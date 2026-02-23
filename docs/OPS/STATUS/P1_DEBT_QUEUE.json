@@ -42,7 +42,7 @@
     {
       "id": "P1-CI-OPS-INJECTION-HARDENING",
       "title": "CI/OPS injection hardening",
-      "status": "OPEN",
+      "status": "CLOSED",
       "priority": "P1",
       "risk": "OPS",
       "owner": "HO",
