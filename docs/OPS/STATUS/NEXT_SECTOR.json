@@ -1,9 +1,9 @@
 {
   "schemaVersion": "next-sector.v1",
-  "id": "SECTOR 01",
-  "mode": "ACTIVE",
-  "reason": "SECTOR_LAUNCH_FREEZE_PREP",
-  "goTag": "GO:NEXT_SECTOR_START",
+  "id": "NONE",
+  "mode": "IDLE",
+  "reason": "ALL_SECTORS_DONE",
+  "goTag": "",
   "prereqs": [
     "SECTOR_P_CLOSE_OK==1",
     "SECTOR_P_CLOSED_MUTATION==0",
