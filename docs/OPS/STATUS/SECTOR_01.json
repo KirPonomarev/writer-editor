@@ -2,9 +2,11 @@
   "id": "SECTOR 01",
   "status": "ACTIVE",
   "tickets": {
-    "A": "PENDING",
-    "B": "PENDING",
-    "C": "PENDING",
-    "D": "PENDING"
+    "A": "DONE",
+    "B": "DONE",
+    "C": "DONE",
+    "D": "DONE",
+    "E": "DONE",
+    "F": "DONE"
   }
 }

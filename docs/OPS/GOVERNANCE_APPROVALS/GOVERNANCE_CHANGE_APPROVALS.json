@@ -157,10 +157,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/P1_DEBT_QUEUE.json",
-      "sha256": "496f6553ab3920bf5f14ddfe1193462a68f404b546134712446cba7abfa0ce8a",
-      "approvedBy": "ticket:TZ-SECTOR-01-D-DEPENDENCY-REMEDIATION-001",
-      "approvedAtUtc": "2026-02-22T20:56:11.158Z",
-      "rationale": "Sector 01 Ticket D: dependency remediation closeout (risk register exceptions + close P1 item)"
+      "sha256": "af2e690b55d16cbf0d259b1f59f75eaa263c922b01241da791b2fb4aaa091809",
+      "approvedBy": "ticket:TZ-SECTOR-01-F-P1-QUEUE-SECTOR-TRACKER-RECONCILE-001",
+      "approvedAtUtc": "2026-02-23T10:49:32.225Z",
+      "rationale": "Sector 01 Ticket F: reconcile P1 queue status + sector tracker (no semantic change)"
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
@@ -346,10 +346,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/SECTOR_01.json",
-      "sha256": "83295e14d0afcd6a67e1a22726c72dff5cf2d308fe8b52c53e30bd28d1a78f2d",
-      "approvedBy": "ticket:TZ-SECTOR-01-00-PHASE0-PATCH1-GOV-STRATEGY",
-      "approvedAtUtc": "2026-02-21T16:26:04.652Z",
-      "rationale": "Sector 01 Phase0 bootstrap approvals (next-sector + sector status + failsignal + debt TTL contract)"
+      "sha256": "b11616405e68638f33781ff23836178b736de00b3c8ca099b3a07efab0683bfc",
+      "approvedBy": "ticket:TZ-SECTOR-01-F-P1-QUEUE-SECTOR-TRACKER-RECONCILE-001",
+      "approvedAtUtc": "2026-02-23T10:49:32.225Z",
+      "rationale": "Sector 01 Ticket F: reconcile P1 queue status + sector tracker (no semantic change)"
     },
     {
       "filePath": "test/contracts/debt-ttl-expired.contract.test.js",
