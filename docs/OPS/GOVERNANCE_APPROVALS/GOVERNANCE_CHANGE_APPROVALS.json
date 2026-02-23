@@ -378,6 +378,48 @@
       "approvedBy": "ticket:TZ-SECTOR-01-C-CI-OPS-INJECTION-HARDENING-001",
       "approvedAtUtc": "2026-02-22T15:49:11.088Z",
       "rationale": "Sector 01 Ticket C: CI/OPS injection hardening (remove shell interpolation) + contract proof + close P1 item"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-bad1149ed99b-592e3737/failsignal-registry-snapshot.json",
+      "sha256": "a99e7c59e9295cb79b40e1a33c0d31edbfceaf16be026083096268870322ea17",
+      "approvedBy": "ticket:TZ-POST-SECTOR-01-H2-PROMOTION-EVIDENCE-GOVERNANCE-001",
+      "approvedAtUtc": "2026-02-23T12:51:20.938Z",
+      "rationale": "Post Sector 01: commit and approve promotion evidence pack for release-candidate verify (restore active canon promotion check)"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-bad1149ed99b-592e3737/heavy-lane-summary.json",
+      "sha256": "44da6a295c4448fc255e138c5bd32b017467275bfc647f6968434483b7757b8a",
+      "approvedBy": "ticket:TZ-POST-SECTOR-01-H2-PROMOTION-EVIDENCE-GOVERNANCE-001",
+      "approvedAtUtc": "2026-02-23T12:51:20.938Z",
+      "rationale": "Post Sector 01: commit and approve promotion evidence pack for release-candidate verify (restore active canon promotion check)"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-bad1149ed99b-592e3737/menuArtifactHash.txt",
+      "sha256": "1f16de2ada63b00b057894eddb2687d109ffbf16a734160eefc6e0c7116c512c",
+      "approvedBy": "ticket:TZ-POST-SECTOR-01-H2-PROMOTION-EVIDENCE-GOVERNANCE-001",
+      "approvedAtUtc": "2026-02-23T12:51:20.938Z",
+      "rationale": "Post Sector 01: commit and approve promotion evidence pack for release-candidate verify (restore active canon promotion check)"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-bad1149ed99b-592e3737/perfBaseline.json",
+      "sha256": "85769939469ef0e202812a7ae850706603534d29af34c87019c4c91b8796c018",
+      "approvedBy": "ticket:TZ-POST-SECTOR-01-H2-PROMOTION-EVIDENCE-GOVERNANCE-001",
+      "approvedAtUtc": "2026-02-23T12:51:20.938Z",
+      "rationale": "Post Sector 01: commit and approve promotion evidence pack for release-candidate verify (restore active canon promotion check)"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-bad1149ed99b-592e3737/promotion-summary.json",
+      "sha256": "d5ddcf4ac3cb4e5402b5d3b27b28d4f90d2f6bfde67826a8f10dee86cab63d0b",
+      "approvedBy": "ticket:TZ-POST-SECTOR-01-H2-PROMOTION-EVIDENCE-GOVERNANCE-001",
+      "approvedAtUtc": "2026-02-23T12:51:20.938Z",
+      "rationale": "Post Sector 01: commit and approve promotion evidence pack for release-candidate verify (restore active canon promotion check)"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-bad1149ed99b-592e3737/token-required-set.json",
+      "sha256": "4f896b50aab5d536f49b7ee2586c70778b4f4466e7a21015bcdd4683d2b2afc9",
+      "approvedBy": "ticket:TZ-POST-SECTOR-01-H2-PROMOTION-EVIDENCE-GOVERNANCE-001",
+      "approvedAtUtc": "2026-02-23T12:51:20.938Z",
+      "rationale": "Post Sector 01: commit and approve promotion evidence pack for release-candidate verify (restore active canon promotion check)"
     }
   ]
 }
