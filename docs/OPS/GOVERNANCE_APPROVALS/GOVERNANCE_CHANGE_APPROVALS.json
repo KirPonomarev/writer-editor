@@ -164,10 +164,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
-      "sha256": "094f222fe2ef81e8032f72284fd2379038b31303e6007b0d8495b71a00663754",
-      "approvedBy": "ticket:TZ-24E-P1-RELEASE-CANDIDATE-LOCK-REFRESH-014",
-      "approvedAtUtc": "2026-02-18T16:49:30.000Z",
-      "rationale": "Refresh release candidate lock to align token catalog and failsignal hashes with current SSOT baseline commit."
+      "sha256": "8a0a2a595c0114e6199f2a11c6b641298f56dfdbcc874be333f950df82f7289b",
+      "approvedBy": "ticket:TZ-SECTOR-01-E-RELEASE-CANDIDATE-LOCK-REFRESH-001",
+      "approvedAtUtc": "2026-02-23T09:31:52.560Z",
+      "rationale": "Sector 01 Ticket E: release candidate lock drift refresh (align token catalog and failsignal hashes)"
     },
     {
       "filePath": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.12.md",
