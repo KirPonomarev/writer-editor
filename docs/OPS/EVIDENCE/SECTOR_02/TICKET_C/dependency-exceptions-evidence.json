@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "sector-02-ticket-c.dependency-exceptions-evidence.v1",
+  "ticketId": "TZ-SECTOR-02-C-DEPENDENCY-EXCEPTIONS-REVALIDATION-DOCS-ONLY-001",
+  "policyPath": "docs/OPS/STATUS/DEPENDENCY_REMEDIATION_POLICY_v3_12.json",
+  "registerPath": "docs/OPS/STATUS/DEPENDENCY_RISK_REGISTER.json",
+  "queuePath": "docs/OPS/STATUS/P1_DEBT_QUEUE.json",
+  "lockfilePath": "package-lock.json",
+  "lockfileSha256": "f61aa1b04ea1c8ae22f15d0d806089d6210838da1c249f661c049ae697943ef8",
+  "assertNoRemediationAttempt": true,
+  "assertNoPackageUpdates": true,
+  "assertNoLockfileChanges": true,
+  "generatedAtUtc": "2026-02-24T10:57:09Z"
+}
