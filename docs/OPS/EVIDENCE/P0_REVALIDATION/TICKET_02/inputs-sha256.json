@@ -1,0 +1,29 @@
+{
+  "baseRef": "origin/main",
+  "baseSha": "80a87fbf17f84ca9640a9dc63f7535c1df06ae48",
+  "headSha": "80a87fbf17f84ca9640a9dc63f7535c1df06ae48",
+  "inputs": [
+    {
+      "inputId": "FAILSIGNAL_REGISTRY",
+      "path": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+      "sha256": "4c5a3a9479a8f8aff6d436844dc9e7f31813fcb58815dd0fd94393497ca6b866"
+    },
+    {
+      "inputId": "TOKEN_CATALOG",
+      "path": "docs/OPS/TOKENS/TOKEN_CATALOG.json",
+      "sha256": "7d25a8d5798d83229ff8a82fb396b2e4f37b0f314c3739ec0f63ac99a170b2d6"
+    },
+    {
+      "inputId": "REQUIRED_TOKEN_SET",
+      "path": "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json",
+      "sha256": "4f896b50aab5d536f49b7ee2586c70778b4f4466e7a21015bcdd4683d2b2afc9"
+    },
+    {
+      "inputId": "LAW",
+      "path": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+      "sha256": "17cadb80e064210aa414786183f3f504e7a8098273c57138e111fc340344e9b6"
+    }
+  ],
+  "originMainSha": "80a87fbf17f84ca9640a9dc63f7535c1df06ae48",
+  "ticketId": "TZ-P0-02-REGISTER-OR-DEMOTE-RECONCILE-001"
+}

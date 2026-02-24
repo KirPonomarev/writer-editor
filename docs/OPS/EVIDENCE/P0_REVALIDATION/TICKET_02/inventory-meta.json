@@ -1,0 +1,10 @@
+{
+  "branchName": "codex/tz-p0-02-register-or-demote-reconcile-001",
+  "generatedAtUtc": "2026-02-24T09:57:55.706Z",
+  "headEqualsOriginMain": true,
+  "headSha": "80a87fbf17f84ca9640a9dc63f7535c1df06ae48",
+  "originMainSha": "80a87fbf17f84ca9640a9dc63f7535c1df06ae48",
+  "sourceDriftProven": true,
+  "sourceTicketId": "TZ-P0-01-INVENTORY-DIFF-PROOF-001-RERUN-BASELINE-01",
+  "ticketId": "TZ-P0-02-REGISTER-OR-DEMOTE-RECONCILE-001"
+}

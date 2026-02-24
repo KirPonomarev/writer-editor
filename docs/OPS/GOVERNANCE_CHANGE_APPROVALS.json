@@ -1,0 +1,54 @@
+{
+  "approvals": [
+    {
+      "approvedAtUtc": "2026-02-24T00:10:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/P0_REVALIDATION/TICKET_02/blocking-set-before-after.json",
+      "rationale": "TZ-P0-02 reconcile approvals for register-or-demote payload.",
+      "sha256": "748d39976ab87cc61dc05963c50068bd62c9f9ff189d2585d4a0a8515b5b7067"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T00:10:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/P0_REVALIDATION/TICKET_02/inputs-sha256.json",
+      "rationale": "TZ-P0-02 reconcile approvals for register-or-demote payload.",
+      "sha256": "64ef476f2645ebfa42718ae17e338c4bccec536926ad299a9f91d88be930ac67"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T00:10:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/P0_REVALIDATION/TICKET_02/inventory-meta.json",
+      "rationale": "TZ-P0-02 reconcile approvals for register-or-demote payload.",
+      "sha256": "f090a131d58586b170964b24468344ae3a602043ea39cc9a708adb0ec208b528"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T00:10:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/P0_REVALIDATION/TICKET_02/registered-failsignals.json",
+      "rationale": "TZ-P0-02 reconcile approvals for register-or-demote payload.",
+      "sha256": "0fcb2ab79ef0cd41e82228d646833cd1873490afe3dc378ddf2aca221b90e97b"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T00:10:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/P0_REVALIDATION/TICKET_02/remaining-mismatches.json",
+      "rationale": "TZ-P0-02 reconcile approvals for register-or-demote payload.",
+      "sha256": "c09dbdc01c45ac89fb579ea6a6bd5e38a36e967cc4760ceaab6470f551a33d47"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T00:10:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/P0_REVALIDATION/TICKET_02/summary.json",
+      "rationale": "TZ-P0-02 reconcile approvals for register-or-demote payload.",
+      "sha256": "edc5cbcd244e0d5413fcfe64d5ea01dbbd2b645103d7e44dafba0969cac08d8c"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T00:10:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+      "rationale": "TZ-P0-02 reconcile approvals for register-or-demote payload.",
+      "sha256": "4c5a3a9479a8f8aff6d436844dc9e7f31813fcb58815dd0fd94393497ca6b866"
+    }
+  ],
+  "version": "v1.0"
+}
