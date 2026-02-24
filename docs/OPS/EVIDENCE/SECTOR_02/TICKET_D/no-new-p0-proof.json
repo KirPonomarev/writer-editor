@@ -1,0 +1,9 @@
+{
+  "runId": "RUN-2026-02-23-009",
+  "ticketId": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01",
+  "noNewP0": true,
+  "driftUnresolvedP0Count": 0,
+  "sourceToken": "OPS_SUMMARY_DRIFT_UNRESOLVED_P0_COUNT",
+  "sourceLog": "run-wave.log",
+  "capturedAtUtc": "2026-02-24T16:52:59.293Z"
+}

@@ -1,0 +1,78 @@
+{
+  "runId": "RUN-2026-02-23-009",
+  "ticketId": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01",
+  "gates": {
+    "preflight_clean": "PASS_AT_START",
+    "head_equals_origin_main": true,
+    "anti_swap": true,
+    "scope_proof": true,
+    "governance_strict": true,
+    "doctor_strict": true,
+    "dev_fast": true,
+    "heavy_rollup_success": true,
+    "promotion_check_pass": true,
+    "transition_exit_check_pass": true,
+    "no_new_p0": true,
+    "baseline_binding_valid": true
+  },
+  "promotionEvidencePack": "rc-e6d2ecb2c475-592e3737",
+  "promotionOutputs": [
+    {
+      "basename": "promotion-summary.json",
+      "exists": true,
+      "sha256": "e7a0547337f364acf7b75475f96fdff8d090478519069b6fec7d410b475b2d5f"
+    },
+    {
+      "basename": "menuArtifactHash.txt",
+      "exists": true,
+      "sha256": "1f16de2ada63b00b057894eddb2687d109ffbf16a734160eefc6e0c7116c512c"
+    },
+    {
+      "basename": "perfBaseline.json",
+      "exists": true,
+      "sha256": "85769939469ef0e202812a7ae850706603534d29af34c87019c4c91b8796c018"
+    },
+    {
+      "basename": "heavy-lane-summary.json",
+      "exists": true,
+      "sha256": "d62b77b044496d7d79ad971080f4454907a52e4287c1377252e76286984ba65b"
+    },
+    {
+      "basename": "token-required-set.json",
+      "exists": true,
+      "sha256": "4f896b50aab5d536f49b7ee2586c70778b4f4466e7a21015bcdd4683d2b2afc9"
+    },
+    {
+      "basename": "failsignal-registry-snapshot.json",
+      "exists": true,
+      "sha256": "4c5a3a9479a8f8aff6d436844dc9e7f31813fcb58815dd0fd94393497ca6b866"
+    }
+  ],
+  "releaseCandidateVerify": {
+    "operation": "verify",
+    "mode": "promotion",
+    "result": "PASS",
+    "ok": true,
+    "exitCode": 0,
+    "failSignalCode": "",
+    "failReason": "",
+    "token": {
+      "RELEASE_CANDIDATE_LOCK_MATCH_OK": 1
+    },
+    "lockPath": "/Volumes/Work/Драфт писательской программы/writer-editor/docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
+    "rcId": "rc-e6d2ecb2c475-592e3737",
+    "mismatches": [],
+    "evidencePackPath": "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737",
+    "evidenceFiles": [
+      "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/promotion-summary.json",
+      "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/menuArtifactHash.txt",
+      "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/perfBaseline.json",
+      "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/doctor-strict.log",
+      "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/heavy-lane-summary.json",
+      "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/token-required-set.json",
+      "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/failsignal-registry-snapshot.json"
+    ]
+  },
+  "capturedAtUtc": "2026-02-24T16:52:59.293Z",
+  "updatedAtUtc": "2026-02-24T16:54:19.113Z"
+}

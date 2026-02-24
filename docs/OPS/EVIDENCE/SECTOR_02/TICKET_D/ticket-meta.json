@@ -1,0 +1,56 @@
+{
+  "role": "DOCS",
+  "routeTo": "CODEX_EXEC",
+  "runId": "RUN-2026-02-23-009",
+  "echoRunId": "RUN-2026-02-23-009",
+  "ticketId": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01",
+  "sourceStopRequiredCode": "UNDECLARED_PATH_IN_ALLOWLIST",
+  "sourceResumeFromStep": "STEP_08_PROMOTION_CHECK_PASS_WITH_UPDATED_ALLOWLIST_POLICY",
+  "approvedBy": "DOCS_OPERATOR",
+  "approvedAt": "2026-02-24T01:20:00Z",
+  "baseSha": "e6d2ecb2c4759c401da1758f3e111de53996643f",
+  "baseRef": "origin/main",
+  "pushBranch": "codex/tz-sector-02-d-closeout-heavy-001",
+  "prMode": "PR",
+  "checks": [
+    "preflight_clean",
+    "head_equals_origin_main",
+    "anti_swap",
+    "scope_proof",
+    "governance_strict",
+    "doctor_strict",
+    "dev_fast",
+    "heavy_rollup_success",
+    "promotion_check_pass",
+    "transition_exit_check_pass",
+    "no_new_p0",
+    "baseline_binding_valid"
+  ],
+  "allowlistPathsMode": "EXACT",
+  "allowlistPaths": [
+    "docs/OPS/GOVERNANCE_CHANGE_APPROVALS.json",
+    "docs/OPS/EVIDENCE/SECTOR_02/TICKET_D",
+    "docs/OPS/EVIDENCE/promotion",
+    "docs/OPS/STATUS",
+    "docs/OPS/CACHE"
+  ],
+  "requiredOutputs": [
+    "heavy-rollup-summary.json",
+    "closeout-gates.json",
+    "no-new-p0-proof.json",
+    "baseline-binding-proof.json",
+    "summary.json",
+    "ticket-meta.json"
+  ],
+  "requiredPromotionOutputBasenames": [
+    "promotion-summary.json",
+    "menuArtifactHash.txt",
+    "perfBaseline.json",
+    "heavy-lane-summary.json",
+    "token-required-set.json",
+    "failsignal-registry-snapshot.json"
+  ],
+  "updatedAtUtc": "2026-02-24T16:54:19.113Z",
+  "executionState": "DONE",
+  "resumeFromStep": "STEP_08_PROMOTION_CHECK_PASS_WITH_UPDATED_ALLOWLIST_POLICY"
+}
