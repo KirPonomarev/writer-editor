@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "sector-02-ticket-b.summary.v1",
+  "ticketId": "TZ-SECTOR-02-B-PATH-BOUNDARY-BEHAVIORAL-PROOF-PACK-001-RERUN-ALLOWLIST-01",
+  "status": "DONE",
+  "checks": {
+    "path_boundary_behavioral_proof": true,
+    "negative_bypass_tests": true,
+    "failsignal_wiring_proof": true,
+    "source_binding_proof": true
+  },
+  "tapSummary": {
+    "tests": 6,
+    "pass": 6,
+    "fail": 0
+  },
+  "centralizedGuardCallCount": 7,
+  "generatedAtUtc": "2026-02-24T10:44:52Z"
+}
