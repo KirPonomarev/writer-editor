@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "sector-02-ticket-a.meta.v1",
+  "ticketId": "TZ-SECTOR-02-A-PATH-BOUNDARY-RUNTIME-MIN-FIX-001",
+  "runId": "RUN-2026-02-23-009",
+  "baseRef": "origin/main",
+  "baseSha": "b8af05ca3a3e949f6b1a0ee37b4b9139b91bf266",
+  "branch": "codex/tz-sector-02-a-path-boundary-runtime-min-fix-001",
+  "goal": "MINIMAL_PATH_BOUNDARY_RUNTIME_FIX_WITHOUT_SCOPE_EXPANSION",
+  "scopeBoundary": "IO_IPC_BOUNDARY_ONLY",
+  "generatedAtUtc": "2026-02-24T10:23:01Z"
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "sector-02-ticket-a.bypass-removal-proof.v1",
+  "ticketId": "TZ-SECTOR-02-A-PATH-BOUNDARY-RUNTIME-MIN-FIX-001",
+  "confirmedBypass": {
+    "id": "FLOW_SAVE_PATH_VALIDATION_BYPASS",
+    "location": "handleFlowSaveV1",
+    "before": "incoming scene path was checked only against allowed map; explicit root-boundary guard was absent",
+    "after": "incoming scene path is sanitized through centralized root-boundary guard before allowlist check"
+  },
+  "addedGuards": [
+    {
+      "entry": "m:cmd:project:flow:save:v1",
+      "failSignal": "E_PATH_BOUNDARY_VIOLATION",
+      "failReason": "flow_save_path_boundary_violation",
+      "line": 1082
+    }
+  ],
+  "refactoredEntriesThroughCentralGuard": [
+    "ui:open-document",
+    "ui:create-node",
+    "ui:rename-node",
+    "ui:delete-node",
+    "ui:reorder-node"
+  ],
+  "assertBypassRemoved": true,
+  "assertNoIpcArchitectureRefactor": true,
+  "assertNoPolicySurfaceExpansion": true,
+  "generatedAtUtc": "2026-02-24T10:23:01Z"
+}

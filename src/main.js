@@ -1074,13 +1074,28 @@ async function handleFlowSaveV1(payloadRaw) {
         return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M7_FLOW_INVALID_SCENE_ITEM', 'flow_save_scene_invalid');
       }
       const scenePath = typeof item.path === 'string' ? item.path : '';
-      if (!scenePath || !allowed.has(scenePath)) {
+      const scenePathGuard = sanitizePayloadWithinProjectRoot({ path: scenePath }, ['path']);
+      if (!scenePathGuard.ok || !scenePathGuard.payload) {
+        return makeFlowModeError(
+          FLOW_SAVE_V1_CHANNEL,
+          'E_PATH_BOUNDARY_VIOLATION',
+          'flow_save_path_boundary_violation',
+          {
+            path: scenePath,
+            failReason: scenePathGuard.pathGuard && typeof scenePathGuard.pathGuard.failReason === 'string'
+              ? scenePathGuard.pathGuard.failReason
+              : 'PATH_BOUNDARY_VIOLATION',
+          },
+        );
+      }
+      const safeScenePath = scenePathGuard.payload.path;
+      if (!safeScenePath || !allowed.has(safeScenePath)) {
         return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M7_FLOW_PATH_FORBIDDEN', 'flow_save_path_forbidden', {
-          path: scenePath,
+          path: safeScenePath || scenePath,
         });
       }
       normalizedScenes.push({
-        path: scenePath,
+        path: safeScenePath,
         content: normalizeFlowTextInput(item.content),
       });
     }
@@ -1163,6 +1178,40 @@ function formatPrefixedName(baseName, index) {
 
 function isPathInside(parentPath, childPath) {
   return isPathInsideBoundary(parentPath, childPath, { resolveSymlinks: false });
+}
+
+function makePathBoundaryViolationResult(pathGuard) {
+  return {
+    ok: false,
+    error: 'Path boundary violation',
+    code: 'E_PATH_BOUNDARY_VIOLATION',
+    failSignal: 'E_PATH_BOUNDARY_VIOLATION',
+    failReason: pathGuard && typeof pathGuard.failReason === 'string'
+      ? pathGuard.failReason
+      : 'PATH_BOUNDARY_VIOLATION',
+  };
+}
+
+function sanitizePayloadWithinProjectRoot(payload, pathFieldNames) {
+  const projectRoot = getProjectRootPath();
+  const pathGuard = sanitizePathFieldsWithinRoot(payload, pathFieldNames, projectRoot, {
+    mode: 'any',
+    resolveSymlinks: true,
+  });
+  if (!pathGuard.ok || !pathGuard.payload) {
+    return {
+      ok: false,
+      payload: null,
+      pathGuard,
+      error: makePathBoundaryViolationResult(pathGuard),
+    };
+  }
+  return {
+    ok: true,
+    payload: pathGuard.payload,
+    pathGuard,
+    error: null,
+  };
 }
 
 // Проверка существования файла
@@ -1832,22 +1881,12 @@ ipcMain.handle('ui:open-document', async (_, payload) => {
     return { ok: false, error: 'No active window' };
   }
 
-  const projectRoot = getProjectRootPath();
-  const pathGuard = sanitizePathFieldsWithinRoot(payload, ['path'], projectRoot, {
-    mode: 'any',
-    resolveSymlinks: true,
-  });
-  if (!pathGuard.ok || !pathGuard.payload) {
-    return {
-      ok: false,
-      error: 'Path boundary violation',
-      code: 'E_PATH_BOUNDARY_VIOLATION',
-      failSignal: 'E_PATH_BOUNDARY_VIOLATION',
-      failReason: pathGuard.failReason || 'PATH_BOUNDARY_VIOLATION',
-    };
+  const guarded = sanitizePayloadWithinProjectRoot(payload, ['path']);
+  if (!guarded.ok || !guarded.payload) {
+    return guarded.error;
   }
 
-  const safePayload = pathGuard.payload;
+  const safePayload = guarded.payload;
   const filePath = safePayload.path;
   if (typeof filePath !== 'string' || !filePath.trim()) {
     return { ok: false, error: 'Invalid file path' };
@@ -1907,21 +1946,11 @@ ipcMain.handle('ui:open-document', async (_, payload) => {
 });
 
 ipcMain.handle('ui:create-node', async (_, payload) => {
-  const projectRoot = getProjectRootPath();
-  const pathGuard = sanitizePathFieldsWithinRoot(payload, ['parentPath'], projectRoot, {
-    mode: 'any',
-    resolveSymlinks: true,
-  });
-  if (!pathGuard.ok || !pathGuard.payload) {
-    return {
-      ok: false,
-      error: 'Path boundary violation',
-      code: 'E_PATH_BOUNDARY_VIOLATION',
-      failSignal: 'E_PATH_BOUNDARY_VIOLATION',
-      failReason: pathGuard.failReason || 'PATH_BOUNDARY_VIOLATION',
-    };
+  const guarded = sanitizePayloadWithinProjectRoot(payload, ['parentPath']);
+  if (!guarded.ok || !guarded.payload) {
+    return guarded.error;
   }
-  const safePayload = pathGuard.payload;
+  const safePayload = guarded.payload;
   if (typeof safePayload.parentPath !== 'string' || typeof safePayload.kind !== 'string') {
     return { ok: false, error: 'Invalid payload' };
   }
@@ -1991,21 +2020,11 @@ ipcMain.handle('ui:create-node', async (_, payload) => {
 });
 
 ipcMain.handle('ui:rename-node', async (_, payload) => {
-  const projectRoot = getProjectRootPath();
-  const pathGuard = sanitizePathFieldsWithinRoot(payload, ['path'], projectRoot, {
-    mode: 'any',
-    resolveSymlinks: true,
-  });
-  if (!pathGuard.ok || !pathGuard.payload) {
-    return {
-      ok: false,
-      error: 'Path boundary violation',
-      code: 'E_PATH_BOUNDARY_VIOLATION',
-      failSignal: 'E_PATH_BOUNDARY_VIOLATION',
-      failReason: pathGuard.failReason || 'PATH_BOUNDARY_VIOLATION',
-    };
+  const guarded = sanitizePayloadWithinProjectRoot(payload, ['path']);
+  if (!guarded.ok || !guarded.payload) {
+    return guarded.error;
   }
-  const safePayload = pathGuard.payload;
+  const safePayload = guarded.payload;
   if (typeof safePayload.path !== 'string' || typeof safePayload.name !== 'string') {
     return { ok: false, error: 'Invalid payload' };
   }
@@ -2044,21 +2063,11 @@ ipcMain.handle('ui:rename-node', async (_, payload) => {
 });
 
 ipcMain.handle('ui:delete-node', async (_, payload) => {
-  const projectRoot = getProjectRootPath();
-  const pathGuard = sanitizePathFieldsWithinRoot(payload, ['path'], projectRoot, {
-    mode: 'any',
-    resolveSymlinks: true,
-  });
-  if (!pathGuard.ok || !pathGuard.payload) {
-    return {
-      ok: false,
-      error: 'Path boundary violation',
-      code: 'E_PATH_BOUNDARY_VIOLATION',
-      failSignal: 'E_PATH_BOUNDARY_VIOLATION',
-      failReason: pathGuard.failReason || 'PATH_BOUNDARY_VIOLATION',
-    };
+  const guarded = sanitizePayloadWithinProjectRoot(payload, ['path']);
+  if (!guarded.ok || !guarded.payload) {
+    return guarded.error;
   }
-  const safePayload = pathGuard.payload;
+  const safePayload = guarded.payload;
   if (typeof safePayload.path !== 'string') {
     return { ok: false, error: 'Invalid payload' };
   }
@@ -2093,21 +2102,11 @@ ipcMain.handle('ui:delete-node', async (_, payload) => {
 });
 
 ipcMain.handle('ui:reorder-node', async (_, payload) => {
-  const projectRoot = getProjectRootPath();
-  const pathGuard = sanitizePathFieldsWithinRoot(payload, ['path'], projectRoot, {
-    mode: 'any',
-    resolveSymlinks: true,
-  });
-  if (!pathGuard.ok || !pathGuard.payload) {
-    return {
-      ok: false,
-      error: 'Path boundary violation',
-      code: 'E_PATH_BOUNDARY_VIOLATION',
-      failSignal: 'E_PATH_BOUNDARY_VIOLATION',
-      failReason: pathGuard.failReason || 'PATH_BOUNDARY_VIOLATION',
-    };
+  const guarded = sanitizePayloadWithinProjectRoot(payload, ['path']);
+  if (!guarded.ok || !guarded.payload) {
+    return guarded.error;
   }
-  const safePayload = pathGuard.payload;
+  const safePayload = guarded.payload;
   if (typeof safePayload.path !== 'string' || typeof safePayload.direction !== 'string') {
     return { ok: false, error: 'Invalid payload' };
   }

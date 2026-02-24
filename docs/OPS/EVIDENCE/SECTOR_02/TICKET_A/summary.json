@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "sector-02-ticket-a.summary.v1",
+  "ticketId": "TZ-SECTOR-02-A-PATH-BOUNDARY-RUNTIME-MIN-FIX-001",
+  "status": "DONE",
+  "scope": "IO_IPC_BOUNDARY_ONLY",
+  "changes": {
+    "centralizedGuardIntroduced": true,
+    "runtimeEntriesRoutedThroughGuard": 6,
+    "confirmedBypassRemoved": 1
+  },
+  "gates": {
+    "preflightClean": true,
+    "headEqualsOriginMainPreflight": true,
+    "antiSwap": true,
+    "scopeProof": true,
+    "governanceStrict": true,
+    "doctorStrict": true,
+    "devFast": true,
+    "pathBoundaryRuntimeProof": true,
+    "hotpathNoRegression": true,
+    "noHeavyGates": true
+  },
+  "stopCodesTriggered": [],
+  "generatedAtUtc": "2026-02-24T10:25:30Z"
+}
