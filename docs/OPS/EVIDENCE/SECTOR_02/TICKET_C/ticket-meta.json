@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "sector-02-ticket-c.meta.v1",
+  "ticketId": "TZ-SECTOR-02-C-DEPENDENCY-EXCEPTIONS-REVALIDATION-DOCS-ONLY-001",
+  "runId": "RUN-2026-02-23-009",
+  "baseRef": "origin/main",
+  "baseSha": "417afc5ad2d5164d09dd0b2febe9dcae490b01fe",
+  "branch": "codex/tz-sector-02-c-dependency-exceptions-revalidation-docs-only-001",
+  "sourceTicketId": "TZ-SECTOR-02-B-PATH-BOUNDARY-BEHAVIORAL-PROOF-PACK-001-RERUN-ALLOWLIST-01",
+  "sourcePostMergeHead": "417afc5ad2d5164d09dd0b2febe9dcae490b01fe",
+  "generatedAtUtc": "2026-02-24T10:57:09Z"
+}

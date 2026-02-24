@@ -1,6 +1,6 @@
 {
   "schemaVersion": "v1",
-  "generatedAt": "2026-02-22T20:55:48.135Z",
+  "generatedAt": "2026-02-24T10:57:09Z",
   "lockfile": "package-lock.json",
   "sourceAuditPath": "docs/AUDIT/audit-findings.json",
   "items": [
@@ -55,5 +55,21 @@
       "monitoring": "See NPM_AUDIT_HIGH_CLOSURE_SECTOR01_D.json; reopen if runtime reachability changes."
     }
   ],
-  "nonReachableExceptions": []
+  "nonReachableExceptions": [],
+  "revalidationHistory": [
+    {
+      "ticketId": "TZ-SECTOR-02-C-DEPENDENCY-EXCEPTIONS-REVALIDATION-DOCS-ONLY-001",
+      "runId": "RUN-2026-02-23-009",
+      "approvedAtUtc": "2026-02-24T00:50:00Z",
+      "baseSha": "417afc5ad2d5164d09dd0b2febe9dcae490b01fe",
+      "mode": "REVALIDATION_ONLY",
+      "reachableCriticalCount": 0,
+      "reachableHighCount": 0,
+      "exceptionsReviewedCount": 5,
+      "reopenTriggered": false,
+      "lockfileSha256": "f61aa1b04ea1c8ae22f15d0d806089d6210838da1c249f661c049ae697943ef8",
+      "generatedAtUtc": "2026-02-24T10:57:09Z"
+    }
+  ],
+  "lastRevalidatedAt": "2026-02-24T10:57:09Z"
 }

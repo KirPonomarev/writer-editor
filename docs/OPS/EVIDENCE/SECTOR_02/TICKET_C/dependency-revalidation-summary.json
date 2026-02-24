@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "sector-02-ticket-c.dependency-revalidation-summary.v1",
+  "ticketId": "TZ-SECTOR-02-C-DEPENDENCY-EXCEPTIONS-REVALIDATION-DOCS-ONLY-001",
+  "status": "DONE",
+  "checks": {
+    "dependency_revalidation_docs_only": true,
+    "no_lockfile_changes": true,
+    "no_heavy_gates": true
+  },
+  "counts": {
+    "reachableHighCount": 0,
+    "reachableCriticalCount": 0,
+    "exceptionsReviewedCount": 5
+  },
+  "reopenTriggered": false,
+  "nextRoute": "SECTOR_02_D_CLOSEOUT_HEAVY",
+  "generatedAtUtc": "2026-02-24T10:57:09Z"
+}

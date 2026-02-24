@@ -2,53 +2,39 @@
   "version": "v1.0",
   "approvals": [
     {
-      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
+      "approvedAtUtc": "2026-02-24T00:50:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
-      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/path-boundary-failsignal-wiring-proof.json",
-      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
-      "sha256": "24c1e43ff2e8a51868ca50e80ab0601b31e0aa480b48bfa1249927cbbe66db0f"
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_C/dependency-exceptions-evidence.json",
+      "rationale": "TZ-SECTOR-02-C dependency exceptions revalidation docs-only approvals.",
+      "sha256": "93094d671d68eef0e79316772f4b4ddc2de6c0457c94e9365715d820296bbff9"
     },
     {
-      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
+      "approvedAtUtc": "2026-02-24T00:50:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
-      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/path-boundary-negative-bypass-tests.json",
-      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
-      "sha256": "cf756275f8b001432556278040c14d7ee9a62df1674b062666f63f3e1d8c1963"
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_C/dependency-revalidation-summary.json",
+      "rationale": "TZ-SECTOR-02-C dependency exceptions revalidation docs-only approvals.",
+      "sha256": "1d5c62a1bb71c12b6445b9855fc333699302c3ae3ac5dc044598b8622e78c2c3"
     },
     {
-      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
+      "approvedAtUtc": "2026-02-24T00:50:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
-      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/path-boundary-positive-proof.json",
-      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
-      "sha256": "ac18ef14493e75304c71b8869817076ed1fed36260b1f6119b2110241a601cbb"
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_C/dependency-risk-register-revalidation.json",
+      "rationale": "TZ-SECTOR-02-C dependency exceptions revalidation docs-only approvals.",
+      "sha256": "06be5ffe337ba09d80e0bb67d53dd302271ac145c2286c1a46dde2992e6eb876"
     },
     {
-      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
+      "approvedAtUtc": "2026-02-24T00:50:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
-      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/path-boundary-source-binding-proof.json",
-      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
-      "sha256": "e440c8bb3919a77468c624f7c824ff9e6915aa471fd3952fd16e0e422b8be2a9"
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_C/ticket-meta.json",
+      "rationale": "TZ-SECTOR-02-C dependency exceptions revalidation docs-only approvals.",
+      "sha256": "5e6ce570d736c3a2d48948dff6548fb754e1c918dd99834bddf2baf5ba8ac5f9"
     },
     {
-      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
+      "approvedAtUtc": "2026-02-24T00:50:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
-      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/summary.json",
-      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
-      "sha256": "93a00996a248ad148027f93be12b9fd8afdd9a09da2baa0341b95dda486ff246"
-    },
-    {
-      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
-      "approvedBy": "DOCS_OPERATOR",
-      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/ticket-meta.json",
-      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
-      "sha256": "e9a4ac952bbef54f0d43a187ac9874ef611ca673f03cfe6f478f621abd795f77"
-    },
-    {
-      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
-      "approvedBy": "DOCS_OPERATOR",
-      "filePath": "test/contracts/path-boundary-behavioral-proof.contract.test.js",
-      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
-      "sha256": "e7a99a9bf706e05eba13e3b3df15ddd7850fdf926b8d7d686561e7f63285e148"
+      "filePath": "docs/OPS/STATUS/DEPENDENCY_RISK_REGISTER.json",
+      "rationale": "TZ-SECTOR-02-C dependency exceptions revalidation docs-only approvals.",
+      "sha256": "9ee62bbcba3084445fa9f385af48d29290aadb24ca89fb85c2a5734f91e4093a"
     }
   ]
 }

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "sector-02-ticket-c.dependency-risk-revalidation.v1",
+  "ticketId": "TZ-SECTOR-02-C-DEPENDENCY-EXCEPTIONS-REVALIDATION-DOCS-ONLY-001",
+  "source": "docs/OPS/STATUS/DEPENDENCY_RISK_REGISTER.json",
+  "mode": "REVALIDATION_ONLY",
+  "reachableCriticalCount": 0,
+  "reachableHighCount": 0,
+  "exceptionsReviewedCount": 5,
+  "reopenTriggered": false,
+  "reviewedItems": [
+    {
+      "package": "app-builder-lib",
+      "severity": "high",
+      "reachable": false,
+      "status": "CLOSED_WITH_EXCEPTIONS",
+      "reviewAfter": "2026-06-30"
+    },
+    {
+      "package": "dmg-builder",
+      "severity": "high",
+      "reachable": false,
+      "status": "CLOSED_WITH_EXCEPTIONS",
+      "reviewAfter": "2026-06-30"
+    },
+    {
+      "package": "electron-builder",
+      "severity": "high",
+      "reachable": false,
+      "status": "CLOSED_WITH_EXCEPTIONS",
+      "reviewAfter": "2026-06-30"
+    },
+    {
+      "package": "electron-builder-squirrel-windows",
+      "severity": "high",
+      "reachable": false,
+      "status": "CLOSED_WITH_EXCEPTIONS",
+      "reviewAfter": "2026-06-30"
+    },
+    {
+      "package": "tar",
+      "severity": "high",
+      "reachable": false,
+      "status": "CLOSED_WITH_EXCEPTIONS",
+      "reviewAfter": "2026-06-30"
+    }
+  ],
+  "generatedAtUtc": "2026-02-24T10:57:09Z"
+}
