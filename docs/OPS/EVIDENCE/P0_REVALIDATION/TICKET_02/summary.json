@@ -1,0 +1,14 @@
+{
+  "decisionRouteHint": "SECTOR_02_A",
+  "demotedLinksCount": 0,
+  "mode": "RECONCILE_REGISTER_OR_DEMOTE",
+  "registeredFailSignalsCount": 35,
+  "remaining": {
+    "lawFailSignalsMissingInRegistry": 0,
+    "releaseRequiredTokenMismatches": 0,
+    "tokenCatalogFailSignalsMissingInRegistry": 0
+  },
+  "remainingMissingFailSignalsCount": 0,
+  "remainingReleaseRequiredMismatchesCount": 0,
+  "ticketId": "TZ-P0-02-REGISTER-OR-DEMOTE-RECONCILE-001"
+}
