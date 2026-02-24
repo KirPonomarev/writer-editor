@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "sector-02-ticket-a.guard-map.v1",
+  "ticketId": "TZ-SECTOR-02-A-PATH-BOUNDARY-RUNTIME-MIN-FIX-001",
+  "centralizedGuard": {
+    "function": "sanitizePayloadWithinProjectRoot",
+    "file": "src/main.js",
+    "definitionLine": 1195,
+    "errorFactory": "makePathBoundaryViolationResult",
+    "errorFactoryLine": 1183
+  },
+  "routedEntries": [
+    {
+      "channel": "ui:open-document",
+      "pathFields": [
+        "path"
+      ],
+      "handlerMarker": "ipcMain.handle('ui:open-document'",
+      "handlerLine": 1879,
+      "usesCentralizedGuard": true
+    },
+    {
+      "channel": "ui:create-node",
+      "pathFields": [
+        "parentPath"
+      ],
+      "handlerMarker": "ipcMain.handle('ui:create-node'",
+      "handlerLine": 1948,
+      "usesCentralizedGuard": true
+    },
+    {
+      "channel": "ui:rename-node",
+      "pathFields": [
+        "path"
+      ],
+      "handlerMarker": "ipcMain.handle('ui:rename-node'",
+      "handlerLine": 2022,
+      "usesCentralizedGuard": true
+    },
+    {
+      "channel": "ui:delete-node",
+      "pathFields": [
+        "path"
+      ],
+      "handlerMarker": "ipcMain.handle('ui:delete-node'",
+      "handlerLine": 2065,
+      "usesCentralizedGuard": true
+    },
+    {
+      "channel": "ui:reorder-node",
+      "pathFields": [
+        "path"
+      ],
+      "handlerMarker": "ipcMain.handle('ui:reorder-node'",
+      "handlerLine": 2104,
+      "usesCentralizedGuard": true
+    },
+    {
+      "channel": "m:cmd:project:flow:save:v1",
+      "pathFields": [
+        "path"
+      ],
+      "handlerMarker": "async function handleFlowSaveV1(",
+      "handlerLine": 1058,
+      "usesCentralizedGuard": true
+    }
+  ],
+  "centralizedGuardCallCount": 7,
+  "assertSingleCentralizedGuard": true,
+  "generatedAtUtc": "2026-02-24T10:23:01Z"
+}
