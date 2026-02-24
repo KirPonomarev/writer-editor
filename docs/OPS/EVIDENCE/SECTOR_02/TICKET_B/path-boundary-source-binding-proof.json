@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "sector-02-ticket-b.source-binding.v1",
+  "ticketId": "TZ-SECTOR-02-B-PATH-BOUNDARY-BEHAVIORAL-PROOF-PACK-001-RERUN-ALLOWLIST-01",
+  "proofType": "SOURCE_BINDING_PROOF",
+  "runtimeSource": "src/main.js",
+  "guardSource": "src/core/io/path-boundary.js",
+  "runtimeMarkers": [
+    {
+      "marker": "require('./core/io/path-boundary')",
+      "line": 16,
+      "present": true
+    },
+    {
+      "marker": "function sanitizePayloadWithinProjectRoot(",
+      "line": 1195,
+      "present": true
+    },
+    {
+      "marker": "sanitizePathFieldsWithinRoot(payload, pathFieldNames, projectRoot",
+      "line": 1197,
+      "present": true
+    }
+  ],
+  "guardMarkers": [
+    {
+      "marker": "const FAIL_SIGNAL = 'E_PATH_BOUNDARY_VIOLATION'",
+      "line": 4,
+      "present": true
+    },
+    {
+      "marker": "function sanitizePathFieldsWithinRoot(",
+      "line": 206,
+      "present": true
+    }
+  ],
+  "centralizedGuardCallCount": 7,
+  "assertRuntimeBoundToCoreGuard": true,
+  "generatedAtUtc": "2026-02-24T10:44:52Z"
+}

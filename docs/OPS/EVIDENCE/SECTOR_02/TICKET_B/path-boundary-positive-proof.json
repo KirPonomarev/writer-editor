@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "sector-02-ticket-b.positive-proof.v1",
+  "ticketId": "TZ-SECTOR-02-B-PATH-BOUNDARY-BEHAVIORAL-PROOF-PACK-001-RERUN-ALLOWLIST-01",
+  "proofType": "POSITIVE_BEHAVIORAL_PROOF",
+  "testFile": "test/contracts/path-boundary-behavioral-proof.contract.test.js",
+  "testCase": "path-boundary behavioral proof: positive within-root path is accepted",
+  "line": 12,
+  "expectedOutcome": "within-root relative path is accepted and resolved inside project root",
+  "executed": true,
+  "pass": true,
+  "tapSummary": {
+    "tests": 6,
+    "pass": 6,
+    "fail": 0
+  },
+  "generatedAtUtc": "2026-02-24T10:44:52Z"
+}

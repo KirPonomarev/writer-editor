@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "sector-02-ticket-b.failsignal-wiring.v1",
+  "ticketId": "TZ-SECTOR-02-B-PATH-BOUNDARY-BEHAVIORAL-PROOF-PACK-001-RERUN-ALLOWLIST-01",
+  "proofType": "FAILSIGNAL_WIRING_PROOF",
+  "sourceFile": "src/main.js",
+  "markers": [
+    {
+      "marker": "function makePathBoundaryViolationResult(",
+      "line": 1183,
+      "present": true
+    },
+    {
+      "marker": "code: 'E_PATH_BOUNDARY_VIOLATION'",
+      "line": 1187,
+      "present": true
+    },
+    {
+      "marker": "failSignal: 'E_PATH_BOUNDARY_VIOLATION'",
+      "line": 350,
+      "present": true
+    },
+    {
+      "marker": "flow_save_path_boundary_violation",
+      "line": 1082,
+      "present": true
+    }
+  ],
+  "expectedFailSignal": "E_PATH_BOUNDARY_VIOLATION",
+  "assertAllMarkersPresent": true,
+  "generatedAtUtc": "2026-02-24T10:44:52Z"
+}

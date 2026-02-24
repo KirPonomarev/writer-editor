@@ -2,39 +2,53 @@
   "version": "v1.0",
   "approvals": [
     {
-      "approvedAtUtc": "2026-02-24T00:20:00.000Z",
+      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
-      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_A/bypass-removal-proof.json",
-      "rationale": "TZ-SECTOR-02-A approvals for minimal path-boundary runtime fix.",
-      "sha256": "3940a7fd09697783ae5eb587288e4c6a2bcd14c1872a3fcaeeb03d4be15caedc"
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/path-boundary-failsignal-wiring-proof.json",
+      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
+      "sha256": "24c1e43ff2e8a51868ca50e80ab0601b31e0aa480b48bfa1249927cbbe66db0f"
     },
     {
-      "approvedAtUtc": "2026-02-24T00:20:00.000Z",
+      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
-      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_A/hotpath-no-regression-proof.json",
-      "rationale": "TZ-SECTOR-02-A approvals for minimal path-boundary runtime fix.",
-      "sha256": "65889cbd9a7b4c53f5b30cbedd4b7eafcde69178714fe8b4759641fdc419cd25"
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/path-boundary-negative-bypass-tests.json",
+      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
+      "sha256": "cf756275f8b001432556278040c14d7ee9a62df1674b062666f63f3e1d8c1963"
     },
     {
-      "approvedAtUtc": "2026-02-24T00:20:00.000Z",
+      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
-      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_A/path-boundary-guard-map.json",
-      "rationale": "TZ-SECTOR-02-A approvals for minimal path-boundary runtime fix.",
-      "sha256": "d55e21b491b507e12fb8ab80d1bc817f35d6cb687bc329eb374c65c3d9064b61"
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/path-boundary-positive-proof.json",
+      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
+      "sha256": "ac18ef14493e75304c71b8869817076ed1fed36260b1f6119b2110241a601cbb"
     },
     {
-      "approvedAtUtc": "2026-02-24T00:20:00.000Z",
+      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
-      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_A/summary.json",
-      "rationale": "TZ-SECTOR-02-A approvals for minimal path-boundary runtime fix.",
-      "sha256": "99005b15af454d680b3ee0756790464c9cc1a7ae688ec7e454da54aa4c00da56"
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/path-boundary-source-binding-proof.json",
+      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
+      "sha256": "e440c8bb3919a77468c624f7c824ff9e6915aa471fd3952fd16e0e422b8be2a9"
     },
     {
-      "approvedAtUtc": "2026-02-24T00:20:00.000Z",
+      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
-      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_A/ticket-meta.json",
-      "rationale": "TZ-SECTOR-02-A approvals for minimal path-boundary runtime fix.",
-      "sha256": "5a7a9f48d25d54e2667c6f5dcbfb3b4a9594a891f342912394da287d30c891ed"
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/summary.json",
+      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
+      "sha256": "93a00996a248ad148027f93be12b9fd8afdd9a09da2baa0341b95dda486ff246"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/ticket-meta.json",
+      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
+      "sha256": "e9a4ac952bbef54f0d43a187ac9874ef611ca673f03cfe6f478f621abd795f77"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T00:40:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "test/contracts/path-boundary-behavioral-proof.contract.test.js",
+      "rationale": "TZ-SECTOR-02-B behavioral proof pack approvals.",
+      "sha256": "e7a99a9bf706e05eba13e3b3df15ddd7850fdf926b8d7d686561e7f63285e148"
     }
   ]
 }

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "sector-02-ticket-b.negative-tests.v1",
+  "ticketId": "TZ-SECTOR-02-B-PATH-BOUNDARY-BEHAVIORAL-PROOF-PACK-001-RERUN-ALLOWLIST-01",
+  "proofType": "NEGATIVE_BYPASS_TESTS",
+  "testFile": "test/contracts/path-boundary-behavioral-proof.contract.test.js",
+  "cases": [
+    {
+      "name": "path-boundary negative bypass: parent traversal is rejected with failSignal",
+      "line": 26,
+      "present": true
+    },
+    {
+      "name": "path-boundary negative bypass: absolute path is rejected with failSignal",
+      "line": 38,
+      "present": true
+    },
+    {
+      "name": "path-boundary negative bypass: sanitizePathFieldsWithinRoot rejects file scheme",
+      "line": 50,
+      "present": true
+    }
+  ],
+  "expectedFailSignal": "E_PATH_BOUNDARY_VIOLATION",
+  "executed": true,
+  "pass": true,
+  "generatedAtUtc": "2026-02-24T10:44:52Z"
+}
