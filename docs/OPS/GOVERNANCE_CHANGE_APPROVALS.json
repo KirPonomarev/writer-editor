@@ -2,6 +2,48 @@
   "version": "v1.0",
   "approvals": [
     {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/failsignal-registry-snapshot.json",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "4c5a3a9479a8f8aff6d436844dc9e7f31813fcb58815dd0fd94393497ca6b866"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/heavy-lane-summary.json",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "d62b77b044496d7d79ad971080f4454907a52e4287c1377252e76286984ba65b"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/menuArtifactHash.txt",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "1f16de2ada63b00b057894eddb2687d109ffbf16a734160eefc6e0c7116c512c"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/perfBaseline.json",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "85769939469ef0e202812a7ae850706603534d29af34c87019c4c91b8796c018"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/promotion-summary.json",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "e7a0547337f364acf7b75475f96fdff8d090478519069b6fec7d410b475b2d5f"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/token-required-set.json",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "4f896b50aab5d536f49b7ee2586c70778b4f4466e7a21015bcdd4683d2b2afc9"
+    },
+    {
       "approvedAtUtc": "2026-02-24T00:50:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
       "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_C/dependency-exceptions-evidence.json",
@@ -30,11 +72,60 @@
       "sha256": "5e6ce570d736c3a2d48948dff6548fb754e1c918dd99834bddf2baf5ba8ac5f9"
     },
     {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_D/baseline-binding-proof.json",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "67be640c52597bc607e9538e7b38feb0a3fb03a526c3a3d17fc111b07d41dd80"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_D/closeout-gates.json",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "a44d2585ede04d06830375326cd96452a57811c71da174803909d2985afc5210"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_D/heavy-rollup-summary.json",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "8577336560144d021bd703492a32127459d52a7f2b3a2d537491cfe7bd922b85"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_D/no-new-p0-proof.json",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "5d5dad41270dc704b701e4c37d273de077bc2fe3afc0f671c3ffb41b21a48d80"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_D/summary.json",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "4ca6917a715e34f3b40bf897ab72ba681452432a9016153e4f3328ca59b14b21"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/EVIDENCE/SECTOR_02/TICKET_D/ticket-meta.json",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "cadd1b1b4095f5f5243b88f9bae2a5190ea914fd3004c8a4177b473f2904a7c7"
+    },
+    {
       "approvedAtUtc": "2026-02-24T00:50:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
       "filePath": "docs/OPS/STATUS/DEPENDENCY_RISK_REGISTER.json",
       "rationale": "TZ-SECTOR-02-C dependency exceptions revalidation docs-only approvals.",
       "sha256": "9ee62bbcba3084445fa9f385af48d29290aadb24ca89fb85c2a5734f91e4093a"
+    },
+    {
+      "approvedAtUtc": "2026-02-24T01:20:00.000Z",
+      "approvedBy": "DOCS_OPERATOR",
+      "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
+      "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
+      "sha256": "6e37085e283ff774f1b3dc0852f6fc272cd6cd1c6862f197ec7fc645934a29cd"
     }
   ]
 }

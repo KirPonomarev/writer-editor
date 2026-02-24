@@ -1,0 +1,12 @@
+{
+  "runId": "RUN-2026-02-23-009",
+  "ticketId": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01",
+  "baseSha": "e6d2ecb2c4759c401da1758f3e111de53996643f",
+  "baseRef": "origin/main",
+  "branch": "codex/tz-sector-02-d-closeout-heavy-001",
+  "headSha": "e6d2ecb2c4759c401da1758f3e111de53996643f",
+  "originMainSha": "e6d2ecb2c4759c401da1758f3e111de53996643f",
+  "baselineBindingValid": true,
+  "antiSwapPerPr": true,
+  "capturedAtUtc": "2026-02-24T16:52:59.293Z"
+}

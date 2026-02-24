@@ -1,0 +1,24 @@
+{
+  "runId": "RUN-2026-02-23-009",
+  "ticketId": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01",
+  "status": "DONE",
+  "goal": "CLOSEOUT_HEAVY_RERUN_WITH_EXACT_ALLOWLIST_FOR_PROMOTION_OUTPUTS_NO_SCOPE_EXPANSION",
+  "heavyRollupSuccess": true,
+  "promotionCheckPass": true,
+  "transitionExitCheckPass": true,
+  "noNewP0": true,
+  "baselineBindingValid": true,
+  "requiredPromotionOutputBasenamesPresent": true,
+  "notes": [
+    "RESUME_FROM_STEP=STEP_08_PROMOTION_CHECK_PASS_WITH_UPDATED_ALLOWLIST_POLICY",
+    "SCOPE_PROOF=PASS_ALLOWLIST_EXACT",
+    "HEAVY_ROLLUP_SOURCE=run-wave.log PASS",
+    "PROMOTION_CHECK=release-candidate verify PASS",
+    "NO_NEW_P0=0"
+  ],
+  "updatedAtUtc": "2026-02-24T16:54:19.113Z",
+  "scopeProof": true,
+  "governanceStrict": true,
+  "doctorStrict": true,
+  "devFast": true
+}
