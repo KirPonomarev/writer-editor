@@ -1,0 +1,18 @@
+{
+  "failSignalCode": "",
+  "gate": "p0_06_trusted_context_positive_check",
+  "ok": true,
+  "payload": {
+    "attestationKind": "POST_MERGE_VERIFY",
+    "taskId": "strict-verify-release",
+    "trustedContext": {
+      "contextId": "ctx-release-verify-main",
+      "source": "trusted_context_record",
+      "trustLockId": "ATTESTATION_TRUST_LOCK_ENFORCEMENT_v1",
+      "trustProvider": "ATTESTATION_TRUST_LOCK"
+    },
+    "verifyOk": 1,
+    "verifyPath": "scripts/ops/post-merge-verify.mjs"
+  },
+  "token": 1
+}
