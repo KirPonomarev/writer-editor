@@ -1,0 +1,33 @@
+{
+  "identical": true,
+  "ok": true,
+  "runs": [
+    {
+      "advisoryToBlockingDriftCount": 0,
+      "failReason": "",
+      "failSignalCode": "",
+      "issues": [],
+      "ok": true,
+      "run": 1,
+      "token": 1
+    },
+    {
+      "advisoryToBlockingDriftCount": 0,
+      "failReason": "",
+      "failSignalCode": "",
+      "issues": [],
+      "ok": true,
+      "run": 2,
+      "token": 1
+    },
+    {
+      "advisoryToBlockingDriftCount": 0,
+      "failReason": "",
+      "failSignalCode": "",
+      "issues": [],
+      "ok": true,
+      "run": 3,
+      "token": 1
+    }
+  ]
+}

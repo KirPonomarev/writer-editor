@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "token": "ATTESTATION_TRUST_LOCK_ENFORCEMENT_OK",
+  "scope": "release attestation trust-lock context validation",
+  "declaredFailSignal": "E_VERIFY_ATTESTATION_INVALID",
+  "stateScript": "scripts/ops/attestation-trust-lock-state.mjs",
+  "reportScript": "scripts/ops/p0-06-attestation-trust-lock-report.mjs",
+  "contractTest": "test/contracts/attestation-trust-lock.contract.test.js"
+}

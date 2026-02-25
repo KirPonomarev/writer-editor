@@ -1,0 +1,20 @@
+{
+  "failReasonActual": "SELF_GENERATED_PAYLOAD_FORBIDDEN",
+  "failSignalCodeActual": "E_VERIFY_ATTESTATION_INVALID",
+  "failSignalCodeExpected": "E_VERIFY_ATTESTATION_INVALID",
+  "gate": "p0_06_self_generated_payload_rejection_check",
+  "ok": true,
+  "payload": {
+    "attestationKind": "POST_MERGE_VERIFY",
+    "taskId": "strict-verify-release",
+    "trustedContext": {
+      "contextId": "ctx-self-generated",
+      "source": "self_generated",
+      "trustLockId": "ATTESTATION_TRUST_LOCK_ENFORCEMENT_v1",
+      "trustProvider": "ATTESTATION_TRUST_LOCK"
+    },
+    "verifyOk": 1,
+    "verifyPath": "scripts/ops/post-merge-verify.mjs"
+  },
+  "stateOk": false
+}

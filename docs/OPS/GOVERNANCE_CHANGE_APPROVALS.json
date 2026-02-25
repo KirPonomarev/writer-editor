@@ -93,6 +93,174 @@
       "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/domain-failsignal-negative-test-map.json",
+      "sha256": "a416ba95a588789df2bdd98b588b6a0a663b9d78a0045aeae81212dfa6e271de",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/generic-schema-rejection-cases.json",
+      "sha256": "80334a222ba8914d068e973aad384ca4e2f41a45dbb1d4b3dde9dff573f8c734",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/p0-03-domain-enforcement-report.json",
+      "sha256": "dbf056cfe144f18932b20d8e63e1a935e27ddfacd5e42877ce0af438c8667bba",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/summary.json",
+      "sha256": "8d2b60562ac11bff664964338829324380e36533180a0956d15b99317b9ab8d0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/ticket-meta.json",
+      "sha256": "7199d51f2299551d7e0e99a16ac153233a7ede0c2713c4c5754cf2a75f8fb50c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/declared-vs-effective-set-diff.json",
+      "sha256": "5010123cc6453d55db9c7e80e255fad7ce68801e9b6ec5b1a1b90332465570a0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/p0-04-alignment-report.json",
+      "sha256": "4eeff6739fbf4d60a3a1b1077bdcbfbbfd054f03b2692a87c21e8b3f6404b3cb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/p0-04-negative-drop-check.json",
+      "sha256": "56f8064c0518d3a640c70c7253b42ee57b49b4e056b24cfcfa61670c85f7c6c6",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/repeatable-pass-3runs.json",
+      "sha256": "dca6adb24a95c9fa42d65b44a3cbdb78a1fb420501a04e589c63c76b6a2bfeff",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/summary.json",
+      "sha256": "e7eafcba622943b5a5bd2aa8da9695d806d1caf24dc509a0c7ef793f1d1a8b81",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/ticket-meta.json",
+      "sha256": "be4a35015caea2bcff95d74e313a805f8d6d8713b71b750ca8ceec37b29f6bde",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/p0-05-recursion-bypass-ban-report.json",
+      "sha256": "59727f8e726134d06d1a64da83bbb05e5fd5d14808ca31f2fb72bb383bd8acb5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/recursion-bypass-negative-attempts.json",
+      "sha256": "1208b9c2a37021c9caa543cdd146bd9502e084e3976a2add6e2e4f50fc6eb406",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/recursion-bypass-promotion-check.json",
+      "sha256": "990b8bb0c06acad58a1dd327ea590ef0f08230a91e4ff999ef371811126c091b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/recursion-bypass-release-check.json",
+      "sha256": "6f7b4cff58f7fd4a78940dd56a286a50913241e623b1d847bbecead44769182b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/summary.json",
+      "sha256": "02abea221f3af25942104e7244eed99bec1ba43e526dea3b598acad7bf0f9c6f",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/ticket-meta.json",
+      "sha256": "94940c6b9e24a2067b482f405ea777e46789002b1ef26f0fea03508fe64cefba",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:40:00.000Z",
+      "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/attestation-self-generated-payload-negative.json",
+      "sha256": "23313d9a676241c51f8929417f048c7fb245b0f5bc5f8431ba8a9c2375ffd561",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:40:00.000Z",
+      "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/attestation-trust-lock-report.json",
+      "sha256": "0741e637c46a534dcb96d026b9f445d955a4371337ff41c0c0dee7f95fbe8293",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:40:00.000Z",
+      "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/attestation-trusted-context-positive.json",
+      "sha256": "aff1d4e4c2a40414feed0fa748258843f49e660a233e5f1c08ecb63edc367e94",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:40:00.000Z",
+      "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/repeatable-pass-3runs.json",
+      "sha256": "5cbba93a6560d3acada9106759d06cf1f640239b8fe957cbb8f8801c83a4ab76",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:40:00.000Z",
+      "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/summary.json",
+      "sha256": "a857b1c8390c8ea3018aa1868e756a8bab32487e08a0a358d59aa89e48d65801",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:40:00.000Z",
+      "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/ticket-meta.json",
+      "sha256": "3362f0094f0e55ce41316e929a9a316bd334e987ed8f388ffba7866e449dc774",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:40:00.000Z",
+      "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
+    },
+    {
       "approvedAtUtc": "2026-02-24T01:20:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/failsignal-registry-snapshot.json",
@@ -205,6 +373,20 @@
       "sha256": "cadd1b1b4095f5f5243b88f9bae2a5190ea914fd3004c8a4177b473f2904a7c7"
     },
     {
+      "filePath": "docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_ENFORCEMENT_v1.json",
+      "sha256": "04434a6f9b507f056b4804f8a4dc2dcda5ec797e5fab667033dd29eb32537fc0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:40:00.000Z",
+      "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/DECLARED_SET_EFFECTIVE_SET_ALIGNMENT_v1.json",
+      "sha256": "70947e0b8555c97a4ecd490a04b92736370598bc229fa6d7ec39248ce7b2e669",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
       "approvedAtUtc": "2026-02-24T00:50:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
       "filePath": "docs/OPS/STATUS/DEPENDENCY_RISK_REGISTER.json",
@@ -212,11 +394,25 @@
       "sha256": "9ee62bbcba3084445fa9f385af48d29290aadb24ca89fb85c2a5734f91e4093a"
     },
     {
+      "filePath": "docs/OPS/STATUS/DOMAIN_NEGATIVE_TEST_ENFORCEMENT_v1.json",
+      "sha256": "7cc17d256000d1cb87a541d532fcdad79a637a0c88bb127de9fa858b8ba91fd3",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
       "filePath": "docs/OPS/STATUS/MODE_MATRIX_SINGLE_AUTHORITY_v1.json",
       "sha256": "d2f55818d388b977ab4bd0f50bc7425f10bc4b806e8aeabd68d5ed4c7f2a03f1",
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T00:55:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/RECURSION_BYPASS_RELEASE_BAN_v1.json",
+      "sha256": "5ec3aac29b0ff70b45aeaed5ce631923e65c91696abafb7668bdc26caf0f661c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
     },
     {
       "approvedAtUtc": "2026-02-24T01:20:00.000Z",
@@ -238,6 +434,20 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T01:15:00.000Z",
       "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "scripts/guards/ops-current-wave-stop.mjs",
+      "sha256": "1d734f1687f9eec482aeb7844dd8c63329c9e148d80c184675149ad15a32eea3",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/attestation-trust-lock-state.mjs",
+      "sha256": "49a5b8b4c018b79e835bb1d9eb48aaadabef4764ccf8e233c4f41e13da81336e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:40:00.000Z",
+      "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
     },
     {
       "filePath": "scripts/ops/canonical-mode-matrix-evaluator.mjs",
@@ -275,6 +485,20 @@
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
     },
     {
+      "filePath": "scripts/ops/declared-set-vs-effective-set-alignment-state.mjs",
+      "sha256": "72c4eff05a282c018628265148b2f781bc0a9c4708811e0803a681ab2399b5bc",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/domain-negative-test-enforcement-state.mjs",
+      "sha256": "a26cf3e28caacb575149b484eb201b48f6b37d863dc4b70306ec5ef5a00aaeb9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
       "filePath": "scripts/ops/p0-01-mode-matrix-single-authority-report.mjs",
       "sha256": "65d1d04fa5e236db899c2629db485df24f24c13938b20689dd5d500e8d50099c",
       "approvedBy": "DOCS_OPERATOR",
@@ -289,11 +513,74 @@
       "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
     },
     {
+      "filePath": "scripts/ops/p0-03-domain-negative-test-enforcement-report.mjs",
+      "sha256": "b70ef41daae062c4f8287d4bb31f01c9216c9bacd0526ef6377c10e2e7db848d",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p0-04-declared-set-vs-effective-set-alignment-report.mjs",
+      "sha256": "db10353cc5630434575979ef0e7cc8257f56225e8a4d66b21a72ba1098638334",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p0-05-recursion-bypass-ban-report.mjs",
+      "sha256": "cef158a515c89eb7ef952b6f3a1ccaa5bef2f4344daa0d05a9122f49014b6a62",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p0-06-attestation-trust-lock-report.mjs",
+      "sha256": "563ee6fd5b7d12adaaf49b3b72a1742ac6f4c22cf3d924e17d692f3d24892c7a",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:40:00.000Z",
+      "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/recursion-bypass-release-ban-state.mjs",
+      "sha256": "dcf8995a42d7eca93cedfef3255c72e636404fbea0f40e42777d9e04f47cf637",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
       "filePath": "scripts/ops/release-token-binding-completeness-state.mjs",
       "sha256": "948cf3d3bd36ce535006c15d51bbcbe938f14e7add85e2f54a4bf152dd58ca16",
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T01:15:00.000Z",
       "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "test/contracts/attestation-trust-lock.contract.test.js",
+      "sha256": "f744502ecc57e98bfcb3567d4f7ad69d5203207ae4833093d6037a5328501c5d",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:40:00.000Z",
+      "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "test/contracts/declared-set-vs-effective-set-alignment.contract.test.js",
+      "sha256": "82732437c30bac38a2d01c5aab16632ca1c7ddc796797bfa63f693cc303621d9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "test/contracts/dev-fast-lane.contract.test.js",
+      "sha256": "8c9852def5aaaacbde3998be897c2ffd1bfcaf1adfa70d8719a63aed20889048",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "test/contracts/domain-negative-test-enforcement.contract.test.js",
+      "sha256": "96b0e166fb6aa72cbca83330c26003ea1c5ccc8084e0afef5fd973e664795972",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
     },
     {
       "filePath": "test/contracts/execution-sequence-lock.contract.test.js",
@@ -310,195 +597,6 @@
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
     },
     {
-      "filePath": "test/contracts/release-token-binding-completeness.contract.test.js",
-      "sha256": "aac0fc83abd4ca8ca9add573ba18a1aeb165c16e701366b6420f86f15649931d",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
-      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/domain-failsignal-negative-test-map.json",
-      "sha256": "a416ba95a588789df2bdd98b588b6a0a663b9d78a0045aeae81212dfa6e271de",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
-      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/generic-schema-rejection-cases.json",
-      "sha256": "80334a222ba8914d068e973aad384ca4e2f41a45dbb1d4b3dde9dff573f8c734",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
-      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/p0-03-domain-enforcement-report.json",
-      "sha256": "dbf056cfe144f18932b20d8e63e1a935e27ddfacd5e42877ce0af438c8667bba",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
-      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/summary.json",
-      "sha256": "8d2b60562ac11bff664964338829324380e36533180a0956d15b99317b9ab8d0",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
-      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/ticket-meta.json",
-      "sha256": "7199d51f2299551d7e0e99a16ac153233a7ede0c2713c4c5754cf2a75f8fb50c",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
-      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/DOMAIN_NEGATIVE_TEST_ENFORCEMENT_v1.json",
-      "sha256": "7cc17d256000d1cb87a541d532fcdad79a637a0c88bb127de9fa858b8ba91fd3",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
-      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
-    },
-    {
-      "filePath": "scripts/ops/domain-negative-test-enforcement-state.mjs",
-      "sha256": "a26cf3e28caacb575149b484eb201b48f6b37d863dc4b70306ec5ef5a00aaeb9",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
-      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
-    },
-    {
-      "filePath": "scripts/ops/p0-03-domain-negative-test-enforcement-report.mjs",
-      "sha256": "b70ef41daae062c4f8287d4bb31f01c9216c9bacd0526ef6377c10e2e7db848d",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
-      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
-    },
-    {
-      "filePath": "test/contracts/domain-negative-test-enforcement.contract.test.js",
-      "sha256": "96b0e166fb6aa72cbca83330c26003ea1c5ccc8084e0afef5fd973e664795972",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
-      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/declared-vs-effective-set-diff.json",
-      "sha256": "5010123cc6453d55db9c7e80e255fad7ce68801e9b6ec5b1a1b90332465570a0",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
-      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/p0-04-alignment-report.json",
-      "sha256": "4eeff6739fbf4d60a3a1b1077bdcbfbbfd054f03b2692a87c21e8b3f6404b3cb",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
-      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/p0-04-negative-drop-check.json",
-      "sha256": "56f8064c0518d3a640c70c7253b42ee57b49b4e056b24cfcfa61670c85f7c6c6",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
-      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/repeatable-pass-3runs.json",
-      "sha256": "dca6adb24a95c9fa42d65b44a3cbdb78a1fb420501a04e589c63c76b6a2bfeff",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
-      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/summary.json",
-      "sha256": "e7eafcba622943b5a5bd2aa8da9695d806d1caf24dc509a0c7ef793f1d1a8b81",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
-      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/ticket-meta.json",
-      "sha256": "be4a35015caea2bcff95d74e313a805f8d6d8713b71b750ca8ceec37b29f6bde",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
-      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/DECLARED_SET_EFFECTIVE_SET_ALIGNMENT_v1.json",
-      "sha256": "70947e0b8555c97a4ecd490a04b92736370598bc229fa6d7ec39248ce7b2e669",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
-      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
-    },
-    {
-      "filePath": "scripts/ops/declared-set-vs-effective-set-alignment-state.mjs",
-      "sha256": "72c4eff05a282c018628265148b2f781bc0a9c4708811e0803a681ab2399b5bc",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
-      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
-    },
-    {
-      "filePath": "scripts/ops/p0-04-declared-set-vs-effective-set-alignment-report.mjs",
-      "sha256": "db10353cc5630434575979ef0e7cc8257f56225e8a4d66b21a72ba1098638334",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
-      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
-    },
-    {
-      "filePath": "test/contracts/declared-set-vs-effective-set-alignment.contract.test.js",
-      "sha256": "82732437c30bac38a2d01c5aab16632ca1c7ddc796797bfa63f693cc303621d9",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
-      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/recursion-bypass-negative-attempts.json",
-      "sha256": "1208b9c2a37021c9caa543cdd146bd9502e084e3976a2add6e2e4f50fc6eb406",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
-      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/recursion-bypass-promotion-check.json",
-      "sha256": "990b8bb0c06acad58a1dd327ea590ef0f08230a91e4ff999ef371811126c091b",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
-      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/recursion-bypass-release-check.json",
-      "sha256": "6f7b4cff58f7fd4a78940dd56a286a50913241e623b1d847bbecead44769182b",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
-      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/RECURSION_BYPASS_RELEASE_BAN_v1.json",
-      "sha256": "5ec3aac29b0ff70b45aeaed5ce631923e65c91696abafb7668bdc26caf0f661c",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
-      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
-    },
-    {
-      "filePath": "scripts/ops/p0-05-recursion-bypass-ban-report.mjs",
-      "sha256": "cef158a515c89eb7ef952b6f3a1ccaa5bef2f4344daa0d05a9122f49014b6a62",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
-      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
-    },
-    {
-      "filePath": "scripts/ops/recursion-bypass-release-ban-state.mjs",
-      "sha256": "dcf8995a42d7eca93cedfef3255c72e636404fbea0f40e42777d9e04f47cf637",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
-      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
-    },
-    {
-      "filePath": "test/contracts/dev-fast-lane.contract.test.js",
-      "sha256": "8c9852def5aaaacbde3998be897c2ffd1bfcaf1adfa70d8719a63aed20889048",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
-      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
-    },
-    {
       "filePath": "test/contracts/recursion-bypass-release-ban.contract.test.js",
       "sha256": "37b5d73eda53030ef35dd137978f6bf0d7eb986fda5a51e6657286677a8986c5",
       "approvedBy": "DOCS_OPERATOR",
@@ -506,32 +604,11 @@
       "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
     },
     {
-      "filePath": "scripts/guards/ops-current-wave-stop.mjs",
-      "sha256": "1d734f1687f9eec482aeb7844dd8c63329c9e148d80c184675149ad15a32eea3",
+      "filePath": "test/contracts/release-token-binding-completeness.contract.test.js",
+      "sha256": "aac0fc83abd4ca8ca9add573ba18a1aeb165c16e701366b6420f86f15649931d",
       "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
-      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/p0-05-recursion-bypass-ban-report.json",
-      "sha256": "59727f8e726134d06d1a64da83bbb05e5fd5d14808ca31f2fb72bb383bd8acb5",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
-      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/summary.json",
-      "sha256": "02abea221f3af25942104e7244eed99bec1ba43e526dea3b598acad7bf0f9c6f",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
-      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/ticket-meta.json",
-      "sha256": "94940c6b9e24a2067b482f405ea777e46789002b1ef26f0fea03508fe64cefba",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
-      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
     }
   ]
 }
