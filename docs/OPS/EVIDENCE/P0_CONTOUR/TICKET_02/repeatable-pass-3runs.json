@@ -1,0 +1,27 @@
+{
+  "identical": true,
+  "ok": true,
+  "runs": [
+    {
+      "completenessOk": true,
+      "failReason": "",
+      "missingRequiredBindingFieldsCount": 0,
+      "releaseRequiredTokensCount": 22,
+      "run": 1
+    },
+    {
+      "completenessOk": true,
+      "failReason": "",
+      "missingRequiredBindingFieldsCount": 0,
+      "releaseRequiredTokensCount": 22,
+      "run": 2
+    },
+    {
+      "completenessOk": true,
+      "failReason": "",
+      "missingRequiredBindingFieldsCount": 0,
+      "releaseRequiredTokensCount": 22,
+      "run": 3
+    }
+  ]
+}

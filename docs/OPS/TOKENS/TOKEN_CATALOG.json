@@ -148,6 +148,7 @@
       "gateTier": "core",
       "requiredWhen": null,
       "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "proofHookClosureSha256": null,
       "sourceBinding": "doctor",
       "failSignalCode": "E_CORE_SOT_NOT_EXECUTABLE",
       "namespace": "CORE_SOT"
@@ -435,6 +436,7 @@
       "gateTier": "core",
       "requiredWhen": null,
       "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "proofHookClosureSha256": null,
       "sourceBinding": "doctor",
       "failSignalCode": "E_RECOVERY_IO_NOT_OK",
       "namespace": "RECOVERY"

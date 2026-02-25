@@ -44,6 +44,55 @@
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/binary-test-a-complete-set.json",
+      "sha256": "38e4235a2c63aed0e5718bae857d16eb5ac891eae45661c90cada71c78024136",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/binary-test-b-remove-field.json",
+      "sha256": "b000c5ce67c1e98840c3c21f44f51127db25cc10f5c0a10e4b1eb1cf71e55cec",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/missing-required-binding-fields.json",
+      "sha256": "932990cb2efb18b3673a11ffe2fcd3bd8f3207968f82ab4e16a616443a03d0a1",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/release-token-binding-completeness-report.json",
+      "sha256": "f734b65c9ade2488801faec1bcb5576232c2dc6f3f1723861b3e381a766035b9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/repeatable-pass-3runs.json",
+      "sha256": "99d32a195877c1839abf4d9babed1dc43c61823cca4726377f374963f1f159df",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/summary.json",
+      "sha256": "4966bf050122d4952f90ba2572b311a21514a6851ffabceeab2ca8503a3252f7",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/ticket-meta.json",
+      "sha256": "4a5aed5fdddb2842c5ea581f162e97009e508954bb413fe44b30b3ff2ee21348",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
       "approvedAtUtc": "2026-02-24T01:20:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/failsignal-registry-snapshot.json",
@@ -177,6 +226,20 @@
       "sha256": "6e37085e283ff774f1b3dc0852f6fc272cd6cd1c6862f197ec7fc645934a29cd"
     },
     {
+      "filePath": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v1.json",
+      "sha256": "0e0aebdac4f67fc5efd46ff142ace8e3a3f88a1cebb202ac5d80fb919dafc242",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/TOKENS/TOKEN_CATALOG.json",
+      "sha256": "b0d2e19677f50c094ba081af0461a7b94622b31b415561bf5f87293158e5fa08",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
       "filePath": "scripts/ops/canonical-mode-matrix-evaluator.mjs",
       "sha256": "ed77b74b9da1947b417d38435c597d9eab0df7812475fa38486a4f309cec03eb",
       "approvedBy": "DOCS_OPERATOR",
@@ -219,6 +282,20 @@
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
     },
     {
+      "filePath": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
+      "sha256": "a35e5c2cbdeecb30ef7e9ff0a37183238c733e34f6d27667b9fe5151a2d6bc99",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/release-token-binding-completeness-state.mjs",
+      "sha256": "948cf3d3bd36ce535006c15d51bbcbe938f14e7add85e2f54a4bf152dd58ca16",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
       "filePath": "test/contracts/execution-sequence-lock.contract.test.js",
       "sha256": "881c7ad528695c15e9fa719d2b8cd8f41d96380ad0a20006b3632937a3d6ea26",
       "approvedBy": "DOCS_OPERATOR",
@@ -231,6 +308,13 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T00:55:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "test/contracts/release-token-binding-completeness.contract.test.js",
+      "sha256": "aac0fc83abd4ca8ca9add573ba18a1aeb165c16e701366b6420f86f15649931d",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:15:00.000Z",
+      "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
     }
   ]
 }

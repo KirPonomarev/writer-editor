@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "token": "RELEASE_TOKEN_BINDING_COMPLETENESS_OK",
+  "scope": "release-required tokens from REQUIRED_TOKEN_SET",
+  "requiredBindingFields": [
+    "proofHook",
+    "sourceBinding",
+    "failSignalCode",
+    "proofHookClosureSha256"
+  ],
+  "stateScript": "scripts/ops/release-token-binding-completeness-state.mjs",
+  "reportScript": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs"
+}

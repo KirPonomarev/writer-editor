@@ -1,0 +1,16 @@
+{
+  "completenessOk": true,
+  "failReason": "",
+  "gates": {
+    "p0_02_binary_test_a": "PASS",
+    "p0_02_binary_test_b": "PASS",
+    "p0_02_repeatable_pass_3runs": "PASS"
+  },
+  "generatedAtUtc": "2026-02-25T08:12:37.518Z",
+  "missingRequiredBindingFieldsCount": 0,
+  "releaseRequiredTokensCount": 22,
+  "reportId": "RELEASE_TOKEN_BINDING_COMPLETENESS_REPORT_V1",
+  "runId": "RUN-2026-02-25-004",
+  "status": "PASS",
+  "ticketId": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001"
+}
