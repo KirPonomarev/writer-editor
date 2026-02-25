@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "token": "DECLARED_SET_EFFECTIVE_SET_ALIGNMENT_OK",
+  "scope": "release declared set vs effective machine release set",
+  "stateScript": "scripts/ops/declared-set-vs-effective-set-alignment-state.mjs",
+  "reportScript": "scripts/ops/p0-04-declared-set-vs-effective-set-alignment-report.mjs",
+  "contractTest": "test/contracts/declared-set-vs-effective-set-alignment.contract.test.js"
+}

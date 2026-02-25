@@ -1,0 +1,75 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "alignmentOk": true,
+  "declaredReleaseSetCount": 22,
+  "declaredReleaseSetMinusEffectiveMachineSet": [],
+  "declaredReleaseSetMinusEffectiveMachineSetCount": 0,
+  "effectiveMachineSetCount": 22,
+  "effectiveMachineSetMinusDeclaredReleaseSet": [],
+  "effectiveMachineSetMinusDeclaredReleaseSetCount": 0,
+  "gates": {
+    "advisory_to_blocking_drift_count_zero": "PASS",
+    "p0_04_alignment_check": "PASS",
+    "p0_04_negative_drop_check": "PASS",
+    "p0_04_repeatable_pass_3runs": "PASS"
+  },
+  "generatedAtUtc": "2026-02-25T09:15:53.569Z",
+  "negativeDrop": {
+    "expectedMissingTokenDetected": true,
+    "mutatedAdvisoryToBlockingDriftCount": 0,
+    "mutatedAlignmentOk": false,
+    "mutatedDeclaredReleaseSetMinusEffectiveMachineSetCount": 0,
+    "mutatedEffectiveMachineSetMinusDeclaredReleaseSetCount": 1,
+    "ok": true,
+    "state": {
+      "alignmentOk": false,
+      "declaredReleaseSetMinusEffectiveMachineSet": [],
+      "declaredReleaseSetMinusEffectiveMachineSetCount": 0,
+      "effectiveMachineSetMinusDeclaredReleaseSet": [
+        "ADAPTERS_ENFORCED_OK"
+      ],
+      "effectiveMachineSetMinusDeclaredReleaseSetCount": 1,
+      "failReason": "DECLARED_EFFECTIVE_SET_MISMATCH",
+      "failSignalCode": "E_REQUIRED_TOKEN_SET_DRIFT",
+      "ok": false
+    },
+    "targetTokenId": "ADAPTERS_ENFORCED_OK"
+  },
+  "repeatable": {
+    "identical": true,
+    "ok": true,
+    "runs": [
+      {
+        "advisoryToBlockingDriftCount": 0,
+        "alignmentOk": true,
+        "declaredReleaseSetMinusEffectiveMachineSetCount": 0,
+        "effectiveMachineSetMinusDeclaredReleaseSetCount": 0,
+        "failReason": "",
+        "ok": true,
+        "run": 1
+      },
+      {
+        "advisoryToBlockingDriftCount": 0,
+        "alignmentOk": true,
+        "declaredReleaseSetMinusEffectiveMachineSetCount": 0,
+        "effectiveMachineSetMinusDeclaredReleaseSetCount": 0,
+        "failReason": "",
+        "ok": true,
+        "run": 2
+      },
+      {
+        "advisoryToBlockingDriftCount": 0,
+        "alignmentOk": true,
+        "declaredReleaseSetMinusEffectiveMachineSetCount": 0,
+        "effectiveMachineSetMinusDeclaredReleaseSetCount": 0,
+        "failReason": "",
+        "ok": true,
+        "run": 3
+      }
+    ]
+  },
+  "reportId": "P0_04_DECLARED_SET_EFFECTIVE_SET_ALIGNMENT_REPORT_V1",
+  "runId": "RUN-2026-02-25-008",
+  "status": "PASS",
+  "ticketId": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001"
+}

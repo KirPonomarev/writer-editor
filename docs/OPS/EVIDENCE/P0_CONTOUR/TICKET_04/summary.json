@@ -1,0 +1,17 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "declaredReleaseSetCount": 22,
+  "declaredReleaseSetMinusEffectiveMachineSetCount": 0,
+  "effectiveMachineSetCount": 22,
+  "effectiveMachineSetMinusDeclaredReleaseSetCount": 0,
+  "gates": {
+    "advisory_to_blocking_drift_count_zero": "PASS",
+    "p0_04_alignment_check": "PASS",
+    "p0_04_negative_drop_check": "PASS",
+    "p0_04_repeatable_pass_3runs": "PASS"
+  },
+  "generatedAtUtc": "2026-02-25T09:15:53.569Z",
+  "runId": "RUN-2026-02-25-008",
+  "status": "PASS",
+  "ticketId": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001"
+}

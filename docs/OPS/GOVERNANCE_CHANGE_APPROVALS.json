@@ -378,6 +378,76 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T01:35:00.000Z",
       "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/declared-vs-effective-set-diff.json",
+      "sha256": "5010123cc6453d55db9c7e80e255fad7ce68801e9b6ec5b1a1b90332465570a0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/p0-04-alignment-report.json",
+      "sha256": "4eeff6739fbf4d60a3a1b1077bdcbfbbfd054f03b2692a87c21e8b3f6404b3cb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/p0-04-negative-drop-check.json",
+      "sha256": "56f8064c0518d3a640c70c7253b42ee57b49b4e056b24cfcfa61670c85f7c6c6",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/repeatable-pass-3runs.json",
+      "sha256": "dca6adb24a95c9fa42d65b44a3cbdb78a1fb420501a04e589c63c76b6a2bfeff",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/summary.json",
+      "sha256": "e7eafcba622943b5a5bd2aa8da9695d806d1caf24dc509a0c7ef793f1d1a8b81",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/ticket-meta.json",
+      "sha256": "be4a35015caea2bcff95d74e313a805f8d6d8713b71b750ca8ceec37b29f6bde",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/DECLARED_SET_EFFECTIVE_SET_ALIGNMENT_v1.json",
+      "sha256": "70947e0b8555c97a4ecd490a04b92736370598bc229fa6d7ec39248ce7b2e669",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/declared-set-vs-effective-set-alignment-state.mjs",
+      "sha256": "72c4eff05a282c018628265148b2f781bc0a9c4708811e0803a681ab2399b5bc",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p0-04-declared-set-vs-effective-set-alignment-report.mjs",
+      "sha256": "db10353cc5630434575979ef0e7cc8257f56225e8a4d66b21a72ba1098638334",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "test/contracts/declared-set-vs-effective-set-alignment.contract.test.js",
+      "sha256": "82732437c30bac38a2d01c5aab16632ca1c7ddc796797bfa63f693cc303621d9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:55:00.000Z",
+      "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
     }
   ]
 }
