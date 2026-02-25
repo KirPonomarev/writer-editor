@@ -1,0 +1,14 @@
+{
+  "domainFailSignalsCount": 35,
+  "domainMappingCoveragePct": 100,
+  "gates": {
+    "p0_03_domain_binding_check": "PASS",
+    "p0_03_generic_test_rejection_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-25T08:38:50.311Z",
+  "genericSchemaRejectionCasesCount": 0,
+  "mappedDomainFailSignalsCount": 35,
+  "runId": "RUN-2026-02-25-006",
+  "status": "PASS",
+  "ticketId": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001"
+}
