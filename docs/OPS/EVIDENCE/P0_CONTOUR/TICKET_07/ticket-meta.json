@@ -1,0 +1,20 @@
+{
+  "generatedAtUtc": "2026-02-25T21:38:52.244Z",
+  "outputDir": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07",
+  "retrySeriesId": "INFRA_REMOTE_UNAVAILABLE_SERIES_01",
+  "runId": "RUN-2026-02-25-013",
+  "scenarios": {
+    "loopBreaker": {
+      "stopCode": "E_ROUTE_MATRIX_VIOLATION"
+    },
+    "resume": {
+      "loopDecision": "CONTINUE",
+      "stopCode": "NONE"
+    },
+    "wait": {
+      "loopDecision": "WAIT_MODE",
+      "stopCode": "DNS_OR_TLS_FAILURE"
+    }
+  },
+  "ticketId": "TZ-P0-07-REMOTE-AUTOFIX-IMPLEMENTATION-001"
+}

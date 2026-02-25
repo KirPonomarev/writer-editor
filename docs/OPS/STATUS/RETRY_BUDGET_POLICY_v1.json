@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "policyId": "RETRY_BUDGET_POLICY_V1",
+  "maxAutofixCycles": 3,
+  "backoffMinutes": [2, 5, 15],
+  "waitModeEntryRule": "ONLY_IF_RETRY_INDEX_GTE_MAX_AUTOFIX_CYCLES",
+  "waitDedupRule": "REPEATED_WAIT_STATUS_WITHOUT_STATE_DELTA_FORBIDDEN",
+  "autoResumeRule": "AFTER_REMOTE_PASS_CONTINUE_AUTOMATICALLY_FROM_PREVIOUS_STEP"
+}
