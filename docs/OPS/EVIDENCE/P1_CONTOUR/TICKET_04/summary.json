@@ -1,0 +1,20 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "backwardCompatibilityOk": true,
+  "coverageTargetPct": 100,
+  "gates": {
+    "advisory_to_blocking_drift_count_zero": "PASS",
+    "p1_04_backward_compatibility_check": "PASS",
+    "p1_04_migration_coverage_check": "PASS",
+    "p1_04_missing_step_negative_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-25T19:57:53.097Z",
+  "migrationCoveragePct": 100,
+  "missingStepNegativeCheckOk": true,
+  "missingStepsCount": 0,
+  "requiredDeclaredSteps": 11,
+  "requiredVerifiedSteps": 11,
+  "runId": "RUN-2026-02-25-011",
+  "status": "PASS",
+  "ticketId": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-001"
+}

@@ -1,0 +1,18 @@
+{
+  "backwardCompatibility": {
+    "checks": {
+      "documentsLegacyFallbackPath": true,
+      "fileManagerLegacyFolderConstant": true,
+      "fileManagerMigrationMarkerConstant": true,
+      "mainLegacyFolderConstant": true,
+      "mainMigrationMarkerConstant": true
+    },
+    "failedChecks": [],
+    "ok": true
+  },
+  "coverageOk": true,
+  "coveragePct": 100,
+  "missingSteps": [],
+  "requiredDeclaredCount": 11,
+  "requiredVerifiedCount": 11
+}

@@ -1,0 +1,31 @@
+{
+  "actualFailReason": "MIGRATION_COVERAGE_FAIL",
+  "details": {
+    "coveragePctAfterRemoval": 100,
+    "missingSteps": [
+      {
+        "filePath": "",
+        "reason": "DECLARED_STEP_MISSING",
+        "stepId": "USERDATA_STEP_01_MARKER_GUARD"
+      },
+      {
+        "filePath": "src/main.js",
+        "reason": "DECLARED_STEP_MISSING",
+        "stepId": "USERDATA_STEP_01_MARKER_GUARD"
+      }
+    ],
+    "removed": {
+      "filePath": "src/main.js",
+      "id": "USERDATA_STEP_01_MARKER_GUARD",
+      "input": "markerPath",
+      "output": "targetPath",
+      "probe": "if (fsSync.existsSync(markerPath))",
+      "required": true
+    }
+  },
+  "expectedFailure": "MIGRATION_COVERAGE_FAIL",
+  "missingStepDetected": true,
+  "ok": true,
+  "removedStepId": "USERDATA_STEP_01_MARKER_GUARD",
+  "verifierStatus": "PASS"
+}
