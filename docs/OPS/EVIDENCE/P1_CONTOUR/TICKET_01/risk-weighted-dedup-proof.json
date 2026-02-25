@@ -1,0 +1,41 @@
+{
+  "duplicateSignalCountAfter": 0,
+  "duplicateSignalCountBefore": 1,
+  "minReductionRequired": 1,
+  "removedDuplicateSignalPaths": 2,
+  "riskWeightedDedupProof": {
+    "canonicalCoverageOk": true,
+    "duplicateSignalCountBefore": 1,
+    "ok": true,
+    "removedByRisk": {
+      "high": 2,
+      "low": 0,
+      "medium": 0
+    },
+    "removedDuplicateSignalPaths": 2,
+    "removedSignals": [
+      {
+        "removedDuplicateSources": 2,
+        "risk": "high",
+        "signal": "advisory_to_blocking_drift_count_zero",
+        "sourceCountBefore": 3,
+        "weight": 5
+      }
+    ],
+    "riskWeightedReductionScore": 10,
+    "riskWeights": {
+      "high": 5,
+      "low": 1,
+      "medium": 3
+    },
+    "weightedScoreAfter": 33,
+    "weightedScoreBefore": 43,
+    "zeroRemainingDuplicates": true
+  },
+  "safetyParity": {
+    "assertBlockingSetExactEqual": true,
+    "assertBlockingSetSha256Equal": true,
+    "assertBlockingSetSizeUnchanged": true,
+    "safetyParityOk": true
+  }
+}

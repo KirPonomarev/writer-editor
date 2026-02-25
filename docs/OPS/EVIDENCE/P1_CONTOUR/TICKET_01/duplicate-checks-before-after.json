@@ -12,6 +12,6 @@
     "totalSignals": 15
   },
   "duplicateReductionOk": true,
-  "minReductionRequired": 2,
+  "minReductionRequired": 1,
   "removedDuplicateSignalPaths": 2
 }
