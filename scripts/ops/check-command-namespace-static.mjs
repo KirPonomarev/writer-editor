@@ -2,9 +2,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { evaluateModeMatrixVerdict } from './canonical-mode-matrix-evaluator.mjs';
 
 const DEFAULT_CANON_PATH = 'docs/OPS/STATUS/COMMAND_NAMESPACE_CANON.json';
 const DEFAULT_SCAN_ROOT = 'src';
+const MODE_PR = 'pr';
 const MODE_RELEASE = 'release';
 const MODE_PROMOTION = 'promotion';
 const RESULT_PASS = 'PASS';
@@ -32,6 +34,7 @@ function parseBooleanish(value) {
 
 function normalizeMode(value) {
   const normalized = normalizeString(value).toLowerCase();
+  if (normalized === MODE_PR || normalized === 'prcore' || normalized === 'pr_core' || normalized === 'core' || normalized === 'dev') return MODE_PR;
   if (normalized === MODE_PROMOTION) return MODE_PROMOTION;
   return MODE_RELEASE;
 }
@@ -208,15 +211,33 @@ export function evaluateCommandNamespaceStaticCheck(input = {}) {
   );
 
   const hasViolations = scanState.violations.length > 0;
+  const modeDecision = hasViolations
+    ? evaluateModeMatrixVerdict({
+      repoRoot: cwd,
+      mode,
+      failSignalCode: FAIL_SIGNAL_CODE,
+    })
+    : null;
+  const shouldBlock = Boolean(modeDecision && modeDecision.shouldBlock);
   const result = !hasViolations
     ? RESULT_PASS
-    : (mode === MODE_PROMOTION ? RESULT_FAIL : RESULT_WARN);
+    : (shouldBlock ? RESULT_FAIL : RESULT_WARN);
 
   return {
     mode,
     result,
-    failSignalCode: result === RESULT_FAIL ? FAIL_SIGNAL_CODE : '',
+    failSignalCode: hasViolations ? FAIL_SIGNAL_CODE : '',
     failReason: hasViolations ? 'LEGACY_PREFIX_LITERAL_FOUND' : '',
+    canonicalModeMatrixEvaluatorId: modeDecision ? modeDecision.evaluatorId : '',
+    modeDecision: modeDecision
+      ? {
+        modeKey: modeDecision.modeKey,
+        modeDisposition: modeDecision.modeDisposition,
+        shouldBlock: modeDecision.shouldBlock,
+      }
+      : null,
+    modeDecisionSource: modeDecision ? modeDecision.source : '',
+    modeDecisionIssues: modeDecision ? modeDecision.issues : [],
     deprecatedPrefixes: canon.deprecatedPrefixes,
     aliasMapSize: canon.aliasMapKeys.length,
     scanRoot: scanState.scanRoot,

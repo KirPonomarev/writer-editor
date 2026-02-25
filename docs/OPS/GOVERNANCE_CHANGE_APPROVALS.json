@@ -2,6 +2,48 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
+      "sha256": "e09a162b1cebcb26c62c578360f8b1ad22301225a564c9477d12d7ecff2b1deb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/evaluator-mismatch-cases.json",
+      "sha256": "043a98c02a2d9ff806d72b03b109a4a597bc4de19a395eb76190b997e8490343",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/mode-matrix-single-authority-report.json",
+      "sha256": "285e5cda0a7160ec3dfcf3441c20ae53db028df78b682f01b33d0ed6f5bf633f",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/repeatable-pass-3runs.json",
+      "sha256": "6a8418b84e9edb225374616976205ebf03376862d9d104b921f4145f1e1a3a73",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/summary.json",
+      "sha256": "71668cb7a9f48d5a0a47d4a03fd3200c68ecffa00d2abe2a6d396f284749f5f7",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/ticket-meta.json",
+      "sha256": "3361763ac147413fc5a3d7f88945c8fc792529bde055dd6e50ed1e86a9774bde",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
       "approvedAtUtc": "2026-02-24T01:20:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/failsignal-registry-snapshot.json",
@@ -121,11 +163,74 @@
       "sha256": "9ee62bbcba3084445fa9f385af48d29290aadb24ca89fb85c2a5734f91e4093a"
     },
     {
+      "filePath": "docs/OPS/STATUS/MODE_MATRIX_SINGLE_AUTHORITY_v1.json",
+      "sha256": "d2f55818d388b977ab4bd0f50bc7425f10bc4b806e8aeabd68d5ed4c7f2a03f1",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
       "approvedAtUtc": "2026-02-24T01:20:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
       "rationale": "TZ-SECTOR-02-D-CLOSEOUT-HEAVY-001-RERUN-ALLOWLIST-01 closeout heavy rerun approvals.",
       "sha256": "6e37085e283ff774f1b3dc0852f6fc272cd6cd1c6862f197ec7fc645934a29cd"
+    },
+    {
+      "filePath": "scripts/ops/canonical-mode-matrix-evaluator.mjs",
+      "sha256": "ed77b74b9da1947b417d38435c597d9eab0df7812475fa38486a4f309cec03eb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/check-command-namespace-static.mjs",
+      "sha256": "32cb52c1408981ba32ede52d62f11b59cf7d01d1d99c0291d3a8e7d30097e2d2",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/check-command-namespace.mjs",
+      "sha256": "4ef9d89f713903880c6f3b8e6805c039be35dc5e5922d1ce142f6527921964ec",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/check-execution-sequence.mjs",
+      "sha256": "e377b6dba69d16ccbc8295bbbf22ab54c997919cd04020b88a91749441b95c2b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/check-law-path-canon.mjs",
+      "sha256": "ab1f11ea5e5485cc6643127626552ed2254541ba12a0a92224edb1518f80d2ee",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p0-01-mode-matrix-single-authority-report.mjs",
+      "sha256": "65d1d04fa5e236db899c2629db485df24f24c13938b20689dd5d500e8d50099c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "test/contracts/execution-sequence-lock.contract.test.js",
+      "sha256": "881c7ad528695c15e9fa719d2b8cd8f41d96380ad0a20006b3632937a3d6ea26",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "test/contracts/mode-matrix-single-authority.contract.test.js",
+      "sha256": "d1d1b26d14ce731c46d4e9e29831a707ee995ebdb6b7dbec6f816ebb22083cd5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T00:55:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
     }
   ]
 }

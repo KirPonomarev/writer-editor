@@ -146,7 +146,7 @@ test('failsignal-and-token-are-registered-without-required-set-expansion', () =>
   assert.equal(flattened.includes('SEQUENCE_ORDER_LOCK_OK'), false);
 });
 
-test('promotion-mode-drift-fails-while-release-mode-warns', () => {
+test('mode-matrix-evaluator: sequence drift blocks release and promotion', () => {
   const fixture = makeFixtureRepo();
   try {
     const baseline = runCheck(['--repo-root', fixture.root, '--mode=release']);
@@ -163,10 +163,12 @@ test('promotion-mode-drift-fails-while-release-mode-warns', () => {
     fs.writeFileSync(fixture.lawAbsPath, `${driftedLaw}\n`, 'utf8');
 
     const release = runCheck(['--repo-root', fixture.root, '--mode=release']);
-    assert.equal(release.status, 0, `${release.stdout}\n${release.stderr}`);
+    assert.notEqual(release.status, 0, `${release.stdout}\n${release.stderr}`);
     const releasePayload = parseJsonOutput(release);
-    assert.equal(releasePayload.result, 'WARN');
+    assert.equal(releasePayload.result, 'FAIL');
     assert.equal(releasePayload.failSignalCode, 'E_SEQUENCE_ORDER_DRIFT');
+    assert.equal(releasePayload.canonicalModeMatrixEvaluatorId, 'CANONICAL_MODE_MATRIX_EVALUATOR_V1');
+    assert.equal(releasePayload.modeDecision.modeDisposition, 'blocking');
 
     const promotion = runCheck(['--repo-root', fixture.root, '--mode=promotion']);
     assert.notEqual(promotion.status, 0, 'promotion mode must fail on sequence order drift');

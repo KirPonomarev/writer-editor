@@ -1,0 +1,16 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+  "gates": {
+    "advisory_to_blocking_drift_count_zero": "PASS",
+    "p0_01_binary_test_a": "PASS",
+    "p0_01_binary_test_b": "PASS",
+    "p0_01_repeatable_pass_3runs": "PASS"
+  },
+  "generatedAtUtc": "2026-02-25T04:37:03.208Z",
+  "mismatchCount": 0,
+  "repeatablePass": true,
+  "runId": "RUN-2026-02-25-002",
+  "status": "PASS",
+  "ticketId": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01"
+}
