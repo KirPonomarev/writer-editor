@@ -1,0 +1,17 @@
+{
+  "after": {
+    "duplicatePathCount": 0,
+    "duplicateSignalCount": 0,
+    "totalSignalPaths": 15,
+    "totalSignals": 15
+  },
+  "before": {
+    "duplicatePathCount": 2,
+    "duplicateSignalCount": 1,
+    "totalSignalPaths": 17,
+    "totalSignals": 15
+  },
+  "duplicateReductionOk": true,
+  "minReductionRequired": 2,
+  "removedDuplicateSignalPaths": 2
+}
