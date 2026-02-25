@@ -1,16 +1,17 @@
 {
   "advisoryToBlockingDriftCount": 0,
-  "exitPolicyBeforeAfterMismatchCount": 0,
   "gates": {
     "advisory_to_blocking_drift_count_zero": "PASS",
     "p1_02_advisory_never_blocks_outside_matrix_check": "PASS",
-    "p1_02_exit_behavior_parity_check": "PASS",
-    "p1_02_mode_routing_check": "PASS"
+    "p1_02_mode_routing_check": "PASS",
+    "p1_02_resume_condition_canon_lock_check": "PASS"
   },
-  "generatedAtUtc": "2026-02-25T17:30:08.585Z",
+  "generatedAtUtc": "2026-02-25T22:06:19.820Z",
   "modeRoutingOk": true,
-  "releasePromotionParityMismatchCount": 0,
-  "runId": "RUN-2026-02-25-011",
+  "parityOk": true,
+  "resumeConditionCanon": "REMOTE_AVAILABLE_PASS_AND_GH_API_OK_PASS_AND_DNS_TLS_OK_PASS",
+  "resumeConditionCanonLockOk": true,
+  "runId": "RUN-2026-02-25-013",
   "status": "PASS",
-  "ticketId": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001"
+  "ticketId": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-002"
 }

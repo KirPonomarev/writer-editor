@@ -10,6 +10,10 @@ import {
 const TOKEN_NAME = 'MODE_AWARE_EXIT_POLICY_OK';
 const FAIL_SIGNAL_CODE = 'E_GOVERNANCE_STRICT_FAIL';
 const DEFAULT_FAILSIGNAL_REGISTRY_PATH = 'docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json';
+const REMOTE_AUTOFIX_STATE_SCRIPT_PATH = 'scripts/ops/remote-autofix-state.mjs';
+const RESUME_CONDITION_SOURCE_LITERAL = 'remote_available=PASS_AND_gh_api_ok=PASS_AND_dns_tls_ok=PASS';
+const RESUME_CONDITION_CANON_LOCK = 'REMOTE_AVAILABLE_PASS_AND_GH_API_OK_PASS_AND_DNS_TLS_OK_PASS';
+const RESUME_CONDITION_SENTINEL_NONE = 'NONE';
 
 function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -332,6 +336,48 @@ function evaluateReleasePromotionParity(repoRoot, registryDoc) {
   };
 }
 
+function evaluateResumeConditionCanonLock(repoRoot) {
+  const sourcePath = path.resolve(repoRoot, REMOTE_AUTOFIX_STATE_SCRIPT_PATH);
+  if (!fs.existsSync(sourcePath)) {
+    return {
+      ok: false,
+      canonicalResumeCondition: RESUME_CONDITION_CANON_LOCK,
+      sourcePath: REMOTE_AUTOFIX_STATE_SCRIPT_PATH,
+      sourceLiteral: RESUME_CONDITION_SOURCE_LITERAL,
+      observedResumeConditions: [],
+      issues: [{ code: 'REMOTE_AUTOFIX_STATE_SCRIPT_MISSING' }],
+    };
+  }
+
+  const source = fs.readFileSync(sourcePath, 'utf8');
+  const observedResumeConditions = [];
+  const re = /resumeCondition\s*=\s*'([^']+)'/gu;
+  for (const match of source.matchAll(re)) {
+    const value = normalizeString(match[1]);
+    if (value) observedResumeConditions.push(value);
+  }
+  const uniqueObserved = [...new Set(observedResumeConditions)].sort((a, b) => a.localeCompare(b));
+
+  const hasCanonicalSourceLiteral = uniqueObserved.includes(RESUME_CONDITION_SOURCE_LITERAL);
+  const hasOnlyAllowedValues = uniqueObserved.length > 0
+    && uniqueObserved.every(
+      (value) => value === RESUME_CONDITION_SOURCE_LITERAL || value === RESUME_CONDITION_SENTINEL_NONE,
+    );
+
+  const issues = [];
+  if (!hasCanonicalSourceLiteral) issues.push({ code: 'RESUME_CONDITION_CANON_SOURCE_LITERAL_MISSING' });
+  if (!hasOnlyAllowedValues) issues.push({ code: 'RESUME_CONDITION_RELAXATION_DETECTED' });
+
+  return {
+    ok: hasCanonicalSourceLiteral && hasOnlyAllowedValues,
+    canonicalResumeCondition: RESUME_CONDITION_CANON_LOCK,
+    sourcePath: REMOTE_AUTOFIX_STATE_SCRIPT_PATH,
+    sourceLiteral: RESUME_CONDITION_SOURCE_LITERAL,
+    observedResumeConditions: uniqueObserved,
+    issues,
+  };
+}
+
 export function evaluateModeAwareExitPolicyState(input = {}) {
   const repoRoot = path.resolve(normalizeString(input.repoRoot) || process.cwd());
   const failsignalRegistryPath = path.resolve(
@@ -364,6 +410,14 @@ export function evaluateModeAwareExitPolicyState(input = {}) {
         mismatchCount: 0,
         mismatches: [],
       },
+      resumeConditionCanonLock: {
+        ok: false,
+        canonicalResumeCondition: RESUME_CONDITION_CANON_LOCK,
+        sourcePath: REMOTE_AUTOFIX_STATE_SCRIPT_PATH,
+        sourceLiteral: RESUME_CONDITION_SOURCE_LITERAL,
+        observedResumeConditions: [],
+        issues: [{ code: 'FAILSIGNAL_REGISTRY_UNREADABLE' }],
+      },
       driftCases: [],
       failsignalRegistryPath: path.relative(repoRoot, failsignalRegistryPath).replaceAll(path.sep, '/'),
       issues: [
@@ -381,7 +435,8 @@ export function evaluateModeAwareExitPolicyState(input = {}) {
   const drift = evaluateAdvisoryDrift(repoRoot, registryDoc);
   const exitPolicyBeforeAfter = evaluateExitPolicyBeforeAfter(repoRoot, registryDoc);
   const releasePromotionParity = evaluateReleasePromotionParity(repoRoot, registryDoc);
-  const issues = [...drift.issues];
+  const resumeConditionCanonLock = evaluateResumeConditionCanonLock(repoRoot);
+  const issues = [...drift.issues, ...resumeConditionCanonLock.issues];
 
   const advisoryToBlockingDriftCount = drift.advisoryToBlockingDriftCount;
   const advisoryToBlockingDriftCountZero = advisoryToBlockingDriftCount === 0;
@@ -390,6 +445,7 @@ export function evaluateModeAwareExitPolicyState(input = {}) {
     && drift.ok
     && exitPolicyBeforeAfter.ok
     && releasePromotionParity.ok
+    && resumeConditionCanonLock.ok
     && advisoryToBlockingDriftCountZero
     && issues.length === 0;
 
@@ -404,7 +460,9 @@ export function evaluateModeAwareExitPolicyState(input = {}) {
           ? 'ADVISORY_BLOCKING_DRIFT_DETECTED'
           : !releasePromotionParity.ok
             ? 'EXIT_PARITY_FAIL'
-            : 'EXIT_POLICY_BEFORE_AFTER_MISMATCH'
+            : !resumeConditionCanonLock.ok
+              ? 'RESUME_CONDITION_DRIFT'
+              : 'EXIT_POLICY_BEFORE_AFTER_MISMATCH'
     ),
     evaluatorId: CANONICAL_MODE_MATRIX_EVALUATOR_ID,
     advisoryToBlockingDriftCount,
@@ -412,6 +470,7 @@ export function evaluateModeAwareExitPolicyState(input = {}) {
     modeRouting,
     exitPolicyBeforeAfter,
     releasePromotionParity,
+    resumeConditionCanonLock,
     driftCases: drift.driftCases,
     failsignalRegistryPath: path.relative(repoRoot, failsignalRegistryPath).replaceAll(path.sep, '/'),
     issues,
@@ -423,6 +482,7 @@ function printHuman(state) {
   console.log(`P1_02_MODE_ROUTING_OK=${state.modeRouting.ok ? 1 : 0}`);
   console.log(`P1_02_ADVISORY_DRIFT_COUNT=${state.advisoryToBlockingDriftCount}`);
   console.log(`P1_02_ADVISORY_DRIFT_COUNT_ZERO=${state.advisoryToBlockingDriftCountZero ? 1 : 0}`);
+  console.log(`P1_02_RESUME_CONDITION_CANON_LOCK_OK=${state.resumeConditionCanonLock.ok ? 1 : 0}`);
   console.log(`P1_02_EXIT_BEFORE_AFTER_OK=${state.exitPolicyBeforeAfter.ok ? 1 : 0}`);
   console.log(`P1_02_RELEASE_PROMOTION_PARITY_OK=${state.releasePromotionParity.ok ? 1 : 0}`);
   if (!state.ok) {

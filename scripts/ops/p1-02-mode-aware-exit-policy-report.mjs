@@ -105,7 +105,7 @@ function main() {
   const gates = {
     p1_02_mode_routing_check: state.modeRouting.ok ? 'PASS' : 'FAIL',
     p1_02_advisory_never_blocks_outside_matrix_check: state.advisoryToBlockingDriftCountZero ? 'PASS' : 'FAIL',
-    p1_02_exit_behavior_parity_check: parityOk ? 'PASS' : 'FAIL',
+    p1_02_resume_condition_canon_lock_check: state.resumeConditionCanonLock.ok ? 'PASS' : 'FAIL',
     advisory_to_blocking_drift_count_zero: state.advisoryToBlockingDriftCountZero ? 'PASS' : 'FAIL',
   };
 
@@ -115,8 +115,9 @@ function main() {
     ticketId: args.ticketId || process.env.TICKET_ID || '',
     modeRoutingOk: state.modeRouting.ok,
     advisoryToBlockingDriftCount: state.advisoryToBlockingDriftCount,
-    exitPolicyBeforeAfterMismatchCount: state.exitPolicyBeforeAfter.mismatchCount,
-    releasePromotionParityMismatchCount: state.releasePromotionParity.mismatchCount,
+    resumeConditionCanonLockOk: state.resumeConditionCanonLock.ok,
+    resumeConditionCanon: state.resumeConditionCanonLock.canonicalResumeCondition,
+    parityOk,
     gates,
     generatedAtUtc: new Date().toISOString(),
   };
@@ -136,10 +137,13 @@ function main() {
   });
 
   writeJson(path.join(outputDir, 'exit-policy-before-after.json'), {
-    gate: 'p1_02_exit_behavior_parity_check',
+    gate: 'p1_02_resume_condition_canon_lock_check',
+    resumeConditionCanonLock: state.resumeConditionCanonLock,
     beforeAfter: state.exitPolicyBeforeAfter,
     releasePromotionParity: state.releasePromotionParity,
     p1_02ParityRule: 'SAME_BLOCKING_OUTCOME_FOR_RELEASE_AND_PROMOTION_PATHS_WHEN_INPUTS_EQUAL',
+    resumeConditionCanon: 'REMOTE_AVAILABLE_PASS_AND_GH_API_OK_PASS_AND_DNS_TLS_OK_PASS',
+    resumeConditionRelaxationForbidden: true,
   });
 
   writeJson(path.join(outputDir, 'advisory-blocking-drift-cases.json'), {
