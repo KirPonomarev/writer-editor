@@ -282,29 +282,8 @@
       "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
     },
     {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/duplicate-checks-before-after.json",
-      "sha256": "f3564e8b2af63b2d7eff6a20965f7bb771f14650bddc0a69e9764aeb1bc3b408",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
-      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
-    },
-    {
       "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/safety-parity-proof.json",
       "sha256": "8917ab5b338286c61276dcae4d3c7950e3030de643f4585dfaf70322bee5bb6e",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
-      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/summary.json",
-      "sha256": "5a6a787dbdb721f722aad53562853feac89c4978002e09a2f139a8cf057df18a",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
-      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/ticket-meta.json",
-      "sha256": "d31e03252590b597bd6c7fe376c6fd379cc6dae47f67693681baad3815e4380e",
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T02:40:00.000Z",
       "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
@@ -653,13 +632,6 @@
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
     },
     {
-      "filePath": "scripts/ops/check-dedup-canon-state.mjs",
-      "sha256": "29b1145aeb4a1ab3fdb4962139d4bb26adc3be017f86ef83a292c72ac78aec08",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
-      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
-    },
-    {
       "filePath": "scripts/ops/check-execution-sequence.mjs",
       "sha256": "e377b6dba69d16ccbc8295bbbf22ab54c997919cd04020b88a91749441b95c2b",
       "approvedBy": "DOCS_OPERATOR",
@@ -737,13 +709,6 @@
       "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
     },
     {
-      "filePath": "scripts/ops/p1-01-check-dedup-canon-report.mjs",
-      "sha256": "d485c963886a84217cb23c9f157584780d298e469a61a8e50c673dc0f64061f3",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
-      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
-    },
-    {
       "filePath": "scripts/ops/p1-02-mode-aware-exit-policy-report.mjs",
       "sha256": "11ea02b8b4e9ab25bade4674b58f83f2076035ea2bced7685664c0fa67ceeef0",
       "approvedBy": "DOCS_OPERATOR",
@@ -812,13 +777,6 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T01:40:00.000Z",
       "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
-    },
-    {
-      "filePath": "test/contracts/check-dedup-canon.contract.test.js",
-      "sha256": "a54de1a73d9304055f6ed4d6f348b2995d2811b6f63cc6d30bb78df394246323",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
-      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
     },
     {
       "filePath": "test/contracts/declared-set-vs-effective-set-alignment.contract.test.js",
@@ -896,6 +854,62 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T06:10:00.000Z",
       "rationale": "TZ-P0-07-REMOTE-AUTOFIX-IMPLEMENTATION-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/duplicate-checks-before-after.json",
+      "sha256": "db601a1b9152969548c41b56d60b3c60e014d60371e055c5154c0242c19efc21",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:05:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/risk-weighted-dedup-proof.json",
+      "sha256": "dd4c9c623995ad802a3207bdb102db197a18a09e4ebdc3cc26236cf3d40942ac",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:05:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/summary.json",
+      "sha256": "e752004cfc8d8c5549bed3461012bbfc450a889a9c7651cfe252dfe1ca552ead",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:05:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/ticket-meta.json",
+      "sha256": "ea469b6887f7c309f80e1dc7b4d955183cbd932ad2580ea12fc9733dacf311e0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:05:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/CHECK_DEDUP_CANON_v2.json",
+      "sha256": "de846a927572d1819be96caa7c2cb8672aca542c24df27ddb80439ecdf798ddc",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:05:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-002 approvals."
+    },
+    {
+      "filePath": "scripts/ops/check-dedup-canon-state.mjs",
+      "sha256": "e4fd42a2560aad0839e63fd5b3702654b7128c5ea5f93f1841e00938a9d9c414",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:05:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-002 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-01-check-dedup-canon-report.mjs",
+      "sha256": "55d4161d1d477d7b763d1cab627e7e9a848f5cce9601a4a288e76d861a6e468d",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:05:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-002 approvals."
+    },
+    {
+      "filePath": "test/contracts/check-dedup-canon.contract.test.js",
+      "sha256": "8bb36dd773d94eb0df339589c0ead98565cfc998a6c5b1bf854eb89445d24014",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:05:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-002 approvals."
     }
   ]
 }

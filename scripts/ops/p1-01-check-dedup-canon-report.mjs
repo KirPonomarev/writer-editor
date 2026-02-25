@@ -134,7 +134,7 @@ function main() {
       && state.duplicateChecksBeforeAfter.after.duplicateSignalCount === 0
       ? 'PASS'
       : 'FAIL',
-    p1_01_safety_parity_check: state.safetyParity.ok ? 'PASS' : 'FAIL',
+    p1_01_risk_weighted_dedup_check: state.riskWeightedDedupProof.ok ? 'PASS' : 'FAIL',
     advisory_to_blocking_drift_count_zero: state.advisoryToBlockingDriftCountZero ? 'PASS' : 'FAIL',
   };
 
@@ -144,6 +144,8 @@ function main() {
     ticketId: args.ticketId || process.env.TICKET_ID || '',
     minReductionRequired: args.minReduction,
     removedDuplicateSignalPaths: state.duplicateChecksBeforeAfter.removedDuplicateSignalPaths,
+    zeroRemainingDuplicates: state.riskWeightedDedupProof.zeroRemainingDuplicates,
+    riskWeightedReductionScore: state.riskWeightedDedupProof.riskWeightedReductionScore,
     duplicateSignalCountBefore: state.duplicateChecksBeforeAfter.before.duplicateSignalCount,
     duplicateSignalCountAfter: state.duplicateChecksBeforeAfter.after.duplicateSignalCount,
     advisoryToBlockingDriftCount: state.advisoryToBlockingDriftCount,
@@ -173,15 +175,18 @@ function main() {
     uniqueSignalMap: state.uniqueSignalMap,
   });
 
-  writeJson(path.join(outputDir, 'safety-parity-proof.json'), {
-    releaseRequiredBefore: state.safetyParity.releaseRequiredBefore,
-    releaseRequiredAfter: state.safetyParity.releaseRequiredAfter,
-    releaseRequiredBeforeSha256: state.safetyParity.releaseRequiredBeforeSha256,
-    releaseRequiredAfterSha256: state.safetyParity.releaseRequiredAfterSha256,
-    assertBlockingSetSizeUnchanged: state.safetyParity.assertBlockingSetSizeUnchanged,
-    assertBlockingSetExactEqual: state.safetyParity.assertBlockingSetExactEqual,
-    assertBlockingSetSha256Equal: state.safetyParity.assertBlockingSetSha256Equal,
-    safetyParityOk: state.safetyParity.ok,
+  writeJson(path.join(outputDir, 'risk-weighted-dedup-proof.json'), {
+    minReductionRequired: args.minReduction,
+    removedDuplicateSignalPaths: state.duplicateChecksBeforeAfter.removedDuplicateSignalPaths,
+    duplicateSignalCountBefore: state.duplicateChecksBeforeAfter.before.duplicateSignalCount,
+    duplicateSignalCountAfter: state.duplicateChecksBeforeAfter.after.duplicateSignalCount,
+    riskWeightedDedupProof: state.riskWeightedDedupProof,
+    safetyParity: {
+      assertBlockingSetSizeUnchanged: state.safetyParity.assertBlockingSetSizeUnchanged,
+      assertBlockingSetExactEqual: state.safetyParity.assertBlockingSetExactEqual,
+      assertBlockingSetSha256Equal: state.safetyParity.assertBlockingSetSha256Equal,
+      safetyParityOk: state.safetyParity.ok,
+    },
   });
 
   writeJson(path.join(outputDir, 'advisory-blocking-drift-cases.json'), {

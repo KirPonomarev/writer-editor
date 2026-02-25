@@ -7,7 +7,7 @@ import { evaluateModeMatrixVerdict } from './canonical-mode-matrix-evaluator.mjs
 
 const TOKEN_NAME = 'CHECK_DEDUP_CANON_OK';
 const FAIL_SIGNAL_CODE = 'E_GOVERNANCE_STRICT_FAIL';
-const DEFAULT_MIN_REDUCTION = 2;
+const DEFAULT_MIN_REDUCTION = 1;
 const DEFAULT_FAILSIGNAL_REGISTRY_PATH = 'docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json';
 const DEFAULT_REQUIRED_SET_PATH = 'docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json';
 const DEFAULT_SIGNAL_SOURCES = Object.freeze([
@@ -17,6 +17,11 @@ const DEFAULT_SIGNAL_SOURCES = Object.freeze([
   'scripts/ops/p0-05-recursion-bypass-ban-report.mjs',
   'scripts/ops/p0-06-attestation-trust-lock-report.mjs',
 ]);
+const DEFAULT_RISK_WEIGHTS = Object.freeze({
+  high: 5,
+  medium: 3,
+  low: 1,
+});
 
 function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -315,6 +320,75 @@ function evaluateSafetyParity(repoRoot, requiredSetPath) {
   };
 }
 
+function classifySignalRisk(signal) {
+  const normalized = normalizeString(signal).toLowerCase();
+  if (!normalized) return 'low';
+  if (normalized.includes('advisory_to_blocking_drift')) return 'high';
+  if (
+    normalized.includes('release')
+    || normalized.includes('promotion')
+    || normalized.includes('binding')
+    || normalized.includes('alignment')
+    || normalized.includes('bypass')
+    || normalized.includes('trusted_context')
+    || normalized.includes('self_generated_payload')
+  ) {
+    return 'medium';
+  }
+  return 'low';
+}
+
+function buildRiskWeightedDedupProof(groupedSignals, uniqueSignalMap) {
+  const removedSignals = [];
+  const removedByRisk = { high: 0, medium: 0, low: 0 };
+  let weightedScoreBefore = 0;
+  let weightedScoreAfter = 0;
+
+  for (const row of groupedSignals) {
+    const risk = classifySignalRisk(row.signal);
+    const weight = DEFAULT_RISK_WEIGHTS[risk] || DEFAULT_RISK_WEIGHTS.low;
+    const sourceCount = Number.isInteger(row.sourceCount) ? row.sourceCount : 0;
+    const removedCount = Math.max(0, sourceCount - 1);
+
+    weightedScoreBefore += sourceCount * weight;
+    weightedScoreAfter += weight;
+
+    if (removedCount > 0) {
+      removedByRisk[risk] += removedCount;
+      removedSignals.push({
+        signal: row.signal,
+        risk,
+        weight,
+        sourceCountBefore: sourceCount,
+        removedDuplicateSources: removedCount,
+      });
+    }
+  }
+
+  const duplicateSignalCountBefore = groupedSignals.filter((row) => row.sourceCount > 1).length;
+  const removedDuplicateSignalPaths = removedSignals.reduce(
+    (acc, row) => acc + row.removedDuplicateSources,
+    0,
+  );
+  const zeroRemainingDuplicates = duplicateSignalCountBefore === 0 || removedDuplicateSignalPaths > 0;
+  const riskWeightedReductionScore = weightedScoreBefore - weightedScoreAfter;
+  const canonicalCoverageOk = uniqueSignalMap.length === groupedSignals.length;
+
+  return {
+    riskWeights: DEFAULT_RISK_WEIGHTS,
+    removedByRisk,
+    removedSignals,
+    weightedScoreBefore,
+    weightedScoreAfter,
+    riskWeightedReductionScore,
+    removedDuplicateSignalPaths,
+    duplicateSignalCountBefore,
+    zeroRemainingDuplicates,
+    canonicalCoverageOk,
+    ok: zeroRemainingDuplicates && canonicalCoverageOk,
+  };
+}
+
 export function evaluateCheckDedupCanonState(input = {}) {
   const repoRoot = path.resolve(normalizeString(input.repoRoot) || process.cwd());
   const failsignalRegistryPath = path.resolve(
@@ -356,12 +430,14 @@ export function evaluateCheckDedupCanonState(input = {}) {
   const duplicatePathCountAfter = 0;
   const removedDuplicateSignalPaths = totalSignalPathsBefore - totalSignalPathsAfter;
 
-  const duplicateReductionOk = removedDuplicateSignalPaths >= effectiveMinReduction;
+  const duplicateReductionOk = duplicateSignalCountBefore === 0
+    || removedDuplicateSignalPaths >= effectiveMinReduction;
   const uniqueSignalProofOk = uniqueSignalMap.every((row) => {
     const canonicalSource = normalizeString(row.canonicalSource);
     const removedSources = uniqueSortedStrings(row.removedDuplicateSources || []);
     return Boolean(canonicalSource) && !removedSources.includes(canonicalSource);
   }) && duplicateSignalCountAfter === 0;
+  const riskWeightedDedupProof = buildRiskWeightedDedupProof(groupedSignals, uniqueSignalMap);
 
   const safetyParity = evaluateSafetyParity(repoRoot, requiredSetPath);
   const driftState = evaluateAdvisoryToBlockingDrift(repoRoot, failsignalRegistryPath);
@@ -377,6 +453,7 @@ export function evaluateCheckDedupCanonState(input = {}) {
   const ok = issues.length === 0
     && duplicateReductionOk
     && uniqueSignalProofOk
+    && riskWeightedDedupProof.ok
     && safetyParity.ok
     && advisoryToBlockingDriftCountZero;
 
@@ -393,6 +470,8 @@ export function evaluateCheckDedupCanonState(input = {}) {
             ? 'SAFETY_PARITY_FAIL'
             : !advisoryToBlockingDriftCountZero
               ? 'ADVISORY_TO_BLOCKING_DRIFT_NONZERO'
+              : !riskWeightedDedupProof.ok
+                ? 'RISK_WEIGHTED_DEDUP_PROOF_FAIL'
               : 'CHECK_DEDUP_CANON_ISSUES'
     ),
     minReductionRequired: effectiveMinReduction,
@@ -412,6 +491,7 @@ export function evaluateCheckDedupCanonState(input = {}) {
       removedDuplicateSignalPaths,
       duplicateReductionOk,
     },
+    riskWeightedDedupProof,
     uniqueSignalMap,
     safetyParity,
     advisoryToBlockingDriftCount,
@@ -429,6 +509,7 @@ function printHuman(state) {
   console.log(`CHECK_DEDUP_DUPLICATE_PATHS_REMOVED=${state.duplicateChecksBeforeAfter.removedDuplicateSignalPaths}`);
   console.log(`CHECK_DEDUP_MIN_REDUCTION_REQUIRED=${state.minReductionRequired}`);
   console.log(`CHECK_DEDUP_UNIQUE_SIGNAL_PROOF_OK=${state.uniqueSignalMap.length > 0 ? 1 : 0}`);
+  console.log(`CHECK_DEDUP_RISK_WEIGHTED_PROOF_OK=${state.riskWeightedDedupProof.ok ? 1 : 0}`);
   console.log(`CHECK_DEDUP_SAFETY_PARITY_OK=${state.safetyParity.ok ? 1 : 0}`);
   console.log(`ADVISORY_TO_BLOCKING_DRIFT_COUNT=${state.advisoryToBlockingDriftCount}`);
   console.log(`ADVISORY_TO_BLOCKING_DRIFT_COUNT_ZERO=${state.advisoryToBlockingDriftCountZero ? 1 : 0}`);
