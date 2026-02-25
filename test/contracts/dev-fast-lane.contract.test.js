@@ -90,6 +90,7 @@ test('dev fast lane: ops current-wave guard respects DEV_FAST_LANE and exits wit
     env: {
       ...process.env,
       DEV_FAST_LANE: '1',
+      OPS_CONTEXT_MODE: 'dev',
     },
   });
 
@@ -97,5 +98,6 @@ test('dev fast lane: ops current-wave guard respects DEV_FAST_LANE and exits wit
   const stdout = String(result.stdout || '');
   assert.ok(stdout.includes('CURRENT_WAVE_STOP_CONDITION_OK=1'));
   assert.ok(stdout.includes('CURRENT_WAVE_STOP_CONDITION_FAIL_REASON=DEV_FAST_LANE_BYPASS'));
+  assert.ok(stdout.includes('CURRENT_WAVE_GUARD_MODE=dev'));
   assert.ok(stdout.includes('CURRENT_WAVE_STOP_CONDITION_GUARD_OK=1'));
 });

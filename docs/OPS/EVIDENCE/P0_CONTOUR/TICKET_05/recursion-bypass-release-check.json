@@ -1,0 +1,12 @@
+{
+  "attempt": {
+    "exitCode": 1,
+    "failReason": "E_GOVERNANCE_STRICT_FAIL",
+    "failSignal": "E_GOVERNANCE_STRICT_FAIL",
+    "guardMode": "release",
+    "stopOk": false
+  },
+  "failSignalCodeExpected": "E_GOVERNANCE_STRICT_FAIL",
+  "gate": "p0_05_release_bypass_ban_check",
+  "ok": true
+}

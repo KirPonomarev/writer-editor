@@ -1,0 +1,12 @@
+{
+  "attempt": {
+    "exitCode": 1,
+    "failReason": "E_GOVERNANCE_STRICT_FAIL",
+    "failSignal": "E_GOVERNANCE_STRICT_FAIL",
+    "guardMode": "promotion",
+    "stopOk": false
+  },
+  "failSignalCodeExpected": "E_GOVERNANCE_STRICT_FAIL",
+  "gate": "p0_05_promotion_bypass_ban_check",
+  "ok": true
+}

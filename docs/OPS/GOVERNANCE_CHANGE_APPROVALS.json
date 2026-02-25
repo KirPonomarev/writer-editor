@@ -448,6 +448,90 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T01:55:00.000Z",
       "rationale": "TZ-P0-04-DECLARED-SET-VS-EFFECTIVE-SET-ALIGNMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/p0-05-recursion-bypass-ban-report.json",
+      "sha256": "bb1e26fbe02d3bcdee4f95440a6298ec6fb5da3a2623daa9a54b54f9c8bf5fb0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/recursion-bypass-negative-attempts.json",
+      "sha256": "1208b9c2a37021c9caa543cdd146bd9502e084e3976a2add6e2e4f50fc6eb406",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/recursion-bypass-promotion-check.json",
+      "sha256": "990b8bb0c06acad58a1dd327ea590ef0f08230a91e4ff999ef371811126c091b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/recursion-bypass-release-check.json",
+      "sha256": "6f7b4cff58f7fd4a78940dd56a286a50913241e623b1d847bbecead44769182b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/summary.json",
+      "sha256": "57eac232a34fced50610627689340540d1d3c754c9cc16e61fdae7a769efdcb8",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/ticket-meta.json",
+      "sha256": "4976fc3b3845b43a037782da121d8cc0f878e35daa8a77f07e9aef1c02291db3",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/RECURSION_BYPASS_RELEASE_BAN_v1.json",
+      "sha256": "5ec3aac29b0ff70b45aeaed5ce631923e65c91696abafb7668bdc26caf0f661c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p0-05-recursion-bypass-ban-report.mjs",
+      "sha256": "cef158a515c89eb7ef952b6f3a1ccaa5bef2f4344daa0d05a9122f49014b6a62",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/recursion-bypass-release-ban-state.mjs",
+      "sha256": "dcf8995a42d7eca93cedfef3255c72e636404fbea0f40e42777d9e04f47cf637",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "test/contracts/dev-fast-lane.contract.test.js",
+      "sha256": "8c9852def5aaaacbde3998be897c2ffd1bfcaf1adfa70d8719a63aed20889048",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "test/contracts/recursion-bypass-release-ban.contract.test.js",
+      "sha256": "37b5d73eda53030ef35dd137978f6bf0d7eb986fda5a51e6657286677a8986c5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
+    },
+    {
+      "filePath": "scripts/guards/ops-current-wave-stop.mjs",
+      "sha256": "1d734f1687f9eec482aeb7844dd8c63329c9e148d80c184675149ad15a32eea3",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:15:00.000Z",
+      "rationale": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001 approvals."
     }
   ]
 }

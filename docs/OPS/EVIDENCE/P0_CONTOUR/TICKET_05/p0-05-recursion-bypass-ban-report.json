@@ -1,0 +1,45 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "attempts": {
+    "negative": {
+      "exitCode": 1,
+      "failReason": "E_GOVERNANCE_STRICT_FAIL",
+      "failSignal": "E_GOVERNANCE_STRICT_FAIL",
+      "guardMode": "release",
+      "stopOk": false
+    },
+    "promotion": {
+      "exitCode": 1,
+      "failReason": "E_GOVERNANCE_STRICT_FAIL",
+      "failSignal": "E_GOVERNANCE_STRICT_FAIL",
+      "guardMode": "promotion",
+      "stopOk": false
+    },
+    "release": {
+      "exitCode": 1,
+      "failReason": "E_GOVERNANCE_STRICT_FAIL",
+      "failSignal": "E_GOVERNANCE_STRICT_FAIL",
+      "guardMode": "release",
+      "stopOk": false
+    }
+  },
+  "driftCases": [],
+  "failReason": "",
+  "failSignalCode": "",
+  "gates": {
+    "advisory_to_blocking_drift_count_zero": "PASS",
+    "p0_05_negative_bypass_attempt_check": "PASS",
+    "p0_05_promotion_bypass_ban_check": "PASS",
+    "p0_05_release_bypass_ban_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-25T11:57:25.470Z",
+  "guardPath": "scripts/guards/ops-current-wave-stop.mjs",
+  "issues": [],
+  "negativeBypassAttemptFails": true,
+  "promotionContextBypassDisabled": true,
+  "releaseContextBypassDisabled": true,
+  "reportId": "P0_05_RECURSION_BYPASS_RELEASE_BAN_REPORT_V1",
+  "runId": "RUN-2026-02-25-011",
+  "status": "PASS",
+  "ticketId": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001"
+}
