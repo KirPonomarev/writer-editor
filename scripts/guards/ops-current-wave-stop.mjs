@@ -1,5 +1,46 @@
 import { spawnSync } from 'node:child_process';
 
+const FAIL_SIGNAL_CODE = 'E_GOVERNANCE_STRICT_FAIL';
+
+function normalizeString(value) {
+  return String(value || '').trim();
+}
+
+function parseBooleanish(value) {
+  const normalized = normalizeString(value).toLowerCase();
+  if (!normalized) return false;
+  return normalized === '1'
+    || normalized === 'true'
+    || normalized === 'yes'
+    || normalized === 'on';
+}
+
+function normalizeMode(value) {
+  const normalized = normalizeString(value).toLowerCase();
+  if (normalized === 'promotion') return 'promotion';
+  if (normalized === 'release') return 'release';
+  if (normalized === 'dev' || normalized === 'pr' || normalized === 'prcore' || normalized === 'pr_core') return 'dev';
+  return '';
+}
+
+function resolveGuardMode() {
+  const explicitMode = normalizeMode(process.env.OPS_CONTEXT_MODE)
+    || normalizeMode(process.env.CHECK_MODE)
+    || normalizeMode(process.env.WAVE_MODE);
+  if (explicitMode) return explicitMode;
+
+  if (
+    parseBooleanish(process.env.PROMOTION_MODE)
+    || parseBooleanish(process.env.promotionMode)
+    || parseBooleanish(process.env.WAVE_PROMOTION_MODE)
+  ) {
+    return 'promotion';
+  }
+
+  // No explicit mode is treated as release to prevent bypass in hard lanes.
+  return 'release';
+}
+
 function fastLaneBypassActive() {
   return String(process.env.DEV_FAST_LANE || '').trim() === '1';
 }
@@ -43,10 +84,33 @@ function parseDoctorTokens(stdout) {
 }
 
 if (fastLaneBypassActive()) {
+  const guardMode = resolveGuardMode();
+  if (guardMode === 'release' || guardMode === 'promotion') {
+    printAndExit([
+      'CURRENT_WAVE_GUARD_RAN=1',
+      'CURRENT_WAVE_STOP_CONDITION_OK=0',
+      `CURRENT_WAVE_STOP_CONDITION_FAIL_REASON=${FAIL_SIGNAL_CODE}`,
+      `CURRENT_WAVE_FAIL_SIGNAL=${FAIL_SIGNAL_CODE}`,
+      `CURRENT_WAVE_GUARD_MODE=${guardMode}`,
+      'CURRENT_WAVE_RECURSION_BYPASS_REQUESTED=1',
+      'CURRENT_WAVE_RECURSION_BYPASS_ALLOWED=0',
+      'CURRENT_WAVE_STRICT_DOCTOR_EXIT=1',
+      'CURRENT_WAVE_BOUNDARY_GUARD_EXIT=1',
+      'STRICT_LIE_CLASS_01_VIOLATIONS_COUNT=0',
+      'STRICT_LIE_CLASS_02_VIOLATIONS_COUNT=0',
+      'STRICT_LIE_CLASSES_OK=0',
+      'CURRENT_WAVE_STOP_CONDITION_GUARD_OK=0',
+    ], 1);
+  }
+
   printAndExit([
     'CURRENT_WAVE_GUARD_RAN=1',
     'CURRENT_WAVE_STOP_CONDITION_OK=1',
     'CURRENT_WAVE_STOP_CONDITION_FAIL_REASON=DEV_FAST_LANE_BYPASS',
+    'CURRENT_WAVE_FAIL_SIGNAL=',
+    `CURRENT_WAVE_GUARD_MODE=${guardMode}`,
+    'CURRENT_WAVE_RECURSION_BYPASS_REQUESTED=1',
+    'CURRENT_WAVE_RECURSION_BYPASS_ALLOWED=1',
     'CURRENT_WAVE_STRICT_DOCTOR_EXIT=0',
     'CURRENT_WAVE_BOUNDARY_GUARD_EXIT=0',
     'STRICT_LIE_CLASS_01_VIOLATIONS_COUNT=0',
@@ -80,6 +144,7 @@ const boundaryExit = parsed.out.get('CURRENT_WAVE_BOUNDARY_GUARD_EXIT') ?? '1';
 const c1 = parsed.out.get('STRICT_LIE_CLASS_01_VIOLATIONS_COUNT') ?? '0';
 const c2 = parsed.out.get('STRICT_LIE_CLASS_02_VIOLATIONS_COUNT') ?? '0';
 const strictOk = parsed.out.get('STRICT_LIE_CLASSES_OK') ?? '0';
+const guardMode = resolveGuardMode();
 
 const stopOkInt = stopOk === '1' ? 1 : 0;
 const guardOkInt = stopOkInt;
@@ -88,6 +153,10 @@ const outLines = [
   'CURRENT_WAVE_GUARD_RAN=1',
   `CURRENT_WAVE_STOP_CONDITION_OK=${stopOkInt}`,
   `CURRENT_WAVE_STOP_CONDITION_FAIL_REASON=${failReason ?? ''}`,
+  'CURRENT_WAVE_FAIL_SIGNAL=',
+  `CURRENT_WAVE_GUARD_MODE=${guardMode}`,
+  'CURRENT_WAVE_RECURSION_BYPASS_REQUESTED=0',
+  'CURRENT_WAVE_RECURSION_BYPASS_ALLOWED=0',
   `CURRENT_WAVE_STRICT_DOCTOR_EXIT=${strictDoctorExit}`,
   `CURRENT_WAVE_BOUNDARY_GUARD_EXIT=${boundaryExit}`,
   `STRICT_LIE_CLASS_01_VIOLATIONS_COUNT=${c1}`,

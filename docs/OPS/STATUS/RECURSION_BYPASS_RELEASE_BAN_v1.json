@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "token": "RECURSION_BYPASS_RELEASE_BAN_OK",
+  "scope": "current-wave guard bypass behavior in release and promotion contexts",
+  "declaredFailSignal": "E_GOVERNANCE_STRICT_FAIL",
+  "guardScript": "scripts/guards/ops-current-wave-stop.mjs",
+  "stateScript": "scripts/ops/recursion-bypass-release-ban-state.mjs",
+  "reportScript": "scripts/ops/p0-05-recursion-bypass-ban-report.mjs",
+  "contractTest": "test/contracts/recursion-bypass-release-ban.contract.test.js"
+}
