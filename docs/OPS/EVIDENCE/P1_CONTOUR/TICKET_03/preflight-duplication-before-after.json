@@ -1,0 +1,28 @@
+{
+  "after": {
+    "duplicatePathCount": 0,
+    "duplicateSignalCount": 0,
+    "remoteBindingSignalPathCount": 0,
+    "totalSignalPaths": 3,
+    "totalSignals": 3
+  },
+  "before": {
+    "duplicatePathCount": 1,
+    "duplicateSignalCount": 1,
+    "remoteBindingSignalPathCount": 2,
+    "totalSignalPaths": 5,
+    "totalSignals": 4
+  },
+  "duplicateReductionOk": true,
+  "minReductionRequired": 1,
+  "remoteBindingSkipOnLocalSafeMode": {
+    "afterRemoteBindingSignalPaths": [],
+    "beforeRemoteBindingSignalPaths": [
+      "scripts/ops/check-merge-readiness.mjs#CHECK_MERGE_READINESS_REMOTE_BINDING_OK",
+      "scripts/ops/emit-ops-summary.mjs#OPS_SUMMARY_REMOTE_BINDING_OK"
+    ],
+    "ok": true,
+    "removedRemoteBindingSignalPaths": 2
+  },
+  "removedDuplicateSignalPaths": 2
+}

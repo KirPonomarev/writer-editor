@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "token": "SAFE_LOCAL_WAVE_PREFLIGHT_OK",
+  "scope": "safe local wave preflight with remote-binding duplicate reduction and safety parity guarantees",
+  "stateScript": "scripts/ops/safe-local-wave-preflight-state.mjs",
+  "reportScript": "scripts/ops/p1-03-safe-local-wave-preflight-report.mjs",
+  "contractTest": "test/contracts/safe-local-wave-preflight.contract.test.js",
+  "localSafeMode": {
+    "enabled": true,
+    "skipRemoteBindingSignals": [
+      "CHECK_MERGE_READINESS_REMOTE_BINDING_OK",
+      "OPS_SUMMARY_REMOTE_BINDING_OK"
+    ],
+    "canonicalLocalSafetySignals": [
+      "worktree_clean",
+      "scope_proof",
+      "governance_strict"
+    ],
+    "releasePromotionPolicy": "unchanged"
+  }
+}
