@@ -303,6 +303,41 @@
       "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/advisory-blocking-drift-cases.json",
+      "sha256": "65babcd7b7a0a6457de5ea18d38e2b7d597d778a566fe182632714d2aeea5694",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/exit-policy-before-after.json",
+      "sha256": "0f1a04af360bf13613eba1282c552da3082561aca9b9c59ed04c4d0a68490dd6",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/mode-aware-exit-policy-cases.json",
+      "sha256": "946be0926b287103728e776dceafc0bdec6e68c547b9c8e8a52e3cf5b8497ec5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/summary.json",
+      "sha256": "090315f5a24f81a552fbd28450008bb600af5b3ba8d523b387d3d2cfe7327a27",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/ticket-meta.json",
+      "sha256": "c559b539bcb444955833151fba3e851aaae7b18e99b472281d282ca489ff7665",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
+    },
+    {
       "approvedAtUtc": "2026-02-24T01:20:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/failsignal-registry-snapshot.json",
@@ -450,6 +485,13 @@
       "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
     },
     {
+      "filePath": "docs/OPS/STATUS/MODE_AWARE_EXIT_POLICY_v1.json",
+      "sha256": "ae24f06bd208dfbed972138f60edc78d341443cc04e646537fdc34540409dbae",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
+    },
+    {
       "filePath": "docs/OPS/STATUS/MODE_MATRIX_SINGLE_AUTHORITY_v1.json",
       "sha256": "d2f55818d388b977ab4bd0f50bc7425f10bc4b806e8aeabd68d5ed4c7f2a03f1",
       "approvedBy": "DOCS_OPERATOR",
@@ -555,6 +597,13 @@
       "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
     },
     {
+      "filePath": "scripts/ops/mode-aware-exit-policy-state.mjs",
+      "sha256": "cea6a64c15b893e7d9cd36434c522c579b7065cfb0c74d3d9799f09e8241b445",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
+    },
+    {
       "filePath": "scripts/ops/p0-01-mode-matrix-single-authority-report.mjs",
       "sha256": "65d1d04fa5e236db899c2629db485df24f24c13938b20689dd5d500e8d50099c",
       "approvedBy": "DOCS_OPERATOR",
@@ -602,6 +651,13 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T02:40:00.000Z",
       "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-02-mode-aware-exit-policy-report.mjs",
+      "sha256": "11ea02b8b4e9ab25bade4674b58f83f2076035ea2bced7685664c0fa67ceeef0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
     },
     {
       "filePath": "scripts/ops/recursion-bypass-release-ban-state.mjs",
@@ -658,6 +714,13 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T00:55:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
+    },
+    {
+      "filePath": "test/contracts/mode-aware-exit-policy.contract.test.js",
+      "sha256": "464d06f0a3ae2a3cc183c3b58fafb237dd9f3b81921f8737b6e607c77d943326",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
     },
     {
       "filePath": "test/contracts/mode-matrix-single-authority.contract.test.js",

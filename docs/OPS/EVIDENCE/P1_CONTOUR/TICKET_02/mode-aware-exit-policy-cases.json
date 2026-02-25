@@ -1,0 +1,55 @@
+{
+  "caseResults": [
+    {
+      "actual": {
+        "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "issues": [],
+        "modeDisposition": "advisory",
+        "shouldBlock": false,
+        "verdictOk": true
+      },
+      "caseId": "pr_advisory_case",
+      "expectedDisposition": "advisory",
+      "expectedShouldBlock": false,
+      "failSignalCode": "E_ADAPTERS_NOT_ENFORCED",
+      "mode": "pr",
+      "modeKey": "prCore",
+      "ok": true
+    },
+    {
+      "actual": {
+        "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "issues": [],
+        "modeDisposition": "blocking",
+        "shouldBlock": true,
+        "verdictOk": true
+      },
+      "caseId": "release_blocking_case",
+      "expectedDisposition": "blocking",
+      "expectedShouldBlock": true,
+      "failSignalCode": "E_DEBT_TTL_EXPIRED",
+      "mode": "release",
+      "modeKey": "release",
+      "ok": true
+    },
+    {
+      "actual": {
+        "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "issues": [],
+        "modeDisposition": "blocking",
+        "shouldBlock": true,
+        "verdictOk": true
+      },
+      "caseId": "promotion_blocking_case",
+      "expectedDisposition": "blocking",
+      "expectedShouldBlock": true,
+      "failSignalCode": "E_COMMAND_NAMESPACE_DRIFT",
+      "mode": "promotion",
+      "modeKey": "promotion",
+      "ok": true
+    }
+  ],
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+  "gate": "p1_02_mode_routing_check",
+  "ok": true
+}

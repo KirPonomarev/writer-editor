@@ -1,0 +1,16 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "exitPolicyBeforeAfterMismatchCount": 0,
+  "gates": {
+    "advisory_to_blocking_drift_count_zero": "PASS",
+    "p1_02_advisory_never_blocks_outside_matrix_check": "PASS",
+    "p1_02_exit_behavior_parity_check": "PASS",
+    "p1_02_mode_routing_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-25T17:30:08.585Z",
+  "modeRoutingOk": true,
+  "releasePromotionParityMismatchCount": 0,
+  "runId": "RUN-2026-02-25-011",
+  "status": "PASS",
+  "ticketId": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001"
+}

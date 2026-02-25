@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "token": "MODE_AWARE_EXIT_POLICY_OK",
+  "scope": "mode-aware exit routing through canonical mode-matrix evaluator",
+  "stateScript": "scripts/ops/mode-aware-exit-policy-state.mjs",
+  "reportScript": "scripts/ops/p1-02-mode-aware-exit-policy-report.mjs",
+  "contractTest": "test/contracts/mode-aware-exit-policy.contract.test.js"
+}
