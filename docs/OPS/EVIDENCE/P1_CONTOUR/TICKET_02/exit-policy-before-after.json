@@ -1,0 +1,16 @@
+{
+  "beforeAfter": {
+    "comparableCount": 156,
+    "mismatchCount": 0,
+    "mismatches": [],
+    "ok": true
+  },
+  "gate": "p1_02_exit_behavior_parity_check",
+  "p1_02ParityRule": "SAME_BLOCKING_OUTCOME_FOR_RELEASE_AND_PROMOTION_PATHS_WHEN_INPUTS_EQUAL",
+  "releasePromotionParity": {
+    "comparableCount": 39,
+    "mismatchCount": 0,
+    "mismatches": [],
+    "ok": true
+  }
+}
