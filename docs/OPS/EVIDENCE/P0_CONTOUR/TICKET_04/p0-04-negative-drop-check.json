@@ -1,0 +1,21 @@
+{
+  "expectedMissingTokenDetected": true,
+  "mutatedAdvisoryToBlockingDriftCount": 0,
+  "mutatedAlignmentOk": false,
+  "mutatedDeclaredReleaseSetMinusEffectiveMachineSetCount": 0,
+  "mutatedEffectiveMachineSetMinusDeclaredReleaseSetCount": 1,
+  "ok": true,
+  "state": {
+    "alignmentOk": false,
+    "declaredReleaseSetMinusEffectiveMachineSet": [],
+    "declaredReleaseSetMinusEffectiveMachineSetCount": 0,
+    "effectiveMachineSetMinusDeclaredReleaseSet": [
+      "ADAPTERS_ENFORCED_OK"
+    ],
+    "effectiveMachineSetMinusDeclaredReleaseSetCount": 1,
+    "failReason": "DECLARED_EFFECTIVE_SET_MISMATCH",
+    "failSignalCode": "E_REQUIRED_TOKEN_SET_DRIFT",
+    "ok": false
+  },
+  "targetTokenId": "ADAPTERS_ENFORCED_OK"
+}

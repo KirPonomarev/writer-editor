@@ -1,0 +1,33 @@
+{
+  "identical": true,
+  "ok": true,
+  "runs": [
+    {
+      "advisoryToBlockingDriftCount": 0,
+      "alignmentOk": true,
+      "declaredReleaseSetMinusEffectiveMachineSetCount": 0,
+      "effectiveMachineSetMinusDeclaredReleaseSetCount": 0,
+      "failReason": "",
+      "ok": true,
+      "run": 1
+    },
+    {
+      "advisoryToBlockingDriftCount": 0,
+      "alignmentOk": true,
+      "declaredReleaseSetMinusEffectiveMachineSetCount": 0,
+      "effectiveMachineSetMinusDeclaredReleaseSetCount": 0,
+      "failReason": "",
+      "ok": true,
+      "run": 2
+    },
+    {
+      "advisoryToBlockingDriftCount": 0,
+      "alignmentOk": true,
+      "declaredReleaseSetMinusEffectiveMachineSetCount": 0,
+      "effectiveMachineSetMinusDeclaredReleaseSetCount": 0,
+      "failReason": "",
+      "ok": true,
+      "run": 3
+    }
+  ]
+}
