@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "policyId": "MODE_MATRIX_POLICY_V1",
+  "singleBlockingEvaluator": {
+    "id": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+    "required": true,
+    "authority": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json#failSignals[].modeMatrix"
+  },
+  "secondaryVerdictPolicy": {
+    "disposition": "ADVISORY_ONLY",
+    "blockingOverrideAllowed": false
+  },
+  "driftTarget": {
+    "advisoryToBlockingDriftCount": 0
+  }
+}

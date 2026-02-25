@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "policyId": "REMOTE_AUTOFIX_POLICY_V1",
+  "workflow": [
+    "probe",
+    "classify",
+    "repair_if_local_fixable",
+    "reprobe",
+    "respect_retry_budget",
+    "wait_mode_after_budget",
+    "auto_resume_after_pass"
+  ],
+  "probesRequired": [
+    "git_ls_remote_origin",
+    "gh_api_rate_limit",
+    "dns_probe_github_host",
+    "https_probe_api_github"
+  ],
+  "repairActions": [
+    "dns_cache_refresh",
+    "resolver_refresh",
+    "proxy_env_normalize",
+    "gh_auth_refresh_if_allowed"
+  ],
+  "waitModePolicy": {
+    "allowedOnlyAfterBudgetExhausted": true,
+    "nextAutoProbeAtRequired": true,
+    "emitOnlyOnStateDelta": true
+  },
+  "resumePolicy": {
+    "automaticAfterRemotePass": true,
+    "manualResumeWhileRemoteFailForbidden": true,
+    "businessRetryWhileWaitForbidden": true
+  },
+  "remoteStateFingerprintMinFields": [
+    "BASE_SHA",
+    "ORIGIN_ID",
+    "DNS_RESOLVER_HASH",
+    "PROXY_ENV_HASH",
+    "GH_AUTH_STATE_HASH",
+    "ERROR_CLASS"
+  ]
+}

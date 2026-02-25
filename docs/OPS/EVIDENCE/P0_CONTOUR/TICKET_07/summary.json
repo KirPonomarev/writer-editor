@@ -1,0 +1,51 @@
+{
+  "autofixActionsDone": [
+    {
+      "action": "dns_cache_refresh",
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "action": "resolver_refresh",
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "action": "proxy_env_normalize",
+      "exitCode": 0,
+      "ok": true
+    },
+    {
+      "action": "gh_auth_refresh_if_allowed",
+      "exitCode": 0,
+      "ok": true
+    }
+  ],
+  "autofixCycleIndex": 3,
+  "gates": {
+    "auto_resume_after_remote_pass_required": "PASS",
+    "autofix_sequence_probe_classify_repair_reprobe_enforced": "PASS",
+    "backoff_enforced_2m_5m_15m": "PASS",
+    "loop_breaker_same_stop_same_fingerprint_state_delta_none_forbidden": "PASS",
+    "manual_resume_while_remote_fail_forbidden": "PASS",
+    "next_auto_probe_at_required_when_wait": "PASS",
+    "no_advisory_to_blocking_drift": "PASS",
+    "no_runtime_hotpath_governance": "PASS",
+    "remote_classification_required": "PASS",
+    "retry_budget_enforced_max_3": "PASS",
+    "schema_valid": "PASS",
+    "single_blocking_authority_enforced": "PASS",
+    "wait_mode_emit_rule_enforced": "PASS",
+    "wait_mode_entry_rule_enforced": "PASS"
+  },
+  "generatedAtUtc": "2026-02-25T21:38:52.244Z",
+  "nextAutoProbeAt": "2026-02-25T21:53:52.217Z",
+  "remoteAvailable": false,
+  "resumeCondition": "remote_available=PASS_AND_gh_api_ok=PASS_AND_dns_tls_ok=PASS",
+  "runId": "RUN-2026-02-25-013",
+  "stateDelta": "AUTOFIX_CYCLE_3_NO_RECOVERY",
+  "stateFingerprint": "a99556b673852d4d402a1ca8cba47ae6b7194be407f5e9c899c9d3631428a4b0",
+  "status": "PASS",
+  "stopCode": "DNS_OR_TLS_FAILURE",
+  "ticketId": "TZ-P0-07-REMOTE-AUTOFIX-IMPLEMENTATION-001"
+}

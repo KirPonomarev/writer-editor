@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "policyId": "LOOP_BREAKER_POLICY_V1",
+  "forbiddenPattern": "SAME_STOP_PLUS_SAME_FINGERPRINT_PLUS_STATE_DELTA_NONE",
+  "effect": "FORBID_REEXECUTION",
+  "routeOnViolation": "E_ROUTE_MATRIX_VIOLATION",
+  "noSilentRetry": true,
+  "noManualRouteBypass": true
+}
