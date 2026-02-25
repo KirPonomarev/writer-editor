@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "status": "ACTIVE",
+  "token": "MODE_AWARE_EXIT_POLICY_OK",
+  "scope": "mode-aware exit routing with canonical resume condition lock",
+  "stateScript": "scripts/ops/mode-aware-exit-policy-state.mjs",
+  "reportScript": "scripts/ops/p1-02-mode-aware-exit-policy-report.mjs",
+  "contractTest": "test/contracts/mode-aware-exit-policy.contract.test.js",
+  "blockingAuthorityId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1_LOCKED",
+  "resumeConditionCanon": "REMOTE_AVAILABLE_PASS_AND_GH_API_OK_PASS_AND_DNS_TLS_OK_PASS",
+  "resumeConditionRelaxationForbidden": true
+}

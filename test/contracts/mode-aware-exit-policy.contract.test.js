@@ -40,13 +40,25 @@ test('mode-aware exit policy: advisory checks never block outside matrix', async
   assert.deepEqual(state.driftCases, []);
 });
 
-test('mode-aware exit policy: release/promotion parity and before-after behavior stay consistent', async () => {
+test('mode-aware exit policy: resume condition remains canon-locked with no relaxation', async () => {
   const { evaluateModeAwareExitPolicyState } = await loadModule();
   const state = evaluateModeAwareExitPolicyState({
     repoRoot: REPO_ROOT,
     failsignalRegistryPath: FAILSIGNAL_REGISTRY_PATH,
   });
 
+  assert.equal(state.resumeConditionCanonLock.ok, true);
+  assert.equal(
+    state.resumeConditionCanonLock.canonicalResumeCondition,
+    'REMOTE_AVAILABLE_PASS_AND_GH_API_OK_PASS_AND_DNS_TLS_OK_PASS',
+  );
+  assert.equal(
+    state.resumeConditionCanonLock.observedResumeConditions.every(
+      (value) => value === 'remote_available=PASS_AND_gh_api_ok=PASS_AND_dns_tls_ok=PASS'
+        || value === 'NONE',
+    ),
+    true,
+  );
   assert.equal(state.exitPolicyBeforeAfter.ok, true);
   assert.equal(state.exitPolicyBeforeAfter.mismatchCount, 0);
   assert.equal(state.releasePromotionParity.ok, true);

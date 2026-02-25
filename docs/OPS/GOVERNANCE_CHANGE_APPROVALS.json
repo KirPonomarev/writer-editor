@@ -303,32 +303,11 @@
       "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
     },
     {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/exit-policy-before-after.json",
-      "sha256": "0f1a04af360bf13613eba1282c552da3082561aca9b9c59ed04c4d0a68490dd6",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
-      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
-    },
-    {
       "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/mode-aware-exit-policy-cases.json",
       "sha256": "946be0926b287103728e776dceafc0bdec6e68c547b9c8e8a52e3cf5b8497ec5",
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T03:20:00.000Z",
       "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/summary.json",
-      "sha256": "4e0136d8d154472ad64c4a258cade24f760b76b9aa402d0849361ac6aa139fd4",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/ticket-meta.json",
-      "sha256": "3b840a7d05eeaed86fe25214137326dac99e78ac13bf68c0d39eee62c9d4bdf5",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
     },
     {
       "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/advisory-blocking-drift-cases.json",
@@ -660,13 +639,6 @@
       "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
     },
     {
-      "filePath": "scripts/ops/mode-aware-exit-policy-state.mjs",
-      "sha256": "cea6a64c15b893e7d9cd36434c522c579b7065cfb0c74d3d9799f09e8241b445",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
-      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
-    },
-    {
       "filePath": "scripts/ops/p0-01-mode-matrix-single-authority-report.mjs",
       "sha256": "65d1d04fa5e236db899c2629db485df24f24c13938b20689dd5d500e8d50099c",
       "approvedBy": "DOCS_OPERATOR",
@@ -707,13 +679,6 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T01:40:00.000Z",
       "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
-    },
-    {
-      "filePath": "scripts/ops/p1-02-mode-aware-exit-policy-report.mjs",
-      "sha256": "11ea02b8b4e9ab25bade4674b58f83f2076035ea2bced7685664c0fa67ceeef0",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
-      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
     },
     {
       "filePath": "scripts/ops/p1-03-safe-local-wave-preflight-report.mjs",
@@ -805,13 +770,6 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T00:55:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
-    },
-    {
-      "filePath": "test/contracts/mode-aware-exit-policy.contract.test.js",
-      "sha256": "464d06f0a3ae2a3cc183c3b58fafb237dd9f3b81921f8737b6e607c77d943326",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:20:00.000Z",
-      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
     },
     {
       "filePath": "test/contracts/mode-matrix-single-authority.contract.test.js",
@@ -910,6 +868,55 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T07:05:00.000Z",
       "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/exit-policy-before-after.json",
+      "sha256": "8d163ee37abd296ddc05fe9a5c94ca81f001d659c93833dc3389d97e498e1002",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:35:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/summary.json",
+      "sha256": "1f73af878b4653123104181449cf6f253c171a6469a79ccb015e025c4ef7470a",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:35:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/ticket-meta.json",
+      "sha256": "f7e7387b1a4f8abdf2cd426cd36e5a22ecc0297bfa34c5d3fd048527df3d72f5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:35:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-002 approvals."
+    },
+    {
+      "filePath": "scripts/ops/mode-aware-exit-policy-state.mjs",
+      "sha256": "6c6a21b124d80e90756abe9775f7e1253cc24102606cedca01ee44ce95282b60",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:35:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-002 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-02-mode-aware-exit-policy-report.mjs",
+      "sha256": "a2c931f1e32bf9759afa893fe8274d1404b5433c8942f4a2537648f159bc0790",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:35:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-002 approvals."
+    },
+    {
+      "filePath": "test/contracts/mode-aware-exit-policy.contract.test.js",
+      "sha256": "a1bcf38e8a516cdb8d33d7380850a66a5f61a7dc6cfe7b0bb09d1d216907abbe",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:35:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MODE_AWARE_EXIT_POLICY_v2.json",
+      "sha256": "5ee3693ddf601424b95be25ededb8067fafa7bb35ff02db86f4e2350499180cb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T07:35:00.000Z",
+      "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-002 approvals."
     }
   ]
 }
