@@ -812,6 +812,83 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T03:55:00.000Z",
       "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_04/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T04:50:00.000Z",
+      "rationale": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_04/migration-gap-report.json",
+      "sha256": "e14f38d5d4e0dfea07014802c608627a8537a0592678f1381a1845e5ef009bfa",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T04:50:00.000Z",
+      "rationale": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_04/migration-input-output-map.json",
+      "sha256": "3010c39f9cd4c105a29e818e6b6b1ccd6905a72d963242b24678d80300ede495",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T04:50:00.000Z",
+      "rationale": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_04/migration-negative-missing-step.json",
+      "sha256": "1b018672ef76b5349de2c547a6049b690a389ff361ed49b9aa2e8041fdff6e6f",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T04:50:00.000Z",
+      "rationale": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_04/safety-parity-proof.json",
+      "sha256": "8917ab5b338286c61276dcae4d3c7950e3030de643f4585dfaf70322bee5bb6e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T04:50:00.000Z",
+      "rationale": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_04/summary.json",
+      "sha256": "ad1ccf029a052650862e02ed405e798dd40cc0ab20ac9ce0525e36120c2e2054",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T04:50:00.000Z",
+      "rationale": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_04/ticket-meta.json",
+      "sha256": "f64fdcadfccb93e5600d798f4cb9e3272473b8ff89dce341ecabbf563aeb2959",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T04:50:00.000Z",
+      "rationale": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MIGRATION_COMPLETENESS_VERIFIER_v1.json",
+      "sha256": "440a2a2f970caac75dc34c233e9c92fb7656b28eae391104c5c6e9055a5a9bc1",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T04:50:00.000Z",
+      "rationale": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/migration-completeness-verifier-state.mjs",
+      "sha256": "560ad5f08531d5724783fed24e3a5db4f6531ea1b0aa402a0241aa1f6d314674",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T04:50:00.000Z",
+      "rationale": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-04-migration-completeness-verifier-report.mjs",
+      "sha256": "e5360275a60cf9e3a5052f4e67e9b06817ee193121903758246c56dd75979baa",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T04:50:00.000Z",
+      "rationale": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-001 approvals."
+    },
+    {
+      "filePath": "test/contracts/migration-completeness-verifier.contract.test.js",
+      "sha256": "9a32e8715d489e6aa3870f7e3b750cce26a93d09a3a3ef94c8a0728f5c755b7e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T04:50:00.000Z",
+      "rationale": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-001 approvals."
     }
   ]
 }

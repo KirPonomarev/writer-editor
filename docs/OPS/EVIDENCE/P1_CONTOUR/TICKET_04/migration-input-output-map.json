@@ -1,0 +1,129 @@
+{
+  "coverageTargetPct": 100,
+  "migrationCoveragePct": 100,
+  "requiredDeclaredCount": 11,
+  "requiredVerifiedCount": 11,
+  "steps": [
+    {
+      "fileExists": true,
+      "filePath": "src/main.js",
+      "input": "markerPath",
+      "output": "targetPath",
+      "probe": "if (fsSync.existsSync(markerPath))",
+      "probeFound": true,
+      "required": true,
+      "stepId": "USERDATA_STEP_01_MARKER_GUARD",
+      "verified": true
+    },
+    {
+      "fileExists": true,
+      "filePath": "src/main.js",
+      "input": "targetPath",
+      "output": "targetPath",
+      "probe": "if (hasDirectoryContent(targetPath))",
+      "probeFound": true,
+      "required": true,
+      "stepId": "USERDATA_STEP_02_TARGET_NONEMPTY_GUARD",
+      "verified": true
+    },
+    {
+      "fileExists": true,
+      "filePath": "src/main.js",
+      "input": "legacyPath",
+      "output": "targetPath",
+      "probe": "if (!hasDirectoryContent(legacyPath))",
+      "probeFound": true,
+      "required": true,
+      "stepId": "USERDATA_STEP_03_NO_LEGACY_CREATE_TARGET",
+      "verified": true
+    },
+    {
+      "fileExists": true,
+      "filePath": "src/main.js",
+      "input": "legacyPath",
+      "output": "targetPath",
+      "probe": "await copyDirectoryContents(legacyPath, targetPath);",
+      "probeFound": true,
+      "required": true,
+      "stepId": "USERDATA_STEP_04_COPY_LEGACY_TO_TARGET",
+      "verified": true
+    },
+    {
+      "fileExists": true,
+      "filePath": "src/main.js",
+      "input": "markerPath",
+      "output": "MIGRATION_MARKER",
+      "probe": "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+      "probeFound": true,
+      "required": true,
+      "stepId": "USERDATA_STEP_05_WRITE_MIGRATION_MARKER",
+      "verified": true
+    },
+    {
+      "fileExists": true,
+      "filePath": "src/main.js",
+      "input": "targetPath",
+      "output": "appPath.userData",
+      "probe": "app.setPath('userData', targetPath);",
+      "probeFound": true,
+      "required": true,
+      "stepId": "USERDATA_STEP_06_SET_USERDATA_PATH",
+      "verified": true
+    },
+    {
+      "fileExists": true,
+      "filePath": "src/utils/fileManager.js",
+      "input": "markerPath",
+      "output": "targetPath",
+      "probe": "if (fsSync.existsSync(markerPath))",
+      "probeFound": true,
+      "required": true,
+      "stepId": "DOCUMENTS_STEP_01_MARKER_GUARD",
+      "verified": true
+    },
+    {
+      "fileExists": true,
+      "filePath": "src/utils/fileManager.js",
+      "input": "targetPath",
+      "output": "targetPath",
+      "probe": "if (hasDirectoryContent(targetPath))",
+      "probeFound": true,
+      "required": true,
+      "stepId": "DOCUMENTS_STEP_02_TARGET_NONEMPTY_GUARD",
+      "verified": true
+    },
+    {
+      "fileExists": true,
+      "filePath": "src/utils/fileManager.js",
+      "input": "legacyPath",
+      "output": "targetPath",
+      "probe": "if (!hasDirectoryContent(legacyPath))",
+      "probeFound": true,
+      "required": true,
+      "stepId": "DOCUMENTS_STEP_03_NO_LEGACY_SKIP",
+      "verified": true
+    },
+    {
+      "fileExists": true,
+      "filePath": "src/utils/fileManager.js",
+      "input": "legacyPath",
+      "output": "targetPath",
+      "probe": "await copyDirectoryContents(legacyPath, targetPath);",
+      "probeFound": true,
+      "required": true,
+      "stepId": "DOCUMENTS_STEP_04_COPY_LEGACY_TO_TARGET",
+      "verified": true
+    },
+    {
+      "fileExists": true,
+      "filePath": "src/utils/fileManager.js",
+      "input": "markerPath",
+      "output": "MIGRATION_MARKER",
+      "probe": "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+      "probeFound": true,
+      "required": true,
+      "stepId": "DOCUMENTS_STEP_05_WRITE_MIGRATION_MARKER",
+      "verified": true
+    }
+  ]
+}

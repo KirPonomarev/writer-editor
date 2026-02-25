@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "token": "MIGRATION_COMPLETENESS_VERIFIER_OK",
+  "scope": "migration chain completeness verification with missing-step negative detection",
+  "stateScript": "scripts/ops/migration-completeness-verifier-state.mjs",
+  "reportScript": "scripts/ops/p1-04-migration-completeness-verifier-report.mjs",
+  "contractTest": "test/contracts/migration-completeness-verifier.contract.test.js"
+}
