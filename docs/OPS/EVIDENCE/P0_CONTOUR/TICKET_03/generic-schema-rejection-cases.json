@@ -1,0 +1,19 @@
+{
+  "binaryTestB": {
+    "genericSchemaRejected": true,
+    "genericSchemaRejectionCasesCount": 1,
+    "mutatedState": {
+      "consistencyOk": false,
+      "domainMappingCoverageOk": false,
+      "failReason": "DOMAIN_NEGATIVE_TEST_ENFORCEMENT_FAILED",
+      "failSignalCode": "E_FAILSIGNAL_NEGATIVE_TEST_MISSING",
+      "genericSchemaRejectionOk": false,
+      "ok": false
+    },
+    "ok": true,
+    "targetFailSignalCode": "E_ATTESTATION_SIGNATURE_INVALID"
+  },
+  "genericSchemaNegativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
+  "genericSchemaRejectionCases": [],
+  "genericSchemaRejectionCasesCount": 0
+}

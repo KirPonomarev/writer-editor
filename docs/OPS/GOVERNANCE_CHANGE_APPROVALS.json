@@ -315,6 +315,69 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T01:15:00.000Z",
       "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/domain-failsignal-negative-test-map.json",
+      "sha256": "a416ba95a588789df2bdd98b588b6a0a663b9d78a0045aeae81212dfa6e271de",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/generic-schema-rejection-cases.json",
+      "sha256": "80334a222ba8914d068e973aad384ca4e2f41a45dbb1d4b3dde9dff573f8c734",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/p0-03-domain-enforcement-report.json",
+      "sha256": "dbf056cfe144f18932b20d8e63e1a935e27ddfacd5e42877ce0af438c8667bba",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/summary.json",
+      "sha256": "8d2b60562ac11bff664964338829324380e36533180a0956d15b99317b9ab8d0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/ticket-meta.json",
+      "sha256": "7199d51f2299551d7e0e99a16ac153233a7ede0c2713c4c5754cf2a75f8fb50c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/DOMAIN_NEGATIVE_TEST_ENFORCEMENT_v1.json",
+      "sha256": "7cc17d256000d1cb87a541d532fcdad79a637a0c88bb127de9fa858b8ba91fd3",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/domain-negative-test-enforcement-state.mjs",
+      "sha256": "a26cf3e28caacb575149b484eb201b48f6b37d863dc4b70306ec5ef5a00aaeb9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p0-03-domain-negative-test-enforcement-report.mjs",
+      "sha256": "b70ef41daae062c4f8287d4bb31f01c9216c9bacd0526ef6377c10e2e7db848d",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "test/contracts/domain-negative-test-enforcement.contract.test.js",
+      "sha256": "96b0e166fb6aa72cbca83330c26003ea1c5ccc8084e0afef5fd973e664795972",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T01:35:00.000Z",
+      "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
     }
   ]
 }

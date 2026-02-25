@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "token": "DOMAIN_NEGATIVE_TEST_ENFORCEMENT_OK",
+  "scope": "domain failSignals in FAILSIGNAL_REGISTRY",
+  "forbiddenNegativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
+  "stateScript": "scripts/ops/domain-negative-test-enforcement-state.mjs",
+  "reportScript": "scripts/ops/p0-03-domain-negative-test-enforcement-report.mjs",
+  "contractTest": "test/contracts/domain-negative-test-enforcement.contract.test.js"
+}
