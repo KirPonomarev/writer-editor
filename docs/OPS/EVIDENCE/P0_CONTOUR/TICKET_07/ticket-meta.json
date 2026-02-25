@@ -1,0 +1,11 @@
+{
+  "runId": "RUN-2026-02-25-012",
+  "ticketId": "TZ-P0-07-STABILITY-LOOP-BREAKER-POLICY-001",
+  "ticketClass": "STABILITY_POLICY",
+  "approvedAtUtc": "2026-02-25T05:20:00Z",
+  "approvedBy": "DOCS_OPERATOR",
+  "baseRef": "ORIGIN_MAIN",
+  "baseSha": "30fc112e2a7e3e3b1c16e16b525d59d1baba19f0",
+  "operationMode": "POLICY_AND_PROCESS_UPDATE",
+  "noCodeChangesRequired": true
+}

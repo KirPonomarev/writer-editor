@@ -261,6 +261,20 @@
       "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/summary.json",
+      "sha256": "1b2193995290b9bb9b88498a5172078078f5524efef1af6fa9fcfaac1c1fc0a2",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T05:20:00.000Z",
+      "rationale": "TZ-P0-07-STABILITY-LOOP-BREAKER-POLICY-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/ticket-meta.json",
+      "sha256": "c8381036e5cbd72822be196ba312151c3deb58b07322a8ac30a053220c1d8e6d",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T05:20:00.000Z",
+      "rationale": "TZ-P0-07-STABILITY-LOOP-BREAKER-POLICY-001 approvals."
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
       "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
       "approvedBy": "DOCS_OPERATOR",
@@ -322,6 +336,62 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T03:20:00.000Z",
       "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/summary.json",
+      "sha256": "4e0136d8d154472ad64c4a258cade24f760b76b9aa402d0849361ac6aa139fd4",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
+      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/ticket-meta.json",
+      "sha256": "3b840a7d05eeaed86fe25214137326dac99e78ac13bf68c0d39eee62c9d4bdf5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
+      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
+      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/local-wave-preflight-cases.json",
+      "sha256": "d6074c79ea8c811360ff26ecbba69968b25f222d0e9aec89af3df73a300485fb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
+      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/preflight-duplication-before-after.json",
+      "sha256": "429c3bf66b7754672dd9654f5768182f9941087292ced10bb0e25f0974ac9c92",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
+      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/safety-parity-proof.json",
+      "sha256": "8917ab5b338286c61276dcae4d3c7950e3030de643f4585dfaf70322bee5bb6e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
+      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/summary.json",
+      "sha256": "0177bb730e53ccd9a29d5d12f1f318fb57eeb36a3965d2afd8e7e04c88565625",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
+      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/ticket-meta.json",
+      "sha256": "744b0fc580493076f4c3c9457b8f5b3475838e8d4ceee23a6c17c89f83a3148a",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
+      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
     },
     {
       "approvedAtUtc": "2026-02-24T01:20:00.000Z",
@@ -450,6 +520,13 @@
       "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
     },
     {
+      "filePath": "docs/OPS/STATUS/CONTOUR_SUPPLEMENT_PLAN_P0_STABILITY_v1.md",
+      "sha256": "98bbc64e8feae53c8167833c46f593daee01fa3fc17e4868e5b40e092ea5189e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T05:20:00.000Z",
+      "rationale": "TZ-P0-07-STABILITY-LOOP-BREAKER-POLICY-001 approvals."
+    },
+    {
       "filePath": "docs/OPS/STATUS/DECLARED_SET_EFFECTIVE_SET_ALIGNMENT_v1.json",
       "sha256": "70947e0b8555c97a4ecd490a04b92736370598bc229fa6d7ec39248ce7b2e669",
       "approvedBy": "DOCS_OPERATOR",
@@ -471,11 +548,25 @@
       "rationale": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001 approvals."
     },
     {
+      "filePath": "docs/OPS/STATUS/LOOP_BREAKER_POLICY_v1.json",
+      "sha256": "ddef71811a6474db698441ec1c2abbf8d545bffd6a9a2b1df860bc81995b7bda",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T05:20:00.000Z",
+      "rationale": "TZ-P0-07-STABILITY-LOOP-BREAKER-POLICY-001 approvals."
+    },
+    {
       "filePath": "docs/OPS/STATUS/MODE_AWARE_EXIT_POLICY_v1.json",
       "sha256": "ae24f06bd208dfbed972138f60edc78d341443cc04e646537fdc34540409dbae",
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T03:20:00.000Z",
       "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MODE_MATRIX_POLICY_v1.json",
+      "sha256": "06bebc05d2af1e99e225029a68f82371ce8b0ce22ad30b7b678e5e31c1e22a63",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T05:20:00.000Z",
+      "rationale": "TZ-P0-07-STABILITY-LOOP-BREAKER-POLICY-001 approvals."
     },
     {
       "filePath": "docs/OPS/STATUS/MODE_MATRIX_SINGLE_AUTHORITY_v1.json",
@@ -504,6 +595,27 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T01:15:00.000Z",
       "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REMOTE_AUTOFIX_POLICY_v1.json",
+      "sha256": "a53f991c91c00f743353424d0025878fa848a0f1e4d9ed2adff5f33415f28906",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T05:20:00.000Z",
+      "rationale": "TZ-P0-07-STABILITY-LOOP-BREAKER-POLICY-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/RETRY_BUDGET_POLICY_v1.json",
+      "sha256": "5d976aedfe89dbe34b56504c932b9d3223fca142b241b767d4d95a6f2e7fd119",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T05:20:00.000Z",
+      "rationale": "TZ-P0-07-STABILITY-LOOP-BREAKER-POLICY-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/SAFE_LOCAL_WAVE_PREFLIGHT_v1.json",
+      "sha256": "f6cf065ec28f15239c8dc2d641ece3aa80d1d1f5fb86a947767abe37c9550ba9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
+      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
     },
     {
       "filePath": "docs/OPS/TOKENS/TOKEN_CATALOG.json",
@@ -646,6 +758,13 @@
       "rationale": "TZ-P1-02-MODE-AWARE-EXIT-POLICY-001 approvals."
     },
     {
+      "filePath": "scripts/ops/p1-03-safe-local-wave-preflight-report.mjs",
+      "sha256": "88ef982a6073bb8f0b8f3519992f3de19ddc9fdb48add788104998908b74953f",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
+      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
+    },
+    {
       "filePath": "scripts/ops/recursion-bypass-release-ban-state.mjs",
       "sha256": "dcf8995a42d7eca93cedfef3255c72e636404fbea0f40e42777d9e04f47cf637",
       "approvedBy": "DOCS_OPERATOR",
@@ -658,6 +777,13 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T01:15:00.000Z",
       "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
+    },
+    {
+      "filePath": "scripts/ops/safe-local-wave-preflight-state.mjs",
+      "sha256": "d34875e1c491baf37de032a77fa518bfbb9e99cf8931bc42a27c60f287307d7a",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
+      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
     },
     {
       "filePath": "test/contracts/attestation-trust-lock.contract.test.js",
@@ -728,83 +854,6 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T01:15:00.000Z",
       "rationale": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/summary.json",
-      "sha256": "4e0136d8d154472ad64c4a258cade24f760b76b9aa402d0849361ac6aa139fd4",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/ticket-meta.json",
-      "sha256": "3b840a7d05eeaed86fe25214137326dac99e78ac13bf68c0d39eee62c9d4bdf5",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/advisory-blocking-drift-cases.json",
-      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/local-wave-preflight-cases.json",
-      "sha256": "d6074c79ea8c811360ff26ecbba69968b25f222d0e9aec89af3df73a300485fb",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/preflight-duplication-before-after.json",
-      "sha256": "429c3bf66b7754672dd9654f5768182f9941087292ced10bb0e25f0974ac9c92",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/safety-parity-proof.json",
-      "sha256": "8917ab5b338286c61276dcae4d3c7950e3030de643f4585dfaf70322bee5bb6e",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/summary.json",
-      "sha256": "0177bb730e53ccd9a29d5d12f1f318fb57eeb36a3965d2afd8e7e04c88565625",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/ticket-meta.json",
-      "sha256": "744b0fc580493076f4c3c9457b8f5b3475838e8d4ceee23a6c17c89f83a3148a",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/SAFE_LOCAL_WAVE_PREFLIGHT_v1.json",
-      "sha256": "f6cf065ec28f15239c8dc2d641ece3aa80d1d1f5fb86a947767abe37c9550ba9",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
-    },
-    {
-      "filePath": "scripts/ops/safe-local-wave-preflight-state.mjs",
-      "sha256": "d34875e1c491baf37de032a77fa518bfbb9e99cf8931bc42a27c60f287307d7a",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
-    },
-    {
-      "filePath": "scripts/ops/p1-03-safe-local-wave-preflight-report.mjs",
-      "sha256": "88ef982a6073bb8f0b8f3519992f3de19ddc9fdb48add788104998908b74953f",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-25T03:55:00.000Z",
-      "rationale": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001 approvals."
     },
     {
       "filePath": "test/contracts/safe-local-wave-preflight.contract.test.js",

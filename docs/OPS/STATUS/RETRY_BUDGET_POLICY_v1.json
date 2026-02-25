@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "policyId": "RETRY_BUDGET_POLICY_V1",
+  "maxAutofixCycles": 3,
+  "backoffScheduleMinutes": [2, 5, 15],
+  "budgetRules": [
+    "retry index increments once per autofix cycle",
+    "same state fingerprint with state delta NONE cannot consume extra business retries",
+    "after max cycles, switch to WAIT mode and require next auto probe"
+  ],
+  "manualResumePolicy": {
+    "prResumeForbiddenWhenRemoteNotPass": true,
+    "autoResumeRequiredWhenRemotePass": true
+  }
+}
