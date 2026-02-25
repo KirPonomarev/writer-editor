@@ -1,0 +1,60 @@
+{
+  "localPreflightSafety": {
+    "cases": {
+      "local": {
+        "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "failSignalCode": "E_REMOTE_UNAVAILABLE",
+        "issues": [],
+        "mode": "pr",
+        "modeDisposition": "advisory",
+        "modeKey": "prCore",
+        "ok": true,
+        "registryPath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+        "registrySource": "repoRoot",
+        "shouldBlock": false,
+        "source": "FAILSIGNAL_REGISTRY_MODE_MATRIX"
+      },
+      "promotion": {
+        "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "failSignalCode": "E_DEBT_TTL_EXPIRED",
+        "issues": [],
+        "mode": "promotion",
+        "modeDisposition": "blocking",
+        "modeKey": "promotion",
+        "ok": true,
+        "registryPath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+        "registrySource": "repoRoot",
+        "shouldBlock": true,
+        "source": "FAILSIGNAL_REGISTRY_MODE_MATRIX"
+      },
+      "release": {
+        "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "failSignalCode": "E_DEBT_TTL_EXPIRED",
+        "issues": [],
+        "mode": "release",
+        "modeDisposition": "blocking",
+        "modeKey": "release",
+        "ok": true,
+        "registryPath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+        "registrySource": "repoRoot",
+        "shouldBlock": true,
+        "source": "FAILSIGNAL_REGISTRY_MODE_MATRIX"
+      }
+    },
+    "localSafeOk": true,
+    "ok": true,
+    "promotionSafetyOk": true,
+    "releasePromotionParityOk": true,
+    "releaseSafetyOk": true
+  },
+  "p1_03ExitCriterion": "SAFE_LOCAL_PREFLIGHT_ACTIVE_WITH_REDUCED_PROCESS_TAX_AND_ZERO_ADVISORY_TO_BLOCKING_DRIFT",
+  "remoteBindingSkipOnLocalSafeMode": {
+    "afterRemoteBindingSignalPaths": [],
+    "beforeRemoteBindingSignalPaths": [
+      "scripts/ops/check-merge-readiness.mjs#CHECK_MERGE_READINESS_REMOTE_BINDING_OK",
+      "scripts/ops/emit-ops-summary.mjs#OPS_SUMMARY_REMOTE_BINDING_OK"
+    ],
+    "ok": true,
+    "removedRemoteBindingSignalPaths": 2
+  }
+}
