@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { evaluateModeMatrixVerdict } from './canonical-mode-matrix-evaluator.mjs';
 
 const DEFAULT_CANON_PATH = 'docs/OPS/STATUS/COMMAND_NAMESPACE_CANON.json';
 const DEFAULT_SCAN_ROOTS = Object.freeze([
@@ -13,6 +14,7 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/u;
 const RESULT_PASS = 'PASS';
 const RESULT_WARN = 'WARN';
 const RESULT_FAIL = 'FAIL';
+const MODE_PR = 'pr';
 const MODE_RELEASE = 'release';
 const MODE_PROMOTION = 'promotion';
 const FAIL_SIGNAL = 'E_COMMAND_NAMESPACE_DRIFT';
@@ -32,6 +34,7 @@ function parseBooleanish(value) {
 
 function normalizeMode(value) {
   const normalized = normalizeString(value).toLowerCase();
+  if (normalized === MODE_PR || normalized === 'prcore' || normalized === 'pr_core' || normalized === 'core' || normalized === 'dev') return MODE_PR;
   if (normalized === MODE_PROMOTION) return MODE_PROMOTION;
   return MODE_RELEASE;
 }
@@ -262,18 +265,24 @@ export function evaluateCommandNamespaceCheck(input = {}) {
   }));
   const missingAliases = hitsWithAlias.filter((hit) => !hit.aliasedTo);
 
-  let result = RESULT_PASS;
   let failReason = '';
+  let hasFailure = false;
   if (missingAliases.length > 0) {
-    result = RESULT_FAIL;
+    hasFailure = true;
     failReason = 'COMMAND_NAMESPACE_ALIAS_MISSING';
-  } else if (hitsWithAlias.length > 0 && sunsetExpired && mode === MODE_PROMOTION) {
-    result = RESULT_FAIL;
-    failReason = 'COMMAND_NAMESPACE_SUNSET_EXPIRED';
   } else if (hitsWithAlias.length > 0 && sunsetExpired) {
-    result = RESULT_WARN;
-    failReason = 'COMMAND_NAMESPACE_SUNSET_EXPIRED_ADVISORY_RELEASE_MODE';
+    hasFailure = true;
+    failReason = 'COMMAND_NAMESPACE_SUNSET_EXPIRED';
   }
+  const modeDecision = hasFailure
+    ? evaluateModeMatrixVerdict({
+      repoRoot: cwd,
+      mode,
+      failSignalCode: FAIL_SIGNAL,
+    })
+    : null;
+  const shouldBlock = Boolean(modeDecision && modeDecision.shouldBlock);
+  const result = hasFailure ? (shouldBlock ? RESULT_FAIL : RESULT_WARN) : RESULT_PASS;
 
   return {
     deprecatedHits: hitsWithAlias.length,
@@ -281,7 +290,17 @@ export function evaluateCommandNamespaceCheck(input = {}) {
     sunsetExpired,
     result,
     failReason,
-    failSignalCode: result === RESULT_FAIL ? FAIL_SIGNAL : '',
+    failSignalCode: hasFailure ? FAIL_SIGNAL : '',
+    canonicalModeMatrixEvaluatorId: modeDecision ? modeDecision.evaluatorId : '',
+    modeDecision: modeDecision
+      ? {
+        modeKey: modeDecision.modeKey,
+        modeDisposition: modeDecision.modeDisposition,
+        shouldBlock: modeDecision.shouldBlock,
+      }
+      : null,
+    modeDecisionSource: modeDecision ? modeDecision.source : '',
+    modeDecisionIssues: modeDecision ? modeDecision.issues : [],
     allowDeprecatedInConfigsUntil: cutoff,
     canonicalPrefix: canon.canonicalPrefix,
     scanRoots,

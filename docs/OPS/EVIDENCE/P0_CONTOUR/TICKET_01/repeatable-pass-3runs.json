@@ -1,0 +1,46 @@
+{
+  "allBlocking": true,
+  "identicalVerdicts": true,
+  "ok": true,
+  "runs": [
+    {
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "exitCode": 1,
+      "failReason": "SEQUENCE_ORDER_MISMATCH",
+      "failSignalCode": "E_SEQUENCE_ORDER_DRIFT",
+      "modeDecision": {
+        "modeDisposition": "blocking",
+        "modeKey": "release",
+        "shouldBlock": true
+      },
+      "result": "FAIL",
+      "run": 1
+    },
+    {
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "exitCode": 1,
+      "failReason": "SEQUENCE_ORDER_MISMATCH",
+      "failSignalCode": "E_SEQUENCE_ORDER_DRIFT",
+      "modeDecision": {
+        "modeDisposition": "blocking",
+        "modeKey": "release",
+        "shouldBlock": true
+      },
+      "result": "FAIL",
+      "run": 2
+    },
+    {
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "exitCode": 1,
+      "failReason": "SEQUENCE_ORDER_MISMATCH",
+      "failSignalCode": "E_SEQUENCE_ORDER_DRIFT",
+      "modeDecision": {
+        "modeDisposition": "blocking",
+        "modeKey": "release",
+        "shouldBlock": true
+      },
+      "result": "FAIL",
+      "run": 3
+    }
+  ]
+}

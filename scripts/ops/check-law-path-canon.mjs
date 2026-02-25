@@ -2,7 +2,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { evaluateModeMatrixVerdict } from './canonical-mode-matrix-evaluator.mjs';
 
+const MODE_PR = 'pr';
 const MODE_RELEASE = 'release';
 const MODE_PROMOTION = 'promotion';
 const RESULT_PASS = 'PASS';
@@ -31,6 +33,7 @@ function parseBooleanish(value) {
 
 function normalizeMode(value) {
   const normalized = normalizeString(value).toLowerCase();
+  if (normalized === MODE_PR || normalized === 'prcore' || normalized === 'pr_core' || normalized === 'core' || normalized === 'dev') return MODE_PR;
   if (normalized === MODE_PROMOTION) return MODE_PROMOTION;
   return MODE_RELEASE;
 }
@@ -274,9 +277,17 @@ export function evaluateLawPathCanonState(input = {}) {
   }
 
   const ok = issues.length === 0;
+  const modeDecision = ok
+    ? null
+    : evaluateModeMatrixVerdict({
+      repoRoot,
+      mode,
+      failSignalCode: FAIL_SIGNAL_CODE,
+    });
+  const shouldBlock = Boolean(modeDecision && modeDecision.shouldBlock);
   const result = ok
     ? RESULT_PASS
-    : (mode === MODE_PROMOTION ? RESULT_FAIL : RESULT_WARN);
+    : (shouldBlock ? RESULT_FAIL : RESULT_WARN);
 
   return {
     ok,
@@ -290,6 +301,16 @@ export function evaluateLawPathCanonState(input = {}) {
     result,
     failSignalCode: ok ? '' : FAIL_SIGNAL_CODE,
     failReason: ok ? '' : String(issues[0]?.code || LAW_PATH_CANON_INVALID),
+    canonicalModeMatrixEvaluatorId: modeDecision ? modeDecision.evaluatorId : '',
+    modeDecision: modeDecision
+      ? {
+        modeKey: modeDecision.modeKey,
+        modeDisposition: modeDecision.modeDisposition,
+        shouldBlock: modeDecision.shouldBlock,
+      }
+      : null,
+    modeDecisionSource: modeDecision ? modeDecision.source : '',
+    modeDecisionIssues: modeDecision ? modeDecision.issues : [],
     issues,
   };
 }

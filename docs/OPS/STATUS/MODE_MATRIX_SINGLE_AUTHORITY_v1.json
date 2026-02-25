@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+  "authority": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json#failSignals[].modeMatrix",
+  "checkedScripts": [
+    "scripts/ops/check-law-path-canon.mjs",
+    "scripts/ops/check-execution-sequence.mjs",
+    "scripts/ops/check-command-namespace.mjs",
+    "scripts/ops/check-command-namespace-static.mjs"
+  ],
+  "notes": "Single canonical evaluator resolves advisory/blocking verdict by mode."
+}
