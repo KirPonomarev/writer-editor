@@ -1,0 +1,8 @@
+{
+  "completenessOk": false,
+  "missingRequiredBindingFieldsCount": 1,
+  "ok": true,
+  "removedDetected": true,
+  "removedField": "proofHook",
+  "targetTokenId": "ADAPTERS_ENFORCED_OK"
+}
