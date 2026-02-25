@@ -261,6 +261,48 @@
       "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/duplicate-checks-before-after.json",
+      "sha256": "f3564e8b2af63b2d7eff6a20965f7bb771f14650bddc0a69e9764aeb1bc3b408",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/safety-parity-proof.json",
+      "sha256": "8917ab5b338286c61276dcae4d3c7950e3030de643f4585dfaf70322bee5bb6e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/summary.json",
+      "sha256": "5a6a787dbdb721f722aad53562853feac89c4978002e09a2f139a8cf057df18a",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/ticket-meta.json",
+      "sha256": "d31e03252590b597bd6c7fe376c6fd379cc6dae47f67693681baad3815e4380e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/unique-signal-map.json",
+      "sha256": "9e3941337530c89b0393a897e33e083130ee41fc27f81fa16d69555aef0ae4a7",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
+    },
+    {
       "approvedAtUtc": "2026-02-24T01:20:00.000Z",
       "approvedBy": "DOCS_OPERATOR",
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-e6d2ecb2c475-592e3737/failsignal-registry-snapshot.json",
@@ -380,6 +422,13 @@
       "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
     },
     {
+      "filePath": "docs/OPS/STATUS/CHECK_DEDUP_CANON_v1.json",
+      "sha256": "5e3b95423b3e13b4d59957b772b43b289c937c50c8fafeed7ac8751baca549ad",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
+    },
+    {
       "filePath": "docs/OPS/STATUS/DECLARED_SET_EFFECTIVE_SET_ALIGNMENT_v1.json",
       "sha256": "70947e0b8555c97a4ecd490a04b92736370598bc229fa6d7ec39248ce7b2e669",
       "approvedBy": "DOCS_OPERATOR",
@@ -471,6 +520,13 @@
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01 approvals."
     },
     {
+      "filePath": "scripts/ops/check-dedup-canon-state.mjs",
+      "sha256": "29b1145aeb4a1ab3fdb4962139d4bb26adc3be017f86ef83a292c72ac78aec08",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
+    },
+    {
       "filePath": "scripts/ops/check-execution-sequence.mjs",
       "sha256": "e377b6dba69d16ccbc8295bbbf22ab54c997919cd04020b88a91749441b95c2b",
       "approvedBy": "DOCS_OPERATOR",
@@ -541,6 +597,13 @@
       "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
     },
     {
+      "filePath": "scripts/ops/p1-01-check-dedup-canon-report.mjs",
+      "sha256": "d485c963886a84217cb23c9f157584780d298e469a61a8e50c673dc0f64061f3",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
+    },
+    {
       "filePath": "scripts/ops/recursion-bypass-release-ban-state.mjs",
       "sha256": "dcf8995a42d7eca93cedfef3255c72e636404fbea0f40e42777d9e04f47cf637",
       "approvedBy": "DOCS_OPERATOR",
@@ -560,6 +623,13 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T01:40:00.000Z",
       "rationale": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001 approvals."
+    },
+    {
+      "filePath": "test/contracts/check-dedup-canon.contract.test.js",
+      "sha256": "a54de1a73d9304055f6ed4d6f348b2995d2811b6f63cc6d30bb78df394246323",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T02:40:00.000Z",
+      "rationale": "TZ-P1-01-CHECK-DEDUP-CANON-001 approvals."
     },
     {
       "filePath": "test/contracts/declared-set-vs-effective-set-alignment.contract.test.js",

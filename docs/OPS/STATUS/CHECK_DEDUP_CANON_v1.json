@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "token": "CHECK_DEDUP_CANON_OK",
+  "scope": "duplicate check-signal path deduplication with canonical single-source mapping",
+  "stateScript": "scripts/ops/check-dedup-canon-state.mjs",
+  "reportScript": "scripts/ops/p1-01-check-dedup-canon-report.mjs",
+  "contractTest": "test/contracts/check-dedup-canon.contract.test.js"
+}

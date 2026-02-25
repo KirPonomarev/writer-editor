@@ -1,0 +1,18 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "duplicateSignalCountAfter": 0,
+  "duplicateSignalCountBefore": 1,
+  "gates": {
+    "advisory_to_blocking_drift_count_zero": "PASS",
+    "p1_01_duplicate_signal_reduction_check": "PASS",
+    "p1_01_safety_parity_check": "PASS",
+    "p1_01_unique_signal_proof_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-25T17:10:15.669Z",
+  "minReductionRequired": 2,
+  "removedDuplicateSignalPaths": 2,
+  "runId": "RUN-2026-02-25-011",
+  "safetyParityOk": true,
+  "status": "PASS",
+  "ticketId": "TZ-P1-01-CHECK-DEDUP-CANON-001"
+}
