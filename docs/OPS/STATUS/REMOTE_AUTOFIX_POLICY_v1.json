@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "policyId": "REMOTE_AUTOFIX_POLICY_V1",
+  "appliesWhen": "remote failure blocks PR resume or merge/postcheck flow",
+  "requiredBeforeWaitMode": true,
+  "retryBudget": {
+    "maxCycles": 3,
+    "backoffMinutes": [2, 5, 15],
+    "seriesType": "single_active_series"
+  },
+  "remoteStateFingerprint": {
+    "required": true,
+    "minFields": [
+      "BASE_SHA",
+      "ORIGIN_URL",
+      "DNS_RESOLVER_HASH",
+      "PROXY_ENV_HASH",
+      "GH_AUTH_STATE_HASH"
+    ]
+  },
+  "waitMode": {
+    "allowedAfterMaxCyclesOnly": true,
+    "requiresNextAutoProbeAt": true,
+    "manualResumeAllowed": false
+  },
+  "autoResume": {
+    "enabled": true,
+    "resumeCondition": "remote_available=PASS",
+    "resumeFromPreviousStep": true
+  }
+}

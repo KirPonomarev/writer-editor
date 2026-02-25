@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "policyId": "MODE_MATRIX_POLICY_V1",
+  "singleBlockingEvaluator": {
+    "id": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+    "required": true,
+    "source": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json#failSignals[].modeMatrix"
+  },
+  "secondaryVerdictPolicy": {
+    "allowed": true,
+    "disposition": "ADVISORY_ONLY",
+    "blockingOverrideAllowed": false
+  },
+  "consistencyRules": [
+    "advisory cannot produce blocking outside canonical evaluator",
+    "release and promotion parity must remain deterministic for equal inputs",
+    "mode routing must remain single-source"
+  ]
+}

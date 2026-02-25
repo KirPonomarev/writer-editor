@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "policyId": "LOOP_BREAKER_POLICY_V1",
+  "rule": "SAME_STOP_CODE_AND_SAME_FINGERPRINT_AND_STATE_DELTA_NONE_FORBIDS_REEXECUTION",
+  "enforcement": {
+    "forbidSilentRetry": true,
+    "forbidSameStepRepeatWithoutStateDelta": true,
+    "forbidManualRouteBypass": true
+  },
+  "requiredTicketTags": [
+    "RUN_ID",
+    "TICKET_ID",
+    "TICKET_CLASS",
+    "STOP_CODE",
+    "STATE_FINGERPRINT",
+    "STATE_DELTA",
+    "RETRY_SERIES_ID",
+    "RETRY_INDEX",
+    "LOOP_DECISION",
+    "NEXT_ROUTE",
+    "RESUME_CONDITION"
+  ],
+  "decisionGate": "if loopDecision != CONTINUE then READY_FOR_EXEC is forbidden"
+}
