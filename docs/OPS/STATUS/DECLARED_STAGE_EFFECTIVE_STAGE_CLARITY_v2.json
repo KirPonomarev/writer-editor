@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "status": "ACTIVE",
+  "token": "DECLARED_STAGE_EFFECTIVE_STAGE_CLARITY_OK",
+  "scope": "declared stage vs effective stage clarity for active scope alignment",
+  "stateScript": "scripts/ops/declared-stage-vs-effective-stage-clarity-state.mjs",
+  "reportScript": "scripts/ops/p1-05-declared-stage-vs-effective-stage-clarity-report.mjs",
+  "contractTest": "test/contracts/declared-stage-vs-effective-stage-clarity.contract.test.js",
+  "blockingAuthorityId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1_LOCKED",
+  "alignmentRule": "DECLARED_STAGE_SET_MUST_MATCH_EFFECTIVE_STAGE_SET_FOR_ACTIVE_SCOPE",
+  "driftTarget": 0
+}

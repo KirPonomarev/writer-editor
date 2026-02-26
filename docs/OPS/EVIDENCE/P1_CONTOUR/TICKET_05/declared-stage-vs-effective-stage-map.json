@@ -1,0 +1,80 @@
+{
+  "activeStageId": "X3",
+  "declaredActiveScopeSet": [
+    "X0",
+    "X1",
+    "X2",
+    "X3"
+  ],
+  "declaredStageSet": [
+    "X0",
+    "X1",
+    "X2",
+    "X3",
+    "X4"
+  ],
+  "effectiveActiveScopeSet": [
+    "X0",
+    "X1",
+    "X2",
+    "X3"
+  ],
+  "effectiveStageSet": [
+    "X0",
+    "X1",
+    "X2",
+    "X3"
+  ],
+  "stageMap": [
+    {
+      "declared": true,
+      "effective": true,
+      "evidenceSources": [
+        "implicit_x0"
+      ],
+      "inActiveScope": true,
+      "mappedForActiveScope": true,
+      "stageId": "X0"
+    },
+    {
+      "declared": true,
+      "effective": true,
+      "evidenceSources": [
+        "parity_baseline",
+        "stage_metrics"
+      ],
+      "inActiveScope": true,
+      "mappedForActiveScope": true,
+      "stageId": "X1"
+    },
+    {
+      "declared": true,
+      "effective": true,
+      "evidenceSources": [
+        "stage_metrics"
+      ],
+      "inActiveScope": true,
+      "mappedForActiveScope": true,
+      "stageId": "X2"
+    },
+    {
+      "declared": true,
+      "effective": true,
+      "evidenceSources": [
+        "stage_metrics"
+      ],
+      "inActiveScope": true,
+      "mappedForActiveScope": true,
+      "stageId": "X3"
+    },
+    {
+      "declared": true,
+      "effective": false,
+      "evidenceSources": [],
+      "inActiveScope": false,
+      "mappedForActiveScope": true,
+      "stageId": "X4"
+    }
+  ],
+  "stageMapSha256": "dacc5883ee1c548a6315a6f252f689bba8cd4517e0dbf217ef61ef800185bb9e"
+}
