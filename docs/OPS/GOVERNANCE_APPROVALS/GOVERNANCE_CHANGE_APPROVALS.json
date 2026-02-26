@@ -115,10 +115,10 @@
     },
     {
       "filePath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
-      "sha256": "a99e7c59e9295cb79b40e1a33c0d31edbfceaf16be026083096268870322ea17",
-      "approvedBy": "ticket:TZ-24E-P1-REQUIRED-SET-CATALOG-SYNC-002",
-      "approvedAtUtc": "2026-02-18T12:00:49.000Z",
-      "rationale": "Non-semantic governance sync: align required-set token coverage with token catalog and failSignal registry."
+      "sha256": "4c5a3a9479a8f8aff6d436844dc9e7f31813fcb58815dd0fd94393497ca6b866",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
     },
     {
       "filePath": "docs/OPS/SECURITY/NPM_AUDIT_HIGH_CLOSURE_SECTOR01_D.json",
@@ -136,10 +136,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/DEPENDENCY_RISK_REGISTER.json",
-      "sha256": "cce6b94baa3b202edae84a10095ae49dc91fa2810e802912cf155519fab7d847",
-      "approvedBy": "ticket:TZ-SECTOR-01-D-DEPENDENCY-REMEDIATION-001",
-      "approvedAtUtc": "2026-02-22T20:56:11.158Z",
-      "rationale": "Sector 01 Ticket D: dependency remediation closeout (risk register exceptions + close P1 item)"
+      "sha256": "9ee62bbcba3084445fa9f385af48d29290aadb24ca89fb85c2a5734f91e4093a",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
     },
     {
       "filePath": "docs/OPS/STATUS/EXECUTION_SEQUENCE_CANON_v1.json",
@@ -164,10 +164,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
-      "sha256": "8a0a2a595c0114e6199f2a11c6b641298f56dfdbcc874be333f950df82f7289b",
-      "approvedBy": "ticket:TZ-SECTOR-01-E-RELEASE-CANDIDATE-LOCK-REFRESH-001",
-      "approvedAtUtc": "2026-02-23T09:31:52.560Z",
-      "rationale": "Sector 01 Ticket E: release candidate lock drift refresh (align token catalog and failsignal hashes)"
+      "sha256": "6e37085e283ff774f1b3dc0852f6fc272cd6cd1c6862f197ec7fc645934a29cd",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
     },
     {
       "filePath": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.12.md",
@@ -185,10 +185,10 @@
     },
     {
       "filePath": "docs/OPS/TOKENS/TOKEN_CATALOG.json",
-      "sha256": "7d25a8d5798d83229ff8a82fb396b2e4f37b0f314c3739ec0f63ac99a170b2d6",
-      "approvedBy": "ticket:TZ-SECTOR-01-B-REQUIREDSET-CATALOG-DRIFT-FIX-001",
-      "approvedAtUtc": "2026-02-22T11:11:58.000Z",
-      "rationale": "Sector 01 Ticket B: token catalog + token declaration validator drift fix (no required set change)"
+      "sha256": "b0d2e19677f50c094ba081af0461a7b94622b31b415561bf5f87293158e5fa08",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
     },
     {
       "filePath": "scripts/doctor.mjs",
@@ -199,17 +199,17 @@
     },
     {
       "filePath": "scripts/ops/check-execution-sequence.mjs",
-      "sha256": "789ad4e33b5bc38b79ab1adfcf46ccdda56ff767f7e431760e653da5e5c20f78",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+      "sha256": "e377b6dba69d16ccbc8295bbbf22ab54c997919cd04020b88a91749441b95c2b",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
     },
     {
       "filePath": "scripts/ops/check-law-path-canon.mjs",
-      "sha256": "ee5474e6d1ee2df9cc3c05b75dffd33dc3bf30defbb74d81543c809f850a523c",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+      "sha256": "ab1f11ea5e5485cc6643127626552ed2254541ba12a0a92224edb1518f80d2ee",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
     },
     {
       "filePath": "scripts/ops/codex-run.mjs",
@@ -262,10 +262,10 @@
     },
     {
       "filePath": "test/contracts/execution-sequence-lock.contract.test.js",
-      "sha256": "482a05cb49294cdffe7eaa60d5fe34ac207490d10bf02da7f33f0e0a6db30af9",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+      "sha256": "881c7ad528695c15e9fa719d2b8cd8f41d96380ad0a20006b3632937a3d6ea26",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
     },
     {
       "filePath": "test/contracts/github-credential-autofix.contract.test.js",
@@ -420,6 +420,76 @@
       "approvedBy": "ticket:TZ-POST-SECTOR-01-H2-PROMOTION-EVIDENCE-GOVERNANCE-001",
       "approvedAtUtc": "2026-02-23T12:51:20.938Z",
       "rationale": "Post Sector 01: commit and approve promotion evidence pack for release-candidate verify (restore active canon promotion check)"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MODE_MATRIX_SINGLE_AUTHORITY_v3.json",
+      "sha256": "4a5f0f3bf22b16abaa7a4c650cf5287acf83cb4a29d2e12aa7f0c445cf7e230b",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
+      "sha256": "8a87616c34ae4eb74f7903477191d22cfc75d9ed1e16bffe22b9c168df6c8a42",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "scripts/ops/mode-matrix-single-authority-state.mjs",
+      "sha256": "9f5060cddb1038e2c9a49a1d4f04da5e700bab98393d5b33b76580d9ad982e73",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "scripts/ops/p0-01-mode-matrix-single-authority-report.mjs",
+      "sha256": "4ccf1f6b48040b81088036ddb52f31a9f06106f416484f8d8cf6d044c5b8c86b",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "test/contracts/mode-matrix-single-authority.contract.test.js",
+      "sha256": "fa2334a5ecb8b3a1ccf422e7f5a09a10283da26ab12e8e75cd3ffcecc378be25",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/dual-authority-mismatch-cases.json",
+      "sha256": "5e9f27980c5236edb14a876566ae32746ed83b9f731bd066f921865c493313d7",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/claims-mode-disposition-conflicts.json",
+      "sha256": "59f18f6e8a9c2a028e24fbad20be24e36fb371a4895a8323147cb924c37edf8c",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
+      "sha256": "e09a162b1cebcb26c62c578360f8b1ad22301225a564c9477d12d7ecff2b1deb",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/summary.json",
+      "sha256": "16f0cad027b26192afd36ba939a25ef286b5c3509328ac9e7c9112055ecf76cb",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:10:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/ticket-meta.json",
+      "sha256": "5c2a68d77d4e4824fe0ab815c0941f10a795a51c9d926be8fff7194a7b31bfc5",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:10:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
     }
   ]
 }

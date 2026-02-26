@@ -4,12 +4,11 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import {
-  evaluateModeMatrixVerdict,
-  CANONICAL_MODE_MATRIX_EVALUATOR_ID,
-} from './canonical-mode-matrix-evaluator.mjs';
+  evaluateModeMatrixSingleAuthorityState,
+} from './mode-matrix-single-authority-state.mjs';
+import { CANONICAL_MODE_MATRIX_EVALUATOR_ID } from './canonical-mode-matrix-evaluator.mjs';
 
 const DEFAULT_OUTPUT_DIR = 'docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01';
-const FAILSIGNAL_REGISTRY_PATH = 'docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json';
 const COMMAND_NAMESPACE_STATIC_CHECK_PATH = 'scripts/ops/check-command-namespace-static.mjs';
 const EXECUTION_SEQUENCE_CHECK_PATH = 'scripts/ops/check-execution-sequence.mjs';
 
@@ -79,10 +78,6 @@ function parseArgs(argv = process.argv.slice(2)) {
   return out;
 }
 
-function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-}
-
 function writeJson(filePath, value) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, `${stableStringify(value)}\n`, 'utf8');
@@ -101,68 +96,6 @@ function runNodeScript(scriptPath, args = [], cwd = process.cwd()) {
     cwd,
     encoding: 'utf8',
   });
-}
-
-function runBinaryTestA(repoRoot, failRegistry) {
-  const modePairs = [
-    { mode: 'pr', modeKey: 'prCore' },
-    { mode: 'release', modeKey: 'release' },
-    { mode: 'promotion', modeKey: 'promotion' },
-  ];
-
-  const mismatches = [];
-  const driftCases = [];
-
-  for (const row of failRegistry.failSignals || []) {
-    if (!row || typeof row.code !== 'string' || !row.code.trim()) continue;
-    for (const modePair of modePairs) {
-      const expectedDisposition = normalizeString((row.modeMatrix || {})[modePair.modeKey]).toLowerCase();
-      if (expectedDisposition !== 'advisory' && expectedDisposition !== 'blocking') continue;
-      const expectedShouldBlock = expectedDisposition === 'blocking';
-
-      const actual = evaluateModeMatrixVerdict({
-        repoRoot,
-        mode: modePair.mode,
-        failSignalCode: row.code,
-      });
-
-      const mismatch = (
-        !actual.ok
-        || actual.modeDisposition !== expectedDisposition
-        || actual.shouldBlock !== expectedShouldBlock
-      );
-
-      if (mismatch) {
-        mismatches.push({
-          failSignalCode: row.code,
-          mode: modePair.mode,
-          expectedDisposition,
-          expectedShouldBlock,
-          actualDisposition: actual.modeDisposition,
-          actualShouldBlock: actual.shouldBlock,
-          actualOk: actual.ok,
-          actualIssues: actual.issues,
-        });
-      }
-
-      if (expectedDisposition === 'advisory' && actual.shouldBlock) {
-        driftCases.push({
-          failSignalCode: row.code,
-          mode: modePair.mode,
-          expectedDisposition,
-          actualDisposition: actual.modeDisposition,
-          reason: 'ADVISORY_TO_BLOCKING_DRIFT',
-        });
-      }
-    }
-  }
-
-  return {
-    mismatchCount: mismatches.length,
-    driftCount: driftCases.length,
-    mismatches,
-    driftCases,
-  };
 }
 
 function runBinaryTestB(repoRoot) {
@@ -305,44 +238,33 @@ function main() {
   const repoRoot = process.cwd();
   const outputDir = path.resolve(repoRoot, args.outputDir || DEFAULT_OUTPUT_DIR);
 
-  const failRegistry = readJson(path.resolve(repoRoot, FAILSIGNAL_REGISTRY_PATH));
-  const binaryA = runBinaryTestA(repoRoot, failRegistry);
+  const state = evaluateModeMatrixSingleAuthorityState({ repoRoot });
   const binaryB = runBinaryTestB(repoRoot);
   const repeatable = runRepeatablePass3(repoRoot);
 
-  const gateMap = {
-    p0_01_binary_test_a: binaryA.mismatchCount === 0 ? 'PASS' : 'FAIL',
-    p0_01_binary_test_b: binaryB.ok ? 'PASS' : 'FAIL',
+  const gates = {
+    mc_phase_switch_valid: state.gates.mc_phase_switch_valid,
+    p0_01_test_a_secondary_evaluator_mismatch_count_zero: state.secondaryEvaluatorMismatchCount === 0 ? 'PASS' : 'FAIL',
+    p0_01_test_b_advisory_signal_cannot_block_outside_canonical_evaluator: binaryB.ok ? 'PASS' : 'FAIL',
+    p0_01_test_c_claim_blocking_cannot_override_canon_mode_disposition: state.claimOverrideViolationCount === 0 ? 'PASS' : 'FAIL',
+    p0_01_test_d_phase_precedence_applied_before_new_v1_verdicts: state.gates.mc_phase_precedence_applied_before_new_v1_verdicts,
     p0_01_repeatable_pass_3runs: repeatable.ok ? 'PASS' : 'FAIL',
-    advisory_to_blocking_drift_count_zero: binaryA.driftCount === 0 ? 'PASS' : 'FAIL',
+    mc_advisory_blocking_drift_zero: state.advisoryToBlockingDriftCount === 0 ? 'PASS' : 'FAIL',
   };
 
   const summary = {
-    status: Object.values(gateMap).every((value) => value === 'PASS') ? 'PASS' : 'FAIL',
+    status: Object.values(gates).every((value) => value === 'PASS') ? 'PASS' : 'FAIL',
     runId: args.runId || process.env.RUN_ID || '',
     ticketId: args.ticketId || process.env.TICKET_ID || '',
     evaluatorId: CANONICAL_MODE_MATRIX_EVALUATOR_ID,
-    mismatchCount: binaryA.mismatchCount,
-    advisoryToBlockingDriftCount: binaryA.driftCount,
-    repeatablePass: repeatable.ok,
-    gates: gateMap,
+    activePhase: state.details.phaseSwitchState.activePhase,
+    secondaryEvaluatorMismatchCount: state.secondaryEvaluatorMismatchCount,
+    advisoryToBlockingDriftCount: state.advisoryToBlockingDriftCount,
+    claimModeDispositionConflictCount: state.claimModeDispositionConflictCount,
+    claimOverrideViolationCount: state.claimOverrideViolationCount,
+    repeatablePass3Runs: repeatable.ok,
+    gates,
     generatedAtUtc: new Date().toISOString(),
-  };
-
-  const mainReport = {
-    reportId: 'MODE_MATRIX_SINGLE_AUTHORITY_REPORT_V1',
-    ...summary,
-    details: {
-      binaryTestA: {
-        mismatchCount: binaryA.mismatchCount,
-      },
-      binaryTestB: {
-        ok: binaryB.ok,
-      },
-      repeatablePass3Runs: {
-        ok: repeatable.ok,
-      },
-    },
   };
 
   const ticketMeta = {
@@ -350,19 +272,25 @@ function main() {
     ticketId: summary.ticketId,
     outputDir: path.relative(repoRoot, outputDir).replaceAll(path.sep, '/'),
     evaluatorId: CANONICAL_MODE_MATRIX_EVALUATOR_ID,
+    activePhase: state.details.phaseSwitchState.activePhase,
     generatedAtUtc: summary.generatedAtUtc,
   };
 
-  writeJson(path.join(outputDir, 'mode-matrix-single-authority-report.json'), mainReport);
-  writeJson(path.join(outputDir, 'evaluator-mismatch-cases.json'), {
-    mismatchCount: binaryA.mismatchCount,
-    mismatches: binaryA.mismatches,
+  writeJson(path.join(outputDir, 'dual-authority-mismatch-cases.json'), {
+    secondaryEvaluatorMismatchCount: state.secondaryEvaluatorMismatchCount,
+    mismatches: state.details.authorityState.mismatches,
+  });
+  writeJson(path.join(outputDir, 'claims-mode-disposition-conflicts.json'), {
+    claimModeDispositionConflictCount: state.claimModeDispositionConflictCount,
+    claimOverrideViolationCount: state.claimOverrideViolationCount,
+    claimModeDispositionConflicts: state.details.claimState.claimModeDispositionConflicts,
+    claimOverrideViolations: state.details.claimState.claimOverrideViolations,
+    evaluationIssues: state.details.claimState.evaluationIssues,
   });
   writeJson(path.join(outputDir, 'advisory-blocking-drift-cases.json'), {
-    advisoryToBlockingDriftCount: binaryA.driftCount,
-    driftCases: binaryA.driftCases,
+    advisoryToBlockingDriftCount: state.advisoryToBlockingDriftCount,
+    driftCases: state.details.authorityState.driftCases,
   });
-  writeJson(path.join(outputDir, 'repeatable-pass-3runs.json'), repeatable);
   writeJson(path.join(outputDir, 'summary.json'), summary);
   writeJson(path.join(outputDir, 'ticket-meta.json'), ticketMeta);
 

@@ -1,0 +1,29 @@
+{
+  "phaseSwitchId": "PHASE_SWITCH_V1",
+  "schemaVersion": 1,
+  "activePhase": "PHASE_1_SHADOW",
+  "precedenceEnabled": true,
+  "allowedPhases": [
+    "PHASE_1_SHADOW",
+    "PHASE_2_WARN",
+    "PHASE_3_HARD"
+  ],
+  "phasePrecedence": {
+    "PHASE_1_SHADOW": {
+      "newV1Enforcement": "SIGNAL_ONLY",
+      "shouldBlock": false
+    },
+    "PHASE_2_WARN": {
+      "newV1Enforcement": "WARN_WITH_TICKETED_REMEDIATION",
+      "shouldBlock": false
+    },
+    "PHASE_3_HARD": {
+      "newV1Enforcement": "HARD_BLOCK",
+      "shouldBlock": true
+    }
+  },
+  "legacyHardStopsAlwaysActive": true,
+  "approvedBy": "DOCS_OPERATOR",
+  "updatedAtUtc": "2026-02-26T00:00:00.000Z",
+  "hashLock": "PENDING_REGEN"
+}
