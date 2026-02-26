@@ -1,0 +1,29 @@
+{
+  "declaredEffectiveTokenMap": [
+    {
+      "declared": true,
+      "existsInTokenCatalog": true,
+      "inEffectiveSet": true,
+      "missingFromEffective": false,
+      "tokenId": "COMMAND_SURFACE_ENFORCED_OK"
+    },
+    {
+      "declared": true,
+      "existsInTokenCatalog": true,
+      "inEffectiveSet": true,
+      "missingFromEffective": false,
+      "tokenId": "CORE_SOT_EXECUTABLE_OK"
+    },
+    {
+      "declared": true,
+      "existsInTokenCatalog": true,
+      "inEffectiveSet": true,
+      "missingFromEffective": false,
+      "tokenId": "RECOVERY_IO_OK"
+    }
+  ],
+  "declaredSetCount": 3,
+  "declaredSetPath": "docs/OPS/STATUS/REQUIRED_SET_PHASE_3_V1.json",
+  "effectiveSetCount": 3,
+  "tokenCatalogPath": "docs/OPS/TOKENS/TOKEN_CATALOG.json"
+}

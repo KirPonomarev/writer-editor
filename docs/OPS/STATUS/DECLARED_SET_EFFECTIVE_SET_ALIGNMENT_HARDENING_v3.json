@@ -2,6 +2,7 @@
   "advisoryToBlockingDriftCount": 0,
   "declaredSetCount": 3,
   "effectiveSetCount": 3,
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
   "extraEffectiveCount": 0,
   "gates": {
     "mc_advisory_blocking_drift_zero": "PASS",
@@ -10,10 +11,9 @@
     "p1_04_effective_set_computed_check": "PASS",
     "p1_04_missing_declared_token_negative_check": "PASS"
   },
-  "generatedAtUtc": "2026-02-26T21:02:07.803Z",
   "missingDeclaredCount": 0,
-  "runId": "RUN-2026-02-26-001",
-  "singleBlockingAuthorityOk": true,
   "status": "PASS",
-  "ticketId": "TZ-P1-04-DECLARED-SET-EFFECTIVE-SET-ALIGNMENT-HARDENING-003"
+  "token": "DECLARED_SET_EFFECTIVE_SET_ALIGNMENT_HARDENING_OK",
+  "updatedAtUtc": "2026-02-26T21:02:07.803Z",
+  "version": 3
 }
