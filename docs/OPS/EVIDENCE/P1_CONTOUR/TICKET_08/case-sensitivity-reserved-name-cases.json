@@ -1,0 +1,119 @@
+{
+  "caseSensitivityBehaviorCheck": true,
+  "caseSensitivityCases": [
+    {
+      "actualSame": true,
+      "caseId": "same-ignore-case",
+      "expectedSame": true,
+      "left": "Readme.md",
+      "pass": true,
+      "right": "README.md"
+    },
+    {
+      "actualSame": false,
+      "caseId": "different-name",
+      "expectedSame": false,
+      "left": "DraftA.txt",
+      "pass": true,
+      "right": "DraftB.txt"
+    },
+    {
+      "actualSame": true,
+      "caseId": "unicode-case",
+      "expectedSame": true,
+      "left": "Сцена.TXT",
+      "pass": true,
+      "right": "сцена.txt"
+    }
+  ],
+  "releaseCriticalPathParity": {
+    "cases": [
+      {
+        "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "failSignalCode": "E_COMMAND_SURFACE_NOT_ENFORCED",
+        "modeDisposition": "advisory",
+        "pass": false,
+        "shouldBlock": false,
+        "tokenId": "COMMAND_SURFACE_ENFORCED_OK",
+        "verdictOk": true
+      },
+      {
+        "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "failSignalCode": "E_CORE_SOT_NOT_EXECUTABLE",
+        "modeDisposition": "advisory",
+        "pass": false,
+        "shouldBlock": false,
+        "tokenId": "CORE_SOT_EXECUTABLE_OK",
+        "verdictOk": true
+      },
+      {
+        "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "failSignalCode": "E_RECOVERY_IO_NOT_OK",
+        "modeDisposition": "advisory",
+        "pass": false,
+        "shouldBlock": false,
+        "tokenId": "RECOVERY_IO_OK",
+        "verdictOk": true
+      }
+    ],
+    "hardEnforcementActive": false,
+    "issues": [
+      {
+        "evaluatorIssues": [],
+        "failSignalCode": "E_COMMAND_SURFACE_NOT_ENFORCED",
+        "reason": "RELEASE_MODE_NOT_BLOCKING",
+        "tokenId": "COMMAND_SURFACE_ENFORCED_OK"
+      },
+      {
+        "evaluatorIssues": [],
+        "failSignalCode": "E_CORE_SOT_NOT_EXECUTABLE",
+        "reason": "RELEASE_MODE_NOT_BLOCKING",
+        "tokenId": "CORE_SOT_EXECUTABLE_OK"
+      },
+      {
+        "evaluatorIssues": [],
+        "failSignalCode": "E_RECOVERY_IO_NOT_OK",
+        "reason": "RELEASE_MODE_NOT_BLOCKING",
+        "tokenId": "RECOVERY_IO_OK"
+      }
+    ],
+    "ok": true,
+    "requiredTokenIds": [
+      "COMMAND_SURFACE_ENFORCED_OK",
+      "CORE_SOT_EXECUTABLE_OK",
+      "RECOVERY_IO_OK"
+    ]
+  },
+  "releaseCriticalPathsNoAdvisorySubsetParityCheck": true,
+  "reservedNameBehaviorCheck": true,
+  "reservedNameCases": [
+    {
+      "actualReserved": true,
+      "caseId": "reserved-con",
+      "expectedReserved": true,
+      "input": "CON",
+      "pass": true
+    },
+    {
+      "actualReserved": true,
+      "caseId": "reserved-com1-txt",
+      "expectedReserved": true,
+      "input": "com1.txt",
+      "pass": true
+    },
+    {
+      "actualReserved": true,
+      "caseId": "reserved-nul-dot",
+      "expectedReserved": true,
+      "input": "nul.",
+      "pass": true
+    },
+    {
+      "actualReserved": false,
+      "caseId": "non-reserved-regular",
+      "expectedReserved": false,
+      "input": "chapter-01.txt",
+      "pass": true
+    }
+  ]
+}

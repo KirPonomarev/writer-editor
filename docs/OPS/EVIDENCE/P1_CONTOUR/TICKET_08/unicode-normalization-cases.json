@@ -1,0 +1,29 @@
+{
+  "cases": [
+    {
+      "caseId": "e-acute",
+      "left": "Café",
+      "normalizedLeft": "Café",
+      "normalizedRight": "Café",
+      "pass": true,
+      "right": "Café"
+    },
+    {
+      "caseId": "yo-cyrillic",
+      "left": "Ёлка",
+      "normalizedLeft": "Ёлка",
+      "normalizedRight": "Ёлка",
+      "pass": true,
+      "right": "Ёлка"
+    },
+    {
+      "caseId": "latin-a-ring",
+      "left": "Å",
+      "normalizedLeft": "Å",
+      "normalizedRight": "Å",
+      "pass": true,
+      "right": "Å"
+    }
+  ],
+  "unicodeNormalizationCheck": true
+}

@@ -1400,6 +1400,90 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-26T21:53:40.246Z",
       "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/newline-normalization-cases.json",
+      "sha256": "fb569b0178655502e58003b2b2f048981a1a0d06812bbf35f907ed1d22e9ebb2",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/unicode-normalization-cases.json",
+      "sha256": "e43b68fdec0823bfd5e4c9c5a8de45ad801b2c53e74fa4554da980929f639ef4",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/locale-independent-sorting-cases.json",
+      "sha256": "6006d35e7c7497ef01dbadb5c35f43ef3015a4c8518ce94f13799271f4dceaa6",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/case-sensitivity-reserved-name-cases.json",
+      "sha256": "1a62740341691dc888fa3a1cdf98c8705e82d178b5e88316ca7a02ecb7854c8f",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/path-separator-safety-cases.json",
+      "sha256": "7470d67bbbd4243caecdc5f1c7a6a393b88a9f21b018a1d16bf8d755b1e17cb4",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/summary.json",
+      "sha256": "09ae7cb90269676abbc4bf481172f210dbf4c2d1b6d5fd72a8bbc5d5cd23c7cb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/ticket-meta.json",
+      "sha256": "48fc20d0f0d80ce9a41fed6ba5a28af3632c2671f498072ceac632db45bddb7c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/CROSS_PLATFORM_NORMALIZATION_HARDENING_v3.json",
+      "sha256": "482c08b6daa86df7a6a08a1ab3a37b01164b460735bb52ee1b53938267e9cba9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/cross-platform-normalization-state.mjs",
+      "sha256": "09f57349b35e50fe04eca52f3d3acac5999a8075b6cb2ba6ee75db6b705ffa05",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-08-cross-platform-normalization-report.mjs",
+      "sha256": "8e0afa33a308fccb4096661488dd44870dd1c17d643afd5055acb86d3a8d72fb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "test/contracts/cross-platform-normalization.contract.test.js",
+      "sha256": "90ae9580b7cf64edaf1fda28a6f1ec23a55132e2aa325b475b52a4f7587e4d2c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
     }
   ]
 }

@@ -1,0 +1,25 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "caseSensitivityCaseCount": 3,
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p1_08_case_sensitivity_behavior_check": "PASS",
+    "p1_08_locale_independent_sorting_check": "PASS",
+    "p1_08_newline_normalization_check": "PASS",
+    "p1_08_path_separator_safety_check": "PASS",
+    "p1_08_release_critical_paths_no_advisory_subset_parity_check": "PASS",
+    "p1_08_reserved_name_behavior_check": "PASS",
+    "p1_08_unicode_normalization_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-26T22:59:48.995Z",
+  "localeSortingCaseCount": 1,
+  "newlineNormalizationCaseCount": 4,
+  "pathSeparatorCaseCount": 3,
+  "releaseCriticalTokenCount": 3,
+  "reservedNameCaseCount": 4,
+  "runId": "RUN-2026-02-26-001",
+  "singleBlockingAuthorityOk": true,
+  "status": "PASS",
+  "ticketId": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003",
+  "unicodeNormalizationCaseCount": 3
+}
