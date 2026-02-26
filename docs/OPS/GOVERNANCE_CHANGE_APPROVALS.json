@@ -1001,6 +1001,76 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T08:35:00.000Z",
       "rationale": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_05/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:05:00.000Z",
+      "rationale": "TZ-P1-05-DECLARED-STAGE-VS-EFFECTIVE-STAGE-CLARITY-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_05/declared-stage-vs-effective-stage-map.json",
+      "sha256": "341eb252ef6de840f9d1e2003183f27419b44d94d6961d1262117b4331814687",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:05:00.000Z",
+      "rationale": "TZ-P1-05-DECLARED-STAGE-VS-EFFECTIVE-STAGE-CLARITY-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_05/stage-alignment-gaps.json",
+      "sha256": "231fb4cdcd4afb74608d171455f6f9f2af69041690dd223fcdef6a2a7f54619b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:05:00.000Z",
+      "rationale": "TZ-P1-05-DECLARED-STAGE-VS-EFFECTIVE-STAGE-CLARITY-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_05/stage-clarity-report.json",
+      "sha256": "05b1dcaa1af0fadfd3b90cd98aa247d98e0f034411eca252c485b52a9bde3e38",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:05:00.000Z",
+      "rationale": "TZ-P1-05-DECLARED-STAGE-VS-EFFECTIVE-STAGE-CLARITY-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_05/summary.json",
+      "sha256": "e7267b428c9f43b6f87dafc14c077e79d8e0630259c6becd8526bff0c143528e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:05:00.000Z",
+      "rationale": "TZ-P1-05-DECLARED-STAGE-VS-EFFECTIVE-STAGE-CLARITY-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_05/ticket-meta.json",
+      "sha256": "0e3b83fa227b0d280559481f19c0bf72b186f437a41736bbc4b0bfd3677a324c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:05:00.000Z",
+      "rationale": "TZ-P1-05-DECLARED-STAGE-VS-EFFECTIVE-STAGE-CLARITY-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/DECLARED_STAGE_EFFECTIVE_STAGE_CLARITY_v2.json",
+      "sha256": "6f5e9c5a43961766f18bb860ddfb227752d74376d68b8e44c1e472778f11bd6d",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:05:00.000Z",
+      "rationale": "TZ-P1-05-DECLARED-STAGE-VS-EFFECTIVE-STAGE-CLARITY-002 approvals."
+    },
+    {
+      "filePath": "scripts/ops/declared-stage-vs-effective-stage-clarity-state.mjs",
+      "sha256": "174e5ca881d9ddc42d13ce560d9abe8e2f2a754ac1219dfe9e7e54661d47d3a5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:05:00.000Z",
+      "rationale": "TZ-P1-05-DECLARED-STAGE-VS-EFFECTIVE-STAGE-CLARITY-002 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-05-declared-stage-vs-effective-stage-clarity-report.mjs",
+      "sha256": "e87b42fb283949bd3018775d2d5c2df5d4f7f35eea5d1319e036bd78ff926526",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:05:00.000Z",
+      "rationale": "TZ-P1-05-DECLARED-STAGE-VS-EFFECTIVE-STAGE-CLARITY-002 approvals."
+    },
+    {
+      "filePath": "test/contracts/declared-stage-vs-effective-stage-clarity.contract.test.js",
+      "sha256": "1a0916edc4a74395254a6645860f3ec30429b944292b65c5980c5cb781bbd6a6",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:05:00.000Z",
+      "rationale": "TZ-P1-05-DECLARED-STAGE-VS-EFFECTIVE-STAGE-CLARITY-002 approvals."
     }
   ]
 }

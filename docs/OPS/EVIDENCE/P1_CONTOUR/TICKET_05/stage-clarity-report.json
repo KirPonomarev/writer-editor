@@ -1,0 +1,109 @@
+{
+  "declaredStageDefinedCheck": {
+    "activeStageId": "X3",
+    "activeStageKnown": true,
+    "declaredStageSet": [
+      "X0",
+      "X1",
+      "X2",
+      "X3",
+      "X4"
+    ],
+    "declaredStageSetIncludesActive": true
+  },
+  "declaredVsEffectiveStageAlignmentCheck": {
+    "alignmentOk": true,
+    "declaredActiveScopeSet": [
+      "X0",
+      "X1",
+      "X2",
+      "X3"
+    ],
+    "declaredNotEffective": [],
+    "effectiveActiveScopeSet": [
+      "X0",
+      "X1",
+      "X2",
+      "X3"
+    ],
+    "effectiveNotDeclared": [],
+    "stageDriftCount": 0
+  },
+  "effectiveStageMappingCheck": {
+    "effectiveStageSet": [
+      "X0",
+      "X1",
+      "X2",
+      "X3"
+    ],
+    "metricsStageSet": [
+      "X1",
+      "X2",
+      "X3"
+    ],
+    "parityStageId": "X1",
+    "stageAlignmentGaps": [],
+    "stageMap": [
+      {
+        "declared": true,
+        "effective": true,
+        "evidenceSources": [
+          "implicit_x0"
+        ],
+        "inActiveScope": true,
+        "mappedForActiveScope": true,
+        "stageId": "X0"
+      },
+      {
+        "declared": true,
+        "effective": true,
+        "evidenceSources": [
+          "parity_baseline",
+          "stage_metrics"
+        ],
+        "inActiveScope": true,
+        "mappedForActiveScope": true,
+        "stageId": "X1"
+      },
+      {
+        "declared": true,
+        "effective": true,
+        "evidenceSources": [
+          "stage_metrics"
+        ],
+        "inActiveScope": true,
+        "mappedForActiveScope": true,
+        "stageId": "X2"
+      },
+      {
+        "declared": true,
+        "effective": true,
+        "evidenceSources": [
+          "stage_metrics"
+        ],
+        "inActiveScope": true,
+        "mappedForActiveScope": true,
+        "stageId": "X3"
+      },
+      {
+        "declared": true,
+        "effective": false,
+        "evidenceSources": [],
+        "inActiveScope": false,
+        "mappedForActiveScope": true,
+        "stageId": "X4"
+      }
+    ],
+    "stageMappingComplete": true
+  },
+  "issues": [],
+  "singleBlockingAuthority": {
+    "evaluatorIdExpected": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+    "evaluatorIdObserved": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+    "failSignalCode": "E_REMOTE_UNAVAILABLE",
+    "issues": [],
+    "mode": "pr",
+    "ok": true,
+    "verdictShouldBlock": false
+  }
+}

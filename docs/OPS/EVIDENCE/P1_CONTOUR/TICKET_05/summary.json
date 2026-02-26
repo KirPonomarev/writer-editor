@@ -1,0 +1,30 @@
+{
+  "activeStageId": "X3",
+  "advisoryToBlockingDriftCount": 0,
+  "alignmentRule": "DECLARED_STAGE_SET_MUST_MATCH_EFFECTIVE_STAGE_SET_FOR_ACTIVE_SCOPE",
+  "declaredActiveScopeSet": [
+    "X0",
+    "X1",
+    "X2",
+    "X3"
+  ],
+  "driftTarget": 0,
+  "effectiveActiveScopeSet": [
+    "X0",
+    "X1",
+    "X2",
+    "X3"
+  ],
+  "gates": {
+    "advisory_to_blocking_drift_count_zero": "PASS",
+    "p1_05_declared_stage_defined_check": "PASS",
+    "p1_05_declared_vs_effective_stage_alignment_check": "PASS",
+    "p1_05_effective_stage_mapping_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-26T08:40:35.107Z",
+  "runId": "RUN-2026-02-25-013",
+  "stageDriftCount": 0,
+  "stageMappingComplete": true,
+  "status": "PASS",
+  "ticketId": "TZ-P1-05-DECLARED-STAGE-VS-EFFECTIVE-STAGE-CLARITY-002"
+}
