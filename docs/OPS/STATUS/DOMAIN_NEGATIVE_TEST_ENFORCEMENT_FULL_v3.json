@@ -2,6 +2,7 @@
   "advisoryToBlockingDriftCount": 0,
   "domainCriticalTokenCount": 14,
   "domainNegativeCoveragePct": 100,
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
   "gates": {
     "mc_advisory_blocking_drift_zero": "PASS",
     "p1_03_domain_critical_tokens_have_domain_negative_check": "PASS",
@@ -9,11 +10,11 @@
     "p1_03_generic_schema_negative_reuse_forbidden_check": "PASS",
     "p1_03_release_required_domain_negative_missing_fails_check": "PASS"
   },
-  "generatedAtUtc": "2026-02-26T20:48:29.944Z",
+  "genericNegativeReuseViolationCount": 0,
   "mappedDomainCriticalTokenCount": 14,
   "releaseRequiredDomainNegativeMissingCount": 0,
-  "runId": "RUN-2026-02-26-001",
-  "singleBlockingAuthorityOk": true,
   "status": "PASS",
-  "ticketId": "TZ-P1-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-FULL-003"
+  "token": "DOMAIN_NEGATIVE_TEST_ENFORCEMENT_OK",
+  "updatedAtUtc": "2026-02-26T20:48:29.944Z",
+  "version": 3
 }
