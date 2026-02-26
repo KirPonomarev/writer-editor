@@ -490,6 +490,90 @@
       "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
       "approvedAtUtc": "2026-02-26T18:10:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/binding-backfill-coverage.json",
+      "sha256": "8a7430d469b15ccf7d2867d99bef38b2afa81f400d6e3e4e59e0ef0a475fd4d5",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/release-token-binding-gaps.json",
+      "sha256": "68391f1498e2e72a9b7ad892bd59b12dc556e35aa0fa81f4540e6b71a2a9602e",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/summary.json",
+      "sha256": "1bf6a3d534d53c1f8a2f8b98dbf9832a3ddb1ec9f1bd615aeda7f952cdea89a0",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/ticket-meta.json",
+      "sha256": "2e885fa0e6249ed96a4b991b904ba5ed18a01ee29ed8bd5bb9816a36d4f1d866",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/BINDING_SCHEMA_V1.json",
+      "sha256": "9fdeb6cdf7679aa5d7b5821dd9996cd4d234b6795ab0302ef27f3a94341ece16",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+      "sha256": "da6b13813c6e03011ca2f1ad8b45cbb57f309ce4374d57f8e69e954214ebcb71",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REQUIRED_SET_PHASE_1_V1.json",
+      "sha256": "127675f24364f71277d0a51af389540704491715a122489d2010359ad55734ad",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REQUIRED_SET_PHASE_2_V1.json",
+      "sha256": "e5c540659384986bc9f7983879f3ec8885b0692c28544282560a7a3fd5c79b38",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REQUIRED_SET_PHASE_3_V1.json",
+      "sha256": "417d87dcdd4f0e955d2e7601422944719c2e6a3a022c9e5b9e33bc559716a2ee",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
+      "sha256": "f09582af9b3697408aa1fb8c95b3d9c8563e3282e98826d1deee2226d0ac65a7",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "scripts/ops/release-token-binding-completeness-state.mjs",
+      "sha256": "d417c281512513c51f5a368d253a5479c3b4ab749af0ca033b710e64eb22594c",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "test/contracts/release-token-binding-completeness.contract.test.js",
+      "sha256": "1239768c5be6b92b166090e0b210962cb7590b5a12e9880e41b210d990981c3f",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
     }
   ]
 }

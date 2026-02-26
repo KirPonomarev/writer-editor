@@ -1,0 +1,16 @@
+{
+  "version": 3,
+  "status": "ACTIVE",
+  "token": "RELEASE_TOKEN_BINDING_COMPLETENESS_OK",
+  "phaseRule": "PHASE_1_SIGNAL_PHASE_2_WARN_PHASE_3_HARD",
+  "legacyRule": "LEGACY_HARD_STOPS_REMAIN_ACTIVE",
+  "bindingSchemaRef": "docs/OPS/STATUS/BINDING_SCHEMA_V1.json",
+  "phaseSwitchRef": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
+  "requiredSets": {
+    "PHASE_1_SHADOW": "docs/OPS/STATUS/REQUIRED_SET_PHASE_1_V1.json",
+    "PHASE_2_WARN": "docs/OPS/STATUS/REQUIRED_SET_PHASE_2_V1.json",
+    "PHASE_3_HARD": "docs/OPS/STATUS/REQUIRED_SET_PHASE_3_V1.json"
+  },
+  "stateScript": "scripts/ops/release-token-binding-completeness-state.mjs",
+  "reportScript": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs"
+}

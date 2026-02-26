@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "phase": "PHASE_3_HARD",
+  "newV1Enforcement": "HARD_BLOCK",
+  "effectiveRequiredTokenIds": [
+    "CORE_SOT_EXECUTABLE_OK",
+    "COMMAND_SURFACE_ENFORCED_OK",
+    "RECOVERY_IO_OK"
+  ]
+}

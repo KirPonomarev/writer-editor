@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "phase": "PHASE_1_SHADOW",
+  "newV1Enforcement": "SIGNAL_ONLY",
+  "effectiveRequiredTokenIds": [
+    "CORE_SOT_EXECUTABLE_OK"
+  ]
+}
