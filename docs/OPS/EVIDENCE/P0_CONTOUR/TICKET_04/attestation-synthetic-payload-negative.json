@@ -1,0 +1,27 @@
+{
+  "failReason": "E_ATTESTATION_SYNTHETIC_DEFAULT_PASS",
+  "failSignalCode": "E_VERIFY_ATTESTATION_INVALID",
+  "issues": [
+    "SYNTHETIC_PAYLOAD"
+  ],
+  "ok": false,
+  "payload": {
+    "BASE_SHA": "54e4d5d416729b53a47371e6b660e7c88f7087ce",
+    "EXTERNAL_ARTIFACT": {
+      "artifactId": "artifact-release-attestation-v3",
+      "checksum": "sha256:artifact-release-attestation-v3",
+      "origin": "release-pipeline-attestation-store"
+    },
+    "IS_SYNTHETIC": true,
+    "KEY_ID": "trusted-key-main-1",
+    "NONCE": "nonce-p0-04-positive",
+    "OFFLINE_VERIFIABLE_CHAIN": true,
+    "PAYLOAD_ORIGIN": "synthetic",
+    "SIGNATURE_TRUST_ROOT_ANCHORED": true,
+    "TIMESTAMP": "2026-02-26T00:00:00.000Z",
+    "TRUST_CONTEXT_ID": "ctx-release-attestation-v3",
+    "TRUST_CONTEXT_SOURCE": "trusted_context_record",
+    "TRUST_LOCK_ID": "ATTESTATION_TRUST_LOCK_HARDENING_v3",
+    "TRUST_PROVIDER": "ATTESTATION_TRUST_LOCK"
+  }
+}

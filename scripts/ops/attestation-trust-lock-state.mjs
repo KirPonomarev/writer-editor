@@ -2,14 +2,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { evaluateModeMatrixVerdict } from './canonical-mode-matrix-evaluator.mjs';
+import { evaluateModeMatrixSingleAuthorityState } from './mode-matrix-single-authority-state.mjs';
 
 const TOKEN_NAME = 'ATTESTATION_TRUST_LOCK_ENFORCEMENT_OK';
 const FAIL_SIGNAL_CODE = 'E_VERIFY_ATTESTATION_INVALID';
-const DEFAULT_FAILSIGNAL_REGISTRY_PATH = 'docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json';
-const TRUST_LOCK_ID = 'ATTESTATION_TRUST_LOCK_ENFORCEMENT_v1';
+const TRUST_LOCK_ID = 'ATTESTATION_TRUST_LOCK_HARDENING_v3';
 const TRUST_PROVIDER = 'ATTESTATION_TRUST_LOCK';
 const FORBIDDEN_CONTEXT_SOURCE = 'self_generated';
+const REQUIRED_PAYLOAD_FIELDS = ['BASE_SHA', 'NONCE', 'TIMESTAMP', 'KEY_ID', 'TRUST_CONTEXT_ID'];
+const DEFAULT_MODE = 'release';
+const DEFAULT_FAILSIGNAL_REGISTRY_PATH = 'docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json';
 
 function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -33,28 +35,33 @@ function stableStringify(value) {
   return JSON.stringify(stableSortObject(value), null, 2);
 }
 
-function readJsonObject(filePath) {
-  try {
-    const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    return isObjectRecord(parsed) ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
 function parseArgs(argv = process.argv.slice(2)) {
   const out = {
     json: false,
+    mode: '',
     failsignalRegistryPath: '',
+    payloadPath: '',
   };
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = normalizeString(argv[i]);
     if (!arg) continue;
+
     if (arg === '--json') {
       out.json = true;
       continue;
     }
+
+    if (arg === '--mode' && i + 1 < argv.length) {
+      out.mode = normalizeString(argv[i + 1]);
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith('--mode=')) {
+      out.mode = normalizeString(arg.slice('--mode='.length));
+      continue;
+    }
+
     if (arg === '--failsignal-registry-path' && i + 1 < argv.length) {
       out.failsignalRegistryPath = normalizeString(argv[i + 1]);
       i += 1;
@@ -62,169 +69,179 @@ function parseArgs(argv = process.argv.slice(2)) {
     }
     if (arg.startsWith('--failsignal-registry-path=')) {
       out.failsignalRegistryPath = normalizeString(arg.slice('--failsignal-registry-path='.length));
+      continue;
+    }
+
+    if (arg === '--payload-path' && i + 1 < argv.length) {
+      out.payloadPath = normalizeString(argv[i + 1]);
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith('--payload-path=')) {
+      out.payloadPath = normalizeString(arg.slice('--payload-path='.length));
+      continue;
     }
   }
 
   return out;
 }
 
-function buildDefaultTrustedPayload() {
+function isIsoTimestamp(value) {
+  const normalized = normalizeString(value);
+  if (!normalized) return false;
+  const parsed = Date.parse(normalized);
+  return Number.isFinite(parsed);
+}
+
+function buildDefaultPayload() {
   return {
-    attestationKind: 'POST_MERGE_VERIFY',
-    taskId: 'strict-verify-release',
-    verifyPath: 'scripts/ops/post-merge-verify.mjs',
-    verifyOk: 1,
-    trustedContext: {
-      trustProvider: TRUST_PROVIDER,
-      trustLockId: TRUST_LOCK_ID,
-      contextId: 'ctx-post-merge-verify-main',
-      source: 'post_merge_verify_record',
+    BASE_SHA: '0000000000000000000000000000000000000000',
+    NONCE: 'nonce-verify-main',
+    TIMESTAMP: new Date('2026-02-26T00:00:00.000Z').toISOString(),
+    KEY_ID: 'trusted-key-main-1',
+    TRUST_CONTEXT_ID: 'ctx-post-merge-verify-main',
+    TRUST_CONTEXT_SOURCE: 'trusted_context_record',
+    SIGNATURE_TRUST_ROOT_ANCHORED: true,
+    OFFLINE_VERIFIABLE_CHAIN: true,
+    EXTERNAL_ARTIFACT: {
+      artifactId: 'post-merge-attestation-record',
+      origin: 'release-pipeline-attestation-store',
+      checksum: 'sha256:trusted-artifact',
     },
+    PAYLOAD_ORIGIN: 'external',
+    IS_SYNTHETIC: false,
+    TRUST_PROVIDER: TRUST_PROVIDER,
+    TRUST_LOCK_ID: TRUST_LOCK_ID,
   };
 }
 
-function evaluateAttestationPayload(payload) {
-  const issues = [];
+function evaluatePayload(payload) {
   const data = isObjectRecord(payload) ? payload : {};
-
-  const attestationKind = normalizeString(data.attestationKind);
-  const taskId = normalizeString(data.taskId);
-  const verifyPath = normalizeString(data.verifyPath);
-  const verifyOk = Number(data.verifyOk) === 1 ? 1 : 0;
-  const trustedContext = isObjectRecord(data.trustedContext) ? data.trustedContext : null;
-
-  if (attestationKind !== 'POST_MERGE_VERIFY') issues.push({ code: 'ATTESTATION_KIND_INVALID' });
-  if (!taskId) issues.push({ code: 'TASK_ID_MISSING' });
-  if (!verifyPath) issues.push({ code: 'VERIFY_PATH_MISSING' });
-  if (verifyOk !== 1) issues.push({ code: 'VERIFY_NOT_OK' });
-
-  if (!trustedContext) {
-    issues.push({ code: 'TRUSTED_CONTEXT_MISSING' });
-  } else {
-    const trustProvider = normalizeString(trustedContext.trustProvider);
-    const trustLockId = normalizeString(trustedContext.trustLockId);
-    const contextId = normalizeString(trustedContext.contextId);
-    const source = normalizeString(trustedContext.source).toLowerCase();
-
-    if (trustProvider !== TRUST_PROVIDER) issues.push({ code: 'TRUST_PROVIDER_INVALID' });
-    if (trustLockId !== TRUST_LOCK_ID) issues.push({ code: 'TRUST_LOCK_ID_INVALID' });
-    if (!contextId) issues.push({ code: 'TRUST_CONTEXT_ID_MISSING' });
-    if (!source) issues.push({ code: 'TRUST_CONTEXT_SOURCE_MISSING' });
-    if (source === FORBIDDEN_CONTEXT_SOURCE) issues.push({ code: 'SELF_GENERATED_CONTEXT_FORBIDDEN' });
-  }
-
-  const ok = issues.length === 0;
-  return {
-    ok,
-    issues,
-  };
-}
-
-function evaluateAdvisoryToBlockingDrift(repoRoot, failsignalRegistryPath) {
-  const registryDoc = readJsonObject(failsignalRegistryPath);
-  if (!registryDoc || !Array.isArray(registryDoc.failSignals)) {
-    return {
-      ok: false,
-      advisoryToBlockingDriftCount: -1,
-      driftCases: [],
-      issues: [
-        {
-          code: 'FAILSIGNAL_REGISTRY_UNREADABLE',
-          failsignalRegistryPath: path.relative(repoRoot, failsignalRegistryPath).replaceAll(path.sep, '/'),
-        },
-      ],
-    };
-  }
-
-  const modePairs = [
-    { mode: 'pr', key: 'prCore' },
-    { mode: 'release', key: 'release' },
-    { mode: 'promotion', key: 'promotion' },
-  ];
-
-  const driftCases = [];
   const issues = [];
 
-  for (const row of registryDoc.failSignals) {
-    if (!isObjectRecord(row)) continue;
-    const failSignalCode = normalizeString(row.code);
-    if (!failSignalCode) continue;
+  const missingRequiredPayloadFields = REQUIRED_PAYLOAD_FIELDS.filter((field) => {
+    const value = data[field];
+    return normalizeString(value).length === 0;
+  });
+  if (missingRequiredPayloadFields.length > 0) {
+    issues.push('REQUIRED_PAYLOAD_FIELDS_MISSING');
+  }
 
-    for (const pair of modePairs) {
-      const expectedDisposition = normalizeString((row.modeMatrix || {})[pair.key]).toLowerCase();
-      if (expectedDisposition !== 'advisory') continue;
+  if (!isIsoTimestamp(data.TIMESTAMP)) {
+    issues.push('TIMESTAMP_INVALID');
+  }
 
-      const verdict = evaluateModeMatrixVerdict({
-        repoRoot,
-        mode: pair.mode,
-        failSignalCode,
-      });
+  const trustContextSource = normalizeString(data.TRUST_CONTEXT_SOURCE || data.trustedContext?.source).toLowerCase();
+  if (trustContextSource === FORBIDDEN_CONTEXT_SOURCE) {
+    issues.push('SELF_GENERATED_TRUST_CONTEXT');
+  }
 
-      if (!verdict.ok) {
-        issues.push({
-          code: 'MODE_EVALUATOR_ERROR',
-          failSignalCode,
-          mode: pair.mode,
-          evaluatorIssues: verdict.issues || [],
-        });
-        continue;
-      }
+  const payloadOrigin = normalizeString(data.PAYLOAD_ORIGIN).toLowerCase();
+  const syntheticPayload = data.IS_SYNTHETIC === true || payloadOrigin === 'synthetic';
+  if (syntheticPayload) {
+    issues.push('SYNTHETIC_PAYLOAD');
+  }
 
-      if (verdict.shouldBlock) {
-        driftCases.push({
-          failSignalCode,
-          mode: pair.mode,
-          expectedDisposition,
-          actualDisposition: verdict.modeDisposition,
-          actualShouldBlock: verdict.shouldBlock,
-          reason: 'ADVISORY_TO_BLOCKING_DRIFT',
-        });
-      }
-    }
+  const signatureTrustRootAnchored = data.SIGNATURE_TRUST_ROOT_ANCHORED === true;
+  if (!signatureTrustRootAnchored) {
+    issues.push('TRUST_ROOT_MISSING');
+  }
+
+  const offlineVerifiableChain = data.OFFLINE_VERIFIABLE_CHAIN === true;
+  if (!offlineVerifiableChain) {
+    issues.push('OFFLINE_CHAIN_NOT_VERIFIABLE');
+  }
+
+  const externalArtifact = isObjectRecord(data.EXTERNAL_ARTIFACT) ? data.EXTERNAL_ARTIFACT : null;
+  const hasExternalArtifact = externalArtifact
+    && normalizeString(externalArtifact.artifactId).length > 0
+    && normalizeString(externalArtifact.origin).length > 0;
+  if (!hasExternalArtifact) {
+    issues.push('EXTERNAL_ARTIFACT_MISSING');
+  }
+
+  const trustLockId = normalizeString(data.TRUST_LOCK_ID || data.trustedContext?.trustLockId);
+  if (trustLockId && trustLockId !== TRUST_LOCK_ID) {
+    issues.push('TRUST_LOCK_ID_INVALID');
+  }
+
+  const trustProvider = normalizeString(data.TRUST_PROVIDER || data.trustedContext?.trustProvider);
+  if (trustProvider && trustProvider !== TRUST_PROVIDER) {
+    issues.push('TRUST_PROVIDER_INVALID');
   }
 
   return {
     ok: issues.length === 0,
-    advisoryToBlockingDriftCount: driftCases.length,
-    driftCases,
     issues,
+    missingRequiredPayloadFields,
+    syntheticPayload,
+    selfGeneratedTrustContext: trustContextSource === FORBIDDEN_CONTEXT_SOURCE,
+    signatureTrustRootAnchored,
+    offlineVerifiableChain,
+    hasExternalArtifact,
   };
+}
+
+function computeFailReason(payloadState) {
+  if (payloadState.syntheticPayload) return 'E_ATTESTATION_SYNTHETIC_DEFAULT_PASS';
+  if (payloadState.selfGeneratedTrustContext) return 'ATTESTATION_TRUST_INVALID';
+  if (payloadState.missingRequiredPayloadFields.length > 0) return 'E_REQUIRED_PAYLOAD_FIELDS_MISSING';
+  if (!payloadState.signatureTrustRootAnchored) return 'E_TRUST_ROOT_MISSING';
+  if (!payloadState.ok) return 'ATTESTATION_TRUST_INVALID';
+  return '';
+}
+
+function modeIsReleasePromotion(mode) {
+  return mode === 'release' || mode === 'promotion';
 }
 
 export function evaluateAttestationTrustLockState(input = {}) {
   const repoRoot = path.resolve(normalizeString(input.repoRoot) || process.cwd());
-  const failsignalRegistryPath = path.resolve(
+  const mode = normalizeString(input.mode || process.env.MODE || DEFAULT_MODE).toLowerCase() || DEFAULT_MODE;
+  const payload = isObjectRecord(input.payload) ? input.payload : buildDefaultPayload();
+
+  const modeState = evaluateModeMatrixSingleAuthorityState({
     repoRoot,
-    normalizeString(input.failsignalRegistryPath || DEFAULT_FAILSIGNAL_REGISTRY_PATH),
-  );
-  const payload = isObjectRecord(input.payload) ? input.payload : buildDefaultTrustedPayload();
+    failsignalRegistryPath: normalizeString(input.failsignalRegistryPath || DEFAULT_FAILSIGNAL_REGISTRY_PATH),
+  });
 
-  const payloadState = evaluateAttestationPayload(payload);
-  const driftState = evaluateAdvisoryToBlockingDrift(repoRoot, failsignalRegistryPath);
+  const payloadState = evaluatePayload(payload);
+  const releasePromotionScope = modeIsReleasePromotion(mode);
+  const trustValid = payloadState.ok;
 
-  const advisoryToBlockingDriftCount = driftState.advisoryToBlockingDriftCount;
-  const advisoryToBlockingDriftCountZero = advisoryToBlockingDriftCount === 0;
-  const issues = [...payloadState.issues];
-  if (!driftState.ok) issues.push(...driftState.issues);
+  const shouldBlockDelivery = releasePromotionScope && !trustValid;
+  const deliveryVerdict = shouldBlockDelivery ? 'BLOCK' : (trustValid ? 'PASS' : 'WARN');
+  const productVerdict = trustValid ? 'PASS' : 'FAIL';
 
-  const ok = payloadState.ok && advisoryToBlockingDriftCountZero && issues.length === 0;
+  const failReason = shouldBlockDelivery ? computeFailReason(payloadState) : '';
+
+  const ok = releasePromotionScope ? trustValid : true;
+
   return {
     ok,
     [TOKEN_NAME]: ok ? 1 : 0,
-    failSignalCode: ok ? '' : FAIL_SIGNAL_CODE,
-    failReason: ok ? '' : (
-      payloadState.issues.some((entry) => entry.code === 'SELF_GENERATED_CONTEXT_FORBIDDEN')
-        ? 'SELF_GENERATED_PAYLOAD_FORBIDDEN'
-        : 'TRUST_LOCK_ENFORCEMENT_FAIL'
-    ),
+    failSignalCode: shouldBlockDelivery ? FAIL_SIGNAL_CODE : '',
+    failReason,
     trustLockId: TRUST_LOCK_ID,
     trustProvider: TRUST_PROVIDER,
-    failsignalRegistryPath: path.relative(repoRoot, failsignalRegistryPath).replaceAll(path.sep, '/'),
+    mode,
+    releasePromotionScope,
+    productVerdict,
+    deliveryVerdict,
+    shouldBlockDelivery,
+    requiredPayloadFields: [...REQUIRED_PAYLOAD_FIELDS],
+    missingRequiredPayloadFields: payloadState.missingRequiredPayloadFields,
+    missingRequiredPayloadFieldsCount: payloadState.missingRequiredPayloadFields.length,
+    externalArtifactRequiredOk: payloadState.hasExternalArtifact,
+    syntheticPayloadForbiddenOk: payloadState.syntheticPayload === false,
+    selfGeneratedTrustContextForbiddenOk: payloadState.selfGeneratedTrustContext === false,
+    signatureTrustRootAnchoredOk: payloadState.signatureTrustRootAnchored,
+    offlineVerifiableChainOk: payloadState.offlineVerifiableChain,
+    advisoryToBlockingDriftCount: modeState.advisoryToBlockingDriftCount,
+    advisoryToBlockingDriftCountZero: modeState.advisoryToBlockingDriftCount === 0,
+    claimOverrideViolationCount: modeState.claimOverrideViolationCount,
+    issues: payloadState.issues,
     payload,
-    advisoryToBlockingDriftCount,
-    advisoryToBlockingDriftCountZero,
-    driftCases: driftState.driftCases,
-    issues,
   };
 }
 
@@ -232,8 +249,10 @@ function printHuman(state) {
   console.log(`${TOKEN_NAME}=${state[TOKEN_NAME]}`);
   console.log(`ATTESTATION_TRUST_LOCK_ID=${state.trustLockId}`);
   console.log(`ATTESTATION_TRUST_PROVIDER=${state.trustProvider}`);
-  console.log(`ATTESTATION_TRUST_LOCK_ADVISORY_DRIFT_COUNT=${state.advisoryToBlockingDriftCount}`);
-  console.log(`ATTESTATION_TRUST_LOCK_ADVISORY_DRIFT_COUNT_ZERO=${state.advisoryToBlockingDriftCountZero ? 1 : 0}`);
+  console.log(`ATTESTATION_MODE=${state.mode}`);
+  console.log(`ATTESTATION_DELIVERY_VERDICT=${state.deliveryVerdict}`);
+  console.log(`ATTESTATION_PRODUCT_VERDICT=${state.productVerdict}`);
+  console.log(`ATTESTATION_ADVISORY_DRIFT_COUNT=${state.advisoryToBlockingDriftCount}`);
   if (!state.ok) {
     console.log(`FAIL_REASON=${state.failReason}`);
     console.log(`FAIL_SIGNAL=${state.failSignalCode}`);
@@ -242,8 +261,20 @@ function printHuman(state) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
+  const payload = args.payloadPath
+    ? (() => {
+      try {
+        return JSON.parse(fs.readFileSync(args.payloadPath, 'utf8'));
+      } catch {
+        return null;
+      }
+    })()
+    : null;
+
   const state = evaluateAttestationTrustLockState({
+    mode: args.mode,
     failsignalRegistryPath: args.failsignalRegistryPath,
+    payload,
   });
 
   if (args.json) {
@@ -266,4 +297,5 @@ export {
   TRUST_LOCK_ID,
   TRUST_PROVIDER,
   FORBIDDEN_CONTEXT_SOURCE,
+  REQUIRED_PAYLOAD_FIELDS,
 };

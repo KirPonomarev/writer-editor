@@ -644,6 +644,90 @@
       "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
       "approvedAtUtc": "2026-02-26T18:24:55.000Z",
       "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/advisory-blocking-drift-cases.json",
+      "sha256": "6f7e2453c0da0224d79012533db58acb4501ffb15d299f99d41798a5757cc9e7",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-external-artifact-positive.json",
+      "sha256": "7928c9b146d6bc67c9cb71a3cc305fde7593ad73b7cef658ebde32e09fc98bb6",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-required-payload-fields-negative.json",
+      "sha256": "00d052484f9ed5b1bb13b0b07643056ac7e648259c694dcaf831e8757ae6db3d",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-self-generated-trust-context-negative.json",
+      "sha256": "c5f828b1d5235d6815ae4cb6d880c429ab41ed9c92797198cd5ece2d9e4ca19f",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-signature-trust-root-negative.json",
+      "sha256": "b4c6b56de7dde2e106b33eb371f3669d874f4f47b582a14173720357f87a2842",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-synthetic-payload-negative.json",
+      "sha256": "f9c1de33cfeed48c023c850df06bb5039b87b2149201e7b4ad604e55e3167e25",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/summary.json",
+      "sha256": "924d101d94dda3c3e500658d37f4c8acba7a22aafd09ad6dd46195c09654b412",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/ticket-meta.json",
+      "sha256": "8619a52370bc0441e42fd4bf80b0b06193db26119eb6f6d6c36a7b779d5c637e",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_HARDENING_v3.json",
+      "sha256": "093e89e8d4e0d5875b4d0528cfcb575eb335e92fd936082c7fc43a7a1560b75e",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "scripts/ops/attestation-trust-lock-state.mjs",
+      "sha256": "2b3600a3320b55b05078a82c585c177801a10230ba596e833b4806da363eefbd",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "scripts/ops/p0-04-attestation-trust-lock-report.mjs",
+      "sha256": "6553017f08464eb61ecd7f251b26fa7fceef32fb4fe008ac470cf164e071b301",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "test/contracts/attestation-trust-lock.contract.test.js",
+      "sha256": "686ece9e5d61ecfa40e2e30904383ac6e5a3339be7eea91618c1e4b3c125f0d5",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
     }
   ]
 }
