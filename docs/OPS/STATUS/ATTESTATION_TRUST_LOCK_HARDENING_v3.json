@@ -1,0 +1,24 @@
+{
+  "version": 3,
+  "status": "ACTIVE",
+  "token": "ATTESTATION_TRUST_LOCK_ENFORCEMENT_OK",
+  "machineCheckId": "p0_04_attestation_trust_lock_machine_check",
+  "phaseRule": "PHASE_1_SIGNAL_PHASE_2_WARN_PHASE_3_HARD",
+  "phaseSwitchRef": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
+  "requiredPayloadFields": [
+    "BASE_SHA",
+    "NONCE",
+    "TIMESTAMP",
+    "KEY_ID",
+    "TRUST_CONTEXT_ID"
+  ],
+  "scopeModes": [
+    "release",
+    "promotion"
+  ],
+  "releasePromotionFailSignalCode": "E_VERIFY_ATTESTATION_INVALID",
+  "stateScript": "scripts/ops/attestation-trust-lock-state.mjs",
+  "reportScript": "scripts/ops/p0-04-attestation-trust-lock-report.mjs",
+  "contractTest": "test/contracts/attestation-trust-lock.contract.test.js",
+  "notes": "P0-04 hardens attestation trust lock: external artifact required, synthetic payload forbidden, trust-root anchored signature and offline-verifiable chain mandatory in release/promotion."
+}
