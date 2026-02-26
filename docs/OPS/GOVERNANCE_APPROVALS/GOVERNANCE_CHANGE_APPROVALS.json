@@ -16,6 +16,356 @@
       "rationale": "Approve safe-automerge profile push-step hook metadata for workflow-scope autofix."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
+      "sha256": "e09a162b1cebcb26c62c578360f8b1ad22301225a564c9477d12d7ecff2b1deb",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/claims-mode-disposition-conflicts.json",
+      "sha256": "59f18f6e8a9c2a028e24fbad20be24e36fb371a4895a8323147cb924c37edf8c",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/dual-authority-mismatch-cases.json",
+      "sha256": "5e9f27980c5236edb14a876566ae32746ed83b9f731bd066f921865c493313d7",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/summary.json",
+      "sha256": "16f0cad027b26192afd36ba939a25ef286b5c3509328ac9e7c9112055ecf76cb",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:10:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/ticket-meta.json",
+      "sha256": "5c2a68d77d4e4824fe0ab815c0941f10a795a51c9d926be8fff7194a7b31bfc5",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:10:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/binding-backfill-coverage.json",
+      "sha256": "8a7430d469b15ccf7d2867d99bef38b2afa81f400d6e3e4e59e0ef0a475fd4d5",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/release-token-binding-gaps.json",
+      "sha256": "68391f1498e2e72a9b7ad892bd59b12dc556e35aa0fa81f4540e6b71a2a9602e",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/summary.json",
+      "sha256": "1bf6a3d534d53c1f8a2f8b98dbf9832a3ddb1ec9f1bd615aeda7f952cdea89a0",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/ticket-meta.json",
+      "sha256": "2e885fa0e6249ed96a4b991b904ba5ed18a01ee29ed8bd5bb9816a36d4f1d866",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/advisory-blocking-drift-cases.json",
+      "sha256": "6f7e2453c0da0224d79012533db58acb4501ffb15d299f99d41798a5757cc9e7",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/critical-user-path-pass-proof.json",
+      "sha256": "9946eeb49eb53c0783cbaa24e37a2a34e71a2a240ed6438d961d94e007e8fa93",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/e2e-critical-user-path-negative-missing-step.json",
+      "sha256": "ab3274751fbf02febee0e0fbb906c8095128b39af8f7043b022ec93c79853b82",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/e2e-critical-user-path-scenarios.json",
+      "sha256": "693f83dd9ef4e84cbe20108658f1b436dfd4c501835a654a96339895548a81b6",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/summary.json",
+      "sha256": "9b4054130b965bd782edc512f25a57479e4375a0db69e5309fac9f807e525e24",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/ticket-meta.json",
+      "sha256": "85dbb093e2eed42d4cbae9583673d35cef8a2574082edf590718a70f0ef67756",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/advisory-blocking-drift-cases.json",
+      "sha256": "6f7e2453c0da0224d79012533db58acb4501ffb15d299f99d41798a5757cc9e7",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-external-artifact-positive.json",
+      "sha256": "7928c9b146d6bc67c9cb71a3cc305fde7593ad73b7cef658ebde32e09fc98bb6",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-required-payload-fields-negative.json",
+      "sha256": "00d052484f9ed5b1bb13b0b07643056ac7e648259c694dcaf831e8757ae6db3d",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-self-generated-trust-context-negative.json",
+      "sha256": "c5f828b1d5235d6815ae4cb6d880c429ab41ed9c92797198cd5ece2d9e4ca19f",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-signature-trust-root-negative.json",
+      "sha256": "b4c6b56de7dde2e106b33eb371f3669d874f4f47b582a14173720357f87a2842",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-synthetic-payload-negative.json",
+      "sha256": "f9c1de33cfeed48c023c850df06bb5039b87b2149201e7b4ad604e55e3167e25",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/summary.json",
+      "sha256": "924d101d94dda3c3e500658d37f4c8acba7a22aafd09ad6dd46195c09654b412",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/ticket-meta.json",
+      "sha256": "8619a52370bc0441e42fd4bf80b0b06193db26119eb6f6d6c36a7b779d5c637e",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/advisory-blocking-drift-cases.json",
+      "sha256": "0ced9911d9e35b05e392c4ebf74095ee2d19355f55243a8b6f87d2464fe4e3aa",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/cycle-negative-fixtures.json",
+      "sha256": "e82b569bc8f9d2491cf386463fdf8b78a6f7447eb04ca03caf07bb0eb6516bea",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/gate-graph-scc-report.json",
+      "sha256": "5874e3c927fc445a93dfbcd16347ca315ea197164b9bef3b5cf7993965132aab",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/skip-flag-bypass-negative.json",
+      "sha256": "a61656625c3732d6b13f369fe6e2a58feaaf47fcebab1c2dbf64e87e7d2b3a7e",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/summary.json",
+      "sha256": "f883a2829da38443e4c59a8480915d998bbedf71b09614e03375ccf27221072a",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/ticket-meta.json",
+      "sha256": "16e9c278ebaa70f8c725512e11a0c44523c9f503894efe7de595eb56d2e92ea7",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/advisory-blocking-drift-cases.json",
+      "sha256": "0ced9911d9e35b05e392c4ebf74095ee2d19355f55243a8b6f87d2464fe4e3aa",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/merge-flow-negative-cases.json",
+      "sha256": "59cedaa753542e49e0463fa8679909a727eab1cd0211e83503fcab8e0fe7d67a",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/release-gate-nonzero-fail-proof.json",
+      "sha256": "336ad47e89681921d3151cb21c9f6b518e79305a88aa8b93ba209ed5ea54f6bf",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/summary.json",
+      "sha256": "7c3ff1e45d24234dca67717f2366c603ec51d00c7788b0fc67b935460b08c7bc",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/ticket-meta.json",
+      "sha256": "73e97a8240218c7459e74b4383eaa483c717ad3f078180f28c6eae495f4f2e8c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/advisory-blocking-drift-cases.json",
+      "sha256": "0ced9911d9e35b05e392c4ebf74095ee2d19355f55243a8b6f87d2464fe4e3aa",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/effective-required-token-fail-map.json",
+      "sha256": "dd79b4dbeab3f048872233b3a0ec50c8f0a5b98d7bb7016876dc370ecce86033",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/release-gate-exit-code-proof.json",
+      "sha256": "769aed4871ccd89fd9e89b3d03187808c64b4114493a65b8241b8357a0055654",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/release-gate-fail-exit-cases.json",
+      "sha256": "67813dcd594a1f7490ea8b74651f3067a1c7aad262e6995061c38ecaec335133",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/summary.json",
+      "sha256": "8becf122d2524c3cd6411566ff5ba4a2519d1d01a1e8a5b736a98688928ee4ef",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/ticket-meta.json",
+      "sha256": "461cc4caf1974ba9009c422424a3fe84772c4c25352f1df943a914dd280a2a37",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/drift-engine-dedup-proof.json",
+      "sha256": "251d3cafa5b246c5326ea6d2007fd2dd6401564a70e7b1045a912030ae894539",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
+      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/drift-engine-input-map.json",
+      "sha256": "0a43f01d1d09cd66dffe777ad0831b2926c68bc8207cb0d632f7db104650a1a9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
+      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/summary.json",
+      "sha256": "a15e3de59baa4fd9aac03ef5284121df84b88288e7d7c77a12b814ecceaa86e4",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
+      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/ticket-meta.json",
+      "sha256": "413cb15a4d65201e6eb58f3ce655d8e7018998ca6dfa414f06fbf9c62fc876c0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
+      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/remote-probe-interactive-path-guard-cases.json",
+      "sha256": "978e347748fa1558076a29e008fcbf424e90347ce8b0e15a4755ebb5c48c8f0a",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/remote-probe-stale-invalidation-cases.json",
+      "sha256": "f9c00953a9e335888e45e7481d670102f9ca4c4b13e370f1e6739e8b52cfa543",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/remote-probe-ttl-cases.json",
+      "sha256": "e2e733330470f14bd864b0b780e19e3f36a57e1285177f9b4c0737ec5adc9ff5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/summary.json",
+      "sha256": "5e5a6a699ee2aa6249e56222f5146529f11ccbfe561e21309a5d49aa84ba2e7c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_02/ticket-meta.json",
+      "sha256": "78de27a178210ee0dcb9b89aaad3a50d00143240890e21a042c9744a6fca1f14",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-0805ab9da950-592e3737/failsignal-registry-snapshot.json",
       "sha256": "9af1b22b87f604601b38114621995a44ae5e15c3ea9a299197c61e863a5e6448",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -107,279 +457,6 @@
       "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
     },
     {
-      "filePath": "docs/OPS/EXECUTION/AUTOCYCLE_CANON_v1.json",
-      "sha256": "0f1f01a0c5a9dd9e314b436597b810fb99b863212767ae05f008812cd45fe75c",
-      "approvedBy": "ticket:TZ-AUTOCYCLE-PRODUCT-PIPELINE-01",
-      "approvedAtUtc": "2026-02-19T04:10:47.000Z",
-      "rationale": "Add local product pipeline inputs (plan digest + node version) to autocycle determinism canon."
-    },
-    {
-      "filePath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
-      "sha256": "4c5a3a9479a8f8aff6d436844dc9e7f31813fcb58815dd0fd94393497ca6b866",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "docs/OPS/SECURITY/NPM_AUDIT_HIGH_CLOSURE_SECTOR01_D.json",
-      "sha256": "33b17548ed8f333518bc1a44d0fbb4466735a76003380bc118900a93e7bbfcbc",
-      "approvedBy": "ticket:TZ-SECTOR-01-D-HIGH-CLOSURE-SSOT-01",
-      "approvedAtUtc": "2026-02-19T10:10:25.806Z",
-      "rationale": "Record high-severity npm audit closure SSOT for Sector-01 Ticket D using reachability classification and exception metadata."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/CANON_STATUS.json",
-      "sha256": "940cf8723fca98898debba1351d0932edc3c1289faadd8c8eef18db4a5fd1b79",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/DEPENDENCY_RISK_REGISTER.json",
-      "sha256": "9ee62bbcba3084445fa9f385af48d29290aadb24ca89fb85c2a5734f91e4093a",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/EXECUTION_SEQUENCE_CANON_v1.json",
-      "sha256": "f6e38847245f424081f8d0755183dbbb86e440c655f0fa8f2e6286dc25005c07",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/LAW_PATH_CANON.json",
-      "sha256": "3f3051cf0ab94e591c737f444ffdb80aa59f7a7d4df45b3a0472909842b0a08c",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/P1_DEBT_QUEUE.json",
-      "sha256": "af2e690b55d16cbf0d259b1f59f75eaa263c922b01241da791b2fb4aaa091809",
-      "approvedBy": "ticket:TZ-SECTOR-01-F-P1-QUEUE-SECTOR-TRACKER-RECONCILE-001",
-      "approvedAtUtc": "2026-02-23T10:49:32.225Z",
-      "rationale": "Sector 01 Ticket F: reconcile P1 queue status + sector tracker (no semantic change)"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
-      "sha256": "6e37085e283ff774f1b3dc0852f6fc272cd6cd1c6862f197ec7fc645934a29cd",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.12.md",
-      "sha256": "e6fc2cb960d55139fb959a3bc31dd2ba0d8016b2eace2064b1cb2775fa62c71c",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
-      "sha256": "17cadb80e064210aa414786183f3f504e7a8098273c57138e111fc340344e9b6",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "docs/OPS/TOKENS/TOKEN_CATALOG.json",
-      "sha256": "b0d2e19677f50c094ba081af0461a7b94622b31b415561bf5f87293158e5fa08",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "scripts/doctor.mjs",
-      "sha256": "8a9435a7a14746aad462035230a2188711cb2277da44cf56a81a9ce3389539c6",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "scripts/ops/check-execution-sequence.mjs",
-      "sha256": "e377b6dba69d16ccbc8295bbbf22ab54c997919cd04020b88a91749441b95c2b",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "scripts/ops/check-law-path-canon.mjs",
-      "sha256": "ab1f11ea5e5485cc6643127626552ed2254541ba12a0a92224edb1518f80d2ee",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "scripts/ops/codex-run.mjs",
-      "sha256": "b8447c8ee2a1d1ea9ad4eb247e10058afac437dae21d6fd5950bc7ae868a7085",
-      "approvedBy": "ticket:TZ-RUNNER-NO-POPUP-SINGLE-ENTRY-01",
-      "approvedAtUtc": "2026-02-19T10:37:19.694Z",
-      "rationale": "Enforce non-interactive runner auth/network preflight with session cache to prevent popup-style prompts in PR flow."
-    },
-    {
-      "filePath": "scripts/ops/compute-wave-input-hash.mjs",
-      "sha256": "870426af05260b2be9d202a9546e1b6df473b9cee8ef5dd05a609ec85b3106b3",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "scripts/ops/github-credential-autofix.mjs",
-      "sha256": "96d4bbd26a9335bd34108d97618f569cbbd136c8f4c2d803ad09a3f710c24c2d",
-      "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
-      "approvedAtUtc": "2026-02-18T14:59:18.000Z",
-      "rationale": "Approve OPS automation autofix script for workflow-scope push remediation and handoff boundary."
-    },
-    {
-      "filePath": "scripts/ops/path-boundary-guard-state.mjs",
-      "sha256": "95838483e8f47c1fa76ca7c806fd993d029a128604f51bed5871cf5c5432e485",
-      "approvedBy": "ticket:TZ-24E-P1-PATH-BOUNDARY-GUARD-IPC-IO-012",
-      "approvedAtUtc": "2026-02-18T15:22:29.000Z",
-      "rationale": "Approve path-boundary guard wiring state checks and expanded bypass scenario coverage."
-    },
-    {
-      "filePath": "scripts/ops/x2-readiness-gate-state.mjs",
-      "sha256": "28279b8bf99c56cd4184a3ad96109c67014f14aca184898f052823b6c66ba1e8",
-      "approvedBy": "ticket:TZ-24E-P1-CI-OPS-INJECTION-HARDENING-DISCOVERY-004",
-      "approvedAtUtc": "2026-02-18T12:26:34.000Z",
-      "rationale": "Approve minimal CI/OPS injection hardening in x2 readiness gate command execution path."
-    },
-    {
-      "filePath": "scripts/ops/xplat-contract-state.mjs",
-      "sha256": "5547c522341d45c49de4a4dba82880398c9ad5dc58f9e2eeff91c6fb8a0835b2",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "test/contracts/codex-automation-policy.test.js",
-      "sha256": "4edc232a871942bd3f8754b229ab953634e3d604adf344bd9f05f1d104f65fb3",
-      "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
-      "approvedAtUtc": "2026-02-18T14:59:18.000Z",
-      "rationale": "Approve contract update for workflow-scope push autofix policy wiring."
-    },
-    {
-      "filePath": "test/contracts/execution-sequence-lock.contract.test.js",
-      "sha256": "881c7ad528695c15e9fa719d2b8cd8f41d96380ad0a20006b3632937a3d6ea26",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "test/contracts/github-credential-autofix.contract.test.js",
-      "sha256": "b38b2c3c773e8d578f6a165de267e4200d9a2495446e7ea1e0a679a1dae284a9",
-      "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
-      "approvedAtUtc": "2026-02-18T14:59:18.000Z",
-      "rationale": "Approve new contract coverage for workflow-scope push autofix detect/remediation/handoff behavior."
-    },
-    {
-      "filePath": "test/contracts/lane-separation.contract.test.js",
-      "sha256": "c4fe6bdfa16b546d2ac015a3b258d53bcef672f6722e5d35cc2c47dc128b10f4",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "test/contracts/law-path-canon-exists.contract.test.js",
-      "sha256": "2582644cdfdcbc38287859dab024abefc008816646b7402c49bee699d5464ad1",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "test/contracts/law-path-canon-no-fallback.contract.test.js",
-      "sha256": "82ec583fd78493f300da24d495fef624f8b3e70d344a7e12970c8aee47a3e78c",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "test/contracts/path-boundary-guard.contract.test.js",
-      "sha256": "36fdb675d716090e09bc09ca13832fd84525378924adcb7754bd53639dc4641c",
-      "approvedBy": "ticket:TZ-24E-P1-PATH-BOUNDARY-GUARD-IPC-IO-012",
-      "approvedAtUtc": "2026-02-18T15:22:29.000Z",
-      "rationale": "Approve contract negatives for symlink traversal and unicode path normalization equivalence."
-    },
-    {
-      "filePath": "test/contracts/prompt-layer-single-source.contract.test.js",
-      "sha256": "dee05454ba47b6844d815e95e6c3a04c68ae729c61dddbd6796f2dc3f9f95329",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "test/contracts/safe-automerge-ops-only-profile.contract.test.js",
-      "sha256": "bc6c83361298c49f195644f18960de0628839b458e1ff2854932cd454e7fef16",
-      "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
-      "approvedAtUtc": "2026-02-18T14:59:18.000Z",
-      "rationale": "Approve profile contract update binding push-step autofix hook metadata."
-    },
-    {
-      "filePath": "test/contracts/stage-axis-lock.contract.test.js",
-      "sha256": "30b5b1b224362f6eafb7e92e9a5b91748ef4e8ead38e0cddee36c86d679aac1e",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "test/contracts/transition-exit-active-canon.contract.test.js",
-      "sha256": "0662ad186cba9b56d9bbb6dd7ce9c620fc90e8e3bbdff129de748cb0f1514a35",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "test/contracts/transition-exit-failsignal-token-wiring.contract.test.js",
-      "sha256": "7ddaa4d4d63d67b5fe9b0efe61dc0db5a31507763d1e151734d1b32c396f7c6a",
-      "approvedBy": "@k.ponomarev.pro",
-      "approvedAtUtc": "2026-02-18T00:00:00.000Z",
-      "rationale": "Approve strict-governance change for TZ-24D2 contract wiring update."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/NEXT_SECTOR.json",
-      "sha256": "b89a5c0a0736a709887bdbeb466f199e80351ea804e77dee2e8f2f1bf326d04c",
-      "approvedBy": "ticket:TZ-SECTOR-01-G-SECTOR01-CLOSEOUT-001",
-      "approvedAtUtc": "2026-02-23T11:59:42.629Z",
-      "rationale": "Sector 01 Ticket G: closeout sector tracker + next sector idle (all sectors done)"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/SECTOR_01.json",
-      "sha256": "c2f5d16593f4b0dc0fc43e4e29212c6f3a1db8554f4c7537a14f203363af32d1",
-      "approvedBy": "ticket:TZ-SECTOR-01-G-SECTOR01-CLOSEOUT-001",
-      "approvedAtUtc": "2026-02-23T11:59:42.629Z",
-      "rationale": "Sector 01 Ticket G: closeout sector tracker + next sector idle (all sectors done)"
-    },
-    {
-      "filePath": "test/contracts/debt-ttl-expired.contract.test.js",
-      "sha256": "f5306a288c4707203f474eed6f0aee68a128438090b322cbe95fceb4304a4409",
-      "approvedBy": "ticket:TZ-SECTOR-01-00-PHASE0-PATCH1-GOV-STRATEGY",
-      "approvedAtUtc": "2026-02-21T16:26:04.652Z",
-      "rationale": "Sector 01 Phase0 bootstrap approvals (next-sector + sector status + failsignal + debt TTL contract)"
-    },
-    {
-      "filePath": "scripts/ops/token-declaration-state.mjs",
-      "sha256": "e81d4cd979c23ab692fe57075465a00dce32ef574bb55ba27d6bdee3d8c0a521",
-      "approvedBy": "ticket:TZ-SECTOR-01-B-REQUIREDSET-CATALOG-DRIFT-FIX-001",
-      "approvedAtUtc": "2026-02-22T11:11:58.000Z",
-      "rationale": "Sector 01 Ticket B: token catalog + token declaration validator drift fix (no required set change)"
-    },
-    {
-      "filePath": "scripts/ops/network-gate.mjs",
-      "sha256": "4ae4b37ad9a2c976a7c1e056be9bb31791b9ea5b51943c8b6fb989af360fb3ed",
-      "approvedBy": "ticket:TZ-SECTOR-01-C-CI-OPS-INJECTION-HARDENING-001",
-      "approvedAtUtc": "2026-02-22T15:49:11.088Z",
-      "rationale": "Sector 01 Ticket C: CI/OPS injection hardening (remove shell interpolation) + contract proof + close P1 item"
-    },
-    {
-      "filePath": "test/contracts/ci-ops-injection-hardening.contract.test.js",
-      "sha256": "f803c738040579021f10d7a58050161b6b452c1291848e980865a9368658d239",
-      "approvedBy": "ticket:TZ-SECTOR-01-C-CI-OPS-INJECTION-HARDENING-001",
-      "approvedAtUtc": "2026-02-22T15:49:11.088Z",
-      "rationale": "Sector 01 Ticket C: CI/OPS injection hardening (remove shell interpolation) + contract proof + close P1 item"
-    },
-    {
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-bad1149ed99b-592e3737/failsignal-registry-snapshot.json",
       "sha256": "a99e7c59e9295cb79b40e1a33c0d31edbfceaf16be026083096268870322ea17",
       "approvedBy": "ticket:TZ-POST-SECTOR-01-H2-PROMOTION-EVIDENCE-GOVERNANCE-001",
@@ -422,11 +499,116 @@
       "rationale": "Post Sector 01: commit and approve promotion evidence pack for release-candidate verify (restore active canon promotion check)"
     },
     {
+      "filePath": "docs/OPS/EXECUTION/AUTOCYCLE_CANON_v1.json",
+      "sha256": "0f1f01a0c5a9dd9e314b436597b810fb99b863212767ae05f008812cd45fe75c",
+      "approvedBy": "ticket:TZ-AUTOCYCLE-PRODUCT-PIPELINE-01",
+      "approvedAtUtc": "2026-02-19T04:10:47.000Z",
+      "rationale": "Add local product pipeline inputs (plan digest + node version) to autocycle determinism canon."
+    },
+    {
+      "filePath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+      "sha256": "4c5a3a9479a8f8aff6d436844dc9e7f31813fcb58815dd0fd94393497ca6b866",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/SECURITY/NPM_AUDIT_HIGH_CLOSURE_SECTOR01_D.json",
+      "sha256": "33b17548ed8f333518bc1a44d0fbb4466735a76003380bc118900a93e7bbfcbc",
+      "approvedBy": "ticket:TZ-SECTOR-01-D-HIGH-CLOSURE-SSOT-01",
+      "approvedAtUtc": "2026-02-19T10:10:25.806Z",
+      "rationale": "Record high-severity npm audit closure SSOT for Sector-01 Ticket D using reachability classification and exception metadata."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_HARDENING_v3.json",
+      "sha256": "093e89e8d4e0d5875b4d0528cfcb575eb335e92fd936082c7fc43a7a1560b75e",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/BINDING_SCHEMA_V1.json",
+      "sha256": "9fdeb6cdf7679aa5d7b5821dd9996cd4d234b6795ab0302ef27f3a94341ece16",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/CANON_STATUS.json",
+      "sha256": "940cf8723fca98898debba1351d0932edc3c1289faadd8c8eef18db4a5fd1b79",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/CIRCULAR_DEPENDENCY_BREAK_v3.json",
+      "sha256": "ed64a957a0a3189c9dfe2e9db76c27b01632fe985f10d9bb1d5dbfb5098fe930",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/DEPENDENCY_RISK_REGISTER.json",
+      "sha256": "9ee62bbcba3084445fa9f385af48d29290aadb24ca89fb85c2a5734f91e4093a",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/E2E_CRITICAL_USER_PATH_HARD_MIN_v3.json",
+      "sha256": "b1cdb69f01f0e620261f913dd1c46ed330880d358f54fb6f03a71d5671dcd08f",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/EXECUTION_SEQUENCE_CANON_v1.json",
+      "sha256": "f6e38847245f424081f8d0755183dbbb86e440c655f0fa8f2e6286dc25005c07",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/GATE_DEPENDENCY_DECLARATION_V1.json",
+      "sha256": "194c87cb9fb4d16be69d2c69bc56b76b52626b98ae82b1877d7e036d66c1c33b",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/LAW_PATH_CANON.json",
+      "sha256": "3f3051cf0ab94e591c737f444ffdb80aa59f7a7d4df45b3a0472909842b0a08c",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/LIFECYCLE_NEGATIVE_TEST_COVERAGE_v3.json",
+      "sha256": "5f7543283540cabf1e71242ef4b6bc9bc89bd26bbcca89725936eabf50b0e8e7",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
       "filePath": "docs/OPS/STATUS/MODE_MATRIX_SINGLE_AUTHORITY_v3.json",
       "sha256": "4a5f0f3bf22b16abaa7a4c650cf5287acf83cb4a29d2e12aa7f0c445cf7e230b",
       "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
       "approvedAtUtc": "2026-02-26T18:05:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/NEXT_SECTOR.json",
+      "sha256": "b89a5c0a0736a709887bdbeb466f199e80351ea804e77dee2e8f2f1bf326d04c",
+      "approvedBy": "ticket:TZ-SECTOR-01-G-SECTOR01-CLOSEOUT-001",
+      "approvedAtUtc": "2026-02-23T11:59:42.629Z",
+      "rationale": "Sector 01 Ticket G: closeout sector tracker + next sector idle (all sectors done)"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/P1_DEBT_QUEUE.json",
+      "sha256": "af2e690b55d16cbf0d259b1f59f75eaa263c922b01241da791b2fb4aaa091809",
+      "approvedBy": "ticket:TZ-SECTOR-01-F-P1-QUEUE-SECTOR-TRACKER-RECONCILE-001",
+      "approvedAtUtc": "2026-02-23T10:49:32.225Z",
+      "rationale": "Sector 01 Ticket F: reconcile P1 queue status + sector tracker (no semantic change)"
     },
     {
       "filePath": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
@@ -436,95 +618,18 @@
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
     },
     {
-      "filePath": "scripts/ops/mode-matrix-single-authority-state.mjs",
-      "sha256": "9f5060cddb1038e2c9a49a1d4f04da5e700bab98393d5b33b76580d9ad982e73",
+      "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
+      "sha256": "6e37085e283ff774f1b3dc0852f6fc272cd6cd1c6862f197ec7fc645934a29cd",
       "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
       "approvedAtUtc": "2026-02-26T18:05:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
     },
     {
-      "filePath": "scripts/ops/p0-01-mode-matrix-single-authority-report.mjs",
-      "sha256": "4ccf1f6b48040b81088036ddb52f31a9f06106f416484f8d8cf6d044c5b8c86b",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "test/contracts/mode-matrix-single-authority.contract.test.js",
-      "sha256": "fa2334a5ecb8b3a1ccf422e7f5a09a10283da26ab12e8e75cd3ffcecc378be25",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/dual-authority-mismatch-cases.json",
-      "sha256": "5e9f27980c5236edb14a876566ae32746ed83b9f731bd066f921865c493313d7",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/claims-mode-disposition-conflicts.json",
-      "sha256": "59f18f6e8a9c2a028e24fbad20be24e36fb371a4895a8323147cb924c37edf8c",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
-      "sha256": "e09a162b1cebcb26c62c578360f8b1ad22301225a564c9477d12d7ecff2b1deb",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/summary.json",
-      "sha256": "16f0cad027b26192afd36ba939a25ef286b5c3509328ac9e7c9112055ecf76cb",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:10:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/ticket-meta.json",
-      "sha256": "5c2a68d77d4e4824fe0ab815c0941f10a795a51c9d926be8fff7194a7b31bfc5",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:10:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/binding-backfill-coverage.json",
-      "sha256": "8a7430d469b15ccf7d2867d99bef38b2afa81f400d6e3e4e59e0ef0a475fd4d5",
-      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
-      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
-      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/release-token-binding-gaps.json",
-      "sha256": "68391f1498e2e72a9b7ad892bd59b12dc556e35aa0fa81f4540e6b71a2a9602e",
-      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
-      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
-      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/summary.json",
-      "sha256": "1bf6a3d534d53c1f8a2f8b98dbf9832a3ddb1ec9f1bd615aeda7f952cdea89a0",
-      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
-      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
-      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/ticket-meta.json",
-      "sha256": "2e885fa0e6249ed96a4b991b904ba5ed18a01ee29ed8bd5bb9816a36d4f1d866",
-      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
-      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
-      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/BINDING_SCHEMA_V1.json",
-      "sha256": "9fdeb6cdf7679aa5d7b5821dd9996cd4d234b6795ab0302ef27f3a94341ece16",
-      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
-      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
-      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+      "filePath": "docs/OPS/STATUS/RELEASE_GATE_EXIT_NONZERO_v3.json",
+      "sha256": "c884408b15748fa2bde8473832bf96e2dcd1c0559343d6654482e21cb87ee17b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
@@ -555,417 +660,11 @@
       "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
     },
     {
-      "filePath": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
-      "sha256": "f09582af9b3697408aa1fb8c95b3d9c8563e3282e98826d1deee2226d0ac65a7",
-      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
-      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
-      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
-    },
-    {
-      "filePath": "scripts/ops/release-token-binding-completeness-state.mjs",
-      "sha256": "d417c281512513c51f5a368d253a5479c3b4ab749af0ca033b710e64eb22594c",
-      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
-      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
-      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
-    },
-    {
-      "filePath": "test/contracts/release-token-binding-completeness.contract.test.js",
-      "sha256": "1239768c5be6b92b166090e0b210962cb7590b5a12e9880e41b210d990981c3f",
-      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
-      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
-      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/advisory-blocking-drift-cases.json",
-      "sha256": "6f7e2453c0da0224d79012533db58acb4501ffb15d299f99d41798a5757cc9e7",
-      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
-      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
-      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/critical-user-path-pass-proof.json",
-      "sha256": "9946eeb49eb53c0783cbaa24e37a2a34e71a2a240ed6438d961d94e007e8fa93",
-      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
-      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
-      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/e2e-critical-user-path-negative-missing-step.json",
-      "sha256": "ab3274751fbf02febee0e0fbb906c8095128b39af8f7043b022ec93c79853b82",
-      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
-      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
-      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/e2e-critical-user-path-scenarios.json",
-      "sha256": "693f83dd9ef4e84cbe20108658f1b436dfd4c501835a654a96339895548a81b6",
-      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
-      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
-      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/summary.json",
-      "sha256": "9b4054130b965bd782edc512f25a57479e4375a0db69e5309fac9f807e525e24",
-      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
-      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
-      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/ticket-meta.json",
-      "sha256": "85dbb093e2eed42d4cbae9583673d35cef8a2574082edf590718a70f0ef67756",
-      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
-      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
-      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/E2E_CRITICAL_USER_PATH_HARD_MIN_v3.json",
-      "sha256": "b1cdb69f01f0e620261f913dd1c46ed330880d358f54fb6f03a71d5671dcd08f",
-      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
-      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
-      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
-    },
-    {
-      "filePath": "scripts/ops/e2e-critical-user-path-state.mjs",
-      "sha256": "b2f31420fc9055c0d62e990a047cad958b777225770ae7986fb73e0cf7118b82",
-      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
-      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
-      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
-    },
-    {
-      "filePath": "scripts/ops/p0-03-e2e-critical-user-path-report.mjs",
-      "sha256": "368f76a01fe9333e17b210e1f19db772db8f56bed597c692a9a221b5c6541fe9",
-      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
-      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
-      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
-    },
-    {
-      "filePath": "test/contracts/e2e-critical-user-path.contract.test.js",
-      "sha256": "59cdb2c206237ca751ea051263741180feaa74f3f8afe3fb1879d06214ca28fe",
-      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
-      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
-      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/advisory-blocking-drift-cases.json",
-      "sha256": "6f7e2453c0da0224d79012533db58acb4501ffb15d299f99d41798a5757cc9e7",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-external-artifact-positive.json",
-      "sha256": "7928c9b146d6bc67c9cb71a3cc305fde7593ad73b7cef658ebde32e09fc98bb6",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-required-payload-fields-negative.json",
-      "sha256": "00d052484f9ed5b1bb13b0b07643056ac7e648259c694dcaf831e8757ae6db3d",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-self-generated-trust-context-negative.json",
-      "sha256": "c5f828b1d5235d6815ae4cb6d880c429ab41ed9c92797198cd5ece2d9e4ca19f",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-signature-trust-root-negative.json",
-      "sha256": "b4c6b56de7dde2e106b33eb371f3669d874f4f47b582a14173720357f87a2842",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/attestation-synthetic-payload-negative.json",
-      "sha256": "f9c1de33cfeed48c023c850df06bb5039b87b2149201e7b4ad604e55e3167e25",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/summary.json",
-      "sha256": "924d101d94dda3c3e500658d37f4c8acba7a22aafd09ad6dd46195c09654b412",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/ticket-meta.json",
-      "sha256": "8619a52370bc0441e42fd4bf80b0b06193db26119eb6f6d6c36a7b779d5c637e",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_HARDENING_v3.json",
-      "sha256": "093e89e8d4e0d5875b4d0528cfcb575eb335e92fd936082c7fc43a7a1560b75e",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "scripts/ops/attestation-trust-lock-state.mjs",
-      "sha256": "2b3600a3320b55b05078a82c585c177801a10230ba596e833b4806da363eefbd",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "scripts/ops/p0-04-attestation-trust-lock-report.mjs",
-      "sha256": "6553017f08464eb61ecd7f251b26fa7fceef32fb4fe008ac470cf164e071b301",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "test/contracts/attestation-trust-lock.contract.test.js",
-      "sha256": "686ece9e5d61ecfa40e2e30904383ac6e5a3339be7eea91618c1e4b3c125f0d5",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/advisory-blocking-drift-cases.json",
-      "sha256": "0ced9911d9e35b05e392c4ebf74095ee2d19355f55243a8b6f87d2464fe4e3aa",
-      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
-      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
-      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/cycle-negative-fixtures.json",
-      "sha256": "e82b569bc8f9d2491cf386463fdf8b78a6f7447eb04ca03caf07bb0eb6516bea",
-      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
-      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
-      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/gate-graph-scc-report.json",
-      "sha256": "5874e3c927fc445a93dfbcd16347ca315ea197164b9bef3b5cf7993965132aab",
-      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
-      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
-      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/skip-flag-bypass-negative.json",
-      "sha256": "a61656625c3732d6b13f369fe6e2a58feaaf47fcebab1c2dbf64e87e7d2b3a7e",
-      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
-      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
-      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/summary.json",
-      "sha256": "f883a2829da38443e4c59a8480915d998bbedf71b09614e03375ccf27221072a",
-      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
-      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
-      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/ticket-meta.json",
-      "sha256": "16e9c278ebaa70f8c725512e11a0c44523c9f503894efe7de595eb56d2e92ea7",
-      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
-      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
-      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/CIRCULAR_DEPENDENCY_BREAK_v3.json",
-      "sha256": "ed64a957a0a3189c9dfe2e9db76c27b01632fe985f10d9bb1d5dbfb5098fe930",
-      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
-      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
-      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/GATE_DEPENDENCY_DECLARATION_V1.json",
-      "sha256": "194c87cb9fb4d16be69d2c69bc56b76b52626b98ae82b1877d7e036d66c1c33b",
-      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
-      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
-      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
-    },
-    {
-      "filePath": "scripts/ops/gate-graph-check-v1-state.mjs",
-      "sha256": "20bfa68c52c4ebb965854db3e6d6cbfabf3dcd7cd45ae6ae9d14fdda9329b4f6",
-      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
-      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
-      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
-    },
-    {
-      "filePath": "scripts/ops/p0-05-circular-dependency-break-report.mjs",
-      "sha256": "f4234294b554e09a32d19ddbdfcc04e07e132f8999485665716ecba9e787b4e3",
-      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
-      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
-      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
-    },
-    {
-      "filePath": "test/contracts/circular-dependency-break.contract.test.js",
-      "sha256": "6e1f8cbcdecff1c90214d649d61a24e32b0c88c6885c084b100dcd813ec7b52e",
-      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
-      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
-      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/LIFECYCLE_NEGATIVE_TEST_COVERAGE_v3.json",
-      "sha256": "5f7543283540cabf1e71242ef4b6bc9bc89bd26bbcca89725936eabf50b0e8e7",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
-      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "scripts/ops/lifecycle-negative-test-coverage-state.mjs",
-      "sha256": "5555a5affca69ee6a6015daeb7e13104e71f1034e42e673dfc5362f6a391cd4e",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
-      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "scripts/ops/p0-06-lifecycle-negative-test-coverage-report.mjs",
-      "sha256": "c0f17a17401afd378ec1cddfbf48a41f1b238c938ab3e601426f7799f20d639f",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
-      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "test/contracts/lifecycle-negative-test-coverage.contract.test.js",
-      "sha256": "aba35bddcd5bd5ff591ddde8333ce48cfbd078b01d3abada8da72e2cab18c7e4",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
-      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/merge-flow-negative-cases.json",
-      "sha256": "59cedaa753542e49e0463fa8679909a727eab1cd0211e83503fcab8e0fe7d67a",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
-      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/release-gate-nonzero-fail-proof.json",
-      "sha256": "336ad47e89681921d3151cb21c9f6b518e79305a88aa8b93ba209ed5ea54f6bf",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
-      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/advisory-blocking-drift-cases.json",
-      "sha256": "0ced9911d9e35b05e392c4ebf74095ee2d19355f55243a8b6f87d2464fe4e3aa",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
-      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/summary.json",
-      "sha256": "7c3ff1e45d24234dca67717f2366c603ec51d00c7788b0fc67b935460b08c7bc",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
-      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/ticket-meta.json",
-      "sha256": "73e97a8240218c7459e74b4383eaa483c717ad3f078180f28c6eae495f4f2e8c",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
-      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/RELEASE_GATE_EXIT_NONZERO_v3.json",
-      "sha256": "c884408b15748fa2bde8473832bf96e2dcd1c0559343d6654482e21cb87ee17b",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
-      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
-    },
-    {
-      "filePath": "scripts/ops/release-gate-exit-nonzero-state.mjs",
-      "sha256": "3f349f7428781e10c24c4237f50e851e3ae558e9d3009ec81b92223ba5703ac0",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
-      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
-    },
-    {
-      "filePath": "scripts/ops/p0-07-release-gate-exit-nonzero-report.mjs",
-      "sha256": "32831408a8b1f17625ebae455938930bb232cb744cb168b8b7cfca09653ef813",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
-      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
-    },
-    {
-      "filePath": "test/contracts/release-gate-exit-nonzero.contract.test.js",
-      "sha256": "911ead17ee7534dfcb71fbfd41c238f6f3691455d5a2acfa9045279c24c100dc",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
-      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/release-gate-fail-exit-cases.json",
-      "sha256": "67813dcd594a1f7490ea8b74651f3067a1c7aad262e6995061c38ecaec335133",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
-      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/release-gate-exit-code-proof.json",
-      "sha256": "769aed4871ccd89fd9e89b3d03187808c64b4114493a65b8241b8357a0055654",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
-      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/effective-required-token-fail-map.json",
-      "sha256": "dd79b4dbeab3f048872233b3a0ec50c8f0a5b98d7bb7016876dc370ecce86033",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
-      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/advisory-blocking-drift-cases.json",
-      "sha256": "0ced9911d9e35b05e392c4ebf74095ee2d19355f55243a8b6f87d2464fe4e3aa",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
-      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/summary.json",
-      "sha256": "8becf122d2524c3cd6411566ff5ba4a2519d1d01a1e8a5b736a98688928ee4ef",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
-      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/ticket-meta.json",
-      "sha256": "461cc4caf1974ba9009c422424a3fe84772c4c25352f1df943a914dd280a2a37",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
-      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/drift-engine-dedup-proof.json",
-      "sha256": "251d3cafa5b246c5326ea6d2007fd2dd6401564a70e7b1045a912030ae894539",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
-      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/drift-engine-input-map.json",
-      "sha256": "0a43f01d1d09cd66dffe777ad0831b2926c68bc8207cb0d632f7db104650a1a9",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
-      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/summary.json",
-      "sha256": "a15e3de59baa4fd9aac03ef5284121df84b88288e7d7c77a12b814ecceaa86e4",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
-      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/ticket-meta.json",
-      "sha256": "413cb15a4d65201e6eb58f3ce655d8e7018998ca6dfa414f06fbf9c62fc876c0",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
-      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+      "filePath": "docs/OPS/STATUS/SECTOR_01.json",
+      "sha256": "c2f5d16593f4b0dc0fc43e4e29212c6f3a1db8554f4c7537a14f203363af32d1",
+      "approvedBy": "ticket:TZ-SECTOR-01-G-SECTOR01-CLOSEOUT-001",
+      "approvedAtUtc": "2026-02-23T11:59:42.629Z",
+      "rationale": "Sector 01 Ticket G: closeout sector tracker + next sector idle (all sectors done)"
     },
     {
       "filePath": "docs/OPS/STATUS/SHARED_DRIFT_ENGINE_RUNTIME_v3.json",
@@ -975,11 +674,200 @@
       "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
     },
     {
+      "filePath": "docs/OPS/STATUS/SHARED_REMOTE_PROBE_ENGINE_WITH_TTL_v3.json",
+      "sha256": "f471d062a421e8f6ba0dac2c098ae10da7aa51affe4b3407812e44b7ddc5632e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.12.md",
+      "sha256": "e6fc2cb960d55139fb959a3bc31dd2ba0d8016b2eace2064b1cb2775fa62c71c",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+      "sha256": "17cadb80e064210aa414786183f3f504e7a8098273c57138e111fc340344e9b6",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "docs/OPS/TOKENS/TOKEN_CATALOG.json",
+      "sha256": "b0d2e19677f50c094ba081af0461a7b94622b31b415561bf5f87293158e5fa08",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "scripts/doctor.mjs",
+      "sha256": "8a9435a7a14746aad462035230a2188711cb2277da44cf56a81a9ce3389539c6",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "scripts/ops/attestation-trust-lock-state.mjs",
+      "sha256": "2b3600a3320b55b05078a82c585c177801a10230ba596e833b4806da363eefbd",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "scripts/ops/check-execution-sequence.mjs",
+      "sha256": "e377b6dba69d16ccbc8295bbbf22ab54c997919cd04020b88a91749441b95c2b",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "scripts/ops/check-law-path-canon.mjs",
+      "sha256": "ab1f11ea5e5485cc6643127626552ed2254541ba12a0a92224edb1518f80d2ee",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "scripts/ops/codex-run.mjs",
+      "sha256": "b8447c8ee2a1d1ea9ad4eb247e10058afac437dae21d6fd5950bc7ae868a7085",
+      "approvedBy": "ticket:TZ-RUNNER-NO-POPUP-SINGLE-ENTRY-01",
+      "approvedAtUtc": "2026-02-19T10:37:19.694Z",
+      "rationale": "Enforce non-interactive runner auth/network preflight with session cache to prevent popup-style prompts in PR flow."
+    },
+    {
+      "filePath": "scripts/ops/compute-wave-input-hash.mjs",
+      "sha256": "870426af05260b2be9d202a9546e1b6df473b9cee8ef5dd05a609ec85b3106b3",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "scripts/ops/e2e-critical-user-path-state.mjs",
+      "sha256": "b2f31420fc9055c0d62e990a047cad958b777225770ae7986fb73e0cf7118b82",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "scripts/ops/gate-graph-check-v1-state.mjs",
+      "sha256": "20bfa68c52c4ebb965854db3e6d6cbfabf3dcd7cd45ae6ae9d14fdda9329b4f6",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "scripts/ops/github-credential-autofix.mjs",
+      "sha256": "96d4bbd26a9335bd34108d97618f569cbbd136c8f4c2d803ad09a3f710c24c2d",
+      "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
+      "approvedAtUtc": "2026-02-18T14:59:18.000Z",
+      "rationale": "Approve OPS automation autofix script for workflow-scope push remediation and handoff boundary."
+    },
+    {
+      "filePath": "scripts/ops/lifecycle-negative-test-coverage-state.mjs",
+      "sha256": "5555a5affca69ee6a6015daeb7e13104e71f1034e42e673dfc5362f6a391cd4e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/mode-matrix-single-authority-state.mjs",
+      "sha256": "9f5060cddb1038e2c9a49a1d4f04da5e700bab98393d5b33b76580d9ad982e73",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "scripts/ops/network-gate.mjs",
+      "sha256": "4ae4b37ad9a2c976a7c1e056be9bb31791b9ea5b51943c8b6fb989af360fb3ed",
+      "approvedBy": "ticket:TZ-SECTOR-01-C-CI-OPS-INJECTION-HARDENING-001",
+      "approvedAtUtc": "2026-02-22T15:49:11.088Z",
+      "rationale": "Sector 01 Ticket C: CI/OPS injection hardening (remove shell interpolation) + contract proof + close P1 item"
+    },
+    {
+      "filePath": "scripts/ops/p0-01-mode-matrix-single-authority-report.mjs",
+      "sha256": "4ccf1f6b48040b81088036ddb52f31a9f06106f416484f8d8cf6d044c5b8c86b",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
+      "sha256": "f09582af9b3697408aa1fb8c95b3d9c8563e3282e98826d1deee2226d0ac65a7",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "scripts/ops/p0-03-e2e-critical-user-path-report.mjs",
+      "sha256": "368f76a01fe9333e17b210e1f19db772db8f56bed597c692a9a221b5c6541fe9",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "scripts/ops/p0-04-attestation-trust-lock-report.mjs",
+      "sha256": "6553017f08464eb61ecd7f251b26fa7fceef32fb4fe008ac470cf164e071b301",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "scripts/ops/p0-05-circular-dependency-break-report.mjs",
+      "sha256": "f4234294b554e09a32d19ddbdfcc04e07e132f8999485665716ecba9e787b4e3",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "scripts/ops/p0-06-lifecycle-negative-test-coverage-report.mjs",
+      "sha256": "c0f17a17401afd378ec1cddfbf48a41f1b238c938ab3e601426f7799f20d639f",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p0-07-release-gate-exit-nonzero-report.mjs",
+      "sha256": "32831408a8b1f17625ebae455938930bb232cb744cb168b8b7cfca09653ef813",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
       "filePath": "scripts/ops/p1-01-shared-drift-engine-runtime-report.mjs",
       "sha256": "b3a399440f40e8487d4d46fcfeac812ada10bd1dd5a667dbbab4bfdd9e2f6c50",
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-26T20:17:35.000Z",
       "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-02-shared-remote-probe-engine-report.mjs",
+      "sha256": "70da5ac0efc99ee9a118f2fb0f9c501722dae2cd0030a04d0c322a011e5799f7",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/path-boundary-guard-state.mjs",
+      "sha256": "95838483e8f47c1fa76ca7c806fd993d029a128604f51bed5871cf5c5432e485",
+      "approvedBy": "ticket:TZ-24E-P1-PATH-BOUNDARY-GUARD-IPC-IO-012",
+      "approvedAtUtc": "2026-02-18T15:22:29.000Z",
+      "rationale": "Approve path-boundary guard wiring state checks and expanded bypass scenario coverage."
+    },
+    {
+      "filePath": "scripts/ops/release-gate-exit-nonzero-state.mjs",
+      "sha256": "3f349f7428781e10c24c4237f50e851e3ae558e9d3009ec81b92223ba5703ac0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/release-token-binding-completeness-state.mjs",
+      "sha256": "d417c281512513c51f5a368d253a5479c3b4ab749af0ca033b710e64eb22594c",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
     },
     {
       "filePath": "scripts/ops/shared-drift-engine-runtime-state.mjs",
@@ -989,11 +877,193 @@
       "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
     },
     {
+      "filePath": "scripts/ops/shared-remote-probe-engine-state.mjs",
+      "sha256": "51eea4d38f75bfc28ce50c08f8cbc961a4b8424c9494c40b4fc78480e79b30ce",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/token-declaration-state.mjs",
+      "sha256": "e81d4cd979c23ab692fe57075465a00dce32ef574bb55ba27d6bdee3d8c0a521",
+      "approvedBy": "ticket:TZ-SECTOR-01-B-REQUIREDSET-CATALOG-DRIFT-FIX-001",
+      "approvedAtUtc": "2026-02-22T11:11:58.000Z",
+      "rationale": "Sector 01 Ticket B: token catalog + token declaration validator drift fix (no required set change)"
+    },
+    {
+      "filePath": "scripts/ops/x2-readiness-gate-state.mjs",
+      "sha256": "28279b8bf99c56cd4184a3ad96109c67014f14aca184898f052823b6c66ba1e8",
+      "approvedBy": "ticket:TZ-24E-P1-CI-OPS-INJECTION-HARDENING-DISCOVERY-004",
+      "approvedAtUtc": "2026-02-18T12:26:34.000Z",
+      "rationale": "Approve minimal CI/OPS injection hardening in x2 readiness gate command execution path."
+    },
+    {
+      "filePath": "scripts/ops/xplat-contract-state.mjs",
+      "sha256": "5547c522341d45c49de4a4dba82880398c9ad5dc58f9e2eeff91c6fb8a0835b2",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "test/contracts/attestation-trust-lock.contract.test.js",
+      "sha256": "686ece9e5d61ecfa40e2e30904383ac6e5a3339be7eea91618c1e4b3c125f0d5",
+      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
+      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
+      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "test/contracts/ci-ops-injection-hardening.contract.test.js",
+      "sha256": "f803c738040579021f10d7a58050161b6b452c1291848e980865a9368658d239",
+      "approvedBy": "ticket:TZ-SECTOR-01-C-CI-OPS-INJECTION-HARDENING-001",
+      "approvedAtUtc": "2026-02-22T15:49:11.088Z",
+      "rationale": "Sector 01 Ticket C: CI/OPS injection hardening (remove shell interpolation) + contract proof + close P1 item"
+    },
+    {
+      "filePath": "test/contracts/circular-dependency-break.contract.test.js",
+      "sha256": "6e1f8cbcdecff1c90214d649d61a24e32b0c88c6885c084b100dcd813ec7b52e",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "test/contracts/codex-automation-policy.test.js",
+      "sha256": "4edc232a871942bd3f8754b229ab953634e3d604adf344bd9f05f1d104f65fb3",
+      "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
+      "approvedAtUtc": "2026-02-18T14:59:18.000Z",
+      "rationale": "Approve contract update for workflow-scope push autofix policy wiring."
+    },
+    {
+      "filePath": "test/contracts/debt-ttl-expired.contract.test.js",
+      "sha256": "f5306a288c4707203f474eed6f0aee68a128438090b322cbe95fceb4304a4409",
+      "approvedBy": "ticket:TZ-SECTOR-01-00-PHASE0-PATCH1-GOV-STRATEGY",
+      "approvedAtUtc": "2026-02-21T16:26:04.652Z",
+      "rationale": "Sector 01 Phase0 bootstrap approvals (next-sector + sector status + failsignal + debt TTL contract)"
+    },
+    {
+      "filePath": "test/contracts/e2e-critical-user-path.contract.test.js",
+      "sha256": "59cdb2c206237ca751ea051263741180feaa74f3f8afe3fb1879d06214ca28fe",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "test/contracts/execution-sequence-lock.contract.test.js",
+      "sha256": "881c7ad528695c15e9fa719d2b8cd8f41d96380ad0a20006b3632937a3d6ea26",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "test/contracts/github-credential-autofix.contract.test.js",
+      "sha256": "b38b2c3c773e8d578f6a165de267e4200d9a2495446e7ea1e0a679a1dae284a9",
+      "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
+      "approvedAtUtc": "2026-02-18T14:59:18.000Z",
+      "rationale": "Approve new contract coverage for workflow-scope push autofix detect/remediation/handoff behavior."
+    },
+    {
+      "filePath": "test/contracts/lane-separation.contract.test.js",
+      "sha256": "c4fe6bdfa16b546d2ac015a3b258d53bcef672f6722e5d35cc2c47dc128b10f4",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "test/contracts/law-path-canon-exists.contract.test.js",
+      "sha256": "2582644cdfdcbc38287859dab024abefc008816646b7402c49bee699d5464ad1",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "test/contracts/law-path-canon-no-fallback.contract.test.js",
+      "sha256": "82ec583fd78493f300da24d495fef624f8b3e70d344a7e12970c8aee47a3e78c",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "test/contracts/lifecycle-negative-test-coverage.contract.test.js",
+      "sha256": "aba35bddcd5bd5ff591ddde8333ce48cfbd078b01d3abada8da72e2cab18c7e4",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "test/contracts/mode-matrix-single-authority.contract.test.js",
+      "sha256": "fa2334a5ecb8b3a1ccf422e7f5a09a10283da26ab12e8e75cd3ffcecc378be25",
+      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
+      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
+      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "test/contracts/path-boundary-guard.contract.test.js",
+      "sha256": "36fdb675d716090e09bc09ca13832fd84525378924adcb7754bd53639dc4641c",
+      "approvedBy": "ticket:TZ-24E-P1-PATH-BOUNDARY-GUARD-IPC-IO-012",
+      "approvedAtUtc": "2026-02-18T15:22:29.000Z",
+      "rationale": "Approve contract negatives for symlink traversal and unicode path normalization equivalence."
+    },
+    {
+      "filePath": "test/contracts/prompt-layer-single-source.contract.test.js",
+      "sha256": "dee05454ba47b6844d815e95e6c3a04c68ae729c61dddbd6796f2dc3f9f95329",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "test/contracts/release-gate-exit-nonzero.contract.test.js",
+      "sha256": "911ead17ee7534dfcb71fbfd41c238f6f3691455d5a2acfa9045279c24c100dc",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "test/contracts/release-token-binding-completeness.contract.test.js",
+      "sha256": "1239768c5be6b92b166090e0b210962cb7590b5a12e9880e41b210d990981c3f",
+      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
+      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
+      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "test/contracts/safe-automerge-ops-only-profile.contract.test.js",
+      "sha256": "bc6c83361298c49f195644f18960de0628839b458e1ff2854932cd454e7fef16",
+      "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
+      "approvedAtUtc": "2026-02-18T14:59:18.000Z",
+      "rationale": "Approve profile contract update binding push-step autofix hook metadata."
+    },
+    {
       "filePath": "test/contracts/shared-drift-engine-runtime.contract.test.js",
       "sha256": "36defbf8f0c6cb2721c0be5c75b59ba1e717fe22c658c304bb633ca07f1b1574",
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-26T20:17:35.000Z",
       "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "test/contracts/shared-remote-probe-engine.contract.test.js",
+      "sha256": "2ccc49e2e028756d0888e6cc18e63434d822f36798e527e6a8d1c87b8cf7b1b2",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
+    },
+    {
+      "filePath": "test/contracts/stage-axis-lock.contract.test.js",
+      "sha256": "30b5b1b224362f6eafb7e92e9a5b91748ef4e8ead38e0cddee36c86d679aac1e",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "test/contracts/transition-exit-active-canon.contract.test.js",
+      "sha256": "0662ad186cba9b56d9bbb6dd7ce9c620fc90e8e3bbdff129de748cb0f1514a35",
+      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
+      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
+      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "test/contracts/transition-exit-failsignal-token-wiring.contract.test.js",
+      "sha256": "7ddaa4d4d63d67b5fe9b0efe61dc0db5a31507763d1e151734d1b32c396f7c6a",
+      "approvedBy": "@k.ponomarev.pro",
+      "approvedAtUtc": "2026-02-18T00:00:00.000Z",
+      "rationale": "Approve strict-governance change for TZ-24D2 contract wiring update."
     }
   ]
 }

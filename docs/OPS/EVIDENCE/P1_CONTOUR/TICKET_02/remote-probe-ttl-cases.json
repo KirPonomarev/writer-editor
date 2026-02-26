@@ -1,0 +1,22 @@
+{
+  "cases": [
+    {
+      "caseId": "ttl_equals_600_positive",
+      "expectedTtlSeconds": 600,
+      "passed": true,
+      "shouldPass": true,
+      "ttlSecondsConfigured": 600
+    },
+    {
+      "caseId": "ttl_not_600_negative",
+      "expectedTtlSeconds": 600,
+      "passed": false,
+      "shouldPass": false,
+      "ttlSecondsConfigured": 599
+    }
+  ],
+  "policyEnforced": true,
+  "ttlEquals600": true,
+  "ttlSecondsConfigured": 600,
+  "ttlSecondsExpected": 600
+}
