@@ -1141,6 +1141,83 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T09:35:00.000Z",
       "rationale": "TZ-P1-06-L3-FAST-LANE-ENFORCEMENT-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T11:15:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-002-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/hotpath-p95-latency-proof.json",
+      "sha256": "0764483f15fb786646ebd0eb1cfe69279f576a0294ca35ad89cc7e62a6861976",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T11:15:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-002-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/hotpath-rerender-sampling.json",
+      "sha256": "881033b35e23f32daccdbc681041eafb625144d45255f4e48f8831b91df9f677",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T11:15:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-002-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/summary.json",
+      "sha256": "e2901f7ed84c8ac910124bd4219013f005f70ccaef9219da48be9dbefdf13cd9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T11:15:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-002-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/ticket-meta.json",
+      "sha256": "a3184f9d28615f338b5cfd620030a1df77fa4c08f20f453f7f83d1cdea6b3a15",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T11:15:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-002-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/typing-loop-nonblocking-proof.json",
+      "sha256": "33f29a6bccb178c511cf76d49b77248f28d5c80e877305bccf1ad13d9f438259",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T11:15:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-002-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/HOT_PATH_INCREMENTAL_RENDER_v2.json",
+      "sha256": "9c45625277b4d3ede5b0356c6e5f2fd197740313bd8a78665645b48362fa7400",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T11:15:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-002-RERUN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/editor-hotpath-incremental-render.js",
+      "sha256": "21062730ce619ea3f0e610bfd9cc6f9e4846e2101d7fc5da9cff3c2e4d50b5d4",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T11:15:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-002-RERUN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/hot-path-incremental-render-state.mjs",
+      "sha256": "9568f3fd98551e3a39418b3900ebd83696c877f3b43108a4ce42f927b8f47b45",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T11:15:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-002-RERUN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p2-01-hot-path-incremental-render-report.mjs",
+      "sha256": "ee5a00b5d563f439f21e8076988d72cece1b0b0eee0cb77ba96b33ae3ba31dfc",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T11:15:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-002-RERUN-01 approvals."
+    },
+    {
+      "filePath": "test/contracts/hot-path-incremental-render.contract.test.js",
+      "sha256": "02a65a8c27df39a781d0ea8d214460997e43765da8dfbb0b46c5f68dca9b7ae5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T11:15:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-002-RERUN-01 approvals."
     }
   ]
 }

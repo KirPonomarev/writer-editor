@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "status": "ACTIVE",
+  "token": "HOT_PATH_INCREMENTAL_RENDER_OK",
+  "scope": "incremental render hot-path for editor input with non-blocking typing loop and p95 budget proof",
+  "stateScript": "scripts/ops/hot-path-incremental-render-state.mjs",
+  "reportScript": "scripts/ops/p2-01-hot-path-incremental-render-report.mjs",
+  "contractTest": "test/contracts/hot-path-incremental-render.contract.test.js",
+  "runtimeModule": "scripts/ops/editor-hotpath-incremental-render.js",
+  "blockingAuthorityId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1_LOCKED",
+  "acceptanceMetricA": "NO_FULL_DOCUMENT_RERENDER_PER_KEYSTROKE",
+  "acceptanceMetricB": "INPUT_P95_WITHIN_FAST_LANE_THRESHOLD",
+  "acceptanceMetricC": "AUTOSAVE_AND_BACKUP_DO_NOT_BLOCK_TYPING_LOOP"
+}
