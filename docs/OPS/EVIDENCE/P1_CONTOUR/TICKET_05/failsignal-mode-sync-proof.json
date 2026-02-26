@@ -1,0 +1,22 @@
+{
+  "highImpactExplicitDispositionCheck": true,
+  "modeMatrixInconsistencyNegative": {
+    "inconsistencyCount": 1,
+    "inconsistencySample": {
+      "blockingFlag": false,
+      "failSignalCode": "E_ADAPTERS_NOT_ENFORCED",
+      "modeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": ""
+      },
+      "reason": "E_FAILSIGNAL_MODE_MAPPING_INCOMPLETE"
+    },
+    "ok": true,
+    "reason": "MODE_MATRIX_INCONSISTENT",
+    "stopCode": "MODE_MATRIX_INCONSISTENT",
+    "targetFailSignalCode": "E_ADAPTERS_NOT_ENFORCED"
+  },
+  "modeMatrixInconsistencyStopCheck": true,
+  "modeSyncAutomationAppliedCheck": true
+}
