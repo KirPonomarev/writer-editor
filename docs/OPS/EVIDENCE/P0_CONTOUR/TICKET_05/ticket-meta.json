@@ -1,6 +1,6 @@
 {
-  "generatedAtUtc": "2026-02-25T12:00:45.849Z",
+  "generatedAtUtc": "2026-02-26T18:55:53.000Z",
   "outputDir": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05",
-  "runId": "RUN-2026-02-25-011",
-  "ticketId": "TZ-P0-05-RECURSION-BYPASS-RELEASE-BAN-001"
+  "runId": "RUN-2026-02-26-001",
+  "ticketId": "TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003"
 }

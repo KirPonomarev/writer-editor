@@ -728,6 +728,83 @@
       "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
       "approvedAtUtc": "2026-02-26T18:45:41.000Z",
       "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/advisory-blocking-drift-cases.json",
+      "sha256": "0ced9911d9e35b05e392c4ebf74095ee2d19355f55243a8b6f87d2464fe4e3aa",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/cycle-negative-fixtures.json",
+      "sha256": "e82b569bc8f9d2491cf386463fdf8b78a6f7447eb04ca03caf07bb0eb6516bea",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/gate-graph-scc-report.json",
+      "sha256": "5874e3c927fc445a93dfbcd16347ca315ea197164b9bef3b5cf7993965132aab",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/skip-flag-bypass-negative.json",
+      "sha256": "a61656625c3732d6b13f369fe6e2a58feaaf47fcebab1c2dbf64e87e7d2b3a7e",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/summary.json",
+      "sha256": "f883a2829da38443e4c59a8480915d998bbedf71b09614e03375ccf27221072a",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/ticket-meta.json",
+      "sha256": "16e9c278ebaa70f8c725512e11a0c44523c9f503894efe7de595eb56d2e92ea7",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/CIRCULAR_DEPENDENCY_BREAK_v3.json",
+      "sha256": "ed64a957a0a3189c9dfe2e9db76c27b01632fe985f10d9bb1d5dbfb5098fe930",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/GATE_DEPENDENCY_DECLARATION_V1.json",
+      "sha256": "194c87cb9fb4d16be69d2c69bc56b76b52626b98ae82b1877d7e036d66c1c33b",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "scripts/ops/gate-graph-check-v1-state.mjs",
+      "sha256": "20bfa68c52c4ebb965854db3e6d6cbfabf3dcd7cd45ae6ae9d14fdda9329b4f6",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "scripts/ops/p0-05-circular-dependency-break-report.mjs",
+      "sha256": "f4234294b554e09a32d19ddbdfcc04e07e132f8999485665716ecba9e787b4e3",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "test/contracts/circular-dependency-break.contract.test.js",
+      "sha256": "6e1f8cbcdecff1c90214d649d61a24e32b0c88c6885c084b100dcd813ec7b52e",
+      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
+      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
+      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
     }
   ]
 }

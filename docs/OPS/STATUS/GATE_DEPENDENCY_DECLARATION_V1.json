@@ -1,0 +1,76 @@
+{
+  "declarationId": "GATE_DEPENDENCY_DECLARATION_V1",
+  "version": 1,
+  "status": "ACTIVE",
+  "description": "Explicit dependency graph for gate checks used by P0-05 SCC cycle detection.",
+  "checks": [
+    {
+      "machineCheckId": "mc_phase_switch_valid",
+      "checkClass": "primitive",
+      "dependsOn": [],
+      "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "mc_gate_graph_check_v1_phase_aware",
+      "checkClass": "primitive",
+      "dependsOn": [
+        "mc_phase_switch_valid"
+      ],
+      "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "p0_05_cycle_detection_scc_check",
+      "checkClass": "primitive",
+      "dependsOn": [
+        "mc_gate_graph_check_v1_phase_aware"
+      ],
+      "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "p0_05_cycle_component_size_threshold_check",
+      "checkClass": "primitive",
+      "dependsOn": [
+        "p0_05_cycle_detection_scc_check"
+      ],
+      "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "p0_05_skip_flag_cannot_suppress_release_promotion_check",
+      "checkClass": "primitive",
+      "dependsOn": [
+        "p0_05_cycle_component_size_threshold_check"
+      ],
+      "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "p0_05_explicit_dependencies_only_check",
+      "checkClass": "primitive",
+      "dependsOn": [
+        "p0_05_cycle_detection_scc_check"
+      ],
+      "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "mc_advisory_blocking_drift_zero",
+      "checkClass": "primitive",
+      "dependsOn": [],
+      "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "p0_05_circular_dependency_break_rollup",
+      "checkClass": "rollup",
+      "dependsOn": [
+        "mc_gate_graph_check_v1_phase_aware",
+        "p0_05_cycle_detection_scc_check",
+        "p0_05_cycle_component_size_threshold_check",
+        "p0_05_skip_flag_cannot_suppress_release_promotion_check",
+        "p0_05_explicit_dependencies_only_check",
+        "mc_advisory_blocking_drift_zero"
+      ],
+      "evidenceDependsOn": [
+        "cycle-negative-fixtures",
+        "skip-flag-bypass-negative"
+      ]
+    }
+  ]
+}

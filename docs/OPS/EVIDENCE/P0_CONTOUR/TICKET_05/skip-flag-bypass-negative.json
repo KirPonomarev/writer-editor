@@ -1,0 +1,16 @@
+{
+  "gate": "p0_05_skip_flag_cannot_suppress_release_promotion_check",
+  "ok": true,
+  "promotion": {
+    "cycleDetected": true,
+    "deliveryVerdict": "WARN",
+    "skipSuppressionAttempted": true,
+    "skipSuppressionPrevented": true
+  },
+  "release": {
+    "cycleDetected": true,
+    "deliveryVerdict": "WARN",
+    "skipSuppressionAttempted": true,
+    "skipSuppressionPrevented": true
+  }
+}

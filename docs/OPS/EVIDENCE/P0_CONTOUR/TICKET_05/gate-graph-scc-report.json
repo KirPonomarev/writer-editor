@@ -1,0 +1,24 @@
+{
+  "acyclicState": {
+    "cycleComponentCount": 0,
+    "cycleDetected": false,
+    "declarationValid": true,
+    "explicitDependenciesOnly": true,
+    "maxCycleComponentSize": 0
+  },
+  "cycleState": {
+    "cycleComponentCount": 1,
+    "cycleComponents": [
+      [
+        "p0_05_cycle_component_size_threshold_check",
+        "p0_05_cycle_detection_scc_check"
+      ]
+    ],
+    "cycleDetected": true,
+    "deliveryVerdict": "WARN",
+    "maxCycleComponentSize": 2,
+    "stopCode": "CIRCULAR_GATE_DEPENDENCY"
+  },
+  "gate": "p0_05_cycle_detection_scc_check",
+  "ok": true
+}

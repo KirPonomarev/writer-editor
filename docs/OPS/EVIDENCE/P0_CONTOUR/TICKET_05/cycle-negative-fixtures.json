@@ -1,0 +1,36 @@
+{
+  "cyclePair": [
+    "p0_05_cycle_detection_scc_check",
+    "p0_05_cycle_component_size_threshold_check"
+  ],
+  "cycleRelease": {
+    "cycleDetected": true,
+    "deliveryVerdict": "WARN",
+    "maxCycleComponentSize": 2,
+    "productVerdict": "FAIL",
+    "stopCode": "CIRCULAR_GATE_DEPENDENCY"
+  },
+  "fixtureReason": "",
+  "gate": "p0_05_cycle_component_size_threshold_check",
+  "ok": true,
+  "phaseBehavior": [
+    {
+      "deliveryVerdict": "WARN",
+      "phase": "PHASE_1_SHADOW",
+      "phaseShouldBlock": false,
+      "productVerdict": "FAIL"
+    },
+    {
+      "deliveryVerdict": "WARN",
+      "phase": "PHASE_2_WARN",
+      "phaseShouldBlock": false,
+      "productVerdict": "FAIL"
+    },
+    {
+      "deliveryVerdict": "BLOCK",
+      "phase": "PHASE_3_HARD",
+      "phaseShouldBlock": true,
+      "productVerdict": "FAIL"
+    }
+  ]
+}
