@@ -1,0 +1,33 @@
+{
+  "cases": {
+    "missingPayloadSchemaVersion": {
+      "cacheHit": false,
+      "ok": false,
+      "reason": "PAYLOAD_SCHEMA_VERSION_REQUIRED",
+      "route": "command.bus",
+      "scenarioId": "",
+      "stopCode": "E_PAYLOAD_CONTRACT_VALIDATION_MISSING"
+    },
+    "missingRequestId": {
+      "cacheHit": false,
+      "ok": false,
+      "reason": "REQUEST_ID_REQUIRED",
+      "route": "command.bus",
+      "scenarioId": "",
+      "stopCode": "E_PAYLOAD_CONTRACT_VALIDATION_MISSING"
+    },
+    "ok": true,
+    "positive": {
+      "aliasUsed": false,
+      "cacheHit": false,
+      "callerId": "menu",
+      "commandId": "cmd.project.open",
+      "ok": true,
+      "reason": "",
+      "route": "command.bus",
+      "scenarioId": "",
+      "stopCode": ""
+    }
+  },
+  "payloadContractRequiredCheck": true
+}

@@ -471,6 +471,55 @@
       "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/alias-indirection-negative-cases.json",
+      "sha256": "6658bbd6192ab263914853fba904cf5c4efc29632251b9214c373a6a21e1a9ed",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:35:25.000Z",
+      "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/caller-identity-validation-cases.json",
+      "sha256": "edae74fadf35808644a00b23e38903787bdd70d0c30a94015d5d2f90904f7562",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:35:25.000Z",
+      "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/command-surface-bypass-scenarios.json",
+      "sha256": "8650706fcfdd9ccda7b8224e989310fc93c76da838a9078dc6d75e0123d69caa",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:35:25.000Z",
+      "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/fast-path-cache-safety-proof.json",
+      "sha256": "bac1c6a097f4bab594a70d9d534c88388b50f9e589133a6cb373a2b93e317d3e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:35:25.000Z",
+      "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/payload-contract-validation-cases.json",
+      "sha256": "9072d7280475da2cb7210734cfd1de930c7623445d6701ab001c1343ee89b28c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:35:25.000Z",
+      "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/summary.json",
+      "sha256": "684d31a73b4c4e80f1216b35a52127860b9c12dbae44329b72ac010fe37a5ddb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:35:25.000Z",
+      "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/ticket-meta.json",
+      "sha256": "07c9c72d79fc5b7fa96f6bb747cf3444a5f7bffacfc9755d56cfd611d097eff6",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:35:25.000Z",
+      "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-0805ab9da950-592e3737/failsignal-registry-snapshot.json",
       "sha256": "9af1b22b87f604601b38114621995a44ae5e15c3ea9a299197c61e863a5e6448",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -651,6 +700,13 @@
       "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
       "approvedAtUtc": "2026-02-26T18:56:31.056Z",
       "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/COMMAND_SURFACE_CALLER_TRUST_PHASE_2_v3.json",
+      "sha256": "e4cb3ff7f8637d9ad294f4fedd87afd81192d3ed6c10e43e4109bb3746d428c3",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:35:25.000Z",
+      "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
     },
     {
       "filePath": "docs/OPS/STATUS/DECLARED_SET_EFFECTIVE_SET_ALIGNMENT_HARDENING_v3.json",
@@ -863,6 +919,13 @@
       "rationale": "Enforce non-interactive runner auth/network preflight with session cache to prevent popup-style prompts in PR flow."
     },
     {
+      "filePath": "scripts/ops/command-surface-caller-trust-state.mjs",
+      "sha256": "d1e309cfce8e58b2c188a88ea76dcc93832bc0d98cc81a833833e8de32808594",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:35:25.000Z",
+      "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
       "filePath": "scripts/ops/compute-wave-input-hash.mjs",
       "sha256": "870426af05260b2be9d202a9546e1b6df473b9cee8ef5dd05a609ec85b3106b3",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -1017,6 +1080,13 @@
       "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
     },
     {
+      "filePath": "scripts/ops/p1-06-command-surface-caller-trust-report.mjs",
+      "sha256": "ba47b3571fcc5901cc51310a90b4aafb1be5304dd3fe8d267cf206811cf1b2b8",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:35:25.000Z",
+      "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
       "filePath": "scripts/ops/path-boundary-guard-state.mjs",
       "sha256": "95838483e8f47c1fa76ca7c806fd993d029a128604f51bed5871cf5c5432e485",
       "approvedBy": "ticket:TZ-24E-P1-PATH-BOUNDARY-GUARD-IPC-IO-012",
@@ -1099,6 +1169,13 @@
       "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
       "approvedAtUtc": "2026-02-18T14:59:18.000Z",
       "rationale": "Approve contract update for workflow-scope push autofix policy wiring."
+    },
+    {
+      "filePath": "test/contracts/command-surface-caller-trust.contract.test.js",
+      "sha256": "1e502dd8ff004f48da6a3ec98c7c794b57c1bd1461a12a717bb17b8de146c176",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:35:25.000Z",
+      "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
     },
     {
       "filePath": "test/contracts/debt-ttl-expired.contract.test.js",

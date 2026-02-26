@@ -1,5 +1,6 @@
 {
   "advisoryToBlockingDriftCount": 0,
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
   "fastPathCacheEntryCount": 2,
   "gates": {
     "mc_advisory_blocking_drift_zero": "PASS",
@@ -14,11 +15,10 @@
     "p1_06_payload_contract_required_check": "PASS",
     "p1_06_plugin_overlay_bypass_block_check": "PASS"
   },
-  "generatedAtUtc": "2026-02-26T21:35:11.398Z",
   "mandatoryBypassPassingCount": 5,
   "mandatoryBypassScenarioCount": 5,
-  "runId": "RUN-2026-02-26-001",
-  "singleBlockingAuthorityOk": true,
   "status": "PASS",
-  "ticketId": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003"
+  "token": "COMMAND_SURFACE_CALLER_TRUST_PHASE_2_OK",
+  "updatedAtUtc": "2026-02-26T21:35:11.398Z",
+  "version": 3
 }
