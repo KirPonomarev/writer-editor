@@ -868,6 +868,76 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-26T19:40:30.000Z",
       "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/RELEASE_GATE_EXIT_NONZERO_v3.json",
+      "sha256": "c884408b15748fa2bde8473832bf96e2dcd1c0559343d6654482e21cb87ee17b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/release-gate-exit-nonzero-state.mjs",
+      "sha256": "3f349f7428781e10c24c4237f50e851e3ae558e9d3009ec81b92223ba5703ac0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p0-07-release-gate-exit-nonzero-report.mjs",
+      "sha256": "32831408a8b1f17625ebae455938930bb232cb744cb168b8b7cfca09653ef813",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "test/contracts/release-gate-exit-nonzero.contract.test.js",
+      "sha256": "911ead17ee7534dfcb71fbfd41c238f6f3691455d5a2acfa9045279c24c100dc",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/release-gate-fail-exit-cases.json",
+      "sha256": "67813dcd594a1f7490ea8b74651f3067a1c7aad262e6995061c38ecaec335133",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/release-gate-exit-code-proof.json",
+      "sha256": "769aed4871ccd89fd9e89b3d03187808c64b4114493a65b8241b8357a0055654",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/effective-required-token-fail-map.json",
+      "sha256": "dd79b4dbeab3f048872233b3a0ec50c8f0a5b98d7bb7016876dc370ecce86033",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/advisory-blocking-drift-cases.json",
+      "sha256": "0ced9911d9e35b05e392c4ebf74095ee2d19355f55243a8b6f87d2464fe4e3aa",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/summary.json",
+      "sha256": "8becf122d2524c3cd6411566ff5ba4a2519d1d01a1e8a5b736a98688928ee4ef",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/ticket-meta.json",
+      "sha256": "461cc4caf1974ba9009c422424a3fe84772c4c25352f1df943a914dd280a2a37",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:52:30.000Z",
+      "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
     }
   ]
 }

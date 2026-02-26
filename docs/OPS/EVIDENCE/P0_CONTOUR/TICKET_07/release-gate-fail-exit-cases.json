@@ -1,0 +1,26 @@
+{
+  "binaryA": {
+    "failingCases": [],
+    "ok": true,
+    "totalCases": 1
+  },
+  "binaryC": {
+    "ok": true,
+    "promotionAllNonzero": true,
+    "releaseAllNonzero": true
+  },
+  "gate": "p0_07_release_mode_fail_propagation_check",
+  "ok": true,
+  "perTokenResults": [
+    {
+      "failSignalCode": "E_CORE_SOT_NOT_EXECUTABLE",
+      "promotionExitCode": 1,
+      "promotionFailReason": "E_RELEASE_GATE_EXIT_SEMANTICS",
+      "promotionNonzero": true,
+      "releaseExitCode": 1,
+      "releaseFailReason": "E_RELEASE_GATE_EXIT_SEMANTICS",
+      "releaseNonzero": true,
+      "tokenId": "CORE_SOT_EXECUTABLE_OK"
+    }
+  ]
+}

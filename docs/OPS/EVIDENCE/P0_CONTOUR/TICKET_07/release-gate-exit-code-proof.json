@@ -1,0 +1,47 @@
+{
+  "binaryB": {
+    "exitCode": 1,
+    "failReason": "E_DEFAULT_ZERO_EXIT_ON_FAIL",
+    "ok": true,
+    "suppressionPrevented": true
+  },
+  "binaryD": {
+    "advisoryProbeNonBlockingCount": 1,
+    "advisorySignalCode": "E_ADAPTERS_NOT_ENFORCED",
+    "deliveryVerdict": "PASS",
+    "exitCode": 0,
+    "ok": true
+  },
+  "gate": "p0_07_release_gate_exit_code_integrity_check",
+  "ok": true,
+  "repeatable": {
+    "identical": true,
+    "ok": true,
+    "runs": [
+      {
+        "activePhase": "PHASE_1_SHADOW",
+        "deliveryVerdict": "PASS",
+        "effectiveRequiredTokenFailureCount": 0,
+        "nonzeroExitRequired": false,
+        "ok": true,
+        "run": 1
+      },
+      {
+        "activePhase": "PHASE_1_SHADOW",
+        "deliveryVerdict": "PASS",
+        "effectiveRequiredTokenFailureCount": 0,
+        "nonzeroExitRequired": false,
+        "ok": true,
+        "run": 2
+      },
+      {
+        "activePhase": "PHASE_1_SHADOW",
+        "deliveryVerdict": "PASS",
+        "effectiveRequiredTokenFailureCount": 0,
+        "nonzeroExitRequired": false,
+        "ok": true,
+        "run": 3
+      }
+    ]
+  }
+}
