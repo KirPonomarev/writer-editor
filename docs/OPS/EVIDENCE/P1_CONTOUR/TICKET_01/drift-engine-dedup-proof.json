@@ -1,0 +1,21 @@
+{
+  "duplicateSignalCountAfter": 0,
+  "duplicateSignalCountBefore": 2,
+  "outputStability": {
+    "baselineHash": "001d0616a687585e2ff2dbd36573ffa6205e91b960129637f8ca4eec6d6204cb",
+    "ok": true,
+    "runHashes": [
+      "001d0616a687585e2ff2dbd36573ffa6205e91b960129637f8ca4eec6d6204cb",
+      "001d0616a687585e2ff2dbd36573ffa6205e91b960129637f8ca4eec6d6204cb",
+      "001d0616a687585e2ff2dbd36573ffa6205e91b960129637f8ca4eec6d6204cb"
+    ]
+  },
+  "reducedOrZeroRemaining": true,
+  "removedDuplicateSignalPaths": 4,
+  "runtimeBudget": {
+    "ok": true,
+    "runtimeBudgetMinutes": 30,
+    "runtimeDurationMs": 32.418291,
+    "runtimeMinutesObserved": 0.0005403048500000001
+  }
+}

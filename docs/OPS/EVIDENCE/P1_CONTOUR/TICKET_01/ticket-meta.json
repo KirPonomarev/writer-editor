@@ -1,6 +1,6 @@
 {
-  "generatedAtUtc": "2026-02-25T21:54:23.256Z",
+  "generatedAtUtc": "2026-02-26T20:16:08.487Z",
   "outputDir": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01",
-  "runId": "RUN-2026-02-25-013",
-  "ticketId": "TZ-P1-01-CHECK-DEDUP-CANON-002"
+  "runId": "RUN-2026-02-26-001",
+  "ticketId": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003"
 }

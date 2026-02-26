@@ -1,0 +1,26 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "duplicateSignalReduction": {
+    "after": 0,
+    "before": 2,
+    "reducedOrZeroRemaining": true,
+    "removedDuplicateSignalPaths": 4
+  },
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p1_01_drift_engine_output_stability_check": "PASS",
+    "p1_01_duplicate_drift_signal_reduction_check": "PASS",
+    "p1_01_runtime_budget_under_30_minutes_check": "PASS",
+    "p1_01_shared_drift_engine_single_source_check": "PASS"
+  },
+  "runtimeBudgetMinutes": 30,
+  "singleSource": {
+    "expected": "SHARED_DRIFT_ENGINE_RUNTIME_V3",
+    "ok": true
+  },
+  "status": "PASS",
+  "token": "SHARED_DRIFT_ENGINE_RUNTIME_OK",
+  "updatedAtUtc": "2026-02-26T20:16:08.487Z",
+  "version": 3
+}

@@ -1,0 +1,104 @@
+{
+  "after": {
+    "duplicateSignalCount": 0,
+    "totalSignalPaths": 2,
+    "totalSignals": 2
+  },
+  "before": {
+    "duplicateSignalCount": 2,
+    "totalSignalPaths": 6,
+    "totalSignals": 2
+  },
+  "driftInputPathsAfter": [
+    {
+      "signal": "advisory_to_blocking_drift_count",
+      "sourcePath": "scripts/ops/shared-drift-engine-runtime-state.mjs#evaluateSharedDriftEngineRuntimeState"
+    },
+    {
+      "signal": "advisory_to_blocking_drift_count_zero",
+      "sourcePath": "scripts/ops/shared-drift-engine-runtime-state.mjs#evaluateSharedDriftEngineRuntimeState"
+    }
+  ],
+  "driftInputPathsBefore": [
+    {
+      "signal": "advisory_to_blocking_drift_count",
+      "sourcePath": "scripts/ops/check-dedup-canon-state.mjs#evaluateAdvisoryToBlockingDrift"
+    },
+    {
+      "signal": "advisory_to_blocking_drift_count",
+      "sourcePath": "scripts/ops/safe-local-wave-preflight-state.mjs#evaluateAdvisoryToBlockingDrift"
+    },
+    {
+      "signal": "advisory_to_blocking_drift_count",
+      "sourcePath": "scripts/ops/l3-fast-lane-enforcement-state.mjs#evaluateAdvisoryToBlockingDrift"
+    },
+    {
+      "signal": "advisory_to_blocking_drift_count_zero",
+      "sourcePath": "scripts/ops/check-dedup-canon-state.mjs#evaluateCheckDedupCanonState"
+    },
+    {
+      "signal": "advisory_to_blocking_drift_count_zero",
+      "sourcePath": "scripts/ops/safe-local-wave-preflight-state.mjs#evaluateSafeLocalWavePreflightState"
+    },
+    {
+      "signal": "advisory_to_blocking_drift_count_zero",
+      "sourcePath": "scripts/ops/l3-fast-lane-enforcement-state.mjs#evaluateL3FastLaneEnforcementState"
+    }
+  ],
+  "groupedAfterInputs": [
+    {
+      "signal": "advisory_to_blocking_drift_count",
+      "sourceCount": 1,
+      "sourcePaths": [
+        "scripts/ops/shared-drift-engine-runtime-state.mjs#evaluateSharedDriftEngineRuntimeState"
+      ]
+    },
+    {
+      "signal": "advisory_to_blocking_drift_count_zero",
+      "sourceCount": 1,
+      "sourcePaths": [
+        "scripts/ops/shared-drift-engine-runtime-state.mjs#evaluateSharedDriftEngineRuntimeState"
+      ]
+    }
+  ],
+  "groupedBeforeInputs": [
+    {
+      "signal": "advisory_to_blocking_drift_count",
+      "sourceCount": 3,
+      "sourcePaths": [
+        "scripts/ops/check-dedup-canon-state.mjs#evaluateAdvisoryToBlockingDrift",
+        "scripts/ops/l3-fast-lane-enforcement-state.mjs#evaluateAdvisoryToBlockingDrift",
+        "scripts/ops/safe-local-wave-preflight-state.mjs#evaluateAdvisoryToBlockingDrift"
+      ]
+    },
+    {
+      "signal": "advisory_to_blocking_drift_count_zero",
+      "sourceCount": 3,
+      "sourcePaths": [
+        "scripts/ops/check-dedup-canon-state.mjs#evaluateCheckDedupCanonState",
+        "scripts/ops/l3-fast-lane-enforcement-state.mjs#evaluateL3FastLaneEnforcementState",
+        "scripts/ops/safe-local-wave-preflight-state.mjs#evaluateSafeLocalWavePreflightState"
+      ]
+    }
+  ],
+  "sharedEngineInputMap": {
+    "inputs": [
+      {
+        "signal": "advisory_to_blocking_drift_count",
+        "sourceCount": 1,
+        "sourcePaths": [
+          "scripts/ops/shared-drift-engine-runtime-state.mjs#evaluateSharedDriftEngineRuntimeState"
+        ]
+      },
+      {
+        "signal": "advisory_to_blocking_drift_count_zero",
+        "sourceCount": 1,
+        "sourcePaths": [
+          "scripts/ops/shared-drift-engine-runtime-state.mjs#evaluateSharedDriftEngineRuntimeState"
+        ]
+      }
+    ],
+    "sourceId": "SHARED_DRIFT_ENGINE_RUNTIME_V3"
+  },
+  "sourceRule": "SHARED_DRIFT_ENGINE_IS_ONLY_RUNTIME_SOURCE_FOR_DRIFT_DECISION_INPUT"
+}

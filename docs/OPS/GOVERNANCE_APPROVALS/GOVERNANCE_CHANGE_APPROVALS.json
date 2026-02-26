@@ -938,6 +938,62 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-26T19:52:30.000Z",
       "rationale": "TZ-P0-07-RELEASE-GATE-EXIT-NONZERO-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/drift-engine-dedup-proof.json",
+      "sha256": "251d3cafa5b246c5326ea6d2007fd2dd6401564a70e7b1045a912030ae894539",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
+      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/drift-engine-input-map.json",
+      "sha256": "0a43f01d1d09cd66dffe777ad0831b2926c68bc8207cb0d632f7db104650a1a9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
+      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/summary.json",
+      "sha256": "a15e3de59baa4fd9aac03ef5284121df84b88288e7d7c77a12b814ecceaa86e4",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
+      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_01/ticket-meta.json",
+      "sha256": "413cb15a4d65201e6eb58f3ce655d8e7018998ca6dfa414f06fbf9c62fc876c0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
+      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/SHARED_DRIFT_ENGINE_RUNTIME_v3.json",
+      "sha256": "87b012a8681c34d86360b3268651af44d6d883ec29d31cc558bc08bc10fdb9d7",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
+      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-01-shared-drift-engine-runtime-report.mjs",
+      "sha256": "b3a399440f40e8487d4d46fcfeac812ada10bd1dd5a667dbbab4bfdd9e2f6c50",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
+      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/shared-drift-engine-runtime-state.mjs",
+      "sha256": "2a5b4d10eea5e13b42adb6426f19fb06e1f10b472bca1b43fed3ce5e6220d689",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
+      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
+    },
+    {
+      "filePath": "test/contracts/shared-drift-engine-runtime.contract.test.js",
+      "sha256": "36defbf8f0c6cb2721c0be5c75b59ba1e717fe22c658c304bb633ca07f1b1574",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:17:35.000Z",
+      "rationale": "TZ-P1-01-SHARED-DRIFT-ENGINE-RUNTIME-003 approvals."
     }
   ]
 }
