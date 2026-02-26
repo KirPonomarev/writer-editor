@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "status": "ACTIVE",
+  "token": "E2E_CRITICAL_USER_PATH_OK",
+  "machineCheckId": "p0_03_critical_user_path_machine_check",
+  "phaseRule": "PHASE_1_SIGNAL_PHASE_2_WARN_PHASE_3_HARD",
+  "phaseSwitchRef": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
+  "scenarioSetRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/e2e-critical-user-path-scenarios.json",
+  "requiredScenarioIds": [
+    "menu_mutation",
+    "markdown_flow",
+    "docx_baseline",
+    "recovery_integrity",
+    "critical_e2e_path"
+  ],
+  "releaseMissingPathStopCode": "E2E_CRITICAL_PATH_MISSING",
+  "stateScript": "scripts/ops/e2e-critical-user-path-state.mjs",
+  "reportScript": "scripts/ops/p0-03-e2e-critical-user-path-report.mjs",
+  "notes": "P0-03 enforces machine-bound critical user path minimum and release blocking on missing evidence."
+}

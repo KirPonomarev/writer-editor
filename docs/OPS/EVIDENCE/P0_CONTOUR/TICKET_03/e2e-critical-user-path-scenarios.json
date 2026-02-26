@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "scenarioSetId": "E2E_CRITICAL_USER_PATH_SET_V3",
+  "scenarios": [
+    {
+      "id": "menu_mutation",
+      "required": true,
+      "passed": true,
+      "evidenceRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/critical-user-path-pass-proof.json#menu_mutation"
+    },
+    {
+      "id": "markdown_flow",
+      "required": true,
+      "passed": true,
+      "evidenceRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/critical-user-path-pass-proof.json#markdown_flow"
+    },
+    {
+      "id": "docx_baseline",
+      "required": true,
+      "passed": true,
+      "evidenceRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/critical-user-path-pass-proof.json#docx_baseline"
+    },
+    {
+      "id": "recovery_integrity",
+      "required": true,
+      "passed": true,
+      "evidenceRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/critical-user-path-pass-proof.json#recovery_integrity"
+    },
+    {
+      "id": "critical_e2e_path",
+      "required": true,
+      "passed": true,
+      "evidenceRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/critical-user-path-pass-proof.json#critical_e2e_path"
+    }
+  ],
+  "updatedAtUtc": "2026-02-26T00:00:00.000Z"
+}

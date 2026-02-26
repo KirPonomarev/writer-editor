@@ -1,6 +1,8 @@
 {
-  "generatedAtUtc": "2026-02-25T08:38:50.311Z",
+  "activePhase": "PHASE_1_SHADOW",
+  "generatedAtUtc": "2026-02-26T18:24:36.068Z",
   "outputDir": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03",
-  "runId": "RUN-2026-02-25-006",
-  "ticketId": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001"
+  "phaseEnforcementMode": "SIGNAL_ONLY",
+  "runId": "RUN-2026-02-26-001",
+  "ticketId": "TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003"
 }
