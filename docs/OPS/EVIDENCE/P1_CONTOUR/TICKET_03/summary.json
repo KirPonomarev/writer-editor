@@ -8,14 +8,15 @@
     "p1_03_local_preflight_safety_check": "PASS",
     "p1_03_remote_binding_skip_on_local_safe_mode_check": "PASS"
   },
-  "generatedAtUtc": "2026-02-25T19:17:31.074Z",
+  "generatedAtUtc": "2026-02-26T08:10:40.678Z",
   "localPreflightSafetyOk": true,
   "minReductionRequired": 1,
   "remoteBindingSignalPathCountAfter": 0,
   "remoteBindingSignalPathCountBefore": 2,
   "removedDuplicateSignalPaths": 2,
-  "runId": "RUN-2026-02-25-011",
+  "runId": "RUN-2026-02-25-013",
   "safetyParityOk": true,
   "status": "PASS",
-  "ticketId": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-001"
+  "ticketId": "TZ-P1-03-SAFE-LOCAL-WAVE-PREFLIGHT-002",
+  "zeroRemainingDuplicates": true
 }
