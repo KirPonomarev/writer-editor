@@ -401,6 +401,41 @@
       "rationale": "TZ-P1-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-FULL-003 approvals."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_04/declared-effective-gap-report.json",
+      "sha256": "57b209942037329a5070b4212d586cf7110d1a820a4117e2de697d2185f65bf1",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:05:00.000Z",
+      "rationale": "TZ-P1-04-DECLARED-SET-EFFECTIVE-SET-ALIGNMENT-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_04/declared-effective-negative-missing-token.json",
+      "sha256": "1296a881ba6de5ae4c0841c5775c15084841f71621264b70f7b59ba48d784384",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:05:00.000Z",
+      "rationale": "TZ-P1-04-DECLARED-SET-EFFECTIVE-SET-ALIGNMENT-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_04/declared-effective-token-map.json",
+      "sha256": "11141b122ecaa62f0e4c3fb130236e11445586e625204f38c8c4bf4f9c208fbb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:05:00.000Z",
+      "rationale": "TZ-P1-04-DECLARED-SET-EFFECTIVE-SET-ALIGNMENT-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_04/summary.json",
+      "sha256": "5f6ce075f91c13bb2effeeddbf3be5710355d074a34b008df3ec8a892c1098e8",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:05:00.000Z",
+      "rationale": "TZ-P1-04-DECLARED-SET-EFFECTIVE-SET-ALIGNMENT-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_04/ticket-meta.json",
+      "sha256": "168962a014108e26e1d13213e9e5cc84e0d2c826bb7f42a50e0669bfb734e0ae",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:05:00.000Z",
+      "rationale": "TZ-P1-04-DECLARED-SET-EFFECTIVE-SET-ALIGNMENT-HARDENING-003 approvals."
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-0805ab9da950-592e3737/failsignal-registry-snapshot.json",
       "sha256": "9af1b22b87f604601b38114621995a44ae5e15c3ea9a299197c61e863a5e6448",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -581,6 +616,13 @@
       "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
       "approvedAtUtc": "2026-02-26T18:56:31.056Z",
       "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/DECLARED_SET_EFFECTIVE_SET_ALIGNMENT_HARDENING_v3.json",
+      "sha256": "75a587f0271f658c865381996c154e88615bbc5ba19e61e896fc7fc083a86ab5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:05:00.000Z",
+      "rationale": "TZ-P1-04-DECLARED-SET-EFFECTIVE-SET-ALIGNMENT-HARDENING-003 approvals."
     },
     {
       "filePath": "docs/OPS/STATUS/DEPENDENCY_RISK_REGISTER.json",
@@ -786,6 +828,13 @@
       "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
     },
     {
+      "filePath": "scripts/ops/declared-set-effective-set-alignment-state.mjs",
+      "sha256": "d6f1959e80eff330e1cfb0a3a133ab5b46775169ba7fdee52c404e6dfa39e8a2",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:05:00.000Z",
+      "rationale": "TZ-P1-04-DECLARED-SET-EFFECTIVE-SET-ALIGNMENT-HARDENING-003 approvals."
+    },
+    {
       "filePath": "scripts/ops/domain-negative-test-enforcement-state.mjs",
       "sha256": "201cc3c4cb0ced11f1e299a2d5c8f8724b7d131b7d71ed60becbc6b8b73aa55d",
       "approvedBy": "DOCS_OPERATOR",
@@ -905,6 +954,13 @@
       "rationale": "TZ-P1-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-FULL-003 approvals."
     },
     {
+      "filePath": "scripts/ops/p1-04-declared-set-effective-set-alignment-report.mjs",
+      "sha256": "14215b592f999bb5334b4b38279ae90254325145ee5e387b471e4d898d741c0e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:05:00.000Z",
+      "rationale": "TZ-P1-04-DECLARED-SET-EFFECTIVE-SET-ALIGNMENT-HARDENING-003 approvals."
+    },
+    {
       "filePath": "scripts/ops/path-boundary-guard-state.mjs",
       "sha256": "95838483e8f47c1fa76ca7c806fd993d029a128604f51bed5871cf5c5432e485",
       "approvedBy": "ticket:TZ-24E-P1-PATH-BOUNDARY-GUARD-IPC-IO-012",
@@ -994,6 +1050,13 @@
       "approvedBy": "ticket:TZ-SECTOR-01-00-PHASE0-PATCH1-GOV-STRATEGY",
       "approvedAtUtc": "2026-02-21T16:26:04.652Z",
       "rationale": "Sector 01 Phase0 bootstrap approvals (next-sector + sector status + failsignal + debt TTL contract)"
+    },
+    {
+      "filePath": "test/contracts/declared-set-effective-set-alignment.contract.test.js",
+      "sha256": "28995a2386a3a77262120c2f2d60c0f631ad3cb68f47db1c54f0d691348954e5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:05:00.000Z",
+      "rationale": "TZ-P1-04-DECLARED-SET-EFFECTIVE-SET-ALIGNMENT-HARDENING-003 approvals."
     },
     {
       "filePath": "test/contracts/domain-negative-test-enforcement.contract.test.js",

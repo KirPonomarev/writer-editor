@@ -1,0 +1,17 @@
+{
+  "declaredEffectiveAlignmentZeroMissingCheck": true,
+  "declaredSet": [
+    "COMMAND_SURFACE_ENFORCED_OK",
+    "CORE_SOT_EXECUTABLE_OK",
+    "RECOVERY_IO_OK"
+  ],
+  "effectiveSet": [
+    "COMMAND_SURFACE_ENFORCED_OK",
+    "CORE_SOT_EXECUTABLE_OK",
+    "RECOVERY_IO_OK"
+  ],
+  "extraEffectiveCount": 0,
+  "extraEffectiveTokens": [],
+  "missingDeclaredCount": 0,
+  "missingDeclaredTokens": []
+}

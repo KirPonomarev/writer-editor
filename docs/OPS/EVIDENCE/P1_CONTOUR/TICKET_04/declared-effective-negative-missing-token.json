@@ -1,0 +1,20 @@
+{
+  "checkId": "p1_04_missing_declared_token_negative_check",
+  "negativeCase": {
+    "expectedMissingDetected": true,
+    "failReason": "",
+    "mutatedState": {
+      "declaredEffectiveAlignmentZeroMissingCheck": false,
+      "extraEffectiveCount": 0,
+      "extraEffectiveTokens": [],
+      "failReason": "E_DECLARED_EFFECTIVE_ALIGNMENT_DRIFT",
+      "missingDeclaredCount": 1,
+      "missingDeclaredTokens": [
+        "COMMAND_SURFACE_ENFORCED_OK"
+      ],
+      "ok": false
+    },
+    "ok": true,
+    "targetTokenId": "COMMAND_SURFACE_ENFORCED_OK"
+  }
+}
