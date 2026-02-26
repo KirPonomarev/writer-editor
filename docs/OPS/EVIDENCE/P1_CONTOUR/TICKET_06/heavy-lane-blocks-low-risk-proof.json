@@ -1,0 +1,105 @@
+{
+  "heavyLaneDefaultRule": "HEAVY_LANE_FORBIDDEN_BY_DEFAULT_FOR_LOW_RISK_L3",
+  "heavyLaneForbiddenByDefaultCheck": {
+    "defaultLane": "dev_fast",
+    "explicitHeavyTriggers": [
+      "core_contract_change",
+      "runtime_wiring_change",
+      "policy_surface_expansion",
+      "new_blocking_gate"
+    ],
+    "heavyLaneByDefault": false,
+    "heavyLaneByDefaultForbidden": true,
+    "issues": [],
+    "lowRiskDefaultedToHeavy": [],
+    "ok": true
+  },
+  "lowRiskScopeClassificationCheck": {
+    "caseResults": [
+      {
+        "actualClass": "LOW_RISK_UI_MENU_DESIGN_ONLY",
+        "actualLane": "dev_fast",
+        "caseId": "ui_menu_label_update",
+        "expectedClass": "LOW_RISK_UI_MENU_DESIGN_ONLY",
+        "expectedLane": "dev_fast",
+        "ok": true,
+        "reasons": [
+          "all_tags_low_risk_allowed"
+        ],
+        "tags": [
+          "ui",
+          "menu",
+          "design"
+        ]
+      },
+      {
+        "actualClass": "LOW_RISK_UI_MENU_DESIGN_ONLY",
+        "actualLane": "dev_fast",
+        "caseId": "ui_toolbar_spacing",
+        "expectedClass": "LOW_RISK_UI_MENU_DESIGN_ONLY",
+        "expectedLane": "dev_fast",
+        "ok": true,
+        "reasons": [
+          "all_tags_low_risk_allowed"
+        ],
+        "tags": [
+          "ui",
+          "design",
+          "layout"
+        ]
+      },
+      {
+        "actualClass": "NON_L3_OR_HIGH_RISK",
+        "actualLane": "heavy",
+        "caseId": "core_runtime_policy_change",
+        "expectedClass": "NON_L3_OR_HIGH_RISK",
+        "expectedLane": "heavy",
+        "ok": true,
+        "reasons": [
+          "forbidden:core",
+          "not_allowed:core"
+        ],
+        "tags": [
+          "core",
+          "runtime",
+          "policy"
+        ]
+      }
+    ],
+    "issues": [],
+    "lowRiskClass": {
+      "allowedTags": [
+        "ui",
+        "menu",
+        "design",
+        "layout",
+        "copy"
+      ],
+      "canonicalSmoke": [
+        "doctor_strict",
+        "dev_fast_lane_contract",
+        "mode_matrix_authority_nonregression"
+      ],
+      "classId": "LOW_RISK_UI_MENU_DESIGN_ONLY",
+      "defaultLane": "dev_fast",
+      "explicitHeavyTriggers": [
+        "core_contract_change",
+        "runtime_wiring_change",
+        "policy_surface_expansion",
+        "new_blocking_gate"
+      ],
+      "forbiddenTags": [
+        "core",
+        "runtime",
+        "policy",
+        "registry",
+        "required_set",
+        "security"
+      ],
+      "heavyLaneByDefault": false,
+      "riskLevel": "LOW"
+    },
+    "lowRiskClassDefined": true,
+    "ok": true
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "canonicalSmokeMissingCount": 0,
+  "canonicalSmokeRequiredCount": 3,
+  "explicitHeavyTriggerCount": 4,
+  "gates": {
+    "no_advisory_to_blocking_drift": "PASS",
+    "p1_06_canonical_smoke_required_check": "PASS",
+    "p1_06_heavy_lane_forbidden_by_default_check": "PASS",
+    "p1_06_low_risk_scope_classification_check": "PASS",
+    "single_blocking_authority_enforced": "PASS"
+  },
+  "generatedAtUtc": "2026-02-26T10:40:33.383Z",
+  "heavyLaneByDefaultForbidden": true,
+  "lowRiskCaseCount": 3,
+  "lowRiskCasePassCount": 3,
+  "runId": "RUN-2026-02-25-013",
+  "scopeRule": "LOW_RISK_UI_MENU_DESIGN_ONLY",
+  "singleBlockingAuthorityOk": true,
+  "status": "PASS",
+  "ticketId": "TZ-P1-06-L3-FAST-LANE-ENFORCEMENT-002"
+}

@@ -1071,6 +1071,76 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-25T09:05:00.000Z",
       "rationale": "TZ-P1-05-DECLARED-STAGE-VS-EFFECTIVE-STAGE-CLARITY-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:35:00.000Z",
+      "rationale": "TZ-P1-06-L3-FAST-LANE-ENFORCEMENT-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/fast-lane-smoke-proof.json",
+      "sha256": "dad076b9440062fe6ab4b50cdb052c51cdea650a5c10b92a69416c615ed60c1d",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:35:00.000Z",
+      "rationale": "TZ-P1-06-L3-FAST-LANE-ENFORCEMENT-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/heavy-lane-blocks-low-risk-proof.json",
+      "sha256": "cd3c1a586728a0bd54d8f78b1d97865d06c4cbeae9b61626903b0e23d649af12",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:35:00.000Z",
+      "rationale": "TZ-P1-06-L3-FAST-LANE-ENFORCEMENT-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/l3-fast-lane-scope-matrix.json",
+      "sha256": "fc19c48ac418802a79f5c31b960e1558f026e40c869bcc42eaec51f194080613",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:35:00.000Z",
+      "rationale": "TZ-P1-06-L3-FAST-LANE-ENFORCEMENT-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/summary.json",
+      "sha256": "ac2c11848372fbc83108af8e866186356e9bf710f3e83e07e062817f85f60fcc",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:35:00.000Z",
+      "rationale": "TZ-P1-06-L3-FAST-LANE-ENFORCEMENT-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_06/ticket-meta.json",
+      "sha256": "7ea1c8cebbcd955915030d2c71aa525a4060b413435ade405dacad89bcea54a8",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:35:00.000Z",
+      "rationale": "TZ-P1-06-L3-FAST-LANE-ENFORCEMENT-002 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/L3_FAST_LANE_ENFORCEMENT_v2.json",
+      "sha256": "79e19cbfdba6da37c410f980fbaef5ad52cda0f1cec73fd5e7ac0a03cacec8aa",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:35:00.000Z",
+      "rationale": "TZ-P1-06-L3-FAST-LANE-ENFORCEMENT-002 approvals."
+    },
+    {
+      "filePath": "scripts/ops/l3-fast-lane-enforcement-state.mjs",
+      "sha256": "2d2f8671f160998d8083e641f68b61ab1f9c5f842c7f8cea82cd1021dab2d563",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:35:00.000Z",
+      "rationale": "TZ-P1-06-L3-FAST-LANE-ENFORCEMENT-002 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-06-l3-fast-lane-enforcement-report.mjs",
+      "sha256": "482c376e7f0a3cfa1dc4af1cacd331913b49873f18cd067d095c1dc9c14a2e6f",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:35:00.000Z",
+      "rationale": "TZ-P1-06-L3-FAST-LANE-ENFORCEMENT-002 approvals."
+    },
+    {
+      "filePath": "test/contracts/l3-fast-lane-enforcement.contract.test.js",
+      "sha256": "ba713356504d7684bbd63ba203a4725b92cb568c3f755302eaa90210c6d4c2d9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-25T09:35:00.000Z",
+      "rationale": "TZ-P1-06-L3-FAST-LANE-ENFORCEMENT-002 approvals."
     }
   ]
 }
