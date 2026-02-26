@@ -1,0 +1,17 @@
+{
+  "binaryTestB": {
+    "failReason": "",
+    "genericNegativeReuseDetected": true,
+    "mutatedState": {
+      "domainCriticalTokensHaveDomainNegativeCheck": false,
+      "failReason": "E_GENERIC_NEGATIVE_REUSE_FORBIDDEN",
+      "genericSchemaNegativeReuseForbiddenCheck": false,
+      "ok": false,
+      "releaseRequiredDomainNegativeMissingCheck": true
+    },
+    "ok": true,
+    "targetTokenId": "COMMAND_NAMESPACE_CANON_OK"
+  },
+  "genericNegativeReuseViolationCount": 0,
+  "genericNegativeReuseViolations": []
+}

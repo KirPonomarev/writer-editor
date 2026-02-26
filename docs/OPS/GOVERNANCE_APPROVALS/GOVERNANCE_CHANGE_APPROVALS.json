@@ -366,6 +366,41 @@
       "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/domain-negative-coverage-proof.json",
+      "sha256": "11dfd788de21ef0b14b168c5c439deddb51ef04d9bd2dfbe9b45634bd8dc023e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-FULL-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/domain-token-negative-map.json",
+      "sha256": "03f5593eb3e34cd823de45c070ffba5d67a73bc93b34f0ac4df8a82d40aa80f7",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-FULL-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/generic-negative-reuse-violations.json",
+      "sha256": "853d0d126843653d314ba4d38ff148294c241be8ce47d56aca713919740254b1",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-FULL-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/summary.json",
+      "sha256": "2c867534231b4030beeb6e7a3cb01e2c2c1ab2954a7ae93a8698b0baa0f6bdb2",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-FULL-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_03/ticket-meta.json",
+      "sha256": "0a387bc419c11e22d7b50cba18c09c3d115ba43a7a1de24cd3c6af682961bc2e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-FULL-003 approvals."
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-0805ab9da950-592e3737/failsignal-registry-snapshot.json",
       "sha256": "9af1b22b87f604601b38114621995a44ae5e15c3ea9a299197c61e863a5e6448",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -553,6 +588,13 @@
       "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
       "approvedAtUtc": "2026-02-26T18:05:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/DOMAIN_NEGATIVE_TEST_ENFORCEMENT_FULL_v3.json",
+      "sha256": "4362d9c09b052d90ba0e1157967628d21a55b6c00384c891199ef21867abbd89",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-FULL-003 approvals."
     },
     {
       "filePath": "docs/OPS/STATUS/E2E_CRITICAL_USER_PATH_HARD_MIN_v3.json",
@@ -744,6 +786,13 @@
       "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
     },
     {
+      "filePath": "scripts/ops/domain-negative-test-enforcement-state.mjs",
+      "sha256": "201cc3c4cb0ced11f1e299a2d5c8f8724b7d131b7d71ed60becbc6b8b73aa55d",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-FULL-003 approvals."
+    },
+    {
       "filePath": "scripts/ops/e2e-critical-user-path-state.mjs",
       "sha256": "b2f31420fc9055c0d62e990a047cad958b777225770ae7986fb73e0cf7118b82",
       "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
@@ -849,6 +898,13 @@
       "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
     },
     {
+      "filePath": "scripts/ops/p1-03-domain-negative-test-enforcement-report.mjs",
+      "sha256": "a304f9b17a9146a4694b968971ef48e23678b69a31a2a4b174bb816c426fd550",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-FULL-003 approvals."
+    },
+    {
       "filePath": "scripts/ops/path-boundary-guard-state.mjs",
       "sha256": "95838483e8f47c1fa76ca7c806fd993d029a128604f51bed5871cf5c5432e485",
       "approvedBy": "ticket:TZ-24E-P1-PATH-BOUNDARY-GUARD-IPC-IO-012",
@@ -938,6 +994,13 @@
       "approvedBy": "ticket:TZ-SECTOR-01-00-PHASE0-PATCH1-GOV-STRATEGY",
       "approvedAtUtc": "2026-02-21T16:26:04.652Z",
       "rationale": "Sector 01 Phase0 bootstrap approvals (next-sector + sector status + failsignal + debt TTL contract)"
+    },
+    {
+      "filePath": "test/contracts/domain-negative-test-enforcement.contract.test.js",
+      "sha256": "3891c55e48f7a4956138ecd06aac17098bf181670df21890b2f61f46580aed4c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T20:50:00.000Z",
+      "rationale": "TZ-P1-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-FULL-003 approvals."
     },
     {
       "filePath": "test/contracts/e2e-critical-user-path.contract.test.js",

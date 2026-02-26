@@ -1,0 +1,24 @@
+{
+  "binaryTestA": {
+    "domainCriticalTokenCount": 14,
+    "domainNegativeCoveragePct": 100,
+    "mappedDomainCriticalTokenCount": 14,
+    "ok": true
+  },
+  "binaryTestC": {
+    "failReason": "",
+    "mutatedState": {
+      "domainCriticalTokensHaveDomainNegativeCheck": false,
+      "failReason": "E_DOMAIN_NEGATIVE_MISSING",
+      "ok": false,
+      "releaseRequiredDomainNegativeMissingCheck": false,
+      "releaseRequiredDomainNegativeMissingCount": 1
+    },
+    "ok": true,
+    "releaseRequiredMissingDetected": true,
+    "targetTokenId": "COMMAND_NAMESPACE_CANON_OK"
+  },
+  "domainNegativeCoverageCompletenessCheck": true,
+  "releaseRequiredDomainNegativeMissing": [],
+  "releaseRequiredDomainNegativeMissingCheck": true
+}
