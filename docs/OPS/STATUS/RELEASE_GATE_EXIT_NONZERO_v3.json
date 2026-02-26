@@ -1,0 +1,23 @@
+{
+  "version": 3,
+  "status": "ACTIVE",
+  "token": "RELEASE_GATE_EXIT_NONZERO_OK",
+  "machineCheckId": "p0_07_release_gate_exit_code_integrity_check",
+  "phaseRule": "PHASE_1_SIGNAL_PHASE_2_WARN_PHASE_3_HARD",
+  "phaseSwitchRef": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
+  "requiredSets": {
+    "PHASE_1_SHADOW": "docs/OPS/STATUS/REQUIRED_SET_PHASE_1_V1.json",
+    "PHASE_2_WARN": "docs/OPS/STATUS/REQUIRED_SET_PHASE_2_V1.json",
+    "PHASE_3_HARD": "docs/OPS/STATUS/REQUIRED_SET_PHASE_3_V1.json"
+  },
+  "bindingSchemaRef": "docs/OPS/STATUS/BINDING_SCHEMA_V1.json",
+  "releaseTokenBindingStatusRef": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+  "effectiveFailMapRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_07/effective-required-token-fail-map.json",
+  "exitSemanticsStopCode": "E_RELEASE_GATE_EXIT_SEMANTICS",
+  "defaultZeroExitStopCode": "E_DEFAULT_ZERO_EXIT_ON_FAIL",
+  "failPropagationStopCode": "E_FAIL_PROPAGATION_BROKEN",
+  "stateScript": "scripts/ops/release-gate-exit-nonzero-state.mjs",
+  "reportScript": "scripts/ops/p0-07-release-gate-exit-nonzero-report.mjs",
+  "contractTest": "test/contracts/release-gate-exit-nonzero.contract.test.js",
+  "notes": "P0-07 enforces nonzero exit semantics on effective release-required token failures, blocks suppression to zero, and verifies release/promotion fail propagation without advisory drift."
+}
