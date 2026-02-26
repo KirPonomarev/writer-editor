@@ -1,0 +1,68 @@
+{
+  "cases": [
+    {
+      "caseId": "phase_change_invalidates_cache",
+      "invalidated": true,
+      "next": {
+        "mainSha": "a",
+        "phase": "PHASE_2_WARN",
+        "scopeDelta": "NONE"
+      },
+      "prior": {
+        "mainSha": "a",
+        "phase": "PHASE_1_SHADOW",
+        "scopeDelta": "NONE"
+      },
+      "shouldInvalidate": true
+    },
+    {
+      "caseId": "main_sha_change_invalidates_cache",
+      "invalidated": true,
+      "next": {
+        "mainSha": "b",
+        "phase": "PHASE_1_SHADOW",
+        "scopeDelta": "NONE"
+      },
+      "prior": {
+        "mainSha": "a",
+        "phase": "PHASE_1_SHADOW",
+        "scopeDelta": "NONE"
+      },
+      "shouldInvalidate": true
+    },
+    {
+      "caseId": "scope_delta_invalidates_cache",
+      "invalidated": true,
+      "next": {
+        "mainSha": "a",
+        "phase": "PHASE_1_SHADOW",
+        "scopeDelta": "NEW_TICKET"
+      },
+      "prior": {
+        "mainSha": "a",
+        "phase": "PHASE_1_SHADOW",
+        "scopeDelta": "NONE"
+      },
+      "shouldInvalidate": true
+    },
+    {
+      "caseId": "stable_inputs_keep_cache",
+      "invalidated": false,
+      "next": {
+        "mainSha": "a",
+        "phase": "PHASE_1_SHADOW",
+        "scopeDelta": "NONE"
+      },
+      "prior": {
+        "mainSha": "a",
+        "phase": "PHASE_1_SHADOW",
+        "scopeDelta": "NONE"
+      },
+      "shouldInvalidate": false
+    }
+  ],
+  "onMainShaChange": true,
+  "onPhaseChange": true,
+  "onScopeDelta": true,
+  "policyEnforced": true
+}

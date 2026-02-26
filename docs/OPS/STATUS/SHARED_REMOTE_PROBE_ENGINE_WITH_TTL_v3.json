@@ -1,0 +1,33 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "duplicateSignalReduction": {
+    "after": 0,
+    "before": 2,
+    "reducedOrZeroRemaining": true,
+    "removedDuplicateSignalPaths": 2
+  },
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p1_02_probe_ttl_600_seconds_check": "PASS",
+    "p1_02_remote_probe_forbidden_in_interactive_paths_check": "PASS",
+    "p1_02_shared_remote_probe_single_engine_check": "PASS",
+    "p1_02_stale_invalidation_on_main_sha_change_check": "PASS",
+    "p1_02_stale_invalidation_on_phase_change_check": "PASS",
+    "p1_02_stale_invalidation_on_scope_delta_check": "PASS"
+  },
+  "interactivePathGuard": {
+    "ok": true,
+    "violatingCaseCount": 0
+  },
+  "staleInvalidationRules": {
+    "onMainShaChange": true,
+    "onPhaseChange": true,
+    "onScopeDelta": true
+  },
+  "status": "PASS",
+  "token": "SHARED_REMOTE_PROBE_ENGINE_WITH_TTL_OK",
+  "ttlSeconds": 600,
+  "updatedAtUtc": "2026-02-26T20:32:13.061Z",
+  "version": 3
+}

@@ -1,6 +1,5 @@
 {
   "advisoryToBlockingDriftCount": 0,
   "advisoryToBlockingDriftCountZero": true,
-  "driftCases": [],
-  "gate": "p1_02_advisory_never_blocks_outside_matrix_check"
+  "driftCases": []
 }

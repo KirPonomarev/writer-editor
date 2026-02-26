@@ -1,0 +1,25 @@
+{
+  "cases": [
+    {
+      "caseId": "typing_hotpath_forbidden",
+      "interactivePath": "typing_hotpath",
+      "remoteProbeRan": false,
+      "shouldRunRemoteProbe": false
+    },
+    {
+      "caseId": "interactive_user_path_forbidden",
+      "interactivePath": "interactive_user_path",
+      "remoteProbeRan": false,
+      "shouldRunRemoteProbe": false
+    },
+    {
+      "caseId": "background_ops_path_allowed",
+      "interactivePath": "background_ops_path",
+      "remoteProbeRan": true,
+      "shouldRunRemoteProbe": true
+    }
+  ],
+  "policyEnforced": true,
+  "violatingCaseCount": 0,
+  "violatingCases": []
+}
