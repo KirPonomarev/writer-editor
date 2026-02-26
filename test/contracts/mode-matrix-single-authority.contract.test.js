@@ -9,16 +9,25 @@ const { pathToFileURL } = require('node:url');
 const REPO_ROOT = process.cwd();
 const FAILSIGNAL_REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'FAILSIGNALS', 'FAILSIGNAL_REGISTRY.json');
 const EVALUATOR_PATH = path.join(REPO_ROOT, 'scripts', 'ops', 'canonical-mode-matrix-evaluator.mjs');
+const MODE_MATRIX_STATE_PATH = path.join(REPO_ROOT, 'scripts', 'ops', 'mode-matrix-single-authority-state.mjs');
 const COMMAND_NAMESPACE_STATIC_CHECK_PATH = path.join(REPO_ROOT, 'scripts', 'ops', 'check-command-namespace-static.mjs');
 const EXECUTION_SEQUENCE_CHECK_PATH = path.join(REPO_ROOT, 'scripts', 'ops', 'check-execution-sequence.mjs');
 
 let evaluatorModulePromise = null;
+let modeMatrixStateModulePromise = null;
 
 function loadEvaluatorModule() {
   if (!evaluatorModulePromise) {
     evaluatorModulePromise = import(pathToFileURL(EVALUATOR_PATH).href);
   }
   return evaluatorModulePromise;
+}
+
+function loadModeMatrixStateModule() {
+  if (!modeMatrixStateModulePromise) {
+    modeMatrixStateModulePromise = import(pathToFileURL(MODE_MATRIX_STATE_PATH).href);
+  }
+  return modeMatrixStateModulePromise;
 }
 
 function readJson(filePath) {
@@ -188,4 +197,24 @@ test('mode-matrix single authority: sequence drift verdict is repeatable across 
   } finally {
     fs.rmSync(fixture.root, { recursive: true, force: true });
   }
+});
+
+test('mode-matrix single authority: claim blocking flag cannot override canonical mode disposition', async () => {
+  const { evaluateModeMatrixSingleAuthorityState } = await loadModeMatrixStateModule();
+  const state = evaluateModeMatrixSingleAuthorityState({ repoRoot: REPO_ROOT });
+
+  assert.equal(state.gates.mc_claim_level_blocking_cannot_override_mode_disposition, 'PASS');
+  assert.equal(state.claimOverrideViolationCount, 0);
+});
+
+test('mode-matrix single authority: phase precedence is applied before new V1 verdicts', async () => {
+  const { evaluateModeMatrixSingleAuthorityState } = await loadModeMatrixStateModule();
+  const state = evaluateModeMatrixSingleAuthorityState({ repoRoot: REPO_ROOT });
+
+  assert.equal(state.gates.mc_phase_switch_valid, 'PASS');
+  assert.equal(state.gates.mc_phase_precedence_applied_before_new_v1_verdicts, 'PASS');
+  assert.equal(state.details.phasePrecedenceState.baseRuleOk, true);
+  assert.equal(state.details.phasePrecedenceState.samples[0].shouldBlock, false);
+  assert.equal(state.details.phasePrecedenceState.samples[1].shouldBlock, false);
+  assert.equal(state.details.phasePrecedenceState.samples[2].shouldBlock, true);
 });

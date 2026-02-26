@@ -1,0 +1,2385 @@
+{
+  "claimModeDispositionConflictCount": 48,
+  "claimModeDispositionConflicts": [
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "CORE_SOT_EXECUTABLE",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_CORE_SOT_NOT_EXECUTABLE",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "CORE_SOT_EXECUTABLE",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_CORE_SOT_NOT_EXECUTABLE",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "CORE_SOT_EXECUTABLE",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_CORE_SOT_NOT_EXECUTABLE",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "COMMAND_SURFACE_ENFORCED",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_COMMAND_SURFACE_NOT_ENFORCED",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "COMMAND_SURFACE_ENFORCED",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_COMMAND_SURFACE_NOT_ENFORCED",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "COMMAND_SURFACE_ENFORCED",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_COMMAND_SURFACE_NOT_ENFORCED",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "CAPABILITY_ENFORCEMENT",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_CAPABILITY_NOT_ENFORCED",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "CAPABILITY_ENFORCEMENT",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_CAPABILITY_NOT_ENFORCED",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "CAPABILITY_ENFORCEMENT",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_CAPABILITY_NOT_ENFORCED",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "RECOVERY_IO",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_RECOVERY_IO_NOT_OK",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "RECOVERY_IO",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_RECOVERY_IO_NOT_OK",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "RECOVERY_IO",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_RECOVERY_IO_NOT_OK",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "ADAPTERS_ENFORCED",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_ADAPTERS_NOT_ENFORCED",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "ADAPTERS_ENFORCED",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_ADAPTERS_NOT_ENFORCED",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "ADAPTERS_ENFORCED",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_ADAPTERS_NOT_ENFORCED",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "PERFORMANCE_BASELINE",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_PERF_BASELINE_NOT_OK",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "PERFORMANCE_BASELINE",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_PERF_BASELINE_NOT_OK",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "PERFORMANCE_BASELINE",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_PERF_BASELINE_NOT_OK",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "GOVERNANCE_STRICT",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_GOVERNANCE_STRICT_FAIL",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "GOVERNANCE_STRICT",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_GOVERNANCE_STRICT_FAIL",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "GOVERNANCE_STRICT",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_GOVERNANCE_STRICT_FAIL",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "HEAD_STRICT_RELEASE",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_HEAD_BINDING_INVALID",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "HEAD_STRICT_RELEASE",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_HEAD_BINDING_INVALID",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "HEAD_STRICT_RELEASE",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_HEAD_BINDING_INVALID",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "TOKEN_DECLARATION",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_TOKEN_DECLARATION_INVALID",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "TOKEN_DECLARATION",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_TOKEN_DECLARATION_INVALID",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "TOKEN_DECLARATION",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_TOKEN_DECLARATION_INVALID",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "SCR_RUNTIME_SHARED_RATIO",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_SHARED_CODE_RATIO_BELOW_MIN",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "SCR_RUNTIME_SHARED_RATIO",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_SHARED_CODE_RATIO_BELOW_MIN",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "SCR_RUNTIME_SHARED_RATIO",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_SHARED_CODE_RATIO_BELOW_MIN",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "CONDITIONAL_GATES_BOUND",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_CONDITIONAL_GATE_MISAPPLIED",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "CONDITIONAL_GATES_BOUND",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_CONDITIONAL_GATE_MISAPPLIED",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "CONDITIONAL_GATES_BOUND",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_CONDITIONAL_GATE_MISAPPLIED",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "CONFIG_HASH_LOCK",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_CONFIG_HASH_CONFLICT",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "CONFIG_HASH_LOCK",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_CONFIG_HASH_CONFLICT",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "CONFIG_HASH_LOCK",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_CONFIG_HASH_CONFLICT",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "TOKEN_CATALOG_VALID",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_TOKEN_CATALOG_INVALID",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "TOKEN_CATALOG_VALID",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_TOKEN_CATALOG_INVALID",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "TOKEN_CATALOG_VALID",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_TOKEN_CATALOG_INVALID",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "LOSSLESS_MAP",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_LOSSLESS_MAP_DRIFT",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "LOSSLESS_MAP",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_LOSSLESS_MAP_DRIFT",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "LOSSLESS_MAP",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_LOSSLESS_MAP_DRIFT",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "REQUIRED_SET_NO_TARGET",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_REQUIRED_SET_CONTAINS_TARGET",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "REQUIRED_SET_NO_TARGET",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_REQUIRED_SET_CONTAINS_TARGET",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "REQUIRED_SET_NO_TARGET",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_REQUIRED_SET_CONTAINS_TARGET",
+      "mode": "promotion"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "PROOFHOOK_INTEGRITY",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_PROOFHOOK_TAMPER_DETECTED",
+      "mode": "pr"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "PROOFHOOK_INTEGRITY",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_PROOFHOOK_TAMPER_DETECTED",
+      "mode": "release"
+    },
+    {
+      "canonicalDisposition": "advisory",
+      "canonicalShouldBlock": false,
+      "claimBlocking": true,
+      "claimId": "PROOFHOOK_INTEGRITY",
+      "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+      "failSignalCode": "E_PROOFHOOK_TAMPER_DETECTED",
+      "mode": "promotion"
+    }
+  ],
+  "claimOverrideViolationCount": 0,
+  "claimOverrideViolations": [],
+  "evaluationIssues": [
+    {
+      "claimId": "CORE_SOT_REDUCER_IMPLEMENTED",
+      "failSignalCode": "E_CORE_SOT_REDUCER_NOT_IMPLEMENTED",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_REDUCER_NOT_IMPLEMENTED is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_REDUCER_IMPLEMENTED",
+      "failSignalCode": "E_CORE_SOT_REDUCER_NOT_IMPLEMENTED",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_REDUCER_NOT_IMPLEMENTED is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_REDUCER_IMPLEMENTED",
+      "failSignalCode": "E_CORE_SOT_REDUCER_NOT_IMPLEMENTED",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_REDUCER_NOT_IMPLEMENTED is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_SCHEMA_ALIGNED",
+      "failSignalCode": "E_CORE_SOT_SCHEMA_NOT_ALIGNED",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_SCHEMA_NOT_ALIGNED is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_SCHEMA_ALIGNED",
+      "failSignalCode": "E_CORE_SOT_SCHEMA_NOT_ALIGNED",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_SCHEMA_NOT_ALIGNED is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_SCHEMA_ALIGNED",
+      "failSignalCode": "E_CORE_SOT_SCHEMA_NOT_ALIGNED",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_SCHEMA_NOT_ALIGNED is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_COMMAND_CANON",
+      "failSignalCode": "E_CORE_SOT_COMMAND_CANON_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_COMMAND_CANON_MISSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_COMMAND_CANON",
+      "failSignalCode": "E_CORE_SOT_COMMAND_CANON_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_COMMAND_CANON_MISSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_COMMAND_CANON",
+      "failSignalCode": "E_CORE_SOT_COMMAND_CANON_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_COMMAND_CANON_MISSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_TYPED_ERRORS",
+      "failSignalCode": "E_CORE_SOT_TYPED_ERRORS_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_TYPED_ERRORS_MISSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_TYPED_ERRORS",
+      "failSignalCode": "E_CORE_SOT_TYPED_ERRORS_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_TYPED_ERRORS_MISSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_TYPED_ERRORS",
+      "failSignalCode": "E_CORE_SOT_TYPED_ERRORS_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_TYPED_ERRORS_MISSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_HASH_DETERMINISTIC",
+      "failSignalCode": "E_CORE_SOT_HASH_NOT_DETERMINISTIC",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_HASH_NOT_DETERMINISTIC is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_HASH_DETERMINISTIC",
+      "failSignalCode": "E_CORE_SOT_HASH_NOT_DETERMINISTIC",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_HASH_NOT_DETERMINISTIC is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CORE_SOT_HASH_DETERMINISTIC",
+      "failSignalCode": "E_CORE_SOT_HASH_NOT_DETERMINISTIC",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CORE_SOT_HASH_NOT_DETERMINISTIC is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COMMAND_SURFACE_SINGLE_ENTRY",
+      "failSignalCode": "E_COMMAND_SURFACE_BYPASS",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_COMMAND_SURFACE_BYPASS has no valid disposition for mode prCore."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COMMAND_SURFACE_SINGLE_ENTRY",
+      "failSignalCode": "E_COMMAND_SURFACE_BYPASS",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_COMMAND_SURFACE_BYPASS has no valid disposition for mode release."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COMMAND_SURFACE_SINGLE_ENTRY",
+      "failSignalCode": "E_COMMAND_SURFACE_BYPASS",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_COMMAND_SURFACE_BYPASS has no valid disposition for mode promotion."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COMMAND_SURFACE_BYPASS_NEGATIVE_TESTS",
+      "failSignalCode": "E_COMMAND_SURFACE_NEGATIVE_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_COMMAND_SURFACE_NEGATIVE_MISSING has no valid disposition for mode prCore."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COMMAND_SURFACE_BYPASS_NEGATIVE_TESTS",
+      "failSignalCode": "E_COMMAND_SURFACE_NEGATIVE_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_COMMAND_SURFACE_NEGATIVE_MISSING has no valid disposition for mode release."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COMMAND_SURFACE_BYPASS_NEGATIVE_TESTS",
+      "failSignalCode": "E_COMMAND_SURFACE_NEGATIVE_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_COMMAND_SURFACE_NEGATIVE_MISSING has no valid disposition for mode promotion."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PATH_BOUNDARY_GUARD",
+      "failSignalCode": "E_PATH_BOUNDARY_VIOLATION",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_PATH_BOUNDARY_VIOLATION has no valid disposition for mode prCore."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PATH_BOUNDARY_GUARD",
+      "failSignalCode": "E_PATH_BOUNDARY_VIOLATION",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_PATH_BOUNDARY_VIOLATION has no valid disposition for mode release."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PATH_BOUNDARY_GUARD",
+      "failSignalCode": "E_PATH_BOUNDARY_VIOLATION",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_PATH_BOUNDARY_VIOLATION has no valid disposition for mode promotion."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "DEPENDENCY_REMEDIATION_POLICY",
+      "failSignalCode": "E_DEP_REMEDIATION_POLICY_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_DEP_REMEDIATION_POLICY_INVALID has no valid disposition for mode prCore."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "DEPENDENCY_REMEDIATION_POLICY",
+      "failSignalCode": "E_DEP_REMEDIATION_POLICY_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_DEP_REMEDIATION_POLICY_INVALID has no valid disposition for mode release."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "DEPENDENCY_REMEDIATION_POLICY",
+      "failSignalCode": "E_DEP_REMEDIATION_POLICY_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_DEP_REMEDIATION_POLICY_INVALID has no valid disposition for mode promotion."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_MATRIX_NON_EMPTY",
+      "failSignalCode": "E_CAPABILITY_MATRIX_EMPTY",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_MATRIX_EMPTY is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_MATRIX_NON_EMPTY",
+      "failSignalCode": "E_CAPABILITY_MATRIX_EMPTY",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_MATRIX_EMPTY is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_MATRIX_NON_EMPTY",
+      "failSignalCode": "E_CAPABILITY_MATRIX_EMPTY",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_MATRIX_EMPTY is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_BASELINE_MIN",
+      "failSignalCode": "E_CAPABILITY_BASELINE_MIN_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_BASELINE_MIN_MISSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_BASELINE_MIN",
+      "failSignalCode": "E_CAPABILITY_BASELINE_MIN_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_BASELINE_MIN_MISSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_BASELINE_MIN",
+      "failSignalCode": "E_CAPABILITY_BASELINE_MIN_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_BASELINE_MIN_MISSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_COMMAND_BINDING",
+      "failSignalCode": "E_CAPABILITY_COMMAND_BINDING_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_COMMAND_BINDING_MISSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_COMMAND_BINDING",
+      "failSignalCode": "E_CAPABILITY_COMMAND_BINDING_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_COMMAND_BINDING_MISSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_COMMAND_BINDING",
+      "failSignalCode": "E_CAPABILITY_COMMAND_BINDING_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_COMMAND_BINDING_MISSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_COMMAND_COVERAGE",
+      "failSignalCode": "E_CAPABILITY_COMMAND_COVERAGE_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_COMMAND_COVERAGE_MISSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_COMMAND_COVERAGE",
+      "failSignalCode": "E_CAPABILITY_COMMAND_COVERAGE_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_COMMAND_COVERAGE_MISSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_COMMAND_COVERAGE",
+      "failSignalCode": "E_CAPABILITY_COMMAND_COVERAGE_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_COMMAND_COVERAGE_MISSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_PLATFORM_RESOLVER",
+      "failSignalCode": "E_CAPABILITY_PLATFORM_RESOLVER_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_PLATFORM_RESOLVER_MISSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_PLATFORM_RESOLVER",
+      "failSignalCode": "E_CAPABILITY_PLATFORM_RESOLVER_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_PLATFORM_RESOLVER_MISSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_PLATFORM_RESOLVER",
+      "failSignalCode": "E_CAPABILITY_PLATFORM_RESOLVER_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_PLATFORM_RESOLVER_MISSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_UNSUPPORTED_TYPED_ERRORS",
+      "failSignalCode": "E_CAPABILITY_UNSUPPORTED_TYPED_ERRORS_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_UNSUPPORTED_TYPED_ERRORS_MISSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_UNSUPPORTED_TYPED_ERRORS",
+      "failSignalCode": "E_CAPABILITY_UNSUPPORTED_TYPED_ERRORS_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_UNSUPPORTED_TYPED_ERRORS_MISSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_UNSUPPORTED_TYPED_ERRORS",
+      "failSignalCode": "E_CAPABILITY_UNSUPPORTED_TYPED_ERRORS_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_UNSUPPORTED_TYPED_ERRORS_MISSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_UNSUPPORTED_MAP_COVERAGE",
+      "failSignalCode": "E_CAPABILITY_UNSUPPORTED_MAP_COVERAGE_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_UNSUPPORTED_MAP_COVERAGE_MISSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_UNSUPPORTED_MAP_COVERAGE",
+      "failSignalCode": "E_CAPABILITY_UNSUPPORTED_MAP_COVERAGE_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_UNSUPPORTED_MAP_COVERAGE_MISSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "CAPABILITY_UNSUPPORTED_MAP_COVERAGE",
+      "failSignalCode": "E_CAPABILITY_UNSUPPORTED_MAP_COVERAGE_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_CAPABILITY_UNSUPPORTED_MAP_COVERAGE_MISSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_ATOMIC_WRITE",
+      "failSignalCode": "E_RECOVERY_ATOMIC_WRITE_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_ATOMIC_WRITE_NOT_OK is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_ATOMIC_WRITE",
+      "failSignalCode": "E_RECOVERY_ATOMIC_WRITE_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_ATOMIC_WRITE_NOT_OK is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_ATOMIC_WRITE",
+      "failSignalCode": "E_RECOVERY_ATOMIC_WRITE_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_ATOMIC_WRITE_NOT_OK is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_SNAPSHOT",
+      "failSignalCode": "E_RECOVERY_SNAPSHOT_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_SNAPSHOT_NOT_OK is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_SNAPSHOT",
+      "failSignalCode": "E_RECOVERY_SNAPSHOT_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_SNAPSHOT_NOT_OK is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_SNAPSHOT",
+      "failSignalCode": "E_RECOVERY_SNAPSHOT_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_SNAPSHOT_NOT_OK is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_CORRUPTION",
+      "failSignalCode": "E_RECOVERY_CORRUPTION_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_CORRUPTION_NOT_OK is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_CORRUPTION",
+      "failSignalCode": "E_RECOVERY_CORRUPTION_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_CORRUPTION_NOT_OK is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_CORRUPTION",
+      "failSignalCode": "E_RECOVERY_CORRUPTION_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_CORRUPTION_NOT_OK is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_TYPED_ERRORS",
+      "failSignalCode": "E_RECOVERY_TYPED_ERRORS_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_TYPED_ERRORS_NOT_OK is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_TYPED_ERRORS",
+      "failSignalCode": "E_RECOVERY_TYPED_ERRORS_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_TYPED_ERRORS_NOT_OK is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_TYPED_ERRORS",
+      "failSignalCode": "E_RECOVERY_TYPED_ERRORS_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_TYPED_ERRORS_NOT_OK is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_REPLAY",
+      "failSignalCode": "E_RECOVERY_REPLAY_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_REPLAY_NOT_OK is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_REPLAY",
+      "failSignalCode": "E_RECOVERY_REPLAY_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_REPLAY_NOT_OK is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_REPLAY",
+      "failSignalCode": "E_RECOVERY_REPLAY_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_REPLAY_NOT_OK is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_ACTION_CANON",
+      "failSignalCode": "E_RECOVERY_ACTION_CANON_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_ACTION_CANON_NOT_OK is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_ACTION_CANON",
+      "failSignalCode": "E_RECOVERY_ACTION_CANON_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_ACTION_CANON_NOT_OK is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "RECOVERY_ACTION_CANON",
+      "failSignalCode": "E_RECOVERY_ACTION_CANON_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_RECOVERY_ACTION_CANON_NOT_OK is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "X3_RECOVERY_SMOKE",
+      "failSignalCode": "E_X3_RECOVERY_SMOKE_FAILED",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_X3_RECOVERY_SMOKE_FAILED has no valid disposition for mode prCore."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "X3_RECOVERY_SMOKE",
+      "failSignalCode": "E_X3_RECOVERY_SMOKE_FAILED",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_X3_RECOVERY_SMOKE_FAILED has no valid disposition for mode release."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "X3_RECOVERY_SMOKE",
+      "failSignalCode": "E_X3_RECOVERY_SMOKE_FAILED",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_X3_RECOVERY_SMOKE_FAILED has no valid disposition for mode promotion."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ADAPTERS_DECLARED",
+      "failSignalCode": "E_ADAPTERS_DECLARED_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_ADAPTERS_DECLARED_MISSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ADAPTERS_DECLARED",
+      "failSignalCode": "E_ADAPTERS_DECLARED_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_ADAPTERS_DECLARED_MISSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ADAPTERS_DECLARED",
+      "failSignalCode": "E_ADAPTERS_DECLARED_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_ADAPTERS_DECLARED_MISSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ADAPTERS_BOUNDARY_TESTED",
+      "failSignalCode": "E_ADAPTERS_BOUNDARY_TESTS_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_ADAPTERS_BOUNDARY_TESTS_MISSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ADAPTERS_BOUNDARY_TESTED",
+      "failSignalCode": "E_ADAPTERS_BOUNDARY_TESTS_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_ADAPTERS_BOUNDARY_TESTS_MISSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ADAPTERS_BOUNDARY_TESTED",
+      "failSignalCode": "E_ADAPTERS_BOUNDARY_TESTS_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_ADAPTERS_BOUNDARY_TESTS_MISSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ADAPTERS_PARITY",
+      "failSignalCode": "E_ADAPTERS_PARITY_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_ADAPTERS_PARITY_MISSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ADAPTERS_PARITY",
+      "failSignalCode": "E_ADAPTERS_PARITY_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_ADAPTERS_PARITY_MISSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ADAPTERS_PARITY",
+      "failSignalCode": "E_ADAPTERS_PARITY_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_ADAPTERS_PARITY_MISSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PLATFORM_COVERAGE_BOUNDARY_TESTED",
+      "failSignalCode": "E_PLATFORM_COVERAGE_BOUNDARY_TESTS_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PLATFORM_COVERAGE_BOUNDARY_TESTS_MISSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PLATFORM_COVERAGE_BOUNDARY_TESTED",
+      "failSignalCode": "E_PLATFORM_COVERAGE_BOUNDARY_TESTS_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PLATFORM_COVERAGE_BOUNDARY_TESTS_MISSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PLATFORM_COVERAGE_BOUNDARY_TESTED",
+      "failSignalCode": "E_PLATFORM_COVERAGE_BOUNDARY_TESTS_MISSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PLATFORM_COVERAGE_BOUNDARY_TESTS_MISSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_HOTPATH_POLICY",
+      "failSignalCode": "E_HOTPATH_POLICY_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_HOTPATH_POLICY_NOT_OK is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_HOTPATH_POLICY",
+      "failSignalCode": "E_HOTPATH_POLICY_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_HOTPATH_POLICY_NOT_OK is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_HOTPATH_POLICY",
+      "failSignalCode": "E_HOTPATH_POLICY_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_HOTPATH_POLICY_NOT_OK is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_FIXTURE",
+      "failSignalCode": "E_PERF_FIXTURE_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PERF_FIXTURE_NOT_OK is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_FIXTURE",
+      "failSignalCode": "E_PERF_FIXTURE_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PERF_FIXTURE_NOT_OK is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_FIXTURE",
+      "failSignalCode": "E_PERF_FIXTURE_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PERF_FIXTURE_NOT_OK is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_RUNNER_DETERMINISTIC",
+      "failSignalCode": "E_PERF_RUNNER_NOT_DETERMINISTIC",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PERF_RUNNER_NOT_DETERMINISTIC is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_RUNNER_DETERMINISTIC",
+      "failSignalCode": "E_PERF_RUNNER_NOT_DETERMINISTIC",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PERF_RUNNER_NOT_DETERMINISTIC is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_RUNNER_DETERMINISTIC",
+      "failSignalCode": "E_PERF_RUNNER_NOT_DETERMINISTIC",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PERF_RUNNER_NOT_DETERMINISTIC is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_THRESHOLDS",
+      "failSignalCode": "E_PERF_THRESHOLD_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PERF_THRESHOLD_NOT_OK is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_THRESHOLDS",
+      "failSignalCode": "E_PERF_THRESHOLD_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PERF_THRESHOLD_NOT_OK is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_THRESHOLDS",
+      "failSignalCode": "E_PERF_THRESHOLD_NOT_OK",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PERF_THRESHOLD_NOT_OK is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "GOVERNANCE_STATE_VALIDATION_BASELINE",
+      "failSignalCode": "E_GOVERNANCE_STATE_VALID_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_GOVERNANCE_STATE_VALID_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "GOVERNANCE_STATE_VALIDATION_BASELINE",
+      "failSignalCode": "E_GOVERNANCE_STATE_VALID_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_GOVERNANCE_STATE_VALID_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "GOVERNANCE_STATE_VALIDATION_BASELINE",
+      "failSignalCode": "E_GOVERNANCE_STATE_VALID_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_GOVERNANCE_STATE_VALID_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "STRATEGY_PROGRESS_VALIDATION_BASELINE",
+      "failSignalCode": "E_STRATEGY_PROGRESS_VALID_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_STRATEGY_PROGRESS_VALID_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "STRATEGY_PROGRESS_VALIDATION_BASELINE",
+      "failSignalCode": "E_STRATEGY_PROGRESS_VALID_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_STRATEGY_PROGRESS_VALID_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "STRATEGY_PROGRESS_VALIDATION_BASELINE",
+      "failSignalCode": "E_STRATEGY_PROGRESS_VALID_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_STRATEGY_PROGRESS_VALID_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "XPLAT_CONTRACT",
+      "failSignalCode": "E_XPLAT_CONTRACT_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_XPLAT_CONTRACT_INVALID is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "XPLAT_CONTRACT",
+      "failSignalCode": "E_XPLAT_CONTRACT_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_XPLAT_CONTRACT_INVALID is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "XPLAT_CONTRACT",
+      "failSignalCode": "E_XPLAT_CONTRACT_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_XPLAT_CONTRACT_INVALID is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "XPLAT_COST_GUARANTEE",
+      "failSignalCode": "E_XPLAT_COST_GUARANTEE_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_XPLAT_COST_GUARANTEE_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "XPLAT_COST_GUARANTEE",
+      "failSignalCode": "E_XPLAT_COST_GUARANTEE_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_XPLAT_COST_GUARANTEE_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "XPLAT_COST_GUARANTEE",
+      "failSignalCode": "E_XPLAT_COST_GUARANTEE_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_XPLAT_COST_GUARANTEE_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "DERIVED_VIEWS_INFRA",
+      "failSignalCode": "E_DERIVED_VIEWS_INFRA_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_DERIVED_VIEWS_INFRA_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "DERIVED_VIEWS_INFRA",
+      "failSignalCode": "E_DERIVED_VIEWS_INFRA_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_DERIVED_VIEWS_INFRA_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "DERIVED_VIEWS_INFRA",
+      "failSignalCode": "E_DERIVED_VIEWS_INFRA_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_DERIVED_VIEWS_INFRA_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "MINDMAP_DERIVED_GRAPH",
+      "failSignalCode": "E_MINDMAP_DERIVED_GRAPH_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_MINDMAP_DERIVED_GRAPH_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "MINDMAP_DERIVED_GRAPH",
+      "failSignalCode": "E_MINDMAP_DERIVED_GRAPH_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_MINDMAP_DERIVED_GRAPH_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "MINDMAP_DERIVED_GRAPH",
+      "failSignalCode": "E_MINDMAP_DERIVED_GRAPH_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_MINDMAP_DERIVED_GRAPH_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COMMENTS_HISTORY_SAFETY_BASELINE",
+      "failSignalCode": "E_COMMENTS_HISTORY_SAFE_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COMMENTS_HISTORY_SAFE_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COMMENTS_HISTORY_SAFETY_BASELINE",
+      "failSignalCode": "E_COMMENTS_HISTORY_SAFE_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COMMENTS_HISTORY_SAFE_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COMMENTS_HISTORY_SAFETY_BASELINE",
+      "failSignalCode": "E_COMMENTS_HISTORY_SAFE_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COMMENTS_HISTORY_SAFE_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COLLAB_STRESS_SAFETY_BASELINE",
+      "failSignalCode": "E_COLLAB_STRESS_SAFE_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COLLAB_STRESS_SAFE_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COLLAB_STRESS_SAFETY_BASELINE",
+      "failSignalCode": "E_COLLAB_STRESS_SAFE_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COLLAB_STRESS_SAFE_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COLLAB_STRESS_SAFETY_BASELINE",
+      "failSignalCode": "E_COLLAB_STRESS_SAFE_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COLLAB_STRESS_SAFE_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COLLAB_EVENTLOG_BASELINE",
+      "failSignalCode": "E_COLLAB_EVENTLOG_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COLLAB_EVENTLOG_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COLLAB_EVENTLOG_BASELINE",
+      "failSignalCode": "E_COLLAB_EVENTLOG_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COLLAB_EVENTLOG_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COLLAB_EVENTLOG_BASELINE",
+      "failSignalCode": "E_COLLAB_EVENTLOG_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COLLAB_EVENTLOG_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COLLAB_APPLY_PIPELINE_BASELINE",
+      "failSignalCode": "E_COLLAB_APPLY_PIPELINE_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COLLAB_APPLY_PIPELINE_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COLLAB_APPLY_PIPELINE_BASELINE",
+      "failSignalCode": "E_COLLAB_APPLY_PIPELINE_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COLLAB_APPLY_PIPELINE_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COLLAB_APPLY_PIPELINE_BASELINE",
+      "failSignalCode": "E_COLLAB_APPLY_PIPELINE_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COLLAB_APPLY_PIPELINE_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COLLAB_CAUSAL_QUEUE_READINESS",
+      "failSignalCode": "E_COLLAB_CAUSAL_QUEUE_READINESS_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COLLAB_CAUSAL_QUEUE_READINESS_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COLLAB_CAUSAL_QUEUE_READINESS",
+      "failSignalCode": "E_COLLAB_CAUSAL_QUEUE_READINESS_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COLLAB_CAUSAL_QUEUE_READINESS_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "COLLAB_CAUSAL_QUEUE_READINESS",
+      "failSignalCode": "E_COLLAB_CAUSAL_QUEUE_READINESS_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_COLLAB_CAUSAL_QUEUE_READINESS_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "SIMULATION_MIN_CONTRACT_BASELINE",
+      "failSignalCode": "E_SIMULATION_MIN_CONTRACT_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_SIMULATION_MIN_CONTRACT_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "SIMULATION_MIN_CONTRACT_BASELINE",
+      "failSignalCode": "E_SIMULATION_MIN_CONTRACT_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_SIMULATION_MIN_CONTRACT_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "SIMULATION_MIN_CONTRACT_BASELINE",
+      "failSignalCode": "E_SIMULATION_MIN_CONTRACT_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_SIMULATION_MIN_CONTRACT_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "FREEZE_MODE_STRICT_SEMANTICS",
+      "failSignalCode": "E_FREEZE_MODE_STRICT_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_FREEZE_MODE_STRICT_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "FREEZE_MODE_STRICT_SEMANTICS",
+      "failSignalCode": "E_FREEZE_MODE_STRICT_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_FREEZE_MODE_STRICT_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "FREEZE_MODE_STRICT_SEMANTICS",
+      "failSignalCode": "E_FREEZE_MODE_STRICT_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_FREEZE_MODE_STRICT_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "THIRD_PARTY_NOTICES_READINESS",
+      "failSignalCode": "E_THIRD_PARTY_NOTICES_READINESS_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_THIRD_PARTY_NOTICES_READINESS_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "THIRD_PARTY_NOTICES_READINESS",
+      "failSignalCode": "E_THIRD_PARTY_NOTICES_READINESS_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_THIRD_PARTY_NOTICES_READINESS_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "THIRD_PARTY_NOTICES_READINESS",
+      "failSignalCode": "E_THIRD_PARTY_NOTICES_READINESS_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_THIRD_PARTY_NOTICES_READINESS_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "FAILSIGNAL_REGISTRY_VALID",
+      "failSignalCode": "E_FAILSIGNAL_REGISTRY_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_FAILSIGNAL_REGISTRY_INVALID has no valid disposition for mode prCore."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "FAILSIGNAL_REGISTRY_VALID",
+      "failSignalCode": "E_FAILSIGNAL_REGISTRY_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_FAILSIGNAL_REGISTRY_INVALID has no valid disposition for mode release."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "FAILSIGNAL_REGISTRY_VALID",
+      "failSignalCode": "E_FAILSIGNAL_REGISTRY_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_FAILSIGNAL_REGISTRY_INVALID has no valid disposition for mode promotion."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ORIGIN_SMOKE",
+      "failSignalCode": "E_NETWORK_ORIGIN_UNAVAILABLE",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_NETWORK_ORIGIN_UNAVAILABLE has no valid disposition for mode prCore."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ORIGIN_SMOKE",
+      "failSignalCode": "E_NETWORK_ORIGIN_UNAVAILABLE",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_NETWORK_ORIGIN_UNAVAILABLE has no valid disposition for mode release."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ORIGIN_SMOKE",
+      "failSignalCode": "E_NETWORK_ORIGIN_UNAVAILABLE",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_NETWORK_ORIGIN_UNAVAILABLE has no valid disposition for mode promotion."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "VERIFY_ATTESTATION",
+      "failSignalCode": "E_VERIFY_ATTESTATION_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_VERIFY_ATTESTATION_INVALID has no valid disposition for mode prCore."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "VERIFY_ATTESTATION",
+      "failSignalCode": "E_VERIFY_ATTESTATION_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_VERIFY_ATTESTATION_INVALID has no valid disposition for mode release."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "VERIFY_ATTESTATION",
+      "failSignalCode": "E_VERIFY_ATTESTATION_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_VERIFY_ATTESTATION_INVALID has no valid disposition for mode promotion."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ATTESTATION_SIGNATURE",
+      "failSignalCode": "E_ATTESTATION_SIGNATURE_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_ATTESTATION_SIGNATURE_INVALID has no valid disposition for mode prCore."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ATTESTATION_SIGNATURE",
+      "failSignalCode": "E_ATTESTATION_SIGNATURE_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_ATTESTATION_SIGNATURE_INVALID has no valid disposition for mode release."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "ATTESTATION_SIGNATURE",
+      "failSignalCode": "E_ATTESTATION_SIGNATURE_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+          "message": "FailSignal E_ATTESTATION_SIGNATURE_INVALID has no valid disposition for mode promotion."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PROOFHOOK_BRIDGE_VALID",
+      "failSignalCode": "E_PROOFHOOK_BRIDGE_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PROOFHOOK_BRIDGE_INVALID is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PROOFHOOK_BRIDGE_VALID",
+      "failSignalCode": "E_PROOFHOOK_BRIDGE_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PROOFHOOK_BRIDGE_INVALID is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "PROOFHOOK_BRIDGE_VALID",
+      "failSignalCode": "E_PROOFHOOK_BRIDGE_INVALID",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_PROOFHOOK_BRIDGE_INVALID is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "VERIFY_ORCHESTRATOR_CANON",
+      "failSignalCode": "E_VERIFY_ORCHESTRATOR_MISMATCH",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_VERIFY_ORCHESTRATOR_MISMATCH is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "VERIFY_ORCHESTRATOR_CANON",
+      "failSignalCode": "E_VERIFY_ORCHESTRATOR_MISMATCH",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_VERIFY_ORCHESTRATOR_MISMATCH is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "VERIFY_ORCHESTRATOR_CANON",
+      "failSignalCode": "E_VERIFY_ORCHESTRATOR_MISMATCH",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_VERIFY_ORCHESTRATOR_MISMATCH is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "LEGACY_VERIFY_SUNSET_GUARD",
+      "failSignalCode": "E_LEGACY_VERIFY_PATH_STILL_PASSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_LEGACY_VERIFY_PATH_STILL_PASSING is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "LEGACY_VERIFY_SUNSET_GUARD",
+      "failSignalCode": "E_LEGACY_VERIFY_PATH_STILL_PASSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_LEGACY_VERIFY_PATH_STILL_PASSING is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "LEGACY_VERIFY_SUNSET_GUARD",
+      "failSignalCode": "E_LEGACY_VERIFY_PATH_STILL_PASSING",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_LEGACY_VERIFY_PATH_STILL_PASSING is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "GOVERNANCE_SINGLE_VERIFY_CONTOUR_ENFORCED",
+      "failSignalCode": "E_DOUBLE_VERIFY_CONTOUR_DETECTED",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_DOUBLE_VERIFY_CONTOUR_DETECTED is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "GOVERNANCE_SINGLE_VERIFY_CONTOUR_ENFORCED",
+      "failSignalCode": "E_DOUBLE_VERIFY_CONTOUR_DETECTED",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_DOUBLE_VERIFY_CONTOUR_DETECTED is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "GOVERNANCE_SINGLE_VERIFY_CONTOUR_ENFORCED",
+      "failSignalCode": "E_DOUBLE_VERIFY_CONTOUR_DETECTED",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_DOUBLE_VERIFY_CONTOUR_DETECTED is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "FREEZE_READY_ROLLUP",
+      "failSignalCode": "E_FREEZE_READY_ROLLUP_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_FREEZE_READY_ROLLUP_FAIL is not registered."
+        }
+      ],
+      "mode": "pr",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "FREEZE_READY_ROLLUP",
+      "failSignalCode": "E_FREEZE_READY_ROLLUP_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_FREEZE_READY_ROLLUP_FAIL is not registered."
+        }
+      ],
+      "mode": "release",
+      "reason": "EVALUATOR_NOT_OK"
+    },
+    {
+      "claimId": "FREEZE_READY_ROLLUP",
+      "failSignalCode": "E_FREEZE_READY_ROLLUP_FAIL",
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_FREEZE_READY_ROLLUP_FAIL is not registered."
+        }
+      ],
+      "mode": "promotion",
+      "reason": "EVALUATOR_NOT_OK"
+    }
+  ]
+}

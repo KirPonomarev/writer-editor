@@ -1,0 +1,21 @@
+{
+  "version": 3,
+  "status": "ACTIVE",
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+  "authority": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json#failSignals[].modeMatrix",
+  "phaseSwitchRef": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
+  "precedenceRules": [
+    "ACTIVE_CANON_MODE_DISPOSITION_OVERRIDES_LOCAL_FLAGS",
+    "CLAIM_LEVEL_BLOCKING_CANNOT_OVERRIDE_MODE_DISPOSITION",
+    "NEW_V1_CONTROLS_PHASE_PRECEDENCE_PHASE_1_SIGNAL_PHASE_2_WARN_PHASE_3_HARD"
+  ],
+  "phaseAwareRule": "PHASE_1_SIGNAL_ONLY_PHASE_2_WARN_ONLY_PHASE_3_HARD_BLOCK_FOR_NEW_V1_CONTROLS",
+  "legacyRule": "LEGACY_HARD_STOPS_REMAIN_ACTIVE_ALL_PHASES",
+  "checkedScripts": [
+    "scripts/ops/mode-matrix-single-authority-state.mjs",
+    "scripts/ops/p0-01-mode-matrix-single-authority-report.mjs",
+    "scripts/ops/check-command-namespace-static.mjs",
+    "scripts/ops/check-execution-sequence.mjs"
+  ],
+  "notes": "P0-01 v3 locks single blocking authority with phase precedence before new V1 verdict enforcement."
+}

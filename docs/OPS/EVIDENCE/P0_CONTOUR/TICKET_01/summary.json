@@ -1,16 +1,22 @@
 {
+  "activePhase": "PHASE_1_SHADOW",
   "advisoryToBlockingDriftCount": 0,
+  "claimModeDispositionConflictCount": 48,
+  "claimOverrideViolationCount": 0,
   "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
   "gates": {
-    "advisory_to_blocking_drift_count_zero": "PASS",
-    "p0_01_binary_test_a": "PASS",
-    "p0_01_binary_test_b": "PASS",
-    "p0_01_repeatable_pass_3runs": "PASS"
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "mc_phase_switch_valid": "PASS",
+    "p0_01_repeatable_pass_3runs": "PASS",
+    "p0_01_test_a_secondary_evaluator_mismatch_count_zero": "PASS",
+    "p0_01_test_b_advisory_signal_cannot_block_outside_canonical_evaluator": "PASS",
+    "p0_01_test_c_claim_blocking_cannot_override_canon_mode_disposition": "PASS",
+    "p0_01_test_d_phase_precedence_applied_before_new_v1_verdicts": "PASS"
   },
-  "generatedAtUtc": "2026-02-25T04:37:03.208Z",
-  "mismatchCount": 0,
-  "repeatablePass": true,
-  "runId": "RUN-2026-02-25-002",
+  "generatedAtUtc": "2026-02-26T17:53:26.356Z",
+  "repeatablePass3Runs": true,
+  "runId": "RUN-2026-02-26-001",
+  "secondaryEvaluatorMismatchCount": 0,
   "status": "PASS",
-  "ticketId": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-001-RERUN-CLEAN-01"
+  "ticketId": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01"
 }
