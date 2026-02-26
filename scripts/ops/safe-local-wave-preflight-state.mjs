@@ -186,7 +186,8 @@ function evaluateDuplicateReduction(minReduction) {
   const afterTotalSignalPaths = afterGrouped.reduce((acc, row) => acc + row.sourceCount, 0);
 
   const removedDuplicateSignalPaths = beforeTotalSignalPaths - afterTotalSignalPaths;
-  const duplicateReductionOk = removedDuplicateSignalPaths >= minReduction;
+  const zeroRemainingDuplicates = beforeDuplicateSignalCount === 0 || afterDuplicateSignalCount === 0;
+  const duplicateReductionOk = removedDuplicateSignalPaths >= minReduction || zeroRemainingDuplicates;
 
   const beforeRemoteBindingSignalPaths = uniqueSortedStrings(
     LOCAL_PREFLIGHT_SIGNAL_PATHS_BEFORE
@@ -222,6 +223,7 @@ function evaluateDuplicateReduction(minReduction) {
       remoteBindingSignalPathCount: afterRemoteBindingSignalPaths.length,
     },
     removedDuplicateSignalPaths,
+    zeroRemainingDuplicates,
     duplicateReductionOk,
     remoteBindingSkipOnLocalSafeMode,
   };
@@ -463,6 +465,7 @@ export function evaluateSafeLocalWavePreflightState(input = {}) {
 function printHuman(state) {
   console.log(`${TOKEN_NAME}=${state[TOKEN_NAME]}`);
   console.log(`P1_03_DUPLICATE_SIGNAL_PATHS_REMOVED=${state.duplicatePreflightBeforeAfter.removedDuplicateSignalPaths}`);
+  console.log(`P1_03_ZERO_REMAINING_DUPLICATES=${state.duplicatePreflightBeforeAfter.zeroRemainingDuplicates ? 1 : 0}`);
   console.log(`P1_03_MIN_REDUCTION_REQUIRED=${state.minReductionRequired}`);
   console.log(`P1_03_REMOTE_BINDING_SKIP_ON_LOCAL_SAFE_MODE=${state.duplicatePreflightBeforeAfter.remoteBindingSkipOnLocalSafeMode.ok ? 1 : 0}`);
   console.log(`P1_03_LOCAL_PREFLIGHT_SAFETY_OK=${state.localPreflightSafety.ok ? 1 : 0}`);

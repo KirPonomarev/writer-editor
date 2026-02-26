@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "status": "ACTIVE",
+  "token": "SAFE_LOCAL_WAVE_PREFLIGHT_OK",
+  "scope": "safe local wave preflight with duplicate preflight signal reduction and canonical drift guard",
+  "stateScript": "scripts/ops/safe-local-wave-preflight-state.mjs",
+  "reportScript": "scripts/ops/p1-03-safe-local-wave-preflight-report.mjs",
+  "contractTest": "test/contracts/safe-local-wave-preflight.contract.test.js",
+  "blockingAuthorityId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1_LOCKED",
+  "minReductionRule": "REMOVE_AT_LEAST_ONE_DUPLICATED_PREFLIGHT_SIGNAL_PATH_OR_PROVE_ZERO_REMAINING"
+}

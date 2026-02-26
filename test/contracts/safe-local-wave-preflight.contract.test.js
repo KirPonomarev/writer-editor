@@ -30,6 +30,7 @@ test('safe local wave preflight: duplicate remote-binding preflight paths are re
   assert.equal(state.SAFE_LOCAL_WAVE_PREFLIGHT_OK, 1);
   assert.ok(state.duplicatePreflightBeforeAfter.before.duplicateSignalCount >= 1);
   assert.ok(state.duplicatePreflightBeforeAfter.removedDuplicateSignalPaths >= 1);
+  assert.equal(state.duplicatePreflightBeforeAfter.zeroRemainingDuplicates, true);
   assert.equal(state.duplicatePreflightBeforeAfter.duplicateReductionOk, true);
 });
 

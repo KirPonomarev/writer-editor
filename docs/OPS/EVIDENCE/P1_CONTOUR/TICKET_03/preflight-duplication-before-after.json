@@ -24,5 +24,6 @@
     "ok": true,
     "removedRemoteBindingSignalPaths": 2
   },
-  "removedDuplicateSignalPaths": 2
+  "removedDuplicateSignalPaths": 2,
+  "zeroRemainingDuplicates": true
 }

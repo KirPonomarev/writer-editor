@@ -141,6 +141,7 @@ function main() {
     ticketId: args.ticketId || process.env.TICKET_ID || '',
     minReductionRequired: args.minReduction,
     removedDuplicateSignalPaths: state.duplicatePreflightBeforeAfter.removedDuplicateSignalPaths,
+    zeroRemainingDuplicates: state.duplicatePreflightBeforeAfter.zeroRemainingDuplicates,
     duplicateSignalCountBefore: state.duplicatePreflightBeforeAfter.before.duplicateSignalCount,
     duplicateSignalCountAfter: state.duplicatePreflightBeforeAfter.after.duplicateSignalCount,
     remoteBindingSignalPathCountBefore: state.duplicatePreflightBeforeAfter.before.remoteBindingSignalPathCount,
@@ -170,6 +171,7 @@ function main() {
     before: state.duplicatePreflightBeforeAfter.before,
     after: state.duplicatePreflightBeforeAfter.after,
     removedDuplicateSignalPaths: state.duplicatePreflightBeforeAfter.removedDuplicateSignalPaths,
+    zeroRemainingDuplicates: state.duplicatePreflightBeforeAfter.zeroRemainingDuplicates,
     duplicateReductionOk: state.duplicatePreflightBeforeAfter.duplicateReductionOk,
     remoteBindingSkipOnLocalSafeMode: state.duplicatePreflightBeforeAfter.remoteBindingSkipOnLocalSafeMode,
   });
