@@ -1,0 +1,23 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "backwardCompatibilityOk": true,
+  "coveragePct": 100,
+  "coverageTarget": "100_PERCENT_DECLARED_MIGRATION_STEPS_VERIFIED",
+  "declaredStepCount": 10,
+  "gates": {
+    "advisory_to_blocking_drift_count_zero": "PASS",
+    "p1_04_backward_compatibility_check": "PASS",
+    "p1_04_migration_coverage_check": "PASS",
+    "p1_04_missing_step_negative_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-26T08:24:56.680Z",
+  "missingStepCount": 0,
+  "negativeMissingStepDetected": true,
+  "negativeRule": "REMOVE_ONE_REQUIRED_STEP_MUST_FAIL_VERIFIER",
+  "runId": "RUN-2026-02-25-013",
+  "safetyParityOk": true,
+  "simulatedRemovedStepId": "documents.copy_legacy_to_target",
+  "status": "PASS",
+  "ticketId": "TZ-P1-04-MIGRATION-COMPLETENESS-VERIFIER-002",
+  "verifiedStepCount": 10
+}

@@ -1,0 +1,86 @@
+{
+  "declaredStepCount": 10,
+  "migrationInputOutputMap": [
+    {
+      "inputCondition": "documents_target_has_migration_marker",
+      "outputGuarantee": "documents_target_path_selected_without_copy",
+      "requiredPattern": "if (fsSync.existsSync(markerPath))",
+      "sourcePath": "src/utils/fileManager.js",
+      "stepId": "documents.marker_check",
+      "verified": true
+    },
+    {
+      "inputCondition": "documents_target_contains_files",
+      "outputGuarantee": "documents_target_path_selected_without_legacy_copy",
+      "requiredPattern": "if (hasDirectoryContent(targetPath))",
+      "sourcePath": "src/utils/fileManager.js",
+      "stepId": "documents.target_populated_check",
+      "verified": true
+    },
+    {
+      "inputCondition": "documents_legacy_missing_or_empty",
+      "outputGuarantee": "documents_target_path_selected_without_copy",
+      "requiredPattern": "if (!hasDirectoryContent(legacyPath))",
+      "sourcePath": "src/utils/fileManager.js",
+      "stepId": "documents.legacy_presence_check",
+      "verified": true
+    },
+    {
+      "inputCondition": "documents_legacy_present_and_target_empty",
+      "outputGuarantee": "documents_legacy_content_copied_to_target",
+      "requiredPattern": "await copyDirectoryContents(legacyPath, targetPath);",
+      "sourcePath": "src/utils/fileManager.js",
+      "stepId": "documents.copy_legacy_to_target",
+      "verified": true
+    },
+    {
+      "inputCondition": "documents_copy_completed",
+      "outputGuarantee": "documents_migration_marker_written",
+      "requiredPattern": "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+      "sourcePath": "src/utils/fileManager.js",
+      "stepId": "documents.write_marker",
+      "verified": true
+    },
+    {
+      "inputCondition": "userdata_target_has_migration_marker",
+      "outputGuarantee": "userdata_target_path_selected_without_copy",
+      "requiredPattern": "if (fsSync.existsSync(markerPath))",
+      "sourcePath": "src/main.js",
+      "stepId": "userdata.marker_check",
+      "verified": true
+    },
+    {
+      "inputCondition": "userdata_target_contains_files",
+      "outputGuarantee": "userdata_target_path_selected_without_legacy_copy",
+      "requiredPattern": "if (hasDirectoryContent(targetPath))",
+      "sourcePath": "src/main.js",
+      "stepId": "userdata.target_populated_check",
+      "verified": true
+    },
+    {
+      "inputCondition": "userdata_legacy_missing_or_empty",
+      "outputGuarantee": "userdata_target_path_selected_without_copy",
+      "requiredPattern": "if (!hasDirectoryContent(legacyPath))",
+      "sourcePath": "src/main.js",
+      "stepId": "userdata.legacy_presence_check",
+      "verified": true
+    },
+    {
+      "inputCondition": "userdata_legacy_present_and_target_empty",
+      "outputGuarantee": "userdata_legacy_content_copied_to_target",
+      "requiredPattern": "await copyDirectoryContents(legacyPath, targetPath);",
+      "sourcePath": "src/main.js",
+      "stepId": "userdata.copy_legacy_to_target",
+      "verified": true
+    },
+    {
+      "inputCondition": "userdata_copy_completed",
+      "outputGuarantee": "userdata_migration_marker_written",
+      "requiredPattern": "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+      "sourcePath": "src/main.js",
+      "stepId": "userdata.write_marker",
+      "verified": true
+    }
+  ],
+  "verifiedStepCount": 10
+}

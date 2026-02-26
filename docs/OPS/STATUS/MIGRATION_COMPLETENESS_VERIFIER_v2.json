@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "status": "ACTIVE",
+  "token": "MIGRATION_COMPLETENESS_VERIFIER_OK",
+  "scope": "migration chain completeness verification with missing-step negative detection and backward compatibility proof",
+  "stateScript": "scripts/ops/migration-completeness-verifier-state.mjs",
+  "reportScript": "scripts/ops/p1-04-migration-completeness-verifier-report.mjs",
+  "contractTest": "test/contracts/migration-completeness-verifier.contract.test.js",
+  "blockingAuthorityId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1_LOCKED",
+  "coverageTarget": "100_PERCENT_DECLARED_MIGRATION_STEPS_VERIFIED",
+  "negativeRule": "REMOVE_ONE_REQUIRED_STEP_MUST_FAIL_VERIFIER"
+}

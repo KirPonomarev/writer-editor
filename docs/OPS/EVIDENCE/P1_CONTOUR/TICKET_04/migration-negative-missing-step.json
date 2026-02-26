@@ -1,0 +1,8 @@
+{
+  "completenessOkAfterDrop": false,
+  "completenessOkBeforeDrop": true,
+  "failReason": "",
+  "missingStepDetected": true,
+  "ok": true,
+  "simulatedRemovedStepId": "documents.copy_legacy_to_target"
+}
