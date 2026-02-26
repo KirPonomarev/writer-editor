@@ -1,0 +1,34 @@
+{
+  "aliasCases": {
+    "dynamicAlias": {
+      "cacheHit": false,
+      "ok": false,
+      "reason": "ALIAS_DYNAMIC_BYPASS",
+      "route": "command.bus",
+      "scenarioId": "",
+      "stopCode": "E_ALIAS_INDIRECTION_BYPASS"
+    },
+    "ok": true,
+    "unknownAlias": {
+      "cacheHit": false,
+      "ok": false,
+      "reason": "ALIAS_NOT_ALLOWED",
+      "route": "command.bus",
+      "scenarioId": "",
+      "stopCode": "E_ALIAS_INDIRECTION_BYPASS"
+    }
+  },
+  "aliasIndirectionRuntimeNegativeCheck": true,
+  "markerCase": {
+    "markerWithoutRuntimeAssertion": {
+      "cacheHit": false,
+      "ok": false,
+      "reason": "MARKER_WITHOUT_RUNTIME_ASSERTION",
+      "route": "command.bus",
+      "scenarioId": "",
+      "stopCode": "COMMAND_SURFACE_BYPASS"
+    },
+    "ok": true
+  },
+  "markerPresenceWithoutRuntimeAssertionInvalidCheck": true
+}

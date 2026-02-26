@@ -1,0 +1,49 @@
+{
+  "fastPathCacheRequiredCheck": true,
+  "proof": {
+    "cacheEnabled": true,
+    "cacheEntryCount": 2,
+    "first": {
+      "aliasUsed": false,
+      "cacheHit": false,
+      "callerId": "menu",
+      "commandId": "cmd.project.open",
+      "ok": true,
+      "reason": "",
+      "route": "command.bus",
+      "scenarioId": "",
+      "stopCode": ""
+    },
+    "interactiveReplay": {
+      "cacheHit": true,
+      "ok": false,
+      "reason": "INTERACTIVE_CACHE_REUSE_FORBIDDEN",
+      "route": "command.bus",
+      "scenarioId": "",
+      "stopCode": "E_FAST_PATH_CACHE_SAFETY_VIOLATION"
+    },
+    "ok": true,
+    "schemaVersionChanged": {
+      "aliasUsed": false,
+      "cacheHit": false,
+      "callerId": "menu",
+      "commandId": "cmd.project.open",
+      "ok": true,
+      "reason": "",
+      "route": "command.bus",
+      "scenarioId": "",
+      "stopCode": ""
+    },
+    "second": {
+      "aliasUsed": false,
+      "cacheHit": true,
+      "callerId": "menu",
+      "commandId": "cmd.project.open",
+      "ok": true,
+      "reason": "",
+      "route": "command.bus",
+      "scenarioId": "",
+      "stopCode": ""
+    }
+  }
+}

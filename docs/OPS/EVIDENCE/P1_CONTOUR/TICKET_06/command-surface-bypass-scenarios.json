@@ -1,0 +1,47 @@
+{
+  "cases": [
+    {
+      "detected": true,
+      "observedScenarioId": "hotkey-bypass",
+      "reason": "COMMAND_ROUTE_BYPASS",
+      "route": "hotkey.direct",
+      "scenarioId": "hotkey-bypass",
+      "stopCode": "COMMAND_SURFACE_BYPASS"
+    },
+    {
+      "detected": true,
+      "observedScenarioId": "palette-bypass",
+      "reason": "COMMAND_ROUTE_BYPASS",
+      "route": "palette.direct",
+      "scenarioId": "palette-bypass",
+      "stopCode": "COMMAND_SURFACE_BYPASS"
+    },
+    {
+      "detected": true,
+      "observedScenarioId": "ipc-direct-bypass",
+      "reason": "COMMAND_ROUTE_BYPASS",
+      "route": "ipc.renderer-main.direct",
+      "scenarioId": "ipc-direct-bypass",
+      "stopCode": "COMMAND_SURFACE_BYPASS"
+    },
+    {
+      "detected": true,
+      "observedScenarioId": "context-button-bypass",
+      "reason": "COMMAND_ROUTE_BYPASS",
+      "route": "context.button.direct",
+      "scenarioId": "context-button-bypass",
+      "stopCode": "COMMAND_SURFACE_BYPASS"
+    },
+    {
+      "detected": true,
+      "observedScenarioId": "plugin-overlay-bypass",
+      "reason": "COMMAND_ROUTE_BYPASS",
+      "route": "plugin.overlay.exec",
+      "scenarioId": "plugin-overlay-bypass",
+      "stopCode": "COMMAND_SURFACE_BYPASS"
+    }
+  ],
+  "mandatoryBypassScenariosCheck": true,
+  "passingScenarioCount": 5,
+  "requiredScenarioCount": 5
+}
