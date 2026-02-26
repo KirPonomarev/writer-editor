@@ -1,0 +1,16 @@
+{
+  "version": 3,
+  "status": "ACTIVE",
+  "token": "CIRCULAR_DEPENDENCY_BREAK_OK",
+  "machineCheckId": "mc_gate_graph_check_v1_phase_aware",
+  "phaseRule": "PHASE_1_SIGNAL_PHASE_2_WARN_PHASE_3_HARD",
+  "phaseSwitchRef": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
+  "gateDependencyDeclarationRef": "docs/OPS/STATUS/GATE_DEPENDENCY_DECLARATION_V1.json",
+  "cycleStopCode": "CIRCULAR_GATE_DEPENDENCY",
+  "declarationInvalidStopCode": "E_GATE_GRAPH_DECLARATION_INVALID",
+  "skipBypassStopCode": "E_SKIP_FLAG_BYPASS",
+  "stateScript": "scripts/ops/gate-graph-check-v1-state.mjs",
+  "reportScript": "scripts/ops/p0-05-circular-dependency-break-report.mjs",
+  "contractTest": "test/contracts/circular-dependency-break.contract.test.js",
+  "notes": "P0-05 enforces acyclic gate graph with SCC detection, explicit dependencies only, and forbids skip-based suppression in release and promotion modes."
+}
