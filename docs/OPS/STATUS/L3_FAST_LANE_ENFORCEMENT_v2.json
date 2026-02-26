@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "status": "ACTIVE",
+  "token": "L3_FAST_LANE_ENFORCEMENT_OK",
+  "scope": "low-risk ui menu design defaults to fast lane with canonical smoke and drift guard",
+  "stateScript": "scripts/ops/l3-fast-lane-enforcement-state.mjs",
+  "reportScript": "scripts/ops/p1-06-l3-fast-lane-enforcement-report.mjs",
+  "contractTest": "test/contracts/l3-fast-lane-enforcement.contract.test.js",
+  "blockingAuthorityId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1_LOCKED",
+  "scopeRule": "LOW_RISK_UI_MENU_DESIGN_ONLY",
+  "heavyLaneRule": "HEAVY_LANE_FORBIDDEN_BY_DEFAULT_FOR_LOW_RISK_L3",
+  "safetyRule": "CANONICAL_NON_REGRESSION_SMOKE_REQUIRED"
+}

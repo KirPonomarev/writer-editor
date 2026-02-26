@@ -1,0 +1,41 @@
+{
+  "canonicalSmokeRequiredCheck": {
+    "issues": [],
+    "missingOrUnknown": [],
+    "ok": true,
+    "packageScriptChecks": {
+      "devFastScriptDefined": true,
+      "devFastScriptReferencesRunTestsFast": true,
+      "doctorScriptExists": true
+    },
+    "requiredSmokes": [
+      "doctor_strict",
+      "dev_fast_lane_contract",
+      "mode_matrix_authority_nonregression"
+    ],
+    "resolvedSmokes": [
+      {
+        "exists": true,
+        "known": true,
+        "path": "scripts/doctor.mjs",
+        "smokeId": "doctor_strict",
+        "type": "script"
+      },
+      {
+        "exists": true,
+        "known": true,
+        "path": "test/contracts/dev-fast-lane.contract.test.js",
+        "smokeId": "dev_fast_lane_contract",
+        "type": "contract"
+      },
+      {
+        "exists": true,
+        "known": true,
+        "path": "test/contracts/mode-matrix-single-authority.contract.test.js",
+        "smokeId": "mode_matrix_authority_nonregression",
+        "type": "contract"
+      }
+    ]
+  },
+  "canonicalSmokeSafetyRule": "CANONICAL_NON_REGRESSION_SMOKE_REQUIRED"
+}
