@@ -1,0 +1,21 @@
+{
+  "noRuntimeHotpathGovernance": {
+    "failReason": "",
+    "ok": true,
+    "policyIssues": [],
+    "policyPath": "scripts/perf/hotpath-policy.json",
+    "policyViolations": []
+  },
+  "typingLoopNonBlockingCheck": {
+    "autosaveBackupNonBlocking": {
+      "hasAutosaveQueued": true,
+      "hasBackupAutosaveQueued": true,
+      "hasBackupCurrentQueued": true,
+      "noSyncIoApis": true,
+      "ok": true,
+      "syncHitsNearCriticalQueues": []
+    },
+    "inputHandlerBlockingPatternHits": [],
+    "ok": true
+  }
+}

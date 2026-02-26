@@ -1,0 +1,25 @@
+{
+  "acceptanceMetricA": "NO_FULL_DOCUMENT_RERENDER_PER_KEYSTROKE",
+  "acceptanceMetricB": "INPUT_P95_WITHIN_FAST_LANE_THRESHOLD",
+  "acceptanceMetricC": "AUTOSAVE_AND_BACKUP_DO_NOT_BLOCK_TYPING_LOOP",
+  "advisoryToBlockingDriftCount": 0,
+  "failReason": "",
+  "gates": {
+    "no_advisory_to_blocking_drift": "PASS",
+    "no_runtime_hotpath_governance": "PASS",
+    "p2_01_autosave_backup_nonblocking_check": "PASS",
+    "p2_01_input_p95_within_threshold_check": "PASS",
+    "p2_01_no_full_document_rerender_per_keystroke_check": "PASS",
+    "single_blocking_authority_enforced": "PASS"
+  },
+  "generatedAtUtc": "2026-02-26T13:34:29.673Z",
+  "inputMedianMeasuredMs": 0.0002080000000006521,
+  "inputP95MeasuredMs": 0.0004159999999977515,
+  "inputP95ThresholdMs": 60,
+  "inputSamplesCount": 200,
+  "noFullRerenderPerKeystroke": true,
+  "runId": "RUN-2026-02-25-013",
+  "status": "PASS",
+  "ticketId": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-002-RERUN-01",
+  "typingLoopNonBlocking": true
+}
