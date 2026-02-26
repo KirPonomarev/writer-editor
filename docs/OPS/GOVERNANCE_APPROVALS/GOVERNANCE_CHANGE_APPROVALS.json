@@ -805,6 +805,69 @@
       "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
       "approvedAtUtc": "2026-02-26T18:56:31.056Z",
       "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/LIFECYCLE_NEGATIVE_TEST_COVERAGE_v3.json",
+      "sha256": "5f7543283540cabf1e71242ef4b6bc9bc89bd26bbcca89725936eabf50b0e8e7",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/lifecycle-negative-test-coverage-state.mjs",
+      "sha256": "5555a5affca69ee6a6015daeb7e13104e71f1034e42e673dfc5362f6a391cd4e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p0-06-lifecycle-negative-test-coverage-report.mjs",
+      "sha256": "c0f17a17401afd378ec1cddfbf48a41f1b238c938ab3e601426f7799f20d639f",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "test/contracts/lifecycle-negative-test-coverage.contract.test.js",
+      "sha256": "aba35bddcd5bd5ff591ddde8333ce48cfbd078b01d3abada8da72e2cab18c7e4",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/merge-flow-negative-cases.json",
+      "sha256": "59cedaa753542e49e0463fa8679909a727eab1cd0211e83503fcab8e0fe7d67a",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/release-gate-nonzero-fail-proof.json",
+      "sha256": "336ad47e89681921d3151cb21c9f6b518e79305a88aa8b93ba209ed5ea54f6bf",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/advisory-blocking-drift-cases.json",
+      "sha256": "0ced9911d9e35b05e392c4ebf74095ee2d19355f55243a8b6f87d2464fe4e3aa",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/summary.json",
+      "sha256": "7c3ff1e45d24234dca67717f2366c603ec51d00c7788b0fc67b935460b08c7bc",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/ticket-meta.json",
+      "sha256": "73e97a8240218c7459e74b4383eaa483c717ad3f078180f28c6eae495f4f2e8c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T19:40:30.000Z",
+      "rationale": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01 approvals."
     }
   ]
 }

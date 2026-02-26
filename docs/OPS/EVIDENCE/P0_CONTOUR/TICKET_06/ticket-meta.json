@@ -1,6 +1,8 @@
 {
-  "generatedAtUtc": "2026-02-25T14:08:24.983Z",
+  "activePhase": "PHASE_1_SHADOW",
+  "generatedAtUtc": "2026-02-26T19:39:08.178Z",
   "outputDir": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06",
-  "runId": "RUN-2026-02-25-011",
-  "ticketId": "TZ-P0-06-ATTESTATION-TRUST-LOCK-ENFORCEMENT-001"
+  "phaseEnforcementMode": "SIGNAL_ONLY",
+  "runId": "RUN-2026-02-26-001",
+  "ticketId": "TZ-P0-06-LIFECYCLE-NEGATIVE-TEST-COVERAGE-003-RERUN-01"
 }

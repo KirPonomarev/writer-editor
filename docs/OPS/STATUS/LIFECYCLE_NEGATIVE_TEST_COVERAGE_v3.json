@@ -1,0 +1,22 @@
+{
+  "version": 3,
+  "status": "ACTIVE",
+  "token": "LIFECYCLE_NEGATIVE_TEST_COVERAGE_OK",
+  "machineCheckId": "p0_06_lifecycle_gate_negative_coverage_check",
+  "phaseRule": "PHASE_1_SIGNAL_PHASE_2_WARN_PHASE_3_HARD",
+  "phaseSwitchRef": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
+  "mergeFlowNegativeCasesRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_06/merge-flow-negative-cases.json",
+  "requiredMergeFlowGates": [
+    "p0_06_merge_flow_negative_cases_required_check",
+    "p0_06_lifecycle_gate_negative_coverage_check",
+    "p0_06_release_gate_nonzero_on_fail_check",
+    "p0_06_no_skip_bypass_in_merge_flow_check"
+  ],
+  "incompleteCoverageStopCode": "E_LIFECYCLE_NEGATIVE_COVERAGE_INCOMPLETE",
+  "releaseGateNonzeroStopCode": "E_RELEASE_GATE_EXIT_SEMANTICS",
+  "skipBypassStopCode": "E_SKIP_FLAG_BYPASS",
+  "stateScript": "scripts/ops/lifecycle-negative-test-coverage-state.mjs",
+  "reportScript": "scripts/ops/p0-06-lifecycle-negative-test-coverage-report.mjs",
+  "contractTest": "test/contracts/lifecycle-negative-test-coverage.contract.test.js",
+  "notes": "P0-06 enforces executable negative coverage for merge-flow blocking gates, nonzero release fail semantics, and skip-bypass resistance with phase-aware delivery verdicts."
+}

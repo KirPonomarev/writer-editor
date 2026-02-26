@@ -1,5 +1,5 @@
 {
-  "advisoryToBlockingDriftCount": 0,
-  "advisoryToBlockingDriftCountZero": true,
-  "driftCases": []
+  "advisory_to_blocking_drift_count": 0,
+  "cases": [],
+  "gate": "mc_advisory_blocking_drift_zero"
 }

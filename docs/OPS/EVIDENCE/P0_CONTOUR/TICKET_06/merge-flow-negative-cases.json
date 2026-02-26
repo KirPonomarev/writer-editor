@@ -1,0 +1,53 @@
+{
+  "cases": [
+    {
+      "caseId": "p0_06_merge_flow_negative_cases_required_check__negative_path",
+      "executable": true,
+      "expectedFailSignal": "p0_06_merge_flow_negative_cases_required_check",
+      "gateId": "p0_06_merge_flow_negative_cases_required_check",
+      "modeCoverage": [
+        "release",
+        "promotion"
+      ],
+      "rationale": "Executable negative case required for merge-flow blocking gates."
+    },
+    {
+      "caseId": "p0_06_lifecycle_gate_negative_coverage_check__negative_path",
+      "executable": true,
+      "expectedFailSignal": "p0_06_lifecycle_gate_negative_coverage_check",
+      "gateId": "p0_06_lifecycle_gate_negative_coverage_check",
+      "modeCoverage": [
+        "release",
+        "promotion"
+      ],
+      "rationale": "Executable negative case required for merge-flow blocking gates."
+    },
+    {
+      "caseId": "p0_06_release_gate_nonzero_on_fail_check__negative_path",
+      "executable": true,
+      "expectedFailSignal": "p0_06_release_gate_nonzero_on_fail_check",
+      "gateId": "p0_06_release_gate_nonzero_on_fail_check",
+      "modeCoverage": [
+        "release",
+        "promotion"
+      ],
+      "rationale": "Executable negative case required for merge-flow blocking gates."
+    },
+    {
+      "caseId": "p0_06_no_skip_bypass_in_merge_flow_check__negative_path",
+      "executable": true,
+      "expectedFailSignal": "p0_06_no_skip_bypass_in_merge_flow_check",
+      "gateId": "p0_06_no_skip_bypass_in_merge_flow_check",
+      "modeCoverage": [
+        "release",
+        "promotion"
+      ],
+      "rationale": "Executable negative case required for merge-flow blocking gates."
+    }
+  ],
+  "coveredMergeFlowGateCount": 4,
+  "gate": "p0_06_merge_flow_negative_cases_required_check",
+  "missingMergeFlowGates": [],
+  "ok": true,
+  "requiredMergeFlowGateCount": 4
+}
