@@ -4,10 +4,28 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const TOKEN_NAME = 'RELEASE_TOKEN_BINDING_COMPLETENESS_OK';
-const FAIL_SIGNAL_CODE = 'E_TOKEN_CATALOG_INVALID';
+const DEFAULT_STATUS_PATH = 'docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json';
+const DEFAULT_BINDING_SCHEMA_PATH = 'docs/OPS/STATUS/BINDING_SCHEMA_V1.json';
+const DEFAULT_PHASE_SWITCH_PATH = 'docs/OPS/STATUS/PHASE_SWITCH_V1.json';
+const DEFAULT_PHASE_SET_1_PATH = 'docs/OPS/STATUS/REQUIRED_SET_PHASE_1_V1.json';
+const DEFAULT_PHASE_SET_2_PATH = 'docs/OPS/STATUS/REQUIRED_SET_PHASE_2_V1.json';
+const DEFAULT_PHASE_SET_3_PATH = 'docs/OPS/STATUS/REQUIRED_SET_PHASE_3_V1.json';
 const DEFAULT_CATALOG_PATH = 'docs/OPS/TOKENS/TOKEN_CATALOG.json';
-const DEFAULT_REQUIRED_SET_PATH = 'docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json';
-const SHA256_HEX_RE = /^[0-9a-f]{64}$/u;
+const REQUIRED_FIELDS = [
+  'TOKEN_ID',
+  'PROOFHOOK_REF',
+  'POSITIVE_CONTRACT_REF',
+  'NEGATIVE_CONTRACT_REF',
+  'FAILSIGNAL_CODE',
+  'MODE_DISPOSITION',
+  'SOURCE_BINDING_REF',
+  'REQUIRED_SCOPE',
+  'OWNER',
+  'ROLLBACK_REF',
+  'EVIDENCE_REF',
+  'UPDATED_AT_UTC',
+];
+const ALLOWED_PHASES = new Set(['PHASE_1_SHADOW', 'PHASE_2_WARN', 'PHASE_3_HARD']);
 
 function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -45,8 +63,7 @@ function uniqueSortedStrings(values) {
   const unique = new Set();
   for (const value of values) {
     const normalized = normalizeString(value);
-    if (!normalized) continue;
-    unique.add(normalized);
+    if (normalized) unique.add(normalized);
   }
   return [...unique].sort((a, b) => a.localeCompare(b));
 }
@@ -54,8 +71,13 @@ function uniqueSortedStrings(values) {
 function parseArgs(argv = process.argv.slice(2)) {
   const out = {
     json: false,
+    statusPath: '',
+    bindingSchemaPath: '',
+    phaseSwitchPath: '',
+    phaseSet1Path: '',
+    phaseSet2Path: '',
+    phaseSet3Path: '',
     catalogPath: '',
-    requiredSetPath: '',
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -65,6 +87,60 @@ function parseArgs(argv = process.argv.slice(2)) {
       out.json = true;
       continue;
     }
+    if (arg === '--status-path' && i + 1 < argv.length) {
+      out.statusPath = normalizeString(argv[i + 1]);
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith('--status-path=')) {
+      out.statusPath = normalizeString(arg.slice('--status-path='.length));
+      continue;
+    }
+    if (arg === '--binding-schema-path' && i + 1 < argv.length) {
+      out.bindingSchemaPath = normalizeString(argv[i + 1]);
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith('--binding-schema-path=')) {
+      out.bindingSchemaPath = normalizeString(arg.slice('--binding-schema-path='.length));
+      continue;
+    }
+    if (arg === '--phase-switch-path' && i + 1 < argv.length) {
+      out.phaseSwitchPath = normalizeString(argv[i + 1]);
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith('--phase-switch-path=')) {
+      out.phaseSwitchPath = normalizeString(arg.slice('--phase-switch-path='.length));
+      continue;
+    }
+    if (arg === '--phase-set-1-path' && i + 1 < argv.length) {
+      out.phaseSet1Path = normalizeString(argv[i + 1]);
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith('--phase-set-1-path=')) {
+      out.phaseSet1Path = normalizeString(arg.slice('--phase-set-1-path='.length));
+      continue;
+    }
+    if (arg === '--phase-set-2-path' && i + 1 < argv.length) {
+      out.phaseSet2Path = normalizeString(argv[i + 1]);
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith('--phase-set-2-path=')) {
+      out.phaseSet2Path = normalizeString(arg.slice('--phase-set-2-path='.length));
+      continue;
+    }
+    if (arg === '--phase-set-3-path' && i + 1 < argv.length) {
+      out.phaseSet3Path = normalizeString(argv[i + 1]);
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith('--phase-set-3-path=')) {
+      out.phaseSet3Path = normalizeString(arg.slice('--phase-set-3-path='.length));
+      continue;
+    }
     if (arg === '--catalog-path' && i + 1 < argv.length) {
       out.catalogPath = normalizeString(argv[i + 1]);
       i += 1;
@@ -72,106 +148,192 @@ function parseArgs(argv = process.argv.slice(2)) {
     }
     if (arg.startsWith('--catalog-path=')) {
       out.catalogPath = normalizeString(arg.slice('--catalog-path='.length));
-      continue;
-    }
-    if (arg === '--required-set-path' && i + 1 < argv.length) {
-      out.requiredSetPath = normalizeString(argv[i + 1]);
-      i += 1;
-      continue;
-    }
-    if (arg.startsWith('--required-set-path=')) {
-      out.requiredSetPath = normalizeString(arg.slice('--required-set-path='.length));
     }
   }
 
   return out;
 }
 
-function buildMissing(tokenId, field, reason, details = {}) {
+function buildState(base = {}) {
   return {
-    tokenId,
-    field,
-    reason,
-    ...details,
+    ok: false,
+    [TOKEN_NAME]: 0,
+    completenessOk: false,
+    failReason: 'RELEASE_TOKEN_BINDING_INCOMPLETE',
+    statusPath: '',
+    bindingSchemaPath: '',
+    phaseSwitchPath: '',
+    activePhase: '',
+    phaseEnforcementMode: '',
+    effectiveRequiredTokenIds: [],
+    effectiveRequiredTokenCount: 0,
+    missingRequiredBindingFields: [],
+    missingRequiredBindingFieldsCount: 0,
+    missingEffectiveRequiredTokensInCatalog: [],
+    missingEffectiveRequiredTokensInCatalogCount: 0,
+    requiredFields: [...REQUIRED_FIELDS],
+    requiredFieldsPerTokenCount: REQUIRED_FIELDS.length,
+    bindingRecordCoverage: {
+      requiredTokenCount: 0,
+      requiredFieldCount: REQUIRED_FIELDS.length,
+      expectedCells: 0,
+      filledCells: 0,
+      missingCells: 0,
+      coveragePct: 0,
+    },
+    ...base,
   };
 }
 
+function resolvePhaseConfig(activePhase, phaseMap) {
+  return phaseMap[activePhase] || '';
+}
+
+function listMissingFields(record) {
+  const missing = [];
+  for (const field of REQUIRED_FIELDS) {
+    const value = record[field];
+    if (value === undefined || value === null || normalizeString(String(value)) === '') {
+      missing.push(field);
+    }
+  }
+  return missing;
+}
+
 export function evaluateReleaseTokenBindingCompleteness(input = {}) {
+  const statusPath = normalizeString(input.statusPath || process.env.RELEASE_TOKEN_BINDING_STATUS_PATH || DEFAULT_STATUS_PATH);
+  const bindingSchemaPath = normalizeString(input.bindingSchemaPath || process.env.BINDING_SCHEMA_V1_PATH || DEFAULT_BINDING_SCHEMA_PATH);
+  const phaseSwitchPath = normalizeString(input.phaseSwitchPath || process.env.PHASE_SWITCH_V1_PATH || DEFAULT_PHASE_SWITCH_PATH);
+  const phaseSet1Path = normalizeString(input.phaseSet1Path || process.env.REQUIRED_SET_PHASE_1_PATH || DEFAULT_PHASE_SET_1_PATH);
+  const phaseSet2Path = normalizeString(input.phaseSet2Path || process.env.REQUIRED_SET_PHASE_2_PATH || DEFAULT_PHASE_SET_2_PATH);
+  const phaseSet3Path = normalizeString(input.phaseSet3Path || process.env.REQUIRED_SET_PHASE_3_PATH || DEFAULT_PHASE_SET_3_PATH);
   const catalogPath = normalizeString(input.catalogPath || process.env.TOKEN_CATALOG_PATH || DEFAULT_CATALOG_PATH);
-  const requiredSetPath = normalizeString(input.requiredSetPath || process.env.REQUIRED_TOKEN_SET_PATH || DEFAULT_REQUIRED_SET_PATH);
 
+  const statusDoc = readJsonObject(statusPath);
+  const bindingSchemaDoc = readJsonObject(bindingSchemaPath);
+  const phaseSwitchDoc = readJsonObject(phaseSwitchPath);
+  const phaseSet1Doc = readJsonObject(phaseSet1Path);
+  const phaseSet2Doc = readJsonObject(phaseSet2Path);
+  const phaseSet3Doc = readJsonObject(phaseSet3Path);
   const catalogDoc = readJsonObject(catalogPath);
-  const requiredSetDoc = readJsonObject(requiredSetPath);
-  const missingRequiredBindingFields = [];
 
+  if (!statusDoc) {
+    return buildState({
+      failReason: 'RELEASE_BINDING_STATUS_UNREADABLE',
+      statusPath,
+      bindingSchemaPath,
+      phaseSwitchPath,
+    });
+  }
+  if (!bindingSchemaDoc || !Array.isArray(bindingSchemaDoc.records) || !Array.isArray(bindingSchemaDoc.requiredFields)) {
+    return buildState({
+      failReason: 'BINDING_SCHEMA_INVALID',
+      statusPath,
+      bindingSchemaPath,
+      phaseSwitchPath,
+    });
+  }
+  if (!phaseSwitchDoc) {
+    return buildState({
+      failReason: 'E_PHASE_SWITCH_INVALID',
+      statusPath,
+      bindingSchemaPath,
+      phaseSwitchPath,
+    });
+  }
+
+  const activePhase = normalizeString(phaseSwitchDoc.activePhase || phaseSwitchDoc.ACTIVE_PHASE);
+  if (!ALLOWED_PHASES.has(activePhase)) {
+    return buildState({
+      failReason: 'E_PHASE_SWITCH_INVALID',
+      statusPath,
+      bindingSchemaPath,
+      phaseSwitchPath,
+      activePhase,
+    });
+  }
+
+  const phaseMap = {
+    PHASE_1_SHADOW: phaseSet1Path,
+    PHASE_2_WARN: phaseSet2Path,
+    PHASE_3_HARD: phaseSet3Path,
+  };
+  const phaseDocs = {
+    PHASE_1_SHADOW: phaseSet1Doc,
+    PHASE_2_WARN: phaseSet2Doc,
+    PHASE_3_HARD: phaseSet3Doc,
+  };
+
+  const phaseDoc = phaseDocs[activePhase];
+  const phasePath = resolvePhaseConfig(activePhase, phaseMap);
+  if (!phaseDoc || !Array.isArray(phaseDoc.effectiveRequiredTokenIds) || normalizeString(phaseDoc.phase) !== activePhase) {
+    return buildState({
+      failReason: 'E_REQUIRED_SET_PHASE_INVALID',
+      statusPath,
+      bindingSchemaPath,
+      phaseSwitchPath,
+      activePhase,
+      phaseSetPath: phasePath,
+    });
+  }
+
+  const effectiveRequiredTokenIds = uniqueSortedStrings(phaseDoc.effectiveRequiredTokenIds);
   if (!catalogDoc || !Array.isArray(catalogDoc.tokens)) {
-    return {
-      ok: false,
-      [TOKEN_NAME]: 0,
-      failSignalCode: FAIL_SIGNAL_CODE,
-      completenessOk: false,
-      failReason: 'CATALOG_UNREADABLE',
-      catalogPath,
-      requiredSetPath,
-      releaseRequiredTokens: [],
-      missingRequiredBindingFields,
-      missingRequiredBindingFieldsCount: 0,
-    };
+    return buildState({
+      failReason: 'TOKEN_CATALOG_UNREADABLE',
+      statusPath,
+      bindingSchemaPath,
+      phaseSwitchPath,
+      activePhase,
+      effectiveRequiredTokenIds,
+      effectiveRequiredTokenCount: effectiveRequiredTokenIds.length,
+      phaseSetPath: phasePath,
+    });
   }
 
-  if (!requiredSetDoc || !isObjectRecord(requiredSetDoc.requiredSets)) {
-    return {
-      ok: false,
-      [TOKEN_NAME]: 0,
-      failSignalCode: FAIL_SIGNAL_CODE,
-      completenessOk: false,
-      failReason: 'REQUIRED_SET_UNREADABLE',
-      catalogPath,
-      requiredSetPath,
-      releaseRequiredTokens: [],
-      missingRequiredBindingFields,
-      missingRequiredBindingFieldsCount: 0,
-    };
-  }
+  const tokenCatalogIds = new Set(
+    (catalogDoc.tokens || [])
+      .map((row) => (isObjectRecord(row) ? normalizeString(row.tokenId) : ''))
+      .filter(Boolean),
+  );
+  const missingEffectiveRequiredTokensInCatalog = effectiveRequiredTokenIds.filter((tokenId) => !tokenCatalogIds.has(tokenId));
 
-  const releaseRequiredTokens = uniqueSortedStrings(requiredSetDoc.requiredSets.release);
-  const tokenById = new Map();
-  for (const row of catalogDoc.tokens) {
-    if (!isObjectRecord(row)) continue;
-    const tokenId = normalizeString(row.tokenId);
+  const recordByTokenId = new Map();
+  for (const record of bindingSchemaDoc.records || []) {
+    if (!isObjectRecord(record)) continue;
+    const tokenId = normalizeString(record.TOKEN_ID);
     if (!tokenId) continue;
-    tokenById.set(tokenId, row);
+    recordByTokenId.set(tokenId, record);
   }
 
-  for (const tokenId of releaseRequiredTokens) {
-    const token = tokenById.get(tokenId);
-    if (!token) {
-      missingRequiredBindingFields.push(buildMissing(tokenId, 'token', 'TOKEN_MISSING'));
+  const missingRequiredBindingFields = [];
+  let filledCells = 0;
+  let missingCells = 0;
+
+  for (const tokenId of effectiveRequiredTokenIds) {
+    const record = recordByTokenId.get(tokenId);
+    if (!record) {
+      for (const field of REQUIRED_FIELDS) {
+        missingRequiredBindingFields.push({
+          tokenId,
+          field,
+          reason: 'RECORD_MISSING',
+        });
+      }
+      missingCells += REQUIRED_FIELDS.length;
       continue;
     }
 
-    const proofHook = normalizeString(token.proofHook);
-    const sourceBinding = normalizeString(token.sourceBinding);
-    const failSignalCode = normalizeString(token.failSignalCode);
-
-    if (!proofHook) {
-      missingRequiredBindingFields.push(buildMissing(tokenId, 'proofHook', 'FIELD_EMPTY'));
+    const missingFields = listMissingFields(record);
+    for (const field of missingFields) {
+      missingRequiredBindingFields.push({
+        tokenId,
+        field,
+        reason: 'FIELD_EMPTY',
+      });
     }
-    if (!sourceBinding) {
-      missingRequiredBindingFields.push(buildMissing(tokenId, 'sourceBinding', 'FIELD_EMPTY'));
-    }
-    if (!failSignalCode) {
-      missingRequiredBindingFields.push(buildMissing(tokenId, 'failSignalCode', 'FIELD_EMPTY'));
-    }
-
-    if (!Object.prototype.hasOwnProperty.call(token, 'proofHookClosureSha256')) {
-      missingRequiredBindingFields.push(buildMissing(tokenId, 'proofHookClosureSha256', 'FIELD_MISSING'));
-    } else {
-      const closureValue = token.proofHookClosureSha256;
-      if (!(closureValue === null || (typeof closureValue === 'string' && SHA256_HEX_RE.test(closureValue.toLowerCase())))) {
-        missingRequiredBindingFields.push(buildMissing(tokenId, 'proofHookClosureSha256', 'FIELD_INVALID', { value: closureValue }));
-      }
-    }
+    missingCells += missingFields.length;
+    filledCells += REQUIRED_FIELDS.length - missingFields.length;
   }
 
   missingRequiredBindingFields.sort((a, b) => {
@@ -180,41 +342,63 @@ export function evaluateReleaseTokenBindingCompleteness(input = {}) {
     return a.reason.localeCompare(b.reason);
   });
 
-  const completenessOk = missingRequiredBindingFields.length === 0;
+  const expectedCells = effectiveRequiredTokenIds.length * REQUIRED_FIELDS.length;
+  const coveragePct = expectedCells > 0
+    ? Number(((filledCells / expectedCells) * 100).toFixed(2))
+    : 100;
 
-  return {
+  const completenessOk = missingRequiredBindingFields.length === 0 && missingEffectiveRequiredTokensInCatalog.length === 0;
+  return buildState({
     ok: completenessOk,
     [TOKEN_NAME]: completenessOk ? 1 : 0,
-    failSignalCode: completenessOk ? '' : FAIL_SIGNAL_CODE,
     completenessOk,
-    failReason: completenessOk ? '' : 'MISSING_REQUIRED_BINDING_FIELDS',
-    catalogPath,
-    requiredSetPath,
-    releaseRequiredTokens,
-    releaseRequiredTokensCount: releaseRequiredTokens.length,
+    failReason: completenessOk ? '' : 'RELEASE_TOKEN_BINDING_INCOMPLETE',
+    statusPath,
+    bindingSchemaPath,
+    phaseSwitchPath,
+    activePhase,
+    phaseSetPath: phasePath,
+    phaseEnforcementMode: normalizeString(phaseDoc.newV1Enforcement),
+    effectiveRequiredTokenIds,
+    effectiveRequiredTokenCount: effectiveRequiredTokenIds.length,
     missingRequiredBindingFields,
     missingRequiredBindingFieldsCount: missingRequiredBindingFields.length,
-  };
+    missingEffectiveRequiredTokensInCatalog,
+    missingEffectiveRequiredTokensInCatalogCount: missingEffectiveRequiredTokensInCatalog.length,
+    bindingRecordCoverage: {
+      requiredTokenCount: effectiveRequiredTokenIds.length,
+      requiredFieldCount: REQUIRED_FIELDS.length,
+      expectedCells,
+      filledCells,
+      missingCells,
+      coveragePct,
+    },
+  });
 }
 
 function printHuman(state) {
   console.log(`${TOKEN_NAME}=${state[TOKEN_NAME]}`);
   console.log(`RELEASE_TOKEN_BINDING_COMPLETENESS_OK=${state.completenessOk ? 1 : 0}`);
-  console.log(`RELEASE_TOKEN_BINDING_CATALOG_PATH=${state.catalogPath}`);
-  console.log(`RELEASE_TOKEN_BINDING_REQUIRED_SET_PATH=${state.requiredSetPath}`);
-  console.log(`RELEASE_TOKEN_BINDING_REQUIRED_COUNT=${state.releaseRequiredTokensCount}`);
+  console.log(`RELEASE_TOKEN_BINDING_ACTIVE_PHASE=${state.activePhase}`);
+  console.log(`RELEASE_TOKEN_BINDING_PHASE_MODE=${state.phaseEnforcementMode}`);
+  console.log(`RELEASE_TOKEN_BINDING_REQUIRED_COUNT=${state.effectiveRequiredTokenCount}`);
   console.log(`RELEASE_TOKEN_BINDING_MISSING_FIELDS_COUNT=${state.missingRequiredBindingFieldsCount}`);
+  console.log(`RELEASE_TOKEN_BINDING_COVERAGE_PCT=${state.bindingRecordCoverage.coveragePct}`);
   if (!state.completenessOk) {
     console.log(`FAIL_REASON=${state.failReason}`);
-    console.log(`FAIL_SIGNAL=${state.failSignalCode}`);
   }
 }
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const state = evaluateReleaseTokenBindingCompleteness({
+    statusPath: args.statusPath,
+    bindingSchemaPath: args.bindingSchemaPath,
+    phaseSwitchPath: args.phaseSwitchPath,
+    phaseSet1Path: args.phaseSet1Path,
+    phaseSet2Path: args.phaseSet2Path,
+    phaseSet3Path: args.phaseSet3Path,
     catalogPath: args.catalogPath,
-    requiredSetPath: args.requiredSetPath,
   });
 
   if (args.json) {

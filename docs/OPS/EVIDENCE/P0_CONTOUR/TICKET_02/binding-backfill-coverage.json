@@ -1,0 +1,15 @@
+{
+  "activePhase": "PHASE_1_SHADOW",
+  "coverage": {
+    "coveragePct": 100,
+    "expectedCells": 12,
+    "filledCells": 12,
+    "missingCells": 0,
+    "requiredFieldCount": 12,
+    "requiredTokenCount": 1
+  },
+  "effectiveRequiredTokenIds": [
+    "CORE_SOT_EXECUTABLE_OK"
+  ],
+  "phaseEnforcementMode": "SIGNAL_ONLY"
+}

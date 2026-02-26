@@ -2,11 +2,18 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { evaluateReleaseTokenBindingCompleteness } from './release-token-binding-completeness-state.mjs';
+import { evaluateModeMatrixSingleAuthorityState } from './mode-matrix-single-authority-state.mjs';
 
 const DEFAULT_OUTPUT_DIR = 'docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02';
+const DEFAULT_STATUS_PATH = 'docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json';
+const DEFAULT_SCHEMA_PATH = 'docs/OPS/STATUS/BINDING_SCHEMA_V1.json';
+const DEFAULT_PHASE_SWITCH_PATH = 'docs/OPS/STATUS/PHASE_SWITCH_V1.json';
+const DEFAULT_PHASE_SET_1_PATH = 'docs/OPS/STATUS/REQUIRED_SET_PHASE_1_V1.json';
+const DEFAULT_PHASE_SET_2_PATH = 'docs/OPS/STATUS/REQUIRED_SET_PHASE_2_V1.json';
+const DEFAULT_PHASE_SET_3_PATH = 'docs/OPS/STATUS/REQUIRED_SET_PHASE_3_V1.json';
 const DEFAULT_CATALOG_PATH = 'docs/OPS/TOKENS/TOKEN_CATALOG.json';
-const DEFAULT_REQUIRED_SET_PATH = 'docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json';
 
 function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -30,13 +37,16 @@ function stableStringify(value) {
   return JSON.stringify(stableSortObject(value), null, 2);
 }
 
+function writeJson(filePath, value) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, `${stableStringify(value)}\n`, 'utf8');
+}
+
 function parseArgs(argv = process.argv.slice(2)) {
   const out = {
     outputDir: DEFAULT_OUTPUT_DIR,
     runId: '',
     ticketId: '',
-    catalogPath: DEFAULT_CATALOG_PATH,
-    requiredSetPath: DEFAULT_REQUIRED_SET_PATH,
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -70,140 +80,148 @@ function parseArgs(argv = process.argv.slice(2)) {
     }
     if (arg.startsWith('--ticket-id=')) {
       out.ticketId = normalizeString(arg.slice('--ticket-id='.length));
-      continue;
-    }
-
-    if (arg === '--catalog-path' && i + 1 < argv.length) {
-      out.catalogPath = normalizeString(argv[i + 1]) || DEFAULT_CATALOG_PATH;
-      i += 1;
-      continue;
-    }
-    if (arg.startsWith('--catalog-path=')) {
-      out.catalogPath = normalizeString(arg.slice('--catalog-path='.length)) || DEFAULT_CATALOG_PATH;
-      continue;
-    }
-
-    if (arg === '--required-set-path' && i + 1 < argv.length) {
-      out.requiredSetPath = normalizeString(argv[i + 1]) || DEFAULT_REQUIRED_SET_PATH;
-      i += 1;
-      continue;
-    }
-    if (arg.startsWith('--required-set-path=')) {
-      out.requiredSetPath = normalizeString(arg.slice('--required-set-path='.length)) || DEFAULT_REQUIRED_SET_PATH;
     }
   }
 
   return out;
 }
 
-function writeJson(filePath, value) {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, `${stableStringify(value)}\n`, 'utf8');
-}
-
-function readJson(filePath) {
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-}
-
-function runBinaryTestA(catalogPath, requiredSetPath) {
-  const state = evaluateReleaseTokenBindingCompleteness({ catalogPath, requiredSetPath });
-  const ok = state.completenessOk === true && state.missingRequiredBindingFieldsCount === 0;
-  return {
-    ok,
-    completenessOk: state.completenessOk,
-    missingRequiredBindingFieldsCount: state.missingRequiredBindingFieldsCount,
-    releaseRequiredTokensCount: state.releaseRequiredTokensCount,
-  };
-}
-
-function runBinaryTestB(repoRoot, catalogPath, requiredSetPath) {
-  const catalogDoc = readJson(path.resolve(repoRoot, catalogPath));
-  const requiredSetDoc = readJson(path.resolve(repoRoot, requiredSetPath));
-  const releaseRequired = ((requiredSetDoc.requiredSets || {}).release || []).map((entry) => normalizeString(entry)).filter(Boolean);
-
-  const targetTokenId = releaseRequired[0] || '';
-  if (!targetTokenId) {
-    return {
-      ok: false,
-      failReason: 'NO_RELEASE_REQUIRED_TOKENS',
-      completenessOk: false,
-      missingRequiredBindingFieldsCount: 0,
-      removedField: 'proofHook',
-      targetTokenId: '',
-    };
-  }
-
-  const token = (catalogDoc.tokens || []).find((row) => row && row.tokenId === targetTokenId);
-  if (!token) {
-    return {
-      ok: false,
-      failReason: 'TARGET_TOKEN_NOT_FOUND',
-      completenessOk: false,
-      missingRequiredBindingFieldsCount: 0,
-      removedField: 'proofHook',
-      targetTokenId,
-    };
-  }
-
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'p0-02-binary-b-'));
-  const mutatedCatalogPath = path.join(tmpDir, 'TOKEN_CATALOG.mutated.json');
-  const removedField = 'proofHook';
-  delete token[removedField];
-  fs.writeFileSync(mutatedCatalogPath, `${JSON.stringify(catalogDoc, null, 2)}\n`, 'utf8');
-
-  const state = evaluateReleaseTokenBindingCompleteness({
-    catalogPath: mutatedCatalogPath,
-    requiredSetPath: path.resolve(repoRoot, requiredSetPath),
+function runNode(scriptPath, args = [], cwd = process.cwd()) {
+  return spawnSync(process.execPath, [scriptPath, ...args], {
+    cwd,
+    encoding: 'utf8',
   });
-
-  fs.rmSync(tmpDir, { recursive: true, force: true });
-
-  const removedDetected = state.missingRequiredBindingFields.some((entry) => entry.tokenId === targetTokenId && entry.field === removedField);
-  const ok = state.completenessOk === false
-    && state.missingRequiredBindingFieldsCount > 0
-    && removedDetected;
-
-  return {
-    ok,
-    completenessOk: state.completenessOk,
-    missingRequiredBindingFieldsCount: state.missingRequiredBindingFieldsCount,
-    removedField,
-    targetTokenId,
-    removedDetected,
-  };
 }
 
-function runRepeatablePass3(catalogPath, requiredSetPath) {
+function mutateSchemaRemoveField(schemaPath, tokenId, field) {
+  const doc = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
+  const row = (doc.records || []).find((entry) => entry && entry.TOKEN_ID === tokenId);
+  if (!row) return null;
+  delete row[field];
+
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'p0-02-negative-'));
+  const mutatedPath = path.join(tmpDir, 'BINDING_SCHEMA_V1.mutated.json');
+  fs.writeFileSync(mutatedPath, `${JSON.stringify(doc, null, 2)}\n`, 'utf8');
+  return { tmpDir, mutatedPath };
+}
+
+function runBinaryTestBAndC(repoRoot, baseState) {
+  const tokenId = baseState.effectiveRequiredTokenIds[0] || '';
+  const removedField = 'PROOFHOOK_REF';
+  if (!tokenId) {
+    return {
+      binaryB: {
+        ok: false,
+        reason: 'E_REQUIRED_SET_PHASE_INVALID',
+      },
+      binaryC: {
+        ok: false,
+        reason: 'E_REQUIRED_SET_PHASE_INVALID',
+      },
+    };
+  }
+
+  const schemaPath = path.resolve(repoRoot, DEFAULT_SCHEMA_PATH);
+  const mutated = mutateSchemaRemoveField(schemaPath, tokenId, removedField);
+  if (!mutated) {
+    return {
+      binaryB: {
+        ok: false,
+        reason: 'TOKEN_MISSING_IN_SCHEMA',
+        tokenId,
+      },
+      binaryC: {
+        ok: false,
+        reason: 'TOKEN_MISSING_IN_SCHEMA',
+        tokenId,
+      },
+    };
+  }
+
+  try {
+    const negativeState = evaluateReleaseTokenBindingCompleteness({
+      statusPath: DEFAULT_STATUS_PATH,
+      bindingSchemaPath: mutated.mutatedPath,
+      phaseSwitchPath: DEFAULT_PHASE_SWITCH_PATH,
+      phaseSet1Path: DEFAULT_PHASE_SET_1_PATH,
+      phaseSet2Path: DEFAULT_PHASE_SET_2_PATH,
+      phaseSet3Path: DEFAULT_PHASE_SET_3_PATH,
+      catalogPath: DEFAULT_CATALOG_PATH,
+    });
+
+    const binaryB = {
+      ok: negativeState.completenessOk === false
+        && negativeState.missingRequiredBindingFields.some((entry) => entry.tokenId === tokenId && entry.field === removedField),
+      completenessOk: negativeState.completenessOk,
+      missingRequiredBindingFieldsCount: negativeState.missingRequiredBindingFieldsCount,
+      tokenId,
+      removedField,
+    };
+
+    const run = runNode(
+      path.resolve(repoRoot, 'scripts/ops/release-token-binding-completeness-state.mjs'),
+      [
+        '--status-path', DEFAULT_STATUS_PATH,
+        '--binding-schema-path', mutated.mutatedPath,
+        '--phase-switch-path', DEFAULT_PHASE_SWITCH_PATH,
+        '--phase-set-1-path', DEFAULT_PHASE_SET_1_PATH,
+        '--phase-set-2-path', DEFAULT_PHASE_SET_2_PATH,
+        '--phase-set-3-path', DEFAULT_PHASE_SET_3_PATH,
+        '--catalog-path', DEFAULT_CATALOG_PATH,
+      ],
+      repoRoot,
+    );
+
+    const binaryC = {
+      ok: run.status !== 0,
+      exitCode: Number.isInteger(run.status) ? run.status : 1,
+      tokenId,
+      removedField,
+    };
+
+    return { binaryB, binaryC };
+  } finally {
+    fs.rmSync(mutated.tmpDir, { recursive: true, force: true });
+  }
+}
+
+function runRepeatablePass3() {
   const runs = [];
   for (let i = 0; i < 3; i += 1) {
-    const state = evaluateReleaseTokenBindingCompleteness({ catalogPath, requiredSetPath });
+    const state = evaluateReleaseTokenBindingCompleteness({
+      statusPath: DEFAULT_STATUS_PATH,
+      bindingSchemaPath: DEFAULT_SCHEMA_PATH,
+      phaseSwitchPath: DEFAULT_PHASE_SWITCH_PATH,
+      phaseSet1Path: DEFAULT_PHASE_SET_1_PATH,
+      phaseSet2Path: DEFAULT_PHASE_SET_2_PATH,
+      phaseSet3Path: DEFAULT_PHASE_SET_3_PATH,
+      catalogPath: DEFAULT_CATALOG_PATH,
+    });
     runs.push({
       run: i + 1,
       completenessOk: state.completenessOk,
       missingRequiredBindingFieldsCount: state.missingRequiredBindingFieldsCount,
-      releaseRequiredTokensCount: state.releaseRequiredTokensCount,
-      failReason: state.failReason,
+      coveragePct: state.bindingRecordCoverage.coveragePct,
+      activePhase: state.activePhase,
     });
   }
 
   const baseline = JSON.stringify({
     completenessOk: runs[0].completenessOk,
     missingRequiredBindingFieldsCount: runs[0].missingRequiredBindingFieldsCount,
-    releaseRequiredTokensCount: runs[0].releaseRequiredTokensCount,
-    failReason: runs[0].failReason,
+    coveragePct: runs[0].coveragePct,
+    activePhase: runs[0].activePhase,
   });
 
   const identical = runs.every((entry) => JSON.stringify({
     completenessOk: entry.completenessOk,
     missingRequiredBindingFieldsCount: entry.missingRequiredBindingFieldsCount,
-    releaseRequiredTokensCount: entry.releaseRequiredTokensCount,
-    failReason: entry.failReason,
+    coveragePct: entry.coveragePct,
+    activePhase: entry.activePhase,
   }) === baseline);
 
-  const ok = identical && runs.every((entry) => entry.completenessOk === true && entry.missingRequiredBindingFieldsCount === 0);
-
   return {
-    ok,
+    ok: identical && runs.every((entry) => entry.completenessOk === true),
     identical,
     runs,
   };
@@ -213,59 +231,73 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const repoRoot = process.cwd();
   const outputDir = path.resolve(repoRoot, args.outputDir);
-  const catalogPath = path.resolve(repoRoot, args.catalogPath);
-  const requiredSetPath = path.resolve(repoRoot, args.requiredSetPath);
 
-  const baselineState = evaluateReleaseTokenBindingCompleteness({
-    catalogPath,
-    requiredSetPath,
+  const modeState = evaluateModeMatrixSingleAuthorityState({ repoRoot });
+  const baseState = evaluateReleaseTokenBindingCompleteness({
+    statusPath: DEFAULT_STATUS_PATH,
+    bindingSchemaPath: DEFAULT_SCHEMA_PATH,
+    phaseSwitchPath: DEFAULT_PHASE_SWITCH_PATH,
+    phaseSet1Path: DEFAULT_PHASE_SET_1_PATH,
+    phaseSet2Path: DEFAULT_PHASE_SET_2_PATH,
+    phaseSet3Path: DEFAULT_PHASE_SET_3_PATH,
+    catalogPath: DEFAULT_CATALOG_PATH,
   });
 
-  const binaryA = runBinaryTestA(catalogPath, requiredSetPath);
-  const binaryB = runBinaryTestB(repoRoot, args.catalogPath, args.requiredSetPath);
-  const repeatable = runRepeatablePass3(catalogPath, requiredSetPath);
+  const binaryAOk = baseState.completenessOk === true
+    && baseState.missingRequiredBindingFieldsCount === 0
+    && baseState.missingEffectiveRequiredTokensInCatalogCount === 0;
+
+  const { binaryB, binaryC } = runBinaryTestBAndC(repoRoot, baseState);
+  const repeatable = runRepeatablePass3();
 
   const gates = {
-    p0_02_binary_test_a: binaryA.ok ? 'PASS' : 'FAIL',
-    p0_02_binary_test_b: binaryB.ok ? 'PASS' : 'FAIL',
+    mc_phase_switch_valid: modeState.gates.mc_phase_switch_valid,
+    mc_blocking_evaluator_single_authority: modeState.gates.mc_blocking_evaluator_single_authority,
+    mc_mode_matrix_consistency: modeState.gates.mc_mode_matrix_consistency,
+    mc_advisory_blocking_drift_zero: modeState.gates.mc_advisory_blocking_drift_zero,
+    p0_02_binding_schema_required_fields_check: binaryAOk ? 'PASS' : 'FAIL',
+    p0_02_effective_required_set_coverage_check: baseState.bindingRecordCoverage.coveragePct === 100 ? 'PASS' : 'FAIL',
+    p0_02_remove_one_required_field_negative_check: binaryB.ok ? 'PASS' : 'FAIL',
+    p0_02_release_gate_nonzero_on_token_fail_check: binaryC.ok ? 'PASS' : 'FAIL',
     p0_02_repeatable_pass_3runs: repeatable.ok ? 'PASS' : 'FAIL',
   };
 
   const summary = {
-    status: (baselineState.missingRequiredBindingFieldsCount === 0
-      && Object.values(gates).every((value) => value === 'PASS'))
-      ? 'PASS'
-      : 'FAIL',
+    status: Object.values(gates).every((value) => value === 'PASS') ? 'PASS' : 'FAIL',
     runId: args.runId || process.env.RUN_ID || '',
     ticketId: args.ticketId || process.env.TICKET_ID || '',
-    missingRequiredBindingFieldsCount: baselineState.missingRequiredBindingFieldsCount,
-    releaseRequiredTokensCount: baselineState.releaseRequiredTokensCount,
+    activePhase: baseState.activePhase,
+    phaseEnforcementMode: baseState.phaseEnforcementMode,
+    effectiveRequiredTokenCount: baseState.effectiveRequiredTokenCount,
+    missingRequiredBindingFieldsCount: baseState.missingRequiredBindingFieldsCount,
+    bindingBackfillCoveragePct: baseState.bindingRecordCoverage.coveragePct,
+    claimOverrideViolationCount: modeState.claimOverrideViolationCount,
+    advisoryToBlockingDriftCount: modeState.advisoryToBlockingDriftCount,
     gates,
     generatedAtUtc: new Date().toISOString(),
-  };
-
-  const report = {
-    reportId: 'RELEASE_TOKEN_BINDING_COMPLETENESS_REPORT_V1',
-    ...summary,
-    completenessOk: baselineState.completenessOk,
-    failReason: baselineState.failReason,
   };
 
   const ticketMeta = {
     runId: summary.runId,
     ticketId: summary.ticketId,
     outputDir: path.relative(repoRoot, outputDir).replaceAll(path.sep, '/'),
+    activePhase: summary.activePhase,
+    phaseEnforcementMode: summary.phaseEnforcementMode,
     generatedAtUtc: summary.generatedAtUtc,
   };
 
-  writeJson(path.join(outputDir, 'release-token-binding-completeness-report.json'), report);
-  writeJson(path.join(outputDir, 'missing-required-binding-fields.json'), {
-    missingRequiredBindingFieldsCount: baselineState.missingRequiredBindingFieldsCount,
-    missingRequiredBindingFields: baselineState.missingRequiredBindingFields,
+  writeJson(path.join(outputDir, 'release-token-binding-gaps.json'), {
+    missingRequiredBindingFieldsCount: baseState.missingRequiredBindingFieldsCount,
+    missingRequiredBindingFields: baseState.missingRequiredBindingFields,
+    missingEffectiveRequiredTokensInCatalogCount: baseState.missingEffectiveRequiredTokensInCatalogCount,
+    missingEffectiveRequiredTokensInCatalog: baseState.missingEffectiveRequiredTokensInCatalog,
   });
-  writeJson(path.join(outputDir, 'binary-test-a-complete-set.json'), binaryA);
-  writeJson(path.join(outputDir, 'binary-test-b-remove-field.json'), binaryB);
-  writeJson(path.join(outputDir, 'repeatable-pass-3runs.json'), repeatable);
+  writeJson(path.join(outputDir, 'binding-backfill-coverage.json'), {
+    activePhase: baseState.activePhase,
+    phaseEnforcementMode: baseState.phaseEnforcementMode,
+    effectiveRequiredTokenIds: baseState.effectiveRequiredTokenIds,
+    coverage: baseState.bindingRecordCoverage,
+  });
   writeJson(path.join(outputDir, 'summary.json'), summary);
   writeJson(path.join(outputDir, 'ticket-meta.json'), ticketMeta);
 

@@ -1,13 +1,24 @@
 {
+  "activePhase": "PHASE_1_SHADOW",
+  "advisoryToBlockingDriftCount": 0,
+  "bindingBackfillCoveragePct": 100,
+  "claimOverrideViolationCount": 0,
+  "effectiveRequiredTokenCount": 1,
   "gates": {
-    "p0_02_binary_test_a": "PASS",
-    "p0_02_binary_test_b": "PASS",
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "mc_blocking_evaluator_single_authority": "PASS",
+    "mc_mode_matrix_consistency": "PASS",
+    "mc_phase_switch_valid": "PASS",
+    "p0_02_binding_schema_required_fields_check": "PASS",
+    "p0_02_effective_required_set_coverage_check": "PASS",
+    "p0_02_release_gate_nonzero_on_token_fail_check": "PASS",
+    "p0_02_remove_one_required_field_negative_check": "PASS",
     "p0_02_repeatable_pass_3runs": "PASS"
   },
-  "generatedAtUtc": "2026-02-25T08:12:37.518Z",
+  "generatedAtUtc": "2026-02-26T18:07:55.460Z",
   "missingRequiredBindingFieldsCount": 0,
-  "releaseRequiredTokensCount": 22,
-  "runId": "RUN-2026-02-25-004",
+  "phaseEnforcementMode": "SIGNAL_ONLY",
+  "runId": "RUN-2026-02-26-001",
   "status": "PASS",
-  "ticketId": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-001"
+  "ticketId": "TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003"
 }

@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "phase": "PHASE_2_WARN",
+  "newV1Enforcement": "WARN_WITH_TICKETED_REMEDIATION",
+  "effectiveRequiredTokenIds": [
+    "CORE_SOT_EXECUTABLE_OK",
+    "COMMAND_SURFACE_ENFORCED_OK"
+  ]
+}
