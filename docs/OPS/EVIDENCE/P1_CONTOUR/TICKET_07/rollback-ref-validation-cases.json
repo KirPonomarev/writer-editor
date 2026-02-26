@@ -1,0 +1,13 @@
+{
+  "blockingEntitiesHaveRollbackRefCheck": true,
+  "completeness": {
+    "incompleteEntities": [],
+    "incompleteEntityCount": 0,
+    "invalidRollbackRef": [],
+    "invalidRollbackRefCount": 0,
+    "missingRollbackRef": [],
+    "missingRollbackRefCount": 0
+  },
+  "ownerDeadlineEvidenceRequiredCheck": true,
+  "rollbackRefFormatValidCheck": true
+}

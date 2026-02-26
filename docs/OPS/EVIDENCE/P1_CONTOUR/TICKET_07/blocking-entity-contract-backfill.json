@@ -1,0 +1,37 @@
+{
+  "blockingEntityContracts": [
+    {
+      "deadlineUtc": "2026-12-31T00:00:00.000Z",
+      "entityId": "COMMAND_SURFACE_ENFORCED_OK",
+      "evidenceArtifactRef": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "machineCheckId": "MC_COMMAND_SURFACE_ENFORCED_OK",
+      "owner": "GOVERNANCE_CORE_OWNER",
+      "rollbackRef": "docs/OPS/STATUS/COMMAND_SURFACE_ENFORCED_OK_ROLLBACK_v1.json",
+      "status": "ACTIVE"
+    },
+    {
+      "deadlineUtc": "2026-12-31T00:00:00.000Z",
+      "entityId": "CORE_SOT_EXECUTABLE_OK",
+      "evidenceArtifactRef": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "machineCheckId": "MC_CORE_SOT_EXECUTABLE_OK",
+      "owner": "GOVERNANCE_CORE_OWNER",
+      "rollbackRef": "docs/OPS/STATUS/CORE_SOT_EXECUTABLE_OK_ROLLBACK_v1.json",
+      "status": "ACTIVE"
+    },
+    {
+      "deadlineUtc": "2026-12-31T00:00:00.000Z",
+      "entityId": "RECOVERY_IO_OK",
+      "evidenceArtifactRef": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "machineCheckId": "MC_RECOVERY_IO_OK",
+      "owner": "GOVERNANCE_CORE_OWNER",
+      "rollbackRef": "docs/OPS/STATUS/RECOVERY_IO_OK_ROLLBACK_v1.json",
+      "status": "ACTIVE"
+    }
+  ],
+  "requiredBlockingTokenCount": 3,
+  "requiredBlockingTokenIds": [
+    "COMMAND_SURFACE_ENFORCED_OK",
+    "CORE_SOT_EXECUTABLE_OK",
+    "RECOVERY_IO_OK"
+  ]
+}

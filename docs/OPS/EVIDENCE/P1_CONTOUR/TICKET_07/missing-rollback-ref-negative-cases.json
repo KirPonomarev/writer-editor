@@ -1,0 +1,37 @@
+{
+  "missingRollbackRefNegativeCheck": true,
+  "negative": {
+    "completeness": {
+      "incompleteEntityCount": 1,
+      "invalidRollbackRefCount": 0,
+      "missingRollbackRef": [
+        "COMMAND_SURFACE_ENFORCED_OK"
+      ],
+      "missingRollbackRefCount": 1
+    },
+    "ok": true,
+    "phase1": {
+      "activePhase": "PHASE_1_SHADOW",
+      "newV1Enforcement": "SIGNAL_ONLY",
+      "shouldBlock": false
+    },
+    "phase2": {
+      "activePhase": "PHASE_2_WARN",
+      "newV1Enforcement": "WARN_WITH_TICKETED_REMEDIATION",
+      "shouldBlock": false
+    },
+    "phase3": {
+      "activePhase": "PHASE_3_HARD",
+      "newV1Enforcement": "HARD_BLOCK",
+      "shouldBlock": true
+    },
+    "reason": "",
+    "targetEntityId": "COMMAND_SURFACE_ENFORCED_OK"
+  },
+  "phaseAwareEnforcementSignalWarnHardCheck": true,
+  "phaseEnforcement": {
+    "activePhase": "PHASE_1_SHADOW",
+    "newV1Enforcement": "SIGNAL_ONLY",
+    "shouldBlock": false
+  }
+}

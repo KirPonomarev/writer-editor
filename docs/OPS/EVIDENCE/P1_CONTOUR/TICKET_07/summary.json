@@ -1,0 +1,19 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p1_07_blocking_entities_have_rollback_ref_check": "PASS",
+    "p1_07_missing_rollback_ref_negative_check": "PASS",
+    "p1_07_owner_deadline_evidence_required_check": "PASS",
+    "p1_07_phase_aware_enforcement_signal_warn_hard_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-26T21:53:40.246Z",
+  "incompleteEntityCount": 0,
+  "invalidRollbackRefCount": 0,
+  "missingRollbackRefCount": 0,
+  "requiredBlockingTokenCount": 3,
+  "runId": "RUN-2026-02-26-001",
+  "singleBlockingAuthorityOk": true,
+  "status": "PASS",
+  "ticketId": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003"
+}
