@@ -436,6 +436,41 @@
       "rationale": "TZ-P1-04-DECLARED-SET-EFFECTIVE-SET-ALIGNMENT-HARDENING-003 approvals."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_05/failsignal-mode-drift-cases.json",
+      "sha256": "5d5c8f8e33b6d54bf2213d3d27e4bc8c23ca638fc3155357b44c0c3cb4ae5492",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:24:16.000Z",
+      "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_05/failsignal-mode-sync-map.json",
+      "sha256": "1987396f25d98b94ae3c746160df800185b751bcbbff1e1c2c87a5bf656b644c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:24:16.000Z",
+      "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_05/failsignal-mode-sync-proof.json",
+      "sha256": "4fa9a3fe1a4f28ee98971f573253794661f5124f903b69221aff150d17b4b1fc",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:24:16.000Z",
+      "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_05/summary.json",
+      "sha256": "f13a43be0b1a20a6d11ca0d01ee48dfc5371b29724081ff369a76b3a8df0f057",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:24:16.000Z",
+      "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_05/ticket-meta.json",
+      "sha256": "7e169db2ab4cfa31ccf8b1530cf065be9588360127d0bc5693df23b5b610dc0b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:24:16.000Z",
+      "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-0805ab9da950-592e3737/failsignal-registry-snapshot.json",
       "sha256": "9af1b22b87f604601b38114621995a44ae5e15c3ea9a299197c61e863a5e6448",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -653,6 +688,13 @@
       "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
     },
     {
+      "filePath": "docs/OPS/STATUS/FAILSIGNAL_MODE_SYNC_AUTOMATION_v3.json",
+      "sha256": "ee3bd615a4aba242dca6ca80c38344d0d3fd445474953f0e5bbe0931dfa7b11e",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:24:16.000Z",
+      "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
+    },
+    {
       "filePath": "docs/OPS/STATUS/GATE_DEPENDENCY_DECLARATION_V1.json",
       "sha256": "194c87cb9fb4d16be69d2c69bc56b76b52626b98ae82b1877d7e036d66c1c33b",
       "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
@@ -849,6 +891,13 @@
       "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
     },
     {
+      "filePath": "scripts/ops/failsignal-mode-sync-automation-state.mjs",
+      "sha256": "f61eea9c86b1f168d092ff97dbce2982a41dda46cfaff8480e2d8d795a8a97ac",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:24:16.000Z",
+      "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
+    },
+    {
       "filePath": "scripts/ops/gate-graph-check-v1-state.mjs",
       "sha256": "20bfa68c52c4ebb965854db3e6d6cbfabf3dcd7cd45ae6ae9d14fdda9329b4f6",
       "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
@@ -959,6 +1008,13 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-26T21:05:00.000Z",
       "rationale": "TZ-P1-04-DECLARED-SET-EFFECTIVE-SET-ALIGNMENT-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-05-failsignal-mode-sync-automation-report.mjs",
+      "sha256": "e9d830283468945e64c026780a38d80c03f096831dc219e8d9f781e472e4254f",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:24:16.000Z",
+      "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
     },
     {
       "filePath": "scripts/ops/path-boundary-guard-state.mjs",
@@ -1078,6 +1134,13 @@
       "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
       "approvedAtUtc": "2026-02-26T18:05:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "test/contracts/failsignal-mode-sync-automation.contract.test.js",
+      "sha256": "7fda300bd467c0e54255e847324b521b42f23ad7aa7c19775337b4f03240bd31",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:24:16.000Z",
+      "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
     },
     {
       "filePath": "test/contracts/github-credential-autofix.contract.test.js",

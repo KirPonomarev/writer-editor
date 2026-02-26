@@ -1,0 +1,2119 @@
+{
+  "failsignalModeSyncMap": [
+    {
+      "failSignalCode": "E_ADAPTERS_NOT_ENFORCED",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_ATTESTATION_SIGNATURE_INVALID",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_BINDING_INDEX_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_BLOCKING_TOKEN_UNBOUND",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_BOOK_PREFLIGHT_FAIL",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_CAPABILITY_NOT_ENFORCED",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_COLLAB_TRANSPORT_FORBIDDEN_IN_MVP",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_COMMAND_NAMESPACE_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_COMMAND_NAMESPACE_UNKNOWN",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_COMMAND_SURFACE_BYPASS",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_COMMAND_SURFACE_NEGATIVE_MISSING",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_COMMAND_SURFACE_NOT_ENFORCED",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_COMMAND_VISIBILITY_MATRIX_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_CONDITIONAL_GATE_MISAPPLIED",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_CONFIG_HASH_CONFLICT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_CORE_CHANGE_DOD_MISSING",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_CORE_SOT_NOT_EXECUTABLE",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_CRITICAL_CLAIM_MATRIX_INVALID",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_DEBT_TTL_EXPIRED",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_DEP_REMEDIATION_POLICY_INVALID",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_DIRECT_PROTECTED_BRANCH_PUSH",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_E2E_CRITICAL_USER_PATH_NOT_OK",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_ENABLEDWHEN_DSL_INVALID",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_EXECUTION_ITEM_UNOWNED",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_EXECUTION_PROFILE_INVALID",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_FAILSIGNAL_DUPLICATE",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_FAILSIGNAL_NEGATIVE_TEST_MISSING",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_FAILSIGNAL_PRECEDENCE_INVALID",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_FAILSIGNAL_REGISTRY_INVALID",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_GOVERNANCE_STRICT_FAIL",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_HEAD_BINDING_INVALID",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_LAW_PATH_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_LOSSLESS_MAP_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_MACOS_SIGNING_READINESS_FAIL",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_MENU_ARTIFACT_TAMPER_OR_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_MENU_NORMALIZATION_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_MENU_OVERLAY_STACK_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_MENU_RUNTIME_ARTIFACT_DIVERGENCE",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_MENU_SNAPSHOT_MISMATCH",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_MERGE_BYPASS_ATTEMPT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_NETWORK_ORIGIN_UNAVAILABLE",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_PATH_BOUNDARY_VIOLATION",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_PERF_BASELINE_NOT_OK",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_PERF_BASELINE_REGRESSION",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_PLUGIN_MENU_OVERLAY_POLICY_VIOLATION",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_PRE_UI_CONTOUR_DIRTY_WORKTREE",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_PRE_UI_CONTOUR_HEAD_ORIGIN_MISMATCH",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_PRE_UI_CONTOUR_RECORD_INVALID",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_PRE_UI_CONTOUR_RECORD_MISSING",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_PRE_UI_CONTOUR_REQUIRED_TOKENS_FAIL",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_PRE_UI_CONTOUR_REQUIRED_TOKENS_MISSING",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_PROMPT_LAYER_POLICY_INVALID",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_PROOFHOOK_TAMPER_DETECTED",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_RECOVERY_IO_NOT_OK",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_RELEASE_ARTIFACT_SOURCES_FAIL",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_RELEASE_CANDIDATE_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_REMOTE_UNAVAILABLE",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_REQUIRED_SET_CONTAINS_TARGET",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_REQUIRED_TOKEN_SET_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_RUNTIME_WIRING_BEFORE_STAGE",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_SCOPEFLAG_UNKNOWN",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_SEQUENCE_ORDER_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_SHARED_CODE_RATIO_BELOW_MIN",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_SSOT_ANCHOR_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_SSOT_ANCHOR_MISSING",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_STAGE_AXIS_DRIFT",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_STAGE_METRICS_MISSING",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_STAGE_PROMOTION_INVALID",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_TOKEN_CATALOG_INVALID",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_TOKEN_DECLARATION_INVALID",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_TOKEN_SOURCE_CONFLICT",
+      "highImpact": true,
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "sourceModeMatrixComplete": true,
+      "syncApplied": false,
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_VERIFY_ATTESTATION_INVALID",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_WAVE_RESULT_STALE",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    },
+    {
+      "failSignalCode": "E_X3_RECOVERY_SMOKE_FAILED",
+      "highImpact": true,
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "sourceModeMatrixComplete": false,
+      "syncApplied": true,
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedModeMatrixComplete": true,
+      "tier": "release"
+    }
+  ],
+  "highImpactFailSignalCount": 74,
+  "highImpactFailSignals": [
+    "E_ADAPTERS_NOT_ENFORCED",
+    "E_ATTESTATION_SIGNATURE_INVALID",
+    "E_BINDING_INDEX_DRIFT",
+    "E_BLOCKING_TOKEN_UNBOUND",
+    "E_BOOK_PREFLIGHT_FAIL",
+    "E_CAPABILITY_NOT_ENFORCED",
+    "E_COLLAB_TRANSPORT_FORBIDDEN_IN_MVP",
+    "E_COMMAND_NAMESPACE_DRIFT",
+    "E_COMMAND_NAMESPACE_UNKNOWN",
+    "E_COMMAND_SURFACE_BYPASS",
+    "E_COMMAND_SURFACE_NEGATIVE_MISSING",
+    "E_COMMAND_SURFACE_NOT_ENFORCED",
+    "E_COMMAND_VISIBILITY_MATRIX_DRIFT",
+    "E_CONDITIONAL_GATE_MISAPPLIED",
+    "E_CONFIG_HASH_CONFLICT",
+    "E_CORE_CHANGE_DOD_MISSING",
+    "E_CORE_SOT_NOT_EXECUTABLE",
+    "E_CRITICAL_CLAIM_MATRIX_INVALID",
+    "E_DEBT_TTL_EXPIRED",
+    "E_DEP_REMEDIATION_POLICY_INVALID",
+    "E_DIRECT_PROTECTED_BRANCH_PUSH",
+    "E_E2E_CRITICAL_USER_PATH_NOT_OK",
+    "E_ENABLEDWHEN_DSL_INVALID",
+    "E_EXECUTION_ITEM_UNOWNED",
+    "E_EXECUTION_PROFILE_INVALID",
+    "E_FAILSIGNAL_DUPLICATE",
+    "E_FAILSIGNAL_NEGATIVE_TEST_MISSING",
+    "E_FAILSIGNAL_PRECEDENCE_INVALID",
+    "E_FAILSIGNAL_REGISTRY_INVALID",
+    "E_GOVERNANCE_STRICT_FAIL",
+    "E_HEAD_BINDING_INVALID",
+    "E_LAW_PATH_DRIFT",
+    "E_LOSSLESS_MAP_DRIFT",
+    "E_MACOS_SIGNING_READINESS_FAIL",
+    "E_MENU_ARTIFACT_TAMPER_OR_DRIFT",
+    "E_MENU_NORMALIZATION_DRIFT",
+    "E_MENU_OVERLAY_STACK_DRIFT",
+    "E_MENU_RUNTIME_ARTIFACT_DIVERGENCE",
+    "E_MENU_SNAPSHOT_MISMATCH",
+    "E_MERGE_BYPASS_ATTEMPT",
+    "E_NETWORK_ORIGIN_UNAVAILABLE",
+    "E_PATH_BOUNDARY_VIOLATION",
+    "E_PERF_BASELINE_NOT_OK",
+    "E_PERF_BASELINE_REGRESSION",
+    "E_PLUGIN_MENU_OVERLAY_POLICY_VIOLATION",
+    "E_PRE_UI_CONTOUR_DIRTY_WORKTREE",
+    "E_PRE_UI_CONTOUR_HEAD_ORIGIN_MISMATCH",
+    "E_PRE_UI_CONTOUR_RECORD_INVALID",
+    "E_PRE_UI_CONTOUR_RECORD_MISSING",
+    "E_PRE_UI_CONTOUR_REQUIRED_TOKENS_FAIL",
+    "E_PRE_UI_CONTOUR_REQUIRED_TOKENS_MISSING",
+    "E_PROMPT_LAYER_POLICY_INVALID",
+    "E_PROOFHOOK_TAMPER_DETECTED",
+    "E_RECOVERY_IO_NOT_OK",
+    "E_RELEASE_ARTIFACT_SOURCES_FAIL",
+    "E_RELEASE_CANDIDATE_DRIFT",
+    "E_REMOTE_UNAVAILABLE",
+    "E_REQUIRED_SET_CONTAINS_TARGET",
+    "E_REQUIRED_TOKEN_SET_DRIFT",
+    "E_RUNTIME_WIRING_BEFORE_STAGE",
+    "E_SCOPEFLAG_UNKNOWN",
+    "E_SEQUENCE_ORDER_DRIFT",
+    "E_SHARED_CODE_RATIO_BELOW_MIN",
+    "E_SSOT_ANCHOR_DRIFT",
+    "E_SSOT_ANCHOR_MISSING",
+    "E_STAGE_AXIS_DRIFT",
+    "E_STAGE_METRICS_MISSING",
+    "E_STAGE_PROMOTION_INVALID",
+    "E_TOKEN_CATALOG_INVALID",
+    "E_TOKEN_DECLARATION_INVALID",
+    "E_TOKEN_SOURCE_CONFLICT",
+    "E_VERIFY_ATTESTATION_INVALID",
+    "E_WAVE_RESULT_STALE",
+    "E_X3_RECOVERY_SMOKE_FAILED"
+  ],
+  "syncAppliedCount": 37,
+  "syncUpdates": [
+    {
+      "failSignalCode": "E_ATTESTATION_SIGNATURE_INVALID",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_COMMAND_NAMESPACE_DRIFT",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_COMMAND_NAMESPACE_UNKNOWN",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_COMMAND_SURFACE_BYPASS",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_COMMAND_SURFACE_NEGATIVE_MISSING",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_COMMAND_VISIBILITY_MATRIX_DRIFT",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_DEBT_TTL_EXPIRED",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_DEP_REMEDIATION_POLICY_INVALID",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_ENABLEDWHEN_DSL_INVALID",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_FAILSIGNAL_DUPLICATE",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_FAILSIGNAL_NEGATIVE_TEST_MISSING",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_FAILSIGNAL_PRECEDENCE_INVALID",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_FAILSIGNAL_REGISTRY_INVALID",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_LAW_PATH_DRIFT",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_MENU_ARTIFACT_TAMPER_OR_DRIFT",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_MENU_NORMALIZATION_DRIFT",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_MENU_OVERLAY_STACK_DRIFT",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_MENU_RUNTIME_ARTIFACT_DIVERGENCE",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_MENU_SNAPSHOT_MISMATCH",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_NETWORK_ORIGIN_UNAVAILABLE",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_PATH_BOUNDARY_VIOLATION",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_PERF_BASELINE_REGRESSION",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_PLUGIN_MENU_OVERLAY_POLICY_VIOLATION",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_PRE_UI_CONTOUR_DIRTY_WORKTREE",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_PRE_UI_CONTOUR_HEAD_ORIGIN_MISMATCH",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_PRE_UI_CONTOUR_RECORD_INVALID",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_PRE_UI_CONTOUR_RECORD_MISSING",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_PRE_UI_CONTOUR_REQUIRED_TOKENS_FAIL",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_PRE_UI_CONTOUR_REQUIRED_TOKENS_MISSING",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": false,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_RELEASE_CANDIDATE_DRIFT",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "failSignalCode": "E_SCOPEFLAG_UNKNOWN",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_SEQUENCE_ORDER_DRIFT",
+      "sourceBlocking": false,
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_STAGE_METRICS_MISSING",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_STAGE_PROMOTION_INVALID",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_VERIFY_ATTESTATION_INVALID",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_WAVE_RESULT_STALE",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "failSignalCode": "E_X3_RECOVERY_SMOKE_FAILED",
+      "sourceBlocking": true,
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      },
+      "syncedBlocking": true,
+      "syncedModeMatrix": {
+        "prCore": "blocking",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    }
+  ]
+}

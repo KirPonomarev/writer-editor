@@ -1,0 +1,319 @@
+{
+  "blockingFlagConflictsAfter": [],
+  "blockingFlagConflictsBefore": [
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_ATTESTATION_SIGNATURE_INVALID",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_COMMAND_NAMESPACE_DRIFT",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_COMMAND_NAMESPACE_UNKNOWN",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_COMMAND_SURFACE_BYPASS",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_COMMAND_SURFACE_NEGATIVE_MISSING",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_COMMAND_VISIBILITY_MATRIX_DRIFT",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_DEBT_TTL_EXPIRED",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_DEP_REMEDIATION_POLICY_INVALID",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_ENABLEDWHEN_DSL_INVALID",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_FAILSIGNAL_DUPLICATE",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_FAILSIGNAL_NEGATIVE_TEST_MISSING",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_FAILSIGNAL_PRECEDENCE_INVALID",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_FAILSIGNAL_REGISTRY_INVALID",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_LAW_PATH_DRIFT",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_MENU_ARTIFACT_TAMPER_OR_DRIFT",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_MENU_NORMALIZATION_DRIFT",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_MENU_OVERLAY_STACK_DRIFT",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_MENU_RUNTIME_ARTIFACT_DIVERGENCE",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_MENU_SNAPSHOT_MISMATCH",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_NETWORK_ORIGIN_UNAVAILABLE",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_PATH_BOUNDARY_VIOLATION",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_PERF_BASELINE_REGRESSION",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_PLUGIN_MENU_OVERLAY_POLICY_VIOLATION",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_RELEASE_CANDIDATE_DRIFT",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "advisory"
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_SCOPEFLAG_UNKNOWN",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": false,
+      "failSignalCode": "E_SEQUENCE_ORDER_DRIFT",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "advisory",
+        "promotion": "blocking",
+        "release": "blocking"
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_STAGE_METRICS_MISSING",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_STAGE_PROMOTION_INVALID",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_VERIFY_ATTESTATION_INVALID",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_WAVE_RESULT_STALE",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    },
+    {
+      "blockingFlag": true,
+      "failSignalCode": "E_X3_RECOVERY_SMOKE_FAILED",
+      "reason": "BLOCKING_FLAG_MODE_DISPOSITION_CONFLICT",
+      "sourceModeMatrix": {
+        "prCore": "",
+        "promotion": "",
+        "release": ""
+      }
+    }
+  ],
+  "highImpactMissingDisposition": [],
+  "modeMatrixInconsistencyAfter": [],
+  "modeMatrixInconsistencyAfterCount": 0,
+  "modeMatrixInconsistencyBeforeCount": 37
+}

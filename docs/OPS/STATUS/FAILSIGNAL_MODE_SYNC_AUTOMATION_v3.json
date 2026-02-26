@@ -1,5 +1,6 @@
 {
   "advisoryToBlockingDriftCount": 0,
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
   "gates": {
     "mc_advisory_blocking_drift_zero": "PASS",
     "p1_05_blocking_flag_mode_disposition_conflict_zero_check": "PASS",
@@ -7,13 +8,12 @@
     "p1_05_mode_matrix_inconsistency_returns_stop_check": "PASS",
     "p1_05_sync_automation_updates_outdated_mode_disposition_check": "PASS"
   },
-  "generatedAtUtc": "2026-02-26T21:23:09.228Z",
   "highImpactFailSignalCount": 74,
   "modeMatrixInconsistencyAfterCount": 0,
   "modeMatrixInconsistencyBeforeCount": 37,
-  "runId": "RUN-2026-02-26-001",
-  "singleBlockingAuthorityOk": true,
   "status": "PASS",
   "syncAppliedCount": 37,
-  "ticketId": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003"
+  "token": "FAILSIGNAL_MODE_SYNC_AUTOMATION_OK",
+  "updatedAtUtc": "2026-02-26T21:23:09.228Z",
+  "version": 3
 }
