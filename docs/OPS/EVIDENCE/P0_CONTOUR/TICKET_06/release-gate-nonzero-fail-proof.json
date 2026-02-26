@@ -1,0 +1,81 @@
+{
+  "gate": "p0_06_release_gate_nonzero_on_fail_check",
+  "negativeCaseFailRelease": {
+    "deliveryVerdict": "WARN",
+    "exitCode": 1,
+    "failReason": "E_LIFECYCLE_NEGATIVE_COVERAGE_INCOMPLETE",
+    "ok": true,
+    "stopCode": "E_LIFECYCLE_NEGATIVE_COVERAGE_INCOMPLETE"
+  },
+  "ok": true,
+  "phasePrecedenceRows": [
+    {
+      "deliveryVerdict": "WARN",
+      "phase": "PHASE_1_SHADOW",
+      "phaseShouldBlock": false,
+      "productVerdict": "FAIL"
+    },
+    {
+      "deliveryVerdict": "WARN",
+      "phase": "PHASE_2_WARN",
+      "phaseShouldBlock": false,
+      "productVerdict": "FAIL"
+    },
+    {
+      "deliveryVerdict": "BLOCK",
+      "phase": "PHASE_3_HARD",
+      "phaseShouldBlock": true,
+      "productVerdict": "FAIL"
+    }
+  ],
+  "repeatable": {
+    "identical": true,
+    "ok": true,
+    "runs": [
+      {
+        "activePhase": "PHASE_1_SHADOW",
+        "deliveryVerdict": "PASS",
+        "executableNegativeCaseCount": 4,
+        "missingMergeFlowGateCount": 0,
+        "ok": true,
+        "requiredMergeFlowGateCount": 4,
+        "run": 1
+      },
+      {
+        "activePhase": "PHASE_1_SHADOW",
+        "deliveryVerdict": "PASS",
+        "executableNegativeCaseCount": 4,
+        "missingMergeFlowGateCount": 0,
+        "ok": true,
+        "requiredMergeFlowGateCount": 4,
+        "run": 2
+      },
+      {
+        "activePhase": "PHASE_1_SHADOW",
+        "deliveryVerdict": "PASS",
+        "executableNegativeCaseCount": 4,
+        "missingMergeFlowGateCount": 0,
+        "ok": true,
+        "requiredMergeFlowGateCount": 4,
+        "run": 3
+      }
+    ]
+  },
+  "skipBypassReleasePromotion": {
+    "ok": true,
+    "promotion": {
+      "exitCode": 1,
+      "failReason": "E_SKIP_FLAG_BYPASS",
+      "skipSuppressionAttempted": true,
+      "skipSuppressionPrevented": true,
+      "stopCode": "E_SKIP_FLAG_BYPASS"
+    },
+    "release": {
+      "exitCode": 1,
+      "failReason": "E_SKIP_FLAG_BYPASS",
+      "skipSuppressionAttempted": true,
+      "skipSuppressionPrevented": true,
+      "stopCode": "E_SKIP_FLAG_BYPASS"
+    }
+  }
+}
