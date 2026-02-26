@@ -1,0 +1,19 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p1_07_blocking_entities_have_rollback_ref_check": "PASS",
+    "p1_07_missing_rollback_ref_negative_check": "PASS",
+    "p1_07_owner_deadline_evidence_required_check": "PASS",
+    "p1_07_phase_aware_enforcement_signal_warn_hard_check": "PASS"
+  },
+  "incompleteEntityCount": 0,
+  "invalidRollbackRefCount": 0,
+  "missingRollbackRefCount": 0,
+  "requiredBlockingTokenCount": 3,
+  "status": "PASS",
+  "token": "ROLLBACK_REF_SCHEMA_ADOPTION_OK",
+  "updatedAtUtc": "2026-02-26T21:53:40.246Z",
+  "version": 3
+}

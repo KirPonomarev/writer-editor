@@ -1330,6 +1330,76 @@
       "approvedBy": "@k.ponomarev.pro",
       "approvedAtUtc": "2026-02-18T00:00:00.000Z",
       "rationale": "Approve strict-governance change for TZ-24D2 contract wiring update."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/blocking-entity-contract-backfill.json",
+      "sha256": "ead553a329db0c8b2f387ec193925897e0f3f95e9f5e4732c2a2e01538cf1752",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/rollback-ref-validation-cases.json",
+      "sha256": "8486a6faebd77b59e3dee5cad49742ea8aae960c38aecc4ae9a997f1b3d771b9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/missing-rollback-ref-negative-cases.json",
+      "sha256": "8870a1043d003e9b7b9915c4988133d7499024293b2dcbd15bbaf2c5c7654f03",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/summary.json",
+      "sha256": "d713a4e58a2369cb282478679bce7f4dfda55f56ee223d50de5f5c5c08033cdd",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/ticket-meta.json",
+      "sha256": "3161ebc44405e24aff17bd817beed41c62a5338f7ebb6c73bfa87173b3e2de0b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/ROLLBACK_REF_SCHEMA_ADOPTION_v3.json",
+      "sha256": "53b334bbd85b98eb852ba5fdbafa76b04220a2492f783c4419aeb67e9fc86238",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-07-rollback-ref-schema-adoption-report.mjs",
+      "sha256": "efb45aac71d7488d718f803d2ed351d2983c87452fe875a4270825ee8b5ccd81",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/rollback-ref-schema-adoption-state.mjs",
+      "sha256": "d110fe8f3011610ac8ae241f61edd95325770f84b64fd2592cce6ee2ae883b90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "test/contracts/rollback-ref-schema-adoption.contract.test.js",
+      "sha256": "e15ba1171ebd13ba94bbdcb958c01350e0a551d9f91d759523248461442299a8",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
     }
   ]
 }
