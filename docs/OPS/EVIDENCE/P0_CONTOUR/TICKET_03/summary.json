@@ -1,14 +1,26 @@
 {
-  "domainFailSignalsCount": 35,
-  "domainMappingCoveragePct": 100,
+  "activePhase": "PHASE_1_SHADOW",
+  "advisoryToBlockingDriftCount": 0,
+  "claimOverrideViolationCount": 0,
+  "criticalUserPathPass": true,
+  "failingRequiredScenarioCount": 0,
   "gates": {
-    "p0_03_domain_binding_check": "PASS",
-    "p0_03_generic_test_rejection_check": "PASS"
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "mc_blocking_evaluator_single_authority": "PASS",
+    "mc_mode_matrix_consistency": "PASS",
+    "mc_phase_switch_valid": "PASS",
+    "p0_03_critical_user_path_defined_check": "PASS",
+    "p0_03_critical_user_path_machine_check_binding_check": "PASS",
+    "p0_03_critical_user_path_negative_missing_step_check": "PASS",
+    "p0_03_product_delivery_verdict_split_check": "PASS",
+    "p0_03_release_mode_blocks_when_critical_path_missing_check": "PASS",
+    "p0_03_repeatable_pass_3runs": "PASS"
   },
-  "generatedAtUtc": "2026-02-25T08:38:50.311Z",
-  "genericSchemaRejectionCasesCount": 0,
-  "mappedDomainFailSignalsCount": 35,
-  "runId": "RUN-2026-02-25-006",
+  "generatedAtUtc": "2026-02-26T18:24:36.068Z",
+  "missingRequiredScenarioCount": 0,
+  "phaseEnforcementMode": "SIGNAL_ONLY",
+  "requiredScenarioCount": 5,
+  "runId": "RUN-2026-02-26-001",
   "status": "PASS",
-  "ticketId": "TZ-P0-03-DOMAIN-NEGATIVE-TEST-ENFORCEMENT-001"
+  "ticketId": "TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003"
 }

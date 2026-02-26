@@ -1,0 +1,21 @@
+{
+  "binaryA": {
+    "deliveryVerdict": "PASS",
+    "failingRequiredScenarioCount": 0,
+    "missingRequiredScenarioCount": 0,
+    "ok": true,
+    "productVerdict": "PASS",
+    "requiredScenarioCount": 5
+  },
+  "criticalUserPathPass": true,
+  "deliveryVerdict": "PASS",
+  "productVerdict": "PASS",
+  "requiredScenarioCount": 5,
+  "requiredScenarioIds": [
+    "critical_e2e_path",
+    "docx_baseline",
+    "markdown_flow",
+    "menu_mutation",
+    "recovery_integrity"
+  ]
+}

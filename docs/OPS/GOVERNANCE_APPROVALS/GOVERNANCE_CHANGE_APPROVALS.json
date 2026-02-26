@@ -574,6 +574,76 @@
       "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
       "approvedAtUtc": "2026-02-26T18:09:58.000Z",
       "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/advisory-blocking-drift-cases.json",
+      "sha256": "6f7e2453c0da0224d79012533db58acb4501ffb15d299f99d41798a5757cc9e7",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/critical-user-path-pass-proof.json",
+      "sha256": "9946eeb49eb53c0783cbaa24e37a2a34e71a2a240ed6438d961d94e007e8fa93",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/e2e-critical-user-path-negative-missing-step.json",
+      "sha256": "ab3274751fbf02febee0e0fbb906c8095128b39af8f7043b022ec93c79853b82",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/e2e-critical-user-path-scenarios.json",
+      "sha256": "693f83dd9ef4e84cbe20108658f1b436dfd4c501835a654a96339895548a81b6",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/summary.json",
+      "sha256": "9b4054130b965bd782edc512f25a57479e4375a0db69e5309fac9f807e525e24",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/ticket-meta.json",
+      "sha256": "85dbb093e2eed42d4cbae9583673d35cef8a2574082edf590718a70f0ef67756",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/E2E_CRITICAL_USER_PATH_HARD_MIN_v3.json",
+      "sha256": "b1cdb69f01f0e620261f913dd1c46ed330880d358f54fb6f03a71d5671dcd08f",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "scripts/ops/e2e-critical-user-path-state.mjs",
+      "sha256": "b2f31420fc9055c0d62e990a047cad958b777225770ae7986fb73e0cf7118b82",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "scripts/ops/p0-03-e2e-critical-user-path-report.mjs",
+      "sha256": "368f76a01fe9333e17b210e1f19db772db8f56bed597c692a9a221b5c6541fe9",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
+    },
+    {
+      "filePath": "test/contracts/e2e-critical-user-path.contract.test.js",
+      "sha256": "59cdb2c206237ca751ea051263741180feaa74f3f8afe3fb1879d06214ca28fe",
+      "approvedBy": "ticket:TZ-P0-03-E2E-CRITICAL-USER-PATH-HARD-MIN-003",
+      "approvedAtUtc": "2026-02-26T18:24:55.000Z",
+      "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
     }
   ]
 }

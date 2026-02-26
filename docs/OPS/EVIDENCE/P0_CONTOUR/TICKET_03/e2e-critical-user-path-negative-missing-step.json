@@ -1,0 +1,42 @@
+{
+  "binaryB": {
+    "failingRequiredScenarioCount": 0,
+    "failReason": "E2E_CRITICAL_PATH_MISSING",
+    "missingRequiredScenarioCount": 1,
+    "ok": true,
+    "removedScenarioId": "menu_mutation"
+  },
+  "binaryC": {
+    "deliveryVerdict": "BLOCK",
+    "exitCode": 1,
+    "ok": true,
+    "productVerdict": "FAIL",
+    "removedScenarioId": "menu_mutation"
+  },
+  "binaryD": {
+    "ok": true,
+    "prDeliveryVerdict": "WARN",
+    "prProductVerdict": "FAIL",
+    "releaseDeliveryVerdict": "BLOCK",
+    "releaseProductVerdict": "FAIL"
+  },
+  "detail": {
+    "prState": {
+      "deliveryVerdict": "WARN",
+      "failReason": "E2E_CRITICAL_PATH_MISSING",
+      "missingRequiredScenarioIds": [
+        "menu_mutation"
+      ],
+      "productVerdict": "FAIL"
+    },
+    "releaseState": {
+      "deliveryVerdict": "BLOCK",
+      "failReason": "E2E_CRITICAL_PATH_MISSING",
+      "missingRequiredScenarioIds": [
+        "menu_mutation"
+      ],
+      "productVerdict": "FAIL"
+    },
+    "removedScenarioId": "menu_mutation"
+  }
+}
