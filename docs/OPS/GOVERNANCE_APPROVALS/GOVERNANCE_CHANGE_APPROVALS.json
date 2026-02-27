@@ -709,6 +709,132 @@
       "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/hotpath-p95-latency-proof.json",
+      "sha256": "ed5672df01ea91fcbcf580f0a4fccc02966283213cb8dad71d584a936a5fb604",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/hotpath-rerender-sampling.json",
+      "sha256": "8637aa00cd62c460bb90b3193d135637be8426e702747202ad85ac1be2048d89",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/summary.json",
+      "sha256": "7a43116ac1c48e1d80b09d1f0de8db2dd913a55c9444d0b046cedcf1916724f2",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/ticket-meta.json",
+      "sha256": "a324315439629dae1d1f96d1c2971926401e19f16ac2877de0ce9465cd6c19bc",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/typing-loop-nonblocking-proof.json",
+      "sha256": "33f29a6bccb178c511cf76d49b77248f28d5c80e877305bccf1ad13d9f438259",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/failsignal-semantics-before-after.json",
+      "sha256": "aeb0ef7ab6099025ce1384308a9c2f2426cfc03ffbf8564a62b30c36b6b665ec",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/semantic-collision-negative-cases.json",
+      "sha256": "78198a6c2f7854383f6668d5c0debb6be1759bdd47615ab9a9f31aebcc8c7178",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/summary.json",
+      "sha256": "7ec430d7311d18005d9cc5374e8b6176de38feef794fbb8f2fb31b47faa781c1",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/ticket-meta.json",
+      "sha256": "c5ef2dd6529c7ea63d088a2ffcdda37e0186179585fca3585579241a4d727c86",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/unique-failsignal-map.json",
+      "sha256": "33ac4ee1b4459e11a2e74cfb6b675e3666d6790cf0deee3b06ad1c6f6823b105",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_03/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
+      "approvedAtUtc": "2026-02-27T01:15:00.000Z",
+      "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_03/budget-threshold-proof.json",
+      "sha256": "823dae4cc10396207f05d6e179dd5f5b932d2c87af7b527273cd0aad72efd603",
+      "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
+      "approvedAtUtc": "2026-02-27T01:15:00.000Z",
+      "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_03/duplicate-gate-signal-map.json",
+      "sha256": "7310f2cb72b402ad080f4858c5cfa816b0151261c4cbc2d3c53386d4e0e4afd6",
+      "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
+      "approvedAtUtc": "2026-02-27T01:15:00.000Z",
+      "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_03/kill-switch-trigger-cases.json",
+      "sha256": "7e3ecf3714e51db2a97304ad84e591139dba89b487fdf3f4bae5c11d873a33aa",
+      "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
+      "approvedAtUtc": "2026-02-27T01:15:00.000Z",
+      "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_03/summary.json",
+      "sha256": "348a7dd2e60d6dfe368b92a5e19285ed289a9754d2e9cadb1f7d89f528cf8130",
+      "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
+      "approvedAtUtc": "2026-02-27T01:15:00.000Z",
+      "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_03/ticket-meta.json",
+      "sha256": "5f3c7fa29a3d765a397853dff108f86c58c70404f480da30416d68e18f040c88",
+      "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
+      "approvedAtUtc": "2026-02-27T01:15:00.000Z",
+      "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-0805ab9da950-592e3737/failsignal-registry-snapshot.json",
       "sha256": "9af1b22b87f604601b38114621995a44ae5e15c3ea9a299197c61e863a5e6448",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -954,11 +1080,25 @@
       "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
     },
     {
+      "filePath": "docs/OPS/STATUS/FAILSIGNAL_SEMANTIC_DEDUP_v3.json",
+      "sha256": "64cbc85f6f02ec37ade78f0a4890d3893ad813fb8de5fd73f8247139ce43b251",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
       "filePath": "docs/OPS/STATUS/GATE_DEPENDENCY_DECLARATION_V1.json",
       "sha256": "194c87cb9fb4d16be69d2c69bc56b76b52626b98ae82b1877d7e036d66c1c33b",
       "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
       "approvedAtUtc": "2026-02-26T18:56:31.056Z",
       "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/HOT_PATH_INCREMENTAL_RENDER_v3.json",
+      "sha256": "1c5ac78bb6e4c8047b6113f1bd6115c54668367b2f90918716042292a8aa0cd5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
     },
     {
       "filePath": "docs/OPS/STATUS/LAW_PATH_CANON.json",
@@ -1001,6 +1141,13 @@
       "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
       "approvedAtUtc": "2026-02-26T18:05:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PROCESS_TAX_BUDGET_GATE_AUTOMATION_v3.json",
+      "sha256": "4c630fea368521ab1888e44e80240068c708948894e61ecdc7623d901e0bc935",
+      "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
+      "approvedAtUtc": "2026-02-27T01:15:00.000Z",
+      "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
     },
     {
       "filePath": "docs/OPS/STATUS/RACE_SAFE_GOVERNANCE_FOR_CORE_ARTIFACTS_v3.json",
@@ -1185,6 +1332,13 @@
       "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
     },
     {
+      "filePath": "scripts/ops/failsignal-semantic-dedup-state.mjs",
+      "sha256": "d93383c5ba5919f207ad1f0582449e951192fbff1808f22a4e472932cb766067",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
       "filePath": "scripts/ops/gate-graph-check-v1-state.mjs",
       "sha256": "20bfa68c52c4ebb965854db3e6d6cbfabf3dcd7cd45ae6ae9d14fdda9329b4f6",
       "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
@@ -1339,11 +1493,39 @@
       "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
     },
     {
+      "filePath": "scripts/ops/p2-01-hot-path-incremental-render-report.mjs",
+      "sha256": "915b32044e205828e24dd8addc5d4723ab31c94d903035742df25556fc1c8ef8",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p2-02-failsignal-semantic-dedup-report.mjs",
+      "sha256": "91aff46e914e37b2f223562b44a4fb1f436b7393b8110ce277d6fda4c6e06621",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p2-03-process-tax-budget-gate-report.mjs",
+      "sha256": "a478b0f2114bf9589289799dc268397a69675bc087ac5465eea26d944a89fe03",
+      "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
+      "approvedAtUtc": "2026-02-27T01:15:00.000Z",
+      "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
+    },
+    {
       "filePath": "scripts/ops/path-boundary-guard-state.mjs",
       "sha256": "95838483e8f47c1fa76ca7c806fd993d029a128604f51bed5871cf5c5432e485",
       "approvedBy": "ticket:TZ-24E-P1-PATH-BOUNDARY-GUARD-IPC-IO-012",
       "approvedAtUtc": "2026-02-18T15:22:29.000Z",
       "rationale": "Approve path-boundary guard wiring state checks and expanded bypass scenario coverage."
+    },
+    {
+      "filePath": "scripts/ops/process-tax-budget-gate-state.mjs",
+      "sha256": "c41feaf1644f42b36ab92dfe6da3506f030a1109a940afe2cf54e6fb40ce54a2",
+      "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
+      "approvedAtUtc": "2026-02-27T01:15:00.000Z",
+      "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
     },
     {
       "filePath": "scripts/ops/race-safe-governance-state.mjs",
@@ -1493,6 +1675,13 @@
       "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
     },
     {
+      "filePath": "test/contracts/failsignal-semantic-dedup.contract.test.js",
+      "sha256": "d2a38b6c4e0677b9b8a93bb0d7902b993294e91435d2ccf3f3b5342b85569492",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
       "filePath": "test/contracts/github-credential-autofix.contract.test.js",
       "sha256": "b38b2c3c773e8d578f6a165de267e4200d9a2495446e7ea1e0a679a1dae284a9",
       "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
@@ -1540,6 +1729,13 @@
       "approvedBy": "ticket:TZ-24E-P1-PATH-BOUNDARY-GUARD-IPC-IO-012",
       "approvedAtUtc": "2026-02-18T15:22:29.000Z",
       "rationale": "Approve contract negatives for symlink traversal and unicode path normalization equivalence."
+    },
+    {
+      "filePath": "test/contracts/process-tax-budget-gate.contract.test.js",
+      "sha256": "e34c7bbc0f14ff7343c771ae648a1d4cc871657bccdf45eaf0d584f5139bf540",
+      "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
+      "approvedAtUtc": "2026-02-27T01:15:00.000Z",
+      "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
     },
     {
       "filePath": "test/contracts/prompt-layer-single-source.contract.test.js",
@@ -1617,132 +1813,6 @@
       "approvedBy": "@k.ponomarev.pro",
       "approvedAtUtc": "2026-02-18T00:00:00.000Z",
       "rationale": "Approve strict-governance change for TZ-24D2 contract wiring update."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
-      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
-      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/hotpath-p95-latency-proof.json",
-      "sha256": "ed5672df01ea91fcbcf580f0a4fccc02966283213cb8dad71d584a936a5fb604",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
-      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/hotpath-rerender-sampling.json",
-      "sha256": "8637aa00cd62c460bb90b3193d135637be8426e702747202ad85ac1be2048d89",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
-      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/typing-loop-nonblocking-proof.json",
-      "sha256": "33f29a6bccb178c511cf76d49b77248f28d5c80e877305bccf1ad13d9f438259",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
-      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/summary.json",
-      "sha256": "7a43116ac1c48e1d80b09d1f0de8db2dd913a55c9444d0b046cedcf1916724f2",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
-      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/ticket-meta.json",
-      "sha256": "a324315439629dae1d1f96d1c2971926401e19f16ac2877de0ce9465cd6c19bc",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
-      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/HOT_PATH_INCREMENTAL_RENDER_v3.json",
-      "sha256": "1c5ac78bb6e4c8047b6113f1bd6115c54668367b2f90918716042292a8aa0cd5",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
-      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
-    },
-    {
-      "filePath": "scripts/ops/p2-01-hot-path-incremental-render-report.mjs",
-      "sha256": "915b32044e205828e24dd8addc5d4723ab31c94d903035742df25556fc1c8ef8",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
-      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/advisory-blocking-drift-cases.json",
-      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/failsignal-semantics-before-after.json",
-      "sha256": "aeb0ef7ab6099025ce1384308a9c2f2426cfc03ffbf8564a62b30c36b6b665ec",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/semantic-collision-negative-cases.json",
-      "sha256": "78198a6c2f7854383f6668d5c0debb6be1759bdd47615ab9a9f31aebcc8c7178",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/summary.json",
-      "sha256": "7ec430d7311d18005d9cc5374e8b6176de38feef794fbb8f2fb31b47faa781c1",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/ticket-meta.json",
-      "sha256": "c5ef2dd6529c7ea63d088a2ffcdda37e0186179585fca3585579241a4d727c86",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/unique-failsignal-map.json",
-      "sha256": "33ac4ee1b4459e11a2e74cfb6b675e3666d6790cf0deee3b06ad1c6f6823b105",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/FAILSIGNAL_SEMANTIC_DEDUP_v3.json",
-      "sha256": "64cbc85f6f02ec37ade78f0a4890d3893ad813fb8de5fd73f8247139ce43b251",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
-    },
-    {
-      "filePath": "scripts/ops/failsignal-semantic-dedup-state.mjs",
-      "sha256": "d93383c5ba5919f207ad1f0582449e951192fbff1808f22a4e472932cb766067",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
-    },
-    {
-      "filePath": "scripts/ops/p2-02-failsignal-semantic-dedup-report.mjs",
-      "sha256": "91aff46e914e37b2f223562b44a4fb1f436b7393b8110ce277d6fda4c6e06621",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
-    },
-    {
-      "filePath": "test/contracts/failsignal-semantic-dedup.contract.test.js",
-      "sha256": "d2a38b6c4e0677b9b8a93bb0d7902b993294e91435d2ccf3f3b5342b85569492",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
     }
   ]
 }
