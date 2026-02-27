@@ -1,0 +1,25 @@
+{
+  "cases": [
+    {
+      "caseId": "cas-update-success",
+      "pass": true,
+      "result": {
+        "next": {
+          "value": "next",
+          "version": 8
+        },
+        "ok": true
+      }
+    },
+    {
+      "caseId": "cas-update-stale-write-rejected",
+      "pass": true,
+      "result": {
+        "currentVersion": 8,
+        "ok": false,
+        "reason": "CAS_VERSION_MISMATCH"
+      }
+    }
+  ],
+  "compareAndSwapLockCheck": true
+}
