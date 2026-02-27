@@ -1673,6 +1673,76 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-27T00:45:00.000Z",
       "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/failsignal-semantics-before-after.json",
+      "sha256": "aeb0ef7ab6099025ce1384308a9c2f2426cfc03ffbf8564a62b30c36b6b665ec",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/semantic-collision-negative-cases.json",
+      "sha256": "78198a6c2f7854383f6668d5c0debb6be1759bdd47615ab9a9f31aebcc8c7178",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/summary.json",
+      "sha256": "7ec430d7311d18005d9cc5374e8b6176de38feef794fbb8f2fb31b47faa781c1",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/ticket-meta.json",
+      "sha256": "c5ef2dd6529c7ea63d088a2ffcdda37e0186179585fca3585579241a4d727c86",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/unique-failsignal-map.json",
+      "sha256": "33ac4ee1b4459e11a2e74cfb6b675e3666d6790cf0deee3b06ad1c6f6823b105",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/FAILSIGNAL_SEMANTIC_DEDUP_v3.json",
+      "sha256": "64cbc85f6f02ec37ade78f0a4890d3893ad813fb8de5fd73f8247139ce43b251",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/failsignal-semantic-dedup-state.mjs",
+      "sha256": "d93383c5ba5919f207ad1f0582449e951192fbff1808f22a4e472932cb766067",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p2-02-failsignal-semantic-dedup-report.mjs",
+      "sha256": "91aff46e914e37b2f223562b44a4fb1f436b7393b8110ce277d6fda4c6e06621",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "test/contracts/failsignal-semantic-dedup.contract.test.js",
+      "sha256": "d2a38b6c4e0677b9b8a93bb0d7902b993294e91435d2ccf3f3b5342b85569492",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
+      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
     }
   ]
 }

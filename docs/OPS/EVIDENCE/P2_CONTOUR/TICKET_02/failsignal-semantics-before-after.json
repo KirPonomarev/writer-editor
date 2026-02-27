@@ -1,0 +1,15 @@
+{
+  "after": {
+    "canonicalSemanticCount": 4,
+    "duplicateSemanticAliasCount": 0,
+    "duplicateSemanticGroupCount": 0
+  },
+  "before": {
+    "duplicateSemanticAliasCount": 70,
+    "duplicateSemanticGroupCount": 4,
+    "totalFailSignalCount": 74,
+    "uniqueSemanticCount": 4
+  },
+  "duplicateFailsignalSemanticsReductionCheck": true,
+  "removedDuplicateSemanticAliases": 70
+}

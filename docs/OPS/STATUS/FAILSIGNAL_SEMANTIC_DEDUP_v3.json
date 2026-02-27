@@ -1,0 +1,17 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p2_02_duplicate_failsignal_semantics_reduction_check": "PASS",
+    "p2_02_semantic_collision_negative_check": "PASS",
+    "p2_02_unique_failsignal_proof_check": "PASS"
+  },
+  "removedDuplicateSemanticAliases": 70,
+  "sourceFailSignalCount": 74,
+  "status": "PASS",
+  "token": "FAILSIGNAL_SEMANTIC_DEDUP_OK",
+  "uniqueSemanticCount": 4,
+  "updatedAtUtc": "2026-02-27T05:24:55.067Z",
+  "version": 3
+}
