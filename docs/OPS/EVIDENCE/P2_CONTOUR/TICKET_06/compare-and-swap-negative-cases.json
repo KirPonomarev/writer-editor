@@ -1,0 +1,36 @@
+{
+  "cases": [
+    {
+      "caseId": "cas_update_with_matching_version_allowed",
+      "pass": true,
+      "result": {
+        "next": {
+          "payload": "writer-a",
+          "version": 8
+        },
+        "ok": true
+      }
+    },
+    {
+      "caseId": "cas_stale_version_conflict_rejected",
+      "pass": true,
+      "result": {
+        "currentVersion": 8,
+        "ok": false,
+        "reason": "CAS_VERSION_MISMATCH"
+      }
+    },
+    {
+      "caseId": "cas_fresh_version_after_conflict_allowed",
+      "pass": true,
+      "result": {
+        "next": {
+          "payload": "writer-c-fresh",
+          "version": 9
+        },
+        "ok": true
+      }
+    }
+  ],
+  "p2_06_compare_and_swap_conflict_check": true
+}

@@ -1,0 +1,19 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "compareAndSwapCaseCount": 3,
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p2_06_compare_and_swap_conflict_check": "PASS",
+    "p2_06_interleaving_protection_check": "PASS",
+    "p2_06_lock_acquire_release_check": "PASS",
+    "p2_06_serialized_queue_enforcement_check": "PASS"
+  },
+  "interleavingCaseCount": 2,
+  "lockAcquireReleaseCaseCount": 5,
+  "serializedQueueCaseCount": 2,
+  "status": "PASS",
+  "token": "CONCURRENCY_LOCKING_FOR_SHARED_GOVERNANCE_ARTIFACTS_OK",
+  "updatedAtUtc": "2026-02-27T06:18:30.083Z",
+  "version": 3
+}

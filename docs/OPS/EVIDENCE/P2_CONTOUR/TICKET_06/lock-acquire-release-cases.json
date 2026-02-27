@@ -1,0 +1,55 @@
+{
+  "cases": [
+    {
+      "actor": "writer-a",
+      "actual": true,
+      "caseId": "acquire_writer_a_when_unlocked",
+      "expect": true,
+      "lockVersionAfter": 1,
+      "ownerAfter": "writer-a",
+      "pass": true,
+      "type": "acquire"
+    },
+    {
+      "actor": "writer-b",
+      "actual": false,
+      "caseId": "acquire_writer_b_while_locked_rejected",
+      "expect": false,
+      "lockVersionAfter": 1,
+      "ownerAfter": "writer-a",
+      "pass": true,
+      "type": "acquire"
+    },
+    {
+      "actor": "writer-b",
+      "actual": false,
+      "caseId": "release_by_non_owner_rejected",
+      "expect": false,
+      "lockVersionAfter": 1,
+      "ownerAfter": "writer-a",
+      "pass": true,
+      "type": "release"
+    },
+    {
+      "actor": "writer-a",
+      "actual": true,
+      "caseId": "release_by_owner_allowed",
+      "expect": true,
+      "lockVersionAfter": 2,
+      "ownerAfter": "",
+      "pass": true,
+      "type": "release"
+    },
+    {
+      "actor": "writer-b",
+      "actual": true,
+      "caseId": "acquire_writer_b_after_release_allowed",
+      "expect": true,
+      "lockVersionAfter": 3,
+      "ownerAfter": "writer-b",
+      "pass": true,
+      "type": "acquire"
+    }
+  ],
+  "p2_06_lock_acquire_release_check": true
+}

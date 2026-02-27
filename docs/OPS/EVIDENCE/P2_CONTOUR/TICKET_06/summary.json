@@ -1,0 +1,19 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "compareAndSwapCaseCount": 3,
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p2_06_compare_and_swap_conflict_check": "PASS",
+    "p2_06_interleaving_protection_check": "PASS",
+    "p2_06_lock_acquire_release_check": "PASS",
+    "p2_06_serialized_queue_enforcement_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-27T06:18:30.083Z",
+  "interleavingCaseCount": 2,
+  "lockAcquireReleaseCaseCount": 5,
+  "runId": "RUN-2026-02-26-001",
+  "serializedQueueCaseCount": 2,
+  "singleBlockingAuthorityOk": true,
+  "status": "PASS",
+  "ticketId": "TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003"
+}
