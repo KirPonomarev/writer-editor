@@ -1400,6 +1400,83 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-26T21:53:40.246Z",
       "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/serialized-queue-cases.json",
+      "sha256": "f1f4a7c56ef3e9a6334020b869a8a3c1e4f34b0639490fe63f1d8cf7af7a092b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/compare-and-swap-cases.json",
+      "sha256": "6a5f7d38563e61450530c2234fcaef1fbf60d31a4abcc98c397a56240ce7eb98",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/merge-interleaving-negative-cases.json",
+      "sha256": "957b0877c42a4cbdb609ad5b9343cbc0116bd001b99c25156a3ecbf40c51ee4f",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/core-artifacts-lock-proof.json",
+      "sha256": "ec3a477ee751179d238774e25ae4204af4a43a5c803a3e4f7739c2c5a49fb272",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/summary.json",
+      "sha256": "0828f535a61ac0f234d0e615560393cb1e7864bdda7f2cb5623c35b1d84134c1",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/ticket-meta.json",
+      "sha256": "9b3081cdf54020b60b41681c6f136e62d2ed78975c0a00ab1513fdde131ede2d",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/RACE_SAFE_GOVERNANCE_FOR_CORE_ARTIFACTS_v3.json",
+      "sha256": "432b8a0d876e6e869965b7764115ad9cb8ff8be4614f16da061e8699ecfcde5b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/race-safe-governance-state.mjs",
+      "sha256": "aa6690065d6d98c978da390f63e79f507a3a511950007ede4f15f4707b13c0a6",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-09-race-safe-governance-report.mjs",
+      "sha256": "6b62cef69d9e0633f5900d05ff118b76ac55a57565975533d85db16b1ba9cb34",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "test/contracts/race-safe-governance.contract.test.js",
+      "sha256": "90d5f0f3b3f552afc7116e195c32ada489c54951cacb4d9d8100e5b69383a289",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
     }
   ]
 }

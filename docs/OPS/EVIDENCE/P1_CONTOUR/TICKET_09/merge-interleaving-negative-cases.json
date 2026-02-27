@@ -1,0 +1,50 @@
+{
+  "automatedQueueCases": [
+    {
+      "caseId": "automated-policy-required",
+      "pass": true,
+      "policy": {
+        "manualBypassAllowed": false,
+        "mode": "automated",
+        "requiresLatestMainRevalidation": true
+      }
+    },
+    {
+      "caseId": "manual-policy-rejected",
+      "pass": true,
+      "policy": {
+        "manualBypassAllowed": true,
+        "mode": "manual",
+        "requiresLatestMainRevalidation": false
+      }
+    }
+  ],
+  "automatedQueueEnforcementCheck": true,
+  "cases": [
+    {
+      "caseId": "stale-write-rejected-after-interleaving",
+      "currentVersion": 4,
+      "pass": true,
+      "readVersion": 3,
+      "reason": "E_INTERLEAVING_STALE_WRITE"
+    }
+  ],
+  "interleavingNegativeFixtureCheck": true,
+  "parallelPrRevalidationCases": [
+    {
+      "baseSha": "886ab7d7351d7705a850da6ec1af64c7cd8a9d2a",
+      "caseId": "parallel-pr-fresh-base",
+      "latestMainSha": "886ab7d7351d7705a850da6ec1af64c7cd8a9d2a",
+      "pass": true,
+      "revalidated": true
+    },
+    {
+      "baseSha": "0000000000000000000000000000000000000000",
+      "caseId": "parallel-pr-stale-base-rejected",
+      "latestMainSha": "886ab7d7351d7705a850da6ec1af64c7cd8a9d2a",
+      "pass": true,
+      "revalidated": false
+    }
+  ],
+  "parallelPrRevalidationCheck": true
+}

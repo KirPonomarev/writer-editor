@@ -1,0 +1,19 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "compareAndSwapCaseCount": 2,
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p1_09_automated_queue_enforcement_check": "PASS",
+    "p1_09_compare_and_swap_lock_check": "PASS",
+    "p1_09_interleaving_negative_fixture_check": "PASS",
+    "p1_09_parallel_pr_revalidation_check": "PASS",
+    "p1_09_serialized_merge_discipline_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-27T04:43:33.713Z",
+  "interleavingCaseCount": 1,
+  "runId": "RUN-2026-02-26-001",
+  "serializedQueueCaseCount": 2,
+  "singleBlockingAuthorityOk": true,
+  "status": "PASS",
+  "ticketId": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01"
+}
