@@ -3,7 +3,7 @@
   "acceptanceMetricB": "INPUT_P95_WITHIN_FAST_LANE_THRESHOLD",
   "acceptanceMetricC": "AUTOSAVE_AND_BACKUP_DO_NOT_BLOCK_TYPING_LOOP",
   "advisoryToBlockingDriftCount": 0,
-  "failReason": "",
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
   "gates": {
     "mc_advisory_blocking_drift_zero": "PASS",
     "no_runtime_hotpath_governance": "PASS",
@@ -12,14 +12,13 @@
     "p2_01_no_full_document_rerender_per_keystroke_check": "PASS",
     "single_blocking_authority_enforced": "PASS"
   },
-  "generatedAtUtc": "2026-02-27T05:12:21.579Z",
   "inputMedianMeasuredMs": 0.00012500000000059686,
   "inputP95MeasuredMs": 0.0002500000000011937,
   "inputP95ThresholdMs": 60,
-  "inputSamplesCount": 200,
   "noFullRerenderPerKeystroke": true,
-  "runId": "RUN-2026-02-26-001",
   "status": "PASS",
-  "ticketId": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003",
-  "typingLoopNonBlocking": true
+  "token": "HOT_PATH_INCREMENTAL_RENDER_OK",
+  "typingLoopNonBlocking": true,
+  "updatedAtUtc": "2026-02-27T05:12:21.579Z",
+  "version": 3
 }
