@@ -1,0 +1,127 @@
+{
+  "fixturesByPlatform": {
+    "android": {
+      "deterministicFixtureSetId": "xplat-android-fixtures-v1",
+      "fixturesTotal": 12,
+      "nonCriticalPaths": {
+        "export_txt": "PASS",
+        "import_md": "PASS",
+        "import_txt": "PASS",
+        "search_replace": "PASS"
+      },
+      "platform": "android",
+      "releaseCriticalPaths": {
+        "edit": "PASS",
+        "export_docx": "PASS",
+        "export_markdown": "PASS",
+        "open": "PASS",
+        "recover": "PASS",
+        "reopen": "PASS",
+        "roundtrip_e2e": "PASS",
+        "save": "PASS"
+      }
+    },
+    "ios": {
+      "deterministicFixtureSetId": "xplat-ios-fixtures-v1",
+      "fixturesTotal": 12,
+      "nonCriticalPaths": {
+        "export_txt": "PASS",
+        "import_md": "PASS",
+        "import_txt": "PASS",
+        "search_replace": "PASS"
+      },
+      "platform": "ios",
+      "releaseCriticalPaths": {
+        "edit": "PASS",
+        "export_docx": "PASS",
+        "export_markdown": "PASS",
+        "open": "PASS",
+        "recover": "PASS",
+        "reopen": "PASS",
+        "roundtrip_e2e": "PASS",
+        "save": "PASS"
+      }
+    },
+    "linux": {
+      "deterministicFixtureSetId": "xplat-linux-fixtures-v1",
+      "fixturesTotal": 12,
+      "nonCriticalPaths": {
+        "export_txt": "PASS",
+        "import_md": "PASS",
+        "import_txt": "PASS",
+        "search_replace": "PASS"
+      },
+      "platform": "linux",
+      "releaseCriticalPaths": {
+        "edit": "PASS",
+        "export_docx": "PASS",
+        "export_markdown": "PASS",
+        "open": "PASS",
+        "recover": "PASS",
+        "reopen": "PASS",
+        "roundtrip_e2e": "PASS",
+        "save": "PASS"
+      }
+    },
+    "web": {
+      "deterministicFixtureSetId": "xplat-web-fixtures-v1",
+      "fixturesTotal": 12,
+      "nonCriticalPaths": {
+        "export_txt": "PASS",
+        "import_md": "PASS",
+        "import_txt": "PASS",
+        "search_replace": "PASS"
+      },
+      "platform": "web",
+      "releaseCriticalPaths": {
+        "edit": "PASS",
+        "export_docx": "PASS",
+        "export_markdown": "PASS",
+        "open": "PASS",
+        "recover": "PASS",
+        "reopen": "PASS",
+        "roundtrip_e2e": "PASS",
+        "save": "PASS"
+      }
+    },
+    "windows": {
+      "deterministicFixtureSetId": "xplat-windows-fixtures-v1",
+      "fixturesTotal": 12,
+      "nonCriticalPaths": {
+        "export_txt": "PASS",
+        "import_md": "PASS",
+        "import_txt": "PASS",
+        "search_replace": "PASS"
+      },
+      "platform": "windows",
+      "releaseCriticalPaths": {
+        "edit": "PASS",
+        "export_docx": "PASS",
+        "export_markdown": "PASS",
+        "open": "PASS",
+        "recover": "PASS",
+        "reopen": "PASS",
+        "roundtrip_e2e": "PASS",
+        "save": "PASS"
+      }
+    }
+  },
+  "platforms": [
+    "web",
+    "windows",
+    "linux",
+    "android",
+    "ios"
+  ],
+  "releaseCriticalPaths": [
+    "open",
+    "edit",
+    "save",
+    "reopen",
+    "recover",
+    "export_docx",
+    "export_markdown",
+    "roundtrip_e2e"
+  ],
+  "schemaVersion": "xplat-parity-fixtures.v1"
+}

@@ -1,0 +1,35 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p2_05_cross_platform_negative_cases_check": "PASS",
+    "p2_05_gap_report_zero_for_release_critical_check": "PASS",
+    "p2_05_platform_parity_matrix_complete_check": "PASS",
+    "p2_05_release_critical_paths_parity_check": "PASS"
+  },
+  "parityMismatchCount": 0,
+  "platformsCovered": [
+    "web",
+    "windows",
+    "linux",
+    "android",
+    "ios"
+  ],
+  "releaseCriticalPaths": [
+    "open",
+    "edit",
+    "save",
+    "reopen",
+    "recover",
+    "export_docx",
+    "export_markdown",
+    "roundtrip_e2e"
+  ],
+  "status": "PASS",
+  "token": "FULL_CROSS_PLATFORM_PARITY_EXPANSION_OK",
+  "totalFailingPaths": 0,
+  "totalMissingPaths": 0,
+  "updatedAtUtc": "2026-02-27T06:04:10.972Z",
+  "version": 3
+}

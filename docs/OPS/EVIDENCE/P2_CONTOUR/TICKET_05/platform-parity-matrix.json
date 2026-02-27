@@ -1,0 +1,100 @@
+{
+  "incompletePaths": [],
+  "matrix": [
+    {
+      "deterministicFixtureSetId": "xplat-web-fixtures-v1",
+      "fixturesTotal": 12,
+      "platform": "web",
+      "releaseCriticalPaths": {
+        "edit": "PASS",
+        "export_docx": "PASS",
+        "export_markdown": "PASS",
+        "open": "PASS",
+        "recover": "PASS",
+        "reopen": "PASS",
+        "roundtrip_e2e": "PASS",
+        "save": "PASS"
+      }
+    },
+    {
+      "deterministicFixtureSetId": "xplat-windows-fixtures-v1",
+      "fixturesTotal": 12,
+      "platform": "windows",
+      "releaseCriticalPaths": {
+        "edit": "PASS",
+        "export_docx": "PASS",
+        "export_markdown": "PASS",
+        "open": "PASS",
+        "recover": "PASS",
+        "reopen": "PASS",
+        "roundtrip_e2e": "PASS",
+        "save": "PASS"
+      }
+    },
+    {
+      "deterministicFixtureSetId": "xplat-linux-fixtures-v1",
+      "fixturesTotal": 12,
+      "platform": "linux",
+      "releaseCriticalPaths": {
+        "edit": "PASS",
+        "export_docx": "PASS",
+        "export_markdown": "PASS",
+        "open": "PASS",
+        "recover": "PASS",
+        "reopen": "PASS",
+        "roundtrip_e2e": "PASS",
+        "save": "PASS"
+      }
+    },
+    {
+      "deterministicFixtureSetId": "xplat-android-fixtures-v1",
+      "fixturesTotal": 12,
+      "platform": "android",
+      "releaseCriticalPaths": {
+        "edit": "PASS",
+        "export_docx": "PASS",
+        "export_markdown": "PASS",
+        "open": "PASS",
+        "recover": "PASS",
+        "reopen": "PASS",
+        "roundtrip_e2e": "PASS",
+        "save": "PASS"
+      }
+    },
+    {
+      "deterministicFixtureSetId": "xplat-ios-fixtures-v1",
+      "fixturesTotal": 12,
+      "platform": "ios",
+      "releaseCriticalPaths": {
+        "edit": "PASS",
+        "export_docx": "PASS",
+        "export_markdown": "PASS",
+        "open": "PASS",
+        "recover": "PASS",
+        "reopen": "PASS",
+        "roundtrip_e2e": "PASS",
+        "save": "PASS"
+      }
+    }
+  ],
+  "missingPlatforms": [],
+  "platformParityMatrixCompleteCheck": true,
+  "releaseCriticalPaths": [
+    "open",
+    "edit",
+    "save",
+    "reopen",
+    "recover",
+    "export_docx",
+    "export_markdown",
+    "roundtrip_e2e"
+  ],
+  "requiredPlatforms": [
+    "web",
+    "windows",
+    "linux",
+    "android",
+    "ios"
+  ],
+  "unexpectedPlatforms": []
+}

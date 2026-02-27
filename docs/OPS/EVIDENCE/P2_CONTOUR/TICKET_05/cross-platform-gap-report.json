@@ -1,0 +1,229 @@
+{
+  "gapReportZeroForReleaseCriticalCheck": true,
+  "gapState": {
+    "ok": true,
+    "parityMismatchCount": 0,
+    "platformGaps": [
+      {
+        "deterministicFixtureSetId": "xplat-web-fixtures-v1",
+        "failingPathCount": 0,
+        "fixturesTotal": 12,
+        "missingPathCount": 0,
+        "platform": "web"
+      },
+      {
+        "deterministicFixtureSetId": "xplat-windows-fixtures-v1",
+        "failingPathCount": 0,
+        "fixturesTotal": 12,
+        "missingPathCount": 0,
+        "platform": "windows"
+      },
+      {
+        "deterministicFixtureSetId": "xplat-linux-fixtures-v1",
+        "failingPathCount": 0,
+        "fixturesTotal": 12,
+        "missingPathCount": 0,
+        "platform": "linux"
+      },
+      {
+        "deterministicFixtureSetId": "xplat-android-fixtures-v1",
+        "failingPathCount": 0,
+        "fixturesTotal": 12,
+        "missingPathCount": 0,
+        "platform": "android"
+      },
+      {
+        "deterministicFixtureSetId": "xplat-ios-fixtures-v1",
+        "failingPathCount": 0,
+        "fixturesTotal": 12,
+        "missingPathCount": 0,
+        "platform": "ios"
+      }
+    ],
+    "totalFailingPaths": 0,
+    "totalMissingPaths": 0
+  },
+  "parityState": {
+    "mismatches": [],
+    "ok": true,
+    "perPathStatus": {
+      "edit": [
+        {
+          "platform": "web",
+          "status": "PASS"
+        },
+        {
+          "platform": "windows",
+          "status": "PASS"
+        },
+        {
+          "platform": "linux",
+          "status": "PASS"
+        },
+        {
+          "platform": "android",
+          "status": "PASS"
+        },
+        {
+          "platform": "ios",
+          "status": "PASS"
+        }
+      ],
+      "export_docx": [
+        {
+          "platform": "web",
+          "status": "PASS"
+        },
+        {
+          "platform": "windows",
+          "status": "PASS"
+        },
+        {
+          "platform": "linux",
+          "status": "PASS"
+        },
+        {
+          "platform": "android",
+          "status": "PASS"
+        },
+        {
+          "platform": "ios",
+          "status": "PASS"
+        }
+      ],
+      "export_markdown": [
+        {
+          "platform": "web",
+          "status": "PASS"
+        },
+        {
+          "platform": "windows",
+          "status": "PASS"
+        },
+        {
+          "platform": "linux",
+          "status": "PASS"
+        },
+        {
+          "platform": "android",
+          "status": "PASS"
+        },
+        {
+          "platform": "ios",
+          "status": "PASS"
+        }
+      ],
+      "open": [
+        {
+          "platform": "web",
+          "status": "PASS"
+        },
+        {
+          "platform": "windows",
+          "status": "PASS"
+        },
+        {
+          "platform": "linux",
+          "status": "PASS"
+        },
+        {
+          "platform": "android",
+          "status": "PASS"
+        },
+        {
+          "platform": "ios",
+          "status": "PASS"
+        }
+      ],
+      "recover": [
+        {
+          "platform": "web",
+          "status": "PASS"
+        },
+        {
+          "platform": "windows",
+          "status": "PASS"
+        },
+        {
+          "platform": "linux",
+          "status": "PASS"
+        },
+        {
+          "platform": "android",
+          "status": "PASS"
+        },
+        {
+          "platform": "ios",
+          "status": "PASS"
+        }
+      ],
+      "reopen": [
+        {
+          "platform": "web",
+          "status": "PASS"
+        },
+        {
+          "platform": "windows",
+          "status": "PASS"
+        },
+        {
+          "platform": "linux",
+          "status": "PASS"
+        },
+        {
+          "platform": "android",
+          "status": "PASS"
+        },
+        {
+          "platform": "ios",
+          "status": "PASS"
+        }
+      ],
+      "roundtrip_e2e": [
+        {
+          "platform": "web",
+          "status": "PASS"
+        },
+        {
+          "platform": "windows",
+          "status": "PASS"
+        },
+        {
+          "platform": "linux",
+          "status": "PASS"
+        },
+        {
+          "platform": "android",
+          "status": "PASS"
+        },
+        {
+          "platform": "ios",
+          "status": "PASS"
+        }
+      ],
+      "save": [
+        {
+          "platform": "web",
+          "status": "PASS"
+        },
+        {
+          "platform": "windows",
+          "status": "PASS"
+        },
+        {
+          "platform": "linux",
+          "status": "PASS"
+        },
+        {
+          "platform": "android",
+          "status": "PASS"
+        },
+        {
+          "platform": "ios",
+          "status": "PASS"
+        }
+      ]
+    }
+  },
+  "releaseCriticalPathsParityCheck": true
+}

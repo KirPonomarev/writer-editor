@@ -1,0 +1,35 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p2_05_cross_platform_negative_cases_check": "PASS",
+    "p2_05_gap_report_zero_for_release_critical_check": "PASS",
+    "p2_05_platform_parity_matrix_complete_check": "PASS",
+    "p2_05_release_critical_paths_parity_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-27T06:04:10.972Z",
+  "parityMismatchCount": 0,
+  "platformsCovered": [
+    "web",
+    "windows",
+    "linux",
+    "android",
+    "ios"
+  ],
+  "releaseCriticalPaths": [
+    "open",
+    "edit",
+    "save",
+    "reopen",
+    "recover",
+    "export_docx",
+    "export_markdown",
+    "roundtrip_e2e"
+  ],
+  "runId": "RUN-2026-02-26-001",
+  "singleBlockingAuthorityOk": true,
+  "status": "PASS",
+  "ticketId": "TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
+  "totalFailingPaths": 0,
+  "totalMissingPaths": 0
+}
