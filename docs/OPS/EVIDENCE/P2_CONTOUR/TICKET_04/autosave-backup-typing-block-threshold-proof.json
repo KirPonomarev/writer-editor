@@ -1,0 +1,29 @@
+{
+  "autosaveBackupTypingBlockThresholdProof": {
+    "autosaveBackupNonBlocking": {
+      "hasAutosaveQueued": true,
+      "hasBackupAutosaveQueued": true,
+      "hasBackupCurrentQueued": true,
+      "noSyncIoApis": true,
+      "ok": true,
+      "syncHitsNearCriticalQueues": []
+    },
+    "autosaveBackupTypingBlockThresholdMs": 60,
+    "measuredP95Ms": 0.0002919999999981826,
+    "ok": true,
+    "syncHitsNearCriticalQueues": [],
+    "typingLoopBlockingPatternHits": []
+  },
+  "typingLoopNonBlockingCheck": {
+    "autosaveBackupNonBlocking": {
+      "hasAutosaveQueued": true,
+      "hasBackupAutosaveQueued": true,
+      "hasBackupCurrentQueued": true,
+      "noSyncIoApis": true,
+      "ok": true,
+      "syncHitsNearCriticalQueues": []
+    },
+    "inputHandlerBlockingPatternHits": [],
+    "ok": true
+  }
+}

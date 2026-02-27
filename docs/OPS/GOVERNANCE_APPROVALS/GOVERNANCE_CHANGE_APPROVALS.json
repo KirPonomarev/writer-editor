@@ -835,6 +835,48 @@
       "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_04/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
+      "approvedAtUtc": "2026-02-27T01:30:00.000Z",
+      "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_04/autosave-backup-typing-block-threshold-proof.json",
+      "sha256": "02a949dc561017163db52752e3c18c03c79b4f76eeefe3baeaa04621e2999c7c",
+      "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
+      "approvedAtUtc": "2026-02-27T01:30:00.000Z",
+      "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_04/hotpath-acceptance-thresholds.json",
+      "sha256": "faadd3dfed446368295a85a031784ec90f7871460e67daf6cec99de92453ca73",
+      "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
+      "approvedAtUtc": "2026-02-27T01:30:00.000Z",
+      "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_04/hotpath-long-task-budget-proof.json",
+      "sha256": "7d56f13f0d7ad17ff87e0ad667ff474d89a1bec4ae2280568361a6cc950d1d8a",
+      "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
+      "approvedAtUtc": "2026-02-27T01:30:00.000Z",
+      "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_04/summary.json",
+      "sha256": "1f27cf2acdccdd8795e2cab59a5c033053ee587874b0a3b7026db77850275060",
+      "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
+      "approvedAtUtc": "2026-02-27T01:30:00.000Z",
+      "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_04/ticket-meta.json",
+      "sha256": "af5a46a7242526bd536705687694a225452ba1ad7d86cf67fb61ed38e1feb6a3",
+      "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
+      "approvedAtUtc": "2026-02-27T01:30:00.000Z",
+      "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-0805ab9da950-592e3737/failsignal-registry-snapshot.json",
       "sha256": "9af1b22b87f604601b38114621995a44ae5e15c3ea9a299197c61e863a5e6448",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -1101,6 +1143,13 @@
       "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
     },
     {
+      "filePath": "docs/OPS/STATUS/HOTPATH_ACCEPTANCE_GUARD_v3.json",
+      "sha256": "31f325e2d171214d9c560b2343a01de4ba8c000ae43672784f566a6d1cf1571a",
+      "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
+      "approvedAtUtc": "2026-02-27T01:30:00.000Z",
+      "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
+    },
+    {
       "filePath": "docs/OPS/STATUS/LAW_PATH_CANON.json",
       "sha256": "3f3051cf0ab94e591c737f444ffdb80aa59f7a7d4df45b3a0472909842b0a08c",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -1353,6 +1402,13 @@
       "rationale": "Approve OPS automation autofix script for workflow-scope push remediation and handoff boundary."
     },
     {
+      "filePath": "scripts/ops/hotpath-acceptance-guard-state.mjs",
+      "sha256": "1dc2184028d28e247e0acfde69dbdc1cd06c2546f5470c7566e368755b3b425e",
+      "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
+      "approvedAtUtc": "2026-02-27T01:30:00.000Z",
+      "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
+    },
+    {
       "filePath": "scripts/ops/lifecycle-negative-test-coverage-state.mjs",
       "sha256": "5555a5affca69ee6a6015daeb7e13104e71f1034e42e673dfc5362f6a391cd4e",
       "approvedBy": "DOCS_OPERATOR",
@@ -1512,6 +1568,13 @@
       "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
       "approvedAtUtc": "2026-02-27T01:15:00.000Z",
       "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
+    },
+    {
+      "filePath": "scripts/ops/p2-04-hotpath-acceptance-guard-report.mjs",
+      "sha256": "d2eb79663e9eb26e2bb2267825fb74e301d8535ec456967454c68c3ab7ec18dc",
+      "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
+      "approvedAtUtc": "2026-02-27T01:30:00.000Z",
+      "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
     },
     {
       "filePath": "scripts/ops/path-boundary-guard-state.mjs",
@@ -1687,6 +1750,13 @@
       "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
       "approvedAtUtc": "2026-02-18T14:59:18.000Z",
       "rationale": "Approve new contract coverage for workflow-scope push autofix detect/remediation/handoff behavior."
+    },
+    {
+      "filePath": "test/contracts/hotpath-acceptance-guard.contract.test.js",
+      "sha256": "d9bc9eb8b6d83fb6cf9880da95201b5b88c4df96ec7c3d3b0976924d4cbe3416",
+      "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
+      "approvedAtUtc": "2026-02-27T01:30:00.000Z",
+      "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
     },
     {
       "filePath": "test/contracts/lane-separation.contract.test.js",
