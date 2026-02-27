@@ -1,0 +1,17 @@
+{
+  "semanticCollisionNegative": {
+    "collisionsDetected": [
+      {
+        "failSignalCode": "E_ADAPTERS_NOT_ENFORCED",
+        "reason": "E_FAILSIGNAL_SEMANTIC_COLLISION",
+        "semanticIds": [
+          "SEM_1f4642703ca8",
+          "SEM_3b56000df62b"
+        ]
+      }
+    ],
+    "ok": true,
+    "reason": "E_FAILSIGNAL_SEMANTIC_COLLISION"
+  },
+  "semanticCollisionNegativeCheck": true
+}

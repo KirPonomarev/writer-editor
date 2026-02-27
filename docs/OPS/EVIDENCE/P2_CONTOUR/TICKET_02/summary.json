@@ -1,0 +1,19 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p2_02_duplicate_failsignal_semantics_reduction_check": "PASS",
+    "p2_02_semantic_collision_negative_check": "PASS",
+    "p2_02_unique_failsignal_proof_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-27T05:24:55.067Z",
+  "removedDuplicateSemanticAliases": 70,
+  "runId": "RUN-2026-02-26-001",
+  "semanticCollisionNegativeOk": true,
+  "singleBlockingAuthorityOk": true,
+  "sourceFailSignalCount": 74,
+  "status": "PASS",
+  "ticketId": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003",
+  "uniqueFailsignalProofOk": true,
+  "uniqueSemanticCount": 4
+}
