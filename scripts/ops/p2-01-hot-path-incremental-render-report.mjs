@@ -4,6 +4,7 @@ import path from 'node:path';
 import { evaluateHotPathIncrementalRenderState } from './hot-path-incremental-render-state.mjs';
 
 const DEFAULT_OUTPUT_DIR = 'docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01';
+const DEFAULT_STATUS_PATH = 'docs/OPS/STATUS/HOT_PATH_INCREMENTAL_RENDER_v3.json';
 const DEFAULT_FAILSIGNAL_REGISTRY_PATH = 'docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json';
 const DEFAULT_HOTPATH_POLICY_PATH = 'scripts/perf/hotpath-policy.json';
 const DEFAULT_PERF_THRESHOLDS_PATH = 'scripts/perf/perf-thresholds.json';
@@ -33,6 +34,7 @@ function stableStringify(value) {
 function parseArgs(argv = process.argv.slice(2)) {
   const out = {
     outputDir: DEFAULT_OUTPUT_DIR,
+    statusPath: DEFAULT_STATUS_PATH,
     runId: '',
     ticketId: '',
     failsignalRegistryPath: DEFAULT_FAILSIGNAL_REGISTRY_PATH,
@@ -51,6 +53,16 @@ function parseArgs(argv = process.argv.slice(2)) {
     }
     if (arg.startsWith('--output-dir=')) {
       out.outputDir = normalizeString(arg.slice('--output-dir='.length)) || DEFAULT_OUTPUT_DIR;
+      continue;
+    }
+
+    if (arg === '--status-path' && i + 1 < argv.length) {
+      out.statusPath = normalizeString(argv[i + 1]) || DEFAULT_STATUS_PATH;
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith('--status-path=')) {
+      out.statusPath = normalizeString(arg.slice('--status-path='.length)) || DEFAULT_STATUS_PATH;
       continue;
     }
 
@@ -116,6 +128,7 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const repoRoot = process.cwd();
   const outputDir = path.resolve(repoRoot, args.outputDir);
+  const statusPath = path.resolve(repoRoot, args.statusPath);
 
   const state = evaluateHotPathIncrementalRenderState({
     repoRoot,
@@ -130,7 +143,7 @@ function main() {
     p2_01_input_p95_within_threshold_check: state.inputP95Check.ok ? 'PASS' : 'FAIL',
     p2_01_autosave_backup_nonblocking_check: state.typingLoopNonBlockingCheck.ok ? 'PASS' : 'FAIL',
     no_runtime_hotpath_governance: state.noRuntimeHotpathGovernance.ok ? 'PASS' : 'FAIL',
-    no_advisory_to_blocking_drift: state.advisoryToBlockingDriftCountZero ? 'PASS' : 'FAIL',
+    mc_advisory_blocking_drift_zero: state.advisoryToBlockingDriftCountZero ? 'PASS' : 'FAIL',
   };
 
   const summary = {
@@ -158,6 +171,24 @@ function main() {
     outputDir: path.relative(repoRoot, outputDir).replaceAll(path.sep, '/'),
     generatedAtUtc: summary.generatedAtUtc,
   };
+
+  writeJson(statusPath, {
+    version: 3,
+    token: 'HOT_PATH_INCREMENTAL_RENDER_OK',
+    evaluatorId: 'CANONICAL_MODE_MATRIX_EVALUATOR_V1',
+    acceptanceMetricA: summary.acceptanceMetricA,
+    acceptanceMetricB: summary.acceptanceMetricB,
+    acceptanceMetricC: summary.acceptanceMetricC,
+    inputP95ThresholdMs: summary.inputP95ThresholdMs,
+    inputP95MeasuredMs: summary.inputP95MeasuredMs,
+    inputMedianMeasuredMs: summary.inputMedianMeasuredMs,
+    noFullRerenderPerKeystroke: summary.noFullRerenderPerKeystroke,
+    typingLoopNonBlocking: summary.typingLoopNonBlocking,
+    advisoryToBlockingDriftCount: summary.advisoryToBlockingDriftCount,
+    gates,
+    status: summary.status,
+    updatedAtUtc: summary.generatedAtUtc,
+  });
 
   writeJson(path.join(outputDir, 'hotpath-rerender-sampling.json'), {
     editorPath: state.hotpathAnalysis.editorPath,

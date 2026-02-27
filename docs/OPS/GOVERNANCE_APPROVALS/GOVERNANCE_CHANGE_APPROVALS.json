@@ -1617,6 +1617,62 @@
       "approvedBy": "@k.ponomarev.pro",
       "approvedAtUtc": "2026-02-18T00:00:00.000Z",
       "rationale": "Approve strict-governance change for TZ-24D2 contract wiring update."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/hotpath-p95-latency-proof.json",
+      "sha256": "ed5672df01ea91fcbcf580f0a4fccc02966283213cb8dad71d584a936a5fb604",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/hotpath-rerender-sampling.json",
+      "sha256": "8637aa00cd62c460bb90b3193d135637be8426e702747202ad85ac1be2048d89",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/typing-loop-nonblocking-proof.json",
+      "sha256": "33f29a6bccb178c511cf76d49b77248f28d5c80e877305bccf1ad13d9f438259",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/summary.json",
+      "sha256": "7a43116ac1c48e1d80b09d1f0de8db2dd913a55c9444d0b046cedcf1916724f2",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/ticket-meta.json",
+      "sha256": "a324315439629dae1d1f96d1c2971926401e19f16ac2877de0ce9465cd6c19bc",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/HOT_PATH_INCREMENTAL_RENDER_v3.json",
+      "sha256": "1c5ac78bb6e4c8047b6113f1bd6115c54668367b2f90918716042292a8aa0cd5",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p2-01-hot-path-incremental-render-report.mjs",
+      "sha256": "915b32044e205828e24dd8addc5d4723ab31c94d903035742df25556fc1c8ef8",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
+      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
     }
   ]
 }

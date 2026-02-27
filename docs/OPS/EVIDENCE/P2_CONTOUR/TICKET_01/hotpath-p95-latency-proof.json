@@ -1,6 +1,6 @@
 {
-  "measuredMedianMs": 0.0002080000000006521,
-  "measuredP95Ms": 0.0004159999999977515,
+  "measuredMedianMs": 0.00012500000000059686,
+  "measuredP95Ms": 0.0002500000000011937,
   "p95WithinThreshold": true,
   "sampleCount": 200,
   "thresholdMs": 60
