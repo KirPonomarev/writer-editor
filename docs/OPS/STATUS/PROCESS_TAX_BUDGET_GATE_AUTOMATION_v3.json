@@ -1,0 +1,22 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "duplicateSignalCountAfter": 0,
+  "duplicateSignalCountBefore": 1,
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p2_03_duplicate_gate_merge_or_disable_check": "PASS",
+    "p2_03_kill_switch_on_no_signal_delta_check": "PASS",
+    "p2_03_max_heavy_pass_per_window_check": "PASS",
+    "p2_03_no_daily_strict_without_scope_delta_check": "PASS",
+    "p2_03_unique_signal_required_check": "PASS"
+  },
+  "killSwitchWaveThreshold": 2,
+  "maxHeavyPassPerWindow": 1,
+  "runtimeBudgetMinutesMax": 30,
+  "status": "PASS",
+  "token": "PROCESS_TAX_BUDGET_GATE_AUTOMATION_OK",
+  "uniqueSignalCount": 21,
+  "updatedAtUtc": "2026-02-27T05:40:24.443Z",
+  "version": 3
+}

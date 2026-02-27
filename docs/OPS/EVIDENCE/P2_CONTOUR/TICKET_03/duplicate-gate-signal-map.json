@@ -1,0 +1,154 @@
+{
+  "duplicateGateMergeOrDisable": {
+    "after": {
+      "duplicatePathCount": 0,
+      "duplicateSignalCount": 0
+    },
+    "before": {
+      "duplicatePathCount": 2,
+      "duplicateSignalCount": 1
+    },
+    "duplicateReductionOk": true,
+    "ok": true,
+    "removedDuplicateSignalPaths": 2
+  },
+  "duplicateGateMergeOrDisableCheck": true,
+  "uniqueSignalRequired": {
+    "duplicates": [],
+    "invalidRows": [],
+    "ok": true,
+    "uniqueRows": [
+      {
+        "canonicalSource": "scripts/ops/p0-04-declared-set-vs-effective-set-alignment-report.mjs",
+        "removedDuplicateSources": [
+          "scripts/ops/p0-05-recursion-bypass-ban-report.mjs",
+          "scripts/ops/p0-06-attestation-trust-lock-report.mjs"
+        ],
+        "signal": "advisory_to_blocking_drift_count_zero",
+        "sourceCountBefore": 3
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "mc_advisory_blocking_drift_zero",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "mc_blocking_evaluator_single_authority",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "mc_mode_matrix_consistency",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "mc_phase_switch_valid",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_02_binding_schema_required_fields_check",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_02_effective_required_set_coverage_check",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_02_release_gate_nonzero_on_token_fail_check",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_02_remove_one_required_field_negative_check",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-02-release-token-binding-completeness-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_02_repeatable_pass_3runs",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-03-domain-negative-test-enforcement-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_03_domain_binding_check",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-03-domain-negative-test-enforcement-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_03_generic_test_rejection_check",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-04-declared-set-vs-effective-set-alignment-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_04_alignment_check",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-04-declared-set-vs-effective-set-alignment-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_04_negative_drop_check",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-04-declared-set-vs-effective-set-alignment-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_04_repeatable_pass_3runs",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-05-recursion-bypass-ban-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_05_negative_bypass_attempt_check",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-05-recursion-bypass-ban-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_05_promotion_bypass_ban_check",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-05-recursion-bypass-ban-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_05_release_bypass_ban_check",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-06-attestation-trust-lock-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_06_repeatable_pass_3runs",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-06-attestation-trust-lock-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_06_self_generated_payload_rejection_check",
+        "sourceCountBefore": 1
+      },
+      {
+        "canonicalSource": "scripts/ops/p0-06-attestation-trust-lock-report.mjs",
+        "removedDuplicateSources": [],
+        "signal": "p0_06_trusted_context_positive_check",
+        "sourceCountBefore": 1
+      }
+    ],
+    "uniqueSignalCount": 21
+  },
+  "uniqueSignalRequiredCheck": true
+}

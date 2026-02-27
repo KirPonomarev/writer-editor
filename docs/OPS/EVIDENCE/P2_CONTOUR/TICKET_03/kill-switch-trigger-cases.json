@@ -1,0 +1,60 @@
+{
+  "killSwitchOnNoSignalDeltaCheck": true,
+  "killSwitchTriggerCases": {
+    "cases": [
+      {
+        "actualAction": "KEEP_ACTIVE",
+        "caseId": "below_threshold_remains_active",
+        "expectedAction": "KEEP_ACTIVE",
+        "noSignalDeltaWaveCount": 1,
+        "pass": true
+      },
+      {
+        "actualAction": "DOWNGRADE_TO_WARN",
+        "caseId": "at_threshold_downgrades_to_warn",
+        "expectedAction": "DOWNGRADE_TO_WARN",
+        "noSignalDeltaWaveCount": 2,
+        "pass": true
+      },
+      {
+        "actualAction": "DOWNGRADE_TO_WARN",
+        "caseId": "above_threshold_stays_warn",
+        "expectedAction": "DOWNGRADE_TO_WARN",
+        "noSignalDeltaWaveCount": 3,
+        "pass": true
+      }
+    ],
+    "killSwitchWaveThreshold": 2,
+    "ok": true
+  },
+  "noDailyStrictWithoutScopeDelta": {
+    "cases": [
+      {
+        "actualAllow": false,
+        "caseId": "daily_strict_without_scope_delta_rejected",
+        "dailyStrictRequested": true,
+        "expectedAllow": false,
+        "pass": true,
+        "scopeDelta": false
+      },
+      {
+        "actualAllow": true,
+        "caseId": "daily_strict_with_scope_delta_allowed",
+        "dailyStrictRequested": true,
+        "expectedAllow": true,
+        "pass": true,
+        "scopeDelta": true
+      },
+      {
+        "actualAllow": true,
+        "caseId": "no_daily_strict_requested_allowed",
+        "dailyStrictRequested": false,
+        "expectedAllow": true,
+        "pass": true,
+        "scopeDelta": false
+      }
+    ],
+    "ok": true
+  },
+  "noDailyStrictWithoutScopeDeltaCheck": true
+}

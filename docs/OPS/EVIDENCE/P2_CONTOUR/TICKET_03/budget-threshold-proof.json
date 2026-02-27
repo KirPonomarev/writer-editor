@@ -1,0 +1,47 @@
+{
+  "budgetThresholdProof": {
+    "ok": true,
+    "overBudgetWindows": [
+      "window_03"
+    ],
+    "runtimeBudgetMinutesMax": 30,
+    "windows": [
+      {
+        "runtimeMinutes": 21,
+        "windowId": "window_01",
+        "withinBudget": true
+      },
+      {
+        "runtimeMinutes": 30,
+        "windowId": "window_02",
+        "withinBudget": true
+      },
+      {
+        "runtimeMinutes": 31,
+        "windowId": "window_03",
+        "withinBudget": false
+      }
+    ]
+  },
+  "maxHeavyPassPerWindow": {
+    "cases": [
+      {
+        "actualAllow": true,
+        "caseId": "single_heavy_pass_allowed",
+        "expectedAllow": true,
+        "heavyPassCount": 1,
+        "pass": true
+      },
+      {
+        "actualAllow": false,
+        "caseId": "double_heavy_pass_rejected",
+        "expectedAllow": false,
+        "heavyPassCount": 2,
+        "pass": true
+      }
+    ],
+    "maxHeavyPassPerWindow": 1,
+    "ok": true
+  },
+  "maxHeavyPassPerWindowCheck": true
+}
