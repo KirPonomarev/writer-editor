@@ -1,0 +1,33 @@
+{
+  "policyId": "FREEZE_ESCAPE_POLICY_V1",
+  "schemaVersion": 1,
+  "status": "ACTIVE",
+  "requiredFields": [
+    "ESCAPE_TRIGGER",
+    "OWNER",
+    "TIMEBOX_HOURS",
+    "ROLLBACK_PLAN",
+    "APPROVAL_RECORD"
+  ],
+  "defaultTimeboxHours": 72,
+  "allowedTriggers": [
+    "EXTERNAL_BLOCKER_PREVENTS_P0_PROGRESS",
+    "TOOLING_OUTAGE_BLOCKS_REQUIRED_VALIDATION"
+  ],
+  "escapeConstraints": {
+    "scopeDriftForbidden": true,
+    "onlyPreworkClassesAllowed": true,
+    "auditTrailRequired": true
+  },
+  "machineCheck": {
+    "machineCheckId": "MC_FREEZE_ESCAPE_CONTROL",
+    "commandId": "validate-freeze-escape-control",
+    "outputArtifact": "FREEZE_ESCAPE_POLICY_V1.json",
+    "passCriteria": [
+      "ESCAPE_FIELDS_COMPLETE",
+      "NO_SCOPE_DRIFT_IN_ESCAPE_MODE"
+    ]
+  },
+  "updatedAtUtc": "2026-02-27T23:30:00.000Z",
+  "owner": "GOVERNANCE_CORE_OWNER"
+}

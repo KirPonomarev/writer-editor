@@ -1,0 +1,23 @@
+{
+  "policyId": "COMMENT_HISTORY_SCOPE_FLAG_BINDING_V1",
+  "schemaVersion": 1,
+  "status": "ACTIVE",
+  "scopeFlag": "COLLAB_SCOPE_FLAG_ACTIVE",
+  "rules": {
+    "commentHistoryAcceptanceActiveOnlyWhenScopeFlagActive": true,
+    "commentHistoryChecksNonBlockingWhenScopeFlagInactive": true,
+    "platformAcceptanceReferencesScopeFlagState": true,
+    "silentScopeEscalationForbidden": true
+  },
+  "machineCheck": {
+    "machineCheckId": "MC_COMMENT_HISTORY_SCOPE_FLAG_BINDING",
+    "commandId": "validate-comment-history-scope-flag-binding",
+    "outputArtifact": "COMMENT_HISTORY_SCOPE_FLAG_BINDING_V1.json",
+    "passCriteria": [
+      "NO_UNCONDITIONAL_BLOCKING_WHEN_SCOPE_DISABLED",
+      "SCOPE_FLAG_BINDING_DECLARED"
+    ]
+  },
+  "updatedAtUtc": "2026-02-27T23:30:00.000Z",
+  "owner": "GOVERNANCE_CORE_OWNER"
+}

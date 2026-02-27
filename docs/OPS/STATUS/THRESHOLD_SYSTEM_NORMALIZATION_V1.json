@@ -1,0 +1,42 @@
+{
+  "thresholdSystemId": "THRESHOLD_SYSTEM_NORMALIZATION_V1",
+  "schemaVersion": 1,
+  "status": "ACTIVE",
+  "unitPolicy": "EXPLICIT_UNIT_AND_DENOMINATOR_REQUIRED",
+  "formulas": {
+    "FALSE_POSITIVE_RATE": "FALSE_POSITIVE_COUNT / TOTAL_ALERTED_CASES * 100",
+    "CRITICAL_REGRESSION_COUNT": "PREVIOUSLY_PASSING_RELEASE_CRITICAL_TESTS_NOW_FAILING_IN_SCOPE_WINDOW",
+    "BACKFILL_COVERAGE": "COMPLETED_VALID_RECORDS / TOTAL_REQUIRED_RECORDS * 100"
+  },
+  "metrics": [
+    {
+      "name": "FALSE_POSITIVE_RATE",
+      "unit": "PERCENT",
+      "denominator": "TOTAL_ALERTED_CASES",
+      "explicit": true
+    },
+    {
+      "name": "CRITICAL_REGRESSION_COUNT",
+      "unit": "COUNT",
+      "denominator": "NOT_APPLICABLE",
+      "explicit": true
+    },
+    {
+      "name": "BACKFILL_COVERAGE",
+      "unit": "PERCENT",
+      "denominator": "TOTAL_REQUIRED_RECORDS",
+      "explicit": true
+    }
+  ],
+  "machineCheck": {
+    "machineCheckId": "MC_THRESHOLD_SYSTEM_NORMALIZATION",
+    "commandId": "validate-threshold-system-normalization",
+    "outputArtifact": "THRESHOLD_SYSTEM_NORMALIZATION_V1.json",
+    "passCriteria": [
+      "NO_MIXED_UNITS_WITHOUT_DENOMINATOR",
+      "ALL_FORMULAS_PRESENT"
+    ]
+  },
+  "updatedAtUtc": "2026-02-27T23:30:00.000Z",
+  "owner": "GOVERNANCE_CORE_OWNER"
+}
