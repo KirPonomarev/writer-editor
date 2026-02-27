@@ -1,0 +1,19 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "compareAndSwapCaseCount": 2,
+  "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p1_09_automated_queue_enforcement_check": "PASS",
+    "p1_09_compare_and_swap_lock_check": "PASS",
+    "p1_09_interleaving_negative_fixture_check": "PASS",
+    "p1_09_parallel_pr_revalidation_check": "PASS",
+    "p1_09_serialized_merge_discipline_check": "PASS"
+  },
+  "interleavingCaseCount": 1,
+  "serializedQueueCaseCount": 2,
+  "status": "PASS",
+  "token": "RACE_SAFE_GOVERNANCE_FOR_CORE_ARTIFACTS_OK",
+  "updatedAtUtc": "2026-02-27T04:43:33.713Z",
+  "version": 3
+}

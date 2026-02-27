@@ -1,0 +1,24 @@
+{
+  "cases": [
+    {
+      "actualOrder": [
+        "failsignal-edit",
+        "token-claim-edit",
+        "required-set-edit"
+      ],
+      "caseId": "queue-serialized-order",
+      "expectedOrder": [
+        "failsignal-edit",
+        "token-claim-edit",
+        "required-set-edit"
+      ],
+      "pass": true
+    },
+    {
+      "caseId": "duplicate-sequence-rejected",
+      "detail": "DUPLICATE_SEQUENCE_DETECTED",
+      "pass": true
+    }
+  ],
+  "serializedMergeDisciplineCheck": true
+}
