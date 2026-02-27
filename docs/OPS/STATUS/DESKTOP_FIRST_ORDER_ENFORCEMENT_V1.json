@@ -1,0 +1,29 @@
+{
+  "policyId": "DESKTOP_FIRST_ORDER_ENFORCEMENT_V1",
+  "schemaVersion": 1,
+  "status": "ACTIVE",
+  "rolloutOrder": [
+    "DESKTOP_WINDOWS",
+    "DESKTOP_LINUX",
+    "WEB",
+    "MOBILE_ANDROID",
+    "MOBILE_IOS",
+    "TRANSPORT"
+  ],
+  "mvpGuard": {
+    "networkDependencyBeforeStageC": false,
+    "stageCRequiresEnableGate": true,
+    "transportActivationAfterDesktopFirst": true
+  },
+  "machineCheck": {
+    "machineCheckId": "MC_DESKTOP_FIRST_ORDER_ENFORCEMENT",
+    "commandId": "validate-desktop-first-order-enforcement",
+    "outputArtifact": "DESKTOP_FIRST_ORDER_ENFORCEMENT_V1.json",
+    "passCriteria": [
+      "NO_OUT_OF_ORDER_STAGE_ACTIVATION",
+      "NO_NETWORK_DEPENDENCY_BEFORE_STAGE_C"
+    ]
+  },
+  "updatedAtUtc": "2026-02-27T23:30:00.000Z",
+  "owner": "GOVERNANCE_CORE_OWNER"
+}

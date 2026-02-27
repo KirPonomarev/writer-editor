@@ -26,21 +26,27 @@
     "machineCheckId": "MC_PHASE3_LOCK_GUARD",
     "phase3Accessible": false,
     "phase3ActivationAllowed": false,
-    "lockReason": "MIN_FIXSET_01_07_INCOMPLETE_OR_P0_NOT_CLOSED",
+    "lockReason": "P0_CLOSED_AND_APPROVAL_GATES_PENDING_FOR_PHASE3",
     "unlockCondition": {
-      "minFixset01To07Complete": false,
-      "p0ClosedConfirmed": false,
+      "minFixset01To07Complete": true,
+      "p0ClosedConfirmed": true,
       "allRequiredChecksPass": false
     },
     "requiredChecks": [
       "MC_BLOCKING_POLICY_SINGLE_SOURCE",
       "MC_V1_ARTIFACTS_PRESENT_AND_BOUND",
       "MC_REGISTRY_BINDING_COMPLETENESS_100",
+      "MC_GLOSSARY_LOCK",
+      "MC_THRESHOLD_SYSTEM_NORMALIZATION",
+      "MC_COMMENT_HISTORY_SCOPE_FLAG_BINDING",
+      "MC_FREEZE_ESCAPE_CONTROL",
+      "MC_DESKTOP_FIRST_ORDER_ENFORCEMENT",
+      "MC_CHECK_EXECUTABILITY_BINDING",
       "MC_PHASE3_LOCK_GUARD"
     ]
   },
   "legacyHardStopsAlwaysActive": true,
   "approvedBy": "DOCS_OPERATOR",
-  "updatedAtUtc": "2026-02-27T02:15:00.000Z",
+  "updatedAtUtc": "2026-02-27T23:30:00.000Z",
   "hashLock": "PENDING_REGEN"
 }

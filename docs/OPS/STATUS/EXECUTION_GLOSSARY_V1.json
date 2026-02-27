@@ -1,0 +1,33 @@
+{
+  "glossaryId": "EXECUTION_GLOSSARY_V1",
+  "schemaVersion": 1,
+  "status": "ACTIVE",
+  "lockPolicy": "CANONICAL_GLOSSARY_LOCK",
+  "terms": {
+    "WAVE": "Single execution cycle for one scoped ticket against one immutable base snapshot.",
+    "MERGE_WINDOW": "Time-bounded interval where at most one heavy gate pass is permitted for the active scope.",
+    "SCOPE_DELTA": "Set difference between current changed basenames and preexisting dirty baseline basenames.",
+    "LOW_RISK_L3": "Change class with no release-blocking token impact and no runtime hotpath impact.",
+    "HEAVY_TRIGGER": "Condition that permits heavy validation lane based on risk signal or incident class.",
+    "CRITICAL_REGRESSION": "Previously passing release-critical check now failing in the same scoped window."
+  },
+  "requiredTerms": [
+    "WAVE",
+    "MERGE_WINDOW",
+    "SCOPE_DELTA",
+    "LOW_RISK_L3",
+    "HEAVY_TRIGGER",
+    "CRITICAL_REGRESSION"
+  ],
+  "machineCheck": {
+    "machineCheckId": "MC_GLOSSARY_LOCK",
+    "commandId": "validate-glossary-lock",
+    "outputArtifact": "EXECUTION_GLOSSARY_V1.json",
+    "passCriteria": [
+      "ALL_REQUIRED_TERMS_DEFINED",
+      "NO_EMPTY_DEFINITIONS"
+    ]
+  },
+  "updatedAtUtc": "2026-02-27T23:30:00.000Z",
+  "owner": "GOVERNANCE_CORE_OWNER"
+}

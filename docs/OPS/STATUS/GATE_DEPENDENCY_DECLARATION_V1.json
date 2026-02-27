@@ -58,7 +58,57 @@
         "MC_TOKEN_COMMAND_SURFACE_ENFORCED_BINDING"
       ],
       "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "MC_GLOSSARY_LOCK",
+      "checkClass": "primitive",
+      "dependsOn": [
+        "MC_BLOCKING_POLICY_SINGLE_SOURCE"
+      ],
+      "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "MC_THRESHOLD_SYSTEM_NORMALIZATION",
+      "checkClass": "primitive",
+      "dependsOn": [
+        "MC_GLOSSARY_LOCK"
+      ],
+      "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "MC_COMMENT_HISTORY_SCOPE_FLAG_BINDING",
+      "checkClass": "primitive",
+      "dependsOn": [
+        "MC_THRESHOLD_SYSTEM_NORMALIZATION"
+      ],
+      "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "MC_FREEZE_ESCAPE_CONTROL",
+      "checkClass": "primitive",
+      "dependsOn": [
+        "MC_COMMENT_HISTORY_SCOPE_FLAG_BINDING"
+      ],
+      "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "MC_DESKTOP_FIRST_ORDER_ENFORCEMENT",
+      "checkClass": "primitive",
+      "dependsOn": [
+        "MC_FREEZE_ESCAPE_CONTROL"
+      ],
+      "evidenceDependsOn": []
+    },
+    {
+      "machineCheckId": "MC_CHECK_EXECUTABILITY_BINDING",
+      "checkClass": "primitive",
+      "dependsOn": [
+        "MC_V1_ARTIFACTS_PRESENT_AND_BOUND",
+        "MC_REGISTRY_BINDING_COMPLETENESS_100",
+        "MC_DESKTOP_FIRST_ORDER_ENFORCEMENT"
+      ],
+      "evidenceDependsOn": []
     }
   ],
-  "updatedAtUtc": "2026-02-27T02:30:00.000Z"
+  "updatedAtUtc": "2026-02-27T23:30:00.000Z"
 }

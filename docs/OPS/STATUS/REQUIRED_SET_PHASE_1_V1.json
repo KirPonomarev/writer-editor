@@ -3,7 +3,8 @@
   "phase": "PHASE_1_SHADOW",
   "newV1Enforcement": "SIGNAL_ONLY",
   "effectiveRequiredTokenIds": [
-    "CORE_SOT_EXECUTABLE_OK"
+    "CORE_SOT_EXECUTABLE_OK",
+    "GLOSSARY_LOCK_OK"
   ],
   "registryBindings": [
     {
@@ -11,6 +12,12 @@
       "machineCheckId": "MC_TOKEN_CORE_SOT_EXECUTABLE_BINDING",
       "commandId": "validate-token-binding-core-sot-executable",
       "outputArtifact": "REQUIRED_SET_PHASE_1_V1.json"
+    },
+    {
+      "tokenId": "GLOSSARY_LOCK_OK",
+      "machineCheckId": "MC_GLOSSARY_LOCK",
+      "commandId": "validate-glossary-lock",
+      "outputArtifact": "EXECUTION_GLOSSARY_V1.json"
     }
   ],
   "consistency": {
@@ -18,5 +25,5 @@
     "unboundTokenIds": [],
     "registryConsistency": "PASS"
   },
-  "updatedAtUtc": "2026-02-27T02:15:00.000Z"
+  "updatedAtUtc": "2026-02-27T23:30:00.000Z"
 }

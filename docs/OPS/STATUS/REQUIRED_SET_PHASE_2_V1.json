@@ -4,7 +4,11 @@
   "newV1Enforcement": "WARN_WITH_TICKETED_REMEDIATION",
   "effectiveRequiredTokenIds": [
     "CORE_SOT_EXECUTABLE_OK",
-    "COMMAND_SURFACE_ENFORCED_OK"
+    "GLOSSARY_LOCK_OK",
+    "COMMAND_SURFACE_ENFORCED_OK",
+    "THRESHOLD_SYSTEM_NORMALIZATION_OK",
+    "COMMENT_HISTORY_SCOPE_FLAG_BINDING_OK",
+    "FREEZE_ESCAPE_CONTROL_OK"
   ],
   "registryBindings": [
     {
@@ -14,10 +18,34 @@
       "outputArtifact": "REQUIRED_SET_PHASE_1_V1.json"
     },
     {
+      "tokenId": "GLOSSARY_LOCK_OK",
+      "machineCheckId": "MC_GLOSSARY_LOCK",
+      "commandId": "validate-glossary-lock",
+      "outputArtifact": "EXECUTION_GLOSSARY_V1.json"
+    },
+    {
       "tokenId": "COMMAND_SURFACE_ENFORCED_OK",
       "machineCheckId": "MC_TOKEN_COMMAND_SURFACE_ENFORCED_BINDING",
       "commandId": "validate-token-binding-command-surface-enforced",
       "outputArtifact": "REQUIRED_SET_PHASE_2_V1.json"
+    },
+    {
+      "tokenId": "THRESHOLD_SYSTEM_NORMALIZATION_OK",
+      "machineCheckId": "MC_THRESHOLD_SYSTEM_NORMALIZATION",
+      "commandId": "validate-threshold-system-normalization",
+      "outputArtifact": "THRESHOLD_SYSTEM_NORMALIZATION_V1.json"
+    },
+    {
+      "tokenId": "COMMENT_HISTORY_SCOPE_FLAG_BINDING_OK",
+      "machineCheckId": "MC_COMMENT_HISTORY_SCOPE_FLAG_BINDING",
+      "commandId": "validate-comment-history-scope-flag-binding",
+      "outputArtifact": "COMMENT_HISTORY_SCOPE_FLAG_BINDING_V1.json"
+    },
+    {
+      "tokenId": "FREEZE_ESCAPE_CONTROL_OK",
+      "machineCheckId": "MC_FREEZE_ESCAPE_CONTROL",
+      "commandId": "validate-freeze-escape-control",
+      "outputArtifact": "FREEZE_ESCAPE_POLICY_V1.json"
     }
   ],
   "consistency": {
@@ -25,5 +53,5 @@
     "unboundTokenIds": [],
     "registryConsistency": "PASS"
   },
-  "updatedAtUtc": "2026-02-27T02:15:00.000Z"
+  "updatedAtUtc": "2026-02-27T23:30:00.000Z"
 }

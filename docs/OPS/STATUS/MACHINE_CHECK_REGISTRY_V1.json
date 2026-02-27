@@ -141,10 +141,118 @@
         "scripts/ops/token-catalog-state.mjs",
         "--json"
       ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MC_GLOSSARY_LOCK",
+      "CHECK_NAME": "execution glossary lock",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_minor",
+      "ROLLBACK_REF": "EXECUTION_GLOSSARY_V1.json",
+      "EVIDENCE_REF": "EXECUTION_GLOSSARY_V1.json",
+      "COMMAND_ID": "validate-glossary-lock",
+      "OUTPUT_ARTIFACT": "EXECUTION_GLOSSARY_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T23:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/governance-state-valid-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MC_THRESHOLD_SYSTEM_NORMALIZATION",
+      "CHECK_NAME": "threshold system normalization",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_minor",
+      "ROLLBACK_REF": "THRESHOLD_SYSTEM_NORMALIZATION_V1.json",
+      "EVIDENCE_REF": "THRESHOLD_SYSTEM_NORMALIZATION_V1.json",
+      "COMMAND_ID": "validate-threshold-system-normalization",
+      "OUTPUT_ARTIFACT": "THRESHOLD_SYSTEM_NORMALIZATION_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T23:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/governance-state-valid-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MC_COMMENT_HISTORY_SCOPE_FLAG_BINDING",
+      "CHECK_NAME": "comment history scope flag binding",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_minor",
+      "ROLLBACK_REF": "COMMENT_HISTORY_SCOPE_FLAG_BINDING_V1.json",
+      "EVIDENCE_REF": "COMMENT_HISTORY_SCOPE_FLAG_BINDING_V1.json",
+      "COMMAND_ID": "validate-comment-history-scope-flag-binding",
+      "OUTPUT_ARTIFACT": "COMMENT_HISTORY_SCOPE_FLAG_BINDING_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T23:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/comments-history-safe-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MC_FREEZE_ESCAPE_CONTROL",
+      "CHECK_NAME": "freeze escape control",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_minor",
+      "ROLLBACK_REF": "FREEZE_ESCAPE_POLICY_V1.json",
+      "EVIDENCE_REF": "FREEZE_ESCAPE_POLICY_V1.json",
+      "COMMAND_ID": "validate-freeze-escape-control",
+      "OUTPUT_ARTIFACT": "FREEZE_ESCAPE_POLICY_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T23:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/freeze-mode-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MC_DESKTOP_FIRST_ORDER_ENFORCEMENT",
+      "CHECK_NAME": "desktop first order enforcement",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_minor",
+      "ROLLBACK_REF": "DESKTOP_FIRST_ORDER_ENFORCEMENT_V1.json",
+      "EVIDENCE_REF": "DESKTOP_FIRST_ORDER_ENFORCEMENT_V1.json",
+      "COMMAND_ID": "validate-desktop-first-order-enforcement",
+      "OUTPUT_ARTIFACT": "DESKTOP_FIRST_ORDER_ENFORCEMENT_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T23:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/x1-desktop-parity-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MC_CHECK_EXECUTABILITY_BINDING",
+      "CHECK_NAME": "check executability binding",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_minor",
+      "ROLLBACK_REF": "MACHINE_CHECK_REGISTRY_V1.json",
+      "EVIDENCE_REF": "MACHINE_CHECK_REGISTRY_V1.json",
+      "COMMAND_ID": "validate-check-executability-binding",
+      "OUTPUT_ARTIFACT": "MACHINE_CHECK_REGISTRY_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T23:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/required-checks-state.mjs",
+        "--json"
+      ]
     }
   ],
   "registryBindingCompletenessPct": 100,
-  "updatedAtUtc": "2026-02-27T02:30:00.000Z",
+  "updatedAtUtc": "2026-02-27T23:30:00.000Z",
   "commandVectorMap": {
     "validate-blocking-policy-single-source": [
       "node",
@@ -179,6 +287,36 @@
     "validate-token-binding-recovery-io": [
       "node",
       "scripts/ops/token-catalog-state.mjs",
+      "--json"
+    ],
+    "validate-glossary-lock": [
+      "node",
+      "scripts/ops/governance-state-valid-state.mjs",
+      "--json"
+    ],
+    "validate-threshold-system-normalization": [
+      "node",
+      "scripts/ops/governance-state-valid-state.mjs",
+      "--json"
+    ],
+    "validate-comment-history-scope-flag-binding": [
+      "node",
+      "scripts/ops/comments-history-safe-state.mjs",
+      "--json"
+    ],
+    "validate-freeze-escape-control": [
+      "node",
+      "scripts/ops/freeze-mode-state.mjs",
+      "--json"
+    ],
+    "validate-desktop-first-order-enforcement": [
+      "node",
+      "scripts/ops/x1-desktop-parity-state.mjs",
+      "--json"
+    ],
+    "validate-check-executability-binding": [
+      "node",
+      "scripts/ops/required-checks-state.mjs",
       "--json"
     ]
   }
