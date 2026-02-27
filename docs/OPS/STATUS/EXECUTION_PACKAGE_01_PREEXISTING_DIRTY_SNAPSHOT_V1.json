@@ -1,0 +1,147 @@
+{
+  "artifactId": "EXECUTION_PACKAGE_01_PREEXISTING_DIRTY_SNAPSHOT_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_EXEC_PKG_01_V3_5_2026_02_27",
+  "capturedAtUtc": "2026-02-27T20:19:19.395Z",
+  "gitStatusPorcelainCount": 18,
+  "entries": [
+    {
+      "status": "M",
+      "filePath": "docs/OPERATIONS/STATUS/CODEX_AUTOMATION_POLICY.json",
+      "basename": "CODEX_AUTOMATION_POLICY.json",
+      "kind": "single"
+    },
+    {
+      "status": "M",
+      "filePath": "docs/OPERATIONS/STATUS/CODEX_DELIVERY_TEMPLATE_v1.0.md",
+      "basename": "CODEX_DELIVERY_TEMPLATE_v1.0.md",
+      "kind": "single"
+    },
+    {
+      "status": "M",
+      "filePath": "docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json",
+      "basename": "GOVERNANCE_CHANGE_APPROVALS.json",
+      "kind": "single"
+    },
+    {
+      "status": "M",
+      "filePath": "docs/OPS/STATUS/BINDING_SCHEMA_V1.json",
+      "basename": "BINDING_SCHEMA_V1.json",
+      "kind": "single"
+    },
+    {
+      "status": "M",
+      "filePath": "docs/OPS/STATUS/GATE_DEPENDENCY_DECLARATION_V1.json",
+      "basename": "GATE_DEPENDENCY_DECLARATION_V1.json",
+      "kind": "single"
+    },
+    {
+      "status": "M",
+      "filePath": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
+      "basename": "PHASE_SWITCH_V1.json",
+      "kind": "single"
+    },
+    {
+      "status": "M",
+      "filePath": "docs/OPS/STATUS/REQUIRED_SET_PHASE_1_V1.json",
+      "basename": "REQUIRED_SET_PHASE_1_V1.json",
+      "kind": "single"
+    },
+    {
+      "status": "M",
+      "filePath": "docs/OPS/STATUS/REQUIRED_SET_PHASE_2_V1.json",
+      "basename": "REQUIRED_SET_PHASE_2_V1.json",
+      "kind": "single"
+    },
+    {
+      "status": "M",
+      "filePath": "docs/OPS/STATUS/REQUIRED_SET_PHASE_3_V1.json",
+      "basename": "REQUIRED_SET_PHASE_3_V1.json",
+      "kind": "single"
+    },
+    {
+      "status": "M",
+      "filePath": "scripts/contracts/check-codex-policy-schema.mjs",
+      "basename": "check-codex-policy-schema.mjs",
+      "kind": "single"
+    },
+    {
+      "status": "M",
+      "filePath": "test/contracts/codex-automation-policy.test.js",
+      "basename": "codex-automation-policy.test.js",
+      "kind": "single"
+    },
+    {
+      "status": "??",
+      "filePath": "docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_ONE_SHOT_SPEC_V1_0.json",
+      "basename": "AGENT_BOOTSTRAP_ONE_SHOT_SPEC_V1_0.json",
+      "kind": "single"
+    },
+    {
+      "status": "??",
+      "filePath": "docs/OPS/STATUS/BLOCKING_ENTITY_CONTRACT_V1.json",
+      "basename": "BLOCKING_ENTITY_CONTRACT_V1.json",
+      "kind": "single"
+    },
+    {
+      "status": "??",
+      "filePath": "docs/OPS/STATUS/BLOCKING_POLICY_SINGLE_SOURCE_V1.json",
+      "basename": "BLOCKING_POLICY_SINGLE_SOURCE_V1.json",
+      "kind": "single"
+    },
+    {
+      "status": "??",
+      "filePath": "docs/OPS/STATUS/MACHINE_CHECK_REGISTRY_V1.json",
+      "basename": "MACHINE_CHECK_REGISTRY_V1.json",
+      "kind": "single"
+    },
+    {
+      "status": "??",
+      "filePath": "docs/OPS/STATUS/STOP_BINDING_MAP_V1.json",
+      "basename": "STOP_BINDING_MAP_V1.json",
+      "kind": "single"
+    },
+    {
+      "status": "??",
+      "filePath": "scripts/contracts/check-agent-bootstrap-spec.mjs",
+      "basename": "check-agent-bootstrap-spec.mjs",
+      "kind": "single"
+    },
+    {
+      "status": "??",
+      "filePath": "test/contracts/agent-bootstrap-spec.contract.test.js",
+      "basename": "agent-bootstrap-spec.contract.test.js",
+      "kind": "single"
+    }
+  ],
+  "basenames": [
+    "AGENT_BOOTSTRAP_ONE_SHOT_SPEC_V1_0.json",
+    "BINDING_SCHEMA_V1.json",
+    "BLOCKING_ENTITY_CONTRACT_V1.json",
+    "BLOCKING_POLICY_SINGLE_SOURCE_V1.json",
+    "CODEX_AUTOMATION_POLICY.json",
+    "CODEX_DELIVERY_TEMPLATE_v1.0.md",
+    "GATE_DEPENDENCY_DECLARATION_V1.json",
+    "GOVERNANCE_CHANGE_APPROVALS.json",
+    "MACHINE_CHECK_REGISTRY_V1.json",
+    "PHASE_SWITCH_V1.json",
+    "REQUIRED_SET_PHASE_1_V1.json",
+    "REQUIRED_SET_PHASE_2_V1.json",
+    "REQUIRED_SET_PHASE_3_V1.json",
+    "STOP_BINDING_MAP_V1.json",
+    "agent-bootstrap-spec.contract.test.js",
+    "check-agent-bootstrap-spec.mjs",
+    "check-codex-policy-schema.mjs",
+    "codex-automation-policy.test.js"
+  ],
+  "outOfScopeBasenames": [
+    "AGENT_BOOTSTRAP_ONE_SHOT_SPEC_V1_0.json",
+    "CODEX_AUTOMATION_POLICY.json",
+    "CODEX_DELIVERY_TEMPLATE_v1.0.md",
+    "agent-bootstrap-spec.contract.test.js",
+    "check-agent-bootstrap-spec.mjs",
+    "check-codex-policy-schema.mjs",
+    "codex-automation-policy.test.js"
+  ],
+  "note": "Preexisting dirty baseline captured before new package writes."
+}
