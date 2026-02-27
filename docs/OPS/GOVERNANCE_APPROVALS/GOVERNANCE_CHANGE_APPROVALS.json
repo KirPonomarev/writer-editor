@@ -877,6 +877,55 @@
       "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_05/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
+      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
+      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_05/cross-platform-gap-report.json",
+      "sha256": "bd5074ca0e2e109a5b94ff5f4d18df05b3160c37ea36bdd9eec74438478947ea",
+      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
+      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
+      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_05/cross-platform-negative-cases.json",
+      "sha256": "f41db3a18ca59ae4b14a6650e69ebb1875f2c8a665853d07336d6f6814680437",
+      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
+      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
+      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_05/platform-parity-matrix.json",
+      "sha256": "1abbae1009db93068985218cd92268b267cc3fa0cfc7696bd9a97c2ecceeedfb",
+      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
+      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
+      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_05/summary.json",
+      "sha256": "869a9d436104238ccfde63f4b94cafcf494379e988e4f6e6ae5508728eb12e30",
+      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
+      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
+      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_05/ticket-meta.json",
+      "sha256": "e65c65a0810a99d02693b5ece21cdadfe2aecb7b83965e92b8b1cf8d922104dd",
+      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
+      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
+      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_05/web-win-linux-android-ios-fixtures.json",
+      "sha256": "7dc8a9bb4442dba710473c947a7a374d67f7719919caa79b14f25b083cbc8126",
+      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
+      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
+      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-0805ab9da950-592e3737/failsignal-registry-snapshot.json",
       "sha256": "9af1b22b87f604601b38114621995a44ae5e15c3ea9a299197c61e863a5e6448",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -1127,6 +1176,13 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-27T01:00:00.000Z",
       "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/FULL_CROSS_PLATFORM_PARITY_EXPANSION_v3.json",
+      "sha256": "6986e5fe93b466075a0c651499826410bf006a9e8c5ad27c79ca6ec752ec1a5d",
+      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
+      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
+      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
     },
     {
       "filePath": "docs/OPS/STATUS/GATE_DEPENDENCY_DECLARATION_V1.json",
@@ -1388,6 +1444,13 @@
       "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
     },
     {
+      "filePath": "scripts/ops/full-cross-platform-parity-state.mjs",
+      "sha256": "556a366466696bc39812ed731737c67264318a0a04fb476cc357c72ed45d6478",
+      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
+      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
+      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
+    },
+    {
       "filePath": "scripts/ops/gate-graph-check-v1-state.mjs",
       "sha256": "20bfa68c52c4ebb965854db3e6d6cbfabf3dcd7cd45ae6ae9d14fdda9329b4f6",
       "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
@@ -1577,6 +1640,13 @@
       "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
     },
     {
+      "filePath": "scripts/ops/p2-05-full-cross-platform-parity-report.mjs",
+      "sha256": "99fdf2669edc396496dec14b63fcda00df02843d14916d21df65aeedf943ae3b",
+      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
+      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
+      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
+    },
+    {
       "filePath": "scripts/ops/path-boundary-guard-state.mjs",
       "sha256": "95838483e8f47c1fa76ca7c806fd993d029a128604f51bed5871cf5c5432e485",
       "approvedBy": "ticket:TZ-24E-P1-PATH-BOUNDARY-GUARD-IPC-IO-012",
@@ -1743,6 +1813,13 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-27T01:00:00.000Z",
       "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
+    },
+    {
+      "filePath": "test/contracts/full-cross-platform-parity.contract.test.js",
+      "sha256": "bccf5bffe885fac1544c415f1140631c4507ef4b8873e56cfbddfa56904d64e8",
+      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
+      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
+      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
     },
     {
       "filePath": "test/contracts/github-credential-autofix.contract.test.js",

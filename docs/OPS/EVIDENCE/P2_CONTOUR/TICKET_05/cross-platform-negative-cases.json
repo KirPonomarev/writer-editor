@@ -1,0 +1,38 @@
+{
+  "cases": [
+    {
+      "caseId": "missing_platform_ios_rejected",
+      "observed": {
+        "matrixOk": false,
+        "missingPlatforms": [
+          "ios"
+        ]
+      },
+      "pass": true
+    },
+    {
+      "caseId": "release_critical_mismatch_rejected",
+      "observed": {
+        "gapOk": false,
+        "matrixOk": true,
+        "parityOk": false
+      },
+      "pass": true
+    },
+    {
+      "caseId": "missing_release_critical_path_status_rejected",
+      "observed": {
+        "incompletePaths": [
+          {
+            "criticalPath": "recover",
+            "platform": "web",
+            "reason": "MISSING_PATH_STATUS"
+          }
+        ],
+        "matrixOk": false
+      },
+      "pass": true
+    }
+  ],
+  "crossPlatformNegativeCasesCheck": true
+}
