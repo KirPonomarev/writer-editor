@@ -1,0 +1,21 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "autosaveBackupTypingBlockThresholdMs": 60,
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p2_04_autosave_backup_nonblocking_check": "PASS",
+    "p2_04_input_p95_within_threshold_check": "PASS",
+    "p2_04_no_full_document_rerender_per_keystroke_check": "PASS",
+    "p2_04_threshold_ssot_lock_check": "PASS"
+  },
+  "generatedAtUtc": "2026-02-27T05:52:29.910Z",
+  "inputP95MeasuredMs": 0.0002919999999981826,
+  "inputP95ThresholdMs": 60,
+  "longTaskBudgetMs": 60,
+  "maxSampleMs": 0.001708000000000709,
+  "noFullDocumentRerenderPerKeystroke": true,
+  "runId": "RUN-2026-02-26-001",
+  "status": "PASS",
+  "thresholdSsotLockSha256": "b793dfe7c7326d4bd714e47f89de158e53431eff43467400ad72e2658a08b5e9",
+  "ticketId": "TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003"
+}

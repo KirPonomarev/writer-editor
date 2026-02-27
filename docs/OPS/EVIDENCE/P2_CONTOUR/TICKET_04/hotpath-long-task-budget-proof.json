@@ -1,0 +1,19 @@
+{
+  "inputP95Check": {
+    "measuredMedianMs": 0.0001660000000001105,
+    "measuredP95Ms": 0.0002919999999981826,
+    "ok": true,
+    "sampleCount": 200,
+    "samplingFailReason": "",
+    "thresholdMs": 60
+  },
+  "longTaskBudgetProof": {
+    "longTaskBudgetMs": 60,
+    "maxSampleMs": 0.001708000000000709,
+    "measuredMedianMs": 0.0001660000000001105,
+    "measuredP95Ms": 0.0002919999999981826,
+    "ok": true,
+    "overBudgetSamplesCount": 0,
+    "sampleCount": 200
+  }
+}

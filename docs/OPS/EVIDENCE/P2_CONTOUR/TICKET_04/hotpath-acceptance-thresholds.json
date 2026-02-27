@@ -1,0 +1,25 @@
+{
+  "sourceLockSha256": "b793dfe7c7326d4bd714e47f89de158e53431eff43467400ad72e2658a08b5e9",
+  "sourcePayload": {
+    "hotpathPolicyPath": "scripts/perf/hotpath-policy.json",
+    "monitoredPathsCount": 4,
+    "perfProfile": "mvp-hotpath",
+    "perfSchemaVersion": "perf-thresholds.v1",
+    "perfThresholdsPath": "scripts/perf/perf-thresholds.json",
+    "policyProfile": "mvp-hotpath",
+    "policyRuleIds": [
+      "FORBID_CHILD_PROCESS",
+      "FORBID_GOVERNANCE_SCAN_WIRING",
+      "FORBID_HEAVY_IO_IMPORTS",
+      "FORBID_NETWORK_RUNTIME",
+      "FORBID_NONDETERMINISTIC_RANDOM"
+    ],
+    "policySchemaVersion": "hotpath-policy.v1"
+  },
+  "thresholds": {
+    "autosaveBackupTypingBlockThresholdMs": 60,
+    "inputP95ThresholdMs": 60,
+    "longTaskBudgetMs": 60
+  },
+  "thresholdSsotLockCheck": true
+}
