@@ -1,0 +1,38 @@
+{
+  "artifactId": "EXECUTION_PACKAGE_01_ALLOWLIST_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_EXEC_PKG_01_V3_5_2026_02_27",
+  "typeSafeScopeMode": "EXACT_TYPED",
+  "typeSafeEntryRule": "FILE_PREFIX_OR_DIR_PREFIX_REQUIRED",
+  "allowlistBasenames": [
+    "BINDING_SCHEMA_V1.json",
+    "GATE_DEPENDENCY_DECLARATION_V1.json",
+    "PHASE_SWITCH_V1.json",
+    "REQUIRED_SET_PHASE_1_V1.json",
+    "REQUIRED_SET_PHASE_2_V1.json",
+    "REQUIRED_SET_PHASE_3_V1.json",
+    "BLOCKING_ENTITY_CONTRACT_V1.json",
+    "BLOCKING_POLICY_SINGLE_SOURCE_V1.json",
+    "MACHINE_CHECK_REGISTRY_V1.json",
+    "STOP_BINDING_MAP_V1.json",
+    "GOVERNANCE_CHANGE_APPROVALS.json",
+    "EXECUTION_PACKAGE_01_ALLOWLIST_V1.json",
+    "EXECUTION_PACKAGE_01_PREEXISTING_DIRTY_SNAPSHOT_V1.json"
+  ],
+  "denylistBasenames": [
+    "package.json",
+    "package-lock.json",
+    "index.html",
+    "styles.css",
+    "editor.js",
+    "main.js",
+    "preload.js",
+    "README.md",
+    "CANON.md",
+    "BIBLE.md"
+  ],
+  "outOfScopeFailSignal": "E_PACKAGE_SCOPE_OUT_OF_ALLOWLIST",
+  "checkUnboundFailSignal": "E_PACKAGE_CHECK_UNBOUND_COMMAND",
+  "updatedAtUtc": "2026-02-27T20:19:19.395Z",
+  "owner": "KIRILL_PONOMAREV"
+}

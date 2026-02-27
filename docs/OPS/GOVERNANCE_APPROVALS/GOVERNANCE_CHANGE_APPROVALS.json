@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "docs/OPERATIONS/STATUS/CODEX_AUTOMATION_POLICY.json",
-      "sha256": "1dc7e339d5951e5dbf538f54349d7c63b46443dd8766bf70418985726cdb93df",
-      "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
-      "approvedAtUtc": "2026-02-18T14:59:18.000Z",
-      "rationale": "Approve policy wiring for workflow-scope push autofix and minimal-click handoff resume path."
+      "sha256": "73774d9cfeb9b0b2a4656b8d2adddfcccc5765c8b618094a4db38be5e292bb91",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_A03_2026_02_27",
+      "approvedAtUtc": "2026-02-27T00:00:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_MIN_FIXSET_01_02_GOVERNANCE_REBIND"
     },
     {
       "filePath": "docs/OPERATIONS/STATUS/SAFE_AUTOMERGE_OPS_ONLY_PROFILE.json",
@@ -1130,10 +1130,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/BINDING_SCHEMA_V1.json",
-      "sha256": "9fdeb6cdf7679aa5d7b5821dd9996cd4d234b6795ab0302ef27f3a94341ece16",
-      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
-      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
-      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+      "sha256": "7053ab803d8b309a6f82e03612de4719b0d4405b5358607c0f2b039f39661523",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
     },
     {
       "filePath": "docs/OPS/STATUS/CANON_STATUS.json",
@@ -1235,10 +1235,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/GATE_DEPENDENCY_DECLARATION_V1.json",
-      "sha256": "194c87cb9fb4d16be69d2c69bc56b76b52626b98ae82b1877d7e036d66c1c33b",
-      "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
-      "approvedAtUtc": "2026-02-26T18:56:31.056Z",
-      "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+      "sha256": "b705d5ecb830584fe6a351f768ab9c3bce58b83bc04171551f7127d8cd57ef4a",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
     },
     {
       "filePath": "docs/OPS/STATUS/HOT_PATH_INCREMENTAL_RENDER_v3.json",
@@ -1291,10 +1291,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
-      "sha256": "8a87616c34ae4eb74f7903477191d22cfc75d9ed1e16bffe22b9c168df6c8a42",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+      "sha256": "b2a1558568621639275fcbad342f33195eff6b5911231205efa75ab7aa023172",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
     },
     {
       "filePath": "docs/OPS/STATUS/PROCESS_TAX_BUDGET_GATE_AUTOMATION_v3.json",
@@ -1333,24 +1333,24 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REQUIRED_SET_PHASE_1_V1.json",
-      "sha256": "127675f24364f71277d0a51af389540704491715a122489d2010359ad55734ad",
-      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
-      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
-      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+      "sha256": "f1724ffd22e4a75ce9e67835b1cf9a511c74a7a0fdbef06b96faa3e4ef8a24fe",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
     },
     {
       "filePath": "docs/OPS/STATUS/REQUIRED_SET_PHASE_2_V1.json",
-      "sha256": "e5c540659384986bc9f7983879f3ec8885b0692c28544282560a7a3fd5c79b38",
-      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
-      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
-      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+      "sha256": "294a813af719ca4857346e6d83a0481d3fc02c932bb769adcb41ccc5e49d8a4a",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
     },
     {
       "filePath": "docs/OPS/STATUS/REQUIRED_SET_PHASE_3_V1.json",
-      "sha256": "417d87dcdd4f0e955d2e7601422944719c2e6a3a022c9e5b9e33bc559716a2ee",
-      "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
-      "approvedAtUtc": "2026-02-26T18:09:58.000Z",
-      "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+      "sha256": "6f3cc913dc4c5588fab4bdd22dad5d796f04dc2e557204f63274b0dc1d3e7bd5",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
     },
     {
       "filePath": "docs/OPS/STATUS/ROLLBACK_REF_SCHEMA_ADOPTION_v3.json",
@@ -1809,10 +1809,10 @@
     },
     {
       "filePath": "test/contracts/codex-automation-policy.test.js",
-      "sha256": "4edc232a871942bd3f8754b229ab953634e3d604adf344bd9f05f1d104f65fb3",
-      "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
-      "approvedAtUtc": "2026-02-18T14:59:18.000Z",
-      "rationale": "Approve contract update for workflow-scope push autofix policy wiring."
+      "sha256": "7535dc9cb45d013022dcef607d1600a54616221c9503de3db1b970378e278800",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
     },
     {
       "filePath": "test/contracts/command-surface-caller-trust.contract.test.js",
@@ -2030,6 +2030,55 @@
       "approvedBy": "@k.ponomarev.pro",
       "approvedAtUtc": "2026-02-18T00:00:00.000Z",
       "rationale": "Approve strict-governance change for TZ-24D2 contract wiring update."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/STOP_BINDING_MAP_V1.json",
+      "sha256": "bfa1c8eb3e75705e8bd128be96763356b18fdf4a263c84fc7282c50113d2559b",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/BLOCKING_ENTITY_CONTRACT_V1.json",
+      "sha256": "ca8c8ea9c5d4edfbbaaa1d2e9d4fa56295c0d0f2a7dbc54df105ba8a6f58a13d",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MACHINE_CHECK_REGISTRY_V1.json",
+      "sha256": "1ba7bebec9a860f12d78d615aac7613939deee35cafe9e3dd4621a4ef50a504b",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/BLOCKING_POLICY_SINGLE_SOURCE_V1.json",
+      "sha256": "bff86e901b1516dcc26c18eebe5350a32ba5329f3fe46e8ae5dce6bc6c6c01b4",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
+    },
+    {
+      "filePath": "test/contracts/agent-bootstrap-spec.contract.test.js",
+      "sha256": "1d519c70facdd45cedcf1f104cf56d2b9d8b3ec1b4167c4b4cc6b738c524740a",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/EXECUTION_PACKAGE_01_ALLOWLIST_V1.json",
+      "sha256": "e03dbbfecfd493f25ab0fe9a0efbc97a35b3d1fddfaa56313b1b2387f8cb42c4",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/EXECUTION_PACKAGE_01_PREEXISTING_DIRTY_SNAPSHOT_V1.json",
+      "sha256": "fa8bc78ecce00cc77fbc14c0fddb0e7d2c0c0d516f2f1a7e50dad40cf3a40773",
+      "approvedBy": "ticket:TZ_EXEC_PKG_01_V3_5_2026_02_27",
+      "approvedAtUtc": "2026-02-27T02:35:00.000Z",
+      "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
     }
   ]
 }

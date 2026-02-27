@@ -17,6 +17,9 @@
   "records": [
     {
       "TOKEN_ID": "CORE_SOT_EXECUTABLE_OK",
+      "MACHINE_CHECK_ID": "MC_TOKEN_CORE_SOT_EXECUTABLE_BINDING",
+      "COMMAND_ID": "validate-token-binding-core-sot-executable",
+      "OUTPUT_ARTIFACT": "REQUIRED_SET_PHASE_1_V1.json",
       "PROOFHOOK_REF": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
       "POSITIVE_CONTRACT_REF": "test/contracts/release-token-binding-completeness.contract.test.js#complete-effective-required-set",
       "NEGATIVE_CONTRACT_REF": "test/contracts/release-token-binding-completeness.contract.test.js#remove-one-required-field",
@@ -25,12 +28,15 @@
       "SOURCE_BINDING_REF": "docs/OPS/TOKENS/TOKEN_CATALOG.json#CORE_SOT_EXECUTABLE_OK",
       "REQUIRED_SCOPE": "release_phase_effective",
       "OWNER": "GOVERNANCE_CORE_OWNER",
-      "ROLLBACK_REF": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v1.json",
+      "ROLLBACK_REF": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
       "EVIDENCE_REF": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/release-token-binding-gaps.json",
-      "UPDATED_AT_UTC": "2026-02-26T00:00:00.000Z"
+      "UPDATED_AT_UTC": "2026-02-27T02:15:00.000Z"
     },
     {
       "TOKEN_ID": "COMMAND_SURFACE_ENFORCED_OK",
+      "MACHINE_CHECK_ID": "MC_TOKEN_COMMAND_SURFACE_ENFORCED_BINDING",
+      "COMMAND_ID": "validate-token-binding-command-surface-enforced",
+      "OUTPUT_ARTIFACT": "REQUIRED_SET_PHASE_2_V1.json",
       "PROOFHOOK_REF": "node scripts/ops/command-surface-state.mjs --json",
       "POSITIVE_CONTRACT_REF": "test/contracts/release-token-binding-completeness.contract.test.js#complete-effective-required-set",
       "NEGATIVE_CONTRACT_REF": "test/contracts/release-token-binding-completeness.contract.test.js#remove-one-required-field",
@@ -39,12 +45,15 @@
       "SOURCE_BINDING_REF": "docs/OPS/TOKENS/TOKEN_CATALOG.json#COMMAND_SURFACE_ENFORCED_OK",
       "REQUIRED_SCOPE": "release_phase_effective",
       "OWNER": "GOVERNANCE_CORE_OWNER",
-      "ROLLBACK_REF": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v1.json",
+      "ROLLBACK_REF": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
       "EVIDENCE_REF": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/release-token-binding-gaps.json",
-      "UPDATED_AT_UTC": "2026-02-26T00:00:00.000Z"
+      "UPDATED_AT_UTC": "2026-02-27T02:15:00.000Z"
     },
     {
       "TOKEN_ID": "RECOVERY_IO_OK",
+      "MACHINE_CHECK_ID": "MC_TOKEN_RECOVERY_IO_BINDING",
+      "COMMAND_ID": "validate-token-binding-recovery-io",
+      "OUTPUT_ARTIFACT": "REQUIRED_SET_PHASE_3_V1.json",
       "PROOFHOOK_REF": "node scripts/ops/recovery-io-state.mjs --json",
       "POSITIVE_CONTRACT_REF": "test/contracts/release-token-binding-completeness.contract.test.js#complete-effective-required-set",
       "NEGATIVE_CONTRACT_REF": "test/contracts/release-token-binding-completeness.contract.test.js#remove-one-required-field",
@@ -53,9 +62,9 @@
       "SOURCE_BINDING_REF": "docs/OPS/TOKENS/TOKEN_CATALOG.json#RECOVERY_IO_OK",
       "REQUIRED_SCOPE": "release_phase_effective",
       "OWNER": "GOVERNANCE_CORE_OWNER",
-      "ROLLBACK_REF": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v1.json",
+      "ROLLBACK_REF": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
       "EVIDENCE_REF": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/release-token-binding-gaps.json",
-      "UPDATED_AT_UTC": "2026-02-26T00:00:00.000Z"
+      "UPDATED_AT_UTC": "2026-02-27T02:15:00.000Z"
     }
   ]
 }

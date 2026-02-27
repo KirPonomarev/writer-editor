@@ -1,0 +1,51 @@
+{
+  "policyId": "BLOCKING_POLICY_SINGLE_SOURCE_V1",
+  "schemaVersion": 1,
+  "status": "ACTIVE",
+  "objective": "single source for blocking semantics with P0-first guard",
+  "singleAuthority": {
+    "canonicalSource": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+    "localOverrideAllowed": false,
+    "advisoryCanEscalateWithoutMachineBinding": false
+  },
+  "p0Policy": {
+    "newP0BlockersAllowed": false,
+    "p0ScopeExpansionAllowed": false,
+    "conflictResolution": "NEW_P0_BLOCKERS_FORBIDDEN_OVERRIDES_PER_WAVE_EXPANSION"
+  },
+  "perWaveBlockingPolicy": {
+    "duringHold": {
+      "maxNewBlockingRulesPerWave": 0,
+      "multiCriticalException": "FORBIDDEN"
+    },
+    "afterHold": {
+      "maxNewBlockingRulesPerWave": 1,
+      "multiCriticalException": "ALLOWED_WITH_EXPLICIT_INCIDENT_OWNER_TIMEBOX_ROLLBACK"
+    }
+  },
+  "phasePrecedence": {
+    "PHASE_1_SHADOW": {
+      "newV1Enforcement": "SIGNAL_ONLY",
+      "shouldBlock": false
+    },
+    "PHASE_2_WARN": {
+      "newV1Enforcement": "WARN_WITH_TICKETED_REMEDIATION",
+      "shouldBlock": false
+    },
+    "PHASE_3_HARD": {
+      "newV1Enforcement": "HARD_BLOCK",
+      "shouldBlock": true
+    }
+  },
+  "machineCheck": {
+    "machineCheckId": "MC_BLOCKING_POLICY_SINGLE_SOURCE",
+    "commandId": "validate-blocking-policy-single-source",
+    "outputArtifact": "BLOCKING_POLICY_SINGLE_SOURCE_V1.json",
+    "passCriteria": [
+      "POLICY_SINGLE_SOURCE_TRUE",
+      "NO_CONTRADICTION_NEW_P0_BLOCKERS_FORBIDDEN_VS_PHASE_PRECEDENCE"
+    ]
+  },
+  "updatedAtUtc": "2026-02-27T02:15:00.000Z",
+  "owner": "GOVERNANCE_CORE_OWNER"
+}

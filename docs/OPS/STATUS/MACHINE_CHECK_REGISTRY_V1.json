@@ -1,0 +1,185 @@
+{
+  "registryId": "MACHINE_CHECK_REGISTRY_V1",
+  "schemaVersion": 1,
+  "requiredFields": [
+    "MACHINE_CHECK_ID",
+    "CHECK_NAME",
+    "OWNER",
+    "BINDING_LEVEL",
+    "MODE_DISPOSITION",
+    "VERSION_CHANGE_POLICY",
+    "ROLLBACK_REF",
+    "EVIDENCE_REF",
+    "COMMAND_ID",
+    "OUTPUT_ARTIFACT",
+    "UPDATED_AT_UTC",
+    "COMMAND_VECTOR"
+  ],
+  "records": [
+    {
+      "MACHINE_CHECK_ID": "MC_BLOCKING_POLICY_SINGLE_SOURCE",
+      "CHECK_NAME": "blocking policy single source",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_minor",
+      "ROLLBACK_REF": "BLOCKING_POLICY_SINGLE_SOURCE_V1.json",
+      "EVIDENCE_REF": "BLOCKING_POLICY_SINGLE_SOURCE_V1.json",
+      "COMMAND_ID": "validate-blocking-policy-single-source",
+      "OUTPUT_ARTIFACT": "BLOCKING_POLICY_SINGLE_SOURCE_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T02:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/governance-state-valid-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MC_V1_ARTIFACTS_PRESENT_AND_BOUND",
+      "CHECK_NAME": "v1 artifacts present and bound",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_minor",
+      "ROLLBACK_REF": "REQUIRED_SET_PHASE_1_V1.json",
+      "EVIDENCE_REF": "BINDING_SCHEMA_V1.json",
+      "COMMAND_ID": "validate-v1-artifacts-presence-and-binding",
+      "OUTPUT_ARTIFACT": "BINDING_SCHEMA_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T02:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/governance-approval-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MC_REGISTRY_BINDING_COMPLETENESS_100",
+      "CHECK_NAME": "registry binding completeness 100",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_minor",
+      "ROLLBACK_REF": "MACHINE_CHECK_REGISTRY_V1.json",
+      "EVIDENCE_REF": "MACHINE_CHECK_REGISTRY_V1.json",
+      "COMMAND_ID": "validate-machine-check-registry-completeness",
+      "OUTPUT_ARTIFACT": "MACHINE_CHECK_REGISTRY_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T02:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/required-checks-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MC_PHASE3_LOCK_GUARD",
+      "CHECK_NAME": "phase3 lock guard",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_minor",
+      "ROLLBACK_REF": "PHASE_SWITCH_V1.json",
+      "EVIDENCE_REF": "PHASE_SWITCH_V1.json",
+      "COMMAND_ID": "validate-phase3-lock-guard",
+      "OUTPUT_ARTIFACT": "PHASE_SWITCH_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T02:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/stage-activation-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MC_TOKEN_CORE_SOT_EXECUTABLE_BINDING",
+      "CHECK_NAME": "token binding core sot executable",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "REQUIRED_SET_PHASE_1_V1.json",
+      "EVIDENCE_REF": "BINDING_SCHEMA_V1.json",
+      "COMMAND_ID": "validate-token-binding-core-sot-executable",
+      "OUTPUT_ARTIFACT": "REQUIRED_SET_PHASE_1_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T02:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/token-catalog-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MC_TOKEN_COMMAND_SURFACE_ENFORCED_BINDING",
+      "CHECK_NAME": "token binding command surface enforced",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "REQUIRED_SET_PHASE_2_V1.json",
+      "EVIDENCE_REF": "BINDING_SCHEMA_V1.json",
+      "COMMAND_ID": "validate-token-binding-command-surface-enforced",
+      "OUTPUT_ARTIFACT": "REQUIRED_SET_PHASE_2_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T02:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/token-catalog-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MC_TOKEN_RECOVERY_IO_BINDING",
+      "CHECK_NAME": "token binding recovery io",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "REQUIRED_SET_PHASE_3_V1.json",
+      "EVIDENCE_REF": "BINDING_SCHEMA_V1.json",
+      "COMMAND_ID": "validate-token-binding-recovery-io",
+      "OUTPUT_ARTIFACT": "REQUIRED_SET_PHASE_3_V1.json",
+      "UPDATED_AT_UTC": "2026-02-27T02:30:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/token-catalog-state.mjs",
+        "--json"
+      ]
+    }
+  ],
+  "registryBindingCompletenessPct": 100,
+  "updatedAtUtc": "2026-02-27T02:30:00.000Z",
+  "commandVectorMap": {
+    "validate-blocking-policy-single-source": [
+      "node",
+      "scripts/ops/governance-state-valid-state.mjs",
+      "--json"
+    ],
+    "validate-v1-artifacts-presence-and-binding": [
+      "node",
+      "scripts/ops/governance-approval-state.mjs",
+      "--json"
+    ],
+    "validate-machine-check-registry-completeness": [
+      "node",
+      "scripts/ops/required-checks-state.mjs",
+      "--json"
+    ],
+    "validate-phase3-lock-guard": [
+      "node",
+      "scripts/ops/stage-activation-state.mjs",
+      "--json"
+    ],
+    "validate-token-binding-core-sot-executable": [
+      "node",
+      "scripts/ops/token-catalog-state.mjs",
+      "--json"
+    ],
+    "validate-token-binding-command-surface-enforced": [
+      "node",
+      "scripts/ops/token-catalog-state.mjs",
+      "--json"
+    ],
+    "validate-token-binding-recovery-io": [
+      "node",
+      "scripts/ops/token-catalog-state.mjs",
+      "--json"
+    ]
+  }
+}

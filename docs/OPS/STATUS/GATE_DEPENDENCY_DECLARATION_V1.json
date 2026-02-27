@@ -5,72 +5,60 @@
   "description": "Explicit dependency graph for gate checks used by P0-05 SCC cycle detection.",
   "checks": [
     {
-      "machineCheckId": "mc_phase_switch_valid",
+      "machineCheckId": "MC_BLOCKING_POLICY_SINGLE_SOURCE",
       "checkClass": "primitive",
       "dependsOn": [],
       "evidenceDependsOn": []
     },
     {
-      "machineCheckId": "mc_gate_graph_check_v1_phase_aware",
+      "machineCheckId": "MC_V1_ARTIFACTS_PRESENT_AND_BOUND",
       "checkClass": "primitive",
       "dependsOn": [
-        "mc_phase_switch_valid"
+        "MC_BLOCKING_POLICY_SINGLE_SOURCE"
       ],
       "evidenceDependsOn": []
     },
     {
-      "machineCheckId": "p0_05_cycle_detection_scc_check",
+      "machineCheckId": "MC_REGISTRY_BINDING_COMPLETENESS_100",
       "checkClass": "primitive",
       "dependsOn": [
-        "mc_gate_graph_check_v1_phase_aware"
+        "MC_V1_ARTIFACTS_PRESENT_AND_BOUND"
       ],
       "evidenceDependsOn": []
     },
     {
-      "machineCheckId": "p0_05_cycle_component_size_threshold_check",
+      "machineCheckId": "MC_PHASE3_LOCK_GUARD",
       "checkClass": "primitive",
       "dependsOn": [
-        "p0_05_cycle_detection_scc_check"
+        "MC_BLOCKING_POLICY_SINGLE_SOURCE",
+        "MC_REGISTRY_BINDING_COMPLETENESS_100"
       ],
       "evidenceDependsOn": []
     },
     {
-      "machineCheckId": "p0_05_skip_flag_cannot_suppress_release_promotion_check",
+      "machineCheckId": "MC_TOKEN_CORE_SOT_EXECUTABLE_BINDING",
       "checkClass": "primitive",
       "dependsOn": [
-        "p0_05_cycle_component_size_threshold_check"
+        "MC_V1_ARTIFACTS_PRESENT_AND_BOUND"
       ],
       "evidenceDependsOn": []
     },
     {
-      "machineCheckId": "p0_05_explicit_dependencies_only_check",
+      "machineCheckId": "MC_TOKEN_COMMAND_SURFACE_ENFORCED_BINDING",
       "checkClass": "primitive",
       "dependsOn": [
-        "p0_05_cycle_detection_scc_check"
+        "MC_TOKEN_CORE_SOT_EXECUTABLE_BINDING"
       ],
       "evidenceDependsOn": []
     },
     {
-      "machineCheckId": "mc_advisory_blocking_drift_zero",
+      "machineCheckId": "MC_TOKEN_RECOVERY_IO_BINDING",
       "checkClass": "primitive",
-      "dependsOn": [],
-      "evidenceDependsOn": []
-    },
-    {
-      "machineCheckId": "p0_05_circular_dependency_break_rollup",
-      "checkClass": "rollup",
       "dependsOn": [
-        "mc_gate_graph_check_v1_phase_aware",
-        "p0_05_cycle_detection_scc_check",
-        "p0_05_cycle_component_size_threshold_check",
-        "p0_05_skip_flag_cannot_suppress_release_promotion_check",
-        "p0_05_explicit_dependencies_only_check",
-        "mc_advisory_blocking_drift_zero"
+        "MC_TOKEN_COMMAND_SURFACE_ENFORCED_BINDING"
       ],
-      "evidenceDependsOn": [
-        "cycle-negative-fixtures",
-        "skip-flag-bypass-negative"
-      ]
+      "evidenceDependsOn": []
     }
-  ]
+  ],
+  "updatedAtUtc": "2026-02-27T02:30:00.000Z"
 }
