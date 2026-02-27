@@ -1,0 +1,33 @@
+{
+  "cases": [
+    {
+      "actual": "line1\nline2",
+      "caseId": "lf-only",
+      "expected": "line1\nline2",
+      "input": "line1\nline2",
+      "pass": true
+    },
+    {
+      "actual": "line1\nline2\n",
+      "caseId": "crlf",
+      "expected": "line1\nline2\n",
+      "input": "line1\r\nline2\r\n",
+      "pass": true
+    },
+    {
+      "actual": "line1\nline2\n",
+      "caseId": "cr-only",
+      "expected": "line1\nline2\n",
+      "input": "line1\rline2\r",
+      "pass": true
+    },
+    {
+      "actual": "line1\nline2\nline3\n",
+      "caseId": "mixed",
+      "expected": "line1\nline2\nline3\n",
+      "input": "line1\r\nline2\rline3\n",
+      "pass": true
+    }
+  ],
+  "newlineNormalizationCheck": true
+}

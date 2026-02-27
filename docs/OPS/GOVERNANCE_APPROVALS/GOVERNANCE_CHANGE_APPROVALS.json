@@ -520,6 +520,195 @@
       "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/blocking-entity-contract-backfill.json",
+      "sha256": "ead553a329db0c8b2f387ec193925897e0f3f95e9f5e4732c2a2e01538cf1752",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/missing-rollback-ref-negative-cases.json",
+      "sha256": "8870a1043d003e9b7b9915c4988133d7499024293b2dcbd15bbaf2c5c7654f03",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/rollback-ref-validation-cases.json",
+      "sha256": "8486a6faebd77b59e3dee5cad49742ea8aae960c38aecc4ae9a997f1b3d771b9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/summary.json",
+      "sha256": "d713a4e58a2369cb282478679bce7f4dfda55f56ee223d50de5f5c5c08033cdd",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/ticket-meta.json",
+      "sha256": "3161ebc44405e24aff17bd817beed41c62a5338f7ebb6c73bfa87173b3e2de0b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/case-sensitivity-reserved-name-cases.json",
+      "sha256": "1a62740341691dc888fa3a1cdf98c8705e82d178b5e88316ca7a02ecb7854c8f",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/locale-independent-sorting-cases.json",
+      "sha256": "6006d35e7c7497ef01dbadb5c35f43ef3015a4c8518ce94f13799271f4dceaa6",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/newline-normalization-cases.json",
+      "sha256": "fb569b0178655502e58003b2b2f048981a1a0d06812bbf35f907ed1d22e9ebb2",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/path-separator-safety-cases.json",
+      "sha256": "7470d67bbbd4243caecdc5f1c7a6a393b88a9f21b018a1d16bf8d755b1e17cb4",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/summary.json",
+      "sha256": "09ae7cb90269676abbc4bf481172f210dbf4c2d1b6d5fd72a8bbc5d5cd23c7cb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/ticket-meta.json",
+      "sha256": "48fc20d0f0d80ce9a41fed6ba5a28af3632c2671f498072ceac632db45bddb7c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_08/unicode-normalization-cases.json",
+      "sha256": "e43b68fdec0823bfd5e4c9c5a8de45ad801b2c53e74fa4554da980929f639ef4",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/compare-and-swap-cases.json",
+      "sha256": "6a5f7d38563e61450530c2234fcaef1fbf60d31a4abcc98c397a56240ce7eb98",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/core-artifacts-lock-proof.json",
+      "sha256": "ec3a477ee751179d238774e25ae4204af4a43a5c803a3e4f7739c2c5a49fb272",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/merge-interleaving-negative-cases.json",
+      "sha256": "957b0877c42a4cbdb609ad5b9343cbc0116bd001b99c25156a3ecbf40c51ee4f",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/serialized-queue-cases.json",
+      "sha256": "f1f4a7c56ef3e9a6334020b869a8a3c1e4f34b0639490fe63f1d8cf7af7a092b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/summary.json",
+      "sha256": "0828f535a61ac0f234d0e615560393cb1e7864bdda7f2cb5623c35b1d84134c1",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/ticket-meta.json",
+      "sha256": "9b3081cdf54020b60b41681c6f136e62d2ed78975c0a00ab1513fdde131ede2d",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/duplicate-checks-before-after.json",
+      "sha256": "99d52c33f7044bef8af418629f7393a368549551e1183dc30c6b898023542422",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/risk-weighted-dedup-proof.json",
+      "sha256": "6f226146cbb0e73fd51cb9cb4aa2110ba58fb77cc615eb0bde68d99785130260",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/summary.json",
+      "sha256": "c97a2fd2681ad26e6e02a174d711aa3012063cccda8a0d658b9472b1009c9cbb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/ticket-meta.json",
+      "sha256": "6060e16da927819bf83d9acade83e338c2b814cd0b34e8f88a07c076704c9288",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/unique-signal-map.json",
+      "sha256": "ae8be715e8ddef9b393f8aa7ffb4dd43e43b0dc99fc4a6de4c5332aa203239f0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-0805ab9da950-592e3737/failsignal-registry-snapshot.json",
       "sha256": "9af1b22b87f604601b38114621995a44ae5e15c3ea9a299197c61e863a5e6448",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -695,6 +884,13 @@
       "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
     },
     {
+      "filePath": "docs/OPS/STATUS/CHECK_DEDUP_CANON_v3.json",
+      "sha256": "1384d797a685f1820339e1802c011003a263ebd3c3926dc0a548290a4d146234",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
       "filePath": "docs/OPS/STATUS/CIRCULAR_DEPENDENCY_BREAK_v3.json",
       "sha256": "ed64a957a0a3189c9dfe2e9db76c27b01632fe985f10d9bb1d5dbfb5098fe930",
       "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
@@ -707,6 +903,13 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-26T21:35:25.000Z",
       "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/CROSS_PLATFORM_NORMALIZATION_HARDENING_v3.json",
+      "sha256": "482c08b6daa86df7a6a08a1ab3a37b01164b460735bb52ee1b53938267e9cba9",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
     },
     {
       "filePath": "docs/OPS/STATUS/DECLARED_SET_EFFECTIVE_SET_ALIGNMENT_HARDENING_v3.json",
@@ -800,6 +1003,13 @@
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
     },
     {
+      "filePath": "docs/OPS/STATUS/RACE_SAFE_GOVERNANCE_FOR_CORE_ARTIFACTS_v3.json",
+      "sha256": "432b8a0d876e6e869965b7764115ad9cb8ff8be4614f16da061e8699ecfcde5b",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
       "sha256": "6e37085e283ff774f1b3dc0852f6fc272cd6cd1c6862f197ec7fc645934a29cd",
       "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
@@ -840,6 +1050,13 @@
       "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
       "approvedAtUtc": "2026-02-26T18:09:58.000Z",
       "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/ROLLBACK_REF_SCHEMA_ADOPTION_v3.json",
+      "sha256": "53b334bbd85b98eb852ba5fdbafa76b04220a2492f783c4419aeb67e9fc86238",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
     },
     {
       "filePath": "docs/OPS/STATUS/SECTOR_01.json",
@@ -931,6 +1148,13 @@
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
       "approvedAtUtc": "2026-02-18T12:05:00.000Z",
       "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+    },
+    {
+      "filePath": "scripts/ops/cross-platform-normalization-state.mjs",
+      "sha256": "09f57349b35e50fe04eca52f3d3acac5999a8075b6cb2ba6ee75db6b705ffa05",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
     },
     {
       "filePath": "scripts/ops/declared-set-effective-set-alignment-state.mjs",
@@ -1087,11 +1311,46 @@
       "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
     },
     {
+      "filePath": "scripts/ops/p1-07-rollback-ref-schema-adoption-report.mjs",
+      "sha256": "efb45aac71d7488d718f803d2ed351d2983c87452fe875a4270825ee8b5ccd81",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-08-cross-platform-normalization-report.mjs",
+      "sha256": "8e0afa33a308fccb4096661488dd44870dd1c17d643afd5055acb86d3a8d72fb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-09-race-safe-governance-report.mjs",
+      "sha256": "6b62cef69d9e0633f5900d05ff118b76ac55a57565975533d85db16b1ba9cb34",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-10-check-dedup-canon-report.mjs",
+      "sha256": "0668fb9cb32626bbf454536be9838a1db7ed8b64a529a75008aa464a0d18ac2c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
       "filePath": "scripts/ops/path-boundary-guard-state.mjs",
       "sha256": "95838483e8f47c1fa76ca7c806fd993d029a128604f51bed5871cf5c5432e485",
       "approvedBy": "ticket:TZ-24E-P1-PATH-BOUNDARY-GUARD-IPC-IO-012",
       "approvedAtUtc": "2026-02-18T15:22:29.000Z",
       "rationale": "Approve path-boundary guard wiring state checks and expanded bypass scenario coverage."
+    },
+    {
+      "filePath": "scripts/ops/race-safe-governance-state.mjs",
+      "sha256": "aa6690065d6d98c978da390f63e79f507a3a511950007ede4f15f4707b13c0a6",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
     },
     {
       "filePath": "scripts/ops/release-gate-exit-nonzero-state.mjs",
@@ -1106,6 +1365,13 @@
       "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
       "approvedAtUtc": "2026-02-26T18:09:58.000Z",
       "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "scripts/ops/rollback-ref-schema-adoption-state.mjs",
+      "sha256": "d110fe8f3011610ac8ae241f61edd95325770f84b64fd2592cce6ee2ae883b90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
     },
     {
       "filePath": "scripts/ops/shared-drift-engine-runtime-state.mjs",
@@ -1176,6 +1442,13 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-26T21:35:25.000Z",
       "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
+      "filePath": "test/contracts/cross-platform-normalization.contract.test.js",
+      "sha256": "90ae9580b7cf64edaf1fda28a6f1ec23a55132e2aa325b475b52a4f7587e4d2c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T22:59:48.995Z",
+      "rationale": "TZ-P1-08-CROSS-PLATFORM-NORMALIZATION-HARDENING-003 approvals."
     },
     {
       "filePath": "test/contracts/debt-ttl-expired.contract.test.js",
@@ -1276,6 +1549,13 @@
       "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
     },
     {
+      "filePath": "test/contracts/race-safe-governance.contract.test.js",
+      "sha256": "90d5f0f3b3f552afc7116e195c32ada489c54951cacb4d9d8100e5b69383a289",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
+      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
       "filePath": "test/contracts/release-gate-exit-nonzero.contract.test.js",
       "sha256": "911ead17ee7534dfcb71fbfd41c238f6f3691455d5a2acfa9045279c24c100dc",
       "approvedBy": "DOCS_OPERATOR",
@@ -1288,6 +1568,13 @@
       "approvedBy": "ticket:TZ-P0-02-RELEASE-TOKEN-BINDING-COMPLETENESS-003",
       "approvedAtUtc": "2026-02-26T18:09:58.000Z",
       "rationale": "Approve P0-02 binding completeness scope updates with phase-aware required-set coverage and deterministic negative checks."
+    },
+    {
+      "filePath": "test/contracts/rollback-ref-schema-adoption.contract.test.js",
+      "sha256": "e15ba1171ebd13ba94bbdcb958c01350e0a551d9f91d759523248461442299a8",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
+      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
     },
     {
       "filePath": "test/contracts/safe-automerge-ops-only-profile.contract.test.js",
@@ -1330,209 +1617,6 @@
       "approvedBy": "@k.ponomarev.pro",
       "approvedAtUtc": "2026-02-18T00:00:00.000Z",
       "rationale": "Approve strict-governance change for TZ-24D2 contract wiring update."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/blocking-entity-contract-backfill.json",
-      "sha256": "ead553a329db0c8b2f387ec193925897e0f3f95e9f5e4732c2a2e01538cf1752",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
-      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/rollback-ref-validation-cases.json",
-      "sha256": "8486a6faebd77b59e3dee5cad49742ea8aae960c38aecc4ae9a997f1b3d771b9",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
-      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/missing-rollback-ref-negative-cases.json",
-      "sha256": "8870a1043d003e9b7b9915c4988133d7499024293b2dcbd15bbaf2c5c7654f03",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
-      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/advisory-blocking-drift-cases.json",
-      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
-      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/summary.json",
-      "sha256": "d713a4e58a2369cb282478679bce7f4dfda55f56ee223d50de5f5c5c08033cdd",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
-      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_07/ticket-meta.json",
-      "sha256": "3161ebc44405e24aff17bd817beed41c62a5338f7ebb6c73bfa87173b3e2de0b",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
-      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/ROLLBACK_REF_SCHEMA_ADOPTION_v3.json",
-      "sha256": "53b334bbd85b98eb852ba5fdbafa76b04220a2492f783c4419aeb67e9fc86238",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
-      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
-    },
-    {
-      "filePath": "scripts/ops/p1-07-rollback-ref-schema-adoption-report.mjs",
-      "sha256": "efb45aac71d7488d718f803d2ed351d2983c87452fe875a4270825ee8b5ccd81",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
-      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
-    },
-    {
-      "filePath": "scripts/ops/rollback-ref-schema-adoption-state.mjs",
-      "sha256": "d110fe8f3011610ac8ae241f61edd95325770f84b64fd2592cce6ee2ae883b90",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
-      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
-    },
-    {
-      "filePath": "test/contracts/rollback-ref-schema-adoption.contract.test.js",
-      "sha256": "e15ba1171ebd13ba94bbdcb958c01350e0a551d9f91d759523248461442299a8",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T21:53:40.246Z",
-      "rationale": "TZ-P1-07-ROLLBACK-REF-SCHEMA-ADOPTION-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/serialized-queue-cases.json",
-      "sha256": "f1f4a7c56ef3e9a6334020b869a8a3c1e4f34b0639490fe63f1d8cf7af7a092b",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
-      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/compare-and-swap-cases.json",
-      "sha256": "6a5f7d38563e61450530c2234fcaef1fbf60d31a4abcc98c397a56240ce7eb98",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
-      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/merge-interleaving-negative-cases.json",
-      "sha256": "957b0877c42a4cbdb609ad5b9343cbc0116bd001b99c25156a3ecbf40c51ee4f",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
-      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/core-artifacts-lock-proof.json",
-      "sha256": "ec3a477ee751179d238774e25ae4204af4a43a5c803a3e4f7739c2c5a49fb272",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
-      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/advisory-blocking-drift-cases.json",
-      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
-      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/summary.json",
-      "sha256": "0828f535a61ac0f234d0e615560393cb1e7864bdda7f2cb5623c35b1d84134c1",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
-      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_09/ticket-meta.json",
-      "sha256": "9b3081cdf54020b60b41681c6f136e62d2ed78975c0a00ab1513fdde131ede2d",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
-      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/RACE_SAFE_GOVERNANCE_FOR_CORE_ARTIFACTS_v3.json",
-      "sha256": "432b8a0d876e6e869965b7764115ad9cb8ff8be4614f16da061e8699ecfcde5b",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
-      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "scripts/ops/race-safe-governance-state.mjs",
-      "sha256": "aa6690065d6d98c978da390f63e79f507a3a511950007ede4f15f4707b13c0a6",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
-      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "scripts/ops/p1-09-race-safe-governance-report.mjs",
-      "sha256": "6b62cef69d9e0633f5900d05ff118b76ac55a57565975533d85db16b1ba9cb34",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
-      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "test/contracts/race-safe-governance.contract.test.js",
-      "sha256": "90d5f0f3b3f552afc7116e195c32ada489c54951cacb4d9d8100e5b69383a289",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T04:43:33.713Z",
-      "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/advisory-blocking-drift-cases.json",
-      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
-      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/duplicate-checks-before-after.json",
-      "sha256": "99d52c33f7044bef8af418629f7393a368549551e1183dc30c6b898023542422",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
-      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/risk-weighted-dedup-proof.json",
-      "sha256": "6f226146cbb0e73fd51cb9cb4aa2110ba58fb77cc615eb0bde68d99785130260",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
-      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/summary.json",
-      "sha256": "c97a2fd2681ad26e6e02a174d711aa3012063cccda8a0d658b9472b1009c9cbb",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
-      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/ticket-meta.json",
-      "sha256": "6060e16da927819bf83d9acade83e338c2b814cd0b34e8f88a07c076704c9288",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
-      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/unique-signal-map.json",
-      "sha256": "ae8be715e8ddef9b393f8aa7ffb4dd43e43b0dc99fc4a6de4c5332aa203239f0",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
-      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/CHECK_DEDUP_CANON_v3.json",
-      "sha256": "1384d797a685f1820339e1802c011003a263ebd3c3926dc0a548290a4d146234",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
-      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
-    },
-    {
-      "filePath": "scripts/ops/p1-10-check-dedup-canon-report.mjs",
-      "sha256": "0668fb9cb32626bbf454536be9838a1db7ed8b64a529a75008aa464a0d18ac2c",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
-      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
     }
   ]
 }

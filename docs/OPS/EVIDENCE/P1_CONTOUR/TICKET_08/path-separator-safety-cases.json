@@ -1,0 +1,32 @@
+{
+  "cases": [
+    {
+      "actualNormalized": "scenes/chapter01/scene01.json",
+      "actualSafe": true,
+      "caseId": "win-path",
+      "expectedNormalized": "scenes/chapter01/scene01.json",
+      "expectedSafe": true,
+      "input": "scenes\\chapter01\\scene01.json",
+      "pass": true
+    },
+    {
+      "actualNormalized": "assets/images/cover.png",
+      "actualSafe": true,
+      "caseId": "mixed-double-separators",
+      "expectedNormalized": "assets/images/cover.png",
+      "expectedSafe": true,
+      "input": "assets\\\\images//cover.png",
+      "pass": true
+    },
+    {
+      "actualNormalized": "scenes/../secrets.txt",
+      "actualSafe": false,
+      "caseId": "parent-traversal",
+      "expectedNormalized": "scenes/../secrets.txt",
+      "expectedSafe": false,
+      "input": "scenes/../secrets.txt",
+      "pass": true
+    }
+  ],
+  "pathSeparatorSafetyCheck": true
+}

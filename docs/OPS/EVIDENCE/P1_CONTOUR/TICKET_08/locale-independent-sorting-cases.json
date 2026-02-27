@@ -1,0 +1,37 @@
+{
+  "cases": [
+    {
+      "actual": [
+        "Alpha",
+        "beta",
+        "item1",
+        "item2",
+        "item10"
+      ],
+      "caseId": "stable-numeric-alpha",
+      "expected": [
+        "Alpha",
+        "beta",
+        "item1",
+        "item2",
+        "item10"
+      ],
+      "input": [
+        "item2",
+        "item10",
+        "item1",
+        "Alpha",
+        "beta"
+      ],
+      "pass": true,
+      "secondPass": [
+        "Alpha",
+        "beta",
+        "item1",
+        "item2",
+        "item10"
+      ]
+    }
+  ],
+  "localeIndependentSortingCheck": true
+}
