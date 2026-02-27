@@ -1477,6 +1477,62 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-27T04:43:33.713Z",
       "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/duplicate-checks-before-after.json",
+      "sha256": "99d52c33f7044bef8af418629f7393a368549551e1183dc30c6b898023542422",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/risk-weighted-dedup-proof.json",
+      "sha256": "6f226146cbb0e73fd51cb9cb4aa2110ba58fb77cc615eb0bde68d99785130260",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/summary.json",
+      "sha256": "c97a2fd2681ad26e6e02a174d711aa3012063cccda8a0d658b9472b1009c9cbb",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/ticket-meta.json",
+      "sha256": "6060e16da927819bf83d9acade83e338c2b814cd0b34e8f88a07c076704c9288",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/unique-signal-map.json",
+      "sha256": "ae8be715e8ddef9b393f8aa7ffb4dd43e43b0dc99fc4a6de4c5332aa203239f0",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/CHECK_DEDUP_CANON_v3.json",
+      "sha256": "1384d797a685f1820339e1802c011003a263ebd3c3926dc0a548290a4d146234",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
+    },
+    {
+      "filePath": "scripts/ops/p1-10-check-dedup-canon-report.mjs",
+      "sha256": "0668fb9cb32626bbf454536be9838a1db7ed8b64a529a75008aa464a0d18ac2c",
+      "approvedBy": "DOCS_OPERATOR",
+      "approvedAtUtc": "2026-02-27T00:10:00.000Z",
+      "rationale": "TZ-P1-10-CHECK-DEDUP-CANON-003 approvals."
     }
   ]
 }
