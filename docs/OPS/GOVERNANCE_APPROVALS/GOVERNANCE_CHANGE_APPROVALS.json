@@ -926,6 +926,48 @@
       "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_06/advisory-blocking-drift-cases.json",
+      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
+      "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
+      "approvedAtUtc": "2026-02-27T02:00:00.000Z",
+      "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_06/compare-and-swap-negative-cases.json",
+      "sha256": "83865da018c01e364376fe04ade3a1289e92e07558b4c3b7aec111f523cc789f",
+      "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
+      "approvedAtUtc": "2026-02-27T02:00:00.000Z",
+      "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_06/interleaving-protection-proof.json",
+      "sha256": "1273d29ec33ea19395d51b0a60e66259520643cbbedcaf9664309120c36ed764",
+      "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
+      "approvedAtUtc": "2026-02-27T02:00:00.000Z",
+      "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_06/lock-acquire-release-cases.json",
+      "sha256": "40369ed1156a2e29f6dcd22095c9c1f4b242fa7eadaa7695bb99fbe28ea5dbc7",
+      "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
+      "approvedAtUtc": "2026-02-27T02:00:00.000Z",
+      "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_06/summary.json",
+      "sha256": "5b705449b8e8bf2edde2f11bb58c44c88453c70cba10d4e6d4ffbbf99e28b9df",
+      "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
+      "approvedAtUtc": "2026-02-27T02:00:00.000Z",
+      "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_06/ticket-meta.json",
+      "sha256": "69d06b1e7fd270f2a93118efa7e5d551d9e0e6ff2f39e226713d182b180f3493",
+      "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
+      "approvedAtUtc": "2026-02-27T02:00:00.000Z",
+      "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-0805ab9da950-592e3737/failsignal-registry-snapshot.json",
       "sha256": "9af1b22b87f604601b38114621995a44ae5e15c3ea9a299197c61e863a5e6448",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -1120,6 +1162,13 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-26T21:35:25.000Z",
       "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/CONCURRENCY_LOCKING_FOR_SHARED_GOVERNANCE_ARTIFACTS_v3.json",
+      "sha256": "d3e6fc5388fb51419dac0dada80f0f6dfc1859bd682d78d75c44df9f1ac2468b",
+      "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
+      "approvedAtUtc": "2026-02-27T02:00:00.000Z",
+      "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
     },
     {
       "filePath": "docs/OPS/STATUS/CROSS_PLATFORM_NORMALIZATION_HARDENING_v3.json",
@@ -1402,6 +1451,13 @@
       "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
     },
     {
+      "filePath": "scripts/ops/concurrency-locking-state.mjs",
+      "sha256": "13bffa8cf4fba8b71f3be7bac51ebaf0b2c653fe800db111e6147286a860bbb4",
+      "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
+      "approvedAtUtc": "2026-02-27T02:00:00.000Z",
+      "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
+    },
+    {
       "filePath": "scripts/ops/cross-platform-normalization-state.mjs",
       "sha256": "09f57349b35e50fe04eca52f3d3acac5999a8075b6cb2ba6ee75db6b705ffa05",
       "approvedBy": "DOCS_OPERATOR",
@@ -1647,6 +1703,13 @@
       "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
     },
     {
+      "filePath": "scripts/ops/p2-06-concurrency-locking-report.mjs",
+      "sha256": "cbdec8ca083ff4b1f767b6c2543277b1f6c5a93e5c796103d5b8b241ed6af94f",
+      "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
+      "approvedAtUtc": "2026-02-27T02:00:00.000Z",
+      "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
+    },
+    {
       "filePath": "scripts/ops/path-boundary-guard-state.mjs",
       "sha256": "95838483e8f47c1fa76ca7c806fd993d029a128604f51bed5871cf5c5432e485",
       "approvedBy": "ticket:TZ-24E-P1-PATH-BOUNDARY-GUARD-IPC-IO-012",
@@ -1757,6 +1820,13 @@
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-26T21:35:25.000Z",
       "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
+    },
+    {
+      "filePath": "test/contracts/concurrency-locking.contract.test.js",
+      "sha256": "e160c6e827cc7ffaf101feae15fa65bd9cd565763f3f99c2b32c98c33981dbf6",
+      "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
+      "approvedAtUtc": "2026-02-27T02:00:00.000Z",
+      "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
     },
     {
       "filePath": "test/contracts/cross-platform-normalization.contract.test.js",
