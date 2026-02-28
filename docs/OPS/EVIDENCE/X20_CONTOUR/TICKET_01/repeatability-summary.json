@@ -1,0 +1,164 @@
+{
+  "runs": [
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "capabilityBindingGapCount": 0,
+        "channelCount": 3,
+        "channelInconsistencyCount": 0,
+        "checklistHintMissingCount": 0,
+        "commandBindingGapCount": 0,
+        "duplicateChecklistItemCount": 0,
+        "entryCount": 6,
+        "hintCommandMismatchCount": 0,
+        "modeCount": 3,
+        "modeProfileVisibilityGapCount": 0,
+        "onboardingHintCount": 6,
+        "profileCount": 3,
+        "requiredChecklistItemCount": 6,
+        "requiredChecklistItemGapCount": 0,
+        "staleHintTargetCount": 0
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "1e6e44f61bc9df56e793bf07ca9419546fb94907f269a9ae244b9389a8dd7fdb",
+        "detectorId": "X20_WS01_RELEASE_ONBOARDING_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "capabilityBindingGapCount": 0,
+        "channelCount": 3,
+        "channelInconsistencyCount": 0,
+        "checklistHintMissingCount": 0,
+        "commandBindingGapCount": 0,
+        "duplicateChecklistItemCount": 0,
+        "entryCount": 6,
+        "hintCommandMismatchCount": 0,
+        "modeCount": 3,
+        "modeProfileVisibilityGapCount": 0,
+        "onboardingHintCount": 6,
+        "profileCount": 3,
+        "requiredChecklistItemCount": 6,
+        "requiredChecklistItemGapCount": 0,
+        "staleHintTargetCount": 0
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "1e6e44f61bc9df56e793bf07ca9419546fb94907f269a9ae244b9389a8dd7fdb",
+        "detectorId": "X20_WS01_RELEASE_ONBOARDING_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "capabilityBindingGapCount": 0,
+        "channelCount": 3,
+        "channelInconsistencyCount": 0,
+        "checklistHintMissingCount": 0,
+        "commandBindingGapCount": 0,
+        "duplicateChecklistItemCount": 0,
+        "entryCount": 6,
+        "hintCommandMismatchCount": 0,
+        "modeCount": 3,
+        "modeProfileVisibilityGapCount": 0,
+        "onboardingHintCount": 6,
+        "profileCount": 3,
+        "requiredChecklistItemCount": 6,
+        "requiredChecklistItemGapCount": 0,
+        "staleHintTargetCount": 0
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "1e6e44f61bc9df56e793bf07ca9419546fb94907f269a9ae244b9389a8dd7fdb",
+        "detectorId": "X20_WS01_RELEASE_ONBOARDING_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    }
+  ],
+  "stable": true
+}

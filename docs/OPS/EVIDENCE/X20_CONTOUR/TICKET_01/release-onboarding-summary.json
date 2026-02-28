@@ -1,0 +1,420 @@
+{
+  "baseline": {
+    "capabilityBindingMissing": [],
+    "channelInconsistency": [],
+    "checklistHintMissing": [],
+    "commandBindingMissing": [],
+    "duplicateChecklistItems": [],
+    "entryCount": 6,
+    "hintCommandMismatch": [],
+    "modeProfileVisibilityGaps": [],
+    "ok": true,
+    "onboardingHintCount": 6,
+    "projection": [
+      {
+        "actionId": "export-docx",
+        "checklistId": "release.export.docx",
+        "commandId": "cmd.project.export.docxMin",
+        "mode": "Plan",
+        "profile": "guru"
+      },
+      {
+        "actionId": "export-docx",
+        "checklistId": "release.export.docx",
+        "commandId": "cmd.project.export.docxMin",
+        "mode": "Plan",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "export-docx",
+        "checklistId": "release.export.docx",
+        "commandId": "cmd.project.export.docxMin",
+        "mode": "Plan",
+        "profile": "pro"
+      },
+      {
+        "actionId": "export-docx",
+        "checklistId": "release.export.docx",
+        "commandId": "cmd.project.export.docxMin",
+        "mode": "Review",
+        "profile": "guru"
+      },
+      {
+        "actionId": "export-docx",
+        "checklistId": "release.export.docx",
+        "commandId": "cmd.project.export.docxMin",
+        "mode": "Review",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "export-docx",
+        "checklistId": "release.export.docx",
+        "commandId": "cmd.project.export.docxMin",
+        "mode": "Review",
+        "profile": "pro"
+      },
+      {
+        "actionId": "export-docx",
+        "checklistId": "release.export.docx",
+        "commandId": "cmd.project.export.docxMin",
+        "mode": "Write",
+        "profile": "guru"
+      },
+      {
+        "actionId": "export-docx",
+        "checklistId": "release.export.docx",
+        "commandId": "cmd.project.export.docxMin",
+        "mode": "Write",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "export-docx",
+        "checklistId": "release.export.docx",
+        "commandId": "cmd.project.export.docxMin",
+        "mode": "Write",
+        "profile": "pro"
+      },
+      {
+        "actionId": "find-text",
+        "checklistId": "release.find.text",
+        "commandId": "cmd.project.edit.find",
+        "mode": "Plan",
+        "profile": "guru"
+      },
+      {
+        "actionId": "find-text",
+        "checklistId": "release.find.text",
+        "commandId": "cmd.project.edit.find",
+        "mode": "Plan",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "find-text",
+        "checklistId": "release.find.text",
+        "commandId": "cmd.project.edit.find",
+        "mode": "Plan",
+        "profile": "pro"
+      },
+      {
+        "actionId": "find-text",
+        "checklistId": "release.find.text",
+        "commandId": "cmd.project.edit.find",
+        "mode": "Review",
+        "profile": "guru"
+      },
+      {
+        "actionId": "find-text",
+        "checklistId": "release.find.text",
+        "commandId": "cmd.project.edit.find",
+        "mode": "Review",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "find-text",
+        "checklistId": "release.find.text",
+        "commandId": "cmd.project.edit.find",
+        "mode": "Review",
+        "profile": "pro"
+      },
+      {
+        "actionId": "find-text",
+        "checklistId": "release.find.text",
+        "commandId": "cmd.project.edit.find",
+        "mode": "Write",
+        "profile": "guru"
+      },
+      {
+        "actionId": "find-text",
+        "checklistId": "release.find.text",
+        "commandId": "cmd.project.edit.find",
+        "mode": "Write",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "find-text",
+        "checklistId": "release.find.text",
+        "commandId": "cmd.project.edit.find",
+        "mode": "Write",
+        "profile": "pro"
+      },
+      {
+        "actionId": "open-project",
+        "checklistId": "release.open.project",
+        "commandId": "cmd.project.open",
+        "mode": "Plan",
+        "profile": "guru"
+      },
+      {
+        "actionId": "open-project",
+        "checklistId": "release.open.project",
+        "commandId": "cmd.project.open",
+        "mode": "Plan",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "open-project",
+        "checklistId": "release.open.project",
+        "commandId": "cmd.project.open",
+        "mode": "Plan",
+        "profile": "pro"
+      },
+      {
+        "actionId": "open-project",
+        "checklistId": "release.open.project",
+        "commandId": "cmd.project.open",
+        "mode": "Review",
+        "profile": "guru"
+      },
+      {
+        "actionId": "open-project",
+        "checklistId": "release.open.project",
+        "commandId": "cmd.project.open",
+        "mode": "Review",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "open-project",
+        "checklistId": "release.open.project",
+        "commandId": "cmd.project.open",
+        "mode": "Review",
+        "profile": "pro"
+      },
+      {
+        "actionId": "open-project",
+        "checklistId": "release.open.project",
+        "commandId": "cmd.project.open",
+        "mode": "Write",
+        "profile": "guru"
+      },
+      {
+        "actionId": "open-project",
+        "checklistId": "release.open.project",
+        "commandId": "cmd.project.open",
+        "mode": "Write",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "open-project",
+        "checklistId": "release.open.project",
+        "commandId": "cmd.project.open",
+        "mode": "Write",
+        "profile": "pro"
+      },
+      {
+        "actionId": "replace-text",
+        "checklistId": "release.replace.text",
+        "commandId": "cmd.project.edit.replace",
+        "mode": "Plan",
+        "profile": "guru"
+      },
+      {
+        "actionId": "replace-text",
+        "checklistId": "release.replace.text",
+        "commandId": "cmd.project.edit.replace",
+        "mode": "Plan",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "replace-text",
+        "checklistId": "release.replace.text",
+        "commandId": "cmd.project.edit.replace",
+        "mode": "Plan",
+        "profile": "pro"
+      },
+      {
+        "actionId": "replace-text",
+        "checklistId": "release.replace.text",
+        "commandId": "cmd.project.edit.replace",
+        "mode": "Review",
+        "profile": "guru"
+      },
+      {
+        "actionId": "replace-text",
+        "checklistId": "release.replace.text",
+        "commandId": "cmd.project.edit.replace",
+        "mode": "Review",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "replace-text",
+        "checklistId": "release.replace.text",
+        "commandId": "cmd.project.edit.replace",
+        "mode": "Review",
+        "profile": "pro"
+      },
+      {
+        "actionId": "replace-text",
+        "checklistId": "release.replace.text",
+        "commandId": "cmd.project.edit.replace",
+        "mode": "Write",
+        "profile": "guru"
+      },
+      {
+        "actionId": "replace-text",
+        "checklistId": "release.replace.text",
+        "commandId": "cmd.project.edit.replace",
+        "mode": "Write",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "replace-text",
+        "checklistId": "release.replace.text",
+        "commandId": "cmd.project.edit.replace",
+        "mode": "Write",
+        "profile": "pro"
+      },
+      {
+        "actionId": "save-as-project",
+        "checklistId": "release.save.as",
+        "commandId": "cmd.project.saveAs",
+        "mode": "Plan",
+        "profile": "guru"
+      },
+      {
+        "actionId": "save-as-project",
+        "checklistId": "release.save.as",
+        "commandId": "cmd.project.saveAs",
+        "mode": "Plan",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "save-as-project",
+        "checklistId": "release.save.as",
+        "commandId": "cmd.project.saveAs",
+        "mode": "Plan",
+        "profile": "pro"
+      },
+      {
+        "actionId": "save-as-project",
+        "checklistId": "release.save.as",
+        "commandId": "cmd.project.saveAs",
+        "mode": "Review",
+        "profile": "guru"
+      },
+      {
+        "actionId": "save-as-project",
+        "checklistId": "release.save.as",
+        "commandId": "cmd.project.saveAs",
+        "mode": "Review",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "save-as-project",
+        "checklistId": "release.save.as",
+        "commandId": "cmd.project.saveAs",
+        "mode": "Review",
+        "profile": "pro"
+      },
+      {
+        "actionId": "save-as-project",
+        "checklistId": "release.save.as",
+        "commandId": "cmd.project.saveAs",
+        "mode": "Write",
+        "profile": "guru"
+      },
+      {
+        "actionId": "save-as-project",
+        "checklistId": "release.save.as",
+        "commandId": "cmd.project.saveAs",
+        "mode": "Write",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "save-as-project",
+        "checklistId": "release.save.as",
+        "commandId": "cmd.project.saveAs",
+        "mode": "Write",
+        "profile": "pro"
+      },
+      {
+        "actionId": "save-project",
+        "checklistId": "release.save.project",
+        "commandId": "cmd.project.save",
+        "mode": "Plan",
+        "profile": "guru"
+      },
+      {
+        "actionId": "save-project",
+        "checklistId": "release.save.project",
+        "commandId": "cmd.project.save",
+        "mode": "Plan",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "save-project",
+        "checklistId": "release.save.project",
+        "commandId": "cmd.project.save",
+        "mode": "Plan",
+        "profile": "pro"
+      },
+      {
+        "actionId": "save-project",
+        "checklistId": "release.save.project",
+        "commandId": "cmd.project.save",
+        "mode": "Review",
+        "profile": "guru"
+      },
+      {
+        "actionId": "save-project",
+        "checklistId": "release.save.project",
+        "commandId": "cmd.project.save",
+        "mode": "Review",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "save-project",
+        "checklistId": "release.save.project",
+        "commandId": "cmd.project.save",
+        "mode": "Review",
+        "profile": "pro"
+      },
+      {
+        "actionId": "save-project",
+        "checklistId": "release.save.project",
+        "commandId": "cmd.project.save",
+        "mode": "Write",
+        "profile": "guru"
+      },
+      {
+        "actionId": "save-project",
+        "checklistId": "release.save.project",
+        "commandId": "cmd.project.save",
+        "mode": "Write",
+        "profile": "minimal"
+      },
+      {
+        "actionId": "save-project",
+        "checklistId": "release.save.project",
+        "commandId": "cmd.project.save",
+        "mode": "Write",
+        "profile": "pro"
+      }
+    ],
+    "projectionHash": "747b447b97599a8f3691890d6632b36fbe187e5dfa25b1dada8b690ad7fe951a",
+    "requiredChecklistItemCount": 6,
+    "requiredChecklistItemMissing": [],
+    "staleHintTargets": [],
+    "unknownModes": [],
+    "unknownProfiles": []
+  },
+  "capabilityBindingGapCount": 0,
+  "channelInconsistencyCount": 0,
+  "checklistHintMissingCount": 0,
+  "commandBindingGapCount": 0,
+  "determinism": {
+    "hashes": [
+      "747b447b97599a8f3691890d6632b36fbe187e5dfa25b1dada8b690ad7fe951a",
+      "747b447b97599a8f3691890d6632b36fbe187e5dfa25b1dada8b690ad7fe951a",
+      "747b447b97599a8f3691890d6632b36fbe187e5dfa25b1dada8b690ad7fe951a"
+    ],
+    "ok": true
+  },
+  "duplicateChecklistItemCount": 0,
+  "entryCount": 6,
+  "hintCommandMismatchCount": 0,
+  "modeProfileVisibilityGapCount": 0,
+  "onboardingHintCount": 6,
+  "requiredChecklistItemCount": 6,
+  "requiredChecklistItemGapCount": 0,
+  "staleHintTargetCount": 0
+}
