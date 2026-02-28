@@ -1,0 +1,68 @@
+{
+  "details": {
+    "CRASH_BETWEEN_SNAPSHOT_AND_LOG": {
+      "artifactsWriteMode": "none",
+      "contractFail": false,
+      "integrityRejected": false,
+      "logEntryCreated": false,
+      "migrationPolicyFail": false,
+      "recoveryAction": "OPEN_SNAPSHOT",
+      "rollbackMarkerWritten": false,
+      "snapshotCreated": true
+    },
+    "MISSING_ROLLBACK_MARKER": {
+      "artifactsWriteMode": "complete",
+      "contractFail": false,
+      "integrityRejected": false,
+      "logEntryCreated": true,
+      "migrationPolicyFail": true,
+      "recoveryAction": "ROLLBACK",
+      "rollbackMarkerWritten": false,
+      "snapshotCreated": true
+    },
+    "MIXED_VERSION_ARTIFACT": {
+      "artifactsWriteMode": "complete",
+      "contractFail": false,
+      "integrityRejected": false,
+      "logEntryCreated": true,
+      "migrationPolicyFail": true,
+      "recoveryAction": "ROLLBACK",
+      "rollbackMarkerWritten": false,
+      "snapshotCreated": true
+    },
+    "NON_IDEMPOTENT_RETRY": {
+      "artifactsWriteMode": "complete",
+      "contractFail": true,
+      "integrityRejected": false,
+      "logEntryCreated": true,
+      "migrationPolicyFail": false,
+      "recoveryAction": "ABORT",
+      "rollbackMarkerWritten": true,
+      "snapshotCreated": true
+    },
+    "PARTIAL_ARTIFACT_WRITE": {
+      "artifactsWriteMode": "partial",
+      "contractFail": false,
+      "integrityRejected": true,
+      "logEntryCreated": true,
+      "migrationPolicyFail": false,
+      "recoveryAction": "OPEN_SNAPSHOT",
+      "rollbackMarkerWritten": false,
+      "snapshotCreated": true
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "CRASH_BETWEEN_SNAPSHOT_AND_LOG_EXPECT_RECOVERY_FAILSAFE_TRIGGER",
+    "NEXT_TZ_NEGATIVE_02": "MISSING_ROLLBACK_MARKER_EXPECT_POLICY_FAIL",
+    "NEXT_TZ_NEGATIVE_03": "PARTIAL_ARTIFACT_WRITE_EXPECT_INTEGRITY_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "MIXED_VERSION_ARTIFACT_EXPECT_MIGRATION_POLICY_FAIL",
+    "NEXT_TZ_NEGATIVE_05": "NON_IDEMPOTENT_RETRY_EXPECT_CONTRACT_FAIL"
+  }
+}

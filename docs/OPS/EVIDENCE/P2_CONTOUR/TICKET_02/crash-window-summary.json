@@ -1,0 +1,94 @@
+{
+  "crashWindowUnsafePathCount": 0,
+  "sourceHardeningCases": [
+    {
+      "checkId": "documents_migration_marker_written",
+      "pass": true,
+      "requiredPattern": "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+      "sourcePath": "src/utils/fileManager.js"
+    },
+    {
+      "checkId": "userdata_migration_marker_written",
+      "pass": true,
+      "requiredPattern": "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+      "sourcePath": "src/main.js"
+    },
+    {
+      "checkId": "atomic_write_uses_temp_file",
+      "pass": true,
+      "requiredPattern": ".tmp",
+      "sourcePath": "src/utils/fileManager.js"
+    },
+    {
+      "checkId": "atomic_write_uses_rename",
+      "pass": true,
+      "requiredPattern": "await fs.rename(tempPath, filePath);",
+      "sourcePath": "src/utils/fileManager.js"
+    },
+    {
+      "checkId": "atomic_write_restores_old_file_on_failure",
+      "pass": true,
+      "requiredPattern": "await fs.rename(oldPath, filePath);",
+      "sourcePath": "src/utils/fileManager.js"
+    },
+    {
+      "checkId": "settings_written_via_atomic_path",
+      "pass": true,
+      "requiredPattern": "fileManager.writeFileAtomic(getSettingsPath(), JSON.stringify(settings))",
+      "sourcePath": "src/main.js"
+    }
+  ],
+  "sourceHardeningFailedCount": 0,
+  "stressDrillCaseCount": 7,
+  "stressDrillCases": [
+    {
+      "crashPoint": "before_snapshot",
+      "logEntryCreated": false,
+      "recoveryAction": "ABORT",
+      "safe": true,
+      "snapshotCreated": false
+    },
+    {
+      "crashPoint": "between_snapshot_and_log",
+      "logEntryCreated": false,
+      "recoveryAction": "OPEN_SNAPSHOT",
+      "safe": true,
+      "snapshotCreated": true
+    },
+    {
+      "crashPoint": "during_log_append",
+      "logEntryCreated": true,
+      "recoveryAction": "OPEN_SNAPSHOT",
+      "safe": true,
+      "snapshotCreated": true
+    },
+    {
+      "crashPoint": "during_artifact_write",
+      "logEntryCreated": true,
+      "recoveryAction": "OPEN_SNAPSHOT",
+      "safe": true,
+      "snapshotCreated": true
+    },
+    {
+      "crashPoint": "mixed_version_artifact",
+      "logEntryCreated": true,
+      "recoveryAction": "ROLLBACK",
+      "safe": true,
+      "snapshotCreated": true
+    },
+    {
+      "crashPoint": "non_idempotent_retry",
+      "logEntryCreated": true,
+      "recoveryAction": "ABORT",
+      "safe": true,
+      "snapshotCreated": true
+    },
+    {
+      "crashPoint": "none",
+      "logEntryCreated": true,
+      "recoveryAction": "COMMIT",
+      "safe": true,
+      "snapshotCreated": true
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "details": {
+    "RECOVERY_HANDOFF": {
+      "artifactsWriteMode": "none",
+      "contractFail": false,
+      "integrityRejected": false,
+      "logEntryCreated": false,
+      "migrationPolicyFail": false,
+      "recoveryAction": "OPEN_SNAPSHOT",
+      "rollbackMarkerWritten": false,
+      "snapshotCreated": true
+    },
+    "STRESS_DRILLS": [
+      {
+        "crashPoint": "before_snapshot",
+        "logEntryCreated": false,
+        "recoveryAction": "ABORT",
+        "safe": true,
+        "snapshotCreated": false
+      },
+      {
+        "crashPoint": "between_snapshot_and_log",
+        "logEntryCreated": false,
+        "recoveryAction": "OPEN_SNAPSHOT",
+        "safe": true,
+        "snapshotCreated": true
+      },
+      {
+        "crashPoint": "during_log_append",
+        "logEntryCreated": true,
+        "recoveryAction": "OPEN_SNAPSHOT",
+        "safe": true,
+        "snapshotCreated": true
+      },
+      {
+        "crashPoint": "during_artifact_write",
+        "logEntryCreated": true,
+        "recoveryAction": "OPEN_SNAPSHOT",
+        "safe": true,
+        "snapshotCreated": true
+      },
+      {
+        "crashPoint": "mixed_version_artifact",
+        "logEntryCreated": true,
+        "recoveryAction": "ROLLBACK",
+        "safe": true,
+        "snapshotCreated": true
+      },
+      {
+        "crashPoint": "non_idempotent_retry",
+        "logEntryCreated": true,
+        "recoveryAction": "ABORT",
+        "safe": true,
+        "snapshotCreated": true
+      },
+      {
+        "crashPoint": "none",
+        "logEntryCreated": true,
+        "recoveryAction": "COMMIT",
+        "safe": true,
+        "snapshotCreated": true
+      }
+    ],
+    "TRANSACTIONAL_FLOW": {
+      "artifactsWriteMode": "complete",
+      "contractFail": false,
+      "integrityRejected": false,
+      "logEntryCreated": true,
+      "migrationPolicyFail": false,
+      "recoveryAction": "COMMIT",
+      "rollbackMarkerWritten": true,
+      "snapshotCreated": true
+    }
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "TRANSACTIONAL_MIGRATION_FLOW_PASS",
+    "NEXT_TZ_POSITIVE_02": "RECOVERY_HANDOFF_CONSISTENCY_PASS",
+    "NEXT_TZ_POSITIVE_03": "STRESS_DRILL_SUITE_PASS"
+  }
+}
