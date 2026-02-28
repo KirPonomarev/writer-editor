@@ -1,0 +1,28 @@
+{
+  "artifactId": "X23_WS03_MERGE_SUMMARY_V1",
+  "headBindingPass": true,
+  "mergeCommit": "4bf4c41d2967146e0564f0525d3c870fb4ff571f",
+  "mergeMethod": "MERGE_COMMIT_ONLY",
+  "mergePolicy": "PR_ONLY",
+  "modeDrift": false,
+  "releaseClassDrift": false,
+  "requiredChecks": [
+    {
+      "name": "oss-policy",
+      "status": "pass"
+    },
+    {
+      "name": "x1-runtime-parity (ubuntu-latest)",
+      "status": "pass"
+    },
+    {
+      "name": "x1-runtime-parity (windows-latest)",
+      "status": "pass"
+    }
+  ],
+  "requiredChecksPass": true,
+  "schemaVersion": 1,
+  "status": "PASS",
+  "tzId": "TZ_X23_WS03_PR_MERGE_EXECUTION_AND_CLOSEOUT_001",
+  "updatedAtUtc": "2026-02-28T22:05:10.611Z"
+}
