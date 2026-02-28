@@ -1,0 +1,81 @@
+{
+  "negativeDetails": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "details": {
+        "modeVerdict": {
+          "issues": [],
+          "modeDisposition": "advisory",
+          "ok": true,
+          "shouldBlock": false
+        },
+        "remoteProbe": {
+          "loopDecision": "CONTINUE",
+          "stopCode": "REMOTE_UNAVAILABLE"
+        }
+      },
+      "detected": true
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "details": {
+        "degradedStopCode": "DNS_OR_TLS_FAILURE",
+        "releaseDecision": {
+          "deliveryVerdict": "PASS",
+          "nonzeroExitRequired": false
+        }
+      },
+      "detected": true
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "details": {
+        "releaseDecisionUnaffected": true,
+        "staleRemoteState": {
+          "failReason": "E_REMOTE_PROBE_TTL_POLICY_VIOLATION",
+          "ok": false,
+          "ttlSeconds": 599
+        }
+      },
+      "detected": true
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "details": {
+        "modeVerdict": {
+          "issues": [],
+          "modeDisposition": "blocking",
+          "ok": true,
+          "shouldBlock": true
+        },
+        "rejectionType": "FORCED_REMOTE_BLOCKING_MAPPING_DETECTED"
+      },
+      "detected": true
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "details": {
+        "mixedOfflineOnline": {
+          "advisoryProbeCount": 1,
+          "deliveryVerdict": "BLOCK",
+          "effectiveRequiredTokenFailureCount": 1,
+          "failReason": "E_RELEASE_GATE_EXIT_SEMANTICS",
+          "nonzeroExitRequired": true
+        }
+      },
+      "detected": true
+    }
+  },
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "positiveDetails": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  }
+}

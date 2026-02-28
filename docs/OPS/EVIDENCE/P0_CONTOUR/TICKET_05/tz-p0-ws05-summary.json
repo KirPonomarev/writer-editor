@@ -1,0 +1,27 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "activeCanonLockCheckPass": true,
+  "advisoryAsBlockingDriftEqualsZeroInWs05Scope": true,
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true,
+    "NEXT_TZ_DOD_07": true
+  },
+  "failSignalTarget": "E_REMOTE_UNAVAILABLE",
+  "generatedAtUtc": "2026-02-28T12:40:58.059Z",
+  "modeNote": "E_REMOTE_UNAVAILABLE_DOES_NOT_CHANGE_RELEASE_DECISION_CLASS",
+  "repeatabilityStable3Runs": true,
+  "runId": "TZ_P0_WS05_NETWORK_SENSITIVE_ISOLATION_001",
+  "stageActivationGuardCheckPass": true,
+  "status": "PASS",
+  "ticketId": "WS05"
+}

@@ -1,0 +1,12 @@
+{
+  "effectiveBlockingCase": {
+    "activePhase": "PHASE_3_HARD",
+    "failSignalCode": "E_CORE_SOT_NOT_EXECUTABLE",
+    "issue": "",
+    "ok": true,
+    "requiredSetPath": "docs/OPS/STATUS/REQUIRED_SET_PHASE_3_V1.json",
+    "tokenId": "CORE_SOT_EXECUTABLE_OK"
+  },
+  "locallyVerifiable": true,
+  "offlineIntegrityPrecedence": true
+}

@@ -1,0 +1,22 @@
+{
+  "baseline": {
+    "deliveryVerdict": "PASS",
+    "failReason": "",
+    "nonzeroExitRequired": false
+  },
+  "mixedOfflineOnline": {
+    "advisoryProbeCount": 1,
+    "deliveryVerdict": "BLOCK",
+    "effectiveRequiredTokenFailureCount": 1,
+    "failReason": "E_RELEASE_GATE_EXIT_SEMANTICS",
+    "nonzeroExitRequired": true
+  },
+  "offlineIntegrityPrecedence": true,
+  "remoteUnavailableProbe": {
+    "advisoryProbeNonBlockingCount": 1,
+    "deliveryVerdict": "PASS",
+    "failReason": "",
+    "nonzeroExitRequired": false
+  },
+  "stableClassUnderRemoteUnavailable": true
+}

@@ -1,0 +1,10 @@
+{
+  "advisoryAsBlockingDriftEqualsZeroInWs05Scope": true,
+  "degradedStopCode": "DNS_OR_TLS_FAILURE",
+  "remoteUnavailableStopCode": "REMOTE_UNAVAILABLE",
+  "staleRemote": {
+    "failReason": "E_REMOTE_PROBE_TTL_POLICY_VIOLATION",
+    "ok": false,
+    "ttlSeconds": 599
+  }
+}
