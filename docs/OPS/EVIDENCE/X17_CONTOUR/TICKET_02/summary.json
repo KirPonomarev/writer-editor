@@ -1,0 +1,47 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "actionCount": 6,
+    "advisoryToBlockingDriftCount": 0,
+    "channelCount": 3,
+    "commandCapabilityBindingCount": 21,
+    "menuProjectionGapCount": 0,
+    "missingRequiredActionRowsCount": 0,
+    "modeCount": 3,
+    "profileCount": 3,
+    "requiredActionCount": 6,
+    "requiredCommandCount": 6,
+    "rowCount": 54
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "generatedAtUtc": "2026-02-28T17:25:37.909Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "ENABLE_VIEW_INSERT_BASELINE_COMMAND_BUS_DETERMINISTIC_CAPABILITY_POLICY",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "X17_WS02_RUN_20260228_R2",
+  "status": "PASS",
+  "ticketId": "TZ_X17_WS02_VIEW_INSERT_BASELINE_001"
+}
