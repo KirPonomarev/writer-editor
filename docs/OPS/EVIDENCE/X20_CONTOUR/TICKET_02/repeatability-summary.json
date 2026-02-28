@@ -1,0 +1,164 @@
+{
+  "runs": [
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "channelGuardMismatchCount": 0,
+        "duplicateFlowGuardCount": 0,
+        "duplicateGuardIdCount": 0,
+        "expectedChannelCount": 3,
+        "expectedModeCount": 3,
+        "expectedProfileCount": 3,
+        "guardCount": 5,
+        "missingCriticalFlowGuardCount": 0,
+        "modeProfileGuardGapCount": 0,
+        "requiredCriticalFlowCount": 5,
+        "requiredPositiveViolationCount": 0,
+        "requiredZeroViolationCount": 0,
+        "staleGuardReferenceCount": 0,
+        "statusMismatchCount": 0,
+        "tokenMismatchCount": 0
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "e5f48459d88614f07bac011aa74755af2072b64d4fe22d11e379e761c5a2460f",
+        "detectorId": "X20_WS02_USABILITY_GUARD_PACK_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "channelGuardMismatchCount": 0,
+        "duplicateFlowGuardCount": 0,
+        "duplicateGuardIdCount": 0,
+        "expectedChannelCount": 3,
+        "expectedModeCount": 3,
+        "expectedProfileCount": 3,
+        "guardCount": 5,
+        "missingCriticalFlowGuardCount": 0,
+        "modeProfileGuardGapCount": 0,
+        "requiredCriticalFlowCount": 5,
+        "requiredPositiveViolationCount": 0,
+        "requiredZeroViolationCount": 0,
+        "staleGuardReferenceCount": 0,
+        "statusMismatchCount": 0,
+        "tokenMismatchCount": 0
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "e5f48459d88614f07bac011aa74755af2072b64d4fe22d11e379e761c5a2460f",
+        "detectorId": "X20_WS02_USABILITY_GUARD_PACK_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "channelGuardMismatchCount": 0,
+        "duplicateFlowGuardCount": 0,
+        "duplicateGuardIdCount": 0,
+        "expectedChannelCount": 3,
+        "expectedModeCount": 3,
+        "expectedProfileCount": 3,
+        "guardCount": 5,
+        "missingCriticalFlowGuardCount": 0,
+        "modeProfileGuardGapCount": 0,
+        "requiredCriticalFlowCount": 5,
+        "requiredPositiveViolationCount": 0,
+        "requiredZeroViolationCount": 0,
+        "staleGuardReferenceCount": 0,
+        "statusMismatchCount": 0,
+        "tokenMismatchCount": 0
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "e5f48459d88614f07bac011aa74755af2072b64d4fe22d11e379e761c5a2460f",
+        "detectorId": "X20_WS02_USABILITY_GUARD_PACK_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    }
+  ],
+  "stable": true
+}

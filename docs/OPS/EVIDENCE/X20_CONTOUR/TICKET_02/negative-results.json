@@ -1,0 +1,356 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "channelGuardMismatch": [],
+      "duplicateFlowIds": [],
+      "duplicateGuardIds": [],
+      "guardCount": 4,
+      "missingCriticalFlowGuards": [
+        {
+          "flowId": "error_hints",
+          "reason": "MISSING_CRITICAL_FLOW_GUARD"
+        }
+      ],
+      "modeProfileGuardGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "channelCount": 3,
+          "flowId": "entry_flow",
+          "guardId": "guard.entry_flow",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X19_WS01_FIRST_RUN_AND_EMPTY_STATE_FLOW_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "quick_open_palette",
+          "guardId": "guard.quick_open_palette",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X18_WS02_QUICK_OPEN_AND_COMMAND_PALETTE_POLISH_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "recent_resume",
+          "guardId": "guard.recent_resume",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X19_WS02_RECENT_PROJECTS_AND_QUICK_RESUME_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "status_feedback",
+          "guardId": "guard.status_feedback",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X18_WS03_MENU_STATUS_FEEDBACK_AND_SAVE_SIGNALS_OK"
+        }
+      ],
+      "projectionHash": "8e838ccada8b4c2697e86c47fb60ca0fd8d2cf7068de43e05277a7c78e02289a",
+      "requiredCriticalFlowCount": 5,
+      "requiredPositiveViolations": [],
+      "requiredZeroViolations": [],
+      "staleGuardReferences": [],
+      "statusMismatch": [],
+      "tokenMismatch": []
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "channelGuardMismatch": [],
+      "duplicateFlowIds": [],
+      "duplicateGuardIds": [],
+      "guardCount": 5,
+      "missingCriticalFlowGuards": [],
+      "modeProfileGuardGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "channelCount": 3,
+          "flowId": "error_hints",
+          "guardId": "guard.error_hints",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X19_WS03_ERROR_HANDLING_AND_RECOVERY_HINTS_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "quick_open_palette",
+          "guardId": "guard.quick_open_palette",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X18_WS02_QUICK_OPEN_AND_COMMAND_PALETTE_POLISH_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "recent_resume",
+          "guardId": "guard.recent_resume",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X19_WS02_RECENT_PROJECTS_AND_QUICK_RESUME_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "status_feedback",
+          "guardId": "guard.status_feedback",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X18_WS03_MENU_STATUS_FEEDBACK_AND_SAVE_SIGNALS_OK"
+        }
+      ],
+      "projectionHash": "67183990b40cdf2fd1f822626ad3d314bde338afb5f781f95d6304f078768340",
+      "requiredCriticalFlowCount": 5,
+      "requiredPositiveViolations": [],
+      "requiredZeroViolations": [],
+      "staleGuardReferences": [
+        {
+          "flowId": "entry_flow",
+          "guardId": "guard.entry_flow",
+          "reason": "STALE_GUARD_REFERENCE",
+          "statusRef": "docs/OPS/STATUS/DOES_NOT_EXIST.json"
+        }
+      ],
+      "statusMismatch": [],
+      "tokenMismatch": []
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "channelGuardMismatch": [],
+      "duplicateFlowIds": [],
+      "duplicateGuardIds": [],
+      "guardCount": 5,
+      "missingCriticalFlowGuards": [],
+      "modeProfileGuardGaps": [
+        {
+          "expectedModeCount": 4,
+          "expectedProfileCount": 3,
+          "flowId": "entry_flow",
+          "guardId": "guard.entry_flow",
+          "modeCount": 3,
+          "profileCount": 3,
+          "reason": "MODE_PROFILE_GUARD_GAP"
+        },
+        {
+          "expectedModeCount": 4,
+          "expectedProfileCount": 3,
+          "flowId": "recent_resume",
+          "guardId": "guard.recent_resume",
+          "modeCount": 3,
+          "profileCount": 3,
+          "reason": "MODE_PROFILE_GUARD_GAP"
+        },
+        {
+          "expectedModeCount": 4,
+          "expectedProfileCount": 3,
+          "flowId": "quick_open_palette",
+          "guardId": "guard.quick_open_palette",
+          "modeCount": 3,
+          "profileCount": 3,
+          "reason": "MODE_PROFILE_GUARD_GAP"
+        },
+        {
+          "expectedModeCount": 4,
+          "expectedProfileCount": 3,
+          "flowId": "status_feedback",
+          "guardId": "guard.status_feedback",
+          "modeCount": 3,
+          "profileCount": 3,
+          "reason": "MODE_PROFILE_GUARD_GAP"
+        },
+        {
+          "expectedModeCount": 4,
+          "expectedProfileCount": 3,
+          "flowId": "error_hints",
+          "guardId": "guard.error_hints",
+          "modeCount": 3,
+          "profileCount": 3,
+          "reason": "MODE_PROFILE_GUARD_GAP"
+        }
+      ],
+      "ok": false,
+      "projection": [
+        {
+          "channelCount": 3,
+          "flowId": "entry_flow",
+          "guardId": "guard.entry_flow",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X19_WS01_FIRST_RUN_AND_EMPTY_STATE_FLOW_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "error_hints",
+          "guardId": "guard.error_hints",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X19_WS03_ERROR_HANDLING_AND_RECOVERY_HINTS_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "quick_open_palette",
+          "guardId": "guard.quick_open_palette",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X18_WS02_QUICK_OPEN_AND_COMMAND_PALETTE_POLISH_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "recent_resume",
+          "guardId": "guard.recent_resume",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X19_WS02_RECENT_PROJECTS_AND_QUICK_RESUME_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "status_feedback",
+          "guardId": "guard.status_feedback",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X18_WS03_MENU_STATUS_FEEDBACK_AND_SAVE_SIGNALS_OK"
+        }
+      ],
+      "projectionHash": "da8ca04b05ccd5c388581d52487f2a86faa55ebf12f59613824c496b3da84ab3",
+      "requiredCriticalFlowCount": 5,
+      "requiredPositiveViolations": [],
+      "requiredZeroViolations": [],
+      "staleGuardReferences": [],
+      "statusMismatch": [],
+      "tokenMismatch": []
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "channelGuardMismatch": [
+        {
+          "channelCount": 3,
+          "expectedChannelCount": 4,
+          "flowId": "entry_flow",
+          "guardId": "guard.entry_flow",
+          "reason": "CHANNEL_GUARD_MISMATCH"
+        },
+        {
+          "channelCount": 3,
+          "expectedChannelCount": 4,
+          "flowId": "recent_resume",
+          "guardId": "guard.recent_resume",
+          "reason": "CHANNEL_GUARD_MISMATCH"
+        },
+        {
+          "channelCount": 3,
+          "expectedChannelCount": 4,
+          "flowId": "quick_open_palette",
+          "guardId": "guard.quick_open_palette",
+          "reason": "CHANNEL_GUARD_MISMATCH"
+        },
+        {
+          "channelCount": 3,
+          "expectedChannelCount": 4,
+          "flowId": "status_feedback",
+          "guardId": "guard.status_feedback",
+          "reason": "CHANNEL_GUARD_MISMATCH"
+        },
+        {
+          "channelCount": 3,
+          "expectedChannelCount": 4,
+          "flowId": "error_hints",
+          "guardId": "guard.error_hints",
+          "reason": "CHANNEL_GUARD_MISMATCH"
+        }
+      ],
+      "duplicateFlowIds": [],
+      "duplicateGuardIds": [],
+      "guardCount": 5,
+      "missingCriticalFlowGuards": [],
+      "modeProfileGuardGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "channelCount": 3,
+          "flowId": "entry_flow",
+          "guardId": "guard.entry_flow",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X19_WS01_FIRST_RUN_AND_EMPTY_STATE_FLOW_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "error_hints",
+          "guardId": "guard.error_hints",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X19_WS03_ERROR_HANDLING_AND_RECOVERY_HINTS_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "quick_open_palette",
+          "guardId": "guard.quick_open_palette",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X18_WS02_QUICK_OPEN_AND_COMMAND_PALETTE_POLISH_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "recent_resume",
+          "guardId": "guard.recent_resume",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X19_WS02_RECENT_PROJECTS_AND_QUICK_RESUME_OK"
+        },
+        {
+          "channelCount": 3,
+          "flowId": "status_feedback",
+          "guardId": "guard.status_feedback",
+          "modeCount": 3,
+          "profileCount": 3,
+          "status": "PASS",
+          "token": "X18_WS03_MENU_STATUS_FEEDBACK_AND_SAVE_SIGNALS_OK"
+        }
+      ],
+      "projectionHash": "da8ca04b05ccd5c388581d52487f2a86faa55ebf12f59613824c496b3da84ab3",
+      "requiredCriticalFlowCount": 5,
+      "requiredPositiveViolations": [],
+      "requiredZeroViolations": [],
+      "staleGuardReferences": [],
+      "statusMismatch": [],
+      "tokenMismatch": []
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "determinism": {
+        "hashes": [
+          "da8ca04b05ccd5c388581d52487f2a86faa55ebf12f59613824c496b3da84ab3",
+          "633ad53c898b7a9bd6e8673bec69c670f0492c18cfda2467d1639f2d58beffff",
+          "da8ca04b05ccd5c388581d52487f2a86faa55ebf12f59613824c496b3da84ab3"
+        ],
+        "ok": false
+      }
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "MISSING_GUARD_FOR_CRITICAL_FLOW_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "STALE_GUARD_REFERENCE_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "MODE_PROFILE_GUARD_GAP_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "CHANNEL_GUARD_MISMATCH_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "NON_DETERMINISTIC_GUARD_SUMMARY_EXPECT_REJECT"
+  }
+}

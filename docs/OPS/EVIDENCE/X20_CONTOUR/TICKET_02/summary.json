@@ -1,0 +1,52 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "channelGuardMismatchCount": 0,
+    "duplicateFlowGuardCount": 0,
+    "duplicateGuardIdCount": 0,
+    "expectedChannelCount": 3,
+    "expectedModeCount": 3,
+    "expectedProfileCount": 3,
+    "guardCount": 5,
+    "missingCriticalFlowGuardCount": 0,
+    "modeProfileGuardGapCount": 0,
+    "requiredCriticalFlowCount": 5,
+    "requiredPositiveViolationCount": 0,
+    "requiredZeroViolationCount": 0,
+    "staleGuardReferenceCount": 0,
+    "statusMismatchCount": 0,
+    "tokenMismatchCount": 0
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "generatedAtUtc": "2026-02-28T19:14:38.119Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "BUILD_USABILITY_REGRESSION_GUARD_PACK_FOR_CURRENT_MENU_FEATURE_SET_BEFORE_RELEASE_WRAP",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "X20_WS02_RUN_20260228_RERUN",
+  "status": "PASS",
+  "ticketId": "TZ_X20_WS02_USABILITY_REGRESSION_GUARD_PACK_001"
+}
