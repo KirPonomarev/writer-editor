@@ -5,11 +5,20 @@ import { fileURLToPath } from 'node:url';
 import {
   COMMAND_BUS_ROUTE,
   REQUIRED_BYPASS_SCENARIO_IDS,
+  evaluateCommandBusRoute,
 } from '../../src/renderer/commands/commandBusGuard.mjs';
 
+const TOKEN_ENFORCED = 'COMMAND_SURFACE_ENFORCED_OK';
 const TOKEN_SINGLE_ENTRY = 'COMMAND_SURFACE_SINGLE_ENTRY_OK';
 const TOKEN_BYPASS_TESTS = 'COMMAND_SURFACE_BYPASS_NEGATIVE_TESTS_OK';
 const DEFAULT_CONTRACT_TEST_PATH = 'test/contracts/command-surface-single-entry.contract.test.js';
+const BYPASS_ROUTE_CASES = Object.freeze([
+  { scenarioId: 'hotkey-bypass', route: 'hotkey.direct' },
+  { scenarioId: 'palette-bypass', route: 'palette.direct' },
+  { scenarioId: 'ipc-direct-bypass', route: 'ipc.renderer-main.direct' },
+  { scenarioId: 'context-button-bypass', route: 'context.button.direct' },
+  { scenarioId: 'plugin-overlay-bypass', route: 'plugin.overlay.exec' },
+]);
 
 const REQUIRED_FILES = Object.freeze([
   'src/renderer/commands/registry.mjs',
@@ -97,6 +106,32 @@ function evaluateSingleEntryState(editorText, projectCommandsText, commandCatalo
   return { ok, checks };
 }
 
+function evaluateBypassRouteSuite() {
+  const cases = BYPASS_ROUTE_CASES.map((entry) => {
+    const state = evaluateCommandBusRoute({ route: entry.route });
+    const pass = state.ok === false
+      && state.failSignal === 'E_COMMAND_SURFACE_BYPASS'
+      && state.scenarioId === entry.scenarioId;
+    return {
+      scenarioId: entry.scenarioId,
+      route: entry.route,
+      pass,
+      failSignal: state.failSignal,
+      failReason: state.failReason,
+      observedScenarioId: state.scenarioId,
+    };
+  });
+  const positiveRoute = evaluateCommandBusRoute({ route: COMMAND_BUS_ROUTE });
+  const positiveRouteOk = positiveRoute.ok === true && positiveRoute.failSignal === '';
+  return {
+    ok: cases.every((entry) => entry.pass) && positiveRouteOk,
+    positiveRouteOk,
+    positiveRouteFailSignal: positiveRoute.failSignal,
+    positiveRouteFailReason: positiveRoute.failReason,
+    cases,
+  };
+}
+
 export function evaluateCommandSurfaceState(input = {}) {
   const contractTestPath = String(input.contractTestPath || DEFAULT_CONTRACT_TEST_PATH).trim();
   const missingFiles = REQUIRED_FILES.filter((filePath) => !fileExists(filePath)).sort((a, b) => a.localeCompare(b));
@@ -115,9 +150,12 @@ export function evaluateCommandSurfaceState(input = {}) {
   const missingScenarioIds = REQUIRED_BYPASS_SCENARIO_IDS
     .filter((scenarioId) => !presentScenarioSet.has(scenarioId))
     .sort((a, b) => a.localeCompare(b));
+  const bypassSuite = evaluateBypassRouteSuite();
 
   const singleEntryOk = missingFiles.length === 0 && singleEntryState.ok ? 1 : 0;
-  const bypassTestsOk = missingScenarioIds.length === 0 ? 1 : 0;
+  const bypassDeclarationsOk = missingScenarioIds.length === 0 ? 1 : 0;
+  const bypassTestsOk = bypassDeclarationsOk === 1 && bypassSuite.ok ? 1 : 0;
+  const enforcedOk = singleEntryOk === 1 && bypassTestsOk === 1 ? 1 : 0;
 
   let failSignal = '';
   let failReason = '';
@@ -126,13 +164,17 @@ export function evaluateCommandSurfaceState(input = {}) {
     failReason = missingFiles.length > 0
       ? 'COMMAND_SURFACE_FILES_MISSING'
       : 'COMMAND_SURFACE_SINGLE_ENTRY_NOT_ENFORCED';
-  } else if (bypassTestsOk !== 1) {
+  } else if (bypassDeclarationsOk !== 1) {
     failSignal = 'E_COMMAND_SURFACE_NEGATIVE_MISSING';
     failReason = 'COMMAND_SURFACE_NEGATIVE_SCENARIOS_MISSING';
+  } else if (bypassSuite.ok !== true) {
+    failSignal = 'E_COMMAND_SURFACE_BYPASS';
+    failReason = 'COMMAND_SURFACE_BYPASS_RUNTIME_CHECK_FAILED';
   }
 
   return {
-    ok: singleEntryOk === 1 && bypassTestsOk === 1,
+    ok: enforcedOk === 1,
+    [TOKEN_ENFORCED]: enforcedOk,
     [TOKEN_SINGLE_ENTRY]: singleEntryOk,
     [TOKEN_BYPASS_TESTS]: bypassTestsOk,
     COMMAND_SURFACE_FAIL_REASON: failReason,
@@ -144,6 +186,7 @@ export function evaluateCommandSurfaceState(input = {}) {
     missingScenarioIds,
     missingFiles,
     checks: singleEntryState.checks,
+    bypassSuite,
   };
 }
 
@@ -164,6 +207,7 @@ function parseArgs(argv) {
 }
 
 function printHuman(state) {
+  console.log(`${TOKEN_ENFORCED}=${state[TOKEN_ENFORCED]}`);
   console.log(`${TOKEN_SINGLE_ENTRY}=${state[TOKEN_SINGLE_ENTRY]}`);
   console.log(`${TOKEN_BYPASS_TESTS}=${state[TOKEN_BYPASS_TESTS]}`);
   console.log(`COMMAND_SURFACE_FAIL_REASON=${state.COMMAND_SURFACE_FAIL_REASON}`);

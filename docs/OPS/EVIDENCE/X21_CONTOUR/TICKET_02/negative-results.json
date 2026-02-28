@@ -1,0 +1,152 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "chainEntries": [
+        {
+          "chainHash": "28efae6cd88c9b2354b91645323166c80c0fe7a38b15dc3a0d10ff4398d7c8d1",
+          "ref": "docs/OPS/EVIDENCE/X20_CONTOUR/x20-contour-freeze-packet-v1.json",
+          "sha256": "c60a496791e2ec966fd9b2eef9bf27e7f8c3ba42c2d4b8a24b511a68e3b2a5e0"
+        },
+        {
+          "chainHash": "25b899818156fff2950011ea69f205103c4552c52ed65bb9f8cee1cbdf9baf2f",
+          "ref": "docs/OPS/STATUS/X20_CONTOUR_CLOSE_SUMMARY_V1.json",
+          "sha256": "4bd488ba79334a542de5509d4a13a3cac3443208831c02126015c28a3713ced8"
+        },
+        {
+          "chainHash": "6b2115109eb83e7b6faffda879aa7e77195a5a9e680651a396eafaa619e0da1b",
+          "ref": "docs/OPS/STATUS/X20_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+          "sha256": "1cb2f723dc27ec0d7e15d3e82225d10272fcec7a45751dfe812c55fe64087cb9"
+        },
+        {
+          "chainHash": "adcd4bda04e729d02605860beab1a2c40f7f8f531b0f884b116576b1af24a546",
+          "ref": "docs/OPS/STATUS/X21_WS01_RELEASE_CANDIDATE_PRECHECK_PACK_v1.json",
+          "sha256": "449f625b5a07ef9c26904540364a2df87f97ff891c8988c2f3a6a5d9c88cecca"
+        },
+        {
+          "chainHash": "5c0370556253f0bba78aa2aa41c82dc14cf4a2768d30ec0186f684234ae7bbf4",
+          "ref": "docs/OPS/EVIDENCE/X21_CONTOUR/TICKET_01/summary.json",
+          "sha256": "285d435967c6a013523d7c3d0a3c42c1e1cf494968b72b7a7fb6acb1a6291df3"
+        }
+      ],
+      "chainRootHash": "5c0370556253f0bba78aa2aa41c82dc14cf4a2768d30ec0186f684234ae7bbf4",
+      "evidenceHashMismatch": false,
+      "issues": [
+        {
+          "reason": "MISSING_EVIDENCE_LINK",
+          "ref": "docs/OPS/STATUS/DOES_NOT_EXIST_PROMOTION_LINK.json"
+        }
+      ],
+      "missingEvidenceLinks": [
+        {
+          "reason": "MISSING_EVIDENCE_LINK",
+          "ref": "docs/OPS/STATUS/DOES_NOT_EXIST_PROMOTION_LINK.json"
+        }
+      ],
+      "ok": false,
+      "requiredEvidenceRefCount": 6,
+      "resolvedEvidenceRefCount": 5
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "chainEntries": [
+        {
+          "chainHash": "28efae6cd88c9b2354b91645323166c80c0fe7a38b15dc3a0d10ff4398d7c8d1",
+          "ref": "docs/OPS/EVIDENCE/X20_CONTOUR/x20-contour-freeze-packet-v1.json",
+          "sha256": "c60a496791e2ec966fd9b2eef9bf27e7f8c3ba42c2d4b8a24b511a68e3b2a5e0"
+        },
+        {
+          "chainHash": "25b899818156fff2950011ea69f205103c4552c52ed65bb9f8cee1cbdf9baf2f",
+          "ref": "docs/OPS/STATUS/X20_CONTOUR_CLOSE_SUMMARY_V1.json",
+          "sha256": "4bd488ba79334a542de5509d4a13a3cac3443208831c02126015c28a3713ced8"
+        },
+        {
+          "chainHash": "6b2115109eb83e7b6faffda879aa7e77195a5a9e680651a396eafaa619e0da1b",
+          "ref": "docs/OPS/STATUS/X20_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+          "sha256": "1cb2f723dc27ec0d7e15d3e82225d10272fcec7a45751dfe812c55fe64087cb9"
+        },
+        {
+          "chainHash": "adcd4bda04e729d02605860beab1a2c40f7f8f531b0f884b116576b1af24a546",
+          "ref": "docs/OPS/STATUS/X21_WS01_RELEASE_CANDIDATE_PRECHECK_PACK_v1.json",
+          "sha256": "449f625b5a07ef9c26904540364a2df87f97ff891c8988c2f3a6a5d9c88cecca"
+        },
+        {
+          "chainHash": "5c0370556253f0bba78aa2aa41c82dc14cf4a2768d30ec0186f684234ae7bbf4",
+          "ref": "docs/OPS/EVIDENCE/X21_CONTOUR/TICKET_01/summary.json",
+          "sha256": "285d435967c6a013523d7c3d0a3c42c1e1cf494968b72b7a7fb6acb1a6291df3"
+        }
+      ],
+      "chainRootHash": "5c0370556253f0bba78aa2aa41c82dc14cf4a2768d30ec0186f684234ae7bbf4",
+      "evidenceHashMismatch": true,
+      "issues": [
+        {
+          "reason": "EVIDENCE_LOCK_HASH_MISMATCH"
+        }
+      ],
+      "missingEvidenceLinks": [],
+      "ok": false,
+      "requiredEvidenceRefCount": 5,
+      "resolvedEvidenceRefCount": 5
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "issues": [
+        {
+          "expectedReleaseClassChanged": false,
+          "observedReleaseClassChanged": true,
+          "reason": "RELEASE_CLASS_DRIFT"
+        }
+      ],
+      "missingModeChecks": [],
+      "modeDispositionDrift": [],
+      "modeEvaluatorIssues": [],
+      "ok": false,
+      "releaseClassDrift": true
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "issues": [
+        {
+          "expectedDisposition": "advisory",
+          "failSignalCode": "E_REMOTE_UNAVAILABLE",
+          "mode": "promotion",
+          "observedDisposition": "blocking",
+          "reason": "REGISTRY_MODE_DISPOSITION_DRIFT"
+        }
+      ],
+      "missingModeChecks": [],
+      "modeDispositionDrift": [
+        {
+          "expectedDisposition": "advisory",
+          "failSignalCode": "E_REMOTE_UNAVAILABLE",
+          "mode": "promotion",
+          "observedDisposition": "blocking",
+          "reason": "REGISTRY_MODE_DISPOSITION_DRIFT"
+        }
+      ],
+      "modeEvaluatorIssues": [],
+      "ok": false,
+      "releaseClassDrift": false
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "determinism": {
+        "hashes": [
+          "aa4f966a29e4bd6f2175e68d8ffa1cbe4bffe6f13b1f8e2c57047e83fcef6b9c",
+          "b34f441b017f4fc65f4ae3a8909c02fbe9bfad7c2362fc998341148af607e68b",
+          "aa4f966a29e4bd6f2175e68d8ffa1cbe4bffe6f13b1f8e2c57047e83fcef6b9c"
+        ],
+        "ok": false
+      }
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "PROMOTION_DRY_RUN_WITH_MISSING_EVIDENCE_LINK_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "EVIDENCE_LOCK_HASH_MISMATCH_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "RELEASE_CLASS_DRIFT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "MODE_DISPOSITION_DRIFT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "NON_DETERMINISTIC_DRY_RUN_OUTPUT_EXPECT_REJECT"
+  }
+}

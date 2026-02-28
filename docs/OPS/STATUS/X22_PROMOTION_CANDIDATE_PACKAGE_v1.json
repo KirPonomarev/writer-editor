@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "promotionDryRunVersion": "x22.ws01.v1",
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "blockingSurfaceExpansion": false,
+  "expectedReleaseClassChanged": false,
+  "requiredModeChecks": [
+    {
+      "failSignalCode": "E_REMOTE_UNAVAILABLE",
+      "mode": "release",
+      "expectedDisposition": "advisory"
+    },
+    {
+      "failSignalCode": "E_REMOTE_UNAVAILABLE",
+      "mode": "promotion",
+      "expectedDisposition": "advisory"
+    }
+  ],
+  "requiredEvidenceRefs": [
+    "docs/OPS/EVIDENCE/X21_CONTOUR/x21-contour-freeze-packet-v1.json",
+    "docs/OPS/STATUS/X21_CONTOUR_CLOSE_SUMMARY_V1.json",
+    "docs/OPS/STATUS/X21_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+    "docs/OPS/STATUS/X21_WS02_PROMOTION_DRY_RUN_AND_EVIDENCE_LOCK_v1.json",
+    "docs/OPS/EVIDENCE/X21_CONTOUR/TICKET_02/summary.json"
+  ],
+  "requiredWs01Token": "X21_WS02_PROMOTION_DRY_RUN_AND_EVIDENCE_LOCK_OK",
+  "requiredWs01Status": "PASS",
+  "requiredWs01ZeroKeys": [
+    "missingEvidenceLinkCount",
+    "evidenceHashMismatchCount",
+    "modeCheckMissingCount",
+    "modeDispositionDriftCount",
+    "modeEvaluatorIssueCount",
+    "releaseClassDriftCount",
+    "promotionDryRunIssueCount",
+    "attestationIssueCount",
+    "advisoryToBlockingDriftCount"
+  ],
+  "requiredAttestationTokens": [
+    "ATTESTATION_SIGNATURE_OK",
+    "VERIFY_ATTESTATION_OK"
+  ]
+}

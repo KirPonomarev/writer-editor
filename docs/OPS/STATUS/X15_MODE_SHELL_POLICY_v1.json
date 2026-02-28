@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "x15.ws04.v1",
+  "modes": [
+    "Write",
+    "Plan",
+    "Review"
+  ],
+  "defaultProfile": "minimal",
+  "writeRequiredCommand": "cmd.project.save",
+  "reviewHistoryCapabilityCommand": "cmd.project.exportMarkdownV1",
+  "reviewOnlyCommands": [
+    "cmd.project.exportMarkdownV1"
+  ],
+  "requiredCommandsByMode": {
+    "Write": [
+      "cmd.project.open",
+      "cmd.project.save",
+      "cmd.project.export.docxMin"
+    ],
+    "Plan": [
+      "cmd.project.open",
+      "cmd.project.flowOpenV1",
+      "cmd.project.flowSaveV1"
+    ],
+    "Review": [
+      "cmd.project.open",
+      "cmd.project.save",
+      "cmd.project.exportMarkdownV1"
+    ]
+  },
+  "requiredPanelsByMode": {
+    "Write": [
+      "projectTree",
+      "editor",
+      "inspector",
+      "statusBar"
+    ],
+    "Plan": [
+      "projectTree",
+      "editor",
+      "timeline",
+      "statusBar"
+    ],
+    "Review": [
+      "projectTree",
+      "editor",
+      "review",
+      "statusBar"
+    ]
+  },
+  "forbiddenPanelsByMode": {
+    "Write": [
+      "review"
+    ],
+    "Plan": [
+      "review"
+    ],
+    "Review": []
+  },
+  "transitionPolicy": {
+    "clearVisibilityStateOnModeChange": true,
+    "resetKeys": [
+      "visibleCommands",
+      "hiddenCommands",
+      "activePanels"
+    ]
+  }
+}

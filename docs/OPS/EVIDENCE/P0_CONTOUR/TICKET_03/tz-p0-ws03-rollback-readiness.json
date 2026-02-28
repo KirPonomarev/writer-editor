@@ -1,0 +1,91 @@
+{
+  "tzId": "TZ_P0_WS03_BLOCKING_BINDING_COMPLETENESS_001",
+  "generatedAtUtc": "2026-02-28T12:22:57.741Z",
+  "rollbackCoveragePct": 100,
+  "rows": [
+    {
+      "tokenId": "CORE_SOT_EXECUTABLE_OK",
+      "rollbackRef": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "RECOVERY_IO_OK",
+      "rollbackRef": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "ATTESTATION_SIGNATURE_OK",
+      "rollbackRef": "docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_ENFORCEMENT_v1.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "VERIFY_ATTESTATION_OK",
+      "rollbackRef": "docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_ENFORCEMENT_v1.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "CONFIG_HASH_LOCK_OK",
+      "rollbackRef": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "E2E_CRITICAL_USER_PATH_OK",
+      "rollbackRef": "docs/OPS/STATUS/E2E_CRITICAL_USER_PATH_HARD_MIN_v3.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "HEAD_STRICT_OK",
+      "rollbackRef": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "MIGRATIONS_ATOMICITY_OK",
+      "rollbackRef": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "MIGRATIONS_POLICY_OK",
+      "rollbackRef": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "NORMALIZATION_XPLAT_OK",
+      "rollbackRef": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "PROOFHOOK_INTEGRITY_OK",
+      "rollbackRef": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "REQUIRED_SET_NO_TARGET_OK",
+      "rollbackRef": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "SINGLE_VERIFY_CONTOUR_ENFORCED_OK",
+      "rollbackRef": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    },
+    {
+      "tokenId": "TOKEN_SOURCE_CONFLICT_OK",
+      "rollbackRef": "docs/OPS/STATUS/RELEASE_TOKEN_BINDING_COMPLETENESS_v3.json",
+      "rollbackRefPresent": true,
+      "rollbackRefExists": true
+    }
+  ]
+}

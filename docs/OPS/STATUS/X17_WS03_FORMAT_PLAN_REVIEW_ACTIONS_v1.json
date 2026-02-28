@@ -1,0 +1,18 @@
+{
+  "actionCount": 6,
+  "advisoryToBlockingDriftCount": 0,
+  "channelCount": 3,
+  "commandCapabilityBindingCount": 27,
+  "menuProjectionGapCount": 0,
+  "missingRequiredActionRowsCount": 0,
+  "modeCount": 3,
+  "profileCount": 3,
+  "repeatabilityStable3Runs": true,
+  "requiredActionCount": 6,
+  "requiredCommandCount": 6,
+  "rowCount": 54,
+  "status": "PASS",
+  "token": "X17_WS03_FORMAT_PLAN_REVIEW_ACTIONS_OK",
+  "updatedAtUtc": "2026-02-28T17:33:43.182Z",
+  "version": 1
+}

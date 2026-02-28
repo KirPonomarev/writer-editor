@@ -1,0 +1,183 @@
+{
+  "fixtures": [
+    {
+      "actual": "FAIL",
+      "category": "case",
+      "detail": {
+        "conflict": true,
+        "left": "SceneA.txt",
+        "right": "scenea.TXT"
+      },
+      "expected": "FAIL",
+      "fixtureId": "canonical-case-collision-1",
+      "kind": "negative",
+      "pass": true
+    },
+    {
+      "actual": "PASS",
+      "category": "case",
+      "detail": {
+        "conflict": false,
+        "left": "SceneA.txt",
+        "right": "SceneB.txt"
+      },
+      "expected": "PASS",
+      "fixtureId": "canonical-case-pass-1",
+      "kind": "positive",
+      "pass": true
+    },
+    {
+      "actual": "FAIL",
+      "category": "reserved",
+      "detail": {
+        "name": "CON.txt",
+        "reserved": true
+      },
+      "expected": "FAIL",
+      "fixtureId": "reserved-name-neg-1",
+      "kind": "negative",
+      "pass": true
+    },
+    {
+      "actual": "PASS",
+      "category": "reserved",
+      "detail": {
+        "name": "chapter-01.txt",
+        "reserved": false
+      },
+      "expected": "PASS",
+      "fixtureId": "reserved-name-pos-1",
+      "kind": "positive",
+      "pass": true
+    },
+    {
+      "actual": "FAIL",
+      "category": "newline",
+      "detail": {
+        "divergence": true,
+        "normalized": "line1\nline2\nline3\n",
+        "text": "line1\r\nline2\rline3\n"
+      },
+      "expected": "FAIL",
+      "fixtureId": "newline-divergence-neg-1",
+      "kind": "negative",
+      "pass": true
+    },
+    {
+      "actual": "PASS",
+      "category": "newline",
+      "detail": {
+        "divergence": false,
+        "normalized": "line1\nline2\nline3\n",
+        "text": "line1\nline2\nline3\n"
+      },
+      "expected": "PASS",
+      "fixtureId": "newline-canonical-pos-1",
+      "kind": "positive",
+      "pass": true
+    },
+    {
+      "actual": "FAIL",
+      "category": "unicode",
+      "detail": {
+        "canonicalMatch": true,
+        "divergence": true,
+        "left": "Café",
+        "rawMismatch": true,
+        "right": "Café"
+      },
+      "expected": "FAIL",
+      "fixtureId": "unicode-mismatch-neg-1",
+      "kind": "negative",
+      "pass": true
+    },
+    {
+      "actual": "PASS",
+      "category": "unicode",
+      "detail": {
+        "canonicalMatch": true,
+        "divergence": false,
+        "left": "Café",
+        "rawMismatch": false,
+        "right": "Café"
+      },
+      "expected": "PASS",
+      "fixtureId": "unicode-canonical-pos-1",
+      "kind": "positive",
+      "pass": true
+    },
+    {
+      "actual": "FAIL",
+      "category": "locale",
+      "detail": {
+        "canonicalOrder": [
+          "Alpha",
+          "beta",
+          "item1",
+          "item2",
+          "item10"
+        ],
+        "drift": true,
+        "observedOrder": [
+          "beta",
+          "Alpha",
+          "item10",
+          "item2",
+          "item1"
+        ],
+        "values": [
+          "item2",
+          "item10",
+          "item1",
+          "Alpha",
+          "beta"
+        ]
+      },
+      "expected": "FAIL",
+      "fixtureId": "locale-ordering-drift-neg-1",
+      "kind": "negative",
+      "pass": true
+    },
+    {
+      "actual": "PASS",
+      "category": "locale",
+      "detail": {
+        "canonicalOrder": [
+          "Alpha",
+          "beta",
+          "item1",
+          "item2",
+          "item10"
+        ],
+        "drift": false,
+        "observedOrder": [
+          "Alpha",
+          "beta",
+          "item1",
+          "item2",
+          "item10"
+        ],
+        "values": [
+          "item2",
+          "item10",
+          "item1",
+          "Alpha",
+          "beta"
+        ]
+      },
+      "expected": "PASS",
+      "fixtureId": "locale-ordering-canonical-pos-1",
+      "kind": "positive",
+      "pass": true
+    }
+  ],
+  "packId": "P2_WS06_EXTENDED_PARITY_FIXTURE_PACKS",
+  "platforms": [
+    "web",
+    "windows",
+    "linux",
+    "android",
+    "ios"
+  ],
+  "schemaVersion": "extended-parity-fixtures.v1"
+}

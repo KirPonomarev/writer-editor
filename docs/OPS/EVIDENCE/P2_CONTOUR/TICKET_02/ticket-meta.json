@@ -1,6 +1,6 @@
 {
-  "generatedAtUtc": "2026-02-27T05:24:55.067Z",
+  "generatedAtUtc": "2026-02-28T13:51:29.763Z",
   "outputDir": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02",
-  "runId": "RUN-2026-02-26-001",
-  "ticketId": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003"
+  "runId": "TZ_P2_WS02_MIGRATION_CRASH_WINDOW_REDUCTION_001",
+  "ticketId": "P2_WS02"
 }

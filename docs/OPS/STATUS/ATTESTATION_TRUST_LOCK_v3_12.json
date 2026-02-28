@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "status": "ACTIVE",
+  "lockId": "ATTESTATION_TRUST_LOCK_v3_12",
+  "trustRootId": "trust-root-release-v1",
+  "requiredContextSource": "trusted_context_record",
+  "forbiddenContextSources": [
+    "self_generated"
+  ],
+  "signerIdentityBinding": {
+    "allowedSignerIds": [
+      "trusted-signer-release-main"
+    ]
+  },
+  "trustedArtifact": {
+    "artifactId": "ATTESTATION_TRUST_ARTIFACT_LOCK_v1",
+    "path": "docs/OPS/LOCKS/ATTESTATION_TRUST_ARTIFACT.lock",
+    "sha256": "16558dc018fced8ae67853def48dd4add95dd9bbe5ac216bbcc2198eb011093a"
+  },
+  "failSignalCode": "E_ATTESTATION_SIGNATURE_INVALID",
+  "updatedAtUtc": "2026-02-28T00:00:00.000Z"
+}

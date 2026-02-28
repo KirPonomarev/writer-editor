@@ -1,19 +1,40 @@
 {
-  "advisoryToBlockingDriftCount": 0,
-  "gates": {
-    "mc_advisory_blocking_drift_zero": "PASS",
-    "p2_02_duplicate_failsignal_semantics_reduction_check": "PASS",
-    "p2_02_semantic_collision_negative_check": "PASS",
-    "p2_02_unique_failsignal_proof_check": "PASS"
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
   },
-  "generatedAtUtc": "2026-02-27T05:24:55.067Z",
-  "removedDuplicateSemanticAliases": 70,
-  "runId": "RUN-2026-02-26-001",
-  "semanticCollisionNegativeOk": true,
-  "singleBlockingAuthorityOk": true,
-  "sourceFailSignalCount": 74,
+  "advisoryToBlockingDriftCount": 0,
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "advisoryDriftCount": 0,
+    "crashWindowUnsafePathCount": 0,
+    "sourceHardeningFailedCount": 0,
+    "stressDrillCaseCount": 7
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true
+  },
+  "generatedAtUtc": "2026-02-28T13:51:29.763Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "СНИЗИТЬ_РИСК_ЧАСТИЧНОЙ_ПОРЧИ_ПРИ_МИГРАЦИЯХ_ЧЕРЕЗ_CRASH_WINDOW_HARDENING_AND_STRESS_DRILLS",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "TZ_P2_WS02_MIGRATION_CRASH_WINDOW_REDUCTION_001",
   "status": "PASS",
-  "ticketId": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003",
-  "uniqueFailsignalProofOk": true,
-  "uniqueSemanticCount": 4
+  "ticketId": "P2_WS02"
 }

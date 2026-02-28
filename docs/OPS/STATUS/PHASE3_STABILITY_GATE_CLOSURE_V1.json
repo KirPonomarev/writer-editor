@@ -1,0 +1,25 @@
+{
+  "artifactId": "PHASE3_STABILITY_GATE_CLOSURE_V1",
+  "schemaVersion": 1,
+  "taskId": "TZ_EXEC_PKG_05_A05_PHASE3_STABILITY_WAVE_05",
+  "mainSha": "44351318385cebe21050436ce1bc5a57341d9b4e",
+  "requiredWaves": 5,
+  "passedWaves": 5,
+  "stabilityCounter": "5_OF_5",
+  "waveIds": [
+    "PHASE3_WAVE_01",
+    "PHASE3_WAVE_02",
+    "PHASE3_WAVE_03",
+    "PHASE3_WAVE_04",
+    "PHASE3_WAVE_05"
+  ],
+  "checks": {
+    "MC_PHASE3_STABILITY_GATE_5_OF_5_PASS": true,
+    "MC_PHASE3_MODE_ACTIVE": true,
+    "MC_CHECK_EXECUTABILITY_BINDING": true
+  },
+  "status": "CLOSED",
+  "closedAtUtc": "2026-02-28T06:08:40.000Z",
+  "updatedAtUtc": "2026-02-28T06:08:40.000Z",
+  "approvedBy": "KIRILL_PONOMAREV"
+}

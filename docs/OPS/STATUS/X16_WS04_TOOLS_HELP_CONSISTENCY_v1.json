@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "consistencyVersion": "x16.ws04.v1",
+  "nonBlockingClassification": "advisory",
+  "blockingSurfaceExpansion": false,
+  "formalMachineBinding": {
+    "status": "not_bound",
+    "blockingAllowed": false,
+    "note": "STAYS_NON_BLOCKING_UNTIL_FORMAL_MACHINE_BINDING"
+  },
+  "requiredHelpEntries": [
+    "HELP_GROUP_BASE_ENTRY"
+  ],
+  "entries": [
+    {
+      "featureId": "TOOLS_GROUP_BASE_ENTRY",
+      "menuGroupId": "Tools",
+      "commandId": "project.create",
+      "capabilityId": "cap.core.project.create",
+      "stageGate": {
+        "minStageId": "X1",
+        "requiredScopeFlag": "XPLAT_STAGE_X1_ENABLED",
+        "disabledVisibilityState": "visible+disabled(reason=\"STAGE_GATED\")"
+      },
+      "requireFullModeProfileCoverage": true,
+      "allowedVisibility": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "featureId": "HELP_GROUP_BASE_ENTRY",
+      "menuGroupId": "Help",
+      "commandId": "cmd.project.open",
+      "capabilityId": "cap.project.open",
+      "stageGate": {
+        "minStageId": "X1",
+        "requiredScopeFlag": "XPLAT_STAGE_X1_ENABLED",
+        "disabledVisibilityState": "visible+disabled(reason=\"STAGE_GATED\")"
+      },
+      "requireFullModeProfileCoverage": true,
+      "allowedVisibility": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    }
+  ]
+}

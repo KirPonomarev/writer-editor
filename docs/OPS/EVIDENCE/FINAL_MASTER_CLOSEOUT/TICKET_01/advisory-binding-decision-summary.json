@@ -1,0 +1,7 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "decision": "KEEP_ADVISORY_UNTIL_MACHINE_BINDING",
+  "missingBindingFieldCount": 0,
+  "promotedItemCount": 0,
+  "rationale": "NO_BLOCKING_SURFACE_EXPANSION_AND_ONLY_MACHINE_BOUND_CAN_BLOCK"
+}

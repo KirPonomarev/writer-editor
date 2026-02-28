@@ -1,0 +1,99 @@
+{
+  "details": {
+    "contracts": {
+      "expiredContract": {
+        "expected": {
+          "route": "FORCE_RERUN_INVALID_INPUT",
+          "shouldHeavyRerun": true,
+          "shouldReuse": false
+        },
+        "observed": {
+          "route": "FORCE_RERUN_INVALID_INPUT",
+          "shouldHeavyRerun": true,
+          "shouldReuse": false
+        },
+        "ok": true,
+        "reason": ""
+      },
+      "invalidInputContract": {
+        "expected": {
+          "route": "FORCE_RERUN_INVALID_INPUT",
+          "shouldHeavyRerun": true,
+          "shouldReuse": false
+        },
+        "observed": {
+          "route": "FORCE_RERUN_INVALID_INPUT",
+          "shouldHeavyRerun": true,
+          "shouldReuse": false
+        },
+        "ok": true,
+        "reason": ""
+      },
+      "mismatchContract": {
+        "expected": {
+          "route": "RERUN_HEAVY",
+          "shouldHeavyRerun": true,
+          "shouldReuse": false
+        },
+        "observed": {
+          "route": "FORCE_RERUN_INVALID_INPUT",
+          "shouldHeavyRerun": true,
+          "shouldReuse": false
+        },
+        "ok": true,
+        "reason": ""
+      },
+      "validContract": {
+        "expected": {
+          "route": "REUSE_CACHE",
+          "shouldHeavyRerun": false,
+          "shouldReuse": true
+        },
+        "observed": {
+          "route": "REUSE_CACHE",
+          "shouldHeavyRerun": false,
+          "shouldReuse": true
+        },
+        "ok": true,
+        "reason": ""
+      }
+    },
+    "decisions": {
+      "decisionDigests": [
+        "edbf898eb95476ffb60de81405f77febe508ca3783053427ea5779e6fb41e59c",
+        "edbf898eb95476ffb60de81405f77febe508ca3783053427ea5779e6fb41e59c",
+        "edbf898eb95476ffb60de81405f77febe508ca3783053427ea5779e6fb41e59c"
+      ],
+      "expiredDecision": {
+        "route": "FORCE_RERUN_INVALID_INPUT",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "invalidInputDecision": {
+        "route": "FORCE_RERUN_INVALID_INPUT",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "mismatchDecision": {
+        "route": "FORCE_RERUN_INVALID_INPUT",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "validDecision": {
+        "route": "REUSE_CACHE",
+        "shouldHeavyRerun": false,
+        "shouldReuse": true
+      }
+    }
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "CACHE_REUSE_ONLY_WHEN_HASH_AND_TTL_VALID",
+    "NEXT_TZ_POSITIVE_02": "HEAVY_RERUN_TRIGGERED_WHEN_INPUT_INVALID",
+    "NEXT_TZ_POSITIVE_03": "WAVE_DECISION_OUTPUT_DETERMINISTIC"
+  }
+}

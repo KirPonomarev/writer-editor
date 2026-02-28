@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "releaseOnboardingVersion": "x20.ws01.v1",
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "blockingSurfaceExpansion": false,
+  "channels": [
+    "menu",
+    "toolbar",
+    "palette"
+  ],
+  "modes": [
+    "Write",
+    "Plan",
+    "Review"
+  ],
+  "profiles": [
+    "minimal",
+    "pro",
+    "guru"
+  ],
+  "requiredChecklistItems": [
+    "release.open.project",
+    "release.save.project",
+    "release.save.as",
+    "release.export.docx",
+    "release.find.text",
+    "release.replace.text"
+  ],
+  "checklistEntries": [
+    {
+      "checklistId": "release.open.project",
+      "actionId": "open-project",
+      "commandId": "cmd.project.open",
+      "checklistText": "Open an existing project",
+      "hintId": "hint.release.open",
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "checklistId": "release.save.project",
+      "actionId": "save-project",
+      "commandId": "cmd.project.save",
+      "checklistText": "Save current changes",
+      "hintId": "hint.release.save",
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "checklistId": "release.save.as",
+      "actionId": "save-as-project",
+      "commandId": "cmd.project.saveAs",
+      "checklistText": "Create a named project snapshot",
+      "hintId": "hint.release.saveas",
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "checklistId": "release.export.docx",
+      "actionId": "export-docx",
+      "commandId": "cmd.project.export.docxMin",
+      "checklistText": "Export DOCX baseline",
+      "hintId": "hint.release.export",
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "checklistId": "release.find.text",
+      "actionId": "find-text",
+      "commandId": "cmd.project.edit.find",
+      "checklistText": "Check find-in-document behavior",
+      "hintId": "hint.release.find",
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "checklistId": "release.replace.text",
+      "actionId": "replace-text",
+      "commandId": "cmd.project.edit.replace",
+      "checklistText": "Check replace flow behavior",
+      "hintId": "hint.release.replace",
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    }
+  ],
+  "onboardingHints": [
+    {
+      "hintId": "hint.release.open",
+      "actionId": "open-project",
+      "commandId": "cmd.project.open",
+      "entrySurface": "release_checklist",
+      "hintText": "Open project from recent list or picker."
+    },
+    {
+      "hintId": "hint.release.save",
+      "actionId": "save-project",
+      "commandId": "cmd.project.save",
+      "entrySurface": "release_checklist",
+      "hintText": "Save after critical edits before export."
+    },
+    {
+      "hintId": "hint.release.saveas",
+      "actionId": "save-as-project",
+      "commandId": "cmd.project.saveAs",
+      "entrySurface": "release_checklist",
+      "hintText": "Use Save As for release snapshot branch."
+    },
+    {
+      "hintId": "hint.release.export",
+      "actionId": "export-docx",
+      "commandId": "cmd.project.export.docxMin",
+      "entrySurface": "release_checklist",
+      "hintText": "Run DOCX export baseline smoke."
+    },
+    {
+      "hintId": "hint.release.find",
+      "actionId": "find-text",
+      "commandId": "cmd.project.edit.find",
+      "entrySurface": "release_checklist",
+      "hintText": "Find key placeholders before release."
+    },
+    {
+      "hintId": "hint.release.replace",
+      "actionId": "replace-text",
+      "commandId": "cmd.project.edit.replace",
+      "entrySurface": "release_checklist",
+      "hintText": "Replace temporary markers before final pack."
+    }
+  ]
+}

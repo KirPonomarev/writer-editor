@@ -42,8 +42,10 @@ test('command surface single-entry: positive baseline tokens are bound', async (
   const state = evaluateCommandSurfaceState();
 
   assert.equal(state.ok, true, JSON.stringify(state, null, 2));
+  assert.equal(state.COMMAND_SURFACE_ENFORCED_OK, 1);
   assert.equal(state.COMMAND_SURFACE_SINGLE_ENTRY_OK, 1);
   assert.equal(state.COMMAND_SURFACE_BYPASS_NEGATIVE_TESTS_OK, 1);
+  assert.equal(state.bypassSuite.positiveRouteOk, true);
   assert.equal(state.failSignal, '');
 });
 
@@ -86,6 +88,7 @@ test('command surface single-entry: missing bypass scenario set returns E_COMMAN
   `;
   const state = evaluateCommandSurfaceState({ testFileText: reducedTestText });
   assert.equal(state.ok, false);
+  assert.equal(state.COMMAND_SURFACE_ENFORCED_OK, 0);
   assert.equal(state.COMMAND_SURFACE_SINGLE_ENTRY_OK, 1);
   assert.equal(state.COMMAND_SURFACE_BYPASS_NEGATIVE_TESTS_OK, 0);
   assert.equal(state.failSignal, 'E_COMMAND_SURFACE_NEGATIVE_MISSING');
@@ -98,4 +101,3 @@ test('command surface single-entry: deterministic output for repeated evaluation
   const runB = evaluateCommandSurfaceState();
   assert.deepEqual(runA, runB);
 });
-

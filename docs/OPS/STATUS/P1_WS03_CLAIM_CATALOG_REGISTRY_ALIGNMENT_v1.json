@@ -1,0 +1,14 @@
+{
+  "activeScopeAlignmentMismatchCount": 0,
+  "advisoryToBlockingDriftCount": 0,
+  "claimFailsignalGapCount": 0,
+  "claimTokenGapCount": 0,
+  "failSignalTarget": "E_CRITICAL_CLAIM_MATRIX_INVALID",
+  "repeatabilityStable3Runs": true,
+  "requiredSetUndeclaredEntityCount": 0,
+  "status": "PASS",
+  "token": "P1_WS03_CLAIM_CATALOG_REGISTRY_ALIGNMENT_OK",
+  "tokenFailsignalGapCount": 0,
+  "updatedAtUtc": "2026-02-28T13:26:54.051Z",
+  "version": 1
+}

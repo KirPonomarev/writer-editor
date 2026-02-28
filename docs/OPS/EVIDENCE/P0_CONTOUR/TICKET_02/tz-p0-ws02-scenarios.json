@@ -1,0 +1,77 @@
+{
+  "tzId": "TZ_P0_WS02_COMMAND_SURFACE_BYPASS_CLOSURE_001",
+  "generatedAtUtc": "2026-02-28T12:09:46.217Z",
+  "failSignalTarget": "E_COMMAND_SURFACE_BYPASS",
+  "fiveNegativeResults": [
+    {
+      "id": "HOTKEY_BYPASS_REJECT",
+      "expected": "FAIL_WITH_E_COMMAND_SURFACE_BYPASS",
+      "pass": true,
+      "failCode": "E_COMMAND_SURFACE_BYPASS",
+      "failSignal": "E_COMMAND_SURFACE_BYPASS",
+      "scenarioId": "hotkey-bypass"
+    },
+    {
+      "id": "PALETTE_BYPASS_REJECT",
+      "expected": "FAIL_WITH_E_COMMAND_SURFACE_BYPASS",
+      "pass": true,
+      "failCode": "E_COMMAND_SURFACE_BYPASS",
+      "failSignal": "E_COMMAND_SURFACE_BYPASS",
+      "scenarioId": "palette-bypass"
+    },
+    {
+      "id": "IPC_DIRECT_BYPASS_REJECT",
+      "expected": "FAIL_WITH_E_COMMAND_SURFACE_BYPASS",
+      "pass": true,
+      "failCode": "E_COMMAND_SURFACE_BYPASS",
+      "failSignal": "E_COMMAND_SURFACE_BYPASS",
+      "scenarioId": "ipc-direct-bypass"
+    },
+    {
+      "id": "CONTEXT_BUTTON_BYPASS_REJECT",
+      "expected": "FAIL_WITH_E_COMMAND_SURFACE_BYPASS",
+      "pass": true,
+      "failCode": "E_COMMAND_SURFACE_BYPASS",
+      "failSignal": "E_COMMAND_SURFACE_BYPASS",
+      "scenarioId": "context-button-bypass"
+    },
+    {
+      "id": "PLUGIN_OVERLAY_BYPASS_REJECT",
+      "expected": "FAIL_WITH_E_COMMAND_SURFACE_BYPASS",
+      "pass": true,
+      "failCode": "E_COMMAND_SURFACE_BYPASS",
+      "failSignal": "E_COMMAND_SURFACE_BYPASS",
+      "scenarioId": "plugin-overlay-bypass"
+    }
+  ],
+  "positiveResults": {
+    "allValidSurfacesRouteThroughBusPass": true,
+    "routeResults": [
+      {
+        "surface": "hotkey",
+        "ok": true
+      },
+      {
+        "surface": "palette",
+        "ok": true
+      },
+      {
+        "surface": "ipc",
+        "ok": true
+      },
+      {
+        "surface": "context-button",
+        "ok": true
+      },
+      {
+        "surface": "plugin-overlay",
+        "ok": true
+      }
+    ],
+    "commandSurfaceEnforcedEqualsOneOnlyWhenAllNegativesExistAndPass": true,
+    "baselineEnforcedToken": 1,
+    "missingScenarioEnforcedToken": 0,
+    "baselineFailSignal": "",
+    "missingScenarioFailSignal": "E_COMMAND_SURFACE_NEGATIVE_MISSING"
+  }
+}

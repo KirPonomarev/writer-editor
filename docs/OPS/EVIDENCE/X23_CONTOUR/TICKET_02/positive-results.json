@@ -1,0 +1,28 @@
+{
+  "details": {
+    "NEXT_TZ_POSITIVE_01": {
+      "expected": "RELEASE_PACKET_COMPLETE_AND_VALID",
+      "observedReleasePacketHash": "e19e7792fe0418214273cdac02eae5455c6b173767040d8534ddee014a4a3687",
+      "pass": true
+    },
+    "NEXT_TZ_POSITIVE_02": {
+      "expected": "PR_PACKET_CONSISTENT_WITH_CURRENT_COMMIT_CHAIN",
+      "observedPrPacketHash": "c214c0ddbecb9b3b222ca77068db36d2e046e4707931385a34a0600913957629",
+      "pass": true
+    },
+    "NEXT_TZ_POSITIVE_03": {
+      "expected": "RELEASE_PACKET_OUTPUT_DETERMINISTIC",
+      "pass": true
+    }
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "RELEASE_PACKET_COMPLETE_AND_VALID",
+    "NEXT_TZ_POSITIVE_02": "PR_PACKET_CONSISTENT_WITH_CURRENT_COMMIT_CHAIN",
+    "NEXT_TZ_POSITIVE_03": "RELEASE_PACKET_OUTPUT_DETERMINISTIC"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "POSITIVE_01": "ВСЕ_BOUND_СТРОКИ_ПОЛНОСТЬЮ_ТРАССИРУЮТСЯ_К_LAW_GATE_FAILSIGNAL_MODE",
+    "POSITIVE_02": "ВСЕ_GAP_СТРОКИ_ЯВНО_ПОМЕЧЕНЫ_И_НЕ_BLOCKING",
+    "POSITIVE_03": "DRIFT_CHECK_ОТЧЕТ_ДЕТЕРМИНИРОВАННЫЙ"
+  }
+}

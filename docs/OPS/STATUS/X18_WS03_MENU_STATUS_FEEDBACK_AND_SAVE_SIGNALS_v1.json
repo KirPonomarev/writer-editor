@@ -1,0 +1,23 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "capabilityBindingGapCount": 0,
+  "channelCount": 3,
+  "channelStatusInconsistencyCount": 0,
+  "commandBindingGapCount": 0,
+  "entryCount": 6,
+  "modeCount": 3,
+  "modeProfileVisibilityGapCount": 0,
+  "profileCount": 3,
+  "repeatabilityStable3Runs": true,
+  "requiredCommandResultSignalCount": 3,
+  "requiredCommandResultSignalGapCount": 0,
+  "requiredSaveSignalCount": 3,
+  "requiredSaveSignalGapCount": 0,
+  "sourceEventGapCount": 0,
+  "staleEntryTargetCount": 0,
+  "status": "PASS",
+  "statusResetGapCount": 0,
+  "token": "X18_WS03_MENU_STATUS_FEEDBACK_AND_SAVE_SIGNALS_OK",
+  "updatedAtUtc": "2026-02-28T18:33:42.969Z",
+  "version": 1
+}

@@ -1,0 +1,18 @@
+{
+  "tzId": "TZ_P0_WS03_BLOCKING_BINDING_COMPLETENESS_001",
+  "generatedAtUtc": "2026-02-28T12:22:57.734Z",
+  "activeCanonVersion": "v3.13a-final",
+  "activeCanonLockCheckPass": true,
+  "failSignalTarget": "E_BLOCKING_TOKEN_UNBOUND",
+  "dod01_fullBindingCompleteness100": true,
+  "dod02_allNegativeFailWithTarget": true,
+  "dod03_alignmentGapsZero": true,
+  "dod04_advisoryAsBlockingDriftNotDetected": true,
+  "dod05_repeatability3RunsWithoutDrift": true,
+  "dod06_blockingSurfaceNotExpanded": true,
+  "acceptance01_falseGreenRegisterZeroOpen": true,
+  "acceptance02_rollbackRefCoverage100": true,
+  "acceptance03_activeCanonLockCheckPass": true,
+  "acceptance04_readyForWs04ModeSplitEnforcement": true,
+  "finalGateReadyForWs04": true
+}

@@ -1,22 +1,41 @@
 {
-  "advisoryToBlockingDriftCount": 0,
-  "duplicateSignalCountAfter": 0,
-  "duplicateSignalCountBefore": 1,
-  "gates": {
-    "mc_advisory_blocking_drift_zero": "PASS",
-    "p2_03_duplicate_gate_merge_or_disable_check": "PASS",
-    "p2_03_kill_switch_on_no_signal_delta_check": "PASS",
-    "p2_03_max_heavy_pass_per_window_check": "PASS",
-    "p2_03_no_daily_strict_without_scope_delta_check": "PASS",
-    "p2_03_unique_signal_required_check": "PASS"
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
   },
-  "generatedAtUtc": "2026-02-27T05:40:24.443Z",
-  "killSwitchWaveThreshold": 2,
-  "maxHeavyPassPerWindow": 1,
-  "runId": "RUN-2026-02-26-001",
-  "runtimeBudgetMinutesMax": 30,
-  "singleBlockingAuthorityOk": true,
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "duplicateCheckCountAfter": 0,
+    "duplicateCheckCountBefore": 1,
+    "duplicateCheckReduced": true,
+    "maxHeavyPassPerWindow": 1,
+    "runtimeBudgetMinutesMax": 30
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true
+  },
+  "generatedAtUtc": "2026-02-28T13:58:27.305Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "УМЕНЬШИТЬ_PROCESS_TAX_БЕЗ_ПОТЕРИ_НАДЕЖНОСТИ_ЧЕРЕЗ_AUTOMATION_AND_CHECK_DEDUP",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "TZ_P2_WS03_PROCESS_TAX_BUDGET_AUTOMATION_001",
   "status": "PASS",
-  "ticketId": "TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
-  "uniqueSignalCount": 21
+  "ticketId": "P2_WS03"
 }

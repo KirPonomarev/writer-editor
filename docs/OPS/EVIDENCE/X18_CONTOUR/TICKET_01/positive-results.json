@@ -1,0 +1,29 @@
+{
+  "details": {
+    "baseline": {
+      "entryCount": 20,
+      "projectionHash": "fd053a877881b86232df833ebac5ab121ca31492b0892e608c5691eb0b5bfcea"
+    },
+    "determinism": {
+      "hashes": [
+        "fd053a877881b86232df833ebac5ab121ca31492b0892e608c5691eb0b5bfcea",
+        "fd053a877881b86232df833ebac5ab121ca31492b0892e608c5691eb0b5bfcea",
+        "fd053a877881b86232df833ebac5ab121ca31492b0892e608c5691eb0b5bfcea"
+      ],
+      "ok": true
+    },
+    "menuHintMismatch": [],
+    "paletteDiscoverabilityGaps": [],
+    "shortcutConflicts": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "SHORTCUT_REGISTRY_CONSISTENT_WITH_COMMANDS",
+    "NEXT_TZ_POSITIVE_02": "MENU_AND_PALETTE_DISCOVERABILITY_CONSISTENT",
+    "NEXT_TZ_POSITIVE_03": "SHORTCUT_BEHAVIOR_DETERMINISTIC"
+  }
+}

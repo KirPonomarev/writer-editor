@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "bridgeVersion": "x16.ws02.v1",
+  "nonBlockingClassification": "advisory",
+  "blockingSurfaceExpansion": false,
+  "formalMachineBinding": {
+    "status": "not_bound",
+    "blockingAllowed": false,
+    "note": "STAYS_NON_BLOCKING_UNTIL_FORMAL_MACHINE_BINDING"
+  },
+  "entries": [
+    {
+      "featureId": "EXPORT_MARKDOWN_MENU_PATH",
+      "commandId": "cmd.project.exportMarkdownV1",
+      "capabilityId": "cap.project.export.markdownV1",
+      "derivedGuard": "NONE",
+      "stageGate": {
+        "minStageId": "X2",
+        "requiredScopeFlag": "XPLAT_STAGE_X2_ENABLED",
+        "disabledVisibilityState": "visible+disabled(reason=\"STAGE_GATED\")"
+      },
+      "allowedVisibility": [
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": {
+            "menu": "visible",
+            "toolbar": "visible",
+            "palette": "visible"
+          }
+        }
+      ]
+    },
+    {
+      "featureId": "MINDMAP_DERIVED_VIEW_MENU_PATH",
+      "commandId": "cmd.project.flowOpenV1",
+      "capabilityId": "cap.project.flow.openV1",
+      "derivedGuard": "DERIVED_VIEW_ONLY",
+      "stageGate": {
+        "minStageId": "X1",
+        "requiredScopeFlag": "XPLAT_STAGE_X1_ENABLED",
+        "disabledVisibilityState": "visible+disabled(reason=\"STAGE_GATED\")"
+      },
+      "allowedVisibility": [
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": {
+            "menu": "visible",
+            "toolbar": "visible",
+            "palette": "visible"
+          }
+        }
+      ]
+    }
+  ]
+}

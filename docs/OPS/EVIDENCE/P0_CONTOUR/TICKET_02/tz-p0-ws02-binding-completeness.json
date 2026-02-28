@@ -1,0 +1,9 @@
+{
+  "tzId": "TZ_P0_WS02_COMMAND_SURFACE_BYPASS_CLOSURE_001",
+  "generatedAtUtc": "2026-02-28T12:09:46.253Z",
+  "tokenId": "COMMAND_SURFACE_ENFORCED_OK",
+  "requiredFieldsCount": 12,
+  "missingFields": [],
+  "completenessPct": 100,
+  "bindingCompletenessOk": true
+}

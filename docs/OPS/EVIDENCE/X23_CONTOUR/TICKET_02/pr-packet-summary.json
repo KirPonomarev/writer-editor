@@ -1,0 +1,19 @@
+{
+  "commitSubjectsHash": "d0d145edc2699bd9a8c98eede9c5ada230a838948a0c807dcd8854da02ed650f",
+  "currentHead": "d4ed6581572bd65baf005fb95fb2a14ff3d2c942",
+  "evidenceChainRootHash": "2d6ae711c389a1888431b35ad83bb1a10d38abca4ebec77e0b27a08b3b2367c4",
+  "expectedCommitCount": 86,
+  "expectedHead": "d4ed6581572bd65baf005fb95fb2a14ff3d2c942",
+  "missingEvidenceLinkCount": 0,
+  "missingPacketRefTagCount": 0,
+  "missingTicketTagCount": 0,
+  "observedCommitCount": 86,
+  "packetIndexRef": "X23_WS01_PACKET_INDEX_V1",
+  "prPacketHash": "c214c0ddbecb9b3b222ca77068db36d2e046e4707931385a34a0600913957629",
+  "releasePacketHash": "e19e7792fe0418214273cdac02eae5455c6b173767040d8534ddee014a4a3687",
+  "requiredEvidenceRefCount": 5,
+  "resolvedEvidenceRefCount": 5,
+  "spanEnd": "d4ed6581572bd65baf005fb95fb2a14ff3d2c942",
+  "spanStart": "af79aee47cad5bc4107ed90bda36afb5419cbfb4",
+  "ticketId": "TZ_X23_WS01_GIT_TRACEABILITY_RECOVERY_001"
+}

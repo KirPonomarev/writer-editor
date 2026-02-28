@@ -1,0 +1,51 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "modeMatrixBlockingFlagConflictCount": 0,
+    "modeMatrixDuplicateSignalCount": 0,
+    "modeMatrixInvalidDispositionCount": 0,
+    "modeMatrixMissingDispositionCount": 0,
+    "modeMatrixRequiredTokenFailSignalMissingCount": 0,
+    "offlineIntegrityIssueCount": 0,
+    "releaseBindingFailSignalMismatchCount": 0,
+    "releaseBindingFailSignalMissingCount": 0,
+    "releaseBindingMissingFieldCount": 0,
+    "releaseBindingMissingRecordCount": 0,
+    "releaseBindingMissingTokenCount": 0,
+    "requiredModeKeyCount": 3,
+    "requiredReleaseBlockingTokenCount": 14,
+    "usabilityGuardIssueCount": 0
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "generatedAtUtc": "2026-02-28T19:25:47.249Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "BUILD_RELEASE_CANDIDATE_PRECHECK_PACK_FOR_ACTIVE_CANON_MODE_MATRIX_TOKEN_BINDING_AND_USABILITY_GUARDS",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "X21_WS01_RUN_20260228_RERUN",
+  "status": "PASS",
+  "ticketId": "TZ_X21_WS01_RELEASE_CANDIDATE_PRECHECK_PACK_001"
+}

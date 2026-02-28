@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "recentResumeVersion": "x19.ws02.v1",
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "blockingSurfaceExpansion": false,
+  "channels": [
+    "menu",
+    "toolbar",
+    "palette"
+  ],
+  "modes": [
+    "Write",
+    "Plan",
+    "Review"
+  ],
+  "profiles": [
+    "minimal",
+    "pro",
+    "guru"
+  ],
+  "requiredRecentActions": [
+    "quick-resume-last",
+    "recent-open-1",
+    "recent-open-2"
+  ],
+  "orderingPolicy": {
+    "primary": "lastOpenedAt_desc",
+    "secondary": "recentRank_asc",
+    "strictDeterminism": true
+  },
+  "recentEntries": [
+    {
+      "recentId": "recent-001",
+      "recentRank": 1,
+      "actionId": "quick-resume-last",
+      "commandId": "cmd.project.open",
+      "projectId": "novel-alpha",
+      "projectPath": "projects/novel-alpha/project.craftsman.json",
+      "lastOpenedAt": "2026-02-28T18:45:00Z",
+      "existsOnDisk": true,
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "recentId": "recent-002",
+      "recentRank": 2,
+      "actionId": "recent-open-1",
+      "commandId": "cmd.project.open",
+      "projectId": "novel-beta",
+      "projectPath": "projects/novel-beta/project.craftsman.json",
+      "lastOpenedAt": "2026-02-27T20:15:00Z",
+      "existsOnDisk": true,
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "recentId": "recent-003",
+      "recentRank": 3,
+      "actionId": "recent-open-2",
+      "commandId": "cmd.project.open",
+      "projectId": "novel-gamma",
+      "projectPath": "projects/novel-gamma/project.craftsman.json",
+      "lastOpenedAt": "2026-02-26T11:32:00Z",
+      "existsOnDisk": true,
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    }
+  ],
+  "quickResumeBindings": [
+    {
+      "bindingId": "resume-bind-001",
+      "actionId": "quick-resume-last",
+      "commandId": "cmd.project.open",
+      "projectPath": "projects/novel-alpha/project.craftsman.json"
+    },
+    {
+      "bindingId": "resume-bind-002",
+      "actionId": "recent-open-1",
+      "commandId": "cmd.project.open",
+      "projectPath": "projects/novel-beta/project.craftsman.json"
+    },
+    {
+      "bindingId": "resume-bind-003",
+      "actionId": "recent-open-2",
+      "commandId": "cmd.project.open",
+      "projectPath": "projects/novel-gamma/project.craftsman.json"
+    }
+  ]
+}

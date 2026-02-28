@@ -1,0 +1,18 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "attestationIssueCount": 0,
+  "evidenceHashMismatchCount": 0,
+  "missingEvidenceLinkCount": 0,
+  "modeCheckMissingCount": 0,
+  "modeDispositionDriftCount": 0,
+  "modeEvaluatorIssueCount": 0,
+  "promotionDryRunIssueCount": 0,
+  "releaseClassDriftCount": 0,
+  "repeatabilityStable3Runs": true,
+  "requiredEvidenceRefCount": 5,
+  "requiredModeCheckCount": 2,
+  "status": "PASS",
+  "token": "X22_WS01_PROMOTION_CANDIDATE_PACKAGE_OK",
+  "updatedAtUtc": "2026-02-28T19:46:16.956Z",
+  "version": 1
+}

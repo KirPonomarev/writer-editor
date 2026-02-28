@@ -1,0 +1,21 @@
+{
+  "actionBindingMismatchCount": 0,
+  "advisoryToBlockingDriftCount": 0,
+  "capabilityBindingGapCount": 0,
+  "channelCount": 3,
+  "commandBindingGapCount": 0,
+  "entryCount": 20,
+  "menuHintMismatchCount": 0,
+  "modeCount": 3,
+  "modeProfileVisibilityGapCount": 0,
+  "paletteDiscoverabilityGapCount": 0,
+  "profileCount": 3,
+  "repeatabilityStable3Runs": true,
+  "requiredGroupCount": 9,
+  "requiredShortcutCommandCount": 20,
+  "shortcutConflictCount": 0,
+  "status": "PASS",
+  "token": "X18_WS01_SHORTCUTS_AND_DISCOVERABILITY_OK",
+  "updatedAtUtc": "2026-02-28T17:49:01.706Z",
+  "version": 1
+}

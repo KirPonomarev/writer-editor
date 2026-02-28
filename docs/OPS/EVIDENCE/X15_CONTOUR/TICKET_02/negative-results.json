@@ -1,0 +1,50 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "attempted": "cmd.project.reorderOutsideAllowlistV1",
+      "ok": true,
+      "reason": "REORDER_OUTSIDE_ALLOWLIST_REJECTED"
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "attempted": "cmd.project.close",
+      "ok": true,
+      "reason": "HIDE_REQUIRED_CORE_REJECTED"
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "duplicateKeys": [
+        "file:dup-item"
+      ],
+      "hasConflictRule": false,
+      "ok": true,
+      "reason": "DUPLICATE_INSERT_WITHOUT_RULE_REJECTED"
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "invalidProfiles": [
+        "expert"
+      ],
+      "ok": true,
+      "reason": "PROFILE_MENU_CONFLICT_REJECTED"
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "capabilityEnabled": false,
+      "capabilityId": "",
+      "hasBinding": false,
+      "ok": true,
+      "reason": "PLUGIN_OVERRIDE_WITHOUT_CAPABILITY_REJECTED"
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "REORDER_OUTSIDE_ALLOWLIST_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "HIDE_REQUIRED_CORE_COMMAND_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "DUPLICATE_OVERLAY_INSERT_WITHOUT_RULE_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "PROFILE_MENU_CONFLICT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "PLUGIN_LAYER_OVERRIDE_WITHOUT_CAPABILITY_EXPECT_REJECT"
+  }
+}

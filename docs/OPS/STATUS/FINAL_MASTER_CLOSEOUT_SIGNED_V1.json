@@ -1,0 +1,55 @@
+{
+  "artifactId": "FINAL_MASTER_CLOSEOUT_SIGNED_V1",
+  "constraints": {
+    "advisoryAsBlockingDriftAllowed": false,
+    "blockingSurfaceExpansion": false,
+    "onlyMachineBoundCanBlock": true
+  },
+  "evidenceChain": [
+    {
+      "ref": "docs/OPS/STATUS/P1_CONTOUR_CLOSE_SUMMARY_V1.json",
+      "sha256": "sha256:58823c84c5217d784e5d6c3e047afa741e1d8cb04eabc613deeea62b50ffa298"
+    },
+    {
+      "ref": "docs/OPS/STATUS/P1_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+      "sha256": "sha256:bcd46de1be18c9531698fc9ec56dbe0f05edba5f0ff37a09e702661096deb074"
+    },
+    {
+      "ref": "docs/OPS/EVIDENCE/P1_CONTOUR/p1-contour-freeze-packet-v1.json",
+      "sha256": "sha256:fd86da3709b2f5a2e4539762fe9b201f509541d6621a3cf8c5dae1bd3bca1f66"
+    },
+    {
+      "ref": "docs/OPS/STATUS/P2_CONTOUR_CLOSE_SUMMARY_V1.json",
+      "sha256": "sha256:cb5e617a22bed36e792285256a82b552503c66442a6ce66388bf75c18ca02902"
+    },
+    {
+      "ref": "docs/OPS/STATUS/P2_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+      "sha256": "sha256:80d4bcdd85448c75c30f07a31d4c9d8a2c5b3f215dc5b39255b86dbeb61340f8"
+    },
+    {
+      "ref": "docs/OPS/EVIDENCE/P2_CONTOUR/p2-contour-freeze-packet-v1.json",
+      "sha256": "sha256:5fe50c17fc0b91e963a3f2960d51c5450c23d21ab60f062dbebed3ba92661707"
+    },
+    {
+      "ref": "docs/OPS/STATUS/FINAL_REBIND_DELTA_V1.json",
+      "sha256": "sha256:5d2ddf7c73fa1860d5e27c9cf0fb9589f77942d9ee3ca8043a5b4e4c308a5c99"
+    },
+    {
+      "ref": "docs/OPS/STATUS/FINAL_MASTER_CLOSEOUT_SUMMARY_V1.json",
+      "sha256": "sha256:c04fb834da65d31ca540194d990ed3f164f5783a14bbd08fa843528bc5b3aa80"
+    }
+  ],
+  "evidenceRootSha256": "sha256:508429a87159108a72d9b7c6db1bd6e25e0d0bf960ddfecc2eb68affc4b0c8f1",
+  "gate": {
+    "isOpen": true,
+    "name": "GO_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+    "releaseDecisionClassChanged": false
+  },
+  "schemaVersion": 1,
+  "signatureType": "SHA256_EVIDENCE_LOCK",
+  "signedAtUtc": "2026-02-28T20:40:49.590Z",
+  "signedBy": "KIRILL_PLUS_CODEX",
+  "signingMode": "LOCAL_OFFLINE",
+  "status": "SIGNED",
+  "taskId": "TZ_FINAL_FORMALIZATION_AND_REBIND_001"
+}

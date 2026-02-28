@@ -1,0 +1,43 @@
+{
+  "baseline": {
+    "blockingClassificationLeaks": [],
+    "channelConsistencyErrors": [],
+    "channelVisibilityMismatches": [],
+    "commandCapabilityMismatches": [],
+    "duplicateFeatureIds": [],
+    "enabledWhenAllowed": {
+      "HELP_GROUP_BASE_ENTRY": true,
+      "TOOLS_GROUP_BASE_ENTRY": true
+    },
+    "invalidModeProfileGating": [],
+    "missingFeatures": [],
+    "missingMenuRows": [],
+    "missingStageGates": [],
+    "modeProfileCoverageGaps": [],
+    "nonBoundBlockingTokens": [],
+    "ok": true,
+    "policyErrors": [],
+    "requiredHelpEntryErrors": [],
+    "stageDisabledStateMismatches": [],
+    "unexpectedFeatures": [],
+    "unknownScopeFlags": [],
+    "unknownStageIds": []
+  },
+  "capabilityBindingCount": 9,
+  "channelCount": 3,
+  "channelMismatchCount": 0,
+  "consistencyEntryCount": 2,
+  "determinism": {
+    "hashes": [
+      "93a2e9747f9e80637c60a2fcc9fe315b51a8bb793ec26c088e52b06736b6a1ec",
+      "93a2e9747f9e80637c60a2fcc9fe315b51a8bb793ec26c088e52b06736b6a1ec",
+      "93a2e9747f9e80637c60a2fcc9fe315b51a8bb793ec26c088e52b06736b6a1ec"
+    ],
+    "ok": true
+  },
+  "menuProjectionRowCount": 81,
+  "modeCount": 3,
+  "modeProfileCoverageGapCount": 0,
+  "profileCount": 3,
+  "runtimeCapabilityBindingCount": 9
+}

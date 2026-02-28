@@ -1,0 +1,13 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "duplicateRowsAfterCount": 0,
+  "duplicateRowsBeforeCount": 0,
+  "rawRowCount": 39,
+  "repeatabilityStable3Runs": true,
+  "signalLossCount": 0,
+  "simplifiedRowCount": 39,
+  "status": "PASS",
+  "token": "P2_WS04_BRIDGE_DRIFT_SIMPLIFICATION_OK",
+  "updatedAtUtc": "2026-02-28T14:21:24.305Z",
+  "version": 1
+}

@@ -1,0 +1,45 @@
+{
+  "details": {
+    "DUPLICATE_CHAIN_WITHOUT_SHARED_EXECUTOR": {
+      "duplicateSignalCountAfter": 1,
+      "failReason": "E_DUPLICATE_SIGNAL_NOT_REDUCED"
+    },
+    "FAST_LANE_FORCED_INTO_HEAVY_POLICY": {
+      "detected": true,
+      "failReason": "FAST_LANE_FORCED_INTO_HEAVY_POLICY",
+      "forceHeavyPolicy": true,
+      "lane": "fast",
+      "ok": false
+    },
+    "HEAVY_RERUN_WITHOUT_HASH_CHANGE": {
+      "failReason": "HEAVY_RERUN_WITHOUT_INPUT_HASH_CHANGE",
+      "hashChanged": false,
+      "heavyRerunRequested": true,
+      "ok": false,
+      "shouldRejectHeavyRerun": true,
+      "ttlValid": true
+    },
+    "MISSING_DEDUP_MAPPING": {
+      "failReason": "E_UNIQUE_SIGNAL_MISSING",
+      "uniqueSignalRequiredCheck": false
+    },
+    "PROCESS_BUDGET_THRESHOLD_VIOLATION": {
+      "failReason": "E_RUNTIME_BUDGET_EXCEEDED",
+      "runtimeBudgetMinutesMax": 20
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "DUPLICATE_CHECK_CHAIN_WITHOUT_SHARED_EXECUTOR_EXPECT_POLICY_FAIL",
+    "NEXT_TZ_NEGATIVE_02": "HEAVY_RERUN_WITHOUT_INPUT_HASH_CHANGE_EXPECT_POLICY_FAIL",
+    "NEXT_TZ_NEGATIVE_03": "PROCESS_BUDGET_THRESHOLD_VIOLATION_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_04": "FAST_LANE_FORCED_INTO_HEAVY_POLICY_EXPECT_DETECTION",
+    "NEXT_TZ_NEGATIVE_05": "MISSING_DEDUP_MAPPING_EXPECT_POLICY_FAIL"
+  }
+}

@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "actionsVersion": "x17.ws02.v1",
+  "nonBlockingClassification": "advisory",
+  "blockingSurfaceExpansion": false,
+  "formalMachineBinding": {
+    "status": "not_bound",
+    "blockingAllowed": false,
+    "note": "STAYS_NON_BLOCKING_UNTIL_FORMAL_MACHINE_BINDING"
+  },
+  "channels": [
+    "menu",
+    "toolbar",
+    "palette"
+  ],
+  "modes": [
+    "Write",
+    "Plan",
+    "Review"
+  ],
+  "profiles": [
+    "minimal",
+    "pro",
+    "guru"
+  ],
+  "states": [
+    "visible",
+    "hidden"
+  ],
+  "requiredCoreActions": [
+    "zoom-out",
+    "zoom-in",
+    "toggle-wrap",
+    "import-markdown-v1",
+    "flow-open-v1",
+    "add-card"
+  ],
+  "requiredCoreCommands": [
+    "cmd.project.view.zoomOut",
+    "cmd.project.view.zoomIn",
+    "cmd.project.view.toggleWrap",
+    "cmd.project.insert.markdownPrompt",
+    "cmd.project.insert.flowOpen",
+    "cmd.project.insert.addCard"
+  ],
+  "entries": [
+    {
+      "bindingOrder": 10,
+      "menuGroupId": "View",
+      "actionId": "zoom-out",
+      "commandId": "cmd.project.view.zoomOut",
+      "capabilityId": "cap.project.view.zoomOut",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "bindingOrder": 20,
+      "menuGroupId": "View",
+      "actionId": "zoom-in",
+      "commandId": "cmd.project.view.zoomIn",
+      "capabilityId": "cap.project.view.zoomIn",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "bindingOrder": 30,
+      "menuGroupId": "View",
+      "actionId": "toggle-wrap",
+      "commandId": "cmd.project.view.toggleWrap",
+      "capabilityId": "cap.project.view.toggleWrap",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "bindingOrder": 40,
+      "menuGroupId": "Insert",
+      "actionId": "import-markdown-v1",
+      "commandId": "cmd.project.insert.markdownPrompt",
+      "capabilityId": "cap.project.insert.markdownPrompt",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "bindingOrder": 50,
+      "menuGroupId": "Insert",
+      "actionId": "flow-open-v1",
+      "commandId": "cmd.project.insert.flowOpen",
+      "capabilityId": "cap.project.insert.flowOpen",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "bindingOrder": 60,
+      "menuGroupId": "Insert",
+      "actionId": "add-card",
+      "commandId": "cmd.project.insert.addCard",
+      "capabilityId": "cap.project.insert.addCard",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    }
+  ]
+}

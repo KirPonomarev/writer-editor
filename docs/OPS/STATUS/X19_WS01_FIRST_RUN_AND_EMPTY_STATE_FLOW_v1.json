@@ -1,0 +1,22 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "capabilityBindingGapCount": 0,
+  "channelCount": 3,
+  "channelEntryInconsistencyCount": 0,
+  "commandBindingGapCount": 0,
+  "emptyStateHintCount": 5,
+  "entryCount": 5,
+  "hintCommandMismatchCount": 0,
+  "modeCount": 3,
+  "modeProfileVisibilityGapCount": 0,
+  "profileCount": 3,
+  "repeatabilityStable3Runs": true,
+  "requiredEntryActionCount": 5,
+  "requiredEntryActionGapCount": 0,
+  "staleEntryTargetCount": 0,
+  "staleHintTargetCount": 0,
+  "status": "PASS",
+  "token": "X19_WS01_FIRST_RUN_AND_EMPTY_STATE_FLOW_OK",
+  "updatedAtUtc": "2026-02-28T18:42:25.492Z",
+  "version": 1
+}

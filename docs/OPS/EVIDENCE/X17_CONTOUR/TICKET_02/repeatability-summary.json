@@ -1,0 +1,149 @@
+{
+  "runs": [
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "actionCount": 6,
+        "advisoryToBlockingDriftCount": 0,
+        "channelCount": 3,
+        "commandCapabilityBindingCount": 21,
+        "menuProjectionGapCount": 0,
+        "missingRequiredActionRowsCount": 0,
+        "modeCount": 3,
+        "profileCount": 3,
+        "requiredActionCount": 6,
+        "requiredCommandCount": 6,
+        "rowCount": 54
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "250aa9c7316e11765ea29c065291fe085e010362a251a080192cf2b59797a038",
+        "detectorId": "X17_WS02_VIEW_INSERT_BASELINE_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": false,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "actionCount": 6,
+        "advisoryToBlockingDriftCount": 0,
+        "channelCount": 3,
+        "commandCapabilityBindingCount": 21,
+        "menuProjectionGapCount": 0,
+        "missingRequiredActionRowsCount": 0,
+        "modeCount": 3,
+        "profileCount": 3,
+        "requiredActionCount": 6,
+        "requiredCommandCount": 6,
+        "rowCount": 54
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "250aa9c7316e11765ea29c065291fe085e010362a251a080192cf2b59797a038",
+        "detectorId": "X17_WS02_VIEW_INSERT_BASELINE_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": false,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "actionCount": 6,
+        "advisoryToBlockingDriftCount": 0,
+        "channelCount": 3,
+        "commandCapabilityBindingCount": 21,
+        "menuProjectionGapCount": 0,
+        "missingRequiredActionRowsCount": 0,
+        "modeCount": 3,
+        "profileCount": 3,
+        "requiredActionCount": 6,
+        "requiredCommandCount": 6,
+        "rowCount": 54
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "250aa9c7316e11765ea29c065291fe085e010362a251a080192cf2b59797a038",
+        "detectorId": "X17_WS02_VIEW_INSERT_BASELINE_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": false,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    }
+  ],
+  "stable": true
+}

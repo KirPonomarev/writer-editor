@@ -1,0 +1,18 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "attestationIssueCount": 0,
+  "evidenceHashMismatchCount": 0,
+  "missingEvidenceLinkCount": 0,
+  "modeCheckMissingCount": 0,
+  "modeDispositionDriftCount": 0,
+  "modeEvaluatorIssueCount": 0,
+  "promotionDryRunIssueCount": 0,
+  "releaseClassDriftCount": 0,
+  "repeatabilityStable3Runs": true,
+  "requiredEvidenceRefCount": 5,
+  "requiredModeCheckCount": 2,
+  "status": "PASS",
+  "token": "X21_WS02_PROMOTION_DRY_RUN_AND_EVIDENCE_LOCK_OK",
+  "updatedAtUtc": "2026-02-28T19:33:53.023Z",
+  "version": 1
+}

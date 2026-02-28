@@ -1,0 +1,8 @@
+{
+  "tzId": "TZ_P0_WS03_BLOCKING_BINDING_COMPLETENESS_001",
+  "generatedAtUtc": "2026-02-28T12:22:57.741Z",
+  "alignmentGapCount": 0,
+  "tokenClaimBindingAlignedCount": 14,
+  "tokenClaimBindingAlignedTotal": 14,
+  "gapsByCode": {}
+}

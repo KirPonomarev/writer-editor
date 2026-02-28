@@ -1,0 +1,29 @@
+{
+  "details": {
+    "baseline": {
+      "entryCount": 6,
+      "projectionHash": "7ac60e6804b9d2e0fc50ce355f6e4d8ea0b5db4db691ab5283353da2b91c5f15"
+    },
+    "channelStatusInconsistency": [],
+    "determinism": {
+      "hashes": [
+        "7ac60e6804b9d2e0fc50ce355f6e4d8ea0b5db4db691ab5283353da2b91c5f15",
+        "7ac60e6804b9d2e0fc50ce355f6e4d8ea0b5db4db691ab5283353da2b91c5f15",
+        "7ac60e6804b9d2e0fc50ce355f6e4d8ea0b5db4db691ab5283353da2b91c5f15"
+      ],
+      "ok": true
+    },
+    "sourceEventMissing": [],
+    "statusResetGaps": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "SAVE_STATE_FEEDBACK_VISIBLE_AND_CONSISTENT",
+    "NEXT_TZ_POSITIVE_02": "COMMAND_RESULT_FEEDBACK_DETERMINISTIC",
+    "NEXT_TZ_POSITIVE_03": "STATUS_RESET_POLICY_STABLE"
+  }
+}

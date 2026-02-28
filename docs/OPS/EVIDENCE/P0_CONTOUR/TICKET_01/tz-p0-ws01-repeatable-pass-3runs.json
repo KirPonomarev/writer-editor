@@ -1,0 +1,21 @@
+{
+  "tzId": "TZ_P0_WS01_ATTESTATION_ANTI_FORGERY_001",
+  "generatedAtUtc": "2026-02-28T12:00:06.847Z",
+  "repeatabilityRuns": 3,
+  "repeatabilityOk": true,
+  "baselinePacketHash": "811f4c54e56b2dd5017fe0b95ecfb5cfc065832629fcccc5e42dfb9e9c230a44",
+  "runs": [
+    {
+      "run": 1,
+      "packetHash": "811f4c54e56b2dd5017fe0b95ecfb5cfc065832629fcccc5e42dfb9e9c230a44"
+    },
+    {
+      "run": 2,
+      "packetHash": "811f4c54e56b2dd5017fe0b95ecfb5cfc065832629fcccc5e42dfb9e9c230a44"
+    },
+    {
+      "run": 3,
+      "packetHash": "811f4c54e56b2dd5017fe0b95ecfb5cfc065832629fcccc5e42dfb9e9c230a44"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "ok": false,
+      "reason": "MENU_ITEM_OUTSIDE_ALLOWLIST"
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "forbidden": [
+        "CORE_SCHEMA_CHANGES"
+      ],
+      "ok": false,
+      "reason": "UI_CHANGE_ALTERS_CORE_CONTRACT"
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "ok": false,
+      "reason": "MODE_VISIBILITY_CONFLICT",
+      "unknown": [
+        "Draft"
+      ]
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "disabled": true,
+      "expectedCapability": "cap.project.import.markdownV1",
+      "mismatch": true,
+      "ok": false,
+      "providedCapability": "cap.project.nonexistent",
+      "reason": "PROFILE_OVERRIDE_BREAKS_CAPABILITY_POLICY"
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "missingMetadata": [
+        "pluginVersion",
+        "signatureStatus"
+      ],
+      "ok": false,
+      "reason": "PLUGIN_OVERLAY_WITHOUT_MANIFEST_RULE"
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "MENU_ITEM_OUTSIDE_ALLOWLIST_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "UI_CHANGE_TRIES_TO_ALTER_CORE_CONTRACT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "MODE_VISIBILITY_CONFLICT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "PROFILE_OVERRIDE_BREAKS_CAPABILITY_POLICY_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "PLUGIN_OVERLAY_WITHOUT_MANIFEST_RULE_EXPECT_REJECT"
+  }
+}

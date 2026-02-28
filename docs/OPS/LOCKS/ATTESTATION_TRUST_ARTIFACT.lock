@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "ATTESTATION_TRUST_ARTIFACT_LOCK_v1",
+  "artifactKind": "LOCAL_IMMUTABLE_TRUST_ARTIFACT",
+  "trustRootId": "trust-root-release-v1",
+  "allowedSignerIds": [
+    "trusted-signer-release-main"
+  ],
+  "contextSource": "trusted_context_record",
+  "createdAtUtc": "2026-02-28T00:00:00.000Z"
+}

@@ -1,0 +1,29 @@
+{
+  "details": {
+    "baseline": {
+      "entryCount": 3,
+      "projectionHash": "8e088c6c3a2852c4c5df8f647674976772ad94083d1f3888eee2919f41561fd3"
+    },
+    "determinism": {
+      "hashes": [
+        "8e088c6c3a2852c4c5df8f647674976772ad94083d1f3888eee2919f41561fd3",
+        "8e088c6c3a2852c4c5df8f647674976772ad94083d1f3888eee2919f41561fd3",
+        "8e088c6c3a2852c4c5df8f647674976772ad94083d1f3888eee2919f41561fd3"
+      ],
+      "ok": true
+    },
+    "orderingIssues": [],
+    "quickResumeBindingMismatch": [],
+    "quickResumeBindingMissing": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "RECENT_PROJECTS_ORDERING_AND_ENTRIES_VALID",
+    "NEXT_TZ_POSITIVE_02": "QUICK_RESUME_ROUTES_TO_VALID_COMMAND_PATHS",
+    "NEXT_TZ_POSITIVE_03": "RECENT_AND_RESUME_BEHAVIOR_DETERMINISTIC"
+  }
+}

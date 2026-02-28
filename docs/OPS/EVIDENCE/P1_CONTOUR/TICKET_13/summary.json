@@ -1,0 +1,42 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "activeScopeAlignmentMismatchCount": 0,
+  "advisoryToBlockingDriftCount": 0,
+  "blockingSurfaceExpansion": false,
+  "claimFailsignalGapCount": 0,
+  "claimTokenGapCount": 0,
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true,
+    "NEXT_TZ_DOD_07": true
+  },
+  "failSignalTarget": "E_CRITICAL_CLAIM_MATRIX_INVALID",
+  "generatedAtUtc": "2026-02-28T13:26:54.051Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "ACHIEVE_ZERO_GAP_ALIGNMENT_BETWEEN_CLAIM_MATRIX_TOKEN_CATALOG_AND_FAILSIGNAL_REGISTRY_FOR_ACTIVE_SCOPE",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "requiredSetUndeclaredEntityCount": 0,
+  "runId": "TZ_P1_WS03_CLAIM_CATALOG_REGISTRY_ALIGNMENT_001",
+  "status": "PASS",
+  "ticketId": "P1_WS03",
+  "tokenFailsignalGapCount": 0
+}

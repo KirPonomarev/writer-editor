@@ -1,0 +1,18 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "advisoryToBlockingDriftCountZero": true,
+  "authorityState": {
+    "advisoryToBlockingDriftCount": 0,
+    "gates": {
+      "mc_advisory_blocking_drift_zero": "PASS",
+      "mc_blocking_evaluator_single_authority": "PASS",
+      "mc_claim_level_blocking_cannot_override_mode_disposition": "PASS",
+      "mc_mode_matrix_consistency": "PASS",
+      "mc_phase_precedence_applied_before_new_v1_verdicts": "PASS",
+      "mc_phase_switch_valid": "PASS"
+    },
+    "secondaryEvaluatorMismatchCount": 0,
+    "status": "PASS"
+  },
+  "modeMatrixSingleAuthorityStatus": "PASS"
+}

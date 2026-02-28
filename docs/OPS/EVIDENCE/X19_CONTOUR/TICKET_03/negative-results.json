@@ -1,0 +1,1647 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "capabilityBindingMissing": [],
+      "channelErrorFeedbackInconsistency": [],
+      "commandBindingMissing": [],
+      "entryCount": 5,
+      "hintMappingMissing": [
+        {
+          "reason": "HINT_MAPPING_MISSING",
+          "signalId": "err.open.path_missing"
+        }
+      ],
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.importMarkdownV1",
+          "errorCode": "IMPORT_UNSUPPORTED_MARKDOWN",
+          "flow": "import",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.import.unsupported_markdown"
+        },
+        {
+          "commandId": "cmd.project.importMarkdownV1",
+          "errorCode": "IMPORT_UNSUPPORTED_MARKDOWN",
+          "flow": "import",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.import.unsupported_markdown"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        }
+      ],
+      "projectionHash": "0967f41ec8493d0fdea77baa11ed112bb0f20ffed90495bbf5b00e824ca87f4a",
+      "recoveryHintMissing": [],
+      "requiredErrorSignalCount": 5,
+      "requiredErrorSignalMissing": [],
+      "requiredRecoveryPathErrorCodeCount": 2,
+      "requiredRecoveryPathErrorCodeMissing": [],
+      "resetPolicyValid": true,
+      "sourceEventMissing": [],
+      "sourceEventNotAllowed": [],
+      "statusResetGaps": [],
+      "unknownErrorStates": [],
+      "unknownFlows": [],
+      "unknownModes": [],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "capabilityBindingMissing": [],
+      "channelErrorFeedbackInconsistency": [],
+      "commandBindingMissing": [],
+      "entryCount": 5,
+      "hintMappingMissing": [],
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.importMarkdownV1",
+          "errorCode": "IMPORT_UNSUPPORTED_MARKDOWN",
+          "flow": "import",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.import.unsupported_markdown"
+        },
+        {
+          "commandId": "cmd.project.importMarkdownV1",
+          "errorCode": "IMPORT_UNSUPPORTED_MARKDOWN",
+          "flow": "import",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.import.unsupported_markdown"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        }
+      ],
+      "projectionHash": "0967f41ec8493d0fdea77baa11ed112bb0f20ffed90495bbf5b00e824ca87f4a",
+      "recoveryHintMissing": [
+        {
+          "errorCode": "RESUME_STALE_PATH",
+          "reason": "RECOVERY_HINT_MISSING",
+          "signalId": "err.resume.stale_path"
+        }
+      ],
+      "requiredErrorSignalCount": 5,
+      "requiredErrorSignalMissing": [],
+      "requiredRecoveryPathErrorCodeCount": 2,
+      "requiredRecoveryPathErrorCodeMissing": [
+        {
+          "errorCode": "RESUME_STALE_PATH",
+          "reason": "REQUIRED_RECOVERY_PATH_ERROR_CODE_MISSING"
+        }
+      ],
+      "resetPolicyValid": true,
+      "sourceEventMissing": [],
+      "sourceEventNotAllowed": [],
+      "statusResetGaps": [],
+      "unknownErrorStates": [],
+      "unknownFlows": [],
+      "unknownModes": [],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "capabilityBindingMissing": [],
+      "channelErrorFeedbackInconsistency": [],
+      "commandBindingMissing": [],
+      "entryCount": 5,
+      "hintMappingMissing": [],
+      "modeProfileVisibilityGaps": [
+        {
+          "mode": "GhostMode",
+          "profile": "minimal",
+          "reason": "MENU_VISIBILITY_RULE_MISSING",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "mode": "GhostMode",
+          "profile": "pro",
+          "reason": "MENU_VISIBILITY_RULE_MISSING",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "mode": "GhostMode",
+          "profile": "guru",
+          "reason": "MENU_VISIBILITY_RULE_MISSING",
+          "signalId": "err.open.path_missing"
+        }
+      ],
+      "ok": false,
+      "projection": [
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.importMarkdownV1",
+          "errorCode": "IMPORT_UNSUPPORTED_MARKDOWN",
+          "flow": "import",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.import.unsupported_markdown"
+        },
+        {
+          "commandId": "cmd.project.importMarkdownV1",
+          "errorCode": "IMPORT_UNSUPPORTED_MARKDOWN",
+          "flow": "import",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.import.unsupported_markdown"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        }
+      ],
+      "projectionHash": "c59bc4e42c9e4d7ca83aa8cf35ac2b93a42b4fd400b2792396c8869ef41b490e",
+      "recoveryHintMissing": [],
+      "requiredErrorSignalCount": 5,
+      "requiredErrorSignalMissing": [],
+      "requiredRecoveryPathErrorCodeCount": 2,
+      "requiredRecoveryPathErrorCodeMissing": [],
+      "resetPolicyValid": true,
+      "sourceEventMissing": [],
+      "sourceEventNotAllowed": [],
+      "statusResetGaps": [],
+      "unknownErrorStates": [],
+      "unknownFlows": [],
+      "unknownModes": [
+        {
+          "mode": "GhostMode",
+          "reason": "UNKNOWN_MODE",
+          "signalId": "err.open.path_missing"
+        }
+      ],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "capabilityBindingMissing": [],
+      "channelErrorFeedbackInconsistency": [],
+      "commandBindingMissing": [],
+      "entryCount": 5,
+      "hintMappingMissing": [],
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.importMarkdownV1",
+          "errorCode": "IMPORT_UNSUPPORTED_MARKDOWN",
+          "flow": "import",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.import.unsupported_markdown"
+        },
+        {
+          "commandId": "cmd.project.importMarkdownV1",
+          "errorCode": "IMPORT_UNSUPPORTED_MARKDOWN",
+          "flow": "import",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.import.unsupported_markdown"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        }
+      ],
+      "projectionHash": "0967f41ec8493d0fdea77baa11ed112bb0f20ffed90495bbf5b00e824ca87f4a",
+      "recoveryHintMissing": [],
+      "requiredErrorSignalCount": 5,
+      "requiredErrorSignalMissing": [],
+      "requiredRecoveryPathErrorCodeCount": 2,
+      "requiredRecoveryPathErrorCodeMissing": [],
+      "resetPolicyValid": true,
+      "sourceEventMissing": [],
+      "sourceEventNotAllowed": [],
+      "statusResetGaps": [
+        {
+          "reason": "INVALID_TIMEOUT",
+          "signalId": "err.open.path_missing",
+          "timeoutMs": 0
+        },
+        {
+          "reason": "RESET_RULES_MISSING",
+          "signalId": "err.open.path_missing"
+        }
+      ],
+      "unknownErrorStates": [],
+      "unknownFlows": [],
+      "unknownModes": [],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "capabilityBindingMissing": [],
+      "channelErrorFeedbackInconsistency": [
+        {
+          "reason": "CHANNEL_ERROR_FEEDBACK_INCONSISTENT",
+          "signalId": "err.open.path_missing"
+        }
+      ],
+      "commandBindingMissing": [],
+      "entryCount": 5,
+      "hintMappingMissing": [],
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.export.docxMin",
+          "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+          "flow": "export",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.export.docx_write_failed"
+        },
+        {
+          "commandId": "cmd.project.importMarkdownV1",
+          "errorCode": "IMPORT_UNSUPPORTED_MARKDOWN",
+          "flow": "import",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.import.unsupported_markdown"
+        },
+        {
+          "commandId": "cmd.project.importMarkdownV1",
+          "errorCode": "IMPORT_UNSUPPORTED_MARKDOWN",
+          "flow": "import",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.import.unsupported_markdown"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "OPEN_PATH_MISSING",
+          "flow": "open",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.open.path_missing"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_INVALID_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.resume.invalid_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Plan",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Review",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "guru",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "minimal",
+          "signalId": "err.resume.stale_path"
+        },
+        {
+          "commandId": "cmd.project.open",
+          "errorCode": "RESUME_STALE_PATH",
+          "flow": "resume",
+          "mode": "Write",
+          "profile": "pro",
+          "signalId": "err.resume.stale_path"
+        }
+      ],
+      "projectionHash": "0967f41ec8493d0fdea77baa11ed112bb0f20ffed90495bbf5b00e824ca87f4a",
+      "recoveryHintMissing": [],
+      "requiredErrorSignalCount": 5,
+      "requiredErrorSignalMissing": [],
+      "requiredRecoveryPathErrorCodeCount": 2,
+      "requiredRecoveryPathErrorCodeMissing": [],
+      "resetPolicyValid": true,
+      "sourceEventMissing": [],
+      "sourceEventNotAllowed": [],
+      "statusResetGaps": [],
+      "unknownErrorStates": [],
+      "unknownFlows": [],
+      "unknownModes": [],
+      "unknownProfiles": []
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "ERROR_WITHOUT_HINT_MAPPING_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "STALE_PATH_ERROR_WITHOUT_RECOVERY_HINT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "MODE_PROFILE_INVALID_ERROR_VISIBILITY_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "ERROR_STATE_NOT_RESET_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "CHANNEL_ERROR_FEEDBACK_INCONSISTENCY_EXPECT_REJECT"
+  }
+}

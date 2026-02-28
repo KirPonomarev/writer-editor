@@ -1,0 +1,13 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "claimModeConflictCount": 0,
+  "failSignalTarget": "E_FAILSIGNAL_SEMANTIC_COLLISION",
+  "registryDeclarationMismatchCount": 0,
+  "repeatabilityStable3Runs": true,
+  "semanticCollisionCount": 0,
+  "status": "PASS",
+  "token": "P1_WS01_FAILSIGNAL_SEMANTIC_DEDUP_OK",
+  "tokenFailsignalAmbiguityCount": 0,
+  "updatedAtUtc": "2026-02-28T13:00:33.329Z",
+  "version": 1
+}

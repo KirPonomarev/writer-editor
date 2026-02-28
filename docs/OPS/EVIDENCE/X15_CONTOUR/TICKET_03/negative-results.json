@@ -1,0 +1,86 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "forceVisibleCapabilityDisabled": [],
+      "hiddenOutsideAllowlist": [],
+      "hiddenRequiredCoreCommands": [],
+      "ok": false,
+      "overrideWithoutCapability": [],
+      "panelConflicts": {
+        "duplicateAcrossZones": [],
+        "unknownPanels": []
+      },
+      "undeclaredCommands": [
+        "cmd.project.undeclaredV1"
+      ]
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "forceVisibleCapabilityDisabled": [],
+      "hiddenOutsideAllowlist": [
+        "cmd.project.export.docxMin"
+      ],
+      "hiddenRequiredCoreCommands": [
+        "cmd.project.export.docxMin"
+      ],
+      "ok": false,
+      "overrideWithoutCapability": [],
+      "panelConflicts": {
+        "duplicateAcrossZones": [],
+        "unknownPanels": []
+      },
+      "undeclaredCommands": []
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "forceVisibleCapabilityDisabled": [],
+      "hiddenOutsideAllowlist": [],
+      "hiddenRequiredCoreCommands": [],
+      "ok": false,
+      "overrideWithoutCapability": [],
+      "panelConflicts": {
+        "duplicateAcrossZones": [
+          {
+            "firstZone": "left",
+            "panelId": "editor",
+            "secondZone": "center"
+          }
+        ],
+        "unknownPanels": []
+      },
+      "undeclaredCommands": []
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "ok": false,
+      "projection": null,
+      "reason": "PRESET_SWITCH_INVALID_MODE_CONTEXT",
+      "validation": null
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "forceVisibleCapabilityDisabled": [],
+      "hiddenOutsideAllowlist": [],
+      "hiddenRequiredCoreCommands": [],
+      "ok": false,
+      "overrideWithoutCapability": [
+        "cmd.project.overrideWithoutCapabilityBindingV1"
+      ],
+      "panelConflicts": {
+        "duplicateAcrossZones": [],
+        "unknownPanels": []
+      },
+      "undeclaredCommands": []
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "PRESET_WITH_UNDECLARED_COMMAND_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "PRESET_HIDES_REQUIRED_CORE_COMMAND_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "PRESET_PANEL_STATE_CONFLICT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "PRESET_SWITCH_WITH_INVALID_MODE_CONTEXT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "PRESET_OVERRIDE_WITHOUT_CAPABILITY_BINDING_EXPECT_REJECT"
+  }
+}

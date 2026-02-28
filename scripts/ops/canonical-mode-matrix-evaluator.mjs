@@ -193,8 +193,8 @@ export function evaluateModeMatrixVerdict(input = {}) {
   }
 
   const ok = issues.length === 0;
-  const effectiveDisposition = ok ? modeDisposition : 'blocking';
-  const shouldBlock = effectiveDisposition === 'blocking';
+  const effectiveDisposition = modeDisposition || 'advisory';
+  const shouldBlock = ok && effectiveDisposition === 'blocking';
 
   return {
     evaluatorId: CANONICAL_MODE_MATRIX_EVALUATOR_ID,
@@ -205,6 +205,7 @@ export function evaluateModeMatrixVerdict(input = {}) {
     modeKey: modeState.modeKey,
     modeDisposition: effectiveDisposition,
     shouldBlock,
+    policyFailure: !ok,
     registryPath: registryState.registryPath,
     registrySource: registryState.source,
     issues,

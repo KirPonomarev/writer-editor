@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "ticketId": "TZ_X19_CONTOUR_OPENING_001",
+  "owner": "CODEX",
+  "priority": "P1",
+  "mode": "IMPLEMENTATION",
+  "status": "READY",
+  "objective": "OPEN_NEXT_CONTOUR_WITH_CANON_LOCK_AND_80_20_BLOCKING_DISCIPLINE_PRESERVED",
+  "executionGate": "GO",
+  "createdAtUtc": "2026-02-28T18:36:31.247Z",
+  "dependsOn": {
+    "requiredGate": "GO_IF_X18_CLOSEOUT_ARTIFACT_SIGNED",
+    "gateSatisfied": true,
+    "x18CloseoutArtifactRef": "docs/OPS/STATUS/X18_CONTOUR_CLOSEOUT_SIGNED_V1.json"
+  },
+  "entryChecks": {
+    "activeCanonLockCheckPass": true,
+    "stageActivationGuardCheckPass": true,
+    "blockingSurfaceExpansion": false,
+    "advisoryAsBlockingDrift": "ZERO",
+    "offlineReleaseIntegrityLocallyVerifiable": true,
+    "x18ContourClosed": true
+  },
+  "scope": {
+    "in": [
+      "NEXT_CONTOUR_ALIGNMENT",
+      "QUEUE_PRIORITIZATION",
+      "EVIDENCE_MAINTENANCE",
+      "CONTROLLED_DELIVERY_EXPANSION"
+    ],
+    "out": [
+      "NEW_BLOCKING_SURFACE",
+      "NETWORK_TRANSPORT_FEATURE_WORK",
+      "CORE_SCHEMA_MIGRATION_RECOVERY_CHANGES",
+      "NON_CANON_REFACTOR"
+    ]
+  }
+}

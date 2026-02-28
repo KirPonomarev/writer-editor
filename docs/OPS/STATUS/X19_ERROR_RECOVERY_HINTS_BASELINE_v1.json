@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "errorRecoveryHintsVersion": "x19.ws03.v1",
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "blockingSurfaceExpansion": false,
+  "channels": [
+    "menu",
+    "toolbar",
+    "palette"
+  ],
+  "modes": [
+    "Write",
+    "Plan",
+    "Review"
+  ],
+  "profiles": [
+    "minimal",
+    "pro",
+    "guru"
+  ],
+  "targetFlows": [
+    "open",
+    "resume",
+    "import",
+    "export"
+  ],
+  "errorStates": [
+    "warning",
+    "error"
+  ],
+  "requiredErrorSignals": [
+    "err.open.path_missing",
+    "err.resume.stale_path",
+    "err.resume.invalid_path",
+    "err.import.unsupported_markdown",
+    "err.export.docx_write_failed"
+  ],
+  "requiredRecoveryPathErrorCodes": [
+    "RESUME_STALE_PATH",
+    "RESUME_INVALID_PATH"
+  ],
+  "allowedSourceEvents": [
+    "evt.project.open.pathMissing",
+    "evt.project.open.retry",
+    "evt.project.open.success",
+    "evt.project.resume.stalePath",
+    "evt.project.resume.invalidPath",
+    "evt.project.resume.retry",
+    "evt.project.resume.success",
+    "evt.project.import.markdownUnsupported",
+    "evt.project.import.retry",
+    "evt.project.import.success",
+    "evt.project.export.docxWriteFailed",
+    "evt.project.export.retry",
+    "evt.project.export.success",
+    "evt.error.dismiss"
+  ],
+  "resetPolicy": {
+    "defaultTimeoutMs": 6000,
+    "maxTimeoutMs": 15000,
+    "onModeSwitchReset": true,
+    "onProfileSwitchReset": true
+  },
+  "entries": [
+    {
+      "signalId": "err.open.path_missing",
+      "flow": "open",
+      "commandId": "cmd.project.open",
+      "sourceEvent": "evt.project.open.pathMissing",
+      "errorState": "error",
+      "errorCode": "OPEN_PATH_MISSING",
+      "hintId": "hint.open.choose_valid_project",
+      "hintText": "Project path is missing. Choose an existing project.",
+      "recoveryHint": "Use Open Project and update recent entries.",
+      "timeoutMs": 7000,
+      "resetOn": [
+        "evt.project.open.retry",
+        "evt.project.open.success",
+        "evt.error.dismiss"
+      ],
+      "channels": {
+        "menu": "visible",
+        "toolbar": "visible",
+        "palette": "visible"
+      },
+      "modes": [
+        "Write",
+        "Plan",
+        "Review"
+      ],
+      "profiles": [
+        "minimal",
+        "pro",
+        "guru"
+      ]
+    },
+    {
+      "signalId": "err.resume.stale_path",
+      "flow": "resume",
+      "commandId": "cmd.project.open",
+      "sourceEvent": "evt.project.resume.stalePath",
+      "errorState": "warning",
+      "errorCode": "RESUME_STALE_PATH",
+      "hintId": "hint.resume.remove_stale_and_open",
+      "hintText": "Recent entry is stale. Remove it and reopen project.",
+      "recoveryHint": "Remove stale recent item and pick a valid project path.",
+      "timeoutMs": 7000,
+      "resetOn": [
+        "evt.project.resume.retry",
+        "evt.project.resume.success",
+        "evt.error.dismiss"
+      ],
+      "channels": {
+        "menu": "visible",
+        "toolbar": "visible",
+        "palette": "visible"
+      },
+      "modes": [
+        "Write",
+        "Plan",
+        "Review"
+      ],
+      "profiles": [
+        "minimal",
+        "pro",
+        "guru"
+      ]
+    },
+    {
+      "signalId": "err.resume.invalid_path",
+      "flow": "resume",
+      "commandId": "cmd.project.open",
+      "sourceEvent": "evt.project.resume.invalidPath",
+      "errorState": "error",
+      "errorCode": "RESUME_INVALID_PATH",
+      "hintId": "hint.resume.fix_path",
+      "hintText": "Recent project path is invalid. Select a new location.",
+      "recoveryHint": "Open project picker and refresh recent path.",
+      "timeoutMs": 7000,
+      "resetOn": [
+        "evt.project.resume.retry",
+        "evt.project.resume.success",
+        "evt.error.dismiss"
+      ],
+      "channels": {
+        "menu": "visible",
+        "toolbar": "visible",
+        "palette": "visible"
+      },
+      "modes": [
+        "Write",
+        "Plan",
+        "Review"
+      ],
+      "profiles": [
+        "minimal",
+        "pro",
+        "guru"
+      ]
+    },
+    {
+      "signalId": "err.import.unsupported_markdown",
+      "flow": "import",
+      "commandId": "cmd.project.importMarkdownV1",
+      "sourceEvent": "evt.project.import.markdownUnsupported",
+      "errorState": "error",
+      "errorCode": "IMPORT_UNSUPPORTED_MARKDOWN",
+      "hintId": "hint.import.check_markdown",
+      "hintText": "Unsupported markdown format. Try plain markdown import.",
+      "recoveryHint": "Retry import with supported markdown profile.",
+      "timeoutMs": 6000,
+      "resetOn": [
+        "evt.project.import.retry",
+        "evt.project.import.success",
+        "evt.error.dismiss"
+      ],
+      "channels": {
+        "menu": "visible",
+        "toolbar": "visible",
+        "palette": "visible"
+      },
+      "modes": [
+        "Write"
+      ],
+      "profiles": [
+        "pro",
+        "guru"
+      ]
+    },
+    {
+      "signalId": "err.export.docx_write_failed",
+      "flow": "export",
+      "commandId": "cmd.project.export.docxMin",
+      "sourceEvent": "evt.project.export.docxWriteFailed",
+      "errorState": "error",
+      "errorCode": "EXPORT_DOCX_WRITE_FAILED",
+      "hintId": "hint.export.check_destination",
+      "hintText": "Export failed. Check destination path and permissions.",
+      "recoveryHint": "Retry export with another destination.",
+      "timeoutMs": 8000,
+      "resetOn": [
+        "evt.project.export.retry",
+        "evt.project.export.success",
+        "evt.error.dismiss"
+      ],
+      "channels": {
+        "menu": "visible",
+        "toolbar": "visible",
+        "palette": "visible"
+      },
+      "modes": [
+        "Write",
+        "Plan",
+        "Review"
+      ],
+      "profiles": [
+        "minimal",
+        "pro",
+        "guru"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "detector": {
+    "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+    "contentHash": "ac4aeae33777f3b779529bd5457571e88fdc170a38e41a0873a3d2fc5e34292a",
+    "detectorId": "X21_WS01_RELEASE_CANDIDATE_PRECHECK_SINGLE_DETECTOR_V1"
+  },
+  "modeMatrix": {
+    "advisoryToBlockingDriftCases": [],
+    "blockingFlagConflict": [],
+    "duplicateSignalCodes": [],
+    "evaluatorIssues": [],
+    "invalidModeDisposition": [],
+    "missingModeDisposition": [],
+    "ok": true,
+    "requiredTokenFailSignalMissing": []
+  },
+  "modeMatrixBlockingFlagConflictCount": 0,
+  "modeMatrixDuplicateSignalCount": 0,
+  "modeMatrixInvalidDispositionCount": 0,
+  "modeMatrixMissingDispositionCount": 0,
+  "modeMatrixRequiredTokenFailSignalMissingCount": 0,
+  "offlineIntegrity": {
+    "issues": [],
+    "lockChecks": {
+      "p0OfflineIntegrity": true,
+      "x20CloseSummary": true,
+      "x20SignedHashMatch": true,
+      "x20SignedStatus": true
+    },
+    "ok": true
+  },
+  "offlineIntegrityIssueCount": 0,
+  "releaseBinding": {
+    "missingBindingRecord": [],
+    "missingBindingRequiredFields": [],
+    "missingFailSignalInRegistry": [],
+    "missingTokenCatalog": [],
+    "ok": true,
+    "requiredReleaseBlockingTokenCount": 14,
+    "tokenBindingFailSignalMismatch": []
+  },
+  "releaseBindingFailSignalMismatchCount": 0,
+  "releaseBindingFailSignalMissingCount": 0,
+  "releaseBindingMissingFieldCount": 0,
+  "releaseBindingMissingRecordCount": 0,
+  "releaseBindingMissingTokenCount": 0,
+  "requiredModeKeyCount": 3,
+  "requiredReleaseBlockingTokenCount": 14,
+  "usabilityGuardIssueCount": 0,
+  "usabilityGuardPack": {
+    "checks": {
+      "repeatability": true,
+      "statusPass": true,
+      "summaryPass": true,
+      "tokenMatch": true
+    },
+    "issues": [],
+    "ok": true
+  }
+}

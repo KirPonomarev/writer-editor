@@ -1,0 +1,33 @@
+{
+  "details": {
+    "determinism": {
+      "hashes": [
+        "64b54be64ee83ea98b2162709c4dc8fffde0289619e9ec6a66168f9667fa31a5",
+        "64b54be64ee83ea98b2162709c4dc8fffde0289619e9ec6a66168f9667fa31a5",
+        "64b54be64ee83ea98b2162709c4dc8fffde0289619e9ec6a66168f9667fa31a5"
+      ],
+      "ok": true
+    },
+    "enabledWhenAllowed": {
+      "EXPORT_MARKDOWN_MENU_PATH": true,
+      "MINDMAP_DERIVED_VIEW_MENU_PATH": true
+    },
+    "stageActivation": {
+      "activeStageId": "NONE",
+      "errors": [],
+      "failSignals": [],
+      "ok": true,
+      "stageActivationOk": 1
+    }
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "EXPORT_MARKDOWN_MENU_PATH_ENABLED_WHEN_ALLOWED",
+    "NEXT_TZ_POSITIVE_02": "MINDMAP_BRIDGE_MENU_PATH_ENABLED_WHEN_ALLOWED",
+    "NEXT_TZ_POSITIVE_03": "STAGE_GATED_POLICY_DETERMINISTIC_AND_STABLE"
+  }
+}

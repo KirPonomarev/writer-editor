@@ -162,7 +162,27 @@ const runCommand = createCommandRunner(commandRegistry, {
     defaultPlatformId: window.electronAPI ? 'node' : 'web',
   },
 });
-registerProjectCommands(commandRegistry, { electronAPI: window.electronAPI });
+registerProjectCommands(commandRegistry, {
+  electronAPI: window.electronAPI,
+  uiActions: {
+    undo: () => handleUndo(),
+    redo: () => handleRedo(),
+    find: () => handleFind(),
+    replace: () => handleReplace(),
+    zoomOut: () => handleZoomOut(),
+    zoomIn: () => handleZoomIn(),
+    toggleWrap: () => handleToggleWrap(),
+    insertMarkdownPrompt: () => handleInsertMarkdownPrompt(),
+    insertFlowOpen: () => handleInsertFlowOpen(),
+    insertAddCard: () => handleInsertAddCard(),
+    formatAlignLeft: () => handleFormatAlign('align-left'),
+    formatAlignCenter: () => handleFormatAlign('align-center'),
+    formatAlignRight: () => handleFormatAlign('align-right'),
+    formatAlignJustify: () => handleFormatAlign('align-justify'),
+    planFlowSave: () => handlePlanFlowSave(),
+    reviewExportMarkdown: () => handleReviewExportMarkdown(),
+  },
+});
 const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });
 window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;
 const MARKDOWN_IMPORT_STATUS_MESSAGE = 'Imported Markdown v1';
@@ -1702,9 +1722,7 @@ if (metaTagPlace) {
 
 if (addCardButton) {
   addCardButton.addEventListener('click', () => {
-    const selection = window.getSelection();
-    const text = selection && editor && editor.contains(selection.anchorNode) ? selection.toString() : '';
-    openCardModal(text);
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_ADD_CARD);
   });
 }
 
@@ -2333,9 +2351,9 @@ function toggleToolbarCompactMode() {
 setToolbarCompactMode(false);
 
 function handleFind() {
-  if (!editor) return;
+  if (!editor) return { performed: false, found: false, query: '' };
   const query = window.prompt('Find', lastSearchQuery);
-  if (!query) return;
+  if (!query) return { performed: false, found: false, query: '' };
   const text = getPlainText();
   const normalized = text.toLowerCase();
   const needle = query.toLowerCase();
@@ -2349,12 +2367,115 @@ function handleFind() {
 
   if (index === -1) {
     updateStatusText('Не найдено');
-    return;
+    return { performed: true, found: false, query };
   }
 
   lastSearchQuery = query;
   editor.focus();
   setSelectionRange(index, index + query.length);
+  return { performed: true, found: true, query, index };
+}
+
+function handleReplace() {
+  if (!editor) return { performed: false, replaced: 0 };
+  const query = window.prompt('Find', lastSearchQuery);
+  if (!query) return { performed: false, replaced: 0 };
+  const replacement = window.prompt('Replace with', '');
+  if (replacement === null) return { performed: false, replaced: 0 };
+
+  const text = getPlainText();
+  if (!text.includes(query)) {
+    updateStatusText('Не найдено');
+    return { performed: true, replaced: 0 };
+  }
+
+  let replaced = 0;
+  let cursor = 0;
+  while (cursor <= text.length) {
+    const index = text.indexOf(query, cursor);
+    if (index === -1) break;
+    replaced += 1;
+    cursor = index + query.length;
+    if (query.length === 0) break;
+  }
+
+  if (replaced === 0) {
+    updateStatusText('Не найдено');
+    return { performed: true, replaced: 0 };
+  }
+
+  const next = text.split(query).join(replacement);
+  setPlainText(next);
+  markAsModified();
+  updateWordCount();
+  lastSearchQuery = query;
+  updateStatusText(`Заменено: ${replaced}`);
+  return { performed: true, replaced };
+}
+
+function handleUndo() {
+  if (!editor) return { performed: false };
+  editor.focus();
+  document.execCommand('undo');
+  return { performed: true };
+}
+
+function handleRedo() {
+  if (!editor) return { performed: false };
+  editor.focus();
+  document.execCommand('redo');
+  return { performed: true };
+}
+
+function handleZoomOut() {
+  changeEditorZoom(-EDITOR_ZOOM_STEP);
+  return { performed: true, direction: 'out' };
+}
+
+function handleZoomIn() {
+  changeEditorZoom(EDITOR_ZOOM_STEP);
+  return { performed: true, direction: 'in' };
+}
+
+function handleToggleWrap() {
+  applyWordWrap(!wordWrapEnabled);
+  return { performed: true, enabled: wordWrapEnabled };
+}
+
+async function handleInsertMarkdownPrompt() {
+  await handleMarkdownImportUiPath();
+  return { performed: true };
+}
+
+async function handleInsertFlowOpen() {
+  await handleFlowModeOpenUiPath();
+  return { performed: true };
+}
+
+function handleInsertAddCard() {
+  const selection = window.getSelection();
+  const text = selection && editor && editor.contains(selection.anchorNode) ? selection.toString() : '';
+  openCardModal(text);
+  return { performed: true, source: 'selection' };
+}
+
+function handleFormatAlign(action) {
+  if (!Object.prototype.hasOwnProperty.call(ALIGNMENT_PREFIX_BY_ACTION, action)) {
+    return { performed: false, reason: 'ALIGN_ACTION_UNKNOWN' };
+  }
+  applyAlignmentStyle(action);
+  updateAlignmentButtons(action);
+  return { performed: true, action };
+}
+
+async function handlePlanFlowSave() {
+  await handleFlowModeSaveUiPath();
+  return { performed: true };
+}
+
+async function handleReviewExportMarkdown() {
+  await handleMarkdownExportUiPath();
+  return { performed: true };
 }
 
 if (toolbar) {
@@ -2368,7 +2489,10 @@ if (toolbar) {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_SAVE_AS);
         break;
       case 'search':
-        handleFind();
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
+        break;
+      case 'replace':
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
         break;
       case 'new':
         void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_NEW);
@@ -2385,7 +2509,7 @@ if (toolbar) {
         break;
       case 'save':
         if (flowModeState.active) {
-          void handleFlowModeSaveUiPath();
+          void dispatchUiCommand(EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE);
         } else {
           void dispatchUiCommand(COMMAND_IDS.PROJECT_SAVE);
         }
@@ -2394,10 +2518,10 @@ if (toolbar) {
         void dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);
         break;
       case 'import-markdown-v1':
-        void handleMarkdownImportUiPath();
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_MARKDOWN_PROMPT);
         break;
       case 'export-markdown-v1':
-        void handleMarkdownExportUiPath();
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN);
         break;
       case 'theme-dark':
         window.electronAPI?.setTheme('dark');
@@ -2406,21 +2530,28 @@ if (toolbar) {
         window.electronAPI?.setTheme('light');
         break;
       case 'toggle-wrap': {
-        applyWordWrap(!wordWrapEnabled);
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_WRAP);
         break;
       }
       case 'zoom-out':
-        changeEditorZoom(-EDITOR_ZOOM_STEP);
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_ZOOM_OUT);
         break;
       case 'zoom-in':
-        changeEditorZoom(EDITOR_ZOOM_STEP);
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_ZOOM_IN);
         break;
       case 'align-left':
       case 'align-center':
       case 'align-right':
       case 'align-justify':
-        applyAlignmentStyle(action);
-        updateAlignmentButtons(action);
+        if (action === 'align-left') {
+          void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
+        } else if (action === 'align-center') {
+          void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_CENTER);
+        } else if (action === 'align-right') {
+          void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_RIGHT);
+        } else {
+          void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_JUSTIFY);
+        }
         break;
       case 'minimize':
         toggleToolbarCompactMode();
@@ -2532,6 +2663,31 @@ document.addEventListener('keydown', (event) => {
     key === '0' || code === 'Digit0' || code === 'Numpad0';
 
   if (!isPlus && !isMinus && !isZero) {
+    if ((key === 'Z' || key === 'z') && !event.shiftKey) {
+      event.preventDefault();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);
+      return;
+    }
+    if ((key === 'Z' || key === 'z') && event.shiftKey) {
+      event.preventDefault();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
+      return;
+    }
+    if ((key === 'Y' || key === 'y') && !event.shiftKey) {
+      event.preventDefault();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
+      return;
+    }
+    if ((key === 'F' || key === 'f') && !event.shiftKey) {
+      event.preventDefault();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
+      return;
+    }
+    if ((key === 'H' || key === 'h') && !event.shiftKey) {
+      event.preventDefault();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
+      return;
+    }
     if ((key === 'E' || key === 'e') && event.shiftKey) {
       event.preventDefault();
       void dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);
@@ -2539,22 +2695,27 @@ document.addEventListener('keydown', (event) => {
     }
     if ((key === 'I' || key === 'i') && event.shiftKey) {
       event.preventDefault();
-      void handleMarkdownImportUiPath();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_MARKDOWN_PROMPT);
       return;
     }
     if ((key === 'M' || key === 'm') && event.shiftKey) {
       event.preventDefault();
-      void handleMarkdownExportUiPath();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN);
       return;
     }
     if ((key === 'F' || key === 'f') && event.shiftKey) {
       event.preventDefault();
-      void handleFlowModeOpenUiPath();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_FLOW_OPEN);
+      return;
+    }
+    if ((key === 'K' || key === 'k') && event.shiftKey) {
+      event.preventDefault();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_ADD_CARD);
       return;
     }
     if ((key === 'S' || key === 's') && event.shiftKey && flowModeState.active) {
       event.preventDefault();
-      void handleFlowModeSaveUiPath();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE);
       return;
     }
     return;
@@ -2562,11 +2723,11 @@ document.addEventListener('keydown', (event) => {
 
   event.preventDefault();
   if (isPlus) {
-    changeEditorZoom(EDITOR_ZOOM_STEP);
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_ZOOM_IN);
     return;
   }
   if (isMinus) {
-    changeEditorZoom(-EDITOR_ZOOM_STEP);
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_ZOOM_OUT);
     return;
   }
   if (isZero) {

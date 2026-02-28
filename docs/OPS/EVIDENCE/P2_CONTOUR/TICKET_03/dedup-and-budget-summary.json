@@ -1,0 +1,18 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "baseStateSummary": {
+    "advisoryToBlockingDriftCount": 0,
+    "budgetThresholdProofOk": true,
+    "duplicateGateMergeOrDisableCheck": true,
+    "killSwitchOnNoSignalDeltaCheck": true,
+    "maxHeavyPassPerWindowCheck": true,
+    "noDailyStrictWithoutScopeDeltaCheck": true,
+    "ok": true,
+    "uniqueSignalRequiredCheck": true
+  },
+  "duplicateCheckCountAfter": 0,
+  "duplicateCheckCountBefore": 1,
+  "duplicateCheckReduced": true,
+  "maxHeavyPassPerWindow": 1,
+  "runtimeBudgetMinutesMax": 30
+}

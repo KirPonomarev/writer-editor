@@ -1,0 +1,131 @@
+{
+  "negativeDetails": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "details": {
+        "ok": false,
+        "results": [
+          {
+            "failSignalCode": "E_GOVERNANCE_STRICT_FAIL",
+            "pass": false,
+            "verdict": {
+              "issues": [],
+              "modeDisposition": "blocking",
+              "ok": true,
+              "shouldBlock": true
+            }
+          },
+          {
+            "failSignalCode": "E_REMOTE_UNAVAILABLE",
+            "pass": true,
+            "verdict": {
+              "issues": [],
+              "modeDisposition": "advisory",
+              "ok": true,
+              "shouldBlock": false
+            }
+          }
+        ]
+      },
+      "detected": true
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "details": {
+        "advisoryToBlockingDriftCount": 0,
+        "gates": {
+          "mc_advisory_blocking_drift_zero": "PASS",
+          "mc_blocking_evaluator_single_authority": "FAIL",
+          "mc_claim_level_blocking_cannot_override_mode_disposition": "PASS",
+          "mc_mode_matrix_consistency": "FAIL",
+          "mc_phase_precedence_applied_before_new_v1_verdicts": "PASS",
+          "mc_phase_switch_valid": "PASS"
+        },
+        "secondaryEvaluatorMismatchCount": 3,
+        "status": "FAIL"
+      },
+      "detected": true
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "details": {
+        "issues": [
+          {
+            "code": "FAILSIGNAL_MODE_MATRIX_INVALID",
+            "message": "FailSignal E_SEQUENCE_ORDER_DRIFT has no valid disposition for mode release."
+          }
+        ],
+        "modeDisposition": "advisory",
+        "ok": false,
+        "shouldBlock": false
+      },
+      "detected": true
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "details": {
+        "failReason": "MODE_ROUTING_REGRESSION",
+        "modeRouting": {
+          "caseResults": [
+            {
+              "actual": {
+                "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+                "issues": [],
+                "modeDisposition": "blocking",
+                "shouldBlock": true,
+                "verdictOk": true
+              },
+              "caseId": "release_advisory_guard_case",
+              "expectedDisposition": "advisory",
+              "expectedShouldBlock": false,
+              "failSignalCode": "E_GOVERNANCE_STRICT_FAIL",
+              "mode": "release",
+              "modeKey": "release",
+              "ok": false
+            }
+          ],
+          "ok": false
+        },
+        "modeRoutingOk": false,
+        "ok": false
+      },
+      "detected": true
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "details": {
+        "ok": false,
+        "rows": [
+          {
+            "expected": {
+              "promotion": "blocking",
+              "release": "blocking"
+            },
+            "failSignalCode": "E_SEQUENCE_ORDER_DRIFT",
+            "pass": false,
+            "promotion": {
+              "issues": [],
+              "modeDisposition": "advisory",
+              "ok": true,
+              "shouldBlock": false
+            },
+            "release": {
+              "issues": [],
+              "modeDisposition": "blocking",
+              "ok": true,
+              "shouldBlock": true
+            }
+          }
+        ]
+      },
+      "detected": true
+    }
+  },
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  }
+}

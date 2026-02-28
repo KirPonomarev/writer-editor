@@ -1,0 +1,252 @@
+{
+  "schemaVersion": 1,
+  "actionsVersion": "x17.ws01.v1",
+  "nonBlockingClassification": "advisory",
+  "blockingSurfaceExpansion": false,
+  "formalMachineBinding": {
+    "status": "not_bound",
+    "blockingAllowed": false,
+    "note": "STAYS_NON_BLOCKING_UNTIL_FORMAL_MACHINE_BINDING"
+  },
+  "channels": [
+    "menu",
+    "toolbar",
+    "palette"
+  ],
+  "modes": [
+    "Write",
+    "Plan",
+    "Review"
+  ],
+  "profiles": [
+    "minimal",
+    "pro",
+    "guru"
+  ],
+  "states": [
+    "visible",
+    "hidden"
+  ],
+  "requiredCoreActions": [
+    "new",
+    "open",
+    "save",
+    "save-as",
+    "undo",
+    "redo",
+    "find",
+    "replace"
+  ],
+  "requiredCoreCommands": [
+    "cmd.project.new",
+    "cmd.project.open",
+    "cmd.project.save",
+    "cmd.project.saveAs",
+    "cmd.project.edit.undo",
+    "cmd.project.edit.redo",
+    "cmd.project.edit.find",
+    "cmd.project.edit.replace"
+  ],
+  "entries": [
+    {
+      "bindingOrder": 10,
+      "menuGroupId": "File",
+      "actionId": "new",
+      "commandId": "cmd.project.new",
+      "capabilityId": "cap.project.new",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "bindingOrder": 20,
+      "menuGroupId": "File",
+      "actionId": "open",
+      "commandId": "cmd.project.open",
+      "capabilityId": "cap.project.open",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "bindingOrder": 30,
+      "menuGroupId": "File",
+      "actionId": "save",
+      "commandId": "cmd.project.save",
+      "capabilityId": "cap.project.save",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "bindingOrder": 40,
+      "menuGroupId": "File",
+      "actionId": "save-as",
+      "commandId": "cmd.project.saveAs",
+      "capabilityId": "cap.project.saveAs",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "bindingOrder": 50,
+      "menuGroupId": "Edit",
+      "actionId": "undo",
+      "commandId": "cmd.project.edit.undo",
+      "capabilityId": "cap.project.edit.undo",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "bindingOrder": 60,
+      "menuGroupId": "Edit",
+      "actionId": "redo",
+      "commandId": "cmd.project.edit.redo",
+      "capabilityId": "cap.project.edit.redo",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "bindingOrder": 70,
+      "menuGroupId": "Edit",
+      "actionId": "find",
+      "commandId": "cmd.project.edit.find",
+      "capabilityId": "cap.project.edit.find",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    },
+    {
+      "bindingOrder": 80,
+      "menuGroupId": "Edit",
+      "actionId": "replace",
+      "commandId": "cmd.project.edit.replace",
+      "capabilityId": "cap.project.edit.replace",
+      "route": "command.bus",
+      "rules": [
+        {
+          "mode": "Write",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Plan",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        },
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" }
+        }
+      ]
+    }
+  ]
+}

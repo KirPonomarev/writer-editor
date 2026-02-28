@@ -1,0 +1,18 @@
+{
+  "actionCount": 8,
+  "advisoryToBlockingDriftCount": 0,
+  "channelCount": 3,
+  "commandCapabilityBindingCount": 21,
+  "menuProjectionGapCount": 0,
+  "missingRequiredActionRowsCount": 0,
+  "modeCount": 3,
+  "profileCount": 3,
+  "repeatabilityStable3Runs": true,
+  "requiredActionCount": 8,
+  "requiredCommandCount": 8,
+  "rowCount": 72,
+  "status": "PASS",
+  "token": "X17_WS01_FILE_EDIT_CORE_ACTIONS_OK",
+  "updatedAtUtc": "2026-02-28T17:22:47.905Z",
+  "version": 1
+}

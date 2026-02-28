@@ -1,0 +1,28 @@
+{
+  "details": {
+    "channelVisibilityMismatches": [],
+    "determinism": {
+      "hashes": [
+        "93a2e9747f9e80637c60a2fcc9fe315b51a8bb793ec26c088e52b06736b6a1ec",
+        "93a2e9747f9e80637c60a2fcc9fe315b51a8bb793ec26c088e52b06736b6a1ec",
+        "93a2e9747f9e80637c60a2fcc9fe315b51a8bb793ec26c088e52b06736b6a1ec"
+      ],
+      "ok": true
+    },
+    "enabledWhenAllowed": {
+      "HELP_GROUP_BASE_ENTRY": true,
+      "TOOLS_GROUP_BASE_ENTRY": true
+    },
+    "modeProfileCoverageGaps": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "TOOLS_GROUP_VISIBLE_WHEN_ALLOWED",
+    "NEXT_TZ_POSITIVE_02": "HELP_GROUP_VISIBLE_WHEN_ALLOWED",
+    "NEXT_TZ_POSITIVE_03": "TOOLS_HELP_CONSISTENCY_DETERMINISTIC_ACROSS_CHANNELS"
+  }
+}

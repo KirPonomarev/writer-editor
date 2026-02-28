@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "reviewToolsVersion": "x16.ws03.v1",
+  "nonBlockingClassification": "advisory",
+  "blockingSurfaceExpansion": false,
+  "formalMachineBinding": {
+    "status": "not_bound",
+    "blockingAllowed": false,
+    "note": "STAYS_NON_BLOCKING_UNTIL_FORMAL_MACHINE_BINDING"
+  },
+  "localFirstPolicy": {
+    "required": true,
+    "scopeFlag": "COLLAB_SCOPE_FLAG_ACTIVE",
+    "networkDependency": "forbidden"
+  },
+  "entries": [
+    {
+      "featureId": "REVIEW_COMMENTS_LOCAL_FIRST",
+      "menuGroupId": "Review",
+      "commandId": "cmd.project.save",
+      "capabilityId": "cap.project.save",
+      "historyCompareGuard": "COMMENTS_LOCAL_FIRST_REQUIRED",
+      "stageGate": {
+        "minStageId": "X1",
+        "requiredScopeFlag": "XPLAT_STAGE_X1_ENABLED",
+        "disabledVisibilityState": "visible+disabled(reason=\"STAGE_GATED\")"
+      },
+      "allowedVisibility": [
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": {
+            "menu": "visible",
+            "toolbar": "visible",
+            "palette": "visible"
+          }
+        }
+      ]
+    },
+    {
+      "featureId": "REVIEW_HISTORY_COMPARE_LOCAL_FIRST",
+      "menuGroupId": "Review",
+      "commandId": "cmd.project.exportMarkdownV1",
+      "capabilityId": "cap.project.export.markdownV1",
+      "historyCompareGuard": "HISTORY_COMPARE_GUARD_REQUIRED",
+      "stageGate": {
+        "minStageId": "X1",
+        "requiredScopeFlag": "XPLAT_STAGE_X1_ENABLED",
+        "disabledVisibilityState": "visible+disabled(reason=\"STAGE_GATED\")"
+      },
+      "allowedVisibility": [
+        {
+          "mode": "Review",
+          "profiles": ["minimal", "pro", "guru"],
+          "channels": {
+            "menu": "visible",
+            "toolbar": "visible",
+            "palette": "visible"
+          }
+        }
+      ]
+    }
+  ]
+}

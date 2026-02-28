@@ -1,0 +1,46 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "bridgeEntryCount": 2,
+    "capabilityBindingCount": 9,
+    "channelCount": 3,
+    "menuProjectionRowCount": 81,
+    "missingStageGateCount": 0,
+    "modeCount": 3,
+    "profileCount": 3,
+    "runtimeCapabilityBindingCount": 9,
+    "visibilityConflictCount": 0
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "generatedAtUtc": "2026-02-28T16:39:53.599Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "ENABLE_EXPORT_MARKDOWN_AND_MINDMAP_BRIDGE_STAGE_GATED_NO_CORE_LEAK",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "TZ_X16_WS02_EXPORT_MARKDOWN_MINDMAP_BRIDGE_001",
+  "status": "PASS",
+  "ticketId": "X16_WS02"
+}

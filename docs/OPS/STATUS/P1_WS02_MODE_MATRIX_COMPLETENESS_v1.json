@@ -1,0 +1,13 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "duplicateModeRuleCount": 0,
+  "failSignalTarget": "E_FAILSIGNAL_MODE_MAPPING_INCOMPLETE",
+  "modeCoveragePercent": 100,
+  "modeGapCount": 0,
+  "modeMismatchCount": 0,
+  "repeatabilityStable3Runs": true,
+  "status": "PASS",
+  "token": "P1_WS02_MODE_MATRIX_COMPLETENESS_OK",
+  "updatedAtUtc": "2026-02-28T13:13:00.518Z",
+  "version": 1
+}

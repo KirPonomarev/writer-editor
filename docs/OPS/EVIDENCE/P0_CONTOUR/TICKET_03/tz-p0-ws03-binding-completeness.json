@@ -1,0 +1,10 @@
+{
+  "tzId": "TZ_P0_WS03_BLOCKING_BINDING_COMPLETENESS_001",
+  "generatedAtUtc": "2026-02-28T12:22:57.741Z",
+  "targetBlockingCount": 14,
+  "targetBlockingCoveredCount": 14,
+  "requiredBindingFieldsCount": 12,
+  "missingBindingFieldsCount": 0,
+  "fullBindingCompletenessPct": 100,
+  "bindingCompletenessOk": true
+}

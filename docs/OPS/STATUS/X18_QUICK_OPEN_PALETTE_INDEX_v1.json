@@ -1,0 +1,334 @@
+{
+  "schemaVersion": 1,
+  "quickOpenVersion": "x18.ws02.v1",
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "blockingSurfaceExpansion": false,
+  "channels": [
+    "menu",
+    "toolbar",
+    "palette"
+  ],
+  "modes": [
+    "Write",
+    "Plan",
+    "Review"
+  ],
+  "profiles": [
+    "minimal",
+    "pro",
+    "guru"
+  ],
+  "requiredGroups": [
+    "File",
+    "Edit",
+    "View",
+    "Insert",
+    "Format",
+    "Plan",
+    "Review",
+    "Tools",
+    "Help"
+  ],
+  "groupCoverage": [
+    {
+      "groupId": "File",
+      "coverageType": "command_index"
+    },
+    {
+      "groupId": "Edit",
+      "coverageType": "command_index"
+    },
+    {
+      "groupId": "View",
+      "coverageType": "command_index"
+    },
+    {
+      "groupId": "Insert",
+      "coverageType": "command_index"
+    },
+    {
+      "groupId": "Format",
+      "coverageType": "command_index"
+    },
+    {
+      "groupId": "Plan",
+      "coverageType": "command_index"
+    },
+    {
+      "groupId": "Review",
+      "coverageType": "command_index"
+    },
+    {
+      "groupId": "Tools",
+      "coverageType": "discoverability_hint_only"
+    },
+    {
+      "groupId": "Help",
+      "coverageType": "discoverability_hint_only"
+    }
+  ],
+  "requiredQuickOpenCommands": [
+    "cmd.project.new",
+    "cmd.project.open",
+    "cmd.project.save",
+    "cmd.project.saveAs",
+    "cmd.project.edit.undo",
+    "cmd.project.edit.redo",
+    "cmd.project.edit.find",
+    "cmd.project.edit.replace",
+    "cmd.project.view.zoomOut",
+    "cmd.project.view.zoomIn",
+    "cmd.project.view.toggleWrap",
+    "cmd.project.insert.markdownPrompt",
+    "cmd.project.insert.flowOpen",
+    "cmd.project.insert.addCard",
+    "cmd.project.format.alignLeft",
+    "cmd.project.format.alignCenter",
+    "cmd.project.format.alignRight",
+    "cmd.project.format.alignJustify",
+    "cmd.project.plan.flowSave",
+    "cmd.project.review.exportMarkdown"
+  ],
+  "entries": [
+    {
+      "groupId": "File",
+      "quickOpenKey": "file:new",
+      "actionId": "new",
+      "commandId": "cmd.project.new",
+      "hotkey": "Cmd/Ctrl+N",
+      "menuHint": "Cmd/Ctrl+N",
+      "shortcutHint": "Cmd/Ctrl+N",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "File",
+      "quickOpenKey": "file:open",
+      "actionId": "open",
+      "commandId": "cmd.project.open",
+      "hotkey": "Cmd/Ctrl+O",
+      "menuHint": "Cmd/Ctrl+O",
+      "shortcutHint": "Cmd/Ctrl+O",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "File",
+      "quickOpenKey": "file:save",
+      "actionId": "save",
+      "commandId": "cmd.project.save",
+      "hotkey": "Cmd/Ctrl+S",
+      "menuHint": "Cmd/Ctrl+S",
+      "shortcutHint": "Cmd/Ctrl+S",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "File",
+      "quickOpenKey": "file:save_as",
+      "actionId": "save-as",
+      "commandId": "cmd.project.saveAs",
+      "hotkey": "Cmd/Ctrl+Shift+S",
+      "menuHint": "Cmd/Ctrl+Shift+S",
+      "shortcutHint": "Cmd/Ctrl+Shift+S",
+      "paletteDiscoverable": true,
+      "modes": ["Write"],
+      "profiles": ["pro", "guru"]
+    },
+    {
+      "groupId": "Edit",
+      "quickOpenKey": "edit:undo",
+      "actionId": "undo",
+      "commandId": "cmd.project.edit.undo",
+      "hotkey": "Cmd/Ctrl+Z",
+      "menuHint": "Cmd/Ctrl+Z",
+      "shortcutHint": "Cmd/Ctrl+Z",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "Edit",
+      "quickOpenKey": "edit:redo",
+      "actionId": "redo",
+      "commandId": "cmd.project.edit.redo",
+      "hotkey": "Cmd/Ctrl+Shift+Z",
+      "menuHint": "Cmd/Ctrl+Shift+Z",
+      "shortcutHint": "Cmd/Ctrl+Shift+Z",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "Edit",
+      "quickOpenKey": "edit:find",
+      "actionId": "find",
+      "commandId": "cmd.project.edit.find",
+      "hotkey": "Cmd/Ctrl+F",
+      "menuHint": "Cmd/Ctrl+F",
+      "shortcutHint": "Cmd/Ctrl+F",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "Edit",
+      "quickOpenKey": "edit:replace",
+      "actionId": "replace",
+      "commandId": "cmd.project.edit.replace",
+      "hotkey": "Cmd/Ctrl+H",
+      "menuHint": "Cmd/Ctrl+H",
+      "shortcutHint": "Cmd/Ctrl+H",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "View",
+      "quickOpenKey": "view:zoom_out",
+      "actionId": "zoom-out",
+      "commandId": "cmd.project.view.zoomOut",
+      "hotkey": "Cmd/Ctrl+-",
+      "menuHint": "Cmd/Ctrl+-",
+      "shortcutHint": "Cmd/Ctrl+-",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "View",
+      "quickOpenKey": "view:zoom_in",
+      "actionId": "zoom-in",
+      "commandId": "cmd.project.view.zoomIn",
+      "hotkey": "Cmd/Ctrl+=",
+      "menuHint": "Cmd/Ctrl+=",
+      "shortcutHint": "Cmd/Ctrl+=",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "View",
+      "quickOpenKey": "view:toggle_wrap",
+      "actionId": "toggle-wrap",
+      "commandId": "cmd.project.view.toggleWrap",
+      "hotkey": "Cmd/Ctrl+Alt+W",
+      "menuHint": "Cmd/Ctrl+Alt+W",
+      "shortcutHint": "Cmd/Ctrl+Alt+W",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "Insert",
+      "quickOpenKey": "insert:markdown_prompt",
+      "actionId": "import-markdown-v1",
+      "commandId": "cmd.project.insert.markdownPrompt",
+      "hotkey": "Cmd/Ctrl+Shift+I",
+      "menuHint": "Cmd/Ctrl+Shift+I",
+      "shortcutHint": "Cmd/Ctrl+Shift+I",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "Insert",
+      "quickOpenKey": "insert:flow_open",
+      "actionId": "flow-open-v1",
+      "commandId": "cmd.project.insert.flowOpen",
+      "hotkey": "Cmd/Ctrl+Shift+F",
+      "menuHint": "Cmd/Ctrl+Shift+F",
+      "shortcutHint": "Cmd/Ctrl+Shift+F",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "Insert",
+      "quickOpenKey": "insert:add_card",
+      "actionId": "add-card",
+      "commandId": "cmd.project.insert.addCard",
+      "hotkey": "Cmd/Ctrl+Shift+K",
+      "menuHint": "Cmd/Ctrl+Shift+K",
+      "shortcutHint": "Cmd/Ctrl+Shift+K",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "Format",
+      "quickOpenKey": "format:align_left",
+      "actionId": "align-left",
+      "commandId": "cmd.project.format.alignLeft",
+      "hotkey": "Cmd/Ctrl+Alt+1",
+      "menuHint": "Cmd/Ctrl+Alt+1",
+      "shortcutHint": "Cmd/Ctrl+Alt+1",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "Format",
+      "quickOpenKey": "format:align_center",
+      "actionId": "align-center",
+      "commandId": "cmd.project.format.alignCenter",
+      "hotkey": "Cmd/Ctrl+Alt+2",
+      "menuHint": "Cmd/Ctrl+Alt+2",
+      "shortcutHint": "Cmd/Ctrl+Alt+2",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "Format",
+      "quickOpenKey": "format:align_right",
+      "actionId": "align-right",
+      "commandId": "cmd.project.format.alignRight",
+      "hotkey": "Cmd/Ctrl+Alt+3",
+      "menuHint": "Cmd/Ctrl+Alt+3",
+      "shortcutHint": "Cmd/Ctrl+Alt+3",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "Format",
+      "quickOpenKey": "format:align_justify",
+      "actionId": "align-justify",
+      "commandId": "cmd.project.format.alignJustify",
+      "hotkey": "Cmd/Ctrl+Alt+4",
+      "menuHint": "Cmd/Ctrl+Alt+4",
+      "shortcutHint": "Cmd/Ctrl+Alt+4",
+      "paletteDiscoverable": true,
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "Plan",
+      "quickOpenKey": "plan:flow_save",
+      "actionId": "flow-save-v1",
+      "commandId": "cmd.project.plan.flowSave",
+      "hotkey": "Cmd/Ctrl+Shift+S",
+      "menuHint": "Cmd/Ctrl+Shift+S",
+      "shortcutHint": "Cmd/Ctrl+Shift+S",
+      "paletteDiscoverable": true,
+      "modes": ["Plan"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "groupId": "Review",
+      "quickOpenKey": "review:export_markdown",
+      "actionId": "export-markdown-v1",
+      "commandId": "cmd.project.review.exportMarkdown",
+      "hotkey": "Cmd/Ctrl+Shift+M",
+      "menuHint": "Cmd/Ctrl+Shift+M",
+      "shortcutHint": "Cmd/Ctrl+Shift+M",
+      "paletteDiscoverable": true,
+      "modes": ["Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    }
+  ]
+}

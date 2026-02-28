@@ -1,0 +1,15 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "bridgeEntryCount": 2,
+  "channelCount": 3,
+  "menuProjectionRowCount": 81,
+  "missingStageGateCount": 0,
+  "modeCount": 3,
+  "profileCount": 3,
+  "repeatabilityStable3Runs": true,
+  "status": "PASS",
+  "token": "X16_WS02_EXPORT_MARKDOWN_MINDMAP_BRIDGE_OK",
+  "updatedAtUtc": "2026-02-28T16:39:53.599Z",
+  "version": 1,
+  "visibilityConflictCount": 0
+}

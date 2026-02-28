@@ -1,0 +1,46 @@
+{
+  "baseline": {
+    "blockingClassificationLeaks": [],
+    "commandCapabilityMismatches": [],
+    "duplicateFeatureIds": [],
+    "enabledWhenAllowed": {
+      "REVIEW_COMMENTS_LOCAL_FIRST": true,
+      "REVIEW_HISTORY_COMPARE_LOCAL_FIRST": true
+    },
+    "historyCompareGuardErrors": [],
+    "localFirstPolicyErrors": [],
+    "missingFeatures": [],
+    "missingMenuRows": [],
+    "missingReviewGroupBindings": [],
+    "missingStageGates": [],
+    "nonBoundBlockingTokens": [],
+    "ok": true,
+    "policyErrors": [],
+    "reviewModeErrors": [],
+    "stageDisabledStateMismatches": [],
+    "unexpectedFeatures": [],
+    "unknownScopeFlags": [],
+    "unknownStageIds": [],
+    "unknownVisibilityModes": [],
+    "unknownVisibilityProfiles": [],
+    "unknownVisibilityStates": [],
+    "visibilityConflicts": []
+  },
+  "capabilityBindingCount": 9,
+  "channelCount": 3,
+  "determinism": {
+    "hashes": [
+      "2d4c460e3494b4c907d82d3b994a6b54d43c028be7899e5d14f9d09d8dbb2fc1",
+      "2d4c460e3494b4c907d82d3b994a6b54d43c028be7899e5d14f9d09d8dbb2fc1",
+      "2d4c460e3494b4c907d82d3b994a6b54d43c028be7899e5d14f9d09d8dbb2fc1"
+    ],
+    "ok": true
+  },
+  "localFirstPolicyErrorCount": 0,
+  "menuProjectionRowCount": 81,
+  "missingReviewGroupBindingsCount": 0,
+  "modeCount": 3,
+  "profileCount": 3,
+  "reviewEntryCount": 2,
+  "runtimeCapabilityBindingCount": 9
+}

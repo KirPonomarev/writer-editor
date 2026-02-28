@@ -1,0 +1,29 @@
+{
+  "artifactId": "P2_CONTOUR_CLOSE_SUMMARY_V1",
+  "schemaVersion": 1,
+  "taskId": "TZ_P2_CONTOUR_CLOSEOUT_001",
+  "updatedAtUtc": "2026-02-28T15:34:35.361Z",
+  "owner": "KIRILL_PLUS_CODEX",
+  "sourceFreezePacket": "docs/OPS/EVIDENCE/P2_CONTOUR/p2-contour-freeze-packet-v1.json",
+  "verdict": "ACCEPTED",
+  "status": "COMPLETED",
+  "gateDecision": "CLOSED",
+  "scopeCompliance": "PASS",
+  "acceptanceCompliance": "PASS",
+  "blockingSurfaceExpansion": false,
+  "falseGreenStatus": "NOT_DETECTED",
+  "advisoryAsBlockingDrift": "ZERO",
+  "offlineReleaseIntegrity": "LOCALLY_VERIFIABLE",
+  "repeatability": "PASS_THREE_OF_THREE",
+  "closeout": {
+    "action01_freezeP2EvidencePacket": "DONE",
+    "action02_recordP2ContourCloseSummary": "DONE",
+    "action03_prepareNextContourOpening": "DONE"
+  },
+  "nextTicket": {
+    "tzId": "TZ_NEXT_CONTOUR_OPENING_001",
+    "priority": "P3",
+    "objective": "OPEN_NEXT_CONTOUR_QUEUE_WITH_ZERO_BLOCKING_SURFACE_EXPANSION_AND_CANON_LOCK_PRESERVED",
+    "gate": "GO_IF_P2_CLOSEOUT_ARTIFACT_SIGNED"
+  }
+}

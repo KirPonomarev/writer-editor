@@ -1,0 +1,236 @@
+{
+  "runs": [
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "advisoryToBlockingDriftCount": 0,
+      "counts": {
+        "advisoryDriftCount": 0,
+        "crashWindowUnsafePathCount": 0,
+        "sourceHardeningFailedCount": 0,
+        "stressDrillCaseCount": 7
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": false,
+        "NEXT_TZ_DOD_05": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "sourceHardening": {
+        "cases": [
+          {
+            "checkId": "documents_migration_marker_written",
+            "pass": true,
+            "requiredPattern": "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+            "sourcePath": "src/utils/fileManager.js"
+          },
+          {
+            "checkId": "userdata_migration_marker_written",
+            "pass": true,
+            "requiredPattern": "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+            "sourcePath": "src/main.js"
+          },
+          {
+            "checkId": "atomic_write_uses_temp_file",
+            "pass": true,
+            "requiredPattern": ".tmp",
+            "sourcePath": "src/utils/fileManager.js"
+          },
+          {
+            "checkId": "atomic_write_uses_rename",
+            "pass": true,
+            "requiredPattern": "await fs.rename(tempPath, filePath);",
+            "sourcePath": "src/utils/fileManager.js"
+          },
+          {
+            "checkId": "atomic_write_restores_old_file_on_failure",
+            "pass": true,
+            "requiredPattern": "await fs.rename(oldPath, filePath);",
+            "sourcePath": "src/utils/fileManager.js"
+          },
+          {
+            "checkId": "settings_written_via_atomic_path",
+            "pass": true,
+            "requiredPattern": "fileManager.writeFileAtomic(getSettingsPath(), JSON.stringify(settings))",
+            "sourcePath": "src/main.js"
+          }
+        ],
+        "ok": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "advisoryToBlockingDriftCount": 0,
+      "counts": {
+        "advisoryDriftCount": 0,
+        "crashWindowUnsafePathCount": 0,
+        "sourceHardeningFailedCount": 0,
+        "stressDrillCaseCount": 7
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": false,
+        "NEXT_TZ_DOD_05": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "sourceHardening": {
+        "cases": [
+          {
+            "checkId": "documents_migration_marker_written",
+            "pass": true,
+            "requiredPattern": "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+            "sourcePath": "src/utils/fileManager.js"
+          },
+          {
+            "checkId": "userdata_migration_marker_written",
+            "pass": true,
+            "requiredPattern": "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+            "sourcePath": "src/main.js"
+          },
+          {
+            "checkId": "atomic_write_uses_temp_file",
+            "pass": true,
+            "requiredPattern": ".tmp",
+            "sourcePath": "src/utils/fileManager.js"
+          },
+          {
+            "checkId": "atomic_write_uses_rename",
+            "pass": true,
+            "requiredPattern": "await fs.rename(tempPath, filePath);",
+            "sourcePath": "src/utils/fileManager.js"
+          },
+          {
+            "checkId": "atomic_write_restores_old_file_on_failure",
+            "pass": true,
+            "requiredPattern": "await fs.rename(oldPath, filePath);",
+            "sourcePath": "src/utils/fileManager.js"
+          },
+          {
+            "checkId": "settings_written_via_atomic_path",
+            "pass": true,
+            "requiredPattern": "fileManager.writeFileAtomic(getSettingsPath(), JSON.stringify(settings))",
+            "sourcePath": "src/main.js"
+          }
+        ],
+        "ok": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "advisoryToBlockingDriftCount": 0,
+      "counts": {
+        "advisoryDriftCount": 0,
+        "crashWindowUnsafePathCount": 0,
+        "sourceHardeningFailedCount": 0,
+        "stressDrillCaseCount": 7
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": false,
+        "NEXT_TZ_DOD_05": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "sourceHardening": {
+        "cases": [
+          {
+            "checkId": "documents_migration_marker_written",
+            "pass": true,
+            "requiredPattern": "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+            "sourcePath": "src/utils/fileManager.js"
+          },
+          {
+            "checkId": "userdata_migration_marker_written",
+            "pass": true,
+            "requiredPattern": "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+            "sourcePath": "src/main.js"
+          },
+          {
+            "checkId": "atomic_write_uses_temp_file",
+            "pass": true,
+            "requiredPattern": ".tmp",
+            "sourcePath": "src/utils/fileManager.js"
+          },
+          {
+            "checkId": "atomic_write_uses_rename",
+            "pass": true,
+            "requiredPattern": "await fs.rename(tempPath, filePath);",
+            "sourcePath": "src/utils/fileManager.js"
+          },
+          {
+            "checkId": "atomic_write_restores_old_file_on_failure",
+            "pass": true,
+            "requiredPattern": "await fs.rename(oldPath, filePath);",
+            "sourcePath": "src/utils/fileManager.js"
+          },
+          {
+            "checkId": "settings_written_via_atomic_path",
+            "pass": true,
+            "requiredPattern": "fileManager.writeFileAtomic(getSettingsPath(), JSON.stringify(settings))",
+            "sourcePath": "src/main.js"
+          }
+        ],
+        "ok": true
+      },
+      "token": 1
+    }
+  ],
+  "stable": true
+}

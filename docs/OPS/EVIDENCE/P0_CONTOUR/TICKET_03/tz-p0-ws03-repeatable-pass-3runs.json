@@ -1,0 +1,21 @@
+{
+  "tzId": "TZ_P0_WS03_BLOCKING_BINDING_COMPLETENESS_001",
+  "generatedAtUtc": "2026-02-28T12:22:57.741Z",
+  "repeatabilityRuns": 3,
+  "repeatabilityOk": true,
+  "baselineHash": "7b9fb56bb9b2f142866b3cd3a7ac888b3128f1ea6abe050f868d79a0d65dc977",
+  "runs": [
+    {
+      "run": 1,
+      "hash": "7b9fb56bb9b2f142866b3cd3a7ac888b3128f1ea6abe050f868d79a0d65dc977"
+    },
+    {
+      "run": 2,
+      "hash": "7b9fb56bb9b2f142866b3cd3a7ac888b3128f1ea6abe050f868d79a0d65dc977"
+    },
+    {
+      "run": 3,
+      "hash": "7b9fb56bb9b2f142866b3cd3a7ac888b3128f1ea6abe050f868d79a0d65dc977"
+    }
+  ]
+}

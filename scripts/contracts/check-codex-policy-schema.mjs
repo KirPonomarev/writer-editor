@@ -22,6 +22,8 @@ try {
 const requiredString = [
   'policyVersion',
   'promptMode',
+  'bootstrapSpecRef',
+  'executionTicketPolicyRef',
   'runnerProfileRef',
   'failReasonRegistryRef',
 ];

@@ -1,0 +1,234 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "docs": {
+        "docs/OPS/STATUS/X21_CONTOUR_CLOSE_SUMMARY_V1.json": {
+          "acceptanceCompliance": "PASS",
+          "advisoryAsBlockingDrift": "ZERO",
+          "artifactId": "X21_CONTOUR_CLOSE_SUMMARY_V1",
+          "blockingSurfaceExpansion": false,
+          "closeout": {
+            "action01_freezeX21EvidencePacket": "DONE",
+            "action02_recordX21ContourCloseSummary": "DONE",
+            "action03_openNextContourRecord": "DONE"
+          },
+          "falseGreenStatus": "NOT_DETECTED",
+          "gateDecision": "CLOSED",
+          "nextTicket": {
+            "gate": "GO_IF_X21_CLOSEOUT_ARTIFACT_SIGNED",
+            "objective": "OPEN_NEXT_CONTOUR_WITH_CANON_LOCK_AND_NON_EXPANDING_BLOCKING_SURFACE",
+            "priority": "P1",
+            "tzId": "TZ_X22_CONTOUR_OPENING_001"
+          },
+          "offlineReleaseIntegrity": "LOCALLY_VERIFIABLE",
+          "owner": "KIRILL_PLUS_CODEX",
+          "repeatability": "PASS_THREE_OF_THREE",
+          "schemaVersion": 1,
+          "scopeCompliance": "PASS",
+          "sourceFreezePacket": "docs/OPS/EVIDENCE/X21_CONTOUR/x21-contour-freeze-packet-v1.json",
+          "status": "COMPLETED",
+          "taskId": "TZ_X21_WS03_CONTOUR_CLOSE_PREP_001",
+          "updatedAtUtc": "2026-02-28T19:36:58.833Z",
+          "verdict": "ACCEPTED"
+        },
+        "docs/OPS/STATUS/X21_CONTOUR_CLOSEOUT_SIGNED_V1.json": {
+          "artifactId": "X21_CONTOUR_CLOSEOUT_SIGNED_V1",
+          "constraints": {
+            "activeCanonLockMaintained": true,
+            "advisoryAsBlockingDriftZero": true,
+            "blockingSurfaceExpansion": false,
+            "newBlockingTokensIntroduced": false
+          },
+          "evidencePacketRef": "docs/OPS/EVIDENCE/X21_CONTOUR/x21-contour-freeze-packet-v1.json",
+          "evidencePacketSha256": "sha256:c0d5d3aa1638f305534057fad83e7bc1d735b4e4b0fc6cb58e8f00513525dc27",
+          "gate": {
+            "isOpen": true,
+            "name": "GO_IF_X21_CLOSEOUT_ARTIFACT_SIGNED",
+            "releaseDecisionClassChanged": false
+          },
+          "schemaVersion": 1,
+          "signatureType": "SHA256_EVIDENCE_LOCK",
+          "signedAtUtc": "2026-02-28T19:36:58.833Z",
+          "signedBy": "KIRILL_PLUS_CODEX",
+          "signingMode": "LOCAL_OFFLINE",
+          "status": "SIGNED",
+          "taskId": "TZ_X21_WS03_CONTOUR_CLOSE_PREP_001"
+        },
+        "docs/OPS/STATUS/X21_WS01_RELEASE_CANDIDATE_PRECHECK_PACK_v1.json": {
+          "advisoryToBlockingDriftCount": 0,
+          "modeMatrixBlockingFlagConflictCount": 0,
+          "modeMatrixDuplicateSignalCount": 0,
+          "modeMatrixInvalidDispositionCount": 0,
+          "modeMatrixMissingDispositionCount": 0,
+          "modeMatrixRequiredTokenFailSignalMissingCount": 0,
+          "offlineIntegrityIssueCount": 0,
+          "releaseBindingFailSignalMismatchCount": 0,
+          "releaseBindingFailSignalMissingCount": 0,
+          "releaseBindingMissingFieldCount": 0,
+          "releaseBindingMissingRecordCount": 0,
+          "releaseBindingMissingTokenCount": 0,
+          "repeatabilityStable3Runs": true,
+          "requiredModeKeyCount": 3,
+          "requiredReleaseBlockingTokenCount": 14,
+          "status": "PASS",
+          "token": "X21_WS01_RELEASE_CANDIDATE_PRECHECK_PACK_OK",
+          "updatedAtUtc": "2026-02-28T19:25:47.249Z",
+          "usabilityGuardIssueCount": 0,
+          "version": 1
+        },
+        "docs/OPS/STATUS/X21_WS02_PROMOTION_DRY_RUN_AND_EVIDENCE_LOCK_v1.json": {
+          "advisoryToBlockingDriftCount": 0,
+          "attestationIssueCount": 0,
+          "evidenceHashMismatchCount": 0,
+          "missingEvidenceLinkCount": 0,
+          "modeCheckMissingCount": 0,
+          "modeDispositionDriftCount": 0,
+          "modeEvaluatorIssueCount": 0,
+          "promotionDryRunIssueCount": 0,
+          "releaseClassDriftCount": 0,
+          "repeatabilityStable3Runs": true,
+          "requiredEvidenceRefCount": 5,
+          "requiredModeCheckCount": 2,
+          "status": "PASS",
+          "token": "X21_WS02_PROMOTION_DRY_RUN_AND_EVIDENCE_LOCK_OK",
+          "updatedAtUtc": "2026-02-28T19:33:53.023Z",
+          "version": 1
+        },
+        "docs/OPS/STATUS/X22_WS01_PROMOTION_CANDIDATE_PACKAGE_v1.json": {
+          "advisoryToBlockingDriftCount": 0,
+          "attestationIssueCount": 0,
+          "evidenceHashMismatchCount": 0,
+          "missingEvidenceLinkCount": 0,
+          "modeCheckMissingCount": 0,
+          "modeDispositionDriftCount": 0,
+          "modeEvaluatorIssueCount": 0,
+          "promotionDryRunIssueCount": 0,
+          "releaseClassDriftCount": 0,
+          "repeatabilityStable3Runs": true,
+          "requiredEvidenceRefCount": 5,
+          "requiredModeCheckCount": 2,
+          "status": "PASS",
+          "token": "X22_WS01_PROMOTION_CANDIDATE_PACKAGE_OK",
+          "updatedAtUtc": "2026-02-28T19:46:16.956Z",
+          "version": 1
+        }
+      },
+      "invalidDecisionInputs": [],
+      "issues": [
+        {
+          "reason": "MISSING_FINAL_DECISION_INPUT",
+          "ref": "docs/OPS/STATUS/DOES_NOT_EXIST_FINAL_DECISION_INPUT.json"
+        }
+      ],
+      "missingDecisionInputs": [
+        {
+          "reason": "MISSING_FINAL_DECISION_INPUT",
+          "ref": "docs/OPS/STATUS/DOES_NOT_EXIST_FINAL_DECISION_INPUT.json"
+        }
+      ],
+      "ok": false,
+      "requiredDecisionInputCount": 6,
+      "resolvedDecisionInputCount": 5
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "failedRequiredGates": [
+        {
+          "expectedStatus": "PASS",
+          "gateId": "X21_WS02",
+          "observedStatus": "FAIL",
+          "reason": "FAILED_REQUIRED_GATE",
+          "ref": "docs/OPS/STATUS/X21_WS02_PROMOTION_DRY_RUN_AND_EVIDENCE_LOCK_v1.json"
+        }
+      ],
+      "gateVerdictConflicts": [],
+      "issues": [
+        {
+          "expectedStatus": "PASS",
+          "gateId": "X21_WS02",
+          "observedStatus": "FAIL",
+          "reason": "FAILED_REQUIRED_GATE",
+          "ref": "docs/OPS/STATUS/X21_WS02_PROMOTION_DRY_RUN_AND_EVIDENCE_LOCK_v1.json"
+        }
+      ],
+      "ok": false,
+      "requiredGateVerdictCount": 5
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "chainEntries": [
+        {
+          "chainHash": "4a03a70c63b4f0da4aee7e459a9e3d90c319f7538686ad12e200419b896d3c06",
+          "ref": "docs/OPS/EVIDENCE/X21_CONTOUR/x21-contour-freeze-packet-v1.json",
+          "sha256": "c0d5d3aa1638f305534057fad83e7bc1d735b4e4b0fc6cb58e8f00513525dc27"
+        },
+        {
+          "chainHash": "289e95cb7116ff1d68227af59de7533d9f53f80054701d52f2a65e181f00a828",
+          "ref": "docs/OPS/STATUS/X21_CONTOUR_CLOSE_SUMMARY_V1.json",
+          "sha256": "9b327b6315e6562ab441918a4046134bc227ffdbd6d7e386448ce6e202823fb8"
+        },
+        {
+          "chainHash": "028c3ef7a908f0b25a4338400633b1fa4f4f038140825b2ecb1458c5a59b9f86",
+          "ref": "docs/OPS/STATUS/X21_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+          "sha256": "762af0b244df6d0fb5721b6c5590a6a97fb3051871bfc64a12224ef19a01358b"
+        },
+        {
+          "chainHash": "64951c6c2e6c1da9c90e20b2861ab8bd4e6d0883051050784700f0bcd0b6161b",
+          "ref": "docs/OPS/STATUS/X22_WS01_PROMOTION_CANDIDATE_PACKAGE_v1.json",
+          "sha256": "74af9c0ae5ffb0516236ae8d61e939832ba6db39d8626d154843c34b37697c43"
+        },
+        {
+          "chainHash": "b66f570f3a6a35fb10a18f6c97879b7750dc49b6102a0ac8c65eb09cff767ef3",
+          "ref": "docs/OPS/EVIDENCE/X22_CONTOUR/TICKET_01/summary.json",
+          "sha256": "82f67428cb398d55bb4289e91361d6d42fd115794612d25c28cadf2ee11033a8"
+        }
+      ],
+      "chainRootHash": "b66f570f3a6a35fb10a18f6c97879b7750dc49b6102a0ac8c65eb09cff767ef3",
+      "evidenceHashMismatch": true,
+      "issues": [
+        {
+          "reason": "EVIDENCE_LOCK_CHAIN_BREAK"
+        }
+      ],
+      "missingEvidenceLinks": [],
+      "ok": false,
+      "requiredEvidenceRefCount": 5,
+      "resolvedEvidenceRefCount": 5
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "decision": "GO",
+      "evidencePass": true,
+      "issues": [
+        {
+          "reason": "GO_DECISION_WITH_FAILED_REQUIRED_GATE"
+        }
+      ],
+      "modePass": true,
+      "ok": false,
+      "recommendedDecision": "NO_GO",
+      "requiredGatesPass": false
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "determinism": {
+        "hashes": [
+          "d49c81d394024f6326ea117369f42a930efdb2687aa3f03c958a831739c2c171",
+          "7dc34dedfaba24ba518020983fd27b0ce23cdc41e2acbb20561421ad100753fd",
+          "d49c81d394024f6326ea117369f42a930efdb2687aa3f03c958a831739c2c171"
+        ],
+        "ok": false
+      }
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "MISSING_FINAL_DECISION_INPUT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "CONFLICTING_GATE_VERDICT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "EVIDENCE_LOCK_CHAIN_BREAK_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "GO_DECISION_WITH_FAILED_REQUIRED_GATE_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "NON_DETERMINISTIC_DECISION_PACKET_EXPECT_REJECT"
+  }
+}

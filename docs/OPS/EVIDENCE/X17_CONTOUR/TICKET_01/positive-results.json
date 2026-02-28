@@ -1,0 +1,28 @@
+{
+  "details": {
+    "baseline": {
+      "projectionHash": "af674267ed3c28c43bd2ed4d0db6366d461b910a2c6ac4804a3be00fae66b09a",
+      "rowCount": 72
+    },
+    "determinism": {
+      "hashes": [
+        "af674267ed3c28c43bd2ed4d0db6366d461b910a2c6ac4804a3be00fae66b09a",
+        "af674267ed3c28c43bd2ed4d0db6366d461b910a2c6ac4804a3be00fae66b09a",
+        "af674267ed3c28c43bd2ed4d0db6366d461b910a2c6ac4804a3be00fae66b09a"
+      ],
+      "ok": true
+    },
+    "menuProjectionGaps": [],
+    "missingRequiredActionRows": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "FILE_EDIT_ACTIONS_EXECUTE_VIA_COMMAND_BUS",
+    "NEXT_TZ_POSITIVE_02": "CHANNEL_CONSISTENCY_CONFIRMED",
+    "NEXT_TZ_POSITIVE_03": "ACTION_SET_DETERMINISTIC_AND_STABLE"
+  }
+}

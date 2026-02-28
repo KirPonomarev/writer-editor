@@ -1,0 +1,23 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "capabilityBindingGapCount": 0,
+  "channelCount": 3,
+  "channelInconsistencyCount": 0,
+  "checklistHintMissingCount": 0,
+  "commandBindingGapCount": 0,
+  "duplicateChecklistItemCount": 0,
+  "entryCount": 6,
+  "hintCommandMismatchCount": 0,
+  "modeCount": 3,
+  "modeProfileVisibilityGapCount": 0,
+  "onboardingHintCount": 6,
+  "profileCount": 3,
+  "repeatabilityStable3Runs": true,
+  "requiredChecklistItemCount": 6,
+  "requiredChecklistItemGapCount": 0,
+  "staleHintTargetCount": 0,
+  "status": "PASS",
+  "token": "X20_WS01_RELEASE_CHECKLIST_AND_ONBOARDING_POLISH_OK",
+  "updatedAtUtc": "2026-02-28T19:05:44.274Z",
+  "version": 1
+}

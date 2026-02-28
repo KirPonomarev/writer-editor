@@ -1,0 +1,106 @@
+{
+  "advisoryLocked": {
+    "ok": true,
+    "results": [
+      {
+        "failSignalCode": "E_GOVERNANCE_STRICT_FAIL",
+        "pass": true,
+        "verdict": {
+          "issues": [],
+          "modeDisposition": "advisory",
+          "ok": true,
+          "shouldBlock": false
+        }
+      },
+      {
+        "failSignalCode": "E_REMOTE_UNAVAILABLE",
+        "pass": true,
+        "verdict": {
+          "issues": [],
+          "modeDisposition": "advisory",
+          "ok": true,
+          "shouldBlock": false
+        }
+      }
+    ]
+  },
+  "exitPolicyState": {
+    "advisoryToBlockingDriftCount": 0,
+    "failReason": "",
+    "modeRouting": {
+      "caseResults": [
+        {
+          "actual": {
+            "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+            "issues": [],
+            "modeDisposition": "advisory",
+            "shouldBlock": false,
+            "verdictOk": true
+          },
+          "caseId": "pr_advisory_case",
+          "expectedDisposition": "advisory",
+          "expectedShouldBlock": false,
+          "failSignalCode": "E_ADAPTERS_NOT_ENFORCED",
+          "mode": "pr",
+          "modeKey": "prCore",
+          "ok": true
+        },
+        {
+          "actual": {
+            "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+            "issues": [],
+            "modeDisposition": "blocking",
+            "shouldBlock": true,
+            "verdictOk": true
+          },
+          "caseId": "release_blocking_case",
+          "expectedDisposition": "blocking",
+          "expectedShouldBlock": true,
+          "failSignalCode": "E_DEBT_TTL_EXPIRED",
+          "mode": "release",
+          "modeKey": "release",
+          "ok": true
+        },
+        {
+          "actual": {
+            "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+            "issues": [],
+            "modeDisposition": "blocking",
+            "shouldBlock": true,
+            "verdictOk": true
+          },
+          "caseId": "promotion_blocking_case",
+          "expectedDisposition": "blocking",
+          "expectedShouldBlock": true,
+          "failSignalCode": "E_COMMAND_NAMESPACE_DRIFT",
+          "mode": "promotion",
+          "modeKey": "promotion",
+          "ok": true
+        }
+      ],
+      "ok": true
+    },
+    "ok": true,
+    "releasePromotionParity": {
+      "comparableCount": 39,
+      "mismatchCount": 0,
+      "mismatches": [],
+      "ok": true
+    }
+  },
+  "modeAwareExitPolicyOk": true,
+  "nonCanonAutoblock": {
+    "ok": true,
+    "verdict": {
+      "issues": [
+        {
+          "code": "FAILSIGNAL_NOT_FOUND",
+          "message": "FailSignal E_NON_CANON_SIGNAL_NOT_REGISTERED is not registered."
+        }
+      ],
+      "modeDisposition": "advisory",
+      "ok": false,
+      "shouldBlock": false
+    }
+  }
+}

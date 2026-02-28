@@ -1,0 +1,17 @@
+{
+  "acceptance": {
+    "ACCEPTANCE_01": true,
+    "ACCEPTANCE_02": true,
+    "ACCEPTANCE_03": true,
+    "ACCEPTANCE_04": true
+  },
+  "dod": {
+    "DOD_01": true,
+    "DOD_02": true,
+    "DOD_03": true,
+    "DOD_04": true,
+    "DOD_05": true,
+    "DOD_06": true
+  },
+  "finalGate": "GO_TO_P2_WS05"
+}

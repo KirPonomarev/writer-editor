@@ -1,21 +1,1102 @@
 {
-  "advisoryToBlockingDriftCount": 0,
-  "autosaveBackupTypingBlockThresholdMs": 60,
-  "gates": {
-    "mc_advisory_blocking_drift_zero": "PASS",
-    "p2_04_autosave_backup_nonblocking_check": "PASS",
-    "p2_04_input_p95_within_threshold_check": "PASS",
-    "p2_04_no_full_document_rerender_per_keystroke_check": "PASS",
-    "p2_04_threshold_ssot_lock_check": "PASS"
+  "acceptance": {
+    "ACCEPTANCE_01": true,
+    "ACCEPTANCE_02": true,
+    "ACCEPTANCE_03": true,
+    "ACCEPTANCE_04": true
   },
-  "generatedAtUtc": "2026-02-27T05:52:29.910Z",
-  "inputP95MeasuredMs": 0.0002919999999981826,
-  "inputP95ThresholdMs": 60,
-  "longTaskBudgetMs": 60,
-  "maxSampleMs": 0.001708000000000709,
-  "noFullDocumentRerenderPerKeystroke": true,
-  "runId": "RUN-2026-02-26-001",
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "boundRowsMissingFieldsCount": 0,
+    "boundTraceabilityFailureCount": 0,
+    "duplicateRowsAfterCount": 0,
+    "duplicateRowsBeforeCount": 0,
+    "gapRowsBlockingCount": 0,
+    "lawConflictCount": 0,
+    "missingBridgeRowsCount": 0,
+    "modeMismatchCount": 0,
+    "normalizedRowCount": 39,
+    "rawRowCount": 39,
+    "signalLossCount": 0,
+    "simplifiedRowCount": 39
+  },
+  "detector": {
+    "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+    "detectorId": "WS04_BRIDGE_DRIFT_SINGLE_DETECTOR_V1"
+  },
+  "dod": {
+    "DOD_01": true,
+    "DOD_02": true,
+    "DOD_03": true,
+    "DOD_04": true,
+    "DOD_05": true,
+    "DOD_06": true
+  },
+  "drift": {
+    "advisoryToBlockingDriftCount": 0,
+    "advisoryToBlockingDriftCountZero": true,
+    "driftCases": [],
+    "issues": []
+  },
+  "generatedAtUtc": "2026-02-28T14:21:24.305Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "УПРОСТИТЬ_BRIDGE_DRIFT_CONTROL_БЕЗ_ПОТЕРИ_ТРАССИРУЕМОСТИ_И_БЕЗ_РАСШИРЕНИЯ_BLOCKING_SURFACE",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "TZ_P2_WS04_BRIDGE_DRIFT_SIMPLIFICATION_001",
+  "simplification": {
+    "duplicates": [],
+    "rawRows": [
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_EXECUTION_PROFILE_INVALID, E_SCOPEFLAG_UNKNOWN, E_REQUIRED_TOKEN_SET_DRIFT",
+        "gateTokenRaw": "Execution profile validity",
+        "lawSections": [
+          "A0",
+          "A17",
+          "A4",
+          "B0"
+        ],
+        "mapId": "0",
+        "mapSection": "Режим документа/полнота",
+        "modeRawNormalized": "BLK/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_COLLAB_TRANSPORT_FORBIDDEN_IN_MVP",
+        "gateTokenRaw": "CORE_SOT_EXECUTABLE_OK, E2E_CRITICAL_USER_PATH_OK, local-only transport до X4",
+        "lawSections": [
+          "A0",
+          "A11",
+          "A14",
+          "A2"
+        ],
+        "mapId": "1",
+        "mapSection": "Продукт (offline-first)",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_STAGE_PROMOTION_INVALID, E_COLLAB_TRANSPORT_FORBIDDEN_IN_MVP",
+        "gateTokenRaw": "Stage activation + scope discipline",
+        "lawSections": [
+          "A0",
+          "A10",
+          "A11",
+          "A14",
+          "A2"
+        ],
+        "mapId": "2",
+        "mapSection": "Канон-связка v3.12",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_RUNTIME_WIRING_BEFORE_STAGE, E_CORE_CHANGE_DOD_MISSING",
+        "gateTokenRaw": "Locked order + runtime wiring guard",
+        "lawSections": [
+          "A1",
+          "A2",
+          "A8"
+        ],
+        "mapId": "3",
+        "mapSection": "Архитектурная иерархия",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_CORE_CHANGE_DOD_MISSING, E_BLOCKING_TOKEN_UNBOUND",
+        "gateTokenRaw": "Core safety set (RECOVERY_IO_OK, MIGRATIONS_*, NORMALIZATION_XPLAT_OK)",
+        "lawSections": [
+          "A12",
+          "A13",
+          "A14",
+          "A2",
+          "A3",
+          "A6.1",
+          "A7"
+        ],
+        "mapId": "4",
+        "mapSection": "Модель системы (модули)",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_CORE_CHANGE_DOD_MISSING",
+        "gateTokenRaw": "Migration/recovery/roundtrip invariants",
+        "lawSections": [
+          "A13",
+          "A14",
+          "A2",
+          "A3",
+          "A6.1",
+          "A9"
+        ],
+        "mapId": "5",
+        "mapSection": "Модель данных",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_CORE_CHANGE_DOD_MISSING",
+        "gateTokenRaw": "No core-leak from UI",
+        "lawSections": [
+          "A2",
+          "A3",
+          "A9"
+        ],
+        "mapId": "6",
+        "mapSection": "Полный интерфейс",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_RUNTIME_WIRING_BEFORE_STAGE, E_CORE_CHANGE_DOD_MISSING",
+        "gateTokenRaw": "UI free-zone + no forbidden runtime wiring",
+        "lawSections": [
+          "A2",
+          "A3",
+          "A8",
+          "A9"
+        ],
+        "mapId": "7",
+        "mapSection": "Полная строка меню",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_STAGE_PROMOTION_INVALID, E_STAGE_METRICS_MISSING",
+        "gateTokenRaw": "Stage/scope activation for advanced profiles",
+        "lawSections": [
+          "A10",
+          "A11",
+          "A2",
+          "A9"
+        ],
+        "mapId": "8",
+        "mapSection": "Режимы и профили",
+        "modeRawNormalized": "ADV/ADV/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_RUNTIME_WIRING_BEFORE_STAGE, E_STAGE_PROMOTION_INVALID",
+        "gateTokenRaw": "Overlay customization without runtime-stage violation",
+        "lawSections": [
+          "A10",
+          "A2",
+          "A8"
+        ],
+        "mapId": "9",
+        "mapSection": "Menu Composer/кастомизация",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_RUNTIME_WIRING_BEFORE_STAGE, E_STAGE_PROMOTION_INVALID",
+        "gateTokenRaw": "No early executable/runtime wiring",
+        "lawSections": [
+          "A10",
+          "A11",
+          "A8"
+        ],
+        "mapId": "10",
+        "mapSection": "Plugins policy",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "token-fail by gate",
+        "gateTokenRaw": "E2E_CRITICAL_USER_PATH_OK",
+        "lawSections": [
+          "A12",
+          "A6.1"
+        ],
+        "mapId": "11",
+        "mapSection": "Поиск/индексация/навигация",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "token-fail by gate",
+        "gateTokenRaw": "Hard parity for export/import semantics",
+        "lawSections": [
+          "A12",
+          "A6.1",
+          "A9"
+        ],
+        "mapId": "12",
+        "mapSection": "Экспорт/импорт",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "GAP",
+        "failSignalRaw": "PROPOSED: E_BOOK_PREFLIGHT_FAIL",
+        "gateTokenRaw": "BookProfile, StyleMap, TOC, FrontBackMatter, PreflightLite",
+        "lawSections": [
+          "A12",
+          "A2",
+          "A6.1",
+          "A9"
+        ],
+        "mapId": "12B",
+        "mapSection": "Minimal Book Plugin Track",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_COLLAB_TRANSPORT_FORBIDDEN_IN_MVP",
+        "gateTokenRaw": "Local-first comments/history до X4",
+        "lawSections": [
+          "A11",
+          "A14"
+        ],
+        "mapId": "13",
+        "mapSection": "Review/история",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_DIRECT_PROTECTED_BRANCH_PUSH, E_MERGE_BYPASS_ATTEMPT, integrity class failSignals",
+        "gateTokenRaw": "Integrity + proofhook + config lock + no bypass",
+        "lawSections": [
+          "A15",
+          "A16",
+          "A6.2",
+          "A7"
+        ],
+        "mapId": "14",
+        "mapSection": "Безопасность/приватность",
+        "modeRawNormalized": "BLK/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_RUNTIME_WIRING_BEFORE_STAGE",
+        "gateTokenRaw": "Late-stage cloud, no early runtime cloud wiring",
+        "lawSections": [
+          "A0",
+          "A11",
+          "A14",
+          "A8"
+        ],
+        "mapId": "15",
+        "mapSection": "AI roadmap",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_STAGE_METRICS_MISSING, E_STAGE_PROMOTION_INVALID",
+        "gateTokenRaw": "Stage metrics + hard parity + platform DoD",
+        "lawSections": [
+          "A11",
+          "A12",
+          "A9"
+        ],
+        "mapId": "16",
+        "mapSection": "Платформы/сторы",
+        "modeRawNormalized": "ADV/ADV/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_SEQUENCE_ORDER_DRIFT, E_STAGE_PROMOTION_INVALID, E_STAGE_METRICS_MISSING",
+        "gateTokenRaw": "Locked order + stage activation + evidence",
+        "lawSections": [
+          "A1",
+          "A10",
+          "A11"
+        ],
+        "mapId": "17",
+        "mapSection": "Этапы внедрения",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_WAVE_RESULT_STALE, E_BLOCKING_TOKEN_UNBOUND",
+        "gateTokenRaw": "80/20 blocking + anti-false-green + freshness",
+        "lawSections": [
+          "A17",
+          "A5",
+          "A6",
+          "A7",
+          "B4"
+        ],
+        "mapId": "18",
+        "mapSection": "Quality system",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_WAVE_RESULT_STALE (косвенно)",
+        "gateTokenRaw": "Process-lean + minimal blocking discipline",
+        "lawSections": [
+          "A5",
+          "A6"
+        ],
+        "mapId": "19",
+        "mapSection": "Anti-bloat",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "GAP",
+        "failSignalRaw": "n/a",
+        "gateTokenRaw": "Product intent layer",
+        "lawSections": [
+          "A0"
+        ],
+        "mapId": "20",
+        "mapSection": "Pain-to-Strength",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "n/a",
+        "gateTokenRaw": "Risk mapping to canon constraints",
+        "lawSections": [
+          "A11",
+          "A14",
+          "A2",
+          "A8"
+        ],
+        "mapId": "21",
+        "mapSection": "Совпадения/риски",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "GAP",
+        "failSignalRaw": "n/a",
+        "gateTokenRaw": "Vision-only",
+        "lawSections": [
+          "A0"
+        ],
+        "mapId": "22",
+        "mapSection": "North Star",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "n/a",
+        "gateTokenRaw": "Composite architecture rule",
+        "lawSections": [
+          "A11",
+          "A14",
+          "A2",
+          "A8"
+        ],
+        "mapId": "23",
+        "mapSection": "Финальная формула",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_BLOCKING_TOKEN_UNBOUND",
+        "gateTokenRaw": "Blocking token law completeness",
+        "lawSections": [
+          "A7",
+          "B4"
+        ],
+        "mapId": "24",
+        "mapSection": "Normative Tags",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_BLOCKING_TOKEN_UNBOUND",
+        "gateTokenRaw": "Invariant -> machine-check linkage",
+        "lawSections": [
+          "A6.1",
+          "A7",
+          "B4"
+        ],
+        "mapId": "25",
+        "mapSection": "Invariant Map",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "fail by mapped class",
+        "gateTokenRaw": "Canonical mode enforcement",
+        "lawSections": [
+          "A16",
+          "A17"
+        ],
+        "mapId": "26",
+        "mapSection": "Mode Matrix",
+        "modeRawNormalized": "AS_DEFINED_IN_A16"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_COMMAND_SURFACE_BYPASS",
+        "gateTokenRaw": "COMMAND_SURFACE_BUS_ONLY_OK + COMMAND_SURFACE_SINGLE_ENTRY_OK + COMMAND_SURFACE_BYPASS_NEGATIVE_TESTS_OK",
+        "lawSections": [
+          "A2",
+          "A7",
+          "A8"
+        ],
+        "mapId": "27",
+        "mapSection": "Command Surface",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "inherited from pack gates",
+        "gateTokenRaw": "FAST/RELEASE/AUDIT packs (mapped to canon)",
+        "lawSections": [
+          "A16",
+          "A6",
+          "B0",
+          "B4"
+        ],
+        "mapId": "28",
+        "mapSection": "Gate Packs",
+        "modeRawNormalized": "PACK_DEPENDENT"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_BLOCKING_TOKEN_UNBOUND, E_WAVE_RESULT_STALE",
+        "gateTokenRaw": "Negative tests + proof binding required",
+        "lawSections": [
+          "A5",
+          "A7",
+          "B4"
+        ],
+        "mapId": "29",
+        "mapSection": "False Green Register",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_STAGE_METRICS_MISSING, E_STAGE_PROMOTION_INVALID",
+        "gateTokenRaw": "Parity baseline + platform DoD + stage metrics",
+        "lawSections": [
+          "A11",
+          "A12",
+          "A9"
+        ],
+        "mapId": "30",
+        "mapSection": "Cross-Platform Matrix",
+        "modeRawNormalized": "ADV/ADV/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_CORE_CHANGE_DOD_MISSING",
+        "gateTokenRaw": "MIGRATIONS_POLICY_OK, MIGRATIONS_ATOMICITY_OK, RECOVERY_IO_OK",
+        "lawSections": [
+          "A3",
+          "A6.1",
+          "A9"
+        ],
+        "mapId": "31",
+        "mapSection": "Migration Safety",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_WAVE_RESULT_STALE, E_REQUIRED_TOKEN_SET_DRIFT, E_STAGE_PROMOTION_INVALID",
+        "gateTokenRaw": "WAVE hash/TTL + required-set safety + stage consistency",
+        "lawSections": [
+          "A10",
+          "A5",
+          "B5",
+          "B6"
+        ],
+        "mapId": "32",
+        "mapSection": "Race-safe Governance",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "FAILSIGNAL_REGISTRY_VALID_OK token-fail",
+        "gateTokenRaw": "FailSignal registry integrity",
+        "lawSections": [
+          "A16",
+          "B1"
+        ],
+        "mapId": "33",
+        "mapSection": "FailSignal Glossary",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_WAVE_RESULT_STALE (косвенно)",
+        "gateTokenRaw": "Single-run wave + 80/20 release blocking",
+        "lawSections": [
+          "A5",
+          "A6"
+        ],
+        "mapId": "34",
+        "mapSection": "Process-Tax Budget",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_BLOCKING_TOKEN_UNBOUND",
+        "gateTokenRaw": "Closure only via machine-bound proofs",
+        "lawSections": [
+          "A17",
+          "A7",
+          "B4"
+        ],
+        "mapId": "35",
+        "mapSection": "Red-Team Closure",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_RUNTIME_WIRING_BEFORE_STAGE, E_COLLAB_TRANSPORT_FORBIDDEN_IN_MVP",
+        "gateTokenRaw": "Core fixed + shell flexible + staged collab",
+        "lawSections": [
+          "A11",
+          "A14",
+          "A2"
+        ],
+        "mapId": "36",
+        "mapSection": "Совместимость с концепцией",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "GAP",
+        "failSignalRaw": "PROPOSED: E_BINDING_INDEX_DRIFT",
+        "gateTokenRaw": "PROPOSED: BINDING_INDEX_SYNC_OK",
+        "lawSections": [
+          "A17",
+          "B0",
+          "B4"
+        ],
+        "mapId": "37",
+        "mapSection": "Drift Control (Bridge Ops)",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      }
+    ],
+    "simplifiedRows": [
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_EXECUTION_PROFILE_INVALID, E_SCOPEFLAG_UNKNOWN, E_REQUIRED_TOKEN_SET_DRIFT",
+        "gateTokenRaw": "Execution profile validity",
+        "lawSections": [
+          "A0",
+          "A17",
+          "A4",
+          "B0"
+        ],
+        "mapId": "0",
+        "mapSection": "Режим документа/полнота",
+        "modeRawNormalized": "BLK/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_COLLAB_TRANSPORT_FORBIDDEN_IN_MVP",
+        "gateTokenRaw": "CORE_SOT_EXECUTABLE_OK, E2E_CRITICAL_USER_PATH_OK, local-only transport до X4",
+        "lawSections": [
+          "A0",
+          "A11",
+          "A14",
+          "A2"
+        ],
+        "mapId": "1",
+        "mapSection": "Продукт (offline-first)",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_RUNTIME_WIRING_BEFORE_STAGE, E_STAGE_PROMOTION_INVALID",
+        "gateTokenRaw": "No early executable/runtime wiring",
+        "lawSections": [
+          "A10",
+          "A11",
+          "A8"
+        ],
+        "mapId": "10",
+        "mapSection": "Plugins policy",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "token-fail by gate",
+        "gateTokenRaw": "E2E_CRITICAL_USER_PATH_OK",
+        "lawSections": [
+          "A12",
+          "A6.1"
+        ],
+        "mapId": "11",
+        "mapSection": "Поиск/индексация/навигация",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "token-fail by gate",
+        "gateTokenRaw": "Hard parity for export/import semantics",
+        "lawSections": [
+          "A12",
+          "A6.1",
+          "A9"
+        ],
+        "mapId": "12",
+        "mapSection": "Экспорт/импорт",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "GAP",
+        "failSignalRaw": "PROPOSED: E_BOOK_PREFLIGHT_FAIL",
+        "gateTokenRaw": "BookProfile, StyleMap, TOC, FrontBackMatter, PreflightLite",
+        "lawSections": [
+          "A12",
+          "A2",
+          "A6.1",
+          "A9"
+        ],
+        "mapId": "12B",
+        "mapSection": "Minimal Book Plugin Track",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_COLLAB_TRANSPORT_FORBIDDEN_IN_MVP",
+        "gateTokenRaw": "Local-first comments/history до X4",
+        "lawSections": [
+          "A11",
+          "A14"
+        ],
+        "mapId": "13",
+        "mapSection": "Review/история",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_DIRECT_PROTECTED_BRANCH_PUSH, E_MERGE_BYPASS_ATTEMPT, integrity class failSignals",
+        "gateTokenRaw": "Integrity + proofhook + config lock + no bypass",
+        "lawSections": [
+          "A15",
+          "A16",
+          "A6.2",
+          "A7"
+        ],
+        "mapId": "14",
+        "mapSection": "Безопасность/приватность",
+        "modeRawNormalized": "BLK/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_RUNTIME_WIRING_BEFORE_STAGE",
+        "gateTokenRaw": "Late-stage cloud, no early runtime cloud wiring",
+        "lawSections": [
+          "A0",
+          "A11",
+          "A14",
+          "A8"
+        ],
+        "mapId": "15",
+        "mapSection": "AI roadmap",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_STAGE_METRICS_MISSING, E_STAGE_PROMOTION_INVALID",
+        "gateTokenRaw": "Stage metrics + hard parity + platform DoD",
+        "lawSections": [
+          "A11",
+          "A12",
+          "A9"
+        ],
+        "mapId": "16",
+        "mapSection": "Платформы/сторы",
+        "modeRawNormalized": "ADV/ADV/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_SEQUENCE_ORDER_DRIFT, E_STAGE_PROMOTION_INVALID, E_STAGE_METRICS_MISSING",
+        "gateTokenRaw": "Locked order + stage activation + evidence",
+        "lawSections": [
+          "A1",
+          "A10",
+          "A11"
+        ],
+        "mapId": "17",
+        "mapSection": "Этапы внедрения",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_WAVE_RESULT_STALE, E_BLOCKING_TOKEN_UNBOUND",
+        "gateTokenRaw": "80/20 blocking + anti-false-green + freshness",
+        "lawSections": [
+          "A17",
+          "A5",
+          "A6",
+          "A7",
+          "B4"
+        ],
+        "mapId": "18",
+        "mapSection": "Quality system",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_WAVE_RESULT_STALE (косвенно)",
+        "gateTokenRaw": "Process-lean + minimal blocking discipline",
+        "lawSections": [
+          "A5",
+          "A6"
+        ],
+        "mapId": "19",
+        "mapSection": "Anti-bloat",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_STAGE_PROMOTION_INVALID, E_COLLAB_TRANSPORT_FORBIDDEN_IN_MVP",
+        "gateTokenRaw": "Stage activation + scope discipline",
+        "lawSections": [
+          "A0",
+          "A10",
+          "A11",
+          "A14",
+          "A2"
+        ],
+        "mapId": "2",
+        "mapSection": "Канон-связка v3.12",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "GAP",
+        "failSignalRaw": "n/a",
+        "gateTokenRaw": "Product intent layer",
+        "lawSections": [
+          "A0"
+        ],
+        "mapId": "20",
+        "mapSection": "Pain-to-Strength",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "n/a",
+        "gateTokenRaw": "Risk mapping to canon constraints",
+        "lawSections": [
+          "A11",
+          "A14",
+          "A2",
+          "A8"
+        ],
+        "mapId": "21",
+        "mapSection": "Совпадения/риски",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "GAP",
+        "failSignalRaw": "n/a",
+        "gateTokenRaw": "Vision-only",
+        "lawSections": [
+          "A0"
+        ],
+        "mapId": "22",
+        "mapSection": "North Star",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "n/a",
+        "gateTokenRaw": "Composite architecture rule",
+        "lawSections": [
+          "A11",
+          "A14",
+          "A2",
+          "A8"
+        ],
+        "mapId": "23",
+        "mapSection": "Финальная формула",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_BLOCKING_TOKEN_UNBOUND",
+        "gateTokenRaw": "Blocking token law completeness",
+        "lawSections": [
+          "A7",
+          "B4"
+        ],
+        "mapId": "24",
+        "mapSection": "Normative Tags",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_BLOCKING_TOKEN_UNBOUND",
+        "gateTokenRaw": "Invariant -> machine-check linkage",
+        "lawSections": [
+          "A6.1",
+          "A7",
+          "B4"
+        ],
+        "mapId": "25",
+        "mapSection": "Invariant Map",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "fail by mapped class",
+        "gateTokenRaw": "Canonical mode enforcement",
+        "lawSections": [
+          "A16",
+          "A17"
+        ],
+        "mapId": "26",
+        "mapSection": "Mode Matrix",
+        "modeRawNormalized": "AS_DEFINED_IN_A16"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_COMMAND_SURFACE_BYPASS",
+        "gateTokenRaw": "COMMAND_SURFACE_BUS_ONLY_OK + COMMAND_SURFACE_SINGLE_ENTRY_OK + COMMAND_SURFACE_BYPASS_NEGATIVE_TESTS_OK",
+        "lawSections": [
+          "A2",
+          "A7",
+          "A8"
+        ],
+        "mapId": "27",
+        "mapSection": "Command Surface",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "inherited from pack gates",
+        "gateTokenRaw": "FAST/RELEASE/AUDIT packs (mapped to canon)",
+        "lawSections": [
+          "A16",
+          "A6",
+          "B0",
+          "B4"
+        ],
+        "mapId": "28",
+        "mapSection": "Gate Packs",
+        "modeRawNormalized": "PACK_DEPENDENT"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_BLOCKING_TOKEN_UNBOUND, E_WAVE_RESULT_STALE",
+        "gateTokenRaw": "Negative tests + proof binding required",
+        "lawSections": [
+          "A5",
+          "A7",
+          "B4"
+        ],
+        "mapId": "29",
+        "mapSection": "False Green Register",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_RUNTIME_WIRING_BEFORE_STAGE, E_CORE_CHANGE_DOD_MISSING",
+        "gateTokenRaw": "Locked order + runtime wiring guard",
+        "lawSections": [
+          "A1",
+          "A2",
+          "A8"
+        ],
+        "mapId": "3",
+        "mapSection": "Архитектурная иерархия",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_STAGE_METRICS_MISSING, E_STAGE_PROMOTION_INVALID",
+        "gateTokenRaw": "Parity baseline + platform DoD + stage metrics",
+        "lawSections": [
+          "A11",
+          "A12",
+          "A9"
+        ],
+        "mapId": "30",
+        "mapSection": "Cross-Platform Matrix",
+        "modeRawNormalized": "ADV/ADV/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_CORE_CHANGE_DOD_MISSING",
+        "gateTokenRaw": "MIGRATIONS_POLICY_OK, MIGRATIONS_ATOMICITY_OK, RECOVERY_IO_OK",
+        "lawSections": [
+          "A3",
+          "A6.1",
+          "A9"
+        ],
+        "mapId": "31",
+        "mapSection": "Migration Safety",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_WAVE_RESULT_STALE, E_REQUIRED_TOKEN_SET_DRIFT, E_STAGE_PROMOTION_INVALID",
+        "gateTokenRaw": "WAVE hash/TTL + required-set safety + stage consistency",
+        "lawSections": [
+          "A10",
+          "A5",
+          "B5",
+          "B6"
+        ],
+        "mapId": "32",
+        "mapSection": "Race-safe Governance",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "FAILSIGNAL_REGISTRY_VALID_OK token-fail",
+        "gateTokenRaw": "FailSignal registry integrity",
+        "lawSections": [
+          "A16",
+          "B1"
+        ],
+        "mapId": "33",
+        "mapSection": "FailSignal Glossary",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_WAVE_RESULT_STALE (косвенно)",
+        "gateTokenRaw": "Single-run wave + 80/20 release blocking",
+        "lawSections": [
+          "A5",
+          "A6"
+        ],
+        "mapId": "34",
+        "mapSection": "Process-Tax Budget",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_BLOCKING_TOKEN_UNBOUND",
+        "gateTokenRaw": "Closure only via machine-bound proofs",
+        "lawSections": [
+          "A17",
+          "A7",
+          "B4"
+        ],
+        "mapId": "35",
+        "mapSection": "Red-Team Closure",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_RUNTIME_WIRING_BEFORE_STAGE, E_COLLAB_TRANSPORT_FORBIDDEN_IN_MVP",
+        "gateTokenRaw": "Core fixed + shell flexible + staged collab",
+        "lawSections": [
+          "A11",
+          "A14",
+          "A2"
+        ],
+        "mapId": "36",
+        "mapSection": "Совместимость с концепцией",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "GAP",
+        "failSignalRaw": "PROPOSED: E_BINDING_INDEX_DRIFT",
+        "gateTokenRaw": "PROPOSED: BINDING_INDEX_SYNC_OK",
+        "lawSections": [
+          "A17",
+          "B0",
+          "B4"
+        ],
+        "mapId": "37",
+        "mapSection": "Drift Control (Bridge Ops)",
+        "modeRawNormalized": "ADV/ADV/ADV"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_CORE_CHANGE_DOD_MISSING, E_BLOCKING_TOKEN_UNBOUND",
+        "gateTokenRaw": "Core safety set (RECOVERY_IO_OK, MIGRATIONS_*, NORMALIZATION_XPLAT_OK)",
+        "lawSections": [
+          "A12",
+          "A13",
+          "A14",
+          "A2",
+          "A3",
+          "A6.1",
+          "A7"
+        ],
+        "mapId": "4",
+        "mapSection": "Модель системы (модули)",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "BOUND",
+        "failSignalRaw": "E_CORE_CHANGE_DOD_MISSING",
+        "gateTokenRaw": "Migration/recovery/roundtrip invariants",
+        "lawSections": [
+          "A13",
+          "A14",
+          "A2",
+          "A3",
+          "A6.1",
+          "A9"
+        ],
+        "mapId": "5",
+        "mapSection": "Модель данных",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_CORE_CHANGE_DOD_MISSING",
+        "gateTokenRaw": "No core-leak from UI",
+        "lawSections": [
+          "A2",
+          "A3",
+          "A9"
+        ],
+        "mapId": "6",
+        "mapSection": "Полный интерфейс",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_RUNTIME_WIRING_BEFORE_STAGE, E_CORE_CHANGE_DOD_MISSING",
+        "gateTokenRaw": "UI free-zone + no forbidden runtime wiring",
+        "lawSections": [
+          "A2",
+          "A3",
+          "A8",
+          "A9"
+        ],
+        "mapId": "7",
+        "mapSection": "Полная строка меню",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_STAGE_PROMOTION_INVALID, E_STAGE_METRICS_MISSING",
+        "gateTokenRaw": "Stage/scope activation for advanced profiles",
+        "lawSections": [
+          "A10",
+          "A11",
+          "A2",
+          "A9"
+        ],
+        "mapId": "8",
+        "mapSection": "Режимы и профили",
+        "modeRawNormalized": "ADV/ADV/BLK"
+      },
+      {
+        "binding": "SEMI",
+        "failSignalRaw": "E_RUNTIME_WIRING_BEFORE_STAGE, E_STAGE_PROMOTION_INVALID",
+        "gateTokenRaw": "Overlay customization without runtime-stage violation",
+        "lawSections": [
+          "A10",
+          "A2",
+          "A8"
+        ],
+        "mapId": "9",
+        "mapSection": "Menu Composer/кастомизация",
+        "modeRawNormalized": "ADV/BLK/BLK"
+      }
+    ]
+  },
   "status": "PASS",
-  "thresholdSsotLockSha256": "b793dfe7c7326d4bd714e47f89de158e53431eff43467400ad72e2658a08b5e9",
-  "ticketId": "TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003"
+  "ticketId": "P2_WS04"
 }

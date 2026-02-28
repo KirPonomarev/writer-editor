@@ -50,6 +50,9 @@
 - Один PR = один вертикальный срез
 - Docs / CI / guards **никогда** не смешиваются с `src/**`
 - Diff budget обязателен
+- Любая write-задача должна иметь commit-исход (`COMMIT_CREATED` или допустимый `EXPLICIT_DEFERRED` только для read-only/OPS_REPORT)
+- Переход к следующему контуру без commit-исхода для write-задачи запрещён
+- Merge только через PR path по политике репозитория
 
 ---
 

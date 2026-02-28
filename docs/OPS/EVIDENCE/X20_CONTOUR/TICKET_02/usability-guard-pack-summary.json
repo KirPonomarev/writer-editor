@@ -1,0 +1,94 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "baseline": {
+    "channelGuardMismatch": [],
+    "duplicateFlowIds": [],
+    "duplicateGuardIds": [],
+    "guardCount": 5,
+    "missingCriticalFlowGuards": [],
+    "modeProfileGuardGaps": [],
+    "ok": true,
+    "projection": [
+      {
+        "channelCount": 3,
+        "flowId": "entry_flow",
+        "guardId": "guard.entry_flow",
+        "modeCount": 3,
+        "profileCount": 3,
+        "status": "PASS",
+        "token": "X19_WS01_FIRST_RUN_AND_EMPTY_STATE_FLOW_OK"
+      },
+      {
+        "channelCount": 3,
+        "flowId": "error_hints",
+        "guardId": "guard.error_hints",
+        "modeCount": 3,
+        "profileCount": 3,
+        "status": "PASS",
+        "token": "X19_WS03_ERROR_HANDLING_AND_RECOVERY_HINTS_OK"
+      },
+      {
+        "channelCount": 3,
+        "flowId": "quick_open_palette",
+        "guardId": "guard.quick_open_palette",
+        "modeCount": 3,
+        "profileCount": 3,
+        "status": "PASS",
+        "token": "X18_WS02_QUICK_OPEN_AND_COMMAND_PALETTE_POLISH_OK"
+      },
+      {
+        "channelCount": 3,
+        "flowId": "recent_resume",
+        "guardId": "guard.recent_resume",
+        "modeCount": 3,
+        "profileCount": 3,
+        "status": "PASS",
+        "token": "X19_WS02_RECENT_PROJECTS_AND_QUICK_RESUME_OK"
+      },
+      {
+        "channelCount": 3,
+        "flowId": "status_feedback",
+        "guardId": "guard.status_feedback",
+        "modeCount": 3,
+        "profileCount": 3,
+        "status": "PASS",
+        "token": "X18_WS03_MENU_STATUS_FEEDBACK_AND_SAVE_SIGNALS_OK"
+      }
+    ],
+    "projectionHash": "da8ca04b05ccd5c388581d52487f2a86faa55ebf12f59613824c496b3da84ab3",
+    "requiredCriticalFlowCount": 5,
+    "requiredPositiveViolations": [],
+    "requiredZeroViolations": [],
+    "staleGuardReferences": [],
+    "statusMismatch": [],
+    "tokenMismatch": []
+  },
+  "channelGuardMismatchCount": 0,
+  "detector": {
+    "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+    "contentHash": "e5f48459d88614f07bac011aa74755af2072b64d4fe22d11e379e761c5a2460f",
+    "detectorId": "X20_WS02_USABILITY_GUARD_PACK_SINGLE_DETECTOR_V1"
+  },
+  "determinism": {
+    "hashes": [
+      "da8ca04b05ccd5c388581d52487f2a86faa55ebf12f59613824c496b3da84ab3",
+      "da8ca04b05ccd5c388581d52487f2a86faa55ebf12f59613824c496b3da84ab3",
+      "da8ca04b05ccd5c388581d52487f2a86faa55ebf12f59613824c496b3da84ab3"
+    ],
+    "ok": true
+  },
+  "duplicateFlowGuardCount": 0,
+  "duplicateGuardIdCount": 0,
+  "expectedChannelCount": 3,
+  "expectedModeCount": 3,
+  "expectedProfileCount": 3,
+  "guardCount": 5,
+  "missingCriticalFlowGuardCount": 0,
+  "modeProfileGuardGapCount": 0,
+  "requiredCriticalFlowCount": 5,
+  "requiredPositiveViolationCount": 0,
+  "requiredZeroViolationCount": 0,
+  "staleGuardReferenceCount": 0,
+  "statusMismatchCount": 0,
+  "tokenMismatchCount": 0
+}

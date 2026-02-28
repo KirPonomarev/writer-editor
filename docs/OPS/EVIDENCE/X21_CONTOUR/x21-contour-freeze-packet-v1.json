@@ -1,0 +1,56 @@
+{
+  "activeCanon": {
+    "lockCheckPass": true,
+    "status": "ACTIVE_CANON",
+    "statusRef": "docs/OPS/STATUS/CANON_STATUS.json",
+    "version": "v3.13a-final"
+  },
+  "artifactId": "X21_CONTOUR_EVIDENCE_FREEZE_PACKET_V1",
+  "contour": {
+    "acceptanceCompliance": "PASS",
+    "advisoryAsBlockingDrift": "ZERO",
+    "blockingSurfaceExpansion": false,
+    "offlineReleaseIntegrity": "LOCALLY_VERIFIABLE",
+    "scopeCompliance": "PASS",
+    "status": "READY_FOR_CLOSEOUT"
+  },
+  "gate": {
+    "name": "GO_IF_X21_WS01_AND_X21_WS02_ACCEPTED",
+    "satisfied": true
+  },
+  "generatedAtUtc": "2026-02-28T19:36:58.833Z",
+  "owner": "KIRILL_PLUS_CODEX",
+  "requiredChecks": {
+    "ACTIVE_CANON_LOCK_CHECK_PASS": true,
+    "ADVISORY_AS_BLOCKING_DRIFT_ZERO": true,
+    "BLOCKING_SURFACE_EXPANSION_FALSE": true,
+    "JSON_VALIDATION_PASS": true,
+    "OFFLINE_RELEASE_INTEGRITY_LOCALLY_VERIFIABLE": true,
+    "SHA_LOCK_MATCH_PASS": true,
+    "STAGE_ACTIVATION_GUARD_CHECK_PASS": true
+  },
+  "requiredOutputs": [
+    "X21_CONTOUR_FREEZE_PACKET_JSON",
+    "X21_CONTOUR_CLOSE_SUMMARY_JSON",
+    "X21_CONTOUR_CLOSEOUT_SIGNED_JSON",
+    "NEXT_CONTOUR_OPENING_RECORD_JSON",
+    "KEY_VALUE_EXECUTION_REPORT"
+  ],
+  "schemaVersion": 1,
+  "wsSummary": {
+    "WS01": {
+      "runId": "X21_WS01_RUN_20260228_RERUN",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X21_WS01_RELEASE_CANDIDATE_PRECHECK_PACK_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X21_CONTOUR/TICKET_01/summary.json",
+      "ticketId": "X21_WS01"
+    },
+    "WS02": {
+      "runId": "",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X21_WS02_PROMOTION_DRY_RUN_AND_EVIDENCE_LOCK_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X21_CONTOUR/TICKET_02/summary.json",
+      "ticketId": "X21_WS02"
+    }
+  }
+}

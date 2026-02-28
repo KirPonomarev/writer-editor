@@ -1,0 +1,29 @@
+{
+  "details": {
+    "baseline": {
+      "entryCount": 6,
+      "projectionHash": "747b447b97599a8f3691890d6632b36fbe187e5dfa25b1dada8b690ad7fe951a"
+    },
+    "channelInconsistency": [],
+    "determinism": {
+      "hashes": [
+        "747b447b97599a8f3691890d6632b36fbe187e5dfa25b1dada8b690ad7fe951a",
+        "747b447b97599a8f3691890d6632b36fbe187e5dfa25b1dada8b690ad7fe951a",
+        "747b447b97599a8f3691890d6632b36fbe187e5dfa25b1dada8b690ad7fe951a"
+      ],
+      "ok": true
+    },
+    "duplicateChecklistItems": [],
+    "staleHintTargets": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "CHECKLIST_AND_HINTS_MATCH_COMMAND_SURFACE",
+    "NEXT_TZ_POSITIVE_02": "VISIBILITY_AND_CAPABILITY_RULES_CONSISTENT",
+    "NEXT_TZ_POSITIVE_03": "OUTPUT_DETERMINISTIC"
+  }
+}

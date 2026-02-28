@@ -1,0 +1,21 @@
+{
+  "tzId": "TZ_P0_WS01_ATTESTATION_ANTI_FORGERY_001",
+  "generatedAtUtc": "2026-02-28T12:00:06.849Z",
+  "requiredFieldsCount": 12,
+  "checks": [
+    {
+      "tokenId": "ATTESTATION_SIGNATURE_OK",
+      "recordPresent": true,
+      "missingFields": [],
+      "completenessPct": 100
+    },
+    {
+      "tokenId": "VERIFY_ATTESTATION_OK",
+      "recordPresent": true,
+      "missingFields": [],
+      "completenessPct": 100
+    }
+  ],
+  "missingFieldsTotal": 0,
+  "bindingCompletenessOk": true
+}

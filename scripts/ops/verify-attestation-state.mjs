@@ -2,6 +2,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { evaluatePostMergeVerifyAttestationState } from './emit-post-merge-verify-attestation.mjs';
+import { evaluateAttestationSignatureState } from './attestation-signature-state.mjs';
 
 const TOKEN_NAME = 'VERIFY_ATTESTATION_OK';
 const FAIL_CODE = 'E_VERIFY_ATTESTATION_INVALID';
@@ -27,9 +28,26 @@ function stableStringify(value) {
 }
 
 function parseArgs(argv) {
-  const out = { json: false };
+  const out = {
+    json: false,
+    trustLockPath: '',
+    artifactPath: '',
+    signature: '',
+  };
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--json') out.json = true;
+    if (argv[i] === '--trust-lock-path' && i + 1 < argv.length) {
+      out.trustLockPath = String(argv[i + 1] || '').trim();
+      i += 1;
+    }
+    if (argv[i] === '--artifact-path' && i + 1 < argv.length) {
+      out.artifactPath = String(argv[i + 1] || '').trim();
+      i += 1;
+    }
+    if (argv[i] === '--signature' && i + 1 < argv.length) {
+      out.signature = String(argv[i + 1] || '').trim();
+      i += 1;
+    }
   }
   return out;
 }
@@ -44,21 +62,28 @@ function getDefaultAttestationState() {
 }
 
 export function evaluateVerifyAttestationState(input = {}) {
-  const state = isObjectRecord(input.attestationState)
+  const attestationState = isObjectRecord(input.attestationState)
     ? input.attestationState
     : getDefaultAttestationState();
 
-  const emitted = Number(state.POST_MERGE_VERIFY_ATTESTATION_EMITTED) === 1;
-  const verifyOk = Number(state.verifyOk) === 1;
-  const attestationKind = String(state.attestationKind || '').trim();
-  const taskId = String(state.taskId || '').trim();
-  const verifyPath = String(state.verifyPath || '').trim();
+  const emitted = Number(attestationState.POST_MERGE_VERIFY_ATTESTATION_EMITTED) === 1;
+  const verifyOk = Number(attestationState.verifyOk) === 1;
+  const attestationKind = String(attestationState.attestationKind || '').trim();
+  const taskId = String(attestationState.taskId || '').trim();
+  const verifyPath = String(attestationState.verifyPath || '').trim();
+  const signatureState = evaluateAttestationSignatureState({
+    payload: attestationState,
+    signature: input.signature,
+    trustLockPath: input.trustLockPath,
+    artifactPath: input.artifactPath,
+  });
 
   const ok = emitted
     && verifyOk
     && attestationKind === 'POST_MERGE_VERIFY'
     && taskId.length > 0
-    && verifyPath.length > 0;
+    && verifyPath.length > 0
+    && signatureState.ok === true;
 
   return {
     ok,
@@ -70,6 +95,9 @@ export function evaluateVerifyAttestationState(input = {}) {
       attestationKind,
       taskId,
       verifyPath,
+      signatureTokenOk: signatureState.ATTESTATION_SIGNATURE_OK,
+      signatureFailCode: signatureState.code,
+      signatureFailReason: signatureState.failReason || '',
     },
   };
 }
@@ -80,6 +108,7 @@ function printHuman(state) {
   console.log(`VERIFY_ATTESTATION_TASK_ID=${state.details.taskId}`);
   console.log(`VERIFY_ATTESTATION_PATH=${state.details.verifyPath}`);
   console.log(`VERIFY_ATTESTATION_VERIFY_OK=${state.details.verifyOk}`);
+  console.log(`VERIFY_ATTESTATION_SIGNATURE_TOKEN_OK=${state.details.signatureTokenOk}`);
   if (!state.ok) {
     console.log(`FAIL_REASON=${state.code}`);
   }
@@ -87,7 +116,11 @@ function printHuman(state) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const state = evaluateVerifyAttestationState();
+  const state = evaluateVerifyAttestationState({
+    trustLockPath: args.trustLockPath || undefined,
+    artifactPath: args.artifactPath || undefined,
+    signature: args.signature || undefined,
+  });
   if (args.json) {
     process.stdout.write(`${stableStringify(state)}\n`);
   } else {

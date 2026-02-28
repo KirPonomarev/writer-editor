@@ -1,0 +1,31 @@
+{
+  "details": {
+    "baseline": {
+      "guardCount": 5,
+      "projectionHash": "da8ca04b05ccd5c388581d52487f2a86faa55ebf12f59613824c496b3da84ab3",
+      "requiredCriticalFlowCount": 5
+    },
+    "channelGuardMismatch": [],
+    "determinism": {
+      "hashes": [
+        "da8ca04b05ccd5c388581d52487f2a86faa55ebf12f59613824c496b3da84ab3",
+        "da8ca04b05ccd5c388581d52487f2a86faa55ebf12f59613824c496b3da84ab3",
+        "da8ca04b05ccd5c388581d52487f2a86faa55ebf12f59613824c496b3da84ab3"
+      ],
+      "ok": true
+    },
+    "missingCriticalFlowGuards": [],
+    "modeProfileGuardGaps": [],
+    "staleGuardReferences": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "GUARD_PACK_COVERS_REQUIRED_USABILITY_FLOWS",
+    "NEXT_TZ_POSITIVE_02": "GUARD_RESULTS_CONSISTENT_WITH_COMMAND_SURFACE",
+    "NEXT_TZ_POSITIVE_03": "GUARD_PACK_OUTPUT_DETERMINISTIC"
+  }
+}

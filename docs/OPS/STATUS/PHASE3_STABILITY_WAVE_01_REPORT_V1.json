@@ -1,0 +1,55 @@
+{
+  "reportId": "PHASE3_STABILITY_WAVE_01_REPORT_V1",
+  "schemaVersion": 1,
+  "taskId": "TZ_EXEC_PKG_05_A01_PHASE3_STABILITY_WAVE_01",
+  "waveId": "PHASE3_WAVE_01",
+  "mode": "PHASE_3_HARD_ACTIVE",
+  "mainSha": "44351318385cebe21050436ce1bc5a57341d9b4e",
+  "metrics": {
+    "falsePositive": {
+      "ratePct": 0,
+      "count": 0,
+      "denominator": 1,
+      "thresholdMaxPct": 1,
+      "checkId": "MC_PHASE3_WAVE_01_FALSE_POSITIVE_AT_MOST_1",
+      "pass": true
+    },
+    "criticalRegression": {
+      "count": 0,
+      "thresholdMaxCount": 0,
+      "checkId": "MC_PHASE3_WAVE_01_CRITICAL_REGRESSION_ZERO",
+      "pass": true
+    },
+    "runtimeBudget": {
+      "minutes": 1.22,
+      "thresholdMaxMinutes": 30,
+      "checkId": "MC_PHASE3_WAVE_01_RUNTIME_BUDGET_PASS",
+      "pass": true
+    },
+    "engineHealth": {
+      "status": "PASS",
+      "strictDoctorExit": 0,
+      "currentWaveStopOk": 1,
+      "checkId": "MC_PHASE3_WAVE_01_ENGINE_HEALTH_PASS",
+      "pass": true
+    }
+  },
+  "gateChecks": {
+    "MC_PHASE3_MODE_ACTIVE": true,
+    "MC_CHECK_EXECUTABILITY_BINDING": true,
+    "MC_SCOPE_PROOF_ONLY_ALLOWLIST": true,
+    "MC_GOVERNANCE_CHANGE_OK": true,
+    "MC_CURRENT_WAVE_STOP_OK": true,
+    "AUTO_CHECK_01_NPM_TEST": true,
+    "AUTO_CHECK_02_NPM_RUN_OSS_POLICY": true
+  },
+  "rollbackTriggers": {
+    "falsePositiveOver2PctFor2ConsecutiveWaves": false,
+    "criticalRegressionGreaterThanZero": false,
+    "engineDegradedHighReleaseImpactOver24Hours": false,
+    "rollbackActivated": false
+  },
+  "status": "PASS",
+  "updatedAtUtc": "2026-02-28T01:05:00.000Z",
+  "approvedBy": "KIRILL_PONOMAREV"
+}

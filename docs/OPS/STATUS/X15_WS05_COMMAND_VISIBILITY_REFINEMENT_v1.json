@@ -1,0 +1,13 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "channelCount": 3,
+  "commandBindingCount": 9,
+  "modeCount": 3,
+  "profileCount": 3,
+  "repeatabilityStable3Runs": true,
+  "rowCount": 63,
+  "status": "PASS",
+  "token": "X15_WS05_COMMAND_VISIBILITY_REFINEMENT_OK",
+  "updatedAtUtc": "2026-02-28T16:16:07.227Z",
+  "version": 1
+}

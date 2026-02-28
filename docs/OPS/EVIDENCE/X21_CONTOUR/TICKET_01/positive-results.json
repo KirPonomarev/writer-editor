@@ -1,0 +1,55 @@
+{
+  "details": {
+    "determinism": {
+      "hashes": [
+        "195eace0453ef7df84bd298f94081552af9d3e8a5adeb25a509f7daf8116c0fe",
+        "195eace0453ef7df84bd298f94081552af9d3e8a5adeb25a509f7daf8116c0fe",
+        "195eace0453ef7df84bd298f94081552af9d3e8a5adeb25a509f7daf8116c0fe"
+      ],
+      "ok": true
+    },
+    "modeMatrix": {
+      "advisoryToBlockingDriftCases": [],
+      "ok": true
+    },
+    "offlineIntegrity": {
+      "issues": [],
+      "lockChecks": {
+        "p0OfflineIntegrity": true,
+        "x20CloseSummary": true,
+        "x20SignedHashMatch": true,
+        "x20SignedStatus": true
+      },
+      "ok": true
+    },
+    "releaseBinding": {
+      "missingBindingRecord": [],
+      "missingBindingRequiredFields": [],
+      "missingFailSignalInRegistry": [],
+      "missingTokenCatalog": [],
+      "ok": true,
+      "requiredReleaseBlockingTokenCount": 14,
+      "tokenBindingFailSignalMismatch": []
+    },
+    "usabilityGuardPack": {
+      "checks": {
+        "repeatability": true,
+        "statusPass": true,
+        "summaryPass": true,
+        "tokenMatch": true
+      },
+      "issues": [],
+      "ok": true
+    }
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "PRECHECK_PACK_COVERS_REQUIRED_RELEASE_SURFACE",
+    "NEXT_TZ_POSITIVE_02": "PRECHECK_RESULTS_CONSISTENT_WITH_ACTIVE_CANON",
+    "NEXT_TZ_POSITIVE_03": "PRECHECK_OUTPUT_DETERMINISTIC"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "releasePrepVersion": "x23.ws02.v1",
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "blockingSurfaceExpansion": false,
+  "requiredInputRefs": [
+    "docs/OPS/STATUS/CANON_STATUS.json",
+    "docs/OPS/TOKENS/TOKEN_CATALOG.json",
+    "docs/OPS/STATUS/BINDING_SCHEMA_V1.json",
+    "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+    "docs/OPS/STATUS/X22_WS02_FINAL_PROMOTION_DECISION_PREP_v1.json",
+    "docs/OPS/STATUS/X22_CONTOUR_CLOSE_SUMMARY_V1.json",
+    "docs/OPS/STATUS/X22_CONTOUR_CLOSEOUT_SIGNED_V1.json"
+  ],
+  "requiredReleaseBlockingSet": [
+    "CORE_SOT_EXECUTABLE_OK",
+    "RECOVERY_IO_OK",
+    "MIGRATIONS_POLICY_OK",
+    "MIGRATIONS_ATOMICITY_OK",
+    "NORMALIZATION_XPLAT_OK",
+    "E2E_CRITICAL_USER_PATH_OK",
+    "HEAD_STRICT_OK",
+    "PROOFHOOK_INTEGRITY_OK",
+    "CONFIG_HASH_LOCK_OK",
+    "TOKEN_SOURCE_CONFLICT_OK",
+    "REQUIRED_SET_NO_TARGET_OK",
+    "SINGLE_VERIFY_CONTOUR_ENFORCED_OK",
+    "VERIFY_ATTESTATION_OK",
+    "ATTESTATION_SIGNATURE_OK"
+  ],
+  "requiredModeChecks": [
+    {
+      "failSignalCode": "E_REMOTE_UNAVAILABLE",
+      "mode": "release",
+      "expectedDisposition": "advisory"
+    },
+    {
+      "failSignalCode": "E_REMOTE_UNAVAILABLE",
+      "mode": "promotion",
+      "expectedDisposition": "advisory"
+    }
+  ],
+  "requiredAttestationTokens": [
+    "ATTESTATION_SIGNATURE_OK",
+    "VERIFY_ATTESTATION_OK"
+  ],
+  "requiredAttestationRefs": [
+    "docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_v3_12.json",
+    "docs/OPS/LOCKS/ATTESTATION_TRUST_ARTIFACT.lock"
+  ],
+  "requiredEvidenceRefs": [
+    "docs/OPS/EVIDENCE/X22_CONTOUR/x22-contour-freeze-packet-v1.json",
+    "docs/OPS/STATUS/X22_CONTOUR_CLOSE_SUMMARY_V1.json",
+    "docs/OPS/STATUS/X22_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+    "docs/OPS/STATUS/X22_WS02_FINAL_PROMOTION_DECISION_PREP_v1.json",
+    "docs/OPS/EVIDENCE/X22_CONTOUR/TICKET_02/summary.json"
+  ],
+  "ws01CommitChain": {
+    "ticketId": "TZ_X23_WS01_GIT_TRACEABILITY_RECOVERY_001",
+    "packetIndexRef": "X23_WS01_PACKET_INDEX_V1",
+    "expectedHead": "d4ed6581572bd65baf005fb95fb2a14ff3d2c942",
+    "expectedCommitCount": 86
+  }
+}

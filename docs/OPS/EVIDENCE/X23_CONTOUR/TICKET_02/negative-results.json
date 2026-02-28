@@ -1,0 +1,45 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "expected": "RELEASE_PACKET_WITH_MISSING_REQUIRED_INPUT_EXPECT_REJECT",
+      "observedMissingRequiredInputCount": 1,
+      "rejected": true
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "expected": "MODE_DISPOSITION_DRIFT_EXPECT_REJECT",
+      "observedModeDispositionDriftCount": 2,
+      "rejected": true
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "expected": "OFFLINE_ATTESTATION_CHAIN_BREAK_EXPECT_REJECT",
+      "observedAttestationIssueCount": 1,
+      "rejected": true
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "expected": "PR_PACKET_WITH_HEAD_MISMATCH_EXPECT_REJECT",
+      "observedCurrentHead": "d4ed6581572bd65baf005fb95fb2a14ff3d2c942",
+      "observedExpectedHead": "d4ed6581572bd65baf005fb95fb2a14ff3d2c940",
+      "rejected": true
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "expected": "NON_DETERMINISTIC_RELEASE_PACKET_HASH_EXPECT_REJECT",
+      "observedHashA": "aadf51b9207fb1722f8e02bdabede7c04749b31ce5da81fe3fe042cbca2dcad8",
+      "observedHashB": "ea2ef59a5d780e350229399c0a4552f63ffc1d1c0948f11773cd59a9867e0162",
+      "rejected": true
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "RELEASE_PACKET_WITH_MISSING_REQUIRED_INPUT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "MODE_DISPOSITION_DRIFT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "OFFLINE_ATTESTATION_CHAIN_BREAK_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "PR_PACKET_WITH_HEAD_MISMATCH_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "NON_DETERMINISTIC_RELEASE_PACKET_HASH_EXPECT_REJECT"
+  }
+}

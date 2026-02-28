@@ -1,0 +1,93 @@
+{
+  "details": {
+    "attestationRecheck": {
+      "attestationState": {
+        "ok": true,
+        "token": 1
+      },
+      "checks": {
+        "attestationTokenOk": true,
+        "verifyTokenOk": true
+      },
+      "issues": [],
+      "ok": true,
+      "verifyState": {
+        "ok": true,
+        "token": 1
+      }
+    },
+    "determinism": {
+      "hashes": [
+        "c6998efbc25ca57a7a22c18cdd694315c6e96016250af7515fe1455e07fcbc73",
+        "c6998efbc25ca57a7a22c18cdd694315c6e96016250af7515fe1455e07fcbc73",
+        "c6998efbc25ca57a7a22c18cdd694315c6e96016250af7515fe1455e07fcbc73"
+      ],
+      "ok": true
+    },
+    "evidenceLock": {
+      "chainEntries": [
+        {
+          "chainHash": "4a03a70c63b4f0da4aee7e459a9e3d90c319f7538686ad12e200419b896d3c06",
+          "ref": "docs/OPS/EVIDENCE/X21_CONTOUR/x21-contour-freeze-packet-v1.json",
+          "sha256": "c0d5d3aa1638f305534057fad83e7bc1d735b4e4b0fc6cb58e8f00513525dc27"
+        },
+        {
+          "chainHash": "289e95cb7116ff1d68227af59de7533d9f53f80054701d52f2a65e181f00a828",
+          "ref": "docs/OPS/STATUS/X21_CONTOUR_CLOSE_SUMMARY_V1.json",
+          "sha256": "9b327b6315e6562ab441918a4046134bc227ffdbd6d7e386448ce6e202823fb8"
+        },
+        {
+          "chainHash": "028c3ef7a908f0b25a4338400633b1fa4f4f038140825b2ecb1458c5a59b9f86",
+          "ref": "docs/OPS/STATUS/X21_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+          "sha256": "762af0b244df6d0fb5721b6c5590a6a97fb3051871bfc64a12224ef19a01358b"
+        },
+        {
+          "chainHash": "92ff8eb05f04c1487b1e6beb09e9697307b2229f1cc8c612af8220ed2f00288c",
+          "ref": "docs/OPS/STATUS/X21_WS02_PROMOTION_DRY_RUN_AND_EVIDENCE_LOCK_v1.json",
+          "sha256": "a0afa3f497784f4b842b02dae78a14755c159fb523005a50c213e9e7f2df88ca"
+        },
+        {
+          "chainHash": "bea59cf642d27aac0d04f347e91042ea94318b1e7fe2ac83fc589ca64f696a4d",
+          "ref": "docs/OPS/EVIDENCE/X21_CONTOUR/TICKET_02/summary.json",
+          "sha256": "dbae50e07c7e052ae50288b8e69e5d033bd914a634e08e71e24b68a7a793f54f"
+        }
+      ],
+      "chainRootHash": "bea59cf642d27aac0d04f347e91042ea94318b1e7fe2ac83fc589ca64f696a4d",
+      "evidenceHashMismatch": false,
+      "issues": [],
+      "missingEvidenceLinks": [],
+      "ok": true,
+      "requiredEvidenceRefCount": 5,
+      "resolvedEvidenceRefCount": 5
+    },
+    "modeReleaseClass": {
+      "issues": [],
+      "missingModeChecks": [],
+      "modeDispositionDrift": [],
+      "modeEvaluatorIssues": [],
+      "ok": true,
+      "releaseClassDrift": false
+    },
+    "promotionDryRun": {
+      "checks": {
+        "ws02StatusPass": true,
+        "ws02SummaryPass": true,
+        "ws02TokenPass": true,
+        "x21CloseReady": true
+      },
+      "issues": [],
+      "ok": true,
+      "zeroKeyViolations": []
+    }
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "PROMOTION_PACKAGE_COMPLETE_AND_VALID",
+    "NEXT_TZ_POSITIVE_02": "RELEASE_CLASS_STABLE",
+    "NEXT_TZ_POSITIVE_03": "PACKAGE_OUTPUT_DETERMINISTIC"
+  }
+}

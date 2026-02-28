@@ -11,6 +11,14 @@ test('codex automation policy v1.4 bootstrap schema is present and valid', () =>
 
   assert.equal(doc.policyVersion, 'v1.4');
   assert.equal(doc.promptMode, 'prompt_disabled');
+  assert.equal(
+    doc.bootstrapSpecRef,
+    'docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_ONE_SHOT_SPEC_V1_0.json',
+  );
+  assert.equal(
+    doc.executionTicketPolicyRef,
+    'docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_ONE_SHOT_SPEC_V1_0.json#/executionTicket',
+  );
   assert.equal(Array.isArray(doc.allowlist), true);
   assert.equal(Array.isArray(doc.denylist), true);
   assert.equal(doc.allowlist.length > 0, true);
@@ -33,6 +41,10 @@ test('codex automation policy v1.4 bootstrap schema is present and valid', () =>
   assert.equal(
     doc.autofixHooks.githubWorkflowScopePush.entryCommand,
     'node scripts/ops/github-credential-autofix.mjs --json --resume-from-step STEP_08_PUSH',
+  );
+  assert.equal(
+    doc.commandAllowlist.includes('node scripts/contracts/check-agent-bootstrap-spec.mjs'),
+    true,
   );
   assert.equal(
     doc.failReasons.includes('PUSH_BLOCKED_MISSING_WORKFLOW_SCOPE'),

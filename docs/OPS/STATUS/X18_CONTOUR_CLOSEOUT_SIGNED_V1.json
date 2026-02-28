@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X18_CONTOUR_CLOSEOUT_SIGNED_V1",
+  "taskId": "TZ_X18_WS04_CONTOUR_CLOSE_PREP_001",
+  "status": "SIGNED",
+  "signatureType": "SHA256_EVIDENCE_LOCK",
+  "signingMode": "LOCAL_OFFLINE",
+  "signedBy": "KIRILL_PLUS_CODEX",
+  "signedAtUtc": "2026-02-28T18:36:31.247Z",
+  "evidencePacketRef": "docs/OPS/EVIDENCE/X18_CONTOUR/x18-contour-freeze-packet-v1.json",
+  "evidencePacketSha256": "sha256:41bf97c68a7a0eb7c75530d0b52c613f8857f7e67c746804320fda8878a25d67",
+  "constraints": {
+    "activeCanonLockMaintained": true,
+    "blockingSurfaceExpansion": false,
+    "advisoryAsBlockingDriftZero": true,
+    "newBlockingTokensIntroduced": false
+  },
+  "gate": {
+    "name": "GO_IF_X18_CLOSEOUT_ARTIFACT_SIGNED",
+    "isOpen": true,
+    "releaseDecisionClassChanged": false
+  }
+}

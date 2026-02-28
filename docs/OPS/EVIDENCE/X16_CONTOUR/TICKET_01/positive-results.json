@@ -1,0 +1,27 @@
+{
+  "details": {
+    "baseline": {
+      "projectionHash": "b6a329f6de06dec025ac7a817b6e4d72ae5e5152a50964787995d0299f50e8d9",
+      "rowCount": 87
+    },
+    "determinism": {
+      "hashes": [
+        "b6a329f6de06dec025ac7a817b6e4d72ae5e5152a50964787995d0299f50e8d9",
+        "b6a329f6de06dec025ac7a817b6e4d72ae5e5152a50964787995d0299f50e8d9",
+        "b6a329f6de06dec025ac7a817b6e4d72ae5e5152a50964787995d0299f50e8d9"
+      ],
+      "ok": true
+    },
+    "missingRequiredCoreCommandRows": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "MENU_GROUPS_LOAD_AND_VALIDATE",
+    "NEXT_TZ_POSITIVE_02": "MODE_PROFILE_GATING_IS_DETERMINISTIC",
+    "NEXT_TZ_POSITIVE_03": "CONTRACT_SUITE_PASS"
+  }
+}

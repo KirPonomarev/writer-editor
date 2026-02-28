@@ -1,0 +1,15 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "channelCount": 3,
+  "localFirstPolicyErrorCount": 0,
+  "menuProjectionRowCount": 81,
+  "missingReviewGroupBindingsCount": 0,
+  "modeCount": 3,
+  "profileCount": 3,
+  "repeatabilityStable3Runs": true,
+  "reviewEntryCount": 2,
+  "status": "PASS",
+  "token": "X16_WS03_REVIEW_TOOLS_MENU_GROUP_OK",
+  "updatedAtUtc": "2026-02-28T16:46:42.249Z",
+  "version": 1
+}

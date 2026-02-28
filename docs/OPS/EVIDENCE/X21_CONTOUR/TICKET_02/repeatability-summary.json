@@ -1,0 +1,149 @@
+{
+  "runs": [
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "attestationIssueCount": 0,
+        "evidenceHashMismatchCount": 0,
+        "missingEvidenceLinkCount": 0,
+        "modeCheckMissingCount": 0,
+        "modeDispositionDriftCount": 0,
+        "modeEvaluatorIssueCount": 0,
+        "promotionDryRunIssueCount": 0,
+        "releaseClassDriftCount": 0,
+        "requiredEvidenceRefCount": 5,
+        "requiredModeCheckCount": 2
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "94241f8aa08113de93cab5fbaa09633d4b948d9f27a7187588c15138ab644827",
+        "detectorId": "X21_WS02_PROMOTION_DRY_RUN_EVIDENCE_LOCK_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "attestationIssueCount": 0,
+        "evidenceHashMismatchCount": 0,
+        "missingEvidenceLinkCount": 0,
+        "modeCheckMissingCount": 0,
+        "modeDispositionDriftCount": 0,
+        "modeEvaluatorIssueCount": 0,
+        "promotionDryRunIssueCount": 0,
+        "releaseClassDriftCount": 0,
+        "requiredEvidenceRefCount": 5,
+        "requiredModeCheckCount": 2
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "94241f8aa08113de93cab5fbaa09633d4b948d9f27a7187588c15138ab644827",
+        "detectorId": "X21_WS02_PROMOTION_DRY_RUN_EVIDENCE_LOCK_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "attestationIssueCount": 0,
+        "evidenceHashMismatchCount": 0,
+        "missingEvidenceLinkCount": 0,
+        "modeCheckMissingCount": 0,
+        "modeDispositionDriftCount": 0,
+        "modeEvaluatorIssueCount": 0,
+        "promotionDryRunIssueCount": 0,
+        "releaseClassDriftCount": 0,
+        "requiredEvidenceRefCount": 5,
+        "requiredModeCheckCount": 2
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "94241f8aa08113de93cab5fbaa09633d4b948d9f27a7187588c15138ab644827",
+        "detectorId": "X21_WS02_PROMOTION_DRY_RUN_EVIDENCE_LOCK_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    }
+  ],
+  "stable": true
+}
