@@ -1,0 +1,23 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "channelGuardMismatchCount": 0,
+  "duplicateFlowGuardCount": 0,
+  "duplicateGuardIdCount": 0,
+  "expectedChannelCount": 3,
+  "expectedModeCount": 3,
+  "expectedProfileCount": 3,
+  "guardCount": 5,
+  "missingCriticalFlowGuardCount": 0,
+  "modeProfileGuardGapCount": 0,
+  "repeatabilityStable3Runs": true,
+  "requiredCriticalFlowCount": 5,
+  "requiredPositiveViolationCount": 0,
+  "requiredZeroViolationCount": 0,
+  "staleGuardReferenceCount": 0,
+  "status": "PASS",
+  "statusMismatchCount": 0,
+  "token": "X20_WS02_USABILITY_REGRESSION_GUARD_PACK_OK",
+  "tokenMismatchCount": 0,
+  "updatedAtUtc": "2026-02-28T19:14:38.119Z",
+  "version": 1
+}
