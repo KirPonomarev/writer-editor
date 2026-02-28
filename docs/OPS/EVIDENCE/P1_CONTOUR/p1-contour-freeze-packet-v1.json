@@ -1,0 +1,59 @@
+{
+  "activeCanon": {
+    "lockCheckPass": true,
+    "status": "ACTIVE_CANON",
+    "statusRef": "docs/OPS/STATUS/CANON_STATUS.json",
+    "version": "v3.13a-final"
+  },
+  "artifactId": "P1_CONTOUR_EVIDENCE_FREEZE_PACKET_V1",
+  "contour": {
+    "acceptanceCompliance": "PASS",
+    "advisoryAsBlockingDrift": "ZERO",
+    "blockingSurfaceExpansion": false,
+    "closeoutSignedRef": "docs/OPS/STATUS/P1_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+    "closeStatusNormalized": true,
+    "closeSummaryRef": "docs/OPS/STATUS/P1_CONTOUR_CLOSE_SUMMARY_V1.json",
+    "closeTaskId": "TZ_P1_CONTOUR_CLOSEOUT_001",
+    "scopeCompliance": "PASS",
+    "status": "COMPLETED_CLOSED"
+  },
+  "gate": {
+    "name": "GO_IF_P1_WS01_WS02_WS03_ALL_ACCEPTED",
+    "satisfied": true
+  },
+  "generatedAtUtc": "2026-02-28T13:33:16Z",
+  "owner": "KIRILL_PLUS_CODEX",
+  "prechecks": {
+    "P1_CLOSEOUT_PRECHECK_01": "PASS",
+    "P1_CLOSEOUT_PRECHECK_02": "PASS",
+    "P1_CLOSEOUT_PRECHECK_03": "PASS"
+  },
+  "requiredOutputs": [
+    "P1_CONTOUR_FREEZE_PACKET_JSON",
+    "P1_CONTOUR_CLOSE_SUMMARY_JSON",
+    "P1_CONTOUR_CLOSEOUT_SIGNED_JSON",
+    "P2_QUEUE_OPENING_RECORD_JSON",
+    "KEY_VALUE_EXECUTION_REPORT"
+  ],
+  "schemaVersion": 1,
+  "wsSummary": {
+    "WS01": {
+      "runId": "TZ_P1_WS01_FAILSIGNAL_SEMANTIC_DEDUP_001",
+      "status": "PASS",
+      "summaryRef": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_11/summary.json",
+      "ticketId": "P1_WS01"
+    },
+    "WS02": {
+      "runId": "TZ_P1_WS02_MODE_MATRIX_COMPLETENESS_001",
+      "status": "PASS",
+      "summaryRef": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_12/summary.json",
+      "ticketId": "P1_WS02"
+    },
+    "WS03": {
+      "runId": "TZ_P1_WS03_CLAIM_CATALOG_REGISTRY_ALIGNMENT_001",
+      "status": "PASS",
+      "summaryRef": "docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_13/summary.json",
+      "ticketId": "P1_WS03"
+    }
+  }
+}

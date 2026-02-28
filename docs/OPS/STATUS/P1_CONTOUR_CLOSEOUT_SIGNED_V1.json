@@ -1,0 +1,22 @@
+{
+  "artifactId": "P1_CONTOUR_CLOSEOUT_SIGNED_V1",
+  "constraints": {
+    "activeCanonLockMaintained": true,
+    "blockingSurfaceExpansion": false,
+    "newBlockingTokensIntroduced": false
+  },
+  "evidencePacketRef": "docs/OPS/EVIDENCE/P1_CONTOUR/p1-contour-freeze-packet-v1.json",
+  "evidencePacketSha256": "sha256:fd86da3709b2f5a2e4539762fe9b201f509541d6621a3cf8c5dae1bd3bca1f66",
+  "gate": {
+    "isOpen": true,
+    "name": "GO_IF_P1_CLOSEOUT_ARTIFACT_SIGNED",
+    "releaseDecisionClassChanged": false
+  },
+  "schemaVersion": 1,
+  "signatureType": "SHA256_EVIDENCE_LOCK",
+  "signedAtUtc": "2026-02-28T13:35:12Z",
+  "signedBy": "KIRILL_PLUS_CODEX",
+  "signingMode": "LOCAL_OFFLINE",
+  "status": "SIGNED",
+  "taskId": "TZ_P1_CONTOUR_CLOSEOUT_001"
+}
