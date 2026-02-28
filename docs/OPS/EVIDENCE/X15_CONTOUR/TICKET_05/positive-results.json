@@ -1,0 +1,27 @@
+{
+  "details": {
+    "baseline": {
+      "projectionHash": "53c8a61dd2276808c7c6c445131bdd0cf0635b98eace1b3cf96ef6f5ae2020e1",
+      "rowCount": 63
+    },
+    "determinism": {
+      "hashes": [
+        "53c8a61dd2276808c7c6c445131bdd0cf0635b98eace1b3cf96ef6f5ae2020e1",
+        "53c8a61dd2276808c7c6c445131bdd0cf0635b98eace1b3cf96ef6f5ae2020e1",
+        "53c8a61dd2276808c7c6c445131bdd0cf0635b98eace1b3cf96ef6f5ae2020e1"
+      ],
+      "ok": true
+    },
+    "requiredCoreNotVisible": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "VISIBILITY_MATRIX_DETERMINISTIC_ACROSS_CHANNELS",
+    "NEXT_TZ_POSITIVE_02": "MODE_PROFILE_POLICY_COMPLIANCE_CONFIRMED",
+    "NEXT_TZ_POSITIVE_03": "REQUIRED_CORE_COMMANDS_GUARANTEED_VISIBLE"
+  }
+}
