@@ -1,0 +1,68 @@
+{
+  "tzId": "TZ_P0_WS01_ATTESTATION_ANTI_FORGERY_001",
+  "generatedAtUtc": "2026-02-28T12:00:06.836Z",
+  "failSignalTarget": "E_ATTESTATION_SIGNATURE_INVALID",
+  "scenarios": [
+    {
+      "id": "POSITIVE_TEST_01_LOCAL_TRUSTED_ARTIFACT_SIGNATURE_PASS",
+      "expected": "PASS_WITH_VALID_VERIFY_CHAIN",
+      "expectationMet": true,
+      "result": {
+        "ok": true,
+        "signatureToken": 1,
+        "verifyToken": 1,
+        "signatureCode": "",
+        "verifyCode": "",
+        "signatureFailReason": "",
+        "verifyFailReason": ""
+      }
+    },
+    {
+      "id": "NEGATIVE_TEST_01_SYNTHETIC_PAYLOAD_REJECT",
+      "expected": "FAIL_WITH_E_ATTESTATION_SIGNATURE_INVALID",
+      "expectationMet": true,
+      "result": {
+        "ok": false,
+        "signatureToken": 0,
+        "signatureCode": "E_ATTESTATION_SIGNATURE_INVALID",
+        "signatureFailReason": "SYNTHETIC_PAYLOAD_REJECT"
+      }
+    },
+    {
+      "id": "NEGATIVE_TEST_02_SELF_CONTEXT_REJECT",
+      "expected": "FAIL_WITH_E_ATTESTATION_SIGNATURE_INVALID",
+      "expectationMet": true,
+      "result": {
+        "ok": false,
+        "signatureToken": 0,
+        "signatureCode": "E_ATTESTATION_SIGNATURE_INVALID",
+        "signatureFailReason": "SELF_CONTEXT_REJECT"
+      }
+    },
+    {
+      "id": "NEGATIVE_TEST_03_MISSING_TRUST_ROOT_REJECT",
+      "expected": "FAIL_WITH_E_ATTESTATION_SIGNATURE_INVALID",
+      "expectationMet": true,
+      "result": {
+        "ok": false,
+        "signatureToken": 0,
+        "signatureCode": "E_ATTESTATION_SIGNATURE_INVALID",
+        "signatureFailReason": "MISSING_TRUST_ROOT_REJECT"
+      }
+    },
+    {
+      "id": "NEGATIVE_TEST_04_WRONG_SIGNER_REJECT",
+      "expected": "FAIL_WITH_E_ATTESTATION_SIGNATURE_INVALID",
+      "expectationMet": true,
+      "result": {
+        "ok": false,
+        "signatureToken": 0,
+        "verifyToken": 0,
+        "signatureCode": "E_ATTESTATION_SIGNATURE_INVALID",
+        "verifyCode": "E_VERIFY_ATTESTATION_INVALID",
+        "signatureFailReason": "WRONG_SIGNER_REJECT",
+        "verifyFailReason": "WRONG_SIGNER_REJECT"
+      }
+    }
+  ]
+}

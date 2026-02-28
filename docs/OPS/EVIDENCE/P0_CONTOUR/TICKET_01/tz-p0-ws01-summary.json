@@ -1,0 +1,22 @@
+{
+  "tzId": "TZ_P0_WS01_ATTESTATION_ANTI_FORGERY_001",
+  "generatedAtUtc": "2026-02-28T12:00:06.850Z",
+  "activeCanonVersion": "v3.13a-final",
+  "activeCanonLockOk": true,
+  "stageActivationGuardAssumed": true,
+  "blockingSurfaceExpansion": false,
+  "failSignalTarget": "E_ATTESTATION_SIGNATURE_INVALID",
+  "positiveScenarioPass": true,
+  "negativeScenarioPassCount": 4,
+  "negativeScenarioTotal": 4,
+  "allNegativeFailWithTargetSignal": true,
+  "repeatabilityRuns": 3,
+  "repeatabilityOk": true,
+  "bindingCompletenessOk": true,
+  "advisoryAsBlockingDriftObserved": false,
+  "falseGreenRegisterZeroOpenForScope": true,
+  "offlineChainOfTrustLocallyVerifiable": true,
+  "releaseDecisionClassUnchanged": true,
+  "evidenceMinimumMet": true,
+  "scenarioHash": "824777d62a03ab3c70ee988551f023013bb378bcd2144e4b8aa70948e8aa43c8"
+}
