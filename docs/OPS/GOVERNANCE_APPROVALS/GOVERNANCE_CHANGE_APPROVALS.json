@@ -16,6 +16,13 @@
       "rationale": "Approve safe-automerge profile push-step hook metadata for workflow-scope autofix."
     },
     {
+      "filePath": "docs/OPS/BASELINE/OPS_GOVERNANCE_BASELINE_v1.0.json",
+      "sha256": "218dc2f157f0307d4fe58e61bfac12580e96820efaa3cafdf7b805fd557ba111",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
       "sha256": "e09a162b1cebcb26c62c578360f8b1ad22301225a564c9477d12d7ecff2b1deb",
       "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
@@ -730,32 +737,11 @@
       "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
     },
     {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/summary.json",
-      "sha256": "7a43116ac1c48e1d80b09d1f0de8db2dd913a55c9444d0b046cedcf1916724f2",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
-      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/ticket-meta.json",
-      "sha256": "a324315439629dae1d1f96d1c2971926401e19f16ac2877de0ce9465cd6c19bc",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T00:45:00.000Z",
-      "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
-    },
-    {
       "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/typing-loop-nonblocking-proof.json",
       "sha256": "33f29a6bccb178c511cf76d49b77248f28d5c80e877305bccf1ad13d9f438259",
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-27T00:45:00.000Z",
       "rationale": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/advisory-blocking-drift-cases.json",
-      "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
     },
     {
       "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/failsignal-semantics-before-after.json",
@@ -767,20 +753,6 @@
     {
       "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/semantic-collision-negative-cases.json",
       "sha256": "78198a6c2f7854383f6668d5c0debb6be1759bdd47615ab9a9f31aebcc8c7178",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/summary.json",
-      "sha256": "7ec430d7311d18005d9cc5374e8b6176de38feef794fbb8f2fb31b47faa781c1",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-27T01:00:00.000Z",
-      "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/ticket-meta.json",
-      "sha256": "c5ef2dd6529c7ea63d088a2ffcdda37e0186179585fca3585579241a4d727c86",
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-27T01:00:00.000Z",
       "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
@@ -821,20 +793,6 @@
       "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
     },
     {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_03/summary.json",
-      "sha256": "348a7dd2e60d6dfe368b92a5e19285ed289a9754d2e9cadb1f7d89f528cf8130",
-      "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
-      "approvedAtUtc": "2026-02-27T01:15:00.000Z",
-      "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_03/ticket-meta.json",
-      "sha256": "5f3c7fa29a3d765a397853dff108f86c58c70404f480da30416d68e18f040c88",
-      "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
-      "approvedAtUtc": "2026-02-27T01:15:00.000Z",
-      "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
-    },
-    {
       "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_04/advisory-blocking-drift-cases.json",
       "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
       "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
@@ -863,20 +821,6 @@
       "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
     },
     {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_04/summary.json",
-      "sha256": "1f27cf2acdccdd8795e2cab59a5c033053ee587874b0a3b7026db77850275060",
-      "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
-      "approvedAtUtc": "2026-02-27T01:30:00.000Z",
-      "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_04/ticket-meta.json",
-      "sha256": "af5a46a7242526bd536705687694a225452ba1ad7d86cf67fb61ed38e1feb6a3",
-      "approvedBy": "ticket:TZ-P2-04-HOTPATH-ACCEPTANCE-GUARD-003",
-      "approvedAtUtc": "2026-02-27T01:30:00.000Z",
-      "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
-    },
-    {
       "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_05/advisory-blocking-drift-cases.json",
       "sha256": "9fb68a29274c041253fda457df2b7ef4be06f63db1cf9d1967172db79b27ed90",
       "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
@@ -900,20 +844,6 @@
     {
       "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_05/platform-parity-matrix.json",
       "sha256": "1abbae1009db93068985218cd92268b267cc3fa0cfc7696bd9a97c2ecceeedfb",
-      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
-      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
-      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_05/summary.json",
-      "sha256": "869a9d436104238ccfde63f4b94cafcf494379e988e4f6e6ae5508728eb12e30",
-      "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
-      "approvedAtUtc": "2026-02-27T01:45:00.000Z",
-      "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_05/ticket-meta.json",
-      "sha256": "e65c65a0810a99d02693b5ece21cdadfe2aecb7b83965e92b8b1cf8d922104dd",
       "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
       "approvedAtUtc": "2026-02-27T01:45:00.000Z",
       "rationale": "Approve P2-05 full cross-platform parity expansion with deterministic fixtures, zero-gap release-critical parity, and drift-zero safeguards."
@@ -949,20 +879,6 @@
     {
       "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_06/lock-acquire-release-cases.json",
       "sha256": "40369ed1156a2e29f6dcd22095c9c1f4b242fa7eadaa7695bb99fbe28ea5dbc7",
-      "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
-      "approvedAtUtc": "2026-02-27T02:00:00.000Z",
-      "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_06/summary.json",
-      "sha256": "5b705449b8e8bf2edde2f11bb58c44c88453c70cba10d4e6d4ffbbf99e28b9df",
-      "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
-      "approvedAtUtc": "2026-02-27T02:00:00.000Z",
-      "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
-    },
-    {
-      "filePath": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_06/ticket-meta.json",
-      "sha256": "69d06b1e7fd270f2a93118efa7e5d551d9e0e6ff2f39e226713d182b180f3493",
       "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
       "approvedAtUtc": "2026-02-27T02:00:00.000Z",
       "rationale": "Approve P2-06 concurrency locking for shared governance artifacts with lock acquire-release, compare-and-swap conflict checks, serialized queue enforcement, and interleaving protection."
@@ -1101,6 +1017,356 @@
       "rationale": "Post Sector 01: commit and approve promotion evidence pack for release-candidate verify (restore active canon promotion check)"
     },
     {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_01/final-dod-acceptance-summary.json",
+      "sha256": "83d9a35cd2a1ac941f3f1c02d5f8d60f9d01cc596591c4140e1ccd823e1e429c",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_01/negative-results.json",
+      "sha256": "63be0c7cc3d5ca0c3a123afe5ae8d935abd0d7ce26265e3b6ee8a5da5c9ceaed",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_01/positive-results.json",
+      "sha256": "85466e43dfd3eb8b6ed8dc064349e0b3821775481300e58c31dc7258b028a308",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_01/post-merge-stability-summary.json",
+      "sha256": "a4a7e364d91e55705cbcfdbe184e23770de12e1e25639d7c366dc1a6fb20512b",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_01/repeatability-summary.json",
+      "sha256": "8b162e8e3deb0446964a1ce1a73a74ec9ba9f1da1c18eca09bb49c220e6c0025",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_01/summary.json",
+      "sha256": "40d8c23303e0626e3ef1b8312c447c676cec6cfabb747f3b4c822ff2dac970c8",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_01/ticket-meta.json",
+      "sha256": "b49e73a5542c1ef565d94632aac664e6fdd63b0b25b15aba36b6a31a4cf104a0",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_99/closeout-summary.json",
+      "sha256": "296d20e84e142577e0924d2c2947373020fe78629fe47c6eef523624514c33cd",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_99/final-dod-acceptance-summary.json",
+      "sha256": "7ea64e3bbad9c953e88f1b0ed1245e3169f47183dd36a9ceb4036bf9b7221b51",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_99/negative-results.json",
+      "sha256": "a3b80bdd8ed69fdaa5a567c1b64a43738bff43900a9668c34efd7dab1c4d4c21",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_99/positive-results.json",
+      "sha256": "c62b35f647c10874cb6944e3bb5a5a282f8bd1c9fd887933925ebdf086d48268",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_99/repeatability-summary.json",
+      "sha256": "61e127743dee09b24785b2d87acddd688df845623d4a22983f54bd08865f6c5d",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_99/ticket-meta.json",
+      "sha256": "558df8bc218f8ccdb7e27e07876305414fa48ba7a7416adf2c9241e81d759dab",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X24_CONTOUR/x24-contour-freeze-packet-v1.json",
+      "sha256": "2d5582ce27f3d0b96754ac390c1a0a345350404ebd5c9e0fbf5b44a33117fb90",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_00/X25_WS00_ENTRY_LOCK_STATUS_V1.json",
+      "sha256": "88268614d3ba7e6b52cf88f59cae4bd493678141fb18c43d7b58aaeb6925b50b",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_01/final-dod-acceptance-summary.json",
+      "sha256": "11c0898097b5c1214431ac07509a9c1426903a37ae21b8ce19930ec82650b0d9",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_01/negative-results.json",
+      "sha256": "6e20f3990aa3bde375214575e4cd58f8bd53ac2f9f3f947aab819531125d448b",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_01/positive-results.json",
+      "sha256": "11b61ca9ffb37a289bb981543d96bbe99e5fc210c0129f2a487009788e2e3488",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_01/required-set-rebind-summary.json",
+      "sha256": "e1d2ce9cf20ff770a85e5cd90b6cf92784498c824ed79aa5deb86e056d1e361f",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_01/summary.json",
+      "sha256": "105eb652b00675e4aae44e0342976de079bd0b32b855c6f2da2d01c43d8a7220",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_01/ticket-meta.json",
+      "sha256": "28dc0fdb1c5479e88a63f44656cca53df89cabbeca1f890a7fd0c5f79c8af5e3",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_01/X25_P0_WS01_REQUIRED_SET_REBIND_STATUS_V1.json",
+      "sha256": "105eb652b00675e4aae44e0342976de079bd0b32b855c6f2da2d01c43d8a7220",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_02/failsignal-mode-alignment-summary.json",
+      "sha256": "4ba78e01e1f2862160a24074cab919165cc031b13f3178667db0e700f7bc8d6e",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_02/final-dod-acceptance-summary.json",
+      "sha256": "bad765cdc143165f0ebd2a820be1f55e6c9fa8acb48c8a7d63ca6e336732b224",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_02/negative-results.json",
+      "sha256": "6e20f3990aa3bde375214575e4cd58f8bd53ac2f9f3f947aab819531125d448b",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_02/positive-results.json",
+      "sha256": "11b61ca9ffb37a289bb981543d96bbe99e5fc210c0129f2a487009788e2e3488",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_02/summary.json",
+      "sha256": "df3a49c12c2dcfdf0da5000b4c2b8edf60394aa427957f2f9e7656d00491a0b5",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_02/ticket-meta.json",
+      "sha256": "efc4c7d06201a96b80220368f2063f5efb3109c10f7d1064b4cc70476d9dba0f",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_02/X25_P0_WS02_FAILSIGNAL_MODE_ALIGNMENT_STATUS_V1.json",
+      "sha256": "df3a49c12c2dcfdf0da5000b4c2b8edf60394aa427957f2f9e7656d00491a0b5",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_03/binding-completeness-summary.json",
+      "sha256": "8307f1494905bd8dde32fb5d802abb8d2ca83ba5fdf5e6e1ce7433dfcd902b78",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_03/final-dod-acceptance-summary.json",
+      "sha256": "00abedfd4a85fff8bddf82622ba9f359783da7fa047dda8385ccf30107baedab",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_03/negative-results.json",
+      "sha256": "6e20f3990aa3bde375214575e4cd58f8bd53ac2f9f3f947aab819531125d448b",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_03/positive-results.json",
+      "sha256": "11b61ca9ffb37a289bb981543d96bbe99e5fc210c0129f2a487009788e2e3488",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_03/summary.json",
+      "sha256": "03d31fadc9f62187081a8b13f1b5106bc146953974e7e332a493acc1f17a4c95",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_03/ticket-meta.json",
+      "sha256": "df32e9d5ede29f63a223909a40a5e01c1e0e5b97e9e65ed13a689e0dd06a6408",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_03/X25_P0_WS03_BLOCKING_BINDING_COMPLETENESS_STATUS_V1.json",
+      "sha256": "03d31fadc9f62187081a8b13f1b5106bc146953974e7e332a493acc1f17a4c95",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_04/final-dod-acceptance-summary.json",
+      "sha256": "4c2f754c931a5f5856bbafccbf1c2bce04442fa4a2dfe54bfcf361edb9553668",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_04/negative-results.json",
+      "sha256": "6e20f3990aa3bde375214575e4cd58f8bd53ac2f9f3f947aab819531125d448b",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_04/offline-isolation-summary.json",
+      "sha256": "8e255c9b4f91d6ec20e52d38289316597608a00e244b086afa052fd7f54d5961",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_04/positive-results.json",
+      "sha256": "11b61ca9ffb37a289bb981543d96bbe99e5fc210c0129f2a487009788e2e3488",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_04/summary.json",
+      "sha256": "caada573402f3307ea073145879d5aa637d5bf15d293a065267108d0cb6b985b",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_04/ticket-meta.json",
+      "sha256": "63800c478831e9a8c9afc456e2ce59fce32f61e1791cf377c42b2dee6a098f2a",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_04/X25_P0_WS04_OFFLINE_RELEASE_INTEGRITY_ISOLATION_STATUS_V1.json",
+      "sha256": "caada573402f3307ea073145879d5aa637d5bf15d293a065267108d0cb6b985b",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_05/final-dod-acceptance-summary.json",
+      "sha256": "5bc02577defcadd34b89139c8ccb49d24028e02bde2f7a1c4af897926b287134",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:52:57.630Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_05/negative-results.json",
+      "sha256": "6e20f3990aa3bde375214575e4cd58f8bd53ac2f9f3f947aab819531125d448b",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:52:57.630Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_05/positive-results.json",
+      "sha256": "11b61ca9ffb37a289bb981543d96bbe99e5fc210c0129f2a487009788e2e3488",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:52:57.630Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_05/strict-cluster-recovery-summary.json",
+      "sha256": "9d1df8c560180e71d9d3c8430d71b7cdd8825a3828320b6cd187547173a8c3f9",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:52:57.630Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_05/summary.json",
+      "sha256": "e0f7c9409a2372455c91b43bf02400aca39dc52cc0f770ba4daede1d17197110",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:52:57.630Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_05/ticket-meta.json",
+      "sha256": "3b00efb42b3656d84740e82bc0bf2de282501eae98c014ab551751f3fa06c328",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:52:57.630Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_05/X25_P0_WS05_STRICT_CLUSTER_RECOVERY_STATUS_V1.json",
+      "sha256": "f3c3d2008cbf687a1716a18172a47862cb9c36b715f69c20ac38c9133317d306",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:52:57.630Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
       "filePath": "docs/OPS/EXECUTION/AUTOCYCLE_CANON_v1.json",
       "sha256": "0f1f01a0c5a9dd9e314b436597b810fb99b863212767ae05f008812cd45fe75c",
       "approvedBy": "ticket:TZ-AUTOCYCLE-PRODUCT-PIPELINE-01",
@@ -1108,11 +1374,32 @@
       "rationale": "Add local product pipeline inputs (plan digest + node version) to autocycle determinism canon."
     },
     {
+      "filePath": "docs/OPS/EXECUTION/EXECUTION_PROFILE.example.json",
+      "sha256": "c6c2b2a0002860327dccf017040f2fa3e895066eed2a31c0d1fac235bce35c35",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EXECUTION/EXECUTION_STATUS_RECORD_V1.json",
+      "sha256": "822c7c8af3969850e6793a2fcd1bc2e9d873bc16b8596507bcd56372bfce1068",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json",
+      "sha256": "fc82503fc1dcb65c4928d2a86ce901a2cd242f675328b22d662a05ff06241dbb",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
       "filePath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
-      "sha256": "4c5a3a9479a8f8aff6d436844dc9e7f31813fcb58815dd0fd94393497ca6b866",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+      "sha256": "1e745cee9a3c446483ad35b7e590198bdfd71fb3713f1180e562d8eb2b1d6fda",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
     },
     {
       "filePath": "docs/OPS/SECURITY/NPM_AUDIT_HIGH_CLOSURE_SECTOR01_D.json",
@@ -1122,18 +1409,11 @@
       "rationale": "Record high-severity npm audit closure SSOT for Sector-01 Ticket D using reachability classification and exception metadata."
     },
     {
-      "filePath": "docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_HARDENING_v3.json",
-      "sha256": "093e89e8d4e0d5875b4d0528cfcb575eb335e92fd936082c7fc43a7a1560b75e",
-      "approvedBy": "ticket:TZ-P0-04-ATTESTATION-TRUST-LOCK-HARDENING-003",
-      "approvedAtUtc": "2026-02-26T18:45:41.000Z",
-      "rationale": "Approve P0-04 attestation trust-lock hardening scope with external artifact requirement and release/promotion trust failure enforcement."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/BINDING_SCHEMA_V1.json",
-      "sha256": "4281b88c2dfe35bc6ae23f807507b4c9c4a71bdc0877c07518848377e536a158",
-      "approvedBy": "ticket:TZ_EXEC_PKG_02_A02_COMMIT_GATE_AND_PR_CREATE",
-      "approvedAtUtc": "2026-02-28T00:15:00Z",
-      "rationale": "EXECUTION_PACKAGE_02_COMMIT_GATE_REBIND"
+      "filePath": "docs/OPS/STATUS/AUTOGENERATED_APPROVAL_PIPELINE_V1_SPEC.json",
+      "sha256": "f453b924e7a5efca7626dcd6c905ef06d2e733cd6dd4216a2b4a6d1c70b84803",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
     },
     {
       "filePath": "docs/OPS/STATUS/BLOCKING_ENTITY_CONTRACT_V1.json",
@@ -1169,6 +1449,27 @@
       "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
       "approvedAtUtc": "2026-02-26T18:56:31.056Z",
       "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/CLOSEOUT_DIRTY_BASELINE_V1.json",
+      "sha256": "d4c66ee39f2f51242cc0601a8d9df5f5f4226db146dee51a40792b5ee44f3a03",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/COMMAND_ID_COMPAT_MAP_V1.json",
+      "sha256": "c7c2334e1d254cc13060dc118f9a4c664e3a9791762e57889231ed749433859b",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/COMMAND_ID_STANDARD_V1.json",
+      "sha256": "79375f5ba0c9ec0872f27425d45bd92d5844a10243d6a8e893114cc865c8e6f3",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_SURFACE_CALLER_TRUST_PHASE_2_v3.json",
@@ -1220,6 +1521,13 @@
       "rationale": "EXECUTION_PACKAGE_02_COMMIT_GATE_REBIND"
     },
     {
+      "filePath": "docs/OPS/STATUS/DETERMINISTIC_CORE_CHECKSET_V1.json",
+      "sha256": "38f7913c6f056655ac1f1d2db2c00a2d7b7b9a862256e5fd07032f1c90674139",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
       "filePath": "docs/OPS/STATUS/DOMAIN_NEGATIVE_TEST_ENFORCEMENT_FULL_v3.json",
       "sha256": "4362d9c09b052d90ba0e1157967628d21a55b6c00384c891199ef21867abbd89",
       "approvedBy": "DOCS_OPERATOR",
@@ -1234,11 +1542,25 @@
       "rationale": "Approve P0-03 critical user path hard-min scope with machine-bound pass proof and release-missing-step blocking negative."
     },
     {
+      "filePath": "docs/OPS/STATUS/EXECUTION_CYCLE_CLOSE_REPORT_V1.json",
+      "sha256": "d43458c7f9761f69be6648a69e38b259e147a606a354d3284ff86c06d9302e00",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
       "filePath": "docs/OPS/STATUS/EXECUTION_GLOSSARY_V1.json",
       "sha256": "7dd0822218edeab911f959770d920b852848ac91c5d2af5378a9cd7d51f8fbd4",
       "approvedBy": "ticket:TZ_EXEC_PKG_02_A02_COMMIT_GATE_AND_PR_CREATE",
       "approvedAtUtc": "2026-02-28T00:15:00Z",
       "rationale": "EXECUTION_PACKAGE_02_COMMIT_GATE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/EXECUTION_HANDOFF_V1.json",
+      "sha256": "aca3fc3966147e078ed90a173f542d57d7e4153967bb0485f2045a2b23dad3a1",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
     },
     {
       "filePath": "docs/OPS/STATUS/EXECUTION_PACKAGE_01_ALLOWLIST_V1.json",
@@ -1297,6 +1619,13 @@
       "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
     },
     {
+      "filePath": "docs/OPS/STATUS/FORMAL_TAILS_PARITY_REPORT_V1.json",
+      "sha256": "4ecbbec16ee5e918cc275a498858a028ee72e70c330e07882a49b27a2473d7e8",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
       "filePath": "docs/OPS/STATUS/FREEZE_ESCAPE_POLICY_V1.json",
       "sha256": "a4c2b3f94d120565bbb5d5499a9d4aabbd88cee9b19bdba0efb26131bf68e40e",
       "approvedBy": "ticket:TZ_EXEC_PKG_02_A02_COMMIT_GATE_AND_PR_CREATE",
@@ -1332,6 +1661,13 @@
       "rationale": "Approve P2-04 hotpath acceptance guard thresholds, SSOT lock proof, and nonblocking typing safeguards."
     },
     {
+      "filePath": "docs/OPS/STATUS/KILL_SWITCH_EXEMPTIONS_V1.json",
+      "sha256": "f4b486a3df2dc87fdd840b62027bd1545d3ab170be0fa5bafddb58e4608328ef",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
       "filePath": "docs/OPS/STATUS/LAW_PATH_CANON.json",
       "sha256": "3f3051cf0ab94e591c737f444ffdb80aa59f7a7d4df45b3a0472909842b0a08c",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -1353,11 +1689,46 @@
       "rationale": "EXECUTION_PACKAGE_02_COMMIT_GATE_REBIND"
     },
     {
+      "filePath": "docs/OPS/STATUS/MC_BLOCKING_POLICY_SINGLE_SOURCE_REPORT_V1.json",
+      "sha256": "d97f29c0527d88793e2b3fb94d68638c4450f19df58940fa29fbadbcadbb8924",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MC_PHASE3_LOCK_GUARD_REPORT_V1.json",
+      "sha256": "acb546e4b0a7e72861a3a66bf00d3ec42ae6d24a7f36d85045e8895a3b495063",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MC_REGISTRY_COMPLETENESS_REPORT_V1.json",
+      "sha256": "44a9f3bdce8016a091242b4748bc0a5fba656088abdd554dcddbc9704e1a1ace",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MC_V1_ARTIFACT_BINDING_REPORT_V1.json",
+      "sha256": "22a5e86227927e5e56990f926435e584bf8dc51e635647b2796edf8ae24164f4",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
       "filePath": "docs/OPS/STATUS/MODE_MATRIX_SINGLE_AUTHORITY_v3.json",
       "sha256": "4a5f0f3bf22b16abaa7a4c650cf5287acf83cb4a29d2e12aa7f0c445cf7e230b",
       "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
       "approvedAtUtc": "2026-02-26T18:05:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/NEXT_CONTOUR_OPENING_RECORD_V9.json",
+      "sha256": "32db41ff578d4f04852e89e08d179fd3c4427ca4cff4b7227876d5541f8b6722",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
     },
     {
       "filePath": "docs/OPS/STATUS/NEXT_SECTOR.json",
@@ -1374,8 +1745,22 @@
       "rationale": "Sector 01 Ticket F: reconcile P1 queue status + sector tracker (no semantic change)"
     },
     {
+      "filePath": "docs/OPS/STATUS/PACKAGE_03_DECISION_RECORD_V1.json",
+      "sha256": "2d8be9152121b1a1df51bf24dc755fb2da5cac45adb9feb22624bec0485bc47c",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
       "filePath": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
       "sha256": "7669a336d87500aec93e05c3fb248e834ae6b19c9f2380988850a0cd717a7b0c",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_GATE_CLOSURE_V1.json",
+      "sha256": "d570b998fec0909b6d17fc93fc6d628a16dea768b62216f6b28da20e679eceb9",
       "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
       "approvedAtUtc": "2026-02-28T08:20:46.000Z",
       "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
@@ -1390,6 +1775,27 @@
     {
       "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_02_REPORT_V1.json",
       "sha256": "c35e9d9029c550590e96ccf4d99ce1b834607472f8969fa6dff14dbd698378be",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_03_REPORT_V1.json",
+      "sha256": "14628434ded2de1bfd3d1df04dbef41980dcddae56d4ac30a346583ee3a2090f",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_04_REPORT_V1.json",
+      "sha256": "ecbad68efaff51ea87238da4904f656435e3b54a8dcff7c2ae3d3b2bb692be3f",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_05_REPORT_V1.json",
+      "sha256": "57d226d386b7b21d91e0b44406ffb941c913df5e43adf1a2833917759a0c51e7",
       "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
       "approvedAtUtc": "2026-02-28T08:20:46.000Z",
       "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
@@ -1414,6 +1820,13 @@
       "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
       "approvedAtUtc": "2026-02-26T18:05:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/RELEASE_CRITICAL_IMPACT_MATRIX_V1.json",
+      "sha256": "a202bbd884156e5ed6333cc14b9a2536c4c153314b95b1c68b8af3e4bdd07be0",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_GATE_EXIT_NONZERO_v3.json",
@@ -1486,11 +1899,88 @@
       "rationale": "EXECUTION_PACKAGE_01_SCOPE_LOCK_CLOSEOUT"
     },
     {
+      "filePath": "docs/OPS/STATUS/TAILS_GIT_CLOSE_ALLOWLIST_V1.json",
+      "sha256": "4f3cf87a853bc397d4b86ffd99227a4a9c661261cd86d84b99e82434c0aba888",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/TAILS_GIT_DIRTY_BASELINE_V1.json",
+      "sha256": "2e84d262f405240d62dab7f3a98e76efaa241efd3719e23b6b66e5c87f3012c3",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/THIRD_PARTY_NOTICES_READINESS.json",
+      "sha256": "64f82cb932f43f12f8e92c088a86b1f15c1af144d52c79f54b6beadaab63e2d9",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
       "filePath": "docs/OPS/STATUS/THRESHOLD_SYSTEM_NORMALIZATION_V1.json",
       "sha256": "ae3a958dd6ef8af50fd0c48b883cbc0f359a9568a28e0d2b8a43b06c9ffc0da5",
       "approvedBy": "ticket:TZ_EXEC_PKG_02_A02_COMMIT_GATE_AND_PR_CREATE",
       "approvedAtUtc": "2026-02-28T00:15:00Z",
       "rationale": "EXECUTION_PACKAGE_02_COMMIT_GATE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/X24_CONTOUR_CLOSE_SUMMARY_V1.json",
+      "sha256": "f820025fef368631e747dcc1ade7dfd21ff039acd7d99ecb1fec966cfe68d57b",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/X24_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+      "sha256": "1be587b47e3ae9753665b74901accabf02f6a0d426ac4d2f9a56229112cc4178",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/X24_POST_MERGE_STABILITY_PACKET_v1.json",
+      "sha256": "e5ad6ca1dcdf83e25c8e1f9e00e8b7f940c6f249938677260030fe9a78a3e3d3",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/X24_WS01_POST_MERGE_BASELINE_RECONFIRM_v1.json",
+      "sha256": "b1d9019f452dab549b4eb5a171d35023fb967d123e885dc562e419775e007eca",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/X25_P0_WS02_FAILSIGNAL_MODE_ALIGNMENT_v1.json",
+      "sha256": "27857ffc11fd061bfe670a531a8028ec3734a511e79f72510764c96f28503a87",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/X25_P0_WS03_BLOCKING_BINDING_COMPLETENESS_v1.json",
+      "sha256": "28e0d203e13674689fc1985ec086ac1fbd0d0b4e98706f1eee7147d99755f68c",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/X25_P0_WS04_OFFLINE_RELEASE_INTEGRITY_ISOLATION_v1.json",
+      "sha256": "b1b43be57755e80e3a2089c94ab3593917e54a54b82fd9e516cd9a719caddc31",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/X25_P0_WS05_STRICT_CLUSTER_RECOVERY_v1.json",
+      "sha256": "f3c3d2008cbf687a1716a18172a47862cb9c36b715f69c20ac38c9133317d306",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:52:57.630Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
     },
     {
       "filePath": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.12.md",
@@ -1505,13 +1995,6 @@
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
       "approvedAtUtc": "2026-02-18T12:05:00.000Z",
       "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
-      "filePath": "docs/OPS/TOKENS/TOKEN_CATALOG.json",
-      "sha256": "b0d2e19677f50c094ba081af0461a7b94622b31b415561bf5f87293158e5fa08",
-      "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
-      "approvedAtUtc": "2026-02-26T18:05:00.000Z",
-      "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
     },
     {
       "filePath": "scripts/doctor.mjs",
@@ -1612,6 +2095,13 @@
       "rationale": "TZ-P2-02-FAILSIGNAL-SEMANTIC-DEDUP-003 approvals."
     },
     {
+      "filePath": "scripts/ops/freeze-rollups-state.mjs",
+      "sha256": "e4e3a09278795c97e15528059c0f863b7b1f3617e8ede415cf3f6876e822b7c0",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:49:20.337Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
       "filePath": "scripts/ops/full-cross-platform-parity-state.mjs",
       "sha256": "556a366466696bc39812ed731737c67264318a0a04fb476cc357c72ed45d6478",
       "approvedBy": "ticket:TZ-P2-05-FULL-CROSS-PLATFORM-PARITY-EXPANSION-003",
@@ -1624,6 +2114,13 @@
       "approvedBy": "ticket:TZ-P0-05-CIRCULAR-DEPENDENCY-BREAK-003",
       "approvedAtUtc": "2026-02-26T18:56:31.056Z",
       "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
+    },
+    {
+      "filePath": "scripts/ops/generate-required-token-set.mjs",
+      "sha256": "8e4d5eb8c727e8335288a4d9ea7a268dcf15335b03a3e8cf9107656af3847ad9",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
     },
     {
       "filePath": "scripts/ops/github-credential-autofix.mjs",
@@ -1892,6 +2389,20 @@
       "rationale": "Approve minimal CI/OPS injection hardening in x2 readiness gate command execution path."
     },
     {
+      "filePath": "scripts/ops/x24-ws01-post-merge-baseline-reconfirm-report.mjs",
+      "sha256": "0503ced57fba9c26c7b03cd2697463be5a2bd41910f998da2949fd38c06757e6",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "scripts/ops/x24-ws01-post-merge-baseline-reconfirm-state.mjs",
+      "sha256": "3999d0a48e3d8660e75980bffc40686d014308286c7c6e9adf99dd6ab1563ddf",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
       "filePath": "scripts/ops/xplat-contract-state.mjs",
       "sha256": "5547c522341d45c49de4a4dba82880398c9ad5dc58f9e2eeff91c6fb8a0835b2",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -2144,158 +2655,11 @@
       "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
     },
     {
-      "filePath": "test/contracts/transition-exit-failsignal-token-wiring.contract.test.js",
-      "sha256": "7ddaa4d4d63d67b5fe9b0efe61dc0db5a31507763d1e151734d1b32c396f7c6a",
-      "approvedBy": "@k.ponomarev.pro",
-      "approvedAtUtc": "2026-02-18T00:00:00.000Z",
-      "rationale": "Approve strict-governance change for TZ-24D2 contract wiring update."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_03_REPORT_V1.json",
-      "sha256": "14628434ded2de1bfd3d1df04dbef41980dcddae56d4ac30a346583ee3a2090f",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_04_REPORT_V1.json",
-      "sha256": "ecbad68efaff51ea87238da4904f656435e3b54a8dcff7c2ae3d3b2bb692be3f",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_05_REPORT_V1.json",
-      "sha256": "57d226d386b7b21d91e0b44406ffb941c913df5e43adf1a2833917759a0c51e7",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_GATE_CLOSURE_V1.json",
-      "sha256": "d570b998fec0909b6d17fc93fc6d628a16dea768b62216f6b28da20e679eceb9",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/EXECUTION_CYCLE_CLOSE_REPORT_V1.json",
-      "sha256": "d43458c7f9761f69be6648a69e38b259e147a606a354d3284ff86c06d9302e00",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/EXECUTION_HANDOFF_V1.json",
-      "sha256": "aca3fc3966147e078ed90a173f542d57d7e4153967bb0485f2045a2b23dad3a1",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/CLOSEOUT_DIRTY_BASELINE_V1.json",
-      "sha256": "d4c66ee39f2f51242cc0601a8d9df5f5f4226db146dee51a40792b5ee44f3a03",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/PACKAGE_03_DECISION_RECORD_V1.json",
-      "sha256": "2d8be9152121b1a1df51bf24dc755fb2da5cac45adb9feb22624bec0485bc47c",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/RELEASE_CRITICAL_IMPACT_MATRIX_V1.json",
-      "sha256": "a202bbd884156e5ed6333cc14b9a2536c4c153314b95b1c68b8af3e4bdd07be0",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/DETERMINISTIC_CORE_CHECKSET_V1.json",
-      "sha256": "38f7913c6f056655ac1f1d2db2c00a2d7b7b9a862256e5fd07032f1c90674139",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/KILL_SWITCH_EXEMPTIONS_V1.json",
-      "sha256": "f4b486a3df2dc87fdd840b62027bd1545d3ab170be0fa5bafddb58e4608328ef",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/AUTOGENERATED_APPROVAL_PIPELINE_V1_SPEC.json",
-      "sha256": "f453b924e7a5efca7626dcd6c905ef06d2e733cd6dd4216a2b4a6d1c70b84803",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/MC_BLOCKING_POLICY_SINGLE_SOURCE_REPORT_V1.json",
-      "sha256": "d97f29c0527d88793e2b3fb94d68638c4450f19df58940fa29fbadbcadbb8924",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/MC_V1_ARTIFACT_BINDING_REPORT_V1.json",
-      "sha256": "22a5e86227927e5e56990f926435e584bf8dc51e635647b2796edf8ae24164f4",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/MC_REGISTRY_COMPLETENESS_REPORT_V1.json",
-      "sha256": "44a9f3bdce8016a091242b4748bc0a5fba656088abdd554dcddbc9704e1a1ace",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/MC_PHASE3_LOCK_GUARD_REPORT_V1.json",
-      "sha256": "acb546e4b0a7e72861a3a66bf00d3ec42ae6d24a7f36d85045e8895a3b495063",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/COMMAND_ID_STANDARD_V1.json",
-      "sha256": "79375f5ba0c9ec0872f27425d45bd92d5844a10243d6a8e893114cc865c8e6f3",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/COMMAND_ID_COMPAT_MAP_V1.json",
-      "sha256": "c7c2334e1d254cc13060dc118f9a4c664e3a9791762e57889231ed749433859b",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/FORMAL_TAILS_PARITY_REPORT_V1.json",
-      "sha256": "4ecbbec16ee5e918cc275a498858a028ee72e70c330e07882a49b27a2473d7e8",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/TAILS_GIT_DIRTY_BASELINE_V1.json",
-      "sha256": "2e84d262f405240d62dab7f3a98e76efaa241efd3719e23b6b66e5c87f3012c3",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/TAILS_GIT_CLOSE_ALLOWLIST_V1.json",
-      "sha256": "4f3cf87a853bc397d4b86ffd99227a4a9c661261cd86d84b99e82434c0aba888",
-      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
-      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
-      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+      "filePath": "test/contracts/x24-ws01-post-merge-baseline-reconfirm.contract.test.js",
+      "sha256": "61a3bdd7d2481ca5275e959f265e8970f5788bac14b774552b266cc1257c49d4",
+      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
+      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
     }
   ]
 }
