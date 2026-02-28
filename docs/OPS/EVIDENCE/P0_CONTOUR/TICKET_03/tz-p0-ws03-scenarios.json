@@ -1,0 +1,49 @@
+{
+  "tzId": "TZ_P0_WS03_BLOCKING_BINDING_COMPLETENESS_001",
+  "generatedAtUtc": "2026-02-28T12:22:57.740Z",
+  "failSignalTarget": "E_BLOCKING_TOKEN_UNBOUND",
+  "negativeResults": [
+    {
+      "id": "MISSING_PROOFHOOK_FAILS_WITH_E_BLOCKING_TOKEN_UNBOUND",
+      "pass": true,
+      "observedFailSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "alignmentGapCount": 1,
+      "missingBindingFieldsCount": 1
+    },
+    {
+      "id": "MISSING_NEGATIVE_CONTRACT_FAILS_WITH_E_BLOCKING_TOKEN_UNBOUND",
+      "pass": true,
+      "observedFailSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "alignmentGapCount": 1,
+      "missingBindingFieldsCount": 1
+    },
+    {
+      "id": "MISSING_SOURCEBINDING_FAILS_WITH_E_BLOCKING_TOKEN_UNBOUND",
+      "pass": true,
+      "observedFailSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "alignmentGapCount": 1,
+      "missingBindingFieldsCount": 1
+    },
+    {
+      "id": "MISSING_ROLLBACK_FAILS_WITH_E_BLOCKING_TOKEN_UNBOUND",
+      "pass": true,
+      "observedFailSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "alignmentGapCount": 1,
+      "missingBindingFieldsCount": 1
+    },
+    {
+      "id": "TOKEN_CLAIM_REGISTRY_MISMATCH_FAILS_WITH_E_BLOCKING_TOKEN_UNBOUND",
+      "pass": true,
+      "observedFailSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "alignmentGapCount": 1,
+      "missingBindingFieldsCount": 0
+    }
+  ],
+  "positiveResults": {
+    "ALL_TARGET_BLOCKING_ENTITIES_HAVE_FULL_BINDING_FIELDS": true,
+    "REQUIRED_FIELDS_MISSING_TOTAL_EQUALS_ZERO": true,
+    "BINDING_SCHEMA_CONTRACTS_PASS": true,
+    "TARGET_BLOCKING_COUNT": 14,
+    "TARGET_BLOCKING_COVERED_COUNT": 14
+  }
+}
