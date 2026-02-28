@@ -1,0 +1,50 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "actionBindingMismatchCount": 0,
+    "advisoryToBlockingDriftCount": 0,
+    "capabilityBindingGapCount": 0,
+    "channelCount": 3,
+    "commandBindingGapCount": 0,
+    "entryCount": 20,
+    "menuHintMismatchCount": 0,
+    "modeCount": 3,
+    "modeProfileVisibilityGapCount": 0,
+    "paletteDiscoverabilityGapCount": 0,
+    "profileCount": 3,
+    "requiredGroupCount": 9,
+    "requiredShortcutCommandCount": 20,
+    "shortcutConflictCount": 0
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "generatedAtUtc": "2026-02-28T17:49:01.706Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "SYNC_SHORTCUTS_HINTS_AND_DISCOVERABILITY_WITH_MODE_PROFILE_GUARDS",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "X18_WS01_RUN_20260228",
+  "status": "PASS",
+  "ticketId": "TZ_X18_WS01_SHORTCUTS_AND_DISCOVERABILITY_001"
+}
