@@ -1,0 +1,11 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "commandBindingCount": 9,
+  "presetCount": 3,
+  "profileEnumCount": 3,
+  "repeatabilityStable3Runs": true,
+  "status": "PASS",
+  "token": "X15_WS03_PROFILE_PRESETS_OK",
+  "updatedAtUtc": "2026-02-28T15:57:29.252Z",
+  "version": 1
+}
