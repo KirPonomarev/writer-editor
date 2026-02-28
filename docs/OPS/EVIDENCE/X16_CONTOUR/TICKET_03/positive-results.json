@@ -1,0 +1,27 @@
+{
+  "details": {
+    "determinism": {
+      "hashes": [
+        "2d4c460e3494b4c907d82d3b994a6b54d43c028be7899e5d14f9d09d8dbb2fc1",
+        "2d4c460e3494b4c907d82d3b994a6b54d43c028be7899e5d14f9d09d8dbb2fc1",
+        "2d4c460e3494b4c907d82d3b994a6b54d43c028be7899e5d14f9d09d8dbb2fc1"
+      ],
+      "ok": true
+    },
+    "enabledWhenAllowed": {
+      "REVIEW_COMMENTS_LOCAL_FIRST": true,
+      "REVIEW_HISTORY_COMPARE_LOCAL_FIRST": true
+    },
+    "localFirstPolicyErrors": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "REVIEW_GROUP_COMMANDS_VISIBLE_WHEN_ALLOWED",
+    "NEXT_TZ_POSITIVE_02": "LOCAL_FIRST_REVIEW_POLICY_DETERMINISTIC",
+    "NEXT_TZ_POSITIVE_03": "COMMENTS_HISTORY_COMPARE_BINDINGS_CONSISTENT"
+  }
+}

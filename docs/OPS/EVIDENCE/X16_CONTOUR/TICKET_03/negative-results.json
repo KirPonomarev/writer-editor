@@ -1,0 +1,183 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "blockingClassificationLeaks": [],
+      "commandCapabilityMismatches": [],
+      "duplicateFeatureIds": [],
+      "enabledWhenAllowed": {
+        "REVIEW_COMMENTS_LOCAL_FIRST": false,
+        "REVIEW_HISTORY_COMPARE_LOCAL_FIRST": false
+      },
+      "historyCompareGuardErrors": [],
+      "localFirstPolicyErrors": [
+        "LOCAL_FIRST_POLICY_REQUIRED_TRUE_MISSING"
+      ],
+      "missingFeatures": [],
+      "missingMenuRows": [],
+      "missingReviewGroupBindings": [],
+      "missingStageGates": [],
+      "nonBoundBlockingTokens": [],
+      "ok": false,
+      "policyErrors": [],
+      "reviewModeErrors": [],
+      "stageDisabledStateMismatches": [],
+      "unexpectedFeatures": [],
+      "unknownScopeFlags": [],
+      "unknownStageIds": [],
+      "unknownVisibilityModes": [],
+      "unknownVisibilityProfiles": [],
+      "unknownVisibilityStates": [],
+      "visibilityConflicts": []
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "blockingClassificationLeaks": [],
+      "commandCapabilityMismatches": [],
+      "duplicateFeatureIds": [],
+      "enabledWhenAllowed": {
+        "REVIEW_COMMENTS_LOCAL_FIRST": true,
+        "REVIEW_HISTORY_COMPARE_LOCAL_FIRST": true
+      },
+      "historyCompareGuardErrors": [],
+      "localFirstPolicyErrors": [],
+      "missingFeatures": [],
+      "missingMenuRows": [],
+      "missingReviewGroupBindings": [],
+      "missingStageGates": [],
+      "nonBoundBlockingTokens": [],
+      "ok": false,
+      "policyErrors": [],
+      "reviewModeErrors": [
+        {
+          "featureId": "REVIEW_COMMENTS_LOCAL_FIRST",
+          "mode": "Write",
+          "reason": "REVIEW_GROUP_MUST_BE_REVIEW_MODE_ONLY"
+        }
+      ],
+      "stageDisabledStateMismatches": [],
+      "unexpectedFeatures": [],
+      "unknownScopeFlags": [],
+      "unknownStageIds": [],
+      "unknownVisibilityModes": [],
+      "unknownVisibilityProfiles": [],
+      "unknownVisibilityStates": [],
+      "visibilityConflicts": []
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "blockingClassificationLeaks": [],
+      "commandCapabilityMismatches": [
+        {
+          "bindingDocCapabilityId": "cap.project.save",
+          "commandId": "cmd.project.save",
+          "declaredCapabilityId": "cap.project.save.mismatch",
+          "featureId": "REVIEW_COMMENTS_LOCAL_FIRST",
+          "runtimeCapabilityId": "cap.project.save"
+        }
+      ],
+      "duplicateFeatureIds": [],
+      "enabledWhenAllowed": {
+        "REVIEW_COMMENTS_LOCAL_FIRST": false,
+        "REVIEW_HISTORY_COMPARE_LOCAL_FIRST": true
+      },
+      "historyCompareGuardErrors": [],
+      "localFirstPolicyErrors": [],
+      "missingFeatures": [],
+      "missingMenuRows": [],
+      "missingReviewGroupBindings": [],
+      "missingStageGates": [],
+      "nonBoundBlockingTokens": [],
+      "ok": false,
+      "policyErrors": [],
+      "reviewModeErrors": [],
+      "stageDisabledStateMismatches": [],
+      "unexpectedFeatures": [],
+      "unknownScopeFlags": [],
+      "unknownStageIds": [],
+      "unknownVisibilityModes": [],
+      "unknownVisibilityProfiles": [],
+      "unknownVisibilityStates": [],
+      "visibilityConflicts": []
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "blockingClassificationLeaks": [
+        {
+          "source": "root.nonBlockingClassification",
+          "value": "blocking"
+        }
+      ],
+      "commandCapabilityMismatches": [],
+      "duplicateFeatureIds": [],
+      "enabledWhenAllowed": {
+        "REVIEW_COMMENTS_LOCAL_FIRST": true,
+        "REVIEW_HISTORY_COMPARE_LOCAL_FIRST": true
+      },
+      "historyCompareGuardErrors": [],
+      "localFirstPolicyErrors": [],
+      "missingFeatures": [],
+      "missingMenuRows": [],
+      "missingReviewGroupBindings": [],
+      "missingStageGates": [],
+      "nonBoundBlockingTokens": [],
+      "ok": false,
+      "policyErrors": [
+        "NON_BLOCKING_CLASSIFICATION_MUST_BE_ADVISORY"
+      ],
+      "reviewModeErrors": [],
+      "stageDisabledStateMismatches": [],
+      "unexpectedFeatures": [],
+      "unknownScopeFlags": [],
+      "unknownStageIds": [],
+      "unknownVisibilityModes": [],
+      "unknownVisibilityProfiles": [],
+      "unknownVisibilityStates": [],
+      "visibilityConflicts": []
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "blockingClassificationLeaks": [],
+      "commandCapabilityMismatches": [],
+      "duplicateFeatureIds": [],
+      "enabledWhenAllowed": {
+        "REVIEW_COMMENTS_LOCAL_FIRST": true,
+        "REVIEW_HISTORY_COMPARE_LOCAL_FIRST": true
+      },
+      "historyCompareGuardErrors": [
+        {
+          "commandId": "cmd.project.exportMarkdownV1",
+          "expected": "HISTORY_COMPARE_GUARD_REQUIRED",
+          "featureId": "REVIEW_HISTORY_COMPARE_LOCAL_FIRST",
+          "historyCompareGuard": "NONE"
+        }
+      ],
+      "localFirstPolicyErrors": [],
+      "missingFeatures": [],
+      "missingMenuRows": [],
+      "missingReviewGroupBindings": [],
+      "missingStageGates": [],
+      "nonBoundBlockingTokens": [],
+      "ok": false,
+      "policyErrors": [],
+      "reviewModeErrors": [],
+      "stageDisabledStateMismatches": [],
+      "unexpectedFeatures": [],
+      "unknownScopeFlags": [],
+      "unknownStageIds": [],
+      "unknownVisibilityModes": [],
+      "unknownVisibilityProfiles": [],
+      "unknownVisibilityStates": [],
+      "visibilityConflicts": []
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "REVIEW_COMMAND_WITHOUT_LOCAL_FIRST_FLAG_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "REVIEW_GROUP_VISIBLE_IN_INVALID_MODE_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "REVIEW_GROUP_WITH_CAPABILITY_MISMATCH_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "REVIEW_GROUP_BOUND_AS_BLOCKING_WITHOUT_MACHINE_BINDING_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "HISTORY_COMPARE_WITHOUT_REQUIRED_GUARD_EXPECT_REJECT"
+  }
+}
