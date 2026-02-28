@@ -1,0 +1,34 @@
+{
+  "details": {
+    "DEDUP_ENGINE": {
+      "duplicateCheckCountAfter": 0,
+      "duplicateCheckCountBefore": 1,
+      "duplicateGateMergeOrDisableCheck": true,
+      "uniqueSignalRequiredCheck": true
+    },
+    "HASH_FRESHNESS_GUARD": {
+      "failReason": "",
+      "hashChanged": true,
+      "heavyRerunRequested": true,
+      "ok": true,
+      "shouldRejectHeavyRerun": false,
+      "ttlValid": true
+    },
+    "LANE_BUDGETS": {
+      "budgetThresholdProofOk": true,
+      "killSwitchOnNoSignalDeltaCheck": true,
+      "maxHeavyPassPerWindowCheck": true,
+      "noDailyStrictWithoutScopeDeltaCheck": true
+    }
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "DEDUP_ENGINE_REDUCES_REDUNDANT_CHECKS_WITHOUT_SIGNAL_LOSS",
+    "NEXT_TZ_POSITIVE_02": "HASH_FRESHNESS_GUARD_PREVENTS_UNNECESSARY_HEAVY_RERUNS",
+    "NEXT_TZ_POSITIVE_03": "FAST_AND_HEAVY_LANE_BUDGETS_PASS"
+  }
+}
