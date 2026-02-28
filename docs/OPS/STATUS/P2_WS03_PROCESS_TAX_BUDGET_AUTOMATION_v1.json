@@ -1,0 +1,12 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "duplicateCheckCountAfter": 0,
+  "duplicateCheckCountBefore": 1,
+  "maxHeavyPassPerWindow": 1,
+  "repeatabilityStable3Runs": true,
+  "runtimeBudgetMinutesMax": 30,
+  "status": "PASS",
+  "token": "P2_WS03_PROCESS_TAX_BUDGET_AUTOMATION_OK",
+  "updatedAtUtc": "2026-02-28T13:58:27.305Z",
+  "version": 1
+}
