@@ -1,0 +1,152 @@
+{
+  "runs": [
+    {
+      "acceptance": {
+        "ACCEPTANCE_01": true,
+        "ACCEPTANCE_02": true,
+        "ACCEPTANCE_03": false,
+        "ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "boundRowsMissingFieldsCount": 0,
+        "boundTraceabilityFailureCount": 0,
+        "duplicateRowsAfterCount": 0,
+        "duplicateRowsBeforeCount": 0,
+        "gapRowsBlockingCount": 0,
+        "lawConflictCount": 0,
+        "missingBridgeRowsCount": 0,
+        "modeMismatchCount": 0,
+        "normalizedRowCount": 39,
+        "rawRowCount": 39,
+        "signalLossCount": 0,
+        "simplifiedRowCount": 39
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "detectorId": "WS04_BRIDGE_DRIFT_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "DOD_01": true,
+        "DOD_02": true,
+        "DOD_03": true,
+        "DOD_04": false,
+        "DOD_05": true,
+        "DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "ACCEPTANCE_01": true,
+        "ACCEPTANCE_02": true,
+        "ACCEPTANCE_03": false,
+        "ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "boundRowsMissingFieldsCount": 0,
+        "boundTraceabilityFailureCount": 0,
+        "duplicateRowsAfterCount": 0,
+        "duplicateRowsBeforeCount": 0,
+        "gapRowsBlockingCount": 0,
+        "lawConflictCount": 0,
+        "missingBridgeRowsCount": 0,
+        "modeMismatchCount": 0,
+        "normalizedRowCount": 39,
+        "rawRowCount": 39,
+        "signalLossCount": 0,
+        "simplifiedRowCount": 39
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "detectorId": "WS04_BRIDGE_DRIFT_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "DOD_01": true,
+        "DOD_02": true,
+        "DOD_03": true,
+        "DOD_04": false,
+        "DOD_05": true,
+        "DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "ACCEPTANCE_01": true,
+        "ACCEPTANCE_02": true,
+        "ACCEPTANCE_03": false,
+        "ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "boundRowsMissingFieldsCount": 0,
+        "boundTraceabilityFailureCount": 0,
+        "duplicateRowsAfterCount": 0,
+        "duplicateRowsBeforeCount": 0,
+        "gapRowsBlockingCount": 0,
+        "lawConflictCount": 0,
+        "missingBridgeRowsCount": 0,
+        "modeMismatchCount": 0,
+        "normalizedRowCount": 39,
+        "rawRowCount": 39,
+        "signalLossCount": 0,
+        "simplifiedRowCount": 39
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "detectorId": "WS04_BRIDGE_DRIFT_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "DOD_01": true,
+        "DOD_02": true,
+        "DOD_03": true,
+        "DOD_04": false,
+        "DOD_05": true,
+        "DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    }
+  ],
+  "stable": true
+}

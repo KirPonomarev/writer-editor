@@ -1,0 +1,9 @@
+{
+  "detectorId": "WS04_BRIDGE_DRIFT_SINGLE_DETECTOR_V1",
+  "duplicateRowsAfterCount": 0,
+  "duplicateRowsBeforeCount": 0,
+  "normalizedRowCount": 39,
+  "rawRowCount": 39,
+  "signalLossCount": 0,
+  "simplifiedRowCount": 39
+}

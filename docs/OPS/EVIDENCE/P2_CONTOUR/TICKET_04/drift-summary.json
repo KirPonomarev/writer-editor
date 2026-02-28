@@ -1,0 +1,9 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "boundRowsMissingFieldsCount": 0,
+  "boundTraceabilityFailureCount": 0,
+  "gapRowsBlockingCount": 0,
+  "lawConflictCount": 0,
+  "missingBridgeRowsCount": 0,
+  "modeMismatchCount": 0
+}
