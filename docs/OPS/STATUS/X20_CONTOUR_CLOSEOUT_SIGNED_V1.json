@@ -1,0 +1,23 @@
+{
+  "artifactId": "X20_CONTOUR_CLOSEOUT_SIGNED_V1",
+  "constraints": {
+    "activeCanonLockMaintained": true,
+    "advisoryAsBlockingDriftZero": true,
+    "blockingSurfaceExpansion": false,
+    "newBlockingTokensIntroduced": false
+  },
+  "evidencePacketRef": "docs/OPS/EVIDENCE/X20_CONTOUR/x20-contour-freeze-packet-v1.json",
+  "evidencePacketSha256": "sha256:c60a496791e2ec966fd9b2eef9bf27e7f8c3ba42c2d4b8a24b511a68e3b2a5e0",
+  "gate": {
+    "isOpen": true,
+    "name": "GO_IF_X20_CLOSEOUT_ARTIFACT_SIGNED",
+    "releaseDecisionClassChanged": false
+  },
+  "schemaVersion": 1,
+  "signatureType": "SHA256_EVIDENCE_LOCK",
+  "signedAtUtc": "2026-02-28T19:17:50.797Z",
+  "signedBy": "KIRILL_PLUS_CODEX",
+  "signingMode": "LOCAL_OFFLINE",
+  "status": "SIGNED",
+  "taskId": "TZ_X20_WS03_RELEASE_WRAP_CLOSE_PREP_001"
+}
