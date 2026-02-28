@@ -1,0 +1,88 @@
+{
+  "activeCanon": {
+    "lockCheckPass": true,
+    "status": "ACTIVE_CANON",
+    "statusRef": "docs/OPS/STATUS/CANON_STATUS.json",
+    "version": "v3.13a-final"
+  },
+  "artifactId": "P2_CONTOUR_EVIDENCE_FREEZE_PACKET_V1",
+  "contour": {
+    "acceptanceCompliance": "PASS",
+    "advisoryAsBlockingDrift": "ZERO",
+    "blockingSurfaceExpansion": false,
+    "closeoutSignedRef": "docs/OPS/STATUS/P2_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+    "closeStatusNormalized": true,
+    "closeSummaryRef": "docs/OPS/STATUS/P2_CONTOUR_CLOSE_SUMMARY_V1.json",
+    "closeTaskId": "TZ_P2_CONTOUR_CLOSEOUT_001",
+    "offlineReleaseIntegrity": "LOCALLY_VERIFIABLE",
+    "scopeCompliance": "PASS",
+    "status": "COMPLETED_CLOSED"
+  },
+  "gate": {
+    "name": "GO_IF_P2_WS01_TO_WS06_ALL_ACCEPTED",
+    "satisfied": true
+  },
+  "generatedAtUtc": "2026-02-28T15:34:35.361Z",
+  "owner": "KIRILL_PLUS_CODEX",
+  "requiredChecks": {
+    "ACTIVE_CANON_LOCK_CHECK_PASS": true,
+    "ADVISORY_AS_BLOCKING_DRIFT_ZERO": true,
+    "BLOCKING_SURFACE_EXPANSION_FALSE": true,
+    "JSON_VALIDATION_PASS": true,
+    "OFFLINE_RELEASE_INTEGRITY_LOCALLY_VERIFIABLE": true,
+    "SHA_LOCK_MATCH_PASS": true,
+    "STAGE_ACTIVATION_GUARD_CHECK_PASS": true
+  },
+  "requiredOutputs": [
+    "P2_CONTOUR_FREEZE_PACKET_JSON",
+    "P2_CONTOUR_CLOSE_SUMMARY_JSON",
+    "P2_CONTOUR_CLOSEOUT_SIGNED_JSON",
+    "NEXT_CONTOUR_OPENING_RECORD_JSON",
+    "KEY_VALUE_EXECUTION_REPORT"
+  ],
+  "schemaVersion": 1,
+  "wsSummary": {
+    "WS01": {
+      "runId": "TZ_P2_WS01_CROSS_PLATFORM_NORMALIZATION_HARDENING_001",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/P2_WS01_CROSS_PLATFORM_NORMALIZATION_HARDENING_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_01/summary.json",
+      "ticketId": "P2_WS01"
+    },
+    "WS02": {
+      "runId": "TZ_P2_WS02_MIGRATION_CRASH_WINDOW_REDUCTION_001",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/P2_WS02_MIGRATION_CRASH_WINDOW_REDUCTION_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_02/summary.json",
+      "ticketId": "P2_WS02"
+    },
+    "WS03": {
+      "runId": "TZ_P2_WS03_PROCESS_TAX_BUDGET_AUTOMATION_001",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/P2_WS03_PROCESS_TAX_BUDGET_AUTOMATION_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_03/summary.json",
+      "ticketId": "P2_WS03"
+    },
+    "WS04": {
+      "runId": "TZ_P2_WS04_BRIDGE_DRIFT_SIMPLIFICATION_001",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/P2_WS04_BRIDGE_DRIFT_SIMPLIFICATION_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_04/summary.json",
+      "ticketId": "P2_WS04"
+    },
+    "WS05": {
+      "runId": "TZ_P2_WS05_WAVE_RERUN_DEDUP_BY_STABLE_INPUT_HASH_001",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/P2_WS05_WAVE_RERUN_DEDUP_BY_STABLE_INPUT_HASH_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_05/summary.json",
+      "ticketId": "P2_WS05"
+    },
+    "WS06": {
+      "runId": "TZ_P2_WS06_EXTENDED_PARITY_FIXTURE_PACKS_001",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/P2_WS06_EXTENDED_PARITY_FIXTURE_PACKS_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/P2_CONTOUR/TICKET_06/summary.json",
+      "ticketId": "P2_WS06"
+    }
+  }
+}
