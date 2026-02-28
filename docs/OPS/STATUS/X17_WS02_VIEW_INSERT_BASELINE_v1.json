@@ -1,0 +1,18 @@
+{
+  "actionCount": 6,
+  "advisoryToBlockingDriftCount": 0,
+  "channelCount": 3,
+  "commandCapabilityBindingCount": 21,
+  "menuProjectionGapCount": 0,
+  "missingRequiredActionRowsCount": 0,
+  "modeCount": 3,
+  "profileCount": 3,
+  "repeatabilityStable3Runs": true,
+  "requiredActionCount": 6,
+  "requiredCommandCount": 6,
+  "rowCount": 54,
+  "status": "PASS",
+  "token": "X17_WS02_VIEW_INSERT_BASELINE_OK",
+  "updatedAtUtc": "2026-02-28T17:25:37.909Z",
+  "version": 1
+}
