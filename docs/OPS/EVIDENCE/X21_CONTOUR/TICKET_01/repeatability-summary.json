@@ -1,0 +1,161 @@
+{
+  "runs": [
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "modeMatrixBlockingFlagConflictCount": 0,
+        "modeMatrixDuplicateSignalCount": 0,
+        "modeMatrixInvalidDispositionCount": 0,
+        "modeMatrixMissingDispositionCount": 0,
+        "modeMatrixRequiredTokenFailSignalMissingCount": 0,
+        "offlineIntegrityIssueCount": 0,
+        "releaseBindingFailSignalMismatchCount": 0,
+        "releaseBindingFailSignalMissingCount": 0,
+        "releaseBindingMissingFieldCount": 0,
+        "releaseBindingMissingRecordCount": 0,
+        "releaseBindingMissingTokenCount": 0,
+        "requiredModeKeyCount": 3,
+        "requiredReleaseBlockingTokenCount": 14,
+        "usabilityGuardIssueCount": 0
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "ac4aeae33777f3b779529bd5457571e88fdc170a38e41a0873a3d2fc5e34292a",
+        "detectorId": "X21_WS01_RELEASE_CANDIDATE_PRECHECK_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "modeMatrixBlockingFlagConflictCount": 0,
+        "modeMatrixDuplicateSignalCount": 0,
+        "modeMatrixInvalidDispositionCount": 0,
+        "modeMatrixMissingDispositionCount": 0,
+        "modeMatrixRequiredTokenFailSignalMissingCount": 0,
+        "offlineIntegrityIssueCount": 0,
+        "releaseBindingFailSignalMismatchCount": 0,
+        "releaseBindingFailSignalMissingCount": 0,
+        "releaseBindingMissingFieldCount": 0,
+        "releaseBindingMissingRecordCount": 0,
+        "releaseBindingMissingTokenCount": 0,
+        "requiredModeKeyCount": 3,
+        "requiredReleaseBlockingTokenCount": 14,
+        "usabilityGuardIssueCount": 0
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "ac4aeae33777f3b779529bd5457571e88fdc170a38e41a0873a3d2fc5e34292a",
+        "detectorId": "X21_WS01_RELEASE_CANDIDATE_PRECHECK_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": false,
+        "NEXT_TZ_ACCEPTANCE_04": false
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "modeMatrixBlockingFlagConflictCount": 0,
+        "modeMatrixDuplicateSignalCount": 0,
+        "modeMatrixInvalidDispositionCount": 0,
+        "modeMatrixMissingDispositionCount": 0,
+        "modeMatrixRequiredTokenFailSignalMissingCount": 0,
+        "offlineIntegrityIssueCount": 0,
+        "releaseBindingFailSignalMismatchCount": 0,
+        "releaseBindingFailSignalMissingCount": 0,
+        "releaseBindingMissingFieldCount": 0,
+        "releaseBindingMissingRecordCount": 0,
+        "releaseBindingMissingTokenCount": 0,
+        "requiredModeKeyCount": 3,
+        "requiredReleaseBlockingTokenCount": 14,
+        "usabilityGuardIssueCount": 0
+      },
+      "detector": {
+        "canonicalModeEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "contentHash": "ac4aeae33777f3b779529bd5457571e88fdc170a38e41a0873a3d2fc5e34292a",
+        "detectorId": "X21_WS01_RELEASE_CANDIDATE_PRECHECK_SINGLE_DETECTOR_V1"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    }
+  ],
+  "stable": true
+}

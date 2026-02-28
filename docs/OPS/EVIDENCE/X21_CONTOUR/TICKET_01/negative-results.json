@@ -1,0 +1,90 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "missingBindingRecord": [
+        {
+          "reason": "MISSING_BINDING_RECORD",
+          "tokenId": "PROOFHOOK_INTEGRITY_OK"
+        }
+      ],
+      "missingBindingRequiredFields": [],
+      "missingFailSignalInRegistry": [],
+      "missingTokenCatalog": [],
+      "ok": false,
+      "requiredReleaseBlockingTokenCount": 14,
+      "tokenBindingFailSignalMismatch": []
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "advisoryToBlockingDriftCases": [],
+      "blockingFlagConflict": [],
+      "duplicateSignalCodes": [],
+      "evaluatorIssues": [],
+      "invalidModeDisposition": [
+        {
+          "disposition": "invalid_value",
+          "failSignalCode": "E_ADAPTERS_NOT_ENFORCED",
+          "modeKey": "release",
+          "reason": "INVALID_MODE_DISPOSITION"
+        }
+      ],
+      "missingModeDisposition": [],
+      "ok": false,
+      "requiredTokenFailSignalMissing": []
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "issues": [
+        {
+          "evidenceRef": "docs/OPS/EVIDENCE/X20_CONTOUR/x20-contour-freeze-packet-v1.json",
+          "reason": "X20_EVIDENCE_HASH_MISMATCH"
+        }
+      ],
+      "lockChecks": {
+        "p0OfflineIntegrity": true,
+        "x20CloseSummary": true,
+        "x20SignedHashMatch": false,
+        "x20SignedStatus": true
+      },
+      "ok": false
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "checks": {
+        "repeatability": true,
+        "statusPass": true,
+        "summaryPass": true,
+        "tokenMatch": true
+      },
+      "issues": [
+        {
+          "key": "modeProfileGuardGapCount",
+          "reason": "USABILITY_ZERO_COUNT_VIOLATION",
+          "value": 1
+        }
+      ],
+      "ok": false
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "determinism": {
+        "hashes": [
+          "195eace0453ef7df84bd298f94081552af9d3e8a5adeb25a509f7daf8116c0fe",
+          "43c14365a5e5393cc423b77412b29b303c68fb378ab825fbf3e2993b6570fecc",
+          "195eace0453ef7df84bd298f94081552af9d3e8a5adeb25a509f7daf8116c0fe"
+        ],
+        "ok": false
+      }
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "MISSING_BLOCKING_ENTITY_BINDING_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "MODE_DISPOSITION_MISMATCH_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "OFFLINE_INTEGRITY_CHECK_FAIL_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "USABILITY_GUARD_PACK_GAP_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "NON_DETERMINISTIC_PRECHECK_OUTPUT_EXPECT_REJECT"
+  }
+}
