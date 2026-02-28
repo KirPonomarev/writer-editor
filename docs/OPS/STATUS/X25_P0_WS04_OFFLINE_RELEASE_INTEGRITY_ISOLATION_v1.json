@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "updatedAtUtc": "2026-02-28T23:39:10.376Z",
+  "runId": "TZ_X25_P0_WS04_OFFLINE_RELEASE_INTEGRITY_ISOLATION_001",
+  "token": "X25_P0_WS04_OFFLINE_RELEASE_INTEGRITY_ISOLATION_OK",
+  "status": "PASS",
+  "counts": {
+    "remoteUnavailableAdvisoryIsolation": true,
+    "advisoryDriftZero": true
+  },
+  "gates": {
+    "offline_release_decision_path_isolated": true,
+    "remote_signal_excluded_from_release_blocking_path": true,
+    "origin_noise_not_blocking_release": true
+  }
+}

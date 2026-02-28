@@ -1,8 +1,8 @@
 {
-  "generatedAtUtc": "2026-02-28T23:36:20.004Z",
-  "runId": "TZ_X25_P0_WS03_BLOCKING_BINDING_COMPLETENESS_001",
+  "generatedAtUtc": "2026-02-28T23:39:10.376Z",
+  "runId": "TZ_X25_P0_WS04_OFFLINE_RELEASE_INTEGRITY_ISOLATION_001",
   "status": "COMPLETED",
-  "scopeLock": "X25_P0_WS03_ONLY",
+  "scopeLock": "X25_P0_WS04_ONLY",
   "canonVersionObserved": "v3.13a-final",
   "lawPath": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
   "releaseSetPointerLock": {
@@ -61,6 +61,6 @@
       "sha256": "PENDING_AFTER_WRITE"
     }
   ],
-  "nextTz": "TZ_X25_P0_WS04_OFFLINE_RELEASE_INTEGRITY_ISOLATION_001",
+  "nextTz": "TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
   "note": "WS02 pointer lock reconfirmed after WS01 rebind"
 }

@@ -1,0 +1,10 @@
+{
+  "offlineReleaseDecisionPathIsolated": true,
+  "eRemoteUnavailableDoesNotChangeReleaseClass": true,
+  "advisoryAsBlockingDriftZero": true,
+  "baselineReleaseNonzeroExitRequired": false,
+  "remoteProbeNonzeroExitRequired": false,
+  "remoteUnavailableStopCode": "REMOTE_UNAVAILABLE",
+  "originNoiseStopCode": "DNS_OR_TLS_FAILURE",
+  "staleRemoteProbePolicyFailReason": "E_REMOTE_PROBE_TTL_POLICY_VIOLATION"
+}
