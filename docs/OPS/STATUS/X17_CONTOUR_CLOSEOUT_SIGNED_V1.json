@@ -1,0 +1,23 @@
+{
+  "artifactId": "X17_CONTOUR_CLOSEOUT_SIGNED_V1",
+  "constraints": {
+    "activeCanonLockMaintained": true,
+    "advisoryAsBlockingDriftZero": true,
+    "blockingSurfaceExpansion": false,
+    "newBlockingTokensIntroduced": false
+  },
+  "evidencePacketRef": "docs/OPS/EVIDENCE/X17_CONTOUR/x17-contour-freeze-packet-v1.json",
+  "evidencePacketSha256": "sha256:70496669211912e93ff6ffc5a49c15fad5cd238145c3e615460fc2c3f7123bd8",
+  "gate": {
+    "isOpen": true,
+    "name": "GO_IF_X17_CLOSEOUT_ARTIFACT_SIGNED",
+    "releaseDecisionClassChanged": false
+  },
+  "schemaVersion": 1,
+  "signatureType": "SHA256_EVIDENCE_LOCK",
+  "signedAtUtc": "2026-02-28T17:38:41.645Z",
+  "signedBy": "KIRILL_PLUS_CODEX",
+  "signingMode": "LOCAL_OFFLINE",
+  "status": "SIGNED",
+  "taskId": "TZ_X17_WS04_CONTOUR_CLOSE_PREP_001"
+}
