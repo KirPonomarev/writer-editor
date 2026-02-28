@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "stabilityPacketVersion": "x24.ws01.v1",
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "blockingSurfaceExpansion": false,
+  "requiredInputRefs": [
+    "docs/OPS/STATUS/CANON_STATUS.json",
+    "docs/OPS/TOKENS/TOKEN_CATALOG.json",
+    "docs/OPS/STATUS/BINDING_SCHEMA_V1.json",
+    "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+    "docs/OPS/STATUS/X23_WS03_PR_MERGE_EXECUTION_AND_CLOSEOUT_v1.json",
+    "docs/OPS/STATUS/X23_CONTOUR_CLOSE_SUMMARY_V1.json",
+    "docs/OPS/STATUS/X23_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+    "docs/OPS/EVIDENCE/X23_CONTOUR/x23-contour-freeze-packet-v1.json"
+  ],
+  "requiredReleaseBlockingSet": [
+    "CORE_SOT_EXECUTABLE_OK",
+    "RECOVERY_IO_OK",
+    "MIGRATIONS_POLICY_OK",
+    "MIGRATIONS_ATOMICITY_OK",
+    "NORMALIZATION_XPLAT_OK",
+    "E2E_CRITICAL_USER_PATH_OK",
+    "HEAD_STRICT_OK",
+    "PROOFHOOK_INTEGRITY_OK",
+    "CONFIG_HASH_LOCK_OK",
+    "TOKEN_SOURCE_CONFLICT_OK",
+    "REQUIRED_SET_NO_TARGET_OK",
+    "SINGLE_VERIFY_CONTOUR_ENFORCED_OK",
+    "VERIFY_ATTESTATION_OK",
+    "ATTESTATION_SIGNATURE_OK"
+  ],
+  "requiredModeChecks": [
+    {
+      "failSignalCode": "E_REMOTE_UNAVAILABLE",
+      "mode": "release",
+      "expectedDisposition": "advisory"
+    },
+    {
+      "failSignalCode": "E_REMOTE_UNAVAILABLE",
+      "mode": "promotion",
+      "expectedDisposition": "advisory"
+    }
+  ],
+  "requiredAttestationRefs": [
+    "docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_v3_12.json",
+    "docs/OPS/LOCKS/ATTESTATION_TRUST_ARTIFACT.lock"
+  ],
+  "requiredAttestationTokens": [
+    "ATTESTATION_SIGNATURE_OK",
+    "VERIFY_ATTESTATION_OK"
+  ],
+  "headBinding": {
+    "expectedHead": "7b7939e2ea1f9bed3626aecb4bbe905476c0f0d4",
+    "requiredBranch": "main"
+  },
+  "worktreePolicy": {
+    "allowDirtyBasenames": [
+      "X24_CONTOUR",
+      "X24_POST_MERGE_STABILITY_PACKET_v1.json",
+      "x24-ws01-post-merge-baseline-reconfirm-state.mjs",
+      "x24-ws01-post-merge-baseline-reconfirm-report.mjs",
+      "x24-ws01-post-merge-baseline-reconfirm.contract.test.js",
+      "X24_WS01_POST_MERGE_BASELINE_RECONFIRM_v1.json",
+      "negative-results.json",
+      "positive-results.json",
+      "post-merge-stability-summary.json",
+      "repeatability-summary.json",
+      "final-dod-acceptance-summary.json",
+      "summary.json",
+      "ticket-meta.json"
+    ]
+  }
+}

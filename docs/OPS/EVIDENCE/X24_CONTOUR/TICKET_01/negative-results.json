@@ -1,0 +1,45 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "expected": "HEAD_BINDING_MISMATCH_EXPECT_REJECT",
+      "observedCurrentHead": "7b7939e2ea1f9bed3626aecb4bbe905476c0f0d4",
+      "observedExpectedHead": "7b7939e2ea1f9bed3626aecb4bbe905476c0f0d0",
+      "rejected": true
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "expected": "REQUIRED_BLOCKING_TOKEN_GAP_EXPECT_REJECT",
+      "observedGapCount": 1,
+      "rejected": true
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "expected": "MODE_DISPOSITION_DRIFT_EXPECT_REJECT",
+      "observedModeDispositionDriftCount": 2,
+      "rejected": true
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "expected": "OFFLINE_ATTESTATION_CHAIN_BREAK_EXPECT_REJECT",
+      "observedAttestationIssueCount": 1,
+      "rejected": true
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "expected": "NON_DETERMINISTIC_STABILITY_PACKET_OUTPUT_EXPECT_REJECT",
+      "observedHashA": "5f85461ad251d6363e03f79e2dbdc76fe0c597b23472f505357995547fccbd68",
+      "observedHashB": "777c1c9448139d832eb9af68dbf58a6f8774eca1a6a3a472c7b8dbf2f8407097",
+      "rejected": true
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "HEAD_BINDING_MISMATCH_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "REQUIRED_BLOCKING_TOKEN_GAP_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "MODE_DISPOSITION_DRIFT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "OFFLINE_ATTESTATION_CHAIN_BREAK_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "NON_DETERMINISTIC_STABILITY_PACKET_OUTPUT_EXPECT_REJECT"
+  }
+}

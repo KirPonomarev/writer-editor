@@ -1,0 +1,188 @@
+{
+  "runs": [
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": true,
+        "NEXT_TZ_ACCEPTANCE_04": true
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "attestationChainBreakCount": 0,
+        "attestationIssueCount": 0,
+        "branchBindingMismatchCount": 0,
+        "headBindingMismatchCount": 0,
+        "missingRequiredInputCount": 0,
+        "modeCheckMissingCount": 0,
+        "modeDispositionDriftCount": 0,
+        "modeEvaluatorIssueCount": 0,
+        "releaseBindingFailSignalMismatchCount": 0,
+        "releaseBindingFailSignalMissingCount": 0,
+        "releaseBindingMissingFieldCount": 0,
+        "releaseBindingMissingRecordCount": 0,
+        "releaseBindingMissingTokenCount": 0,
+        "requiredInputRefCount": 8,
+        "requiredModeCheckCount": 2,
+        "requiredReleaseBlockingTokenCount": 14,
+        "worktreeDirtyViolationCount": 0
+      },
+      "detector": {
+        "canonStatusPath": "docs/OPS/STATUS/CANON_STATUS.json",
+        "expectedCanonVersion": "v3.13a-final",
+        "failsignalRegistryPath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+        "modeMatrixEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "stabilityPacketPath": "docs/OPS/STATUS/X24_POST_MERGE_STABILITY_PACKET_v1.json",
+        "token": "X24_WS01_POST_MERGE_BASELINE_RECONFIRM_OK"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "hashes": {
+        "postMergeStabilityHash": "6e73dc9192543f4cd3a7361acf432268b1a7f96e8d3e4c80eecda520d6f5e658"
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": true,
+        "NEXT_TZ_ACCEPTANCE_04": true
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "attestationChainBreakCount": 0,
+        "attestationIssueCount": 0,
+        "branchBindingMismatchCount": 0,
+        "headBindingMismatchCount": 0,
+        "missingRequiredInputCount": 0,
+        "modeCheckMissingCount": 0,
+        "modeDispositionDriftCount": 0,
+        "modeEvaluatorIssueCount": 0,
+        "releaseBindingFailSignalMismatchCount": 0,
+        "releaseBindingFailSignalMissingCount": 0,
+        "releaseBindingMissingFieldCount": 0,
+        "releaseBindingMissingRecordCount": 0,
+        "releaseBindingMissingTokenCount": 0,
+        "requiredInputRefCount": 8,
+        "requiredModeCheckCount": 2,
+        "requiredReleaseBlockingTokenCount": 14,
+        "worktreeDirtyViolationCount": 0
+      },
+      "detector": {
+        "canonStatusPath": "docs/OPS/STATUS/CANON_STATUS.json",
+        "expectedCanonVersion": "v3.13a-final",
+        "failsignalRegistryPath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+        "modeMatrixEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "stabilityPacketPath": "docs/OPS/STATUS/X24_POST_MERGE_STABILITY_PACKET_v1.json",
+        "token": "X24_WS01_POST_MERGE_BASELINE_RECONFIRM_OK"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "hashes": {
+        "postMergeStabilityHash": "6e73dc9192543f4cd3a7361acf432268b1a7f96e8d3e4c80eecda520d6f5e658"
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": true,
+        "NEXT_TZ_ACCEPTANCE_04": true
+      },
+      "counts": {
+        "advisoryToBlockingDriftCount": 0,
+        "attestationChainBreakCount": 0,
+        "attestationIssueCount": 0,
+        "branchBindingMismatchCount": 0,
+        "headBindingMismatchCount": 0,
+        "missingRequiredInputCount": 0,
+        "modeCheckMissingCount": 0,
+        "modeDispositionDriftCount": 0,
+        "modeEvaluatorIssueCount": 0,
+        "releaseBindingFailSignalMismatchCount": 0,
+        "releaseBindingFailSignalMissingCount": 0,
+        "releaseBindingMissingFieldCount": 0,
+        "releaseBindingMissingRecordCount": 0,
+        "releaseBindingMissingTokenCount": 0,
+        "requiredInputRefCount": 8,
+        "requiredModeCheckCount": 2,
+        "requiredReleaseBlockingTokenCount": 14,
+        "worktreeDirtyViolationCount": 0
+      },
+      "detector": {
+        "canonStatusPath": "docs/OPS/STATUS/CANON_STATUS.json",
+        "expectedCanonVersion": "v3.13a-final",
+        "failsignalRegistryPath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+        "modeMatrixEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+        "stabilityPacketPath": "docs/OPS/STATUS/X24_POST_MERGE_STABILITY_PACKET_v1.json",
+        "token": "X24_WS01_POST_MERGE_BASELINE_RECONFIRM_OK"
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true
+      },
+      "hashes": {
+        "postMergeStabilityHash": "6e73dc9192543f4cd3a7361acf432268b1a7f96e8d3e4c80eecda520d6f5e658"
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    }
+  ],
+  "stable": true
+}
