@@ -1,0 +1,134 @@
+{
+  "details": {
+    "expiredContract": {
+      "expected": {
+        "route": "FORCE_RERUN_INVALID_INPUT",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "observed": {
+        "route": "FORCE_RERUN_INVALID_INPUT",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "ok": true,
+      "reason": ""
+    },
+    "invalidInputContract": {
+      "expected": {
+        "route": "FORCE_RERUN_INVALID_INPUT",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "observed": {
+        "route": "FORCE_RERUN_INVALID_INPUT",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "ok": true,
+      "reason": ""
+    },
+    "mismatchContract": {
+      "expected": {
+        "route": "RERUN_HEAVY",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "observed": {
+        "route": "FORCE_RERUN_INVALID_INPUT",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "ok": true,
+      "reason": ""
+    },
+    "negative01": {
+      "expected": {
+        "route": "RERUN_HEAVY",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "observed": {
+        "route": "REUSE_CACHE",
+        "shouldHeavyRerun": false,
+        "shouldReuse": true
+      },
+      "ok": false,
+      "reason": "CACHE_REUSE_WITH_EXPIRED_TTL"
+    },
+    "negative02": {
+      "expected": {
+        "route": "RERUN_HEAVY",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "observed": {
+        "route": "REUSE_CACHE",
+        "shouldHeavyRerun": false,
+        "shouldReuse": true
+      },
+      "ok": false,
+      "reason": "CACHE_REUSE_WITH_EXPIRED_TTL"
+    },
+    "negative03": {
+      "expected": {
+        "route": "FORCE_RERUN_INVALID_INPUT",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "observed": {
+        "route": "SKIP_HEAVY",
+        "shouldHeavyRerun": false,
+        "shouldReuse": false
+      },
+      "ok": false,
+      "reason": "HEAVY_RERUN_SKIPPED_WHEN_INPUT_INVALID"
+    },
+    "negative04": {
+      "ok": false,
+      "reason": "MANUAL_RELEVANT_INPUT_OVERRIDE"
+    },
+    "negative05": {
+      "expected": {
+        "route": "FORCE_RERUN_INVALID_INPUT",
+        "shouldHeavyRerun": true,
+        "shouldReuse": false
+      },
+      "observed": {
+        "route": "ACCEPT_STALE",
+        "shouldHeavyRerun": false,
+        "shouldReuse": true
+      },
+      "ok": false,
+      "reason": "STALE_RESULT_ACCEPTANCE"
+    },
+    "validContract": {
+      "expected": {
+        "route": "REUSE_CACHE",
+        "shouldHeavyRerun": false,
+        "shouldReuse": true
+      },
+      "observed": {
+        "route": "REUSE_CACHE",
+        "shouldHeavyRerun": false,
+        "shouldReuse": true
+      },
+      "ok": true,
+      "reason": ""
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "CACHE_REUSE_WITH_HASH_MISMATCH_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_02": "CACHE_REUSE_WITH_EXPIRED_TTL_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_03": "HEAVY_RERUN_SKIPPED_WHEN_INVALID_INPUT_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_04": "MANUAL_RELEVANT_INPUT_OVERRIDE_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_05": "STALE_RESULT_ACCEPTANCE_EXPECT_FAIL"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "stageActivationOk": 1,
+  "ttlClass": "networkSensitive",
+  "ttlSec": 900,
+  "unnecessaryHeavyRerunCountAfter": 0,
+  "unnecessaryHeavyRerunCountBefore": 4,
+  "unnecessaryHeavyRerunReduced": 1,
+  "waveInputHash": "7075e38581598607e15d08fa6cfbe94efc1b03f7419bc03781bddca373c26eda",
+  "waveInputHashPresent": 1
+}
