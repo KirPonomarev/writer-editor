@@ -1,7 +1,7 @@
 {
   "phaseSwitchId": "PHASE_SWITCH_V1",
   "schemaVersion": 1,
-  "activePhase": "PHASE_1_SHADOW",
+  "activePhase": "PHASE_3_HARD",
   "precedenceEnabled": true,
   "allowedPhases": [
     "PHASE_1_SHADOW",
@@ -24,13 +24,13 @@
   },
   "phase3LockGuard": {
     "machineCheckId": "MC_PHASE3_LOCK_GUARD",
-    "phase3Accessible": false,
-    "phase3ActivationAllowed": false,
-    "lockReason": "P0_CLOSED_AND_APPROVAL_GATES_PENDING_FOR_PHASE3",
+    "phase3Accessible": true,
+    "phase3ActivationAllowed": true,
+    "lockReason": "UNLOCKED_AFTER_HARD_ENABLE_GATE_PASS",
     "unlockCondition": {
       "minFixset01To07Complete": true,
       "p0ClosedConfirmed": true,
-      "allRequiredChecksPass": false
+      "allRequiredChecksPass": true
     },
     "requiredChecks": [
       "MC_BLOCKING_POLICY_SINGLE_SOURCE",
@@ -46,7 +46,17 @@
     ]
   },
   "legacyHardStopsAlwaysActive": true,
-  "approvedBy": "DOCS_OPERATOR",
-  "updatedAtUtc": "2026-02-27T23:30:00.000Z",
-  "hashLock": "PENDING_REGEN"
+  "approvedBy": "KIRILL_PONOMAREV",
+  "updatedAtUtc": "2026-02-28T00:45:00.000Z",
+  "hashLock": "sha256:3ccb6bfb3d405cf141b605fc5d322fe6f5a3690d95fa51b4d73bc08132f65eab",
+  "ACTIVE_PHASE": "PHASE_3",
+  "approvalOwner": "KIRILL_PONOMAREV",
+  "phaseSwitchEvent": {
+    "taskId": "TZ_EXEC_PKG_04_A02_PHASE3_SWITCH_EXECUTION",
+    "switchTo": "PHASE_3_HARD",
+    "decision": "ENABLE",
+    "timestampUtc": "2026-02-28T00:45:00.000Z",
+    "approvedBy": "KIRILL_PONOMAREV"
+  },
+  "hashLockVerified": true
 }

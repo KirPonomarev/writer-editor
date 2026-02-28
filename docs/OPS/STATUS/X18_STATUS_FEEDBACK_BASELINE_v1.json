@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "statusFeedbackVersion": "x18.ws03.v1",
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "blockingSurfaceExpansion": false,
+  "channels": [
+    "menu",
+    "toolbar",
+    "statusbar"
+  ],
+  "modes": [
+    "Write",
+    "Plan",
+    "Review"
+  ],
+  "profiles": [
+    "minimal",
+    "pro",
+    "guru"
+  ],
+  "statusStates": [
+    "pending",
+    "success",
+    "warning",
+    "error"
+  ],
+  "requiredSaveSignals": [
+    "save.pending",
+    "save.success",
+    "save.error"
+  ],
+  "requiredCommandResultSignals": [
+    "command.success",
+    "command.warning",
+    "command.error"
+  ],
+  "allowedSourceEvents": [
+    "evt.project.save.requested",
+    "evt.project.save.succeeded",
+    "evt.project.save.failed",
+    "evt.command.result.success",
+    "evt.command.result.warning",
+    "evt.command.result.error"
+  ],
+  "resetPolicy": {
+    "defaultTimeoutMs": 4000,
+    "maxTimeoutMs": 10000,
+    "onModeSwitchReset": true,
+    "onProfileSwitchReset": true
+  },
+  "entries": [
+    {
+      "signalId": "save.pending",
+      "sourceEvent": "evt.project.save.requested",
+      "commandId": "cmd.project.save",
+      "resultType": "pending",
+      "timeoutMs": 10000,
+      "resetOn": [
+        "evt.project.save.succeeded",
+        "evt.project.save.failed"
+      ],
+      "channels": {
+        "menu": "visible",
+        "toolbar": "visible",
+        "statusbar": "visible"
+      },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "signalId": "save.success",
+      "sourceEvent": "evt.project.save.succeeded",
+      "commandId": "cmd.project.save",
+      "resultType": "success",
+      "timeoutMs": 4000,
+      "resetOn": [
+        "evt.project.save.requested"
+      ],
+      "channels": {
+        "menu": "visible",
+        "toolbar": "visible",
+        "statusbar": "visible"
+      },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "signalId": "save.error",
+      "sourceEvent": "evt.project.save.failed",
+      "commandId": "cmd.project.save",
+      "resultType": "error",
+      "timeoutMs": 8000,
+      "resetOn": [
+        "evt.project.save.requested"
+      ],
+      "channels": {
+        "menu": "visible",
+        "toolbar": "visible",
+        "statusbar": "visible"
+      },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "signalId": "command.success",
+      "sourceEvent": "evt.command.result.success",
+      "commandId": "cmd.project.open",
+      "resultType": "success",
+      "timeoutMs": 3000,
+      "resetOn": [
+        "evt.command.result.success",
+        "evt.command.result.warning",
+        "evt.command.result.error"
+      ],
+      "channels": {
+        "menu": "visible",
+        "toolbar": "visible",
+        "statusbar": "visible"
+      },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "signalId": "command.warning",
+      "sourceEvent": "evt.command.result.warning",
+      "commandId": "cmd.project.plan.flowSave",
+      "resultType": "warning",
+      "timeoutMs": 5000,
+      "resetOn": [
+        "evt.command.result.success",
+        "evt.command.result.warning",
+        "evt.command.result.error"
+      ],
+      "channels": {
+        "menu": "visible",
+        "toolbar": "visible",
+        "statusbar": "visible"
+      },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "signalId": "command.error",
+      "sourceEvent": "evt.command.result.error",
+      "commandId": "cmd.project.review.exportMarkdown",
+      "resultType": "error",
+      "timeoutMs": 8000,
+      "resetOn": [
+        "evt.command.result.success",
+        "evt.command.result.warning",
+        "evt.command.result.error"
+      ],
+      "channels": {
+        "menu": "visible",
+        "toolbar": "visible",
+        "statusbar": "visible"
+      },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    }
+  ]
+}

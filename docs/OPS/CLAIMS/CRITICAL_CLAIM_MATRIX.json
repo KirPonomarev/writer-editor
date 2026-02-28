@@ -2,108 +2,48 @@
   "schemaVersion": 1,
   "claims": [
     {
-      "claimId": "CORE_SOT_EXECUTABLE",
-      "requiredToken": "CORE_SOT_EXECUTABLE_OK",
+      "claimId": "ADAPTERS_BOUNDARY_TESTED",
+      "requiredToken": "ADAPTERS_BOUNDARY_TESTED_OK",
       "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_CORE_SOT_NOT_EXECUTABLE",
+      "failSignal": "E_ADAPTERS_BOUNDARY_TESTS_MISSING",
       "blocking": true,
       "sourceBinding": "doctor"
     },
     {
-      "claimId": "CORE_SOT_REDUCER_IMPLEMENTED",
-      "requiredToken": "CORE_SOT_REDUCER_IMPLEMENTED_OK",
+      "claimId": "ADAPTERS_DECLARED",
+      "requiredToken": "ADAPTERS_DECLARED_OK",
       "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_CORE_SOT_REDUCER_NOT_IMPLEMENTED",
+      "failSignal": "E_ADAPTERS_DECLARED_MISSING",
       "blocking": true,
       "sourceBinding": "doctor"
     },
     {
-      "claimId": "CORE_SOT_SCHEMA_ALIGNED",
-      "requiredToken": "CORE_SOT_SCHEMA_ALIGNED_OK",
+      "claimId": "ADAPTERS_ENFORCED",
+      "requiredToken": "ADAPTERS_ENFORCED_OK",
       "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_CORE_SOT_SCHEMA_NOT_ALIGNED",
+      "failSignal": "E_ADAPTERS_NOT_ENFORCED",
       "blocking": true,
       "sourceBinding": "doctor"
     },
     {
-      "claimId": "CORE_SOT_COMMAND_CANON",
-      "requiredToken": "CORE_SOT_COMMAND_CANON_OK",
+      "claimId": "ADAPTERS_PARITY",
+      "requiredToken": "ADAPTERS_PARITY_OK",
       "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_CORE_SOT_COMMAND_CANON_MISSING",
+      "failSignal": "E_ADAPTERS_PARITY_MISSING",
       "blocking": true,
       "sourceBinding": "doctor"
     },
     {
-      "claimId": "CORE_SOT_TYPED_ERRORS",
-      "requiredToken": "CORE_SOT_TYPED_ERRORS_OK",
-      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_CORE_SOT_TYPED_ERRORS_MISSING",
+      "claimId": "ATTESTATION_SIGNATURE",
+      "requiredToken": "ATTESTATION_SIGNATURE_OK",
+      "proofHook": "node scripts/ops/attestation-signature-state.mjs --json",
+      "failSignal": "E_ATTESTATION_SIGNATURE_INVALID",
+      "failSignalCode": "E_ATTESTATION_SIGNATURE_INVALID",
       "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "CORE_SOT_HASH_DETERMINISTIC",
-      "requiredToken": "CORE_SOT_HASH_DETERMINISTIC_OK",
-      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_CORE_SOT_HASH_NOT_DETERMINISTIC",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "COMMAND_SURFACE_ENFORCED",
-      "requiredToken": "COMMAND_SURFACE_ENFORCED_OK",
-      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_COMMAND_SURFACE_NOT_ENFORCED",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "COMMAND_SURFACE_SINGLE_ENTRY",
-      "requiredToken": "COMMAND_SURFACE_SINGLE_ENTRY_OK",
-      "proofHook": "node scripts/ops/command-surface-state.mjs --json",
-      "failSignal": "E_COMMAND_SURFACE_BYPASS",
-      "blocking": true,
-      "sourceBinding": "ops_script+contract_test"
-    },
-    {
-      "claimId": "COMMAND_SURFACE_BYPASS_NEGATIVE_TESTS",
-      "requiredToken": "COMMAND_SURFACE_BYPASS_NEGATIVE_TESTS_OK",
-      "proofHook": "node scripts/ops/command-surface-state.mjs --json",
-      "failSignal": "E_COMMAND_SURFACE_NEGATIVE_MISSING",
-      "blocking": true,
-      "sourceBinding": "ops_script+contract_test"
-    },
-    {
-      "claimId": "PATH_BOUNDARY_GUARD",
-      "requiredToken": "PATH_BOUNDARY_GUARD_OK",
-      "proofHook": "node scripts/ops/path-boundary-guard-state.mjs --json",
-      "failSignal": "E_PATH_BOUNDARY_VIOLATION",
-      "blocking": true,
-      "sourceBinding": "ops_script+contract_test"
-    },
-    {
-      "claimId": "DEPENDENCY_REMEDIATION_POLICY",
-      "requiredToken": "DEPENDENCY_REMEDIATION_POLICY_OK",
-      "proofHook": "node scripts/ops/dependency-remediation-policy-state.mjs --json",
-      "failSignal": "E_DEP_REMEDIATION_POLICY_INVALID",
-      "blocking": false,
-      "sourceBinding": "ops_script+contract_test"
-    },
-    {
-      "claimId": "CAPABILITY_ENFORCEMENT",
-      "requiredToken": "CAPABILITY_ENFORCED_OK",
-      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_CAPABILITY_NOT_ENFORCED",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "CAPABILITY_MATRIX_NON_EMPTY",
-      "requiredToken": "CAPABILITY_MATRIX_NON_EMPTY_OK",
-      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_CAPABILITY_MATRIX_EMPTY",
-      "blocking": true,
-      "sourceBinding": "doctor"
+      "gateTier": "release",
+      "sourceBinding": "ops_script+trust_lock",
+      "positiveContractRef": "test/contracts/attestation-signature.contract.test.js#local-trusted-artifact-signature-pass",
+      "negativeContractRef": "test/contracts/attestation-signature.contract.test.js#wrong-signer-reject"
     },
     {
       "claimId": "CAPABILITY_BASELINE_MIN",
@@ -130,18 +70,26 @@
       "sourceBinding": "doctor"
     },
     {
-      "claimId": "CAPABILITY_PLATFORM_RESOLVER",
-      "requiredToken": "CAPABILITY_PLATFORM_RESOLVER_OK",
+      "claimId": "CAPABILITY_ENFORCEMENT",
+      "requiredToken": "CAPABILITY_ENFORCED_OK",
       "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_CAPABILITY_PLATFORM_RESOLVER_MISSING",
+      "failSignal": "E_CAPABILITY_NOT_ENFORCED",
       "blocking": true,
       "sourceBinding": "doctor"
     },
     {
-      "claimId": "CAPABILITY_UNSUPPORTED_TYPED_ERRORS",
-      "requiredToken": "CAPABILITY_UNSUPPORTED_TYPED_ERRORS_OK",
+      "claimId": "CAPABILITY_MATRIX_NON_EMPTY",
+      "requiredToken": "CAPABILITY_MATRIX_NON_EMPTY_OK",
       "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_CAPABILITY_UNSUPPORTED_TYPED_ERRORS_MISSING",
+      "failSignal": "E_CAPABILITY_MATRIX_EMPTY",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "CAPABILITY_PLATFORM_RESOLVER",
+      "requiredToken": "CAPABILITY_PLATFORM_RESOLVER_OK",
+      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "failSignal": "E_CAPABILITY_PLATFORM_RESOLVER_MISSING",
       "blocking": true,
       "sourceBinding": "doctor"
     },
@@ -154,258 +102,12 @@
       "sourceBinding": "doctor"
     },
     {
-      "claimId": "RECOVERY_IO",
-      "requiredToken": "RECOVERY_IO_OK",
+      "claimId": "CAPABILITY_UNSUPPORTED_TYPED_ERRORS",
+      "requiredToken": "CAPABILITY_UNSUPPORTED_TYPED_ERRORS_OK",
       "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_RECOVERY_IO_NOT_OK",
+      "failSignal": "E_CAPABILITY_UNSUPPORTED_TYPED_ERRORS_MISSING",
       "blocking": true,
       "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "RECOVERY_ATOMIC_WRITE",
-      "requiredToken": "RECOVERY_ATOMIC_WRITE_OK",
-      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
-      "failSignal": "E_RECOVERY_ATOMIC_WRITE_NOT_OK",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "RECOVERY_SNAPSHOT",
-      "requiredToken": "RECOVERY_SNAPSHOT_OK",
-      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
-      "failSignal": "E_RECOVERY_SNAPSHOT_NOT_OK",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "RECOVERY_CORRUPTION",
-      "requiredToken": "RECOVERY_CORRUPTION_OK",
-      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
-      "failSignal": "E_RECOVERY_CORRUPTION_NOT_OK",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "RECOVERY_TYPED_ERRORS",
-      "requiredToken": "RECOVERY_TYPED_ERRORS_OK",
-      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
-      "failSignal": "E_RECOVERY_TYPED_ERRORS_NOT_OK",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "RECOVERY_REPLAY",
-      "requiredToken": "RECOVERY_REPLAY_OK",
-      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
-      "failSignal": "E_RECOVERY_REPLAY_NOT_OK",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "RECOVERY_ACTION_CANON",
-      "requiredToken": "RECOVERY_ACTION_CANON_OK",
-      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
-      "failSignal": "E_RECOVERY_ACTION_CANON_NOT_OK",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "X3_RECOVERY_SMOKE",
-      "requiredToken": "RECOVERY_X3_RECOVERY_SMOKE_OK",
-      "proofHook": "node scripts/ops/x3-recovery-smoke-proofhook.mjs --json",
-      "failSignal": "E_X3_RECOVERY_SMOKE_FAILED",
-      "failSignalCode": "E_X3_RECOVERY_SMOKE_FAILED",
-      "blocking": true,
-      "gateTier": "release",
-      "requiredWhen": "activeStageId==X3",
-      "sourceBinding": "ops_script+contract_test",
-      "positiveContractRef": "test/contracts/x3-recovery-smoke.contract.test.js#positive-path",
-      "negativeContractRef": "test/contracts/x3-recovery-smoke.contract.test.js#forced-failure"
-    },
-    {
-      "claimId": "ADAPTERS_DECLARED",
-      "requiredToken": "ADAPTERS_DECLARED_OK",
-      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_ADAPTERS_DECLARED_MISSING",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "ADAPTERS_BOUNDARY_TESTED",
-      "requiredToken": "ADAPTERS_BOUNDARY_TESTED_OK",
-      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_ADAPTERS_BOUNDARY_TESTS_MISSING",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "ADAPTERS_PARITY",
-      "requiredToken": "ADAPTERS_PARITY_OK",
-      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_ADAPTERS_PARITY_MISSING",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "ADAPTERS_ENFORCED",
-      "requiredToken": "ADAPTERS_ENFORCED_OK",
-      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
-      "failSignal": "E_ADAPTERS_NOT_ENFORCED",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "PLATFORM_COVERAGE_BOUNDARY_TESTED",
-      "requiredToken": "PLATFORM_COVERAGE_BOUNDARY_TESTED_OK",
-      "proofHook": "node scripts/ops/platform-coverage-state.mjs --json",
-      "failSignal": "E_PLATFORM_COVERAGE_BOUNDARY_TESTS_MISSING",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "PERFORMANCE_HOTPATH_POLICY",
-      "requiredToken": "HOTPATH_POLICY_OK",
-      "proofHook": "node scripts/ops/perf-state.mjs --json",
-      "failSignal": "E_HOTPATH_POLICY_NOT_OK",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "PERFORMANCE_FIXTURE",
-      "requiredToken": "PERF_FIXTURE_OK",
-      "proofHook": "node scripts/ops/perf-state.mjs --json",
-      "failSignal": "E_PERF_FIXTURE_NOT_OK",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "PERFORMANCE_RUNNER_DETERMINISTIC",
-      "requiredToken": "PERF_RUNNER_DETERMINISTIC_OK",
-      "proofHook": "node scripts/ops/perf-state.mjs --json",
-      "failSignal": "E_PERF_RUNNER_NOT_DETERMINISTIC",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "PERFORMANCE_THRESHOLDS",
-      "requiredToken": "PERF_THRESHOLD_OK",
-      "proofHook": "node scripts/ops/perf-state.mjs --json",
-      "failSignal": "E_PERF_THRESHOLD_NOT_OK",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "PERFORMANCE_BASELINE",
-      "requiredToken": "PERF_BASELINE_OK",
-      "proofHook": "node scripts/ops/perf-state.mjs --json",
-      "failSignal": "E_PERF_BASELINE_NOT_OK",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "GOVERNANCE_STRICT",
-      "requiredToken": "GOVERNANCE_STRICT_OK",
-      "proofHook": "node scripts/ops/emit-ops-summary.mjs",
-      "failSignal": "E_GOVERNANCE_STRICT_FAIL",
-      "blocking": true,
-      "sourceBinding": "ops-summary"
-    },
-    {
-      "claimId": "GOVERNANCE_STATE_VALIDATION_BASELINE",
-      "requiredToken": "GOVERNANCE_STATE_VALID",
-      "proofHook": "node scripts/ops/governance-state-valid-state.mjs --json",
-      "failSignal": "E_GOVERNANCE_STATE_VALID_FAIL",
-      "blocking": false,
-      "sourceBinding": "truth-table"
-    },
-    {
-      "claimId": "STRATEGY_PROGRESS_VALIDATION_BASELINE",
-      "requiredToken": "STRATEGY_PROGRESS_VALID",
-      "proofHook": "node scripts/ops/strategy-progress-valid-state.mjs --json",
-      "failSignal": "E_STRATEGY_PROGRESS_VALID_FAIL",
-      "blocking": false,
-      "sourceBinding": "truth-table"
-    },
-    {
-      "claimId": "XPLAT_CONTRACT",
-      "requiredToken": "XPLAT_CONTRACT_OK",
-      "proofHook": "node scripts/ops/extract-truth-table.mjs --json",
-      "failSignal": "E_XPLAT_CONTRACT_INVALID",
-      "blocking": true,
-      "sourceBinding": "truth-table"
-    },
-    {
-      "claimId": "HEAD_STRICT_RELEASE",
-      "requiredToken": "HEAD_STRICT_OK",
-      "proofHook": "node scripts/ops/head-strict-state.mjs --json",
-      "failSignal": "E_HEAD_BINDING_INVALID",
-      "blocking": true,
-      "gateTier": "release",
-      "sourceBinding": "ops_script"
-    },
-    {
-      "claimId": "TOKEN_DECLARATION",
-      "requiredToken": "TOKEN_DECLARATION_VALID_OK",
-      "proofHook": "node scripts/ops/token-declaration-state.mjs",
-      "failSignal": "E_TOKEN_DECLARATION_INVALID",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "SCR_RUNTIME_SHARED_RATIO",
-      "requiredToken": "SCR_RUNTIME_SHARED_RATIO_OK",
-      "proofHook": "node scripts/ops/scr-calc.mjs --json",
-      "failSignal": "E_SHARED_CODE_RATIO_BELOW_MIN",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "XPLAT_COST_GUARANTEE",
-      "requiredToken": "XPLAT_COST_GUARANTEE_OK",
-      "proofHook": "node scripts/ops/xplat-cost-guarantee-state.mjs --json",
-      "failSignal": "E_XPLAT_COST_GUARANTEE_FAIL",
-      "blocking": true,
-      "sourceBinding": "doctor"
-    },
-    {
-      "claimId": "DERIVED_VIEWS_INFRA",
-      "requiredToken": "DERIVED_VIEWS_INFRA_OK",
-      "proofHook": "node scripts/ops/derived-views-state.mjs --json",
-      "failSignal": "E_DERIVED_VIEWS_INFRA_FAIL",
-      "blocking": false,
-      "sourceBinding": "truth-table"
-    },
-    {
-      "claimId": "MINDMAP_DERIVED_GRAPH",
-      "requiredToken": "MINDMAP_DERIVED_GRAPH_OK",
-      "proofHook": "node scripts/ops/mindmap-derived-state.mjs --json",
-      "failSignal": "E_MINDMAP_DERIVED_GRAPH_FAIL",
-      "blocking": false,
-      "sourceBinding": "truth-table"
-    },
-    {
-      "claimId": "COMMENTS_HISTORY_SAFETY_BASELINE",
-      "requiredToken": "COMMENTS_HISTORY_SAFE_OK",
-      "proofHook": "node scripts/ops/comments-history-safe-state.mjs --json",
-      "failSignal": "E_COMMENTS_HISTORY_SAFE_FAIL",
-      "blocking": false,
-      "sourceBinding": "truth-table"
-    },
-    {
-      "claimId": "COLLAB_STRESS_SAFETY_BASELINE",
-      "requiredToken": "COLLAB_STRESS_SAFE_OK",
-      "proofHook": "node scripts/ops/collab-stress-safe-state.mjs --json",
-      "failSignal": "E_COLLAB_STRESS_SAFE_FAIL",
-      "blocking": false,
-      "sourceBinding": "truth-table"
-    },
-    {
-      "claimId": "COLLAB_EVENTLOG_BASELINE",
-      "requiredToken": "COLLAB_EVENTLOG_OK",
-      "proofHook": "node scripts/ops/collab-eventlog-state.mjs --json",
-      "failSignal": "E_COLLAB_EVENTLOG_FAIL",
-      "blocking": false,
-      "sourceBinding": "truth-table"
     },
     {
       "claimId": "COLLAB_APPLY_PIPELINE_BASELINE",
@@ -424,42 +126,52 @@
       "sourceBinding": "truth-table"
     },
     {
-      "claimId": "SIMULATION_MIN_CONTRACT_BASELINE",
-      "requiredToken": "SIMULATION_MIN_CONTRACT_OK",
-      "proofHook": "node scripts/ops/simulation-min-contract-state.mjs --json",
-      "failSignal": "E_SIMULATION_MIN_CONTRACT_FAIL",
+      "claimId": "COLLAB_EVENTLOG_BASELINE",
+      "requiredToken": "COLLAB_EVENTLOG_OK",
+      "proofHook": "node scripts/ops/collab-eventlog-state.mjs --json",
+      "failSignal": "E_COLLAB_EVENTLOG_FAIL",
       "blocking": false,
       "sourceBinding": "truth-table"
     },
     {
-      "claimId": "FREEZE_MODE_STRICT_SEMANTICS",
-      "requiredToken": "FREEZE_MODE_STRICT_OK",
-      "proofHook": "FREEZE_MODE=1 node scripts/ops/freeze-mode-state.mjs --json",
-      "failSignal": "E_FREEZE_MODE_STRICT_FAIL",
+      "claimId": "COLLAB_STRESS_SAFETY_BASELINE",
+      "requiredToken": "COLLAB_STRESS_SAFE_OK",
+      "proofHook": "node scripts/ops/collab-stress-safe-state.mjs --json",
+      "failSignal": "E_COLLAB_STRESS_SAFE_FAIL",
       "blocking": false,
       "sourceBinding": "truth-table"
     },
     {
-      "claimId": "MACOS_SIGNING_READINESS",
-      "requiredToken": "XPLAT_CONTRACT_MACOS_SIGNING_READY_OK",
-      "proofHook": "node scripts/ops/macos-signing-readiness-state.mjs --json",
-      "failSignal": "E_MACOS_SIGNING_READINESS_FAIL",
-      "blocking": false,
-      "sourceBinding": "truth-table"
+      "claimId": "COMMAND_SURFACE_BYPASS_NEGATIVE_TESTS",
+      "requiredToken": "COMMAND_SURFACE_BYPASS_NEGATIVE_TESTS_OK",
+      "proofHook": "node scripts/ops/command-surface-state.mjs --json",
+      "failSignal": "E_COMMAND_SURFACE_NEGATIVE_MISSING",
+      "blocking": true,
+      "sourceBinding": "ops_script+contract_test"
     },
     {
-      "claimId": "RELEASE_ARTIFACT_SOURCES_ROLLUP",
-      "requiredToken": "RELEASE_ARTIFACT_SOURCES_OK",
-      "proofHook": "node scripts/ops/release-artifact-sources-state.mjs --json",
-      "failSignal": "E_RELEASE_ARTIFACT_SOURCES_FAIL",
-      "blocking": false,
-      "sourceBinding": "truth-table"
+      "claimId": "COMMAND_SURFACE_ENFORCED",
+      "requiredToken": "COMMAND_SURFACE_ENFORCED_OK",
+      "proofHook": "node scripts/ops/command-surface-state.mjs --json",
+      "failSignal": "E_COMMAND_SURFACE_BYPASS",
+      "blocking": true,
+      "sourceBinding": "ops_script+contract_test",
+      "positiveContractRef": "test/contracts/command-surface-single-entry.contract.test.js#positive-baseline-tokens-are-bound",
+      "negativeContractRef": "test/contracts/command-surface-single-entry.contract.test.js#hotkey-bypass-fails-with-e-command-surface-bypass"
     },
     {
-      "claimId": "THIRD_PARTY_NOTICES_READINESS",
-      "requiredToken": "THIRD_PARTY_NOTICES_READINESS_OK",
-      "proofHook": "node scripts/ops/third-party-notices-readiness-state.mjs --json",
-      "failSignal": "E_THIRD_PARTY_NOTICES_READINESS_FAIL",
+      "claimId": "COMMAND_SURFACE_SINGLE_ENTRY",
+      "requiredToken": "COMMAND_SURFACE_SINGLE_ENTRY_OK",
+      "proofHook": "node scripts/ops/command-surface-state.mjs --json",
+      "failSignal": "E_COMMAND_SURFACE_BYPASS",
+      "blocking": true,
+      "sourceBinding": "ops_script+contract_test"
+    },
+    {
+      "claimId": "COMMENTS_HISTORY_SAFETY_BASELINE",
+      "requiredToken": "COMMENTS_HISTORY_SAFE_OK",
+      "proofHook": "node scripts/ops/comments-history-safe-state.mjs --json",
+      "failSignal": "E_COMMENTS_HISTORY_SAFE_FAIL",
       "blocking": false,
       "sourceBinding": "truth-table"
     },
@@ -484,6 +196,92 @@
       "sourceBinding": "ops_script"
     },
     {
+      "claimId": "CORE_SOT_COMMAND_CANON",
+      "requiredToken": "CORE_SOT_COMMAND_CANON_OK",
+      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "failSignal": "E_CORE_SOT_COMMAND_CANON_MISSING",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "CORE_SOT_EXECUTABLE",
+      "requiredToken": "CORE_SOT_EXECUTABLE_OK",
+      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "failSignal": "E_CORE_SOT_NOT_EXECUTABLE",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "CORE_SOT_HASH_DETERMINISTIC",
+      "requiredToken": "CORE_SOT_HASH_DETERMINISTIC_OK",
+      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "failSignal": "E_CORE_SOT_HASH_NOT_DETERMINISTIC",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "CORE_SOT_REDUCER_IMPLEMENTED",
+      "requiredToken": "CORE_SOT_REDUCER_IMPLEMENTED_OK",
+      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "failSignal": "E_CORE_SOT_REDUCER_NOT_IMPLEMENTED",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "CORE_SOT_SCHEMA_ALIGNED",
+      "requiredToken": "CORE_SOT_SCHEMA_ALIGNED_OK",
+      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "failSignal": "E_CORE_SOT_SCHEMA_NOT_ALIGNED",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "CORE_SOT_TYPED_ERRORS",
+      "requiredToken": "CORE_SOT_TYPED_ERRORS_OK",
+      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "failSignal": "E_CORE_SOT_TYPED_ERRORS_MISSING",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "CRITICAL_CLAIM_MATRIX_VALID",
+      "requiredToken": "CRITICAL_CLAIM_MATRIX_OK",
+      "proofHook": "node scripts/ops/critical-claim-matrix-state.mjs --json",
+      "failSignal": "E_CRITICAL_CLAIM_MATRIX_INVALID",
+      "failSignalCode": "E_CRITICAL_CLAIM_MATRIX_INVALID",
+      "blocking": true,
+      "gateTier": "release",
+      "sourceBinding": "ops_script"
+    },
+    {
+      "claimId": "DEPENDENCY_REMEDIATION_POLICY",
+      "requiredToken": "DEPENDENCY_REMEDIATION_POLICY_OK",
+      "proofHook": "node scripts/ops/dependency-remediation-policy-state.mjs --json",
+      "failSignal": "E_DEP_REMEDIATION_POLICY_INVALID",
+      "blocking": false,
+      "sourceBinding": "ops_script+contract_test"
+    },
+    {
+      "claimId": "DERIVED_VIEWS_INFRA",
+      "requiredToken": "DERIVED_VIEWS_INFRA_OK",
+      "proofHook": "node scripts/ops/derived-views-state.mjs --json",
+      "failSignal": "E_DERIVED_VIEWS_INFRA_FAIL",
+      "blocking": false,
+      "sourceBinding": "truth-table"
+    },
+    {
+      "claimId": "E2E_CRITICAL_USER_PATH",
+      "requiredToken": "E2E_CRITICAL_USER_PATH_OK",
+      "proofHook": "node scripts/ops/e2e-critical-user-path-state.mjs --json",
+      "failSignal": "E_E2E_CRITICAL_USER_PATH_NOT_OK",
+      "failSignalCode": "E_E2E_CRITICAL_USER_PATH_NOT_OK",
+      "blocking": false,
+      "gateTier": "release",
+      "sourceBinding": "ops_script+contract_test",
+      "positiveContractRef": "test/contracts/e2e-critical-user-path.contract.test.js#required-scenario-set-returns-pass-equals-one",
+      "negativeContractRef": "test/contracts/e2e-critical-user-path.contract.test.js#remove-one-required-step-returns-fail"
+    },
+    {
       "claimId": "FAILSIGNAL_REGISTRY_VALID",
       "requiredToken": "FAILSIGNAL_REGISTRY_VALID_OK",
       "proofHook": "node scripts/ops/failsignal-registry-state.mjs --json",
@@ -494,110 +292,18 @@
       "sourceBinding": "ops_script"
     },
     {
-      "claimId": "TOKEN_CATALOG_VALID",
-      "requiredToken": "TOKEN_CATALOG_VALID_OK",
-      "proofHook": "node scripts/ops/token-catalog-state.mjs --json",
-      "failSignal": "E_TOKEN_CATALOG_INVALID",
-      "failSignalCode": "E_TOKEN_CATALOG_INVALID",
-      "blocking": true,
-      "gateTier": "release",
-      "sourceBinding": "ops_script"
-    },
-    {
-      "claimId": "LOSSLESS_MAP",
-      "requiredToken": "LOSSLESS_MAP_OK",
-      "proofHook": "node scripts/ops/lossless-map-state.mjs --json",
-      "failSignal": "E_LOSSLESS_MAP_DRIFT",
-      "failSignalCode": "E_LOSSLESS_MAP_DRIFT",
-      "blocking": true,
-      "gateTier": "release",
-      "sourceBinding": "ops_script"
-    },
-    {
-      "claimId": "REQUIRED_SET_NO_TARGET",
-      "requiredToken": "REQUIRED_SET_NO_TARGET_OK",
-      "proofHook": "node scripts/ops/required-set-no-target-state.mjs --json",
-      "failSignal": "E_REQUIRED_SET_CONTAINS_TARGET",
-      "failSignalCode": "E_REQUIRED_SET_CONTAINS_TARGET",
-      "blocking": true,
-      "gateTier": "release",
-      "sourceBinding": "ops_script+contract_test"
-    },
-    {
-      "claimId": "ORIGIN_SMOKE",
-      "requiredToken": "ORIGIN_SMOKE_OK",
-      "proofHook": "node scripts/ops/origin-smoke-state.mjs --json",
-      "failSignal": "E_NETWORK_ORIGIN_UNAVAILABLE",
-      "failSignalCode": "E_NETWORK_ORIGIN_UNAVAILABLE",
-      "blocking": true,
-      "gateTier": "release",
-      "sourceBinding": "ops_script"
-    },
-    {
-      "claimId": "VERIFY_ATTESTATION",
-      "requiredToken": "VERIFY_ATTESTATION_OK",
-      "proofHook": "node scripts/ops/verify-attestation-state.mjs --json",
-      "failSignal": "E_VERIFY_ATTESTATION_INVALID",
-      "failSignalCode": "E_VERIFY_ATTESTATION_INVALID",
-      "blocking": true,
-      "gateTier": "release",
-      "sourceBinding": "ops_script"
-    },
-    {
-      "claimId": "ATTESTATION_SIGNATURE",
-      "requiredToken": "ATTESTATION_SIGNATURE_OK",
-      "proofHook": "node scripts/ops/attestation-signature-state.mjs --json",
-      "failSignal": "E_ATTESTATION_SIGNATURE_INVALID",
-      "failSignalCode": "E_ATTESTATION_SIGNATURE_INVALID",
-      "blocking": true,
-      "gateTier": "release",
-      "sourceBinding": "ops_script"
-    },
-    {
-      "claimId": "PROOFHOOK_INTEGRITY",
-      "requiredToken": "PROOFHOOK_INTEGRITY_OK",
-      "proofHook": "node scripts/ops/proofhook-integrity-state.mjs --json",
-      "failSignal": "E_PROOFHOOK_TAMPER_DETECTED",
-      "failSignalCode": "E_PROOFHOOK_TAMPER_DETECTED",
-      "blocking": true,
-      "gateTier": "release",
-      "sourceBinding": "ops_script"
-    },
-    {
-      "claimId": "PROOFHOOK_BRIDGE_VALID",
-      "requiredToken": "PROOFHOOK_BRIDGE_VALID_OK",
-      "proofHook": "node scripts/ops/proofhook-bridge-state.mjs --json",
-      "failSignal": "E_PROOFHOOK_BRIDGE_INVALID",
-      "failSignalCode": "E_PROOFHOOK_BRIDGE_INVALID",
+      "claimId": "FREEZE_MODE_STRICT_SEMANTICS",
+      "requiredToken": "FREEZE_MODE_STRICT_OK",
+      "proofHook": "FREEZE_MODE=1 node scripts/ops/freeze-mode-state.mjs --json",
+      "failSignal": "E_FREEZE_MODE_STRICT_FAIL",
       "blocking": false,
-      "gateTier": "release",
-      "sourceBinding": "ops_script"
+      "sourceBinding": "truth-table"
     },
     {
-      "claimId": "VERIFY_ORCHESTRATOR_CANON",
-      "requiredToken": "VERIFY_ORCHESTRATOR_CANON_OK",
-      "proofHook": "node scripts/ops/verify-orchestrator-canon-state.mjs --json",
-      "failSignal": "E_VERIFY_ORCHESTRATOR_MISMATCH",
-      "failSignalCode": "E_VERIFY_ORCHESTRATOR_MISMATCH",
-      "blocking": false,
-      "gateTier": "release",
-      "sourceBinding": "ops_script"
-    },
-    {
-      "claimId": "LEGACY_VERIFY_SUNSET_GUARD",
-      "requiredToken": "LEGACY_VERIFY_SUNSET_GUARD_OK",
-      "proofHook": "node scripts/ops/legacy-verify-sunset-guard-state.mjs --json",
-      "failSignal": "E_LEGACY_VERIFY_PATH_STILL_PASSING",
-      "failSignalCode": "E_LEGACY_VERIFY_PATH_STILL_PASSING",
-      "blocking": false,
-      "gateTier": "release",
-      "sourceBinding": "ops_script"
-    },
-    {
-      "claimId": "TOKEN_SOURCE_CONFLICT_DETECTION",
-      "requiredToken": "TOKEN_SOURCE_CONFLICT_OK",
-      "proofHook": "node scripts/ops/token-source-conflict-state.mjs --json",
-      "failSignal": "E_TOKEN_SOURCE_CONFLICT",
+      "claimId": "FREEZE_READY_ROLLUP",
+      "requiredToken": "FREEZE_READY_OK",
+      "proofHook": "node scripts/ops/freeze-ready-state.mjs --json",
+      "failSignal": "E_FREEZE_READY_ROLLUP_FAIL",
       "blocking": false,
       "sourceBinding": "truth-table"
     },
@@ -612,12 +318,384 @@
       "sourceBinding": "truth-table"
     },
     {
-      "claimId": "FREEZE_READY_ROLLUP",
-      "requiredToken": "FREEZE_READY_OK",
-      "proofHook": "node scripts/ops/freeze-ready-state.mjs --json",
-      "failSignal": "E_FREEZE_READY_ROLLUP_FAIL",
+      "claimId": "GOVERNANCE_STATE_VALIDATION_BASELINE",
+      "requiredToken": "GOVERNANCE_STATE_VALID",
+      "proofHook": "node scripts/ops/governance-state-valid-state.mjs --json",
+      "failSignal": "E_GOVERNANCE_STATE_VALID_FAIL",
       "blocking": false,
       "sourceBinding": "truth-table"
+    },
+    {
+      "claimId": "GOVERNANCE_STRICT",
+      "requiredToken": "GOVERNANCE_STRICT_OK",
+      "proofHook": "node scripts/ops/emit-ops-summary.mjs",
+      "failSignal": "E_GOVERNANCE_STRICT_FAIL",
+      "blocking": true,
+      "sourceBinding": "ops-summary"
+    },
+    {
+      "claimId": "HEAD_STRICT_RELEASE",
+      "requiredToken": "HEAD_STRICT_OK",
+      "proofHook": "node scripts/ops/head-strict-state.mjs --json",
+      "failSignal": "E_HEAD_BINDING_INVALID",
+      "blocking": true,
+      "gateTier": "release",
+      "sourceBinding": "ops_script"
+    },
+    {
+      "claimId": "LEGACY_VERIFY_SUNSET_GUARD",
+      "requiredToken": "LEGACY_VERIFY_SUNSET_GUARD_OK",
+      "proofHook": "node scripts/ops/legacy-verify-sunset-guard-state.mjs --json",
+      "failSignal": "E_LEGACY_VERIFY_PATH_STILL_PASSING",
+      "failSignalCode": "E_LEGACY_VERIFY_PATH_STILL_PASSING",
+      "blocking": false,
+      "gateTier": "release",
+      "sourceBinding": "ops_script"
+    },
+    {
+      "claimId": "LOSSLESS_MAP",
+      "requiredToken": "LOSSLESS_MAP_OK",
+      "proofHook": "node scripts/ops/lossless-map-state.mjs --json",
+      "failSignal": "E_LOSSLESS_MAP_DRIFT",
+      "failSignalCode": "E_LOSSLESS_MAP_DRIFT",
+      "blocking": true,
+      "gateTier": "release",
+      "sourceBinding": "ops_script"
+    },
+    {
+      "claimId": "MACOS_SIGNING_READINESS",
+      "requiredToken": "XPLAT_CONTRACT_MACOS_SIGNING_READY_OK",
+      "proofHook": "node scripts/ops/macos-signing-readiness-state.mjs --json",
+      "failSignal": "E_MACOS_SIGNING_READINESS_FAIL",
+      "blocking": false,
+      "sourceBinding": "truth-table"
+    },
+    {
+      "claimId": "MIGRATIONS_ATOMICITY",
+      "requiredToken": "MIGRATIONS_ATOMICITY_OK",
+      "proofHook": "node scripts/ops/migration-completeness-verifier-state.mjs --json",
+      "failSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "failSignalCode": "E_BLOCKING_TOKEN_UNBOUND",
+      "blocking": false,
+      "gateTier": "release",
+      "sourceBinding": "ops_script+contract_test",
+      "positiveContractRef": "test/contracts/migration-completeness-verifier.contract.test.js#declared-chain-coverage-is-100-percent",
+      "negativeContractRef": "test/contracts/migration-completeness-verifier.contract.test.js#removing-one-required-step-fails-completeness"
+    },
+    {
+      "claimId": "MIGRATIONS_POLICY",
+      "requiredToken": "MIGRATIONS_POLICY_OK",
+      "proofHook": "node scripts/ops/migration-completeness-verifier-state.mjs --json",
+      "failSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "failSignalCode": "E_BLOCKING_TOKEN_UNBOUND",
+      "blocking": false,
+      "gateTier": "release",
+      "sourceBinding": "ops_script+contract_test",
+      "positiveContractRef": "test/contracts/migration-completeness-verifier.contract.test.js#declared-chain-coverage-is-100-percent",
+      "negativeContractRef": "test/contracts/migration-completeness-verifier.contract.test.js#removing-one-required-step-fails-completeness"
+    },
+    {
+      "claimId": "MINDMAP_DERIVED_GRAPH",
+      "requiredToken": "MINDMAP_DERIVED_GRAPH_OK",
+      "proofHook": "node scripts/ops/mindmap-derived-state.mjs --json",
+      "failSignal": "E_MINDMAP_DERIVED_GRAPH_FAIL",
+      "blocking": false,
+      "sourceBinding": "truth-table"
+    },
+    {
+      "claimId": "NORMALIZATION_XPLAT",
+      "requiredToken": "NORMALIZATION_XPLAT_OK",
+      "proofHook": "node --test test/contracts/cross-platform-normalization.contract.test.js",
+      "failSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "failSignalCode": "E_BLOCKING_TOKEN_UNBOUND",
+      "blocking": false,
+      "gateTier": "release",
+      "sourceBinding": "ops_script+contract_test",
+      "positiveContractRef": "test/contracts/cross-platform-normalization.contract.test.js#newline-and-unicode-parity-confirmed",
+      "negativeContractRef": "test/contracts/cross-platform-normalization.contract.test.js#advisory-signals-cannot-escalate-to-blocking-outside-canonical-mode-matrix"
+    },
+    {
+      "claimId": "ORIGIN_SMOKE",
+      "requiredToken": "ORIGIN_SMOKE_OK",
+      "proofHook": "node scripts/ops/origin-smoke-state.mjs --json",
+      "failSignal": "E_NETWORK_ORIGIN_UNAVAILABLE",
+      "failSignalCode": "E_NETWORK_ORIGIN_UNAVAILABLE",
+      "blocking": true,
+      "gateTier": "release",
+      "sourceBinding": "ops_script"
+    },
+    {
+      "claimId": "PATH_BOUNDARY_GUARD",
+      "requiredToken": "PATH_BOUNDARY_GUARD_OK",
+      "proofHook": "node scripts/ops/path-boundary-guard-state.mjs --json",
+      "failSignal": "E_PATH_BOUNDARY_VIOLATION",
+      "blocking": true,
+      "sourceBinding": "ops_script+contract_test"
+    },
+    {
+      "claimId": "PERFORMANCE_BASELINE",
+      "requiredToken": "PERF_BASELINE_OK",
+      "proofHook": "node scripts/ops/perf-state.mjs --json",
+      "failSignal": "E_PERF_BASELINE_NOT_OK",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "PERFORMANCE_FIXTURE",
+      "requiredToken": "PERF_FIXTURE_OK",
+      "proofHook": "node scripts/ops/perf-state.mjs --json",
+      "failSignal": "E_PERF_FIXTURE_NOT_OK",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "PERFORMANCE_HOTPATH_POLICY",
+      "requiredToken": "HOTPATH_POLICY_OK",
+      "proofHook": "node scripts/ops/perf-state.mjs --json",
+      "failSignal": "E_HOTPATH_POLICY_NOT_OK",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "PERFORMANCE_RUNNER_DETERMINISTIC",
+      "requiredToken": "PERF_RUNNER_DETERMINISTIC_OK",
+      "proofHook": "node scripts/ops/perf-state.mjs --json",
+      "failSignal": "E_PERF_RUNNER_NOT_DETERMINISTIC",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "PERFORMANCE_THRESHOLDS",
+      "requiredToken": "PERF_THRESHOLD_OK",
+      "proofHook": "node scripts/ops/perf-state.mjs --json",
+      "failSignal": "E_PERF_THRESHOLD_NOT_OK",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "PLATFORM_COVERAGE_BOUNDARY_TESTED",
+      "requiredToken": "PLATFORM_COVERAGE_BOUNDARY_TESTED_OK",
+      "proofHook": "node scripts/ops/platform-coverage-state.mjs --json",
+      "failSignal": "E_PLATFORM_COVERAGE_BOUNDARY_TESTS_MISSING",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "PROOFHOOK_BRIDGE_VALID",
+      "requiredToken": "PROOFHOOK_BRIDGE_VALID_OK",
+      "proofHook": "node scripts/ops/proofhook-bridge-state.mjs --json",
+      "failSignal": "E_PROOFHOOK_BRIDGE_INVALID",
+      "failSignalCode": "E_PROOFHOOK_BRIDGE_INVALID",
+      "blocking": false,
+      "gateTier": "release",
+      "sourceBinding": "ops_script"
+    },
+    {
+      "claimId": "PROOFHOOK_INTEGRITY",
+      "requiredToken": "PROOFHOOK_INTEGRITY_OK",
+      "proofHook": "node scripts/ops/proofhook-integrity-state.mjs --json",
+      "failSignal": "E_PROOFHOOK_TAMPER_DETECTED",
+      "failSignalCode": "E_PROOFHOOK_TAMPER_DETECTED",
+      "blocking": true,
+      "gateTier": "release",
+      "sourceBinding": "ops_script"
+    },
+    {
+      "claimId": "RECOVERY_ACTION_CANON",
+      "requiredToken": "RECOVERY_ACTION_CANON_OK",
+      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
+      "failSignal": "E_RECOVERY_ACTION_CANON_NOT_OK",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "RECOVERY_ATOMIC_WRITE",
+      "requiredToken": "RECOVERY_ATOMIC_WRITE_OK",
+      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
+      "failSignal": "E_RECOVERY_ATOMIC_WRITE_NOT_OK",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "RECOVERY_CORRUPTION",
+      "requiredToken": "RECOVERY_CORRUPTION_OK",
+      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
+      "failSignal": "E_RECOVERY_CORRUPTION_NOT_OK",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "RECOVERY_IO",
+      "requiredToken": "RECOVERY_IO_OK",
+      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "failSignal": "E_RECOVERY_IO_NOT_OK",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "RECOVERY_REPLAY",
+      "requiredToken": "RECOVERY_REPLAY_OK",
+      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
+      "failSignal": "E_RECOVERY_REPLAY_NOT_OK",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "RECOVERY_SNAPSHOT",
+      "requiredToken": "RECOVERY_SNAPSHOT_OK",
+      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
+      "failSignal": "E_RECOVERY_SNAPSHOT_NOT_OK",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "RECOVERY_TYPED_ERRORS",
+      "requiredToken": "RECOVERY_TYPED_ERRORS_OK",
+      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
+      "failSignal": "E_RECOVERY_TYPED_ERRORS_NOT_OK",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "RELEASE_ARTIFACT_SOURCES_ROLLUP",
+      "requiredToken": "RELEASE_ARTIFACT_SOURCES_OK",
+      "proofHook": "node scripts/ops/release-artifact-sources-state.mjs --json",
+      "failSignal": "E_RELEASE_ARTIFACT_SOURCES_FAIL",
+      "blocking": false,
+      "sourceBinding": "truth-table"
+    },
+    {
+      "claimId": "REQUIRED_SET_NO_TARGET",
+      "requiredToken": "REQUIRED_SET_NO_TARGET_OK",
+      "proofHook": "node scripts/ops/required-set-no-target-state.mjs --json",
+      "failSignal": "E_REQUIRED_SET_CONTAINS_TARGET",
+      "failSignalCode": "E_REQUIRED_SET_CONTAINS_TARGET",
+      "blocking": true,
+      "gateTier": "release",
+      "sourceBinding": "ops_script+contract_test"
+    },
+    {
+      "claimId": "SCR_RUNTIME_SHARED_RATIO",
+      "requiredToken": "SCR_RUNTIME_SHARED_RATIO_OK",
+      "proofHook": "node scripts/ops/scr-calc.mjs --json",
+      "failSignal": "E_SHARED_CODE_RATIO_BELOW_MIN",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "SIMULATION_MIN_CONTRACT_BASELINE",
+      "requiredToken": "SIMULATION_MIN_CONTRACT_OK",
+      "proofHook": "node scripts/ops/simulation-min-contract-state.mjs --json",
+      "failSignal": "E_SIMULATION_MIN_CONTRACT_FAIL",
+      "blocking": false,
+      "sourceBinding": "truth-table"
+    },
+    {
+      "claimId": "SINGLE_VERIFY_CONTOUR_ENFORCED",
+      "requiredToken": "SINGLE_VERIFY_CONTOUR_ENFORCED_OK",
+      "proofHook": "node scripts/ops/verify-contour-state.mjs --json",
+      "failSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "failSignalCode": "E_BLOCKING_TOKEN_UNBOUND",
+      "blocking": false,
+      "gateTier": "release",
+      "sourceBinding": "ops_script+contract_test",
+      "positiveContractRef": "test/contracts/single-verify-contour.contract.test.js#single-verify-contour-state-returns-ok-on-repository-baseline",
+      "negativeContractRef": "test/contracts/single-verify-contour.contract.test.js#single-verify-contour-state-fails-when-second-orchestrator-entrypoint-exists"
+    },
+    {
+      "claimId": "STRATEGY_PROGRESS_VALIDATION_BASELINE",
+      "requiredToken": "STRATEGY_PROGRESS_VALID",
+      "proofHook": "node scripts/ops/strategy-progress-valid-state.mjs --json",
+      "failSignal": "E_STRATEGY_PROGRESS_VALID_FAIL",
+      "blocking": false,
+      "sourceBinding": "truth-table"
+    },
+    {
+      "claimId": "THIRD_PARTY_NOTICES_READINESS",
+      "requiredToken": "THIRD_PARTY_NOTICES_READINESS_OK",
+      "proofHook": "node scripts/ops/third-party-notices-readiness-state.mjs --json",
+      "failSignal": "E_THIRD_PARTY_NOTICES_READINESS_FAIL",
+      "blocking": false,
+      "sourceBinding": "truth-table"
+    },
+    {
+      "claimId": "TOKEN_CATALOG_VALID",
+      "requiredToken": "TOKEN_CATALOG_VALID_OK",
+      "proofHook": "node scripts/ops/token-catalog-state.mjs --json",
+      "failSignal": "E_TOKEN_CATALOG_INVALID",
+      "failSignalCode": "E_TOKEN_CATALOG_INVALID",
+      "blocking": true,
+      "gateTier": "release",
+      "sourceBinding": "ops_script"
+    },
+    {
+      "claimId": "TOKEN_DECLARATION",
+      "requiredToken": "TOKEN_DECLARATION_VALID_OK",
+      "proofHook": "node scripts/ops/token-declaration-state.mjs",
+      "failSignal": "E_TOKEN_DECLARATION_INVALID",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
+      "claimId": "TOKEN_SOURCE_CONFLICT_DETECTION",
+      "requiredToken": "TOKEN_SOURCE_CONFLICT_OK",
+      "proofHook": "node scripts/ops/token-source-conflict-state.mjs --json",
+      "failSignal": "E_TOKEN_SOURCE_CONFLICT",
+      "blocking": false,
+      "sourceBinding": "truth-table",
+      "positiveContractRef": "test/contracts/token-source-conflict.contract.test.js#pass-when-truth-table-and-ops-summary-token-values-match",
+      "negativeContractRef": "test/contracts/token-source-conflict.contract.test.js#fail-with-e-token-source-conflict-on-mismatch"
+    },
+    {
+      "claimId": "VERIFY_ATTESTATION",
+      "requiredToken": "VERIFY_ATTESTATION_OK",
+      "proofHook": "node scripts/ops/verify-attestation-state.mjs --json",
+      "failSignal": "E_VERIFY_ATTESTATION_INVALID",
+      "failSignalCode": "E_VERIFY_ATTESTATION_INVALID",
+      "blocking": true,
+      "gateTier": "release",
+      "sourceBinding": "ops_script+trust_lock",
+      "positiveContractRef": "test/contracts/verify-attestation.contract.test.js#baseline-attestation-is-valid-with-signature-gate",
+      "negativeContractRef": "test/contracts/verify-attestation.contract.test.js#wrong-signer-fails-signature-gate"
+    },
+    {
+      "claimId": "VERIFY_ORCHESTRATOR_CANON",
+      "requiredToken": "VERIFY_ORCHESTRATOR_CANON_OK",
+      "proofHook": "node scripts/ops/verify-orchestrator-canon-state.mjs --json",
+      "failSignal": "E_VERIFY_ORCHESTRATOR_MISMATCH",
+      "failSignalCode": "E_VERIFY_ORCHESTRATOR_MISMATCH",
+      "blocking": false,
+      "gateTier": "release",
+      "sourceBinding": "ops_script"
+    },
+    {
+      "claimId": "X3_RECOVERY_SMOKE",
+      "requiredToken": "RECOVERY_X3_RECOVERY_SMOKE_OK",
+      "proofHook": "node scripts/ops/x3-recovery-smoke-proofhook.mjs --json",
+      "failSignal": "E_X3_RECOVERY_SMOKE_FAILED",
+      "failSignalCode": "E_X3_RECOVERY_SMOKE_FAILED",
+      "blocking": true,
+      "gateTier": "release",
+      "requiredWhen": "activeStageId==X3",
+      "sourceBinding": "ops_script+contract_test",
+      "positiveContractRef": "test/contracts/x3-recovery-smoke.contract.test.js#positive-path",
+      "negativeContractRef": "test/contracts/x3-recovery-smoke.contract.test.js#forced-failure"
+    },
+    {
+      "claimId": "XPLAT_CONTRACT",
+      "requiredToken": "XPLAT_CONTRACT_OK",
+      "proofHook": "node scripts/ops/extract-truth-table.mjs --json",
+      "failSignal": "E_XPLAT_CONTRACT_INVALID",
+      "blocking": true,
+      "sourceBinding": "truth-table"
+    },
+    {
+      "claimId": "XPLAT_COST_GUARANTEE",
+      "requiredToken": "XPLAT_COST_GUARANTEE_OK",
+      "proofHook": "node scripts/ops/xplat-cost-guarantee-state.mjs --json",
+      "failSignal": "E_XPLAT_COST_GUARANTEE_FAIL",
+      "blocking": true,
+      "sourceBinding": "doctor"
     }
   ]
 }

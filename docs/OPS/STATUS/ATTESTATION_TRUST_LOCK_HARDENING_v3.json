@@ -12,6 +12,9 @@
     "KEY_ID",
     "TRUST_CONTEXT_ID"
   ],
+  "trustLockRef": "docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_v3_12.json",
+  "trustedArtifactRef": "docs/OPS/LOCKS/ATTESTATION_TRUST_ARTIFACT.lock",
+  "requiredSignerIdentityBoundVerification": true,
   "scopeModes": [
     "release",
     "promotion"

@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "entryFlowVersion": "x19.ws01.v1",
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "blockingSurfaceExpansion": false,
+  "channels": [
+    "menu",
+    "toolbar",
+    "palette"
+  ],
+  "entrySurfaces": [
+    "first_run",
+    "empty_state"
+  ],
+  "modes": [
+    "Write",
+    "Plan",
+    "Review"
+  ],
+  "profiles": [
+    "minimal",
+    "pro",
+    "guru"
+  ],
+  "requiredEntryActions": [
+    "new",
+    "open",
+    "import-markdown-v1",
+    "export-docx-min",
+    "help-open"
+  ],
+  "entries": [
+    {
+      "actionId": "new",
+      "commandId": "cmd.project.new",
+      "quickStartKey": "first-run:new-project",
+      "hintId": "hint.new",
+      "hintText": "Start with a new project",
+      "entrySurfaces": ["first_run", "empty_state"],
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "actionId": "open",
+      "commandId": "cmd.project.open",
+      "quickStartKey": "first-run:open-project",
+      "hintId": "hint.open",
+      "hintText": "Open existing project",
+      "entrySurfaces": ["first_run", "empty_state"],
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "actionId": "import-markdown-v1",
+      "commandId": "cmd.project.insert.markdownPrompt",
+      "quickStartKey": "first-run:import-markdown",
+      "hintId": "hint.import",
+      "hintText": "Import markdown draft",
+      "entrySurfaces": ["first_run", "empty_state"],
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "actionId": "export-docx-min",
+      "commandId": "cmd.project.export.docxMin",
+      "quickStartKey": "first-run:export-docx",
+      "hintId": "hint.export",
+      "hintText": "Export draft to DOCX",
+      "entrySurfaces": ["first_run", "empty_state"],
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    },
+    {
+      "actionId": "help-open",
+      "commandId": "cmd.project.open",
+      "quickStartKey": "first-run:help-quickstart",
+      "hintId": "hint.help",
+      "hintText": "Open sample project and quickstart guide",
+      "entrySurfaces": ["first_run", "empty_state"],
+      "channels": { "menu": "visible", "toolbar": "visible", "palette": "visible" },
+      "modes": ["Write", "Plan", "Review"],
+      "profiles": ["minimal", "pro", "guru"]
+    }
+  ],
+  "emptyStateHints": [
+    {
+      "hintId": "hint.new",
+      "actionId": "new",
+      "commandId": "cmd.project.new",
+      "entrySurface": "empty_state"
+    },
+    {
+      "hintId": "hint.open",
+      "actionId": "open",
+      "commandId": "cmd.project.open",
+      "entrySurface": "empty_state"
+    },
+    {
+      "hintId": "hint.import",
+      "actionId": "import-markdown-v1",
+      "commandId": "cmd.project.insert.markdownPrompt",
+      "entrySurface": "empty_state"
+    },
+    {
+      "hintId": "hint.export",
+      "actionId": "export-docx-min",
+      "commandId": "cmd.project.export.docxMin",
+      "entrySurface": "empty_state"
+    },
+    {
+      "hintId": "hint.help",
+      "actionId": "help-open",
+      "commandId": "cmd.project.open",
+      "entrySurface": "empty_state"
+    }
+  ]
+}

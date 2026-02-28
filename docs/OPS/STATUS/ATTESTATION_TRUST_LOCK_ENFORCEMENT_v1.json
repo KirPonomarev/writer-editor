@@ -4,6 +4,8 @@
   "token": "ATTESTATION_TRUST_LOCK_ENFORCEMENT_OK",
   "scope": "release attestation trust-lock context validation",
   "declaredFailSignal": "E_VERIFY_ATTESTATION_INVALID",
+  "trustLockRef": "docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_v3_12.json",
+  "trustedArtifactRef": "docs/OPS/LOCKS/ATTESTATION_TRUST_ARTIFACT.lock",
   "stateScript": "scripts/ops/attestation-trust-lock-state.mjs",
   "reportScript": "scripts/ops/p0-06-attestation-trust-lock-report.mjs",
   "contractTest": "test/contracts/attestation-trust-lock.contract.test.js"

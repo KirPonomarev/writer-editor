@@ -17,10 +17,15 @@
     {
       "blocking": true,
       "code": "E_ATTESTATION_SIGNATURE_INVALID",
-      "negativeTestRef": "test/contracts/attestation-signature.contract.test.js#tampered-signature-fails-with-canonical-code",
+      "negativeTestRef": "test/contracts/attestation-signature.contract.test.js#wrong-signer-reject",
       "precedence": 1,
-      "rationale": "Attestation signature mismatch indicates attestation evidence tamper and must block release gates.",
-      "tier": "release"
+      "rationale": "Attestation signature is valid only with trust-lock provenance and signer identity binding; violations must block release gates.",
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": false,
@@ -44,9 +49,9 @@
         "promotion": "advisory",
         "release": "advisory"
       },
-      "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
+      "negativeTestRef": "test/contracts/ws03-blocking-binding-completeness.contract.test.js#missing-proofhook-fails-with-e-blocking-token-unbound",
       "precedence": 3,
-      "rationale": "P0-02 reconcile registration for E_BLOCKING_TOKEN_UNBOUND; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
+      "rationale": "WS03 binding completeness: missing proofhook, contracts, sourceBinding, rollback, or token-claim-registry alignment must fail deterministically without expanding blocking surface.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
     },
@@ -121,10 +126,15 @@
     {
       "blocking": true,
       "code": "E_COMMAND_SURFACE_BYPASS",
-      "negativeTestRef": "test/contracts/command-surface-bus-only.contract.test.js#direct-ipc-command-bypass",
+      "negativeTestRef": "test/contracts/command-surface-single-entry.contract.test.js#hotkey-bypass-fails-with-e-command-surface-bypass",
       "precedence": 9,
-      "rationale": "Command execution outside command.bus is a deterministic bypass and must fail in release gates.",
-      "tier": "release"
+      "rationale": "Command execution outside command.bus across the mandatory five-scenario bypass suite must fail in release gates.",
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": true,
@@ -132,7 +142,12 @@
       "negativeTestRef": "test/contracts/command-surface-single-entry.contract.test.js#missing-bypass-scenario",
       "precedence": 10,
       "rationale": "Command surface bypass suite is incomplete when any required negative scenario is missing.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": false,
@@ -250,7 +265,12 @@
       "negativeTestRef": "test/contracts/dependency-remediation-policy.contract.test.js#missing-reachable-critical-high-rule",
       "precedence": 19,
       "rationale": "Dependency remediation policy must be machine-valid to keep promotion gating deterministic.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": false,
@@ -327,7 +347,12 @@
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#duplicate-code",
       "precedence": 25,
       "rationale": "Duplicate failSignal code in registry breaks deterministic resolver behavior.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": true,
@@ -335,7 +360,12 @@
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#missing-negative-test-ref",
       "precedence": 26,
       "rationale": "Every failSignal must be covered by an explicit negative contract scenario.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": true,
@@ -343,7 +373,12 @@
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#precedence-invalid",
       "precedence": 27,
       "rationale": "Precedence metadata must remain well-formed and deterministic.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": true,
@@ -351,7 +386,12 @@
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 28,
       "rationale": "FailSignal registry shape and metadata must stay deterministic and machine-verifiable.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": false,
@@ -507,7 +547,12 @@
       "negativeTestRef": "test/contracts/origin-smoke.contract.test.js#unavailable-origin-fails-with-canonical-code",
       "precedence": 40,
       "rationale": "Origin availability smoke failure means origin binding cannot be verified and must block release gates.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": true,
@@ -515,7 +560,12 @@
       "negativeTestRef": "test/contracts/path-boundary-guard.contract.test.js#parent-segment-negative",
       "precedence": 41,
       "rationale": "Path payloads violating centralized boundary rules can bypass filesystem safety and must fail.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": false,
@@ -563,7 +613,12 @@
       "negativeTestRef": "test/contracts/pre-ui-ops-contour-close.contract.test.js#dirty-worktree-negative",
       "precedence": 45,
       "rationale": "Pre-UI contour close token is advisory by default and should fail when worktree is not clean.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "advisory",
+        "release": "advisory",
+        "promotion": "advisory"
+      }
     },
     {
       "blocking": false,
@@ -571,7 +626,12 @@
       "negativeTestRef": "test/contracts/pre-ui-ops-contour-close.contract.test.js#head-origin-mismatch-negative",
       "precedence": 46,
       "rationale": "Pre-UI contour close token is advisory by default and should fail when head/origin pointers diverge.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "advisory",
+        "release": "advisory",
+        "promotion": "advisory"
+      }
     },
     {
       "blocking": false,
@@ -579,7 +639,12 @@
       "negativeTestRef": "test/contracts/pre-ui-ops-contour-close.contract.test.js#invalid-shape-negative",
       "precedence": 47,
       "rationale": "Contour close record must match schema and required metadata before it can be used as evidence.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "advisory",
+        "release": "advisory",
+        "promotion": "advisory"
+      }
     },
     {
       "blocking": false,
@@ -587,7 +652,12 @@
       "negativeTestRef": "test/contracts/pre-ui-ops-contour-close.contract.test.js#missing-record-negative",
       "precedence": 48,
       "rationale": "Contour close record is missing so closure evidence cannot be established.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "advisory",
+        "release": "advisory",
+        "promotion": "advisory"
+      }
     },
     {
       "blocking": false,
@@ -595,7 +665,12 @@
       "negativeTestRef": "test/contracts/pre-ui-ops-contour-close.contract.test.js#required-token-fail-negative",
       "precedence": 49,
       "rationale": "Pre-UI contour required token set exists but one or more required checks are red.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "advisory",
+        "release": "advisory",
+        "promotion": "advisory"
+      }
     },
     {
       "blocking": false,
@@ -603,7 +678,12 @@
       "negativeTestRef": "test/contracts/pre-ui-ops-contour-close.contract.test.js#required-token-missing-negative",
       "precedence": 50,
       "rationale": "Pre-UI contour required token declaration references missing token IDs.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "advisory",
+        "release": "advisory",
+        "promotion": "advisory"
+      }
     },
     {
       "blocking": true,
@@ -736,7 +816,12 @@
       "negativeTestRef": "test/contracts/wave-freshness-and-stage-activation.contract.test.js#unknown-scopeflag",
       "precedence": 60,
       "rationale": "Unknown scope flag cannot participate in machine stage activation and must fail deterministically.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": false,
@@ -813,7 +898,12 @@
       "negativeTestRef": "test/contracts/wave-freshness-and-stage-activation.contract.test.js#stage-metrics-missing-promotion",
       "precedence": 66,
       "rationale": "Promotion mode requires metrics evidence for the target stage before stage-gated binding can be trusted.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": true,
@@ -821,7 +911,12 @@
       "negativeTestRef": "test/contracts/wave-freshness-and-stage-activation.contract.test.js#promotion-without-record",
       "precedence": 67,
       "rationale": "Promotion mode without a valid promotion record or stage-consistent transition is invalid.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": false,
@@ -868,10 +963,15 @@
     {
       "blocking": true,
       "code": "E_VERIFY_ATTESTATION_INVALID",
-      "negativeTestRef": "test/contracts/verify-attestation.contract.test.js#malformed-attestation-fails-with-canonical-code",
+      "negativeTestRef": "test/contracts/verify-attestation.contract.test.js#wrong-signer-fails-signature-gate",
       "precedence": 71,
-      "rationale": "Post-merge attestation verification state is invalid and must block release gates.",
-      "tier": "release"
+      "rationale": "Post-merge attestation verification is invalid when signature trust chain or signer binding is not satisfied.",
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": true,
@@ -879,7 +979,12 @@
       "negativeTestRef": "test/contracts/wave-freshness-and-stage-activation.contract.test.js#ttl-stale-reuse",
       "precedence": 72,
       "rationale": "Wave result reuse is allowed only for matching hash with valid TTL to prevent stale-green reuse.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     },
     {
       "blocking": true,
@@ -887,7 +992,12 @@
       "negativeTestRef": "test/contracts/x3-recovery-smoke.contract.test.js#forced-failure",
       "precedence": 73,
       "rationale": "X3 deterministic recovery smoke proofhook must pass before promotion-tier readiness can be considered green.",
-      "tier": "release"
+      "tier": "release",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      }
     }
   ],
   "schemaVersion": 1

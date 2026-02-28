@@ -50,7 +50,7 @@ test('transition-exit G0.2: required failSignals are registered with determinist
   assert.ok(commandSurface, 'E_COMMAND_SURFACE_BYPASS must stay registered');
   assert.equal(commandSurface.blocking, true);
   assert.equal(commandSurface.tier, 'release');
-  assert.match(String(commandSurface.negativeTestRef || ''), /^test\/contracts\/command-surface-bus-only\.contract\.test\.js#/u);
+  assert.match(String(commandSurface.negativeTestRef || ''), /^test\/contracts\/command-surface-single-entry\.contract\.test\.js#/u);
 });
 
 test('transition-exit G0.2: sequence-order drift is machine-bound with release/promotion blocking', () => {

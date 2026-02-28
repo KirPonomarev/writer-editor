@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "promotionDryRunVersion": "x21.ws02.v1",
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "blockingSurfaceExpansion": false,
+  "expectedReleaseClassChanged": false,
+  "requiredModeChecks": [
+    {
+      "failSignalCode": "E_REMOTE_UNAVAILABLE",
+      "mode": "release",
+      "expectedDisposition": "advisory"
+    },
+    {
+      "failSignalCode": "E_REMOTE_UNAVAILABLE",
+      "mode": "promotion",
+      "expectedDisposition": "advisory"
+    }
+  ],
+  "requiredEvidenceRefs": [
+    "docs/OPS/EVIDENCE/X20_CONTOUR/x20-contour-freeze-packet-v1.json",
+    "docs/OPS/STATUS/X20_CONTOUR_CLOSE_SUMMARY_V1.json",
+    "docs/OPS/STATUS/X20_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+    "docs/OPS/STATUS/X21_WS01_RELEASE_CANDIDATE_PRECHECK_PACK_v1.json",
+    "docs/OPS/EVIDENCE/X21_CONTOUR/TICKET_01/summary.json"
+  ],
+  "requiredWs01Token": "X21_WS01_RELEASE_CANDIDATE_PRECHECK_PACK_OK",
+  "requiredWs01Status": "PASS",
+  "requiredWs01ZeroKeys": [
+    "releaseBindingMissingTokenCount",
+    "releaseBindingMissingRecordCount",
+    "releaseBindingMissingFieldCount",
+    "releaseBindingFailSignalMissingCount",
+    "releaseBindingFailSignalMismatchCount",
+    "modeMatrixDuplicateSignalCount",
+    "modeMatrixMissingDispositionCount",
+    "modeMatrixInvalidDispositionCount",
+    "modeMatrixBlockingFlagConflictCount",
+    "modeMatrixRequiredTokenFailSignalMissingCount",
+    "advisoryToBlockingDriftCount",
+    "offlineIntegrityIssueCount",
+    "usabilityGuardIssueCount"
+  ],
+  "requiredAttestationTokens": [
+    "ATTESTATION_SIGNATURE_OK",
+    "VERIFY_ATTESTATION_OK"
+  ]
+}

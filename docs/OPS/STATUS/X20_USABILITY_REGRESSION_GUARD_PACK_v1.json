@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "usabilityGuardPackVersion": "x20.ws02.v1",
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "blockingSurfaceExpansion": false,
+  "expectedChannelCount": 3,
+  "expectedModeCount": 3,
+  "expectedProfileCount": 3,
+  "requiredCriticalFlows": [
+    "entry_flow",
+    "recent_resume",
+    "quick_open_palette",
+    "status_feedback",
+    "error_hints"
+  ],
+  "guards": [
+    {
+      "guardId": "guard.entry_flow",
+      "flowId": "entry_flow",
+      "statusRef": "docs/OPS/STATUS/X19_WS01_FIRST_RUN_AND_EMPTY_STATE_FLOW_v1.json",
+      "expectedToken": "X19_WS01_FIRST_RUN_AND_EMPTY_STATE_FLOW_OK",
+      "requiredStatus": "PASS",
+      "requiredZeroCountKeys": [
+        "commandBindingGapCount",
+        "modeProfileVisibilityGapCount",
+        "staleEntryTargetCount",
+        "staleHintTargetCount",
+        "channelEntryInconsistencyCount",
+        "advisoryToBlockingDriftCount"
+      ],
+      "requiredPositiveCountKeys": [
+        "entryCount"
+      ]
+    },
+    {
+      "guardId": "guard.recent_resume",
+      "flowId": "recent_resume",
+      "statusRef": "docs/OPS/STATUS/X19_WS02_RECENT_PROJECTS_AND_QUICK_RESUME_v1.json",
+      "expectedToken": "X19_WS02_RECENT_PROJECTS_AND_QUICK_RESUME_OK",
+      "requiredStatus": "PASS",
+      "requiredZeroCountKeys": [
+        "invalidProjectPathCount",
+        "quickResumeBindingMissingCount",
+        "quickResumeBindingMismatchCount",
+        "modeProfileVisibilityGapCount",
+        "channelInconsistencyCount",
+        "advisoryToBlockingDriftCount"
+      ],
+      "requiredPositiveCountKeys": [
+        "entryCount"
+      ]
+    },
+    {
+      "guardId": "guard.quick_open_palette",
+      "flowId": "quick_open_palette",
+      "statusRef": "docs/OPS/STATUS/X18_WS02_QUICK_OPEN_AND_COMMAND_PALETTE_POLISH_v1.json",
+      "expectedToken": "X18_WS02_QUICK_OPEN_AND_COMMAND_PALETTE_POLISH_OK",
+      "requiredStatus": "PASS",
+      "requiredZeroCountKeys": [
+        "commandBindingGapCount",
+        "quickOpenIndexGapCount",
+        "staleEntryTargetCount",
+        "modeProfileVisibilityGapCount",
+        "paletteDuplicateEntryCount",
+        "advisoryToBlockingDriftCount"
+      ],
+      "requiredPositiveCountKeys": [
+        "entryCount",
+        "requiredQuickOpenCommandCount"
+      ]
+    },
+    {
+      "guardId": "guard.status_feedback",
+      "flowId": "status_feedback",
+      "statusRef": "docs/OPS/STATUS/X18_WS03_MENU_STATUS_FEEDBACK_AND_SAVE_SIGNALS_v1.json",
+      "expectedToken": "X18_WS03_MENU_STATUS_FEEDBACK_AND_SAVE_SIGNALS_OK",
+      "requiredStatus": "PASS",
+      "requiredZeroCountKeys": [
+        "sourceEventGapCount",
+        "statusResetGapCount",
+        "channelStatusInconsistencyCount",
+        "modeProfileVisibilityGapCount",
+        "requiredCommandResultSignalGapCount",
+        "advisoryToBlockingDriftCount"
+      ],
+      "requiredPositiveCountKeys": [
+        "entryCount"
+      ]
+    },
+    {
+      "guardId": "guard.error_hints",
+      "flowId": "error_hints",
+      "statusRef": "docs/OPS/STATUS/X19_WS03_ERROR_HANDLING_AND_RECOVERY_HINTS_v1.json",
+      "expectedToken": "X19_WS03_ERROR_HANDLING_AND_RECOVERY_HINTS_OK",
+      "requiredStatus": "PASS",
+      "requiredZeroCountKeys": [
+        "hintMappingGapCount",
+        "recoveryHintGapCount",
+        "statusResetGapCount",
+        "channelErrorFeedbackInconsistencyCount",
+        "requiredErrorSignalGapCount",
+        "advisoryToBlockingDriftCount"
+      ],
+      "requiredPositiveCountKeys": [
+        "entryCount"
+      ]
+    }
+  ]
+}

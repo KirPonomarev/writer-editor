@@ -1,0 +1,39 @@
+{
+  "ticketId": "TZ_P2_QUEUE_OPENING_001",
+  "schemaVersion": 1,
+  "status": "READY",
+  "priority": "P2",
+  "mode": "IMPLEMENTATION",
+  "owner": "CODEX",
+  "createdAtUtc": "2026-02-28T13:35:12Z",
+  "dependsOn": {
+    "p1CloseoutArtifactRef": "docs/OPS/STATUS/P1_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+    "requiredGate": "GO_IF_P1_CLOSEOUT_ARTIFACT_SIGNED",
+    "gateSatisfied": true
+  },
+  "objective": "OPEN_P2_ALIGNMENT_QUEUE_WITH_ZERO_BLOCKING_SURFACE_EXPANSION",
+  "scope": {
+    "in": [
+      "CROSS_PLATFORM_NORMALIZATION_HARDENING_MATRIX",
+      "MIGRATION_CRASH_WINDOW_REDUCTION_AND_STRESS_DRILLS",
+      "PROCESS_TAX_BUDGET_AUTOMATION",
+      "BRIDGE_DRIFT_SIMPLIFICATION",
+      "WAVE_RERUN_DEDUP_BY_STABLE_INPUT_HASH",
+      "EXTENDED_PARITY_FIXTURE_PACKS"
+    ],
+    "out": [
+      "NEW_BLOCKING_SURFACE",
+      "NETWORK_TRANSPORT_FEATURE_WORK",
+      "UI_REDESIGN",
+      "NON_P2_CANON_REFACTOR"
+    ]
+  },
+  "entryChecks": {
+    "p1ContourClosed": true,
+    "p1AcceptancePass": true,
+    "blockingSurfaceExpansion": false,
+    "advisoryAsBlockingDrift": "ZERO",
+    "offlineReleaseIntegrityLocallyVerifiable": true
+  },
+  "executionGate": "GO"
+}

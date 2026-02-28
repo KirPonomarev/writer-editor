@@ -1,0 +1,35 @@
+{
+  "ticketId": "TZ_P1_ALIGNMENT_AND_DEDUP_001",
+  "schemaVersion": 1,
+  "status": "READY",
+  "priority": "P1",
+  "mode": "IMPLEMENTATION",
+  "owner": "CODEX",
+  "createdAtUtc": "2026-02-28T12:47:05Z",
+  "dependsOn": {
+    "p0CloseoutArtifactRef": "docs/OPS/STATUS/P0_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+    "requiredGate": "GO_IF_P0_CLOSEOUT_ARTIFACT_SIGNED",
+    "gateSatisfied": true
+  },
+  "objective": "FAILSIGNAL_SEMANTIC_DEDUP_PLUS_MODE_MATRIX_COMPLETENESS_PLUS_CLAIM_CATALOG_REGISTRY_ALIGNMENT",
+  "scope": {
+    "in": [
+      "FAILSIGNAL_SEMANTIC_DEDUP",
+      "MODE_MATRIX_COMPLETENESS",
+      "CLAIM_CATALOG_REGISTRY_ALIGNMENT"
+    ],
+    "out": [
+      "NEW_BLOCKING_SURFACE",
+      "UI_FEATURE_CHANGES",
+      "NETWORK_TRANSPORT_FEATURE_WORK"
+    ]
+  },
+  "entryChecks": {
+    "p0ContourClosed": true,
+    "p0AcceptancePass": true,
+    "blockingSurfaceExpansion": false,
+    "advisoryAsBlockingDrift": "ZERO",
+    "offlineReleaseIntegrityLocallyVerifiable": true
+  },
+  "executionGate": "GO"
+}

@@ -20,8 +20,11 @@
       "proofHook": "node scripts/ops/attestation-signature-state.mjs --json",
       "proofHookClosureSha256": null,
       "sourceBinding": "ops_script",
+      "sourceBindingRef": "docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_v3_12.json + docs/OPS/LOCKS/ATTESTATION_TRUST_ARTIFACT.lock + scripts/ops/attestation-signature-state.mjs",
       "failSignalCode": "E_ATTESTATION_SIGNATURE_INVALID",
-      "namespace": "ATTESTATION_SIGNATURE"
+      "namespace": "ATTESTATION_SIGNATURE",
+      "positiveContractRef": "test/contracts/attestation-signature.contract.test.js#local-trusted-artifact-signature-pass",
+      "negativeContractRef": "test/contracts/attestation-signature.contract.test.js#wrong-signer-reject"
     },
     {
       "tokenId": "CAPABILITY_ENFORCED_OK",
@@ -83,19 +86,25 @@
       "proofHook": "node scripts/ops/command-surface-state.mjs --json",
       "proofHookClosureSha256": null,
       "sourceBinding": "ops_script",
+      "sourceBindingRef": "scripts/ops/command-surface-state.mjs + src/renderer/commands/commandBusGuard.mjs + test/contracts/command-surface-single-entry.contract.test.js",
       "failSignalCode": "E_COMMAND_SURFACE_NEGATIVE_MISSING",
-      "namespace": "COMMAND_SURFACE"
+      "namespace": "COMMAND_SURFACE",
+      "positiveContractRef": "test/contracts/command-surface-single-entry.contract.test.js#positive-baseline-tokens-are-bound",
+      "negativeContractRef": "test/contracts/command-surface-single-entry.contract.test.js#missing-bypass-scenario-set-returns-e-command-surface-negative-missing"
     },
     {
       "tokenId": "COMMAND_SURFACE_ENFORCED_OK",
       "promotionState": "existing",
       "gateTier": "release",
       "requiredWhen": null,
-      "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",
+      "proofHook": "node scripts/ops/command-surface-state.mjs --json",
       "proofHookClosureSha256": null,
-      "sourceBinding": "doctor",
-      "failSignalCode": "E_COMMAND_SURFACE_NOT_ENFORCED",
-      "namespace": "COMMAND_SURFACE"
+      "sourceBinding": "ops_script",
+      "sourceBindingRef": "scripts/ops/command-surface-state.mjs + src/renderer/commands/commandBusGuard.mjs + test/contracts/command-surface-single-entry.contract.test.js",
+      "failSignalCode": "E_COMMAND_SURFACE_BYPASS",
+      "namespace": "COMMAND_SURFACE",
+      "positiveContractRef": "test/contracts/command-surface-single-entry.contract.test.js#positive-baseline-tokens-are-bound",
+      "negativeContractRef": "test/contracts/command-surface-single-entry.contract.test.js#hotkey-bypass-fails-with-e-command-surface-bypass"
     },
     {
       "tokenId": "COMMAND_SURFACE_SINGLE_ENTRY_OK",
@@ -140,7 +149,10 @@
       "proofHookClosureSha256": null,
       "sourceBinding": "ops_script",
       "failSignalCode": "E_CONFIG_HASH_CONFLICT",
-      "namespace": "CONFIG"
+      "namespace": "CONFIG",
+      "sourceBindingRef": "scripts/ops/config-hash-lock-state.mjs + test/contracts/config-hash-lock.contract.test.js",
+      "positiveContractRef": "test/contracts/config-hash-lock.contract.test.js#repository-baseline-lock-is-valid",
+      "negativeContractRef": "test/contracts/config-hash-lock.contract.test.js#tampered-input-emits-e-config-hash-conflict"
     },
     {
       "tokenId": "CORE_SOT_EXECUTABLE_OK",
@@ -151,7 +163,10 @@
       "proofHookClosureSha256": null,
       "sourceBinding": "doctor",
       "failSignalCode": "E_CORE_SOT_NOT_EXECUTABLE",
-      "namespace": "CORE_SOT"
+      "namespace": "CORE_SOT",
+      "sourceBindingRef": "scripts/doctor.mjs + docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json",
+      "positiveContractRef": "test/contracts/release-token-binding-completeness.contract.test.js#complete-effective-required-set-returns-completeness-ok-true",
+      "negativeContractRef": "test/contracts/release-token-binding-completeness.contract.test.js#removing-one-required-field-returns-completeness-ok-false"
     },
     {
       "tokenId": "CRITICAL_CLAIM_MATRIX_OK",
@@ -179,10 +194,13 @@
       "promotionState": "target",
       "gateTier": "conditional",
       "requiredWhen": "VNEXT_TOUCHED=1",
-      "proofHook": "node scripts/doctor.mjs",
-      "sourceBinding": "contract_test",
+      "proofHook": "node scripts/ops/e2e-critical-user-path-state.mjs --json",
+      "sourceBinding": "ops_script",
       "failSignalCode": "E_E2E_CRITICAL_USER_PATH_NOT_OK",
-      "namespace": "E2E"
+      "namespace": "E2E",
+      "sourceBindingRef": "scripts/ops/e2e-critical-user-path-state.mjs + test/contracts/e2e-critical-user-path.contract.test.js",
+      "positiveContractRef": "test/contracts/e2e-critical-user-path.contract.test.js#required-scenario-set-returns-pass-equals-one",
+      "negativeContractRef": "test/contracts/e2e-critical-user-path.contract.test.js#remove-one-required-step-returns-fail"
     },
     {
       "tokenId": "ENABLEDWHEN_DSL_CANON_OK",
@@ -227,7 +245,10 @@
       "proofHookClosureSha256": null,
       "sourceBinding": "doctor",
       "failSignalCode": "E_HEAD_BINDING_INVALID",
-      "namespace": "HEAD_STRICT"
+      "namespace": "HEAD_STRICT",
+      "sourceBindingRef": "scripts/ops/head-strict-state.mjs + test/contracts/head-strict.contract.test.js",
+      "positiveContractRef": "test/contracts/head-strict.contract.test.js#repository-baseline-passes-in-release-mode",
+      "negativeContractRef": "test/contracts/head-strict.contract.test.js#non-merge-head-fails-in-release-mode"
     },
     {
       "tokenId": "LAW_PATH_CANON_OK",
@@ -324,6 +345,48 @@
       "namespace": "MENU",
       "positiveContractRef": "test/contracts/menu-snapshot-freeze-promotion.contract.test.js#snapshot-create-updates-registry-and-check-passes-for-frozen-hash",
       "negativeContractRef": "test/contracts/menu-snapshot-freeze-promotion.contract.test.js#snapshot-check-release-warns-and-promotion-fails-on-mismatch"
+    },
+    {
+      "tokenId": "MIGRATIONS_ATOMICITY_OK",
+      "promotionState": "target",
+      "gateTier": "release",
+      "requiredWhen": null,
+      "proofHook": "node scripts/ops/migration-completeness-verifier-state.mjs --json",
+      "proofHookClosureSha256": null,
+      "sourceBinding": "ops_script",
+      "sourceBindingRef": "scripts/ops/migration-completeness-verifier-state.mjs + test/contracts/migration-completeness-verifier.contract.test.js",
+      "failSignalCode": "E_BLOCKING_TOKEN_UNBOUND",
+      "namespace": "MIGRATIONS",
+      "positiveContractRef": "test/contracts/migration-completeness-verifier.contract.test.js#declared-chain-coverage-is-100-percent",
+      "negativeContractRef": "test/contracts/migration-completeness-verifier.contract.test.js#removing-one-required-step-fails-completeness"
+    },
+    {
+      "tokenId": "MIGRATIONS_POLICY_OK",
+      "promotionState": "target",
+      "gateTier": "release",
+      "requiredWhen": null,
+      "proofHook": "node scripts/ops/migration-completeness-verifier-state.mjs --json",
+      "proofHookClosureSha256": null,
+      "sourceBinding": "ops_script",
+      "sourceBindingRef": "scripts/ops/migration-completeness-verifier-state.mjs + test/contracts/migration-completeness-verifier.contract.test.js",
+      "failSignalCode": "E_BLOCKING_TOKEN_UNBOUND",
+      "namespace": "MIGRATIONS",
+      "positiveContractRef": "test/contracts/migration-completeness-verifier.contract.test.js#declared-chain-coverage-is-100-percent",
+      "negativeContractRef": "test/contracts/migration-completeness-verifier.contract.test.js#removing-one-required-step-fails-completeness"
+    },
+    {
+      "tokenId": "NORMALIZATION_XPLAT_OK",
+      "promotionState": "target",
+      "gateTier": "release",
+      "requiredWhen": null,
+      "proofHook": "node --test test/contracts/cross-platform-normalization.contract.test.js",
+      "proofHookClosureSha256": null,
+      "sourceBinding": "contract_test",
+      "sourceBindingRef": "scripts/ops/cross-platform-normalization-state.mjs + test/contracts/cross-platform-normalization.contract.test.js",
+      "failSignalCode": "E_BLOCKING_TOKEN_UNBOUND",
+      "namespace": "NORMALIZATION",
+      "positiveContractRef": "test/contracts/cross-platform-normalization.contract.test.js#newline-and-unicode-parity-confirmed",
+      "negativeContractRef": "test/contracts/cross-platform-normalization.contract.test.js#advisory-signals-cannot-escalate-to-blocking-outside-canonical-mode-matrix"
     },
     {
       "tokenId": "ORIGIN_SMOKE_OK",
@@ -428,7 +491,10 @@
       "proofHookClosureSha256": null,
       "sourceBinding": "ops_script",
       "failSignalCode": "E_PROOFHOOK_TAMPER_DETECTED",
-      "namespace": "PROOFHOOK"
+      "namespace": "PROOFHOOK",
+      "sourceBindingRef": "scripts/ops/proofhook-integrity-state.mjs + test/contracts/proofhook-integrity.contract.test.js",
+      "positiveContractRef": "test/contracts/proofhook-integrity.contract.test.js#repository-lock-matches-computed-closure-hash",
+      "negativeContractRef": "test/contracts/proofhook-integrity.contract.test.js#tampered-closure-file-fails-with-deterministic-signal"
     },
     {
       "tokenId": "RECOVERY_IO_OK",
@@ -439,7 +505,10 @@
       "proofHookClosureSha256": null,
       "sourceBinding": "doctor",
       "failSignalCode": "E_RECOVERY_IO_NOT_OK",
-      "namespace": "RECOVERY"
+      "namespace": "RECOVERY",
+      "sourceBindingRef": "scripts/ops/recovery-io-state.mjs + test/contracts/release-token-binding-completeness.contract.test.js",
+      "positiveContractRef": "test/contracts/release-token-binding-completeness.contract.test.js#complete-effective-required-set-returns-completeness-ok-true",
+      "negativeContractRef": "test/contracts/release-token-binding-completeness.contract.test.js#removing-one-required-field-returns-completeness-ok-false"
     },
     {
       "tokenId": "RELEASE_ARTIFACT_SOURCES_OK",
@@ -475,7 +544,10 @@
       "proofHookClosureSha256": null,
       "sourceBinding": "ops_script",
       "failSignalCode": "E_REQUIRED_SET_CONTAINS_TARGET",
-      "namespace": "REQUIRED_SET"
+      "namespace": "REQUIRED_SET",
+      "sourceBindingRef": "scripts/ops/required-set-no-target-state.mjs + test/contracts/required-set-no-target.contract.test.js",
+      "positiveContractRef": "test/contracts/required-set-no-target.contract.test.js#repository-baseline-is-valid",
+      "negativeContractRef": "test/contracts/required-set-no-target.contract.test.js#release-required-token-from-target-set-fails"
     },
     {
       "tokenId": "SCR_SHARED_CODE_RATIO_OK",
@@ -501,6 +573,20 @@
       "positiveContractRef": "test/contracts/execution-sequence-lock.contract.test.js#anchor-and-static-check-exist",
       "negativeContractRef": "test/contracts/execution-sequence-lock.contract.test.js#promotion-mode-drift-fails-while-release-mode-warns",
       "blocking": false
+    },
+    {
+      "tokenId": "SINGLE_VERIFY_CONTOUR_ENFORCED_OK",
+      "promotionState": "target",
+      "gateTier": "release",
+      "requiredWhen": null,
+      "proofHook": "node scripts/ops/verify-contour-state.mjs --json",
+      "proofHookClosureSha256": null,
+      "sourceBinding": "ops_script",
+      "sourceBindingRef": "scripts/ops/verify-contour-state.mjs + test/contracts/single-verify-contour.contract.test.js",
+      "failSignalCode": "E_BLOCKING_TOKEN_UNBOUND",
+      "namespace": "SINGLE_VERIFY",
+      "positiveContractRef": "test/contracts/single-verify-contour.contract.test.js#single-verify-contour-state-returns-ok-on-repository-baseline",
+      "negativeContractRef": "test/contracts/single-verify-contour.contract.test.js#single-verify-contour-state-fails-when-second-orchestrator-entrypoint-exists"
     },
     {
       "tokenId": "STAGE_AXIS_LOCK_ENFORCED_OK",
@@ -545,7 +631,10 @@
       "proofHook": "node scripts/ops/token-source-conflict-state.mjs --json",
       "sourceBinding": "truth_table",
       "failSignalCode": "E_TOKEN_SOURCE_CONFLICT",
-      "namespace": "TOKEN_SOURCE"
+      "namespace": "TOKEN_SOURCE",
+      "sourceBindingRef": "scripts/ops/token-source-conflict-state.mjs + test/contracts/token-source-conflict.contract.test.js",
+      "positiveContractRef": "test/contracts/token-source-conflict.contract.test.js#pass-when-truth-table-and-ops-summary-token-values-match",
+      "negativeContractRef": "test/contracts/token-source-conflict.contract.test.js#fail-with-e-token-source-conflict-on-mismatch"
     },
     {
       "tokenId": "VERIFY_ATTESTATION_OK",
@@ -555,8 +644,11 @@
       "proofHook": "node scripts/ops/verify-attestation-state.mjs --json",
       "proofHookClosureSha256": null,
       "sourceBinding": "ops_script",
+      "sourceBindingRef": "scripts/ops/verify-attestation-state.mjs + scripts/ops/attestation-signature-state.mjs + docs/OPS/STATUS/ATTESTATION_TRUST_LOCK_v3_12.json",
       "failSignalCode": "E_VERIFY_ATTESTATION_INVALID",
-      "namespace": "VERIFY_ATTESTATION"
+      "namespace": "VERIFY_ATTESTATION",
+      "positiveContractRef": "test/contracts/verify-attestation.contract.test.js#baseline-attestation-is-valid-with-signature-gate",
+      "negativeContractRef": "test/contracts/verify-attestation.contract.test.js#wrong-signer-fails-signature-gate"
     },
     {
       "tokenId": "XPLAT_CONTRACT_MACOS_SIGNING_READY_OK",

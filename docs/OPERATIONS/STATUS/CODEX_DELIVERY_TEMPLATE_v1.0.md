@@ -33,6 +33,8 @@
 
 ## PRECONDITIONS
 - Рабочая ветка: `codex/<task-id>`.
+- Обязателен валидный execution ticket в формате bootstrap spec:
+  - `docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_ONE_SHOT_SPEC_V1_0.json#/executionTicket`.
 - Scope только OPS-layer:
   - `docs/OPERATIONS/**`
   - `scripts/guards/**`
@@ -50,6 +52,7 @@
 2. `node --test test/contracts/safe-automerge-ops-only.contract.test.js`
 3. `npm test`
 4. `node scripts/contracts/check-codex-prompt-mode.mjs`
+5. `node scripts/contracts/check-agent-bootstrap-spec.mjs`
 
 Expected:
 - Все checks `PASS`.

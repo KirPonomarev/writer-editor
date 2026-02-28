@@ -17,17 +17,50 @@ export const COMMAND_IDS = Object.freeze({
 export const EXTRA_COMMAND_IDS = Object.freeze({
   PROJECT_NEW: 'cmd.project.new',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
+  EDIT_UNDO: 'cmd.project.edit.undo',
+  EDIT_REDO: 'cmd.project.edit.redo',
+  EDIT_FIND: 'cmd.project.edit.find',
+  EDIT_REPLACE: 'cmd.project.edit.replace',
+  VIEW_ZOOM_OUT: 'cmd.project.view.zoomOut',
+  VIEW_ZOOM_IN: 'cmd.project.view.zoomIn',
+  VIEW_TOGGLE_WRAP: 'cmd.project.view.toggleWrap',
+  INSERT_MARKDOWN_PROMPT: 'cmd.project.insert.markdownPrompt',
+  INSERT_FLOW_OPEN: 'cmd.project.insert.flowOpen',
+  INSERT_ADD_CARD: 'cmd.project.insert.addCard',
+  FORMAT_ALIGN_LEFT: 'cmd.project.format.alignLeft',
+  FORMAT_ALIGN_CENTER: 'cmd.project.format.alignCenter',
+  FORMAT_ALIGN_RIGHT: 'cmd.project.format.alignRight',
+  FORMAT_ALIGN_JUSTIFY: 'cmd.project.format.alignJustify',
+  PLAN_FLOW_SAVE: 'cmd.project.plan.flowSave',
+  REVIEW_EXPORT_MARKDOWN: 'cmd.project.review.exportMarkdown',
 });
 
 export const LEGACY_ACTION_TO_COMMAND = Object.freeze({
-  new: EXTRA_COMMAND_IDS.PROJECT_NEW,
-  open: COMMAND_IDS.PROJECT_OPEN,
-  openDocument: COMMAND_IDS.PROJECT_OPEN,
-  save: COMMAND_IDS.PROJECT_SAVE,
-  saveDocument: COMMAND_IDS.PROJECT_SAVE,
-  'save-as': EXTRA_COMMAND_IDS.PROJECT_SAVE_AS,
-  'export-docx-min': COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN,
-  exportDocxMin: COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN,
+  new: 'cmd.project.new',
+  open: 'cmd.project.open',
+  openDocument: 'cmd.project.open',
+  save: 'cmd.project.save',
+  saveDocument: 'cmd.project.save',
+  'save-as': 'cmd.project.saveAs',
+  undo: 'cmd.project.edit.undo',
+  redo: 'cmd.project.edit.redo',
+  find: 'cmd.project.edit.find',
+  search: 'cmd.project.edit.find',
+  replace: 'cmd.project.edit.replace',
+  'zoom-out': 'cmd.project.view.zoomOut',
+  'zoom-in': 'cmd.project.view.zoomIn',
+  'toggle-wrap': 'cmd.project.view.toggleWrap',
+  'import-markdown-v1': 'cmd.project.insert.markdownPrompt',
+  'flow-open-v1': 'cmd.project.insert.flowOpen',
+  'add-card': 'cmd.project.insert.addCard',
+  'align-left': 'cmd.project.format.alignLeft',
+  'align-center': 'cmd.project.format.alignCenter',
+  'align-right': 'cmd.project.format.alignRight',
+  'align-justify': 'cmd.project.format.alignJustify',
+  'flow-save-v1': 'cmd.project.plan.flowSave',
+  'export-markdown-v1': 'cmd.project.review.exportMarkdown',
+  'export-docx-min': 'cmd.project.export.docxMin',
+  exportDocxMin: 'cmd.project.export.docxMin',
 });
 
 // Canonical Core command IDs used by CORE_SOT checks.
@@ -74,6 +107,38 @@ function registerCatalogCommand(registry, commandId, handler) {
   );
 }
 
+async function runUiAction(uiActions, actionName, commandId, payload = {}) {
+  const action = uiActions && typeof uiActions[actionName] === 'function'
+    ? uiActions[actionName]
+    : null;
+  if (!action) {
+    return fail(
+      'E_COMMAND_FAILED',
+      commandId,
+      'UI_ACTION_UNAVAILABLE',
+      { action: actionName },
+    );
+  }
+
+  try {
+    const result = await action(payload);
+    return ok({
+      performed: true,
+      action: actionName,
+      result: result && typeof result === 'object' && !Array.isArray(result)
+        ? result
+        : null,
+    });
+  } catch (error) {
+    return fail(
+      'E_COMMAND_FAILED',
+      commandId,
+      'UI_ACTION_FAILED',
+      { action: actionName, message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+}
+
 export function resolveLegacyActionToCommand(actionId, context = {}) {
   if (actionId === 'save' && context && context.flowModeActive === true) {
     return COMMAND_IDS.PROJECT_FLOW_SAVE_V1;
@@ -101,14 +166,15 @@ export function createLegacyActionBridge(executeCommand) {
 
 export function registerProjectCommands(registry, options = {}) {
   const electronAPI = options.electronAPI || null;
+  const uiActions = options.uiActions && typeof options.uiActions === 'object' ? options.uiActions : null;
 
   registry.registerCommand(
     {
       id: EXTRA_COMMAND_IDS.PROJECT_NEW,
       label: 'New Project',
       group: 'file',
-      surface: ['toolbar', 'menu'],
-      hotkey: '',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+N',
     },
     async () => {
       const hasFileOpen = electronAPI && typeof electronAPI.fileOpen === 'function';
@@ -218,8 +284,8 @@ export function registerProjectCommands(registry, options = {}) {
       id: EXTRA_COMMAND_IDS.PROJECT_SAVE_AS,
       label: 'Save Project As',
       group: 'file',
-      surface: ['toolbar', 'menu'],
-      hotkey: '',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Shift+S',
     },
     async () => {
       const hasFileSaveAs = electronAPI && typeof electronAPI.fileSaveAs === 'function';
@@ -254,6 +320,182 @@ export function registerProjectCommands(registry, options = {}) {
         response && typeof response.reason === 'string' ? response.reason : 'FILE_SAVE_AS_FAILED',
       );
     },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.EDIT_UNDO,
+      label: 'Undo',
+      group: 'edit',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Z',
+    },
+    async () => runUiAction(uiActions, 'undo', EXTRA_COMMAND_IDS.EDIT_UNDO),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.EDIT_REDO,
+      label: 'Redo',
+      group: 'edit',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Shift+Z',
+    },
+    async () => runUiAction(uiActions, 'redo', EXTRA_COMMAND_IDS.EDIT_REDO),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.EDIT_FIND,
+      label: 'Find',
+      group: 'edit',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+F',
+    },
+    async () => runUiAction(uiActions, 'find', EXTRA_COMMAND_IDS.EDIT_FIND),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.EDIT_REPLACE,
+      label: 'Replace',
+      group: 'edit',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+H',
+    },
+    async () => runUiAction(uiActions, 'replace', EXTRA_COMMAND_IDS.EDIT_REPLACE),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_ZOOM_OUT,
+      label: 'Zoom Out',
+      group: 'view',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+-',
+    },
+    async () => runUiAction(uiActions, 'zoomOut', EXTRA_COMMAND_IDS.VIEW_ZOOM_OUT),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_ZOOM_IN,
+      label: 'Zoom In',
+      group: 'view',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+=',
+    },
+    async () => runUiAction(uiActions, 'zoomIn', EXTRA_COMMAND_IDS.VIEW_ZOOM_IN),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_TOGGLE_WRAP,
+      label: 'Toggle Wrap',
+      group: 'view',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Alt+W',
+    },
+    async () => runUiAction(uiActions, 'toggleWrap', EXTRA_COMMAND_IDS.VIEW_TOGGLE_WRAP),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.INSERT_MARKDOWN_PROMPT,
+      label: 'Insert Markdown v1',
+      group: 'insert',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Shift+I',
+    },
+    async () => runUiAction(uiActions, 'insertMarkdownPrompt', EXTRA_COMMAND_IDS.INSERT_MARKDOWN_PROMPT),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.INSERT_FLOW_OPEN,
+      label: 'Insert Flow Mode',
+      group: 'insert',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Shift+F',
+    },
+    async () => runUiAction(uiActions, 'insertFlowOpen', EXTRA_COMMAND_IDS.INSERT_FLOW_OPEN),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.INSERT_ADD_CARD,
+      label: 'Insert Card',
+      group: 'insert',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Shift+K',
+    },
+    async () => runUiAction(uiActions, 'insertAddCard', EXTRA_COMMAND_IDS.INSERT_ADD_CARD),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT,
+      label: 'Align Left',
+      group: 'format',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Alt+1',
+    },
+    async () => runUiAction(uiActions, 'formatAlignLeft', EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.FORMAT_ALIGN_CENTER,
+      label: 'Align Center',
+      group: 'format',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Alt+2',
+    },
+    async () => runUiAction(uiActions, 'formatAlignCenter', EXTRA_COMMAND_IDS.FORMAT_ALIGN_CENTER),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.FORMAT_ALIGN_RIGHT,
+      label: 'Align Right',
+      group: 'format',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Alt+3',
+    },
+    async () => runUiAction(uiActions, 'formatAlignRight', EXTRA_COMMAND_IDS.FORMAT_ALIGN_RIGHT),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.FORMAT_ALIGN_JUSTIFY,
+      label: 'Align Justify',
+      group: 'format',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Alt+4',
+    },
+    async () => runUiAction(uiActions, 'formatAlignJustify', EXTRA_COMMAND_IDS.FORMAT_ALIGN_JUSTIFY),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE,
+      label: 'Plan Flow Save',
+      group: 'plan',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Shift+S',
+    },
+    async () => runUiAction(uiActions, 'planFlowSave', EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN,
+      label: 'Review Export Markdown',
+      group: 'review',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+Shift+M',
+    },
+    async () => runUiAction(uiActions, 'reviewExportMarkdown', EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN),
   );
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN, async (input = {}) => {

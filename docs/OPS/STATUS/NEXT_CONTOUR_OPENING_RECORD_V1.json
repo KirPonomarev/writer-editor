@@ -1,0 +1,37 @@
+{
+  "ticketId": "TZ_NEXT_CONTOUR_OPENING_001",
+  "schemaVersion": 1,
+  "status": "READY",
+  "priority": "P3",
+  "mode": "IMPLEMENTATION",
+  "owner": "CODEX",
+  "createdAtUtc": "2026-02-28T15:34:35.361Z",
+  "dependsOn": {
+    "p2CloseoutArtifactRef": "docs/OPS/STATUS/P2_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+    "requiredGate": "GO_IF_P2_CLOSEOUT_ARTIFACT_SIGNED",
+    "gateSatisfied": true
+  },
+  "objective": "OPEN_NEXT_CONTOUR_QUEUE_WITH_ZERO_BLOCKING_SURFACE_EXPANSION",
+  "scope": {
+    "in": [
+      "NEXT_CONTOUR_ALIGNMENT",
+      "QUEUE_PRIORITIZATION",
+      "EVIDENCE_MAINTENANCE",
+      "PERFORMANCE_AND_PARITY_CONTINUATION"
+    ],
+    "out": [
+      "NEW_BLOCKING_SURFACE",
+      "NETWORK_TRANSPORT_FEATURE_WORK",
+      "UI_REDESIGN",
+      "NON_CANON_REFACTOR"
+    ]
+  },
+  "entryChecks": {
+    "activeCanonLockCheckPass": true,
+    "blockingSurfaceExpansion": false,
+    "advisoryAsBlockingDrift": "ZERO",
+    "offlineReleaseIntegrityLocallyVerifiable": true,
+    "p2ContourClosed": true
+  },
+  "executionGate": "GO"
+}
