@@ -1,0 +1,16 @@
+{
+  "baselineFixtureCount": 5,
+  "categoryCoverage": {
+    "case": 2,
+    "locale": 2,
+    "newline": 2,
+    "reserved": 2,
+    "unicode": 2
+  },
+  "coverageIncreased": 1,
+  "fixturesTotal": 10,
+  "missingCategories": [],
+  "missingPlatforms": [],
+  "negativeFixturesTotal": 5,
+  "positiveFixturesTotal": 5
+}

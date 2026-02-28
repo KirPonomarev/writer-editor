@@ -1,0 +1,24 @@
+{
+  "details": {
+    "deterministicParity": {
+      "hashes": [
+        "63633f1f6572b5ddf22a4b4aa1adecc70ca3320090e6c759623b5f8d06c7b22f",
+        "63633f1f6572b5ddf22a4b4aa1adecc70ca3320090e6c759623b5f8d06c7b22f",
+        "63633f1f6572b5ddf22a4b4aa1adecc70ca3320090e6c759623b5f8d06c7b22f"
+      ],
+      "ok": true
+    },
+    "missingCategories": [],
+    "missingPlatforms": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "EXTENDED_FIXTURE_PACK_LOADS_AND_VALIDATES",
+    "NEXT_TZ_POSITIVE_02": "PARITY_OUTPUT_DETERMINISTIC_FOR_CANONICAL_FIXTURES",
+    "NEXT_TZ_POSITIVE_03": "CONTRACT_SUITE_PASS"
+  }
+}

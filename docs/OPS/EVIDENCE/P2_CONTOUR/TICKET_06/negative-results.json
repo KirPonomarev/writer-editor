@@ -1,0 +1,103 @@
+{
+  "details": [
+    {
+      "actual": "FAIL",
+      "category": "case",
+      "detail": {
+        "conflict": true,
+        "left": "SceneA.txt",
+        "right": "scenea.TXT"
+      },
+      "expected": "FAIL",
+      "fixtureId": "canonical-case-collision-1",
+      "kind": "negative",
+      "pass": true
+    },
+    {
+      "actual": "FAIL",
+      "category": "reserved",
+      "detail": {
+        "name": "CON.txt",
+        "reserved": true
+      },
+      "expected": "FAIL",
+      "fixtureId": "reserved-name-neg-1",
+      "kind": "negative",
+      "pass": true
+    },
+    {
+      "actual": "FAIL",
+      "category": "newline",
+      "detail": {
+        "divergence": true,
+        "normalized": "line1\nline2\nline3\n",
+        "text": "line1\r\nline2\rline3\n"
+      },
+      "expected": "FAIL",
+      "fixtureId": "newline-divergence-neg-1",
+      "kind": "negative",
+      "pass": true
+    },
+    {
+      "actual": "FAIL",
+      "category": "unicode",
+      "detail": {
+        "canonicalMatch": true,
+        "divergence": true,
+        "left": "Café",
+        "rawMismatch": true,
+        "right": "Café"
+      },
+      "expected": "FAIL",
+      "fixtureId": "unicode-mismatch-neg-1",
+      "kind": "negative",
+      "pass": true
+    },
+    {
+      "actual": "FAIL",
+      "category": "locale",
+      "detail": {
+        "canonicalOrder": [
+          "Alpha",
+          "beta",
+          "item1",
+          "item2",
+          "item10"
+        ],
+        "drift": true,
+        "observedOrder": [
+          "beta",
+          "Alpha",
+          "item10",
+          "item2",
+          "item1"
+        ],
+        "values": [
+          "item2",
+          "item10",
+          "item1",
+          "Alpha",
+          "beta"
+        ]
+      },
+      "expected": "FAIL",
+      "fixtureId": "locale-ordering-drift-neg-1",
+      "kind": "negative",
+      "pass": true
+    }
+  ],
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "CASE_CONFLICT_FIXTURE_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_02": "RESERVED_NAME_FIXTURE_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_03": "NEWLINE_DIVERGENCE_FIXTURE_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_04": "UNICODE_NORMALIZATION_MISMATCH_FIXTURE_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_05": "LOCALE_ORDERING_DRIFT_FIXTURE_EXPECT_FAIL"
+  }
+}

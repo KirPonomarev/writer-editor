@@ -1,0 +1,25 @@
+{
+  "categoryCoverage": {
+    "case": 2,
+    "locale": 2,
+    "newline": 2,
+    "reserved": 2,
+    "unicode": 2
+  },
+  "missingCategories": [],
+  "missingPlatforms": [],
+  "observedPlatforms": [
+    "web",
+    "windows",
+    "linux",
+    "android",
+    "ios"
+  ],
+  "requiredPlatforms": [
+    "web",
+    "windows",
+    "linux",
+    "android",
+    "ios"
+  ]
+}

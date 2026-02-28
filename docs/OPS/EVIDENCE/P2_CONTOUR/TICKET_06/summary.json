@@ -1,19 +1,44 @@
 {
-  "advisoryToBlockingDriftCount": 0,
-  "compareAndSwapCaseCount": 3,
-  "gates": {
-    "mc_advisory_blocking_drift_zero": "PASS",
-    "p2_06_compare_and_swap_conflict_check": "PASS",
-    "p2_06_interleaving_protection_check": "PASS",
-    "p2_06_lock_acquire_release_check": "PASS",
-    "p2_06_serialized_queue_enforcement_check": "PASS"
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
   },
-  "generatedAtUtc": "2026-02-27T06:18:30.083Z",
-  "interleavingCaseCount": 2,
-  "lockAcquireReleaseCaseCount": 5,
-  "runId": "RUN-2026-02-26-001",
-  "serializedQueueCaseCount": 2,
-  "singleBlockingAuthorityOk": true,
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "baselineFixtureCount": 5,
+    "coverageIncreased": 1,
+    "fixturesTotal": 10,
+    "negativeFixturesTotal": 5,
+    "negativePassCount": 5,
+    "positiveFixturesTotal": 5,
+    "positivePassCount": 5
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "generatedAtUtc": "2026-02-28T15:10:49.014Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "EXTEND_PARITY_FIXTURE_PACKS_FOR_STABLE_XPLAT_VALIDATION_WITHOUT_BLOCKING_SURFACE_EXPANSION",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "TZ_P2_WS06_EXTENDED_PARITY_FIXTURE_PACKS_001",
   "status": "PASS",
-  "ticketId": "TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003"
+  "ticketId": "P2_WS06"
 }
