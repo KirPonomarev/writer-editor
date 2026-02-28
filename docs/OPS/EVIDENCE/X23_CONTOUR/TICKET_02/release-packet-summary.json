@@ -1,0 +1,25 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "attestationChainRootHash": "18939abca685e70a443ae2519e32fc8ca6afd346cdef77e70f3cd93797be6668",
+  "attestationIssueCount": 0,
+  "blockingSurfaceExpansion": false,
+  "detector": {
+    "canonStatusPath": "docs/OPS/STATUS/CANON_STATUS.json",
+    "expectedCanonVersion": "v3.13a-final",
+    "failsignalRegistryPath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+    "modeMatrixEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+    "releasePacketPath": "docs/OPS/STATUS/X23_RELEASE_TAG_PREP_AND_PR_PACKET_v1.json",
+    "token": "X23_WS02_RELEASE_TAG_PREP_AND_PR_PACKET_OK"
+  },
+  "head": "d4ed6581572bd65baf005fb95fb2a14ff3d2c942",
+  "missingRequiredInputCount": 0,
+  "modeCheckIssueCount": 0,
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "releaseBindingIssueCount": 0,
+  "releasePacketHash": "e19e7792fe0418214273cdac02eae5455c6b173767040d8534ddee014a4a3687",
+  "releasePrepVersion": "x23.ws02.v1",
+  "requiredInputRefCount": 7,
+  "requiredReleaseBlockingTokenCount": 14,
+  "x22Ws02Status": "PASS",
+  "x22Ws02Token": "X22_WS02_FINAL_PROMOTION_DECISION_PREP_OK"
+}

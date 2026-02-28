@@ -1,0 +1,59 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true,
+    "NEXT_TZ_ACCEPTANCE_05": true
+  },
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "attestationChainBreakCount": 0,
+    "attestationIssueCount": 0,
+    "missingEvidenceLinkCount": 0,
+    "missingRequiredInputCount": 0,
+    "modeCheckMissingCount": 0,
+    "modeDispositionDriftCount": 0,
+    "modeEvaluatorIssueCount": 0,
+    "prPacketHeadMismatchCount": 0,
+    "releaseBindingFailSignalMismatchCount": 0,
+    "releaseBindingFailSignalMissingCount": 0,
+    "releaseBindingMissingFieldCount": 0,
+    "releaseBindingMissingRecordCount": 0,
+    "releaseBindingMissingTokenCount": 0,
+    "requiredEvidenceRefCount": 5,
+    "requiredInputRefCount": 7,
+    "requiredModeCheckCount": 2,
+    "requiredReleaseBlockingTokenCount": 14,
+    "ws01CommitCountMismatchCount": 0,
+    "ws01ExpectedCommitCount": 86,
+    "ws01HeadMismatchCount": 0,
+    "ws01ObservedCommitCount": 86
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "generatedAtUtc": "2026-02-28T21:56:50.746Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "PREPARE_RELEASE_TAG_PACKET_AND_PR_READINESS_FROM_VERIFIED_COMMIT_CHAIN",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "TZ_X23_WS02_RELEASE_TAG_PREP_AND_PR_PACKET_001",
+  "status": "PASS",
+  "ticketId": "TZ_X23_WS02_RELEASE_TAG_PREP_AND_PR_PACKET_001"
+}
