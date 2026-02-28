@@ -1,0 +1,132 @@
+{
+  "claimMissingFailsignal": [],
+  "claimModeConflictCount": 0,
+  "claimModeResolvedByMigrationCount": 15,
+  "claimResolvedByMigration": [
+    {
+      "claimId": "ADAPTERS_ENFORCED",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_ADAPTERS_NOT_ENFORCED",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "ADAPTERS_ENFORCED_OK"
+    },
+    {
+      "claimId": "CAPABILITY_ENFORCEMENT",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_CAPABILITY_NOT_ENFORCED",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "CAPABILITY_ENFORCED_OK"
+    },
+    {
+      "claimId": "CONDITIONAL_GATES_BOUND",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_CONDITIONAL_GATE_MISAPPLIED",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "CONDITIONAL_GATES_BOUND_OK"
+    },
+    {
+      "claimId": "CONFIG_HASH_LOCK",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_CONFIG_HASH_CONFLICT",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "CONFIG_HASH_LOCK_OK"
+    },
+    {
+      "claimId": "CORE_SOT_EXECUTABLE",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_CORE_SOT_NOT_EXECUTABLE",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "CORE_SOT_EXECUTABLE_OK"
+    },
+    {
+      "claimId": "DEPENDENCY_REMEDIATION_POLICY",
+      "expectedClaimDisposition": "advisory",
+      "failSignal": "E_DEP_REMEDIATION_POLICY_INVALID",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "blocking",
+      "requiredToken": "DEPENDENCY_REMEDIATION_POLICY_OK"
+    },
+    {
+      "claimId": "GOVERNANCE_STRICT",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_GOVERNANCE_STRICT_FAIL",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "GOVERNANCE_STRICT_OK"
+    },
+    {
+      "claimId": "HEAD_STRICT_RELEASE",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_HEAD_BINDING_INVALID",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "HEAD_STRICT_OK"
+    },
+    {
+      "claimId": "LOSSLESS_MAP",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_LOSSLESS_MAP_DRIFT",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "LOSSLESS_MAP_OK"
+    },
+    {
+      "claimId": "PERFORMANCE_BASELINE",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_PERF_BASELINE_NOT_OK",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "PERF_BASELINE_OK"
+    },
+    {
+      "claimId": "PROOFHOOK_INTEGRITY",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_PROOFHOOK_TAMPER_DETECTED",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "PROOFHOOK_INTEGRITY_OK"
+    },
+    {
+      "claimId": "RECOVERY_IO",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_RECOVERY_IO_NOT_OK",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "RECOVERY_IO_OK"
+    },
+    {
+      "claimId": "REQUIRED_SET_NO_TARGET",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_REQUIRED_SET_CONTAINS_TARGET",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "REQUIRED_SET_NO_TARGET_OK"
+    },
+    {
+      "claimId": "TOKEN_CATALOG_VALID",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_TOKEN_CATALOG_INVALID",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "TOKEN_CATALOG_VALID_OK"
+    },
+    {
+      "claimId": "TOKEN_DECLARATION",
+      "expectedClaimDisposition": "blocking",
+      "failSignal": "E_TOKEN_DECLARATION_INVALID",
+      "reason": "CLAIM_MODE_DISPOSITION_CONFLICT",
+      "registryReleaseDisposition": "advisory",
+      "requiredToken": "TOKEN_DECLARATION_VALID_OK"
+    }
+  ],
+  "claimUnresolvedConflicts": [],
+  "registryDeclarationMismatchCount": 0,
+  "tokenAmbiguous": [],
+  "tokenFailsignalAmbiguityCount": 0,
+  "tokenUnknown": []
+}

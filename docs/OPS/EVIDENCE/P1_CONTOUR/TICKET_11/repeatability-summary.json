@@ -1,0 +1,128 @@
+{
+  "runs": [
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": true,
+        "NEXT_TZ_ACCEPTANCE_04": true
+      },
+      "counts": {
+        "claimModeConflictCount": 0,
+        "claimModeResolvedByMigrationCount": 15,
+        "duplicateDeclarationCount": 0,
+        "registryDeclarationMismatchCount": 0,
+        "scopedClaimCount": 31,
+        "semanticAliasWithoutMigrationCount": 0,
+        "semanticCollisionCount": 0,
+        "tokenFailsignalAmbiguityCount": 0
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true,
+        "NEXT_TZ_DOD_07": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": true,
+        "NEXT_TZ_ACCEPTANCE_04": true
+      },
+      "counts": {
+        "claimModeConflictCount": 0,
+        "claimModeResolvedByMigrationCount": 15,
+        "duplicateDeclarationCount": 0,
+        "registryDeclarationMismatchCount": 0,
+        "scopedClaimCount": 31,
+        "semanticAliasWithoutMigrationCount": 0,
+        "semanticCollisionCount": 0,
+        "tokenFailsignalAmbiguityCount": 0
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true,
+        "NEXT_TZ_DOD_07": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    },
+    {
+      "acceptance": {
+        "NEXT_TZ_ACCEPTANCE_01": true,
+        "NEXT_TZ_ACCEPTANCE_02": true,
+        "NEXT_TZ_ACCEPTANCE_03": true,
+        "NEXT_TZ_ACCEPTANCE_04": true
+      },
+      "counts": {
+        "claimModeConflictCount": 0,
+        "claimModeResolvedByMigrationCount": 15,
+        "duplicateDeclarationCount": 0,
+        "registryDeclarationMismatchCount": 0,
+        "scopedClaimCount": 31,
+        "semanticAliasWithoutMigrationCount": 0,
+        "semanticCollisionCount": 0,
+        "tokenFailsignalAmbiguityCount": 0
+      },
+      "dod": {
+        "NEXT_TZ_DOD_01": true,
+        "NEXT_TZ_DOD_02": true,
+        "NEXT_TZ_DOD_03": true,
+        "NEXT_TZ_DOD_04": true,
+        "NEXT_TZ_DOD_05": true,
+        "NEXT_TZ_DOD_06": true,
+        "NEXT_TZ_DOD_07": true
+      },
+      "negativeResults": {
+        "NEXT_TZ_NEGATIVE_01": true,
+        "NEXT_TZ_NEGATIVE_02": true,
+        "NEXT_TZ_NEGATIVE_03": true,
+        "NEXT_TZ_NEGATIVE_04": true,
+        "NEXT_TZ_NEGATIVE_05": true
+      },
+      "ok": true,
+      "positiveResults": {
+        "NEXT_TZ_POSITIVE_01": true,
+        "NEXT_TZ_POSITIVE_02": true,
+        "NEXT_TZ_POSITIVE_03": true
+      },
+      "token": 1
+    }
+  ],
+  "stable": true
+}

@@ -1,0 +1,42 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "advisoryToBlockingDriftCount": 0,
+  "blockingSurfaceExpansion": false,
+  "claimModeConflictCount": 0,
+  "claimModeResolvedByMigrationCount": 15,
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true,
+    "NEXT_TZ_DOD_07": true
+  },
+  "failSignalTarget": "E_FAILSIGNAL_SEMANTIC_COLLISION",
+  "generatedAtUtc": "2026-02-28T13:00:33.329Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "ONE_MEANING_ONE_FAILSIGNAL_PLUS_DUPLICATE_COLLISION_ELIMINATION_WITHOUT_BLOCKING_SURFACE_EXPANSION",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "registryDeclarationMismatchCount": 0,
+  "runId": "TZ_P1_WS01_FAILSIGNAL_SEMANTIC_DEDUP_001",
+  "semanticCollisionCount": 0,
+  "status": "PASS",
+  "ticketId": "P1_WS01",
+  "tokenFailsignalAmbiguityCount": 0
+}
