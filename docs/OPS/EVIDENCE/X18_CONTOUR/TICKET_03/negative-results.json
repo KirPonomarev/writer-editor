@@ -1,0 +1,3491 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "capabilityBindingMissing": [],
+      "channelStatusInconsistency": [],
+      "commandBindingMissing": [],
+      "duplicateSignals": [],
+      "entryCount": 6,
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": ""
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": ""
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": ""
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": ""
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": ""
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": ""
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": ""
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": ""
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": ""
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        }
+      ],
+      "projectionHash": "ebbb89af2b2e5ac85e020dbc18912bd11c735bf003cd82b32e9d91316e8d5d92",
+      "requiredCommandResultSignalCount": 3,
+      "requiredCommandResultSignalMissing": [],
+      "requiredSaveSignalCount": 3,
+      "requiredSaveSignalMissing": [],
+      "requiredSaveSignalsVisible": true,
+      "resetPolicyValid": true,
+      "sourceEventMissing": [
+        {
+          "reason": "SOURCE_EVENT_MISSING",
+          "signalId": "save.pending"
+        }
+      ],
+      "sourceEventNotAllowed": [],
+      "staleEntryTargets": [],
+      "statusResetGaps": [],
+      "unknownModes": [],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "capabilityBindingMissing": [],
+      "channelStatusInconsistency": [],
+      "commandBindingMissing": [],
+      "duplicateSignals": [],
+      "entryCount": 5,
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        }
+      ],
+      "projectionHash": "3ef067476e46d63229d8666f682e4e1c94eabda98400c7ddc6ebb9ebbbf6424e",
+      "requiredCommandResultSignalCount": 3,
+      "requiredCommandResultSignalMissing": [
+        {
+          "reason": "REQUIRED_COMMAND_RESULT_SIGNAL_MISSING",
+          "signalId": "command.error"
+        }
+      ],
+      "requiredSaveSignalCount": 3,
+      "requiredSaveSignalMissing": [],
+      "requiredSaveSignalsVisible": true,
+      "resetPolicyValid": true,
+      "sourceEventMissing": [],
+      "sourceEventNotAllowed": [],
+      "staleEntryTargets": [],
+      "statusResetGaps": [],
+      "unknownModes": [],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "capabilityBindingMissing": [],
+      "channelStatusInconsistency": [],
+      "commandBindingMissing": [],
+      "duplicateSignals": [],
+      "entryCount": 6,
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        }
+      ],
+      "projectionHash": "7ac60e6804b9d2e0fc50ce355f6e4d8ea0b5db4db691ab5283353da2b91c5f15",
+      "requiredCommandResultSignalCount": 3,
+      "requiredCommandResultSignalMissing": [],
+      "requiredSaveSignalCount": 3,
+      "requiredSaveSignalMissing": [],
+      "requiredSaveSignalsVisible": true,
+      "resetPolicyValid": true,
+      "sourceEventMissing": [],
+      "sourceEventNotAllowed": [],
+      "staleEntryTargets": [],
+      "statusResetGaps": [
+        {
+          "reason": "INVALID_TIMEOUT",
+          "signalId": "save.pending",
+          "timeoutMs": 0
+        },
+        {
+          "reason": "RESET_RULES_MISSING",
+          "signalId": "save.pending"
+        }
+      ],
+      "unknownModes": [],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "capabilityBindingMissing": [],
+      "channelStatusInconsistency": [],
+      "commandBindingMissing": [],
+      "duplicateSignals": [],
+      "entryCount": 6,
+      "modeProfileVisibilityGaps": [
+        {
+          "commandId": "cmd.project.save",
+          "mode": "GhostMode",
+          "profile": "minimal",
+          "reason": "MENU_VISIBILITY_RULE_MISSING",
+          "signalId": "save.pending"
+        },
+        {
+          "commandId": "cmd.project.save",
+          "mode": "GhostMode",
+          "profile": "pro",
+          "reason": "MENU_VISIBILITY_RULE_MISSING",
+          "signalId": "save.pending"
+        },
+        {
+          "commandId": "cmd.project.save",
+          "mode": "GhostMode",
+          "profile": "guru",
+          "reason": "MENU_VISIBILITY_RULE_MISSING",
+          "signalId": "save.pending"
+        }
+      ],
+      "ok": false,
+      "projection": [
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        }
+      ],
+      "projectionHash": "bca4dd5f402e1083c14463cf3585fece7feb995026ff7b7bef9f3ab35611a361",
+      "requiredCommandResultSignalCount": 3,
+      "requiredCommandResultSignalMissing": [],
+      "requiredSaveSignalCount": 3,
+      "requiredSaveSignalMissing": [],
+      "requiredSaveSignalsVisible": true,
+      "resetPolicyValid": true,
+      "sourceEventMissing": [],
+      "sourceEventNotAllowed": [],
+      "staleEntryTargets": [
+        {
+          "commandId": "cmd.project.save",
+          "mode": "GhostMode",
+          "profile": "minimal",
+          "reason": "STALE_ENTRY_TARGET",
+          "signalId": "save.pending"
+        },
+        {
+          "commandId": "cmd.project.save",
+          "mode": "GhostMode",
+          "profile": "pro",
+          "reason": "STALE_ENTRY_TARGET",
+          "signalId": "save.pending"
+        },
+        {
+          "commandId": "cmd.project.save",
+          "mode": "GhostMode",
+          "profile": "guru",
+          "reason": "STALE_ENTRY_TARGET",
+          "signalId": "save.pending"
+        }
+      ],
+      "statusResetGaps": [],
+      "unknownModes": [
+        {
+          "mode": "GhostMode",
+          "signalId": "save.pending"
+        }
+      ],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "capabilityBindingMissing": [],
+      "channelStatusInconsistency": [
+        {
+          "menu": "visible",
+          "reason": "CHANNEL_STATUS_INCONSISTENT",
+          "signalId": "save.pending",
+          "statusbar": "hidden",
+          "toolbar": "visible"
+        }
+      ],
+      "commandBindingMissing": [],
+      "duplicateSignals": [],
+      "entryCount": 6,
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.review.exportMarkdown",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "command.error",
+          "sourceEvent": "evt.command.result.error"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "command.success",
+          "sourceEvent": "evt.command.result.success"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.plan.flowSave",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "warning",
+          "signalId": "command.warning",
+          "sourceEvent": "evt.command.result.warning"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "error",
+          "signalId": "save.error",
+          "sourceEvent": "evt.project.save.failed"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "pending",
+          "signalId": "save.pending",
+          "sourceEvent": "evt.project.save.requested"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Plan",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Review",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "guru",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "minimal",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        },
+        {
+          "channels": {
+            "menu": "visible",
+            "statusbar": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.save",
+          "mode": "Write",
+          "profile": "pro",
+          "resultType": "success",
+          "signalId": "save.success",
+          "sourceEvent": "evt.project.save.succeeded"
+        }
+      ],
+      "projectionHash": "4d19621bf4b3da06e5055e01c5d48d8f1ccc502298725f29241cf47cfb7586da",
+      "requiredCommandResultSignalCount": 3,
+      "requiredCommandResultSignalMissing": [],
+      "requiredSaveSignalCount": 3,
+      "requiredSaveSignalMissing": [],
+      "requiredSaveSignalsVisible": false,
+      "resetPolicyValid": true,
+      "sourceEventMissing": [],
+      "sourceEventNotAllowed": [],
+      "staleEntryTargets": [],
+      "statusResetGaps": [],
+      "unknownModes": [],
+      "unknownProfiles": []
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "SAVE_SIGNAL_WITHOUT_SOURCE_EVENT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "COMMAND_ERROR_FEEDBACK_MISSING_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "STATUS_STUCK_WITHOUT_RESET_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "MODE_PROFILE_INVALID_STATUS_VISIBILITY_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "CHANNEL_STATUS_INCONSISTENCY_EXPECT_REJECT"
+  }
+}
