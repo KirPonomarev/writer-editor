@@ -5,7 +5,7 @@
   "packageName": "EXECUTION_PACKAGE_02_MINFIXSET_03_07",
   "status": "DONE",
   "startedAtUtc": "2026-02-27T22:44:15.866Z",
-  "updatedAtUtc": "2026-02-28T00:06:00.000Z",
+  "updatedAtUtc": "2026-02-28T08:07:24.000Z",
   "steps": [
     {
       "id": "STEP_01",
@@ -67,5 +67,106 @@
       "status": "PASS",
       "updatedAtUtc": "2026-02-28T00:06:00.000Z"
     }
-  ]
+  ],
+  "phase3Switch": {
+    "taskId": "TZ_EXEC_PKG_04_A02_PHASE3_SWITCH_EXECUTION",
+    "status": "PASS",
+    "activePhase": "PHASE_3_HARD",
+    "activePhaseAlias": "PHASE_3",
+    "timestampUtc": "2026-02-28T00:45:00.000Z",
+    "approvedBy": "KIRILL_PONOMAREV"
+  },
+  "lastGateDecision": {
+    "decisionStatus": "PHASE_3_HARD_MODE_ACTIVE",
+    "gateStatus": "PASS",
+    "taskId": "TZ_EXEC_PKG_04_A01_HARD_ENABLE_GATE_EVALUATION",
+    "updatedAtUtc": "2026-02-28T00:45:00.000Z"
+  },
+  "phase3StabilityWaves": [
+    {
+      "waveId": "PHASE3_WAVE_01",
+      "taskId": "TZ_EXEC_PKG_05_A01_PHASE3_STABILITY_WAVE_01",
+      "status": "PASS",
+      "falsePositiveRatePct": 0,
+      "criticalRegressionCount": 0,
+      "runtimeBudgetMinutes": 1.22,
+      "engineHealth": "PASS",
+      "rollbackActivated": false,
+      "updatedAtUtc": "2026-02-28T01:05:00.000Z"
+    },
+    {
+      "waveId": "PHASE3_WAVE_02",
+      "taskId": "TZ_EXEC_PKG_05_A02_PHASE3_STABILITY_WAVE_02",
+      "status": "PASS",
+      "falsePositiveRatePct": 0,
+      "criticalRegressionCount": 0,
+      "runtimeBudgetMinutes": 1.217,
+      "engineHealth": "PASS",
+      "rollbackActivated": false,
+      "updatedAtUtc": "2026-02-28T01:20:00.000Z"
+    },
+    {
+      "waveId": "PHASE3_WAVE_03",
+      "taskId": "TZ_EXEC_PKG_05_A03_PHASE3_STABILITY_WAVE_03",
+      "status": "PASS",
+      "falsePositiveRatePct": 0.0,
+      "criticalRegressionCount": 0,
+      "runtimeBudgetMinutes": 1.214,
+      "engineHealth": "PASS",
+      "rollbackActivated": false,
+      "updatedAtUtc": "2026-02-28T05:58:41.000Z"
+    },
+    {
+      "waveId": "PHASE3_WAVE_04",
+      "taskId": "TZ_EXEC_PKG_05_A04_PHASE3_STABILITY_WAVE_04",
+      "status": "PASS",
+      "falsePositiveRatePct": 0.0,
+      "criticalRegressionCount": 0,
+      "runtimeBudgetMinutes": 1.224,
+      "engineHealth": "PASS",
+      "rollbackActivated": false,
+      "updatedAtUtc": "2026-02-28T06:03:37.000Z"
+    },
+    {
+      "waveId": "PHASE3_WAVE_05",
+      "taskId": "TZ_EXEC_PKG_05_A05_PHASE3_STABILITY_WAVE_05",
+      "status": "PASS",
+      "falsePositiveRatePct": 0.0,
+      "criticalRegressionCount": 0,
+      "runtimeBudgetMinutes": 1.216,
+      "engineHealth": "PASS",
+      "rollbackActivated": false,
+      "updatedAtUtc": "2026-02-28T06:08:40.000Z"
+    }
+  ],
+  "lastPhase3StabilityStatus": "PASS",
+  "lastPhase3StabilityWave": "PHASE3_WAVE_05",
+  "phase3StabilityCounter": {
+    "passedWaves": 5,
+    "targetWaves": 5,
+    "label": "5_OF_5",
+    "updatedAtUtc": "2026-02-28T06:08:40.000Z"
+  },
+  "phase3StabilityGate": {
+    "status": "CLOSED",
+    "requiredWaves": 5,
+    "passedWaves": 5,
+    "updatedAtUtc": "2026-02-28T06:08:40.000Z",
+    "taskId": "TZ_EXEC_PKG_05_A05_PHASE3_STABILITY_WAVE_05"
+  },
+  "cycleCloseEvent": {
+    "taskId": "TZ_CONTOUR_CLOSE_V4_A01_CLOSEOUT_MINIMAL",
+    "status": "CLOSED",
+    "decision": "EXECUTION_CYCLE_CLOSED_SUCCESSFULLY",
+    "nextStep": "TZ_CONTOUR_CLOSE_V4_B01_FORMAL_TAILS_PARITY",
+    "updatedAtUtc": "2026-02-28T07:49:58.000Z"
+  },
+  "formalTailsParityEvent": {
+    "taskId": "TZ_CONTOUR_CLOSE_V4_B01_FORMAL_TAILS_PARITY",
+    "status": "PASS",
+    "strictNamedArtifactsPresent": true,
+    "commandIdMismatchZero": true,
+    "secondApprovalSigned": true,
+    "updatedAtUtc": "2026-02-28T08:07:24.000Z"
+  }
 }

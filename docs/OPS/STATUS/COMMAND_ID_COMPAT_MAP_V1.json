@@ -1,0 +1,82 @@
+{
+  "SCHEMA_VERSION": 1,
+  "OWNER": "KIRILL_PONOMAREV",
+  "UPDATED_AT_UTC": "2026-02-28T08:07:06.000Z",
+  "HASH_LOCK": "sha256:19195dce911163366cd7652c6e56a6ff1167e4641b191f037ab2a07eabd4a218",
+  "CHECK_BINDING": "MC_CHECK_EXECUTABILITY_BINDING",
+  "EVIDENCE_REF": "COMMAND_ID_STANDARD_V1.json",
+  "artifactId": "COMMAND_ID_COMPAT_MAP_V1",
+  "taskId": "TZ_CONTOUR_CLOSE_V4_B01_FORMAL_TAILS_PARITY",
+  "compatMode": "CMD_MC_ALIAS_ALLOWED_TRANSITION_ONLY",
+  "windowHours": 168,
+  "windowStartUtc": "2026-02-28T08:07:06.000Z",
+  "windowEndUtc": "2026-03-07T08:07:06.000Z",
+  "aliases": [
+    {
+      "aliasCommandId": "CMD_MC_BLOCKING_POLICY_SINGLE_SOURCE",
+      "canonicalCommandId": "validate-blocking-policy-single-source",
+      "machineCheckId": "MC_BLOCKING_POLICY_SINGLE_SOURCE"
+    },
+    {
+      "aliasCommandId": "CMD_MC_V1_ARTIFACTS_PRESENT_AND_BOUND",
+      "canonicalCommandId": "validate-v1-artifacts-presence-and-binding",
+      "machineCheckId": "MC_V1_ARTIFACTS_PRESENT_AND_BOUND"
+    },
+    {
+      "aliasCommandId": "CMD_MC_REGISTRY_BINDING_COMPLETENESS_100",
+      "canonicalCommandId": "validate-machine-check-registry-completeness",
+      "machineCheckId": "MC_REGISTRY_BINDING_COMPLETENESS_100"
+    },
+    {
+      "aliasCommandId": "CMD_MC_PHASE3_LOCK_GUARD",
+      "canonicalCommandId": "validate-phase3-lock-guard",
+      "machineCheckId": "MC_PHASE3_LOCK_GUARD"
+    },
+    {
+      "aliasCommandId": "CMD_MC_TOKEN_CORE_SOT_EXECUTABLE_BINDING",
+      "canonicalCommandId": "validate-token-binding-core-sot-executable",
+      "machineCheckId": "MC_TOKEN_CORE_SOT_EXECUTABLE_BINDING"
+    },
+    {
+      "aliasCommandId": "CMD_MC_TOKEN_COMMAND_SURFACE_ENFORCED_BINDING",
+      "canonicalCommandId": "validate-token-binding-command-surface-enforced",
+      "machineCheckId": "MC_TOKEN_COMMAND_SURFACE_ENFORCED_BINDING"
+    },
+    {
+      "aliasCommandId": "CMD_MC_TOKEN_RECOVERY_IO_BINDING",
+      "canonicalCommandId": "validate-token-binding-recovery-io",
+      "machineCheckId": "MC_TOKEN_RECOVERY_IO_BINDING"
+    },
+    {
+      "aliasCommandId": "CMD_MC_GLOSSARY_LOCK",
+      "canonicalCommandId": "validate-glossary-lock",
+      "machineCheckId": "MC_GLOSSARY_LOCK"
+    },
+    {
+      "aliasCommandId": "CMD_MC_THRESHOLD_SYSTEM_NORMALIZATION",
+      "canonicalCommandId": "validate-threshold-system-normalization",
+      "machineCheckId": "MC_THRESHOLD_SYSTEM_NORMALIZATION"
+    },
+    {
+      "aliasCommandId": "CMD_MC_COMMENT_HISTORY_SCOPE_FLAG_BINDING",
+      "canonicalCommandId": "validate-comment-history-scope-flag-binding",
+      "machineCheckId": "MC_COMMENT_HISTORY_SCOPE_FLAG_BINDING"
+    },
+    {
+      "aliasCommandId": "CMD_MC_FREEZE_ESCAPE_CONTROL",
+      "canonicalCommandId": "validate-freeze-escape-control",
+      "machineCheckId": "MC_FREEZE_ESCAPE_CONTROL"
+    },
+    {
+      "aliasCommandId": "CMD_MC_DESKTOP_FIRST_ORDER_ENFORCEMENT",
+      "canonicalCommandId": "validate-desktop-first-order-enforcement",
+      "machineCheckId": "MC_DESKTOP_FIRST_ORDER_ENFORCEMENT"
+    },
+    {
+      "aliasCommandId": "CMD_MC_CHECK_EXECUTABILITY_BINDING",
+      "canonicalCommandId": "validate-check-executability-binding",
+      "machineCheckId": "MC_CHECK_EXECUTABILITY_BINDING"
+    }
+  ],
+  "status": "PASS"
+}

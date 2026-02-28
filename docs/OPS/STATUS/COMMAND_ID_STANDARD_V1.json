@@ -1,0 +1,16 @@
+{
+  "SCHEMA_VERSION": 1,
+  "OWNER": "KIRILL_PONOMAREV",
+  "UPDATED_AT_UTC": "2026-02-28T08:07:06.000Z",
+  "HASH_LOCK": "sha256:ec74c0689ff229a3e8e758172d8052f319c54a2d394e2b1357c77c9e1411c108",
+  "CHECK_BINDING": "MC_CHECK_EXECUTABILITY_BINDING",
+  "EVIDENCE_REF": "MACHINE_CHECK_REGISTRY_V1.json",
+  "artifactId": "COMMAND_ID_STANDARD_V1",
+  "taskId": "TZ_CONTOUR_CLOSE_V4_B01_FORMAL_TAILS_PARITY",
+  "canonicalPrefix": "validate-",
+  "postWindowHardRule": "POST_WINDOW_ONLY_VALIDATE_PREFIX_ALLOWED",
+  "commandCount": 13,
+  "mismatchCount": 0,
+  "mismatches": [],
+  "status": "PASS"
+}

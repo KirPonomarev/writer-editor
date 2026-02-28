@@ -1270,10 +1270,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EXECUTION_PROGRESS_LOG_V1.json",
-      "sha256": "3df549478a2a52333dd6ec0a6dcf28befcc52cf6f1c6325ef366dc79799f81b2",
-      "approvedBy": "ticket:TZ_EXEC_PKG_02_A02_COMMIT_GATE_AND_PR_CREATE",
-      "approvedAtUtc": "2026-02-28T00:15:00Z",
-      "rationale": "EXECUTION_PACKAGE_02_COMMIT_GATE_REBIND"
+      "sha256": "48df84705460abfb06c11366cba277302670fa12977c34fb0036f9b780082416",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
     },
     {
       "filePath": "docs/OPS/STATUS/EXECUTION_SEQUENCE_CANON_v1.json",
@@ -1375,10 +1375,24 @@
     },
     {
       "filePath": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
-      "sha256": "b0a878b4d703b78e26f5cd7647e62829aaf8411b066aef9ae18953517dd9c3e2",
-      "approvedBy": "ticket:TZ_EXEC_PKG_02_A02_COMMIT_GATE_AND_PR_CREATE",
-      "approvedAtUtc": "2026-02-28T00:15:00Z",
-      "rationale": "EXECUTION_PACKAGE_02_COMMIT_GATE_REBIND"
+      "sha256": "7669a336d87500aec93e05c3fb248e834ae6b19c9f2380988850a0cd717a7b0c",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_01_REPORT_V1.json",
+      "sha256": "7c405fb11cf8df19da96ab62c4d82310a9d00ffb0473996aea3e0aa661725c68",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_02_REPORT_V1.json",
+      "sha256": "c35e9d9029c550590e96ccf4d99ce1b834607472f8969fa6dff14dbd698378be",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
     },
     {
       "filePath": "docs/OPS/STATUS/PROCESS_TAX_BUDGET_GATE_AUTOMATION_v3.json",
@@ -1887,9 +1901,9 @@
     {
       "filePath": "test/contracts/agent-bootstrap-spec.contract.test.js",
       "sha256": "1d519c70facdd45cedcf1f104cf56d2b9d8b3ec1b4167c4b4cc6b738c524740a",
-      "approvedBy": "ticket:TZ_EXEC_PKG_02_A02_COMMIT_GATE_AND_PR_CREATE",
-      "approvedAtUtc": "2026-02-28T00:15:00Z",
-      "rationale": "EXECUTION_PACKAGE_02_COMMIT_GATE_REBIND"
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
     },
     {
       "filePath": "test/contracts/attestation-trust-lock.contract.test.js",
@@ -1915,9 +1929,9 @@
     {
       "filePath": "test/contracts/codex-automation-policy.test.js",
       "sha256": "7535dc9cb45d013022dcef607d1600a54616221c9503de3db1b970378e278800",
-      "approvedBy": "ticket:TZ_EXEC_PKG_02_A02_COMMIT_GATE_AND_PR_CREATE",
-      "approvedAtUtc": "2026-02-28T00:15:00Z",
-      "rationale": "EXECUTION_PACKAGE_02_COMMIT_GATE_REBIND"
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
     },
     {
       "filePath": "test/contracts/command-surface-caller-trust.contract.test.js",
@@ -2135,6 +2149,153 @@
       "approvedBy": "@k.ponomarev.pro",
       "approvedAtUtc": "2026-02-18T00:00:00.000Z",
       "rationale": "Approve strict-governance change for TZ-24D2 contract wiring update."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_03_REPORT_V1.json",
+      "sha256": "14628434ded2de1bfd3d1df04dbef41980dcddae56d4ac30a346583ee3a2090f",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_04_REPORT_V1.json",
+      "sha256": "ecbad68efaff51ea87238da4904f656435e3b54a8dcff7c2ae3d3b2bb692be3f",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_05_REPORT_V1.json",
+      "sha256": "57d226d386b7b21d91e0b44406ffb941c913df5e43adf1a2833917759a0c51e7",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PHASE3_STABILITY_GATE_CLOSURE_V1.json",
+      "sha256": "d570b998fec0909b6d17fc93fc6d628a16dea768b62216f6b28da20e679eceb9",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/EXECUTION_CYCLE_CLOSE_REPORT_V1.json",
+      "sha256": "d43458c7f9761f69be6648a69e38b259e147a606a354d3284ff86c06d9302e00",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/EXECUTION_HANDOFF_V1.json",
+      "sha256": "aca3fc3966147e078ed90a173f542d57d7e4153967bb0485f2045a2b23dad3a1",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/CLOSEOUT_DIRTY_BASELINE_V1.json",
+      "sha256": "d4c66ee39f2f51242cc0601a8d9df5f5f4226db146dee51a40792b5ee44f3a03",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/PACKAGE_03_DECISION_RECORD_V1.json",
+      "sha256": "2d8be9152121b1a1df51bf24dc755fb2da5cac45adb9feb22624bec0485bc47c",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/RELEASE_CRITICAL_IMPACT_MATRIX_V1.json",
+      "sha256": "a202bbd884156e5ed6333cc14b9a2536c4c153314b95b1c68b8af3e4bdd07be0",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/DETERMINISTIC_CORE_CHECKSET_V1.json",
+      "sha256": "38f7913c6f056655ac1f1d2db2c00a2d7b7b9a862256e5fd07032f1c90674139",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/KILL_SWITCH_EXEMPTIONS_V1.json",
+      "sha256": "f4b486a3df2dc87fdd840b62027bd1545d3ab170be0fa5bafddb58e4608328ef",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/AUTOGENERATED_APPROVAL_PIPELINE_V1_SPEC.json",
+      "sha256": "f453b924e7a5efca7626dcd6c905ef06d2e733cd6dd4216a2b4a6d1c70b84803",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MC_BLOCKING_POLICY_SINGLE_SOURCE_REPORT_V1.json",
+      "sha256": "d97f29c0527d88793e2b3fb94d68638c4450f19df58940fa29fbadbcadbb8924",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MC_V1_ARTIFACT_BINDING_REPORT_V1.json",
+      "sha256": "22a5e86227927e5e56990f926435e584bf8dc51e635647b2796edf8ae24164f4",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MC_REGISTRY_COMPLETENESS_REPORT_V1.json",
+      "sha256": "44a9f3bdce8016a091242b4748bc0a5fba656088abdd554dcddbc9704e1a1ace",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MC_PHASE3_LOCK_GUARD_REPORT_V1.json",
+      "sha256": "acb546e4b0a7e72861a3a66bf00d3ec42ae6d24a7f36d85045e8895a3b495063",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/COMMAND_ID_STANDARD_V1.json",
+      "sha256": "79375f5ba0c9ec0872f27425d45bd92d5844a10243d6a8e893114cc865c8e6f3",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/COMMAND_ID_COMPAT_MAP_V1.json",
+      "sha256": "c7c2334e1d254cc13060dc118f9a4c664e3a9791762e57889231ed749433859b",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/FORMAL_TAILS_PARITY_REPORT_V1.json",
+      "sha256": "4ecbbec16ee5e918cc275a498858a028ee72e70c330e07882a49b27a2473d7e8",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/TAILS_GIT_DIRTY_BASELINE_V1.json",
+      "sha256": "2e84d262f405240d62dab7f3a98e76efaa241efd3719e23b6b66e5c87f3012c3",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/TAILS_GIT_CLOSE_ALLOWLIST_V1.json",
+      "sha256": "4f3cf87a853bc397d4b86ffd99227a4a9c661261cd86d84b99e82434c0aba888",
+      "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+      "approvedAtUtc": "2026-02-28T08:20:46.000Z",
+      "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
     }
   ]
 }

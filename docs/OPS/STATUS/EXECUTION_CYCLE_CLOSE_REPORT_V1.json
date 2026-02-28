@@ -1,0 +1,51 @@
+{
+  "artifactId": "EXECUTION_CYCLE_CLOSE_REPORT_V1",
+  "schemaVersion": 1,
+  "taskId": "TZ_CONTOUR_CLOSE_V4_A01_CLOSEOUT_MINIMAL",
+  "mode": "PHASE_3_HARD_ACTIVE",
+  "mainSha": "44351318385cebe21050436ce1bc5a57341d9b4e",
+  "preconditions": {
+    "mainShaRequiredOrNewer": true,
+    "executionPackage01Closed": true,
+    "executionPackage02Closed": true,
+    "canonicalValidationReady": true,
+    "phase3StabilityGateClosed": true,
+    "stabilityCounterIs5Of5": true
+  },
+  "packages": {
+    "EXECUTION_PACKAGE_01_MIN_FIXSET_01_02": "CLOSED",
+    "EXECUTION_PACKAGE_02_MIN_FIXSET_03_07": "CLOSED",
+    "EXECUTION_PACKAGE_03_SINGLE_CANONICAL_VALIDATION_PASS": "WAIVED_SIGNED",
+    "EXECUTION_PACKAGE_04_HARD_ENABLE_GATE_AND_PHASE_SWITCH": "CLOSED",
+    "EXECUTION_PACKAGE_05_PHASE3_STABILITY": "CLOSED"
+  },
+  "phase3Summary": {
+    "active": true,
+    "stabilityCounter": "5_OF_5",
+    "gateStatus": "CLOSED",
+    "passedWaves": 5,
+    "requiredWaves": 5,
+    "maxRuntimeMinutes": 1.224,
+    "allEngineHealthPass": true
+  },
+  "decision": "EXECUTION_CYCLE_CLOSED_SUCCESSFULLY",
+  "nextAllowedAction": "START_NEW_CYCLE_ONLY_WITH_NEW_SCOPED_TICKET",
+  "updatedAtUtc": "2026-02-28T07:49:58.000Z",
+  "approvedBy": "KIRILL_PONOMAREV",
+  "package03Decision": {
+    "status": "WAIVED_SIGNED",
+    "artifact": "PACKAGE_03_DECISION_RECORD_V1.json",
+    "decisionType": "SIGNED_WAIVER",
+    "updatedAtUtc": "2026-02-28T07:49:58.000Z"
+  },
+  "blockedDecision": {
+    "status": "NOT_APPLICABLE",
+    "reason": "MACHINE_SIGNAL_FALSE",
+    "artifact": null
+  },
+  "canonicalPassPolicy": {
+    "mode": "FRESH_RUN",
+    "reuseAllowed": false,
+    "maxAgeMinutes": 360
+  }
+}

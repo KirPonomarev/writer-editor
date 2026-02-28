@@ -1,0 +1,16 @@
+{
+  "SCHEMA_VERSION": 1,
+  "OWNER": "KIRILL_PONOMAREV",
+  "UPDATED_AT_UTC": "2026-02-28T08:07:06.000Z",
+  "HASH_LOCK": "sha256:5031f5696d612d685b0497539dd3c72412bf5822d66301150f67855348cc25e6",
+  "CHECK_BINDING": "MC_CHECK_EXECUTABILITY_BINDING",
+  "EVIDENCE_REF": "MACHINE_CHECK_REGISTRY_V1.json",
+  "artifactId": "MC_REGISTRY_COMPLETENESS_REPORT_V1",
+  "taskId": "TZ_CONTOUR_CLOSE_V4_B01_FORMAL_TAILS_PARITY",
+  "machineCheckId": "MC_REGISTRY_BINDING_COMPLETENESS_100",
+  "commandId": "validate-machine-check-registry-completeness",
+  "outputArtifact": "MACHINE_CHECK_REGISTRY_V1.json",
+  "modeDisposition": "release_blocking",
+  "status": "PASS",
+  "assertion": "REGISTRY_BINDING_COMPLETENESS_IS_100"
+}
