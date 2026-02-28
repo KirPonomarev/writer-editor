@@ -1,0 +1,19 @@
+{
+  "artifactId": "X23_WS03_PR_SUMMARY_V1",
+  "baseRef": "main",
+  "evidenceChainRefs": [
+    "docs/OPS/EVIDENCE/X23_CONTOUR/TICKET_02/summary.json",
+    "docs/OPS/STATUS/X23_WS02_RELEASE_TAG_PREP_AND_PR_PACKET_v1.json",
+    "docs/OPS/STATUS/X23_RELEASE_TAG_PREP_AND_PR_PACKET_v1.json"
+  ],
+  "headBeforeMerge": "0c116f40716ae051de376b2f9eea2721676c405f",
+  "headRef": "codex/x23-ws03-pr-merge-execution-and-closeout-001",
+  "mergeCommit": "4bf4c41d2967146e0564f0525d3c870fb4ff571f",
+  "prNumber": 279,
+  "prState": "MERGED",
+  "prUrl": "https://github.com/KirPon2024/writer-editor/pull/279",
+  "schemaVersion": 1,
+  "status": "PASS",
+  "tzId": "TZ_X23_WS03_PR_MERGE_EXECUTION_AND_CLOSEOUT_001",
+  "updatedAtUtc": "2026-02-28T22:05:10.611Z"
+}

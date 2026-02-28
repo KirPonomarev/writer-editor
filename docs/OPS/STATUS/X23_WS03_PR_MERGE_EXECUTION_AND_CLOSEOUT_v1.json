@@ -1,0 +1,12 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "blockingSurfaceExpansion": false,
+  "mergeCommit": "4bf4c41d2967146e0564f0525d3c870fb4ff571f",
+  "prNumber": 279,
+  "repeatabilityStable3Runs": true,
+  "requiredChecksPass": true,
+  "status": "PASS",
+  "token": "X23_WS03_PR_MERGE_EXECUTION_AND_CLOSEOUT_OK",
+  "updatedAtUtc": "2026-02-28T22:05:10.611Z",
+  "version": 1
+}

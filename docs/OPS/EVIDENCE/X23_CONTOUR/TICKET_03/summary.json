@@ -1,0 +1,12 @@
+{
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "blockingSurfaceExpansionCount": 0,
+    "negativePassCount": 5,
+    "positivePassCount": 3
+  },
+  "generatedAtUtc": "2026-02-28T22:05:10.611Z",
+  "objective": "CREATE_PR_RUN_REQUIRED_GATES_MERGE_BY_PR_PATH_AND_CLOSE_X23_WITH_SIGNED_EVIDENCE",
+  "runId": "TZ_X23_WS03_PR_MERGE_EXECUTION_AND_CLOSEOUT_001",
+  "status": "PASS"
+}
