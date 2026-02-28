@@ -1,0 +1,71 @@
+{
+  "artifactId": "P0_CONTOUR_EVIDENCE_FREEZE_PACKET_V1",
+  "schemaVersion": 1,
+  "generatedAtUtc": "2026-02-28T12:47:05Z",
+  "owner": "KIRILL_PLUS_CODEX",
+  "activeCanon": {
+    "version": "v3.13a-final",
+    "statusFile": "docs/OPS/STATUS/CANON_STATUS.json",
+    "active": true
+  },
+  "contour": {
+    "verdict": "ACCEPTED",
+    "status": "COMPLETED",
+    "gateDecision": "CLOSED",
+    "scopeCompliance": "PASS",
+    "acceptanceCompliance": "PASS",
+    "blockingSurfaceExpansion": false,
+    "falseGreenStatus": "NOT_DETECTED",
+    "advisoryAsBlockingDrift": "ZERO",
+    "offlineReleaseIntegrity": "LOCALLY_VERIFIABLE",
+    "repeatability": "PASS_THREE_OF_THREE"
+  },
+  "workstreams": [
+    {
+      "id": "WS01",
+      "tzId": "TZ_P0_WS01_ATTESTATION_ANTI_FORGERY_001",
+      "status": "PASS",
+      "summaryRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/tz-p0-ws01-summary.json",
+      "repeatabilityRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/tz-p0-ws01-repeatable-pass-3runs.json"
+    },
+    {
+      "id": "WS02",
+      "tzId": "TZ_P0_WS02_COMMAND_SURFACE_BYPASS_CLOSURE_001",
+      "status": "PASS",
+      "summaryRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/tz-p0-ws02-summary.json",
+      "repeatabilityRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_02/tz-p0-ws02-repeatable-pass-3runs.json"
+    },
+    {
+      "id": "WS03",
+      "tzId": "TZ_P0_WS03_BLOCKING_BINDING_COMPLETENESS_001",
+      "status": "PASS",
+      "summaryRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/tz-p0-ws03-summary.json",
+      "repeatabilityRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_03/tz-p0-ws03-repeatable-pass-3runs.json"
+    },
+    {
+      "id": "WS04",
+      "tzId": "TZ_P0_WS04_MODE_SPLIT_ENFORCEMENT_001",
+      "status": "PASS",
+      "summaryRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/tz-p0-ws04-summary.json",
+      "repeatabilityRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_04/tz-p0-ws04-repeatable-pass-3runs.json"
+    },
+    {
+      "id": "WS05",
+      "tzId": "TZ_P0_WS05_NETWORK_SENSITIVE_ISOLATION_001",
+      "status": "PASS",
+      "summaryRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/tz-p0-ws05-summary.json",
+      "repeatabilityRef": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_05/tz-p0-ws05-repeatable-pass-3runs.json"
+    }
+  ],
+  "closeoutActions": [
+    "FREEZE_P0_EVIDENCE_PACKET",
+    "RECORD_P0_CONTOUR_CLOSE_SUMMARY",
+    "OPEN_NEXT_CONTOUR_P1_ALIGNMENT"
+  ],
+  "next": {
+    "tzId": "TZ_P1_ALIGNMENT_AND_DEDUP_001",
+    "priority": "P1",
+    "objective": "FAILSIGNAL_SEMANTIC_DEDUP_PLUS_MODE_MATRIX_COMPLETENESS_PLUS_CLAIM_CATALOG_REGISTRY_ALIGNMENT",
+    "gate": "GO_IF_P0_CLOSEOUT_ARTIFACT_SIGNED"
+  }
+}
