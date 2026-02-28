@@ -19,33 +19,24 @@
       "TOKEN_SOURCE_CONFLICT_OK"
     ],
     "release": [
-      "ADAPTERS_ENFORCED_OK",
-      "CAPABILITY_ENFORCED_OK",
-      "COMMAND_SURFACE_ENFORCED_OK",
       "CORE_SOT_EXECUTABLE_OK",
-      "CRITICAL_CLAIM_MATRIX_OK",
-      "GOVERNANCE_STRICT_OK",
-      "HEAD_STRICT_OK",
-      "PERF_BASELINE_OK",
       "RECOVERY_IO_OK",
-      "RELEASE_ARTIFACT_SOURCES_OK",
-      "TOKEN_DECLARATION_VALID_OK",
-      "XPLAT_CONTRACT_MACOS_SIGNING_READY_OK"
+      "MIGRATIONS_POLICY_OK",
+      "MIGRATIONS_ATOMICITY_OK",
+      "NORMALIZATION_XPLAT_OK",
+      "E2E_CRITICAL_USER_PATH_OK",
+      "HEAD_STRICT_OK",
+      "PROOFHOOK_INTEGRITY_OK",
+      "CONFIG_HASH_LOCK_OK",
+      "TOKEN_SOURCE_CONFLICT_OK",
+      "REQUIRED_SET_NO_TARGET_OK",
+      "SINGLE_VERIFY_CONTOUR_ENFORCED_OK",
+      "VERIFY_ATTESTATION_OK",
+      "ATTESTATION_SIGNATURE_OK"
     ],
     "freezeMode": [
       "FREEZE_MODE_STRICT_OK"
     ],
-    "conditional": [
-      {
-        "flag": "VNEXT_TOUCHED",
-        "enabledWhen": true,
-        "tokens": [
-          "E2E_CRITICAL_USER_PATH_OK"
-        ],
-        "applyTo": [
-          "core"
-        ]
-      }
-    ]
+    "conditional": []
   }
 }

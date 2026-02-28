@@ -1,0 +1,15 @@
+{
+  "releaseRequiredCount": 14,
+  "activeRequiredCount": 14,
+  "canonicalBlockingCount": 14,
+  "canonicalExactMatch": true,
+  "effectiveBlockingSetFormula": "effectiveBlockingSet = releaseRequired INTERSECT canonical14",
+  "effectiveBlockingSetCount": 14,
+  "effectiveBlockingSetFormulaTrue": true,
+  "releaseRequiredNonblockingSignalCount": 0,
+  "releaseRegistryAdvisoryModeCountObserved": 12,
+  "pointerLockMismatchVsWs00Detected": true,
+  "negative03TargetTokenUsed": "COLLAB_CAUSAL_QUEUE_READINESS_OK",
+  "freezeModeCount": 1,
+  "requiredConfigHash": "3450b8d4b61dc16bd4ebc428366bdf998ebb2a297a7d54b5b5c56c93ba20d233"
+}
