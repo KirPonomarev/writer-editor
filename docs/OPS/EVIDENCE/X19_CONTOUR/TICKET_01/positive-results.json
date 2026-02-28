@@ -1,0 +1,28 @@
+{
+  "details": {
+    "baseline": {
+      "entryCount": 5,
+      "projectionHash": "c4c1f32ddcc404cfd9fd276613acee2b881a85d10bcf8a6a7c592733a8a0dad3"
+    },
+    "determinism": {
+      "hashes": [
+        "c4c1f32ddcc404cfd9fd276613acee2b881a85d10bcf8a6a7c592733a8a0dad3",
+        "c4c1f32ddcc404cfd9fd276613acee2b881a85d10bcf8a6a7c592733a8a0dad3",
+        "c4c1f32ddcc404cfd9fd276613acee2b881a85d10bcf8a6a7c592733a8a0dad3"
+      ],
+      "ok": true
+    },
+    "hintCommandMismatch": [],
+    "staleHintTargets": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "FIRST_RUN_ACTIONS_RESOLVE_TO_VALID_COMMAND_PATHS",
+    "NEXT_TZ_POSITIVE_02": "EMPTY_STATE_HINTS_MATCH_AVAILABLE_ACTIONS",
+    "NEXT_TZ_POSITIVE_03": "ENTRY_FLOW_BEHAVIOR_DETERMINISTIC"
+  }
+}

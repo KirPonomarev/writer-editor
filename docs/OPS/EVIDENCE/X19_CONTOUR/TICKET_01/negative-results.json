@@ -1,0 +1,2712 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "capabilityBindingMissing": [
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "reason": "CAPABILITY_BINDING_MISSING"
+        }
+      ],
+      "channelEntryInconsistency": [],
+      "commandBindingMissing": [
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "reason": "COMMAND_NOT_REGISTERED"
+        }
+      ],
+      "emptyStateHintCount": 5,
+      "entryCount": 5,
+      "hintCommandMismatch": [
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.new",
+          "expectedCommandId": "cmd.project.missing.binding",
+          "hintId": "hint.new",
+          "reason": "HINT_COMMAND_MISMATCH"
+        }
+      ],
+      "modeProfileVisibilityGaps": [
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Write",
+          "profile": "minimal",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Write",
+          "profile": "pro",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Write",
+          "profile": "guru",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Plan",
+          "profile": "minimal",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Plan",
+          "profile": "pro",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Plan",
+          "profile": "guru",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Review",
+          "profile": "minimal",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Review",
+          "profile": "pro",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Review",
+          "profile": "guru",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        }
+      ],
+      "ok": false,
+      "projection": [
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "pro"
+        }
+      ],
+      "projectionHash": "f84b951c6157a3d6f756cad8bb701206f7eb76c06a62b3d78ae9250af7656852",
+      "requiredEntryActionCount": 5,
+      "requiredEntryActionMissing": [],
+      "staleEntryTargets": [
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Write",
+          "profile": "minimal",
+          "reason": "STALE_ENTRY_TARGET"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Write",
+          "profile": "pro",
+          "reason": "STALE_ENTRY_TARGET"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Write",
+          "profile": "guru",
+          "reason": "STALE_ENTRY_TARGET"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Plan",
+          "profile": "minimal",
+          "reason": "STALE_ENTRY_TARGET"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Plan",
+          "profile": "pro",
+          "reason": "STALE_ENTRY_TARGET"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Plan",
+          "profile": "guru",
+          "reason": "STALE_ENTRY_TARGET"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Review",
+          "profile": "minimal",
+          "reason": "STALE_ENTRY_TARGET"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Review",
+          "profile": "pro",
+          "reason": "STALE_ENTRY_TARGET"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.missing.binding",
+          "mode": "Review",
+          "profile": "guru",
+          "reason": "STALE_ENTRY_TARGET"
+        }
+      ],
+      "staleHintTargets": [],
+      "unknownModes": [],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "capabilityBindingMissing": [],
+      "channelEntryInconsistency": [],
+      "commandBindingMissing": [],
+      "emptyStateHintCount": 5,
+      "entryCount": 5,
+      "hintCommandMismatch": [],
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "pro"
+        }
+      ],
+      "projectionHash": "c4c1f32ddcc404cfd9fd276613acee2b881a85d10bcf8a6a7c592733a8a0dad3",
+      "requiredEntryActionCount": 5,
+      "requiredEntryActionMissing": [],
+      "staleEntryTargets": [],
+      "staleHintTargets": [
+        {
+          "actionId": "stale-action-id",
+          "hintId": "hint.new",
+          "reason": "HINT_TARGET_ACTION_MISSING"
+        }
+      ],
+      "unknownModes": [],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "capabilityBindingMissing": [],
+      "channelEntryInconsistency": [],
+      "commandBindingMissing": [],
+      "emptyStateHintCount": 5,
+      "entryCount": 5,
+      "hintCommandMismatch": [],
+      "modeProfileVisibilityGaps": [
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.new",
+          "mode": "GhostMode",
+          "profile": "minimal",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.new",
+          "mode": "GhostMode",
+          "profile": "pro",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.new",
+          "mode": "GhostMode",
+          "profile": "guru",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        }
+      ],
+      "ok": false,
+      "projection": [
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "pro"
+        }
+      ],
+      "projectionHash": "f84b951c6157a3d6f756cad8bb701206f7eb76c06a62b3d78ae9250af7656852",
+      "requiredEntryActionCount": 5,
+      "requiredEntryActionMissing": [],
+      "staleEntryTargets": [
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.new",
+          "mode": "GhostMode",
+          "profile": "minimal",
+          "reason": "STALE_ENTRY_TARGET"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.new",
+          "mode": "GhostMode",
+          "profile": "pro",
+          "reason": "STALE_ENTRY_TARGET"
+        },
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.new",
+          "mode": "GhostMode",
+          "profile": "guru",
+          "reason": "STALE_ENTRY_TARGET"
+        }
+      ],
+      "staleHintTargets": [],
+      "unknownModes": [
+        {
+          "actionId": "new",
+          "mode": "GhostMode"
+        }
+      ],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "capabilityBindingMissing": [],
+      "channelEntryInconsistency": [],
+      "commandBindingMissing": [],
+      "emptyStateHintCount": 5,
+      "entryCount": 4,
+      "hintCommandMismatch": [],
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "pro"
+        }
+      ],
+      "projectionHash": "deaa5a2520f7b164f11c85457d6d34f0097e42bb4bde5b18f7101de57bf7e1a6",
+      "requiredEntryActionCount": 5,
+      "requiredEntryActionMissing": [
+        {
+          "actionId": "help-open",
+          "reason": "REQUIRED_ENTRY_ACTION_MISSING"
+        }
+      ],
+      "staleEntryTargets": [],
+      "staleHintTargets": [
+        {
+          "actionId": "help-open",
+          "hintId": "hint.help",
+          "reason": "HINT_TARGET_ACTION_MISSING"
+        }
+      ],
+      "unknownModes": [],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "capabilityBindingMissing": [],
+      "channelEntryInconsistency": [
+        {
+          "actionId": "new",
+          "commandId": "cmd.project.new",
+          "menu": "visible",
+          "palette": "hidden",
+          "reason": "CHANNEL_ENTRY_INCONSISTENT",
+          "toolbar": "visible"
+        }
+      ],
+      "commandBindingMissing": [],
+      "emptyStateHintCount": 5,
+      "entryCount": 5,
+      "hintCommandMismatch": [],
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "projection": [
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "export-docx-min",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.export.docxMin",
+          "hintId": "hint.export",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "help-open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.help",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "import-markdown-v1",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.insert.markdownPrompt",
+          "hintId": "hint.import",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "new",
+          "channels": {
+            "menu": "visible",
+            "palette": "hidden",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.new",
+          "hintId": "hint.new",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Plan",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Review",
+          "profile": "pro"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actionId": "open",
+          "channels": {
+            "menu": "visible",
+            "palette": "visible",
+            "toolbar": "visible"
+          },
+          "commandId": "cmd.project.open",
+          "hintId": "hint.open",
+          "mode": "Write",
+          "profile": "pro"
+        }
+      ],
+      "projectionHash": "6de850d3049f3886f72c2e044a6e3d003dd20e853c9646ca35a42a313bdd686a",
+      "requiredEntryActionCount": 5,
+      "requiredEntryActionMissing": [],
+      "staleEntryTargets": [],
+      "staleHintTargets": [],
+      "unknownModes": [],
+      "unknownProfiles": []
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "FIRST_RUN_ACTION_WITHOUT_COMMAND_BINDING_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "EMPTY_STATE_HINT_WITH_STALE_TARGET_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "MODE_PROFILE_INVALID_ENTRY_VISIBILITY_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "REQUIRED_ENTRY_ACTION_MISSING_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "CHANNEL_ENTRY_INCONSISTENCY_EXPECT_REJECT"
+  }
+}
