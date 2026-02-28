@@ -1,0 +1,65 @@
+{
+  "generatedAtUtc": "2026-02-28T23:20:27.493Z",
+  "runId": "TZ_X25_WS00_ENTRY_BASELINE_LOCK_001",
+  "status": "COMPLETED",
+  "scopeLock": "X25_WS00_ONLY",
+  "canonVersionObserved": "v3.13a-final",
+  "lawPath": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+  "releaseSetPointerLock": {
+    "pointerName": "ACTIVE_RELEASE_REQUIRED_SET",
+    "sourceFile": "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json",
+    "sourceFileSha256": "4f896b50aab5d536f49b7ee2586c70778b4f4466e7a21015bcdd4683d2b2afc9",
+    "profile": "release",
+    "gateTier": "release",
+    "scopeFlags": {
+      "ECONOMIC_CLAIM_SHARED_CODE": false,
+      "RELEASE_SCOPE_PERF": true,
+      "VNEXT_TOUCHED": false
+    },
+    "activeRequiredCount": 22
+  },
+  "stageActivationGuardCheck": "PASS",
+  "strictDoctorRuntimeProbe": {
+    "captured": true,
+    "exitCode": 1,
+    "logPath": "/tmp/x25_ws00_strict_doctor.log"
+  },
+  "bindingGapCapture": {
+    "releaseRequiredNonBlockingSignalCount": 22,
+    "missingBindingSchemaRecordCount": 13,
+    "missingNegativeRefCount": 0
+  },
+  "artifactNamePathLockTable": [
+    {
+      "basename": "REQUIRED_TOKEN_SET.json",
+      "path": "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json",
+      "sha256": "4f896b50aab5d536f49b7ee2586c70778b4f4466e7a21015bcdd4683d2b2afc9"
+    },
+    {
+      "basename": "FAILSIGNAL_REGISTRY.json",
+      "path": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+      "sha256": "e09cc3578e38e72a029d74190187c885c4bd9fe7f6763b4704c20fae6d075e22"
+    },
+    {
+      "basename": "CANON_STATUS.json",
+      "path": "docs/OPS/STATUS/CANON_STATUS.json",
+      "sha256": "940cf8723fca98898debba1351d0932edc3c1289faadd8c8eef18db4a5fd1b79"
+    },
+    {
+      "basename": "LAW_PATH_CANON.json",
+      "path": "docs/OPS/STATUS/LAW_PATH_CANON.json",
+      "sha256": "3f3051cf0ab94e591c737f444ffdb80aa59f7a7d4df45b3a0472909842b0a08c"
+    },
+    {
+      "basename": "X25_WS00_ENTRY_LOCK_STATUS_V1.json",
+      "path": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_00/X25_WS00_ENTRY_LOCK_STATUS_V1.json",
+      "sha256": "e9f7bc9f7b3748343becce502151d5687978ef6d42a5e30432b3e47862ac4ce7"
+    },
+    {
+      "basename": "EXECUTION_STATUS_RECORD_V1.json",
+      "path": "docs/OPS/EXECUTION/EXECUTION_STATUS_RECORD_V1.json",
+      "sha256": "PENDING_AFTER_WRITE"
+    }
+  ],
+  "nextTz": "TZ_X25_P0_WS01_REQUIRED_SET_REBIND_001"
+}
