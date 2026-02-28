@@ -1,0 +1,187 @@
+{
+  "applyByMode": {
+    "Plan": {
+      "hash": "a8034c1e132967d8b9e6aed01fdfb2442f9f783aebf891bb83ece39c4c943696",
+      "ok": true,
+      "projection": {
+        "activePanels": [
+          "projectTree",
+          "editor",
+          "timeline",
+          "statusBar"
+        ],
+        "hiddenCommands": [
+          "cmd.project.importMarkdownV1"
+        ],
+        "mode": "Plan",
+        "profileId": "minimal",
+        "visibleCommands": [
+          "cmd.project.export.docxMin",
+          "cmd.project.flowOpenV1",
+          "cmd.project.flowSaveV1",
+          "cmd.project.open",
+          "cmd.project.save"
+        ]
+      },
+      "reason": "",
+      "validation": {
+        "disabledCapabilities": [],
+        "forbiddenPanelsPresent": [],
+        "missingCapabilityBindings": [],
+        "missingRequiredPanels": [],
+        "reviewHistoryMissing": false,
+        "reviewOnlyInWrongMode": [],
+        "unknownPanels": [],
+        "writeRequiredCommandHidden": false
+      }
+    },
+    "Review": {
+      "hash": "3736972a709fc72f644bf73e4574ffdcf1d7b825c2682c2dde11676f415ecd59",
+      "ok": true,
+      "projection": {
+        "activePanels": [
+          "projectTree",
+          "editor",
+          "review",
+          "statusBar"
+        ],
+        "hiddenCommands": [
+          "cmd.project.flowOpenV1",
+          "cmd.project.importMarkdownV1"
+        ],
+        "mode": "Review",
+        "profileId": "minimal",
+        "visibleCommands": [
+          "cmd.project.export.docxMin",
+          "cmd.project.exportMarkdownV1",
+          "cmd.project.open",
+          "cmd.project.save"
+        ]
+      },
+      "reason": "",
+      "validation": {
+        "disabledCapabilities": [],
+        "forbiddenPanelsPresent": [],
+        "missingCapabilityBindings": [],
+        "missingRequiredPanels": [],
+        "reviewHistoryMissing": false,
+        "reviewOnlyInWrongMode": [],
+        "unknownPanels": [],
+        "writeRequiredCommandHidden": false
+      }
+    },
+    "Write": {
+      "hash": "044c9aaced3f4a66b92c9b5e0b7e22ca4887e010f54d6d0c3fb080f2a4d208d6",
+      "ok": true,
+      "projection": {
+        "activePanels": [
+          "projectTree",
+          "editor",
+          "inspector",
+          "statusBar"
+        ],
+        "hiddenCommands": [
+          "cmd.project.flowOpenV1",
+          "cmd.project.importMarkdownV1"
+        ],
+        "mode": "Write",
+        "profileId": "minimal",
+        "visibleCommands": [
+          "cmd.project.export.docxMin",
+          "cmd.project.open",
+          "cmd.project.save"
+        ]
+      },
+      "reason": "",
+      "validation": {
+        "disabledCapabilities": [],
+        "forbiddenPanelsPresent": [],
+        "missingCapabilityBindings": [],
+        "missingRequiredPanels": [],
+        "reviewHistoryMissing": false,
+        "reviewOnlyInWrongMode": [],
+        "unknownPanels": [],
+        "writeRequiredCommandHidden": false
+      }
+    }
+  },
+  "commandBindingCount": 9,
+  "modeCount": 3,
+  "modePolicy": {
+    "defaultProfile": "minimal",
+    "forbiddenPanelsByMode": {
+      "Plan": [
+        "review"
+      ],
+      "Review": [],
+      "Write": [
+        "review"
+      ]
+    },
+    "modes": [
+      "Write",
+      "Plan",
+      "Review"
+    ],
+    "policyVersion": "x15.ws04.v1",
+    "requiredCommandsByMode": {
+      "Plan": [
+        "cmd.project.flowOpenV1",
+        "cmd.project.flowSaveV1",
+        "cmd.project.open"
+      ],
+      "Review": [
+        "cmd.project.exportMarkdownV1",
+        "cmd.project.open",
+        "cmd.project.save"
+      ],
+      "Write": [
+        "cmd.project.export.docxMin",
+        "cmd.project.open",
+        "cmd.project.save"
+      ]
+    },
+    "requiredPanelsByMode": {
+      "Plan": [
+        "projectTree",
+        "editor",
+        "timeline",
+        "statusBar"
+      ],
+      "Review": [
+        "projectTree",
+        "editor",
+        "review",
+        "statusBar"
+      ],
+      "Write": [
+        "projectTree",
+        "editor",
+        "inspector",
+        "statusBar"
+      ]
+    },
+    "reviewHistoryCapabilityCommand": "cmd.project.exportMarkdownV1",
+    "reviewOnlyCommands": [
+      "cmd.project.exportMarkdownV1"
+    ],
+    "schemaVersion": 1,
+    "transitionPolicy": {
+      "clearVisibilityStateOnModeChange": true,
+      "resetKeys": [
+        "activePanels",
+        "hiddenCommands",
+        "visibleCommands"
+      ]
+    },
+    "writeRequiredCommand": "cmd.project.save"
+  },
+  "modePolicyConsistency": {
+    "missingExpectedModes": [],
+    "missingRequiredModeMappings": [],
+    "modesMissingInDsl": [],
+    "ok": true,
+    "profileAvailable": true
+  },
+  "panelCatalogCount": 7
+}

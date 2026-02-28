@@ -1,0 +1,104 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "applied": {
+        "hash": "",
+        "ok": false,
+        "projection": null,
+        "reason": "MODE_SWITCH_UNKNOWN_MODE",
+        "validation": null
+      },
+      "ok": true
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "applied": {
+        "hash": "",
+        "ok": false,
+        "projection": null,
+        "reason": "MODE_POLICY_VALIDATION_FAILED",
+        "validation": {
+          "disabledCapabilities": [],
+          "forbiddenPanelsPresent": [],
+          "missingCapabilityBindings": [],
+          "missingRequiredPanels": [],
+          "reviewHistoryMissing": false,
+          "reviewOnlyInWrongMode": [],
+          "unknownPanels": [],
+          "writeRequiredCommandHidden": true
+        }
+      },
+      "ok": true,
+      "writeRequiredCommand": "cmd.project.save"
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "applied": {
+        "hash": "",
+        "ok": false,
+        "projection": null,
+        "reason": "MODE_POLICY_VALIDATION_FAILED",
+        "validation": {
+          "disabledCapabilities": [],
+          "forbiddenPanelsPresent": [
+            "review"
+          ],
+          "missingCapabilityBindings": [],
+          "missingRequiredPanels": [],
+          "reviewHistoryMissing": false,
+          "reviewOnlyInWrongMode": [],
+          "unknownPanels": [],
+          "writeRequiredCommandHidden": false
+        }
+      },
+      "ok": true
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "applied": {
+        "hash": "",
+        "ok": false,
+        "projection": null,
+        "reason": "MODE_POLICY_VALIDATION_FAILED",
+        "validation": {
+          "disabledCapabilities": [],
+          "forbiddenPanelsPresent": [],
+          "missingCapabilityBindings": [],
+          "missingRequiredPanels": [],
+          "reviewHistoryMissing": true,
+          "reviewOnlyInWrongMode": [],
+          "unknownPanels": [],
+          "writeRequiredCommandHidden": false
+        }
+      },
+      "ok": true
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "actualWriteVisibleCommandsAfterBrokenTransition": [
+        "cmd.project.export.docxMin",
+        "cmd.project.exportMarkdownV1",
+        "cmd.project.open",
+        "cmd.project.save"
+      ],
+      "expectedWriteVisibleCommands": [
+        "cmd.project.export.docxMin",
+        "cmd.project.open",
+        "cmd.project.save"
+      ],
+      "ok": true,
+      "reason": "MODE_TRANSITION_STALE_VISIBILITY_DETECTED",
+      "staleDetected": true
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "MODE_SWITCH_WITH_UNKNOWN_MODE_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "WRITE_MODE_HIDES_REQUIRED_WRITING_COMMAND_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "PLAN_MODE_OPENS_REVIEW_ONLY_PANEL_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "REVIEW_MODE_WITHOUT_HISTORY_CAPABILITY_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "MODE_TRANSITION_LEAVES_STALE_VISIBILITY_STATE_EXPECT_REJECT"
+  }
+}
