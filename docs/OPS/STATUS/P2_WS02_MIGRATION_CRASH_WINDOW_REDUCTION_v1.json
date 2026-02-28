@@ -1,0 +1,11 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "crashWindowUnsafePathCount": 0,
+  "repeatabilityStable3Runs": true,
+  "sourceHardeningFailedCount": 0,
+  "status": "PASS",
+  "stressDrillCaseCount": 7,
+  "token": "P2_WS02_MIGRATION_CRASH_WINDOW_REDUCTION_OK",
+  "updatedAtUtc": "2026-02-28T13:51:29.763Z",
+  "version": 1
+}
