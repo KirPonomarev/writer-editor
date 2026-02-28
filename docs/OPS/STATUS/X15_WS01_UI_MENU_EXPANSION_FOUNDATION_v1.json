@@ -1,0 +1,13 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "allowlistCommandCount": 14,
+  "capabilityOverlapMismatchCount": 0,
+  "menuLayerCount": 6,
+  "missingHiddenAllowlistCommandsCount": 0,
+  "missingRequiredCoreCommandsCount": 0,
+  "repeatabilityStable3Runs": true,
+  "status": "PASS",
+  "token": "X15_WS01_UI_MENU_EXPANSION_FOUNDATION_OK",
+  "updatedAtUtc": "2026-02-28T15:43:07.857Z",
+  "version": 1
+}
