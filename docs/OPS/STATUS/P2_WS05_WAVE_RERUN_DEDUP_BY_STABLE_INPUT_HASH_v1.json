@@ -1,0 +1,11 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "repeatabilityStable3Runs": true,
+  "status": "PASS",
+  "token": "P2_WS05_WAVE_RERUN_DEDUP_BY_STABLE_INPUT_HASH_OK",
+  "unnecessaryHeavyRerunCountAfter": 0,
+  "unnecessaryHeavyRerunCountBefore": 4,
+  "unnecessaryHeavyRerunReduced": 1,
+  "updatedAtUtc": "2026-02-28T14:29:03.265Z",
+  "version": 1
+}
