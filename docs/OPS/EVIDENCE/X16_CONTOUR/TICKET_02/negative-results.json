@@ -1,0 +1,250 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "blockingClassificationLeaks": [],
+      "commandCapabilityMismatches": [],
+      "derivedGuardErrors": [],
+      "duplicateFeatureIds": [],
+      "enabledWhenAllowed": {
+        "EXPORT_MARKDOWN_MENU_PATH": "",
+        "MINDMAP_DERIVED_VIEW_MENU_PATH": true
+      },
+      "missingFeatures": [],
+      "missingMenuRows": [],
+      "missingStageGates": [
+        {
+          "commandId": "cmd.project.exportMarkdownV1",
+          "disabledVisibilityState": "visible+disabled(reason=\"STAGE_GATED\")",
+          "featureId": "EXPORT_MARKDOWN_MENU_PATH",
+          "minStageId": "X2",
+          "requiredScopeFlag": ""
+        }
+      ],
+      "nonBoundBlockingTokens": [],
+      "ok": false,
+      "policyErrors": [],
+      "stageDisabledStateMismatches": [],
+      "unexpectedFeatures": [],
+      "unknownScopeFlags": [],
+      "unknownStageIds": [],
+      "unknownVisibilityModes": [],
+      "unknownVisibilityProfiles": [],
+      "unknownVisibilityStates": [],
+      "visibilityConflicts": []
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "blockingClassificationLeaks": [],
+      "commandCapabilityMismatches": [],
+      "derivedGuardErrors": [
+        {
+          "commandId": "cmd.project.flowOpenV1",
+          "derivedGuard": "NONE",
+          "expected": "DERIVED_VIEW_ONLY",
+          "featureId": "MINDMAP_DERIVED_VIEW_MENU_PATH"
+        }
+      ],
+      "duplicateFeatureIds": [],
+      "enabledWhenAllowed": {
+        "EXPORT_MARKDOWN_MENU_PATH": true,
+        "MINDMAP_DERIVED_VIEW_MENU_PATH": true
+      },
+      "missingFeatures": [],
+      "missingMenuRows": [],
+      "missingStageGates": [],
+      "nonBoundBlockingTokens": [],
+      "ok": false,
+      "policyErrors": [],
+      "stageDisabledStateMismatches": [],
+      "unexpectedFeatures": [],
+      "unknownScopeFlags": [],
+      "unknownStageIds": [],
+      "unknownVisibilityModes": [],
+      "unknownVisibilityProfiles": [],
+      "unknownVisibilityStates": [],
+      "visibilityConflicts": []
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "blockingClassificationLeaks": [],
+      "commandCapabilityMismatches": [],
+      "derivedGuardErrors": [],
+      "duplicateFeatureIds": [],
+      "enabledWhenAllowed": {
+        "EXPORT_MARKDOWN_MENU_PATH": true,
+        "MINDMAP_DERIVED_VIEW_MENU_PATH": true
+      },
+      "missingFeatures": [],
+      "missingMenuRows": [],
+      "missingStageGates": [],
+      "nonBoundBlockingTokens": [],
+      "ok": false,
+      "policyErrors": [],
+      "stageDisabledStateMismatches": [],
+      "unexpectedFeatures": [],
+      "unknownScopeFlags": [],
+      "unknownStageIds": [],
+      "unknownVisibilityModes": [],
+      "unknownVisibilityProfiles": [],
+      "unknownVisibilityStates": [],
+      "visibilityConflicts": [
+        {
+          "actual": "hidden",
+          "channel": "menu",
+          "commandId": "cmd.project.exportMarkdownV1",
+          "expected": "visible",
+          "featureId": "EXPORT_MARKDOWN_MENU_PATH",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actual": "hidden",
+          "channel": "toolbar",
+          "commandId": "cmd.project.exportMarkdownV1",
+          "expected": "visible",
+          "featureId": "EXPORT_MARKDOWN_MENU_PATH",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actual": "hidden",
+          "channel": "palette",
+          "commandId": "cmd.project.exportMarkdownV1",
+          "expected": "visible",
+          "featureId": "EXPORT_MARKDOWN_MENU_PATH",
+          "mode": "Write",
+          "profile": "minimal"
+        },
+        {
+          "actual": "hidden",
+          "channel": "menu",
+          "commandId": "cmd.project.exportMarkdownV1",
+          "expected": "visible",
+          "featureId": "EXPORT_MARKDOWN_MENU_PATH",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actual": "hidden",
+          "channel": "toolbar",
+          "commandId": "cmd.project.exportMarkdownV1",
+          "expected": "visible",
+          "featureId": "EXPORT_MARKDOWN_MENU_PATH",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actual": "hidden",
+          "channel": "palette",
+          "commandId": "cmd.project.exportMarkdownV1",
+          "expected": "visible",
+          "featureId": "EXPORT_MARKDOWN_MENU_PATH",
+          "mode": "Write",
+          "profile": "pro"
+        },
+        {
+          "actual": "hidden",
+          "channel": "menu",
+          "commandId": "cmd.project.exportMarkdownV1",
+          "expected": "visible",
+          "featureId": "EXPORT_MARKDOWN_MENU_PATH",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actual": "hidden",
+          "channel": "toolbar",
+          "commandId": "cmd.project.exportMarkdownV1",
+          "expected": "visible",
+          "featureId": "EXPORT_MARKDOWN_MENU_PATH",
+          "mode": "Write",
+          "profile": "guru"
+        },
+        {
+          "actual": "hidden",
+          "channel": "palette",
+          "commandId": "cmd.project.exportMarkdownV1",
+          "expected": "visible",
+          "featureId": "EXPORT_MARKDOWN_MENU_PATH",
+          "mode": "Write",
+          "profile": "guru"
+        }
+      ]
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "blockingClassificationLeaks": [
+        {
+          "source": "root.nonBlockingClassification",
+          "value": "blocking"
+        }
+      ],
+      "commandCapabilityMismatches": [],
+      "derivedGuardErrors": [],
+      "duplicateFeatureIds": [],
+      "enabledWhenAllowed": {
+        "EXPORT_MARKDOWN_MENU_PATH": true,
+        "MINDMAP_DERIVED_VIEW_MENU_PATH": true
+      },
+      "missingFeatures": [],
+      "missingMenuRows": [],
+      "missingStageGates": [],
+      "nonBoundBlockingTokens": [],
+      "ok": false,
+      "policyErrors": [
+        "NON_BLOCKING_CLASSIFICATION_MUST_BE_ADVISORY"
+      ],
+      "stageDisabledStateMismatches": [],
+      "unexpectedFeatures": [],
+      "unknownScopeFlags": [],
+      "unknownStageIds": [],
+      "unknownVisibilityModes": [],
+      "unknownVisibilityProfiles": [],
+      "unknownVisibilityStates": [],
+      "visibilityConflicts": []
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "blockingClassificationLeaks": [],
+      "commandCapabilityMismatches": [
+        {
+          "bindingDocCapabilityId": "cap.project.export.markdownV1",
+          "commandId": "cmd.project.exportMarkdownV1",
+          "declaredCapabilityId": "cap.project.export.markdownV1.mismatch",
+          "featureId": "EXPORT_MARKDOWN_MENU_PATH",
+          "runtimeCapabilityId": "cap.project.export.markdownV1"
+        }
+      ],
+      "derivedGuardErrors": [],
+      "duplicateFeatureIds": [],
+      "enabledWhenAllowed": {
+        "EXPORT_MARKDOWN_MENU_PATH": false,
+        "MINDMAP_DERIVED_VIEW_MENU_PATH": true
+      },
+      "missingFeatures": [],
+      "missingMenuRows": [],
+      "missingStageGates": [],
+      "nonBoundBlockingTokens": [],
+      "ok": false,
+      "policyErrors": [],
+      "stageDisabledStateMismatches": [],
+      "unexpectedFeatures": [],
+      "unknownScopeFlags": [],
+      "unknownStageIds": [],
+      "unknownVisibilityModes": [],
+      "unknownVisibilityProfiles": [],
+      "unknownVisibilityStates": [],
+      "visibilityConflicts": []
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "EXPORT_MARKDOWN_COMMAND_WITHOUT_STAGE_FLAG_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "MINDMAP_COMMAND_WITHOUT_DERIVED_GUARD_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "MODE_PROFILE_VISIBILITY_CONFLICT_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "COMMAND_BOUND_AS_BLOCKING_WITHOUT_MACHINE_BINDING_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "CAPABILITY_MISMATCH_EXPECT_REJECT"
+  }
+}
