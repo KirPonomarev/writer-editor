@@ -1,0 +1,18 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "evidenceChainBreakCount": 0,
+  "failedRequiredGateCount": 0,
+  "gateVerdictConflictCount": 0,
+  "goDecisionPolicyViolationCount": 0,
+  "invalidDecisionInputCount": 0,
+  "missingDecisionInputCount": 0,
+  "repeatabilityStable3Runs": true,
+  "requiredDecisionInputCount": 5,
+  "requiredEvidenceRefCount": 5,
+  "requiredGateVerdictCount": 5,
+  "requiredModeCheckCount": 2,
+  "status": "PASS",
+  "token": "X22_WS02_FINAL_PROMOTION_DECISION_PREP_OK",
+  "updatedAtUtc": "2026-02-28T19:51:45.643Z",
+  "version": 1
+}
