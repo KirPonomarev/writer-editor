@@ -1,0 +1,17 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "capabilityBindingCount": 9,
+  "channelCount": 3,
+  "entryCount": 11,
+  "groupAllowlistCount": 8,
+  "groupCoverageCount": 8,
+  "missingRequiredCoreCommandRowsCount": 0,
+  "modeCount": 3,
+  "profileCount": 3,
+  "repeatabilityStable3Runs": true,
+  "rowCount": 87,
+  "status": "PASS",
+  "token": "X16_WS01_MENU_FUNCTION_GROUPS_OK",
+  "updatedAtUtc": "2026-02-28T16:32:38.874Z",
+  "version": 1
+}
