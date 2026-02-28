@@ -1,0 +1,17 @@
+{
+  "counts": {
+    "activeGapCount": 0,
+    "activeTokenCount": 22,
+    "advisoryToBlockingDriftCount": 0,
+    "finalMasterArtifactMismatchCount": 0,
+    "globalGapCount": 185,
+    "missingBindingFieldCount": 0,
+    "missingCloseoutArtifactCount": 0,
+    "promotedItemCount": 0
+  },
+  "finalGateStatus": "GO_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "runId": "TZ_FINAL_FORMALIZATION_AND_REBIND_001",
+  "status": "PASS",
+  "token": "FINAL_FORMALIZATION_AND_REBIND_OK",
+  "tokenValue": 1
+}
