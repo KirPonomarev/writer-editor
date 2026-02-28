@@ -1,14 +1,14 @@
 {
-  "generatedAtUtc": "2026-02-28T23:20:27.493Z",
-  "runId": "TZ_X25_WS00_ENTRY_BASELINE_LOCK_001",
+  "generatedAtUtc": "2026-02-28T23:33:04.096Z",
+  "runId": "TZ_X25_P0_WS02_FAILSIGNAL_MODE_ALIGNMENT_001",
   "status": "COMPLETED",
-  "scopeLock": "X25_WS00_ONLY",
+  "scopeLock": "X25_P0_WS02_ONLY",
   "canonVersionObserved": "v3.13a-final",
   "lawPath": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
   "releaseSetPointerLock": {
     "pointerName": "ACTIVE_RELEASE_REQUIRED_SET",
     "sourceFile": "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json",
-    "sourceFileSha256": "4f896b50aab5d536f49b7ee2586c70778b4f4466e7a21015bcdd4683d2b2afc9",
+    "sourceFileSha256": "fc82503fc1dcb65c4928d2a86ce901a2cd242f675328b22d662a05ff06241dbb",
     "profile": "release",
     "gateTier": "release",
     "scopeFlags": {
@@ -16,7 +16,7 @@
       "RELEASE_SCOPE_PERF": true,
       "VNEXT_TOUCHED": false
     },
-    "activeRequiredCount": 22
+    "activeRequiredCount": 14
   },
   "stageActivationGuardCheck": "PASS",
   "strictDoctorRuntimeProbe": {
@@ -61,5 +61,6 @@
       "sha256": "PENDING_AFTER_WRITE"
     }
   ],
-  "nextTz": "TZ_X25_P0_WS01_REQUIRED_SET_REBIND_001"
+  "nextTz": "TZ_X25_P0_WS03_BLOCKING_BINDING_COMPLETENESS_001",
+  "note": "WS02 pointer lock reconfirmed after WS01 rebind"
 }

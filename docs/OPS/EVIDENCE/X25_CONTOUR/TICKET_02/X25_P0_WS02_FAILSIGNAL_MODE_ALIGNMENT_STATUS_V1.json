@@ -1,0 +1,47 @@
+{
+  "generatedAtUtc": "2026-02-28T23:33:04.096Z",
+  "runId": "TZ_X25_P0_WS02_FAILSIGNAL_MODE_ALIGNMENT_001",
+  "ticketId": "TZ_X25_P0_WS02_FAILSIGNAL_MODE_ALIGNMENT_001",
+  "objective": "ALIGN_FAILSIGNAL_MODE_MATRIX_WITH_ACTIVE_CANON_AND_ELIMINATE_CRITICAL_MODE_DRIFT",
+  "status": "PASS",
+  "failsignalModeAlignmentSummary": {
+    "failSignalCount": 74,
+    "criticalSignalCount": 12,
+    "criticalModeDriftCount": 0,
+    "stageOrderSignalPresent": true,
+    "stageOrderSignalAligned": true,
+    "ws00PointerLockSha": "4f896b50aab5d536f49b7ee2586c70778b4f4466e7a21015bcdd4683d2b2afc9",
+    "ws02PointerLockSha": "fc82503fc1dcb65c4928d2a86ce901a2cd242f675328b22d662a05ff06241dbb",
+    "pointerLockReconfirmationAtWs02Entry": true,
+    "modeMatrixAuthority": "ACTIVE_CANON_A16",
+    "advisoryAsBlockingDriftZero": true
+  },
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": "PASS",
+    "NEXT_TZ_NEGATIVE_02": "PASS",
+    "NEXT_TZ_NEGATIVE_03": "PASS",
+    "NEXT_TZ_NEGATIVE_04": "PASS",
+    "NEXT_TZ_NEGATIVE_05": "PASS"
+  },
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": "PASS",
+    "NEXT_TZ_POSITIVE_02": "PASS",
+    "NEXT_TZ_POSITIVE_03": "PASS"
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "finalGate": "GO_TO_X25_P0_WS03_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "finalGateSatisfied": true
+}

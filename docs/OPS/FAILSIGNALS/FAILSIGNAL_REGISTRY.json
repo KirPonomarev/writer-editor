@@ -42,12 +42,12 @@
       "tier": "release"
     },
     {
-      "blocking": false,
+      "blocking": true,
       "code": "E_BLOCKING_TOKEN_UNBOUND",
       "modeMatrix": {
         "prCore": "advisory",
-        "promotion": "advisory",
-        "release": "advisory"
+        "release": "blocking",
+        "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/ws03-blocking-binding-completeness.contract.test.js#missing-proofhook-fails-with-e-blocking-token-unbound",
       "precedence": 3,
@@ -273,12 +273,12 @@
       }
     },
     {
-      "blocking": false,
+      "blocking": true,
       "code": "E_DIRECT_PROTECTED_BRANCH_PUSH",
       "modeMatrix": {
-        "prCore": "advisory",
-        "promotion": "advisory",
-        "release": "advisory"
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 20,
@@ -314,12 +314,12 @@
       "tier": "release"
     },
     {
-      "blocking": false,
+      "blocking": true,
       "code": "E_EXECUTION_ITEM_UNOWNED",
       "modeMatrix": {
         "prCore": "advisory",
-        "promotion": "advisory",
-        "release": "advisory"
+        "release": "advisory",
+        "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 23,
@@ -328,12 +328,12 @@
       "tier": "release"
     },
     {
-      "blocking": false,
+      "blocking": true,
       "code": "E_EXECUTION_PROFILE_INVALID",
       "modeMatrix": {
-        "prCore": "advisory",
-        "promotion": "advisory",
-        "release": "advisory"
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 24,
@@ -528,12 +528,12 @@
       "tier": "release"
     },
     {
-      "blocking": false,
+      "blocking": true,
       "code": "E_MERGE_BYPASS_ATTEMPT",
       "modeMatrix": {
-        "prCore": "advisory",
-        "promotion": "advisory",
-        "release": "advisory"
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 39,
@@ -542,16 +542,16 @@
       "tier": "release"
     },
     {
-      "blocking": true,
+      "blocking": false,
       "code": "E_NETWORK_ORIGIN_UNAVAILABLE",
       "negativeTestRef": "test/contracts/origin-smoke.contract.test.js#unavailable-origin-fails-with-canonical-code",
       "precedence": 40,
       "rationale": "Origin availability smoke failure means origin binding cannot be verified and must block release gates.",
       "tier": "release",
       "modeMatrix": {
-        "prCore": "blocking",
-        "release": "blocking",
-        "promotion": "blocking"
+        "prCore": "advisory",
+        "release": "advisory",
+        "promotion": "advisory"
       }
     },
     {
@@ -700,12 +700,12 @@
       "tier": "release"
     },
     {
-      "blocking": false,
+      "blocking": true,
       "code": "E_PROOFHOOK_TAMPER_DETECTED",
       "modeMatrix": {
-        "prCore": "advisory",
-        "promotion": "advisory",
-        "release": "advisory"
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 52,
@@ -759,8 +759,8 @@
       "code": "E_REMOTE_UNAVAILABLE",
       "modeMatrix": {
         "prCore": "advisory",
-        "promotion": "advisory",
-        "release": "advisory"
+        "release": "advisory",
+        "promotion": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 56,
@@ -769,12 +769,12 @@
       "tier": "release"
     },
     {
-      "blocking": false,
+      "blocking": true,
       "code": "E_REQUIRED_SET_CONTAINS_TARGET",
       "modeMatrix": {
-        "prCore": "advisory",
-        "promotion": "advisory",
-        "release": "advisory"
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 57,
@@ -783,12 +783,12 @@
       "tier": "release"
     },
     {
-      "blocking": false,
+      "blocking": true,
       "code": "E_REQUIRED_TOKEN_SET_DRIFT",
       "modeMatrix": {
-        "prCore": "advisory",
-        "promotion": "advisory",
-        "release": "advisory"
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 58,
@@ -797,12 +797,12 @@
       "tier": "release"
     },
     {
-      "blocking": false,
+      "blocking": true,
       "code": "E_RUNTIME_WIRING_BEFORE_STAGE",
       "modeMatrix": {
         "prCore": "advisory",
-        "promotion": "advisory",
-        "release": "advisory"
+        "release": "blocking",
+        "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 59,
@@ -900,8 +900,8 @@
       "rationale": "Promotion mode requires metrics evidence for the target stage before stage-gated binding can be trusted.",
       "tier": "release",
       "modeMatrix": {
-        "prCore": "blocking",
-        "release": "blocking",
+        "prCore": "advisory",
+        "release": "advisory",
         "promotion": "blocking"
       }
     },
