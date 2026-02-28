@@ -1,0 +1,53 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "capabilityBindingGapCount": 0,
+    "channelCount": 3,
+    "channelErrorFeedbackInconsistencyCount": 0,
+    "commandBindingGapCount": 0,
+    "entryCount": 5,
+    "hintMappingGapCount": 0,
+    "modeCount": 3,
+    "modeProfileVisibilityGapCount": 0,
+    "profileCount": 3,
+    "recoveryHintGapCount": 0,
+    "requiredErrorSignalCount": 5,
+    "requiredErrorSignalGapCount": 0,
+    "requiredRecoveryPathErrorCodeCount": 2,
+    "requiredRecoveryPathErrorCodeGapCount": 0,
+    "sourceEventGapCount": 0,
+    "statusResetGapCount": 0
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "generatedAtUtc": "2026-02-28T18:55:38.487Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "IMPROVE_ERROR_HANDLING_AND_RECOVERY_HINTS_IN_ENTRY_AND_RESUME_FLOWS_WITHOUT_CORE_CHANGES",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "X19_WS03_RUN_20260228",
+  "status": "PASS",
+  "ticketId": "TZ_X19_WS03_ERROR_HANDLING_AND_RECOVERY_HINTS_001"
+}

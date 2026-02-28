@@ -1,0 +1,30 @@
+{
+  "details": {
+    "baseline": {
+      "entryCount": 5,
+      "projectionHash": "0967f41ec8493d0fdea77baa11ed112bb0f20ffed90495bbf5b00e824ca87f4a"
+    },
+    "channelErrorFeedbackInconsistency": [],
+    "determinism": {
+      "hashes": [
+        "0967f41ec8493d0fdea77baa11ed112bb0f20ffed90495bbf5b00e824ca87f4a",
+        "0967f41ec8493d0fdea77baa11ed112bb0f20ffed90495bbf5b00e824ca87f4a",
+        "0967f41ec8493d0fdea77baa11ed112bb0f20ffed90495bbf5b00e824ca87f4a"
+      ],
+      "ok": true
+    },
+    "hintMappingMissing": [],
+    "recoveryHintMissing": [],
+    "statusResetGaps": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "ERROR_TO_HINT_MAPPING_COMPLETE_FOR_TARGET_FLOW",
+    "NEXT_TZ_POSITIVE_02": "RECOVERY_HINTS_PRESENT_AND_CONSISTENT",
+    "NEXT_TZ_POSITIVE_03": "ERROR_FEEDBACK_BEHAVIOR_DETERMINISTIC"
+  }
+}
