@@ -1,0 +1,29 @@
+{
+  "artifactId": "EXECUTION_HANDOFF_V1",
+  "schemaVersion": 1,
+  "taskId": "TZ_CONTOUR_CLOSE_V4_A01_CLOSEOUT_MINIMAL",
+  "cycleStatus": "CLOSED",
+  "mainSha": "44351318385cebe21050436ce1bc5a57341d9b4e",
+  "activeMode": "PHASE_3_HARD_ACTIVE",
+  "guards": {
+    "outOfScopePolicy": "HARD_STOP_NEW_TICKET_REQUIRED",
+    "newImplementationScopeInThisTicket": false,
+    "phase3StabilityGateStatus": "CLOSED",
+    "stabilityCounter": "5_OF_5"
+  },
+  "nextAllowedActions": [
+    "START_NEW_CYCLE_ONLY_WITH_NEW_SCOPED_TICKET",
+    "KEEP_SCOPE_MODE_EXACT_TYPED",
+    "KEEP_OUT_OF_SCOPE_POLICY_HARD_STOP"
+  ],
+  "forbiddenActions": [
+    "NO_SCOPE_EXPANSION_WITHOUT_NEW_TICKET",
+    "NO_MANUAL_BYPASS_OF_REQUIRED_CHECKS",
+    "NO_UNBOUND_CHECK_OR_COMMAND_ID"
+  ],
+  "handoffStatus": "READY",
+  "updatedAtUtc": "2026-02-28T07:49:58.000Z",
+  "approvedBy": "KIRILL_PONOMAREV",
+  "package03DecisionStatus": "WAIVED_SIGNED",
+  "blockedDecisionStatus": "NOT_APPLICABLE"
+}

@@ -1,0 +1,18 @@
+{
+  "artifactId": "TAILS_GIT_CLOSE_REPORT_V1",
+  "schemaVersion": 1,
+  "taskId": "TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
+  "status": "PRE_MERGE_READY",
+  "preCommitChecks": {
+    "MC_SCOPE_PROOF_ONLY_ALLOWLIST": "PASS",
+    "MC_GOVERNANCE_CHANGE_OK": "PASS",
+    "MC_CURRENT_WAVE_STOP_OK": "PASS",
+    "MC_CHECK_EXECUTABILITY_BINDING": "PASS",
+    "AUTO_CHECK_01_NPM_TEST": "PASS",
+    "AUTO_CHECK_02_NPM_RUN_OSS_POLICY": "PASS"
+  },
+  "scopePolicy": "EXACT_TYPED_ALLOWLIST_BASENAME_ONLY",
+  "postMergeVerificationRequired": true,
+  "updatedAtUtc": "2026-02-28T08:22:37.000Z",
+  "owner": "KIRILL_PONOMAREV"
+}

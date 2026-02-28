@@ -1,0 +1,16 @@
+{
+  "SCHEMA_VERSION": 1,
+  "OWNER": "KIRILL_PONOMAREV",
+  "UPDATED_AT_UTC": "2026-02-28T08:07:06.000Z",
+  "HASH_LOCK": "sha256:59bd04a547e44631f8f1d4286c53962433b1bef2d880497018a35331da29bc77",
+  "CHECK_BINDING": "MC_CHECK_EXECUTABILITY_BINDING",
+  "EVIDENCE_REF": "MACHINE_CHECK_REGISTRY_V1.json",
+  "artifactId": "MC_V1_ARTIFACT_BINDING_REPORT_V1",
+  "taskId": "TZ_CONTOUR_CLOSE_V4_B01_FORMAL_TAILS_PARITY",
+  "machineCheckId": "MC_V1_ARTIFACTS_PRESENT_AND_BOUND",
+  "commandId": "validate-v1-artifacts-presence-and-binding",
+  "outputArtifact": "BINDING_SCHEMA_V1.json",
+  "modeDisposition": "release_blocking",
+  "status": "PASS",
+  "assertion": "ALL_REQUIRED_ARTIFACTS_PRESENT_AND_SCHEMA_VALID_AND_REGISTRY_BOUND"
+}

@@ -1,0 +1,118 @@
+{
+  "artifactId": "CLOSEOUT_DIRTY_BASELINE_V1",
+  "schemaVersion": 1,
+  "taskId": "TZ_CONTOUR_CLOSE_V4_A01_CLOSEOUT_MINIMAL",
+  "capturedAtUtc": "2026-02-28T07:49:58.000Z",
+  "policy": "PREEXISTING_DIRTY_BASELINE_CAPTURE_AND_EXCLUDE_FROM_NEW_DELTA",
+  "entries": [
+    {
+      "status": " M",
+      "path": "docs/OPERATIONS/STATUS/CODEX_AUTOMATION_POLICY.json",
+      "basename": "CODEX_AUTOMATION_POLICY.json",
+      "sha256": "73774d9cfeb9b0b2a4656b8d2adddfcccc5765c8b618094a4db38be5e292bb91"
+    },
+    {
+      "status": " M",
+      "path": "docs/OPERATIONS/STATUS/CODEX_DELIVERY_TEMPLATE_v1.0.md",
+      "basename": "CODEX_DELIVERY_TEMPLATE_v1.0.md",
+      "sha256": "f49c71579613d720920c462fff960907556ec039704e3dc621e5c2dd8600cf7a"
+    },
+    {
+      "status": " M",
+      "path": "docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json",
+      "basename": "GOVERNANCE_CHANGE_APPROVALS.json",
+      "sha256": "b7d2722443d51893731eca5461f48e54ccf6558e5ccbc8bf5d40c13dca421636"
+    },
+    {
+      "status": " M",
+      "path": "docs/OPS/STATUS/EXECUTION_PROGRESS_LOG_V1.json",
+      "basename": "EXECUTION_PROGRESS_LOG_V1.json",
+      "sha256": "2fdcc521cceea48bc2dbb6bd751bf67fc7c9b2b3761d8606650aa02a9618fc26"
+    },
+    {
+      "status": " M",
+      "path": "docs/OPS/STATUS/PHASE_SWITCH_V1.json",
+      "basename": "PHASE_SWITCH_V1.json",
+      "sha256": "7669a336d87500aec93e05c3fb248e834ae6b19c9f2380988850a0cd717a7b0c"
+    },
+    {
+      "status": " M",
+      "path": "scripts/contracts/check-codex-policy-schema.mjs",
+      "basename": "check-codex-policy-schema.mjs",
+      "sha256": "955e63a76863b5f125262cd88c114588d9e8a6db8916190e2a5debdb5aad7b54"
+    },
+    {
+      "status": " M",
+      "path": "test/contracts/codex-automation-policy.test.js",
+      "basename": "codex-automation-policy.test.js",
+      "sha256": "7535dc9cb45d013022dcef607d1600a54616221c9503de3db1b970378e278800"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPERATIONS/STATUS/AGENT_BOOTSTRAP_ONE_SHOT_SPEC_V1_0.json",
+      "basename": "AGENT_BOOTSTRAP_ONE_SHOT_SPEC_V1_0.json",
+      "sha256": "45d1ba1f7f569b93907cf4ce6733298b6af4f790034c40df1188fcdf32182678"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPS/STATUS/EXECUTION_CYCLE_CLOSE_REPORT_V1.json",
+      "basename": "EXECUTION_CYCLE_CLOSE_REPORT_V1.json",
+      "sha256": "a0975372a49fff4d130cb68cad8aef06093506fd84609ba5848934eedd2a5a3e"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPS/STATUS/EXECUTION_HANDOFF_V1.json",
+      "basename": "EXECUTION_HANDOFF_V1.json",
+      "sha256": "f1ed80a7abedc975c19bab508d6b057fa446638c2e1e1e21aae270dd59bc5404"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPS/STATUS/PHASE3_STABILITY_GATE_CLOSURE_V1.json",
+      "basename": "PHASE3_STABILITY_GATE_CLOSURE_V1.json",
+      "sha256": "d570b998fec0909b6d17fc93fc6d628a16dea768b62216f6b28da20e679eceb9"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_01_REPORT_V1.json",
+      "basename": "PHASE3_STABILITY_WAVE_01_REPORT_V1.json",
+      "sha256": "7c405fb11cf8df19da96ab62c4d82310a9d00ffb0473996aea3e0aa661725c68"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_02_REPORT_V1.json",
+      "basename": "PHASE3_STABILITY_WAVE_02_REPORT_V1.json",
+      "sha256": "c35e9d9029c550590e96ccf4d99ce1b834607472f8969fa6dff14dbd698378be"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_03_REPORT_V1.json",
+      "basename": "PHASE3_STABILITY_WAVE_03_REPORT_V1.json",
+      "sha256": "14628434ded2de1bfd3d1df04dbef41980dcddae56d4ac30a346583ee3a2090f"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_04_REPORT_V1.json",
+      "basename": "PHASE3_STABILITY_WAVE_04_REPORT_V1.json",
+      "sha256": "ecbad68efaff51ea87238da4904f656435e3b54a8dcff7c2ae3d3b2bb692be3f"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPS/STATUS/PHASE3_STABILITY_WAVE_05_REPORT_V1.json",
+      "basename": "PHASE3_STABILITY_WAVE_05_REPORT_V1.json",
+      "sha256": "57d226d386b7b21d91e0b44406ffb941c913df5e43adf1a2833917759a0c51e7"
+    },
+    {
+      "status": "??",
+      "path": "scripts/contracts/check-agent-bootstrap-spec.mjs",
+      "basename": "check-agent-bootstrap-spec.mjs",
+      "sha256": "f1a450f76caf14e0f96b22e036f74f479cf09aa28044abcf28152787ee653804"
+    },
+    {
+      "status": "??",
+      "path": "test/contracts/agent-bootstrap-spec.contract.test.js",
+      "basename": "agent-bootstrap-spec.contract.test.js",
+      "sha256": "1d519c70facdd45cedcf1f104cf56d2b9d8b3ec1b4167c4b4cc6b738c524740a"
+    }
+  ],
+  "entryCount": 18
+}
