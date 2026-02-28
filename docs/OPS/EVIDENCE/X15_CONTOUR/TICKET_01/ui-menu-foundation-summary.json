@@ -1,0 +1,50 @@
+{
+  "allowlistCommandCount": 14,
+  "capabilityOverlapMismatchCount": 0,
+  "capabilitySyncState": {
+    "coreSafetyAllowlistCount": 8,
+    "disabledInNode": [],
+    "hiddenAllowlistCount": 4,
+    "mismatches": [],
+    "missingHiddenAllowlistCommands": [],
+    "missingRequiredCoreCommands": [],
+    "ok": true,
+    "requiredVisibleCommandsCovered": 3
+  },
+  "layerState": {
+    "allowlistRulesOk": true,
+    "mergeRules": {
+      "hide": "allowlist",
+      "insert": "allowlist",
+      "reorder": "allowlist",
+      "replace": "forbidden"
+    },
+    "ok": true,
+    "stackOrder": [
+      "base",
+      "platform",
+      "profile",
+      "workspace",
+      "user",
+      "plugin"
+    ],
+    "stackOrderMatches": true
+  },
+  "menuLayerCount": 6,
+  "missingHiddenAllowlistCommandsCount": 0,
+  "missingRequiredCoreCommandsCount": 0,
+  "modeShellState": {
+    "allowedModes": [
+      "Plan",
+      "Review",
+      "Write"
+    ],
+    "deterministicHashes": [
+      "d4525b19881c30f8b80d64242ee1cdbeab3f9c87ffa6e1c3f907c428601fc538",
+      "d4525b19881c30f8b80d64242ee1cdbeab3f9c87ffa6e1c3f907c428601fc538",
+      "d4525b19881c30f8b80d64242ee1cdbeab3f9c87ffa6e1c3f907c428601fc538"
+    ],
+    "missingModes": [],
+    "ok": true
+  }
+}

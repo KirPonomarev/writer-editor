@@ -1,0 +1,57 @@
+{
+  "details": {
+    "capabilitySyncState": {
+      "coreSafetyAllowlistCount": 8,
+      "disabledInNode": [],
+      "hiddenAllowlistCount": 4,
+      "mismatches": [],
+      "missingHiddenAllowlistCommands": [],
+      "missingRequiredCoreCommands": [],
+      "ok": true,
+      "requiredVisibleCommandsCovered": 3
+    },
+    "layerState": {
+      "allowlistRulesOk": true,
+      "mergeRules": {
+        "hide": "allowlist",
+        "insert": "allowlist",
+        "reorder": "allowlist",
+        "replace": "forbidden"
+      },
+      "ok": true,
+      "stackOrder": [
+        "base",
+        "platform",
+        "profile",
+        "workspace",
+        "user",
+        "plugin"
+      ],
+      "stackOrderMatches": true
+    },
+    "modeShellState": {
+      "allowedModes": [
+        "Plan",
+        "Review",
+        "Write"
+      ],
+      "deterministicHashes": [
+        "d4525b19881c30f8b80d64242ee1cdbeab3f9c87ffa6e1c3f907c428601fc538",
+        "d4525b19881c30f8b80d64242ee1cdbeab3f9c87ffa6e1c3f907c428601fc538",
+        "d4525b19881c30f8b80d64242ee1cdbeab3f9c87ffa6e1c3f907c428601fc538"
+      ],
+      "missingModes": [],
+      "ok": true
+    }
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "MENU_EXPANSION_WORKS_IN_ALLOWED_LAYERS",
+    "NEXT_TZ_POSITIVE_02": "WRITE_PLAN_REVIEW_SHELL_SWITCHING_STABLE",
+    "NEXT_TZ_POSITIVE_03": "COMMAND_VISIBILITY_AND_CAPABILITY_POLICY_CONSISTENT"
+  }
+}
