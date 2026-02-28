@@ -1,0 +1,11 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "commandBindingCount": 9,
+  "modeCount": 3,
+  "panelCatalogCount": 7,
+  "repeatabilityStable3Runs": true,
+  "status": "PASS",
+  "token": "X15_WS04_WRITE_PLAN_REVIEW_SHELLS_OK",
+  "updatedAtUtc": "2026-02-28T16:02:57.725Z",
+  "version": 1
+}
