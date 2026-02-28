@@ -1,25 +1,44 @@
 {
-  "acceptanceMetricA": "NO_FULL_DOCUMENT_RERENDER_PER_KEYSTROKE",
-  "acceptanceMetricB": "INPUT_P95_WITHIN_FAST_LANE_THRESHOLD",
-  "acceptanceMetricC": "AUTOSAVE_AND_BACKUP_DO_NOT_BLOCK_TYPING_LOOP",
-  "advisoryToBlockingDriftCount": 0,
-  "failReason": "",
-  "gates": {
-    "mc_advisory_blocking_drift_zero": "PASS",
-    "no_runtime_hotpath_governance": "PASS",
-    "p2_01_autosave_backup_nonblocking_check": "PASS",
-    "p2_01_input_p95_within_threshold_check": "PASS",
-    "p2_01_no_full_document_rerender_per_keystroke_check": "PASS",
-    "single_blocking_authority_enforced": "PASS"
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
   },
-  "generatedAtUtc": "2026-02-27T05:12:21.579Z",
-  "inputMedianMeasuredMs": 0.00012500000000059686,
-  "inputP95MeasuredMs": 0.0002500000000011937,
-  "inputP95ThresholdMs": 60,
-  "inputSamplesCount": 200,
-  "noFullRerenderPerKeystroke": true,
-  "runId": "RUN-2026-02-26-001",
+  "advisoryToBlockingDriftCount": 0,
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "caseSensitivityCaseCount": 3,
+    "localeSortingCaseCount": 1,
+    "newlineCaseCount": 4,
+    "pathSeparatorCaseCount": 3,
+    "platformGapCount": 0,
+    "reservedNameCaseCount": 4,
+    "unicodeCaseCount": 3
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true
+  },
+  "generatedAtUtc": "2026-02-28T13:43:32.332Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "УСИЛИТЬ_CROSS_PLATFORM_NORMALIZATION_ДЛЯ_CASE_RESERVED_SEPARATOR_NEWLINE_UNICODE_LOCALE",
+  "platformGapEntries": [],
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "TZ_P2_WS01_CROSS_PLATFORM_NORMALIZATION_HARDENING_001",
   "status": "PASS",
-  "ticketId": "TZ-P2-01-HOT-PATH-INCREMENTAL-RENDER-003",
-  "typingLoopNonBlocking": true
+  "ticketId": "P2_WS01"
 }

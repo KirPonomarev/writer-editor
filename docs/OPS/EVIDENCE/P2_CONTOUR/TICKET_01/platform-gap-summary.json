@@ -1,0 +1,21 @@
+{
+  "counts": {
+    "caseSensitivityCaseCount": 3,
+    "localeSortingCaseCount": 1,
+    "newlineCaseCount": 4,
+    "pathSeparatorCaseCount": 3,
+    "platformGapCount": 0,
+    "reservedNameCaseCount": 4,
+    "unicodeCaseCount": 3
+  },
+  "platformGapCount": 0,
+  "platformGapEntries": [],
+  "scopeChecks": {
+    "caseSensitivity": true,
+    "localeSorting": true,
+    "newlines": true,
+    "pathSeparators": true,
+    "reservedNames": true,
+    "unicode": true
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "details": {
+    "CASE_COLLISION_EXPECT_FAIL": {
+      "collisionDetected": true,
+      "fixture": [
+        "SceneA.txt",
+        "scenea.TXT"
+      ],
+      "pass": true
+    },
+    "INVALID_SEPARATOR_MIX_EXPECT_FAIL": {
+      "fixture": "scenes\\chapter01/../secret.txt",
+      "mixedSeparatorsDetected": true,
+      "parentTraversalDetected": true,
+      "pass": true
+    },
+    "NEWLINE_MISMATCH_EXPECT_FAIL": {
+      "fixture": "line1\r\nline2",
+      "mismatchDetected": true,
+      "normalized": "line1\nline2",
+      "pass": true
+    },
+    "RESERVED_NAME_EXPECT_FAIL": {
+      "fixture": "CON.txt",
+      "pass": true,
+      "reservedDetected": true
+    },
+    "UNICODE_NORMALIZATION_MISMATCH_EXPECT_FAIL": {
+      "canonicalMatchDetected": true,
+      "fixture": {
+        "left": "Café",
+        "right": "Café"
+      },
+      "pass": true,
+      "rawMismatchDetected": true
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "CASE_COLLISION_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_02": "RESERVED_NAME_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_03": "INVALID_SEPARATOR_MIX_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_04": "NEWLINE_MISMATCH_EXPECT_FAIL",
+    "NEXT_TZ_NEGATIVE_05": "UNICODE_NORMALIZATION_MISMATCH_EXPECT_FAIL"
+  }
+}
