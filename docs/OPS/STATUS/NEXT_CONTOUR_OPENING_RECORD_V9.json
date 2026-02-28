@@ -1,0 +1,38 @@
+{
+  "createdAtUtc": "2026-02-28T22:19:54.738Z",
+  "dependsOn": {
+    "gateSatisfied": true,
+    "requiredGate": "GO_IF_X24_CLOSEOUT_ARTIFACT_SIGNED",
+    "x24CloseoutArtifactRef": "docs/OPS/STATUS/X24_CONTOUR_CLOSEOUT_SIGNED_V1.json"
+  },
+  "entryChecks": {
+    "activeCanonLockCheckPass": true,
+    "advisoryAsBlockingDrift": "ZERO",
+    "blockingSurfaceExpansion": false,
+    "offlineReleaseIntegrityLocallyVerifiable": true,
+    "stageActivationGuardCheckPass": true,
+    "x24ContourClosed": true
+  },
+  "executionGate": "GO",
+  "mode": "IMPLEMENTATION",
+  "objective": "OPEN_NEXT_CONTOUR_GATE_AFTER_X24_SYMBOLIC_CLOSEOUT_WITH_CANON_LOCK_PRESERVED",
+  "owner": "CODEX",
+  "priority": "P1",
+  "schemaVersion": 1,
+  "scope": {
+    "in": [
+      "NEXT_CONTOUR_ALIGNMENT",
+      "RELEASE_HANDOFF_PREP",
+      "EVIDENCE_CHAIN_CONTINUITY",
+      "CONTROLLED_DELIVERY"
+    ],
+    "out": [
+      "NEW_BLOCKING_SURFACE",
+      "CORE_SCHEMA_MIGRATION_RECOVERY_CHANGES",
+      "NETWORK_TRANSPORT_FEATURE_WORK",
+      "NON_CANON_REFACTOR"
+    ]
+  },
+  "status": "READY",
+  "ticketId": "TZ_X24_NEXT_CONTOUR_OPENING_001"
+}
