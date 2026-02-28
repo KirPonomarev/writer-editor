@@ -1,0 +1,9 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "platformGapCount": 0,
+  "repeatabilityStable3Runs": true,
+  "status": "PASS",
+  "token": "P2_WS01_CROSS_PLATFORM_NORMALIZATION_HARDENING_OK",
+  "updatedAtUtc": "2026-02-28T13:43:32.332Z",
+  "version": 1
+}
