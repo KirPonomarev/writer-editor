@@ -1,0 +1,53 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "blockingSurfaceExpansion": false,
+  "counts": {
+    "actionBindingMismatchCount": 0,
+    "advisoryToBlockingDriftCount": 0,
+    "capabilityBindingGapCount": 0,
+    "channelCount": 3,
+    "commandBindingGapCount": 0,
+    "entryCount": 20,
+    "menuHintMismatchCount": 0,
+    "modeCount": 3,
+    "modeProfileVisibilityGapCount": 0,
+    "paletteDiscoverabilityGapCount": 0,
+    "paletteDuplicateEntryCount": 0,
+    "profileCount": 3,
+    "quickOpenIndexGapCount": 0,
+    "requiredGroupCount": 9,
+    "requiredQuickOpenCommandCount": 20,
+    "shortcutHintMismatchCount": 0,
+    "staleEntryTargetCount": 0
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "generatedAtUtc": "2026-02-28T18:26:52.937Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "POLISH_QUICK_OPEN_AND_COMMAND_PALETTE_FOR_NEW_MENU_FUNCTIONS_WITHOUT_CORE_CHANGES",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "TZ_X18_WS02_QUICK_OPEN_AND_COMMAND_PALETTE_POLISH_001",
+  "status": "PASS",
+  "ticketId": "X18_WS02"
+}

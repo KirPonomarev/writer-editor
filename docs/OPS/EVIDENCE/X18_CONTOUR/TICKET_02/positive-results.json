@@ -1,0 +1,31 @@
+{
+  "details": {
+    "baseline": {
+      "entryCount": 20,
+      "projectionHash": "dba4becf3d49e1229d1624729f3b24c3fa8e04658e5d1e6ac517ee9e3de597fc"
+    },
+    "determinism": {
+      "hashes": [
+        "dba4becf3d49e1229d1624729f3b24c3fa8e04658e5d1e6ac517ee9e3de597fc",
+        "dba4becf3d49e1229d1624729f3b24c3fa8e04658e5d1e6ac517ee9e3de597fc",
+        "dba4becf3d49e1229d1624729f3b24c3fa8e04658e5d1e6ac517ee9e3de597fc"
+      ],
+      "ok": true
+    },
+    "duplicatePaletteEntries": [],
+    "menuHintMismatch": [],
+    "paletteDiscoverabilityGaps": [],
+    "shortcutHintMismatch": [],
+    "staleEntryTargets": []
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "QUICK_OPEN_INDEX_COVERS_REQUIRED_FUNCTIONS",
+    "NEXT_TZ_POSITIVE_02": "PALETTE_ENTRIES_CONSISTENT_WITH_MENU_AND_SHORTCUTS",
+    "NEXT_TZ_POSITIVE_03": "PALETTE_BEHAVIOR_DETERMINISTIC"
+  }
+}
