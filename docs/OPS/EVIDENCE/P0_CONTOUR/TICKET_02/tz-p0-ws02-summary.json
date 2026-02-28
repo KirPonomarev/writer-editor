@@ -1,0 +1,21 @@
+{
+  "tzId": "TZ_P0_WS02_COMMAND_SURFACE_BYPASS_CLOSURE_001",
+  "generatedAtUtc": "2026-02-28T12:09:46.253Z",
+  "activeCanonVersion": "v3.13a-final",
+  "activeCanonLockCheckPass": true,
+  "failSignalTarget": "E_COMMAND_SURFACE_BYPASS",
+  "fiveNegativePassCount": 5,
+  "fiveNegativeTotal": 5,
+  "positiveRouteValidated": true,
+  "commandSurfaceEnforcedConditionValidated": true,
+  "bindingCompletenessOk": true,
+  "advisoryAsBlockingDriftDetectedInWs02Scope": false,
+  "repeatabilityRuns": 3,
+  "repeatabilityOk": true,
+  "blockingSurfaceExpansion": false,
+  "falseGreenRegisterZeroOpenForWs02": true,
+  "rollbackRefPresent": true,
+  "rollbackRefExists": true,
+  "rollbackNegativeTested": true,
+  "finalGateReadyForWs03": true
+}

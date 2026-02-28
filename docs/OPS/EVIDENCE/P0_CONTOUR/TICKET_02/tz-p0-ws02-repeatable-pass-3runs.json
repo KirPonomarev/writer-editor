@@ -1,0 +1,21 @@
+{
+  "tzId": "TZ_P0_WS02_COMMAND_SURFACE_BYPASS_CLOSURE_001",
+  "generatedAtUtc": "2026-02-28T12:09:46.253Z",
+  "repeatabilityRuns": 3,
+  "repeatabilityOk": true,
+  "baselineHash": "32092e9a4bd440dd9e96d40761f48e32d800c7d7ff4be7f5ed02f1a2305116cf",
+  "runs": [
+    {
+      "run": 1,
+      "hash": "32092e9a4bd440dd9e96d40761f48e32d800c7d7ff4be7f5ed02f1a2305116cf"
+    },
+    {
+      "run": 2,
+      "hash": "32092e9a4bd440dd9e96d40761f48e32d800c7d7ff4be7f5ed02f1a2305116cf"
+    },
+    {
+      "run": 3,
+      "hash": "32092e9a4bd440dd9e96d40761f48e32d800c7d7ff4be7f5ed02f1a2305116cf"
+    }
+  ]
+}
