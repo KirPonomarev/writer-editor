@@ -1,0 +1,22 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "modeMatrixBlockingFlagConflictCount": 0,
+  "modeMatrixDuplicateSignalCount": 0,
+  "modeMatrixInvalidDispositionCount": 0,
+  "modeMatrixMissingDispositionCount": 0,
+  "modeMatrixRequiredTokenFailSignalMissingCount": 0,
+  "offlineIntegrityIssueCount": 0,
+  "releaseBindingFailSignalMismatchCount": 0,
+  "releaseBindingFailSignalMissingCount": 0,
+  "releaseBindingMissingFieldCount": 0,
+  "releaseBindingMissingRecordCount": 0,
+  "releaseBindingMissingTokenCount": 0,
+  "repeatabilityStable3Runs": true,
+  "requiredModeKeyCount": 3,
+  "requiredReleaseBlockingTokenCount": 14,
+  "status": "PASS",
+  "token": "X21_WS01_RELEASE_CANDIDATE_PRECHECK_PACK_OK",
+  "updatedAtUtc": "2026-02-28T19:25:47.249Z",
+  "usabilityGuardIssueCount": 0,
+  "version": 1
+}
