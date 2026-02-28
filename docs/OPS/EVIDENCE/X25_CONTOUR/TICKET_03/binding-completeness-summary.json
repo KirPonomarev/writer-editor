@@ -1,0 +1,11 @@
+{
+  "targetBlockingCount": 14,
+  "targetBlockingCoveredCount": 14,
+  "requiredBindingFieldsCount": 12,
+  "missingBindingFieldsCount": 0,
+  "alignmentGapCount": 0,
+  "effectiveBlockingSetOnlyNoScopeExpansion": true,
+  "eBlockingTokenUnboundTriggeredOnEffectiveSet": false,
+  "advisoryAsBlockingDriftZero": true,
+  "activeRequiredCount": 14
+}

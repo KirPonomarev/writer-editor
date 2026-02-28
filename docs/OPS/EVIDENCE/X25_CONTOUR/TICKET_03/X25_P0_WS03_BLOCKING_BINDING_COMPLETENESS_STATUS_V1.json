@@ -1,0 +1,46 @@
+{
+  "generatedAtUtc": "2026-02-28T23:36:20.004Z",
+  "runId": "TZ_X25_P0_WS03_BLOCKING_BINDING_COMPLETENESS_001",
+  "ticketId": "TZ_X25_P0_WS03_BLOCKING_BINDING_COMPLETENESS_001",
+  "objective": "ENSURE_EFFECTIVE_BLOCKING_SET_HAS_FULL_BINDING_FIELDS_WITH_ZERO_GAPS",
+  "status": "PASS",
+  "bindingCompletenessSummary": {
+    "targetBlockingCount": 14,
+    "targetBlockingCoveredCount": 14,
+    "requiredBindingFieldsCount": 12,
+    "missingBindingFieldsCount": 0,
+    "alignmentGapCount": 0,
+    "effectiveBlockingSetOnlyNoScopeExpansion": true,
+    "eBlockingTokenUnboundTriggeredOnEffectiveSet": false,
+    "advisoryAsBlockingDriftZero": true,
+    "activeRequiredCount": 14
+  },
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": "PASS",
+    "NEXT_TZ_NEGATIVE_02": "PASS",
+    "NEXT_TZ_NEGATIVE_03": "PASS",
+    "NEXT_TZ_NEGATIVE_04": "PASS",
+    "NEXT_TZ_NEGATIVE_05": "PASS"
+  },
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": "PASS",
+    "NEXT_TZ_POSITIVE_02": "PASS",
+    "NEXT_TZ_POSITIVE_03": "PASS"
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "finalGate": "GO_TO_X25_P0_WS04_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "finalGateSatisfied": true
+}
