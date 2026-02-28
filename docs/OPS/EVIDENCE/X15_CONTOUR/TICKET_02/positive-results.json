@@ -1,0 +1,92 @@
+{
+  "details": {
+    "l1Policy": {
+      "allowlistSize": 14,
+      "coreSafetyAllowlist": [
+        "cmd.project.close",
+        "cmd.project.export.docxMin",
+        "cmd.project.new",
+        "cmd.project.open",
+        "cmd.project.recovery.open",
+        "cmd.project.recovery.restore",
+        "cmd.project.save",
+        "cmd.project.saveAs"
+      ],
+      "hiddenAllowlist": [
+        "cmd.project.exportMarkdownV1",
+        "cmd.project.flowOpenV1",
+        "cmd.project.flowSaveV1",
+        "cmd.project.importMarkdownV1"
+      ],
+      "hideApplied": true,
+      "hideTarget": "cmd.project.exportMarkdownV1",
+      "ok": true,
+      "reorderTarget": "cmd.project.flowOpenV1"
+    },
+    "overlayPrecedence": {
+      "detectedOrder": [
+        "base",
+        "platform",
+        "profile",
+        "workspace",
+        "user",
+        "plugin"
+      ],
+      "deterministicHashesMatch": true,
+      "expectedOrder": [
+        "base",
+        "platform",
+        "profile",
+        "workspace",
+        "user",
+        "plugin"
+      ],
+      "finalSaveCommand": "cmd.project.save",
+      "hashA": "a17aa4e428845886f2603f892fb40edda618ab6f993e633ed332434b7c4b9239",
+      "hashB": "a17aa4e428845886f2603f892fb40edda618ab6f993e633ed332434b7c4b9239",
+      "ok": true
+    },
+    "profileDeterminism": {
+      "allowedProfiles": [
+        "guru",
+        "minimal",
+        "pro"
+      ],
+      "missingProfiles": [],
+      "ok": true,
+      "runs": {
+        "guru": {
+          "deterministic": true,
+          "hashA": "b25c40097b523be3508cca2b4a7d25d5b2bbb6be8443c1208ac19643acebeebe",
+          "hashB": "b25c40097b523be3508cca2b4a7d25d5b2bbb6be8443c1208ac19643acebeebe",
+          "okA": true,
+          "okB": true
+        },
+        "minimal": {
+          "deterministic": true,
+          "hashA": "a17aa4e428845886f2603f892fb40edda618ab6f993e633ed332434b7c4b9239",
+          "hashB": "a17aa4e428845886f2603f892fb40edda618ab6f993e633ed332434b7c4b9239",
+          "okA": true,
+          "okB": true
+        },
+        "pro": {
+          "deterministic": true,
+          "hashA": "b25c40097b523be3508cca2b4a7d25d5b2bbb6be8443c1208ac19643acebeebe",
+          "hashB": "b25c40097b523be3508cca2b4a7d25d5b2bbb6be8443c1208ac19643acebeebe",
+          "okA": true,
+          "okB": true
+        }
+      }
+    }
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "L0_PROFILE_SWITCH_WORKS_DETERMINISTIC",
+    "NEXT_TZ_POSITIVE_02": "L1_HIDE_REORDER_WORKS_WITHIN_ALLOWLIST",
+    "NEXT_TZ_POSITIVE_03": "OVERLAY_PRECEDENCE_RESOLUTION_STABLE"
+  }
+}
