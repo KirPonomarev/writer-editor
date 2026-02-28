@@ -1,0 +1,28 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "activeCanonLockCheckPass": true,
+  "advisoryToBlockingDriftCount": 0,
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "failSignalStatus": "E_MODE_POLICY_DRIFT",
+  "generatedAtUtc": "2026-02-28T12:31:04.037Z",
+  "modeAwareExitPolicyOk": true,
+  "modeMatrixSingleAuthorityStatus": "PASS",
+  "noNonCanonAutoblockIntroduced": true,
+  "repeatabilityStable3Runs": true,
+  "runId": "TZ_P0_WS04_MODE_SPLIT_ENFORCEMENT_001",
+  "stageActivationGuardCheckPass": true,
+  "status": "PASS",
+  "ticketId": "WS04"
+}
