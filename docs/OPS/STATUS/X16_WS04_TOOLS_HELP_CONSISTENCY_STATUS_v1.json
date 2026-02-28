@@ -1,0 +1,15 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "channelCount": 3,
+  "channelMismatchCount": 0,
+  "consistencyEntryCount": 2,
+  "menuProjectionRowCount": 81,
+  "modeCount": 3,
+  "modeProfileCoverageGapCount": 0,
+  "profileCount": 3,
+  "repeatabilityStable3Runs": true,
+  "status": "PASS",
+  "token": "X16_WS04_TOOLS_HELP_CONSISTENCY_OK",
+  "updatedAtUtc": "2026-02-28T16:52:27.945Z",
+  "version": 1
+}
