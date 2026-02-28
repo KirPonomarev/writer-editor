@@ -1,0 +1,674 @@
+{
+  "duplicateModeRuleCount": 0,
+  "modeCoverageDetails": [
+    {
+      "complete": true,
+      "failSignalCode": "E_ADAPTERS_NOT_ENFORCED",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_ATTESTATION_SIGNATURE_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_BINDING_INDEX_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_BLOCKING_TOKEN_UNBOUND",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_BOOK_PREFLIGHT_FAIL",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_CAPABILITY_NOT_ENFORCED",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_COLLAB_TRANSPORT_FORBIDDEN_IN_MVP",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_COMMAND_NAMESPACE_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_COMMAND_NAMESPACE_UNKNOWN",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_COMMAND_SURFACE_BYPASS",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_COMMAND_SURFACE_NEGATIVE_MISSING",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_COMMAND_SURFACE_NOT_ENFORCED",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_COMMAND_VISIBILITY_MATRIX_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_CONDITIONAL_GATE_MISAPPLIED",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_CONFIG_HASH_CONFLICT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_CORE_CHANGE_DOD_MISSING",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_CORE_SOT_NOT_EXECUTABLE",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_CRITICAL_CLAIM_MATRIX_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_DEBT_TTL_EXPIRED",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_DEP_REMEDIATION_POLICY_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_DIRECT_PROTECTED_BRANCH_PUSH",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_E2E_CRITICAL_USER_PATH_NOT_OK",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_ENABLEDWHEN_DSL_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_EXECUTION_ITEM_UNOWNED",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_EXECUTION_PROFILE_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_FAILSIGNAL_DUPLICATE",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_FAILSIGNAL_NEGATIVE_TEST_MISSING",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_FAILSIGNAL_PRECEDENCE_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_FAILSIGNAL_REGISTRY_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_GOVERNANCE_STRICT_FAIL",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_HEAD_BINDING_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_LAW_PATH_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_LOSSLESS_MAP_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_MACOS_SIGNING_READINESS_FAIL",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_MENU_ARTIFACT_TAMPER_OR_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_MENU_NORMALIZATION_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_MENU_OVERLAY_STACK_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_MENU_RUNTIME_ARTIFACT_DIVERGENCE",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_MENU_SNAPSHOT_MISMATCH",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_MERGE_BYPASS_ATTEMPT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_NETWORK_ORIGIN_UNAVAILABLE",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_PATH_BOUNDARY_VIOLATION",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_PERF_BASELINE_NOT_OK",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_PERF_BASELINE_REGRESSION",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_PLUGIN_MENU_OVERLAY_POLICY_VIOLATION",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_PRE_UI_CONTOUR_DIRTY_WORKTREE",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_PRE_UI_CONTOUR_HEAD_ORIGIN_MISMATCH",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_PRE_UI_CONTOUR_RECORD_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_PRE_UI_CONTOUR_RECORD_MISSING",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_PRE_UI_CONTOUR_REQUIRED_TOKENS_FAIL",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_PRE_UI_CONTOUR_REQUIRED_TOKENS_MISSING",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_PROMPT_LAYER_POLICY_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_PROOFHOOK_TAMPER_DETECTED",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_RECOVERY_IO_NOT_OK",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_RELEASE_ARTIFACT_SOURCES_FAIL",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_RELEASE_CANDIDATE_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_REMOTE_UNAVAILABLE",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_REQUIRED_SET_CONTAINS_TARGET",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_REQUIRED_TOKEN_SET_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_RUNTIME_WIRING_BEFORE_STAGE",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_SCOPEFLAG_UNKNOWN",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_SEQUENCE_ORDER_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_SHARED_CODE_RATIO_BELOW_MIN",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_SSOT_ANCHOR_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_SSOT_ANCHOR_MISSING",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_STAGE_AXIS_DRIFT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_STAGE_METRICS_MISSING",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_STAGE_PROMOTION_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_TOKEN_CATALOG_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_TOKEN_DECLARATION_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_TOKEN_SOURCE_CONFLICT",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "advisory",
+      "promotion": "advisory",
+      "release": "advisory"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_VERIFY_ATTESTATION_INVALID",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_WAVE_RESULT_STALE",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    },
+    {
+      "complete": true,
+      "failSignalCode": "E_X3_RECOVERY_SMOKE_FAILED",
+      "invalidKeys": [],
+      "missingKeys": [],
+      "prCore": "blocking",
+      "promotion": "blocking",
+      "release": "blocking"
+    }
+  ],
+  "modeCoveragePercent": 100,
+  "modeGapCount": 0,
+  "totalFailSignalCount": 74
+}

@@ -1,0 +1,41 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "advisoryToBlockingDriftCount": 0,
+  "blockingSurfaceExpansion": false,
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true,
+    "NEXT_TZ_DOD_07": true
+  },
+  "duplicateModeRuleCount": 0,
+  "failSignalTarget": "E_FAILSIGNAL_MODE_MAPPING_INCOMPLETE",
+  "generatedAtUtc": "2026-02-28T13:13:00.518Z",
+  "modeCoveragePercent": 100,
+  "modeGapCount": 0,
+  "modeMismatchCount": 0,
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "objective": "COMPLETE_MODE_MATRIX_COVERAGE_FOR_ALL_FAILSIGNALS_WITH_SINGLE_AUTHORITY_ENFORCEMENT",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "runId": "TZ_P1_WS02_MODE_MATRIX_COMPLETENESS_001",
+  "status": "PASS",
+  "ticketId": "P1_WS02"
+}
