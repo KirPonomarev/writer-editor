@@ -1,0 +1,11 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "allowlistSize": 14,
+  "l0ProfilesDetectedCount": 3,
+  "menuLayerCount": 6,
+  "repeatabilityStable3Runs": true,
+  "status": "PASS",
+  "token": "X15_WS02_MENU_COMPOSER_LEVELS_OK",
+  "updatedAtUtc": "2026-02-28T15:49:50.806Z",
+  "version": 1
+}
