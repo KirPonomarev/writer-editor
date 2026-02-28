@@ -1,0 +1,73 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true,
+    "NEXT_TZ_ACCEPTANCE_05": true
+  },
+  "advisoryBindingDecision": {
+    "decision": "KEEP_ADVISORY_UNTIL_MACHINE_BINDING",
+    "promotedBindingMissingFieldCount": 0,
+    "promotedItems": [],
+    "rationale": "NO_BLOCKING_SURFACE_EXPANSION_AND_ONLY_MACHINE_BOUND_CAN_BLOCK"
+  },
+  "artifactId": "FINAL_REBIND_DELTA_V1",
+  "closeoutNormalization": {
+    "fullCloseoutPackagePresent": true,
+    "normalizedTo": "COMPLETED_CLOSED",
+    "p1Status": "COMPLETED_CLOSED",
+    "p2Status": "COMPLETED_CLOSED"
+  },
+  "correctionStatus": {
+    "CORRECTION_01": "DONE",
+    "CORRECTION_02": "DONE_ACTIVE_SCOPE",
+    "CORRECTION_03": "DONE_KEEP_ADVISORY_UNTIL_MACHINE_BINDING",
+    "CORRECTION_04": "DONE",
+    "CORRECTION_05": "DONE",
+    "CORRECTION_06": "DONE"
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true,
+    "NEXT_TZ_DOD_07": true
+  },
+  "finalGate": "GO_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "generatedAtUtc": "2026-02-28T20:40:49.590Z",
+  "negativeScenarios": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "owner": "KIRILL_PLUS_CODEX",
+  "policyLocks": {
+    "advisoryAsBlockingDriftAllowed": false,
+    "blockingSurfaceExpansion": false,
+    "onlyMachineBoundCanBlock": true
+  },
+  "positiveScenarios": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "registryAlignment": {
+    "activeClaimFailsignalMissing": [],
+    "activeGapCount": 0,
+    "activeMissingClaim": [],
+    "activeMissingInCatalog": [],
+    "activeMissingInDeclaration": [],
+    "activeTokenCount": 22,
+    "activeTokenFailsignalMissing": [],
+    "globalGapCount": 185,
+    "globalGapsRetainedAsAdvisory": true,
+    "scope": "ACTIVE_CANON_SURFACE"
+  },
+  "schemaVersion": 1,
+  "taskId": "TZ_FINAL_FORMALIZATION_AND_REBIND_001"
+}

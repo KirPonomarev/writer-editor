@@ -1,0 +1,43 @@
+{
+  "advisoryAsBlockingDrift": "ZERO",
+  "advisoryDecision": {
+    "decision": "KEEP_ADVISORY_UNTIL_MACHINE_BINDING",
+    "promotedItems": [],
+    "rationale": "NO_BLOCKING_SURFACE_EXPANSION_AND_ONLY_MACHINE_BOUND_CAN_BLOCK"
+  },
+  "artifactId": "FINAL_MASTER_CLOSEOUT_SUMMARY_V1",
+  "blockingSurfaceExpansion": false,
+  "checks": {
+    "ACCEPTANCE_01": true,
+    "ACCEPTANCE_02": true,
+    "ACCEPTANCE_03": true,
+    "ACCEPTANCE_04": true,
+    "ACCEPTANCE_05": true,
+    "DOD_01": true,
+    "DOD_02": true,
+    "DOD_03": true,
+    "DOD_04": true,
+    "DOD_05": true,
+    "DOD_06": true,
+    "DOD_07": true
+  },
+  "closeout": {
+    "p1": "COMPLETED_CLOSED",
+    "p2": "COMPLETED_CLOSED",
+    "requiredArtifactsPresent": true
+  },
+  "finalGateStatus": "GO_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "gateDecision": "CLOSED",
+  "generatedAtUtc": "2026-02-28T20:40:49.590Z",
+  "owner": "KIRILL_PLUS_CODEX",
+  "planCompletionPercent": 100,
+  "registryAlignment": {
+    "activeGapCount": 0,
+    "activeScopeZeroGap": true,
+    "globalGapCount": 185
+  },
+  "schemaVersion": 1,
+  "status": "COMPLETED",
+  "taskId": "TZ_FINAL_FORMALIZATION_AND_REBIND_001",
+  "verdict": "ACCEPTED"
+}
