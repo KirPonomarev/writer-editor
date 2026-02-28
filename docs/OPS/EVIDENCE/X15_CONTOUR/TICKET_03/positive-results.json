@@ -1,0 +1,336 @@
+{
+  "details": {
+    "presetSchemaState": {
+      "allowedModes": [
+        "Write",
+        "Plan",
+        "Review"
+      ],
+      "allowedPanels": [
+        "editor",
+        "inspector",
+        "mindmap",
+        "projectTree",
+        "review",
+        "statusBar",
+        "timeline"
+      ],
+      "missingModes": [],
+      "missingPresetDefinitions": [],
+      "missingProfiles": [],
+      "ok": true,
+      "presetCount": 3,
+      "profileEnum": [
+        "guru",
+        "minimal",
+        "pro"
+      ]
+    },
+    "presetSwitchDeterminism": {
+      "idempotentMinimal": true,
+      "ok": true,
+      "runA": {
+        "hashes": [
+          "f3bbeb709a8a5d7b02d3ecca3a35e14a60d92332aa8042b2dfa1da1387aa43d1",
+          "0c72cead27d510eac22c94549114469fec8b4d5eb591dd2fc765f56a30697c77",
+          "dd220cbfb008f48afe6a71aa343b116e699b133ad2690e3bf7b86f2954b57f0b",
+          "f3bbeb709a8a5d7b02d3ecca3a35e14a60d92332aa8042b2dfa1da1387aa43d1"
+        ],
+        "ok": true,
+        "projections": [
+          {
+            "hiddenCommands": [
+              "cmd.project.flowOpenV1",
+              "cmd.project.importMarkdownV1"
+            ],
+            "mode": "Write",
+            "panelLayout": {
+              "bottom": [
+                "statusBar"
+              ],
+              "center": [
+                "editor"
+              ],
+              "left": [
+                "projectTree"
+              ],
+              "right": [
+                "inspector"
+              ]
+            },
+            "profileId": "minimal",
+            "visibleCommands": [
+              "cmd.project.export.docxMin",
+              "cmd.project.open",
+              "cmd.project.save"
+            ]
+          },
+          {
+            "hiddenCommands": [
+              "cmd.project.flowSaveV1"
+            ],
+            "mode": "Write",
+            "panelLayout": {
+              "bottom": [
+                "statusBar"
+              ],
+              "center": [
+                "editor"
+              ],
+              "left": [
+                "projectTree",
+                "timeline"
+              ],
+              "right": [
+                "inspector",
+                "review"
+              ]
+            },
+            "profileId": "pro",
+            "visibleCommands": [
+              "cmd.project.export.docxMin",
+              "cmd.project.exportMarkdownV1",
+              "cmd.project.importMarkdownV1",
+              "cmd.project.open",
+              "cmd.project.save"
+            ]
+          },
+          {
+            "hiddenCommands": [],
+            "mode": "Write",
+            "panelLayout": {
+              "bottom": [
+                "statusBar"
+              ],
+              "center": [
+                "editor"
+              ],
+              "left": [
+                "projectTree",
+                "timeline",
+                "mindmap"
+              ],
+              "right": [
+                "inspector",
+                "review"
+              ]
+            },
+            "profileId": "guru",
+            "visibleCommands": [
+              "cmd.project.export.docxMin",
+              "cmd.project.exportMarkdownV1",
+              "cmd.project.flowOpenV1",
+              "cmd.project.flowSaveV1",
+              "cmd.project.importMarkdownV1",
+              "cmd.project.open",
+              "cmd.project.save"
+            ]
+          },
+          {
+            "hiddenCommands": [
+              "cmd.project.flowOpenV1",
+              "cmd.project.importMarkdownV1"
+            ],
+            "mode": "Write",
+            "panelLayout": {
+              "bottom": [
+                "statusBar"
+              ],
+              "center": [
+                "editor"
+              ],
+              "left": [
+                "projectTree"
+              ],
+              "right": [
+                "inspector"
+              ]
+            },
+            "profileId": "minimal",
+            "visibleCommands": [
+              "cmd.project.export.docxMin",
+              "cmd.project.open",
+              "cmd.project.save"
+            ]
+          }
+        ],
+        "reason": ""
+      },
+      "runB": {
+        "hashes": [
+          "f3bbeb709a8a5d7b02d3ecca3a35e14a60d92332aa8042b2dfa1da1387aa43d1",
+          "0c72cead27d510eac22c94549114469fec8b4d5eb591dd2fc765f56a30697c77",
+          "dd220cbfb008f48afe6a71aa343b116e699b133ad2690e3bf7b86f2954b57f0b",
+          "f3bbeb709a8a5d7b02d3ecca3a35e14a60d92332aa8042b2dfa1da1387aa43d1"
+        ],
+        "ok": true,
+        "projections": [
+          {
+            "hiddenCommands": [
+              "cmd.project.flowOpenV1",
+              "cmd.project.importMarkdownV1"
+            ],
+            "mode": "Write",
+            "panelLayout": {
+              "bottom": [
+                "statusBar"
+              ],
+              "center": [
+                "editor"
+              ],
+              "left": [
+                "projectTree"
+              ],
+              "right": [
+                "inspector"
+              ]
+            },
+            "profileId": "minimal",
+            "visibleCommands": [
+              "cmd.project.export.docxMin",
+              "cmd.project.open",
+              "cmd.project.save"
+            ]
+          },
+          {
+            "hiddenCommands": [
+              "cmd.project.flowSaveV1"
+            ],
+            "mode": "Write",
+            "panelLayout": {
+              "bottom": [
+                "statusBar"
+              ],
+              "center": [
+                "editor"
+              ],
+              "left": [
+                "projectTree",
+                "timeline"
+              ],
+              "right": [
+                "inspector",
+                "review"
+              ]
+            },
+            "profileId": "pro",
+            "visibleCommands": [
+              "cmd.project.export.docxMin",
+              "cmd.project.exportMarkdownV1",
+              "cmd.project.importMarkdownV1",
+              "cmd.project.open",
+              "cmd.project.save"
+            ]
+          },
+          {
+            "hiddenCommands": [],
+            "mode": "Write",
+            "panelLayout": {
+              "bottom": [
+                "statusBar"
+              ],
+              "center": [
+                "editor"
+              ],
+              "left": [
+                "projectTree",
+                "timeline",
+                "mindmap"
+              ],
+              "right": [
+                "inspector",
+                "review"
+              ]
+            },
+            "profileId": "guru",
+            "visibleCommands": [
+              "cmd.project.export.docxMin",
+              "cmd.project.exportMarkdownV1",
+              "cmd.project.flowOpenV1",
+              "cmd.project.flowSaveV1",
+              "cmd.project.importMarkdownV1",
+              "cmd.project.open",
+              "cmd.project.save"
+            ]
+          },
+          {
+            "hiddenCommands": [
+              "cmd.project.flowOpenV1",
+              "cmd.project.importMarkdownV1"
+            ],
+            "mode": "Write",
+            "panelLayout": {
+              "bottom": [
+                "statusBar"
+              ],
+              "center": [
+                "editor"
+              ],
+              "left": [
+                "projectTree"
+              ],
+              "right": [
+                "inspector"
+              ]
+            },
+            "profileId": "minimal",
+            "visibleCommands": [
+              "cmd.project.export.docxMin",
+              "cmd.project.open",
+              "cmd.project.save"
+            ]
+          }
+        ],
+        "reason": ""
+      }
+    },
+    "validationsByProfile": {
+      "guru": {
+        "forceVisibleCapabilityDisabled": [],
+        "hiddenOutsideAllowlist": [],
+        "hiddenRequiredCoreCommands": [],
+        "ok": true,
+        "overrideWithoutCapability": [],
+        "panelConflicts": {
+          "duplicateAcrossZones": [],
+          "unknownPanels": []
+        },
+        "undeclaredCommands": []
+      },
+      "minimal": {
+        "forceVisibleCapabilityDisabled": [],
+        "hiddenOutsideAllowlist": [],
+        "hiddenRequiredCoreCommands": [],
+        "ok": true,
+        "overrideWithoutCapability": [],
+        "panelConflicts": {
+          "duplicateAcrossZones": [],
+          "unknownPanels": []
+        },
+        "undeclaredCommands": []
+      },
+      "pro": {
+        "forceVisibleCapabilityDisabled": [],
+        "hiddenOutsideAllowlist": [],
+        "hiddenRequiredCoreCommands": [],
+        "ok": true,
+        "overrideWithoutCapability": [],
+        "panelConflicts": {
+          "duplicateAcrossZones": [],
+          "unknownPanels": []
+        },
+        "undeclaredCommands": []
+      }
+    }
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "MINIMAL_PRO_GURU_PRESETS_LOAD_AND_APPLY",
+    "NEXT_TZ_POSITIVE_02": "PRESET_SWITCHING_DETERMINISTIC",
+    "NEXT_TZ_POSITIVE_03": "COMMAND_VISIBILITY_AND_LAYOUT_BINDINGS_CONSISTENT"
+  }
+}
