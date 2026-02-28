@@ -1,0 +1,1318 @@
+{
+  "details": {
+    "NEXT_TZ_NEGATIVE_01": {
+      "capabilityBindingMissing": [],
+      "channelInconsistency": [],
+      "commandBindingMissing": [],
+      "entryCount": 3,
+      "invalidProjectPath": [
+        {
+          "actionId": "quick-resume-last",
+          "projectPath": "../outside/project.craftsman.json",
+          "reason": "INVALID_PROJECT_PATH"
+        }
+      ],
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "orderingIssues": [],
+      "orderingPolicyValid": true,
+      "projection": [
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-alpha",
+          "projectPath": "../outside/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-alpha",
+          "projectPath": "../outside/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-alpha",
+          "projectPath": "../outside/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-alpha",
+          "projectPath": "../outside/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-alpha",
+          "projectPath": "../outside/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-alpha",
+          "projectPath": "../outside/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-alpha",
+          "projectPath": "../outside/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-alpha",
+          "projectPath": "../outside/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-alpha",
+          "projectPath": "../outside/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        }
+      ],
+      "projectionHash": "479f820030d6695e6d27fdc718d107893a2bb45914fe02ae4038993f367388f5",
+      "quickResumeBindingCount": 3,
+      "quickResumeBindingMismatch": [
+        {
+          "actionId": "quick-resume-last",
+          "reason": "QUICK_RESUME_BINDING_MISMATCH"
+        },
+        {
+          "actionId": "quick-resume-last",
+          "reason": "BINDING_TARGET_MISMATCH"
+        }
+      ],
+      "quickResumeBindingMissing": [],
+      "requiredActionMissing": [],
+      "requiredRecentActionCount": 3,
+      "staleRecentReference": [],
+      "unknownModes": [],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_02": {
+      "capabilityBindingMissing": [],
+      "channelInconsistency": [],
+      "commandBindingMissing": [],
+      "entryCount": 3,
+      "invalidProjectPath": [],
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "orderingIssues": [],
+      "orderingPolicyValid": true,
+      "projection": [
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        }
+      ],
+      "projectionHash": "8e088c6c3a2852c4c5df8f647674976772ad94083d1f3888eee2919f41561fd3",
+      "quickResumeBindingCount": 2,
+      "quickResumeBindingMismatch": [],
+      "quickResumeBindingMissing": [
+        {
+          "actionId": "quick-resume-last",
+          "reason": "QUICK_RESUME_BINDING_MISSING"
+        }
+      ],
+      "requiredActionMissing": [],
+      "requiredRecentActionCount": 3,
+      "staleRecentReference": [],
+      "unknownModes": [],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_03": {
+      "capabilityBindingMissing": [],
+      "channelInconsistency": [],
+      "commandBindingMissing": [],
+      "entryCount": 3,
+      "invalidProjectPath": [],
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "orderingIssues": [],
+      "orderingPolicyValid": true,
+      "projection": [
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        }
+      ],
+      "projectionHash": "8e088c6c3a2852c4c5df8f647674976772ad94083d1f3888eee2919f41561fd3",
+      "quickResumeBindingCount": 3,
+      "quickResumeBindingMismatch": [],
+      "quickResumeBindingMissing": [],
+      "requiredActionMissing": [],
+      "requiredRecentActionCount": 3,
+      "staleRecentReference": [
+        {
+          "actionId": "recent-open-1",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "reason": "STALE_RECENT_REFERENCE"
+        }
+      ],
+      "unknownModes": [],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_04": {
+      "capabilityBindingMissing": [],
+      "channelInconsistency": [],
+      "commandBindingMissing": [],
+      "entryCount": 3,
+      "invalidProjectPath": [],
+      "modeProfileVisibilityGaps": [
+        {
+          "actionId": "quick-resume-last",
+          "mode": "GhostMode",
+          "profile": "minimal",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        },
+        {
+          "actionId": "quick-resume-last",
+          "mode": "GhostMode",
+          "profile": "pro",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        },
+        {
+          "actionId": "quick-resume-last",
+          "mode": "GhostMode",
+          "profile": "guru",
+          "reason": "MENU_VISIBILITY_RULE_MISSING"
+        }
+      ],
+      "ok": false,
+      "orderingIssues": [],
+      "orderingPolicyValid": true,
+      "projection": [
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        }
+      ],
+      "projectionHash": "aabc46fbba0edee05d48aaaed1febed7e73188b4376e8c5c4b2b2a5846117d53",
+      "quickResumeBindingCount": 3,
+      "quickResumeBindingMismatch": [],
+      "quickResumeBindingMissing": [],
+      "requiredActionMissing": [],
+      "requiredRecentActionCount": 3,
+      "staleRecentReference": [],
+      "unknownModes": [
+        {
+          "actionId": "quick-resume-last",
+          "mode": "GhostMode"
+        }
+      ],
+      "unknownProfiles": []
+    },
+    "NEXT_TZ_NEGATIVE_05": {
+      "capabilityBindingMissing": [],
+      "channelInconsistency": [
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "reason": "CHANNEL_INCONSISTENCY"
+        }
+      ],
+      "commandBindingMissing": [],
+      "entryCount": 3,
+      "invalidProjectPath": [],
+      "modeProfileVisibilityGaps": [],
+      "ok": false,
+      "orderingIssues": [],
+      "orderingPolicyValid": true,
+      "projection": [
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "quick-resume-last",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-alpha",
+          "projectPath": "projects/novel-alpha/project.craftsman.json",
+          "recentRank": 1
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-1",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-beta",
+          "projectPath": "projects/novel-beta/project.craftsman.json",
+          "recentRank": 2
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Plan",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Review",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "guru",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "minimal",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        },
+        {
+          "actionId": "recent-open-2",
+          "commandId": "cmd.project.open",
+          "mode": "Write",
+          "profile": "pro",
+          "projectId": "novel-gamma",
+          "projectPath": "projects/novel-gamma/project.craftsman.json",
+          "recentRank": 3
+        }
+      ],
+      "projectionHash": "8e088c6c3a2852c4c5df8f647674976772ad94083d1f3888eee2919f41561fd3",
+      "quickResumeBindingCount": 3,
+      "quickResumeBindingMismatch": [],
+      "quickResumeBindingMissing": [],
+      "requiredActionMissing": [],
+      "requiredRecentActionCount": 3,
+      "staleRecentReference": [],
+      "unknownModes": [],
+      "unknownProfiles": []
+    }
+  },
+  "results": {
+    "NEXT_TZ_NEGATIVE_01": true,
+    "NEXT_TZ_NEGATIVE_02": true,
+    "NEXT_TZ_NEGATIVE_03": true,
+    "NEXT_TZ_NEGATIVE_04": true,
+    "NEXT_TZ_NEGATIVE_05": true
+  },
+  "target": {
+    "NEXT_TZ_NEGATIVE_01": "RECENT_ENTRY_WITH_INVALID_PROJECT_PATH_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_02": "QUICK_RESUME_WITH_MISSING_BINDING_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_03": "STALE_RECENT_REFERENCE_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_04": "MODE_PROFILE_INVALID_RECENT_VISIBILITY_EXPECT_REJECT",
+    "NEXT_TZ_NEGATIVE_05": "CHANNEL_INCONSISTENCY_FOR_RECENT_ENTRIES_EXPECT_REJECT"
+  }
+}
