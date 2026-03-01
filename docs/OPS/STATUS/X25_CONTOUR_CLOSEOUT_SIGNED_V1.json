@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X25_CONTOUR_CLOSEOUT_SIGNED_V1",
+  "taskId": "TZ_X25_WS99_SYMBOLIC_CLOSEOUT_AND_SIGNED_PACKET_001",
+  "status": "SIGNED",
+  "signatureType": "SHA256_EVIDENCE_LOCK",
+  "signingMode": "LOCAL_OFFLINE",
+  "signedBy": "KIRILL_PLUS_CODEX",
+  "signedAtUtc": "2026-03-01T00:05:58.573Z",
+  "evidencePacketRef": "docs/OPS/EVIDENCE/X25_CONTOUR/x25-contour-freeze-packet-v1.json",
+  "evidencePacketSha256": "sha256:691b130f370d63b07c64b44ac5db05714116847c3782c3495f2fcc1d55880ce8",
+  "constraints": {
+    "activeCanonLockMaintained": true,
+    "blockingSurfaceExpansion": false,
+    "advisoryAsBlockingDriftZero": true,
+    "newBlockingTokensIntroduced": false
+  },
+  "gate": {
+    "name": "GO_TO_NEXT_CONTOUR_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+    "isOpen": true,
+    "releaseDecisionClassChanged": false
+  }
+}
