@@ -1,0 +1,37 @@
+{
+  "generatedAtUtc": "2026-02-28T23:52:43.016Z",
+  "runId": "TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+  "ticketId": "TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+  "schemaVersion": "x25-p0-ws05-strict-cluster-recovery-status.v1",
+  "status": "PASS",
+  "strictClusterRecoverySummary": {
+    "generatedAtUtc": "2026-02-28T23:52:43.016Z",
+    "runId": "TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
+    "objective": "RECOVER_STRICT_ALIGNMENT_CLUSTER_TO_GREEN_AT_CHECKPOINT_WITHOUT_SCOPE_EXPANSION",
+    "checkpoint": {
+      "GOVERNANCE_CHANGE_OK": true,
+      "OPS_GOVERNANCE_BASELINE_OK": true,
+      "GOVERNANCE_STRICT_OK": true,
+      "RELEASE_ARTIFACT_SOURCES_OK": true,
+      "XPLAT_CONTRACT_MACOS_SIGNING_READY_OK": true,
+      "THIRD_PARTY_NOTICES_READINESS_OK": true,
+      "CURRENT_WAVE_STOP_CONDITION_OK": true,
+      "FREEZE_READY_OK": false
+    },
+    "noScopeExpansionConfirmed": true,
+    "blockingSurfaceExpansionFalse": true,
+    "advisoryAsBlockingDriftZero": true
+  },
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": "PASS",
+    "NEXT_TZ_NEGATIVE_02": "PASS",
+    "NEXT_TZ_NEGATIVE_03": "PASS",
+    "NEXT_TZ_NEGATIVE_04": "PASS",
+    "NEXT_TZ_NEGATIVE_05": "PASS"
+  },
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": "PASS",
+    "NEXT_TZ_POSITIVE_02": "PASS",
+    "NEXT_TZ_POSITIVE_03": "PASS"
+  }
+}

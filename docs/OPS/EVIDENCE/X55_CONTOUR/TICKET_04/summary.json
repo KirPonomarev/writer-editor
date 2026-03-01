@@ -1,0 +1,199 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "controlledDeliveryExpansionSummary": {
+    "blockingSurfaceGrowthCount": 0,
+    "controlledDeliveryExpansionValid": true,
+    "expansionOutputDeterministic": true,
+    "missingEvidenceRefCount": 0,
+    "modeProfileChannelMismatchCount": 0,
+    "nonCanonAutoBlockAttemptCount": 0,
+    "nonDeterministicExpansionOutputCount": 0,
+    "prestartFailureCount": 0,
+    "releaseClassDriftCount": 0,
+    "releaseClassStable": true
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "finalGate": "GO_TO_X55_WS99_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "finalGateSatisfied": true,
+  "generatedAtUtc": "2026-03-01T12:12:24.616Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": "PASS",
+    "NEXT_TZ_NEGATIVE_02": "PASS",
+    "NEXT_TZ_NEGATIVE_03": "PASS",
+    "NEXT_TZ_NEGATIVE_04": "PASS",
+    "NEXT_TZ_NEGATIVE_05": "PASS"
+  },
+  "objective": "EXECUTE_CONTROLLED_DELIVERY_EXPANSION_WITH_CANON_LOCK_AND_NO_BLOCKING_SURFACE_GROWTH",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": "PASS",
+    "NEXT_TZ_POSITIVE_02": "PASS",
+    "NEXT_TZ_POSITIVE_03": "PASS"
+  },
+  "repeatability": {
+    "runs": [
+      {
+        "acceptance": {
+          "ACCEPTANCE_01": true,
+          "ACCEPTANCE_02": true,
+          "ACCEPTANCE_03": true,
+          "ACCEPTANCE_04": true
+        },
+        "counts": {
+          "advisoryToBlockingDriftCount": 0,
+          "blockingSurfaceGrowthCount": 0,
+          "missingEvidenceRefCount": 0,
+          "modeProfileChannelMismatchCount": 0,
+          "nonCanonAutoBlockAttemptCount": 0,
+          "nonDeterministicExpansionOutputCount": 0,
+          "prestartFailureCount": 0,
+          "releaseClassDriftCount": 0
+        },
+        "determinism": {
+          "runHashes": [
+            "eb4edbd22ec4ee4fb3bfb9bdad8715b851f5489cc42dd16df11205e2a582a085",
+            "eb4edbd22ec4ee4fb3bfb9bdad8715b851f5489cc42dd16df11205e2a582a085",
+            "eb4edbd22ec4ee4fb3bfb9bdad8715b851f5489cc42dd16df11205e2a582a085"
+          ],
+          "stable": true
+        },
+        "dod": {
+          "DOD_01": true,
+          "DOD_02": true,
+          "DOD_03": true,
+          "DOD_04": true,
+          "DOD_05": true,
+          "DOD_06": true
+        },
+        "finalGateSatisfied": true,
+        "negativeResults": {
+          "NEXT_TZ_NEGATIVE_01": true,
+          "NEXT_TZ_NEGATIVE_02": true,
+          "NEXT_TZ_NEGATIVE_03": true,
+          "NEXT_TZ_NEGATIVE_04": true,
+          "NEXT_TZ_NEGATIVE_05": true
+        },
+        "ok": true,
+        "positiveResults": {
+          "NEXT_TZ_POSITIVE_01": true,
+          "NEXT_TZ_POSITIVE_02": true,
+          "NEXT_TZ_POSITIVE_03": true
+        },
+        "token": "X55_WS04_CONTROLLED_DELIVERY_EXPANSION_OK"
+      },
+      {
+        "acceptance": {
+          "ACCEPTANCE_01": true,
+          "ACCEPTANCE_02": true,
+          "ACCEPTANCE_03": true,
+          "ACCEPTANCE_04": true
+        },
+        "counts": {
+          "advisoryToBlockingDriftCount": 0,
+          "blockingSurfaceGrowthCount": 0,
+          "missingEvidenceRefCount": 0,
+          "modeProfileChannelMismatchCount": 0,
+          "nonCanonAutoBlockAttemptCount": 0,
+          "nonDeterministicExpansionOutputCount": 0,
+          "prestartFailureCount": 0,
+          "releaseClassDriftCount": 0
+        },
+        "determinism": {
+          "runHashes": [
+            "eb4edbd22ec4ee4fb3bfb9bdad8715b851f5489cc42dd16df11205e2a582a085",
+            "eb4edbd22ec4ee4fb3bfb9bdad8715b851f5489cc42dd16df11205e2a582a085",
+            "eb4edbd22ec4ee4fb3bfb9bdad8715b851f5489cc42dd16df11205e2a582a085"
+          ],
+          "stable": true
+        },
+        "dod": {
+          "DOD_01": true,
+          "DOD_02": true,
+          "DOD_03": true,
+          "DOD_04": true,
+          "DOD_05": true,
+          "DOD_06": true
+        },
+        "finalGateSatisfied": true,
+        "negativeResults": {
+          "NEXT_TZ_NEGATIVE_01": true,
+          "NEXT_TZ_NEGATIVE_02": true,
+          "NEXT_TZ_NEGATIVE_03": true,
+          "NEXT_TZ_NEGATIVE_04": true,
+          "NEXT_TZ_NEGATIVE_05": true
+        },
+        "ok": true,
+        "positiveResults": {
+          "NEXT_TZ_POSITIVE_01": true,
+          "NEXT_TZ_POSITIVE_02": true,
+          "NEXT_TZ_POSITIVE_03": true
+        },
+        "token": "X55_WS04_CONTROLLED_DELIVERY_EXPANSION_OK"
+      },
+      {
+        "acceptance": {
+          "ACCEPTANCE_01": true,
+          "ACCEPTANCE_02": true,
+          "ACCEPTANCE_03": true,
+          "ACCEPTANCE_04": true
+        },
+        "counts": {
+          "advisoryToBlockingDriftCount": 0,
+          "blockingSurfaceGrowthCount": 0,
+          "missingEvidenceRefCount": 0,
+          "modeProfileChannelMismatchCount": 0,
+          "nonCanonAutoBlockAttemptCount": 0,
+          "nonDeterministicExpansionOutputCount": 0,
+          "prestartFailureCount": 0,
+          "releaseClassDriftCount": 0
+        },
+        "determinism": {
+          "runHashes": [
+            "eb4edbd22ec4ee4fb3bfb9bdad8715b851f5489cc42dd16df11205e2a582a085",
+            "eb4edbd22ec4ee4fb3bfb9bdad8715b851f5489cc42dd16df11205e2a582a085",
+            "eb4edbd22ec4ee4fb3bfb9bdad8715b851f5489cc42dd16df11205e2a582a085"
+          ],
+          "stable": true
+        },
+        "dod": {
+          "DOD_01": true,
+          "DOD_02": true,
+          "DOD_03": true,
+          "DOD_04": true,
+          "DOD_05": true,
+          "DOD_06": true
+        },
+        "finalGateSatisfied": true,
+        "negativeResults": {
+          "NEXT_TZ_NEGATIVE_01": true,
+          "NEXT_TZ_NEGATIVE_02": true,
+          "NEXT_TZ_NEGATIVE_03": true,
+          "NEXT_TZ_NEGATIVE_04": true,
+          "NEXT_TZ_NEGATIVE_05": true
+        },
+        "ok": true,
+        "positiveResults": {
+          "NEXT_TZ_POSITIVE_01": true,
+          "NEXT_TZ_POSITIVE_02": true,
+          "NEXT_TZ_POSITIVE_03": true
+        },
+        "token": "X55_WS04_CONTROLLED_DELIVERY_EXPANSION_OK"
+      }
+    ],
+    "stable": true
+  },
+  "runId": "TZ_X55_WS04_CONTROLLED_DELIVERY_EXPANSION_001",
+  "status": "PASS",
+  "ticketId": "TZ_X55_WS04_CONTROLLED_DELIVERY_EXPANSION_001"
+}

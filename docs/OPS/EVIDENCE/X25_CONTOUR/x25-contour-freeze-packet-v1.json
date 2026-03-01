@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X25_CONTOUR_EVIDENCE_FREEZE_PACKET_V1",
+  "generatedAtUtc": "2026-03-01T00:05:58.573Z",
+  "owner": "KIRILL_PLUS_CODEX",
+  "activeCanon": {
+    "lockCheckPass": true,
+    "status": "ACTIVE_CANON",
+    "version": "v3.13a-final",
+    "statusRef": "docs/OPS/STATUS/CANON_STATUS.json"
+  },
+  "contour": {
+    "verdict": "ACCEPTED",
+    "status": "SYMBOLIC_CLOSED",
+    "gateDecision": "X25_CLOSED_GO_NEXT",
+    "scopeCompliance": "PASS",
+    "acceptanceCompliance": "PASS",
+    "blockingSurfaceExpansion": false,
+    "advisoryAsBlockingDrift": "ZERO",
+    "repeatability": "PASS_THREE_OF_THREE",
+    "offlineReleaseIntegrity": "LOCALLY_VERIFIABLE"
+  },
+  "requiredOutputs": [
+    "X25_CONTOUR_FREEZE_PACKET_V1_JSON",
+    "X25_CONTOUR_CLOSE_SUMMARY_V1_JSON",
+    "X25_CONTOUR_CLOSEOUT_SIGNED_V1_JSON",
+    "NEXT_CONTOUR_OPENING_RECORD_V11_JSON",
+    "KEY_VALUE_EXECUTION_REPORT"
+  ],
+  "requiredChecks": {
+    "ACTIVE_CANON_LOCK_CHECK_PASS": true,
+    "STAGE_ACTIVATION_GUARD_CHECK_PASS": true,
+    "JSON_VALIDATION_PASS": true,
+    "SHA_LOCK_MATCH_PASS": true,
+    "BLOCKING_SURFACE_EXPANSION_FALSE": true,
+    "ADVISORY_AS_BLOCKING_DRIFT_ZERO": true,
+    "OFFLINE_RELEASE_INTEGRITY_LOCALLY_VERIFIABLE": true
+  },
+  "wsSummary": {
+    "WS00": {
+      "ticketId": "X25_WS00",
+      "status": "PASS",
+      "statusRef": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_00/X25_WS00_ENTRY_LOCK_STATUS_V1.json"
+    },
+    "WS01": {
+      "ticketId": "X25_WS01",
+      "status": "PASS",
+      "statusRef": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_01/X25_P0_WS01_REQUIRED_SET_REBIND_STATUS_V1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_01/summary.json"
+    },
+    "WS02": {
+      "ticketId": "X25_WS02",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X25_P0_WS02_FAILSIGNAL_MODE_ALIGNMENT_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_02/summary.json"
+    },
+    "WS03": {
+      "ticketId": "X25_WS03",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X25_P0_WS03_BLOCKING_BINDING_COMPLETENESS_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_03/summary.json"
+    },
+    "WS04": {
+      "ticketId": "X25_WS04",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X25_P0_WS04_OFFLINE_RELEASE_INTEGRITY_ISOLATION_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_04/summary.json"
+    },
+    "WS05": {
+      "ticketId": "X25_WS05",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X25_P0_WS05_STRICT_CLUSTER_RECOVERY_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_05/summary.json"
+    },
+    "WS06": {
+      "ticketId": "X25_WS06",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X25_P0_WS06_REPEATABILITY_GUARD_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_06/summary.json"
+    },
+    "WS99": {
+      "ticketId": "X25_WS99",
+      "status": "PASS",
+      "symbolicCloseout": true
+    }
+  },
+  "gate": {
+    "name": "GO_TO_NEXT_CONTOUR_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+    "satisfied": true
+  }
+}

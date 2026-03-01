@@ -1,0 +1,29 @@
+{
+  "advisoryToBlockingDriftCount": 0,
+  "attestationChainRootHash": "18939abca685e70a443ae2519e32fc8ca6afd346cdef77e70f3cd93797be6668",
+  "attestationIssueCount": 0,
+  "blockingSurfaceExpansion": false,
+  "branchBindingPass": true,
+  "currentBranch": "main",
+  "currentHead": "7b7939e2ea1f9bed3626aecb4bbe905476c0f0d4",
+  "detector": {
+    "canonStatusPath": "docs/OPS/STATUS/CANON_STATUS.json",
+    "expectedCanonVersion": "v3.13a-final",
+    "failsignalRegistryPath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+    "modeMatrixEvaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
+    "stabilityPacketPath": "docs/OPS/STATUS/X24_POST_MERGE_STABILITY_PACKET_v1.json",
+    "token": "X24_WS01_POST_MERGE_BASELINE_RECONFIRM_OK"
+  },
+  "headBindingPass": true,
+  "missingRequiredInputCount": 0,
+  "modeCheckIssueCount": 0,
+  "nonBlockingClassification": "advisory_until_machine_bound",
+  "postMergeStabilityHash": "6e73dc9192543f4cd3a7361acf432268b1a7f96e8d3e4c80eecda520d6f5e658",
+  "releaseBindingIssueCount": 0,
+  "requiredInputRefCount": 8,
+  "requiredReleaseBlockingTokenCount": 14,
+  "stabilityPacketVersion": "x24.ws01.v1",
+  "worktreeCleanPass": true,
+  "x23Ws03Status": "PASS",
+  "x23Ws03Token": "X23_WS03_PR_MERGE_EXECUTION_AND_CLOSEOUT_OK"
+}

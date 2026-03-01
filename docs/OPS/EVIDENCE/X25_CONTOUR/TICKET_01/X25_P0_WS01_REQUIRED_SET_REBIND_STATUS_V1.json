@@ -1,0 +1,50 @@
+{
+  "generatedAtUtc": "2026-02-28T23:26:11.713Z",
+  "runId": "TZ_X25_P0_WS01_REQUIRED_SET_REBIND_001",
+  "ticketId": "TZ_X25_P0_WS01_REQUIRED_SET_REBIND_001",
+  "objective": "REBIND_RELEASE_REQUIRED_SET_TO_EXACT_CANONICAL_14_WITHOUT_BLOCKING_EXPANSION",
+  "status": "PASS",
+  "requiredSetRebindSummary": {
+    "releaseRequiredCount": 14,
+    "activeRequiredCount": 14,
+    "canonicalBlockingCount": 14,
+    "canonicalExactMatch": true,
+    "effectiveBlockingSetFormula": "effectiveBlockingSet = releaseRequired INTERSECT canonical14",
+    "effectiveBlockingSetCount": 14,
+    "effectiveBlockingSetFormulaTrue": true,
+    "releaseRequiredNonblockingSignalCount": 0,
+    "releaseRegistryAdvisoryModeCountObserved": 12,
+    "pointerLockMismatchVsWs00Detected": true,
+    "negative03TargetTokenUsed": "COLLAB_CAUSAL_QUEUE_READINESS_OK",
+    "freezeModeCount": 1,
+    "requiredConfigHash": "3450b8d4b61dc16bd4ebc428366bdf998ebb2a297a7d54b5b5c56c93ba20d233"
+  },
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": "PASS",
+    "NEXT_TZ_NEGATIVE_02": "PASS",
+    "NEXT_TZ_NEGATIVE_03": "PASS",
+    "NEXT_TZ_NEGATIVE_04": "PASS",
+    "NEXT_TZ_NEGATIVE_05": "PASS"
+  },
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": "PASS",
+    "NEXT_TZ_POSITIVE_02": "PASS",
+    "NEXT_TZ_POSITIVE_03": "PASS"
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "finalGate": "GO_TO_X25_P0_WS02_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "finalGateSatisfied": true
+}

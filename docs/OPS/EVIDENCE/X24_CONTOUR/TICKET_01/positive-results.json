@@ -1,0 +1,27 @@
+{
+  "details": {
+    "NEXT_TZ_POSITIVE_01": {
+      "expected": "BASELINE_STATE_STABLE_AND_VALID",
+      "observedPostMergeStabilityHash": "6e73dc9192543f4cd3a7361acf432268b1a7f96e8d3e4c80eecda520d6f5e658",
+      "pass": true
+    },
+    "NEXT_TZ_POSITIVE_02": {
+      "expected": "REQUIRED_RELEASE_SURFACE_STILL_COHERENT",
+      "pass": true
+    },
+    "NEXT_TZ_POSITIVE_03": {
+      "expected": "STABILITY_PACKET_OUTPUT_DETERMINISTIC",
+      "pass": true
+    }
+  },
+  "results": {
+    "NEXT_TZ_POSITIVE_01": true,
+    "NEXT_TZ_POSITIVE_02": true,
+    "NEXT_TZ_POSITIVE_03": true
+  },
+  "target": {
+    "NEXT_TZ_POSITIVE_01": "BASELINE_STATE_STABLE_AND_VALID",
+    "NEXT_TZ_POSITIVE_02": "REQUIRED_RELEASE_SURFACE_STILL_COHERENT",
+    "NEXT_TZ_POSITIVE_03": "STABILITY_PACKET_OUTPUT_DETERMINISTIC"
+  }
+}

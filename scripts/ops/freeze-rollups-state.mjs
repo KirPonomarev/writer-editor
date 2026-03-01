@@ -633,9 +633,15 @@ export function evaluateFreezeRollupsState(input = {}) {
   const collabApplyPipeline = evaluateCollabApplyPipeline();
   const collabCausalQueueReadiness = evaluateCollabCausalQueueReadinessState();
   const simulationMinContract = evaluateSimulationMinContract();
-  const macosSigningReadiness = evaluateMacosSigningReadinessState();
-  const releaseArtifactSources = evaluateReleaseArtifactSourcesState();
-  const thirdPartyNoticesReadiness = evaluateThirdPartyNoticesReadinessState();
+  const macosSigningReadiness = evaluateMacosSigningReadinessState({
+    headStrictOk: headStrict.ok,
+  });
+  const releaseArtifactSources = evaluateReleaseArtifactSourcesState({
+    headStrictOk: headStrict.ok,
+  });
+  const thirdPartyNoticesReadiness = evaluateThirdPartyNoticesReadinessState({
+    headStrictOk: headStrict.ok,
+  });
   const tokenSourceConflict = shouldSkipTokenSourceConflictCheck(input)
     ? {
       ok: true,
@@ -683,11 +689,14 @@ export function evaluateFreezeRollupsState(input = {}) {
   };
   const xplatCostGuaranteeOk = Object.values(xplatCostGuaranteeRequires).every((value) => value === 1) ? 1 : 0;
 
-  const governanceStrictOk = remote.remoteBindingOk === 1
+  const governanceRemoteGateOk = mode === 'release'
+    ? remote.remoteBindingOk === 1
+    : headStrict.ok === 1;
+
+  const governanceStrictOk = governanceRemoteGateOk
     && nextSector.valid
     && requiredChecks.syncOk === 1
     && requiredChecks.stale === 0
-    && headStrict.ok === 1
     ? 1 : 0;
 
   const state = {

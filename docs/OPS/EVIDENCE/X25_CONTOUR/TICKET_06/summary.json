@@ -1,0 +1,54 @@
+{
+  "generatedAtUtc": "2026-02-28T23:59:24.230Z",
+  "runId": "TZ_X25_P0_WS06_REPEATABILITY_GUARD_001",
+  "ticketId": "TZ_X25_P0_WS06_REPEATABILITY_GUARD_001",
+  "objective": "CONFIRM_THREE_RUN_REPEATABILITY_ON_STABLE_INPUT_HASH_WITHOUT_DRIFT",
+  "status": "PASS",
+  "repeatabilitySummary": {
+    "generatedAtUtc": "2026-02-28T23:59:24.230Z",
+    "runId": "TZ_X25_P0_WS06_REPEATABILITY_GUARD_001",
+    "stableInputHash": "86f5554095e5538ca2ef49d0a90189ff6ad1d422c6606c3b9aeed24bd2aeae0b",
+    "runOutputHashes": [
+      "0525f6b7c80baec615fa482936be2d70618f08f3b3f8162633610c2afd3b3201",
+      "0525f6b7c80baec615fa482936be2d70618f08f3b3f8162633610c2afd3b3201",
+      "0525f6b7c80baec615fa482936be2d70618f08f3b3f8162633610c2afd3b3201"
+    ],
+    "stableInputHashEqual": true,
+    "runOutputHashStable": true,
+    "threeRunsStable": true,
+    "ttlClass": "networkSensitive",
+    "ttlSec": 900,
+    "ttlValid": true,
+    "cacheReuseOnStableInput": true,
+    "unstableInputHash": "c3d7111e976f6b8d230caa40e2d47dbc89758aed7d5f4b38e5bb8fc21a66e924",
+    "unstableInputDetected": true
+  },
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": "PASS",
+    "NEXT_TZ_NEGATIVE_02": "PASS",
+    "NEXT_TZ_NEGATIVE_03": "PASS",
+    "NEXT_TZ_NEGATIVE_04": "PASS",
+    "NEXT_TZ_NEGATIVE_05": "PASS"
+  },
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": "PASS",
+    "NEXT_TZ_POSITIVE_02": "PASS",
+    "NEXT_TZ_POSITIVE_03": "PASS"
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "finalGate": "GO_TO_X25_WS99_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "finalGateSatisfied": true
+}

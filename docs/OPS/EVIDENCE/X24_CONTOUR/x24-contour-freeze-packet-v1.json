@@ -1,0 +1,62 @@
+{
+  "activeCanon": {
+    "lockCheckPass": true,
+    "status": "ACTIVE_CANON",
+    "statusRef": "docs/OPS/STATUS/CANON_STATUS.json",
+    "version": "v3.13a-final"
+  },
+  "artifactId": "X24_CONTOUR_EVIDENCE_FREEZE_PACKET_V1",
+  "contour": {
+    "acceptanceCompliance": "PASS",
+    "advisoryAsBlockingDrift": "ZERO",
+    "blockingSurfaceExpansion": false,
+    "gateDecision": "X24_CLOSED_GO_NEXT",
+    "offlineReleaseIntegrity": "LOCALLY_VERIFIABLE",
+    "repeatability": "PASS_THREE_OF_THREE",
+    "scopeCompliance": "PASS",
+    "status": "SYMBOLIC_CLOSED",
+    "verdict": "ACCEPTED"
+  },
+  "gate": {
+    "name": "GO_TO_NEXT_CONTOUR_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+    "satisfied": true
+  },
+  "generatedAtUtc": "2026-02-28T22:19:54.738Z",
+  "owner": "KIRILL_PLUS_CODEX",
+  "requiredChecks": {
+    "ACTIVE_CANON_LOCK_CHECK_PASS": true,
+    "ADVISORY_AS_BLOCKING_DRIFT_ZERO": true,
+    "BLOCKING_SURFACE_EXPANSION_FALSE": true,
+    "JSON_VALIDATION_PASS": true,
+    "OFFLINE_RELEASE_INTEGRITY_LOCALLY_VERIFIABLE": true,
+    "SHA_LOCK_MATCH_PASS": true,
+    "STAGE_ACTIVATION_GUARD_CHECK_PASS": true
+  },
+  "requiredOutputs": [
+    "X24_CONTOUR_FREEZE_PACKET_JSON",
+    "X24_CONTOUR_CLOSE_SUMMARY_JSON",
+    "X24_CONTOUR_CLOSEOUT_SIGNED_JSON",
+    "NEXT_CONTOUR_OPENING_RECORD_JSON",
+    "KEY_VALUE_EXECUTION_REPORT"
+  ],
+  "schemaVersion": 1,
+  "wsSummary": {
+    "WS01": {
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X24_WS01_POST_MERGE_BASELINE_RECONFIRM_v1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X24_CONTOUR/TICKET_01/summary.json",
+      "ticketId": "X24_WS01"
+    },
+    "WS01A": {
+      "commitOutcomeLocked": true,
+      "head": "ddf16a99a36162a6f1a2bee54d0efb89c9d6b6fb",
+      "status": "PASS",
+      "ticketId": "X24_WS01A"
+    },
+    "WS99": {
+      "status": "PASS",
+      "symbolicCloseout": true,
+      "ticketId": "X24_WS99"
+    }
+  }
+}

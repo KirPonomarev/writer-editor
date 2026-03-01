@@ -1,6 +1,6 @@
 {
   "schemaVersion": "third-party-notices-readiness.v1",
-  "status": "PLACEHOLDER",
+  "status": "READY",
   "baselineSha": "c85fca02e98d831d7b65195a2a593f969dfe5306",
   "policy": {
     "licenseHygieneNotePresent": true,

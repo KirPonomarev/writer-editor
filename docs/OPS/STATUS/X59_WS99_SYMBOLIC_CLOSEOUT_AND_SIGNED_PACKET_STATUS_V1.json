@@ -1,0 +1,97 @@
+{
+  "artifactRefs": {
+    "closeSummaryRef": "docs/OPS/STATUS/X59_CONTOUR_CLOSE_SUMMARY_V1.json",
+    "freezePacketRef": "docs/OPS/EVIDENCE/X59_CONTOUR/x59-contour-freeze-packet-v1.json",
+    "nextContourOpeningRecordRef": "docs/OPS/STATUS/NEXT_CONTOUR_OPENING_RECORD_V44.json",
+    "signedStatusRef": "docs/OPS/STATUS/X59_CONTOUR_CLOSEOUT_SIGNED_V1.json"
+  },
+  "checks": {
+    "canon": {
+      "failReason": "",
+      "observedStatus": "ACTIVE_CANON",
+      "observedVersion": "v3.13a-final",
+      "ok": true
+    },
+    "contourSignals": {
+      "advisoryAsBlockingDriftZero": true,
+      "blockingSurfaceExpansionFalse": true,
+      "ws04SummaryPresent": true
+    },
+    "stage": {
+      "ACTIVE_STAGE_ID": "NONE",
+      "ok": true,
+      "STAGE_ACTIVATION_OK": 1,
+      "STAGE_ACTIVE": 0
+    },
+    "trust": {
+      "advisoryToBlockingDriftCountZero": true,
+      "offlineVerifiableChainOk": true,
+      "ok": true
+    },
+    "worktree": {
+      "changedPaths": [
+        "scripts/ops/x59-ws99-symbolic-closeout-and-signed-packet-report.mjs",
+        "scripts/ops/x59-ws99-symbolic-closeout-and-signed-packet-state.mjs",
+        "test/contracts/x59-ws99-symbolic-closeout-and-signed-packet.contract.test.js"
+      ],
+      "failReason": "",
+      "ok": true,
+      "packetScopedOnly": true,
+      "status": "?? scripts/ops/x59-ws99-symbolic-closeout-and-signed-packet-report.mjs\n?? scripts/ops/x59-ws99-symbolic-closeout-and-signed-packet-state.mjs\n?? test/contracts/x59-ws99-symbolic-closeout-and-signed-packet.contract.test.js"
+    },
+    "ws": {
+      "missingArtifactCount": 0,
+      "missingArtifacts": [],
+      "ok": true,
+      "wsSummary": {
+        "WS01": {
+          "status": "PASS",
+          "statusRef": "docs/OPS/STATUS/X59_WS01_NEXT_CONTOUR_ALIGNMENT_STATUS_V1.json",
+          "summaryRef": "docs/OPS/EVIDENCE/X59_CONTOUR/TICKET_01/summary.json",
+          "ticketId": "X59_WS01"
+        },
+        "WS02": {
+          "status": "PASS",
+          "statusRef": "docs/OPS/STATUS/X59_WS02_QUEUE_PRIORITIZATION_STATUS_V1.json",
+          "summaryRef": "docs/OPS/EVIDENCE/X59_CONTOUR/TICKET_02/summary.json",
+          "ticketId": "X59_WS02"
+        },
+        "WS03": {
+          "status": "PASS",
+          "statusRef": "docs/OPS/STATUS/X59_WS03_EVIDENCE_MAINTENANCE_STATUS_V1.json",
+          "summaryRef": "docs/OPS/EVIDENCE/X59_CONTOUR/TICKET_03/summary.json",
+          "ticketId": "X59_WS03"
+        },
+        "WS04": {
+          "status": "PASS",
+          "statusRef": "docs/OPS/STATUS/X59_WS04_CONTROLLED_DELIVERY_EXPANSION_STATUS_V1.json",
+          "summaryRef": "docs/OPS/EVIDENCE/X59_CONTOUR/TICKET_04/summary.json",
+          "ticketId": "X59_WS04"
+        },
+        "WS99": {
+          "status": "PASS",
+          "symbolicCloseout": true,
+          "ticketId": "X59_WS99"
+        }
+      }
+    }
+  },
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "missingArtifactCount": 0,
+    "missingCloseoutSummaryCount": 0,
+    "missingFreezePacketCount": 0,
+    "missingNextGateRecordCount": 0,
+    "prestartFailureCount": 0,
+    "signatureHashMismatchCount": 0,
+    "unsignedCloseoutArtifactCount": 0
+  },
+  "finalGateSatisfied": true,
+  "generatedAtUtc": "2026-03-01T13:01:57.194Z",
+  "repeatabilityStable": true,
+  "runId": "TZ_X59_WS99_SYMBOLIC_CLOSEOUT_AND_SIGNED_PACKET_001",
+  "status": "PASS",
+  "ticketId": "TZ_X59_WS99_SYMBOLIC_CLOSEOUT_AND_SIGNED_PACKET_001",
+  "token": "X59_WS99_SYMBOLIC_CLOSEOUT_AND_SIGNED_PACKET_OK",
+  "version": 1
+}

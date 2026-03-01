@@ -1,0 +1,63 @@
+{
+  "checks": {
+    "canon": {
+      "failReason": "",
+      "observedStatus": "ACTIVE_CANON",
+      "observedVersion": "v3.13a-final",
+      "ok": true
+    },
+    "scopeQueue": {
+      "advisoryAsBlockingDriftZero": true,
+      "blockingSurfaceExpansionFalse": true,
+      "dependsGateSatisfied": true,
+      "dependsRefOk": true,
+      "evidenceShaMatch": true,
+      "executionGateOk": true,
+      "missingRefs": [],
+      "modeOk": true,
+      "priorityOk": true,
+      "scopeInMatch": true,
+      "scopeOutMatch": true
+    },
+    "stage": {
+      "ACTIVE_STAGE_ID": "NONE",
+      "ok": true,
+      "STAGE_ACTIVATION_OK": 1,
+      "STAGE_ACTIVE": 0
+    },
+    "trust": {
+      "advisoryToBlockingDriftCountZero": true,
+      "offlineVerifiableChainOk": true,
+      "ok": true
+    },
+    "worktree": {
+      "changedPaths": [
+        "docs/OPS/EVIDENCE/X36_CONTOUR/",
+        "docs/OPS/STATUS/X36_WS01_NEXT_CONTOUR_ALIGNMENT_STATUS_V1.json",
+        "scripts/ops/x36-ws01-next-contour-alignment-report.mjs",
+        "scripts/ops/x36-ws01-next-contour-alignment-state.mjs",
+        "test/contracts/x36-ws01-next-contour-alignment.contract.test.js"
+      ],
+      "failReason": "",
+      "ok": true,
+      "packetScopedOnly": true,
+      "status": "?? docs/OPS/EVIDENCE/X36_CONTOUR/\n?? docs/OPS/STATUS/X36_WS01_NEXT_CONTOUR_ALIGNMENT_STATUS_V1.json\n?? scripts/ops/x36-ws01-next-contour-alignment-report.mjs\n?? scripts/ops/x36-ws01-next-contour-alignment-state.mjs\n?? test/contracts/x36-ws01-next-contour-alignment.contract.test.js"
+    }
+  },
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "evidenceChainGapCount": 0,
+    "nonDeterministicOutputCount": 0,
+    "prestartFailureCount": 0,
+    "queuePriorityConflictCount": 0,
+    "scopeExpansionCount": 0
+  },
+  "finalGateSatisfied": true,
+  "generatedAtUtc": "2026-03-01T02:58:12.233Z",
+  "repeatabilityStable": true,
+  "runId": "TZ_X36_WS01_NEXT_CONTOUR_ALIGNMENT_001",
+  "status": "PASS",
+  "ticketId": "TZ_X36_WS01_NEXT_CONTOUR_ALIGNMENT_001",
+  "token": "X36_WS01_NEXT_CONTOUR_ALIGNMENT_OK",
+  "version": 1
+}

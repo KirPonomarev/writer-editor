@@ -1,0 +1,10 @@
+{
+  "algorithm": "sha256",
+  "runs": [
+    "2d5582ce27f3d0b96754ac390c1a0a345350404ebd5c9e0fbf5b44a33117fb90",
+    "2d5582ce27f3d0b96754ac390c1a0a345350404ebd5c9e0fbf5b44a33117fb90",
+    "2d5582ce27f3d0b96754ac390c1a0a345350404ebd5c9e0fbf5b44a33117fb90"
+  ],
+  "stable": true,
+  "target": "x24-contour-freeze-packet-v1.json"
+}

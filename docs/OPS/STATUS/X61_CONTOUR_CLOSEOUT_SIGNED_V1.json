@@ -1,0 +1,23 @@
+{
+  "artifactId": "X61_CONTOUR_CLOSEOUT_SIGNED_V1",
+  "constraints": {
+    "activeCanonLockMaintained": true,
+    "advisoryAsBlockingDriftZero": true,
+    "blockingSurfaceExpansion": false,
+    "newBlockingTokensIntroduced": false
+  },
+  "evidencePacketRef": "docs/OPS/EVIDENCE/X61_CONTOUR/x61-contour-freeze-packet-v1.json",
+  "evidencePacketSha256": "sha256:6a27d7eb0a9dab6c1890d3d92a0e8514f0f07bd873d19e86d0db24116cb0b337",
+  "gate": {
+    "isOpen": true,
+    "name": "GO_TO_NEXT_CONTOUR_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+    "releaseDecisionClassChanged": false
+  },
+  "schemaVersion": 1,
+  "signatureType": "SHA256_EVIDENCE_LOCK",
+  "signedAtUtc": "2026-03-01T13:31:02.881Z",
+  "signedBy": "KIRILL_PLUS_CODEX",
+  "signingMode": "LOCAL_OFFLINE",
+  "status": "SIGNED",
+  "taskId": "TZ_X61_WS99_SYMBOLIC_CLOSEOUT_AND_SIGNED_PACKET_001"
+}

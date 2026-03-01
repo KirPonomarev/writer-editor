@@ -1,0 +1,195 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "finalGate": "GO_TO_X29_WS03_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "finalGateSatisfied": true,
+  "generatedAtUtc": "2026-03-01T01:07:14.993Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": "PASS",
+    "NEXT_TZ_NEGATIVE_02": "PASS",
+    "NEXT_TZ_NEGATIVE_03": "PASS",
+    "NEXT_TZ_NEGATIVE_04": "PASS",
+    "NEXT_TZ_NEGATIVE_05": "PASS"
+  },
+  "objective": "EXECUTE_QUEUE_PRIORITIZATION_WITH_RISK_DEPENDENCY_DISCIPLINE_AND_EVIDENCE_COMPLETENESS",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": "PASS",
+    "NEXT_TZ_POSITIVE_02": "PASS",
+    "NEXT_TZ_POSITIVE_03": "PASS"
+  },
+  "queuePrioritizationSummary": {
+    "invalidPriorityOrderCount": 0,
+    "missingDependencyLinkCount": 0,
+    "nonDeterministicOutputCount": 0,
+    "prestartFailureCount": 0,
+    "priorityDecisionsEvidenceComplete": true,
+    "priorityOutputDeterministic": true,
+    "priorityWithoutEvidenceCount": 0,
+    "queueOrderConsistentWithRiskAndDependencies": true,
+    "scopeExpansionCount": 0
+  },
+  "repeatability": {
+    "runs": [
+      {
+        "acceptance": {
+          "ACCEPTANCE_01": true,
+          "ACCEPTANCE_02": true,
+          "ACCEPTANCE_03": true,
+          "ACCEPTANCE_04": true
+        },
+        "counts": {
+          "advisoryToBlockingDriftCount": 0,
+          "invalidPriorityOrderCount": 0,
+          "missingDependencyLinkCount": 0,
+          "nonDeterministicOutputCount": 0,
+          "prestartFailureCount": 0,
+          "priorityWithoutEvidenceCount": 0,
+          "scopeExpansionCount": 0
+        },
+        "determinism": {
+          "runHashes": [
+            "5f08cab3f753ebaadc6e4988b109660eb26bea7e156b505722bf466a5c3aa415",
+            "5f08cab3f753ebaadc6e4988b109660eb26bea7e156b505722bf466a5c3aa415",
+            "5f08cab3f753ebaadc6e4988b109660eb26bea7e156b505722bf466a5c3aa415"
+          ],
+          "stable": true
+        },
+        "dod": {
+          "DOD_01": true,
+          "DOD_02": true,
+          "DOD_03": true,
+          "DOD_04": true,
+          "DOD_05": true,
+          "DOD_06": true
+        },
+        "finalGateSatisfied": true,
+        "negativeResults": {
+          "NEXT_TZ_NEGATIVE_01": true,
+          "NEXT_TZ_NEGATIVE_02": true,
+          "NEXT_TZ_NEGATIVE_03": true,
+          "NEXT_TZ_NEGATIVE_04": true,
+          "NEXT_TZ_NEGATIVE_05": true
+        },
+        "ok": true,
+        "positiveResults": {
+          "NEXT_TZ_POSITIVE_01": true,
+          "NEXT_TZ_POSITIVE_02": true,
+          "NEXT_TZ_POSITIVE_03": true
+        },
+        "token": "X29_WS02_QUEUE_PRIORITIZATION_OK"
+      },
+      {
+        "acceptance": {
+          "ACCEPTANCE_01": true,
+          "ACCEPTANCE_02": true,
+          "ACCEPTANCE_03": true,
+          "ACCEPTANCE_04": true
+        },
+        "counts": {
+          "advisoryToBlockingDriftCount": 0,
+          "invalidPriorityOrderCount": 0,
+          "missingDependencyLinkCount": 0,
+          "nonDeterministicOutputCount": 0,
+          "prestartFailureCount": 0,
+          "priorityWithoutEvidenceCount": 0,
+          "scopeExpansionCount": 0
+        },
+        "determinism": {
+          "runHashes": [
+            "5f08cab3f753ebaadc6e4988b109660eb26bea7e156b505722bf466a5c3aa415",
+            "5f08cab3f753ebaadc6e4988b109660eb26bea7e156b505722bf466a5c3aa415",
+            "5f08cab3f753ebaadc6e4988b109660eb26bea7e156b505722bf466a5c3aa415"
+          ],
+          "stable": true
+        },
+        "dod": {
+          "DOD_01": true,
+          "DOD_02": true,
+          "DOD_03": true,
+          "DOD_04": true,
+          "DOD_05": true,
+          "DOD_06": true
+        },
+        "finalGateSatisfied": true,
+        "negativeResults": {
+          "NEXT_TZ_NEGATIVE_01": true,
+          "NEXT_TZ_NEGATIVE_02": true,
+          "NEXT_TZ_NEGATIVE_03": true,
+          "NEXT_TZ_NEGATIVE_04": true,
+          "NEXT_TZ_NEGATIVE_05": true
+        },
+        "ok": true,
+        "positiveResults": {
+          "NEXT_TZ_POSITIVE_01": true,
+          "NEXT_TZ_POSITIVE_02": true,
+          "NEXT_TZ_POSITIVE_03": true
+        },
+        "token": "X29_WS02_QUEUE_PRIORITIZATION_OK"
+      },
+      {
+        "acceptance": {
+          "ACCEPTANCE_01": true,
+          "ACCEPTANCE_02": true,
+          "ACCEPTANCE_03": true,
+          "ACCEPTANCE_04": true
+        },
+        "counts": {
+          "advisoryToBlockingDriftCount": 0,
+          "invalidPriorityOrderCount": 0,
+          "missingDependencyLinkCount": 0,
+          "nonDeterministicOutputCount": 0,
+          "prestartFailureCount": 0,
+          "priorityWithoutEvidenceCount": 0,
+          "scopeExpansionCount": 0
+        },
+        "determinism": {
+          "runHashes": [
+            "5f08cab3f753ebaadc6e4988b109660eb26bea7e156b505722bf466a5c3aa415",
+            "5f08cab3f753ebaadc6e4988b109660eb26bea7e156b505722bf466a5c3aa415",
+            "5f08cab3f753ebaadc6e4988b109660eb26bea7e156b505722bf466a5c3aa415"
+          ],
+          "stable": true
+        },
+        "dod": {
+          "DOD_01": true,
+          "DOD_02": true,
+          "DOD_03": true,
+          "DOD_04": true,
+          "DOD_05": true,
+          "DOD_06": true
+        },
+        "finalGateSatisfied": true,
+        "negativeResults": {
+          "NEXT_TZ_NEGATIVE_01": true,
+          "NEXT_TZ_NEGATIVE_02": true,
+          "NEXT_TZ_NEGATIVE_03": true,
+          "NEXT_TZ_NEGATIVE_04": true,
+          "NEXT_TZ_NEGATIVE_05": true
+        },
+        "ok": true,
+        "positiveResults": {
+          "NEXT_TZ_POSITIVE_01": true,
+          "NEXT_TZ_POSITIVE_02": true,
+          "NEXT_TZ_POSITIVE_03": true
+        },
+        "token": "X29_WS02_QUEUE_PRIORITIZATION_OK"
+      }
+    ],
+    "stable": true
+  },
+  "runId": "TZ_X29_WS02_QUEUE_PRIORITIZATION_001",
+  "status": "PASS",
+  "ticketId": "TZ_X29_WS02_QUEUE_PRIORITIZATION_001"
+}

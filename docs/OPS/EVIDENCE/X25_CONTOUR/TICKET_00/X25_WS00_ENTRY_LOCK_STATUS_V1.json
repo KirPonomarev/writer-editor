@@ -1,0 +1,125 @@
+{
+  "generatedAtUtc": "2026-02-28T23:20:27.493Z",
+  "runId": "TZ_X25_WS00_ENTRY_BASELINE_LOCK_001",
+  "ticketId": "TZ_X25_WS00_ENTRY_BASELINE_LOCK_001",
+  "packet": {
+    "profile": "release",
+    "gateTier": "release",
+    "scopeFlags": "RELEASE_SCOPE_PERF_TRUE_VNEXT_TOUCHED_FALSE_ECONOMIC_CLAIM_SHARED_CODE_FALSE",
+    "scopeLock": "X25_WS00_ONLY"
+  },
+  "probes": {
+    "worktreeCleanAtStart": true,
+    "strictDoctorRuntimeProbeCaptured": true,
+    "strictDoctorExitCode": 1,
+    "strictDoctorSnapshot": {
+      "stageActivationOk": true,
+      "governanceStrictOk": false,
+      "freezeReadyOk": false,
+      "currentWaveStopConditionOk": false
+    },
+    "releaseRequiredSetCapture": {
+      "requiredProfile": "release",
+      "requiredGateTier": "release",
+      "activeRequiredCount": 22,
+      "requiredConfigHash": "77884bf34c8c51893a94caa39e85df45a34b8e56e3526b82054e82233bacd977"
+    },
+    "failSignalRegistryCapture": {
+      "totalFailSignals": 74,
+      "checkedCodes": [
+        "E_EXECUTION_PROFILE_INVALID",
+        "E_SCOPEFLAG_UNKNOWN",
+        "E_REQUIRED_TOKEN_SET_DRIFT"
+      ],
+      "missingSignalCodes": []
+    },
+    "bindingGapCapture": {
+      "releaseRequiredNonBlockingSignalCount": 22,
+      "missingBindingSchemaRecordCount": 13,
+      "missingNegativeRefCount": 0
+    },
+    "activeReleaseSetPointerLock": {
+      "pointerName": "ACTIVE_RELEASE_REQUIRED_SET",
+      "sourceFile": "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json",
+      "sourceFileSha256": "4f896b50aab5d536f49b7ee2586c70778b4f4466e7a21015bcdd4683d2b2afc9",
+      "profile": "release",
+      "gateTier": "release",
+      "scopeFlags": {
+        "ECONOMIC_CLAIM_SHARED_CODE": false,
+        "RELEASE_SCOPE_PERF": true,
+        "VNEXT_TOUCHED": false
+      },
+      "activeRequiredCount": 22
+    },
+    "artifactNamePathLockTableCapture": [
+      {
+        "basename": "REQUIRED_TOKEN_SET.json",
+        "path": "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json",
+        "sha256": "4f896b50aab5d536f49b7ee2586c70778b4f4466e7a21015bcdd4683d2b2afc9"
+      },
+      {
+        "basename": "FAILSIGNAL_REGISTRY.json",
+        "path": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+        "sha256": "e09cc3578e38e72a029d74190187c885c4bd9fe7f6763b4704c20fae6d075e22"
+      },
+      {
+        "basename": "CANON_STATUS.json",
+        "path": "docs/OPS/STATUS/CANON_STATUS.json",
+        "sha256": "940cf8723fca98898debba1351d0932edc3c1289faadd8c8eef18db4a5fd1b79"
+      },
+      {
+        "basename": "LAW_PATH_CANON.json",
+        "path": "docs/OPS/STATUS/LAW_PATH_CANON.json",
+        "sha256": "3f3051cf0ab94e591c737f444ffdb80aa59f7a7d4df45b3a0472909842b0a08c"
+      },
+      {
+        "basename": "X25_WS00_ENTRY_LOCK_STATUS_V1.json",
+        "path": "docs/OPS/EVIDENCE/X25_CONTOUR/TICKET_00/X25_WS00_ENTRY_LOCK_STATUS_V1.json",
+        "sha256": "e9f7bc9f7b3748343becce502151d5687978ef6d42a5e30432b3e47862ac4ce7"
+      },
+      {
+        "basename": "EXECUTION_STATUS_RECORD_V1.json",
+        "path": "docs/OPS/EXECUTION/EXECUTION_STATUS_RECORD_V1.json",
+        "sha256": "7ff9552e59e9e2f2e556568af6800d8a405eadffc3c844035b6fb04ee37a8d07"
+      }
+    ]
+  },
+  "mandatoryChecks": {
+    "TZ_MANDATORY_CHECK_01": true,
+    "TZ_MANDATORY_CHECK_02": true,
+    "TZ_MANDATORY_CHECK_03": true,
+    "TZ_MANDATORY_CHECK_04": true,
+    "TZ_MANDATORY_CHECK_05": true,
+    "TZ_MANDATORY_CHECK_06": true,
+    "TZ_MANDATORY_CHECK_07": true,
+    "TZ_MANDATORY_CHECK_08": true
+  },
+  "negativeResults": {
+    "TZ_NEGATIVE_01": "PASS",
+    "TZ_NEGATIVE_02": "PASS",
+    "TZ_NEGATIVE_03": "PASS",
+    "TZ_NEGATIVE_04": "PASS",
+    "TZ_NEGATIVE_05": "PASS"
+  },
+  "positiveResults": {
+    "TZ_POSITIVE_01": "PASS",
+    "TZ_POSITIVE_02": "PASS",
+    "TZ_POSITIVE_03": "PASS"
+  },
+  "dod": {
+    "TZ_DOD_01": true,
+    "TZ_DOD_02": true,
+    "TZ_DOD_03": true,
+    "TZ_DOD_04": true,
+    "TZ_DOD_05": true,
+    "TZ_DOD_06": true
+  },
+  "acceptance": {
+    "TZ_ACCEPTANCE_01": true,
+    "TZ_ACCEPTANCE_02": true,
+    "TZ_ACCEPTANCE_03": true,
+    "TZ_ACCEPTANCE_04": true
+  },
+  "finalGate": "GO_TO_X25_P0_WS01_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "finalGateSatisfied": true
+}

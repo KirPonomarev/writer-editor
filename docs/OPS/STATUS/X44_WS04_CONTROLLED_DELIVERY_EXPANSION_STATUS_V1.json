@@ -1,0 +1,77 @@
+{
+  "checks": {
+    "canon": {
+      "failReason": "",
+      "observedStatus": "ACTIVE_CANON",
+      "observedVersion": "v3.13a-final",
+      "ok": true
+    },
+    "controlled": {
+      "blockingSurfaceExpansionFalse": true,
+      "canonicalReleaseCount": 14,
+      "missingRefs": [],
+      "missingWsRefs": [],
+      "modeProfileChannelConsistent": true,
+      "nonCanonAutoBlockAttempt": false,
+      "releaseClassStable": true,
+      "requiredRelease": [
+        "ATTESTATION_SIGNATURE_OK",
+        "CONFIG_HASH_LOCK_OK",
+        "CORE_SOT_EXECUTABLE_OK",
+        "E2E_CRITICAL_USER_PATH_OK",
+        "HEAD_STRICT_OK",
+        "MIGRATIONS_ATOMICITY_OK",
+        "MIGRATIONS_POLICY_OK",
+        "NORMALIZATION_XPLAT_OK",
+        "PROOFHOOK_INTEGRITY_OK",
+        "RECOVERY_IO_OK",
+        "REQUIRED_SET_NO_TARGET_OK",
+        "SINGLE_VERIFY_CONTOUR_ENFORCED_OK",
+        "TOKEN_SOURCE_CONFLICT_OK",
+        "VERIFY_ATTESTATION_OK"
+      ],
+      "requiredReleaseCount": 14,
+      "scopeFlagsConsistent": true
+    },
+    "stage": {
+      "ACTIVE_STAGE_ID": "NONE",
+      "ok": true,
+      "STAGE_ACTIVATION_OK": 1,
+      "STAGE_ACTIVE": 0
+    },
+    "trust": {
+      "advisoryToBlockingDriftCountZero": true,
+      "offlineVerifiableChainOk": true,
+      "ok": true
+    },
+    "worktree": {
+      "changedPaths": [
+        "scripts/ops/x44-ws04-controlled-delivery-expansion-report.mjs",
+        "scripts/ops/x44-ws04-controlled-delivery-expansion-state.mjs",
+        "test/contracts/x44-ws04-controlled-delivery-expansion.contract.test.js"
+      ],
+      "failReason": "",
+      "ok": true,
+      "packetScopedOnly": true,
+      "status": "?? scripts/ops/x44-ws04-controlled-delivery-expansion-report.mjs\n?? scripts/ops/x44-ws04-controlled-delivery-expansion-state.mjs\n?? test/contracts/x44-ws04-controlled-delivery-expansion.contract.test.js"
+    }
+  },
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "blockingSurfaceGrowthCount": 0,
+    "missingEvidenceRefCount": 0,
+    "modeProfileChannelMismatchCount": 0,
+    "nonCanonAutoBlockAttemptCount": 0,
+    "nonDeterministicExpansionOutputCount": 0,
+    "prestartFailureCount": 0,
+    "releaseClassDriftCount": 0
+  },
+  "finalGateSatisfied": true,
+  "generatedAtUtc": "2026-03-01T09:00:35.229Z",
+  "repeatabilityStable": true,
+  "runId": "TZ_X44_WS04_CONTROLLED_DELIVERY_EXPANSION_001",
+  "status": "PASS",
+  "ticketId": "TZ_X44_WS04_CONTROLLED_DELIVERY_EXPANSION_001",
+  "token": "X44_WS04_CONTROLLED_DELIVERY_EXPANSION_OK",
+  "version": 1
+}

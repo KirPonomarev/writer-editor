@@ -1,0 +1,12 @@
+{
+  "failSignalCount": 74,
+  "criticalSignalCount": 12,
+  "criticalModeDriftCount": 0,
+  "stageOrderSignalPresent": true,
+  "stageOrderSignalAligned": true,
+  "ws00PointerLockSha": "4f896b50aab5d536f49b7ee2586c70778b4f4466e7a21015bcdd4683d2b2afc9",
+  "ws02PointerLockSha": "fc82503fc1dcb65c4928d2a86ce901a2cd242f675328b22d662a05ff06241dbb",
+  "pointerLockReconfirmationAtWs02Entry": true,
+  "modeMatrixAuthority": "ACTIVE_CANON_A16",
+  "advisoryAsBlockingDriftZero": true
+}

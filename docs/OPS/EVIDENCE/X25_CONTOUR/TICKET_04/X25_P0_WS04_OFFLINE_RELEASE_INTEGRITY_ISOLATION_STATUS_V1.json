@@ -1,0 +1,45 @@
+{
+  "generatedAtUtc": "2026-02-28T23:39:10.376Z",
+  "runId": "TZ_X25_P0_WS04_OFFLINE_RELEASE_INTEGRITY_ISOLATION_001",
+  "ticketId": "TZ_X25_P0_WS04_OFFLINE_RELEASE_INTEGRITY_ISOLATION_001",
+  "objective": "ISOLATE_RELEASE_DECISION_CLASS_FROM_TRANSIENT_REMOTE_STATE_AND_ORIGIN_NOISE",
+  "status": "PASS",
+  "offlineIsolationSummary": {
+    "offlineReleaseDecisionPathIsolated": true,
+    "eRemoteUnavailableDoesNotChangeReleaseClass": true,
+    "advisoryAsBlockingDriftZero": true,
+    "baselineReleaseNonzeroExitRequired": false,
+    "remoteProbeNonzeroExitRequired": false,
+    "remoteUnavailableStopCode": "REMOTE_UNAVAILABLE",
+    "originNoiseStopCode": "DNS_OR_TLS_FAILURE",
+    "staleRemoteProbePolicyFailReason": "E_REMOTE_PROBE_TTL_POLICY_VIOLATION"
+  },
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": "PASS",
+    "NEXT_TZ_NEGATIVE_02": "PASS",
+    "NEXT_TZ_NEGATIVE_03": "PASS",
+    "NEXT_TZ_NEGATIVE_04": "PASS",
+    "NEXT_TZ_NEGATIVE_05": "PASS"
+  },
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": "PASS",
+    "NEXT_TZ_POSITIVE_02": "PASS",
+    "NEXT_TZ_POSITIVE_03": "PASS"
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "finalGate": "GO_TO_X25_P0_WS05_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "finalGateSatisfied": true
+}
