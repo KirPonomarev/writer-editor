@@ -1,0 +1,74 @@
+{
+  "activeCanon": {
+    "lockCheckPass": true,
+    "status": "ACTIVE_CANON",
+    "statusRef": "docs/OPS/STATUS/CANON_STATUS.json",
+    "version": "v3.13a-final"
+  },
+  "artifactId": "X52_CONTOUR_EVIDENCE_FREEZE_PACKET_V1",
+  "contour": {
+    "acceptanceCompliance": "PASS",
+    "advisoryAsBlockingDrift": "ZERO",
+    "blockingSurfaceExpansion": false,
+    "gateDecision": "X52_CLOSED_GO_NEXT",
+    "offlineReleaseIntegrity": "LOCALLY_VERIFIABLE",
+    "repeatability": "PASS_THREE_OF_THREE",
+    "scopeCompliance": "PASS",
+    "status": "SYMBOLIC_CLOSED",
+    "verdict": "ACCEPTED"
+  },
+  "gate": {
+    "name": "GO_TO_NEXT_CONTOUR_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+    "satisfied": true
+  },
+  "generatedAtUtc": "2026-03-01T11:28:47.121Z",
+  "owner": "KIRILL_PLUS_CODEX",
+  "requiredChecks": {
+    "ACTIVE_CANON_LOCK_CHECK_PASS": true,
+    "ADVISORY_AS_BLOCKING_DRIFT_ZERO": true,
+    "BLOCKING_SURFACE_EXPANSION_FALSE": true,
+    "JSON_VALIDATION_PASS": true,
+    "OFFLINE_RELEASE_INTEGRITY_LOCALLY_VERIFIABLE": true,
+    "SHA_LOCK_MATCH_PASS": true,
+    "STAGE_ACTIVATION_GUARD_CHECK_PASS": true
+  },
+  "requiredOutputs": [
+    "X52_CONTOUR_FREEZE_PACKET_V1_JSON",
+    "X52_CONTOUR_CLOSE_SUMMARY_V1_JSON",
+    "X52_CONTOUR_CLOSEOUT_SIGNED_V1_JSON",
+    "NEXT_CONTOUR_OPENING_RECORD_V38_JSON",
+    "KEY_VALUE_EXECUTION_REPORT"
+  ],
+  "schemaVersion": 1,
+  "wsSummary": {
+    "WS01": {
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X52_WS01_NEXT_CONTOUR_ALIGNMENT_STATUS_V1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X52_CONTOUR/TICKET_01/summary.json",
+      "ticketId": "X52_WS01"
+    },
+    "WS02": {
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X52_WS02_QUEUE_PRIORITIZATION_STATUS_V1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X52_CONTOUR/TICKET_02/summary.json",
+      "ticketId": "X52_WS02"
+    },
+    "WS03": {
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X52_WS03_EVIDENCE_MAINTENANCE_STATUS_V1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X52_CONTOUR/TICKET_03/summary.json",
+      "ticketId": "X52_WS03"
+    },
+    "WS04": {
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X52_WS04_CONTROLLED_DELIVERY_EXPANSION_STATUS_V1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X52_CONTOUR/TICKET_04/summary.json",
+      "ticketId": "X52_WS04"
+    },
+    "WS99": {
+      "status": "PASS",
+      "symbolicCloseout": true,
+      "ticketId": "X52_WS99"
+    }
+  }
+}
