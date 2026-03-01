@@ -1,0 +1,38 @@
+{
+  "generatedAtUtc": "2026-03-01T14:40:18Z",
+  "runId": "TZ_X64_SEQ10B_OWNER_MERGE_EXECUTION_001",
+  "ticketId": "TZ_X64_SEQ10B_OWNER_MERGE_EXECUTION_001",
+  "status": "PASS",
+  "objective": "EXECUTE_FACTUAL_MERGE_AND_POST_MERGE_RECONFIRM_FOR_X64",
+  "mergeExecutionSummary": {
+    "prNumber": 281,
+    "mergeCommit": "e4fd1b9e50b8d01a46bf4ca8d8c2c11b60fd6cf5",
+    "tagName": "x64-contour-close-milestone-v1",
+    "factualMergeExecuted": true
+  },
+  "postMergeReconfirmSummary": {
+    "postMergeVerifyOk": true,
+    "canonPointerUnchanged": true,
+    "requiredSetPointerUnchanged": true,
+    "noNewP0Drift": true
+  },
+  "signedStatus": {
+    "signed": true,
+    "evidencePacketSha256": "sha256:1b807a2b1499a5d024af5a143624ea9213d2ab747523caf77db25ec1221c6897"
+  },
+  "negativeResults": {
+    "NEGATIVE_01_MERGE_WITHOUT_OWNER_GO_EXPECT_REJECT": "PASS",
+    "NEGATIVE_02_MERGE_WITHOUT_GREEN_CHECKS_EXPECT_REJECT": "PASS",
+    "NEGATIVE_03_SIGNATURE_HASH_MISMATCH_EXPECT_REJECT": "PASS",
+    "NEGATIVE_04_TAG_MISSING_EXPECT_REJECT": "PASS",
+    "NEGATIVE_05_POST_MERGE_POINTER_DRIFT_EXPECT_REJECT": "PASS"
+  },
+  "positiveResults": {
+    "POSITIVE_01_FACTUAL_MERGE_EXECUTED_TRUE": "PASS",
+    "POSITIVE_02_POST_MERGE_RECONFIRM_PASS_TRUE": "PASS",
+    "POSITIVE_03_MERGE_AND_TAG_PRESENT_TRUE": "PASS"
+  },
+  "nextGateStatus": "GO_NEXT_CONTOUR",
+  "finalGate": "GO_NEXT_CONTOUR_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "finalGateSatisfied": true
+}

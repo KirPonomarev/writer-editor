@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "token": "X64_SEQ10B_OWNER_MERGE_EXECUTION_OK",
+  "status": "PASS",
+  "runId": "TZ_X64_SEQ10B_OWNER_MERGE_EXECUTION_001",
+  "ticketId": "TZ_X64_SEQ10B_OWNER_MERGE_EXECUTION_001",
+  "generatedAtUtc": "2026-03-01T14:40:18Z",
+  "prNumber": 281,
+  "mergeCommit": "e4fd1b9e50b8d01a46bf4ca8d8c2c11b60fd6cf5",
+  "tagName": "x64-contour-close-milestone-v1",
+  "factualMergeExecuted": true,
+  "postMergeReconfirmPass": true,
+  "noNewP0Drift": true,
+  "blockingSurfaceExpansion": false,
+  "advisoryAsBlockingDriftZero": true,
+  "finalGateSatisfied": true,
+  "nextGateStatus": "GO_NEXT_CONTOUR"
+}
