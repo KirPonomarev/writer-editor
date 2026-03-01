@@ -1,0 +1,191 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true
+  },
+  "finalGate": "GO_TO_X41_WS02_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "finalGateSatisfied": true,
+  "generatedAtUtc": "2026-03-01T08:15:17.345Z",
+  "negativeResults": {
+    "NEXT_TZ_NEGATIVE_01": "PASS",
+    "NEXT_TZ_NEGATIVE_02": "PASS",
+    "NEXT_TZ_NEGATIVE_03": "PASS",
+    "NEXT_TZ_NEGATIVE_04": "PASS",
+    "NEXT_TZ_NEGATIVE_05": "PASS"
+  },
+  "nextContourAlignmentSummary": {
+    "alignmentOutputDeterministic": true,
+    "entryChecksAllPass": true,
+    "evidenceChainGapCount": 0,
+    "nonDeterministicOutputCount": 0,
+    "prestartFailureCount": 0,
+    "queuePriorityAndScopeLockConsistent": true,
+    "queuePriorityConflictCount": 0,
+    "scopeExpansionCount": 0
+  },
+  "objective": "EXECUTE_NEXT_CONTOUR_ALIGNMENT_WITH_CANON_LOCK_AND_DETERMINISTIC_OUTPUT",
+  "positiveResults": {
+    "NEXT_TZ_POSITIVE_01": "PASS",
+    "NEXT_TZ_POSITIVE_02": "PASS",
+    "NEXT_TZ_POSITIVE_03": "PASS"
+  },
+  "repeatability": {
+    "runs": [
+      {
+        "acceptance": {
+          "ACCEPTANCE_01": true,
+          "ACCEPTANCE_02": true,
+          "ACCEPTANCE_03": true,
+          "ACCEPTANCE_04": true
+        },
+        "counts": {
+          "advisoryToBlockingDriftCount": 0,
+          "evidenceChainGapCount": 0,
+          "nonDeterministicOutputCount": 0,
+          "prestartFailureCount": 0,
+          "queuePriorityConflictCount": 0,
+          "scopeExpansionCount": 0
+        },
+        "determinism": {
+          "runHashes": [
+            "7194741c84d3b0f1c236a0403e02425d64b4b30b10008c7100ddf23847a049de",
+            "7194741c84d3b0f1c236a0403e02425d64b4b30b10008c7100ddf23847a049de",
+            "7194741c84d3b0f1c236a0403e02425d64b4b30b10008c7100ddf23847a049de"
+          ],
+          "stable": true
+        },
+        "dod": {
+          "DOD_01": true,
+          "DOD_02": true,
+          "DOD_03": true,
+          "DOD_04": true,
+          "DOD_05": true,
+          "DOD_06": true
+        },
+        "finalGateSatisfied": true,
+        "negativeResults": {
+          "NEXT_TZ_NEGATIVE_01": true,
+          "NEXT_TZ_NEGATIVE_02": true,
+          "NEXT_TZ_NEGATIVE_03": true,
+          "NEXT_TZ_NEGATIVE_04": true,
+          "NEXT_TZ_NEGATIVE_05": true
+        },
+        "ok": true,
+        "positiveResults": {
+          "NEXT_TZ_POSITIVE_01": true,
+          "NEXT_TZ_POSITIVE_02": true,
+          "NEXT_TZ_POSITIVE_03": true
+        },
+        "token": "X41_WS01_NEXT_CONTOUR_ALIGNMENT_OK"
+      },
+      {
+        "acceptance": {
+          "ACCEPTANCE_01": true,
+          "ACCEPTANCE_02": true,
+          "ACCEPTANCE_03": true,
+          "ACCEPTANCE_04": true
+        },
+        "counts": {
+          "advisoryToBlockingDriftCount": 0,
+          "evidenceChainGapCount": 0,
+          "nonDeterministicOutputCount": 0,
+          "prestartFailureCount": 0,
+          "queuePriorityConflictCount": 0,
+          "scopeExpansionCount": 0
+        },
+        "determinism": {
+          "runHashes": [
+            "7194741c84d3b0f1c236a0403e02425d64b4b30b10008c7100ddf23847a049de",
+            "7194741c84d3b0f1c236a0403e02425d64b4b30b10008c7100ddf23847a049de",
+            "7194741c84d3b0f1c236a0403e02425d64b4b30b10008c7100ddf23847a049de"
+          ],
+          "stable": true
+        },
+        "dod": {
+          "DOD_01": true,
+          "DOD_02": true,
+          "DOD_03": true,
+          "DOD_04": true,
+          "DOD_05": true,
+          "DOD_06": true
+        },
+        "finalGateSatisfied": true,
+        "negativeResults": {
+          "NEXT_TZ_NEGATIVE_01": true,
+          "NEXT_TZ_NEGATIVE_02": true,
+          "NEXT_TZ_NEGATIVE_03": true,
+          "NEXT_TZ_NEGATIVE_04": true,
+          "NEXT_TZ_NEGATIVE_05": true
+        },
+        "ok": true,
+        "positiveResults": {
+          "NEXT_TZ_POSITIVE_01": true,
+          "NEXT_TZ_POSITIVE_02": true,
+          "NEXT_TZ_POSITIVE_03": true
+        },
+        "token": "X41_WS01_NEXT_CONTOUR_ALIGNMENT_OK"
+      },
+      {
+        "acceptance": {
+          "ACCEPTANCE_01": true,
+          "ACCEPTANCE_02": true,
+          "ACCEPTANCE_03": true,
+          "ACCEPTANCE_04": true
+        },
+        "counts": {
+          "advisoryToBlockingDriftCount": 0,
+          "evidenceChainGapCount": 0,
+          "nonDeterministicOutputCount": 0,
+          "prestartFailureCount": 0,
+          "queuePriorityConflictCount": 0,
+          "scopeExpansionCount": 0
+        },
+        "determinism": {
+          "runHashes": [
+            "7194741c84d3b0f1c236a0403e02425d64b4b30b10008c7100ddf23847a049de",
+            "7194741c84d3b0f1c236a0403e02425d64b4b30b10008c7100ddf23847a049de",
+            "7194741c84d3b0f1c236a0403e02425d64b4b30b10008c7100ddf23847a049de"
+          ],
+          "stable": true
+        },
+        "dod": {
+          "DOD_01": true,
+          "DOD_02": true,
+          "DOD_03": true,
+          "DOD_04": true,
+          "DOD_05": true,
+          "DOD_06": true
+        },
+        "finalGateSatisfied": true,
+        "negativeResults": {
+          "NEXT_TZ_NEGATIVE_01": true,
+          "NEXT_TZ_NEGATIVE_02": true,
+          "NEXT_TZ_NEGATIVE_03": true,
+          "NEXT_TZ_NEGATIVE_04": true,
+          "NEXT_TZ_NEGATIVE_05": true
+        },
+        "ok": true,
+        "positiveResults": {
+          "NEXT_TZ_POSITIVE_01": true,
+          "NEXT_TZ_POSITIVE_02": true,
+          "NEXT_TZ_POSITIVE_03": true
+        },
+        "token": "X41_WS01_NEXT_CONTOUR_ALIGNMENT_OK"
+      }
+    ],
+    "stable": true
+  },
+  "runId": "TZ_X41_WS01_NEXT_CONTOUR_ALIGNMENT_001",
+  "status": "PASS",
+  "ticketId": "TZ_X41_WS01_NEXT_CONTOUR_ALIGNMENT_001"
+}
