@@ -1,0 +1,205 @@
+{
+  "acceptance": {
+    "NEXT_TZ_ACCEPTANCE_01": true,
+    "NEXT_TZ_ACCEPTANCE_02": true,
+    "NEXT_TZ_ACCEPTANCE_03": true,
+    "NEXT_TZ_ACCEPTANCE_04": true
+  },
+  "dod": {
+    "NEXT_TZ_DOD_01": true,
+    "NEXT_TZ_DOD_02": true,
+    "NEXT_TZ_DOD_03": true,
+    "NEXT_TZ_DOD_04": true,
+    "NEXT_TZ_DOD_05": true,
+    "NEXT_TZ_DOD_06": true,
+    "NEXT_TZ_DOD_07": true
+  },
+  "finalGate": "GO_MERGE_ONLY_IF_WS99_SIGNED_AND_ALL_ACCEPTANCE_TRUE_AND_OWNER_MERGE_GO",
+  "finalGateSatisfied": false,
+  "generatedAtUtc": "2026-03-01T14:26:48.550Z",
+  "negativeResults": {
+    "NEGATIVE_01_MERGE_WITHOUT_OWNER_GO_EXPECT_BLOCK": "PASS",
+    "NEGATIVE_02_INVALID_SIGNATURE_HASH_EXPECT_REJECT": "PASS",
+    "NEGATIVE_03_MISSING_CLOSEOUT_ARTIFACT_EXPECT_REJECT": "PASS",
+    "NEGATIVE_04_SCOPE_DRIFT_OUTSIDE_ALLOWLIST_EXPECT_REJECT": "PASS",
+    "NEGATIVE_05_POST_MERGE_POINTER_DRIFT_EXPECT_REJECT": "PASS"
+  },
+  "nextGateStatus": "HOLD_OWNER_MERGE_GO",
+  "objective": "CLOSE_CURRENT_CONTOUR_WITH_SYMBOLIC_PACKET_AND_SAFE_MERGE_WITH_POST_MERGE_RECONFIRM",
+  "positiveResults": {
+    "POSITIVE_01_ENTRY_PRECONDITIONS_CONFIRMED": "PASS",
+    "POSITIVE_02_LOCAL_PRECHECK_COMPLETED_NO_FACTUAL_MERGE": "PASS",
+    "POSITIVE_03_POST_MERGE_RECONFIRM_PASS": "PASS"
+  },
+  "repeatability": {
+    "runs": [
+      {
+        "acceptance": {
+          "ACCEPTANCE_01": true,
+          "ACCEPTANCE_02": true,
+          "ACCEPTANCE_03": true,
+          "ACCEPTANCE_04": true
+        },
+        "counts": {
+          "advisoryToBlockingDriftCount": 0,
+          "mergePrecheckFailureCount": 1,
+          "missingCloseoutArtifactCount": 0,
+          "postMergeReconfirmFailureCount": 0,
+          "preconditionFailureCount": 0,
+          "remoteBindingMismatchCount": 1,
+          "signatureHashMismatchCount": 0,
+          "worktreeScopeViolationCount": 0
+        },
+        "determinism": {
+          "runHashes": [
+            "aa42143babe020a2cb88f57dbdf60cf28a5ccca50136cf4e4e66c42fb417b56a",
+            "aa42143babe020a2cb88f57dbdf60cf28a5ccca50136cf4e4e66c42fb417b56a",
+            "aa42143babe020a2cb88f57dbdf60cf28a5ccca50136cf4e4e66c42fb417b56a"
+          ],
+          "stable": true
+        },
+        "dod": {
+          "DOD_01": true,
+          "DOD_02": true,
+          "DOD_03": true,
+          "DOD_04": true,
+          "DOD_05": true,
+          "DOD_06": true,
+          "DOD_07": true
+        },
+        "negativeResults": {
+          "NEGATIVE_01_MERGE_WITHOUT_OWNER_GO_EXPECT_BLOCK": true,
+          "NEGATIVE_02_INVALID_SIGNATURE_HASH_EXPECT_REJECT": true,
+          "NEGATIVE_03_MISSING_CLOSEOUT_ARTIFACT_EXPECT_REJECT": true,
+          "NEGATIVE_04_SCOPE_DRIFT_OUTSIDE_ALLOWLIST_EXPECT_REJECT": true,
+          "NEGATIVE_05_POST_MERGE_POINTER_DRIFT_EXPECT_REJECT": true
+        },
+        "nextGateStatus": "HOLD_OWNER_MERGE_GO",
+        "ok": true,
+        "positiveResults": {
+          "POSITIVE_01_ENTRY_PRECONDITIONS_CONFIRMED": true,
+          "POSITIVE_02_LOCAL_PRECHECK_COMPLETED_NO_FACTUAL_MERGE": true,
+          "POSITIVE_03_POST_MERGE_RECONFIRM_PASS": true
+        },
+        "token": "X64_SEQ10_11_CLOSEOUT_MERGE_EXECUTION_OK"
+      },
+      {
+        "acceptance": {
+          "ACCEPTANCE_01": true,
+          "ACCEPTANCE_02": true,
+          "ACCEPTANCE_03": true,
+          "ACCEPTANCE_04": true
+        },
+        "counts": {
+          "advisoryToBlockingDriftCount": 0,
+          "mergePrecheckFailureCount": 1,
+          "missingCloseoutArtifactCount": 0,
+          "postMergeReconfirmFailureCount": 0,
+          "preconditionFailureCount": 0,
+          "remoteBindingMismatchCount": 1,
+          "signatureHashMismatchCount": 0,
+          "worktreeScopeViolationCount": 0
+        },
+        "determinism": {
+          "runHashes": [
+            "aa42143babe020a2cb88f57dbdf60cf28a5ccca50136cf4e4e66c42fb417b56a",
+            "aa42143babe020a2cb88f57dbdf60cf28a5ccca50136cf4e4e66c42fb417b56a",
+            "aa42143babe020a2cb88f57dbdf60cf28a5ccca50136cf4e4e66c42fb417b56a"
+          ],
+          "stable": true
+        },
+        "dod": {
+          "DOD_01": true,
+          "DOD_02": true,
+          "DOD_03": true,
+          "DOD_04": true,
+          "DOD_05": true,
+          "DOD_06": true,
+          "DOD_07": true
+        },
+        "negativeResults": {
+          "NEGATIVE_01_MERGE_WITHOUT_OWNER_GO_EXPECT_BLOCK": true,
+          "NEGATIVE_02_INVALID_SIGNATURE_HASH_EXPECT_REJECT": true,
+          "NEGATIVE_03_MISSING_CLOSEOUT_ARTIFACT_EXPECT_REJECT": true,
+          "NEGATIVE_04_SCOPE_DRIFT_OUTSIDE_ALLOWLIST_EXPECT_REJECT": true,
+          "NEGATIVE_05_POST_MERGE_POINTER_DRIFT_EXPECT_REJECT": true
+        },
+        "nextGateStatus": "HOLD_OWNER_MERGE_GO",
+        "ok": true,
+        "positiveResults": {
+          "POSITIVE_01_ENTRY_PRECONDITIONS_CONFIRMED": true,
+          "POSITIVE_02_LOCAL_PRECHECK_COMPLETED_NO_FACTUAL_MERGE": true,
+          "POSITIVE_03_POST_MERGE_RECONFIRM_PASS": true
+        },
+        "token": "X64_SEQ10_11_CLOSEOUT_MERGE_EXECUTION_OK"
+      },
+      {
+        "acceptance": {
+          "ACCEPTANCE_01": true,
+          "ACCEPTANCE_02": true,
+          "ACCEPTANCE_03": true,
+          "ACCEPTANCE_04": true
+        },
+        "counts": {
+          "advisoryToBlockingDriftCount": 0,
+          "mergePrecheckFailureCount": 1,
+          "missingCloseoutArtifactCount": 0,
+          "postMergeReconfirmFailureCount": 0,
+          "preconditionFailureCount": 0,
+          "remoteBindingMismatchCount": 1,
+          "signatureHashMismatchCount": 0,
+          "worktreeScopeViolationCount": 0
+        },
+        "determinism": {
+          "runHashes": [
+            "aa42143babe020a2cb88f57dbdf60cf28a5ccca50136cf4e4e66c42fb417b56a",
+            "aa42143babe020a2cb88f57dbdf60cf28a5ccca50136cf4e4e66c42fb417b56a",
+            "aa42143babe020a2cb88f57dbdf60cf28a5ccca50136cf4e4e66c42fb417b56a"
+          ],
+          "stable": true
+        },
+        "dod": {
+          "DOD_01": true,
+          "DOD_02": true,
+          "DOD_03": true,
+          "DOD_04": true,
+          "DOD_05": true,
+          "DOD_06": true,
+          "DOD_07": true
+        },
+        "negativeResults": {
+          "NEGATIVE_01_MERGE_WITHOUT_OWNER_GO_EXPECT_BLOCK": true,
+          "NEGATIVE_02_INVALID_SIGNATURE_HASH_EXPECT_REJECT": true,
+          "NEGATIVE_03_MISSING_CLOSEOUT_ARTIFACT_EXPECT_REJECT": true,
+          "NEGATIVE_04_SCOPE_DRIFT_OUTSIDE_ALLOWLIST_EXPECT_REJECT": true,
+          "NEGATIVE_05_POST_MERGE_POINTER_DRIFT_EXPECT_REJECT": true
+        },
+        "nextGateStatus": "HOLD_OWNER_MERGE_GO",
+        "ok": true,
+        "positiveResults": {
+          "POSITIVE_01_ENTRY_PRECONDITIONS_CONFIRMED": true,
+          "POSITIVE_02_LOCAL_PRECHECK_COMPLETED_NO_FACTUAL_MERGE": true,
+          "POSITIVE_03_POST_MERGE_RECONFIRM_PASS": true
+        },
+        "token": "X64_SEQ10_11_CLOSEOUT_MERGE_EXECUTION_OK"
+      }
+    ],
+    "stable": true
+  },
+  "runId": "TZ_CONTOUR_CLOSEOUT_AND_MERGE_EXECUTION_001",
+  "status": "PASS",
+  "ticketId": "TZ_CONTOUR_CLOSEOUT_AND_MERGE_EXECUTION_001",
+  "workstreamSummary": {
+    "branchUpToDateCheck": true,
+    "closeoutPacketSignatureValid": true,
+    "finalGateSatisfiedAndWorktreeClean": true,
+    "mergeExecuted": false,
+    "mode": "LOCAL_PRECHECK_ONLY_NO_FACTUAL_MERGE",
+    "nextGateStatus": "HOLD_OWNER_MERGE_GO",
+    "ownerMergeGo": false,
+    "postMergeReconfirmPass": true,
+    "remoteBindingReady": false,
+    "signedStatusTrueAndSha256Match": true,
+    "ws99Accepted": true
+  }
+}

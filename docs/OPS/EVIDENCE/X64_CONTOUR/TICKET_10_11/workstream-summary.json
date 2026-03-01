@@ -1,0 +1,13 @@
+{
+  "branchUpToDateCheck": true,
+  "closeoutPacketSignatureValid": true,
+  "finalGateSatisfiedAndWorktreeClean": true,
+  "mergeExecuted": false,
+  "mode": "LOCAL_PRECHECK_ONLY_NO_FACTUAL_MERGE",
+  "nextGateStatus": "HOLD_OWNER_MERGE_GO",
+  "ownerMergeGo": false,
+  "postMergeReconfirmPass": true,
+  "remoteBindingReady": false,
+  "signedStatusTrueAndSha256Match": true,
+  "ws99Accepted": true
+}
