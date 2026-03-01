@@ -1,0 +1,76 @@
+{
+  "checks": {
+    "canon": {
+      "failReason": "",
+      "observedStatus": "ACTIVE_CANON",
+      "observedVersion": "v3.13a-final",
+      "ok": true
+    },
+    "evidenceChain": {
+      "hashMatch": true,
+      "missing": [],
+      "nextRecordRefOk": true,
+      "ok": true,
+      "signedRefOk": true
+    },
+    "evidenceRefs": {
+      "missingRefs": [],
+      "ok": true,
+      "requiredRefs": [
+        "docs/OPS/STATUS/X31_WS01_NEXT_CONTOUR_ALIGNMENT_STATUS_V1.json",
+        "docs/OPS/STATUS/X31_WS02_QUEUE_PRIORITIZATION_STATUS_V1.json",
+        "docs/OPS/EVIDENCE/X31_CONTOUR/TICKET_01/summary.json",
+        "docs/OPS/EVIDENCE/X31_CONTOUR/TICKET_01/final-dod-acceptance-summary.json",
+        "docs/OPS/EVIDENCE/X31_CONTOUR/TICKET_02/summary.json",
+        "docs/OPS/EVIDENCE/X31_CONTOUR/TICKET_02/final-dod-acceptance-summary.json",
+        "docs/OPS/STATUS/NEXT_CONTOUR_OPENING_RECORD_V16.json",
+        "docs/OPS/STATUS/X30_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+        "docs/OPS/EVIDENCE/X30_CONTOUR/x30-contour-freeze-packet-v1.json"
+      ]
+    },
+    "stage": {
+      "ACTIVE_STAGE_ID": "NONE",
+      "ok": true,
+      "STAGE_ACTIVATION_OK": 1,
+      "STAGE_ACTIVE": 0
+    },
+    "staleLinks": {
+      "ok": true,
+      "reason": "",
+      "stale": false
+    },
+    "trust": {
+      "advisoryToBlockingDriftCountZero": true,
+      "offlineVerifiableChainOk": true,
+      "ok": true
+    },
+    "worktree": {
+      "changedPaths": [
+        "scripts/ops/x31-ws03-evidence-maintenance-report.mjs",
+        "scripts/ops/x31-ws03-evidence-maintenance-state.mjs",
+        "test/contracts/x31-ws03-evidence-maintenance.contract.test.js"
+      ],
+      "failReason": "",
+      "ok": true,
+      "packetScopedOnly": true,
+      "status": "?? scripts/ops/x31-ws03-evidence-maintenance-report.mjs\n?? scripts/ops/x31-ws03-evidence-maintenance-state.mjs\n?? test/contracts/x31-ws03-evidence-maintenance.contract.test.js"
+    }
+  },
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "evidenceChainBreakCount": 0,
+    "hashMismatchCount": 0,
+    "missingEvidenceRefCount": 0,
+    "nonDeterministicEvidenceOutputCount": 0,
+    "prestartFailureCount": 0,
+    "staleEvidenceLinkCount": 0
+  },
+  "finalGateSatisfied": true,
+  "generatedAtUtc": "2026-03-01T01:39:24.000Z",
+  "repeatabilityStable": true,
+  "runId": "TZ_X31_WS03_EVIDENCE_MAINTENANCE_001",
+  "status": "PASS",
+  "ticketId": "TZ_X31_WS03_EVIDENCE_MAINTENANCE_001",
+  "token": "X31_WS03_EVIDENCE_MAINTENANCE_OK",
+  "version": 1
+}
