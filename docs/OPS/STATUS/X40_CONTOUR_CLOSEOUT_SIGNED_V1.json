@@ -1,0 +1,23 @@
+{
+  "artifactId": "X40_CONTOUR_CLOSEOUT_SIGNED_V1",
+  "schemaVersion": 1,
+  "taskId": "TZ_X40_WS99_SYMBOLIC_CLOSEOUT_AND_SIGNED_PACKET_001",
+  "status": "SIGNED",
+  "signedAtUtc": "2026-03-01T08:12:32.450Z",
+  "signedBy": "KIRILL_PLUS_CODEX",
+  "signingMode": "LOCAL_OFFLINE",
+  "signatureType": "SHA256_EVIDENCE_LOCK",
+  "evidencePacketRef": "docs/OPS/EVIDENCE/X40_CONTOUR/x40-contour-freeze-packet-v1.json",
+  "evidencePacketSha256": "sha256:55e168003435c0ae90ac75b67e3cd4a71b47eb81750d93832263fdd61154b84c",
+  "gate": {
+    "name": "GO_TO_NEXT_CONTOUR_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+    "isOpen": true,
+    "releaseDecisionClassChanged": false
+  },
+  "constraints": {
+    "blockingSurfaceExpansion": false,
+    "newBlockingTokensIntroduced": false,
+    "activeCanonLockMaintained": true,
+    "advisoryAsBlockingDriftZero": true
+  }
+}
