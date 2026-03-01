@@ -1,0 +1,23 @@
+{
+  "artifactId": "X66_CONTOUR_CLOSEOUT_SIGNED_V1",
+  "constraints": {
+    "activeCanonLockMaintained": true,
+    "advisoryAsBlockingDriftZero": true,
+    "blockingSurfaceExpansion": false,
+    "newBlockingTokensIntroduced": false
+  },
+  "evidencePacketRef": "docs/OPS/EVIDENCE/X66_CONTOUR/x66-contour-freeze-packet-v1.json",
+  "evidencePacketSha256": "sha256:9fed318e5a7ac3553d4c466459c926cbd13dc5cc6dbbf119602c361702ad2248",
+  "gate": {
+    "isOpen": true,
+    "name": "GO_TO_NEXT_CONTOUR_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+    "releaseDecisionClassChanged": false
+  },
+  "schemaVersion": 1,
+  "signatureType": "SHA256_EVIDENCE_LOCK",
+  "signedAtUtc": "2026-03-01T15:21:24.860Z",
+  "signedBy": "KIRILL_PLUS_CODEX",
+  "signingMode": "LOCAL_OFFLINE",
+  "status": "SIGNED",
+  "taskId": "TZ_X66_WS99_SYMBOLIC_CLOSEOUT_AND_SIGNED_PACKET_001"
+}
