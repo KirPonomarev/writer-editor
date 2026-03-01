@@ -1,0 +1,16 @@
+{
+  "closeoutArtifactSetComplete": true,
+  "freezePacketSha256": "sha256:7866eea225223fb064e527a6a3a6f1e8d973e811cbb6f21e071518e34ceaeb1a",
+  "generatedAtUtc": "2026-03-01T13:15:32.662Z",
+  "missingArtifactCount": 0,
+  "missingCloseoutSummaryCount": 0,
+  "missingFreezePacketCount": 0,
+  "missingNextGateRecordCount": 0,
+  "nextGateOpeningRecordPresent": true,
+  "objective": "SYMBOLICALLY_CLOSE_X60_WITH_SIGNED_FREEZE_PACKET_AND_OPEN_NEXT_CONTOUR_GATE",
+  "repeatabilityStable": true,
+  "signatureHashMismatchCount": 0,
+  "signedStatusTrueWithSha256EvidenceLock": true,
+  "status": "PASS",
+  "unsignedCloseoutArtifactCount": 0
+}
