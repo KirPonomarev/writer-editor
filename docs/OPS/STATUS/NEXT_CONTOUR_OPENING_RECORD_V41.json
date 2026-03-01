@@ -1,9 +1,9 @@
 {
-  "createdAtUtc": "2026-03-01T12:15:45.523Z",
+  "createdAtUtc": "2026-03-01T12:30:34.381Z",
   "dependsOn": {
     "gateSatisfied": true,
-    "requiredGate": "GO_IF_X55_CLOSEOUT_ARTIFACT_SIGNED",
-    "x55CloseoutArtifactRef": "docs/OPS/STATUS/X55_CONTOUR_CLOSEOUT_SIGNED_V1.json"
+    "requiredGate": "GO_IF_X56_CLOSEOUT_ARTIFACT_SIGNED",
+    "x56CloseoutArtifactRef": "docs/OPS/STATUS/X56_CONTOUR_CLOSEOUT_SIGNED_V1.json"
   },
   "entryChecks": {
     "activeCanonLockCheckPass": true,
@@ -11,7 +11,7 @@
     "blockingSurfaceExpansion": false,
     "offlineReleaseIntegrityLocallyVerifiable": true,
     "stageActivationGuardCheckPass": true,
-    "x55ContourClosed": true
+    "x56ContourClosed": true
   },
   "executionGate": "GO",
   "mode": "IMPLEMENTATION",
@@ -34,5 +34,5 @@
     ]
   },
   "status": "READY",
-  "ticketId": "TZ_X55_NEXT_CONTOUR_OPENING_001"
+  "ticketId": "TZ_X56_NEXT_CONTOUR_OPENING_001"
 }
