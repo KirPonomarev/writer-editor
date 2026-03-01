@@ -7,10 +7,6 @@ const TOKEN_NAME = 'REQUIRED_SET_NO_TARGET_OK';
 const FAIL_CODE = 'E_REQUIRED_SET_CONTAINS_TARGET';
 const DEFAULT_REQUIRED_SET_PATH = 'docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json';
 const DEFAULT_DECLARATION_PATH = 'docs/OPS/TOKENS/TOKEN_DECLARATION.json';
-const SELF_BOOTSTRAP_ALLOWED_TARGETS = Object.freeze([
-  'REQUIRED_SET_NO_TARGET_OK',
-]);
-
 function isObjectRecord(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
@@ -93,14 +89,12 @@ export function evaluateRequiredSetNoTargetState(input = {}) {
     declarationDoc && Array.isArray(declarationDoc.targetTokens) ? declarationDoc.targetTokens : [],
   );
   const targetSet = new Set(targetTokens);
-  const bootstrapAllowedSet = new Set(SELF_BOOTSTRAP_ALLOWED_TARGETS);
-
   if (releaseRequired.length === 0) {
     issues.push(buildIssue('RELEASE_REQUIRED_SET_EMPTY'));
   }
 
   const releaseTargetTokens = releaseRequired.filter((token) => targetSet.has(token));
-  const violatingTokens = releaseTargetTokens.filter((token) => !bootstrapAllowedSet.has(token));
+  const violatingTokens = releaseTargetTokens;
   for (const token of violatingTokens) {
     issues.push(buildIssue('RELEASE_CONTAINS_TARGET_TOKEN', { token }));
   }
@@ -116,9 +110,7 @@ export function evaluateRequiredSetNoTargetState(input = {}) {
       declarationPath,
       releaseRequired,
       targetTokens,
-      releaseTargetTokens,
-      bootstrapAllowedTargetTokens: [...SELF_BOOTSTRAP_ALLOWED_TARGETS],
-      violatingTokens,
+      releaseTargetTokens,      violatingTokens,
       issues: sortedIssues,
     },
   };
