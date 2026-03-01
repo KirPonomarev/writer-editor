@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X27_CONTOUR_EVIDENCE_FREEZE_PACKET_V1",
+  "generatedAtUtc": "2026-03-01T00:44:06.000Z",
+  "owner": "KIRILL_PLUS_CODEX",
+  "activeCanon": {
+    "lockCheckPass": true,
+    "status": "ACTIVE_CANON",
+    "version": "v3.13a-final",
+    "statusRef": "docs/OPS/STATUS/CANON_STATUS.json"
+  },
+  "contour": {
+    "verdict": "ACCEPTED",
+    "status": "SYMBOLIC_CLOSED",
+    "gateDecision": "X27_CLOSED_GO_NEXT",
+    "scopeCompliance": "PASS",
+    "acceptanceCompliance": "PASS",
+    "blockingSurfaceExpansion": false,
+    "advisoryAsBlockingDrift": "ZERO",
+    "repeatability": "PASS_THREE_OF_THREE",
+    "offlineReleaseIntegrity": "LOCALLY_VERIFIABLE"
+  },
+  "requiredOutputs": [
+    "X27_CONTOUR_FREEZE_PACKET_V1_JSON",
+    "X27_CONTOUR_CLOSE_SUMMARY_V1_JSON",
+    "X27_CONTOUR_CLOSEOUT_SIGNED_V1_JSON",
+    "NEXT_CONTOUR_OPENING_RECORD_V13_JSON",
+    "KEY_VALUE_EXECUTION_REPORT"
+  ],
+  "requiredChecks": {
+    "ACTIVE_CANON_LOCK_CHECK_PASS": true,
+    "STAGE_ACTIVATION_GUARD_CHECK_PASS": true,
+    "JSON_VALIDATION_PASS": true,
+    "SHA_LOCK_MATCH_PASS": true,
+    "BLOCKING_SURFACE_EXPANSION_FALSE": true,
+    "ADVISORY_AS_BLOCKING_DRIFT_ZERO": true,
+    "OFFLINE_RELEASE_INTEGRITY_LOCALLY_VERIFIABLE": true
+  },
+  "wsSummary": {
+    "WS01": {
+      "ticketId": "X27_WS01",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X27_WS01_NEXT_CONTOUR_ALIGNMENT_STATUS_V1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X27_CONTOUR/TICKET_01/summary.json"
+    },
+    "WS02": {
+      "ticketId": "X27_WS02",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X27_WS02_QUEUE_PRIORITIZATION_STATUS_V1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X27_CONTOUR/TICKET_02/summary.json"
+    },
+    "WS03": {
+      "ticketId": "X27_WS03",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X27_WS03_EVIDENCE_MAINTENANCE_STATUS_V1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X27_CONTOUR/TICKET_03/summary.json"
+    },
+    "WS04": {
+      "ticketId": "X27_WS04",
+      "status": "PASS",
+      "statusRef": "docs/OPS/STATUS/X27_WS04_CONTROLLED_DELIVERY_EXPANSION_STATUS_V1.json",
+      "summaryRef": "docs/OPS/EVIDENCE/X27_CONTOUR/TICKET_04/summary.json"
+    },
+    "WS99": {
+      "ticketId": "X27_WS99",
+      "status": "PASS",
+      "symbolicCloseout": true
+    }
+  },
+  "gate": {
+    "name": "GO_TO_NEXT_CONTOUR_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+    "satisfied": true
+  }
+}
