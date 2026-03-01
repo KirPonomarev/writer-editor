@@ -1,0 +1,78 @@
+{
+  "checks": {
+    "canon": {
+      "failReason": "",
+      "observedStatus": "ACTIVE_CANON",
+      "observedVersion": "v3.13a-final",
+      "ok": true
+    },
+    "evidenceChain": {
+      "hashMatch": true,
+      "missing": [],
+      "nextRecordRefOk": true,
+      "ok": true,
+      "signedRefOk": true
+    },
+    "evidenceRefs": {
+      "missingRefs": [],
+      "ok": true,
+      "requiredRefs": [
+        "docs/OPS/STATUS/X27_WS01_NEXT_CONTOUR_ALIGNMENT_STATUS_V1.json",
+        "docs/OPS/STATUS/X27_WS02_QUEUE_PRIORITIZATION_STATUS_V1.json",
+        "docs/OPS/EVIDENCE/X27_CONTOUR/TICKET_01/summary.json",
+        "docs/OPS/EVIDENCE/X27_CONTOUR/TICKET_01/final-dod-acceptance-summary.json",
+        "docs/OPS/EVIDENCE/X27_CONTOUR/TICKET_02/summary.json",
+        "docs/OPS/EVIDENCE/X27_CONTOUR/TICKET_02/final-dod-acceptance-summary.json",
+        "docs/OPS/STATUS/NEXT_CONTOUR_OPENING_RECORD_V12.json",
+        "docs/OPS/STATUS/X26_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+        "docs/OPS/EVIDENCE/X26_CONTOUR/x26-contour-freeze-packet-v1.json"
+      ]
+    },
+    "stage": {
+      "ACTIVE_STAGE_ID": "NONE",
+      "ok": true,
+      "STAGE_ACTIVATION_OK": 1,
+      "STAGE_ACTIVE": 0
+    },
+    "staleLinks": {
+      "ok": true,
+      "reason": "",
+      "stale": false
+    },
+    "trust": {
+      "advisoryToBlockingDriftCountZero": true,
+      "offlineVerifiableChainOk": true,
+      "ok": true
+    },
+    "worktree": {
+      "changedPaths": [
+        "docs/OPS/EVIDENCE/X27_CONTOUR/TICKET_03/",
+        "docs/OPS/STATUS/X27_WS03_EVIDENCE_MAINTENANCE_STATUS_V1.json",
+        "scripts/ops/x27-ws03-evidence-maintenance-report.mjs",
+        "scripts/ops/x27-ws03-evidence-maintenance-state.mjs",
+        "test/contracts/x27-ws03-evidence-maintenance.contract.test.js"
+      ],
+      "failReason": "",
+      "ok": true,
+      "packetScopedOnly": true,
+      "status": "?? docs/OPS/EVIDENCE/X27_CONTOUR/TICKET_03/\n?? docs/OPS/STATUS/X27_WS03_EVIDENCE_MAINTENANCE_STATUS_V1.json\n?? scripts/ops/x27-ws03-evidence-maintenance-report.mjs\n?? scripts/ops/x27-ws03-evidence-maintenance-state.mjs\n?? test/contracts/x27-ws03-evidence-maintenance.contract.test.js"
+    }
+  },
+  "counts": {
+    "advisoryToBlockingDriftCount": 0,
+    "evidenceChainBreakCount": 0,
+    "hashMismatchCount": 0,
+    "missingEvidenceRefCount": 0,
+    "nonDeterministicEvidenceOutputCount": 0,
+    "prestartFailureCount": 0,
+    "staleEvidenceLinkCount": 0
+  },
+  "finalGateSatisfied": true,
+  "generatedAtUtc": "2026-03-01T00:39:22.566Z",
+  "repeatabilityStable": true,
+  "runId": "TZ_X27_WS03_EVIDENCE_MAINTENANCE_001",
+  "status": "PASS",
+  "ticketId": "TZ_X27_WS03_EVIDENCE_MAINTENANCE_001",
+  "token": "X27_WS03_EVIDENCE_MAINTENANCE_OK",
+  "version": 1
+}
