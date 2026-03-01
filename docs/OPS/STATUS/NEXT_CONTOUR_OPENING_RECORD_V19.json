@@ -1,0 +1,38 @@
+{
+  "ticketId": "TZ_X33_NEXT_CONTOUR_OPENING_001",
+  "schemaVersion": 1,
+  "status": "READY",
+  "priority": "P1",
+  "mode": "IMPLEMENTATION",
+  "owner": "CODEX",
+  "createdAtUtc": "2026-03-01T02:27:07.120Z",
+  "dependsOn": {
+    "x33CloseoutArtifactRef": "docs/OPS/STATUS/X33_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+    "requiredGate": "GO_IF_X33_CLOSEOUT_ARTIFACT_SIGNED",
+    "gateSatisfied": true
+  },
+  "objective": "OPEN_NEXT_CONTOUR_WITH_CANON_LOCK_AND_80_20_BLOCKING_DISCIPLINE_PRESERVED",
+  "scope": {
+    "in": [
+      "NEXT_CONTOUR_ALIGNMENT",
+      "QUEUE_PRIORITIZATION",
+      "EVIDENCE_MAINTENANCE",
+      "CONTROLLED_DELIVERY_EXPANSION"
+    ],
+    "out": [
+      "NEW_BLOCKING_SURFACE",
+      "NETWORK_TRANSPORT_FEATURE_WORK",
+      "CORE_SCHEMA_MIGRATION_RECOVERY_CHANGES",
+      "NON_CANON_REFACTOR"
+    ]
+  },
+  "entryChecks": {
+    "activeCanonLockCheckPass": true,
+    "stageActivationGuardCheckPass": true,
+    "blockingSurfaceExpansion": false,
+    "advisoryAsBlockingDrift": "ZERO",
+    "offlineReleaseIntegrityLocallyVerifiable": true,
+    "x33ContourClosed": true
+  },
+  "executionGate": "GO"
+}
