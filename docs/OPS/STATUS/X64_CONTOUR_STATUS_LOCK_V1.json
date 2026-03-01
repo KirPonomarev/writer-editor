@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "updatedAtUtc": "2026-03-01T14:40:18Z",
+  "contourId": "X64_CONTOUR",
+  "status": "CLOSED",
+  "locked": true,
+  "lockReason": "OWNER_MERGE_GO_TRUE_MERGE_EXECUTED_AND_RECONFIRMED",
+  "closeoutTaskId": "TZ_X64_SEQ10B_OWNER_MERGE_EXECUTION_001",
+  "prNumber": 281,
+  "mergeCommit": "e4fd1b9e50b8d01a46bf4ca8d8c2c11b60fd6cf5",
+  "closeMilestoneTag": "x64-contour-close-milestone-v1",
+  "signedStatusRef": "X64_CONTOUR_CLOSEOUT_SIGNED_V1.json",
+  "closeSummaryRef": "X64_CONTOUR_CLOSE_SUMMARY_V1.json",
+  "nextContourOpeningRecordRef": "NEXT_CONTOUR_OPENING_RECORD_V48.json",
+  "nextContourGateStatus": "OPEN"
+}

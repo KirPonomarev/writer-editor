@@ -1,0 +1,18 @@
+{
+  "dod": {
+    "DOD_01": true,
+    "DOD_02": true,
+    "DOD_03": true,
+    "DOD_04": true,
+    "DOD_05": true,
+    "DOD_06": true
+  },
+  "acceptance": {
+    "ACCEPTANCE_01": true,
+    "ACCEPTANCE_02": true,
+    "ACCEPTANCE_03": true,
+    "ACCEPTANCE_04": true
+  },
+  "finalGate": "GO_NEXT_CONTOUR_ONLY_IF_ALL_DOD_AND_ACCEPTANCE_TRUE",
+  "finalGateSatisfied": true
+}

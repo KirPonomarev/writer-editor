@@ -1,0 +1,11 @@
+{
+  "postMergeVerifyTaskId": "TZ_X64_SEQ10B_OWNER_MERGE_EXECUTION_001",
+  "postMergeVerifyOk": true,
+  "canonPointerUnchanged": true,
+  "requiredSetPointerUnchanged": true,
+  "noNewP0Drift": true,
+  "activeCanonLockCheckPass": true,
+  "stageActivationGuardCheckPass": true,
+  "nextContourGateOpenRecordReady": true,
+  "shortCloseoutNotePublished": true
+}
