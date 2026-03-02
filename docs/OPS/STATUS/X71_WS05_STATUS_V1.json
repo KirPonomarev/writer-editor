@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X71_WS05_STATUS_V1",
+  "ok": true,
+  "token": true,
+  "scope": {
+    "WS05_SCOPE_LIMIT": "CONTEXT_RECORD_ONLY",
+    "scopeExpansionAttemptCount": 0,
+    "noScopeExpansion": true
+  },
+  "positiveResults": {
+    "OWNER_SIGNAL_CONTEXT_RECORD_SCHEMA_VALID_TRUE": true,
+    "OWNER_SIGNAL_CONTEXT_REFERENCES_X71_TRUE": true,
+    "OWNER_SIGNAL_VALUE_REFERENCE_MACHINE_READABLE_TRUE": true,
+    "GLOBAL_OWNER_SIGNAL_CARRIER_UNCHANGED_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true
+  },
+  "negativeResults": {
+    "CONTEXT_RECORD_SCHEMA_INVALID_EXPECT_REJECT_TRUE": true,
+    "CONTOUR_CONTEXT_MISMATCH_EXPECT_REJECT_TRUE": true,
+    "UPDATED_AT_MISSING_EXPECT_REJECT_TRUE": true
+  },
+  "dod": {
+    "WS05_DOD_01_OWNER_SIGNAL_CONTEXT_RECORD_SCHEMA_VALID_TRUE": true,
+    "WS05_DOD_02_OWNER_SIGNAL_CONTEXT_REFERENCES_X71_TRUE": true,
+    "WS05_DOD_03_OWNER_SIGNAL_VALUE_REFERENCE_MACHINE_READABLE_TRUE": true,
+    "WS05_DOD_04_GLOBAL_OWNER_SIGNAL_CARRIER_UNCHANGED_TRUE": true,
+    "WS05_DOD_05_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "WS05_DOD_06_SINGLE_COMMIT_CREATED_IF_WRITE_TRUE": true,
+    "WS05_DOD_07_NEXT_GATE_STATUS_GO_TO_NEXT_FALSE_ITEM_TRUE": true
+  },
+  "checks": {
+    "OWNER_SIGNAL_SCHEMA_VALID_TRUE": true,
+    "OWNER_OPEN_SIGNAL_TRUE": true,
+    "ACTIVE_CANON_LOCK_TRUE": true,
+    "P0_REQUIRED_VECTOR_STAYS_TRUE": true,
+    "DELTA_MAP_FROZEN_SHA256_PRESENT": true,
+    "WS05_MARKED_FALSE_IN_DELTA_MAP": true,
+    "SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE": true
+  },
+  "ownerSignalCarrierIntegrity": {
+    "globalCarrierBasename": "OWNER_OPEN_SIGNAL_RECORD_V1.json",
+    "globalCarrierSha256Before": "6e33cd124bf1a3fb8881346b96bc5a6d74f866558cb4103ce5e3781ebd892446",
+    "globalCarrierSha256After": "6e33cd124bf1a3fb8881346b96bc5a6d74f866558cb4103ce5e3781ebd892446",
+    "globalCarrierUnchanged": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z"
+}

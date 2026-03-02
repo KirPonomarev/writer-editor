@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X71_WS05_NEGATIVE_RESULTS_V1",
+  "ok": true,
+  "negativeResults": {
+    "CONTEXT_RECORD_SCHEMA_INVALID_EXPECT_REJECT_TRUE": true,
+    "CONTOUR_CONTEXT_MISMATCH_EXPECT_REJECT_TRUE": true,
+    "UPDATED_AT_MISSING_EXPECT_REJECT_TRUE": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z"
+}
