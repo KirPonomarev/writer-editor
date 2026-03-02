@@ -1,0 +1,10 @@
+{
+  "allTrue": true,
+  "artifactId": "X70_WS06_NEGATIVE_RESULTS_V1",
+  "results": {
+    "NON_DETERMINISTIC_OUTPUT_EXPECT_REJECT_TRUE": true,
+    "STALE_RESULT_REUSE_EXPECT_REJECT_TRUE": true
+  },
+  "schemaVersion": 1,
+  "updatedAtUtc": "2026-03-02T21:15:21.957Z"
+}
