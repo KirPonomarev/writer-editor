@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "packetId": "OWNER_DECISION_PACKET_V1",
+  "ownerId": "KIRILL",
+  "decision": "OPEN",
+  "target": "TZ_X68_BOOTSTRAP_REPAIR_005",
+  "issuedAtUtc": "2026-03-02T00:00:00Z",
+  "ownerOpenSignalRecord": "OWNER_OPEN_SIGNAL_RECORD_V1.json",
+  "constraints": {
+    "scope": "WS00_WS01_AND_BOOTSTRAP_REPAIR_ONLY",
+    "newBlockingTokens": false,
+    "featureWork": false
+  }
+}

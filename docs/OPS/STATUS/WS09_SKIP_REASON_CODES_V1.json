@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "registryId": "WS09_SKIP_REASON_CODES_V1",
+  "reasonCodes": [
+    "NO_P0_TOUCH_AND_NO_HASH_DELTA",
+    "NON_PROMOTION_STABLE_INPUT"
+  ]
+}

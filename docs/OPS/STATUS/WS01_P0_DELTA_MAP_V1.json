@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_BOOTSTRAP_REPAIR_005",
+  "machineChecks": {
+    "GATE_GRAPH_CYCLE_FREE_OK": true,
+    "REQUIRED_SET_FAILSIGNAL_MODE_SYNC_OK": true,
+    "WS09_SKIP_RULE_DETERMINISTIC_OK": true,
+    "FAST_PRECHECK_NOT_RELEASE_GATE_ASSERTION_TRUE": true,
+    "MODE_GUARD_ACTIVE_TRUE": true,
+    "STRICT_RUN_CAP_ACTIVE_TRUE": true,
+    "OWNER_SIGNAL_SCHEMA_VALID_TRUE": true
+  },
+  "p0RequiredVector": {
+    "P0_REQUIRED_01": true,
+    "P0_REQUIRED_02": true,
+    "P0_REQUIRED_03": true,
+    "P0_REQUIRED_04": true,
+    "P0_REQUIRED_05": true,
+    "P0_REQUIRED_06": true
+  },
+  "unresolvedItems": [],
+  "issuedAtUtc": "2026-03-02T00:00:00Z",
+  "verdict": "PASS"
+}

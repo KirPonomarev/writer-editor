@@ -249,10 +249,136 @@
         "scripts/ops/required-checks-state.mjs",
         "--json"
       ]
+    },
+    {
+      "MACHINE_CHECK_ID": "GATE_GRAPH_CYCLE_FREE_OK",
+      "CHECK_NAME": "gate graph cycle free check",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "CIRCULAR_DEPENDENCY_BREAK_v3.json",
+      "EVIDENCE_REF": "CIRCULAR_DEPENDENCY_BREAK_v3.json",
+      "COMMAND_ID": "validate-gate-graph-cycle-free",
+      "OUTPUT_ARTIFACT": "CIRCULAR_DEPENDENCY_BREAK_v3.json",
+      "UPDATED_AT_UTC": "2026-03-02T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/gate-graph-cycle-free-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "REQUIRED_SET_FAILSIGNAL_MODE_SYNC_OK",
+      "CHECK_NAME": "required set and failsignal mode sync",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "FAILSIGNAL_MODE_SYNC_AUTOMATION_v3.json",
+      "EVIDENCE_REF": "FAILSIGNAL_MODE_SYNC_AUTOMATION_v3.json",
+      "COMMAND_ID": "validate-required-set-failsignal-mode-sync",
+      "OUTPUT_ARTIFACT": "FAILSIGNAL_MODE_SYNC_AUTOMATION_v3.json",
+      "UPDATED_AT_UTC": "2026-03-02T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/required-set-failsignal-mode-sync-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "WS09_SKIP_RULE_DETERMINISTIC_OK",
+      "CHECK_NAME": "ws09 skip rule deterministic check",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "WS09_SKIP_REASON_CODES_V1.json",
+      "EVIDENCE_REF": "WS09_SKIP_REASON_CODES_V1.json",
+      "COMMAND_ID": "validate-ws09-skip-rule-deterministic",
+      "OUTPUT_ARTIFACT": "WS09_SKIP_REASON_CODES_V1.json",
+      "UPDATED_AT_UTC": "2026-03-02T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/ws09-skip-rule-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "FAST_PRECHECK_NOT_RELEASE_GATE_ASSERTION_TRUE",
+      "CHECK_NAME": "fast precheck non substitution assertion",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "X21_RELEASE_CANDIDATE_PRECHECK_PACK_v1.json",
+      "EVIDENCE_REF": "X21_RELEASE_CANDIDATE_PRECHECK_PACK_v1.json",
+      "COMMAND_ID": "validate-fast-precheck-non-substitution",
+      "OUTPUT_ARTIFACT": "X21_RELEASE_CANDIDATE_PRECHECK_PACK_v1.json",
+      "UPDATED_AT_UTC": "2026-03-02T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/fast-precheck-non-substitution-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "MODE_GUARD_ACTIVE_TRUE",
+      "CHECK_NAME": "mode guard active",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "EXECUTION_PROFILE.schema.json",
+      "EVIDENCE_REF": "EXECUTION_PROFILE.schema.json",
+      "COMMAND_ID": "validate-mode-guard-active",
+      "OUTPUT_ARTIFACT": "EXECUTION_PROFILE.schema.json",
+      "UPDATED_AT_UTC": "2026-03-02T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/mode-guard-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "STRICT_RUN_CAP_ACTIVE_TRUE",
+      "CHECK_NAME": "strict run cap active",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "STRICT_RUN_POLICY_V1",
+      "EVIDENCE_REF": "STRICT_RUN_POLICY_V1",
+      "COMMAND_ID": "validate-strict-run-cap-active",
+      "OUTPUT_ARTIFACT": "STRICT_RUN_POLICY_V1",
+      "UPDATED_AT_UTC": "2026-03-02T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/strict-run-cap-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "OWNER_SIGNAL_SCHEMA_VALID_TRUE",
+      "CHECK_NAME": "owner open signal schema valid",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "required",
+      "MODE_DISPOSITION": "release_blocking",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "OWNER_OPEN_SIGNAL_RECORD_V1.json",
+      "EVIDENCE_REF": "OWNER_OPEN_SIGNAL_RECORD_V1.json",
+      "COMMAND_ID": "validate-owner-open-signal-schema",
+      "OUTPUT_ARTIFACT": "OWNER_OPEN_SIGNAL_RECORD_V1.json",
+      "UPDATED_AT_UTC": "2026-03-02T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/owner-open-signal-state.mjs",
+        "--json"
+      ]
     }
   ],
   "registryBindingCompletenessPct": 100,
-  "updatedAtUtc": "2026-02-27T23:30:00.000Z",
+  "updatedAtUtc": "2026-03-02T00:00:00.000Z",
   "commandVectorMap": {
     "validate-blocking-policy-single-source": [
       "node",
@@ -317,6 +443,41 @@
     "validate-check-executability-binding": [
       "node",
       "scripts/ops/required-checks-state.mjs",
+      "--json"
+    ],
+    "validate-gate-graph-cycle-free": [
+      "node",
+      "scripts/ops/gate-graph-cycle-free-state.mjs",
+      "--json"
+    ],
+    "validate-required-set-failsignal-mode-sync": [
+      "node",
+      "scripts/ops/required-set-failsignal-mode-sync-state.mjs",
+      "--json"
+    ],
+    "validate-ws09-skip-rule-deterministic": [
+      "node",
+      "scripts/ops/ws09-skip-rule-state.mjs",
+      "--json"
+    ],
+    "validate-fast-precheck-non-substitution": [
+      "node",
+      "scripts/ops/fast-precheck-non-substitution-state.mjs",
+      "--json"
+    ],
+    "validate-mode-guard-active": [
+      "node",
+      "scripts/ops/mode-guard-state.mjs",
+      "--json"
+    ],
+    "validate-strict-run-cap-active": [
+      "node",
+      "scripts/ops/strict-run-cap-state.mjs",
+      "--json"
+    ],
+    "validate-owner-open-signal-schema": [
+      "node",
+      "scripts/ops/owner-open-signal-state.mjs",
       "--json"
     ]
   }
