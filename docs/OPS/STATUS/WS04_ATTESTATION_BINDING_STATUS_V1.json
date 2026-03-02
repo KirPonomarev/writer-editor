@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS04_EXECUTE_ONLY_FALSE_009",
+  "mode": "REPO_EXECUTION",
+  "ws04Executed": true,
+  "ws04WasFalseBeforeExecution": true,
+  "goalStatus": {
+    "BIND_ATTESTATION_PAYLOAD_TO_HEAD_WAVE_TOKEN_EVIDENCE_HASH": true,
+    "REJECT_SYNTHETIC_OR_WRONG_BINDING_PAYLOAD": true,
+    "CONFIRM_ATTESTATION_SIGNATURE_PATH_STABLE": true,
+    "KEEP_SCOPE_EXPANSION_ZERO": true
+  },
+  "dodStatus": {
+    "DOD_01_WS04_PASS_TRUE": true,
+    "DOD_02_WRONG_BINDING_REJECT_TRUE": true,
+    "DOD_03_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "DOD_04_SINGLE_COMMIT_CREATED_IF_WRITE_TRUE": true,
+    "DOD_05_NEXT_GATE_STATUS_GO_TO_NEXT_FALSE_ITEM_TRUE": true
+  },
+  "filesTarget": [
+    "emit-post-merge-verify-attestation.mjs",
+    "attestation-signature-state.mjs"
+  ],
+  "observedFailReasons": {
+    "NEGATIVE_SET_01": "SYNTHETIC_PAYLOAD_REJECT",
+    "NEGATIVE_SET_02": "MISSING_HEAD_BINDING_REJECT",
+    "NEGATIVE_SET_03": "MISSING_WAVE_HASH_BINDING_REJECT",
+    "NEGATIVE_SET_04": "MISSING_EVIDENCE_HASH_BINDING_REJECT"
+  },
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

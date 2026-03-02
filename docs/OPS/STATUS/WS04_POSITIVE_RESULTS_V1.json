@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS04_EXECUTE_ONLY_FALSE_009",
+  "mode": "REPO_EXECUTION",
+  "positiveResults": {
+    "POSITIVE_SET_01_PAYLOAD_BOUND_TO_HEAD_TRUE": true,
+    "POSITIVE_SET_02_PAYLOAD_BOUND_TO_WAVE_TRUE": true,
+    "POSITIVE_SET_03_PAYLOAD_BOUND_TO_TOKEN_RESULTS_TRUE": true,
+    "POSITIVE_SET_04_PAYLOAD_BOUND_TO_EVIDENCE_HASH_TRUE": true,
+    "POSITIVE_SET_05_ATTESTATION_SIGNATURE_OK_TRUE": true,
+    "POSITIVE_SET_06_SCOPE_EXPANSION_ATTEMPT_COUNT_ZERO_TRUE": true
+  },
+  "bindingSnapshot": {
+    "headShaBinding": "71f8256d106f57ac243b5ed4f345ad07861c3d9e",
+    "waveInputHashBinding": "817851ebf4dd3a314d16000870f9dca42145f007a532b02f81d2bdc7edc0d272",
+    "tokenResultsHashBinding": "fc82503fc1dcb65c4928d2a86ce901a2cd242f675328b22d662a05ff06241dbb",
+    "evidenceHashBinding": "16558dc018fced8ae67853def48dd4add95dd9bbe5ac216bbcc2198eb011093a"
+  },
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

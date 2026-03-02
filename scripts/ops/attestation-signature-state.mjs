@@ -3,7 +3,10 @@ import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { evaluatePostMergeVerifyAttestationState } from './emit-post-merge-verify-attestation.mjs';
+import {
+  evaluatePostMergeVerifyAttestationState,
+  resolvePostMergeVerifyBindingContext,
+} from './emit-post-merge-verify-attestation.mjs';
 
 const TOKEN_NAME = 'ATTESTATION_SIGNATURE_OK';
 const FAIL_CODE = 'E_ATTESTATION_SIGNATURE_INVALID';
@@ -55,6 +58,17 @@ function readJsonObject(filePath) {
 function normalizeBool(value, fallback = false) {
   if (value === true || value === false) return value;
   return fallback;
+}
+
+function hasOwn(obj, key) {
+  return Boolean(obj) && Object.prototype.hasOwnProperty.call(obj, key);
+}
+
+function readBindingField(payload, primaryKey, legacyKey, fallbackValue) {
+  if (hasOwn(payload, primaryKey) || hasOwn(payload, legacyKey)) {
+    return normalizeString(payload[primaryKey] || payload[legacyKey]);
+  }
+  return normalizeString(fallbackValue);
 }
 
 function parseArgs(argv) {
@@ -158,7 +172,7 @@ function readArtifactState(trustState, repoRoot) {
   };
 }
 
-function buildPayload(input = {}, trustState = {}) {
+function buildPayload(input = {}, trustState = {}, bindingContext = {}) {
   if (isObjectRecord(input.payload)) {
     const payload = input.payload;
     const hasSignerId = Object.prototype.hasOwnProperty.call(payload, 'signerId');
@@ -184,6 +198,30 @@ function buildPayload(input = {}, trustState = {}) {
     const externalArtifactId = hasExternalArtifactId
       ? normalizeString(payload.externalArtifactId || payload.EXTERNAL_ARTIFACT_ID)
       : (trustState.trustedArtifactId || 'ATTESTATION_TRUST_ARTIFACT_LOCK_v1');
+    const headShaBinding = readBindingField(
+      payload,
+      'headShaBinding',
+      'HEAD_SHA_BINDING',
+      bindingContext.headShaBinding,
+    );
+    const waveInputHashBinding = readBindingField(
+      payload,
+      'waveInputHashBinding',
+      'WAVE_INPUT_HASH_BINDING',
+      bindingContext.waveInputHashBinding,
+    );
+    const tokenResultsHashBinding = readBindingField(
+      payload,
+      'tokenResultsHashBinding',
+      'TOKEN_RESULTS_HASH_BINDING',
+      bindingContext.tokenResultsHashBinding,
+    );
+    const evidenceHashBinding = readBindingField(
+      payload,
+      'evidenceHashBinding',
+      'EVIDENCE_HASH_BINDING',
+      bindingContext.evidenceHashBinding,
+    );
 
     return {
       attestationKind: normalizeString(payload.attestationKind),
@@ -198,6 +236,10 @@ function buildPayload(input = {}, trustState = {}) {
       payloadOrigin: normalizeString(payload.payloadOrigin || payload.PAYLOAD_ORIGIN || 'external').toLowerCase(),
       isSynthetic: normalizeBool(payload.isSynthetic, payload.IS_SYNTHETIC === true),
       externalArtifactId,
+      headShaBinding,
+      waveInputHashBinding,
+      tokenResultsHashBinding,
+      evidenceHashBinding,
     };
   }
 
@@ -206,6 +248,11 @@ function buildPayload(input = {}, trustState = {}) {
     verifyPath: DEFAULT_VERIFY_PATH,
     status: 'pass',
     detail: 'strict_verify_release_ready',
+    repoRoot: input.repoRoot,
+    headShaBinding: input.headShaBinding,
+    waveInputHashBinding: input.waveInputHashBinding,
+    tokenResultsHashBinding: input.tokenResultsHashBinding,
+    evidenceHashBinding: input.evidenceHashBinding,
   });
 
   return {
@@ -221,12 +268,24 @@ function buildPayload(input = {}, trustState = {}) {
     payloadOrigin: 'external',
     isSynthetic: false,
     externalArtifactId: trustState.trustedArtifactId || 'ATTESTATION_TRUST_ARTIFACT_LOCK_v1',
+    headShaBinding: normalizeString(emitted.headShaBinding),
+    waveInputHashBinding: normalizeString(emitted.waveInputHashBinding),
+    tokenResultsHashBinding: normalizeString(emitted.tokenResultsHashBinding),
+    evidenceHashBinding: normalizeString(emitted.evidenceHashBinding),
   };
 }
 
-function resolveFailReason(payload, trustState, artifactState) {
+function resolveFailReason(payload, trustState, artifactState, bindingChecks = {}) {
   if (payload.isSynthetic || payload.payloadOrigin === 'synthetic') return 'SYNTHETIC_PAYLOAD_REJECT';
   if (payload.trustContextSource.toLowerCase() === FORBIDDEN_TRUST_CONTEXT_SOURCE) return 'SELF_CONTEXT_REJECT';
+  if (!bindingChecks.headShaBindingPresent) return 'MISSING_HEAD_BINDING_REJECT';
+  if (!bindingChecks.waveInputHashBindingPresent) return 'MISSING_WAVE_HASH_BINDING_REJECT';
+  if (!bindingChecks.tokenResultsHashBindingPresent) return 'MISSING_TOKEN_RESULTS_HASH_BINDING_REJECT';
+  if (!bindingChecks.evidenceHashBindingPresent) return 'MISSING_EVIDENCE_HASH_BINDING_REJECT';
+  if (!bindingChecks.headShaBindingMatchesExpected) return 'HEAD_BINDING_MISMATCH_REJECT';
+  if (!bindingChecks.waveInputHashBindingMatchesExpected) return 'WAVE_HASH_BINDING_MISMATCH_REJECT';
+  if (!bindingChecks.tokenResultsHashBindingMatchesExpected) return 'TOKEN_RESULTS_HASH_BINDING_MISMATCH_REJECT';
+  if (!bindingChecks.evidenceHashBindingMatchesExpected) return 'EVIDENCE_HASH_BINDING_MISMATCH_REJECT';
   if (
     !trustState.ok
     || !artifactState.ok
@@ -241,7 +300,20 @@ export function evaluateAttestationSignatureState(input = {}) {
   const repoRoot = path.resolve(normalizeString(input.repoRoot) || process.cwd());
   const trustState = readTrustLock(input);
   const artifactState = readArtifactState(trustState, repoRoot);
-  const payload = buildPayload(input, trustState);
+  const bindingContext = resolvePostMergeVerifyBindingContext({ repoRoot });
+  const payload = buildPayload(input, trustState, bindingContext);
+  const headShaBindingPresent = payload.headShaBinding.length > 0;
+  const waveInputHashBindingPresent = payload.waveInputHashBinding.length > 0;
+  const tokenResultsHashBindingPresent = payload.tokenResultsHashBinding.length > 0;
+  const evidenceHashBindingPresent = payload.evidenceHashBinding.length > 0;
+  const headShaBindingMatchesExpected = headShaBindingPresent
+    && payload.headShaBinding === bindingContext.headShaBinding;
+  const waveInputHashBindingMatchesExpected = waveInputHashBindingPresent
+    && payload.waveInputHashBinding === bindingContext.waveInputHashBinding;
+  const tokenResultsHashBindingMatchesExpected = tokenResultsHashBindingPresent
+    && payload.tokenResultsHashBinding === bindingContext.tokenResultsHashBinding;
+  const evidenceHashBindingMatchesExpected = evidenceHashBindingPresent
+    && payload.evidenceHashBinding === bindingContext.evidenceHashBinding;
   const payloadCanonical = stableStringify({
     attestationKind: payload.attestationKind,
     taskId: payload.taskId,
@@ -255,6 +327,10 @@ export function evaluateAttestationSignatureState(input = {}) {
     externalArtifactId: payload.externalArtifactId,
     payloadOrigin: payload.payloadOrigin,
     isSynthetic: payload.isSynthetic,
+    headShaBinding: payload.headShaBinding,
+    waveInputHashBinding: payload.waveInputHashBinding,
+    tokenResultsHashBinding: payload.tokenResultsHashBinding,
+    evidenceHashBinding: payload.evidenceHashBinding,
   });
   const expectedSignature = sha256Hex(payloadCanonical);
   const boundExpectedSignature = sha256Hex([
@@ -272,7 +348,15 @@ export function evaluateAttestationSignatureState(input = {}) {
     && (payload.verifyOk === 0 || payload.verifyOk === 1)
     && payload.signerId.length > 0
     && payload.trustRootId.length > 0
-    && payload.trustContextId.length > 0;
+    && payload.trustContextId.length > 0
+    && headShaBindingPresent
+    && waveInputHashBindingPresent
+    && tokenResultsHashBindingPresent
+    && evidenceHashBindingPresent;
+  const payloadBindingValid = headShaBindingMatchesExpected
+    && waveInputHashBindingMatchesExpected
+    && tokenResultsHashBindingMatchesExpected
+    && evidenceHashBindingMatchesExpected;
   const payloadNotSynthetic = payload.isSynthetic === false && payload.payloadOrigin !== 'synthetic';
   const contextSourceValid = payload.trustContextSource.length > 0
     && payload.trustContextSource.toLowerCase() !== FORBIDDEN_TRUST_CONTEXT_SOURCE
@@ -288,11 +372,23 @@ export function evaluateAttestationSignatureState(input = {}) {
     && contextSourceValid
     && signerBoundValid
     && trustRootBoundValid
+    && payloadBindingValid
     && trustLockReadable
     && artifactTrusted
     && signatureShapeValid
     && signatureMatches;
-  const failReason = ok ? '' : resolveFailReason(payload, trustState, artifactState);
+  const failReason = ok
+    ? ''
+    : resolveFailReason(payload, trustState, artifactState, {
+      headShaBindingPresent,
+      waveInputHashBindingPresent,
+      tokenResultsHashBindingPresent,
+      evidenceHashBindingPresent,
+      headShaBindingMatchesExpected,
+      waveInputHashBindingMatchesExpected,
+      tokenResultsHashBindingMatchesExpected,
+      evidenceHashBindingMatchesExpected,
+    });
 
   return {
     ok,
@@ -312,6 +408,19 @@ export function evaluateAttestationSignatureState(input = {}) {
       contextSourceValid: contextSourceValid ? 1 : 0,
       signerBoundValid: signerBoundValid ? 1 : 0,
       trustRootBoundValid: trustRootBoundValid ? 1 : 0,
+      payloadBindingValid: payloadBindingValid ? 1 : 0,
+      headShaBindingPresent: headShaBindingPresent ? 1 : 0,
+      waveInputHashBindingPresent: waveInputHashBindingPresent ? 1 : 0,
+      tokenResultsHashBindingPresent: tokenResultsHashBindingPresent ? 1 : 0,
+      evidenceHashBindingPresent: evidenceHashBindingPresent ? 1 : 0,
+      headShaBindingMatchesExpected: headShaBindingMatchesExpected ? 1 : 0,
+      waveInputHashBindingMatchesExpected: waveInputHashBindingMatchesExpected ? 1 : 0,
+      tokenResultsHashBindingMatchesExpected: tokenResultsHashBindingMatchesExpected ? 1 : 0,
+      evidenceHashBindingMatchesExpected: evidenceHashBindingMatchesExpected ? 1 : 0,
+      expectedHeadShaBinding: bindingContext.headShaBinding,
+      expectedWaveInputHashBinding: bindingContext.waveInputHashBinding,
+      expectedTokenResultsHashBinding: bindingContext.tokenResultsHashBinding,
+      expectedEvidenceHashBinding: bindingContext.evidenceHashBinding,
       trustLockPath: trustState.trustLockPath,
       trustLockReadable: trustLockReadable ? 1 : 0,
       trustRootIdExpected: trustState.trustRootId,
@@ -334,6 +443,10 @@ function printHuman(state) {
   console.log(`ATTESTATION_TRUST_ARTIFACT_OK=${state.details.artifactTrusted}`);
   console.log(`ATTESTATION_TRUST_CONTEXT_OK=${state.details.contextSourceValid}`);
   console.log(`ATTESTATION_SYNTHETIC_FORBIDDEN_OK=${state.details.payloadNotSynthetic}`);
+  console.log(`ATTESTATION_HEAD_BINDING_OK=${state.details.headShaBindingMatchesExpected}`);
+  console.log(`ATTESTATION_WAVE_BINDING_OK=${state.details.waveInputHashBindingMatchesExpected}`);
+  console.log(`ATTESTATION_TOKEN_RESULTS_BINDING_OK=${state.details.tokenResultsHashBindingMatchesExpected}`);
+  console.log(`ATTESTATION_EVIDENCE_BINDING_OK=${state.details.evidenceHashBindingMatchesExpected}`);
   if (!state.ok) {
     console.log(`FAIL_REASON=${state.code}`);
     console.log(`FAIL_DETAIL=${state.failReason}`);
