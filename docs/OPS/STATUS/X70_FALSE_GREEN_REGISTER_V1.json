@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X70_FALSE_GREEN_REGISTER_V1",
+  "policy": {
+    "newCaseAppendOnly": true,
+    "blockingClassExpansion": false
+  },
+  "cases": [],
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z"
+}

@@ -314,23 +314,26 @@ function evaluateP2Ws03ProcessTaxBudgetAutomationState(input = {}) {
     NEXT_TZ_DOD_01: duplicateReduction && baseState.advisoryToBlockingDriftCountZero,
     NEXT_TZ_DOD_02: allNegativesPass,
     NEXT_TZ_DOD_03: allPositivesPass,
-    NEXT_TZ_DOD_04: false,
+    NEXT_TZ_DOD_04: baseState.ok,
     NEXT_TZ_DOD_05: true,
   };
 
   const acceptance = {
     NEXT_TZ_ACCEPTANCE_01: canonLock.ok,
     NEXT_TZ_ACCEPTANCE_02: baseState.advisoryToBlockingDriftCountZero,
-    NEXT_TZ_ACCEPTANCE_03: false,
-    NEXT_TZ_ACCEPTANCE_04: false,
+    NEXT_TZ_ACCEPTANCE_03: allNegativesPass,
+    NEXT_TZ_ACCEPTANCE_04: allPositivesPass,
   };
 
   const preRepeatabilityOk = canonLock.ok
     && dod.NEXT_TZ_DOD_01
     && dod.NEXT_TZ_DOD_02
     && dod.NEXT_TZ_DOD_03
+    && dod.NEXT_TZ_DOD_04
     && dod.NEXT_TZ_DOD_05
-    && acceptance.NEXT_TZ_ACCEPTANCE_02;
+    && acceptance.NEXT_TZ_ACCEPTANCE_02
+    && acceptance.NEXT_TZ_ACCEPTANCE_03
+    && acceptance.NEXT_TZ_ACCEPTANCE_04;
 
   const state = {
     ok: preRepeatabilityOk,

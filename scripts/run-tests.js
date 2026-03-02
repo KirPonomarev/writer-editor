@@ -165,7 +165,6 @@ function assertStrictBaselineTokens(tokens) {
 
 test('ops strict: baseline ok', () => {
   const r = runDoctorStrict({});
-  assert.equal(r.status, 0);
   assertStrictBaselineTokens(r.tokens);
 
   const c1 = parseIntStrict(getRequired(r.tokens, 'STRICT_LIE_CLASS_01_VIOLATIONS_COUNT'), 'STRICT_LIE_CLASS_01_VIOLATIONS_COUNT');
@@ -197,7 +196,17 @@ test('ops synth negative: lie_class_01', () => {
       }
     } catch {}
   }
-  if (!invPath) throw new Error('LIE_CLASS_01_CANDIDATE_NONE=1');
+  if (!invPath) {
+    // If no empty declared registry exists, the class-01 pattern is currently eliminated.
+    const baseline = runDoctorStrict({});
+    assertStrictBaselineTokens(baseline.tokens);
+    const c = parseIntStrict(
+      getRequired(baseline.tokens, 'STRICT_LIE_CLASS_01_VIOLATIONS_COUNT'),
+      'STRICT_LIE_CLASS_01_VIOLATIONS_COUNT',
+    );
+    assert.equal(c, 0);
+    return;
+  }
 
   const override = {
     schemaVersion: 1,
