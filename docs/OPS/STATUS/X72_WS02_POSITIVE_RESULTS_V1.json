@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X72_WS02_POSITIVE_RESULTS_V1",
+  "ok": true,
+  "positiveResults": {
+    "PROOFHOOK_INTEGRITY_OK_TRUE": true,
+    "NEGATIVE_TAMPER_TEST_PASS_TRUE": true,
+    "EVIDENCE_CHAIN_CONSISTENT_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "proofhookState": {
+    "PROOFHOOK_INTEGRITY_OK": 1,
+    "code": "",
+    "closureMismatchCount": 0
+  },
+  "doctorSnapshot": {
+    "DRIFT_UNRESOLVED_P0_COUNT": 0
+  },
+  "updatedAtUtc": "2026-03-02T23:52:03Z"
+}

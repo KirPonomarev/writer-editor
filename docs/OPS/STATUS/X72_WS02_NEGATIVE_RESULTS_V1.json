@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X72_WS02_NEGATIVE_RESULTS_V1",
+  "ok": true,
+  "negativeResults": {
+    "PROOFHOOK_TAMPER_EXPECT_REJECT_TRUE": true,
+    "EVIDENCE_LINK_MISSING_EXPECT_REJECT_TRUE": true,
+    "LOCK_MISMATCH_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "tamperContractTestPass": true,
+    "missingEvidenceRejectExitCode": 1,
+    "lockMismatchRejectExitCode": 1,
+    "failSignalCode": "E_PROOFHOOK_TAMPER_DETECTED"
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-02T23:52:03Z"
+}

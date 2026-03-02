@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X72_WS02_STATUS_V1",
+  "ok": true,
+  "token": true,
+  "findingRef": "F001",
+  "scopeLimit": "PROOFHOOK_LOCK_AND_EVIDENCE_CHAIN_ONLY",
+  "positiveResults": {
+    "PROOFHOOK_INTEGRITY_OK_TRUE": true,
+    "NEGATIVE_TAMPER_TEST_PASS_TRUE": true,
+    "EVIDENCE_CHAIN_CONSISTENT_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "negativeResults": {
+    "PROOFHOOK_TAMPER_EXPECT_REJECT_TRUE": true,
+    "EVIDENCE_LINK_MISSING_EXPECT_REJECT_TRUE": true,
+    "LOCK_MISMATCH_EXPECT_REJECT_TRUE": true
+  },
+  "dod": {
+    "WS02_DOD_01_PROOFHOOK_INTEGRITY_OK_TRUE": true,
+    "WS02_DOD_02_NEGATIVE_TAMPER_TEST_PASS_TRUE": true,
+    "WS02_DOD_03_NO_NEW_P0_DRIFT_TRUE": true,
+    "WS02_DOD_04_NO_SCOPE_EXPANSION_TRUE": true,
+    "WS02_DOD_05_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "WS02_DOD_06_SINGLE_COMMIT_CREATED_IF_WRITE_TRUE": true
+  },
+  "checks": {
+    "proofhookStateOk": true,
+    "proofhookFailSignalOnTamper": "E_PROOFHOOK_TAMPER_DETECTED",
+    "proofhookClosureMismatchesCount": 0,
+    "driftUnresolvedP0Count": 0
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-02T23:52:03Z"
+}
