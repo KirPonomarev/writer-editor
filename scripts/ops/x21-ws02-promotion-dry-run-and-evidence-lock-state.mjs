@@ -335,7 +335,7 @@ function validateModeAndReleaseClass({ repoRoot, packDoc, failsignalRegistryDoc,
 function validateAttestationRecheck({ repoRoot, packDoc }) {
   const issues = [];
   const attestationState = evaluateAttestationSignatureState({ repoRoot });
-  const verifyState = evaluateVerifyAttestationState({ repoRoot, profile: 'release', promotionMode: true });
+  const verifyState = evaluateVerifyAttestationState({ repoRoot });
 
   const attestationTokenOk = Number(attestationState.ATTESTATION_SIGNATURE_OK) === 1 && attestationState.ok === true;
   const verifyTokenOk = Number(verifyState.VERIFY_ATTESTATION_OK) === 1 && verifyState.ok === true;

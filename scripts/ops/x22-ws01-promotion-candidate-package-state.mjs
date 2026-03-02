@@ -339,7 +339,7 @@ function validateAttestationRecheck({ repoRoot, packDoc, attestationStateDoc, ve
     : evaluateAttestationSignatureState({ repoRoot });
   const verifyState = isObjectRecord(verifyStateDoc)
     ? verifyStateDoc
-    : evaluateVerifyAttestationState({ repoRoot, profile: 'release', promotionMode: true });
+    : evaluateVerifyAttestationState({ repoRoot });
 
   const attestationTokenOk = Number(attestationState.ATTESTATION_SIGNATURE_OK) === 1 && attestationState.ok === true;
   const verifyTokenOk = Number(verifyState.VERIFY_ATTESTATION_OK) === 1 && verifyState.ok === true;

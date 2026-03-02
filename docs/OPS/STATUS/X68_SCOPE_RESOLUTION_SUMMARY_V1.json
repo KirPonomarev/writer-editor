@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_SCOPE_ROLLBACK_RESOLUTION_011",
+  "finalGateOnPass": "GO_TO_TZ_X68_WS04_EXECUTE_ONLY_FALSE_009",
+  "finalGateOnFail": "HOLD_AND_FIX_SCOPE_RESOLUTION_ONLY",
+  "finalGateStatus": "GO_TO_TZ_X68_WS04_EXECUTE_ONLY_FALSE_009",
+  "successCondition": "WS03_RECONFIRMED_AND_WS04_GATE_OPEN",
+  "scopeDriftRemains": false,
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}
