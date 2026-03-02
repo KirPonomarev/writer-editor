@@ -29,15 +29,11 @@
       "ok": true
     },
     "worktree": {
-      "changedPaths": [
-        "scripts/ops/x66-ws99-symbolic-closeout-and-signed-packet-report.mjs",
-        "scripts/ops/x66-ws99-symbolic-closeout-and-signed-packet-state.mjs",
-        "test/contracts/x66-ws99-symbolic-closeout-and-signed-packet.contract.test.js"
-      ],
+      "changedPaths": [],
       "failReason": "",
       "ok": true,
       "packetScopedOnly": true,
-      "status": "?? scripts/ops/x66-ws99-symbolic-closeout-and-signed-packet-report.mjs\n?? scripts/ops/x66-ws99-symbolic-closeout-and-signed-packet-state.mjs\n?? test/contracts/x66-ws99-symbolic-closeout-and-signed-packet.contract.test.js"
+      "status": ""
     },
     "ws": {
       "missingArtifactCount": 0,
@@ -87,7 +83,7 @@
     "unsignedCloseoutArtifactCount": 0
   },
   "finalGateSatisfied": true,
-  "generatedAtUtc": "2026-03-01T15:21:24.860Z",
+  "generatedAtUtc": "2026-03-01T22:42:03.932Z",
   "repeatabilityStable": true,
   "runId": "TZ_X66_WS99_SYMBOLIC_CLOSEOUT_AND_SIGNED_PACKET_001",
   "status": "PASS",

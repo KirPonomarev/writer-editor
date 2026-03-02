@@ -196,7 +196,7 @@
       "modeMatrix": {
         "prCore": "advisory",
         "promotion": "advisory",
-        "release": "advisory"
+        "release": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 14,
@@ -224,7 +224,7 @@
       "modeMatrix": {
         "prCore": "advisory",
         "promotion": "advisory",
-        "release": "advisory"
+        "release": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 16,
@@ -292,7 +292,7 @@
       "modeMatrix": {
         "prCore": "advisory",
         "promotion": "advisory",
-        "release": "advisory"
+        "release": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 21,
@@ -413,7 +413,7 @@
       "modeMatrix": {
         "prCore": "advisory",
         "promotion": "advisory",
-        "release": "advisory"
+        "release": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 30,
@@ -719,7 +719,7 @@
       "modeMatrix": {
         "prCore": "advisory",
         "promotion": "advisory",
-        "release": "advisory"
+        "release": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 53,
@@ -952,7 +952,7 @@
       "modeMatrix": {
         "prCore": "advisory",
         "promotion": "advisory",
-        "release": "advisory"
+        "release": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 70,

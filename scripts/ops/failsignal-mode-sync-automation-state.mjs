@@ -174,7 +174,11 @@ function buildSyncedRows(failsignalRows, highImpactSet, syncAutomationEnabled = 
       : sourceModeMatrix;
 
     const syncedModeMatrixComplete = modeMatrixComplete(syncedModeMatrix);
-    const syncedBlocking = modeMatrixAnyBlocking(syncedModeMatrix);
+    // When sync automation is disabled, keep the original blocking flag so
+    // blocking/mode conflicts remain detectable by negative checks.
+    const syncedBlocking = syncAutomationEnabled
+      ? modeMatrixAnyBlocking(syncedModeMatrix)
+      : sourceBlocking;
 
     const syncApplied = syncAutomationEnabled && (
       !sourceModeMatrixComplete
@@ -390,6 +394,7 @@ function evaluateSingleBlockingAuthority(repoRoot) {
 
 function resolveFailReason(state) {
   if (state.highImpactExplicitDispositionCheck === false) return 'E_FAILSIGNAL_MODE_MAPPING_INCOMPLETE';
+  if (state.blockingFlagConflictZeroCheck === false) return 'E_FAILSIGNAL_MODE_MAPPING_INCOMPLETE';
   if (state.modeSyncAutomationAppliedCheck === false) return 'E_FAILSIGNAL_MODE_SYNC_AUTOMATION_FAIL';
   if (state.modeMatrixInconsistencyStopCheck === false) return 'MODE_MATRIX_INCONSISTENT';
   if (state.advisoryToBlockingDriftCountZero === false) return 'ADVISORY_TO_BLOCKING_DRIFT';
@@ -440,9 +445,19 @@ function evaluateFailsignalModeSyncAutomationState(input = {}) {
     })),
   );
 
-  const highImpactMissingDisposition = syncState.syncedRows.filter(
-    (row) => row.highImpact && row.syncedModeMatrixComplete === false,
-  );
+  const highImpactMissingDisposition = syncState.syncedRows
+    .filter((row) => row.highImpact)
+    .filter((row) => {
+      if (row.syncedModeMatrixComplete === false) return true;
+      // Explicit disposition is considered incomplete when blocking flag and
+      // mode-matrix semantics conflict in the effective (synced) row.
+      return row.syncedBlocking !== modeMatrixAnyBlocking(row.syncedModeMatrix);
+    })
+    .map((row) => ({
+      failSignalCode: row.failSignalCode,
+      syncedModeMatrix: row.syncedModeMatrix,
+      reason: 'E_FAILSIGNAL_MODE_MAPPING_INCOMPLETE',
+    }));
 
   const highImpactExplicitDispositionCheck = highImpactMissingDisposition.length === 0;
   const blockingFlagConflictZeroCheck = syncState.blockingConflictsAfter.length === 0;
@@ -475,6 +490,7 @@ function evaluateFailsignalModeSyncAutomationState(input = {}) {
     [TOKEN_NAME]: ok ? 1 : 0,
     failSignalCode: ok ? '' : resolveFailReason({
       highImpactExplicitDispositionCheck,
+      blockingFlagConflictZeroCheck,
       modeSyncAutomationAppliedCheck,
       modeMatrixInconsistencyStopCheck,
       advisoryToBlockingDriftCountZero,
@@ -482,6 +498,7 @@ function evaluateFailsignalModeSyncAutomationState(input = {}) {
     }),
     failReason: ok ? '' : resolveFailReason({
       highImpactExplicitDispositionCheck,
+      blockingFlagConflictZeroCheck,
       modeSyncAutomationAppliedCheck,
       modeMatrixInconsistencyStopCheck,
       advisoryToBlockingDriftCountZero,
