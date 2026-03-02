@@ -1,0 +1,10 @@
+{
+  "allTrue": true,
+  "artifactId": "X70_WS07_NEGATIVE_RESULTS_V1",
+  "results": {
+    "REPO_ACCEPTANCE_PREMATURE_EXPECT_REJECT_TRUE": true,
+    "THREAD_ACCEPTANCE_FALSE_EXPECT_REJECT_TRUE": true
+  },
+  "schemaVersion": 1,
+  "updatedAtUtc": "2026-03-02T21:25:01.502Z"
+}

@@ -1,0 +1,61 @@
+{
+  "artifactId": "X70_WS07_STATUS_V1",
+  "doctorSnapshot": {
+    "DRIFT_UNRESOLVED_P0_COUNT": "0",
+    "HEAD_STRICT_OK": "1",
+    "WAVE_INPUT_HASH_PRESENT": "1",
+    "WAVE_RESULT_STALE": "0",
+    "WAVE_TTL_VALID": "1"
+  },
+  "dod": {
+    "WS07_DOD_01_THREAD_REVIEW_ACCEPTANCE_TRUE": true,
+    "WS07_DOD_02_REPO_EXECUTION_ACCEPTANCE_READY_TRUE": true,
+    "WS07_DOD_03_FINAL_STATE_REVIEW_COMPLETE_TRUE": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "negativeResults": {
+    "REPO_ACCEPTANCE_PREMATURE_EXPECT_REJECT_TRUE": true,
+    "THREAD_ACCEPTANCE_FALSE_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "positiveResults": {
+    "FINAL_STATE_REVIEW_COMPLETE_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "REPO_EXECUTION_ACCEPTANCE_READY_TRUE": true,
+    "THREAD_REVIEW_ACCEPTANCE_TRUE": true
+  },
+  "prechecks": {
+    "PRECHECK_01_PREV_WS06_PASS_TRUE": true,
+    "PRECHECK_02_OWNER_OPEN_SIGNAL_TRUE": true,
+    "PRECHECK_03_MODE_REPO_EXECUTION_TRUE": true,
+    "PRECHECK_04_WORKTREE_CLEAN_TRUE": true,
+    "PRECHECK_05_ACTIVE_CANON_LOCK_TRUE": true,
+    "PRECHECK_06_P0_REQUIRED_VECTOR_STAYS_TRUE": true,
+    "PRECHECK_07_DELTA_MAP_FROZEN_SHA256_PRESENT": true,
+    "PRECHECK_08_WS07_MARKED_FALSE_IN_DELTA_MAP": true,
+    "PRECHECK_09_EXEC_PREGATE_01_TO_05_ALL_TRUE": true
+  },
+  "runtimeDeltaSnapshot": {
+    "DELTA_MAP_FROZEN_SHA256": "ac174e5316eeb953abd18351c998b3b7cca788a94d152ec2dac30e352d54e423",
+    "payload": {
+      "contourId": "X70",
+      "items": {
+        "WS02": true,
+        "WS03": true,
+        "WS04": true,
+        "WS05": true,
+        "WS06": true,
+        "WS07": false,
+        "WS99": false
+      },
+      "source": "RUNTIME_RECONSTRUCTED"
+    },
+    "WS07_MARKED_FALSE_IN_DELTA_MAP": true
+  },
+  "schemaVersion": 1,
+  "token": true,
+  "updatedAtUtc": "2026-03-02T21:25:01.502Z",
+  "X70_WS07_CLOSEOUT_ACCEPTANCE_VECTOR_OK": 1
+}
