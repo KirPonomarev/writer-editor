@@ -5,5 +5,7 @@
   "WS10_TRIGGER_REGISTERED_TRUE": true,
   "WS11_TRIGGER_REGISTERED_TRUE": true,
   "pass": true,
-  "updatedAtUtc": "2026-03-02T00:00:00.000Z"
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z",
+  "HEAD_STRICT_OK": true,
+  "EXECUTION_SCOPE_CLASS_GUARD_ACTIVE_TRUE": true
 }

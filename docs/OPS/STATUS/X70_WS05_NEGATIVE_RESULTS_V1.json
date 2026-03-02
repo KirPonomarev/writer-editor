@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X70_WS05_NEGATIVE_RESULTS_V1",
+  "results": {
+    "CANONICAL_14_SET_CHANGE_EXPECT_REJECT_TRUE": true,
+    "CANON_POINTER_HASH_MISMATCH_EXPECT_REJECT_TRUE": true,
+    "REQUIRED_SET_POINTER_MISMATCH_EXPECT_REJECT_TRUE": true
+  },
+  "allTrue": true,
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z"
+}

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X70_ALLOWED_CHANGE_CONTROL_V1",
+  "scopeControlMode": "BUCKET_PLUS_PATH_CLASS",
+  "executionScopeClassGuardActive": true,
+  "allowedBuckets": [
+    "OPS_STATUS",
+    "OPS_EXECUTION",
+    "OPS_TOKENS",
+    "OPS_BASELINE",
+    "OPS_SCRIPTS"
+  ],
+  "allowedPathClasses": [
+    "docs/OPS/STATUS/",
+    "docs/OPS/EXECUTION/",
+    "docs/OPS/TOKENS/",
+    "docs/OPS/BASELINE/",
+    "scripts/ops/"
+  ],
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z"
+}
