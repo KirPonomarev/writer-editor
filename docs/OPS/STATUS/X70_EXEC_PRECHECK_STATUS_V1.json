@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X70_EXEC_PRECHECK_STATUS_V1",
+  "REASON_CODE_SINGLE_SOURCE_LOCKED_TRUE": true,
+  "WS10_TRIGGER_REGISTERED_TRUE": true,
+  "WS11_TRIGGER_REGISTERED_TRUE": true,
+  "pass": true,
+  "updatedAtUtc": "2026-03-02T00:00:00.000Z"
+}

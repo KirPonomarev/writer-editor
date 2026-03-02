@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X70_WS04_SUMMARY_V1",
+  "finalDodAcceptanceSummary": "ALL_TRUE_REQUIRED_PASSED",
+  "finalGateStatus": "PASS",
+  "nextGateOnPass": "TZ_X70_WS05_RELEASE_SURFACE_PARITY_AND_POINTER_RECONFIRM",
+  "nextGateOnFail": "HOLD_AND_FIX_WS04_ONLY",
+  "updatedAtUtc": "2026-03-02T00:00:00.000Z"
+}
