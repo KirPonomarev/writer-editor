@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS07_EXECUTE_ONLY_FALSE_012",
+  "ws07PassTrueOrFalse": true,
+  "finalGateStatus": "GO_TO_NEXT_FALSE_ITEM_IN_ORDER",
+  "nextGateOnPass": "GO_TO_NEXT_FALSE_ITEM_IN_ORDER",
+  "nextGateOnFail": "HOLD_AND_FIX_WS07_ONLY",
+  "p0ItemsFalseListUpdated": [
+    "P0_08",
+    "P0_09",
+    "P0_10"
+  ],
+  "notes": "WS07 closed; cycle-free gate graph enforcement validated for pre-execution and pre-merge",
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}
