@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS06_EXECUTE_ONLY_FALSE_011",
+  "ws06PassTrueOrFalse": true,
+  "finalGateStatus": "GO_TO_NEXT_FALSE_ITEM_IN_ORDER",
+  "nextGateOnPass": "GO_TO_NEXT_FALSE_ITEM_IN_ORDER",
+  "nextGateOnFail": "HOLD_AND_FIX_WS06_ONLY",
+  "p0ItemsFalseListUpdated": [
+    "P0_07",
+    "P0_08",
+    "P0_09",
+    "P0_10"
+  ],
+  "notes": "WS06 closed; command surface bypass hardening verified with five negative scenarios",
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}
