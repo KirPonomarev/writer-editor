@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X71_WS03_NEGATIVE_RESULTS_V1",
+  "ok": true,
+  "negativeResults": {
+    "EXCEPTION_WITHOUT_OWNER_EXPECT_REJECT_TRUE": true,
+    "EXCEPTION_WITHOUT_EXPIRY_EXPECT_REJECT_TRUE": true,
+    "EXCEPTION_WITHOUT_TEST_EVIDENCE_EXPECT_REJECT_TRUE": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z"
+}

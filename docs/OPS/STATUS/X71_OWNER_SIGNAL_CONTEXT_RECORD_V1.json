@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X71_OWNER_SIGNAL_CONTEXT_RECORD_V1",
+  "contextId": "OWNER_SIGNAL_CONTEXT_X71",
+  "contourId": "X71",
+  "mode": "REPO_EXECUTION",
+  "ownerId": "KIRILL",
+  "ownerSignalRecordRef": {
+    "basename": "OWNER_OPEN_SIGNAL_RECORD_V1.json",
+    "carrierId": "OWNER_OPEN_SIGNAL_RECORD_V1_JSON",
+    "ownerOpenSignal": true,
+    "machineReadable": true
+  },
+  "issuedAtUtc": "2026-03-03T00:00:00Z",
+  "updatedAtUtc": "2026-03-03T00:00:00Z",
+  "status": "ACTIVE_CONTEXT"
+}

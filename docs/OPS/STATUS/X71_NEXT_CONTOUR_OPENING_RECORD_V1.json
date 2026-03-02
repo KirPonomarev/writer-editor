@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X71_NEXT_CONTOUR_OPENING_RECORD_V1",
+  "prevContourId": "X71",
+  "nextContourId": "X72",
+  "openingCondition": "READY",
+  "sourceStatusPacketBasename": "X71_STATUS_PACKET_V1.json",
+  "sourceSeq10GatePacketBasename": "X71_SEQ10_GATE_PACKET_V1.json",
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z"
+}

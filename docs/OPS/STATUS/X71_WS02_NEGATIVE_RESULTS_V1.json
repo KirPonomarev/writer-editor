@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X71_WS02_NEGATIVE_RESULTS_V1",
+  "ok": true,
+  "negativeResults": {
+    "QUEUE_ITEM_WITHOUT_QUEUE_ID_EXPECT_REJECT_TRUE": true,
+    "QUEUE_ITEM_WITH_INVALID_MAX_SIZE_EXPECT_REJECT_TRUE": true,
+    "QUEUE_ITEM_WITH_INVALID_OVERFLOW_EXPECT_REJECT_TRUE": true,
+    "DECLARED_EMPTY_TRUE_WITH_NON_EMPTY_ITEMS_EXPECT_REJECT_TRUE": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z"
+}

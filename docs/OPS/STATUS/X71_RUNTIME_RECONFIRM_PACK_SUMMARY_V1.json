@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X71_RUNTIME_RECONFIRM_PACK_SUMMARY_V1",
+  "ok": true,
+  "subgoals": {
+    "CI_OPS_INJECTION_RECONFIRM": true,
+    "DEPENDENCY_POLICY_RECONFIRM": true,
+    "HOTPATH_GUARD_RECONFIRM": true,
+    "OPTIONAL_U4_U5_DOCTOR_FIX_IF_TRIGGERED": "NOT_TRIGGERED"
+  },
+  "proofs": {
+    "ciOpsContractSuitePass": true,
+    "dependencyRemediationPolicyOk": true,
+    "ossPolicyCheckPass": true,
+    "hotpathAcceptanceGuardOk": true,
+    "perfBaselineOk": true,
+    "pathBoundaryGuardOk": true,
+    "driftUnresolvedP0CountZero": true
+  },
+  "optionalTriggerEvaluation": {
+    "u4TestsOk": 0,
+    "u4ProofOk": 0,
+    "u5TestsOk": 0,
+    "u5ProofOk": 0,
+    "doctorU4U5MismatchDetected": false
+  },
+  "scope": {
+    "scopeExpansionAttemptCount": 0,
+    "noScopeExpansion": true,
+    "noNewBlockingSurface": true
+  },
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z"
+}

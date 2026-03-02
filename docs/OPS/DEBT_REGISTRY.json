@@ -18,7 +18,7 @@
     },
     {
       "debtId": "DEBT:INV_QUEUE_POLICIES_DECLARED_EMPTY",
-      "active": true,
+      "active": false,
       "owner": "OPS_CANON",
       "severity": "D2",
       "createdAt": "2026-02-11",
