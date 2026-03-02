@@ -5,7 +5,7 @@ const os = require('os');
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const crypto = require('crypto');
-const { pathToFileURL } = require('url');
+const { pathToFileURL, fileURLToPath } = require('url');
 const fileManager = require('./utils/fileManager');
 const backupManager = require('./utils/backupManager');
 const { hasDirectoryContent, copyDirectoryContents } = require('./utils/fsHelpers');
@@ -27,6 +27,8 @@ const backupHashes = new Map();
 const isDevMode = process.argv.includes('--dev');
 const CSP_POLICY =
   "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'";
+const FILE_NAVIGATION_FAIL_CODE = 'E_PATH_BOUNDARY_VIOLATION';
+const FILE_NAVIGATION_FAIL_SIGNAL = 'E_RUNTIME_WIRING_BEFORE_STAGE';
 function logPerfStage(label) {
   if (!isDevMode) return;
   const elapsed = Math.round(performance.now() - launchT0);
@@ -264,10 +266,67 @@ function isFileUrl(url) {
   return typeof url === 'string' && url.startsWith('file://');
 }
 
+function resolveExistingPath(candidate) {
+  const normalized = typeof candidate === 'string' ? candidate.trim() : '';
+  if (!normalized) return '';
+  try {
+    return path.resolve(normalized);
+  } catch {
+    return '';
+  }
+}
+
+function getFilePathAllowlistRoots() {
+  const roots = new Set();
+  const candidates = [
+    getProjectRootPath(),
+    fileManager.getDocumentsPath(),
+    app ? app.getPath('userData') : '',
+  ];
+  for (const candidate of candidates) {
+    const resolved = resolveExistingPath(candidate);
+    if (resolved) {
+      roots.add(resolved);
+    }
+  }
+  return [...roots];
+}
+
+function isAllowedFilePath(candidatePath) {
+  const resolvedPath = resolveExistingPath(candidatePath);
+  if (!resolvedPath) return false;
+  const allowlistRoots = getFilePathAllowlistRoots();
+  if (!allowlistRoots.length) return false;
+  return allowlistRoots.some((rootPath) => (
+    resolvedPath === rootPath || isPathInside(rootPath, resolvedPath)
+  ));
+}
+
+function isAllowedFileNavigationUrl(url) {
+  if (!isFileUrl(url)) return false;
+  try {
+    const filePath = fileURLToPath(url);
+    return isAllowedFilePath(filePath);
+  } catch {
+    return false;
+  }
+}
+
 function blockExternalNavigation(event, url) {
-  if (!isFileUrl(url)) {
+  if (!isAllowedFileNavigationUrl(url)) {
     event.preventDefault();
   }
+}
+
+function makeAllowlistReject(reason, filePath = '') {
+  return {
+    ok: false,
+    error: 'Path boundary violation',
+    code: FILE_NAVIGATION_FAIL_CODE,
+    failSignal: FILE_NAVIGATION_FAIL_SIGNAL,
+    failReason: reason,
+    path: typeof filePath === 'string' ? filePath : '',
+  };
 }
 
 function installContentSecurityPolicy() {
@@ -1555,6 +1614,7 @@ async function openLastFile() {
   
   const lastFilePath = await loadLastFile();
   if (!lastFilePath) return 'noFile';
+  if (!isAllowedFilePath(lastFilePath)) return 'noFile';
   
   const exists = await fileExists(lastFilePath);
   if (!exists) return 'noFile';
@@ -2218,7 +2278,8 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
-      contextIsolation: true
+      contextIsolation: true,
+      sandbox: true
     }
   });
 
@@ -2322,6 +2383,10 @@ async function handleOpen() {
 
   if (!result.canceled && result.filePaths.length > 0) {
     const filePath = result.filePaths[0];
+    if (!isAllowedFilePath(filePath)) {
+      updateStatus('Ошибка');
+      return makeAllowlistReject('FILE_OPEN_PATH_NOT_ALLOWED', filePath);
+    }
     const fileResult = await fileManager.readFile(filePath);
     
     if (fileResult.success) {
@@ -2480,6 +2545,10 @@ async function handleSave() {
   const wasUntitled = currentFilePath === null;
 
   if (currentFilePath) {
+    if (!isAllowedFilePath(currentFilePath)) {
+      updateStatus('Ошибка');
+      return false;
+    }
     const saveResult = await queueDiskOperation(
       () => fileManager.writeFileAtomic(currentFilePath, content),
       'save existing file'
@@ -2508,6 +2577,10 @@ async function handleSave() {
     let filePath = result.filePath;
     if (!filePath.endsWith('.txt')) {
       filePath += '.txt';
+    }
+    if (!isAllowedFilePath(filePath)) {
+      updateStatus('Ошибка');
+      return false;
     }
 
     const saveResult = await queueDiskOperation(
@@ -2560,6 +2633,10 @@ async function handleSaveAs() {
     let filePath = result.filePath;
     if (!filePath.endsWith('.txt')) {
       filePath += '.txt';
+    }
+    if (!isAllowedFilePath(filePath)) {
+      updateStatus('Ошибка');
+      return false;
     }
 
     const saveResult = await queueDiskOperation(

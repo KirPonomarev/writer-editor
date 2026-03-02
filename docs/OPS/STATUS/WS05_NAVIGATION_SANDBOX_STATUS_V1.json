@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS05_EXECUTE_ONLY_FALSE_010",
+  "mode": "REPO_EXECUTION",
+  "ws05Executed": true,
+  "ws05WasFalseBeforeExecution": true,
+  "goalStatus": {
+    "ENFORCE_STRICT_FILE_NAVIGATION_ALLOWLIST": true,
+    "BLOCK_ARBITRARY_FILE_NAVIGATE_AND_EXTERNAL_OPEN": true,
+    "ENABLE_BROWSER_SANDBOX_TRUE_WITH_PRELOAD_COMPAT": true,
+    "KEEP_SCOPE_EXPANSION_ZERO": true
+  },
+  "dodStatus": {
+    "DOD_01_WS05_PASS_TRUE": true,
+    "DOD_02_ARBITRARY_NAVIGATION_REJECT_TRUE": true,
+    "DOD_03_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "DOD_04_SINGLE_COMMIT_CREATED_IF_WRITE_TRUE": true,
+    "DOD_05_NEXT_GATE_STATUS_GO_TO_NEXT_FALSE_ITEM_TRUE": true
+  },
+  "filesTarget": [
+    "main.js"
+  ],
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}
