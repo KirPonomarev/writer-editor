@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS09_EXECUTE_ONLY_FALSE_014",
+  "mode": "REPO_EXECUTION",
+  "negativeResults": {
+    "NEGATIVE_SET_01_SKIP_WITHOUT_REASON_CODE_EXPECT_REJECT": true,
+    "NEGATIVE_SET_02_HASH_DELTA_UNKNOWN_EXPECT_REJECT": true,
+    "NEGATIVE_SET_03_BOOLEAN_AMBIGUOUS_EXPECT_REJECT": true,
+    "NEGATIVE_SET_04_RUN_WITHOUT_TRIGGER_EXPECT_REJECT": true
+  },
+  "failSignal": "E_STAGE_PROMOTION_INVALID",
+  "details": {
+    "neg01FailureCode": "E_STAGE_PROMOTION_INVALID",
+    "neg02HashDeltaUnknown": true,
+    "neg03BooleanAmbiguous": true,
+    "neg04FailureCode": "E_STRICT_RUN_CAP_EXCEEDED"
+  },
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

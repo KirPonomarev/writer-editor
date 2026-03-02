@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS09_EXECUTE_ONLY_FALSE_014",
+  "mode": "REPO_EXECUTION",
+  "ws09Executed": true,
+  "ws09WasFalseBeforeExecution": true,
+  "goalStatus": {
+    "WS09_REQUIRED_BOOLEAN_FORMULA_ENFORCED": true,
+    "SKIP_ALLOWED_ONLY_WITH_REASON_CODE_AND_HASH_DELTA_FALSE": true,
+    "MODE_GUARD_ACTIVE_TRUE": true,
+    "STRICT_RUN_CAP_ACTIVE_TRUE": true,
+    "NO_SCOPE_EXPANSION": true
+  },
+  "dodStatus": {
+    "DOD_01_WS09_PASS_TRUE": true,
+    "DOD_02_WS09_DETERMINISTIC_TRUE": true,
+    "DOD_03_MODE_GUARD_VIOLATION_ZERO_TRUE": true,
+    "DOD_04_STRICT_CAP_ENFORCED_TRUE": true,
+    "DOD_05_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "DOD_06_SINGLE_COMMIT_CREATED_IF_WRITE_TRUE": true
+  },
+  "filesTarget": [
+    "ws09-skip-rule-state.mjs",
+    "ops-gate.mjs",
+    "doctor.mjs"
+  ],
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

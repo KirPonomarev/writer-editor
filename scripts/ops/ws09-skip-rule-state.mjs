@@ -11,10 +11,24 @@ function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-function parseBoolean(value) {
-  if (typeof value === 'boolean') return value;
+function parseBooleanStrict(value, fallback = false) {
+  if (typeof value === 'boolean') {
+    return { value, valid: true, provided: true };
+  }
+
   const normalized = normalizeString(value).toLowerCase();
-  return normalized === '1' || normalized === 'true' || normalized === 'yes' || normalized === 'on';
+  if (!normalized) {
+    return { value: Boolean(fallback), valid: true, provided: false };
+  }
+
+  if (normalized === '1' || normalized === 'true' || normalized === 'yes' || normalized === 'on') {
+    return { value: true, valid: true, provided: true };
+  }
+  if (normalized === '0' || normalized === 'false' || normalized === 'no' || normalized === 'off') {
+    return { value: false, valid: true, provided: true };
+  }
+
+  return { value: Boolean(fallback), valid: false, provided: true };
 }
 
 function isObjectRecord(value) {
@@ -49,9 +63,9 @@ function parseArgs(argv = process.argv.slice(2)) {
   const out = {
     json: false,
     reasonCodesPath: '',
-    promotionMode: false,
-    stageModeAttestationP0Touch: false,
-    hashDelta: false,
+    promotionMode: '',
+    stageModeAttestationP0Touch: '',
+    hashDelta: '',
     reasonCode: '',
   };
 
@@ -75,32 +89,32 @@ function parseArgs(argv = process.argv.slice(2)) {
     }
 
     if (arg === '--promotion-mode' && i + 1 < argv.length) {
-      out.promotionMode = parseBoolean(argv[i + 1]);
+      out.promotionMode = normalizeString(argv[i + 1]);
       i += 1;
       continue;
     }
     if (arg.startsWith('--promotion-mode=')) {
-      out.promotionMode = parseBoolean(arg.slice('--promotion-mode='.length));
+      out.promotionMode = normalizeString(arg.slice('--promotion-mode='.length));
       continue;
     }
 
     if (arg === '--stage-mode-attestation-p0-touch' && i + 1 < argv.length) {
-      out.stageModeAttestationP0Touch = parseBoolean(argv[i + 1]);
+      out.stageModeAttestationP0Touch = normalizeString(argv[i + 1]);
       i += 1;
       continue;
     }
     if (arg.startsWith('--stage-mode-attestation-p0-touch=')) {
-      out.stageModeAttestationP0Touch = parseBoolean(arg.slice('--stage-mode-attestation-p0-touch='.length));
+      out.stageModeAttestationP0Touch = normalizeString(arg.slice('--stage-mode-attestation-p0-touch='.length));
       continue;
     }
 
     if (arg === '--hash-delta' && i + 1 < argv.length) {
-      out.hashDelta = parseBoolean(argv[i + 1]);
+      out.hashDelta = normalizeString(argv[i + 1]);
       i += 1;
       continue;
     }
     if (arg.startsWith('--hash-delta=')) {
-      out.hashDelta = parseBoolean(arg.slice('--hash-delta='.length));
+      out.hashDelta = normalizeString(arg.slice('--hash-delta='.length));
       continue;
     }
 
@@ -121,15 +135,20 @@ function parseArgs(argv = process.argv.slice(2)) {
 export function evaluateWs09SkipRuleState(input = {}) {
   const reasonCodesPath = normalizeString(input.reasonCodesPath || DEFAULT_REASON_CODES_PATH) || DEFAULT_REASON_CODES_PATH;
   const reasonCodes = readReasonCodes(reasonCodesPath);
-  const promotionMode = parseBoolean(input.promotionMode);
-  const stageModeAttestationP0Touch = parseBoolean(input.stageModeAttestationP0Touch);
-  const hashDelta = parseBoolean(input.hashDelta);
+  const promotionModeState = parseBooleanStrict(input.promotionMode, false);
+  const stageModeAttestationP0TouchState = parseBooleanStrict(input.stageModeAttestationP0Touch, false);
+  const hashDeltaState = parseBooleanStrict(input.hashDelta, false);
+  const promotionMode = promotionModeState.value;
+  const stageModeAttestationP0Touch = stageModeAttestationP0TouchState.value;
+  const hashDelta = hashDeltaState.value;
   const reasonCode = normalizeString(input.reasonCode);
 
+  const booleanAmbiguous = !promotionModeState.valid || !stageModeAttestationP0TouchState.valid;
+  const hashDeltaUnknown = !hashDeltaState.valid;
   const ws09Required = promotionMode || stageModeAttestationP0Touch;
   const reasonCodeValid = reasonCodes.has(reasonCode);
-  const skipAllowed = !ws09Required && !hashDelta && reasonCodeValid;
-  const ok = ws09Required ? true : skipAllowed;
+  const skipAllowed = !booleanAmbiguous && !hashDeltaUnknown && !ws09Required && !hashDelta && reasonCodeValid;
+  const ok = !booleanAmbiguous && !hashDeltaUnknown && (ws09Required ? true : skipAllowed);
 
   return {
     ok,
@@ -144,6 +163,8 @@ export function evaluateWs09SkipRuleState(input = {}) {
       reasonCode,
       reasonCodeValid,
       skipAllowed,
+      booleanAmbiguous,
+      hashDeltaUnknown,
       reasonCodesPath,
       reasonCodeRegistrySize: reasonCodes.size,
     },
@@ -155,6 +176,8 @@ function printHuman(state) {
   console.log(`WS09_REQUIRED=${state.details.ws09Required ? 1 : 0}`);
   console.log(`WS09_SKIP_ALLOWED=${state.details.skipAllowed ? 1 : 0}`);
   console.log(`WS09_REASON_CODE_VALID=${state.details.reasonCodeValid ? 1 : 0}`);
+  console.log(`WS09_BOOLEAN_AMBIGUOUS=${state.details.booleanAmbiguous ? 1 : 0}`);
+  console.log(`WS09_HASH_DELTA_UNKNOWN=${state.details.hashDeltaUnknown ? 1 : 0}`);
   if (!state.ok) {
     console.log(`FAIL_REASON=${state.failReason}`);
   }
