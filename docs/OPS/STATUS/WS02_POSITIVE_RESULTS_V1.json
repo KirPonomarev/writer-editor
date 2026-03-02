@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS02_EXECUTE_ONLY_FALSE_007",
+  "positiveResults": {
+    "POSITIVE_SET_01_TEMP_TO_FINAL_SWITCH_ATOMIC_TRUE": true,
+    "POSITIVE_SET_02_COMPLETE_MARKER_REQUIRED_TRUE": true,
+    "POSITIVE_SET_03_RETRY_ON_PARTIAL_COPY_TRUE": true,
+    "POSITIVE_SET_04_MIGRATION_RECOVERY_PASS_TRUE": true,
+    "POSITIVE_SET_05_SCOPE_EXPANSION_ATTEMPT_COUNT_ZERO": true
+  },
+  "verification": {
+    "migrationHardeningTestsPass": true,
+    "atomicWriteRegressionTestsPass": true,
+    "scopeExpansionAttemptCount": 0
+  },
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

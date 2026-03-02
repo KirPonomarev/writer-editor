@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS02_EXECUTE_ONLY_FALSE_007",
+  "negativeResults": {
+    "NEGATIVE_SET_01_PARTIAL_COPY_POWER_LOSS_TARGET_NOT_COMPLETE_EXPECT_REJECT": {
+      "pass": true,
+      "evidence": "migration retry test with partial target and no complete marker"
+    },
+    "NEGATIVE_SET_02_TARGET_EXISTS_WITHOUT_COMPLETE_MARKER_EXPECT_RETRY_NOT_PASS": {
+      "pass": true,
+      "evidence": "target without marker no longer short-circuits as migrated"
+    },
+    "NEGATIVE_SET_03_MIGRATION_MARKED_COMPLETE_WITH_MISSING_DATA_EXPECT_REJECT": {
+      "pass": true,
+      "evidence": "marker present plus missing legacy entry triggers repair path"
+    }
+  },
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

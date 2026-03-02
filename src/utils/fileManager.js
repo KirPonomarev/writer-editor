@@ -3,7 +3,7 @@ const fsSync = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { app } = require('electron');
-const { hasDirectoryContent, copyDirectoryContents } = require('./fsHelpers');
+const { hasDirectoryContent, copyDirectoryContents, directoryContainsAllEntries } = require('./fsHelpers');
 
 const DOCUMENTS_FOLDER_NAME = 'craftsman';
 const LEGACY_DOCUMENTS_FOLDER_NAME = 'WriterEditor';
@@ -54,18 +54,37 @@ async function ensureDocumentsFolder() {
 
 async function migrateDocumentsFolder() {
   const documentsPath = app.getPath('documents');
+  return migrateDocumentsFolderForPaths({ documentsPath });
+}
+
+function buildMigrationTempPath(targetPath) {
+  const suffix = `${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+  return `${targetPath}.tmp-${suffix}`;
+}
+
+function buildMigrationBackupPath(targetPath) {
+  const suffix = `${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+  return `${targetPath}.stale-${suffix}`;
+}
+
+async function removePathSafe(targetPath) {
+  try {
+    await fs.rm(targetPath, { recursive: true, force: true });
+  } catch {}
+}
+
+async function migrateDocumentsFolderForPaths({ documentsPath }) {
   const targetPath = path.join(documentsPath, DOCUMENTS_FOLDER_NAME);
   const legacyPath = path.join(documentsPath, LEGACY_DOCUMENTS_FOLDER_NAME);
   const markerPath = path.join(targetPath, MIGRATION_MARKER);
+  const targetHasCompleteData = directoryContainsAllEntries(legacyPath, targetPath);
 
   if (fsSync.existsSync(markerPath)) {
-    logMigration('documents migration marker present, skipping');
-    return targetPath;
-  }
-
-  if (hasDirectoryContent(targetPath)) {
-    logMigration('craftsman documents already populated, skipping migration');
-    return targetPath;
+    if (!hasDirectoryContent(legacyPath) || targetHasCompleteData) {
+      logMigration('documents migration marker present, skipping');
+      return targetPath;
+    }
+    logMigration('documents migration marker present but target incomplete, retrying migration');
   }
 
   if (!hasDirectoryContent(legacyPath)) {
@@ -73,12 +92,40 @@ async function migrateDocumentsFolder() {
     return targetPath;
   }
 
+  const targetHasAnyContent = hasDirectoryContent(targetPath);
+  const tempPath = buildMigrationTempPath(targetPath);
+  const backupPath = targetHasAnyContent ? buildMigrationBackupPath(targetPath) : '';
+  const tempMarkerPath = path.join(tempPath, MIGRATION_MARKER);
+  let targetMovedToBackup = false;
+
   try {
-    logMigration(`copying documents from ${legacyPath} → ${targetPath}`);
-    await copyDirectoryContents(legacyPath, targetPath);
-    await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');
+    await removePathSafe(tempPath);
+    await fs.mkdir(tempPath, { recursive: true });
+
+    if (targetHasAnyContent) {
+      // Preserve potentially user-created files while repairing partial migration.
+      await copyDirectoryContents(targetPath, tempPath, { overwriteExisting: true });
+    }
+    await copyDirectoryContents(legacyPath, tempPath, { overwriteExisting: false });
+    await fs.writeFile(tempMarkerPath, 'migrated from WriterEditor', 'utf8');
+
+    if (targetHasAnyContent && fsSync.existsSync(targetPath)) {
+      await fs.rename(targetPath, backupPath);
+      targetMovedToBackup = true;
+    }
+    await fs.rename(tempPath, targetPath);
+
+    if (targetMovedToBackup) {
+      await removePathSafe(backupPath);
+    }
     logMigration('documents migration complete');
   } catch (error) {
+    await removePathSafe(tempPath);
+    if (targetMovedToBackup && !fsSync.existsSync(targetPath)) {
+      try {
+        await fs.rename(backupPath, targetPath);
+      } catch {}
+    }
     logMigration(`documents migration failed: ${error.message}`);
   }
 
@@ -177,6 +224,7 @@ module.exports = {
   getDocumentsPath,
   ensureDocumentsFolder,
   migrateDocumentsFolder,
+  migrateDocumentsFolderForPaths,
   readFile,
   writeFile,
   writeFileAtomic
