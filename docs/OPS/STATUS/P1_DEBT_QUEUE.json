@@ -72,7 +72,7 @@
     {
       "id": "P1-PATH-BOUNDARY-GUARD",
       "title": "Centralized path-boundary guard for IPC/file operations",
-      "status": "CLOSED_WITH_EXCEPTIONS",
+      "status": "CLOSED",
       "priority": "P1",
       "risk": "INTEGRITY",
       "owner": "HO",
@@ -81,17 +81,24 @@
         "Path traversal and outside-root access attempts are covered by automated tests and fail closed."
       ],
       "evidence": [
-        "docs/OPS/STATUS/P1_DEBT_QUEUE.json"
+        "docs/OPS/STATUS/P1_DEBT_QUEUE.json",
+        "scripts/ops/path-boundary-guard-state.mjs",
+        "test/contracts/path-boundary-guard.contract.test.js",
+        "docs/OPS/EVIDENCE/SECTOR_02/TICKET_B/path-boundary-negative-bypass-tests.json"
       ],
       "checks": [
         "node scripts/doctor.mjs --strict",
+        "node scripts/ops/path-boundary-guard-state.mjs --json",
         "npm run dev:fast"
       ],
       "notes": [
         "ownerAssigned=HO",
         "expiryUtc=2026-06-30T00:00:00.000Z",
         "justification=Out of scope for SECTOR_01 A-to-D; accepted temporarily to prevent Sector DONE deadlock.",
-        "monitoringNote=Reopen as OPEN in next sector if still applicable; do not let expiry lapse."
+        "monitoringNote=Reopen as OPEN in next sector if still applicable; do not let expiry lapse.",
+        "mitigationPlan=Centralized guard enforced in runtime and protected by contract-negative coverage.",
+        "exceptionClosureTicket=TZ_X71_WS03_PATH_BOUNDARY_EXCEPTION_BURNDOWN",
+        "exceptionClosedAtUtc=2026-03-03T00:00:00.000Z"
       ]
     }
   ]

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X71_PATH_BOUNDARY_EXCEPTION_STATE_V1",
+  "ok": true,
+  "exceptionState": {
+    "itemId": "P1-PATH-BOUNDARY-GUARD",
+    "statusBefore": "CLOSED_WITH_EXCEPTIONS",
+    "statusAfter": "CLOSED",
+    "ownerPresent": true,
+    "expiryPresent": true,
+    "testEvidencePresent": true,
+    "exceptionLeftUnbounded": false
+  },
+  "sourceBindings": {
+    "queuePath": "docs/OPS/STATUS/P1_DEBT_QUEUE.json",
+    "guardStateProof": "scripts/ops/path-boundary-guard-state.mjs",
+    "negativeContractTest": "test/contracts/path-boundary-guard.contract.test.js"
+  },
+  "positiveResults": {
+    "PATH_BOUNDARY_GUARD_STATE_CONFIRMED_TRUE": true,
+    "PATH_BOUNDARY_EXCEPTION_NOT_LEFT_UNBOUNDED_TRUE": true,
+    "EXCEPTION_POLICY_CONSISTENT_TRUE": true
+  },
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z"
+}
