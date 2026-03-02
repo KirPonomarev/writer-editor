@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS03_EXECUTE_ONLY_FALSE_008",
+  "mode": "REPO_EXECUTION",
+  "ws03Executed": true,
+  "ws03WasFalseBeforeExecution": true,
+  "goalStatus": {
+    "MISSING_ATTESTATION_FAIL_IN_RELEASE_PROMOTION": true,
+    "REMOVE_DEFAULT_PASS_FOR_MISSING_STATE": true,
+    "KEEP_SCOPE_EXPANSION_ZERO": true
+  },
+  "dodStatus": {
+    "DOD_01_MISSING_ATTESTATION_FAIL_IN_RELEASE_PROMOTION_TRUE": true,
+    "DOD_02_NO_DEFAULT_PASS_FOR_MISSING_STATE_TRUE": true,
+    "DOD_03_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "DOD_04_SINGLE_COMMIT_CREATED_IF_WRITE_TRUE": true
+  },
+  "filesTarget": [
+    "verify-attestation-state.mjs"
+  ],
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

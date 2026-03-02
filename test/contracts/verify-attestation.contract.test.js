@@ -15,9 +15,9 @@ function loadModule() {
   return modulePromise;
 }
 
-test('verify attestation state: baseline-attestation-is-valid-with-signature-gate', async () => {
+test('verify attestation state: baseline-attestation-is-valid-with-signature-gate-in-dev', async () => {
   const { evaluateVerifyAttestationState } = await loadModule();
-  const state = evaluateVerifyAttestationState();
+  const state = evaluateVerifyAttestationState({ profile: 'dev' });
   assert.equal(state.ok, true);
   assert.equal(state.VERIFY_ATTESTATION_OK, 1);
   assert.equal(state.code, '');
@@ -48,4 +48,22 @@ test('verify attestation state: wrong-signer-fails-signature-gate', async () => 
   assert.equal(state.code, 'E_VERIFY_ATTESTATION_INVALID');
   assert.equal(state.details.signatureTokenOk, 0);
   assert.equal(state.details.signatureFailReason, 'WRONG_SIGNER_REJECT');
+});
+
+test('verify attestation state: missing-attestation-fails-in-release', async () => {
+  const { evaluateVerifyAttestationState } = await loadModule();
+  const state = evaluateVerifyAttestationState({ profile: 'release' });
+  assert.equal(state.ok, false);
+  assert.equal(state.VERIFY_ATTESTATION_OK, 0);
+  assert.equal(state.code, 'E_VERIFY_ATTESTATION_INVALID');
+  assert.equal(state.details.failReason, 'MISSING_ATTESTATION_STATE');
+});
+
+test('verify attestation state: missing-attestation-fails-in-promotion', async () => {
+  const { evaluateVerifyAttestationState } = await loadModule();
+  const state = evaluateVerifyAttestationState({ profile: 'dev', promotionMode: true });
+  assert.equal(state.ok, false);
+  assert.equal(state.VERIFY_ATTESTATION_OK, 0);
+  assert.equal(state.code, 'E_VERIFY_ATTESTATION_INVALID');
+  assert.equal(state.details.failReason, 'MISSING_ATTESTATION_STATE');
 });

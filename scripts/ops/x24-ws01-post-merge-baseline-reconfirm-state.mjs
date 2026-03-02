@@ -390,7 +390,7 @@ function validateAttestationChain({ repoRoot, stabilityPacketDoc }) {
   });
 
   const signatureState = evaluateAttestationSignatureState({ repoRoot });
-  const verifyState = evaluateVerifyAttestationState({ repoRoot });
+  const verifyState = evaluateVerifyAttestationState({ repoRoot, profile: 'release', promotionMode: false });
 
   const tokenChecks = [];
   for (const tokenId of stabilityPacketDoc.requiredAttestationTokens) {

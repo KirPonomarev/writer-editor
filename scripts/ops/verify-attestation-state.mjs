@@ -61,8 +61,53 @@ function getDefaultAttestationState() {
   });
 }
 
+function normalizeBool(value) {
+  if (value === true || value === false) return value;
+  if (typeof value === 'number') return value === 1;
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    return normalized === '1' || normalized === 'true' || normalized === 'yes';
+  }
+  return false;
+}
+
+function resolveExecutionScope(input = {}) {
+  const profile = String(input.profile || input.executionProfile || '').trim().toLowerCase();
+  const promotionMode = normalizeBool(input.promotionMode);
+  const releaseMode = profile === 'release';
+  return {
+    profile,
+    promotionMode,
+    releasePromotionMode: releaseMode || promotionMode,
+  };
+}
+
 export function evaluateVerifyAttestationState(input = {}) {
-  const attestationState = isObjectRecord(input.attestationState)
+  const scope = resolveExecutionScope(input);
+  const hasAttestationState = isObjectRecord(input.attestationState);
+
+  if (!hasAttestationState && scope.releasePromotionMode) {
+    return {
+      ok: false,
+      [TOKEN_NAME]: 0,
+      code: FAIL_CODE,
+      details: {
+        emitted: 0,
+        verifyOk: 0,
+        attestationKind: '',
+        taskId: '',
+        verifyPath: '',
+        signatureTokenOk: 0,
+        signatureFailCode: '',
+        signatureFailReason: '',
+        profile: scope.profile || '',
+        promotionMode: scope.promotionMode ? 1 : 0,
+        failReason: 'MISSING_ATTESTATION_STATE',
+      },
+    };
+  }
+
+  const attestationState = hasAttestationState
     ? input.attestationState
     : getDefaultAttestationState();
 
@@ -98,6 +143,9 @@ export function evaluateVerifyAttestationState(input = {}) {
       signatureTokenOk: signatureState.ATTESTATION_SIGNATURE_OK,
       signatureFailCode: signatureState.code,
       signatureFailReason: signatureState.failReason || '',
+      profile: scope.profile || '',
+      promotionMode: scope.promotionMode ? 1 : 0,
+      failReason: ok ? '' : 'ATTESTATION_STATE_INVALID',
     },
   };
 }
