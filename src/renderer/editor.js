@@ -1803,7 +1803,8 @@ function setEditorZoom(value, persist = true) {
   const quantized = Math.round(value / EDITOR_ZOOM_STEP) * EDITOR_ZOOM_STEP;
   const nextZoom = Math.max(EDITOR_ZOOM_MIN, Math.min(EDITOR_ZOOM_MAX, quantized));
   editorZoom = nextZoom;
-  document.documentElement.style.setProperty('--editor-zoom', String(editorZoom));
+  const metrics = getPageMetrics({ pageWidthMm: initialPageWidthMm, zoom: editorZoom });
+  applyPageViewCssVars(metrics);
   updateZoomValue();
   if (!persist) {
     return;
