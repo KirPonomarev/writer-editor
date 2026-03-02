@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X72_WS03_NEGATIVE_RESULTS_V1",
+  "ok": true,
+  "negativeResults": {
+    "HASH_CONFLICT_EXPECT_REJECT_TRUE": true,
+    "LOCK_CHAIN_BREAK_EXPECT_REJECT_TRUE": true,
+    "NON_REPRODUCIBLE_HASH_STATE_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "hashConflictRejectExitCode": 1,
+    "lockChainBreakRejectExitCode": 1,
+    "nonReproducibleRejectExitCode": 1,
+    "hashConflictActual": "HASH_MISMATCH_OR_FILE_HASH_CONFLICT",
+    "lockChainBreakActual": "LOCK_INPUT_HASHES_KEYS_MISMATCH",
+    "nonReproducibleActual": "LOCK_INPUTS_NOT_SORTED",
+    "failSignalCode": "E_CONFIG_HASH_CONFLICT"
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-02T23:55:37Z"
+}
