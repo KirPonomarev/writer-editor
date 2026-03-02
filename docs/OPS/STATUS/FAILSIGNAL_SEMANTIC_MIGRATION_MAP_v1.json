@@ -125,6 +125,70 @@
       "expectedClaimDisposition": "blocking",
       "registryReleaseDisposition": "advisory",
       "rationale": "legacy_reconcile_alignment"
+    },
+    {
+      "claimId": "CRITICAL_CLAIM_MATRIX_VALID",
+      "requiredToken": "CRITICAL_CLAIM_MATRIX_OK",
+      "failSignal": "E_CRITICAL_CLAIM_MATRIX_INVALID",
+      "expectedClaimDisposition": "blocking",
+      "registryReleaseDisposition": "advisory",
+      "rationale": "legacy_reconcile_alignment"
+    },
+    {
+      "claimId": "E2E_CRITICAL_USER_PATH",
+      "requiredToken": "E2E_CRITICAL_USER_PATH_OK",
+      "failSignal": "E_E2E_CRITICAL_USER_PATH_NOT_OK",
+      "expectedClaimDisposition": "advisory",
+      "registryReleaseDisposition": "blocking",
+      "rationale": "legacy_reconcile_alignment"
+    },
+    {
+      "claimId": "MIGRATIONS_ATOMICITY",
+      "requiredToken": "MIGRATIONS_ATOMICITY_OK",
+      "failSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "expectedClaimDisposition": "advisory",
+      "registryReleaseDisposition": "blocking",
+      "rationale": "legacy_reconcile_alignment"
+    },
+    {
+      "claimId": "MIGRATIONS_POLICY",
+      "requiredToken": "MIGRATIONS_POLICY_OK",
+      "failSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "expectedClaimDisposition": "advisory",
+      "registryReleaseDisposition": "blocking",
+      "rationale": "legacy_reconcile_alignment"
+    },
+    {
+      "claimId": "NORMALIZATION_XPLAT",
+      "requiredToken": "NORMALIZATION_XPLAT_OK",
+      "failSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "expectedClaimDisposition": "advisory",
+      "registryReleaseDisposition": "blocking",
+      "rationale": "legacy_reconcile_alignment"
+    },
+    {
+      "claimId": "ORIGIN_SMOKE",
+      "requiredToken": "ORIGIN_SMOKE_OK",
+      "failSignal": "E_NETWORK_ORIGIN_UNAVAILABLE",
+      "expectedClaimDisposition": "blocking",
+      "registryReleaseDisposition": "advisory",
+      "rationale": "legacy_reconcile_alignment"
+    },
+    {
+      "claimId": "SINGLE_VERIFY_CONTOUR_ENFORCED",
+      "requiredToken": "SINGLE_VERIFY_CONTOUR_ENFORCED_OK",
+      "failSignal": "E_BLOCKING_TOKEN_UNBOUND",
+      "expectedClaimDisposition": "advisory",
+      "registryReleaseDisposition": "blocking",
+      "rationale": "legacy_reconcile_alignment"
+    },
+    {
+      "claimId": "TOKEN_SOURCE_CONFLICT_DETECTION",
+      "requiredToken": "TOKEN_SOURCE_CONFLICT_OK",
+      "failSignal": "E_TOKEN_SOURCE_CONFLICT",
+      "expectedClaimDisposition": "advisory",
+      "registryReleaseDisposition": "blocking",
+      "rationale": "legacy_reconcile_alignment"
     }
   ]
 }
