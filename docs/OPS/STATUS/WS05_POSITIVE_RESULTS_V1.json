@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS05_EXECUTE_ONLY_FALSE_010",
+  "mode": "REPO_EXECUTION",
+  "positiveResults": {
+    "POSITIVE_SET_01_ALLOWLIST_ONLY_TRUE": true,
+    "POSITIVE_SET_02_SANDBOX_TRUE": true,
+    "POSITIVE_SET_03_PRELOAD_COMPAT_TRUE": true,
+    "POSITIVE_SET_04_SCOPE_EXPANSION_ATTEMPT_COUNT_ZERO_TRUE": true
+  },
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

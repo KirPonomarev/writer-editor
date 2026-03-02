@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS08_EXECUTE_ONLY_FALSE_013",
+  "mode": "REPO_EXECUTION",
+  "ws08Executed": true,
+  "ws08WasFalseBeforeExecution": true,
+  "goalStatus": {
+    "REQUIRED_SET_FAILSIGNAL_MODE_SYNC_GUARD_ENFORCED": true,
+    "FAST_PRECHECK_NOT_RELEASE_GATE_ASSERTION_ENFORCED": true,
+    "MANUAL_DRIFT_REJECTED": true,
+    "NO_SCOPE_EXPANSION": true
+  },
+  "dodStatus": {
+    "DOD_01_WS08_PASS_TRUE": true,
+    "DOD_02_REQUIRED_SET_MODE_SYNC_TRUE": true,
+    "DOD_03_FAST_PRECHECK_NOT_RELEASE_GATE_ASSERTION_TRUE": true,
+    "DOD_04_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "DOD_05_SINGLE_COMMIT_CREATED_IF_WRITE_TRUE": true
+  },
+  "filesTarget": [
+    "generate-required-token-set.mjs",
+    "failsignal-mode-sync-automation-state.mjs",
+    "check-merge-readiness.mjs"
+  ],
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

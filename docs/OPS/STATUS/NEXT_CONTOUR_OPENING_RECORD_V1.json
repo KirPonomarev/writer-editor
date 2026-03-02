@@ -1,37 +1,38 @@
 {
-  "ticketId": "TZ_NEXT_CONTOUR_OPENING_001",
+  "ticketId": "TZ_X68_NEXT_CONTOUR_OPENING_001",
   "schemaVersion": 1,
   "status": "READY",
-  "priority": "P3",
+  "priority": "P1",
   "mode": "IMPLEMENTATION",
-  "owner": "CODEX",
-  "createdAtUtc": "2026-02-28T15:34:35.361Z",
+  "owner": "KIRILL_PLUS_CODEX",
+  "createdAtUtc": "2026-03-02T00:00:00Z",
   "dependsOn": {
-    "p2CloseoutArtifactRef": "docs/OPS/STATUS/P2_CONTOUR_CLOSEOUT_SIGNED_V1.json",
-    "requiredGate": "GO_IF_P2_CLOSEOUT_ARTIFACT_SIGNED",
+    "x68CloseoutArtifactRef": "docs/OPS/STATUS/WS99_STATUS_PACKET_V1.json",
+    "requiredGate": "GO_TO_SEQ10_OWNER_MERGE_EXECUTION",
     "gateSatisfied": true
   },
-  "objective": "OPEN_NEXT_CONTOUR_QUEUE_WITH_ZERO_BLOCKING_SURFACE_EXPANSION",
+  "objective": "OPEN_NEXT_CONTOUR_WITH_P0_CLOSED_AND_NO_BLOCKING_SURFACE_EXPANSION",
   "scope": {
     "in": [
-      "NEXT_CONTOUR_ALIGNMENT",
-      "QUEUE_PRIORITIZATION",
-      "EVIDENCE_MAINTENANCE",
-      "PERFORMANCE_AND_PARITY_CONTINUATION"
+      "SEQ10_OWNER_MERGE_EXECUTION_STANDARD_PR_PATH",
+      "SEQ11_POST_MERGE_RECONFIRM_AND_POINTER_STABILITY",
+      "P1_QUEUE_START_AFTER_P0_ACCEPTANCE"
     ],
     "out": [
       "NEW_BLOCKING_SURFACE",
-      "NETWORK_TRANSPORT_FEATURE_WORK",
-      "UI_REDESIGN",
-      "NON_CANON_REFACTOR"
+      "NETWORK_COLLAB_BEFORE_X4",
+      "LARGE_UI_REDESIGN",
+      "BIG_CANON_REVISION_BEFORE_P0_CLOSE"
     ]
   },
   "entryChecks": {
     "activeCanonLockCheckPass": true,
+    "p0RequiredVectorTrue": true,
+    "ws02ToWs09PassConfirmed": true,
+    "worktreeCleanBeforeWs99": true,
     "blockingSurfaceExpansion": false,
     "advisoryAsBlockingDrift": "ZERO",
-    "offlineReleaseIntegrityLocallyVerifiable": true,
-    "p2ContourClosed": true
+    "offlineReleaseIntegrityLocallyVerifiable": true
   },
   "executionGate": "GO"
 }

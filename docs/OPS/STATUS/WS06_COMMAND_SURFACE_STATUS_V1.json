@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS06_EXECUTE_ONLY_FALSE_011",
+  "mode": "REPO_EXECUTION",
+  "ws06Executed": true,
+  "ws06WasFalseBeforeExecution": true,
+  "goalStatus": {
+    "HARDEN_COMMAND_SURFACE_AGAINST_ALIAS_BRACKET_DYNAMIC_BYPASS": true,
+    "ENFORCE_FIVE_BYPASS_NEGATIVES": true,
+    "KEEP_SCOPE_EXPANSION_ZERO": true
+  },
+  "dodStatus": {
+    "DOD_01_WS06_PASS_TRUE": true,
+    "DOD_02_FIVE_BYPASS_NEGATIVES_PASS_TRUE": true,
+    "DOD_03_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "DOD_04_SINGLE_COMMIT_CREATED_IF_WRITE_TRUE": true,
+    "DOD_05_NEXT_GATE_STATUS_GO_TO_NEXT_FALSE_ITEM_TRUE": true
+  },
+  "filesTarget": [
+    "command-surface-bus-only.contract.test.js"
+  ],
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

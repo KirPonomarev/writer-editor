@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS08_EXECUTE_ONLY_FALSE_013",
+  "ws08PassTrueOrFalse": true,
+  "finalGateStatus": "GO_TO_NEXT_FALSE_ITEM_IN_ORDER",
+  "nextGateOnPass": "GO_TO_NEXT_FALSE_ITEM_IN_ORDER",
+  "nextGateOnFail": "HOLD_AND_FIX_WS08_ONLY",
+  "p0ItemsFalseListUpdated": [
+    "P0_08",
+    "P0_10"
+  ],
+  "notes": "WS08 closed; required set mode sync and fast precheck non-substitution assertions verified with negative scenarios",
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

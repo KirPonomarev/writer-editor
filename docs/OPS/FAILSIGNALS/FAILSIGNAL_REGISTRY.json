@@ -329,6 +329,20 @@
     },
     {
       "blocking": true,
+      "code": "E_EXECUTION_MODE_INVALID",
+      "modeMatrix": {
+        "prCore": "blocking",
+        "release": "blocking",
+        "promotion": "blocking"
+      },
+      "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
+      "rationale": "Execution mode must be explicit and valid; missing or invalid mode is rejected deterministically.",
+      "sourceBinding": "x68_bootstrap_repair_005",
+      "tier": "release",
+      "precedence": 24
+    },
+    {
+      "blocking": true,
       "code": "E_EXECUTION_PROFILE_INVALID",
       "modeMatrix": {
         "prCore": "blocking",
@@ -336,7 +350,7 @@
         "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 24,
+      "precedence": 25,
       "rationale": "P0-02 reconcile registration for E_EXECUTION_PROFILE_INVALID; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -345,7 +359,7 @@
       "blocking": true,
       "code": "E_FAILSIGNAL_DUPLICATE",
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#duplicate-code",
-      "precedence": 25,
+      "precedence": 26,
       "rationale": "Duplicate failSignal code in registry breaks deterministic resolver behavior.",
       "tier": "release",
       "modeMatrix": {
@@ -358,7 +372,7 @@
       "blocking": true,
       "code": "E_FAILSIGNAL_NEGATIVE_TEST_MISSING",
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#missing-negative-test-ref",
-      "precedence": 26,
+      "precedence": 27,
       "rationale": "Every failSignal must be covered by an explicit negative contract scenario.",
       "tier": "release",
       "modeMatrix": {
@@ -371,7 +385,7 @@
       "blocking": true,
       "code": "E_FAILSIGNAL_PRECEDENCE_INVALID",
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#precedence-invalid",
-      "precedence": 27,
+      "precedence": 28,
       "rationale": "Precedence metadata must remain well-formed and deterministic.",
       "tier": "release",
       "modeMatrix": {
@@ -384,7 +398,7 @@
       "blocking": true,
       "code": "E_FAILSIGNAL_REGISTRY_INVALID",
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 28,
+      "precedence": 29,
       "rationale": "FailSignal registry shape and metadata must stay deterministic and machine-verifiable.",
       "tier": "release",
       "modeMatrix": {
@@ -402,7 +416,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 29,
+      "precedence": 30,
       "rationale": "P0-02 reconcile registration for E_GOVERNANCE_STRICT_FAIL; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -416,7 +430,7 @@
         "release": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 30,
+      "precedence": 31,
       "rationale": "P0-02 reconcile registration for E_HEAD_BINDING_INVALID; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -430,7 +444,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/law-path-canon-no-fallback.contract.test.js#promotion-mode-broken-law-path-fails-while-release-warns",
-      "precedence": 31,
+      "precedence": 32,
       "rationale": "LAW path canon drift is advisory in PR/release and promotion-blocking to keep all LAW-bound checks pinned to a single SSOT path without alternate routing.",
       "tier": "release"
     },
@@ -443,7 +457,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 32,
+      "precedence": 33,
       "rationale": "P0-02 reconcile registration for E_LOSSLESS_MAP_DRIFT; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -457,7 +471,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 33,
+      "precedence": 34,
       "rationale": "P0-02 reconcile registration for E_MACOS_SIGNING_READINESS_FAIL; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -471,7 +485,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/menu-artifact-export-and-runtime-verify.contract.test.js#tamper-artifact-release-warns-and-promotion-fails",
-      "precedence": 34,
+      "precedence": 35,
       "rationale": "Menu artifact hash/lock mismatch is advisory in PR/release but promotion-blocking to prevent shipping tampered or drifted menu artifacts.",
       "tier": "release"
     },
@@ -484,7 +498,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/menu-config-normalization.contract.test.js#negative-string-enabledwhen-is-rejected",
-      "precedence": 35,
+      "precedence": 36,
       "rationale": "Menu normalization is advisory in PR/release but promotion-blocking when deterministic canonical output cannot be produced.",
       "tier": "release"
     },
@@ -497,7 +511,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/menu-overlay-stack-and-plugin-overlays.contract.test.js#mode-semantics-release-warn-and-promotion-fail-on-violations",
-      "precedence": 36,
+      "precedence": 37,
       "rationale": "Overlay stack ordering and merge determinism remain advisory in PR/release but promotion-blocking to prevent menu drift across overlay layers.",
       "tier": "release"
     },
@@ -510,7 +524,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/menu-runtime-artifact-first-and-equivalence.contract.test.js#runtime-equivalent-check-release-warns-and-promotion-fails-on-mismatch",
-      "precedence": 37,
+      "precedence": 38,
       "rationale": "Runtime menu must consume normalized artifact deterministically; runtime/ops divergence remains advisory in PR/release and blocks promotion.",
       "tier": "release"
     },
@@ -523,7 +537,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/menu-snapshot-freeze-promotion.contract.test.js#snapshot-check-release-warns-and-promotion-fails-on-mismatch",
-      "precedence": 38,
+      "precedence": 39,
       "rationale": "Menu snapshot mismatch is advisory in PR/release but promotion-blocking to keep shipped menu evidence tied to a frozen deterministic snapshot.",
       "tier": "release"
     },
@@ -536,7 +550,7 @@
         "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 39,
+      "precedence": 40,
       "rationale": "P0-02 reconcile registration for E_MERGE_BYPASS_ATTEMPT; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -545,7 +559,7 @@
       "blocking": false,
       "code": "E_NETWORK_ORIGIN_UNAVAILABLE",
       "negativeTestRef": "test/contracts/origin-smoke.contract.test.js#unavailable-origin-fails-with-canonical-code",
-      "precedence": 40,
+      "precedence": 41,
       "rationale": "Origin availability smoke failure means origin binding cannot be verified and must block release gates.",
       "tier": "release",
       "modeMatrix": {
@@ -558,7 +572,7 @@
       "blocking": true,
       "code": "E_PATH_BOUNDARY_VIOLATION",
       "negativeTestRef": "test/contracts/path-boundary-guard.contract.test.js#parent-segment-negative",
-      "precedence": 41,
+      "precedence": 42,
       "rationale": "Path payloads violating centralized boundary rules can bypass filesystem safety and must fail.",
       "tier": "release",
       "modeMatrix": {
@@ -576,7 +590,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 42,
+      "precedence": 43,
       "rationale": "P0-02 reconcile registration for E_PERF_BASELINE_NOT_OK; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -590,7 +604,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/perf-ci-promotion-mode.contract.test.js#promotion-mode-regression-breach",
-      "precedence": 43,
+      "precedence": 44,
       "rationale": "Perf baseline delta breach is advisory for release but must block promotion to prevent stale performance regressions.",
       "tier": "release"
     },
@@ -603,7 +617,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/menu-overlay-stack-and-plugin-overlays.contract.test.js#plugin-data-only-policy-negative-pack",
-      "precedence": 44,
+      "precedence": 45,
       "rationale": "Plugin menu overlays are data-only by policy; executable or non-canonical overlay payloads are advisory in release and promotion-blocking.",
       "tier": "release"
     },
@@ -611,7 +625,7 @@
       "blocking": false,
       "code": "E_PRE_UI_CONTOUR_DIRTY_WORKTREE",
       "negativeTestRef": "test/contracts/pre-ui-ops-contour-close.contract.test.js#dirty-worktree-negative",
-      "precedence": 45,
+      "precedence": 46,
       "rationale": "Pre-UI contour close token is advisory by default and should fail when worktree is not clean.",
       "tier": "release",
       "modeMatrix": {
@@ -624,7 +638,7 @@
       "blocking": false,
       "code": "E_PRE_UI_CONTOUR_HEAD_ORIGIN_MISMATCH",
       "negativeTestRef": "test/contracts/pre-ui-ops-contour-close.contract.test.js#head-origin-mismatch-negative",
-      "precedence": 46,
+      "precedence": 47,
       "rationale": "Pre-UI contour close token is advisory by default and should fail when head/origin pointers diverge.",
       "tier": "release",
       "modeMatrix": {
@@ -637,7 +651,7 @@
       "blocking": false,
       "code": "E_PRE_UI_CONTOUR_RECORD_INVALID",
       "negativeTestRef": "test/contracts/pre-ui-ops-contour-close.contract.test.js#invalid-shape-negative",
-      "precedence": 47,
+      "precedence": 48,
       "rationale": "Contour close record must match schema and required metadata before it can be used as evidence.",
       "tier": "release",
       "modeMatrix": {
@@ -650,7 +664,7 @@
       "blocking": false,
       "code": "E_PRE_UI_CONTOUR_RECORD_MISSING",
       "negativeTestRef": "test/contracts/pre-ui-ops-contour-close.contract.test.js#missing-record-negative",
-      "precedence": 48,
+      "precedence": 49,
       "rationale": "Contour close record is missing so closure evidence cannot be established.",
       "tier": "release",
       "modeMatrix": {
@@ -663,7 +677,7 @@
       "blocking": false,
       "code": "E_PRE_UI_CONTOUR_REQUIRED_TOKENS_FAIL",
       "negativeTestRef": "test/contracts/pre-ui-ops-contour-close.contract.test.js#required-token-fail-negative",
-      "precedence": 49,
+      "precedence": 50,
       "rationale": "Pre-UI contour required token set exists but one or more required checks are red.",
       "tier": "release",
       "modeMatrix": {
@@ -676,7 +690,7 @@
       "blocking": false,
       "code": "E_PRE_UI_CONTOUR_REQUIRED_TOKENS_MISSING",
       "negativeTestRef": "test/contracts/pre-ui-ops-contour-close.contract.test.js#required-token-missing-negative",
-      "precedence": 50,
+      "precedence": 51,
       "rationale": "Pre-UI contour required token declaration references missing token IDs.",
       "tier": "release",
       "modeMatrix": {
@@ -694,7 +708,7 @@
         "release": "blocking"
       },
       "negativeTestRef": "test/contracts/prompt-layer-single-source.contract.test.js#promotion-layer-emission-outside-run-wave-is-rejected",
-      "precedence": 51,
+      "precedence": 52,
       "rationale": "Prompt-layer marker policy must remain single-source and forbid repo-layer emission to prevent false-green execution provenance.",
       "sourceBinding": "scripts/ops/run-wave.mjs + scripts/contracts/check-codex-prompt-mode.mjs",
       "tier": "release"
@@ -708,7 +722,7 @@
         "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 52,
+      "precedence": 53,
       "rationale": "P0-02 reconcile registration for E_PROOFHOOK_TAMPER_DETECTED; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -722,7 +736,7 @@
         "release": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 53,
+      "precedence": 54,
       "rationale": "P0-02 reconcile registration for E_RECOVERY_IO_NOT_OK; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -736,7 +750,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 54,
+      "precedence": 55,
       "rationale": "P0-02 reconcile registration for E_RELEASE_ARTIFACT_SOURCES_FAIL; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -750,7 +764,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js#promotion-mode-mismatch-fails-while-release-mode-mismatch-warns",
-      "precedence": 55,
+      "precedence": 56,
       "rationale": "Release-candidate lock drift is advisory for PR/release checks and promotion-blocking for canonical release cuts.",
       "tier": "release"
     },
@@ -763,7 +777,7 @@
         "promotion": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 56,
+      "precedence": 57,
       "rationale": "P0-02 reconcile registration for E_REMOTE_UNAVAILABLE; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -777,7 +791,7 @@
         "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 57,
+      "precedence": 58,
       "rationale": "P0-02 reconcile registration for E_REQUIRED_SET_CONTAINS_TARGET; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -791,7 +805,7 @@
         "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 58,
+      "precedence": 59,
       "rationale": "P0-02 reconcile registration for E_REQUIRED_TOKEN_SET_DRIFT; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -805,7 +819,7 @@
         "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 59,
+      "precedence": 60,
       "rationale": "P0-02 reconcile registration for E_RUNTIME_WIRING_BEFORE_STAGE; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -814,7 +828,7 @@
       "blocking": true,
       "code": "E_SCOPEFLAG_UNKNOWN",
       "negativeTestRef": "test/contracts/wave-freshness-and-stage-activation.contract.test.js#unknown-scopeflag",
-      "precedence": 60,
+      "precedence": 61,
       "rationale": "Unknown scope flag cannot participate in machine stage activation and must fail deterministically.",
       "tier": "release",
       "modeMatrix": {
@@ -832,7 +846,7 @@
         "release": "blocking"
       },
       "negativeTestRef": "test/contracts/execution-sequence-lock.contract.test.js#promotion-mode-drift-fails-while-release-mode-warns",
-      "precedence": 61,
+      "precedence": 62,
       "rationale": "Execution sequence order drift is advisory in PR and blocking for release/promotion to keep LAW A1 machine-bound against canonical SSOT.",
       "tier": "release"
     },
@@ -845,7 +859,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 62,
+      "precedence": 63,
       "rationale": "P0-02 reconcile registration for E_SHARED_CODE_RATIO_BELOW_MIN; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -859,7 +873,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 63,
+      "precedence": 64,
       "rationale": "P0-02 reconcile registration for E_SSOT_ANCHOR_DRIFT; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -873,7 +887,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 64,
+      "precedence": 65,
       "rationale": "P0-02 reconcile registration for E_SSOT_ANCHOR_MISSING; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -887,7 +901,7 @@
         "release": "blocking"
       },
       "negativeTestRef": "test/contracts/stage-axis-lock.contract.test.js#stage-x5-is-rejected-by-runtime-validator",
-      "precedence": 65,
+      "precedence": 66,
       "rationale": "Runtime stage axis is locked to X0..X4; any X5+ acceptance in schema, validator, defaults, or contract path is drift.",
       "sourceBinding": "src/menu/menu-config.schema.v2.json + src/menu/menu-config-validator.js + src/menu/menu-config.v2.example.json",
       "tier": "release"
@@ -896,7 +910,7 @@
       "blocking": true,
       "code": "E_STAGE_METRICS_MISSING",
       "negativeTestRef": "test/contracts/wave-freshness-and-stage-activation.contract.test.js#stage-metrics-missing-promotion",
-      "precedence": 66,
+      "precedence": 67,
       "rationale": "Promotion mode requires metrics evidence for the target stage before stage-gated binding can be trusted.",
       "tier": "release",
       "modeMatrix": {
@@ -909,7 +923,7 @@
       "blocking": true,
       "code": "E_STAGE_PROMOTION_INVALID",
       "negativeTestRef": "test/contracts/wave-freshness-and-stage-activation.contract.test.js#promotion-without-record",
-      "precedence": 67,
+      "precedence": 68,
       "rationale": "Promotion mode without a valid promotion record or stage-consistent transition is invalid.",
       "tier": "release",
       "modeMatrix": {
@@ -927,7 +941,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 68,
+      "precedence": 69,
       "rationale": "P0-02 reconcile registration for E_TOKEN_CATALOG_INVALID; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -941,7 +955,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 69,
+      "precedence": 70,
       "rationale": "P0-02 reconcile registration for E_TOKEN_DECLARATION_INVALID; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -955,7 +969,7 @@
         "release": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 70,
+      "precedence": 71,
       "rationale": "P0-02 reconcile registration for E_TOKEN_SOURCE_CONFLICT; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -964,7 +978,7 @@
       "blocking": true,
       "code": "E_VERIFY_ATTESTATION_INVALID",
       "negativeTestRef": "test/contracts/verify-attestation.contract.test.js#wrong-signer-fails-signature-gate",
-      "precedence": 71,
+      "precedence": 72,
       "rationale": "Post-merge attestation verification is invalid when signature trust chain or signer binding is not satisfied.",
       "tier": "release",
       "modeMatrix": {
@@ -977,7 +991,7 @@
       "blocking": true,
       "code": "E_WAVE_RESULT_STALE",
       "negativeTestRef": "test/contracts/wave-freshness-and-stage-activation.contract.test.js#ttl-stale-reuse",
-      "precedence": 72,
+      "precedence": 73,
       "rationale": "Wave result reuse is allowed only for matching hash with valid TTL to prevent stale-green reuse.",
       "tier": "release",
       "modeMatrix": {
@@ -990,7 +1004,7 @@
       "blocking": true,
       "code": "E_X3_RECOVERY_SMOKE_FAILED",
       "negativeTestRef": "test/contracts/x3-recovery-smoke.contract.test.js#forced-failure",
-      "precedence": 73,
+      "precedence": 74,
       "rationale": "X3 deterministic recovery smoke proofhook must pass before promotion-tier readiness can be considered green.",
       "tier": "release",
       "modeMatrix": {

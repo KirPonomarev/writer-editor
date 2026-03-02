@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS08_EXECUTE_ONLY_FALSE_013",
+  "mode": "REPO_EXECUTION",
+  "negativeResults": {
+    "NEGATIVE_SET_01_MANUAL_DRIFT_EXPECT_REJECT": true,
+    "NEGATIVE_SET_02_MODE_MISMATCH_EXPECT_REJECT": true,
+    "NEGATIVE_SET_03_FAST_AS_RELEASE_SUBSTITUTE_EXPECT_REJECT": true
+  },
+  "failSignal": "E_REQUIRED_TOKEN_SET_DRIFT",
+  "details": {
+    "neg01FailureCode": "E_REQUIRED_TOKEN_SET_DRIFT",
+    "neg02FailureCode": "E_FAILSIGNAL_MODE_MAPPING_INCOMPLETE",
+    "neg03FailureCode": "E_FAST_PRECHECK_SUBSTITUTION"
+  },
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

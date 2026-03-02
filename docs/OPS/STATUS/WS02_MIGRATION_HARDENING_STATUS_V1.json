@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS02_EXECUTE_ONLY_FALSE_007",
+  "mode": "REPO_EXECUTION",
+  "ws02Executed": true,
+  "ws02WasFalseBeforeExecution": true,
+  "goalStatus": {
+    "ATOMIC_MIGRATION_TEMP_COMPLETE_MARKER_RETRY": true,
+    "PARTIAL_COPY_RECOVERY_PASS": true,
+    "FALSE_GREEN_ZERO_FOR_MIGRATION_PATH": true,
+    "NO_SCOPE_EXPANSION": true
+  },
+  "dodStatus": {
+    "DOD_01_PARTIAL_COPY_RECOVERY_PASS_TRUE": true,
+    "DOD_02_COMPLETE_MARKER_GUARD_TRUE": true,
+    "DOD_03_FALSE_GREEN_ZERO_TRUE": true,
+    "DOD_04_WORKTREE_CLEAN_AFTER_PACKET_TRUE": false,
+    "DOD_05_SINGLE_COMMIT_CREATED_IF_WRITE_TRUE": false
+  },
+  "filesTarget": [
+    "fileManager.js",
+    "fsHelpers.js"
+  ],
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

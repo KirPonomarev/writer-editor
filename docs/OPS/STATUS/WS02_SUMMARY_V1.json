@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS02_EXECUTE_ONLY_FALSE_007",
+  "finalGateStatus": "GO_TO_NEXT_FALSE_ITEM_IN_ORDER",
+  "nextGateOnPass": "GO_TO_NEXT_FALSE_ITEM_IN_ORDER",
+  "nextGateOnFail": "HOLD_AND_FIX_WS02_ONLY",
+  "p0ItemsFalseListUpdated": [
+    "P0_02",
+    "P0_03",
+    "P0_04",
+    "P0_05",
+    "P0_06",
+    "P0_07",
+    "P0_08",
+    "P0_09",
+    "P0_10"
+  ],
+  "notes": "WS02 closed; migration path hardened for partial copy retry and complete marker guard",
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

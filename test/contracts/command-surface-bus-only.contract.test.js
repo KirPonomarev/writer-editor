@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const { pathToFileURL } = require('node:url');
 
 const REPO_ROOT = process.cwd();
 const RUN_COMMAND_OWNER = 'src/renderer/commands/commandBusGuard.mjs';
@@ -12,6 +13,18 @@ const FILES = Object.freeze({
   editor: 'src/renderer/editor.js',
   bus: 'src/renderer/commands/commandBusGuard.mjs',
 });
+
+let busModulePromise = null;
+
+function loadBusModule() {
+  if (!busModulePromise) {
+    const href = pathToFileURL(
+      path.join(process.cwd(), 'src/renderer/commands/commandBusGuard.mjs'),
+    ).href;
+    busModulePromise = import(href);
+  }
+  return busModulePromise;
+}
 
 const FORBIDDEN_EDITOR_COMMAND_APIS = Object.freeze([
   'window.electronAPI.newFile(',
@@ -218,4 +231,63 @@ test('command surface bus-only negative: direct IPC command bypass channel is re
   const state = evaluateBusOnlySurface(fixture);
   assert.equal(state.ok, false);
   assert.ok(state.errors.some((entry) => entry.code === 'E_DIRECT_IPC_BYPASS_CHANNEL'));
+});
+
+test('command surface bus-only negative: alias call expect reject', async () => {
+  const { COMMAND_BUS_ROUTE, runCommandThroughBus } = await loadBusModule();
+  const result = await runCommandThroughBus(
+    async () => ({ ok: true, value: { shouldNotRun: true } }),
+    'alias.project.open',
+    {},
+    { route: COMMAND_BUS_ROUTE },
+  );
+  assert.equal(result.ok, false);
+});
+
+test('command surface bus-only negative: bracket call expect reject', async () => {
+  const { runCommandThroughBus } = await loadBusModule();
+  const result = await runCommandThroughBus(
+    async () => ({ ok: true, value: { shouldNotRun: true } }),
+    'cmd.project.open',
+    {},
+    { route: 'hotkey.direct' },
+  );
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_COMMAND_SURFACE_BYPASS');
+});
+
+test('command surface bus-only negative: dynamic name expect reject', async () => {
+  const { COMMAND_BUS_ROUTE, runCommandThroughBus } = await loadBusModule();
+  const dynamicId = ['cmd', 'project', 'open'].join('-');
+  const result = await runCommandThroughBus(
+    async () => ({ ok: true, value: { shouldNotRun: true } }),
+    dynamicId,
+    {},
+    { route: COMMAND_BUS_ROUTE },
+  );
+  assert.equal(result.ok, false);
+});
+
+test('command surface bus-only negative: direct path expect reject', async () => {
+  const { runCommandThroughBus } = await loadBusModule();
+  const result = await runCommandThroughBus(
+    async () => ({ ok: true, value: { shouldNotRun: true } }),
+    'cmd.project.open',
+    {},
+    { route: 'ipc.renderer-main.direct' },
+  );
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_COMMAND_SURFACE_BYPASS');
+});
+
+test('command surface bus-only negative: plugin overlay bypass expect reject', async () => {
+  const { runCommandThroughBus } = await loadBusModule();
+  const result = await runCommandThroughBus(
+    async () => ({ ok: true, value: { shouldNotRun: true } }),
+    'cmd.project.open',
+    {},
+    { route: 'plugin.overlay.exec' },
+  );
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_COMMAND_SURFACE_BYPASS');
 });

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_SCOPE_ROLLBACK_RESOLUTION_011",
+  "ownerDecisionValue": false,
+  "decisionPolicy": "FOLLOW_SCOPE_EXPANSION_FORBIDDEN_UNTIL_P0_CLOSE",
+  "outOfScopeBasenameResolutionList": [
+    {
+      "basename": "x21-ws02-promotion-dry-run-and-evidence-lock-state.mjs",
+      "resolution": "ROLLED_BACK"
+    },
+    {
+      "basename": "x22-ws01-promotion-candidate-package-state.mjs",
+      "resolution": "ROLLED_BACK"
+    },
+    {
+      "basename": "x23-ws02-release-tag-prep-and-pr-packet-state.mjs",
+      "resolution": "ROLLED_BACK"
+    },
+    {
+      "basename": "x24-ws01-post-merge-baseline-reconfirm-state.mjs",
+      "resolution": "ROLLED_BACK"
+    }
+  ],
+  "negativeResults": {
+    "NEGATIVE_SET_01_CONTINUE_WITHOUT_ROLLBACK_EXPECT_REJECT": true,
+    "NEGATIVE_SET_02_PARTIAL_ROLLBACK_EXPECT_REJECT": true,
+    "NEGATIVE_SET_03_WS03_RERUN_SKIPPED_EXPECT_REJECT": true,
+    "NEGATIVE_SET_04_SCOPE_EXPANSION_ATTEMPT_EXPECT_REJECT": true
+  },
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

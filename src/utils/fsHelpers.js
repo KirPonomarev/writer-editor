@@ -22,7 +22,53 @@ function hasDirectoryContent(directoryPath) {
   }
 }
 
-async function copyDirectoryContents(source, destination) {
+function directoryContainsAllEntries(source, destination) {
+  try {
+    const sourceStat = fsSync.statSync(source);
+    if (!sourceStat.isDirectory()) {
+      return true;
+    }
+  } catch {
+    return true;
+  }
+
+  let entries = [];
+  try {
+    entries = fsSync.readdirSync(source, { withFileTypes: true });
+  } catch {
+    return true;
+  }
+
+  for (const entry of entries) {
+    const sourcePath = path.join(source, entry.name);
+    const destinationPath = path.join(destination, entry.name);
+    let destinationStat = null;
+    try {
+      destinationStat = fsSync.statSync(destinationPath);
+    } catch {
+      return false;
+    }
+
+    if (entry.isDirectory()) {
+      if (!destinationStat.isDirectory()) {
+        return false;
+      }
+      if (!directoryContainsAllEntries(sourcePath, destinationPath)) {
+        return false;
+      }
+      continue;
+    }
+
+    if (!destinationStat.isFile()) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+async function copyDirectoryContents(source, destination, options = {}) {
+  const overwriteExisting = options.overwriteExisting === true;
   await fs.mkdir(destination, { recursive: true });
   const entries = await fs.readdir(source, { withFileTypes: true });
 
@@ -31,11 +77,11 @@ async function copyDirectoryContents(source, destination) {
     const destinationPath = path.join(destination, entry.name);
 
     if (entry.isDirectory()) {
-      await copyDirectoryContents(sourcePath, destinationPath);
+      await copyDirectoryContents(sourcePath, destinationPath, options);
       continue;
     }
 
-    if (fsSync.existsSync(destinationPath)) {
+    if (!overwriteExisting && fsSync.existsSync(destinationPath)) {
       continue;
     }
 
@@ -45,5 +91,6 @@ async function copyDirectoryContents(source, destination) {
 
 module.exports = {
   hasDirectoryContent,
-  copyDirectoryContents
+  copyDirectoryContents,
+  directoryContainsAllEntries
 };

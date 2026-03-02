@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_WS09_EXECUTE_ONLY_FALSE_014",
+  "ws09PassTrueOrFalse": true,
+  "finalGateStatus": "GO_TO_WS99_SYMBOLIC_CLOSEOUT",
+  "nextGateOnPass": "GO_TO_WS99_SYMBOLIC_CLOSEOUT",
+  "nextGateOnFail": "HOLD_AND_FIX_WS09_ONLY",
+  "p0ItemsFalseListUpdated": [],
+  "notes": "WS09 closed; skip determinism, mode guard, and strict run cap assertions verified with negative scenarios",
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}

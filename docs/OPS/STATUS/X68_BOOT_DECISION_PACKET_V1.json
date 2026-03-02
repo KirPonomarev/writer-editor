@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "tzId": "TZ_X68_BOOTSTRAP_REPAIR_005",
+  "decision": "GO_TO_WS02_AND_EXECUTE_ONLY_FALSE_ITEMS",
+  "finalGateStatus": "PASS",
+  "ws00Pass": true,
+  "ws01Pass": true,
+  "ws02StartPermissionAllow": true,
+  "preconditions": {
+    "ownerOpenSignalTrue": true,
+    "modeRepoExecutionTrue": false,
+    "activeCanonLockTrue": true,
+    "worktreeCleanTrue": true
+  },
+  "nextAction": "WAIT_OWNER_MODE_SWITCH_TO_REPO_EXECUTION",
+  "issuedAtUtc": "2026-03-02T00:00:00Z"
+}
