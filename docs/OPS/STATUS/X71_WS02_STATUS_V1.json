@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X71_WS02_STATUS_V1",
+  "ok": true,
+  "token": true,
+  "positiveResults": {
+    "QUEUE_POLICIES_DECLARED_EMPTY_FALSE_TRUE": true,
+    "QUEUE_POLICY_ITEMS_VALID_TRUE": true,
+    "DEBT_QUEUE_POLICIES_ACTIVE_FALSE_TRUE": true,
+    "NO_NEW_BLOCKING_SURFACE_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true
+  },
+  "negativeResults": {
+    "QUEUE_ITEM_WITHOUT_QUEUE_ID_EXPECT_REJECT_TRUE": true,
+    "QUEUE_ITEM_WITH_INVALID_MAX_SIZE_EXPECT_REJECT_TRUE": true,
+    "QUEUE_ITEM_WITH_INVALID_OVERFLOW_EXPECT_REJECT_TRUE": true,
+    "DECLARED_EMPTY_TRUE_WITH_NON_EMPTY_ITEMS_EXPECT_REJECT_TRUE": true
+  },
+  "dod": {
+    "WS02_DOD_01_QUEUE_POLICIES_DECLARED_EMPTY_FALSE_TRUE": true,
+    "WS02_DOD_02_QUEUE_POLICY_ITEMS_VALID_TRUE": true,
+    "WS02_DOD_03_DEBT_QUEUE_POLICIES_ACTIVE_FALSE_TRUE": true,
+    "WS02_DOD_04_NO_NEW_BLOCKING_SURFACE_TRUE": true,
+    "WS02_DOD_05_NO_NEW_P0_DRIFT_TRUE": true
+  },
+  "doctorSnapshot": {
+    "DRIFT_UNRESOLVED_P0_COUNT": 0,
+    "QUEUE_POLICY_OK": true,
+    "GOVERNANCE_CHANGE_OK": false
+  },
+  "scope": {
+    "scopeLimit": "QUEUE_POLICIES_AND_DEBT_REGISTRY_AND_VALIDATION_ONLY",
+    "outOfScopeTouched": false
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z"
+}

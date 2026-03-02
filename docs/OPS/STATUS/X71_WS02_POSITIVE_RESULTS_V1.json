@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X71_WS02_POSITIVE_RESULTS_V1",
+  "ok": true,
+  "positiveResults": {
+    "QUEUE_POLICIES_DECLARED_EMPTY_FALSE_TRUE": true,
+    "QUEUE_POLICY_ITEMS_VALID_TRUE": true,
+    "DEBT_QUEUE_POLICIES_ACTIVE_FALSE_TRUE": true,
+    "NO_NEW_BLOCKING_SURFACE_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true
+  },
+  "queuePolicySummary": {
+    "declaredEmpty": false,
+    "itemsCount": 2,
+    "allowedOverflowValues": [
+      "drop_oldest",
+      "drop_newest",
+      "hard_fail",
+      "degrade"
+    ]
+  },
+  "debtSummary": {
+    "debtId": "DEBT:INV_QUEUE_POLICIES_DECLARED_EMPTY",
+    "active": false
+  },
+  "updatedAtUtc": "2026-03-03T00:00:00.000Z"
+}

@@ -1,6 +1,19 @@
 {
   "schemaVersion": 1,
   "opsCanonVersion": "v1.3",
-  "declaredEmpty": true,
-  "items": []
+  "declaredEmpty": false,
+  "items": [
+    {
+      "queueId": "runtime-effects-main",
+      "maxSize": 1024,
+      "overflow": "degrade",
+      "owner": "OPS_CANON"
+    },
+    {
+      "queueId": "runtime-trace-main",
+      "maxSize": 2048,
+      "overflow": "drop_oldest",
+      "owner": "OPS_CANON"
+    }
+  ]
 }
