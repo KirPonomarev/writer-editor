@@ -630,7 +630,7 @@ function evaluatePolicyFromDocs(inputDocs) {
   };
 }
 
-function buildNegativeFixtures(baseDocs) {
+function buildNegativeFixtures(baseDocs, basePolicy = {}) {
   const fixtures = [];
 
   {
@@ -673,10 +673,17 @@ function buildNegativeFixtures(baseDocs) {
     const claimDoc = JSON.parse(JSON.stringify(baseDocs.claimMatrixDoc));
     const migDoc = JSON.parse(JSON.stringify(baseDocs.migrationMapDoc));
     const claims = Array.isArray(claimDoc.claims) ? claimDoc.claims : [];
-    const claim = claims.find((row) => normalizeString(row.claimId) === 'PROOFHOOK_INTEGRITY');
+    const resolvedByMigration = Array.isArray(basePolicy.claimResolvedByMigration)
+      ? basePolicy.claimResolvedByMigration
+      : [];
+    const targetResolved = resolvedByMigration.find((row) => isObjectRecord(row) && normalizeString(row.claimId));
+    const targetClaimId = normalizeString(targetResolved?.claimId) || 'PROOFHOOK_INTEGRITY';
+    const claim = claims.find((row) => normalizeString(row.claimId) === targetClaimId);
     if (claim) {
       if (isObjectRecord(migDoc) && Array.isArray(migDoc.claimModeOverrides)) {
-        migDoc.claimModeOverrides = migDoc.claimModeOverrides.filter((row) => normalizeString(row.claimId) !== 'PROOFHOOK_INTEGRITY');
+        migDoc.claimModeOverrides = migDoc.claimModeOverrides.filter(
+          (row) => normalizeString(row.claimId) !== targetClaimId,
+        );
       }
       fixtures.push({
         id: 'NEXT_TZ_NEGATIVE_03',
@@ -740,7 +747,7 @@ export function evaluateP1Ws01FailsignalSemanticDedupState(input = {}) {
   };
 
   if (runNegativeFixtures) {
-    const fixtures = buildNegativeFixtures(docs);
+    const fixtures = buildNegativeFixtures(docs, basePolicy);
     for (const fixture of fixtures) {
       const fixturePolicy = evaluatePolicyFromDocs({
         ...docs,

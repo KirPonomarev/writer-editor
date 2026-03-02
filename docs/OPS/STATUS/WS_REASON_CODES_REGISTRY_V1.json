@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "registryId": "WS_REASON_CODES_REGISTRY_V1",
+  "singleSourceLocked": true,
+  "sourceOfTruth": {
+    "basename": "WS_REASON_CODES_REGISTRY_V1.json",
+    "scope": "WS09_WS10_WS11",
+    "legacyBridgeBasename": "WS09_SKIP_REASON_CODES_V1.json"
+  },
+  "reasonCodes": [
+    {
+      "code": "NO_P0_TOUCH_AND_NO_HASH_DELTA",
+      "workstream": "WS09"
+    },
+    {
+      "code": "NON_PROMOTION_STABLE_INPUT",
+      "workstream": "WS09"
+    },
+    {
+      "code": "NO_REAL_SCOPE_REQUIRED",
+      "workstream": "WS10"
+    },
+    {
+      "code": "NO_PROMOTION_EVENT_DECLARED",
+      "workstream": "WS11"
+    }
+  ],
+  "workstreamPolicies": {
+    "WS09": {
+      "skipReasonCodeRequired": true,
+      "allowedReasonCodes": [
+        "NO_P0_TOUCH_AND_NO_HASH_DELTA",
+        "NON_PROMOTION_STABLE_INPUT"
+      ],
+      "legacyCompatible": true
+    },
+    "WS10": {
+      "skipReasonCodeRequired": true,
+      "allowedReasonCodes": [
+        "NO_REAL_SCOPE_REQUIRED"
+      ],
+      "triggerCheckId": "REAL_SCOPE_REQUIRED_TRUE_REGISTERED"
+    },
+    "WS11": {
+      "skipReasonCodeRequired": true,
+      "allowedReasonCodes": [
+        "NO_PROMOTION_EVENT_DECLARED"
+      ],
+      "triggerCheckId": "PROMOTION_EVENT_DECLARED_TRUE_REGISTERED"
+    }
+  },
+  "updatedAtUtc": "2026-03-02T00:00:00.000Z"
+}

@@ -1,0 +1,96 @@
+{
+  "artifactId": "X70_WS06_STATUS_V1",
+  "doctorSnapshot": {
+    "DRIFT_UNRESOLVED_P0_COUNT": "0",
+    "WAVE_INPUT_HASH_PRESENT": "1",
+    "WAVE_RESULT_STALE": "0",
+    "WAVE_TTL_VALID": "1"
+  },
+  "dod": {
+    "WS06_DOD_01_THREE_RUN_REPEATABILITY_TRUE": true,
+    "WS06_DOD_02_WAVE_INPUT_HASH_GUARD_TRUE": true,
+    "WS06_DOD_03_FALSE_GREEN_REGISTER_UPDATED_CONDITIONAL_ONLY_IF_NEW_CASE_TRUE": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "falseGreenPolicy": {
+    "conditionalRuleSatisfied": true,
+    "detectedNewCase": false,
+    "registerBasename": "X70_FALSE_GREEN_REGISTER_V1.json",
+    "registerCases": 0,
+    "registerExists": false,
+    "registerUpdated": false
+  },
+  "negativeResults": {
+    "NON_DETERMINISTIC_OUTPUT_EXPECT_REJECT_TRUE": true,
+    "STALE_RESULT_REUSE_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "positiveResults": {
+    "FALSE_GREEN_REGISTER_UPDATED_CONDITIONAL_ONLY_IF_NEW_CASE_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "THREE_RUN_REPEATABILITY_TRUE": true,
+    "WAVE_INPUT_HASH_GUARD_TRUE": true
+  },
+  "repeatability": {
+    "baselineComparableDigest": "24fbaf5006d2d7c4a5d5ca62c3708b9dc03d05d69b51ba500d573bbc601e836f",
+    "p2Ws05CompactRuns": [
+      {
+        "ADVISORY_TO_BLOCKING_DRIFT_COUNT": 0,
+        "DOD_01": true,
+        "DOD_02": true,
+        "DOD_03": true,
+        "token": true,
+        "UNNECESSARY_HEAVY_RERUN_COUNT_AFTER": 0,
+        "UNNECESSARY_HEAVY_RERUN_COUNT_BEFORE": 4
+      },
+      {
+        "ADVISORY_TO_BLOCKING_DRIFT_COUNT": 0,
+        "DOD_01": true,
+        "DOD_02": true,
+        "DOD_03": true,
+        "token": true,
+        "UNNECESSARY_HEAVY_RERUN_COUNT_AFTER": 0,
+        "UNNECESSARY_HEAVY_RERUN_COUNT_BEFORE": 4
+      },
+      {
+        "ADVISORY_TO_BLOCKING_DRIFT_COUNT": 0,
+        "DOD_01": true,
+        "DOD_02": true,
+        "DOD_03": true,
+        "token": true,
+        "UNNECESSARY_HEAVY_RERUN_COUNT_AFTER": 0,
+        "UNNECESSARY_HEAVY_RERUN_COUNT_BEFORE": 4
+      }
+    ],
+    "runHashes": [
+      "24fbaf5006d2d7c4a5d5ca62c3708b9dc03d05d69b51ba500d573bbc601e836f",
+      "24fbaf5006d2d7c4a5d5ca62c3708b9dc03d05d69b51ba500d573bbc601e836f",
+      "24fbaf5006d2d7c4a5d5ca62c3708b9dc03d05d69b51ba500d573bbc601e836f"
+    ],
+    "stableAcrossThreeRuns": true
+  },
+  "schemaVersion": 1,
+  "scopeControl": {
+    "executionScopeClassGuardActive": true,
+    "scopeControlMode": "BUCKET_PLUS_PATH_CLASS"
+  },
+  "staleGuardProbe": {
+    "failReason": "WAVE_CACHE_TTL_EXPIRED",
+    "failSignal": "E_WAVE_RESULT_STALE",
+    "ok": true,
+    "WAVE_RESULT_STALE": 1,
+    "WAVE_TTL_VALID": 0
+  },
+  "token": true,
+  "updatedAtUtc": "2026-03-02T21:15:21.957Z",
+  "waveInputGuard": {
+    "ok": true,
+    "ttlClass": "deterministicLocal",
+    "ttlSec": 21600,
+    "waveInputHash": "2d9dda7cef38c30568e511ea96f632f9168dfe9206aa938fb10830e1f4b8f94f",
+    "waveInputHashPresent": 1
+  },
+  "X70_WS06_REPEATABILITY_AND_FALSE_GREEN_GUARD_OK": 1
+}

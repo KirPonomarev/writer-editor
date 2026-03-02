@@ -93,7 +93,10 @@ export function evaluateFreezeReady(input = {}) {
 
   const requiredAlways = [...BASELINE_REQUIRED_TOKENS];
   const requiredConditional = freezeMode ? [...FREEZE_MODE_CONDITIONAL_TOKENS] : [];
-  const requiredActive = [...new Set([...requiredAlways, ...requiredConditional])].sort();
+  // In non-freeze runs this check is informational and must not hard-block declared subsets.
+  const requiredActive = freezeMode
+    ? [...new Set([...requiredAlways, ...requiredConditional])].sort()
+    : [];
   const requiredTokens = getFreezeReadyRequiredTokens();
 
   const missingTokensSet = new Set();

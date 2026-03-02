@@ -375,6 +375,78 @@
         "scripts/ops/owner-open-signal-state.mjs",
         "--json"
       ]
+    },
+    {
+      "MACHINE_CHECK_ID": "REASON_CODE_SINGLE_SOURCE_LOCKED_TRUE",
+      "CHECK_NAME": "reason code single source locked",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "advisory",
+      "MODE_DISPOSITION": "advisory",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "WS_REASON_CODES_REGISTRY_V1.json",
+      "EVIDENCE_REF": "WS_REASON_CODES_REGISTRY_V1.json",
+      "COMMAND_ID": "validate-ws-reason-code-single-source",
+      "OUTPUT_ARTIFACT": "WS_REASON_CODES_REGISTRY_V1.json",
+      "UPDATED_AT_UTC": "2026-03-02T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/ws04-trigger-governance-pack-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "WS10_TRIGGER_REGISTERED_TRUE",
+      "CHECK_NAME": "ws10 trigger registered advisory",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "advisory",
+      "MODE_DISPOSITION": "advisory",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "MACHINE_CHECK_REGISTRY_V1.json",
+      "EVIDENCE_REF": "MACHINE_CHECK_REGISTRY_V1.json",
+      "COMMAND_ID": "validate-ws10-trigger-registration",
+      "OUTPUT_ARTIFACT": "MACHINE_CHECK_REGISTRY_V1.json",
+      "UPDATED_AT_UTC": "2026-03-02T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/ws04-trigger-governance-pack-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "WS11_TRIGGER_REGISTERED_TRUE",
+      "CHECK_NAME": "ws11 trigger registered advisory",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "advisory",
+      "MODE_DISPOSITION": "advisory",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "MACHINE_CHECK_REGISTRY_V1.json",
+      "EVIDENCE_REF": "MACHINE_CHECK_REGISTRY_V1.json",
+      "COMMAND_ID": "validate-ws11-trigger-registration",
+      "OUTPUT_ARTIFACT": "MACHINE_CHECK_REGISTRY_V1.json",
+      "UPDATED_AT_UTC": "2026-03-02T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/ws04-trigger-governance-pack-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "RUN_OR_SKIP_MACHINE_EXPLAINED_TRUE",
+      "CHECK_NAME": "run or skip machine explained",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "advisory",
+      "MODE_DISPOSITION": "advisory",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "WS_REASON_CODES_REGISTRY_V1.json",
+      "EVIDENCE_REF": "WS_REASON_CODES_REGISTRY_V1.json",
+      "COMMAND_ID": "validate-run-or-skip-machine-explained",
+      "OUTPUT_ARTIFACT": "WS_REASON_CODES_REGISTRY_V1.json",
+      "UPDATED_AT_UTC": "2026-03-02T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/ws04-trigger-governance-pack-state.mjs",
+        "--json"
+      ]
     }
   ],
   "registryBindingCompletenessPct": 100,
@@ -478,6 +550,26 @@
     "validate-owner-open-signal-schema": [
       "node",
       "scripts/ops/owner-open-signal-state.mjs",
+      "--json"
+    ],
+    "validate-ws-reason-code-single-source": [
+      "node",
+      "scripts/ops/ws04-trigger-governance-pack-state.mjs",
+      "--json"
+    ],
+    "validate-ws10-trigger-registration": [
+      "node",
+      "scripts/ops/ws04-trigger-governance-pack-state.mjs",
+      "--json"
+    ],
+    "validate-ws11-trigger-registration": [
+      "node",
+      "scripts/ops/ws04-trigger-governance-pack-state.mjs",
+      "--json"
+    ],
+    "validate-run-or-skip-machine-explained": [
+      "node",
+      "scripts/ops/ws04-trigger-governance-pack-state.mjs",
       "--json"
     ]
   }
