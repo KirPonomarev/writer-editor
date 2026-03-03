@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X72_WS04_NEGATIVE_RESULTS_V1",
+  "ok": true,
+  "negativeResults": {
+    "LIE_CLASS_01_EXPECT_REJECT_TRUE": true,
+    "OK_TRUE_WITH_ACCEPTANCE_FALSE_EXPECT_REJECT_TRUE": true,
+    "NEGATIVE_SYNTH_MISSING_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "lieClass01NegativeFromElectronSuite": true,
+    "okAcceptanceMismatchRejectedByContracts": true,
+    "missingSynthRejectExitCode": 1,
+    "missingSynthParseOkToken": 0,
+    "missingSynthErrorToken": "ERR_DOCTOR_INVALID_SHAPE"
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-02T23:59:59Z"
+}
