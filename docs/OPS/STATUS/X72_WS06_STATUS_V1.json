@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X72_WS06_STATUS_V1",
+  "ok": true,
+  "token": true,
+  "findingRef": "F008",
+  "scopeLimit": "FALSE_GREEN_REGISTER_BASELINE_ARTIFACT_ONLY",
+  "positiveResults": {
+    "FALSE_GREEN_REGISTER_BASELINE_PRESENT_TRUE": true,
+    "NEW_CASE_APPEND_RULE_DEFINED_TRUE": true,
+    "NO_BLOCKING_CLASS_EXPANSION_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "negativeResults": {
+    "MISSING_REGISTER_BASELINE_EXPECT_REJECT_TRUE": true,
+    "INVALID_REGISTER_SCHEMA_EXPECT_REJECT_TRUE": true,
+    "BLOCKING_CLASS_EXPANSION_EXPECT_REJECT_TRUE": true
+  },
+  "dod": {
+    "WS06_DOD_01_FALSE_GREEN_REGISTER_BASELINE_PRESENT_TRUE": true,
+    "WS06_DOD_02_NEW_CASE_APPEND_RULE_DEFINED_TRUE": true,
+    "WS06_DOD_03_NO_BLOCKING_CLASS_EXPANSION_TRUE": true,
+    "WS06_DOD_04_NO_NEW_P0_DRIFT_TRUE": true,
+    "WS06_DOD_05_NO_SCOPE_EXPANSION_TRUE": true,
+    "WS06_DOD_06_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "WS06_DOD_07_SINGLE_COMMIT_CREATED_IF_WRITE_TRUE": true
+  },
+  "checks": {
+    "registerBasename": "X70_FALSE_GREEN_REGISTER_V1.json",
+    "registerExists": true,
+    "registerCases": 0,
+    "schemaValidationOk": true,
+    "appendRuleDefined": true,
+    "blockingClassExpansionForbidden": true,
+    "driftUnresolvedP0Count": 0
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T00:06:41Z"
+}
