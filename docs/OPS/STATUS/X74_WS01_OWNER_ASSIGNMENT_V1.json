@@ -1,0 +1,15 @@
+{
+  "artifactId": "X74_WS01_OWNER_ASSIGNMENT_V1",
+  "assignments": {
+    "AGPL_ABOUT_UI_ENTRY_NOT_VISIBLE_TRUE": "CODEX",
+    "AGPL_DEBT_REGISTRY_NOT_CLOSED_TRUE": "CODEX",
+    "DEBT_AGPL_ABOUT_UI_LINK_PENDING_ACTIVE_TRUE": "CODEX",
+    "X74_ACCEPTANCE_VECTOR_NOT_COMPILED": "CODEX"
+  },
+  "defaultOwner": "CODEX",
+  "ok": true,
+  "ownerPolicy": "SINGLE_OWNER_PER_FALSE_ITEM",
+  "schemaVersion": 1,
+  "tzId": "TZ_X74_WS00_WS01_BOOTSTRAP_001",
+  "updatedAtUtc": "2026-03-03T14:47:57.408Z"
+}

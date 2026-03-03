@@ -1,0 +1,23 @@
+{
+  "artifactId": "X74_WS02_NEGATIVE_RESULTS_V1",
+  "evidence": {
+    "hashDeltaFieldProducerMissingRejectedByPolicy": true,
+    "missingAboutEntryRejectedByPolicy": true,
+    "missingAgplNoticeRejectedByPolicy": true,
+    "missingCorrespondingSourceRefRejectedByPolicy": true,
+    "scopeBreachDetected": false
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "negativeResults": {
+    "ABOUT_OR_LICENSE_ENTRY_MISSING_EXPECT_REJECT_TRUE": true,
+    "AGPL_NOTICE_TEXT_MISSING_EXPECT_REJECT_TRUE": true,
+    "CORRESPONDING_SOURCE_REFERENCE_MISSING_EXPECT_REJECT_TRUE": true,
+    "HASH_DELTA_FIELD_PRODUCER_MISSING_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X74_WS02_AGPL_ABOUT_UI_DEBT_CLOSURE_MINIMAL_TOUCH_AND_HASH_DELTA_PRODUCER",
+  "updatedAtUtc": "2026-03-03T14:54:16.959Z"
+}

@@ -1,0 +1,16 @@
+{
+  "artifactId": "X74_WS03_SUMMARY_V1",
+  "executionPath": "SKIP",
+  "finalDodAcceptanceSummary": "ALL_TRUE",
+  "finalGateStatus": "PASS",
+  "hashDeltaDetectedTrue": false,
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "noNewP0DriftState": true,
+  "noScopeExpansionTrue": true,
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "schemaVersion": 1,
+  "skipRecordWritten": true,
+  "status": "PASS",
+  "tzId": "TZ_X74_WS03_TARGETED_REVERIFY_RELEASE_CANDIDATE_AND_P0_CONDITIONAL",
+  "updatedAtUtc": "2026-03-03T14:59:05.056Z"
+}

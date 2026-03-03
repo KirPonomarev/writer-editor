@@ -1,0 +1,25 @@
+{
+  "aboutDialogTitle": "О программе и лицензии",
+  "aboutLicenseTextSource": "ABOUT_LICENSE_TEXT.md",
+  "aboutMenuEntryId": "help-about-licenses",
+  "artifactId": "X74_AGPL_DEBT_CLOSURE_EVIDENCE_V1",
+  "correspondingSourceRefPresent": true,
+  "debtActiveAfter": false,
+  "debtId": "DEBT:AGPL_ABOUT_UI_LINK_PENDING",
+  "evidenceFiles": [
+    "main.js",
+    "ABOUT_LICENSE_TEXT.md",
+    "DEBT_REGISTRY.json",
+    "RELEASE_CANDIDATE_LOCK.json"
+  ],
+  "hashDeltaDetectedTrue": false,
+  "hashDeltaFieldProducedTrue": true,
+  "hashDeltaTargetBasename": "RELEASE_CANDIDATE_LOCK.json",
+  "hashDeltaTargetField": "HASH_DELTA_DETECTED_TRUE",
+  "hashDeltaWritePolicy": "SET_TRUE_IF_HASH_CHANGED_ELSE_SET_FALSE",
+  "releaseCandidateLockMatchOk": true,
+  "schemaVersion": 1,
+  "status": "PASS",
+  "tzId": "TZ_X74_WS02_AGPL_ABOUT_UI_DEBT_CLOSURE_MINIMAL_TOUCH_AND_HASH_DELTA_PRODUCER",
+  "updatedAtUtc": "2026-03-03T14:54:16.959Z"
+}

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X74_WS99_METADATA_BLOCK_V1",
+  "tzId": "TZ_X74_WS99_FINAL_CLOSEOUT_AND_NEXT_GATE_WITH_DEBT_METADATA",
+  "debtStateTransitionSummary": {
+    "AGPL_DEBT_STATE_EXPLICIT_CLOSED_TRUE": true,
+    "agplDebtId": "DEBT:AGPL_ABOUT_UI_LINK_PENDING",
+    "agplDebtActiveFalseRequired": true,
+    "agplDebtClosedInX74": true,
+    "agplDebtClosureEvidenceReferenceRequired": true,
+    "agplDebtClosureEvidenceArtifact": "X74_AGPL_DEBT_CLOSURE_EVIDENCE_V1.json",
+    "ownerAckRequired": false,
+    "ownerAckPresent": true,
+    "policy": "AGPL_DEBT_ACTIVE_FALSE_REQUIRED_AND_CLOSURE_EVIDENCE_REFERENCE_REQUIRED"
+  },
+  "references": {
+    "bootPrecheckArtifact": "X74_BOOT_PRECHECK_STATUS_V1",
+    "bindingIntegrityArtifact": "X74_BINDING_INTEGRITY_STATUS_V1",
+    "debtClosureEvidenceArtifact": "X74_AGPL_DEBT_CLOSURE_EVIDENCE_V1"
+  },
+  "updatedAtUtc": "2026-03-03T15:11:56.270Z"
+}
