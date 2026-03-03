@@ -1,0 +1,24 @@
+{
+  "artifactId": "X74_WS03_POSITIVE_RESULTS_V1",
+  "executionPath": "SKIP",
+  "ok": true,
+  "positiveResults": {
+    "HEAD_STRICT_OK_TRUE": true,
+    "IF_RUN_THEN_E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE_TRUE": true,
+    "IF_RUN_THEN_OPS_INTEGRITY_P0_ALL_TRUE": true,
+    "IF_RUN_THEN_RELEASE_CANDIDATE_LOCK_MATCH_OK_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "SKIP_RECORD_VALID_TRUE": true
+  },
+  "rcState": {
+    "E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE_TRUE": true,
+    "HASH_DELTA_DETECTED_TRUE": false,
+    "RELEASE_CANDIDATE_LOCK_MATCH_OK": 1
+  },
+  "schemaVersion": 1,
+  "skipRecordCarrier": "X74_WS03_STATUS_V1.json",
+  "skipRecordRequiredFieldsPresentTrue": true,
+  "tzId": "TZ_X74_WS03_TARGETED_REVERIFY_RELEASE_CANDIDATE_AND_P0_CONDITIONAL",
+  "updatedAtUtc": "2026-03-03T14:59:05.056Z"
+}
