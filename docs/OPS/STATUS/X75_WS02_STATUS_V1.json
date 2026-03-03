@@ -1,0 +1,56 @@
+{
+  "artifactId": "X75_WS02_STATUS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X75_WS02_PROFILE_BINDINGS_METADATA_ACTIVATION_MINIMAL_TOUCH",
+  "ok": true,
+  "token": true,
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "prechecks": {
+    "PRECHECK_01_OWNER_OPEN_SIGNAL_TRUE": true,
+    "PRECHECK_02_MODE_REPO_EXECUTION_TRUE": true,
+    "PRECHECK_03_WORKTREE_CLEAN_TRUE": true,
+    "PRECHECK_04_ACTIVE_CANON_LOCK_TRUE": true,
+    "PRECHECK_05_WS02_MARKED_FALSE_IN_DELTA_MAP_TRUE": true,
+    "PRECHECK_06_SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE": true
+  },
+  "checks": {
+    "profileBindingsFileCreatedIfMissing": true,
+    "profileBindingsFilePresent": true,
+    "profileBindingsSchemaValid": true,
+    "profileBindingsScopeFlagMappingComplete": true,
+    "profileBindingsStageBindingComplete": true,
+    "profileBindingsClassNonBlockingUnlessStageActivated": true,
+    "releaseCandidateLockMatchOk": true,
+    "hashDeltaDetectedTrue": false,
+    "headStrictOk": true,
+    "driftUnresolvedP0Count": 0,
+    "scopeExpansionAttemptCount": 0
+  },
+  "scopeLimit": "XPLAT_PROFILE_BINDINGS_v3_12.json_AND_STATUS_ARTIFACTS_ONLY",
+  "negativeResults": {
+    "PROFILE_BINDINGS_ARTIFACT_MISSING_AFTER_WS02_EXPECT_REJECT_TRUE": true,
+    "PROFILE_BINDINGS_SCHEMA_INVALID_EXPECT_REJECT_TRUE": true,
+    "PROFILE_BINDINGS_SCOPEFLAG_MAPPING_INCOMPLETE_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true
+  },
+  "positiveResults": {
+    "PROFILE_BINDINGS_ARTIFACT_PRESENT_TRUE": true,
+    "PROFILE_BINDINGS_SCHEMA_VALID_TRUE": true,
+    "PROFILE_BINDINGS_STAGE_BINDING_COMPLETE_TRUE": true,
+    "PROFILE_BINDINGS_CLASS_NON_BLOCKING_UNLESS_STAGE_ACTIVATED_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "dod": {
+    "WS02_DOD_01_PROFILE_BINDINGS_ARTIFACT_PRESENT_TRUE": true,
+    "WS02_DOD_02_PROFILE_BINDINGS_SCHEMA_VALID_TRUE": true,
+    "WS02_DOD_03_PROFILE_BINDINGS_STAGE_BINDING_COMPLETE_TRUE": true,
+    "WS02_DOD_04_PROFILE_BINDINGS_CLASS_NON_BLOCKING_UNLESS_STAGE_ACTIVATED_TRUE": true,
+    "WS02_DOD_05_NO_NEW_P0_DRIFT_TRUE": true,
+    "WS02_DOD_06_NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T16:42:42.648Z"
+}

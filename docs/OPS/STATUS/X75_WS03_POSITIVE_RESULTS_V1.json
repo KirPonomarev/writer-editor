@@ -1,0 +1,33 @@
+{
+  "artifactId": "X75_WS03_POSITIVE_RESULTS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X75_WS03_METADATA_ALWAYS_RUN_AND_REVERIFY_CONDITIONAL",
+  "ok": true,
+  "positiveResults": {
+    "BOOK_LAYOUT_METADATA_BASELINE_PRESENT_TRUE": true,
+    "BOOK_LAYOUT_PREFLIGHT_PROTOCOL_PRESENT_TRUE": true,
+    "METADATA_BOUND_TO_DOCX_BASELINE_CONSTRAINT_TRUE": true,
+    "IF_REVERIFY_RUN_THEN_RELEASE_CANDIDATE_LOCK_MATCH_OK_TRUE": true,
+    "IF_REVERIFY_RUN_THEN_E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE_TRUE": true,
+    "OPS_INTEGRITY_P0_ALL_TRUE": true,
+    "HEAD_STRICT_OK_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "SKIP_RECORD_VALID_TRUE": true
+  },
+  "executionPath": "SKIP",
+  "hashDeltaDetectedTrue": false,
+  "metadataEvidence": {
+    "baselineArtifact": "X75_BOOK_LAYOUT_METADATA_BASELINE_V1.json",
+    "preflightArtifact": "X75_BOOK_LAYOUT_PREFLIGHT_PROTOCOL_V1.json",
+    "docxBaselineConstraintBound": true
+  },
+  "reverifyEvidence": {
+    "runCondition": "HASH_DELTA_DETECTED_TRUE",
+    "skipCondition": "HASH_DELTA_DETECTED_FALSE_OR_FIELD_MISSING",
+    "skipRecordCarrier": "X75_WS03_STATUS_V1.json",
+    "previousEvidenceArtifact": "X75_WS02_STATUS_V1.json",
+    "previousEvidenceHashMatchTrue": true
+  },
+  "updatedAtUtc": "2026-03-03T16:47:03.459Z"
+}

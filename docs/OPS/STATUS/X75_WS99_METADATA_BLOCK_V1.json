@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X75_WS99_METADATA_BLOCK_V1",
+  "tzId": "TZ_X75_WS99_FINAL_CLOSEOUT_AND_NEXT_GATE_WITH_METADATA",
+  "profileBindingsStateTransitionSummary": {
+    "PROFILE_BINDINGS_STATE_EXPLICIT_TRUE": true,
+    "profileBindingsArtifact": "XPLAT_PROFILE_BINDINGS_v3_12.json",
+    "profileBindingsBindingValidTrue": true,
+    "profileBindingsCreatedIfMissing": true,
+    "profileBindingsClassNonBlockingUnlessStageActivatedTrue": true,
+    "profileBindingsActivationSummaryArtifact": "X75_PROFILE_BINDINGS_ACTIVATION_SUMMARY_V1.json"
+  },
+  "valueMetadataTransitionSummary": {
+    "VALUE_METADATA_STATE_EXPLICIT_TRUE": true,
+    "advisoryTrack": true,
+    "bookLayoutMetadataBaselineEstablishedTrue": true,
+    "bookLayoutPreflightProtocolEstablishedTrue": true,
+    "metadataBaselineArtifact": "X75_BOOK_LAYOUT_METADATA_BASELINE_V1.json",
+    "preflightProtocolArtifact": "X75_BOOK_LAYOUT_PREFLIGHT_PROTOCOL_V1.json",
+    "nonBlockingClass": true
+  },
+  "references": {
+    "bootPrecheckArtifact": "X75_BOOT_PRECHECK_STATUS_V1",
+    "bindingIntegrityArtifact": "X75_BINDING_INTEGRITY_STATUS_V1",
+    "profileBindingsActivationSummaryArtifact": "X75_PROFILE_BINDINGS_ACTIVATION_SUMMARY_V1",
+    "ws03SummaryArtifact": "X75_WS03_SUMMARY_V1"
+  },
+  "updatedAtUtc": "2026-03-03T16:55:33.607Z"
+}

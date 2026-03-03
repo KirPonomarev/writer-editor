@@ -1,0 +1,27 @@
+{
+  "artifactId": "X75_BOOK_LAYOUT_METADATA_BASELINE_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X75_WS03_METADATA_ALWAYS_RUN_AND_REVERIFY_CONDITIONAL",
+  "status": "PASS",
+  "profileId": "BOOK_PROFILE_MIN_V1",
+  "styleMapId": "BOOK_STYLEMAP_V1",
+  "tocDeterminismRule": "TOC_GENERATION_DETERMINISTIC_FROM_SCENE_STRUCTURE_TRUE",
+  "styleMapToExportBinding": {
+    "targetExport": "DOCX_BASELINE",
+    "headingToStyleBindingPresent": true,
+    "sceneToStyleBindingPresent": true,
+    "stableOrderingRulePresent": true
+  },
+  "baselineFields": {
+    "pageFormat": "A5",
+    "marginsPreset": "BOOK_DEFAULT",
+    "chapterHeadingStyle": "Heading1",
+    "sceneHeadingStyle": "Heading2"
+  },
+  "constraints": {
+    "noRuntimeWiring": true,
+    "nonBlockingAdvisoryTrack": true,
+    "noCoreSchemaMutation": true
+  },
+  "updatedAtUtc": "2026-03-03T16:47:03.459Z"
+}

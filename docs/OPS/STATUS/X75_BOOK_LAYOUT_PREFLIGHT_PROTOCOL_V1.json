@@ -1,0 +1,19 @@
+{
+  "artifactId": "X75_BOOK_LAYOUT_PREFLIGHT_PROTOCOL_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X75_WS03_METADATA_ALWAYS_RUN_AND_REVERIFY_CONDITIONAL",
+  "status": "PASS",
+  "protocolId": "BOOK_PREFLIGHT_LITE_V1",
+  "checks": {
+    "EMPTY_CHAPTER_DETECTOR_PRESENT_TRUE": true,
+    "DUPLICATE_TITLE_DETECTOR_PRESENT_TRUE": true,
+    "BROKEN_REFERENCE_DETECTOR_PRESENT_TRUE": true,
+    "MACHINE_READABLE_REPORT_SCHEMA_PRESENT_TRUE": true
+  },
+  "outputs": {
+    "reportFormat": "JSON_KEY_VALUE",
+    "deterministicOrder": true,
+    "nonBlockingAdvisoryTrack": true
+  },
+  "updatedAtUtc": "2026-03-03T16:47:03.459Z"
+}

@@ -1,0 +1,25 @@
+{
+  "artifactId": "X75_WS03_NEGATIVE_RESULTS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X75_WS03_METADATA_ALWAYS_RUN_AND_REVERIFY_CONDITIONAL",
+  "ok": true,
+  "negativeResults": {
+    "BOOK_PROFILE_SCHEMA_INVALID_EXPECT_REJECT_TRUE": true,
+    "STYLEMAP_TO_EXPORT_BINDING_MISSING_EXPECT_REJECT_TRUE": true,
+    "TOC_DETERMINISM_RULE_MISSING_EXPECT_REJECT_TRUE": true,
+    "RELEASE_CANDIDATE_LOCK_MATCH_FALSE_EXPECT_REJECT_TRUE": true,
+    "TARGETED_RERUN_SCOPE_BREACH_EXPECT_REJECT_TRUE": true,
+    "SKIP_RECORD_MISSING_REQUIRED_FIELDS_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "invalidBookProfileRejectedByPolicy": true,
+    "missingStyleMapBindingRejectedByPolicy": true,
+    "missingTocDeterminismRuleRejectedByPolicy": true,
+    "releaseCandidateMismatchRejectedByPolicy": true,
+    "targetedRerunScopeBreachDetected": false,
+    "skipRecordRequiredFieldsPresent": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T16:47:03.459Z"
+}
