@@ -1,0 +1,21 @@
+{
+  "artifactId": "X75_WS04_NEGATIVE_RESULTS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X75_WS04_TARGETED_RECONFIRM_BRIDGE_ONLY_WITH_AUTO_SKIP",
+  "ok": true,
+  "executionPath": "SKIP",
+  "autoSkipAppliedTrue": true,
+  "negativeResults": {
+    "OUT_OF_SCOPE_RERUN_EXPECT_REJECT_TRUE": true,
+    "FULL_STACK_RERUN_EXPECT_REJECT_TRUE": true,
+    "RECONFIRM_WITHOUT_EVIDENCE_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "outOfScopeRerunDetected": false,
+    "fullStackRerunDetected": false,
+    "missingEvidenceDetected": false
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T16:49:54.245Z"
+}
