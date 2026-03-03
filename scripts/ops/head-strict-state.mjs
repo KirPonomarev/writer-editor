@@ -6,6 +6,9 @@ import { fileURLToPath } from 'node:url';
 const TOKEN_NAME = 'HEAD_STRICT_OK';
 const FAIL_CODE = 'E_HEAD_BINDING_INVALID';
 const REMOTE_UNAVAILABLE_CODE = 'E_REMOTE_UNAVAILABLE';
+const MODE_RELEASE = 'release';
+const MODE_DEV = 'dev';
+const MODE_REPO_EXECUTION = 'repo_execution';
 
 function runGit(args) {
   return spawnSync('git', args, { encoding: 'utf8' });
@@ -44,16 +47,22 @@ function parseHeadParentCount() {
 }
 
 function inferDefaultMode() {
+  const runInputMode = String(process.env.RUN_INPUT_MODE || process.env.EXECUTION_MODE || '')
+    .trim()
+    .toUpperCase();
+  if (runInputMode === 'REPO_EXECUTION') return MODE_REPO_EXECUTION;
   const doctorMode = String(process.env.DOCTOR_MODE || '').trim().toLowerCase();
-  if (doctorMode === 'delivery') return 'release';
-  return 'release';
+  if (doctorMode === 'delivery') return MODE_RELEASE;
+  return MODE_RELEASE;
 }
 
 function normalizeMode(inputMode) {
   const requestedMode = String(inputMode || process.env.HEAD_STRICT_MODE || inferDefaultMode())
     .trim()
     .toLowerCase();
-  return requestedMode === 'dev' ? 'dev' : 'release';
+  if (requestedMode === MODE_DEV) return MODE_DEV;
+  if (requestedMode === MODE_REPO_EXECUTION) return MODE_REPO_EXECUTION;
+  return MODE_RELEASE;
 }
 
 export function evaluateHeadStrictState(input = {}) {
@@ -88,9 +97,9 @@ export function evaluateHeadStrictState(input = {}) {
     || String(process.env.E_REMOTE_UNAVAILABLE || '').trim() === '1'
     || !originResolved;
 
-  const ok = mode === 'release'
+  const ok = mode === MODE_RELEASE
     ? (headEqualsOrigin && mergeCommitOk && shaLockValid && !remoteUnavailableDetected ? 1 : 0)
-    : (originAncestorOfHead && !remoteUnavailableDetected ? 1 : 0);
+    : (originAncestorOfHead && headResolved && originResolved && !remoteUnavailableDetected ? 1 : 0);
 
   return {
     ok,
@@ -109,6 +118,7 @@ export function evaluateHeadStrictState(input = {}) {
       headParentCount,
       mergeCommitOk: mergeCommitOk ? 1 : 0,
       shaLockValid: shaLockValid ? 1 : 0,
+      repoExecutionPolicyApplied: mode === MODE_REPO_EXECUTION ? 1 : 0,
       remoteUnavailableDetected: remoteUnavailableDetected ? 1 : 0,
       remoteUnavailableCode: remoteUnavailableDetected ? REMOTE_UNAVAILABLE_CODE : '',
     },

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS03_HEAD_STRICT_REMEDIATION_POSITIVE_RESULTS_V1",
+  "tzId": "TZ_X73_WS03_HEAD_STRICT_GUARD_REPAIR_001",
+  "ok": true,
+  "positiveResults": {
+    "HEAD_STRICT_OK_TRUE_IN_REPO_EXECUTION_TRUE": true,
+    "WS03_DOD_04_HEAD_STRICT_OK_TRUE_TRUE": true,
+    "SEQ11_MAIN_EQUALITY_CHECK_STILL_REQUIRED_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "headStrictRepoExecutionState": {
+    "mode": "repo_execution",
+    "HEAD_STRICT_OK": 1,
+    "headEqualsOrigin": 0,
+    "originAncestorOfHead": 1,
+    "repoExecutionPolicyApplied": 1
+  },
+  "seq11GuardState": {
+    "branchMainRequired": true,
+    "remoteBindingRequired": true,
+    "aheadStateRejectedTrue": true
+  },
+  "doctorSnapshot": {
+    "HEAD_STRICT_OK": 1,
+    "DRIFT_UNRESOLVED_P0_COUNT": 0
+  },
+  "updatedAtUtc": "2026-03-03T10:07:05Z"
+}
