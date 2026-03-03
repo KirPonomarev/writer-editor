@@ -12,10 +12,14 @@
     "DEBT_REGISTRY.json",
     "RELEASE_CANDIDATE_LOCK.json"
   ],
-  "releaseCandidateHashDeltaDetectedTrue": false,
+  "hashDeltaDetectedTrue": false,
+  "hashDeltaFieldProducedTrue": true,
+  "hashDeltaTargetBasename": "RELEASE_CANDIDATE_LOCK.json",
+  "hashDeltaTargetField": "HASH_DELTA_DETECTED_TRUE",
+  "hashDeltaWritePolicy": "SET_TRUE_IF_HASH_CHANGED_ELSE_SET_FALSE",
   "releaseCandidateLockMatchOk": true,
   "schemaVersion": 1,
   "status": "PASS",
   "tzId": "TZ_X74_WS02_AGPL_ABOUT_UI_DEBT_CLOSURE_MINIMAL_TOUCH_AND_HASH_DELTA_PRODUCER",
-  "updatedAtUtc": "2026-03-03T14:47:57.408Z"
+  "updatedAtUtc": "2026-03-03T14:54:16.959Z"
 }
