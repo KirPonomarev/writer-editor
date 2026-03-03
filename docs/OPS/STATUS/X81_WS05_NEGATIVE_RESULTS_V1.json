@@ -1,0 +1,11 @@
+{
+  "artifactId": "X81_WS05_NEGATIVE_RESULTS_V1",
+  "negativeResults": {
+    "REPO_ACCEPTANCE_PREMATURE_EXPECT_REJECT_TRUE": true,
+    "THREAD_ACCEPTANCE_FALSE_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X81_WS05_ACCEPTANCE_VECTOR_COMPILE",
+  "updatedAtUtc": "2026-03-03T22:46:13.000Z"
+}
