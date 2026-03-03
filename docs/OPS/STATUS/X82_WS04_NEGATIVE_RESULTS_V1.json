@@ -1,0 +1,12 @@
+{
+  "artifactId": "X82_WS04_NEGATIVE_RESULTS_V1",
+  "negativeResults": {
+    "FULL_STACK_RERUN_EXPECT_REJECT_TRUE": true,
+    "OUT_OF_SCOPE_RERUN_EXPECT_REJECT_TRUE": true,
+    "RECONFIRM_WITHOUT_EVIDENCE_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X82_WS04_TARGETED_RECONFIRM_REQUIRED_SET_WITH_AUTO_SKIP",
+  "updatedAtUtc": "2026-03-03T23:00:33.000Z"
+}
