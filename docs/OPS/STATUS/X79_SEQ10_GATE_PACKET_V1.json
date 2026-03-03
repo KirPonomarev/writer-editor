@@ -1,0 +1,23 @@
+{
+  "allowedValues": [
+    "TRUE",
+    "FALSE"
+  ],
+  "artifactId": "X79_SEQ10_GATE_PACKET_V1",
+  "onFalse": "HOLD_WITHOUT_MERGE",
+  "onTrue": "EXECUTE_SEQ10_STANDARD_PR_PATH_AND_SEQ11_RECONFIRM",
+  "proof": {
+    "attestationSignatureOkTrue": true,
+    "headStrictOkTrue": true,
+    "noNewP0DriftTrue": true,
+    "noScopeExpansionTrue": true,
+    "opsIntegrityP0AllTrue": true,
+    "releaseShipReadinessParityTrue": true,
+    "verifyAttestationOkTrue": true,
+    "worktreeCleanAfterPacketTrue": true
+  },
+  "readyForSeq10OwnerMergeGate": true,
+  "requiredOwnerInput": "OWNER_MERGE_GO_TRUE_OR_FALSE",
+  "schemaVersion": 1,
+  "updatedAtUtc": "2026-03-03T22:12:10.000Z"
+}

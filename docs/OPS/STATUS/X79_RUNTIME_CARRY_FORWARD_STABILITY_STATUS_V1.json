@@ -1,0 +1,17 @@
+{
+  "artifactId": "X79_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1",
+  "checks": {
+    "X78_RUNTIME_CARRY_FORWARD_STABILITY_TRUE": true,
+    "PROFILE_BINDINGS_REMAIN_VALID_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "evidence": {
+    "sourceArtifact": "X78_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1.json",
+    "carryForwardValid": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X79_WS02_RELEASE_FINALIZATION_AND_SHIP_READINESS_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T22:12:10.000Z"
+}
