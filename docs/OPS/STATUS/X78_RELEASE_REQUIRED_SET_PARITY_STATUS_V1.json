@@ -1,0 +1,15 @@
+{
+  "artifactId": "X78_RELEASE_REQUIRED_SET_PARITY_STATUS_V1",
+  "canonicalReleaseSetSha256": "9d75093b83c8cbec6cff9a85cd07ddc4ba249dc84780ef40a3c662266407e465",
+  "HEAD_STRICT_OK_TRUE": true,
+  "NO_NEW_P0_DRIFT_TRUE": true,
+  "RELEASE_REQUIRED_SET_PARITY_TRUE": true,
+  "releaseRequiredSetSha256": "9d75093b83c8cbec6cff9a85cd07ddc4ba249dc84780ef40a3c662266407e465",
+  "releaseRequiredSetSize": 14,
+  "schemaVersion": 1,
+  "sourceToken": "X70_WS05_RELEASE_SURFACE_PARITY_OK",
+  "sourceTokenPassTrue": true,
+  "status": "PASS",
+  "tzId": "TZ_X78_WS02_RELEASE_PREP_AND_VALUE_STABILIZATION_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T21:58:05.968Z"
+}

@@ -1,0 +1,14 @@
+{
+  "artifactId": "X78_RELEASE_VERIFICATION_EVIDENCE_STATUS_V1",
+  "ATTESTATION_SIGNATURE_OK_TRUE": true,
+  "attestationSignerId": "trusted-signer-release-main",
+  "schemaVersion": 1,
+  "SIGNATURE_TOKEN_ID": "ATTESTATION_SIGNATURE_OK",
+  "status": "PASS",
+  "tzId": "TZ_X78_WS02_RELEASE_PREP_AND_VALUE_STABILIZATION_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T21:58:05.968Z",
+  "VERIFY_ATTESTATION_OK_TRUE": true,
+  "VERIFY_TOKEN_ID": "VERIFY_ATTESTATION_OK",
+  "verifyPath": "scripts/ops/post-merge-verify.mjs",
+  "verifyTaskId": "strict-verify-release"
+}

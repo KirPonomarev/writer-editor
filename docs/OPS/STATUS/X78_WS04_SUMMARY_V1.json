@@ -1,0 +1,16 @@
+{
+  "artifactId": "X78_WS04_SUMMARY_V1",
+  "executionPath": "SKIP",
+  "finalDodAcceptanceSummary": "ALL_TRUE",
+  "finalGateStatus": "PASS",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "noNewP0DriftState": true,
+  "noScopeExpansionTrue": true,
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "schemaVersion": 1,
+  "status": "PASS",
+  "tzId": "TZ_X78_WS04_TARGETED_RECONFIRM_REQUIRED_SET_WITH_AUTO_SKIP",
+  "updatedAtUtc": "2026-03-03T21:58:05.968Z",
+  "WS04_AFFECTED_CHECK_SET_UNCHANGED_TRUE_OR_FALSE": true,
+  "WS04_AUTO_SKIP_APPLIED_TRUE_OR_FALSE": true
+}
