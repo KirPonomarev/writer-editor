@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS04_STATUS_V1",
+  "tzId": "TZ_X73_WS04_RUNTIME_RECONFIRM_AFFECTED_SET_ONLY_WITH_AUTO_SKIP",
+  "ok": true,
+  "token": true,
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "scopeLimit": "WS04_AFFECTED_SET_ONLY_NO_SCOPE_EXPANSION",
+  "autoSkip": {
+    "required": true,
+    "condition": "WS03_GREEN_TRUE_AND_AFFECTED_CHECK_SET_UNCHANGED_TRUE",
+    "applied": true,
+    "policy": "SKIP_ALLOWED_NO_PENALTY_WITH_MIN_RECORD"
+  },
+  "affectedCheckSet": {
+    "RELEASE_CANDIDATE_LOCK_MATCH_OK": true,
+    "E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE": true,
+    "PATH_BOUNDARY_GUARD_OK": true,
+    "DEPENDENCY_REMEDIATION_POLICY_OK": true,
+    "HOTPATH_ACCEPTANCE_GUARD_OK": true,
+    "WS04_AFFECTED_CHECK_SET_UNCHANGED_TRUE": true
+  },
+  "negativeResults": {
+    "OUT_OF_SCOPE_RERUN_EXPECT_REJECT_TRUE": true,
+    "FULL_STACK_RERUN_EXPECT_REJECT_TRUE": true,
+    "RUNTIME_RECONFIRM_WITHOUT_EVIDENCE_EXPECT_REJECT_TRUE": true
+  },
+  "positiveResults": {
+    "WS04_AUTO_SKIP_APPLIED_TRUE": true,
+    "WS04_AFFECTED_CHECK_SET_UNCHANGED_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "NO_NEW_BLOCKING_SURFACE_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true
+  },
+  "dod": {
+    "IF_NOT_SKIPPED_THEN_AFFECTED_CHECKS_ALL_GREEN_TRUE": true,
+    "IF_NOT_SKIPPED_THEN_OPS_INTEGRITY_P0_RECONFIRMED_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "NO_NEW_BLOCKING_SURFACE_TRUE": true
+  },
+  "checks": {
+    "releaseCandidateVerifyResult": "PASS",
+    "pathBoundaryGuardOk": 1,
+    "dependencyRemediationPolicyOk": 1,
+    "hotpathAcceptanceGuardOk": 1,
+    "scopeExpansionAttemptCount": 0,
+    "driftUnresolvedP0Count": 0
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T10:18:35Z"
+}

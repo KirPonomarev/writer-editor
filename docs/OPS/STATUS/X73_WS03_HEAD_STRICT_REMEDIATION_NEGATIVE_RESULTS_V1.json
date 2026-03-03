@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS03_HEAD_STRICT_REMEDIATION_NEGATIVE_RESULTS_V1",
+  "tzId": "TZ_X73_WS03_HEAD_STRICT_GUARD_REPAIR_001",
+  "ok": true,
+  "negativeResults": {
+    "HEAD_EQ_MAIN_REQUIRED_DURING_REPO_EXEC_EXPECT_REJECT_TRUE": true,
+    "HEAD_STRICT_PASS_WITH_BROKEN_BINDING_EXPECT_REJECT_TRUE": true,
+    "SEQ11_ONLY_RULE_MISSING_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "releaseModeHeadStrictOk": 0,
+    "releaseModeFailReason": "E_HEAD_BINDING_INVALID",
+    "repoExecutionBrokenBindingHeadStrictOk": 0,
+    "repoExecutionBrokenBindingFailReason": "E_HEAD_BINDING_INVALID",
+    "seq11ReadinessRemoteBindingOk": 0,
+    "seq11ReadinessFailReason": "CHECK_MERGE_READINESS_REMOTE_BINDING_MISMATCH"
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T10:07:05Z"
+}

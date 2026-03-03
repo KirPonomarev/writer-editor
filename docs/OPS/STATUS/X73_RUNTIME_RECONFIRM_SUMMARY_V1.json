@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_RUNTIME_RECONFIRM_SUMMARY_V1",
+  "tzId": "TZ_X73_WS04_RUNTIME_RECONFIRM_AFFECTED_SET_ONLY_WITH_AUTO_SKIP",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "ws03GreenTrue": true,
+  "affectedCheckSet": {
+    "RELEASE_CANDIDATE_LOCK_MATCH_OK": true,
+    "E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE": true,
+    "PATH_BOUNDARY_GUARD_OK": true,
+    "DEPENDENCY_REMEDIATION_POLICY_OK": true,
+    "HOTPATH_ACCEPTANCE_GUARD_OK": true
+  },
+  "affectedCheckSetUnchangedTrue": true,
+  "ws04AutoSkipAppliedTrue": true,
+  "ws04AutoSkipPolicy": "SKIP_ALLOWED_NO_PENALTY_WITH_MIN_RECORD",
+  "ifNotSkippedThenAffectedChecksAllGreenTrue": true,
+  "ifNotSkippedThenOpsIntegrityP0ReconfirmedTrue": true,
+  "noScopeExpansionTrue": true,
+  "noNewBlockingSurfaceTrue": true,
+  "noNewP0DriftTrue": true,
+  "updatedAtUtc": "2026-03-03T10:18:35Z"
+}

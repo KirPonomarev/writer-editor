@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_DELTA_REFRESH_STATUS_V1",
+  "tzId": "TZ_X73_WS01_MACHINE_CARRIER_REPAIR_001",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "refreshPolicy": "AFTER_EACH_WS_COMMIT_OR_VALID_SKIP",
+  "deltaMapBasename": "X73_WS01_DELTA_MAP_V1.json",
+  "deltaMapFrozenSha256": "c05a96aad8d8bb5d44156516223bbe76618c6f1ee94129677514b8bd96d406ab",
+  "refreshCompleteTrue": true,
+  "updatedAtUtc": "2026-03-03T09:02:38Z"
+}

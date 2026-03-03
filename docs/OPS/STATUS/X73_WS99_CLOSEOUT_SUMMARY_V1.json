@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS99_CLOSEOUT_SUMMARY_V1",
+  "tzId": "TZ_X73_WS99_FINAL_CLOSEOUT_AND_NEXT_GATE_WITH_DEBT_METADATA",
+  "ok": true,
+  "token": true,
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "scopeLimit": "WS99_ONLY",
+  "negativeResults": {
+    "MISSING_CLOSEOUT_SUMMARY_EXPECT_REJECT_TRUE": true,
+    "MISSING_STATUS_PACKET_EXPECT_REJECT_TRUE": true,
+    "ACCEPTANCE_VECTOR_NOT_ALL_TRUE_EXPECT_REJECT_TRUE": true
+  },
+  "positiveResults": {
+    "ALL_EXECUTED_FALSE_ITEMS_CLOSED_TRUE": true,
+    "ACCEPTANCE_VECTOR_ALL_TRUE": true,
+    "EVIDENCE_PACKET_COMPLETE_TRUE": true,
+    "WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "READY_FOR_SEQ10_OWNER_MERGE_GATE_TRUE": true,
+    "AGPL_DEBT_STATE_EXPLICIT_TRANSITION_OR_CARRY_FORWARD_RULE_TRUE": true,
+    "FINAL_STATE_EXECUTION_COMPLETE_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true
+  },
+  "executedFalseItemsList": [
+    "RELEASE_CANDIDATE_DRIFT_REBIND_REQUIRED",
+    "RELEASE_CANDIDATE_LOCK_MATCH_NOT_TRUE",
+    "X73_ACCEPTANCE_VECTOR_NOT_COMPILED"
+  ],
+  "checks": {
+    "ws02PassTrue": true,
+    "ws03PassTrue": true,
+    "ws04PassOrValidAutoSkipTrue": true,
+    "ws06PassTrue": true,
+    "activeCanonLockTrue": true,
+    "ownerOpenSignalTrue": true,
+    "scopeExpansionCounterPreWs99ZeroTrue": true,
+    "scopeExpansionAttemptCount": 0,
+    "driftUnresolvedP0Count": 0,
+    "headStrictOkTrue": true
+  },
+  "debtStateTransitionSummary": {
+    "agplDebtClosedInX73": false,
+    "carryForwardApplied": true,
+    "carryForwardTtlUntil": "2026-03-13",
+    "ownerAckRequired": true,
+    "ownerAckPresent": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T10:30:45Z"
+}

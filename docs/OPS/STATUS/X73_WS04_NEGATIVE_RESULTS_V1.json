@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS04_NEGATIVE_RESULTS_V1",
+  "tzId": "TZ_X73_WS04_RUNTIME_RECONFIRM_AFFECTED_SET_ONLY_WITH_AUTO_SKIP",
+  "ok": true,
+  "negativeResults": {
+    "OUT_OF_SCOPE_RERUN_EXPECT_REJECT_TRUE": true,
+    "FULL_STACK_RERUN_EXPECT_REJECT_TRUE": true,
+    "RUNTIME_RECONFIRM_WITHOUT_EVIDENCE_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "scopeLockRespected": true,
+    "fullStackRerunExecuted": false,
+    "evidencePresent": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T10:18:35Z"
+}

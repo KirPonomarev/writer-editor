@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS01_REMEDIATION_POSITIVE_RESULTS_V1",
+  "tzId": "TZ_X73_WS01_MACHINE_CARRIER_REPAIR_001",
+  "ok": true,
+  "positiveResults": {
+    "DELTA_MAP_PRESENT_TRUE": true,
+    "SCOPE_COUNTER_PRESENT_TRUE": true,
+    "FALSE_ITEM_02_PRESENT_TRUE": true,
+    "COUNTER_ZERO_TRUE": true,
+    "NO_NEW_P0_DRIFT_STATE_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "updatedAtUtc": "2026-03-03T09:02:38Z"
+}

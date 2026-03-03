@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS03_STATUS_V1",
+  "tzId": "TZ_X73_WS03_TARGETED_VERIFY_RELEASE_CANDIDATE_AND_P0",
+  "ok": true,
+  "token": true,
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "scopeLimit": "RELEASE_CANDIDATE_VERIFY_PLUS_TARGETED_P0_RECONFIRM_ONLY",
+  "positiveResults": {
+    "RELEASE_CANDIDATE_LOCK_MATCH_OK_TRUE": true,
+    "E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE_TRUE": true,
+    "OPS_INTEGRITY_P0_ALL_TRUE": true,
+    "HEAD_STRICT_OK_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "negativeResults": {
+    "RELEASE_CANDIDATE_LOCK_MATCH_FALSE_EXPECT_REJECT_TRUE": true,
+    "TARGETED_RERUN_SCOPE_BREACH_EXPECT_REJECT_TRUE": true,
+    "NO_NEW_P0_DRIFT_FALSE_EXPECT_REJECT_TRUE": true
+  },
+  "dod": {
+    "WS03_DOD_01_RELEASE_CANDIDATE_LOCK_MATCH_OK_TRUE": true,
+    "WS03_DOD_02_E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE_TRUE": true,
+    "WS03_DOD_03_OPS_INTEGRITY_P0_ALL_TRUE": true,
+    "WS03_DOD_04_HEAD_STRICT_OK_TRUE": true,
+    "WS03_DOD_05_NO_NEW_P0_DRIFT_TRUE": true,
+    "WS03_DOD_06_NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "checks": {
+    "releaseCandidateVerifyResult": "PASS",
+    "releaseCandidateLockMatchOk": true,
+    "headStrictOkInRepoExecution": true,
+    "opsIntegrityP0AllTrue": true,
+    "driftUnresolvedP0Count": 0,
+    "scopeExpansionAttemptCount": 0
+  },
+  "evidenceSingleSource": {
+    "artifact": "X73_WS03_STATUS_V1.json",
+    "field": "E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE_TRUE",
+    "value": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T10:13:02Z"
+}

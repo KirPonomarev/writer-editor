@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS99_METADATA_BLOCK_V1",
+  "tzId": "TZ_X73_WS99_FINAL_CLOSEOUT_AND_NEXT_GATE_WITH_DEBT_METADATA",
+  "debtStateTransitionSummary": {
+    "AGPL_DEBT_STATE_EXPLICIT_TRANSITION_OR_CARRY_FORWARD_RULE_TRUE": true,
+    "agplDebtId": "DEBT:AGPL_ABOUT_UI_LINK_PENDING",
+    "agplDebtClosedInX73": false,
+    "carryForwardApplied": true,
+    "carryForwardTtlUntil": "2026-03-13",
+    "ownerAckRequired": true,
+    "ownerAckPresent": true,
+    "policy": "IF_AGPL_NOT_CLOSED_THEN_CARRY_FORWARD_WITH_TTL_AND_OWNER_ACK_REQUIRED"
+  },
+  "updatedAtUtc": "2026-03-03T10:30:45Z"
+}

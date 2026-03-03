@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_NEXT_CONTOUR_OPENING_RECORD_V1",
+  "fromContour": "X73",
+  "nextContour": "X74",
+  "openCondition": "EXPLICIT_OWNER_OPEN_SIGNAL_REQUIRED",
+  "carryForward": {
+    "advisoryRemaining": [
+      "DEBT:AGPL_ABOUT_UI_LINK_PENDING"
+    ],
+    "p0Count": 0,
+    "scopeDriftCount": 0
+  },
+  "updatedAtUtc": "2026-03-03T10:30:45Z"
+}

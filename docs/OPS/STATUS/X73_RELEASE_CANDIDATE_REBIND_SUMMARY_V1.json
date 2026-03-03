@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_RELEASE_CANDIDATE_REBIND_SUMMARY_V1",
+  "tzId": "TZ_X73_WS02_RELEASE_CANDIDATE_LOCK_REBIND",
+  "operation": "RELEASE_CANDIDATE_LOCK_REBIND",
+  "status": "PASS",
+  "lockPathBasename": "RELEASE_CANDIDATE_LOCK.json",
+  "before": {
+    "rcId": "rc-e6d2ecb2c475-592e3737",
+    "baseCommitSha": "e6d2ecb2c4759c401da1758f3e111de53996643f",
+    "createdByMode": "promotion",
+    "createdAt": "2026-02-24T16:12:03.215Z"
+  },
+  "after": {
+    "rcId": "rc-d4d33ea3ec34-592e3737",
+    "baseCommitSha": "d4d33ea3ec34ea9973302d861f4ef0764f6f1d9f",
+    "createdByMode": "release",
+    "createdAt": "2026-03-03T09:09:51.429Z"
+  },
+  "hashFieldsAligned": true,
+  "releaseCandidateLockMatchOk": true,
+  "failSignalActiveAfterRebind": false,
+  "noNewP0DriftState": true,
+  "noScopeExpansionState": true,
+  "updatedAtUtc": "2026-03-03T09:11:14Z"
+}

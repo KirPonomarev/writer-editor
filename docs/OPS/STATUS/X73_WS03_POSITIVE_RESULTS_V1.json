@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS03_POSITIVE_RESULTS_V1",
+  "tzId": "TZ_X73_WS03_TARGETED_VERIFY_RELEASE_CANDIDATE_AND_P0",
+  "ok": true,
+  "positiveResults": {
+    "RELEASE_CANDIDATE_LOCK_MATCH_OK_TRUE": true,
+    "E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE_TRUE": true,
+    "OPS_INTEGRITY_P0_ALL_TRUE": true,
+    "HEAD_STRICT_OK_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "opsIntegrityP0Vector": {
+    "TOKEN_CATALOG_VALID_OK_TRUE": true,
+    "FAILSIGNAL_REGISTRY_VALID_OK_TRUE": true,
+    "PROOFHOOK_INTEGRITY_OK_TRUE": true,
+    "CONFIG_HASH_LOCK_OK_TRUE": true,
+    "REQUIRED_SET_NO_TARGET_OK_TRUE": true,
+    "TOKEN_SOURCE_CONFLICT_OK_TRUE": true
+  },
+  "headStrictState": {
+    "mode": "repo_execution",
+    "HEAD_STRICT_OK": 1
+  },
+  "doctorSnapshot": {
+    "HEAD_STRICT_OK": 1,
+    "DRIFT_UNRESOLVED_P0_COUNT": 0
+  },
+  "updatedAtUtc": "2026-03-03T10:13:02Z"
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS01_DELTA_MAP_V1",
+  "tzId": "TZ_X73_WS01_MACHINE_CARRIER_REPAIR_001",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "falseVectorPolicy": "EXECUTE_ONLY_DECLARED_FALSE_ITEMS",
+  "falseItems": [
+    {
+      "id": "RELEASE_CANDIDATE_DRIFT_REBIND_REQUIRED",
+      "status": "FALSE",
+      "required": true,
+      "targetWs": "WS02"
+    },
+    {
+      "id": "RELEASE_CANDIDATE_LOCK_MATCH_NOT_TRUE",
+      "status": "FALSE",
+      "required": true,
+      "targetWs": "WS02"
+    },
+    {
+      "id": "X73_ACCEPTANCE_VECTOR_NOT_COMPILED",
+      "status": "FALSE",
+      "required": true,
+      "targetWs": "WS06"
+    }
+  ],
+  "optionalFalseItems": [
+    {
+      "id": "AGPL_ABOUT_UI_LINK_PENDING_IF_OWNER_APPROVES_SEPARATE_TZ_TRUE",
+      "status": "OPTIONAL",
+      "required": false
+    }
+  ],
+  "wsMarkers": {
+    "WS02_MARKED_FALSE_IN_DELTA_MAP_TRUE": true
+  },
+  "hashPayload": {
+    "falseItems": [
+      "RELEASE_CANDIDATE_DRIFT_REBIND_REQUIRED",
+      "RELEASE_CANDIDATE_LOCK_MATCH_NOT_TRUE",
+      "X73_ACCEPTANCE_VECTOR_NOT_COMPILED"
+    ],
+    "ownerMap": {
+      "RELEASE_CANDIDATE_DRIFT_REBIND_REQUIRED": "CODEX",
+      "RELEASE_CANDIDATE_LOCK_MATCH_NOT_TRUE": "CODEX",
+      "X73_ACCEPTANCE_VECTOR_NOT_COMPILED": "CODEX"
+    }
+  },
+  "DELTA_MAP_FROZEN_SHA256": "c05a96aad8d8bb5d44156516223bbe76618c6f1ee94129677514b8bd96d406ab",
+  "allFalseItemsMappedTrue": true,
+  "singleOwnerPerFalseItemTrue": true,
+  "updatedAtUtc": "2026-03-03T09:02:38Z"
+}
