@@ -1,0 +1,17 @@
+{
+  "artifactId": "X85_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1",
+  "checks": {
+    "X84_RUNTIME_CARRY_FORWARD_STABILITY_TRUE": true,
+    "PROFILE_BINDINGS_REMAIN_VALID_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "evidence": {
+    "sourceArtifact": "X84_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1.json",
+    "carryForwardValid": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X85_WS02_RELEASE_TAG_EXECUTION_AND_POST_RELEASE_VERIFICATION_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T23:36:13.000Z"
+}
