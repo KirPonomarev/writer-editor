@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu, dialog, ipcMain, session } = require('electron');
 const { performance } = require('perf_hooks');
+const { spawnSync } = require('child_process');
 const path = require('path');
 const os = require('os');
 const fs = require('fs').promises;
@@ -29,6 +30,106 @@ const CSP_POLICY =
   "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'";
 const FILE_NAVIGATION_FAIL_CODE = 'E_PATH_BOUNDARY_VIOLATION';
 const FILE_NAVIGATION_FAIL_SIGNAL = 'E_RUNTIME_WIRING_BEFORE_STAGE';
+const CORRESPONDING_SOURCE_BASE_URL = 'https://github.com/KirPon2024/writer-editor';
+const ABOUT_LICENSE_TEXT_FALLBACK = 'Craftsman is licensed under AGPL-3.0-or-later.';
+
+function resolveRepoRootForAbout() {
+  return path.resolve(__dirname, '..');
+}
+
+function resolveAboutLicenseTextPath() {
+  return path.join(resolveRepoRootForAbout(), 'docs', 'OPERATIONS', 'ABOUT_LICENSE_TEXT.md');
+}
+
+function extractNoticeFromAboutLicenseText(raw) {
+  const text = typeof raw === 'string' ? raw : '';
+  const quoted = text.match(/"([^"]+)"/);
+  if (quoted && quoted[1]) return quoted[1].trim();
+  return ABOUT_LICENSE_TEXT_FALLBACK;
+}
+
+function resolveCorrespondingSourceRef() {
+  const envRef = typeof process.env.CRAFTSMAN_CORRESPONDING_SOURCE_REF === 'string'
+    ? process.env.CRAFTSMAN_CORRESPONDING_SOURCE_REF.trim()
+    : '';
+  if (envRef) return envRef;
+
+  const repoRoot = resolveRepoRootForAbout();
+  const gitDir = path.join(repoRoot, '.git');
+  if (!fsSync.existsSync(gitDir)) return CORRESPONDING_SOURCE_BASE_URL;
+
+  const probe = spawnSync('git', ['rev-parse', 'HEAD'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+  if (probe.status !== 0) return CORRESPONDING_SOURCE_BASE_URL;
+
+  const sha = typeof probe.stdout === 'string' ? probe.stdout.trim() : '';
+  if (!sha) return CORRESPONDING_SOURCE_BASE_URL;
+  return `${CORRESPONDING_SOURCE_BASE_URL}/tree/${sha}`;
+}
+
+function buildAboutLicenseNotice() {
+  try {
+    const raw = fsSync.readFileSync(resolveAboutLicenseTextPath(), 'utf8');
+    return extractNoticeFromAboutLicenseText(raw);
+  } catch {
+    return ABOUT_LICENSE_TEXT_FALLBACK;
+  }
+}
+
+async function showAboutLicensesDialog() {
+  const win = BrowserWindow.getFocusedWindow() || mainWindow || null;
+  const notice = buildAboutLicenseNotice();
+  const sourceRef = resolveCorrespondingSourceRef();
+  const detail = `${notice}\n\nCorresponding Source:\n${sourceRef}`;
+
+  await dialog.showMessageBox(win, {
+    type: 'info',
+    buttons: ['OK'],
+    defaultId: 0,
+    title: 'О программе и лицензии',
+    message: 'Craftsman — AGPL-3.0-or-later',
+    detail,
+    noLink: true,
+  });
+}
+
+function createAboutLicensesMenuEntry() {
+  return {
+    id: 'help',
+    label: 'Справка',
+    submenu: [
+      {
+        id: 'help-about-licenses',
+        label: 'О программе и лицензии',
+        click: () => {
+          showAboutLicensesDialog().catch((error) => {
+            logDevError('showAboutLicensesDialog', error);
+          });
+        },
+      },
+    ],
+  };
+}
+
+function ensureAboutLicensesMenuEntry(template) {
+  const hasAboutEntry = template.some((item) =>
+    item && (item.id === 'help-about-licenses'
+      || (Array.isArray(item.submenu)
+        && item.submenu.some((child) => child && child.id === 'help-about-licenses')))
+  );
+  if (hasAboutEntry) return;
+
+  const helpMenu = template.find((item) => item && (item.id === 'help' || item.role === 'help'));
+  if (helpMenu && Array.isArray(helpMenu.submenu)) {
+    helpMenu.submenu.push(createAboutLicensesMenuEntry().submenu[0]);
+    return;
+  }
+
+  template.push(createAboutLicensesMenuEntry());
+}
+
 function logPerfStage(label) {
   if (!isDevMode) return;
   const elapsed = Math.round(performance.now() - launchT0);
@@ -3305,6 +3406,7 @@ function createMenu() {
   try {
     const runtimeConfig = resolveRuntimeMenuBuildConfig(mode);
     const template = buildMenuTemplateFromConfig(runtimeConfig);
+    ensureAboutLicensesMenuEntry(template);
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
   } catch (error) {

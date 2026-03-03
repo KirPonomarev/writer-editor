@@ -1,0 +1,43 @@
+{
+  "artifactId": "X74_WS02_STATUS_V1",
+  "checks": {
+    "driftUnresolvedP0Count": 0,
+    "hashDeltaDetectedTrue": false,
+    "headStrictOk": true,
+    "releaseCandidateLockMatchOk": true,
+    "releaseCandidateVerifyResult": "PASS",
+    "scopeExpansionAttemptCount": 0
+  },
+  "dod": {
+    "WS02_DOD_01_AGPL_ABOUT_UI_ENTRY_VISIBLE_TRUE": true,
+    "WS02_DOD_02_AGPL_NOTICE_TEXT_RESOLVES_FROM_ABOUT_LICENSE_TEXT_TRUE": true,
+    "WS02_DOD_03_AGPL_DEBT_REGISTRY_MARKED_INACTIVE_TRUE": true,
+    "WS02_DOD_04_AGPL_DEBT_CLOSURE_EVIDENCE_PRESENT_TRUE": true,
+    "WS02_DOD_05_NO_NEW_P0_DRIFT_TRUE": true,
+    "WS02_DOD_06_NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "negativeResults": {
+    "ABOUT_OR_LICENSE_ENTRY_MISSING_EXPECT_REJECT_TRUE": true,
+    "AGPL_NOTICE_TEXT_MISSING_EXPECT_REJECT_TRUE": true,
+    "CORRESPONDING_SOURCE_REFERENCE_MISSING_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "positiveResults": {
+    "AGPL_ABOUT_UI_ENTRY_VISIBLE_TRUE": true,
+    "AGPL_DEBT_CLOSURE_EVIDENCE_PRESENT_TRUE": true,
+    "AGPL_DEBT_REGISTRY_MARKED_INACTIVE_TRUE": true,
+    "AGPL_NOTICE_TEXT_RESOLVES_FROM_ABOUT_LICENSE_TEXT_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "schemaVersion": 1,
+  "scopeLimit": "main.js,ABOUT_LICENSE_TEXT.md,DEBT_REGISTRY.json,STATUS_ARTIFACTS_ONLY",
+  "token": true,
+  "tzId": "TZ_X74_WS02_AGPL_ABOUT_UI_DEBT_CLOSURE_MINIMAL_TOUCH_AND_HASH_DELTA_PRODUCER",
+  "updatedAtUtc": "2026-03-03T14:47:57.408Z"
+}

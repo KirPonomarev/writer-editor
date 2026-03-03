@@ -7,6 +7,7 @@
   "tokenCatalogHash": "8074af7ba472c211886c9b04a0af6bba2af9d8aa0231c0c3675cc1cac819f8bf",
   "failsignalRegistryHash": "999bcb93a513da21edfab25443c5acc2d17f2e6f247675825edd1f68fb928159",
   "requiredTokenSetHash": "fc82503fc1dcb65c4928d2a86ce901a2cd242f675328b22d662a05ff06241dbb",
+  "HASH_DELTA_DETECTED_TRUE": false,
   "createdAt": "2026-03-03T09:09:51.429Z",
   "createdByMode": "release"
 }

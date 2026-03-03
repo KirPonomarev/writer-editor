@@ -32,7 +32,7 @@
     },
     {
       "debtId": "DEBT:AGPL_ABOUT_UI_LINK_PENDING",
-      "active": true,
+      "active": false,
       "owner": "DESKTOP_UI",
       "severity": "D1",
       "createdAt": "2026-02-11",
