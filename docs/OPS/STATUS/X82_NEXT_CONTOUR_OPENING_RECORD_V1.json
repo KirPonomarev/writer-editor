@@ -1,0 +1,18 @@
+{
+  "artifactId": "X82_NEXT_CONTOUR_OPENING_RECORD_V1",
+  "carryForward": {
+    "advisoryRemaining": [],
+    "p0Count": 0,
+    "scopeDriftCount": 0
+  },
+  "fromContour": "X82",
+  "handoff": {
+    "NEXT_CONTOUR_CLASS": "RELEASE_FREEZE_AND_SHIP_DECISION",
+    "NEXT_CONTOUR_ID_AFTER_X82": "X83",
+    "NEXT_CONTOUR_OPENING_RECORD_REQUIRED": true
+  },
+  "nextContour": "X83",
+  "openCondition": "EXPLICIT_OWNER_OPEN_SIGNAL_REQUIRED",
+  "schemaVersion": 1,
+  "updatedAtUtc": "2026-03-03T23:00:33.000Z"
+}
