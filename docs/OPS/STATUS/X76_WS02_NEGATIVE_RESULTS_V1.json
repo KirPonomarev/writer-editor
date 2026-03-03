@@ -1,0 +1,27 @@
+{
+  "artifactId": "X76_WS02_NEGATIVE_RESULTS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X76_WS02_VALUE_IMPLEMENTATION_AND_ADVISORY_PACKET_WITH_MACHINE_PROOF",
+  "ok": true,
+  "negativeResults": {
+    "COMMAND_SURFACE_BYPASS_RISK_EXPECT_REJECT_TRUE": true,
+    "CAPABILITY_BINDING_MISSING_EXPECT_REJECT_TRUE": true,
+    "MENU_BINDING_INCONSISTENT_EXPECT_REJECT_TRUE": true,
+    "MACOS_SIGNING_READINESS_SCHEMA_INVALID_EXPECT_REJECT_TRUE": true,
+    "ENTITLEMENTS_MIN_SCHEMA_INVALID_EXPECT_REJECT_TRUE": true,
+    "ENTITLEMENTS_HASH_MISMATCH_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "commandSurfaceBypassRejectedByPolicy": true,
+    "capabilityBindingMissingRejectedByPolicy": true,
+    "menuBindingInconsistentRejectedByPolicy": true,
+    "macosSigningSchemaInvalidRejectedByPolicy": true,
+    "entitlementsMinSchemaInvalidRejectedByPolicy": true,
+    "entitlementsHashMismatchRejectedByPolicy": true,
+    "scopeBreachDetected": false
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}

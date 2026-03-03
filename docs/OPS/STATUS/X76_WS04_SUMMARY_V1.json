@@ -1,0 +1,16 @@
+{
+  "artifactId": "X76_WS04_SUMMARY_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X76_WS04_TARGETED_RECONFIRM_REQUIRED_SET_WITH_AUTO_SKIP",
+  "status": "PASS",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "executionPath": "SKIP",
+  "noNewP0DriftState": true,
+  "noScopeExpansionTrue": true,
+  "finalDodAcceptanceSummary": "ALL_TRUE",
+  "finalGateStatus": "PASS",
+  "WS04_AUTO_SKIP_APPLIED_TRUE_OR_FALSE": true,
+  "WS04_AFFECTED_CHECK_SET_UNCHANGED_TRUE_OR_FALSE": true,
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}

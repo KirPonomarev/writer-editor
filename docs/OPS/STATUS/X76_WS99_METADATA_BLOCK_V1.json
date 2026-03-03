@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X76_WS99_METADATA_BLOCK_V1",
+  "tzId": "TZ_X76_WS99_FINAL_CLOSEOUT_AND_NEXT_GATE_WITH_METADATA",
+  "profileBindingsStateTransitionSummary": {
+    "PROFILE_BINDINGS_STATE_EXPLICIT_TRUE": true,
+    "profileBindingsArtifact": "XPLAT_PROFILE_BINDINGS_v3_12.json",
+    "profileBindingsBindingValidTrue": true,
+    "profileBindingsCreatedIfMissing": false,
+    "profileBindingsClassNonBlockingUnlessStageActivatedTrue": true,
+    "profileBindingsActivationSummaryArtifact": "X75_PROFILE_BINDINGS_ACTIVATION_SUMMARY_V1.json"
+  },
+  "valueImplementationTransitionSummary": {
+    "COMMAND_SURFACE_STATE_EXPLICIT_TRUE": true,
+    "commandSurfaceTokenId": "COMMAND_SURFACE_ENFORCED_OK",
+    "commandSurfaceMachineBoundTrue": true,
+    "commandSurfaceProofhookScriptBasename": "command-surface-state.mjs",
+    "commandSurfaceNegativeTestBasename": "command-surface-single-entry.contract.test.js",
+    "commandSurfaceFailSignalBinding": "E_COMMAND_SURFACE_BYPASS",
+    "commandSurfaceStatusArtifact": "X76_BOOK_LAYOUT_COMMAND_SURFACE_STATUS_V1.json"
+  },
+  "macosAdvisoryPacketStateSummary": {
+    "MACOS_ADVISORY_PACKET_STATE_EXPLICIT_TRUE": true,
+    "macosReadinessArtifact": "MACOS_SIGNING_READINESS.json",
+    "macosAdvisoryPacketArtifact": "X76_MACOS_RELEASE_READINESS_PACKET_V1.json",
+    "entitlementsArtifact": "MACOS_SIGNING_ENTITLEMENTS.plist",
+    "ENTITLEMENTS_SHA256": "d4077854f1dedc1804ebd1d76b18fbc3fd1aec491e06e7496c26145b99b10b70",
+    "ENTITLEMENTS_MIN_SCHEMA_VALID_TRUE": true,
+    "ENTITLEMENTS_HASH_MATCH_TRUE": true
+  },
+  "references": {
+    "bootPrecheckArtifact": "X76_BOOT_PRECHECK_STATUS_V1",
+    "bindingIntegrityArtifact": "X76_BINDING_INTEGRITY_STATUS_V1",
+    "commandSurfaceArtifact": "X76_BOOK_LAYOUT_COMMAND_SURFACE_STATUS_V1",
+    "ws03SummaryArtifact": "X76_WS03_SUMMARY_V1"
+  },
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}

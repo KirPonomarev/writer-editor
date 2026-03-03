@@ -1,0 +1,69 @@
+{
+  "artifactId": "X76_WS02_STATUS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X76_WS02_VALUE_IMPLEMENTATION_AND_ADVISORY_PACKET_WITH_MACHINE_PROOF",
+  "ok": true,
+  "token": true,
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "prechecks": {
+    "PRECHECK_01_OWNER_OPEN_SIGNAL_TRUE": true,
+    "PRECHECK_02_MODE_REPO_EXECUTION_TRUE": true,
+    "PRECHECK_03_WORKTREE_CLEAN_TRUE": true,
+    "PRECHECK_04_ACTIVE_CANON_LOCK_TRUE": true,
+    "PRECHECK_05_WS02_MARKED_FALSE_IN_DELTA_MAP_TRUE": true,
+    "PRECHECK_06_SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE": true
+  },
+  "checks": {
+    "commandSurfaceMachineBound": true,
+    "commandSurfaceProofhookPass": true,
+    "commandSurfaceNegativeTestBindingPresent": true,
+    "profileBindingsRemainValid": true,
+    "macosAdvisoryPacketPresent": true,
+    "macosEntitlementsArtifactPresent": true,
+    "macosEntitlementsMinSchemaValid": true,
+    "macosEntitlementsHashMatch": true,
+    "releaseCandidateLockMatchOk": true,
+    "hashDeltaDetectedTrue": false,
+    "headStrictOk": true,
+    "driftUnresolvedP0Count": 0,
+    "scopeExpansionAttemptCount": 0
+  },
+  "scopeLimit": "command-catalog.v1.mjs,projectCommands.mjs,capabilityPolicy.mjs,menu-config.v1.json,menu-config-validator.js,MACOS_SIGNING_READINESS.json,MACOS_SIGNING_ENTITLEMENTS.plist,STATUS_ARTIFACTS_ONLY",
+  "negativeResults": {
+    "COMMAND_SURFACE_BYPASS_RISK_EXPECT_REJECT_TRUE": true,
+    "CAPABILITY_BINDING_MISSING_EXPECT_REJECT_TRUE": true,
+    "MENU_BINDING_INCONSISTENT_EXPECT_REJECT_TRUE": true,
+    "MACOS_SIGNING_READINESS_SCHEMA_INVALID_EXPECT_REJECT_TRUE": true,
+    "ENTITLEMENTS_MIN_SCHEMA_INVALID_EXPECT_REJECT_TRUE": true,
+    "ENTITLEMENTS_HASH_MISMATCH_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true
+  },
+  "positiveResults": {
+    "COMMAND_SURFACE_MACHINE_BOUND_TRUE": true,
+    "COMMAND_SURFACE_PROOFHOOK_PASS_TRUE": true,
+    "COMMAND_SURFACE_NEGATIVE_TEST_BINDING_PRESENT_TRUE": true,
+    "PROFILE_BINDINGS_REMAIN_VALID_TRUE": true,
+    "MACOS_ADVISORY_PACKET_PRESENT_TRUE": true,
+    "MACOS_ENTITLEMENTS_ARTIFACT_PRESENT_TRUE": true,
+    "MACOS_ENTITLEMENTS_MIN_SCHEMA_VALID_TRUE": true,
+    "MACOS_ENTITLEMENTS_HASH_MATCH_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "dod": {
+    "WS02_DOD_01_COMMAND_SURFACE_MACHINE_BOUND_TRUE": true,
+    "WS02_DOD_02_COMMAND_SURFACE_PROOFHOOK_PASS_TRUE": true,
+    "WS02_DOD_03_COMMAND_SURFACE_NEGATIVE_TEST_BINDING_PRESENT_TRUE": true,
+    "WS02_DOD_04_PROFILE_BINDINGS_REMAIN_VALID_TRUE": true,
+    "WS02_DOD_05_MACOS_ADVISORY_PACKET_PRESENT_TRUE": true,
+    "WS02_DOD_06_MACOS_ENTITLEMENTS_ARTIFACT_PRESENT_TRUE": true,
+    "WS02_DOD_07_MACOS_ENTITLEMENTS_MIN_SCHEMA_VALID_TRUE": true,
+    "WS02_DOD_08_MACOS_ENTITLEMENTS_HASH_MATCH_TRUE": true,
+    "WS02_DOD_09_NO_NEW_P0_DRIFT_TRUE": true,
+    "WS02_DOD_10_NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}

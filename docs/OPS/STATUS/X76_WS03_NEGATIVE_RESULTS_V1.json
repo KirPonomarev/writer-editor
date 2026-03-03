@@ -1,0 +1,23 @@
+{
+  "artifactId": "X76_WS03_NEGATIVE_RESULTS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X76_WS03_METADATA_ALWAYS_RUN_AND_REVERIFY_CONDITIONAL",
+  "ok": true,
+  "negativeResults": {
+    "RELEASE_CANDIDATE_LOCK_MATCH_FALSE_EXPECT_REJECT_TRUE": true,
+    "TARGETED_RERUN_SCOPE_BREACH_EXPECT_REJECT_TRUE": true,
+    "HEAD_STRICT_OK_FALSE_EXPECT_REJECT_TRUE": true,
+    "HASH_DELTA_FIELD_MISSING_WITHOUT_FALLBACK_RECORD_EXPECT_REJECT_TRUE": true,
+    "SKIP_RECORD_MISSING_REQUIRED_FIELDS_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "releaseCandidateMismatchRejectedByPolicy": true,
+    "targetedRerunScopeBreachDetected": false,
+    "headStrictFalseRejectedByPolicy": true,
+    "hashDeltaFallbackRecordValid": true,
+    "skipRecordRequiredFieldsPresent": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}
