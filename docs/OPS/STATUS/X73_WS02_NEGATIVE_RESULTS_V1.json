@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS02_NEGATIVE_RESULTS_V1",
+  "tzId": "TZ_X73_WS02_RELEASE_CANDIDATE_LOCK_REBIND",
+  "ok": true,
+  "negativeResults": {
+    "LOCK_CREATE_WITH_MISSING_INPUT_EXPECT_REJECT_TRUE": true,
+    "LOCK_SCHEMA_INVALID_EXPECT_REJECT_TRUE": true,
+    "REBIND_WITH_SCOPE_BREACH_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "missingInputCreateExitCode": 1,
+    "missingInputFailSignalCode": "E_RELEASE_CANDIDATE_DRIFT",
+    "invalidLockVerifyToken": 0,
+    "invalidLockVerifyFailSignalCode": "E_RELEASE_CANDIDATE_DRIFT",
+    "scopeBreachDetected": false
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T09:11:14Z"
+}

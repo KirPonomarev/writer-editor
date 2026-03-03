@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS02_STATUS_V1",
+  "tzId": "TZ_X73_WS02_RELEASE_CANDIDATE_LOCK_REBIND",
+  "ok": true,
+  "token": true,
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "scopeLimit": "RELEASE_CANDIDATE_LOCK_AND_RELATED_HASH_EVIDENCE_ONLY",
+  "positiveResults": {
+    "RELEASE_CANDIDATE_LOCK_UPDATED_TRUE": true,
+    "RELEASE_CANDIDATE_LOCK_SCHEMA_VALID_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "negativeResults": {
+    "LOCK_CREATE_WITH_MISSING_INPUT_EXPECT_REJECT_TRUE": true,
+    "LOCK_SCHEMA_INVALID_EXPECT_REJECT_TRUE": true,
+    "REBIND_WITH_SCOPE_BREACH_EXPECT_REJECT_TRUE": true
+  },
+  "dod": {
+    "WS02_DOD_01_RELEASE_CANDIDATE_LOCK_UPDATED_TRUE": true,
+    "WS02_DOD_02_RELEASE_CANDIDATE_LOCK_SCHEMA_VALID_TRUE": true,
+    "WS02_DOD_03_NO_NEW_P0_DRIFT_TRUE": true,
+    "WS02_DOD_04_NO_SCOPE_EXPANSION_TRUE": true,
+    "WS02_DOD_05_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "WS02_DOD_06_SINGLE_COMMIT_CREATED_IF_WRITE_TRUE": true
+  },
+  "checks": {
+    "releaseCandidateCreateResult": "PASS",
+    "releaseCandidateVerifyResult": "PASS",
+    "releaseCandidateLockMatchOk": true,
+    "headStrictOk": true,
+    "driftUnresolvedP0Count": 0,
+    "scopeExpansionAttemptCount": 0
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T09:11:14Z"
+}
