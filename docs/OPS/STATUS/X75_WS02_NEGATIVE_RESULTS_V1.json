@@ -1,0 +1,21 @@
+{
+  "artifactId": "X75_WS02_NEGATIVE_RESULTS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X75_WS02_PROFILE_BINDINGS_METADATA_ACTIVATION_MINIMAL_TOUCH",
+  "ok": true,
+  "negativeResults": {
+    "PROFILE_BINDINGS_ARTIFACT_MISSING_AFTER_WS02_EXPECT_REJECT_TRUE": true,
+    "PROFILE_BINDINGS_SCHEMA_INVALID_EXPECT_REJECT_TRUE": true,
+    "PROFILE_BINDINGS_SCOPEFLAG_MAPPING_INCOMPLETE_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "profileBindingsMissingRejectedByPolicy": true,
+    "profileBindingsInvalidSchemaRejectedByPolicy": true,
+    "profileBindingsIncompleteMappingRejectedByPolicy": true,
+    "scopeBreachDetected": false
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T16:42:42.648Z"
+}

@@ -1,0 +1,39 @@
+{
+  "artifactId": "X75_PROFILE_BINDINGS_ACTIVATION_SUMMARY_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X75_WS02_PROFILE_BINDINGS_METADATA_ACTIVATION_MINIMAL_TOUCH",
+  "status": "PASS",
+  "profileBindingsBasename": "XPLAT_PROFILE_BINDINGS_v3_12.json",
+  "createdIfMissing": true,
+  "schemaValid": true,
+  "stageBindingComplete": true,
+  "scopeFlagMappingComplete": true,
+  "classNonBlockingUnlessStageActivated": true,
+  "stageBindingPairs": [
+    {
+      "stageId": "X1",
+      "requiredScopeFlag": "XPLAT_STAGE_X1_ENABLED"
+    },
+    {
+      "stageId": "X2",
+      "requiredScopeFlag": "XPLAT_STAGE_X2_ENABLED"
+    },
+    {
+      "stageId": "X3",
+      "requiredScopeFlag": "XPLAT_STAGE_X3_ENABLED"
+    },
+    {
+      "stageId": "X4",
+      "requiredScopeFlag": "XPLAT_STAGE_X4_ENABLED"
+    }
+  ],
+  "evidenceFiles": [
+    "XPLAT_PROFILE_BINDINGS_v3_12.json",
+    "XPLAT_ROLLOUT_PLAN_v3_12.json",
+    "SCOPEFLAGS_REGISTRY_v3_12.json",
+    "X75_WS02_STATUS_V1.json",
+    "X75_WS02_NEGATIVE_RESULTS_V1.json",
+    "X75_WS02_POSITIVE_RESULTS_V1.json"
+  ],
+  "updatedAtUtc": "2026-03-03T16:42:42.648Z"
+}

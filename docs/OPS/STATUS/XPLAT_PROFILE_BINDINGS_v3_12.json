@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "v3.12",
+  "artifactId": "XPLAT_PROFILE_BINDINGS_v3_12",
+  "status": "ACTIVE",
+  "sourceOfTruthPolicy": "ACTIVE_CANON_ONLY",
+  "nonBlockingUnlessStageActivated": true,
+  "activationGuard": {
+    "stageActivationSource": "XPLAT_ROLLOUT_PLAN_v3_12.json",
+    "scopeFlagSource": "SCOPEFLAGS_REGISTRY_v3_12.json",
+    "blockingOnlyWhenStageActive": true
+  },
+  "profiles": [
+    {
+      "profile": "dev",
+      "gateTier": "core",
+      "mode": "THREAD_REVIEW_OR_REPO_EXECUTION",
+      "scopeFlagDefaults": {
+        "XPLAT_STAGE_X1_ENABLED": false,
+        "XPLAT_STAGE_X2_ENABLED": false,
+        "XPLAT_STAGE_X3_ENABLED": false,
+        "XPLAT_STAGE_X4_ENABLED": false
+      }
+    },
+    {
+      "profile": "pr",
+      "gateTier": "core",
+      "mode": "REPO_EXECUTION",
+      "scopeFlagDefaults": {
+        "XPLAT_STAGE_X1_ENABLED": false,
+        "XPLAT_STAGE_X2_ENABLED": false,
+        "XPLAT_STAGE_X3_ENABLED": false,
+        "XPLAT_STAGE_X4_ENABLED": false
+      }
+    },
+    {
+      "profile": "release",
+      "gateTier": "release",
+      "mode": "REPO_EXECUTION",
+      "scopeFlagDefaults": {
+        "XPLAT_STAGE_X1_ENABLED": false,
+        "XPLAT_STAGE_X2_ENABLED": false,
+        "XPLAT_STAGE_X3_ENABLED": false,
+        "XPLAT_STAGE_X4_ENABLED": false
+      }
+    }
+  ],
+  "stageBindings": [
+    {
+      "stageId": "X1",
+      "requiredScopeFlag": "XPLAT_STAGE_X1_ENABLED",
+      "nonBlockingWhenInactive": true
+    },
+    {
+      "stageId": "X2",
+      "requiredScopeFlag": "XPLAT_STAGE_X2_ENABLED",
+      "nonBlockingWhenInactive": true
+    },
+    {
+      "stageId": "X3",
+      "requiredScopeFlag": "XPLAT_STAGE_X3_ENABLED",
+      "nonBlockingWhenInactive": true
+    },
+    {
+      "stageId": "X4",
+      "requiredScopeFlag": "XPLAT_STAGE_X4_ENABLED",
+      "nonBlockingWhenInactive": true
+    }
+  ],
+  "completeness": {
+    "stageBindingCount": 4,
+    "scopeFlagRegistryCount": 4,
+    "mappingComplete": true
+  },
+  "updatedAtUtc": "2026-03-03T16:42:42.648Z"
+}
