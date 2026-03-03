@@ -1,0 +1,33 @@
+{
+  "artifactId": "X80_WS99_METADATA_BLOCK_V1",
+  "profileBindingsStateTransitionSummary": {
+    "PROFILE_BINDINGS_STATE_EXPLICIT_TRUE": true,
+    "profileBindingsActivationSummaryArtifact": "X75_PROFILE_BINDINGS_ACTIVATION_SUMMARY_V1.json",
+    "profileBindingsArtifact": "XPLAT_PROFILE_BINDINGS_v3_12.json",
+    "profileBindingsBindingValidTrue": true,
+    "profileBindingsClassNonBlockingUnlessStageActivatedTrue": true,
+    "profileBindingsCreatedIfMissing": false
+  },
+  "references": {
+    "bindingIntegrityArtifact": "X80_BINDING_INTEGRITY_STATUS_V1",
+    "bootPrecheckArtifact": "X80_BOOT_PRECHECK_STATUS_V1",
+    "releaseShipExecutionArtifact": "X80_RELEASE_SHIP_EXECUTION_STATUS_V1",
+    "postShipGuardArtifact": "X80_POST_SHIP_GUARD_STATUS_V1",
+    "ws03SummaryArtifact": "X80_WS03_SUMMARY_V1"
+  },
+  "releaseShipExecutionStateTransitionSummary": {
+    "RELEASE_SHIP_EXECUTION_READY_TRUE": true,
+    "releaseShipExecutionArtifact": "X80_RELEASE_SHIP_EXECUTION_STATUS_V1.json",
+    "releaseSurfaceParityTokenId": "X70_WS05_RELEASE_SURFACE_PARITY_OK",
+    "runtimeCarryForwardArtifact": "X80_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1.json"
+  },
+  "postShipGuardStateTransitionSummary": {
+    "POST_SHIP_GUARD_READY_TRUE": true,
+    "postShipGuardArtifact": "X80_POST_SHIP_GUARD_STATUS_V1.json",
+    "verifyTokenId": "VERIFY_ATTESTATION_OK",
+    "signatureTokenId": "ATTESTATION_SIGNATURE_OK"
+  },
+  "schemaVersion": 1,
+  "tzId": "TZ_X80_WS99_FINAL_CLOSEOUT_AND_NEXT_GATE_WITH_METADATA",
+  "updatedAtUtc": "2026-03-03T22:30:51.000Z"
+}
