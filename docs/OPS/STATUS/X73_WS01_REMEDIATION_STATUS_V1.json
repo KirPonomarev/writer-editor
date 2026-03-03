@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS01_REMEDIATION_STATUS_V1",
+  "tzId": "TZ_X73_WS01_MACHINE_CARRIER_REPAIR_001",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "ok": true,
+  "token": true,
+  "scopeLimit": "WS01_MACHINE_CARRIERS_ONLY",
+  "goalResults": {
+    "GOAL_01_CREATE_X73_WS01_DELTA_MAP_MACHINE_CARRIER_TRUE": true,
+    "GOAL_02_CREATE_X73_SCOPE_EXPANSION_COUNTER_MACHINE_CARRIER_TRUE": true,
+    "GOAL_03_CREATE_OWNER_ASSIGNMENT_AND_DELTA_REFRESH_TRUE": true
+  },
+  "dod": {
+    "DOD_01_WS02_MARKED_FALSE_IN_DELTA_MAP_TRUE": true,
+    "DOD_02_SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE": true,
+    "DOD_03_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "DOD_04_SINGLE_COMMIT_CREATED_IF_WRITE_TRUE": true,
+    "DOD_05_READY_TO_REENTER_TZ_X73_WS02_RELEASE_CANDIDATE_LOCK_REBIND_TRUE": true
+  },
+  "checks": {
+    "ws02MarkedFalseInDeltaMapTrue": true,
+    "scopeExpansionCounterPreWs99ZeroTrue": true,
+    "scopeExpansionAttemptCount": 0,
+    "noNewP0DriftState": true,
+    "noScopeExpansionTrue": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T09:02:38Z"
+}

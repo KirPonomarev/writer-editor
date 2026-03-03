@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS01_OWNER_ASSIGNMENT_V1",
+  "tzId": "TZ_X73_WS01_MACHINE_CARRIER_REPAIR_001",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "singleOwnerPerFalseItemTrue": true,
+  "ownerMap": {
+    "RELEASE_CANDIDATE_DRIFT_REBIND_REQUIRED": "CODEX",
+    "RELEASE_CANDIDATE_LOCK_MATCH_NOT_TRUE": "CODEX",
+    "X73_ACCEPTANCE_VECTOR_NOT_COMPILED": "CODEX"
+  },
+  "ownerAssignmentCount": 3,
+  "updatedAtUtc": "2026-03-03T09:02:38Z"
+}
