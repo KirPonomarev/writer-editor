@@ -1,0 +1,33 @@
+{
+  "artifactId": "X81_WS99_METADATA_BLOCK_V1",
+  "profileBindingsStateTransitionSummary": {
+    "PROFILE_BINDINGS_STATE_EXPLICIT_TRUE": true,
+    "profileBindingsActivationSummaryArtifact": "X75_PROFILE_BINDINGS_ACTIVATION_SUMMARY_V1.json",
+    "profileBindingsArtifact": "XPLAT_PROFILE_BINDINGS_v3_12.json",
+    "profileBindingsBindingValidTrue": true,
+    "profileBindingsClassNonBlockingUnlessStageActivatedTrue": true,
+    "profileBindingsCreatedIfMissing": false
+  },
+  "references": {
+    "bindingIntegrityArtifact": "X81_BINDING_INTEGRITY_STATUS_V1",
+    "bootPrecheckArtifact": "X81_BOOT_PRECHECK_STATUS_V1",
+    "releaseRetroArtifact": "X81_RELEASE_RETRO_PACKET_STATUS_V1",
+    "promotionReadinessArtifact": "X81_PROMOTION_READINESS_PACKET_STATUS_V1",
+    "ws03SummaryArtifact": "X81_WS03_SUMMARY_V1"
+  },
+  "releaseRetroStateTransitionSummary": {
+    "RELEASE_RETRO_PACKET_READY_TRUE": true,
+    "releaseRetroArtifact": "X81_RELEASE_RETRO_PACKET_STATUS_V1.json",
+    "releaseSurfaceParityTokenId": "X70_WS05_RELEASE_SURFACE_PARITY_OK",
+    "runtimeCarryForwardArtifact": "X81_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1.json"
+  },
+  "promotionReadinessStateTransitionSummary": {
+    "PROMOTION_READINESS_PACKET_READY_TRUE": true,
+    "promotionReadinessArtifact": "X81_PROMOTION_READINESS_PACKET_STATUS_V1.json",
+    "verifyTokenId": "VERIFY_ATTESTATION_OK",
+    "signatureTokenId": "ATTESTATION_SIGNATURE_OK"
+  },
+  "schemaVersion": 1,
+  "tzId": "TZ_X81_WS99_FINAL_CLOSEOUT_AND_NEXT_GATE_WITH_METADATA",
+  "updatedAtUtc": "2026-03-03T22:46:13.000Z"
+}

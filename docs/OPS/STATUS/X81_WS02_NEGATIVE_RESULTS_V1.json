@@ -1,0 +1,21 @@
+{
+  "artifactId": "X81_WS02_NEGATIVE_RESULTS_V1",
+  "evidence": {
+    "releaseRetroPacketMissingRejectedByPolicy": true,
+    "promotionReadinessPacketMissingRejectedByPolicy": true,
+    "scopeBreachDetected": false,
+    "carryForwardMissingRejectedByPolicy": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "negativeResults": {
+    "RELEASE_RETRO_PACKET_MISSING_EXPECT_REJECT_TRUE": true,
+    "PROMOTION_READINESS_PACKET_MISSING_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true,
+    "X80_CARRY_FORWARD_STABILITY_MISSING_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X81_WS02_RELEASE_RETRO_AND_PROMOTION_READINESS_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T22:46:13.000Z"
+}

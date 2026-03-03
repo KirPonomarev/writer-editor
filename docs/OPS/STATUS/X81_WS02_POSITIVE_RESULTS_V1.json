@@ -1,0 +1,30 @@
+{
+  "artifactId": "X81_WS02_POSITIVE_RESULTS_V1",
+  "bindingSnapshot": {
+    "carryForwardSourceArtifact": "X80_STATUS_PACKET_V1.json",
+    "releaseRetroSourceTokenId": "X70_WS05_RELEASE_SURFACE_PARITY_OK",
+    "verifyTokenId": "VERIFY_ATTESTATION_OK",
+    "signatureTokenId": "ATTESTATION_SIGNATURE_OK"
+  },
+  "doctorSnapshot": {
+    "DRIFT_UNRESOLVED_P0_COUNT": 0,
+    "HEAD_STRICT_OK": 1,
+    "TOKEN_SOURCE_CONFLICT_OK": 1
+  },
+  "ok": true,
+  "positiveResults": {
+    "RELEASE_RETRO_PACKET_READY_TRUE": true,
+    "PROMOTION_READINESS_PACKET_READY_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "PROFILE_BINDINGS_REMAIN_VALID_TRUE": true,
+    "X80_RUNTIME_CARRY_FORWARD_STABILITY_TRUE": true
+  },
+  "schemaVersion": 1,
+  "scopeSnapshot": {
+    "NO_SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE_LOCAL": true,
+    "SCOPE_EXPANSION_ATTEMPT_COUNT": 0
+  },
+  "tzId": "TZ_X81_WS02_RELEASE_RETRO_AND_PROMOTION_READINESS_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T22:46:13.000Z"
+}
