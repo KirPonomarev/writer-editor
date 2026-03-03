@@ -1,0 +1,64 @@
+{
+  "acceptance": {
+    "ACCEPTANCE_01_THREAD_REVIEW_ACCEPTANCE_TRUE": true,
+    "ACCEPTANCE_02_REPO_EXECUTION_ACCEPTANCE_TRUE": true,
+    "ACCEPTANCE_03_TRANSITION_READY_FORMULA_TRUE": true,
+    "ACCEPTANCE_04_PROFILE_BINDINGS_ARTIFACT_PRESENT_TRUE": true,
+    "ACCEPTANCE_05_PROFILE_BINDINGS_BINDING_VALID_TRUE": true,
+    "ACCEPTANCE_06_COMMAND_SURFACE_ENFORCEMENT_BOUND_TRUE": true,
+    "ACCEPTANCE_07_EXPORT_MARKDOWN_RUNTIME_BINDING_READY_TRUE": true,
+    "ACCEPTANCE_08_MINDMAP_RUNTIME_BINDING_READY_TRUE": true,
+    "ACCEPTANCE_09_RELEASE_CANDIDATE_STATE_GREEN_OR_VALID_CARRY_FORWARD_TRUE": true,
+    "ACCEPTANCE_10_OPS_INTEGRITY_P0_ALL_TRUE": true,
+    "ACCEPTANCE_11_HEAD_STRICT_OK_TRUE": true,
+    "ACCEPTANCE_12_NO_SCOPE_EXPANSION_TRUE": true,
+    "ACCEPTANCE_13_NO_NEW_BLOCKING_TOKENS_TRUE": true,
+    "ACCEPTANCE_14_NO_NEW_BLOCKING_FAILSIGNALS_TRUE": true,
+    "ACCEPTANCE_15_NO_NEW_P0_DRIFT_TRUE": true,
+    "ACCEPTANCE_16_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "ACCEPTANCE_17_FINAL_CLOSEOUT_PACKET_COMPLETE_TRUE": true,
+    "FINAL_DOD_ACCEPTANCE_SUMMARY": "ALL_TRUE_REQUIRED_SATISFIED"
+  },
+  "acceptanceAdvisory": {
+    "ACCEPTANCE_ADVISORY_01_MACOS_RELEASE_READINESS_PACKET_CARRY_FORWARD_STABLE_TRUE": true,
+    "ACCEPTANCE_ADVISORY_02_BOOK_LAYOUT_METADATA_CARRY_FORWARD_STABLE_TRUE": true
+  },
+  "acceptanceEvidence": {
+    "ACCEPTANCE_06_EVIDENCE_RULE": "X77_WS02_STATUS_V1_JSON_FIELD_COMMAND_SURFACE_MACHINE_BOUND_TRUE_AND_PROOFHOOK_SCRIPT_BASENAME_command-surface-state.mjs_AND_NEGATIVE_TEST_BASENAME_command-surface-single-entry.contract.test.js",
+    "ACCEPTANCE_09_EVIDENCE_RULE": "X77_WS03_STATUS_V1_JSON_FIELD_E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE_TRUE_OR_VALID_SKIP_RECORD_WITH_PREVIOUS_EVIDENCE_HASH_MATCH_TRUE"
+  },
+  "artifactId": "X77_STATUS_PACKET_V1",
+  "contourId": "X77",
+  "exportRuntimeStateTransitionSummary": {
+    "bridgeToken": "X16_WS02_EXPORT_MARKDOWN_MINDMAP_BRIDGE_OK",
+    "bridgeTokenPassTrue": true,
+    "EXPORT_RUNTIME_STATE_EXPLICIT_TRUE": true,
+    "exportRuntimeStatusArtifact": "X77_EXPORT_MARKDOWN_RUNTIME_BINDING_STATUS_V1.json",
+    "exportTruthMeterArtifact": "X77_EXPORT_TRUTH_METER_BASELINE_V1.json"
+  },
+  "mindmapRuntimeStateTransitionSummary": {
+    "derivedViewsInfraOkTrue": true,
+    "MINDMAP_RUNTIME_STATE_EXPLICIT_TRUE": true,
+    "mindmapDerivedGraphOkTrue": true,
+    "mindmapRuntimeStatusArtifact": "X77_MINDMAP_RUNTIME_BINDING_STATUS_V1.json"
+  },
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "profileBindingsStateTransitionSummary": {
+    "PROFILE_BINDINGS_STATE_EXPLICIT_TRUE": true,
+    "profileBindingsActivationSummaryArtifact": "X75_PROFILE_BINDINGS_ACTIVATION_SUMMARY_V1.json",
+    "profileBindingsArtifact": "XPLAT_PROFILE_BINDINGS_v3_12.json",
+    "profileBindingsBindingValidTrue": true,
+    "profileBindingsClassNonBlockingUnlessStageActivatedTrue": true,
+    "profileBindingsCreatedIfMissing": false
+  },
+  "report": {
+    "finalGateStatus": "READY_FOR_SEQ10_OWNER_MERGE_GATE",
+    "noNewP0DriftState": true,
+    "noScopeExpansionTrue": true,
+    "scopeExpansionAttemptCount": 0
+  },
+  "schemaVersion": 1,
+  "state": "WS99_CLOSED_TRUE",
+  "updatedAtUtc": "2026-03-03T21:42:07.287Z"
+}

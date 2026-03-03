@@ -1,0 +1,23 @@
+{
+  "artifactId": "X77_WS02_NEGATIVE_RESULTS_V1",
+  "evidence": {
+    "commandSurfaceBypassRejectedByPolicy": true,
+    "exportMarkdownBindingMissingRejectedByPolicy": true,
+    "mindmapBindingMissingRejectedByPolicy": true,
+    "scopeBreachDetected": false,
+    "secondSotPathRejectedByPolicy": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "negativeResults": {
+    "COMMAND_SURFACE_BYPASS_RISK_EXPECT_REJECT_TRUE": true,
+    "EXPORT_MARKDOWN_RUNTIME_BINDING_MISSING_EXPECT_REJECT_TRUE": true,
+    "MINDMAP_DERIVED_BINDING_MISSING_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true,
+    "SECOND_SOT_PATH_DETECTED_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X77_WS02_EXPORT_AND_MINDMAP_RUNTIME_BINDING_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T21:42:07.287Z"
+}

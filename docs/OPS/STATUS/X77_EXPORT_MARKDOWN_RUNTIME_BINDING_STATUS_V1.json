@@ -1,0 +1,16 @@
+{
+  "artifactId": "X77_EXPORT_MARKDOWN_RUNTIME_BINDING_STATUS_V1",
+  "bridgeProofhookScriptBasename": "x16-ws02-export-markdown-mindmap-bridge-state.mjs",
+  "bridgeToken": "X16_WS02_EXPORT_MARKDOWN_MINDMAP_BRIDGE_OK",
+  "bridgeTokenPassTrue": true,
+  "capabilityId": "cap.project.export.markdownV1",
+  "commandId": "cmd.project.exportMarkdownV1",
+  "EXPORT_MARKDOWN_RUNTIME_BINDING_READY_TRUE": true,
+  "lossReportModulePath": "src/export/markdown/v1/lossReport.mjs",
+  "parserModulePath": "src/export/markdown/v1/parseMarkdownV1.mjs",
+  "schemaVersion": 1,
+  "serializerModulePath": "src/export/markdown/v1/serializeMarkdownV1.mjs",
+  "status": "PASS",
+  "tzId": "TZ_X77_WS02_EXPORT_AND_MINDMAP_RUNTIME_BINDING_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T21:42:07.287Z"
+}

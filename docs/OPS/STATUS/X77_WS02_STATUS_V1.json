@@ -1,0 +1,58 @@
+{
+  "artifactId": "X77_WS02_STATUS_V1",
+  "checks": {
+    "commandSurfaceMachineBound": true,
+    "driftUnresolvedP0Count": 0,
+    "exportMarkdownRuntimeBindingReady": true,
+    "exportTruthMeterBaselinePresent": true,
+    "hashDeltaDetectedTrue": false,
+    "headStrictOk": true,
+    "mindmapDerivedRuntimeBindingReady": true,
+    "profileBindingsRemainValid": true,
+    "releaseCandidateLockMatchOk": true,
+    "scopeExpansionAttemptCount": 0
+  },
+  "dod": {
+    "WS02_DOD_01_COMMAND_SURFACE_MACHINE_BOUND_TRUE": true,
+    "WS02_DOD_02_EXPORT_MARKDOWN_RUNTIME_BINDING_READY_TRUE": true,
+    "WS02_DOD_03_MINDMAP_DERIVED_RUNTIME_BINDING_READY_TRUE": true,
+    "WS02_DOD_04_EXPORT_TRUTH_METER_BASELINE_PRESENT_TRUE": true,
+    "WS02_DOD_05_PROFILE_BINDINGS_REMAIN_VALID_TRUE": true,
+    "WS02_DOD_06_NO_NEW_P0_DRIFT_TRUE": true,
+    "WS02_DOD_07_NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "negativeResults": {
+    "COMMAND_SURFACE_BYPASS_RISK_EXPECT_REJECT_TRUE": true,
+    "EXPORT_MARKDOWN_RUNTIME_BINDING_MISSING_EXPECT_REJECT_TRUE": true,
+    "MINDMAP_DERIVED_BINDING_MISSING_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true,
+    "SECOND_SOT_PATH_DETECTED_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "positiveResults": {
+    "COMMAND_SURFACE_MACHINE_BOUND_TRUE": true,
+    "EXPORT_MARKDOWN_RUNTIME_BINDING_READY_TRUE": true,
+    "EXPORT_TRUTH_METER_BASELINE_PRESENT_TRUE": true,
+    "MINDMAP_DERIVED_RUNTIME_BINDING_READY_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "PROFILE_BINDINGS_REMAIN_VALID_TRUE": true
+  },
+  "prechecks": {
+    "PRECHECK_01_OWNER_OPEN_SIGNAL_TRUE": true,
+    "PRECHECK_02_MODE_REPO_EXECUTION_TRUE": true,
+    "PRECHECK_03_WORKTREE_CLEAN_TRUE": true,
+    "PRECHECK_04_ACTIVE_CANON_LOCK_TRUE": true,
+    "PRECHECK_05_WS02_MARKED_FALSE_IN_DELTA_MAP_TRUE": true,
+    "PRECHECK_06_SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE": true
+  },
+  "schemaVersion": 1,
+  "scopeLimit": "command-catalog.v1.mjs,projectCommands.mjs,capabilityPolicy.mjs,menu-config.v1.json,menu-config-validator.js,parseMarkdownV1.mjs,serializeMarkdownV1.mjs,lossReport.mjs,deriveMindMapGraph.mjs,deriveView.mjs,STATUS_ARTIFACTS_ONLY",
+  "token": true,
+  "tzId": "TZ_X77_WS02_EXPORT_AND_MINDMAP_RUNTIME_BINDING_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T21:42:07.287Z"
+}
