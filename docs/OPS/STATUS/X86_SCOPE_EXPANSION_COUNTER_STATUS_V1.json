@@ -1,0 +1,9 @@
+{
+  "artifactId": "X86_SCOPE_EXPANSION_COUNTER_STATUS_V1",
+  "NO_SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE_LOCAL": true,
+  "noScopeExpansionTrue": true,
+  "schemaVersion": 1,
+  "SCOPE_EXPANSION_ATTEMPT_COUNT": 0,
+  "tzId": "TZ_X86_WS00_WS01_BOOTSTRAP_001",
+  "updatedAtUtc": "2026-03-03T23:43:33.000Z"
+}
