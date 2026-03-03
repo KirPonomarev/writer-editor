@@ -2660,6 +2660,41 @@
       "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
       "approvedAtUtc": "2026-02-28T23:47:23.730Z",
       "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/LOCKS/CONFIG_HASH_LOCK.json",
+      "sha256": "3d8dbb04e8a990695ad8949d0bb4b175c1adb94906d72077e55a0b604a34b431",
+      "approvedBy": "ticket:TZ_X72_REMEDIATION_P0_P1_001",
+      "approvedAtUtc": "2026-03-02T23:41:14.088Z",
+      "rationale": "X72_TARGETED_REMEDIATION_APPROVAL_SCOPE_LOCK"
+    },
+    {
+      "filePath": "docs/OPS/PROOFHOOKS/PROOFHOOK_INTEGRITY_LOCK.json",
+      "sha256": "304dd6b6d38582c318f1a7217b3b407b210b4186edaed1d425e42ec7cf5984d7",
+      "approvedBy": "ticket:TZ_X72_REMEDIATION_P0_P1_001",
+      "approvedAtUtc": "2026-03-02T23:41:14.088Z",
+      "rationale": "X72_TARGETED_REMEDIATION_APPROVAL_SCOPE_LOCK"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/X70_FALSE_GREEN_REGISTER_V1.json",
+      "sha256": "5c596bcb14c3598e74635038d66f2df1b562c251c7efa8b76888ce5cfb3cbaaf",
+      "approvedBy": "ticket:TZ_X72_REMEDIATION_P0_P1_001",
+      "approvedAtUtc": "2026-03-02T23:41:14.088Z",
+      "rationale": "X72_TARGETED_REMEDIATION_APPROVAL_SCOPE_LOCK"
+    },
+    {
+      "filePath": "scripts/ops/p2-ws03-process-tax-budget-automation-state.mjs",
+      "sha256": "e8b5b17d7ca87ebd200baf81d5a92f609d96722ab5cf20b82345cbea80b4d69d",
+      "approvedBy": "ticket:TZ_X72_REMEDIATION_P0_P1_001",
+      "approvedAtUtc": "2026-03-02T23:41:14.088Z",
+      "rationale": "X72_TARGETED_REMEDIATION_APPROVAL_SCOPE_LOCK"
+    },
+    {
+      "filePath": "scripts/ops/x16-ws02-export-markdown-mindmap-bridge-state.mjs",
+      "sha256": "e016c8c07475df77e8ee1ed5980ea87656a931e6fc940ba88361b2c3be17b916",
+      "approvedBy": "ticket:TZ_X72_REMEDIATION_P0_P1_001",
+      "approvedAtUtc": "2026-03-02T23:41:14.088Z",
+      "rationale": "X72_TARGETED_REMEDIATION_APPROVAL_SCOPE_LOCK"
     }
   ]
 }

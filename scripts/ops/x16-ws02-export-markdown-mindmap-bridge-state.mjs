@@ -791,7 +791,7 @@ function evaluateX16Ws02ExportMarkdownMindmapBridgeState(input = {}) {
     NEXT_TZ_DOD_01: bridgeReady,
     NEXT_TZ_DOD_02: allNegativesPass,
     NEXT_TZ_DOD_03: allPositivesPass,
-    NEXT_TZ_DOD_04: false,
+    NEXT_TZ_DOD_04: stageActivationGuardCheck,
     NEXT_TZ_DOD_05: true,
     NEXT_TZ_DOD_06: drift.advisoryToBlockingDriftCountZero,
   };
@@ -799,8 +799,8 @@ function evaluateX16Ws02ExportMarkdownMindmapBridgeState(input = {}) {
   const acceptance = {
     NEXT_TZ_ACCEPTANCE_01: canonLock.ok,
     NEXT_TZ_ACCEPTANCE_02: stageActivationGuardCheck,
-    NEXT_TZ_ACCEPTANCE_03: false,
-    NEXT_TZ_ACCEPTANCE_04: false,
+    NEXT_TZ_ACCEPTANCE_03: allNegativesPass,
+    NEXT_TZ_ACCEPTANCE_04: allPositivesPass,
   };
 
   const preRepeatabilityOk = canonLock.ok

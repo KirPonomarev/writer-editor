@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X72_WS05_POSITIVE_RESULTS_V1",
+  "ok": true,
+  "positiveResults": {
+    "OK_TRUE_WITH_ACCEPTANCE_FALSE_PATTERN_ZERO_TRUE": true,
+    "STATUS_SCHEMA_ALIGNMENT_TRUE": true,
+    "PROCESS_TAX_AMBIGUITY_REDUCED_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "evidence": {
+    "x16": {
+      "ok": true,
+      "acceptance03": true,
+      "acceptance04": true,
+      "dod04": true
+    },
+    "p2": {
+      "ok": true,
+      "acceptance03": true,
+      "acceptance04": true,
+      "dod04": true
+    },
+    "doctorSnapshot": {
+      "DRIFT_UNRESOLVED_P0_COUNT": 0
+    }
+  },
+  "updatedAtUtc": "2026-03-03T00:03:07Z"
+}

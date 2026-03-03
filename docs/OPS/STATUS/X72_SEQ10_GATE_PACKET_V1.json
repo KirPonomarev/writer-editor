@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X72_SEQ10_GATE_PACKET_V1",
+  "readyForSeq10OwnerMergeGate": true,
+  "requiredOwnerInput": "OWNER_MERGE_GO_TRUE_OR_FALSE",
+  "allowedValues": ["TRUE", "FALSE"],
+  "onTrue": "EXECUTE_SEQ10_STANDARD_PR_PATH_AND_SEQ11_RECONFIRM",
+  "onFalse": "HOLD_WITHOUT_MERGE",
+  "proof": {
+    "opsIntegrityP0AllTrue": true,
+    "noNewP0Drift": true,
+    "noScopeExpansion": true,
+    "worktreeClean": true
+  },
+  "updatedAtUtc": "2026-03-03T00:09:49Z"
+}
