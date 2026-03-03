@@ -1,0 +1,21 @@
+{
+  "artifactId": "X84_WS02_NEGATIVE_RESULTS_V1",
+  "evidence": {
+    "releaseFinalApprovalPacketMissingRejectedByPolicy": true,
+    "releaseTagPrepPacketMissingRejectedByPolicy": true,
+    "scopeBreachDetected": false,
+    "carryForwardMissingRejectedByPolicy": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "negativeResults": {
+    "RELEASE_FINAL_APPROVAL_PACKET_MISSING_EXPECT_REJECT_TRUE": true,
+    "RELEASE_TAG_PREP_PACKET_MISSING_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true,
+    "X83_CARRY_FORWARD_STABILITY_MISSING_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X84_WS02_RELEASE_FINAL_APPROVAL_AND_RELEASE_TAG_PREP_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T23:26:41.000Z"
+}
