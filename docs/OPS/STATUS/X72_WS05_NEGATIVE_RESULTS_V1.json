@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X72_WS05_NEGATIVE_RESULTS_V1",
+  "ok": true,
+  "negativeResults": {
+    "OK_TRUE_WITH_ACCEPTANCE_FALSE_EXPECT_REJECT_TRUE": true,
+    "STATUS_SCHEMA_FIELD_MISMATCH_EXPECT_REJECT_TRUE": true,
+    "AMBIGUOUS_GATE_STATUS_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "x16NegativeSetAllTrue": true,
+    "p2NegativeSetAllTrue": true,
+    "x16MismatchDetection": true,
+    "p2AmbiguityDetection": true,
+    "contractsNegativeScenariosPass": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T00:03:07Z"
+}
