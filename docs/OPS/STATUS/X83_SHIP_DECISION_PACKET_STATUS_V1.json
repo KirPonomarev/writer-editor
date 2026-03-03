@@ -1,0 +1,20 @@
+{
+  "artifactId": "X83_SHIP_DECISION_PACKET_STATUS_V1",
+  "checks": {
+    "SHIP_DECISION_PACKET_READY_TRUE": true,
+    "VERIFY_ATTESTATION_OK_TRUE": true,
+    "ATTESTATION_SIGNATURE_OK_TRUE": true,
+    "HEAD_STRICT_OK_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true
+  },
+  "evidence": {
+    "verifyTokenId": "VERIFY_ATTESTATION_OK",
+    "signatureTokenId": "ATTESTATION_SIGNATURE_OK",
+    "sourceArtifact": "X82_AUDIT_LOCK_PACKET_STATUS_V1.json",
+    "carryForwardValid": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X83_WS02_RELEASE_FREEZE_AND_SHIP_DECISION_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T23:14:11.000Z"
+}
