@@ -1,0 +1,12 @@
+{
+  "artifactId": "X76_DELTA_REFRESH_STATUS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X76_WS00_WS01_BOOTSTRAP_001",
+  "refreshed": true,
+  "reason": "WS01_INITIALIZATION",
+  "deltaMapBasename": "X76_WS01_DELTA_MAP_V1.json",
+  "DELTA_MAP_FROZEN_SHA256": "462b80ef5b4876f932704a357231c594d98d29b67858c8cb17bacf8958e64cfa",
+  "scopeExpansionAttemptCount": 0,
+  "noScopeExpansionTrue": true,
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}

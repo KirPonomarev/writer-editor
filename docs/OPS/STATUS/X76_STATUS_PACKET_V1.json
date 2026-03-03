@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X76_STATUS_PACKET_V1",
+  "contourId": "X76",
+  "state": "WS99_CLOSED_TRUE",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "acceptance": {
+    "ACCEPTANCE_01_THREAD_REVIEW_ACCEPTANCE_TRUE": true,
+    "ACCEPTANCE_02_REPO_EXECUTION_ACCEPTANCE_TRUE": true,
+    "ACCEPTANCE_03_TRANSITION_READY_FORMULA_TRUE": true,
+    "ACCEPTANCE_04_PROFILE_BINDINGS_ARTIFACT_PRESENT_TRUE": true,
+    "ACCEPTANCE_05_PROFILE_BINDINGS_BINDING_VALID_TRUE": true,
+    "ACCEPTANCE_06_COMMAND_SURFACE_ENFORCEMENT_BOUND_TRUE": true,
+    "ACCEPTANCE_07_RELEASE_CANDIDATE_STATE_GREEN_OR_VALID_CARRY_FORWARD_TRUE": true,
+    "ACCEPTANCE_08_OPS_INTEGRITY_P0_ALL_TRUE": true,
+    "ACCEPTANCE_09_HEAD_STRICT_OK_TRUE": true,
+    "ACCEPTANCE_10_NO_SCOPE_EXPANSION_TRUE": true,
+    "ACCEPTANCE_11_NO_NEW_BLOCKING_TOKENS_TRUE": true,
+    "ACCEPTANCE_12_NO_NEW_BLOCKING_FAILSIGNALS_TRUE": true,
+    "ACCEPTANCE_13_NO_NEW_P0_DRIFT_TRUE": true,
+    "ACCEPTANCE_14_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "ACCEPTANCE_15_FINAL_CLOSEOUT_PACKET_COMPLETE_TRUE": true,
+    "FINAL_DOD_ACCEPTANCE_SUMMARY": "ALL_TRUE_REQUIRED_SATISFIED"
+  },
+  "acceptanceAdvisory": {
+    "ACCEPTANCE_ADVISORY_01_MACOS_RELEASE_READINESS_PACKET_PRESENT_TRUE": true,
+    "ACCEPTANCE_ADVISORY_02_XPLAT_CONTRACT_MACOS_SIGNING_READY_OK_TRUE": true,
+    "ACCEPTANCE_ADVISORY_03_BOOK_LAYOUT_METADATA_CARRY_FORWARD_STABLE_TRUE": true,
+    "ACCEPTANCE_ADVISORY_04_VALUE_IMPLEMENTATION_STATE_EXPLICIT_TRUE": true
+  },
+  "report": {
+    "scopeExpansionAttemptCount": 0,
+    "noScopeExpansionTrue": true,
+    "noNewP0DriftState": true,
+    "finalGateStatus": "READY_FOR_SEQ10_OWNER_MERGE_GATE"
+  },
+  "profileBindingsStateTransitionSummary": {
+    "PROFILE_BINDINGS_STATE_EXPLICIT_TRUE": true,
+    "profileBindingsArtifact": "XPLAT_PROFILE_BINDINGS_v3_12.json",
+    "profileBindingsBindingValidTrue": true,
+    "profileBindingsCreatedIfMissing": false,
+    "profileBindingsClassNonBlockingUnlessStageActivatedTrue": true,
+    "profileBindingsActivationSummaryArtifact": "X75_PROFILE_BINDINGS_ACTIVATION_SUMMARY_V1.json"
+  },
+  "valueImplementationTransitionSummary": {
+    "COMMAND_SURFACE_STATE_EXPLICIT_TRUE": true,
+    "commandSurfaceTokenId": "COMMAND_SURFACE_ENFORCED_OK",
+    "commandSurfaceMachineBoundTrue": true,
+    "commandSurfaceProofhookScriptBasename": "command-surface-state.mjs",
+    "commandSurfaceNegativeTestBasename": "command-surface-single-entry.contract.test.js",
+    "commandSurfaceFailSignalBinding": "E_COMMAND_SURFACE_BYPASS",
+    "commandSurfaceStatusArtifact": "X76_BOOK_LAYOUT_COMMAND_SURFACE_STATUS_V1.json"
+  },
+  "macosAdvisoryPacketStateSummary": {
+    "MACOS_ADVISORY_PACKET_STATE_EXPLICIT_TRUE": true,
+    "macosReadinessArtifact": "MACOS_SIGNING_READINESS.json",
+    "macosAdvisoryPacketArtifact": "X76_MACOS_RELEASE_READINESS_PACKET_V1.json",
+    "entitlementsArtifact": "MACOS_SIGNING_ENTITLEMENTS.plist",
+    "ENTITLEMENTS_SHA256": "d4077854f1dedc1804ebd1d76b18fbc3fd1aec491e06e7496c26145b99b10b70",
+    "ENTITLEMENTS_MIN_SCHEMA_VALID_TRUE": true,
+    "ENTITLEMENTS_HASH_MATCH_TRUE": true
+  },
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}

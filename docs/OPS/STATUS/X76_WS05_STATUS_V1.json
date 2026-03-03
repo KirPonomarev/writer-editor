@@ -1,0 +1,44 @@
+{
+  "artifactId": "X76_WS05_STATUS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X76_WS05_ACCEPTANCE_VECTOR_COMPILE",
+  "ok": true,
+  "token": true,
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "prechecks": {
+    "PRECHECK_01_WS02_PASS_TRUE": true,
+    "PRECHECK_02_WS03_PASS_TRUE": true,
+    "PRECHECK_03_WS04_PASS_OR_VALID_AUTO_SKIP_TRUE": true,
+    "PRECHECK_04_ACTIVE_CANON_LOCK_TRUE": true,
+    "PRECHECK_05_SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE": true
+  },
+  "negativeResults": {
+    "THREAD_ACCEPTANCE_FALSE_EXPECT_REJECT_TRUE": true,
+    "REPO_ACCEPTANCE_PREMATURE_EXPECT_REJECT_TRUE": true
+  },
+  "positiveResults": {
+    "THREAD_REVIEW_ACCEPTANCE_TRUE": true,
+    "REPO_EXECUTION_ACCEPTANCE_READY_TRUE": true,
+    "FINAL_STATE_REVIEW_COMPLETE_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "dod": {
+    "WS05_DOD_01_THREAD_REVIEW_ACCEPTANCE_TRUE": true,
+    "WS05_DOD_02_REPO_EXECUTION_ACCEPTANCE_READY_TRUE": true,
+    "WS05_DOD_03_FINAL_STATE_REVIEW_COMPLETE_TRUE": true
+  },
+  "checks": {
+    "ws02Ok": true,
+    "ws03Ok": true,
+    "ws04Ok": true,
+    "ws04AutoSkipAppliedTrue": true,
+    "driftUnresolvedP0Count": 0,
+    "headStrictOk": true,
+    "scopeExpansionAttemptCount": 0
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}

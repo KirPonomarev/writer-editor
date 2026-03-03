@@ -1,0 +1,23 @@
+{
+  "artifactId": "X76_BINDING_INTEGRITY_STATUS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X76_WS00_WS01_BOOTSTRAP_001",
+  "ok": true,
+  "token": true,
+  "modeSwitchState": "THREAD_REVIEW_TRUE",
+  "bindingIntegrity": {
+    "HEAD_STRICT_OK_TRUE": true,
+    "PROOFHOOK_INTEGRITY_OK_TRUE": true,
+    "CONFIG_HASH_LOCK_OK_TRUE": true,
+    "REQUIRED_SET_NO_TARGET_OK_TRUE": true,
+    "TOKEN_SOURCE_CONFLICT_OK_TRUE": true
+  },
+  "doctorSnapshot": {
+    "HEAD_STRICT_OK": 1,
+    "DRIFT_UNRESOLVED_P0_COUNT": 0,
+    "TOKEN_SOURCE_CONFLICT_OK": 1
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}

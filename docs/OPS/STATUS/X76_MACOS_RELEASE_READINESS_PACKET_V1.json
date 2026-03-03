@@ -1,0 +1,26 @@
+{
+  "artifactId": "X76_MACOS_RELEASE_READINESS_PACKET_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X76_WS02_VALUE_IMPLEMENTATION_AND_ADVISORY_PACKET_WITH_MACHINE_PROOF",
+  "advisoryClass": true,
+  "readiness": {
+    "status": "READY",
+    "XPLAT_CONTRACT_MACOS_SIGNING_READY_OK_TRUE": true,
+    "sourceArtifact": "MACOS_SIGNING_READINESS.json",
+    "sourceArtifactSha256": "359cd878cd7fd102388d9873f5d58d1fcddf9465b9c40aedf7f74ee374166f83"
+  },
+  "entitlements": {
+    "artifactPath": "MACOS_SIGNING_ENTITLEMENTS.plist",
+    "createIfMissingApplied": true,
+    "presentTrue": true,
+    "minSchemaKeysRequired": [
+      "com.apple.security.app-sandbox",
+      "com.apple.security.files.user-selected.read-write"
+    ],
+    "minSchemaValidTrue": true,
+    "ENTITLEMENTS_SHA256": "d4077854f1dedc1804ebd1d76b18fbc3fd1aec491e06e7496c26145b99b10b70",
+    "ENTITLEMENTS_HASH_MATCH_TRUE": true
+  },
+  "noNewBlockingSurfaceTrue": true,
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}

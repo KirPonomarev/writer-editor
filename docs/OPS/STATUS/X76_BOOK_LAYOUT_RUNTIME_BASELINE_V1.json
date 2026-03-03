@@ -1,0 +1,12 @@
+{
+  "artifactId": "X76_BOOK_LAYOUT_RUNTIME_BASELINE_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X76_WS02_VALUE_IMPLEMENTATION_AND_ADVISORY_PACKET_WITH_MACHINE_PROOF",
+  "status": "PASS",
+  "runtimeWiringExpansionDetected": false,
+  "appInputHotpathTouched": false,
+  "commandSurfaceRoute": "COMMAND_BUS_ONLY",
+  "noScopeExpansionTrue": true,
+  "noNewDependenciesTrue": true,
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}

@@ -1,0 +1,31 @@
+{
+  "artifactId": "X76_WS03_POSITIVE_RESULTS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X76_WS03_METADATA_ALWAYS_RUN_AND_REVERIFY_CONDITIONAL",
+  "ok": true,
+  "positiveResults": {
+    "BOOK_LAYOUT_RUNTIME_BASELINE_CARRIER_PRESENT_TRUE": true,
+    "MACOS_ADVISORY_PACKET_CARRIER_PRESENT_TRUE": true,
+    "IF_REVERIFY_RUN_THEN_RELEASE_CANDIDATE_LOCK_MATCH_OK_TRUE": true,
+    "IF_REVERIFY_RUN_THEN_E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE_TRUE": true,
+    "OPS_INTEGRITY_P0_ALL_TRUE": true,
+    "HEAD_STRICT_OK_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "SKIP_RECORD_VALID_TRUE": true
+  },
+  "executionPath": "SKIP",
+  "hashDeltaDetectedTrue": false,
+  "metadataEvidence": {
+    "runtimeBaselineArtifact": "X76_BOOK_LAYOUT_RUNTIME_BASELINE_V1.json",
+    "macosPacketArtifact": "X76_MACOS_RELEASE_READINESS_PACKET_V1.json"
+  },
+  "reverifyEvidence": {
+    "runCondition": "HASH_DELTA_DETECTED_TRUE",
+    "skipCondition": "HASH_DELTA_DETECTED_FALSE_OR_FIELD_MISSING",
+    "skipRecordCarrier": "X76_WS03_STATUS_V1.json",
+    "previousEvidenceArtifact": "X76_WS02_STATUS_V1.json",
+    "previousEvidenceHashMatchTrue": true
+  },
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}

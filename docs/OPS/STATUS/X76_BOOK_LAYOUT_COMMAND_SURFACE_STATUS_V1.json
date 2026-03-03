@@ -1,0 +1,22 @@
+{
+  "artifactId": "X76_BOOK_LAYOUT_COMMAND_SURFACE_STATUS_V1",
+  "schemaVersion": 1,
+  "tzId": "TZ_X76_WS02_VALUE_IMPLEMENTATION_AND_ADVISORY_PACKET_WITH_MACHINE_PROOF",
+  "status": "PASS",
+  "COMMAND_SURFACE_MACHINE_BOUND_TRUE": true,
+  "COMMAND_SURFACE_PROOFHOOK_PASS_TRUE": true,
+  "COMMAND_SURFACE_NEGATIVE_TEST_BINDING_PRESENT_TRUE": true,
+  "proofhookTokenId": "COMMAND_SURFACE_ENFORCED_OK",
+  "proofhookScriptBasename": "command-surface-state.mjs",
+  "negativeTestBasename": "command-surface-single-entry.contract.test.js",
+  "failSignalBinding": "E_COMMAND_SURFACE_BYPASS",
+  "bypassNegativeSuiteOk": true,
+  "scenariosCovered": [
+    "context-button-bypass",
+    "hotkey-bypass",
+    "ipc-direct-bypass",
+    "palette-bypass",
+    "plugin-overlay-bypass"
+  ],
+  "updatedAtUtc": "2026-03-03T21:18:47.879Z"
+}
