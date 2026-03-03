@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X74_WS99_CLOSEOUT_SUMMARY_V1",
+  "tzId": "TZ_X74_WS99_FINAL_CLOSEOUT_AND_NEXT_GATE_WITH_DEBT_METADATA",
+  "ok": true,
+  "token": true,
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "scopeLimit": "WS99_ONLY",
+  "prechecks": {
+    "PRECHECK_01_WS02_PASS_TRUE": true,
+    "PRECHECK_02_WS03_PASS_TRUE": true,
+    "PRECHECK_03_WS04_PASS_OR_VALID_AUTO_SKIP_TRUE": true,
+    "PRECHECK_04_WS05_PASS_TRUE": true,
+    "PRECHECK_05_ACTIVE_CANON_LOCK_TRUE": true,
+    "PRECHECK_06_SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE": true,
+    "PRECHECK_07_OWNER_OPEN_SIGNAL_TRUE": true
+  },
+  "negativeResults": {
+    "MISSING_CLOSEOUT_SUMMARY_EXPECT_REJECT_TRUE": true,
+    "MISSING_STATUS_PACKET_EXPECT_REJECT_TRUE": true,
+    "ACCEPTANCE_VECTOR_NOT_ALL_TRUE_EXPECT_REJECT_TRUE": true
+  },
+  "positiveResults": {
+    "ALL_EXECUTED_FALSE_ITEMS_CLOSED_TRUE": true,
+    "ACCEPTANCE_VECTOR_ALL_TRUE": true,
+    "EVIDENCE_PACKET_COMPLETE_TRUE": true,
+    "WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "READY_FOR_SEQ10_OWNER_MERGE_GATE_TRUE": true,
+    "AGPL_DEBT_STATE_EXPLICIT_CLOSED_TRUE": true,
+    "FINAL_STATE_EXECUTION_COMPLETE_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true
+  },
+  "executedFalseItemsList": [
+    "DEBT_AGPL_ABOUT_UI_LINK_PENDING_ACTIVE_TRUE",
+    "AGPL_ABOUT_UI_ENTRY_NOT_VISIBLE_TRUE",
+    "AGPL_DEBT_REGISTRY_NOT_CLOSED_TRUE",
+    "X74_ACCEPTANCE_VECTOR_NOT_COMPILED"
+  ],
+  "checks": {
+    "ws02PassTrue": true,
+    "ws03PassTrue": true,
+    "ws04PassOrValidAutoSkipTrue": true,
+    "ws05PassTrue": true,
+    "activeCanonLockTrue": true,
+    "ownerOpenSignalTrue": true,
+    "scopeExpansionCounterPreWs99ZeroTrue": true,
+    "scopeExpansionAttemptCount": 0,
+    "driftUnresolvedP0Count": 0,
+    "headStrictOkTrue": true
+  },
+  "debtStateTransitionSummary": {
+    "AGPL_DEBT_STATE_EXPLICIT_CLOSED_TRUE": true,
+    "agplDebtId": "DEBT:AGPL_ABOUT_UI_LINK_PENDING",
+    "agplDebtActiveFalseRequired": true,
+    "agplDebtClosedInX74": true,
+    "agplDebtClosureEvidenceReferenceRequired": true,
+    "agplDebtClosureEvidenceArtifact": "X74_AGPL_DEBT_CLOSURE_EVIDENCE_V1.json",
+    "ownerAckRequired": false,
+    "ownerAckPresent": true,
+    "policy": "AGPL_DEBT_ACTIVE_FALSE_REQUIRED_AND_CLOSURE_EVIDENCE_REFERENCE_REQUIRED"
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T15:11:56.270Z"
+}
