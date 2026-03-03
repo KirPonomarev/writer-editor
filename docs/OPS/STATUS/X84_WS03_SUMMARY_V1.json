@@ -1,0 +1,10 @@
+{
+  "artifactId": "X84_WS03_SUMMARY_V1",
+  "executionPath": "SKIP",
+  "ok": true,
+  "releaseCandidateCarryForwardValid": true,
+  "scopeExpansionAttemptCount": 0,
+  "schemaVersion": 1,
+  "tzId": "TZ_X84_WS03_METADATA_ALWAYS_RUN_AND_REVERIFY_CONDITIONAL",
+  "updatedAtUtc": "2026-03-03T23:26:41.000Z"
+}
