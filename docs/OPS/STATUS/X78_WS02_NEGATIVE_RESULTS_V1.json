@@ -1,0 +1,23 @@
+{
+  "artifactId": "X78_WS02_NEGATIVE_RESULTS_V1",
+  "evidence": {
+    "carryForwardMissingRejectedByPolicy": true,
+    "releaseSetParityMismatchRejectedByPolicy": true,
+    "scopeBreachDetected": false,
+    "signatureBindingMissingRejectedByPolicy": true,
+    "verifyBindingMissingRejectedByPolicy": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "negativeResults": {
+    "ATTESTATION_SIGNATURE_BINDING_MISSING_EXPECT_REJECT_TRUE": true,
+    "RELEASE_REQUIRED_SET_PARITY_MISMATCH_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true,
+    "VERIFY_ATTESTATION_BINDING_MISSING_EXPECT_REJECT_TRUE": true,
+    "X77_CARRY_FORWARD_STABILITY_MISSING_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X78_WS02_RELEASE_PREP_AND_VALUE_STABILIZATION_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T21:58:05.968Z"
+}

@@ -1,0 +1,32 @@
+{
+  "artifactId": "X78_WS03_POSITIVE_RESULTS_V1",
+  "executionPath": "SKIP",
+  "hashDeltaDetectedTrue": false,
+  "metadataEvidence": {
+    "carryForwardArtifact": "X78_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1.json",
+    "releaseParityArtifact": "X78_RELEASE_REQUIRED_SET_PARITY_STATUS_V1.json",
+    "verifyEvidenceArtifact": "X78_RELEASE_VERIFICATION_EVIDENCE_STATUS_V1.json"
+  },
+  "ok": true,
+  "positiveResults": {
+    "HEAD_STRICT_OK_TRUE": true,
+    "IF_REVERIFY_RUN_THEN_E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE_TRUE": true,
+    "IF_REVERIFY_RUN_THEN_RELEASE_CANDIDATE_LOCK_MATCH_OK_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "OPS_INTEGRITY_P0_ALL_TRUE": true,
+    "RELEASE_PARITY_STATUS_CARRIER_PRESENT_TRUE": true,
+    "SKIP_RECORD_VALID_TRUE": true,
+    "VERIFY_EVIDENCE_STATUS_CARRIER_PRESENT_TRUE": true
+  },
+  "reverifyEvidence": {
+    "previousEvidenceArtifact": "X78_WS02_STATUS_V1.json",
+    "previousEvidenceHashMatchTrue": true,
+    "runCondition": "HASH_DELTA_DETECTED_TRUE",
+    "skipCondition": "HASH_DELTA_DETECTED_FALSE_OR_FIELD_MISSING",
+    "skipRecordCarrier": "X78_WS03_STATUS_V1.json"
+  },
+  "schemaVersion": 1,
+  "tzId": "TZ_X78_WS03_METADATA_ALWAYS_RUN_AND_REVERIFY_CONDITIONAL",
+  "updatedAtUtc": "2026-03-03T21:58:05.968Z"
+}

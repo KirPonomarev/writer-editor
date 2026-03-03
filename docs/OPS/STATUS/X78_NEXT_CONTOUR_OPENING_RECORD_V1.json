@@ -1,0 +1,18 @@
+{
+  "artifactId": "X78_NEXT_CONTOUR_OPENING_RECORD_V1",
+  "carryForward": {
+    "advisoryRemaining": [],
+    "p0Count": 0,
+    "scopeDriftCount": 0
+  },
+  "fromContour": "X78",
+  "handoff": {
+    "NEXT_CONTOUR_CLASS": "RELEASE_FINALIZATION_AND_SHIP_READINESS",
+    "NEXT_CONTOUR_ID_AFTER_X78": "X79",
+    "NEXT_CONTOUR_OPENING_RECORD_REQUIRED": true
+  },
+  "nextContour": "X79",
+  "openCondition": "EXPLICIT_OWNER_OPEN_SIGNAL_REQUIRED",
+  "schemaVersion": 1,
+  "updatedAtUtc": "2026-03-03T21:58:05.968Z"
+}

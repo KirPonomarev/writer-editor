@@ -1,0 +1,21 @@
+{
+  "artifactId": "X78_WS04_NEGATIVE_RESULTS_V1",
+  "autoSkipAppliedTrue": true,
+  "evidence": {
+    "fullStackRerunDetected": false,
+    "missingEvidenceDetected": false,
+    "outOfScopeRerunDetected": false
+  },
+  "executionPath": "SKIP",
+  "failReason": "",
+  "failSignalCode": "",
+  "negativeResults": {
+    "FULL_STACK_RERUN_EXPECT_REJECT_TRUE": true,
+    "OUT_OF_SCOPE_RERUN_EXPECT_REJECT_TRUE": true,
+    "RECONFIRM_WITHOUT_EVIDENCE_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X78_WS04_TARGETED_RECONFIRM_REQUIRED_SET_WITH_AUTO_SKIP",
+  "updatedAtUtc": "2026-03-03T21:58:05.968Z"
+}

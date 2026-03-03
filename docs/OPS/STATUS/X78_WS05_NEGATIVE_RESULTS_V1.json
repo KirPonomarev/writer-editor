@@ -1,0 +1,18 @@
+{
+  "artifactId": "X78_WS05_NEGATIVE_RESULTS_V1",
+  "evidence": {
+    "prechecksAllTrue": true,
+    "repoAcceptancePrematureRejectedByPolicy": true,
+    "threadAcceptanceFalseRejectedByPolicy": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "negativeResults": {
+    "REPO_ACCEPTANCE_PREMATURE_EXPECT_REJECT_TRUE": true,
+    "THREAD_ACCEPTANCE_FALSE_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X78_WS05_ACCEPTANCE_VECTOR_COMPILE",
+  "updatedAtUtc": "2026-03-03T21:58:05.968Z"
+}

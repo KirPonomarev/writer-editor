@@ -1,0 +1,58 @@
+{
+  "artifactId": "X78_WS02_STATUS_V1",
+  "checks": {
+    "attestationSignatureOkTrue": true,
+    "driftUnresolvedP0Count": 0,
+    "hashDeltaDetectedTrue": false,
+    "headStrictOk": true,
+    "profileBindingsRemainValid": true,
+    "releaseCandidateLockMatchOk": true,
+    "releaseRequiredSetParityTrue": true,
+    "scopeExpansionAttemptCount": 0,
+    "verifyAttestationOkTrue": true,
+    "x77CarryForwardStabilityTrue": true
+  },
+  "dod": {
+    "WS02_DOD_01_RELEASE_REQUIRED_SET_PARITY_TRUE": true,
+    "WS02_DOD_02_VERIFY_ATTESTATION_OK_TRUE": true,
+    "WS02_DOD_03_ATTESTATION_SIGNATURE_OK_TRUE": true,
+    "WS02_DOD_04_X77_RUNTIME_CARRY_FORWARD_STABILITY_TRUE": true,
+    "WS02_DOD_05_PROFILE_BINDINGS_REMAIN_VALID_TRUE": true,
+    "WS02_DOD_06_NO_NEW_P0_DRIFT_TRUE": true,
+    "WS02_DOD_07_NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "negativeResults": {
+    "ATTESTATION_SIGNATURE_BINDING_MISSING_EXPECT_REJECT_TRUE": true,
+    "RELEASE_REQUIRED_SET_PARITY_MISMATCH_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true,
+    "VERIFY_ATTESTATION_BINDING_MISSING_EXPECT_REJECT_TRUE": true,
+    "X77_CARRY_FORWARD_STABILITY_MISSING_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "positiveResults": {
+    "ATTESTATION_SIGNATURE_OK_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "PROFILE_BINDINGS_REMAIN_VALID_TRUE": true,
+    "RELEASE_REQUIRED_SET_PARITY_TRUE": true,
+    "VERIFY_ATTESTATION_OK_TRUE": true,
+    "X77_RUNTIME_CARRY_FORWARD_STABILITY_TRUE": true
+  },
+  "prechecks": {
+    "PRECHECK_01_OWNER_OPEN_SIGNAL_TRUE": true,
+    "PRECHECK_02_MODE_REPO_EXECUTION_TRUE": true,
+    "PRECHECK_03_WORKTREE_CLEAN_TRUE": true,
+    "PRECHECK_04_ACTIVE_CANON_LOCK_TRUE": true,
+    "PRECHECK_05_WS02_MARKED_FALSE_IN_DELTA_MAP_TRUE": true,
+    "PRECHECK_06_SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE": true
+  },
+  "schemaVersion": 1,
+  "scopeLimit": "STATUS_ARTIFACTS_ONLY_RELEASE_PREP_STABILIZATION",
+  "token": true,
+  "tzId": "TZ_X78_WS02_RELEASE_PREP_AND_VALUE_STABILIZATION_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T21:58:05.968Z"
+}

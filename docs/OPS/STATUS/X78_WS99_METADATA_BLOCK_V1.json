@@ -1,0 +1,34 @@
+{
+  "artifactId": "X78_WS99_METADATA_BLOCK_V1",
+  "profileBindingsStateTransitionSummary": {
+    "PROFILE_BINDINGS_STATE_EXPLICIT_TRUE": true,
+    "profileBindingsActivationSummaryArtifact": "X75_PROFILE_BINDINGS_ACTIVATION_SUMMARY_V1.json",
+    "profileBindingsArtifact": "XPLAT_PROFILE_BINDINGS_v3_12.json",
+    "profileBindingsBindingValidTrue": true,
+    "profileBindingsClassNonBlockingUnlessStageActivatedTrue": true,
+    "profileBindingsCreatedIfMissing": false
+  },
+  "references": {
+    "bindingIntegrityArtifact": "X78_BINDING_INTEGRITY_STATUS_V1",
+    "bootPrecheckArtifact": "X78_BOOT_PRECHECK_STATUS_V1",
+    "releaseParityArtifact": "X78_RELEASE_REQUIRED_SET_PARITY_STATUS_V1",
+    "verifyEvidenceArtifact": "X78_RELEASE_VERIFICATION_EVIDENCE_STATUS_V1",
+    "ws03SummaryArtifact": "X78_WS03_SUMMARY_V1"
+  },
+  "releasePrepStabilityStateTransitionSummary": {
+    "RELEASE_REQUIRED_SET_PARITY_TRUE": true,
+    "releaseParityArtifact": "X78_RELEASE_REQUIRED_SET_PARITY_STATUS_V1.json",
+    "releaseSurfaceParityTokenId": "X70_WS05_RELEASE_SURFACE_PARITY_OK",
+    "runtimeCarryForwardArtifact": "X78_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1.json"
+  },
+  "schemaVersion": 1,
+  "tzId": "TZ_X78_WS99_FINAL_CLOSEOUT_AND_NEXT_GATE_WITH_METADATA",
+  "updatedAtUtc": "2026-03-03T21:58:05.968Z",
+  "verifyEvidenceStateTransitionSummary": {
+    "ATTESTATION_SIGNATURE_OK_TRUE": true,
+    "signatureTokenId": "ATTESTATION_SIGNATURE_OK",
+    "VERIFY_ATTESTATION_OK_TRUE": true,
+    "verifyEvidenceArtifact": "X78_RELEASE_VERIFICATION_EVIDENCE_STATUS_V1.json",
+    "verifyTokenId": "VERIFY_ATTESTATION_OK"
+  }
+}
