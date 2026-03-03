@@ -1,0 +1,25 @@
+{
+  "allowedValues": [
+    "TRUE",
+    "FALSE"
+  ],
+  "artifactId": "X77_SEQ10_GATE_PACKET_V1",
+  "onFalse": "HOLD_WITHOUT_MERGE",
+  "onTrue": "EXECUTE_SEQ10_STANDARD_PR_PATH_AND_SEQ11_RECONFIRM",
+  "proof": {
+    "commandSurfaceMachineBindingValidTrue": true,
+    "eReleaseCandidateDriftNotActiveTrue": true,
+    "exportRuntimeBindingReadyTrue": true,
+    "headStrictOkTrue": true,
+    "mindmapRuntimeBindingReadyTrue": true,
+    "noNewP0DriftTrue": true,
+    "noScopeExpansionTrue": true,
+    "opsIntegrityP0AllTrue": true,
+    "releaseCandidateLockMatchOkTrue": true,
+    "worktreeCleanAfterPacketTrue": true
+  },
+  "readyForSeq10OwnerMergeGate": true,
+  "requiredOwnerInput": "OWNER_MERGE_GO_TRUE_OR_FALSE",
+  "schemaVersion": 1,
+  "updatedAtUtc": "2026-03-03T21:42:07.287Z"
+}

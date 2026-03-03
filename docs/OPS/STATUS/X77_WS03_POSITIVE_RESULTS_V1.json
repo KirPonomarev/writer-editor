@@ -1,0 +1,32 @@
+{
+  "artifactId": "X77_WS03_POSITIVE_RESULTS_V1",
+  "executionPath": "SKIP",
+  "hashDeltaDetectedTrue": false,
+  "metadataEvidence": {
+    "exportRuntimeArtifact": "X77_EXPORT_MARKDOWN_RUNTIME_BINDING_STATUS_V1.json",
+    "exportTruthMeterArtifact": "X77_EXPORT_TRUTH_METER_BASELINE_V1.json",
+    "mindmapRuntimeArtifact": "X77_MINDMAP_RUNTIME_BINDING_STATUS_V1.json"
+  },
+  "ok": true,
+  "positiveResults": {
+    "EXPORT_RUNTIME_STATUS_CARRIER_PRESENT_TRUE": true,
+    "HEAD_STRICT_OK_TRUE": true,
+    "IF_REVERIFY_RUN_THEN_E_RELEASE_CANDIDATE_DRIFT_NOT_ACTIVE_TRUE": true,
+    "IF_REVERIFY_RUN_THEN_RELEASE_CANDIDATE_LOCK_MATCH_OK_TRUE": true,
+    "MINDMAP_RUNTIME_STATUS_CARRIER_PRESENT_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "OPS_INTEGRITY_P0_ALL_TRUE": true,
+    "SKIP_RECORD_VALID_TRUE": true
+  },
+  "reverifyEvidence": {
+    "previousEvidenceArtifact": "X77_WS02_STATUS_V1.json",
+    "previousEvidenceHashMatchTrue": true,
+    "runCondition": "HASH_DELTA_DETECTED_TRUE",
+    "skipCondition": "HASH_DELTA_DETECTED_FALSE_OR_FIELD_MISSING",
+    "skipRecordCarrier": "X77_WS03_STATUS_V1.json"
+  },
+  "schemaVersion": 1,
+  "tzId": "TZ_X77_WS03_METADATA_ALWAYS_RUN_AND_REVERIFY_CONDITIONAL",
+  "updatedAtUtc": "2026-03-03T21:42:07.287Z"
+}

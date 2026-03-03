@@ -1,0 +1,11 @@
+{
+  "artifactId": "X77_EXPORT_TRUTH_METER_BASELINE_V1",
+  "baselineMode": "DOCX_FIRST_WITH_MARKDOWN_BRIDGE_EVIDENCE",
+  "EXPORT_TRUTH_METER_BASELINE_PRESENT_TRUE": true,
+  "schemaVersion": 1,
+  "secondSotDetected": false,
+  "source": "lossReport.mjs",
+  "status": "PASS",
+  "tzId": "TZ_X77_WS02_EXPORT_AND_MINDMAP_RUNTIME_BINDING_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-03T21:42:07.287Z"
+}
