@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "X73_WS06_NEGATIVE_RESULTS_V1",
+  "tzId": "TZ_X73_WS06_ACCEPTANCE_VECTOR_COMPILE",
+  "ok": true,
+  "negativeResults": {
+    "THREAD_ACCEPTANCE_FALSE_EXPECT_REJECT_TRUE": true,
+    "REPO_ACCEPTANCE_PREMATURE_EXPECT_REJECT_TRUE": true
+  },
+  "evidence": {
+    "threadAcceptanceComputedTrue": true,
+    "repoAcceptancePrematureRejected": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "updatedAtUtc": "2026-03-03T10:25:14Z"
+}
