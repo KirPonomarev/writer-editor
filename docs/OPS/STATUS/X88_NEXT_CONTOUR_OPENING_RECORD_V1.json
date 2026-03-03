@@ -1,0 +1,18 @@
+{
+  "artifactId": "X88_NEXT_CONTOUR_OPENING_RECORD_V1",
+  "carryForward": {
+    "advisoryRemaining": [],
+    "p0Count": 0,
+    "scopeDriftCount": 0
+  },
+  "fromContour": "X88",
+  "handoff": {
+    "NEXT_CONTOUR_CLASS": "RELEASE_TAG_AND_POST_RELEASE_VERIFICATION",
+    "NEXT_CONTOUR_ID_AFTER_X88": "X89",
+    "NEXT_CONTOUR_OPENING_RECORD_REQUIRED": true
+  },
+  "nextContour": "X89",
+  "openCondition": "EXPLICIT_OWNER_OPEN_SIGNAL_REQUIRED",
+  "schemaVersion": 1,
+  "updatedAtUtc": "2026-03-03T23:56:46.000Z"
+}
