@@ -1,0 +1,15 @@
+{
+  "artifactId": "X94_REQUIRED_SET_BASELINE_V1",
+  "schemaVersion": 1,
+  "contourId": "X94",
+  "sourceArtifact": "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json",
+  "requiredTokenSetSha256": "fc82503fc1dcb65c4928d2a86ce901a2cd242f675328b22d662a05ff06241dbb",
+  "requiredTokenSetCount": null,
+  "requiredSetUnchangedMethod": "CURRENT_REQUIRED_TOKEN_SET_SHA256_EQUALS_BASELINE_REQUIRED_TOKEN_SET_SHA256",
+  "modeSwitchState": "THREAD_REVIEW_TRUE",
+  "token": true,
+  "failReason": "",
+  "failSignalCode": "",
+  "ok": true,
+  "updatedAtUtc": "2026-03-04T07:08:03.000Z"
+}

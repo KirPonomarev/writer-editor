@@ -1,0 +1,48 @@
+{
+  "artifactId": "X94_WS05_STATUS_V1",
+  "checks": {
+    "driftUnresolvedP0Count": 0,
+    "headStrictOk": true,
+    "scopeExpansionAttemptCount": 0,
+    "ws02Ok": true,
+    "ws03Ok": true,
+    "ws04AutoSkipAppliedTrue": true,
+    "ws04Ok": true
+  },
+  "dod": {
+    "WS05_DOD_01_THREAD_REVIEW_ACCEPTANCE_TRUE": true,
+    "WS05_DOD_02_REPO_EXECUTION_ACCEPTANCE_READY_TRUE": true,
+    "WS05_DOD_03_FINAL_STATE_REVIEW_COMPLETE_TRUE": true,
+    "WS05_DOD_04_ACCEPTANCE_VECTOR_VALIDATION_SINGLE_PASS_TRUE": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "negativeResults": {
+    "REPO_ACCEPTANCE_PREMATURE_EXPECT_REJECT_TRUE": true,
+    "THREAD_ACCEPTANCE_FALSE_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "positiveResults": {
+    "FINAL_STATE_REVIEW_COMPLETE_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "REPO_EXECUTION_ACCEPTANCE_READY_TRUE": true,
+    "THREAD_REVIEW_ACCEPTANCE_TRUE": true,
+    "ACCEPTANCE_VECTOR_VALIDATION_SINGLE_PASS_TRUE": true
+  },
+  "prechecks": {
+    "PRECHECK_01_WS02_PASS_TRUE": true,
+    "PRECHECK_02_WS03_PASS_TRUE": true,
+    "PRECHECK_03_WS04_PASS_OR_VALID_AUTO_SKIP_TRUE": true,
+    "PRECHECK_04_ACTIVE_CANON_LOCK_TRUE": true,
+    "PRECHECK_05_SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE": true,
+    "PRECHECK_06_ACCEPTANCE_VECTOR_VALIDATION_ARTIFACT_PRESENT_TRUE": true
+  },
+  "schemaVersion": 1,
+  "token": true,
+  "tzId": "TZ_X94_WS05_ACCEPTANCE_VECTOR_COMPILE",
+  "updatedAtUtc": "2026-03-04T07:08:03.000Z",
+  "acceptanceVectorValidationArtifact": "X94_ACCEPTANCE_VECTOR_VALIDATION_STATUS_V1.json"
+}
