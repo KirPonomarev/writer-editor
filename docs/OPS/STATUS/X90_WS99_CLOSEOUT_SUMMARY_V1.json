@@ -1,0 +1,78 @@
+{
+  "artifactId": "X90_WS99_CLOSEOUT_SUMMARY_V1",
+  "checks": {
+    "activeCanonLockTrue": true,
+    "driftUnresolvedP0Count": 0,
+    "headStrictOkTrue": true,
+    "ownerOpenSignalTrue": true,
+    "scopeExpansionAttemptCount": 0,
+    "scopeExpansionCounterPreWs99ZeroTrue": true,
+    "ws02PassTrue": true,
+    "ws03PassTrue": true,
+    "ws04PassOrValidAutoSkipTrue": true,
+    "ws05PassTrue": true
+  },
+  "executedFalseItemsList": [
+    "RELEASE_TAG_EXECUTION_PACKET_NOT_CONFIRMED_TRUE",
+    "POST_RELEASE_VERIFICATION_PACKET_NOT_CONFIRMED_TRUE",
+    "X89_RUNTIME_CARRY_FORWARD_STABILITY_NOT_CONFIRMED_TRUE",
+    "X90_ACCEPTANCE_VECTOR_NOT_COMPILED"
+  ],
+  "failReason": "",
+  "failSignalCode": "",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "negativeResults": {
+    "ACCEPTANCE_VECTOR_NOT_ALL_TRUE_EXPECT_REJECT_TRUE": true,
+    "MISSING_CLOSEOUT_SUMMARY_EXPECT_REJECT_TRUE": true,
+    "MISSING_STATUS_PACKET_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "positiveResults": {
+    "ACCEPTANCE_VECTOR_ALL_TRUE": true,
+    "ALL_EXECUTED_FALSE_ITEMS_CLOSED_TRUE": true,
+    "EVIDENCE_PACKET_COMPLETE_TRUE": true,
+    "FINAL_STATE_EXECUTION_COMPLETE_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "PROFILE_BINDINGS_STATE_EXPLICIT_TRUE": true,
+    "READY_FOR_SEQ10_OWNER_MERGE_GATE_TRUE": true,
+    "RELEASE_TAG_EXECUTION_STATE_EXPLICIT_TRUE": true,
+    "POST_RELEASE_VERIFICATION_STATE_EXPLICIT_TRUE": true,
+    "WORKTREE_CLEAN_AFTER_PACKET_TRUE": true
+  },
+  "prechecks": {
+    "PRECHECK_01_WS02_PASS_TRUE": true,
+    "PRECHECK_02_WS03_PASS_TRUE": true,
+    "PRECHECK_03_WS04_PASS_OR_VALID_AUTO_SKIP_TRUE": true,
+    "PRECHECK_04_WS05_PASS_TRUE": true,
+    "PRECHECK_05_ACTIVE_CANON_LOCK_TRUE": true,
+    "PRECHECK_06_SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE": true,
+    "PRECHECK_07_OWNER_OPEN_SIGNAL_TRUE": true
+  },
+  "profileBindingsStateTransitionSummary": {
+    "PROFILE_BINDINGS_STATE_EXPLICIT_TRUE": true,
+    "profileBindingsActivationSummaryArtifact": "X75_PROFILE_BINDINGS_ACTIVATION_SUMMARY_V1.json",
+    "profileBindingsArtifact": "XPLAT_PROFILE_BINDINGS_v3_12.json",
+    "profileBindingsBindingValidTrue": true,
+    "profileBindingsClassNonBlockingUnlessStageActivatedTrue": true,
+    "profileBindingsCreatedIfMissing": false
+  },
+  "releaseTagExecutionStateTransitionSummary": {
+    "RELEASE_TAG_EXECUTION_PACKET_READY_TRUE": true,
+    "releaseTagExecutionArtifact": "X90_RELEASE_TAG_EXECUTION_PACKET_STATUS_V1.json",
+    "releaseSurfaceParityTokenId": "X70_WS05_RELEASE_SURFACE_PARITY_OK",
+    "runtimeCarryForwardArtifact": "X90_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1.json"
+  },
+  "postReleaseVerificationStateTransitionSummary": {
+    "POST_RELEASE_VERIFICATION_PACKET_READY_TRUE": true,
+    "postReleaseVerificationArtifact": "X90_POST_RELEASE_VERIFICATION_PACKET_STATUS_V1.json",
+    "verifyTokenId": "VERIFY_ATTESTATION_OK",
+    "signatureTokenId": "ATTESTATION_SIGNATURE_OK"
+  },
+  "schemaVersion": 1,
+  "scopeLimit": "WS99_ONLY",
+  "token": true,
+  "tzId": "TZ_X90_WS99_FINAL_CLOSEOUT_AND_NEXT_GATE_WITH_METADATA",
+  "updatedAtUtc": "2026-03-04T00:10:36.000Z"
+}

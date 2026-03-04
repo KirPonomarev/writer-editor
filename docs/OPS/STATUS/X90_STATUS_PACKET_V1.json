@@ -1,0 +1,58 @@
+{
+  "acceptance": {
+    "ACCEPTANCE_01_THREAD_REVIEW_ACCEPTANCE_TRUE": true,
+    "ACCEPTANCE_02_REPO_EXECUTION_ACCEPTANCE_TRUE": true,
+    "ACCEPTANCE_03_TRANSITION_READY_FORMULA_TRUE": true,
+    "ACCEPTANCE_04_PROFILE_BINDINGS_ARTIFACT_PRESENT_TRUE": true,
+    "ACCEPTANCE_05_PROFILE_BINDINGS_BINDING_VALID_TRUE": true,
+    "ACCEPTANCE_06_RELEASE_TAG_EXECUTION_PACKET_READY_TRUE": true,
+    "ACCEPTANCE_07_POST_RELEASE_VERIFICATION_PACKET_READY_TRUE": true,
+    "ACCEPTANCE_08_RELEASE_CANDIDATE_STATE_GREEN_OR_VALID_CARRY_FORWARD_TRUE": true,
+    "ACCEPTANCE_09_OPS_INTEGRITY_P0_ALL_TRUE": true,
+    "ACCEPTANCE_10_HEAD_STRICT_OK_TRUE": true,
+    "ACCEPTANCE_11_NO_SCOPE_EXPANSION_TRUE": true,
+    "ACCEPTANCE_12_NO_NEW_BLOCKING_TOKENS_TRUE": true,
+    "ACCEPTANCE_13_NO_NEW_BLOCKING_FAILSIGNALS_TRUE": true,
+    "ACCEPTANCE_14_NO_NEW_P0_DRIFT_TRUE": true,
+    "ACCEPTANCE_15_WORKTREE_CLEAN_AFTER_PACKET_TRUE": true,
+    "ACCEPTANCE_16_FINAL_CLOSEOUT_PACKET_COMPLETE_TRUE": true,
+    "FINAL_DOD_ACCEPTANCE_SUMMARY": "ALL_TRUE_REQUIRED_SATISFIED"
+  },
+  "acceptanceAdvisory": {
+    "ACCEPTANCE_ADVISORY_01_X89_RUNTIME_BINDINGS_CARRY_FORWARD_STABLE_TRUE": true,
+    "ACCEPTANCE_ADVISORY_02_X16_BRIDGE_STATUS_PASS_TRUE": true
+  },
+  "artifactId": "X90_STATUS_PACKET_V1",
+  "contourId": "X90",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "profileBindingsStateTransitionSummary": {
+    "PROFILE_BINDINGS_STATE_EXPLICIT_TRUE": true,
+    "profileBindingsActivationSummaryArtifact": "X75_PROFILE_BINDINGS_ACTIVATION_SUMMARY_V1.json",
+    "profileBindingsArtifact": "XPLAT_PROFILE_BINDINGS_v3_12.json",
+    "profileBindingsBindingValidTrue": true,
+    "profileBindingsClassNonBlockingUnlessStageActivatedTrue": true,
+    "profileBindingsCreatedIfMissing": false
+  },
+  "releaseTagExecutionStateTransitionSummary": {
+    "RELEASE_TAG_EXECUTION_PACKET_READY_TRUE": true,
+    "releaseTagExecutionArtifact": "X90_RELEASE_TAG_EXECUTION_PACKET_STATUS_V1.json",
+    "releaseSurfaceParityTokenId": "X70_WS05_RELEASE_SURFACE_PARITY_OK",
+    "runtimeCarryForwardArtifact": "X90_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1.json"
+  },
+  "postReleaseVerificationStateTransitionSummary": {
+    "POST_RELEASE_VERIFICATION_PACKET_READY_TRUE": true,
+    "postReleaseVerificationArtifact": "X90_POST_RELEASE_VERIFICATION_PACKET_STATUS_V1.json",
+    "verifyTokenId": "VERIFY_ATTESTATION_OK",
+    "signatureTokenId": "ATTESTATION_SIGNATURE_OK"
+  },
+  "report": {
+    "finalGateStatus": "READY_FOR_SEQ10_OWNER_MERGE_GATE",
+    "noNewP0DriftState": true,
+    "noScopeExpansionTrue": true,
+    "scopeExpansionAttemptCount": 0
+  },
+  "schemaVersion": 1,
+  "state": "WS99_CLOSED_TRUE",
+  "updatedAtUtc": "2026-03-04T00:10:36.000Z"
+}
