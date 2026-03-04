@@ -1,0 +1,33 @@
+{
+  "artifactId": "X91_WS99_METADATA_BLOCK_V1",
+  "profileBindingsStateTransitionSummary": {
+    "PROFILE_BINDINGS_STATE_EXPLICIT_TRUE": true,
+    "profileBindingsActivationSummaryArtifact": "X75_PROFILE_BINDINGS_ACTIVATION_SUMMARY_V1.json",
+    "profileBindingsArtifact": "XPLAT_PROFILE_BINDINGS_v3_12.json",
+    "profileBindingsBindingValidTrue": true,
+    "profileBindingsClassNonBlockingUnlessStageActivatedTrue": true,
+    "profileBindingsCreatedIfMissing": false
+  },
+  "references": {
+    "bindingIntegrityArtifact": "X91_BINDING_INTEGRITY_STATUS_V1",
+    "bootPrecheckArtifact": "X91_BOOT_PRECHECK_STATUS_V1",
+    "releaseTagExecutionArtifact": "X91_RELEASE_TAG_EXECUTION_PACKET_STATUS_V1",
+    "postReleaseVerificationArtifact": "X91_POST_RELEASE_VERIFICATION_PACKET_STATUS_V1",
+    "ws03SummaryArtifact": "X91_WS03_SUMMARY_V1"
+  },
+  "releaseTagExecutionStateTransitionSummary": {
+    "RELEASE_TAG_EXECUTION_PACKET_READY_TRUE": true,
+    "releaseTagExecutionArtifact": "X91_RELEASE_TAG_EXECUTION_PACKET_STATUS_V1.json",
+    "releaseSurfaceParityTokenId": "X70_WS05_RELEASE_SURFACE_PARITY_OK",
+    "runtimeCarryForwardArtifact": "X91_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1.json"
+  },
+  "postReleaseVerificationStateTransitionSummary": {
+    "POST_RELEASE_VERIFICATION_PACKET_READY_TRUE": true,
+    "postReleaseVerificationArtifact": "X91_POST_RELEASE_VERIFICATION_PACKET_STATUS_V1.json",
+    "verifyTokenId": "VERIFY_ATTESTATION_OK",
+    "signatureTokenId": "ATTESTATION_SIGNATURE_OK"
+  },
+  "schemaVersion": 1,
+  "tzId": "TZ_X91_WS99_FINAL_CLOSEOUT_AND_NEXT_GATE_WITH_METADATA",
+  "updatedAtUtc": "2026-03-04T06:08:09.000Z"
+}
