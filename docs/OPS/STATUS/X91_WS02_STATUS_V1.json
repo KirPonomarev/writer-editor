@@ -1,0 +1,54 @@
+{
+  "artifactId": "X91_WS02_STATUS_V1",
+  "checks": {
+    "releaseTagExecutionPacketReadyTrue": true,
+    "postReleaseVerificationPacketReadyTrue": true,
+    "driftUnresolvedP0Count": 0,
+    "hashDeltaDetectedTrue": false,
+    "headStrictOk": true,
+    "profileBindingsRemainValid": true,
+    "releaseCandidateLockMatchOk": true,
+    "scopeExpansionAttemptCount": 0,
+    "x83CarryForwardStabilityTrue": true
+  },
+  "dod": {
+    "WS02_DOD_01_RELEASE_TAG_EXECUTION_PACKET_READY_TRUE": true,
+    "WS02_DOD_02_POST_RELEASE_VERIFICATION_PACKET_READY_TRUE": true,
+    "WS02_DOD_03_X90_RUNTIME_CARRY_FORWARD_STABILITY_TRUE": true,
+    "WS02_DOD_04_PROFILE_BINDINGS_REMAIN_VALID_TRUE": true,
+    "WS02_DOD_05_NO_NEW_P0_DRIFT_TRUE": true,
+    "WS02_DOD_06_NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "modeSwitchState": "REPO_EXECUTION_TRUE",
+  "negativeResults": {
+    "RELEASE_TAG_EXECUTION_PACKET_MISSING_EXPECT_REJECT_TRUE": true,
+    "POST_RELEASE_VERIFICATION_PACKET_MISSING_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true,
+    "X90_CARRY_FORWARD_STABILITY_MISSING_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "ownerSignalState": "OWNER_OPEN_SIGNAL_TRUE",
+  "positiveResults": {
+    "RELEASE_TAG_EXECUTION_PACKET_READY_TRUE": true,
+    "POST_RELEASE_VERIFICATION_PACKET_READY_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true,
+    "PROFILE_BINDINGS_REMAIN_VALID_TRUE": true,
+    "X90_RUNTIME_CARRY_FORWARD_STABILITY_TRUE": true
+  },
+  "prechecks": {
+    "PRECHECK_01_OWNER_OPEN_SIGNAL_TRUE": true,
+    "PRECHECK_02_MODE_REPO_EXECUTION_TRUE": true,
+    "PRECHECK_03_WORKTREE_CLEAN_TRUE": true,
+    "PRECHECK_04_ACTIVE_CANON_LOCK_TRUE": true,
+    "PRECHECK_05_WS02_MARKED_FALSE_IN_DELTA_MAP_TRUE": true,
+    "PRECHECK_06_SCOPE_EXPANSION_COUNTER_PRE_WS99_ZERO_TRUE": true
+  },
+  "schemaVersion": 1,
+  "scopeLimit": "STATUS_ARTIFACTS_ONLY_RELEASE_TAG_EXECUTION_AND_POST_RELEASE_VERIFICATION",
+  "token": true,
+  "tzId": "TZ_X91_WS02_RELEASE_TAG_EXECUTION_AND_POST_RELEASE_VERIFICATION_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-04T06:08:09.000Z"
+}
