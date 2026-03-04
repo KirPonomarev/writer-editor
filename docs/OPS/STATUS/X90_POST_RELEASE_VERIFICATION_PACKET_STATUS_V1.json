@@ -1,0 +1,20 @@
+{
+  "artifactId": "X90_POST_RELEASE_VERIFICATION_PACKET_STATUS_V1",
+  "checks": {
+    "POST_RELEASE_VERIFICATION_PACKET_READY_TRUE": true,
+    "VERIFY_ATTESTATION_OK_TRUE": true,
+    "ATTESTATION_SIGNATURE_OK_TRUE": true,
+    "HEAD_STRICT_OK_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true
+  },
+  "evidence": {
+    "verifyTokenId": "VERIFY_ATTESTATION_OK",
+    "signatureTokenId": "ATTESTATION_SIGNATURE_OK",
+    "sourceArtifact": "X89_AUDIT_LOCK_PACKET_STATUS_V1.json",
+    "carryForwardValid": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X90_WS02_RELEASE_TAG_EXECUTION_AND_POST_RELEASE_VERIFICATION_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-04T00:10:36.000Z"
+}
