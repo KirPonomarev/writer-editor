@@ -1,0 +1,21 @@
+{
+  "artifactId": "X95_WS02_NEGATIVE_RESULTS_V1",
+  "evidence": {
+    "releaseTagExecutionPacketMissingRejectedByPolicy": true,
+    "postReleaseVerificationPacketMissingRejectedByPolicy": true,
+    "scopeBreachDetected": false,
+    "carryForwardMissingRejectedByPolicy": true
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "negativeResults": {
+    "RELEASE_TAG_EXECUTION_PACKET_MISSING_EXPECT_REJECT_TRUE": true,
+    "POST_RELEASE_VERIFICATION_PACKET_MISSING_EXPECT_REJECT_TRUE": true,
+    "SCOPE_BREACH_EXPECT_REJECT_TRUE": true,
+    "X94_CARRY_FORWARD_STABILITY_MISSING_EXPECT_REJECT_TRUE": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X95_WS02_RELEASE_TAG_EXECUTION_AND_POST_RELEASE_VERIFICATION_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-04T07:14:00.000Z"
+}
