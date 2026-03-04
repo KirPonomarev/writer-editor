@@ -1,0 +1,37 @@
+{
+  "artifactId": "X98_BOOT_PRECHECK_STATUS_V1",
+  "bootPregates": {
+    "FAST_PRECHECK_NOT_RELEASE_GATE_ASSERTION_TRUE": true,
+    "GATE_GRAPH_CYCLE_FREE_OK_TRUE": true,
+    "MC_CHECK_EXECUTABILITY_BINDING_TRUE": true,
+    "MC_REGISTRY_BINDING_COMPLETENESS_100_TRUE": true,
+    "MODE_GUARD_ACTIVE_TRUE": true,
+    "OWNER_SIGNAL_SCHEMA_VALID_TRUE": true,
+    "REQUIRED_SET_FAILSIGNAL_MODE_SYNC_OK_TRUE": true,
+    "STRICT_RUN_CAP_ACTIVE_TRUE": true,
+    "WS09_SKIP_RULE_DETERMINISTIC_OK_TRUE": true
+  },
+  "details": {
+    "OWNER_OPEN_SIGNAL": true,
+    "WS09_REASON_CODE": "NON_PROMOTION_STABLE_INPUT",
+    "WS09_REQUIRED": false
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "modeSwitchState": "THREAD_REVIEW_TRUE",
+  "ok": true,
+  "prechecks": {
+    "ACTIVE_CANON_RESOLUTION_TRUE": true,
+    "DRIFT_UNRESOLVED_P0_COUNT_ZERO_TRUE": true,
+    "HEAD_STRICT_OK_TRUE": true,
+    "MODE_THREAD_REVIEW_TRUE": true,
+    "NO_PRODUCT_CODE_WRITE_TRUE": true,
+    "OWNER_SIGNAL_SCHEMA_VALID_TRUE": true,
+    "TRANSITION_READY_FORMULA_TRUE": true,
+    "WORKTREE_CLEAN_TRUE": true
+  },
+  "schemaVersion": 1,
+  "token": true,
+  "tzId": "TZ_X98_WS00_WS01_BOOTSTRAP_001",
+  "updatedAtUtc": "2026-03-04T07:37:30.000Z"
+}

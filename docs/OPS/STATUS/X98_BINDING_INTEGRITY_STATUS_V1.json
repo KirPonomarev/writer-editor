@@ -1,0 +1,23 @@
+{
+  "artifactId": "X98_BINDING_INTEGRITY_STATUS_V1",
+  "bindingIntegrity": {
+    "CONFIG_HASH_LOCK_OK_TRUE": true,
+    "HEAD_STRICT_OK_TRUE": true,
+    "PROOFHOOK_INTEGRITY_OK_TRUE": true,
+    "REQUIRED_SET_NO_TARGET_OK_TRUE": true,
+    "TOKEN_SOURCE_CONFLICT_OK_TRUE": true
+  },
+  "doctorSnapshot": {
+    "DRIFT_UNRESOLVED_P0_COUNT": 0,
+    "HEAD_STRICT_OK": 1,
+    "TOKEN_SOURCE_CONFLICT_OK": 1
+  },
+  "failReason": "",
+  "failSignalCode": "",
+  "modeSwitchState": "THREAD_REVIEW_TRUE",
+  "ok": true,
+  "schemaVersion": 1,
+  "token": true,
+  "tzId": "TZ_X98_WS00_WS01_BOOTSTRAP_001",
+  "updatedAtUtc": "2026-03-04T07:37:30.000Z"
+}
