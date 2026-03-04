@@ -1,0 +1,9 @@
+{
+  "artifactId": "X93_WS04_SUMMARY_V1",
+  "executionPath": "SKIP",
+  "ok": true,
+  "requiredSetReconfirmPath": "SKIP_VALID",
+  "schemaVersion": 1,
+  "tzId": "TZ_X93_WS04_TARGETED_RECONFIRM_REQUIRED_SET_WITH_AUTO_SKIP",
+  "updatedAtUtc": "2026-03-04T06:57:49.000Z"
+}
