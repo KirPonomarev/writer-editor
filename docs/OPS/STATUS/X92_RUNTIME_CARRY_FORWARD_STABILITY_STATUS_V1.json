@@ -1,0 +1,17 @@
+{
+  "artifactId": "X92_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1",
+  "checks": {
+    "X91_RUNTIME_CARRY_FORWARD_STABILITY_TRUE": true,
+    "PROFILE_BINDINGS_REMAIN_VALID_TRUE": true,
+    "NO_NEW_P0_DRIFT_TRUE": true,
+    "NO_SCOPE_EXPANSION_TRUE": true
+  },
+  "evidence": {
+    "sourceArtifact": "X91_RUNTIME_CARRY_FORWARD_STABILITY_STATUS_V1.json",
+    "carryForwardValid": true
+  },
+  "ok": true,
+  "schemaVersion": 1,
+  "tzId": "TZ_X92_WS02_RELEASE_TAG_EXECUTION_AND_POST_RELEASE_VERIFICATION_MINIMAL_TOUCH",
+  "updatedAtUtc": "2026-03-04T06:51:57.000Z"
+}
