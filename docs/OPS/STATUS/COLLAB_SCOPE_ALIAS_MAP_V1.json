@@ -1,0 +1,10 @@
+{
+  "DOCUMENT_ID": "COLLAB_SCOPE_ALIAS_MAP_V1",
+  "schemaVersion": 1,
+  "status": "ACTIVE",
+  "canonicalTerm": "COLLAB_SCOPE_LOCAL",
+  "aliasTerm": "COLLAB_SCOPE_FLAG_ACTIVE",
+  "mappingRule": "COLLAB_SCOPE_LOCAL_TRUE_EQ_COLLAB_SCOPE_FLAG_ACTIVE_TRUE",
+  "advisoryOnlyNonBlocking": true,
+  "notes": "Alias map for terminology normalization only; non-blocking by policy."
+}

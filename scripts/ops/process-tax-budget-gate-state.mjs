@@ -12,6 +12,8 @@ const FAIL_SIGNAL_CODE = 'E_PROCESS_TAX_BUDGET_GATE_AUTOMATION';
 const DEFAULT_UNIQUE_SIGNAL_MAP_PATH = 'docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/unique-signal-map.json';
 const DEFAULT_DUPLICATE_BEFORE_AFTER_PATH = 'docs/OPS/EVIDENCE/P1_CONTOUR/TICKET_10/duplicate-checks-before-after.json';
 const DEFAULT_FAILSIGNAL_REGISTRY_PATH = 'docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json';
+const DEFAULT_LOOP_BREAKER_POLICY_PATH = 'docs/OPS/STATUS/LOOP_BREAKER_POLICY_v1.json';
+const DEFAULT_STATUS_DIR_PATH = 'docs/OPS/STATUS';
 const DEFAULT_MAX_HEAVY_PASS_PER_WINDOW = 1;
 const DEFAULT_KILL_SWITCH_WAVE_THRESHOLD = 2;
 const DEFAULT_RUNTIME_BUDGET_MINUTES_MAX = 30;
@@ -47,12 +49,241 @@ function readJsonObject(filePath) {
   }
 }
 
+function toBool(value) {
+  if (value === true) return true;
+  if (value === false) return false;
+  if (typeof value === 'number') return value === 1;
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    return normalized === 'true' || normalized === '1' || normalized === 'yes';
+  }
+  return false;
+}
+
+function normalizeContourId(value) {
+  const normalized = normalizeString(value).toUpperCase();
+  return /^X\d+$/u.test(normalized) ? normalized : '';
+}
+
+function contourOrdinal(contourId) {
+  const normalized = normalizeContourId(contourId);
+  if (!normalized) return Number.NaN;
+  return Number.parseInt(normalized.slice(1), 10);
+}
+
+function listNextContourOpeningRecords(statusDirPath) {
+  let entries = [];
+  try {
+    entries = fs.readdirSync(statusDirPath, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  const rows = [];
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    const match = /^X(\d+)_NEXT_CONTOUR_OPENING_RECORD_V1\.json$/u.exec(entry.name);
+    if (!match) continue;
+    const recordPath = path.join(statusDirPath, entry.name);
+    const record = readJsonObject(recordPath);
+    if (!record) continue;
+
+    const fromContour = normalizeContourId(record.fromContour);
+    const handoffClass = normalizeString(record?.handoff?.NEXT_CONTOUR_CLASS);
+    rows.push({
+      fileName: entry.name,
+      recordPath,
+      contourId: fromContour || `X${match[1]}`,
+      contourOrdinal: fromContour ? contourOrdinal(fromContour) : Number.parseInt(match[1], 10),
+      nextContourClass: handoffClass,
+      record,
+    });
+  }
+
+  rows.sort((a, b) => b.contourOrdinal - a.contourOrdinal);
+  return rows;
+}
+
+function collectUserArtifactIds(statusDoc) {
+  const fromRoot = Array.isArray(statusDoc?.USER_ARTIFACT_IDS) ? statusDoc.USER_ARTIFACT_IDS : [];
+  const fromProductDelta = Array.isArray(statusDoc?.productDelta?.USER_ARTIFACT_IDS)
+    ? statusDoc.productDelta.USER_ARTIFACT_IDS
+    : [];
+  const fromUserArtifacts = Array.isArray(statusDoc?.userArtifacts?.USER_ARTIFACT_IDS)
+    ? statusDoc.userArtifacts.USER_ARTIFACT_IDS
+    : [];
+  const merged = [...fromRoot, ...fromProductDelta, ...fromUserArtifacts]
+    .map((entry) => normalizeString(entry))
+    .filter(Boolean);
+  return Array.from(new Set(merged));
+}
+
+function extractProductDeltaTrue(statusDoc) {
+  return toBool(statusDoc?.productDelta?.PRODUCT_DELTA_TRUE)
+    || toBool(statusDoc?.PRODUCT_DELTA_TRUE)
+    || toBool(statusDoc?.acceptanceAdvisory?.PRODUCT_DELTA_TRUE);
+}
+
+function evaluateContourLoopExitGuard({ repoRoot, statusDirPath, loopBreakerPolicyDoc }) {
+  const guard = isObjectRecord(loopBreakerPolicyDoc?.contourLoopExitGuard)
+    ? loopBreakerPolicyDoc.contourLoopExitGuard
+    : {};
+  const enabled = guard.enabled !== false;
+  const enforcementMode = normalizeString(guard.enforcementMode || 'advisory_non_blocking').toLowerCase();
+  const blockingMode = enforcementMode.startsWith('blocking');
+  const maxSameClassWithoutProductDelta = Number.isInteger(guard.maxSameClassWithoutProductDelta)
+    ? guard.maxSameClassWithoutProductDelta
+    : 2;
+  const userArtifactMinCount = Number.isInteger(guard.userArtifactMinCount) ? guard.userArtifactMinCount : 1;
+  const allowlist = Array.isArray(guard.userArtifactAllowlist)
+    ? guard.userArtifactAllowlist.map((entry) => normalizeString(entry)).filter(Boolean)
+    : [];
+
+  if (!enabled) {
+    return {
+      enabled: false,
+      enforcementMode,
+      blockingMode,
+      repeatClassWithoutDeltaCapCheck: true,
+      userArtifactMin1Check: true,
+      warnings: [],
+      violations: [],
+      onViolationAction: 'NONE',
+      latestContourId: '',
+      latestContourClass: '',
+      sameClassStreakCount: 0,
+      sameClassStreakCountEffective: 0,
+      productDeltaTrue: false,
+      userArtifactCount: 0,
+      userArtifactIds: [],
+    };
+  }
+
+  const warnings = [];
+  const records = listNextContourOpeningRecords(statusDirPath);
+  if (records.length === 0) {
+    warnings.push('NEXT_CONTOUR_OPENING_RECORD_NOT_FOUND');
+    return {
+      enabled: true,
+      enforcementMode,
+      blockingMode,
+      repeatClassWithoutDeltaCapCheck: false,
+      userArtifactMin1Check: false,
+      warnings,
+      violations: [
+        'REPEAT_CLASS_WITHOUT_DELTA_CAP_EXCEEDED_OR_UNVERIFIED',
+        'USER_ARTIFACT_MIN_COUNT_NOT_MET_OR_UNVERIFIED',
+      ],
+      onViolationAction: blockingMode
+        ? normalizeString(guard.onViolationBlocking || 'HOLD_AND_OWNER_DECISION_REQUIRED')
+        : normalizeString(guard.onViolationAdvisory || 'WARN_AND_OWNER_DECISION_REQUIRED'),
+      latestContourId: '',
+      latestContourClass: '',
+      sameClassStreakCount: 0,
+      sameClassStreakCountEffective: 0,
+      productDeltaTrue: false,
+      userArtifactCount: 0,
+      userArtifactIds: [],
+    };
+  }
+
+  const latest = records[0];
+  const latestContourClass = normalizeString(latest.nextContourClass);
+  const sameClassRows = [];
+  for (const row of records) {
+    if (normalizeString(row.nextContourClass) !== latestContourClass) break;
+    sameClassRows.push(row);
+  }
+
+  const sameClassStreakCount = sameClassRows.length;
+  let sameClassStreakCountEffective = sameClassStreakCount;
+  let latestStatusDoc = null;
+  let latestStatusPath = '';
+  let productDeltaTrue = false;
+
+  for (let index = 0; index < sameClassRows.length; index += 1) {
+    const row = sameClassRows[index];
+    const statusPath = path.join(statusDirPath, `${row.contourId}_STATUS_PACKET_V1.json`);
+    const statusDoc = readJsonObject(statusPath);
+    if (!statusDoc) {
+      warnings.push(`STATUS_PACKET_UNREADABLE:${path.basename(statusPath)}`);
+      continue;
+    }
+
+    if (index === 0) {
+      latestStatusDoc = statusDoc;
+      latestStatusPath = statusPath;
+      productDeltaTrue = extractProductDeltaTrue(statusDoc);
+    }
+
+    if (extractProductDeltaTrue(statusDoc)) {
+      // Reset streak at the first contour in the same-class chain that has product delta.
+      sameClassStreakCountEffective = index;
+      break;
+    }
+  }
+
+  if (!latestStatusPath) {
+    latestStatusPath = path.join(statusDirPath, `${latest.contourId}_STATUS_PACKET_V1.json`);
+  }
+  if (!latestStatusDoc) {
+    latestStatusDoc = readJsonObject(latestStatusPath);
+  }
+  if (!latestStatusDoc) {
+    const latestUnreadable = `STATUS_PACKET_UNREADABLE:${path.basename(latestStatusPath)}`;
+    if (!warnings.includes(latestUnreadable)) warnings.push(latestUnreadable);
+  } else {
+    productDeltaTrue = extractProductDeltaTrue(latestStatusDoc);
+  }
+
+  const userArtifactIdsRaw = collectUserArtifactIds(latestStatusDoc || {});
+  const userArtifactIds = allowlist.length > 0
+    ? userArtifactIdsRaw.filter((entry) => allowlist.includes(entry))
+    : userArtifactIdsRaw;
+  const userArtifactCount = userArtifactIds.length;
+
+  const repeatClassWithoutDeltaCapCheck = sameClassStreakCountEffective <= maxSameClassWithoutProductDelta;
+  const userArtifactMin1Check = userArtifactCount >= userArtifactMinCount;
+  const violations = [];
+  if (!repeatClassWithoutDeltaCapCheck) violations.push('REPEAT_CLASS_WITHOUT_DELTA_CAP_EXCEEDED_OR_UNVERIFIED');
+  if (!userArtifactMin1Check) violations.push('USER_ARTIFACT_MIN_COUNT_NOT_MET_OR_UNVERIFIED');
+
+  const onViolationAction = violations.length === 0
+    ? 'NONE'
+    : (blockingMode
+      ? normalizeString(guard.onViolationBlocking || 'HOLD_AND_OWNER_DECISION_REQUIRED')
+      : normalizeString(guard.onViolationAdvisory || 'WARN_AND_OWNER_DECISION_REQUIRED'));
+
+  return {
+    enabled: true,
+    enforcementMode,
+    blockingMode,
+    repeatClassWithoutDeltaCapCheck,
+    userArtifactMin1Check,
+    warnings,
+    violations,
+    onViolationAction,
+    latestContourId: latest.contourId,
+    latestContourClass,
+    sameClassStreakCount,
+    sameClassStreakCountEffective,
+    maxSameClassWithoutProductDelta,
+    productDeltaTrue,
+    userArtifactMinCount,
+    userArtifactCount,
+    userArtifactIds,
+    latestStatusArtifact: path.relative(repoRoot, latestStatusPath).replaceAll(path.sep, '/'),
+  };
+}
+
 function parseArgs(argv = process.argv.slice(2)) {
   const out = {
     json: false,
     uniqueSignalMapPath: '',
     duplicateBeforeAfterPath: '',
     failsignalRegistryPath: '',
+    loopBreakerPolicyPath: '',
+    statusDirPath: '',
     maxHeavyPassPerWindow: DEFAULT_MAX_HEAVY_PASS_PER_WINDOW,
     killSwitchWaveThreshold: DEFAULT_KILL_SWITCH_WAVE_THRESHOLD,
     runtimeBudgetMinutesMax: DEFAULT_RUNTIME_BUDGET_MINUTES_MAX,
@@ -94,6 +325,26 @@ function parseArgs(argv = process.argv.slice(2)) {
     }
     if (arg.startsWith('--failsignal-registry-path=')) {
       out.failsignalRegistryPath = normalizeString(arg.slice('--failsignal-registry-path='.length));
+      continue;
+    }
+
+    if (arg === '--loop-breaker-policy-path' && i + 1 < argv.length) {
+      out.loopBreakerPolicyPath = normalizeString(argv[i + 1]);
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith('--loop-breaker-policy-path=')) {
+      out.loopBreakerPolicyPath = normalizeString(arg.slice('--loop-breaker-policy-path='.length));
+      continue;
+    }
+
+    if (arg === '--status-dir-path' && i + 1 < argv.length) {
+      out.statusDirPath = normalizeString(argv[i + 1]);
+      i += 1;
+      continue;
+    }
+    if (arg.startsWith('--status-dir-path=')) {
+      out.statusDirPath = normalizeString(arg.slice('--status-dir-path='.length));
       continue;
     }
 
@@ -405,6 +656,10 @@ function evaluateAdvisoryToBlockingDrift(repoRoot, failsignalRegistryDoc) {
 
 export function evaluateProcessTaxBudgetGateState(input = {}) {
   const repoRoot = path.resolve(normalizeString(input.repoRoot) || process.cwd());
+  const statusDirPath = path.resolve(
+    repoRoot,
+    normalizeString(input.statusDirPath || DEFAULT_STATUS_DIR_PATH),
+  );
   const uniqueSignalMapPath = path.resolve(
     repoRoot,
     normalizeString(input.uniqueSignalMapPath || DEFAULT_UNIQUE_SIGNAL_MAP_PATH),
@@ -417,6 +672,10 @@ export function evaluateProcessTaxBudgetGateState(input = {}) {
     repoRoot,
     normalizeString(input.failsignalRegistryPath || DEFAULT_FAILSIGNAL_REGISTRY_PATH),
   );
+  const loopBreakerPolicyPath = path.resolve(
+    repoRoot,
+    normalizeString(input.loopBreakerPolicyPath || DEFAULT_LOOP_BREAKER_POLICY_PATH),
+  );
 
   const uniqueSignalMapDoc = isObjectRecord(input.uniqueSignalMapDoc)
     ? input.uniqueSignalMapDoc
@@ -427,6 +686,9 @@ export function evaluateProcessTaxBudgetGateState(input = {}) {
   const failsignalRegistryDoc = isObjectRecord(input.failsignalRegistryDoc)
     ? input.failsignalRegistryDoc
     : readJsonObject(failsignalRegistryPath);
+  const loopBreakerPolicyDoc = isObjectRecord(input.loopBreakerPolicyDoc)
+    ? input.loopBreakerPolicyDoc
+    : readJsonObject(loopBreakerPolicyPath);
 
   const issues = [];
   if (!uniqueSignalMapDoc) issues.push({ code: 'UNIQUE_SIGNAL_MAP_UNREADABLE' });
@@ -434,6 +696,7 @@ export function evaluateProcessTaxBudgetGateState(input = {}) {
   if (!failsignalRegistryDoc || !Array.isArray(failsignalRegistryDoc.failSignals)) {
     issues.push({ code: 'FAILSIGNAL_REGISTRY_UNREADABLE' });
   }
+  if (!loopBreakerPolicyDoc) issues.push({ code: 'LOOP_BREAKER_POLICY_UNREADABLE' });
 
   const uniqueSignalRequired = uniqueSignalMapDoc
     ? evaluateUniqueSignalRequired(uniqueSignalMapDoc)
@@ -481,9 +744,18 @@ export function evaluateProcessTaxBudgetGateState(input = {}) {
         driftCases: [],
         issues: [{ code: 'FAILSIGNAL_REGISTRY_UNREADABLE' }],
       };
+  const contourLoopExitGuard = evaluateContourLoopExitGuard({
+    repoRoot,
+    statusDirPath,
+    loopBreakerPolicyDoc,
+  });
 
   const advisoryToBlockingDriftCountZero = driftState.advisoryToBlockingDriftCount === 0;
+  const advisoryWarnings = [...(contourLoopExitGuard.warnings || [])];
   issues.push(...(singleBlockingAuthority.issues || []), ...(driftState.issues || []));
+  const loopExitGuardChecksOk = contourLoopExitGuard.repeatClassWithoutDeltaCapCheck
+    && contourLoopExitGuard.userArtifactMin1Check;
+  const loopExitGuardBlocking = contourLoopExitGuard.blockingMode === true;
 
   const ok = issues.length === 0
     && uniqueSignalRequired.ok
@@ -493,7 +765,8 @@ export function evaluateProcessTaxBudgetGateState(input = {}) {
     && killSwitch.ok
     && budgetThresholdProof.ok
     && singleBlockingAuthority.ok
-    && advisoryToBlockingDriftCountZero;
+    && advisoryToBlockingDriftCountZero
+    && (!loopExitGuardBlocking || loopExitGuardChecksOk);
 
   return {
     ok,
@@ -516,22 +789,33 @@ export function evaluateProcessTaxBudgetGateState(input = {}) {
                     ? 'E_DUAL_AUTHORITY'
                     : !advisoryToBlockingDriftCountZero
                       ? 'ADVISORY_TO_BLOCKING_DRIFT'
+                      : loopExitGuardBlocking && !contourLoopExitGuard.repeatClassWithoutDeltaCapCheck
+                        ? 'E_CONTOUR_CLASS_REPEAT_CAP_EXCEEDED'
+                        : loopExitGuardBlocking && !contourLoopExitGuard.userArtifactMin1Check
+                          ? 'E_USER_ARTIFACT_MIN_COUNT_MISSING'
                       : 'E_POLICY_OR_SECURITY_CONFLICT'
     ),
+    statusDirPath: path.relative(repoRoot, statusDirPath).replaceAll(path.sep, '/'),
     uniqueSignalMapPath: path.relative(repoRoot, uniqueSignalMapPath).replaceAll(path.sep, '/'),
     duplicateBeforeAfterPath: path.relative(repoRoot, duplicateBeforeAfterPath).replaceAll(path.sep, '/'),
     failsignalRegistryPath: path.relative(repoRoot, failsignalRegistryPath).replaceAll(path.sep, '/'),
+    loopBreakerPolicyPath: path.relative(repoRoot, loopBreakerPolicyPath).replaceAll(path.sep, '/'),
     uniqueSignalRequiredCheck: uniqueSignalRequired.ok,
     duplicateGateMergeOrDisableCheck: duplicateGateMergeOrDisable.ok,
     maxHeavyPassPerWindowCheck: maxHeavyPassPerWindow.ok,
     noDailyStrictWithoutScopeDeltaCheck: noDailyStrictWithoutScopeDelta.ok,
     killSwitchOnNoSignalDeltaCheck: killSwitch.ok,
+    repeatClassWithoutDeltaCapCheck: contourLoopExitGuard.repeatClassWithoutDeltaCapCheck,
+    userArtifactMin1Check: contourLoopExitGuard.userArtifactMin1Check,
+    loopExitGuardBlocking,
+    advisoryWarnings,
     uniqueSignalRequired,
     duplicateGateMergeOrDisable,
     maxHeavyPassPerWindow,
     noDailyStrictWithoutScopeDelta,
     killSwitchTriggerCases: killSwitch,
     budgetThresholdProof,
+    contourLoopExitGuard,
     singleBlockingAuthority,
     advisoryToBlockingDriftCount: driftState.advisoryToBlockingDriftCount,
     advisoryToBlockingDriftCountZero,
@@ -547,6 +831,10 @@ function printHuman(state) {
   console.log(`P2_03_MAX_HEAVY_PASS_PER_WINDOW_OK=${state.maxHeavyPassPerWindowCheck ? 1 : 0}`);
   console.log(`P2_03_NO_DAILY_STRICT_WITHOUT_SCOPE_DELTA_OK=${state.noDailyStrictWithoutScopeDeltaCheck ? 1 : 0}`);
   console.log(`P2_03_KILL_SWITCH_NO_SIGNAL_DELTA_OK=${state.killSwitchOnNoSignalDeltaCheck ? 1 : 0}`);
+  console.log(`P2_03_CONTOUR_CLASS_REPEAT_CAP_OK=${state.repeatClassWithoutDeltaCapCheck ? 1 : 0}`);
+  console.log(`P2_03_USER_ARTIFACT_MIN1_OK=${state.userArtifactMin1Check ? 1 : 0}`);
+  console.log(`P2_03_LOOP_EXIT_GUARD_BLOCKING_MODE=${state.loopExitGuardBlocking ? 1 : 0}`);
+  console.log(`P2_03_LOOP_EXIT_GUARD_ACTION=${state.contourLoopExitGuard?.onViolationAction || 'NONE'}`);
   console.log(`ADVISORY_TO_BLOCKING_DRIFT_COUNT=${state.advisoryToBlockingDriftCount}`);
   if (!state.ok) {
     console.log(`FAIL_REASON=${state.failReason}`);
@@ -560,6 +848,8 @@ function main() {
     uniqueSignalMapPath: args.uniqueSignalMapPath,
     duplicateBeforeAfterPath: args.duplicateBeforeAfterPath,
     failsignalRegistryPath: args.failsignalRegistryPath,
+    loopBreakerPolicyPath: args.loopBreakerPolicyPath,
+    statusDirPath: args.statusDirPath,
     maxHeavyPassPerWindow: args.maxHeavyPassPerWindow,
     killSwitchWaveThreshold: args.killSwitchWaveThreshold,
     runtimeBudgetMinutesMax: args.runtimeBudgetMinutesMax,

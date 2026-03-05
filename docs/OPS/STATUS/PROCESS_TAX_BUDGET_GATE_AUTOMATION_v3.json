@@ -1,5 +1,10 @@
 {
+  "advisoryGates": {
+    "p2_03_contour_class_repeat_cap_check": "WARN",
+    "p2_03_user_artifact_min1_check": "WARN"
+  },
   "advisoryToBlockingDriftCount": 0,
+  "coreGatesPass": true,
   "duplicateSignalCountAfter": 0,
   "duplicateSignalCountBefore": 1,
   "evaluatorId": "CANONICAL_MODE_MATRIX_EVALUATOR_V1",
@@ -12,11 +17,33 @@
     "p2_03_unique_signal_required_check": "PASS"
   },
   "killSwitchWaveThreshold": 2,
+  "loopExitGuard": {
+    "action": "WARN_AND_OWNER_DECISION_REQUIRED",
+    "blockingMode": false,
+    "latestContourClass": "RELEASE_TAG_AND_POST_RELEASE_VERIFICATION",
+    "latestContourId": "X99",
+    "latestStatusArtifact": "docs/OPS/STATUS/X99_STATUS_PACKET_V1.json",
+    "maxSameClassWithoutProductDelta": 2,
+    "productDeltaTrue": false,
+    "repeatClassWithoutDeltaCapCheck": false,
+    "sameClassStreakCount": 16,
+    "sameClassStreakCountEffective": 16,
+    "userArtifactCount": 0,
+    "userArtifactIds": [],
+    "userArtifactMin1Check": false,
+    "userArtifactMinCount": 1,
+    "violations": [
+      "REPEAT_CLASS_WITHOUT_DELTA_CAP_EXCEEDED_OR_UNVERIFIED",
+      "USER_ARTIFACT_MIN_COUNT_NOT_MET_OR_UNVERIFIED"
+    ],
+    "warnings": []
+  },
   "maxHeavyPassPerWindow": 1,
   "runtimeBudgetMinutesMax": 30,
+  "stateOk": true,
   "status": "PASS",
   "token": "PROCESS_TAX_BUDGET_GATE_AUTOMATION_OK",
   "uniqueSignalCount": 21,
-  "updatedAtUtc": "2026-02-27T05:40:24.443Z",
+  "updatedAtUtc": "2026-03-04T08:44:12.004Z",
   "version": 3
 }
