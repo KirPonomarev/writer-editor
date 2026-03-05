@@ -6,5 +6,46 @@
   "effect": "FORBID_REEXECUTION",
   "routeOnViolation": "E_ROUTE_MATRIX_VIOLATION",
   "noSilentRetry": true,
-  "noManualRouteBypass": true
+  "noManualRouteBypass": true,
+  "contourLoopExitGuard": {
+    "enabled": true,
+    "enforcementMode": "advisory_non_blocking",
+    "enforcementModeUpgradeTarget": "blocking_after_stability_window",
+    "stabilityWindowContours": 2,
+    "onViolationAdvisory": "WARN_AND_OWNER_DECISION_REQUIRED",
+    "onViolationBlocking": "HOLD_AND_OWNER_DECISION_REQUIRED",
+    "maxSameClassWithoutProductDelta": 2,
+    "productDeltaRequired": true,
+    "productDeltaFields": [
+      "PRODUCT_DELTA_TRUE",
+      "USER_ARTIFACT_IDS"
+    ],
+    "productDeltaSourcePriority": [
+      "X*_STATUS_PACKET_V1.json.productDelta",
+      "X*_STATUS_PACKET_V1.json.root",
+      "X*_STATUS_PACKET_V1.json.acceptanceAdvisory"
+    ],
+    "sameClassStreakSource": "X*_NEXT_CONTOUR_OPENING_RECORD_V1.json",
+    "sameClassFieldPath": "handoff.NEXT_CONTOUR_CLASS",
+    "sameClassStreakResetRule": "RESET_TO_ZERO_IF_PRODUCT_DELTA_TRUE",
+    "userArtifactMinCount": 1,
+    "userArtifactCountField": "USER_ARTIFACT_IDS",
+    "userArtifactAllowlist": [
+      "MACOS_INSTALLABLE_BUILD",
+      "MACOS_SIGNED_APP_BUNDLE",
+      "MACOS_NOTARIZED_PACKAGE",
+      "MACOS_RELEASE_NOTES",
+      "MENU_USER_VISIBLE_UPDATE",
+      "UX_FLOW_USER_VISIBLE_UPDATE",
+      "DOCX_EXPORT_USER_VISIBLE_UPDATE",
+      "MARKDOWN_EXPORT_USER_VISIBLE_UPDATE",
+      "MINDMAP_USER_VISIBLE_UPDATE"
+    ],
+    "userArtifactNoiseNamespacesDenied": [
+      "OPS_STATUS",
+      "OPS_EXECUTION",
+      "OPS_ARTIFACTS",
+      "OPS_LOCKS"
+    ]
+  }
 }

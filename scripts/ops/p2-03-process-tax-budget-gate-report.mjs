@@ -153,12 +153,19 @@ function main() {
     p2_03_kill_switch_on_no_signal_delta_check: state.killSwitchOnNoSignalDeltaCheck ? 'PASS' : 'FAIL',
     mc_advisory_blocking_drift_zero: state.advisoryToBlockingDriftCountZero ? 'PASS' : 'FAIL',
   };
+  const advisoryGates = {
+    p2_03_contour_class_repeat_cap_check: state.repeatClassWithoutDeltaCapCheck ? 'PASS' : 'WARN',
+    p2_03_user_artifact_min1_check: state.userArtifactMin1Check ? 'PASS' : 'WARN',
+  };
 
-  const status = Object.values(gates).every((value) => value === 'PASS') ? 'PASS' : 'FAIL';
+  const coreGatesPass = Object.values(gates).every((value) => value === 'PASS');
+  const status = state.ok ? 'PASS' : 'FAIL';
   const generatedAtUtc = new Date().toISOString();
 
   const summary = {
     status,
+    stateOk: state.ok === true,
+    coreGatesPass,
     runId: args.runId || process.env.RUN_ID || '',
     ticketId: args.ticketId || process.env.TICKET_ID || '',
     uniqueSignalCount: state.uniqueSignalRequired.uniqueSignalCount,
@@ -170,6 +177,11 @@ function main() {
     advisoryToBlockingDriftCount: state.advisoryToBlockingDriftCount,
     singleBlockingAuthorityOk: state.singleBlockingAuthority.ok,
     gates,
+    advisoryGates,
+    loopExitGuardBlockingMode: state.loopExitGuardBlocking === true,
+    loopExitGuardAction: state.contourLoopExitGuard?.onViolationAction || 'NONE',
+    repeatClassWithoutDeltaCapCheck: state.repeatClassWithoutDeltaCapCheck === true,
+    userArtifactMin1Check: state.userArtifactMin1Check === true,
     generatedAtUtc,
   };
 
@@ -185,6 +197,29 @@ function main() {
     runtimeBudgetMinutesMax: summary.runtimeBudgetMinutesMax,
     advisoryToBlockingDriftCount: summary.advisoryToBlockingDriftCount,
     gates,
+    advisoryGates,
+    loopExitGuard: {
+      blockingMode: summary.loopExitGuardBlockingMode,
+      action: summary.loopExitGuardAction,
+      repeatClassWithoutDeltaCapCheck: summary.repeatClassWithoutDeltaCapCheck,
+      userArtifactMin1Check: summary.userArtifactMin1Check,
+      sameClassStreakCount: state.contourLoopExitGuard?.sameClassStreakCount ?? 0,
+      sameClassStreakCountEffective: state.contourLoopExitGuard?.sameClassStreakCountEffective ?? 0,
+      maxSameClassWithoutProductDelta: state.contourLoopExitGuard?.maxSameClassWithoutProductDelta ?? 0,
+      latestContourId: state.contourLoopExitGuard?.latestContourId || '',
+      latestContourClass: state.contourLoopExitGuard?.latestContourClass || '',
+      productDeltaTrue: state.contourLoopExitGuard?.productDeltaTrue === true,
+      userArtifactMinCount: state.contourLoopExitGuard?.userArtifactMinCount ?? 1,
+      userArtifactCount: state.contourLoopExitGuard?.userArtifactCount ?? 0,
+      userArtifactIds: Array.isArray(state.contourLoopExitGuard?.userArtifactIds)
+        ? state.contourLoopExitGuard.userArtifactIds
+        : [],
+      latestStatusArtifact: state.contourLoopExitGuard?.latestStatusArtifact || '',
+      warnings: Array.isArray(state.contourLoopExitGuard?.warnings) ? state.contourLoopExitGuard.warnings : [],
+      violations: Array.isArray(state.contourLoopExitGuard?.violations) ? state.contourLoopExitGuard.violations : [],
+    },
+    stateOk: summary.stateOk,
+    coreGatesPass: summary.coreGatesPass,
     status,
     updatedAtUtc: generatedAtUtc,
   });

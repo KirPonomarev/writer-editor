@@ -1,41 +1,32 @@
 {
-  "acceptance": {
-    "NEXT_TZ_ACCEPTANCE_01": true,
-    "NEXT_TZ_ACCEPTANCE_02": true,
-    "NEXT_TZ_ACCEPTANCE_03": true,
-    "NEXT_TZ_ACCEPTANCE_04": true
+  "advisoryGates": {
+    "p2_03_contour_class_repeat_cap_check": "WARN",
+    "p2_03_user_artifact_min1_check": "WARN"
   },
-  "blockingSurfaceExpansion": false,
-  "counts": {
-    "advisoryToBlockingDriftCount": 0,
-    "duplicateCheckCountAfter": 0,
-    "duplicateCheckCountBefore": 1,
-    "duplicateCheckReduced": true,
-    "maxHeavyPassPerWindow": 1,
-    "runtimeBudgetMinutesMax": 30
+  "advisoryToBlockingDriftCount": 0,
+  "coreGatesPass": true,
+  "duplicateSignalCountAfter": 0,
+  "duplicateSignalCountBefore": 1,
+  "gates": {
+    "mc_advisory_blocking_drift_zero": "PASS",
+    "p2_03_duplicate_gate_merge_or_disable_check": "PASS",
+    "p2_03_kill_switch_on_no_signal_delta_check": "PASS",
+    "p2_03_max_heavy_pass_per_window_check": "PASS",
+    "p2_03_no_daily_strict_without_scope_delta_check": "PASS",
+    "p2_03_unique_signal_required_check": "PASS"
   },
-  "dod": {
-    "NEXT_TZ_DOD_01": true,
-    "NEXT_TZ_DOD_02": true,
-    "NEXT_TZ_DOD_03": true,
-    "NEXT_TZ_DOD_04": true,
-    "NEXT_TZ_DOD_05": true
-  },
-  "generatedAtUtc": "2026-02-28T13:58:27.305Z",
-  "negativeResults": {
-    "NEXT_TZ_NEGATIVE_01": true,
-    "NEXT_TZ_NEGATIVE_02": true,
-    "NEXT_TZ_NEGATIVE_03": true,
-    "NEXT_TZ_NEGATIVE_04": true,
-    "NEXT_TZ_NEGATIVE_05": true
-  },
-  "objective": "УМЕНЬШИТЬ_PROCESS_TAX_БЕЗ_ПОТЕРИ_НАДЕЖНОСТИ_ЧЕРЕЗ_AUTOMATION_AND_CHECK_DEDUP",
-  "positiveResults": {
-    "NEXT_TZ_POSITIVE_01": true,
-    "NEXT_TZ_POSITIVE_02": true,
-    "NEXT_TZ_POSITIVE_03": true
-  },
-  "runId": "TZ_P2_WS03_PROCESS_TAX_BUDGET_AUTOMATION_001",
+  "generatedAtUtc": "2026-03-04T08:44:12.004Z",
+  "killSwitchWaveThreshold": 2,
+  "loopExitGuardAction": "WARN_AND_OWNER_DECISION_REQUIRED",
+  "loopExitGuardBlockingMode": false,
+  "maxHeavyPassPerWindow": 1,
+  "repeatClassWithoutDeltaCapCheck": false,
+  "runId": "R4_FIX_VERIFY",
+  "runtimeBudgetMinutesMax": 30,
+  "singleBlockingAuthorityOk": true,
+  "stateOk": true,
   "status": "PASS",
-  "ticketId": "P2_WS03"
+  "ticketId": "R4_FIX_VERIFY",
+  "uniqueSignalCount": 21,
+  "userArtifactMin1Check": false
 }

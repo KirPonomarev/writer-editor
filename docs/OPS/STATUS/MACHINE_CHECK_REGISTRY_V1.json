@@ -447,10 +447,46 @@
         "scripts/ops/ws04-trigger-governance-pack-state.mjs",
         "--json"
       ]
+    },
+    {
+      "MACHINE_CHECK_ID": "CONTOUR_CLASS_REPEAT_CAP_OK",
+      "CHECK_NAME": "contour class repeat cap without product delta",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "advisory",
+      "MODE_DISPOSITION": "advisory",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "LOOP_BREAKER_POLICY_v1.json",
+      "EVIDENCE_REF": "LOOP_BREAKER_POLICY_v1.json",
+      "COMMAND_ID": "validate-contour-class-repeat-cap",
+      "OUTPUT_ARTIFACT": "PROCESS_TAX_BUDGET_GATE_AUTOMATION_v3.json",
+      "UPDATED_AT_UTC": "2026-03-04T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/process-tax-budget-gate-state.mjs",
+        "--json"
+      ]
+    },
+    {
+      "MACHINE_CHECK_ID": "USER_ARTIFACT_MIN1_OK",
+      "CHECK_NAME": "minimum one user artifact per contour",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "BINDING_LEVEL": "advisory",
+      "MODE_DISPOSITION": "advisory",
+      "VERSION_CHANGE_POLICY": "semver_patch",
+      "ROLLBACK_REF": "LOOP_BREAKER_POLICY_v1.json",
+      "EVIDENCE_REF": "LOOP_BREAKER_POLICY_v1.json",
+      "COMMAND_ID": "validate-user-artifact-min1",
+      "OUTPUT_ARTIFACT": "PROCESS_TAX_BUDGET_GATE_AUTOMATION_v3.json",
+      "UPDATED_AT_UTC": "2026-03-04T00:00:00.000Z",
+      "COMMAND_VECTOR": [
+        "node",
+        "scripts/ops/process-tax-budget-gate-state.mjs",
+        "--json"
+      ]
     }
   ],
   "registryBindingCompletenessPct": 100,
-  "updatedAtUtc": "2026-03-02T00:00:00.000Z",
+  "updatedAtUtc": "2026-03-04T00:00:00.000Z",
   "commandVectorMap": {
     "validate-blocking-policy-single-source": [
       "node",
@@ -570,6 +606,16 @@
     "validate-run-or-skip-machine-explained": [
       "node",
       "scripts/ops/ws04-trigger-governance-pack-state.mjs",
+      "--json"
+    ],
+    "validate-contour-class-repeat-cap": [
+      "node",
+      "scripts/ops/process-tax-budget-gate-state.mjs",
+      "--json"
+    ],
+    "validate-user-artifact-min1": [
+      "node",
+      "scripts/ops/process-tax-budget-gate-state.mjs",
       "--json"
     ]
   }
