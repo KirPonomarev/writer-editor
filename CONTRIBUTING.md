@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to Craftsman!
+Thanks for your interest in contributing to Yalken!
 
 ## Issues
 

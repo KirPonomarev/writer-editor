@@ -1,4 +1,4 @@
-# HANDOFF (Craftsman)
+# HANDOFF (Yalken)
 
 _Generated: 2026-01-27_
 
@@ -19,7 +19,7 @@ _Generated: 2026-01-27_
 - Переход к следующему контуру без commit-исхода для write-задачи запрещён.
 
 ## Snapshot: Проект
-- Название: `craftsman` (десктоп‑редактор для писателей)
+- Название: `Yalken` (внутренний id: `craftsman`, десктоп‑редактор для писателей)
 - Технологии: Electron + HTML/CSS (с сохранением текущей UI‑геометрии)
 - Режим: desktop‑first, offline‑first
 - Канон: `docs/BIBLE.md`
@@ -55,7 +55,7 @@ _Generated: 2026-01-27_
 - Метрики/прогресс письма: цели, тайминг активности, средняя скорость печати (и т.п.).
 
 ## Recent WORKLOG (2026-01-27)
-- Canon: добавлен `docs/BIBLE.md` (Craftsman vNext) и зафиксирован финальный пакет политик (security/deps/yjs fallback/perf/codex checklist).
+- Canon: добавлен `docs/BIBLE.md` (Yalken vNext) и зафиксирован финальный пакет политик (security/deps/yjs fallback/perf/codex checklist).
 - CI: добавлен OSS‑guard `scripts/check-no-paid-tiptap.mjs` + workflow `.github/workflows/oss-policy.yml` (pre/post install) + `npm audit`.
 - Docs: синхронизированы `README.md`, `agents.md`, `docs/CONTEXT.md`, `docs/HANDOFF.md`, шаблоны и `docs/references/ROADMAP.md` под vNext; добавлен `docs/AGENT_START_PROMPT.md`.
 
