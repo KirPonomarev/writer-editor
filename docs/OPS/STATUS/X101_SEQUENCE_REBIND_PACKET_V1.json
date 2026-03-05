@@ -1,0 +1,12 @@
+{
+  "DOCUMENT_ID": "X101_SEQUENCE_REBIND_PACKET_V1",
+  "status": "ACTIVE",
+  "fromContour": "X99",
+  "toContour": "X101",
+  "rebindReason": "OWNER_APPROVED_CANON_REBIND_TO_RESOLVE_SEQUENCE_GAP",
+  "ownerApprovalTrue": true,
+  "approvedAtUtc": "2026-03-04T00:00:00Z",
+  "canonVersion": "V3_13A_FINAL",
+  "bridgeSyncConfirmedTrue": true,
+  "signatureOrHash": "52dabcdeaa6ec2906d85853a0e124657dfab9085f44220f608c8e74abbee8438"
+}

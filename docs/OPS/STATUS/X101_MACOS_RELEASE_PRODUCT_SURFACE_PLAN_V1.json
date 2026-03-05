@@ -1,0 +1,162 @@
+{
+  "DOCUMENT_ID": "X101_MACOS_RELEASE_PRODUCT_SURFACE_PLAN_V1",
+  "schemaVersion": 1,
+  "status": "ADVISORY_DRAFT",
+  "dateUtc": "2026-03-04",
+  "owner": "KIRILL_PLUS_CODEX",
+  "changeMethod": "ADDITIVE_ONLY",
+  "blockingDecisionSource": "ACTIVE_CANON_ONLY",
+  "activeCanonEntrypoint": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+  "x101ReleaseScope": {
+    "functionalFocusMacos": "STABLE_WRITING_CONTOUR_WITHOUT_RISK_SURFACE_EXPANSION",
+    "windows": [
+      {
+        "id": "main-window",
+        "name": "Main Window",
+        "required": true,
+        "purpose": "PRIMARY_WORKSPACE_FOR_WRITE_PLAN_REVIEW"
+      },
+      {
+        "id": "settings-window",
+        "name": "Settings Window",
+        "required": true,
+        "purpose": "APPLICATION_SETTINGS_AND_PROFILE_CONTROLS"
+      },
+      {
+        "id": "recovery-modal",
+        "name": "Recovery Modal",
+        "required": true,
+        "purpose": "CRASH_OR_REOPEN_CONFLICT_RECOVERY_FLOW"
+      },
+      {
+        "id": "export-preview-modal",
+        "name": "Export Preview Modal",
+        "required": true,
+        "purpose": "EXPORT_CONFIRMATION_WITH_PROFILE_SELECTION"
+      },
+      {
+        "id": "diagnostics-window",
+        "name": "Diagnostics Window",
+        "required": true,
+        "purpose": "LOGS_AND_RUNTIME_HEALTH_VISIBILITY"
+      }
+    ],
+    "mainWindowStructure": {
+      "topModes": [
+        "Write",
+        "Plan",
+        "Review"
+      ],
+      "leftPanelTabs": [
+        "Project",
+        "Outline",
+        "Search"
+      ],
+      "center": {
+        "surface": "Editor",
+        "scope": "SCENE_LEVEL",
+        "splitView": "OPTIONAL"
+      },
+      "rightPanelTabs": [
+        "Inspector",
+        "Scene Meta"
+      ],
+      "bottomStatusLine": [
+        "Save State",
+        "Sync State",
+        "Warnings",
+        "Perf Hint"
+      ]
+    },
+    "stageGatedTabs": [
+      {
+        "tab": "Comments",
+        "visibleWhen": "COLLAB_SCOPE_LOCAL=true",
+        "blockingWhenHidden": false
+      },
+      {
+        "tab": "History",
+        "visibleWhen": "COLLAB_SCOPE_LOCAL=true",
+        "blockingWhenHidden": false
+      },
+      {
+        "tab": "Mind Map",
+        "visibleWhen": "PLAN_MODE_ACTIVE=true",
+        "classification": "DERIVED_VIEW_ONLY",
+        "secondSourceOfTruthForbidden": true
+      },
+      {
+        "tab": "Markdown Export",
+        "visibleWhen": "STAGE_GATED_EXPORT_EXTENSION=true",
+        "docxBaselineAlwaysRequired": true
+      },
+      {
+        "tab": "PDF Export",
+        "visibleWhen": "STAGE_GATED_EXPORT_EXTENSION=true",
+        "docxBaselineAlwaysRequired": true
+      }
+    ]
+  },
+  "x102PlusExpansion": {
+    "reviewExpansion": [
+      "Changes",
+      "Compare",
+      "Bulk Accept Reject"
+    ],
+    "planExpansion": [
+      "Characters",
+      "Locations",
+      "Timeline",
+      "Mind Map Full"
+    ],
+    "pluginManager": {
+      "enabled": true,
+      "allowedPluginClass": "DATA_ONLY",
+      "executablePluginsForbiddenAtCurrentStage": true
+    },
+    "platformRolloutOrder": [
+      "Windows",
+      "Linux",
+      "Web",
+      "Mobile"
+    ],
+    "rolloutRule": "STAGE_GATED_ONLY"
+  },
+  "postReleaseMutability": {
+    "canChangeAfterReleaseWithoutCoreMigration": [
+      "WINDOW_LAYOUT",
+      "MENU_GROUPING",
+      "TAB_STRUCTURE",
+      "PANEL_VISIBILITY",
+      "MODE_SWITCH_UX",
+      "PROFILE_PRESETS"
+    ],
+    "mustStayInvariant": [
+      "COMMAND_BUS_SINGLE_ENTRY",
+      "CORE_SCHEMA_AND_OPS_INVARIANTS",
+      "DOCX_BASELINE_RELEASE_CONTRACT",
+      "LOCAL_FIRST_UNTIL_X4",
+      "NETWORK_TRANSPORT_FORBIDDEN_BEFORE_X4"
+    ]
+  },
+  "releaseBoundary": {
+    "hardParityRequired": [
+      "SCHEMA",
+      "OPS",
+      "MIGRATIONS",
+      "RECOVERY",
+      "NORMALIZATION",
+      "ROUNDTRIP"
+    ],
+    "softParityNonBlockingForRelease": [
+      "HOTKEYS",
+      "LAYOUT",
+      "PLATFORM_UX"
+    ],
+    "finalGoCondition": "FUNCTIONAL_SURFACE_READY_AND_ALL_BLOCKING_GATES_TRUE_AND_DRIFT_UNRESOLVED_P0_COUNT_ZERO_TRUE"
+  },
+  "classification": "PRODUCT_SURFACE_ADVISORY_INPUT",
+  "bindingReady": false,
+  "scopeAliasMapRef": "docs/OPS/STATUS/COLLAB_SCOPE_ALIAS_MAP_V1.json",
+  "advisoryOnlyNonBlocking": true
+}
