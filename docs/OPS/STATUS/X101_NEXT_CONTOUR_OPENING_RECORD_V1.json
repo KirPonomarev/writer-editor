@@ -1,0 +1,20 @@
+{
+  "artifactId": "X101_NEXT_CONTOUR_OPENING_RECORD_V1",
+  "carryForward": {
+    "advisoryRemaining": [],
+    "p0Count": 0,
+    "scopeDriftCount": 0
+  },
+  "fromContour": "X101",
+  "handoff": {
+    "NEXT_CONTOUR_CLASS": "RELEASE_TAG_AND_POST_RELEASE_VERIFICATION",
+    "NEXT_CONTOUR_ID_AFTER_X101": "X102",
+    "NEXT_CONTOUR_OPENING_RECORD_REQUIRED": true
+  },
+  "nextContour": "X102",
+  "openCondition": "EXPLICIT_OWNER_OPEN_SIGNAL_REQUIRED",
+  "productSurfaceAdvisoryInputRef": "docs/OPS/STATUS/X101_MACOS_RELEASE_PRODUCT_SURFACE_PLAN_V1.json",
+  "productSurfaceReferenceExplicitTrue": true,
+  "schemaVersion": 1,
+  "updatedAtUtc": "2026-03-05T06:50:44.000Z"
+}
