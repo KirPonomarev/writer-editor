@@ -61,7 +61,7 @@
     "esbuild": "^0.27.3"
   },
   "build": {
-    "appId": "com.craftsman.app",
+    "appId": "com.kirpon.writereditor",
     "productName": "Craftsman",
     "icon": "build/icon.png",
     "mac": {
