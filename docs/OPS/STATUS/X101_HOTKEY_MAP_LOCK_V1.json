@@ -1,0 +1,44 @@
+{
+  "artifactId": "X101_HOTKEY_MAP_LOCK_V1",
+  "tzId": "TZ_PRE_UI_REDESIGN_LOCK_001",
+  "status": "LOCKED",
+  "schemaVersion": 1,
+  "executedAtUtc": "2026-03-05T18:28:28Z",
+  "platform": "macos",
+  "minimumHotkeysRequired": [
+    "Cmd+N",
+    "Cmd+O",
+    "Cmd+S",
+    "Cmd+Shift+S",
+    "Cmd+Z",
+    "Cmd+Shift+Z",
+    "Cmd+F"
+  ],
+  "menuAccelerators": [
+    { "combo": "Cmd+N", "commandId": "cmd.project.new" },
+    { "combo": "Cmd+O", "commandId": "cmd.project.open" },
+    { "combo": "Cmd+S", "commandId": "cmd.project.save" },
+    { "combo": "Cmd+Q", "commandId": "cmd.app.quit" }
+  ],
+  "rendererHotkeys": [
+    { "combo": "Cmd+N", "dispatch": "EXTRA_COMMAND_IDS.PROJECT_NEW" },
+    { "combo": "Cmd+O", "dispatch": "COMMAND_IDS.PROJECT_OPEN" },
+    { "combo": "Cmd+S", "dispatch": "COMMAND_IDS.PROJECT_SAVE_OR_EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE" },
+    { "combo": "Cmd+Shift+S", "dispatch": "EXTRA_COMMAND_IDS.PROJECT_SAVE_AS_OR_EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE" },
+    { "combo": "Cmd+Z", "dispatch": "EXTRA_COMMAND_IDS.EDIT_UNDO" },
+    { "combo": "Cmd+Shift+Z", "dispatch": "EXTRA_COMMAND_IDS.EDIT_REDO" },
+    { "combo": "Cmd+Y", "dispatch": "EXTRA_COMMAND_IDS.EDIT_REDO" },
+    { "combo": "Cmd+F", "dispatch": "EXTRA_COMMAND_IDS.EDIT_FIND" },
+    { "combo": "Cmd+H", "dispatch": "EXTRA_COMMAND_IDS.EDIT_REPLACE" },
+    { "combo": "Cmd+Shift+E", "dispatch": "COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN" }
+  ],
+  "proof": {
+    "sectorUU6A11yShortcutsPassTrue": true,
+    "commandBusOnlyRoutePreservedTrue": true
+  },
+  "redesignRule": {
+    "labelsAndPlacementMayChange": true,
+    "shortcutToCommandBindingMustStayDeterministic": true,
+    "minimumHotkeysMustSurvive": true
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "artifactId": "X101_MACOS_PREVIEW_DISTRIBUTION_PACKET_V1",
+  "channel": "INTERNAL_BETA",
+  "buildPath": null,
+  "appPath": "dist/mac-arm64/Craftsman.app",
+  "appId": "com.kirpon.writereditor",
+  "signatureMode": "ADHOC",
+  "notarizationStatus": "NOT_REQUIRED_INTERNAL_BETA",
+  "gatekeeperExpectedWarning": true,
+  "manualInstallSteps": [
+    "OPEN_SYSTEM_SETTINGS_PRIVACY_AND_SECURITY",
+    "CLICK_OPEN_ANYWAY_FOR_APP",
+    "RUN_APP_AFTER_CONFIRMATION"
+  ],
+  "previewReleaseDoneTrue": true,
+  "publicStablePendingTrue": true,
+  "finalHashSha256": "0ca5bf541329f762e7ebb39f0c4eb2560d83347f9e86eed3a81fd246b8618589",
+  "executedAtUtc": "2026-03-05T10:02:58Z",
+  "schemaVersion": 1,
+  "releaseChannel": "INTERNAL_BETA",
+  "noClaimSignedNotarizedForInternalBetaTrue": true,
+  "manualOpenAnywayRequiredTrue": true,
+  "installNoteIncludedTrue": true,
+  "userInstallPolicyText": [
+    "ПРИЛОЖЕНИЕ_МОЖЕТ_ТРЕБОВАТЬ_OPEN_ANYWAY_В_PRIVACY_SECURITY",
+    "ЭТО_ОЖИДАЕМО_ДЛЯ_INTERNAL_BETA_БЕЗ_NOTARIZATION",
+    "ФУНКЦИОНАЛ_ПРИЛОЖЕНИЯ_ПОЛНЫЙ_В_РАМКАХ_INTERNAL_BETA",
+    "PUBLIC_STABLE_БУДЕТ_ПОСЛЕ_SIGN_AND_NOTARIZATION"
+  ],
+  "runtimeFixAppliedTrue": true,
+  "appAsarHasEditorBundleTrue": true,
+  "indexHtmlRuntimeBundlePathValidTrue": true,
+  "functionalSmokeHeadlessRiskFlagTrue": true,
+  "manualFunctionalSmokeChecklist": [
+    "APP_STARTS_AND_EDITOR_MOUNTS",
+    "MODES_VISIBLE_WRITE_PLAN_REVIEW",
+    "BASIC_OPEN_SAVE_ACTION_PATH_RESPONDS",
+    "EXPORT_DOCX_ACTION_PATH_RESPONDS",
+    "DIAGNOSTICS_ENTRY_AVAILABLE"
+  ],
+  "internalBetaRuntimeFixAppliedTrue": true,
+  "functionalCoverage": {
+    "req01TopModesTrue": true,
+    "req02LeftTabsTrue": true,
+    "req03CenterEditorSceneTrue": true,
+    "req04RightInspectorSceneMetaTrue": true,
+    "req05BottomStatusPipelineTrue": true,
+    "req06SettingsModalTrue": true,
+    "req07RecoveryModalTrue": true,
+    "req08ExportPreviewModalTrue": true,
+    "req09DiagnosticsSurfaceTrue": true,
+    "req10MenuSectionsWorkingTrue": true,
+    "req11MenuCommandBusRouteTrue": true,
+    "req12DocxBaselinePathTrue": true,
+    "req13CommentsHistoryStageGateTrue": true,
+    "req14MindmapDerivedInPlanTrue": true,
+    "req15NoNetworkBeforeX4True": true
+  },
+  "dodUnblock002": {
+    "tzId": "TZ_X101_DOD_UNBLOCK_002",
+    "status": "PASS",
+    "guiSmokePacketRef": "docs/OPS/STATUS/DOD_X101_GUI_SMOKE_PACKET_V1.json",
+    "guiSmoke14ItemsAllConfirmedTrue": true,
+    "eRunCommandSurfaceSplitResolvedTrue": true,
+    "executedAtUtc": "2026-03-05T18:28:28Z"
+  },
+  "internalBetaUiFullGreenReadyTrue": true
+}

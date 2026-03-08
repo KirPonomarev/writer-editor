@@ -1,0 +1,40 @@
+{
+  "artifactId": "X101_STAGE_GATED_UI_LOCK_V1",
+  "tzId": "TZ_PRE_UI_REDESIGN_LOCK_001",
+  "status": "LOCKED",
+  "schemaVersion": 1,
+  "executedAtUtc": "2026-03-05T18:28:28Z",
+  "rules": {
+    "commentsHistoryOnlyWhenCollabScopeLocalTrue": true,
+    "noNetworkBeforeX4True": true,
+    "docxBaselineMustSurviveTrue": true,
+    "recoveryPathMustSurviveTrue": true,
+    "offlineFirstMustRemainTrue": true
+  },
+  "uiVisibilityGates": [
+    {
+      "surface": "RightTabs.Comments",
+      "visibleWhen": "COLLAB_SCOPE_LOCAL=true"
+    },
+    {
+      "surface": "RightTabs.History",
+      "visibleWhen": "COLLAB_SCOPE_LOCAL=true"
+    }
+  ],
+  "networkGuard": {
+    "transportBeforeX4": "FORBIDDEN",
+    "runtimeGuard": "BLOCK_HTTP_HTTPS_WS_WSS_FETCH_PATHS",
+    "collabNoNetworkContractsPassTrue": true
+  },
+  "proof": {
+    "functionalCoverageReq13True": true,
+    "functionalCoverageReq15True": true,
+    "collabNoNetworkWiringContractPassTrue": true,
+    "collabApplyNoNetworkWiringContractPassTrue": true,
+    "collabEventLogNoNetworkWiringContractPassTrue": true
+  },
+  "references": {
+    "smokeBaselinePacket": "DOD_X101_GUI_SMOKE_PACKET_V1.json",
+    "canonEntry": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md"
+  }
+}

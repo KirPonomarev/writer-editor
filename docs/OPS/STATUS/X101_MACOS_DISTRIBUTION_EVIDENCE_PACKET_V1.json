@@ -1,0 +1,24 @@
+{
+  "artifactId": "X101_MACOS_DISTRIBUTION_EVIDENCE_PACKET_V1",
+  "appPath": "/Volumes/Work/Драфт писательской программы/writer-editor/dist/mac-arm64/Craftsman.app",
+  "packagePath": "/Volumes/Work/Драфт писательской программы/writer-editor/dist/Craftsman-1.0.2-arm64.dmg",
+  "appId": "com.kirpon.writereditor",
+  "bundleId": "com.kirpon.writereditor",
+  "teamId": "notset",
+  "signingIdentity": "adhoc",
+  "notarizationSubmissionId": "",
+  "notarizationStatus": "FAIL_NO_KEYCHAIN_PROFILE",
+  "staplerStatus": "FAIL_NO_TICKET",
+  "codesignVerifyStatus": "PASS",
+  "spctlAssessStatus": "FAIL_REJECTED",
+  "finalHashSha256": "47f99a965ac16fb77d48750dd05d02480cffd9cdc3a1b8cde7930f5822879a45",
+  "executedAtUtc": "2026-03-05T08:07:20.000Z",
+  "rawEvidence": {
+    "codesignVerifyExit": 0,
+    "spctlExit": 3,
+    "notaryExit": 69,
+    "stapleExit": 65,
+    "stapleValidateExit": 65
+  },
+  "schemaVersion": 1
+}

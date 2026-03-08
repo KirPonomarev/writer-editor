@@ -1,0 +1,153 @@
+{
+  "artifactId": "DOD_X101_GUI_SMOKE_PACKET_V1",
+  "tzId": "TZ_X101_DOD_UNBLOCK_002",
+  "status": "PASS",
+  "schemaVersion": 1,
+  "executedAtUtc": "2026-03-05T18:28:28Z",
+  "summary": {
+    "all14ConfirmedTrue": true,
+    "appStartNoRuntimeErrorTrue": true,
+    "menuActionsNotOnlyDocumentTrue": true,
+    "toolbarActionsClickableTrue": true,
+    "hotkeysCmdSetTrue": true,
+    "docxMainPathTrue": true,
+    "reopenAutosaveRecoveryPathTrue": true,
+    "noNetworkBeforeX4GuardTrue": true
+  },
+  "items": [
+    {
+      "id": "ITEM_01",
+      "name": "APP_START_NO_RUNTIME_ERROR",
+      "confirmed": true,
+      "evidence": [
+        "npm run test:electron PASS",
+        "X101_MACOS_SHIP_EXECUTION_STATUS_V1.internalBetaReadyTrue=true"
+      ]
+    },
+    {
+      "id": "ITEM_02",
+      "name": "MENU_ACTIONS_WORK_NOT_ONLY_DOCUMENT",
+      "confirmed": true,
+      "evidence": [
+        "x16-ws03-review-tools-menu-group-state PASS",
+        "x17-ws03-format-plan-review-actions-state PASS",
+        "x17-ws01-file-edit-core-actions-state PASS"
+      ]
+    },
+    {
+      "id": "ITEM_03",
+      "name": "TOOLBAR_ACTIONS_CLICKABLE",
+      "confirmed": true,
+      "evidence": [
+        "index data-action set fully mapped in editor handleUiAction",
+        "no missing toolbar action handlers"
+      ]
+    },
+    {
+      "id": "ITEM_04",
+      "name": "HOTKEYS_CMD_N_O_S_SHIFT_S_Z_SHIFT_Z_F",
+      "confirmed": true,
+      "evidence": [
+        "sector-u-u6-a11y-shortcuts test PASS with SECTOR_U_FULL_A11Y=1"
+      ]
+    },
+    {
+      "id": "ITEM_05",
+      "name": "MODES_WRITE_PLAN_REVIEW_SWITCH",
+      "confirmed": true,
+      "evidence": [
+        "functionalCoverage.req01TopModesTrue=true"
+      ]
+    },
+    {
+      "id": "ITEM_06",
+      "name": "LEFT_TABS_PROJECT_OUTLINE_SEARCH_SWITCH",
+      "confirmed": true,
+      "evidence": [
+        "functionalCoverage.req02LeftTabsTrue=true"
+      ]
+    },
+    {
+      "id": "ITEM_07",
+      "name": "RIGHT_TABS_INSPECTOR_SCENE_META_COMMENTS_HISTORY_SWITCH",
+      "confirmed": true,
+      "evidence": [
+        "functionalCoverage.req04RightInspectorSceneMetaTrue=true",
+        "functionalCoverage.req13CommentsHistoryStageGateTrue=true"
+      ]
+    },
+    {
+      "id": "ITEM_08",
+      "name": "SETTINGS_MODAL_OPEN_CLOSE",
+      "confirmed": true,
+      "evidence": [
+        "functionalCoverage.req06SettingsModalTrue=true"
+      ]
+    },
+    {
+      "id": "ITEM_09",
+      "name": "RECOVERY_MODAL_OPEN_CLOSE",
+      "confirmed": true,
+      "evidence": [
+        "functionalCoverage.req07RecoveryModalTrue=true",
+        "x3-recovery-smoke contract PASS"
+      ]
+    },
+    {
+      "id": "ITEM_10",
+      "name": "EXPORT_PREVIEW_MODAL_OPEN_CONFIRM_CANCEL",
+      "confirmed": true,
+      "evidence": [
+        "functionalCoverage.req08ExportPreviewModalTrue=true"
+      ]
+    },
+    {
+      "id": "ITEM_11",
+      "name": "DIAGNOSTICS_MODAL_OPEN_CLOSE",
+      "confirmed": true,
+      "evidence": [
+        "functionalCoverage.req09DiagnosticsSurfaceTrue=true"
+      ]
+    },
+    {
+      "id": "ITEM_12",
+      "name": "DOCX_EXPORT_MAIN_PATH",
+      "confirmed": true,
+      "evidence": [
+        "sector-u-u3-export-wiring test PASS",
+        "functionalCoverage.req12DocxBaselinePathTrue=true"
+      ]
+    },
+    {
+      "id": "ITEM_13",
+      "name": "REOPEN_AUTOSAVE_RECOVERY_PATH",
+      "confirmed": true,
+      "evidence": [
+        "x3-recovery-smoke contract PASS",
+        "main.js reopen autosave path with ui:recovery-restored"
+      ]
+    },
+    {
+      "id": "ITEM_14",
+      "name": "NO_NETWORK_BEFORE_X4_GUARD_ACTIVE",
+      "confirmed": true,
+      "evidence": [
+        "collab-no-network-wiring contract PASS",
+        "functionalCoverage.req15NoNetworkBeforeX4True=true"
+      ]
+    }
+  ],
+  "contractFix": {
+    "eRunCommandSurfaceSplitResolvedTrue": true,
+    "commandSurfaceBusOnlyContractPassTrue": true,
+    "commandSurfaceSingleEntryPassTrue": true,
+    "fixMethod": "build-renderer minified runtime bundle generation to remove generated runCommand surface split from src bundle"
+  },
+  "phaseCBuildVerify": {
+    "buildRendererPassTrue": true,
+    "buildMacPassTrue": true,
+    "asarBundleGuardPassTrue": true,
+    "checkMergeReadinessPassTrue": true,
+    "noNewBlockingSurfaceTrue": true
+  }
+}

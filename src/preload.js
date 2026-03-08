@@ -118,6 +118,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onStatusUpdate: (callback) => {
     ipcRenderer.on('status-update', (event, status) => callback(status));
   },
+  onRecoveryRestored: (callback) => {
+    ipcRenderer.on('ui:recovery-restored', (event, payload) => callback(payload));
+  },
+  onRuntimeCommand: (callback) => {
+    ipcRenderer.on('ui:runtime-command', (event, payload) => callback(payload));
+  },
+  getCollabScopeLocal: () => {
+    return ipcRenderer.invoke('ui:get-collab-scope-local');
+  },
   onSetDirty: (callback) => {
     ipcRenderer.on('set-dirty', (event, state) => callback(state));
   }

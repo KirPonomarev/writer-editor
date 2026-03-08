@@ -1,0 +1,46 @@
+{
+  "artifactId": "X101_PRE_REDESIGN_GUARDS_V1",
+  "tzId": "TZ_PRE_UI_REDESIGN_LOCK_001",
+  "status": "PASS",
+  "schemaVersion": 1,
+  "executedAtUtc": "2026-03-05T18:28:28Z",
+  "guards": {
+    "GUARD_01_COMMAND_BUS_ONLY_TRUE": true,
+    "GUARD_02_COMMAND_ID_STABILITY_REQUIRED_TRUE": true,
+    "GUARD_03_NO_NETWORK_BEFORE_X4_TRUE": true,
+    "GUARD_04_COMMENTS_HISTORY_ONLY_WHEN_COLLAB_SCOPE_LOCAL_TRUE": true,
+    "GUARD_05_DOCX_BASELINE_MUST_SURVIVE_TRUE": true,
+    "GUARD_06_RECOVERY_PATH_MUST_SURVIVE_TRUE": true,
+    "GUARD_07_NO_NEW_BLOCKING_SURFACE_TRUE": true
+  },
+  "proof": {
+    "commandSurfaceBusOnlyContractPassTrue": true,
+    "commandSurfaceSingleEntryContractPassTrue": true,
+    "x17Ws01FileEditCoreActionsPassTrue": true,
+    "x17Ws02ViewInsertBaselinePassTrue": true,
+    "x17Ws03FormatPlanReviewPassTrue": true,
+    "x16Ws03ReviewToolsPassTrue": true,
+    "sectorUU3ExportWiringPassTrue": true,
+    "x3RecoverySmokeContractPassTrue": true,
+    "checkPackagedRendererBundlePassTrue": true,
+    "checkMergeReadinessPassTrue": true,
+    "buildRendererPassTrue": true,
+    "buildMacPassTrue": true
+  },
+  "whatIsFreeToChange": {
+    "menuOrder": true,
+    "menuLabels": true,
+    "menuGrouping": true,
+    "panelAndTabPlacement": true,
+    "visualSpacingTypographyStates": true,
+    "windowModelWithinCurrentScenario": true
+  },
+  "whatIsNotFree": {
+    "coreDataFormat": true,
+    "migrationAndRecoverySemantics": true,
+    "commandBusRoute": true,
+    "stageGatedRules": true,
+    "offlineFirstPrinciple": true
+  },
+  "redesignStartReadyTrue": true
+}

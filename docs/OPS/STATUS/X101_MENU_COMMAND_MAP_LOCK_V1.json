@@ -1,0 +1,123 @@
+{
+  "artifactId": "X101_MENU_COMMAND_MAP_LOCK_V1",
+  "tzId": "TZ_PRE_UI_REDESIGN_LOCK_001",
+  "status": "LOCKED",
+  "schemaVersion": 1,
+  "executedAtUtc": "2026-03-05T18:28:28Z",
+  "commandBus": {
+    "route": "command.bus",
+    "commandBusOnlyTrue": true,
+    "commandIdStabilityRequiredTrue": true,
+    "proof": {
+      "commandSurfaceBusOnlyContractPassTrue": true,
+      "commandSurfaceSingleEntryContractPassTrue": true
+    }
+  },
+  "menuActionAliasToCommandId": {
+    "newDocument": "cmd.project.new",
+    "openDocument": "cmd.project.open",
+    "saveDocument": "cmd.project.save",
+    "exportDocxMin": "cmd.project.export.docxMin",
+    "quitApp": "cmd.app.quit",
+    "setFont": "cmd.ui.font.set",
+    "setFontSize": "cmd.ui.fontSize.set",
+    "setTheme": "cmd.ui.theme.set"
+  },
+  "x101MenuSections": [
+    {
+      "section": "File",
+      "items": [
+        { "label": "New", "commandId": "cmd.project.new" },
+        { "label": "Open", "commandId": "cmd.project.open" },
+        { "label": "Save", "commandId": "cmd.project.save" },
+        { "label": "Export DOCX", "commandId": "cmd.project.export.docxMin" }
+      ]
+    },
+    {
+      "section": "Edit",
+      "items": [
+        { "label": "Undo", "role": "undo" },
+        { "label": "Redo", "role": "redo" },
+        { "label": "Copy", "role": "copy" },
+        { "label": "Paste", "role": "paste" },
+        { "label": "Select All", "role": "selectAll" }
+      ]
+    },
+    {
+      "section": "View",
+      "items": [
+        { "label": "Settings", "commandId": "cmd.project.view.openSettings" },
+        { "label": "Write Mode", "commandId": "cmd.project.window.switchModeWrite" },
+        { "label": "Plan Mode", "commandId": "cmd.project.plan.switchMode" },
+        { "label": "Review Mode", "commandId": "cmd.project.review.switchMode" }
+      ]
+    },
+    {
+      "section": "Insert",
+      "items": [
+        { "label": "Add Card", "commandId": "cmd.project.insert.addCard" }
+      ]
+    },
+    {
+      "section": "Format",
+      "items": [
+        { "label": "Align Left", "commandId": "cmd.project.format.alignLeft" }
+      ]
+    },
+    {
+      "section": "Plan",
+      "items": [
+        { "label": "Open Plan Mode", "commandId": "cmd.project.plan.switchMode" }
+      ]
+    },
+    {
+      "section": "Review",
+      "items": [
+        { "label": "Open Review Mode", "commandId": "cmd.project.review.switchMode" },
+        { "label": "Recovery", "commandId": "cmd.project.review.openRecovery" }
+      ]
+    },
+    {
+      "section": "Tools",
+      "items": [
+        { "label": "Diagnostics", "commandId": "cmd.project.tools.openDiagnostics" }
+      ]
+    },
+    {
+      "section": "Window",
+      "items": [
+        { "label": "Back To Write Mode", "commandId": "cmd.project.window.switchModeWrite" }
+      ]
+    },
+    {
+      "section": "Help",
+      "items": [
+        { "label": "About", "kind": "help-entry" }
+      ]
+    }
+  ],
+  "toolbarActionToCommandPath": {
+    "new": "EXTRA_COMMAND_IDS.PROJECT_NEW",
+    "open": "COMMAND_IDS.PROJECT_OPEN",
+    "save": "COMMAND_IDS.PROJECT_SAVE_OR_EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE",
+    "save-as": "EXTRA_COMMAND_IDS.PROJECT_SAVE_AS",
+    "search": "EXTRA_COMMAND_IDS.EDIT_FIND",
+    "replace": "EXTRA_COMMAND_IDS.EDIT_REPLACE",
+    "export-docx-min": "COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN_THROUGH_PREVIEW_CONFIRM",
+    "open-settings": "LOCAL_MODAL_HANDLER",
+    "open-diagnostics": "LOCAL_MODAL_HANDLER",
+    "open-recovery": "LOCAL_MODAL_HANDLER"
+  },
+  "redesignFreedom": {
+    "menuOrderFree": true,
+    "menuLabelFree": true,
+    "groupingFree": true,
+    "layoutFree": true,
+    "visualFree": true
+  },
+  "notFree": {
+    "commandIdsMustRemainStable": true,
+    "commandBusRouteMustRemain": true,
+    "coreFormatAndRecoverySemanticsLocked": true
+  }
+}

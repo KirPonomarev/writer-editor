@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Craftsman</title>
+  <title>Yalken</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -217,9 +217,28 @@
         </div>
       </div>
     </header>
+    <div class="toolbar__row toolbar__row--secondary x101-tabs-row x101-mode-switcher" data-mode-switcher>
+      <div class="toolbar__cluster x101-tabs-group">
+        <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button is-active" data-mode="write" aria-pressed="true">Write</button>
+        <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-mode="plan" aria-pressed="false">Plan</button>
+        <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-mode="review" aria-pressed="false">Review</button>
+      </div>
+    </div>
     <div class="app-layout">
-      <aside class="sidebar">
+      <aside class="sidebar sidebar--left">
+        <div class="toolbar__row toolbar__row--secondary x101-tabs-row" data-left-tabs>
+          <div class="toolbar__cluster x101-tabs-group">
+            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button is-active" data-left-tab="project" aria-pressed="true">Project</button>
+            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-left-tab="outline" aria-pressed="false">Outline</button>
+            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-left-tab="search" aria-pressed="false">Search</button>
+          </div>
+        </div>
+        <div class="toolbar__row toolbar__row--secondary" data-left-search-panel hidden>
+          <input type="text" class="modal__input" data-left-search-input placeholder="Search project">
+        </div>
         <div class="sidebar__tree" data-tree></div>
+        <div class="sidebar__tree" data-outline-list hidden></div>
+        <div class="sidebar__tree" data-search-results hidden></div>
         <div class="sidebar__resize-handle" data-sidebar-resizer aria-hidden="true"></div>
       </aside>
       <main class="main-content">
@@ -260,12 +279,90 @@
           </div>
         </div>
       </main>
+      <aside class="sidebar sidebar--right" data-right-sidebar>
+        <div class="toolbar__row toolbar__row--secondary x101-tabs-row" data-right-tabs>
+          <div class="toolbar__cluster x101-tabs-group">
+            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button is-active" data-right-tab="inspector" aria-pressed="true">Inspector</button>
+            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="scene-meta" aria-pressed="false">Scene Meta</button>
+            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="comments" aria-pressed="false">Comments</button>
+            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="history" aria-pressed="false">History</button>
+          </div>
+        </div>
+        <div class="sidebar__tree" data-right-panel-inspector>
+          <div class="tree__empty" data-inspector-snapshot>Inspector not ready</div>
+          <div class="toolbar__cluster x101-action-buttons">
+            <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-settings">Settings</button>
+            <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-diagnostics">Diagnostics</button>
+            <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-recovery">Recovery</button>
+          </div>
+        </div>
+        <div class="sidebar__tree" data-right-panel-scene-meta hidden></div>
+        <div class="sidebar__tree" data-right-panel-comments hidden>
+          <div class="tree__empty" data-comments-placeholder>Comments local-first only</div>
+        </div>
+        <div class="sidebar__tree" data-right-panel-history hidden>
+          <div class="tree__empty" data-history-placeholder>History local-first only</div>
+        </div>
+      </aside>
     </div>
   </div>
   <div class="status-bar status-bar--floating" aria-live="polite">
     <span id="status" class="status">Готово</span>
+    <span class="status" data-save-state>Save: idle</span>
+    <span class="status" data-warning-state>Warnings: none</span>
+    <span class="status" data-perf-hint>Perf: normal</span>
   </div>
   <div class="context-menu" data-context-menu hidden></div>
+  <div class="modal" data-settings-modal hidden>
+    <div class="modal__backdrop" data-settings-close></div>
+    <div class="modal__content" role="dialog" aria-modal="true" aria-label="Settings">
+      <h3 class="modal__title">Settings</h3>
+      <label class="modal__label" for="settings-theme">Theme</label>
+      <select id="settings-theme" class="modal__input" data-settings-theme>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+      <label class="modal__label" for="settings-wrap">Word Wrap</label>
+      <select id="settings-wrap" class="modal__input" data-settings-wrap>
+        <option value="on">On</option>
+        <option value="off">Off</option>
+      </select>
+      <div class="modal__actions">
+        <button type="button" class="modal__button" data-settings-close>Close</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal" data-recovery-modal hidden>
+    <div class="modal__backdrop" data-recovery-close></div>
+    <div class="modal__content" role="dialog" aria-modal="true" aria-label="Recovery">
+      <h3 class="modal__title">Recovery</h3>
+      <div class="tree__empty" data-recovery-message>Recovery status</div>
+      <div class="modal__actions">
+        <button type="button" class="modal__button" data-recovery-close>Close</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal" data-export-preview-modal hidden>
+    <div class="modal__backdrop" data-export-preview-cancel></div>
+    <div class="modal__content" role="dialog" aria-modal="true" aria-label="Export Preview">
+      <h3 class="modal__title">Export Preview</h3>
+      <div class="tree__empty" data-export-preview-message>DOCX baseline export (internal beta)</div>
+      <div class="modal__actions">
+        <button type="button" class="modal__button" data-export-preview-cancel>Cancel</button>
+        <button type="button" class="modal__button modal__button--primary" data-export-preview-confirm>Export DOCX</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal" data-diagnostics-modal hidden>
+    <div class="modal__backdrop" data-diagnostics-close></div>
+    <div class="modal__content" role="dialog" aria-modal="true" aria-label="Diagnostics">
+      <h3 class="modal__title">Diagnostics</h3>
+      <textarea class="modal__textarea" rows="8" data-diagnostics-text readonly></textarea>
+      <div class="modal__actions">
+        <button type="button" class="modal__button" data-diagnostics-close>Close</button>
+      </div>
+    </div>
+  </div>
   <div class="modal" data-card-modal hidden>
     <div class="modal__backdrop" data-card-cancel></div>
     <div class="modal__content" role="dialog" aria-modal="true" aria-label="Новая карточка">
@@ -281,7 +378,8 @@
         <button type="button" class="modal__button modal__button--primary" data-card-save>Сохранить</button>
       </div>
     </div>
-  </div><script src="./flags.js"></script>
-    <script src="../../dist/renderer/editor.bundle.js"></script>
+  </div>
+  <script src="./flags.js"></script>
+  <script src="./editor.bundle.js"></script>
 </body>
 </html>
