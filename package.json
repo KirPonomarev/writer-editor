@@ -34,6 +34,7 @@
     "brain:refs": "node scripts/brain.mjs refs",
     "icons:mac": "bash scripts/make-mac-icon.sh",
     "build": "electron-builder",
+    "prebuild:mac": "npm run build:renderer",
     "build:mac": "electron-builder --mac",
     "build:win": "electron-builder --win",
     "build:linux": "electron-builder --linux"
@@ -43,7 +44,7 @@
     "writer",
     "text"
   ],
-  "author": "Craftsman Contributors",
+  "author": "Yalken Contributors",
   "license": "AGPL-3.0-or-later",
   "homepage": "https://github.com/KirPon2024/writer-editor",
   "repository": {
@@ -62,7 +63,7 @@
   },
   "build": {
     "appId": "com.kirpon.writereditor",
-    "productName": "Craftsman",
+    "productName": "Yalken",
     "icon": "build/icon.png",
     "mac": {
       "category": "public.app-category.productivity",

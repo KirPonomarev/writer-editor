@@ -1,0 +1,72 @@
+{
+  "documentId": "X101_UI_REDESIGN_STATUS_V1",
+  "tzId": "TZ_START_MASS_UI_MENU_REDESIGN_001",
+  "phaseId": "PHASE_B_C_IMPLEMENT_AND_VALIDATE",
+  "status": "PRE_REDESIGN_BASELINE_LOCKED",
+  "baseRef": "5f49474527b5c552b15d1d55168690f59a335480",
+  "taskDeltaOnly": true,
+  "requiredChecks": {
+    "REQ_01_build_renderer": true,
+    "REQ_02_packaged_bundle_check": true,
+    "REQ_03_merge_readiness": true,
+    "REQ_03_note": "validated in temporary main worktree at base ref",
+    "REQ_04_task_delta_allowlist_only": true,
+    "REQ_05_manual_gui_smoke_8_of_8": false
+  },
+  "manualSmoke": {
+    "APP_START": "UNCONFIRMED",
+    "MENU_CLICKS": "UNCONFIRMED",
+    "TOOLBAR_ACTIONS": "UNCONFIRMED",
+    "HOTKEYS": "UNCONFIRMED",
+    "MODE_SWITCH": "UNCONFIRMED",
+    "RIGHT_TABS": "UNCONFIRMED",
+    "MODALS": "UNCONFIRMED",
+    "EXPORT_PREVIEW_OPEN": "UNCONFIRMED"
+  },
+  "advisoryChecks": {
+    "ADV_01_test_electron": "PASS",
+    "ADV_02_build_mac": "FAIL_SANDBOX_EPERM"
+  },
+  "hardGuards": {
+    "noCoreSchemaMigrationRecoveryChanges": true,
+    "noNewDependencies": true,
+    "commandBusSingleEntryMustStay": true,
+    "stageGatedCommentsHistoryRuleMustStay": true,
+    "noNetworkPathBeforeX4": true,
+    "noSigningNotarizationLogicChanges": true
+  },
+  "changedScopes": [
+    "src/renderer/index.html",
+    "src/renderer/styles.css"
+  ],
+  "nextGate": "START_MASS_UI_MENU_REDESIGN",
+  "updatedAtUtc": "2026-03-08T00:00:00Z",
+  "baselineLocked": true,
+  "redesignStartReady": true,
+  "closeoutRef": "docs/OPS/STATUS/X101_PRE_REDESIGN_CLOSEOUT_V1.json",
+  "taskDeltaChangedFiles": [
+    "docs/OPS/STATUS/MACOS_SHIP_NORMALIZATION_AND_EXECUTION_PLAN_V2_3_FINAL.json",
+    "docs/OPS/STATUS/OWNER_OPEN_SIGNAL_RECORD_V1.json",
+    "docs/OPS/STATUS/DOD_X101_GUI_SMOKE_PACKET_V1.json",
+    "docs/OPS/STATUS/GOVERNANCE_LOOP_POLICY_V1.json",
+    "docs/OPS/STATUS/X101_HOTKEY_MAP_LOCK_V1.json",
+    "docs/OPS/STATUS/X101_MACOS_DISTRIBUTION_EVIDENCE_PACKET_V1.json",
+    "docs/OPS/STATUS/X101_MACOS_PREVIEW_DISTRIBUTION_PACKET_V1.json",
+    "docs/OPS/STATUS/X101_MACOS_SHIP_EXECUTION_STATUS_V1.json",
+    "docs/OPS/STATUS/X101_MENU_COMMAND_MAP_LOCK_V1.json",
+    "docs/OPS/STATUS/X101_PRE_REDESIGN_GUARDS_V1.json",
+    "docs/OPS/STATUS/X101_STAGE_GATED_UI_LOCK_V1.json",
+    "docs/OPS/STATUS/X101_UI_BASELINE_LOCK_PACKET_V1.json",
+    "docs/OPS/STATUS/X101_UI_REDESIGN_STATUS_V1.json",
+    "package.json",
+    "scripts/build-renderer.mjs",
+    "scripts/check-packaged-renderer-bundle.mjs",
+    "src/main.js",
+    "src/preload.js",
+    "src/renderer/editor.js",
+    "src/renderer/index.html",
+    "src/renderer/styles.css",
+    "src/renderer/editor.bundle.js",
+    "docs/OPS/STATUS/X101_PRE_REDESIGN_CLOSEOUT_V1.json"
+  ]
+}

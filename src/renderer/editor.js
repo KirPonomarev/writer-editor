@@ -27,12 +27,31 @@ if (window.__USE_TIPTAP) {
 } else {
 const editor = document.getElementById('editor');
 const statusElement = document.getElementById('status');
+const saveStateElement = document.querySelector('[data-save-state]');
+const warningStateElement = document.querySelector('[data-warning-state]');
+const perfHintElement = document.querySelector('[data-perf-hint]');
 const emptyState = document.querySelector('.empty-state');
 const editorPanel = document.querySelector('.editor-panel');
 const sidebar = document.querySelector('.sidebar');
 const sidebarResizer = document.querySelector('[data-sidebar-resizer]');
 const mainContent = document.querySelector('.main-content');
 const toolbar = document.querySelector('[data-toolbar]');
+const modeSwitcher = document.querySelector('[data-mode-switcher]');
+const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
+const leftTabsHost = document.querySelector('[data-left-tabs]');
+const leftTabButtons = Array.from(document.querySelectorAll('[data-left-tab]'));
+const leftSearchPanel = document.querySelector('[data-left-search-panel]');
+const leftSearchInput = document.querySelector('[data-left-search-input]');
+const outlineListElement = document.querySelector('[data-outline-list]');
+const searchResultsElement = document.querySelector('[data-search-results]');
+const rightSidebar = document.querySelector('[data-right-sidebar]');
+const rightTabsHost = document.querySelector('[data-right-tabs]');
+const rightTabButtons = Array.from(document.querySelectorAll('[data-right-tab]'));
+const rightInspectorPanel = document.querySelector('[data-right-panel-inspector]');
+const rightSceneMetaPanel = document.querySelector('[data-right-panel-scene-meta]');
+const rightCommentsPanel = document.querySelector('[data-right-panel-comments]');
+const rightHistoryPanel = document.querySelector('[data-right-panel-history]');
+const inspectorSnapshotElement = document.querySelector('[data-inspector-snapshot]');
 const wordCountElement = document.querySelector('[data-word-count]');
 const zoomValueElement = document.querySelector('[data-zoom-value]');
 const styleSelect = document.querySelector('[data-style-select]');
@@ -57,6 +76,20 @@ const cardsList = document.querySelector('[data-cards-list]');
 const addCardButton = document.querySelector('[data-action="add-card"]');
 const contextMenu = document.querySelector('[data-context-menu]');
 const cardModal = document.querySelector('[data-card-modal]');
+const settingsModal = document.querySelector('[data-settings-modal]');
+const settingsThemeSelect = document.querySelector('[data-settings-theme]');
+const settingsWrapSelect = document.querySelector('[data-settings-wrap]');
+const settingsCloseButtons = Array.from(document.querySelectorAll('[data-settings-close]'));
+const recoveryModal = document.querySelector('[data-recovery-modal]');
+const recoveryMessage = document.querySelector('[data-recovery-message]');
+const recoveryCloseButtons = Array.from(document.querySelectorAll('[data-recovery-close]'));
+const exportPreviewModal = document.querySelector('[data-export-preview-modal]');
+const exportPreviewMessage = document.querySelector('[data-export-preview-message]');
+const exportPreviewConfirmButtons = Array.from(document.querySelectorAll('[data-export-preview-confirm]'));
+const exportPreviewCancelButtons = Array.from(document.querySelectorAll('[data-export-preview-cancel]'));
+const diagnosticsModal = document.querySelector('[data-diagnostics-modal]');
+const diagnosticsText = document.querySelector('[data-diagnostics-text]');
+const diagnosticsCloseButtons = Array.from(document.querySelectorAll('[data-diagnostics-close]'));
 const cardTitleInput = document.querySelector('[data-card-title]');
 const cardTextInput = document.querySelector('[data-card-text]');
 const cardTagsInput = document.querySelector('[data-card-tags]');
@@ -80,6 +113,10 @@ let editorZoom = EDITOR_ZOOM_DEFAULT;
 const isMac = navigator.platform.toUpperCase().includes('MAC');
 let currentFontSizePx = 16;
 let wordWrapEnabled = true;
+let collabScopeLocal = false;
+let currentMode = 'write';
+let currentLeftTab = 'project';
+let currentRightTab = 'inspector';
 let lastSearchQuery = '';
 let plainTextBuffer = '';
 const activeTab = 'roman';
@@ -92,6 +129,7 @@ let flowModeState = {
 };
 let metaEnabled = false;
 let currentCards = [];
+let treeRoot = null;
 let currentMeta = {
   synopsis: '',
   status: 'черновик',
@@ -1119,6 +1157,7 @@ function collapseSelection() {
     setPlainText('');
     updateWordCount();
   }
+  updateInspectorSnapshot();
 }
 
 function updateMetaInputs() {
@@ -1283,6 +1322,7 @@ async function openDocumentNode(node) {
     currentDocumentKind = getEffectiveDocumentKind(node);
     metaEnabled = currentDocumentKind === 'scene' || currentDocumentKind === 'chapter-file';
     updateMetaVisibility();
+    updateInspectorSnapshot();
     return true;
   } catch {
     updateStatusText('Ошибка');
@@ -1331,9 +1371,10 @@ async function handleDeleteNode(node) {
     currentDocumentPath = null;
   }
   await loadTree();
-  if (!currentDocumentPath) {
-    collapseSelection();
-  }
+    if (!currentDocumentPath) {
+      collapseSelection();
+    }
+    updateInspectorSnapshot();
 }
 
 async function handleReorderNode(node, direction) {
@@ -1563,8 +1604,6 @@ function findRomanRootNode(root) {
   return null;
 }
 
-let treeRoot = null;
-
 function renderTree() {
   if (!treeContainer) return;
   treeContainer.innerHTML = '';
@@ -1573,6 +1612,9 @@ function renderTree() {
     empty.className = 'tree__empty';
     empty.textContent = 'Дерево пустое';
     treeContainer.appendChild(empty);
+    renderOutlineList();
+    renderSearchResults(leftSearchInput ? leftSearchInput.value : '');
+    updateInspectorSnapshot();
     return;
   }
   const list = document.createElement('ul');
@@ -1583,6 +1625,9 @@ function renderTree() {
     list.appendChild(renderTreeNode(child, 0, index === nodesToRender.length - 1, []));
   });
   treeContainer.appendChild(list);
+  renderOutlineList();
+  renderSearchResults(leftSearchInput ? leftSearchInput.value : '');
+  updateInspectorSnapshot();
 }
 
 async function loadTree() {
@@ -1752,6 +1797,14 @@ if (cardCancelButtons.length) {
 }
 
 document.addEventListener('click', (event) => {
+  const actionTarget = event.target.closest('[data-action]');
+  if (actionTarget && !actionTarget.closest('[data-toolbar]')) {
+    const action = actionTarget.dataset.action;
+    if (handleUiAction(action)) {
+      event.preventDefault();
+      return;
+    }
+  }
   if (contextMenu && !contextMenu.hidden && !contextMenu.contains(event.target)) {
     clearContextMenu();
   }
@@ -1785,12 +1838,289 @@ function updateStatusText(text) {
   }
 }
 
+function updateSaveStateText(text) {
+  if (saveStateElement && text) {
+    saveStateElement.textContent = `Save: ${text}`;
+  }
+}
+
+function updateWarningStateText(text) {
+  if (warningStateElement && text) {
+    warningStateElement.textContent = `Warnings: ${text}`;
+  }
+}
+
+function updatePerfHintText(text) {
+  if (perfHintElement && text) {
+    perfHintElement.textContent = `Perf: ${text}`;
+  }
+}
+
+function updateInspectorSnapshot() {
+  if (!inspectorSnapshotElement) return;
+  const snapshot = [
+    `Mode=${currentMode}`,
+    `DocKind=${currentDocumentKind || 'none'}`,
+    `DocPath=${currentDocumentPath || 'none'}`,
+    `Dirty=${localDirty ? 'true' : 'false'}`,
+    `FlowMode=${flowModeState.active ? 'active' : 'off'}`,
+    `CollabScopeLocal=${collabScopeLocal ? 'true' : 'false'}`,
+  ];
+  inspectorSnapshotElement.textContent = snapshot.join('\n');
+}
+
+function renderOutlineList() {
+  if (!outlineListElement) return;
+  outlineListElement.innerHTML = '';
+  const items = [];
+  if (treeRoot && Array.isArray(treeRoot.children)) {
+    const walk = (nodes) => {
+      for (const node of nodes) {
+        if (!node || typeof node !== 'object') continue;
+        const kind = String(node.kind || '');
+        const isMindMap = kind === 'mindmap-section' || kind === 'mindmap-root';
+        if (isMindMap && currentMode !== 'plan') {
+          continue;
+        }
+        if (kind === 'part' || kind === 'chapter-folder' || kind === 'chapter-file' || kind === 'scene' || isMindMap) {
+          items.push(`${kind}: ${node.label || ''}`);
+        }
+        if (Array.isArray(node.children) && node.children.length > 0) {
+          walk(node.children);
+        }
+      }
+    };
+    walk(treeRoot.children);
+  }
+  if (items.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'tree__empty';
+    empty.textContent = 'Outline is empty';
+    outlineListElement.appendChild(empty);
+    return;
+  }
+  const list = document.createElement('ul');
+  list.className = 'tree__list';
+  for (const line of items) {
+    const li = document.createElement('li');
+    li.className = 'tree__node';
+    li.textContent = line;
+    list.appendChild(li);
+  }
+  outlineListElement.appendChild(list);
+}
+
+function renderSearchResults(query = '') {
+  if (!searchResultsElement) return;
+  searchResultsElement.innerHTML = '';
+  const needle = String(query || '').trim().toLowerCase();
+  if (!needle) {
+    const empty = document.createElement('div');
+    empty.className = 'tree__empty';
+    empty.textContent = 'Type to search';
+    searchResultsElement.appendChild(empty);
+    return;
+  }
+  const matches = [];
+  const pushNode = (node) => {
+    if (!node || typeof node !== 'object') return;
+    const label = String(node.label || '');
+    const kind = String(node.kind || '');
+    if (label.toLowerCase().includes(needle)) {
+      matches.push(`${kind}: ${label}`);
+    }
+    if (Array.isArray(node.children)) {
+      node.children.forEach(pushNode);
+    }
+  };
+  if (treeRoot && Array.isArray(treeRoot.children)) {
+    treeRoot.children.forEach(pushNode);
+  }
+  const plain = getPlainText();
+  if (plain.toLowerCase().includes(needle)) {
+    matches.push('editor: text match');
+  }
+  if (matches.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'tree__empty';
+    empty.textContent = 'No matches';
+    searchResultsElement.appendChild(empty);
+    return;
+  }
+  const list = document.createElement('ul');
+  list.className = 'tree__list';
+  for (const line of matches.slice(0, 100)) {
+    const li = document.createElement('li');
+    li.className = 'tree__node';
+    li.textContent = line;
+    list.appendChild(li);
+  }
+  searchResultsElement.appendChild(list);
+}
+
+function applyLeftTab(tab) {
+  currentLeftTab = tab;
+  for (const button of leftTabButtons) {
+    const active = button.dataset.leftTab === tab;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  }
+  if (treeContainer) treeContainer.hidden = tab !== 'project';
+  if (outlineListElement) outlineListElement.hidden = tab !== 'outline';
+  if (searchResultsElement) searchResultsElement.hidden = tab !== 'search';
+  if (leftSearchPanel) leftSearchPanel.hidden = tab !== 'search';
+  if (tab === 'outline') {
+    renderOutlineList();
+  }
+  if (tab === 'search') {
+    renderSearchResults(leftSearchInput ? leftSearchInput.value : '');
+  }
+}
+
+function applyRightTab(tab) {
+  currentRightTab = tab;
+  for (const button of rightTabButtons) {
+    const active = button.dataset.rightTab === tab;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  }
+  if (rightInspectorPanel) rightInspectorPanel.hidden = tab !== 'inspector';
+  if (rightSceneMetaPanel) rightSceneMetaPanel.hidden = tab !== 'scene-meta';
+  if (rightCommentsPanel) rightCommentsPanel.hidden = tab !== 'comments' || !collabScopeLocal;
+  if (rightHistoryPanel) rightHistoryPanel.hidden = tab !== 'history' || !collabScopeLocal;
+}
+
+function applyMode(mode) {
+  currentMode = mode;
+  document.body.dataset.mode = mode;
+  for (const button of modeButtons) {
+    const active = button.dataset.mode === mode;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  }
+  if (mode === 'plan') {
+    applyLeftTab('outline');
+  } else if (mode === 'review') {
+    applyRightTab(collabScopeLocal ? 'comments' : 'inspector');
+  } else {
+    applyLeftTab('project');
+    applyRightTab('inspector');
+  }
+  updateInspectorSnapshot();
+}
+
+function openSimpleModal(modal) {
+  if (!modal) return;
+  modal.hidden = false;
+}
+
+function closeSimpleModal(modal) {
+  if (!modal) return;
+  modal.hidden = true;
+}
+
+function openSettingsModal() {
+  if (settingsThemeSelect) {
+    settingsThemeSelect.value = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+  }
+  if (settingsWrapSelect) {
+    settingsWrapSelect.value = wordWrapEnabled ? 'on' : 'off';
+  }
+  openSimpleModal(settingsModal);
+}
+
+function openRecoveryModal(message = '') {
+  if (recoveryMessage) {
+    recoveryMessage.textContent = message || 'Recovery ready';
+  }
+  openSimpleModal(recoveryModal);
+}
+
+function openDiagnosticsModal() {
+  if (diagnosticsText) {
+    const lines = [
+      `mode=${currentMode}`,
+      `leftTab=${currentLeftTab}`,
+      `rightTab=${currentRightTab}`,
+      `docKind=${currentDocumentKind || 'none'}`,
+      `docPath=${currentDocumentPath || 'none'}`,
+      `dirty=${localDirty ? 'true' : 'false'}`,
+      `flowModeActive=${flowModeState.active ? 'true' : 'false'}`,
+      `collabScopeLocal=${collabScopeLocal ? 'true' : 'false'}`,
+    ];
+    diagnosticsText.value = lines.join('\n');
+  }
+  openSimpleModal(diagnosticsModal);
+}
+
+function openExportPreviewModal() {
+  if (exportPreviewMessage) {
+    exportPreviewMessage.textContent = 'DOCX baseline export. Confirm to continue.';
+  }
+  openSimpleModal(exportPreviewModal);
+}
+
+async function confirmExportPreviewAndRun() {
+  closeSimpleModal(exportPreviewModal);
+  updatePerfHintText('export');
+  await dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);
+  updatePerfHintText('normal');
+  updateWarningStateText('none');
+}
+
+function applyCollabGate() {
+  for (const button of rightTabButtons) {
+    const tab = button.dataset.rightTab;
+    const gated = tab === 'comments' || tab === 'history';
+    if (gated) {
+      button.hidden = !collabScopeLocal;
+    }
+  }
+  if (!collabScopeLocal && (currentRightTab === 'comments' || currentRightTab === 'history')) {
+    applyRightTab('inspector');
+  } else {
+    applyRightTab(currentRightTab);
+  }
+  updateInspectorSnapshot();
+}
+
+async function initializeCollabScopeLocal() {
+  try {
+    if (window.electronAPI && typeof window.electronAPI.getCollabScopeLocal === 'function') {
+      collabScopeLocal = await window.electronAPI.getCollabScopeLocal();
+    } else {
+      collabScopeLocal = localStorage.getItem('COLLAB_SCOPE_LOCAL') === 'true';
+    }
+  } catch {
+    collabScopeLocal = false;
+  }
+  applyCollabGate();
+}
+
+function installNetworkGuard() {
+  const blockedError = () => new Error('E_COLLAB_TRANSPORT_FORBIDDEN_IN_MVP');
+  const originalFetch = window.fetch;
+  if (typeof originalFetch === 'function') {
+    window.fetch = async (...args) => {
+      const url = String(args[0] || '');
+      if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('ws://') || url.startsWith('wss://')) {
+        updateWarningStateText('network blocked before X4');
+        throw blockedError();
+      }
+      return originalFetch(...args);
+    };
+  }
+}
+
 function updateWordCount() {
   if (!editor || !wordCountElement) return;
   const text = getPlainText();
   const trimmed = text.trim();
   const count = trimmed ? trimmed.split(/\s+/).filter(Boolean).length : 0;
   wordCountElement.textContent = `${count} words`;
+  if (count > 20000) {
+    updatePerfHintText('large document');
+  }
 }
 
 function updateZoomValue() {
@@ -1875,6 +2205,9 @@ function markAsModified() {
       window.electronAPI.notifyDirtyState(true);
     }
   }
+  updateSaveStateText('unsaved');
+  updatePerfHintText('typing');
+  updateInspectorSnapshot();
   scheduleAutoSave();
 }
 
@@ -1911,6 +2244,7 @@ function applyWordWrap(enabled, persist = true) {
   if (persist) {
     localStorage.setItem('editorWordWrap', enabled ? 'on' : 'off');
   }
+  updateInspectorSnapshot();
 }
 
 function applyViewMode(mode, persist = true) {
@@ -2316,6 +2650,7 @@ function applyTheme(theme) {
   }
   localStorage.setItem('editorTheme', theme);
   updateThemeSwatches(theme);
+  updateInspectorSnapshot();
 }
 
 function loadSavedTheme() {
@@ -2479,86 +2814,97 @@ async function handleReviewExportMarkdown() {
   return { performed: true };
 }
 
+function handleUiAction(action) {
+  switch (action) {
+    case 'save-as':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_SAVE_AS);
+      return true;
+    case 'search':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
+      return true;
+    case 'replace':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
+      return true;
+    case 'new':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_NEW);
+      return true;
+    case 'clear':
+      if (editor) {
+        setPlainText('');
+        markAsModified();
+        updateWordCount();
+      }
+      return true;
+    case 'open':
+      void dispatchUiCommand(COMMAND_IDS.PROJECT_OPEN);
+      return true;
+    case 'save':
+      if (flowModeState.active) {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE);
+      } else {
+        void dispatchUiCommand(COMMAND_IDS.PROJECT_SAVE);
+      }
+      return true;
+    case 'export-docx-min':
+      openExportPreviewModal();
+      return true;
+    case 'import-markdown-v1':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_MARKDOWN_PROMPT);
+      return true;
+    case 'export-markdown-v1':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN);
+      return true;
+    case 'theme-dark':
+      window.electronAPI?.setTheme('dark');
+      return true;
+    case 'theme-light':
+      window.electronAPI?.setTheme('light');
+      return true;
+    case 'toggle-wrap':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_WRAP);
+      return true;
+    case 'zoom-out':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_ZOOM_OUT);
+      return true;
+    case 'zoom-in':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_ZOOM_IN);
+      return true;
+    case 'align-left':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
+      return true;
+    case 'align-center':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_CENTER);
+      return true;
+    case 'align-right':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_RIGHT);
+      return true;
+    case 'align-justify':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_JUSTIFY);
+      return true;
+    case 'minimize':
+      toggleToolbarCompactMode();
+      return true;
+    case 'open-settings':
+      openSettingsModal();
+      return true;
+    case 'open-diagnostics':
+      openDiagnosticsModal();
+      return true;
+    case 'open-recovery':
+      openRecoveryModal('Recovery modal opened manually');
+      return true;
+    default:
+      return false;
+  }
+}
+
 if (toolbar) {
   toolbar.addEventListener('click', (event) => {
     const target = event.target.closest('[data-action]');
     if (!target) return;
     const action = target.dataset.action;
-
-    switch (action) {
-      case 'save-as':
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_SAVE_AS);
-        break;
-      case 'search':
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
-        break;
-      case 'replace':
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
-        break;
-      case 'new':
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_NEW);
-        break;
-      case 'clear':
-        if (editor) {
-          setPlainText('');
-          markAsModified();
-          updateWordCount();
-        }
-        break;
-      case 'open':
-        void dispatchUiCommand(COMMAND_IDS.PROJECT_OPEN);
-        break;
-      case 'save':
-        if (flowModeState.active) {
-          void dispatchUiCommand(EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE);
-        } else {
-          void dispatchUiCommand(COMMAND_IDS.PROJECT_SAVE);
-        }
-        break;
-      case 'export-docx-min':
-        void dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);
-        break;
-      case 'import-markdown-v1':
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_MARKDOWN_PROMPT);
-        break;
-      case 'export-markdown-v1':
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN);
-        break;
-      case 'theme-dark':
-        window.electronAPI?.setTheme('dark');
-        break;
-      case 'theme-light':
-        window.electronAPI?.setTheme('light');
-        break;
-      case 'toggle-wrap': {
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_WRAP);
-        break;
-      }
-      case 'zoom-out':
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_ZOOM_OUT);
-        break;
-      case 'zoom-in':
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_ZOOM_IN);
-        break;
-      case 'align-left':
-      case 'align-center':
-      case 'align-right':
-      case 'align-justify':
-        if (action === 'align-left') {
-          void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
-        } else if (action === 'align-center') {
-          void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_CENTER);
-        } else if (action === 'align-right') {
-          void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_RIGHT);
-        } else {
-          void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_JUSTIFY);
-        }
-        break;
-      case 'minimize':
-        toggleToolbarCompactMode();
-        break;
-      default:
-        break;
+    if (handleUiAction(action)) {
+      event.preventDefault();
     }
   });
 }
@@ -2646,8 +2992,94 @@ loadSavedEditorZoom();
 
 setPlainText('');
 metaPanel?.classList.add('is-hidden');
+if (rightSceneMetaPanel && metaPanel) {
+  rightSceneMetaPanel.appendChild(metaPanel);
+}
+updateSaveStateText('idle');
+updateWarningStateText('none');
+updatePerfHintText('normal');
+updateInspectorSnapshot();
+applyMode('write');
+applyLeftTab('project');
+applyRightTab('inspector');
+installNetworkGuard();
+void initializeCollabScopeLocal();
 
 loadTree();
+
+if (modeSwitcher) {
+  modeSwitcher.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-mode]');
+    if (!button) return;
+    const mode = button.dataset.mode;
+    if (mode === 'write' || mode === 'plan' || mode === 'review') {
+      applyMode(mode);
+    }
+  });
+}
+
+if (leftTabsHost) {
+  leftTabsHost.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-left-tab]');
+    if (!button) return;
+    const tab = button.dataset.leftTab;
+    if (tab === 'project' || tab === 'outline' || tab === 'search') {
+      applyLeftTab(tab);
+    }
+  });
+}
+
+if (rightTabsHost) {
+  rightTabsHost.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-right-tab]');
+    if (!button) return;
+    const tab = button.dataset.rightTab;
+    if (tab === 'inspector' || tab === 'scene-meta' || tab === 'comments' || tab === 'history') {
+      applyRightTab(tab);
+    }
+  });
+}
+
+if (leftSearchInput) {
+  leftSearchInput.addEventListener('input', () => {
+    if (currentLeftTab === 'search') {
+      renderSearchResults(leftSearchInput.value);
+    }
+  });
+}
+
+if (settingsThemeSelect) {
+  settingsThemeSelect.addEventListener('change', () => {
+    const nextTheme = settingsThemeSelect.value === 'dark' ? 'dark' : 'light';
+    window.electronAPI?.setTheme(nextTheme);
+  });
+}
+
+if (settingsWrapSelect) {
+  settingsWrapSelect.addEventListener('change', () => {
+    const enabled = settingsWrapSelect.value !== 'off';
+    applyWordWrap(enabled);
+    updateInspectorSnapshot();
+  });
+}
+
+settingsCloseButtons.forEach((button) => {
+  button.addEventListener('click', () => closeSimpleModal(settingsModal));
+});
+recoveryCloseButtons.forEach((button) => {
+  button.addEventListener('click', () => closeSimpleModal(recoveryModal));
+});
+exportPreviewCancelButtons.forEach((button) => {
+  button.addEventListener('click', () => closeSimpleModal(exportPreviewModal));
+});
+exportPreviewConfirmButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    void confirmExportPreviewAndRun();
+  });
+});
+diagnosticsCloseButtons.forEach((button) => {
+  button.addEventListener('click', () => closeSimpleModal(diagnosticsModal));
+});
 
 document.addEventListener('keydown', (event) => {
   const isPrimaryModifier = isMac ? event.metaKey : event.ctrlKey;
@@ -2664,6 +3096,30 @@ document.addEventListener('keydown', (event) => {
     key === '0' || code === 'Digit0' || code === 'Numpad0';
 
   if (!isPlus && !isMinus && !isZero) {
+    if ((key === 'N' || key === 'n') && !event.shiftKey) {
+      event.preventDefault();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_NEW);
+      return;
+    }
+    if ((key === 'O' || key === 'o') && !event.shiftKey) {
+      event.preventDefault();
+      void dispatchUiCommand(COMMAND_IDS.PROJECT_OPEN);
+      return;
+    }
+    if ((key === 'S' || key === 's') && !event.shiftKey) {
+      event.preventDefault();
+      if (flowModeState.active) {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE);
+      } else {
+        void dispatchUiCommand(COMMAND_IDS.PROJECT_SAVE);
+      }
+      return;
+    }
+    if ((key === 'S' || key === 's') && event.shiftKey && !flowModeState.active) {
+      event.preventDefault();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_SAVE_AS);
+      return;
+    }
     if ((key === 'Z' || key === 'z') && !event.shiftKey) {
       event.preventDefault();
       void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);
@@ -2774,6 +3230,9 @@ if (window.electronAPI) {
       showEditorPanelFor(resolvedTitle);
     }
     renderTree();
+    updateSaveStateText('loaded');
+    updatePerfHintText('normal');
+    updateInspectorSnapshot();
   });
 
   window.electronAPI.onEditorTextRequest(({ requestId }) => {
@@ -2787,6 +3246,42 @@ if (window.electronAPI) {
       renderStyledView(getPlainText());
     }
   });
+
+  if (typeof window.electronAPI.onRecoveryRestored === 'function') {
+    window.electronAPI.onRecoveryRestored((payload) => {
+      const message = payload && typeof payload.message === 'string'
+        ? payload.message
+        : 'Recovered from autosave';
+      updateWarningStateText('recovery restored');
+      openRecoveryModal(message);
+      updateInspectorSnapshot();
+    });
+  }
+
+  if (typeof window.electronAPI.onRuntimeCommand === 'function') {
+    window.electronAPI.onRuntimeCommand((payload) => {
+      const command = payload && typeof payload.command === 'string' ? payload.command : '';
+      if (command === 'open-settings') {
+        openSettingsModal();
+      } else if (command === 'open-diagnostics') {
+        openDiagnosticsModal();
+      } else if (command === 'open-recovery') {
+        openRecoveryModal('Recovery modal opened from menu');
+      } else if (command === 'open-export-preview') {
+        openExportPreviewModal();
+      } else if (command === 'insert-add-card') {
+        handleInsertAddCard();
+      } else if (command === 'format-align-left') {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
+      } else if (command === 'switch-mode-plan') {
+        applyMode('plan');
+      } else if (command === 'switch-mode-review') {
+        applyMode('review');
+      } else if (command === 'switch-mode-write') {
+        applyMode('write');
+      }
+    });
+  }
 }
 
 editor.addEventListener('pointerdown', (event) => {
@@ -2864,10 +3359,22 @@ editor.addEventListener('keydown', (event) => {
 if (window.electronAPI) {
   window.electronAPI.onStatusUpdate((status) => {
     updateStatusText(status);
+    const normalized = String(status || '').toLowerCase();
+    if (normalized.includes('восстановлено') || normalized.includes('recovery')) {
+      updateWarningStateText('recovery');
+    } else if (normalized.includes('ошибка') || normalized.includes('error')) {
+      updateWarningStateText('error');
+    } else {
+      updateWarningStateText('none');
+    }
+    updatePerfHintText('normal');
+    updateInspectorSnapshot();
   });
 
   window.electronAPI.onSetDirty((state) => {
     localDirty = state;
+    updateSaveStateText(localDirty ? 'unsaved' : 'saved');
+    updateInspectorSnapshot();
   });
 }
 

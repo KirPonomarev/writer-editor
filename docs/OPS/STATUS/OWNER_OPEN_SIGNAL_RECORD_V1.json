@@ -5,5 +5,14 @@
   "ownerOpenSignal": true,
   "issuedAtUtc": "2026-03-02T00:00:00Z",
   "mode": "REPO_EXECUTION",
-  "note": "owner_open_signal_for_x68_bootstrap_repair"
+  "note": "owner_open_signal_for_x68_bootstrap_repair",
+  "GOVERNANCE_LOOP_STATE": "PAUSED",
+  "OWNER_GATES_MODE": "MANUAL_ON_DEMAND",
+  "OWNER_GATES_AUTO_PROMPT": false,
+  "RELEASE_PHASE_GATES_ACTIVE": true,
+  "HARD_BLOCKERS_ACTIVE": true,
+  "CHANGE_REASON": "REDUCE_PROMPT_NOISE_KEEP_RELEASE_CONTROL",
+  "CHANGED_AT_UTC": "2026-03-05T08:24:20Z",
+  "OWNER_GATE_ENFORCEMENT_MODE": "MANUAL_ONLY_ON_RELEASE_PHASES",
+  "AUTO_HOLD_ON_NO_OWNER_INPUT": false
 }

@@ -1,0 +1,42 @@
+{
+  "artifactId": "X101_UI_BASELINE_LOCK_PACKET_V1",
+  "tzId": "TZ_PRE_UI_REDESIGN_LOCK_001",
+  "status": "PASS",
+  "schemaVersion": 1,
+  "executedAtUtc": "2026-03-05T18:28:28Z",
+  "goal": "LOCK_SAFE_BOUNDARIES_AND_BASELINE_INVARIANTS_BEFORE_MASS_UI_MENU_REDESIGN",
+  "baselineReferences": {
+    "smokePassPacket": "DOD_X101_GUI_SMOKE_PACKET_V1.json",
+    "menuCommandMapLock": "X101_MENU_COMMAND_MAP_LOCK_V1.json",
+    "hotkeyMapLock": "X101_HOTKEY_MAP_LOCK_V1.json",
+    "stageGatedUiLock": "X101_STAGE_GATED_UI_LOCK_V1.json",
+    "preRedesignGuards": "X101_PRE_REDESIGN_GUARDS_V1.json"
+  },
+  "lockedInvariants": {
+    "coreDataFormat": true,
+    "migrationAndRecoverySemantics": true,
+    "commandBusRoute": true,
+    "stageGatedRules": true,
+    "offlineFirstPrinciple": true,
+    "docxBaselineMustSurvive": true,
+    "recoveryPathMustSurvive": true
+  },
+  "freeZoneExplicit": {
+    "menuSectionOrder": true,
+    "menuSectionAndItemNaming": true,
+    "menuGrouping": true,
+    "panelAndTabLayout": true,
+    "visualSpacingTypographyStates": true,
+    "windowArrangementWithinCurrentScenario": true
+  },
+  "acceptance": {
+    "smokeBaselineReferencePresentTrue": true,
+    "stageGatedRulesReferencePresentTrue": true,
+    "redesignFreeZoneExplicitTrue": true,
+    "commandBusOnlyConfirmedTrue": true,
+    "noNewBlockingSurfaceTrue": true
+  },
+  "baselineLockReadyTrue": true,
+  "redesignStartReadyTrue": true,
+  "nextGate": "START_MASS_UI_MENU_REDESIGN"
+}

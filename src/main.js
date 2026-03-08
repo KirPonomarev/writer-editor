@@ -31,7 +31,7 @@ const CSP_POLICY =
 const FILE_NAVIGATION_FAIL_CODE = 'E_PATH_BOUNDARY_VIOLATION';
 const FILE_NAVIGATION_FAIL_SIGNAL = 'E_RUNTIME_WIRING_BEFORE_STAGE';
 const CORRESPONDING_SOURCE_BASE_URL = 'https://github.com/KirPon2024/writer-editor';
-const ABOUT_LICENSE_TEXT_FALLBACK = 'Craftsman is licensed under AGPL-3.0-or-later.';
+const ABOUT_LICENSE_TEXT_FALLBACK = 'Yalken is licensed under AGPL-3.0-or-later.';
 
 function resolveRepoRootForAbout() {
   return path.resolve(__dirname, '..');
@@ -89,7 +89,7 @@ async function showAboutLicensesDialog() {
     buttons: ['OK'],
     defaultId: 0,
     title: 'О программе и лицензии',
-    message: 'Craftsman — AGPL-3.0-or-later',
+    message: 'Yalken — AGPL-3.0-or-later',
     detail,
     noLink: true,
   });
@@ -128,6 +128,119 @@ function ensureAboutLicensesMenuEntry(template) {
   }
 
   template.push(createAboutLicensesMenuEntry());
+}
+
+function ensureX101MenuSections(template) {
+  if (!Array.isArray(template)) return;
+  const byId = new Map();
+  for (const item of template) {
+    if (item && typeof item.id === 'string' && item.id) {
+      byId.set(item.id, item);
+    }
+  }
+
+  const ensureMenu = (id, label, submenu) => {
+    const existing = byId.get(id);
+    if (existing) {
+      if (!Array.isArray(existing.submenu)) {
+        existing.submenu = [];
+      }
+      return existing;
+    }
+    const created = { id, label, submenu: Array.isArray(submenu) ? submenu : [] };
+    template.push(created);
+    byId.set(id, created);
+    return created;
+  };
+  const commandItem = (id, label, commandId, options = {}) => {
+    const item = {
+      id,
+      label,
+      click: buildCommandClickHandler(commandId),
+    };
+    if (typeof options.accelerator === 'string' && options.accelerator.length > 0) {
+      item.accelerator = options.accelerator;
+    }
+    return item;
+  };
+
+  const fileMenu = ensureMenu('file', 'File', []);
+  if (fileMenu.submenu.length === 0) {
+    fileMenu.submenu.push(
+      commandItem('file-new', 'New', 'cmd.project.new', { accelerator: process.platform === 'darwin' ? 'Cmd+N' : 'Ctrl+N' }),
+      commandItem('file-open', 'Open', 'cmd.project.open', { accelerator: process.platform === 'darwin' ? 'Cmd+O' : 'Ctrl+O' }),
+      commandItem('file-save', 'Save', 'cmd.project.save', { accelerator: process.platform === 'darwin' ? 'Cmd+S' : 'Ctrl+S' }),
+      { type: 'separator' },
+      commandItem('file-export-docx', 'Export DOCX', 'cmd.project.export.docxMin'),
+    );
+  }
+
+  const editMenu = ensureMenu('edit', 'Edit', []);
+  if (editMenu.submenu.length === 0) {
+    editMenu.submenu.push(
+      { role: 'undo' },
+      { role: 'redo' },
+      { type: 'separator' },
+      { role: 'copy' },
+      { role: 'paste' },
+      { role: 'selectAll' },
+    );
+  }
+
+  const viewMenu = ensureMenu('view', 'View', []);
+  if (viewMenu.submenu.length === 0) {
+    viewMenu.submenu.push(
+      commandItem('view-settings', 'Settings', 'cmd.project.view.openSettings'),
+      commandItem('view-switch-write', 'Write Mode', 'cmd.project.window.switchModeWrite'),
+      commandItem('view-switch-plan', 'Plan Mode', 'cmd.project.plan.switchMode'),
+      commandItem('view-switch-review', 'Review Mode', 'cmd.project.review.switchMode'),
+    );
+  }
+
+  const insertMenu = ensureMenu('insert', 'Insert', []);
+  if (insertMenu.submenu.length === 0) {
+    insertMenu.submenu.push(
+      commandItem('insert-add-card', 'Add Card', 'cmd.project.insert.addCard'),
+    );
+  }
+
+  const formatMenu = ensureMenu('format', 'Format', []);
+  if (formatMenu.submenu.length === 0) {
+    formatMenu.submenu.push(
+      commandItem('format-align-left', 'Align Left', 'cmd.project.format.alignLeft'),
+    );
+  }
+
+  const planMenu = ensureMenu('plan', 'Plan', []);
+  if (planMenu.submenu.length === 0) {
+    planMenu.submenu.push(
+      commandItem('plan-mode', 'Open Plan Mode', 'cmd.project.plan.switchMode'),
+    );
+  }
+
+  const reviewMenu = ensureMenu('review', 'Review', []);
+  if (reviewMenu.submenu.length === 0) {
+    reviewMenu.submenu.push(
+      commandItem('review-mode', 'Open Review Mode', 'cmd.project.review.switchMode'),
+      commandItem('review-recovery', 'Recovery', 'cmd.project.review.openRecovery'),
+    );
+  }
+
+  const toolsMenu = ensureMenu('tools', 'Tools', []);
+  if (toolsMenu.submenu.length === 0) {
+    toolsMenu.submenu.push(
+      commandItem('tools-diagnostics', 'Diagnostics', 'cmd.project.tools.openDiagnostics'),
+    );
+  }
+
+  const windowMenu = ensureMenu('window', 'Window', []);
+  if (windowMenu.submenu.length === 0) {
+    windowMenu.submenu.push(
+      commandItem('window-write-mode', 'Back To Write Mode', 'cmd.project.window.switchModeWrite'),
+    );
+  }
+
+  ensureMenu('help', 'Help', []);
 }
 
 function logPerfStage(label) {
@@ -1778,6 +1891,12 @@ async function restoreAutosaveIfExists() {
     lastAutosaveHash = autosaveHash;
     backupHashes.set(autosavePath, autosaveHash);
     updateStatus('Восстановлено из автосохранения');
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('ui:recovery-restored', {
+        message: 'Recovered autosave on reopen path',
+        source: 'autosave',
+      });
+    }
     return true;
   } catch (error) {
     logDevError('restoreAutosaveIfExists', error);
@@ -1878,6 +1997,30 @@ function setDirtyState(state) {
   }
 }
 
+function sendRuntimeCommand(command, payload = {}) {
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    return false;
+  }
+  mainWindow.webContents.send('ui:runtime-command', {
+    command,
+    payload: payload && typeof payload === 'object' && !Array.isArray(payload) ? payload : {},
+  });
+  return true;
+}
+
+function resolveCollabScopeLocalState() {
+  const rawValue = typeof process.env.COLLAB_SCOPE_LOCAL === 'string'
+    ? process.env.COLLAB_SCOPE_LOCAL.trim().toLowerCase()
+    : '';
+  if (rawValue === '1' || rawValue === 'true' || rawValue === 'yes' || rawValue === 'on') {
+    return true;
+  }
+  const aliasValue = typeof process.env.COLLAB_SCOPE_FLAG_ACTIVE === 'string'
+    ? process.env.COLLAB_SCOPE_FLAG_ACTIVE.trim().toLowerCase()
+    : '';
+  return aliasValue === '1' || aliasValue === 'true' || aliasValue === 'yes' || aliasValue === 'on';
+}
+
 ipcMain.on('editor:text-response', (_, payload) => {
   const requestId = payload && payload.requestId;
   if (!requestId) {
@@ -1962,6 +2105,10 @@ ipcMain.handle(FLOW_SAVE_V1_CHANNEL, async (_, payload) => {
 
 ipcMain.handle('ui:request-autosave', async () => {
   return autoSave();
+});
+
+ipcMain.handle('ui:get-collab-scope-local', async () => {
+  return resolveCollabScopeLocalState();
 });
 
 ipcMain.on('dirty-changed', (_, state) => {
@@ -2885,6 +3032,13 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return { ok: saved === true };
   },
   'cmd.project.export.docxMin': async (payload = {}) => {
+    const previewRequested = sendRuntimeCommand('open-export-preview', {
+      source: 'menu',
+      commandId: 'cmd.project.export.docxMin',
+    });
+    if (previewRequested) {
+      return { ok: true, preview: true };
+    }
     const response = await handleExportDocxMin({
       requestId: 'menu-export-docx-min',
       outPath: typeof payload.outPath === 'string' ? payload.outPath : '',
@@ -2899,6 +3053,38 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.app.quit': () => {
     app.quit();
     return { ok: true };
+  },
+  'cmd.project.view.openSettings': () => {
+    const delivered = sendRuntimeCommand('open-settings', { source: 'menu' });
+    return { ok: delivered };
+  },
+  'cmd.project.tools.openDiagnostics': () => {
+    const delivered = sendRuntimeCommand('open-diagnostics', { source: 'menu' });
+    return { ok: delivered };
+  },
+  'cmd.project.review.openRecovery': () => {
+    const delivered = sendRuntimeCommand('open-recovery', { source: 'menu' });
+    return { ok: delivered };
+  },
+  'cmd.project.insert.addCard': () => {
+    const delivered = sendRuntimeCommand('insert-add-card', { source: 'menu' });
+    return { ok: delivered };
+  },
+  'cmd.project.format.alignLeft': () => {
+    const delivered = sendRuntimeCommand('format-align-left', { source: 'menu' });
+    return { ok: delivered };
+  },
+  'cmd.project.plan.switchMode': () => {
+    const delivered = sendRuntimeCommand('switch-mode-plan', { source: 'menu' });
+    return { ok: delivered };
+  },
+  'cmd.project.review.switchMode': () => {
+    const delivered = sendRuntimeCommand('switch-mode-review', { source: 'menu' });
+    return { ok: delivered };
+  },
+  'cmd.project.window.switchModeWrite': () => {
+    const delivered = sendRuntimeCommand('switch-mode-write', { source: 'menu' });
+    return { ok: delivered };
   },
   'cmd.ui.font.set': (payload = {}) => {
     const fontFamily = typeof payload.fontFamily === 'string'
@@ -3406,6 +3592,7 @@ function createMenu() {
   try {
     const runtimeConfig = resolveRuntimeMenuBuildConfig(mode);
     const template = buildMenuTemplateFromConfig(runtimeConfig);
+    ensureX101MenuSections(template);
     ensureAboutLicensesMenuEntry(template);
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);
@@ -3432,7 +3619,7 @@ async function initializeApp() {
 
 app.whenReady().then(async () => {
   logPerfStage('when-ready');
-  app.setName('Craftsman');
+  app.setName('Yalken');
   await ensureUserDataFolder();
   installContentSecurityPolicy();
   const windowStatePromise = loadWindowStateFromSettings();
