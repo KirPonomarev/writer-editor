@@ -52,9 +52,9 @@
     "url": "https://github.com/KirPon2024/writer-editor.git"
   },
   "dependencies": {
-    "@tiptap/core": "2.27.2",
-    "@tiptap/pm": "2.27.2",
-    "@tiptap/starter-kit": "2.27.2"
+    "@tiptap/core": "^3.20.1",
+    "@tiptap/pm": "^3.20.1",
+    "@tiptap/starter-kit": "^3.20.1"
   },
   "devDependencies": {
     "electron": "^40.6.0",
