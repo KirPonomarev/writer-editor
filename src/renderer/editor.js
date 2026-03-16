@@ -36,6 +36,31 @@ const sidebar = document.querySelector('.sidebar');
 const sidebarResizer = document.querySelector('[data-sidebar-resizer]');
 const mainContent = document.querySelector('.main-content');
 const toolbar = document.querySelector('[data-toolbar]');
+const toolbarShell = document.querySelector('[data-toolbar-shell]');
+const leftToolbar = document.querySelector('[data-left-toolbar]');
+const leftToolbarShell = document.querySelector('[data-left-toolbar-shell]');
+const topWorkBar = document.querySelector('[data-top-work-bar]');
+const configuratorPanel = document.querySelector('[data-configurator-panel]');
+const gridTriggerButton = document.querySelector('[data-grid-button]');
+const configuratorSlotButtons = Array.from(document.querySelectorAll('.configurator-panel__slot'));
+const configuratorBuckets = Array.from(document.querySelectorAll('[data-configurator-bucket]'));
+const toolbarRotateHandles = Array.from(document.querySelectorAll('[data-toolbar-rotate-handle]'));
+const toolbarWidthHandle = document.querySelector('[data-toolbar-width-handle]');
+const toolbarScaleHandle = document.querySelector('[data-toolbar-scale-handle]');
+const leftToolbarRotateHandles = Array.from(document.querySelectorAll('[data-left-toolbar-rotate-handle]'));
+const leftToolbarWidthHandle = document.querySelector('[data-left-toolbar-width-handle]');
+const leftToolbarScaleHandle = document.querySelector('[data-left-toolbar-scale-handle]');
+const leftToolbarCluster = document.querySelector('.left-floating-toolbar .work-bar__cluster');
+const leftToolbarButtons = Array.from(document.querySelectorAll('.left-floating-toolbar .work-bar__button[data-action]'));
+const leftToolbarSpacingMenu = document.querySelector('[data-left-toolbar-spacing-menu]');
+const leftToolbarSpacingAction = document.querySelector('[data-left-toolbar-spacing-action]');
+const toolbarTunableItems = Array.from(
+  document.querySelectorAll(
+    '.floating-toolbar [data-toolbar-item-key], .floating-toolbar .floating-toolbar__button[data-action]'
+  )
+);
+const toolbarSpacingMenu = document.querySelector('[data-toolbar-spacing-menu]');
+const toolbarSpacingAction = document.querySelector('[data-toolbar-spacing-action]');
 const modeSwitcher = document.querySelector('[data-mode-switcher]');
 const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
 const leftTabsHost = document.querySelector('[data-left-tabs]');
@@ -59,6 +84,10 @@ const fontSelect = document.querySelector('[data-font-select]');
 const weightSelect = document.querySelector('[data-weight-select]');
 const sizeSelect = document.querySelector('[data-size-select]');
 const lineHeightSelect = document.querySelector('[data-line-height-select]');
+const fontDisplay = document.querySelector('[data-font-display]');
+const weightDisplay = document.querySelector('[data-weight-display]');
+const sizeDisplay = document.querySelector('[data-size-display]');
+const lineHeightDisplay = document.querySelector('[data-line-height-display]');
 const textStyleSelect = document.querySelector('[data-text-style-select]');
 const themeDarkButton = document.querySelector('[data-action="theme-dark"]');
 const themeLightButton = document.querySelector('[data-action="theme-light"]');
@@ -109,9 +138,40 @@ const EDITOR_ZOOM_MIN = 0.5;
 const EDITOR_ZOOM_MAX = 2.0;
 const EDITOR_ZOOM_STEP = 0.05;
 const EDITOR_ZOOM_DEFAULT = 1.0;
+const FLOATING_TOOLBAR_STORAGE_KEY = 'yalkenLiteralStageAToolbarState';
+const FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY = 'yalkenLiteralStageAToolbarItemOffsets';
+const LEFT_FLOATING_TOOLBAR_STORAGE_KEY = 'yalkenLeftToolbarState';
+const LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY = 'yalkenLeftToolbarButtonOffsets';
+const CONFIGURATOR_BUCKETS_STORAGE_KEY = 'yalkenConfiguratorBuckets';
+const FLOATING_TOOLBAR_DRAG_THRESHOLD_PX = 6;
+const FLOATING_TOOLBAR_ROTATE_THRESHOLD_PX = 30;
+const FLOATING_TOOLBAR_SNAP_ZONE_PX = 30;
+const FLOATING_TOOLBAR_CENTER_ANCHOR_PX = 30;
+const FLOATING_TOOLBAR_ITEM_SNAP_THRESHOLD_PX = 10;
+const FLOATING_TOOLBAR_VISIBLE_STRIP_PX = 56;
+const FLOATING_TOOLBAR_SCALE_MIN = 0.5;
+const FLOATING_TOOLBAR_SCALE_MAX = 2.0;
+const FLOATING_TOOLBAR_WIDTH_SCALE_MIN = 0.1;
+const FLOATING_TOOLBAR_WIDTH_SCALE_MAX = 2.0;
+const FONT_WEIGHT_PRESETS = Object.freeze({
+  light: { weight: '300', stretch: 'normal', spacing: '0em' },
+  regular: { weight: '400', stretch: 'normal', spacing: '0em' },
+  semibold: { weight: '600', stretch: 'normal', spacing: '0em' },
+  bold: { weight: '700', stretch: 'normal', spacing: '0em' },
+  condensed: { weight: '400', stretch: 'condensed', spacing: '-0.02em' },
+  'condensed-light': { weight: '300', stretch: 'condensed', spacing: '-0.015em' },
+  'condensed-bold': { weight: '700', stretch: 'condensed', spacing: '-0.025em' },
+});
+const LEGACY_FONT_WEIGHT_PRESET_MAP = Object.freeze({
+  '300': 'light',
+  '400': 'regular',
+  '500': 'semibold',
+  '600': 'semibold',
+  '700': 'bold',
+});
 let editorZoom = EDITOR_ZOOM_DEFAULT;
 const isMac = navigator.platform.toUpperCase().includes('MAC');
-let currentFontSizePx = 16;
+let currentFontSizePx = 12;
 let wordWrapEnabled = true;
 let collabScopeLocal = false;
 let currentMode = 'write';
@@ -137,6 +197,83 @@ let currentMeta = {
 };
 let expandedNodesByTab = new Map();
 let autoSaveTimerId = null;
+let floatingToolbarState = {
+  x: 0,
+  y: 0,
+  isVertical: false,
+  isDetached: false,
+  scale: 1,
+  widthScale: 1,
+  toolbarHeight: 0,
+};
+let leftFloatingToolbarState = {
+  x: 0,
+  y: 0,
+  isVertical: false,
+  isDetached: false,
+  scale: 1,
+  widthScale: 1,
+};
+let floatingToolbarInteractionState = {
+  mode: null,
+  active: false,
+  startX: 0,
+  startY: 0,
+  origin: null,
+};
+let leftFloatingToolbarInteractionState = {
+  mode: null,
+  active: false,
+  startX: 0,
+  startY: 0,
+  origin: null,
+};
+let floatingToolbarHandlesVisible = false;
+let floatingToolbarSuppressClickOnce = false;
+let toolbarItemSuppressClickOnce = false;
+let toolbarSpacingTuningMode = false;
+let toolbarAnchorFrameId = 0;
+let toolbarItemOffsets = {};
+let toolbarItemOffsetDragState = {
+  active: false,
+  item: null,
+  key: '',
+  startX: 0,
+  originOffset: 0,
+  moved: false,
+};
+let leftFloatingToolbarHandlesVisible = false;
+let leftFloatingToolbarSuppressClickOnce = false;
+let leftToolbarButtonSuppressClickOnce = false;
+let leftToolbarSpacingTuningMode = false;
+let leftToolbarAnchorFrameId = 0;
+let leftToolbarButtonOffsets = {};
+let leftToolbarButtonOffsetDragState = {
+  active: false,
+  button: null,
+  action: '',
+  startX: 0,
+  originOffset: 0,
+  moved: false,
+};
+let configuratorBucketState = {
+  master: [],
+  minimal: [],
+};
+let activeConfiguratorDragPayload = null;
+let configuratorBucketPointerDragState = {
+  active: false,
+  draggedItem: null,
+  sourceBucketKey: '',
+  sourceIndex: -1,
+  startX: 0,
+  startY: 0,
+  moved: false,
+};
+let activeConfiguratorBucketSelection = {
+  bucketKey: '',
+  itemIndex: -1,
+};
 const AUTO_SAVE_DELAY = 600;
 const HOTPATH_RENDER_DEBOUNCE_MS = 32;
 const HOTPATH_FULL_RENDER_MIN_INTERVAL_MS = 280;
@@ -193,6 +330,1532 @@ function applyPageViewCssVars(metrics) {
 const initialPageWidthMm = PAGE_FORMATS.A4;
 const initialPageMetrics = getPageMetrics({ pageWidthMm: initialPageWidthMm, zoom: ZOOM_DEFAULT });
 applyPageViewCssVars(initialPageMetrics);
+
+function canStartFloatingToolbarDrag(target) {
+  if (!target || !(target instanceof Element)) return false;
+  return !target.closest('button, select, option, input, textarea, label');
+}
+
+function clampFloatingToolbarPosition(position, shellRect = toolbarShell?.getBoundingClientRect()) {
+  if (!toolbarShell) {
+    return position;
+  }
+  const minX = FLOATING_TOOLBAR_VISIBLE_STRIP_PX - shellRect.width;
+  const maxX = window.innerWidth - FLOATING_TOOLBAR_VISIBLE_STRIP_PX;
+  const minY = FLOATING_TOOLBAR_VISIBLE_STRIP_PX - shellRect.height;
+  const maxY = window.innerHeight - FLOATING_TOOLBAR_VISIBLE_STRIP_PX;
+  return {
+    x: Math.min(Math.max(position.x, minX), maxX),
+    y: Math.min(Math.max(position.y, minY), maxY),
+  };
+}
+
+function readFloatingToolbarState() {
+  try {
+    const raw = localStorage.getItem(FLOATING_TOOLBAR_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    const x = Number(parsed.x);
+    const y = Number(parsed.y);
+    const scale = Number(parsed.scale);
+    const widthScale = Number(parsed.widthScale);
+    const toolbarHeight = Number(parsed.toolbarHeight);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    return {
+      x,
+      y,
+      isVertical: Boolean(parsed.isVertical),
+      isDetached: Boolean(parsed.isDetached),
+      scale: Number.isFinite(scale) ? scale : 1,
+      widthScale: Number.isFinite(widthScale) ? widthScale : 1,
+      toolbarHeight: Number.isFinite(toolbarHeight) ? toolbarHeight : 0,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function persistFloatingToolbarState() {
+  try {
+    localStorage.setItem(FLOATING_TOOLBAR_STORAGE_KEY, JSON.stringify(floatingToolbarState));
+  } catch {}
+}
+
+function readFloatingToolbarItemOffsets() {
+  try {
+    const raw = localStorage.getItem(FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    return Object.fromEntries(
+      Object.entries(parsed).filter(([, value]) => Number.isFinite(Number(value)))
+    );
+  } catch {
+    return {};
+  }
+}
+
+function persistFloatingToolbarItemOffsets() {
+  try {
+    localStorage.setItem(FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY, JSON.stringify(toolbarItemOffsets));
+  } catch {}
+}
+
+function getFloatingToolbarItemOffsetKey(item) {
+  if (!(item instanceof HTMLElement)) return '';
+  return item.dataset.toolbarItemKey || item.dataset.action || '';
+}
+
+function applyFloatingToolbarItemOffsets() {
+  toolbarTunableItems.forEach((item) => {
+    const key = getFloatingToolbarItemOffsetKey(item);
+    const offset = Number(toolbarItemOffsets[key] || 0);
+    item.style.setProperty('--floating-toolbar-offset-x', `${offset}px`);
+  });
+  scheduleToolbarAnchorUpdate();
+}
+
+function setFloatingToolbarItemOffset(item, nextOffset, persist = true) {
+  const key = getFloatingToolbarItemOffsetKey(item);
+  if (!key) return;
+  const roundedOffset = Math.round(nextOffset);
+  const normalizedOffset = Math.abs(roundedOffset) <= FLOATING_TOOLBAR_ITEM_SNAP_THRESHOLD_PX ? 0 : roundedOffset;
+  if (normalizedOffset === 0) {
+    delete toolbarItemOffsets[key];
+  } else {
+    toolbarItemOffsets[key] = normalizedOffset;
+  }
+  applyFloatingToolbarItemOffsets();
+  if (persist) {
+    persistFloatingToolbarItemOffsets();
+  }
+}
+
+function restoreFloatingToolbarItemOffsets() {
+  toolbarItemOffsets = readFloatingToolbarItemOffsets();
+  applyFloatingToolbarItemOffsets();
+}
+
+function stopFloatingToolbarItemOffsetDrag() {
+  if (!toolbarItemOffsetDragState.active) return;
+  const shouldReleaseClickSuppression = toolbarItemOffsetDragState.moved;
+  if (toolbarItemOffsetDragState.item) {
+    persistFloatingToolbarItemOffsets();
+  }
+  toolbarItemOffsetDragState = {
+    active: false,
+    item: null,
+    key: '',
+    startX: 0,
+    originOffset: 0,
+    moved: false,
+  };
+  if (shouldReleaseClickSuppression) {
+    window.setTimeout(() => {
+      toolbarItemSuppressClickOnce = false;
+    }, 0);
+  }
+}
+
+function setToolbarSpacingMenuOpen(nextOpen) {
+  if (!toolbarSpacingMenu || !toolbarShell) return;
+  if (!nextOpen) {
+    toolbarSpacingMenu.hidden = true;
+    return;
+  }
+  const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
+  toolbarSpacingMenu.hidden = false;
+  const menuRect = toolbarSpacingMenu.getBoundingClientRect();
+  const clusterLeft = Number.parseFloat(toolbarShell.style.getPropertyValue('--floating-toolbar-cluster-left')) || 0;
+  const clusterRight = Number.parseFloat(toolbarShell.style.getPropertyValue('--floating-toolbar-cluster-right')) || 0;
+  const clusterBottom = Number.parseFloat(toolbarShell.style.getPropertyValue('--floating-toolbar-cluster-bottom')) || 0;
+  const clusterCenterX = clusterLeft + ((clusterRight - clusterLeft) / 2);
+  const desiredLeft = clusterCenterX - (menuRect.width / 2);
+  const desiredTop = clusterBottom + 18;
+  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuRect.width);
+  const nextLeft = Math.round(Math.min(Math.max(desiredLeft, 0), maxLeft));
+  const nextTop = Math.round(desiredTop);
+  toolbarSpacingMenu.style.left = `${nextLeft}px`;
+  toolbarSpacingMenu.style.top = `${nextTop}px`;
+}
+
+function setToolbarSpacingTuningMode(nextActive) {
+  toolbarSpacingTuningMode = Boolean(nextActive);
+  if (toolbarShell) {
+    toolbarShell.classList.toggle('is-spacing-tuning', toolbarSpacingTuningMode);
+  }
+  if (toolbarSpacingAction) {
+    toolbarSpacingAction.textContent = toolbarSpacingTuningMode ? 'Завершить отступы' : 'Изменить отступы';
+    toolbarSpacingAction.setAttribute('aria-pressed', toolbarSpacingTuningMode ? 'true' : 'false');
+  }
+  if (!toolbarSpacingTuningMode) {
+    stopFloatingToolbarItemOffsetDrag();
+  }
+}
+
+function updateToolbarAnchorVars() {
+  if (!toolbarShell || !toolbarTunableItems.length) return;
+  const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
+  const itemRects = toolbarTunableItems
+    .map((item) => item.getBoundingClientRect())
+    .filter((rect) => rect.width > 0 && rect.height > 0);
+  if (!itemRects.length) return;
+  const bounds = itemRects.reduce((acc, rect) => ({
+    left: Math.min(acc.left, rect.left),
+    right: Math.max(acc.right, rect.right),
+    top: Math.min(acc.top, rect.top),
+    bottom: Math.max(acc.bottom, rect.bottom),
+  }), {
+    left: itemRects[0].left,
+    right: itemRects[0].right,
+    top: itemRects[0].top,
+    bottom: itemRects[0].bottom,
+  });
+  const localLeft = (bounds.left - shellRect.left) / shellScale;
+  const localRight = (bounds.right - shellRect.left) / shellScale;
+  const localTop = (bounds.top - shellRect.top) / shellScale;
+  const localBottom = (bounds.bottom - shellRect.top) / shellScale;
+  toolbarShell.style.setProperty('--floating-toolbar-cluster-left', `${Math.round(localLeft)}px`);
+  toolbarShell.style.setProperty('--floating-toolbar-cluster-right', `${Math.round(localRight)}px`);
+  toolbarShell.style.setProperty('--floating-toolbar-cluster-top', `${Math.round(localTop)}px`);
+  toolbarShell.style.setProperty('--floating-toolbar-cluster-bottom', `${Math.round(localBottom)}px`);
+  toolbarShell.style.setProperty('--floating-toolbar-cluster-center-x', `${Math.round(localLeft + ((localRight - localLeft) / 2))}px`);
+  toolbarShell.style.setProperty('--floating-toolbar-cluster-center-y', `${Math.round(localTop + ((localBottom - localTop) / 2))}px`);
+  if (!toolbarSpacingMenu?.hidden) {
+    setToolbarSpacingMenuOpen(true);
+  }
+}
+
+function scheduleToolbarAnchorUpdate() {
+  if (toolbarAnchorFrameId) {
+    cancelAnimationFrame(toolbarAnchorFrameId);
+  }
+  toolbarAnchorFrameId = requestAnimationFrame(() => {
+    toolbarAnchorFrameId = 0;
+    updateToolbarAnchorVars();
+  });
+}
+
+function getSnappedFloatingToolbarPosition(shellRect = toolbarShell?.getBoundingClientRect()) {
+  const topBarRect = topWorkBar?.getBoundingClientRect();
+  const shellWidth = shellRect?.width || 0;
+  const shellHeight = shellRect?.height || 0;
+  const baseY = topBarRect ? topBarRect.top + ((topBarRect.height - shellHeight) / 2) : 92;
+  const baseX = topBarRect ? topBarRect.left + ((topBarRect.width - shellWidth) / 2) : (window.innerWidth - shellWidth) / 2;
+  return clampFloatingToolbarPosition({
+    x: baseX,
+    y: baseY,
+  }, shellRect);
+}
+
+function getSnappedFloatingToolbarX(nextX, shellRect = toolbarShell?.getBoundingClientRect()) {
+  const topBarRect = topWorkBar?.getBoundingClientRect();
+  if (!topBarRect) {
+    return clampFloatingToolbarPosition({ x: nextX, y: floatingToolbarState.y }, shellRect).x;
+  }
+  const shellWidth = shellRect?.width || 0;
+  const minX = topBarRect.left;
+  const maxX = topBarRect.right - shellWidth;
+  const centeredX = topBarRect.left + ((topBarRect.width - shellWidth) / 2);
+  const clampedX = Math.min(Math.max(nextX, minX), maxX);
+  if (Math.abs(clampedX - centeredX) <= FLOATING_TOOLBAR_CENTER_ANCHOR_PX) {
+    return centeredX;
+  }
+  return clampedX;
+}
+
+function getDefaultFloatingToolbarState(shellRect = toolbarShell?.getBoundingClientRect()) {
+  const snapped = getSnappedFloatingToolbarPosition(shellRect);
+  const topBarRect = topWorkBar?.getBoundingClientRect();
+  return {
+    x: snapped.x,
+    y: snapped.y,
+    isVertical: false,
+    isDetached: false,
+    scale: 1,
+    widthScale: 1,
+    toolbarHeight: Number.isFinite(topBarRect?.height) ? topBarRect.height : 0,
+  };
+}
+
+function applyFloatingToolbarVisualState() {
+  if (!toolbarShell) return;
+  toolbarShell.style.setProperty('--floating-toolbar-scale', String(floatingToolbarState.scale));
+  toolbarShell.style.setProperty('--floating-toolbar-width-scale', String(floatingToolbarState.widthScale));
+  toolbarShell.classList.toggle('is-vertical', floatingToolbarState.isVertical);
+  toolbarShell.classList.toggle('is-snapped', !floatingToolbarState.isDetached);
+  scheduleToolbarAnchorUpdate();
+}
+
+function applyFloatingToolbarState(partialState, persist = true) {
+  if (!toolbar) return;
+  const shellRect = toolbarShell?.getBoundingClientRect();
+  const nextPosition = clampFloatingToolbarPosition({
+    x: partialState.x,
+    y: partialState.y,
+  }, shellRect);
+  floatingToolbarState = {
+    x: nextPosition.x,
+    y: nextPosition.y,
+    isVertical: Boolean(partialState.isVertical),
+    isDetached: Boolean(partialState.isDetached),
+    scale: Math.min(Math.max(partialState.scale, FLOATING_TOOLBAR_SCALE_MIN), FLOATING_TOOLBAR_SCALE_MAX),
+    widthScale: Math.min(
+      Math.max(partialState.widthScale, FLOATING_TOOLBAR_WIDTH_SCALE_MIN),
+      FLOATING_TOOLBAR_WIDTH_SCALE_MAX
+    ),
+    toolbarHeight: Number.isFinite(partialState.toolbarHeight) ? partialState.toolbarHeight : 0,
+  };
+  toolbar.style.left = `${Math.round(floatingToolbarState.x)}px`;
+  toolbar.style.top = `${Math.round(floatingToolbarState.y)}px`;
+  toolbar.style.transform = 'none';
+  if (persist) {
+    persistFloatingToolbarState();
+  }
+  applyFloatingToolbarVisualState();
+  scheduleToolbarAnchorUpdate();
+}
+
+function restoreFloatingToolbarPosition() {
+  if (!toolbarShell) return;
+  const saved = readFloatingToolbarState();
+  applyFloatingToolbarState(saved || getDefaultFloatingToolbarState(), Boolean(saved));
+}
+
+function clampLeftFloatingToolbarPosition(position, shellRect = leftToolbarShell?.getBoundingClientRect()) {
+  if (!leftToolbarShell) {
+    return position;
+  }
+  const minX = FLOATING_TOOLBAR_VISIBLE_STRIP_PX - shellRect.width;
+  const maxX = window.innerWidth - FLOATING_TOOLBAR_VISIBLE_STRIP_PX;
+  const minY = FLOATING_TOOLBAR_VISIBLE_STRIP_PX - shellRect.height;
+  const maxY = window.innerHeight - FLOATING_TOOLBAR_VISIBLE_STRIP_PX;
+  return {
+    x: Math.min(Math.max(position.x, minX), maxX),
+    y: Math.min(Math.max(position.y, minY), maxY),
+  };
+}
+
+function readLeftFloatingToolbarState() {
+  try {
+    const raw = localStorage.getItem(LEFT_FLOATING_TOOLBAR_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    const x = Number(parsed.x);
+    const y = Number(parsed.y);
+    const scale = Number(parsed.scale);
+    const widthScale = Number(parsed.widthScale);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    return {
+      x,
+      y,
+      isVertical: Boolean(parsed.isVertical),
+      isDetached: Boolean(parsed.isDetached),
+      scale: Number.isFinite(scale) ? scale : 1,
+      widthScale: Number.isFinite(widthScale) ? widthScale : 1,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function persistLeftFloatingToolbarState() {
+  try {
+    localStorage.setItem(LEFT_FLOATING_TOOLBAR_STORAGE_KEY, JSON.stringify(leftFloatingToolbarState));
+  } catch {}
+}
+
+function readLeftToolbarButtonOffsets() {
+  try {
+    const raw = localStorage.getItem(LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    return Object.fromEntries(
+      Object.entries(parsed).filter(([, value]) => Number.isFinite(Number(value)))
+    );
+  } catch {
+    return {};
+  }
+}
+
+function persistLeftToolbarButtonOffsets() {
+  try {
+    localStorage.setItem(LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY, JSON.stringify(leftToolbarButtonOffsets));
+  } catch {}
+}
+
+function getLeftToolbarButtonOffsetKey(button) {
+  if (!(button instanceof HTMLElement)) return '';
+  return button.dataset.action || '';
+}
+
+function applyLeftToolbarButtonOffsets() {
+  leftToolbarButtons.forEach((button) => {
+    const key = getLeftToolbarButtonOffsetKey(button);
+    const offset = Number(leftToolbarButtonOffsets[key] || 0);
+    button.style.setProperty('--work-bar-offset-x', `${offset}px`);
+  });
+  scheduleLeftToolbarAnchorUpdate();
+}
+
+function setLeftToolbarButtonOffset(button, nextOffset, persist = true) {
+  const key = getLeftToolbarButtonOffsetKey(button);
+  if (!key) return;
+  const normalizedOffset = Math.round(nextOffset);
+  if (normalizedOffset === 0) {
+    delete leftToolbarButtonOffsets[key];
+  } else {
+    leftToolbarButtonOffsets[key] = normalizedOffset;
+  }
+  applyLeftToolbarButtonOffsets();
+  if (persist) {
+    persistLeftToolbarButtonOffsets();
+  }
+}
+
+function restoreLeftToolbarButtonOffsets() {
+  leftToolbarButtonOffsets = readLeftToolbarButtonOffsets();
+  applyLeftToolbarButtonOffsets();
+}
+
+function stopLeftToolbarButtonOffsetDrag() {
+  if (!leftToolbarButtonOffsetDragState.active) return;
+  const shouldReleaseClickSuppression = leftToolbarButtonOffsetDragState.moved;
+  if (leftToolbarButtonOffsetDragState.button) {
+    persistLeftToolbarButtonOffsets();
+  }
+  leftToolbarButtonOffsetDragState = {
+    active: false,
+    button: null,
+    action: '',
+    startX: 0,
+    originOffset: 0,
+    moved: false,
+  };
+  if (shouldReleaseClickSuppression) {
+    window.setTimeout(() => {
+      leftToolbarButtonSuppressClickOnce = false;
+    }, 0);
+  }
+}
+
+function setLeftToolbarSpacingMenuOpen(nextOpen, position = null) {
+  if (!leftToolbarSpacingMenu || !leftToolbarShell) return;
+  if (!nextOpen) {
+    leftToolbarSpacingMenu.hidden = true;
+    return;
+  }
+  const shellRect = leftToolbarShell.getBoundingClientRect();
+  const clusterRect = leftToolbarCluster?.getBoundingClientRect();
+  leftToolbarSpacingMenu.hidden = false;
+  const menuRect = leftToolbarSpacingMenu.getBoundingClientRect();
+  const shellScale = Math.max(leftFloatingToolbarState.scale || 1, 0.001);
+  const clusterLeft = clusterRect ? (clusterRect.left - shellRect.left) / shellScale : 0;
+  const clusterRight = clusterRect ? (clusterRect.right - shellRect.left) / shellScale : 0;
+  const clusterBottom = clusterRect ? (clusterRect.bottom - shellRect.top) / shellScale : 0;
+  const clusterCenterX = clusterLeft + ((clusterRight - clusterLeft) / 2);
+  const desiredLeft = clusterCenterX - (menuRect.width / 2);
+  const desiredTop = clusterBottom + 18;
+  const nextLeft = Math.round(desiredLeft);
+  const nextTop = Math.round(desiredTop);
+  leftToolbarSpacingMenu.style.left = `${nextLeft}px`;
+  leftToolbarSpacingMenu.style.top = `${nextTop}px`;
+}
+
+function setLeftToolbarSpacingTuningMode(nextActive) {
+  leftToolbarSpacingTuningMode = Boolean(nextActive);
+  if (leftToolbarShell) {
+    leftToolbarShell.classList.toggle('is-spacing-tuning', leftToolbarSpacingTuningMode);
+  }
+  if (leftToolbarSpacingAction) {
+    leftToolbarSpacingAction.textContent = leftToolbarSpacingTuningMode ? 'Завершить отступы' : 'Изменить отступы';
+    leftToolbarSpacingAction.setAttribute('aria-pressed', leftToolbarSpacingTuningMode ? 'true' : 'false');
+  }
+  if (!leftToolbarSpacingTuningMode) {
+    stopLeftToolbarButtonOffsetDrag();
+  }
+}
+
+function updateLeftToolbarAnchorVars() {
+  if (!leftToolbarShell || !leftToolbarButtons.length) return;
+  const shellRect = leftToolbarShell.getBoundingClientRect();
+  const shellScale = Math.max(leftFloatingToolbarState.scale || 1, 0.001);
+  const buttonRects = leftToolbarButtons
+    .map((button) => button.getBoundingClientRect())
+    .filter((rect) => rect.width > 0 && rect.height > 0);
+  if (!buttonRects.length) return;
+  const bounds = buttonRects.reduce((acc, rect) => ({
+    left: Math.min(acc.left, rect.left),
+    right: Math.max(acc.right, rect.right),
+    top: Math.min(acc.top, rect.top),
+    bottom: Math.max(acc.bottom, rect.bottom),
+  }), {
+    left: buttonRects[0].left,
+    right: buttonRects[0].right,
+    top: buttonRects[0].top,
+    bottom: buttonRects[0].bottom,
+  });
+  const localLeft = (bounds.left - shellRect.left) / shellScale;
+  const localRight = (bounds.right - shellRect.left) / shellScale;
+  const localTop = (bounds.top - shellRect.top) / shellScale;
+  const localBottom = (bounds.bottom - shellRect.top) / shellScale;
+  leftToolbarShell.style.setProperty('--left-toolbar-cluster-left', `${Math.round(localLeft)}px`);
+  leftToolbarShell.style.setProperty('--left-toolbar-cluster-right', `${Math.round(localRight)}px`);
+  leftToolbarShell.style.setProperty('--left-toolbar-cluster-top', `${Math.round(localTop)}px`);
+  leftToolbarShell.style.setProperty('--left-toolbar-cluster-bottom', `${Math.round(localBottom)}px`);
+  leftToolbarShell.style.setProperty('--left-toolbar-cluster-center-x', `${Math.round(localLeft + ((localRight - localLeft) / 2))}px`);
+  leftToolbarShell.style.setProperty('--left-toolbar-cluster-center-y', `${Math.round(localTop + ((localBottom - localTop) / 2))}px`);
+}
+
+function scheduleLeftToolbarAnchorUpdate() {
+  if (leftToolbarAnchorFrameId) {
+    cancelAnimationFrame(leftToolbarAnchorFrameId);
+  }
+  leftToolbarAnchorFrameId = requestAnimationFrame(() => {
+    leftToolbarAnchorFrameId = 0;
+    updateLeftToolbarAnchorVars();
+  });
+}
+
+function getSnappedLeftFloatingToolbarPosition(shellRect = leftToolbarShell?.getBoundingClientRect()) {
+  const topBarRect = topWorkBar?.getBoundingClientRect();
+  const shellWidth = shellRect?.width || 0;
+  const shellHeight = shellRect?.height || 0;
+  const baseY = topBarRect ? topBarRect.top + ((topBarRect.height - shellHeight) / 2) : 92;
+  const baseX = topBarRect ? topBarRect.left + 24 : 24;
+  return clampLeftFloatingToolbarPosition({
+    x: baseX,
+    y: baseY,
+  }, shellRect);
+}
+
+function getDefaultLeftFloatingToolbarState(shellRect = leftToolbarShell?.getBoundingClientRect()) {
+  const snapped = getSnappedLeftFloatingToolbarPosition(shellRect);
+  return {
+    x: snapped.x,
+    y: snapped.y,
+    isVertical: false,
+    isDetached: false,
+    scale: 1,
+    widthScale: 1,
+  };
+}
+
+function applyLeftFloatingToolbarVisualState() {
+  if (!leftToolbarShell) return;
+  leftToolbarShell.style.setProperty('--left-toolbar-scale', String(leftFloatingToolbarState.scale));
+  leftToolbarShell.style.setProperty('--left-toolbar-width-scale', String(leftFloatingToolbarState.widthScale));
+  leftToolbarShell.classList.toggle('is-vertical', leftFloatingToolbarState.isVertical);
+  leftToolbarShell.classList.toggle('is-snapped', !leftFloatingToolbarState.isDetached);
+  scheduleLeftToolbarAnchorUpdate();
+}
+
+function applyLeftFloatingToolbarState(partialState, persist = true) {
+  if (!leftToolbar) return;
+  const shellRect = leftToolbarShell?.getBoundingClientRect();
+  const nextPosition = clampLeftFloatingToolbarPosition({
+    x: partialState.x,
+    y: partialState.y,
+  }, shellRect);
+  leftFloatingToolbarState = {
+    x: nextPosition.x,
+    y: nextPosition.y,
+    isVertical: Boolean(partialState.isVertical),
+    isDetached: Boolean(partialState.isDetached),
+    scale: Math.min(Math.max(partialState.scale, FLOATING_TOOLBAR_SCALE_MIN), FLOATING_TOOLBAR_SCALE_MAX),
+    widthScale: Math.min(
+      Math.max(partialState.widthScale, FLOATING_TOOLBAR_WIDTH_SCALE_MIN),
+      FLOATING_TOOLBAR_WIDTH_SCALE_MAX
+    ),
+  };
+  leftToolbar.style.left = `${Math.round(leftFloatingToolbarState.x)}px`;
+  leftToolbar.style.top = `${Math.round(leftFloatingToolbarState.y)}px`;
+  leftToolbar.style.transform = 'none';
+  if (persist) {
+    persistLeftFloatingToolbarState();
+  }
+  applyLeftFloatingToolbarVisualState();
+}
+
+function restoreLeftFloatingToolbarPosition() {
+  if (!leftToolbarShell) return;
+  const saved = readLeftFloatingToolbarState();
+  applyLeftFloatingToolbarState(saved || getDefaultLeftFloatingToolbarState(), Boolean(saved));
+  scheduleLeftToolbarAnchorUpdate();
+}
+
+function updateLeftTransformingClass() {
+  if (!leftToolbarShell) return;
+  leftToolbarShell.classList.toggle('is-transforming', Boolean(leftFloatingToolbarInteractionState.mode));
+}
+
+function setLeftFloatingToolbarHandlesVisible(nextVisible) {
+  if (!leftToolbarShell) return;
+  leftFloatingToolbarHandlesVisible = Boolean(nextVisible);
+  leftToolbarShell.classList.toggle('is-handles-visible', leftFloatingToolbarHandlesVisible);
+}
+
+function startLeftFloatingToolbarInteraction(mode, event) {
+  if (!leftToolbarShell) return;
+  if (mode === 'move' && !canStartFloatingToolbarDrag(event.target)) {
+    return;
+  }
+  event.preventDefault();
+  if (mode === 'move' && event.altKey) {
+    return;
+  }
+  leftFloatingToolbarInteractionState = {
+    mode,
+    active: false,
+    startX: event.clientX,
+    startY: event.clientY,
+    origin: { ...leftFloatingToolbarState },
+  };
+  updateLeftTransformingClass();
+}
+
+function stopLeftFloatingToolbarInteraction() {
+  if (!leftToolbarShell) return;
+  if (leftFloatingToolbarInteractionState.mode) {
+    persistLeftFloatingToolbarState();
+  }
+  leftFloatingToolbarInteractionState = {
+    mode: null,
+    active: false,
+    startX: 0,
+    startY: 0,
+    origin: null,
+  };
+  leftToolbarShell.classList.remove('is-dragging');
+  updateLeftTransformingClass();
+}
+
+function initializeLeftToolbarButtonOffsetTuning() {
+  if (!leftToolbarButtons.length) return;
+  restoreLeftToolbarButtonOffsets();
+  leftToolbarButtons.forEach((button) => {
+    button.addEventListener('mousedown', (event) => {
+      // Keep button click handling independent from toolbar drag foundation.
+      event.stopPropagation();
+    });
+    button.addEventListener('mousedown', (event) => {
+      const tuningIntent = leftToolbarSpacingTuningMode || event.altKey;
+      if (event.button !== 0 || !tuningIntent) return;
+      const key = getLeftToolbarButtonOffsetKey(button);
+      if (!key) return;
+      event.preventDefault();
+      event.stopPropagation();
+      leftToolbarButtonOffsetDragState = {
+        active: true,
+        button,
+        action: key,
+        startX: event.clientX,
+        originOffset: Number(leftToolbarButtonOffsets[key] || 0),
+        moved: false,
+      };
+    });
+    button.addEventListener('dblclick', (event) => {
+      if (!leftToolbarSpacingTuningMode && !event.altKey) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setLeftToolbarButtonOffset(button, 0);
+      leftFloatingToolbarSuppressClickOnce = true;
+    });
+  });
+
+  document.addEventListener('mousemove', (event) => {
+    if (!leftToolbarButtonOffsetDragState.active || !leftToolbarButtonOffsetDragState.button) return;
+    const deltaX = event.clientX - leftToolbarButtonOffsetDragState.startX;
+    if (!leftToolbarButtonOffsetDragState.moved && Math.abs(deltaX) >= 1) {
+      leftToolbarButtonOffsetDragState.moved = true;
+      leftFloatingToolbarSuppressClickOnce = true;
+      leftToolbarButtonSuppressClickOnce = true;
+    }
+    setLeftToolbarButtonOffset(
+      leftToolbarButtonOffsetDragState.button,
+      leftToolbarButtonOffsetDragState.originOffset + deltaX,
+      false
+    );
+    event.preventDefault();
+  });
+
+  document.addEventListener('mouseup', () => {
+    stopLeftToolbarButtonOffsetDrag();
+  });
+}
+
+function initializeLeftToolbarActionButtons() {
+  if (!leftToolbarCluster) return;
+  let pressedButton = null;
+
+  const resolveActionButton = (eventTarget) => {
+    if (!(eventTarget instanceof Element)) return null;
+    const button = eventTarget.closest('[data-left-action]');
+    if (!(button instanceof HTMLElement)) return null;
+    if (!leftToolbarCluster.contains(button)) return null;
+    return button;
+  };
+
+  const clearPressedState = () => {
+    if (!pressedButton) return;
+    pressedButton.classList.remove('is-pressed');
+    pressedButton = null;
+  };
+
+  leftToolbarCluster.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0 || event.altKey || leftToolbarSpacingTuningMode) return;
+    const button = resolveActionButton(event.target);
+    if (!button) return;
+    clearPressedState();
+    pressedButton = button;
+    button.classList.add('is-pressed');
+  }, true);
+
+  document.addEventListener('pointerup', () => {
+    if (!pressedButton) return;
+    clearPressedState();
+  });
+
+  document.addEventListener('pointercancel', () => {
+    clearPressedState();
+  });
+
+  leftToolbarCluster.addEventListener('click', (event) => {
+    const button = resolveActionButton(event.target);
+    if (!button) return;
+    if (event.altKey || leftToolbarSpacingTuningMode) return;
+    if (leftFloatingToolbarSuppressClickOnce || leftToolbarButtonSuppressClickOnce) {
+      leftFloatingToolbarSuppressClickOnce = false;
+      leftToolbarButtonSuppressClickOnce = false;
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    const action = button.dataset.leftAction || button.dataset.action || '';
+    if (!action) return;
+    event.preventDefault();
+    event.stopPropagation();
+    triggerLeftToolbarAction(action);
+  }, true);
+}
+
+function initializeLeftToolbarSpacingMenu() {
+  if (!leftToolbarCluster || !leftToolbarSpacingMenu || !leftToolbarSpacingAction) return;
+  setLeftToolbarSpacingTuningMode(false);
+  leftToolbarCluster.addEventListener('contextmenu', (event) => {
+    if (event.target instanceof Element && event.target.closest('[data-left-toolbar-rotate-handle], [data-left-toolbar-width-handle], [data-left-toolbar-scale-handle]')) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    setLeftToolbarSpacingMenuOpen(true, { x: event.clientX, y: event.clientY });
+    leftToolbarSpacingAction.focus();
+  });
+  leftToolbarSpacingAction.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setLeftToolbarSpacingTuningMode(!leftToolbarSpacingTuningMode);
+    setLeftToolbarSpacingMenuOpen(false);
+  });
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!leftToolbarSpacingMenu.contains(target)) {
+      setLeftToolbarSpacingMenuOpen(false);
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setLeftToolbarSpacingMenuOpen(false);
+      if (leftToolbarSpacingTuningMode) {
+        setLeftToolbarSpacingTuningMode(false);
+      }
+    }
+  });
+}
+
+function initializeLeftFloatingToolbarDragFoundation() {
+  if (!leftToolbarShell) return;
+  leftToolbarShell.addEventListener('mousedown', (event) => {
+    if (event.button !== 0) return;
+    startLeftFloatingToolbarInteraction('move', event);
+  });
+  leftToolbarRotateHandles.forEach((handle) => {
+    handle.addEventListener('mousedown', (event) => {
+      event.stopPropagation();
+    });
+    handle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      applyLeftFloatingToolbarState({
+        ...leftFloatingToolbarState,
+        isVertical: !leftFloatingToolbarState.isVertical,
+      });
+    });
+  });
+  leftToolbarWidthHandle?.addEventListener('mousedown', (event) => {
+    event.stopPropagation();
+    startLeftFloatingToolbarInteraction('width', event);
+  });
+  leftToolbarScaleHandle?.addEventListener('mousedown', (event) => {
+    event.stopPropagation();
+    startLeftFloatingToolbarInteraction('scale', event);
+  });
+
+  document.addEventListener('mousemove', (event) => {
+    const { mode, origin } = leftFloatingToolbarInteractionState;
+    if (!mode || !origin || !leftToolbarShell) return;
+    const deltaX = event.clientX - leftFloatingToolbarInteractionState.startX;
+    const deltaY = event.clientY - leftFloatingToolbarInteractionState.startY;
+    if (mode === 'move') {
+      if (!leftFloatingToolbarInteractionState.active) {
+        const distance = Math.hypot(deltaX, deltaY);
+        if (distance < FLOATING_TOOLBAR_DRAG_THRESHOLD_PX) {
+          return;
+        }
+        leftFloatingToolbarInteractionState.active = true;
+        leftFloatingToolbarSuppressClickOnce = true;
+        leftToolbarShell.classList.add('is-dragging');
+      }
+      const topBarRect = topWorkBar?.getBoundingClientRect();
+      const pointerNearSnapZone = Boolean(
+        topBarRect &&
+        event.clientY >= topBarRect.top - FLOATING_TOOLBAR_SNAP_ZONE_PX &&
+        event.clientY <= topBarRect.bottom + FLOATING_TOOLBAR_SNAP_ZONE_PX
+      );
+      if (pointerNearSnapZone) {
+        const shellRect = leftToolbarShell.getBoundingClientRect();
+        const snapped = getSnappedLeftFloatingToolbarPosition(shellRect);
+        const shellWidth = shellRect?.width || 0;
+        const minX = topBarRect.left;
+        const maxX = topBarRect.right - shellWidth;
+        applyLeftFloatingToolbarState({
+          ...origin,
+          x: Math.min(Math.max(origin.x + deltaX, minX), maxX),
+          y: snapped.y,
+          isDetached: false,
+        }, false);
+      } else {
+        applyLeftFloatingToolbarState({
+          ...origin,
+          x: origin.x + deltaX,
+          y: origin.y + deltaY,
+          isDetached: true,
+        }, false);
+      }
+    } else if (mode === 'width') {
+      leftFloatingToolbarInteractionState.active = true;
+      applyLeftFloatingToolbarState({
+        ...origin,
+        widthScale: origin.widthScale + (deltaX * 0.01),
+      }, false);
+    } else if (mode === 'scale') {
+      leftFloatingToolbarInteractionState.active = true;
+      applyLeftFloatingToolbarState({
+        ...origin,
+        scale: origin.scale + (deltaX * 0.01),
+      }, false);
+    }
+    event.preventDefault();
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!leftFloatingToolbarInteractionState.mode) return;
+    stopLeftFloatingToolbarInteraction();
+  });
+
+  leftToolbarShell.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (leftFloatingToolbarSuppressClickOnce) {
+      leftFloatingToolbarSuppressClickOnce = false;
+      return;
+    }
+    if (target.closest('button, select, option, input, textarea, label, [data-left-toolbar-rotate-handle], [data-left-toolbar-width-handle], [data-left-toolbar-scale-handle]')) {
+      return;
+    }
+    setLeftFloatingToolbarHandlesVisible(!leftFloatingToolbarHandlesVisible);
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!leftToolbarShell.contains(target)) {
+      setLeftFloatingToolbarHandlesVisible(false);
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    restoreLeftFloatingToolbarPosition();
+    scheduleLeftToolbarAnchorUpdate();
+  });
+
+  requestAnimationFrame(() => {
+    restoreLeftFloatingToolbarPosition();
+    scheduleLeftToolbarAnchorUpdate();
+  });
+}
+
+function setConfiguratorOpen(nextOpen) {
+  if (!configuratorPanel) return;
+  configuratorPanel.hidden = !nextOpen;
+  if (gridTriggerButton) {
+    gridTriggerButton.classList.toggle('is-active', nextOpen);
+    gridTriggerButton.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+    gridTriggerButton.setAttribute('aria-pressed', nextOpen ? 'true' : 'false');
+  }
+}
+
+function toggleConfiguratorOpen() {
+  if (!configuratorPanel) return false;
+  const nextOpen = configuratorPanel.hidden;
+  setConfiguratorOpen(nextOpen);
+  return nextOpen;
+}
+
+function applyConfiguratorSelection(nextIndex) {
+  if (!configuratorSlotButtons.length) return;
+  configuratorSlotButtons.forEach((button, index) => {
+    const active = index === nextIndex;
+    button.classList.toggle('is-selected', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+function readConfiguratorBucketState() {
+  try {
+    const raw = localStorage.getItem(CONFIGURATOR_BUCKETS_STORAGE_KEY);
+    if (!raw) return { master: [], minimal: [] };
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return { master: [], minimal: [] };
+    }
+    return {
+      master: Array.isArray(parsed.master) ? parsed.master.filter((item) => typeof item === 'string' && item.trim()) : [],
+      minimal: Array.isArray(parsed.minimal) ? parsed.minimal.filter((item) => typeof item === 'string' && item.trim()) : [],
+    };
+  } catch {
+    return { master: [], minimal: [] };
+  }
+}
+
+function persistConfiguratorBucketState() {
+  try {
+    localStorage.setItem(CONFIGURATOR_BUCKETS_STORAGE_KEY, JSON.stringify(configuratorBucketState));
+  } catch {}
+}
+
+function writeConfiguratorDragPayload(event, payload) {
+  if (!event.dataTransfer) return false;
+  try {
+    event.dataTransfer.setData('application/json', JSON.stringify(payload));
+  } catch {}
+  event.dataTransfer.setData('text/plain', payload.label || '');
+  return true;
+}
+
+function readConfiguratorDragPayload(event) {
+  if (activeConfiguratorDragPayload) {
+    return activeConfiguratorDragPayload;
+  }
+  const raw = event.dataTransfer?.getData('application/json') || '';
+  if (!raw) {
+    const label = event.dataTransfer?.getData('text/plain')?.trim() || '';
+    return label ? { sourceType: 'slot', label } : null;
+  }
+  try {
+    const payload = JSON.parse(raw);
+    if (!payload || typeof payload !== 'object') return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+function setActiveConfiguratorBucketSelection(bucketKey = '', itemIndex = -1) {
+  activeConfiguratorBucketSelection = {
+    bucketKey,
+    itemIndex: Number.isInteger(itemIndex) ? itemIndex : -1,
+  };
+  configuratorBuckets.forEach((bucket) => {
+    bucket.querySelectorAll('.configurator-panel__bucket-item').forEach((item) => {
+      const itemBucketKey = item.dataset.bucketKey || '';
+      const currentIndex = Number.parseInt(item.dataset.bucketIndex || '', 10);
+      const isActive = itemBucketKey === bucketKey && currentIndex === activeConfiguratorBucketSelection.itemIndex;
+      item.classList.toggle('is-active', isActive);
+    });
+  });
+}
+
+function createConfiguratorBucketItem(label, bucketKey, index) {
+  const item = document.createElement('div');
+  item.className = 'configurator-panel__bucket-item';
+  item.draggable = false;
+  item.dataset.bucketKey = bucketKey;
+  item.dataset.bucketIndex = String(index);
+  item.setAttribute('role', 'button');
+  item.setAttribute('tabindex', '0');
+  item.setAttribute('aria-label', `${label}. Перетащите для перестановки или используйте крестик для удаления.`);
+
+  const icon = document.createElement('span');
+  icon.className = 'configurator-panel__slot-icon';
+  icon.setAttribute('aria-hidden', 'true');
+
+  const text = document.createElement('span');
+  text.className = 'configurator-panel__slot-text';
+  text.textContent = label;
+
+  const removeButton = document.createElement('button');
+  removeButton.type = 'button';
+  removeButton.className = 'configurator-panel__bucket-remove';
+  removeButton.setAttribute('aria-label', `Удалить ${label}`);
+  removeButton.textContent = '×';
+
+  item.append(icon, text, removeButton);
+  item.addEventListener('mousedown', (event) => {
+    const removeTarget = event.target instanceof Element
+      ? event.target.closest('.configurator-panel__bucket-remove')
+      : null;
+    if (removeTarget) return;
+    if (event.button !== 0) return;
+    event.preventDefault();
+    const itemIndex = Number.parseInt(item.dataset.bucketIndex || '', 10);
+    if (!Number.isInteger(itemIndex)) return;
+    stopConfiguratorBucketPointerDrag();
+    configuratorBucketPointerDragState = {
+      active: true,
+      draggedItem: item,
+      sourceBucketKey: bucketKey,
+      sourceIndex: itemIndex,
+      startX: event.clientX,
+      startY: event.clientY,
+      moved: false,
+    };
+  });
+  removeButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const itemIndex = Number.parseInt(item.dataset.bucketIndex || '', 10);
+    if (activeConfiguratorBucketSelection.bucketKey === bucketKey && activeConfiguratorBucketSelection.itemIndex === itemIndex) {
+      setActiveConfiguratorBucketSelection('', -1);
+    }
+    removeConfiguratorBucketItem(bucketKey, itemIndex);
+  });
+  if (activeConfiguratorBucketSelection.bucketKey === bucketKey && activeConfiguratorBucketSelection.itemIndex === index) {
+    item.classList.add('is-active');
+  }
+  return item;
+}
+
+function renderConfiguratorBuckets() {
+  configuratorBuckets.forEach((bucket) => {
+    const bucketKey = bucket.dataset.configuratorBucket;
+    if (!bucketKey) return;
+    bucket.replaceChildren();
+    const items = configuratorBucketState[bucketKey] || [];
+    items.forEach((label, index) => {
+      bucket.appendChild(createConfiguratorBucketItem(label, bucketKey, index));
+    });
+  });
+}
+
+function addConfiguratorBucketItem(bucketKey, label, insertIndex = null) {
+  if (!bucketKey || typeof label !== 'string' || !label.trim()) return;
+  if (!Array.isArray(configuratorBucketState[bucketKey])) {
+    configuratorBucketState[bucketKey] = [];
+  }
+  const items = configuratorBucketState[bucketKey];
+  const normalizedLabel = label.trim();
+  const nextIndex = Number.isInteger(insertIndex) ? Math.max(0, Math.min(insertIndex, items.length)) : items.length;
+  items.splice(nextIndex, 0, normalizedLabel);
+  persistConfiguratorBucketState();
+  renderConfiguratorBuckets();
+}
+
+function removeConfiguratorBucketItem(bucketKey, itemIndex) {
+  if (!bucketKey || !Array.isArray(configuratorBucketState[bucketKey])) return;
+  if (!Number.isInteger(itemIndex) || itemIndex < 0 || itemIndex >= configuratorBucketState[bucketKey].length) return;
+  configuratorBucketState[bucketKey].splice(itemIndex, 1);
+  if (activeConfiguratorBucketSelection.bucketKey === bucketKey && activeConfiguratorBucketSelection.itemIndex === itemIndex) {
+    activeConfiguratorBucketSelection = { bucketKey: '', itemIndex: -1 };
+  }
+  persistConfiguratorBucketState();
+  renderConfiguratorBuckets();
+}
+
+function moveConfiguratorBucketItem(fromBucketKey, fromIndex, toBucketKey, toIndex) {
+  if (
+    !fromBucketKey ||
+    !toBucketKey ||
+    !Array.isArray(configuratorBucketState[fromBucketKey]) ||
+    !Array.isArray(configuratorBucketState[toBucketKey]) ||
+    !Number.isInteger(fromIndex) ||
+    fromIndex < 0 ||
+    fromIndex >= configuratorBucketState[fromBucketKey].length
+  ) {
+    return;
+  }
+
+  const [label] = configuratorBucketState[fromBucketKey].splice(fromIndex, 1);
+  if (!label) {
+    renderConfiguratorBuckets();
+    return;
+  }
+
+  let normalizedTargetIndex = Number.isInteger(toIndex)
+    ? toIndex
+    : configuratorBucketState[toBucketKey].length;
+
+  if (fromBucketKey === toBucketKey && fromIndex < normalizedTargetIndex) {
+    normalizedTargetIndex -= 1;
+  }
+
+  normalizedTargetIndex = Math.max(0, Math.min(normalizedTargetIndex, configuratorBucketState[toBucketKey].length));
+
+  configuratorBucketState[toBucketKey].splice(normalizedTargetIndex, 0, label);
+  activeConfiguratorBucketSelection = {
+    bucketKey: toBucketKey,
+    itemIndex: normalizedTargetIndex,
+  };
+  persistConfiguratorBucketState();
+  renderConfiguratorBuckets();
+}
+
+function getConfiguratorBucketDropIndex(bucket, event) {
+  const items = Array.from(bucket.querySelectorAll('.configurator-panel__bucket-item'));
+  const targetItem = event.target instanceof Element
+    ? event.target.closest('.configurator-panel__bucket-item')
+    : null;
+  if (!targetItem) {
+    return items.length;
+  }
+
+  const fallbackIndex = items.indexOf(targetItem);
+  const targetIndex = Number.parseInt(targetItem.dataset.bucketIndex || '', 10);
+  const resolvedIndex = Number.isInteger(targetIndex) ? targetIndex : fallbackIndex;
+  const rect = targetItem.getBoundingClientRect();
+  const insertAfter = event.clientX > rect.left + rect.width / 2;
+  return Math.max(0, resolvedIndex + (insertAfter ? 1 : 0));
+}
+
+function applyConfiguratorBucketDrop(bucketKey, payload, dropIndex) {
+  if (!payload || !bucketKey) return;
+  if (payload.sourceType === 'bucket-item') {
+    moveConfiguratorBucketItem(
+      payload.bucketKey || '',
+      Number.parseInt(String(payload.itemIndex), 10),
+      bucketKey,
+      dropIndex
+    );
+    activeConfiguratorDragPayload = null;
+    return;
+  }
+  addConfiguratorBucketItem(bucketKey, payload.label || '', dropIndex);
+  activeConfiguratorDragPayload = null;
+}
+
+function clearConfiguratorBucketDropTarget() {
+  configuratorBuckets.forEach((bucket) => bucket.classList.remove('is-drop-target'));
+}
+
+function getConfiguratorBucketDropTargetFromPoint(clientX, clientY) {
+  const target = document.elementFromPoint(clientX, clientY);
+  if (!(target instanceof Element)) return null;
+  const bucket = target.closest('[data-configurator-bucket]');
+  if (!(bucket instanceof HTMLElement)) return null;
+  const bucketKey = bucket.dataset.configuratorBucket || '';
+  if (!bucketKey) return null;
+  const item = target.closest('.configurator-panel__bucket-item');
+  if (!(item instanceof HTMLElement)) {
+    return {
+      bucket,
+      bucketKey,
+      dropIndex: Array.isArray(configuratorBucketState[bucketKey]) ? configuratorBucketState[bucketKey].length : 0,
+    };
+  }
+  const itemIndex = Number.parseInt(item.dataset.bucketIndex || '', 10);
+  const rect = item.getBoundingClientRect();
+  const insertAfter = clientX > rect.left + rect.width / 2;
+  return {
+    bucket,
+    bucketKey,
+    dropIndex: Math.max(0, itemIndex + (insertAfter ? 1 : 0)),
+  };
+}
+
+function stopConfiguratorBucketPointerDrag() {
+  const draggedItem = configuratorBucketPointerDragState.draggedItem;
+  if (draggedItem instanceof HTMLElement) {
+    draggedItem.classList.remove('is-dragging');
+    draggedItem.style.removeProperty('pointer-events');
+  }
+  configuratorBucketPointerDragState = {
+    active: false,
+    draggedItem: null,
+    sourceBucketKey: '',
+    sourceIndex: -1,
+    startX: 0,
+    startY: 0,
+    moved: false,
+  };
+  clearConfiguratorBucketDropTarget();
+}
+
+function handleConfiguratorBucketPointerMove(event) {
+  if (!configuratorBucketPointerDragState.active) return;
+  if (!configuratorBucketPointerDragState.moved) {
+    const deltaX = event.clientX - configuratorBucketPointerDragState.startX;
+    const deltaY = event.clientY - configuratorBucketPointerDragState.startY;
+    const distance = Math.hypot(deltaX, deltaY);
+    if (distance < FLOATING_TOOLBAR_DRAG_THRESHOLD_PX) {
+      return;
+    }
+    configuratorBucketPointerDragState.moved = true;
+    if (configuratorBucketPointerDragState.draggedItem instanceof HTMLElement) {
+      configuratorBucketPointerDragState.draggedItem.classList.add('is-dragging');
+      configuratorBucketPointerDragState.draggedItem.style.pointerEvents = 'none';
+    }
+  }
+  const dropTarget = getConfiguratorBucketDropTargetFromPoint(event.clientX, event.clientY);
+  clearConfiguratorBucketDropTarget();
+  dropTarget?.bucket.classList.add('is-drop-target');
+}
+
+function handleConfiguratorBucketPointerUp(event) {
+  if (!configuratorBucketPointerDragState.active) return;
+  const {
+    sourceBucketKey,
+    sourceIndex,
+    moved,
+  } = configuratorBucketPointerDragState;
+  const dropTarget = getConfiguratorBucketDropTargetFromPoint(event.clientX, event.clientY);
+  stopConfiguratorBucketPointerDrag();
+  if (!moved) {
+    if (activeConfiguratorBucketSelection.bucketKey === sourceBucketKey && activeConfiguratorBucketSelection.itemIndex === sourceIndex) {
+      setActiveConfiguratorBucketSelection('', -1);
+    } else {
+      setActiveConfiguratorBucketSelection(sourceBucketKey, sourceIndex);
+    }
+    return;
+  }
+  if (!dropTarget) return;
+  moveConfiguratorBucketItem(sourceBucketKey, sourceIndex, dropTarget.bucketKey, dropTarget.dropIndex);
+}
+
+function initializeConfiguratorBuckets() {
+  if (!configuratorBuckets.length || !configuratorSlotButtons.length) return;
+
+  configuratorBucketState = readConfiguratorBucketState();
+  renderConfiguratorBuckets();
+  window.addEventListener('mousemove', handleConfiguratorBucketPointerMove);
+  window.addEventListener('mouseup', handleConfiguratorBucketPointerUp);
+  document.addEventListener('mousedown', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (target.closest('.configurator-panel__bucket-item')) return;
+    if (activeConfiguratorBucketSelection.bucketKey || activeConfiguratorBucketSelection.itemIndex !== -1) {
+      setActiveConfiguratorBucketSelection('', -1);
+    }
+  });
+
+  configuratorSlotButtons.forEach((button) => {
+    button.draggable = true;
+    button.addEventListener('dragstart', (event) => {
+      const text = button.querySelector('.configurator-panel__slot-text')?.textContent?.trim() || '';
+      if (!text || !event.dataTransfer) return;
+      activeConfiguratorDragPayload = { sourceType: 'slot', label: text };
+      writeConfiguratorDragPayload(event, activeConfiguratorDragPayload);
+      event.dataTransfer.effectAllowed = 'copy';
+    });
+    button.addEventListener('dragend', () => {
+      activeConfiguratorDragPayload = null;
+      configuratorBuckets.forEach((bucketElement) => bucketElement.classList.remove('is-drop-target'));
+    });
+  });
+
+  configuratorBuckets.forEach((bucket) => {
+    bucket.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      const payload = readConfiguratorDragPayload(event);
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = payload?.sourceType === 'bucket-item' ? 'move' : 'copy';
+      }
+      bucket.classList.add('is-drop-target');
+    });
+    bucket.addEventListener('dragleave', () => {
+      bucket.classList.remove('is-drop-target');
+    });
+    bucket.addEventListener('drop', (event) => {
+      event.preventDefault();
+      bucket.classList.remove('is-drop-target');
+      const bucketKey = bucket.dataset.configuratorBucket || '';
+      const payload = readConfiguratorDragPayload(event);
+      if (!payload || !bucketKey) return;
+      const dropIndex = getConfiguratorBucketDropIndex(bucket, event);
+      applyConfiguratorBucketDrop(bucketKey, payload, dropIndex);
+    });
+  });
+}
+
+function updateTransformingClass() {
+  if (!toolbarShell) return;
+  toolbarShell.classList.toggle('is-transforming', Boolean(floatingToolbarInteractionState.mode));
+}
+
+function setFloatingToolbarHandlesVisible(nextVisible) {
+  if (!toolbarShell) return;
+  floatingToolbarHandlesVisible = Boolean(nextVisible);
+  toolbarShell.classList.toggle('is-handles-visible', floatingToolbarHandlesVisible);
+}
+
+function startFloatingToolbarInteraction(mode, event) {
+  if (!toolbarShell) return;
+  if (mode === 'move' && !canStartFloatingToolbarDrag(event.target)) {
+    return;
+  }
+  event.preventDefault();
+  const origin = { ...floatingToolbarState };
+  floatingToolbarInteractionState = {
+    mode,
+    active: false,
+    startX: event.clientX,
+    startY: event.clientY,
+    origin,
+  };
+  updateTransformingClass();
+}
+
+function stopFloatingToolbarInteraction() {
+  if (!toolbarShell) return;
+  if (floatingToolbarInteractionState.mode) {
+    persistFloatingToolbarState();
+  }
+  floatingToolbarInteractionState = {
+    mode: null,
+    active: false,
+    startX: 0,
+    startY: 0,
+    origin: null,
+  };
+  toolbarShell.classList.remove('is-dragging');
+  updateTransformingClass();
+}
+
+function initializeFloatingToolbarItemOffsetTuning() {
+  if (!toolbarTunableItems.length) return;
+  restoreFloatingToolbarItemOffsets();
+  toolbarTunableItems.forEach((item) => {
+    item.addEventListener('mousedown', (event) => {
+      const tuningIntent = toolbarSpacingTuningMode || event.altKey;
+      if (event.button !== 0 || !tuningIntent) return;
+      const key = getFloatingToolbarItemOffsetKey(item);
+      if (!key) return;
+      event.preventDefault();
+      event.stopPropagation();
+      toolbarItemOffsetDragState = {
+        active: true,
+        item,
+        key,
+        startX: event.clientX,
+        originOffset: Number(toolbarItemOffsets[key] || 0),
+        moved: false,
+      };
+    });
+    item.addEventListener('dblclick', (event) => {
+      if (!toolbarSpacingTuningMode && !event.altKey) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setFloatingToolbarItemOffset(item, 0);
+      floatingToolbarSuppressClickOnce = true;
+    });
+    item.addEventListener('click', (event) => {
+      if (!toolbarItemSuppressClickOnce && !event.altKey && !toolbarSpacingTuningMode) return;
+      event.preventDefault();
+      event.stopPropagation();
+      toolbarItemSuppressClickOnce = false;
+    });
+  });
+
+  document.addEventListener('mousemove', (event) => {
+    if (!toolbarItemOffsetDragState.active || !toolbarItemOffsetDragState.item) return;
+    const deltaX = event.clientX - toolbarItemOffsetDragState.startX;
+    if (!toolbarItemOffsetDragState.moved && Math.abs(deltaX) >= 1) {
+      toolbarItemOffsetDragState.moved = true;
+      floatingToolbarSuppressClickOnce = true;
+      toolbarItemSuppressClickOnce = true;
+    }
+    setFloatingToolbarItemOffset(
+      toolbarItemOffsetDragState.item,
+      toolbarItemOffsetDragState.originOffset + deltaX,
+      false
+    );
+    event.preventDefault();
+  });
+
+  document.addEventListener('mouseup', () => {
+    stopFloatingToolbarItemOffsetDrag();
+  });
+}
+
+function initializeFloatingToolbarSpacingMenu() {
+  if (!toolbarShell || !toolbarSpacingMenu || !toolbarSpacingAction) return;
+  setToolbarSpacingTuningMode(false);
+  toolbarShell.addEventListener('contextmenu', (event) => {
+    if (event.target instanceof Element && event.target.closest('[data-toolbar-rotate-handle], [data-toolbar-width-handle], [data-toolbar-scale-handle]')) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    setToolbarSpacingMenuOpen(true);
+    toolbarSpacingAction.focus();
+  });
+  toolbarSpacingAction.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setToolbarSpacingTuningMode(!toolbarSpacingTuningMode);
+    setToolbarSpacingMenuOpen(false);
+  });
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!toolbarSpacingMenu.contains(target)) {
+      setToolbarSpacingMenuOpen(false);
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setToolbarSpacingMenuOpen(false);
+      if (toolbarSpacingTuningMode) {
+        setToolbarSpacingTuningMode(false);
+      }
+    }
+  });
+}
+
+function initializeFloatingToolbarDragFoundation() {
+  if (!toolbarShell) return;
+  toolbarShell.addEventListener('mousedown', (event) => {
+    if (event.button !== 0) return;
+    startFloatingToolbarInteraction('move', event);
+  });
+  toolbarRotateHandles.forEach((handle) => {
+    handle.addEventListener('mousedown', (event) => {
+      event.stopPropagation();
+    });
+    handle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      applyFloatingToolbarState({
+        ...floatingToolbarState,
+        isVertical: !floatingToolbarState.isVertical,
+      });
+    });
+  });
+  toolbarWidthHandle?.addEventListener('mousedown', (event) => {
+    event.stopPropagation();
+    startFloatingToolbarInteraction('width', event);
+  });
+  toolbarScaleHandle?.addEventListener('mousedown', (event) => {
+    event.stopPropagation();
+    startFloatingToolbarInteraction('scale', event);
+  });
+  document.addEventListener('mousemove', (event) => {
+    const { mode, origin } = floatingToolbarInteractionState;
+    if (!mode || !origin) return;
+    const deltaX = event.clientX - floatingToolbarInteractionState.startX;
+    const deltaY = event.clientY - floatingToolbarInteractionState.startY;
+    if (mode === 'move') {
+      if (!floatingToolbarInteractionState.active) {
+        const distance = Math.hypot(deltaX, deltaY);
+        if (distance < FLOATING_TOOLBAR_DRAG_THRESHOLD_PX) {
+          return;
+        }
+        floatingToolbarInteractionState.active = true;
+        floatingToolbarSuppressClickOnce = true;
+        toolbarShell.classList.add('is-dragging');
+      }
+      const topBarRect = topWorkBar?.getBoundingClientRect();
+      const pointerNearSnapZone = Boolean(
+        topBarRect &&
+        event.clientY >= topBarRect.top - FLOATING_TOOLBAR_SNAP_ZONE_PX &&
+        event.clientY <= topBarRect.bottom + FLOATING_TOOLBAR_SNAP_ZONE_PX
+      );
+      if (pointerNearSnapZone) {
+        const shellRect = toolbarShell.getBoundingClientRect();
+        const snapped = getSnappedFloatingToolbarPosition(shellRect);
+        applyFloatingToolbarState({
+          ...origin,
+          x: getSnappedFloatingToolbarX(origin.x + deltaX, shellRect),
+          y: snapped.y,
+          isDetached: false,
+          toolbarHeight: topBarRect?.height || origin.toolbarHeight || 0,
+        }, false);
+      } else {
+        applyFloatingToolbarState({
+          ...origin,
+          x: origin.x + deltaX,
+          y: origin.y + deltaY,
+          isDetached: true,
+          toolbarHeight: topBarRect?.height || origin.toolbarHeight || 0,
+        }, false);
+      }
+    } else if (mode === 'width') {
+      floatingToolbarInteractionState.active = true;
+      const widthDelta = (origin.isVertical ? deltaX : deltaX) * 0.01;
+      applyFloatingToolbarState({
+        ...origin,
+        widthScale: origin.widthScale + widthDelta,
+      }, false);
+    } else if (mode === 'scale') {
+      floatingToolbarInteractionState.active = true;
+      const scaleDelta = (origin.isVertical ? deltaX : deltaX) * 0.01;
+      applyFloatingToolbarState({
+        ...origin,
+        scale: origin.scale + scaleDelta,
+      }, false);
+    }
+    event.preventDefault();
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!floatingToolbarInteractionState.mode) return;
+    stopFloatingToolbarInteraction();
+  });
+
+  toolbarShell.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (floatingToolbarSuppressClickOnce) {
+      floatingToolbarSuppressClickOnce = false;
+      return;
+    }
+    if (target.closest('button, select, option, input, textarea, label, [data-toolbar-rotate-handle], [data-toolbar-width-handle], [data-toolbar-scale-handle]')) {
+      return;
+    }
+    setFloatingToolbarHandlesVisible(!floatingToolbarHandlesVisible);
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!toolbarShell.contains(target)) {
+      setFloatingToolbarHandlesVisible(false);
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    restoreFloatingToolbarPosition();
+    scheduleToolbarAnchorUpdate();
+  });
+
+  requestAnimationFrame(() => {
+    restoreFloatingToolbarPosition();
+    scheduleToolbarAnchorUpdate();
+  });
+}
 
 const commandRegistry = createCommandRegistry();
 const runCommand = createCommandRunner(commandRegistry, {
@@ -1802,12 +3465,29 @@ document.addEventListener('click', (event) => {
     const action = actionTarget.dataset.action;
     if (handleUiAction(action)) {
       event.preventDefault();
+      event.stopImmediatePropagation();
       return;
     }
+  }
+  if (
+    configuratorPanel &&
+    !configuratorPanel.hidden &&
+    !configuratorPanel.contains(event.target) &&
+    !event.target.closest('[data-grid-button]')
+  ) {
+    setConfiguratorOpen(false);
   }
   if (contextMenu && !contextMenu.hidden && !contextMenu.contains(event.target)) {
     clearContextMenu();
   }
+});
+
+configuratorPanel?.addEventListener('click', (event) => {
+  const button = event.target.closest('.configurator-panel__slot');
+  if (!button) return;
+  const nextIndex = configuratorSlotButtons.indexOf(button);
+  if (nextIndex === -1) return;
+  applyConfiguratorSelection(nextIndex);
 });
 
 document.addEventListener('contextmenu', (event) => {
@@ -2165,8 +3845,10 @@ function setCurrentFontSize(px) {
   if (!Number.isFinite(px)) return;
   currentFontSizePx = px;
   if (sizeSelect) {
+    ensureSelectHasOption(sizeSelect, String(px), String(px), '__custom_size__');
     sizeSelect.value = String(px);
   }
+  syncLiteralToolbarDisplays();
 }
 
 function scheduleAutoSave(delay = AUTO_SAVE_DELAY) {
@@ -2211,12 +3893,43 @@ function markAsModified() {
   scheduleAutoSave();
 }
 
-function applyFontWeight(weight, persist = true) {
-  if (!editor) return;
-  editor.style.fontWeight = String(weight);
-  if (persist) {
-    localStorage.setItem('editorFontWeight', String(weight));
+function normalizeFontWeightPreset(value) {
+  const raw = String(value || '').trim().toLowerCase();
+  if (FONT_WEIGHT_PRESETS[raw]) {
+    return raw;
   }
+  return LEGACY_FONT_WEIGHT_PRESET_MAP[raw] || 'light';
+}
+
+function ensureSelectHasOption(select, value, label = value, beforeValue = '') {
+  if (!(select instanceof HTMLSelectElement)) return;
+  const stringValue = String(value);
+  const existing = Array.from(select.options).find((option) => option.value === stringValue);
+  if (existing) {
+    existing.textContent = label;
+    return;
+  }
+  const option = new Option(label, stringValue);
+  const beforeOption = beforeValue
+    ? Array.from(select.options).find((candidate) => candidate.value === beforeValue) || null
+    : null;
+  select.add(option, beforeOption);
+}
+
+function applyFontWeight(weightPreset, persist = true) {
+  if (!editor) return;
+  const presetId = normalizeFontWeightPreset(weightPreset);
+  const preset = FONT_WEIGHT_PRESETS[presetId] || FONT_WEIGHT_PRESETS.light;
+  editor.style.fontWeight = preset.weight;
+  editor.style.fontStretch = preset.stretch;
+  editor.style.letterSpacing = preset.spacing;
+  if (weightSelect) {
+    weightSelect.value = presetId;
+  }
+  if (persist) {
+    localStorage.setItem('editorFontWeight', presetId);
+  }
+  syncLiteralToolbarDisplays();
   renderStyledView(getPlainText());
 }
 
@@ -2224,11 +3937,13 @@ function applyLineHeight(value, persist = true) {
   if (!editor) return;
   editor.style.lineHeight = String(value);
   if (lineHeightSelect) {
+    ensureSelectHasOption(lineHeightSelect, String(value), String(value), '__custom_line_height__');
     lineHeightSelect.value = String(value);
   }
   if (persist) {
     localStorage.setItem('editorLineHeight', String(value));
   }
+  syncLiteralToolbarDisplays();
   renderStyledView(getPlainText());
 }
 
@@ -2284,7 +3999,7 @@ function applyTextStyle(action) {
 function updateAlignmentButtons(activeAction) {
   if (!alignButtons.length) return;
   alignButtons.forEach((button) => {
-    const isActive = button.dataset.action === activeAction;
+    const isActive = activeAction !== 'align-left' && button.dataset.action === activeAction;
     button.classList.toggle('is-active', isActive);
     button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
@@ -2609,7 +4324,64 @@ function updateThemeSwatches(theme) {
   function applyFont(fontFamily) {
     editor.style.fontFamily = fontFamily;
     localStorage.setItem('editorFont', fontFamily);
+    syncLiteralToolbarDisplays();
   }
+
+function syncLiteralToolbarDisplays() {
+  if (fontDisplay && fontSelect) {
+    const option = fontSelect.options[fontSelect.selectedIndex];
+    fontDisplay.textContent = option?.textContent || 'Roboto Ms';
+  }
+  if (weightDisplay && weightSelect) {
+    const option = weightSelect.options[weightSelect.selectedIndex];
+    weightDisplay.textContent = option?.textContent || 'Light';
+  }
+  if (sizeDisplay && sizeSelect) {
+    const option = sizeSelect.options[sizeSelect.selectedIndex];
+    sizeDisplay.textContent = option?.textContent || String(currentFontSizePx);
+  }
+  if (lineHeightDisplay && lineHeightSelect) {
+    const option = lineHeightSelect.options[lineHeightSelect.selectedIndex];
+    lineHeightDisplay.textContent = option?.value && !option.value.startsWith('__')
+      ? option.value
+      : String(editor?.style.lineHeight || '1.0');
+  }
+}
+
+function promptForCustomFontSize() {
+  const response = window.prompt('Font size (px)', String(currentFontSizePx));
+  if (response === null) return;
+  const nextSize = Number(response);
+  if (!Number.isFinite(nextSize) || nextSize <= 0) {
+    updateStatusText('Некорректный размер шрифта');
+    if (sizeSelect) {
+      sizeSelect.value = String(currentFontSizePx);
+    }
+    return;
+  }
+  const normalizedSize = Math.round(nextSize);
+  ensureSelectHasOption(sizeSelect, String(normalizedSize), String(normalizedSize), '__custom_size__');
+  window.electronAPI?.setFontSizePx(normalizedSize);
+}
+
+function promptForCustomLineHeight() {
+  const currentValue = lineHeightSelect?.value && !lineHeightSelect.value.startsWith('__')
+    ? lineHeightSelect.value
+    : String(editor?.style.lineHeight || '1.0');
+  const response = window.prompt('Line height', currentValue);
+  if (response === null) return;
+  const nextValue = Number(response);
+  if (!Number.isFinite(nextValue) || nextValue <= 0) {
+    updateStatusText('Некорректный интерлиньяж');
+    if (lineHeightSelect) {
+      lineHeightSelect.value = String(editor?.style.lineHeight || '1.0');
+    }
+    return;
+  }
+  const normalizedValue = String(Number(nextValue.toFixed(3)));
+  ensureSelectHasOption(lineHeightSelect, normalizedValue, normalizedValue, '__custom_line_height__');
+  applyLineHeight(normalizedValue);
+}
 
 function loadSavedFont() {
   const savedFont = localStorage.getItem('editorFont');
@@ -2629,6 +4401,7 @@ function loadSavedFont() {
       localStorage.setItem('editorFont', fallbackFont);
     }
   }
+  syncLiteralToolbarDisplays();
 }
 
 if (window.electronAPI) {
@@ -2816,6 +4589,9 @@ async function handleReviewExportMarkdown() {
 
 function handleUiAction(action) {
   switch (action) {
+    case 'toggle-configurator':
+      toggleConfiguratorOpen();
+      return true;
     case 'save-as':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_SAVE_AS);
       return true;
@@ -2898,16 +4674,47 @@ function handleUiAction(action) {
   }
 }
 
-if (toolbar) {
-  toolbar.addEventListener('click', (event) => {
-    const target = event.target.closest('[data-action]');
-    if (!target) return;
-    const action = target.dataset.action;
-    if (handleUiAction(action)) {
-      event.preventDefault();
-    }
-  });
+function triggerLeftToolbarAction(action) {
+  if (typeof action !== 'string' || action.length === 0) return false;
+  switch (action) {
+    case 'search':
+      {
+        const result = handleFind();
+        if (!result || result.performed !== true) {
+          applyLeftTab('search');
+          leftSearchInput?.focus();
+        }
+      }
+      return true;
+    case 'new':
+      if (window.electronAPI && typeof window.electronAPI.fileOpen === 'function') {
+        void window.electronAPI.fileOpen({ intent: 'new' });
+        return true;
+      }
+      break;
+    case 'open':
+      if (window.electronAPI && typeof window.electronAPI.fileOpen === 'function') {
+        void window.electronAPI.fileOpen({ intent: 'open' });
+        return true;
+      }
+      break;
+    case 'toggle-configurator':
+      toggleConfiguratorOpen();
+      return true;
+    default:
+      break;
+  }
+  return handleUiAction(action);
 }
+
+document.addEventListener('click', (event) => {
+  const target = event.target.closest('[data-action]');
+  if (!target) return;
+  const action = target.dataset.action;
+  if (handleUiAction(action)) {
+    event.preventDefault();
+  }
+});
 
 if (styleSelect) {
   styleSelect.addEventListener('change', (event) => {
@@ -2936,6 +4743,10 @@ if (weightSelect) {
 
 if (sizeSelect) {
   sizeSelect.addEventListener('change', (event) => {
+    if (event.target.value === '__custom_size__') {
+      promptForCustomFontSize();
+      return;
+    }
     const nextSize = Number(event.target.value);
     if (Number.isFinite(nextSize)) {
       window.electronAPI?.setFontSizePx(nextSize);
@@ -2945,6 +4756,10 @@ if (sizeSelect) {
 
 if (lineHeightSelect) {
   lineHeightSelect.addEventListener('change', (event) => {
+    if (event.target.value === '__custom_line_height__') {
+      promptForCustomLineHeight();
+      return;
+    }
     applyLineHeight(event.target.value);
   });
 }
@@ -2959,12 +4774,12 @@ function loadSavedFontWeight() {
   if (saved) {
     applyFontWeight(saved, false);
     if (weightSelect) {
-      weightSelect.value = saved;
+      weightSelect.value = normalizeFontWeightPreset(saved);
     }
   } else {
-    applyFontWeight('400', false);
+    applyFontWeight('light', false);
     if (weightSelect) {
-      weightSelect.value = '400';
+      weightSelect.value = 'light';
     }
   }
 }
@@ -2984,11 +4799,33 @@ function loadSavedWordWrap() {
   applyWordWrap(enabled, false);
 }
 
+function applyLiteralToolbarMasterVisualDefaults() {
+  if (!document.body.classList.contains('literal-stage-a')) return;
+  if (fontSelect) {
+    const literalFont = '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+    fontSelect.value = literalFont;
+    applyFont(literalFont);
+  }
+  if (weightSelect) {
+    weightSelect.value = 'light';
+  }
+  if (lineHeightSelect) {
+    lineHeightSelect.value = '1.0';
+  }
+  applyFontWeight('light', false);
+  if (editor) {
+    editor.style.fontSize = '12px';
+  }
+  setCurrentFontSize(12);
+  syncLiteralToolbarDisplays();
+}
+
 loadSavedViewMode();
 loadSavedFontWeight();
 loadSavedLineHeight();
 loadSavedWordWrap();
 loadSavedEditorZoom();
+applyLiteralToolbarMasterVisualDefaults();
 
 setPlainText('');
 metaPanel?.classList.add('is-hidden');
@@ -3004,6 +4841,20 @@ applyLeftTab('project');
 applyRightTab('inspector');
 installNetworkGuard();
 void initializeCollabScopeLocal();
+if (configuratorSlotButtons.length) {
+  const defaultSelectedIndex = configuratorSlotButtons.findIndex((button) => button.classList.contains('is-selected'));
+  applyConfiguratorSelection(defaultSelectedIndex >= 0 ? defaultSelectedIndex : 0);
+}
+initializeConfiguratorBuckets();
+showEditorPanelFor('Yalken');
+updateWordCount();
+initializeFloatingToolbarSpacingMenu();
+initializeFloatingToolbarItemOffsetTuning();
+initializeFloatingToolbarDragFoundation();
+initializeLeftToolbarSpacingMenu();
+initializeLeftToolbarButtonOffsetTuning();
+initializeLeftToolbarActionButtons();
+initializeLeftFloatingToolbarDragFoundation();
 
 loadTree();
 
@@ -3082,6 +4933,11 @@ diagnosticsCloseButtons.forEach((button) => {
 });
 
 document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && configuratorPanel && !configuratorPanel.hidden) {
+    event.preventDefault();
+    setConfiguratorOpen(false);
+    return;
+  }
   const isPrimaryModifier = isMac ? event.metaKey : event.ctrlKey;
   if (!isPrimaryModifier || event.altKey) {
     return;

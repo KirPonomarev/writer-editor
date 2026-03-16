@@ -6,222 +6,288 @@
   <title>Yalken</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="literal-stage-a">
   <div class="window">
-    <header class="toolbar" data-toolbar>
-      <div class="toolbar__row toolbar__row--primary">
-        <div class="toolbar__main">
-          <div class="toolbar__cluster">
-            <button type="button" class="toolbar__button" data-compact-hidden data-action="save-as" aria-label="Save as">
-              <svg class="toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M8 2v6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M5.5 4.5L8 2l2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M3 8v5h10V8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <div class="titlebar">
+      <div class="titlebar__label">Yalken</div>
+    </div>
+    <div class="work-bar" data-top-work-bar>
+      <div class="left-floating-toolbar" data-left-toolbar>
+        <div class="left-floating-toolbar__shell" data-left-toolbar-shell>
+          <div class="left-floating-toolbar__transform-handle left-floating-toolbar__transform-handle--rotate" data-left-toolbar-rotate-handle aria-hidden="true">
+            <span class="left-floating-toolbar__transform-control">
+              <svg class="left-floating-toolbar__transform-icon left-floating-toolbar__transform-icon--rotate-horizontal" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <circle cx="4" cy="8" r="1.5" fill="currentColor"></circle>
+                <circle cx="8" cy="8" r="1.5" fill="currentColor"></circle>
+                <circle cx="12" cy="8" r="1.5" fill="currentColor"></circle>
+              </svg>
+              <svg class="left-floating-toolbar__transform-icon left-floating-toolbar__transform-icon--rotate-vertical" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <circle cx="8" cy="4" r="1.5" fill="currentColor"></circle>
+                <circle cx="8" cy="8" r="1.5" fill="currentColor"></circle>
+                <circle cx="8" cy="12" r="1.5" fill="currentColor"></circle>
+              </svg>
+            </span>
+          </div>
+          <div class="left-floating-toolbar__transform-handle left-floating-toolbar__transform-handle--scale" data-left-toolbar-scale-handle aria-hidden="true">
+            <span class="left-floating-toolbar__transform-control">
+              <svg class="left-floating-toolbar__transform-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path d="M8 2L8 5M8 2L6.5 3.5M8 2L9.5 3.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M8 14L8 11M8 14L6.5 12.5M8 14L9.5 12.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M2 8L5 8M2 8L3.5 6.5M2 8L3.5 9.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M14 8L11 8M14 8L12.5 6.5M14 8L12.5 9.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </span>
+          </div>
+          <div class="left-floating-toolbar__transform-handle left-floating-toolbar__transform-handle--width" data-left-toolbar-width-handle aria-hidden="true">
+            <span class="left-floating-toolbar__transform-control">
+              <svg class="left-floating-toolbar__transform-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path d="M5 8L2 8M2 8L3.5 6.5M2 8L3.5 9.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M8 3L8 13" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"></path>
+                <path d="M11 8L14 8M14 8L12.5 6.5M14 8L12.5 9.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </span>
+          </div>
+          <div class="work-bar__cluster">
+            <button type="button" class="work-bar__button left-toolbar__button--icon-only left-toolbar__button--search" data-action="left-search-main" data-left-action="search" aria-label="Find">
+              <svg class="work-bar__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="11" cy="11" r="7.4" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M20 20l-4.1-4.1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
               </svg>
             </button>
-            <button type="button" class="toolbar__button toolbar__button--wide" data-compact-hidden data-action="search" aria-label="Find">
-              <svg class="toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M10.5 10.5L14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-              <svg class="toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <button type="button" class="work-bar__button left-toolbar__button--chip" data-action="left-search-menu" data-left-action="search" aria-label="Search menu">
+              <svg class="work-bar__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M6 9.2L12 15.2L18 9.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
-            <button type="button" class="toolbar__button toolbar__button--wide" data-action="new" aria-label="New document">
-              <svg class="toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-              <svg class="toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <button type="button" class="work-bar__button left-toolbar__button--icon-only left-toolbar__button--plus" data-action="left-new-main" data-left-action="new" aria-label="New document">
+              <svg class="work-bar__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 5v14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                <path d="M5 12h14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
               </svg>
             </button>
-            <button type="button" class="toolbar__button" data-compact-hidden data-action="clear" aria-label="Clear document">
-              <svg class="toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M3 5h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M6 5V3h4v2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M5 5l.5 8h5L11 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <button type="button" class="work-bar__button left-toolbar__button--icon-only left-toolbar__button--doc" data-action="left-open-doc" data-left-action="open" aria-label="Open document">
+              <svg class="work-bar__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/>
+                <path d="M14 2v5h5" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round"/>
+                <path d="M9 13h6" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"/>
+                <path d="M9 17h6" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"/>
               </svg>
             </button>
-            <button type="button" class="toolbar__button toolbar__button--wide" data-compact-hidden data-action="open" aria-label="Open">
-              <svg class="toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M2.5 5.5h4l1.5 2h5.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                <path d="M2.5 5.5v6.5h11v-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-              </svg>
-              <svg class="toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <button type="button" class="toolbar__button" data-compact-hidden data-action="save" aria-label="Save">
-              <svg class="toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M3 3h8l2 2v8H3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                <path d="M5 3v4h6V3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-                <path d="M5 13v-4h6v4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <button type="button" class="work-bar__button left-toolbar__button--icon-only left-toolbar__button--grid" data-grid-button data-action="left-grid" data-left-action="toggle-configurator" aria-label="Layout grid" aria-expanded="false" aria-pressed="false">
+              <svg class="work-bar__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <rect x="4" y="4" width="7" height="7" rx="1.1" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                <rect x="13" y="4" width="7" height="7" rx="1.1" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                <rect x="4" y="13" width="7" height="7" rx="1.1" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                <rect x="13" y="13" width="7" height="7" rx="1.1" fill="none" stroke="currentColor" stroke-width="1.3"/>
               </svg>
             </button>
           </div>
-          <span class="toolbar__separator" aria-hidden="true"></span>
-          <div class="toolbar__cluster">
-            <div class="toolbar__select-wrap toolbar__select-wrap--wide" data-compact-hidden>
-              <select class="toolbar__select" data-style-select>
-                <option value="default">No Style</option>
-                <option value="focus">Focus</option>
-              </select>
-              <svg class="toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="toolbar__select-wrap toolbar__select-wrap--styles" data-compact-hidden>
-              <select class="toolbar__select" data-text-style-select aria-label="Styles">
-                <option value="paragraph-none">No Style</option>
-                <optgroup label="Paragraph Styles">
-                  <option value="paragraph-title">¶ Title</option>
-                  <option value="paragraph-heading1">¶ Heading 1</option>
-                  <option value="paragraph-heading2">¶ Heading 2</option>
-                  <option value="paragraph-blockquote">¶ Block Quote</option>
-                  <option value="paragraph-caption">¶ Caption</option>
-                  <option value="paragraph-centered">¶ Centered Text</option>
-                  <option value="paragraph-verse">¶ Verse</option>
-                  <option value="paragraph-attribution">¶ Attribution</option>
-                  <option value="paragraph-codeblock">¶ Code Block</option>
-                </optgroup>
-                <optgroup label="Character Styles">
-                  <option value="character-emphasis">a Emphasis</option>
-                  <option value="character-code-span">a Code Span</option>
-                </optgroup>
-              </select>
-              <svg class="toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="toolbar__select-wrap toolbar__select-wrap--font">
-              <select class="toolbar__select" data-font-select>
-                <option value='"Circe", -apple-system, system-ui, sans-serif'>Circe</option>
-                <option value='"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'>Roboto Mono</option>
-                <option value='"American Typewriter", Georgia, serif'>American Typewriter</option>
-                <option value="Palatino, 'Palatino Linotype', 'Book Antiqua', serif">Palatino</option>
-                <option value="Georgia, serif">Georgia</option>
-                <option value="'Times New Roman', Times, serif">Times New Roman</option>
-                <option value="Helvetica, Arial, sans-serif">Helvetica</option>
-                <option value="Arial, sans-serif">Arial</option>
-                <option value="-apple-system, system-ui, sans-serif">SF Pro</option>
-                <option value="'Courier New', Courier, monospace">Courier</option>
-              </select>
-              <svg class="toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="toolbar__select-wrap toolbar__select-wrap--weight">
-              <select class="toolbar__select" data-weight-select>
-                <option value="300">Light</option>
-                <option value="400">Regular</option>
-                <option value="500">Medium</option>
-                <option value="600">Semibold</option>
-              </select>
-              <svg class="toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="toolbar__select-wrap toolbar__select-wrap--size">
-              <select class="toolbar__select" data-size-select>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-                <option value="15">15</option>
-                <option value="16">16</option>
-                <option value="17">17</option>
-                <option value="18">18</option>
-                <option value="19">19</option>
-                <option value="20">20</option>
-                <option value="21">21</option>
-                <option value="22">22</option>
-                <option value="23">23</option>
-                <option value="24">24</option>
-                <option value="25">25</option>
-                <option value="26">26</option>
-                <option value="27">27</option>
-                <option value="28">28</option>
-              </select>
-              <svg class="toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-          </div>
-          <span class="toolbar__divider" aria-hidden="true" data-compact-hidden></span>
-          <div class="toolbar__cluster" data-compact-hidden>
-            <button type="button" class="toolbar__swatch toolbar__swatch--dark" data-action="theme-dark" aria-label="Dark theme"></button>
-            <button type="button" class="toolbar__swatch toolbar__swatch--light" data-action="theme-light" aria-label="Light theme"></button>
-          </div>
-          <span class="toolbar__divider" aria-hidden="true" data-compact-hidden></span>
-          <div class="toolbar__cluster">
-            <div class="toolbar__select-wrap toolbar__select-wrap--icon">
-              <svg class="toolbar__select-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M4 3h8M4 13h8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M8 4.5v7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M6.5 6L8 4.5 9.5 6M6.5 10L8 11.5 9.5 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <select class="toolbar__select" data-line-height-select>
-                <option value="1.0">1.0</option>
-                <option value="1.2">1.2</option>
-                <option value="1.4">1.4</option>
-                <option value="1.625">1.625</option>
-              </select>
-              <svg class="toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <button type="button" class="toolbar__button" data-action="align-left" aria-label="Align left">
-              <svg class="toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M3 4h10M3 8h7M3 12h9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </button>
-            <button type="button" class="toolbar__button" data-action="align-center" aria-label="Align center">
-              <svg class="toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M4 4h8M3 8h10M4 12h8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </button>
-            <button type="button" class="toolbar__button" data-action="align-right" aria-label="Align right">
-              <svg class="toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M3 4h10M6 8h7M4 12h9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </button>
-            <button type="button" class="toolbar__button" data-action="align-justify" aria-label="Align justify">
-              <svg class="toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M3 4h10M3 8h10M3 12h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </button>
-          </div>
-          <button type="button" class="toolbar__min" data-action="minimize">min</button>
-        </div>
-      </div>
-      <div class="toolbar__row toolbar__row--secondary">
-        <div class="toolbar__meta">
-          <div class="toolbar__words" data-word-count>0 words</div>
-          <div class="toolbar__zoom">
-            <button type="button" class="toolbar__button toolbar__button--small" data-action="zoom-out" aria-label="Zoom out">
-              <svg class="toolbar__icon toolbar__icon--small" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M5 7h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M10.5 10.5L14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </button>
-            <div class="toolbar__zoom-value" data-zoom-value>100%</div>
-            <button type="button" class="toolbar__button toolbar__button--small" data-action="zoom-in" aria-label="Zoom in">
-              <svg class="toolbar__icon toolbar__icon--small" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M7 5v4M5 7h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M10.5 10.5L14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
+          <div class="left-toolbar-spacing-menu" data-left-toolbar-spacing-menu hidden>
+            <button
+              type="button"
+              class="left-toolbar-spacing-menu__action"
+              data-left-toolbar-spacing-action
+              aria-pressed="false"
+            >
+              Изменить отступы
             </button>
           </div>
         </div>
       </div>
-    </header>
-    <div class="toolbar__row toolbar__row--secondary x101-tabs-row x101-mode-switcher" data-mode-switcher>
-      <div class="toolbar__cluster x101-tabs-group">
-        <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button is-active" data-mode="write" aria-pressed="true">Write</button>
-        <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-mode="plan" aria-pressed="false">Plan</button>
-        <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-mode="review" aria-pressed="false">Review</button>
+    </div>
+    <div class="floating-toolbar" data-toolbar>
+      <div class="floating-toolbar__shell" data-toolbar-shell>
+        <div class="floating-toolbar__transform-handle floating-toolbar__transform-handle--rotate" data-toolbar-rotate-handle aria-hidden="true">
+          <span class="floating-toolbar__transform-control floating-toolbar__transform-control--rotate">
+            <svg class="floating-toolbar__transform-icon floating-toolbar__transform-icon--rotate-horizontal" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <circle cx="4" cy="8" r="1.5" fill="currentColor"></circle>
+              <circle cx="8" cy="8" r="1.5" fill="currentColor"></circle>
+              <circle cx="12" cy="8" r="1.5" fill="currentColor"></circle>
+            </svg>
+            <svg class="floating-toolbar__transform-icon floating-toolbar__transform-icon--rotate-vertical" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <circle cx="8" cy="4" r="1.5" fill="currentColor"></circle>
+              <circle cx="8" cy="8" r="1.5" fill="currentColor"></circle>
+              <circle cx="8" cy="12" r="1.5" fill="currentColor"></circle>
+            </svg>
+          </span>
+        </div>
+        <div class="floating-toolbar__transform-handle floating-toolbar__transform-handle--width" data-toolbar-width-handle aria-hidden="true">
+          <span class="floating-toolbar__transform-control floating-toolbar__transform-control--width">
+            <svg class="floating-toolbar__transform-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M5 8L2 8M2 8L3.5 6.5M2 8L3.5 9.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M8 3L8 13" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"></path>
+              <path d="M11 8L14 8M14 8L12.5 6.5M14 8L12.5 9.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </span>
+        </div>
+        <div class="floating-toolbar__transform-handle floating-toolbar__transform-handle--scale" data-toolbar-scale-handle aria-hidden="true">
+          <span class="floating-toolbar__transform-control floating-toolbar__transform-control--scale">
+            <svg class="floating-toolbar__transform-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M8 2L8 5M8 2L6.5 3.5M8 2L9.5 3.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M8 14L8 11M8 14L6.5 12.5M8 14L9.5 12.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M2 8L5 8M2 8L3.5 6.5M2 8L3.5 9.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M14 8L11 8M14 8L12.5 6.5M14 8L12.5 9.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </span>
+        </div>
+        <div class="floating-toolbar__group floating-toolbar__group--fields">
+          <div class="floating-toolbar__select-wrap floating-toolbar__select-wrap--font" data-toolbar-item-key="font-select">
+            <div class="floating-toolbar__display" aria-hidden="true">
+              <span class="floating-toolbar__display-text" data-font-display>Roboto Ms</span>
+              <svg class="floating-toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <select class="floating-toolbar__select" data-font-select>
+              <option value='"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'>Roboto Ms</option>
+              <option value='"Circe", -apple-system, system-ui, sans-serif'>Circe</option>
+              <option value='"American Typewriter", Georgia, serif'>American Typewriter</option>
+              <option value="Palatino, 'Palatino Linotype', 'Book Antiqua', serif">Palatino</option>
+              <option value="Georgia, serif">Georgia</option>
+              <option value="'Times New Roman', Times, serif">Times New Roman</option>
+              <option value="Helvetica, Arial, sans-serif">Helvetica</option>
+              <option value="Arial, sans-serif">Arial</option>
+              <option value="-apple-system, system-ui, sans-serif">SF Pro</option>
+              <option value="'Courier New', Courier, monospace">Courier</option>
+            </select>
+          </div>
+          <div class="floating-toolbar__select-wrap floating-toolbar__select-wrap--weight" data-toolbar-item-key="weight-select">
+            <div class="floating-toolbar__display" aria-hidden="true">
+              <span class="floating-toolbar__display-text" data-weight-display>Light</span>
+              <svg class="floating-toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <select class="floating-toolbar__select" data-weight-select>
+              <option value="regular">Regular</option>
+              <option value="light">Light</option>
+              <option value="semibold">Semibold</option>
+              <option value="bold">Bold</option>
+              <option value="condensed">Condensed</option>
+              <option value="condensed-light">Condensed Light</option>
+              <option value="condensed-bold">Condensed Bold</option>
+            </select>
+          </div>
+          <div class="floating-toolbar__select-wrap floating-toolbar__select-wrap--size" data-toolbar-item-key="size-select">
+            <div class="floating-toolbar__display" aria-hidden="true">
+              <span class="floating-toolbar__display-text" data-size-display>12</span>
+              <svg class="floating-toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <select class="floating-toolbar__select" data-size-select>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+              <option value="21">21</option>
+              <option value="22">22</option>
+              <option value="23">23</option>
+              <option value="24">24</option>
+              <option value="25">25</option>
+              <option value="26">26</option>
+              <option value="27">27</option>
+              <option value="28">28</option>
+              <option value="32">32</option>
+              <option value="36">36</option>
+              <option value="40">40</option>
+              <option value="48">48</option>
+              <option value="56">56</option>
+              <option value="64">64</option>
+              <option value="72">72</option>
+              <option value="96">96</option>
+              <option value="144">144</option>
+              <option value="288">288</option>
+              <option value="__custom_size__">Font Panel...</option>
+            </select>
+          </div>
+          <div class="floating-toolbar__line-height-control" data-toolbar-item-key="line-height-select">
+            <span class="floating-toolbar__line-height-icon-wrap" aria-hidden="true">
+              <svg class="floating-toolbar__select-icon floating-toolbar__select-icon--line-height" viewBox="0 0 14 14" aria-hidden="true" focusable="false">
+                <path d="M7 1.7v10.6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+                <path d="M4.8 3.9L7 1.7l2.2 2.2" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M4.8 10.1L7 12.3l2.2-2.2" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <div class="floating-toolbar__select-wrap floating-toolbar__select-wrap--line-height-chip">
+              <div class="floating-toolbar__display floating-toolbar__display--line-height-chip" aria-hidden="true">
+                <span class="floating-toolbar__display-value" data-line-height-display>1.0</span>
+                <svg class="floating-toolbar__caret floating-toolbar__caret--line-height" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                  <path d="M3.5 4.8L6 7.2l2.5-2.4" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <select class="floating-toolbar__select" data-line-height-select>
+              <option value="0.5">0.5</option>
+              <option value="0.6">0.6</option>
+              <option value="0.7">0.7</option>
+              <option value="0.8">0.8</option>
+              <option value="0.9">0.9</option>
+              <option value="1.0">1.0</option>
+              <option value="1.1">1.1</option>
+              <option value="1.2">1.2</option>
+              <option value="1.3">1.3</option>
+              <option value="1.4">1.4</option>
+              <option value="1.5">1.5</option>
+              <option value="1.625">1.625</option>
+              <option value="1.75">1.75</option>
+              <option value="2.0">2.0</option>
+              <option value="__custom_line_height__">Other...</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <span class="floating-toolbar__separator" data-toolbar-item-key="separator-align" aria-hidden="true"></span>
+        <div class="floating-toolbar__group floating-toolbar__group--align">
+          <button type="button" class="floating-toolbar__button" data-action="align-left" aria-label="Align left">
+            <svg class="floating-toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M3 4h10M3 8h7M3 12h9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button type="button" class="floating-toolbar__button" data-action="align-center" aria-label="Align center">
+            <svg class="floating-toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M4 4h8M3 8h10M4 12h8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button type="button" class="floating-toolbar__button" data-action="align-right" aria-label="Align right">
+            <svg class="floating-toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M3 4h10M6 8h7M4 12h9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button type="button" class="floating-toolbar__button" data-action="align-justify" aria-label="Align justify">
+            <svg class="floating-toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M3 4h10M3 8h10M3 12h10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <span class="floating-toolbar__separator" data-toolbar-item-key="separator-final" aria-hidden="true"></span>
+        <div class="floating-toolbar__group floating-toolbar__group--final">
+          <button type="button" class="floating-toolbar__button floating-toolbar__button--final" data-action="toggle-wrap" aria-label="View density">
+            <svg class="floating-toolbar__icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M9.15 6.85L13 3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M9.9 3H13V6.1" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6.85 9.15L3 13" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M3 9.9V13H6.1" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="floating-toolbar-spacing-menu" data-toolbar-spacing-menu hidden>
+          <button
+            type="button"
+            class="floating-toolbar-spacing-menu__action"
+            data-toolbar-spacing-action
+            aria-pressed="false"
+          >
+            Изменить отступы
+          </button>
+        </div>
       </div>
     </div>
     <div class="app-layout">
@@ -243,6 +309,56 @@
       </aside>
       <main class="main-content">
         <div class="empty-state" aria-live="polite">Выберите раздел для начала работы</div>
+        <div class="configurator-panel" data-configurator-panel hidden>
+          <div class="configurator-panel__surface">
+            <div class="configurator-panel__divider" aria-hidden="true"></div>
+            <div class="configurator-panel__section configurator-panel__section--master">
+              <h3 class="configurator-panel__label">master</h3>
+              <div class="configurator-panel__bucket" data-configurator-bucket="master" aria-label="Master slots"></div>
+            </div>
+            <div class="configurator-panel__section configurator-panel__section--minimal">
+              <h3 class="configurator-panel__label">minimal</h3>
+              <div class="configurator-panel__bucket" data-configurator-bucket="minimal" aria-label="Minimal slots"></div>
+            </div>
+            <div class="configurator-panel__grid">
+              <div class="configurator-panel__column">
+                <button type="button" class="configurator-panel__slot is-selected" aria-pressed="true"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">Color Background</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+              </div>
+              <div class="configurator-panel__column">
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">No Background</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+              </div>
+              <div class="configurator-panel__column">
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">Black &amp; White</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+              </div>
+              <div class="configurator-panel__column">
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+              </div>
+              <div class="configurator-panel__column">
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+                <button type="button" class="configurator-panel__slot"><span class="configurator-panel__slot-icon" aria-hidden="true"></span><span class="configurator-panel__slot-text">New Slot</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="editor-panel-wrapper">
           <div class="editor-panel">
             <div class="editor-panel__meta" data-meta-panel>
@@ -306,12 +422,36 @@
       </aside>
     </div>
   </div>
-  <div class="status-bar status-bar--floating" aria-live="polite">
-    <span id="status" class="status">Готово</span>
-    <span class="status" data-save-state>Save: idle</span>
-    <span class="status" data-warning-state>Warnings: none</span>
-    <span class="status" data-perf-hint>Perf: normal</span>
-  </div>
+  <footer class="status-dock" aria-live="polite">
+    <div class="status-dock__side status-dock__side--left">
+      <span class="status-dock__item status-dock__item--word-count" data-word-count>0 words</span>
+    </div>
+    <div class="status-dock__center">
+      <span id="status" class="status-dock__item">Готово</span>
+      <span class="status-dock__item" data-save-state>Save: idle</span>
+      <span class="status-dock__item" data-warning-state>Warnings: none</span>
+      <span class="status-dock__item" data-perf-hint>Perf: normal</span>
+    </div>
+    <div class="status-dock__side status-dock__side--right">
+      <div class="status-dock__zoom">
+        <button type="button" class="status-dock__zoom-button" data-action="zoom-out" aria-label="Zoom out">
+          <svg class="status-dock__zoom-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M5 7h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <path d="M10.5 10.5L14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="status-dock__zoom-value" data-zoom-value>100%</div>
+        <button type="button" class="status-dock__zoom-button" data-action="zoom-in" aria-label="Zoom in">
+          <svg class="status-dock__zoom-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+            <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M7 5v4M5 7h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <path d="M10.5 10.5L14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </footer>
   <div class="context-menu" data-context-menu hidden></div>
   <div class="modal" data-settings-modal hidden>
     <div class="modal__backdrop" data-settings-close></div>
