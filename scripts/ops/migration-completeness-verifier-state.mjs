@@ -24,9 +24,9 @@ const DECLARED_MIGRATION_CHAIN = Object.freeze([
   {
     stepId: 'documents.target_populated_check',
     sourcePath: 'src/utils/fileManager.js',
-    requiredPattern: 'if (hasDirectoryContent(targetPath))',
+    requiredPattern: 'const targetHasAnyContent = hasDirectoryContent(targetPath);',
     inputCondition: 'documents_target_contains_files',
-    outputGuarantee: 'documents_target_path_selected_without_legacy_copy',
+    outputGuarantee: 'documents_target_content_detected_for_preservation_before_merge',
   },
   {
     stepId: 'documents.legacy_presence_check',
@@ -38,16 +38,16 @@ const DECLARED_MIGRATION_CHAIN = Object.freeze([
   {
     stepId: 'documents.copy_legacy_to_target',
     sourcePath: 'src/utils/fileManager.js',
-    requiredPattern: 'await copyDirectoryContents(legacyPath, targetPath);',
+    requiredPattern: 'await copyDirectoryContents(legacyPath, tempPath, { overwriteExisting: false });',
     inputCondition: 'documents_legacy_present_and_target_empty',
-    outputGuarantee: 'documents_legacy_content_copied_to_target',
+    outputGuarantee: 'documents_legacy_content_merged_into_temp_target',
   },
   {
     stepId: 'documents.write_marker',
     sourcePath: 'src/utils/fileManager.js',
-    requiredPattern: "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+    requiredPattern: "await fs.writeFile(tempMarkerPath, 'migrated from WriterEditor', 'utf8');",
     inputCondition: 'documents_copy_completed',
-    outputGuarantee: 'documents_migration_marker_written',
+    outputGuarantee: 'documents_migration_marker_written_before_target_swap',
   },
   {
     stepId: 'userdata.marker_check',

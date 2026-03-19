@@ -170,7 +170,7 @@ function evaluateSourceHardening(repoRoot) {
     {
       checkId: 'documents_migration_marker_written',
       sourcePath: 'src/utils/fileManager.js',
-      requiredPattern: "await fs.writeFile(markerPath, 'migrated from WriterEditor', 'utf8');",
+      requiredPattern: "await fs.writeFile(tempMarkerPath, 'migrated from WriterEditor', 'utf8');",
     },
     {
       checkId: 'userdata_migration_marker_written',
