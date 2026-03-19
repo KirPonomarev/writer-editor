@@ -1,0 +1,40 @@
+{
+  "artifactId": "PHASE04_SPATIAL_PREP_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_04",
+  "status": "PASS",
+  "phase04ReadinessStatus": "HOLD",
+  "sourcePhase03State": "phase03-baseline-docked-shell-state.mjs",
+  "lockedTargetIds": [
+    "BOUNDED_SPATIAL_SCOPE",
+    "SPATIAL_COMMIT_POINTS",
+    "SPATIAL_PERSISTENCE_BOUNDARIES",
+    "SPATIAL_BLOCKING_ACTIVATION"
+  ],
+  "lockedCommitPointIds": [
+    "DRAG_END",
+    "RESIZE_END",
+    "EXPLICIT_APPLY",
+    "WORKSPACE_SAVE",
+    "MODE_OR_PROFILE_SWITCH",
+    "APP_CLOSE_WITH_DEBOUNCE",
+    "SAFE_RESET_OR_LAST_STABLE_RESTORE"
+  ],
+  "lockedRuntimeGapIds": [
+    "SPATIAL_RUNTIME_NOT_EXECUTED",
+    "LAYOUT_SNAPSHOT_RUNTIME_NOT_EXECUTED",
+    "INVALID_LAYOUT_AND_MISSING_MONITOR_RECOVERY_NOT_EXECUTED"
+  ],
+  "proof": {
+    "phase03PassTrue": true,
+    "canonBoundedSpatialLayerPresentTrue": true,
+    "bibleBoundedSpatialShellPresentTrue": true,
+    "contextBoundedSpatialLayerPresentTrue": true,
+    "editorRootDockedTrue": true,
+    "transientOverlaysExcludedTrue": true,
+    "commitPointsLockedTrue": true,
+    "invalidLayoutBlockingRulePresentTrue": true,
+    "noFalsePhase04GreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T23:05:00.000Z"
+}
