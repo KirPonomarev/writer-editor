@@ -1,0 +1,51 @@
+{
+  "artifactId": "PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_07",
+  "status": "PASS",
+  "phase07SceneSwitchRuntimeMeasurementBaselineStatus": "PASS",
+  "phase07ReadinessStatus": "HOLD",
+  "sourcePhase07RuntimeMeasurementsFoundationState": "phase07-startup-project-open-scene-switch-reset-runtime-measurements-foundation-state.mjs",
+  "sourcePhase07StartupRuntimeMeasurementBaselineState": "phase07-startup-runtime-measurement-baseline-state.mjs",
+  "sourcePhase07BlockingBudgetsBaselineState": "phase07-startup-project-open-scene-switch-reset-blocking-budgets-baseline-state.mjs",
+  "phase07BlockingBudgetIds": [
+    "STARTUP",
+    "PROJECT_OPEN",
+    "SCENE_SWITCH",
+    "RESET"
+  ],
+  "boundSignalIds": [
+    "STARTUP_MEASUREMENT_BOUND",
+    "PROJECT_OPEN_MEASUREMENT_BOUND",
+    "SCENE_SWITCH_MEASUREMENT_BOUND",
+    "PERF_RUN_SCENE_SWITCH_MEASUREMENT_PRESENT",
+    "BLOCKING_BUDGET_ORDER_STARTUP_PROJECT_OPEN_SCENE_SWITCH_RESET"
+  ],
+  "lockedTargetIds": [
+    "STARTUP_MEASUREMENT_BOUND",
+    "PROJECT_OPEN_MEASUREMENT_BOUND",
+    "SCENE_SWITCH_MEASUREMENT_BOUND",
+    "RESET_MEASUREMENT_NOT_BOUND",
+    "BLOCKING_BUDGET_ORDER_STARTUP_PROJECT_OPEN_SCENE_SWITCH_RESET",
+    "PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE"
+  ],
+  "phase07PendingGapIds": [
+    "PHASE07_RESET_MEASUREMENT_NOT_BOUND"
+  ],
+  "proof": {
+    "previousPhase07BlockingBudgetsBaselinePassTrue": true,
+    "phase07RuntimeMeasurementsFoundationPassTrue": true,
+    "phase07StartupRuntimeMeasurementBaselinePassTrue": true,
+    "perfRunSceneSwitchMeasurementPresentTrue": true,
+    "startupMeasurementBoundTrue": true,
+    "projectOpenMeasurementBoundTrue": true,
+    "sceneSwitchMeasurementBoundTrue": true,
+    "resetMeasurementOpenTrue": true,
+    "blockingBudgetOrderExactTrue": true,
+    "phase07PendingGapIdsExactTrue": true,
+    "phase07ReadinessStatusHoldTrue": true,
+    "noFalsePhase07GreenTrue": true,
+    "packetInternalConsistencyTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T02:45:00.000Z"
+}

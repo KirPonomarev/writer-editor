@@ -11,6 +11,12 @@
   "savePayload": {
     "platformId": "node"
   },
+  "sceneSwitchProbe": {
+    "projectId": "perf-project",
+    "fromSceneId": "scene-1",
+    "toSceneId": "scene-2",
+    "toSceneText": "Secondary deterministic scene snapshot\n"
+  },
   "dispatchProbe": {
     "commandId": "cmd.project.export.docxMin",
     "payload": {
