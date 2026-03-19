@@ -1,0 +1,41 @@
+{
+  "artifactId": "PHASE06_REAL_PACK_VALUE_OR_EXPLICIT_SKIP_DECISION_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_06",
+  "status": "PASS",
+  "phase06DecisionStatus": "PASS",
+  "phase06PackDecision": "EXPLICIT_SKIP",
+  "phase06PackLayerRequired": false,
+  "sourcePhase05BoundedSpatialShellState": "phase05-bounded-spatial-shell-state.mjs",
+  "boundSignalIds": [
+    "PHASE05_BOUNDED_SPATIAL_SHELL_PASS",
+    "BIBLE_PACK_LAYER_OPTIONAL",
+    "BIBLE_PACK_LAYER_ONLY_IF_JUSTIFIED",
+    "CANON_PACK_LAYER_ONLY_IF_JUSTIFIED",
+    "CONTEXT_PACK_LAYER_NOT_REQUIRED",
+    "HANDOFF_PACK_LAYER_NOT_CURRENT_AXIS",
+    "NO_EXECUTABLE_PLUGIN_RUNTIME_V1",
+    "NO_MACHINE_BOUND_REQUIRED_PACK_FEATURE_EVIDENCE",
+    "PHASE06_EXPLICIT_SKIP_DECISION"
+  ],
+  "lockedTargetIds": [
+    "EXPLICIT_SKIP_IN_V1",
+    "MINIMAL_INTERNAL_PACK_LAYER_NOT_REQUIRED",
+    "NO_EXECUTABLE_PLUGIN_RUNTIME",
+    "ACTIVE_DOCS_REMAIN_OPTIONAL_ONLY"
+  ],
+  "phase06PendingGapIds": [],
+  "proof": {
+    "phase05BoundedSpatialShellPassTrue": true,
+    "biblePackLayerOptionalTrue": true,
+    "biblePackLayerOnlyIfJustifiedTrue": true,
+    "canonPackLayerOnlyIfJustifiedTrue": true,
+    "contextPackLayerNotRequiredTrue": true,
+    "handoffPackWorkNotCurrentAxisTrue": true,
+    "noExecutablePluginRuntimeV1True": true,
+    "noMachineBoundRequiredPackFeatureEvidenceTrue": true,
+    "explicitSkipDecisionTrue": true,
+    "noFalsePhase06GreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T00:35:00.000Z"
+}
