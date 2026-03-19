@@ -116,7 +116,9 @@ body {
 
 .app-layout {
   display: grid;
-  grid-template-columns: minmax(250px, 290px) minmax(640px, 1fr) minmax(280px, 340px);
+  --app-left-sidebar-width: 290px;
+  --app-right-sidebar-width: 340px;
+  grid-template-columns: minmax(250px, var(--app-left-sidebar-width)) minmax(640px, 1fr) minmax(280px, var(--app-right-sidebar-width));
   gap: 12px;
   padding: 12px 14px 76px;
   flex: 1;
@@ -691,6 +693,11 @@ body.dark-theme .sidebar__resize-handle:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
+.sidebar__resize-handle--right {
+  right: auto;
+  left: -2px;
+}
+
 .main-content {
   flex: 1;
   display: flex;
@@ -1244,7 +1251,9 @@ body.dark-theme .status-bar {
 
 @media (max-width: 1279px) {
   .app-layout {
-    grid-template-columns: minmax(230px, 260px) minmax(480px, 1fr) minmax(250px, 290px);
+    --app-left-sidebar-width: 260px;
+    --app-right-sidebar-width: 290px;
+    grid-template-columns: minmax(230px, var(--app-left-sidebar-width)) minmax(480px, 1fr) minmax(250px, var(--app-right-sidebar-width));
     gap: 10px;
     padding: 10px 10px 72px;
   }
@@ -1256,7 +1265,8 @@ body.dark-theme .status-bar {
 
 @media (max-width: 900px) {
   .app-layout {
-    grid-template-columns: minmax(210px, 240px) minmax(360px, 1fr);
+    --app-left-sidebar-width: 240px;
+    grid-template-columns: minmax(210px, var(--app-left-sidebar-width)) minmax(360px, 1fr);
   }
 
   .sidebar--right {
