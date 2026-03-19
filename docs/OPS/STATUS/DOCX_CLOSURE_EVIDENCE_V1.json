@@ -1,0 +1,15 @@
+{
+  "artifactId": "DOCX_CLOSURE_EVIDENCE_V1",
+  "schemaVersion": 1,
+  "status": "PASS",
+  "evidenceKind": "STATIC_RUNTIME_WIRING_VERIFICATION",
+  "checks": {
+    "exportChannelPresent": true,
+    "ipcHandlerPresent": true,
+    "documentXmlBuilderPresent": true,
+    "atomicWritePathPresent": true,
+    "menuCommandWiringPresent": true
+  },
+  "commandId": "cmd.project.export.docxMin",
+  "updatedAtUtc": "2026-03-19T11:30:00.000Z"
+}

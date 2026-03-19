@@ -1,0 +1,45 @@
+{
+  "artifactId": "PHASE03_TERMINOLOGY_MIGRATION_ARTIFACT_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_03",
+  "status": "PASS",
+  "migrationStatus": "PASS",
+  "sourceTerminologyMigrationFoundationState": "phase03-terminology-migration-foundation-state.mjs",
+  "scope": {
+    "shellCutoverPreconditionArtifact": true,
+    "legacyProfilesMapped": true,
+    "workspacesSeparatedFromShellModes": true,
+    "defaultMigratedShellMode": "CALM_DOCKED",
+    "safeRecoveryOverrideMode": "SAFE_RECOVERY"
+  },
+  "legacyProfileMap": {
+    "minimal": {
+      "targetProfile": "FOCUS"
+    },
+    "pro": {
+      "targetProfile": "BASELINE"
+    },
+    "guru": {
+      "targetProfile": "BASELINE",
+      "commandVisibility": "EXPANDED_ONLY"
+    }
+  },
+  "newTargetProfilesWithoutLegacyEquivalent": [
+    "SAFE",
+    "COMPACT"
+  ],
+  "taskWorkspaceIds": [
+    "WRITE",
+    "PLAN",
+    "REVIEW"
+  ],
+  "proof": {
+    "terminologyFoundationPassTrue": true,
+    "legacyProfileMappingFrozenTrue": true,
+    "taskWorkspaceSeparationFrozenTrue": true,
+    "defaultMigratedShellModeFrozenTrue": true,
+    "safeRecoveryOverrideFrozenTrue": true,
+    "noFalseTerminologyHoldTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T18:20:00.000Z"
+}

@@ -6,10 +6,14 @@ import {
   detachTiptapIpc,
   parseObservablePayload,
 } from './ipc.js'
+import { createTiptapRuntimeBridge } from './runtimeBridge.js'
 
 let currentEditorInstance = null
 let currentIpcSession = null
+let currentRuntimeBridge = null
 let unloadHookBound = false
+let runtimeCommandListenerAttached = false
+let recoveryRestoredListenerAttached = false
 
 function cloneDefaultMeta() {
   return {
@@ -123,20 +127,57 @@ function destroyCurrentEditor() {
   currentEditorInstance.destroy()
   currentEditorInstance = null
   currentIpcSession = null
+  currentRuntimeBridge = null
 }
 
-export function initTiptap(mountEl) {
+function ensureRuntimeListenersAttached() {
+  if (!window.electronAPI) return
+
+  if (!runtimeCommandListenerAttached && typeof window.electronAPI.onRuntimeCommand === 'function') {
+    window.electronAPI.onRuntimeCommand((payload) => {
+      currentRuntimeBridge?.handleRuntimeCommand(payload)
+    })
+    runtimeCommandListenerAttached = true
+  }
+
+  if (!recoveryRestoredListenerAttached && typeof window.electronAPI.onRecoveryRestored === 'function') {
+    window.electronAPI.onRecoveryRestored((payload) => {
+      currentRuntimeBridge?.handleRecoveryRestored(payload)
+    })
+    recoveryRestoredListenerAttached = true
+  }
+}
+
+export function initTiptap(mountEl, options = {}) {
   if (!mountEl) throw new Error('TipTap mount element not found (#editor)')
+  const attachIpc = options.attachIpc !== false
+
+  destroyCurrentEditor()
 
   destroyCurrentEditor()
 
   // legacy editor раньше работал через textContent; TipTapу нужен контейнер
   mountEl.innerHTML = ''
   mountEl.classList.add('tiptap-host')
+  mountEl.removeAttribute('contenteditable')
+  mountEl.setAttribute('data-editor-surface', 'tiptap')
+
+  const pageWrapEl = document.createElement('div')
+  pageWrapEl.className = 'editor-page-wrap tiptap-page-wrap'
+
+  const pageEl = document.createElement('div')
+  pageEl.className = 'editor-page tiptap-page'
+
+  const contentSurfaceEl = document.createElement('div')
+  contentSurfaceEl.className = 'editor-page__content tiptap-page__content'
 
   const contentEl = document.createElement('div')
   contentEl.className = 'tiptap-editor'
-  mountEl.appendChild(contentEl)
+
+  contentSurfaceEl.appendChild(contentEl)
+  pageEl.appendChild(contentSurfaceEl)
+  pageWrapEl.appendChild(pageEl)
+  mountEl.appendChild(pageWrapEl)
 
   const editor = new Editor({
     element: contentEl,
@@ -147,8 +188,21 @@ export function initTiptap(mountEl) {
     },
   })
 
-  currentIpcSession = createIpcSession(editor)
-  attachTiptapIpc(currentIpcSession)
+  currentIpcSession = attachIpc ? createIpcSession(editor) : null
+  if (currentIpcSession) {
+    attachTiptapIpc(currentIpcSession)
+  }
+  currentRuntimeBridge = createTiptapRuntimeBridge({
+    editor,
+    runtimeHandlers: options.runtimeHandlers || {},
+    onRecoveryRestored: ({ message }) => {
+      const statusElement = document.getElementById('status')
+      if (statusElement) {
+        statusElement.textContent = message
+      }
+    },
+  })
+  ensureRuntimeListenersAttached()
   currentEditorInstance = editor
 
   if (!unloadHookBound) {
@@ -163,4 +217,36 @@ export function initTiptap(mountEl) {
 
 export function destroyTiptap() {
   destroyCurrentEditor()
+}
+export function setTiptapRuntimeHandlers(runtimeHandlers = {}) {
+  if (!currentRuntimeBridge || typeof currentRuntimeBridge.setRuntimeHandlers !== 'function') {
+    return
+  }
+
+  currentRuntimeBridge.setRuntimeHandlers(runtimeHandlers)
+}
+
+export function getTiptapPlainText() {
+  return readEditorText(currentEditorInstance)
+}
+
+export function setTiptapPlainText(text = '') {
+  if (!currentEditorInstance) return
+  currentEditorInstance.commands.setContent(textToDoc(text), false)
+}
+
+export function undoTiptap() {
+  if (!currentEditorInstance || !currentEditorInstance.commands || typeof currentEditorInstance.commands.undo !== 'function') {
+    return { performed: false }
+  }
+
+  return { performed: Boolean(currentEditorInstance.commands.undo()) }
+}
+
+export function redoTiptap() {
+  if (!currentEditorInstance || !currentEditorInstance.commands || typeof currentEditorInstance.commands.redo !== 'function') {
+    return { performed: false }
+  }
+
+  return { performed: Boolean(currentEditorInstance.commands.redo()) }
 }

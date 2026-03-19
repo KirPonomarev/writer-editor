@@ -1,99 +1,76 @@
-# CONTEXT (Yalken vNext)
+# CONTEXT (Yalken Writer)
 
-Этот файл — сжатая “память проекта” для быстрого входа нового агента/разработчика: что мы делаем, какие инварианты vNext, что уже решено и куда двигаться дальше.
+Этот файл фиксирует фактическое текущее состояние репозитория после editor closure и factual doc cutover.
 
-## Как использовать (чтобы была “память” между аккаунтами)
-- Верхний канон решений/изменений: `CANON.md` (свободная интерпретация запрещена).
-- Канон проекта и дорожная карта: `docs/BIBLE.md`.
-- Этот репозиторий — единственный источник “постоянной памяти” для будущих агентов: у модели нет гарантированной памяти между сессиями/аккаунтами.
-- Держите `docs/CONTEXT.md` коротким: только устойчивые договорённости, ограничения, текущее состояние и ближайшие шаги.
-- Для истории изменений используйте `docs/WORKLOG.md` (короткие пункты по датам). Туда же можно добавлять важные решения из переписок (не обязательно только про код).
-- Не вставляйте сюда длинные логи чата целиком: лучше 3–10 буллетов “что решили / почему / что дальше”.
-- Для новых задач используйте “Spec‑Lite” процесс и шаблоны: `docs/PROCESS.md` и `docs/templates/*`.
-- Для передачи контекста между агентами используйте `npm run brain:handoff` (генерирует `docs/HANDOFF.md`).
-- При смене аккаунта/агента: используйте `docs/AGENT_START_PROMPT.md` как первое сообщение.
+## Как читать репозиторий
+- Верхний repo entrypoint: `CANON.md`
+- Active execution canon: `docs/OPS/STATUS/CANON_STATUS.json`
+- Target architecture: `docs/corex/COREX.v1.md`
+- Product map: `docs/BIBLE.md`
+- Process rules: `docs/PROCESS.md`
+- Quick re-entry: `docs/HANDOFF.md`
 
-## Протокол отклонений от плана (как мы “не уезжаем в сторону”)
-Когда появляется новая идея/задача, которая не укладывается в текущий план, действуем так:
-- Я помечаю это как **отклонение** и кратко объясняю риск (регрессии, усложнение, не соответствует канону/ТЗ, трогает ядро, добавляет зависимости, нарушает offline‑first / anti‑paywall).
-- Я предлагаю 3 пути на выбор:
-  1) **Остаться в плане** (самый безопасный путь).
-  2) **Минимальный компромисс** (маленький шаг, который частично решает проблему без большой перестройки).
-  3) **Перепланировать** (что выкидываем/что добавляем, какие риски и проверки).
-- Любые изменения “ядра” (редактор/рендер/сохранение/undo) делаем **только этапами** с ручной проверкой после каждого этапа.
-- Итоговое решение (что выбрали и почему) фиксируем 2–5 буллетами в `docs/WORKLOG.md`.
-- Любые исключения из канона фиксируем в `docs/ARCH_DIFF_LOG.md` (с причиной и rollback).
+## Stable Product Reality
+- Продукт: `Yalken Writer`
+- Режим: desktop-first, offline-first
+- Текущий release axis: `Writer v1`
+- Active product truth после cutover должна быть одна
 
-Контрольные вопросы перед поворотом:
-- Это точно нужно для MVP сейчас?
-- Что именно рискуем сломать?
-- Есть ли путь проще (без новой архитектуры/зависимостей)?
-- Какие 2–3 проверки подтвердят, что не регресснули?
+## What Is Already True
 
-## Два режима работы (ChatGPT → Codex)
-Чтобы не “зажимать” Codex и при этом держать процесс предсказуемым, работаем в 2 этапа:
+### Primary editor closure
+- Primary editor path закрыт machine-bound closure packet.
+- Tiptap path является основным editor path.
+- Legacy editor path больше не считается основной operating truth.
+- No input loss rollup закрыт.
+- IME composition для closure gate подтверждён.
+- Existing DOCX baseline связан с machine-carried evidence.
 
-- Этап 1 — **ChatGPT (Чат)**: формируем “ТЗ для Codex”, план этапов, промежуточные проверки и задаём до **3 уточняющих вопросов**. В этом режиме **не меняем файлы репозитория**.
-- Этап 2 — **Codex (Агент)**: по готовому ТЗ **вносит правки в репозиторий по умолчанию**, работает этапами и делает проверки из ТЗ.
-- Git-правило: write-этап не закрывается без commit-исхода (`COMMIT_CREATED` или допустимый `EXPLICIT_DEFERRED` для read-only/OPS_REPORT).
-- Агент может делать commit/push при явной команде в ТЗ или в сообщении.
-- Переход к следующему контуру без commit-исхода для write-задачи запрещён.
+### Phase status
+- Phase 00: PASS
+- Phase 01 prep: PASS
+- Phase 01 execute prep: PASS
+- Factual stale-doc surface выделен и переведён в machine-bound refresh map.
 
-## Snapshot: проект (vNext)
-- Название: `Yalken` (внутренний id: `craftsman`, desktop редактор для писателей)
-- Технологии: Electron + HTML/CSS (с сохранением текущей UI‑геометрии)
-- Режим: desktop‑first, offline‑first
-- Канон/дорожная карта: `docs/BIBLE.md`
+### Invariants
+- editor surface не источник истины,
+- локальная истина без network truth,
+- scenes remain isolated entities,
+- atomic write и recovery остаются обязательными,
+- DOCX остаётся первым export baseline.
 
-### Данные (vNext)
-- Проект‑папка (format v1): `manifest.json`, `styles.json`, `scenes/*.ydoc`, `recovery/*.md`, `assets/*`, `backups/*`.
-- Сцены — отдельные сущности (редактирование изолировано).
-- Обязательные бэкапы + атомарная запись + recovery (читаемый слепок).
+## Three Layers Of UI Truth
+- `System constraints`: устойчивые ограничения живут в repo canon и active execution canon.
+- `Current iteration visual snapshot`: временный implementation baseline конкретной UI-итерации.
+- `Advisory vision`: дальнее направление, которое не заменяет active canon.
 
-### Editor / storage (vNext)
-- Draft editor: Tiptap/ProseMirror (OSS).
-- Хранение сцены: `Y.Doc` per scene (в MVP без провайдера).
-- Экспорт v1: DOCX первым.
+## Current Open Delivery Axis
 
-### Важно про текущий код
-Кодовая база находится в переходе: в текущей реализации ещё могут встречаться legacy‑решения (например `.txt`/contenteditable). Канон и план миграции — `docs/BIBLE.md`.
+После editor closure следующий реальный delivery order такой:
+1. factual doc cutover and active doc reconciliation
+2. data core, recovery и command kernel stabilization
+3. user shell state и project workspace state
+4. bounded spatial layer
+5. optional internal pack layer only if justified
+6. release hardening
 
-## Политики (канон)
-### SECURITY_POLICY
-- Electron: CSP обязателен; navigation blocked; new-window blocked; no remote code.
-- IPC: allowlist каналов; payload validation; запрет путей/команд.
+## What Is Not Yet Claimed
+- shell core не считается завершённым,
+- spatial layer не считается завершённым,
+- pack layer не считается обязательным,
+- post-v1 freedom не считается текущим scope.
 
-### DEPENDENCY_POLICY
-- Allowlist (MVP): `esbuild`, `@tiptap/*` (OSS), `yjs`, DOCX lib (одна).
-- Forbidden: `@tiptap-pro/*`, UI frameworks, state managers.
-- CI: `npm audit` + OSS‑guard (`npm run oss:policy`).
+## Policies That Remain Binding
+- SECURITY_POLICY: CSP, blocked navigation, blocked new-window, no remote code
+- DEPENDENCY_POLICY: only OSS Tiptap layer, no `@tiptap-pro/*`, no UI frameworks, no state managers
+- YJS direction remains allowed later, but not a current release gate
 
-### YJS FALLBACK
-Если `.ydoc` повреждён: сцена read‑only, показывается `recovery.md`, возможна пересборка сцены.
+## Working Rules
+- write contours идут bounded slices,
+- false-green и stale-green запрещены,
+- следующий contour берётся только из текущего execution order,
+- factual docs должны описывать current operating reality, а не старый transition milestone.
 
-## UI/UX договорённости
-### Клавиатура и системные шорткаты (инвариант)
-- На macOS при кастомном `Menu.setApplicationMenu(...)` обязательно должен быть `Edit` menu (role `editMenu` или набор role‑items `copy/paste/selectAll/...`), иначе могут перестать работать `Cmd+C/V/A/X/Z` даже в `contenteditable`/inputs.
-- Если добавляем хоткеи в JS, ориентируемся на `event.code` (раскладка‑независимо), и не делаем глобальный `preventDefault()` “на всё с Cmd/Ctrl”.
-
-### Рамки/разделители
-- Рамка “страницы” `.editor-panel` должна совпадать по толщине/цвету с разделителем sidebar.
-- Для этого рамка `.editor-panel` использует `var(--sidebar-border)` (и в светлой, и в тёмной теме через переопределение переменной).
-
-### Toolbar: режимы `min/max`
-- Кнопка `min/max` должна находиться в общем потоке тулбара (без “пустого растяжения” справа).
-- По клику переключает компактный/полный режим тулбара, меняет текст `min` ⇄ `max`.
-- В компактном режиме остаются только “минимальные” контролы (new + font/weight/size + line-height + кнопка), остальное скрыто.
-
-## Текущее состояние (кратко)
-- Milestone 0 выполнен: канон зафиксирован в `docs/BIBLE.md`, добавлены OSS‑guard и CI.
-- Дальше работаем по roadmap в `docs/BIBLE.md` (M1: esbuild bundling → M2: Tiptap минимально → …).
-
-## Референсы и лицензии
-- Можно использовать сторонние open‑source редакторы как референс архитектуры/идей.
-- Важно: KDE/ghostwriter вероятно под GPL → прямое копирование кода в проект недопустимо, если проект не готов принимать GPL. Лучше фиксировать идеи/паттерны в заметках.
-
-## Следующие шаги (приоритет)
-1) Milestone 1: сборка renderer (`esbuild`) без изменения UI.
-2) Milestone 2: минимальный Tiptap editor (OSS) без смены хранения (временный bridge).
-3) Milestone 3–4: проектный формат v1 + Yjs per scene + recovery.
+## Next Practical Target
+- завершить factual doc refresh application across stale active docs,
+- затем перейти к Phase 02 stabilization contour.

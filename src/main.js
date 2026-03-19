@@ -191,6 +191,8 @@ function ensureX101MenuSections(template) {
   if (viewMenu.submenu.length === 0) {
     viewMenu.submenu.push(
       commandItem('view-settings', 'Settings', 'cmd.project.view.openSettings'),
+      commandItem('view-safe-reset', 'Safe Reset', 'cmd.project.view.safeReset'),
+      commandItem('view-restore-last-stable', 'Restore Last Stable', 'cmd.project.view.restoreLastStable'),
       commandItem('view-switch-write', 'Write Mode', 'cmd.project.window.switchModeWrite'),
       commandItem('view-switch-plan', 'Plan Mode', 'cmd.project.plan.switchMode'),
       commandItem('view-switch-review', 'Review Mode', 'cmd.project.review.switchMode'),
@@ -255,6 +257,8 @@ const USER_DATA_FOLDER_NAME = 'craftsman';
 const LEGACY_USER_DATA_FOLDER_NAME = 'WriterEditor';
 const MIGRATION_MARKER = '.migrated-from-writer-editor';
 const DEFAULT_PROJECT_NAME = 'Роман';
+const PROJECT_MANIFEST_FILENAME = 'project.craftsman.json';
+const PROJECT_MANIFEST_SCHEMA_VERSION = 1;
 const PROJECT_SUBFOLDERS = {
   roman: 'roman',
   mindmap: 'mindmap',
@@ -322,6 +326,10 @@ function getProjectSectionPath(section, projectName = DEFAULT_PROJECT_NAME) {
   return folder ? path.join(root, folder) : root;
 }
 
+function getProjectManifestPath(projectName = DEFAULT_PROJECT_NAME) {
+  return path.join(getProjectRootPath(projectName), PROJECT_MANIFEST_FILENAME);
+}
+
 function buildSectionDefinitions(labels) {
   return labels.map((label) => ({
     label,
@@ -337,6 +345,158 @@ function getSectionDocumentPath(sectionName, projectName = DEFAULT_PROJECT_NAME)
   const projectFolder = sanitizeFilename(projectName);
   const fileName = `${sanitizeFilename(sectionName)}.txt`;
   return path.join(root, projectFolder, fileName);
+}
+
+function createStableProjectId() {
+  const randomPart = typeof crypto.randomUUID === 'function'
+    ? crypto.randomUUID()
+    : crypto.randomBytes(16).toString('hex');
+  return `project-${randomPart}`;
+}
+
+function normalizeProjectManifest(manifest, projectName = DEFAULT_PROJECT_NAME) {
+  const source = manifest && typeof manifest === 'object' && !Array.isArray(manifest) ? manifest : {};
+  const projectId = typeof source.projectId === 'string' && source.projectId.trim().length > 0
+    ? source.projectId.trim()
+    : createStableProjectId();
+  const normalizedProjectName = typeof source.projectName === 'string' && source.projectName.trim().length > 0
+    ? source.projectName.trim()
+    : sanitizeFilename(projectName);
+  const createdAtUtc = typeof source.createdAtUtc === 'string' && source.createdAtUtc.trim().length > 0
+    ? source.createdAtUtc.trim()
+    : new Date().toISOString();
+
+  return {
+    schemaVersion: PROJECT_MANIFEST_SCHEMA_VERSION,
+    projectId,
+    projectName: normalizedProjectName,
+    createdAtUtc
+  };
+}
+
+async function readProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
+  const manifestPath = getProjectManifestPath(projectName);
+  try {
+    const raw = await fs.readFile(manifestPath, 'utf8');
+    return normalizeProjectManifest(JSON.parse(raw), projectName);
+  } catch {
+    return null;
+  }
+}
+
+async function ensureProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
+  const manifestPath = getProjectManifestPath(projectName);
+  const existingManifest = await readProjectManifest(projectName);
+  const nextManifest = normalizeProjectManifest(existingManifest || {}, projectName);
+  const shouldWrite = !existingManifest
+    || JSON.stringify(existingManifest) !== JSON.stringify(nextManifest);
+
+  if (shouldWrite) {
+    const writeResult = await queueDiskOperation(
+      () => fileManager.writeFileAtomic(manifestPath, JSON.stringify(nextManifest, null, 2)),
+      'save project manifest'
+    );
+    if (!writeResult.success) {
+      throw new Error(writeResult.error || 'Failed to save project manifest');
+    }
+  }
+
+  return {
+    manifestPath,
+    manifest: nextManifest
+  };
+}
+
+async function resolveProjectBindingForFile(filePath) {
+  if (typeof filePath !== 'string' || !filePath.trim()) {
+    return null;
+  }
+
+  const projectRoot = getProjectRootPath();
+  if (!isPathInside(projectRoot, filePath)) {
+    return null;
+  }
+
+  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  return {
+    manifestPath,
+    projectId: manifest.projectId
+  };
+}
+
+function getProjectRelativeFilePath(filePath, manifestPath) {
+  if (typeof filePath !== 'string' || !filePath.trim()) {
+    return '';
+  }
+  if (typeof manifestPath !== 'string' || !manifestPath.trim()) {
+    return '';
+  }
+
+  const projectRoot = path.dirname(manifestPath);
+  if (!(filePath === projectRoot || isPathInside(projectRoot, filePath))) {
+    return '';
+  }
+
+  const relativePath = path.relative(projectRoot, filePath);
+  return typeof relativePath === 'string' ? relativePath : '';
+}
+
+async function findProjectBindingByProjectId(projectId) {
+  const normalizedProjectId = typeof projectId === 'string' ? projectId.trim() : '';
+  if (!normalizedProjectId) {
+    return null;
+  }
+
+  const documentsRoot = fileManager.getDocumentsPath();
+  try {
+    const entries = await fs.readdir(documentsRoot, { withFileTypes: true });
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const manifestPath = path.join(documentsRoot, entry.name, PROJECT_MANIFEST_FILENAME);
+      try {
+        const raw = await fs.readFile(manifestPath, 'utf8');
+        const manifest = normalizeProjectManifest(JSON.parse(raw), entry.name);
+        if (manifest.projectId === normalizedProjectId) {
+          return {
+            manifestPath,
+            projectRoot: path.dirname(manifestPath),
+            manifest
+          };
+        }
+      } catch {
+        // ignore malformed or absent manifest candidates
+      }
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+async function resolveLastOpenedFilePath(settings) {
+  const source = settings && typeof settings === 'object' ? settings : {};
+  const lastProjectId = typeof source.lastProjectId === 'string' ? source.lastProjectId.trim() : '';
+  const lastProjectRelativePath = typeof source.lastProjectRelativePath === 'string' ? source.lastProjectRelativePath.trim() : '';
+
+  if (lastProjectId && lastProjectRelativePath) {
+    const projectBinding = await findProjectBindingByProjectId(lastProjectId);
+    if (projectBinding && projectBinding.projectRoot) {
+      const candidatePath = path.resolve(projectBinding.projectRoot, lastProjectRelativePath);
+      if ((candidatePath === projectBinding.projectRoot || isPathInside(projectBinding.projectRoot, candidatePath))
+        && await fileExists(candidatePath)) {
+        return candidatePath;
+      }
+    }
+  }
+
+  const externalPath = typeof source.lastExternalFilePath === 'string' ? source.lastExternalFilePath.trim() : '';
+  if (externalPath) {
+    return externalPath;
+  }
+
+  const legacyPath = typeof source.lastFilePath === 'string' ? source.lastFilePath.trim() : '';
+  return legacyPath || null;
 }
 
 // Путь к файлу настроек
@@ -437,12 +597,36 @@ function sendEditorText(payload) {
       title: typeof payload.title === 'string' ? payload.title : '',
       path: typeof payload.path === 'string' ? payload.path : '',
       kind: typeof payload.kind === 'string' ? payload.kind : '',
-      metaEnabled: Boolean(payload.metaEnabled)
+      metaEnabled: Boolean(payload.metaEnabled),
+      projectId: typeof payload.projectId === 'string' ? payload.projectId : ''
     };
     mainWindow.webContents.send('editor:set-text', safePayload);
     return;
   }
   mainWindow.webContents.send('editor:set-text', { content: '' });
+}
+
+async function attachProjectIdToEditorPayload(payload) {
+  const source = payload && typeof payload === 'object' ? payload : {};
+  const nextPayload = {
+    content: typeof source.content === 'string' ? source.content : '',
+    title: typeof source.title === 'string' ? source.title : '',
+    path: typeof source.path === 'string' ? source.path : '',
+    kind: typeof source.kind === 'string' ? source.kind : '',
+    metaEnabled: Boolean(source.metaEnabled),
+    projectId: ''
+  };
+
+  if (!nextPayload.path) {
+    return nextPayload;
+  }
+
+  const projectBinding = await resolveProjectBindingForFile(nextPayload.path);
+  if (projectBinding && typeof projectBinding.projectId === 'string' && projectBinding.projectId.trim()) {
+    nextPayload.projectId = projectBinding.projectId.trim();
+  }
+
+  return nextPayload;
 }
 
 function sendEditorFontSize(px) {
@@ -584,7 +768,31 @@ async function saveSettings(settings) {
 async function saveLastFile() {
   try {
     const settings = await loadSettings();
-    settings.lastFilePath = currentFilePath;
+    const projectBinding = await resolveProjectBindingForFile(currentFilePath);
+    if (projectBinding && projectBinding.projectId) {
+      const projectId = projectBinding.projectId;
+      const relativePath = getProjectRelativeFilePath(currentFilePath, projectBinding.manifestPath);
+      settings.projectId = projectId;
+      settings.projectManifestPath = projectBinding.manifestPath;
+      settings.lastProjectId = projectId;
+      if (relativePath) {
+        settings.lastProjectRelativePath = relativePath;
+      } else {
+        delete settings.lastProjectRelativePath;
+      }
+      delete settings.lastExternalFilePath;
+    } else {
+      delete settings.projectId;
+      delete settings.projectManifestPath;
+      delete settings.lastProjectId;
+      delete settings.lastProjectRelativePath;
+      if (typeof currentFilePath === 'string' && currentFilePath.trim()) {
+        settings.lastExternalFilePath = currentFilePath;
+      } else {
+        delete settings.lastExternalFilePath;
+      }
+    }
+    delete settings.lastFilePath;
     await saveSettings(settings);
   } catch (error) {
     // Тихая обработка ошибок
@@ -595,7 +803,7 @@ async function saveLastFile() {
 async function loadLastFile() {
   try {
     const settings = await loadSettings();
-    return settings.lastFilePath || null;
+    return await resolveLastOpenedFilePath(settings);
   } catch (error) {
     return null;
   }
@@ -1524,6 +1732,8 @@ async function ensureProjectStructure(projectName = DEFAULT_PROJECT_NAME) {
     await fs.mkdir(path.join(referencePath, section.dirName), { recursive: true });
   }
 
+  await ensureProjectManifest(projectName);
+
   return projectRoot;
 }
 
@@ -1838,13 +2048,13 @@ async function openLastFile() {
       currentFilePath = lastFilePath;
       await saveLastFile();
       const context = getDocumentContextFromPath(lastFilePath);
-      sendEditorText({
+      sendEditorText(await attachProjectIdToEditorPayload({
         content: fileResult.content,
         title: context.title,
         path: lastFilePath,
         kind: context.kind,
         metaEnabled: context.metaEnabled
-      });
+      }));
       setDirtyState(false);
       const contentHash = computeHash(fileResult.content);
       lastAutosaveHash = contentHash;
@@ -1884,7 +2094,7 @@ async function restoreAutosaveIfExists() {
       return false;
     }
 
-    sendEditorText({ content, title: 'Автосохранение', path: '', kind: 'autosave', metaEnabled: false });
+    sendEditorText(await attachProjectIdToEditorPayload({ content, title: 'Автосохранение', path: '', kind: 'autosave', metaEnabled: false }));
 
     setDirtyState(true); // восстановленный черновик считается несохранённым
     const autosaveHash = computeHash(content);
@@ -2238,13 +2448,13 @@ ipcMain.handle('ui:open-document', async (_, payload) => {
 
   currentFilePath = filePath;
   await saveLastFile();
-  sendEditorText({
+  sendEditorText(await attachProjectIdToEditorPayload({
     content,
     title: context.title,
     path: filePath,
     kind: context.kind,
     metaEnabled: context.metaEnabled
-  });
+  }));
   setDirtyState(false);
   const contentHash = computeHash(content);
   lastAutosaveHash = contentHash;
@@ -2401,7 +2611,7 @@ ipcMain.handle('ui:delete-node', async (_, payload) => {
   if (currentFilePath && isPathInside(nodePath, currentFilePath)) {
     currentFilePath = null;
     await saveLastFile();
-    sendEditorText({ content: '', title: '', path: '', kind: 'empty', metaEnabled: false });
+    sendEditorText(await attachProjectIdToEditorPayload({ content: '', title: '', path: '', kind: 'empty', metaEnabled: false }));
     setDirtyState(false);
     updateStatus('Готово');
   }
@@ -2498,7 +2708,7 @@ ipcMain.handle('ui:open-section', async (_, payload) => {
 
   currentFilePath = filePath;
   await saveLastFile();
-  sendEditorText({ content, title: sectionName, path: filePath, kind: 'legacy-section', metaEnabled: false });
+  sendEditorText(await attachProjectIdToEditorPayload({ content, title: sectionName, path: filePath, kind: 'legacy-section', metaEnabled: false }));
   setDirtyState(false);
   const contentHash = computeHash(content);
   lastAutosaveHash = contentHash;
@@ -2537,8 +2747,9 @@ function createWindow() {
 
   logPerfStage('create-window');
 
-  const useTiptap = process.env.USE_TIPTAP === '1';
-  mainWindow.loadFile('src/renderer/index.html', { query: { USE_TIPTAP: (process.env.USE_TIPTAP === '1' ? '1' : '0') } });
+  const useLegacyEditor = process.env.USE_LEGACY_EDITOR === '1';
+  const useTiptap = !useLegacyEditor;
+  mainWindow.loadFile('src/renderer/index.html', { query: { USE_TIPTAP: (useTiptap ? '1' : '0') } });
 
   mainWindow.webContents.on('before-input-event', (event, input) => {
     if (input.key === 'Escape' && mainWindow && mainWindow.isFullScreen()) {
@@ -2551,7 +2762,6 @@ function createWindow() {
   mainWindow.webContents.once('did-finish-load', async () => {
     mainWindow.webContents.setZoomFactor(1);
     logPerfStage('did-finish-load');
-    if (isDevMode) mainWindow.webContents.openDevTools({ mode: 'detach' });
     await loadSavedFontSize();
     const restored = await restoreAutosaveIfExists();
     if (!restored) {
@@ -2612,7 +2822,7 @@ async function handleNew() {
   if (!mainWindow) return;
   currentFilePath = null;
   await saveLastFile();
-  sendEditorText({ content: '', title: '', path: '', kind: 'empty', metaEnabled: false });
+  sendEditorText(await attachProjectIdToEditorPayload({ content: '', title: '', path: '', kind: 'empty', metaEnabled: false }));
   setDirtyState(false);
   lastAutosaveHash = null;
   updateStatus('Готово');
@@ -2641,13 +2851,13 @@ async function handleOpen() {
       currentFilePath = filePath;
       await saveLastFile();
       const context = getDocumentContextFromPath(filePath);
-      sendEditorText({
+      sendEditorText(await attachProjectIdToEditorPayload({
         content: fileResult.content,
         title: context.title,
         path: filePath,
         kind: context.kind,
         metaEnabled: context.metaEnabled
-      });
+      }));
       setDirtyState(false);
       const contentHash = computeHash(fileResult.content);
       lastAutosaveHash = contentHash;
@@ -3056,6 +3266,14 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.view.openSettings': () => {
     const delivered = sendRuntimeCommand('open-settings', { source: 'menu' });
+    return { ok: delivered };
+  },
+  'cmd.project.view.safeReset': () => {
+    const delivered = sendRuntimeCommand('safe-reset-shell', { source: 'menu' });
+    return { ok: delivered };
+  },
+  'cmd.project.view.restoreLastStable': () => {
+    const delivered = sendRuntimeCommand('restore-last-stable-shell', { source: 'menu' });
     return { ok: delivered };
   },
   'cmd.project.tools.openDiagnostics': () => {

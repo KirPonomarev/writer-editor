@@ -245,22 +245,48 @@ function applyIncomingPayload(payload) {
   session.applyIncomingPayload(payload)
 }
 
+export function createTextRequestHandler({ readObservablePayload, sendEditorTextResponse } = {}) {
+  const read = typeof readObservablePayload === 'function' ? readObservablePayload : (() => '')
+  const send = typeof sendEditorTextResponse === 'function' ? sendEditorTextResponse : (() => {})
+
+  return function handleTextRequest(payload = {}) {
+    const requestId = payload && Object.prototype.hasOwnProperty.call(payload, 'requestId')
+      ? payload.requestId
+      : undefined
+    const text = read()
+    send(requestId, text)
+    return { requestId, text }
+  }
+}
+
+export function createSetTextHandler({ applyIncomingPayload: applyPayload } = {}) {
+  const apply = typeof applyPayload === 'function' ? applyPayload : (() => {})
+
+  return function handleSetText(payload = {}) {
+    apply(payload)
+    return { applied: true, payload }
+  }
+}
 function ensureListenersAttached() {
   if (!window.electronAPI) return
 
   if (!textRequestListenerAttached && typeof window.electronAPI.onEditorTextRequest === 'function') {
-    window.electronAPI.onEditorTextRequest(({ requestId }) => {
-      const text = readCurrentObservablePayload()
-      window.electronAPI.sendEditorTextResponse(requestId, text)
+    const handleTextRequest = createTextRequestHandler({
+      readObservablePayload: readCurrentObservablePayload,
+      sendEditorTextResponse: (requestId, text) => {
+        window.electronAPI.sendEditorTextResponse(requestId, text)
+      },
     })
+    window.electronAPI.onEditorTextRequest(handleTextRequest)
     textRequestListenerAttached = true
     listenerCount += 1
   }
 
   if (!setTextListenerAttached && typeof window.electronAPI.onEditorSetText === 'function') {
-    window.electronAPI.onEditorSetText((payload) => {
-      applyIncomingPayload(payload)
+    const handleSetText = createSetTextHandler({
+      applyIncomingPayload,
     })
+    window.electronAPI.onEditorSetText(handleSetText)
     setTextListenerAttached = true
     listenerCount += 1
   }
