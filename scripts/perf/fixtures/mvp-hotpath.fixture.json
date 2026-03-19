@@ -17,6 +17,37 @@
     "toSceneId": "scene-2",
     "toSceneText": "Secondary deterministic scene snapshot\n"
   },
+  "resetProbe": {
+    "actionId": "safe-reset-shell",
+    "currentState": {
+      "mode": "review",
+      "leftTab": "search",
+      "rightTab": "history",
+      "spatialLayout": {
+        "leftSidebarWidth": 304,
+        "rightPanelWidth": 348,
+        "outlinePinned": false
+      },
+      "floatingToolbar": {
+        "x": 88,
+        "y": 44
+      }
+    },
+    "baselineState": {
+      "mode": "write",
+      "leftTab": "project",
+      "rightTab": "inspector",
+      "spatialLayout": {
+        "leftSidebarWidth": 280,
+        "rightPanelWidth": 320,
+        "outlinePinned": true
+      },
+      "floatingToolbar": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
   "dispatchProbe": {
     "commandId": "cmd.project.export.docxMin",
     "payload": {

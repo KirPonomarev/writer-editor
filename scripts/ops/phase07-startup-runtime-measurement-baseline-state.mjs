@@ -103,12 +103,10 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
       && foundationState.checkStatusById?.PROJECT_OPEN_MEASUREMENT_BOUND?.measured === true;
     const sceneSwitchMeasurementBound = foundationState.checkStatusById?.SCENE_SWITCH_MEASUREMENT_BOUND?.status === 'GREEN'
       && foundationState.checkStatusById?.SCENE_SWITCH_MEASUREMENT_BOUND?.measured === true;
-    const resetMeasurementOpen = foundationState.checkStatusById?.RESET_MEASUREMENT_NOT_BOUND?.status === 'OPEN_GAP'
-      && foundationState.checkStatusById?.RESET_MEASUREMENT_NOT_BOUND?.measured === false;
+    const resetMeasurementBound = foundationState.checkStatusById?.RESET_MEASUREMENT_BOUND?.status === 'GREEN'
+      && foundationState.checkStatusById?.RESET_MEASUREMENT_BOUND?.measured === true;
     const blockingBudgetOrderExact = arraysEqual(blockingBudgetsState.phase07BlockingBudgetIds || [], EXPECTED_BLOCKING_BUDGET_IDS);
-    const pendingGapIdsExact = arraysEqual(foundationState.phase07PendingGapIds || [], [
-      'PHASE07_RESET_MEASUREMENT_NOT_BOUND',
-    ]);
+    const pendingGapIdsExact = arraysEqual(foundationState.phase07PendingGapIds || [], []);
     const sourceFoundationMatches = packet?.sourcePhase07RuntimeMeasurementsFoundationState === 'phase07-startup-project-open-scene-switch-reset-runtime-measurements-foundation-state.mjs';
     const sourceBlockingBudgetsMatches = packet?.sourcePhase07BlockingBudgetsBaselineState === 'phase07-startup-project-open-scene-switch-reset-blocking-budgets-baseline-state.mjs';
     const packetPass = packet?.status === 'PASS';
@@ -128,7 +126,7 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
       && startupMeasurementBound
       && projectOpenMeasurementBound
       && sceneSwitchMeasurementBound
-      && resetMeasurementOpen
+      && resetMeasurementBound
       && blockingBudgetOrderExact
       && pendingGapIdsExact
       && arraysEqual(packet?.phase07BlockingBudgetIds || [], EXPECTED_BLOCKING_BUDGET_IDS)
@@ -151,7 +149,7 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
       STARTUP_MEASUREMENT_BOUND: asCheck(startupMeasurementBound ? 'GREEN' : 'OPEN_GAP', startupMeasurementBound, startupMeasurementBound ? 'STARTUP_MEASUREMENT_BOUND' : 'STARTUP_MEASUREMENT_NOT_BOUND'),
       PROJECT_OPEN_MEASUREMENT_BOUND: asCheck(projectOpenMeasurementBound ? 'GREEN' : 'OPEN_GAP', projectOpenMeasurementBound, projectOpenMeasurementBound ? 'PROJECT_OPEN_MEASUREMENT_BOUND' : 'PROJECT_OPEN_MEASUREMENT_NOT_BOUND'),
       SCENE_SWITCH_MEASUREMENT_PROGRESS_PRESERVED: asCheck(sceneSwitchMeasurementBound ? 'GREEN' : 'OPEN_GAP', sceneSwitchMeasurementBound, sceneSwitchMeasurementBound ? 'SCENE_SWITCH_MEASUREMENT_BOUND_BY_LATER_CONTOUR' : 'SCENE_SWITCH_MEASUREMENT_PROGRESS_MISSING'),
-      RESET_MEASUREMENT_NOT_BOUND: asCheck(resetMeasurementOpen ? 'OPEN_GAP' : 'OPEN_GAP', resetMeasurementOpen, resetMeasurementOpen ? 'RESET_MEASUREMENT_NOT_BOUND' : 'RESET_MEASUREMENT_BOUND_UNEXPECTED'),
+      RESET_MEASUREMENT_PROGRESS_PRESERVED: asCheck(resetMeasurementBound ? 'GREEN' : 'OPEN_GAP', resetMeasurementBound, resetMeasurementBound ? 'RESET_MEASUREMENT_BOUND_BY_LATER_CONTOUR' : 'RESET_MEASUREMENT_PROGRESS_MISSING'),
       BLOCKING_BUDGET_ORDER_EXACT: asCheck(blockingBudgetOrderExact ? 'GREEN' : 'OPEN_GAP', blockingBudgetOrderExact, blockingBudgetOrderExact ? 'BLOCKING_BUDGET_ORDER_EXACT' : 'BLOCKING_BUDGET_ORDER_DRIFT'),
       PACKET_PRESENT: asCheck(packetExists ? 'GREEN' : 'OPEN_GAP', packetExists, packetExists ? 'PACKET_PRESENT' : 'PACKET_MISSING'),
       PACKET_PASS: asCheck(packetPass ? 'GREEN' : 'OPEN_GAP', packetPass, packetPass ? 'PACKET_PASS' : 'PACKET_NOT_PASS'),

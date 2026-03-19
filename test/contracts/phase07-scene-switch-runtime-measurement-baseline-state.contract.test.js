@@ -24,9 +24,7 @@ const EXPECTED_LOCKED_TARGET_IDS = [
   'BLOCKING_BUDGET_ORDER_STARTUP_PROJECT_OPEN_SCENE_SWITCH_RESET',
   'PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE',
 ];
-const EXPECTED_PENDING_GAP_IDS = [
-  'PHASE07_RESET_MEASUREMENT_NOT_BOUND',
-];
+const EXPECTED_PENDING_GAP_IDS = [];
 
 function runStateScript(args = []) {
   return spawnSync(process.execPath, [SCRIPT_PATH, '--json', ...args], {
@@ -42,7 +40,7 @@ function parseJsonOutput(result) {
   return payload;
 }
 
-test('phase07 scene switch runtime measurement baseline: positive run passes with reset still open', () => {
+test('phase07 scene switch runtime measurement baseline: positive run stays green after reset binding', () => {
   const result = runStateScript();
   assert.equal(result.status, 0, `expected state script pass:\n${result.stdout}\n${result.stderr}`);
 
@@ -56,13 +54,12 @@ test('phase07 scene switch runtime measurement baseline: positive run passes wit
   assert.deepEqual(payload.boundSignalIds, EXPECTED_BOUND_SIGNAL_IDS);
   assert.deepEqual(payload.lockedTargetIds, EXPECTED_LOCKED_TARGET_IDS);
   assert.deepEqual(payload.phase07PendingGapIds, EXPECTED_PENDING_GAP_IDS);
-  assert.deepEqual(payload.openGapIds, [
-    'RESET_MEASUREMENT_NOT_BOUND',
-  ]);
+  assert.deepEqual(payload.openGapIds, []);
   assert.equal(payload.greenCheckIds.includes('PHASE07_RUNTIME_MEASUREMENTS_FOUNDATION_PASS'), true);
   assert.equal(payload.greenCheckIds.includes('PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_PASS'), true);
   assert.equal(payload.greenCheckIds.includes('PERF_RUN_SCENE_SWITCH_MEASUREMENT_PRESENT'), true);
   assert.equal(payload.greenCheckIds.includes('SCENE_SWITCH_MEASUREMENT_BOUND'), true);
+  assert.equal(payload.greenCheckIds.includes('RESET_MEASUREMENT_PROGRESS_PRESERVED'), true);
   assert.equal(payload.greenCheckIds.includes('PACKET_INTERNAL_CONSISTENCY'), true);
   assert.equal(payload.checkStatusById.PACKET_INTERNAL_CONSISTENCY.status, 'GREEN');
   assert.equal(payload.checkStatusById.PACKET_INTERNAL_CONSISTENCY.measured, true);
