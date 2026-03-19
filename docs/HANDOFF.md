@@ -47,6 +47,11 @@ _Generated: 2026-03-19_
 - No split-brain docs
 - Write contour should not advance without commit outcome
 
+## Active Mode
+- Orchestrator mode active.
+- Code writing delegated to separate code agent.
+- Zero-tail policy active.
+
 ## UI Reading Note
 - For UI tasks, system constraints stay in repo canon.
 - Visual snapshots are temporary iteration references, not permanent design law.
