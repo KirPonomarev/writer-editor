@@ -267,6 +267,7 @@ export async function evaluatePerfRun(input = {}) {
     };
   }
 
+  const startupStartedAt = performance.now();
   const { core, registry, runner, project } = await loadModules();
   const computedExpected = computeExpectedStateHash(core, fixture);
   if (!computedExpected.ok) {
@@ -276,6 +277,7 @@ export async function evaluatePerfRun(input = {}) {
   }
 
   const { runCommand, commandIds } = await buildCommandRunner(registry, runner, project);
+  const startupMs = roundMs(performance.now() - startupStartedAt);
   const samples = [];
   for (let index = 0; index < fixture.runs; index += 1) {
     const sample = await runPerfOnce({ fixture, runCommand, commandIds, core });
@@ -290,6 +292,7 @@ export async function evaluatePerfRun(input = {}) {
   const fixtureStateHash = samples.length > 0 ? samples[0].stateHash : '';
 
   const metrics = {
+    startup_ms: startupMs,
     open_median_ms: roundMs(median(openValues)),
     save_median_ms: roundMs(median(saveValues)),
     command_dispatch_p95_ms: roundMs(p95(dispatchValues)),

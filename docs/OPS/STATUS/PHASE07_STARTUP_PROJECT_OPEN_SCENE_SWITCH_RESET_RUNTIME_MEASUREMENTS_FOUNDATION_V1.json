@@ -13,7 +13,6 @@
     "RESET"
   ],
   "phase07PendingGapIds": [
-    "PHASE07_STARTUP_MEASUREMENT_NOT_BOUND",
     "PHASE07_SCENE_SWITCH_MEASUREMENT_NOT_BOUND",
     "PHASE07_RESET_MEASUREMENT_NOT_BOUND"
   ],
@@ -21,7 +20,7 @@
     "previousPhase07BlockingBudgetsBaselinePassTrue": true,
     "perfInfrastructurePresentTrue": true,
     "projectOpenMeasurementBoundTrue": true,
-    "startupMeasurementBindingOpenGapTrue": true,
+    "startupMeasurementBoundTrue": true,
     "sceneSwitchMeasurementBindingOpenGapTrue": true,
     "resetMeasurementBindingOpenGapTrue": true,
     "phase07BlockingBudgetIdsExactTrue": true,
