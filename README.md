@@ -1,119 +1,80 @@
-⚠️ Work in progress (early MVP). APIs and behavior may change.
+⚠️ Work in progress (writer v1). APIs and behavior may change.
 # Yalken
 
-Бесплатный аскетичный редактор для писателей, сценаристов и людей, работающих с текстом, которым важна эстетически спокойная и сосредоточенная среда.
+Спокойный локальный редактор для письма и редактуры текста.
 
-Программа создаётся как автономное десктоп-приложение для письма и редактуры текста, способное полноценно работать оффлайн.
-Веб-версия рассматривается как форма распространения в будущем, но не влияет на решения MVP.
+Yalken развивается как desktop-first и offline-first writer tool с приоритетом на:
+- надёжный primary editor path,
+- предсказуемое восстановление текста,
+- локальное хранение,
+- минимальную хрупкость интерфейса и процесса.
 
-## Канон (vNext)
-- Верхний канон решений/изменений (свободная интерпретация запрещена): `CANON.md`
-- COREX (философия + целевая архитектура + долгий горизонт): `docs/corex/COREX.md`
-- Канон проекта и дорожная карта: `docs/BIBLE.md`
-- Сжатый контекст (что сейчас, что нельзя ломать): `docs/CONTEXT.md`
-- Процесс (“Spec‑Lite”): `docs/PROCESS.md`
-- Последний срез для нового агента: `docs/HANDOFF.md`
-- Стартовый промпт для смены аккаунта/агента: `docs/AGENT_START_PROMPT.md`
+## Канон
+- Верхний repo canon: `CANON.md`
+- Active execution canon: `docs/OPS/STATUS/CANON_STATUS.json`
+- COREX: `docs/corex/COREX.v1.md`
+- Product map: `docs/BIBLE.md`
+- Factual context: `docs/CONTEXT.md`
+- Process: `docs/PROCESS.md`
+- Handoff: `docs/HANDOFF.md`
 
-## Цель проекта
-Создать простое, надёжное и приятное пространство для работы с текстом, в котором ничто не отвлекает от письма и редактуры.
+## Writer V1
 
-Проект развивается как инди-инициатива, ориентированная на ощущение работы с текстом, устойчивость и долгосрочное использование.
+Текущий ориентир версии:
+- strict data core,
+- reliable primary editor path,
+- zero-bypass command surface,
+- safe reset and restore,
+- bounded spatial containers,
+- mutable design that never threatens text truth.
 
-## Аудитория
-- сам автор проекта
-- узкий круг людей, регулярно работающих с текстом (проза, эссе, сценарии)
-- более широкая группа писателей и эстетов, ценящих минимализм, моношрифты и спокойную визуальную среду
+## Current State
 
-## Принципы
-- автономность и оффлайн-работа — норма
-- минимализм интерфейса и архитектуры
-- отсутствие отвлекающих элементов
-- программа остаётся бесплатной для пользователей
+Сейчас репозиторий находится в post-closure factual state:
+- primary editor path закрыт и является основным,
+- editor closure подтверждён machine-bound packet,
+- factual docs синхронизируются с active canon,
+- дальнейшая работа идёт уже после closure, а не внутри старого transition milestone.
 
-## MVP vNext (цель)
-См. `CANON.md` и `docs/BIBLE.md`. Коротко:
-- проект‑папка (manifest/styles/scenes/recovery/assets/backups)
+Это не означает, что весь `Writer v1` завершён:
+- data core hardening,
+- wider shell truth,
+- bounded spatial layer,
+- optional pack layer,
+- release hardening
+ещё впереди.
+
+## MVP Invariants
+- desktop-first
+- offline-first
 - сцены как отдельные сущности
-- Draft editor: Tiptap/ProseMirror (OSS) + `styleId`
-- Yjs per scene (в MVP без провайдера)
-- экспорт v1: DOCX первым
+- atomic write и recovery обязательны
+- DOCX first export
+- без cloud truth и network truth в `v1`
+- без executable plugin runtime в `v1`
 
-### Текущее состояние (legacy)
-Кодовая база находится в переходе на vNext. В текущей реализации могут ещё встречаться legacy‑решения (например, `.txt`‑документы). Канон и план миграции — в `docs/BIBLE.md`.
-
-### Осознанно не входит в MVP
+## Не входит в текущий scope
 - аккаунты и авторизация
 - синхронизация и облачное хранение
-- социальные функции
-- сложное форматирование
-- плагины и расширяемая архитектура
-- интеграция AI-функций
+- social layer
+- executable plugin ecosystem
+- platform-first expansion
 
-## Бесплатность
-Программа бесплатна для пользователей.
-В текущей версии отсутствуют платные функции, подписки и ограничения.
-
-## License
-- License: AGPL-3.0-or-later
-- Full license text: `LICENSE`
-- AGPL source-availability policy: `docs/OPERATIONS/AGPL_SOURCE_OFFER.md`
-- Contributions are licensed under AGPL-3.0-or-later.
-
-## Перспектива развития
-Проект может развиваться и расширяться со временем, однако текущая версия сознательно ограничена базовыми задачами письма и редактуры текста.
-
-В перспективе возможны:
-- аккаунты и синхронизация со сторонними хранилищами
-- социальное пространство для людей, объединённых интересом к письму и тексту
-- версии для мобильных платформ (Android и iOS)
-
-Будущие направления развития не влияют на архитектурные решения MVP.
-
-## Архитектура (на текущем этапе)
-Архитектура минимальная и может меняться по мере развития проекта.
-
-- автономное десктоп-приложение
-- локальное хранение данных
-- простая структура приложения
-- минимум зависимостей
-- упор на стабильность и читаемость кода
-
-## Запуск проекта
-Минимальные шаги для локального запуска:
-
+## Запуск
 ```bash
 npm install
 npm run dev
 ```
 
-## OSS policy (anti‑paywall)
-- Запрещены `@tiptap-pro/*`, `@tiptap-cloud/*`, `registry.tiptap.dev`, `TIPTAP_PRO_TOKEN`.
-- Локальная проверка: `npm run oss:policy`
-
-## Запуск
-- `npm install`
-- `npm run dev` — для разработки
-- `npm start` — запуск собранной версии
+## Проверка зависимостей
+- `npm run oss:policy`
 
 ## Сборка macOS
 - `npm run build:mac`
-- Результат появляется в папке `dist/`
 
-Иконка приложения (macOS):
-- положите логотип в `src/renderer/assets/logo.png`
-- выполните `npm run icons:mac` для генерации `build/icon.png` и `build/icon.icns`
+## Где хранятся данные
+- Основная папка: `~/Documents/craftsman/`
+- Дополнительные настройки: `app.getPath('userData')`
 
-## Где хранятся данные (macOS)
-- Основная папка: `~/Documents/craftsman/` (бренд приложения: Yalken; внутренний folder id пока остаётся legacy для совместимости)
-- Автосохранения/бэкапы: зависят от версии (legacy vs vNext). Актуальный формат данных vNext описан в `docs/BIBLE.md`.
-- При первом запуске Yalken автоматически копирует содержимое `~/Documents/WriterEditor/`, если новая папка пустая.
-- Дополнительные настройки (размеры окна, шрифт и т.п.) хранятся в каталоге, возвращаемом `app.getPath('userData')`
-
-## Контекст разработки (для нового агента/аккаунта)
-- Верхний канон: `CANON.md`
-- Канон проекта: `docs/BIBLE.md`
-- Сжатый контекст проекта и текущих решений: `docs/CONTEXT.md`
-- Короткая хронология изменений (что сделали/зачем/что дальше): `docs/WORKLOG.md`
-- Процесс разработки (“Spec‑Lite”) и шаблоны ТЗ/проверок: `docs/PROCESS.md` и `docs/templates/*`
-- “Мозг проекта” (handoff/log/new-task): `npm run brain:*` (см. `docs/PROCESS.md`)
+## Лицензия
+- AGPL-3.0-or-later
