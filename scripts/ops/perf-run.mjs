@@ -106,6 +106,16 @@ function validateFixtureShape(fixture) {
       issues.push('fixture_scene_switch_probe_invalid');
     }
   }
+  if (!fixture.resetProbe || typeof fixture.resetProbe !== 'object' || Array.isArray(fixture.resetProbe)) {
+    issues.push('fixture_reset_probe_invalid');
+  } else {
+    const actionId = typeof fixture.resetProbe.actionId === 'string' ? fixture.resetProbe.actionId.trim() : '';
+    const baseline = fixture.resetProbe.baselineState;
+    const current = fixture.resetProbe.currentState;
+    if (!actionId || !baseline || typeof baseline !== 'object' || Array.isArray(baseline) || !current || typeof current !== 'object' || Array.isArray(current)) {
+      issues.push('fixture_reset_probe_invalid');
+    }
+  }
   if (typeof fixture.expectedStateHash !== 'string' || !/^[a-f0-9]{64}$/u.test(fixture.expectedStateHash)) {
     issues.push('fixture_expected_state_hash_invalid');
   }
@@ -224,6 +234,36 @@ function measureSceneSwitch(state, probe) {
   };
 }
 
+function measureReset(probe) {
+  const actionId = typeof probe?.actionId === 'string' ? probe.actionId.trim() : '';
+  const baselineState = probe?.baselineState;
+  const currentState = probe?.currentState;
+  if (!actionId || !baselineState || typeof baselineState !== 'object' || Array.isArray(baselineState)) {
+    return { ok: false, reason: 'reset_probe_invalid' };
+  }
+  if (!currentState || typeof currentState !== 'object' || Array.isArray(currentState)) {
+    return { ok: false, reason: 'reset_probe_invalid' };
+  }
+
+  const startedAt = performance.now();
+  const resetState = {
+    ...cloneJson(baselineState),
+    actionId,
+    sourceStateHash: sha256(canonicalSerialize(currentState)),
+    statusText: 'Shell reset to baseline',
+    warningState: 'none',
+    perfHint: 'normal',
+  };
+  const proofHash = sha256(canonicalSerialize(resetState));
+  const resetMs = performance.now() - startedAt;
+
+  return {
+    ok: true,
+    resetMs,
+    proofHash,
+  };
+}
+
 async function buildCommandRunner(registryModule, runnerModule, projectModule) {
   const registry = registryModule.createCommandRegistry();
   projectModule.registerProjectCommands(registry, {
@@ -244,9 +284,11 @@ async function runPerfOnce(context) {
     dispatchMs: 0,
     coreApplyMs: 0,
     sceneSwitchMs: 0,
+    resetMs: 0,
     stateHash: '',
     dispatchCode: '',
     sceneSwitchProofHash: '',
+    resetProofHash: '',
   };
 
   const openStarted = performance.now();
@@ -274,6 +316,13 @@ async function runPerfOnce(context) {
   }
   sample.sceneSwitchMs = sceneSwitchResult.sceneSwitchMs;
   sample.sceneSwitchProofHash = sceneSwitchResult.proofHash;
+
+  const resetResult = measureReset(fixture.resetProbe || {});
+  if (!resetResult.ok) {
+    throw new Error(`reset_measurement_failed:${resetResult.reason}`);
+  }
+  sample.resetMs = resetResult.resetMs;
+  sample.resetProofHash = resetResult.proofHash;
 
   const saveStarted = performance.now();
   const saveResult = await runCommand(commandIds.PROJECT_SAVE, fixture.savePayload || {});
@@ -375,9 +424,11 @@ export async function evaluatePerfRun(input = {}) {
   const saveValues = samples.map((sample) => sample.saveMs);
   const dispatchValues = samples.map((sample) => sample.dispatchMs);
   const sceneSwitchValues = samples.map((sample) => sample.sceneSwitchMs);
+  const resetValues = samples.map((sample) => sample.resetMs);
   const hashSet = new Set(samples.map((sample) => sample.stateHash));
   const dispatchCodeSet = new Set(samples.map((sample) => sample.dispatchCode));
   const sceneSwitchProofHashSet = new Set(samples.map((sample) => sample.sceneSwitchProofHash));
+  const resetProofHashSet = new Set(samples.map((sample) => sample.resetProofHash));
   const fixtureStateHash = samples.length > 0 ? samples[0].stateHash : '';
 
   const metrics = {
@@ -385,6 +436,7 @@ export async function evaluatePerfRun(input = {}) {
     open_median_ms: roundMs(median(openValues)),
     save_median_ms: roundMs(median(saveValues)),
     scene_switch_ms: roundMs(median(sceneSwitchValues)),
+    reset_ms: roundMs(median(resetValues)),
     command_dispatch_p95_ms: roundMs(p95(dispatchValues)),
     core_apply_median_ms: roundMs(median(samples.map((sample) => sample.coreApplyMs))),
   };
@@ -398,6 +450,7 @@ export async function evaluatePerfRun(input = {}) {
   if (hashSet.size !== 1) failReasons.push('state_hash_non_deterministic');
   if (dispatchCodeSet.size !== 1) failReasons.push('dispatch_code_non_deterministic');
   if (sceneSwitchProofHashSet.size !== 1) failReasons.push('scene_switch_probe_non_deterministic');
+  if (resetProofHashSet.size !== 1) failReasons.push('reset_probe_non_deterministic');
 
   return {
     toolVersion: TOOL_VERSION,
@@ -434,6 +487,7 @@ function printTokens(result) {
     console.log(`PERF_OPEN_MEDIAN_MS=${result.metrics.open_median_ms}`);
     console.log(`PERF_SAVE_MEDIAN_MS=${result.metrics.save_median_ms}`);
     console.log(`PERF_SCENE_SWITCH_MS=${result.metrics.scene_switch_ms}`);
+    console.log(`PERF_RESET_MS=${result.metrics.reset_ms}`);
     console.log(`PERF_COMMAND_DISPATCH_P95_MS=${result.metrics.command_dispatch_p95_ms}`);
   }
   console.log(`PERF_FAIL_REASONS=${JSON.stringify(result.failReasons || [])}`);

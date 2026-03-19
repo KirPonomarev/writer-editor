@@ -12,16 +12,14 @@
     "SCENE_SWITCH",
     "RESET"
   ],
-  "phase07PendingGapIds": [
-    "PHASE07_RESET_MEASUREMENT_NOT_BOUND"
-  ],
+  "phase07PendingGapIds": [],
   "proof": {
     "previousPhase07BlockingBudgetsBaselinePassTrue": true,
     "perfInfrastructurePresentTrue": true,
     "projectOpenMeasurementBoundTrue": true,
     "startupMeasurementBoundTrue": true,
     "sceneSwitchMeasurementBoundTrue": true,
-    "resetMeasurementBindingOpenGapTrue": true,
+    "resetMeasurementBoundTrue": true,
     "phase07BlockingBudgetIdsExactTrue": true,
     "phase07PendingGapIdsExactTrue": true,
     "phase07PendingGapIdsHonestTrue": true,
@@ -30,5 +28,5 @@
     "noFalsePhase07GreenTrue": true,
     "packetInternalConsistencyTrue": true
   },
-  "updatedAtUtc": "2026-03-20T02:30:00.000Z"
+  "updatedAtUtc": "2026-03-20T03:10:00.000Z"
 }

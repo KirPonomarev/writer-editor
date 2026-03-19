@@ -25,6 +25,8 @@ test('perf runner contract: deterministic verdict and stable proof fields', () =
   assert.equal(Number.isFinite(Number(second.metrics && second.metrics.startup_ms)), true);
   assert.equal(Number.isFinite(Number(first.metrics && first.metrics.scene_switch_ms)), true);
   assert.equal(Number.isFinite(Number(second.metrics && second.metrics.scene_switch_ms)), true);
+  assert.equal(Number.isFinite(Number(first.metrics && first.metrics.reset_ms)), true);
+  assert.equal(Number.isFinite(Number(second.metrics && second.metrics.reset_ms)), true);
   assert.equal(first.probeStable, 1);
   assert.equal(second.probeStable, 1);
   assert.equal(first.stateHashStable, 1);
