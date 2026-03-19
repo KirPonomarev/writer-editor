@@ -1,0 +1,38 @@
+{
+  "artifactId": "PHASE07_STARTUP_PROJECT_OPEN_SCENE_SWITCH_RESET_BLOCKING_BUDGETS_BASELINE_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_07",
+  "status": "PASS",
+  "phase07BlockingBudgetsBaselineStatus": "PASS",
+  "phase07ReleaseReadinessStatus": "HOLD",
+  "phase07BlockingBudgetIds": [
+    "STARTUP",
+    "PROJECT_OPEN",
+    "SCENE_SWITCH",
+    "RESET"
+  ],
+  "phase07AdvisoryBudgetIds": [
+    "WORKSPACE_SWITCH",
+    "DETAILED_LAYOUT_SETTLE",
+    "PACK_APPLY_COST"
+  ],
+  "sourcePhase06DecisionState": "phase06-real-pack-value-or-explicit-skip-decision-state.mjs",
+  "phase07PendingGapIds": [
+    "PHASE07_RUNTIME_MEASUREMENTS_PENDING",
+    "PHASE07_FULL_RELEASE_HARDENING_NOT_OPENED"
+  ],
+  "proof": {
+    "phase06DecisionPassTrue": true,
+    "canonPerformanceHardeningDirectionPresentTrue": true,
+    "bibleReleaseHardeningDirectionPresentTrue": true,
+    "contextReleaseHardeningDirectionPresentTrue": true,
+    "executionSequencePerformanceHardeningPresentTrue": true,
+    "blockingBudgetIdsExactTrue": true,
+    "advisoryBudgetIdsExactTrue": true,
+    "sourcePhase06DecisionStateMatchesTrue": true,
+    "baselineOnlyTrue": true,
+    "releaseReadinessHeldTrue": true,
+    "noFalsePhase07GreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T00:50:00.000Z"
+}
