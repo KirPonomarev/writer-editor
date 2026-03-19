@@ -1,0 +1,43 @@
+{
+  "artifactId": "PHASE05_MOVABLE_SIDE_CONTAINERS_BASELINE_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_05",
+  "status": "PASS",
+  "phase05ReadinessStatus": "HOLD",
+  "sourcePhase04State": "phase04-spatial-prep-state.mjs",
+  "boundSignalIds": [
+    "LEFT_SIDE_CONTAINER_RUNTIME_BOUND",
+    "RIGHT_SIDE_CONTAINER_RUNTIME_BOUND",
+    "EDITOR_ROOT_FIXED_DOCKED",
+    "PROJECT_SCOPED_SPATIAL_LAYOUT_SNAPSHOT",
+    "COMMIT_POINT_ONLY_PERSISTENCE",
+    "SAFE_DEGRADATION_ON_INVALID_LAYOUT_OR_VIEWPORT_SHRINK"
+  ],
+  "lockedTargetIds": [
+    "BOUNDED_MOVABLE_SIDE_CONTAINERS_BASELINE",
+    "LEFT_SIDE_CONTAINER",
+    "RIGHT_SIDE_CONTAINER",
+    "EDITOR_ROOT_FIXED_DOCKED",
+    "PROJECT_SCOPED_SPATIAL_LAYOUT_SNAPSHOT",
+    "RESIZE_END_SAFE_RESET_LAST_STABLE_RESTORE",
+    "SAFE_DEGRADATION_ON_INVALID_LAYOUT_OR_VIEWPORT_SHRINK"
+  ],
+  "lockedCommitPointIds": [
+    "RESIZE_END",
+    "SAFE_RESET",
+    "RESTORE_LAST_STABLE"
+  ],
+  "phase05PendingGapIds": [],
+  "proof": {
+    "phase04PassTrue": true,
+    "editorRootFixedDockedTrue": true,
+    "leftAndRightResizeHandlesPresentTrue": true,
+    "projectScopedSpatialLayoutStorageTrue": true,
+    "commitPointPersistenceOnlyTrue": true,
+    "safeResetPersistsBaselineTrue": true,
+    "restoreLastStableRestoresSnapshotTrue": true,
+    "invalidViewportDegradesToBaselineTrue": true,
+    "noFalsePhase05GreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T23:55:00.000Z"
+}
