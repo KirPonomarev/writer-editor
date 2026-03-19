@@ -27,7 +27,6 @@ const EXPECTED_BLOCKING_BUDGET_IDS = Object.freeze([
 ]);
 
 const EXPECTED_PENDING_GAP_IDS = Object.freeze([
-  'PHASE07_SCENE_SWITCH_MEASUREMENT_NOT_BOUND',
   'PHASE07_RESET_MEASUREMENT_NOT_BOUND',
 ]);
 
@@ -128,10 +127,10 @@ function evaluatePhase07StartupProjectOpenSceneSwitchResetRuntimeMeasurementsFou
       || hasAny(perfRunSource, ['startup_ms', 'startupMs', 'measureStartup', 'startup measurement', 'startup'])
       || hasAny(perfStateSource, ['startup_ms', 'startupMs', 'measureStartup', 'startup measurement', 'startup']);
 
-    const sceneSwitchMeasurementBound = hasAny(perfLiteSource, ['sceneSwitchP95Ms', 'measureSceneSwitch', 'scene switch'])
-      || hasAny(perfBaselineSource, ['sceneSwitchP95Ms', 'measureSceneSwitch', 'scene switch'])
-      || hasAny(perfRunSource, ['sceneSwitchP95Ms', 'measureSceneSwitch', 'scene switch'])
-      || hasAny(perfStateSource, ['sceneSwitchP95Ms', 'measureSceneSwitch', 'scene switch']);
+    const sceneSwitchMeasurementBound = hasAny(perfLiteSource, ['sceneSwitchP95Ms', 'measureSceneSwitch', 'scene switch', 'scene_switch_ms'])
+      || hasAny(perfBaselineSource, ['sceneSwitchP95Ms', 'measureSceneSwitch', 'scene switch', 'scene_switch_ms'])
+      || hasAny(perfRunSource, ['sceneSwitchP95Ms', 'measureSceneSwitch', 'scene switch', 'scene_switch_ms'])
+      || hasAny(perfStateSource, ['sceneSwitchP95Ms', 'measureSceneSwitch', 'scene switch', 'scene_switch_ms']);
 
     const resetMeasurementBound = hasAny(perfLiteSource, ['resetP95Ms', 'measureReset', 'safe-reset-shell', 'reset measurement'])
       || hasAny(perfBaselineSource, ['resetP95Ms', 'measureReset', 'safe-reset-shell', 'reset measurement'])
@@ -139,9 +138,8 @@ function evaluatePhase07StartupProjectOpenSceneSwitchResetRuntimeMeasurementsFou
       || hasAny(perfStateSource, ['resetP95Ms', 'measureReset', 'safe-reset-shell', 'reset measurement']);
 
     const phase07PendingGapIdsHonest = arraysEqual(EXPECTED_PENDING_GAP_IDS, [
-      'PHASE07_SCENE_SWITCH_MEASUREMENT_NOT_BOUND',
       'PHASE07_RESET_MEASUREMENT_NOT_BOUND',
-    ]) && startupMeasurementBound && !sceneSwitchMeasurementBound && !resetMeasurementBound;
+    ]) && startupMeasurementBound && sceneSwitchMeasurementBound && !resetMeasurementBound;
 
     const phase07BlockingBudgetIdsExact = arraysEqual(packet?.phase07BlockingBudgetIds || [], EXPECTED_BLOCKING_BUDGET_IDS);
     const phase07PendingGapIdsExact = arraysEqual(packet?.phase07PendingGapIds || [], EXPECTED_PENDING_GAP_IDS);
@@ -163,14 +161,14 @@ function evaluatePhase07StartupProjectOpenSceneSwitchResetRuntimeMeasurementsFou
       && perfInfrastructurePresent
       && projectOpenMeasurementBound
       && startupMeasurementBound
-      && !sceneSwitchMeasurementBound
+      && sceneSwitchMeasurementBound
       && !resetMeasurementBound
       && phase07PendingGapIdsHonest
       && packet?.proof?.previousPhase07BlockingBudgetsBaselinePassTrue === true
       && packet?.proof?.perfInfrastructurePresentTrue === true
       && packet?.proof?.projectOpenMeasurementBoundTrue === true
       && packet?.proof?.startupMeasurementBoundTrue === true
-      && packet?.proof?.sceneSwitchMeasurementBindingOpenGapTrue === true
+      && packet?.proof?.sceneSwitchMeasurementBoundTrue === true
       && packet?.proof?.resetMeasurementBindingOpenGapTrue === true
       && packet?.proof?.phase07BlockingBudgetIdsExactTrue === true
       && packet?.proof?.phase07PendingGapIdsExactTrue === true
@@ -204,10 +202,10 @@ function evaluatePhase07StartupProjectOpenSceneSwitchResetRuntimeMeasurementsFou
         startupMeasurementBound,
         startupMeasurementBound ? 'STARTUP_MEASUREMENT_BOUND' : 'STARTUP_MEASUREMENT_NOT_BOUND',
       ),
-      SCENE_SWITCH_MEASUREMENT_NOT_BOUND: asCheck(
-        sceneSwitchMeasurementBound ? 'OPEN_GAP' : 'OPEN_GAP',
+      SCENE_SWITCH_MEASUREMENT_BOUND: asCheck(
+        sceneSwitchMeasurementBound ? 'GREEN' : 'OPEN_GAP',
         sceneSwitchMeasurementBound,
-        sceneSwitchMeasurementBound ? 'SCENE_SWITCH_MEASUREMENT_BOUND_UNEXPECTED' : 'SCENE_SWITCH_MEASUREMENT_NOT_BOUND',
+        sceneSwitchMeasurementBound ? 'SCENE_SWITCH_MEASUREMENT_BOUND' : 'SCENE_SWITCH_MEASUREMENT_NOT_BOUND',
       ),
       RESET_MEASUREMENT_NOT_BOUND: asCheck(
         resetMeasurementBound ? 'OPEN_GAP' : 'OPEN_GAP',

@@ -54,6 +54,10 @@ function roundMs(value) {
   return Number(value.toFixed(3));
 }
 
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 function parseArgs(argv) {
   const out = {
     fixturePath: DEFAULT_FIXTURE_PATH,
@@ -92,6 +96,16 @@ function validateFixtureShape(fixture) {
   if (!Number.isInteger(fixture.runs) || fixture.runs < 3 || fixture.runs > 51) issues.push('fixture_runs_invalid');
   if (!Array.isArray(fixture.coreCommands) || fixture.coreCommands.length < 1) issues.push('fixture_core_commands_invalid');
   if (!fixture.dispatchProbe || typeof fixture.dispatchProbe !== 'object') issues.push('fixture_dispatch_probe_invalid');
+  if (!fixture.sceneSwitchProbe || typeof fixture.sceneSwitchProbe !== 'object' || Array.isArray(fixture.sceneSwitchProbe)) {
+    issues.push('fixture_scene_switch_probe_invalid');
+  } else {
+    const projectId = typeof fixture.sceneSwitchProbe.projectId === 'string' ? fixture.sceneSwitchProbe.projectId.trim() : '';
+    const fromSceneId = typeof fixture.sceneSwitchProbe.fromSceneId === 'string' ? fixture.sceneSwitchProbe.fromSceneId.trim() : '';
+    const toSceneId = typeof fixture.sceneSwitchProbe.toSceneId === 'string' ? fixture.sceneSwitchProbe.toSceneId.trim() : '';
+    if (!projectId || !fromSceneId || !toSceneId || fromSceneId === toSceneId) {
+      issues.push('fixture_scene_switch_probe_invalid');
+    }
+  }
   if (typeof fixture.expectedStateHash !== 'string' || !/^[a-f0-9]{64}$/u.test(fixture.expectedStateHash)) {
     issues.push('fixture_expected_state_hash_invalid');
   }
@@ -144,9 +158,69 @@ function computeExpectedStateHash(core, fixture) {
   }
   return {
     ok: true,
+    state: current,
     stateHash: core.hashCoreState(current),
     reason: '',
     error: null,
+  };
+}
+
+function buildSceneSwitchProbeState(baseState, fixture) {
+  const probe = fixture && fixture.sceneSwitchProbe && typeof fixture.sceneSwitchProbe === 'object'
+    ? fixture.sceneSwitchProbe
+    : null;
+  const projectId = typeof probe?.projectId === 'string' ? probe.projectId.trim() : '';
+  const fromSceneId = typeof probe?.fromSceneId === 'string' ? probe.fromSceneId.trim() : '';
+  const toSceneId = typeof probe?.toSceneId === 'string' ? probe.toSceneId.trim() : '';
+  const toSceneText = typeof probe?.toSceneText === 'string' ? probe.toSceneText : '';
+  if (!projectId || !fromSceneId || !toSceneId || fromSceneId === toSceneId) {
+    return { ok: false, reason: 'scene_switch_probe_invalid' };
+  }
+
+  const nextState = cloneJson(baseState);
+  const project = nextState?.data?.projects?.[projectId];
+  if (!project || !project.scenes || typeof project.scenes !== 'object' || Array.isArray(project.scenes)) {
+    return { ok: false, reason: 'scene_switch_project_missing' };
+  }
+  if (!project.scenes[fromSceneId]) {
+    return { ok: false, reason: 'scene_switch_from_scene_missing' };
+  }
+  if (!project.scenes[toSceneId]) {
+    project.scenes[toSceneId] = {
+      id: toSceneId,
+      text: toSceneText,
+    };
+  }
+
+  return {
+    ok: true,
+    probe: { projectId, fromSceneId, toSceneId },
+    state: nextState,
+  };
+}
+
+function measureSceneSwitch(state, probe) {
+  const project = state?.data?.projects?.[probe.projectId];
+  const fromScene = project?.scenes?.[probe.fromSceneId];
+  const toScene = project?.scenes?.[probe.toSceneId];
+  if (!project || !fromScene || !toScene) {
+    return { ok: false, reason: 'scene_switch_state_missing' };
+  }
+
+  const startedAt = performance.now();
+  const selection = {
+    current: fromScene.id,
+    next: toScene.id,
+    fromTextLength: String(fromScene.text || '').length,
+    toTextLength: String(toScene.text || '').length,
+  };
+  const proofHash = sha256(canonicalSerialize(selection));
+  const sceneSwitchMs = performance.now() - startedAt;
+
+  return {
+    ok: true,
+    sceneSwitchMs,
+    proofHash,
   };
 }
 
@@ -169,8 +243,10 @@ async function runPerfOnce(context) {
     saveMs: 0,
     dispatchMs: 0,
     coreApplyMs: 0,
+    sceneSwitchMs: 0,
     stateHash: '',
     dispatchCode: '',
+    sceneSwitchProofHash: '',
   };
 
   const openStarted = performance.now();
@@ -187,6 +263,17 @@ async function runPerfOnce(context) {
     throw new Error(`core_sequence_failed:${expected.reason}`);
   }
   sample.stateHash = expected.stateHash;
+
+  const sceneSwitchState = buildSceneSwitchProbeState(expected.state, fixture);
+  if (!sceneSwitchState.ok) {
+    throw new Error(`scene_switch_probe_failed:${sceneSwitchState.reason}`);
+  }
+  const sceneSwitchResult = measureSceneSwitch(sceneSwitchState.state, sceneSwitchState.probe);
+  if (!sceneSwitchResult.ok) {
+    throw new Error(`scene_switch_measurement_failed:${sceneSwitchResult.reason}`);
+  }
+  sample.sceneSwitchMs = sceneSwitchResult.sceneSwitchMs;
+  sample.sceneSwitchProofHash = sceneSwitchResult.proofHash;
 
   const saveStarted = performance.now();
   const saveResult = await runCommand(commandIds.PROJECT_SAVE, fixture.savePayload || {});
@@ -287,14 +374,17 @@ export async function evaluatePerfRun(input = {}) {
   const openValues = samples.map((sample) => sample.openMs);
   const saveValues = samples.map((sample) => sample.saveMs);
   const dispatchValues = samples.map((sample) => sample.dispatchMs);
+  const sceneSwitchValues = samples.map((sample) => sample.sceneSwitchMs);
   const hashSet = new Set(samples.map((sample) => sample.stateHash));
   const dispatchCodeSet = new Set(samples.map((sample) => sample.dispatchCode));
+  const sceneSwitchProofHashSet = new Set(samples.map((sample) => sample.sceneSwitchProofHash));
   const fixtureStateHash = samples.length > 0 ? samples[0].stateHash : '';
 
   const metrics = {
     startup_ms: startupMs,
     open_median_ms: roundMs(median(openValues)),
     save_median_ms: roundMs(median(saveValues)),
+    scene_switch_ms: roundMs(median(sceneSwitchValues)),
     command_dispatch_p95_ms: roundMs(p95(dispatchValues)),
     core_apply_median_ms: roundMs(median(samples.map((sample) => sample.coreApplyMs))),
   };
@@ -307,6 +397,7 @@ export async function evaluatePerfRun(input = {}) {
   }
   if (hashSet.size !== 1) failReasons.push('state_hash_non_deterministic');
   if (dispatchCodeSet.size !== 1) failReasons.push('dispatch_code_non_deterministic');
+  if (sceneSwitchProofHashSet.size !== 1) failReasons.push('scene_switch_probe_non_deterministic');
 
   return {
     toolVersion: TOOL_VERSION,
@@ -339,8 +430,10 @@ function printTokens(result) {
   console.log(`PERF_STATE_HASH_STABLE=${result.stateHashStable}`);
   console.log(`PERF_PROBE_STABLE=${result.probeStable}`);
   if (result.metrics && typeof result.metrics === 'object') {
+    console.log(`PERF_STARTUP_MS=${result.metrics.startup_ms}`);
     console.log(`PERF_OPEN_MEDIAN_MS=${result.metrics.open_median_ms}`);
     console.log(`PERF_SAVE_MEDIAN_MS=${result.metrics.save_median_ms}`);
+    console.log(`PERF_SCENE_SWITCH_MS=${result.metrics.scene_switch_ms}`);
     console.log(`PERF_COMMAND_DISPATCH_P95_MS=${result.metrics.command_dispatch_p95_ms}`);
   }
   console.log(`PERF_FAIL_REASONS=${JSON.stringify(result.failReasons || [])}`);

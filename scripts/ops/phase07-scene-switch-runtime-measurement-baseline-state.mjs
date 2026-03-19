@@ -5,11 +5,12 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import { evaluatePhase07StartupProjectOpenSceneSwitchResetRuntimeMeasurementsFoundationState } from './phase07-startup-project-open-scene-switch-reset-runtime-measurements-foundation-state.mjs';
+import { evaluatePhase07StartupRuntimeMeasurementBaselineState } from './phase07-startup-runtime-measurement-baseline-state.mjs';
 import { evaluatePhase07StartupProjectOpenSceneSwitchResetBlockingBudgetsBaselineState } from './phase07-startup-project-open-scene-switch-reset-blocking-budgets-baseline-state.mjs';
 
-const FAIL_REASON_FORCED_NEGATIVE = 'E_PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_FORCED_NEGATIVE';
-const FAIL_REASON_UNEXPECTED = 'E_PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_UNEXPECTED';
-const PACKET_PATH = 'docs/OPS/STATUS/PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_V1.json';
+const FAIL_REASON_FORCED_NEGATIVE = 'E_PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE_FORCED_NEGATIVE';
+const FAIL_REASON_UNEXPECTED = 'E_PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE_UNEXPECTED';
+const PACKET_PATH = 'docs/OPS/STATUS/PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE_V1.json';
 const PERF_RUN_SCRIPT = 'scripts/ops/perf-run.mjs';
 
 const EXPECTED_BLOCKING_BUDGET_IDS = Object.freeze([
@@ -22,17 +23,18 @@ const EXPECTED_BLOCKING_BUDGET_IDS = Object.freeze([
 const EXPECTED_BOUND_SIGNAL_IDS = Object.freeze([
   'STARTUP_MEASUREMENT_BOUND',
   'PROJECT_OPEN_MEASUREMENT_BOUND',
-  'PERF_RUN_STARTUP_MEASUREMENT_PRESENT',
+  'SCENE_SWITCH_MEASUREMENT_BOUND',
+  'PERF_RUN_SCENE_SWITCH_MEASUREMENT_PRESENT',
   'BLOCKING_BUDGET_ORDER_STARTUP_PROJECT_OPEN_SCENE_SWITCH_RESET',
 ]);
 
 const EXPECTED_LOCKED_TARGET_IDS = Object.freeze([
   'STARTUP_MEASUREMENT_BOUND',
   'PROJECT_OPEN_MEASUREMENT_BOUND',
-  'SCENE_SWITCH_MEASUREMENT_NOT_BOUND',
+  'SCENE_SWITCH_MEASUREMENT_BOUND',
   'RESET_MEASUREMENT_NOT_BOUND',
   'BLOCKING_BUDGET_ORDER_STARTUP_PROJECT_OPEN_SCENE_SWITCH_RESET',
-  'PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE',
+  'PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE',
 ]);
 
 function parseArgs(argv) {
@@ -76,19 +78,20 @@ function runPerfRunJson() {
   };
 }
 
-function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
+function evaluatePhase07SceneSwitchRuntimeMeasurementBaselineState(input = {}) {
   const forceNegative = Boolean(input.forceNegative);
 
   try {
     const foundationState = evaluatePhase07StartupProjectOpenSceneSwitchResetRuntimeMeasurementsFoundationState({});
+    const startupBaselineState = evaluatePhase07StartupRuntimeMeasurementBaselineState({});
     const blockingBudgetsState = evaluatePhase07StartupProjectOpenSceneSwitchResetBlockingBudgetsBaselineState({});
     const perfRun = runPerfRunJson();
     const packetExists = fs.existsSync(path.resolve(PACKET_PATH));
     const packet = packetExists ? readJson(PACKET_PATH) : null;
 
-    const perfRunStartupMeasurementPresent = perfRun.status === 0
+    const perfRunSceneSwitchMeasurementPresent = perfRun.status === 0
       && perfRun.parsed
-      && Number.isFinite(Number(perfRun.parsed.metrics?.startup_ms));
+      && Number.isFinite(Number(perfRun.parsed.metrics?.scene_switch_ms));
     const blockingBudgetsBaselinePass = blockingBudgetsState.ok === true
       && blockingBudgetsState.overallStatus === 'PASS'
       && blockingBudgetsState.phase07BlockingBudgetsBaselineStatus === 'PASS'
@@ -97,6 +100,10 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
       && foundationState.overallStatus === 'PASS'
       && foundationState.phase07RuntimeMeasurementsFoundationStatus === 'PASS'
       && foundationState.phase07RuntimeMeasurementsReadinessStatus === 'HOLD';
+    const startupBaselinePass = startupBaselineState.ok === true
+      && startupBaselineState.overallStatus === 'PASS'
+      && startupBaselineState.phase07StartupRuntimeMeasurementBaselineStatus === 'PASS'
+      && startupBaselineState.phase07ReadinessStatus === 'HOLD';
     const startupMeasurementBound = foundationState.checkStatusById?.STARTUP_MEASUREMENT_BOUND?.status === 'GREEN'
       && foundationState.checkStatusById?.STARTUP_MEASUREMENT_BOUND?.measured === true;
     const projectOpenMeasurementBound = foundationState.checkStatusById?.PROJECT_OPEN_MEASUREMENT_BOUND?.status === 'GREEN'
@@ -106,24 +113,27 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
     const resetMeasurementOpen = foundationState.checkStatusById?.RESET_MEASUREMENT_NOT_BOUND?.status === 'OPEN_GAP'
       && foundationState.checkStatusById?.RESET_MEASUREMENT_NOT_BOUND?.measured === false;
     const blockingBudgetOrderExact = arraysEqual(blockingBudgetsState.phase07BlockingBudgetIds || [], EXPECTED_BLOCKING_BUDGET_IDS);
-    const pendingGapIdsExact = arraysEqual(foundationState.phase07PendingGapIds || [], [
+    const pendingGapIdsExact = arraysEqual(packet?.phase07PendingGapIds || [], [
       'PHASE07_RESET_MEASUREMENT_NOT_BOUND',
     ]);
     const sourceFoundationMatches = packet?.sourcePhase07RuntimeMeasurementsFoundationState === 'phase07-startup-project-open-scene-switch-reset-runtime-measurements-foundation-state.mjs';
+    const sourceStartupBaselineMatches = packet?.sourcePhase07StartupRuntimeMeasurementBaselineState === 'phase07-startup-runtime-measurement-baseline-state.mjs';
     const sourceBlockingBudgetsMatches = packet?.sourcePhase07BlockingBudgetsBaselineState === 'phase07-startup-project-open-scene-switch-reset-blocking-budgets-baseline-state.mjs';
     const packetPass = packet?.status === 'PASS';
     const packetReadyHold = packet?.phase07ReadinessStatus === 'HOLD';
     const packetInternalConsistency = Boolean(packet)
-      && packet?.artifactId === 'PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_V1'
+      && packet?.artifactId === 'PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE_V1'
       && packet?.schemaVersion === 1
       && packet?.phaseId === 'PHASE_07'
       && packetPass
-      && packet?.phase07StartupRuntimeMeasurementBaselineStatus === 'PASS'
+      && packet?.phase07SceneSwitchRuntimeMeasurementBaselineStatus === 'PASS'
       && packetReadyHold
       && sourceFoundationMatches
+      && sourceStartupBaselineMatches
       && sourceBlockingBudgetsMatches
-      && perfRunStartupMeasurementPresent
+      && perfRunSceneSwitchMeasurementPresent
       && foundationPass
+      && startupBaselinePass
       && blockingBudgetsBaselinePass
       && startupMeasurementBound
       && projectOpenMeasurementBound
@@ -136,10 +146,14 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
       && arraysEqual(packet?.lockedTargetIds || [], EXPECTED_LOCKED_TARGET_IDS)
       && packet?.proof?.previousPhase07BlockingBudgetsBaselinePassTrue === true
       && packet?.proof?.phase07RuntimeMeasurementsFoundationPassTrue === true
-      && packet?.proof?.perfRunStartupMeasurementPresentTrue === true
+      && packet?.proof?.phase07StartupRuntimeMeasurementBaselinePassTrue === true
+      && packet?.proof?.perfRunSceneSwitchMeasurementPresentTrue === true
       && packet?.proof?.startupMeasurementBoundTrue === true
       && packet?.proof?.projectOpenMeasurementBoundTrue === true
+      && packet?.proof?.sceneSwitchMeasurementBoundTrue === true
+      && packet?.proof?.resetMeasurementOpenTrue === true
       && packet?.proof?.blockingBudgetOrderExactTrue === true
+      && packet?.proof?.phase07PendingGapIdsExactTrue === true
       && packet?.proof?.phase07ReadinessStatusHoldTrue === true
       && packet?.proof?.noFalsePhase07GreenTrue === true
       && packet?.proof?.packetInternalConsistencyTrue === true;
@@ -147,10 +161,11 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
     const checkStatusById = {
       PREVIOUS_PHASE07_BLOCKING_BUDGETS_BASELINE_PASS: asCheck(blockingBudgetsBaselinePass ? 'GREEN' : 'OPEN_GAP', blockingBudgetsBaselinePass, blockingBudgetsBaselinePass ? 'PREVIOUS_PHASE07_BLOCKING_BUDGETS_BASELINE_PASS' : 'PREVIOUS_PHASE07_BLOCKING_BUDGETS_BASELINE_NOT_PASS'),
       PHASE07_RUNTIME_MEASUREMENTS_FOUNDATION_PASS: asCheck(foundationPass ? 'GREEN' : 'OPEN_GAP', foundationPass, foundationPass ? 'PHASE07_RUNTIME_MEASUREMENTS_FOUNDATION_PASS' : 'PHASE07_RUNTIME_MEASUREMENTS_FOUNDATION_NOT_PASS'),
-      PERF_RUN_STARTUP_MEASUREMENT_PRESENT: asCheck(perfRunStartupMeasurementPresent ? 'GREEN' : 'OPEN_GAP', perfRunStartupMeasurementPresent, perfRunStartupMeasurementPresent ? 'PERF_RUN_STARTUP_MEASUREMENT_PRESENT' : 'PERF_RUN_STARTUP_MEASUREMENT_MISSING'),
+      PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_PASS: asCheck(startupBaselinePass ? 'GREEN' : 'OPEN_GAP', startupBaselinePass, startupBaselinePass ? 'PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_PASS' : 'PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_NOT_PASS'),
+      PERF_RUN_SCENE_SWITCH_MEASUREMENT_PRESENT: asCheck(perfRunSceneSwitchMeasurementPresent ? 'GREEN' : 'OPEN_GAP', perfRunSceneSwitchMeasurementPresent, perfRunSceneSwitchMeasurementPresent ? 'PERF_RUN_SCENE_SWITCH_MEASUREMENT_PRESENT' : 'PERF_RUN_SCENE_SWITCH_MEASUREMENT_MISSING'),
       STARTUP_MEASUREMENT_BOUND: asCheck(startupMeasurementBound ? 'GREEN' : 'OPEN_GAP', startupMeasurementBound, startupMeasurementBound ? 'STARTUP_MEASUREMENT_BOUND' : 'STARTUP_MEASUREMENT_NOT_BOUND'),
       PROJECT_OPEN_MEASUREMENT_BOUND: asCheck(projectOpenMeasurementBound ? 'GREEN' : 'OPEN_GAP', projectOpenMeasurementBound, projectOpenMeasurementBound ? 'PROJECT_OPEN_MEASUREMENT_BOUND' : 'PROJECT_OPEN_MEASUREMENT_NOT_BOUND'),
-      SCENE_SWITCH_MEASUREMENT_PROGRESS_PRESERVED: asCheck(sceneSwitchMeasurementBound ? 'GREEN' : 'OPEN_GAP', sceneSwitchMeasurementBound, sceneSwitchMeasurementBound ? 'SCENE_SWITCH_MEASUREMENT_BOUND_BY_LATER_CONTOUR' : 'SCENE_SWITCH_MEASUREMENT_PROGRESS_MISSING'),
+      SCENE_SWITCH_MEASUREMENT_BOUND: asCheck(sceneSwitchMeasurementBound ? 'GREEN' : 'OPEN_GAP', sceneSwitchMeasurementBound, sceneSwitchMeasurementBound ? 'SCENE_SWITCH_MEASUREMENT_BOUND' : 'SCENE_SWITCH_MEASUREMENT_NOT_BOUND'),
       RESET_MEASUREMENT_NOT_BOUND: asCheck(resetMeasurementOpen ? 'OPEN_GAP' : 'OPEN_GAP', resetMeasurementOpen, resetMeasurementOpen ? 'RESET_MEASUREMENT_NOT_BOUND' : 'RESET_MEASUREMENT_BOUND_UNEXPECTED'),
       BLOCKING_BUDGET_ORDER_EXACT: asCheck(blockingBudgetOrderExact ? 'GREEN' : 'OPEN_GAP', blockingBudgetOrderExact, blockingBudgetOrderExact ? 'BLOCKING_BUDGET_ORDER_EXACT' : 'BLOCKING_BUDGET_ORDER_DRIFT'),
       PACKET_PRESENT: asCheck(packetExists ? 'GREEN' : 'OPEN_GAP', packetExists, packetExists ? 'PACKET_PRESENT' : 'PACKET_MISSING'),
@@ -171,12 +186,12 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
         ok: false,
         failReason: FAIL_REASON_FORCED_NEGATIVE,
         overallStatus: 'HOLD',
-        phase07StartupRuntimeMeasurementBaselineStatus: 'HOLD',
+        phase07SceneSwitchRuntimeMeasurementBaselineStatus: 'HOLD',
         phase07ReadinessStatus: 'HOLD',
         greenCheckIds,
         openGapIds: Array.from(new Set([...openGapIds, 'FORCED_NEGATIVE_PATH'])),
         checkStatusById,
-        phase07PendingGapIds: foundationState.phase07PendingGapIds || [],
+        phase07PendingGapIds: packet?.phase07PendingGapIds || [],
         phase07BlockingBudgetIds: packet?.phase07BlockingBudgetIds || [],
         boundSignalIds: packet?.boundSignalIds || [],
         lockedTargetIds: packet?.lockedTargetIds || [],
@@ -187,12 +202,12 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
       ok: Boolean(packetInternalConsistency),
       failReason: '',
       overallStatus: packetInternalConsistency ? 'PASS' : 'HOLD',
-      phase07StartupRuntimeMeasurementBaselineStatus: packetPass ? 'PASS' : 'HOLD',
+      phase07SceneSwitchRuntimeMeasurementBaselineStatus: packetPass ? 'PASS' : 'HOLD',
       phase07ReadinessStatus: packetReadyHold ? 'HOLD' : 'UNKNOWN',
       greenCheckIds,
       openGapIds,
       checkStatusById,
-      phase07PendingGapIds: foundationState.phase07PendingGapIds || [],
+      phase07PendingGapIds: packet?.phase07PendingGapIds || [],
       phase07BlockingBudgetIds: packet?.phase07BlockingBudgetIds || [],
       boundSignalIds: packet?.boundSignalIds || [],
       lockedTargetIds: packet?.lockedTargetIds || [],
@@ -202,10 +217,10 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
       ok: false,
       failReason: FAIL_REASON_UNEXPECTED,
       overallStatus: 'HOLD',
-      phase07StartupRuntimeMeasurementBaselineStatus: 'UNKNOWN',
+      phase07SceneSwitchRuntimeMeasurementBaselineStatus: 'UNKNOWN',
       phase07ReadinessStatus: 'UNKNOWN',
       greenCheckIds: [],
-      openGapIds: ['PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_EVALUATION_ERROR'],
+      openGapIds: ['PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE_EVALUATION_ERROR'],
       checkStatusById: {},
       phase07PendingGapIds: [],
       phase07BlockingBudgetIds: [],
@@ -218,17 +233,17 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
 
 function runCli() {
   const args = parseArgs(process.argv.slice(2));
-  const state = evaluatePhase07StartupRuntimeMeasurementBaselineState({ forceNegative: args.forceNegative });
+  const state = evaluatePhase07SceneSwitchRuntimeMeasurementBaselineState({ forceNegative: args.forceNegative });
 
   if (args.json) {
     console.log(JSON.stringify(state, null, 2));
   } else {
-    console.log('PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_OK=' + (state.ok ? 1 : 0));
-    console.log('PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_OVERALL_STATUS=' + state.overallStatus);
-    console.log('PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_STATUS=' + state.phase07StartupRuntimeMeasurementBaselineStatus);
-    console.log('PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_READINESS_STATUS=' + state.phase07ReadinessStatus);
-    console.log('PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_OPEN_GAP_IDS=' + state.openGapIds.join(','));
-    console.log('PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_FAIL_REASON=' + state.failReason);
+    console.log('PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE_OK=' + (state.ok ? 1 : 0));
+    console.log('PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE_OVERALL_STATUS=' + state.overallStatus);
+    console.log('PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE_STATUS=' + state.phase07SceneSwitchRuntimeMeasurementBaselineStatus);
+    console.log('PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE_READINESS_STATUS=' + state.phase07ReadinessStatus);
+    console.log('PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE_OPEN_GAP_IDS=' + state.openGapIds.join(','));
+    console.log('PHASE07_SCENE_SWITCH_RUNTIME_MEASUREMENT_BASELINE_FAIL_REASON=' + state.failReason);
   }
 
   process.exit(state.ok ? 0 : 1);
@@ -239,4 +254,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(selfPath))
   runCli();
 }
 
-export { evaluatePhase07StartupRuntimeMeasurementBaselineState };
+export { evaluatePhase07SceneSwitchRuntimeMeasurementBaselineState };
