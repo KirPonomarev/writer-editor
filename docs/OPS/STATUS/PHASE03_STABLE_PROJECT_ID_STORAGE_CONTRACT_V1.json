@@ -1,0 +1,34 @@
+{
+  "artifactId": "PHASE03_STABLE_PROJECT_ID_STORAGE_CONTRACT_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_03",
+  "status": "PASS",
+  "contractStatus": "PASS",
+  "sourcePhase03UserShellStateFoundationState": "phase03-user-shell-state-foundation-state.mjs",
+  "scope": {
+    "coreRuntimeProjectIdPresent": true,
+    "projectManifestBindingPresent": true,
+    "workspaceKeyingByProjectIdPresent": true,
+    "cloneImportPolicyPresent": true
+  },
+  "runtimeSignalIds": [
+    "CORE_PROJECT_ID_REQUIRED",
+    "CORE_PROJECT_CREATE_STORES_PROJECT_ID",
+    "PROJECT_MANIFEST_AT_PROJECT_ROOT",
+    "SETTINGS_PROJECT_ID_PERSISTED",
+    "PROJECT_ID_RESUME_RELATIVE_PATH"
+  ],
+  "pendingContractGapIds": [],
+  "blockedPhase03GapIds": [],
+  "proof": {
+    "phase03UserShellStateFoundationPassTrue": true,
+    "coreProjectIdRuntimeTrue": true,
+    "projectManifestBindingPresentTrue": true,
+    "settingsProjectIdPersistedTrue": true,
+    "workspaceKeyingByProjectIdPresentTrue": true,
+    "projectIdResumeBindingPresentTrue": true,
+    "cloneImportPolicyPresentTrue": true,
+    "noFalseStableProjectIdGreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T20:10:00.000Z"
+}

@@ -1,0 +1,11 @@
+{
+  "artifactId": "PHASE01_DELTA_REFRESH_STATUS_V1",
+  "schemaVersion": 1,
+  "reason": "PHASE01_EXECUTE_PREP",
+  "deltaMapBasename": "PHASE01_REFRESH_MUTATION_MAP_V1.json",
+  "DELTA_MAP_FROZEN_SHA256": "dfb0dcd38cb3baaf2a24ad28aa2e972c8abfd6b5a8201f861a0e53c940a0b379",
+  "refreshed": true,
+  "scopeExpansionAttemptCount": 0,
+  "noScopeExpansionTrue": true,
+  "updatedAtUtc": "2026-03-19T13:10:00.000Z"
+}

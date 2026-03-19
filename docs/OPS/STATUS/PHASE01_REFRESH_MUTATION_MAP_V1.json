@@ -1,0 +1,100 @@
+{
+  "artifactId": "PHASE01_REFRESH_MUTATION_MAP_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_01_EXECUTE_PREP",
+  "status": "PASS",
+  "sourceActiveCanonBasename": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+  "sourceDeltaPacketId": "PHASE01_REFRESH_DELTA_PACKET_V1",
+  "sourceOnePassPacketId": "PHASE01_ONE_PASS_REFRESH_PACKET_V1",
+  "scopeBasenames": [
+    "CANON.md",
+    "BIBLE.md",
+    "CONTEXT.md",
+    "HANDOFF.md",
+    "README.md"
+  ],
+  "mutationPlanByBasename": {
+    "CANON.md": {
+      "mutationMode": "REWRITE_ENTRYPOINT_CANON",
+      "targetOutcomeIds": [
+        "ACTIVE_CANON_RESOLUTION_EXPLICIT",
+        "WRITER_V1_SCOPE_NARROWING_REFERENCED",
+        "PRIMARY_EDITOR_CLOSURE_AS_HARD_GATE",
+        "FACTUAL_DOC_CUTOVER_RULE_EXPLICIT",
+        "STALE_MILESTONE_ZERO_LAW_REMOVED"
+      ],
+      "staleMarkers": [
+        "Milestone 0 = docs + CI",
+        "editor.js не может быть частью Milestone 0"
+      ]
+    },
+    "BIBLE.md": {
+      "mutationMode": "RETAG_AS_MAP_AND_TARGET_MODEL",
+      "targetOutcomeIds": [
+        "ACTIVE_EXECUTION_ORDER_ROUTED_TO_ACTIVE_CANON",
+        "OLD_MILESTONE_SEQUENCE_MARKED_AS_HISTORICAL_CONTEXT",
+        "WRITER_V1_SCOPE_AND_MVP_INVARIANTS_PRESERVED",
+        "NO_DUPLICATE_BLOCKING_AUTHORITY"
+      ],
+      "staleMarkers": [
+        "# Milestone 0 — “Заморозить новую реальность”",
+        "**M2.2 — Bridge “plain text ↔ tiptap” (временно)**"
+      ]
+    },
+    "CONTEXT.md": {
+      "mutationMode": "REWRITE_FACTUAL_STATUS",
+      "targetOutcomeIds": [
+        "PRIMARY_EDITOR_CLOSURE_PASS_RECORDED",
+        "TITPTAP_PRIMARY_PATH_RECORDED",
+        "PHASE01_PREP_PASS_RECORDED",
+        "NO_LEGACY_TRANSITION_WORLD_AS_PRIMARY_REALITY",
+        "NEXT_STEP_ROUTED_TO_PHASE01_EXECUTE_AND_PHASE02"
+      ],
+      "staleMarkers": [
+        "Milestone 0 выполнен",
+        "M1: esbuild bundling → M2: Tiptap минимально"
+      ]
+    },
+    "HANDOFF.md": {
+      "mutationMode": "REGENERATE_CURRENT_HANDOFF",
+      "targetOutcomeIds": [
+        "ACTIVE_CANON_ENTRYPOINT_ORDER_UPDATED",
+        "PRIMARY_EDITOR_CLOSURE_PASS_RECORDED",
+        "CURRENT_WRITER_V1_STATE_RECORDED",
+        "OLD_M1_M2_NEXT_STEPS_REMOVED"
+      ],
+      "staleMarkers": [
+        "Milestone 1: сборка renderer",
+        "Milestone 2: минимальный Tiptap editor"
+      ]
+    },
+    "README.md": {
+      "mutationMode": "REWRITE_PUBLIC_STATUS_SUMMARY",
+      "targetOutcomeIds": [
+        "LEGACY_HEADING_REMOVED",
+        "PRIMARY_EDITOR_PATH_NOW_PRIMARY",
+        "OFFLINE_FIRST_AND_WRITER_V1_SCOPE_RETAINED",
+        "NO_TRANSITION_WORDING_AS_PRIMARY_REALITY"
+      ],
+      "staleMarkers": [
+        "### Текущее состояние (legacy)",
+        "legacy vs vNext"
+      ]
+    }
+  },
+  "preserveOutcomeIds": [
+    "DESKTOP_FIRST",
+    "OFFLINE_FIRST",
+    "SCENES_AS_ENTITIES",
+    "ATOMIC_WRITE_AND_RECOVERY",
+    "DOCX_FIRST_EXPORT",
+    "NO_NETWORK_TRUTH_IN_V1",
+    "NO_EXECUTABLE_PLUGIN_RUNTIME_IN_V1"
+  ],
+  "proof": {
+    "allStaleDocsCoveredTrue": true,
+    "activeCanonPartVIAndPartVIIReferencedTrue": true,
+    "noScopeExpansionTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T13:05:00.000Z"
+}

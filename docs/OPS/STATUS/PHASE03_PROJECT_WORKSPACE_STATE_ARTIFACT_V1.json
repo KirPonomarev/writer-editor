@@ -1,0 +1,33 @@
+{
+  "artifactId": "PHASE03_PROJECT_WORKSPACE_STATE_ARTIFACT_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_03",
+  "status": "PASS",
+  "workspaceStatus": "PASS",
+  "sourceProjectWorkspaceFoundationState": "phase03-project-workspace-state-foundation-state.mjs",
+  "sourceStableProjectIdContractState": "phase03-stable-project-id-storage-contract-state.mjs",
+  "scope": {
+    "projectScopedButNotDocumentTruth": true,
+    "stableProjectIdKeyingPresent": true,
+    "pathBoundResumePresent": false,
+    "documentTruthMutationPresent": false,
+    "legacyFallbackReadPresent": true
+  },
+  "boundWorkspaceSurfaceIds": [
+    "ACTIVE_DOCUMENT_TITLE_LOCAL",
+    "TREE_EXPANDED_LOCAL"
+  ],
+  "pathBoundWorkspaceSurfaceIds": [],
+  "remainingBlockedGapIds": [],
+  "proof": {
+    "projectWorkspaceFoundationPassTrue": true,
+    "stableProjectIdContractPassTrue": true,
+    "editorPayloadProjectIdPresentTrue": true,
+    "activeDocumentTitleProjectScopedTrue": true,
+    "treeExpansionProjectScopedTrue": true,
+    "projectIdResumeBindingPresentTrue": true,
+    "documentTruthUntouchedTrue": true,
+    "noFalseWorkspaceGreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T20:10:00.000Z"
+}

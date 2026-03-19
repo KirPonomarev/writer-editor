@@ -1,4 +1,4 @@
-import { initTiptap } from './tiptap/index.js';
+import { getTiptapPlainText, initTiptap, redoTiptap, setTiptapPlainText, setTiptapRuntimeHandlers, undoTiptap } from './tiptap/index.js';
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
 import {
@@ -22,10 +22,11 @@ import {
 } from './commands/flowMode.mjs';
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
 
-if (window.__USE_TIPTAP) {
-  initTiptap(document.getElementById('editor'));
-} else {
+const isTiptapMode = window.__USE_TIPTAP === true;
 const editor = document.getElementById('editor');
+if (isTiptapMode) {
+  initTiptap(editor, { attachIpc: false });
+}
 const statusElement = document.getElementById('status');
 const saveStateElement = document.querySelector('[data-save-state]');
 const warningStateElement = document.querySelector('[data-warning-state]');
@@ -109,6 +110,44 @@ const EDITOR_ZOOM_MIN = 0.5;
 const EDITOR_ZOOM_MAX = 2.0;
 const EDITOR_ZOOM_STEP = 0.05;
 const EDITOR_ZOOM_DEFAULT = 1.0;
+const FLOATING_TOOLBAR_STORAGE_KEY = 'yalkenLiteralStageAToolbarState';
+const FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY = 'yalkenLiteralStageAToolbarItemOffsets';
+const LEFT_FLOATING_TOOLBAR_STORAGE_KEY = 'yalkenLeftToolbarState';
+const LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY = 'yalkenLeftToolbarButtonOffsets';
+const CONFIGURATOR_BUCKETS_STORAGE_KEY = 'yalkenConfiguratorBuckets';
+const SAFE_RESET_BASELINE_THEME = 'light';
+const SAFE_RESET_BASELINE_FONT_FAMILY = '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+const SAFE_RESET_BASELINE_FONT_SIZE_PX = 12;
+const SAFE_RESET_BASELINE_FONT_WEIGHT = 'light';
+const SAFE_RESET_BASELINE_LINE_HEIGHT = '1.0';
+const SAFE_RESET_BASELINE_VIEW_MODE = 'default';
+const PROJECT_WORKSPACE_RESET_TABS = Object.freeze(['project', 'outline', 'search', 'roman']);
+const FLOATING_TOOLBAR_DRAG_THRESHOLD_PX = 6;
+const FLOATING_TOOLBAR_ROTATE_THRESHOLD_PX = 30;
+const FLOATING_TOOLBAR_SNAP_ZONE_PX = 30;
+const FLOATING_TOOLBAR_CENTER_ANCHOR_PX = 30;
+const FLOATING_TOOLBAR_ITEM_SNAP_THRESHOLD_PX = 10;
+const FLOATING_TOOLBAR_VISIBLE_STRIP_PX = 56;
+const FLOATING_TOOLBAR_SCALE_MIN = 0.5;
+const FLOATING_TOOLBAR_SCALE_MAX = 2.0;
+const FLOATING_TOOLBAR_WIDTH_SCALE_MIN = 0.1;
+const FLOATING_TOOLBAR_WIDTH_SCALE_MAX = 2.0;
+const FONT_WEIGHT_PRESETS = Object.freeze({
+  light: { weight: '300', stretch: 'normal', spacing: '0em' },
+  regular: { weight: '400', stretch: 'normal', spacing: '0em' },
+  semibold: { weight: '600', stretch: 'normal', spacing: '0em' },
+  bold: { weight: '700', stretch: 'normal', spacing: '0em' },
+  condensed: { weight: '400', stretch: 'condensed', spacing: '-0.02em' },
+  'condensed-light': { weight: '300', stretch: 'condensed', spacing: '-0.015em' },
+  'condensed-bold': { weight: '700', stretch: 'condensed', spacing: '-0.025em' },
+});
+const LEGACY_FONT_WEIGHT_PRESET_MAP = Object.freeze({
+  '300': 'light',
+  '400': 'regular',
+  '500': 'semibold',
+  '600': 'semibold',
+  '700': 'bold',
+});
 let editorZoom = EDITOR_ZOOM_DEFAULT;
 const isMac = navigator.platform.toUpperCase().includes('MAC');
 let currentFontSizePx = 16;
@@ -122,6 +161,7 @@ let plainTextBuffer = '';
 const activeTab = 'roman';
 let currentDocumentPath = null;
 let currentDocumentKind = null;
+let currentProjectId = '';
 let flowModeState = {
   active: false,
   scenes: [],
@@ -482,6 +522,9 @@ async function handleMarkdownExportUiPath() {
 }
 
 function getPlainText() {
+  if (isTiptapMode) {
+    plainTextBuffer = getTiptapPlainText();
+  }
   return plainTextBuffer;
 }
 
@@ -491,6 +534,8 @@ let deferredRenderIncludePagination = false;
 let deferredRenderPreserveSelection = true;
 let incrementalInputDomSyncScheduled = false;
 let lastFullRenderAtMs = 0;
+let legacyCompositionActive = false;
+let legacyCompositionRenderPending = false;
 
 function nowMs() {
   if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
@@ -514,6 +559,11 @@ function cancelDeferredRenderWork() {
 
 function setPlainText(text = '', options = {}) {
   plainTextBuffer = text;
+  if (isTiptapMode) {
+    cancelDeferredRenderWork();
+    setTiptapPlainText(text);
+    return;
+  }
   const includePagination = options.includePagination !== false;
   const preserveSelection = options.preserveSelection !== false;
   if (options.deferRender === true) {
@@ -706,6 +756,10 @@ function composeDocumentContent() {
 }
 
 function getSelectionOffsets() {
+  if (isTiptapMode) {
+    const length = getPlainText().length;
+    return { start: length, end: length };
+  }
   if (!editor) return { start: 0, end: 0 };
   const selection = window.getSelection();
   if (!selection || selection.rangeCount === 0) {
@@ -746,6 +800,7 @@ function getNodeForOffset(offset) {
 }
 
 function setSelectionRange(start, end) {
+  if (isTiptapMode) return;
   if (!editor) return;
   const text = getPlainText();
   const normalizedStart = Math.max(0, Math.min(start, text.length));
@@ -766,6 +821,7 @@ function selectAllEditor() {
 }
 
 function renderNodesWithoutPagination(nodes) {
+  if (isTiptapMode) return;
   if (!editor) return;
   editor.innerHTML = '';
   const page = createPageElement(true, 0);
@@ -779,6 +835,10 @@ function renderNodesWithoutPagination(nodes) {
 }
 
 function renderStyledView(text = '', options = {}) {
+  if (isTiptapMode) {
+    plainTextBuffer = text;
+    return;
+  }
   if (!editor) return;
   const includePagination = options.includePagination !== false;
   const preserveSelection = options.preserveSelection !== false;
@@ -857,6 +917,7 @@ function createPageElement(isFirstPage = false, pageIndex = 0) {
 }
 
 function createEmptyPage() {
+  if (isTiptapMode) return;
   if (!editor) return;
   editor.innerHTML = '';
   const page = createPageElement(true, 0);
@@ -864,6 +925,7 @@ function createEmptyPage() {
 }
 
 function paginateNodes(nodes) {
+  if (isTiptapMode) return;
   if (!editor) return;
   if (!nodes.length) {
     createEmptyPage();
@@ -926,6 +988,7 @@ function paginateNodes(nodes) {
 
 let layoutRefreshScheduled = false;
 function scheduleLayoutRefresh() {
+  if (isTiptapMode) return;
   if (layoutRefreshScheduled) {
     return;
   }
@@ -937,6 +1000,7 @@ function scheduleLayoutRefresh() {
 }
 
 function scheduleDeferredHotpathRender(options = {}) {
+  if (isTiptapMode) return;
   const includePagination = options.includePagination === true;
   const preserveSelection = options.preserveSelection !== false;
   deferredRenderIncludePagination = deferredRenderIncludePagination || includePagination;
@@ -962,6 +1026,7 @@ function scheduleDeferredHotpathRender(options = {}) {
 }
 
 function scheduleDeferredPaginationRefresh() {
+  if (isTiptapMode) return;
   if (deferredPaginationTimerId) {
     window.clearTimeout(deferredPaginationTimerId);
     deferredPaginationTimerId = null;
@@ -980,6 +1045,7 @@ function scheduleDeferredPaginationRefresh() {
 }
 
 function normalizeActiveTextNodeWhitespace() {
+  if (isTiptapMode) return;
   const selection = window.getSelection();
   const activeNode = selection && selection.anchorNode;
   if (!activeNode || !editor.contains(activeNode) || activeNode.nodeType !== Node.TEXT_NODE) {
@@ -1002,7 +1068,21 @@ function scheduleIncrementalInputDomSync() {
 }
 
 function syncPlainTextBufferFromEditorDom() {
+  if (isTiptapMode) {
+    plainTextBuffer = getTiptapPlainText();
+    return;
+  }
   plainTextBuffer = (editor.textContent || '').replace(/\u00a0/g, ' ');
+}
+
+function flushLegacyCompositionRender() {
+  legacyCompositionRenderPending = false;
+  scheduleIncrementalInputDomSync();
+  syncPlainTextBufferFromEditorDom();
+  scheduleDeferredHotpathRender({ includePagination: false, preserveSelection: true });
+  scheduleDeferredPaginationRefresh();
+  markAsModified();
+  updateWordCount();
 }
 
 let lastPointerDownPageIndex = -1;
@@ -1116,6 +1196,35 @@ function positionCaretForCurrentText() {
   setSelectionRange(textLength, textLength);
 }
 
+function normalizeProjectId(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function getActiveDocumentTitleStorageKey(projectId = currentProjectId) {
+  const normalizedProjectId = normalizeProjectId(projectId);
+  return normalizedProjectId ? `activeDocumentTitle:${normalizedProjectId}` : 'activeDocumentTitle';
+}
+
+function getTreeExpandedStorageKey(tab, projectId = currentProjectId) {
+  const normalizedProjectId = normalizeProjectId(projectId);
+  const normalizedTab = typeof tab === 'string' && tab ? tab : activeTab;
+  return normalizedProjectId
+    ? `treeExpanded:${normalizedProjectId}:${normalizedTab}`
+    : `treeExpanded:${normalizedTab}`;
+}
+
+function readWorkspaceStorage(primaryKey, legacyKey = primaryKey) {
+  try {
+    const primaryValue = localStorage.getItem(primaryKey);
+    if (primaryValue !== null || primaryKey === legacyKey) {
+      return primaryValue;
+    }
+    return localStorage.getItem(legacyKey);
+  } catch {
+    return null;
+  }
+}
+
 function showEditorPanelFor(title) {
   editorPanel?.classList.add('active');
   mainContent?.classList.add('main-content--editor');
@@ -1123,7 +1232,7 @@ function showEditorPanelFor(title) {
   updateMetaVisibility();
   try {
     if (title) {
-      localStorage.setItem('activeDocumentTitle', title);
+      localStorage.setItem(getActiveDocumentTitleStorageKey(currentProjectId), title);
     }
   } catch {}
 
@@ -1218,7 +1327,12 @@ function getExpandedSet(tab) {
   }
   let stored = [];
   try {
-    stored = JSON.parse(localStorage.getItem(`treeExpanded:${tab}`) || '[]');
+    stored = JSON.parse(
+      readWorkspaceStorage(
+        getTreeExpandedStorageKey(tab, currentProjectId),
+        `treeExpanded:${tab}`
+      ) || '[]'
+    );
   } catch {
     stored = [];
   }
@@ -1231,7 +1345,7 @@ function saveExpandedSet(tab) {
   const set = expandedNodesByTab.get(tab);
   if (!set) return;
   try {
-    localStorage.setItem(`treeExpanded:${tab}`, JSON.stringify(Array.from(set)));
+    localStorage.setItem(getTreeExpandedStorageKey(tab, currentProjectId), JSON.stringify(Array.from(set)));
   } catch {}
 }
 
@@ -1645,9 +1759,10 @@ async function loadTree() {
     if (activeTab === 'roman' && treeRoot) {
       const expandedSet = getExpandedSet(activeTab);
       let stored = null;
-      try {
-        stored = localStorage.getItem('treeExpanded:roman');
-      } catch {}
+      stored = readWorkspaceStorage(
+        getTreeExpandedStorageKey('roman', currentProjectId),
+        'treeExpanded:roman'
+      );
       if (stored === null) {
         const romanRoot = findRomanRootNode(treeRoot);
         const pathToExpand = (romanRoot && romanRoot.path) || treeRoot.path;
@@ -2007,6 +2122,218 @@ function applyMode(mode) {
     applyRightTab('inspector');
   }
   updateInspectorSnapshot();
+}
+
+function resolveSafeResetFontFamily() {
+  if (fontSelect) {
+    const hasPreferredOption = Array.from(fontSelect.options).some((option) => option.value === SAFE_RESET_BASELINE_FONT_FAMILY);
+    if (hasPreferredOption) {
+      return SAFE_RESET_BASELINE_FONT_FAMILY;
+    }
+    if (typeof fontSelect.value === 'string' && fontSelect.value.trim()) {
+      return fontSelect.value;
+    }
+  }
+  return SAFE_RESET_BASELINE_FONT_FAMILY;
+}
+
+function clearProjectWorkspaceStorage(projectId = currentProjectId) {
+  const normalizedProjectId = normalizeProjectId(projectId);
+  const keysToRemove = new Set([
+    'activeDocumentTitle',
+    ...PROJECT_WORKSPACE_RESET_TABS.map((tab) => `treeExpanded:${tab}`),
+  ]);
+
+  if (normalizedProjectId) {
+    keysToRemove.add(getActiveDocumentTitleStorageKey(normalizedProjectId));
+    PROJECT_WORKSPACE_RESET_TABS.forEach((tab) => {
+      keysToRemove.add(getTreeExpandedStorageKey(tab, normalizedProjectId));
+    });
+  }
+
+  try {
+    for (const key of keysToRemove) {
+      localStorage.removeItem(key);
+    }
+    if (normalizedProjectId) {
+      const prefixedKeys = [];
+      for (let index = 0; index < localStorage.length; index += 1) {
+        const key = localStorage.key(index);
+        if (typeof key === 'string' && key.startsWith(`treeExpanded:${normalizedProjectId}:`)) {
+          prefixedKeys.push(key);
+        }
+      }
+      prefixedKeys.forEach((key) => localStorage.removeItem(key));
+    }
+  } catch {}
+
+  expandedNodesByTab = new Map();
+}
+
+function performSafeResetShell() {
+  const nextFontFamily = resolveSafeResetFontFamily();
+
+  clearProjectWorkspaceStorage(currentProjectId);
+
+  try {
+    localStorage.removeItem('editorTheme');
+    localStorage.removeItem('editorFont');
+    localStorage.removeItem('editorFontWeight');
+    localStorage.removeItem('editorLineHeight');
+    localStorage.removeItem('editorWordWrap');
+    localStorage.removeItem('editorViewMode');
+    localStorage.removeItem(EDITOR_ZOOM_STORAGE_KEY);
+    localStorage.removeItem(FLOATING_TOOLBAR_STORAGE_KEY);
+    localStorage.removeItem(FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY);
+    localStorage.removeItem(LEFT_FLOATING_TOOLBAR_STORAGE_KEY);
+    localStorage.removeItem(LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY);
+    localStorage.removeItem(CONFIGURATOR_BUCKETS_STORAGE_KEY);
+  } catch {}
+
+  applyTheme(SAFE_RESET_BASELINE_THEME);
+  if (settingsThemeSelect) {
+    settingsThemeSelect.value = SAFE_RESET_BASELINE_THEME;
+  }
+
+  if (fontSelect) {
+    ensureSelectHasOption(fontSelect, nextFontFamily, 'Roboto Ms');
+    fontSelect.value = nextFontFamily;
+  }
+  applyFont(nextFontFamily);
+
+  if (weightSelect) {
+    weightSelect.value = SAFE_RESET_BASELINE_FONT_WEIGHT;
+  }
+  applyFontWeight(SAFE_RESET_BASELINE_FONT_WEIGHT);
+
+  if (lineHeightSelect) {
+    ensureSelectHasOption(lineHeightSelect, SAFE_RESET_BASELINE_LINE_HEIGHT, SAFE_RESET_BASELINE_LINE_HEIGHT, '__custom_line_height__');
+    lineHeightSelect.value = SAFE_RESET_BASELINE_LINE_HEIGHT;
+  }
+  applyLineHeight(SAFE_RESET_BASELINE_LINE_HEIGHT);
+
+  applyWordWrap(true);
+  if (settingsWrapSelect) {
+    settingsWrapSelect.value = 'on';
+  }
+  applyViewMode(SAFE_RESET_BASELINE_VIEW_MODE);
+  setEditorZoom(EDITOR_ZOOM_DEFAULT);
+  setToolbarCompactMode(false);
+
+  if (editor) {
+    editor.style.fontSize = `${SAFE_RESET_BASELINE_FONT_SIZE_PX}px`;
+  }
+  setCurrentFontSize(SAFE_RESET_BASELINE_FONT_SIZE_PX);
+  window.electronAPI?.setFontSizePx(SAFE_RESET_BASELINE_FONT_SIZE_PX);
+
+  toolbarItemOffsets = {};
+  persistFloatingToolbarItemOffsets();
+  applyFloatingToolbarState(getDefaultFloatingToolbarState(), true);
+
+  leftToolbarButtonOffsets = {};
+  persistLeftToolbarButtonOffsets();
+  applyLeftFloatingToolbarState(getDefaultLeftFloatingToolbarState(), true);
+
+  configuratorBucketState = { master: [], minimal: [] };
+  setActiveConfiguratorBucketSelection('', -1);
+  persistConfiguratorBucketState();
+  renderConfiguratorBuckets();
+  setConfiguratorOpen(false);
+  setToolbarSpacingTuningMode(false);
+  setToolbarSpacingMenuOpen(false);
+  setLeftToolbarSpacingTuningMode(false);
+  setLeftToolbarSpacingMenuOpen(false);
+
+  if (leftSearchInput) {
+    leftSearchInput.value = '';
+    renderSearchResults('');
+  }
+
+  closeSimpleModal(settingsModal);
+  closeSimpleModal(recoveryModal);
+  closeSimpleModal(exportPreviewModal);
+  closeSimpleModal(diagnosticsModal);
+
+  applyMode('write');
+  applyLeftTab('project');
+  applyRightTab('inspector');
+  loadTree();
+  updateWordCount();
+  updateSaveStateText(localDirty ? 'unsaved' : 'idle');
+  updateWarningStateText('none');
+  updatePerfHintText('normal');
+  updateStatusText('Shell reset to baseline');
+  updateInspectorSnapshot();
+
+  return { performed: true, action: 'safe-reset-shell', reason: null };
+}
+
+function performRestoreLastStableShell() {
+  const savedActiveDocumentTitle = String(
+    readWorkspaceStorage(getActiveDocumentTitleStorageKey(currentProjectId), 'activeDocumentTitle') || ''
+  ).trim();
+
+  loadSavedTheme();
+  if (settingsThemeSelect) {
+    settingsThemeSelect.value = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+  }
+
+  loadSavedFont();
+  loadSavedFontWeight();
+  loadSavedLineHeight();
+  loadSavedWordWrap();
+  if (settingsWrapSelect) {
+    settingsWrapSelect.value = wordWrapEnabled ? 'on' : 'off';
+  }
+  loadSavedViewMode();
+  loadSavedEditorZoom();
+
+  const restoredFontSizePx = Number.isFinite(currentFontSizePx)
+    ? currentFontSizePx
+    : SAFE_RESET_BASELINE_FONT_SIZE_PX;
+  if (editor) {
+    editor.style.fontSize = `${restoredFontSizePx}px`;
+  }
+  setCurrentFontSize(restoredFontSizePx);
+  window.electronAPI?.setFontSizePx(restoredFontSizePx);
+
+  restoreFloatingToolbarItemOffsets();
+  restoreFloatingToolbarPosition();
+  restoreLeftToolbarButtonOffsets();
+  restoreLeftFloatingToolbarPosition();
+
+  configuratorBucketState = readConfiguratorBucketState();
+  setActiveConfiguratorBucketSelection('', -1);
+  renderConfiguratorBuckets();
+  setConfiguratorOpen(false);
+  setToolbarSpacingTuningMode(false);
+  setToolbarSpacingMenuOpen(false);
+  setLeftToolbarSpacingTuningMode(false);
+  setLeftToolbarSpacingMenuOpen(false);
+
+  expandedNodesByTab = new Map();
+  renderTree();
+  if (leftSearchInput && currentLeftTab === 'search') {
+    renderSearchResults(leftSearchInput.value);
+  }
+
+  closeSimpleModal(settingsModal);
+  closeSimpleModal(recoveryModal);
+  closeSimpleModal(exportPreviewModal);
+  closeSimpleModal(diagnosticsModal);
+
+  updateWordCount();
+  updateSaveStateText(localDirty ? 'unsaved' : 'idle');
+  updateWarningStateText('recovery restored');
+  updatePerfHintText('normal');
+  updateStatusText(
+    savedActiveDocumentTitle
+      ? `Restored last stable shell state for ${savedActiveDocumentTitle}`
+      : 'Restored last stable shell state'
+  );
+  updateInspectorSnapshot();
+
+  return { performed: true, action: 'restore-last-stable-shell', reason: null };
 }
 
 function openSimpleModal(modal) {
@@ -2751,6 +3078,9 @@ function handleReplace() {
 
 function handleUndo() {
   if (!editor) return { performed: false };
+  if (isTiptapMode) {
+    return undoTiptap();
+  }
   editor.focus();
   document.execCommand('undo');
   return { performed: true };
@@ -2758,6 +3088,9 @@ function handleUndo() {
 
 function handleRedo() {
   if (!editor) return { performed: false };
+  if (isTiptapMode) {
+    return redoTiptap();
+  }
   editor.focus();
   document.execCommand('redo');
   return { performed: true };
@@ -3190,7 +3523,7 @@ document.addEventListener('keydown', (event) => {
   if (isZero) {
     setEditorZoom(EDITOR_ZOOM_DEFAULT);
   }
-});
+}, true);
 document.addEventListener('selectionchange', syncAlignmentButtonsToSelection);
 
 window.addEventListener('resize', scheduleLayoutRefresh);
@@ -3201,8 +3534,10 @@ if (window.electronAPI) {
     const title = typeof payload === 'object' && payload ? payload.title : '';
     const hasPath = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'path');
     const hasKind = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'kind');
+    const hasProjectId = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'projectId');
     const path = hasPath ? payload.path : '';
     const kind = hasKind ? payload.kind : '';
+    const projectId = hasProjectId && typeof payload.projectId === 'string' ? payload.projectId : '';
     const nextMetaEnabled = typeof payload === 'object' && payload ? Boolean(payload.metaEnabled) : false;
 
     clearFlowModeState();
@@ -3212,6 +3547,13 @@ if (window.electronAPI) {
     }
     if (hasKind) {
       currentDocumentKind = kind || null;
+    }
+    if (hasProjectId) {
+      const nextProjectId = normalizeProjectId(projectId);
+      if (nextProjectId !== currentProjectId) {
+        currentProjectId = nextProjectId;
+        expandedNodesByTab = new Map();
+      }
     }
 
     const parsed = parseDocumentContent(content);
@@ -3258,11 +3600,29 @@ if (window.electronAPI) {
     });
   }
 
-  if (typeof window.electronAPI.onRuntimeCommand === 'function') {
+  if (isTiptapMode) {
+    setTiptapRuntimeHandlers({
+      openSettings: () => openSettingsModal(),
+      safeResetShell: () => performSafeResetShell(),
+      restoreLastStableShell: () => performRestoreLastStableShell(),
+      openDiagnostics: () => openDiagnosticsModal(),
+      openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
+      openExportPreview: () => openExportPreviewModal(),
+      insertAddCard: () => handleInsertAddCard(),
+      formatAlignLeft: () => {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
+      },
+      switchMode: (mode) => applyMode(mode),
+    });
+  } else if (typeof window.electronAPI.onRuntimeCommand === 'function') {
     window.electronAPI.onRuntimeCommand((payload) => {
       const command = payload && typeof payload.command === 'string' ? payload.command : '';
       if (command === 'open-settings') {
         openSettingsModal();
+      } else if (command === 'safe-reset-shell') {
+        performSafeResetShell();
+      } else if (command === 'restore-last-stable-shell') {
+        performRestoreLastStableShell();
       } else if (command === 'open-diagnostics') {
         openDiagnosticsModal();
       } else if (command === 'open-recovery') {
@@ -3284,77 +3644,111 @@ if (window.electronAPI) {
   }
 }
 
-editor.addEventListener('pointerdown', (event) => {
-  const nextIndex = getPageIndexFromNode(event.target);
-  lastPointerDownPageIndex = nextIndex != null ? nextIndex : -1;
-});
-
-editor.addEventListener('beforeinput', () => {
-  ensureCaretInLastPointerPage();
-});
-
-editor.addEventListener('input', () => {
-  scheduleIncrementalInputDomSync();
-  syncPlainTextBufferFromEditorDom();
-  scheduleDeferredHotpathRender({ includePagination: false, preserveSelection: true });
-  scheduleDeferredPaginationRefresh();
-  markAsModified();
-  updateWordCount();
-});
-
-editor.addEventListener('paste', (event) => {
-  ensureCaretInLastPointerPage();
-  event.preventDefault();
-  const text = event.clipboardData?.getData('text/plain') || '';
-  if (text) {
-    document.execCommand('insertText', false, text);
-  }
-});
-
-editor.addEventListener('keydown', (event) => {
-  if (flowModeState.active) {
-    const { start, end } = getSelectionOffsets();
-    const hasCollapsedSelection = start === end;
-    if (hasCollapsedSelection && event.key === 'ArrowDown') {
-      const nextCaret = nextSceneCaretAtBoundary(getPlainText(), start);
-      if (Number.isInteger(nextCaret)) {
-        event.preventDefault();
-        setSelectionRange(nextCaret, nextCaret);
-        return;
-      }
-    }
-    if (hasCollapsedSelection && event.key === 'ArrowUp') {
-      const prevCaret = previousSceneCaretAtBoundary(getPlainText(), start);
-      if (Number.isInteger(prevCaret)) {
-        event.preventDefault();
-        setSelectionRange(prevCaret, prevCaret);
-        return;
-      }
-    }
-    if (hasCollapsedSelection && event.key === 'Backspace') {
-      const prevCaret = previousSceneCaretAtBoundary(getPlainText(), start);
-      if (Number.isInteger(prevCaret)) {
-        event.preventDefault();
-        setSelectionRange(prevCaret, prevCaret);
-        return;
-      }
-    }
-  }
-
-  if (event.key === 'Enter') {
-    ensureCaretInLastPointerPage();
-    event.preventDefault();
-    const { start, end } = getSelectionOffsets();
-    const text = getPlainText();
-    const normalizedStart = Math.max(0, Math.min(start, text.length));
-    const normalizedEnd = Math.max(0, Math.min(end, text.length));
-    const nextText = `${text.slice(0, normalizedStart)}\n${text.slice(normalizedEnd)}`;
-    setPlainText(nextText);
-    setSelectionRange(normalizedStart + 1, normalizedStart + 1);
+if (isTiptapMode) {
+  editor.addEventListener('input', () => {
+    syncPlainTextBufferFromEditorDom();
     markAsModified();
     updateWordCount();
-  }
-});
+  });
+} else {
+  editor.addEventListener('pointerdown', (event) => {
+    const nextIndex = getPageIndexFromNode(event.target);
+    lastPointerDownPageIndex = nextIndex != null ? nextIndex : -1;
+  });
+
+  editor.addEventListener('beforeinput', (event) => {
+    if (event.isComposing || event.inputType === 'insertCompositionText' || event.inputType === 'deleteCompositionText') {
+      return;
+    }
+    ensureCaretInLastPointerPage();
+  });
+
+  editor.addEventListener('compositionstart', () => {
+    legacyCompositionActive = true;
+    legacyCompositionRenderPending = false;
+    cancelDeferredRenderWork();
+  });
+
+  editor.addEventListener('compositionend', () => {
+    legacyCompositionActive = false;
+    window.requestAnimationFrame(() => {
+      if (legacyCompositionRenderPending) {
+        flushLegacyCompositionRender();
+      }
+    });
+  });
+
+  editor.addEventListener('input', () => {
+    scheduleIncrementalInputDomSync();
+    syncPlainTextBufferFromEditorDom();
+    if (legacyCompositionActive) {
+      legacyCompositionRenderPending = true;
+      return;
+    }
+    scheduleDeferredHotpathRender({ includePagination: false, preserveSelection: true });
+    scheduleDeferredPaginationRefresh();
+    markAsModified();
+    updateWordCount();
+  });
+
+  editor.addEventListener('paste', (event) => {
+    ensureCaretInLastPointerPage();
+    event.preventDefault();
+    const text = event.clipboardData?.getData('text/plain') || '';
+    if (text) {
+      document.execCommand('insertText', false, text);
+    }
+  });
+
+  editor.addEventListener('keydown', (event) => {
+    if (event.isComposing || legacyCompositionActive) {
+      return;
+    }
+
+    if (flowModeState.active) {
+      const { start, end } = getSelectionOffsets();
+      const hasCollapsedSelection = start === end;
+      if (hasCollapsedSelection && event.key === 'ArrowDown') {
+        const nextCaret = nextSceneCaretAtBoundary(getPlainText(), start);
+        if (Number.isInteger(nextCaret)) {
+          event.preventDefault();
+          setSelectionRange(nextCaret, nextCaret);
+          return;
+        }
+      }
+      if (hasCollapsedSelection && event.key === 'ArrowUp') {
+        const prevCaret = previousSceneCaretAtBoundary(getPlainText(), start);
+        if (Number.isInteger(prevCaret)) {
+          event.preventDefault();
+          setSelectionRange(prevCaret, prevCaret);
+          return;
+        }
+      }
+      if (hasCollapsedSelection && event.key === 'Backspace') {
+        const prevCaret = previousSceneCaretAtBoundary(getPlainText(), start);
+        if (Number.isInteger(prevCaret)) {
+          event.preventDefault();
+          setSelectionRange(prevCaret, prevCaret);
+          return;
+        }
+      }
+    }
+
+    if (event.key === 'Enter') {
+      ensureCaretInLastPointerPage();
+      event.preventDefault();
+      const { start, end } = getSelectionOffsets();
+      const text = getPlainText();
+      const normalizedStart = Math.max(0, Math.min(start, text.length));
+      const normalizedEnd = Math.max(0, Math.min(end, text.length));
+      const nextText = `${text.slice(0, normalizedStart)}\n${text.slice(normalizedEnd)}`;
+      setPlainText(nextText);
+      setSelectionRange(normalizedStart + 1, normalizedStart + 1);
+      markAsModified();
+      updateWordCount();
+    }
+  });
+}
 
 if (window.electronAPI) {
   window.electronAPI.onStatusUpdate((status) => {
@@ -3380,5 +3774,3 @@ if (window.electronAPI) {
 
 setCurrentFontSize(currentFontSizePx);
 updateWordCount();
-
-}

@@ -1,0 +1,75 @@
+{
+  "artifactId": "PHASE01_ONE_PASS_REFRESH_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_01_EXECUTE",
+  "status": "PASS",
+  "refreshExecutionStatus": "PASS",
+  "sourceDeltaPacketId": "PHASE01_REFRESH_DELTA_PACKET_V1",
+  "refreshScopeBasenames": [
+    "CANON.md",
+    "BIBLE.md",
+    "CONTEXT.md",
+    "PROCESS.md",
+    "HANDOFF.md",
+    "README.md",
+    "CANON_STATUS.json",
+    "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+    "BINDING_INDEX_v0.md"
+  ],
+  "plannedRefreshActions": [
+    {
+      "basename": "CANON.md",
+      "actionId": "RECONCILE_ROOT_CANON_WITH_ACTIVE_WRITER_REALITY",
+      "mutationStatus": "APPLIED"
+    },
+    {
+      "basename": "BIBLE.md",
+      "actionId": "REPLACE_OLD_MILESTONE_ROADMAP_WITH_CURRENT_WRITER_TRACK",
+      "mutationStatus": "APPLIED"
+    },
+    {
+      "basename": "CONTEXT.md",
+      "actionId": "REPLACE_OLD_TRANSITION_CONTEXT_WITH_PHASE01_REALITY",
+      "mutationStatus": "APPLIED"
+    },
+    {
+      "basename": "PROCESS.md",
+      "actionId": "VERIFY_PROCESS_COMPATIBILITY_ONLY",
+      "mutationStatus": "VERIFIED"
+    },
+    {
+      "basename": "HANDOFF.md",
+      "actionId": "REGENERATE_HANDOFF_AFTER_ONE_PASS_REFRESH",
+      "mutationStatus": "APPLIED"
+    },
+    {
+      "basename": "README.md",
+      "actionId": "REMOVE_LEGACY_TRANSITION_WORDING",
+      "mutationStatus": "APPLIED"
+    },
+    {
+      "basename": "CANON_STATUS.json",
+      "actionId": "PROMOTE_UPDATED_ACTIVE_EXECUTION_CANON",
+      "mutationStatus": "VERIFIED"
+    },
+    {
+      "basename": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+      "actionId": "PROMOTE_VERSIONED_SUCCESSOR_OR_RECONCILED_ACTIVE_EXECUTION_CANON",
+      "mutationStatus": "VERIFIED"
+    },
+    {
+      "basename": "BINDING_INDEX_v0.md",
+      "actionId": "SYNC_BRIDGE_INDEX_IN_SAME_CHANGESET",
+      "mutationStatus": "VERIFIED"
+    }
+  ],
+  "pendingExecuteGapIds": [],
+  "proof": {
+    "deltaPacketPresentTrue": true,
+    "refreshScopeLockedTrue": true,
+    "onePassRefreshAppliedTrue": true,
+    "activeCanonAlreadyContainsWriterTrackTrue": true,
+    "bridgeSyncVerifiedTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T13:40:00.000Z"
+}

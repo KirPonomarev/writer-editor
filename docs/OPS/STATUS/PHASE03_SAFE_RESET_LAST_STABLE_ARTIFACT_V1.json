@@ -1,0 +1,31 @@
+{
+  "artifactId": "PHASE03_SAFE_RESET_LAST_STABLE_ARTIFACT_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_03",
+  "status": "PASS",
+  "restoreStatus": "PASS",
+  "sourceSafeResetLastStableFoundationState": "phase03-safe-reset-last-stable-foundation-state.mjs",
+  "scope": {
+    "recoverySurfaceBound": true,
+    "autosaveRestoreBound": true,
+    "shellLevelSafeResetPresent": true,
+    "lastStableRestorePresent": true,
+    "honestHoldArtifact": true
+  },
+  "boundRecoverySurfaceIds": [
+    "AUTOSAVE_RESTORE_ON_REOPEN",
+    "RECOVERY_MODAL_ENTRY",
+    "WINDOW_STATE_PERSISTENCE"
+  ],
+  "openRuntimeGapIds": [],
+  "proof": {
+    "safeResetFoundationPassTrue": true,
+    "autosaveRestorePresentTrue": true,
+    "recoveryEntryPresentTrue": true,
+    "windowStatePersistencePresentTrue": true,
+    "shellLevelSafeResetPresentTrue": true,
+    "lastStableRestorePresentTrue": true,
+    "noFalseSafeResetGreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T21:00:00.000Z"
+}
