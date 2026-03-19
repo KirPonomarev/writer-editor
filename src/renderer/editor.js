@@ -131,6 +131,9 @@ const SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH = 340;
 const SPATIAL_LAYOUT_COMPACT_LEFT_BASELINE_WIDTH = 260;
 const SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH = 290;
 const SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH = 240;
+const SPATIAL_LAYOUT_ENVELOPE_SIGNATURE_VERSION = 1;
+const SPATIAL_LAYOUT_MISSING_MONITOR_SHRINK_PX = 320;
+const SPATIAL_LAYOUT_MISSING_MONITOR_SHRINK_RATIO = 0.25;
 const SAFE_RESET_BASELINE_THEME = 'light';
 const SAFE_RESET_BASELINE_FONT_FAMILY = '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 const SAFE_RESET_BASELINE_FONT_SIZE_PX = 12;
@@ -1316,8 +1319,59 @@ function getSpatialLayoutConstraintsForViewport(viewportWidth = getSpatialLayout
   };
 }
 
+function getSpatialLayoutViewportEnvelope(viewportWidth = getSpatialLayoutViewportWidth()) {
+  const normalizedViewportWidth = Math.max(0, Math.floor(Number(viewportWidth) || 0));
+  const mode = getSpatialLayoutMode(normalizedViewportWidth);
+  return {
+    version: SPATIAL_LAYOUT_ENVELOPE_SIGNATURE_VERSION,
+    mode,
+    width: normalizedViewportWidth,
+    signature: `${mode}:${normalizedViewportWidth}`,
+  };
+}
+
+function isSpatialLayoutEnvelopeCompatible(rawState, viewportWidth = getSpatialLayoutViewportWidth()) {
+  if (!rawState || typeof rawState !== 'object') {
+    return false;
+  }
+
+  const currentEnvelope = getSpatialLayoutViewportEnvelope(viewportWidth);
+  const savedEnvelope = rawState.viewportEnvelope && typeof rawState.viewportEnvelope === 'object'
+    ? rawState.viewportEnvelope
+    : rawState;
+  const savedMode = typeof savedEnvelope.mode === 'string'
+    ? savedEnvelope.mode
+    : typeof rawState.viewportMode === 'string'
+      ? rawState.viewportMode
+      : '';
+  const savedViewportWidth = Math.max(
+    0,
+    Math.floor(Number(savedEnvelope.width || rawState.viewportWidth || 0))
+  );
+
+  if (!savedMode || !savedViewportWidth) {
+    return true;
+  }
+
+  if (savedMode !== currentEnvelope.mode) {
+    return false;
+  }
+
+  const viewportShrinkPx = savedViewportWidth - currentEnvelope.width;
+  if (viewportShrinkPx <= 0) {
+    return true;
+  }
+
+  const missingMonitorThresholdPx = Math.max(
+    SPATIAL_LAYOUT_MISSING_MONITOR_SHRINK_PX,
+    Math.round(savedViewportWidth * SPATIAL_LAYOUT_MISSING_MONITOR_SHRINK_RATIO),
+  );
+  return viewportShrinkPx <= missingMonitorThresholdPx;
+}
+
 function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutViewportWidth(), projectId = currentProjectId) {
   const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
+  const viewportEnvelope = getSpatialLayoutViewportEnvelope(viewportWidth);
   if (constraints.mode === 'mobile') {
     return {
       version: SPATIAL_LAYOUT_VERSION,
@@ -1326,8 +1380,10 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
       rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
       viewportWidth,
       viewportMode: constraints.mode,
+      viewportEnvelope,
       savedAtUtc: '',
       source: 'baseline',
+      recoveryReason: 'baseline',
     };
   }
   if (constraints.mode === 'compact') {
@@ -1338,8 +1394,10 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
       rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
       viewportWidth,
       viewportMode: constraints.mode,
+      viewportEnvelope,
       savedAtUtc: '',
       source: 'baseline',
+      recoveryReason: 'baseline',
     };
   }
   return {
@@ -1349,8 +1407,10 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
     rightSidebarWidth: SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH,
     viewportWidth,
     viewportMode: constraints.mode,
+    viewportEnvelope,
     savedAtUtc: '',
     source: 'baseline',
+    recoveryReason: 'baseline',
   };
 }
 
@@ -1366,11 +1426,13 @@ function normalizeSpatialLayoutState(
   { source = 'stored', projectId = currentProjectId } = {}
 ) {
   const fallback = getSpatialLayoutBaselineForViewport(viewportWidth, projectId);
+  const viewportEnvelope = getSpatialLayoutViewportEnvelope(viewportWidth);
   if (!rawState || typeof rawState !== 'object') {
     return {
       ...fallback,
       source: 'baseline',
       wasValid: false,
+      recoveryReason: 'invalid-layout',
     };
   }
 
@@ -1387,6 +1449,7 @@ function normalizeSpatialLayoutState(
   );
   const isValid =
     rawState.version === SPATIAL_LAYOUT_VERSION &&
+    isSpatialLayoutEnvelopeCompatible(rawState, viewportWidth) &&
     leftSidebarWidth >= constraints.leftMin &&
     leftSidebarWidth <= constraints.leftMax &&
     rightSidebarWidth >= constraints.rightMin &&
@@ -1397,6 +1460,9 @@ function normalizeSpatialLayoutState(
       ...fallback,
       source: 'baseline',
       wasValid: false,
+      recoveryReason: isSpatialLayoutEnvelopeCompatible(rawState, viewportWidth)
+        ? 'invalid-layout'
+        : 'missing-monitor',
     };
   }
 
@@ -1407,9 +1473,11 @@ function normalizeSpatialLayoutState(
     rightSidebarWidth: constraints.rightVisible ? rightSidebarWidth : fallback.rightSidebarWidth,
     viewportWidth,
     viewportMode: constraints.mode,
+    viewportEnvelope,
     savedAtUtc: typeof rawState.savedAtUtc === 'string' ? rawState.savedAtUtc : '',
     source,
     wasValid: true,
+    recoveryReason: typeof rawState.recoveryReason === 'string' ? rawState.recoveryReason : 'stored',
   };
 }
 
@@ -1451,8 +1519,12 @@ function persistSpatialLayoutSnapshot(
     rightSidebarWidth: Math.round(Number(state?.rightSidebarWidth) || SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH),
     viewportWidth: Math.max(0, Math.floor(Number(state?.viewportWidth) || getSpatialLayoutViewportWidth())),
     viewportMode: state?.viewportMode || getSpatialLayoutMode(),
+    viewportEnvelope: state?.viewportEnvelope && typeof state.viewportEnvelope === 'object'
+      ? state.viewportEnvelope
+      : getSpatialLayoutViewportEnvelope(Math.max(0, Math.floor(Number(state?.viewportWidth) || getSpatialLayoutViewportWidth()))),
     savedAtUtc: new Date().toISOString(),
     source: state?.source || source,
+    recoveryReason: typeof state?.recoveryReason === 'string' ? state.recoveryReason : '',
   };
   try {
     localStorage.setItem(storageKey, JSON.stringify(nextState));
@@ -1521,6 +1593,23 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
   return spatialLayoutState;
 }
 
+function resolveSpatialLayoutRecoveryCandidate(candidate, viewportWidth = getSpatialLayoutViewportWidth(), projectId = currentProjectId) {
+  const normalizedCandidate = normalizeSpatialLayoutState(candidate.rawState, viewportWidth, {
+    projectId,
+    source: candidate.source,
+  });
+  const envelopeCompatible = candidate.rawState ? isSpatialLayoutEnvelopeCompatible(candidate.rawState, viewportWidth) : false;
+  const recoveryReason = envelopeCompatible
+    ? (normalizedCandidate.wasValid ? 'valid-current-envelope' : 'invalid-layout')
+    : 'missing-monitor';
+  return {
+    ...normalizedCandidate,
+    recoveryReason,
+    recoverySource: candidate.source,
+    wasValid: Boolean(normalizedCandidate.wasValid && envelopeCompatible),
+  };
+}
+
 function recoverSpatialLayoutState(projectId = currentProjectId) {
   const normalizedProjectId = normalizeProjectId(projectId);
   const viewportWidth = getSpatialLayoutViewportWidth();
@@ -1539,10 +1628,7 @@ function recoverSpatialLayoutState(projectId = currentProjectId) {
   );
 
   for (const candidate of candidates) {
-    const resolvedCandidate = normalizeSpatialLayoutState(candidate.rawState, viewportWidth, {
-      projectId: normalizedProjectId,
-      source: candidate.source,
-    });
+    const resolvedCandidate = resolveSpatialLayoutRecoveryCandidate(candidate, viewportWidth, normalizedProjectId);
     if (resolvedCandidate.wasValid) {
       return resolvedCandidate;
     }
@@ -1563,10 +1649,10 @@ function restoreSpatialLayoutState(projectId = currentProjectId) {
 function restoreLastStableSpatialLayoutState(projectId = currentProjectId) {
   const viewportWidth = getSpatialLayoutViewportWidth();
   const storedState = readSpatialLastStableLayoutState(projectId);
-  const resolvedState = normalizeSpatialLayoutState(storedState, viewportWidth, {
-    projectId,
+  const resolvedState = resolveSpatialLayoutRecoveryCandidate({
+    rawState: storedState,
     source: 'last-stable',
-  });
+  }, viewportWidth, projectId);
   const stateToApply = resolvedState.wasValid
     ? resolvedState
     : getSpatialLayoutBaselineForViewport(viewportWidth, projectId);

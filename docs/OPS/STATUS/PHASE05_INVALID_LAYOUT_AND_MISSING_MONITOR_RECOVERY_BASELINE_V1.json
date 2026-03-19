@@ -1,0 +1,43 @@
+{
+  "artifactId": "PHASE05_INVALID_LAYOUT_AND_MISSING_MONITOR_RECOVERY_BASELINE_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_05",
+  "status": "PASS",
+  "phase05ReadinessStatus": "HOLD",
+  "sourcePhase05LayoutRecoveryLastStableBaseline": "phase05-layout-recovery-last-stable-baseline-state.mjs",
+  "boundSignalIds": [
+    "VIEWPORT_ENVELOPE_METADATA_BOUND",
+    "INVALID_LAYOUT_AND_MISSING_MONITOR_RECOVERY_BOUND",
+    "LAST_STABLE_RECOVERY_ORDER_BOUND",
+    "LAST_STABLE_FALLBACK_TO_BASELINE_BOUND",
+    "PROJECT_SCOPED_SPATIAL_LAYOUT_SNAPSHOT_BOUND",
+    "EDITOR_ROOT_FIXED_DOCKED_BOUND"
+  ],
+  "lockedTargetIds": [
+    "SPATIAL_VIEWPORT_ENVELOPE_METADATA",
+    "INVALID_LAYOUT_AND_MISSING_MONITOR_RECOVERY",
+    "CURRENT_TO_LAST_STABLE_RECOVERY_ORDER",
+    "LAST_STABLE_VALID_FOR_CURRENT_ENVELOPE",
+    "LAST_STABLE_INVALID_OR_MISSING_MONITOR_FALLS_BACK_TO_BASELINE",
+    "PROJECT_SCOPED_SPATIAL_LAYOUT_SNAPSHOT",
+    "EDITOR_ROOT_FIXED_DOCKED"
+  ],
+  "lockedCommitPointIds": [
+    "RESIZE_END",
+    "SAFE_RESET",
+    "RESTORE_LAST_STABLE"
+  ],
+  "phase05PendingGapIds": [],
+  "proof": {
+    "phase05LayoutRecoveryLastStablePassTrue": true,
+    "viewportEnvelopeMetadataPresentTrue": true,
+    "missingMonitorDetectionPresentTrue": true,
+    "invalidLayoutAndMissingMonitorRecoveryExplicitTrue": true,
+    "lastStableFallbackToBaselineExplicitTrue": true,
+    "recoveryOrderDeterministicTrue": true,
+    "editorRootFixedDockedStillTrue": true,
+    "projectScopedSpatialLayoutSnapshotStillTrue": true,
+    "noFalsePhase05GreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T00:00:00.000Z"
+}
