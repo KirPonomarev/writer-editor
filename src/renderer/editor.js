@@ -162,6 +162,19 @@ const activeTab = 'roman';
 let currentDocumentPath = null;
 let currentDocumentKind = null;
 let currentProjectId = '';
+let floatingToolbarState = {
+  position: { x: 0, y: 0 },
+  compact: false,
+  scale: 1,
+  widthScale: 1,
+};
+let toolbarItemOffsets = {};
+let leftFloatingToolbarState = {
+  position: { x: 0, y: 0 },
+  compact: false,
+};
+let leftToolbarButtonOffsets = {};
+let configuratorBucketState = { master: [], minimal: [] };
 let flowModeState = {
   active: false,
   scenes: [],
@@ -2538,11 +2551,215 @@ function markAsModified() {
   scheduleAutoSave();
 }
 
+function getDefaultFloatingToolbarState() {
+  return {
+    position: { x: 0, y: 0 },
+    compact: false,
+    scale: 1,
+    widthScale: 1,
+  };
+}
+
+function normalizeFloatingToolbarState(input) {
+  const fallback = getDefaultFloatingToolbarState();
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return fallback;
+  }
+  const position = input.position && typeof input.position === 'object' && !Array.isArray(input.position)
+    ? input.position
+    : {};
+  const x = Number(position.x);
+  const y = Number(position.y);
+  const scale = Number(input.scale);
+  const widthScale = Number(input.widthScale);
+  return {
+    position: {
+      x: Number.isFinite(x) ? x : fallback.position.x,
+      y: Number.isFinite(y) ? y : fallback.position.y,
+    },
+    compact: Boolean(input.compact),
+    scale: Number.isFinite(scale) ? Math.min(FLOATING_TOOLBAR_SCALE_MAX, Math.max(FLOATING_TOOLBAR_SCALE_MIN, scale)) : fallback.scale,
+    widthScale: Number.isFinite(widthScale)
+      ? Math.min(FLOATING_TOOLBAR_WIDTH_SCALE_MAX, Math.max(FLOATING_TOOLBAR_WIDTH_SCALE_MIN, widthScale))
+      : fallback.widthScale,
+  };
+}
+
+function readFloatingToolbarState() {
+  try {
+    const raw = localStorage.getItem(FLOATING_TOOLBAR_STORAGE_KEY);
+    if (!raw) return getDefaultFloatingToolbarState();
+    return normalizeFloatingToolbarState(JSON.parse(raw));
+  } catch (error) {
+    return getDefaultFloatingToolbarState();
+  }
+}
+
+function persistFloatingToolbarState() {
+  localStorage.setItem(FLOATING_TOOLBAR_STORAGE_KEY, JSON.stringify(floatingToolbarState));
+}
+
+function readFloatingToolbarItemOffsets() {
+  try {
+    const raw = localStorage.getItem(FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function persistFloatingToolbarItemOffsets() {
+  localStorage.setItem(FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY, JSON.stringify(toolbarItemOffsets));
+}
+
+function applyFloatingToolbarState(nextState, persist = true) {
+  floatingToolbarState = normalizeFloatingToolbarState(nextState);
+  setToolbarCompactMode(floatingToolbarState.compact);
+  if (persist) {
+    persistFloatingToolbarState();
+  }
+}
+
+function restoreFloatingToolbarItemOffsets() {
+  toolbarItemOffsets = readFloatingToolbarItemOffsets();
+}
+
+function restoreFloatingToolbarPosition() {
+  applyFloatingToolbarState(readFloatingToolbarState(), false);
+}
+
+function getDefaultLeftFloatingToolbarState() {
+  return {
+    position: { x: 0, y: 0 },
+    compact: false,
+  };
+}
+
+function normalizeLeftFloatingToolbarState(input) {
+  const fallback = getDefaultLeftFloatingToolbarState();
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return fallback;
+  }
+  const position = input.position && typeof input.position === 'object' && !Array.isArray(input.position)
+    ? input.position
+    : {};
+  const x = Number(position.x);
+  const y = Number(position.y);
+  return {
+    position: {
+      x: Number.isFinite(x) ? x : fallback.position.x,
+      y: Number.isFinite(y) ? y : fallback.position.y,
+    },
+    compact: Boolean(input.compact),
+  };
+}
+
+function readLeftFloatingToolbarState() {
+  try {
+    const raw = localStorage.getItem(LEFT_FLOATING_TOOLBAR_STORAGE_KEY);
+    if (!raw) return getDefaultLeftFloatingToolbarState();
+    return normalizeLeftFloatingToolbarState(JSON.parse(raw));
+  } catch (error) {
+    return getDefaultLeftFloatingToolbarState();
+  }
+}
+
+function persistLeftFloatingToolbarState() {
+  localStorage.setItem(LEFT_FLOATING_TOOLBAR_STORAGE_KEY, JSON.stringify(leftFloatingToolbarState));
+}
+
+function readLeftToolbarButtonOffsets() {
+  try {
+    const raw = localStorage.getItem(LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function persistLeftToolbarButtonOffsets() {
+  localStorage.setItem(LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY, JSON.stringify(leftToolbarButtonOffsets));
+}
+
+function applyLeftFloatingToolbarState(nextState, persist = true) {
+  leftFloatingToolbarState = normalizeLeftFloatingToolbarState(nextState);
+  if (persist) {
+    persistLeftFloatingToolbarState();
+  }
+}
+
+function restoreLeftToolbarButtonOffsets() {
+  leftToolbarButtonOffsets = readLeftToolbarButtonOffsets();
+}
+
+function restoreLeftFloatingToolbarPosition() {
+  applyLeftFloatingToolbarState(readLeftFloatingToolbarState(), false);
+}
+
+function readConfiguratorBucketState() {
+  try {
+    const raw = localStorage.getItem(CONFIGURATOR_BUCKETS_STORAGE_KEY);
+    if (!raw) return { master: [], minimal: [] };
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return { master: [], minimal: [] };
+    }
+    return {
+      master: Array.isArray(parsed.master) ? parsed.master : [],
+      minimal: Array.isArray(parsed.minimal) ? parsed.minimal : [],
+    };
+  } catch (error) {
+    return { master: [], minimal: [] };
+  }
+}
+
+function persistConfiguratorBucketState() {
+  localStorage.setItem(CONFIGURATOR_BUCKETS_STORAGE_KEY, JSON.stringify(configuratorBucketState));
+}
+
+function setActiveConfiguratorBucketSelection() {}
+
+function renderConfiguratorBuckets() {}
+
+function setConfiguratorOpen() {}
+
+function setToolbarSpacingTuningMode() {}
+
+function setToolbarSpacingMenuOpen() {}
+
+function setLeftToolbarSpacingTuningMode() {}
+
+function setLeftToolbarSpacingMenuOpen() {}
+
+function resolveFontWeightPresetId(weight) {
+  const normalized = String(weight || '').trim();
+  if (Object.prototype.hasOwnProperty.call(FONT_WEIGHT_PRESETS, normalized)) {
+    return normalized;
+  }
+  return LEGACY_FONT_WEIGHT_PRESET_MAP[normalized] || 'regular';
+}
+
+function getWeightSelectValueForPresetId(presetId) {
+  const preset = FONT_WEIGHT_PRESETS[presetId] || FONT_WEIGHT_PRESETS.regular;
+  return preset.weight;
+}
+
 function applyFontWeight(weight, persist = true) {
   if (!editor) return;
-  editor.style.fontWeight = String(weight);
+  const presetId = resolveFontWeightPresetId(weight);
+  const preset = FONT_WEIGHT_PRESETS[presetId] || FONT_WEIGHT_PRESETS.regular;
+  editor.style.fontWeight = preset.weight;
+  editor.style.fontStretch = preset.stretch;
+  editor.style.letterSpacing = preset.spacing;
+  if (weightSelect) {
+    weightSelect.value = getWeightSelectValueForPresetId(presetId);
+  }
   if (persist) {
-    localStorage.setItem('editorFontWeight', String(weight));
+    localStorage.setItem('editorFontWeight', presetId);
   }
   renderStyledView(getPlainText());
 }
@@ -3289,16 +3506,10 @@ function loadSavedViewMode() {
 
 function loadSavedFontWeight() {
   const saved = localStorage.getItem('editorFontWeight');
-  if (saved) {
-    applyFontWeight(saved, false);
-    if (weightSelect) {
-      weightSelect.value = saved;
-    }
-  } else {
-    applyFontWeight('400', false);
-    if (weightSelect) {
-      weightSelect.value = '400';
-    }
+  const presetId = resolveFontWeightPresetId(saved || 'regular');
+  applyFontWeight(presetId, false);
+  if (weightSelect) {
+    weightSelect.value = getWeightSelectValueForPresetId(presetId);
   }
 }
 

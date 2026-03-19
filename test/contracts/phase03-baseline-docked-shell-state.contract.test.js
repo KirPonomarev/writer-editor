@@ -18,27 +18,26 @@ function parseJsonOutput(result) {
   return payload;
 }
 
-test('phase03 baseline docked shell state: positive run stays hold while blocked artifact passes remain open', () => {
+test('phase03 baseline docked shell state: positive run passes once phase03 shell blockers are closed', () => {
   const result = runStateScript();
-  assert.notEqual(result.status, 0, `expected state script hold:\n${result.stdout}\n${result.stderr}`);
+  assert.equal(result.status, 0, `expected state script pass:\n${result.stdout}\n${result.stderr}`);
 
   const payload = parseJsonOutput(result);
-  assert.equal(payload.ok, false);
+  assert.equal(payload.ok, true);
   assert.equal(payload.failReason, '');
-  assert.equal(payload.overallStatus, 'HOLD');
+  assert.equal(payload.overallStatus, 'PASS');
   assert.equal(payload.phase03ReadinessStatus, 'PASS');
-  assert.deepEqual(payload.openGapIds, [
-    'USER_SHELL_STATE_FOUNDATION_PASS',
-    'PROJECT_WORKSPACE_STATE_ARTIFACT_PASS',
-    'SAFE_RESET_LAST_STABLE_ARTIFACT_PASS',
-    'STABLE_PROJECT_ID_STORAGE_CONTRACT_PASS',
-    'TERMINOLOGY_MIGRATION_ARTIFACT_PASS',
-  ]);
+  assert.deepEqual(payload.openGapIds, []);
   assert.deepEqual(payload.phase03PendingGapIds, []);
   assert.equal(payload.greenCheckIds.includes('PHASE03_PREP_PASS'), true);
   assert.equal(payload.greenCheckIds.includes('PACKET_PRESENT'), true);
   assert.equal(payload.greenCheckIds.includes('PACKET_PASS'), true);
   assert.equal(payload.greenCheckIds.includes('PACKET_READY'), true);
+  assert.equal(payload.greenCheckIds.includes('USER_SHELL_STATE_FOUNDATION_PASS'), true);
+  assert.equal(payload.greenCheckIds.includes('PROJECT_WORKSPACE_STATE_ARTIFACT_PASS'), true);
+  assert.equal(payload.greenCheckIds.includes('SAFE_RESET_LAST_STABLE_ARTIFACT_PASS'), true);
+  assert.equal(payload.greenCheckIds.includes('STABLE_PROJECT_ID_STORAGE_CONTRACT_PASS'), true);
+  assert.equal(payload.greenCheckIds.includes('TERMINOLOGY_MIGRATION_ARTIFACT_PASS'), true);
 });
 
 test('phase03 baseline docked shell state: forced negative path is deterministic', () => {
