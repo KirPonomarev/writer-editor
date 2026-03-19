@@ -1,0 +1,106 @@
+{
+  "artifactId": "PHASE01_REFRESH_DELTA_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_01_EXECUTE_PREP",
+  "status": "PASS",
+  "refreshExecutionStatus": "HOLD",
+  "sourcePrepPacketId": "PHASE01_CUTOVER_PREP_PACKET_V1",
+  "lockedRefreshScopeBasenames": [
+    "CANON.md",
+    "BIBLE.md",
+    "CONTEXT.md",
+    "PROCESS.md",
+    "HANDOFF.md",
+    "README.md",
+    "CANON_STATUS.json",
+    "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+    "BINDING_INDEX_v0.md"
+  ],
+  "staleDocBasenames": [
+    "CANON.md",
+    "BIBLE.md",
+    "CONTEXT.md",
+    "HANDOFF.md",
+    "README.md"
+  ],
+  "alignedDocBasenames": [
+    "PROCESS.md",
+    "CANON_STATUS.json",
+    "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+    "BINDING_INDEX_v0.md"
+  ],
+  "pendingExecuteGapIds": [
+    "ONE_PASS_REFRESH_NOT_EXECUTED",
+    "ACTIVE_CANON_NOT_YET_PROMOTED_TO_WRITER_V5",
+    "FACTUAL_DOC_RECONCILIATION_NOT_EXECUTED"
+  ],
+  "deltaByBasename": {
+    "CANON.md": {
+      "deltaStatus": "STALE",
+      "gapId": "ACTIVE_CANON_NOT_YET_PROMOTED_TO_WRITER_V5",
+      "markers": [
+        "Docs / CI / guards",
+        "Milestone 0 = docs + CI"
+      ]
+    },
+    "BIBLE.md": {
+      "deltaStatus": "STALE",
+      "gapId": "FACTUAL_DOC_RECONCILIATION_NOT_EXECUTED",
+      "markers": [
+        "# Milestone 0 — “Заморозить новую реальность”",
+        "**M2.2 — Bridge “plain text ↔ tiptap” (временно)**"
+      ]
+    },
+    "CONTEXT.md": {
+      "deltaStatus": "STALE",
+      "gapId": "FACTUAL_DOC_RECONCILIATION_NOT_EXECUTED",
+      "markers": [
+        "Milestone 0 выполнен",
+        "M1: esbuild bundling → M2: Tiptap минимально"
+      ]
+    },
+    "HANDOFF.md": {
+      "deltaStatus": "STALE",
+      "gapId": "FACTUAL_DOC_RECONCILIATION_NOT_EXECUTED",
+      "markers": [
+        "Milestone 1: сборка renderer",
+        "Milestone 2: минимальный Tiptap editor"
+      ]
+    },
+    "README.md": {
+      "deltaStatus": "STALE",
+      "gapId": "FACTUAL_DOC_RECONCILIATION_NOT_EXECUTED",
+      "markers": [
+        "### Текущее состояние (legacy)",
+        "legacy vs vNext"
+      ]
+    },
+    "PROCESS.md": {
+      "deltaStatus": "ALIGNED",
+      "gapId": "",
+      "markers": []
+    },
+    "CANON_STATUS.json": {
+      "deltaStatus": "ALIGNED",
+      "gapId": "",
+      "markers": []
+    },
+    "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md": {
+      "deltaStatus": "ALIGNED",
+      "gapId": "",
+      "markers": []
+    },
+    "BINDING_INDEX_v0.md": {
+      "deltaStatus": "ALIGNED",
+      "gapId": "",
+      "markers": []
+    }
+  },
+  "proof": {
+    "phase01PrepPassTrue": true,
+    "actualStaleMarkersBoundTrue": true,
+    "refreshStillPendingTrue": true,
+    "noFalsePromotionTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T12:45:00.000Z"
+}

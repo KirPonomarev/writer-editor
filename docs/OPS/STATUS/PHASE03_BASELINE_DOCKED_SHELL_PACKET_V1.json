@@ -1,0 +1,34 @@
+{
+  "artifactId": "PHASE03_BASELINE_DOCKED_SHELL_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_03",
+  "status": "PASS",
+  "phase03ReadinessStatus": "PASS",
+  "sourcePhase03PrepState": "phase03-prep-state.mjs",
+  "boundSignalIds": [
+    "USER_SHELL_STATE_FOUNDATION_PASS",
+    "PROJECT_WORKSPACE_STATE_ARTIFACT_PASS",
+    "SAFE_RESET_LAST_STABLE_ARTIFACT_PASS",
+    "STABLE_PROJECT_ID_STORAGE_CONTRACT_PASS",
+    "TERMINOLOGY_MIGRATION_ARTIFACT_PASS"
+  ],
+  "lockedTargetIds": [
+    "BASELINE_DOCKED_SHELL",
+    "USER_SHELL_STATE",
+    "PROJECT_WORKSPACE_STATE",
+    "SAFE_RESET_AND_LAST_STABLE_RESTORE",
+    "STABLE_PROJECT_ID_STORAGE_CONTRACT",
+    "TERMINOLOGY_MIGRATION_FOR_SHELL_CUTOVER"
+  ],
+  "phase03PendingGapIds": [],
+  "proof": {
+    "phase03PrepPassTrue": true,
+    "userShellStateFoundationPassTrue": true,
+    "projectWorkspaceStateArtifactPassTrue": true,
+    "safeResetLastStableArtifactPassTrue": true,
+    "stableProjectIdStorageContractPassTrue": true,
+    "terminologyMigrationArtifactPassTrue": true,
+    "noFalsePhase03GreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T22:40:00.000Z"
+}

@@ -1,0 +1,35 @@
+{
+  "artifactId": "PHASE03_PROJECT_WORKSPACE_STATE_FOUNDATION_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_03",
+  "status": "PASS",
+  "foundationStatus": "HOLD",
+  "sourceStableProjectIdContractState": "phase03-stable-project-id-storage-contract-state.mjs",
+  "scope": {
+    "projectScopedButNotDocumentTruth": true,
+    "stableProjectIdKeyingPresent": false,
+    "pathBoundResumePresent": true,
+    "documentTruthMutationPresent": false
+  },
+  "observedWorkspaceSurfaceIds": [
+    "ACTIVE_DOCUMENT_TITLE_LOCAL",
+    "TREE_EXPANDED_LOCAL",
+    "LAST_FILE_RESUME_SETTINGS"
+  ],
+  "pendingFoundationGapIds": [
+    "PROJECT_WORKSPACE_STATE_ARTIFACT_NOT_BOUND"
+  ],
+  "blockedByGapIds": [
+    "STABLE_PROJECT_ID_STORAGE_CONTRACT_NOT_BOUND"
+  ],
+  "proof": {
+    "stableProjectIdContractPassTrue": true,
+    "activeDocumentTitlePersistedTrue": true,
+    "treeExpansionPersistedTrue": true,
+    "pathBoundLastFileResumeTrue": true,
+    "stableProjectIdKeyingAbsentTrue": true,
+    "documentTruthUntouchedTrue": true,
+    "noFalseWorkspaceGreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T16:45:00.000Z"
+}

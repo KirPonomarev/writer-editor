@@ -1,0 +1,47 @@
+{
+  "artifactId": "PHASE01_CUTOVER_PREP_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_01_PREP",
+  "status": "PASS",
+  "executeReadinessStatus": "HOLD",
+  "activeExecutionCanon": {
+    "canonStatusBasename": "CANON_STATUS.json",
+    "canonicalDocBasename": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+    "canonVersion": "v3.13a-final"
+  },
+  "repoCanonSurfaceEquivalents": {
+    "rootCanonBasename": "CANON.md",
+    "docsCanonEquivalentBasenames": [
+      "BIBLE.md",
+      "CONTEXT.md",
+      "PROCESS.md",
+      "HANDOFF.md"
+    ],
+    "bridgeIndexBasename": "BINDING_INDEX_v0.md"
+  },
+  "lockedRefreshScopeBasenames": [
+    "CANON.md",
+    "BIBLE.md",
+    "CONTEXT.md",
+    "PROCESS.md",
+    "HANDOFF.md",
+    "README.md",
+    "CANON_STATUS.json",
+    "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+    "BINDING_INDEX_v0.md"
+  ],
+  "lockedExecuteGapIds": [
+    "ONE_PASS_REFRESH_NOT_EXECUTED",
+    "ACTIVE_CANON_NOT_YET_PROMOTED_TO_WRITER_V5",
+    "FACTUAL_DOC_RECONCILIATION_NOT_EXECUTED"
+  ],
+  "proof": {
+    "phase00ClosureCandidatePassTrue": true,
+    "activeExecutionCanonBoundTrue": true,
+    "bindingIndexPresentTrue": true,
+    "refreshScopeLockedTrue": true,
+    "bridgeSyncScopeLockedTrue": true,
+    "cutoverExecuteNotClaimedTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T12:15:00.000Z"
+}

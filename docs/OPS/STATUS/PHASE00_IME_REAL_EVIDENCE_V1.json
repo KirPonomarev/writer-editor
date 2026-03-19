@@ -1,0 +1,23 @@
+{
+  "artifactId": "PHASE00_IME_REAL_EVIDENCE_V1",
+  "schemaVersion": 1,
+  "status": "PASS",
+  "evidenceKind": "MANUAL_PRIMARY_PATH_VERIFICATION",
+  "editorPath": "TIPTAP_PRIMARY",
+  "inputMethod": "JAPANESE_IME_ON_MACOS",
+  "scope": "IME_INPUT_ONLY_NOT_PAGE_LAYOUT",
+  "checks": {
+    "compositionInputObserved": true,
+    "candidateCommitObserved": true,
+    "textPersistsAfterCommit": true,
+    "continuedTypingAfterCommitObserved": true
+  },
+  "knownOutOfScope": [
+    "PAGE_SPLIT",
+    "BOTTOM_PAGE_BOUNDARY",
+    "FINAL_PAGED_LAYOUT",
+    "FULL_HOTKEY_SURFACE"
+  ],
+  "verifiedAtUtc": "2026-03-19T11:30:00.000Z",
+  "verifiedBy": "USER_MANUAL_VERIFICATION"
+}

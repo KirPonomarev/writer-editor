@@ -1,0 +1,70 @@
+{
+  "artifactId": "PHASE03_USER_SHELL_STATE_FOUNDATION_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_03",
+  "status": "PASS",
+  "foundationStatus": "PASS",
+  "sourcePhase03PrepState": "phase03-prep-state.mjs",
+  "scope": {
+    "userLevelLocalOnly": true,
+    "projectWorkspaceStateIncluded": false,
+    "safeResetLastStableIncluded": false,
+    "stableProjectIdIncluded": false,
+    "terminologyMigrationIncluded": false
+  },
+  "boundPreferenceIds": [
+    "EDITOR_THEME",
+    "EDITOR_FONT_FAMILY",
+    "EDITOR_FONT_SIZE",
+    "EDITOR_FONT_WEIGHT",
+    "EDITOR_LINE_HEIGHT",
+    "EDITOR_WORD_WRAP",
+    "EDITOR_VIEW_MODE",
+    "EDITOR_ZOOM",
+    "FLOATING_TOOLBAR_LAYOUT",
+    "LEFT_TOOLBAR_LAYOUT",
+    "CONFIGURATOR_BUCKET_LAYOUT"
+  ],
+  "boundStorageKeys": [
+    "editorTheme",
+    "editorFont",
+    "editorFontWeight",
+    "editorLineHeight",
+    "editorWordWrap",
+    "editorViewMode",
+    "editorZoom",
+    "yalkenLiteralStageAToolbarState",
+    "yalkenLiteralStageAToolbarItemOffsets",
+    "yalkenLeftToolbarState",
+    "yalkenLeftToolbarButtonOffsets",
+    "yalkenConfiguratorBuckets"
+  ],
+  "boundStorageSurfaces": [
+    "RENDERER_LOCALSTORAGE_THEME_AND_STYLE_PREFS",
+    "RENDERER_LOCALSTORAGE_VIEW_PREFS",
+    "RENDERER_LOCALSTORAGE_FLOATING_TOOLBAR_LAYOUT",
+    "RENDERER_LOCALSTORAGE_CONFIGURATOR_LAYOUT",
+    "MAIN_SETTINGS_FONT_SIZE"
+  ],
+  "remainingPhase03GapIds": [],
+  "proof": {
+    "phase03PrepPassTrue": true,
+    "projectWorkspaceArtifactBoundTrue": true,
+    "safeResetLastStableArtifactBoundTrue": true,
+    "stableProjectIdContractBoundTrue": true,
+    "themePersistedTrue": true,
+    "fontFamilyPersistedTrue": true,
+    "fontSizePersistedMainSettingsTrue": true,
+    "fontWeightPersistedTrue": true,
+    "lineHeightPersistedTrue": true,
+    "wordWrapPersistedTrue": true,
+    "viewModePersistedTrue": true,
+    "zoomPersistedTrue": true,
+    "floatingToolbarPersistedTrue": true,
+    "leftToolbarPersistedTrue": true,
+    "configuratorLayoutPersistedTrue": true,
+    "noWorkspaceClaimTrue": true,
+    "noSafeResetClaimTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T20:10:00.000Z"
+}
