@@ -1,0 +1,42 @@
+{
+  "artifactId": "PHASE05_LAYOUT_RECOVERY_LAST_STABLE_BASELINE_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_05",
+  "status": "PASS",
+  "phase05ReadinessStatus": "HOLD",
+  "sourcePhase05MovableSideContainersBaseline": "phase05-movable-side-containers-baseline-state.mjs",
+  "boundSignalIds": [
+    "CURRENT_SPATIAL_LAYOUT_STATE_BOUND",
+    "LAST_STABLE_SPATIAL_LAYOUT_STATE_BOUND",
+    "PROJECT_SCOPED_SPATIAL_LAYOUT_STORAGE",
+    "RECOVERY_ORDER_CURRENT_LAST_STABLE_BASELINE",
+    "SAFE_RESET_REBUILDS_BOTH_SNAPSHOTS",
+    "RESTORE_LAST_STABLE_IGNORES_CURRENT_STORAGE"
+  ],
+  "lockedTargetIds": [
+    "CURRENT_SPATIAL_LAYOUT_SNAPSHOT",
+    "LAST_STABLE_SPATIAL_LAYOUT_SNAPSHOT",
+    "PROJECT_SCOPED_SPATIAL_LAYOUT_STORAGE",
+    "RECOVERY_ORDER_CURRENT_LAST_STABLE_BASELINE",
+    "SAFE_RESET_REBUILDS_BOTH_SNAPSHOTS",
+    "RESTORE_LAST_STABLE_IGNORES_CURRENT_STORAGE",
+    "INVALID_LAYOUT_FALLBACK_TO_BASELINE"
+  ],
+  "lockedCommitPointIds": [
+    "RESIZE_END",
+    "SAFE_RESET",
+    "RESTORE_LAST_STABLE"
+  ],
+  "phase05PendingGapIds": [],
+  "proof": {
+    "phase05BaselinePassTrue": true,
+    "lastStableStorageKeyPresentTrue": true,
+    "projectScopedPersistenceTrue": true,
+    "recoveryOrderExplicitTrue": true,
+    "safeResetRebuildsBothSnapshotsTrue": true,
+    "restoreLastStableUsesLastStableSnapshotTrue": true,
+    "invalidLayoutFallsBackToBaselineTrue": true,
+    "noFalsePhase05GreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-19T23:59:00.000Z"
+}

@@ -118,6 +118,7 @@ const LEFT_FLOATING_TOOLBAR_STORAGE_KEY = 'yalkenLeftToolbarState';
 const LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY = 'yalkenLeftToolbarButtonOffsets';
 const CONFIGURATOR_BUCKETS_STORAGE_KEY = 'yalkenConfiguratorBuckets';
 const SPATIAL_LAYOUT_STORAGE_KEY_PREFIX = 'yalkenSpatialLayout';
+const SPATIAL_LAYOUT_LAST_STABLE_STORAGE_KEY_PREFIX = 'yalkenSpatialLayoutLastStable';
 const SPATIAL_LAYOUT_VERSION = 1;
 const SPATIAL_LAYOUT_MOBILE_BREAKPOINT = 900;
 const SPATIAL_LAYOUT_COMPACT_BREAKPOINT = 1280;
@@ -178,6 +179,7 @@ let currentDocumentPath = null;
 let currentDocumentKind = null;
 let currentProjectId = '';
 let spatialLayoutState = null;
+let spatialLastStableLayoutState = null;
 let floatingToolbarState = {
   position: { x: 0, y: 0 },
   compact: false,
@@ -1261,6 +1263,13 @@ function getSpatialLayoutStorageKey(projectId = currentProjectId) {
     : SPATIAL_LAYOUT_STORAGE_KEY_PREFIX;
 }
 
+function getSpatialLastStableLayoutStorageKey(projectId = currentProjectId) {
+  const normalizedProjectId = normalizeProjectId(projectId);
+  return normalizedProjectId
+    ? `${SPATIAL_LAYOUT_LAST_STABLE_STORAGE_KEY_PREFIX}:${normalizedProjectId}`
+    : SPATIAL_LAYOUT_LAST_STABLE_STORAGE_KEY_PREFIX;
+}
+
 function getSpatialLayoutViewportWidth() {
   return Math.max(0, Math.floor(window.innerWidth || document.documentElement.clientWidth || 0));
 }
@@ -1307,12 +1316,12 @@ function getSpatialLayoutConstraintsForViewport(viewportWidth = getSpatialLayout
   };
 }
 
-function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutViewportWidth()) {
+function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutViewportWidth(), projectId = currentProjectId) {
   const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
   if (constraints.mode === 'mobile') {
     return {
       version: SPATIAL_LAYOUT_VERSION,
-      projectId: normalizeProjectId(currentProjectId),
+      projectId: normalizeProjectId(projectId),
       leftSidebarWidth: SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH,
       rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
       viewportWidth,
@@ -1324,7 +1333,7 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
   if (constraints.mode === 'compact') {
     return {
       version: SPATIAL_LAYOUT_VERSION,
-      projectId: normalizeProjectId(currentProjectId),
+      projectId: normalizeProjectId(projectId),
       leftSidebarWidth: SPATIAL_LAYOUT_COMPACT_LEFT_BASELINE_WIDTH,
       rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
       viewportWidth,
@@ -1335,7 +1344,7 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
   }
   return {
     version: SPATIAL_LAYOUT_VERSION,
-    projectId: normalizeProjectId(currentProjectId),
+    projectId: normalizeProjectId(projectId),
     leftSidebarWidth: SPATIAL_LAYOUT_DESKTOP_LEFT_BASELINE_WIDTH,
     rightSidebarWidth: SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH,
     viewportWidth,
@@ -1351,10 +1360,18 @@ function clampSpatialSidebarWidth(value, min, max) {
   return Math.max(min, Math.min(max, Math.round(nextValue)));
 }
 
-function normalizeSpatialLayoutState(rawState, viewportWidth = getSpatialLayoutViewportWidth()) {
-  const fallback = getSpatialLayoutBaselineForViewport(viewportWidth);
+function normalizeSpatialLayoutState(
+  rawState,
+  viewportWidth = getSpatialLayoutViewportWidth(),
+  { source = 'stored', projectId = currentProjectId } = {}
+) {
+  const fallback = getSpatialLayoutBaselineForViewport(viewportWidth, projectId);
   if (!rawState || typeof rawState !== 'object') {
-    return { ...fallback };
+    return {
+      ...fallback,
+      source: 'baseline',
+      wasValid: false,
+    };
   }
 
   const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
@@ -1376,18 +1393,23 @@ function normalizeSpatialLayoutState(rawState, viewportWidth = getSpatialLayoutV
     rightSidebarWidth <= constraints.rightMax;
 
   if (!isValid) {
-    return { ...fallback };
+    return {
+      ...fallback,
+      source: 'baseline',
+      wasValid: false,
+    };
   }
 
   return {
     version: SPATIAL_LAYOUT_VERSION,
-    projectId: normalizeProjectId(rawState.projectId || currentProjectId),
+    projectId: normalizeProjectId(rawState.projectId || projectId),
     leftSidebarWidth,
     rightSidebarWidth: constraints.rightVisible ? rightSidebarWidth : fallback.rightSidebarWidth,
     viewportWidth,
     viewportMode: constraints.mode,
     savedAtUtc: typeof rawState.savedAtUtc === 'string' ? rawState.savedAtUtc : '',
-    source: 'stored',
+    source,
+    wasValid: true,
   };
 }
 
@@ -1401,7 +1423,26 @@ function readSpatialLayoutState(projectId = currentProjectId) {
   }
 }
 
-function persistSpatialLayoutState(state, projectId = currentProjectId) {
+function readSpatialLastStableLayoutState(projectId = currentProjectId) {
+  const raw = readWorkspaceStorage(getSpatialLastStableLayoutStorageKey(projectId));
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function persistSpatialLayoutSnapshot(
+  state,
+  {
+    projectId = currentProjectId,
+    storageKey = getSpatialLayoutStorageKey(projectId),
+    source = 'committed',
+    updateCurrentLiveState = true,
+    updateLastStableLiveState = false,
+  } = {}
+) {
   const normalizedProjectId = normalizeProjectId(projectId);
   const nextState = {
     version: SPATIAL_LAYOUT_VERSION,
@@ -1411,18 +1452,46 @@ function persistSpatialLayoutState(state, projectId = currentProjectId) {
     viewportWidth: Math.max(0, Math.floor(Number(state?.viewportWidth) || getSpatialLayoutViewportWidth())),
     viewportMode: state?.viewportMode || getSpatialLayoutMode(),
     savedAtUtc: new Date().toISOString(),
-    source: state?.source || 'committed',
+    source: state?.source || source,
   };
   try {
-    localStorage.setItem(getSpatialLayoutStorageKey(normalizedProjectId), JSON.stringify(nextState));
+    localStorage.setItem(storageKey, JSON.stringify(nextState));
   } catch {}
-  spatialLayoutState = nextState;
+  if (updateCurrentLiveState) {
+    spatialLayoutState = nextState;
+  }
+  if (updateLastStableLiveState) {
+    spatialLastStableLayoutState = nextState;
+  }
   return nextState;
+}
+
+function persistSpatialLayoutState(state, projectId = currentProjectId) {
+  return persistSpatialLayoutSnapshot(state, {
+    projectId,
+    storageKey: getSpatialLayoutStorageKey(projectId),
+    source: state?.source || 'committed',
+    updateCurrentLiveState: true,
+    updateLastStableLiveState: false,
+  });
+}
+
+function persistSpatialLastStableLayoutState(state, projectId = currentProjectId) {
+  return persistSpatialLayoutSnapshot(state, {
+    projectId,
+    storageKey: getSpatialLastStableLayoutStorageKey(projectId),
+    source: state?.source || 'last-stable',
+    updateCurrentLiveState: false,
+    updateLastStableLiveState: true,
+  });
 }
 
 function applySpatialLayoutState(state, { persist = false, projectId = currentProjectId } = {}) {
   const viewportWidth = getSpatialLayoutViewportWidth();
-  const normalizedState = normalizeSpatialLayoutState(state, viewportWidth);
+  const normalizedState = normalizeSpatialLayoutState(state, viewportWidth, {
+    projectId,
+    source: persist ? 'committed' : 'stored',
+  });
   const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
 
   if (appLayout) {
@@ -1452,23 +1521,76 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
   return spatialLayoutState;
 }
 
+function recoverSpatialLayoutState(projectId = currentProjectId) {
+  const normalizedProjectId = normalizeProjectId(projectId);
+  const viewportWidth = getSpatialLayoutViewportWidth();
+  const candidates = [];
+
+  if (spatialLayoutState && normalizeProjectId(spatialLayoutState.projectId) === normalizedProjectId) {
+    candidates.push({
+      rawState: spatialLayoutState,
+      source: 'current',
+    });
+  }
+
+  candidates.push(
+    { rawState: readSpatialLayoutState(normalizedProjectId), source: 'stored-current' },
+    { rawState: readSpatialLastStableLayoutState(normalizedProjectId), source: 'last-stable' },
+  );
+
+  for (const candidate of candidates) {
+    const resolvedCandidate = normalizeSpatialLayoutState(candidate.rawState, viewportWidth, {
+      projectId: normalizedProjectId,
+      source: candidate.source,
+    });
+    if (resolvedCandidate.wasValid) {
+      return resolvedCandidate;
+    }
+  }
+
+  return {
+    ...getSpatialLayoutBaselineForViewport(viewportWidth, normalizedProjectId),
+    wasValid: true,
+    source: 'baseline',
+  };
+}
+
 function restoreSpatialLayoutState(projectId = currentProjectId) {
-  const storedState = readSpatialLayoutState(projectId);
-  const resolvedState = normalizeSpatialLayoutState(storedState, getSpatialLayoutViewportWidth());
+  const resolvedState = recoverSpatialLayoutState(projectId);
   return applySpatialLayoutState(resolvedState, { persist: false, projectId });
 }
 
+function restoreLastStableSpatialLayoutState(projectId = currentProjectId) {
+  const viewportWidth = getSpatialLayoutViewportWidth();
+  const storedState = readSpatialLastStableLayoutState(projectId);
+  const resolvedState = normalizeSpatialLayoutState(storedState, viewportWidth, {
+    projectId,
+    source: 'last-stable',
+  });
+  const stateToApply = resolvedState.wasValid
+    ? resolvedState
+    : getSpatialLayoutBaselineForViewport(viewportWidth, projectId);
+  return applySpatialLayoutState(stateToApply, { persist: false, projectId });
+}
+
 function commitSpatialLayoutState(projectId = currentProjectId) {
-  return applySpatialLayoutState(spatialLayoutState || getSpatialLayoutBaselineForViewport(), {
-    persist: true,
+  const committedState = applySpatialLayoutState(spatialLayoutState || getSpatialLayoutBaselineForViewport(), {
+    persist: false,
     projectId,
   });
+  persistSpatialLayoutState(committedState, projectId);
+  persistSpatialLastStableLayoutState(committedState, projectId);
+  return committedState;
 }
 
 function updateSpatialLayoutForViewportChange() {
   const storedState = readSpatialLayoutState(currentProjectId);
   const resolvedState = normalizeSpatialLayoutState(storedState || spatialLayoutState, getSpatialLayoutViewportWidth());
-  applySpatialLayoutState(resolvedState, { persist: false, projectId: currentProjectId });
+  const recoveryState = recoverSpatialLayoutState(currentProjectId);
+  applySpatialLayoutState(recoveryState.wasValid ? recoveryState : resolvedState, {
+    persist: false,
+    projectId: currentProjectId,
+  });
 }
 
 function showEditorPanelFor(title) {
@@ -2429,6 +2551,7 @@ function clearProjectWorkspaceStorage(projectId = currentProjectId) {
   if (normalizedProjectId) {
     keysToRemove.add(getActiveDocumentTitleStorageKey(normalizedProjectId));
     keysToRemove.add(getSpatialLayoutStorageKey(normalizedProjectId));
+    keysToRemove.add(getSpatialLastStableLayoutStorageKey(normalizedProjectId));
     PROJECT_WORKSPACE_RESET_TABS.forEach((tab) => {
       keysToRemove.add(getTreeExpandedStorageKey(tab, normalizedProjectId));
     });
@@ -2506,6 +2629,8 @@ function performSafeResetShell() {
     persist: true,
     projectId: currentProjectId,
   });
+  persistSpatialLastStableLayoutState(spatialLayoutState, currentProjectId);
+  commitSpatialLayoutState(currentProjectId);
 
   if (editor) {
     editor.style.fontSize = `${SAFE_RESET_BASELINE_FONT_SIZE_PX}px`;
@@ -2589,6 +2714,7 @@ function performRestoreLastStableShell() {
   restoreLeftToolbarButtonOffsets();
   restoreLeftFloatingToolbarPosition();
   restoreSpatialLayoutState(currentProjectId);
+  restoreLastStableSpatialLayoutState(currentProjectId);
 
   configuratorBucketState = readConfiguratorBucketState();
   setActiveConfiguratorBucketSelection('', -1);
