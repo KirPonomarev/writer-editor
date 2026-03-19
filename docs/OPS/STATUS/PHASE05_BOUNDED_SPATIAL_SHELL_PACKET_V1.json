@@ -1,0 +1,33 @@
+{
+  "artifactId": "PHASE05_BOUNDED_SPATIAL_SHELL_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_05",
+  "status": "PASS",
+  "phase05ReadinessStatus": "PASS",
+  "sourcePhase05InvalidLayoutAndMissingMonitorRecoveryBaseline": "phase05-invalid-layout-and-missing-monitor-recovery-baseline-state.mjs",
+  "boundSignalIds": [
+    "PHASE05_MOVABLE_SIDE_CONTAINERS_BASELINE_PASS",
+    "PHASE05_LAYOUT_RECOVERY_LAST_STABLE_BASELINE_PASS",
+    "PHASE05_INVALID_LAYOUT_AND_MISSING_MONITOR_RECOVERY_BASELINE_PASS"
+  ],
+  "lockedTargetIds": [
+    "BOUNDED_SPATIAL_SHELL",
+    "MOVABLE_SIDE_CONTAINERS",
+    "SAFE_RESTORE_AND_LAYOUT_RECOVERY",
+    "INVALID_LAYOUT_AND_MISSING_MONITOR_RECOVERY",
+    "PROJECT_SCOPED_SPATIAL_LAYOUT_SNAPSHOTS",
+    "EDITOR_ROOT_FIXED_DOCKED"
+  ],
+  "phase05PendingGapIds": [],
+  "proof": {
+    "phase05MovableSideContainersBaselinePassTrue": true,
+    "phase05LayoutRecoveryLastStableBaselinePassTrue": true,
+    "phase05InvalidLayoutAndMissingMonitorRecoveryBaselinePassTrue": true,
+    "sourcePhase05InvalidLayoutAndMissingMonitorRecoveryBaselineTrue": true,
+    "boundSignalIdsAlignedTrue": true,
+    "lockedTargetIdsAlignedTrue": true,
+    "phase05PendingGapIdsClearedTrue": true,
+    "noFalsePhase05GreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T00:20:00.000Z"
+}
