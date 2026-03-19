@@ -84,6 +84,7 @@ Machine-bound blocking law определяется не этим докумен
 3. False-green, stale-green и scope drift запрещены.
 4. Factual docs обновляются одним pass после closure, а не фрагментами “когда получится”.
 5. Merge идёт только через approved PR path и действующую automation policy.
+6. `ROLE_CONTRACT_OPS_PROTOCOL` обязателен; источник исполнения этого контракта — `docs/PROCESS.md`.
 
 ## 7. Repo Interpretation Rules
 
