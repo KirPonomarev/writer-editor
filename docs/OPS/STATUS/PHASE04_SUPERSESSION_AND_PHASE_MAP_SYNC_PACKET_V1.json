@@ -1,0 +1,40 @@
+{
+  "artifactId": "PHASE04_SUPERSESSION_AND_PHASE_MAP_SYNC_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_04",
+  "status": "PASS",
+  "phase04PhaseMapSyncStatus": "PASS",
+  "bindingOrder": [
+    "LOGICAL_ARTIFACT_ID",
+    "ACTIVE_PACKET",
+    "HISTORICAL_PREP_IF_PRESENT"
+  ],
+  "activeLogicalArtifactId": "PHASE04_DESIGN_LAYER_BASELINE",
+  "activePacketBasename": "PHASE04_DESIGN_LAYER_BASELINE_PACKET_V1.json",
+  "historicalPrepBindings": [
+    {
+      "logicalArtifactId": "PHASE04_SPATIAL_PREP_HISTORICAL",
+      "packetBasename": "PHASE04_SPATIAL_PREP_PACKET_V1.json",
+      "stateScriptBasename": "phase04-spatial-prep-state.mjs",
+      "bindingStatus": "IMMUTABLE_HISTORICAL_PREP"
+    }
+  ],
+  "boundSignalIds": [
+    "LOGICAL_ARTIFACT_ID_FIRST",
+    "ACTIVE_PHASE04_PACKET_BOUND",
+    "HISTORICAL_PHASE04_PREP_RETAINED_IF_PRESENT"
+  ],
+  "lockedTargetIds": [
+    "TRUE_PHASE04_IS_DESIGN_LAYER_BASELINE",
+    "OLD_PHASE04_SPATIAL_PREP_IS_HISTORICAL_ONLY",
+    "PHASE04_PHASE_MAP_SYNC_MACHINE_BOUND"
+  ],
+  "phase04PhaseMapPendingGapIds": [],
+  "proof": {
+    "logicalArtifactIdFirstTrue": true,
+    "activePacketBoundTrue": true,
+    "historicalPrepRetainedIfPresentTrue": true,
+    "noFalsePhase04SupersessionGreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T10:30:00.000Z"
+}

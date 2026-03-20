@@ -1,0 +1,68 @@
+{
+  "artifactId": "PHASE04_DESIGN_LAYER_BASELINE_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_04",
+  "status": "PASS",
+  "phase04BaselineStatus": "PASS",
+  "sourcePhase03State": "phase03-baseline-docked-shell-state.mjs",
+  "sourcePhase04SupersessionPacketBasename": "PHASE04_SUPERSESSION_AND_PHASE_MAP_SYNC_PACKET_V1.json",
+  "scope": {
+    "designLayerOnly": true,
+    "touchesDocumentTruth": false,
+    "touchesRecoveryTruth": false,
+    "touchesCommandSemantics": false,
+    "shellRuntimeClosureClaimed": false,
+    "spatialRuntimeClosureClaimed": false
+  },
+  "designLayerSurfaceIds": [
+    "TOKENS",
+    "TYPOGRAPHY",
+    "SKINS",
+    "SUPPORTED_MODES"
+  ],
+  "profileIds": [
+    "BASELINE",
+    "SAFE",
+    "FOCUS",
+    "COMPACT"
+  ],
+  "supportedShellModeIds": [
+    "CALM_DOCKED",
+    "COMPACT_DOCKED",
+    "SPATIAL_ADVANCED",
+    "SAFE_RECOVERY"
+  ],
+  "boundSignalIds": [
+    "PHASE03_BASELINE_DOCKED_SHELL_PASS",
+    "PHASE04_SUPERSESSION_AND_PHASE_MAP_SYNC_PASS",
+    "CANON_MUTABLE_DESIGN_SAFE",
+    "BIBLE_MUTABLE_DESIGN_SAFE",
+    "BIBLE_DESIGN_LAYER_DEFINED",
+    "XPLAT_PROFILE_SET_LOCKED",
+    "XPLAT_SHELL_MODE_SET_LOCKED"
+  ],
+  "lockedTargetIds": [
+    "DESIGN_LAYER_BASELINE",
+    "TOKENS",
+    "TYPOGRAPHY",
+    "SKINS",
+    "SUPPORTED_MODES",
+    "TEXT_TRUTH_UNTOUCHED",
+    "RECOVERY_TRUTH_UNTOUCHED",
+    "COMMAND_SEMANTICS_UNTOUCHED",
+    "NO_SHELL_OR_SPATIAL_RUNTIME_CLOSURE_CLAIM"
+  ],
+  "phase04PendingGapIds": [],
+  "proof": {
+    "phase03BaselineDockedShellPassTrue": true,
+    "supersessionAndPhaseMapSyncPassTrue": true,
+    "canonMutableDesignSafeTrue": true,
+    "bibleMutableDesignSafeTrue": true,
+    "bibleDesignLayerDefinedTrue": true,
+    "xplatProfileSetLockedTrue": true,
+    "xplatShellModeSetLockedTrue": true,
+    "designLayerOnlyScopeTrue": true,
+    "noFalsePhase04DesignBaselineGreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T10:30:00.000Z"
+}
