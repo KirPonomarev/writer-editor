@@ -4,7 +4,7 @@
   "phaseId": "PHASE_05",
   "status": "PASS",
   "phase05ReadinessStatus": "HOLD",
-  "sourcePhase04State": "phase04-spatial-prep-state.mjs",
+  "sourcePhase04State": "phase04-design-layer-baseline-state.mjs",
   "boundSignalIds": [
     "LEFT_SIDE_CONTAINER_RUNTIME_BOUND",
     "RIGHT_SIDE_CONTAINER_RUNTIME_BOUND",

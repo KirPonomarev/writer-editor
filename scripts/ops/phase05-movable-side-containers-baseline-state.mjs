@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { evaluatePhase04SpatialPrepState } from './phase04-spatial-prep-state.mjs';
+import { evaluatePhase04DesignLayerBaselineState } from './phase04-design-layer-baseline-state.mjs';
 
 const FAIL_REASON_FORCED_NEGATIVE = 'E_PHASE05_MOVABLE_SIDE_CONTAINERS_BASELINE_FORCED_NEGATIVE';
 const FAIL_REASON_UNEXPECTED = 'E_PHASE05_MOVABLE_SIDE_CONTAINERS_BASELINE_UNEXPECTED';
@@ -63,16 +63,16 @@ function evaluatePhase05MovableSideContainersBaselineState(input = {}) {
   const forceNegative = Boolean(input.forceNegative);
 
   try {
-    const phase04State = evaluatePhase04SpatialPrepState({});
+    const phase04State = evaluatePhase04DesignLayerBaselineState({});
     const packet = fs.existsSync(path.resolve(PACKET_PATH)) ? readJson(PACKET_PATH) : null;
     const editorText = readText(EDITOR_PATH);
     const stylesText = readText(STYLES_PATH);
     const indexText = readText(INDEX_PATH);
 
-    const phase04Pass = phase04State.overallStatus === 'PASS' && phase04State.phase04ReadinessStatus === 'HOLD';
+    const phase04Pass = phase04State.overallStatus === 'PASS' && phase04State.phase04BaselineStatus === 'PASS';
     const packetPass = packet?.status === 'PASS';
     const readinessHold = packet?.phase05ReadinessStatus === 'HOLD';
-    const sourcePhase04Matches = packet?.sourcePhase04State === 'phase04-spatial-prep-state.mjs';
+    const sourcePhase04Matches = packet?.sourcePhase04State === 'phase04-design-layer-baseline-state.mjs';
     const lockedTargetIdsMatch = arraysEqual(packet?.lockedTargetIds || [], EXPECTED_LOCKED_TARGET_IDS);
     const lockedCommitPointIdsMatch = arraysEqual(packet?.lockedCommitPointIds || [], EXPECTED_LOCKED_COMMIT_POINT_IDS);
 
@@ -101,7 +101,7 @@ function evaluatePhase05MovableSideContainersBaselineState(input = {}) {
       hasPattern(editorText, /normalizeSpatialLayoutState\(storedState \|\| spatialLayoutState/);
 
     const checkStatusById = {
-      PHASE04_SPATIAL_PREP_PASS: asCheck(phase04Pass ? 'GREEN' : 'OPEN_GAP', true, phase04Pass ? 'PHASE04_SPATIAL_PREP_PASS' : 'PHASE04_SPATIAL_PREP_NOT_PASS'),
+      PHASE04_DESIGN_LAYER_BASELINE_PASS: asCheck(phase04Pass ? 'GREEN' : 'OPEN_GAP', true, phase04Pass ? 'PHASE04_DESIGN_LAYER_BASELINE_PASS' : 'PHASE04_DESIGN_LAYER_BASELINE_NOT_PASS'),
       PACKET_PRESENT: asCheck(Boolean(packet) ? 'GREEN' : 'OPEN_GAP', true, packet ? 'PACKET_PRESENT' : 'PACKET_MISSING'),
       PACKET_PASS: asCheck(packetPass ? 'GREEN' : 'OPEN_GAP', true, packetPass ? 'PACKET_PASS' : 'PACKET_NOT_PASS'),
       READINESS_HOLD: asCheck(readinessHold ? 'GREEN' : 'OPEN_GAP', true, readinessHold ? 'READINESS_HOLD' : 'READINESS_FALSE_GREEN'),
