@@ -33,16 +33,13 @@ Yalken развивается как desktop-first и offline-first writer tool 
 Сейчас репозиторий находится в post-closure factual state:
 - primary editor path закрыт и является основным,
 - editor closure подтверждён machine-bound packet,
-- factual docs синхронизируются с active canon,
-- дальнейшая работа идёт уже после closure, а не внутри старого transition milestone.
+- factual docs синхронизированы с active canon,
+- release hardening path закрыт как machine-bound writer path.
 
-Это не означает, что весь `Writer v1` завершён:
-- data core hardening,
-- wider shell truth,
-- bounded spatial layer,
-- optional pack layer,
-- release hardening
-ещё впереди.
+Это не означает автоматический переход к новой обязательной версии:
+- broader freedom остаётся только post-version-one evaluation axis,
+- future expansion не переоткрывает закрытый `Writer v1`,
+- evaluation-only работа не считается новой release law сама по себе.
 
 ## MVP Invariants
 - desktop-first

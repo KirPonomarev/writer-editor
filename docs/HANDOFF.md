@@ -1,6 +1,6 @@
 # HANDOFF (Yalken Writer)
 
-_Generated: 2026-03-19_
+_Generated: 2026-03-20_
 
 ## Start Here
 - Repo canon: `CANON.md`
@@ -26,7 +26,7 @@ _Generated: 2026-03-19_
 - Active axis: `Writer v1`
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
-- Active docs: in factual cutover after closure
+- Active docs: aligned after closure and release hardening
 
 ## What Is Stable
 - Primary editor closure packet exists.
@@ -34,11 +34,13 @@ _Generated: 2026-03-19_
 - IME composition closure evidence is bound.
 - DOCX closure evidence is bound.
 - Tiptap path is the primary editor path.
+- Release hardening path is machine-bound pass.
+- Writer v1 required runtime contours are closed.
 
 ## What Is Next
-1. complete one-pass factual doc refresh
-2. lock Phase 02 data core and command kernel contours
-3. move only then into wider shell truth
+1. open only post-version-one evaluation contours
+2. do not reopen closed writer-v1 runtime gates
+3. keep broader freedom out of mandatory v1 readiness
 
 ## Working Agreement
 - Bounded contours only
@@ -57,6 +59,6 @@ _Generated: 2026-03-19_
 - Visual snapshots are temporary iteration references, not permanent design law.
 
 ## Current Risk Boundary
-- Do not confuse post-closure doc refresh with shell completion.
-- Do not reopen legacy editor truth while validating current primary path.
-- Do not expand into spatial or pack work before Phase 02 and Phase 03 order.
+- Do not treat post-version-one evaluation as automatic new release scope.
+- Do not reopen closed writer-v1 gates while exploring future freedom.
+- Do not convert evaluation-only work into active canon law without explicit promotion.
