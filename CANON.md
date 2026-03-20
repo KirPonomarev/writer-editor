@@ -97,14 +97,12 @@ Machine-bound blocking law определяется не этим докумен
 ## 8. Current Cutover Reality
 
 Текущая активная реальность репозитория:
-- primary editor closure закрыт,
 - active execution canon уже содержит writer-specific narrowing и factual doc cutover rules,
-- factual docs после closure обязаны описывать post-closure operating reality, а не старый transition world.
-- Phase 02 data core, recovery и command kernel stabilization закрыт,
-- shell state закрыт,
-- bounded spatial layer закрыт,
-- minimal pack layer не стал обязательным blocking axis для текущего writer path,
-- release hardening закрыт.
+- текущий repo находится в repair-pending состоянии для честного выравнивания product truth и machine chain,
+- factual docs не должны объявлять `Writer v1` полностью закрытым, пока repair wave не закроет текущий repo-level drift,
+- Phase 03 сейчас считается активным blocker для этой repair wave,
+- Phase 04, Phase 05 и Phase 06 не должны описываться как уже repair-closed в текущем repo,
+- broader freedom и post-version-one evaluation не открываются, пока repair wave не закрыта.
 
 После release hardening:
 - broader freedom не становится автоматическим продолжением `Writer v1`,

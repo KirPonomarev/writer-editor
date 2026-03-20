@@ -1,6 +1,6 @@
 # CONTEXT (Yalken Writer)
 
-Этот файл фиксирует фактическое текущее состояние репозитория после editor closure и factual doc cutover.
+Этот файл фиксирует фактическое текущее состояние репозитория в repair-pending волне после drift между closure claims и текущей repo-level machine chain.
 
 ## Как читать репозиторий
 - Верхний repo entrypoint: `CANON.md`
@@ -30,11 +30,11 @@
 - Phase 00: PASS
 - Phase 01: PASS
 - Phase 02: PASS
-- Phase 03: PASS
-- Phase 04: PASS
-- Phase 05: PASS
-- Phase 06: PASS_OR_SKIPPED_AS_NOT_REQUIRED
-- Phase 07: PASS
+- Phase 03: BLOCKER_REOPEN
+- Phase 04: REPAIR_PENDING
+- Phase 05: REPAIR_PENDING
+- Phase 06: REPAIR_PENDING
+- Phase 07: CONDITIONAL_PROOF_RECHECK_ONLY
 
 ### Invariants
 - editor surface не источник истины,
@@ -50,12 +50,12 @@
 
 ## Current Open Delivery Axis
 
-Обязательные delivery axes внутри `Writer v1` закрыты через release hardening.
+Обязательные delivery axes внутри `Writer v1` не считаются честно закрытыми, пока текущая repair wave не снимет repo-level drift.
 
 Следующее допустимое состояние:
-1. post-version-one evaluation only
-2. без автоматического открытия нового mandatory runtime contour
-3. без переоткрытия закрытых `Writer v1` gates
+1. закрыть активную repair wave по текущему repo
+2. не открывать post-version-one evaluation до этого момента
+3. не маскировать repair gaps narrative claims о полном closure
 
 ## What Is Not Yet Claimed
 - pack layer не считается обязательным,
@@ -73,6 +73,6 @@
 - factual docs должны описывать current operating reality, а не старый transition milestone.
 
 ## Next Practical Target
-- держать `Writer v1` как закрытый release-ready core path,
-- открывать только отдельные post-version-one evaluation contours,
-- не смешивать evaluation-only работу с уже закрытыми `v1` runtime gates.
+- закрыть repo-level repair wave начиная с Phase 03 blocker,
+- не объявлять Phase 04, Phase 05 и Phase 06 закрытыми до machine proof в этом repo,
+- не смешивать evaluation-only работу с активным repair contour.
