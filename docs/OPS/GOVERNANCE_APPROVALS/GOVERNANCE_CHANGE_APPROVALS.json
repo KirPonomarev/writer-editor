@@ -2695,6 +2695,20 @@
       "approvedBy": "ticket:TZ_X72_REMEDIATION_P0_P1_001",
       "approvedAtUtc": "2026-03-02T23:41:14.088Z",
       "rationale": "X72_TARGETED_REMEDIATION_APPROVAL_SCOPE_LOCK"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REPAIR_WAVE_2_PHASE07_MAIN_PR_HANDOFF_V1.json",
+      "sha256": "573bd1343c255ca0dc4a0b2c3f7e9cc149c8b301b92843fedb98959731f17e44",
+      "approvedBy": "ticket:OPS_WRITE_TZ_REPO_WIDE_SYMBOLIC_CLOSEOUT_V5_R1",
+      "approvedAtUtc": "2026-03-20T19:15:25.000Z",
+      "rationale": "REPAIR_WAVE_2_REPO_WIDE_SYMBOLIC_CLOSEOUT_COMPANION_APPROVAL"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REPAIR_WAVE_2_PHASE07_REPO_WIDE_CLOSEOUT_RECORD_V1.json",
+      "sha256": "cc242b367d8333cf2989152f9131a0cd545301f210e312d227cec0de986397d5",
+      "approvedBy": "ticket:OPS_WRITE_TZ_REPO_WIDE_SYMBOLIC_CLOSEOUT_V5_R1",
+      "approvedAtUtc": "2026-03-20T19:15:25.000Z",
+      "rationale": "REPAIR_WAVE_2_REPO_WIDE_SYMBOLIC_CLOSEOUT_COMPANION_APPROVAL"
     }
   ]
 }

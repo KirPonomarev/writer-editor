@@ -50,13 +50,13 @@
 
 ## Current Delivery Axis
 
-Текущая repair wave ещё не закрыта на repo-level contour.
-Принятая repair surface branch-local closed и зелёная через Phase 07.
-release hardening remains the last mandatory runtime axis that was closed on the accepted repair surface before merge gate.
-Repo-wide done по-прежнему запрещён до merge gate и post-merge reconfirm.
+Текущая repair wave уже закрыта на repo-level contour.
+Branch-local accepted repair surface остаётся только историческим промежуточным состоянием.
+release hardening remains the last mandatory runtime axis that was closed before repo-wide post-merge reconfirm on main.
+Repo-wide done подтверждён на main после merge gate и post-merge reconfirm.
 
 Следующее допустимое состояние:
-1. сохранить честное branch-local closure состояние до merge gate
+1. сохранять repo-wide closure как текущую operating reality на main
 2. не открывать post-version-one evaluation как обязательную часть `Writer v1`
 3. не маскировать новые gaps narrative claims о полном closure
 
@@ -76,6 +76,6 @@ Repo-wide done по-прежнему запрещён до merge gate и post-me
 - factual docs должны описывать current operating reality, а не старый transition milestone.
 
 ## Next Practical Target
-- не объявлять repo-level closed state до branch-local closure, merge gate и post-merge reconfirm,
+- не переоткрывать уже подтверждённый repo-level closed state без нового machine gap,
 - не смешивать evaluation-only работу с закрытым repair contour,
 - re-audit выполнять только как подтверждение, а не как замену machine proof.
