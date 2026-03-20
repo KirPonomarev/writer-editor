@@ -1,0 +1,57 @@
+{
+  "artifactId": "REPAIR_WAVE_2_PHASE07_MAIN_PR_HANDOFF_V1",
+  "schemaVersion": 1,
+  "taskId": "REPAIR_WAVE_2_EXEC_TZ_MERGE_GATE_AND_POSTMERGE_R2",
+  "status": "HUMAN_ACTION_REQUIRED",
+  "modeUsed": "PREMERGE_HANDOFF_PATH",
+  "targetBranch": "main",
+  "sourceBranch": "codex/repair-wave-2-r2",
+  "baseSha": "65fc829296fb11b617518bcca15ab0fcf2c1f8c5",
+  "startHead": "4a7737c884c092cffa3db989c6babc1657f956a4",
+  "humanActionRequired": true,
+  "handoffReason": "TARGET_BRANCH_DOES_NOT_CONTAIN_START_HEAD_AND_PR_ONLY_UI_MERGE_GATE_REMAINS_PENDING",
+  "pushStatus": "NOT_ATTEMPTED_REMOTE_BRANCH_UNAVAILABLE_IN_LOCAL_REMOTE_REFS",
+  "prReady": true,
+  "repoWideDoneClaimed": false,
+  "resumeFromStep": "STEP_03_POSTMERGE",
+  "clickList": [
+    {
+      "id": "clk-001",
+      "surface": "other",
+      "action": "Publish source branch to origin",
+      "target": "codex/repair-wave-2-r2",
+      "expectedResult": "Remote branch exists for PR creation",
+      "resumeFromStep": "STEP_02_PREMERGE"
+    },
+    {
+      "id": "clk-002",
+      "surface": "github_ui",
+      "action": "Create approved PR from source branch to main",
+      "target": "codex/repair-wave-2-r2 -> main",
+      "expectedResult": "Mergeable PR exists in approved PR path",
+      "resumeFromStep": "STEP_03_POSTMERGE"
+    },
+    {
+      "id": "clk-003",
+      "surface": "github_ui",
+      "action": "Merge PR into main via UI",
+      "target": "main",
+      "expectedResult": "main contains start head changes and post-merge reconfirm may begin",
+      "resumeFromStep": "STEP_03_POSTMERGE"
+    }
+  ],
+  "artifacts": [
+    "PHASE07_WARN_CLASSIFICATION_PACKET_V1.json",
+    "REPAIR_WAVE_2_PHASE07_BRANCH_LOCAL_CLOSEOUT_RECORD_V1.json"
+  ],
+  "proof": {
+    "acceptedSurfaceHeadLockedTrue": true,
+    "acceptedSurfaceWorktreeCleanTrue": true,
+    "warningPacketPresentTrue": true,
+    "branchLocalCloseoutRecordPresentTrue": true,
+    "localMainContainsStartHeadFalse": true,
+    "originMainContainsStartHeadFalse": true,
+    "repoWideDoneStillForbiddenTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T18:10:39Z"
+}

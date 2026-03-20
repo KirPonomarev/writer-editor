@@ -30,11 +30,16 @@ Yalken развивается как desktop-first и offline-first writer tool 
 
 ## Current State
 
-Сейчас репозиторий находится в post-closure factual state:
-- primary editor path закрыт и является основным,
-- editor closure подтверждён machine-bound packet,
-- factual docs синхронизированы с active canon,
-- release hardening path закрыт как machine-bound writer path.
+Сейчас accepted repair surface находится в branch-local closed state для текущей волны:
+- earlier closure claims не считаются достаточным доказательством полного repo-level closure,
+- repo-wide done не заявляется до merge gate и post-merge reconfirm,
+- Phase 03 blocker уже закрыт в текущей repair branch,
+- true Phase 04 design-layer baseline уже закрыт в текущей repair branch,
+- Phase 05 bounded spatial shell chain уже закрыт в текущей repair branch,
+- Phase 06 explicit skip contour уже закрыт в текущей repair branch,
+- Phase 07 branch-local closure уже достигнут на accepted repair surface,
+- branch-local closure не равен repo-wide done,
+- broader freedom не открывается автоматически после repair closure.
 
 Это не означает автоматический переход к новой обязательной версии:
 - broader freedom остаётся только post-version-one evaluation axis,

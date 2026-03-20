@@ -192,10 +192,10 @@ function evaluatePhase03PrepState(input = {}) {
       && terminologyMigrationPacket.pendingFoundationGapIds.includes('TERMINOLOGY_MIGRATION_ARTIFACT_NOT_BOUND');
     const projectManifestContractPresent = hasProjectManifestContractSource();
 
-    const projectWorkspaceStateGapRecorded = projectWorkspaceStateHoldFoundation || projectWorkspaceStateArtifactPresent || !projectWorkspaceStateArtifactPresent;
-    const safeResetLastStableGapRecorded = safeResetLastStableHoldFoundation || !safeResetLastStableArtifactPresent;
-    const terminologyMigrationGapRecorded = terminologyMigrationArtifactPresent || terminologyMigrationHoldFoundation || !terminologyMigrationArtifactPresent;
-    const projectManifestGapRecorded = stableProjectIdContractPresent || stableProjectIdHoldFoundation || !stableProjectIdContractPresent;
+    const projectWorkspaceStateGapRecorded = projectWorkspaceStateHoldFoundation;
+    const safeResetLastStableGapRecorded = safeResetLastStableHoldFoundation;
+    const terminologyMigrationGapRecorded = terminologyMigrationHoldFoundation;
+    const projectManifestGapRecorded = stableProjectIdContractPresent;
 
     const pendingGapIdsMatch = arraysEqual(
       prepPacket?.phase03PendingGapIds || [],

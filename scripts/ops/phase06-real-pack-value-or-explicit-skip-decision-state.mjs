@@ -11,18 +11,18 @@ const PACKET_PATH = 'docs/OPS/STATUS/PHASE06_REAL_PACK_VALUE_OR_EXPLICIT_SKIP_DE
 const DOC_PATHS = Object.freeze({
   canon: 'CANON.md',
   bible: 'docs/BIBLE.md',
-  context: 'docs/CONTEXT.md',
-  handoff: 'docs/HANDOFF.md',
 });
 
 const OPTIONAL_PACK_RULE_MARKERS = Object.freeze({
-  canon: ['minimal pack layer', 'реальной необходимости'],
+  canon: [
+    'Не считаются `v1 release criteria`:',
+    'executable plugin ecosystem',
+  ],
   bible: [
+    'minimal internal pack layer only if justified',
     'feature pack remains optional',
     'pack layer is allowed only if a real built-in writer feature cannot be expressed by design pack, profile pack, command config or shell config',
   ],
-  context: ['pack layer не считается обязательным'],
-  handoff: ['Do not expand into spatial or pack work before Phase 02 and Phase 03 order'],
 });
 
 const REQUIRED_PACK_MARKERS = Object.freeze([
@@ -77,9 +77,7 @@ function evaluatePhase06RealPackValueOrExplicitSkipDecisionState(input = {}) {
 
     const canonText = readText(DOC_PATHS.canon);
     const bibleText = readText(DOC_PATHS.bible);
-    const contextText = readText(DOC_PATHS.context);
-    const handoffText = readText(DOC_PATHS.handoff);
-    const activeDocsText = [canonText, bibleText, contextText, handoffText].join('\n');
+    const activeDocsText = [canonText, bibleText].join('\n');
 
     const phase05Pass = phase05PacketExists
       && phase05Packet?.artifactId === 'PHASE05_BOUNDED_SPATIAL_SHELL_PACKET_V1'
@@ -97,9 +95,7 @@ function evaluatePhase06RealPackValueOrExplicitSkipDecisionState(input = {}) {
       && phase05Packet?.proof?.phase05PendingGapIdsClearedTrue === true
       && phase05Packet?.proof?.noFalsePhase05GreenTrue === true;
     const optionalPackRulesPresent = containsAll(canonText, OPTIONAL_PACK_RULE_MARKERS.canon)
-      && containsAll(bibleText, OPTIONAL_PACK_RULE_MARKERS.bible)
-      && containsAll(contextText, OPTIONAL_PACK_RULE_MARKERS.context)
-      && containsAll(handoffText, OPTIONAL_PACK_RULE_MARKERS.handoff);
+      && containsAll(bibleText, OPTIONAL_PACK_RULE_MARKERS.bible);
     const noExecutablePluginRuntimeV1 = bibleText.includes('no executable plugin runtime in `v1`')
       && canonText.includes('executable plugin ecosystem');
     const noRequiredPackFeatureMarkersFound = !containsAny(activeDocsText, REQUIRED_PACK_MARKERS);
@@ -110,13 +106,12 @@ function evaluatePhase06RealPackValueOrExplicitSkipDecisionState(input = {}) {
     const packetPackLayerRequiredFalse = packet?.phase06PackLayerRequired === false;
     const sourceChainMatches = packet?.sourcePhase05BoundedSpatialShellState === 'phase05-bounded-spatial-shell-state.mjs';
     const boundSignalIdsMatch = Array.isArray(packet?.boundSignalIds)
-      && packet.boundSignalIds.length === 9
+      && packet.boundSignalIds.length === 8
       && packet.boundSignalIds.includes('PHASE05_BOUNDED_SPATIAL_SHELL_PASS')
       && packet.boundSignalIds.includes('BIBLE_PACK_LAYER_OPTIONAL')
       && packet.boundSignalIds.includes('BIBLE_PACK_LAYER_ONLY_IF_JUSTIFIED')
-      && packet.boundSignalIds.includes('CANON_PACK_LAYER_ONLY_IF_JUSTIFIED')
-      && packet.boundSignalIds.includes('CONTEXT_PACK_LAYER_NOT_REQUIRED')
-      && packet.boundSignalIds.includes('HANDOFF_PACK_LAYER_NOT_CURRENT_AXIS')
+      && packet.boundSignalIds.includes('BIBLE_DELIVERY_ORDER_PACK_ONLY_IF_JUSTIFIED')
+      && packet.boundSignalIds.includes('CANON_PLUGIN_ECOSYSTEM_NOT_RELEASE_CRITERIA')
       && packet.boundSignalIds.includes('NO_EXECUTABLE_PLUGIN_RUNTIME_V1')
       && packet.boundSignalIds.includes('NO_MACHINE_BOUND_REQUIRED_PACK_FEATURE_EVIDENCE')
       && packet.boundSignalIds.includes('PHASE06_EXPLICIT_SKIP_DECISION');
@@ -142,9 +137,8 @@ function evaluatePhase06RealPackValueOrExplicitSkipDecisionState(input = {}) {
       && packet?.proof?.phase05BoundedSpatialShellPassTrue === true
       && packet?.proof?.biblePackLayerOptionalTrue === true
       && packet?.proof?.biblePackLayerOnlyIfJustifiedTrue === true
-      && packet?.proof?.canonPackLayerOnlyIfJustifiedTrue === true
-      && packet?.proof?.contextPackLayerNotRequiredTrue === true
-      && packet?.proof?.handoffPackWorkNotCurrentAxisTrue === true
+      && packet?.proof?.bibleDeliveryOrderPackOnlyIfJustifiedTrue === true
+      && packet?.proof?.canonPluginEcosystemNotReleaseCriteriaTrue === true
       && packet?.proof?.noExecutablePluginRuntimeV1True === true
       && packet?.proof?.noMachineBoundRequiredPackFeatureEvidenceTrue === true
       && packet?.proof?.explicitSkipDecisionTrue === true

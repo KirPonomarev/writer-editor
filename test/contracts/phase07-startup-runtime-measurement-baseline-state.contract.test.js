@@ -18,8 +18,8 @@ const EXPECTED_BOUND_SIGNAL_IDS = [
 const EXPECTED_LOCKED_TARGET_IDS = [
   'STARTUP_MEASUREMENT_BOUND',
   'PROJECT_OPEN_MEASUREMENT_BOUND',
-  'SCENE_SWITCH_MEASUREMENT_NOT_BOUND',
-  'RESET_MEASUREMENT_NOT_BOUND',
+  'SCENE_SWITCH_MEASUREMENT_BOUND',
+  'RESET_MEASUREMENT_BOUND',
   'BLOCKING_BUDGET_ORDER_STARTUP_PROJECT_OPEN_SCENE_SWITCH_RESET',
   'PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE',
 ];
@@ -39,7 +39,7 @@ function parseJsonOutput(result) {
   return payload;
 }
 
-test('phase07 startup runtime measurement baseline: positive run stays green after reset binding', () => {
+test('phase07 startup runtime measurement baseline: positive run closes readiness after blocking budgets alignment', () => {
   const result = runStateScript();
   assert.equal(result.status, 0, `expected state script pass:\n${result.stdout}\n${result.stderr}`);
 
@@ -48,7 +48,7 @@ test('phase07 startup runtime measurement baseline: positive run stays green aft
   assert.equal(payload.failReason, '');
   assert.equal(payload.overallStatus, 'PASS');
   assert.equal(payload.phase07StartupRuntimeMeasurementBaselineStatus, 'PASS');
-  assert.equal(payload.phase07ReadinessStatus, 'HOLD');
+  assert.equal(payload.phase07ReadinessStatus, 'PASS');
   assert.deepEqual(payload.phase07BlockingBudgetIds, EXPECTED_BLOCKING_BUDGET_IDS);
   assert.deepEqual(payload.boundSignalIds, EXPECTED_BOUND_SIGNAL_IDS);
   assert.deepEqual(payload.lockedTargetIds, EXPECTED_LOCKED_TARGET_IDS);
@@ -59,9 +59,11 @@ test('phase07 startup runtime measurement baseline: positive run stays green aft
   assert.equal(payload.greenCheckIds.includes('PERF_RUN_STARTUP_MEASUREMENT_PRESENT'), true);
   assert.equal(payload.greenCheckIds.includes('STARTUP_MEASUREMENT_BOUND'), true);
   assert.equal(payload.greenCheckIds.includes('PROJECT_OPEN_MEASUREMENT_BOUND'), true);
-  assert.equal(payload.greenCheckIds.includes('SCENE_SWITCH_MEASUREMENT_PROGRESS_PRESERVED'), true);
-  assert.equal(payload.greenCheckIds.includes('RESET_MEASUREMENT_PROGRESS_PRESERVED'), true);
+  assert.equal(payload.greenCheckIds.includes('SCENE_SWITCH_MEASUREMENT_BOUND'), true);
+  assert.equal(payload.greenCheckIds.includes('RESET_MEASUREMENT_BOUND'), true);
   assert.equal(payload.greenCheckIds.includes('BLOCKING_BUDGET_ORDER_EXACT'), true);
+  assert.equal(payload.greenCheckIds.includes('PACKET_PENDING_GAP_IDS_EXACT'), true);
+  assert.equal(payload.greenCheckIds.includes('PACKET_READINESS_STATUS_PASS'), true);
   assert.equal(payload.greenCheckIds.includes('PACKET_INTERNAL_CONSISTENCY'), true);
   assert.equal(payload.checkStatusById.PACKET_INTERNAL_CONSISTENCY.status, 'GREEN');
   assert.equal(payload.checkStatusById.PACKET_INTERNAL_CONSISTENCY.measured, true);

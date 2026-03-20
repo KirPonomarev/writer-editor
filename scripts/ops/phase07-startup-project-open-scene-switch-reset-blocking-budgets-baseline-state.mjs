@@ -3,9 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { evaluatePhase06RealPackValueOrExplicitSkipDecisionState } from './phase06-real-pack-value-or-explicit-skip-decision-state.mjs';
+
 const FAIL_REASON_FORCED_NEGATIVE = 'E_PHASE07_STARTUP_PROJECT_OPEN_SCENE_SWITCH_RESET_BLOCKING_BUDGETS_BASELINE_FORCED_NEGATIVE';
 const FAIL_REASON_UNEXPECTED = 'E_PHASE07_STARTUP_PROJECT_OPEN_SCENE_SWITCH_RESET_BLOCKING_BUDGETS_BASELINE_UNEXPECTED';
-const PHASE06_PACKET_PATH = 'docs/OPS/STATUS/PHASE06_REAL_PACK_VALUE_OR_EXPLICIT_SKIP_DECISION_V1.json';
 const PACKET_PATH = 'docs/OPS/STATUS/PHASE07_STARTUP_PROJECT_OPEN_SCENE_SWITCH_RESET_BLOCKING_BUDGETS_BASELINE_V1.json';
 const EXECUTION_SEQUENCE_CANON_PATH = 'docs/OPS/STATUS/EXECUTION_SEQUENCE_CANON_v1.json';
 
@@ -59,8 +60,7 @@ function evaluatePhase07StartupProjectOpenSceneSwitchResetBlockingBudgetsBaselin
   const forceNegative = Boolean(input.forceNegative);
 
   try {
-    const phase06PacketExists = fs.existsSync(path.resolve(PHASE06_PACKET_PATH));
-    const phase06Packet = phase06PacketExists ? readJson(PHASE06_PACKET_PATH) : null;
+    const phase06State = evaluatePhase06RealPackValueOrExplicitSkipDecisionState({});
     const packetExists = fs.existsSync(path.resolve(PACKET_PATH));
     const packet = packetExists ? readJson(PACKET_PATH) : null;
     const executionSequenceCanon = readJson(EXECUTION_SEQUENCE_CANON_PATH);
@@ -69,26 +69,12 @@ function evaluatePhase07StartupProjectOpenSceneSwitchResetBlockingBudgetsBaselin
     const bibleText = readText(DOC_PATHS.bible);
     const contextText = readText(DOC_PATHS.context);
 
-    const phase06DecisionPass = Boolean(phase06Packet)
-      && phase06Packet?.artifactId === 'PHASE06_REAL_PACK_VALUE_OR_EXPLICIT_SKIP_DECISION_V1'
-      && phase06Packet?.schemaVersion === 1
-      && phase06Packet?.phaseId === 'PHASE_06'
-      && phase06Packet?.status === 'PASS'
-      && phase06Packet?.phase06DecisionStatus === 'PASS'
-      && phase06Packet?.phase06PackDecision === 'EXPLICIT_SKIP'
-      && phase06Packet?.phase06PackLayerRequired === false
-      && Array.isArray(phase06Packet?.phase06PendingGapIds)
-      && phase06Packet.phase06PendingGapIds.length === 0
-      && phase06Packet?.proof?.phase05BoundedSpatialShellPassTrue === true
-      && phase06Packet?.proof?.biblePackLayerOptionalTrue === true
-      && phase06Packet?.proof?.biblePackLayerOnlyIfJustifiedTrue === true
-      && phase06Packet?.proof?.canonPackLayerOnlyIfJustifiedTrue === true
-      && phase06Packet?.proof?.contextPackLayerNotRequiredTrue === true
-      && phase06Packet?.proof?.handoffPackWorkNotCurrentAxisTrue === true
-      && phase06Packet?.proof?.noExecutablePluginRuntimeV1True === true
-      && phase06Packet?.proof?.noMachineBoundRequiredPackFeatureEvidenceTrue === true
-      && phase06Packet?.proof?.explicitSkipDecisionTrue === true
-      && phase06Packet?.proof?.noFalsePhase06GreenTrue === true;
+    const phase06DecisionPass = phase06State.ok === true
+      && phase06State.overallStatus === 'PASS'
+      && phase06State.phase06DecisionStatus === 'PASS'
+      && phase06State.phase06PackDecision === 'EXPLICIT_SKIP'
+      && Array.isArray(phase06State.openGapIds)
+      && phase06State.openGapIds.length === 0;
 
     const canonPerformanceHardeningDirectionPresent = canonText.includes('затем minimal pack layer только при реальной необходимости.')
       || canonText.includes('release hardening')

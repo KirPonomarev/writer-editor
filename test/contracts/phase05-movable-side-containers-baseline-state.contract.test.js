@@ -44,7 +44,7 @@ test('phase05 movable side containers baseline: positive run passes while readin
   assert.deepEqual(payload.openGapIds, []);
   assert.deepEqual(payload.lockedTargetIds, EXPECTED_TARGET_IDS);
   assert.deepEqual(payload.lockedCommitPointIds, EXPECTED_COMMIT_POINT_IDS);
-  assert.equal(payload.greenCheckIds.includes('PHASE04_SPATIAL_PREP_PASS'), true);
+  assert.equal(payload.greenCheckIds.includes('PHASE04_DESIGN_LAYER_BASELINE_PASS'), true);
   assert.equal(payload.greenCheckIds.includes('LEFT_AND_RIGHT_RESIZE_HANDLES_PRESENT'), true);
   assert.equal(payload.greenCheckIds.includes('PROJECT_SCOPED_SPATIAL_LAYOUT_STORAGE'), true);
   assert.equal(payload.greenCheckIds.includes('COMMIT_POINT_PERSISTENCE_ONLY'), true);

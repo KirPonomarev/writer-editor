@@ -9,9 +9,7 @@ const EXPECTED_BLOCKING_BUDGET_IDS = [
   'SCENE_SWITCH',
   'RESET',
 ];
-const EXPECTED_PENDING_GAP_IDS = [
-  'PHASE07_RUNTIME_CARRY_FORWARD_STABILITY_NOT_BOUND',
-];
+const EXPECTED_PENDING_GAP_IDS = [];
 
 function runStateScript(args = []) {
   return spawnSync(process.execPath, [SCRIPT_PATH, '--json', ...args], {
@@ -27,7 +25,7 @@ function parseJsonOutput(result) {
   return payload;
 }
 
-test('phase07 release verification chain baseline: positive run passes while readiness stays held', () => {
+test('phase07 release verification chain baseline: positive run closes readiness', () => {
   const result = runStateScript();
   assert.equal(result.status, 0, `expected state script pass:\n${result.stdout}\n${result.stderr}`);
 
@@ -36,7 +34,7 @@ test('phase07 release verification chain baseline: positive run passes while rea
   assert.equal(payload.failReason, '');
   assert.equal(payload.overallStatus, 'PASS');
   assert.equal(payload.phase07ReleaseVerificationChainBaselineStatus, 'PASS');
-  assert.equal(payload.phase07ReadinessStatus, 'HOLD');
+  assert.equal(payload.phase07ReadinessStatus, 'PASS');
   assert.deepEqual(payload.phase07BlockingBudgetIds, EXPECTED_BLOCKING_BUDGET_IDS);
   assert.deepEqual(payload.phase07PendingGapIds, EXPECTED_PENDING_GAP_IDS);
   assert.deepEqual(payload.openGapIds, []);
@@ -48,7 +46,7 @@ test('phase07 release verification chain baseline: positive run passes while rea
   assert.equal(payload.greenCheckIds.includes('PHASE07_RELEASE_VERIFICATION_CHAIN_NOT_BOUND_RESOLVED'), true);
   assert.equal(payload.greenCheckIds.includes('PHASE07_BLOCKING_BUDGET_IDS_EXACT'), true);
   assert.equal(payload.greenCheckIds.includes('PHASE07_PENDING_GAP_IDS_EXACT'), true);
-  assert.equal(payload.greenCheckIds.includes('PHASE07_READINESS_STATUS_HOLD'), true);
+  assert.equal(payload.greenCheckIds.includes('PHASE07_READINESS_STATUS_PASS'), true);
   assert.equal(payload.greenCheckIds.includes('PACKET_INTERNAL_CONSISTENCY'), true);
   assert.equal(payload.checkStatusById.PHASE07_RELEASE_VERIFICATION_CHAIN_NOT_BOUND_RESOLVED.status, 'GREEN');
   assert.equal(payload.checkStatusById.PHASE07_RELEASE_VERIFICATION_CHAIN_NOT_BOUND_RESOLVED.measured, true);

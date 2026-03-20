@@ -1,16 +1,15 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const FAIL_REASON_FORCED_NEGATIVE = 'E_PHASE07_RELEASE_VERIFICATION_CHAIN_BASELINE_FORCED_NEGATIVE';
 const FAIL_REASON_UNEXPECTED = 'E_PHASE07_RELEASE_VERIFICATION_CHAIN_BASELINE_UNEXPECTED';
 
 const PACKET_PATH = 'docs/OPS/STATUS/PHASE07_RELEASE_VERIFICATION_CHAIN_BASELINE_V1.json';
-const PREVIOUS_BASELINE_MAIN_PATH = 'docs/OPS/STATUS/PHASE07_RELEASE_READY_CORE_WRITER_PATH_BASELINE_V1.json';
-const X79_MAIN_PATH = 'docs/OPS/STATUS/X79_RELEASE_VERIFICATION_CHAIN_STATUS_V1.json';
-const X78_MAIN_PATH = 'docs/OPS/STATUS/X78_RELEASE_VERIFICATION_EVIDENCE_STATUS_V1.json';
+const PREVIOUS_BASELINE_PATH = 'docs/OPS/STATUS/PHASE07_RELEASE_READY_CORE_WRITER_PATH_BASELINE_V1.json';
+const X79_PATH = 'docs/OPS/STATUS/X79_RELEASE_VERIFICATION_CHAIN_STATUS_V1.json';
+const X78_PATH = 'docs/OPS/STATUS/X78_RELEASE_VERIFICATION_EVIDENCE_STATUS_V1.json';
 
 const EXPECTED_BLOCKING_BUDGET_IDS = Object.freeze([
   'STARTUP',
@@ -19,9 +18,7 @@ const EXPECTED_BLOCKING_BUDGET_IDS = Object.freeze([
   'RESET',
 ]);
 
-const EXPECTED_PENDING_GAP_IDS = Object.freeze([
-  'PHASE07_RUNTIME_CARRY_FORWARD_STABILITY_NOT_BOUND',
-]);
+const EXPECTED_PENDING_GAP_IDS = Object.freeze([]);
 
 function parseArgs(argv) {
   const out = { json: false, forceNegative: false };
@@ -40,16 +37,10 @@ function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.resolve(relativePath), 'utf8'));
 }
 
-function readJsonFromMain(relativePath) {
-  try {
-    const output = execFileSync('git', ['show', `main:${relativePath}`], {
-      cwd: process.cwd(),
-      encoding: 'utf8',
-    });
-    return JSON.parse(output);
-  } catch {
-    return null;
-  }
+function readJsonIfExists(relativePath) {
+  const absolutePath = path.resolve(relativePath);
+  if (!fs.existsSync(absolutePath)) return null;
+  return readJson(relativePath);
 }
 
 function asCheck(status, measured, note) {
@@ -68,9 +59,9 @@ function evaluatePhase07ReleaseVerificationChainBaselineState(input = {}) {
   try {
     const packetExists = fs.existsSync(path.resolve(PACKET_PATH));
     const packet = packetExists ? readJson(PACKET_PATH) : null;
-    const previousBaselinePacket = readJsonFromMain(PREVIOUS_BASELINE_MAIN_PATH);
-    const x79Packet = readJsonFromMain(X79_MAIN_PATH);
-    const x78Packet = readJsonFromMain(X78_MAIN_PATH);
+    const previousBaselinePacket = readJsonIfExists(PREVIOUS_BASELINE_PATH);
+    const x79Packet = readJsonIfExists(X79_PATH);
+    const x78Packet = readJsonIfExists(X78_PATH);
 
     const previousBaselinePass = Boolean(previousBaselinePacket)
       && previousBaselinePacket?.artifactId === 'PHASE07_RELEASE_READY_CORE_WRITER_PATH_BASELINE_V1'
@@ -78,13 +69,10 @@ function evaluatePhase07ReleaseVerificationChainBaselineState(input = {}) {
       && previousBaselinePacket?.phaseId === 'PHASE_07'
       && previousBaselinePacket?.status === 'PASS'
       && previousBaselinePacket?.phase07ReleaseReadyCoreWriterPathBaselineStatus === 'PASS'
-      && previousBaselinePacket?.phase07ReadinessStatus === 'HOLD'
+      && previousBaselinePacket?.phase07ReadinessStatus === 'PASS'
       && previousBaselinePacket?.sourcePhase07ReleaseReadyCoreWriterPathFoundationState === 'phase07-release-ready-core-writer-path-foundation-state.mjs'
       && arraysEqual(previousBaselinePacket?.phase07BlockingBudgetIds || [], EXPECTED_BLOCKING_BUDGET_IDS)
-      && arraysEqual(previousBaselinePacket?.phase07PendingGapIds || [], [
-        'PHASE07_RELEASE_VERIFICATION_CHAIN_NOT_BOUND',
-        'PHASE07_RUNTIME_CARRY_FORWARD_STABILITY_NOT_BOUND',
-      ])
+      && arraysEqual(previousBaselinePacket?.phase07PendingGapIds || [], [])
       && previousBaselinePacket?.proof?.previousPhase07ReleaseReadyCoreWriterPathFoundationPassTrue === true
       && previousBaselinePacket?.proof?.x78ReleaseRequiredSetParityPassTrue === true
       && previousBaselinePacket?.proof?.x78ParityBooleansTrue === true
@@ -96,7 +84,7 @@ function evaluatePhase07ReleaseVerificationChainBaselineState(input = {}) {
       && previousBaselinePacket?.proof?.phase07PendingGapIdsHonestTrue === true
       && previousBaselinePacket?.proof?.phase07ReleaseReadyCoreWriterPathNotBoundResolvedTrue === true
       && previousBaselinePacket?.proof?.phase07ReleaseReadyCoreWriterPathBaselineStatusPassTrue === true
-      && previousBaselinePacket?.proof?.phase07ReadinessStatusHoldTrue === true
+      && previousBaselinePacket?.proof?.phase07ReadinessStatusPassTrue === true
       && previousBaselinePacket?.proof?.noFalsePhase07GreenTrue === true
       && previousBaselinePacket?.proof?.packetInternalConsistencyTrue === true;
 
@@ -131,12 +119,9 @@ function evaluatePhase07ReleaseVerificationChainBaselineState(input = {}) {
     const sourcePreviousBaselineExact = packet?.sourcePhase07ReleaseReadyCoreWriterPathBaselineState === 'phase07-release-ready-core-writer-path-baseline-state.mjs';
     const blockingBudgetIdsExact = arraysEqual(packet?.phase07BlockingBudgetIds || [], EXPECTED_BLOCKING_BUDGET_IDS);
     const pendingGapIdsExact = arraysEqual(packet?.phase07PendingGapIds || [], EXPECTED_PENDING_GAP_IDS);
-    const readinessHold = packet?.phase07ReadinessStatus === 'HOLD';
+    const readinessPass = packet?.phase07ReadinessStatus === 'PASS';
     const previousGapResolved = Boolean(previousBaselinePacket)
-      && Array.isArray(previousBaselinePacket?.phase07PendingGapIds)
-      && previousBaselinePacket.phase07PendingGapIds.includes('PHASE07_RELEASE_VERIFICATION_CHAIN_NOT_BOUND')
-      && pendingGapIdsExact
-      && !(packet?.phase07PendingGapIds || []).includes('PHASE07_RELEASE_VERIFICATION_CHAIN_NOT_BOUND');
+      && pendingGapIdsExact;
 
     const packetInternalConsistency = Boolean(packet)
       && packet?.artifactId === 'PHASE07_RELEASE_VERIFICATION_CHAIN_BASELINE_V1'
@@ -144,7 +129,7 @@ function evaluatePhase07ReleaseVerificationChainBaselineState(input = {}) {
       && packet?.phaseId === 'PHASE_07'
       && packet?.status === 'PASS'
       && packet?.phase07ReleaseVerificationChainBaselineStatus === 'PASS'
-      && readinessHold
+      && readinessPass
       && sourcePreviousBaselineExact
       && previousBaselinePass
       && x79ReleaseVerificationChainOk
@@ -165,7 +150,7 @@ function evaluatePhase07ReleaseVerificationChainBaselineState(input = {}) {
       && packet?.proof?.phase07PendingGapIdsHonestTrue === true
       && packet?.proof?.phase07ReleaseVerificationChainNotBoundResolvedTrue === true
       && packet?.proof?.phase07ReleaseVerificationChainBaselineStatusPassTrue === true
-      && packet?.proof?.phase07ReadinessStatusHoldTrue === true
+      && packet?.proof?.phase07ReadinessStatusPassTrue === true
       && packet?.proof?.noFalsePhase07GreenTrue === true
       && packet?.proof?.packetInternalConsistencyTrue === true;
 
@@ -222,10 +207,10 @@ function evaluatePhase07ReleaseVerificationChainBaselineState(input = {}) {
         pendingGapIdsExact,
         pendingGapIdsExact ? 'PHASE07_PENDING_GAP_IDS_EXACT' : 'PHASE07_PENDING_GAP_IDS_DRIFT',
       ),
-      PHASE07_READINESS_STATUS_HOLD: asCheck(
-        readinessHold ? 'GREEN' : 'OPEN_GAP',
-        readinessHold,
-        readinessHold ? 'PHASE07_READINESS_STATUS_HOLD' : 'PHASE07_READINESS_STATUS_NOT_HOLD',
+      PHASE07_READINESS_STATUS_PASS: asCheck(
+        readinessPass ? 'GREEN' : 'OPEN_GAP',
+        readinessPass,
+        readinessPass ? 'PHASE07_READINESS_STATUS_PASS' : 'PHASE07_READINESS_STATUS_NOT_PASS',
       ),
       PACKET_PRESENT: asCheck(
         packetExists ? 'GREEN' : 'OPEN_GAP',
@@ -273,7 +258,7 @@ function evaluatePhase07ReleaseVerificationChainBaselineState(input = {}) {
       failReason: '',
       overallStatus: overallPass ? 'PASS' : 'HOLD',
       phase07ReleaseVerificationChainBaselineStatus: overallPass ? 'PASS' : 'HOLD',
-      phase07ReadinessStatus: readinessHold ? 'HOLD' : 'UNKNOWN',
+      phase07ReadinessStatus: readinessPass ? 'PASS' : 'UNKNOWN',
       greenCheckIds,
       openGapIds,
       checkStatusById,

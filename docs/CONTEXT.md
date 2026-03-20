@@ -1,6 +1,6 @@
 # CONTEXT (Yalken Writer)
 
-Этот файл фиксирует фактическое текущее состояние репозитория после editor closure и factual doc cutover.
+Этот файл фиксирует фактическое текущее состояние репозитория в repair-pending волне после drift между closure claims и текущей repo-level machine chain.
 
 ## Как читать репозиторий
 - Верхний repo entrypoint: `CANON.md`
@@ -33,8 +33,8 @@
 - Phase 03: PASS
 - Phase 04: PASS
 - Phase 05: PASS
-- Phase 06: PASS_OR_SKIPPED_AS_NOT_REQUIRED
-- Phase 07: PASS
+- Phase 06: PASS
+- Phase 07: BRANCH_LOCAL_CLOSED_ON_ACCEPTED_REPAIR_SURFACE
 
 ### Invariants
 - editor surface не источник истины,
@@ -48,14 +48,17 @@
 - `Current iteration visual snapshot`: временный implementation baseline конкретной UI-итерации.
 - `Advisory vision`: дальнее направление, которое не заменяет active canon.
 
-## Current Open Delivery Axis
+## Current Delivery Axis
 
-Обязательные delivery axes внутри `Writer v1` закрыты через release hardening.
+Текущая repair wave ещё не закрыта на repo-level contour.
+Принятая repair surface branch-local closed и зелёная через Phase 07.
+release hardening remains the last mandatory runtime axis that was closed on the accepted repair surface before merge gate.
+Repo-wide done по-прежнему запрещён до merge gate и post-merge reconfirm.
 
 Следующее допустимое состояние:
-1. post-version-one evaluation only
-2. без автоматического открытия нового mandatory runtime contour
-3. без переоткрытия закрытых `Writer v1` gates
+1. сохранить честное branch-local closure состояние до merge gate
+2. не открывать post-version-one evaluation как обязательную часть `Writer v1`
+3. не маскировать новые gaps narrative claims о полном closure
 
 ## What Is Not Yet Claimed
 - pack layer не считается обязательным,
@@ -73,6 +76,6 @@
 - factual docs должны описывать current operating reality, а не старый transition milestone.
 
 ## Next Practical Target
-- держать `Writer v1` как закрытый release-ready core path,
-- открывать только отдельные post-version-one evaluation contours,
-- не смешивать evaluation-only работу с уже закрытыми `v1` runtime gates.
+- не объявлять repo-level closed state до branch-local closure, merge gate и post-merge reconfirm,
+- не смешивать evaluation-only работу с закрытым repair contour,
+- re-audit выполнять только как подтверждение, а не как замену machine proof.

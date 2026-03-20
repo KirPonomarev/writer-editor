@@ -26,7 +26,7 @@ _Generated: 2026-03-20_
 - Active axis: `Writer v1`
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
-- Active docs: aligned after closure and release hardening
+- Active docs: synced to accepted repair surface with branch-local closure and no repo-wide done claim
 
 ## What Is Stable
 - Primary editor closure packet exists.
@@ -34,12 +34,16 @@ _Generated: 2026-03-20_
 - IME composition closure evidence is bound.
 - DOCX closure evidence is bound.
 - Tiptap path is the primary editor path.
-- Release hardening path is machine-bound pass.
-- Writer v1 required runtime contours are closed.
+- Phase 03 blocker is closed in the current repair branch.
+- True Phase 04 design-layer baseline is closed in the current repair branch.
+- Phase 05 bounded spatial shell chain is closed in the current repair branch.
+- Phase 06 explicit skip contour is closed in the current repair branch.
+- Phase 07 branch-local closure is achieved on the accepted repair surface.
+- Repo-wide done is not claimed before merge gate and post-merge reconfirm.
 
 ## What Is Next
-1. open only post-version-one evaluation contours
-2. do not reopen closed writer-v1 runtime gates
+1. preserve the honest branch-local closure state until merge gate
+2. do not reopen post-version-one evaluation as mandatory v1 readiness
 3. keep broader freedom out of mandatory v1 readiness
 
 ## Working Agreement
@@ -60,5 +64,5 @@ _Generated: 2026-03-20_
 
 ## Current Risk Boundary
 - Do not treat post-version-one evaluation as automatic new release scope.
-- Do not reopen closed writer-v1 gates while exploring future freedom.
+- Do not describe current repo as if Phase 03, Phase 04, Phase 05 and Phase 06 were already repair-closed.
 - Do not convert evaluation-only work into active canon law without explicit promotion.
