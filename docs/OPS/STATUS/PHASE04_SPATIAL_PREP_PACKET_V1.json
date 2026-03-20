@@ -1,0 +1,30 @@
+{
+  "artifactId": "PHASE04_SPATIAL_PREP_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_04",
+  "status": "PASS",
+  "phase04ReadinessStatus": "HOLD",
+  "sourcePhase04SpatialPrepState": "phase04-spatial-prep-state.mjs",
+  "boundSignalIds": [
+    "PHASE04_BOUNDED_SPATIAL_LAYER_PRESENT",
+    "PHASE04_SAFE_SPATIAL_PREP_PASS"
+  ],
+  "lockedTargetIds": [
+    "BOUNDED_SPATIAL_LAYER",
+    "SAFE_SPATIAL_PREP",
+    "CANON_BOUNDED_SPATIAL_LAYER_PRESENT",
+    "CONTEXT_BOUNDED_SPATIAL_LAYER_PRESENT"
+  ],
+  "phase04PendingGapIds": [
+    "CANON_BOUNDED_SPATIAL_LAYER_PRESENT",
+    "CONTEXT_BOUNDED_SPATIAL_LAYER_PRESENT"
+  ],
+  "proof": {
+    "boundedSpatialLayerPresentTrue": true,
+    "canonBoundedSpatialLayerPresentTrue": false,
+    "contextBoundedSpatialLayerPresentTrue": false,
+    "phase04PendingGapIdsClearedTrue": false,
+    "noFalsePhase04GreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T00:55:00.000Z"
+}

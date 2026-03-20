@@ -1,6 +1,6 @@
 # HANDOFF (Yalken Writer)
 
-_Generated: 2026-03-19_
+_Generated: 2026-03-20_
 
 ## Start Here
 - Repo canon: `CANON.md`
@@ -27,6 +27,7 @@ _Generated: 2026-03-19_
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
 - Active docs: in factual cutover after closure
+- Phase 04: design-layer baseline is the true Phase 04; the spatial-prep packet is historical and superseded.
 
 ## What Is Stable
 - Primary editor closure packet exists.

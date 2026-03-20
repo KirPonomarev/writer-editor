@@ -1,0 +1,36 @@
+{
+  "artifactId": "PHASE04_DESIGN_LAYER_BASELINE_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_04",
+  "status": "PASS",
+  "phase04ReadinessStatus": "PASS",
+  "sourcePhase04SupersessionAndPhaseMapSyncPacket": "PHASE04_SUPERSESSION_AND_PHASE_MAP_SYNC_PACKET_V1",
+  "designLayerFocus": "BASELINE_SAFE_FOCUS_COMPACT",
+  "visibleDesignSwitch": "VISIBLE_DESIGN_SWITCH",
+  "boundSignalIds": [
+    "PHASE04_BASELINE_SAFE_FOCUS_COMPACT_PASS",
+    "PHASE04_VISIBLE_DESIGN_SWITCH_PASS",
+    "PHASE04_BINDING_INDEX_SYNC_PASS"
+  ],
+  "lockedTargetIds": [
+    "DESIGN_LAYER_BASELINE",
+    "BASELINE_SAFE_FOCUS_COMPACT",
+    "VISIBLE_DESIGN_SWITCH",
+    "DOCUMENT_TRUTH_UNCHANGED",
+    "RECOVERY_TRUTH_UNCHANGED",
+    "COMMAND_SEMANTICS_UNCHANGED"
+  ],
+  "phase04PendingGapIds": [],
+  "proof": {
+    "phase04BaselineSafeFocusCompactTrue": true,
+    "phase04VisibleDesignSwitchTrue": true,
+    "phase04DocumentTruthUnchangedTrue": true,
+    "phase04RecoveryTruthUnchangedTrue": true,
+    "phase04CommandSemanticsUnchangedTrue": true,
+    "bindingIndexSyncTrue": true,
+    "sourceSupersessionPacketAlignedTrue": true,
+    "phase04PendingGapIdsClearedTrue": true,
+    "noFalsePhase04GreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T01:00:00.000Z"
+}

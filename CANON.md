@@ -63,6 +63,7 @@ Machine-bound blocking law определяется не этим докумен
 3. Closure должен быть подтверждён одним machine-carried packet с checklist, sign-off, evidence set и canon reference.
 4. После editor closure выполняется один factual doc cutover pass.
 5. После factual doc cutover в активных документах должна остаться одна active product truth.
+6. Phase 04 reclassified here as design-layer baseline: old spatial-prep packet is historical only, and the visible design switch must not change document truth, recovery truth, or command semantics.
 
 ## 5. MVP Invariants
 

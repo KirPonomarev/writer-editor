@@ -31,6 +31,8 @@
 - Phase 01 prep: PASS
 - Phase 01 execute prep: PASS
 - Factual stale-doc surface выделен и переведён в machine-bound refresh map.
+- Phase 04 now resolves to design-layer baseline; the old spatial-prep packet is superseded and no longer counts as final Phase 04.
+- The Phase 04 design switch is bounded to design-layer state and does not mutate document truth, recovery truth, or command semantics.
 
 ### Invariants
 - editor surface не источник истины,
@@ -50,7 +52,7 @@
 1. factual doc cutover and active doc reconciliation
 2. data core, recovery и command kernel stabilization
 3. user shell state и project workspace state
-4. bounded spatial layer
+4. bounded spatial layer, with Phase 04 already introduced as design-layer baseline rather than spatial-prep finality
 5. optional internal pack layer only if justified
 6. release hardening
 

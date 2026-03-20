@@ -34,6 +34,7 @@ Yalken развивается как desktop-first и offline-first writer tool 
 - primary editor path закрыт и является основным,
 - editor closure подтверждён machine-bound packet,
 - factual docs синхронизируются с active canon,
+- Phase 04 is now design-layer baseline, not spatial-prep finality; the visible design switch stays outside document, recovery, and command truth.
 - дальнейшая работа идёт уже после closure, а не внутри старого transition milestone.
 
 Это не означает, что весь `Writer v1` завершён:

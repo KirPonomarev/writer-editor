@@ -1,0 +1,34 @@
+{
+  "artifactId": "PHASE04_SUPERSESSION_AND_PHASE_MAP_SYNC_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_04",
+  "status": "PASS",
+  "phase04SupersessionStatus": "PASS",
+  "supersededLogicalArtifactId": "PHASE04_SPATIAL_PREP_PACKET_V1",
+  "supersededHistoricalFileRef": "docs/OPS/STATUS/PHASE04_SPATIAL_PREP_PACKET_V1.json",
+  "truePhase04LogicalArtifactId": "PHASE04_DESIGN_LAYER_BASELINE_PACKET_V1",
+  "truePhase04HistoricalFileRef": "docs/OPS/STATUS/PHASE04_DESIGN_LAYER_BASELINE_PACKET_V1.json",
+  "phaseMap": {
+    "oldFinalPhase04": "SPATIAL_PREP",
+    "truePhase04": "DESIGN_LAYER_BASELINE",
+    "oldPhase04CountsAsFinal": false,
+    "truePhase04CountsAsFinal": true
+  },
+  "boundSignalIds": [
+    "PHASE04_SUPERSESSION_RECORDED_PASS",
+    "PHASE04_PHASE_MAP_SYNC_PASS",
+    "PHASE04_OLD_SPATIAL_PREP_NO_LONGER_FINAL_PASS"
+  ],
+  "phase04PendingGapIds": [],
+  "proof": {
+    "supersessionRecordedTrue": true,
+    "phaseMapSyncedTrue": true,
+    "oldSpatialPrepNoLongerCountsFinalPhase04True": true,
+    "historicalFileRefsPreservedTrue": true,
+    "noDocumentTruthChangeTrue": true,
+    "noRecoveryTruthChangeTrue": true,
+    "noCommandSemanticsChangeTrue": true,
+    "noFalsePhase04SupersessionGreenTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T01:00:00.000Z"
+}

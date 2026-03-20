@@ -177,3 +177,4 @@ This allowance does not authorize early shell runtime or spatial runtime.
 - active canon остаётся binding execution law,
 - wide future horizon сохраняется как north star,
 - но не становится автоматическим release criterion для `Writer v1`.
+- true Phase 04 now means design-layer baseline with BASELINE SAFE FOCUS COMPACT and a visible design switch; the old spatial-prep packet is historical and no longer final Phase 04.
