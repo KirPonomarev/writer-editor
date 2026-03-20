@@ -1,0 +1,54 @@
+{
+  "artifactId": "PHASE07_WARN_CLASSIFICATION_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "PHASE_07",
+  "status": "PASS",
+  "classificationStatus": "PASS",
+  "executionMode": "release",
+  "canonVersion": "v3.13a-final",
+  "requiredSetSource": "REQUIRED_TOKEN_SET.json#requiredSets.active",
+  "requiredSetExcludesWarningTokens": true,
+  "warnings": [
+    {
+      "warningId": "MENU_SNAPSHOT_WARN",
+      "tokenId": "MENU_SNAPSHOT_MATCH_OK",
+      "failSignalCode": "E_MENU_SNAPSHOT_MISMATCH",
+      "requiredInActiveSet": false,
+      "releaseModeDecision": "ADVISORY",
+      "promotionModeDecision": "BLOCKING",
+      "classification": "ADVISORY",
+      "machineJustification": "TOKEN_NOT_IN_ACTIVE_REQUIRED_SET_AND_FAILSIGNAL_RELEASE_MODE_IS_ADVISORY"
+    },
+    {
+      "warningId": "MENU_ARTIFACT_LOCK_WARN",
+      "tokenId": "MENU_ARTIFACT_LOCK_MATCH_OK",
+      "failSignalCode": "E_MENU_ARTIFACT_TAMPER_OR_DRIFT",
+      "requiredInActiveSet": false,
+      "releaseModeDecision": "ADVISORY",
+      "promotionModeDecision": "BLOCKING",
+      "classification": "ADVISORY",
+      "machineJustification": "TOKEN_NOT_IN_ACTIVE_REQUIRED_SET_AND_FAILSIGNAL_RELEASE_MODE_IS_ADVISORY"
+    },
+    {
+      "warningId": "RELEASE_CANDIDATE_WARN",
+      "tokenId": "RELEASE_CANDIDATE_LOCK_MATCH_OK",
+      "failSignalCode": "E_RELEASE_CANDIDATE_DRIFT",
+      "requiredInActiveSet": false,
+      "releaseModeDecision": "ADVISORY",
+      "promotionModeDecision": "BLOCKING",
+      "classification": "ADVISORY",
+      "machineJustification": "TOKEN_NOT_IN_ACTIVE_REQUIRED_SET_AND_FAILSIGNAL_RELEASE_MODE_IS_ADVISORY"
+    }
+  ],
+  "proof": {
+    "menuSnapshotTokenNotRequiredTrue": true,
+    "menuArtifactLockTokenNotRequiredTrue": true,
+    "releaseCandidateTokenNotRequiredTrue": true,
+    "menuSnapshotReleaseAdvisoryTrue": true,
+    "menuArtifactLockReleaseAdvisoryTrue": true,
+    "releaseCandidateReleaseAdvisoryTrue": true,
+    "allWarningsMachineJustifiedTrue": true,
+    "onlyAdvisoryWarningsRemainTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T21:05:00.000Z"
+}

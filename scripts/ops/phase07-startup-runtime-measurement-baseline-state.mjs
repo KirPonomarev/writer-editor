@@ -29,8 +29,8 @@ const EXPECTED_BOUND_SIGNAL_IDS = Object.freeze([
 const EXPECTED_LOCKED_TARGET_IDS = Object.freeze([
   'STARTUP_MEASUREMENT_BOUND',
   'PROJECT_OPEN_MEASUREMENT_BOUND',
-  'SCENE_SWITCH_MEASUREMENT_NOT_BOUND',
-  'RESET_MEASUREMENT_NOT_BOUND',
+  'SCENE_SWITCH_MEASUREMENT_BOUND',
+  'RESET_MEASUREMENT_BOUND',
   'BLOCKING_BUDGET_ORDER_STARTUP_PROJECT_OPEN_SCENE_SWITCH_RESET',
   'PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE',
 ]);
@@ -107,17 +107,19 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
       && foundationState.checkStatusById?.RESET_MEASUREMENT_BOUND?.measured === true;
     const blockingBudgetOrderExact = arraysEqual(blockingBudgetsState.phase07BlockingBudgetIds || [], EXPECTED_BLOCKING_BUDGET_IDS);
     const pendingGapIdsExact = arraysEqual(foundationState.phase07PendingGapIds || [], []);
+    const packetPendingGapIdsExact = arraysEqual(packet?.phase07PendingGapIds || [], []);
     const sourceFoundationMatches = packet?.sourcePhase07RuntimeMeasurementsFoundationState === 'phase07-startup-project-open-scene-switch-reset-runtime-measurements-foundation-state.mjs';
     const sourceBlockingBudgetsMatches = packet?.sourcePhase07BlockingBudgetsBaselineState === 'phase07-startup-project-open-scene-switch-reset-blocking-budgets-baseline-state.mjs';
     const packetPass = packet?.status === 'PASS';
-    const packetReadyHold = packet?.phase07ReadinessStatus === 'HOLD';
+    const packetReadyPass = packet?.phase07ReadinessStatus === 'PASS';
     const packetInternalConsistency = Boolean(packet)
       && packet?.artifactId === 'PHASE07_STARTUP_RUNTIME_MEASUREMENT_BASELINE_V1'
       && packet?.schemaVersion === 1
       && packet?.phaseId === 'PHASE_07'
       && packetPass
       && packet?.phase07StartupRuntimeMeasurementBaselineStatus === 'PASS'
-      && packetReadyHold
+      && packetReadyPass
+      && packetPendingGapIdsExact
       && sourceFoundationMatches
       && sourceBlockingBudgetsMatches
       && perfRunStartupMeasurementPresent
@@ -137,8 +139,11 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
       && packet?.proof?.perfRunStartupMeasurementPresentTrue === true
       && packet?.proof?.startupMeasurementBoundTrue === true
       && packet?.proof?.projectOpenMeasurementBoundTrue === true
+      && packet?.proof?.sceneSwitchMeasurementBoundTrue === true
+      && packet?.proof?.resetMeasurementBoundTrue === true
       && packet?.proof?.blockingBudgetOrderExactTrue === true
-      && packet?.proof?.phase07ReadinessStatusHoldTrue === true
+      && packet?.proof?.phase07PendingGapIdsExactTrue === true
+      && packet?.proof?.phase07ReadinessStatusPassTrue === true
       && packet?.proof?.noFalsePhase07GreenTrue === true
       && packet?.proof?.packetInternalConsistencyTrue === true;
 
@@ -148,12 +153,13 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
       PERF_RUN_STARTUP_MEASUREMENT_PRESENT: asCheck(perfRunStartupMeasurementPresent ? 'GREEN' : 'OPEN_GAP', perfRunStartupMeasurementPresent, perfRunStartupMeasurementPresent ? 'PERF_RUN_STARTUP_MEASUREMENT_PRESENT' : 'PERF_RUN_STARTUP_MEASUREMENT_MISSING'),
       STARTUP_MEASUREMENT_BOUND: asCheck(startupMeasurementBound ? 'GREEN' : 'OPEN_GAP', startupMeasurementBound, startupMeasurementBound ? 'STARTUP_MEASUREMENT_BOUND' : 'STARTUP_MEASUREMENT_NOT_BOUND'),
       PROJECT_OPEN_MEASUREMENT_BOUND: asCheck(projectOpenMeasurementBound ? 'GREEN' : 'OPEN_GAP', projectOpenMeasurementBound, projectOpenMeasurementBound ? 'PROJECT_OPEN_MEASUREMENT_BOUND' : 'PROJECT_OPEN_MEASUREMENT_NOT_BOUND'),
-      SCENE_SWITCH_MEASUREMENT_PROGRESS_PRESERVED: asCheck(sceneSwitchMeasurementBound ? 'GREEN' : 'OPEN_GAP', sceneSwitchMeasurementBound, sceneSwitchMeasurementBound ? 'SCENE_SWITCH_MEASUREMENT_BOUND_BY_LATER_CONTOUR' : 'SCENE_SWITCH_MEASUREMENT_PROGRESS_MISSING'),
-      RESET_MEASUREMENT_PROGRESS_PRESERVED: asCheck(resetMeasurementBound ? 'GREEN' : 'OPEN_GAP', resetMeasurementBound, resetMeasurementBound ? 'RESET_MEASUREMENT_BOUND_BY_LATER_CONTOUR' : 'RESET_MEASUREMENT_PROGRESS_MISSING'),
+      SCENE_SWITCH_MEASUREMENT_BOUND: asCheck(sceneSwitchMeasurementBound ? 'GREEN' : 'OPEN_GAP', sceneSwitchMeasurementBound, sceneSwitchMeasurementBound ? 'SCENE_SWITCH_MEASUREMENT_BOUND' : 'SCENE_SWITCH_MEASUREMENT_NOT_BOUND'),
+      RESET_MEASUREMENT_BOUND: asCheck(resetMeasurementBound ? 'GREEN' : 'OPEN_GAP', resetMeasurementBound, resetMeasurementBound ? 'RESET_MEASUREMENT_BOUND' : 'RESET_MEASUREMENT_NOT_BOUND'),
       BLOCKING_BUDGET_ORDER_EXACT: asCheck(blockingBudgetOrderExact ? 'GREEN' : 'OPEN_GAP', blockingBudgetOrderExact, blockingBudgetOrderExact ? 'BLOCKING_BUDGET_ORDER_EXACT' : 'BLOCKING_BUDGET_ORDER_DRIFT'),
+      PACKET_PENDING_GAP_IDS_EXACT: asCheck(packetPendingGapIdsExact ? 'GREEN' : 'OPEN_GAP', packetPendingGapIdsExact, packetPendingGapIdsExact ? 'PACKET_PENDING_GAP_IDS_EXACT' : 'PACKET_PENDING_GAP_IDS_DRIFT'),
       PACKET_PRESENT: asCheck(packetExists ? 'GREEN' : 'OPEN_GAP', packetExists, packetExists ? 'PACKET_PRESENT' : 'PACKET_MISSING'),
       PACKET_PASS: asCheck(packetPass ? 'GREEN' : 'OPEN_GAP', packetPass, packetPass ? 'PACKET_PASS' : 'PACKET_NOT_PASS'),
-      PACKET_READINESS_STATUS_HOLD: asCheck(packetReadyHold ? 'GREEN' : 'OPEN_GAP', packetReadyHold, packetReadyHold ? 'PACKET_READINESS_STATUS_HOLD' : 'PACKET_READINESS_STATUS_NOT_HOLD'),
+      PACKET_READINESS_STATUS_PASS: asCheck(packetReadyPass ? 'GREEN' : 'OPEN_GAP', packetReadyPass, packetReadyPass ? 'PACKET_READINESS_STATUS_PASS' : 'PACKET_READINESS_STATUS_NOT_PASS'),
       PACKET_INTERNAL_CONSISTENCY: asCheck(packetInternalConsistency ? 'GREEN' : 'OPEN_GAP', packetInternalConsistency, packetInternalConsistency ? 'PACKET_INTERNAL_CONSISTENCY' : 'PACKET_INTERNAL_CONSISTENCY_BROKEN'),
     };
 
@@ -186,7 +192,7 @@ function evaluatePhase07StartupRuntimeMeasurementBaselineState(input = {}) {
       failReason: '',
       overallStatus: packetInternalConsistency ? 'PASS' : 'HOLD',
       phase07StartupRuntimeMeasurementBaselineStatus: packetPass ? 'PASS' : 'HOLD',
-      phase07ReadinessStatus: packetReadyHold ? 'HOLD' : 'UNKNOWN',
+      phase07ReadinessStatus: packetReadyPass ? 'PASS' : 'UNKNOWN',
       greenCheckIds,
       openGapIds,
       checkStatusById,

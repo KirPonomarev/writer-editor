@@ -1,0 +1,24 @@
+{
+  "artifactId": "REPAIR_WAVE_2_PHASE07_BRANCH_LOCAL_CLOSEOUT_RECORD_V1",
+  "schemaVersion": 1,
+  "taskId": "REPAIR_WAVE_2_EXEC_TZ_PHASE07_CLOSEOUT_R4",
+  "status": "PASS",
+  "closureStatus": "BRANCH_LOCAL_CLOSED",
+  "baseSha": "65fc829296fb11b617518bcca15ab0fcf2c1f8c5",
+  "startHead": "df4e996fe5749df4d9c3fb5beb5071052417dcaf",
+  "executionSurface": "ACCEPTED_REPAIR_SURFACE_ONLY",
+  "phase07Status": "FULLY_GREEN",
+  "warningClassificationArtifact": "PHASE07_WARN_CLASSIFICATION_PACKET_V1",
+  "postSyncAuthoritativeMatrixStatus": "PASS",
+  "branchLocalClosureClaimHonest": true,
+  "repoWideDoneClaimed": false,
+  "proof": {
+    "phase03ThroughPhase07GreenTrue": true,
+    "buildRendererPassTrue": true,
+    "testElectronPassTrue": true,
+    "onlyAdvisoryWarningsRemainTrue": true,
+    "falseGreenNoneTrue": true,
+    "splitBrainNoneTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T18:10:39Z"
+}

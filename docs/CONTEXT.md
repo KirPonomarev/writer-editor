@@ -34,7 +34,7 @@
 - Phase 04: PASS
 - Phase 05: PASS
 - Phase 06: PASS
-- Phase 07: PASS
+- Phase 07: BRANCH_LOCAL_CLOSED_ON_ACCEPTED_REPAIR_SURFACE
 
 ### Invariants
 - editor surface не источник истины,
@@ -50,10 +50,13 @@
 
 ## Current Delivery Axis
 
-Текущая repair wave честно закрыта в этом repo-level contour после final sweep.
+Текущая repair wave ещё не закрыта на repo-level contour.
+Принятая repair surface branch-local closed и зелёная через Phase 07.
+release hardening remains the last mandatory runtime axis that was closed on the accepted repair surface before merge gate.
+Repo-wide done по-прежнему запрещён до merge gate и post-merge reconfirm.
 
 Следующее допустимое состояние:
-1. сохранить закрытие repair wave без повторного false-green
+1. сохранить честное branch-local closure состояние до merge gate
 2. не открывать post-version-one evaluation как обязательную часть `Writer v1`
 3. не маскировать новые gaps narrative claims о полном closure
 
@@ -73,6 +76,6 @@
 - factual docs должны описывать current operating reality, а не старый transition milestone.
 
 ## Next Practical Target
-- удерживать closed state без reopening repo-level drift,
+- не объявлять repo-level closed state до branch-local closure, merge gate и post-merge reconfirm,
 - не смешивать evaluation-only работу с закрытым repair contour,
 - re-audit выполнять только как подтверждение, а не как замену machine proof.

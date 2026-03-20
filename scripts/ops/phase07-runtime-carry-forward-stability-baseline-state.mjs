@@ -71,10 +71,10 @@ function evaluatePhase07RuntimeCarryForwardStabilityBaselineState(input = {}) {
       && previousBaselinePacket?.phaseId === 'PHASE_07'
       && previousBaselinePacket?.status === 'PASS'
       && previousBaselinePacket?.phase07ReleaseVerificationChainBaselineStatus === 'PASS'
-      && previousBaselinePacket?.phase07ReadinessStatus === 'HOLD'
+      && previousBaselinePacket?.phase07ReadinessStatus === 'PASS'
       && previousBaselinePacket?.sourcePhase07ReleaseReadyCoreWriterPathBaselineState === 'phase07-release-ready-core-writer-path-baseline-state.mjs'
       && arraysEqual(previousBaselinePacket?.phase07BlockingBudgetIds || [], EXPECTED_BLOCKING_BUDGET_IDS)
-      && arraysEqual(previousBaselinePacket?.phase07PendingGapIds || [], ['PHASE07_RUNTIME_CARRY_FORWARD_STABILITY_NOT_BOUND'])
+      && arraysEqual(previousBaselinePacket?.phase07PendingGapIds || [], [])
       && previousBaselinePacket?.proof?.previousPhase07ReleaseReadyCoreWriterPathBaselinePassTrue === true
       && previousBaselinePacket?.proof?.x79ReleaseVerificationChainOkTrue === true
       && previousBaselinePacket?.proof?.x79ReleaseVerificationChainChecksTrue === true
@@ -86,7 +86,7 @@ function evaluatePhase07RuntimeCarryForwardStabilityBaselineState(input = {}) {
       && previousBaselinePacket?.proof?.phase07PendingGapIdsHonestTrue === true
       && previousBaselinePacket?.proof?.phase07ReleaseVerificationChainNotBoundResolvedTrue === true
       && previousBaselinePacket?.proof?.phase07ReleaseVerificationChainBaselineStatusPassTrue === true
-      && previousBaselinePacket?.proof?.phase07ReadinessStatusHoldTrue === true
+      && previousBaselinePacket?.proof?.phase07ReadinessStatusPassTrue === true
       && previousBaselinePacket?.proof?.noFalsePhase07GreenTrue === true
       && previousBaselinePacket?.proof?.packetInternalConsistencyTrue === true;
 
@@ -145,9 +145,6 @@ function evaluatePhase07RuntimeCarryForwardStabilityBaselineState(input = {}) {
     const pendingGapIdsExact = arraysEqual(packet?.phase07PendingGapIds || [], EXPECTED_PENDING_GAP_IDS);
     const readinessPass = packet?.phase07ReadinessStatus === 'PASS';
     const previousGapResolved = Boolean(previousBaselinePacket)
-      && Array.isArray(previousBaselinePacket?.phase07PendingGapIds)
-      && previousBaselinePacket.phase07PendingGapIds.length === 1
-      && previousBaselinePacket.phase07PendingGapIds.includes('PHASE07_RUNTIME_CARRY_FORWARD_STABILITY_NOT_BOUND')
       && pendingGapIdsExact;
 
     const packetInternalConsistency = Boolean(packet)
