@@ -100,9 +100,13 @@ Machine-bound blocking law определяется не этим докумен
 - primary editor closure закрыт,
 - active execution canon уже содержит writer-specific narrowing и factual doc cutover rules,
 - factual docs после closure обязаны описывать post-closure operating reality, а не старый transition world.
+- Phase 02 data core, recovery и command kernel stabilization закрыт,
+- shell state закрыт,
+- bounded spatial layer закрыт,
+- minimal pack layer не стал обязательным blocking axis для текущего writer path,
+- release hardening закрыт.
 
-Следующий delivery axis после closure и factual cutover:
-- Phase 02: data core, recovery и command kernel stabilization,
-- затем shell state,
-- затем bounded spatial layer,
-- затем minimal pack layer только при реальной необходимости.
+После release hardening:
+- broader freedom не становится автоматическим продолжением `Writer v1`,
+- post-version-one exploration допускается только как отдельный evaluation-only axis,
+- этот evaluation-only axis не переоткрывает закрытые `Writer v1` gates сам по себе.

@@ -28,9 +28,13 @@
 
 ### Phase status
 - Phase 00: PASS
-- Phase 01 prep: PASS
-- Phase 01 execute prep: PASS
-- Factual stale-doc surface выделен и переведён в machine-bound refresh map.
+- Phase 01: PASS
+- Phase 02: PASS
+- Phase 03: PASS
+- Phase 04: PASS
+- Phase 05: PASS
+- Phase 06: PASS_OR_SKIPPED_AS_NOT_REQUIRED
+- Phase 07: PASS
 
 ### Invariants
 - editor surface не источник истины,
@@ -46,19 +50,16 @@
 
 ## Current Open Delivery Axis
 
-После editor closure следующий реальный delivery order такой:
-1. factual doc cutover and active doc reconciliation
-2. data core, recovery и command kernel stabilization
-3. user shell state и project workspace state
-4. bounded spatial layer
-5. optional internal pack layer only if justified
-6. release hardening
+Обязательные delivery axes внутри `Writer v1` закрыты через release hardening.
+
+Следующее допустимое состояние:
+1. post-version-one evaluation only
+2. без автоматического открытия нового mandatory runtime contour
+3. без переоткрытия закрытых `Writer v1` gates
 
 ## What Is Not Yet Claimed
-- shell core не считается завершённым,
-- spatial layer не считается завершённым,
 - pack layer не считается обязательным,
-- post-v1 freedom не считается текущим scope.
+- post-v1 freedom не считается текущим implementation commitment и остаётся evaluation-only.
 
 ## Policies That Remain Binding
 - SECURITY_POLICY: CSP, blocked navigation, blocked new-window, no remote code
@@ -72,5 +73,6 @@
 - factual docs должны описывать current operating reality, а не старый transition milestone.
 
 ## Next Practical Target
-- завершить factual doc refresh application across stale active docs,
-- затем перейти к Phase 02 stabilization contour.
+- держать `Writer v1` как закрытый release-ready core path,
+- открывать только отдельные post-version-one evaluation contours,
+- не смешивать evaluation-only работу с уже закрытыми `v1` runtime gates.

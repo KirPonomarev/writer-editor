@@ -99,6 +99,7 @@ ROLE: PRODUCT_SCOPE_AND_TARGET_ARCHITECTURE
 6. bounded spatial shell
 7. minimal internal pack layer only if justified
 8. release hardening
+9. post-version-one evaluation only
 
 ## 6. Primary Editor Closure Rule
 
@@ -177,3 +178,5 @@ This allowance does not authorize early shell runtime or spatial runtime.
 - active canon остаётся binding execution law,
 - wide future horizon сохраняется как north star,
 - но не становится автоматическим release criterion для `Writer v1`.
+- release hardening остаётся последним обязательным runtime axis для текущего `Writer v1`.
+- любой broader freedom после него допускается только как post-version-one evaluation only.
