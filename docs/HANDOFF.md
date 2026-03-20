@@ -34,14 +34,17 @@ _Generated: 2026-03-20_
 - IME composition closure evidence is bound.
 - DOCX closure evidence is bound.
 - Tiptap path is the primary editor path.
-- Current repo repair wave is open.
+- Current repo repair wave is closed in the current repair branch.
 - Phase 03 blocker is closed in the current repair branch.
 - True Phase 04 design-layer baseline is closed in the current repair branch.
-- Phase 05 and Phase 06 must not be treated as already repair-closed.
+- Phase 05 bounded spatial shell chain is closed in the current repair branch.
+- Phase 06 explicit skip contour is closed in the current repair branch.
+- Phase 07 conditional cross-branch proof repair is closed in the current repair branch.
+- Overall repair wave is closed after final sweep, build verification and electron verification.
 
 ## What Is Next
-1. close the active repo-level repair wave
-2. do not open post-version-one evaluation before repair closure
+1. preserve the closed repo-level repair state
+2. do not reopen post-version-one evaluation as mandatory v1 readiness
 3. keep broader freedom out of mandatory v1 readiness
 
 ## Working Agreement

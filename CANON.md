@@ -98,12 +98,15 @@ Machine-bound blocking law определяется не этим докумен
 
 Текущая активная реальность репозитория:
 - active execution canon уже содержит writer-specific narrowing и factual doc cutover rules,
-- текущий repo находится в repair-pending состоянии для честного выравнивания product truth и machine chain,
-- factual docs не должны объявлять `Writer v1` полностью закрытым, пока repair wave не закроет текущий repo-level drift,
+- текущий repo-level repair drift закрыт в текущей repair branch,
+- factual docs описывают закрытую repair wave в этом repo, а не переходное pending-состояние,
 - Phase 03 blocker закрыт в текущей repair branch,
 - true Phase 04 design-layer baseline закрыт в текущей repair branch,
-- Phase 05 и Phase 06 не должны описываться как уже repair-closed в текущем repo,
-- broader freedom и post-version-one evaluation не открываются, пока repair wave не закрыта.
+- Phase 05 bounded spatial shell chain закрыт в текущей repair branch,
+- Phase 06 explicit skip contour закрыт в текущей repair branch,
+- Phase 07 conditional cross-branch proof repair закрыт в текущей repair branch,
+- overall repair wave закрыта после final sweep, build и electron verification,
+- broader freedom и post-version-one evaluation не открываются автоматически после repair closure.
 
 После release hardening:
 - broader freedom не становится автоматическим продолжением `Writer v1`,

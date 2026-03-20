@@ -32,9 +32,9 @@
 - Phase 02: PASS
 - Phase 03: PASS
 - Phase 04: PASS
-- Phase 05: REPAIR_PENDING
-- Phase 06: REPAIR_PENDING
-- Phase 07: CONDITIONAL_PROOF_RECHECK_ONLY
+- Phase 05: PASS
+- Phase 06: PASS
+- Phase 07: PASS
 
 ### Invariants
 - editor surface не источник истины,
@@ -48,14 +48,14 @@
 - `Current iteration visual snapshot`: временный implementation baseline конкретной UI-итерации.
 - `Advisory vision`: дальнее направление, которое не заменяет active canon.
 
-## Current Open Delivery Axis
+## Current Delivery Axis
 
-Обязательные delivery axes внутри `Writer v1` не считаются честно закрытыми, пока текущая repair wave не снимет repo-level drift.
+Текущая repair wave честно закрыта в этом repo-level contour после final sweep.
 
 Следующее допустимое состояние:
-1. закрыть активную repair wave по текущему repo
-2. не открывать post-version-one evaluation до этого момента
-3. не маскировать repair gaps narrative claims о полном closure
+1. сохранить закрытие repair wave без повторного false-green
+2. не открывать post-version-one evaluation как обязательную часть `Writer v1`
+3. не маскировать новые gaps narrative claims о полном closure
 
 ## What Is Not Yet Claimed
 - pack layer не считается обязательным,
@@ -73,6 +73,6 @@
 - factual docs должны описывать current operating reality, а не старый transition milestone.
 
 ## Next Practical Target
-- закрыть repo-level repair wave начиная с Phase05 chain rebuild,
-- не объявлять Phase 05 и Phase 06 закрытыми до machine proof в этом repo,
-- не смешивать evaluation-only работу с активным repair contour.
+- удерживать closed state без reopening repo-level drift,
+- не смешивать evaluation-only работу с закрытым repair contour,
+- re-audit выполнять только как подтверждение, а не как замену machine proof.
