@@ -100,7 +100,7 @@ Machine-bound blocking law определяется не этим докумен
 - active execution canon уже содержит writer-specific narrowing и factual doc cutover rules,
 - текущий repo находится в repair-pending состоянии для честного выравнивания product truth и machine chain,
 - factual docs не должны объявлять `Writer v1` полностью закрытым, пока repair wave не закроет текущий repo-level drift,
-- Phase 03 сейчас считается активным blocker для этой repair wave,
+- Phase 03 blocker закрыт в текущей repair branch,
 - Phase 04, Phase 05 и Phase 06 не должны описываться как уже repair-closed в текущем repo,
 - broader freedom и post-version-one evaluation не открываются, пока repair wave не закрыта.
 

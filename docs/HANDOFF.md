@@ -35,7 +35,7 @@ _Generated: 2026-03-20_
 - DOCX closure evidence is bound.
 - Tiptap path is the primary editor path.
 - Current repo repair wave is open.
-- Phase 03 is the active blocker.
+- Phase 03 blocker is closed in the current repair branch.
 - Phase 04, Phase 05 and Phase 06 must not be treated as already repair-closed.
 
 ## What Is Next

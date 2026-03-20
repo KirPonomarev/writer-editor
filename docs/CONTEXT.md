@@ -30,7 +30,7 @@
 - Phase 00: PASS
 - Phase 01: PASS
 - Phase 02: PASS
-- Phase 03: BLOCKER_REOPEN
+- Phase 03: PASS
 - Phase 04: REPAIR_PENDING
 - Phase 05: REPAIR_PENDING
 - Phase 06: REPAIR_PENDING
@@ -73,6 +73,6 @@
 - factual docs должны описывать current operating reality, а не старый transition milestone.
 
 ## Next Practical Target
-- закрыть repo-level repair wave начиная с Phase 03 blocker,
+- закрыть repo-level repair wave начиная с true Phase04 introduction,
 - не объявлять Phase 04, Phase 05 и Phase 06 закрытыми до machine proof в этом repo,
 - не смешивать evaluation-only работу с активным repair contour.

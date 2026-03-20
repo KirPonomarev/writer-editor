@@ -33,7 +33,7 @@ Yalken развивается как desktop-first и offline-first writer tool 
 Сейчас репозиторий находится в repair-pending state:
 - earlier closure claims не считаются достаточным доказательством полного repo-level closure,
 - текущая repair wave открыта для честного выравнивания docs и machine chain,
-- Phase 03 рассматривается как активный blocker,
+- Phase 03 blocker уже закрыт в текущей repair branch,
 - Phase 04, Phase 05 и Phase 06 не считаются уже repair-closed в этом repo,
 - broader freedom не открывается до закрытия repair wave.
 
