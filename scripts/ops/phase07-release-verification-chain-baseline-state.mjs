@@ -1,16 +1,15 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const FAIL_REASON_FORCED_NEGATIVE = 'E_PHASE07_RELEASE_VERIFICATION_CHAIN_BASELINE_FORCED_NEGATIVE';
 const FAIL_REASON_UNEXPECTED = 'E_PHASE07_RELEASE_VERIFICATION_CHAIN_BASELINE_UNEXPECTED';
 
 const PACKET_PATH = 'docs/OPS/STATUS/PHASE07_RELEASE_VERIFICATION_CHAIN_BASELINE_V1.json';
-const PREVIOUS_BASELINE_MAIN_PATH = 'docs/OPS/STATUS/PHASE07_RELEASE_READY_CORE_WRITER_PATH_BASELINE_V1.json';
-const X79_MAIN_PATH = 'docs/OPS/STATUS/X79_RELEASE_VERIFICATION_CHAIN_STATUS_V1.json';
-const X78_MAIN_PATH = 'docs/OPS/STATUS/X78_RELEASE_VERIFICATION_EVIDENCE_STATUS_V1.json';
+const PREVIOUS_BASELINE_PATH = 'docs/OPS/STATUS/PHASE07_RELEASE_READY_CORE_WRITER_PATH_BASELINE_V1.json';
+const X79_PATH = 'docs/OPS/STATUS/X79_RELEASE_VERIFICATION_CHAIN_STATUS_V1.json';
+const X78_PATH = 'docs/OPS/STATUS/X78_RELEASE_VERIFICATION_EVIDENCE_STATUS_V1.json';
 
 const EXPECTED_BLOCKING_BUDGET_IDS = Object.freeze([
   'STARTUP',
@@ -40,16 +39,10 @@ function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.resolve(relativePath), 'utf8'));
 }
 
-function readJsonFromMain(relativePath) {
-  try {
-    const output = execFileSync('git', ['show', `main:${relativePath}`], {
-      cwd: process.cwd(),
-      encoding: 'utf8',
-    });
-    return JSON.parse(output);
-  } catch {
-    return null;
-  }
+function readJsonIfExists(relativePath) {
+  const absolutePath = path.resolve(relativePath);
+  if (!fs.existsSync(absolutePath)) return null;
+  return readJson(relativePath);
 }
 
 function asCheck(status, measured, note) {
@@ -68,9 +61,9 @@ function evaluatePhase07ReleaseVerificationChainBaselineState(input = {}) {
   try {
     const packetExists = fs.existsSync(path.resolve(PACKET_PATH));
     const packet = packetExists ? readJson(PACKET_PATH) : null;
-    const previousBaselinePacket = readJsonFromMain(PREVIOUS_BASELINE_MAIN_PATH);
-    const x79Packet = readJsonFromMain(X79_MAIN_PATH);
-    const x78Packet = readJsonFromMain(X78_MAIN_PATH);
+    const previousBaselinePacket = readJsonIfExists(PREVIOUS_BASELINE_PATH);
+    const x79Packet = readJsonIfExists(X79_PATH);
+    const x78Packet = readJsonIfExists(X78_PATH);
 
     const previousBaselinePass = Boolean(previousBaselinePacket)
       && previousBaselinePacket?.artifactId === 'PHASE07_RELEASE_READY_CORE_WRITER_PATH_BASELINE_V1'
