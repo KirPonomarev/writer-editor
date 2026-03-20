@@ -101,7 +101,8 @@ Machine-bound blocking law определяется не этим докумен
 - текущий repo находится в repair-pending состоянии для честного выравнивания product truth и machine chain,
 - factual docs не должны объявлять `Writer v1` полностью закрытым, пока repair wave не закроет текущий repo-level drift,
 - Phase 03 blocker закрыт в текущей repair branch,
-- Phase 04, Phase 05 и Phase 06 не должны описываться как уже repair-closed в текущем repo,
+- true Phase 04 design-layer baseline закрыт в текущей repair branch,
+- Phase 05 и Phase 06 не должны описываться как уже repair-closed в текущем repo,
 - broader freedom и post-version-one evaluation не открываются, пока repair wave не закрыта.
 
 После release hardening:

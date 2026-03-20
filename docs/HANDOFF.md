@@ -36,7 +36,8 @@ _Generated: 2026-03-20_
 - Tiptap path is the primary editor path.
 - Current repo repair wave is open.
 - Phase 03 blocker is closed in the current repair branch.
-- Phase 04, Phase 05 and Phase 06 must not be treated as already repair-closed.
+- True Phase 04 design-layer baseline is closed in the current repair branch.
+- Phase 05 and Phase 06 must not be treated as already repair-closed.
 
 ## What Is Next
 1. close the active repo-level repair wave

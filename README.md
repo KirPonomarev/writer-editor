@@ -34,7 +34,8 @@ Yalken развивается как desktop-first и offline-first writer tool 
 - earlier closure claims не считаются достаточным доказательством полного repo-level closure,
 - текущая repair wave открыта для честного выравнивания docs и machine chain,
 - Phase 03 blocker уже закрыт в текущей repair branch,
-- Phase 04, Phase 05 и Phase 06 не считаются уже repair-closed в этом repo,
+- true Phase 04 design-layer baseline уже закрыт в текущей repair branch,
+- Phase 05 и Phase 06 не считаются уже repair-closed в этом repo,
 - broader freedom не открывается до закрытия repair wave.
 
 Это не означает автоматический переход к новой обязательной версии:
