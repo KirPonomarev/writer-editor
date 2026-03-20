@@ -1,0 +1,29 @@
+{
+  "artifactId": "REPAIR_WAVE_2_PHASE07_REPO_WIDE_CLOSEOUT_RECORD_V1",
+  "schemaVersion": 1,
+  "taskId": "OPS_WRITE_TZ_REPO_WIDE_SYMBOLIC_CLOSEOUT_V5_R1",
+  "status": "PASS",
+  "closureStatus": "REPO_WIDE_CLOSED",
+  "targetBranch": "main",
+  "requiredMainHeadAtWrite": "4049539c2fecd68053a8c5dfe2894e7f4f95a222",
+  "requiredMergedAncestor": "661ad58a158b49cd389a5240e154b24b1bdddc78",
+  "branchLocalHistoryArtifact": "REPAIR_WAVE_2_PHASE07_BRANCH_LOCAL_CLOSEOUT_RECORD_V1",
+  "supersededPremergeArtifact": "REPAIR_WAVE_2_PHASE07_MAIN_PR_HANDOFF_V1",
+  "warningClassificationArtifact": "PHASE07_WARN_CLASSIFICATION_PACKET_V1",
+  "machineClosureStatus": "PASS",
+  "symbolicLayerStatus": "PASS",
+  "activeDocLayerStatus": "PASS",
+  "repoWideDoneClaimed": true,
+  "proof": {
+    "mainHeadLockedTrue": true,
+    "requiredMergedAncestorContainedTrue": true,
+    "phase03ThroughPhase07GreenTrue": true,
+    "buildRendererPassTrue": true,
+    "testElectronPassTrue": true,
+    "doctorStrictPassTrue": true,
+    "onlyAdvisoryWarningsRemainTrue": true,
+    "falseGreenNoneTrue": true,
+    "splitBrainNoneTrue": true
+  },
+  "updatedAtUtc": "2026-03-20T19:12:06Z"
+}

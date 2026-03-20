@@ -17,7 +17,7 @@
     },
     {
       "filePath": "docs/OPS/BASELINE/OPS_GOVERNANCE_BASELINE_v1.0.json",
-      "sha256": "218dc2f157f0307d4fe58e61bfac12580e96820efaa3cafdf7b805fd557ba111",
+      "sha256": "d81eb24a136b3f6d7078c2f0c0d4dd14cd2c98d5f44bc556e0399fe1d325a641",
       "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
       "approvedAtUtc": "2026-02-28T23:47:23.730Z",
       "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
@@ -1396,7 +1396,7 @@
     },
     {
       "filePath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
-      "sha256": "1e745cee9a3c446483ad35b7e590198bdfd71fb3713f1180e562d8eb2b1d6fda",
+      "sha256": "999bcb93a513da21edfab25443c5acc2d17f2e6f247675825edd1f68fb928159",
       "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
       "approvedAtUtc": "2026-02-28T23:47:23.730Z",
       "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
@@ -1683,7 +1683,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/MACHINE_CHECK_REGISTRY_V1.json",
-      "sha256": "e9be0e28767b5c896ff0da1496d95f269adf406d0e782c5c536079118ba363b9",
+      "sha256": "97907b94ad0dfae7b232a9fc8f2a9bb84e5ebb0f4d65749f5df389ac3773a2f3",
       "approvedBy": "ticket:TZ_EXEC_PKG_02_A02_COMMIT_GATE_AND_PR_CREATE",
       "approvedAtUtc": "2026-02-28T00:15:00Z",
       "rationale": "EXECUTION_PACKAGE_02_COMMIT_GATE_REBIND"
@@ -1739,7 +1739,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/P1_DEBT_QUEUE.json",
-      "sha256": "af2e690b55d16cbf0d259b1f59f75eaa263c922b01241da791b2fb4aaa091809",
+      "sha256": "39d3416651c8c60f1a25227c939de8e09d3b8da19a52083ddf814ceb4c0870d4",
       "approvedBy": "ticket:TZ-SECTOR-01-F-P1-QUEUE-SECTOR-TRACKER-RECONCILE-001",
       "approvedAtUtc": "2026-02-23T10:49:32.225Z",
       "rationale": "Sector 01 Ticket F: reconcile P1 queue status + sector tracker (no semantic change)"
@@ -1802,7 +1802,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/PROCESS_TAX_BUDGET_GATE_AUTOMATION_v3.json",
-      "sha256": "4c630fea368521ab1888e44e80240068c708948894e61ecdc7623d901e0bc935",
+      "sha256": "c75df79750db2ade9190d2f494f760cfd5262b37eedf37b9690646be58fa7d7c",
       "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
       "approvedAtUtc": "2026-02-27T01:15:00.000Z",
       "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
@@ -1816,7 +1816,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
-      "sha256": "6e37085e283ff774f1b3dc0852f6fc272cd6cd1c6862f197ec7fc645934a29cd",
+      "sha256": "7378819f5c58043f5f7697d41bba04af20b44d1710fcc26082c36b1d61b4d27f",
       "approvedBy": "ticket:TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01",
       "approvedAtUtc": "2026-02-26T18:05:00.000Z",
       "rationale": "TZ-P0-01-MODE-MATRIX-SINGLE-AUTHORITY-003-GOV-REMEDIATION-01 rebind base:6ace80ee64b8e3a1027b726bc3ea2bf7cc92402a canon:V3_13A_FINAL."
@@ -1991,7 +1991,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
-      "sha256": "17cadb80e064210aa414786183f3f504e7a8098273c57138e111fc340344e9b6",
+      "sha256": "b8e99ad1c9cd37e874d3145c79be99f6f3181a9eae7078060f9e497e0896077b",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
       "approvedAtUtc": "2026-02-18T12:05:00.000Z",
       "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
@@ -2082,7 +2082,7 @@
     },
     {
       "filePath": "scripts/ops/failsignal-mode-sync-automation-state.mjs",
-      "sha256": "f61eea9c86b1f168d092ff97dbce2982a41dda46cfaff8480e2d8d795a8a97ac",
+      "sha256": "cf6c9aa73fc5c7891582e61e62dc3a11316b2e191aa3165b5c64fed5f07076b6",
       "approvedBy": "DOCS_OPERATOR",
       "approvedAtUtc": "2026-02-26T21:24:16.000Z",
       "rationale": "TZ-P1-05-FAILSIGNAL-MODE-SYNC-AUTOMATION-003 approvals."
@@ -2292,7 +2292,7 @@
     },
     {
       "filePath": "scripts/ops/p2-03-process-tax-budget-gate-report.mjs",
-      "sha256": "a478b0f2114bf9589289799dc268397a69675bc087ac5465eea26d944a89fe03",
+      "sha256": "55225b0d04ccaaf5886d7bf099cc8b8b3004dc20cd5cfce3004a86d1ee0fe06b",
       "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
       "approvedAtUtc": "2026-02-27T01:15:00.000Z",
       "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
@@ -2327,7 +2327,7 @@
     },
     {
       "filePath": "scripts/ops/process-tax-budget-gate-state.mjs",
-      "sha256": "c41feaf1644f42b36ab92dfe6da3506f030a1109a940afe2cf54e6fb40ce54a2",
+      "sha256": "dbcce02ea569312322994b2240ccf91e42be5b06ee048b8b1ed066dbd17518ec",
       "approvedBy": "ticket:TZ-P2-03-PROCESS-TAX-BUDGET-GATE-AUTOMATION-003",
       "approvedAtUtc": "2026-02-27T01:15:00.000Z",
       "rationale": "Approve P2-03 process tax budget gate automation with unique signal enforcement, duplicate gate kill-switch rules, and drift-zero safeguards."
@@ -2677,7 +2677,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/X70_FALSE_GREEN_REGISTER_V1.json",
-      "sha256": "5c596bcb14c3598e74635038d66f2df1b562c251c7efa8b76888ce5cfb3cbaaf",
+      "sha256": "472ee61ab0c922f452fecca11f2ee6b14792bc9753b81fec4da669461b75e13d",
       "approvedBy": "ticket:TZ_X72_REMEDIATION_P0_P1_001",
       "approvedAtUtc": "2026-03-02T23:41:14.088Z",
       "rationale": "X72_TARGETED_REMEDIATION_APPROVAL_SCOPE_LOCK"
@@ -2695,6 +2695,20 @@
       "approvedBy": "ticket:TZ_X72_REMEDIATION_P0_P1_001",
       "approvedAtUtc": "2026-03-02T23:41:14.088Z",
       "rationale": "X72_TARGETED_REMEDIATION_APPROVAL_SCOPE_LOCK"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REPAIR_WAVE_2_PHASE07_MAIN_PR_HANDOFF_V1.json",
+      "sha256": "573bd1343c255ca0dc4a0b2c3f7e9cc149c8b301b92843fedb98959731f17e44",
+      "approvedBy": "ticket:OPS_WRITE_TZ_REPO_WIDE_SYMBOLIC_CLOSEOUT_V5_R1",
+      "approvedAtUtc": "2026-03-20T19:15:25.000Z",
+      "rationale": "REPAIR_WAVE_2_REPO_WIDE_SYMBOLIC_CLOSEOUT_COMPANION_APPROVAL"
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REPAIR_WAVE_2_PHASE07_REPO_WIDE_CLOSEOUT_RECORD_V1.json",
+      "sha256": "cc242b367d8333cf2989152f9131a0cd545301f210e312d227cec0de986397d5",
+      "approvedBy": "ticket:OPS_WRITE_TZ_REPO_WIDE_SYMBOLIC_CLOSEOUT_V5_R1",
+      "approvedAtUtc": "2026-03-20T19:15:25.000Z",
+      "rationale": "REPAIR_WAVE_2_REPO_WIDE_SYMBOLIC_CLOSEOUT_COMPANION_APPROVAL"
     }
   ]
 }

@@ -30,15 +30,15 @@ Yalken развивается как desktop-first и offline-first writer tool 
 
 ## Current State
 
-Сейчас accepted repair surface находится в branch-local closed state для текущей волны:
+Сейчас merged repair wave уже подтверждена как repo-wide closed state на main:
 - earlier closure claims не считаются достаточным доказательством полного repo-level closure,
-- repo-wide done не заявляется до merge gate и post-merge reconfirm,
-- Phase 03 blocker уже закрыт в текущей repair branch,
-- true Phase 04 design-layer baseline уже закрыт в текущей repair branch,
-- Phase 05 bounded spatial shell chain уже закрыт в текущей repair branch,
-- Phase 06 explicit skip contour уже закрыт в текущей repair branch,
-- Phase 07 branch-local closure уже достигнут на accepted repair surface,
-- branch-local closure не равен repo-wide done,
+- repo-wide done уже подтвержден на main после merge gate и post-merge reconfirm,
+- Phase 03 blocker уже закрыт на main через merged repair wave,
+- true Phase 04 design-layer baseline уже закрыт на main через merged repair wave,
+- Phase 05 bounded spatial shell chain уже закрыт на main через merged repair wave,
+- Phase 06 explicit skip contour уже закрыт на main через merged repair wave,
+- Phase 07 required closure set уже закрыт на main через post-merge reconfirm,
+- branch-local closure остаётся историческим этапом и не является текущим repo-wide состоянием,
 - broader freedom не открывается автоматически после repair closure.
 
 Это не означает автоматический переход к новой обязательной версии:

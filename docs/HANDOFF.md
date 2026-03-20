@@ -26,7 +26,7 @@ _Generated: 2026-03-20_
 - Active axis: `Writer v1`
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
-- Active docs: synced to accepted repair surface with branch-local closure and no repo-wide done claim
+- Active docs: synced to post-merge main reality with repo-wide done confirmed after reconfirm
 
 ## What Is Stable
 - Primary editor closure packet exists.
@@ -34,15 +34,15 @@ _Generated: 2026-03-20_
 - IME composition closure evidence is bound.
 - DOCX closure evidence is bound.
 - Tiptap path is the primary editor path.
-- Phase 03 blocker is closed in the current repair branch.
-- True Phase 04 design-layer baseline is closed in the current repair branch.
-- Phase 05 bounded spatial shell chain is closed in the current repair branch.
-- Phase 06 explicit skip contour is closed in the current repair branch.
-- Phase 07 branch-local closure is achieved on the accepted repair surface.
-- Repo-wide done is not claimed before merge gate and post-merge reconfirm.
+- Phase 03 blocker is closed on main through the merged repair wave.
+- True Phase 04 design-layer baseline is closed on main through the merged repair wave.
+- Phase 05 bounded spatial shell chain is closed on main through the merged repair wave.
+- Phase 06 explicit skip contour is closed on main through the merged repair wave.
+- Phase 07 required closure set is green on main after post-merge reconfirm.
+- Repo-wide done is confirmed on main after merge gate and post-merge reconfirm.
 
 ## What Is Next
-1. preserve the honest branch-local closure state until merge gate
+1. preserve the confirmed repo-wide closure state on main
 2. do not reopen post-version-one evaluation as mandatory v1 readiness
 3. keep broader freedom out of mandatory v1 readiness
 

@@ -98,15 +98,15 @@ Machine-bound blocking law определяется не этим докумен
 
 Текущая активная реальность репозитория:
 - active execution canon уже содержит writer-specific narrowing и factual doc cutover rules,
-- текущий repo-level repair drift еще не объявлен закрытым на уровне всего repo,
-- factual docs должны оставаться согласованными с branch-local machine truth на accepted repair surface,
-- Phase 03 blocker закрыт в текущей repair branch,
-- true Phase 04 design-layer baseline закрыт в текущей repair branch,
-- Phase 05 bounded spatial shell chain закрыт в текущей repair branch,
-- Phase 06 explicit skip contour закрыт в текущей repair branch,
-- Phase 07 required closure set закрыт на accepted repair surface,
-- branch-local closure достигнут на accepted repair surface без repo-wide done claim,
-- overall repair wave не считается repo-level closed до merge gate и post-merge reconfirm,
+- текущий repo-level repair drift закрыт на main после merge gate и post-merge reconfirm,
+- factual docs должны оставаться согласованными с post-merge repo-wide machine truth на main,
+- Phase 03 blocker закрыт на main через merged repair wave,
+- true Phase 04 design-layer baseline закрыт на main через merged repair wave,
+- Phase 05 bounded spatial shell chain закрыт на main через merged repair wave,
+- Phase 06 explicit skip contour закрыт на main через merged repair wave,
+- Phase 07 required closure set закрыт на main через merged repair wave и post-merge reconfirm,
+- branch-local closure остаётся историческим предшественником repo-wide done, а не текущим финальным состоянием,
+- overall repair wave считается repo-level closed после merge gate и post-merge reconfirm,
 - broader freedom и post-version-one evaluation не открываются автоматически после repair closure.
 
 После release hardening:
