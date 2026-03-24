@@ -1,0 +1,39 @@
+{
+  "status": "FACTUAL_REFRESH_COMPLETE_RUNTIME_WRITES_NOT_ADMITTED",
+  "recordedAtUtc": "2026-03-24T17:30:00Z",
+  "decisionOwner": "MAIN_INTEGRATOR",
+  "taskBasename": "CORE-A4-YALKEN-FACTUAL-REFRESH-001.md",
+  "scopeBasenames": [
+    "CONTEXT.md",
+    "HANDOFF.md"
+  ],
+  "orderReconciliationDecisionBasename": "CONTOUR_03_04_05_ORDER_RECONCILIATION_DECISION_RECORD_V1.json",
+  "currentBindingOrderPreserved": true,
+  "factualRefreshCompleted": true,
+  "contour01ProofOnlyClosed": true,
+  "contour02ProofOnlyClosed": true,
+  "phase02PrepStarted": false,
+  "historicalPhase02PacketBasename": "PHASE02_CORE_LOCK_PACKET_V1.json",
+  "historicalPhase02PacketCountsAsCurrentPrepAdmission": false,
+  "runtimeWritesAdmitted": false,
+  "runtimeAdmissionGranted": false,
+  "formalCutoverClaimed": false,
+  "broadShellAdmissionClaimed": false,
+  "evidenceBasenames": [
+    "CANON.md",
+    "CONTEXT.md",
+    "HANDOFF.md",
+    "CONTOUR_03_04_05_ORDER_RECONCILIATION_DECISION_RECORD_V1.json",
+    "CONTOUR_01_PROOF_CLOSURE_RECORD_V1.json",
+    "CONTOUR_02_PROOF_CLOSURE_RECORD_V1.json",
+    "PHASE02_CORE_LOCK_PACKET_V1.json"
+  ],
+  "notes": [
+    "This record completes the current-lane factual refresh pass only.",
+    "This record does not grant runtime admission.",
+    "This record does not start Phase 02 prep or execution.",
+    "This record does not claim formal cutover.",
+    "This record does not admit contours 03-05."
+  ],
+  "nextStep": "OPEN_ONE_SEPARATE_CURRENT_LANE_PHASE02_PREP_ONLY_TASK"
+}

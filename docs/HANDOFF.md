@@ -1,6 +1,6 @@
 # HANDOFF (Yalken Writer)
 
-_Generated: 2026-03-20_
+_Generated: 2026-03-24_
 
 ## Start Here
 - Repo canon: `CANON.md`
@@ -26,20 +26,24 @@ _Generated: 2026-03-20_
 - Active axis: `Writer v1`
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
-- Active docs: in factual cutover after closure
+- Active docs: refreshed for the current lane after contour 01 and contour 02 proof-only closure
 - Phase 04: design-layer baseline is the true Phase 04; the spatial-prep packet is historical and superseded.
 
 ## What Is Stable
 - Primary editor closure packet exists.
+- Contour 01 is closed as a proof-only contour without runtime mutation.
+- Contour 02 is closed as a proof-only contour without runtime mutation.
 - No input loss suite is green.
 - IME composition closure evidence is bound.
 - DOCX closure evidence is bound.
 - Tiptap path is the primary editor path.
 
 ## What Is Next
-1. complete one-pass factual doc refresh
-2. lock Phase 02 data core and command kernel contours
-3. move only then into wider shell truth
+1. one separate current-lane Phase 02 prep-only step
+2. PHASE02_CORE_LOCK_PACKET_V1.json is retained as historical readiness evidence only.
+3. It does not count as current-lane prep admission.
+4. move into current-lane Phase 02 stabilization only after separate explicit prep decision
+5. move only then into wider shell truth
 
 ## Working Agreement
 - Bounded contours only
@@ -53,6 +57,7 @@ _Generated: 2026-03-20_
 - Visual snapshots are temporary iteration references, not permanent design law.
 
 ## Current Risk Boundary
-- Do not confuse post-closure doc refresh with shell completion.
+- Do not confuse contour 01 and contour 02 proof-only closure with shell completion.
 - Do not reopen legacy editor truth while validating current primary path.
-- Do not expand into spatial or pack work before Phase 02 and Phase 03 order.
+- Do not read PHASE02_CORE_LOCK_PACKET_V1.json as current-lane prep admission.
+- Do not expand into spatial or pack work before the current-lane Phase 02 order is separately admitted.

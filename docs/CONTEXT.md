@@ -1,6 +1,6 @@
 # CONTEXT (Yalken Writer)
 
-Этот файл фиксирует фактическое текущее состояние репозитория после editor closure и factual doc cutover.
+Этот файл фиксирует фактическое текущее состояние репозитория после editor closure и текущего factual refresh pass по active factual docs.
 
 ## Как читать репозиторий
 - Верхний repo entrypoint: `CANON.md`
@@ -30,7 +30,9 @@
 - Phase 00: PASS
 - Phase 01 prep: PASS
 - Phase 01 execute prep: PASS
-- Factual stale-doc surface выделен и переведён в machine-bound refresh map.
+- Current-lane factual refresh across active factual docs: COMPLETE.
+- Contour 01 is closed as a proof-only contour without runtime mutation.
+- Contour 02 is closed as a proof-only contour without runtime mutation.
 - Phase 04 now resolves to design-layer baseline; the old spatial-prep packet is superseded and no longer counts as final Phase 04.
 - The Phase 04 design switch is bounded to design-layer state and does not mutate document truth, recovery truth, or command semantics.
 
@@ -49,18 +51,24 @@
 ## Current Open Delivery Axis
 
 После editor closure следующий реальный delivery order такой:
-1. factual doc cutover and active doc reconciliation
+1. one separate current-lane Phase 02 prep-only step
 2. data core, recovery и command kernel stabilization
 3. user shell state и project workspace state
 4. bounded spatial layer, with Phase 04 already introduced as design-layer baseline rather than spatial-prep finality
 5. optional internal pack layer only if justified
 6. release hardening
 
+This is a candidate next step only and requires one separate explicit admission task.
+PHASE02_CORE_LOCK_PACKET_V1.json is retained as historical readiness evidence only.
+It does not count as current-lane prep admission.
+
 ## What Is Not Yet Claimed
+- current-lane Phase 02 prep is not yet admitted,
 - shell core не считается завершённым,
 - spatial layer не считается завершённым,
 - pack layer не считается обязательным,
-- post-v1 freedom не считается текущим scope.
+- post-v1 freedom не считается текущим scope,
+- contour 03, contour 04 и contour 05 не допущены в текущем delivery order.
 
 ## Policies That Remain Binding
 - SECURITY_POLICY: CSP, blocked navigation, blocked new-window, no remote code
@@ -74,5 +82,5 @@
 - factual docs должны описывать current operating reality, а не старый transition milestone.
 
 ## Next Practical Target
-- завершить factual doc refresh application across stale active docs,
-- затем перейти к Phase 02 stabilization contour.
+- open one separate current-lane Phase 02 prep-only step,
+- do not read PHASE02_CORE_LOCK_PACKET_V1.json as current-lane prep admission.
