@@ -1,0 +1,38 @@
+{
+  "status": "BRANCH_LOCAL_AUDIT_ONLY_RUNTIME_WRITES_NOT_ADMITTED",
+  "recordedAtUtc": "2026-03-24T20:35:00Z",
+  "decisionOwner": "MAIN_INTEGRATOR",
+  "taskBasename": "CORE-A4-YALKEN-MAINLINE-RECON-AUDIT-001.md",
+  "scope": "MAINLINE_COMPATIBLE_AUDIT_ONLY",
+  "sourceBranchName": "codex/tz-yalken-literal-interface-stage-a-exec-001",
+  "sourceCommitSha": "517ed9119720772185bffae4c7dc81ee49e3b918",
+  "sourceCommitTaskBasename": "CORE-A4-YALKEN-CURRENT-LANE-RECONCILIATION-COMMIT-001.md",
+  "sourceArtifactsBasenames": [
+    "CONTEXT.md",
+    "HANDOFF.md",
+    "CURRENT_LANE_COMMIT_REMEDIATION_LEDGER_V1.json",
+    "CURRENT_LANE_OWNER_BLOCKER_DECISION_RECORD_V1.json",
+    "CURRENT_LANE_PHASE02_PREP_ONLY_DECISION_RECORD_V1.json",
+    "CURRENT_LANE_PHASE02_EXECUTION_ADMISSION_DECISION_RECORD_V1.json",
+    "CORE-A4-YALKEN-CURRENT-LANE-RECONCILIATION-COMMIT-001.md"
+  ],
+  "promotionDecision": "NOT_PROMOTED_TO_MAINLINE_FACTUAL_SURFACES",
+  "mainlineRepoWideDonePreserved": true,
+  "mainlineFactualDocsChanged": false,
+  "runtimeWritesAdmitted": false,
+  "runtimeAdmissionGranted": false,
+  "formalCutoverClaimed": false,
+  "broadShellAdmissionClaimed": false,
+  "reasons": [
+    "Local reconciliation content was internally coherent on its source branch.",
+    "Direct promotion to mainline would create a factual narrative conflict with repo-wide done on main.",
+    "Mainline keeps repo-wide done wording unchanged and retains this record only as narrow historical audit trail."
+  ],
+  "notes": [
+    "This record does not reopen current-lane Phase 02 on main.",
+    "This record does not modify CONTEXT.md or HANDOFF.md.",
+    "This record does not grant runtime admission.",
+    "This record does not claim formal cutover."
+  ],
+  "nextStep": "NO_MAINLINE_PHASE02_REOPEN_WITHOUT_SEPARATE_CANON_DECISION"
+}
