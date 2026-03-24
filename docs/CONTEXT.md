@@ -50,20 +50,28 @@
 
 ## Current Open Delivery Axis
 
-После editor closure следующий реальный delivery order такой:
-1. one separate current-lane Phase 02 prep-only step
-2. data core, recovery и command kernel stabilization
-3. user shell state и project workspace state
-4. bounded spatial layer, with Phase 04 already introduced as design-layer baseline rather than spatial-prep finality
-5. optional internal pack layer only if justified
-6. release hardening
+После editor closure и factual refresh commit-chain closure текущая authoritative current-lane голова уже стоит на `CORE-A4-YALKEN-PHASE02-PREP-ONLY-001.md`.
+1. one separate queue-head patch task only for current-lane Phase 02 prep-only
+2. close current-lane Phase 02 prep-only segment in commit chain
+3. Current-lane Phase 02 execution admission record already exists as future authority only.
+4. Phase 02 execution task may open only after prep-only segment is closed in commit chain.
+5. data core, recovery и command kernel stabilization continue only through the admitted Phase 02 path
+6. user shell state и project workspace state
+7. bounded spatial layer, with Phase 04 already introduced as design-layer baseline rather than spatial-prep finality
+8. optional internal pack layer only if justified
+9. release hardening
 
-This is a candidate next step only and requires one separate explicit admission task.
+Current-lane Phase 02 prep-only is already admitted as governance only.
+CURRENT_LANE_COMMIT_REMEDIATION_LEDGER_V1.json sets the first executable queue head to CORE-A4-YALKEN-PHASE02-PREP-ONLY-001.md, and CURRENT_LANE_OWNER_BLOCKER_DECISION_RECORD_V1.json allows that queue-head task to open. Commit loop is not started, phase02ExecutionStarted is false, and runtime remains closed.
 PHASE02_CORE_LOCK_PACKET_V1.json is retained as historical readiness evidence only.
-It does not count as current-lane prep admission.
+It does not count as current-lane prep or execution admission.
+Current-lane Phase 02 execution admission record already exists as future authority only.
+It does not supersede the current prep-only head and does not start execution.
 
 ## What Is Not Yet Claimed
-- current-lane Phase 02 prep is not yet admitted,
+- current-lane Phase 02 prep-only commit-chain segment is not yet closed,
+- current-lane Phase 02 execution task has not started,
+- current-lane Phase 02 execution admission record remains future authority only until the prep-only segment is closed,
 - shell core не считается завершённым,
 - spatial layer не считается завершённым,
 - pack layer не считается обязательным,
@@ -82,5 +90,6 @@ It does not count as current-lane prep admission.
 - factual docs должны описывать current operating reality, а не старый transition milestone.
 
 ## Next Practical Target
-- open one separate current-lane Phase 02 prep-only step,
-- do not read PHASE02_CORE_LOCK_PACKET_V1.json as current-lane prep admission.
+- open one separate queue-head patch task only for current-lane Phase 02 prep-only,
+- keep CURRENT_LANE_PHASE02_EXECUTION_ADMISSION_DECISION_RECORD_V1.json as future authority only until the prep-only segment is closed,
+- do not read PHASE02_CORE_LOCK_PACKET_V1.json as current-lane prep or execution admission.
