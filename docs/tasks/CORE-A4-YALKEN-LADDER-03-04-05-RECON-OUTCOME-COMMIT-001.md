@@ -9,9 +9,9 @@ CHECKS_BASELINE_VERSION: v1.0
 Выполнить один narrow commit только для outcome pair `CORE-A4-YALKEN-LADDER-03-04-05-RECON-OUTCOME-001.md` и `CONTOUR_03_04_05_ORDER_RECONCILIATION_DECISION_RECORD_V1.json` плюс одного commit-task artifact. Этот task использует exact-path staging only, создает ровно один commit, не патчит terminal record outcome fields после commit в этом же batch, не делает второй commit и не открывает runtime admission.
 
 ## ENTRY_CRITERIA
-- `CORE-A4-YALKEN-LADDER-03-04-05-RECON-OUTCOME-PRECOMMIT-001.md` stays green and says `READY_FOR_NARROW_COMMIT`
-- `CORE-A4-YALKEN-LADDER-03-04-05-RECON-OUTCOME-001.md` exists and stays `POST_COMMIT_OUTCOME_PATCH_ONLY_NO_STAGING_NO_COMMIT_RUNTIME_WRITES_NOT_ADMITTED`
+- outcome target task exists and stays `POST_COMMIT_OUTCOME_PATCH_ONLY_NO_STAGING_NO_COMMIT_RUNTIME_WRITES_NOT_ADMITTED`
 - target record preserves governance fields and already carries commit outcome metadata for `21ed5c37f41fd91ccd9ea0a1b125ed7126a488f6`
+- this task keeps no live dependency on any separate precommit scaffold file
 
 ## ARTIFACT
 - docs/tasks/CORE-A4-YALKEN-LADDER-03-04-05-RECON-OUTCOME-COMMIT-001.md
@@ -59,8 +59,8 @@ CHECKS_BASELINE_VERSION: v1.0
 7) Остановиться; outcome patch после этого commit не делать в этом task.
 
 ## CHECKS
-CHECK_01_PRE_OUTCOME_PRECOMMIT_PASS
-CMD: node -e 'const fs=require("node:fs");const t=fs.readFileSync("docs/tasks/CORE-A4-YALKEN-LADDER-03-04-05-RECON-OUTCOME-PRECOMMIT-001.md","utf8");if(!t.includes("STATUS: PRE_COMMIT_CHECKS_GREEN_READY_FOR_NARROW_COMMIT_NO_STAGING_NO_COMMIT_RUNTIME_WRITES_NOT_ADMITTED"))process.exit(1);process.exit(0);'
+CHECK_01_PRE_OUTCOME_SCOPE_SELF_CONTAINED
+CMD: node -e 'const fs=require("node:fs");const t=fs.readFileSync("docs/tasks/CORE-A4-YALKEN-LADDER-03-04-05-RECON-OUTCOME-001.md","utf8");const j=JSON.parse(fs.readFileSync("docs/OPS/STATUS/CONTOUR_03_04_05_ORDER_RECONCILIATION_DECISION_RECORD_V1.json","utf8"));if(!t.includes("STATUS: POST_COMMIT_OUTCOME_PATCH_ONLY_NO_STAGING_NO_COMMIT_RUNTIME_WRITES_NOT_ADMITTED"))process.exit(1);if(j.status!=="CURRENT_BINDING_ORDER_PRESERVED_RUNTIME_WRITES_NOT_ADMITTED")process.exit(1);if(j.commitSha!=="21ed5c37f41fd91ccd9ea0a1b125ed7126a488f6")process.exit(1);process.exit(0);'
 PASS: exit 0
 
 CHECK_02_PRE_OUTCOME_TASK_AND_TARGET_RECORD_PASS
