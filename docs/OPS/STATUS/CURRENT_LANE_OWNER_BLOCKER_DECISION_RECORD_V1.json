@@ -1,14 +1,14 @@
 {
   "status": "OWNER_BLOCKER_DECISION_TAKEN_QUEUE_HEAD_TASK_MAY_OPEN_COMMIT_LOOP_NOT_STARTED_RUNTIME_WRITES_NOT_ADMITTED",
-  "recordedAtUtc": "2026-03-24T19:27:05Z",
+  "recordedAtUtc": "2026-03-24T23:08:51Z",
   "decisionOwner": "MAIN_INTEGRATOR",
   "taskBasename": "CORE-A4-YALKEN-OWNER-BLOCKER-DECISION-003.md",
   "scope": "HISTORICAL_PROOF_CHAIN_BLOCKER_DECISION_ONLY",
-  "decision": "ALLOW_ONE_SEPARATE_QUEUE_HEAD_PATCH_TASK_ONLY",
+  "decision": "ALLOW_ONE_SEPARATE_EXECUTION_ACTIVATION_TASK_ONLY",
   "historicalFrozenBlockersRemainFrozen": true,
   "historicalTerminalRetrofitRequiredNow": false,
   "queueHeadTaskMayOpen": true,
-  "queueHeadTaskBasename": "CORE-A4-YALKEN-PHASE02-PREP-ONLY-001.md",
+  "queueHeadTaskBasename": "CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001.md",
   "commitLoopStarted": false,
   "continuousCommitChainReady": false,
   "runtimeWritesAdmitted": false,
@@ -19,8 +19,8 @@
   "reasons": [
     "Historical contour proof-chain terminals remain the highest provenance-drift risk and should stay frozen.",
     "Current-lane governance terminals are the safest queue for later additive outcome patching and controlled owner rollover.",
-    "Allowing one separate queue-head patch task for Phase 02 prep-only is safer than implicit owner rebinding inside ledger advance.",
-    "This decision preserves stop conditions on commit-loop start, runtime admission, and continuous-chain completion."
+    "Prep-only closure is already evidenced in the current lane and should not keep the queue head pinned to the old patch-only move.",
+    "Allowing one separate execution-activation task is safer than auto-jumping to the execution-admission artifact or starting execution by implication."
   ],
   "evidenceBasenames": [
     "CORE-A4-YALKEN-COMMIT-REMEDIATION-001.md",
@@ -40,5 +40,5 @@
     "This record does not grant runtime admission.",
     "This record does not reopen contours 03, 04, or 05."
   ],
-  "nextStep": "OPEN_ONE_SEPARATE_QUEUE_HEAD_PATCH_TASK_ONLY_FOR_CORE-A4-YALKEN-PHASE02-PREP-ONLY-001_COMMIT_LOOP_STILL_NOT_STARTED_NO_STAGING_OR_COMMIT_ACTIONS_IN_THIS_STEP"
+  "nextStep": "OPEN_ONE_SEPARATE_CURRENT_LANE_PHASE02_EXECUTION_ACTIVATION_TASK_ONLY_FOR_CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001_RUNTIME_WRITES_STILL_LOCKED_NO_EXECUTION_START_IN_THIS_STEP"
 }

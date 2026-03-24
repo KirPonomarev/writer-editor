@@ -1,6 +1,6 @@
 {
   "status": "COMMIT_REMEDIATION_LEDGER_ONLY_RUNTIME_WRITES_NOT_ADMITTED",
-  "recordedAtUtc": "2026-03-24T18:26:18Z",
+  "recordedAtUtc": "2026-03-24T23:08:51Z",
   "decisionOwner": "MAIN_INTEGRATOR",
   "taskBasename": "CORE-A4-YALKEN-COMMIT-REMEDIATION-001.md",
   "scope": "LEDGER_AND_QUEUE_ONLY",
@@ -41,16 +41,11 @@
   "currentLaneSafePatchQueue": [
     {
       "order": 1,
-      "taskBasename": "CORE-A4-YALKEN-PHASE02-PREP-ONLY-001.md",
-      "terminalRecordBasename": "CURRENT_LANE_PHASE02_PREP_ONLY_DECISION_RECORD_V1.json"
-    },
-    {
-      "order": 2,
-      "taskBasename": "CORE-A4-YALKEN-PHASE02-EXECUTION-ADMISSION-001.md",
+      "taskBasename": "CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001.md",
       "terminalRecordBasename": "CURRENT_LANE_PHASE02_EXECUTION_ADMISSION_DECISION_RECORD_V1.json"
     }
   ],
-  "firstExecutableQueueHeadBasename": "CORE-A4-YALKEN-PHASE02-PREP-ONLY-001.md",
+  "firstExecutableQueueHeadBasename": "CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001.md",
   "queueHeadAdvancedFrom": "CORE-A4-YALKEN-FACTUAL-REFRESH-001.md",
   "queueHeadAdvancedTo": "CORE-A4-YALKEN-PHASE02-PREP-ONLY-001.md",
   "advancedByCommitSha": "f47b6c6591283709415ef2b44b94a66b3140d4c5",
@@ -58,8 +53,8 @@
   "reasons": [
     "Current-lane governance terminal records can accept additive outcome metadata without changing their narrow admission semantics.",
     "Historical contour proof-chain terminals should stay frozen to avoid provenance drift and parallel-truth risk.",
-    "The earliest unclosed historical task remains contour 01, but the factual refresh chain is now consumed and Phase 02 prep-only is the next safely executable current-lane queue head.",
-    "Owner and ledger heads already align on Phase 02 prep-only, so the immediate current-lane move is one separate queue-head patch task only for that segment before any new commit loop start."
+    "The earliest unclosed historical task remains contour 01, but the current-lane prep-only segment now has commit-chain closure evidence plus outcome metadata.",
+    "The separately admitted execution path may open only through one separate current-lane Phase 02 execution-activation task, not by treating the admission record itself as the queue head."
   ],
   "notes": [
     "This ledger opens no commit loop by itself.",
@@ -67,5 +62,5 @@
     "This ledger does not grant runtime admission.",
     "This ledger does not reopen contours 03, 04, or 05."
   ],
-  "nextStep": "OPEN_ONE_SEPARATE_QUEUE_HEAD_PATCH_TASK_ONLY_FOR_CORE-A4-YALKEN-PHASE02-PREP-ONLY-001_COMMIT_LOOP_STILL_NOT_STARTED_NO_STAGING_OR_COMMIT_ACTIONS_IN_THIS_STEP"
+  "nextStep": "OPEN_ONE_SEPARATE_CURRENT_LANE_PHASE02_EXECUTION_ACTIVATION_TASK_ONLY_FOR_CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001_RUNTIME_WRITES_STILL_LOCKED_NO_EXECUTION_START_IN_THIS_STEP"
 }
