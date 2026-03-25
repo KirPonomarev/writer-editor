@@ -152,6 +152,31 @@ OPS-GATE (E0) — локальный, ручной gate для MODE A (HARD‑Т
 - Сообщение коммита должно быть понятным без чата. Пример: `editor: stage 2 paragraph render` или `toolbar: compact mode toggle`.
 - Для экспериментов — отдельная ветка (или worktree), чтобы не пачкать стабильную историю.
 
+## Жесткая Git delivery discipline
+- Для любой `write`‑задачи delivery policy должна быть явной: `COMMIT_REQUIRED`, `PUSH_REQUIRED`, `PR_REQUIRED`, `MERGE_REQUIRED`.
+- Если задача не помечена как явное исключение, по умолчанию считаем: `COMMIT_REQUIRED=true`, `PUSH_REQUIRED=true`, `PR_REQUIRED=true`, `MERGE_REQUIRED=true`.
+- `Write`‑задача без `COMMIT_SHA` не считается завершённой.
+- Если по policy нужен push, PR или merge, отсутствие любого из них означает, что задача ещё открыта.
+- Новый `write`‑run запрещён в грязном worktree, если это не отдельный hygiene/isolation task.
+- Нельзя держать “накопленный хвост” как нормальный режим работы: смысловой шаг закончен → commit сразу.
+- Если delivery chain прерывается, задача должна завершаться статусом `STOP`, а не `DONE`.
+
+## Обязательные поля отчёта по write‑задаче
+Каждый отчёт по `write`‑задаче обязан содержать:
+- `TASK_ID`
+- `HEAD_SHA_BEFORE`
+- `HEAD_SHA_AFTER`
+- `COMMIT_SHA`
+- `CHANGED_BASENAMES`
+- `STAGED_SCOPE_MATCH`
+- `COMMIT_OUTCOME`
+- `PUSH_RESULT`
+- `PR_RESULT`
+- `MERGE_RESULT`
+- `NEXT_STEP`
+
+Если какое‑то поле не применимо из‑за task policy, это должно быть сказано явно значением вида `NOT_REQUIRED_BY_TASK_POLICY`, а не опущено.
+
 ## Где что хранить
 - **Постоянный контекст проекта** (устойчивые правила/ограничения/текущее состояние): `docs/CONTEXT.md`
 - **Хронология** (что сделали/почему/что дальше): `docs/WORKLOG.md`
