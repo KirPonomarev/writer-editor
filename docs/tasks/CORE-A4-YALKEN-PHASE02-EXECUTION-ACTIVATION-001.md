@@ -13,7 +13,7 @@ CHECKS_BASELINE_VERSION: v1.0
 - `CURRENT_LANE_OWNER_BLOCKER_DECISION_RECORD_V1.json` already allows that queue-head task to open
 - `CURRENT_LANE_PHASE02_EXECUTION_ADMISSION_DECISION_RECORD_V1.json` remains authority-only and does not start execution
 - runtime flags remain false across ledger, owner, prep-only and execution-admission records
-- this task artifact does not yet exist as a tracked file
+- this task artifact already exists as the tracked queue-head surface and may be reconciled in place only
 
 ## ARTIFACT
 - docs/tasks/CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001.md
@@ -59,7 +59,7 @@ CHECKS_BASELINE_VERSION: v1.0
 
 ## IMPLEMENTATION_STEPS
 0) Выполнить CHECK_01, CHECK_02, CHECK_03 и CHECK_04 до любых write-действий.
-1) Создать один task artifact only for `CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001.md`.
+1) Reconcile exactly one task artifact in place only for `CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001.md`.
 2) После записи task выполнить CHECK_05 и CHECK_06.
 3) Выполнить `git add --` exact path only from ALLOWLIST.
 4) Выполнить CHECK_07.
