@@ -105,6 +105,7 @@ Future slice commit outcome policy:
 
 ## IMPLEMENTATION_STEPS
 0) Выполнить CHECK_01, CHECK_02 и CHECK_03 до любых write-действий.
+0a) Явно зафиксировать pre-write HEAD baseline: `git rev-parse HEAD > /tmp/CORE-A4-YALKEN-PHASE02-FIRST-BOUNDED-EXECUTION-BRIEF-001.head`.
 1) Создать один task artifact only for `CORE-A4-YALKEN-PHASE02-FIRST-BOUNDED-EXECUTION-BRIEF-001.md`.
 2) Зафиксировать ровно один first execution slice and its future exact allowlist, checks, stop conditions and commit policy.
 3) Не стартовать execution slice и не открывать runtime admission.
@@ -149,7 +150,7 @@ CMD: node -e 'const {execSync}=require("node:child_process");const want=["docs/t
 PASS: exit 0
 
 CHECK_09_POST_ONE_NARROW_COMMIT_ONLY
-CMD: node -e 'const fs=require("node:fs");const {execSync}=require("node:child_process");const before=fs.readFileSync("/tmp/CORE-A4-YALKEN-PHASE02-FIRST-BOUNDED-EXECUTION-BRIEF-001.head","utf8").trim();const after=execSync("git rev-parse HEAD",{encoding:"utf8"}).trim();if(!before||!after||before===after)process.exit(1);const count=execSync(`git rev-list --count ${before}..${after}`,{encoding:"utf8"}).trim();if(count!=="1")process.exit(1);process.exit(0);'
+CMD: node -e 'const fs=require("node:fs");const {execSync}=require("node:child_process");const p="/tmp/CORE-A4-YALKEN-PHASE02-FIRST-BOUNDED-EXECUTION-BRIEF-001.head";if(!fs.existsSync(p))process.exit(1);const before=fs.readFileSync(p,"utf8").trim();const after=execSync("git rev-parse HEAD",{encoding:"utf8"}).trim();if(!before||!after||before===after)process.exit(1);const count=execSync(`git rev-list --count ${before}..${after}`,{encoding:"utf8"}).trim();if(count!=="1")process.exit(1);process.exit(0);'
 PASS: exit 0
 
 CHECK_10_POST_NO_PR_NO_MERGE
