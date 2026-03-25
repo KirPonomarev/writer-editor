@@ -1,0 +1,45 @@
+{
+  "status": "V6_1_SYMBOLIC_CLOSE_RECORDED_RUNTIME_WRITES_NOT_ADMITTED",
+  "recordedAtUtc": "2026-03-25T00:30:04Z",
+  "decisionOwner": "MAIN_INTEGRATOR",
+  "taskBasename": "CORE-A4-YALKEN-V6_1-SYMBOLIC-CLOSE-001.md",
+  "scope": "SUPERVISORY_BASELINE_SYMBOLIC_CLOSE_ONLY",
+  "closedBaselineLabel": "YALKEN_EXECUTION_BASELINE_V6_1_REPO_LOCAL_FINAL",
+  "replacementBaselineLabel": "YALKEN_EXECUTION_BASELINE_V6_2_SEQUENTIAL_ROLLOUT_AND_SYMBOLIC_CLOSE",
+  "activeContext": "BRANCH_LOCAL_CONTEXT",
+  "activeQueueHeadBasename": "CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001.md",
+  "activeQueueHeadTaskAlreadyClosed": true,
+  "symbolicCloseOnly": true,
+  "replacementBaselineMaterializedInRepo": false,
+  "replacementBaselineInterpretation": "POLICY_MEMO_ONLY_UNTIL_ONE_CONCRETE_TASK_BRIEF_IS_ISSUED",
+  "runtimeWritesAdmitted": false,
+  "runtimeAdmissionGranted": false,
+  "formalCutoverClaimed": false,
+  "broadShellAdmissionClaimed": false,
+  "contour03to05State": "PARKED",
+  "mainlinePromotionClaimed": false,
+  "evidenceBasenames": [
+    "CANON.md",
+    "CONTEXT.md",
+    "HANDOFF.md",
+    "CURRENT_LANE_COMMIT_REMEDIATION_LEDGER_V1.json",
+    "CURRENT_LANE_OWNER_BLOCKER_DECISION_RECORD_V1.json",
+    "CURRENT_LANE_PHASE02_PREP_ONLY_DECISION_RECORD_V1.json",
+    "CURRENT_LANE_PHASE02_EXECUTION_ADMISSION_DECISION_RECORD_V1.json",
+    "CONTOUR_03_04_05_ORDER_RECONCILIATION_DECISION_RECORD_V1.json",
+    "CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001.md"
+  ],
+  "reasons": [
+    "V6_1 completed its current-lane supervisory role after PR 347 merged and the branch-local activation task was cleanly created and pushed.",
+    "Further continuation must use one explicit task per run and must not infer chain auto-advance from the symbolic close itself.",
+    "The active queue head remains the already-created execution-activation task and runtime admission remains closed."
+  ],
+  "notes": [
+    "This record is symbolic close only and does not change active canon.",
+    "This record does not change current-lane authority records.",
+    "This record does not start execution.",
+    "This record does not grant runtime admission.",
+    "This record does not reopen contour 03, contour 04, or contour 05."
+  ],
+  "nextStep": "WAIT_FOR_ONE_NEW_EXPLICIT_TASK_BRIEF_ONLY"
+}
