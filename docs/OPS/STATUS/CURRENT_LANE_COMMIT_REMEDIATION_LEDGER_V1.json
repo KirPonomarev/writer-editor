@@ -54,13 +54,16 @@
     "Current-lane governance terminal records can accept additive outcome metadata without changing their narrow admission semantics.",
     "Historical contour proof-chain terminals should stay frozen to avoid provenance drift and parallel-truth risk.",
     "The earliest unclosed historical task remains contour 01, but the current-lane prep-only segment now has commit-chain closure evidence plus outcome metadata.",
-    "The separately admitted execution path may open only through one separate current-lane Phase 02 execution-activation task, not by treating the admission record itself as the queue head."
+    "The separately admitted execution path has already been advanced through one separate current-lane Phase 02 execution-activation task without opening runtime writes.",
+    "No concrete post-activation execution slice is selected in this sync step, so the next allowed move is one new explicit post-activation execution brief only."
   ],
   "notes": [
     "This ledger opens no commit loop by itself.",
     "This ledger does not patch any existing terminal record.",
     "This ledger does not grant runtime admission.",
-    "This ledger does not reopen contours 03, 04, or 05."
+    "This ledger does not reopen contours 03, 04, or 05.",
+    "The activation task is already materialized and closed as a bounded historical step.",
+    "This ledger does not itself choose the next execution slice and now requires one new explicit post-activation execution brief only."
   ],
-  "nextStep": "OPEN_ONE_SEPARATE_CURRENT_LANE_PHASE02_EXECUTION_ACTIVATION_TASK_ONLY_FOR_CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001_RUNTIME_WRITES_STILL_LOCKED_NO_EXECUTION_START_IN_THIS_STEP"
+  "nextStep": "OPEN_ONE_NEW_EXPLICIT_POST_ACTIVATION_EXECUTION_BRIEF_ONLY"
 }

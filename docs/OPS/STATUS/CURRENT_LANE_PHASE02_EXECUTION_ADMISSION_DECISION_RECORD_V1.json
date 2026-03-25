@@ -29,12 +29,12 @@
     "Historical Phase 02 readiness surfaces are green, but they remain context plus gate evidence only and do not by themselves constitute execution admission."
   ],
   "notes": [
-    "This record admits one separate current-lane Phase 02 execution-activation task only.",
+    "This record admitted one separate current-lane Phase 02 execution-activation task only, and that activation task is already materialized.",
     "This record does not start execution.",
     "This record does not grant runtime admission.",
     "This record does not claim formal cutover.",
     "This record does not admit contours 03-05.",
-    "This record remains authority-only and the next allowed move is one separate execution-activation task rather than direct execution start."
+    "This record remains authority-only and the next allowed move is one new explicit post-activation execution brief only rather than direct execution start."
   ],
-  "nextStep": "OPEN_ONE_SEPARATE_CURRENT_LANE_PHASE02_EXECUTION_ACTIVATION_TASK_ONLY_FOR_CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001_RUNTIME_WRITES_STILL_LOCKED_NO_EXECUTION_START_IN_THIS_STEP"
+  "nextStep": "OPEN_ONE_NEW_EXPLICIT_POST_ACTIVATION_EXECUTION_BRIEF_ONLY"
 }

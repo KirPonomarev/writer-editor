@@ -59,7 +59,9 @@
     "This record does not grant runtime admission.",
     "This record does not claim formal cutover.",
     "This record does not admit contours 03-05.",
-    "This record no longer supplies the active queue head after prep-only closure and now points only to the separate execution-activation step."
+    "This record no longer supplies the active queue head after prep-only closure.",
+    "The activation task is already materialized as the bounded next step that followed prep-only closure.",
+    "This record now points only to one new explicit post-activation execution brief and does not itself choose the next execution slice."
   ],
-  "nextStep": "OPEN_ONE_SEPARATE_CURRENT_LANE_PHASE02_EXECUTION_ACTIVATION_TASK_ONLY_FOR_CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001_RUNTIME_WRITES_STILL_LOCKED_NO_EXECUTION_START_IN_THIS_STEP"
+  "nextStep": "OPEN_ONE_NEW_EXPLICIT_POST_ACTIVATION_EXECUTION_BRIEF_ONLY"
 }

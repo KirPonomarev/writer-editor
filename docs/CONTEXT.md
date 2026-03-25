@@ -51,10 +51,10 @@
 ## Current Open Delivery Axis
 
 После editor closure и factual refresh commit-chain closure текущая authoritative current-lane голова уже переведена на `CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001.md`.
-1. one separate current-lane Phase 02 execution-activation task only
+1. one new explicit post-activation execution brief only
 2. Current-lane Phase 02 execution admission record remains authority-only and does not itself count as execution start
-3. runtime writes remain locked during execution-activation opening
-4. only after the separate activation step may later execution work be considered
+3. runtime writes remain locked and no execution slice is selected in this sync step
+4. only after a new explicit post-activation execution brief may later execution work be considered
 5. data core, recovery и command kernel stabilization continue only through the admitted Phase 02 path
 6. user shell state и project workspace state
 7. bounded spatial layer, with Phase 04 already introduced as design-layer baseline rather than spatial-prep finality
@@ -66,7 +66,8 @@ CURRENT_LANE_PHASE02_PREP_ONLY_DECISION_RECORD_V1.json now carries committed pre
 PHASE02_CORE_LOCK_PACKET_V1.json is retained as historical readiness evidence only.
 It does not count as current-lane prep or execution admission.
 Current-lane Phase 02 execution admission record already exists as future authority only.
-It does not start execution by itself and now authorizes only the separate execution-activation opening step.
+The activation task is already materialized and reconciled in place only.
+It does not start execution by itself and the next allowed move is now one new explicit post-activation execution brief only.
 
 ## What Is Not Yet Claimed
 - current-lane Phase 02 execution task has not started,
@@ -89,6 +90,8 @@ It does not start execution by itself and now authorizes only the separate execu
 - factual docs должны описывать current operating reality, а не старый transition milestone.
 
 ## Next Practical Target
-- open one separate current-lane Phase 02 execution-activation task only,
+- activation task is already materialized and no longer counts as the pending next move,
+- open one new explicit post-activation execution brief only,
 - keep CURRENT_LANE_PHASE02_EXECUTION_ADMISSION_DECISION_RECORD_V1.json as authority-only and do not treat it as execution start,
+- do not select a concrete execution slice inside factual sync,
 - do not read PHASE02_CORE_LOCK_PACKET_V1.json as current-lane prep or execution admission.

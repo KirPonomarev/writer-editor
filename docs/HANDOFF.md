@@ -42,14 +42,14 @@ _Generated: 2026-03-24_
 - Tiptap path is the primary editor path.
 
 ## What Is Next
-1. one separate current-lane Phase 02 execution-activation task only
+1. one new explicit post-activation execution brief only
 2. PHASE02_CORE_LOCK_PACKET_V1.json is retained as historical readiness evidence only.
 3. It does not count as current-lane prep or execution admission.
 4. Current-lane Phase 02 execution admission record already exists as authority-only.
 5. It does not itself start execution.
-6. move through the separate execution-activation step before any later execution work
-7. move only then into wider shell truth
-8. CURRENT_LANE_COMMIT_REMEDIATION_LEDGER_V1.json already points queue head to CORE-A4-YALKEN-PHASE02-EXECUTION-ACTIVATION-001.md, CURRENT_LANE_OWNER_BLOCKER_DECISION_RECORD_V1.json allows that queue-head task to open, and commit loop is not started.
+6. the activation task is already materialized and does not remain the pending next move
+7. move only after a new explicit post-activation execution brief into a bounded execution slice
+8. CURRENT_LANE_PHASE02_EXECUTION_ADMISSION_DECISION_RECORD_V1.json remains authority-only and does not itself choose the slice or start execution
 
 ## Working Agreement
 - Bounded contours only
