@@ -378,7 +378,7 @@ async function readProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
   const manifestPath = getProjectManifestPath(projectName);
   try {
     const raw = await fs.readFile(manifestPath, 'utf8');
-    return normalizeProjectManifest(JSON.parse(raw), projectName);
+    return JSON.parse(raw);
   } catch {
     return null;
   }
@@ -412,12 +412,26 @@ async function resolveProjectBindingForFile(filePath) {
     return null;
   }
 
-  const projectRoot = getProjectRootPath();
+  const documentsRoot = fileManager.getDocumentsPath();
+  if (!isPathInside(documentsRoot, filePath)) {
+    return null;
+  }
+
+  const relativePath = path.relative(documentsRoot, filePath);
+  const pathSegments = typeof relativePath === 'string'
+    ? relativePath.split(path.sep).filter(Boolean)
+    : [];
+  if (pathSegments.length < 2) {
+    return null;
+  }
+
+  const projectName = pathSegments[0];
+  const projectRoot = path.join(documentsRoot, projectName);
   if (!isPathInside(projectRoot, filePath)) {
     return null;
   }
 
-  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const { manifestPath, manifest } = await ensureProjectManifest(projectName);
   return {
     manifestPath,
     projectId: manifest.projectId
