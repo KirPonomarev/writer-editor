@@ -1,5 +1,6 @@
 import { getTiptapPlainText, initTiptap, redoTiptap, setTiptapPlainText, setTiptapRuntimeHandlers, undoTiptap } from './tiptap/index.js';
 import {
+  applyCssVariables,
   buildLayoutPatchFromSpatialState,
   buildDesignOsStatusText,
   buildSpatialStateFromLayoutSnapshot,
@@ -7,6 +8,7 @@ import {
   createRepoGroundedDesignOsBrowserRuntime,
   deriveAccessibilityId,
   deriveRuntimePlatformId,
+  extractCssVariablesFromTokens,
   mapEditorModeToWorkspace,
 } from './design-os/index.mjs';
 import { createCommandRegistry } from './commands/registry.mjs';
@@ -2734,6 +2736,14 @@ function syncDesignOsDormantContext() {
       context: buildDesignOsDormantContext(),
     });
     designOsDormantDegradedToBaseline = preview?.degraded_to_baseline === true;
+    const resolvedTokens = preview?.resolved_tokens;
+    if (resolvedTokens && typeof resolvedTokens === 'object') {
+      const isDarkTheme = document.body.classList.contains('dark-theme');
+      const cssVariables = extractCssVariablesFromTokens(resolvedTokens, {
+        isDarkTheme,
+      });
+      applyCssVariables(document.documentElement, cssVariables);
+    }
   } catch {}
 }
 
