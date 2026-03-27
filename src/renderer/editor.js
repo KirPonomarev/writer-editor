@@ -2958,8 +2958,25 @@ function performRestoreLastStableShell() {
   restoreFloatingToolbarPosition();
   restoreLeftToolbarButtonOffsets();
   restoreLeftFloatingToolbarPosition();
-  restoreSpatialLayoutState(currentProjectId);
-  restoreLastStableSpatialLayoutState(currentProjectId);
+  let nextRestoreLayoutState = null;
+  if (designOsDormantRuntimeMount.ports && typeof designOsDormantRuntimeMount.ports.restoreLastStableShell === 'function') {
+    try {
+      const layoutSnapshot = designOsDormantRuntimeMount.ports.restoreLastStableShell();
+      nextRestoreLayoutState = buildSpatialStateFromLayoutSnapshot(layoutSnapshot, {
+        viewportWidth: getSpatialLayoutViewportWidth(),
+      });
+      designOsDormantDegradedToBaseline = false;
+    } catch {}
+  }
+  if (nextRestoreLayoutState) {
+    applySpatialLayoutState(nextRestoreLayoutState, {
+      persist: false,
+      projectId: currentProjectId,
+    });
+  } else {
+    restoreSpatialLayoutState(currentProjectId);
+    restoreLastStableSpatialLayoutState(currentProjectId);
+  }
 
   configuratorBucketState = readConfiguratorBucketState();
   setActiveConfiguratorBucketSelection('', -1);
