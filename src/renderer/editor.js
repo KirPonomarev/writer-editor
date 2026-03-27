@@ -1,6 +1,7 @@
 import { getTiptapPlainText, initTiptap, redoTiptap, setTiptapPlainText, setTiptapRuntimeHandlers, undoTiptap } from './tiptap/index.js';
 import {
   buildDesignOsStatusText,
+  buildSpatialStateFromLayoutSnapshot,
   createDesignOsPorts,
   createRepoGroundedDesignOsBrowserRuntime,
   deriveAccessibilityId,
@@ -2859,7 +2860,17 @@ function performSafeResetShell() {
   applyViewMode(SAFE_RESET_BASELINE_VIEW_MODE);
   setEditorZoom(EDITOR_ZOOM_DEFAULT);
   setToolbarCompactMode(false);
-  applySpatialLayoutState(getSpatialLayoutBaselineForViewport(), {
+  let nextSafeResetLayoutState = null;
+  if (designOsDormantRuntimeMount.ports && typeof designOsDormantRuntimeMount.ports.safeResetShell === 'function') {
+    try {
+      const layoutSnapshot = designOsDormantRuntimeMount.ports.safeResetShell();
+      nextSafeResetLayoutState = buildSpatialStateFromLayoutSnapshot(layoutSnapshot, {
+        viewportWidth: getSpatialLayoutViewportWidth(),
+      });
+      designOsDormantDegradedToBaseline = false;
+    } catch {}
+  }
+  applySpatialLayoutState(nextSafeResetLayoutState || getSpatialLayoutBaselineForViewport(), {
     persist: true,
     projectId: currentProjectId,
   });
