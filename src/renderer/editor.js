@@ -1,5 +1,6 @@
 import { getTiptapPlainText, initTiptap, redoTiptap, setTiptapPlainText, setTiptapRuntimeHandlers, undoTiptap } from './tiptap/index.js';
 import {
+  buildDesignOsStatusText,
   createDesignOsPorts,
   createRepoGroundedDesignOsBrowserRuntime,
   deriveAccessibilityId,
@@ -2452,7 +2453,7 @@ document.addEventListener('scroll', () => {
 
 function updateStatusText(text) {
   if (statusElement && text) {
-    statusElement.textContent = text;
+    statusElement.textContent = buildStatusLineWithDormantYdosHint(text);
   }
 }
 
@@ -2472,6 +2473,24 @@ function updatePerfHintText(text) {
   if (perfHintElement && text) {
     perfHintElement.textContent = `Perf: ${text}`;
   }
+}
+
+function buildStatusLineWithDormantYdosHint(text) {
+  const baseText = String(text || '').trim();
+  if (!baseText) return baseText;
+  const context = buildDesignOsDormantContext();
+  const profile = context.profile || 'BASELINE';
+  const shellMode = context.shell_mode || 'CALM_DOCKED';
+  const workspace = context.workspace || 'WRITE';
+  const statusText = buildDesignOsStatusText({
+    profile,
+    shellMode,
+    workspace,
+  });
+  const hint = designOsDormantRuntimeMount.lastError ? ' error' : ' dormant';
+  const suffix = `[${statusText}${hint}]`;
+  const normalizedBase = baseText.replace(/\s*\[YDOS [^\]]+\]$/u, '').trimEnd();
+  return `${normalizedBase} ${suffix}`;
 }
 
 function buildDesignOsDormantObservabilityLines() {
