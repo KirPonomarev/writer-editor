@@ -2721,10 +2721,17 @@ function applyRightTab(tab) {
   if (rightHistoryPanel) rightHistoryPanel.hidden = tab !== 'history' || !collabScopeLocal;
 }
 
+function resolveDormantDesignOsProfileFromStyleValue(styleValue) {
+  const normalized = typeof styleValue === 'string' ? styleValue.trim().toLowerCase() : '';
+  if (normalized === 'focus') return 'FOCUS';
+  return 'BASELINE';
+}
+
 function buildDesignOsDormantContext() {
+  const styleValue = styleSelect && typeof styleSelect.value === 'string' ? styleSelect.value : '';
   return {
     shell_mode: 'CALM_DOCKED',
-    profile: 'BASELINE',
+    profile: resolveDormantDesignOsProfileFromStyleValue(styleValue),
     workspace: mapEditorModeToWorkspace(currentMode),
     platform: deriveRuntimePlatformId(),
     accessibility: deriveAccessibilityId(),
@@ -3544,6 +3551,7 @@ function applyViewMode(mode, persist = true) {
   if (persist) {
     localStorage.setItem('editorViewMode', mode);
   }
+  syncDesignOsDormantContext();
 }
 
 function applyTextStyle(action) {
