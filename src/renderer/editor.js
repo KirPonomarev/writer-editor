@@ -13,6 +13,7 @@ import {
 } from './design-os/index.mjs';
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
+import { listCommandCatalog } from './commands/command-catalog.v1.mjs';
 import {
   COMMAND_IDS,
   EXTRA_COMMAND_IDS,
@@ -221,6 +222,7 @@ let designOsDormantRuntimeMount = {
   lastError: null,
 };
 let designOsDormantDegradedToBaseline = false;
+let designOsDormantVisibleCommandIds = null;
 let metaEnabled = false;
 let currentCards = [];
 let treeRoot = null;
@@ -315,7 +317,51 @@ registerProjectCommands(commandRegistry, {
     reviewExportMarkdown: () => handleReviewExportMarkdown(),
   },
 });
-const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });
+
+const catalogManagedProjectCommandIds = new Set(listCommandCatalog().map((entry) => entry.id));
+
+function normalizeDormantVisibleCommandIds(value) {
+  if (!Array.isArray(value)) return null;
+  const ids = value.filter((commandId) => typeof commandId === 'string' && commandId.trim().length > 0);
+  return new Set(ids);
+}
+
+function filterPaletteCommandEntries(entries) {
+  if (!Array.isArray(entries)) return [];
+  return entries.filter((entry) => {
+    if (!entry || typeof entry !== 'object' || typeof entry.id !== 'string') return false;
+    if (!catalogManagedProjectCommandIds.has(entry.id)) return true;
+    if (!(designOsDormantVisibleCommandIds instanceof Set)) return true;
+    return designOsDormantVisibleCommandIds.has(entry.id);
+  });
+}
+
+function createDormantAwarePaletteDataProvider(baseProvider) {
+  return {
+    listAll() {
+      const entries = typeof baseProvider?.listAll === 'function' ? baseProvider.listAll() : [];
+      return filterPaletteCommandEntries(entries);
+    },
+    listBySurface(surface) {
+      const entries = typeof baseProvider?.listBySurface === 'function' ? baseProvider.listBySurface(surface) : [];
+      return filterPaletteCommandEntries(entries);
+    },
+    listByGroup(surface) {
+      const groups = typeof baseProvider?.listByGroup === 'function' ? baseProvider.listByGroup(surface) : [];
+      if (!Array.isArray(groups)) return [];
+      return groups
+        .map((group) => {
+          const commands = filterPaletteCommandEntries(group && Array.isArray(group.commands) ? group.commands : []);
+          if (commands.length === 0) return null;
+          return { ...group, commands };
+        })
+        .filter(Boolean);
+    },
+  };
+}
+
+const baseCommandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });
+const commandPaletteDataProvider = createDormantAwarePaletteDataProvider(baseCommandPaletteDataProvider);
 window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;
 const MARKDOWN_IMPORT_STATUS_MESSAGE = 'Imported Markdown v1';
 const MARKDOWN_EXPORT_STATUS_MESSAGE = 'Exported Markdown v1';
@@ -2736,6 +2782,8 @@ function syncDesignOsDormantContext() {
       context: buildDesignOsDormantContext(),
     });
     designOsDormantDegradedToBaseline = preview?.degraded_to_baseline === true;
+    const nextVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);
+    designOsDormantVisibleCommandIds = nextVisibleCommandIds;
     const resolvedTokens = preview?.resolved_tokens;
     if (resolvedTokens && typeof resolvedTokens === 'object') {
       const isDarkTheme = document.body.classList.contains('dark-theme');
@@ -2744,7 +2792,9 @@ function syncDesignOsDormantContext() {
       });
       applyCssVariables(document.documentElement, cssVariables);
     }
-  } catch {}
+  } catch {
+    designOsDormantVisibleCommandIds = null;
+  }
 }
 
 function syncDesignOsDormantTextInput() {
