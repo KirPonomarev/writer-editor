@@ -81,6 +81,7 @@ CI:
 - Если для задачи `PR_REQUIRED: true`, то без PR задача считается не выполненной.
 - Если для задачи `MERGE_REQUIRED: true`, то без merge задача считается не выполненной.
 - Новый `write`‑task запрещён в грязном worktree, если он не является явным hygiene/isolation task.
+- Между символическим закрытием текущего контура и открытием следующего нового write-контура нельзя начинать новый write-контур, пока delivery chain предыдущего контура либо не завершён полностью, либо не остановлен явно со статусом STOP и не принят owner.
 - После завершения смыслового шага агент обязан сразу делать commit, а не оставлять изменения “на потом”.
 - Для `report-only` задач commit/push/PR/merge не требуются, если только отчёт явно не верифицирует исторический run.
 - Любой отчёт по `write`‑задаче обязан явно содержать: `TASK_ID`, `HEAD_SHA_BEFORE`, `HEAD_SHA_AFTER`, `COMMIT_SHA`, `CHANGED_BASENAMES`, `STAGED_SCOPE_MATCH`, `COMMIT_OUTCOME`, `PUSH_RESULT`, `PR_RESULT`, `MERGE_RESULT`, `NEXT_STEP`.
