@@ -216,6 +216,7 @@ let designOsDormantRuntimeMount = {
   bootstrap: null,
   lastError: null,
 };
+let designOsDormantDegradedToBaseline = false;
 let metaEnabled = false;
 let currentCards = [];
 let treeRoot = null;
@@ -2493,6 +2494,16 @@ function buildStatusLineWithDormantYdosHint(text) {
   return `${normalizedBase} ${suffix}`;
 }
 
+function buildDormantWarningHintText(text) {
+  const baseText = String(text || '').trim();
+  if (!baseText) return baseText;
+  const hasDormantSignal = Boolean(designOsDormantRuntimeMount.lastError) || designOsDormantDegradedToBaseline === true;
+  const normalizedBase = baseText.replace(/\s*\[YDOS dormant (?:error|degraded)\]$/u, '').trimEnd();
+  if (!hasDormantSignal) return normalizedBase;
+  const hint = designOsDormantRuntimeMount.lastError ? 'error' : 'degraded';
+  return `${normalizedBase} [YDOS dormant ${hint}]`;
+}
+
 function buildDesignOsDormantObservabilityLines() {
   const context = buildDesignOsDormantContext();
   const lastError = typeof designOsDormantRuntimeMount.lastError === 'string' && designOsDormantRuntimeMount.lastError.trim()
@@ -2699,6 +2710,7 @@ function mountDesignOsDormantRuntime() {
       bootstrap,
       lastError: null,
     };
+    designOsDormantDegradedToBaseline = false;
   } catch (error) {
     designOsDormantRuntimeMount = {
       mounted: false,
@@ -2707,6 +2719,7 @@ function mountDesignOsDormantRuntime() {
       bootstrap: null,
       lastError: error instanceof Error ? error.message : String(error),
     };
+    designOsDormantDegradedToBaseline = false;
   }
   return designOsDormantRuntimeMount;
 }
@@ -2714,9 +2727,10 @@ function mountDesignOsDormantRuntime() {
 function syncDesignOsDormantContext() {
   if (!designOsDormantRuntimeMount.ports) return;
   try {
-    designOsDormantRuntimeMount.ports.previewDesign({
+    const preview = designOsDormantRuntimeMount.ports.previewDesign({
       context: buildDesignOsDormantContext(),
     });
+    designOsDormantDegradedToBaseline = preview?.degraded_to_baseline === true;
   } catch {}
 }
 
@@ -2892,7 +2906,7 @@ function performSafeResetShell() {
   loadTree();
   updateWordCount();
   updateSaveStateText(localDirty ? 'unsaved' : 'idle');
-  updateWarningStateText('none');
+  updateWarningStateText(buildDormantWarningHintText('none'));
   updatePerfHintText('normal');
   updateStatusText('Shell reset to baseline');
   updateInspectorSnapshot();
@@ -2958,7 +2972,7 @@ function performRestoreLastStableShell() {
 
   updateWordCount();
   updateSaveStateText(localDirty ? 'unsaved' : 'idle');
-  updateWarningStateText('recovery restored');
+  updateWarningStateText(buildDormantWarningHintText('recovery restored'));
   updatePerfHintText('normal');
   updateStatusText(
     savedActiveDocumentTitle
@@ -3027,7 +3041,7 @@ async function confirmExportPreviewAndRun() {
   updatePerfHintText('export');
   await dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);
   updatePerfHintText('normal');
-  updateWarningStateText('none');
+  updateWarningStateText(buildDormantWarningHintText('none'));
 }
 
 function applyCollabGate() {
@@ -3066,7 +3080,7 @@ function installNetworkGuard() {
     window.fetch = async (...args) => {
       const url = String(args[0] || '');
       if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('ws://') || url.startsWith('wss://')) {
-        updateWarningStateText('network blocked before X4');
+        updateWarningStateText(buildDormantWarningHintText('network blocked before X4'));
         throw blockedError();
       }
       return originalFetch(...args);
@@ -4163,7 +4177,7 @@ if (rightSceneMetaPanel && metaPanel) {
   rightSceneMetaPanel.appendChild(metaPanel);
 }
 updateSaveStateText('idle');
-updateWarningStateText('none');
+updateWarningStateText(buildDormantWarningHintText('none'));
 updatePerfHintText('normal');
 updateInspectorSnapshot();
 applyMode('write');
@@ -4436,7 +4450,7 @@ if (window.electronAPI) {
       const message = payload && typeof payload.message === 'string'
         ? payload.message
         : 'Recovered from autosave';
-      updateWarningStateText('recovery restored');
+      updateWarningStateText(buildDormantWarningHintText('recovery restored'));
       openRecoveryModal(message);
       updateInspectorSnapshot();
     });
@@ -4599,11 +4613,11 @@ if (window.electronAPI) {
     updateStatusText(status);
     const normalized = String(status || '').toLowerCase();
     if (normalized.includes('восстановлено') || normalized.includes('recovery')) {
-      updateWarningStateText('recovery');
+      updateWarningStateText(buildDormantWarningHintText('recovery'));
     } else if (normalized.includes('ошибка') || normalized.includes('error')) {
-      updateWarningStateText('error');
+      updateWarningStateText(buildDormantWarningHintText('error'));
     } else {
-      updateWarningStateText('none');
+      updateWarningStateText(buildDormantWarningHintText('none'));
     }
     updatePerfHintText('normal');
     updateInspectorSnapshot();
