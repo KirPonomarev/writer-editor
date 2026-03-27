@@ -1,5 +1,6 @@
 import { getTiptapPlainText, initTiptap, redoTiptap, setTiptapPlainText, setTiptapRuntimeHandlers, undoTiptap } from './tiptap/index.js';
 import {
+  buildLayoutPatchFromSpatialState,
   buildDesignOsStatusText,
   buildSpatialStateFromLayoutSnapshot,
   createDesignOsPorts,
@@ -2331,7 +2332,8 @@ function stopSpatialResize() {
   document.body.style.userSelect = '';
   window.removeEventListener('pointermove', handleSpatialResizeMove);
   window.removeEventListener('pointerup', stopSpatialResize);
-  commitSpatialLayoutState(currentProjectId);
+  const committedLayoutState = commitSpatialLayoutState(currentProjectId);
+  syncDesignOsDormantLayoutCommitAtResizeEnd(committedLayoutState);
   scheduleLayoutRefresh();
 }
 
@@ -2739,6 +2741,24 @@ function syncDesignOsDormantTextInput() {
   if (!designOsDormantRuntimeMount.ports) return;
   try {
     designOsDormantRuntimeMount.ports.onTextInput(getPlainText());
+  } catch {}
+}
+
+function syncDesignOsDormantLayoutCommitAtResizeEnd(committedSpatialState) {
+  if (!committedSpatialState) return;
+  if (!designOsDormantRuntimeMount.ports || typeof designOsDormantRuntimeMount.ports.commitDesign !== 'function') return;
+  try {
+    const context = buildDesignOsDormantContext();
+    const layoutPatch = buildLayoutPatchFromSpatialState(committedSpatialState, {
+      viewportWidth: committedSpatialState.viewportWidth || getSpatialLayoutViewportWidth(),
+      viewportHeight: Math.max(320, Math.floor(Number(window.innerHeight) || 0) || 900),
+      shellMode: context.shell_mode || 'CALM_DOCKED',
+    });
+    designOsDormantRuntimeMount.ports.commitDesign({
+      context,
+      layout_patch: layoutPatch,
+      commit_point: 'resize_end',
+    });
   } catch {}
 }
 
