@@ -2474,6 +2474,37 @@ function updatePerfHintText(text) {
   }
 }
 
+function buildDesignOsDormantObservabilityLines() {
+  const context = buildDesignOsDormantContext();
+  const lastError = typeof designOsDormantRuntimeMount.lastError === 'string' && designOsDormantRuntimeMount.lastError.trim()
+    ? designOsDormantRuntimeMount.lastError
+    : 'none';
+  let resolverCalls = 0;
+  let previewCalls = 0;
+  let textInputEvents = 0;
+
+  if (designOsDormantRuntimeMount.ports && typeof designOsDormantRuntimeMount.ports.getRuntimeSnapshot === 'function') {
+    try {
+      const runtimeSnapshot = designOsDormantRuntimeMount.ports.getRuntimeSnapshot();
+      resolverCalls = Number.isFinite(runtimeSnapshot?.resolver_calls) ? runtimeSnapshot.resolver_calls : 0;
+      previewCalls = Number.isFinite(runtimeSnapshot?.preview_calls) ? runtimeSnapshot.preview_calls : 0;
+      textInputEvents = Number.isFinite(runtimeSnapshot?.text_input_events) ? runtimeSnapshot.text_input_events : 0;
+    } catch {}
+  }
+
+  return [
+    `YDOS_DormantMounted=${designOsDormantRuntimeMount.mounted ? 'true' : 'false'}`,
+    `YDOS_DormantLastError=${lastError}`,
+    `YDOS_Workspace=${context.workspace}`,
+    `YDOS_Platform=${context.platform}`,
+    `YDOS_Accessibility=${context.accessibility}`,
+    `YDOS_ShellMode=${context.shell_mode}`,
+    `YDOS_ResolverCalls=${resolverCalls}`,
+    `YDOS_PreviewCalls=${previewCalls}`,
+    `YDOS_TextInputEvents=${textInputEvents}`,
+  ];
+}
+
 function updateInspectorSnapshot() {
   if (!inspectorSnapshotElement) return;
   const snapshot = [
@@ -2483,6 +2514,7 @@ function updateInspectorSnapshot() {
     `Dirty=${localDirty ? 'true' : 'false'}`,
     `FlowMode=${flowModeState.active ? 'active' : 'off'}`,
     `CollabScopeLocal=${collabScopeLocal ? 'true' : 'false'}`,
+    ...buildDesignOsDormantObservabilityLines(),
   ];
   inspectorSnapshotElement.textContent = snapshot.join('\n');
 }
@@ -2957,6 +2989,7 @@ function openDiagnosticsModal() {
       `dirty=${localDirty ? 'true' : 'false'}`,
       `flowModeActive=${flowModeState.active ? 'true' : 'false'}`,
       `collabScopeLocal=${collabScopeLocal ? 'true' : 'false'}`,
+      ...buildDesignOsDormantObservabilityLines(),
     ];
     diagnosticsText.value = lines.join('\n');
   }
