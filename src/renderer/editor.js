@@ -1,4 +1,11 @@
 import { getTiptapPlainText, initTiptap, redoTiptap, setTiptapPlainText, setTiptapRuntimeHandlers, undoTiptap } from './tiptap/index.js';
+import {
+  createDesignOsPorts,
+  createRepoGroundedDesignOsBrowserRuntime,
+  deriveAccessibilityId,
+  deriveRuntimePlatformId,
+  mapEditorModeToWorkspace,
+} from './design-os/index.mjs';
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
 import {
@@ -200,6 +207,13 @@ let flowModeState = {
   active: false,
   scenes: [],
   dirty: false,
+};
+let designOsDormantRuntimeMount = {
+  mounted: false,
+  runtime: null,
+  ports: null,
+  bootstrap: null,
+  lastError: null,
 };
 let metaEnabled = false;
 let currentCards = [];
@@ -2594,6 +2608,74 @@ function applyRightTab(tab) {
   if (rightHistoryPanel) rightHistoryPanel.hidden = tab !== 'history' || !collabScopeLocal;
 }
 
+function buildDesignOsDormantContext() {
+  return {
+    shell_mode: 'CALM_DOCKED',
+    profile: 'BASELINE',
+    workspace: mapEditorModeToWorkspace(currentMode),
+    platform: deriveRuntimePlatformId(),
+    accessibility: deriveAccessibilityId(),
+  };
+}
+
+function buildDesignOsDormantProductTruth() {
+  return {
+    project_id: currentProjectId || 'local-project',
+    active_scene_id: 'scene-1',
+    scenes: {
+      'scene-1': getPlainText() || '',
+    },
+  };
+}
+
+function mountDesignOsDormantRuntime() {
+  if (designOsDormantRuntimeMount.mounted) {
+    return designOsDormantRuntimeMount;
+  }
+
+  try {
+    const bootstrap = createRepoGroundedDesignOsBrowserRuntime({
+      productTruth: buildDesignOsDormantProductTruth(),
+    });
+    const ports = createDesignOsPorts({
+      runtime: bootstrap.runtime,
+      defaultContext: buildDesignOsDormantContext(),
+    });
+    designOsDormantRuntimeMount = {
+      mounted: true,
+      runtime: bootstrap.runtime,
+      ports,
+      bootstrap,
+      lastError: null,
+    };
+  } catch (error) {
+    designOsDormantRuntimeMount = {
+      mounted: false,
+      runtime: null,
+      ports: null,
+      bootstrap: null,
+      lastError: error instanceof Error ? error.message : String(error),
+    };
+  }
+  return designOsDormantRuntimeMount;
+}
+
+function syncDesignOsDormantContext() {
+  if (!designOsDormantRuntimeMount.ports) return;
+  try {
+    designOsDormantRuntimeMount.ports.previewDesign({
+      context: buildDesignOsDormantContext(),
+    });
+  } catch {}
+}
+
+function syncDesignOsDormantTextInput() {
+  if (!designOsDormantRuntimeMount.ports) return;
+  try {
+    designOsDormantRuntimeMount.ports.onTextInput(getPlainText());
+  } catch {}
+}
+
 function applyMode(mode) {
   currentMode = mode;
   document.body.dataset.mode = mode;
@@ -2610,6 +2692,7 @@ function applyMode(mode) {
     applyLeftTab('project');
     applyRightTab('inspector');
   }
+  syncDesignOsDormantContext();
   updateInspectorSnapshot();
 }
 
@@ -4230,6 +4313,9 @@ window.addEventListener('resize', () => {
   scheduleLayoutRefresh();
 });
 
+mountDesignOsDormantRuntime();
+syncDesignOsDormantContext();
+
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
     const content = typeof payload === 'string' ? payload : payload?.content || '';
@@ -4278,6 +4364,7 @@ if (window.electronAPI) {
     updateSaveStateText('loaded');
     updatePerfHintText('normal');
     updateInspectorSnapshot();
+    syncDesignOsDormantTextInput();
   });
 
   window.electronAPI.onEditorTextRequest(({ requestId }) => {
@@ -4350,6 +4437,7 @@ if (window.electronAPI) {
 if (isTiptapMode) {
   editor.addEventListener('input', () => {
     syncPlainTextBufferFromEditorDom();
+    syncDesignOsDormantTextInput();
     markAsModified();
     updateWordCount();
   });
@@ -4384,6 +4472,7 @@ if (isTiptapMode) {
   editor.addEventListener('input', () => {
     scheduleIncrementalInputDomSync();
     syncPlainTextBufferFromEditorDom();
+    syncDesignOsDormantTextInput();
     if (legacyCompositionActive) {
       legacyCompositionRenderPending = true;
       return;

@@ -123,6 +123,45 @@ test('tiptap runtime bridge: last stable restore delegates to runtime handler', 
   })
 })
 
+test('tiptap runtime bridge: command surface is locked for dormant bootstrap slice', async () => {
+  const filePath = path.join(ROOT, 'src', 'renderer', 'tiptap', 'runtimeBridge.js')
+  const source = fs.readFileSync(filePath, 'utf8')
+  const commands = [...source.matchAll(/command === '([^']+)'/g)]
+    .map((match) => match[1])
+    .filter((command) => command !== 'string')
+  assert.deepEqual(commands, [
+    'undo',
+    'edit-undo',
+    'redo',
+    'edit-redo',
+    'open-settings',
+    'safe-reset-shell',
+    'restore-last-stable-shell',
+    'open-diagnostics',
+    'open-recovery',
+    'open-export-preview',
+    'insert-add-card',
+    'format-align-left',
+    'switch-mode-plan',
+    'switch-mode-review',
+    'switch-mode-write',
+  ])
+})
+
+test('tiptap runtime bridge: design-os-specific commands are rejected in dormant slice', async () => {
+  const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
+  const bridge = createTiptapRuntimeBridge({})
+  const forbidden = [
+    'design-os-preview',
+    'design-os-commit',
+    'design-os-safe-reset-shell',
+  ]
+
+  for (const command of forbidden) {
+    assert.deepEqual(bridge.handleRuntimeCommand({ command }), { handled: false, command })
+  }
+})
+
 test('tiptap ipc adapter seams: text request and set text are deterministic', async () => {
   const { createTextRequestHandler, createSetTextHandler } = await loadIpcModule()
 
