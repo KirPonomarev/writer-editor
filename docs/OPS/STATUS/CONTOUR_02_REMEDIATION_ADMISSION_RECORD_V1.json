@@ -1,0 +1,40 @@
+{
+  "status": "REMEDIATION_ONLY_RUNTIME_SURFACE_WRITES_NOT_ADMITTED",
+  "contourId": "CONTOUR_02_WRITE_WORKSPACE_STATE_PERSIST_RESTORE_AND_SAFE_RESET",
+  "decisionAtUtc": "2026-03-24T12:31:16Z",
+  "decisionOwner": "MAIN_INTEGRATOR",
+  "decision": "OPEN_NARROW_BLOCKER_FIX_LANE_ONLY",
+  "scope": "BLOCKER_FIX_ONLY",
+  "runtimeWritesAdmitted": false,
+  "formalCutoverClaimed": false,
+  "broadShellAdmissionClaimed": false,
+  "allowedWriteDomain": [
+    "proof scripts",
+    "proof contracts",
+    "task text",
+    "remediation admission record"
+  ],
+  "blockedWriteDomain": [
+    "runtime UI surfaces",
+    "broad shell rollout",
+    "plan workspace rollout",
+    "review workspace rollout",
+    "contour 03",
+    "formal cutover",
+    "broad shell admission"
+  ],
+  "reasons": [
+    "Contour 02 execution proof record exists and honestly records not-proven status without runtime admission.",
+    "Recorded blocker set is local to phase03 and phase05 proof surfaces and should be fixed in a separate narrow lane.",
+    "This admission opens blocker-fix work only and does not reopen contour 02 runtime writes."
+  ],
+  "proofArtifacts": [
+    "CORE-A4-YALKEN-CONTOUR-02-EXEC-001.md",
+    "MIOS_SECOND_VERTICAL_SLICE_EXECUTION_PROOF_RECORD_V1.json",
+    "CORE-A4-YALKEN-CONTOUR-02-REM-001.md"
+  ],
+  "notes": [
+    "If blocker repair requires any src mutation, stop and open one separate follow-up instead of widening this lane.",
+    "Remediation completion is not contour 02 proof-complete and not runtime admission."
+  ]
+}
