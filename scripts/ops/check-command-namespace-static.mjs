@@ -14,6 +14,10 @@ const RESULT_WARN = 'WARN';
 const RESULT_FAIL = 'FAIL';
 const FAIL_SIGNAL_CODE = 'E_COMMAND_NAMESPACE_UNKNOWN';
 const JS_EXT_RE = /\.(?:[cm]?js)$/u;
+const LINE_TEXT_PREVIEW_MAX = 240;
+const EXCLUDED_RUNTIME_SCAN_REPO_PATHS = Object.freeze([
+  'src/renderer/editor.bundle.js',
+]);
 
 const ALLOWED_HIT_PATH_SEGMENTS = Object.freeze([
   '/test/fixtures/',
@@ -144,9 +148,32 @@ function isAllowedAliasZone(hit) {
   return false;
 }
 
+function clipLineText(lineText) {
+  const source = String(lineText || '').trim();
+  if (source.length <= LINE_TEXT_PREVIEW_MAX) {
+    return {
+      text: source,
+      length: source.length,
+      clipped: false,
+    };
+  }
+  return {
+    text: `${source.slice(0, LINE_TEXT_PREVIEW_MAX)}…`,
+    length: source.length,
+    clipped: true,
+  };
+}
+
+function shouldExcludeRuntimeScanFile(cwd, absPath) {
+  const repoPath = toRepoPath(cwd, absPath);
+  return EXCLUDED_RUNTIME_SCAN_REPO_PATHS.includes(repoPath);
+}
+
 function collectLegacyPrefixHits(cwd, scanRootRaw, deprecatedPrefixes) {
   const scanRootAbs = path.resolve(cwd, scanRootRaw);
-  const files = collectFilesRecursive(scanRootAbs).sort((a, b) => a.localeCompare(b));
+  const files = collectFilesRecursive(scanRootAbs)
+    .filter((absPath) => !shouldExcludeRuntimeScanFile(cwd, absPath))
+    .sort((a, b) => a.localeCompare(b));
   const rawHits = [];
   const compiled = deprecatedPrefixes.map((prefix) => ({
     prefix,
@@ -163,12 +190,15 @@ function collectLegacyPrefixHits(cwd, scanRootRaw, deprecatedPrefixes) {
         matcher.pattern.lastIndex = 0;
         let match = null;
         while ((match = matcher.pattern.exec(lineText)) !== null) {
+          const clippedLine = clipLineText(lineText);
           rawHits.push({
             filePath,
             line: lineIndex + 1,
             commandId: String(match[0] || ''),
             deprecatedPrefix: matcher.prefix,
-            lineText: lineText.trim(),
+            lineText: clippedLine.text,
+            lineTextLength: clippedLine.length,
+            lineTextClipped: clippedLine.clipped,
           });
         }
       }
