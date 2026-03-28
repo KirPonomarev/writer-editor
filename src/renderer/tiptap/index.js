@@ -54,11 +54,14 @@ function readEditorText(editor) {
 }
 
 function notifyDirtyState(nextDirty) {
-  if (!window.electronAPI || typeof window.electronAPI.notifyDirtyState !== 'function') {
+  if (!window.electronAPI || typeof window.electronAPI.invokeSaveLifecycleSignalBridge !== 'function') {
     return
   }
 
-  window.electronAPI.notifyDirtyState(Boolean(nextDirty))
+  window.electronAPI.invokeSaveLifecycleSignalBridge({
+    signalId: 'signal.localDirty.set',
+    payload: { state: Boolean(nextDirty) },
+  }).catch(() => {})
 }
 
 function createIpcSession(editor) {
