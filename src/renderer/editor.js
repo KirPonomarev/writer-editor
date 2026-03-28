@@ -532,6 +532,7 @@ async function handleFlowModeOpenUiPath() {
     window.electronAPI.notifyDirtyState(false);
   }
   showEditorPanelFor('Flow mode');
+  remountDesignOsDormantRuntimeForCurrentDocumentContext();
   updateStatusText(buildFlowModeM9KickoffStatus('open', scenes.length, { m8Kickoff: true, m9Kickoff: true }));
 }
 
@@ -563,6 +564,7 @@ async function handleFlowModeSaveUiPath() {
   if (window.electronAPI && typeof window.electronAPI.notifyDirtyState === 'function') {
     window.electronAPI.notifyDirtyState(false);
   }
+  remountDesignOsDormantRuntimeForCurrentDocumentContext();
   updateStatusText(buildFlowModeM9KickoffStatus('save', payload.scenes.length, { m8Kickoff: true, m9Kickoff: true }));
 }
 
@@ -2748,20 +2750,67 @@ function buildDesignOsDormantContext() {
 }
 
 function buildDesignOsDormantProductTruth() {
-  return {
-    project_id: currentProjectId || 'local-project',
-    active_scene_id: 'scene-1',
+  const projectId = normalizeProjectId(currentProjectId) || 'local-project';
+  const fallbackSceneId = 'scene-local';
+  const fallbackText = getPlainText() || '';
+
+  const buildSingleSceneFallbackTruth = () => ({
+    project_id: projectId,
+    active_scene_id: fallbackSceneId,
     scenes: {
-      'scene-1': getPlainText() || '',
+      [fallbackSceneId]: fallbackText,
     },
+  });
+
+  const buildNonFlowDocumentTruth = () => {
+    const hasPath = typeof currentDocumentPath === 'string' && currentDocumentPath.trim().length > 0;
+    const hasKind = typeof currentDocumentKind === 'string' && currentDocumentKind.trim().length > 0;
+    if (!hasPath || !hasKind) {
+      return buildSingleSceneFallbackTruth();
+    }
+    const sceneId = currentDocumentPath.trim();
+    return {
+      project_id: projectId,
+      active_scene_id: sceneId,
+      scenes: {
+        [sceneId]: fallbackText,
+      },
+    };
   };
+
+  const buildFlowDocumentTruth = () => {
+    if (!flowModeState.active) return null;
+    const payload = buildFlowSavePayload(getPlainText(), flowModeState.scenes);
+    if (!payload.ok || !Array.isArray(payload.scenes) || payload.scenes.length === 0) return null;
+    const scenes = {};
+    for (const scene of payload.scenes) {
+      if (!scene || typeof scene !== 'object') continue;
+      const scenePath = typeof scene.path === 'string' ? scene.path.trim() : '';
+      if (!scenePath) continue;
+      scenes[scenePath] = typeof scene.content === 'string' ? scene.content : '';
+    }
+    const activeSceneId = payload.scenes.find((scene) => scene && typeof scene.path === 'string' && scene.path.trim())
+      ?.path
+      ?.trim();
+    if (!activeSceneId || Object.keys(scenes).length === 0) return null;
+    return {
+      project_id: projectId,
+      active_scene_id: activeSceneId,
+      scenes,
+    };
+  };
+
+  const flowTruth = buildFlowDocumentTruth();
+  if (flowTruth) {
+    return flowTruth;
+  }
+  if (flowModeState.active) {
+    return buildSingleSceneFallbackTruth();
+  }
+  return buildNonFlowDocumentTruth();
 }
 
-function mountDesignOsDormantRuntime() {
-  if (designOsDormantRuntimeMount.mounted) {
-    return designOsDormantRuntimeMount;
-  }
-
+function remountDesignOsDormantRuntimeForCurrentDocumentContext() {
   try {
     const bootstrap = createRepoGroundedDesignOsBrowserRuntime({
       productTruth: buildDesignOsDormantProductTruth(),
@@ -2778,6 +2827,10 @@ function mountDesignOsDormantRuntime() {
       lastError: null,
     };
     designOsDormantDegradedToBaseline = false;
+    designOsDormantVisibleCommandIds = null;
+    const layoutStateForReplay = spatialLayoutState || getSpatialLayoutBaselineForViewport();
+    syncDesignOsDormantLayoutCommitAtResizeEnd(layoutStateForReplay);
+    syncDesignOsDormantContext();
   } catch (error) {
     designOsDormantRuntimeMount = {
       mounted: false,
@@ -2787,8 +2840,18 @@ function mountDesignOsDormantRuntime() {
       lastError: error instanceof Error ? error.message : String(error),
     };
     designOsDormantDegradedToBaseline = false;
+    designOsDormantVisibleCommandIds = null;
   }
-  return designOsDormantRuntimeMount;
+  return {
+    ...designOsDormantRuntimeMount,
+  };
+}
+
+function mountDesignOsDormantRuntime() {
+  if (designOsDormantRuntimeMount.mounted) {
+    return designOsDormantRuntimeMount;
+  }
+  return remountDesignOsDormantRuntimeForCurrentDocumentContext();
 }
 
 function syncDesignOsDormantContext() {
@@ -4552,6 +4615,7 @@ if (window.electronAPI) {
     if (resolvedTitle) {
       showEditorPanelFor(resolvedTitle);
     }
+    remountDesignOsDormantRuntimeForCurrentDocumentContext();
     renderTree();
     updateSaveStateText('loaded');
     updatePerfHintText('normal');
