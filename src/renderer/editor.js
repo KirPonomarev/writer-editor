@@ -4613,6 +4613,14 @@ function handleCanonicalRuntimeCommandId(commandId, runtimePayload = null) {
     void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
     return true;
   }
+  if (commandId === EXTRA_COMMAND_IDS.EDIT_UNDO) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);
+    return true;
+  }
+  if (commandId === EXTRA_COMMAND_IDS.EDIT_REDO) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
+    return true;
+  }
   if (commandId === EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE) {
     void dispatchUiCommand(EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE);
     return true;
@@ -5050,6 +5058,10 @@ if (window.electronAPI) {
         openRecoveryModal('Recovery modal opened from menu');
       } else if (command === 'open-export-preview') {
         openExportPreviewModal();
+      } else if (command === 'undo' || command === 'edit-undo') {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);
+      } else if (command === 'redo' || command === 'edit-redo') {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
       } else if (command === 'insert-add-card') {
         handleInsertAddCard();
       } else if (command === 'format-align-left') {

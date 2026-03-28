@@ -178,8 +178,8 @@ function ensureX101MenuSections(template) {
   const editMenu = ensureMenu('edit', 'Edit', []);
   if (editMenu.submenu.length === 0) {
     editMenu.submenu.push(
-      { role: 'undo' },
-      { role: 'redo' },
+      commandItem('edit-undo', 'Undo', 'cmd.project.edit.undo', { accelerator: 'CmdOrCtrl+Z' }),
+      commandItem('edit-redo', 'Redo', 'cmd.project.edit.redo', { accelerator: 'Shift+CmdOrCtrl+Z' }),
       { type: 'separator' },
       { role: 'copy' },
       { role: 'paste' },
@@ -3399,6 +3399,22 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.saveAs': async () => {
     const savedAs = await handleSaveAs();
     return { ok: savedAs === true };
+  },
+  'cmd.project.edit.undo': () => {
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.edit.undo',
+      { source: 'menu' },
+      'edit-undo',
+    );
+    return { ok: delivered };
+  },
+  'cmd.project.edit.redo': () => {
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.edit.redo',
+      { source: 'menu' },
+      'edit-redo',
+    );
+    return { ok: delivered };
   },
   'cmd.project.export.docxMin': async (payload = {}) => {
     const previewRequested = sendCanonicalRuntimeCommand(
