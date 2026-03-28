@@ -2727,10 +2727,19 @@ function resolveDormantDesignOsProfileFromStyleValue(styleValue) {
   return 'BASELINE';
 }
 
+function resolveDormantDesignOsShellModeFromLayoutMode(layoutMode) {
+  const normalized = typeof layoutMode === 'string' ? layoutMode.trim().toLowerCase() : '';
+  if (normalized === 'compact' || normalized === 'mobile') return 'COMPACT_DOCKED';
+  return 'CALM_DOCKED';
+}
+
 function buildDesignOsDormantContext() {
   const styleValue = styleSelect && typeof styleSelect.value === 'string' ? styleSelect.value : '';
+  const layoutMode = spatialLayoutState && typeof spatialLayoutState.viewportMode === 'string'
+    ? spatialLayoutState.viewportMode
+    : getSpatialLayoutMode();
   return {
-    shell_mode: 'CALM_DOCKED',
+    shell_mode: resolveDormantDesignOsShellModeFromLayoutMode(layoutMode),
     profile: resolveDormantDesignOsProfileFromStyleValue(styleValue),
     workspace: mapEditorModeToWorkspace(currentMode),
     platform: deriveRuntimePlatformId(),
@@ -4492,6 +4501,7 @@ document.addEventListener('selectionchange', syncAlignmentButtonsToSelection);
 
 window.addEventListener('resize', () => {
   updateSpatialLayoutForViewportChange();
+  syncDesignOsDormantContext();
   scheduleLayoutRefresh();
 });
 
