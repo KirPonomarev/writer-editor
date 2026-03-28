@@ -13,13 +13,13 @@
   ],
   "closureFileHashes": {
     "docs/OPS/CLAIMS/CRITICAL_CLAIM_MATRIX.json": "0b70cf8a6d0ac4436d513f0fc13eaf187159fe29b423aabc1fea3f5b81822088",
-    "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json": "fc82503fc1dcb65c4928d2a86ce901a2cd242f675328b22d662a05ff06241dbb",
+    "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json": "53845afe43620c1da737dba37aaf96a86d09e3a0cc5ee4b086b1912282956ac5",
     "docs/OPS/TOKENS/TOKEN_DECLARATION.json": "b3db3e5b7d2dbc8f457e0049a9425fdd6e8fd5e95069e2c4af6aa2a04501e349",
     "scripts/ops/critical-claim-matrix-state.mjs": "68e449b8ec53f99aaac0a410807a8285ec823db10bca372cc5e359da1d42801f",
-    "scripts/ops/generate-required-token-set.mjs": "8e4d5eb8c727e8335288a4d9ea7a268dcf15335b03a3e8cf9107656af3847ad9",
+    "scripts/ops/generate-required-token-set.mjs": "87024c2e2ec2aff27f2272e4d6637dfddf6af88da38b2d2f85d3d2b1c8c8d774",
     "scripts/ops/proofhook-integrity-state.mjs": "5053b2f3c93d039f627f24253d93c310fd07f3cbf149bcd0a4fe91e83a86aa26",
     "test/fixtures/proofhook-integrity/alpha.txt": "a0e148c5e6d6a8fecc12bf68581c9eba02ff2a884da95ca379acc0bdcb6b7e52",
     "test/fixtures/proofhook-integrity/beta.txt": "56c8339c4f4bf0d47462f11b43155e6fe81b13cac3a553822f1c70e0e8001f68"
   },
-  "closureHash": "c505074e2f55bc4489007a57b4e17ed5a15d4807a7732a4dc485b0f874cf633f"
+  "closureHash": "5f1e89ea33f7b3642bc1dd73ebae7903e90779b3790a88b91efcd0cec5590494"
 }

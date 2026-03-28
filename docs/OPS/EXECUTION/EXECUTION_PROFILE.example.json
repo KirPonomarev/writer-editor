@@ -37,6 +37,17 @@
     "freezeMode": [
       "FREEZE_MODE_STRICT_OK"
     ],
-    "conditional": []
+    "conditional": [
+      {
+        "flag": "VNEXT_TOUCHED",
+        "enabledWhen": true,
+        "applyTo": [
+          "core"
+        ],
+        "tokens": [
+          "E2E_CRITICAL_USER_PATH_OK"
+        ]
+      }
+    ]
   }
 }
