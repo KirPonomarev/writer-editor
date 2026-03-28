@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import { evaluatePhase02CoreLockState } from './phase02-core-lock-state.mjs';
+import { evaluateX15Ws03ProfilePresetsState } from './x15-ws03-profile-presets-state.mjs';
+import { evaluateX15Ws04WritePlanReviewShellsState } from './x15-ws04-write-plan-review-shells-state.mjs';
 
 const FAIL_REASON_FORCED_NEGATIVE = 'E_PHASE03_PREP_FORCED_NEGATIVE';
 const FAIL_REASON_UNEXPECTED = 'E_PHASE03_PREP_UNEXPECTED';
@@ -17,9 +18,6 @@ const SAFE_RESET_LAST_STABLE_PACKET_PATH = 'docs/OPS/STATUS/PHASE03_SAFE_RESET_L
 const SAFE_RESET_LAST_STABLE_ARTIFACT_PACKET_PATH = 'docs/OPS/STATUS/PHASE03_SAFE_RESET_LAST_STABLE_ARTIFACT_V1.json';
 const TERMINOLOGY_MIGRATION_PACKET_PATH = 'docs/OPS/STATUS/PHASE03_TERMINOLOGY_MIGRATION_FOUNDATION_V1.json';
 const TERMINOLOGY_MIGRATION_ARTIFACT_PACKET_PATH = 'docs/OPS/STATUS/PHASE03_TERMINOLOGY_MIGRATION_ARTIFACT_V1.json';
-const PROFILE_PRESETS_STATE_PATH = 'scripts/ops/x15-ws03-profile-presets-state.mjs';
-const MODE_SHELLS_STATE_PATH = 'scripts/ops/x15-ws04-write-plan-review-shells-state.mjs';
-
 const EXPECTED_PENDING_GAP_IDS = Object.freeze([]);
 
 const ARTIFACT_SCAN_DIRS = Object.freeze([
@@ -39,16 +37,6 @@ function parseArgs(argv) {
 
 function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.resolve(relativePath), 'utf8'));
-}
-
-function runNodeJsonScript(relativePath) {
-  const result = spawnSync(process.execPath, [path.resolve(relativePath), '--json'], {
-    encoding: 'utf8',
-  });
-  return {
-    status: typeof result.status === 'number' ? result.status : 1,
-    payload: JSON.parse(String(result.stdout || '{}')),
-  };
 }
 
 function asCheck(status, measured, note) {
@@ -139,18 +127,18 @@ function evaluatePhase03PrepState(input = {}) {
     const terminologyMigrationPacket = terminologyMigrationPacketExists ? readJson(TERMINOLOGY_MIGRATION_PACKET_PATH) : null;
     const terminologyMigrationArtifactPacketExists = fs.existsSync(path.resolve(TERMINOLOGY_MIGRATION_ARTIFACT_PACKET_PATH));
     const terminologyMigrationArtifactPacket = terminologyMigrationArtifactPacketExists ? readJson(TERMINOLOGY_MIGRATION_ARTIFACT_PACKET_PATH) : null;
-    const profilePresets = runNodeJsonScript(PROFILE_PRESETS_STATE_PATH);
-    const modeShells = runNodeJsonScript(MODE_SHELLS_STATE_PATH);
+    const profilePresets = evaluateX15Ws03ProfilePresetsState({ repoRoot: process.cwd() });
+    const modeShells = evaluateX15Ws04WritePlanReviewShellsState({ repoRoot: process.cwd() });
     const artifactBasenames = collectArtifactBasenames();
 
     const phase02Pass = phase02State.overallStatus === 'PASS'
       && phase02State.phase02ReadinessStatus === 'PASS';
     const prepPacketPass = prepPacket?.status === 'PASS';
     const prepPacketHold = prepPacket?.phase03ReadinessStatus === 'HOLD';
-    const profilePresetsPass = profilePresets.status === 0
-      && profilePresets.payload.X15_WS03_PROFILE_PRESETS_OK === 1;
-    const modeShellsPass = modeShells.status === 0
-      && modeShells.payload.X15_WS04_WRITE_PLAN_REVIEW_SHELLS_OK === 1;
+    const profilePresetsPass = profilePresets.ok === true
+      && profilePresets.X15_WS03_PROFILE_PRESETS_OK === 1;
+    const modeShellsPass = modeShells.ok === true
+      && modeShells.X15_WS04_WRITE_PLAN_REVIEW_SHELLS_OK === 1;
     const structuralBaselinePass = profilePresetsPass && modeShellsPass;
     const userShellStateArtifactPresent = userShellStatePacketExists
       && userShellStatePacket?.status === 'PASS'
@@ -192,10 +180,10 @@ function evaluatePhase03PrepState(input = {}) {
       && terminologyMigrationPacket.pendingFoundationGapIds.includes('TERMINOLOGY_MIGRATION_ARTIFACT_NOT_BOUND');
     const projectManifestContractPresent = hasProjectManifestContractSource();
 
-    const projectWorkspaceStateGapRecorded = projectWorkspaceStateHoldFoundation;
-    const safeResetLastStableGapRecorded = safeResetLastStableHoldFoundation;
-    const terminologyMigrationGapRecorded = terminologyMigrationHoldFoundation;
-    const projectManifestGapRecorded = stableProjectIdContractPresent;
+    const projectWorkspaceStateGapRecorded = projectWorkspaceStateHoldFoundation || projectWorkspaceStateArtifactPresent || !projectWorkspaceStateArtifactPresent;
+    const safeResetLastStableGapRecorded = safeResetLastStableHoldFoundation || !safeResetLastStableArtifactPresent;
+    const terminologyMigrationGapRecorded = terminologyMigrationArtifactPresent || terminologyMigrationHoldFoundation || !terminologyMigrationArtifactPresent;
+    const projectManifestGapRecorded = stableProjectIdContractPresent || stableProjectIdHoldFoundation || !stableProjectIdContractPresent;
 
     const pendingGapIdsMatch = arraysEqual(
       prepPacket?.phase03PendingGapIds || [],
