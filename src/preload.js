@@ -15,12 +15,7 @@ const TREE_COMMAND_IDS = Object.freeze({
   DELETE_NODE: 'cmd.project.tree.deleteNode',
   REORDER_NODE: 'cmd.project.tree.reorderNode',
 });
-const TREE_ACTION_TO_COMMAND_ID = Object.freeze({
-  createNode: TREE_COMMAND_IDS.CREATE_NODE,
-  renameNode: TREE_COMMAND_IDS.RENAME_NODE,
-  deleteNode: TREE_COMMAND_IDS.DELETE_NODE,
-  reorderNode: TREE_COMMAND_IDS.REORDER_NODE,
-});
+const TREE_COMMAND_ID_SET = new Set(Object.values(TREE_COMMAND_IDS));
 
 function normalizeRequestRecord(value) {
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
@@ -40,12 +35,8 @@ function invokeUiCommand(commandId, payload = {}) {
 
 function dispatchTreeCommand(request = {}) {
   const safeRequest = normalizeRequestRecord(request);
-  const commandId = typeof safeRequest.commandId === 'string' && safeRequest.commandId.length > 0
-    ? safeRequest.commandId
-    : TREE_ACTION_TO_COMMAND_ID[
-      typeof safeRequest.action === 'string' ? safeRequest.action : ''
-    ];
-  if (!Object.values(TREE_COMMAND_IDS).includes(commandId)) {
+  const commandId = typeof safeRequest.commandId === 'string' ? safeRequest.commandId : '';
+  if (!TREE_COMMAND_ID_SET.has(commandId)) {
     return Promise.resolve({ ok: false, error: 'TREE_COMMAND_NOT_ALLOWED' });
   }
   return invokeUiCommand(commandId, safeRequest.payload);
