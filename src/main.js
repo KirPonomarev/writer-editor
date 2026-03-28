@@ -2430,7 +2430,7 @@ ipcMain.handle('ui:get-project-tree', async (_, payload) => {
   return { ok: false, error: 'Unknown tab' };
 });
 
-ipcMain.handle('ui:open-document', async (_, payload) => {
+async function handleUiOpenDocumentCommand(payload) {
   if (!mainWindow) {
     return { ok: false, error: 'No active window' };
   }
@@ -2497,9 +2497,13 @@ ipcMain.handle('ui:open-document', async (_, payload) => {
   backupHashes.set(filePath, contentHash);
   updateStatus('Готово');
   return { ok: true, path: filePath };
+}
+
+ipcMain.handle('ui:open-document', async (_, payload) => {
+  return handleUiOpenDocumentCommand(payload);
 });
 
-ipcMain.handle('ui:create-node', async (_, payload) => {
+async function handleUiCreateNodeCommand(payload) {
   const guarded = sanitizePayloadWithinProjectRoot(payload, ['parentPath']);
   if (!guarded.ok || !guarded.payload) {
     return guarded.error;
@@ -2571,9 +2575,13 @@ ipcMain.handle('ui:create-node', async (_, payload) => {
   }
 
   return { ok: false, error: 'Unknown node kind' };
+}
+
+ipcMain.handle('ui:create-node', async (_, payload) => {
+  return handleUiCreateNodeCommand(payload);
 });
 
-ipcMain.handle('ui:rename-node', async (_, payload) => {
+async function handleUiRenameNodeCommand(payload) {
   const guarded = sanitizePayloadWithinProjectRoot(payload, ['path']);
   if (!guarded.ok || !guarded.payload) {
     return guarded.error;
@@ -2614,9 +2622,13 @@ ipcMain.handle('ui:rename-node', async (_, payload) => {
   }
 
   return { ok: true, path: targetPath };
+}
+
+ipcMain.handle('ui:rename-node', async (_, payload) => {
+  return handleUiRenameNodeCommand(payload);
 });
 
-ipcMain.handle('ui:delete-node', async (_, payload) => {
+async function handleUiDeleteNodeCommand(payload) {
   const guarded = sanitizePayloadWithinProjectRoot(payload, ['path']);
   if (!guarded.ok || !guarded.payload) {
     return guarded.error;
@@ -2653,9 +2665,13 @@ ipcMain.handle('ui:delete-node', async (_, payload) => {
   }
 
   return { ok: true, path: targetPath };
+}
+
+ipcMain.handle('ui:delete-node', async (_, payload) => {
+  return handleUiDeleteNodeCommand(payload);
 });
 
-ipcMain.handle('ui:reorder-node', async (_, payload) => {
+async function handleUiReorderNodeCommand(payload) {
   const guarded = sanitizePayloadWithinProjectRoot(payload, ['path']);
   if (!guarded.ok || !guarded.payload) {
     return guarded.error;
@@ -2700,6 +2716,10 @@ ipcMain.handle('ui:reorder-node', async (_, payload) => {
   }
 
   return { ok: true, path: updatedPath };
+}
+
+ipcMain.handle('ui:reorder-node', async (_, payload) => {
+  return handleUiReorderNodeCommand(payload);
 });
 ipcMain.handle('ui:open-section', async (_, payload) => {
   if (!mainWindow) {
@@ -3255,6 +3275,11 @@ const MENU_RUNTIME_ARTIFACT_ENV_PATH = 'MENU_RUNTIME_ARTIFACT_PATH';
 const MENU_RUNTIME_RAW_CONFIG_ENV_PATH = 'MENU_RUNTIME_RAW_CONFIG_PATH';
 const MENU_RUNTIME_LEGACY_RAW_CONFIG_ENV_PATH = 'MENU_CONFIG_PATH';
 const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
+  'cmd.project.document.open',
+  'cmd.project.tree.createNode',
+  'cmd.project.tree.renameNode',
+  'cmd.project.tree.deleteNode',
+  'cmd.project.tree.reorderNode',
   'cmd.ui.theme.set',
   'cmd.ui.font.set',
   'cmd.ui.fontSize.set',
@@ -3344,6 +3369,21 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.window.switchModeWrite': () => {
     const delivered = sendRuntimeCommand('switch-mode-write', { source: 'menu' });
     return { ok: delivered };
+  },
+  'cmd.project.document.open': async (payload = {}) => {
+    return handleUiOpenDocumentCommand(payload);
+  },
+  'cmd.project.tree.createNode': async (payload = {}) => {
+    return handleUiCreateNodeCommand(payload);
+  },
+  'cmd.project.tree.renameNode': async (payload = {}) => {
+    return handleUiRenameNodeCommand(payload);
+  },
+  'cmd.project.tree.deleteNode': async (payload = {}) => {
+    return handleUiDeleteNodeCommand(payload);
+  },
+  'cmd.project.tree.reorderNode': async (payload = {}) => {
+    return handleUiReorderNodeCommand(payload);
   },
   'cmd.ui.font.set': (payload = {}) => {
     const fontFamily = typeof payload.fontFamily === 'string'

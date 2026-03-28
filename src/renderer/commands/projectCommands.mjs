@@ -84,6 +84,7 @@ const IMPORT_MARKDOWN_V1_OP = 'm:cmd:project:import:markdownV1:v1';
 const EXPORT_MARKDOWN_V1_OP = 'm:cmd:project:export:markdownV1:v1';
 const FLOW_OPEN_V1_OP = 'm:cmd:project:flow:open:v1';
 const FLOW_SAVE_V1_OP = 'm:cmd:project:flow:save:v1';
+const COMMAND_BRIDGE_ROUTE = 'command.bus';
 
 function fail(code, op, reason, details) {
   const error = { code, op, reason };
@@ -342,7 +343,7 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => {
-      if (!electronAPI || typeof electronAPI.openDocument !== 'function') {
+      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, 'ELECTRON_API_UNAVAILABLE');
       }
       const path = typeof input.path === 'string' ? input.path.trim() : '';
@@ -354,7 +355,11 @@ export function registerProjectCommands(registry, options = {}) {
 
       let response;
       try {
-        response = await electronAPI.openDocument({ path, title, kind });
+        response = await electronAPI.invokeUiCommandBridge({
+          route: COMMAND_BRIDGE_ROUTE,
+          commandId: EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,
+          payload: { path, title, kind },
+        });
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
@@ -364,16 +369,26 @@ export function registerProjectCommands(registry, options = {}) {
         );
       }
 
-      if (response && response.cancelled) {
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && bridged.cancelled) {
         return ok({ opened: false, cancelled: true, path, kind });
       }
-      if (response && (response.ok === 1 || response.ok === true)) {
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
         return ok({ opened: true, path, kind });
       }
       return fail(
         'E_COMMAND_FAILED',
         EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,
-        response && typeof response.reason === 'string' ? response.reason : 'OPEN_DOCUMENT_FAILED',
+        bridged && typeof bridged.reason === 'string'
+          ? bridged.reason
+          : bridged && typeof bridged.error === 'string'
+            ? bridged.error
+            : response && typeof response.reason === 'string'
+              ? response.reason
+              : 'OPEN_DOCUMENT_FAILED',
       );
     },
   );
@@ -387,7 +402,7 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => {
-      if (!electronAPI || typeof electronAPI.createNode !== 'function') {
+      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'ELECTRON_API_UNAVAILABLE');
       }
       const parentPath = typeof input.parentPath === 'string' ? input.parentPath.trim() : '';
@@ -399,7 +414,11 @@ export function registerProjectCommands(registry, options = {}) {
 
       let response;
       try {
-        response = await electronAPI.createNode({ parentPath, kind, name });
+        response = await electronAPI.invokeUiCommandBridge({
+          route: COMMAND_BRIDGE_ROUTE,
+          commandId: EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
+          payload: { parentPath, kind, name },
+        });
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
@@ -409,13 +428,23 @@ export function registerProjectCommands(registry, options = {}) {
         );
       }
 
-      if (response && (response.ok === 1 || response.ok === true)) {
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
         return ok({ created: true, parentPath, kind, name });
       }
       return fail(
         'E_COMMAND_FAILED',
         EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
-        response && typeof response.reason === 'string' ? response.reason : 'TREE_CREATE_FAILED',
+        bridged && typeof bridged.reason === 'string'
+          ? bridged.reason
+          : bridged && typeof bridged.error === 'string'
+            ? bridged.error
+            : response && typeof response.reason === 'string'
+              ? response.reason
+              : 'TREE_CREATE_FAILED',
       );
     },
   );
@@ -429,7 +458,7 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => {
-      if (!electronAPI || typeof electronAPI.renameNode !== 'function') {
+      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'ELECTRON_API_UNAVAILABLE');
       }
       const path = typeof input.path === 'string' ? input.path.trim() : '';
@@ -440,7 +469,11 @@ export function registerProjectCommands(registry, options = {}) {
 
       let response;
       try {
-        response = await electronAPI.renameNode({ path, name });
+        response = await electronAPI.invokeUiCommandBridge({
+          route: COMMAND_BRIDGE_ROUTE,
+          commandId: EXTRA_COMMAND_IDS.TREE_RENAME_NODE,
+          payload: { path, name },
+        });
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
@@ -450,17 +483,27 @@ export function registerProjectCommands(registry, options = {}) {
         );
       }
 
-      if (response && (response.ok === 1 || response.ok === true)) {
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
         return ok({
           renamed: true,
-          path: typeof response.path === 'string' && response.path.trim().length > 0 ? response.path : path,
+          path: typeof bridged.path === 'string' && bridged.path.trim().length > 0 ? bridged.path : path,
           oldPath: path,
         });
       }
       return fail(
         'E_COMMAND_FAILED',
         EXTRA_COMMAND_IDS.TREE_RENAME_NODE,
-        response && typeof response.reason === 'string' ? response.reason : 'TREE_RENAME_FAILED',
+        bridged && typeof bridged.reason === 'string'
+          ? bridged.reason
+          : bridged && typeof bridged.error === 'string'
+            ? bridged.error
+            : response && typeof response.reason === 'string'
+              ? response.reason
+              : 'TREE_RENAME_FAILED',
       );
     },
   );
@@ -474,7 +517,7 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => {
-      if (!electronAPI || typeof electronAPI.deleteNode !== 'function') {
+      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'ELECTRON_API_UNAVAILABLE');
       }
       const path = typeof input.path === 'string' ? input.path.trim() : '';
@@ -484,7 +527,11 @@ export function registerProjectCommands(registry, options = {}) {
 
       let response;
       try {
-        response = await electronAPI.deleteNode({ path });
+        response = await electronAPI.invokeUiCommandBridge({
+          route: COMMAND_BRIDGE_ROUTE,
+          commandId: EXTRA_COMMAND_IDS.TREE_DELETE_NODE,
+          payload: { path },
+        });
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
@@ -494,13 +541,23 @@ export function registerProjectCommands(registry, options = {}) {
         );
       }
 
-      if (response && (response.ok === 1 || response.ok === true)) {
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
         return ok({ deleted: true, path });
       }
       return fail(
         'E_COMMAND_FAILED',
         EXTRA_COMMAND_IDS.TREE_DELETE_NODE,
-        response && typeof response.reason === 'string' ? response.reason : 'TREE_DELETE_FAILED',
+        bridged && typeof bridged.reason === 'string'
+          ? bridged.reason
+          : bridged && typeof bridged.error === 'string'
+            ? bridged.error
+            : response && typeof response.reason === 'string'
+              ? response.reason
+              : 'TREE_DELETE_FAILED',
       );
     },
   );
@@ -514,7 +571,7 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => {
-      if (!electronAPI || typeof electronAPI.reorderNode !== 'function') {
+      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'ELECTRON_API_UNAVAILABLE');
       }
       const path = typeof input.path === 'string' ? input.path.trim() : '';
@@ -525,7 +582,11 @@ export function registerProjectCommands(registry, options = {}) {
 
       let response;
       try {
-        response = await electronAPI.reorderNode({ path, direction });
+        response = await electronAPI.invokeUiCommandBridge({
+          route: COMMAND_BRIDGE_ROUTE,
+          commandId: EXTRA_COMMAND_IDS.TREE_REORDER_NODE,
+          payload: { path, direction },
+        });
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
@@ -535,10 +596,14 @@ export function registerProjectCommands(registry, options = {}) {
         );
       }
 
-      if (response && (response.ok === 1 || response.ok === true)) {
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
         return ok({
           reordered: true,
-          path: typeof response.path === 'string' && response.path.trim().length > 0 ? response.path : path,
+          path: typeof bridged.path === 'string' && bridged.path.trim().length > 0 ? bridged.path : path,
           oldPath: path,
           direction,
         });
@@ -546,7 +611,13 @@ export function registerProjectCommands(registry, options = {}) {
       return fail(
         'E_COMMAND_FAILED',
         EXTRA_COMMAND_IDS.TREE_REORDER_NODE,
-        response && typeof response.reason === 'string' ? response.reason : 'TREE_REORDER_FAILED',
+        bridged && typeof bridged.reason === 'string'
+          ? bridged.reason
+          : bridged && typeof bridged.error === 'string'
+            ? bridged.error
+            : response && typeof response.reason === 'string'
+              ? response.reason
+              : 'TREE_REORDER_FAILED',
       );
     },
   );
