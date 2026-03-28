@@ -55,6 +55,7 @@
   --canvas-padding-horizontal: 48px;
   --canvas-padding-bottom: 48px;
   --editor-zoom: 1;
+  --renderer-wiring-phase-tag: "phase06-renderer-wiring-001";
 }
 
 body.dark-theme {
