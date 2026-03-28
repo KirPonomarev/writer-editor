@@ -244,12 +244,20 @@ Goal:
 
 Constraint:
 
-- split by feature family:
-  - perf cluster,
-  - phase03 cluster,
-  - phase05 cluster,
-  - phase07 cluster,
-  - x102 cluster.
+- split by feature family and keep existing family ids unchanged:
+  - `CLUSTER_05A_OPS_PERF_AND_PHASE03`,
+  - `CLUSTER_05B_OPS_PHASE05`,
+  - `CLUSTER_05C_OPS_PHASE07`,
+  - `CLUSTER_05D_OPS_X102_AND_RELATED_CONTRACT_TESTS`,
+  - `CLUSTER_05E_CONTOUR_01_PROOFHOOK_AND_CONTRACT`.
+
+Cluster 05E scope:
+- `scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs`
+- `test/contracts/contour-01-primary-editor-save-recovery-proofhook.contract.test.js`
+
+Cluster 05E context:
+- keep the proofhook script and contract paired in one family;
+- preserve explicit relation to Contour 01 and proof-only closure evidence (`MIOS_FIRST_VERTICAL_SLICE_EXECUTION_PROOF_RECORD_V1.json`).
 
 Git rule:
 
