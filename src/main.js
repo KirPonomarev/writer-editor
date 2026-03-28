@@ -181,6 +181,9 @@ function ensureX101MenuSections(template) {
       commandItem('edit-undo', 'Undo', 'cmd.project.edit.undo', { accelerator: 'CmdOrCtrl+Z' }),
       commandItem('edit-redo', 'Redo', 'cmd.project.edit.redo', { accelerator: 'Shift+CmdOrCtrl+Z' }),
       { type: 'separator' },
+      commandItem('edit-find', 'Find', 'cmd.project.edit.find', { accelerator: 'CmdOrCtrl+F' }),
+      commandItem('edit-replace', 'Replace', 'cmd.project.edit.replace', { accelerator: 'CmdOrCtrl+H' }),
+      { type: 'separator' },
       { role: 'copy' },
       { role: 'paste' },
       { role: 'selectAll' },
@@ -3413,6 +3416,22 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
       'cmd.project.edit.redo',
       { source: 'menu' },
       'edit-redo',
+    );
+    return { ok: delivered };
+  },
+  'cmd.project.edit.find': () => {
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.edit.find',
+      { source: 'menu' },
+      'search',
+    );
+    return { ok: delivered };
+  },
+  'cmd.project.edit.replace': () => {
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.edit.replace',
+      { source: 'menu' },
+      'replace',
     );
     return { ok: delivered };
   },
