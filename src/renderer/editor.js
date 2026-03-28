@@ -469,6 +469,24 @@ async function invokeWorkspaceQueryBridge(queryId, payload = {}) {
   return window.electronAPI.invokeWorkspaceQueryBridge({ queryId, payload: safePayload });
 }
 
+async function invokeSaveLifecycleSignalBridge(signalId, payload = {}) {
+  if (!window.electronAPI || typeof window.electronAPI.invokeSaveLifecycleSignalBridge !== 'function') {
+    return { ok: false, error: 'SAVE_LIFECYCLE_SIGNAL_BRIDGE_UNAVAILABLE' };
+  }
+  const safePayload = payload && typeof payload === 'object' && !Array.isArray(payload)
+    ? payload
+    : {};
+  try {
+    return await window.electronAPI.invokeSaveLifecycleSignalBridge({ signalId, payload: safePayload });
+  } catch (error) {
+    return {
+      ok: false,
+      error: 'SAVE_LIFECYCLE_SIGNAL_BRIDGE_FAILED',
+      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+    };
+  }
+}
+
 function resolveSceneFromImportResult(importResult) {
   if (!importResult || importResult.ok !== true) return null;
   const value = importResult.value;
@@ -544,9 +562,7 @@ async function handleFlowModeOpenUiPath() {
   setPlainText(composeFlowDocument(scenes));
   updateWordCount();
   localDirty = false;
-  if (window.electronAPI && typeof window.electronAPI.notifyDirtyState === 'function') {
-    window.electronAPI.notifyDirtyState(false);
-  }
+  await invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: false });
   showEditorPanelFor('Flow mode');
   remountDesignOsDormantRuntimeForCurrentDocumentContext();
   updateStatusText(buildFlowModeM9KickoffStatus('open', scenes.length, { m8Kickoff: true, m9Kickoff: true }));
@@ -577,9 +593,7 @@ async function handleFlowModeSaveUiPath() {
     dirty: false,
   };
   localDirty = false;
-  if (window.electronAPI && typeof window.electronAPI.notifyDirtyState === 'function') {
-    window.electronAPI.notifyDirtyState(false);
-  }
+  await invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: false });
   remountDesignOsDormantRuntimeForCurrentDocumentContext();
   updateStatusText(buildFlowModeM9KickoffStatus('save', payload.scenes.length, { m8Kickoff: true, m9Kickoff: true }));
 }
@@ -3544,7 +3558,7 @@ function promptForCustomFontSize() {
 }
 
 function scheduleAutoSave(delay = AUTO_SAVE_DELAY) {
-  if (!window.electronAPI || typeof window.electronAPI.requestAutoSave !== 'function') {
+  if (!window.electronAPI || typeof window.electronAPI.invokeSaveLifecycleSignalBridge !== 'function') {
     return;
   }
 
@@ -3553,9 +3567,7 @@ function scheduleAutoSave(delay = AUTO_SAVE_DELAY) {
   }
 
   autoSaveTimerId = window.setTimeout(() => {
-    window.electronAPI
-      .requestAutoSave()
-      .catch(() => {})
+    invokeSaveLifecycleSignalBridge('signal.autoSave.request')
       .finally(() => {
         autoSaveTimerId = null;
       });
@@ -3575,9 +3587,7 @@ function markAsModified() {
 
   if (!localDirty) {
     localDirty = true;
-    if (window.electronAPI && window.electronAPI.notifyDirtyState) {
-      window.electronAPI.notifyDirtyState(true);
-    }
+    void invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: true });
   }
   updateSaveStateText('unsaved');
   updatePerfHintText('typing');
