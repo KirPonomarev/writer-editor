@@ -3335,6 +3335,11 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.open',
   'cmd.project.save',
   'cmd.project.saveAs',
+  'cmd.project.export.docxMin',
+  'cmd.project.importMarkdownV1',
+  'cmd.project.exportMarkdownV1',
+  'cmd.project.flowOpenV1',
+  'cmd.project.flowSaveV1',
   'cmd.project.document.open',
   'cmd.project.tree.createNode',
   'cmd.project.tree.renameNode',
@@ -3397,6 +3402,18 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
         : {},
     });
     return { ok: Boolean(response && response.ok === 1) };
+  },
+  'cmd.project.importMarkdownV1': async (payload = {}) => {
+    return handleImportMarkdownV1(payload);
+  },
+  'cmd.project.exportMarkdownV1': async (payload = {}) => {
+    return handleExportMarkdownV1(payload);
+  },
+  'cmd.project.flowOpenV1': async () => {
+    return handleFlowOpenV1();
+  },
+  'cmd.project.flowSaveV1': async (payload = {}) => {
+    return handleFlowSaveV1(payload);
   },
   'cmd.app.quit': () => {
     app.quit();

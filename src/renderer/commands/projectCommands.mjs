@@ -213,6 +213,70 @@ async function invokeFileLifecycleBridge(electronAPI, commandId) {
   return { ok: true };
 }
 
+function resolveTransferAndFlowFallbackInvoker(electronAPI, commandId, payload = {}) {
+  if (commandId === COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN) {
+    const exportDocxMin = getElectronApiMethod(electronAPI, 'exportDocxMin');
+    if (!exportDocxMin) return null;
+    return () => exportDocxMin(payload);
+  }
+  if (commandId === COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1) {
+    const importMarkdownV1 = getElectronApiMethod(electronAPI, 'importMarkdownV1');
+    if (!importMarkdownV1) return null;
+    return () => importMarkdownV1(payload);
+  }
+  if (commandId === COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1) {
+    const exportMarkdownV1 = getElectronApiMethod(electronAPI, 'exportMarkdownV1');
+    if (!exportMarkdownV1) return null;
+    return () => exportMarkdownV1(payload);
+  }
+  if (commandId === COMMAND_IDS.PROJECT_FLOW_OPEN_V1) {
+    const openFlowModeV1 = getElectronApiMethod(electronAPI, 'openFlowModeV1');
+    if (!openFlowModeV1) return null;
+    return () => openFlowModeV1();
+  }
+  if (commandId === COMMAND_IDS.PROJECT_FLOW_SAVE_V1) {
+    const saveFlowModeV1 = getElectronApiMethod(electronAPI, 'saveFlowModeV1');
+    if (!saveFlowModeV1) return null;
+    return () => saveFlowModeV1(payload);
+  }
+  return null;
+}
+
+async function invokeTransferAndFlowCommandBridge(electronAPI, commandId, payload = {}) {
+  if (electronAPI && typeof electronAPI.invokeUiCommandBridge === 'function') {
+    return electronAPI.invokeUiCommandBridge({
+      route: COMMAND_BRIDGE_ROUTE,
+      commandId,
+      payload,
+    });
+  }
+
+  // Compatibility fallback for non-preload runtimes used by local parity harnesses.
+  const fallbackInvoker = resolveTransferAndFlowFallbackInvoker(electronAPI, commandId, payload);
+  if (!fallbackInvoker) {
+    throw new Error('ELECTRON_API_UNAVAILABLE');
+  }
+  const legacyResult = await fallbackInvoker();
+  if (legacyResult && typeof legacyResult === 'object' && !Array.isArray(legacyResult)) {
+    return legacyResult;
+  }
+  return { ok: legacyResult ? 1 : 0 };
+}
+
+function unwrapBridgeResponseValue(response) {
+  if (
+    response &&
+    typeof response === 'object' &&
+    !Array.isArray(response) &&
+    response.value &&
+    typeof response.value === 'object' &&
+    !Array.isArray(response.value)
+  ) {
+    return response.value;
+  }
+  return response;
+}
+
 export function resolveLegacyActionToCommand(actionId, context = {}) {
   if (actionId === 'save' && context && context.flowModeActive === true) {
     return COMMAND_IDS.PROJECT_FLOW_SAVE_V1;
@@ -906,7 +970,7 @@ export function registerProjectCommands(registry, options = {}) {
   );
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN, async (input = {}) => {
-    if (!electronAPI || typeof electronAPI.exportDocxMin !== 'function') {
+    if (!electronAPI || typeof electronAPI !== 'object') {
       return fail(
         'E_UNWIRED_EXPORT_BACKEND',
         COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN,
@@ -928,7 +992,7 @@ export function registerProjectCommands(registry, options = {}) {
 
     let response;
     try {
-      response = await electronAPI.exportDocxMin(payload);
+      response = await invokeTransferAndFlowCommandBridge(electronAPI, COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN, payload);
     } catch (error) {
       return fail(
         'E_COMMAND_FAILED',
@@ -937,17 +1001,18 @@ export function registerProjectCommands(registry, options = {}) {
         { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
       );
     }
+    const bridged = unwrapBridgeResponseValue(response);
 
-    if (response && response.ok === 1) {
+    if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
       return ok({
         exported: true,
-        outPath: typeof response.outPath === 'string' ? response.outPath : '',
-        bytesWritten: Number.isInteger(response.bytesWritten) ? response.bytesWritten : 0,
+        outPath: typeof bridged.outPath === 'string' ? bridged.outPath : '',
+        bytesWritten: Number.isInteger(bridged.bytesWritten) ? bridged.bytesWritten : 0,
       });
     }
 
-    if (response && response.ok === 0 && response.error && typeof response.error === 'object') {
-      const error = response.error;
+    if (bridged && bridged.ok === 0 && bridged.error && typeof bridged.error === 'object') {
+      const error = bridged.error;
       return fail(
         typeof error.code === 'string' ? error.code : 'E_EXPORT_DOCXMIN_FAILED',
         typeof error.op === 'string' ? error.op : EXPORT_DOCX_MIN_OP,
@@ -964,7 +1029,7 @@ export function registerProjectCommands(registry, options = {}) {
   });
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, async (input = {}) => {
-    if (!electronAPI || typeof electronAPI.importMarkdownV1 !== 'function') {
+    if (!electronAPI || typeof electronAPI !== 'object') {
       return fail(
         'MDV1_INTERNAL_ERROR',
         COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1,
@@ -985,7 +1050,7 @@ export function registerProjectCommands(registry, options = {}) {
 
     let response;
     try {
-      response = await electronAPI.importMarkdownV1(payload);
+      response = await invokeTransferAndFlowCommandBridge(electronAPI, COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);
     } catch (error) {
       return fail(
         'MDV1_INTERNAL_ERROR',
@@ -994,19 +1059,20 @@ export function registerProjectCommands(registry, options = {}) {
         { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
       );
     }
+    const bridged = unwrapBridgeResponseValue(response);
 
-    if (response && response.ok === 1 && response.scene && typeof response.scene === 'object') {
+    if (bridged && bridged.ok === 1 && bridged.scene && typeof bridged.scene === 'object') {
       return ok({
         imported: true,
-        scene: response.scene,
-        lossReport: response.lossReport && typeof response.lossReport === 'object'
-          ? response.lossReport
+        scene: bridged.scene,
+        lossReport: bridged.lossReport && typeof bridged.lossReport === 'object'
+          ? bridged.lossReport
           : { count: 0, items: [] },
       });
     }
 
-    if (response && response.ok === 0 && response.error && typeof response.error === 'object') {
-      const error = response.error;
+    if (bridged && bridged.ok === 0 && bridged.error && typeof bridged.error === 'object') {
+      const error = bridged.error;
       return fail(
         typeof error.code === 'string' ? error.code : 'MDV1_INTERNAL_ERROR',
         typeof error.op === 'string' ? error.op : IMPORT_MARKDOWN_V1_OP,
@@ -1023,7 +1089,7 @@ export function registerProjectCommands(registry, options = {}) {
   });
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, async (input = {}) => {
-    if (!electronAPI || typeof electronAPI.exportMarkdownV1 !== 'function') {
+    if (!electronAPI || typeof electronAPI !== 'object') {
       return fail(
         'MDV1_INTERNAL_ERROR',
         COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1,
@@ -1052,7 +1118,7 @@ export function registerProjectCommands(registry, options = {}) {
 
     let response;
     try {
-      response = await electronAPI.exportMarkdownV1(payload);
+      response = await invokeTransferAndFlowCommandBridge(electronAPI, COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, payload);
     } catch (error) {
       return fail(
         'MDV1_INTERNAL_ERROR',
@@ -1061,37 +1127,38 @@ export function registerProjectCommands(registry, options = {}) {
         { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
       );
     }
+    const bridged = unwrapBridgeResponseValue(response);
 
-    if (response && response.ok === 1 && typeof response.markdown === 'string') {
+    if (bridged && bridged.ok === 1 && typeof bridged.markdown === 'string') {
       const output = {
         exported: true,
-        markdown: response.markdown,
-        lossReport: response.lossReport && typeof response.lossReport === 'object'
-          ? response.lossReport
+        markdown: bridged.markdown,
+        lossReport: bridged.lossReport && typeof bridged.lossReport === 'object'
+          ? bridged.lossReport
           : { count: 0, items: [] },
       };
 
-      if (typeof response.outPath === 'string' && response.outPath.length > 0) {
-        output.outPath = response.outPath;
+      if (typeof bridged.outPath === 'string' && bridged.outPath.length > 0) {
+        output.outPath = bridged.outPath;
       }
-      if (Number.isInteger(response.bytesWritten) && response.bytesWritten >= 0) {
-        output.bytesWritten = response.bytesWritten;
+      if (Number.isInteger(bridged.bytesWritten) && bridged.bytesWritten >= 0) {
+        output.bytesWritten = bridged.bytesWritten;
       }
-      if (typeof response.safetyMode === 'string' && response.safetyMode.length > 0) {
-        output.safetyMode = response.safetyMode;
+      if (typeof bridged.safetyMode === 'string' && bridged.safetyMode.length > 0) {
+        output.safetyMode = bridged.safetyMode;
       }
-      if (response.snapshotCreated === true) {
+      if (bridged.snapshotCreated === true) {
         output.snapshotCreated = true;
-        if (typeof response.snapshotPath === 'string' && response.snapshotPath.length > 0) {
-          output.snapshotPath = response.snapshotPath;
+        if (typeof bridged.snapshotPath === 'string' && bridged.snapshotPath.length > 0) {
+          output.snapshotPath = bridged.snapshotPath;
         }
       }
 
       return ok(output);
     }
 
-    if (response && response.ok === 0 && response.error && typeof response.error === 'object') {
-      const error = response.error;
+    if (bridged && bridged.ok === 0 && bridged.error && typeof bridged.error === 'object') {
+      const error = bridged.error;
       return fail(
         typeof error.code === 'string' ? error.code : 'MDV1_INTERNAL_ERROR',
         typeof error.op === 'string' ? error.op : EXPORT_MARKDOWN_V1_OP,
@@ -1108,7 +1175,7 @@ export function registerProjectCommands(registry, options = {}) {
   });
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_FLOW_OPEN_V1, async () => {
-    if (!electronAPI || typeof electronAPI.openFlowModeV1 !== 'function') {
+    if (!electronAPI || typeof electronAPI !== 'object') {
       return fail(
         'M7_FLOW_INTERNAL_ERROR',
         COMMAND_IDS.PROJECT_FLOW_OPEN_V1,
@@ -1118,7 +1185,7 @@ export function registerProjectCommands(registry, options = {}) {
 
     let response;
     try {
-      response = await electronAPI.openFlowModeV1();
+      response = await invokeTransferAndFlowCommandBridge(electronAPI, COMMAND_IDS.PROJECT_FLOW_OPEN_V1);
     } catch (error) {
       return fail(
         'M7_FLOW_INTERNAL_ERROR',
@@ -1127,16 +1194,17 @@ export function registerProjectCommands(registry, options = {}) {
         { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
       );
     }
+    const bridged = unwrapBridgeResponseValue(response);
 
-    if (response && response.ok === 1 && Array.isArray(response.scenes)) {
+    if (bridged && bridged.ok === 1 && Array.isArray(bridged.scenes)) {
       return ok({
         opened: true,
-        scenes: response.scenes,
+        scenes: bridged.scenes,
       });
     }
 
-    if (response && response.ok === 0 && response.error && typeof response.error === 'object') {
-      const error = response.error;
+    if (bridged && bridged.ok === 0 && bridged.error && typeof bridged.error === 'object') {
+      const error = bridged.error;
       return fail(
         typeof error.code === 'string' ? error.code : 'M7_FLOW_INTERNAL_ERROR',
         typeof error.op === 'string' ? error.op : FLOW_OPEN_V1_OP,
@@ -1153,7 +1221,7 @@ export function registerProjectCommands(registry, options = {}) {
   });
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_FLOW_SAVE_V1, async (input = {}) => {
-    if (!electronAPI || typeof electronAPI.saveFlowModeV1 !== 'function') {
+    if (!electronAPI || typeof electronAPI !== 'object') {
       return fail(
         'M7_FLOW_INTERNAL_ERROR',
         COMMAND_IDS.PROJECT_FLOW_SAVE_V1,
@@ -1171,7 +1239,11 @@ export function registerProjectCommands(registry, options = {}) {
 
     let response;
     try {
-      response = await electronAPI.saveFlowModeV1({ scenes: input.scenes });
+      response = await invokeTransferAndFlowCommandBridge(
+        electronAPI,
+        COMMAND_IDS.PROJECT_FLOW_SAVE_V1,
+        { scenes: input.scenes },
+      );
     } catch (error) {
       return fail(
         'M7_FLOW_INTERNAL_ERROR',
@@ -1180,16 +1252,17 @@ export function registerProjectCommands(registry, options = {}) {
         { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
       );
     }
+    const bridged = unwrapBridgeResponseValue(response);
 
-    if (response && response.ok === 1) {
+    if (bridged && bridged.ok === 1) {
       return ok({
         saved: true,
-        savedCount: Number.isInteger(response.savedCount) ? response.savedCount : input.scenes.length,
+        savedCount: Number.isInteger(bridged.savedCount) ? bridged.savedCount : input.scenes.length,
       });
     }
 
-    if (response && response.ok === 0 && response.error && typeof response.error === 'object') {
-      const error = response.error;
+    if (bridged && bridged.ok === 0 && bridged.error && typeof bridged.error === 'object') {
+      const error = bridged.error;
       return fail(
         typeof error.code === 'string' ? error.code : 'M7_FLOW_INTERNAL_ERROR',
         typeof error.op === 'string' ? error.op : FLOW_SAVE_V1_OP,
