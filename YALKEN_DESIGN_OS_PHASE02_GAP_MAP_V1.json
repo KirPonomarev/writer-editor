@@ -1,0 +1,337 @@
+{
+  "schemaVersion": 1,
+  "taskId": "YALKEN_DESIGN_OS_PHASE02_REBASELINE_AGAINST_CONFIRMED_CLEAN_BASE_001",
+  "baselineHeadSha": "d3b7e90de926a17c9ee565ce1a6e17f1554fb72a",
+  "mode": "DOC_ADMISSION_PREP_ONLY",
+  "activeCanonBinding": true,
+  "externalAdmissionInputBindingOverride": false,
+  "gapMapClassSet": [
+    "ALREADY_COVERED_OUTSIDE_PROGRAM",
+    "IMPORT_WITH_MAINLINE_ADAPTATION",
+    "MISSING_VALID",
+    "STALE",
+    "MANUAL_MERGE_REQUIRED"
+  ],
+  "comparedItems": [
+    {
+      "itemId": "CANON.md",
+      "presentInRepo": true,
+      "primaryDisposition": "ALREADY_COVERED_OUTSIDE_PROGRAM",
+      "secondary": {
+        "missingValidContext": false,
+        "staleContext": false,
+        "manualMergeContext": false,
+        "note": "active binding entrypoint already present"
+      }
+    },
+    {
+      "itemId": "COREX.v1.md",
+      "presentInRepo": true,
+      "primaryDisposition": "ALREADY_COVERED_OUTSIDE_PROGRAM",
+      "secondary": {
+        "missingValidContext": false,
+        "staleContext": false,
+        "manualMergeContext": false,
+        "note": "frozen target architecture source already present"
+      }
+    },
+    {
+      "itemId": "BIBLE.md",
+      "presentInRepo": true,
+      "primaryDisposition": "ALREADY_COVERED_OUTSIDE_PROGRAM",
+      "secondary": {
+        "missingValidContext": false,
+        "staleContext": false,
+        "manualMergeContext": false,
+        "note": "product map source already present"
+      }
+    },
+    {
+      "itemId": "CONTEXT.md",
+      "presentInRepo": true,
+      "primaryDisposition": "ALREADY_COVERED_OUTSIDE_PROGRAM",
+      "secondary": {
+        "missingValidContext": false,
+        "staleContext": false,
+        "manualMergeContext": false,
+        "note": "active factual context source already present"
+      }
+    },
+    {
+      "itemId": "HANDOFF.md",
+      "presentInRepo": true,
+      "primaryDisposition": "ALREADY_COVERED_OUTSIDE_PROGRAM",
+      "secondary": {
+        "missingValidContext": false,
+        "staleContext": false,
+        "manualMergeContext": false,
+        "note": "handoff snapshot source already present"
+      }
+    },
+    {
+      "itemId": "PROCESS.md",
+      "presentInRepo": true,
+      "primaryDisposition": "ALREADY_COVERED_OUTSIDE_PROGRAM",
+      "secondary": {
+        "missingValidContext": false,
+        "staleContext": false,
+        "manualMergeContext": false,
+        "note": "execution process source already present"
+      }
+    },
+    {
+      "itemId": "YALKEN_DESIGN_OS_EXTERNAL_ARCHIVE_SET_V3.json",
+      "presentInRepo": false,
+      "primaryDisposition": "MANUAL_MERGE_REQUIRED",
+      "secondary": {
+        "missingValidContext": true,
+        "staleContext": false,
+        "manualMergeContext": true,
+        "note": "external archive set absent locally and requires manual reconciliation map"
+      }
+    },
+    {
+      "itemId": "YALKEN_DESIGN_OS_EXTERNAL_AGENT_DELIVERY_REPORT_V3_2026-03-27.json",
+      "presentInRepo": false,
+      "primaryDisposition": "STALE",
+      "secondary": {
+        "missingValidContext": true,
+        "staleContext": true,
+        "manualMergeContext": false,
+        "note": "external report date precedes confirmed clean base"
+      }
+    },
+    {
+      "itemId": "YALKEN_DESIGN_OS_EXTERNAL_AGENT_DELIVERY_REPORT_V3_2026-03-27.md",
+      "presentInRepo": false,
+      "primaryDisposition": "STALE",
+      "secondary": {
+        "missingValidContext": true,
+        "staleContext": true,
+        "manualMergeContext": false,
+        "note": "external narrative report date precedes confirmed clean base"
+      }
+    },
+    {
+      "itemId": "YALKEN_DESIGN_OS_OPEN_PROBLEM_REGISTER_V1.json",
+      "presentInRepo": false,
+      "primaryDisposition": "MISSING_VALID",
+      "secondary": {
+        "missingValidContext": true,
+        "staleContext": false,
+        "manualMergeContext": false,
+        "note": "problem register referenced by admission input but absent in current repo baseline"
+      }
+    },
+    {
+      "itemId": "YALKEN_DESIGN_OS_DETAILED_MASTER_IMPLEMENTATION_PROGRAM_V3_2026-03-27.md",
+      "presentInRepo": false,
+      "primaryDisposition": "STALE",
+      "secondary": {
+        "missingValidContext": true,
+        "staleContext": true,
+        "manualMergeContext": false,
+        "note": "external master program is dated earlier than current clean baseline"
+      }
+    },
+    {
+      "itemId": "YALKEN_DESIGN_OS_REPO_CURRENT_STATE_EVALUATION_V1_2026-03-27.md",
+      "presentInRepo": false,
+      "primaryDisposition": "STALE",
+      "secondary": {
+        "missingValidContext": true,
+        "staleContext": true,
+        "manualMergeContext": false,
+        "note": "external state evaluation is pre-baseline and absent locally"
+      }
+    },
+    {
+      "itemId": "main.js",
+      "presentInRepo": true,
+      "primaryDisposition": "IMPORT_WITH_MAINLINE_ADAPTATION",
+      "secondary": {
+        "missingValidContext": false,
+        "staleContext": false,
+        "manualMergeContext": true,
+        "note": "any external import touching runtime menu flow requires adaptation to merged mainline"
+      }
+    },
+    {
+      "itemId": "preload.js",
+      "presentInRepo": true,
+      "primaryDisposition": "IMPORT_WITH_MAINLINE_ADAPTATION",
+      "secondary": {
+        "missingValidContext": false,
+        "staleContext": false,
+        "manualMergeContext": true,
+        "note": "bridge and guard behavior must stay aligned with current mainline"
+      }
+    },
+    {
+      "itemId": "editor.js",
+      "presentInRepo": true,
+      "primaryDisposition": "IMPORT_WITH_MAINLINE_ADAPTATION",
+      "secondary": {
+        "missingValidContext": false,
+        "staleContext": false,
+        "manualMergeContext": true,
+        "note": "renderer command/kernel integrations require selective adaptation only"
+      }
+    },
+    {
+      "itemId": "runtimeBridge.js",
+      "presentInRepo": true,
+      "primaryDisposition": "IMPORT_WITH_MAINLINE_ADAPTATION",
+      "secondary": {
+        "missingValidContext": false,
+        "staleContext": false,
+        "manualMergeContext": true,
+        "note": "runtime command canonicalization path requires selective adaptation"
+      }
+    },
+    {
+      "itemId": "index.html",
+      "presentInRepo": true,
+      "primaryDisposition": "IMPORT_WITH_MAINLINE_ADAPTATION",
+      "secondary": {
+        "missingValidContext": false,
+        "staleContext": false,
+        "manualMergeContext": true,
+        "note": "markup changes require compatibility check against merged renderer baseline"
+      }
+    },
+    {
+      "itemId": "styles.css",
+      "presentInRepo": true,
+      "primaryDisposition": "IMPORT_WITH_MAINLINE_ADAPTATION",
+      "secondary": {
+        "missingValidContext": false,
+        "staleContext": false,
+        "manualMergeContext": true,
+        "note": "style changes require compatibility check against merged renderer baseline"
+      }
+    }
+  ],
+  "runtimeImportStrictAllowlist": {
+    "allowedTargetBasenames": [
+      "main.js",
+      "preload.js",
+      "editor.js",
+      "runtimeBridge.js",
+      "index.html",
+      "styles.css"
+    ],
+    "blockedUntilSelectivePlanBasenames": [
+      "CANON.md",
+      "COREX.v1.md",
+      "BIBLE.md",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "PROCESS.md",
+      "OWNER_OPEN_SIGNAL_RECORD_V1.json",
+      "X101_UI_REDESIGN_STATUS_V1.json",
+      "X102_LOCAL_APP_CAPTURE_ROUTE_RUNTIME_SPEC_V1.json",
+      "X102_LOCAL_APP_CAPTURE_ROUTE_STATUS_V1.json",
+      "X102_VISUAL_SOURCE_PACKET_V1.json"
+    ],
+    "rule": "NO_RUNTIME_IMPORT_BEFORE_SELECTIVE_PLAN"
+  },
+  "testCarryForwardValidityMatrix": [
+    {
+      "testId": "phase05-bounded-spatial-shell-state.contract.test.js",
+      "carryForwardValidity": "VALID",
+      "basis": "merged in queue 05B and not superseded in baseline"
+    },
+    {
+      "testId": "phase07-startup-project-open-scene-switch-reset-runtime-measurements-foundation-state.contract.test.js",
+      "carryForwardValidity": "VALID",
+      "basis": "merged in queue 05C with HOLD readiness semantics"
+    },
+    {
+      "testId": "phase07-startup-runtime-measurement-baseline.contract.test.js",
+      "carryForwardValidity": "VALID",
+      "basis": "merged in queue 05C with open-gap preservation"
+    },
+    {
+      "testId": "x102-capture-static-checks",
+      "carryForwardValidity": "VALID",
+      "basis": "merged in queue 05D with helper-launch binding and asset-set checks"
+    },
+    {
+      "testId": "external-agent-delivery-report-based-assertions",
+      "carryForwardValidity": "STALE",
+      "basis": "external reports predate confirmed clean base"
+    }
+  ],
+  "statusWordingDriftNotes": [
+    {
+      "topic": "Phase07 Readiness",
+      "repoWording": "HOLD readiness with explicit open gaps for scene switch and reset",
+      "driftRisk": "older external phrasing may imply forced PASS",
+      "action": "preserve HOLD semantics in selective plan"
+    },
+    {
+      "topic": "Tail Closure",
+      "repoWording": "tail queue closed through 05D on mainline",
+      "driftRisk": "legacy local branch history can look like active tail",
+      "action": "use confirmed clean base only"
+    },
+    {
+      "topic": "Authority Layer",
+      "repoWording": "active canon is binding; external materials are admission input only",
+      "driftRisk": "external master order interpreted as override",
+      "action": "keep override flag false in all planning artifacts"
+    }
+  ],
+  "problemReassessment": [
+    {
+      "problemId": "PROBLEM_01",
+      "post05DStatus": "CLOSED",
+      "note": "canon authority model remains explicit"
+    },
+    {
+      "problemId": "PROBLEM_02",
+      "post05DStatus": "CLOSED",
+      "note": "git delivery chain enforced through merged queue"
+    },
+    {
+      "problemId": "PROBLEM_03",
+      "post05DStatus": "CLOSED",
+      "note": "tail clusters landed through 05D"
+    },
+    {
+      "problemId": "PROBLEM_04",
+      "post05DStatus": "CLOSED_BY_THIS_ARTIFACT",
+      "note": "machine-readable gap map now exists"
+    },
+    {
+      "problemId": "PROBLEM_05",
+      "post05DStatus": "CLOSED",
+      "note": "rebaseline performed against confirmed clean base"
+    },
+    {
+      "problemId": "PROBLEM_06",
+      "post05DStatus": "CLOSED",
+      "note": "external admission input not promoted to binding"
+    },
+    {
+      "problemId": "PROBLEM_07",
+      "post05DStatus": "REDUCED",
+      "note": "dirty local branches remain non-binding compare-only context"
+    },
+    {
+      "problemId": "PROBLEM_08",
+      "post05DStatus": "OPEN",
+      "note": "requires one explicit selective import plan brief"
+    }
+  ],
+  "coverageSummary": {
+    "alreadyCoveredOutsideProgramCount": 6,
+    "importWithMainlineAdaptationCount": 6,
+    "missingValidCount": 1,
+    "staleCount": 4,
+    "manualMergeRequiredCount": 1,
+    "totalComparedItems": 18
+  },
+  "nextStep": "OPEN_ONE_EXPLICIT_SELECTIVE_IMPORT_PLAN_BRIEF_ONLY"
+}
