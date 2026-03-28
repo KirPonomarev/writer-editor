@@ -2,6 +2,7 @@
   "artifactId": "PHASE05_BOUNDED_SPATIAL_SHELL_PACKET_V1",
   "schemaVersion": 1,
   "phaseId": "PHASE_05",
+  "deliveryClusterId": "GIT-TAIL-CLUSTER-05B-OPS-PHASE05-001",
   "status": "PASS",
   "phase05ReadinessStatus": "PASS",
   "sourcePhase05InvalidLayoutAndMissingMonitorRecoveryBaseline": "phase05-invalid-layout-and-missing-monitor-recovery-baseline-state.mjs",
@@ -29,5 +30,5 @@
     "phase05PendingGapIdsClearedTrue": true,
     "noFalsePhase05GreenTrue": true
   },
-  "updatedAtUtc": "2026-03-20T00:20:00.000Z"
+  "updatedAtUtc": "2026-03-28T00:00:00.000Z"
 }
