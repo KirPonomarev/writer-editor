@@ -2812,6 +2812,65 @@ function buildDesignOsDormantProductTruth() {
   return buildNonFlowDocumentTruth();
 }
 
+function buildDesignOsDormantTypographyDesignPatch() {
+  if (!editor) return null;
+  const computedStyle = window.getComputedStyle ? window.getComputedStyle(editor) : null;
+  const fontFamily = (
+    typeof editor.style.fontFamily === 'string' && editor.style.fontFamily.trim()
+      ? editor.style.fontFamily.trim()
+      : computedStyle && typeof computedStyle.fontFamily === 'string'
+        ? computedStyle.fontFamily.trim()
+        : ''
+  );
+  const lineHeightRaw = (
+    typeof editor.style.lineHeight === 'string' && editor.style.lineHeight.trim()
+      ? editor.style.lineHeight.trim()
+      : computedStyle && typeof computedStyle.lineHeight === 'string'
+        ? computedStyle.lineHeight.trim()
+        : ''
+  );
+  const sizePx = Number(currentFontSizePx);
+  const lineHeightValue = Number.parseFloat(lineHeightRaw);
+  if (!fontFamily || !Number.isFinite(sizePx) || sizePx <= 0) return null;
+  if (!Number.isFinite(lineHeightValue) || lineHeightValue <= 0) return null;
+  return {
+    typography: {
+      font: {
+        body: {
+          family: fontFamily,
+          sizePx: Number(sizePx.toFixed(2)),
+        },
+      },
+      scale: {
+        body: {
+          lineHeight: Number(lineHeightValue.toFixed(3)),
+        },
+      },
+    },
+  };
+}
+
+function commitDesignOsDormantTypographyDesignPatch({ syncPreview = true } = {}) {
+  if (!designOsDormantRuntimeMount.ports || typeof designOsDormantRuntimeMount.ports.commitDesign !== 'function') {
+    return false;
+  }
+  const designPatch = buildDesignOsDormantTypographyDesignPatch();
+  if (!designPatch) return false;
+  try {
+    designOsDormantRuntimeMount.ports.commitDesign({
+      context: buildDesignOsDormantContext(),
+      design_patch: designPatch,
+      commit_point: 'apply',
+    });
+    if (syncPreview) {
+      syncDesignOsDormantContext();
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function remountDesignOsDormantRuntimeForCurrentDocumentContext(options = {}) {
   try {
     const productTruth = options && typeof options === 'object' && options.productTruth
@@ -2839,6 +2898,7 @@ function remountDesignOsDormantRuntimeForCurrentDocumentContext(options = {}) {
     designOsDormantLastSyncedProductTruthHash = productTruthHash;
     const layoutStateForReplay = spatialLayoutState || getSpatialLayoutBaselineForViewport();
     syncDesignOsDormantLayoutCommitAtResizeEnd(layoutStateForReplay);
+    commitDesignOsDormantTypographyDesignPatch({ syncPreview: false });
     syncDesignOsDormantContext();
   } catch (error) {
     designOsDormantRuntimeMount = {
@@ -3623,6 +3683,7 @@ function applyLineHeight(value, persist = true) {
     localStorage.setItem('editorLineHeight', String(value));
   }
   renderStyledView(getPlainText());
+  commitDesignOsDormantTypographyDesignPatch();
 }
 
 function applyWordWrap(enabled, persist = true) {
@@ -4003,6 +4064,7 @@ function updateThemeSwatches(theme) {
   function applyFont(fontFamily) {
     editor.style.fontFamily = fontFamily;
     localStorage.setItem('editorFont', fontFamily);
+    commitDesignOsDormantTypographyDesignPatch();
   }
 
 function loadSavedFont() {
@@ -4658,6 +4720,7 @@ if (window.electronAPI) {
       editor.style.fontSize = `${px}px`;
       setCurrentFontSize(px);
       renderStyledView(getPlainText());
+      commitDesignOsDormantTypographyDesignPatch();
     }
   });
 
