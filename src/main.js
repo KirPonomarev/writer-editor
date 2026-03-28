@@ -2574,8 +2574,24 @@ async function handleUiOpenDocumentCommand(payload) {
   return { ok: true, path: filePath };
 }
 
+async function dispatchLegacyUiTreeDocumentCommand(commandId, payload = {}) {
+  try {
+    const result = await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE });
+    if (result && typeof result === 'object' && !Array.isArray(result)) {
+      return result;
+    }
+    return { ok: false, error: 'COMMAND_EXECUTION_FAILED' };
+  } catch (error) {
+    logDevError(`legacy-ui-tree-document-command:${commandId}`, error);
+    return {
+      ok: false,
+      error: error && typeof error.message === 'string' ? error.message : 'COMMAND_EXECUTION_THROW',
+    };
+  }
+}
+
 ipcMain.handle('ui:open-document', async (_, payload) => {
-  return handleUiOpenDocumentCommand(payload);
+  return dispatchLegacyUiTreeDocumentCommand('cmd.project.document.open', payload);
 });
 
 async function handleUiCreateNodeCommand(payload) {
@@ -2653,7 +2669,7 @@ async function handleUiCreateNodeCommand(payload) {
 }
 
 ipcMain.handle('ui:create-node', async (_, payload) => {
-  return handleUiCreateNodeCommand(payload);
+  return dispatchLegacyUiTreeDocumentCommand('cmd.project.tree.createNode', payload);
 });
 
 async function handleUiRenameNodeCommand(payload) {
@@ -2700,7 +2716,7 @@ async function handleUiRenameNodeCommand(payload) {
 }
 
 ipcMain.handle('ui:rename-node', async (_, payload) => {
-  return handleUiRenameNodeCommand(payload);
+  return dispatchLegacyUiTreeDocumentCommand('cmd.project.tree.renameNode', payload);
 });
 
 async function handleUiDeleteNodeCommand(payload) {
@@ -2743,7 +2759,7 @@ async function handleUiDeleteNodeCommand(payload) {
 }
 
 ipcMain.handle('ui:delete-node', async (_, payload) => {
-  return handleUiDeleteNodeCommand(payload);
+  return dispatchLegacyUiTreeDocumentCommand('cmd.project.tree.deleteNode', payload);
 });
 
 async function handleUiReorderNodeCommand(payload) {
@@ -2794,7 +2810,7 @@ async function handleUiReorderNodeCommand(payload) {
 }
 
 ipcMain.handle('ui:reorder-node', async (_, payload) => {
-  return handleUiReorderNodeCommand(payload);
+  return dispatchLegacyUiTreeDocumentCommand('cmd.project.tree.reorderNode', payload);
 });
 ipcMain.handle('ui:open-section', async (_, payload) => {
   if (!mainWindow) {
