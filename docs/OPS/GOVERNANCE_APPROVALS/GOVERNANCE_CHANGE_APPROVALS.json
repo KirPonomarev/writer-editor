@@ -17,10 +17,10 @@
     },
     {
       "filePath": "docs/OPS/BASELINE/OPS_GOVERNANCE_BASELINE_v1.0.json",
-      "sha256": "d81eb24a136b3f6d7078c2f0c0d4dd14cd2c98d5f44bc556e0399fe1d325a641",
-      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
-      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
-      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
+      "approvedBy": "ticket:YALKEN_DESIGN_OS_PHASE08_OPS_GOVERNANCE_BASELINE_REGEN_001",
+      "rationale": "PHASE_08_OPS_GOVERNANCE_BASELINE_REGEN_CANONICAL_REBIND",
+      "sha256": "9277d4c4116b63671fc2da83640df08d5e2b7a5345a30d2df66c120a8e536ae1",
+      "approvedAtUtc": "2026-03-28T17:14:57.714Z"
     },
     {
       "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
