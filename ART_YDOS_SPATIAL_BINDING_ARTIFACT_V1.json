@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "artifactType": "spatialBindingArtifact",
+  "bindingId": "ydos-spatial-binding-v1",
+  "truthBoundaries": {
+    "textTruthOwnedByDesignOs": false,
+    "commandMeaningOwnedByDesignOs": false,
+    "runtimeTruthOwnedByDesignOs": false,
+    "statusTruthOwnedByDesignOs": false
+  },
+  "bindingScope": {
+    "foundationOnly": true,
+    "runtimeImportAuthorized": false,
+    "liveCutoverComplete": false
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "artifactType": "runtimeContextExample",
+  "contextId": "ydos-runtime-context-example-v1",
+  "context": {
+    "executionPhase": "phase04_schema_base",
+    "runtimeImportAllowed": false,
+    "rendererWiringAllowed": false,
+    "statusPromotionAllowed": false
+  },
+  "guardrails": {
+    "activeCanonWins": true,
+    "externalAdmissionInputBinding": false,
+    "branchLocalCompareBinding": false
+  }
+}

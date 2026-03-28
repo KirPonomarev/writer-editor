@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "artifactType": "baselineExamplePayload",
+  "baselineId": "ydos-phase04-foundation-baseline-v1",
+  "forbiddenPatchRoots": [
+    "product_truth",
+    "command_truth",
+    "recovery_truth",
+    "command_availability"
+  ],
+  "baselineAssertions": {
+    "activeCanonFirst": true,
+    "runtimeImportDone": false,
+    "rendererWiringDone": false,
+    "liveCutoverComplete": false
+  },
+  "ownershipClaims": {
+    "productTruthOwnedByDesignOs": false,
+    "commandMeaningOwnedByDesignOs": false
+  }
+}

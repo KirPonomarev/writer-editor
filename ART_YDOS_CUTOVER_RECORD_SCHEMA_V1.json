@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "artifactType": "cutoverRecordSchema",
+  "purpose": "Schema foundation for controlled cutover records without claiming cutover completion.",
+  "required": [
+    "recordId",
+    "recordType",
+    "createdAtUtc",
+    "activeCanonReference",
+    "changeSet",
+    "verification"
+  ],
+  "properties": {
+    "recordId": "string",
+    "recordType": "string",
+    "createdAtUtc": "string",
+    "activeCanonReference": "string",
+    "changeSet": "array",
+    "verification": "object"
+  },
+  "notes": {
+    "claimsLiveCutoverComplete": false,
+    "runtimeImportAuthorized": false
+  }
+}
