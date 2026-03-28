@@ -19,6 +19,9 @@
     "cmd.file.importMarkdownV1": "cmd.project.importMarkdownV1",
     "cmd.file.exportMarkdownV1": "cmd.project.exportMarkdownV1",
     "cmd.file.flowOpenV1": "cmd.project.flowOpenV1",
-    "cmd.file.flowSaveV1": "cmd.project.flowSaveV1"
+    "cmd.file.flowSaveV1": "cmd.project.flowSaveV1",
+    "cmd.ui.theme.set": "cmd.ui.theme.set",
+    "cmd.ui.font.set": "cmd.ui.font.set",
+    "cmd.ui.fontSize.set": "cmd.ui.fontSize.set"
   }
 }
