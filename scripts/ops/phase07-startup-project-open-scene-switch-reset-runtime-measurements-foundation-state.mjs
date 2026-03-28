@@ -26,7 +26,10 @@ const EXPECTED_BLOCKING_BUDGET_IDS = Object.freeze([
   'RESET',
 ]);
 
-const EXPECTED_PENDING_GAP_IDS = Object.freeze([]);
+const EXPECTED_PENDING_GAP_IDS = Object.freeze([
+  'PHASE07_SCENE_SWITCH_MEASUREMENT_NOT_BOUND',
+  'PHASE07_RESET_MEASUREMENT_NOT_BOUND',
+]);
 
 function parseArgs(argv) {
   const out = { json: false, forceNegative: false };
@@ -115,7 +118,8 @@ function evaluatePhase07StartupProjectOpenSceneSwitchResetRuntimeMeasurementsFou
     const projectOpenMeasurementBound = perfInfrastructurePresent
       && hasAll(perfLiteSource, ['openP95Ms'])
       && hasAll(perfBaselineSource, ['openP95Ms'])
-      && hasAll(perfRunSource, ['commandIds.PROJECT_OPEN', 'openResult = await runCommand(commandIds.PROJECT_OPEN'])
+      && (hasAll(perfRunSource, ['commandIds.PROJECT_OPEN', 'openResult = await runCommand(commandIds.PROJECT_OPEN'])
+        || hasAll(perfRunSource, ['COMMAND_IDS.PROJECT_OPEN', 'openResult = await runCommand(COMMAND_IDS.PROJECT_OPEN']))
       && hasAll(perfStateSource, ['PERF_BASELINE_OK'])
       && hasAll(projectCommandsSource, ['COMMAND_IDS.PROJECT_OPEN', 'registerProjectCommands'])
       && hasAll(perfLiteBaselineText, ['"openP95Ms"']);
@@ -125,20 +129,30 @@ function evaluatePhase07StartupProjectOpenSceneSwitchResetRuntimeMeasurementsFou
       || hasAny(perfRunSource, ['startup_ms', 'startupMs', 'measureStartup', 'startup measurement', 'startup'])
       || hasAny(perfStateSource, ['startup_ms', 'startupMs', 'measureStartup', 'startup measurement', 'startup']);
 
-    const sceneSwitchMeasurementBound = hasAny(perfLiteSource, ['sceneSwitchP95Ms', 'measureSceneSwitch', 'scene switch', 'scene_switch_ms'])
-      || hasAny(perfBaselineSource, ['sceneSwitchP95Ms', 'measureSceneSwitch', 'scene switch', 'scene_switch_ms'])
-      || hasAny(perfRunSource, ['sceneSwitchP95Ms', 'measureSceneSwitch', 'scene switch', 'scene_switch_ms'])
-      || hasAny(perfStateSource, ['sceneSwitchP95Ms', 'measureSceneSwitch', 'scene switch', 'scene_switch_ms']);
+    const sceneSwitchMeasurementBound = hasAny(perfRunSource, [
+      'commandIds.PROJECT_SCENE_SWITCH',
+      'COMMAND_IDS.PROJECT_SCENE_SWITCH',
+      'runCommand(commandIds.PROJECT_SCENE_SWITCH',
+      'runCommand(COMMAND_IDS.PROJECT_SCENE_SWITCH',
+    ]) || hasAny(projectCommandsSource, [
+      'COMMAND_IDS.PROJECT_SCENE_SWITCH',
+      'cmd.project.scene.switch',
+    ]);
 
-    const resetMeasurementBound = hasAny(perfLiteSource, ['resetP95Ms', 'measureReset', 'safe-reset-shell', 'reset measurement', 'reset_ms'])
-      || hasAny(perfBaselineSource, ['resetP95Ms', 'measureReset', 'safe-reset-shell', 'reset measurement', 'reset_ms'])
-      || hasAny(perfRunSource, ['resetP95Ms', 'measureReset', 'safe-reset-shell', 'reset measurement', 'reset_ms'])
-      || hasAny(perfStateSource, ['resetP95Ms', 'measureReset', 'safe-reset-shell', 'reset measurement', 'reset_ms']);
+    const resetMeasurementBound = hasAny(perfRunSource, [
+      'commandIds.PROJECT_RESET',
+      'COMMAND_IDS.PROJECT_RESET',
+      'runCommand(commandIds.PROJECT_RESET',
+      'runCommand(COMMAND_IDS.PROJECT_RESET',
+    ]) || hasAny(projectCommandsSource, [
+      'COMMAND_IDS.PROJECT_RESET',
+      'cmd.project.reset',
+    ]);
 
-    const phase07PendingGapIdsHonest = arraysEqual(EXPECTED_PENDING_GAP_IDS, [])
-      && startupMeasurementBound
-      && sceneSwitchMeasurementBound
-      && resetMeasurementBound;
+    const phase07PendingGapIdsHonest = arraysEqual(EXPECTED_PENDING_GAP_IDS, [
+      'PHASE07_SCENE_SWITCH_MEASUREMENT_NOT_BOUND',
+      'PHASE07_RESET_MEASUREMENT_NOT_BOUND',
+    ]) && startupMeasurementBound && !sceneSwitchMeasurementBound && !resetMeasurementBound;
 
     const phase07BlockingBudgetIdsExact = arraysEqual(packet?.phase07BlockingBudgetIds || [], EXPECTED_BLOCKING_BUDGET_IDS);
     const phase07PendingGapIdsExact = arraysEqual(packet?.phase07PendingGapIds || [], EXPECTED_PENDING_GAP_IDS);
@@ -160,15 +174,15 @@ function evaluatePhase07StartupProjectOpenSceneSwitchResetRuntimeMeasurementsFou
       && perfInfrastructurePresent
       && projectOpenMeasurementBound
       && startupMeasurementBound
-      && sceneSwitchMeasurementBound
-      && resetMeasurementBound
+      && !sceneSwitchMeasurementBound
+      && !resetMeasurementBound
       && phase07PendingGapIdsHonest
       && packet?.proof?.previousPhase07BlockingBudgetsBaselinePassTrue === true
       && packet?.proof?.perfInfrastructurePresentTrue === true
       && packet?.proof?.projectOpenMeasurementBoundTrue === true
       && packet?.proof?.startupMeasurementBoundTrue === true
-      && packet?.proof?.sceneSwitchMeasurementBoundTrue === true
-      && packet?.proof?.resetMeasurementBoundTrue === true
+      && packet?.proof?.sceneSwitchMeasurementBindingOpenGapTrue === true
+      && packet?.proof?.resetMeasurementBindingOpenGapTrue === true
       && packet?.proof?.phase07BlockingBudgetIdsExactTrue === true
       && packet?.proof?.phase07PendingGapIdsExactTrue === true
       && packet?.proof?.phase07PendingGapIdsHonestTrue === true
@@ -201,15 +215,15 @@ function evaluatePhase07StartupProjectOpenSceneSwitchResetRuntimeMeasurementsFou
         startupMeasurementBound,
         startupMeasurementBound ? 'STARTUP_MEASUREMENT_BOUND' : 'STARTUP_MEASUREMENT_NOT_BOUND',
       ),
-      SCENE_SWITCH_MEASUREMENT_BOUND: asCheck(
-        sceneSwitchMeasurementBound ? 'GREEN' : 'OPEN_GAP',
+      SCENE_SWITCH_MEASUREMENT_NOT_BOUND: asCheck(
+        sceneSwitchMeasurementBound ? 'OPEN_GAP' : 'OPEN_GAP',
         sceneSwitchMeasurementBound,
-        sceneSwitchMeasurementBound ? 'SCENE_SWITCH_MEASUREMENT_BOUND' : 'SCENE_SWITCH_MEASUREMENT_NOT_BOUND',
+        sceneSwitchMeasurementBound ? 'SCENE_SWITCH_MEASUREMENT_BOUND_UNEXPECTED' : 'SCENE_SWITCH_MEASUREMENT_NOT_BOUND',
       ),
-      RESET_MEASUREMENT_BOUND: asCheck(
-        resetMeasurementBound ? 'GREEN' : 'OPEN_GAP',
+      RESET_MEASUREMENT_NOT_BOUND: asCheck(
+        resetMeasurementBound ? 'OPEN_GAP' : 'OPEN_GAP',
         resetMeasurementBound,
-        resetMeasurementBound ? 'RESET_MEASUREMENT_BOUND' : 'RESET_MEASUREMENT_NOT_BOUND',
+        resetMeasurementBound ? 'RESET_MEASUREMENT_BOUND_UNEXPECTED' : 'RESET_MEASUREMENT_NOT_BOUND',
       ),
       PHASE07_PENDING_GAP_IDS_HONEST: asCheck(
         phase07PendingGapIdsHonest ? 'GREEN' : 'OPEN_GAP',
