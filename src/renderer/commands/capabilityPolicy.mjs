@@ -26,6 +26,9 @@ export const CAPABILITY_BINDING = Object.freeze({
   'cmd.project.exportMarkdownV1': 'cap.project.export.markdownV1',
   'cmd.project.flowOpenV1': 'cap.project.flow.openV1',
   'cmd.project.flowSaveV1': 'cap.project.flow.saveV1',
+  'cmd.ui.theme.set': 'cap.ui.theme.set',
+  'cmd.ui.font.set': 'cap.ui.font.set',
+  'cmd.ui.fontSize.set': 'cap.ui.fontSize.set',
 });
 
 export const CAPABILITY_MATRIX = Object.freeze({
@@ -57,6 +60,9 @@ export const CAPABILITY_MATRIX = Object.freeze({
     'cap.project.export.markdownV1': true,
     'cap.project.flow.openV1': true,
     'cap.project.flow.saveV1': true,
+    'cap.ui.theme.set': true,
+    'cap.ui.font.set': true,
+    'cap.ui.fontSize.set': true,
   }),
   web: Object.freeze({
     'cap.core.project.create': true,
@@ -86,6 +92,9 @@ export const CAPABILITY_MATRIX = Object.freeze({
     'cap.project.export.markdownV1': false,
     'cap.project.flow.openV1': false,
     'cap.project.flow.saveV1': false,
+    'cap.ui.theme.set': false,
+    'cap.ui.font.set': false,
+    'cap.ui.fontSize.set': false,
   }),
   'mobile-wrapper': Object.freeze({
     'cap.core.project.create': true,
@@ -115,6 +124,9 @@ export const CAPABILITY_MATRIX = Object.freeze({
     'cap.project.export.markdownV1': false,
     'cap.project.flow.openV1': false,
     'cap.project.flow.saveV1': false,
+    'cap.ui.theme.set': false,
+    'cap.ui.font.set': false,
+    'cap.ui.fontSize.set': false,
   }),
 });
 
