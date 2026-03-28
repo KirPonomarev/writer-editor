@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "taskId": "YALKEN_DESIGN_OS_PHASE02_IMPORT_LEDGER_001",
+  "confirmedCleanBaseHead": "b57b3d19a81fe5ae22a4beae8be45a4d8449ff5c",
+  "sourceGapMapReference": {
+    "basename": "YALKEN_DESIGN_OS_PHASE02_GAP_MAP_V1.json",
+    "sourceTaskId": "YALKEN_DESIGN_OS_PHASE02_REBASELINE_AGAINST_CONFIRMED_CLEAN_BASE_001",
+    "sourceBaselineHeadSha": "d3b7e90de926a17c9ee565ce1a6e17f1554fb72a"
+  },
+  "activeCanonBinding": true,
+  "externalAdmissionInputBindingOverride": false,
+  "importEligibilityRule": {
+    "primaryDispositionAllowed": [
+      "IMPORT_WITH_MAINLINE_ADAPTATION"
+    ],
+    "primaryDispositionDenied": [
+      "ALREADY_COVERED_OUTSIDE_PROGRAM",
+      "MISSING_VALID",
+      "STALE",
+      "MANUAL_MERGE_REQUIRED"
+    ],
+    "noImportBeforeClassification": "TRUE"
+  },
+  "sourceClassificationSnapshot": {
+    "importWithMainlineAdaptationItems": [
+      "main.js",
+      "preload.js",
+      "editor.js",
+      "runtimeBridge.js",
+      "index.html",
+      "styles.css"
+    ],
+    "alreadyCoveredOutsideProgramItems": [
+      "CANON.md",
+      "COREX.v1.md",
+      "BIBLE.md",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "PROCESS.md"
+    ],
+    "outsideProgramItems": [
+      "YALKEN_DESIGN_OS_EXTERNAL_ARCHIVE_SET_V3.json",
+      "YALKEN_DESIGN_OS_EXTERNAL_AGENT_DELIVERY_REPORT_V3_2026-03-27.json",
+      "YALKEN_DESIGN_OS_EXTERNAL_AGENT_DELIVERY_REPORT_V3_2026-03-27.md",
+      "YALKEN_DESIGN_OS_OPEN_PROBLEM_REGISTER_V1.json",
+      "YALKEN_DESIGN_OS_DETAILED_MASTER_IMPLEMENTATION_PROGRAM_V3_2026-03-27.md",
+      "YALKEN_DESIGN_OS_REPO_CURRENT_STATE_EVALUATION_V1_2026-03-27.md"
+    ]
+  },
+  "futureBlockSequence": [
+    {
+      "phaseId": "PHASE_03_DOC_ALIGN",
+      "importItems": [],
+      "gates": [
+        "DOC_ALIGN_ADMISSION_APPROVED",
+        "CANON_PRIORITY_RECONFIRMED"
+      ],
+      "checkpointRefs": [
+        "YALKEN_DESIGN_OS_SECTOR_AND_CONTOUR_MAP_V1_2026-03-27.md",
+        "YALKEN_DESIGN_OS_PHASE_CHECKPOINT_MATRIX_V1.json",
+        "YALKEN_DESIGN_OS_PHASE_CHECKPOINT_RUNBOOK_V1_2026-03-27.md"
+      ]
+    },
+    {
+      "phaseId": "PHASE_04_SCHEMA_BASE",
+      "importItems": [],
+      "gates": [
+        "SCHEMA_BASE_ADMISSION_APPROVED",
+        "NO_RUNTIME_SCOPE_IN_PHASE_04"
+      ],
+      "checkpointRefs": [
+        "YALKEN_DESIGN_OS_FINAL_MASTER_IMPLEMENTATION_PROGRAM_V4_2026-03-27.md",
+        "YALKEN_DESIGN_OS_PHASE_CHECKPOINT_MATRIX_V1.json"
+      ]
+    },
+    {
+      "phaseId": "PHASE_05_RUNTIME_SUBTREE_IMPORT",
+      "importItems": [
+        "main.js",
+        "preload.js",
+        "runtimeBridge.js"
+      ],
+      "gates": [
+        "RUNTIME_IMPORT_ALLOWLIST_LOCKED",
+        "NO_EDITOR_PARITY_PATCH_IN_SAME_SLICE"
+      ],
+      "checkpointRefs": [
+        "YALKEN_DESIGN_OS_FULL_EXTERNAL_PREINTEGRATION_TZ_REFINED_V1_2026-03-27.md",
+        "YALKEN_DESIGN_OS_POST_ACTIVATION_AUTHORITY_MAP_V1.json"
+      ]
+    },
+    {
+      "phaseId": "PHASE_06_RENDERER_WIRING",
+      "importItems": [
+        "editor.js",
+        "index.html",
+        "styles.css"
+      ],
+      "gates": [
+        "RENDERER_SCOPE_ADMISSION_APPROVED",
+        "NO_STATUS_PROMOTION_IN_PHASE_06"
+      ],
+      "checkpointRefs": [
+        "YALKEN_DESIGN_OS_PHASE_CHECKPOINT_MATRIX_V1.json",
+        "YALKEN_DESIGN_OS_PHASE_CHECKPOINT_RUNBOOK_V1_2026-03-27.md"
+      ]
+    },
+    {
+      "phaseId": "PHASE_07_COMMAND_SEAM_FENCING",
+      "importItems": [],
+      "gates": [
+        "COMMAND_SEAM_FENCING_APPROVED",
+        "NO_UNCLASSIFIED_IMPORTS"
+      ],
+      "checkpointRefs": [
+        "YALKEN_DESIGN_OS_SECTOR_AND_CONTOUR_MAP_V1_2026-03-27.md",
+        "YALKEN_DESIGN_OS_PHASE_CHECKPOINT_MATRIX_V1.json"
+      ]
+    },
+    {
+      "phaseId": "PHASE_08_PROOF_AND_STATUS_REGEN",
+      "importItems": [],
+      "gates": [
+        "PROOF_REGEN_ADMISSION_APPROVED",
+        "STATUS_REGEN_AFTER_IMPORT_ONLY"
+      ],
+      "checkpointRefs": [
+        "YALKEN_DESIGN_OS_PHASE_CHECKPOINT_RUNBOOK_V1_2026-03-27.md",
+        "YALKEN_DESIGN_OS_POST_ACTIVATION_AUTHORITY_MAP_V1.json"
+      ]
+    }
+  ],
+  "importDenylists": {
+    "classDenylist": [
+      "ALREADY_COVERED_OUTSIDE_PROGRAM",
+      "MISSING_VALID",
+      "STALE",
+      "MANUAL_MERGE_REQUIRED"
+    ],
+    "itemDenylist": [
+      "CANON.md",
+      "COREX.v1.md",
+      "BIBLE.md",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "PROCESS.md",
+      "OWNER_OPEN_SIGNAL_RECORD_V1.json",
+      "X101_UI_REDESIGN_STATUS_V1.json",
+      "X102_BLOCK_01_EXECUTION_STATUS_V1.json",
+      "X102_LOCAL_APP_CAPTURE_ROUTE_RUNTIME_SPEC_V1.json",
+      "X102_LOCAL_APP_CAPTURE_ROUTE_STATUS_V1.json",
+      "X102_VISUAL_SOURCE_PACKET_V1.json"
+    ]
+  },
+  "guardLanguage": {
+    "branchLocalCompareOnlyDeny": "BRANCH_LOCAL_COMPARE_ONLY_REALITY_IS_NOT_BINDING_FOR_IMPORT",
+    "externalAdmissionOnly": "EXTERNAL_ADMISSION_INPUT_IS_READ_ONLY_AND_NOT_A_BINDING_OVERRIDE",
+    "runtimeImportInThisSlice": "FORBIDDEN"
+  },
+  "nextStep": "OPEN_ONE_EXPLICIT_PHASE_03_DOC_ALIGN_ADMISSION_BRIEF_ONLY"
+}
