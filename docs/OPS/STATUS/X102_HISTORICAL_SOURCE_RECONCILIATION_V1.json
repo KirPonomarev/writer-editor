@@ -1,0 +1,141 @@
+{
+  "artifactId": "X102_HISTORICAL_SOURCE_RECONCILIATION_V1",
+  "schemaVersion": 1,
+  "taskId": "X102_HISTORICAL_SOURCE_RECONCILIATION_V1",
+  "status": "READY",
+  "CURRENT_HEAD": "364bdb7980107c483864359219b8a93fede65cae",
+  "CURRENT_BRANCH": "codex/tz-yalken-literal-interface-stage-a-exec-001",
+  "X102_BASE_COMMIT_SHA": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+  "X102_HEAD_SHA_AT_OPEN": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+  "X102_START_BRANCH": "codex/tz-yalken-literal-interface-stage-a-exec-001",
+  "HISTORICAL_SOURCE_SURFACE_CLASS": "DIRTY_TRACKED_PLUS_UNTRACKED_WORKTREE_HISTORICAL_SOURCE_SURFACE",
+  "CLEAN_HEAD_SURFACE_CLASS": "TRACKED_HEAD_SURFACE_INCOMPLETE_FOR_X102_TEST_DESIGN",
+  "TRACKED_IN_HEAD_SET": [],
+  "DIRTY_TRACKED_SET": [
+    "index.html",
+    "styles.css",
+    "editor.js",
+    "editor.bundle.js",
+    "X101_UI_REDESIGN_STATUS_V1.json",
+    "OWNER_OPEN_SIGNAL_RECORD_V1.json"
+  ],
+  "UNTRACKED_WORKTREE_SET": [
+    "X101_LITERAL_INTERFACE_STAGE_A_PACKET_V1.json",
+    "X101_LITERAL_INTERFACE_STAGE_A1_HOTFIX_PACKET_V1.json",
+    "X102_UI_REDESIGN_OPENING_RECORD_V1.json",
+    "X102_UI_REDESIGN_READINESS_PACKET_V1.json",
+    "X102_UI_BLOCK_MAP_V1.json",
+    "X102_BLOCK_01_EXECUTION_BRIEF_V1.md",
+    "X102_BLOCK_01_EXECUTION_STATUS_V1.json",
+    "X102_VISUAL_SOURCE_PACKET_V1.json",
+    "x102_master_screen_01.png",
+    "x102_crop_block01_top_composition_01.png",
+    "x102_crop_block01_toolbar_01.png",
+    "x102_crop_block01_left_cluster_01.png",
+    "x102_crop_block01_compact_panel_01.png"
+  ],
+  "MISSING_SET": [],
+  "X102_REQUIRED_SOURCE_SET": [
+    "index.html",
+    "styles.css",
+    "editor.js",
+    "editor.bundle.js"
+  ],
+  "X102_REQUIRED_DOC_SET": [
+    "X101_UI_REDESIGN_STATUS_V1.json",
+    "X101_LITERAL_INTERFACE_STAGE_A_PACKET_V1.json",
+    "X101_LITERAL_INTERFACE_STAGE_A1_HOTFIX_PACKET_V1.json",
+    "X102_UI_REDESIGN_OPENING_RECORD_V1.json",
+    "X102_UI_REDESIGN_READINESS_PACKET_V1.json",
+    "X102_UI_BLOCK_MAP_V1.json",
+    "X102_BLOCK_01_EXECUTION_BRIEF_V1.md",
+    "X102_BLOCK_01_EXECUTION_STATUS_V1.json",
+    "X102_VISUAL_SOURCE_PACKET_V1.json",
+    "OWNER_OPEN_SIGNAL_RECORD_V1.json"
+  ],
+  "X102_REQUIRED_ASSET_SET": [
+    "x102_master_screen_01.png",
+    "x102_crop_block01_top_composition_01.png",
+    "x102_crop_block01_toolbar_01.png",
+    "x102_crop_block01_left_cluster_01.png",
+    "x102_crop_block01_compact_panel_01.png"
+  ],
+  "worktreeEvidence": {
+    "dirtyTrackedBasenames": [
+      "OWNER_OPEN_SIGNAL_RECORD_V1.json",
+      "X101_UI_REDESIGN_STATUS_V1.json",
+      "editor.bundle.js",
+      "editor.js",
+      "index.html",
+      "styles.css"
+    ],
+    "relevantUntrackedBasenames": [
+      "X101_LITERAL_INTERFACE_STAGE_A_PACKET_V1.json",
+      "X101_LITERAL_INTERFACE_STAGE_A1_HOTFIX_PACKET_V1.json",
+      "X102_UI_REDESIGN_OPENING_RECORD_V1.json",
+      "X102_UI_REDESIGN_READINESS_PACKET_V1.json",
+      "X102_UI_BLOCK_MAP_V1.json",
+      "X102_BLOCK_01_EXECUTION_BRIEF_V1.md",
+      "X102_BLOCK_01_EXECUTION_STATUS_V1.json",
+      "X102_VISUAL_SOURCE_PACKET_V1.json",
+      "x102_master_screen_01.png",
+      "x102_crop_block01_top_composition_01.png",
+      "x102_crop_block01_toolbar_01.png",
+      "x102_crop_block01_left_cluster_01.png",
+      "x102_crop_block01_compact_panel_01.png"
+    ]
+  },
+  "openingRecordProvenance": {
+    "startMode": "SNAPSHOT_ADOPTION",
+    "baseCommitSha": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+    "headShaAtOpen": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+    "startBranch": "codex/tz-yalken-literal-interface-stage-a-exec-001",
+    "carryForwardRefsResolvedTrue": true,
+    "adoptedBaselineDirtySet": [
+      "X101_UI_REDESIGN_STATUS_V1.json",
+      "editor.bundle.js",
+      "editor.js",
+      "index.html",
+      "styles.css",
+      "X101_LITERAL_INTERFACE_STAGE_A1_HOTFIX_PACKET_V1.json",
+      "X101_LITERAL_INTERFACE_STAGE_A_PACKET_V1.json"
+    ]
+  },
+  "blockExecutionProvenance": {
+    "baseSha": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+    "headShaAtStart": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+    "branch": "codex/tz-yalken-literal-interface-stage-a-exec-001",
+    "deltaPaths": [
+      "index.html",
+      "styles.css",
+      "editor.js",
+      "editor.bundle.js",
+      "X102_BLOCK_01_EXECUTION_STATUS_V1.json"
+    ],
+    "manualVisualStatus": "PENDING_OWNER_RECHECK",
+    "nextGate": "OWNER_VISUAL_RECHECK_FOR_BLOCK_01"
+  },
+  "visualSourceProvenance": {
+    "masterScreen": "x102_master_screen_01.png",
+    "zoneCrops": [
+      "x102_crop_block01_top_composition_01.png",
+      "x102_crop_block01_toolbar_01.png",
+      "x102_crop_block01_left_cluster_01.png",
+      "x102_crop_block01_compact_panel_01.png"
+    ],
+    "sourcePriority": [
+      "MASTER_SCREEN",
+      "RELEVANT_ZONE_CROPS",
+      "VISUAL_SOURCE_PACKET_METADATA",
+      "CURRENT_CODE_STATE"
+    ]
+  },
+  "ownerSignalProvenance": {
+    "recordId": "X102_BLOCK_01_OWNER_OPEN_SIGNAL_V1",
+    "baseCommitShaApproved": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+    "startBranchApproved": "codex/tz-yalken-literal-interface-stage-a-exec-001",
+    "startModeApproved": "SNAPSHOT_ADOPTION"
+  },
+  "TRUE_HISTORICAL_SOURCE_SURFACE_SUMMARY": "The truthful historical X102 test design source is not HEAD alone. It is the current dirty tracked renderer plus X101 status and owner signal files together with untracked X101 Stage A packets, X102 packets, and X102 visual assets, all anchored by base commit ccd81d3 and start branch codex/tz-yalken-literal-interface-stage-a-exec-001.",
+  "TRUE_NEXT_GATE": "X102_INPUT_PACKET_PROMOTION_TO_CLEAN_SURFACE_V1"
+}

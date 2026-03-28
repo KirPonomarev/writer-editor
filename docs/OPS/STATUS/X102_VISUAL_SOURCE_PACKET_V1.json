@@ -1,0 +1,86 @@
+{
+  "artifactId": "X102_VISUAL_SOURCE_PACKET_V1",
+  "schemaVersion": 1,
+  "status": "READY",
+  "visualSourceType": "REPO_NORMALIZED_FROM_APPROVED_SCREENS_AND_ARCHIVE_GEOMETRY",
+  "visualBaselinePolicy": {
+    "policyClass": "TEMPORARY_ITERATION_ACCEPTANCE_BASELINE",
+    "currentIterationOnlyTrue": true,
+    "permanentProductDesignCanonFalse": true,
+    "futureRedesignAllowedTrue": true,
+    "designCanonAuthority": "ACTIVE_CANON_BOUNDARIES_PLUS_ITERATION_ACCEPTANCE_ONLY"
+  },
+  "normalizationRule": "HOST_CHROME_EXCLUDED_APP_SURFACE_ONLY",
+  "sourcePriority": [
+    "MASTER_SCREEN",
+    "RELEVANT_ZONE_CROPS",
+    "VISUAL_SOURCE_PACKET_METADATA",
+    "CURRENT_CODE_STATE"
+  ],
+  "masterScreen": {
+    "path": "docs/OPS/STATUS/assets/x102_visual_source/x102_master_screen_01.png",
+    "sha256": "ed2f9e08e6efcf420782e1c1dddf3010b6144143a7479e5d9f3595dc71727ec4",
+    "width": 2048,
+    "height": 1110
+  },
+  "zoneCrops": {
+    "BLOCK_01_TOP_COMPOSITION": {
+      "path": "docs/OPS/STATUS/assets/x102_visual_source/x102_crop_block01_top_composition_01.png",
+      "sha256": "0b50ee7c45df6cc0c3bcdf0d83d802a7947b84fa7b00f15b79b7e52c86a99f2d",
+      "width": 2048,
+      "height": 146
+    },
+    "BLOCK_01_TOOLBAR": {
+      "path": "docs/OPS/STATUS/assets/x102_visual_source/x102_crop_block01_toolbar_01.png",
+      "sha256": "b50f02c6f189e5217ced4f40771e439f014423e38321f6bed77a3eadad2d4a35",
+      "width": 625,
+      "height": 58
+    },
+    "BLOCK_01_LEFT_CLUSTER": {
+      "path": "docs/OPS/STATUS/assets/x102_visual_source/x102_crop_block01_left_cluster_01.png",
+      "sha256": "655227217155014fc43ddbc278b44c16593b87db94a571e643ca8fbb51d26e41",
+      "width": 332,
+      "height": 76
+    },
+    "BLOCK_01_COMPACT_PANEL": {
+      "path": "docs/OPS/STATUS/assets/x102_visual_source/x102_crop_block01_compact_panel_01.png",
+      "sha256": "3be6a550cdbb0a3bda2b2c6880d47cf3cc7b4b84f6c90d6862b1d82414de171f",
+      "width": 1200,
+      "height": 600
+    }
+  },
+  "viewport": {
+    "normalizedCanvasWidth": 2048,
+    "normalizedCanvasHeight": 1110,
+    "titleBarHeight": 22,
+    "topWorkBarHeight": 68,
+    "bottomBarHeight": 30,
+    "sheetWidth": 595,
+    "sheetHeight": 842
+  },
+  "scaleRule": "USE_MASTER_SCREEN_FOR_GLOBAL_GEOMETRY_AND_RELEVANT_CROP_FOR_LOCAL_PIXEL_FIDELITY",
+  "strictZones": [
+    "top_title_area",
+    "top_work_bar",
+    "floating_toolbar",
+    "left_icon_cluster",
+    "compact_panel"
+  ],
+  "softZones": [
+    "central_sheet",
+    "bottom_status_bar"
+  ],
+  "compactPanelIdentity": {
+    "surfaceId": "GRID_TRIGGER_PANEL",
+    "trigger": "left_cluster_grid_icon",
+    "openStateAsset": "docs/OPS/STATUS/assets/x102_visual_source/x102_crop_block01_compact_panel_01.png",
+    "identityResolvedTrue": true,
+    "notes": "Derived from archive App.tsx grid panel dropdown with master/minimal headers and 4x5 slot grid"
+  },
+  "generationNotes": [
+    "Assets normalized into repository-resident PNGs for deterministic handoff",
+    "Geometry and palette derived from approved archive App.tsx and approved screenshot composition intent",
+    "Master screen excludes host Figma shell and macOS chrome to keep Block 01 reference stable",
+    "Visual screenshots, crops, and normalized assets are temporary acceptance baseline for the current iteration only and do not become permanent product design canon"
+  ]
+}
