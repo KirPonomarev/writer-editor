@@ -3401,10 +3401,14 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return { ok: savedAs === true };
   },
   'cmd.project.export.docxMin': async (payload = {}) => {
-    const previewRequested = sendRuntimeCommand('open-export-preview', {
-      source: 'menu',
-      commandId: 'cmd.project.export.docxMin',
-    });
+    const previewRequested = sendCanonicalRuntimeCommand(
+      'cmd.project.export.docxMin',
+      {
+        source: 'menu',
+        preview: true,
+      },
+      'open-export-preview',
+    );
     if (previewRequested) {
       return { ok: true, preview: true };
     }
