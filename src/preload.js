@@ -4,6 +4,7 @@ const IMPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:import:markdownV1:v1';
 const EXPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:export:markdownV1:v1';
 const FLOW_OPEN_V1_CHANNEL = 'm:cmd:project:flow:open:v1';
 const FLOW_SAVE_V1_CHANNEL = 'm:cmd:project:flow:save:v1';
+const UI_COMMAND_BRIDGE_CHANNEL = 'ui:command-bridge';
 
 // Экспорт безопасного API для renderer процесса
 contextBridge.exposeInMainWorld('electronAPI', {
@@ -93,6 +94,17 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   saveFlowModeV1: (payload) => {
     return ipcRenderer.invoke(FLOW_SAVE_V1_CHANNEL, payload);
+  },
+  invokeUiCommandBridge: (request) => {
+    const safeRequest = request && typeof request === 'object' && !Array.isArray(request)
+      ? request
+      : {};
+    const route = typeof safeRequest.route === 'string' ? safeRequest.route : '';
+    const commandId = typeof safeRequest.commandId === 'string' ? safeRequest.commandId : '';
+    const payload = safeRequest.payload && typeof safeRequest.payload === 'object' && !Array.isArray(safeRequest.payload)
+      ? safeRequest.payload
+      : {};
+    return ipcRenderer.invoke(UI_COMMAND_BRIDGE_CHANNEL, { route, commandId, payload });
   },
   setTheme: (theme) => {
     ipcRenderer.send('ui:set-theme', theme);

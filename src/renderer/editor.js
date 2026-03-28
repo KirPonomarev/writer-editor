@@ -4392,43 +4392,77 @@ async function handleReviewExportMarkdown() {
   return { performed: true };
 }
 
-function handleUiSetThemeCommand(payload = {}) {
+async function invokePreloadUiCommandBridge(commandId, payload = {}) {
+  if (!window.electronAPI || typeof window.electronAPI.invokeUiCommandBridge !== 'function') {
+    return { ok: false, reason: 'UI_COMMAND_BRIDGE_UNAVAILABLE' };
+  }
+  try {
+    return await window.electronAPI.invokeUiCommandBridge({
+      route: COMMAND_BUS_ROUTE,
+      commandId,
+      payload,
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      reason: 'UI_COMMAND_BRIDGE_FAILED',
+      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+    };
+  }
+}
+
+async function handleUiSetThemeCommand(payload = {}) {
   const nextTheme = payload && payload.theme === 'dark'
     ? 'dark'
     : (payload && payload.theme === 'light' ? 'light' : '');
   if (!nextTheme) {
     return { performed: false, reason: 'THEME_INVALID' };
   }
-  if (!window.electronAPI || typeof window.electronAPI.setTheme !== 'function') {
-    return { performed: false, reason: 'THEME_API_UNAVAILABLE' };
+  const bridgeResult = await invokePreloadUiCommandBridge(UI_COMMAND_IDS.THEME_SET, { theme: nextTheme });
+  if (!bridgeResult || bridgeResult.ok !== true) {
+    return {
+      performed: false,
+      reason: bridgeResult && typeof bridgeResult.reason === 'string'
+        ? bridgeResult.reason
+        : 'THEME_BRIDGE_FAILED',
+    };
   }
-  window.electronAPI.setTheme(nextTheme);
   return { performed: true, theme: nextTheme };
 }
 
-function handleUiSetFontCommand(payload = {}) {
+async function handleUiSetFontCommand(payload = {}) {
   const fontFamily = typeof payload?.fontFamily === 'string'
     ? payload.fontFamily.trim()
     : '';
   if (!fontFamily) {
     return { performed: false, reason: 'FONT_INVALID' };
   }
-  if (!window.electronAPI || typeof window.electronAPI.setFont !== 'function') {
-    return { performed: false, reason: 'FONT_API_UNAVAILABLE' };
+  const bridgeResult = await invokePreloadUiCommandBridge(UI_COMMAND_IDS.FONT_SET, { fontFamily });
+  if (!bridgeResult || bridgeResult.ok !== true) {
+    return {
+      performed: false,
+      reason: bridgeResult && typeof bridgeResult.reason === 'string'
+        ? bridgeResult.reason
+        : 'FONT_BRIDGE_FAILED',
+    };
   }
-  window.electronAPI.setFont(fontFamily);
   return { performed: true, fontFamily };
 }
 
-function handleUiSetFontSizeCommand(payload = {}) {
+async function handleUiSetFontSizeCommand(payload = {}) {
   const px = Number(payload?.px);
   if (!Number.isFinite(px) || px < 8 || px > 96) {
     return { performed: false, reason: 'FONT_SIZE_INVALID' };
   }
-  if (!window.electronAPI || typeof window.electronAPI.setFontSizePx !== 'function') {
-    return { performed: false, reason: 'FONT_SIZE_API_UNAVAILABLE' };
+  const bridgeResult = await invokePreloadUiCommandBridge(UI_COMMAND_IDS.FONT_SIZE_SET, { px });
+  if (!bridgeResult || bridgeResult.ok !== true) {
+    return {
+      performed: false,
+      reason: bridgeResult && typeof bridgeResult.reason === 'string'
+        ? bridgeResult.reason
+        : 'FONT_SIZE_BRIDGE_FAILED',
+    };
   }
-  window.electronAPI.setFontSizePx(px);
   return { performed: true, px };
 }
 

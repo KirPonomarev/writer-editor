@@ -2321,6 +2321,42 @@ ipcMain.handle('ui:get-collab-scope-local', async () => {
   return resolveCollabScopeLocalState();
 });
 
+ipcMain.handle('ui:command-bridge', async (_, request) => {
+  const safeRequest = request && typeof request === 'object' && !Array.isArray(request)
+    ? request
+    : {};
+  const route = typeof safeRequest.route === 'string' ? safeRequest.route : '';
+  const commandId = typeof safeRequest.commandId === 'string' ? safeRequest.commandId : '';
+  const payload = safeRequest.payload && typeof safeRequest.payload === 'object' && !Array.isArray(safeRequest.payload)
+    ? safeRequest.payload
+    : {};
+
+  if (route !== COMMAND_BUS_ROUTE) {
+    return { ok: false, reason: 'COMMAND_ROUTE_UNSUPPORTED' };
+  }
+  if (!UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS.has(commandId)) {
+    return { ok: false, reason: 'COMMAND_ID_NOT_ALLOWED' };
+  }
+
+  try {
+    const result = await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE });
+    if (result && result.ok === true) {
+      return { ok: true, value: result };
+    }
+    return {
+      ok: false,
+      reason: 'COMMAND_EXECUTION_FAILED',
+      value: result && typeof result === 'object' ? result : null,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      reason: 'COMMAND_EXECUTION_THROW',
+      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+    };
+  }
+});
+
 ipcMain.on('dirty-changed', (_, state) => {
   isDirty = state;
 });
@@ -3218,6 +3254,11 @@ const MENU_RUNTIME_CONTEXT_ENV_JSON = 'MENU_RUNTIME_CONTEXT_JSON';
 const MENU_RUNTIME_ARTIFACT_ENV_PATH = 'MENU_RUNTIME_ARTIFACT_PATH';
 const MENU_RUNTIME_RAW_CONFIG_ENV_PATH = 'MENU_RUNTIME_RAW_CONFIG_PATH';
 const MENU_RUNTIME_LEGACY_RAW_CONFIG_ENV_PATH = 'MENU_CONFIG_PATH';
+const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
+  'cmd.ui.theme.set',
+  'cmd.ui.font.set',
+  'cmd.ui.fontSize.set',
+]);
 const MENU_ACTION_ALIAS_TO_COMMAND = Object.freeze({
   newDocument: 'cmd.project.new',
   openDocument: 'cmd.project.open',
@@ -3312,12 +3353,25 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     handleFontChange(fontFamily);
     return { ok: true };
   },
-  'cmd.ui.fontSize.set': (payload = {}) => {
+  'cmd.ui.fontSize.set': async (payload = {}) => {
+    const px = Number(payload.px);
+    if (Number.isFinite(px)) {
+      currentFontSize = clampFontSize(px);
+      sendEditorFontSize(currentFontSize);
+      try {
+        const settings = await loadSettings();
+        settings.fontSize = currentFontSize;
+        await saveSettings(settings);
+      } catch (error) {
+        logDevError('cmd.ui.fontSize.set', error);
+      }
+      return { ok: true };
+    }
     const action = typeof payload.action === 'string'
       ? payload.action
       : (typeof payload.actionArg === 'string' ? payload.actionArg : '');
     if (!action) return { ok: false };
-    handleFontSizeChange(action);
+    await handleFontSizeChange(action);
     return { ok: true };
   },
   'cmd.ui.theme.set': (payload = {}) => {
