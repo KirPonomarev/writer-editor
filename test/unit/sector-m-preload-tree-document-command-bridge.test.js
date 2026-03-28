@@ -1,0 +1,88 @@
+const test = require('node:test')
+const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const path = require('node:path')
+
+const ROOT = path.resolve(__dirname, '..', '..')
+
+function read(filePath) {
+  return fs.readFileSync(path.join(ROOT, filePath), 'utf8')
+}
+
+test('preload tree document bridge: projectCommands routes five existing tree and document commands through invokeUiCommandBridge', () => {
+  const source = read('src/renderer/commands/projectCommands.mjs')
+
+  assert.ok(source.includes("const COMMAND_BRIDGE_ROUTE = 'command.bus';"))
+  assert.ok(source.includes('electronAPI.invokeUiCommandBridge({'))
+
+  assert.equal(source.includes('electronAPI.openDocument('), false)
+  assert.equal(source.includes('electronAPI.createNode('), false)
+  assert.equal(source.includes('electronAPI.renameNode('), false)
+  assert.equal(source.includes('electronAPI.deleteNode('), false)
+  assert.equal(source.includes('electronAPI.reorderNode('), false)
+
+  assert.ok(source.includes('commandId: EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN'))
+  assert.ok(source.includes('commandId: EXTRA_COMMAND_IDS.TREE_CREATE_NODE'))
+  assert.ok(source.includes('commandId: EXTRA_COMMAND_IDS.TREE_RENAME_NODE'))
+  assert.ok(source.includes('commandId: EXTRA_COMMAND_IDS.TREE_DELETE_NODE'))
+  assert.ok(source.includes('commandId: EXTRA_COMMAND_IDS.TREE_REORDER_NODE'))
+})
+
+test('preload tree document bridge: main bridge allowlist includes only existing cmd.ui set and existing tree document ids', () => {
+  const source = read('src/main.js')
+
+  assert.ok(source.includes('const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set(['))
+  assert.ok(source.includes("'cmd.ui.theme.set'"))
+  assert.ok(source.includes("'cmd.ui.font.set'"))
+  assert.ok(source.includes("'cmd.ui.fontSize.set'"))
+  assert.ok(source.includes("'cmd.project.document.open'"))
+  assert.ok(source.includes("'cmd.project.tree.createNode'"))
+  assert.ok(source.includes("'cmd.project.tree.renameNode'"))
+  assert.ok(source.includes("'cmd.project.tree.deleteNode'"))
+  assert.ok(source.includes("'cmd.project.tree.reorderNode'"))
+
+  assert.ok(source.includes("if (!UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS.has(commandId)) {"))
+  assert.ok(source.includes("return { ok: false, reason: 'COMMAND_ID_NOT_ALLOWED' };"))
+})
+
+test('preload tree document bridge: main bridge reuses existing tree and document semantics through shared handlers', () => {
+  const source = read('src/main.js')
+
+  assert.ok(source.includes('async function handleUiOpenDocumentCommand(payload) {'))
+  assert.ok(source.includes('async function handleUiCreateNodeCommand(payload) {'))
+  assert.ok(source.includes('async function handleUiRenameNodeCommand(payload) {'))
+  assert.ok(source.includes('async function handleUiDeleteNodeCommand(payload) {'))
+  assert.ok(source.includes('async function handleUiReorderNodeCommand(payload) {'))
+
+  assert.ok(source.includes("'cmd.project.document.open': async (payload = {}) => {"))
+  assert.ok(source.includes('return handleUiOpenDocumentCommand(payload);'))
+  assert.ok(source.includes("'cmd.project.tree.createNode': async (payload = {}) => {"))
+  assert.ok(source.includes('return handleUiCreateNodeCommand(payload);'))
+  assert.ok(source.includes("'cmd.project.tree.renameNode': async (payload = {}) => {"))
+  assert.ok(source.includes('return handleUiRenameNodeCommand(payload);'))
+  assert.ok(source.includes("'cmd.project.tree.deleteNode': async (payload = {}) => {"))
+  assert.ok(source.includes('return handleUiDeleteNodeCommand(payload);'))
+  assert.ok(source.includes("'cmd.project.tree.reorderNode': async (payload = {}) => {"))
+  assert.ok(source.includes('return handleUiReorderNodeCommand(payload);'))
+
+  assert.ok(source.includes("ipcMain.handle('ui:open-document', async (_, payload) => {"))
+  assert.ok(source.includes("ipcMain.handle('ui:create-node', async (_, payload) => {"))
+  assert.ok(source.includes("ipcMain.handle('ui:rename-node', async (_, payload) => {"))
+  assert.ok(source.includes("ipcMain.handle('ui:delete-node', async (_, payload) => {"))
+  assert.ok(source.includes("ipcMain.handle('ui:reorder-node', async (_, payload) => {"))
+})
+
+test('preload tree document bridge: out-of-scope surfaces remain present and unchanged by intent', () => {
+  const preloadSource = read('src/preload.js')
+  const editorSource = read('src/renderer/editor.js')
+  const capabilitySource = read('src/renderer/commands/capabilityPolicy.mjs')
+  const bindingDoc = read('docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json')
+  const namespaceDoc = read('docs/OPS/STATUS/COMMAND_NAMESPACE_CANON.json')
+
+  assert.ok(preloadSource.includes('invokeUiCommandBridge: (request) => {'))
+  assert.ok(editorSource.includes('async function openDocumentNode(node) {'))
+  assert.ok(editorSource.includes('async function handleCreateNode(node, kind, promptLabel) {'))
+  assert.ok(capabilitySource.includes("'cmd.project.document.open': 'cap.project.document.open'"))
+  assert.ok(bindingDoc.includes('"commandId": "cmd.project.document.open"'))
+  assert.ok(namespaceDoc.includes('"cmd.ui.theme.set"'))
+})
