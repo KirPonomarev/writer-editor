@@ -4581,7 +4581,10 @@ function handleUiAction(action) {
   }
 }
 
-function handleCanonicalRuntimeCommandId(commandId) {
+function handleCanonicalRuntimeCommandId(commandId, runtimePayload = null) {
+  const payload = runtimePayload && typeof runtimePayload === 'object' && !Array.isArray(runtimePayload)
+    ? runtimePayload
+    : {};
   if (commandId === EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS) {
     void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS);
     return true;
@@ -4620,6 +4623,10 @@ function handleCanonicalRuntimeCommandId(commandId) {
   }
   if (commandId === EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE) {
     void dispatchUiCommand(EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE);
+    return true;
+  }
+  if (commandId === COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN && payload.preview === true) {
+    openExportPreviewModal();
     return true;
   }
   return false;
@@ -5024,7 +5031,10 @@ if (window.electronAPI) {
   } else if (typeof window.electronAPI.onRuntimeCommand === 'function') {
     window.electronAPI.onRuntimeCommand((payload) => {
       const commandId = payload && typeof payload.commandId === 'string' ? payload.commandId : '';
-      if (handleCanonicalRuntimeCommandId(commandId)) {
+      const commandPayload = payload && payload.payload && typeof payload.payload === 'object' && !Array.isArray(payload.payload)
+        ? payload.payload
+        : {};
+      if (handleCanonicalRuntimeCommandId(commandId, commandPayload)) {
         return;
       }
       const command = payload && typeof payload.command === 'string' ? payload.command : '';

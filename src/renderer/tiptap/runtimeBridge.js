@@ -19,7 +19,10 @@ function runBridgeCallback(callback, action, ...args) {
   return { performed: true, action, reason: null }
 }
 
-function handleCanonicalRuntimeCommandId(runtimeHandlers, commandId) {
+function handleCanonicalRuntimeCommandId(runtimeHandlers, commandId, commandPayload = null) {
+  const payload = commandPayload && typeof commandPayload === 'object' && !Array.isArray(commandPayload)
+    ? commandPayload
+    : {}
   if (commandId === 'cmd.project.view.openSettings') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.openSettings, commandId) }
   }
@@ -49,6 +52,9 @@ function handleCanonicalRuntimeCommandId(runtimeHandlers, commandId) {
   }
   if (commandId === 'cmd.project.window.switchModeWrite') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.switchMode, commandId, 'write') }
+  }
+  if (commandId === 'cmd.project.export.docxMin' && payload.preview === true) {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.openExportPreview, commandId) }
   }
   return { handled: false, result: null }
 }
@@ -99,7 +105,10 @@ export function createTiptapRuntimeBridge(options = {}) {
     },
     handleRuntimeCommand(payload = {}) {
       const commandId = payload && typeof payload.commandId === 'string' ? payload.commandId : ''
-      const canonicalResult = handleCanonicalRuntimeCommandId(runtimeHandlers, commandId)
+      const commandPayload = payload && payload.payload && typeof payload.payload === 'object' && !Array.isArray(payload.payload)
+        ? payload.payload
+        : {}
+      const canonicalResult = handleCanonicalRuntimeCommandId(runtimeHandlers, commandId, commandPayload)
       if (canonicalResult.handled) {
         return {
           handled: true,
