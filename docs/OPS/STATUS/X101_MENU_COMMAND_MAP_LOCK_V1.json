@@ -106,9 +106,9 @@
     "search": "EXTRA_COMMAND_IDS.EDIT_FIND",
     "replace": "EXTRA_COMMAND_IDS.EDIT_REPLACE",
     "export-docx-min": "COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN_THROUGH_PREVIEW_CONFIRM",
-    "open-settings": "LOCAL_MODAL_HANDLER",
-    "open-diagnostics": "LOCAL_MODAL_HANDLER",
-    "open-recovery": "LOCAL_MODAL_HANDLER"
+    "open-settings": "EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS",
+    "open-diagnostics": "EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS",
+    "open-recovery": "EXTRA_COMMAND_IDS.REVIEW_OPEN_RECOVERY"
   },
   "redesignFreedom": {
     "menuOrderFree": true,
