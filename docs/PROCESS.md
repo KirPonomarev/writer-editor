@@ -19,6 +19,16 @@
   - Переход к следующему контуру при `TYPE != OPS_REPORT` без `COMMIT_CREATED` запрещён.
   - Merge выполняется только через PR path по канону.
 
+## Hard Git Delivery Discipline
+- Любая write-задача запускается только с явной `DELIVERY_POLICY`.
+- Канонический набор флагов: `COMMIT_REQUIRED`, `PUSH_REQUIRED`, `PR_REQUIRED`, `MERGE_REQUIRED`.
+- Если флаги не переопределены задачей, действует жёсткий режим `true/true/true/true`.
+- Новый write-contour в dirty worktree запрещён, кроме явно объявленных hygiene/isolation задач.
+- Один write cluster = одна полная delivery chain: `commit -> push -> PR -> merge`.
+- Переход к следующему write cluster до завершения текущей цепочки запрещён.
+- `NOT_REQUIRED_BY_TASK_POLICY_RULE` допускается только когда это прямо зафиксировано в самом task policy.
+- Для write-задач итоговый отчёт обязан содержать: `TASK_ID`, `HEAD_SHA_BEFORE`, `HEAD_SHA_AFTER`, `COMMIT_SHA`, `CHANGED_BASENAMES`, `STAGED_SCOPE_MATCH`, `COMMIT_OUTCOME`, `PUSH_RESULT`, `PR_RESULT`, `MERGE_RESULT`, `NEXT_STEP`.
+
 ### ROLE CONTRACT (Orchestrator Mode)
 
 Если в текущем рабочем режиме `Codex` действует как оркестратор, применяется следующий обязательный контракт исполнения:
