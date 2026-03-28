@@ -4529,7 +4529,7 @@ function handleUiAction(action) {
       }
       return true;
     case 'export-docx-min':
-      openExportPreviewModal();
+      void dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);
       return true;
     case 'import-markdown-v1':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_MARKDOWN_PROMPT);
