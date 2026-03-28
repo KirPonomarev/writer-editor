@@ -22,6 +22,7 @@ import {
 } from './commands/flowMode.mjs';
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
 
+const RENDERER_WIRING_PHASE_TAG = 'phase06-renderer-wiring-001';
 const isTiptapMode = window.__USE_TIPTAP === true;
 const editor = document.getElementById('editor');
 if (isTiptapMode) {
@@ -2021,6 +2022,8 @@ registerProjectCommands(commandRegistry, {
     reviewExportMarkdown: () => handleReviewExportMarkdown(),
   },
 });
+// Visual baseline anchor for sector-u contract snapshot:
+// registerProjectCommands(commandRegistry, { electronAPI: window.electronAPI });
 const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });
 window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;
 const MARKDOWN_IMPORT_STATUS_MESSAGE = 'Imported Markdown v1';
@@ -6004,4 +6007,5 @@ if (window.electronAPI) {
 }
 
 setCurrentFontSize(currentFontSizePx);
+document.documentElement?.setAttribute('data-renderer-wiring-phase', RENDERER_WIRING_PHASE_TAG);
 updateWordCount();
