@@ -189,20 +189,17 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: 'Cmd/Ctrl+N',
     },
     async () => {
-      const hasFileOpen = electronAPI && typeof electronAPI.fileOpen === 'function';
-      const hasNewFile = electronAPI && typeof electronAPI.newFile === 'function';
-      if (!hasFileOpen && !hasNewFile) {
+      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_NEW, 'ELECTRON_API_UNAVAILABLE');
       }
 
       let response;
       try {
-        if (hasFileOpen) {
-          response = await electronAPI.fileOpen({ intent: 'new' });
-        } else {
-          electronAPI.newFile();
-          response = { ok: true };
-        }
+        response = await electronAPI.invokeUiCommandBridge({
+          route: COMMAND_BRIDGE_ROUTE,
+          commandId: EXTRA_COMMAND_IDS.PROJECT_NEW,
+          payload: {},
+        });
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
@@ -212,32 +209,39 @@ export function registerProjectCommands(registry, options = {}) {
         );
       }
 
-      if (response && (response.ok === 1 || response.ok === true)) {
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
         return ok({ created: true });
       }
       return fail(
         'E_COMMAND_FAILED',
         EXTRA_COMMAND_IDS.PROJECT_NEW,
-        response && typeof response.reason === 'string' ? response.reason : 'FILE_NEW_FAILED',
+        bridged && typeof bridged.reason === 'string'
+          ? bridged.reason
+          : bridged && typeof bridged.error === 'string'
+            ? bridged.error
+            : response && typeof response.reason === 'string'
+              ? response.reason
+              : 'FILE_NEW_FAILED',
       );
     },
   );
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_OPEN, async () => {
-    const hasFileOpen = electronAPI && typeof electronAPI.fileOpen === 'function';
-    const hasOpenFile = electronAPI && typeof electronAPI.openFile === 'function';
-    if (!hasFileOpen && !hasOpenFile) {
+    if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
       return fail('E_COMMAND_FAILED', COMMAND_IDS.PROJECT_OPEN, 'ELECTRON_API_UNAVAILABLE');
     }
 
     let response;
     try {
-      if (hasFileOpen) {
-        response = await electronAPI.fileOpen({ intent: 'open' });
-      } else {
-        electronAPI.openFile();
-        response = { ok: true };
-      }
+      response = await electronAPI.invokeUiCommandBridge({
+        route: COMMAND_BRIDGE_ROUTE,
+        commandId: COMMAND_IDS.PROJECT_OPEN,
+        payload: {},
+      });
     } catch (error) {
       return fail(
         'E_COMMAND_FAILED',
@@ -247,31 +251,38 @@ export function registerProjectCommands(registry, options = {}) {
       );
     }
 
-    if (response && (response.ok === 1 || response.ok === true)) {
+    const bridged = response && typeof response === 'object' && !Array.isArray(response)
+      && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+      ? response.value
+      : response;
+    if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
       return ok({ opened: true });
     }
     return fail(
       'E_COMMAND_FAILED',
       COMMAND_IDS.PROJECT_OPEN,
-      response && typeof response.reason === 'string' ? response.reason : 'FILE_OPEN_FAILED',
+      bridged && typeof bridged.reason === 'string'
+        ? bridged.reason
+        : bridged && typeof bridged.error === 'string'
+          ? bridged.error
+          : response && typeof response.reason === 'string'
+            ? response.reason
+            : 'FILE_OPEN_FAILED',
     );
   });
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_SAVE, async () => {
-    const hasFileSave = electronAPI && typeof electronAPI.fileSave === 'function';
-    const hasSaveFile = electronAPI && typeof electronAPI.saveFile === 'function';
-    if (!hasFileSave && !hasSaveFile) {
+    if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
       return fail('E_COMMAND_FAILED', COMMAND_IDS.PROJECT_SAVE, 'ELECTRON_API_UNAVAILABLE');
     }
 
     let response;
     try {
-      if (hasFileSave) {
-        response = await electronAPI.fileSave({ intent: 'save' });
-      } else {
-        electronAPI.saveFile();
-        response = { ok: true };
-      }
+      response = await electronAPI.invokeUiCommandBridge({
+        route: COMMAND_BRIDGE_ROUTE,
+        commandId: COMMAND_IDS.PROJECT_SAVE,
+        payload: {},
+      });
     } catch (error) {
       return fail(
         'E_COMMAND_FAILED',
@@ -281,13 +292,23 @@ export function registerProjectCommands(registry, options = {}) {
       );
     }
 
-    if (response && (response.ok === 1 || response.ok === true)) {
+    const bridged = response && typeof response === 'object' && !Array.isArray(response)
+      && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+      ? response.value
+      : response;
+    if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
       return ok({ saved: true });
     }
     return fail(
       'E_COMMAND_FAILED',
       COMMAND_IDS.PROJECT_SAVE,
-      response && typeof response.reason === 'string' ? response.reason : 'FILE_SAVE_FAILED',
+      bridged && typeof bridged.reason === 'string'
+        ? bridged.reason
+        : bridged && typeof bridged.error === 'string'
+          ? bridged.error
+          : response && typeof response.reason === 'string'
+            ? response.reason
+            : 'FILE_SAVE_FAILED',
     );
   });
 
@@ -300,20 +321,17 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: 'Cmd/Ctrl+Shift+S',
     },
     async () => {
-      const hasFileSaveAs = electronAPI && typeof electronAPI.fileSaveAs === 'function';
-      const hasSaveAs = electronAPI && typeof electronAPI.saveAs === 'function';
-      if (!hasFileSaveAs && !hasSaveAs) {
+      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_SAVE_AS, 'ELECTRON_API_UNAVAILABLE');
       }
 
       let response;
       try {
-        if (hasFileSaveAs) {
-          response = await electronAPI.fileSaveAs({ intent: 'saveAs' });
-        } else {
-          electronAPI.saveAs();
-          response = { ok: true };
-        }
+        response = await electronAPI.invokeUiCommandBridge({
+          route: COMMAND_BRIDGE_ROUTE,
+          commandId: EXTRA_COMMAND_IDS.PROJECT_SAVE_AS,
+          payload: {},
+        });
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
@@ -323,13 +341,23 @@ export function registerProjectCommands(registry, options = {}) {
         );
       }
 
-      if (response && (response.ok === 1 || response.ok === true)) {
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
         return ok({ savedAs: true });
       }
       return fail(
         'E_COMMAND_FAILED',
         EXTRA_COMMAND_IDS.PROJECT_SAVE_AS,
-        response && typeof response.reason === 'string' ? response.reason : 'FILE_SAVE_AS_FAILED',
+        bridged && typeof bridged.reason === 'string'
+          ? bridged.reason
+          : bridged && typeof bridged.error === 'string'
+            ? bridged.error
+            : response && typeof response.reason === 'string'
+              ? response.reason
+              : 'FILE_SAVE_AS_FAILED',
       );
     },
   );

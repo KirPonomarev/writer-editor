@@ -3331,6 +3331,10 @@ const MENU_RUNTIME_ARTIFACT_ENV_PATH = 'MENU_RUNTIME_ARTIFACT_PATH';
 const MENU_RUNTIME_RAW_CONFIG_ENV_PATH = 'MENU_RUNTIME_RAW_CONFIG_PATH';
 const MENU_RUNTIME_LEGACY_RAW_CONFIG_ENV_PATH = 'MENU_CONFIG_PATH';
 const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
+  'cmd.project.new',
+  'cmd.project.open',
+  'cmd.project.save',
+  'cmd.project.saveAs',
   'cmd.project.document.open',
   'cmd.project.tree.createNode',
   'cmd.project.tree.renameNode',
@@ -3370,6 +3374,10 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.save': async () => {
     const saved = await handleSave();
     return { ok: saved === true };
+  },
+  'cmd.project.saveAs': async () => {
+    const savedAs = await handleSaveAs();
+    return { ok: savedAs === true };
   },
   'cmd.project.export.docxMin': async (payload = {}) => {
     const previewRequested = sendRuntimeCommand('open-export-preview', {
