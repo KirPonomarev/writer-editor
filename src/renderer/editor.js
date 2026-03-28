@@ -3310,6 +3310,7 @@ function performRestoreLastStableShell() {
     restoreSpatialLayoutState(currentProjectId);
     restoreLastStableSpatialLayoutState(currentProjectId);
   }
+  syncDesignOsDormantContext();
 
   configuratorBucketState = readConfiguratorBucketState();
   setActiveConfiguratorBucketSelection('', -1);
