@@ -2947,6 +2947,12 @@ function commitDesignOsDormantThemeDesignPatch({ syncPreview = true } = {}) {
   }
 }
 
+function replayDesignOsDormantDesignStateAfterSafeReset() {
+  commitDesignOsDormantTypographyDesignPatch({ syncPreview: false });
+  commitDesignOsDormantThemeDesignPatch({ syncPreview: false });
+  syncDesignOsDormantContext();
+}
+
 function remountDesignOsDormantRuntimeForCurrentDocumentContext(options = {}) {
   try {
     const productTruth = options && typeof options === 'object' && options.productTruth
@@ -3183,6 +3189,7 @@ function performSafeResetShell() {
   setEditorZoom(EDITOR_ZOOM_DEFAULT);
   setToolbarCompactMode(false);
   let nextSafeResetLayoutState = null;
+  let safeResetPortSucceeded = false;
   if (designOsDormantRuntimeMount.ports && typeof designOsDormantRuntimeMount.ports.safeResetShell === 'function') {
     try {
       const layoutSnapshot = designOsDormantRuntimeMount.ports.safeResetShell();
@@ -3190,6 +3197,7 @@ function performSafeResetShell() {
         viewportWidth: getSpatialLayoutViewportWidth(),
       });
       designOsDormantDegradedToBaseline = false;
+      safeResetPortSucceeded = true;
     } catch {}
   }
   applySpatialLayoutState(nextSafeResetLayoutState || getSpatialLayoutBaselineForViewport(), {
@@ -3234,6 +3242,9 @@ function performSafeResetShell() {
   closeSimpleModal(diagnosticsModal);
 
   applyMode('write');
+  if (safeResetPortSucceeded) {
+    replayDesignOsDormantDesignStateAfterSafeReset();
+  }
   applyLeftTab('project');
   applyRightTab('inspector');
   loadTree();
