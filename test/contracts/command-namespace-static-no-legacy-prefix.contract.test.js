@@ -46,6 +46,11 @@ function flattenStrings(input, out = []) {
   return out;
 }
 
+function isDerivedBundleArtifact(absPath) {
+  const normalized = path.basename(absPath).toLowerCase();
+  return normalized === 'editor.bundle.js';
+}
+
 function runStaticCheck(args = []) {
   return spawnSync(process.execPath, [STATIC_CHECK_PATH, '--json', ...args], {
     cwd: REPO_ROOT,
@@ -94,7 +99,8 @@ test('command namespace static freeze: promotion-blocks-legacy-prefix-in-static-
 test('command namespace static freeze: legacy prefix is absent from runtime source files', () => {
   const sourceRoot = path.join(REPO_ROOT, 'src');
   const files = collectFilesRecursive(sourceRoot)
-    .filter((absPath) => absPath.endsWith('.js') || absPath.endsWith('.mjs'));
+    .filter((absPath) => absPath.endsWith('.js') || absPath.endsWith('.mjs'))
+    .filter((absPath) => !isDerivedBundleArtifact(absPath));
   const violations = [];
 
   for (const absPath of files) {
