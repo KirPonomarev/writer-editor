@@ -459,6 +459,16 @@ async function dispatchUiCommand(commandId, payload = {}) {
   return result;
 }
 
+async function invokeWorkspaceQueryBridge(queryId, payload = {}) {
+  if (!window.electronAPI || typeof window.electronAPI.invokeWorkspaceQueryBridge !== 'function') {
+    throw new Error('WORKSPACE_QUERY_BRIDGE_UNAVAILABLE');
+  }
+  const safePayload = payload && typeof payload === 'object' && !Array.isArray(payload)
+    ? payload
+    : {};
+  return window.electronAPI.invokeWorkspaceQueryBridge({ queryId, payload: safePayload });
+}
+
 function resolveSceneFromImportResult(importResult) {
   if (!importResult || importResult.ok !== true) return null;
   const value = importResult.value;
@@ -2286,9 +2296,9 @@ function renderTree() {
 }
 
 async function loadTree() {
-  if (!window.electronAPI || !window.electronAPI.getProjectTree) return;
+  if (!window.electronAPI || typeof window.electronAPI.invokeWorkspaceQueryBridge !== 'function') return;
   try {
-    const result = await window.electronAPI.getProjectTree(activeTab);
+    const result = await invokeWorkspaceQueryBridge('query.projectTree', { tab: activeTab });
     if (!result || result.ok === false) {
       updateStatusText('Ошибка');
       return;
@@ -3441,8 +3451,8 @@ function applyCollabGate() {
 
 async function initializeCollabScopeLocal() {
   try {
-    if (window.electronAPI && typeof window.electronAPI.getCollabScopeLocal === 'function') {
-      collabScopeLocal = await window.electronAPI.getCollabScopeLocal();
+    if (window.electronAPI && typeof window.electronAPI.invokeWorkspaceQueryBridge === 'function') {
+      collabScopeLocal = (await invokeWorkspaceQueryBridge('query.collabScopeLocal')) === true;
     } else {
       collabScopeLocal = localStorage.getItem('COLLAB_SCOPE_LOCAL') === 'true';
     }

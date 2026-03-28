@@ -5,6 +5,7 @@ const EXPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:export:markdownV1:v1';
 const FLOW_OPEN_V1_CHANNEL = 'm:cmd:project:flow:open:v1';
 const FLOW_SAVE_V1_CHANNEL = 'm:cmd:project:flow:save:v1';
 const UI_COMMAND_BRIDGE_CHANNEL = 'ui:command-bridge';
+const WORKSPACE_QUERY_BRIDGE_CHANNEL = 'ui:workspace-query-bridge';
 
 // Экспорт безопасного API для renderer процесса
 contextBridge.exposeInMainWorld('electronAPI', {
@@ -105,6 +106,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ? safeRequest.payload
       : {};
     return ipcRenderer.invoke(UI_COMMAND_BRIDGE_CHANNEL, { route, commandId, payload });
+  },
+  invokeWorkspaceQueryBridge: (request) => {
+    const safeRequest = request && typeof request === 'object' && !Array.isArray(request)
+      ? request
+      : {};
+    const queryId = typeof safeRequest.queryId === 'string' ? safeRequest.queryId : '';
+    const payload = safeRequest.payload && typeof safeRequest.payload === 'object' && !Array.isArray(safeRequest.payload)
+      ? safeRequest.payload
+      : {};
+    return ipcRenderer.invoke(WORKSPACE_QUERY_BRIDGE_CHANNEL, { queryId, payload });
   },
   setTheme: (theme) => {
     ipcRenderer.send('ui:set-theme', theme);
