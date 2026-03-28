@@ -35,6 +35,12 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   REVIEW_EXPORT_MARKDOWN: 'cmd.project.review.exportMarkdown',
 });
 
+export const UI_COMMAND_IDS = Object.freeze({
+  THEME_SET: 'cmd.ui.theme.set',
+  FONT_SET: 'cmd.ui.font.set',
+  FONT_SIZE_SET: 'cmd.ui.fontSize.set',
+});
+
 export const LEGACY_ACTION_TO_COMMAND = Object.freeze({
   new: 'cmd.project.new',
   open: 'cmd.project.open',
@@ -496,6 +502,39 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: 'Cmd/Ctrl+Shift+M',
     },
     async () => runUiAction(uiActions, 'reviewExportMarkdown', EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN),
+  );
+
+  registry.registerCommand(
+    {
+      id: UI_COMMAND_IDS.THEME_SET,
+      label: 'Set Theme',
+      group: 'view',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => runUiAction(uiActions, 'setTheme', UI_COMMAND_IDS.THEME_SET, input),
+  );
+
+  registry.registerCommand(
+    {
+      id: UI_COMMAND_IDS.FONT_SET,
+      label: 'Set Font',
+      group: 'format',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => runUiAction(uiActions, 'setFont', UI_COMMAND_IDS.FONT_SET, input),
+  );
+
+  registry.registerCommand(
+    {
+      id: UI_COMMAND_IDS.FONT_SIZE_SET,
+      label: 'Set Font Size',
+      group: 'format',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => runUiAction(uiActions, 'setFontSize', UI_COMMAND_IDS.FONT_SIZE_SET, input),
   );
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN, async (input = {}) => {

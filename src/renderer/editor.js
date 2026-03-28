@@ -18,6 +18,7 @@ import { listCommandCatalog } from './commands/command-catalog.v1.mjs';
 import {
   COMMAND_IDS,
   EXTRA_COMMAND_IDS,
+  UI_COMMAND_IDS,
   registerProjectCommands,
 } from './commands/projectCommands.mjs';
 import { COMMAND_BUS_ROUTE, runCommandThroughBus } from './commands/commandBusGuard.mjs';
@@ -317,6 +318,9 @@ registerProjectCommands(commandRegistry, {
     formatAlignJustify: () => handleFormatAlign('align-justify'),
     planFlowSave: () => handlePlanFlowSave(),
     reviewExportMarkdown: () => handleReviewExportMarkdown(),
+    setTheme: (payload) => handleUiSetThemeCommand(payload),
+    setFont: (payload) => handleUiSetFontCommand(payload),
+    setFontSize: (payload) => handleUiSetFontSizeCommand(payload),
   },
 });
 
@@ -3507,6 +3511,15 @@ function setCurrentFontSize(px) {
   }
 }
 
+function promptForCustomFontSize() {
+  if (typeof window.prompt !== 'function') return null;
+  const raw = window.prompt('Font size (8-96)', String(currentFontSizePx || 16));
+  if (raw === null) return null;
+  const px = Number(String(raw).trim());
+  if (!Number.isFinite(px) || px < 8 || px > 96) return null;
+  return px;
+}
+
 function scheduleAutoSave(delay = AUTO_SAVE_DELAY) {
   if (!window.electronAPI || typeof window.electronAPI.requestAutoSave !== 'function') {
     return;
@@ -4366,6 +4379,46 @@ async function handleReviewExportMarkdown() {
   return { performed: true };
 }
 
+function handleUiSetThemeCommand(payload = {}) {
+  const nextTheme = payload && payload.theme === 'dark'
+    ? 'dark'
+    : (payload && payload.theme === 'light' ? 'light' : '');
+  if (!nextTheme) {
+    return { performed: false, reason: 'THEME_INVALID' };
+  }
+  if (!window.electronAPI || typeof window.electronAPI.setTheme !== 'function') {
+    return { performed: false, reason: 'THEME_API_UNAVAILABLE' };
+  }
+  window.electronAPI.setTheme(nextTheme);
+  return { performed: true, theme: nextTheme };
+}
+
+function handleUiSetFontCommand(payload = {}) {
+  const fontFamily = typeof payload?.fontFamily === 'string'
+    ? payload.fontFamily.trim()
+    : '';
+  if (!fontFamily) {
+    return { performed: false, reason: 'FONT_INVALID' };
+  }
+  if (!window.electronAPI || typeof window.electronAPI.setFont !== 'function') {
+    return { performed: false, reason: 'FONT_API_UNAVAILABLE' };
+  }
+  window.electronAPI.setFont(fontFamily);
+  return { performed: true, fontFamily };
+}
+
+function handleUiSetFontSizeCommand(payload = {}) {
+  const px = Number(payload?.px);
+  if (!Number.isFinite(px) || px < 8 || px > 96) {
+    return { performed: false, reason: 'FONT_SIZE_INVALID' };
+  }
+  if (!window.electronAPI || typeof window.electronAPI.setFontSizePx !== 'function') {
+    return { performed: false, reason: 'FONT_SIZE_API_UNAVAILABLE' };
+  }
+  window.electronAPI.setFontSizePx(px);
+  return { performed: true, px };
+}
+
 function handleUiAction(action) {
   switch (action) {
     case 'save-as':
@@ -4407,10 +4460,10 @@ function handleUiAction(action) {
       void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN);
       return true;
     case 'theme-dark':
-      window.electronAPI?.setTheme('dark');
+      void dispatchUiCommand(UI_COMMAND_IDS.THEME_SET, { theme: 'dark' });
       return true;
     case 'theme-light':
-      window.electronAPI?.setTheme('light');
+      void dispatchUiCommand(UI_COMMAND_IDS.THEME_SET, { theme: 'light' });
       return true;
     case 'toggle-wrap':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_WRAP);
@@ -4476,7 +4529,9 @@ if (textStyleSelect) {
 
 if (fontSelect) {
   fontSelect.addEventListener('change', (event) => {
-    window.electronAPI?.setFont(event.target.value);
+    const fontFamily = typeof event?.target?.value === 'string' ? event.target.value : '';
+    if (!fontFamily.trim()) return;
+    void dispatchUiCommand(UI_COMMAND_IDS.FONT_SET, { fontFamily });
   });
 }
 
@@ -4490,7 +4545,12 @@ if (sizeSelect) {
   sizeSelect.addEventListener('change', (event) => {
     const nextSize = Number(event.target.value);
     if (Number.isFinite(nextSize)) {
-      window.electronAPI?.setFontSizePx(nextSize);
+      void dispatchUiCommand(UI_COMMAND_IDS.FONT_SIZE_SET, { px: nextSize });
+      return;
+    }
+    const customSize = promptForCustomFontSize();
+    if (Number.isFinite(customSize)) {
+      void dispatchUiCommand(UI_COMMAND_IDS.FONT_SIZE_SET, { px: customSize });
     }
   });
 }
@@ -4598,7 +4658,7 @@ if (leftSearchInput) {
 if (settingsThemeSelect) {
   settingsThemeSelect.addEventListener('change', () => {
     const nextTheme = settingsThemeSelect.value === 'dark' ? 'dark' : 'light';
-    window.electronAPI?.setTheme(nextTheme);
+    void dispatchUiCommand(UI_COMMAND_IDS.THEME_SET, { theme: nextTheme });
   });
 }
 
