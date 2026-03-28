@@ -1,0 +1,55 @@
+{
+  "documentId": "X101_LITERAL_INTERFACE_STAGE_A_PACKET_V1",
+  "tzId": "TZ_YALKEN_LITERAL_INTERFACE_STAGE_A1_HOTFIX_002",
+  "ackStatus": "HOLD",
+  "scope": "STAGE_A_ONLY",
+  "masterStateMatched": false,
+  "dragFoundationImplemented": true,
+  "stageBReady": false,
+  "nextGate": "MANUAL_STAGE_A1_LITERAL_RECHECK",
+  "status": "HOTFIX_IMPLEMENTED_PENDING_MANUAL_RECHECK",
+  "sourcePriority": [
+    "APPROVED_USER_SCREENS",
+    "YALKEN_INTERFACE_MASTER_HANDOFF",
+    "/Users/kirillponomarev/Downloads/Интерфейс 1_1 по скрину.zip"
+  ],
+  "requiredChecks": {
+    "REQ_01_build_renderer": true,
+    "REQ_02_packaged_renderer_bundle": true,
+    "REQ_03_merge_readiness": true,
+    "REQ_03_note": "validated in temporary main worktree merge-preview on branch main after Stage A1_002 hotfixes",
+    "REQ_04_task_delta_allowlist_only": true,
+    "REQ_05_existing_runtime_baseline_not_regressed": true,
+    "REQ_05_note": "validated by npm run test:electron",
+    "REQ_06_manual_visual_recheck_all_failed_items": false
+  },
+  "manualVisualChecklist": {
+    "SMOKE_01_toolbar_can_move_freely_anywhere_on_screen": "UNCONFIRMED",
+    "SMOKE_02_toolbar_snaps_centered_to_top_work_bar_zone_correctly": "UNCONFIRMED",
+    "SMOKE_03_final_action_icon_matches_approved_screen": "UNCONFIRMED",
+    "SMOKE_04_left_icon_cluster_matches_approved_screen": "UNCONFIRMED",
+    "SMOKE_05_configurator_highlight_is_soft_halo_not_heavy_bar": "UNCONFIRMED",
+    "SMOKE_06_canvas_has_no_unapproved_rounding": "UNCONFIRMED",
+    "SMOKE_07_sheet_looks_like_approved_paper_object": "UNCONFIRMED",
+    "SMOKE_08_drag_still_works_and_controls_still_click": "UNCONFIRMED"
+  },
+  "automatedImplementationNotes": [
+    "top title area and fixed work bar introduced",
+    "detached floating toolbar introduced with real drag threshold and local persistence",
+    "top-center snap now forces the approved horizontal master state near the toolbar zone",
+    "grid trigger now opens and closes a real configurator surface with outside-click and escape dismissal",
+    "rotate, width, and scale handles now start real isolated interactions instead of bubbling into drag",
+    "final action glyph now matches the approved maximize-style icon more closely",
+    "left icon cluster glyphs and spacing were retuned toward the approved stroke proportions",
+    "configurator surface now exposes a real soft halo selected row instead of an inert plain list",
+    "central blank document sheet forced as default visible state",
+    "bottom status dock now carries word count and zoom cluster",
+    "no new dependencies or framework imports introduced"
+  ],
+  "risksOrOpenDecisions": [
+    "approved user screens were not accessible as machine-readable source in this run",
+    "archive was used only as lower-priority geometry and drag reference, not imported as stack",
+    "final literal match on promoted blockers must still be confirmed manually before Stage B"
+  ],
+  "updatedAtUtc": "2026-03-09T15:52:02Z"
+}
