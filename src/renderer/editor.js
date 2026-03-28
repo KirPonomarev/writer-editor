@@ -2,6 +2,7 @@ import { getTiptapPlainText, initTiptap, redoTiptap, setTiptapPlainText, setTipt
 import {
   applyCssVariables,
   buildLayoutPatchFromSpatialState,
+  buildProductTruthHash,
   buildDesignOsStatusText,
   buildSpatialStateFromLayoutSnapshot,
   createDesignOsPorts,
@@ -223,6 +224,7 @@ let designOsDormantRuntimeMount = {
 };
 let designOsDormantDegradedToBaseline = false;
 let designOsDormantVisibleCommandIds = null;
+let designOsDormantLastSyncedProductTruthHash = null;
 let metaEnabled = false;
 let currentCards = [];
 let treeRoot = null;
@@ -2810,10 +2812,16 @@ function buildDesignOsDormantProductTruth() {
   return buildNonFlowDocumentTruth();
 }
 
-function remountDesignOsDormantRuntimeForCurrentDocumentContext() {
+function remountDesignOsDormantRuntimeForCurrentDocumentContext(options = {}) {
   try {
+    const productTruth = options && typeof options === 'object' && options.productTruth
+      ? options.productTruth
+      : buildDesignOsDormantProductTruth();
+    const productTruthHash = options && typeof options === 'object' && typeof options.productTruthHash === 'string' && options.productTruthHash
+      ? options.productTruthHash
+      : buildProductTruthHash(productTruth);
     const bootstrap = createRepoGroundedDesignOsBrowserRuntime({
-      productTruth: buildDesignOsDormantProductTruth(),
+      productTruth,
     });
     const ports = createDesignOsPorts({
       runtime: bootstrap.runtime,
@@ -2828,6 +2836,7 @@ function remountDesignOsDormantRuntimeForCurrentDocumentContext() {
     };
     designOsDormantDegradedToBaseline = false;
     designOsDormantVisibleCommandIds = null;
+    designOsDormantLastSyncedProductTruthHash = productTruthHash;
     const layoutStateForReplay = spatialLayoutState || getSpatialLayoutBaselineForViewport();
     syncDesignOsDormantLayoutCommitAtResizeEnd(layoutStateForReplay);
     syncDesignOsDormantContext();
@@ -2845,6 +2854,23 @@ function remountDesignOsDormantRuntimeForCurrentDocumentContext() {
   return {
     ...designOsDormantRuntimeMount,
   };
+}
+
+function syncDesignOsDormantRuntimeTruthAtSaveBoundary(previousDirtyState, nextDirtyState) {
+  if (!previousDirtyState || nextDirtyState) return;
+  const productTruth = buildDesignOsDormantProductTruth();
+  let productTruthHash = null;
+  try {
+    productTruthHash = buildProductTruthHash(productTruth);
+  } catch {
+    return;
+  }
+  if (typeof productTruthHash !== 'string' || productTruthHash.length === 0) return;
+  if (productTruthHash === designOsDormantLastSyncedProductTruthHash) return;
+  remountDesignOsDormantRuntimeForCurrentDocumentContext({
+    productTruth,
+    productTruthHash,
+  });
 }
 
 function mountDesignOsDormantRuntime() {
@@ -4814,8 +4840,11 @@ if (window.electronAPI) {
   });
 
   window.electronAPI.onSetDirty((state) => {
-    localDirty = state;
+    const previousDirtyState = localDirty === true;
+    const nextDirtyState = state === true;
+    localDirty = nextDirtyState;
     updateSaveStateText(localDirty ? 'unsaved' : 'saved');
+    syncDesignOsDormantRuntimeTruthAtSaveBoundary(previousDirtyState, nextDirtyState);
     updateInspectorSnapshot();
   });
 }
