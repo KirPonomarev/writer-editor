@@ -1944,43 +1944,44 @@ function closeCardModal() {
 }
 
 async function openDocumentNode(node) {
-  if (!window.electronAPI || !window.electronAPI.openDocument) return false;
   const documentPath = getEffectiveDocumentPath(node);
   if (!documentPath) return false;
-  try {
-    const result = await window.electronAPI.openDocument({
-      path: documentPath,
-      title: node.label,
-      kind: getEffectiveDocumentKind(node)
-    });
-    if (!result || result.ok === false) {
-      if (result && result.cancelled) {
-        return false;
-      }
-      updateStatusText('Ошибка');
-      return false;
-    }
-    currentDocumentPath = documentPath;
-    currentDocumentKind = getEffectiveDocumentKind(node);
-    metaEnabled = currentDocumentKind === 'scene' || currentDocumentKind === 'chapter-file';
-    updateMetaVisibility();
-    updateInspectorSnapshot();
-    return true;
-  } catch {
+  const documentKind = getEffectiveDocumentKind(node);
+  const state = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, {
+    path: documentPath,
+    title: typeof node?.label === 'string' ? node.label : '',
+    kind: documentKind,
+  });
+  if (!state.ok) {
     updateStatusText('Ошибка');
     return false;
   }
+  const result = state.value && typeof state.value === 'object' && !Array.isArray(state.value)
+    ? state.value.result
+    : null;
+  if (!result || result.opened !== true) {
+    return false;
+  }
+
+  currentDocumentPath = documentPath;
+  currentDocumentKind = documentKind;
+  metaEnabled = currentDocumentKind === 'scene' || currentDocumentKind === 'chapter-file';
+  updateMetaVisibility();
+  updateInspectorSnapshot();
+  return true;
 }
 
 async function handleCreateNode(node, kind, promptLabel) {
   const name = window.prompt(promptLabel || 'Название', '');
   if (!name) return;
-  const result = await window.electronAPI.createNode({
-    parentPath: node.path,
+  const parentPath = typeof node?.path === 'string' ? node.path.trim() : '';
+  if (!parentPath || !kind) return;
+  const state = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, {
+    parentPath,
     kind,
-    name
+    name,
   });
-  if (!result || result.ok === false) {
+  if (!state.ok) {
     updateStatusText('Ошибка');
     return;
   }
@@ -1990,12 +1991,17 @@ async function handleCreateNode(node, kind, promptLabel) {
 async function handleRenameNode(node) {
   const name = window.prompt('Новое имя', node.label || '');
   if (!name) return;
-  const result = await window.electronAPI.renameNode({ path: node.path, name });
-  if (!result || result.ok === false) {
+  const path = typeof node?.path === 'string' ? node.path.trim() : '';
+  if (!path) return;
+  const state = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, { path, name });
+  if (!state.ok) {
     updateStatusText('Ошибка');
     return;
   }
-  if (currentDocumentPath && result.path && currentDocumentPath === node.path) {
+  const result = state.value && typeof state.value === 'object' && !Array.isArray(state.value)
+    ? state.value.result
+    : null;
+  if (currentDocumentPath && result && typeof result.path === 'string' && currentDocumentPath === path) {
     currentDocumentPath = result.path;
   }
   await loadTree();
@@ -2004,12 +2010,14 @@ async function handleRenameNode(node) {
 async function handleDeleteNode(node) {
   const confirmed = window.confirm('Переместить в корзину?');
   if (!confirmed) return;
-  const result = await window.electronAPI.deleteNode({ path: node.path });
-  if (!result || result.ok === false) {
+  const path = typeof node?.path === 'string' ? node.path.trim() : '';
+  if (!path) return;
+  const state = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, { path });
+  if (!state.ok) {
     updateStatusText('Ошибка');
     return;
   }
-  if (currentDocumentPath && currentDocumentPath === node.path) {
+  if (currentDocumentPath && currentDocumentPath === path) {
     currentDocumentPath = null;
   }
   await loadTree();
@@ -2020,11 +2028,16 @@ async function handleDeleteNode(node) {
 }
 
 async function handleReorderNode(node, direction) {
-  const result = await window.electronAPI.reorderNode({ path: node.path, direction });
-  if (!result || result.ok === false) {
+  const path = typeof node?.path === 'string' ? node.path.trim() : '';
+  if (!path || (direction !== 'up' && direction !== 'down')) return;
+  const state = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, { path, direction });
+  if (!state.ok) {
     return;
   }
-  if (currentDocumentPath && result.path && currentDocumentPath === node.path) {
+  const result = state.value && typeof state.value === 'object' && !Array.isArray(state.value)
+    ? state.value.result
+    : null;
+  if (currentDocumentPath && result && typeof result.path === 'string' && currentDocumentPath === path) {
     currentDocumentPath = result.path;
   }
   await loadTree();
