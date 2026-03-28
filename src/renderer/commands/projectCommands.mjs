@@ -151,6 +151,68 @@ async function runUiAction(uiActions, actionName, commandId, payload = {}) {
   }
 }
 
+function getElectronApiMethod(electronAPI, methodName) {
+  if (!electronAPI || typeof methodName !== 'string' || methodName.length === 0) return null;
+  const candidate = electronAPI[methodName];
+  if (typeof candidate !== 'function') return null;
+  return candidate.bind(electronAPI);
+}
+
+function resolveFileLifecycleFallbackInvoker(electronAPI, commandId) {
+  if (commandId === EXTRA_COMMAND_IDS.PROJECT_NEW) {
+    const fileOpen = getElectronApiMethod(electronAPI, 'fileOpen');
+    if (fileOpen) return () => fileOpen({ intent: 'new' });
+    const newFile = getElectronApiMethod(electronAPI, 'newFile');
+    if (newFile) return () => newFile();
+    const openFile = getElectronApiMethod(electronAPI, 'openFile');
+    if (openFile) return () => openFile();
+    return null;
+  }
+  if (commandId === COMMAND_IDS.PROJECT_OPEN) {
+    const fileOpen = getElectronApiMethod(electronAPI, 'fileOpen');
+    if (fileOpen) return () => fileOpen({ intent: 'open' });
+    const openFile = getElectronApiMethod(electronAPI, 'openFile');
+    if (openFile) return () => openFile();
+    return null;
+  }
+  if (commandId === COMMAND_IDS.PROJECT_SAVE) {
+    const fileSave = getElectronApiMethod(electronAPI, 'fileSave');
+    if (fileSave) return () => fileSave({ intent: 'save' });
+    const saveFile = getElectronApiMethod(electronAPI, 'saveFile');
+    if (saveFile) return () => saveFile();
+    return null;
+  }
+  if (commandId === EXTRA_COMMAND_IDS.PROJECT_SAVE_AS) {
+    const fileSaveAs = getElectronApiMethod(electronAPI, 'fileSaveAs');
+    if (fileSaveAs) return () => fileSaveAs({ intent: 'saveAs' });
+    const saveAs = getElectronApiMethod(electronAPI, 'saveAs');
+    if (saveAs) return () => saveAs();
+    return null;
+  }
+  return null;
+}
+
+async function invokeFileLifecycleBridge(electronAPI, commandId) {
+  if (electronAPI && typeof electronAPI.invokeUiCommandBridge === 'function') {
+    return electronAPI.invokeUiCommandBridge({
+      route: COMMAND_BRIDGE_ROUTE,
+      commandId,
+      payload: {},
+    });
+  }
+
+  // Compatibility fallback for non-preload runtimes used by local parity harnesses.
+  const fallbackInvoker = resolveFileLifecycleFallbackInvoker(electronAPI, commandId);
+  if (!fallbackInvoker) {
+    throw new Error('ELECTRON_API_UNAVAILABLE');
+  }
+  const legacyResult = await fallbackInvoker();
+  if (legacyResult && typeof legacyResult === 'object' && !Array.isArray(legacyResult)) {
+    return legacyResult;
+  }
+  return { ok: true };
+}
+
 export function resolveLegacyActionToCommand(actionId, context = {}) {
   if (actionId === 'save' && context && context.flowModeActive === true) {
     return COMMAND_IDS.PROJECT_FLOW_SAVE_V1;
@@ -189,17 +251,13 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: 'Cmd/Ctrl+N',
     },
     async () => {
-      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
+      if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_NEW, 'ELECTRON_API_UNAVAILABLE');
       }
 
       let response;
       try {
-        response = await electronAPI.invokeUiCommandBridge({
-          route: COMMAND_BRIDGE_ROUTE,
-          commandId: EXTRA_COMMAND_IDS.PROJECT_NEW,
-          payload: {},
-        });
+        response = await invokeFileLifecycleBridge(electronAPI, EXTRA_COMMAND_IDS.PROJECT_NEW);
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
@@ -231,17 +289,13 @@ export function registerProjectCommands(registry, options = {}) {
   );
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_OPEN, async () => {
-    if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
+    if (!electronAPI || typeof electronAPI !== 'object') {
       return fail('E_COMMAND_FAILED', COMMAND_IDS.PROJECT_OPEN, 'ELECTRON_API_UNAVAILABLE');
     }
 
     let response;
     try {
-      response = await electronAPI.invokeUiCommandBridge({
-        route: COMMAND_BRIDGE_ROUTE,
-        commandId: COMMAND_IDS.PROJECT_OPEN,
-        payload: {},
-      });
+      response = await invokeFileLifecycleBridge(electronAPI, COMMAND_IDS.PROJECT_OPEN);
     } catch (error) {
       return fail(
         'E_COMMAND_FAILED',
@@ -272,17 +326,13 @@ export function registerProjectCommands(registry, options = {}) {
   });
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_SAVE, async () => {
-    if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
+    if (!electronAPI || typeof electronAPI !== 'object') {
       return fail('E_COMMAND_FAILED', COMMAND_IDS.PROJECT_SAVE, 'ELECTRON_API_UNAVAILABLE');
     }
 
     let response;
     try {
-      response = await electronAPI.invokeUiCommandBridge({
-        route: COMMAND_BRIDGE_ROUTE,
-        commandId: COMMAND_IDS.PROJECT_SAVE,
-        payload: {},
-      });
+      response = await invokeFileLifecycleBridge(electronAPI, COMMAND_IDS.PROJECT_SAVE);
     } catch (error) {
       return fail(
         'E_COMMAND_FAILED',
@@ -321,17 +371,13 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: 'Cmd/Ctrl+Shift+S',
     },
     async () => {
-      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
+      if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_SAVE_AS, 'ELECTRON_API_UNAVAILABLE');
       }
 
       let response;
       try {
-        response = await electronAPI.invokeUiCommandBridge({
-          route: COMMAND_BRIDGE_ROUTE,
-          commandId: EXTRA_COMMAND_IDS.PROJECT_SAVE_AS,
-          payload: {},
-        });
+        response = await invokeFileLifecycleBridge(electronAPI, EXTRA_COMMAND_IDS.PROJECT_SAVE_AS);
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',

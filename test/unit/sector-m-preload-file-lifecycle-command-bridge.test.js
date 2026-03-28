@@ -13,10 +13,12 @@ test('preload file lifecycle bridge: projectCommands routes four existing file c
   const source = read('src/renderer/commands/projectCommands.mjs')
 
   assert.ok(source.includes("const COMMAND_BRIDGE_ROUTE = 'command.bus';"))
-  assert.ok(source.includes('commandId: EXTRA_COMMAND_IDS.PROJECT_NEW'))
-  assert.ok(source.includes('commandId: COMMAND_IDS.PROJECT_OPEN'))
-  assert.ok(source.includes('commandId: COMMAND_IDS.PROJECT_SAVE'))
-  assert.ok(source.includes('commandId: EXTRA_COMMAND_IDS.PROJECT_SAVE_AS'))
+  assert.ok(source.includes('async function invokeFileLifecycleBridge(electronAPI, commandId) {'))
+  assert.ok(source.includes('typeof electronAPI.invokeUiCommandBridge === \'function\''))
+  assert.ok(source.includes('response = await invokeFileLifecycleBridge(electronAPI, EXTRA_COMMAND_IDS.PROJECT_NEW);'))
+  assert.ok(source.includes('response = await invokeFileLifecycleBridge(electronAPI, COMMAND_IDS.PROJECT_OPEN);'))
+  assert.ok(source.includes('response = await invokeFileLifecycleBridge(electronAPI, COMMAND_IDS.PROJECT_SAVE);'))
+  assert.ok(source.includes('response = await invokeFileLifecycleBridge(electronAPI, EXTRA_COMMAND_IDS.PROJECT_SAVE_AS);'))
 
   assert.equal(source.includes('electronAPI.fileOpen('), false)
   assert.equal(source.includes('electronAPI.newFile('), false)
