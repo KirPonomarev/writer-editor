@@ -1,24 +1,9 @@
 import { getTiptapPlainText, initTiptap, redoTiptap, setTiptapPlainText, setTiptapRuntimeHandlers, undoTiptap } from './tiptap/index.js';
-import {
-  applyCssVariables,
-  buildLayoutPatchFromSpatialState,
-  buildProductTruthHash,
-  buildDesignOsStatusText,
-  buildSpatialStateFromLayoutSnapshot,
-  createDesignOsPorts,
-  createRepoGroundedDesignOsBrowserRuntime,
-  deriveAccessibilityId,
-  deriveRuntimePlatformId,
-  extractCssVariablesFromTokens,
-  mapEditorModeToWorkspace,
-} from './design-os/index.mjs';
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
-import { listCommandCatalog } from './commands/command-catalog.v1.mjs';
 import {
   COMMAND_IDS,
   EXTRA_COMMAND_IDS,
-  UI_COMMAND_IDS,
   registerProjectCommands,
 } from './commands/projectCommands.mjs';
 import { COMMAND_BUS_ROUTE, runCommandThroughBus } from './commands/commandBusGuard.mjs';
@@ -54,6 +39,33 @@ const sidebarResizer = document.querySelector('[data-sidebar-resizer]');
 const rightSidebarResizer = document.querySelector('[data-right-sidebar-resizer]');
 const mainContent = document.querySelector('.main-content');
 const toolbar = document.querySelector('[data-toolbar]');
+const toolbarShell = document.querySelector('[data-toolbar-shell]');
+const leftToolbar = document.querySelector('[data-left-toolbar]');
+const leftToolbarShell = document.querySelector('[data-left-toolbar-shell]');
+const topWorkBar = document.querySelector('[data-top-work-bar]');
+const configuratorPanel = document.querySelector('[data-configurator-panel]');
+const gridTriggerButton = document.querySelector('[data-grid-button]');
+const configuratorSlotButtons = Array.from(document.querySelectorAll('.configurator-panel__slot'));
+const configuratorBuckets = Array.from(document.querySelectorAll('[data-configurator-bucket]'));
+const toolbarRotateHandles = Array.from(document.querySelectorAll('[data-toolbar-rotate-handle]'));
+const toolbarWidthHandle = document.querySelector('[data-toolbar-width-handle]');
+const toolbarScaleHandle = document.querySelector('[data-toolbar-scale-handle]');
+const leftToolbarRotateHandles = Array.from(document.querySelectorAll('[data-left-toolbar-rotate-handle]'));
+const leftToolbarWidthHandle = document.querySelector('[data-left-toolbar-width-handle]');
+const leftToolbarScaleHandle = document.querySelector('[data-left-toolbar-scale-handle]');
+const leftToolbarCluster = document.querySelector('.left-floating-toolbar .work-bar__cluster');
+const leftToolbarButtons = Array.from(document.querySelectorAll('.left-floating-toolbar .work-bar__button[data-action]'));
+const leftToolbarSpacingMenu = document.querySelector('[data-left-toolbar-spacing-menu]');
+const leftToolbarSpacingAction = document.querySelector('[data-left-toolbar-spacing-action]');
+const toolbarTunableItems = Array.from(
+  document.querySelectorAll(
+    '.floating-toolbar [data-toolbar-item-key], .floating-toolbar .floating-toolbar__button[data-action]'
+  )
+);
+const toolbarSpacingMenu = document.querySelector('[data-toolbar-spacing-menu]');
+const toolbarSpacingAction = document.querySelector('[data-toolbar-spacing-action]');
+const paragraphTriggerButton = document.querySelector('[data-toolbar-item-key="paragraph-trigger"]');
+const paragraphMenu = document.querySelector('[data-paragraph-menu]');
 const modeSwitcher = document.querySelector('[data-mode-switcher]');
 const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
 const leftTabsHost = document.querySelector('[data-left-tabs]');
@@ -77,12 +89,16 @@ const fontSelect = document.querySelector('[data-font-select]');
 const weightSelect = document.querySelector('[data-weight-select]');
 const sizeSelect = document.querySelector('[data-size-select]');
 const lineHeightSelect = document.querySelector('[data-line-height-select]');
+const fontDisplay = document.querySelector('[data-font-display]');
+const weightDisplay = document.querySelector('[data-weight-display]');
+const sizeDisplay = document.querySelector('[data-size-display]');
+const lineHeightDisplay = document.querySelector('[data-line-height-display]');
 const textStyleSelect = document.querySelector('[data-text-style-select]');
 const themeDarkButton = document.querySelector('[data-action="theme-dark"]');
 const themeLightButton = document.querySelector('[data-action="theme-light"]');
 const wrapToggleButton = document.querySelector('[data-action="toggle-wrap"]');
 const toolbarToggleButton = document.querySelector('[data-action="minimize"]');
-const alignButtons = Array.from(document.querySelectorAll('[data-action^="align-"]'));
+const alignButtons = Array.from(document.querySelectorAll('[data-paragraph-alignment]'));
 const treeContainer = document.querySelector('[data-tree]');
 const metaPanel = document.querySelector('[data-meta-panel]');
 const metaSynopsis = document.querySelector('[data-meta-synopsis]');
@@ -133,7 +149,6 @@ const LEFT_FLOATING_TOOLBAR_STORAGE_KEY = 'yalkenLeftToolbarState';
 const LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY = 'yalkenLeftToolbarButtonOffsets';
 const CONFIGURATOR_BUCKETS_STORAGE_KEY = 'yalkenConfiguratorBuckets';
 const SPATIAL_LAYOUT_STORAGE_KEY_PREFIX = 'yalkenSpatialLayout';
-const SPATIAL_LAYOUT_LAST_STABLE_STORAGE_KEY_PREFIX = 'yalkenSpatialLayoutLastStable';
 const SPATIAL_LAYOUT_VERSION = 1;
 const SPATIAL_LAYOUT_MOBILE_BREAKPOINT = 900;
 const SPATIAL_LAYOUT_COMPACT_BREAKPOINT = 1280;
@@ -146,9 +161,6 @@ const SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH = 340;
 const SPATIAL_LAYOUT_COMPACT_LEFT_BASELINE_WIDTH = 260;
 const SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH = 290;
 const SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH = 240;
-const SPATIAL_LAYOUT_ENVELOPE_SIGNATURE_VERSION = 1;
-const SPATIAL_LAYOUT_MISSING_MONITOR_SHRINK_PX = 320;
-const SPATIAL_LAYOUT_MISSING_MONITOR_SHRINK_RATIO = 0.25;
 const SAFE_RESET_BASELINE_THEME = 'light';
 const SAFE_RESET_BASELINE_FONT_FAMILY = '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 const SAFE_RESET_BASELINE_FONT_SIZE_PX = 12;
@@ -184,7 +196,7 @@ const LEGACY_FONT_WEIGHT_PRESET_MAP = Object.freeze({
 });
 let editorZoom = EDITOR_ZOOM_DEFAULT;
 const isMac = navigator.platform.toUpperCase().includes('MAC');
-let currentFontSizePx = 16;
+let currentFontSizePx = 12;
 let wordWrapEnabled = true;
 let collabScopeLocal = false;
 let currentMode = 'write';
@@ -197,35 +209,11 @@ let currentDocumentPath = null;
 let currentDocumentKind = null;
 let currentProjectId = '';
 let spatialLayoutState = null;
-let spatialLastStableLayoutState = null;
-let floatingToolbarState = {
-  position: { x: 0, y: 0 },
-  compact: false,
-  scale: 1,
-  widthScale: 1,
-};
-let toolbarItemOffsets = {};
-let leftFloatingToolbarState = {
-  position: { x: 0, y: 0 },
-  compact: false,
-};
-let leftToolbarButtonOffsets = {};
-let configuratorBucketState = { master: [], minimal: [] };
 let flowModeState = {
   active: false,
   scenes: [],
   dirty: false,
 };
-let designOsDormantRuntimeMount = {
-  mounted: false,
-  runtime: null,
-  ports: null,
-  bootstrap: null,
-  lastError: null,
-};
-let designOsDormantDegradedToBaseline = false;
-let designOsDormantVisibleCommandIds = null;
-let designOsDormantLastSyncedProductTruthHash = null;
 let metaEnabled = false;
 let currentCards = [];
 let treeRoot = null;
@@ -236,6 +224,85 @@ let currentMeta = {
 };
 let expandedNodesByTab = new Map();
 let autoSaveTimerId = null;
+let floatingToolbarState = {
+  x: 0,
+  y: 0,
+  isVertical: false,
+  isDetached: false,
+  scale: 1,
+  widthScale: 1,
+  dockedWidthScale: 1,
+  freeWidthScale: 1,
+  toolbarHeight: 0,
+};
+let leftFloatingToolbarState = {
+  x: 0,
+  y: 0,
+  isVertical: false,
+  isDetached: false,
+  scale: 1,
+  widthScale: 1,
+};
+let floatingToolbarInteractionState = {
+  mode: null,
+  active: false,
+  startX: 0,
+  startY: 0,
+  origin: null,
+};
+let leftFloatingToolbarInteractionState = {
+  mode: null,
+  active: false,
+  startX: 0,
+  startY: 0,
+  origin: null,
+};
+let floatingToolbarHandlesVisible = false;
+let floatingToolbarSuppressClickOnce = false;
+let toolbarItemSuppressClickOnce = false;
+let toolbarSpacingTuningMode = false;
+let toolbarAnchorFrameId = 0;
+let toolbarItemOffsets = {};
+let toolbarItemOffsetDragState = {
+  active: false,
+  item: null,
+  key: '',
+  startX: 0,
+  originOffset: 0,
+  moved: false,
+};
+let leftFloatingToolbarHandlesVisible = false;
+let leftFloatingToolbarSuppressClickOnce = false;
+let leftToolbarButtonSuppressClickOnce = false;
+let leftToolbarSpacingTuningMode = false;
+let leftToolbarAnchorFrameId = 0;
+let leftToolbarButtonOffsets = {};
+let leftToolbarButtonOffsetDragState = {
+  active: false,
+  button: null,
+  action: '',
+  startX: 0,
+  originOffset: 0,
+  moved: false,
+};
+let configuratorBucketState = {
+  master: [],
+  minimal: [],
+};
+let activeConfiguratorDragPayload = null;
+let configuratorBucketPointerDragState = {
+  active: false,
+  draggedItem: null,
+  sourceBucketKey: '',
+  sourceIndex: -1,
+  startX: 0,
+  startY: 0,
+  moved: false,
+};
+let activeConfiguratorBucketSelection = {
+  bucketKey: '',
+  itemIndex: -1,
+};
 const AUTO_SAVE_DELAY = 600;
 const HOTPATH_RENDER_DEBOUNCE_MS = 32;
 const HOTPATH_FULL_RENDER_MIN_INTERVAL_MS = 280;
@@ -293,6 +360,1640 @@ const initialPageWidthMm = PAGE_FORMATS.A4;
 const initialPageMetrics = getPageMetrics({ pageWidthMm: initialPageWidthMm, zoom: ZOOM_DEFAULT });
 applyPageViewCssVars(initialPageMetrics);
 
+function canStartFloatingToolbarDrag(target) {
+  if (!target || !(target instanceof Element)) return false;
+  return !target.closest('button, select, option, input, textarea, label');
+}
+
+function clampFloatingToolbarPosition(position, shellRect = toolbarShell?.getBoundingClientRect()) {
+  if (!toolbarShell) {
+    return position;
+  }
+  const minX = FLOATING_TOOLBAR_VISIBLE_STRIP_PX - shellRect.width;
+  const maxX = window.innerWidth - FLOATING_TOOLBAR_VISIBLE_STRIP_PX;
+  const minY = FLOATING_TOOLBAR_VISIBLE_STRIP_PX - shellRect.height;
+  const maxY = window.innerHeight - FLOATING_TOOLBAR_VISIBLE_STRIP_PX;
+  return {
+    x: Math.min(Math.max(position.x, minX), maxX),
+    y: Math.min(Math.max(position.y, minY), maxY),
+  };
+}
+
+function clampFloatingToolbarWidthScale(widthScale) {
+  return Math.min(
+    Math.max(widthScale, FLOATING_TOOLBAR_WIDTH_SCALE_MIN),
+    FLOATING_TOOLBAR_WIDTH_SCALE_MAX
+  );
+}
+
+function readFloatingToolbarState() {
+  try {
+    const raw = localStorage.getItem(FLOATING_TOOLBAR_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    const x = Number(parsed.x);
+    const y = Number(parsed.y);
+    const scale = Number(parsed.scale);
+    const widthScale = Number(parsed.widthScale);
+    const dockedWidthScale = Number(parsed.dockedWidthScale);
+    const freeWidthScale = Number(parsed.freeWidthScale);
+    const toolbarHeight = Number(parsed.toolbarHeight);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    const resolvedWidthScale = Number.isFinite(widthScale) ? widthScale : 1;
+    const resolvedDockedWidthScale = Number.isFinite(dockedWidthScale) ? dockedWidthScale : resolvedWidthScale;
+    const resolvedFreeWidthScale = Number.isFinite(freeWidthScale) ? freeWidthScale : resolvedWidthScale;
+    return {
+      x,
+      y,
+      isVertical: Boolean(parsed.isVertical),
+      isDetached: Boolean(parsed.isDetached),
+      scale: Number.isFinite(scale) ? scale : 1,
+      widthScale: Boolean(parsed.isDetached) ? resolvedFreeWidthScale : resolvedDockedWidthScale,
+      dockedWidthScale: resolvedDockedWidthScale,
+      freeWidthScale: resolvedFreeWidthScale,
+      toolbarHeight: Number.isFinite(toolbarHeight) ? toolbarHeight : 0,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function persistFloatingToolbarState() {
+  try {
+    localStorage.setItem(FLOATING_TOOLBAR_STORAGE_KEY, JSON.stringify(floatingToolbarState));
+  } catch {}
+}
+
+function readFloatingToolbarItemOffsets() {
+  try {
+    const raw = localStorage.getItem(FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    return Object.fromEntries(
+      Object.entries(parsed).filter(([, value]) => Number.isFinite(Number(value)))
+    );
+  } catch {
+    return {};
+  }
+}
+
+function persistFloatingToolbarItemOffsets() {
+  try {
+    localStorage.setItem(FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY, JSON.stringify(toolbarItemOffsets));
+  } catch {}
+}
+
+function getFloatingToolbarItemOffsetKey(item) {
+  if (!(item instanceof HTMLElement)) return '';
+  return item.dataset.toolbarItemKey || item.dataset.action || '';
+}
+
+function applyFloatingToolbarItemOffsets() {
+  toolbarTunableItems.forEach((item) => {
+    const key = getFloatingToolbarItemOffsetKey(item);
+    const offset = floatingToolbarState.isDetached ? Number(toolbarItemOffsets[key] || 0) : 0;
+    item.style.setProperty('--floating-toolbar-offset-x', `${offset}px`);
+  });
+  scheduleToolbarAnchorUpdate();
+}
+
+function setFloatingToolbarItemOffset(item, nextOffset, persist = true) {
+  const key = getFloatingToolbarItemOffsetKey(item);
+  if (!key) return;
+  const roundedOffset = Math.round(nextOffset);
+  const normalizedOffset = Math.abs(roundedOffset) <= FLOATING_TOOLBAR_ITEM_SNAP_THRESHOLD_PX ? 0 : roundedOffset;
+  if (normalizedOffset === 0) {
+    delete toolbarItemOffsets[key];
+  } else {
+    toolbarItemOffsets[key] = normalizedOffset;
+  }
+  applyFloatingToolbarItemOffsets();
+  if (persist) {
+    persistFloatingToolbarItemOffsets();
+  }
+}
+
+function restoreFloatingToolbarItemOffsets() {
+  toolbarItemOffsets = readFloatingToolbarItemOffsets();
+  applyFloatingToolbarItemOffsets();
+}
+
+function stopFloatingToolbarItemOffsetDrag() {
+  if (!toolbarItemOffsetDragState.active) return;
+  const shouldReleaseClickSuppression = toolbarItemOffsetDragState.moved;
+  if (toolbarItemOffsetDragState.item) {
+    persistFloatingToolbarItemOffsets();
+  }
+  toolbarItemOffsetDragState = {
+    active: false,
+    item: null,
+    key: '',
+    startX: 0,
+    originOffset: 0,
+    moved: false,
+  };
+  if (shouldReleaseClickSuppression) {
+    window.setTimeout(() => {
+      toolbarItemSuppressClickOnce = false;
+    }, 0);
+  }
+}
+
+function setToolbarSpacingMenuOpen(nextOpen) {
+  if (!toolbarSpacingMenu || !toolbarShell) return;
+  if (!nextOpen) {
+    toolbarSpacingMenu.hidden = true;
+    return;
+  }
+  setParagraphMenuOpen(false);
+  const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
+  toolbarSpacingMenu.hidden = false;
+  const menuRect = toolbarSpacingMenu.getBoundingClientRect();
+  const clusterLeft = Number.parseFloat(toolbarShell.style.getPropertyValue('--floating-toolbar-cluster-left')) || 0;
+  const clusterRight = Number.parseFloat(toolbarShell.style.getPropertyValue('--floating-toolbar-cluster-right')) || 0;
+  const clusterBottom = Number.parseFloat(toolbarShell.style.getPropertyValue('--floating-toolbar-cluster-bottom')) || 0;
+  const clusterCenterX = clusterLeft + ((clusterRight - clusterLeft) / 2);
+  const desiredLeft = clusterCenterX - (menuRect.width / 2);
+  const desiredTop = clusterBottom + 18;
+  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuRect.width);
+  const nextLeft = Math.round(Math.min(Math.max(desiredLeft, 0), maxLeft));
+  const nextTop = Math.round(desiredTop);
+  toolbarSpacingMenu.style.left = `${nextLeft}px`;
+  toolbarSpacingMenu.style.top = `${nextTop}px`;
+}
+
+function setParagraphMenuOpen(nextOpen) {
+  if (!paragraphMenu || !paragraphTriggerButton || !toolbarShell) return;
+  if (!nextOpen) {
+    paragraphMenu.hidden = true;
+    paragraphTriggerButton.setAttribute('aria-expanded', 'false');
+    return;
+  }
+  setToolbarSpacingMenuOpen(false);
+  const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
+  const triggerRect = paragraphTriggerButton.getBoundingClientRect();
+  paragraphMenu.hidden = false;
+  const menuRect = paragraphMenu.getBoundingClientRect();
+  const desiredLeft = (triggerRect.left - shellRect.left) / shellScale;
+  const desiredTop = ((triggerRect.bottom - shellRect.top) / shellScale) + 10;
+  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuRect.width);
+  const nextLeft = Math.round(Math.min(Math.max(desiredLeft, 0), maxLeft));
+  const nextTop = Math.round(desiredTop);
+  paragraphMenu.style.left = `${nextLeft}px`;
+  paragraphMenu.style.top = `${nextTop}px`;
+  paragraphTriggerButton.setAttribute('aria-expanded', 'true');
+}
+
+function setToolbarSpacingTuningMode(nextActive) {
+  toolbarSpacingTuningMode = Boolean(nextActive);
+  if (toolbarShell) {
+    toolbarShell.classList.toggle('is-spacing-tuning', toolbarSpacingTuningMode);
+  }
+  if (toolbarSpacingAction) {
+    toolbarSpacingAction.textContent = toolbarSpacingTuningMode ? 'Завершить отступы' : 'Изменить отступы';
+    toolbarSpacingAction.setAttribute('aria-pressed', toolbarSpacingTuningMode ? 'true' : 'false');
+  }
+  if (!toolbarSpacingTuningMode) {
+    stopFloatingToolbarItemOffsetDrag();
+  }
+}
+
+function updateToolbarAnchorVars() {
+  if (!toolbarShell || !toolbarTunableItems.length) return;
+  const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
+  const itemRects = toolbarTunableItems
+    .map((item) => item.getBoundingClientRect())
+    .filter((rect) => rect.width > 0 && rect.height > 0);
+  if (!itemRects.length) return;
+  const bounds = itemRects.reduce((acc, rect) => ({
+    left: Math.min(acc.left, rect.left),
+    right: Math.max(acc.right, rect.right),
+    top: Math.min(acc.top, rect.top),
+    bottom: Math.max(acc.bottom, rect.bottom),
+  }), {
+    left: itemRects[0].left,
+    right: itemRects[0].right,
+    top: itemRects[0].top,
+    bottom: itemRects[0].bottom,
+  });
+  const localLeft = (bounds.left - shellRect.left) / shellScale;
+  const localRight = (bounds.right - shellRect.left) / shellScale;
+  const localTop = (bounds.top - shellRect.top) / shellScale;
+  const localBottom = (bounds.bottom - shellRect.top) / shellScale;
+  toolbarShell.style.setProperty('--floating-toolbar-cluster-left', `${Math.round(localLeft)}px`);
+  toolbarShell.style.setProperty('--floating-toolbar-cluster-right', `${Math.round(localRight)}px`);
+  toolbarShell.style.setProperty('--floating-toolbar-cluster-top', `${Math.round(localTop)}px`);
+  toolbarShell.style.setProperty('--floating-toolbar-cluster-bottom', `${Math.round(localBottom)}px`);
+  toolbarShell.style.setProperty('--floating-toolbar-cluster-center-x', `${Math.round(localLeft + ((localRight - localLeft) / 2))}px`);
+  toolbarShell.style.setProperty('--floating-toolbar-cluster-center-y', `${Math.round(localTop + ((localBottom - localTop) / 2))}px`);
+  if (!toolbarSpacingMenu?.hidden) {
+    setToolbarSpacingMenuOpen(true);
+  }
+}
+
+function scheduleToolbarAnchorUpdate() {
+  if (toolbarAnchorFrameId) {
+    cancelAnimationFrame(toolbarAnchorFrameId);
+  }
+  toolbarAnchorFrameId = requestAnimationFrame(() => {
+    toolbarAnchorFrameId = 0;
+    updateToolbarAnchorVars();
+  });
+}
+
+function getSnappedFloatingToolbarPosition(shellRect = toolbarShell?.getBoundingClientRect()) {
+  const topBarRect = topWorkBar?.getBoundingClientRect();
+  const shellWidth = shellRect?.width || 0;
+  const shellHeight = shellRect?.height || 0;
+  const baseY = topBarRect ? topBarRect.top + ((topBarRect.height - shellHeight) / 2) : 92;
+  const baseX = topBarRect ? topBarRect.left + ((topBarRect.width - shellWidth) / 2) : (window.innerWidth - shellWidth) / 2;
+  return clampFloatingToolbarPosition({
+    x: baseX,
+    y: baseY,
+  }, shellRect);
+}
+
+function getSnappedFloatingToolbarX(nextX, shellRect = toolbarShell?.getBoundingClientRect()) {
+  const topBarRect = topWorkBar?.getBoundingClientRect();
+  if (!topBarRect) {
+    return clampFloatingToolbarPosition({ x: nextX, y: floatingToolbarState.y }, shellRect).x;
+  }
+  const shellWidth = shellRect?.width || 0;
+  const minX = topBarRect.left;
+  const maxX = topBarRect.right - shellWidth;
+  const centeredX = topBarRect.left + ((topBarRect.width - shellWidth) / 2);
+  const clampedX = Math.min(Math.max(nextX, minX), maxX);
+  if (Math.abs(clampedX - centeredX) <= FLOATING_TOOLBAR_CENTER_ANCHOR_PX) {
+    return centeredX;
+  }
+  return clampedX;
+}
+
+function getDefaultFloatingToolbarState(shellRect = toolbarShell?.getBoundingClientRect()) {
+  const snapped = getSnappedFloatingToolbarPosition(shellRect);
+  const topBarRect = topWorkBar?.getBoundingClientRect();
+  return {
+    x: snapped.x,
+    y: snapped.y,
+    isVertical: false,
+    isDetached: false,
+    scale: 1,
+    widthScale: 1,
+    dockedWidthScale: 1,
+    freeWidthScale: 1,
+    toolbarHeight: Number.isFinite(topBarRect?.height) ? topBarRect.height : 0,
+  };
+}
+
+function applyFloatingToolbarVisualState() {
+  if (!toolbarShell) return;
+  toolbarShell.style.setProperty('--floating-toolbar-scale', String(floatingToolbarState.scale));
+  toolbarShell.style.setProperty(
+    '--floating-toolbar-width-scale',
+    String(floatingToolbarState.isDetached ? floatingToolbarState.freeWidthScale : floatingToolbarState.dockedWidthScale)
+  );
+  toolbarShell.classList.toggle('is-vertical', floatingToolbarState.isVertical);
+  toolbarShell.classList.toggle('is-snapped', !floatingToolbarState.isDetached);
+  scheduleToolbarAnchorUpdate();
+}
+
+function applyFloatingToolbarState(partialState, persist = true) {
+  if (!toolbar) return;
+  const shellRect = toolbarShell?.getBoundingClientRect();
+  const nextPosition = clampFloatingToolbarPosition({
+    x: partialState.x,
+    y: partialState.y,
+  }, shellRect);
+  const nextIsDetached = Boolean(partialState.isDetached);
+  const isModeTransition = nextIsDetached !== floatingToolbarState.isDetached;
+  const providedWidthScale = Number.isFinite(partialState.widthScale)
+    ? partialState.widthScale
+    : floatingToolbarState.widthScale;
+  let nextDockedWidthScale;
+  let nextFreeWidthScale;
+  if (isModeTransition) {
+    if (nextIsDetached) {
+      nextDockedWidthScale = clampFloatingToolbarWidthScale(
+        Number.isFinite(partialState.dockedWidthScale)
+          ? partialState.dockedWidthScale
+          : floatingToolbarState.dockedWidthScale || providedWidthScale
+      );
+      nextFreeWidthScale = clampFloatingToolbarWidthScale(providedWidthScale);
+    } else {
+      nextDockedWidthScale = clampFloatingToolbarWidthScale(providedWidthScale);
+      nextFreeWidthScale = clampFloatingToolbarWidthScale(
+        Number.isFinite(partialState.freeWidthScale)
+          ? partialState.freeWidthScale
+          : floatingToolbarState.freeWidthScale || providedWidthScale
+      );
+    }
+  } else {
+    nextDockedWidthScale = clampFloatingToolbarWidthScale(
+      Number.isFinite(partialState.dockedWidthScale)
+        ? partialState.dockedWidthScale
+        : (!nextIsDetached ? providedWidthScale : floatingToolbarState.dockedWidthScale || providedWidthScale)
+    );
+    nextFreeWidthScale = clampFloatingToolbarWidthScale(
+      Number.isFinite(partialState.freeWidthScale)
+        ? partialState.freeWidthScale
+        : (nextIsDetached ? providedWidthScale : floatingToolbarState.freeWidthScale || providedWidthScale)
+    );
+  }
+  floatingToolbarState = {
+    x: nextPosition.x,
+    y: nextPosition.y,
+    isVertical: Boolean(partialState.isVertical),
+    isDetached: nextIsDetached,
+    scale: Math.min(Math.max(partialState.scale, FLOATING_TOOLBAR_SCALE_MIN), FLOATING_TOOLBAR_SCALE_MAX),
+    widthScale: nextIsDetached ? nextFreeWidthScale : nextDockedWidthScale,
+    dockedWidthScale: nextDockedWidthScale,
+    freeWidthScale: nextFreeWidthScale,
+    toolbarHeight: Number.isFinite(partialState.toolbarHeight) ? partialState.toolbarHeight : 0,
+  };
+  toolbar.style.left = `${Math.round(floatingToolbarState.x)}px`;
+  toolbar.style.top = `${Math.round(floatingToolbarState.y)}px`;
+  toolbar.style.transform = 'none';
+  if (persist) {
+    persistFloatingToolbarState();
+  }
+  applyFloatingToolbarVisualState();
+  applyFloatingToolbarItemOffsets();
+  scheduleToolbarAnchorUpdate();
+}
+
+function restoreFloatingToolbarPosition() {
+  if (!toolbarShell) return;
+  const saved = readFloatingToolbarState();
+  applyFloatingToolbarState(saved || getDefaultFloatingToolbarState(), Boolean(saved));
+}
+
+function clampLeftFloatingToolbarPosition(position, shellRect = leftToolbarShell?.getBoundingClientRect()) {
+  if (!leftToolbarShell) {
+    return position;
+  }
+  const minX = FLOATING_TOOLBAR_VISIBLE_STRIP_PX - shellRect.width;
+  const maxX = window.innerWidth - FLOATING_TOOLBAR_VISIBLE_STRIP_PX;
+  const minY = FLOATING_TOOLBAR_VISIBLE_STRIP_PX - shellRect.height;
+  const maxY = window.innerHeight - FLOATING_TOOLBAR_VISIBLE_STRIP_PX;
+  return {
+    x: Math.min(Math.max(position.x, minX), maxX),
+    y: Math.min(Math.max(position.y, minY), maxY),
+  };
+}
+
+function readLeftFloatingToolbarState() {
+  try {
+    const raw = localStorage.getItem(LEFT_FLOATING_TOOLBAR_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    const x = Number(parsed.x);
+    const y = Number(parsed.y);
+    const scale = Number(parsed.scale);
+    const widthScale = Number(parsed.widthScale);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    return {
+      x,
+      y,
+      isVertical: Boolean(parsed.isVertical),
+      isDetached: Boolean(parsed.isDetached),
+      scale: Number.isFinite(scale) ? scale : 1,
+      widthScale: Number.isFinite(widthScale) ? widthScale : 1,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function persistLeftFloatingToolbarState() {
+  try {
+    localStorage.setItem(LEFT_FLOATING_TOOLBAR_STORAGE_KEY, JSON.stringify(leftFloatingToolbarState));
+  } catch {}
+}
+
+function readLeftToolbarButtonOffsets() {
+  try {
+    const raw = localStorage.getItem(LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    return Object.fromEntries(
+      Object.entries(parsed).filter(([, value]) => Number.isFinite(Number(value)))
+    );
+  } catch {
+    return {};
+  }
+}
+
+function persistLeftToolbarButtonOffsets() {
+  try {
+    localStorage.setItem(LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY, JSON.stringify(leftToolbarButtonOffsets));
+  } catch {}
+}
+
+function getLeftToolbarButtonOffsetKey(button) {
+  if (!(button instanceof HTMLElement)) return '';
+  return button.dataset.action || '';
+}
+
+function applyLeftToolbarButtonOffsets() {
+  leftToolbarButtons.forEach((button) => {
+    const key = getLeftToolbarButtonOffsetKey(button);
+    const offset = Number(leftToolbarButtonOffsets[key] || 0);
+    button.style.setProperty('--work-bar-offset-x', `${offset}px`);
+  });
+  scheduleLeftToolbarAnchorUpdate();
+}
+
+function setLeftToolbarButtonOffset(button, nextOffset, persist = true) {
+  const key = getLeftToolbarButtonOffsetKey(button);
+  if (!key) return;
+  const normalizedOffset = Math.round(nextOffset);
+  if (normalizedOffset === 0) {
+    delete leftToolbarButtonOffsets[key];
+  } else {
+    leftToolbarButtonOffsets[key] = normalizedOffset;
+  }
+  applyLeftToolbarButtonOffsets();
+  if (persist) {
+    persistLeftToolbarButtonOffsets();
+  }
+}
+
+function restoreLeftToolbarButtonOffsets() {
+  leftToolbarButtonOffsets = readLeftToolbarButtonOffsets();
+  applyLeftToolbarButtonOffsets();
+}
+
+function stopLeftToolbarButtonOffsetDrag() {
+  if (!leftToolbarButtonOffsetDragState.active) return;
+  const shouldReleaseClickSuppression = leftToolbarButtonOffsetDragState.moved;
+  if (leftToolbarButtonOffsetDragState.button) {
+    persistLeftToolbarButtonOffsets();
+  }
+  leftToolbarButtonOffsetDragState = {
+    active: false,
+    button: null,
+    action: '',
+    startX: 0,
+    originOffset: 0,
+    moved: false,
+  };
+  if (shouldReleaseClickSuppression) {
+    window.setTimeout(() => {
+      leftToolbarButtonSuppressClickOnce = false;
+    }, 0);
+  }
+}
+
+function setLeftToolbarSpacingMenuOpen(nextOpen, position = null) {
+  if (!leftToolbarSpacingMenu || !leftToolbarShell) return;
+  if (!nextOpen) {
+    leftToolbarSpacingMenu.hidden = true;
+    return;
+  }
+  const shellRect = leftToolbarShell.getBoundingClientRect();
+  const clusterRect = leftToolbarCluster?.getBoundingClientRect();
+  leftToolbarSpacingMenu.hidden = false;
+  const menuRect = leftToolbarSpacingMenu.getBoundingClientRect();
+  const shellScale = Math.max(leftFloatingToolbarState.scale || 1, 0.001);
+  const clusterLeft = clusterRect ? (clusterRect.left - shellRect.left) / shellScale : 0;
+  const clusterRight = clusterRect ? (clusterRect.right - shellRect.left) / shellScale : 0;
+  const clusterBottom = clusterRect ? (clusterRect.bottom - shellRect.top) / shellScale : 0;
+  const clusterCenterX = clusterLeft + ((clusterRight - clusterLeft) / 2);
+  const desiredLeft = clusterCenterX - (menuRect.width / 2);
+  const desiredTop = clusterBottom + 18;
+  const nextLeft = Math.round(desiredLeft);
+  const nextTop = Math.round(desiredTop);
+  leftToolbarSpacingMenu.style.left = `${nextLeft}px`;
+  leftToolbarSpacingMenu.style.top = `${nextTop}px`;
+}
+
+function setLeftToolbarSpacingTuningMode(nextActive) {
+  leftToolbarSpacingTuningMode = Boolean(nextActive);
+  if (leftToolbarShell) {
+    leftToolbarShell.classList.toggle('is-spacing-tuning', leftToolbarSpacingTuningMode);
+  }
+  if (leftToolbarSpacingAction) {
+    leftToolbarSpacingAction.textContent = leftToolbarSpacingTuningMode ? 'Завершить отступы' : 'Изменить отступы';
+    leftToolbarSpacingAction.setAttribute('aria-pressed', leftToolbarSpacingTuningMode ? 'true' : 'false');
+  }
+  if (!leftToolbarSpacingTuningMode) {
+    stopLeftToolbarButtonOffsetDrag();
+  }
+}
+
+function updateLeftToolbarAnchorVars() {
+  if (!leftToolbarShell || !leftToolbarButtons.length) return;
+  const shellRect = leftToolbarShell.getBoundingClientRect();
+  const shellScale = Math.max(leftFloatingToolbarState.scale || 1, 0.001);
+  const buttonRects = leftToolbarButtons
+    .map((button) => button.getBoundingClientRect())
+    .filter((rect) => rect.width > 0 && rect.height > 0);
+  if (!buttonRects.length) return;
+  const bounds = buttonRects.reduce((acc, rect) => ({
+    left: Math.min(acc.left, rect.left),
+    right: Math.max(acc.right, rect.right),
+    top: Math.min(acc.top, rect.top),
+    bottom: Math.max(acc.bottom, rect.bottom),
+  }), {
+    left: buttonRects[0].left,
+    right: buttonRects[0].right,
+    top: buttonRects[0].top,
+    bottom: buttonRects[0].bottom,
+  });
+  const localLeft = (bounds.left - shellRect.left) / shellScale;
+  const localRight = (bounds.right - shellRect.left) / shellScale;
+  const localTop = (bounds.top - shellRect.top) / shellScale;
+  const localBottom = (bounds.bottom - shellRect.top) / shellScale;
+  leftToolbarShell.style.setProperty('--left-toolbar-cluster-left', `${Math.round(localLeft)}px`);
+  leftToolbarShell.style.setProperty('--left-toolbar-cluster-right', `${Math.round(localRight)}px`);
+  leftToolbarShell.style.setProperty('--left-toolbar-cluster-top', `${Math.round(localTop)}px`);
+  leftToolbarShell.style.setProperty('--left-toolbar-cluster-bottom', `${Math.round(localBottom)}px`);
+  leftToolbarShell.style.setProperty('--left-toolbar-cluster-center-x', `${Math.round(localLeft + ((localRight - localLeft) / 2))}px`);
+  leftToolbarShell.style.setProperty('--left-toolbar-cluster-center-y', `${Math.round(localTop + ((localBottom - localTop) / 2))}px`);
+}
+
+function scheduleLeftToolbarAnchorUpdate() {
+  if (leftToolbarAnchorFrameId) {
+    cancelAnimationFrame(leftToolbarAnchorFrameId);
+  }
+  leftToolbarAnchorFrameId = requestAnimationFrame(() => {
+    leftToolbarAnchorFrameId = 0;
+    updateLeftToolbarAnchorVars();
+  });
+}
+
+function getSnappedLeftFloatingToolbarPosition(shellRect = leftToolbarShell?.getBoundingClientRect()) {
+  const topBarRect = topWorkBar?.getBoundingClientRect();
+  const shellWidth = shellRect?.width || 0;
+  const shellHeight = shellRect?.height || 0;
+  const baseY = topBarRect ? topBarRect.top + ((topBarRect.height - shellHeight) / 2) : 92;
+  const baseX = topBarRect ? topBarRect.left + 24 : 24;
+  return clampLeftFloatingToolbarPosition({
+    x: baseX,
+    y: baseY,
+  }, shellRect);
+}
+
+function getDefaultLeftFloatingToolbarState(shellRect = leftToolbarShell?.getBoundingClientRect()) {
+  const snapped = getSnappedLeftFloatingToolbarPosition(shellRect);
+  return {
+    x: snapped.x,
+    y: snapped.y,
+    isVertical: false,
+    isDetached: false,
+    scale: 1,
+    widthScale: 1,
+  };
+}
+
+function applyLeftFloatingToolbarVisualState() {
+  if (!leftToolbarShell) return;
+  leftToolbarShell.style.setProperty('--left-toolbar-scale', String(leftFloatingToolbarState.scale));
+  leftToolbarShell.style.setProperty('--left-toolbar-width-scale', String(leftFloatingToolbarState.widthScale));
+  leftToolbarShell.classList.toggle('is-vertical', leftFloatingToolbarState.isVertical);
+  leftToolbarShell.classList.toggle('is-snapped', !leftFloatingToolbarState.isDetached);
+  scheduleLeftToolbarAnchorUpdate();
+}
+
+function applyLeftFloatingToolbarState(partialState, persist = true) {
+  if (!leftToolbar) return;
+  const shellRect = leftToolbarShell?.getBoundingClientRect();
+  const nextPosition = clampLeftFloatingToolbarPosition({
+    x: partialState.x,
+    y: partialState.y,
+  }, shellRect);
+  leftFloatingToolbarState = {
+    x: nextPosition.x,
+    y: nextPosition.y,
+    isVertical: Boolean(partialState.isVertical),
+    isDetached: Boolean(partialState.isDetached),
+    scale: Math.min(Math.max(partialState.scale, FLOATING_TOOLBAR_SCALE_MIN), FLOATING_TOOLBAR_SCALE_MAX),
+    widthScale: Math.min(
+      Math.max(partialState.widthScale, FLOATING_TOOLBAR_WIDTH_SCALE_MIN),
+      FLOATING_TOOLBAR_WIDTH_SCALE_MAX
+    ),
+  };
+  leftToolbar.style.left = `${Math.round(leftFloatingToolbarState.x)}px`;
+  leftToolbar.style.top = `${Math.round(leftFloatingToolbarState.y)}px`;
+  leftToolbar.style.transform = 'none';
+  if (persist) {
+    persistLeftFloatingToolbarState();
+  }
+  applyLeftFloatingToolbarVisualState();
+}
+
+function restoreLeftFloatingToolbarPosition() {
+  if (!leftToolbarShell) return;
+  const saved = readLeftFloatingToolbarState();
+  applyLeftFloatingToolbarState(saved || getDefaultLeftFloatingToolbarState(), Boolean(saved));
+  scheduleLeftToolbarAnchorUpdate();
+}
+
+function updateLeftTransformingClass() {
+  if (!leftToolbarShell) return;
+  leftToolbarShell.classList.toggle('is-transforming', Boolean(leftFloatingToolbarInteractionState.mode));
+}
+
+function setLeftFloatingToolbarHandlesVisible(nextVisible) {
+  if (!leftToolbarShell) return;
+  leftFloatingToolbarHandlesVisible = Boolean(nextVisible);
+  leftToolbarShell.classList.toggle('is-handles-visible', leftFloatingToolbarHandlesVisible);
+}
+
+function startLeftFloatingToolbarInteraction(mode, event) {
+  if (!leftToolbarShell) return;
+  if (mode === 'move' && !canStartFloatingToolbarDrag(event.target)) {
+    return;
+  }
+  event.preventDefault();
+  if (mode === 'move' && event.altKey) {
+    return;
+  }
+  leftFloatingToolbarInteractionState = {
+    mode,
+    active: false,
+    startX: event.clientX,
+    startY: event.clientY,
+    origin: { ...leftFloatingToolbarState },
+  };
+  updateLeftTransformingClass();
+}
+
+function stopLeftFloatingToolbarInteraction() {
+  if (!leftToolbarShell) return;
+  if (leftFloatingToolbarInteractionState.mode) {
+    persistLeftFloatingToolbarState();
+  }
+  leftFloatingToolbarInteractionState = {
+    mode: null,
+    active: false,
+    startX: 0,
+    startY: 0,
+    origin: null,
+  };
+  leftToolbarShell.classList.remove('is-dragging');
+  updateLeftTransformingClass();
+}
+
+function initializeLeftToolbarButtonOffsetTuning() {
+  if (!leftToolbarButtons.length) return;
+  restoreLeftToolbarButtonOffsets();
+  leftToolbarButtons.forEach((button) => {
+    button.addEventListener('mousedown', (event) => {
+      // Keep button click handling independent from toolbar drag foundation.
+      event.stopPropagation();
+    });
+    button.addEventListener('mousedown', (event) => {
+      const tuningIntent = leftToolbarSpacingTuningMode || event.altKey;
+      if (event.button !== 0 || !tuningIntent) return;
+      const key = getLeftToolbarButtonOffsetKey(button);
+      if (!key) return;
+      event.preventDefault();
+      event.stopPropagation();
+      leftToolbarButtonOffsetDragState = {
+        active: true,
+        button,
+        action: key,
+        startX: event.clientX,
+        originOffset: Number(leftToolbarButtonOffsets[key] || 0),
+        moved: false,
+      };
+    });
+    button.addEventListener('dblclick', (event) => {
+      if (!leftToolbarSpacingTuningMode && !event.altKey) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setLeftToolbarButtonOffset(button, 0);
+      leftFloatingToolbarSuppressClickOnce = true;
+    });
+  });
+
+  document.addEventListener('mousemove', (event) => {
+    if (!leftToolbarButtonOffsetDragState.active || !leftToolbarButtonOffsetDragState.button) return;
+    const deltaX = event.clientX - leftToolbarButtonOffsetDragState.startX;
+    if (!leftToolbarButtonOffsetDragState.moved && Math.abs(deltaX) >= 1) {
+      leftToolbarButtonOffsetDragState.moved = true;
+      leftFloatingToolbarSuppressClickOnce = true;
+      leftToolbarButtonSuppressClickOnce = true;
+    }
+    setLeftToolbarButtonOffset(
+      leftToolbarButtonOffsetDragState.button,
+      leftToolbarButtonOffsetDragState.originOffset + deltaX,
+      false
+    );
+    event.preventDefault();
+  });
+
+  document.addEventListener('mouseup', () => {
+    stopLeftToolbarButtonOffsetDrag();
+  });
+}
+
+function initializeLeftToolbarActionButtons() {
+  if (!leftToolbarCluster) return;
+  let pressedButton = null;
+
+  const resolveActionButton = (eventTarget) => {
+    if (!(eventTarget instanceof Element)) return null;
+    const button = eventTarget.closest('[data-left-action]');
+    if (!(button instanceof HTMLElement)) return null;
+    if (!leftToolbarCluster.contains(button)) return null;
+    return button;
+  };
+
+  const clearPressedState = () => {
+    if (!pressedButton) return;
+    pressedButton.classList.remove('is-pressed');
+    pressedButton = null;
+  };
+
+  leftToolbarCluster.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0 || event.altKey || leftToolbarSpacingTuningMode) return;
+    const button = resolveActionButton(event.target);
+    if (!button) return;
+    clearPressedState();
+    pressedButton = button;
+    button.classList.add('is-pressed');
+  }, true);
+
+  document.addEventListener('pointerup', () => {
+    if (!pressedButton) return;
+    clearPressedState();
+  });
+
+  document.addEventListener('pointercancel', () => {
+    clearPressedState();
+  });
+
+  leftToolbarCluster.addEventListener('click', (event) => {
+    const button = resolveActionButton(event.target);
+    if (!button) return;
+    if (event.altKey || leftToolbarSpacingTuningMode) return;
+    if (leftFloatingToolbarSuppressClickOnce || leftToolbarButtonSuppressClickOnce) {
+      leftFloatingToolbarSuppressClickOnce = false;
+      leftToolbarButtonSuppressClickOnce = false;
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    const action = button.dataset.leftAction || button.dataset.action || '';
+    if (!action) return;
+    event.preventDefault();
+    event.stopPropagation();
+    triggerLeftToolbarAction(action);
+  }, true);
+}
+
+function initializeLeftToolbarSpacingMenu() {
+  if (!leftToolbarCluster || !leftToolbarSpacingMenu || !leftToolbarSpacingAction) return;
+  setLeftToolbarSpacingTuningMode(false);
+  leftToolbarCluster.addEventListener('contextmenu', (event) => {
+    if (event.target instanceof Element && event.target.closest('[data-left-toolbar-rotate-handle], [data-left-toolbar-width-handle], [data-left-toolbar-scale-handle]')) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    setLeftToolbarSpacingMenuOpen(true, { x: event.clientX, y: event.clientY });
+    leftToolbarSpacingAction.focus();
+  });
+  leftToolbarSpacingAction.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setLeftToolbarSpacingTuningMode(!leftToolbarSpacingTuningMode);
+    setLeftToolbarSpacingMenuOpen(false);
+  });
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!leftToolbarSpacingMenu.contains(target)) {
+      setLeftToolbarSpacingMenuOpen(false);
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setLeftToolbarSpacingMenuOpen(false);
+      if (leftToolbarSpacingTuningMode) {
+        setLeftToolbarSpacingTuningMode(false);
+      }
+    }
+  });
+}
+
+function initializeLeftFloatingToolbarDragFoundation() {
+  if (!leftToolbarShell) return;
+  leftToolbarShell.addEventListener('mousedown', (event) => {
+    if (event.button !== 0) return;
+    startLeftFloatingToolbarInteraction('move', event);
+  });
+  leftToolbarRotateHandles.forEach((handle) => {
+    handle.addEventListener('mousedown', (event) => {
+      event.stopPropagation();
+    });
+    handle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      applyLeftFloatingToolbarState({
+        ...leftFloatingToolbarState,
+        isVertical: !leftFloatingToolbarState.isVertical,
+      });
+    });
+  });
+  leftToolbarWidthHandle?.addEventListener('mousedown', (event) => {
+    event.stopPropagation();
+    startLeftFloatingToolbarInteraction('width', event);
+  });
+  leftToolbarScaleHandle?.addEventListener('mousedown', (event) => {
+    event.stopPropagation();
+    startLeftFloatingToolbarInteraction('scale', event);
+  });
+
+  document.addEventListener('mousemove', (event) => {
+    const { mode, origin } = leftFloatingToolbarInteractionState;
+    if (!mode || !origin || !leftToolbarShell) return;
+    const deltaX = event.clientX - leftFloatingToolbarInteractionState.startX;
+    const deltaY = event.clientY - leftFloatingToolbarInteractionState.startY;
+    if (mode === 'move') {
+      if (!leftFloatingToolbarInteractionState.active) {
+        const distance = Math.hypot(deltaX, deltaY);
+        if (distance < FLOATING_TOOLBAR_DRAG_THRESHOLD_PX) {
+          return;
+        }
+        leftFloatingToolbarInteractionState.active = true;
+        leftFloatingToolbarSuppressClickOnce = true;
+        leftToolbarShell.classList.add('is-dragging');
+      }
+      const topBarRect = topWorkBar?.getBoundingClientRect();
+      const pointerNearSnapZone = Boolean(
+        topBarRect &&
+        event.clientY >= topBarRect.top - FLOATING_TOOLBAR_SNAP_ZONE_PX &&
+        event.clientY <= topBarRect.bottom + FLOATING_TOOLBAR_SNAP_ZONE_PX
+      );
+      if (pointerNearSnapZone) {
+        const shellRect = leftToolbarShell.getBoundingClientRect();
+        const snapped = getSnappedLeftFloatingToolbarPosition(shellRect);
+        const shellWidth = shellRect?.width || 0;
+        const minX = topBarRect.left;
+        const maxX = topBarRect.right - shellWidth;
+        applyLeftFloatingToolbarState({
+          ...origin,
+          x: Math.min(Math.max(origin.x + deltaX, minX), maxX),
+          y: snapped.y,
+          isDetached: false,
+        }, false);
+      } else {
+        applyLeftFloatingToolbarState({
+          ...origin,
+          x: origin.x + deltaX,
+          y: origin.y + deltaY,
+          isDetached: true,
+        }, false);
+      }
+    } else if (mode === 'width') {
+      leftFloatingToolbarInteractionState.active = true;
+      applyLeftFloatingToolbarState({
+        ...origin,
+        widthScale: origin.widthScale + (deltaX * 0.01),
+      }, false);
+    } else if (mode === 'scale') {
+      leftFloatingToolbarInteractionState.active = true;
+      applyLeftFloatingToolbarState({
+        ...origin,
+        scale: origin.scale + (deltaX * 0.01),
+      }, false);
+    }
+    event.preventDefault();
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!leftFloatingToolbarInteractionState.mode) return;
+    stopLeftFloatingToolbarInteraction();
+  });
+
+  leftToolbarShell.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (leftFloatingToolbarSuppressClickOnce) {
+      leftFloatingToolbarSuppressClickOnce = false;
+      return;
+    }
+    if (target.closest('button, select, option, input, textarea, label, [data-left-toolbar-rotate-handle], [data-left-toolbar-width-handle], [data-left-toolbar-scale-handle]')) {
+      return;
+    }
+    setLeftFloatingToolbarHandlesVisible(!leftFloatingToolbarHandlesVisible);
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!leftToolbarShell.contains(target)) {
+      setLeftFloatingToolbarHandlesVisible(false);
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    restoreLeftFloatingToolbarPosition();
+    scheduleLeftToolbarAnchorUpdate();
+  });
+
+  requestAnimationFrame(() => {
+    restoreLeftFloatingToolbarPosition();
+    scheduleLeftToolbarAnchorUpdate();
+  });
+}
+
+function setConfiguratorOpen(nextOpen) {
+  if (!configuratorPanel) return;
+  configuratorPanel.hidden = !nextOpen;
+  if (gridTriggerButton) {
+    gridTriggerButton.classList.toggle('is-active', nextOpen);
+    gridTriggerButton.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
+    gridTriggerButton.setAttribute('aria-pressed', nextOpen ? 'true' : 'false');
+  }
+}
+
+function toggleConfiguratorOpen() {
+  if (!configuratorPanel) return false;
+  const nextOpen = configuratorPanel.hidden;
+  setConfiguratorOpen(nextOpen);
+  return nextOpen;
+}
+
+function applyConfiguratorSelection(nextIndex) {
+  if (!configuratorSlotButtons.length) return;
+  configuratorSlotButtons.forEach((button, index) => {
+    const active = index === nextIndex;
+    button.classList.toggle('is-selected', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+function readConfiguratorBucketState() {
+  try {
+    const raw = localStorage.getItem(CONFIGURATOR_BUCKETS_STORAGE_KEY);
+    if (!raw) return { master: [], minimal: [] };
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return { master: [], minimal: [] };
+    }
+    return {
+      master: Array.isArray(parsed.master) ? parsed.master.filter((item) => typeof item === 'string' && item.trim()) : [],
+      minimal: Array.isArray(parsed.minimal) ? parsed.minimal.filter((item) => typeof item === 'string' && item.trim()) : [],
+    };
+  } catch {
+    return { master: [], minimal: [] };
+  }
+}
+
+function persistConfiguratorBucketState() {
+  try {
+    localStorage.setItem(CONFIGURATOR_BUCKETS_STORAGE_KEY, JSON.stringify(configuratorBucketState));
+  } catch {}
+}
+
+function writeConfiguratorDragPayload(event, payload) {
+  if (!event.dataTransfer) return false;
+  try {
+    event.dataTransfer.setData('application/json', JSON.stringify(payload));
+  } catch {}
+  event.dataTransfer.setData('text/plain', payload.label || '');
+  return true;
+}
+
+function readConfiguratorDragPayload(event) {
+  if (activeConfiguratorDragPayload) {
+    return activeConfiguratorDragPayload;
+  }
+  const raw = event.dataTransfer?.getData('application/json') || '';
+  if (!raw) {
+    const label = event.dataTransfer?.getData('text/plain')?.trim() || '';
+    return label ? { sourceType: 'slot', label } : null;
+  }
+  try {
+    const payload = JSON.parse(raw);
+    if (!payload || typeof payload !== 'object') return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+function setActiveConfiguratorBucketSelection(bucketKey = '', itemIndex = -1) {
+  activeConfiguratorBucketSelection = {
+    bucketKey,
+    itemIndex: Number.isInteger(itemIndex) ? itemIndex : -1,
+  };
+  configuratorBuckets.forEach((bucket) => {
+    bucket.querySelectorAll('.configurator-panel__bucket-item').forEach((item) => {
+      const itemBucketKey = item.dataset.bucketKey || '';
+      const currentIndex = Number.parseInt(item.dataset.bucketIndex || '', 10);
+      const isActive = itemBucketKey === bucketKey && currentIndex === activeConfiguratorBucketSelection.itemIndex;
+      item.classList.toggle('is-active', isActive);
+    });
+  });
+}
+
+function createConfiguratorBucketItem(label, bucketKey, index) {
+  const item = document.createElement('div');
+  item.className = 'configurator-panel__bucket-item';
+  item.draggable = false;
+  item.dataset.bucketKey = bucketKey;
+  item.dataset.bucketIndex = String(index);
+  item.setAttribute('role', 'button');
+  item.setAttribute('tabindex', '0');
+  item.setAttribute('aria-label', `${label}. Перетащите для перестановки или используйте крестик для удаления.`);
+
+  const icon = document.createElement('span');
+  icon.className = 'configurator-panel__slot-icon';
+  icon.setAttribute('aria-hidden', 'true');
+
+  const text = document.createElement('span');
+  text.className = 'configurator-panel__slot-text';
+  text.textContent = label;
+
+  const removeButton = document.createElement('button');
+  removeButton.type = 'button';
+  removeButton.className = 'configurator-panel__bucket-remove';
+  removeButton.setAttribute('aria-label', `Удалить ${label}`);
+  removeButton.textContent = '×';
+
+  item.append(icon, text, removeButton);
+  item.addEventListener('mousedown', (event) => {
+    const removeTarget = event.target instanceof Element
+      ? event.target.closest('.configurator-panel__bucket-remove')
+      : null;
+    if (removeTarget) return;
+    if (event.button !== 0) return;
+    event.preventDefault();
+    const itemIndex = Number.parseInt(item.dataset.bucketIndex || '', 10);
+    if (!Number.isInteger(itemIndex)) return;
+    stopConfiguratorBucketPointerDrag();
+    configuratorBucketPointerDragState = {
+      active: true,
+      draggedItem: item,
+      sourceBucketKey: bucketKey,
+      sourceIndex: itemIndex,
+      startX: event.clientX,
+      startY: event.clientY,
+      moved: false,
+    };
+  });
+  removeButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const itemIndex = Number.parseInt(item.dataset.bucketIndex || '', 10);
+    if (activeConfiguratorBucketSelection.bucketKey === bucketKey && activeConfiguratorBucketSelection.itemIndex === itemIndex) {
+      setActiveConfiguratorBucketSelection('', -1);
+    }
+    removeConfiguratorBucketItem(bucketKey, itemIndex);
+  });
+  if (activeConfiguratorBucketSelection.bucketKey === bucketKey && activeConfiguratorBucketSelection.itemIndex === index) {
+    item.classList.add('is-active');
+  }
+  return item;
+}
+
+function renderConfiguratorBuckets() {
+  configuratorBuckets.forEach((bucket) => {
+    const bucketKey = bucket.dataset.configuratorBucket;
+    if (!bucketKey) return;
+    bucket.replaceChildren();
+    const items = configuratorBucketState[bucketKey] || [];
+    items.forEach((label, index) => {
+      bucket.appendChild(createConfiguratorBucketItem(label, bucketKey, index));
+    });
+  });
+}
+
+function addConfiguratorBucketItem(bucketKey, label, insertIndex = null) {
+  if (!bucketKey || typeof label !== 'string' || !label.trim()) return;
+  if (!Array.isArray(configuratorBucketState[bucketKey])) {
+    configuratorBucketState[bucketKey] = [];
+  }
+  const items = configuratorBucketState[bucketKey];
+  const normalizedLabel = label.trim();
+  const nextIndex = Number.isInteger(insertIndex) ? Math.max(0, Math.min(insertIndex, items.length)) : items.length;
+  items.splice(nextIndex, 0, normalizedLabel);
+  persistConfiguratorBucketState();
+  renderConfiguratorBuckets();
+}
+
+function removeConfiguratorBucketItem(bucketKey, itemIndex) {
+  if (!bucketKey || !Array.isArray(configuratorBucketState[bucketKey])) return;
+  if (!Number.isInteger(itemIndex) || itemIndex < 0 || itemIndex >= configuratorBucketState[bucketKey].length) return;
+  configuratorBucketState[bucketKey].splice(itemIndex, 1);
+  if (activeConfiguratorBucketSelection.bucketKey === bucketKey && activeConfiguratorBucketSelection.itemIndex === itemIndex) {
+    activeConfiguratorBucketSelection = { bucketKey: '', itemIndex: -1 };
+  }
+  persistConfiguratorBucketState();
+  renderConfiguratorBuckets();
+}
+
+function moveConfiguratorBucketItem(fromBucketKey, fromIndex, toBucketKey, toIndex) {
+  if (
+    !fromBucketKey ||
+    !toBucketKey ||
+    !Array.isArray(configuratorBucketState[fromBucketKey]) ||
+    !Array.isArray(configuratorBucketState[toBucketKey]) ||
+    !Number.isInteger(fromIndex) ||
+    fromIndex < 0 ||
+    fromIndex >= configuratorBucketState[fromBucketKey].length
+  ) {
+    return;
+  }
+
+  const [label] = configuratorBucketState[fromBucketKey].splice(fromIndex, 1);
+  if (!label) {
+    renderConfiguratorBuckets();
+    return;
+  }
+
+  let normalizedTargetIndex = Number.isInteger(toIndex)
+    ? toIndex
+    : configuratorBucketState[toBucketKey].length;
+
+  if (fromBucketKey === toBucketKey && fromIndex < normalizedTargetIndex) {
+    normalizedTargetIndex -= 1;
+  }
+
+  normalizedTargetIndex = Math.max(0, Math.min(normalizedTargetIndex, configuratorBucketState[toBucketKey].length));
+
+  configuratorBucketState[toBucketKey].splice(normalizedTargetIndex, 0, label);
+  activeConfiguratorBucketSelection = {
+    bucketKey: toBucketKey,
+    itemIndex: normalizedTargetIndex,
+  };
+  persistConfiguratorBucketState();
+  renderConfiguratorBuckets();
+}
+
+function getConfiguratorBucketDropIndex(bucket, event) {
+  const items = Array.from(bucket.querySelectorAll('.configurator-panel__bucket-item'));
+  const targetItem = event.target instanceof Element
+    ? event.target.closest('.configurator-panel__bucket-item')
+    : null;
+  if (!targetItem) {
+    return items.length;
+  }
+
+  const fallbackIndex = items.indexOf(targetItem);
+  const targetIndex = Number.parseInt(targetItem.dataset.bucketIndex || '', 10);
+  const resolvedIndex = Number.isInteger(targetIndex) ? targetIndex : fallbackIndex;
+  const rect = targetItem.getBoundingClientRect();
+  const insertAfter = event.clientX > rect.left + rect.width / 2;
+  return Math.max(0, resolvedIndex + (insertAfter ? 1 : 0));
+}
+
+function applyConfiguratorBucketDrop(bucketKey, payload, dropIndex) {
+  if (!payload || !bucketKey) return;
+  if (payload.sourceType === 'bucket-item') {
+    moveConfiguratorBucketItem(
+      payload.bucketKey || '',
+      Number.parseInt(String(payload.itemIndex), 10),
+      bucketKey,
+      dropIndex
+    );
+    activeConfiguratorDragPayload = null;
+    return;
+  }
+  addConfiguratorBucketItem(bucketKey, payload.label || '', dropIndex);
+  activeConfiguratorDragPayload = null;
+}
+
+function clearConfiguratorBucketDropTarget() {
+  configuratorBuckets.forEach((bucket) => bucket.classList.remove('is-drop-target'));
+}
+
+function getConfiguratorBucketDropTargetFromPoint(clientX, clientY) {
+  const target = document.elementFromPoint(clientX, clientY);
+  if (!(target instanceof Element)) return null;
+  const bucket = target.closest('[data-configurator-bucket]');
+  if (!(bucket instanceof HTMLElement)) return null;
+  const bucketKey = bucket.dataset.configuratorBucket || '';
+  if (!bucketKey) return null;
+  const item = target.closest('.configurator-panel__bucket-item');
+  if (!(item instanceof HTMLElement)) {
+    return {
+      bucket,
+      bucketKey,
+      dropIndex: Array.isArray(configuratorBucketState[bucketKey]) ? configuratorBucketState[bucketKey].length : 0,
+    };
+  }
+  const itemIndex = Number.parseInt(item.dataset.bucketIndex || '', 10);
+  const rect = item.getBoundingClientRect();
+  const insertAfter = clientX > rect.left + rect.width / 2;
+  return {
+    bucket,
+    bucketKey,
+    dropIndex: Math.max(0, itemIndex + (insertAfter ? 1 : 0)),
+  };
+}
+
+function stopConfiguratorBucketPointerDrag() {
+  const draggedItem = configuratorBucketPointerDragState.draggedItem;
+  if (draggedItem instanceof HTMLElement) {
+    draggedItem.classList.remove('is-dragging');
+    draggedItem.style.removeProperty('pointer-events');
+  }
+  configuratorBucketPointerDragState = {
+    active: false,
+    draggedItem: null,
+    sourceBucketKey: '',
+    sourceIndex: -1,
+    startX: 0,
+    startY: 0,
+    moved: false,
+  };
+  clearConfiguratorBucketDropTarget();
+}
+
+function handleConfiguratorBucketPointerMove(event) {
+  if (!configuratorBucketPointerDragState.active) return;
+  if (!configuratorBucketPointerDragState.moved) {
+    const deltaX = event.clientX - configuratorBucketPointerDragState.startX;
+    const deltaY = event.clientY - configuratorBucketPointerDragState.startY;
+    const distance = Math.hypot(deltaX, deltaY);
+    if (distance < FLOATING_TOOLBAR_DRAG_THRESHOLD_PX) {
+      return;
+    }
+    configuratorBucketPointerDragState.moved = true;
+    if (configuratorBucketPointerDragState.draggedItem instanceof HTMLElement) {
+      configuratorBucketPointerDragState.draggedItem.classList.add('is-dragging');
+      configuratorBucketPointerDragState.draggedItem.style.pointerEvents = 'none';
+    }
+  }
+  const dropTarget = getConfiguratorBucketDropTargetFromPoint(event.clientX, event.clientY);
+  clearConfiguratorBucketDropTarget();
+  dropTarget?.bucket.classList.add('is-drop-target');
+}
+
+function handleConfiguratorBucketPointerUp(event) {
+  if (!configuratorBucketPointerDragState.active) return;
+  const {
+    sourceBucketKey,
+    sourceIndex,
+    moved,
+  } = configuratorBucketPointerDragState;
+  const dropTarget = getConfiguratorBucketDropTargetFromPoint(event.clientX, event.clientY);
+  stopConfiguratorBucketPointerDrag();
+  if (!moved) {
+    if (activeConfiguratorBucketSelection.bucketKey === sourceBucketKey && activeConfiguratorBucketSelection.itemIndex === sourceIndex) {
+      setActiveConfiguratorBucketSelection('', -1);
+    } else {
+      setActiveConfiguratorBucketSelection(sourceBucketKey, sourceIndex);
+    }
+    return;
+  }
+  if (!dropTarget) return;
+  moveConfiguratorBucketItem(sourceBucketKey, sourceIndex, dropTarget.bucketKey, dropTarget.dropIndex);
+}
+
+function initializeConfiguratorBuckets() {
+  if (!configuratorBuckets.length || !configuratorSlotButtons.length) return;
+
+  configuratorBucketState = readConfiguratorBucketState();
+  renderConfiguratorBuckets();
+  window.addEventListener('mousemove', handleConfiguratorBucketPointerMove);
+  window.addEventListener('mouseup', handleConfiguratorBucketPointerUp);
+  document.addEventListener('mousedown', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (target.closest('.configurator-panel__bucket-item')) return;
+    if (activeConfiguratorBucketSelection.bucketKey || activeConfiguratorBucketSelection.itemIndex !== -1) {
+      setActiveConfiguratorBucketSelection('', -1);
+    }
+  });
+
+  configuratorSlotButtons.forEach((button) => {
+    button.draggable = true;
+    button.addEventListener('dragstart', (event) => {
+      const text = button.querySelector('.configurator-panel__slot-text')?.textContent?.trim() || '';
+      if (!text || !event.dataTransfer) return;
+      activeConfiguratorDragPayload = { sourceType: 'slot', label: text };
+      writeConfiguratorDragPayload(event, activeConfiguratorDragPayload);
+      event.dataTransfer.effectAllowed = 'copy';
+    });
+    button.addEventListener('dragend', () => {
+      activeConfiguratorDragPayload = null;
+      configuratorBuckets.forEach((bucketElement) => bucketElement.classList.remove('is-drop-target'));
+    });
+  });
+
+  configuratorBuckets.forEach((bucket) => {
+    bucket.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      const payload = readConfiguratorDragPayload(event);
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = payload?.sourceType === 'bucket-item' ? 'move' : 'copy';
+      }
+      bucket.classList.add('is-drop-target');
+    });
+    bucket.addEventListener('dragleave', () => {
+      bucket.classList.remove('is-drop-target');
+    });
+    bucket.addEventListener('drop', (event) => {
+      event.preventDefault();
+      bucket.classList.remove('is-drop-target');
+      const bucketKey = bucket.dataset.configuratorBucket || '';
+      const payload = readConfiguratorDragPayload(event);
+      if (!payload || !bucketKey) return;
+      const dropIndex = getConfiguratorBucketDropIndex(bucket, event);
+      applyConfiguratorBucketDrop(bucketKey, payload, dropIndex);
+    });
+  });
+}
+
+function updateTransformingClass() {
+  if (!toolbarShell) return;
+  toolbarShell.classList.toggle('is-transforming', Boolean(floatingToolbarInteractionState.mode));
+}
+
+function setFloatingToolbarHandlesVisible(nextVisible) {
+  if (!toolbarShell) return;
+  floatingToolbarHandlesVisible = Boolean(nextVisible);
+  toolbarShell.classList.toggle('is-handles-visible', floatingToolbarHandlesVisible);
+}
+
+function startFloatingToolbarInteraction(mode, event) {
+  if (!toolbarShell) return;
+  if (mode === 'move' && !canStartFloatingToolbarDrag(event.target)) {
+    return;
+  }
+  event.preventDefault();
+  const origin = { ...floatingToolbarState };
+  floatingToolbarInteractionState = {
+    mode,
+    active: false,
+    startX: event.clientX,
+    startY: event.clientY,
+    origin,
+  };
+  updateTransformingClass();
+}
+
+function stopFloatingToolbarInteraction() {
+  if (!toolbarShell) return;
+  if (floatingToolbarInteractionState.mode) {
+    persistFloatingToolbarState();
+  }
+  floatingToolbarInteractionState = {
+    mode: null,
+    active: false,
+    startX: 0,
+    startY: 0,
+    origin: null,
+  };
+  toolbarShell.classList.remove('is-dragging');
+  updateTransformingClass();
+}
+
+function initializeFloatingToolbarItemOffsetTuning() {
+  if (!toolbarTunableItems.length) return;
+  restoreFloatingToolbarItemOffsets();
+  toolbarTunableItems.forEach((item) => {
+    item.addEventListener('mousedown', (event) => {
+      const tuningIntent = toolbarSpacingTuningMode || event.altKey;
+      if (event.button !== 0 || !tuningIntent) return;
+      const key = getFloatingToolbarItemOffsetKey(item);
+      if (!key) return;
+      event.preventDefault();
+      event.stopPropagation();
+      toolbarItemOffsetDragState = {
+        active: true,
+        item,
+        key,
+        startX: event.clientX,
+        originOffset: Number(toolbarItemOffsets[key] || 0),
+        moved: false,
+      };
+    });
+    item.addEventListener('dblclick', (event) => {
+      if (!toolbarSpacingTuningMode && !event.altKey) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setFloatingToolbarItemOffset(item, 0);
+      floatingToolbarSuppressClickOnce = true;
+    });
+    item.addEventListener('click', (event) => {
+      if (!toolbarItemSuppressClickOnce && !event.altKey && !toolbarSpacingTuningMode) return;
+      event.preventDefault();
+      event.stopPropagation();
+      toolbarItemSuppressClickOnce = false;
+    });
+  });
+
+  document.addEventListener('mousemove', (event) => {
+    if (!toolbarItemOffsetDragState.active || !toolbarItemOffsetDragState.item) return;
+    const deltaX = event.clientX - toolbarItemOffsetDragState.startX;
+    if (!toolbarItemOffsetDragState.moved && Math.abs(deltaX) >= 1) {
+      toolbarItemOffsetDragState.moved = true;
+      floatingToolbarSuppressClickOnce = true;
+      toolbarItemSuppressClickOnce = true;
+    }
+    setFloatingToolbarItemOffset(
+      toolbarItemOffsetDragState.item,
+      toolbarItemOffsetDragState.originOffset + deltaX,
+      false
+    );
+    event.preventDefault();
+  });
+
+  document.addEventListener('mouseup', () => {
+    stopFloatingToolbarItemOffsetDrag();
+  });
+}
+
+function initializeFloatingToolbarSpacingMenu() {
+  if (!toolbarShell || !toolbarSpacingMenu || !toolbarSpacingAction) return;
+  setToolbarSpacingTuningMode(false);
+  toolbarShell.addEventListener('contextmenu', (event) => {
+    if (event.target instanceof Element && event.target.closest('[data-toolbar-rotate-handle], [data-toolbar-width-handle], [data-toolbar-scale-handle]')) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    setToolbarSpacingMenuOpen(true);
+    toolbarSpacingAction.focus();
+  });
+  toolbarSpacingAction.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setToolbarSpacingTuningMode(!toolbarSpacingTuningMode);
+    setToolbarSpacingMenuOpen(false);
+  });
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!toolbarSpacingMenu.contains(target)) {
+      setToolbarSpacingMenuOpen(false);
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setToolbarSpacingMenuOpen(false);
+      if (toolbarSpacingTuningMode) {
+        setToolbarSpacingTuningMode(false);
+      }
+    }
+  });
+}
+
+function initializeFloatingToolbarParagraphMenu() {
+  if (!toolbarShell || !paragraphMenu || !paragraphTriggerButton) return;
+  paragraphMenu.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target.closest('[data-paragraph-alignment]') : null;
+    if (!target) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const action = target.dataset.paragraphAlignment;
+    if (action) {
+      handleUiAction(action);
+    }
+    setParagraphMenuOpen(false);
+  });
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!paragraphMenu.contains(target) && target !== paragraphTriggerButton && !paragraphTriggerButton.contains(target)) {
+      setParagraphMenuOpen(false);
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setParagraphMenuOpen(false);
+    }
+  });
+}
+
+function initializeFloatingToolbarDragFoundation() {
+  if (!toolbarShell) return;
+  toolbarShell.addEventListener('mousedown', (event) => {
+    if (event.button !== 0) return;
+    startFloatingToolbarInteraction('move', event);
+  });
+  toolbarRotateHandles.forEach((handle) => {
+    handle.addEventListener('mousedown', (event) => {
+      event.stopPropagation();
+    });
+    handle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      applyFloatingToolbarState({
+        ...floatingToolbarState,
+        isVertical: !floatingToolbarState.isVertical,
+      });
+    });
+  });
+  toolbarWidthHandle?.addEventListener('mousedown', (event) => {
+    event.stopPropagation();
+    startFloatingToolbarInteraction('width', event);
+  });
+  toolbarScaleHandle?.addEventListener('mousedown', (event) => {
+    event.stopPropagation();
+    startFloatingToolbarInteraction('scale', event);
+  });
+  document.addEventListener('mousemove', (event) => {
+    const { mode, origin } = floatingToolbarInteractionState;
+    if (!mode || !origin) return;
+    const deltaX = event.clientX - floatingToolbarInteractionState.startX;
+    const deltaY = event.clientY - floatingToolbarInteractionState.startY;
+    if (mode === 'move') {
+      if (!floatingToolbarInteractionState.active) {
+        const distance = Math.hypot(deltaX, deltaY);
+        if (distance < FLOATING_TOOLBAR_DRAG_THRESHOLD_PX) {
+          return;
+        }
+        floatingToolbarInteractionState.active = true;
+        floatingToolbarSuppressClickOnce = true;
+        toolbarShell.classList.add('is-dragging');
+      }
+      const topBarRect = topWorkBar?.getBoundingClientRect();
+      const pointerNearSnapZone = Boolean(
+        topBarRect &&
+        event.clientY >= topBarRect.top - FLOATING_TOOLBAR_SNAP_ZONE_PX &&
+        event.clientY <= topBarRect.bottom + FLOATING_TOOLBAR_SNAP_ZONE_PX
+      );
+      if (pointerNearSnapZone) {
+        const shellRect = toolbarShell.getBoundingClientRect();
+        const snapped = getSnappedFloatingToolbarPosition(shellRect);
+        applyFloatingToolbarState({
+          ...origin,
+          x: getSnappedFloatingToolbarX(origin.x + deltaX, shellRect),
+          y: snapped.y,
+          isDetached: false,
+          toolbarHeight: topBarRect?.height || origin.toolbarHeight || 0,
+        }, false);
+      } else {
+        applyFloatingToolbarState({
+          ...origin,
+          x: origin.x + deltaX,
+          y: origin.y + deltaY,
+          isDetached: true,
+          toolbarHeight: topBarRect?.height || origin.toolbarHeight || 0,
+        }, false);
+      }
+    } else if (mode === 'width') {
+      floatingToolbarInteractionState.active = true;
+      const widthDelta = (origin.isVertical ? deltaX : deltaX) * 0.01;
+      const nextWidthScale = origin.widthScale + widthDelta;
+      applyFloatingToolbarState({
+        ...origin,
+        widthScale: nextWidthScale,
+        dockedWidthScale: origin.isDetached ? origin.dockedWidthScale : nextWidthScale,
+        freeWidthScale: origin.isDetached ? nextWidthScale : origin.freeWidthScale,
+      }, false);
+    } else if (mode === 'scale') {
+      floatingToolbarInteractionState.active = true;
+      const scaleDelta = (origin.isVertical ? deltaX : deltaX) * 0.01;
+      applyFloatingToolbarState({
+        ...origin,
+        scale: origin.scale + scaleDelta,
+      }, false);
+    }
+    event.preventDefault();
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!floatingToolbarInteractionState.mode) return;
+    stopFloatingToolbarInteraction();
+  });
+
+  toolbarShell.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (floatingToolbarSuppressClickOnce) {
+      floatingToolbarSuppressClickOnce = false;
+      return;
+    }
+    if (target.closest('button, select, option, input, textarea, label, [data-toolbar-rotate-handle], [data-toolbar-width-handle], [data-toolbar-scale-handle]')) {
+      return;
+    }
+    setFloatingToolbarHandlesVisible(!floatingToolbarHandlesVisible);
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!toolbarShell.contains(target)) {
+      setFloatingToolbarHandlesVisible(false);
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    restoreFloatingToolbarPosition();
+    scheduleToolbarAnchorUpdate();
+  });
+
+  requestAnimationFrame(() => {
+    restoreFloatingToolbarPosition();
+    scheduleToolbarAnchorUpdate();
+  });
+}
+
 const commandRegistry = createCommandRegistry();
 const runCommand = createCommandRunner(commandRegistry, {
   capability: {
@@ -318,67 +2019,9 @@ registerProjectCommands(commandRegistry, {
     formatAlignJustify: () => handleFormatAlign('align-justify'),
     planFlowSave: () => handlePlanFlowSave(),
     reviewExportMarkdown: () => handleReviewExportMarkdown(),
-    openSettings: () => openSettingsModal(),
-    safeResetShell: () => performSafeResetShell(),
-    restoreLastStableShell: () => performRestoreLastStableShell(),
-    openDiagnostics: () => openDiagnosticsModal(),
-    openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
-    switchMode: (payload = {}) => {
-      const mode = typeof payload.mode === 'string' ? payload.mode : '';
-      if (mode === 'write' || mode === 'plan' || mode === 'review') {
-        applyMode(mode);
-      }
-    },
-    setTheme: (payload) => handleUiSetThemeCommand(payload),
-    setFont: (payload) => handleUiSetFontCommand(payload),
-    setFontSize: (payload) => handleUiSetFontSizeCommand(payload),
   },
 });
-
-const catalogManagedProjectCommandIds = new Set(listCommandCatalog().map((entry) => entry.id));
-
-function normalizeDormantVisibleCommandIds(value) {
-  if (!Array.isArray(value)) return null;
-  const ids = value.filter((commandId) => typeof commandId === 'string' && commandId.trim().length > 0);
-  return new Set(ids);
-}
-
-function filterPaletteCommandEntries(entries) {
-  if (!Array.isArray(entries)) return [];
-  return entries.filter((entry) => {
-    if (!entry || typeof entry !== 'object' || typeof entry.id !== 'string') return false;
-    if (!catalogManagedProjectCommandIds.has(entry.id)) return true;
-    if (!(designOsDormantVisibleCommandIds instanceof Set)) return true;
-    return designOsDormantVisibleCommandIds.has(entry.id);
-  });
-}
-
-function createDormantAwarePaletteDataProvider(baseProvider) {
-  return {
-    listAll() {
-      const entries = typeof baseProvider?.listAll === 'function' ? baseProvider.listAll() : [];
-      return filterPaletteCommandEntries(entries);
-    },
-    listBySurface(surface) {
-      const entries = typeof baseProvider?.listBySurface === 'function' ? baseProvider.listBySurface(surface) : [];
-      return filterPaletteCommandEntries(entries);
-    },
-    listByGroup(surface) {
-      const groups = typeof baseProvider?.listByGroup === 'function' ? baseProvider.listByGroup(surface) : [];
-      if (!Array.isArray(groups)) return [];
-      return groups
-        .map((group) => {
-          const commands = filterPaletteCommandEntries(group && Array.isArray(group.commands) ? group.commands : []);
-          if (commands.length === 0) return null;
-          return { ...group, commands };
-        })
-        .filter(Boolean);
-    },
-  };
-}
-
-const baseCommandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });
-const commandPaletteDataProvider = createDormantAwarePaletteDataProvider(baseCommandPaletteDataProvider);
+const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });
 window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;
 const MARKDOWN_IMPORT_STATUS_MESSAGE = 'Imported Markdown v1';
 const MARKDOWN_EXPORT_STATUS_MESSAGE = 'Exported Markdown v1';
@@ -470,34 +2113,6 @@ async function dispatchUiCommand(commandId, payload = {}) {
   return result;
 }
 
-async function invokeWorkspaceQueryBridge(queryId, payload = {}) {
-  if (!window.electronAPI || typeof window.electronAPI.invokeWorkspaceQueryBridge !== 'function') {
-    throw new Error('WORKSPACE_QUERY_BRIDGE_UNAVAILABLE');
-  }
-  const safePayload = payload && typeof payload === 'object' && !Array.isArray(payload)
-    ? payload
-    : {};
-  return window.electronAPI.invokeWorkspaceQueryBridge({ queryId, payload: safePayload });
-}
-
-async function invokeSaveLifecycleSignalBridge(signalId, payload = {}) {
-  if (!window.electronAPI || typeof window.electronAPI.invokeSaveLifecycleSignalBridge !== 'function') {
-    return { ok: false, error: 'SAVE_LIFECYCLE_SIGNAL_BRIDGE_UNAVAILABLE' };
-  }
-  const safePayload = payload && typeof payload === 'object' && !Array.isArray(payload)
-    ? payload
-    : {};
-  try {
-    return await window.electronAPI.invokeSaveLifecycleSignalBridge({ signalId, payload: safePayload });
-  } catch (error) {
-    return {
-      ok: false,
-      error: 'SAVE_LIFECYCLE_SIGNAL_BRIDGE_FAILED',
-      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
-    };
-  }
-}
-
 function resolveSceneFromImportResult(importResult) {
   if (!importResult || importResult.ok !== true) return null;
   const value = importResult.value;
@@ -573,9 +2188,10 @@ async function handleFlowModeOpenUiPath() {
   setPlainText(composeFlowDocument(scenes));
   updateWordCount();
   localDirty = false;
-  await invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: false });
+  if (window.electronAPI && typeof window.electronAPI.notifyDirtyState === 'function') {
+    window.electronAPI.notifyDirtyState(false);
+  }
   showEditorPanelFor('Flow mode');
-  remountDesignOsDormantRuntimeForCurrentDocumentContext();
   updateStatusText(buildFlowModeM9KickoffStatus('open', scenes.length, { m8Kickoff: true, m9Kickoff: true }));
 }
 
@@ -604,8 +2220,9 @@ async function handleFlowModeSaveUiPath() {
     dirty: false,
   };
   localDirty = false;
-  await invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: false });
-  remountDesignOsDormantRuntimeForCurrentDocumentContext();
+  if (window.electronAPI && typeof window.electronAPI.notifyDirtyState === 'function') {
+    window.electronAPI.notifyDirtyState(false);
+  }
   updateStatusText(buildFlowModeM9KickoffStatus('save', payload.scenes.length, { m8Kickoff: true, m9Kickoff: true }));
 }
 
@@ -1375,13 +2992,6 @@ function getSpatialLayoutStorageKey(projectId = currentProjectId) {
     : SPATIAL_LAYOUT_STORAGE_KEY_PREFIX;
 }
 
-function getSpatialLastStableLayoutStorageKey(projectId = currentProjectId) {
-  const normalizedProjectId = normalizeProjectId(projectId);
-  return normalizedProjectId
-    ? `${SPATIAL_LAYOUT_LAST_STABLE_STORAGE_KEY_PREFIX}:${normalizedProjectId}`
-    : SPATIAL_LAYOUT_LAST_STABLE_STORAGE_KEY_PREFIX;
-}
-
 function getSpatialLayoutViewportWidth() {
   return Math.max(0, Math.floor(window.innerWidth || document.documentElement.clientWidth || 0));
 }
@@ -1394,6 +3004,44 @@ function getSpatialLayoutMode(viewportWidth = getSpatialLayoutViewportWidth()) {
     return 'compact';
   }
   return 'desktop';
+}
+
+function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutViewportWidth()) {
+  const mode = getSpatialLayoutMode(viewportWidth);
+  if (mode === 'mobile') {
+    return {
+      version: SPATIAL_LAYOUT_VERSION,
+      projectId: normalizeProjectId(currentProjectId),
+      leftSidebarWidth: SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH,
+      rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
+      viewportWidth,
+      viewportMode: mode,
+      savedAtUtc: '',
+      source: 'baseline',
+    };
+  }
+  if (mode === 'compact') {
+    return {
+      version: SPATIAL_LAYOUT_VERSION,
+      projectId: normalizeProjectId(currentProjectId),
+      leftSidebarWidth: SPATIAL_LAYOUT_COMPACT_LEFT_BASELINE_WIDTH,
+      rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
+      viewportWidth,
+      viewportMode: mode,
+      savedAtUtc: '',
+      source: 'baseline',
+    };
+  }
+  return {
+    version: SPATIAL_LAYOUT_VERSION,
+    projectId: normalizeProjectId(currentProjectId),
+    leftSidebarWidth: SPATIAL_LAYOUT_DESKTOP_LEFT_BASELINE_WIDTH,
+    rightSidebarWidth: SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH,
+    viewportWidth,
+    viewportMode: mode,
+    savedAtUtc: '',
+    source: 'baseline',
+  };
 }
 
 function getSpatialLayoutConstraintsForViewport(viewportWidth = getSpatialLayoutViewportWidth()) {
@@ -1428,124 +3076,19 @@ function getSpatialLayoutConstraintsForViewport(viewportWidth = getSpatialLayout
   };
 }
 
-function getSpatialLayoutViewportEnvelope(viewportWidth = getSpatialLayoutViewportWidth()) {
-  const normalizedViewportWidth = Math.max(0, Math.floor(Number(viewportWidth) || 0));
-  const mode = getSpatialLayoutMode(normalizedViewportWidth);
-  return {
-    version: SPATIAL_LAYOUT_ENVELOPE_SIGNATURE_VERSION,
-    mode,
-    width: normalizedViewportWidth,
-    signature: `${mode}:${normalizedViewportWidth}`,
-  };
-}
-
-function isSpatialLayoutEnvelopeCompatible(rawState, viewportWidth = getSpatialLayoutViewportWidth()) {
-  if (!rawState || typeof rawState !== 'object') {
-    return false;
-  }
-
-  const currentEnvelope = getSpatialLayoutViewportEnvelope(viewportWidth);
-  const savedEnvelope = rawState.viewportEnvelope && typeof rawState.viewportEnvelope === 'object'
-    ? rawState.viewportEnvelope
-    : rawState;
-  const savedMode = typeof savedEnvelope.mode === 'string'
-    ? savedEnvelope.mode
-    : typeof rawState.viewportMode === 'string'
-      ? rawState.viewportMode
-      : '';
-  const savedViewportWidth = Math.max(
-    0,
-    Math.floor(Number(savedEnvelope.width || rawState.viewportWidth || 0))
-  );
-
-  if (!savedMode || !savedViewportWidth) {
-    return true;
-  }
-
-  if (savedMode !== currentEnvelope.mode) {
-    return false;
-  }
-
-  const viewportShrinkPx = savedViewportWidth - currentEnvelope.width;
-  if (viewportShrinkPx <= 0) {
-    return true;
-  }
-
-  const missingMonitorThresholdPx = Math.max(
-    SPATIAL_LAYOUT_MISSING_MONITOR_SHRINK_PX,
-    Math.round(savedViewportWidth * SPATIAL_LAYOUT_MISSING_MONITOR_SHRINK_RATIO),
-  );
-  return viewportShrinkPx <= missingMonitorThresholdPx;
-}
-
-function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutViewportWidth(), projectId = currentProjectId) {
-  const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
-  const viewportEnvelope = getSpatialLayoutViewportEnvelope(viewportWidth);
-  if (constraints.mode === 'mobile') {
-    return {
-      version: SPATIAL_LAYOUT_VERSION,
-      projectId: normalizeProjectId(projectId),
-      leftSidebarWidth: SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH,
-      rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
-      viewportWidth,
-      viewportMode: constraints.mode,
-      viewportEnvelope,
-      savedAtUtc: '',
-      source: 'baseline',
-      recoveryReason: 'baseline',
-    };
-  }
-  if (constraints.mode === 'compact') {
-    return {
-      version: SPATIAL_LAYOUT_VERSION,
-      projectId: normalizeProjectId(projectId),
-      leftSidebarWidth: SPATIAL_LAYOUT_COMPACT_LEFT_BASELINE_WIDTH,
-      rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
-      viewportWidth,
-      viewportMode: constraints.mode,
-      viewportEnvelope,
-      savedAtUtc: '',
-      source: 'baseline',
-      recoveryReason: 'baseline',
-    };
-  }
-  return {
-    version: SPATIAL_LAYOUT_VERSION,
-    projectId: normalizeProjectId(projectId),
-    leftSidebarWidth: SPATIAL_LAYOUT_DESKTOP_LEFT_BASELINE_WIDTH,
-    rightSidebarWidth: SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH,
-    viewportWidth,
-    viewportMode: constraints.mode,
-    viewportEnvelope,
-    savedAtUtc: '',
-    source: 'baseline',
-    recoveryReason: 'baseline',
-  };
-}
-
 function clampSpatialSidebarWidth(value, min, max) {
   const nextValue = Number(value);
   if (!Number.isFinite(nextValue)) return min;
   return Math.max(min, Math.min(max, Math.round(nextValue)));
 }
 
-function normalizeSpatialLayoutState(
-  rawState,
-  viewportWidth = getSpatialLayoutViewportWidth(),
-  { source = 'stored', projectId = currentProjectId } = {}
-) {
-  const fallback = getSpatialLayoutBaselineForViewport(viewportWidth, projectId);
-  const viewportEnvelope = getSpatialLayoutViewportEnvelope(viewportWidth);
+function normalizeSpatialLayoutState(rawState, viewportWidth = getSpatialLayoutViewportWidth()) {
+  const fallback = getSpatialLayoutBaselineForViewport(viewportWidth);
+  const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
   if (!rawState || typeof rawState !== 'object') {
-    return {
-      ...fallback,
-      source: 'baseline',
-      wasValid: false,
-      recoveryReason: 'invalid-layout',
-    };
+    return { ...fallback };
   }
 
-  const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
   const leftSidebarWidth = clampSpatialSidebarWidth(
     rawState.leftSidebarWidth,
     constraints.leftMin,
@@ -1556,42 +3099,34 @@ function normalizeSpatialLayoutState(
     constraints.rightMin,
     constraints.rightMax
   );
+
   const isValid =
     rawState.version === SPATIAL_LAYOUT_VERSION &&
-    isSpatialLayoutEnvelopeCompatible(rawState, viewportWidth) &&
     leftSidebarWidth >= constraints.leftMin &&
     leftSidebarWidth <= constraints.leftMax &&
     rightSidebarWidth >= constraints.rightMin &&
     rightSidebarWidth <= constraints.rightMax;
 
   if (!isValid) {
-    return {
-      ...fallback,
-      source: 'baseline',
-      wasValid: false,
-      recoveryReason: isSpatialLayoutEnvelopeCompatible(rawState, viewportWidth)
-        ? 'invalid-layout'
-        : 'missing-monitor',
-    };
+    return { ...fallback };
   }
 
   return {
     version: SPATIAL_LAYOUT_VERSION,
-    projectId: normalizeProjectId(rawState.projectId || projectId),
+    projectId: normalizeProjectId(rawState.projectId || currentProjectId),
     leftSidebarWidth,
     rightSidebarWidth: constraints.rightVisible ? rightSidebarWidth : fallback.rightSidebarWidth,
     viewportWidth,
     viewportMode: constraints.mode,
-    viewportEnvelope,
     savedAtUtc: typeof rawState.savedAtUtc === 'string' ? rawState.savedAtUtc : '',
-    source,
-    wasValid: true,
-    recoveryReason: typeof rawState.recoveryReason === 'string' ? rawState.recoveryReason : 'stored',
+    source: 'stored',
   };
 }
 
 function readSpatialLayoutState(projectId = currentProjectId) {
-  const raw = readWorkspaceStorage(getSpatialLayoutStorageKey(projectId), 'spatialLayout');
+  const storageKey = getSpatialLayoutStorageKey(projectId);
+  const legacyKey = 'spatialLayout';
+  const raw = readWorkspaceStorage(storageKey, legacyKey);
   if (!raw) return null;
   try {
     return JSON.parse(raw);
@@ -1600,26 +3135,7 @@ function readSpatialLayoutState(projectId = currentProjectId) {
   }
 }
 
-function readSpatialLastStableLayoutState(projectId = currentProjectId) {
-  const raw = readWorkspaceStorage(getSpatialLastStableLayoutStorageKey(projectId));
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
-
-function persistSpatialLayoutSnapshot(
-  state,
-  {
-    projectId = currentProjectId,
-    storageKey = getSpatialLayoutStorageKey(projectId),
-    source = 'committed',
-    updateCurrentLiveState = true,
-    updateLastStableLiveState = false,
-  } = {}
-) {
+function persistSpatialLayoutState(state, projectId = currentProjectId) {
   const normalizedProjectId = normalizeProjectId(projectId);
   const nextState = {
     version: SPATIAL_LAYOUT_VERSION,
@@ -1628,52 +3144,21 @@ function persistSpatialLayoutSnapshot(
     rightSidebarWidth: Math.round(Number(state?.rightSidebarWidth) || SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH),
     viewportWidth: Math.max(0, Math.floor(Number(state?.viewportWidth) || getSpatialLayoutViewportWidth())),
     viewportMode: state?.viewportMode || getSpatialLayoutMode(),
-    viewportEnvelope: state?.viewportEnvelope && typeof state.viewportEnvelope === 'object'
-      ? state.viewportEnvelope
-      : getSpatialLayoutViewportEnvelope(Math.max(0, Math.floor(Number(state?.viewportWidth) || getSpatialLayoutViewportWidth()))),
     savedAtUtc: new Date().toISOString(),
-    source: state?.source || source,
-    recoveryReason: typeof state?.recoveryReason === 'string' ? state.recoveryReason : '',
+    source: state?.source || 'committed',
   };
   try {
-    localStorage.setItem(storageKey, JSON.stringify(nextState));
+    localStorage.setItem(getSpatialLayoutStorageKey(normalizedProjectId), JSON.stringify(nextState));
   } catch {}
-  if (updateCurrentLiveState) {
-    spatialLayoutState = nextState;
-  }
-  if (updateLastStableLiveState) {
-    spatialLastStableLayoutState = nextState;
-  }
+  spatialLayoutState = nextState;
   return nextState;
-}
-
-function persistSpatialLayoutState(state, projectId = currentProjectId) {
-  return persistSpatialLayoutSnapshot(state, {
-    projectId,
-    storageKey: getSpatialLayoutStorageKey(projectId),
-    source: state?.source || 'committed',
-    updateCurrentLiveState: true,
-    updateLastStableLiveState: false,
-  });
-}
-
-function persistSpatialLastStableLayoutState(state, projectId = currentProjectId) {
-  return persistSpatialLayoutSnapshot(state, {
-    projectId,
-    storageKey: getSpatialLastStableLayoutStorageKey(projectId),
-    source: state?.source || 'last-stable',
-    updateCurrentLiveState: false,
-    updateLastStableLiveState: true,
-  });
 }
 
 function applySpatialLayoutState(state, { persist = false, projectId = currentProjectId } = {}) {
   const viewportWidth = getSpatialLayoutViewportWidth();
-  const normalizedState = normalizeSpatialLayoutState(state, viewportWidth, {
-    projectId,
-    source: persist ? 'committed' : 'stored',
-  });
+  const normalizedState = normalizeSpatialLayoutState(state, viewportWidth);
   const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
+  const rightVisible = constraints.rightVisible;
 
   if (appLayout) {
     appLayout.style.setProperty('--app-left-sidebar-width', `${normalizedState.leftSidebarWidth}px`);
@@ -1681,10 +3166,10 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
   }
 
   if (rightSidebar) {
-    rightSidebar.hidden = !constraints.rightVisible;
+    rightSidebar.hidden = !rightVisible;
   }
   if (rightSidebarResizer) {
-    rightSidebarResizer.hidden = !constraints.rightVisible;
+    rightSidebarResizer.hidden = !rightVisible;
   }
 
   spatialLayoutState = {
@@ -1702,90 +3187,23 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
   return spatialLayoutState;
 }
 
-function resolveSpatialLayoutRecoveryCandidate(candidate, viewportWidth = getSpatialLayoutViewportWidth(), projectId = currentProjectId) {
-  const normalizedCandidate = normalizeSpatialLayoutState(candidate.rawState, viewportWidth, {
-    projectId,
-    source: candidate.source,
-  });
-  const envelopeCompatible = candidate.rawState ? isSpatialLayoutEnvelopeCompatible(candidate.rawState, viewportWidth) : false;
-  const recoveryReason = envelopeCompatible
-    ? (normalizedCandidate.wasValid ? 'valid-current-envelope' : 'invalid-layout')
-    : 'missing-monitor';
-  return {
-    ...normalizedCandidate,
-    recoveryReason,
-    recoverySource: candidate.source,
-    wasValid: Boolean(normalizedCandidate.wasValid && envelopeCompatible),
-  };
-}
-
-function recoverSpatialLayoutState(projectId = currentProjectId) {
-  const normalizedProjectId = normalizeProjectId(projectId);
-  const viewportWidth = getSpatialLayoutViewportWidth();
-  const candidates = [];
-
-  if (spatialLayoutState && normalizeProjectId(spatialLayoutState.projectId) === normalizedProjectId) {
-    candidates.push({
-      rawState: spatialLayoutState,
-      source: 'current',
-    });
-  }
-
-  candidates.push(
-    { rawState: readSpatialLayoutState(normalizedProjectId), source: 'stored-current' },
-    { rawState: readSpatialLastStableLayoutState(normalizedProjectId), source: 'last-stable' },
-  );
-
-  for (const candidate of candidates) {
-    const resolvedCandidate = resolveSpatialLayoutRecoveryCandidate(candidate, viewportWidth, normalizedProjectId);
-    if (resolvedCandidate.wasValid) {
-      return resolvedCandidate;
-    }
-  }
-
-  return {
-    ...getSpatialLayoutBaselineForViewport(viewportWidth, normalizedProjectId),
-    wasValid: true,
-    source: 'baseline',
-  };
-}
-
 function restoreSpatialLayoutState(projectId = currentProjectId) {
-  const resolvedState = recoverSpatialLayoutState(projectId);
+  const storedState = readSpatialLayoutState(projectId);
+  const resolvedState = normalizeSpatialLayoutState(storedState, getSpatialLayoutViewportWidth());
   return applySpatialLayoutState(resolvedState, { persist: false, projectId });
 }
 
-function restoreLastStableSpatialLayoutState(projectId = currentProjectId) {
-  const viewportWidth = getSpatialLayoutViewportWidth();
-  const storedState = readSpatialLastStableLayoutState(projectId);
-  const resolvedState = resolveSpatialLayoutRecoveryCandidate({
-    rawState: storedState,
-    source: 'last-stable',
-  }, viewportWidth, projectId);
-  const stateToApply = resolvedState.wasValid
-    ? resolvedState
-    : getSpatialLayoutBaselineForViewport(viewportWidth, projectId);
-  return applySpatialLayoutState(stateToApply, { persist: false, projectId });
-}
-
 function commitSpatialLayoutState(projectId = currentProjectId) {
-  const committedState = applySpatialLayoutState(spatialLayoutState || getSpatialLayoutBaselineForViewport(), {
-    persist: false,
+  return applySpatialLayoutState(spatialLayoutState || getSpatialLayoutBaselineForViewport(), {
+    persist: true,
     projectId,
   });
-  persistSpatialLayoutState(committedState, projectId);
-  persistSpatialLastStableLayoutState(committedState, projectId);
-  return committedState;
 }
 
 function updateSpatialLayoutForViewportChange() {
   const storedState = readSpatialLayoutState(currentProjectId);
   const resolvedState = normalizeSpatialLayoutState(storedState || spatialLayoutState, getSpatialLayoutViewportWidth());
-  const recoveryState = recoverSpatialLayoutState(currentProjectId);
-  applySpatialLayoutState(recoveryState.wasValid ? recoveryState : resolvedState, {
-    persist: false,
-    projectId: currentProjectId,
-  });
+  applySpatialLayoutState(resolvedState, { persist: false, projectId: currentProjectId });
 }
 
 function showEditorPanelFor(title) {
@@ -1979,44 +3397,43 @@ function closeCardModal() {
 }
 
 async function openDocumentNode(node) {
+  if (!window.electronAPI || !window.electronAPI.openDocument) return false;
   const documentPath = getEffectiveDocumentPath(node);
   if (!documentPath) return false;
-  const documentKind = getEffectiveDocumentKind(node);
-  const state = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, {
-    path: documentPath,
-    title: typeof node?.label === 'string' ? node.label : '',
-    kind: documentKind,
-  });
-  if (!state.ok) {
+  try {
+    const result = await window.electronAPI.openDocument({
+      path: documentPath,
+      title: node.label,
+      kind: getEffectiveDocumentKind(node)
+    });
+    if (!result || result.ok === false) {
+      if (result && result.cancelled) {
+        return false;
+      }
+      updateStatusText('Ошибка');
+      return false;
+    }
+    currentDocumentPath = documentPath;
+    currentDocumentKind = getEffectiveDocumentKind(node);
+    metaEnabled = currentDocumentKind === 'scene' || currentDocumentKind === 'chapter-file';
+    updateMetaVisibility();
+    updateInspectorSnapshot();
+    return true;
+  } catch {
     updateStatusText('Ошибка');
     return false;
   }
-  const result = state.value && typeof state.value === 'object' && !Array.isArray(state.value)
-    ? state.value.result
-    : null;
-  if (!result || result.opened !== true) {
-    return false;
-  }
-
-  currentDocumentPath = documentPath;
-  currentDocumentKind = documentKind;
-  metaEnabled = currentDocumentKind === 'scene' || currentDocumentKind === 'chapter-file';
-  updateMetaVisibility();
-  updateInspectorSnapshot();
-  return true;
 }
 
 async function handleCreateNode(node, kind, promptLabel) {
   const name = window.prompt(promptLabel || 'Название', '');
   if (!name) return;
-  const parentPath = typeof node?.path === 'string' ? node.path.trim() : '';
-  if (!parentPath || !kind) return;
-  const state = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, {
-    parentPath,
+  const result = await window.electronAPI.createNode({
+    parentPath: node.path,
     kind,
-    name,
+    name
   });
-  if (!state.ok) {
+  if (!result || result.ok === false) {
     updateStatusText('Ошибка');
     return;
   }
@@ -2026,17 +3443,12 @@ async function handleCreateNode(node, kind, promptLabel) {
 async function handleRenameNode(node) {
   const name = window.prompt('Новое имя', node.label || '');
   if (!name) return;
-  const path = typeof node?.path === 'string' ? node.path.trim() : '';
-  if (!path) return;
-  const state = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, { path, name });
-  if (!state.ok) {
+  const result = await window.electronAPI.renameNode({ path: node.path, name });
+  if (!result || result.ok === false) {
     updateStatusText('Ошибка');
     return;
   }
-  const result = state.value && typeof state.value === 'object' && !Array.isArray(state.value)
-    ? state.value.result
-    : null;
-  if (currentDocumentPath && result && typeof result.path === 'string' && currentDocumentPath === path) {
+  if (currentDocumentPath && result.path && currentDocumentPath === node.path) {
     currentDocumentPath = result.path;
   }
   await loadTree();
@@ -2045,14 +3457,12 @@ async function handleRenameNode(node) {
 async function handleDeleteNode(node) {
   const confirmed = window.confirm('Переместить в корзину?');
   if (!confirmed) return;
-  const path = typeof node?.path === 'string' ? node.path.trim() : '';
-  if (!path) return;
-  const state = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, { path });
-  if (!state.ok) {
+  const result = await window.electronAPI.deleteNode({ path: node.path });
+  if (!result || result.ok === false) {
     updateStatusText('Ошибка');
     return;
   }
-  if (currentDocumentPath && currentDocumentPath === path) {
+  if (currentDocumentPath && currentDocumentPath === node.path) {
     currentDocumentPath = null;
   }
   await loadTree();
@@ -2063,16 +3473,11 @@ async function handleDeleteNode(node) {
 }
 
 async function handleReorderNode(node, direction) {
-  const path = typeof node?.path === 'string' ? node.path.trim() : '';
-  if (!path || (direction !== 'up' && direction !== 'down')) return;
-  const state = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, { path, direction });
-  if (!state.ok) {
+  const result = await window.electronAPI.reorderNode({ path: node.path, direction });
+  if (!result || result.ok === false) {
     return;
   }
-  const result = state.value && typeof state.value === 'object' && !Array.isArray(state.value)
-    ? state.value.result
-    : null;
-  if (currentDocumentPath && result && typeof result.path === 'string' && currentDocumentPath === path) {
+  if (currentDocumentPath && result.path && currentDocumentPath === node.path) {
     currentDocumentPath = result.path;
   }
   await loadTree();
@@ -2321,9 +3726,9 @@ function renderTree() {
 }
 
 async function loadTree() {
-  if (!window.electronAPI || typeof window.electronAPI.invokeWorkspaceQueryBridge !== 'function') return;
+  if (!window.electronAPI || !window.electronAPI.getProjectTree) return;
   try {
-    const result = await invokeWorkspaceQueryBridge('query.projectTree', { tab: activeTab });
+    const result = await window.electronAPI.getProjectTree(activeTab);
     if (!result || result.ok === false) {
       updateStatusText('Ошибка');
       return;
@@ -2436,8 +3841,7 @@ function stopSpatialResize() {
   document.body.style.userSelect = '';
   window.removeEventListener('pointermove', handleSpatialResizeMove);
   window.removeEventListener('pointerup', stopSpatialResize);
-  const committedLayoutState = commitSpatialLayoutState(currentProjectId);
-  syncDesignOsDormantLayoutCommitAtResizeEnd(committedLayoutState);
+  commitSpatialLayoutState(currentProjectId);
   scheduleLayoutRefresh();
 }
 
@@ -2529,12 +3933,29 @@ document.addEventListener('click', (event) => {
     const action = actionTarget.dataset.action;
     if (handleUiAction(action)) {
       event.preventDefault();
+      event.stopImmediatePropagation();
       return;
     }
+  }
+  if (
+    configuratorPanel &&
+    !configuratorPanel.hidden &&
+    !configuratorPanel.contains(event.target) &&
+    !event.target.closest('[data-grid-button]')
+  ) {
+    setConfiguratorOpen(false);
   }
   if (contextMenu && !contextMenu.hidden && !contextMenu.contains(event.target)) {
     clearContextMenu();
   }
+});
+
+configuratorPanel?.addEventListener('click', (event) => {
+  const button = event.target.closest('.configurator-panel__slot');
+  if (!button) return;
+  const nextIndex = configuratorSlotButtons.indexOf(button);
+  if (nextIndex === -1) return;
+  applyConfiguratorSelection(nextIndex);
 });
 
 document.addEventListener('contextmenu', (event) => {
@@ -2561,7 +3982,7 @@ document.addEventListener('scroll', () => {
 
 function updateStatusText(text) {
   if (statusElement && text) {
-    statusElement.textContent = buildStatusLineWithDormantYdosHint(text);
+    statusElement.textContent = text;
   }
 }
 
@@ -2583,65 +4004,6 @@ function updatePerfHintText(text) {
   }
 }
 
-function buildStatusLineWithDormantYdosHint(text) {
-  const baseText = String(text || '').trim();
-  if (!baseText) return baseText;
-  const context = buildDesignOsDormantContext();
-  const profile = context.profile || 'BASELINE';
-  const shellMode = context.shell_mode || 'CALM_DOCKED';
-  const workspace = context.workspace || 'WRITE';
-  const statusText = buildDesignOsStatusText({
-    profile,
-    shellMode,
-    workspace,
-  });
-  const hint = designOsDormantRuntimeMount.lastError ? ' error' : ' dormant';
-  const suffix = `[${statusText}${hint}]`;
-  const normalizedBase = baseText.replace(/\s*\[YDOS [^\]]+\]$/u, '').trimEnd();
-  return `${normalizedBase} ${suffix}`;
-}
-
-function buildDormantWarningHintText(text) {
-  const baseText = String(text || '').trim();
-  if (!baseText) return baseText;
-  const hasDormantSignal = Boolean(designOsDormantRuntimeMount.lastError) || designOsDormantDegradedToBaseline === true;
-  const normalizedBase = baseText.replace(/\s*\[YDOS dormant (?:error|degraded)\]$/u, '').trimEnd();
-  if (!hasDormantSignal) return normalizedBase;
-  const hint = designOsDormantRuntimeMount.lastError ? 'error' : 'degraded';
-  return `${normalizedBase} [YDOS dormant ${hint}]`;
-}
-
-function buildDesignOsDormantObservabilityLines() {
-  const context = buildDesignOsDormantContext();
-  const lastError = typeof designOsDormantRuntimeMount.lastError === 'string' && designOsDormantRuntimeMount.lastError.trim()
-    ? designOsDormantRuntimeMount.lastError
-    : 'none';
-  let resolverCalls = 0;
-  let previewCalls = 0;
-  let textInputEvents = 0;
-
-  if (designOsDormantRuntimeMount.ports && typeof designOsDormantRuntimeMount.ports.getRuntimeSnapshot === 'function') {
-    try {
-      const runtimeSnapshot = designOsDormantRuntimeMount.ports.getRuntimeSnapshot();
-      resolverCalls = Number.isFinite(runtimeSnapshot?.resolver_calls) ? runtimeSnapshot.resolver_calls : 0;
-      previewCalls = Number.isFinite(runtimeSnapshot?.preview_calls) ? runtimeSnapshot.preview_calls : 0;
-      textInputEvents = Number.isFinite(runtimeSnapshot?.text_input_events) ? runtimeSnapshot.text_input_events : 0;
-    } catch {}
-  }
-
-  return [
-    `YDOS_DormantMounted=${designOsDormantRuntimeMount.mounted ? 'true' : 'false'}`,
-    `YDOS_DormantLastError=${lastError}`,
-    `YDOS_Workspace=${context.workspace}`,
-    `YDOS_Platform=${context.platform}`,
-    `YDOS_Accessibility=${context.accessibility}`,
-    `YDOS_ShellMode=${context.shell_mode}`,
-    `YDOS_ResolverCalls=${resolverCalls}`,
-    `YDOS_PreviewCalls=${previewCalls}`,
-    `YDOS_TextInputEvents=${textInputEvents}`,
-  ];
-}
-
 function updateInspectorSnapshot() {
   if (!inspectorSnapshotElement) return;
   const snapshot = [
@@ -2651,7 +4013,6 @@ function updateInspectorSnapshot() {
     `Dirty=${localDirty ? 'true' : 'false'}`,
     `FlowMode=${flowModeState.active ? 'active' : 'off'}`,
     `CollabScopeLocal=${collabScopeLocal ? 'true' : 'false'}`,
-    ...buildDesignOsDormantObservabilityLines(),
   ];
   inspectorSnapshotElement.textContent = snapshot.join('\n');
 }
@@ -2777,351 +4138,6 @@ function applyRightTab(tab) {
   if (rightHistoryPanel) rightHistoryPanel.hidden = tab !== 'history' || !collabScopeLocal;
 }
 
-function resolveDormantDesignOsProfileFromStyleValue(styleValue) {
-  const normalized = typeof styleValue === 'string' ? styleValue.trim().toLowerCase() : '';
-  if (normalized === 'focus') return 'FOCUS';
-  return 'BASELINE';
-}
-
-function resolveDormantDesignOsShellModeFromLayoutMode(layoutMode) {
-  const normalized = typeof layoutMode === 'string' ? layoutMode.trim().toLowerCase() : '';
-  if (normalized === 'compact' || normalized === 'mobile') return 'COMPACT_DOCKED';
-  return 'CALM_DOCKED';
-}
-
-function buildDesignOsDormantContext() {
-  const styleValue = styleSelect && typeof styleSelect.value === 'string' ? styleSelect.value : '';
-  const layoutMode = spatialLayoutState && typeof spatialLayoutState.viewportMode === 'string'
-    ? spatialLayoutState.viewportMode
-    : getSpatialLayoutMode();
-  return {
-    shell_mode: resolveDormantDesignOsShellModeFromLayoutMode(layoutMode),
-    profile: resolveDormantDesignOsProfileFromStyleValue(styleValue),
-    workspace: mapEditorModeToWorkspace(currentMode),
-    platform: deriveRuntimePlatformId(),
-    accessibility: deriveAccessibilityId(),
-  };
-}
-
-function buildDesignOsDormantProductTruth() {
-  const projectId = normalizeProjectId(currentProjectId) || 'local-project';
-  const fallbackSceneId = 'scene-local';
-  const fallbackText = getPlainText() || '';
-
-  const buildSingleSceneFallbackTruth = () => ({
-    project_id: projectId,
-    active_scene_id: fallbackSceneId,
-    scenes: {
-      [fallbackSceneId]: fallbackText,
-    },
-  });
-
-  const buildNonFlowDocumentTruth = () => {
-    const hasPath = typeof currentDocumentPath === 'string' && currentDocumentPath.trim().length > 0;
-    const hasKind = typeof currentDocumentKind === 'string' && currentDocumentKind.trim().length > 0;
-    if (!hasPath || !hasKind) {
-      return buildSingleSceneFallbackTruth();
-    }
-    const sceneId = currentDocumentPath.trim();
-    return {
-      project_id: projectId,
-      active_scene_id: sceneId,
-      scenes: {
-        [sceneId]: fallbackText,
-      },
-    };
-  };
-
-  const buildFlowDocumentTruth = () => {
-    if (!flowModeState.active) return null;
-    const payload = buildFlowSavePayload(getPlainText(), flowModeState.scenes);
-    if (!payload.ok || !Array.isArray(payload.scenes) || payload.scenes.length === 0) return null;
-    const scenes = {};
-    for (const scene of payload.scenes) {
-      if (!scene || typeof scene !== 'object') continue;
-      const scenePath = typeof scene.path === 'string' ? scene.path.trim() : '';
-      if (!scenePath) continue;
-      scenes[scenePath] = typeof scene.content === 'string' ? scene.content : '';
-    }
-    const activeSceneId = payload.scenes.find((scene) => scene && typeof scene.path === 'string' && scene.path.trim())
-      ?.path
-      ?.trim();
-    if (!activeSceneId || Object.keys(scenes).length === 0) return null;
-    return {
-      project_id: projectId,
-      active_scene_id: activeSceneId,
-      scenes,
-    };
-  };
-
-  const flowTruth = buildFlowDocumentTruth();
-  if (flowTruth) {
-    return flowTruth;
-  }
-  if (flowModeState.active) {
-    return buildSingleSceneFallbackTruth();
-  }
-  return buildNonFlowDocumentTruth();
-}
-
-function buildDesignOsDormantTypographyDesignPatch() {
-  if (!editor) return null;
-  const computedStyle = window.getComputedStyle ? window.getComputedStyle(editor) : null;
-  const fontFamily = (
-    typeof editor.style.fontFamily === 'string' && editor.style.fontFamily.trim()
-      ? editor.style.fontFamily.trim()
-      : computedStyle && typeof computedStyle.fontFamily === 'string'
-        ? computedStyle.fontFamily.trim()
-        : ''
-  );
-  const lineHeightRaw = (
-    typeof editor.style.lineHeight === 'string' && editor.style.lineHeight.trim()
-      ? editor.style.lineHeight.trim()
-      : computedStyle && typeof computedStyle.lineHeight === 'string'
-        ? computedStyle.lineHeight.trim()
-        : ''
-  );
-  const sizePx = Number(currentFontSizePx);
-  const lineHeightValue = Number.parseFloat(lineHeightRaw);
-  if (!fontFamily || !Number.isFinite(sizePx) || sizePx <= 0) return null;
-  if (!Number.isFinite(lineHeightValue) || lineHeightValue <= 0) return null;
-  return {
-    typography: {
-      font: {
-        body: {
-          family: fontFamily,
-          sizePx: Number(sizePx.toFixed(2)),
-        },
-      },
-      scale: {
-        body: {
-          lineHeight: Number(lineHeightValue.toFixed(3)),
-        },
-      },
-    },
-  };
-}
-
-function commitDesignOsDormantTypographyDesignPatch({ syncPreview = true } = {}) {
-  if (!designOsDormantRuntimeMount.ports || typeof designOsDormantRuntimeMount.ports.commitDesign !== 'function') {
-    return false;
-  }
-  const designPatch = buildDesignOsDormantTypographyDesignPatch();
-  if (!designPatch) return false;
-  try {
-    designOsDormantRuntimeMount.ports.commitDesign({
-      context: buildDesignOsDormantContext(),
-      design_patch: designPatch,
-      commit_point: 'apply',
-    });
-    if (syncPreview) {
-      syncDesignOsDormantContext();
-    }
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function buildDesignOsDormantThemeDesignPatch() {
-  if (!document || !document.body) return null;
-  const isDarkTheme = document.body.classList.contains('dark-theme');
-  const computedStyle = window.getComputedStyle ? window.getComputedStyle(document.body) : null;
-  const fallbackLight = {
-    backgroundCanvas: '#e7e0d5',
-    foregroundPrimary: '#171317',
-    surfacePanel: '#fffdf8',
-    surfaceElevated: '#e0d7c8',
-    shellBackground: '#d8cfc1',
-  };
-  const fallbackDark = {
-    backgroundCanvas: '#101119',
-    foregroundPrimary: '#fdfdfd',
-    surfacePanel: '#181a24',
-    surfaceElevated: '#171925',
-    shellBackground: '#11131d',
-  };
-  const fallbackTheme = isDarkTheme ? fallbackDark : fallbackLight;
-  const resolveToken = (cssVarName, fallbackValue) => {
-    const rawValue = computedStyle && typeof computedStyle.getPropertyValue === 'function'
-      ? computedStyle.getPropertyValue(cssVarName)
-      : '';
-    const normalized = typeof rawValue === 'string' ? rawValue.trim() : '';
-    return normalized || fallbackValue;
-  };
-  const backgroundCanvas = resolveToken('--background', fallbackTheme.backgroundCanvas);
-  const foregroundPrimary = resolveToken('--foreground', fallbackTheme.foregroundPrimary);
-  const surfacePanel = resolveToken('--card', fallbackTheme.surfacePanel);
-  const surfaceElevated = resolveToken('--sidebar', fallbackTheme.surfaceElevated);
-  const shellBackground = resolveToken('--canvas-bg', fallbackTheme.shellBackground);
-  return {
-    color: {
-      background: {
-        canvas: backgroundCanvas,
-      },
-      text: {
-        primary: foregroundPrimary,
-      },
-      surface: {
-        panel: surfacePanel,
-        elevated: surfaceElevated,
-      },
-    },
-    surface: {
-      shell: {
-        background: shellBackground,
-      },
-      editor: {
-        background: surfacePanel,
-      },
-    },
-  };
-}
-
-function commitDesignOsDormantThemeDesignPatch({ syncPreview = true } = {}) {
-  if (!designOsDormantRuntimeMount.ports || typeof designOsDormantRuntimeMount.ports.commitDesign !== 'function') {
-    return false;
-  }
-  const designPatch = buildDesignOsDormantThemeDesignPatch();
-  if (!designPatch) return false;
-  try {
-    designOsDormantRuntimeMount.ports.commitDesign({
-      context: buildDesignOsDormantContext(),
-      design_patch: designPatch,
-      commit_point: 'mode_switch',
-    });
-    if (syncPreview) {
-      syncDesignOsDormantContext();
-    }
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function replayDesignOsDormantDesignStateAfterSafeReset() {
-  commitDesignOsDormantTypographyDesignPatch({ syncPreview: false });
-  commitDesignOsDormantThemeDesignPatch({ syncPreview: false });
-  syncDesignOsDormantContext();
-}
-
-function remountDesignOsDormantRuntimeForCurrentDocumentContext(options = {}) {
-  try {
-    const productTruth = options && typeof options === 'object' && options.productTruth
-      ? options.productTruth
-      : buildDesignOsDormantProductTruth();
-    const productTruthHash = options && typeof options === 'object' && typeof options.productTruthHash === 'string' && options.productTruthHash
-      ? options.productTruthHash
-      : buildProductTruthHash(productTruth);
-    const bootstrap = createRepoGroundedDesignOsBrowserRuntime({
-      productTruth,
-    });
-    const ports = createDesignOsPorts({
-      runtime: bootstrap.runtime,
-      defaultContext: buildDesignOsDormantContext(),
-    });
-    designOsDormantRuntimeMount = {
-      mounted: true,
-      runtime: bootstrap.runtime,
-      ports,
-      bootstrap,
-      lastError: null,
-    };
-    designOsDormantDegradedToBaseline = false;
-    designOsDormantVisibleCommandIds = null;
-    designOsDormantLastSyncedProductTruthHash = productTruthHash;
-    const layoutStateForReplay = spatialLayoutState || getSpatialLayoutBaselineForViewport();
-    syncDesignOsDormantLayoutCommitAtResizeEnd(layoutStateForReplay);
-    commitDesignOsDormantTypographyDesignPatch({ syncPreview: false });
-    commitDesignOsDormantThemeDesignPatch({ syncPreview: false });
-    syncDesignOsDormantContext();
-  } catch (error) {
-    designOsDormantRuntimeMount = {
-      mounted: false,
-      runtime: null,
-      ports: null,
-      bootstrap: null,
-      lastError: error instanceof Error ? error.message : String(error),
-    };
-    designOsDormantDegradedToBaseline = false;
-    designOsDormantVisibleCommandIds = null;
-  }
-  return {
-    ...designOsDormantRuntimeMount,
-  };
-}
-
-function syncDesignOsDormantRuntimeTruthAtSaveBoundary(previousDirtyState, nextDirtyState) {
-  if (!previousDirtyState || nextDirtyState) return;
-  const productTruth = buildDesignOsDormantProductTruth();
-  let productTruthHash = null;
-  try {
-    productTruthHash = buildProductTruthHash(productTruth);
-  } catch {
-    return;
-  }
-  if (typeof productTruthHash !== 'string' || productTruthHash.length === 0) return;
-  if (productTruthHash === designOsDormantLastSyncedProductTruthHash) return;
-  remountDesignOsDormantRuntimeForCurrentDocumentContext({
-    productTruth,
-    productTruthHash,
-  });
-}
-
-function mountDesignOsDormantRuntime() {
-  if (designOsDormantRuntimeMount.mounted) {
-    return designOsDormantRuntimeMount;
-  }
-  return remountDesignOsDormantRuntimeForCurrentDocumentContext();
-}
-
-function syncDesignOsDormantContext() {
-  if (!designOsDormantRuntimeMount.ports) return;
-  try {
-    const preview = designOsDormantRuntimeMount.ports.previewDesign({
-      context: buildDesignOsDormantContext(),
-    });
-    designOsDormantDegradedToBaseline = preview?.degraded_to_baseline === true;
-    const nextVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);
-    designOsDormantVisibleCommandIds = nextVisibleCommandIds;
-    const resolvedTokens = preview?.resolved_tokens;
-    if (resolvedTokens && typeof resolvedTokens === 'object') {
-      const isDarkTheme = document.body.classList.contains('dark-theme');
-      const cssVariables = extractCssVariablesFromTokens(resolvedTokens, {
-        isDarkTheme,
-      });
-      applyCssVariables(document.documentElement, cssVariables);
-    }
-  } catch {
-    designOsDormantVisibleCommandIds = null;
-  }
-}
-
-function syncDesignOsDormantTextInput() {
-  if (!designOsDormantRuntimeMount.ports) return;
-  try {
-    designOsDormantRuntimeMount.ports.onTextInput(getPlainText());
-  } catch {}
-}
-
-function syncDesignOsDormantLayoutCommitAtResizeEnd(committedSpatialState) {
-  if (!committedSpatialState) return;
-  if (!designOsDormantRuntimeMount.ports || typeof designOsDormantRuntimeMount.ports.commitDesign !== 'function') return;
-  try {
-    const context = buildDesignOsDormantContext();
-    const layoutPatch = buildLayoutPatchFromSpatialState(committedSpatialState, {
-      viewportWidth: committedSpatialState.viewportWidth || getSpatialLayoutViewportWidth(),
-      viewportHeight: Math.max(320, Math.floor(Number(window.innerHeight) || 0) || 900),
-      shellMode: context.shell_mode || 'CALM_DOCKED',
-    });
-    designOsDormantRuntimeMount.ports.commitDesign({
-      context,
-      layout_patch: layoutPatch,
-      commit_point: 'resize_end',
-    });
-  } catch {}
-}
-
 function applyMode(mode) {
   currentMode = mode;
   document.body.dataset.mode = mode;
@@ -3138,7 +4154,6 @@ function applyMode(mode) {
     applyLeftTab('project');
     applyRightTab('inspector');
   }
-  syncDesignOsDormantContext();
   updateInspectorSnapshot();
 }
 
@@ -3166,7 +4181,6 @@ function clearProjectWorkspaceStorage(projectId = currentProjectId) {
   if (normalizedProjectId) {
     keysToRemove.add(getActiveDocumentTitleStorageKey(normalizedProjectId));
     keysToRemove.add(getSpatialLayoutStorageKey(normalizedProjectId));
-    keysToRemove.add(getSpatialLastStableLayoutStorageKey(normalizedProjectId));
     PROJECT_WORKSPACE_RESET_TABS.forEach((tab) => {
       keysToRemove.add(getTreeExpandedStorageKey(tab, normalizedProjectId));
     });
@@ -3240,24 +4254,10 @@ function performSafeResetShell() {
   applyViewMode(SAFE_RESET_BASELINE_VIEW_MODE);
   setEditorZoom(EDITOR_ZOOM_DEFAULT);
   setToolbarCompactMode(false);
-  let nextSafeResetLayoutState = null;
-  let safeResetPortSucceeded = false;
-  if (designOsDormantRuntimeMount.ports && typeof designOsDormantRuntimeMount.ports.safeResetShell === 'function') {
-    try {
-      const layoutSnapshot = designOsDormantRuntimeMount.ports.safeResetShell();
-      nextSafeResetLayoutState = buildSpatialStateFromLayoutSnapshot(layoutSnapshot, {
-        viewportWidth: getSpatialLayoutViewportWidth(),
-      });
-      designOsDormantDegradedToBaseline = false;
-      safeResetPortSucceeded = true;
-    } catch {}
-  }
-  applySpatialLayoutState(nextSafeResetLayoutState || getSpatialLayoutBaselineForViewport(), {
+  applySpatialLayoutState(getSpatialLayoutBaselineForViewport(), {
     persist: true,
     projectId: currentProjectId,
   });
-  persistSpatialLastStableLayoutState(spatialLayoutState, currentProjectId);
-  commitSpatialLayoutState(currentProjectId);
 
   if (editor) {
     editor.style.fontSize = `${SAFE_RESET_BASELINE_FONT_SIZE_PX}px`;
@@ -3294,15 +4294,12 @@ function performSafeResetShell() {
   closeSimpleModal(diagnosticsModal);
 
   applyMode('write');
-  if (safeResetPortSucceeded) {
-    replayDesignOsDormantDesignStateAfterSafeReset();
-  }
   applyLeftTab('project');
   applyRightTab('inspector');
   loadTree();
   updateWordCount();
   updateSaveStateText(localDirty ? 'unsaved' : 'idle');
-  updateWarningStateText(buildDormantWarningHintText('none'));
+  updateWarningStateText('none');
   updatePerfHintText('normal');
   updateStatusText('Shell reset to baseline');
   updateInspectorSnapshot();
@@ -3343,26 +4340,7 @@ function performRestoreLastStableShell() {
   restoreFloatingToolbarPosition();
   restoreLeftToolbarButtonOffsets();
   restoreLeftFloatingToolbarPosition();
-  let nextRestoreLayoutState = null;
-  if (designOsDormantRuntimeMount.ports && typeof designOsDormantRuntimeMount.ports.restoreLastStableShell === 'function') {
-    try {
-      const layoutSnapshot = designOsDormantRuntimeMount.ports.restoreLastStableShell();
-      nextRestoreLayoutState = buildSpatialStateFromLayoutSnapshot(layoutSnapshot, {
-        viewportWidth: getSpatialLayoutViewportWidth(),
-      });
-      designOsDormantDegradedToBaseline = false;
-    } catch {}
-  }
-  if (nextRestoreLayoutState) {
-    applySpatialLayoutState(nextRestoreLayoutState, {
-      persist: false,
-      projectId: currentProjectId,
-    });
-  } else {
-    restoreSpatialLayoutState(currentProjectId);
-    restoreLastStableSpatialLayoutState(currentProjectId);
-  }
-  syncDesignOsDormantContext();
+  restoreSpatialLayoutState(currentProjectId);
 
   configuratorBucketState = readConfiguratorBucketState();
   setActiveConfiguratorBucketSelection('', -1);
@@ -3386,7 +4364,7 @@ function performRestoreLastStableShell() {
 
   updateWordCount();
   updateSaveStateText(localDirty ? 'unsaved' : 'idle');
-  updateWarningStateText(buildDormantWarningHintText('recovery restored'));
+  updateWarningStateText('recovery restored');
   updatePerfHintText('normal');
   updateStatusText(
     savedActiveDocumentTitle
@@ -3436,7 +4414,6 @@ function openDiagnosticsModal() {
       `dirty=${localDirty ? 'true' : 'false'}`,
       `flowModeActive=${flowModeState.active ? 'true' : 'false'}`,
       `collabScopeLocal=${collabScopeLocal ? 'true' : 'false'}`,
-      ...buildDesignOsDormantObservabilityLines(),
     ];
     diagnosticsText.value = lines.join('\n');
   }
@@ -3455,7 +4432,7 @@ async function confirmExportPreviewAndRun() {
   updatePerfHintText('export');
   await dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);
   updatePerfHintText('normal');
-  updateWarningStateText(buildDormantWarningHintText('none'));
+  updateWarningStateText('none');
 }
 
 function applyCollabGate() {
@@ -3476,8 +4453,8 @@ function applyCollabGate() {
 
 async function initializeCollabScopeLocal() {
   try {
-    if (window.electronAPI && typeof window.electronAPI.invokeWorkspaceQueryBridge === 'function') {
-      collabScopeLocal = (await invokeWorkspaceQueryBridge('query.collabScopeLocal')) === true;
+    if (window.electronAPI && typeof window.electronAPI.getCollabScopeLocal === 'function') {
+      collabScopeLocal = await window.electronAPI.getCollabScopeLocal();
     } else {
       collabScopeLocal = localStorage.getItem('COLLAB_SCOPE_LOCAL') === 'true';
     }
@@ -3494,7 +4471,7 @@ function installNetworkGuard() {
     window.fetch = async (...args) => {
       const url = String(args[0] || '');
       if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('ws://') || url.startsWith('wss://')) {
-        updateWarningStateText(buildDormantWarningHintText('network blocked before X4'));
+        updateWarningStateText('network blocked before X4');
         throw blockedError();
       }
       return originalFetch(...args);
@@ -3555,21 +4532,14 @@ function setCurrentFontSize(px) {
   if (!Number.isFinite(px)) return;
   currentFontSizePx = px;
   if (sizeSelect) {
+    ensureSelectHasOption(sizeSelect, String(px), String(px), '__custom_size__');
     sizeSelect.value = String(px);
   }
-}
-
-function promptForCustomFontSize() {
-  if (typeof window.prompt !== 'function') return null;
-  const raw = window.prompt('Font size (8-96)', String(currentFontSizePx || 16));
-  if (raw === null) return null;
-  const px = Number(String(raw).trim());
-  if (!Number.isFinite(px) || px < 8 || px > 96) return null;
-  return px;
+  syncLiteralToolbarDisplays();
 }
 
 function scheduleAutoSave(delay = AUTO_SAVE_DELAY) {
-  if (!window.electronAPI || typeof window.electronAPI.invokeSaveLifecycleSignalBridge !== 'function') {
+  if (!window.electronAPI || typeof window.electronAPI.requestAutoSave !== 'function') {
     return;
   }
 
@@ -3578,7 +4548,9 @@ function scheduleAutoSave(delay = AUTO_SAVE_DELAY) {
   }
 
   autoSaveTimerId = window.setTimeout(() => {
-    invokeSaveLifecycleSignalBridge('signal.autoSave.request')
+    window.electronAPI
+      .requestAutoSave()
+      .catch(() => {})
       .finally(() => {
         autoSaveTimerId = null;
       });
@@ -3598,7 +4570,9 @@ function markAsModified() {
 
   if (!localDirty) {
     localDirty = true;
-    void invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: true });
+    if (window.electronAPI && window.electronAPI.notifyDirtyState) {
+      window.electronAPI.notifyDirtyState(true);
+    }
   }
   updateSaveStateText('unsaved');
   updatePerfHintText('typing');
@@ -3606,216 +4580,43 @@ function markAsModified() {
   scheduleAutoSave();
 }
 
-function getDefaultFloatingToolbarState() {
-  return {
-    position: { x: 0, y: 0 },
-    compact: false,
-    scale: 1,
-    widthScale: 1,
-  };
-}
-
-function normalizeFloatingToolbarState(input) {
-  const fallback = getDefaultFloatingToolbarState();
-  if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    return fallback;
+function normalizeFontWeightPreset(value) {
+  const raw = String(value || '').trim().toLowerCase();
+  if (FONT_WEIGHT_PRESETS[raw]) {
+    return raw;
   }
-  const position = input.position && typeof input.position === 'object' && !Array.isArray(input.position)
-    ? input.position
-    : {};
-  const x = Number(position.x);
-  const y = Number(position.y);
-  const scale = Number(input.scale);
-  const widthScale = Number(input.widthScale);
-  return {
-    position: {
-      x: Number.isFinite(x) ? x : fallback.position.x,
-      y: Number.isFinite(y) ? y : fallback.position.y,
-    },
-    compact: Boolean(input.compact),
-    scale: Number.isFinite(scale) ? Math.min(FLOATING_TOOLBAR_SCALE_MAX, Math.max(FLOATING_TOOLBAR_SCALE_MIN, scale)) : fallback.scale,
-    widthScale: Number.isFinite(widthScale)
-      ? Math.min(FLOATING_TOOLBAR_WIDTH_SCALE_MAX, Math.max(FLOATING_TOOLBAR_WIDTH_SCALE_MIN, widthScale))
-      : fallback.widthScale,
-  };
+  return LEGACY_FONT_WEIGHT_PRESET_MAP[raw] || 'light';
 }
 
-function readFloatingToolbarState() {
-  try {
-    const raw = localStorage.getItem(FLOATING_TOOLBAR_STORAGE_KEY);
-    if (!raw) return getDefaultFloatingToolbarState();
-    return normalizeFloatingToolbarState(JSON.parse(raw));
-  } catch (error) {
-    return getDefaultFloatingToolbarState();
+function ensureSelectHasOption(select, value, label = value, beforeValue = '') {
+  if (!(select instanceof HTMLSelectElement)) return;
+  const stringValue = String(value);
+  const existing = Array.from(select.options).find((option) => option.value === stringValue);
+  if (existing) {
+    existing.textContent = label;
+    return;
   }
+  const option = new Option(label, stringValue);
+  const beforeOption = beforeValue
+    ? Array.from(select.options).find((candidate) => candidate.value === beforeValue) || null
+    : null;
+  select.add(option, beforeOption);
 }
 
-function persistFloatingToolbarState() {
-  localStorage.setItem(FLOATING_TOOLBAR_STORAGE_KEY, JSON.stringify(floatingToolbarState));
-}
-
-function readFloatingToolbarItemOffsets() {
-  try {
-    const raw = localStorage.getItem(FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
-  } catch (error) {
-    return {};
-  }
-}
-
-function persistFloatingToolbarItemOffsets() {
-  localStorage.setItem(FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY, JSON.stringify(toolbarItemOffsets));
-}
-
-function applyFloatingToolbarState(nextState, persist = true) {
-  floatingToolbarState = normalizeFloatingToolbarState(nextState);
-  setToolbarCompactMode(floatingToolbarState.compact);
-  if (persist) {
-    persistFloatingToolbarState();
-  }
-}
-
-function restoreFloatingToolbarItemOffsets() {
-  toolbarItemOffsets = readFloatingToolbarItemOffsets();
-}
-
-function restoreFloatingToolbarPosition() {
-  applyFloatingToolbarState(readFloatingToolbarState(), false);
-}
-
-function getDefaultLeftFloatingToolbarState() {
-  return {
-    position: { x: 0, y: 0 },
-    compact: false,
-  };
-}
-
-function normalizeLeftFloatingToolbarState(input) {
-  const fallback = getDefaultLeftFloatingToolbarState();
-  if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    return fallback;
-  }
-  const position = input.position && typeof input.position === 'object' && !Array.isArray(input.position)
-    ? input.position
-    : {};
-  const x = Number(position.x);
-  const y = Number(position.y);
-  return {
-    position: {
-      x: Number.isFinite(x) ? x : fallback.position.x,
-      y: Number.isFinite(y) ? y : fallback.position.y,
-    },
-    compact: Boolean(input.compact),
-  };
-}
-
-function readLeftFloatingToolbarState() {
-  try {
-    const raw = localStorage.getItem(LEFT_FLOATING_TOOLBAR_STORAGE_KEY);
-    if (!raw) return getDefaultLeftFloatingToolbarState();
-    return normalizeLeftFloatingToolbarState(JSON.parse(raw));
-  } catch (error) {
-    return getDefaultLeftFloatingToolbarState();
-  }
-}
-
-function persistLeftFloatingToolbarState() {
-  localStorage.setItem(LEFT_FLOATING_TOOLBAR_STORAGE_KEY, JSON.stringify(leftFloatingToolbarState));
-}
-
-function readLeftToolbarButtonOffsets() {
-  try {
-    const raw = localStorage.getItem(LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
-  } catch (error) {
-    return {};
-  }
-}
-
-function persistLeftToolbarButtonOffsets() {
-  localStorage.setItem(LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY, JSON.stringify(leftToolbarButtonOffsets));
-}
-
-function applyLeftFloatingToolbarState(nextState, persist = true) {
-  leftFloatingToolbarState = normalizeLeftFloatingToolbarState(nextState);
-  if (persist) {
-    persistLeftFloatingToolbarState();
-  }
-}
-
-function restoreLeftToolbarButtonOffsets() {
-  leftToolbarButtonOffsets = readLeftToolbarButtonOffsets();
-}
-
-function restoreLeftFloatingToolbarPosition() {
-  applyLeftFloatingToolbarState(readLeftFloatingToolbarState(), false);
-}
-
-function readConfiguratorBucketState() {
-  try {
-    const raw = localStorage.getItem(CONFIGURATOR_BUCKETS_STORAGE_KEY);
-    if (!raw) return { master: [], minimal: [] };
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      return { master: [], minimal: [] };
-    }
-    return {
-      master: Array.isArray(parsed.master) ? parsed.master : [],
-      minimal: Array.isArray(parsed.minimal) ? parsed.minimal : [],
-    };
-  } catch (error) {
-    return { master: [], minimal: [] };
-  }
-}
-
-function persistConfiguratorBucketState() {
-  localStorage.setItem(CONFIGURATOR_BUCKETS_STORAGE_KEY, JSON.stringify(configuratorBucketState));
-}
-
-function setActiveConfiguratorBucketSelection() {}
-
-function renderConfiguratorBuckets() {}
-
-function setConfiguratorOpen() {}
-
-function setToolbarSpacingTuningMode() {}
-
-function setToolbarSpacingMenuOpen() {}
-
-function setLeftToolbarSpacingTuningMode() {}
-
-function setLeftToolbarSpacingMenuOpen() {}
-
-function resolveFontWeightPresetId(weight) {
-  const normalized = String(weight || '').trim();
-  if (Object.prototype.hasOwnProperty.call(FONT_WEIGHT_PRESETS, normalized)) {
-    return normalized;
-  }
-  return LEGACY_FONT_WEIGHT_PRESET_MAP[normalized] || 'regular';
-}
-
-function getWeightSelectValueForPresetId(presetId) {
-  const preset = FONT_WEIGHT_PRESETS[presetId] || FONT_WEIGHT_PRESETS.regular;
-  return preset.weight;
-}
-
-function applyFontWeight(weight, persist = true) {
+function applyFontWeight(weightPreset, persist = true) {
   if (!editor) return;
-  const presetId = resolveFontWeightPresetId(weight);
-  const preset = FONT_WEIGHT_PRESETS[presetId] || FONT_WEIGHT_PRESETS.regular;
+  const presetId = normalizeFontWeightPreset(weightPreset);
+  const preset = FONT_WEIGHT_PRESETS[presetId] || FONT_WEIGHT_PRESETS.light;
   editor.style.fontWeight = preset.weight;
   editor.style.fontStretch = preset.stretch;
   editor.style.letterSpacing = preset.spacing;
   if (weightSelect) {
-    weightSelect.value = getWeightSelectValueForPresetId(presetId);
+    weightSelect.value = presetId;
   }
   if (persist) {
     localStorage.setItem('editorFontWeight', presetId);
   }
+  syncLiteralToolbarDisplays();
   renderStyledView(getPlainText());
 }
 
@@ -3823,13 +4624,14 @@ function applyLineHeight(value, persist = true) {
   if (!editor) return;
   editor.style.lineHeight = String(value);
   if (lineHeightSelect) {
+    ensureSelectHasOption(lineHeightSelect, String(value), String(value), '__custom_line_height__');
     lineHeightSelect.value = String(value);
   }
   if (persist) {
     localStorage.setItem('editorLineHeight', String(value));
   }
+  syncLiteralToolbarDisplays();
   renderStyledView(getPlainText());
-  commitDesignOsDormantTypographyDesignPatch();
 }
 
 function applyWordWrap(enabled, persist = true) {
@@ -3856,7 +4658,6 @@ function applyViewMode(mode, persist = true) {
   if (persist) {
     localStorage.setItem('editorViewMode', mode);
   }
-  syncDesignOsDormantContext();
 }
 
 function applyTextStyle(action) {
@@ -3885,7 +4686,7 @@ function applyTextStyle(action) {
 function updateAlignmentButtons(activeAction) {
   if (!alignButtons.length) return;
   alignButtons.forEach((button) => {
-    const isActive = button.dataset.action === activeAction;
+    const isActive = button.dataset.paragraphAlignment === activeAction;
     button.classList.toggle('is-active', isActive);
     button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
@@ -4210,8 +5011,64 @@ function updateThemeSwatches(theme) {
   function applyFont(fontFamily) {
     editor.style.fontFamily = fontFamily;
     localStorage.setItem('editorFont', fontFamily);
-    commitDesignOsDormantTypographyDesignPatch();
+    syncLiteralToolbarDisplays();
   }
+
+function syncLiteralToolbarDisplays() {
+  if (fontDisplay && fontSelect) {
+    const option = fontSelect.options[fontSelect.selectedIndex];
+    fontDisplay.textContent = option?.textContent || 'Roboto Ms';
+  }
+  if (weightDisplay && weightSelect) {
+    const option = weightSelect.options[weightSelect.selectedIndex];
+    weightDisplay.textContent = option?.textContent || 'Light';
+  }
+  if (sizeDisplay && sizeSelect) {
+    const option = sizeSelect.options[sizeSelect.selectedIndex];
+    sizeDisplay.textContent = option?.textContent || String(currentFontSizePx);
+  }
+  if (lineHeightDisplay && lineHeightSelect) {
+    const option = lineHeightSelect.options[lineHeightSelect.selectedIndex];
+    lineHeightDisplay.textContent = option?.value && !option.value.startsWith('__')
+      ? option.value
+      : String(editor?.style.lineHeight || '1.0');
+  }
+}
+
+function promptForCustomFontSize() {
+  const response = window.prompt('Font size (px)', String(currentFontSizePx));
+  if (response === null) return;
+  const nextSize = Number(response);
+  if (!Number.isFinite(nextSize) || nextSize <= 0) {
+    updateStatusText('Некорректный размер шрифта');
+    if (sizeSelect) {
+      sizeSelect.value = String(currentFontSizePx);
+    }
+    return;
+  }
+  const normalizedSize = Math.round(nextSize);
+  ensureSelectHasOption(sizeSelect, String(normalizedSize), String(normalizedSize), '__custom_size__');
+  window.electronAPI?.setFontSizePx(normalizedSize);
+}
+
+function promptForCustomLineHeight() {
+  const currentValue = lineHeightSelect?.value && !lineHeightSelect.value.startsWith('__')
+    ? lineHeightSelect.value
+    : String(editor?.style.lineHeight || '1.0');
+  const response = window.prompt('Line height', currentValue);
+  if (response === null) return;
+  const nextValue = Number(response);
+  if (!Number.isFinite(nextValue) || nextValue <= 0) {
+    updateStatusText('Некорректный интерлиньяж');
+    if (lineHeightSelect) {
+      lineHeightSelect.value = String(editor?.style.lineHeight || '1.0');
+    }
+    return;
+  }
+  const normalizedValue = String(Number(nextValue.toFixed(3)));
+  ensureSelectHasOption(lineHeightSelect, normalizedValue, normalizedValue, '__custom_line_height__');
+  applyLineHeight(normalizedValue);
+}
 
 function loadSavedFont() {
   const savedFont = localStorage.getItem('editorFont');
@@ -4231,6 +5088,7 @@ function loadSavedFont() {
       localStorage.setItem('editorFont', fallbackFont);
     }
   }
+  syncLiteralToolbarDisplays();
 }
 
 if (window.electronAPI) {
@@ -4252,7 +5110,6 @@ function applyTheme(theme) {
   }
   localStorage.setItem('editorTheme', theme);
   updateThemeSwatches(theme);
-  commitDesignOsDormantThemeDesignPatch();
   updateInspectorSnapshot();
 }
 
@@ -4423,82 +5280,11 @@ async function handleReviewExportMarkdown() {
   return { performed: true };
 }
 
-async function invokePreloadUiCommandBridge(commandId, payload = {}) {
-  if (!window.electronAPI || typeof window.electronAPI.invokeUiCommandBridge !== 'function') {
-    return { ok: false, reason: 'UI_COMMAND_BRIDGE_UNAVAILABLE' };
-  }
-  try {
-    return await window.electronAPI.invokeUiCommandBridge({
-      route: COMMAND_BUS_ROUTE,
-      commandId,
-      payload,
-    });
-  } catch (error) {
-    return {
-      ok: false,
-      reason: 'UI_COMMAND_BRIDGE_FAILED',
-      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
-    };
-  }
-}
-
-async function handleUiSetThemeCommand(payload = {}) {
-  const nextTheme = payload && payload.theme === 'dark'
-    ? 'dark'
-    : (payload && payload.theme === 'light' ? 'light' : '');
-  if (!nextTheme) {
-    return { performed: false, reason: 'THEME_INVALID' };
-  }
-  const bridgeResult = await invokePreloadUiCommandBridge(UI_COMMAND_IDS.THEME_SET, { theme: nextTheme });
-  if (!bridgeResult || bridgeResult.ok !== true) {
-    return {
-      performed: false,
-      reason: bridgeResult && typeof bridgeResult.reason === 'string'
-        ? bridgeResult.reason
-        : 'THEME_BRIDGE_FAILED',
-    };
-  }
-  return { performed: true, theme: nextTheme };
-}
-
-async function handleUiSetFontCommand(payload = {}) {
-  const fontFamily = typeof payload?.fontFamily === 'string'
-    ? payload.fontFamily.trim()
-    : '';
-  if (!fontFamily) {
-    return { performed: false, reason: 'FONT_INVALID' };
-  }
-  const bridgeResult = await invokePreloadUiCommandBridge(UI_COMMAND_IDS.FONT_SET, { fontFamily });
-  if (!bridgeResult || bridgeResult.ok !== true) {
-    return {
-      performed: false,
-      reason: bridgeResult && typeof bridgeResult.reason === 'string'
-        ? bridgeResult.reason
-        : 'FONT_BRIDGE_FAILED',
-    };
-  }
-  return { performed: true, fontFamily };
-}
-
-async function handleUiSetFontSizeCommand(payload = {}) {
-  const px = Number(payload?.px);
-  if (!Number.isFinite(px) || px < 8 || px > 96) {
-    return { performed: false, reason: 'FONT_SIZE_INVALID' };
-  }
-  const bridgeResult = await invokePreloadUiCommandBridge(UI_COMMAND_IDS.FONT_SIZE_SET, { px });
-  if (!bridgeResult || bridgeResult.ok !== true) {
-    return {
-      performed: false,
-      reason: bridgeResult && typeof bridgeResult.reason === 'string'
-        ? bridgeResult.reason
-        : 'FONT_SIZE_BRIDGE_FAILED',
-    };
-  }
-  return { performed: true, px };
-}
-
 function handleUiAction(action) {
   switch (action) {
+    case 'toggle-configurator':
+      toggleConfiguratorOpen();
+      return true;
     case 'save-as':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_SAVE_AS);
       return true;
@@ -4529,7 +5315,7 @@ function handleUiAction(action) {
       }
       return true;
     case 'export-docx-min':
-      void dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);
+      openExportPreviewModal();
       return true;
     case 'import-markdown-v1':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_MARKDOWN_PROMPT);
@@ -4538,10 +5324,10 @@ function handleUiAction(action) {
       void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN);
       return true;
     case 'theme-dark':
-      void dispatchUiCommand(UI_COMMAND_IDS.THEME_SET, { theme: 'dark' });
+      window.electronAPI?.setTheme('dark');
       return true;
     case 'theme-light':
-      void dispatchUiCommand(UI_COMMAND_IDS.THEME_SET, { theme: 'light' });
+      window.electronAPI?.setTheme('light');
       return true;
     case 'toggle-wrap':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_WRAP);
@@ -4552,6 +5338,13 @@ function handleUiAction(action) {
     case 'zoom-in':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_ZOOM_IN);
       return true;
+    case 'toggle-paragraph-menu':
+      setParagraphMenuOpen(!(paragraphMenu && !paragraphMenu.hidden));
+      return true;
+    case 'undo':
+      return handleUndo().performed !== false;
+    case 'redo':
+      return handleRedo().performed !== false;
     case 'align-left':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
       return true;
@@ -4568,96 +5361,60 @@ function handleUiAction(action) {
       toggleToolbarCompactMode();
       return true;
     case 'open-settings':
-      void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS);
+      openSettingsModal();
       return true;
     case 'open-diagnostics':
-      void dispatchUiCommand(EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS);
+      openDiagnosticsModal();
       return true;
     case 'open-recovery':
-      void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_RECOVERY);
+      openRecoveryModal('Recovery modal opened manually');
       return true;
     default:
       return false;
   }
 }
 
-function handleCanonicalRuntimeCommandId(commandId, runtimePayload = null) {
-  const payload = runtimePayload && typeof runtimePayload === 'object' && !Array.isArray(runtimePayload)
-    ? runtimePayload
-    : {};
-  if (commandId === EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS);
-    return true;
+function triggerLeftToolbarAction(action) {
+  if (typeof action !== 'string' || action.length === 0) return false;
+  switch (action) {
+    case 'search':
+      {
+        const result = handleFind();
+        if (!result || result.performed !== true) {
+          applyLeftTab('search');
+          leftSearchInput?.focus();
+        }
+      }
+      return true;
+    case 'new':
+      if (window.electronAPI && typeof window.electronAPI.fileOpen === 'function') {
+        void window.electronAPI.fileOpen({ intent: 'new' });
+        return true;
+      }
+      break;
+    case 'open':
+      if (window.electronAPI && typeof window.electronAPI.fileOpen === 'function') {
+        void window.electronAPI.fileOpen({ intent: 'open' });
+        return true;
+      }
+      break;
+    case 'toggle-configurator':
+      toggleConfiguratorOpen();
+      return true;
+    default:
+      break;
   }
-  if (commandId === EXTRA_COMMAND_IDS.VIEW_SAFE_RESET) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_SAFE_RESET);
-    return true;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.VIEW_RESTORE_LAST_STABLE) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_RESTORE_LAST_STABLE);
-    return true;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS);
-    return true;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.REVIEW_OPEN_RECOVERY) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_RECOVERY);
-    return true;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.INSERT_ADD_CARD) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_ADD_CARD);
-    return true;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
-    return true;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.EDIT_UNDO) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);
-    return true;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.EDIT_REDO) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
-    return true;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.EDIT_FIND) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
-    return true;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.EDIT_REPLACE) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
-    return true;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE);
-    return true;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.REVIEW_SWITCH_MODE) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_SWITCH_MODE);
-    return true;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE) {
-    void dispatchUiCommand(EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE);
-    return true;
-  }
-  if (commandId === COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN && payload.preview === true) {
-    openExportPreviewModal();
-    return true;
-  }
-  return false;
+  return handleUiAction(action);
 }
 
-if (toolbar) {
-  toolbar.addEventListener('click', (event) => {
-    const target = event.target.closest('[data-action]');
-    if (!target) return;
-    const action = target.dataset.action;
-    if (handleUiAction(action)) {
-      event.preventDefault();
-    }
-  });
-}
+document.addEventListener('click', (event) => {
+  const target = event.target.closest('[data-action]');
+  if (!target) return;
+  const action = target.dataset.action;
+  if (handleUiAction(action)) {
+    event.preventDefault();
+  }
+});
 
 if (styleSelect) {
   styleSelect.addEventListener('change', (event) => {
@@ -4674,9 +5431,7 @@ if (textStyleSelect) {
 
 if (fontSelect) {
   fontSelect.addEventListener('change', (event) => {
-    const fontFamily = typeof event?.target?.value === 'string' ? event.target.value : '';
-    if (!fontFamily.trim()) return;
-    void dispatchUiCommand(UI_COMMAND_IDS.FONT_SET, { fontFamily });
+    window.electronAPI?.setFont(event.target.value);
   });
 }
 
@@ -4688,20 +5443,23 @@ if (weightSelect) {
 
 if (sizeSelect) {
   sizeSelect.addEventListener('change', (event) => {
-    const nextSize = Number(event.target.value);
-    if (Number.isFinite(nextSize)) {
-      void dispatchUiCommand(UI_COMMAND_IDS.FONT_SIZE_SET, { px: nextSize });
+    if (event.target.value === '__custom_size__') {
+      promptForCustomFontSize();
       return;
     }
-    const customSize = promptForCustomFontSize();
-    if (Number.isFinite(customSize)) {
-      void dispatchUiCommand(UI_COMMAND_IDS.FONT_SIZE_SET, { px: customSize });
+    const nextSize = Number(event.target.value);
+    if (Number.isFinite(nextSize)) {
+      window.electronAPI?.setFontSizePx(nextSize);
     }
   });
 }
 
 if (lineHeightSelect) {
   lineHeightSelect.addEventListener('change', (event) => {
+    if (event.target.value === '__custom_line_height__') {
+      promptForCustomLineHeight();
+      return;
+    }
     applyLineHeight(event.target.value);
   });
 }
@@ -4713,10 +5471,16 @@ function loadSavedViewMode() {
 
 function loadSavedFontWeight() {
   const saved = localStorage.getItem('editorFontWeight');
-  const presetId = resolveFontWeightPresetId(saved || 'regular');
-  applyFontWeight(presetId, false);
-  if (weightSelect) {
-    weightSelect.value = getWeightSelectValueForPresetId(presetId);
+  if (saved) {
+    applyFontWeight(saved, false);
+    if (weightSelect) {
+      weightSelect.value = normalizeFontWeightPreset(saved);
+    }
+  } else {
+    applyFontWeight('light', false);
+    if (weightSelect) {
+      weightSelect.value = 'light';
+    }
   }
 }
 
@@ -4735,20 +5499,42 @@ function loadSavedWordWrap() {
   applyWordWrap(enabled, false);
 }
 
+function applyLiteralToolbarMasterVisualDefaults() {
+  if (!document.body.classList.contains('literal-stage-a')) return;
+  if (fontSelect) {
+    const literalFont = '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+    fontSelect.value = literalFont;
+    applyFont(literalFont);
+  }
+  if (weightSelect) {
+    weightSelect.value = 'light';
+  }
+  if (lineHeightSelect) {
+    lineHeightSelect.value = '1.0';
+  }
+  applyFontWeight('light', false);
+  if (editor) {
+    editor.style.fontSize = '12px';
+  }
+  setCurrentFontSize(12);
+  syncLiteralToolbarDisplays();
+}
+
 loadSavedViewMode();
 loadSavedFontWeight();
 loadSavedLineHeight();
 loadSavedWordWrap();
 loadSavedEditorZoom();
-restoreSpatialLayoutState(currentProjectId);
+applyLiteralToolbarMasterVisualDefaults();
 
 setPlainText('');
+restoreSpatialLayoutState(currentProjectId);
 metaPanel?.classList.add('is-hidden');
 if (rightSceneMetaPanel && metaPanel) {
   rightSceneMetaPanel.appendChild(metaPanel);
 }
 updateSaveStateText('idle');
-updateWarningStateText(buildDormantWarningHintText('none'));
+updateWarningStateText('none');
 updatePerfHintText('normal');
 updateInspectorSnapshot();
 applyMode('write');
@@ -4756,6 +5542,21 @@ applyLeftTab('project');
 applyRightTab('inspector');
 installNetworkGuard();
 void initializeCollabScopeLocal();
+if (configuratorSlotButtons.length) {
+  const defaultSelectedIndex = configuratorSlotButtons.findIndex((button) => button.classList.contains('is-selected'));
+  applyConfiguratorSelection(defaultSelectedIndex >= 0 ? defaultSelectedIndex : 0);
+}
+initializeConfiguratorBuckets();
+showEditorPanelFor('Yalken');
+updateWordCount();
+initializeFloatingToolbarSpacingMenu();
+initializeFloatingToolbarParagraphMenu();
+initializeFloatingToolbarItemOffsetTuning();
+initializeFloatingToolbarDragFoundation();
+initializeLeftToolbarSpacingMenu();
+initializeLeftToolbarButtonOffsetTuning();
+initializeLeftToolbarActionButtons();
+initializeLeftFloatingToolbarDragFoundation();
 
 loadTree();
 
@@ -4803,7 +5604,7 @@ if (leftSearchInput) {
 if (settingsThemeSelect) {
   settingsThemeSelect.addEventListener('change', () => {
     const nextTheme = settingsThemeSelect.value === 'dark' ? 'dark' : 'light';
-    void dispatchUiCommand(UI_COMMAND_IDS.THEME_SET, { theme: nextTheme });
+    window.electronAPI?.setTheme(nextTheme);
   });
 }
 
@@ -4834,6 +5635,11 @@ diagnosticsCloseButtons.forEach((button) => {
 });
 
 document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && configuratorPanel && !configuratorPanel.hidden) {
+    event.preventDefault();
+    setConfiguratorOpen(false);
+    return;
+  }
   const isPrimaryModifier = isMac ? event.metaKey : event.ctrlKey;
   if (!isPrimaryModifier || event.altKey) {
     return;
@@ -4947,12 +5753,8 @@ document.addEventListener('selectionchange', syncAlignmentButtonsToSelection);
 
 window.addEventListener('resize', () => {
   updateSpatialLayoutForViewportChange();
-  syncDesignOsDormantContext();
   scheduleLayoutRefresh();
 });
-
-mountDesignOsDormantRuntime();
-syncDesignOsDormantContext();
 
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
@@ -4998,12 +5800,10 @@ if (window.electronAPI) {
     if (resolvedTitle) {
       showEditorPanelFor(resolvedTitle);
     }
-    remountDesignOsDormantRuntimeForCurrentDocumentContext();
     renderTree();
     updateSaveStateText('loaded');
     updatePerfHintText('normal');
     updateInspectorSnapshot();
-    syncDesignOsDormantTextInput();
   });
 
   window.electronAPI.onEditorTextRequest(({ requestId }) => {
@@ -5015,7 +5815,6 @@ if (window.electronAPI) {
       editor.style.fontSize = `${px}px`;
       setCurrentFontSize(px);
       renderStyledView(getPlainText());
-      commitDesignOsDormantTypographyDesignPatch();
     }
   });
 
@@ -5024,8 +5823,10 @@ if (window.electronAPI) {
       const message = payload && typeof payload.message === 'string'
         ? payload.message
         : 'Recovered from autosave';
-      updateWarningStateText(buildDormantWarningHintText('recovery restored'));
-      openRecoveryModal(message);
+      updateWarningStateText('recovery restored');
+      if (recoveryMessage) {
+        recoveryMessage.textContent = message;
+      }
       updateInspectorSnapshot();
     });
   }
@@ -5038,12 +5839,6 @@ if (window.electronAPI) {
       openDiagnostics: () => openDiagnosticsModal(),
       openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
       openExportPreview: () => openExportPreviewModal(),
-      find: () => {
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
-      },
-      replace: () => {
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
-      },
       insertAddCard: () => handleInsertAddCard(),
       formatAlignLeft: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
@@ -5052,13 +5847,6 @@ if (window.electronAPI) {
     });
   } else if (typeof window.electronAPI.onRuntimeCommand === 'function') {
     window.electronAPI.onRuntimeCommand((payload) => {
-      const commandId = payload && typeof payload.commandId === 'string' ? payload.commandId : '';
-      const commandPayload = payload && payload.payload && typeof payload.payload === 'object' && !Array.isArray(payload.payload)
-        ? payload.payload
-        : {};
-      if (handleCanonicalRuntimeCommandId(commandId, commandPayload)) {
-        return;
-      }
       const command = payload && typeof payload.command === 'string' ? payload.command : '';
       if (command === 'open-settings') {
         openSettingsModal();
@@ -5072,14 +5860,6 @@ if (window.electronAPI) {
         openRecoveryModal('Recovery modal opened from menu');
       } else if (command === 'open-export-preview') {
         openExportPreviewModal();
-      } else if (command === 'undo' || command === 'edit-undo') {
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);
-      } else if (command === 'redo' || command === 'edit-redo') {
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
-      } else if (command === 'search') {
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
-      } else if (command === 'replace') {
-        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
       } else if (command === 'insert-add-card') {
         handleInsertAddCard();
       } else if (command === 'format-align-left') {
@@ -5098,7 +5878,6 @@ if (window.electronAPI) {
 if (isTiptapMode) {
   editor.addEventListener('input', () => {
     syncPlainTextBufferFromEditorDom();
-    syncDesignOsDormantTextInput();
     markAsModified();
     updateWordCount();
   });
@@ -5133,7 +5912,6 @@ if (isTiptapMode) {
   editor.addEventListener('input', () => {
     scheduleIncrementalInputDomSync();
     syncPlainTextBufferFromEditorDom();
-    syncDesignOsDormantTextInput();
     if (legacyCompositionActive) {
       legacyCompositionRenderPending = true;
       return;
@@ -5208,22 +5986,19 @@ if (window.electronAPI) {
     updateStatusText(status);
     const normalized = String(status || '').toLowerCase();
     if (normalized.includes('восстановлено') || normalized.includes('recovery')) {
-      updateWarningStateText(buildDormantWarningHintText('recovery'));
+      updateWarningStateText('recovery');
     } else if (normalized.includes('ошибка') || normalized.includes('error')) {
-      updateWarningStateText(buildDormantWarningHintText('error'));
+      updateWarningStateText('error');
     } else {
-      updateWarningStateText(buildDormantWarningHintText('none'));
+      updateWarningStateText('none');
     }
     updatePerfHintText('normal');
     updateInspectorSnapshot();
   });
 
   window.electronAPI.onSetDirty((state) => {
-    const previousDirtyState = localDirty === true;
-    const nextDirtyState = state === true;
-    localDirty = nextDirtyState;
+    localDirty = state;
     updateSaveStateText(localDirty ? 'unsaved' : 'saved');
-    syncDesignOsDormantRuntimeTruthAtSaveBoundary(previousDirtyState, nextDirtyState);
     updateInspectorSnapshot();
   });
 }
