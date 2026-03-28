@@ -1,0 +1,78 @@
+{
+  "status": "PROOF_ATTEMPT_COMPLETE_RUNTIME_ADMISSION_NOT_GRANTED",
+  "definitionRecordBasename": "MIOS_SECOND_VERTICAL_SLICE_DEFINITION_RECORD_V1.json",
+  "prepDecisionRecordBasename": "CONTOUR_02_PREP_DECISION_RECORD_V1.json",
+  "reauditResultRecordBasename": "CONTOUR_02_REAUDIT_RESULT_RECORD_V1.json",
+  "executionRetryDecisionRecordBasename": "CONTOUR_02_EXECUTION_RETRY_DECISION_RECORD_V1.json",
+  "entryConditionObserved": true,
+  "proofComplete": true,
+  "proofAttemptExecuted": [
+    "phase03 project workspace state artifact proof surface re-executed in clean lane",
+    "phase03 safe reset last stable artifact proof surface re-executed in clean lane",
+    "phase05 bounded spatial shell proof surface re-executed in clean lane",
+    "phase03 project workspace state contract re-executed in clean lane",
+    "phase03 baseline docked shell contract re-executed in clean lane",
+    "phase05 bounded spatial shell contract re-executed in clean lane"
+  ],
+  "actionResultObserved": [
+    "phase03 project workspace state artifact script returned PASS with workspaceStatus PASS and no open gaps",
+    "phase03 safe reset last stable artifact script returned PASS with restoreStatus PASS and no open gaps",
+    "phase05 bounded spatial shell script returned PASS with phase05ReadinessStatus PASS and no open gaps",
+    "phase03 project workspace state contract passed in clean lane",
+    "phase03 baseline docked shell contract passed in clean lane",
+    "phase05 bounded spatial shell contract passed in clean lane"
+  ],
+  "stableOutcomeObserved": true,
+  "repoSurfacesUsed": [
+    "CANON_STATUS.json",
+    "CANON.md",
+    "CONTEXT.md",
+    "HANDOFF.md",
+    "PROCESS.md",
+    "MIOS_SECOND_VERTICAL_SLICE_DEFINITION_RECORD_V1.json",
+    "CONTOUR_02_PREP_DECISION_RECORD_V1.json",
+    "CONTOUR_02_REAUDIT_RESULT_RECORD_V1.json",
+    "CONTOUR_02_EXECUTION_RETRY_DECISION_RECORD_V1.json",
+    "phase03-project-workspace-state-artifact-state.mjs",
+    "phase03-safe-reset-last-stable-artifact-state.mjs",
+    "phase05-bounded-spatial-shell-state.mjs",
+    "phase03-project-workspace-state-artifact-state.contract.test.js",
+    "phase03-baseline-docked-shell-state.contract.test.js",
+    "phase05-bounded-spatial-shell-state.contract.test.js"
+  ],
+  "projectWorkspaceStatePathProven": true,
+  "safeResetPathProven": true,
+  "restoreLastStablePathProven": true,
+  "boundedSpatialCommitPathProven": true,
+  "editorRootDockedInvariantProven": true,
+  "noDocumentTruthCrossoverObserved": true,
+  "parallelRecoveryTruthIntroduced": false,
+  "networkTransportAuthorityIntroduced": false,
+  "hotPathContaminationObserved": false,
+  "evidenceRefs": [
+    "node scripts/ops/phase03-project-workspace-state-artifact-state.mjs --json",
+    "node scripts/ops/phase03-safe-reset-last-stable-artifact-state.mjs --json",
+    "node scripts/ops/phase05-bounded-spatial-shell-state.mjs --json",
+    "node --test test/contracts/phase03-project-workspace-state-artifact-state.contract.test.js",
+    "node --test test/contracts/phase03-baseline-docked-shell-state.contract.test.js",
+    "node --test test/contracts/phase05-bounded-spatial-shell-state.contract.test.js"
+  ],
+  "relevantExecutionGaps": [],
+  "admissionStatus": "NOT_ADMITTED",
+  "runtimeWritesPerformed": false,
+  "runtimeWritesAdmitted": false,
+  "admissionBlockers": [
+    "proof-complete in clean lane does not itself grant runtime admission",
+    "runtime surface writes remain separately not admitted",
+    "any future runtime mutation still requires a separate admission task",
+    "formal cutover remains out of scope for this record"
+  ],
+  "formalCutoverClaimed": false,
+  "broadShellAdmissionClaimed": false,
+  "notes": [
+    "This record captures a clean-lane execution retry outcome.",
+    "This record does not claim runtime admission.",
+    "This record does not claim formal cutover.",
+    "This record marks contour 02 proof-complete on current proof surfaces while keeping runtime admission closed."
+  ]
+}

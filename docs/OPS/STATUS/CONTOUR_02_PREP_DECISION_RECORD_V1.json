@@ -1,0 +1,34 @@
+{
+  "status": "PREP_LAYER_ACCEPTED_RUNTIME_WRITES_NOT_ADMITTED",
+  "contourId": "CONTOUR_02_WRITE_WORKSPACE_STATE_PERSIST_RESTORE_AND_SAFE_RESET",
+  "decisionAtUtc": "2026-03-24T12:09:25Z",
+  "decisionOwner": "MAIN_INTEGRATOR",
+  "decision": "ACCEPT_PREP_LAYER_KEEP_RUNTIME_WRITES_LOCKED",
+  "scope": "PREPARATION_ONLY",
+  "preparationComplete": true,
+  "runtimeProofStarted": false,
+  "runtimeWritesAdmitted": false,
+  "reasons": [
+    "CORE-A4-YALKEN-CONTOUR-02-001.md and MIOS_SECOND_VERTICAL_SLICE_DEFINITION_RECORD_V1.json exist and remain narrow.",
+    "The contour 02 preparation task now includes an explicit pre-capture baseline step before allowed-delta verification.",
+    "Contour 02 preparation wording now distinguishes supporting preparation evidence from final admitted runtime binding.",
+    "Safe reset path and restore-last-stable path are now kept as separate path families in the preparation layer.",
+    "Independent re-audit passed after the remaining preparation-only tightening changes."
+  ],
+  "prepArtifacts": [
+    "CORE-A4-YALKEN-CONTOUR-02-001.md",
+    "MIOS_SECOND_VERTICAL_SLICE_DEFINITION_RECORD_V1.json"
+  ],
+  "notClaimed": {
+    "runtimeAdmissionClaimed": false,
+    "executionProofClaimed": false,
+    "formalCutoverClaimed": false,
+    "broadShellAdmissionClaimed": false
+  },
+  "nextStep": "OPEN_SEPARATE_CONTOUR_02_EXECUTION_TASK_IF_RUNTIME_PROOF_IS_REQUIRED",
+  "notes": [
+    "This decision accepts the preparation layer only.",
+    "This decision does not admit any runtime surface writes.",
+    "This decision does not replace the need for a separate contour 02 execution proof record if runtime proof starts later."
+  ]
+}

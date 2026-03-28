@@ -1,0 +1,43 @@
+{
+  "status": "REAUDIT_COMPLETE_RUNTIME_WRITES_NOT_ADMITTED",
+  "contourId": "CONTOUR_02_WRITE_WORKSPACE_STATE_PERSIST_RESTORE_AND_SAFE_RESET",
+  "recordedAtUtc": "2026-03-24T13:35:00Z",
+  "decisionOwner": "MAIN_INTEGRATOR",
+  "scope": "POST_REMEDIATION_REAUDIT_ONLY",
+  "verdict": "BLOCKER_SET_CLEARED_EXECUTION_RETRY_ADMISSIBLE_RUNTIME_NOT_ADMITTED",
+  "blockerSetCleared": true,
+  "executionRetryAdmissible": true,
+  "runtimeWritesAdmitted": false,
+  "runtimeAdmissionGranted": false,
+  "formalCutoverClaimed": false,
+  "broadShellAdmissionClaimed": false,
+  "reasons": [
+    "The recorded phase03 blocker chain now returns local PASS across prep, artifact, baseline docked shell, and contract surfaces.",
+    "The recorded phase05 bounded spatial proof surface now returns PASS and its contract passes after baseline evaluator restoration.",
+    "The remediation lane remained blocker-fix only and did not introduce runtime surface writes or broad shell admission drift."
+  ],
+  "evidenceArtifacts": [
+    "CORE-A4-YALKEN-CONTOUR-02-REM-001.md",
+    "CONTOUR_02_REMEDIATION_ADMISSION_RECORD_V1.json",
+    "MIOS_SECOND_VERTICAL_SLICE_EXECUTION_PROOF_RECORD_V1.json",
+    "phase03-prep-state.mjs",
+    "phase05-bounded-spatial-shell-state.mjs",
+    "phase03-prep-state.contract.test.js",
+    "phase03-baseline-docked-shell-state.contract.test.js",
+    "phase05-bounded-spatial-shell-state.contract.test.js"
+  ],
+  "clearedBlockers": [
+    "PROJECT_WORKSPACE_FOUNDATION_PASS ready on proof surfaces",
+    "STABLE_PROJECT_ID_CONTRACT_PASS ready on proof surfaces",
+    "SAFE_RESET_FOUNDATION_PASS ready on proof surfaces",
+    "phase05 bounded spatial proof surface import chain restored",
+    "phase03 baseline docked shell proof surface now green"
+  ],
+  "caveats": [
+    "This record does not grant runtime admission.",
+    "This record does not claim contour 02 proof-complete status.",
+    "MIOS_SECOND_VERTICAL_SLICE_EXECUTION_PROOF_RECORD_V1.json remains the historical not-proven execution record until a separate execution retry updates it.",
+    "Execution retry may proceed only through one separate execution-retry decision record."
+  ],
+  "nextStep": "ISSUE_CONTOUR_02_EXECUTION_RETRY_DECISION_RECORD_V1"
+}

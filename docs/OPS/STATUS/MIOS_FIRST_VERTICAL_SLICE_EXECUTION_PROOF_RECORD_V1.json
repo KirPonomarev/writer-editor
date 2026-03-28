@@ -1,0 +1,69 @@
+{
+  "status": "PROOF_COMPLETE_CODE_ADMISSION_NOT_GRANTED",
+  "definitionRecordBasename": "MIOS_FIRST_VERTICAL_SLICE_DEFINITION_RECORD_V1.json",
+  "entryConditionObserved": true,
+  "interactionExecuted": [
+    "menu-save-command-path proofhook executed",
+    "boundary-read-seam proofhook executed",
+    "autosave-reopen-recovery-path proofhook executed",
+    "ui-recovery-restored-channel proofhook executed"
+  ],
+  "actionResultObserved": [
+    "exact live-path proofhook returned ok=true",
+    "exact live-path proofhook contract test passed",
+    "command surface bus-only contract passed",
+    "command namespace and menu normalization contracts passed",
+    "supplemental persistence and recovery baseline contracts passed"
+  ],
+  "stableOutcomeObserved": true,
+  "repoSurfacesUsed": [
+    "CANON_STATUS.json",
+    "CANON.md",
+    "CONTEXT.md",
+    "HANDOFF.md",
+    "PROCESS.md",
+    "MIOS_FIRST_VERTICAL_SLICE_DEFINITION_RECORD_V1.json",
+    "contour-01-primary-editor-save-recovery-proofhook.mjs",
+    "contour-01-primary-editor-save-recovery-proofhook.contract.test.js",
+    "command-surface-bus-only.contract.test.js",
+    "command-namespace-canon-and-alias-bridge.contract.test.js",
+    "menu-config-normalization.contract.test.js",
+    "phase00-tiptap-persistence-proofhook.contract.test.js",
+    "x3-recovery-smoke.contract.test.js",
+    "atomicWrite.test.js"
+  ],
+  "commandProjectionProven": true,
+  "manifestSurfaceProven": true,
+  "shellPresentationProven": true,
+  "snapshotRecoveryProven": true,
+  "boundaryReadSurfaceObserved": true,
+  "editorRootDockedInvariantMaintained": true,
+  "noParallelRecoveryChannelObserved": true,
+  "networkTransportAuthorityIntroduced": false,
+  "hotPathContaminationObserved": false,
+  "evidenceRefs": [
+    "node scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs --json",
+    "node --test test/contracts/contour-01-primary-editor-save-recovery-proofhook.contract.test.js",
+    "node --test test/contracts/command-surface-bus-only.contract.test.js",
+    "node --test test/contracts/command-namespace-canon-and-alias-bridge.contract.test.js",
+    "node --test test/contracts/menu-config-normalization.contract.test.js",
+    "node --test test/contracts/phase00-tiptap-persistence-proofhook.contract.test.js",
+    "node --test test/contracts/x3-recovery-smoke.contract.test.js",
+    "node --test test/electron/atomicWrite.test.js"
+  ],
+  "failClasses": [],
+  "admissionStatus": "NOT_ADMITTED",
+  "admissionBlockers": [
+    "repo-level doctor and governance head-state gates are red",
+    "proofhook and test phase does not by itself admit broad code writes",
+    "task allowlist remains broader than the currently admitted write scope and must not be read as automatic write admission",
+    "bundle-aware follow-up is required before any editor.js source mutation",
+    "isolated clean execution lane is required before mutation of already-dirty mapped code surfaces"
+  ],
+  "notes": [
+    "This record proves the admitted live path only.",
+    "This record is not a formal cutover claim.",
+    "This record does not grant code-write admission.",
+    "Current admitted write scope is limited to task text, definition record, execution proof record, proofhook script and proofhook contract test until separate admission is issued."
+  ]
+}
