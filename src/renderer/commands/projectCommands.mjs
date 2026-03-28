@@ -16,7 +16,12 @@ export const COMMAND_IDS = Object.freeze({
 
 export const EXTRA_COMMAND_IDS = Object.freeze({
   PROJECT_NEW: 'cmd.project.new',
+  PROJECT_DOCUMENT_OPEN: 'cmd.project.document.open',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
+  TREE_CREATE_NODE: 'cmd.project.tree.createNode',
+  TREE_RENAME_NODE: 'cmd.project.tree.renameNode',
+  TREE_DELETE_NODE: 'cmd.project.tree.deleteNode',
+  TREE_REORDER_NODE: 'cmd.project.tree.reorderNode',
   EDIT_UNDO: 'cmd.project.edit.undo',
   EDIT_REDO: 'cmd.project.edit.redo',
   EDIT_FIND: 'cmd.project.edit.find',
@@ -324,6 +329,224 @@ export function registerProjectCommands(registry, options = {}) {
         'E_COMMAND_FAILED',
         EXTRA_COMMAND_IDS.PROJECT_SAVE_AS,
         response && typeof response.reason === 'string' ? response.reason : 'FILE_SAVE_AS_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,
+      label: 'Open Project Document Node',
+      group: 'file',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI.openDocument !== 'function') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, 'ELECTRON_API_UNAVAILABLE');
+      }
+      const path = typeof input.path === 'string' ? input.path.trim() : '';
+      const title = typeof input.title === 'string' ? input.title : '';
+      const kind = typeof input.kind === 'string' ? input.kind : '';
+      if (!path) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, 'DOCUMENT_PATH_REQUIRED');
+      }
+
+      let response;
+      try {
+        response = await electronAPI.openDocument({ path, title, kind });
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,
+          'OPEN_DOCUMENT_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      if (response && response.cancelled) {
+        return ok({ opened: false, cancelled: true, path, kind });
+      }
+      if (response && (response.ok === 1 || response.ok === true)) {
+        return ok({ opened: true, path, kind });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,
+        response && typeof response.reason === 'string' ? response.reason : 'OPEN_DOCUMENT_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
+      label: 'Create Project Tree Node',
+      group: 'insert',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI.createNode !== 'function') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'ELECTRON_API_UNAVAILABLE');
+      }
+      const parentPath = typeof input.parentPath === 'string' ? input.parentPath.trim() : '';
+      const kind = typeof input.kind === 'string' ? input.kind.trim() : '';
+      const name = typeof input.name === 'string' ? input.name.trim() : '';
+      if (!parentPath || !kind || !name) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'TREE_CREATE_PAYLOAD_INVALID');
+      }
+
+      let response;
+      try {
+        response = await electronAPI.createNode({ parentPath, kind, name });
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
+          'TREE_CREATE_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      if (response && (response.ok === 1 || response.ok === true)) {
+        return ok({ created: true, parentPath, kind, name });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
+        response && typeof response.reason === 'string' ? response.reason : 'TREE_CREATE_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.TREE_RENAME_NODE,
+      label: 'Rename Project Tree Node',
+      group: 'edit',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI.renameNode !== 'function') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'ELECTRON_API_UNAVAILABLE');
+      }
+      const path = typeof input.path === 'string' ? input.path.trim() : '';
+      const name = typeof input.name === 'string' ? input.name.trim() : '';
+      if (!path || !name) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'TREE_RENAME_PAYLOAD_INVALID');
+      }
+
+      let response;
+      try {
+        response = await electronAPI.renameNode({ path, name });
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.TREE_RENAME_NODE,
+          'TREE_RENAME_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      if (response && (response.ok === 1 || response.ok === true)) {
+        return ok({
+          renamed: true,
+          path: typeof response.path === 'string' && response.path.trim().length > 0 ? response.path : path,
+          oldPath: path,
+        });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.TREE_RENAME_NODE,
+        response && typeof response.reason === 'string' ? response.reason : 'TREE_RENAME_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.TREE_DELETE_NODE,
+      label: 'Delete Project Tree Node',
+      group: 'edit',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI.deleteNode !== 'function') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'ELECTRON_API_UNAVAILABLE');
+      }
+      const path = typeof input.path === 'string' ? input.path.trim() : '';
+      if (!path) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'TREE_DELETE_PAYLOAD_INVALID');
+      }
+
+      let response;
+      try {
+        response = await electronAPI.deleteNode({ path });
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.TREE_DELETE_NODE,
+          'TREE_DELETE_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      if (response && (response.ok === 1 || response.ok === true)) {
+        return ok({ deleted: true, path });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.TREE_DELETE_NODE,
+        response && typeof response.reason === 'string' ? response.reason : 'TREE_DELETE_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.TREE_REORDER_NODE,
+      label: 'Reorder Project Tree Node',
+      group: 'edit',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI.reorderNode !== 'function') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'ELECTRON_API_UNAVAILABLE');
+      }
+      const path = typeof input.path === 'string' ? input.path.trim() : '';
+      const direction = typeof input.direction === 'string' ? input.direction.trim() : '';
+      if (!path || (direction !== 'up' && direction !== 'down')) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'TREE_REORDER_PAYLOAD_INVALID');
+      }
+
+      let response;
+      try {
+        response = await electronAPI.reorderNode({ path, direction });
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.TREE_REORDER_NODE,
+          'TREE_REORDER_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      if (response && (response.ok === 1 || response.ok === true)) {
+        return ok({
+          reordered: true,
+          path: typeof response.path === 'string' && response.path.trim().length > 0 ? response.path : path,
+          oldPath: path,
+          direction,
+        });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.TREE_REORDER_NODE,
+        response && typeof response.reason === 'string' ? response.reason : 'TREE_REORDER_FAILED',
       );
     },
   );
