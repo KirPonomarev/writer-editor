@@ -9,7 +9,7 @@
       "sha256": "e81a034f85becb689ccb0b3b221ba84e98b14571de13f90362dbf61eff77c438"
     },
     "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json": {
-      "sha256": "966b1ca67ed5ce9ba13cf832c892044b2f131d723d5838b80257d6a3b7ef12b7"
+      "sha256": "6ce87586218af226f2e797fa311d7cddeb4d942fba22c1ea19b7cf763986dd40"
     },
     "docs/OPS/TOKENS/TOKEN_CATALOG_LOCK.json": {
       "sha256": "38144b099d2bab8f64f7c2df255e468343a10ed36298db524204da56694ce6bc"
@@ -18,6 +18,6 @@
       "sha256": "ab754000a03a3c380711956f94ad30ebf58dd1285b079bc0034b9a057b621f34"
     }
   },
-  "global_sha256": "fde085f62487101df65a0398a285e9548768324adf125f8ab73e6210f5295861",
-  "generated_at": "2026-03-02T20:46:21.257Z"
+  "global_sha256": "eb5e5f88e0f539d2dca3166b6c2bbd5ff9010053f44a6c0c200e593831648c52",
+  "generated_at": "2026-03-28T17:13:11.343Z"
 }
