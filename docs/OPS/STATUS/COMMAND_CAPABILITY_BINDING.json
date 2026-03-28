@@ -28,6 +28,9 @@
     { "commandId": "cmd.project.importMarkdownV1", "capabilityId": "cap.project.import.markdownV1" },
     { "commandId": "cmd.project.exportMarkdownV1", "capabilityId": "cap.project.export.markdownV1" },
     { "commandId": "cmd.project.flowOpenV1", "capabilityId": "cap.project.flow.openV1" },
-    { "commandId": "cmd.project.flowSaveV1", "capabilityId": "cap.project.flow.saveV1" }
+    { "commandId": "cmd.project.flowSaveV1", "capabilityId": "cap.project.flow.saveV1" },
+    { "commandId": "cmd.ui.theme.set", "capabilityId": "cap.ui.theme.set" },
+    { "commandId": "cmd.ui.font.set", "capabilityId": "cap.ui.font.set" },
+    { "commandId": "cmd.ui.fontSize.set", "capabilityId": "cap.ui.fontSize.set" }
   ]
 }
