@@ -1,11 +1,11 @@
 {
   "schemaVersion": "collab-causal-queue-readiness.v1",
-  "status": "PLACEHOLDER",
+  "status": "READY",
   "baselineSha": "ebfd97cc1c710498ee0e20aee6e1d98a1ebf3f2a",
   "design": {
-    "queueModel": "UNKNOWN",
-    "orderingKey": "UNKNOWN",
-    "conflictPolicy": "UNKNOWN",
+    "queueModel": "PER_ACTOR_FIFO",
+    "orderingKey": "(actorId,seq)",
+    "conflictPolicy": "BUFFER",
     "noNetwork": true
   },
   "proofRequirements": {
@@ -13,5 +13,5 @@
     "typedRejectionEnvelopeRequired": true,
     "noSecondSotRequired": true
   },
-  "configHash": "eadc709e881176745da0dfd1caf18a6ab9a81f4fac6f5ae5348fc8124b95a89c"
+  "configHash": "43896f6ef5b81a56306c6c4eff0bcb6c343863ca17aeacd014929a96ad876183"
 }
