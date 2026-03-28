@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "artifactType": "cutoverRecordTemplate",
+  "templateId": "ydos-cutover-template-v1",
+  "template": {
+    "recordId": "TBD",
+    "recordType": "foundation",
+    "createdAtUtc": "TBD",
+    "activeCanonReference": "TBD",
+    "changeSet": [],
+    "verification": {
+      "checks": [],
+      "result": "pending"
+    }
+  },
+  "templateConstraints": {
+    "claimsLiveCutoverComplete": false,
+    "runtimeImportAuthorized": false,
+    "productTruthOwnershipClaimed": false,
+    "commandMeaningOwnershipClaimed": false
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "artifactType": "tokenSchema",
+  "purpose": "Foundation schema for machine-readable token package metadata before runtime subtree import.",
+  "authority": {
+    "activeCanonWins": true,
+    "externalAdmissionInputBinding": false
+  },
+  "fields": {
+    "tokenId": "string",
+    "tokenClass": "string",
+    "tokenLabel": "string",
+    "tokenState": "enum(active|deprecated|reserved)",
+    "tokenPayload": "object"
+  },
+  "notes": {
+    "runtimeImportAuthorized": false,
+    "liveCutoverComplete": false
+  }
+}
