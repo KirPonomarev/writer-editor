@@ -2318,7 +2318,7 @@ ipcMain.handle('ui:request-autosave', async () => {
 });
 
 ipcMain.handle('ui:get-collab-scope-local', async () => {
-  return resolveCollabScopeLocalState();
+  return handleWorkspaceCollabScopeLocalQuery();
 });
 
 ipcMain.handle('ui:command-bridge', async (_, request) => {
@@ -2355,6 +2355,28 @@ ipcMain.handle('ui:command-bridge', async (_, request) => {
       message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
     };
   }
+});
+
+ipcMain.handle('ui:workspace-query-bridge', async (_, request) => {
+  const safeRequest = request && typeof request === 'object' && !Array.isArray(request)
+    ? request
+    : {};
+  const queryId = typeof safeRequest.queryId === 'string' ? safeRequest.queryId : '';
+  const payload = safeRequest.payload && typeof safeRequest.payload === 'object' && !Array.isArray(safeRequest.payload)
+    ? safeRequest.payload
+    : {};
+
+  if (!WORKSPACE_QUERY_BRIDGE_ALLOWED_QUERY_IDS.has(queryId)) {
+    return { ok: false, error: 'QUERY_ID_NOT_ALLOWED' };
+  }
+
+  if (queryId === 'query.projectTree') {
+    return handleWorkspaceProjectTreeQuery(payload);
+  }
+  if (queryId === 'query.collabScopeLocal') {
+    return handleWorkspaceCollabScopeLocalQuery();
+  }
+  return { ok: false, error: 'QUERY_ID_NOT_ALLOWED' };
 });
 
 ipcMain.on('dirty-changed', (_, state) => {
@@ -2397,7 +2419,7 @@ ipcMain.on('ui:window-minimize', () => {
   }
 });
 
-ipcMain.handle('ui:get-project-tree', async (_, payload) => {
+async function handleWorkspaceProjectTreeQuery(payload) {
   const tab = payload && payload.tab;
   if (!tab) {
     return { ok: false, error: 'Missing tab' };
@@ -2428,6 +2450,14 @@ ipcMain.handle('ui:get-project-tree', async (_, payload) => {
   }
 
   return { ok: false, error: 'Unknown tab' };
+}
+
+function handleWorkspaceCollabScopeLocalQuery() {
+  return resolveCollabScopeLocalState();
+}
+
+ipcMain.handle('ui:get-project-tree', async (_, payload) => {
+  return handleWorkspaceProjectTreeQuery(payload);
 });
 
 async function handleUiOpenDocumentCommand(payload) {
@@ -3283,6 +3313,10 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.ui.theme.set',
   'cmd.ui.font.set',
   'cmd.ui.fontSize.set',
+]);
+const WORKSPACE_QUERY_BRIDGE_ALLOWED_QUERY_IDS = new Set([
+  'query.projectTree',
+  'query.collabScopeLocal',
 ]);
 const MENU_ACTION_ALIAS_TO_COMMAND = Object.freeze({
   newDocument: 'cmd.project.new',
