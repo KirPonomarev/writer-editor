@@ -2379,6 +2379,32 @@ ipcMain.handle('ui:workspace-query-bridge', async (_, request) => {
   return { ok: false, error: 'QUERY_ID_NOT_ALLOWED' };
 });
 
+ipcMain.handle('ui:save-lifecycle-signal-bridge', async (_, request) => {
+  const safeRequest = request && typeof request === 'object' && !Array.isArray(request)
+    ? request
+    : {};
+  const signalId = typeof safeRequest.signalId === 'string' ? safeRequest.signalId : '';
+  const payload = safeRequest.payload && typeof safeRequest.payload === 'object' && !Array.isArray(safeRequest.payload)
+    ? safeRequest.payload
+    : {};
+
+  if (!SAVE_LIFECYCLE_SIGNAL_BRIDGE_ALLOWED_SIGNAL_IDS.has(signalId)) {
+    return { ok: false, error: 'SIGNAL_ID_NOT_ALLOWED' };
+  }
+
+  if (signalId === 'signal.localDirty.set') {
+    if (typeof payload.state !== 'boolean') {
+      return { ok: false, error: 'SIGNAL_PAYLOAD_INVALID' };
+    }
+    isDirty = payload.state;
+    return { ok: true };
+  }
+  if (signalId === 'signal.autoSave.request') {
+    return autoSave();
+  }
+  return { ok: false, error: 'SIGNAL_ID_NOT_ALLOWED' };
+});
+
 ipcMain.on('dirty-changed', (_, state) => {
   isDirty = state;
 });
@@ -3317,6 +3343,10 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
 const WORKSPACE_QUERY_BRIDGE_ALLOWED_QUERY_IDS = new Set([
   'query.projectTree',
   'query.collabScopeLocal',
+]);
+const SAVE_LIFECYCLE_SIGNAL_BRIDGE_ALLOWED_SIGNAL_IDS = new Set([
+  'signal.localDirty.set',
+  'signal.autoSave.request',
 ]);
 const MENU_ACTION_ALIAS_TO_COMMAND = Object.freeze({
   newDocument: 'cmd.project.new',

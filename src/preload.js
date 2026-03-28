@@ -6,6 +6,7 @@ const FLOW_OPEN_V1_CHANNEL = 'm:cmd:project:flow:open:v1';
 const FLOW_SAVE_V1_CHANNEL = 'm:cmd:project:flow:save:v1';
 const UI_COMMAND_BRIDGE_CHANNEL = 'ui:command-bridge';
 const WORKSPACE_QUERY_BRIDGE_CHANNEL = 'ui:workspace-query-bridge';
+const SAVE_LIFECYCLE_SIGNAL_BRIDGE_CHANNEL = 'ui:save-lifecycle-signal-bridge';
 
 // Экспорт безопасного API для renderer процесса
 contextBridge.exposeInMainWorld('electronAPI', {
@@ -116,6 +117,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ? safeRequest.payload
       : {};
     return ipcRenderer.invoke(WORKSPACE_QUERY_BRIDGE_CHANNEL, { queryId, payload });
+  },
+  invokeSaveLifecycleSignalBridge: (request) => {
+    const safeRequest = request && typeof request === 'object' && !Array.isArray(request)
+      ? request
+      : {};
+    const signalId = typeof safeRequest.signalId === 'string' ? safeRequest.signalId : '';
+    const payload = safeRequest.payload && typeof safeRequest.payload === 'object' && !Array.isArray(safeRequest.payload)
+      ? safeRequest.payload
+      : {};
+    return ipcRenderer.invoke(SAVE_LIFECYCLE_SIGNAL_BRIDGE_CHANNEL, { signalId, payload });
   },
   setTheme: (theme) => {
     ipcRenderer.send('ui:set-theme', theme);
