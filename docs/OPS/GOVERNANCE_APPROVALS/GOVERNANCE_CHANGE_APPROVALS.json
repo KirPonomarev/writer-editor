@@ -1374,22 +1374,8 @@
       "rationale": "Add local product pipeline inputs (plan digest + node version) to autocycle determinism canon."
     },
     {
-      "filePath": "docs/OPS/EXECUTION/EXECUTION_PROFILE.example.json",
-      "sha256": "c6c2b2a0002860327dccf017040f2fa3e895066eed2a31c0d1fac235bce35c35",
-      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
-      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
-      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
-    },
-    {
       "filePath": "docs/OPS/EXECUTION/EXECUTION_STATUS_RECORD_V1.json",
       "sha256": "822c7c8af3969850e6793a2fcd1bc2e9d873bc16b8596507bcd56372bfce1068",
-      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
-      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
-      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json",
-      "sha256": "fc82503fc1dcb65c4928d2a86ce901a2cd242f675328b22d662a05ff06241dbb",
       "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
       "approvedAtUtc": "2026-02-28T23:47:23.730Z",
       "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
@@ -2116,13 +2102,6 @@
       "rationale": "Approve P0-05 circular dependency break artifacts and gate-graph enforcement wiring for SCC cycle detection with phase-aware behavior."
     },
     {
-      "filePath": "scripts/ops/generate-required-token-set.mjs",
-      "sha256": "8e4d5eb8c727e8335288a4d9ea7a268dcf15335b03a3e8cf9107656af3847ad9",
-      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
-      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
-      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
-    },
-    {
       "filePath": "scripts/ops/github-credential-autofix.mjs",
       "sha256": "96d4bbd26a9335bd34108d97618f569cbbd136c8f4c2d803ad09a3f710c24c2d",
       "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
@@ -2662,20 +2641,6 @@
       "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
     },
     {
-      "filePath": "docs/OPS/LOCKS/CONFIG_HASH_LOCK.json",
-      "sha256": "3d8dbb04e8a990695ad8949d0bb4b175c1adb94906d72077e55a0b604a34b431",
-      "approvedBy": "ticket:TZ_X72_REMEDIATION_P0_P1_001",
-      "approvedAtUtc": "2026-03-02T23:41:14.088Z",
-      "rationale": "X72_TARGETED_REMEDIATION_APPROVAL_SCOPE_LOCK"
-    },
-    {
-      "filePath": "docs/OPS/PROOFHOOKS/PROOFHOOK_INTEGRITY_LOCK.json",
-      "sha256": "304dd6b6d38582c318f1a7217b3b407b210b4186edaed1d425e42ec7cf5984d7",
-      "approvedBy": "ticket:TZ_X72_REMEDIATION_P0_P1_001",
-      "approvedAtUtc": "2026-03-02T23:41:14.088Z",
-      "rationale": "X72_TARGETED_REMEDIATION_APPROVAL_SCOPE_LOCK"
-    },
-    {
       "filePath": "docs/OPS/STATUS/X70_FALSE_GREEN_REGISTER_V1.json",
       "sha256": "472ee61ab0c922f452fecca11f2ee6b14792bc9753b81fec4da669461b75e13d",
       "approvedBy": "ticket:TZ_X72_REMEDIATION_P0_P1_001",
@@ -2709,6 +2674,41 @@
       "approvedBy": "ticket:OPS_WRITE_TZ_REPO_WIDE_SYMBOLIC_CLOSEOUT_V5_R1",
       "approvedAtUtc": "2026-03-20T19:15:25.000Z",
       "rationale": "REPAIR_WAVE_2_REPO_WIDE_SYMBOLIC_CLOSEOUT_COMPANION_APPROVAL"
+    },
+    {
+      "filePath": "docs/OPS/EXECUTION/EXECUTION_PROFILE.example.json",
+      "sha256": "8c449a6408d977b989d43c574446c71be16c039f912f15dc043591fdba43265e",
+      "approvedBy": "ticket:YALKEN_DESIGN_OS_PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_001",
+      "approvedAtUtc": "2026-03-28T16:24:00.063Z",
+      "rationale": "PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_MINIMAL_DETERMINISTIC_CHAIN_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json",
+      "sha256": "53845afe43620c1da737dba37aaf96a86d09e3a0cc5ee4b086b1912282956ac5",
+      "approvedBy": "ticket:YALKEN_DESIGN_OS_PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_001",
+      "approvedAtUtc": "2026-03-28T16:24:00.063Z",
+      "rationale": "PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_MINIMAL_DETERMINISTIC_CHAIN_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/LOCKS/CONFIG_HASH_LOCK.json",
+      "sha256": "b75056e9fdff16a665b8e258c26a6485ab678024b5aab54e59d4d1eb62989847",
+      "approvedBy": "ticket:YALKEN_DESIGN_OS_PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_001",
+      "approvedAtUtc": "2026-03-28T16:24:00.063Z",
+      "rationale": "PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_MINIMAL_DETERMINISTIC_CHAIN_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/PROOFHOOKS/PROOFHOOK_INTEGRITY_LOCK.json",
+      "sha256": "d80b54a38495f41c9d637fcb1dfc4254c13a0b0283444274f7c673101a8f8d3c",
+      "approvedBy": "ticket:YALKEN_DESIGN_OS_PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_001",
+      "approvedAtUtc": "2026-03-28T16:24:00.063Z",
+      "rationale": "PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_MINIMAL_DETERMINISTIC_CHAIN_REBIND"
+    },
+    {
+      "filePath": "scripts/ops/generate-required-token-set.mjs",
+      "sha256": "87024c2e2ec2aff27f2272e4d6637dfddf6af88da38b2d2f85d3d2b1c8c8d774",
+      "approvedBy": "ticket:YALKEN_DESIGN_OS_PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_001",
+      "approvedAtUtc": "2026-03-28T16:24:00.063Z",
+      "rationale": "PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_MINIMAL_DETERMINISTIC_CHAIN_REBIND"
     }
   ]
 }

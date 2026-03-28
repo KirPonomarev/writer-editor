@@ -14,7 +14,18 @@ const DEFAULT_PROFILE_PATH = 'docs/OPS/EXECUTION/EXECUTION_PROFILE.example.json'
 const DEFAULT_LOCK_PATH = 'docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json';
 const TOKEN_RE = /^[A-Z0-9_]+$/u;
 const RELEASE_ALWAYS_REQUIRED_TOKENS = Object.freeze([]);
-const RELEASE_IF_AND_ONLY_IF_TOKEN_RULES = Object.freeze([]);
+const RELEASE_IF_AND_ONLY_IF_TOKEN_RULES = Object.freeze([
+  Object.freeze({
+    token: 'PERF_BASELINE_OK',
+    flag: 'RELEASE_SCOPE_PERF',
+    enabledWhen: true,
+  }),
+  Object.freeze({
+    token: 'SCR_SHARED_CODE_RATIO_OK',
+    flag: 'ECONOMIC_CLAIM_SHARED_CODE',
+    enabledWhen: true,
+  }),
+]);
 const FREEZE_READY_EXCLUDED_RELEASE_TOKENS = new Set([
   'CONFIG_HASH_LOCK_OK',
   'LOSSLESS_MAP_OK',
