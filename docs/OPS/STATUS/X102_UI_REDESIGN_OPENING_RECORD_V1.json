@@ -1,0 +1,91 @@
+{
+  "artifactId": "X102_UI_REDESIGN_OPENING_RECORD_V1",
+  "schemaVersion": 1,
+  "status": "ACTIVE",
+  "contourId": "X102",
+  "openedFromHistoricalBase": "X101_UI_TAIL_SNAPSHOT_ADOPTION",
+  "historicalBaseRefs": [
+    "docs/OPS/STATUS/X101_PRE_REDESIGN_CLOSEOUT_V1.json",
+    "docs/OPS/STATUS/X101_UI_BASELINE_LOCK_PACKET_V1.json",
+    "docs/OPS/STATUS/X101_MENU_COMMAND_MAP_LOCK_V1.json",
+    "docs/OPS/STATUS/X101_HOTKEY_MAP_LOCK_V1.json",
+    "docs/OPS/STATUS/X101_STAGE_GATED_UI_LOCK_V1.json",
+    "docs/OPS/STATUS/X101_PRE_REDESIGN_GUARDS_V1.json",
+    "docs/OPS/STATUS/X101_UI_REDESIGN_STATUS_V1.json",
+    "docs/OPS/STATUS/X101_LITERAL_INTERFACE_STAGE_A_PACKET_V1.json",
+    "docs/OPS/STATUS/X101_LITERAL_INTERFACE_STAGE_A1_HOTFIX_PACKET_V1.json"
+  ],
+  "activeCanon": {
+    "canonVersion": "v3.13a-final",
+    "canonicalDocPath": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md"
+  },
+  "startMode": "SNAPSHOT_ADOPTION",
+  "baseCommitSha": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+  "headShaAtOpen": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+  "startBranch": "codex/tz-yalken-literal-interface-stage-a-exec-001",
+  "targetBranch": "main",
+  "carryForwardRefsResolvedTrue": true,
+  "adoptedBaselineDirtySet": [
+    {
+      "status": " M",
+      "path": "docs/OPS/STATUS/X101_UI_REDESIGN_STATUS_V1.json"
+    },
+    {
+      "status": " M",
+      "path": "src/renderer/editor.bundle.js"
+    },
+    {
+      "status": " M",
+      "path": "src/renderer/editor.js"
+    },
+    {
+      "status": " M",
+      "path": "src/renderer/index.html"
+    },
+    {
+      "status": " M",
+      "path": "src/renderer/styles.css"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPS/STATUS/X101_LITERAL_INTERFACE_STAGE_A1_HOTFIX_PACKET_V1.json"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPS/STATUS/X101_LITERAL_INTERFACE_STAGE_A_PACKET_V1.json"
+    }
+  ],
+  "adoptedDenylistDirtySet": [
+    {
+      "status": " M",
+      "path": "docs/OPS/STATUS/X101_UI_REDESIGN_STATUS_V1.json"
+    },
+    {
+      "status": " M",
+      "path": "src/renderer/editor.bundle.js"
+    },
+    {
+      "status": " M",
+      "path": "src/renderer/editor.js"
+    },
+    {
+      "status": " M",
+      "path": "src/renderer/index.html"
+    },
+    {
+      "status": " M",
+      "path": "src/renderer/styles.css"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPS/STATUS/X101_LITERAL_INTERFACE_STAGE_A1_HOTFIX_PACKET_V1.json"
+    },
+    {
+      "status": "??",
+      "path": "docs/OPS/STATUS/X101_LITERAL_INTERFACE_STAGE_A_PACKET_V1.json"
+    }
+  ],
+  "designExecutionNamespaceRule": "X101_HISTORICAL_BASE_ONLY_X102_ACTIVE_ONLY",
+  "visualBaselinePolicyNote": "Normalized X102 visual assets are temporary acceptance baseline for the current iteration only and do not establish permanent product design canon",
+  "openedAtUtc": "2026-03-10T00:00:00+03:00"
+}
