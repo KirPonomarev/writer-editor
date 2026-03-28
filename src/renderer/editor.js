@@ -318,6 +318,17 @@ registerProjectCommands(commandRegistry, {
     formatAlignJustify: () => handleFormatAlign('align-justify'),
     planFlowSave: () => handlePlanFlowSave(),
     reviewExportMarkdown: () => handleReviewExportMarkdown(),
+    openSettings: () => openSettingsModal(),
+    safeResetShell: () => performSafeResetShell(),
+    restoreLastStableShell: () => performRestoreLastStableShell(),
+    openDiagnostics: () => openDiagnosticsModal(),
+    openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
+    switchMode: (payload = {}) => {
+      const mode = typeof payload.mode === 'string' ? payload.mode : '';
+      if (mode === 'write' || mode === 'plan' || mode === 'review') {
+        applyMode(mode);
+      }
+    },
     setTheme: (payload) => handleUiSetThemeCommand(payload),
     setFont: (payload) => handleUiSetFontCommand(payload),
     setFontSize: (payload) => handleUiSetFontSizeCommand(payload),

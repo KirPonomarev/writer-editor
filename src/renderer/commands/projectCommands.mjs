@@ -18,6 +18,14 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   PROJECT_NEW: 'cmd.project.new',
   PROJECT_DOCUMENT_OPEN: 'cmd.project.document.open',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
+  VIEW_OPEN_SETTINGS: 'cmd.project.view.openSettings',
+  VIEW_SAFE_RESET: 'cmd.project.view.safeReset',
+  VIEW_RESTORE_LAST_STABLE: 'cmd.project.view.restoreLastStable',
+  TOOLS_OPEN_DIAGNOSTICS: 'cmd.project.tools.openDiagnostics',
+  REVIEW_OPEN_RECOVERY: 'cmd.project.review.openRecovery',
+  PLAN_SWITCH_MODE: 'cmd.project.plan.switchMode',
+  REVIEW_SWITCH_MODE: 'cmd.project.review.switchMode',
+  WINDOW_SWITCH_MODE_WRITE: 'cmd.project.window.switchModeWrite',
   TREE_CREATE_NODE: 'cmd.project.tree.createNode',
   TREE_RENAME_NODE: 'cmd.project.tree.renameNode',
   TREE_DELETE_NODE: 'cmd.project.tree.deleteNode',
@@ -470,6 +478,109 @@ export function registerProjectCommands(registry, options = {}) {
               : 'FILE_SAVE_AS_FAILED',
       );
     },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS,
+      label: 'Open Settings',
+      group: 'view',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(uiActions, 'openSettings', EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_SAFE_RESET,
+      label: 'Safe Reset Shell',
+      group: 'view',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(uiActions, 'safeResetShell', EXTRA_COMMAND_IDS.VIEW_SAFE_RESET),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_RESTORE_LAST_STABLE,
+      label: 'Restore Last Stable Shell',
+      group: 'view',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(uiActions, 'restoreLastStableShell', EXTRA_COMMAND_IDS.VIEW_RESTORE_LAST_STABLE),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS,
+      label: 'Open Diagnostics',
+      group: 'tools',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(uiActions, 'openDiagnostics', EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.REVIEW_OPEN_RECOVERY,
+      label: 'Open Recovery',
+      group: 'review',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(uiActions, 'openRecovery', EXTRA_COMMAND_IDS.REVIEW_OPEN_RECOVERY),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE,
+      label: 'Switch Mode Plan',
+      group: 'plan',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(
+      uiActions,
+      'switchMode',
+      EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE,
+      { mode: 'plan' },
+    ),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.REVIEW_SWITCH_MODE,
+      label: 'Switch Mode Review',
+      group: 'review',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(
+      uiActions,
+      'switchMode',
+      EXTRA_COMMAND_IDS.REVIEW_SWITCH_MODE,
+      { mode: 'review' },
+    ),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE,
+      label: 'Switch Mode Write',
+      group: 'window',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(
+      uiActions,
+      'switchMode',
+      EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE,
+      { mode: 'write' },
+    ),
   );
 
   registry.registerCommand(
