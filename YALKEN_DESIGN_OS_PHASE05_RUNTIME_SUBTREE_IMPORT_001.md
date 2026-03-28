@@ -2,20 +2,19 @@
 
 ## Scope
 - Narrow runtime entrypoint adaptation only.
-- Runtime subtree files remained unchanged.
-- No renderer wiring scope was opened.
+- Changed files are limited to main.js and preload.js.
+- runtimeBridge.js is intentionally unchanged in this revised slice.
 
-## Changes
-- main.js: legacy tree/document IPC entrypoints now route through canonical command bus dispatch.
-- preload.js: tree/document API routes through command bridge and exposes dispatchTreeCommand with allowlisted command IDs.
-- runtimeBridge.js: dormant command surface no longer includes legacy search/replace string commands; canonical commandId path remains.
+## Delivered Adaptation
+- main.js: legacy tree and document IPC handlers are explicitly fail-closed and routed through canonical command bus dispatch.
+- preload.js: dispatchTreeCommand is present and strict-allowlisted by commandId only.
+- preload.js: invokeUiCommandBridge, invokeWorkspaceQueryBridge, and invokeSaveLifecycleSignalBridge are preserved.
 
 ## Guardrails Preserved
-- CSP and window navigation deny controls remain intact.
-- contextIsolation and sandbox remain enabled.
-- UI command bridge, workspace query bridge, and save lifecycle signal bridge allowlists remain in place.
-- No changes to design-os subtree basenames.
-- No changes to editor.js, index.html, styles.css.
+- CSP, blocked navigation, denied window-open handler, contextIsolation and sandbox remain enforced.
+- UI command bridge, workspace query bridge, and save lifecycle signal bridge allowlists remain intact.
+- design-os runtime subtree basenames remain unchanged.
+- editor.js, index.html, styles.css remain unchanged.
 
 ## Next Step
 - OPEN_ONE_EXPLICIT_PHASE_06_RENDERER_WIRING_BRIEF_ONLY

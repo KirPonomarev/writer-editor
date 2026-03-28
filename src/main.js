@@ -2574,9 +2574,28 @@ async function handleUiOpenDocumentCommand(payload) {
   return { ok: true, path: filePath };
 }
 
+const LEGACY_UI_TREE_DOCUMENT_COMMAND_IDS = new Set([
+  'cmd.project.document.open',
+  'cmd.project.tree.createNode',
+  'cmd.project.tree.renameNode',
+  'cmd.project.tree.deleteNode',
+  'cmd.project.tree.reorderNode',
+]);
+
+function normalizeLegacyUiBridgePayload(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
 async function dispatchLegacyUiTreeDocumentCommand(commandId, payload = {}) {
+  if (!LEGACY_UI_TREE_DOCUMENT_COMMAND_IDS.has(commandId)) {
+    return { ok: false, error: 'LEGACY_UI_COMMAND_NOT_ALLOWED' };
+  }
   try {
-    const result = await dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE });
+    const result = await dispatchMenuCommand(
+      commandId,
+      normalizeLegacyUiBridgePayload(payload),
+      { route: COMMAND_BUS_ROUTE },
+    );
     if (result && typeof result === 'object' && !Array.isArray(result)) {
       return result;
     }
