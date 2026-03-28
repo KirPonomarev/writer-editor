@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { spawnSync } = require('node:child_process');
 
+// Tail cluster 05B delivery anchor: deterministic contract for the full Phase05 family.
 const SCRIPT_PATH = 'scripts/ops/phase05-bounded-spatial-shell-state.mjs';
 const EXPECTED_BOUND_SIGNAL_IDS = [
   'PHASE05_MOVABLE_SIDE_CONTAINERS_BASELINE_PASS',

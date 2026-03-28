@@ -7,6 +7,7 @@ import { evaluatePhase05MovableSideContainersBaselineState } from './phase05-mov
 import { evaluatePhase05LayoutRecoveryLastStableBaselineState } from './phase05-layout-recovery-last-stable-baseline-state.mjs';
 import { evaluatePhase05InvalidLayoutAndMissingMonitorRecoveryBaselineState } from './phase05-invalid-layout-and-missing-monitor-recovery-baseline-state.mjs';
 
+// Tail cluster 05B delivery anchor: keep the full Phase05 family isolated and coherent.
 const FAIL_REASON_FORCED_NEGATIVE = 'E_PHASE05_BOUNDED_SPATIAL_SHELL_FORCED_NEGATIVE';
 const FAIL_REASON_UNEXPECTED = 'E_PHASE05_BOUNDED_SPATIAL_SHELL_UNEXPECTED';
 const PACKET_PATH = 'docs/OPS/STATUS/PHASE05_BOUNDED_SPATIAL_SHELL_PACKET_V1.json';
