@@ -7,6 +7,49 @@ const FLOW_SAVE_V1_CHANNEL = 'm:cmd:project:flow:save:v1';
 const UI_COMMAND_BRIDGE_CHANNEL = 'ui:command-bridge';
 const WORKSPACE_QUERY_BRIDGE_CHANNEL = 'ui:workspace-query-bridge';
 const SAVE_LIFECYCLE_SIGNAL_BRIDGE_CHANNEL = 'ui:save-lifecycle-signal-bridge';
+const COMMAND_BUS_ROUTE = 'command.bus';
+const DOCUMENT_OPEN_COMMAND_ID = 'cmd.project.document.open';
+const TREE_COMMAND_IDS = Object.freeze({
+  CREATE_NODE: 'cmd.project.tree.createNode',
+  RENAME_NODE: 'cmd.project.tree.renameNode',
+  DELETE_NODE: 'cmd.project.tree.deleteNode',
+  REORDER_NODE: 'cmd.project.tree.reorderNode',
+});
+const TREE_ACTION_TO_COMMAND_ID = Object.freeze({
+  createNode: TREE_COMMAND_IDS.CREATE_NODE,
+  renameNode: TREE_COMMAND_IDS.RENAME_NODE,
+  deleteNode: TREE_COMMAND_IDS.DELETE_NODE,
+  reorderNode: TREE_COMMAND_IDS.REORDER_NODE,
+});
+
+function normalizeRequestRecord(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
+function normalizeRequestPayload(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
+function invokeUiCommand(commandId, payload = {}) {
+  return ipcRenderer.invoke(UI_COMMAND_BRIDGE_CHANNEL, {
+    route: COMMAND_BUS_ROUTE,
+    commandId: typeof commandId === 'string' ? commandId : '',
+    payload: normalizeRequestPayload(payload),
+  });
+}
+
+function dispatchTreeCommand(request = {}) {
+  const safeRequest = normalizeRequestRecord(request);
+  const commandId = typeof safeRequest.commandId === 'string' && safeRequest.commandId.length > 0
+    ? safeRequest.commandId
+    : TREE_ACTION_TO_COMMAND_ID[
+      typeof safeRequest.action === 'string' ? safeRequest.action : ''
+    ];
+  if (!Object.values(TREE_COMMAND_IDS).includes(commandId)) {
+    return Promise.resolve({ ok: false, error: 'TREE_COMMAND_NOT_ALLOWED' });
+  }
+  return invokeUiCommand(commandId, safeRequest.payload);
+}
 
 // Экспорт безопасного API для renderer процесса
 contextBridge.exposeInMainWorld('electronAPI', {
@@ -65,22 +108,40 @@ contextBridge.exposeInMainWorld('electronAPI', {
     return ipcRenderer.invoke('ui:open-section', { sectionName });
   },
   getProjectTree: (tab) => {
-    return ipcRenderer.invoke('ui:get-project-tree', { tab });
+    return ipcRenderer.invoke(WORKSPACE_QUERY_BRIDGE_CHANNEL, {
+      queryId: 'query.projectTree',
+      payload: { tab },
+    });
   },
   openDocument: (payload) => {
-    return ipcRenderer.invoke('ui:open-document', payload);
+    return invokeUiCommand(DOCUMENT_OPEN_COMMAND_ID, payload);
+  },
+  dispatchTreeCommand: (request) => {
+    return dispatchTreeCommand(request);
   },
   createNode: (payload) => {
-    return ipcRenderer.invoke('ui:create-node', payload);
+    return dispatchTreeCommand({
+      commandId: TREE_COMMAND_IDS.CREATE_NODE,
+      payload,
+    });
   },
   renameNode: (payload) => {
-    return ipcRenderer.invoke('ui:rename-node', payload);
+    return dispatchTreeCommand({
+      commandId: TREE_COMMAND_IDS.RENAME_NODE,
+      payload,
+    });
   },
   deleteNode: (payload) => {
-    return ipcRenderer.invoke('ui:delete-node', payload);
+    return dispatchTreeCommand({
+      commandId: TREE_COMMAND_IDS.DELETE_NODE,
+      payload,
+    });
   },
   reorderNode: (payload) => {
-    return ipcRenderer.invoke('ui:reorder-node', payload);
+    return dispatchTreeCommand({
+      commandId: TREE_COMMAND_IDS.REORDER_NODE,
+      payload,
+    });
   },
   exportDocxMin: (payload) => {
     return ipcRenderer.invoke(EXPORT_DOCX_MIN_CHANNEL, payload);
