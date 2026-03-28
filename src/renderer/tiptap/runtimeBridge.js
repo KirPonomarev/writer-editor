@@ -19,6 +19,40 @@ function runBridgeCallback(callback, action, ...args) {
   return { performed: true, action, reason: null }
 }
 
+function handleCanonicalRuntimeCommandId(runtimeHandlers, commandId) {
+  if (commandId === 'cmd.project.view.openSettings') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.openSettings, commandId) }
+  }
+  if (commandId === 'cmd.project.view.safeReset') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.safeResetShell, commandId) }
+  }
+  if (commandId === 'cmd.project.view.restoreLastStable') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.restoreLastStableShell, commandId) }
+  }
+  if (commandId === 'cmd.project.tools.openDiagnostics') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.openDiagnostics, commandId) }
+  }
+  if (commandId === 'cmd.project.review.openRecovery') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.openRecovery, commandId) }
+  }
+  if (commandId === 'cmd.project.insert.addCard') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.insertAddCard, commandId) }
+  }
+  if (commandId === 'cmd.project.format.alignLeft') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.formatAlignLeft, commandId) }
+  }
+  if (commandId === 'cmd.project.plan.switchMode') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.switchMode, commandId, 'plan') }
+  }
+  if (commandId === 'cmd.project.review.switchMode') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.switchMode, commandId, 'review') }
+  }
+  if (commandId === 'cmd.project.window.switchModeWrite') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.switchMode, commandId, 'write') }
+  }
+  return { handled: false, result: null }
+}
+
 export function runTiptapUndo(editor) {
   return runEditorCommand(editor, 'undo')
 }
@@ -64,6 +98,15 @@ export function createTiptapRuntimeBridge(options = {}) {
       return runTiptapRedo(editor)
     },
     handleRuntimeCommand(payload = {}) {
+      const commandId = payload && typeof payload.commandId === 'string' ? payload.commandId : ''
+      const canonicalResult = handleCanonicalRuntimeCommandId(runtimeHandlers, commandId)
+      if (canonicalResult.handled) {
+        return {
+          handled: true,
+          result: canonicalResult.result,
+          commandId,
+        }
+      }
       const command = payload && typeof payload.command === 'string' ? payload.command : ''
 
       if (command === 'undo' || command === 'edit-undo') {

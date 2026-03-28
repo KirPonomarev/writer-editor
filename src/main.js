@@ -2218,6 +2218,22 @@ function sendRuntimeCommand(command, payload = {}) {
   return true;
 }
 
+function sendCanonicalRuntimeCommand(commandId, payload = {}, legacyCommand = '') {
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    return false;
+  }
+  const safePayload = payload && typeof payload === 'object' && !Array.isArray(payload) ? payload : {};
+  const envelope = {
+    commandId,
+    payload: safePayload,
+  };
+  if (typeof legacyCommand === 'string' && legacyCommand.length > 0) {
+    envelope.command = legacyCommand;
+  }
+  mainWindow.webContents.send('ui:runtime-command', envelope);
+  return true;
+}
+
 function resolveCollabScopeLocalState() {
   const rawValue = typeof process.env.COLLAB_SCOPE_LOCAL === 'string'
     ? process.env.COLLAB_SCOPE_LOCAL.trim().toLowerCase()
@@ -3420,43 +3436,83 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return { ok: true };
   },
   'cmd.project.view.openSettings': () => {
-    const delivered = sendRuntimeCommand('open-settings', { source: 'menu' });
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.view.openSettings',
+      { source: 'menu' },
+      'open-settings',
+    );
     return { ok: delivered };
   },
   'cmd.project.view.safeReset': () => {
-    const delivered = sendRuntimeCommand('safe-reset-shell', { source: 'menu' });
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.view.safeReset',
+      { source: 'menu' },
+      'safe-reset-shell',
+    );
     return { ok: delivered };
   },
   'cmd.project.view.restoreLastStable': () => {
-    const delivered = sendRuntimeCommand('restore-last-stable-shell', { source: 'menu' });
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.view.restoreLastStable',
+      { source: 'menu' },
+      'restore-last-stable-shell',
+    );
     return { ok: delivered };
   },
   'cmd.project.tools.openDiagnostics': () => {
-    const delivered = sendRuntimeCommand('open-diagnostics', { source: 'menu' });
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.tools.openDiagnostics',
+      { source: 'menu' },
+      'open-diagnostics',
+    );
     return { ok: delivered };
   },
   'cmd.project.review.openRecovery': () => {
-    const delivered = sendRuntimeCommand('open-recovery', { source: 'menu' });
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.review.openRecovery',
+      { source: 'menu' },
+      'open-recovery',
+    );
     return { ok: delivered };
   },
   'cmd.project.insert.addCard': () => {
-    const delivered = sendRuntimeCommand('insert-add-card', { source: 'menu' });
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.insert.addCard',
+      { source: 'menu' },
+      'insert-add-card',
+    );
     return { ok: delivered };
   },
   'cmd.project.format.alignLeft': () => {
-    const delivered = sendRuntimeCommand('format-align-left', { source: 'menu' });
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.format.alignLeft',
+      { source: 'menu' },
+      'format-align-left',
+    );
     return { ok: delivered };
   },
   'cmd.project.plan.switchMode': () => {
-    const delivered = sendRuntimeCommand('switch-mode-plan', { source: 'menu' });
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.plan.switchMode',
+      { source: 'menu' },
+      'switch-mode-plan',
+    );
     return { ok: delivered };
   },
   'cmd.project.review.switchMode': () => {
-    const delivered = sendRuntimeCommand('switch-mode-review', { source: 'menu' });
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.review.switchMode',
+      { source: 'menu' },
+      'switch-mode-review',
+    );
     return { ok: delivered };
   },
   'cmd.project.window.switchModeWrite': () => {
-    const delivered = sendRuntimeCommand('switch-mode-write', { source: 'menu' });
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.window.switchModeWrite',
+      { source: 'menu' },
+      'switch-mode-write',
+    );
     return { ok: delivered };
   },
   'cmd.project.document.open': async (payload = {}) => {

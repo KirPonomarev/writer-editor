@@ -4581,6 +4581,50 @@ function handleUiAction(action) {
   }
 }
 
+function handleCanonicalRuntimeCommandId(commandId) {
+  if (commandId === EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS);
+    return true;
+  }
+  if (commandId === EXTRA_COMMAND_IDS.VIEW_SAFE_RESET) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_SAFE_RESET);
+    return true;
+  }
+  if (commandId === EXTRA_COMMAND_IDS.VIEW_RESTORE_LAST_STABLE) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_RESTORE_LAST_STABLE);
+    return true;
+  }
+  if (commandId === EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS);
+    return true;
+  }
+  if (commandId === EXTRA_COMMAND_IDS.REVIEW_OPEN_RECOVERY) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_RECOVERY);
+    return true;
+  }
+  if (commandId === EXTRA_COMMAND_IDS.INSERT_ADD_CARD) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_ADD_CARD);
+    return true;
+  }
+  if (commandId === EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
+    return true;
+  }
+  if (commandId === EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE);
+    return true;
+  }
+  if (commandId === EXTRA_COMMAND_IDS.REVIEW_SWITCH_MODE) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_SWITCH_MODE);
+    return true;
+  }
+  if (commandId === EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE);
+    return true;
+  }
+  return false;
+}
+
 if (toolbar) {
   toolbar.addEventListener('click', (event) => {
     const target = event.target.closest('[data-action]');
@@ -4979,6 +5023,10 @@ if (window.electronAPI) {
     });
   } else if (typeof window.electronAPI.onRuntimeCommand === 'function') {
     window.electronAPI.onRuntimeCommand((payload) => {
+      const commandId = payload && typeof payload.commandId === 'string' ? payload.commandId : '';
+      if (handleCanonicalRuntimeCommandId(commandId)) {
+        return;
+      }
       const command = payload && typeof payload.command === 'string' ? payload.command : '';
       if (command === 'open-settings') {
         openSettingsModal();
