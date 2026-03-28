@@ -4621,6 +4621,14 @@ function handleCanonicalRuntimeCommandId(commandId, runtimePayload = null) {
     void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
     return true;
   }
+  if (commandId === EXTRA_COMMAND_IDS.EDIT_FIND) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
+    return true;
+  }
+  if (commandId === EXTRA_COMMAND_IDS.EDIT_REPLACE) {
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
+    return true;
+  }
   if (commandId === EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE) {
     void dispatchUiCommand(EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE);
     return true;
@@ -5030,6 +5038,12 @@ if (window.electronAPI) {
       openDiagnostics: () => openDiagnosticsModal(),
       openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
       openExportPreview: () => openExportPreviewModal(),
+      find: () => {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
+      },
+      replace: () => {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
+      },
       insertAddCard: () => handleInsertAddCard(),
       formatAlignLeft: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
@@ -5062,6 +5076,10 @@ if (window.electronAPI) {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);
       } else if (command === 'redo' || command === 'edit-redo') {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
+      } else if (command === 'search') {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
+      } else if (command === 'replace') {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
       } else if (command === 'insert-add-card') {
         handleInsertAddCard();
       } else if (command === 'format-align-left') {

@@ -38,6 +38,8 @@
       "items": [
         { "label": "Undo", "commandId": "cmd.project.edit.undo" },
         { "label": "Redo", "commandId": "cmd.project.edit.redo" },
+        { "label": "Find", "commandId": "cmd.project.edit.find" },
+        { "label": "Replace", "commandId": "cmd.project.edit.replace" },
         { "label": "Copy", "role": "copy" },
         { "label": "Paste", "role": "paste" },
         { "label": "Select All", "role": "selectAll" }

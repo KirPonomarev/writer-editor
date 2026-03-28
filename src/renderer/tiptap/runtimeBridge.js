@@ -50,6 +50,12 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
   if (commandId === 'cmd.project.edit.redo') {
     return { handled: true, result: runtimeBridge.redo() }
   }
+  if (commandId === 'cmd.project.edit.find') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.find, commandId) }
+  }
+  if (commandId === 'cmd.project.edit.replace') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.replace, commandId) }
+  }
   if (commandId === 'cmd.project.plan.switchMode') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.switchMode, commandId, 'plan') }
   }
@@ -129,6 +135,12 @@ export function createTiptapRuntimeBridge(options = {}) {
       }
       if (command === 'redo' || command === 'edit-redo') {
         return { handled: true, result: bridge.redo(), command }
+      }
+      if (command === 'search') {
+        return { handled: true, result: runBridgeCallback(runtimeHandlers.find, command), command }
+      }
+      if (command === 'replace') {
+        return { handled: true, result: runBridgeCallback(runtimeHandlers.replace, command), command }
       }
       if (command === 'open-settings') {
         return { handled: true, result: runBridgeCallback(runtimeHandlers.openSettings, command), command }
