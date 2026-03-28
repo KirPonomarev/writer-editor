@@ -19,7 +19,7 @@ function runBridgeCallback(callback, action, ...args) {
   return { performed: true, action, reason: null }
 }
 
-function handleCanonicalRuntimeCommandId(runtimeHandlers, commandId, commandPayload = null) {
+function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, commandId, commandPayload = null) {
   const payload = commandPayload && typeof commandPayload === 'object' && !Array.isArray(commandPayload)
     ? commandPayload
     : {}
@@ -43,6 +43,12 @@ function handleCanonicalRuntimeCommandId(runtimeHandlers, commandId, commandPayl
   }
   if (commandId === 'cmd.project.format.alignLeft') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.formatAlignLeft, commandId) }
+  }
+  if (commandId === 'cmd.project.edit.undo') {
+    return { handled: true, result: runtimeBridge.undo() }
+  }
+  if (commandId === 'cmd.project.edit.redo') {
+    return { handled: true, result: runtimeBridge.redo() }
   }
   if (commandId === 'cmd.project.plan.switchMode') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.switchMode, commandId, 'plan') }
@@ -108,7 +114,7 @@ export function createTiptapRuntimeBridge(options = {}) {
       const commandPayload = payload && payload.payload && typeof payload.payload === 'object' && !Array.isArray(payload.payload)
         ? payload.payload
         : {}
-      const canonicalResult = handleCanonicalRuntimeCommandId(runtimeHandlers, commandId, commandPayload)
+      const canonicalResult = handleCanonicalRuntimeCommandId(bridge, runtimeHandlers, commandId, commandPayload)
       if (canonicalResult.handled) {
         return {
           handled: true,
