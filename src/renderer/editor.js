@@ -2871,6 +2871,82 @@ function commitDesignOsDormantTypographyDesignPatch({ syncPreview = true } = {})
   }
 }
 
+function buildDesignOsDormantThemeDesignPatch() {
+  if (!document || !document.body) return null;
+  const isDarkTheme = document.body.classList.contains('dark-theme');
+  const computedStyle = window.getComputedStyle ? window.getComputedStyle(document.body) : null;
+  const fallbackLight = {
+    backgroundCanvas: '#e7e0d5',
+    foregroundPrimary: '#171317',
+    surfacePanel: '#fffdf8',
+    surfaceElevated: '#e0d7c8',
+    shellBackground: '#d8cfc1',
+  };
+  const fallbackDark = {
+    backgroundCanvas: '#101119',
+    foregroundPrimary: '#fdfdfd',
+    surfacePanel: '#181a24',
+    surfaceElevated: '#171925',
+    shellBackground: '#11131d',
+  };
+  const fallbackTheme = isDarkTheme ? fallbackDark : fallbackLight;
+  const resolveToken = (cssVarName, fallbackValue) => {
+    const rawValue = computedStyle && typeof computedStyle.getPropertyValue === 'function'
+      ? computedStyle.getPropertyValue(cssVarName)
+      : '';
+    const normalized = typeof rawValue === 'string' ? rawValue.trim() : '';
+    return normalized || fallbackValue;
+  };
+  const backgroundCanvas = resolveToken('--background', fallbackTheme.backgroundCanvas);
+  const foregroundPrimary = resolveToken('--foreground', fallbackTheme.foregroundPrimary);
+  const surfacePanel = resolveToken('--card', fallbackTheme.surfacePanel);
+  const surfaceElevated = resolveToken('--sidebar', fallbackTheme.surfaceElevated);
+  const shellBackground = resolveToken('--canvas-bg', fallbackTheme.shellBackground);
+  return {
+    color: {
+      background: {
+        canvas: backgroundCanvas,
+      },
+      text: {
+        primary: foregroundPrimary,
+      },
+      surface: {
+        panel: surfacePanel,
+        elevated: surfaceElevated,
+      },
+    },
+    surface: {
+      shell: {
+        background: shellBackground,
+      },
+      editor: {
+        background: surfacePanel,
+      },
+    },
+  };
+}
+
+function commitDesignOsDormantThemeDesignPatch({ syncPreview = true } = {}) {
+  if (!designOsDormantRuntimeMount.ports || typeof designOsDormantRuntimeMount.ports.commitDesign !== 'function') {
+    return false;
+  }
+  const designPatch = buildDesignOsDormantThemeDesignPatch();
+  if (!designPatch) return false;
+  try {
+    designOsDormantRuntimeMount.ports.commitDesign({
+      context: buildDesignOsDormantContext(),
+      design_patch: designPatch,
+      commit_point: 'mode_switch',
+    });
+    if (syncPreview) {
+      syncDesignOsDormantContext();
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function remountDesignOsDormantRuntimeForCurrentDocumentContext(options = {}) {
   try {
     const productTruth = options && typeof options === 'object' && options.productTruth
@@ -2899,6 +2975,7 @@ function remountDesignOsDormantRuntimeForCurrentDocumentContext(options = {}) {
     const layoutStateForReplay = spatialLayoutState || getSpatialLayoutBaselineForViewport();
     syncDesignOsDormantLayoutCommitAtResizeEnd(layoutStateForReplay);
     commitDesignOsDormantTypographyDesignPatch({ syncPreview: false });
+    commitDesignOsDormantThemeDesignPatch({ syncPreview: false });
     syncDesignOsDormantContext();
   } catch (error) {
     designOsDormantRuntimeMount = {
@@ -4106,6 +4183,7 @@ function applyTheme(theme) {
   }
   localStorage.setItem('editorTheme', theme);
   updateThemeSwatches(theme);
+  commitDesignOsDormantThemeDesignPatch();
   updateInspectorSnapshot();
 }
 
