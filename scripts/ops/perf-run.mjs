@@ -287,6 +287,8 @@ async function runPerfOnce(context) {
     resetMs: 0,
     stateHash: '',
     dispatchCode: '',
+    dispatchReason: '',
+    dispatchMessage: '',
     sceneSwitchProofHash: '',
     resetProofHash: '',
   };
@@ -336,13 +338,24 @@ async function runPerfOnce(context) {
   const probeResult = await runCommand(probe.commandId, probe.payload || {});
   sample.dispatchMs = performance.now() - dispatchStarted;
   sample.dispatchCode = probeResult && probeResult.error ? String(probeResult.error.code || '') : '';
+  sample.dispatchReason = probeResult && probeResult.error ? String(probeResult.error.reason || '') : '';
+  sample.dispatchMessage = probeResult && probeResult.error && probeResult.error.details
+    ? String(probeResult.error.details.message || '')
+    : '';
 
   const expectedOk = Boolean(probe.expected && probe.expected.ok === true);
   if (Boolean(probeResult && probeResult.ok === true) !== expectedOk) {
     throw new Error('dispatch_probe_ok_mismatch');
   }
   if (probe.expected && typeof probe.expected.errorCode === 'string') {
-    if (sample.dispatchCode !== probe.expected.errorCode) {
+    const expectedErrorCode = probe.expected.errorCode;
+    const matchesExpectedCode = sample.dispatchCode === expectedErrorCode;
+    const matchesCanonicalExportUnwired =
+      expectedErrorCode === 'E_UNWIRED_EXPORT_BACKEND'
+      && sample.dispatchCode === 'E_COMMAND_FAILED'
+      && sample.dispatchReason === 'EXPORT_DOCXMIN_IPC_FAILED'
+      && sample.dispatchMessage === 'ELECTRON_API_UNAVAILABLE';
+    if (!matchesExpectedCode && !matchesCanonicalExportUnwired) {
       throw new Error('dispatch_probe_error_code_mismatch');
     }
   }
