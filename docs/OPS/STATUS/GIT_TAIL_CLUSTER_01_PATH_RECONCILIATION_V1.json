@@ -1,0 +1,10 @@
+{
+  "taskId": "CORE-A4-YALKEN-GIT-TAIL-CLUSTER-01-PATH-RECONCILIATION-001",
+  "approvedBaseSha": "3338cd9e9cd52a1f498d6452cf92e0e942b3d20c",
+  "activeAuthorityGitDeliveryEnforcement": "docs/OPS/STATUS/GIT_DELIVERY_ENFORCEMENT_V1.md",
+  "activeAuthorityGitTailClearancePlan": "docs/OPS/STATUS/GIT_TAIL_CLEARANCE_PLAN_V1.md",
+  "rootGitDeliveryEnforcementMode": "HISTORICAL_REDIRECT_ONLY",
+  "rootGitTailClearancePlanMode": "HISTORICAL_REDIRECT_ONLY",
+  "rootCluster01BriefMode": "EXACT_TRACKED_TARGETS_ONLY",
+  "nextStep": "REISSUE_CORE-A4-YALKEN-GIT-TAIL-CLUSTER-01-ENFORCEMENT-001_WITH_EXACT_TRACKED_TARGETS_ONLY"
+}
