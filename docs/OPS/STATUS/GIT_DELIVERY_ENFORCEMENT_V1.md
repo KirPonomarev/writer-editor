@@ -183,3 +183,19 @@ The intended outcome is simple:
 - fewer local-only ghosts,
 - fewer false green reports,
 - and every serious write step actually reaches GitHub when policy says it must.
+
+## 11. Base Freshness Rule
+
+If a task is explicitly pinned to a `BINDING_BASE_SHA`, that pin is part of task authority.
+
+If target branch moves and the PR becomes non-mergeable under the task scope policy, the agent must:
+
+1. stop with `STOP_NOT_DONE`;
+2. report base freshness mismatch;
+3. request one new owner-approved base SHA;
+4. rerun from a fresh isolated base.
+
+What is forbidden:
+
+- silent rebase to a newer base without explicit owner approval;
+- merging a dirty or widened PR just to “finish the chain”.

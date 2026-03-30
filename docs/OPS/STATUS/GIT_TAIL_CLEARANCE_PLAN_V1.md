@@ -393,3 +393,13 @@ The repo should now read the tail like this:
 - no more “we will commit it later”,
 - no more local-only write progress,
 - and no more mixed dirty worktree as the normal operating mode.
+
+## 13. Base Freshness Handling For Mainline-Safe Clusters
+
+If a cluster is started from an explicit base SHA for `mainline-safe` delivery and target `main` later moves:
+
+1. continue only if PR remains mergeable without scope widening;
+2. if PR becomes dirty or non-mergeable under scope policy, stop immediately;
+3. do not perform silent rebase;
+4. request one new explicit owner-approved base SHA;
+5. rerun the same cluster with unchanged allowlist.
