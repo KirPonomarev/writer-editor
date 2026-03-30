@@ -2,7 +2,7 @@
   "artifactId": "Y4_RENDERER_LIVE_WIRING_RECORD_V1",
   "schemaVersion": 1,
   "taskId": "YALKEN_DESIGN_OS_Y4_RENDERER_LIVE_WIRING_001",
-  "status": "PASS_PENDING_COMMIT_CHAIN",
+  "status": "PASS_MERGED_ON_main",
   "selectedBaseSha": "f916bfc6fcf21f40ee206938e59e85da60da9291",
   "selectedBaseMode": "LIVE_origin_main_HEAD_MODE",
   "baseCaptureTimeUtc": "2026-03-30T21:37:29Z",
