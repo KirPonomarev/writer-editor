@@ -13,13 +13,25 @@ const DEFAULT_RUNTIME_TO_CAPABILITY_PLATFORM = Object.freeze({
   ios: 'mobile-wrapper',
 });
 
-const PHASE04_REQUIRED_TARGETS = Object.freeze([
+const PHASE04_REQUIRED_TARGETS_LEGACY = Object.freeze([
   'DESIGN_LAYER_BASELINE',
   'BASELINE_SAFE_FOCUS_COMPACT',
   'VISIBLE_DESIGN_SWITCH',
   'DOCUMENT_TRUTH_UNCHANGED',
   'RECOVERY_TRUTH_UNCHANGED',
   'COMMAND_SEMANTICS_UNCHANGED',
+]);
+
+const PHASE04_REQUIRED_TARGETS_CURRENT = Object.freeze([
+  'DESIGN_LAYER_BASELINE',
+  'TOKENS',
+  'TYPOGRAPHY',
+  'SKINS',
+  'SUPPORTED_MODES',
+  'TEXT_TRUTH_UNTOUCHED',
+  'RECOVERY_TRUTH_UNTOUCHED',
+  'COMMAND_SEMANTICS_UNTOUCHED',
+  'NO_SHELL_OR_SPATIAL_RUNTIME_CLOSURE_CLAIM',
 ]);
 
 const PHASE05_REQUIRED_TARGETS = Object.freeze([
@@ -71,6 +83,10 @@ function ensure(condition, message) {
   if (!condition) {
     throw new Error(message);
   }
+}
+
+function setHasAll(set, values) {
+  return Array.isArray(values) && values.every((value) => set.has(value));
 }
 
 function listPresetCommands(schema) {
@@ -185,23 +201,41 @@ export function validatePresetSchemaAgainstCatalog(schema, knownCommandIds) {
 export function derivePhase04Compatibility(phase04) {
   const packet = isPlainObject(phase04) ? phase04 : {};
   const lockedTargets = new Set(uniqueSortedStrings(packet.lockedTargetIds));
-  for (const targetId of PHASE04_REQUIRED_TARGETS) {
-    ensure(lockedTargets.has(targetId), `Phase04 packet missing locked target: ${targetId}`);
-  }
-  ensure(packet.proof?.phase04DocumentTruthUnchangedTrue === true, 'Phase04 packet no longer proves document truth unchanged.');
-  ensure(packet.proof?.phase04RecoveryTruthUnchangedTrue === true, 'Phase04 packet no longer proves recovery truth unchanged.');
-  ensure(packet.proof?.phase04CommandSemanticsUnchangedTrue === true, 'Phase04 packet no longer proves command semantics unchanged.');
-  ensure(packet.proof?.noFalsePhase04GreenTrue === true, 'Phase04 packet no longer proves anti-false-green baseline.');
+  const hasLegacyTargets = setHasAll(lockedTargets, PHASE04_REQUIRED_TARGETS_LEGACY);
+  const hasCurrentTargets = setHasAll(lockedTargets, PHASE04_REQUIRED_TARGETS_CURRENT);
+  ensure(hasLegacyTargets || hasCurrentTargets, 'Phase04 packet missing required locked targets for known schema variants.');
+
+  const ownershipLockedLegacy = packet.proof?.phase04DocumentTruthUnchangedTrue === true
+    && packet.proof?.phase04RecoveryTruthUnchangedTrue === true
+    && packet.proof?.phase04CommandSemanticsUnchangedTrue === true;
+  const ownershipLockedCurrent = packet.scope?.designLayerOnly === true
+    && packet.scope?.touchesDocumentTruth === false
+    && packet.scope?.touchesRecoveryTruth === false
+    && packet.scope?.touchesCommandSemantics === false
+    && packet.scope?.shellRuntimeClosureClaimed === false
+    && packet.scope?.spatialRuntimeClosureClaimed === false;
+  ensure(ownershipLockedLegacy || ownershipLockedCurrent, 'Phase04 packet no longer proves ownership boundaries are locked.');
+
+  const antiFalseGreen = packet.proof?.noFalsePhase04GreenTrue === true
+    || packet.proof?.noFalsePhase04DesignBaselineGreenTrue === true;
+  ensure(antiFalseGreen, 'Phase04 packet no longer proves anti-false-green baseline.');
+
+  const baselineSafeFocusCompact = packet.proof?.phase04BaselineSafeFocusCompactTrue === true
+    || (
+      Array.isArray(packet.profileIds)
+      && ['BASELINE', 'SAFE', 'FOCUS', 'COMPACT'].every((profileId) => packet.profileIds.includes(profileId))
+    );
+  const visibleDesignSwitch = packet.proof?.phase04VisibleDesignSwitchTrue === true
+    || Array.isArray(packet.designLayerSurfaceIds) && packet.designLayerSurfaceIds.includes('SUPPORTED_MODES');
+
   return {
     shell_modes: [...CURRENT_SHELL_MODES],
     profile_ids: [...CURRENT_PROFILE_IDS],
     locked_targets: [...lockedTargets],
     evidence: {
-      baseline_safe_focus_compact: packet.proof?.phase04BaselineSafeFocusCompactTrue === true,
-      visible_design_switch: packet.proof?.phase04VisibleDesignSwitchTrue === true,
-      ownership_locked: packet.proof?.phase04DocumentTruthUnchangedTrue === true
-        && packet.proof?.phase04RecoveryTruthUnchangedTrue === true
-        && packet.proof?.phase04CommandSemanticsUnchangedTrue === true,
+      baseline_safe_focus_compact: baselineSafeFocusCompact,
+      visible_design_switch: visibleDesignSwitch,
+      ownership_locked: ownershipLockedLegacy || ownershipLockedCurrent,
     },
   };
 }
