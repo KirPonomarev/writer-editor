@@ -109,6 +109,11 @@ function pickErrorDetails(error) {
   return {};
 }
 
+function normalizeRecoverySnapshotScanLimit(value) {
+  if (Number.isInteger(value) && value >= 1 && value <= 20) return value;
+  return 3;
+}
+
 export async function writeMarkdownWithRecovery(targetPath, markdown, options = {}) {
   const text = normalizeMarkdownInput(markdown);
   const safetyMode = normalizeSafetyMode(options.safetyMode);
@@ -185,10 +190,15 @@ function createSnapshotMissingError(sourcePath, primaryError) {
   });
 }
 
-function createSnapshotMismatchError(sourcePath, snapshotPath, primaryError, snapshotError) {
+function createSnapshotMismatchError(sourcePath, attemptedSnapshotPaths, primaryError, snapshotError) {
+  const normalizedAttempts = Array.isArray(attemptedSnapshotPaths)
+    ? attemptedSnapshotPaths.filter((item) => typeof item === 'string' && item.length > 0)
+    : [];
+  const snapshotPath = normalizedAttempts[0] || '';
   return createMarkdownIoError('E_IO_SNAPSHOT_MISMATCH', 'snapshot_mismatch', {
     sourcePath,
     snapshotPath,
+    attemptedSnapshotPaths: normalizedAttempts,
     primaryCode: primaryError.code,
     primaryReason: primaryError.reason,
     snapshotCode: snapshotError.code,
@@ -223,31 +233,42 @@ export async function readMarkdownWithRecovery(sourcePath, options = {}) {
       throw createSnapshotMissingError(resolvedPath, ioError);
     }
 
-    const snapshotPath = snapshots[0];
-    try {
-      const recovered = await readMarkdownWithLimits(snapshotPath, {
-        maxInputBytes: options.maxInputBytes,
-        expectedSha256: options.snapshotExpectedSha256,
-      });
-      return {
-        ...recovered,
-        sourceKind: 'snapshot',
-        recoveredFromSnapshot: true,
-        sourcePath: resolvedPath,
-        snapshotPath,
-        recoveryAction: 'OPEN_SNAPSHOT',
-        primaryError: {
-          code: ioError.code,
-          reason: ioError.reason,
-          details: pickErrorDetails(ioError),
-        },
-      };
-    } catch (snapshotError) {
-      const normalizedSnapshotError = toMarkdownIoError(snapshotError, 'E_IO_READ_FAIL', 'read_markdown_failed', {
-        sourcePath: snapshotPath,
-      });
-      throw createSnapshotMismatchError(resolvedPath, snapshotPath, ioError, normalizedSnapshotError);
+    const scanLimit = normalizeRecoverySnapshotScanLimit(options.maxRecoverySnapshots);
+    const candidateSnapshots = snapshots.slice(0, scanLimit);
+
+    let lastSnapshotError = null;
+    for (const snapshotPath of candidateSnapshots) {
+      try {
+        const recovered = await readMarkdownWithLimits(snapshotPath, {
+          maxInputBytes: options.maxInputBytes,
+          expectedSha256: options.snapshotExpectedSha256,
+        });
+        return {
+          ...recovered,
+          sourceKind: 'snapshot',
+          recoveredFromSnapshot: true,
+          sourcePath: resolvedPath,
+          snapshotPath,
+          recoveryAction: 'OPEN_SNAPSHOT',
+          primaryError: {
+            code: ioError.code,
+            reason: ioError.reason,
+            details: pickErrorDetails(ioError),
+          },
+        };
+      } catch (snapshotError) {
+        lastSnapshotError = toMarkdownIoError(snapshotError, 'E_IO_READ_FAIL', 'read_markdown_failed', {
+          sourcePath: snapshotPath,
+        });
+      }
     }
+
+    throw createSnapshotMismatchError(
+      resolvedPath,
+      candidateSnapshots,
+      ioError,
+      lastSnapshotError || createMarkdownIoError('E_IO_READ_FAIL', 'read_markdown_failed'),
+    );
   }
 }
 

@@ -16,6 +16,26 @@ export function createMarkdownIoError(code, reason, details) {
 
 export function asMarkdownIoError(error, fallbackCode, fallbackReason, details) {
   if (error instanceof MarkdownIoError) return error;
+
+  if (error && typeof error === 'object' && !Array.isArray(error)) {
+    const externalCode = typeof error.code === 'string' && error.code.trim().length > 0
+      ? error.code.trim()
+      : '';
+    const externalReason = typeof error.reason === 'string' && error.reason.trim().length > 0
+      ? error.reason.trim()
+      : '';
+    if (externalCode || externalReason) {
+      return createMarkdownIoError(
+        externalCode || fallbackCode,
+        externalReason || fallbackReason,
+        {
+          ...(details && typeof details === 'object' && !Array.isArray(details) ? details : {}),
+          ...(error.details && typeof error.details === 'object' && !Array.isArray(error.details) ? error.details : {}),
+        },
+      );
+    }
+  }
+
   const safeDetails = {
     ...(details && typeof details === 'object' && !Array.isArray(details) ? details : {}),
   };

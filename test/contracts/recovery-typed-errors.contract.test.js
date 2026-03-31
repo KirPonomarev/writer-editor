@@ -10,6 +10,11 @@ async function loadIoModule() {
   return import(pathToFileURL(path.join(root, 'src', 'io', 'markdown', 'index.mjs')).href);
 }
 
+async function loadIoErrorsModule() {
+  const root = process.cwd();
+  return import(pathToFileURL(path.join(root, 'src', 'io', 'markdown', 'ioErrors.mjs')).href);
+}
+
 function makeTempFile(prefix, bytes) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
   const filePath = path.join(dir, 'scene.md');
@@ -88,7 +93,27 @@ test('recovery typed errors contract: snapshot mismatch is typed failure', async
       assert.equal(error.reason, 'snapshot_mismatch');
       assert.equal(error.details.primaryCode, 'E_IO_CORRUPT_INPUT');
       assert.equal(error.details.snapshotCode, 'E_IO_TRUNCATED_INPUT');
+      assert.deepEqual(error.details.attemptedSnapshotPaths, [snapshot.snapshotPath]);
       return true;
     },
   );
+});
+
+test('recovery typed errors contract: typed error shape survives normalization wrapper', async () => {
+  const ioErrors = await loadIoErrorsModule();
+  const normalized = ioErrors.asMarkdownIoError(
+    {
+      code: 'E_IO_SNAPSHOT_MISSING',
+      reason: 'snapshot_missing',
+      details: { sourcePath: 'x' },
+    },
+    'E_IO_READ_FAIL',
+    'read_markdown_failed',
+    { extra: 1 },
+  );
+
+  assert.equal(normalized.code, 'E_IO_SNAPSHOT_MISSING');
+  assert.equal(normalized.reason, 'snapshot_missing');
+  assert.equal(normalized.details.sourcePath, 'x');
+  assert.equal(normalized.details.extra, 1);
 });

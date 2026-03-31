@@ -23,6 +23,17 @@ function buildSnapshotPrefix(targetPath) {
   return `.${baseName}.bak.`;
 }
 
+function parseSnapshotStamp(entryName, snapshotPrefix) {
+  if (typeof entryName !== 'string' || !entryName.startsWith(snapshotPrefix)) {
+    return null;
+  }
+  const stamp = entryName.slice(snapshotPrefix.length);
+  if (!/^\d{13}$/u.test(stamp)) {
+    return null;
+  }
+  return Number(stamp);
+}
+
 export async function listRecoverySnapshots(targetPathRaw) {
   const targetPath = normalizeSnapshotPath(targetPathRaw);
   const directory = path.dirname(targetPath);
@@ -31,9 +42,18 @@ export async function listRecoverySnapshots(targetPathRaw) {
   try {
     const entries = await fs.readdir(directory, { withFileTypes: true });
     return entries
-      .filter((entry) => entry.isFile() && entry.name.startsWith(snapshotPrefix))
-      .map((entry) => path.join(directory, entry.name))
-      .sort((a, b) => b.localeCompare(a));
+      .map((entry) => {
+        if (!entry.isFile()) return null;
+        const stamp = parseSnapshotStamp(entry.name, snapshotPrefix);
+        if (!Number.isFinite(stamp)) return null;
+        return {
+          stamp,
+          fullPath: path.join(directory, entry.name),
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.stamp - a.stamp)
+      .map((entry) => entry.fullPath);
   } catch (error) {
     throw asMarkdownIoError(error, 'E_IO_SNAPSHOT_FAIL', 'snapshot_list_failed', {
       targetPath,
@@ -62,7 +82,14 @@ export async function createRecoverySnapshot(targetPathRaw, options = {}) {
     };
   }
 
-  const stamp = formatTimestamp(Number(nowFn()));
+  const stampValue = Number(nowFn());
+  if (!Number.isFinite(stampValue) || stampValue < 0) {
+    throw createMarkdownIoError('E_IO_SNAPSHOT_FAIL', 'snapshot_invalid_timestamp', {
+      targetPath,
+      timestamp: stampValue,
+    });
+  }
+  const stamp = formatTimestamp(Math.trunc(stampValue));
   const snapshotPath = path.join(directory, `${snapshotPrefix}${stamp}`);
 
   try {
