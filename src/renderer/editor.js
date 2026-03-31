@@ -20,19 +20,7 @@ import {
   nextSceneCaretAtBoundary,
   previousSceneCaretAtBoundary,
 } from './commands/flowMode.mjs';
-import {
-  applyCssVariables,
-  buildDesignOsStatusText,
-  buildLayoutPatchFromSpatialState,
-  createRepoGroundedDesignOsBrowserRuntime,
-  deriveAccessibilityId,
-  deriveRuntimePlatformId,
-  extractCssVariablesFromTokens,
-  mapEditorModeToWorkspace,
-} from './design-os/index.mjs';
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
-import x15ProfilePresetsDoc from '../../docs/OPS/STATUS/X15_PROFILE_PRESETS_SCHEMA_v1.json';
-import x15ModeShellPolicyDoc from '../../docs/OPS/STATUS/X15_MODE_SHELL_POLICY_v1.json';
 
 const isTiptapMode = window.__USE_TIPTAP === true;
 const editor = document.getElementById('editor');
@@ -190,22 +178,6 @@ const FLOATING_TOOLBAR_SCALE_MIN = 0.5;
 const FLOATING_TOOLBAR_SCALE_MAX = 2.0;
 const FLOATING_TOOLBAR_WIDTH_SCALE_MIN = 0.1;
 const FLOATING_TOOLBAR_WIDTH_SCALE_MAX = 2.0;
-const DESIGN_OS_RUNTIME_WIRING_MARKER = 'Y4_RENDERER_LIVE_WIRING_ACTIVE';
-const DESIGN_OS_POLICY_MODE_BY_EDITOR_MODE = Object.freeze({
-  write: 'Write',
-  plan: 'Plan',
-  review: 'Review',
-});
-const DESIGN_OS_RUNTIME_PROFILE_BY_PRESET = Object.freeze({
-  minimal: 'LEGACY_MINIMAL',
-  pro: 'LEGACY_PRO',
-  guru: 'LEGACY_GURU',
-});
-const DESIGN_OS_FALLBACK_RUNTIME_PROFILE_BY_MODE = Object.freeze({
-  write: 'LEGACY_MINIMAL',
-  plan: 'LEGACY_GURU',
-  review: 'LEGACY_PRO',
-});
 const FONT_WEIGHT_PRESETS = Object.freeze({
   light: { weight: '300', stretch: 'normal', spacing: '0em' },
   regular: { weight: '400', stretch: 'normal', spacing: '0em' },
@@ -237,10 +209,6 @@ let currentDocumentPath = null;
 let currentDocumentKind = null;
 let currentProjectId = '';
 let spatialLayoutState = null;
-let designOsRuntimeBootstrap = null;
-let designOsRuntime = null;
-let designOsRuntimeContext = null;
-let designOsRuntimePreview = null;
 let flowModeState = {
   active: false,
   scenes: [],
@@ -2032,8 +2000,6 @@ const runCommand = createCommandRunner(commandRegistry, {
     defaultPlatformId: window.electronAPI ? 'node' : 'web',
   },
 });
-// Visual baseline contract sentinel:
-// registerProjectCommands(commandRegistry, { electronAPI: window.electronAPI });
 registerProjectCommands(commandRegistry, {
   electronAPI: window.electronAPI,
   uiActions: {
@@ -3218,11 +3184,6 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
     persistSpatialLayoutState(spatialLayoutState, projectId);
   }
 
-  applyDesignOsRuntimeWiring({
-    updateStatus: false,
-    commitPoint: persist ? 'resize_end' : '',
-  });
-
   return spatialLayoutState;
 }
 
@@ -3436,10 +3397,11 @@ function closeCardModal() {
 }
 
 async function openDocumentNode(node) {
+  if (!window.electronAPI || !window.electronAPI.openDocument) return false;
   const documentPath = getEffectiveDocumentPath(node);
   if (!documentPath) return false;
   try {
-    const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, {
+    const result = await window.electronAPI.openDocument({
       path: documentPath,
       title: node.label,
       kind: getEffectiveDocumentKind(node)
@@ -3466,7 +3428,7 @@ async function openDocumentNode(node) {
 async function handleCreateNode(node, kind, promptLabel) {
   const name = window.prompt(promptLabel || 'Название', '');
   if (!name) return;
-  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, {
+  const result = await window.electronAPI.createNode({
     parentPath: node.path,
     kind,
     name
@@ -3481,7 +3443,7 @@ async function handleCreateNode(node, kind, promptLabel) {
 async function handleRenameNode(node) {
   const name = window.prompt('Новое имя', node.label || '');
   if (!name) return;
-  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, { path: node.path, name });
+  const result = await window.electronAPI.renameNode({ path: node.path, name });
   if (!result || result.ok === false) {
     updateStatusText('Ошибка');
     return;
@@ -3495,7 +3457,7 @@ async function handleRenameNode(node) {
 async function handleDeleteNode(node) {
   const confirmed = window.confirm('Переместить в корзину?');
   if (!confirmed) return;
-  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, { path: node.path });
+  const result = await window.electronAPI.deleteNode({ path: node.path });
   if (!result || result.ok === false) {
     updateStatusText('Ошибка');
     return;
@@ -3511,7 +3473,7 @@ async function handleDeleteNode(node) {
 }
 
 async function handleReorderNode(node, direction) {
-  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, { path: node.path, direction });
+  const result = await window.electronAPI.reorderNode({ path: node.path, direction });
   if (!result || result.ok === false) {
     return;
   }
@@ -4042,163 +4004,6 @@ function updatePerfHintText(text) {
   }
 }
 
-function normalizeDesignOsPolicyMode(mode) {
-  return DESIGN_OS_POLICY_MODE_BY_EDITOR_MODE[String(mode || '').toLowerCase()] || 'Write';
-}
-
-function resolveDesignOsShellMode(mode = currentMode) {
-  const normalizedMode = String(mode || '').toLowerCase();
-  const viewportMode = spatialLayoutState?.viewportMode || getSpatialLayoutMode();
-  if (normalizedMode === 'review') {
-    return 'SPATIAL_ADVANCED';
-  }
-  if (normalizedMode === 'plan' || viewportMode === 'compact' || viewportMode === 'mobile') {
-    return 'COMPACT_DOCKED';
-  }
-  return 'CALM_DOCKED';
-}
-
-function buildDesignOsProductTruthSnapshot() {
-  const projectId = String(currentProjectId || '').trim() || 'repo-current-workspace';
-  return {
-    project_id: projectId,
-    active_scene_id: 'editor_scene',
-    scenes: {
-      editor_scene: `Design OS renderer wiring active for ${projectId}`,
-    },
-  };
-}
-
-function buildDesignOsModeRequiredCommands(policyMode) {
-  const requiredByMode = x15ModeShellPolicyDoc?.requiredCommandsByMode;
-  const required = Array.isArray(requiredByMode?.[policyMode]) ? requiredByMode[policyMode] : [];
-  return [...new Set(required.filter((item) => typeof item === 'string' && item.trim()))];
-}
-
-function getDesignOsVisibleCommandsByRuntimeProfile(profileId) {
-  const profile = designOsRuntime?.profiles?.[profileId];
-  if (!profile || typeof profile !== 'object') {
-    return null;
-  }
-  const visible = new Set(Array.isArray(profile.visible_commands) ? profile.visible_commands : []);
-  const hidden = new Set(Array.isArray(profile.hidden_commands) ? profile.hidden_commands : []);
-  for (const commandId of hidden) {
-    visible.delete(commandId);
-  }
-  return visible;
-}
-
-function resolveDesignOsRuntimeProfile(mode = currentMode) {
-  const policyMode = normalizeDesignOsPolicyMode(mode);
-  const requiredCommands = buildDesignOsModeRequiredCommands(policyMode);
-  const defaultPreset = typeof x15ModeShellPolicyDoc?.defaultProfile === 'string'
-    ? x15ModeShellPolicyDoc.defaultProfile.trim().toLowerCase()
-    : 'minimal';
-  const declaredPresetIds = Object.keys(x15ProfilePresetsDoc?.presets || {})
-    .map((presetId) => String(presetId).trim().toLowerCase())
-    .filter(Boolean);
-  const candidatePresets = [
-    defaultPreset,
-    ...declaredPresetIds,
-    'pro',
-    'guru',
-    'minimal',
-  ];
-  for (const presetId of candidatePresets) {
-    const runtimeProfileId = DESIGN_OS_RUNTIME_PROFILE_BY_PRESET[presetId];
-    if (!runtimeProfileId) continue;
-    const visibleCommands = getDesignOsVisibleCommandsByRuntimeProfile(runtimeProfileId);
-    if (!visibleCommands) continue;
-    const allRequiredPresent = requiredCommands.every((commandId) => visibleCommands.has(commandId));
-    if (allRequiredPresent) {
-      return runtimeProfileId;
-    }
-  }
-  return DESIGN_OS_FALLBACK_RUNTIME_PROFILE_BY_MODE[String(mode || '').toLowerCase()] || 'LEGACY_MINIMAL';
-}
-
-function getDesignOsLayoutPatch(shellMode) {
-  return buildLayoutPatchFromSpatialState(
-    spatialLayoutState || getSpatialLayoutBaselineForViewport(),
-    {
-      viewportWidth: getSpatialLayoutViewportWidth(),
-      viewportHeight: window.innerHeight || 900,
-      shellMode,
-    },
-  );
-}
-
-function applyDesignOsRuntimeWiring(options = {}) {
-  if (!designOsRuntime) {
-    return false;
-  }
-  try {
-    const shellMode = resolveDesignOsShellMode(currentMode);
-    const profile = resolveDesignOsRuntimeProfile(currentMode);
-    const workspace = mapEditorModeToWorkspace(currentMode);
-    const context = {
-      shell_mode: shellMode,
-      profile,
-      workspace,
-      platform: deriveRuntimePlatformId(),
-      accessibility: deriveAccessibilityId(),
-    };
-    const layoutPatch = getDesignOsLayoutPatch(shellMode);
-    const preview = designOsRuntime.preview(context, { layout_patch: layoutPatch });
-    if (typeof options.commitPoint === 'string' && options.commitPoint.trim()) {
-      designOsRuntime.commit(context, {
-        layout_patch: layoutPatch,
-        commit_point: options.commitPoint,
-      });
-    }
-    applyCssVariables(
-      document.documentElement,
-      extractCssVariablesFromTokens(preview.resolved_tokens, {
-        isDarkTheme: document.body.classList.contains('dark-theme'),
-      }),
-    );
-    if (document.body) {
-      document.body.dataset.designOsWiring = DESIGN_OS_RUNTIME_WIRING_MARKER;
-      document.body.dataset.designOsRuntimeProfile = profile;
-      document.body.dataset.designOsRuntimeShellMode = shellMode;
-      document.body.dataset.designOsRuntimeWorkspace = workspace;
-    }
-    designOsRuntimeContext = context;
-    designOsRuntimePreview = preview;
-    if (options.updateStatus !== false) {
-      updateStatusText(buildDesignOsStatusText({
-        profile,
-        shellMode,
-        workspace,
-        degraded: preview.degraded_to_baseline === true,
-      }));
-    }
-    return true;
-  } catch (error) {
-    console.error('Y4 renderer live wiring hold', error);
-    return false;
-  }
-}
-
-function initializeDesignOsRuntimeWiring() {
-  if (designOsRuntime) {
-    return applyDesignOsRuntimeWiring();
-  }
-  try {
-    designOsRuntimeBootstrap = createRepoGroundedDesignOsBrowserRuntime({
-      productTruth: buildDesignOsProductTruthSnapshot(),
-    });
-    designOsRuntime = designOsRuntimeBootstrap?.runtime || null;
-    if (!designOsRuntime) {
-      return false;
-    }
-    return applyDesignOsRuntimeWiring();
-  } catch (error) {
-    console.error('Y4 renderer runtime bootstrap failed', error);
-    return false;
-  }
-}
-
 function updateInspectorSnapshot() {
   if (!inspectorSnapshotElement) return;
   const snapshot = [
@@ -4349,7 +4154,6 @@ function applyMode(mode) {
     applyLeftTab('project');
     applyRightTab('inspector');
   }
-  applyDesignOsRuntimeWiring();
   updateInspectorSnapshot();
 }
 
@@ -4497,10 +4301,6 @@ function performSafeResetShell() {
   updateSaveStateText(localDirty ? 'unsaved' : 'idle');
   updateWarningStateText('none');
   updatePerfHintText('normal');
-  applyDesignOsRuntimeWiring({
-    updateStatus: false,
-    commitPoint: 'safe_reset',
-  });
   updateStatusText('Shell reset to baseline');
   updateInspectorSnapshot();
 
@@ -4566,10 +4366,6 @@ function performRestoreLastStableShell() {
   updateSaveStateText(localDirty ? 'unsaved' : 'idle');
   updateWarningStateText('recovery restored');
   updatePerfHintText('normal');
-  applyDesignOsRuntimeWiring({
-    updateStatus: false,
-    commitPoint: 'restore_last_stable',
-  });
   updateStatusText(
     savedActiveDocumentTitle
       ? `Restored last stable shell state for ${savedActiveDocumentTitle}`
@@ -5314,7 +5110,6 @@ function applyTheme(theme) {
   }
   localStorage.setItem('editorTheme', theme);
   updateThemeSwatches(theme);
-  applyDesignOsRuntimeWiring({ updateStatus: false });
   updateInspectorSnapshot();
 }
 
@@ -5592,11 +5387,17 @@ function triggerLeftToolbarAction(action) {
       }
       return true;
     case 'new':
-      void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_NEW);
-      return true;
+      if (window.electronAPI && typeof window.electronAPI.fileOpen === 'function') {
+        void window.electronAPI.fileOpen({ intent: 'new' });
+        return true;
+      }
+      break;
     case 'open':
-      void dispatchUiCommand(COMMAND_IDS.PROJECT_OPEN);
-      return true;
+      if (window.electronAPI && typeof window.electronAPI.fileOpen === 'function') {
+        void window.electronAPI.fileOpen({ intent: 'open' });
+        return true;
+      }
+      break;
     case 'toggle-configurator':
       toggleConfiguratorOpen();
       return true;
@@ -5739,7 +5540,6 @@ updateInspectorSnapshot();
 applyMode('write');
 applyLeftTab('project');
 applyRightTab('inspector');
-initializeDesignOsRuntimeWiring();
 installNetworkGuard();
 void initializeCollabScopeLocal();
 if (configuratorSlotButtons.length) {
@@ -6003,7 +5803,6 @@ if (window.electronAPI) {
     renderTree();
     updateSaveStateText('loaded');
     updatePerfHintText('normal');
-    applyDesignOsRuntimeWiring({ updateStatus: false });
     updateInspectorSnapshot();
   });
 
