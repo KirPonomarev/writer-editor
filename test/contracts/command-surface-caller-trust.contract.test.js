@@ -6,14 +6,23 @@ const { pathToFileURL } = require('node:url');
 const REPO_ROOT = process.cwd();
 const MODULE_PATH = path.join(REPO_ROOT, 'scripts', 'ops', 'command-surface-caller-trust-state.mjs');
 const FAILSIGNAL_REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'FAILSIGNALS', 'FAILSIGNAL_REGISTRY.json');
+const BUS_MODULE_PATH = path.join(REPO_ROOT, 'src', 'renderer', 'commands', 'commandBusGuard.mjs');
 
 let modulePromise = null;
+let busModulePromise = null;
 
 function loadModule() {
   if (!modulePromise) {
     modulePromise = import(pathToFileURL(MODULE_PATH).href);
   }
   return modulePromise;
+}
+
+function loadBusModule() {
+  if (!busModulePromise) {
+    busModulePromise = import(pathToFileURL(BUS_MODULE_PATH).href);
+  }
+  return busModulePromise;
 }
 
 test('command surface caller trust: mandatory bypass scenarios have executable negative tests', async () => {
@@ -134,4 +143,30 @@ test('command surface caller trust: advisory signals cannot escalate to blocking
   assert.equal(state.advisoryToBlockingDriftCount, 0);
   assert.equal(state.advisoryToBlockingDriftCountZero, true);
   assert.equal(state.singleBlockingAuthority.ok, true);
+});
+
+test('command surface caller trust: bus guard fail-closes untrusted caller and payload contract violations', async () => {
+  const { COMMAND_BUS_ROUTE, runCommandThroughBus } = await loadBusModule();
+
+  const untrustedCaller = await runCommandThroughBus(
+    async () => ({ ok: true, value: { shouldNotRun: true } }),
+    'cmd.project.open',
+    {},
+    { route: COMMAND_BUS_ROUTE, callerId: 'external-proxy' },
+  );
+
+  assert.equal(untrustedCaller.ok, false);
+  assert.equal(untrustedCaller.error.code, 'E_CALLER_IDENTITY_VALIDATION_MISSING');
+  assert.equal(untrustedCaller.error.reason, 'CALLER_IDENTITY_UNTRUSTED');
+
+  const invalidPayload = await runCommandThroughBus(
+    async () => ({ ok: true, value: { shouldNotRun: true } }),
+    'cmd.project.open',
+    null,
+    { route: COMMAND_BUS_ROUTE, callerId: 'menu' },
+  );
+
+  assert.equal(invalidPayload.ok, false);
+  assert.equal(invalidPayload.error.code, 'E_PAYLOAD_CONTRACT_VALIDATION_MISSING');
+  assert.equal(invalidPayload.error.reason, 'ARGS_OBJECT_REQUIRED');
 });

@@ -291,3 +291,29 @@ test('command surface bus-only negative: plugin overlay bypass expect reject', a
   assert.equal(result.ok, false);
   assert.equal(result.error.code, 'E_COMMAND_SURFACE_BYPASS');
 });
+
+test('command surface bus-only negative: untrusted caller identity is rejected', async () => {
+  const { COMMAND_BUS_ROUTE, runCommandThroughBus } = await loadBusModule();
+  const result = await runCommandThroughBus(
+    async () => ({ ok: true, value: { shouldNotRun: true } }),
+    'cmd.project.open',
+    {},
+    { route: COMMAND_BUS_ROUTE, callerId: 'unknown-caller' },
+  );
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_CALLER_IDENTITY_VALIDATION_MISSING');
+  assert.equal(result.error.reason, 'CALLER_IDENTITY_UNTRUSTED');
+});
+
+test('command surface bus-only negative: non-object payload is rejected', async () => {
+  const { COMMAND_BUS_ROUTE, runCommandThroughBus } = await loadBusModule();
+  const result = await runCommandThroughBus(
+    async () => ({ ok: true, value: { shouldNotRun: true } }),
+    'cmd.project.open',
+    [],
+    { route: COMMAND_BUS_ROUTE, callerId: 'menu' },
+  );
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_PAYLOAD_CONTRACT_VALIDATION_MISSING');
+  assert.equal(result.error.reason, 'ARGS_OBJECT_REQUIRED');
+});
