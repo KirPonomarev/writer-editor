@@ -1,0 +1,53 @@
+{
+  "artifactId": "Y7_FOUNDATION_STATE_AND_PROOF_REGEN_RECORD_V1",
+  "schemaVersion": 1,
+  "phaseId": "Y7",
+  "status": "PASS",
+  "y7FoundationRegenStatus": "PASS",
+  "y7ReadinessStatus": "HOLD",
+  "selectedBaseSha": "169e0618e58d1af488932d15bac9245620ebd362",
+  "baseCaptureTimeUtc": "2026-03-31T15:21:40Z",
+  "sourceY7FoundationStateScript": "Y7_FOUNDATION_STATE_AND_PROOF_REGEN_STATE.mjs",
+  "phase03Summary": {
+    "projectWorkspaceFoundationStatus": "HOLD",
+    "safeResetLastStableFoundationStatus": "HOLD",
+    "terminologyMigrationFoundationStatus": "HOLD",
+    "userShellStateFoundationStatus": "PASS"
+  },
+  "phase07Summary": {
+    "releaseReadyCoreWriterPathFoundationStatus": "PASS",
+    "releaseReadyCoreWriterPathReadinessStatus": "HOLD",
+    "startupRuntimeMeasurementsFoundationStatus": "PASS",
+    "startupRuntimeMeasurementsReadinessStatus": "HOLD"
+  },
+  "phase03PendingGapIds": {
+    "projectWorkspace": [
+      "PROJECT_WORKSPACE_STATE_ARTIFACT_NOT_BOUND"
+    ],
+    "safeResetLastStable": [
+      "SAFE_RESET_LAST_STABLE_ARTIFACT_NOT_BOUND"
+    ],
+    "terminologyMigration": [
+      "TERMINOLOGY_MIGRATION_ARTIFACT_NOT_BOUND"
+    ],
+    "userShellState": []
+  },
+  "phase07PendingGapIds": {
+    "releaseReadyCoreWriterPath": [
+      "PHASE07_RELEASE_READY_CORE_WRITER_PATH_NOT_BOUND"
+    ],
+    "startupRuntimeMeasurements": [
+      "PHASE07_SCENE_SWITCH_MEASUREMENT_NOT_BOUND",
+      "PHASE07_RESET_MEASUREMENT_NOT_BOUND"
+    ]
+  },
+  "proof": {
+    "phase03PassHoldProfileHonestTrue": true,
+    "phase07HoldProfileHonestTrue": true,
+    "statePendingGapIdsMatchTrue": true,
+    "packetStatusAlignedWithStateTrue": true,
+    "packetPendingGapIdsMatchTrue": true,
+    "noFalseGreenPromotionTrue": true
+  },
+  "updatedAtUtc": "2026-03-31T15:21:40.000Z"
+}
