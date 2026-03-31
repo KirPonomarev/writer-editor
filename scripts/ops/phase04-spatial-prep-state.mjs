@@ -36,6 +36,12 @@ const EXPECTED_RUNTIME_GAP_IDS = Object.freeze([
   'INVALID_LAYOUT_AND_MISSING_MONITOR_RECOVERY_NOT_EXECUTED',
 ]);
 
+const EXPECTED_PENDING_GAP_IDS = Object.freeze([
+  'PHASE03_BASELINE_DOCKED_SHELL_PASS',
+  'CANON_BOUNDED_SPATIAL_LAYER_PRESENT',
+  'CONTEXT_BOUNDED_SPATIAL_LAYER_PRESENT',
+]);
+
 function parseArgs(argv) {
   const out = { json: false, forceNegative: false };
   for (const token of argv) {
@@ -83,6 +89,7 @@ function evaluatePhase04SpatialPrepState(input = {}) {
     const lockedTargetIdsMatch = arraysEqual(prepPacket?.lockedTargetIds || [], EXPECTED_LOCKED_TARGET_IDS);
     const lockedCommitPointIdsMatch = arraysEqual(prepPacket?.lockedCommitPointIds || [], EXPECTED_COMMIT_POINT_IDS);
     const lockedRuntimeGapIdsMatch = arraysEqual(prepPacket?.lockedRuntimeGapIds || [], EXPECTED_RUNTIME_GAP_IDS);
+    const pendingGapIdsMatch = arraysEqual(prepPacket?.phase04PendingGapIds || [], EXPECTED_PENDING_GAP_IDS);
 
     const canonBoundedSpatialLayerPresent = /bounded spatial layer/.test(canonText);
     const bibleBoundedSpatialShellPresent = /bounded spatial shell/.test(bibleText);
@@ -108,6 +115,7 @@ function evaluatePhase04SpatialPrepState(input = {}) {
       LOCKED_TARGET_IDS_MATCH: asCheck(lockedTargetIdsMatch ? 'GREEN' : 'OPEN_GAP', true, lockedTargetIdsMatch ? 'LOCKED_TARGET_IDS_MATCH' : 'LOCKED_TARGET_IDS_DRIFT'),
       LOCKED_COMMIT_POINT_IDS_MATCH: asCheck(lockedCommitPointIdsMatch ? 'GREEN' : 'OPEN_GAP', true, lockedCommitPointIdsMatch ? 'LOCKED_COMMIT_POINT_IDS_MATCH' : 'LOCKED_COMMIT_POINT_IDS_DRIFT'),
       LOCKED_RUNTIME_GAP_IDS_MATCH: asCheck(lockedRuntimeGapIdsMatch ? 'GREEN' : 'OPEN_GAP', true, lockedRuntimeGapIdsMatch ? 'LOCKED_RUNTIME_GAP_IDS_MATCH' : 'LOCKED_RUNTIME_GAP_IDS_DRIFT'),
+      PENDING_GAP_IDS_MATCH: asCheck(pendingGapIdsMatch ? 'GREEN' : 'OPEN_GAP', true, pendingGapIdsMatch ? 'PENDING_GAP_IDS_MATCH' : 'PENDING_GAP_IDS_DRIFT'),
       CANON_BOUNDED_SPATIAL_LAYER_PRESENT: asCheck(canonBoundedSpatialLayerPresent ? 'GREEN' : 'OPEN_GAP', true, canonBoundedSpatialLayerPresent ? 'CANON_BOUNDED_SPATIAL_LAYER_PRESENT' : 'CANON_BOUNDED_SPATIAL_LAYER_MISSING'),
       BIBLE_BOUNDED_SPATIAL_SHELL_PRESENT: asCheck(bibleBoundedSpatialShellPresent ? 'GREEN' : 'OPEN_GAP', true, bibleBoundedSpatialShellPresent ? 'BIBLE_BOUNDED_SPATIAL_SHELL_PRESENT' : 'BIBLE_BOUNDED_SPATIAL_SHELL_MISSING'),
       CONTEXT_BOUNDED_SPATIAL_LAYER_PRESENT: asCheck(contextBoundedSpatialLayerPresent ? 'GREEN' : 'OPEN_GAP', true, contextBoundedSpatialLayerPresent ? 'CONTEXT_BOUNDED_SPATIAL_LAYER_PRESENT' : 'CONTEXT_BOUNDED_SPATIAL_LAYER_MISSING'),
@@ -141,12 +149,13 @@ function evaluatePhase04SpatialPrepState(input = {}) {
 
     return {
       ok: openGapIds.length === 0,
-      failReason: '',
+      failReason: openGapIds.length === 0 ? '' : 'PHASE04_SPATIAL_PREP_PENDING_GAPS',
       overallStatus: openGapIds.length === 0 ? 'PASS' : 'HOLD',
       phase04ReadinessStatus: prepHold ? 'HOLD' : 'UNKNOWN',
       greenCheckIds,
       openGapIds,
       checkStatusById,
+      phase04PendingGapIds: prepPacket?.phase04PendingGapIds || [],
       lockedTargetIds: prepPacket?.lockedTargetIds || [],
       lockedCommitPointIds: prepPacket?.lockedCommitPointIds || [],
       lockedRuntimeGapIds: prepPacket?.lockedRuntimeGapIds || [],
