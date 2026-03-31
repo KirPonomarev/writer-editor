@@ -25,16 +25,21 @@
     "LAYOUT_SNAPSHOT_RUNTIME_NOT_EXECUTED",
     "INVALID_LAYOUT_AND_MISSING_MONITOR_RECOVERY_NOT_EXECUTED"
   ],
+  "phase04PendingGapIds": [
+    "PHASE03_BASELINE_DOCKED_SHELL_PASS",
+    "CANON_BOUNDED_SPATIAL_LAYER_PRESENT",
+    "CONTEXT_BOUNDED_SPATIAL_LAYER_PRESENT"
+  ],
   "proof": {
-    "phase03PassTrue": true,
-    "canonBoundedSpatialLayerPresentTrue": true,
+    "phase03PassTrue": false,
+    "canonBoundedSpatialLayerPresentTrue": false,
     "bibleBoundedSpatialShellPresentTrue": true,
-    "contextBoundedSpatialLayerPresentTrue": true,
+    "contextBoundedSpatialLayerPresentTrue": false,
     "editorRootDockedTrue": true,
     "transientOverlaysExcludedTrue": true,
     "commitPointsLockedTrue": true,
     "invalidLayoutBlockingRulePresentTrue": true,
     "noFalsePhase04GreenTrue": true
   },
-  "updatedAtUtc": "2026-03-19T23:05:00.000Z"
+  "updatedAtUtc": "2026-03-31T14:36:25.000Z"
 }

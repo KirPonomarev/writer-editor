@@ -14,6 +14,11 @@ const EXPECTED_RUNTIME_GAP_IDS = [
   'LAYOUT_SNAPSHOT_RUNTIME_NOT_EXECUTED',
   'INVALID_LAYOUT_AND_MISSING_MONITOR_RECOVERY_NOT_EXECUTED',
 ];
+const EXPECTED_PENDING_GAP_IDS = [
+  'PHASE03_BASELINE_DOCKED_SHELL_PASS',
+  'CANON_BOUNDED_SPATIAL_LAYER_PRESENT',
+  'CONTEXT_BOUNDED_SPATIAL_LAYER_PRESENT',
+];
 
 function runStateScript(args = []) {
   return spawnSync(process.execPath, [SCRIPT_PATH, '--json', ...args], {
@@ -29,19 +34,21 @@ function parseJsonOutput(result) {
   return payload;
 }
 
-test('phase04 spatial prep state: positive run passes while runtime readiness remains hold', () => {
+test('phase04 spatial prep state: measured run preserves known hold without false green', () => {
   const result = runStateScript();
-  assert.equal(result.status, 0, `expected state script pass:\n${result.stdout}\n${result.stderr}`);
+  assert.notEqual(result.status, 0, `expected spatial prep state hold:\n${result.stdout}\n${result.stderr}`);
 
   const payload = parseJsonOutput(result);
-  assert.equal(payload.ok, true);
-  assert.equal(payload.failReason, '');
-  assert.equal(payload.overallStatus, 'PASS');
+  assert.equal(payload.ok, false);
+  assert.equal(payload.failReason, 'PHASE04_SPATIAL_PREP_PENDING_GAPS');
+  assert.equal(payload.overallStatus, 'HOLD');
   assert.equal(payload.phase04ReadinessStatus, 'HOLD');
-  assert.deepEqual(payload.openGapIds, []);
+  assert.deepEqual(payload.phase04PendingGapIds, EXPECTED_PENDING_GAP_IDS);
+  assert.deepEqual(payload.openGapIds, EXPECTED_PENDING_GAP_IDS);
   assert.deepEqual(payload.lockedTargetIds, EXPECTED_TARGET_IDS);
   assert.deepEqual(payload.lockedRuntimeGapIds, EXPECTED_RUNTIME_GAP_IDS);
-  assert.equal(payload.greenCheckIds.includes('PHASE03_BASELINE_DOCKED_SHELL_PASS'), true);
+  assert.equal(payload.greenCheckIds.includes('PENDING_GAP_IDS_MATCH'), true);
+  assert.equal(payload.greenCheckIds.includes('BIBLE_BOUNDED_SPATIAL_SHELL_PRESENT'), true);
   assert.equal(payload.greenCheckIds.includes('COMMIT_POINTS_LOCKED'), true);
   assert.equal(payload.greenCheckIds.includes('INVALID_LAYOUT_BLOCKING_RULE_PRESENT'), true);
 });
