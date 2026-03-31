@@ -1,0 +1,44 @@
+{
+  "artifactId": "Y8_FORMAL_CUTOVER_PACKET_RECORD_V1",
+  "schemaVersion": 1,
+  "phaseId": "Y8",
+  "status": "PASS",
+  "y8FormalCutoverStatus": "PASS",
+  "y8ReadinessStatus": "HOLD",
+  "selectedBaseSha": "e2053a41a887caee33e580e224b94ebdd2b62871",
+  "baseCaptureTimeUtc": "2026-03-31T15:50:43Z",
+  "sourceY8FormalCutoverPacketStateScript": "Y8_FORMAL_CUTOVER_PACKET_STATE.mjs",
+  "sourceY7RecordId": "Y7_FOUNDATION_STATE_AND_PROOF_REGEN_RECORD_V1",
+  "sourceRollbackPacketId": "Y8_FORMAL_CUTOVER_ROLLBACK_PACKET_V1",
+  "cutoverEvent": {
+    "cutoverEventId": "Y8_FORMAL_CUTOVER_EVENT_001",
+    "cutoverEventStatus": "BOUND",
+    "cutoverEventPolicy": "ONE_EXPLICIT_EVENT_ONLY"
+  },
+  "releaseInputs": {
+    "phase05BoundedSpatialShellStatus": "PASS",
+    "phase06DecisionStatus": "PASS_EXPLICIT_SKIP",
+    "phase07ReleaseReadyCoreWriterPathFoundationStatus": "PASS",
+    "phase07ReleaseReadyCoreWriterPathReadinessStatus": "HOLD",
+    "phase07RuntimeMeasurementsFoundationStatus": "PASS",
+    "phase07RuntimeMeasurementsReadinessStatus": "HOLD",
+    "phase07StartupRuntimeMeasurementBaselineStatus": "PASS",
+    "phase07StartupRuntimeMeasurementBaselineReadinessStatus": "HOLD",
+    "x78ReleaseRequiredSetParityStatus": "PASS",
+    "x79ReleaseFinalShipReadinessOk": true
+  },
+  "factualDocSync": {
+    "contextBasename": "CONTEXT.md",
+    "handoffBasename": "HANDOFF.md",
+    "syncStatus": "PASS_SINGLE_ACTIVE_TRUTH"
+  },
+  "proof": {
+    "y7PassNotReinterpretedAsAutoCutoverAuthorityTrue": true,
+    "rollbackPacketPresentTrue": true,
+    "factualDocSyncBoundTrue": true,
+    "noStatusDocOnlyProofTrue": true,
+    "noY9ImplicationTrue": true,
+    "packetInternalConsistencyTrue": true
+  },
+  "updatedAtUtc": "2026-03-31T15:50:43.000Z"
+}

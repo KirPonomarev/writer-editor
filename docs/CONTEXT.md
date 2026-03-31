@@ -34,7 +34,14 @@
 - Phase 04: PASS
 - Phase 05: PASS
 - Phase 06: PASS
-- Phase 07: BRANCH_LOCAL_CLOSED_ON_ACCEPTED_REPAIR_SURFACE
+- Phase 07: PASS
+
+### Design OS status
+- Y7: CLOSED_ON_MAIN_WITH_HONEST_PASS_HOLD_PROFILE
+- Y8: FORMAL_CUTOVER_PACKET_BOUND_PASS_WITH_READINESS_HOLD
+- Active Y8 formal packet record: `Y8_FORMAL_CUTOVER_PACKET_RECORD_V1.json`
+- Active Y8 rollback packet: `Y8_FORMAL_CUTOVER_ROLLBACK_PACKET_V1.json`
+- Y9_NOT_OPENED_BY_IMPLICATION: TRUE
 
 ### Invariants
 - editor surface не источник истины,
@@ -54,6 +61,7 @@
 Branch-local accepted repair surface остаётся только историческим промежуточным состоянием.
 release hardening remains the last mandatory runtime axis that was closed before repo-wide post-merge reconfirm on main.
 Repo-wide done подтверждён на main после merge gate и post-merge reconfirm.
+Formal Y8 cutover packet is explicitly bound on main with explicit rollback packet in the same operating reality.
 
 Следующее допустимое состояние:
 1. сохранять repo-wide closure как текущую operating reality на main
@@ -76,6 +84,6 @@ Repo-wide done подтверждён на main после merge gate и post-me
 - factual docs должны описывать current operating reality, а не старый transition milestone.
 
 ## Next Practical Target
-- не переоткрывать уже подтверждённый repo-level closed state без нового machine gap,
-- не смешивать evaluation-only работу с закрытым repair contour,
-- re-audit выполнять только как подтверждение, а не как замену machine proof.
+- не открывать Y9 по импликации из текста или narrative claims,
+- не переинтерпретировать Y8 PASS как автоматический полный release hardening,
+- следующий шаг только один: explicit post-Y8 decision brief.

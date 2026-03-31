@@ -1,0 +1,26 @@
+{
+  "artifactId": "Y8_FORMAL_CUTOVER_ROLLBACK_PACKET_V1",
+  "schemaVersion": 1,
+  "phaseId": "Y8",
+  "status": "PASS",
+  "rollbackReadyStatus": "PASS",
+  "sourceScopeRollbackPacketId": "X68_SCOPE_ROLLBACK_PACKET_V1",
+  "rollbackEvent": {
+    "rollbackEventId": "Y8_FORMAL_CUTOVER_ROLLBACK_EVENT_001",
+    "rollbackEventStatus": "BOUND",
+    "rollbackEventPolicy": "MANDATORY_AND_EXPLICIT",
+    "rollbackTriggerIds": [
+      "POST_CUTOVER_RUNTIME_REGRESSION",
+      "OWNER_ROLLBACK_SIGNAL"
+    ],
+    "rollbackTarget": "PRE_Y8_FORMAL_CUTOVER_MAINLINE_STATE"
+  },
+  "proof": {
+    "x68SourceRollbackPacketPresentTrue": true,
+    "explicitRollbackEventBoundTrue": true,
+    "noRollbackSkipTrue": true,
+    "noY9ImplicationTrue": true,
+    "packetInternalConsistencyTrue": true
+  },
+  "updatedAtUtc": "2026-03-31T15:50:43.000Z"
+}
