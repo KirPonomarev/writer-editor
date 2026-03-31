@@ -27,7 +27,7 @@ function parseJsonOutput(result) {
   return payload;
 }
 
-test('phase07 release ready core writer path foundation: positive run passes while release readiness stays held', () => {
+test('phase07 release ready core writer path foundation: positive run accepts previous hold and keeps release readiness held', () => {
   const result = runStateScript();
   assert.equal(result.status, 0, `expected state script pass:\n${result.stdout}\n${result.stderr}`);
 
@@ -48,6 +48,7 @@ test('phase07 release ready core writer path foundation: positive run passes whi
   assert.equal(payload.greenCheckIds.includes('PHASE07_PENDING_GAP_IDS_EXACT'), true);
   assert.equal(payload.greenCheckIds.includes('PHASE07_PENDING_GAP_IDS_HONEST'), true);
   assert.equal(payload.greenCheckIds.includes('PACKET_INTERNAL_CONSISTENCY'), true);
+  assert.equal(payload.checkStatusById.PREVIOUS_PHASE07_RUNTIME_MEASUREMENTS_FOUNDATION_PASS.note, 'PREVIOUS_PHASE07_RUNTIME_MEASUREMENTS_FOUNDATION_PASS');
 });
 
 test('phase07 release ready core writer path foundation: forced negative path is deterministic', () => {
