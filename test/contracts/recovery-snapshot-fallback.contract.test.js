@@ -51,3 +51,33 @@ test('recovery snapshot contract: missing snapshot is typed failure', async () =
     },
   );
 });
+
+test('recovery snapshot contract: corrupted latest snapshot falls back to next valid snapshot deterministically', async () => {
+  const io = await loadIoModule();
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'recovery-snapshot-rollover-contract-'));
+  const target = path.join(dir, 'scene.md');
+
+  fs.writeFileSync(target, 'snapshot-older\n', 'utf8');
+  const olderSnapshot = await io.createRecoverySnapshot(target, {
+    maxSnapshots: 3,
+    now: () => 1700000000000,
+  });
+
+  fs.writeFileSync(target, 'snapshot-latest\n', 'utf8');
+  const latestSnapshot = await io.createRecoverySnapshot(target, {
+    maxSnapshots: 3,
+    now: () => 1700000001000,
+  });
+
+  fs.writeFileSync(latestSnapshot.snapshotPath, Buffer.from([0x41, 0x00, 0x42]));
+  fs.writeFileSync(target, Buffer.from([0x41, 0x00, 0x42]));
+
+  const run1 = await io.readMarkdownWithRecovery(target, { maxInputBytes: 1024 * 1024 });
+  const run2 = await io.readMarkdownWithRecovery(target, { maxInputBytes: 1024 * 1024 });
+
+  assert.equal(run1.recoveredFromSnapshot, true);
+  assert.equal(run1.snapshotPath, olderSnapshot.snapshotPath);
+  assert.equal(run1.snapshotPath, run2.snapshotPath);
+  assert.equal(run1.text, 'snapshot-older\n');
+  assert.equal(run2.text, 'snapshot-older\n');
+});
