@@ -1038,6 +1038,15 @@ export function registerProjectCommands(registry, options = {}) {
         'EXPORT_DOCXMIN_BACKEND_NOT_WIRED',
       );
     }
+    const hasBridgeHook = typeof electronAPI.invokeUiCommandBridge === 'function';
+    const hasLegacyHook = typeof electronAPI.exportDocxMin === 'function';
+    if (!hasBridgeHook && !hasLegacyHook) {
+      return fail(
+        'E_UNWIRED_EXPORT_BACKEND',
+        COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN,
+        'EXPORT_DOCXMIN_BACKEND_NOT_WIRED',
+      );
+    }
 
     const payload = {
       requestId: typeof input.requestId === 'string' && input.requestId.length > 0

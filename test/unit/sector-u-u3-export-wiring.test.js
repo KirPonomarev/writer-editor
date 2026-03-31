@@ -26,7 +26,7 @@ async function loadModules() {
   };
 }
 
-test('u3 export wiring: fallback stub is preserved when backend hook is missing', async () => {
+test('u3 export wiring: canonical fallback stub is preserved when backend hook is missing', async () => {
   const { createCommandRegistry, createCommandRunner, COMMAND_IDS, registerProjectCommands } = await loadModules();
   const registry = createCommandRegistry();
   registerProjectCommands(registry, { electronAPI: {} });

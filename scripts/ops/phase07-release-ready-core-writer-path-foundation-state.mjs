@@ -23,6 +23,10 @@ const EXPECTED_BLOCKING_BUDGET_IDS = Object.freeze([
 const EXPECTED_PENDING_GAP_IDS = Object.freeze([
   'PHASE07_RELEASE_READY_CORE_WRITER_PATH_NOT_BOUND',
 ]);
+const EXPECTED_PREVIOUS_PENDING_GAP_IDS = Object.freeze([
+  'PHASE07_SCENE_SWITCH_MEASUREMENT_NOT_BOUND',
+  'PHASE07_RESET_MEASUREMENT_NOT_BOUND',
+]);
 
 function parseArgs(argv) {
   const out = { json: false, forceNegative: false };
@@ -70,14 +74,13 @@ function evaluatePhase07ReleaseReadyCoreWriterPathFoundationState(input = {}) {
       && previousPacket?.phase07RuntimeMeasurementsFoundationStatus === 'PASS'
       && previousPacket?.phase07RuntimeMeasurementsReadinessStatus === 'HOLD'
       && arraysEqual(previousPacket?.phase07BlockingBudgetIds || [], EXPECTED_BLOCKING_BUDGET_IDS)
-      && Array.isArray(previousPacket?.phase07PendingGapIds)
-      && previousPacket.phase07PendingGapIds.length === 0
+      && arraysEqual(previousPacket?.phase07PendingGapIds || [], EXPECTED_PREVIOUS_PENDING_GAP_IDS)
       && previousPacket?.proof?.previousPhase07BlockingBudgetsBaselinePassTrue === true
       && previousPacket?.proof?.perfInfrastructurePresentTrue === true
       && previousPacket?.proof?.projectOpenMeasurementBoundTrue === true
       && previousPacket?.proof?.startupMeasurementBoundTrue === true
-      && previousPacket?.proof?.sceneSwitchMeasurementBoundTrue === true
-      && previousPacket?.proof?.resetMeasurementBoundTrue === true
+      && previousPacket?.proof?.sceneSwitchMeasurementBindingOpenGapTrue === true
+      && previousPacket?.proof?.resetMeasurementBindingOpenGapTrue === true
       && previousPacket?.proof?.phase07BlockingBudgetIdsExactTrue === true
       && previousPacket?.proof?.phase07PendingGapIdsExactTrue === true
       && previousPacket?.proof?.phase07PendingGapIdsHonestTrue === true
