@@ -10,6 +10,8 @@ export const REQUIRED_BYPASS_SCENARIO_IDS = Object.freeze([
   'plugin-overlay-bypass',
 ]);
 
+const TRUSTED_CALLERS = new Set(['menu', 'hotkey', 'palette', 'ipc-main', 'context-button', 'plugin-overlay']);
+
 const BYPASS_ROUTE_TO_SCENARIO = Object.freeze({
   'hotkey.direct': 'hotkey-bypass',
   'palette.direct': 'palette-bypass',
@@ -20,6 +22,39 @@ const BYPASS_ROUTE_TO_SCENARIO = Object.freeze({
 
 function normalizeRoute(route) {
   return typeof route === 'string' ? route.trim() : '';
+}
+
+function normalizeCallerId(callerId) {
+  return typeof callerId === 'string' ? callerId.trim().toLowerCase() : '';
+}
+
+function makeCallerTrustError(commandId, callerId) {
+  return {
+    ok: false,
+    error: {
+      code: 'E_CALLER_IDENTITY_VALIDATION_MISSING',
+      op: commandId,
+      reason: 'CALLER_IDENTITY_UNTRUSTED',
+      details: {
+        failSignal: 'E_CALLER_IDENTITY_VALIDATION_MISSING',
+        callerId,
+      },
+    },
+  };
+}
+
+function makePayloadContractError(commandId) {
+  return {
+    ok: false,
+    error: {
+      code: 'E_PAYLOAD_CONTRACT_VALIDATION_MISSING',
+      op: commandId,
+      reason: 'ARGS_OBJECT_REQUIRED',
+      details: {
+        failSignal: 'E_PAYLOAD_CONTRACT_VALIDATION_MISSING',
+      },
+    },
+  };
 }
 
 function makeBypassError(commandId, route, scenarioId) {
@@ -73,6 +108,13 @@ export async function runCommandThroughBus(runCommand, commandId, payload = {}, 
   const routeState = evaluateCommandBusRoute({ route: options.route });
   if (!routeState.ok) {
     return makeBypassError(commandId, routeState.route, routeState.scenarioId);
+  }
+  const callerId = normalizeCallerId(options.callerId || 'menu');
+  if (!callerId || !TRUSTED_CALLERS.has(callerId)) {
+    return makeCallerTrustError(commandId, callerId);
+  }
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return makePayloadContractError(commandId);
   }
   const resolved = resolveCommandId(commandId, {
     mode: options.mode,
