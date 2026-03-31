@@ -30,3 +30,4 @@
 - Docs: добавлена структура для референсов (index + checklist + шаблон заметок): `docs/references/*`.
 - Docs: добавлена база референсов по OSS проектам (`docs/references/ROADMAP.md` + `docs/references/projects/*.md`) и улучшен `brain:refs` (теги разбиваются на части).
 - Process: разделили режимы ChatGPT (ТЗ/план/проверки, без правок в репо) и Codex (правки по ТЗ по умолчанию); коммиты/push вручную пользователем (если не оговорено иначе).
+- 2026-03-31: GIT-TAIL-CLUSTER-01-ENFORCEMENT-001 зафиксирован как cluster-first delivery discipline baseline при уже существующих enforcement surfaces на main.
