@@ -160,25 +160,65 @@ async function runUiAction(uiActions, actionName, commandId, payload = {}) {
 }
 
 async function invokeFileLifecycleBridge(electronAPI, commandId) {
-  if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
+  if (electronAPI && typeof electronAPI.invokeUiCommandBridge === 'function') {
+    return electronAPI.invokeUiCommandBridge({
+      route: COMMAND_BRIDGE_ROUTE,
+      commandId,
+      payload: {},
+    });
+  }
+  const fallbackMap = {
+    [EXTRA_COMMAND_IDS.PROJECT_NEW]: ['openFile', { intent: 'new' }],
+    [COMMAND_IDS.PROJECT_OPEN]: ['openFile', { intent: 'open' }],
+    [COMMAND_IDS.PROJECT_SAVE]: ['saveFile', { intent: 'save' }],
+    [EXTRA_COMMAND_IDS.PROJECT_SAVE_AS]: ['saveAs', { intent: 'saveAs' }],
+  };
+  const fallback = fallbackMap[commandId];
+  if (!fallback || !electronAPI || typeof electronAPI !== 'object') {
     throw new Error('ELECTRON_API_UNAVAILABLE');
   }
-  return electronAPI.invokeUiCommandBridge({
-    route: COMMAND_BRIDGE_ROUTE,
-    commandId,
-    payload: {},
-  });
+  const [methodName, payload] = fallback;
+  const method = electronAPI[methodName];
+  if (typeof method !== 'function') {
+    throw new Error('ELECTRON_API_UNAVAILABLE');
+  }
+  const legacyResult = await method.call(electronAPI, payload);
+  if (legacyResult && typeof legacyResult === 'object' && !Array.isArray(legacyResult)) {
+    return legacyResult;
+  }
+  return { ok: true };
 }
 
 async function invokeTransferAndFlowCommandBridge(electronAPI, commandId, payload = {}) {
-  if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
+  if (electronAPI && typeof electronAPI.invokeUiCommandBridge === 'function') {
+    return electronAPI.invokeUiCommandBridge({
+      route: COMMAND_BRIDGE_ROUTE,
+      commandId,
+      payload,
+    });
+  }
+  const fallbackMap = {
+    [COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN]: 'exportDocxMin',
+    [COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1]: 'importMarkdownV1',
+    [COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1]: 'exportMarkdownV1',
+    [COMMAND_IDS.PROJECT_FLOW_OPEN_V1]: 'openFlowModeV1',
+    [COMMAND_IDS.PROJECT_FLOW_SAVE_V1]: 'saveFlowModeV1',
+  };
+  const methodName = fallbackMap[commandId];
+  if (!methodName || !electronAPI || typeof electronAPI !== 'object') {
     throw new Error('ELECTRON_API_UNAVAILABLE');
   }
-  return electronAPI.invokeUiCommandBridge({
-    route: COMMAND_BRIDGE_ROUTE,
-    commandId,
-    payload,
-  });
+  const method = electronAPI[methodName];
+  if (typeof method !== 'function') {
+    throw new Error('ELECTRON_API_UNAVAILABLE');
+  }
+  const legacyResult = commandId === COMMAND_IDS.PROJECT_FLOW_OPEN_V1
+    ? await method.call(electronAPI)
+    : await method.call(electronAPI, payload);
+  if (legacyResult && typeof legacyResult === 'object' && !Array.isArray(legacyResult)) {
+    return legacyResult;
+  }
+  return { ok: legacyResult ? 1 : 0 };
 }
 
 function unwrapBridgeResponseValue(response) {
