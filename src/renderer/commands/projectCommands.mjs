@@ -159,116 +159,26 @@ async function runUiAction(uiActions, actionName, commandId, payload = {}) {
   }
 }
 
-function getElectronApiMethod(electronAPI, methodName) {
-  if (!electronAPI || typeof methodName !== 'string' || methodName.length === 0) return null;
-  const candidate = electronAPI[methodName];
-  if (typeof candidate !== 'function') return null;
-  return candidate.bind(electronAPI);
-}
-
-function resolveFileLifecycleFallbackInvoker(electronAPI, commandId) {
-  if (commandId === EXTRA_COMMAND_IDS.PROJECT_NEW) {
-    const fileOpen = getElectronApiMethod(electronAPI, 'fileOpen');
-    if (fileOpen) return () => fileOpen({ intent: 'new' });
-    const newFile = getElectronApiMethod(electronAPI, 'newFile');
-    if (newFile) return () => newFile();
-    const openFile = getElectronApiMethod(electronAPI, 'openFile');
-    if (openFile) return () => openFile();
-    return null;
-  }
-  if (commandId === COMMAND_IDS.PROJECT_OPEN) {
-    const fileOpen = getElectronApiMethod(electronAPI, 'fileOpen');
-    if (fileOpen) return () => fileOpen({ intent: 'open' });
-    const openFile = getElectronApiMethod(electronAPI, 'openFile');
-    if (openFile) return () => openFile();
-    return null;
-  }
-  if (commandId === COMMAND_IDS.PROJECT_SAVE) {
-    const fileSave = getElectronApiMethod(electronAPI, 'fileSave');
-    if (fileSave) return () => fileSave({ intent: 'save' });
-    const saveFile = getElectronApiMethod(electronAPI, 'saveFile');
-    if (saveFile) return () => saveFile();
-    return null;
-  }
-  if (commandId === EXTRA_COMMAND_IDS.PROJECT_SAVE_AS) {
-    const fileSaveAs = getElectronApiMethod(electronAPI, 'fileSaveAs');
-    if (fileSaveAs) return () => fileSaveAs({ intent: 'saveAs' });
-    const saveAs = getElectronApiMethod(electronAPI, 'saveAs');
-    if (saveAs) return () => saveAs();
-    return null;
-  }
-  return null;
-}
-
 async function invokeFileLifecycleBridge(electronAPI, commandId) {
-  if (electronAPI && typeof electronAPI.invokeUiCommandBridge === 'function') {
-    return electronAPI.invokeUiCommandBridge({
-      route: COMMAND_BRIDGE_ROUTE,
-      commandId,
-      payload: {},
-    });
-  }
-
-  // Compatibility fallback for non-preload runtimes used by local parity harnesses.
-  const fallbackInvoker = resolveFileLifecycleFallbackInvoker(electronAPI, commandId);
-  if (!fallbackInvoker) {
+  if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
     throw new Error('ELECTRON_API_UNAVAILABLE');
   }
-  const legacyResult = await fallbackInvoker();
-  if (legacyResult && typeof legacyResult === 'object' && !Array.isArray(legacyResult)) {
-    return legacyResult;
-  }
-  return { ok: true };
-}
-
-function resolveTransferAndFlowFallbackInvoker(electronAPI, commandId, payload = {}) {
-  if (commandId === COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN) {
-    const exportDocxMin = getElectronApiMethod(electronAPI, 'exportDocxMin');
-    if (!exportDocxMin) return null;
-    return () => exportDocxMin(payload);
-  }
-  if (commandId === COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1) {
-    const importMarkdownV1 = getElectronApiMethod(electronAPI, 'importMarkdownV1');
-    if (!importMarkdownV1) return null;
-    return () => importMarkdownV1(payload);
-  }
-  if (commandId === COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1) {
-    const exportMarkdownV1 = getElectronApiMethod(electronAPI, 'exportMarkdownV1');
-    if (!exportMarkdownV1) return null;
-    return () => exportMarkdownV1(payload);
-  }
-  if (commandId === COMMAND_IDS.PROJECT_FLOW_OPEN_V1) {
-    const openFlowModeV1 = getElectronApiMethod(electronAPI, 'openFlowModeV1');
-    if (!openFlowModeV1) return null;
-    return () => openFlowModeV1();
-  }
-  if (commandId === COMMAND_IDS.PROJECT_FLOW_SAVE_V1) {
-    const saveFlowModeV1 = getElectronApiMethod(electronAPI, 'saveFlowModeV1');
-    if (!saveFlowModeV1) return null;
-    return () => saveFlowModeV1(payload);
-  }
-  return null;
+  return electronAPI.invokeUiCommandBridge({
+    route: COMMAND_BRIDGE_ROUTE,
+    commandId,
+    payload: {},
+  });
 }
 
 async function invokeTransferAndFlowCommandBridge(electronAPI, commandId, payload = {}) {
-  if (electronAPI && typeof electronAPI.invokeUiCommandBridge === 'function') {
-    return electronAPI.invokeUiCommandBridge({
-      route: COMMAND_BRIDGE_ROUTE,
-      commandId,
-      payload,
-    });
-  }
-
-  // Compatibility fallback for non-preload runtimes used by local parity harnesses.
-  const fallbackInvoker = resolveTransferAndFlowFallbackInvoker(electronAPI, commandId, payload);
-  if (!fallbackInvoker) {
+  if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
     throw new Error('ELECTRON_API_UNAVAILABLE');
   }
-  const legacyResult = await fallbackInvoker();
-  if (legacyResult && typeof legacyResult === 'object' && !Array.isArray(legacyResult)) {
-    return legacyResult;
-  }
-  return { ok: legacyResult ? 1 : 0 };
+  return electronAPI.invokeUiCommandBridge({
+    route: COMMAND_BRIDGE_ROUTE,
+    commandId,
+    payload,
+  });
 }
 
 function unwrapBridgeResponseValue(response) {

@@ -8,6 +8,10 @@ const UI_COMMAND_BRIDGE_CHANNEL = 'ui:command-bridge';
 const WORKSPACE_QUERY_BRIDGE_CHANNEL = 'ui:workspace-query-bridge';
 const SAVE_LIFECYCLE_SIGNAL_BRIDGE_CHANNEL = 'ui:save-lifecycle-signal-bridge';
 const COMMAND_BUS_ROUTE = 'command.bus';
+const PROJECT_NEW_COMMAND_ID = 'cmd.project.new';
+const PROJECT_OPEN_COMMAND_ID = 'cmd.project.open';
+const PROJECT_SAVE_COMMAND_ID = 'cmd.project.save';
+const PROJECT_SAVE_AS_COMMAND_ID = 'cmd.project.saveAs';
 const DOCUMENT_OPEN_COMMAND_ID = 'cmd.project.document.open';
 const TREE_COMMAND_IDS = Object.freeze({
   CREATE_NODE: 'cmd.project.tree.createNode',
@@ -63,37 +67,55 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('editor:set-font-size', (event, payload) => callback(payload));
   },
   newFile: () => {
-    ipcRenderer.send('ui:new');
+    return invokeUiCommand(PROJECT_NEW_COMMAND_ID, {});
   },
   openFile: () => {
-    ipcRenderer.send('ui:open');
+    return invokeUiCommand(PROJECT_OPEN_COMMAND_ID, {});
   },
   saveFile: () => {
-    ipcRenderer.send('ui:save');
+    return invokeUiCommand(PROJECT_SAVE_COMMAND_ID, {});
   },
   saveAs: () => {
-    ipcRenderer.send('ui:save-as');
+    return invokeUiCommand(PROJECT_SAVE_AS_COMMAND_ID, {});
   },
   /**
    * @param {unknown} payload
    * @returns {Promise<{ ok: false, reason: "not-implemented" }>}
    */
   fileSave: (payload) => {
-    return ipcRenderer.invoke('file:save', payload);
+    const safePayload = normalizeRequestPayload(payload);
+    const intent = typeof safePayload.intent === 'string' ? safePayload.intent : '';
+    if (intent && intent !== 'save') {
+      return Promise.resolve({ ok: false, reason: 'FILE_SAVE_INTENT_NOT_ALLOWED' });
+    }
+    return invokeUiCommand(PROJECT_SAVE_COMMAND_ID, {});
   },
   /**
    * @param {unknown} payload
    * @returns {Promise<{ ok: false, reason: "not-implemented" }>}
    */
   fileSaveAs: (payload) => {
-    return ipcRenderer.invoke('file:save-as', payload);
+    const safePayload = normalizeRequestPayload(payload);
+    const intent = typeof safePayload.intent === 'string' ? safePayload.intent : '';
+    if (intent && intent !== 'saveAs') {
+      return Promise.resolve({ ok: false, reason: 'FILE_SAVE_AS_INTENT_NOT_ALLOWED' });
+    }
+    return invokeUiCommand(PROJECT_SAVE_AS_COMMAND_ID, {});
   },
   /**
    * @param {unknown} payload
    * @returns {Promise<{ ok: false, reason: "not-implemented" }>}
    */
   fileOpen: (payload) => {
-    return ipcRenderer.invoke('file:open', payload);
+    const safePayload = normalizeRequestPayload(payload);
+    const intent = typeof safePayload.intent === 'string' ? safePayload.intent : '';
+    if (intent === 'new') {
+      return invokeUiCommand(PROJECT_NEW_COMMAND_ID, {});
+    }
+    if (!intent || intent === 'open') {
+      return invokeUiCommand(PROJECT_OPEN_COMMAND_ID, {});
+    }
+    return Promise.resolve({ ok: false, reason: 'FILE_OPEN_INTENT_NOT_ALLOWED' });
   },
   openSection: (sectionName) => {
     return ipcRenderer.invoke('ui:open-section', { sectionName });
