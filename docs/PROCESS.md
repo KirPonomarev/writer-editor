@@ -19,17 +19,6 @@
   - Переход к следующему контуру при `TYPE != OPS_REPORT` без `COMMIT_CREATED` запрещён.
   - Merge выполняется только через PR path по канону.
 
-### ROLE CONTRACT (Orchestrator Mode)
-
-Если в текущем рабочем режиме `Codex` действует как оркестратор, применяется следующий обязательный контракт исполнения:
-- Оркестратор режет работу на bounded contours, готовит ТЗ, обновляет docs и OPS-артефакты, выполняет проверки, принимает или отклоняет результат, делает commit, push, PR и merge.
-- Любой новый кодовый contour (`runtime`, `core`, `UI`, `storage`, `IPC`, `tests for changed runtime behavior`) должен исполняться через отдельного кодового агента, а не прямой самостоятельной реализацией оркестратора.
-- Оркестратор может править напрямую только doc-only, OPS-only и read-only контуры, а также их машинно-несущие артефакты, если contour не создаёт новый runtime truth.
-- `ACCEPTED` для write-контура допустим только после `COMMIT_CREATED`; без commit-исхода contour считается draft, а не закрытым.
-- Следующий write-contour запрещён, пока предыдущий не закрыт commit-исходом и не имеет явной границы проверки.
-- Любой dirty tail после принятого write-контура считается process failure, а не нормальным рабочим состоянием.
-- Merge допускается только из чистого mergeable PR path без смешанного worktree и без scope drift.
-
 ### Фазы CHECK (PRE/POST) для write-задач
 Правило фаз:
 - PRE_* CHECK выполняются ДО любых write-действий.
@@ -151,6 +140,31 @@ OPS-GATE (E0) — локальный, ручной gate для MODE A (HARD‑Т
 - Если этап затронул много файлов, лучше разбить на 2–3 коммита по смыслу (но не “всё сразу одним коммитом”).
 - Сообщение коммита должно быть понятным без чата. Пример: `editor: stage 2 paragraph render` или `toolbar: compact mode toggle`.
 - Для экспериментов — отдельная ветка (или worktree), чтобы не пачкать стабильную историю.
+
+## Жесткая Git delivery discipline
+- Для любой `write`‑задачи delivery policy должна быть явной: `COMMIT_REQUIRED`, `PUSH_REQUIRED`, `PR_REQUIRED`, `MERGE_REQUIRED`.
+- Если задача не помечена как явное исключение, по умолчанию считаем: `COMMIT_REQUIRED=true`, `PUSH_REQUIRED=true`, `PR_REQUIRED=true`, `MERGE_REQUIRED=true`.
+- `Write`‑задача без `COMMIT_SHA` не считается завершённой.
+- Если по policy нужен push, PR или merge, отсутствие любого из них означает, что задача ещё открыта.
+- Новый `write`‑run запрещён в грязном worktree, если это не отдельный hygiene/isolation task.
+- Нельзя держать “накопленный хвост” как нормальный режим работы: смысловой шаг закончен → commit сразу.
+- Если delivery chain прерывается, задача должна завершаться статусом `STOP`, а не `DONE`.
+
+## Обязательные поля отчёта по write‑задаче
+Каждый отчёт по `write`‑задаче обязан содержать:
+- `TASK_ID`
+- `HEAD_SHA_BEFORE`
+- `HEAD_SHA_AFTER`
+- `COMMIT_SHA`
+- `CHANGED_BASENAMES`
+- `STAGED_SCOPE_MATCH`
+- `COMMIT_OUTCOME`
+- `PUSH_RESULT`
+- `PR_RESULT`
+- `MERGE_RESULT`
+- `NEXT_STEP`
+
+Если какое‑то поле не применимо из‑за task policy, это должно быть сказано явно значением вида `NOT_REQUIRED_BY_TASK_POLICY`, а не опущено.
 
 ## Где что хранить
 - **Постоянный контекст проекта** (устойчивые правила/ограничения/текущее состояние): `docs/CONTEXT.md`

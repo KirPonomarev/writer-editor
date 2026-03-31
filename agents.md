@@ -73,6 +73,18 @@ CI:
 - Тесты проходят (или явно сказано, что не запускалось)
 - Diff‑budget соблюдён
 
+## GIT_DELIVERY_ENFORCEMENT (обязателен для всех агентов)
+- Любая `write`‑задача обязана иметь явную delivery policy: `COMMIT_REQUIRED`, `PUSH_REQUIRED`, `PR_REQUIRED`, `MERGE_REQUIRED`.
+- Если в брифе не указано иное явно, правило по умолчанию жёсткое: сделать commit, push, PR и merge.
+- Любая `write`‑задача без `COMMIT_SHA` считается не выполненной.
+- Если для задачи `PUSH_REQUIRED: true`, то без push задача считается не выполненной.
+- Если для задачи `PR_REQUIRED: true`, то без PR задача считается не выполненной.
+- Если для задачи `MERGE_REQUIRED: true`, то без merge задача считается не выполненной.
+- Новый `write`‑task запрещён в грязном worktree, если он не является явным hygiene/isolation task.
+- После завершения смыслового шага агент обязан сразу делать commit, а не оставлять изменения “на потом”.
+- Для `report-only` задач commit/push/PR/merge не требуются, если только отчёт явно не верифицирует исторический run.
+- Любой отчёт по `write`‑задаче обязан явно содержать: `TASK_ID`, `HEAD_SHA_BEFORE`, `HEAD_SHA_AFTER`, `COMMIT_SHA`, `CHANGED_BASENAMES`, `STAGED_SCOPE_MATCH`, `COMMIT_OUTCOME`, `PUSH_RESULT`, `PR_RESULT`, `MERGE_RESULT`, `NEXT_STEP`.
+
 ## ARCH_DIFF_LOG (исключения)
 Любое исключение из канона:
 - фиксируется (с причиной)
