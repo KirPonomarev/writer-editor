@@ -3436,11 +3436,10 @@ function closeCardModal() {
 }
 
 async function openDocumentNode(node) {
-  if (!window.electronAPI || !window.electronAPI.openDocument) return false;
   const documentPath = getEffectiveDocumentPath(node);
   if (!documentPath) return false;
   try {
-    const result = await window.electronAPI.openDocument({
+    const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, {
       path: documentPath,
       title: node.label,
       kind: getEffectiveDocumentKind(node)
@@ -3467,7 +3466,7 @@ async function openDocumentNode(node) {
 async function handleCreateNode(node, kind, promptLabel) {
   const name = window.prompt(promptLabel || 'Название', '');
   if (!name) return;
-  const result = await window.electronAPI.createNode({
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, {
     parentPath: node.path,
     kind,
     name
@@ -3482,7 +3481,7 @@ async function handleCreateNode(node, kind, promptLabel) {
 async function handleRenameNode(node) {
   const name = window.prompt('Новое имя', node.label || '');
   if (!name) return;
-  const result = await window.electronAPI.renameNode({ path: node.path, name });
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, { path: node.path, name });
   if (!result || result.ok === false) {
     updateStatusText('Ошибка');
     return;
@@ -3496,7 +3495,7 @@ async function handleRenameNode(node) {
 async function handleDeleteNode(node) {
   const confirmed = window.confirm('Переместить в корзину?');
   if (!confirmed) return;
-  const result = await window.electronAPI.deleteNode({ path: node.path });
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, { path: node.path });
   if (!result || result.ok === false) {
     updateStatusText('Ошибка');
     return;
@@ -3512,7 +3511,7 @@ async function handleDeleteNode(node) {
 }
 
 async function handleReorderNode(node, direction) {
-  const result = await window.electronAPI.reorderNode({ path: node.path, direction });
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, { path: node.path, direction });
   if (!result || result.ok === false) {
     return;
   }
@@ -5593,17 +5592,11 @@ function triggerLeftToolbarAction(action) {
       }
       return true;
     case 'new':
-      if (window.electronAPI && typeof window.electronAPI.fileOpen === 'function') {
-        void window.electronAPI.fileOpen({ intent: 'new' });
-        return true;
-      }
-      break;
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_NEW);
+      return true;
     case 'open':
-      if (window.electronAPI && typeof window.electronAPI.fileOpen === 'function') {
-        void window.electronAPI.fileOpen({ intent: 'open' });
-        return true;
-      }
-      break;
+      void dispatchUiCommand(COMMAND_IDS.PROJECT_OPEN);
+      return true;
     case 'toggle-configurator':
       toggleConfiguratorOpen();
       return true;

@@ -1,0 +1,32 @@
+{
+  "artifactId": "Y6_COMMAND_SEAM_FENCING_RECORD_V1",
+  "schemaVersion": 1,
+  "taskId": "YALKEN_DESIGN_OS_Y6_COMMAND_SEAM_FENCING_001",
+  "status": "PASS_PENDING_COMMIT_CHAIN",
+  "selectedBaseSha": "19a7c8c8578118d82d6f55e47ec315109ca4109a",
+  "selectedBaseMode": "CAPTURED_LIVE_origin_main_HEAD_MODE",
+  "baseCaptureTimeUtc": "2026-03-31T06:05:30Z",
+  "scope": {
+    "singleTrustedCommandFlowEnforced": true,
+    "untrustedDirectPathsFailClosed": true,
+    "mainPreloadRendererBridgeReviewed": true,
+    "commandMeaningDriftPerformed": false,
+    "y5ScopePerformed": false,
+    "factualDocCutoverPerformed": false
+  },
+  "proof": {
+    "stateScript": "Y6_COMMAND_SEAM_FENCING_STATE.mjs",
+    "contractTest": "Y6_COMMAND_SEAM_FENCING.contract.test.js",
+    "existingContract01": "command-surface-single-entry.contract.test.js",
+    "existingContract02": "command-surface-caller-trust.contract.test.js",
+    "existingContract03": "command-surface-bus-only.contract.test.js",
+    "existingContract04": "proofhook-bridge.contract.test.js",
+    "existingContract05": "e2e-critical-user-path.contract.test.js",
+    "bundleValidationTarget": "editor.bundle.js",
+    "requiredPrChecksPolicySatisfied": true,
+    "noStatusDocOnlyProofUsed": true
+  },
+  "singleNextMove": "CONTOUR_Y7_FOUNDATION_STATE_AND_PROOF_REGEN",
+  "singleNextMoveReason": "Y6_COMMAND_SEAM_FENCING_ESTABLISHED_WITH_NO_SCOPE_DRIFT",
+  "updatedAtUtc": "2026-03-31T06:05:30Z"
+}
