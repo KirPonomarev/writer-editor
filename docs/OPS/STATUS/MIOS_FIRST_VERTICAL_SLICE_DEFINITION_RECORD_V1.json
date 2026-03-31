@@ -1,0 +1,83 @@
+{
+  "status": "PROOFHOOK_ONLY_NOT_ADMITTED_FOR_CODE_WRITES",
+  "resolvedHostPlanBasename": "CORE-A4-YALKEN-CONTOUR-01-001.md",
+  "authorityGraphLockRecordBasename": "CANON.md",
+  "authorityGraphLockSurfaceRef": "docs/OPS/STATUS/CANON_STATUS.json + CANON.md + docs/CONTEXT.md + docs/HANDOFF.md + docs/PROCESS.md",
+  "contourAdmissionEvidenceRef": "CANON.md::Current_Cutover_Reality + CONTEXT.md current stabilization axis + HANDOFF.md current repo state review (2026-03-24)",
+  "executableUserPathId": "PRIMARY_EDITOR_LOCAL_SAVE_AND_RECOVER_USER_PATH_V1",
+  "executableUserPathEntrypoint": "editor.js handleUiAction/save and save hotkey -> projectCommands.mjs registerCatalogCommand(cmd.project.save) -> preload.js fileSave(file:save) -> main.js ipcMain.handle(file:save) -> handleSave -> fileManager.writeFileAtomic -> main.js autosave reopen recovery -> preload.js onRecoveryRestored(ui:recovery-restored) -> editor.js recovery restored UI",
+  "commandProjectionPathId": "PRIMARY_EDITOR_SAVE_COMMAND_PROJECTION_V1",
+  "commandProjectionEntrypoint": "command-catalog.v1.mjs cmd.project.save + projectCommands.mjs registerCatalogCommand + commandBusGuard.mjs COMMAND_BUS_ROUTE/runCommandThroughBus + editor.js dispatchUiCommand + main.js saveDocument alias and MENU_COMMAND_HANDLERS",
+  "manifestSurfacePathId": "PRIMARY_EDITOR_SAVE_SURFACE_MANIFEST_PATH_V1",
+  "manifestSurfaceEntrypoint": "menu-config.v1.json file-save/saveDocument + menu-config-normalizer.js ACTION_TO_COMMAND saveDocument -> cmd.project.save",
+  "shellPresentationPathId": "PRIMARY_EDITOR_SINGLE_SAVE_PRESENTATION_PATH_V1",
+  "shellPresentationEntrypoint": "main.js fileMenu commandItem(file-save, Save, cmd.project.save) + dispatchMenuCommand + buildCommandClickHandler; existing hotkey-triggered save path remains part of executable user flow but not a separate presentation surface",
+  "snapshotRecoveryPathId": "PRIMARY_EDITOR_LAST_STABLE_SNAPSHOT_RECOVERY_PATH_V1",
+  "snapshotRecoveryEntrypoint": "main.js autosave reopen recovery path + preload.js onRecoveryRestored + editor.js recovery restored UI + runtimeBridge.js handleRecoveryRestored",
+  "boundaryReadPathId": "PRIMARY_EDITOR_HOST_STATE_BOUNDARY_READ_PATH_V1",
+  "boundaryReadSurfaceRef": "main.js requestEditorText + preload.js onEditorTextRequest/sendEditorTextResponse + editor.js composeDocumentContent/getPlainText with runtimeBridge recovery normalization awareness and editor.bundle runtime awareness",
+  "editorRootInvariantId": "EDITOR_ROOT_REMAINS_DOCKED_IN_V1",
+  "inScope": [
+    "PRIMARY_EDITOR_LOCAL_SAVE_AND_RECOVER_USER_PATH_V1",
+    "PRIMARY_EDITOR_SAVE_COMMAND_PROJECTION_V1",
+    "PRIMARY_EDITOR_SAVE_SURFACE_MANIFEST_PATH_V1",
+    "PRIMARY_EDITOR_SINGLE_SAVE_PRESENTATION_PATH_V1",
+    "PRIMARY_EDITOR_LAST_STABLE_SNAPSHOT_RECOVERY_PATH_V1",
+    "PRIMARY_EDITOR_HOST_STATE_BOUNDARY_READ_PATH_V1",
+    "EDITOR_ROOT_REMAINS_DOCKED_IN_V1"
+  ],
+  "outOfScope": [
+    "CONTOUR_02",
+    "BROAD_SHELL_EXPANSION",
+    "PACK_LAYER_PROMOTION",
+    "EDITOR_STACK_MIGRATION",
+    "NETWORK_TRANSPORT_AUTHORITY",
+    "SECOND_RECOVERY_CHANNEL",
+    "FORMAL_CUTOVER"
+  ],
+  "proofObligations": [
+    "resolve one exact live save command path",
+    "resolve one exact live manifest-to-surface path",
+    "resolve one exact live shell presentation path",
+    "resolve one exact live autosave-reopen recovery path only",
+    "resolve one exact live host-state boundary read seam",
+    "preserve editor root docked invariant",
+    "avoid second source of truth",
+    "avoid parallel recovery channel"
+  ],
+  "repoSurfacesUsed": [
+    "src/renderer/commands/command-catalog.v1.mjs",
+    "src/renderer/commands/projectCommands.mjs",
+    "src/renderer/commands/commandBusGuard.mjs",
+    "src/menu/menu-config.v1.json",
+    "src/menu/menu-config-normalizer.js",
+    "src/main.js",
+    "src/preload.js",
+    "src/renderer/editor.js",
+    "src/renderer/tiptap/runtimeBridge.js",
+    "src/utils/fileManager.js",
+    "src/renderer/index.html",
+    "test/contracts/command-surface-bus-only.contract.test.js",
+    "test/contracts/x3-recovery-smoke.contract.test.js",
+    "test/electron/atomicWrite.test.js",
+    "test/contracts/phase05-bounded-spatial-shell-state.contract.test.js"
+  ],
+  "appStateOwnership": "host-owned",
+  "introducesSecondSourceOfTruth": false,
+  "introducesParallelRecoveryChannel": false,
+  "promotesPackLayer": false,
+  "inflatesReleaseScope": false,
+  "formalCutoverClaimed": false,
+  "liveMappingClarifications": [
+    "snapshot recovery is mapped to the existing autosave reopen recovery path only and not to restore-last-stable-shell, safe-reset-shell or a new shell snapshot subsystem",
+    "single save presentation is mapped to the existing main menu save entry as primary presentation, while the existing hotkey path remains part of the executable user flow",
+    "host-state boundary read is mapped to main.js + preload.js + editor.js and not to tiptap ipc.js because attachIpc is false in editor.js",
+    "runtimeBridge awareness and editor.bundle awareness remain part of admitted contour reasoning but do not reopen tiptap ipc as an admitted boundary seam"
+  ],
+  "notes": [
+    "This record is a surface binding artifact only and is not execution proof.",
+    "This record must still be independently audited before code writes are considered safe.",
+    "Current repo-level admission is blocked by doctor and governance head-state gates unrelated to contour 01 proof semantics.",
+    "If contour 01 would require editor.js source mutation, code admission must stop until a bundle-aware follow-up is explicitly opened because runtime loads editor.bundle.js."
+  ]
+}

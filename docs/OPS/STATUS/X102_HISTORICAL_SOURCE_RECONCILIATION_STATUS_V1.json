@@ -1,0 +1,29 @@
+{
+  "artifactId": "X102_HISTORICAL_SOURCE_RECONCILIATION_STATUS_V1",
+  "schemaVersion": 1,
+  "taskId": "X102_HISTORICAL_SOURCE_RECONCILIATION_V1",
+  "status": "PASS_RECONCILED_EVIDENCE_ONLY",
+  "CURRENT_HEAD": "364bdb7980107c483864359219b8a93fede65cae",
+  "CURRENT_BRANCH": "codex/tz-yalken-literal-interface-stage-a-exec-001",
+  "X102_BASE_COMMIT_SHA": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+  "HISTORICAL_SOURCE_SURFACE_CLASS": "DIRTY_TRACKED_PLUS_UNTRACKED_WORKTREE_HISTORICAL_SOURCE_SURFACE",
+  "TRACKED_IN_HEAD_COUNT": 0,
+  "DIRTY_TRACKED_COUNT": 6,
+  "UNTRACKED_WORKTREE_COUNT": 13,
+  "MISSING_COUNT": 0,
+  "checksPassed": [
+    "head_and_branch_evidence_recorded",
+    "worktree_status_evidence_recorded",
+    "all_required_doc_files_classified_by_git_truth_class",
+    "all_required_asset_files_classified_by_git_truth_class",
+    "all_required_source_files_classified_by_git_truth_class",
+    "opening_record_provenance_fields_recorded_exactly",
+    "block_execution_provenance_fields_recorded_exactly",
+    "visual_source_asset_references_recorded_exactly",
+    "no_source_code_changed",
+    "no_baseline_behavior_changed",
+    "final_recommended_next_gate_is_singular_and_grounded_in_evidence"
+  ],
+  "TRUE_HISTORICAL_SOURCE_SURFACE_SUMMARY": "Historical X102 test design truth currently lives across two surfaces: dirty tracked renderer and status files plus untracked packet and asset artifacts. HEAD by itself does not contain the full X102 test design packet surface.",
+  "TRUE_NEXT_GATE": "X102_INPUT_PACKET_PROMOTION_TO_CLEAN_SURFACE_V1"
+}

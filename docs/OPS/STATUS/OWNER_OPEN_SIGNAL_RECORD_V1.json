@@ -14,5 +14,21 @@
   "CHANGE_REASON": "REDUCE_PROMPT_NOISE_KEEP_RELEASE_CONTROL",
   "CHANGED_AT_UTC": "2026-03-05T08:24:20Z",
   "OWNER_GATE_ENFORCEMENT_MODE": "MANUAL_ONLY_ON_RELEASE_PHASES",
-  "AUTO_HOLD_ON_NO_OWNER_INPUT": false
+  "AUTO_HOLD_ON_NO_OWNER_INPUT": false,
+  "activeExecutionRecords": [
+    {
+      "recordId": "X102_BLOCK_01_OWNER_OPEN_SIGNAL_V1",
+      "contourId": "X102",
+      "blockId": "BLOCK_01",
+      "startApprovedTrue": true,
+      "status": "ACTIVE",
+      "approvedAtUtc": "2026-03-10T00:00:00+03:00",
+      "ownerId": "KIRILL",
+      "baseCommitShaApproved": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+      "startBranchApproved": "codex/tz-yalken-literal-interface-stage-a-exec-001",
+      "startModeApproved": "SNAPSHOT_ADOPTION"
+    }
+  ],
+  "latestX102ExecutionRecordId": "X102_BLOCK_01_OWNER_OPEN_SIGNAL_V1",
+  "latestX102ExecutionRecordValidTrue": true
 }

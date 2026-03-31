@@ -1,0 +1,63 @@
+{
+  "artifactId": "X102_LOCAL_APP_CAPTURE_ROUTE_RUNTIME_SPEC_V1",
+  "taskId": "X102_LOCAL_APP_LAUNCH_AND_CAPTURE_ROUTE_REPAIR_V1",
+  "status": "HOLD_AFTER_REPO_LOCAL_ELECTRON_LAUNCH_ATTEMPT",
+  "currentHead": "364bdb7980107c483864359219b8a93fede65cae",
+  "cleanSurfaceHead": "364bdb7980107c483864359219b8a93fede65cae",
+  "launchRules": {
+    "helperLaunchesOnlyThroughElectronBinary": true,
+    "plainNodeHelperLaunchForbidden": true,
+    "explicitEnvRequired": [
+      "X102_CLEAN_ROOT",
+      "X102_RUNTIME_PATH",
+      "X102_CAPTURE_OUT_DIR",
+      "X102_STAGE_LOG_PATH"
+    ],
+    "repoLocalHelperRequired": true
+  },
+  "repoLocalArtifacts": {
+    "launcher": "x102-capture-launch.mjs",
+    "helper": "x102-capture-helper.js"
+  },
+  "expectedSuccessMarkers": [
+    "helper_boot",
+    "app_when_ready",
+    "wait_for_window",
+    "window_ready",
+    "load_complete",
+    "closed_state_collected",
+    "master_capture_done",
+    "open_state_collected",
+    "pngs_written",
+    "runtime_written"
+  ],
+  "runtimeOutputs": {
+    "runtimeJsonBasename": "runtime.json",
+    "stageLogBasename": "helper.log",
+    "launcherLogBasename": "launcher.log",
+    "pngBasenames": [
+      "x102_master_screen_02.png",
+      "x102_crop_block01_top_composition_02.png",
+      "x102_crop_block01_toolbar_02.png",
+      "x102_crop_block01_left_cluster_02.png",
+      "x102_crop_block01_compact_panel_02.png"
+    ]
+  },
+  "knownObservedFailure": {
+    "type": "SIGABRT_BEFORE_HELPER_BOOT",
+    "scope": "SYSTEM_APPKIT_LAUNCH_PHASE",
+    "evidence": [
+      "repo local launcher invokes helper script through Electron binary",
+      "launcher log records SIGNAL:SIGABRT",
+      "no helper log markers are created",
+      "no runtime json is produced",
+      "no V2 png capture outputs are produced",
+      "Electron ips crash reports show abort in RegisterApplication before helper execution"
+    ],
+    "latestLauncherAttempt": {
+      "helperBootReached": false,
+      "runtimeJsonPresent": false,
+      "pngSetPresent": false
+    }
+  }
+}

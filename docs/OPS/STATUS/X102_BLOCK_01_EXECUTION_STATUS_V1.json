@@ -1,0 +1,113 @@
+{
+  "artifactId": "X102_BLOCK_01_EXECUTION_STATUS_V1",
+  "schemaVersion": 1,
+  "ticketId": "X102_BLOCK_01_FULL_RESTORE_UNTIL_OWNER_ACCEPTANCE_005",
+  "contourId": "X102",
+  "blockId": "BLOCK_01",
+  "status": "HOLD_PENDING_OWNER_VISUAL_RECHECK",
+  "baseSha": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+  "headShaAtStart": "ccd81d3feb6210079f5c93ef21dee024f1031786",
+  "branch": "codex/tz-yalken-literal-interface-stage-a-exec-001",
+  "snapshotBaseline": {
+    "capturedTrue": true,
+    "dirtyPathCount": 14,
+    "dirtyDenylistPathCount": 7,
+    "baselineRule": "POST_EXECUTION_DELTA_ONLY_AGAINST_CAPTURED_BASELINE"
+  },
+  "implementationSummary": {
+    "scopeOnlyTrue": true,
+    "touchedSurfaces": [
+      "floating_toolbar_handle_visual_fidelity",
+      "floating_toolbar_handle_interaction_fidelity",
+      "floating_toolbar_control_state_fidelity",
+      "floating_toolbar_snap_detach_state_persistence",
+      "floating_toolbar_soft_center_anchor_behavior",
+      "left_icon_cluster_toolbar_system_restore",
+      "group_level_invisible_drag_halo",
+      "neutral_default_toolbar_selection_state",
+      "floating_toolbar_literal_stage_restore_behavior",
+      "floating_toolbar_vertical_layout_geometry",
+      "left_icon_cluster_grid_icon_fidelity",
+      "left_icon_cluster_button_surface_fidelity",
+      "compact_panel_surface_visual_state",
+      "compact_panel_slot_iconography"
+    ],
+    "appliedChanges": [
+      "toolbar_transform_handles_replaced_with_archive_like_rotation_scale_width_controls",
+      "toolbar_handles_now_toggle_on_background_click_instead_of_hover_only",
+      "toolbar_rotation_now_switches_orientation_on_click",
+      "toolbar_scale_range_aligned_to_0_5x_2_0x",
+      "toolbar_width_scale_range_aligned_to_0_1x_2_0x",
+      "grid_trigger_icon_moved_from_2x2_to_3x3_geometry",
+      "left_cluster_buttons_restored_to_archive_like_gradient_chip_surface",
+      "compact_panel_selected_state_reduced_from_heavy_halo_to_subtle_row_state",
+      "compact_panel_slot_iconography_aligned_to_archive_file_row_pattern",
+      "grid_trigger_active_fill_removed_for_literal_stage_master_state",
+      "compact_panel_slot_padding_reduced_to_archive_like_density",
+      "floating_toolbar_state_now_persists_isDetached_and_toolbarHeight",
+      "literal_stage_toolbar_restore_now_reads_saved_local_state",
+      "snapped_and_detached_modes_now_persist_explicitly_in_toolbar_state",
+      "snapped_mode_now_allows_full_horizontal_travel_across_top_toolbar_width",
+      "hard_center_lock_replaced_with_soft_center_anchor_assist",
+      "snap_zone_tolerance_aligned_to_30px",
+      "horizontal_transform_origin_corrected_to_left_center",
+      "vertical_toolbar_groups_now_stretch_to_archive_like_width_rule",
+      "left_icon_cluster_now_uses_independent_floating_toolbar_shell",
+      "left_icon_cluster_now_has_handles_toggle_rotation_scale_width_and_localStorage_restore",
+      "invisible_drag_halo_added_around_right_toolbar_group",
+      "invisible_drag_halo_added_around_left_toolbar_group",
+      "default_align_left_visual_highlight_removed_for_neutral_master_state"
+    ]
+  },
+  "requiredCheckResults": {
+    "activeCanonResolvedTrue": true,
+    "x102InputArtifactsValidTrue": true,
+    "executionContextValidTrue": true,
+    "snapshotBaselineCapturedTrue": true,
+    "block01ScopeOnlyTrue": true,
+    "buildRendererPass": true,
+    "packagedRendererBundlePass": true,
+    "testElectronPass": true,
+    "mergeReadinessPassInAllowedContext": "SKIPPED_OUTSIDE_ALLOWED_CONTEXT",
+    "allowlistOnlyDeltaTrue": true,
+    "denylistUnchangedTrue": true,
+    "noNewDependenciesTrue": true,
+    "protectedBehaviorPreservedTrue": true,
+    "executionStatusSyncTrue": true,
+    "ownerVisualGateRequiredTrue": true
+  },
+  "protectedBehavior": {
+    "commandBusSingleEntryTouched": false,
+    "stageGatedCommentsHistoryTouched": false,
+    "networkEnablementBeforeX4": false
+  },
+  "manualVisualResults": {
+    "status": "PENDING_OWNER_RECHECK",
+    "requiredItems": [
+      "top_work_bar_matches_master_screen",
+      "floating_toolbar_matches_master_screen",
+      "left_icon_cluster_matches_relevant_crop",
+      "compact_panel_trigger_and_surface_match_relevant_crop",
+      "overall_top_composition_geometry_matches_master_screen"
+    ]
+  },
+  "visualBaselinePolicy": {
+    "temporaryIterationAcceptanceBaselineTrue": true,
+    "permanentProductDesignCanonFalse": true,
+    "futureRedesignAllowedTrue": true,
+    "authority": "ACTIVE_CANON_BOUNDARIES_PLUS_CURRENT_ITERATION_VISUAL_ACCEPTANCE_BASELINE"
+  },
+  "deltaSummary": {
+    "newDeltaPaths": [
+      "src/renderer/index.html",
+      "src/renderer/styles.css",
+      "src/renderer/editor.js",
+      "src/renderer/editor.bundle.js",
+      "docs/OPS/STATUS/X102_BLOCK_01_EXECUTION_STATUS_V1.json"
+    ],
+    "nonAllowlistedDeltaDetected": false,
+    "denylistMutatedBeyondBaseline": false
+  },
+  "nextGate": "OWNER_VISUAL_RECHECK_FOR_BLOCK_01",
+  "updatedAtUtc": "2026-03-10T19:30:06Z"
+}

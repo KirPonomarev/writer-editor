@@ -655,8 +655,10 @@ body {
 
 .floating-toolbar__shell.is-vertical {
   flex-direction: column;
-  align-items: stretch;
-  gap: 6px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 12px;
+  width: auto;
   transform-origin: center center;
 }
 
@@ -673,16 +675,22 @@ body {
   z-index: 1;
 }
 
-.floating-toolbar__group--fields {
-  gap: 16px;
+.floating-toolbar__controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
-.floating-toolbar__group--align {
-  gap: 8px;
+.floating-toolbar__group--type,
+.floating-toolbar__group--history {
+  gap: 10px;
 }
 
-.floating-toolbar__group--final {
-  padding-left: 0;
+.floating-toolbar__group--paragraph {
+  gap: 0;
 }
 
 .floating-toolbar-spacing-menu {
@@ -733,12 +741,22 @@ body {
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__group {
   flex-direction: column;
-  align-items: stretch;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 8px;
+  width: auto;
 }
 
-.floating-toolbar__shell.is-vertical .floating-toolbar__group--align,
-.floating-toolbar__shell.is-vertical .floating-toolbar__group--final {
-  width: calc(120px * var(--floating-toolbar-width-scale));
+.floating-toolbar__shell.is-vertical .floating-toolbar__controls {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--history {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
 }
 
 .floating-toolbar__separator {
@@ -752,8 +770,10 @@ body {
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__separator {
-  width: calc(96px * var(--floating-toolbar-width-scale));
-  height: 0.5px;
+  width: calc(136px * var(--floating-toolbar-width-scale));
+  height: 1px;
+  margin: 2px 0;
+  align-self: flex-start;
 }
 
 .floating-toolbar__select-wrap {
@@ -761,44 +781,46 @@ body {
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: 24px;
-  border-radius: 6px;
-  background: linear-gradient(180deg, #f8f6f3 0%, #f0ede9 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04),
-    0 1px 3px rgba(0, 0, 0, 0.12),
-    0 2px 6px rgba(0, 0, 0, 0.08);
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(248, 246, 243, 0.08);
+  border: 1px solid transparent;
+  box-shadow: none;
   opacity: 1;
   transform: translateX(var(--floating-toolbar-offset-x));
   z-index: 1;
+  transition: background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.floating-toolbar__select-wrap:hover,
+.floating-toolbar__select-wrap:focus-within {
+  background: rgba(236, 231, 223, 0.28);
+  border-color: rgba(50, 36, 24, 0.05);
 }
 
 .floating-toolbar__select-wrap--font {
-  width: calc(116px * var(--floating-toolbar-width-scale));
+  width: calc(136px * var(--floating-toolbar-width-scale));
+}
+
+.floating-toolbar__select-wrap--font .floating-toolbar__display {
+  justify-content: flex-start;
+  padding: 0 12px;
+}
+
+.floating-toolbar__select-wrap--font .floating-toolbar__display-text {
+  text-align: left;
 }
 
 .floating-toolbar__select-wrap--weight {
-  width: calc(128px * var(--floating-toolbar-width-scale));
+  width: calc(104px * var(--floating-toolbar-width-scale));
 }
 
 .floating-toolbar__select-wrap--size {
   width: calc(56px * var(--floating-toolbar-width-scale));
 }
 
-.floating-toolbar__line-height-control {
-  --floating-toolbar-offset-x: 0px;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex: 0 0 auto;
-  transform: translateX(var(--floating-toolbar-offset-x));
-  z-index: 1;
-}
-
-.floating-toolbar__select-wrap--line-height-chip {
-  width: calc(56px * var(--floating-toolbar-width-scale));
+.floating-toolbar__select-wrap--line-height {
+  width: calc(72px * var(--floating-toolbar-width-scale));
 }
 
 .floating-toolbar__select {
@@ -825,11 +847,11 @@ body {
 .floating-toolbar__display {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
+  justify-content: flex-start;
+  gap: 8px;
   width: 100%;
   height: 100%;
-  padding: 0 10px;
+  padding: 0 12px;
   pointer-events: none;
 }
 
@@ -839,22 +861,14 @@ body {
   padding: 0 8px;
 }
 
-.floating-toolbar__display--line-height-chip {
+.floating-toolbar__display--line-height {
   display: grid;
-  grid-template-columns: 10px minmax(18px, 1fr) 10px;
+  grid-template-columns: 12px minmax(0, 1fr) 10px;
   align-items: center;
   justify-items: center;
   justify-content: center;
-  gap: 0;
+  gap: 4px;
   padding: 0 8px;
-  transform: translateX(-1mm);
-}
-
-.floating-toolbar__display--line-height-chip::before {
-  content: '';
-  grid-column: 1;
-  width: 10px;
-  height: 10px;
 }
 
 .floating-toolbar__display-text {
@@ -862,14 +876,14 @@ body {
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
-  text-overflow: clip;
+  text-overflow: ellipsis;
   color: #1f1a15;
-  font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  font-size: 14px;
   font-weight: 400;
-  line-height: 1;
+  line-height: 20px;
   letter-spacing: 0;
-  text-align: center;
+  text-align: left;
 }
 
 .floating-toolbar__select-icon {
@@ -882,8 +896,8 @@ body {
 }
 
 .floating-toolbar__line-height-icon-wrap {
-  width: 10px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -891,8 +905,8 @@ body {
 }
 
 .floating-toolbar__select-icon--line-height {
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
   color: rgba(102, 102, 102, 0.92);
   flex: 0 0 auto;
 }
@@ -902,9 +916,9 @@ body {
   min-width: 0;
   color: #3d3d3d;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
@@ -932,77 +946,244 @@ body {
 
 .floating-toolbar__button {
   --floating-toolbar-offset-x: 0px;
-  width: calc(24px * var(--floating-toolbar-width-scale));
-  height: 24px;
+  width: calc(28px * var(--floating-toolbar-width-scale));
+  height: 28px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   background: transparent;
-  color: #3a3a3a;
+  color: rgba(45, 39, 33, 0.86);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.16s ease, box-shadow 0.16s ease;
-  opacity: 0.8;
+  transition: background 0.16s ease, color 0.16s ease, opacity 0.16s ease;
+  opacity: 1;
   position: relative;
   transform: translateX(var(--floating-toolbar-offset-x));
   z-index: 1;
-}
-
-.floating-toolbar__button:hover {
-  background: #ccc7c1;
-}
-
-.floating-toolbar__button.is-active {
-  background: transparent;
-}
-
-.floating-toolbar__icon {
-  width: 18px;
-  height: 18px;
-}
-
-.floating-toolbar__button--final {
-  width: auto;
-  min-width: calc(38px * var(--floating-toolbar-width-scale));
-  border-radius: 6px;
-  background: linear-gradient(180deg, #f8f6f3 0%, #f0ede9 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04),
-    0 1px 3px rgba(0, 0, 0, 0.12),
-    0 2px 6px rgba(0, 0, 0, 0.08);
-  padding: 0 10px;
-}
-
-.literal-stage-a .floating-toolbar__button[data-action^="align-"] {
-  border-radius: 0;
-  width: 24px;
-  height: 24px;
-}
-
-.literal-stage-a .floating-toolbar__button[data-action^="align-"]:hover,
-.literal-stage-a .floating-toolbar__button[data-action^="align-"].is-active {
-  background: #ccc7c1;
   box-shadow: none;
 }
 
-.literal-stage-a .floating-toolbar__button[data-action^="align-"] .floating-toolbar__icon {
-  width: 14px;
-  height: 14px;
+.floating-toolbar__button:hover {
+  background: rgba(236, 231, 223, 0.34);
+}
+
+.floating-toolbar__button.is-active {
+  background: rgba(228, 222, 214, 0.48);
+}
+
+.floating-toolbar__button--paragraph {
+  width: calc(28px * var(--floating-toolbar-width-scale));
+}
+
+.floating-toolbar__button--history {
+  width: calc(28px * var(--floating-toolbar-width-scale));
+}
+
+.floating-toolbar__icon {
+  width: 16px;
+  height: 16px;
+}
+
+.floating-toolbar__icon--paragraph,
+.floating-toolbar__icon--history {
+  width: 16px;
+  height: 16px;
+}
+
+.floating-toolbar__button-label--paragraph,
+.floating-toolbar__caret--paragraph {
+  display: none;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap {
+  height: 24px;
+  border-radius: 6px;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap:hover,
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap:focus-within {
+  background: rgba(244, 240, 235, 0.16);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display {
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 0 10px;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display--line-height {
+  grid-template-columns: 12px minmax(0, 1fr) 10px;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display-text {
+  color: rgba(31, 26, 21, 0.88);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
+  line-height: 20px;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display-value {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__line-height-icon-wrap {
+  width: 12px;
+  height: 12px;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-icon--line-height {
+  width: 12px;
+  height: 12px;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__button {
+  height: 24px;
+  border-radius: 4px;
+  color: rgba(45, 39, 33, 0.82);
+  opacity: 0.9;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__button:hover {
+  background: rgba(236, 231, 223, 0.12);
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__button.is-active {
+  background: rgba(228, 222, 214, 0.18);
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__icon,
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__icon--paragraph,
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__icon--history {
+  width: 16px;
+  height: 16px;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__caret,
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__caret--line-height {
+  width: 12px;
+  height: 12px;
+  color: rgba(45, 39, 33, 0.72);
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__caret--line-height path {
+  stroke-width: 1.3;
+}
+
+.floating-toolbar__paragraph-menu {
+  position: absolute;
+  z-index: 4;
+  min-width: 124px;
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(50, 36, 24, 0.12);
+  background: rgba(248, 246, 243, 0.96);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03),
+    0 8px 20px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.floating-toolbar__paragraph-menu[hidden] {
+  display: none;
+}
+
+.floating-toolbar__paragraph-menu-item {
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #3d3d3d;
+  min-height: 28px;
+  padding: 0 10px;
+  text-align: left;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.floating-toolbar__paragraph-menu-item:hover,
+.floating-toolbar__paragraph-menu-item.is-active {
+  background: rgba(221, 216, 210, 0.4);
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__button--paragraph {
+  width: calc(136px * var(--floating-toolbar-width-scale));
+  height: 32px;
+  justify-content: flex-start;
+  gap: 18px;
+  padding: 0 12px;
+  border: 1px solid rgba(50, 36, 24, 0.07);
+  border-radius: 10px;
+  background: rgba(248, 246, 243, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__button-label--paragraph,
+.floating-toolbar__shell.is-vertical .floating-toolbar__caret--paragraph {
+  display: inline-flex;
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__select-wrap {
+  background: rgba(248, 246, 243, 0.72);
+  border-color: rgba(50, 36, 24, 0.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__select-wrap:hover,
+.floating-toolbar__shell.is-vertical .floating-toolbar__select-wrap:focus-within {
+  background: rgba(248, 246, 243, 0.82);
+  border-color: rgba(50, 36, 24, 0.1);
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__select-wrap,
 .floating-toolbar__shell.is-vertical .floating-toolbar__button {
-  width: calc(120px * var(--floating-toolbar-width-scale));
+  transform: none !important;
+  align-self: flex-start;
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__display {
-  justify-content: space-between;
+  justify-content: flex-start;
+  padding: 0 12px;
 }
 
-.floating-toolbar__shell.is-vertical .floating-toolbar__button {
+.floating-toolbar__shell.is-vertical .floating-toolbar__button:not(.floating-toolbar__button--paragraph) {
   justify-content: center;
+  padding: 0;
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__display--line-height {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 0 12px;
+  transform: none;
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__display-text,
+.floating-toolbar__shell.is-vertical .floating-toolbar__display-value {
+  text-align: left;
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__select-wrap--line-height {
+  width: calc(72px * var(--floating-toolbar-width-scale));
 }
 
 .floating-toolbar__separator {
@@ -1013,14 +1194,14 @@ body {
 .floating-toolbar__shell.is-spacing-tuning .floating-toolbar__select-wrap,
 .floating-toolbar__shell.is-spacing-tuning .floating-toolbar__button,
 .floating-toolbar__shell.is-spacing-tuning .floating-toolbar__separator,
-.floating-toolbar__shell.is-spacing-tuning .floating-toolbar__line-height-control {
+.floating-toolbar__shell.is-spacing-tuning .floating-toolbar__select-wrap--line-height {
   cursor: ew-resize;
 }
 
 .floating-toolbar__shell.is-spacing-tuning .floating-toolbar__select-wrap::after,
 .floating-toolbar__shell.is-spacing-tuning .floating-toolbar__button::after,
 .floating-toolbar__shell.is-spacing-tuning .floating-toolbar__separator::after,
-.floating-toolbar__shell.is-spacing-tuning .floating-toolbar__line-height-control::after {
+.floating-toolbar__shell.is-spacing-tuning .floating-toolbar__select-wrap--line-height::after {
   content: '';
   position: absolute;
   inset: -3mm;
@@ -1139,7 +1320,9 @@ body {
 
 .app-layout {
   display: grid;
-  grid-template-columns: minmax(250px, 290px) minmax(640px, 1fr) minmax(280px, 340px);
+  --app-left-sidebar-width: 290px;
+  --app-right-sidebar-width: 340px;
+  grid-template-columns: minmax(250px, var(--app-left-sidebar-width)) minmax(640px, 1fr) minmax(280px, var(--app-right-sidebar-width));
   gap: 12px;
   padding: 12px 14px 76px;
   flex: 1;
@@ -2013,6 +2196,11 @@ body.dark-theme .sidebar__resize-handle:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
+.sidebar__resize-handle--right {
+  right: auto;
+  left: -2px;
+}
+
 .main-content {
   flex: 1;
   display: flex;
@@ -2309,6 +2497,8 @@ body.dark-theme .empty-state {
 .editor-line {
   display: flex;
   align-items: baseline;
+  width: 100%;
+  min-width: 0;
   letter-spacing: -0.01em;
 }
 
@@ -2319,6 +2509,72 @@ body.dark-theme .empty-state {
 
 .editor-line .content {
   flex: 1;
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.main-content--editor #editor.tiptap-host,
+.main-content--editor #editor.editor__input:not(.tiptap-host):not(:has(.editor-page-wrap)) {
+  display: block;
+  width: min(100%, calc(var(--page-width-px) - var(--page-margin-left-px) - var(--page-margin-right-px)));
+  max-width: calc(var(--page-width-px) - var(--page-margin-left-px) - var(--page-margin-right-px));
+  min-width: 0;
+  margin: 0 auto;
+  padding: 0;
+  overflow: visible;
+}
+
+.main-content--editor #editor.tiptap-host .tiptap-editor,
+.main-content--editor #editor.tiptap-host .ProseMirror,
+.main-content--editor #editor.editor__input:not(.tiptap-host):not(:has(.editor-page-wrap)) {
+  width: 100%;
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.main-content--editor #editor.tiptap-host .tiptap-editor,
+.main-content--editor #editor.tiptap-host .ProseMirror {
+  display: block;
+  min-height: 1.625em;
+  outline: none;
+}
+
+.main-content--editor #editor.tiptap-host .ProseMirror > *:first-child {
+  margin-top: 0;
+}
+
+.main-content--editor #editor.tiptap-host {
+  width: var(--page-width-px);
+  max-width: var(--page-width-px);
+}
+
+.main-content--editor #editor.tiptap-host .tiptap-page-wrap {
+  width: var(--page-width-px);
+  height: var(--page-height-px);
+  margin: 0 auto 24px;
+}
+
+.main-content--editor #editor.tiptap-host .tiptap-page {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.main-content--editor #editor.tiptap-host .tiptap-page__content {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable both-edges;
+}
+
+.main-content--editor #editor.tiptap-host .tiptap-editor,
+.main-content--editor #editor.tiptap-host .ProseMirror {
+  min-height: calc(var(--page-height-px) - var(--page-margin-top-px) - var(--page-margin-bottom-px));
 }
 
 .line--paragraph {
@@ -2657,7 +2913,9 @@ body.dark-theme .status-bar {
 
 @media (max-width: 1279px) {
   .app-layout {
-    grid-template-columns: minmax(230px, 260px) minmax(480px, 1fr) minmax(250px, 290px);
+    --app-left-sidebar-width: 260px;
+    --app-right-sidebar-width: 290px;
+    grid-template-columns: minmax(230px, var(--app-left-sidebar-width)) minmax(480px, 1fr) minmax(250px, var(--app-right-sidebar-width));
     gap: 10px;
     padding: 10px 10px 72px;
   }
@@ -2669,7 +2927,8 @@ body.dark-theme .status-bar {
 
 @media (max-width: 900px) {
   .app-layout {
-    grid-template-columns: minmax(210px, 240px) minmax(360px, 1fr);
+    --app-left-sidebar-width: 240px;
+    grid-template-columns: minmax(210px, var(--app-left-sidebar-width)) minmax(360px, 1fr);
   }
 
   .sidebar--right {

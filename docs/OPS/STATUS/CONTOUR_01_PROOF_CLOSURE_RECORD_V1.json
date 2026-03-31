@@ -1,0 +1,49 @@
+{
+  "status": "CLOSED_AS_PROOF_CONTOUR_WITHOUT_RUNTIME_MUTATION",
+  "contourId": "CONTOUR_01_PRIMARY_EDITOR_LOCAL_SAVE_AND_LAST_STABLE_RECOVERY",
+  "closedAtUtc": "2026-03-24T11:40:33Z",
+  "closureType": "PROOF_ONLY",
+  "decisionRecordBasename": "CONTOUR_01_ADMISSION_DECISION_RECORD_V1.json",
+  "definitionRecordBasename": "MIOS_FIRST_VERTICAL_SLICE_DEFINITION_RECORD_V1.json",
+  "executionProofRecordBasename": "MIOS_FIRST_VERTICAL_SLICE_EXECUTION_PROOF_RECORD_V1.json",
+  "proofComplete": true,
+  "runtimeWritesPerformed": false,
+  "runtimeWritesAdmitted": false,
+  "relevantGatesClear": true,
+  "externalBackgroundGates": [
+    "HEAD_STRICT_OK=0",
+    "GOVERNANCE_CHANGE_OK=0",
+    "PRE_UI_OPS_CONTOUR_CLOSED_OK=0",
+    "M3_COMMAND_WIRING_OK=0",
+    "M4_UI_PATH_OK=0"
+  ],
+  "maintainedInvariants": [
+    "app state remains host-owned in v1",
+    "editor root remains docked in v1",
+    "no second source of truth introduced",
+    "no parallel recovery channel introduced",
+    "no pack-layer promotion",
+    "no release-scope inflation",
+    "no formal cutover"
+  ],
+  "closureArtifacts": [
+    "CORE-A4-YALKEN-CONTOUR-01-001.md",
+    "MIOS_FIRST_VERTICAL_SLICE_DEFINITION_RECORD_V1.json",
+    "MIOS_FIRST_VERTICAL_SLICE_EXECUTION_PROOF_RECORD_V1.json",
+    "CONTOUR_01_ADMISSION_DECISION_RECORD_V1.json",
+    "contour-01-primary-editor-save-recovery-proofhook.mjs",
+    "contour-01-primary-editor-save-recovery-proofhook.contract.test.js"
+  ],
+  "notClaimed": {
+    "runtimeMutationClaimed": false,
+    "broadRepoAdmissionClaimed": false,
+    "contour02AdmissionClaimed": false
+  },
+  "nextAllowedMove": "OPEN_ADMISSION_REMEDIATION_TASK_IF_RUNTIME_WRITES_BECOME_NECESSARY_LATER",
+  "contour02RequiresThisClosureRecord": true,
+  "notes": [
+    "This closure confirms proof completeness only.",
+    "This closure does not override red repo-level doctor or governance gates.",
+    "Contour 02 may be prepared only after this closure record exists and remains separate from any later runtime-write admission."
+  ]
+}

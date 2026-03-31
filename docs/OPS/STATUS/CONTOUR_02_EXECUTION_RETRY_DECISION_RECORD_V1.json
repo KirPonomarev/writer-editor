@@ -1,0 +1,40 @@
+{
+  "status": "EXECUTION_RETRY_ALLOWED_IN_CLEAN_LANE_RUNTIME_WRITES_NOT_ADMITTED",
+  "contourId": "CONTOUR_02_WRITE_WORKSPACE_STATE_PERSIST_RESTORE_AND_SAFE_RESET",
+  "recordedAtUtc": "2026-03-24T13:42:00Z",
+  "decisionOwner": "MAIN_INTEGRATOR",
+  "scope": "POST_REAUDIT_EXECUTION_RETRY_DECISION_ONLY",
+  "decision": "ALLOW_CONTOUR_02_EXECUTION_RETRY_IN_CLEAN_LANE_WITHOUT_RUNTIME_ADMISSION_AND_WITHOUT_PROOF_COMPLETE_CLAIM",
+  "executionTaskBasename": "CORE-A4-YALKEN-CONTOUR-02-EXEC-001.md",
+  "executionRetryAllowed": true,
+  "executionRetryLane": "CLEAN_LANE_REQUIRED",
+  "runtimeWritesAdmitted": false,
+  "runtimeAdmissionGranted": false,
+  "formalCutoverClaimed": false,
+  "broadShellAdmissionClaimed": false,
+  "reasons": [
+    "Contour 02 re-audit result record says blockerSetCleared true and executionRetryAdmissible true.",
+    "The remediation lane stayed within blocker-fix scope and did not admit runtime surface writes.",
+    "The historical contour 02 execution proof record remains not admitted and therefore requires one clean execution retry instead of reinterpretation."
+  ],
+  "preconditions": [
+    "Run the retry in one clean lane.",
+    "Keep runtime surface writes not admitted.",
+    "Keep prep, remediation, and execution layers separate.",
+    "Do not interpret retry permission as proof-complete closure."
+  ],
+  "caveats": [
+    "This decision does not grant runtime admission.",
+    "This decision does not claim contour 02 proof-complete status.",
+    "This decision does not claim formal cutover.",
+    "This decision does not claim broad shell admission.",
+    "Any runtime mutation discovered during retry requires one separate admission task."
+  ],
+  "evidenceArtifacts": [
+    "CONTOUR_02_REAUDIT_RESULT_RECORD_V1.json",
+    "CONTOUR_02_REMEDIATION_ADMISSION_RECORD_V1.json",
+    "MIOS_SECOND_VERTICAL_SLICE_EXECUTION_PROOF_RECORD_V1.json",
+    "CORE-A4-YALKEN-CONTOUR-02-EXEC-001.md"
+  ],
+  "nextStep": "RUN_CONTOUR_02_EXECUTION_RETRY_IN_CLEAN_LANE"
+}

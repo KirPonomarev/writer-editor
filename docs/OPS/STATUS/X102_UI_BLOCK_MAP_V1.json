@@ -1,0 +1,83 @@
+{
+  "artifactId": "X102_UI_BLOCK_MAP_V1",
+  "schemaVersion": 1,
+  "status": "READY",
+  "contourId": "X102",
+  "blockOrder": [
+    "BLOCK_01_UPPER_WORKING_COMPOSITION",
+    "BLOCK_02_CENTER_WORK_AREA",
+    "BLOCK_03_BOTTOM_STATUS",
+    "BLOCK_04_RIGHT_ZONE",
+    "BLOCK_05_SECONDARY_FLOATING_PANELS",
+    "BLOCK_06_MODALS"
+  ],
+  "onlyOneActiveBlockAtATimeTrue": true,
+  "block01": {
+    "blockId": "BLOCK_01",
+    "label": "UPPER_WORKING_COMPOSITION",
+    "scope": [
+      "top_work_bar",
+      "floating_toolbar",
+      "left_icon_cluster",
+      "compact_panel_trigger",
+      "compact_panel_surface",
+      "snap_behavior",
+      "overall_top_geometry"
+    ],
+    "exactAllowlist": [
+      "src/renderer/index.html",
+      "src/renderer/styles.css",
+      "src/renderer/editor.js",
+      "src/renderer/editor.bundle.js",
+      "docs/OPS/STATUS/X102_BLOCK_01_EXECUTION_STATUS_V1.json"
+    ],
+    "denylistReference": "TICKET_DENYLIST_X102_DOCS_PREP_AND_HANDOFF_003",
+    "acceptanceCriteria": {
+      "visual": [
+        "top_work_bar_matches_master_screen",
+        "floating_toolbar_matches_master_screen",
+        "left_icon_cluster_matches_relevant_crop",
+        "compact_panel_trigger_and_surface_match_relevant_crop",
+        "overall_top_composition_geometry_matches_master_screen"
+      ],
+      "behavioral": [
+        "toolbar_moves_correctly",
+        "toolbar_snaps_to_top_zone_correctly",
+        "controls_remain_clickable",
+        "compact_panel_opens_and_closes_correctly",
+        "top_zone_does_not_block_editor_work"
+      ],
+      "technical": [
+        "npm_run_build_renderer_pass",
+        "check_packaged_renderer_bundle_pass",
+        "check_merge_readiness_pass_in_main_compatible_preview_or_pr_closeout_context",
+        "allowlist_only_diff_true",
+        "no_new_dependencies_true",
+        "protected_files_unchanged_true",
+        "stage_gated_rules_preserved_true",
+        "no_network_enablement_before_x4_true"
+      ]
+    },
+      "minimumChecks": [
+        "npm run build:renderer",
+        "node scripts/check-packaged-renderer-bundle.mjs",
+        "node scripts/ops/check-merge-readiness.mjs in main-compatible preview or PR-closeout context only",
+        "allowlist_only_diff",
+        "no_new_dependencies",
+        "manual_visual_check_block_01"
+      ],
+      "mergeReadinessPolicy": {
+        "requiredTrue": true,
+        "runOnlyIn": [
+          "MAIN_COMPATIBLE_PREVIEW_CONTEXT",
+          "PR_CLOSEOUT_CONTEXT"
+        ],
+        "plainCurrentBranchMustBeMainRuleRemovedTrue": true
+      },
+      "carryForwardChecksIfAffected": [
+        "hotkey_baseline_survives_if_toolbar_binding_path_changes",
+        "command_bus_single_entry_survives_if_toolbar_actions_are_touched",
+        "stage_gated_comments_history_rule_survives_if_top_zone_changes_touch_visibility_controls"
+      ]
+  }
+}

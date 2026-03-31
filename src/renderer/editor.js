@@ -31,10 +31,12 @@ const statusElement = document.getElementById('status');
 const saveStateElement = document.querySelector('[data-save-state]');
 const warningStateElement = document.querySelector('[data-warning-state]');
 const perfHintElement = document.querySelector('[data-perf-hint]');
+const appLayout = document.querySelector('.app-layout');
 const emptyState = document.querySelector('.empty-state');
 const editorPanel = document.querySelector('.editor-panel');
 const sidebar = document.querySelector('.sidebar');
 const sidebarResizer = document.querySelector('[data-sidebar-resizer]');
+const rightSidebarResizer = document.querySelector('[data-right-sidebar-resizer]');
 const mainContent = document.querySelector('.main-content');
 const toolbar = document.querySelector('[data-toolbar]');
 const toolbarShell = document.querySelector('[data-toolbar-shell]');
@@ -62,6 +64,8 @@ const toolbarTunableItems = Array.from(
 );
 const toolbarSpacingMenu = document.querySelector('[data-toolbar-spacing-menu]');
 const toolbarSpacingAction = document.querySelector('[data-toolbar-spacing-action]');
+const paragraphTriggerButton = document.querySelector('[data-toolbar-item-key="paragraph-trigger"]');
+const paragraphMenu = document.querySelector('[data-paragraph-menu]');
 const modeSwitcher = document.querySelector('[data-mode-switcher]');
 const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
 const leftTabsHost = document.querySelector('[data-left-tabs]');
@@ -94,7 +98,7 @@ const themeDarkButton = document.querySelector('[data-action="theme-dark"]');
 const themeLightButton = document.querySelector('[data-action="theme-light"]');
 const wrapToggleButton = document.querySelector('[data-action="toggle-wrap"]');
 const toolbarToggleButton = document.querySelector('[data-action="minimize"]');
-const alignButtons = Array.from(document.querySelectorAll('[data-action^="align-"]'));
+const alignButtons = Array.from(document.querySelectorAll('[data-paragraph-alignment]'));
 const treeContainer = document.querySelector('[data-tree]');
 const metaPanel = document.querySelector('[data-meta-panel]');
 const metaSynopsis = document.querySelector('[data-meta-synopsis]');
@@ -144,6 +148,19 @@ const FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY = 'yalkenLiteralStageAToolbarIte
 const LEFT_FLOATING_TOOLBAR_STORAGE_KEY = 'yalkenLeftToolbarState';
 const LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY = 'yalkenLeftToolbarButtonOffsets';
 const CONFIGURATOR_BUCKETS_STORAGE_KEY = 'yalkenConfiguratorBuckets';
+const SPATIAL_LAYOUT_STORAGE_KEY_PREFIX = 'yalkenSpatialLayout';
+const SPATIAL_LAYOUT_VERSION = 1;
+const SPATIAL_LAYOUT_MOBILE_BREAKPOINT = 900;
+const SPATIAL_LAYOUT_COMPACT_BREAKPOINT = 1280;
+const SPATIAL_LAYOUT_LEFT_MIN_WIDTH = 200;
+const SPATIAL_LAYOUT_LEFT_MAX_WIDTH = 600;
+const SPATIAL_LAYOUT_RIGHT_MIN_WIDTH = 250;
+const SPATIAL_LAYOUT_RIGHT_MAX_WIDTH = 420;
+const SPATIAL_LAYOUT_DESKTOP_LEFT_BASELINE_WIDTH = 290;
+const SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH = 340;
+const SPATIAL_LAYOUT_COMPACT_LEFT_BASELINE_WIDTH = 260;
+const SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH = 290;
+const SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH = 240;
 const SAFE_RESET_BASELINE_THEME = 'light';
 const SAFE_RESET_BASELINE_FONT_FAMILY = '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 const SAFE_RESET_BASELINE_FONT_SIZE_PX = 12;
@@ -191,6 +208,7 @@ const activeTab = 'roman';
 let currentDocumentPath = null;
 let currentDocumentKind = null;
 let currentProjectId = '';
+let spatialLayoutState = null;
 let flowModeState = {
   active: false,
   scenes: [],
@@ -489,6 +507,7 @@ function setToolbarSpacingMenuOpen(nextOpen) {
     toolbarSpacingMenu.hidden = true;
     return;
   }
+  setParagraphMenuOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
   const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
   toolbarSpacingMenu.hidden = false;
@@ -504,6 +523,29 @@ function setToolbarSpacingMenuOpen(nextOpen) {
   const nextTop = Math.round(desiredTop);
   toolbarSpacingMenu.style.left = `${nextLeft}px`;
   toolbarSpacingMenu.style.top = `${nextTop}px`;
+}
+
+function setParagraphMenuOpen(nextOpen) {
+  if (!paragraphMenu || !paragraphTriggerButton || !toolbarShell) return;
+  if (!nextOpen) {
+    paragraphMenu.hidden = true;
+    paragraphTriggerButton.setAttribute('aria-expanded', 'false');
+    return;
+  }
+  setToolbarSpacingMenuOpen(false);
+  const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
+  const triggerRect = paragraphTriggerButton.getBoundingClientRect();
+  paragraphMenu.hidden = false;
+  const menuRect = paragraphMenu.getBoundingClientRect();
+  const desiredLeft = (triggerRect.left - shellRect.left) / shellScale;
+  const desiredTop = ((triggerRect.bottom - shellRect.top) / shellScale) + 10;
+  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuRect.width);
+  const nextLeft = Math.round(Math.min(Math.max(desiredLeft, 0), maxLeft));
+  const nextTop = Math.round(desiredTop);
+  paragraphMenu.style.left = `${nextLeft}px`;
+  paragraphMenu.style.top = `${nextTop}px`;
+  paragraphTriggerButton.setAttribute('aria-expanded', 'true');
 }
 
 function setToolbarSpacingTuningMode(nextActive) {
@@ -1801,6 +1843,33 @@ function initializeFloatingToolbarSpacingMenu() {
   });
 }
 
+function initializeFloatingToolbarParagraphMenu() {
+  if (!toolbarShell || !paragraphMenu || !paragraphTriggerButton) return;
+  paragraphMenu.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target.closest('[data-paragraph-alignment]') : null;
+    if (!target) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const action = target.dataset.paragraphAlignment;
+    if (action) {
+      handleUiAction(action);
+    }
+    setParagraphMenuOpen(false);
+  });
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!paragraphMenu.contains(target) && target !== paragraphTriggerButton && !paragraphTriggerButton.contains(target)) {
+      setParagraphMenuOpen(false);
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setParagraphMenuOpen(false);
+    }
+  });
+}
+
 function initializeFloatingToolbarDragFoundation() {
   if (!toolbarShell) return;
   toolbarShell.addEventListener('mousedown', (event) => {
@@ -2916,6 +2985,227 @@ function readWorkspaceStorage(primaryKey, legacyKey = primaryKey) {
   }
 }
 
+function getSpatialLayoutStorageKey(projectId = currentProjectId) {
+  const normalizedProjectId = normalizeProjectId(projectId);
+  return normalizedProjectId
+    ? `${SPATIAL_LAYOUT_STORAGE_KEY_PREFIX}:${normalizedProjectId}`
+    : SPATIAL_LAYOUT_STORAGE_KEY_PREFIX;
+}
+
+function getSpatialLayoutViewportWidth() {
+  return Math.max(0, Math.floor(window.innerWidth || document.documentElement.clientWidth || 0));
+}
+
+function getSpatialLayoutMode(viewportWidth = getSpatialLayoutViewportWidth()) {
+  if (viewportWidth < SPATIAL_LAYOUT_MOBILE_BREAKPOINT) {
+    return 'mobile';
+  }
+  if (viewportWidth < SPATIAL_LAYOUT_COMPACT_BREAKPOINT) {
+    return 'compact';
+  }
+  return 'desktop';
+}
+
+function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutViewportWidth()) {
+  const mode = getSpatialLayoutMode(viewportWidth);
+  if (mode === 'mobile') {
+    return {
+      version: SPATIAL_LAYOUT_VERSION,
+      projectId: normalizeProjectId(currentProjectId),
+      leftSidebarWidth: SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH,
+      rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
+      viewportWidth,
+      viewportMode: mode,
+      savedAtUtc: '',
+      source: 'baseline',
+    };
+  }
+  if (mode === 'compact') {
+    return {
+      version: SPATIAL_LAYOUT_VERSION,
+      projectId: normalizeProjectId(currentProjectId),
+      leftSidebarWidth: SPATIAL_LAYOUT_COMPACT_LEFT_BASELINE_WIDTH,
+      rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
+      viewportWidth,
+      viewportMode: mode,
+      savedAtUtc: '',
+      source: 'baseline',
+    };
+  }
+  return {
+    version: SPATIAL_LAYOUT_VERSION,
+    projectId: normalizeProjectId(currentProjectId),
+    leftSidebarWidth: SPATIAL_LAYOUT_DESKTOP_LEFT_BASELINE_WIDTH,
+    rightSidebarWidth: SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH,
+    viewportWidth,
+    viewportMode: mode,
+    savedAtUtc: '',
+    source: 'baseline',
+  };
+}
+
+function getSpatialLayoutConstraintsForViewport(viewportWidth = getSpatialLayoutViewportWidth()) {
+  const mode = getSpatialLayoutMode(viewportWidth);
+  if (mode === 'mobile') {
+    return {
+      mode,
+      leftMin: SPATIAL_LAYOUT_LEFT_MIN_WIDTH,
+      leftMax: SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH,
+      rightMin: SPATIAL_LAYOUT_RIGHT_MIN_WIDTH,
+      rightMax: SPATIAL_LAYOUT_RIGHT_MAX_WIDTH,
+      rightVisible: false,
+    };
+  }
+  if (mode === 'compact') {
+    return {
+      mode,
+      leftMin: 230,
+      leftMax: 260,
+      rightMin: 250,
+      rightMax: 290,
+      rightVisible: true,
+    };
+  }
+  return {
+    mode,
+    leftMin: 250,
+    leftMax: SPATIAL_LAYOUT_LEFT_MAX_WIDTH,
+    rightMin: 280,
+    rightMax: SPATIAL_LAYOUT_RIGHT_MAX_WIDTH,
+    rightVisible: true,
+  };
+}
+
+function clampSpatialSidebarWidth(value, min, max) {
+  const nextValue = Number(value);
+  if (!Number.isFinite(nextValue)) return min;
+  return Math.max(min, Math.min(max, Math.round(nextValue)));
+}
+
+function normalizeSpatialLayoutState(rawState, viewportWidth = getSpatialLayoutViewportWidth()) {
+  const fallback = getSpatialLayoutBaselineForViewport(viewportWidth);
+  const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
+  if (!rawState || typeof rawState !== 'object') {
+    return { ...fallback };
+  }
+
+  const leftSidebarWidth = clampSpatialSidebarWidth(
+    rawState.leftSidebarWidth,
+    constraints.leftMin,
+    constraints.leftMax
+  );
+  const rightSidebarWidth = clampSpatialSidebarWidth(
+    rawState.rightSidebarWidth,
+    constraints.rightMin,
+    constraints.rightMax
+  );
+
+  const isValid =
+    rawState.version === SPATIAL_LAYOUT_VERSION &&
+    leftSidebarWidth >= constraints.leftMin &&
+    leftSidebarWidth <= constraints.leftMax &&
+    rightSidebarWidth >= constraints.rightMin &&
+    rightSidebarWidth <= constraints.rightMax;
+
+  if (!isValid) {
+    return { ...fallback };
+  }
+
+  return {
+    version: SPATIAL_LAYOUT_VERSION,
+    projectId: normalizeProjectId(rawState.projectId || currentProjectId),
+    leftSidebarWidth,
+    rightSidebarWidth: constraints.rightVisible ? rightSidebarWidth : fallback.rightSidebarWidth,
+    viewportWidth,
+    viewportMode: constraints.mode,
+    savedAtUtc: typeof rawState.savedAtUtc === 'string' ? rawState.savedAtUtc : '',
+    source: 'stored',
+  };
+}
+
+function readSpatialLayoutState(projectId = currentProjectId) {
+  const storageKey = getSpatialLayoutStorageKey(projectId);
+  const legacyKey = 'spatialLayout';
+  const raw = readWorkspaceStorage(storageKey, legacyKey);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function persistSpatialLayoutState(state, projectId = currentProjectId) {
+  const normalizedProjectId = normalizeProjectId(projectId);
+  const nextState = {
+    version: SPATIAL_LAYOUT_VERSION,
+    projectId: normalizedProjectId,
+    leftSidebarWidth: Math.round(Number(state?.leftSidebarWidth) || SPATIAL_LAYOUT_DESKTOP_LEFT_BASELINE_WIDTH),
+    rightSidebarWidth: Math.round(Number(state?.rightSidebarWidth) || SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH),
+    viewportWidth: Math.max(0, Math.floor(Number(state?.viewportWidth) || getSpatialLayoutViewportWidth())),
+    viewportMode: state?.viewportMode || getSpatialLayoutMode(),
+    savedAtUtc: new Date().toISOString(),
+    source: state?.source || 'committed',
+  };
+  try {
+    localStorage.setItem(getSpatialLayoutStorageKey(normalizedProjectId), JSON.stringify(nextState));
+  } catch {}
+  spatialLayoutState = nextState;
+  return nextState;
+}
+
+function applySpatialLayoutState(state, { persist = false, projectId = currentProjectId } = {}) {
+  const viewportWidth = getSpatialLayoutViewportWidth();
+  const normalizedState = normalizeSpatialLayoutState(state, viewportWidth);
+  const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
+  const rightVisible = constraints.rightVisible;
+
+  if (appLayout) {
+    appLayout.style.setProperty('--app-left-sidebar-width', `${normalizedState.leftSidebarWidth}px`);
+    appLayout.style.setProperty('--app-right-sidebar-width', `${normalizedState.rightSidebarWidth}px`);
+  }
+
+  if (rightSidebar) {
+    rightSidebar.hidden = !rightVisible;
+  }
+  if (rightSidebarResizer) {
+    rightSidebarResizer.hidden = !rightVisible;
+  }
+
+  spatialLayoutState = {
+    ...normalizedState,
+    projectId: normalizeProjectId(projectId || normalizedState.projectId || currentProjectId),
+    viewportWidth,
+    viewportMode: constraints.mode,
+    source: persist ? 'committed' : normalizedState.source,
+  };
+
+  if (persist) {
+    persistSpatialLayoutState(spatialLayoutState, projectId);
+  }
+
+  return spatialLayoutState;
+}
+
+function restoreSpatialLayoutState(projectId = currentProjectId) {
+  const storedState = readSpatialLayoutState(projectId);
+  const resolvedState = normalizeSpatialLayoutState(storedState, getSpatialLayoutViewportWidth());
+  return applySpatialLayoutState(resolvedState, { persist: false, projectId });
+}
+
+function commitSpatialLayoutState(projectId = currentProjectId) {
+  return applySpatialLayoutState(spatialLayoutState || getSpatialLayoutBaselineForViewport(), {
+    persist: true,
+    projectId,
+  });
+}
+
+function updateSpatialLayoutForViewportChange() {
+  const storedState = readSpatialLayoutState(currentProjectId);
+  const resolvedState = normalizeSpatialLayoutState(storedState || spatialLayoutState, getSpatialLayoutViewportWidth());
+  applySpatialLayoutState(resolvedState, { persist: false, projectId: currentProjectId });
+}
+
 function showEditorPanelFor(title) {
   editorPanel?.classList.add('active');
   mainContent?.classList.add('main-content--editor');
@@ -3501,36 +3791,71 @@ if (treeContainer) {
   });
 }
 
+let spatialResizeDragState = null;
+
+function startSpatialResize(side, event) {
+  const draftState = spatialLayoutState || getSpatialLayoutBaselineForViewport();
+  spatialResizeDragState = {
+    side,
+    startX: event.clientX,
+    startLeftWidth: draftState.leftSidebarWidth,
+    startRightWidth: draftState.rightSidebarWidth,
+  };
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+  window.addEventListener('pointermove', handleSpatialResizeMove);
+  window.addEventListener('pointerup', stopSpatialResize);
+}
+
+function handleSpatialResizeMove(event) {
+  if (!spatialResizeDragState) return;
+  const constraints = getSpatialLayoutConstraintsForViewport();
+  const nextState = {
+    ...(spatialLayoutState || getSpatialLayoutBaselineForViewport()),
+    viewportWidth: getSpatialLayoutViewportWidth(),
+    viewportMode: constraints.mode,
+  };
+
+  if (spatialResizeDragState.side === 'left') {
+    nextState.leftSidebarWidth = clampSpatialSidebarWidth(
+      spatialResizeDragState.startLeftWidth + (event.clientX - spatialResizeDragState.startX),
+      constraints.leftMin,
+      constraints.leftMax
+    );
+  } else {
+    nextState.rightSidebarWidth = clampSpatialSidebarWidth(
+      spatialResizeDragState.startRightWidth + (spatialResizeDragState.startX - event.clientX),
+      constraints.rightMin,
+      constraints.rightMax
+    );
+  }
+
+  applySpatialLayoutState(nextState, { persist: false, projectId: currentProjectId });
+  scheduleLayoutRefresh();
+}
+
+function stopSpatialResize() {
+  if (!spatialResizeDragState) return;
+  spatialResizeDragState = null;
+  document.body.style.cursor = '';
+  document.body.style.userSelect = '';
+  window.removeEventListener('pointermove', handleSpatialResizeMove);
+  window.removeEventListener('pointerup', stopSpatialResize);
+  commitSpatialLayoutState(currentProjectId);
+  scheduleLayoutRefresh();
+}
+
 if (sidebar && sidebarResizer) {
-  const MIN_WIDTH = 200;
-  const MAX_WIDTH = 600;
-  let dragStartX = null;
-  let dragStartWidth = null;
-
-  function onMove(event) {
-    if (dragStartX === null || dragStartWidth === null) return;
-    const delta = event.clientX - dragStartX;
-    const nextWidth = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, dragStartWidth + delta));
-    sidebar.style.width = `${nextWidth}px`;
-  }
-
-  function stop() {
-    dragStartX = null;
-    dragStartWidth = null;
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-    window.removeEventListener('pointermove', onMove);
-    window.removeEventListener('pointerup', stop);
-    scheduleLayoutRefresh();
-  }
-
   sidebarResizer.addEventListener('pointerdown', (event) => {
-    dragStartX = event.clientX;
-    dragStartWidth = sidebar.getBoundingClientRect().width;
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', stop);
+    event.preventDefault();
+    startSpatialResize('left', event);
+  });
+}
+
+if (rightSidebar && rightSidebarResizer) {
+  rightSidebarResizer.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    startSpatialResize('right', event);
   });
 }
 
@@ -3849,11 +4174,13 @@ function clearProjectWorkspaceStorage(projectId = currentProjectId) {
   const normalizedProjectId = normalizeProjectId(projectId);
   const keysToRemove = new Set([
     'activeDocumentTitle',
+    'spatialLayout',
     ...PROJECT_WORKSPACE_RESET_TABS.map((tab) => `treeExpanded:${tab}`),
   ]);
 
   if (normalizedProjectId) {
     keysToRemove.add(getActiveDocumentTitleStorageKey(normalizedProjectId));
+    keysToRemove.add(getSpatialLayoutStorageKey(normalizedProjectId));
     PROJECT_WORKSPACE_RESET_TABS.forEach((tab) => {
       keysToRemove.add(getTreeExpandedStorageKey(tab, normalizedProjectId));
     });
@@ -3927,6 +4254,10 @@ function performSafeResetShell() {
   applyViewMode(SAFE_RESET_BASELINE_VIEW_MODE);
   setEditorZoom(EDITOR_ZOOM_DEFAULT);
   setToolbarCompactMode(false);
+  applySpatialLayoutState(getSpatialLayoutBaselineForViewport(), {
+    persist: true,
+    projectId: currentProjectId,
+  });
 
   if (editor) {
     editor.style.fontSize = `${SAFE_RESET_BASELINE_FONT_SIZE_PX}px`;
@@ -4009,6 +4340,7 @@ function performRestoreLastStableShell() {
   restoreFloatingToolbarPosition();
   restoreLeftToolbarButtonOffsets();
   restoreLeftFloatingToolbarPosition();
+  restoreSpatialLayoutState(currentProjectId);
 
   configuratorBucketState = readConfiguratorBucketState();
   setActiveConfiguratorBucketSelection('', -1);
@@ -4354,7 +4686,7 @@ function applyTextStyle(action) {
 function updateAlignmentButtons(activeAction) {
   if (!alignButtons.length) return;
   alignButtons.forEach((button) => {
-    const isActive = activeAction !== 'align-left' && button.dataset.action === activeAction;
+    const isActive = button.dataset.paragraphAlignment === activeAction;
     button.classList.toggle('is-active', isActive);
     button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
@@ -5006,6 +5338,13 @@ function handleUiAction(action) {
     case 'zoom-in':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_ZOOM_IN);
       return true;
+    case 'toggle-paragraph-menu':
+      setParagraphMenuOpen(!(paragraphMenu && !paragraphMenu.hidden));
+      return true;
+    case 'undo':
+      return handleUndo().performed !== false;
+    case 'redo':
+      return handleRedo().performed !== false;
     case 'align-left':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
       return true;
@@ -5189,6 +5528,7 @@ loadSavedEditorZoom();
 applyLiteralToolbarMasterVisualDefaults();
 
 setPlainText('');
+restoreSpatialLayoutState(currentProjectId);
 metaPanel?.classList.add('is-hidden');
 if (rightSceneMetaPanel && metaPanel) {
   rightSceneMetaPanel.appendChild(metaPanel);
@@ -5210,6 +5550,7 @@ initializeConfiguratorBuckets();
 showEditorPanelFor('Yalken');
 updateWordCount();
 initializeFloatingToolbarSpacingMenu();
+initializeFloatingToolbarParagraphMenu();
 initializeFloatingToolbarItemOffsetTuning();
 initializeFloatingToolbarDragFoundation();
 initializeLeftToolbarSpacingMenu();
@@ -5410,7 +5751,10 @@ document.addEventListener('keydown', (event) => {
 }, true);
 document.addEventListener('selectionchange', syncAlignmentButtonsToSelection);
 
-window.addEventListener('resize', scheduleLayoutRefresh);
+window.addEventListener('resize', () => {
+  updateSpatialLayoutForViewportChange();
+  scheduleLayoutRefresh();
+});
 
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
@@ -5437,6 +5781,7 @@ if (window.electronAPI) {
       if (nextProjectId !== currentProjectId) {
         currentProjectId = nextProjectId;
         expandedNodesByTab = new Map();
+        restoreSpatialLayoutState(currentProjectId);
       }
     }
 
@@ -5479,7 +5824,9 @@ if (window.electronAPI) {
         ? payload.message
         : 'Recovered from autosave';
       updateWarningStateText('recovery restored');
-      openRecoveryModal(message);
+      if (recoveryMessage) {
+        recoveryMessage.textContent = message;
+      }
       updateInspectorSnapshot();
     });
   }

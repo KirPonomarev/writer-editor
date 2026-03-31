@@ -1,0 +1,67 @@
+{
+  "status": "DECISION_TAKEN_RUNTIME_WRITES_NOT_ADMITTED",
+  "contourId": "CONTOUR_01_PRIMARY_EDITOR_LOCAL_SAVE_AND_LAST_STABLE_RECOVERY",
+  "decisionAtUtc": "2026-03-24T11:40:33Z",
+  "decisionOwner": "MAIN_INTEGRATOR",
+  "decision": "CLOSE_AS_PROOF_CONTOUR_WITHOUT_RUNTIME_MUTATION",
+  "proofComplete": true,
+  "runtimeWritesAdmitted": false,
+  "relevantGateDefinition": "A contour-relevant gate is any gate that directly invalidates the admitted seams, proof obligations or invariants of contour 01.",
+  "externalBackgroundGateDefinition": "An external-background gate may block broad repo-level runtime admission but does not invalidate contour 01 proof-only closure when admitted seams remain proven and runtime writes stay forbidden.",
+  "relevantGates": [],
+  "externalGates": [
+    {
+      "gateId": "HEAD_STRICT_OK",
+      "currentValue": 0,
+      "role": "EXTERNAL_BACKGROUND_REPO_GLOBAL",
+      "source": "scripts/ops/head-strict-state.mjs via evaluateHeadStrictState"
+    },
+    {
+      "gateId": "GOVERNANCE_CHANGE_OK",
+      "currentValue": 0,
+      "role": "EXTERNAL_BACKGROUND_REPO_GLOBAL",
+      "source": "scripts/ops/governance-change-detection.mjs via evaluateGovernanceChangeDetection"
+    },
+    {
+      "gateId": "PRE_UI_OPS_CONTOUR_CLOSED_OK",
+      "currentValue": 0,
+      "role": "EXTERNAL_BACKGROUND_REPO_GLOBAL",
+      "source": "scripts/ops/pre-ui-ops-contour-close-state.mjs via evaluatePreUiOpsContourCloseState"
+    },
+    {
+      "gateId": "M3_COMMAND_WIRING_OK",
+      "currentValue": 0,
+      "role": "EXTERNAL_BACKGROUND_STALE_SECTOR_M",
+      "source": "scripts/doctor.mjs via evaluateM3CommandWiringTokens"
+    },
+    {
+      "gateId": "M4_UI_PATH_OK",
+      "currentValue": 0,
+      "role": "EXTERNAL_BACKGROUND_STALE_SECTOR_M",
+      "source": "scripts/doctor.mjs via evaluateM4UiPathTokens"
+    }
+  ],
+  "reasons": [
+    "MIOS_FIRST_VERTICAL_SLICE_DEFINITION_RECORD_V1.json and MIOS_FIRST_VERTICAL_SLICE_EXECUTION_PROOF_RECORD_V1.json both exist and stay narrow.",
+    "The exact contour-01 proofhook and its contract test pass locally.",
+    "No red gate currently invalidates the admitted contour-01 seams, invariants or proof obligations.",
+    "Requested red gates remain repo-global or stale-sector admission background and therefore block broad runtime code admission, not proof-only closure."
+  ],
+  "proofArtifacts": [
+    "CORE-A4-YALKEN-CONTOUR-01-001.md",
+    "MIOS_FIRST_VERTICAL_SLICE_DEFINITION_RECORD_V1.json",
+    "MIOS_FIRST_VERTICAL_SLICE_EXECUTION_PROOF_RECORD_V1.json",
+    "contour-01-primary-editor-save-recovery-proofhook.mjs",
+    "contour-01-primary-editor-save-recovery-proofhook.contract.test.js"
+  ],
+  "notClaimed": {
+    "formalCutoverClaimed": false,
+    "broadRuntimeAdmissionClaimed": false,
+    "repoLevelDoctorGreenClaimed": false
+  },
+  "nextStep": "ISSUE_CONTOUR_01_PROOF_CLOSURE_RECORD_AND_KEEP_RUNTIME_WRITES_LOCKED",
+  "notes": [
+    "Runtime surface writes remain forbidden until a separate admission decision explicitly reopens the task.",
+    "If runtime writes are needed later, open one separate admission remediation task instead of mutating runtime surfaces under this proof-only closure."
+  ]
+}

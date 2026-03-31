@@ -1,0 +1,60 @@
+{
+  "documentId": "X101_LITERAL_INTERFACE_STAGE_A1_HOTFIX_PACKET_V1",
+  "tzId": "TZ_YALKEN_LITERAL_INTERFACE_STAGE_A1_HOTFIX_002",
+  "ackStatus": "HOLD",
+  "phaseId": "STAGE_A1_LITERAL_FIDELITY_HOTFIX",
+  "scope": "STAGE_A1_LITERAL_FIDELITY_HOTFIX",
+  "masterStateMatched": false,
+  "dragFoundationImplemented": true,
+  "stageBReady": false,
+  "previousBlockersTargeted": [
+    "MASTER_STATE_VISUAL_MISMATCH",
+    "TOP_TOOLBAR_CENTER_SNAP_BEHAVIOR_MISMATCH",
+    "GRID_TRIGGER_BEHAVIOR_MISMATCH",
+    "SHEET_IDENTITY_MISMATCH",
+    "TOOLBAR_TRANSFORMABILITY_MISSING_IF_REQUIRED_FOR_APPROVED_STATE_FIDELITY"
+  ],
+  "implementedHotfixes": [
+    "restored top-bar composition proportions closer to approved master geometry",
+    "restored 3x3 grid icon fidelity and real configurator open behavior",
+    "retuned search, plus, document, and caret glyph proportions in the left icon cluster",
+    "replaced the final action icon with a maximize-style glyph closer to the approved screen",
+    "removed unapproved canvas rounding and preserved paper-style sheet identity",
+    "forced snapped master state to horizontal top-center behavior",
+    "made rotate, width, and scale handles real isolated toolbar interactions",
+    "added configurator close behavior for outside click and escape",
+    "added a real soft halo selected row inside the configurator surface"
+  ],
+  "requiredChecks": {
+    "REQ_01_build_renderer": true,
+    "REQ_02_packaged_bundle_check": true,
+    "REQ_03_merge_readiness": true,
+    "REQ_03_note": "validated in temporary main worktree merge-preview on branch main after Stage A1_002 hotfixes",
+    "REQ_04_task_delta_allowlist_only": true,
+    "REQ_05_existing_runtime_baseline_not_regressed": true,
+    "REQ_05_note": "validated by npm run test:electron",
+    "REQ_06_manual_visual_recheck_all_failed_items": false
+  },
+  "manualRecheck": {
+    "SMOKE_01_toolbar_can_move_freely_anywhere_on_screen": "UNCONFIRMED",
+    "SMOKE_02_toolbar_snaps_centered_to_top_work_bar_zone_correctly": "UNCONFIRMED",
+    "SMOKE_03_final_action_icon_matches_approved_screen": "UNCONFIRMED",
+    "SMOKE_04_left_icon_cluster_matches_approved_screen": "UNCONFIRMED",
+    "SMOKE_05_configurator_highlight_is_soft_halo_not_heavy_bar": "UNCONFIRMED",
+    "SMOKE_06_canvas_has_no_unapproved_rounding": "UNCONFIRMED",
+    "SMOKE_07_sheet_looks_like_approved_paper_object": "UNCONFIRMED",
+    "SMOKE_08_drag_still_works_and_controls_still_click": "UNCONFIRMED"
+  },
+  "visualMatchNotesOnPreviousFailures": [
+    "left cluster proportions were tightened toward the archive geometry instead of the earlier rounded interpretation",
+    "grid trigger now presents a real overlay surface instead of a decorative dead-end icon",
+    "top snap behavior now restores the horizontal master state instead of preserving detached vertical orientation",
+    "configurator surface now carries a soft selected-row halo instead of a heavy block highlight",
+    "final action button now uses a maximize-like glyph instead of the earlier substitute icon"
+  ],
+  "remainingGapsIfAny": [
+    "manual visual confirmation against approved screens is still required for literal fidelity closure"
+  ],
+  "nextGate": "MANUAL_STAGE_A1_LITERAL_RECHECK",
+  "updatedAtUtc": "2026-03-09T15:52:02Z"
+}

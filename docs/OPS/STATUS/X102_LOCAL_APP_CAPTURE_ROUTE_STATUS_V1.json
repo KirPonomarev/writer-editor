@@ -1,0 +1,39 @@
+{
+  "artifactId": "X102_LOCAL_APP_CAPTURE_ROUTE_STATUS_V1",
+  "taskId": "X102_LOCAL_APP_LAUNCH_AND_CAPTURE_ROUTE_REPAIR_V1",
+  "status": "HOLD_SYSTEM_LAUNCH_BLOCKER_AFTER_REPO_LOCAL_ROUTE_REPAIR",
+  "currentHead": "364bdb7980107c483864359219b8a93fede65cae",
+  "cleanSurfaceHead": "364bdb7980107c483864359219b8a93fede65cae",
+  "launchRouteFixed": false,
+  "helperBootReached": false,
+  "runtimeJsonCreated": false,
+  "pngCaptureSetCreated": false,
+  "sourceFilesChanged": [
+    "x102-capture-launch.mjs",
+    "x102-capture-helper.js",
+    "X102_LOCAL_APP_CAPTURE_ROUTE_RUNTIME_SPEC_V1.json",
+    "X102_LOCAL_APP_CAPTURE_ROUTE_STATUS_V1.json"
+  ],
+  "checksPassed": [
+    "local_electron_binary_resolved_true",
+    "clean_surface_head_reconfirmed_true",
+    "repo_local_helper_surface_created_true",
+    "plain_node_launch_path_eliminated_in_launcher_true",
+    "helper_script_target_is_explicit_true",
+    "renderer_source_unchanged_true",
+    "no_new_dependencies_true",
+    "parked_right_zone_and_spatial_deltas_remain_excluded_true"
+  ],
+  "observedFailureMode": {
+    "launchCommandReachedElectronBinary": true,
+    "launchCommandReachedHelperScript": true,
+    "helperBootMarkerPresent": false,
+    "runtimeJsonPresent": false,
+    "pngOutputsPresent": false,
+    "crashEvidenceType": "SIGABRT",
+    "crashEvidenceLocation": "Electron ips report and launcher.log",
+    "crashEvidenceSummary": "Abort occurs in AppKit RegisterApplication and NSApplication sharedApplication before repo local helper executes",
+    "launcherLogSignal": "SIGABRT"
+  },
+  "nextGate": "RERUN_SNAPSHOT_CONTOUR_ONLY_AFTER_SYSTEM_LEVEL_ELECTRON_GUI_LAUNCH_IS_AVAILABLE_TO_CODEX_SESSION"
+}
