@@ -357,11 +357,44 @@ function createStableProjectId() {
   return `project-${randomPart}`;
 }
 
+function normalizeStableProjectId(projectId) {
+  if (typeof projectId !== 'string') {
+    return '';
+  }
+
+  const normalized = projectId.trim();
+  if (!normalized) {
+    return '';
+  }
+
+  if (normalized.length > 128) {
+    return '';
+  }
+
+  if (/[\\/\u0000-\u001F]/.test(normalized)) {
+    return '';
+  }
+
+  return normalized;
+}
+
+function getProjectManifestComparable(manifest) {
+  if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
+    return null;
+  }
+
+  return {
+    schemaVersion: manifest.schemaVersion,
+    projectId: typeof manifest.projectId === 'string' ? manifest.projectId.trim() : manifest.projectId,
+    projectName: typeof manifest.projectName === 'string' ? manifest.projectName.trim() : manifest.projectName,
+    createdAtUtc: typeof manifest.createdAtUtc === 'string' ? manifest.createdAtUtc.trim() : manifest.createdAtUtc
+  };
+}
+
 function normalizeProjectManifest(manifest, projectName = DEFAULT_PROJECT_NAME) {
   const source = manifest && typeof manifest === 'object' && !Array.isArray(manifest) ? manifest : {};
-  const projectId = typeof source.projectId === 'string' && source.projectId.trim().length > 0
-    ? source.projectId.trim()
-    : createStableProjectId();
+  const stableProjectId = normalizeStableProjectId(source.projectId);
+  const projectId = stableProjectId || createStableProjectId();
   const normalizedProjectName = typeof source.projectName === 'string' && source.projectName.trim().length > 0
     ? source.projectName.trim()
     : sanitizeFilename(projectName);
@@ -381,7 +414,12 @@ async function readProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
   const manifestPath = getProjectManifestPath(projectName);
   try {
     const raw = await fs.readFile(manifestPath, 'utf8');
-    return normalizeProjectManifest(JSON.parse(raw), projectName);
+    const parsed = JSON.parse(raw);
+    const sourceManifest = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null;
+    return {
+      manifest: normalizeProjectManifest(sourceManifest || {}, projectName),
+      sourceManifestComparable: getProjectManifestComparable(sourceManifest)
+    };
   } catch {
     return null;
   }
@@ -389,10 +427,12 @@ async function readProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
 
 async function ensureProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
   const manifestPath = getProjectManifestPath(projectName);
-  const existingManifest = await readProjectManifest(projectName);
+  const existingManifestRecord = await readProjectManifest(projectName);
+  const existingManifest = existingManifestRecord ? existingManifestRecord.manifest : null;
+  const sourceManifestComparable = existingManifestRecord ? existingManifestRecord.sourceManifestComparable : null;
   const nextManifest = normalizeProjectManifest(existingManifest || {}, projectName);
-  const shouldWrite = !existingManifest
-    || JSON.stringify(existingManifest) !== JSON.stringify(nextManifest);
+  const shouldWrite = !sourceManifestComparable
+    || JSON.stringify(sourceManifestComparable) !== JSON.stringify(nextManifest);
 
   if (shouldWrite) {
     const writeResult = await queueDiskOperation(
