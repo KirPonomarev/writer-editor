@@ -1,6 +1,6 @@
 # HANDOFF (Yalken Writer)
 
-_Generated: 2026-03-20_
+_Generated: 2026-03-31_
 
 ## Start Here
 - Repo canon: `CANON.md`
@@ -26,7 +26,7 @@ _Generated: 2026-03-20_
 - Active axis: `Writer v1`
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
-- Active docs: synced to post-merge main reality with repo-wide done confirmed after reconfirm
+- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet and rollback packet
 
 ## What Is Stable
 - Primary editor closure packet exists.
@@ -39,12 +39,18 @@ _Generated: 2026-03-20_
 - Phase 05 bounded spatial shell chain is closed on main through the merged repair wave.
 - Phase 06 explicit skip contour is closed on main through the merged repair wave.
 - Phase 07 required closure set is green on main after post-merge reconfirm.
+- Y7 foundation/proof regen record is closed on main with honest pass-hold profile.
+- Y8 formal cutover packet is bound on main.
+- Y8 rollback packet is bound on main.
+- Y8_FORMAL_CUTOVER_PACKET_RECORD_V1.json is active.
+- Y8_FORMAL_CUTOVER_ROLLBACK_PACKET_V1.json is active.
+- Y9_NOT_OPENED_BY_IMPLICATION: TRUE
 - Repo-wide done is confirmed on main after merge gate and post-merge reconfirm.
 
 ## What Is Next
-1. preserve the confirmed repo-wide closure state on main
-2. do not reopen post-version-one evaluation as mandatory v1 readiness
-3. keep broader freedom out of mandatory v1 readiness
+1. keep Y8 cutover truth and rollback truth as one active factual reality
+2. do not reinterpret Y8 as automatic Y9 authority
+3. wait for one explicit post-Y8 decision brief only
 
 ## Working Agreement
 - Bounded contours only
@@ -64,5 +70,5 @@ _Generated: 2026-03-20_
 
 ## Current Risk Boundary
 - Do not treat post-version-one evaluation as automatic new release scope.
-- Do not describe current repo as if Phase 03, Phase 04, Phase 05 and Phase 06 were already repair-closed.
-- Do not convert evaluation-only work into active canon law without explicit promotion.
+- Do not skip rollback packet when formal cutover is claimed.
+- Do not imply Y9 or release hardening by narrative-only text.
