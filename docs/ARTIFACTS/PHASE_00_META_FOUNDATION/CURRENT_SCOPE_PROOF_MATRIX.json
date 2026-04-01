@@ -4,7 +4,7 @@
   "generatedAtUtc": "2026-04-01T20:55:24Z",
   "currentMainlineRebind": {
     "bindingBaseSha": "22db0b8177f27b8950675b4affd0a4ed3a5e3f2f",
-    "reboundAtUtc": "2026-04-01T23:18:05Z",
+    "reboundAtUtc": "2026-04-01T23:28:12Z",
     "surfaceClassifications": [
       {
         "surfaceId": "SURFACE_MENU_SOURCEBINDING",
@@ -23,6 +23,12 @@
         "classification": "LIVE",
         "proofClassSetSatisfied": true,
         "reason": "Factual docs are aligned to current mainline operating reality."
+      },
+      {
+        "surfaceId": "SURFACE_SHELL_SAFE_RESET_RESTORE",
+        "classification": "LIVE",
+        "proofClassSetSatisfied": true,
+        "reason": "Current safe-reset and restore runtime path is covered by active targeted shell proof tests on mainline."
       }
     ]
   },

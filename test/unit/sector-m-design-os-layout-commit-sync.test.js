@@ -9,75 +9,52 @@ function readEditorSource() {
   return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'editor.js'), 'utf8')
 }
 
-test.skip('layout commit sync: editor imports buildLayoutPatchFromSpatialState and uses commitDesign at resize_end boundary only', () => {
+test('layout commit sync: runtime slice is not currently admitted in editor runtime path', () => {
   const source = readEditorSource()
-  assert.ok(source.includes('buildLayoutPatchFromSpatialState,'))
+  assert.equal(source.includes('buildLayoutPatchFromSpatialState'), false)
+  assert.equal(source.includes('commitDesign('), false)
+  assert.equal(source.includes('syncDesignOsDormantLayoutCommitAtResizeEnd('), false)
+})
+
+test('layout commit sync: current resize flow persists baseline spatial state without dormant commitDesign ports', () => {
+  const source = readEditorSource()
 
   const stopStart = source.indexOf('function stopSpatialResize()')
   const stopEnd = source.indexOf('if (sidebar && sidebarResizer)')
   assert.ok(stopStart > -1 && stopEnd > stopStart, 'stopSpatialResize bounds must exist')
   const stopSnippet = source.slice(stopStart, stopEnd)
-  assert.ok(stopSnippet.includes('const committedLayoutState = commitSpatialLayoutState(currentProjectId);'))
-  assert.ok(stopSnippet.includes('syncDesignOsDormantLayoutCommitAtResizeEnd(committedLayoutState);'))
-
-  const helperStart = source.indexOf('function syncDesignOsDormantLayoutCommitAtResizeEnd(committedSpatialState)')
-  const helperEnd = source.indexOf('function applyMode(mode)')
-  assert.ok(helperStart > -1 && helperEnd > helperStart, 'layout commit helper bounds must exist')
-  const helperSnippet = source.slice(helperStart, helperEnd)
-  assert.ok(helperSnippet.includes("typeof designOsDormantRuntimeMount.ports.commitDesign !== 'function'"))
-  assert.ok(helperSnippet.includes('const layoutPatch = buildLayoutPatchFromSpatialState(committedSpatialState, {'))
-  assert.ok(helperSnippet.includes('designOsDormantRuntimeMount.ports.commitDesign({'))
-  assert.ok(helperSnippet.includes('context,'))
-  assert.ok(helperSnippet.includes('layout_patch: layoutPatch,'))
-  assert.ok(helperSnippet.includes("commit_point: 'resize_end',"))
-  assert.equal(helperSnippet.includes('design_patch'), false, 'design_patch must not be sent')
-})
-
-test.skip('layout commit sync: fallback remains when commitDesign ports are unavailable or throw', () => {
-  const source = readEditorSource()
-
-  const helperStart = source.indexOf('function syncDesignOsDormantLayoutCommitAtResizeEnd(committedSpatialState)')
-  const helperEnd = source.indexOf('function applyMode(mode)')
-  assert.ok(helperStart > -1 && helperEnd > helperStart, 'layout commit helper bounds must exist')
-  const helperSnippet = source.slice(helperStart, helperEnd)
-  assert.ok(helperSnippet.includes('if (!designOsDormantRuntimeMount.ports || typeof designOsDormantRuntimeMount.ports.commitDesign !== \'function\') return;'))
-  assert.ok(helperSnippet.includes('try {'))
-  assert.ok(helperSnippet.includes('} catch {}'))
-
-  const stopStart = source.indexOf('function stopSpatialResize()')
-  const stopEnd = source.indexOf('if (sidebar && sidebarResizer)')
-  const stopSnippet = source.slice(stopStart, stopEnd)
   assert.ok(stopSnippet.includes('commitSpatialLayoutState(currentProjectId);'))
+  assert.equal(stopSnippet.includes('commitDesign('), false)
 })
 
-test.skip('layout commit sync: safe-reset and restore handlers remain unchanged in this slice', () => {
+test('layout commit sync: safe-reset and restore handlers remain stable while layout commit slice is not admitted', () => {
   const source = readEditorSource()
 
   const safeStart = source.indexOf('function performSafeResetShell()')
   const safeEnd = source.indexOf('function performRestoreLastStableShell()')
   assert.ok(safeStart > -1 && safeEnd > safeStart, 'performSafeResetShell bounds must exist')
   const safeSnippet = source.slice(safeStart, safeEnd)
-  assert.ok(safeSnippet.includes("typeof designOsDormantRuntimeMount.ports.safeResetShell === 'function'"))
-  assert.ok(safeSnippet.includes('nextSafeResetLayoutState = buildSpatialStateFromLayoutSnapshot(layoutSnapshot, {'))
+  assert.ok(safeSnippet.includes('applySpatialLayoutState(getSpatialLayoutBaselineForViewport(), {'))
 
   const restoreStart = source.indexOf('function performRestoreLastStableShell()')
   const restoreEnd = source.indexOf('function openSimpleModal(modal)')
   assert.ok(restoreStart > -1 && restoreEnd > restoreStart, 'performRestoreLastStableShell bounds must exist')
   const restoreSnippet = source.slice(restoreStart, restoreEnd)
-  assert.ok(restoreSnippet.includes("typeof designOsDormantRuntimeMount.ports.restoreLastStableShell === 'function'"))
-  assert.ok(restoreSnippet.includes('nextRestoreLayoutState = buildSpatialStateFromLayoutSnapshot(layoutSnapshot, {'))
+  assert.ok(restoreSnippet.includes('restoreSpatialLayoutState(currentProjectId);'))
 })
 
-test.skip('layout commit sync: status warning perf semantics and runtime bridge command surface remain unchanged', () => {
+test('layout commit sync: runtime bridge command surface remains unchanged', () => {
   const source = readEditorSource()
 
   const statusStart = source.indexOf('function updateStatusText(text)')
   const statusEnd = source.indexOf('function updateSaveStateText(text)')
+  assert.ok(statusStart > -1 && statusEnd > statusStart, 'status update bounds must exist')
   const statusSnippet = source.slice(statusStart, statusEnd)
-  assert.ok(statusSnippet.includes('statusElement.textContent = buildStatusLineWithDormantYdosHint(text);'))
+  assert.ok(statusSnippet.includes('statusElement.textContent = text;'))
 
   const warningStart = source.indexOf('function updateWarningStateText(text)')
   const warningEnd = source.indexOf('function updatePerfHintText(text)')
+  assert.ok(warningStart > -1 && warningEnd > warningStart, 'warning update bounds must exist')
   const warningSnippet = source.slice(warningStart, warningEnd)
   assert.ok(warningSnippet.includes('warningStateElement.textContent = `Warnings: ${text}`;'))
 
