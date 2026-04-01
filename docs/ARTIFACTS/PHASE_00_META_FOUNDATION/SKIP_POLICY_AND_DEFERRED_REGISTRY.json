@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
+  "generatedAtUtc": "2026-04-01T20:55:24Z",
+  "skipLaw": {
+    "passFromSkippedRequiredTestsForbidden": true,
+    "deferredTestsMustBeExplicitlyRegistered": true
+  },
+  "deferredTests": [
+    {
+      "testId": "DEFERRED_TEST_PALETTE_GROUPING",
+      "basename": "palette-grouping.test.js",
+      "ownerReason": "current_scope_defers_noncritical_palette_layout_proof",
+      "scopeClass": "DEFERRED",
+      "deferredJustification": "safe_to_defer_until_later_contour_without_redefining_writer_v1_truth"
+    },
+    {
+      "testId": "DEFERRED_TEST_COMMAND_SURFACE_UI_FENCING",
+      "basename": "sector-m-command-surface-ui-fencing.test.js",
+      "ownerReason": "current_scope_records_command_surface_gap_honestly_without_activating_enforcement",
+      "scopeClass": "DEFERRED",
+      "deferredJustification": "proof_is_deferred_but_cannot_be_claimed_pass"
+    },
+    {
+      "testId": "DEFERRED_TEST_PRELOAD_UI_COMMAND_BRIDGE",
+      "basename": "sector-m-preload-ui-command-bridge.test.js",
+      "ownerReason": "preload_bridge_gap_is_recorded_not_hidden",
+      "scopeClass": "DEFERRED",
+      "deferredJustification": "later_contour_must_close_bridge_behavior_explicitly"
+    },
+    {
+      "testId": "DEFERRED_TEST_RUNTIME_COMMAND_ID_CANONICALIZATION",
+      "basename": "sector-m-runtime-command-id-canonicalization.test.js",
+      "ownerReason": "runtime_command_id_canonicalization_remains_deferred",
+      "scopeClass": "DEFERRED",
+      "deferredJustification": "not_required_for_phase_00_meta_foundation_only_scope"
+    },
+    {
+      "testId": "DEFERRED_TEST_DESIGN_OS_SAVE_BOUNDARY_TRUTH_SYNC",
+      "basename": "sector-m-design-os-save-boundary-truth-sync.test.js",
+      "ownerReason": "design_os_runtime_not_opened_by_implication",
+      "scopeClass": "DEFERRED",
+      "deferredJustification": "safe_derived_horizon_cannot_be_presented_as_live_runtime"
+    },
+    {
+      "testId": "DEFERRED_TEST_DESIGN_OS_RESTORE_LAST_STABLE_ADOPTION",
+      "basename": "sector-m-design-os-restore-last-stable-adoption.test.js",
+      "ownerReason": "restore_last_stable_adoption_not_in_current_scope",
+      "scopeClass": "DEFERRED",
+      "deferredJustification": "deferred_until_separate_runtime_contour"
+    },
+    {
+      "testId": "DEFERRED_TEST_DESIGN_OS_LAYOUT_COMMIT_SYNC",
+      "basename": "sector-m-design-os-layout-commit-sync.test.js",
+      "ownerReason": "layout_commit_sync_is_not_activated_by_phase_00_docs_only_work",
+      "scopeClass": "DEFERRED",
+      "deferredJustification": "requires_runtime_slice_not_meta_foundation_only"
+    },
+    {
+      "testId": "DEFERRED_TEST_DESIGN_OS_THEME_DESIGN_STATE",
+      "basename": "sector-m-design-os-theme-design-state.test.js",
+      "ownerReason": "theme_design_state_remains_deferred_horizon",
+      "scopeClass": "DEFERRED",
+      "deferredJustification": "deferred_until_design_runtime_admission"
+    },
+    {
+      "testId": "DEFERRED_TEST_DESIGN_OS_TYPOGRAPHY_DESIGN_STATE",
+      "basename": "sector-m-design-os-typography-design-state.test.js",
+      "ownerReason": "typography_design_state_remains_deferred_horizon",
+      "scopeClass": "DEFERRED",
+      "deferredJustification": "deferred_until_design_runtime_admission"
+    },
+    {
+      "testId": "DEFERRED_TEST_DESIGN_OS_COMMAND_PALETTE_VISIBILITY",
+      "basename": "sector-m-design-os-command-palette-visibility.test.js",
+      "ownerReason": "command_palette_visibility_not_required_for_current_scope",
+      "scopeClass": "DEFERRED",
+      "deferredJustification": "future_contour_may_activate_after_explicit_owner_decision"
+    }
+  ]
+}

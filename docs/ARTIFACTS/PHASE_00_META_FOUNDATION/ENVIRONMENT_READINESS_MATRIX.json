@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
+  "generatedAtUtc": "2026-04-01T20:55:24Z",
+  "lanes": [
+    {
+      "laneId": "DEV_FAST",
+      "requiredTools": [
+        "node",
+        "npm"
+      ],
+      "laneStatus": "READY",
+      "blockedMeaning": "not_applicable_when_laneStatus_is_READY"
+    },
+    {
+      "laneId": "NPM_TEST",
+      "requiredTools": [
+        "node",
+        "npm"
+      ],
+      "laneStatus": "READY",
+      "blockedMeaning": "not_applicable_when_laneStatus_is_READY"
+    },
+    {
+      "laneId": "TEST_ELECTRON",
+      "requiredTools": [
+        "electron"
+      ],
+      "laneStatus": "BLOCKED",
+      "blockedMeaning": "environment_blocked_until_explicit_electron_lane_readiness_is_available"
+    },
+    {
+      "laneId": "BUILD_MAC",
+      "requiredTools": [
+        "xcodebuild",
+        "codesign"
+      ],
+      "laneStatus": "BLOCKED",
+      "blockedMeaning": "mac_build_lane_blocked_in_current_environment"
+    },
+    {
+      "laneId": "SECURITY_AUDIT",
+      "requiredTools": [
+        "npm",
+        "audit_scanner"
+      ],
+      "laneStatus": "BLOCKED",
+      "blockedMeaning": "security_scanner_lane_requires_separate_environment_and_policy_window"
+    },
+    {
+      "laneId": "PERF_SYNTHETIC",
+      "requiredTools": [
+        "node"
+      ],
+      "laneStatus": "READY",
+      "blockedMeaning": "not_applicable_when_laneStatus_is_READY"
+    },
+    {
+      "laneId": "PERF_LIVE",
+      "requiredTools": [
+        "interactive_runtime"
+      ],
+      "laneStatus": "BLOCKED",
+      "blockedMeaning": "live_perf_gate_not_active_in_current_phase_00_meta_scope"
+    },
+    {
+      "laneId": "DOC_TRUTH",
+      "requiredTools": [
+        "git"
+      ],
+      "laneStatus": "READY",
+      "blockedMeaning": "not_applicable_when_laneStatus_is_READY"
+    },
+    {
+      "laneId": "SOURCEBINDING",
+      "requiredTools": [
+        "git",
+        "rg"
+      ],
+      "laneStatus": "READY",
+      "blockedMeaning": "not_applicable_when_laneStatus_is_READY"
+    }
+  ],
+  "requiredTools": [
+    "audit_scanner",
+    "codesign",
+    "electron",
+    "git",
+    "interactive_runtime",
+    "node",
+    "npm",
+    "rg",
+    "xcodebuild"
+  ],
+  "readinessRules": [
+    "laneStatus_READY_means_required_tools_and_current_policy_allow_execution",
+    "laneStatus_BLOCKED_means_environment_or_policy_prevents_honest_green_claim"
+  ],
+  "blockedSemantics": {
+    "blockedMeaningLaw": "blocked_lanes_cannot_be_reported_pass_without_real_environment_readiness",
+    "blockedStatusLiteral": "BLOCKED"
+  }
+}

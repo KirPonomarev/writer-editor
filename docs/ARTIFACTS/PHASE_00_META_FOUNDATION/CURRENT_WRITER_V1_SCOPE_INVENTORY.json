@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
+  "generatedAtUtc": "2026-04-01T20:55:24Z",
+  "authority": {
+    "activeCanonRecord": "docs/OPS/STATUS/CANON_STATUS.json",
+    "activeContract": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+    "authorityMode": "ACTIVE_CANON_ENTRYPOINT"
+  },
+  "currentScopeRequiredSurfaces": [
+    {
+      "surfaceId": "SURFACE_EDITOR_TRUTH_AND_SAVE",
+      "scopeClass": "REQUIRED",
+      "summary": "Writer v1 editor truth and save path remain primary."
+    },
+    {
+      "surfaceId": "SURFACE_COMMAND_SURFACE",
+      "scopeClass": "REQUIRED",
+      "summary": "Commands must remain single-entry and capability-bound."
+    },
+    {
+      "surfaceId": "SURFACE_MENU_SOURCEBINDING",
+      "scopeClass": "REQUIRED",
+      "summary": "Menu truth must remain bound to real command surfaces."
+    },
+    {
+      "surfaceId": "SURFACE_SHELL_SAFE_RESET_RESTORE",
+      "scopeClass": "REQUIRED",
+      "summary": "Safe reset and restore must remain explicit operating surfaces."
+    },
+    {
+      "surfaceId": "SURFACE_FACTUAL_DOC_TRUTH",
+      "scopeClass": "REQUIRED",
+      "summary": "Factual docs must describe one active operating reality."
+    },
+    {
+      "surfaceId": "SURFACE_PERF_TRUTH",
+      "scopeClass": "REQUIRED",
+      "summary": "Perf claims remain evidence-bound and non-narrative."
+    },
+    {
+      "surfaceId": "SURFACE_DEPENDENCY_TRUTH",
+      "scopeClass": "REQUIRED",
+      "summary": "Dependency readiness remains explicit and reviewable."
+    }
+  ],
+  "deferredSurfaces": [
+    {
+      "surfaceId": "SURFACE_DORMANT_DESIGN_OS_PREVIEW_RUNTIME",
+      "scopeClass": "DEFERRED",
+      "summary": "Design OS preview runtime remains deferred beyond Writer v1 scope."
+    },
+    {
+      "surfaceId": "SURFACE_TOKEN_CSS_PROJECTION",
+      "scopeClass": "DEFERRED",
+      "summary": "Token-driven CSS projection remains deferred work."
+    },
+    {
+      "surfaceId": "SURFACE_THEME_PATCH_REPLAY",
+      "scopeClass": "DEFERRED",
+      "summary": "Theme patch replay is not active in current scope."
+    },
+    {
+      "surfaceId": "SURFACE_TYPOGRAPHY_PATCH_REPLAY",
+      "scopeClass": "DEFERRED",
+      "summary": "Typography patch replay is deferred until later contour."
+    },
+    {
+      "surfaceId": "SURFACE_COMMAND_PALETTE_DORMANT_FILTERING",
+      "scopeClass": "DEFERRED",
+      "summary": "Dormant command palette filtering remains deferred."
+    }
+  ],
+  "dormantSurfaces": [
+    {
+      "surfaceId": "SURFACE_DORMANT_DESIGN_OS_PORTS",
+      "scopeClass": "DORMANT",
+      "summary": "Design OS ports exist only as dormant structural horizon."
+    },
+    {
+      "surfaceId": "SURFACE_DORMANT_DESIGN_OS_SHELL_CONTROLLER",
+      "scopeClass": "DORMANT",
+      "summary": "Shell controller remains dormant and non-authoritative."
+    },
+    {
+      "surfaceId": "SURFACE_DORMANT_REPO_DESIGN_OS_COMPAT",
+      "scopeClass": "DORMANT",
+      "summary": "Repo compatibility for Design OS remains dormant."
+    }
+  ],
+  "nonAuthorizingRepoPresentSurfaces": [
+    {
+      "surfaceId": "SURFACE_LATER_PORTABILITY_PROOF",
+      "scopeClass": "NON_AUTHORIZING",
+      "summary": "Later portability proof does not authorize current scope expansion."
+    },
+    {
+      "surfaceId": "SURFACE_PLUGIN_HORIZON",
+      "scopeClass": "NON_AUTHORIZING",
+      "summary": "Plugin horizon remains future-only and non-authorizing."
+    },
+    {
+      "surfaceId": "SURFACE_TRANSPORT_HORIZON",
+      "scopeClass": "NON_AUTHORIZING",
+      "summary": "Transport horizon remains outside current Writer v1 scope."
+    },
+    {
+      "surfaceId": "SURFACE_Y9_LANGUAGE",
+      "scopeClass": "NON_AUTHORIZING",
+      "summary": "Y9 language remains present but not active by implication."
+    }
+  ],
+  "nonGoals": [
+    "no_runtime_edits",
+    "no_test_edits",
+    "no_active_canon_edits",
+    "no_required_token_edits",
+    "no_command_surface_edits",
+    "no_menu_artifact_edits",
+    "no_dependency_remediation",
+    "no_perf_work",
+    "no_Y9_implication"
+  ]
+}

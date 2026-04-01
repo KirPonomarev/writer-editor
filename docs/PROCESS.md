@@ -290,3 +290,12 @@ ARTIFACTS:
 NOTES:
 - ops-gate: PASS
 - smoke-a4: PASS
+
+## Machine Evidence Rule
+PASS_from_narrative_reports_is_forbidden
+PASS_requires_machine_evidence_packets_only
+CURRENT_WRITER_V1_SCOPE_INVENTORY.json_exists
+CURRENT_SCOPE_PROOF_MATRIX.json_exists
+FALSE_GREEN_GUARD_POLICY.json_exists
+SKIP_POLICY_AND_DEFERRED_REGISTRY.json_exists
+enforcement_not_yet_active

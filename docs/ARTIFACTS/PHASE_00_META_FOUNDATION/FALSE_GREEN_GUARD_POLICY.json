@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
+  "generatedAtUtc": "2026-04-01T20:55:24Z",
+  "falseGreenClasses": [
+    {
+      "classId": "green_with_skips",
+      "action": "HOLD"
+    },
+    {
+      "classId": "green_with_warn",
+      "action": "HOLD"
+    },
+    {
+      "classId": "green_with_blocked_env",
+      "action": "HOLD"
+    },
+    {
+      "classId": "synthetic_perf_green",
+      "action": "HOLD"
+    },
+    {
+      "classId": "stale_dependency_ready",
+      "action": "HOLD"
+    },
+    {
+      "classId": "stale_menu_lock",
+      "action": "HOLD"
+    },
+    {
+      "classId": "doc_claim_without_live_runtime",
+      "action": "FAIL"
+    },
+    {
+      "classId": "direct_ui_bypass_under_bus_claim",
+      "action": "FAIL"
+    },
+    {
+      "classId": "dormant_design_os_presented_as_live",
+      "action": "FAIL"
+    }
+  ],
+  "escalationRules": [
+    "PASS_from_narrative_reports_is_forbidden",
+    "any_false_green_class_requires_owner_visible_escalation"
+  ],
+  "failOrHoldPolicy": {
+    "defaultDecision": "HOLD",
+    "failClasses": [
+      "doc_claim_without_live_runtime",
+      "direct_ui_bypass_under_bus_claim",
+      "dormant_design_os_presented_as_live"
+    ]
+  }
+}
