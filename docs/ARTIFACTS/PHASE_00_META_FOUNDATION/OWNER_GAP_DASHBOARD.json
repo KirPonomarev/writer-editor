@@ -2,6 +2,25 @@
   "schemaVersion": 1,
   "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
   "generatedAtUtc": "2026-04-01T20:55:24Z",
+  "currentMainlineRebind": {
+    "bindingBaseSha": "90b768510e02b0efca3e34897e3514f60f6f3fe8",
+    "reboundAtUtc": "2026-04-01T23:03:39Z",
+    "rebindClass": "MENU_TRUTH_CHAIN_SOURCEBINDING_RECONFIRM",
+    "gapClassifications": [
+      {
+        "gapId": "GAP_MENU_TRUTH_CHAIN",
+        "classification": "SUPERSEDED",
+        "currentDebt": false,
+        "reason": "Current mainline menu baseline checks pass; selected-base HOLD was stale inventory."
+      },
+      {
+        "gapId": "GAP_SOURCEBINDING_DRIFT",
+        "classification": "SUPERSEDED",
+        "currentDebt": false,
+        "reason": "Current mainline sourcebinding maps to live runtime entrypoints; selected-base HOLD was stale inventory."
+      }
+    ]
+  },
   "currentScopeRegressions": [
     {
       "gapId": "GAP_COMMAND_SURFACE_BYPASS",
@@ -10,8 +29,8 @@
     },
     {
       "gapId": "GAP_MENU_TRUTH_CHAIN",
-      "status": "HOLD",
-      "summary": "Menu truth chain requires explicit sourcebinding and cannot be implied narratively."
+      "status": "PASS",
+      "summary": "Reconfirmed on current remote mainline; selected-base HOLD was stale inventory."
     },
     {
       "gapId": "GAP_SKIP_HEAVY_CURRENT_SCOPE",
@@ -40,8 +59,8 @@
     },
     {
       "gapId": "GAP_SOURCEBINDING_DRIFT",
-      "status": "HOLD",
-      "summary": "Sourcebinding must stay mapped to real runtime entrypoints."
+      "status": "PASS",
+      "summary": "Reconfirmed on current remote mainline; selected-base HOLD was stale inventory."
     }
   ],
   "blockedEnv": [
@@ -83,10 +102,7 @@
     "docs/CONTEXT.md",
     "docs/HANDOFF.md"
   ],
-  "staleLocks": [
-    "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
-    "docs/OPS/STATUS/X101_MENU_COMMAND_MAP_LOCK_V1.json"
-  ],
+  "staleLocks": [],
   "falseGreenClasses": [
     "green_with_skips",
     "green_with_warn",
