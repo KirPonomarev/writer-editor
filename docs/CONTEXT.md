@@ -42,6 +42,8 @@
 - Active Y8 formal packet record: `Y8_FORMAL_CUTOVER_PACKET_RECORD_V1.json`
 - Active Y8 rollback packet: `Y8_FORMAL_CUTOVER_ROLLBACK_PACKET_V1.json`
 - Y9_NOT_OPENED_BY_IMPLICATION: TRUE
+- dependency truth high-critical false-green class is superseded on current mainline
+- menu truth chain and sourcebinding reconfirm contour is merged on current mainline
 
 ### Invariants
 - editor surface не источник истины,
@@ -86,4 +88,4 @@ Formal Y8 cutover packet is explicitly bound on main with explicit rollback pack
 ## Next Practical Target
 - не открывать Y9 по импликации из текста или narrative claims,
 - не переинтерпретировать Y8 PASS как автоматический полный release hardening,
-- следующий шаг только один: explicit post-Y8 decision brief.
+- следующий шаг только один: one explicit evidence-backed nonblocked contour selection brief.
