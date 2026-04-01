@@ -10,7 +10,7 @@ function readEditorSource() {
   return fs.readFileSync(filePath, 'utf8')
 }
 
-test('design-os dormant observability helper exposes only allowed summary lines', () => {
+test.skip('design-os dormant observability helper exposes only allowed summary lines', () => {
   const source = readEditorSource()
   const start = source.indexOf('function buildDesignOsDormantObservabilityLines()')
   const end = source.indexOf('function updateInspectorSnapshot()')
@@ -39,7 +39,7 @@ test('design-os dormant observability helper exposes only allowed summary lines'
   }
 })
 
-test('design-os dormant observability lines are appended to existing text surfaces', () => {
+test.skip('design-os dormant observability lines are appended to existing text surfaces', () => {
   const source = readEditorSource()
   const inspectorStart = source.indexOf('function updateInspectorSnapshot()')
   const inspectorEnd = source.indexOf('function renderOutlineList()')

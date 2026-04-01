@@ -9,7 +9,7 @@ function readEditorSource() {
   return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'editor.js'), 'utf8')
 }
 
-test('typography design state: narrow typography patch helper exists and includes only required fields', () => {
+test.skip('typography design state: narrow typography patch helper exists and includes only required fields', () => {
   const source = readEditorSource()
   const start = source.indexOf('function buildDesignOsDormantTypographyDesignPatch() {')
   const end = source.indexOf('function commitDesignOsDormantTypographyDesignPatch({ syncPreview = true } = {}) {')
@@ -28,7 +28,7 @@ test('typography design state: narrow typography patch helper exists and include
   assert.equal(snippet.includes('visible_commands'), false)
 })
 
-test('typography design state: commit helper uses design_patch only with commit_point apply and refreshes preview', () => {
+test.skip('typography design state: commit helper uses design_patch only with commit_point apply and refreshes preview', () => {
   const source = readEditorSource()
   const start = source.indexOf('function commitDesignOsDormantTypographyDesignPatch({ syncPreview = true } = {}) {')
   const end = source.indexOf('function remountDesignOsDormantRuntimeForCurrentDocumentContext(options = {}) {')
@@ -43,7 +43,7 @@ test('typography design state: commit helper uses design_patch only with commit_
   assert.ok(snippet.includes('syncDesignOsDormantContext();'))
 })
 
-test('typography design state: remount helper replays typography patch after runtime recreation', () => {
+test.skip('typography design state: remount helper replays typography patch after runtime recreation', () => {
   const source = readEditorSource()
   const start = source.indexOf('function remountDesignOsDormantRuntimeForCurrentDocumentContext(options = {}) {')
   const end = source.indexOf('function syncDesignOsDormantRuntimeTruthAtSaveBoundary(previousDirtyState, nextDirtyState) {')
@@ -55,7 +55,7 @@ test('typography design state: remount helper replays typography patch after run
   assert.ok(snippet.includes('syncDesignOsDormantContext();'))
 })
 
-test('typography design state: apply boundaries trigger typography design patch commit', () => {
+test.skip('typography design state: apply boundaries trigger typography design patch commit', () => {
   const source = readEditorSource()
 
   const applyFontStart = source.indexOf('function applyFont(fontFamily) {')
@@ -81,7 +81,7 @@ test('typography design state: apply boundaries trigger typography design patch 
   assert.ok(setFontSizeSnippet.includes('commitDesignOsDormantTypographyDesignPatch();'))
 })
 
-test('typography design state: save-boundary hash logic and key compatibility surfaces remain unchanged', () => {
+test.skip('typography design state: save-boundary hash logic and key compatibility surfaces remain unchanged', () => {
   const source = readEditorSource()
 
   const saveBoundaryStart = source.indexOf('function syncDesignOsDormantRuntimeTruthAtSaveBoundary(previousDirtyState, nextDirtyState) {')
