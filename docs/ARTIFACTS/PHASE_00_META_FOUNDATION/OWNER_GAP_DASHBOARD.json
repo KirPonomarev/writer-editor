@@ -4,8 +4,8 @@
   "generatedAtUtc": "2026-04-01T20:55:24Z",
   "currentMainlineRebind": {
     "bindingBaseSha": "22db0b8177f27b8950675b4affd0a4ed3a5e3f2f",
-    "reboundAtUtc": "2026-04-01T23:18:05Z",
-    "rebindClass": "FACTUAL_DOC_TRUTH_RECONFIRM",
+    "reboundAtUtc": "2026-04-01T23:28:12Z",
+    "rebindClass": "SHELL_SAFE_RESET_RESTORE_PROOF_CLOSURE",
     "gapClassifications": [
       {
         "gapId": "GAP_COMMAND_SURFACE_BYPASS",
@@ -36,6 +36,12 @@
         "classification": "SUPERSEDED",
         "currentDebt": false,
         "reason": "Current mainline sourcebinding maps to live runtime entrypoints; selected-base HOLD was stale inventory."
+      },
+      {
+        "gapId": "GAP_SHELL_PROOF_DRIFT",
+        "classification": "SUPERSEDED",
+        "currentDebt": false,
+        "reason": "Current mainline shell safe-reset and restore runtime path is covered by active targeted proof tests; deferred selected-base shell proof debt is closed."
       }
     ]
   },
@@ -57,8 +63,8 @@
     },
     {
       "gapId": "GAP_SHELL_PROOF_DRIFT",
-      "status": "HOLD",
-      "summary": "Shell proof drift remains visible until later runtime contour closes it."
+      "status": "PASS",
+      "summary": "Shell safe-reset and restore proof is closed on current remote mainline; selected-base deferred shell debt is superseded."
     },
     {
       "gapId": "GAP_PERF_FALSE_GREEN",
@@ -103,9 +109,6 @@
     "sector-m-command-surface-ui-fencing.test.js",
     "sector-m-preload-ui-command-bridge.test.js",
     "sector-m-runtime-command-id-canonicalization.test.js",
-    "sector-m-design-os-save-boundary-truth-sync.test.js",
-    "sector-m-design-os-restore-last-stable-adoption.test.js",
-    "sector-m-design-os-layout-commit-sync.test.js",
     "sector-m-design-os-theme-design-state.test.js",
     "sector-m-design-os-typography-design-state.test.js",
     "sector-m-design-os-command-palette-visibility.test.js"

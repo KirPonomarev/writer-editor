@@ -36,27 +36,6 @@
       "deferredJustification": "not_required_for_phase_00_meta_foundation_only_scope"
     },
     {
-      "testId": "DEFERRED_TEST_DESIGN_OS_SAVE_BOUNDARY_TRUTH_SYNC",
-      "basename": "sector-m-design-os-save-boundary-truth-sync.test.js",
-      "ownerReason": "design_os_runtime_not_opened_by_implication",
-      "scopeClass": "DEFERRED",
-      "deferredJustification": "safe_derived_horizon_cannot_be_presented_as_live_runtime"
-    },
-    {
-      "testId": "DEFERRED_TEST_DESIGN_OS_RESTORE_LAST_STABLE_ADOPTION",
-      "basename": "sector-m-design-os-restore-last-stable-adoption.test.js",
-      "ownerReason": "restore_last_stable_adoption_not_in_current_scope",
-      "scopeClass": "DEFERRED",
-      "deferredJustification": "deferred_until_separate_runtime_contour"
-    },
-    {
-      "testId": "DEFERRED_TEST_DESIGN_OS_LAYOUT_COMMIT_SYNC",
-      "basename": "sector-m-design-os-layout-commit-sync.test.js",
-      "ownerReason": "layout_commit_sync_is_not_activated_by_phase_00_docs_only_work",
-      "scopeClass": "DEFERRED",
-      "deferredJustification": "requires_runtime_slice_not_meta_foundation_only"
-    },
-    {
       "testId": "DEFERRED_TEST_DESIGN_OS_THEME_DESIGN_STATE",
       "basename": "sector-m-design-os-theme-design-state.test.js",
       "ownerReason": "theme_design_state_remains_deferred_horizon",
