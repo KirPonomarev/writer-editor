@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
+  "generatedAtUtc": "2026-04-01T20:55:24Z",
+  "proofClasses": [
+    "LIVE_RUNTIME",
+    "NEGATIVE_PROOF",
+    "STATIC_SOURCEBINDING",
+    "DOC_ONLY",
+    "SYNTHETIC_ONLY",
+    "ASSUMED",
+    "ENVIRONMENT_BLOCKED"
+  ],
+  "requiredSurfaces": [
+    "SURFACE_EDITOR_TRUTH_AND_SAVE",
+    "SURFACE_COMMAND_SURFACE",
+    "SURFACE_MENU_SOURCEBINDING",
+    "SURFACE_SHELL_SAFE_RESET_RESTORE",
+    "SURFACE_FACTUAL_DOC_TRUTH",
+    "SURFACE_PERF_TRUTH",
+    "SURFACE_DEPENDENCY_TRUTH"
+  ],
+  "eachSurfaceRequiredProofClasses": [
+    {
+      "surfaceId": "SURFACE_EDITOR_TRUTH_AND_SAVE",
+      "requiredProofClasses": [
+        "LIVE_RUNTIME",
+        "NEGATIVE_PROOF",
+        "STATIC_SOURCEBINDING"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_COMMAND_SURFACE",
+      "requiredProofClasses": [
+        "LIVE_RUNTIME",
+        "NEGATIVE_PROOF",
+        "STATIC_SOURCEBINDING"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_MENU_SOURCEBINDING",
+      "requiredProofClasses": [
+        "LIVE_RUNTIME",
+        "NEGATIVE_PROOF",
+        "STATIC_SOURCEBINDING"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_SHELL_SAFE_RESET_RESTORE",
+      "requiredProofClasses": [
+        "LIVE_RUNTIME",
+        "NEGATIVE_PROOF",
+        "STATIC_SOURCEBINDING"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_FACTUAL_DOC_TRUTH",
+      "requiredProofClasses": [
+        "LIVE_RUNTIME",
+        "NEGATIVE_PROOF",
+        "STATIC_SOURCEBINDING"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_PERF_TRUTH",
+      "requiredProofClasses": [
+        "LIVE_RUNTIME",
+        "NEGATIVE_PROOF",
+        "STATIC_SOURCEBINDING"
+      ]
+    },
+    {
+      "surfaceId": "SURFACE_DEPENDENCY_TRUTH",
+      "requiredProofClasses": [
+        "LIVE_RUNTIME",
+        "NEGATIVE_PROOF",
+        "STATIC_SOURCEBINDING"
+      ]
+    }
+  ],
+  "greenRules": [
+    "all_required_surfaces_must_have_live_runtime_negative_proof_and_static_sourcebinding",
+    "narrative_only_reports_cannot_mark_required_surface_green"
+  ],
+  "holdRules": [
+    "missing_live_runtime_or_negative_proof_holds_required_surface",
+    "environment_blocked_may_hold_but_cannot_pass_required_surface",
+    "sourcebinding_gap_holds_required_surface"
+  ]
+}

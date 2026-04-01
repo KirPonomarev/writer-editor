@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
+  "generatedAtUtc": "2026-04-01T20:55:24Z",
+  "currentScopeRegressions": [
+    {
+      "gapId": "GAP_COMMAND_SURFACE_BYPASS",
+      "status": "FAIL",
+      "summary": "Direct UI bypass under bus claim remains a false-green class until proven closed."
+    },
+    {
+      "gapId": "GAP_MENU_TRUTH_CHAIN",
+      "status": "HOLD",
+      "summary": "Menu truth chain requires explicit sourcebinding and cannot be implied narratively."
+    },
+    {
+      "gapId": "GAP_SKIP_HEAVY_CURRENT_SCOPE",
+      "status": "HOLD",
+      "summary": "Skipped heavy contours cannot be promoted to green current-scope proof."
+    },
+    {
+      "gapId": "GAP_SHELL_PROOF_DRIFT",
+      "status": "HOLD",
+      "summary": "Shell proof drift remains visible until later runtime contour closes it."
+    },
+    {
+      "gapId": "GAP_PERF_FALSE_GREEN",
+      "status": "HOLD",
+      "summary": "Synthetic perf green cannot replace live perf proof."
+    },
+    {
+      "gapId": "GAP_DEPENDENCY_FALSE_GREEN",
+      "status": "HOLD",
+      "summary": "Dependency readiness must remain explicit rather than narratively assumed."
+    },
+    {
+      "gapId": "GAP_DOC_TRUTH_DRIFT",
+      "status": "HOLD",
+      "summary": "Factual docs must continue to speak one operating reality."
+    },
+    {
+      "gapId": "GAP_SOURCEBINDING_DRIFT",
+      "status": "HOLD",
+      "summary": "Sourcebinding must stay mapped to real runtime entrypoints."
+    }
+  ],
+  "blockedEnv": [
+    {
+      "blockedId": "BLOCKED_TEST_ELECTRON",
+      "status": "BLOCKED",
+      "summary": "Electron test lane is environment blocked in current scope."
+    },
+    {
+      "blockedId": "BLOCKED_BUILD_MAC",
+      "status": "BLOCKED",
+      "summary": "Mac build lane is blocked without a dedicated build environment."
+    },
+    {
+      "blockedId": "BLOCKED_SECURITY_SCANNERS",
+      "status": "BLOCKED",
+      "summary": "Security scanner lane requires a separate environment and policy window."
+    }
+  ],
+  "skippedRequiredTests": [
+    "palette-grouping.test.js",
+    "sector-m-command-surface-ui-fencing.test.js",
+    "sector-m-preload-ui-command-bridge.test.js",
+    "sector-m-runtime-command-id-canonicalization.test.js",
+    "sector-m-design-os-save-boundary-truth-sync.test.js",
+    "sector-m-design-os-restore-last-stable-adoption.test.js",
+    "sector-m-design-os-layout-commit-sync.test.js",
+    "sector-m-design-os-theme-design-state.test.js",
+    "sector-m-design-os-typography-design-state.test.js",
+    "sector-m-design-os-command-palette-visibility.test.js"
+  ],
+  "warnAsFailSurfaces": [
+    "MENU_DRIFT",
+    "PERF_DRIFT",
+    "DEPENDENCY_DRIFT",
+    "SKIPPED_REQUIRED_TESTS"
+  ],
+  "staleDocs": [
+    "docs/CONTEXT.md",
+    "docs/HANDOFF.md"
+  ],
+  "staleLocks": [
+    "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+    "docs/OPS/STATUS/X101_MENU_COMMAND_MAP_LOCK_V1.json"
+  ],
+  "falseGreenClasses": [
+    "green_with_skips",
+    "green_with_warn",
+    "green_with_blocked_env",
+    "synthetic_perf_green",
+    "stale_dependency_ready",
+    "stale_menu_lock",
+    "doc_claim_without_live_runtime",
+    "direct_ui_bypass_under_bus_claim",
+    "dormant_design_os_presented_as_live"
+  ],
+  "singleNextMove": "OWNER_REVIEW_THEN_SEPARATE_PHASE_01_SCOPE_DECISION_BRIEF_ONLY"
+}

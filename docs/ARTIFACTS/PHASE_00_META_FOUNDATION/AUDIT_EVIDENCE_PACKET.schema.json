@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "title": "Audit Evidence Packet",
+  "type": "object",
+  "required": [
+    "selectedBaseSha",
+    "command",
+    "exitCode",
+    "timestampUtc",
+    "artifactHashes",
+    "evidenceClass",
+    "preDiff",
+    "postDiff",
+    "mutatedFiles",
+    "environmentReadiness",
+    "passDecision"
+  ],
+  "properties": {
+    "selectedBaseSha": {
+      "type": "string"
+    },
+    "command": {
+      "type": "string"
+    },
+    "exitCode": {
+      "type": "integer"
+    },
+    "timestampUtc": {
+      "type": "string"
+    },
+    "artifactHashes": {
+      "type": "object"
+    },
+    "evidenceClass": {
+      "type": "string",
+      "enum": [
+        "LIVE_RUNTIME",
+        "NEGATIVE_PROOF",
+        "STATIC_SOURCEBINDING",
+        "DOC_ONLY",
+        "SYNTHETIC_ONLY",
+        "ASSUMED",
+        "ENVIRONMENT_BLOCKED"
+      ]
+    },
+    "preDiff": {
+      "type": "array"
+    },
+    "postDiff": {
+      "type": "array"
+    },
+    "mutatedFiles": {
+      "type": "array"
+    },
+    "environmentReadiness": {
+      "type": "object"
+    },
+    "passDecision": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "HOLD",
+        "FAIL",
+        "BLOCKED",
+        "MUTATION_DETECTED"
+      ]
+    }
+  }
+}

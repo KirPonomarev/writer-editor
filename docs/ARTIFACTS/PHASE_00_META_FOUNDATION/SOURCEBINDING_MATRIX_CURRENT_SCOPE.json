@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
+  "generatedAtUtc": "2026-04-01T20:55:24Z",
+  "currentClaims": [
+    {
+      "claimId": "CLAIM_COMMAND_SURFACE_SINGLE_ENTRY",
+      "scopeClass": "REQUIRED",
+      "shippingEntrypoints": [
+        "src/main.js",
+        "src/preload.js",
+        "src/renderer/editor.js",
+        "src/renderer/commands/projectCommands.mjs"
+      ],
+      "proofRefs": [
+        "CURRENT_SCOPE_PROOF_MATRIX.json",
+        "FALSE_GREEN_GUARD_POLICY.json"
+      ],
+      "artifactRefs": [
+        "CURRENT_SCOPE_PROOF_MATRIX.json",
+        "SOURCEBINDING_MATRIX_CURRENT_SCOPE.json",
+        "OWNER_GAP_DASHBOARD.json"
+      ]
+    },
+    {
+      "claimId": "CLAIM_MENU_TRUTH_CHAIN",
+      "scopeClass": "REQUIRED",
+      "shippingEntrypoints": [
+        "src/main.js",
+        "src/preload.js",
+        "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+        "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+        "docs/OPS/STATUS/X101_MENU_COMMAND_MAP_LOCK_V1.json"
+      ],
+      "proofRefs": [
+        "CURRENT_SCOPE_PROOF_MATRIX.json",
+        "WARN_ESCALATION_POLICY.json"
+      ],
+      "artifactRefs": [
+        "SOURCEBINDING_MATRIX_CURRENT_SCOPE.json",
+        "OWNER_GAP_DASHBOARD.json"
+      ]
+    },
+    {
+      "claimId": "CLAIM_SHELL_SAFE_RESET_RESTORE",
+      "scopeClass": "REQUIRED",
+      "shippingEntrypoints": [
+        "src/main.js",
+        "src/preload.js",
+        "src/renderer/editor.js"
+      ],
+      "proofRefs": [
+        "CURRENT_SCOPE_PROOF_MATRIX.json",
+        "ENVIRONMENT_READINESS_MATRIX.json"
+      ],
+      "artifactRefs": [
+        "CURRENT_SCOPE_PROOF_MATRIX.json",
+        "ENVIRONMENT_READINESS_MATRIX.json"
+      ]
+    },
+    {
+      "claimId": "CLAIM_EDITOR_SAVE_TRUTH",
+      "scopeClass": "REQUIRED",
+      "shippingEntrypoints": [
+        "src/main.js",
+        "src/preload.js",
+        "src/renderer/editor.js",
+        "src/renderer/tiptap/runtimeBridge.js"
+      ],
+      "proofRefs": [
+        "CURRENT_SCOPE_PROOF_MATRIX.json",
+        "AUDIT_EVIDENCE_PACKET.schema.json"
+      ],
+      "artifactRefs": [
+        "CURRENT_SCOPE_PROOF_MATRIX.json",
+        "AUDIT_EVIDENCE_PACKET.schema.json"
+      ]
+    },
+    {
+      "claimId": "CLAIM_FACTUAL_DOC_ALIGNMENT",
+      "scopeClass": "REQUIRED",
+      "shippingEntrypoints": [
+        "docs/CONTEXT.md",
+        "docs/HANDOFF.md",
+        "docs/PROCESS.md"
+      ],
+      "proofRefs": [
+        "CURRENT_WRITER_V1_SCOPE_INVENTORY.json",
+        "OWNER_GAP_DASHBOARD.json"
+      ],
+      "artifactRefs": [
+        "CURRENT_WRITER_V1_SCOPE_INVENTORY.json",
+        "OWNER_GAP_DASHBOARD.json"
+      ]
+    },
+    {
+      "claimId": "CLAIM_PERF_GREEN",
+      "scopeClass": "REQUIRED",
+      "shippingEntrypoints": [
+        "scripts/perf/perf-lite.mjs",
+        "scripts/ops/perf-run.mjs",
+        "src/renderer/editor.js"
+      ],
+      "proofRefs": [
+        "ENVIRONMENT_READINESS_MATRIX.json",
+        "FALSE_GREEN_GUARD_POLICY.json"
+      ],
+      "artifactRefs": [
+        "ENVIRONMENT_READINESS_MATRIX.json",
+        "FALSE_GREEN_GUARD_POLICY.json"
+      ]
+    },
+    {
+      "claimId": "CLAIM_DEPENDENCY_READY",
+      "scopeClass": "REQUIRED",
+      "shippingEntrypoints": [
+        "package.json",
+        "package-lock.json",
+        "scripts/doctor.mjs"
+      ],
+      "proofRefs": [
+        "ENVIRONMENT_READINESS_MATRIX.json",
+        "OWNER_GAP_DASHBOARD.json"
+      ],
+      "artifactRefs": [
+        "ENVIRONMENT_READINESS_MATRIX.json",
+        "OWNER_GAP_DASHBOARD.json"
+      ]
+    }
+  ],
+  "driftRules": [
+    "shipping_entrypoints_must_reference_real_repo_surfaces_not_status_only_files",
+    "doc_only_exception_is_allowed_only_for_CLAIM_FACTUAL_DOC_ALIGNMENT",
+    "all_other_claims_require_at_least_one_non_doc_entrypoint"
+  ]
+}

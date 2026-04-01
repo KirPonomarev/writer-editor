@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
+  "generatedAtUtc": "2026-04-01T20:55:24Z",
+  "warnClasses": [
+    {
+      "classId": "BLOCKING_WARN"
+    },
+    {
+      "classId": "ADVISORY_WARN"
+    }
+  ],
+  "warnSurfaces": [
+    {
+      "surfaceId": "MENU_DRIFT"
+    },
+    {
+      "surfaceId": "PERF_DRIFT"
+    },
+    {
+      "surfaceId": "DEPENDENCY_DRIFT"
+    },
+    {
+      "surfaceId": "SKIPPED_REQUIRED_TESTS"
+    }
+  ],
+  "blockingWarnClasses": [
+    {
+      "classId": "BLOCKING_WARN"
+    }
+  ],
+  "advisoryOnlyWarnClasses": [
+    {
+      "classId": "ADVISORY_WARN"
+    }
+  ],
+  "passPlusWarnForbiddenClasses": [
+    {
+      "surfaceId": "MENU_DRIFT"
+    },
+    {
+      "surfaceId": "PERF_DRIFT"
+    },
+    {
+      "surfaceId": "DEPENDENCY_DRIFT"
+    },
+    {
+      "surfaceId": "SKIPPED_REQUIRED_TESTS"
+    }
+  ]
+}
