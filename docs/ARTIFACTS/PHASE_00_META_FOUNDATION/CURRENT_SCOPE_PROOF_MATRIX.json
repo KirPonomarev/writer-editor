@@ -3,14 +3,26 @@
   "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
   "generatedAtUtc": "2026-04-01T20:55:24Z",
   "currentMainlineRebind": {
-    "bindingBaseSha": "90b768510e02b0efca3e34897e3514f60f6f3fe8",
-    "reboundAtUtc": "2026-04-01T23:03:39Z",
+    "bindingBaseSha": "22db0b8177f27b8950675b4affd0a4ed3a5e3f2f",
+    "reboundAtUtc": "2026-04-01T23:18:05Z",
     "surfaceClassifications": [
       {
         "surfaceId": "SURFACE_MENU_SOURCEBINDING",
         "classification": "LIVE",
         "proofClassSetSatisfied": true,
         "reason": "Current remote mainline menu contract checks pass and sourcebinding points to active runtime entrypoints."
+      },
+      {
+        "surfaceId": "SURFACE_DEPENDENCY_TRUTH",
+        "classification": "LIVE",
+        "proofClassSetSatisfied": true,
+        "reason": "Current remote mainline dependency audit has zero high and zero critical findings."
+      },
+      {
+        "surfaceId": "SURFACE_FACTUAL_DOC_TRUTH",
+        "classification": "LIVE",
+        "proofClassSetSatisfied": true,
+        "reason": "Factual docs are aligned to current mainline operating reality."
       }
     ]
   },

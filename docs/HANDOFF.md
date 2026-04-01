@@ -46,11 +46,13 @@ _Generated: 2026-03-31_
 - Y8_FORMAL_CUTOVER_ROLLBACK_PACKET_V1.json is active.
 - Y9_NOT_OPENED_BY_IMPLICATION: TRUE
 - Repo-wide done is confirmed on main after merge gate and post-merge reconfirm.
+- dependency truth high-critical false-green class is superseded on current mainline.
+- menu truth chain and sourcebinding reconfirm contour is merged on current mainline.
 
 ## What Is Next
 1. keep Y8 cutover truth and rollback truth as one active factual reality
 2. do not reinterpret Y8 as automatic Y9 authority
-3. wait for one explicit post-Y8 decision brief only
+3. open one explicit evidence-backed nonblocked contour selection brief only
 
 ## Working Agreement
 - Bounded contours only
@@ -77,4 +79,4 @@ _Generated: 2026-03-31_
 machine_readable_meta_artifact_set_exists
 enforcement_not_yet_active
 current_mode_may_still_be_blocked_under_no_repo_changes_rule
-next_step_after_permission_is_owner_review_then_PHASE_01_only
+next_step_after_permission_is_one_evidence_backed_nonblocked_contour_selection_brief

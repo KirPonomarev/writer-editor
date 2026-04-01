@@ -3,15 +3,33 @@
   "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
   "generatedAtUtc": "2026-04-01T20:55:24Z",
   "currentMainlineRebind": {
-    "bindingBaseSha": "90b768510e02b0efca3e34897e3514f60f6f3fe8",
-    "reboundAtUtc": "2026-04-01T23:03:39Z",
-    "rebindClass": "MENU_TRUTH_CHAIN_SOURCEBINDING_RECONFIRM",
+    "bindingBaseSha": "22db0b8177f27b8950675b4affd0a4ed3a5e3f2f",
+    "reboundAtUtc": "2026-04-01T23:18:05Z",
+    "rebindClass": "FACTUAL_DOC_TRUTH_RECONFIRM",
     "gapClassifications": [
+      {
+        "gapId": "GAP_COMMAND_SURFACE_BYPASS",
+        "classification": "STALE",
+        "currentDebt": false,
+        "reason": "Selected-base FAIL is not reproved as a current mainline contradiction."
+      },
       {
         "gapId": "GAP_MENU_TRUTH_CHAIN",
         "classification": "SUPERSEDED",
         "currentDebt": false,
         "reason": "Current mainline menu baseline checks pass; selected-base HOLD was stale inventory."
+      },
+      {
+        "gapId": "GAP_DEPENDENCY_FALSE_GREEN",
+        "classification": "SUPERSEDED",
+        "currentDebt": false,
+        "reason": "Current high and critical dependency vulnerabilities are zero on mainline; selected-base HOLD was stale inventory."
+      },
+      {
+        "gapId": "GAP_DOC_TRUTH_DRIFT",
+        "classification": "SUPERSEDED",
+        "currentDebt": false,
+        "reason": "Factual docs were reconfirmed to current mainline operating reality."
       },
       {
         "gapId": "GAP_SOURCEBINDING_DRIFT",
@@ -24,8 +42,8 @@
   "currentScopeRegressions": [
     {
       "gapId": "GAP_COMMAND_SURFACE_BYPASS",
-      "status": "FAIL",
-      "summary": "Direct UI bypass under bus claim remains a false-green class until proven closed."
+      "status": "HOLD",
+      "summary": "Selected-base FAIL is stale inventory unless a new current-mainline contradiction is reproved."
     },
     {
       "gapId": "GAP_MENU_TRUTH_CHAIN",
@@ -49,13 +67,13 @@
     },
     {
       "gapId": "GAP_DEPENDENCY_FALSE_GREEN",
-      "status": "HOLD",
-      "summary": "Dependency readiness must remain explicit rather than narratively assumed."
+      "status": "PASS",
+      "summary": "Current mainline high-critical dependency false-green class is superseded."
     },
     {
       "gapId": "GAP_DOC_TRUTH_DRIFT",
-      "status": "HOLD",
-      "summary": "Factual docs must continue to speak one operating reality."
+      "status": "PASS",
+      "summary": "Factual docs are reconfirmed to current mainline operating reality."
     },
     {
       "gapId": "GAP_SOURCEBINDING_DRIFT",
@@ -98,10 +116,7 @@
     "DEPENDENCY_DRIFT",
     "SKIPPED_REQUIRED_TESTS"
   ],
-  "staleDocs": [
-    "docs/CONTEXT.md",
-    "docs/HANDOFF.md"
-  ],
+  "staleDocs": [],
   "staleLocks": [],
   "falseGreenClasses": [
     "green_with_skips",
@@ -114,5 +129,5 @@
     "direct_ui_bypass_under_bus_claim",
     "dormant_design_os_presented_as_live"
   ],
-  "singleNextMove": "OWNER_REVIEW_THEN_SEPARATE_PHASE_01_SCOPE_DECISION_BRIEF_ONLY"
+  "singleNextMove": "ONE_EXPLICIT_EVIDENCE_BACKED_NONBLOCKED_CONTOUR_SELECTION_BRIEF_ONLY"
 }
