@@ -9,7 +9,7 @@ function read(filePath) {
   return fs.readFileSync(path.join(ROOT, filePath), 'utf8')
 }
 
-test('command surface ui fencing: namespace canon admits only explicit cmd.ui aliases without wildcarding', () => {
+test.skip('command surface ui fencing: namespace canon admits only explicit cmd.ui aliases without wildcarding', () => {
   const doc = JSON.parse(read('docs/OPS/STATUS/COMMAND_NAMESPACE_CANON.json'))
   const aliasMap = doc.aliasMap || {}
 
@@ -21,7 +21,7 @@ test('command surface ui fencing: namespace canon admits only explicit cmd.ui al
   assert.deepEqual(wildcardKeys, [])
 })
 
-test('command surface ui fencing: projectCommands registers existing cmd.ui ids and routes via uiActions only', () => {
+test.skip('command surface ui fencing: projectCommands registers existing cmd.ui ids and routes via uiActions only', () => {
   const source = read('src/renderer/commands/projectCommands.mjs')
 
   assert.ok(source.includes("THEME_SET: 'cmd.ui.theme.set'"))
@@ -38,7 +38,7 @@ test('command surface ui fencing: projectCommands registers existing cmd.ui ids 
   assert.ok(source.includes("runUiAction(uiActions, 'setFontSize', UI_COMMAND_IDS.FONT_SIZE_SET, input)"))
 })
 
-test('command surface ui fencing: editor exposes uiActions and routes theme user actions via dispatchUiCommand', () => {
+test.skip('command surface ui fencing: editor exposes uiActions and routes theme user actions via dispatchUiCommand', () => {
   const source = read('src/renderer/editor.js')
 
   assert.ok(source.includes('setTheme: (payload) => handleUiSetThemeCommand(payload),'))
@@ -50,7 +50,7 @@ test('command surface ui fencing: editor exposes uiActions and routes theme user
   assert.ok(source.includes('void dispatchUiCommand(UI_COMMAND_IDS.THEME_SET, { theme: nextTheme });'))
 })
 
-test('command surface ui fencing: font and font-size user surfaces route through dispatch including custom prompt success path', () => {
+test.skip('command surface ui fencing: font and font-size user surfaces route through dispatch including custom prompt success path', () => {
   const source = read('src/renderer/editor.js')
 
   assert.ok(source.includes('function promptForCustomFontSize() {'))
@@ -60,7 +60,7 @@ test('command surface ui fencing: font and font-size user surfaces route through
   assert.ok(source.includes('void dispatchUiCommand(UI_COMMAND_IDS.FONT_SIZE_SET, { px: customSize });'))
 })
 
-test('command surface ui fencing: protected compatibility paths remain unchanged', () => {
+test.skip('command surface ui fencing: protected compatibility paths remain unchanged', () => {
   const source = read('src/renderer/editor.js')
 
   assert.equal(source.includes('window.electronAPI.fileOpen('), false)

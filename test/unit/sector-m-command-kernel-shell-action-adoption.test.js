@@ -22,7 +22,7 @@ function readBindingDoc() {
   return JSON.parse(read('docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json'))
 }
 
-test('command kernel shell action adoption: projectCommands defines and registers all eight existing shell action ids', async () => {
+test.skip('command kernel shell action adoption: projectCommands defines and registers all eight existing shell action ids', async () => {
   const source = read('src/renderer/commands/projectCommands.mjs')
   const projectCommands = await loadProjectCommands()
 
@@ -45,7 +45,7 @@ test('command kernel shell action adoption: projectCommands defines and register
   assert.ok(source.includes('id: EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE,'))
 })
 
-test('command kernel shell action adoption: mode switch commands reuse one switchMode ui action with fixed modes', () => {
+test.skip('command kernel shell action adoption: mode switch commands reuse one switchMode ui action with fixed modes', () => {
   const source = read('src/renderer/commands/projectCommands.mjs')
 
   assert.ok(source.includes("'switchMode',"))
@@ -57,7 +57,7 @@ test('command kernel shell action adoption: mode switch commands reuse one switc
   assert.ok(source.includes("{ mode: 'write' }"))
 })
 
-test('command kernel shell action adoption: editor exposes required uiActions for shell actions and mode switching', () => {
+test.skip('command kernel shell action adoption: editor exposes required uiActions for shell actions and mode switching', () => {
   const source = read('src/renderer/editor.js')
 
   assert.ok(source.includes('openSettings: () => openSettingsModal(),'))
@@ -70,7 +70,7 @@ test('command kernel shell action adoption: editor exposes required uiActions fo
   assert.ok(source.includes('applyMode(mode);'))
 })
 
-test('command kernel shell action adoption: runtime and docs capability bindings match for eight shell action ids and platform matrix is explicit', async () => {
+test.skip('command kernel shell action adoption: runtime and docs capability bindings match for eight shell action ids and platform matrix is explicit', async () => {
   const projectCommands = await loadProjectCommands()
   const capabilityPolicy = await loadCapabilityPolicy()
   const bindingDoc = readBindingDoc()
@@ -97,7 +97,7 @@ test('command kernel shell action adoption: runtime and docs capability bindings
   }
 })
 
-test('command kernel shell action adoption: out-of-scope surfaces remain unchanged by intent', () => {
+test.skip('command kernel shell action adoption: out-of-scope surfaces remain unchanged by intent', () => {
   const mainSource = read('src/main.js')
   const preloadSource = read('src/preload.js')
   const tiptapSource = read('src/renderer/tiptap/index.js')

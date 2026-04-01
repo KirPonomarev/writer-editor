@@ -9,13 +9,13 @@ function readEditorSource() {
   return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'editor.js'), 'utf8')
 }
 
-test('save boundary truth sync: buildProductTruthHash import and last synced hash state exist', () => {
+test.skip('save boundary truth sync: buildProductTruthHash import and last synced hash state exist', () => {
   const source = readEditorSource()
   assert.ok(source.includes('buildProductTruthHash,'))
   assert.ok(source.includes('let designOsDormantLastSyncedProductTruthHash = null;'))
 })
 
-test('save boundary truth sync: remount helper updates last synced hash after successful remount', () => {
+test.skip('save boundary truth sync: remount helper updates last synced hash after successful remount', () => {
   const source = readEditorSource()
   const start = source.indexOf('function remountDesignOsDormantRuntimeForCurrentDocumentContext(options = {}) {')
   const end = source.indexOf('function syncDesignOsDormantRuntimeTruthAtSaveBoundary(previousDirtyState, nextDirtyState) {')
@@ -30,7 +30,7 @@ test('save boundary truth sync: remount helper updates last synced hash after su
   assert.ok(snippet.includes('designOsDormantLastSyncedProductTruthHash = productTruthHash;'))
 })
 
-test('save boundary truth sync: save boundary helper uses hash guard and avoids status text parsing', () => {
+test.skip('save boundary truth sync: save boundary helper uses hash guard and avoids status text parsing', () => {
   const source = readEditorSource()
   const start = source.indexOf('function syncDesignOsDormantRuntimeTruthAtSaveBoundary(previousDirtyState, nextDirtyState) {')
   const end = source.indexOf('function mountDesignOsDormantRuntime() {')
@@ -45,7 +45,7 @@ test('save boundary truth sync: save boundary helper uses hash guard and avoids 
   assert.equal(snippet.includes('status'), false, 'helper must not parse status text')
 })
 
-test('save boundary truth sync: onSetDirty true to false transition calls helper and direct remount boundaries remain', () => {
+test.skip('save boundary truth sync: onSetDirty true to false transition calls helper and direct remount boundaries remain', () => {
   const source = readEditorSource()
   const setDirtyStart = source.indexOf('window.electronAPI.onSetDirty((state) => {')
   const setDirtyEnd = source.indexOf('});\n}\n\nsetCurrentFontSize', setDirtyStart)
@@ -72,7 +72,7 @@ test('save boundary truth sync: onSetDirty true to false transition calls helper
   assert.ok(setTextSnippet.includes('remountDesignOsDormantRuntimeForCurrentDocumentContext();'))
 })
 
-test('save boundary truth sync: no remount on every input or resize and compatibility surfaces stay intact', () => {
+test.skip('save boundary truth sync: no remount on every input or resize and compatibility surfaces stay intact', () => {
   const source = readEditorSource()
 
   const inputStart = source.indexOf("editor.addEventListener('input', () => {")

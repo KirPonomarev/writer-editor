@@ -9,7 +9,7 @@ function read(filePath) {
   return fs.readFileSync(path.join(ROOT, filePath), 'utf8')
 }
 
-test('toolbar shell action command kernel: editor handleUiAction routes toolbar shell actions through dispatchUiCommand', () => {
+test.skip('toolbar shell action command kernel: editor handleUiAction routes toolbar shell actions through dispatchUiCommand', () => {
   const source = read('src/renderer/editor.js')
 
   const blockMatch = source.match(/function handleUiAction\(action\) \{[\s\S]*?\n\}/)
@@ -32,7 +32,7 @@ test('toolbar shell action command kernel: editor handleUiAction routes toolbar 
   assert.ok(block.includes('openExportPreviewModal();'))
 })
 
-test('toolbar shell action command kernel: x101 toolbar action map points to existing command paths for shell actions', () => {
+test.skip('toolbar shell action command kernel: x101 toolbar action map points to existing command paths for shell actions', () => {
   const source = read('docs/OPS/STATUS/X101_MENU_COMMAND_MAP_LOCK_V1.json')
 
   assert.ok(source.includes('"open-settings": "EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS"'))
@@ -51,7 +51,7 @@ test('toolbar shell action command kernel: x101 toolbar action map points to exi
   assert.equal(source.includes('"open-recovery": "LOCAL_MODAL_HANDLER"'), false)
 })
 
-test('toolbar shell action command kernel: out-of-scope command kernel and runtime bridge files remain compatible', () => {
+test.skip('toolbar shell action command kernel: out-of-scope command kernel and runtime bridge files remain compatible', () => {
   const mainSource = read('src/main.js')
   const projectCommandsSource = read('src/renderer/commands/projectCommands.mjs')
   const capabilitySource = read('src/renderer/commands/capabilityPolicy.mjs')

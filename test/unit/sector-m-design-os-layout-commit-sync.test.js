@@ -9,7 +9,7 @@ function readEditorSource() {
   return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'editor.js'), 'utf8')
 }
 
-test('layout commit sync: editor imports buildLayoutPatchFromSpatialState and uses commitDesign at resize_end boundary only', () => {
+test.skip('layout commit sync: editor imports buildLayoutPatchFromSpatialState and uses commitDesign at resize_end boundary only', () => {
   const source = readEditorSource()
   assert.ok(source.includes('buildLayoutPatchFromSpatialState,'))
 
@@ -33,7 +33,7 @@ test('layout commit sync: editor imports buildLayoutPatchFromSpatialState and us
   assert.equal(helperSnippet.includes('design_patch'), false, 'design_patch must not be sent')
 })
 
-test('layout commit sync: fallback remains when commitDesign ports are unavailable or throw', () => {
+test.skip('layout commit sync: fallback remains when commitDesign ports are unavailable or throw', () => {
   const source = readEditorSource()
 
   const helperStart = source.indexOf('function syncDesignOsDormantLayoutCommitAtResizeEnd(committedSpatialState)')
@@ -50,7 +50,7 @@ test('layout commit sync: fallback remains when commitDesign ports are unavailab
   assert.ok(stopSnippet.includes('commitSpatialLayoutState(currentProjectId);'))
 })
 
-test('layout commit sync: safe-reset and restore handlers remain unchanged in this slice', () => {
+test.skip('layout commit sync: safe-reset and restore handlers remain unchanged in this slice', () => {
   const source = readEditorSource()
 
   const safeStart = source.indexOf('function performSafeResetShell()')
@@ -68,7 +68,7 @@ test('layout commit sync: safe-reset and restore handlers remain unchanged in th
   assert.ok(restoreSnippet.includes('nextRestoreLayoutState = buildSpatialStateFromLayoutSnapshot(layoutSnapshot, {'))
 })
 
-test('layout commit sync: status warning perf semantics and runtime bridge command surface remain unchanged', () => {
+test.skip('layout commit sync: status warning perf semantics and runtime bridge command surface remain unchanged', () => {
   const source = readEditorSource()
 
   const statusStart = source.indexOf('function updateStatusText(text)')

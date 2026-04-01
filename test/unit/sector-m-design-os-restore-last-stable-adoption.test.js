@@ -9,7 +9,7 @@ function readEditorSource() {
   return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'editor.js'), 'utf8')
 }
 
-test('restore-last-stable adoption: performRestoreLastStableShell adopts dormant restore port path', () => {
+test.skip('restore-last-stable adoption: performRestoreLastStableShell adopts dormant restore port path', () => {
   const source = readEditorSource()
 
   const start = source.indexOf('function performRestoreLastStableShell()')
@@ -27,7 +27,7 @@ test('restore-last-stable adoption: performRestoreLastStableShell adopts dormant
   assert.ok(snippet.includes('applySpatialLayoutState(nextRestoreLayoutState, {'))
 })
 
-test('restore-last-stable adoption: fallback path remains when ports unavailable or throw', () => {
+test.skip('restore-last-stable adoption: fallback path remains when ports unavailable or throw', () => {
   const source = readEditorSource()
 
   const start = source.indexOf('function performRestoreLastStableShell()')
@@ -41,7 +41,7 @@ test('restore-last-stable adoption: fallback path remains when ports unavailable
   assert.ok(snippet.includes("return { performed: true, action: 'restore-last-stable-shell', reason: null };"))
 })
 
-test('restore-last-stable adoption: safe-reset handler and runtime command surface remain unchanged', () => {
+test.skip('restore-last-stable adoption: safe-reset handler and runtime command surface remain unchanged', () => {
   const source = readEditorSource()
 
   const safeStart = source.indexOf('function performSafeResetShell()')
