@@ -1,0 +1,217 @@
+[
+  {
+    "id": "SCA-0001",
+    "category": "SCA",
+    "severity": "P1",
+    "evidence": {
+      "rawArtifact": "docs/AUDIT/raw/now/npm-audit.json",
+      "excerpt": "npm audit: 5 high / 0 critical; osv confirms vulnerability set and scope by dependency groups."
+    },
+    "highCriticalTriage": [
+      {
+        "name": "app-builder-lib",
+        "severity": "high",
+        "reachable": true,
+        "runtimePath": "dev",
+        "attackSurface": "release-pipeline",
+        "decision": "FIX_NOW"
+      },
+      {
+        "name": "dmg-builder",
+        "severity": "high",
+        "reachable": true,
+        "runtimePath": "dev",
+        "attackSurface": "release-pipeline",
+        "decision": "FIX_NOW"
+      },
+      {
+        "name": "electron-builder",
+        "severity": "high",
+        "reachable": true,
+        "runtimePath": "dev",
+        "attackSurface": "release-pipeline",
+        "decision": "FIX_NOW"
+      },
+      {
+        "name": "electron-builder-squirrel-windows",
+        "severity": "high",
+        "reachable": true,
+        "runtimePath": "dev",
+        "attackSurface": "release-pipeline",
+        "decision": "FIX_NOW"
+      },
+      {
+        "name": "tar",
+        "severity": "high",
+        "reachable": true,
+        "runtimePath": "dev",
+        "attackSurface": "release-pipeline",
+        "decision": "FIX_NOW"
+      }
+    ],
+    "reachability": {
+      "reachable": true,
+      "runtimePath": "prod+dev",
+      "attackSurface": "desktop-runtime + release-pipeline"
+    },
+    "impact": "High findings are concentrated in packaging toolchain (dev path). Runtime advisories observed are moderate (e.g. markdown-it in non-dev group).",
+    "fixCost": "M",
+    "decision": "FIX_NOW",
+    "notes": "No Critical findings. OSV evidence in docs/AUDIT/raw/now/osv.json; markdown-it is runtimePath=prod but severity=moderate."
+  },
+  {
+    "id": "SAST-0001",
+    "category": "SAST",
+    "severity": "P1",
+    "evidence": {
+      "rawArtifact": "docs/AUDIT/raw/now/semgrep.json",
+      "excerpt": "Semgrep ERROR findings: run-shell-injection in workflow and spawn shell:true in ops script."
+    },
+    "reachability": {
+      "reachable": true,
+      "runtimePath": "dev",
+      "attackSurface": "ci+ops"
+    },
+    "impact": "Command-injection surface in CI/ops can compromise automation and release chain.",
+    "fixCost": "S",
+    "decision": "FIX_NOW",
+    "notes": "Evidence points: .github/workflows/ops-vector-close.yml:36 and scripts/ops/x2-readiness-gate-state.mjs:77."
+  },
+  {
+    "id": "SAST-0002",
+    "category": "SAST",
+    "severity": "P1",
+    "evidence": {
+      "rawArtifact": "docs/AUDIT/raw/now/semgrep.json",
+      "excerpt": "46 path-traversal warnings across IPC and file path builders (main + file utils)."
+    },
+    "reachability": {
+      "reachable": "unknown",
+      "runtimePath": "prod",
+      "attackSurface": "main|ipc|file-parser|local"
+    },
+    "impact": "Scattered path construction and guard checks increase regression risk for traversal/path-escape bugs.",
+    "fixCost": "M",
+    "decision": "FIX_NOW",
+    "notes": "Current guards exist (sanitize/isPathInside), but rule surface remains broad; central guard contract is recommended."
+  },
+  {
+    "id": "LICENSE-0001",
+    "category": "LICENSE",
+    "severity": "P2",
+    "evidence": {
+      "rawArtifact": "inline_current_run:npm ls --omit=dev --json --long",
+      "excerpt": "Fresh production scan reports UNKNOWN=0 and DENY=0; review set is limited to AGPL-3.0-or-later with no new review licenses."
+    },
+    "reachability": {
+      "reachable": true,
+      "runtimePath": "prod"
+    },
+    "impact": "License posture requires explicit policy notes but does not block current UI design flow.",
+    "fixCost": "S",
+    "decision": "CLOSED_ON_CURRENT_MAINLINE",
+    "notes": "License posture is explicitly closed for current scope A using fresh production scan, notices readiness token pass, and existing AGPL source-offer policy."
+  },
+  {
+    "id": "ARCH-0001",
+    "category": "ARCH",
+    "severity": "P2",
+    "evidence": {
+      "rawArtifact": "docs/AUDIT/raw/now/knip.json",
+      "excerpt": "Knip reports 18 issues (3 deps, 1 binary, 14 exports); depcruise reports 0 circular/unresolved and 1 orphan file."
+    },
+    "knipTopIssues": [
+      {
+        "type": "dependency",
+        "item": "@tiptap/core",
+        "file": "package.json:45",
+        "runtimeImpact": "unknown (likely build/import hygiene)",
+        "decision": "DEFER"
+      },
+      {
+        "type": "dependency",
+        "item": "@tiptap/pm",
+        "file": "package.json:46",
+        "runtimeImpact": "unknown (likely build/import hygiene)",
+        "decision": "DEFER"
+      },
+      {
+        "type": "dependency",
+        "item": "@tiptap/starter-kit",
+        "file": "package.json:47",
+        "runtimeImpact": "unknown (likely build/import hygiene)",
+        "decision": "DEFER"
+      },
+      {
+        "type": "binary",
+        "item": "electron",
+        "file": "package.json",
+        "runtimeImpact": "dev toolchain context",
+        "decision": "DEFER"
+      },
+      {
+        "type": "export",
+        "item": "writeFileAtomic",
+        "file": "src/utils/fileManager.js:182",
+        "runtimeImpact": "no direct user-facing impact proven",
+        "decision": "DROP"
+      },
+      {
+        "type": "export",
+        "item": "createBackup",
+        "file": "src/utils/backupManager.js:77",
+        "runtimeImpact": "no direct user-facing impact proven",
+        "decision": "DROP"
+      },
+      {
+        "type": "export",
+        "item": "validateMenuConfigAgainstSchema",
+        "file": "src/menu/menu-config-validator.js:255",
+        "runtimeImpact": "no direct user-facing impact proven",
+        "decision": "DROP"
+      }
+    ],
+    "reachability": {
+      "reachable": true,
+      "runtimePath": "dev+prod"
+    },
+    "impact": "Mostly maintainability noise; no immediate P0/P1 runtime break proven.",
+    "fixCost": "M",
+    "decision": "DEFER",
+    "notes": "Depcruise orphan: src/renderer/flags.js. No circular deps detected."
+  },
+  {
+    "id": "DUP-0001",
+    "category": "DUP",
+    "severity": "P3",
+    "evidence": {
+      "rawArtifact": "docs/AUDIT/raw/now/jscpd/jscpd-report.json",
+      "excerpt": "jscpd total duplication 13.45% lines (604 clone blocks), mostly ops/test and non-runtime code paths."
+    },
+    "reachability": {
+      "reachable": false,
+      "runtimePath": "dev+test"
+    },
+    "impact": "Maintenance overhead only; no direct user-impact defect evidence.",
+    "fixCost": "L",
+    "decision": "DROP",
+    "notes": "Anti-dr4chevo: no bulk dedup ticket before user-facing impact is demonstrated."
+  },
+  {
+    "id": "ELECTRON-0001",
+    "category": "ELECTRON",
+    "severity": "P3",
+    "evidence": {
+      "rawArtifact": "docs/AUDIT/raw/electron-invariants.md",
+      "excerpt": "CSP/navigation/new-window/IPC/no-remote-code previously verified PASS; no new contradicting evidence in this run."
+    },
+    "reachability": {
+      "reachable": false,
+      "runtimePath": "prod"
+    },
+    "impact": "No Electron P0 invariant breach identified.",
+    "fixCost": "S",
+    "decision": "DROP",
+    "notes": "No mutation run; invariants are reconfirmed from latest available evidence set."
+  }
+]

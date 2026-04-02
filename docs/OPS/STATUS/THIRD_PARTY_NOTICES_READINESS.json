@@ -1,7 +1,7 @@
 {
   "schemaVersion": "third-party-notices-readiness.v1",
   "status": "READY",
-  "baselineSha": "c85fca02e98d831d7b65195a2a593f969dfe5306",
+  "baselineSha": "4032ca41da7067b7dbff1f71574c4068f27ea0e6",
   "policy": {
     "licenseHygieneNotePresent": true,
     "sourceOfferPolicyPresent": true
@@ -14,5 +14,5 @@
       "NOTICE"
     ]
   },
-  "configHash": "23218fcc8d478dfec87f163cc142632dfc3b8b2202e8be9ab0ba34e075cd4c5e"
+  "configHash": "ba22d93a2327bff0bd0576e1dff4fdbe779a3ff54075e8f10a925259fa15d051"
 }
