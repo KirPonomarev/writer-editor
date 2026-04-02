@@ -70,3 +70,11 @@ test('createBackup rotates backups per fileId (keeps last 50)', async (t) => {
   assert.equal(backupFiles.length, 50);
   assert.equal(files.includes('meta.json'), true);
 });
+
+test('createBackup rejects traversal-like basePath input', async () => {
+  const result = await backupManager.createBackup('/rotate/story.txt', 'content', {
+    basePath: '../outside',
+  });
+
+  assert.equal(result.success, false);
+});

@@ -12,6 +12,8 @@ const backupManager = require('./utils/backupManager');
 const { hasDirectoryContent, copyDirectoryContents } = require('./utils/fsHelpers');
 const {
   isPathInsideBoundary,
+  joinPathSegmentsWithinRoot,
+  resolveValidatedPath,
   sanitizePathFields,
   sanitizePathFieldsWithinRoot,
 } = require('./core/io/path-boundary');
@@ -320,17 +322,19 @@ const ROMAN_SECTION_FILENAME_SET = new Set(
 
 function getProjectRootPath(projectName = DEFAULT_PROJECT_NAME) {
   const root = fileManager.getDocumentsPath();
-  return path.join(root, sanitizeFilename(projectName));
+  return joinPathSegmentsWithinRoot(root, [sanitizeFilename(projectName)], { resolveSymlinks: false });
 }
 
 function getProjectSectionPath(section, projectName = DEFAULT_PROJECT_NAME) {
   const root = getProjectRootPath(projectName);
   const folder = PROJECT_SUBFOLDERS[section];
-  return folder ? path.join(root, folder) : root;
+  return folder ? joinPathSegmentsWithinRoot(root, [folder], { resolveSymlinks: false }) : root;
 }
 
 function getProjectManifestPath(projectName = DEFAULT_PROJECT_NAME) {
-  return path.join(getProjectRootPath(projectName), PROJECT_MANIFEST_FILENAME);
+  return joinPathSegmentsWithinRoot(getProjectRootPath(projectName), [PROJECT_MANIFEST_FILENAME], {
+    resolveSymlinks: false,
+  });
 }
 
 function buildSectionDefinitions(labels) {
@@ -347,7 +351,7 @@ function getSectionDocumentPath(sectionName, projectName = DEFAULT_PROJECT_NAME)
   const root = fileManager.getDocumentsPath();
   const projectFolder = sanitizeFilename(projectName);
   const fileName = `${sanitizeFilename(sectionName)}.txt`;
-  return path.join(root, projectFolder, fileName);
+  return joinPathSegmentsWithinRoot(root, [projectFolder, fileName], { resolveSymlinks: false });
 }
 
 function createStableProjectId() {
@@ -525,11 +529,15 @@ async function resolveLastOpenedFilePath(settings) {
   if (lastProjectId && lastProjectRelativePath) {
     const projectBinding = await findProjectBindingByProjectId(lastProjectId);
     if (projectBinding && projectBinding.projectRoot) {
-      const candidatePath = path.resolve(projectBinding.projectRoot, lastProjectRelativePath);
-      if ((candidatePath === projectBinding.projectRoot || isPathInside(projectBinding.projectRoot, candidatePath))
-        && await fileExists(candidatePath)) {
-        return candidatePath;
-      }
+      try {
+        const candidatePath = joinPathSegmentsWithinRoot(projectBinding.projectRoot, [lastProjectRelativePath], {
+          resolveSymlinks: false,
+        });
+        if ((candidatePath === projectBinding.projectRoot || isPathInside(projectBinding.projectRoot, candidatePath))
+          && await fileExists(candidatePath)) {
+          return candidatePath;
+        }
+      } catch {}
     }
   }
 
@@ -711,7 +719,7 @@ function resolveExistingPath(candidate) {
   const normalized = typeof candidate === 'string' ? candidate.trim() : '';
   if (!normalized) return '';
   try {
-    return path.resolve(normalized);
+    return resolveValidatedPath(normalized, { mode: 'any' });
   } catch {
     return '';
   }
@@ -1262,7 +1270,9 @@ async function writeBufferAtomic(filePath, buffer) {
   const directory = path.dirname(filePath);
   const baseName = path.basename(filePath);
   const randomSuffix = crypto.randomBytes(5).toString('hex');
-  const tempPath = path.join(directory, `${baseName}.${randomSuffix}.tmp`);
+  const tempPath = joinPathSegmentsWithinRoot(directory, [`${baseName}.${randomSuffix}.tmp`], {
+    resolveSymlinks: false,
+  });
 
   await fs.mkdir(directory, { recursive: true });
   await fs.writeFile(tempPath, buffer);
@@ -1768,11 +1778,15 @@ async function ensureProjectStructure(projectName = DEFAULT_PROJECT_NAME) {
   await fs.mkdir(backupsPath, { recursive: true });
 
   for (const section of MATERIALS_SECTIONS) {
-    await fs.mkdir(path.join(materialsPath, section.dirName), { recursive: true });
+    await fs.mkdir(joinPathSegmentsWithinRoot(materialsPath, [section.dirName], { resolveSymlinks: false }), {
+      recursive: true,
+    });
   }
 
   for (const section of REFERENCE_SECTIONS) {
-    await fs.mkdir(path.join(referencePath, section.dirName), { recursive: true });
+    await fs.mkdir(joinPathSegmentsWithinRoot(referencePath, [section.dirName], { resolveSymlinks: false }), {
+      recursive: true,
+    });
   }
 
   await ensureProjectManifest(projectName);
@@ -1793,7 +1807,7 @@ async function readDirectoryEntries(folderPath) {
     .filter((entry) => entry.name && !entry.name.startsWith('.'))
     .map((entry) => ({
       name: entry.name,
-      path: path.join(folderPath, entry.name),
+      path: joinPathSegmentsWithinRoot(folderPath, [entry.name], { resolveSymlinks: false }),
       isDirectory: entry.isDirectory(),
       isFile: entry.isFile(),
       prefix: extractNumericPrefix(entry.name),
@@ -1827,7 +1841,9 @@ async function buildRomanTree(projectName = DEFAULT_PROJECT_NAME) {
       name: label,
       label,
       kind: 'roman-section',
-      nodePath: path.join(romanPath, `${sanitizeFilename(label)}.txt`),
+      nodePath: joinPathSegmentsWithinRoot(romanPath, [`${sanitizeFilename(label)}.txt`], {
+        resolveSymlinks: false,
+      }),
       children: []
     })
   );
@@ -1848,7 +1864,9 @@ async function buildMindMapTree(projectName = DEFAULT_PROJECT_NAME) {
       name: label,
       label,
       kind: 'mindmap-section',
-      nodePath: path.join(mindmapPath, `${sanitizeFilename(label)}.txt`),
+      nodePath: joinPathSegmentsWithinRoot(mindmapPath, [`${sanitizeFilename(label)}.txt`], {
+        resolveSymlinks: false,
+      }),
       children: []
     })
   );
@@ -1869,7 +1887,9 @@ async function buildPrintTree(projectName = DEFAULT_PROJECT_NAME) {
       name: label,
       label,
       kind: 'print-section',
-      nodePath: path.join(printPath, `${sanitizeFilename(label)}.txt`),
+      nodePath: joinPathSegmentsWithinRoot(printPath, [`${sanitizeFilename(label)}.txt`], {
+        resolveSymlinks: false,
+      }),
       children: []
     })
   );
@@ -1926,7 +1946,7 @@ async function buildMaterialsTree(projectName = DEFAULT_PROJECT_NAME) {
   const materialsPath = getProjectSectionPath('materials', projectName);
   const categoryNodes = [];
   for (const section of MATERIALS_SECTIONS) {
-    const folderPath = path.join(materialsPath, section.dirName);
+    const folderPath = joinPathSegmentsWithinRoot(materialsPath, [section.dirName], { resolveSymlinks: false });
     const subtree = await buildGenericTree(folderPath, 'materials');
     categoryNodes.push(
       buildNode({
@@ -1952,7 +1972,7 @@ async function buildReferenceTree(projectName = DEFAULT_PROJECT_NAME) {
   const referencePath = getProjectSectionPath('reference', projectName);
   const categoryNodes = [];
   for (const section of REFERENCE_SECTIONS) {
-    const folderPath = path.join(referencePath, section.dirName);
+    const folderPath = joinPathSegmentsWithinRoot(referencePath, [section.dirName], { resolveSymlinks: false });
     const subtree = await buildGenericTree(folderPath, 'reference');
     categoryNodes.push(
       buildNode({
@@ -2060,7 +2080,7 @@ async function reorderEntriesWithPrefixes(parentPath, orderedEntries) {
     const baseName = entry.baseName;
     const prefixed = formatPrefixedName(baseName, index + 1);
     const finalName = entry.isFile ? `${prefixed}.txt` : prefixed;
-    const finalPath = path.join(parentPath, finalName);
+    const finalPath = joinPathSegmentsWithinRoot(parentPath, [finalName], { resolveSymlinks: false });
     if (entry.path !== finalPath) {
       renames.push({ from: entry.path, to: finalPath });
     }
@@ -2673,7 +2693,7 @@ async function handleUiCreateNodeCommand(payload) {
     const nextIndex = entries.length + 1;
     const prefixed = formatPrefixedName(baseName, nextIndex);
     const finalName = isFile ? `${prefixed}.txt` : prefixed;
-    const targetPath = path.join(parentPath, finalName);
+    const targetPath = joinPathSegmentsWithinRoot(parentPath, [finalName], { resolveSymlinks: false });
     if (await fileExists(targetPath)) {
       return { ok: false, error: 'Файл уже существует' };
     }
@@ -2690,7 +2710,7 @@ async function handleUiCreateNodeCommand(payload) {
 
   const createWithoutPrefix = async (baseName, isFile) => {
     const finalName = isFile ? `${baseName}.txt` : baseName;
-    const targetPath = path.join(parentPath, finalName);
+    const targetPath = joinPathSegmentsWithinRoot(parentPath, [finalName], { resolveSymlinks: false });
     if (await fileExists(targetPath)) {
       return { ok: false, error: 'Файл уже существует' };
     }
@@ -2752,7 +2772,7 @@ async function handleUiRenameNodeCommand(payload) {
   const prefix = extractNumericPrefix(baseName);
   const finalBase = prefix !== null ? `${String(prefix).padStart(2, '0')}_${newName}` : newName;
   const finalName = isFile ? `${finalBase}.txt` : finalBase;
-  const targetPath = path.join(path.dirname(nodePath), finalName);
+  const targetPath = joinPathSegmentsWithinRoot(path.dirname(nodePath), [finalName], { resolveSymlinks: false });
 
   if (targetPath === nodePath) {
     return { ok: true, path: nodePath };
@@ -2767,7 +2787,7 @@ async function handleUiRenameNodeCommand(payload) {
 
   if (currentFilePath && isPathInside(nodePath, currentFilePath)) {
     const relative = path.relative(nodePath, currentFilePath);
-    currentFilePath = path.join(targetPath, relative);
+    currentFilePath = joinPathSegmentsWithinRoot(targetPath, [relative], { resolveSymlinks: false });
     await saveLastFile();
   }
 
@@ -2793,10 +2813,10 @@ async function handleUiDeleteNodeCommand(payload) {
   const trashPath = getProjectSectionPath('trash');
   await fs.mkdir(trashPath, { recursive: true });
   const baseName = path.basename(nodePath);
-  let targetPath = path.join(trashPath, baseName);
+  let targetPath = joinPathSegmentsWithinRoot(trashPath, [baseName], { resolveSymlinks: false });
   if (await fileExists(targetPath)) {
     const stamped = `${Date.now()}_${baseName}`;
-    targetPath = path.join(trashPath, stamped);
+    targetPath = joinPathSegmentsWithinRoot(trashPath, [stamped], { resolveSymlinks: false });
   }
 
   try {
@@ -2861,7 +2881,7 @@ async function handleUiReorderNodeCommand(payload) {
 
   if (currentFilePath && isPathInside(nodePath, currentFilePath)) {
     const relative = path.relative(nodePath, currentFilePath);
-    currentFilePath = path.join(updatedPath, relative);
+    currentFilePath = joinPathSegmentsWithinRoot(updatedPath, [relative], { resolveSymlinks: false });
     await saveLastFile();
   }
 
@@ -3759,7 +3779,7 @@ function parseRuntimeJsonInput(pathEnvKey, jsonEnvKey, label) {
 
   const payloadPathRaw = normalizeRuntimeString(process.env[pathEnvKey]);
   if (!payloadPathRaw) return null;
-  const payloadPath = path.resolve(payloadPathRaw);
+  const payloadPath = resolveValidatedPath(payloadPathRaw, { mode: 'any' });
   let rawText = '';
   try {
     rawText = fsSync.readFileSync(payloadPath, 'utf8');

@@ -3,6 +3,7 @@ const fsSync = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { app } = require('electron');
+const { joinPathSegmentsWithinRoot } = require('../core/io/path-boundary');
 const { hasDirectoryContent, copyDirectoryContents, directoryContainsAllEntries } = require('./fsHelpers');
 
 const DOCUMENTS_FOLDER_NAME = 'craftsman';
@@ -19,8 +20,8 @@ function logMigration(message) {
 // Путь к папке Documents/craftsman (fallback на WriterEditor, если уже существует)
 function getDocumentsPath() {
   const documentsPath = app.getPath('documents');
-  const preferredPath = path.join(documentsPath, DOCUMENTS_FOLDER_NAME);
-  const legacyPath = path.join(documentsPath, LEGACY_DOCUMENTS_FOLDER_NAME);
+  const preferredPath = joinPathSegmentsWithinRoot(documentsPath, [DOCUMENTS_FOLDER_NAME], { resolveSymlinks: false });
+  const legacyPath = joinPathSegmentsWithinRoot(documentsPath, [LEGACY_DOCUMENTS_FOLDER_NAME], { resolveSymlinks: false });
 
   if (hasDirectoryContent(preferredPath)) {
     return preferredPath;
@@ -74,9 +75,9 @@ async function removePathSafe(targetPath) {
 }
 
 async function migrateDocumentsFolderForPaths({ documentsPath }) {
-  const targetPath = path.join(documentsPath, DOCUMENTS_FOLDER_NAME);
-  const legacyPath = path.join(documentsPath, LEGACY_DOCUMENTS_FOLDER_NAME);
-  const markerPath = path.join(targetPath, MIGRATION_MARKER);
+  const targetPath = joinPathSegmentsWithinRoot(documentsPath, [DOCUMENTS_FOLDER_NAME], { resolveSymlinks: false });
+  const legacyPath = joinPathSegmentsWithinRoot(documentsPath, [LEGACY_DOCUMENTS_FOLDER_NAME], { resolveSymlinks: false });
+  const markerPath = joinPathSegmentsWithinRoot(targetPath, [MIGRATION_MARKER], { resolveSymlinks: false });
   const targetHasCompleteData = directoryContainsAllEntries(legacyPath, targetPath);
 
   if (fsSync.existsSync(markerPath)) {
@@ -95,7 +96,7 @@ async function migrateDocumentsFolderForPaths({ documentsPath }) {
   const targetHasAnyContent = hasDirectoryContent(targetPath);
   const tempPath = buildMigrationTempPath(targetPath);
   const backupPath = targetHasAnyContent ? buildMigrationBackupPath(targetPath) : '';
-  const tempMarkerPath = path.join(tempPath, MIGRATION_MARKER);
+  const tempMarkerPath = joinPathSegmentsWithinRoot(tempPath, [MIGRATION_MARKER], { resolveSymlinks: false });
   let targetMovedToBackup = false;
 
   try {
@@ -146,8 +147,8 @@ async function writeFileAtomic(filePath, content) {
   const directory = path.dirname(filePath);
   const baseName = path.basename(filePath);
   const randomSuffix = crypto.randomBytes(5).toString('hex');
-  const tempPath = path.join(directory, `${baseName}.${randomSuffix}.tmp`);
-  const oldPath = path.join(directory, `${baseName}.${randomSuffix}.old`);
+  const tempPath = joinPathSegmentsWithinRoot(directory, [`${baseName}.${randomSuffix}.tmp`], { resolveSymlinks: false });
+  const oldPath = joinPathSegmentsWithinRoot(directory, [`${baseName}.${randomSuffix}.old`], { resolveSymlinks: false });
 
   try {
     const stat = await fs.lstat(filePath);

@@ -1,6 +1,7 @@
 const { createHash } = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const { joinPathSegmentsWithinRoot, resolveValidatedPath } = require('../core/io/path-boundary.js');
 
 const MODE_RELEASE = 'release';
 const MODE_PROMOTION = 'promotion';
@@ -81,16 +82,22 @@ function normalizeRelativePath(filePath) {
   return normalized;
 }
 
+function normalizeResolvedComparisonPath(filePath) {
+  return String(filePath || '').normalize('NFC');
+}
+
 function toRepoRelativePath(filePath, repoRoot = REPO_ROOT) {
-  const rel = path.relative(path.resolve(repoRoot), path.resolve(filePath)).replaceAll(path.sep, '/');
+  const rel = path.relative(
+    resolveValidatedPath(repoRoot, { mode: 'any' }),
+    resolveValidatedPath(filePath, { mode: 'any' }),
+  ).replaceAll(path.sep, '/');
   return normalizeRelativePath(rel);
 }
 
 function resolvePath(inputPath, fallbackPath) {
   const raw = normalizeString(inputPath);
-  if (!raw) return path.resolve(fallbackPath);
-  if (path.isAbsolute(raw)) return path.resolve(raw);
-  return path.resolve(raw);
+  if (!raw) return resolveValidatedPath(fallbackPath, { mode: 'any' });
+  return resolveValidatedPath(raw, { mode: 'any' });
 }
 
 function validateVerifyCanon(doc, issues) {
@@ -278,8 +285,10 @@ function evaluateMenuArtifactLockState(input = {}) {
 
     const lockedArtifactPath = normalizeRelativePath(lockDoc.artifactPath);
     if (lockedArtifactPath) {
-      const resolvedLockedArtifactPath = path.resolve(REPO_ROOT, lockedArtifactPath);
-      if (path.resolve(artifactPath) !== resolvedLockedArtifactPath) {
+      const resolvedLockedArtifactPath = joinPathSegmentsWithinRoot(REPO_ROOT, [lockedArtifactPath], {
+        resolveSymlinks: false,
+      });
+      if (normalizeResolvedComparisonPath(artifactPath) !== normalizeResolvedComparisonPath(resolvedLockedArtifactPath)) {
         issues.push({ code: 'LOCK_ARTIFACT_PATH_MISMATCH', message: 'lock.artifactPath points to a different artifact path.' });
       }
     }
@@ -309,8 +318,8 @@ function evaluateMenuArtifactLockState(input = {}) {
 }
 
 function buildMenuArtifactLockDocument(input = {}) {
-  const repoRoot = path.resolve(input.repoRoot || REPO_ROOT);
-  const artifactPath = path.resolve(String(input.artifactPath || DEFAULT_ARTIFACT_PATH));
+  const repoRoot = resolveValidatedPath(input.repoRoot || REPO_ROOT, { mode: 'any' });
+  const artifactPath = resolveValidatedPath(String(input.artifactPath || DEFAULT_ARTIFACT_PATH), { mode: 'any' });
   const normalizedHashSha256 = normalizeString(input.normalizedHashSha256).toLowerCase();
   const snapshotId = normalizeString(input.snapshotId);
   const lockedAt = normalizeString(input.lockedAt) || new Date().toISOString();
