@@ -162,6 +162,66 @@ function validatePathWithinRoot(inputPath, rootPath, options = {}) {
   };
 }
 
+function makeBoundaryError(state, rawPath) {
+  const error = new Error(
+    state && typeof state.failReason === 'string' && state.failReason
+      ? state.failReason
+      : 'PATH_BOUNDARY_VIOLATION'
+  );
+  error.code = FAIL_SIGNAL;
+  error.failSignal = FAIL_SIGNAL;
+  error.failReason = state && typeof state.failReason === 'string' && state.failReason
+    ? state.failReason
+    : 'PATH_BOUNDARY_VIOLATION';
+  error.normalizedPath = state && typeof state.normalizedPath === 'string' ? state.normalizedPath : '';
+  error.rawPath = String(rawPath || '');
+  return error;
+}
+
+function resolveValidatedPath(inputPath, options = {}) {
+  const basePath = typeof options.basePath === 'string' && options.basePath.trim()
+    ? options.basePath
+    : process.cwd();
+  const mode = normalizeMode(options.mode || 'any');
+  const state = validatePathBoundary(inputPath, { mode });
+  if (!state.ok) {
+    throw makeBoundaryError(state, inputPath);
+  }
+  return resolvePathAgainstRoot(state.normalizedPath, basePath);
+}
+
+function joinPathWithinRoot(rootPath, inputPath, options = {}) {
+  const state = validatePathWithinRoot(inputPath, rootPath, options);
+  if (!state.ok) {
+    throw makeBoundaryError(state, inputPath);
+  }
+  return state.resolvedPath;
+}
+
+function joinPathSegmentsWithinRoot(rootPath, segments, options = {}) {
+  const items = Array.isArray(segments) ? segments : [];
+  const normalized = [];
+
+  for (const segment of items) {
+    const value = String(segment || '').trim();
+    if (!value) continue;
+    const state = validatePathBoundary(value, { mode: 'relative' });
+    if (!state.ok) {
+      throw makeBoundaryError(state, value);
+    }
+    normalized.push(state.normalizedPath);
+  }
+
+  if (!normalized.length) {
+    return path.resolve(rootPath);
+  }
+
+  return joinPathWithinRoot(rootPath, normalized.join('/'), {
+    ...options,
+    mode: 'relative',
+  });
+}
+
 function sanitizePathFields(payload, pathFieldNames, options = {}) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
     return {
@@ -247,6 +307,9 @@ function sanitizePathFieldsWithinRoot(payload, pathFieldNames, rootPath, options
 module.exports = {
   FAIL_SIGNAL,
   isPathInsideBoundary,
+  joinPathSegmentsWithinRoot,
+  joinPathWithinRoot,
+  resolveValidatedPath,
   sanitizePathFields,
   sanitizePathFieldsWithinRoot,
   validatePathWithinRoot,

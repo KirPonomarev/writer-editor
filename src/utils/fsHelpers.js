@@ -1,6 +1,6 @@
 const fs = require('fs').promises;
 const fsSync = require('fs');
-const path = require('path');
+const { joinPathSegmentsWithinRoot } = require('../core/io/path-boundary');
 
 function hasDirectoryContent(directoryPath) {
   try {
@@ -40,8 +40,8 @@ function directoryContainsAllEntries(source, destination) {
   }
 
   for (const entry of entries) {
-    const sourcePath = path.join(source, entry.name);
-    const destinationPath = path.join(destination, entry.name);
+    const sourcePath = joinPathSegmentsWithinRoot(source, [entry.name], { resolveSymlinks: false });
+    const destinationPath = joinPathSegmentsWithinRoot(destination, [entry.name], { resolveSymlinks: false });
     let destinationStat = null;
     try {
       destinationStat = fsSync.statSync(destinationPath);
@@ -73,8 +73,8 @@ async function copyDirectoryContents(source, destination, options = {}) {
   const entries = await fs.readdir(source, { withFileTypes: true });
 
   for (const entry of entries) {
-    const sourcePath = path.join(source, entry.name);
-    const destinationPath = path.join(destination, entry.name);
+    const sourcePath = joinPathSegmentsWithinRoot(source, [entry.name], { resolveSymlinks: false });
+    const destinationPath = joinPathSegmentsWithinRoot(destination, [entry.name], { resolveSymlinks: false });
 
     if (entry.isDirectory()) {
       await copyDirectoryContents(sourcePath, destinationPath, options);
