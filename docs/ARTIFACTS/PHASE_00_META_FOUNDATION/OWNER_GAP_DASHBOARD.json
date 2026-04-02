@@ -3,9 +3,9 @@
   "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
   "generatedAtUtc": "2026-04-01T20:55:24Z",
   "currentMainlineRebind": {
-    "bindingBaseSha": "e1355820abc08cdd3865d6b6612451aff01a636d",
-    "reboundAtUtc": "2026-04-02T06:20:23Z",
-    "rebindClass": "FACTUAL_AUDIT_TRUTH_RECONFIRM",
+    "bindingBaseSha": "e304c9d5d9a5563792adeee26e0611a60adead0d",
+    "reboundAtUtc": "2026-04-02T07:09:45Z",
+    "rebindClass": "SYMBOLIC_CLOSEOUT_AND_BLOCKED_LATER_FREEZE",
     "gapClassifications": [
       {
         "gapId": "GAP_COMMAND_SURFACE_BYPASS",
@@ -42,6 +42,18 @@
         "classification": "SUPERSEDED",
         "currentDebt": false,
         "reason": "Current mainline shell safe-reset and restore runtime path is covered by active targeted proof tests; deferred selected-base shell proof debt is closed."
+      },
+      {
+        "gapId": "GAP_SKIP_HEAVY_CURRENT_SCOPE",
+        "classification": "LATER",
+        "currentDebt": true,
+        "reason": "Explicit hold remains honest debt and does not create an admissible nonblocked contour by itself."
+      },
+      {
+        "gapId": "GAP_PERF_FALSE_GREEN",
+        "classification": "BLOCKED",
+        "currentDebt": true,
+        "reason": "Live perf gate remains environment blocked in current scope."
       }
     ]
   },
@@ -101,7 +113,7 @@
     {
       "blockedId": "BLOCKED_SECURITY_SCANNERS",
       "status": "BLOCKED",
-      "summary": "Security scanner lane is not standardized enough to mark environment readiness PASS, even though an operator-local semgrep run was executed during closeout."
+      "summary": "Operator-local semgrep is available with PATH correction, but security audit lane is still not standardized-ready for environment readiness PASS."
     }
   ],
   "skippedRequiredTests": [
@@ -132,5 +144,5 @@
     "direct_ui_bypass_under_bus_claim",
     "dormant_design_os_presented_as_live"
   ],
-  "singleNextMove": "ONE_EXPLICIT_EVIDENCE_BACKED_NONBLOCKED_CONTOUR_SELECTION_BRIEF_ONLY"
+  "singleNextMove": "REPORT_SYMBOLIC_CLOSEOUT_READY"
 }

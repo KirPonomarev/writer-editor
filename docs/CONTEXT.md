@@ -47,6 +47,9 @@
 - path boundary centralization contour is merged on current mainline
 - dependency truth high-critical false-green class is superseded on current mainline after merged remediation
 - menu truth chain and sourcebinding reconfirm contour is merged on current mainline
+- current scope A is symbolic closeout ready on current mainline
+- blocked lanes remain explicit blocked debt; later items remain explicit later or hold debt
+- operator-local semgrep is available via PATH correction, but security audit lane is still not standardized-ready
 
 ### Invariants
 - editor surface не источник истины,
@@ -74,6 +77,7 @@ Formal Y8 cutover packet is explicitly bound on main with explicit rollback pack
 2. не открывать post-version-one evaluation как обязательную часть `Writer v1`
 3. если будет переподтверждён новый nonblocked contradiction, открывать только один explicit evidence-backed contour за раз
 4. не маскировать новые gaps narrative claims о полном closure
+5. если новый nonblocked contradiction не переподтверждён, фиксировать symbolic closeout ready без открытия нового write contour
 
 ## What Is Not Yet Claimed
 - pack layer не считается обязательным,
@@ -94,4 +98,5 @@ Formal Y8 cutover packet is explicitly bound on main with explicit rollback pack
 - не открывать Y9 по импликации из текста или narrative claims,
 - не переинтерпретировать Y8 PASS как автоматический полный release hardening,
 - если новых live nonblocked contradictions не переподтверждено, сохранять current mainline closure truth,
+- при отсутствии новых live nonblocked contradictions текущий статус: symbolic closeout ready with blocked and later freeze,
 - если новый live nonblocked contradiction переподтверждён, следующий шаг только один: one explicit evidence-backed nonblocked contour selection brief.
