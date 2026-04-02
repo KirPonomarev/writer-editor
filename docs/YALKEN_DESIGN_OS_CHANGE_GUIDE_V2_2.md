@@ -19,9 +19,10 @@ TRUTH_ORDER_01: CANON_STATUS.json_AND_ACTIVE_CANONICAL_EXECUTION_DOCUMENT
 TRUTH_ORDER_02: CANON.md
 TRUTH_ORDER_03: COREX.v1.md
 TRUTH_ORDER_04: BIBLE.md
-TRUTH_ORDER_05: CONTEXT.md
-TRUTH_ORDER_06: HANDOFF.md
+TRUTH_ORDER_05: README.md
+TRUTH_ORDER_06: CONTEXT.md
 TRUTH_ORDER_07: PROCESS.md
+TRUTH_ORDER_08: HANDOFF.md
 TRUTH_RULE_01: OLD_MASTER_PLANS_ARE_DONOR_ONLY
 TRUTH_RULE_02: NO_SECOND_CANON
 ```
@@ -77,22 +78,25 @@ BOUNDARY_RULE_02: DESIGN_OS_MAY_PRESENT_COMMANDS_BUT_MUST_NOT_REDEFINE_MEANING
 
 ## 4. Схема сущностей
 
-В репо нельзя смешивать четыре разных класса вещей:
+В репо нельзя смешивать пять разных классов вещей:
 
 - required surface
 - gap
 - deferred test
 - lane status
+- blocked environment
 
 ```text
 ENTITY_01: REQUIRED_SURFACE
 ENTITY_02: GAP
 ENTITY_03: DEFERRED_TEST
 ENTITY_04: LANE_STATUS
+ENTITY_05: BLOCKED_ENV
 ENTITY_RULE_01: NEVER_MIX_THESE_IN_ONE_LIST
 ENTITY_RULE_02: LANE_STATUS_IS_NOT_SURFACE
 ENTITY_RULE_03: DEFERRED_TEST_IS_NOT_ADMITTED_SURFACE
 ENTITY_RULE_04: GAP_IS_NOT_SURFACE
+ENTITY_RULE_05: BLOCKED_ENV_IS_NOT_LANE_STATUS
 ```
 
 ## 5. Текущая опорная карта по репо
@@ -100,10 +104,18 @@ ENTITY_RULE_04: GAP_IS_NOT_SURFACE
 Это не вечные истины, а текущая карта, привязанная к снимку current mainline.
 
 ```text
+CURRENT_MAP_SNAPSHOT_BOUND: TRUE
+CURRENT_MAP_SELECTED_BASE_SHA: 023275cdc82faf4483568596a9e144fe2442bfcc
+CURRENT_MAP_BINDING_BASE_SHA: f6f04b17e74cc7b9fc5185ca6dc37261886de0d5
+CURRENT_MAP_REBOUND_AT_UTC: 2026-04-02T14:55:00Z
+CURRENT_MAP_ARTIFACTS: CURRENT_SCOPE_PROOF_MATRIX.json OWNER_GAP_DASHBOARD.json ENVIRONMENT_READINESS_MATRIX.json FALSE_GREEN_GUARD_POLICY.json Y8_FORMAL_CUTOVER_PACKET_RECORD_V1.json
+CURRENT_MAP_RULE_01: ALL_CURRENT_MAP_ROWS_MUST_TRACE_TO_CURRENT_MAP_ARTIFACTS
+CURRENT_MAP_RULE_02: IF_ANY_BOUND_FIELD_CHANGES_REBIND_BEFORE_NEW_WRITE_CONTOUR
 REQUIRED_SURFACES: SURFACE_EDITOR_TRUTH_AND_SAVE SURFACE_COMMAND_SURFACE SURFACE_MENU_SOURCEBINDING SURFACE_SHELL_SAFE_RESET_RESTORE SURFACE_FACTUAL_DOC_TRUTH SURFACE_PERF_TRUTH SURFACE_DEPENDENCY_TRUTH
 CURRENT_GAPS: GAP_SKIP_HEAVY_CURRENT_SCOPE=LATER GAP_PERF_FALSE_GREEN=BLOCKED
-CURRENT_DEFERRED_TESTS: palette_grouping_test_js sector_m_command_surface_ui_fencing_test_js sector_m_preload_ui_command_bridge_test_js sector_m_runtime_command_id_canonicalization_test_js sector_m_design_os_theme_design_state_test_js sector_m_design_os_typography_design_state_test_js sector_m_design_os_command_palette_visibility_test_js
-CURRENT_LANE_STATUSES: SECURITY_AUDIT_LANE=STANDARDIZED_READY_WITH_GENERIC_SAST TEST_ELECTRON_LANE=READY_AND_EXECUTED_TWICE_ON_CURRENT_MAINLINE BUILD_MAC_LANE=BLOCKED_BUILD_MAC
+CURRENT_DEFERRED_TESTS: palette-grouping.test.js sector-m-command-surface-ui-fencing.test.js sector-m-preload-ui-command-bridge.test.js sector-m-runtime-command-id-canonicalization.test.js sector-m-design-os-theme-design-state.test.js sector-m-design-os-typography-design-state.test.js sector-m-design-os-command-palette-visibility.test.js
+CURRENT_LANE_STATUSES: SECURITY_AUDIT_LANE=STANDARDIZED_READY_WITH_GENERIC_SAST TEST_ELECTRON_LANE=READY_AND_EXECUTED_TWICE_ON_CURRENT_MAINLINE
+CURRENT_BLOCKED_ENV: BLOCKED_BUILD_MAC=BLOCKED
 ```
 
 Статусные claims должны быть привязаны к конкретным артефактам, а не пересказываться свободно.
@@ -113,6 +125,7 @@ STATUS_ARTIFACT_01: CURRENT_SCOPE_PROOF_MATRIX.json_FOR_REQUIRED_SURFACES
 STATUS_ARTIFACT_02: OWNER_GAP_DASHBOARD.json_FOR_GAP_CLASSIFICATION
 STATUS_ARTIFACT_03: FALSE_GREEN_GUARD_POLICY.json_FOR_FALSE_GREEN_GUARDS
 STATUS_ARTIFACT_04: Y8_FORMAL_CUTOVER_PACKET_RECORD_V1.json_FOR_FORMAL_CUTOVER_BOUND_WITH_READINESS_HOLD
+STATUS_ARTIFACT_05: ENVIRONMENT_READINESS_MATRIX.json_FOR_LANE_READINESS_AND_BLOCKED_ENV
 ARTIFACT_RULE_01: STATUS_CLAIMS_MUST_POINT_TO_ARTIFACT_CLASS
 ARTIFACT_RULE_02: VERIFIED_AT_UTC_WITHOUT_ARTIFACT_CLASS_IS_NOT_ENOUGH
 ARTIFACT_RULE_03: REQUIRED_SURFACE_CLAIMS_AND_LANE_STATUS_CLAIMS_MUST_NOT_SHARE_THE_SAME_SLOT
@@ -226,7 +239,7 @@ DECISION_07: ONLY_SMALL_EXCEPTION_IS_VISUAL_PLUS_UI_BINDING
 ```text
 GROUP_ID: GROUP_01_VISUAL_AND_TYPOGRAPHY
 WHEN: HTML CSS SPACING SIZING TYPOGRAPHY ICONS VISUAL_COMPOSITION
-TOUCH: index.html styles.css theme-config.v1.json theme-config.schema.v1.json theme-config-validator.js asset_files
+TOUCH: index.html styles.css theme-config.v1.json theme-config.schema.v1.json theme-config-validator.js logo.png Circe-Regular.ttf
 DEFAULT_DENYLIST: editor.js designOsRuntime.mjs designOsPortContract.mjs preload.js main.js fileManager.js backupManager.js atomicWriteFile.mjs
 PATCH_SCOPE: DESIGN_PATCH_ONLY
 PORT_USAGE: NONE_BY_DEFAULT
@@ -263,14 +276,15 @@ STOP_IF: NEW_COMMAND_MEANING_OR_PRELOAD_MAIN_BRIDGE_BECOMES_NECESSARY
 ```text
 GROUP_ID: GROUP_03_SHELL_MECHANICS
 WHEN: SAFE_RESET RESTORE_LAST_STABLE SHELL_MODE LAYOUT_BEHAVIOR DESIGN_STATE_MECHANICS
-TOUCH: designOsRuntime.mjs designOsPortContract.mjs designOsShellController.mjs repoDesignOsCompat.mjs repoDesignOsBootstrap.mjs index.mjs editor.js runtimeBridge.js theme-config.v1.json
+TOUCH: designOsRuntime.mjs designOsPortContract.mjs designOsShellController.mjs repoDesignOsCompat.mjs repoDesignOsBootstrap.mjs repoDesignOsAdapter.mjs editor.js runtimeBridge.js theme-config.v1.json
 DEFAULT_DENYLIST: fileManager.js backupManager.js atomicWriteFile.mjs preload.js main.js UNLESS_TASK_EXPLICITLY_OPENS_BRIDGE_LEVEL_CONTOUR
 PATCH_SCOPE: DESIGN_PATCH_AND_LAYOUT_PATCH_WITHIN_ALLOWED_KEYS
 PORT_USAGE: PREVIEW_DESIGN COMMIT_DESIGN SAFE_RESET_SHELL RESTORE_LAST_STABLE_SHELL GET_RUNTIME_SNAPSHOT
 ESCALATE_IF: TOUCHES_PRODUCT_TRUTH OR_RECOVERY_TRUTH OR_COMMAND_MEANING OR_STORAGE
 PRECHECK_COMMANDS: git_status_short_branch git_rev_parse_HEAD git_rev_parse_origin_main
 PRECHECK_PROOF: CHOSEN_ALLOWED_COMMIT_POINT_PLUS_EXISTING_PORT_PLUS_SHELL_SCOPE_ONLY
-POSTCHECK_COMMANDS: npm_run_build_renderer npm_test npm_run_test_electron_IF_RUNTIME_SURFACE_CHANGED git_diff_name_only
+POSTCHECK_COMMANDS: npm_run_build_renderer npm_test npm_run_test_electron git_diff_name_only
+POSTCHECK_RULE_01: RUN_npm_run_test_electron_WHEN_RUNTIME_SURFACE_CHANGED
 ACCEPTANCE_ARTIFACTS: RUNTIME_NOTE_PLUS_CLEAN_SCOPE_DIFF_PLUS_TEST_OUTPUT
 STOP_IF: PRODUCT_TRUTH_RECOVERY_TRUTH_COMMAND_MEANING_OR_STORAGE_BECOMES_NECESSARY
 ```
@@ -282,7 +296,9 @@ STOP_IF: PRODUCT_TRUTH_RECOVERY_TRUTH_COMMAND_MEANING_OR_STORAGE_BECOMES_NECESSA
 ```text
 GROUP_ID: GROUP_04_STORAGE_AND_WRITE
 WHEN: SAVE RECOVERY ATOMIC_WRITE BACKUP PROJECT_STATE STORAGE_AS_TRUTH
-TOUCH: fileManager.js backupManager.js atomicWriteFile.mjs snapshotFile.mjs reliabilityLog.mjs preload.js main.js shared_recovery_files test_storage_files
+TOUCH: fileManager.js backupManager.js atomicWriteFile.mjs snapshotFile.mjs reliabilityLog.mjs ioErrors.mjs recoveryActionCanon.mjs fsHelpers.js path-boundary.js preload.js main.js
+TEST_TOUCH: atomicWrite.test.js backupManager.test.js migrationHardening.test.js pathBoundaryHelpers.test.js sector-m-m5-atomic-write.test.js sector-m-m5-snapshot.test.js sector-m-m5-corruption.test.js sector-m-m5-limits.test.js sector-m-m6-safety-config.test.js sector-m-m6-recovery-ux.test.js sector-m-m6-deterministic-log.test.js x3-recovery-smoke.contract.test.js recovery-atomic-write.contract.test.js recovery-snapshot-fallback.contract.test.js recovery-typed-errors.contract.test.js recovery-replay.contract.test.js recovery-corruption.contract.test.js recovery-action-canon.contract.test.js
+FIXTURE_TOUCH: big.md corrupt.md existing.md expected-log-record.json
 DEFAULT_DENYLIST: PURE_VISUAL_FILES_UNLESS_TASK_IS_EXPLICITLY_SPLIT
 PATCH_SCOPE: STORAGE_ONLY_OR_STORAGE_DOMINANT
 PORT_USAGE: NOT_A_PURE_DESIGN_OS_PORT_CONTOUR
@@ -301,7 +317,8 @@ STOP_IF: TASK_IS_STILL_DESCRIBED_AS_PURE_VISUAL_OR_UI_ONLY
 ```text
 GROUP_ID: GROUP_05_DOCS_AND_STATUS
 WHEN: CODE_ALREADY_ACCEPTED_AND_DOCS_NEED_ALIGNMENT
-TOUCH: HANDOFF.md CONTEXT.md WORKLOG.md YALKEN_DESIGN_OS_CHANGE_GUIDE_V2_2.md TASK_DOCS_IF_NEEDED
+TOUCH: HANDOFF.md CONTEXT.md WORKLOG.md PROCESS.md YALKEN_DESIGN_OS_CHANGE_GUIDE_V2_2.md
+EXTRA_DOC_RULE: ANY_OTHER_DOC_BASENAME_MUST_BE_NAMED_EXPLICITLY_IN_TASK_PACKET
 DEFAULT_DENYLIST: ALL_RUNTIME_FILES
 PATCH_SCOPE: DOC_ONLY
 PORT_USAGE: NONE
