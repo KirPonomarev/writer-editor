@@ -17,6 +17,7 @@
 - Closeout: current scope A is recorded as symbolic closeout ready on mainline with blocked and later debt explicitly frozen.
 - Security lane standardized: added repo-runner generic semgrep lane with package script; current generic scan remains zero-findings with timeout events reported honestly.
 - Test lane readiness: `npm run -s test:electron` rerun twice on current mainline, both pass; TEST_ELECTRON moved from blocked to ready and executed.
+- License posture closure: fresh production license scan reports `UNKNOWN=0` and `DENY=0`; notices-readiness token remains pass; `LICENSE-0001` moved from later to closed on current mainline for current scope A.
 
 ## 2026-01-27
 - Canon: добавлен `CANON.md` (верхний канон решений/изменений) + `docs/BIBLE.md` (Craftsman vNext).
