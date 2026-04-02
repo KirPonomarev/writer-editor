@@ -53,7 +53,7 @@ _Generated: 2026-04-02_
 - menu truth chain and sourcebinding reconfirm contour is merged on current mainline.
 - current scope A is symbolic closeout ready on current mainline.
 - blocked lanes remain explicit blocked debt; later items remain explicit later or hold debt.
-- operator-local semgrep is available via PATH correction, but security audit lane is still not standardized-ready.
+- security audit lane is standardized on repo mainline via generic semgrep runner and package script; generic scan is repeatable with zero findings and honest timeout reporting.
 
 ## What Is Next
 1. keep Y8 cutover truth and rollback truth as one active factual reality

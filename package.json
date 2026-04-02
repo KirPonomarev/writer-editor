@@ -24,6 +24,7 @@
     "test:electron": "node scripts/run-tests.js electron",
     "sector:u:run": "node scripts/sector-u-run.mjs",
     "oss:policy": "node scripts/check-no-paid-tiptap.mjs",
+    "security:audit:generic-sast": "node semgrep-generic-sast.mjs",
     "ops:mvp-boundary": "node scripts/guards/ops-mvp-boundary.mjs",
     "ops:current-wave": "node scripts/guards/ops-current-wave-stop.mjs",
     "brain:status": "node scripts/brain.mjs status",
