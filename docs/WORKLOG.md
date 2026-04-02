@@ -8,6 +8,13 @@
 - Reason: UI быстро эволюционирует, но репозиторий должен хранить только устойчивые инварианты и текущий исполнимый срез.
 - UI: visual baseline зафиксирован как временный и итерационный, а не как постоянная истина продукта.
 
+## 2026-04-02
+- False-green: merged current-mainline reconfirm for menu truth chain and sourcebinding.
+- False-green: merged factual doc truth reconfirm and shell safe-reset or restore proof closure.
+- Security: merged SAST-0001 CI and ops command injection hardening and SAST-0002 path boundary centralization.
+- Dependency truth: merged narrow remediation on current mainline; current `npm audit --audit-level=high` is clean.
+- Docs and OPS artifacts: factual and audit truth surfaces were reconfirmed after the merged proof-changing contours.
+
 ## 2026-01-27
 - Canon: добавлен `CANON.md` (верхний канон решений/изменений) + `docs/BIBLE.md` (Craftsman vNext).
 - CI: добавлен OSS‑guard `scripts/check-no-paid-tiptap.mjs` + workflow `.github/workflows/oss-policy.yml` (pre/post install) + `npm audit`.

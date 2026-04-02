@@ -3,8 +3,8 @@
   "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
   "generatedAtUtc": "2026-04-01T20:55:24Z",
   "currentMainlineRebind": {
-    "bindingBaseSha": "22db0b8177f27b8950675b4affd0a4ed3a5e3f2f",
-    "reboundAtUtc": "2026-04-01T23:28:12Z",
+    "bindingBaseSha": "e1355820abc08cdd3865d6b6612451aff01a636d",
+    "reboundAtUtc": "2026-04-02T06:20:23Z",
     "surfaceClassifications": [
       {
         "surfaceId": "SURFACE_MENU_SOURCEBINDING",
@@ -16,13 +16,13 @@
         "surfaceId": "SURFACE_DEPENDENCY_TRUTH",
         "classification": "LIVE",
         "proofClassSetSatisfied": true,
-        "reason": "Current remote mainline dependency audit has zero high and zero critical findings."
+        "reason": "Current remote mainline dependency audit has zero findings after merged dependency remediation."
       },
       {
         "surfaceId": "SURFACE_FACTUAL_DOC_TRUTH",
         "classification": "LIVE",
         "proofClassSetSatisfied": true,
-        "reason": "Factual docs are aligned to current mainline operating reality."
+        "reason": "Factual and audit docs are aligned to current mainline operating reality."
       },
       {
         "surfaceId": "SURFACE_SHELL_SAFE_RESET_RESTORE",
