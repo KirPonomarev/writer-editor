@@ -19,21 +19,23 @@
 - `SAST-0001`: CLOSED_ON_CURRENT_MAINLINE
 - `SAST-0002`: CLOSED_ON_CURRENT_MAINLINE
 - `LICENSE-0001`: CLOSED_ON_CURRENT_MAINLINE
-- `ARCH-0001`: LATER
+- `ARCH-0001`: CLOSED_ON_CURRENT_MAINLINE
 - `DUP-0001`: DROP
 - `ELECTRON-0001`: DROP
 
 ## Notes
 - Fresh production license scan (`npm ls --omit=dev --json --long`) reports `UNKNOWN=0` and `DENY=0`; review set is limited to `AGPL-3.0-or-later` with no new review licenses.
-- Architecture hygiene for `knip` and `depcruise` remains later-only and is not a current P1 blocker.
+- Architecture rebind on current mainline confirms no circular or unresolved graph break in current depcruise raw evidence and no runtime-impacting orphan claim.
+- Old knip dependency unused claims for `@tiptap/core`, `@tiptap/pm`, and `@tiptap/starter-kit` are stale against current runtime wiring (`src/renderer/tiptap/index.js` + installed dependency graph).
+- Old `src/renderer/flags.js` orphan narrative is stale because `src/renderer/index.html` wires it in the active renderer entrypoint.
 - Blocked environment lanes such as live perf, Electron runtime execution, and mac build readiness are not promoted to PASS by this audit closeout.
 
 ## Severity Counts
 - P0: **0**
 - P1: **0**
-- P2: **1**
+- P2: **0**
 - P3: **2**
 
 ## Final Decision
 - **CURRENT_MAINLINE_NOW_SET_CLOSED**
-- Basis: fast gates are green, current dependency audit has zero findings, current generic semgrep scan has zero findings, the three targeted P1 remediation contours are merged on mainline, and license posture is explicitly closed for current scope A.
+- Basis: fast gates are green, current dependency audit has zero findings, current generic semgrep scan has zero findings, targeted P1 remediation contours are merged on mainline, and both `LICENSE-0001` and `ARCH-0001` are explicitly closed for current scope A.
