@@ -3,8 +3,8 @@
   "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
   "generatedAtUtc": "2026-04-01T20:55:24Z",
   "currentMainlineRebind": {
-    "bindingBaseSha": "e304c9d5d9a5563792adeee26e0611a60adead0d",
-    "reboundAtUtc": "2026-04-02T07:09:45Z",
+    "bindingBaseSha": "f6f04b17e74cc7b9fc5185ca6dc37261886de0d5",
+    "reboundAtUtc": "2026-04-02T14:55:00Z",
     "rebindClass": "SYMBOLIC_CLOSEOUT_AND_BLOCKED_LATER_FREEZE",
     "gapClassifications": [
       {
@@ -100,11 +100,6 @@
     }
   ],
   "blockedEnv": [
-    {
-      "blockedId": "BLOCKED_TEST_ELECTRON",
-      "status": "BLOCKED",
-      "summary": "Electron test lane is environment blocked in current scope."
-    },
     {
       "blockedId": "BLOCKED_BUILD_MAC",
       "status": "BLOCKED",

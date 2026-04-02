@@ -3,10 +3,11 @@
   "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
   "generatedAtUtc": "2026-04-01T20:55:24Z",
   "currentMainlineRebind": {
-    "bindingBaseSha": "e304c9d5d9a5563792adeee26e0611a60adead0d",
-    "reboundAtUtc": "2026-04-02T07:09:45Z",
+    "bindingBaseSha": "f6f04b17e74cc7b9fc5185ca6dc37261886de0d5",
+    "reboundAtUtc": "2026-04-02T14:55:00Z",
     "currentScopeStatus": "SYMBOLIC_CLOSEOUT_READY",
     "securityAuditLaneStatus": "STANDARDIZED_READY_WITH_GENERIC_SAST",
+    "testElectronLaneStatus": "READY_AND_EXECUTED_TWICE_ON_CURRENT_MAINLINE",
     "surfaceClassifications": [
       {
         "surfaceId": "SURFACE_MENU_SOURCEBINDING",
