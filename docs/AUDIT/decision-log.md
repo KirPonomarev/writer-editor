@@ -9,9 +9,11 @@ Effect: current CI and ops command injection surface is materially reduced witho
 Effect: traversal regression risk is reduced on active prod file-operation paths.
 4. **License posture closure (LICENSE-0001)**: fresh production license scan on current mainline reports `UNKNOWN=0` and `DENY=0`, while notices readiness and AGPL source-offer policy remain valid.
 Effect: license posture is explicitly closed for current scope A without opening runtime or dependency contours.
+5. **Architecture evidence rebind closure (ARCH-0001)**: old knip and depcruise claims were rebound against current mainline static evidence and reproved as nonblocking or stale for current runtime truth.
+Effect: no current circular or unresolved architecture break is reproved; old tiptap-unused and flags-orphan narratives are stale on current mainline runtime wiring.
 
 ## LATER
-1. Architecture hygiene pass for knip/depcruise findings (unused exports/deps, orphan module) with strict scope.
+1. None in audit-now set after current scope A closeout.
 
 ## DROP
 1. Any mass dedup/refactor not tied to measurable bug/security/perf effect.

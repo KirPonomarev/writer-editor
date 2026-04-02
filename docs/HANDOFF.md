@@ -52,6 +52,7 @@ _Generated: 2026-04-02_
 - dependency truth high-critical false-green class is superseded on current mainline after merged remediation.
 - menu truth chain and sourcebinding reconfirm contour is merged on current mainline.
 - license posture `LICENSE-0001` is closed on current mainline for current scope A with fresh production scan (`UNKNOWN=0`, `DENY=0`) and notices-readiness token pass.
+- architecture posture `ARCH-0001` is closed on current mainline for current scope A after static evidence rebind confirmed no runtime-impacting circular or unresolved break.
 - current scope A is symbolic closeout ready on current mainline.
 - blocked lanes remain explicit blocked debt; later items remain explicit later or hold debt.
 - security audit lane is standardized on repo mainline via generic semgrep runner and package script; generic scan is repeatable with zero findings and honest timeout reporting.

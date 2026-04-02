@@ -118,36 +118,36 @@
     "severity": "P2",
     "evidence": {
       "rawArtifact": "docs/AUDIT/raw/now/knip.json",
-      "excerpt": "Knip reports 18 issues (3 deps, 1 binary, 14 exports); depcruise reports 0 circular/unresolved and 1 orphan file."
+      "excerpt": "Raw knip claim class remains visible, but current depcruise evidence has no circular or unresolved violations and old orphan narrative is not reproved as a current runtime issue."
     },
     "knipTopIssues": [
       {
         "type": "dependency",
         "item": "@tiptap/core",
         "file": "package.json:45",
-        "runtimeImpact": "unknown (likely build/import hygiene)",
-        "decision": "DEFER"
+        "runtimeImpact": "stale unused claim; imported in current renderer tiptap runtime path",
+        "decision": "STALE"
       },
       {
         "type": "dependency",
         "item": "@tiptap/pm",
         "file": "package.json:46",
-        "runtimeImpact": "unknown (likely build/import hygiene)",
-        "decision": "DEFER"
+        "runtimeImpact": "stale unused claim; reachable via current tiptap runtime dependency graph",
+        "decision": "STALE"
       },
       {
         "type": "dependency",
         "item": "@tiptap/starter-kit",
         "file": "package.json:47",
-        "runtimeImpact": "unknown (likely build/import hygiene)",
-        "decision": "DEFER"
+        "runtimeImpact": "stale unused claim; imported in current renderer tiptap runtime path",
+        "decision": "STALE"
       },
       {
         "type": "binary",
         "item": "electron",
         "file": "package.json",
-        "runtimeImpact": "dev toolchain context",
-        "decision": "DEFER"
+        "runtimeImpact": "dev toolchain context only",
+        "decision": "NONBLOCKING"
       },
       {
         "type": "export",
@@ -175,10 +175,10 @@
       "reachable": true,
       "runtimePath": "dev+prod"
     },
-    "impact": "Mostly maintainability noise; no immediate P0/P1 runtime break proven.",
+    "impact": "Current static rebind shows architecture finding class is nonblocking for current mainline runtime truth.",
     "fixCost": "M",
-    "decision": "DEFER",
-    "notes": "Depcruise orphan: src/renderer/flags.js. No circular deps detected."
+    "decision": "CLOSED_ON_CURRENT_MAINLINE",
+    "notes": "Depcruise raw evidence rebind: no circular and no unresolved violations. Old flags orphan narrative is stale because src/renderer/index.html wires flags.js in active renderer entrypoint."
   },
   {
     "id": "DUP-0001",
