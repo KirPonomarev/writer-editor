@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "snapshotId": "menu-default-desktop-minimal",
-  "normalizedHashSha256": "af9f17862173a0315c3ae2a958298add764ca2bdfc1f86f27054b9cdbb8d8e21",
-  "generatedAt": "2026-02-17T21:08:57.280Z",
-  "generatedFromCommit": "5d740faaacf5eae5291414f469919430f16bcdf3",
+  "normalizedHashSha256": "6f2ffb602b87514b944e4f5c60111e6e728f0c2d0c8596767b8ae780559ee353",
+  "generatedAt": "2026-04-02T17:36:10.097Z",
+  "generatedFromCommit": "b91542605f20e154f041526594fa8bcc7f491393",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
@@ -43,7 +43,7 @@
           ],
           "role": "copy",
           "sourceRefs": [
-            "/Volumes/Work/Драфт писательской программы/writer-editor/src/menu/menu-config.v2.example.json"
+            "src/menu/menu-config.v2.example.json"
           ],
           "stage": [
             "X1",
@@ -65,7 +65,7 @@
         "guru"
       ],
       "sourceRefs": [
-        "/Volumes/Work/Драфт писательской программы/writer-editor/src/menu/menu-config.v2.example.json"
+        "src/menu/menu-config.v2.example.json"
       ],
       "stage": [
         "X0",
@@ -103,7 +103,7 @@
             "guru"
           ],
           "sourceRefs": [
-            "/Volumes/Work/Драфт писательской программы/writer-editor/src/menu/menu-config.v2.example.json"
+            "src/menu/menu-config.v2.example.json"
           ],
           "stage": [
             "X1",
@@ -133,7 +133,7 @@
             "guru"
           ],
           "sourceRefs": [
-            "/Volumes/Work/Драфт писательской программы/writer-editor/src/menu/menu-config.v2.example.json"
+            "src/menu/menu-config.v2.example.json"
           ],
           "stage": [
             "X1",
@@ -163,7 +163,7 @@
             "guru"
           ],
           "sourceRefs": [
-            "/Volumes/Work/Драфт писательской программы/writer-editor/src/menu/menu-config.v2.example.json"
+            "src/menu/menu-config.v2.example.json"
           ],
           "stage": [
             "X1",
@@ -185,7 +185,7 @@
         "guru"
       ],
       "sourceRefs": [
-        "/Volumes/Work/Драфт писательской программы/writer-editor/src/menu/menu-config.v2.example.json"
+        "src/menu/menu-config.v2.example.json"
       ],
       "stage": [
         "X1",

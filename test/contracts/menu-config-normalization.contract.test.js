@@ -41,6 +41,17 @@ function walkMenuItems(items, visit) {
   });
 }
 
+function collectSourceRefsFromNormalizedMenus(menus) {
+  const refs = [];
+  walkMenuItems(menus, (item) => {
+    if (!Array.isArray(item.sourceRefs)) return;
+    item.sourceRefs.forEach((entry) => {
+      if (typeof entry === 'string' && entry.length > 0) refs.push(entry);
+    });
+  });
+  return refs;
+}
+
 function runNormalizeCli(args) {
   return spawnSync(process.execPath, [OPS_SCRIPT_PATH, ...args], {
     cwd: REPO_ROOT,
@@ -118,6 +129,45 @@ test('menu normalization is deterministic for identical inputs', () => {
     assert.equal(typeof payloadA.normalizedHashSha256, 'string');
     assert.equal(payloadA.normalizedHashSha256.length, 64);
     assert.equal(payloadA.normalizedHashSha256, payloadB.normalizedHashSha256);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('menu normalization hash is stable for absolute and repo-relative input paths', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'menu-normalize-path-stable-'));
+  const outAbs = path.join(tmpDir, 'normalized-abs.json');
+  const outRel = path.join(tmpDir, 'normalized-rel.json');
+  try {
+    const absRun = runNormalizeCli([
+      '--in',
+      EXAMPLE_CONFIG_PATH,
+      '--context',
+      DEFAULT_CONTEXT_PATH,
+      '--out',
+      outAbs,
+      '--json',
+    ]);
+    assert.equal(absRun.status, 0, absRun.stdout || absRun.stderr);
+
+    const relRun = runNormalizeCli([
+      '--in',
+      'src/menu/menu-config.v2.example.json',
+      '--context',
+      DEFAULT_CONTEXT_PATH,
+      '--out',
+      outRel,
+      '--json',
+    ]);
+    assert.equal(relRun.status, 0, relRun.stdout || relRun.stderr);
+
+    const absPayload = readJson(outAbs);
+    const relPayload = readJson(outRel);
+    assert.equal(absPayload.normalizedHashSha256, relPayload.normalizedHashSha256);
+
+    const absSourceRefs = collectSourceRefsFromNormalizedMenus(absPayload.normalizedConfig?.menus);
+    assert.ok(absSourceRefs.length > 0, 'expected sourceRefs in normalized menu payload');
+    assert.equal(absSourceRefs.every((entry) => !path.isAbsolute(entry)), true, `sourceRefs must be repo-relative: ${JSON.stringify(absSourceRefs)}`);
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
