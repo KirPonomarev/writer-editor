@@ -26,8 +26,8 @@
       "requiredTools": [
         "electron"
       ],
-      "laneStatus": "BLOCKED",
-      "blockedMeaning": "environment_blocked_until_explicit_electron_lane_readiness_is_available"
+      "laneStatus": "READY",
+      "blockedMeaning": "not_applicable_when_laneStatus_is_READY"
     },
     {
       "laneId": "BUILD_MAC",
