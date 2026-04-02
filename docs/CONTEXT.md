@@ -1,6 +1,6 @@
 # CONTEXT (Yalken Writer)
 
-Этот файл фиксирует фактическое текущее состояние репозитория в repair-pending волне после drift между closure claims и текущей repo-level machine chain.
+Этот файл фиксирует фактическое текущее состояние репозитория после repo-level closure и последующих bounded false-green remediation contours, уже смерженных на main.
 
 ## Как читать репозиторий
 - Верхний repo entrypoint: `CANON.md`
@@ -42,7 +42,10 @@
 - Active Y8 formal packet record: `Y8_FORMAL_CUTOVER_PACKET_RECORD_V1.json`
 - Active Y8 rollback packet: `Y8_FORMAL_CUTOVER_ROLLBACK_PACKET_V1.json`
 - Y9_NOT_OPENED_BY_IMPLICATION: TRUE
-- dependency truth high-critical false-green class is superseded on current mainline
+- shell safe-reset and restore proof closure contour is merged on current mainline
+- ci and ops command injection hardening contour is merged on current mainline
+- path boundary centralization contour is merged on current mainline
+- dependency truth high-critical false-green class is superseded on current mainline after merged remediation
 - menu truth chain and sourcebinding reconfirm contour is merged on current mainline
 
 ### Invariants
@@ -59,16 +62,18 @@
 
 ## Current Delivery Axis
 
-Текущая repair wave уже закрыта на repo-level contour.
+Текущая repo-wide closure остаётся активной operating reality на main.
 Branch-local accepted repair surface остаётся только историческим промежуточным состоянием.
-release hardening remains the last mandatory runtime axis that was closed before repo-wide post-merge reconfirm on main.
+Release hardening remains the last mandatory runtime axis that was closed before repo-wide post-merge reconfirm on main.
 Repo-wide done подтверждён на main после merge gate и post-merge reconfirm.
 Formal Y8 cutover packet is explicitly bound on main with explicit rollback packet in the same operating reality.
+Если на current mainline честно переподтверждается live contradiction, он закрывается одним bounded contour и потом factual truth reconfirmed again.
 
 Следующее допустимое состояние:
 1. сохранять repo-wide closure как текущую operating reality на main
 2. не открывать post-version-one evaluation как обязательную часть `Writer v1`
-3. не маскировать новые gaps narrative claims о полном closure
+3. если будет переподтверждён новый nonblocked contradiction, открывать только один explicit evidence-backed contour за раз
+4. не маскировать новые gaps narrative claims о полном closure
 
 ## What Is Not Yet Claimed
 - pack layer не считается обязательным,
@@ -88,4 +93,5 @@ Formal Y8 cutover packet is explicitly bound on main with explicit rollback pack
 ## Next Practical Target
 - не открывать Y9 по импликации из текста или narrative claims,
 - не переинтерпретировать Y8 PASS как автоматический полный release hardening,
-- следующий шаг только один: one explicit evidence-backed nonblocked contour selection brief.
+- если новых live nonblocked contradictions не переподтверждено, сохранять current mainline closure truth,
+- если новый live nonblocked contradiction переподтверждён, следующий шаг только один: one explicit evidence-backed nonblocked contour selection brief.

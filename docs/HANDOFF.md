@@ -1,6 +1,6 @@
 # HANDOFF (Yalken Writer)
 
-_Generated: 2026-03-31_
+_Generated: 2026-04-02_
 
 ## Start Here
 - Repo canon: `CANON.md`
@@ -46,13 +46,17 @@ _Generated: 2026-03-31_
 - Y8_FORMAL_CUTOVER_ROLLBACK_PACKET_V1.json is active.
 - Y9_NOT_OPENED_BY_IMPLICATION: TRUE
 - Repo-wide done is confirmed on main after merge gate and post-merge reconfirm.
-- dependency truth high-critical false-green class is superseded on current mainline.
+- shell safe-reset and restore proof closure contour is merged on current mainline.
+- ci and ops command injection hardening contour is merged on current mainline.
+- path boundary centralization contour is merged on current mainline.
+- dependency truth high-critical false-green class is superseded on current mainline after merged remediation.
 - menu truth chain and sourcebinding reconfirm contour is merged on current mainline.
 
 ## What Is Next
 1. keep Y8 cutover truth and rollback truth as one active factual reality
 2. do not reinterpret Y8 as automatic Y9 authority
-3. open one explicit evidence-backed nonblocked contour selection brief only
+3. if no new live nonblocked contradiction is reproved, preserve current mainline closure truth
+4. if a new live nonblocked contradiction is reproved, open one explicit evidence-backed contour selection brief only
 
 ## Working Agreement
 - Bounded contours only
@@ -77,6 +81,6 @@ _Generated: 2026-03-31_
 
 ## Meta Foundation Added
 machine_readable_meta_artifact_set_exists
-enforcement_not_yet_active
-current_mode_may_still_be_blocked_under_no_repo_changes_rule
-next_step_after_permission_is_one_evidence_backed_nonblocked_contour_selection_brief
+selected_base_inventory_rebind_is_active_truth_guard
+current_mode_allows_only_one_explicit_nonblocked_contour_at_a_time
+next_step_is_selection_only_if_a_new_live_nonblocked_contradiction_is_reproved

@@ -3,9 +3,9 @@
   "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
   "generatedAtUtc": "2026-04-01T20:55:24Z",
   "currentMainlineRebind": {
-    "bindingBaseSha": "22db0b8177f27b8950675b4affd0a4ed3a5e3f2f",
-    "reboundAtUtc": "2026-04-01T23:28:12Z",
-    "rebindClass": "SHELL_SAFE_RESET_RESTORE_PROOF_CLOSURE",
+    "bindingBaseSha": "e1355820abc08cdd3865d6b6612451aff01a636d",
+    "reboundAtUtc": "2026-04-02T06:20:23Z",
+    "rebindClass": "FACTUAL_AUDIT_TRUTH_RECONFIRM",
     "gapClassifications": [
       {
         "gapId": "GAP_COMMAND_SURFACE_BYPASS",
@@ -23,13 +23,13 @@
         "gapId": "GAP_DEPENDENCY_FALSE_GREEN",
         "classification": "SUPERSEDED",
         "currentDebt": false,
-        "reason": "Current high and critical dependency vulnerabilities are zero on mainline; selected-base HOLD was stale inventory."
+        "reason": "Current dependency audit is clean on mainline after merged dependency remediation; selected-base HOLD was stale inventory."
       },
       {
         "gapId": "GAP_DOC_TRUTH_DRIFT",
         "classification": "SUPERSEDED",
         "currentDebt": false,
-        "reason": "Factual docs were reconfirmed to current mainline operating reality."
+        "reason": "Factual and audit docs are reconfirmed to current mainline operating reality."
       },
       {
         "gapId": "GAP_SOURCEBINDING_DRIFT",
@@ -74,12 +74,12 @@
     {
       "gapId": "GAP_DEPENDENCY_FALSE_GREEN",
       "status": "PASS",
-      "summary": "Current mainline high-critical dependency false-green class is superseded."
+      "summary": "Current mainline dependency truth is clean after merged dependency remediation."
     },
     {
       "gapId": "GAP_DOC_TRUTH_DRIFT",
       "status": "PASS",
-      "summary": "Factual docs are reconfirmed to current mainline operating reality."
+      "summary": "Factual and audit docs are reconfirmed to current mainline operating reality."
     },
     {
       "gapId": "GAP_SOURCEBINDING_DRIFT",
@@ -101,7 +101,7 @@
     {
       "blockedId": "BLOCKED_SECURITY_SCANNERS",
       "status": "BLOCKED",
-      "summary": "Security scanner lane requires a separate environment and policy window."
+      "summary": "Security scanner lane is not standardized enough to mark environment readiness PASS, even though an operator-local semgrep run was executed during closeout."
     }
   ],
   "skippedRequiredTests": [

@@ -3,8 +3,8 @@
   "selectedBaseSha": "023275cdc82faf4483568596a9e144fe2442bfcc",
   "generatedAtUtc": "2026-04-01T20:55:24Z",
   "currentMainlineRebind": {
-    "bindingBaseSha": "22db0b8177f27b8950675b4affd0a4ed3a5e3f2f",
-    "reboundAtUtc": "2026-04-01T23:28:12Z",
+    "bindingBaseSha": "e1355820abc08cdd3865d6b6612451aff01a636d",
+    "reboundAtUtc": "2026-04-02T06:20:23Z",
     "claimClassifications": [
       {
         "claimId": "CLAIM_MENU_TRUTH_CHAIN",
@@ -16,13 +16,13 @@
         "claimId": "CLAIM_DEPENDENCY_READY",
         "classification": "LIVE",
         "runtimeDrift": false,
-        "reason": "Dependency truth is aligned on current mainline with zero high and critical audit findings."
+        "reason": "Dependency truth is aligned on current mainline with zero audit findings after merged dependency remediation."
       },
       {
         "claimId": "CLAIM_FACTUAL_DOC_ALIGNMENT",
         "classification": "LIVE",
         "runtimeDrift": false,
-        "reason": "Factual operating docs are synchronized to current mainline closure reality."
+        "reason": "Factual and audit operating docs are synchronized to current mainline closure reality."
       },
       {
         "claimId": "CLAIM_SHELL_SAFE_RESET_RESTORE",
