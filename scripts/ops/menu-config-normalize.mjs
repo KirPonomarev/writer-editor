@@ -242,6 +242,13 @@ function resolveArtifactOutputPath(rawPath) {
   return path.resolve(normalizeString(rawPath) || DEFAULT_ARTIFACT_PATH);
 }
 
+function resolveStableSourceRef(filePath, repoRoot = process.cwd()) {
+  const absolutePath = path.resolve(filePath);
+  const repoRelative = toRepoRelativePath(absolutePath, repoRoot);
+  if (repoRelative) return repoRelative;
+  return absolutePath.replaceAll('\\', '/');
+}
+
 function resolveCurrentCommit(cwd) {
   const result = spawnSync('git', ['rev-parse', 'HEAD'], {
     cwd,
@@ -370,7 +377,7 @@ function runMenuConfigNormalize(input = {}) {
     baseConfig,
     overlays: [],
     context,
-    baseSourceRef: absInPath,
+    baseSourceRef: resolveStableSourceRef(absInPath, process.cwd()),
   });
 
   if (!state.ok || !state.normalizedConfig) {
