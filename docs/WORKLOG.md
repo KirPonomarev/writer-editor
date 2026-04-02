@@ -14,6 +14,8 @@
 - Security: merged SAST-0001 CI and ops command injection hardening and SAST-0002 path boundary centralization.
 - Dependency truth: merged narrow remediation on current mainline; current `npm audit --audit-level=high` is clean.
 - Docs and OPS artifacts: factual and audit truth surfaces were reconfirmed after the merged proof-changing contours.
+- Closeout: current scope A is recorded as symbolic closeout ready on mainline with blocked and later debt explicitly frozen.
+- Security lane wording: semgrep is operator-local available via PATH correction, but security-audit lane remains not standardized-ready.
 
 ## 2026-01-27
 - Canon: добавлен `CANON.md` (верхний канон решений/изменений) + `docs/BIBLE.md` (Craftsman vNext).

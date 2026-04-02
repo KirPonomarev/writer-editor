@@ -51,12 +51,16 @@ _Generated: 2026-04-02_
 - path boundary centralization contour is merged on current mainline.
 - dependency truth high-critical false-green class is superseded on current mainline after merged remediation.
 - menu truth chain and sourcebinding reconfirm contour is merged on current mainline.
+- current scope A is symbolic closeout ready on current mainline.
+- blocked lanes remain explicit blocked debt; later items remain explicit later or hold debt.
+- operator-local semgrep is available via PATH correction, but security audit lane is still not standardized-ready.
 
 ## What Is Next
 1. keep Y8 cutover truth and rollback truth as one active factual reality
 2. do not reinterpret Y8 as automatic Y9 authority
 3. if no new live nonblocked contradiction is reproved, preserve current mainline closure truth
-4. if a new live nonblocked contradiction is reproved, open one explicit evidence-backed contour selection brief only
+4. current no-contradiction state should remain symbolic closeout ready with blocked or later freeze
+5. if a new live nonblocked contradiction is reproved, open one explicit evidence-backed contour selection brief only
 
 ## Working Agreement
 - Bounded contours only
