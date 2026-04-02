@@ -6,6 +6,7 @@ _Generated: 2026-04-02_
 - Active execution canon resolver: `docs/OPS/STATUS/CANON_STATUS.json`
 - Active canonical execution document: `docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md`
 - Repo canon: `CANON.md`
+- Design OS change guide: `docs/YALKEN_DESIGN_OS_CHANGE_GUIDE_V2_2.md`
 - COREX: `docs/corex/COREX.v1.md`
 - Product map: `docs/BIBLE.md`
 - Factual context: `docs/CONTEXT.md`
@@ -90,6 +91,7 @@ _Generated: 2026-04-02_
 
 ## UI Reading Note
 - For UI tasks, system constraints stay in repo canon.
+- For Design OS change work, use `docs/YALKEN_DESIGN_OS_CHANGE_GUIDE_V2_2.md` as the advisory operating guide.
 - Visual snapshots are temporary iteration references, not permanent design law.
 
 ## Current Risk Boundary
