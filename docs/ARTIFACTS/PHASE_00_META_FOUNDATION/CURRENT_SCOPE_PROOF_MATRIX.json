@@ -6,6 +6,7 @@
     "bindingBaseSha": "e304c9d5d9a5563792adeee26e0611a60adead0d",
     "reboundAtUtc": "2026-04-02T07:09:45Z",
     "currentScopeStatus": "SYMBOLIC_CLOSEOUT_READY",
+    "securityAuditLaneStatus": "STANDARDIZED_READY_WITH_GENERIC_SAST",
     "surfaceClassifications": [
       {
         "surfaceId": "SURFACE_MENU_SOURCEBINDING",

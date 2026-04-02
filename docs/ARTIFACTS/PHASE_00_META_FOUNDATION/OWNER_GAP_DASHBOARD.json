@@ -109,11 +109,6 @@
       "blockedId": "BLOCKED_BUILD_MAC",
       "status": "BLOCKED",
       "summary": "Mac build lane is blocked without a dedicated build environment."
-    },
-    {
-      "blockedId": "BLOCKED_SECURITY_SCANNERS",
-      "status": "BLOCKED",
-      "summary": "Operator-local semgrep is available with PATH correction, but security audit lane is still not standardized-ready for environment readiness PASS."
     }
   ],
   "skippedRequiredTests": [

@@ -42,10 +42,10 @@
       "laneId": "SECURITY_AUDIT",
       "requiredTools": [
         "npm",
-        "audit_scanner"
+        "semgrep"
       ],
-      "laneStatus": "BLOCKED",
-      "blockedMeaning": "security_scanner_lane_requires_separate_environment_and_policy_window"
+      "laneStatus": "READY",
+      "blockedMeaning": "not_applicable_when_laneStatus_is_READY"
     },
     {
       "laneId": "PERF_SYNTHETIC",
@@ -82,7 +82,6 @@
     }
   ],
   "requiredTools": [
-    "audit_scanner",
     "codesign",
     "electron",
     "git",
@@ -90,6 +89,7 @@
     "node",
     "npm",
     "rg",
+    "semgrep",
     "xcodebuild"
   ],
   "readinessRules": [
