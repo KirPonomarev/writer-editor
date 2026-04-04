@@ -20,6 +20,7 @@ import {
   nextSceneCaretAtBoundary,
   previousSceneCaretAtBoundary,
 } from './commands/flowMode.mjs';
+import { createDesignOsPorts, createRepoGroundedDesignOsBrowserRuntime } from './design-os/index.mjs';
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
 
 const isTiptapMode = window.__USE_TIPTAP === true;
@@ -209,6 +210,7 @@ let currentDocumentPath = null;
 let currentDocumentKind = null;
 let currentProjectId = '';
 let spatialLayoutState = null;
+let designOsDormantRuntimeMount = null;
 let flowModeState = {
   active: false,
   scenes: [],
@@ -243,6 +245,36 @@ let leftFloatingToolbarState = {
   scale: 1,
   widthScale: 1,
 };
+
+function mountDesignOsDormantRuntime({ force = false, productTruth } = {}) {
+  if (designOsDormantRuntimeMount && force !== true && productTruth == null) {
+    return designOsDormantRuntimeMount;
+  }
+
+  try {
+    const bootstrap = createRepoGroundedDesignOsBrowserRuntime({
+      productTruth:
+        productTruth && typeof productTruth === 'object' && !Array.isArray(productTruth)
+          ? productTruth
+          : undefined,
+    });
+    const runtime = bootstrap && bootstrap.runtime ? bootstrap.runtime : null;
+    if (!runtime) {
+      return designOsDormantRuntimeMount;
+    }
+
+    designOsDormantRuntimeMount = {
+      runtime,
+      ports: createDesignOsPorts({ runtime }),
+      compatibility:
+        bootstrap && bootstrap.compatibility && typeof bootstrap.compatibility === 'object'
+          ? bootstrap.compatibility
+          : null,
+    };
+  } catch {}
+
+  return designOsDormantRuntimeMount;
+}
 let floatingToolbarInteractionState = {
   mode: null,
   active: false,
@@ -5757,6 +5789,8 @@ window.addEventListener('resize', () => {
 });
 
 if (window.electronAPI) {
+  mountDesignOsDormantRuntime();
+
   window.electronAPI.onEditorSetText((payload) => {
     const content = typeof payload === 'string' ? payload : payload?.content || '';
     const title = typeof payload === 'object' && payload ? payload.title : '';
