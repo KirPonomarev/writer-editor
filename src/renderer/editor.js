@@ -21,11 +21,13 @@ import {
   previousSceneCaretAtBoundary,
 } from './commands/flowMode.mjs';
 import {
+  applyCssVariables,
   buildProductTruthHash,
   createDesignOsPorts,
   createRepoGroundedDesignOsBrowserRuntime,
   deriveAccessibilityId,
   deriveRuntimePlatformId,
+  extractCssVariablesFromTokens,
   mapEditorModeToWorkspace,
 } from './design-os/index.mjs';
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
@@ -401,10 +403,18 @@ function syncDesignOsDormantContext() {
   const preview = refreshDesignOsDormantPreview();
   designOsDormantDegradedToBaseline = preview?.degraded_to_baseline === true;
   designOsDormantVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);
-  designOsDormantResolvedTokens =
+  const resolvedTokens =
     preview && typeof preview.resolved_tokens === 'object' && !Array.isArray(preview.resolved_tokens)
       ? preview.resolved_tokens
       : null;
+  designOsDormantResolvedTokens = resolvedTokens;
+  try {
+    const isDarkTheme = document.body.classList.contains('dark-theme');
+    const cssVariables = extractCssVariablesFromTokens(resolvedTokens, {
+      isDarkTheme,
+    });
+    applyCssVariables(document.documentElement, cssVariables);
+  } catch {}
   return preview;
 }
 

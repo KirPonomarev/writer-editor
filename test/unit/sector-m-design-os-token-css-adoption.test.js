@@ -2,6 +2,7 @@ const test = require('node:test')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
+const vm = require('node:vm')
 
 const ROOT = path.resolve(__dirname, '..', '..')
 
@@ -9,62 +10,206 @@ function readEditorSource() {
   return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'editor.js'), 'utf8')
 }
 
-test.skip('token css adoption: editor imports extractCssVariablesFromTokens and applyCssVariables', () => {
+function extractFunctionSource(source, name) {
+  const signature = `function ${name}(`
+  const start = source.indexOf(signature)
+  assert.ok(start > -1, `${name} must exist`)
+  const paramsStart = source.indexOf('(', start)
+  assert.ok(paramsStart > start, `${name} params must exist`)
+  let paramsDepth = 0
+  let paramsEnd = -1
+  for (let index = paramsStart; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '(') paramsDepth += 1
+    if (char === ')') paramsDepth -= 1
+    if (paramsDepth === 0) {
+      paramsEnd = index
+      break
+    }
+  }
+  assert.ok(paramsEnd > paramsStart, `${name} params must close`)
+  const braceStart = source.indexOf('{', paramsEnd)
+  assert.ok(braceStart > start, `${name} body must exist`)
+  let depth = 0
+  for (let index = braceStart; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '{') depth += 1
+    if (char === '}') depth -= 1
+    if (depth === 0) {
+      return source.slice(start, index + 1)
+    }
+  }
+  throw new Error(`Unclosed function body for ${name}`)
+}
+
+function instantiateFunctions(functionNames, context = {}) {
+  const source = readEditorSource()
+  const script = `${functionNames.map((name) => extractFunctionSource(source, name)).join('\n\n')}\nmodule.exports = { ${functionNames.join(', ')} };`
+  const sandbox = {
+    module: { exports: {} },
+    exports: {},
+    ...context,
+  }
+  vm.runInNewContext(script, sandbox, { filename: 'sector-m-design-os-token-css-adoption.editor-snippet.js' })
+  return { exported: sandbox.module.exports, sandbox }
+}
+
+function toPlain(value) {
+  return JSON.parse(JSON.stringify(value))
+}
+
+test('token css adoption: editor imports extractCssVariablesFromTokens and applyCssVariables', () => {
   const source = readEditorSource()
   assert.ok(source.includes('extractCssVariablesFromTokens,'))
   assert.ok(source.includes('applyCssVariables,'))
 })
 
-test.skip('token css adoption: syncDesignOsDormantContext captures preview and projects resolved tokens to documentElement', () => {
+test('token css adoption: syncDesignOsDormantContext projects resolved tokens to documentElement and preserves preview state', () => {
   const source = readEditorSource()
-  const start = source.indexOf('function syncDesignOsDormantContext()')
-  const end = source.indexOf('function syncDesignOsDormantTextInput()')
-  assert.ok(start > -1 && end > start, 'syncDesignOsDormantContext bounds must exist')
-
-  const snippet = source.slice(start, end)
-  assert.ok(snippet.includes('const preview = designOsDormantRuntimeMount.ports.previewDesign({'))
+  const snippet = extractFunctionSource(source, 'syncDesignOsDormantContext')
+  assert.ok(snippet.includes('const preview = refreshDesignOsDormantPreview();'))
   assert.ok(snippet.includes('designOsDormantDegradedToBaseline = preview?.degraded_to_baseline === true;'))
-  assert.ok(snippet.includes('const resolvedTokens = preview?.resolved_tokens;'))
+  assert.ok(snippet.includes('const resolvedTokens ='))
   assert.ok(snippet.includes("const isDarkTheme = document.body.classList.contains('dark-theme');"))
   assert.ok(snippet.includes('const cssVariables = extractCssVariablesFromTokens(resolvedTokens, {'))
-  assert.ok(snippet.includes('isDarkTheme,'))
   assert.ok(snippet.includes('applyCssVariables(document.documentElement, cssVariables);'))
-  assert.ok(snippet.includes('} catch {}'))
+
+  const events = []
+  const { exported, sandbox } = instantiateFunctions([
+    'normalizeDormantVisibleCommandIds',
+    'syncDesignOsDormantContext',
+  ], {
+    designOsDormantDegradedToBaseline: false,
+    designOsDormantVisibleCommandIds: null,
+    designOsDormantResolvedTokens: null,
+    refreshDesignOsDormantPreview: () => ({
+      degraded_to_baseline: false,
+      visible_commands: ['cmd.project.open', ' cmd.project.save ', '', 'cmd.project.open'],
+      resolved_tokens: {
+        color: {
+          background: { canvas: '#f7f6f3' },
+        },
+      },
+    }),
+    document: {
+      body: {
+        classList: {
+          contains: (name) => name === 'dark-theme',
+        },
+      },
+      documentElement: { id: 'root' },
+    },
+    extractCssVariablesFromTokens: (tokens, options) => {
+      events.push(['extract', toPlain(tokens), toPlain(options)])
+      return { '--background': '#f7f6f3' }
+    },
+    applyCssVariables: (root, vars) => {
+      events.push(['apply', root.id, toPlain(vars)])
+    },
+  })
+
+  const preview = exported.syncDesignOsDormantContext()
+  assert.deepEqual(toPlain(preview), {
+    degraded_to_baseline: false,
+    visible_commands: ['cmd.project.open', ' cmd.project.save ', '', 'cmd.project.open'],
+    resolved_tokens: {
+      color: {
+        background: { canvas: '#f7f6f3' },
+      },
+    },
+  })
+  assert.equal(sandbox.designOsDormantDegradedToBaseline, false)
+  assert.deepEqual(toPlain(sandbox.designOsDormantVisibleCommandIds), [
+    'cmd.project.open',
+    'cmd.project.save',
+  ])
+  assert.deepEqual(toPlain(sandbox.designOsDormantResolvedTokens), {
+    color: {
+      background: { canvas: '#f7f6f3' },
+    },
+  })
+  assert.deepEqual(toPlain(events), [
+    ['extract', {
+      color: {
+        background: { canvas: '#f7f6f3' },
+      },
+    }, {
+      isDarkTheme: true,
+    }],
+    ['apply', 'root', { '--background': '#f7f6f3' }],
+  ])
 })
 
-test.skip('token css adoption: layout sync safe-reset and restore handlers remain unchanged', () => {
+test('token css adoption: syncDesignOsDormantContext fail-closes css projection and keeps preview truth', () => {
+  const events = []
+  const { exported, sandbox } = instantiateFunctions([
+    'normalizeDormantVisibleCommandIds',
+    'syncDesignOsDormantContext',
+  ], {
+    designOsDormantDegradedToBaseline: false,
+    designOsDormantVisibleCommandIds: null,
+    designOsDormantResolvedTokens: null,
+    refreshDesignOsDormantPreview: () => ({
+      degraded_to_baseline: true,
+      visible_commands: ['cmd.project.open'],
+      resolved_tokens: { semanticIntent: { brand: '#2f6fed' } },
+    }),
+    document: {
+      body: {
+        classList: {
+          contains: () => false,
+        },
+      },
+      documentElement: { id: 'root' },
+    },
+    extractCssVariablesFromTokens: () => {
+      events.push(['extract'])
+      throw new Error('boom')
+    },
+    applyCssVariables: () => {
+      events.push(['apply'])
+    },
+  })
+
+  const preview = exported.syncDesignOsDormantContext()
+  assert.equal(preview.degraded_to_baseline, true)
+  assert.equal(sandbox.designOsDormantDegradedToBaseline, true)
+  assert.deepEqual(toPlain(sandbox.designOsDormantVisibleCommandIds), ['cmd.project.open'])
+  assert.deepEqual(toPlain(sandbox.designOsDormantResolvedTokens), { semanticIntent: { brand: '#2f6fed' } })
+  assert.deepEqual(toPlain(events), [['extract']])
+})
+
+test('token css adoption: layout sync safe-reset and restore handlers remain unchanged', () => {
   const source = readEditorSource()
 
-  const layoutStart = source.indexOf('function syncDesignOsDormantLayoutCommitAtResizeEnd(committedSpatialState)')
-  const layoutEnd = source.indexOf('function applyMode(mode)')
-  assert.ok(layoutStart > -1 && layoutEnd > layoutStart, 'layout commit helper bounds must exist')
-  const layoutSnippet = source.slice(layoutStart, layoutEnd)
-  assert.ok(layoutSnippet.includes('const layoutPatch = buildLayoutPatchFromSpatialState(committedSpatialState, {'))
-  assert.ok(layoutSnippet.includes("commit_point: 'resize_end',"))
+  const layoutSnippet = extractFunctionSource(source, 'stopSpatialResize')
+  assert.ok(layoutSnippet.includes('commitSpatialLayoutState(currentProjectId);'))
+  assert.equal(layoutSnippet.includes('commitDesign('), false)
 
   const safeStart = source.indexOf('function performSafeResetShell()')
   const safeEnd = source.indexOf('function performRestoreLastStableShell()')
   assert.ok(safeStart > -1 && safeEnd > safeStart, 'performSafeResetShell bounds must exist')
   const safeSnippet = source.slice(safeStart, safeEnd)
-  assert.ok(safeSnippet.includes("typeof designOsDormantRuntimeMount.ports.safeResetShell === 'function'"))
-  assert.ok(safeSnippet.includes('nextSafeResetLayoutState = buildSpatialStateFromLayoutSnapshot(layoutSnapshot, {'))
+  assert.ok(safeSnippet.includes("applyTheme(SAFE_RESET_BASELINE_THEME);"))
+  assert.ok(safeSnippet.includes('applySpatialLayoutState(getSpatialLayoutBaselineForViewport(), {'))
+  assert.equal(safeSnippet.includes('safeResetShell'), false)
 
   const restoreStart = source.indexOf('function performRestoreLastStableShell()')
   const restoreEnd = source.indexOf('function openSimpleModal(modal)')
   assert.ok(restoreStart > -1 && restoreEnd > restoreStart, 'performRestoreLastStableShell bounds must exist')
   const restoreSnippet = source.slice(restoreStart, restoreEnd)
-  assert.ok(restoreSnippet.includes("typeof designOsDormantRuntimeMount.ports.restoreLastStableShell === 'function'"))
-  assert.ok(restoreSnippet.includes('nextRestoreLayoutState = buildSpatialStateFromLayoutSnapshot(layoutSnapshot, {'))
+  assert.ok(restoreSnippet.includes('restoreSpatialLayoutState(currentProjectId);'))
+  assert.equal(restoreSnippet.includes('restoreLastStableShell'), false)
 })
 
-test.skip('token css adoption: status warning perf semantics and command surface remain unchanged', () => {
+test('token css adoption: status warning perf semantics and command surface remain unchanged', () => {
   const source = readEditorSource()
 
   const statusStart = source.indexOf('function updateStatusText(text)')
   const statusEnd = source.indexOf('function updateSaveStateText(text)')
   assert.ok(statusStart > -1 && statusEnd > statusStart, 'updateStatusText bounds must exist')
   const statusSnippet = source.slice(statusStart, statusEnd)
-  assert.ok(statusSnippet.includes('statusElement.textContent = buildStatusLineWithDormantYdosHint(text);'))
+  assert.ok(statusSnippet.includes('statusElement.textContent = text;'))
 
   const warningStart = source.indexOf('function updateWarningStateText(text)')
   const warningEnd = source.indexOf('function updatePerfHintText(text)')
@@ -73,7 +218,7 @@ test.skip('token css adoption: status warning perf semantics and command surface
   assert.ok(warningSnippet.includes('warningStateElement.textContent = `Warnings: ${text}`;'))
 
   const perfStart = source.indexOf('function updatePerfHintText(text)')
-  const perfEnd = source.indexOf('function buildStatusLineWithDormantYdosHint(text)')
+  const perfEnd = source.indexOf('function updateInspectorSnapshot()')
   assert.ok(perfStart > -1 && perfEnd > perfStart, 'updatePerfHintText bounds must exist')
   const perfSnippet = source.slice(perfStart, perfEnd)
   assert.ok(perfSnippet.includes('perfHintElement.textContent = `Perf: ${text}`;'))

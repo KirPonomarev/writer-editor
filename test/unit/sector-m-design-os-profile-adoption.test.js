@@ -179,14 +179,14 @@ test('profile adoption: applyViewMode resyncs dormant context after local focus 
   ])
 })
 
-test('profile adoption: syncDesignOsDormantContext remains single preview path for degraded visible commands and resolved tokens', () => {
+test('profile adoption: syncDesignOsDormantContext remains single preview path while token css projection is delegated', () => {
   const source = readEditorSource()
   const snippet = extractFunctionSource(source, 'syncDesignOsDormantContext')
   assert.ok(snippet.includes('const preview = refreshDesignOsDormantPreview();'))
   assert.ok(snippet.includes('designOsDormantVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
   assert.equal(snippet.includes('previewDesign('), false)
-  assert.equal(snippet.includes('extractCssVariablesFromTokens('), false)
-  assert.equal(snippet.includes('applyCssVariables('), false)
+  assert.ok(snippet.includes('extractCssVariablesFromTokens('))
+  assert.ok(snippet.includes('applyCssVariables('))
 
   const { exported, sandbox } = instantiateFunctions([
     'normalizeDormantVisibleCommandIds',
@@ -205,6 +205,21 @@ test('profile adoption: syncDesignOsDormantContext remains single preview path f
       sandbox.refreshCalls += 1
       return sandbox.preview
     },
+    document: {
+      body: {
+        classList: {
+          contains: () => false,
+        },
+      },
+      documentElement: { id: 'root' },
+    },
+    extractCssVariablesFromTokens: (tokens, options) => {
+      sandbox.extractArgs = [toPlain(tokens), toPlain(options)]
+      return { '--background': '#fff' }
+    },
+    applyCssVariables: (root, vars) => {
+      sandbox.cssApplyArgs = [root.id, toPlain(vars)]
+    },
   })
 
   assert.deepEqual(toPlain(exported.syncDesignOsDormantContext()), {
@@ -216,6 +231,11 @@ test('profile adoption: syncDesignOsDormantContext remains single preview path f
   assert.equal(sandbox.designOsDormantDegradedToBaseline, true)
   assert.deepEqual(toPlain(sandbox.designOsDormantVisibleCommandIds), ['alpha', 'beta'])
   assert.deepEqual(toPlain(sandbox.designOsDormantResolvedTokens), { accent: '#fff' })
+  assert.deepEqual(toPlain(sandbox.extractArgs), [
+    { accent: '#fff' },
+    { isDarkTheme: false },
+  ])
+  assert.deepEqual(toPlain(sandbox.cssApplyArgs), ['root', { '--background': '#fff' }])
 })
 
 test('profile adoption: command palette provider and later shell slices remain unchanged', () => {
