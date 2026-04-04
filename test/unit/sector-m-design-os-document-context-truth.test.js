@@ -163,7 +163,7 @@ test('document context truth: dormant context derives profile workspace shell pl
   })
 })
 
-test('document context truth: remount rebuilds runtime with explicit product truth, replays layout, and refreshes preview', () => {
+test('document context truth: remount rebuilds runtime with explicit product truth, remembers layout state, and refreshes preview', () => {
   const events = []
   const runtime = { kind: 'runtime' }
   const { exported, sandbox } = instantiateFunctions([
@@ -197,8 +197,8 @@ test('document context truth: remount rebuilds runtime with explicit product tru
       events.push(['ports', nextRuntime, defaultContext])
       return { previewDesign() {}, getRuntimeSnapshot() {} }
     },
-    replayDesignOsDormantRuntimeLayout: (layoutState) => {
-      events.push(['layout', layoutState])
+    rememberDesignOsDormantLayoutState: (layoutState) => {
+      events.push(['layout-memory', layoutState])
     },
     refreshDesignOsDormantPreview: () => {
       events.push(['preview'])
@@ -223,7 +223,7 @@ test('document context truth: remount rebuilds runtime with explicit product tru
       platform: 'macos',
       accessibility: 'default',
     }],
-    ['layout', { source: 'baseline-layout' }],
+    ['layout-memory', { source: 'baseline-layout' }],
     ['preview'],
   ])
   assert.deepEqual(toPlain(sandbox.designOsDormantRuntimeMount.productTruth), explicitTruth)
@@ -259,4 +259,12 @@ test('document context truth: boundaries remount only on onEditorSetText success
   assert.ok(resizeStart > -1 && resizeEnd > resizeStart, 'resize bounds must exist')
   const resizeSnippet = source.slice(resizeStart, resizeEnd)
   assert.equal(resizeSnippet.includes('remountDesignOsDormantRuntimeForCurrentDocumentContext();'), false)
+})
+
+test('document context truth: A02 does not admit dormant layout commit path', () => {
+  const source = readEditorSource()
+  assert.equal(source.includes("['commit', 'Design'].join('')"), false)
+  assert.equal(source.includes("commit_point: 'resize_end'"), false)
+  assert.equal(source.includes('layout_patch:'), false)
+  assert.ok(source.includes('function rememberDesignOsDormantLayoutState('))
 })

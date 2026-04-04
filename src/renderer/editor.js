@@ -340,48 +340,18 @@ function buildDesignOsDormantProductTruth() {
   };
 }
 
-function buildDormantRuntimeLayoutPatch(committedSpatialState, shellMode) {
-  const layoutState = committedSpatialState || getSpatialLayoutBaselineForViewport();
-  const leftWidth = Number.isFinite(layoutState?.leftSidebarWidth) ? Math.round(layoutState.leftSidebarWidth) : 290;
-  const rightWidth = Number.isFinite(layoutState?.rightSidebarWidth) ? Math.round(layoutState.rightSidebarWidth) : 340;
-  const viewportWidth = Number.isFinite(layoutState?.viewportWidth)
-    ? Math.round(layoutState.viewportWidth)
-    : getSpatialLayoutViewportWidth();
-  return {
-    left_width: leftWidth,
-    right_width: rightWidth,
-    bottom_height: 96,
-    editor_root: 'docked',
-    viewport_width: viewportWidth,
-    viewport_height: Math.max(320, Number(window?.innerHeight) || 900),
-    shell_mode: shellMode || 'CALM_DOCKED',
-  };
-}
-
-function replayDesignOsDormantRuntimeLayout(committedSpatialState) {
+function rememberDesignOsDormantLayoutState(committedSpatialState) {
   const mount = designOsDormantRuntimeMount;
-  const ports = mount?.ports;
-  const commitPortName = ['commit', 'Design'].join('');
-  const commitPort = ports && typeof ports[commitPortName] === 'function' ? ports[commitPortName] : null;
-  if (!commitPort) return null;
+  if (!mount) return null;
 
-  try {
-    const context = buildDesignOsDormantContext();
-    const layoutState = committedSpatialState || getSpatialLayoutBaselineForViewport();
-    const preview = commitPort({
-      context,
-      layout_patch: buildDormantRuntimeLayoutPatch(layoutState, context.shell_mode || 'CALM_DOCKED'),
-      commit_point: 'resize_end',
-    });
-    designOsDormantRuntimeMount = {
-      ...mount,
-      lastContext: context,
-      lastLayoutCommitPreview: preview,
-    };
-    return preview;
-  } catch {
-    return null;
-  }
+  const layoutState = committedSpatialState || getSpatialLayoutBaselineForViewport();
+  designOsDormantRuntimeMount = {
+    ...mount,
+    lastKnownSpatialLayoutState: layoutState && typeof layoutState === 'object'
+      ? { ...layoutState }
+      : layoutState,
+  };
+  return designOsDormantRuntimeMount.lastKnownSpatialLayoutState;
 }
 
 function refreshDesignOsDormantPreview() {
@@ -432,7 +402,7 @@ function remountDesignOsDormantRuntimeForCurrentDocumentContext(productTruthOver
     };
 
     const layoutStateForReplay = spatialLayoutState || getSpatialLayoutBaselineForViewport();
-    replayDesignOsDormantRuntimeLayout(layoutStateForReplay);
+    rememberDesignOsDormantLayoutState(layoutStateForReplay);
     refreshDesignOsDormantPreview();
   } catch {}
 
