@@ -408,6 +408,78 @@ function syncDesignOsDormantContext() {
   return preview;
 }
 
+function buildDesignOsDormantTypographyDesignPatch() {
+  if (!editor) return null;
+  const readComputedStyleSafe =
+    typeof window !== 'undefined' && typeof window.getComputedStyle === 'function'
+      ? window.getComputedStyle.bind(window)
+      : typeof getComputedStyle === 'function'
+        ? getComputedStyle
+        : null;
+  if (!readComputedStyleSafe) {
+    return null;
+  }
+
+  const editorStyle = readComputedStyleSafe(editor);
+  const fontFamily = String(editor.style.fontFamily || editorStyle?.fontFamily || '').trim();
+  const sizePx = Number.isFinite(currentFontSizePx)
+    ? Number(currentFontSizePx)
+    : Number.parseFloat(editorStyle?.fontSize || '');
+  const lineHeightSource = String(editor.style.lineHeight || editorStyle?.lineHeight || '').trim();
+  const lineHeightValue = Number.parseFloat(lineHeightSource);
+
+  if (!fontFamily || !Number.isFinite(sizePx) || !Number.isFinite(lineHeightValue)) {
+    return null;
+  }
+
+  return {
+    typography: {
+      font: {
+        body: {
+          family: fontFamily,
+          sizePx: Number(sizePx.toFixed(2)),
+          lineHeight: Number(lineHeightValue.toFixed(3)),
+        },
+      },
+    },
+  };
+}
+
+function commitDesignOsDormantTypographyDesignPatch({ syncPreview = true } = {}) {
+  const mount = designOsDormantRuntimeMount;
+  const ports = mount?.ports;
+  if (!ports || typeof ports.commitDesign !== 'function') return null;
+  const commitDesignPort = ports.commitDesign;
+
+  const designPatch = buildDesignOsDormantTypographyDesignPatch();
+  if (!designPatch) return null;
+
+  try {
+    const context = buildDesignOsDormantContext();
+    const preview = commitDesignPort({
+      context,
+      design_patch: designPatch,
+      commit_point: 'apply',
+    });
+    designOsDormantRuntimeMount = {
+      ...mount,
+      lastContext: context,
+      lastPreview: preview,
+    };
+
+    if (syncPreview) {
+      if (typeof syncDesignOsDormantContext === 'function') {
+        syncDesignOsDormantContext();
+      } else {
+        refreshDesignOsDormantPreview();
+      }
+    }
+    return preview;
+  } catch {
+    return null;
+  }
+}
+
 function buildDesignOsDormantThemeDesignPatch() {
   const readComputedStyleSafe =
     typeof window !== 'undefined' && typeof window.getComputedStyle === 'function'
@@ -516,11 +588,15 @@ function remountDesignOsDormantRuntimeForCurrentDocumentContext(productTruthOver
 
     const layoutStateForReplay = spatialLayoutState || getSpatialLayoutBaselineForViewport();
     rememberDesignOsDormantLayoutState(layoutStateForReplay);
+    const typographyReplayPreview =
+      typeof commitDesignOsDormantTypographyDesignPatch === 'function'
+        ? commitDesignOsDormantTypographyDesignPatch({ syncPreview: false })
+        : null;
     const themeReplayPreview =
       typeof commitDesignOsDormantThemeDesignPatch === 'function'
         ? commitDesignOsDormantThemeDesignPatch({ syncPreview: false })
         : null;
-    if (themeReplayPreview && typeof syncDesignOsDormantContext === 'function') {
+    if ((typographyReplayPreview || themeReplayPreview) && typeof syncDesignOsDormantContext === 'function') {
       syncDesignOsDormantContext();
     } else {
       refreshDesignOsDormantPreview();
@@ -4955,6 +5031,9 @@ function applyLineHeight(value, persist = true) {
   }
   syncLiteralToolbarDisplays();
   renderStyledView(getPlainText());
+  if (typeof commitDesignOsDormantTypographyDesignPatch === 'function') {
+    commitDesignOsDormantTypographyDesignPatch();
+  }
 }
 
 function applyWordWrap(enabled, persist = true) {
@@ -5336,6 +5415,9 @@ function updateThemeSwatches(theme) {
     editor.style.fontFamily = fontFamily;
     localStorage.setItem('editorFont', fontFamily);
     syncLiteralToolbarDisplays();
+    if (typeof commitDesignOsDormantTypographyDesignPatch === 'function') {
+      commitDesignOsDormantTypographyDesignPatch();
+    }
   }
 
 function syncLiteralToolbarDisplays() {
@@ -6147,6 +6229,9 @@ if (window.electronAPI) {
       editor.style.fontSize = `${px}px`;
       setCurrentFontSize(px);
       renderStyledView(getPlainText());
+      if (typeof commitDesignOsDormantTypographyDesignPatch === 'function') {
+        commitDesignOsDormantTypographyDesignPatch();
+      }
     }
   });
 
