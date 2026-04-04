@@ -1331,12 +1331,13 @@ body {
 
 .literal-stage-a .app-layout {
   grid-template-columns: minmax(250px, var(--app-left-sidebar-width)) minmax(640px, 1fr);
-  gap: 12px;
-  padding: 12px 14px 76px;
+  gap: 0;
+  padding: 0 0 30px;
 }
 
 .literal-stage-a .sidebar--left {
   display: flex;
+  margin: 12px 0 0 14px;
 }
 
 .literal-stage-a .sidebar--right,
@@ -1648,6 +1649,10 @@ body {
   display: flex;
   align-items: center;
   padding: 0 12px;
+}
+
+.toolbar__row[hidden] {
+  display: none !important;
 }
 
 .toolbar__row--primary {
