@@ -134,7 +134,7 @@ test('shell mode adoption: syncDesignOsDormantContext stays a single preview-syn
 
   const snippet = extractFunctionSource(readEditorSource(), 'syncDesignOsDormantContext')
   assert.ok(snippet.includes('const preview = refreshDesignOsDormantPreview();'))
-  assert.ok(snippet.includes('designOsDormantVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
+  assert.ok(snippet.includes('const nextVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
   assert.equal(snippet.includes('previewDesign('), false)
 })
 

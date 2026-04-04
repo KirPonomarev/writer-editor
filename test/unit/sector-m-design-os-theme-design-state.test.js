@@ -422,7 +422,7 @@ test('theme design state: non-theme compatibility surfaces remain unchanged afte
   assert.ok(source.includes('profile: resolveDormantDesignOsProfileFromStyleValue(styleValue),'))
   assert.ok(source.includes('workspace: mapEditorModeToWorkspace(currentMode),'))
   assert.ok(source.includes('shell_mode: resolveDormantDesignOsShellModeFromLayoutMode(layoutMode),'))
-  assert.ok(source.includes('designOsDormantVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
+  assert.ok(source.includes('const nextVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
 
   const bridgeSource = fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'tiptap', 'runtimeBridge.js'), 'utf8')
   const commands = [...bridgeSource.matchAll(/command === '([^']+)'/g)]
