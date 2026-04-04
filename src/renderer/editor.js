@@ -21,6 +21,7 @@ import {
   previousSceneCaretAtBoundary,
 } from './commands/flowMode.mjs';
 import {
+  buildProductTruthHash,
   createDesignOsPorts,
   createRepoGroundedDesignOsBrowserRuntime,
   deriveAccessibilityId,
@@ -217,6 +218,8 @@ let currentDocumentKind = null;
 let currentProjectId = '';
 let spatialLayoutState = null;
 let designOsDormantRuntimeMount = null;
+let lastSyncedDormantProductTruthHash = '';
+let lastObservedDormantDirtyState = false;
 let flowModeState = {
   active: false,
   scenes: [],
@@ -404,9 +407,34 @@ function remountDesignOsDormantRuntimeForCurrentDocumentContext(productTruthOver
     const layoutStateForReplay = spatialLayoutState || getSpatialLayoutBaselineForViewport();
     rememberDesignOsDormantLayoutState(layoutStateForReplay);
     refreshDesignOsDormantPreview();
+    if (typeof buildProductTruthHash === 'function') {
+      lastSyncedDormantProductTruthHash = buildProductTruthHash(nextProductTruth);
+    }
   } catch {}
 
   return designOsDormantRuntimeMount;
+}
+
+function syncDesignOsDormantProductTruthAtSaveBoundary() {
+  const nextProductTruth = buildDesignOsDormantProductTruth();
+  const nextTruthHash = buildProductTruthHash(nextProductTruth);
+  if (nextTruthHash === lastSyncedDormantProductTruthHash) {
+    return {
+      performed: false,
+      skipped: true,
+      reason: 'hash_match',
+      productTruthHash: nextTruthHash,
+    };
+  }
+
+  mountDesignOsDormantRuntime({ productTruth: nextProductTruth });
+  const performed = lastSyncedDormantProductTruthHash === nextTruthHash;
+  return {
+    performed,
+    skipped: false,
+    reason: performed ? null : 'remount_failed',
+    productTruthHash: nextTruthHash,
+  };
 }
 
 function mountDesignOsDormantRuntime({ force = false, productTruth } = {}) {
@@ -2360,6 +2388,7 @@ async function handleFlowModeOpenUiPath() {
   setPlainText(composeFlowDocument(scenes));
   updateWordCount();
   localDirty = false;
+  lastObservedDormantDirtyState = false;
   if (window.electronAPI && typeof window.electronAPI.notifyDirtyState === 'function') {
     window.electronAPI.notifyDirtyState(false);
   }
@@ -2393,6 +2422,7 @@ async function handleFlowModeSaveUiPath() {
     dirty: false,
   };
   localDirty = false;
+  lastObservedDormantDirtyState = false;
   if (window.electronAPI && typeof window.electronAPI.notifyDirtyState === 'function') {
     window.electronAPI.notifyDirtyState(false);
   }
@@ -4744,6 +4774,7 @@ function markAsModified() {
 
   if (!localDirty) {
     localDirty = true;
+    lastObservedDormantDirtyState = true;
     if (window.electronAPI && window.electronAPI.notifyDirtyState) {
       window.electronAPI.notifyDirtyState(true);
     }
@@ -5970,6 +6001,7 @@ if (window.electronAPI) {
     updateCardsList();
 
     localDirty = false;
+    lastObservedDormantDirtyState = false;
     updateWordCount();
 
     const resolvedTitle = title || getTitleFromPath(path);
@@ -6174,7 +6206,13 @@ if (window.electronAPI) {
   });
 
   window.electronAPI.onSetDirty((state) => {
-    localDirty = state;
+    const previousDirtyState = lastObservedDormantDirtyState === true;
+    const nextDirtyState = state === true;
+    localDirty = nextDirtyState;
+    lastObservedDormantDirtyState = nextDirtyState;
+    if (previousDirtyState && !nextDirtyState) {
+      syncDesignOsDormantProductTruthAtSaveBoundary();
+    }
     updateSaveStateText(localDirty ? 'unsaved' : 'saved');
     updateInspectorSnapshot();
   });
