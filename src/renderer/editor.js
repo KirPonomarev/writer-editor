@@ -4895,6 +4895,7 @@ function applyViewMode(mode, persist = true) {
   if (persist) {
     localStorage.setItem('editorViewMode', mode);
   }
+  syncDesignOsDormantContext();
 }
 
 function applyTextStyle(action) {
