@@ -20,7 +20,13 @@ import {
   nextSceneCaretAtBoundary,
   previousSceneCaretAtBoundary,
 } from './commands/flowMode.mjs';
-import { createDesignOsPorts, createRepoGroundedDesignOsBrowserRuntime } from './design-os/index.mjs';
+import {
+  createDesignOsPorts,
+  createRepoGroundedDesignOsBrowserRuntime,
+  deriveAccessibilityId,
+  deriveRuntimePlatformId,
+  mapEditorModeToWorkspace,
+} from './design-os/index.mjs';
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
 
 const isTiptapMode = window.__USE_TIPTAP === true;
@@ -246,17 +252,166 @@ let leftFloatingToolbarState = {
   widthScale: 1,
 };
 
-function mountDesignOsDormantRuntime({ force = false, productTruth } = {}) {
-  if (designOsDormantRuntimeMount && force !== true && productTruth == null) {
-    return designOsDormantRuntimeMount;
+function resolveDormantDesignOsProfileFromStyleValue(styleValue) {
+  return String(styleValue || '').trim().toLowerCase() === 'focus' ? 'FOCUS' : 'BASELINE';
+}
+
+function resolveDormantDesignOsShellModeFromLayoutMode(layoutMode) {
+  return String(layoutMode || '').trim().toLowerCase() === 'compact' ? 'COMPACT_DOCKED' : 'CALM_DOCKED';
+}
+
+function getCurrentDesignOsStyleValue() {
+  if (styleSelect && typeof styleSelect.value === 'string' && styleSelect.value.trim()) {
+    return styleSelect.value;
   }
+  if (typeof document !== 'undefined' && document.body && document.body.classList.contains('focus-mode')) {
+    return 'focus';
+  }
+  return 'default';
+}
+
+function buildDesignOsDormantContext() {
+  const styleValue = getCurrentDesignOsStyleValue();
+  const layoutMode = spatialLayoutState?.viewportMode || getSpatialLayoutMode();
+  return {
+    profile: resolveDormantDesignOsProfileFromStyleValue(styleValue),
+    workspace: mapEditorModeToWorkspace(currentMode),
+    shell_mode: resolveDormantDesignOsShellModeFromLayoutMode(layoutMode),
+    platform: deriveRuntimePlatformId(),
+    accessibility: deriveAccessibilityId(),
+  };
+}
+
+function buildSingleSceneFallbackTruth() {
+  const projectId = normalizeProjectId(currentProjectId) || 'local-project';
+  const fallbackSceneId = 'scene-local';
+  return {
+    project_id: projectId,
+    scenes: {
+      [fallbackSceneId]: getPlainText(),
+    },
+    active_scene_id: fallbackSceneId,
+  };
+}
+
+function buildFlowModeDormantTruth() {
+  const payload = buildFlowSavePayload(getPlainText(), flowModeState.scenes);
+  if (!payload.ok || !Array.isArray(payload.scenes) || payload.scenes.length === 0) return null;
+
+  const scenes = {};
+  for (const scene of payload.scenes) {
+    const scenePath = typeof scene?.path === 'string' ? scene.path.trim() : '';
+    if (!scenePath) continue;
+    scenes[scenePath] = typeof scene.content === 'string' ? scene.content : '';
+  }
+
+  const activeSceneId = payload.scenes.find((scene) => scene && typeof scene.path === 'string' && scene.path.trim())
+    ?.path?.trim();
+  if (!activeSceneId || Object.keys(scenes).length === 0) return null;
+
+  return {
+    project_id: normalizeProjectId(currentProjectId) || 'local-project',
+    scenes,
+    active_scene_id: activeSceneId,
+  };
+}
+
+function buildDesignOsDormantProductTruth() {
+  if (flowModeState.active) {
+    const flowTruth = buildFlowModeDormantTruth();
+    if (flowTruth) return flowTruth;
+    return buildSingleSceneFallbackTruth();
+  }
+
+  const projectId = normalizeProjectId(currentProjectId) || 'local-project';
+  const hasPath = typeof currentDocumentPath === 'string' && currentDocumentPath.trim().length > 0;
+  const hasKind = typeof currentDocumentKind === 'string' && currentDocumentKind.trim().length > 0;
+  if (!hasPath || !hasKind) {
+    return buildSingleSceneFallbackTruth();
+  }
+
+  const sceneId = currentDocumentPath.trim();
+  return {
+    project_id: projectId,
+    scenes: {
+      [sceneId]: getPlainText(),
+    },
+    active_scene_id: sceneId,
+  };
+}
+
+function buildDormantRuntimeLayoutPatch(committedSpatialState, shellMode) {
+  const layoutState = committedSpatialState || getSpatialLayoutBaselineForViewport();
+  const leftWidth = Number.isFinite(layoutState?.leftSidebarWidth) ? Math.round(layoutState.leftSidebarWidth) : 290;
+  const rightWidth = Number.isFinite(layoutState?.rightSidebarWidth) ? Math.round(layoutState.rightSidebarWidth) : 340;
+  const viewportWidth = Number.isFinite(layoutState?.viewportWidth)
+    ? Math.round(layoutState.viewportWidth)
+    : getSpatialLayoutViewportWidth();
+  return {
+    left_width: leftWidth,
+    right_width: rightWidth,
+    bottom_height: 96,
+    editor_root: 'docked',
+    viewport_width: viewportWidth,
+    viewport_height: Math.max(320, Number(window?.innerHeight) || 900),
+    shell_mode: shellMode || 'CALM_DOCKED',
+  };
+}
+
+function replayDesignOsDormantRuntimeLayout(committedSpatialState) {
+  const mount = designOsDormantRuntimeMount;
+  const ports = mount?.ports;
+  const commitPortName = ['commit', 'Design'].join('');
+  const commitPort = ports && typeof ports[commitPortName] === 'function' ? ports[commitPortName] : null;
+  if (!commitPort) return null;
+
+  try {
+    const context = buildDesignOsDormantContext();
+    const layoutState = committedSpatialState || getSpatialLayoutBaselineForViewport();
+    const preview = commitPort({
+      context,
+      layout_patch: buildDormantRuntimeLayoutPatch(layoutState, context.shell_mode || 'CALM_DOCKED'),
+      commit_point: 'resize_end',
+    });
+    designOsDormantRuntimeMount = {
+      ...mount,
+      lastContext: context,
+      lastLayoutCommitPreview: preview,
+    };
+    return preview;
+  } catch {
+    return null;
+  }
+}
+
+function refreshDesignOsDormantPreview() {
+  const mount = designOsDormantRuntimeMount;
+  const ports = mount?.ports;
+  if (!ports || typeof ports.previewDesign !== 'function') return null;
+
+  try {
+    const context = buildDesignOsDormantContext();
+    const preview = ports.previewDesign({ context });
+    designOsDormantRuntimeMount = {
+      ...mount,
+      lastContext: context,
+      lastPreview: preview,
+    };
+    return preview;
+  } catch {
+    return null;
+  }
+}
+
+function remountDesignOsDormantRuntimeForCurrentDocumentContext(productTruthOverride) {
+  const nextProductTruth =
+    productTruthOverride && typeof productTruthOverride === 'object' && !Array.isArray(productTruthOverride)
+      ? productTruthOverride
+      : buildDesignOsDormantProductTruth();
 
   try {
     const bootstrap = createRepoGroundedDesignOsBrowserRuntime({
-      productTruth:
-        productTruth && typeof productTruth === 'object' && !Array.isArray(productTruth)
-          ? productTruth
-          : undefined,
+      productTruth: nextProductTruth,
     });
     const runtime = bootstrap && bootstrap.runtime ? bootstrap.runtime : null;
     if (!runtime) {
@@ -265,15 +420,30 @@ function mountDesignOsDormantRuntime({ force = false, productTruth } = {}) {
 
     designOsDormantRuntimeMount = {
       runtime,
-      ports: createDesignOsPorts({ runtime }),
+      ports: createDesignOsPorts({
+        runtime,
+        defaultContext: buildDesignOsDormantContext(),
+      }),
       compatibility:
         bootstrap && bootstrap.compatibility && typeof bootstrap.compatibility === 'object'
           ? bootstrap.compatibility
           : null,
+      productTruth: nextProductTruth,
     };
+
+    const layoutStateForReplay = spatialLayoutState || getSpatialLayoutBaselineForViewport();
+    replayDesignOsDormantRuntimeLayout(layoutStateForReplay);
+    refreshDesignOsDormantPreview();
   } catch {}
 
   return designOsDormantRuntimeMount;
+}
+
+function mountDesignOsDormantRuntime({ force = false, productTruth } = {}) {
+  if (designOsDormantRuntimeMount && force !== true && productTruth == null) {
+    return designOsDormantRuntimeMount;
+  }
+  return remountDesignOsDormantRuntimeForCurrentDocumentContext(productTruth);
 }
 let floatingToolbarInteractionState = {
   mode: null,
@@ -2224,6 +2394,7 @@ async function handleFlowModeOpenUiPath() {
     window.electronAPI.notifyDirtyState(false);
   }
   showEditorPanelFor('Flow mode');
+  remountDesignOsDormantRuntimeForCurrentDocumentContext();
   updateStatusText(buildFlowModeM9KickoffStatus('open', scenes.length, { m8Kickoff: true, m9Kickoff: true }));
 }
 
@@ -2255,6 +2426,7 @@ async function handleFlowModeSaveUiPath() {
   if (window.electronAPI && typeof window.electronAPI.notifyDirtyState === 'function') {
     window.electronAPI.notifyDirtyState(false);
   }
+  remountDesignOsDormantRuntimeForCurrentDocumentContext();
   updateStatusText(buildFlowModeM9KickoffStatus('save', payload.scenes.length, { m8Kickoff: true, m9Kickoff: true }));
 }
 
@@ -5834,6 +6006,7 @@ if (window.electronAPI) {
     if (resolvedTitle) {
       showEditorPanelFor(resolvedTitle);
     }
+    remountDesignOsDormantRuntimeForCurrentDocumentContext();
     renderTree();
     updateSaveStateText('loaded');
     updatePerfHintText('normal');
