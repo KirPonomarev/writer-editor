@@ -2,6 +2,7 @@ const test = require('node:test')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
+const vm = require('node:vm')
 
 const ROOT = path.resolve(__dirname, '..', '..')
 
@@ -9,98 +10,224 @@ function readEditorSource() {
   return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'editor.js'), 'utf8')
 }
 
-test.skip('profile adoption: buildDesignOsDormantContext no longer hardcodes BASELINE and maps style selector to BASELINE and FOCUS', () => {
+function extractFunctionSource(source, name) {
+  const signature = `function ${name}(`
+  const start = source.indexOf(signature)
+  assert.ok(start > -1, `${name} must exist`)
+  const braceStart = source.indexOf('{', start)
+  assert.ok(braceStart > start, `${name} body must exist`)
+  let depth = 0
+  for (let index = braceStart; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '{') depth += 1
+    if (char === '}') depth -= 1
+    if (depth === 0) {
+      return source.slice(start, index + 1)
+    }
+  }
+  throw new Error(`Unclosed function body for ${name}`)
+}
+
+function instantiateFunctions(functionNames, context = {}) {
   const source = readEditorSource()
-  assert.ok(source.includes('function resolveDormantDesignOsProfileFromStyleValue(styleValue) {'))
-  const helperStart = source.indexOf('function resolveDormantDesignOsProfileFromStyleValue(styleValue) {')
-  const helperEnd = source.indexOf('function buildDesignOsDormantContext()')
-  assert.ok(helperStart > -1 && helperEnd > helperStart, 'profile helper bounds must exist')
-  const helperSnippet = source.slice(helperStart, helperEnd)
-  assert.ok(helperSnippet.includes("if (normalized === 'focus') return 'FOCUS';"))
-  assert.ok(helperSnippet.includes("return 'BASELINE';"))
+  const script = `${functionNames.map((name) => extractFunctionSource(source, name)).join('\n\n')}\nmodule.exports = { ${functionNames.join(', ')} };`
+  const sandbox = {
+    module: { exports: {} },
+    exports: {},
+    Set,
+    ...context,
+  }
+  vm.runInNewContext(script, sandbox, { filename: 'sector-m-design-os-profile-adoption.editor-snippet.js' })
+  return { exported: sandbox.module.exports, sandbox }
+}
+
+function toPlain(value) {
+  return JSON.parse(JSON.stringify(value))
+}
+
+test('profile adoption: helper maps focus to FOCUS and defaults unknown values to BASELINE', () => {
+  const source = readEditorSource()
+  const helperSnippet = extractFunctionSource(source, 'resolveDormantDesignOsProfileFromStyleValue')
   assert.equal(helperSnippet.includes('COMPACT'), false)
   assert.equal(helperSnippet.includes('SAFE'), false)
 
-  const start = source.indexOf('function buildDesignOsDormantContext()')
-  const end = source.indexOf('function buildDesignOsDormantProductTruth()')
-  assert.ok(start > -1 && end > start, 'buildDesignOsDormantContext bounds must exist')
-  const snippet = source.slice(start, end)
-  assert.ok(snippet.includes("const styleValue = styleSelect && typeof styleSelect.value === 'string' ? styleSelect.value : '';"))
-  assert.ok(snippet.includes('profile: resolveDormantDesignOsProfileFromStyleValue(styleValue),'))
-  assert.equal(snippet.includes("profile: 'BASELINE'"), false)
+  const { exported } = instantiateFunctions([
+    'resolveDormantDesignOsProfileFromStyleValue',
+  ])
+
+  assert.equal(exported.resolveDormantDesignOsProfileFromStyleValue('focus'), 'FOCUS')
+  assert.equal(exported.resolveDormantDesignOsProfileFromStyleValue(' Focus '), 'FOCUS')
+  assert.equal(exported.resolveDormantDesignOsProfileFromStyleValue('default'), 'BASELINE')
+  assert.equal(exported.resolveDormantDesignOsProfileFromStyleValue('unknown'), 'BASELINE')
+  assert.equal(exported.resolveDormantDesignOsProfileFromStyleValue(''), 'BASELINE')
+  assert.equal(exported.resolveDormantDesignOsProfileFromStyleValue(undefined), 'BASELINE')
 })
 
-test.skip('profile adoption: applyViewMode triggers dormant preview resync after local focus and persistence update', () => {
+test('profile adoption: buildDesignOsDormantContext uses style selector and body fallback without hardcoded profile', () => {
   const source = readEditorSource()
-  const start = source.indexOf('function applyViewMode(mode, persist = true) {')
-  const end = source.indexOf('function applyTextStyle(action) {')
-  assert.ok(start > -1 && end > start, 'applyViewMode bounds must exist')
-  const snippet = source.slice(start, end)
+  const contextSnippet = extractFunctionSource(source, 'buildDesignOsDormantContext')
+  assert.ok(contextSnippet.includes('profile: resolveDormantDesignOsProfileFromStyleValue(styleValue),'))
+  assert.equal(contextSnippet.includes("profile: 'BASELINE'"), false)
 
+  const focused = instantiateFunctions([
+    'resolveDormantDesignOsProfileFromStyleValue',
+    'resolveDormantDesignOsShellModeFromLayoutMode',
+    'getCurrentDesignOsStyleValue',
+    'buildDesignOsDormantContext',
+  ], {
+    styleSelect: { value: 'focus' },
+    currentMode: 'review',
+    spatialLayoutState: { viewportMode: 'desktop' },
+    mapEditorModeToWorkspace: (mode) => mode.toUpperCase(),
+    deriveRuntimePlatformId: () => 'windows',
+    deriveAccessibilityId: () => 'reduced_motion',
+    getSpatialLayoutMode: () => 'desktop',
+    document: {
+      body: {
+        classList: {
+          contains: () => false,
+        },
+      },
+    },
+  }).exported
+
+  assert.deepEqual(toPlain(focused.buildDesignOsDormantContext()), {
+    profile: 'FOCUS',
+    workspace: 'REVIEW',
+    shell_mode: 'CALM_DOCKED',
+    platform: 'windows',
+    accessibility: 'reduced_motion',
+  })
+
+  const bodyFallback = instantiateFunctions([
+    'resolveDormantDesignOsProfileFromStyleValue',
+    'getCurrentDesignOsStyleValue',
+  ], {
+    styleSelect: { value: '' },
+    document: {
+      body: {
+        classList: {
+          contains: (className) => className === 'focus-mode',
+        },
+      },
+    },
+  }).exported
+
+  assert.equal(bodyFallback.getCurrentDesignOsStyleValue(), 'focus')
+})
+
+test('profile adoption: applyViewMode resyncs dormant context after local focus and persistence updates', () => {
+  const source = readEditorSource()
+  const snippet = extractFunctionSource(source, 'applyViewMode')
   const toggleIdx = snippet.indexOf("document.body.classList.toggle('focus-mode', isFocus);")
-  const selectIdx = snippet.indexOf('styleSelect.value = mode;')
+  const styleIdx = snippet.indexOf('styleSelect.value = mode;')
   const persistIdx = snippet.indexOf("localStorage.setItem('editorViewMode', mode);")
   const syncIdx = snippet.indexOf('syncDesignOsDormantContext();')
-  assert.ok(toggleIdx > -1 && selectIdx > -1 && persistIdx > -1 && syncIdx > -1)
-  assert.ok(syncIdx > persistIdx, 'sync must run after local focus and persistence updates')
+  assert.ok(toggleIdx > -1 && styleIdx > -1 && persistIdx > -1 && syncIdx > -1)
+  assert.ok(syncIdx > persistIdx, 'sync must run after persistence update')
+
+  const events = []
+  const styleState = { value: 'default' }
+  const styleSelect = {}
+  Object.defineProperty(styleSelect, 'value', {
+    get() {
+      return styleState.value
+    },
+    set(nextValue) {
+      styleState.value = nextValue
+      events.push(['style', nextValue])
+    },
+  })
+
+  const { exported } = instantiateFunctions([
+    'applyViewMode',
+  ], {
+    document: {
+      body: {
+        classList: {
+          toggle: (className, enabled) => {
+            events.push(['toggle', className, enabled])
+          },
+        },
+      },
+    },
+    styleSelect,
+    localStorage: {
+      setItem: (key, value) => {
+        events.push(['persist', key, value])
+      },
+    },
+    syncDesignOsDormantContext: () => {
+      events.push(['sync'])
+    },
+  })
+
+  exported.applyViewMode('focus')
+  assert.deepEqual(toPlain(events), [
+    ['toggle', 'focus-mode', true],
+    ['style', 'focus'],
+    ['persist', 'editorViewMode', 'focus'],
+    ['sync'],
+  ])
+
+  events.length = 0
+  exported.applyViewMode('default', false)
+  assert.deepEqual(toPlain(events), [
+    ['toggle', 'focus-mode', false],
+    ['style', 'default'],
+    ['sync'],
+  ])
 })
 
-test.skip('profile adoption: syncDesignOsDormantContext remains the single path for degraded visible_commands and resolved_tokens refresh', () => {
+test('profile adoption: syncDesignOsDormantContext remains single preview path for degraded visible commands and resolved tokens', () => {
   const source = readEditorSource()
-  const start = source.indexOf('function syncDesignOsDormantContext()')
-  const end = source.indexOf('function syncDesignOsDormantTextInput()')
-  assert.ok(start > -1 && end > start, 'syncDesignOsDormantContext bounds must exist')
-  const snippet = source.slice(start, end)
+  const snippet = extractFunctionSource(source, 'syncDesignOsDormantContext')
+  assert.ok(snippet.includes('const preview = refreshDesignOsDormantPreview();'))
+  assert.ok(snippet.includes('designOsDormantVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
+  assert.equal(snippet.includes('previewDesign('), false)
+  assert.equal(snippet.includes('extractCssVariablesFromTokens('), false)
+  assert.equal(snippet.includes('applyCssVariables('), false)
 
-  assert.ok(snippet.includes('const preview = designOsDormantRuntimeMount.ports.previewDesign({'))
-  assert.ok(snippet.includes('designOsDormantDegradedToBaseline = preview?.degraded_to_baseline === true;'))
-  assert.ok(snippet.includes('const nextVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
-  assert.ok(snippet.includes('designOsDormantVisibleCommandIds = nextVisibleCommandIds;'))
-  assert.ok(snippet.includes('const resolvedTokens = preview?.resolved_tokens;'))
-  assert.ok(snippet.includes('const cssVariables = extractCssVariablesFromTokens(resolvedTokens, {'))
-  assert.ok(snippet.includes('applyCssVariables(document.documentElement, cssVariables);'))
+  const { exported, sandbox } = instantiateFunctions([
+    'normalizeDormantVisibleCommandIds',
+    'syncDesignOsDormantContext',
+  ], {
+    refreshCalls: 0,
+    preview: {
+      degraded_to_baseline: true,
+      visible_commands: ['alpha', ' alpha ', '', 'beta'],
+      resolved_tokens: { accent: '#fff' },
+    },
+    designOsDormantDegradedToBaseline: false,
+    designOsDormantVisibleCommandIds: [],
+    designOsDormantResolvedTokens: null,
+    refreshDesignOsDormantPreview: () => {
+      sandbox.refreshCalls += 1
+      return sandbox.preview
+    },
+  })
+
+  assert.deepEqual(toPlain(exported.syncDesignOsDormantContext()), {
+    degraded_to_baseline: true,
+    visible_commands: ['alpha', ' alpha ', '', 'beta'],
+    resolved_tokens: { accent: '#fff' },
+  })
+  assert.equal(sandbox.refreshCalls, 1)
+  assert.equal(sandbox.designOsDormantDegradedToBaseline, true)
+  assert.deepEqual(toPlain(sandbox.designOsDormantVisibleCommandIds), ['alpha', 'beta'])
+  assert.deepEqual(toPlain(sandbox.designOsDormantResolvedTokens), { accent: '#fff' })
 })
 
-test.skip('profile adoption: command palette wrapper semantics remain compatible and non-catalog commands stay visible', () => {
+test('profile adoption: command palette provider and later shell slices remain unchanged', () => {
   const source = readEditorSource()
-  const filterStart = source.indexOf('function filterPaletteCommandEntries(entries) {')
-  const filterEnd = source.indexOf('function createDormantAwarePaletteDataProvider(baseProvider) {')
-  assert.ok(filterStart > -1 && filterEnd > filterStart, 'palette filter bounds must exist')
-  const filterSnippet = source.slice(filterStart, filterEnd)
-  assert.ok(filterSnippet.includes('if (!catalogManagedProjectCommandIds.has(entry.id)) return true;'))
-  assert.ok(filterSnippet.includes('if (!(designOsDormantVisibleCommandIds instanceof Set)) return true;'))
-  assert.ok(filterSnippet.includes('return designOsDormantVisibleCommandIds.has(entry.id);'))
-
-  const wrapperStart = source.indexOf('function createDormantAwarePaletteDataProvider(baseProvider) {')
-  const wrapperEnd = source.indexOf('const baseCommandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: \'palette\' });')
-  assert.ok(wrapperStart > -1 && wrapperEnd > wrapperStart, 'palette wrapper bounds must exist')
-  const wrapper = source.slice(wrapperStart, wrapperEnd)
-  assert.ok(wrapper.includes('listAll() {'))
-  assert.ok(wrapper.includes('listBySurface(surface) {'))
-  assert.ok(wrapper.includes('listByGroup(surface) {'))
-})
-
-test.skip('profile adoption: layout commit safe reset restore and runtime bridge command surface remain unchanged', () => {
-  const source = readEditorSource()
-
-  const layoutStart = source.indexOf('function syncDesignOsDormantLayoutCommitAtResizeEnd(committedSpatialState)')
-  const layoutEnd = source.indexOf('function applyMode(mode)')
-  assert.ok(layoutStart > -1 && layoutEnd > layoutStart, 'layout helper bounds must exist')
-  const layoutSnippet = source.slice(layoutStart, layoutEnd)
-  assert.ok(layoutSnippet.includes('const layoutPatch = buildLayoutPatchFromSpatialState(committedSpatialState, {'))
-  assert.ok(layoutSnippet.includes("commit_point: 'resize_end',"))
-
-  const safeStart = source.indexOf('function performSafeResetShell()')
-  const safeEnd = source.indexOf('function performRestoreLastStableShell()')
-  assert.ok(safeStart > -1 && safeEnd > safeStart, 'safe reset bounds must exist')
-  const safeSnippet = source.slice(safeStart, safeEnd)
-  assert.ok(safeSnippet.includes("typeof designOsDormantRuntimeMount.ports.safeResetShell === 'function'"))
-
-  const restoreStart = source.indexOf('function performRestoreLastStableShell()')
-  const restoreEnd = source.indexOf('function openSimpleModal(modal)')
-  assert.ok(restoreStart > -1 && restoreEnd > restoreStart, 'restore bounds must exist')
-  const restoreSnippet = source.slice(restoreStart, restoreEnd)
-  assert.ok(restoreSnippet.includes("typeof designOsDormantRuntimeMount.ports.restoreLastStableShell === 'function'"))
+  assert.ok(source.includes("const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });"))
+  assert.ok(source.includes('window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;'))
+  assert.equal(source.includes('createDormantAwarePaletteDataProvider('), false)
+  assert.equal(source.includes('filterPaletteCommandEntries('), false)
+  assert.equal(source.includes("import { listCommandCatalog } from './commands/command-catalog.v1.mjs';"), false)
+  assert.ok(source.includes('function performSafeResetShell()'))
+  assert.ok(source.includes('function performRestoreLastStableShell()'))
+  assert.equal(source.includes('function syncDesignOsDormantLayoutCommitAtResizeEnd('), false)
 
   const bridgeSource = fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'tiptap', 'runtimeBridge.js'), 'utf8')
   const commands = [...bridgeSource.matchAll(/command === '([^']+)'/g)]
@@ -124,4 +251,7 @@ test.skip('profile adoption: layout commit safe reset restore and runtime bridge
     'switch-mode-review',
     'switch-mode-write',
   ])
+  assert.equal(bridgeSource.includes('design-os-profile'), false)
+  assert.equal(bridgeSource.includes('design-os-preview'), false)
+  assert.equal(bridgeSource.includes('design-os-commit'), false)
 })
