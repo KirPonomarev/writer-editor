@@ -1337,7 +1337,7 @@ body {
 
 .literal-stage-a .sidebar--left {
   display: flex;
-  margin: 12px 0 0 14px;
+  margin: 0 0 0 14px;
 }
 
 .literal-stage-a .sidebar--right,
@@ -2001,15 +2001,19 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .sidebar--left {
-  border-right: 1px solid var(--sidebar-border);
+  border-right: 1px solid rgba(118, 92, 62, 0.1);
 }
 
 .sidebar--left {
-  background: #eee7df;
-  color: #4f4842;
-  border-color: rgba(118, 92, 62, 0.14);
+  background: #ede7e0;
+  color: #59524c;
+  border: none;
+  border-right: 1px solid rgba(118, 92, 62, 0.1);
   box-shadow: none;
-  border-radius: 24px;
+  border-radius: 0;
+  --tree-row-height: 28px;
+  --tree-indent: 20px;
+  --tree-line-color: rgba(118, 92, 62, 0.1);
   --left-rail-folder-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M1.75 4.25h4.1l1.2 1.5h7.2v6.5a1 1 0 0 1-1 1H2.75a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z' stroke='%23a39a92' stroke-width='1.25' stroke-linejoin='round'/%3E%3C/svg%3E");
   --left-rail-document-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 1.75h5.5l2.75 2.75V13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2.75a1 1 0 0 1 1-1Z' stroke='%23a39a92' stroke-width='1.25' stroke-linejoin='round'/%3E%3Cpath d='M9.5 1.75V4.5h2.75' stroke='%23a39a92' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
@@ -2019,52 +2023,55 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 [data-left-tabs] {
-  padding: 12px 14px 0;
-  border-bottom: 1px solid rgba(118, 92, 62, 0.12);
+  padding: 12px 24px 0;
+  border-bottom: 1px solid rgba(118, 92, 62, 0.1);
 }
 
 [data-left-tabs] .x101-tabs-group {
-  gap: 6px;
+  gap: 10px;
   padding: 0 0 12px;
 }
 
 [data-left-tabs] .x101-tab-button,
 [data-left-tabs] .x101-tab-button.toolbar__button--wide {
-  height: 38px;
-  padding: 0 16px;
-  border-radius: 12px;
+  min-width: auto;
+  flex: 0 0 auto;
+  height: 28px;
+  padding: 0 14px;
+  border-radius: 10px;
   border-color: transparent;
-  color: #a19890;
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  color: #9d948b;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 
 [data-left-tabs] .x101-tab-button:hover,
 [data-left-tabs] .x101-tab-button:focus-visible {
-  background: #ece5de;
-  color: #6d6560;
+  background: rgba(118, 92, 62, 0.06);
+  color: #6a625c;
 }
 
 [data-left-tabs] .x101-tab-button.is-active {
-  background: #dbd3ca;
-  color: #433c37;
-  border-color: #dbd3ca;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.36);
+  background: #ddd6cd;
+  color: #433d37;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 [data-left-search-panel] {
-  padding: 10px 14px 12px;
+  padding: 12px 24px 14px;
 }
 
 [data-left-search-panel] .modal__input {
-  min-height: 40px;
-  border-radius: 12px;
-  border-color: rgba(118, 92, 62, 0.14);
-  background: rgba(255, 252, 247, 0.72);
-  color: #4f4842;
+  min-height: 36px;
+  border-radius: 8px;
+  border-color: rgba(118, 92, 62, 0.1);
+  background: rgba(255, 252, 247, 0.68);
+  color: #59524c;
   box-shadow: none;
+  font-size: 13px;
 }
 
 .sidebar--right {
@@ -2074,18 +2081,18 @@ body.dark-theme .toolbar__swatch::before {
 .sidebar__tree {
   flex: 1;
   overflow-y: auto;
-  padding: 18px 16px 28px 18px;
+  padding: 20px 24px 24px;
   position: relative;
 }
 
 .sidebar--left [data-tree]::before {
   content: 'Document';
   display: block;
-  margin: 0 0 18px 0;
-  color: rgba(99, 82, 66, 0.34);
+  margin: 0 0 12px 0;
+  color: rgba(99, 82, 66, 0.3);
   font-size: 11px;
-  line-height: 15px;
-  font-weight: 600;
+  line-height: 14px;
+  font-weight: 500;
   letter-spacing: 0.02em;
 }
 
@@ -2131,6 +2138,10 @@ body.dark-theme .toolbar__swatch::before {
   padding: 0;
 }
 
+.sidebar--left .tree__node + .tree__node {
+  margin-top: 4px;
+}
+
 .tree__row {
   position: relative;
   display: flex;
@@ -2151,13 +2162,13 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .sidebar--left .tree__row {
-  min-height: 36px;
-  height: 36px;
-  padding: 0 10px;
-  color: #4f4842;
-  border-radius: 14px;
-  font-size: 14px;
-  line-height: 20px;
+  min-height: 28px;
+  height: 28px;
+  padding: 0 6px;
+  color: #59524c;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 18px;
   transition: background 0.18s ease, color 0.18s ease;
 }
 
@@ -2166,7 +2177,7 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .sidebar--left .tree__row:hover {
-  background: #ece5de;
+  background: rgba(118, 92, 62, 0.04);
 }
 
 .tree__row.is-selected {
@@ -2174,8 +2185,8 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .sidebar--left .tree__row.is-selected {
-  background: #dbd3ca;
-  color: #433c37;
+  background: transparent;
+  color: #433d37;
 }
 
 .tree__indent {
@@ -2223,8 +2234,8 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .sidebar--left .tree__toggle {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   color: #a39a92;
   opacity: 1;
 }
@@ -2243,7 +2254,7 @@ body.dark-theme .toolbar__swatch::before {
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2252,7 +2263,7 @@ body.dark-theme .toolbar__swatch::before {
 .sidebar--left .tree__label {
   color: inherit;
   font-weight: 400;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
 .sidebar--left .tree__label::before {
@@ -2277,15 +2288,20 @@ body.dark-theme .toolbar__swatch::before {
 
 .sidebar--left .tree__row[data-level="2"] .tree__toggle.is-empty + .tree__label::before,
 .sidebar--left .tree__row[data-level="3"] .tree__toggle.is-empty + .tree__label::before {
-  width: 10px;
-  height: 10px;
-  flex-basis: 10px;
+  width: 6px;
+  height: 6px;
+  flex-basis: 6px;
   border-radius: 999px;
   background: #a39a92;
 }
 
 .sidebar--left .tree__row.is-selected .tree__label {
-  font-weight: 600;
+  flex: 0 1 auto;
+  max-width: calc(100% - 18px);
+  font-weight: 500;
+  background: #ddd6cd;
+  border-radius: 10px;
+  padding: 5px 14px 5px 12px;
 }
 
 .tree__children {
