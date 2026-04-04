@@ -1379,6 +1379,12 @@ body {
 .literal-stage-a .editor-page-wrap {
   width: 595px;
   min-height: 842px;
+  margin: 0 auto;
+}
+
+.literal-stage-a .main-content--editor #editor.tiptap-host {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .literal-stage-a .editor-page {
