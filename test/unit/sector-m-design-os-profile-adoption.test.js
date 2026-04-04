@@ -183,7 +183,7 @@ test('profile adoption: syncDesignOsDormantContext remains single preview path w
   const source = readEditorSource()
   const snippet = extractFunctionSource(source, 'syncDesignOsDormantContext')
   assert.ok(snippet.includes('const preview = refreshDesignOsDormantPreview();'))
-  assert.ok(snippet.includes('designOsDormantVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
+  assert.ok(snippet.includes('const nextVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
   assert.equal(snippet.includes('previewDesign('), false)
   assert.ok(snippet.includes('extractCssVariablesFromTokens('))
   assert.ok(snippet.includes('applyCssVariables('))
@@ -240,11 +240,8 @@ test('profile adoption: syncDesignOsDormantContext remains single preview path w
 
 test('profile adoption: command palette provider and later shell slices remain unchanged', () => {
   const source = readEditorSource()
-  assert.ok(source.includes("const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });"))
+  assert.ok(source.includes('const commandPaletteDataProvider = createDormantAwarePaletteDataProvider(baseCommandPaletteDataProvider);'))
   assert.ok(source.includes('window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;'))
-  assert.equal(source.includes('createDormantAwarePaletteDataProvider('), false)
-  assert.equal(source.includes('filterPaletteCommandEntries('), false)
-  assert.equal(source.includes("import { listCommandCatalog } from './commands/command-catalog.v1.mjs';"), false)
   assert.ok(source.includes('function performSafeResetShell()'))
   assert.ok(source.includes('function performRestoreLastStableShell()'))
   assert.equal(source.includes('function syncDesignOsDormantLayoutCommitAtResizeEnd('), false)

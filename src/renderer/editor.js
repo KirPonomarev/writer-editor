@@ -7,6 +7,7 @@ import {
   registerProjectCommands,
 } from './commands/projectCommands.mjs';
 import { COMMAND_BUS_ROUTE, runCommandThroughBus } from './commands/commandBusGuard.mjs';
+import { listCommandCatalog } from './commands/command-catalog.v1.mjs';
 import { createPaletteDataProvider } from './commands/palette-groups.v1.mjs';
 import {
   buildFlowModeKickoffStatus,
@@ -223,8 +224,9 @@ let designOsDormantRuntimeMount = null;
 let lastSyncedDormantProductTruthHash = '';
 let lastObservedDormantDirtyState = false;
 let designOsDormantDegradedToBaseline = false;
-let designOsDormantVisibleCommandIds = [];
+let designOsDormantVisibleCommandIds = null;
 let designOsDormantResolvedTokens = null;
+const catalogManagedProjectCommandIds = new Set(listCommandCatalog().map((entry) => entry.id));
 let flowModeState = {
   active: false,
   scenes: [],
@@ -380,6 +382,60 @@ function normalizeDormantVisibleCommandIds(visibleCommands) {
   return normalized;
 }
 
+function shouldKeepDormantPaletteEntry(entry) {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return false;
+  if (typeof entry.id !== 'string' || entry.id.trim().length === 0) return false;
+  if (!catalogManagedProjectCommandIds.has(entry.id)) return true;
+  if (!Array.isArray(designOsDormantVisibleCommandIds)) return true;
+  return designOsDormantVisibleCommandIds.includes(entry.id);
+}
+
+function filterDormantPaletteEntries(entries) {
+  if (!Array.isArray(entries)) return [];
+  return entries.filter((entry) => shouldKeepDormantPaletteEntry(entry));
+}
+
+function filterDormantPaletteGroups(groups) {
+  if (!Array.isArray(groups)) return [];
+  return groups
+    .map((group) => {
+      if (!group || typeof group !== 'object' || Array.isArray(group)) return null;
+      const commands = filterDormantPaletteEntries(group.commands);
+      if (commands.length === 0) return null;
+      return {
+        ...group,
+        commands,
+      };
+    })
+    .filter(Boolean);
+}
+
+function createDormantAwarePaletteDataProvider(baseProvider) {
+  return {
+    listAll() {
+      return filterDormantPaletteEntries(
+        baseProvider && typeof baseProvider.listAll === 'function'
+          ? baseProvider.listAll()
+          : []
+      );
+    },
+    listBySurface(surface) {
+      return filterDormantPaletteEntries(
+        baseProvider && typeof baseProvider.listBySurface === 'function'
+          ? baseProvider.listBySurface(surface)
+          : []
+      );
+    },
+    listByGroup(surface) {
+      return filterDormantPaletteGroups(
+        baseProvider && typeof baseProvider.listByGroup === 'function'
+          ? baseProvider.listByGroup(surface)
+          : []
+      );
+    },
+  };
+}
+
 function refreshDesignOsDormantPreview() {
   const mount = designOsDormantRuntimeMount;
   const ports = mount?.ports;
@@ -402,7 +458,8 @@ function refreshDesignOsDormantPreview() {
 function syncDesignOsDormantContext() {
   const preview = refreshDesignOsDormantPreview();
   designOsDormantDegradedToBaseline = preview?.degraded_to_baseline === true;
-  designOsDormantVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);
+  const nextVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);
+  designOsDormantVisibleCommandIds = Array.isArray(preview?.visible_commands) ? nextVisibleCommandIds : null;
   const resolvedTokens =
     preview && typeof preview.resolved_tokens === 'object' && !Array.isArray(preview.resolved_tokens)
       ? preview.resolved_tokens
@@ -2425,7 +2482,8 @@ registerProjectCommands(commandRegistry, {
     reviewExportMarkdown: () => handleReviewExportMarkdown(),
   },
 });
-const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });
+const baseCommandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });
+const commandPaletteDataProvider = createDormantAwarePaletteDataProvider(baseCommandPaletteDataProvider);
 window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;
 const MARKDOWN_IMPORT_STATUS_MESSAGE = 'Imported Markdown v1';
 const MARKDOWN_EXPORT_STATUS_MESSAGE = 'Exported Markdown v1';

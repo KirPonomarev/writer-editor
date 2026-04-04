@@ -407,6 +407,6 @@ test('typography design state: save-boundary and later slices remain unchanged',
   assert.ok(source.includes('profile: resolveDormantDesignOsProfileFromStyleValue(styleValue),'))
   assert.ok(source.includes('workspace: mapEditorModeToWorkspace(currentMode),'))
   assert.ok(source.includes('shell_mode: resolveDormantDesignOsShellModeFromLayoutMode(layoutMode),'))
-  assert.ok(source.includes('designOsDormantVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
+  assert.ok(source.includes('const nextVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
   assert.ok(source.includes('designOsDormantResolvedTokens ='))
 })
