@@ -258,13 +258,12 @@ test('theme design state: applyTheme commits theme patch and saved theme paths s
   ])
 })
 
-test('theme design state: remount replays theme patch and falls back to preview refresh when commit path is unavailable', () => {
+test('theme design state: remount keeps theme replay compatible and falls back to preview refresh when commit path is unavailable', () => {
   const source = readEditorSource()
   const remountSnippet = extractFunctionSource(source, 'remountDesignOsDormantRuntimeForCurrentDocumentContext')
   assert.ok(remountSnippet.includes("commitDesignOsDormantThemeDesignPatch({ syncPreview: false })"))
   assert.ok(remountSnippet.includes('syncDesignOsDormantContext();'))
   assert.ok(remountSnippet.includes('refreshDesignOsDormantPreview();'))
-  assert.equal(remountSnippet.includes('commitDesignOsDormantTypographyDesignPatch'), false)
 
   const withCommitEvents = []
   const withCommit = instantiateFunctions([
@@ -388,7 +387,7 @@ test('theme design state: remount replays theme patch and falls back to preview 
   ])
 })
 
-test('theme design state: later slices remain unchanged and no theme drift leaks into typography or save-boundary logic', () => {
+test('theme design state: non-theme compatibility surfaces remain unchanged after typography slice lands', () => {
   const source = readEditorSource()
 
   const stopSpatialResizeSnippet = extractFunctionSource(source, 'stopSpatialResize')
@@ -424,8 +423,6 @@ test('theme design state: later slices remain unchanged and no theme drift leaks
   assert.ok(source.includes('workspace: mapEditorModeToWorkspace(currentMode),'))
   assert.ok(source.includes('shell_mode: resolveDormantDesignOsShellModeFromLayoutMode(layoutMode),'))
   assert.ok(source.includes('designOsDormantVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
-  assert.equal(source.includes('function buildDesignOsDormantTypographyDesignPatch('), false)
-  assert.equal(source.includes('function commitDesignOsDormantTypographyDesignPatch('), false)
 
   const bridgeSource = fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'tiptap', 'runtimeBridge.js'), 'utf8')
   const commands = [...bridgeSource.matchAll(/command === '([^']+)'/g)]

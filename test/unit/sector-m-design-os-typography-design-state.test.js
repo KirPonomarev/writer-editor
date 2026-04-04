@@ -2,6 +2,7 @@ const test = require('node:test')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
+const vm = require('node:vm')
 
 const ROOT = path.resolve(__dirname, '..', '..')
 
@@ -9,68 +10,208 @@ function readEditorSource() {
   return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'editor.js'), 'utf8')
 }
 
-test.skip('typography design state: narrow typography patch helper exists and includes only required fields', () => {
-  const source = readEditorSource()
-  const start = source.indexOf('function buildDesignOsDormantTypographyDesignPatch() {')
-  const end = source.indexOf('function commitDesignOsDormantTypographyDesignPatch({ syncPreview = true } = {}) {')
-  assert.ok(start > -1 && end > start, 'typography patch helper bounds must exist')
-  const snippet = source.slice(start, end)
+function extractFunctionSource(source, name) {
+  const signature = `function ${name}(`
+  const start = source.indexOf(signature)
+  assert.ok(start > -1, `${name} must exist`)
+  const paramsStart = source.indexOf('(', start)
+  assert.ok(paramsStart > start, `${name} params must exist`)
+  let paramsDepth = 0
+  let paramsEnd = -1
+  for (let index = paramsStart; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '(') paramsDepth += 1
+    if (char === ')') paramsDepth -= 1
+    if (paramsDepth === 0) {
+      paramsEnd = index
+      break
+    }
+  }
+  assert.ok(paramsEnd > paramsStart, `${name} params must close`)
+  const braceStart = source.indexOf('{', paramsEnd)
+  assert.ok(braceStart > start, `${name} body must exist`)
+  let depth = 0
+  for (let index = braceStart; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '{') depth += 1
+    if (char === '}') depth -= 1
+    if (depth === 0) {
+      return source.slice(start, index + 1)
+    }
+  }
+  throw new Error(`Unclosed function body for ${name}`)
+}
 
+function instantiateFunctions(functionNames, context = {}) {
+  const source = readEditorSource()
+  const script = `${functionNames.map((name) => extractFunctionSource(source, name)).join('\n\n')}\nmodule.exports = { ${functionNames.join(', ')} };`
+  const sandbox = {
+    module: { exports: {} },
+    exports: {},
+    ...context,
+  }
+  vm.runInNewContext(script, sandbox, { filename: 'sector-m-design-os-typography-design-state.editor-snippet.js' })
+  return { exported: sandbox.module.exports, sandbox }
+}
+
+function toPlain(value) {
+  return JSON.parse(JSON.stringify(value))
+}
+
+test('typography design state: narrow typography patch helper returns only required fields', () => {
+  const source = readEditorSource()
+  const snippet = extractFunctionSource(source, 'buildDesignOsDormantTypographyDesignPatch')
   assert.ok(snippet.includes('typography: {'))
   assert.ok(snippet.includes('font: {'))
   assert.ok(snippet.includes('body: {'))
   assert.ok(snippet.includes('family: fontFamily,'))
   assert.ok(snippet.includes('sizePx: Number(sizePx.toFixed(2)),'))
   assert.ok(snippet.includes('lineHeight: Number(lineHeightValue.toFixed(3)),'))
-
   assert.equal(snippet.includes('layout_patch'), false)
   assert.equal(snippet.includes('productTruth'), false)
   assert.equal(snippet.includes('visible_commands'), false)
+
+  const { exported } = instantiateFunctions([
+    'buildDesignOsDormantTypographyDesignPatch',
+  ], {
+    editor: {
+      style: {
+        fontFamily: '"Literata", serif',
+        lineHeight: '1.625',
+      },
+    },
+    currentFontSizePx: 13.5,
+    window: {
+      getComputedStyle: () => ({
+        fontFamily: '"Literata", serif',
+        fontSize: '13.5px',
+        lineHeight: '1.625',
+      }),
+    },
+  })
+
+  assert.deepEqual(toPlain(exported.buildDesignOsDormantTypographyDesignPatch()), {
+    typography: {
+      font: {
+        body: {
+          family: '"Literata", serif',
+          sizePx: 13.5,
+          lineHeight: 1.625,
+        },
+      },
+    },
+  })
 })
 
-test.skip('typography design state: commit helper uses design_patch only with commit_point apply and refreshes preview', () => {
+test('typography design state: commit helper uses design_patch only with apply commit point and preview sync', () => {
   const source = readEditorSource()
-  const start = source.indexOf('function commitDesignOsDormantTypographyDesignPatch({ syncPreview = true } = {}) {')
-  const end = source.indexOf('function remountDesignOsDormantRuntimeForCurrentDocumentContext(options = {}) {')
-  assert.ok(start > -1 && end > start, 'typography commit helper bounds must exist')
-  const snippet = source.slice(start, end)
-
-  assert.ok(snippet.includes('designOsDormantRuntimeMount.ports.commitDesign({'))
-  assert.ok(snippet.includes('context: buildDesignOsDormantContext(),'))
+  const snippet = extractFunctionSource(source, 'commitDesignOsDormantTypographyDesignPatch')
   assert.ok(snippet.includes('design_patch: designPatch,'))
   assert.ok(snippet.includes("commit_point: 'apply',"))
   assert.equal(snippet.includes('layout_patch'), false)
-  assert.ok(snippet.includes('syncDesignOsDormantContext();'))
+
+  const events = []
+  const { exported } = instantiateFunctions([
+    'buildDesignOsDormantTypographyDesignPatch',
+    'commitDesignOsDormantTypographyDesignPatch',
+  ], {
+    editor: {
+      style: {
+        fontFamily: '"Literata", serif',
+        lineHeight: '1.625',
+      },
+    },
+    currentFontSizePx: 13.5,
+    window: {
+      getComputedStyle: () => ({
+        fontFamily: '"Literata", serif',
+        fontSize: '13.5px',
+        lineHeight: '1.625',
+      }),
+    },
+    buildDesignOsDormantContext: () => ({ profile: 'BASELINE', workspace: 'WRITE' }),
+    designOsDormantRuntimeMount: {
+      ports: {
+        commitDesign: (payload) => {
+          events.push(['commit', toPlain(payload)])
+          return { committed: true }
+        },
+      },
+      lastContext: null,
+      lastPreview: null,
+    },
+    syncDesignOsDormantContext: () => {
+      events.push(['sync'])
+      return { previewed: true }
+    },
+    refreshDesignOsDormantPreview: () => {
+      events.push(['preview'])
+      return { previewed: true }
+    },
+  })
+
+  assert.deepEqual(toPlain(exported.commitDesignOsDormantTypographyDesignPatch()), { committed: true })
+  assert.deepEqual(toPlain(events), [
+    ['commit', {
+      context: { profile: 'BASELINE', workspace: 'WRITE' },
+      design_patch: {
+        typography: {
+          font: {
+            body: {
+              family: '"Literata", serif',
+              sizePx: 13.5,
+              lineHeight: 1.625,
+            },
+          },
+        },
+      },
+      commit_point: 'apply',
+    }],
+    ['sync'],
+  ])
+
+  events.length = 0
+  exported.commitDesignOsDormantTypographyDesignPatch({ syncPreview: false })
+  assert.deepEqual(toPlain(events), [
+    ['commit', {
+      context: { profile: 'BASELINE', workspace: 'WRITE' },
+      design_patch: {
+        typography: {
+          font: {
+            body: {
+              family: '"Literata", serif',
+              sizePx: 13.5,
+              lineHeight: 1.625,
+            },
+          },
+        },
+      },
+      commit_point: 'apply',
+    }],
+  ])
 })
 
-test.skip('typography design state: remount helper replays typography patch after runtime recreation', () => {
-  const source = readEditorSource()
-  const start = source.indexOf('function remountDesignOsDormantRuntimeForCurrentDocumentContext(options = {}) {')
-  const end = source.indexOf('function syncDesignOsDormantRuntimeTruthAtSaveBoundary(previousDirtyState, nextDirtyState) {')
-  assert.ok(start > -1 && end > start, 'remount helper bounds must exist')
-  const snippet = source.slice(start, end)
-
-  assert.ok(snippet.includes('syncDesignOsDormantLayoutCommitAtResizeEnd(layoutStateForReplay);'))
-  assert.ok(snippet.includes('commitDesignOsDormantTypographyDesignPatch({ syncPreview: false });'))
-  assert.ok(snippet.includes('syncDesignOsDormantContext();'))
-})
-
-test.skip('typography design state: apply boundaries trigger typography design patch commit', () => {
+test('typography design state: apply boundaries commit typography patch and saved paths still reuse apply helpers', () => {
   const source = readEditorSource()
 
-  const applyFontStart = source.indexOf('function applyFont(fontFamily) {')
-  const applyFontEnd = source.indexOf('function loadSavedFont() {', applyFontStart)
-  assert.ok(applyFontStart > -1 && applyFontEnd > applyFontStart, 'applyFont bounds must exist')
-  const applyFontSnippet = source.slice(applyFontStart, applyFontEnd)
-  assert.ok(applyFontSnippet.includes('editor.style.fontFamily = fontFamily;'))
+  const applyFontSnippet = extractFunctionSource(source, 'applyFont')
   assert.ok(applyFontSnippet.includes('commitDesignOsDormantTypographyDesignPatch();'))
 
-  const applyLineHeightStart = source.indexOf('function applyLineHeight(value, persist = true) {')
-  const applyLineHeightEnd = source.indexOf('function applyWordWrap(enabled, persist = true) {', applyLineHeightStart)
-  assert.ok(applyLineHeightStart > -1 && applyLineHeightEnd > applyLineHeightStart, 'applyLineHeight bounds must exist')
-  const applyLineHeightSnippet = source.slice(applyLineHeightStart, applyLineHeightEnd)
-  assert.ok(applyLineHeightSnippet.includes('editor.style.lineHeight = String(value);'))
+  const loadSavedFontSnippet = extractFunctionSource(source, 'loadSavedFont')
+  assert.ok(loadSavedFontSnippet.includes('applyFont(savedFont);'))
+
+  const onFontChangedStart = source.indexOf('window.electronAPI.onFontChanged((fontFamily) => {')
+  const onFontChangedEnd = source.indexOf('});\n}\n\nloadSavedFont();', onFontChangedStart)
+  assert.ok(onFontChangedStart > -1 && onFontChangedEnd > onFontChangedStart, 'onFontChanged bounds must exist')
+  const onFontChangedSnippet = source.slice(onFontChangedStart, onFontChangedEnd)
+  assert.ok(onFontChangedSnippet.includes('applyFont(fontFamily);'))
+
+  const applyLineHeightSnippet = extractFunctionSource(source, 'applyLineHeight')
   assert.ok(applyLineHeightSnippet.includes('commitDesignOsDormantTypographyDesignPatch();'))
+
+  const loadSavedLineHeightSnippet = extractFunctionSource(source, 'loadSavedLineHeight')
+  assert.ok(loadSavedLineHeightSnippet.includes('applyLineHeight(saved, false);'))
+  assert.ok(loadSavedLineHeightSnippet.includes("applyLineHeight('1.625', false);"))
 
   const setFontSizeStart = source.indexOf('window.electronAPI.onEditorSetFontSize(({ px }) => {')
   const setFontSizeEnd = source.indexOf('  if (typeof window.electronAPI.onRecoveryRestored === \'function\') {', setFontSizeStart)
@@ -79,47 +220,193 @@ test.skip('typography design state: apply boundaries trigger typography design p
   assert.ok(setFontSizeSnippet.includes('setCurrentFontSize(px);'))
   assert.ok(setFontSizeSnippet.includes('renderStyledView(getPlainText());'))
   assert.ok(setFontSizeSnippet.includes('commitDesignOsDormantTypographyDesignPatch();'))
+
+  const fontEvents = []
+  const { exported: fontExported } = instantiateFunctions([
+    'applyFont',
+  ], {
+    editor: { style: {} },
+    localStorage: {
+      setItem: (key, value) => fontEvents.push(['persist', key, value]),
+    },
+    syncLiteralToolbarDisplays: () => fontEvents.push(['toolbar']),
+    commitDesignOsDormantTypographyDesignPatch: () => fontEvents.push(['commit']),
+  })
+
+  fontExported.applyFont('"IBM Plex Sans", sans-serif')
+  assert.deepEqual(toPlain(fontEvents), [
+    ['persist', 'editorFont', '"IBM Plex Sans", sans-serif'],
+    ['toolbar'],
+    ['commit'],
+  ])
+
+  const lineHeightEvents = []
+  const { exported: lineHeightExported } = instantiateFunctions([
+    'applyLineHeight',
+  ], {
+    editor: { style: {} },
+    lineHeightSelect: null,
+    ensureSelectHasOption: () => lineHeightEvents.push(['ensure-option']),
+    localStorage: {
+      setItem: (key, value) => lineHeightEvents.push(['persist', key, value]),
+    },
+    syncLiteralToolbarDisplays: () => lineHeightEvents.push(['toolbar']),
+    renderStyledView: (value) => lineHeightEvents.push(['render', value]),
+    getPlainText: () => 'body',
+    commitDesignOsDormantTypographyDesignPatch: () => lineHeightEvents.push(['commit']),
+  })
+
+  lineHeightExported.applyLineHeight('1.4')
+  assert.deepEqual(toPlain(lineHeightEvents), [
+    ['persist', 'editorLineHeight', '1.4'],
+    ['toolbar'],
+    ['render', 'body'],
+    ['commit'],
+  ])
 })
 
-test.skip('typography design state: save-boundary hash logic and key compatibility surfaces remain unchanged', () => {
+test('typography design state: remount replays typography before theme and keeps single final sync', () => {
+  const source = readEditorSource()
+  const remountSnippet = extractFunctionSource(source, 'remountDesignOsDormantRuntimeForCurrentDocumentContext')
+  assert.ok(remountSnippet.includes("commitDesignOsDormantTypographyDesignPatch({ syncPreview: false })"))
+  assert.ok(remountSnippet.includes("commitDesignOsDormantThemeDesignPatch({ syncPreview: false })"))
+  assert.ok(remountSnippet.includes('syncDesignOsDormantContext();'))
+  assert.ok(remountSnippet.includes('refreshDesignOsDormantPreview();'))
+
+  const events = []
+  const { exported } = instantiateFunctions([
+    'buildDesignOsDormantTypographyDesignPatch',
+    'commitDesignOsDormantTypographyDesignPatch',
+    'buildDesignOsDormantThemeDesignPatch',
+    'commitDesignOsDormantThemeDesignPatch',
+    'remountDesignOsDormantRuntimeForCurrentDocumentContext',
+  ], {
+    editor: {
+      style: {
+        fontFamily: '"Literata", serif',
+        lineHeight: '1.625',
+      },
+    },
+    currentFontSizePx: 13.5,
+    document: {
+      body: {
+        classList: {
+          contains: () => false,
+        },
+      },
+    },
+    window: {
+      getComputedStyle: (node) => node && node.style
+        ? {
+            fontFamily: '"Literata", serif',
+            fontSize: '13.5px',
+            lineHeight: '1.625',
+          }
+        : {
+            getPropertyValue: (propertyName) => ({
+              '--background': '#e7e0d5',
+              '--foreground': '#171317',
+              '--card': '#fffdf8',
+              '--sidebar': '#e0d7c8',
+              '--canvas-bg': '#d8cfc1',
+            }[propertyName] || ''),
+          },
+    },
+    buildDesignOsDormantProductTruth: () => ({ project_id: 'writer', scenes: {}, active_scene_id: 'scene-a' }),
+    createRepoGroundedDesignOsBrowserRuntime: ({ productTruth }) => {
+      events.push(['bootstrap', toPlain(productTruth)])
+      return { runtime: { id: 'runtime' }, compatibility: { ok: true } }
+    },
+    createDesignOsPorts: ({ runtime, defaultContext }) => {
+      events.push(['ports', runtime.id, toPlain(defaultContext)])
+      return {
+        commitDesign: (payload) => {
+          events.push(['commit', toPlain(payload)])
+          return { committed: true }
+        },
+        previewDesign: () => {
+          events.push(['preview'])
+          return { previewed: true }
+        },
+      }
+    },
+    buildDesignOsDormantContext: () => ({ profile: 'BASELINE', workspace: 'WRITE' }),
+    rememberDesignOsDormantLayoutState: (layoutState) => events.push(['layout-memory', toPlain(layoutState)]),
+    getSpatialLayoutBaselineForViewport: () => ({ source: 'baseline-layout' }),
+    spatialLayoutState: null,
+    syncDesignOsDormantContext: () => events.push(['sync']),
+    buildProductTruthHash: () => 'hash-1',
+    designOsDormantRuntimeMount: null,
+  })
+
+  exported.remountDesignOsDormantRuntimeForCurrentDocumentContext()
+  assert.deepEqual(toPlain(events), [
+    ['bootstrap', { project_id: 'writer', scenes: {}, active_scene_id: 'scene-a' }],
+    ['ports', 'runtime', { profile: 'BASELINE', workspace: 'WRITE' }],
+    ['layout-memory', { source: 'baseline-layout' }],
+    ['commit', {
+      context: { profile: 'BASELINE', workspace: 'WRITE' },
+      design_patch: {
+        typography: {
+          font: {
+            body: {
+              family: '"Literata", serif',
+              sizePx: 13.5,
+              lineHeight: 1.625,
+            },
+          },
+        },
+      },
+      commit_point: 'apply',
+    }],
+    ['commit', {
+      context: { profile: 'BASELINE', workspace: 'WRITE' },
+      design_patch: {
+        color: {
+          background: { canvas: '#e7e0d5' },
+          surface: {
+            panel: '#fffdf8',
+            elevated: '#e0d7c8',
+          },
+          text: { primary: '#171317' },
+        },
+        surface: {
+          shell: { background: '#d8cfc1' },
+          editor: { background: '#fffdf8' },
+        },
+      },
+      commit_point: 'mode_switch',
+    }],
+    ['sync'],
+  ])
+})
+
+test('typography design state: save-boundary and later slices remain unchanged', () => {
   const source = readEditorSource()
 
-  const saveBoundaryStart = source.indexOf('function syncDesignOsDormantRuntimeTruthAtSaveBoundary(previousDirtyState, nextDirtyState) {')
-  const saveBoundaryEnd = source.indexOf('function mountDesignOsDormantRuntime() {', saveBoundaryStart)
-  assert.ok(saveBoundaryStart > -1 && saveBoundaryEnd > saveBoundaryStart, 'save boundary helper bounds must exist')
-  const saveBoundarySnippet = source.slice(saveBoundaryStart, saveBoundaryEnd)
-  assert.ok(saveBoundarySnippet.includes('if (!previousDirtyState || nextDirtyState) return;'))
-  assert.ok(saveBoundarySnippet.includes('if (productTruthHash === designOsDormantLastSyncedProductTruthHash) return;'))
+  const saveBoundarySnippet = extractFunctionSource(source, 'syncDesignOsDormantProductTruthAtSaveBoundary')
+  assert.ok(saveBoundarySnippet.includes('if (nextTruthHash === lastSyncedDormantProductTruthHash) {'))
+  assert.ok(saveBoundarySnippet.includes('mountDesignOsDormantRuntime({ productTruth: nextProductTruth });'))
+  assert.equal(saveBoundarySnippet.includes('commitDesignOsDormantTypographyDesignPatch'), false)
 
-  const applyFontWeightStart = source.indexOf('function applyFontWeight(weight, persist = true) {')
-  const applyFontWeightEnd = source.indexOf('function applyLineHeight(value, persist = true) {', applyFontWeightStart)
-  const applyFontWeightSnippet = source.slice(applyFontWeightStart, applyFontWeightEnd)
+  const applyFontWeightSnippet = extractFunctionSource(source, 'applyFontWeight')
   assert.equal(applyFontWeightSnippet.includes('commitDesignOsDormantTypographyDesignPatch'), false)
 
-  const applyWordWrapStart = source.indexOf('function applyWordWrap(enabled, persist = true) {')
-  const applyWordWrapEnd = source.indexOf('function applyViewMode(mode, persist = true) {', applyWordWrapStart)
-  const applyWordWrapSnippet = source.slice(applyWordWrapStart, applyWordWrapEnd)
+  const applyWordWrapSnippet = extractFunctionSource(source, 'applyWordWrap')
   assert.equal(applyWordWrapSnippet.includes('commitDesignOsDormantTypographyDesignPatch'), false)
 
-  const applyThemeStart = source.indexOf('function applyTheme(theme) {')
-  const applyThemeEnd = source.indexOf('function loadSavedTheme() {', applyThemeStart)
-  const applyThemeSnippet = source.slice(applyThemeStart, applyThemeEnd)
+  const applyThemeSnippet = extractFunctionSource(source, 'applyTheme')
   assert.equal(applyThemeSnippet.includes('commitDesignOsDormantTypographyDesignPatch'), false)
+
+  const safeResetSnippet = extractFunctionSource(source, 'performSafeResetShell')
+  assert.equal(safeResetSnippet.includes('commitDesignOsDormantTypographyDesignPatch'), false)
+
+  const restoreSnippet = extractFunctionSource(source, 'performRestoreLastStableShell')
+  assert.equal(restoreSnippet.includes('commitDesignOsDormantTypographyDesignPatch'), false)
 
   assert.ok(source.includes('profile: resolveDormantDesignOsProfileFromStyleValue(styleValue),'))
   assert.ok(source.includes('workspace: mapEditorModeToWorkspace(currentMode),'))
   assert.ok(source.includes('shell_mode: resolveDormantDesignOsShellModeFromLayoutMode(layoutMode),'))
-  assert.ok(source.includes('const nextVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
-  assert.ok(source.includes('const cssVariables = extractCssVariablesFromTokens(resolvedTokens, {'))
-
-  const safeResetStart = source.indexOf('function performSafeResetShell() {')
-  const restoreStart = source.indexOf('function performRestoreLastStableShell() {')
-  assert.ok(safeResetStart > -1 && restoreStart > safeResetStart, 'safe reset and restore function bounds must exist')
-  const safeResetSnippet = source.slice(safeResetStart, restoreStart)
-  assert.ok(safeResetSnippet.includes('designOsDormantRuntimeMount.ports.safeResetShell'))
-
-  const restoreEnd = source.indexOf('function openDiagnosticsModal() {', restoreStart)
-  assert.ok(restoreEnd > restoreStart, 'restore function end bound must exist')
-  const restoreSnippet = source.slice(restoreStart, restoreEnd)
-  assert.ok(restoreSnippet.includes('designOsDormantRuntimeMount.ports.restoreLastStableShell'))
+  assert.ok(source.includes('designOsDormantVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);'))
+  assert.ok(source.includes('designOsDormantResolvedTokens ='))
 })
