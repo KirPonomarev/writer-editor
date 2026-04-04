@@ -408,6 +408,84 @@ function syncDesignOsDormantContext() {
   return preview;
 }
 
+function buildDesignOsDormantThemeDesignPatch() {
+  const readComputedStyleSafe =
+    typeof window !== 'undefined' && typeof window.getComputedStyle === 'function'
+      ? window.getComputedStyle.bind(window)
+      : typeof getComputedStyle === 'function'
+        ? getComputedStyle
+        : null;
+  if (!readComputedStyleSafe || typeof document === 'undefined' || !document.body) {
+    return null;
+  }
+
+  const bodyStyle = readComputedStyleSafe(document.body);
+  const isDarkTheme = document.body.classList.contains('dark-theme');
+  const readVar = (propertyName, fallbackValue) => {
+    const value = typeof bodyStyle?.getPropertyValue === 'function'
+      ? bodyStyle.getPropertyValue(propertyName).trim()
+      : '';
+    return value || fallbackValue;
+  };
+
+  const backgroundCanvas = readVar('--background', isDarkTheme ? '#101119' : '#e7e0d5');
+  const foregroundPrimary = readVar('--foreground', isDarkTheme ? '#fdfdfd' : '#171317');
+  const surfacePanel = readVar('--card', isDarkTheme ? '#181a24' : '#fffdf8');
+  const surfaceElevated = readVar('--sidebar', isDarkTheme ? '#171925' : '#e0d7c8');
+  const shellBackground = readVar('--canvas-bg', backgroundCanvas);
+  const editorBackground = surfacePanel;
+
+  return {
+    color: {
+      background: { canvas: backgroundCanvas },
+      surface: {
+        panel: surfacePanel,
+        elevated: surfaceElevated,
+      },
+      text: { primary: foregroundPrimary },
+    },
+    surface: {
+      shell: { background: shellBackground },
+      editor: { background: editorBackground },
+    },
+  };
+}
+
+function commitDesignOsDormantThemeDesignPatch({ syncPreview = true } = {}) {
+  const mount = designOsDormantRuntimeMount;
+  const ports = mount?.ports;
+  if (!ports || typeof ports.commitDesign !== 'function') return null;
+  const commitDesignPort = ports.commitDesign;
+
+  const designPatch = buildDesignOsDormantThemeDesignPatch();
+  if (!designPatch) return null;
+
+  try {
+    const context = buildDesignOsDormantContext();
+    const preview = commitDesignPort({
+      context,
+      design_patch: designPatch,
+      commit_point: 'mode_switch',
+    });
+    designOsDormantRuntimeMount = {
+      ...mount,
+      lastContext: context,
+      lastPreview: preview,
+    };
+
+    if (syncPreview) {
+      if (typeof syncDesignOsDormantContext === 'function') {
+        syncDesignOsDormantContext();
+      } else {
+        refreshDesignOsDormantPreview();
+      }
+    }
+    return preview;
+  } catch {
+    return null;
+  }
+}
+
 function remountDesignOsDormantRuntimeForCurrentDocumentContext(productTruthOverride) {
   const nextProductTruth =
     productTruthOverride && typeof productTruthOverride === 'object' && !Array.isArray(productTruthOverride)
@@ -438,7 +516,15 @@ function remountDesignOsDormantRuntimeForCurrentDocumentContext(productTruthOver
 
     const layoutStateForReplay = spatialLayoutState || getSpatialLayoutBaselineForViewport();
     rememberDesignOsDormantLayoutState(layoutStateForReplay);
-    refreshDesignOsDormantPreview();
+    const themeReplayPreview =
+      typeof commitDesignOsDormantThemeDesignPatch === 'function'
+        ? commitDesignOsDormantThemeDesignPatch({ syncPreview: false })
+        : null;
+    if (themeReplayPreview && typeof syncDesignOsDormantContext === 'function') {
+      syncDesignOsDormantContext();
+    } else {
+      refreshDesignOsDormantPreview();
+    }
     if (typeof buildProductTruthHash === 'function') {
       lastSyncedDormantProductTruthHash = buildProductTruthHash(nextProductTruth);
     }
@@ -5349,6 +5435,9 @@ function applyTheme(theme) {
   localStorage.setItem('editorTheme', theme);
   updateThemeSwatches(theme);
   updateInspectorSnapshot();
+  if (typeof commitDesignOsDormantThemeDesignPatch === 'function') {
+    commitDesignOsDormantThemeDesignPatch();
+  }
 }
 
 function loadSavedTheme() {
