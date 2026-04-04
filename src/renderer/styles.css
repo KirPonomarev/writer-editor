@@ -1330,18 +1330,22 @@ body {
 }
 
 .literal-stage-a .app-layout {
-  grid-template-columns: 1fr;
-  gap: 0;
-  padding: 0 0 30px;
+  grid-template-columns: minmax(250px, var(--app-left-sidebar-width)) minmax(640px, 1fr);
+  gap: 12px;
+  padding: 12px 14px 76px;
 }
 
-.literal-stage-a .sidebar,
+.literal-stage-a .sidebar--left {
+  display: flex;
+}
+
+.literal-stage-a .sidebar--right,
 .literal-stage-a .x101-mode-switcher {
   display: none;
 }
 
 .literal-stage-a .main-content {
-  grid-column: 1 / -1;
+  grid-column: auto;
   border: none;
   border-radius: 0;
   background: #c9c2ba;
