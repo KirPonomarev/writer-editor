@@ -220,6 +220,9 @@ let spatialLayoutState = null;
 let designOsDormantRuntimeMount = null;
 let lastSyncedDormantProductTruthHash = '';
 let lastObservedDormantDirtyState = false;
+let designOsDormantDegradedToBaseline = false;
+let designOsDormantVisibleCommandIds = [];
+let designOsDormantResolvedTokens = null;
 let flowModeState = {
   active: false,
   scenes: [],
@@ -260,7 +263,11 @@ function resolveDormantDesignOsProfileFromStyleValue(styleValue) {
 }
 
 function resolveDormantDesignOsShellModeFromLayoutMode(layoutMode) {
-  return String(layoutMode || '').trim().toLowerCase() === 'compact' ? 'COMPACT_DOCKED' : 'CALM_DOCKED';
+  const normalized = String(layoutMode || '').trim().toLowerCase();
+  if (normalized === 'compact' || normalized === 'mobile') {
+    return 'COMPACT_DOCKED';
+  }
+  return 'CALM_DOCKED';
 }
 
 function getCurrentDesignOsStyleValue() {
@@ -357,6 +364,20 @@ function rememberDesignOsDormantLayoutState(committedSpatialState) {
   return designOsDormantRuntimeMount.lastKnownSpatialLayoutState;
 }
 
+function normalizeDormantVisibleCommandIds(visibleCommands) {
+  if (!Array.isArray(visibleCommands)) return [];
+
+  const normalized = [];
+  const seen = new Set();
+  for (const commandId of visibleCommands) {
+    const nextId = typeof commandId === 'string' ? commandId.trim() : '';
+    if (!nextId || seen.has(nextId)) continue;
+    seen.add(nextId);
+    normalized.push(nextId);
+  }
+  return normalized;
+}
+
 function refreshDesignOsDormantPreview() {
   const mount = designOsDormantRuntimeMount;
   const ports = mount?.ports;
@@ -374,6 +395,17 @@ function refreshDesignOsDormantPreview() {
   } catch {
     return null;
   }
+}
+
+function syncDesignOsDormantContext() {
+  const preview = refreshDesignOsDormantPreview();
+  designOsDormantDegradedToBaseline = preview?.degraded_to_baseline === true;
+  designOsDormantVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);
+  designOsDormantResolvedTokens =
+    preview && typeof preview.resolved_tokens === 'object' && !Array.isArray(preview.resolved_tokens)
+      ? preview.resolved_tokens
+      : null;
+  return preview;
 }
 
 function remountDesignOsDormantRuntimeForCurrentDocumentContext(productTruthOverride) {
@@ -5958,6 +5990,7 @@ document.addEventListener('selectionchange', syncAlignmentButtonsToSelection);
 
 window.addEventListener('resize', () => {
   updateSpatialLayoutForViewportChange();
+  syncDesignOsDormantContext();
   scheduleLayoutRefresh();
 });
 
