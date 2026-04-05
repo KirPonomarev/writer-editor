@@ -86,3 +86,29 @@ test('toolbar boundary ownership: spatial resize path refreshes snapped toolbar 
   assert.ok(moveSnippet.includes('refreshSnappedFloatingToolbarPlacement(false);'))
   assert.ok(stopSnippet.includes('refreshSnappedFloatingToolbarPlacement(true);'))
 })
+
+test('toolbar boundary ownership: snapped refresh recenters toolbar on boundary changes', () => {
+  const { exported, sandbox } = instantiateFunctions([
+    'refreshSnappedFloatingToolbarPlacement',
+  ], {
+    toolbarShell: {
+      getBoundingClientRect: () => ({ width: 360, height: 24 }),
+    },
+    floatingToolbarState: {
+      x: 777,
+      y: 10,
+      isDetached: false,
+    },
+    getSnappedFloatingToolbarPosition: () => ({ x: 460, y: 50 }),
+    applyFloatingToolbarState: (nextState, persist) => {
+      sandbox.nextState = nextState
+      sandbox.persist = persist
+    },
+  })
+
+  exported.refreshSnappedFloatingToolbarPlacement(true)
+  assert.equal(sandbox.nextState.x, 460)
+  assert.equal(sandbox.nextState.y, 50)
+  assert.equal(sandbox.nextState.isDetached, false)
+  assert.equal(sandbox.persist, true)
+})

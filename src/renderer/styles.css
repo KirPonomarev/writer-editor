@@ -1731,6 +1731,12 @@ body {
   flex: 1 1 0;
 }
 
+[data-right-tabs] .x101-tab-button,
+[data-right-tabs] .x101-tab-button.toolbar__button--wide {
+  min-width: auto;
+  flex: 0 0 auto;
+}
+
 .toolbar__main {
   display: flex;
   align-items: center;
