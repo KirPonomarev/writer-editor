@@ -34,8 +34,12 @@ test('right inspector visibility: literal stage does not hide right sidebar and 
 
 test('right inspector visibility: runtime keeps right tab and panel wiring', () => {
   const source = readEditorSource()
+  const css = readStylesSource()
   assert.ok(source.includes('const rightSidebar = document.querySelector(\'[data-right-sidebar]\');'))
   assert.ok(source.includes('const rightTabsHost = document.querySelector(\'[data-right-tabs]\');'))
   assert.ok(source.includes('const rightInspectorPanel = document.querySelector(\'[data-right-panel-inspector]\');'))
   assert.ok(source.includes('if (rightInspectorPanel) rightInspectorPanel.hidden = tab !== \'inspector\';'))
+  assert.ok(css.includes('[data-right-tabs] .x101-tab-button,'))
+  assert.ok(css.includes('[data-right-tabs] .x101-tab-button.toolbar__button--wide {'))
+  assert.ok(css.includes('flex: 0 0 auto;'))
 })

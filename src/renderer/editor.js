@@ -1137,7 +1137,7 @@ function refreshSnappedFloatingToolbarPlacement(persist = false) {
   const snapped = getSnappedFloatingToolbarPosition(shellRect);
   applyFloatingToolbarState({
     ...floatingToolbarState,
-    x: getSnappedFloatingToolbarX(floatingToolbarState.x, shellRect),
+    x: snapped.x,
     y: snapped.y,
     isDetached: false,
   }, persist);
