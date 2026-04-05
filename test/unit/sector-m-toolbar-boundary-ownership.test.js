@@ -131,10 +131,27 @@ test('toolbar boundary ownership: snapped mode normalizes docked width scale for
   assert.ok(refreshSnippet.includes('const sideAnchoredX = getClampedFloatingToolbarXWithinBounds(floatingToolbarState.x, shellRect);'))
   assert.ok(refreshSnippet.includes('widthScale: 1,'))
   assert.ok(refreshSnippet.includes('dockedWidthScale: 1,'))
-  assert.ok(clampSnippet.includes('if ((right - left) <= shellWidth) {'))
+  assert.ok(clampSnippet.includes('if (nextX < minX && (minX - nextX) <= FLOATING_TOOLBAR_COLLISION_HOLD_PX) {'))
+  assert.ok(clampSnippet.includes('if (nextX > maxX && (nextX - maxX) <= FLOATING_TOOLBAR_COLLISION_HOLD_PX) {'))
   assert.ok(clampSnippet.includes('return Math.min(Math.max(nextX, minX), maxX);'))
   assert.ok(dragSnippet.includes('widthScale: 1,'))
   assert.ok(dragSnippet.includes('dockedWidthScale: 1,'))
+})
+
+test('toolbar boundary ownership: side clamp keeps position at collision threshold but clamps on larger overlap', () => {
+  const { exported } = instantiateFunctions([
+    'getClampedFloatingToolbarXWithinBounds',
+  ], {
+    getFloatingToolbarSnapBounds: () => ({ left: 300, right: 980 }),
+    clampFloatingToolbarPosition: (position) => position,
+    floatingToolbarState: { y: 0 },
+    FLOATING_TOOLBAR_COLLISION_HOLD_PX: 8,
+  })
+
+  assert.equal(exported.getClampedFloatingToolbarXWithinBounds(295, { width: 360 }), 295)
+  assert.equal(exported.getClampedFloatingToolbarXWithinBounds(610, { width: 360 }), 610)
+  assert.equal(exported.getClampedFloatingToolbarXWithinBounds(290, { width: 360 }), 300)
+  assert.equal(exported.getClampedFloatingToolbarXWithinBounds(630, { width: 360 }), 620)
 })
 
 test('toolbar boundary ownership: snapped refresh recenters toolbar on boundary changes', () => {
@@ -144,6 +161,7 @@ test('toolbar boundary ownership: snapped refresh recenters toolbar on boundary 
   ], {
     getFloatingToolbarSnapBounds: () => ({ left: 300, right: 980 }),
     clampFloatingToolbarPosition: (position) => position,
+    FLOATING_TOOLBAR_COLLISION_HOLD_PX: 8,
     toolbarShell: {
       getBoundingClientRect: () => ({ width: 360, height: 24 }),
     },

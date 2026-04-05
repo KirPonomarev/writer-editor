@@ -189,6 +189,7 @@ const FLOATING_TOOLBAR_DRAG_THRESHOLD_PX = 6;
 const FLOATING_TOOLBAR_ROTATE_THRESHOLD_PX = 30;
 const FLOATING_TOOLBAR_SNAP_ZONE_PX = 30;
 const FLOATING_TOOLBAR_CENTER_ANCHOR_PX = 30;
+const FLOATING_TOOLBAR_COLLISION_HOLD_PX = 8;
 const FLOATING_TOOLBAR_ITEM_SNAP_THRESHOLD_PX = 10;
 const FLOATING_TOOLBAR_VISIBLE_STRIP_PX = 56;
 const FLOATING_TOOLBAR_SCALE_MIN = 0.5;
@@ -1138,12 +1139,14 @@ function getClampedFloatingToolbarXWithinBounds(nextX, shellRect = toolbarShell?
     return clampFloatingToolbarPosition({ x: nextX, y: floatingToolbarState.y }, shellRect).x;
   }
   const shellWidth = shellRect?.width || 0;
-  if ((right - left) <= shellWidth) {
-    const centeredX = left + ((right - left - shellWidth) / 2);
-    return clampFloatingToolbarPosition({ x: centeredX, y: floatingToolbarState.y }, shellRect).x;
-  }
   const minX = left;
   const maxX = Math.max(left, right - shellWidth);
+  if (nextX < minX && (minX - nextX) <= FLOATING_TOOLBAR_COLLISION_HOLD_PX) {
+    return nextX;
+  }
+  if (nextX > maxX && (nextX - maxX) <= FLOATING_TOOLBAR_COLLISION_HOLD_PX) {
+    return nextX;
+  }
   return Math.min(Math.max(nextX, minX), maxX);
 }
 
