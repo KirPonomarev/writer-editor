@@ -1077,18 +1077,28 @@ function scheduleToolbarAnchorUpdate() {
   });
 }
 
+function getStableToolbarCenterInsets(viewportWidth = getSpatialLayoutViewportWidth()) {
+  const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
+  const baseline = getSpatialLayoutBaselineForViewport(viewportWidth);
+  const stableLeftInset = Number.isFinite(baseline?.leftSidebarWidth)
+    ? baseline.leftSidebarWidth
+    : 0;
+  const stableRightInset = constraints.rightVisible && Number.isFinite(baseline?.rightSidebarWidth)
+    ? baseline.rightSidebarWidth
+    : 0;
+  return {
+    stableLeftInset,
+    stableRightInset,
+  };
+}
+
 function getFloatingToolbarSnapBounds(shellRect = toolbarShell?.getBoundingClientRect()) {
   const topBarRect = topWorkBar?.getBoundingClientRect();
-  const mainContentRect = mainContent?.getBoundingClientRect();
   const fallbackLeft = topBarRect ? topBarRect.left : 0;
   const fallbackRight = topBarRect ? topBarRect.right : window.innerWidth;
-  let left = fallbackLeft;
-  let right = fallbackRight;
-
-  if (mainContentRect) {
-    left = Math.max(left, mainContentRect.left);
-    right = Math.min(right, mainContentRect.right);
-  }
+  const { stableLeftInset, stableRightInset } = getStableToolbarCenterInsets(getSpatialLayoutViewportWidth());
+  let left = fallbackLeft + stableLeftInset;
+  let right = fallbackRight - stableRightInset;
 
   if (!Number.isFinite(left) || !Number.isFinite(right) || right <= left) {
     left = fallbackLeft;

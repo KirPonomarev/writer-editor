@@ -42,12 +42,16 @@ function instantiateFunctions(functionNames, context = {}) {
   return { exported: sandbox.module.exports, sandbox }
 }
 
-test('toolbar boundary ownership: snap bounds are derived from main content rect instead of top bar only', () => {
+test('toolbar boundary ownership: snap bounds are derived from stable center insets instead of live main content rect', () => {
   const source = readEditorSource()
+  assert.ok(source.includes('function getStableToolbarCenterInsets(viewportWidth = getSpatialLayoutViewportWidth()) {'))
+  assert.ok(source.includes('const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);'))
+  assert.ok(source.includes('const baseline = getSpatialLayoutBaselineForViewport(viewportWidth);'))
   assert.ok(source.includes('function getFloatingToolbarSnapBounds(shellRect = toolbarShell?.getBoundingClientRect()) {'))
-  assert.ok(source.includes('const mainContentRect = mainContent?.getBoundingClientRect();'))
-  assert.ok(source.includes('left = Math.max(left, mainContentRect.left);'))
-  assert.ok(source.includes('right = Math.min(right, mainContentRect.right);'))
+  assert.ok(source.includes('const { stableLeftInset, stableRightInset } = getStableToolbarCenterInsets(getSpatialLayoutViewportWidth());'))
+  assert.ok(source.includes('let left = fallbackLeft + stableLeftInset;'))
+  assert.ok(source.includes('let right = fallbackRight - stableRightInset;'))
+  assert.ok(!source.includes('const mainContentRect = mainContent?.getBoundingClientRect();'))
   assert.ok(source.includes('const baseX = left + ((right - left - shellWidth) / 2);'))
   assert.ok(source.includes('if ((right - left) <= shellWidth) {'))
   assert.ok(source.includes('const { topBarRect, left, right } = getFloatingToolbarSnapBounds(shellRect);'))
@@ -55,6 +59,7 @@ test('toolbar boundary ownership: snap bounds are derived from main content rect
 
 test('toolbar boundary ownership: snapped X position is clamped to content bounds and centered inside content', () => {
   const { exported } = instantiateFunctions([
+    'getStableToolbarCenterInsets',
     'getFloatingToolbarSnapBounds',
     'getSnappedFloatingToolbarPosition',
     'getSnappedFloatingToolbarX',
@@ -65,9 +70,38 @@ test('toolbar boundary ownership: snapped X position is clamped to content bound
     topWorkBar: {
       getBoundingClientRect: () => ({ left: 0, right: 1280, top: 40, height: 44 }),
     },
-    mainContent: {
-      getBoundingClientRect: () => ({ left: 300, right: 980, top: 120, height: 600 }),
+    getSpatialLayoutViewportWidth: () => 1280,
+    getSpatialLayoutBaselineForViewport: () => ({ leftSidebarWidth: 290, rightSidebarWidth: 340 }),
+    getSpatialLayoutConstraintsForViewport: () => ({ rightVisible: true }),
+    clampFloatingToolbarPosition: (position) => position,
+    floatingToolbarState: { y: 0 },
+    FLOATING_TOOLBAR_CENTER_ANCHOR_PX: 12,
+    window: { innerWidth: 1280 },
+  })
+
+  const snapped = exported.getSnappedFloatingToolbarPosition({ width: 360, height: 24 })
+  assert.equal(snapped.x, 435)
+  assert.equal(snapped.y, 50)
+  assert.equal(exported.getSnappedFloatingToolbarX(120, { width: 360 }), 290)
+  assert.equal(exported.getSnappedFloatingToolbarX(900, { width: 360 }), 580)
+})
+
+test('toolbar boundary ownership: snapped position stays centered when content span is narrower than toolbar width', () => {
+  const { exported } = instantiateFunctions([
+    'getStableToolbarCenterInsets',
+    'getFloatingToolbarSnapBounds',
+    'getSnappedFloatingToolbarPosition',
+    'getSnappedFloatingToolbarX',
+  ], {
+    toolbarShell: {
+      getBoundingClientRect: () => ({ width: 360, height: 24 }),
     },
+    topWorkBar: {
+      getBoundingClientRect: () => ({ left: 0, right: 1280, top: 40, height: 44 }),
+    },
+    getSpatialLayoutViewportWidth: () => 1280,
+    getSpatialLayoutBaselineForViewport: () => ({ leftSidebarWidth: 500, rightSidebarWidth: 500 }),
+    getSpatialLayoutConstraintsForViewport: () => ({ rightVisible: true }),
     clampFloatingToolbarPosition: (position) => position,
     floatingToolbarState: { y: 0 },
     FLOATING_TOOLBAR_CENTER_ANCHOR_PX: 12,
@@ -76,35 +110,7 @@ test('toolbar boundary ownership: snapped X position is clamped to content bound
 
   const snapped = exported.getSnappedFloatingToolbarPosition({ width: 360, height: 24 })
   assert.equal(snapped.x, 460)
-  assert.equal(snapped.y, 50)
-  assert.equal(exported.getSnappedFloatingToolbarX(120, { width: 360 }), 300)
-  assert.equal(exported.getSnappedFloatingToolbarX(900, { width: 360 }), 620)
-})
-
-test('toolbar boundary ownership: snapped position stays centered when content span is narrower than toolbar width', () => {
-  const { exported } = instantiateFunctions([
-    'getFloatingToolbarSnapBounds',
-    'getSnappedFloatingToolbarPosition',
-    'getSnappedFloatingToolbarX',
-  ], {
-    toolbarShell: {
-      getBoundingClientRect: () => ({ width: 360, height: 24 }),
-    },
-    topWorkBar: {
-      getBoundingClientRect: () => ({ left: 0, right: 1280, top: 40, height: 44 }),
-    },
-    mainContent: {
-      getBoundingClientRect: () => ({ left: 300, right: 620, top: 120, height: 600 }),
-    },
-    clampFloatingToolbarPosition: (position) => position,
-    floatingToolbarState: { y: 0 },
-    FLOATING_TOOLBAR_CENTER_ANCHOR_PX: 12,
-    window: { innerWidth: 1280 },
-  })
-
-  const snapped = exported.getSnappedFloatingToolbarPosition({ width: 360, height: 24 })
-  assert.equal(snapped.x, 280)
-  assert.equal(exported.getSnappedFloatingToolbarX(420, { width: 360 }), 280)
+  assert.equal(exported.getSnappedFloatingToolbarX(420, { width: 360 }), 460)
 })
 
 test('toolbar boundary ownership: spatial resize path refreshes snapped toolbar placement', () => {
