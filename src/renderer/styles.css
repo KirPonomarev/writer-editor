@@ -669,6 +669,7 @@ body {
 .floating-toolbar__group {
   display: inline-flex;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 8px;
   flex: 0 0 auto;
   position: relative;
@@ -678,10 +679,17 @@ body {
 .floating-toolbar__controls {
   display: inline-flex;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 20px;
   flex: 0 0 auto;
   position: relative;
   z-index: 1;
+}
+
+.floating-toolbar__select-wrap,
+.floating-toolbar__button,
+.floating-toolbar__separator {
+  flex: 0 0 auto;
 }
 
 .floating-toolbar__group--type,
