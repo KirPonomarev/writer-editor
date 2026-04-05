@@ -111,26 +111,34 @@ test('toolbar boundary ownership: spatial resize path refreshes snapped toolbar 
   const source = readEditorSource()
   const moveSnippet = extractFunctionSource(source, 'handleSpatialResizeMove')
   const stopSnippet = extractFunctionSource(source, 'stopSpatialResize')
-  assert.ok(moveSnippet.includes('refreshSnappedFloatingToolbarPlacement(false);'))
-  assert.ok(stopSnippet.includes('refreshSnappedFloatingToolbarPlacement(true);'))
+  assert.ok(moveSnippet.includes('refreshSnappedFloatingToolbarPlacement(false, { preserveSideAnchor: true });'))
+  assert.ok(stopSnippet.includes('refreshSnappedFloatingToolbarPlacement(true, { preserveSideAnchor: true });'))
 })
 
 test('toolbar boundary ownership: snapped mode normalizes docked width scale for stable group anchoring', () => {
   const source = readEditorSource()
   const refreshSnippet = extractFunctionSource(source, 'refreshSnappedFloatingToolbarPlacement')
+  const clampSnippet = extractFunctionSource(source, 'getClampedFloatingToolbarXWithinBounds')
   const dragSnippet = extractFunctionSource(source, 'initializeFloatingToolbarDragFoundation')
+  assert.ok(refreshSnippet.includes('const preserveSideAnchor = Boolean(options?.preserveSideAnchor);'))
   assert.ok(refreshSnippet.includes('const stableDockedWidthScale = 1;'))
   assert.ok(refreshSnippet.includes('const shouldNormalizeDockedWidth = ('))
+  assert.ok(refreshSnippet.includes('const sideAnchoredX = getClampedFloatingToolbarXWithinBounds(floatingToolbarState.x, shellRect);'))
   assert.ok(refreshSnippet.includes('widthScale: stableDockedWidthScale,'))
   assert.ok(refreshSnippet.includes('dockedWidthScale: stableDockedWidthScale,'))
+  assert.ok(clampSnippet.includes('if ((right - left) <= shellWidth) {'))
+  assert.ok(clampSnippet.includes('return Math.min(Math.max(nextX, minX), maxX);'))
   assert.ok(dragSnippet.includes('widthScale: 1,'))
   assert.ok(dragSnippet.includes('dockedWidthScale: 1,'))
 })
 
 test('toolbar boundary ownership: snapped refresh recenters toolbar on boundary changes', () => {
   const { exported, sandbox } = instantiateFunctions([
+    'getClampedFloatingToolbarXWithinBounds',
     'refreshSnappedFloatingToolbarPlacement',
   ], {
+    getFloatingToolbarSnapBounds: () => ({ left: 300, right: 980 }),
+    clampFloatingToolbarPosition: (position) => position,
     toolbarShell: {
       getBoundingClientRect: () => ({ width: 360, height: 24 }),
     },
@@ -138,6 +146,8 @@ test('toolbar boundary ownership: snapped refresh recenters toolbar on boundary 
       x: 777,
       y: 10,
       isDetached: false,
+      widthScale: 1,
+      dockedWidthScale: 1,
     },
     getSnappedFloatingToolbarPosition: () => ({ x: 460, y: 50 }),
     applyFloatingToolbarState: (nextState, persist) => {
