@@ -1147,38 +1147,38 @@ function getClampedFloatingToolbarXWithinBounds(nextX, shellRect = toolbarShell?
   return Math.min(Math.max(nextX, minX), maxX);
 }
 
+function normalizeSnappedToolbarDockedWidthScale(persist = false) {
+  if (!toolbarShell || floatingToolbarState.isDetached) return;
+  const stableDockedWidthScale = 1;
+  const shouldNormalizeDockedWidth =
+    Math.abs((floatingToolbarState.dockedWidthScale || stableDockedWidthScale) - stableDockedWidthScale) > 0.001 ||
+    Math.abs((floatingToolbarState.widthScale || stableDockedWidthScale) - stableDockedWidthScale) > 0.001;
+  if (!shouldNormalizeDockedWidth) return;
+  applyFloatingToolbarState({
+    ...floatingToolbarState,
+    isDetached: false,
+    widthScale: stableDockedWidthScale,
+    dockedWidthScale: stableDockedWidthScale,
+  }, persist);
+}
+
 function refreshSnappedFloatingToolbarPlacement(persist = false, options = null) {
   if (!toolbarShell || floatingToolbarState.isDetached) return;
   const preserveSideAnchor = Boolean(options?.preserveSideAnchor);
-  const stableDockedWidthScale = 1;
-  const shouldNormalizeDockedWidth = (
-    Math.abs((floatingToolbarState.dockedWidthScale || stableDockedWidthScale) - stableDockedWidthScale) > 0.001 ||
-    Math.abs((floatingToolbarState.widthScale || stableDockedWidthScale) - stableDockedWidthScale) > 0.001
-  );
   const shellRect = toolbarShell.getBoundingClientRect();
   const snapped = getSnappedFloatingToolbarPosition(shellRect);
   const sideAnchoredX = getClampedFloatingToolbarXWithinBounds(floatingToolbarState.x, shellRect);
   const nextBaseState = {
     ...floatingToolbarState,
     isDetached: false,
-    widthScale: stableDockedWidthScale,
-    dockedWidthScale: stableDockedWidthScale,
+    widthScale: 1,
+    dockedWidthScale: 1,
   };
   applyFloatingToolbarState({
     ...nextBaseState,
     x: preserveSideAnchor ? sideAnchoredX : snapped.x,
     y: snapped.y,
-  }, shouldNormalizeDockedWidth ? false : persist);
-  if (shouldNormalizeDockedWidth) {
-    const normalizedShellRect = toolbarShell.getBoundingClientRect();
-    const normalizedSnapped = getSnappedFloatingToolbarPosition(normalizedShellRect);
-    const normalizedSideAnchoredX = getClampedFloatingToolbarXWithinBounds(sideAnchoredX, normalizedShellRect);
-    applyFloatingToolbarState({
-      ...nextBaseState,
-      x: preserveSideAnchor ? normalizedSideAnchoredX : normalizedSnapped.x,
-      y: normalizedSnapped.y,
-    }, persist);
-  }
+  }, persist);
 }
 
 function getDefaultFloatingToolbarState(shellRect = toolbarShell?.getBoundingClientRect()) {
@@ -4348,6 +4348,7 @@ if (treeContainer) {
 let spatialResizeDragState = null;
 
 function startSpatialResize(side, event) {
+  normalizeSnappedToolbarDockedWidthScale(false);
   const draftState = spatialLayoutState || getSpatialLayoutBaselineForViewport();
   spatialResizeDragState = {
     side,
