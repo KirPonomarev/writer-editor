@@ -126,6 +126,11 @@ const settingsModal = document.querySelector('[data-settings-modal]');
 const settingsThemeSelect = document.querySelector('[data-settings-theme]');
 const settingsWrapSelect = document.querySelector('[data-settings-wrap]');
 const settingsCloseButtons = Array.from(document.querySelectorAll('[data-settings-close]'));
+const commandPaletteModal = document.querySelector('[data-command-palette-modal]');
+const commandPaletteSearchInput = document.querySelector('[data-command-palette-search]');
+const commandPaletteSummary = document.querySelector('[data-command-palette-summary]');
+const commandPaletteList = document.querySelector('[data-command-palette-list]');
+const commandPaletteCloseButtons = Array.from(document.querySelectorAll('[data-command-palette-close]'));
 const recoveryModal = document.querySelector('[data-recovery-modal]');
 const recoveryMessage = document.querySelector('[data-recovery-message]');
 const recoveryCloseButtons = Array.from(document.querySelectorAll('[data-recovery-close]'));
@@ -4856,6 +4861,61 @@ function closeSimpleModal(modal) {
   modal.hidden = true;
 }
 
+function filterCommandPaletteEntries(entries, rawQuery) {
+  const query = typeof rawQuery === 'string' ? rawQuery.trim().toLowerCase() : '';
+  if (!query) return entries.slice();
+  return entries.filter((entry) => {
+    const label = typeof entry?.label === 'string' ? entry.label.toLowerCase() : '';
+    const id = typeof entry?.id === 'string' ? entry.id.toLowerCase() : '';
+    const hotkey = typeof entry?.hotkey === 'string' ? entry.hotkey.toLowerCase() : '';
+    return label.includes(query) || id.includes(query) || hotkey.includes(query);
+  });
+}
+
+function renderCommandPaletteList(rawQuery = '') {
+  if (!commandPaletteList || typeof document === 'undefined') return;
+  const sourceEntries =
+    commandPaletteDataProvider && typeof commandPaletteDataProvider.listAll === 'function'
+      ? commandPaletteDataProvider.listAll()
+      : [];
+  const entries = filterCommandPaletteEntries(Array.isArray(sourceEntries) ? sourceEntries : [], rawQuery);
+  const fragment = document.createDocumentFragment();
+  commandPaletteList.innerHTML = '';
+  entries.forEach((entry) => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return;
+    const commandId = typeof entry.id === 'string' ? entry.id : '';
+    if (!commandId) return;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'modal__button';
+    button.dataset.commandPaletteCommandId = commandId;
+    const label = typeof entry.label === 'string' && entry.label.length > 0 ? entry.label : commandId;
+    const hotkey = typeof entry.hotkey === 'string' && entry.hotkey.length > 0 ? ` (${entry.hotkey})` : '';
+    button.textContent = `${label}${hotkey}`;
+    fragment.append(button);
+  });
+  commandPaletteList.append(fragment);
+  if (commandPaletteSummary) {
+    commandPaletteSummary.textContent =
+      entries.length > 0 ? `Commands available: ${entries.length}` : 'No commands found';
+  }
+}
+
+function openCommandPaletteModal() {
+  if (commandPaletteSearchInput) {
+    commandPaletteSearchInput.value = '';
+  }
+  renderCommandPaletteList('');
+  openSimpleModal(commandPaletteModal);
+  commandPaletteSearchInput?.focus();
+}
+
+function runCommandPaletteAction(commandId) {
+  if (typeof commandId !== 'string' || commandId.trim().length === 0) return;
+  closeSimpleModal(commandPaletteModal);
+  return dispatchUiCommand(commandId.trim());
+}
+
 function openSettingsModal() {
   if (settingsThemeSelect) {
     settingsThemeSelect.value = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
@@ -5853,6 +5913,9 @@ function handleUiAction(action) {
     case 'open-settings':
       openSettingsModal();
       return true;
+    case 'open-command-palette':
+      openCommandPaletteModal();
+      return true;
     case 'open-diagnostics':
       openDiagnosticsModal();
       return true;
@@ -6114,6 +6177,21 @@ if (settingsWrapSelect) {
 
 settingsCloseButtons.forEach((button) => {
   button.addEventListener('click', () => closeSimpleModal(settingsModal));
+});
+if (commandPaletteSearchInput) {
+  commandPaletteSearchInput.addEventListener('input', () => {
+    renderCommandPaletteList(commandPaletteSearchInput.value);
+  });
+}
+if (commandPaletteList) {
+  commandPaletteList.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-command-palette-command-id]');
+    if (!button) return;
+    void runCommandPaletteAction(button.dataset.commandPaletteCommandId || '');
+  });
+}
+commandPaletteCloseButtons.forEach((button) => {
+  button.addEventListener('click', () => closeSimpleModal(commandPaletteModal));
 });
 recoveryCloseButtons.forEach((button) => {
   button.addEventListener('click', () => closeSimpleModal(recoveryModal));
