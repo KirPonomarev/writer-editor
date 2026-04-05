@@ -1076,12 +1076,39 @@ function scheduleToolbarAnchorUpdate() {
   });
 }
 
-function getSnappedFloatingToolbarPosition(shellRect = toolbarShell?.getBoundingClientRect()) {
+function getFloatingToolbarSnapBounds(shellRect = toolbarShell?.getBoundingClientRect()) {
   const topBarRect = topWorkBar?.getBoundingClientRect();
+  const mainContentRect = mainContent?.getBoundingClientRect();
+  const shellWidth = shellRect?.width || 0;
+  const fallbackLeft = topBarRect ? topBarRect.left : 0;
+  const fallbackRight = topBarRect ? topBarRect.right : window.innerWidth;
+  let left = fallbackLeft;
+  let right = fallbackRight;
+
+  if (mainContentRect) {
+    left = Math.max(left, mainContentRect.left);
+    right = Math.min(right, mainContentRect.right);
+  }
+
+  if (!Number.isFinite(left) || !Number.isFinite(right) || (right - left) < Math.max(shellWidth, 1)) {
+    left = fallbackLeft;
+    right = fallbackRight;
+  }
+
+  return {
+    topBarRect,
+    left,
+    right,
+  };
+}
+
+function getSnappedFloatingToolbarPosition(shellRect = toolbarShell?.getBoundingClientRect()) {
+  const { topBarRect, left, right } = getFloatingToolbarSnapBounds(shellRect);
   const shellWidth = shellRect?.width || 0;
   const shellHeight = shellRect?.height || 0;
+  const horizontalSpan = Math.max(right - left - shellWidth, 0);
   const baseY = topBarRect ? topBarRect.top + ((topBarRect.height - shellHeight) / 2) : 92;
-  const baseX = topBarRect ? topBarRect.left + ((topBarRect.width - shellWidth) / 2) : (window.innerWidth - shellWidth) / 2;
+  const baseX = left + (horizontalSpan / 2);
   return clampFloatingToolbarPosition({
     x: baseX,
     y: baseY,
@@ -1089,19 +1116,31 @@ function getSnappedFloatingToolbarPosition(shellRect = toolbarShell?.getBounding
 }
 
 function getSnappedFloatingToolbarX(nextX, shellRect = toolbarShell?.getBoundingClientRect()) {
-  const topBarRect = topWorkBar?.getBoundingClientRect();
-  if (!topBarRect) {
+  const { left, right } = getFloatingToolbarSnapBounds(shellRect);
+  if (!Number.isFinite(left) || !Number.isFinite(right)) {
     return clampFloatingToolbarPosition({ x: nextX, y: floatingToolbarState.y }, shellRect).x;
   }
   const shellWidth = shellRect?.width || 0;
-  const minX = topBarRect.left;
-  const maxX = topBarRect.right - shellWidth;
-  const centeredX = topBarRect.left + ((topBarRect.width - shellWidth) / 2);
+  const minX = left;
+  const maxX = Math.max(left, right - shellWidth);
+  const centeredX = left + (Math.max(right - left - shellWidth, 0) / 2);
   const clampedX = Math.min(Math.max(nextX, minX), maxX);
   if (Math.abs(clampedX - centeredX) <= FLOATING_TOOLBAR_CENTER_ANCHOR_PX) {
     return centeredX;
   }
   return clampedX;
+}
+
+function refreshSnappedFloatingToolbarPlacement(persist = false) {
+  if (!toolbarShell || floatingToolbarState.isDetached) return;
+  const shellRect = toolbarShell.getBoundingClientRect();
+  const snapped = getSnappedFloatingToolbarPosition(shellRect);
+  applyFloatingToolbarState({
+    ...floatingToolbarState,
+    x: getSnappedFloatingToolbarX(floatingToolbarState.x, shellRect),
+    y: snapped.y,
+    isDetached: false,
+  }, persist);
 }
 
 function getDefaultFloatingToolbarState(shellRect = toolbarShell?.getBoundingClientRect()) {
@@ -4306,6 +4345,7 @@ function handleSpatialResizeMove(event) {
   }
 
   applySpatialLayoutState(nextState, { persist: false, projectId: currentProjectId });
+  refreshSnappedFloatingToolbarPlacement(false);
   scheduleLayoutRefresh();
 }
 
@@ -4317,6 +4357,7 @@ function stopSpatialResize() {
   window.removeEventListener('pointermove', handleSpatialResizeMove);
   window.removeEventListener('pointerup', stopSpatialResize);
   commitSpatialLayoutState(currentProjectId);
+  refreshSnappedFloatingToolbarPlacement(true);
   scheduleLayoutRefresh();
 }
 
