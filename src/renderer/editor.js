@@ -1079,7 +1079,6 @@ function scheduleToolbarAnchorUpdate() {
 function getFloatingToolbarSnapBounds(shellRect = toolbarShell?.getBoundingClientRect()) {
   const topBarRect = topWorkBar?.getBoundingClientRect();
   const mainContentRect = mainContent?.getBoundingClientRect();
-  const shellWidth = shellRect?.width || 0;
   const fallbackLeft = topBarRect ? topBarRect.left : 0;
   const fallbackRight = topBarRect ? topBarRect.right : window.innerWidth;
   let left = fallbackLeft;
@@ -1090,7 +1089,7 @@ function getFloatingToolbarSnapBounds(shellRect = toolbarShell?.getBoundingClien
     right = Math.min(right, mainContentRect.right);
   }
 
-  if (!Number.isFinite(left) || !Number.isFinite(right) || (right - left) < Math.max(shellWidth, 1)) {
+  if (!Number.isFinite(left) || !Number.isFinite(right) || right <= left) {
     left = fallbackLeft;
     right = fallbackRight;
   }
@@ -1106,9 +1105,8 @@ function getSnappedFloatingToolbarPosition(shellRect = toolbarShell?.getBounding
   const { topBarRect, left, right } = getFloatingToolbarSnapBounds(shellRect);
   const shellWidth = shellRect?.width || 0;
   const shellHeight = shellRect?.height || 0;
-  const horizontalSpan = Math.max(right - left - shellWidth, 0);
   const baseY = topBarRect ? topBarRect.top + ((topBarRect.height - shellHeight) / 2) : 92;
-  const baseX = left + (horizontalSpan / 2);
+  const baseX = left + ((right - left - shellWidth) / 2);
   return clampFloatingToolbarPosition({
     x: baseX,
     y: baseY,
@@ -1121,9 +1119,12 @@ function getSnappedFloatingToolbarX(nextX, shellRect = toolbarShell?.getBounding
     return clampFloatingToolbarPosition({ x: nextX, y: floatingToolbarState.y }, shellRect).x;
   }
   const shellWidth = shellRect?.width || 0;
+  const centeredX = left + ((right - left - shellWidth) / 2);
+  if ((right - left) <= shellWidth) {
+    return clampFloatingToolbarPosition({ x: centeredX, y: floatingToolbarState.y }, shellRect).x;
+  }
   const minX = left;
   const maxX = Math.max(left, right - shellWidth);
-  const centeredX = left + (Math.max(right - left - shellWidth, 0) / 2);
   const clampedX = Math.min(Math.max(nextX, minX), maxX);
   if (Math.abs(clampedX - centeredX) <= FLOATING_TOOLBAR_CENTER_ANCHOR_PX) {
     return centeredX;
