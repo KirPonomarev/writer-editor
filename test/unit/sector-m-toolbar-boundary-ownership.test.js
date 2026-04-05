@@ -115,6 +115,18 @@ test('toolbar boundary ownership: spatial resize path refreshes snapped toolbar 
   assert.ok(stopSnippet.includes('refreshSnappedFloatingToolbarPlacement(true);'))
 })
 
+test('toolbar boundary ownership: snapped mode normalizes docked width scale for stable group anchoring', () => {
+  const source = readEditorSource()
+  const refreshSnippet = extractFunctionSource(source, 'refreshSnappedFloatingToolbarPlacement')
+  const dragSnippet = extractFunctionSource(source, 'initializeFloatingToolbarDragFoundation')
+  assert.ok(refreshSnippet.includes('const stableDockedWidthScale = 1;'))
+  assert.ok(refreshSnippet.includes('const shouldNormalizeDockedWidth = ('))
+  assert.ok(refreshSnippet.includes('widthScale: stableDockedWidthScale,'))
+  assert.ok(refreshSnippet.includes('dockedWidthScale: stableDockedWidthScale,'))
+  assert.ok(dragSnippet.includes('widthScale: 1,'))
+  assert.ok(dragSnippet.includes('dockedWidthScale: 1,'))
+})
+
 test('toolbar boundary ownership: snapped refresh recenters toolbar on boundary changes', () => {
   const { exported, sandbox } = instantiateFunctions([
     'refreshSnappedFloatingToolbarPlacement',
