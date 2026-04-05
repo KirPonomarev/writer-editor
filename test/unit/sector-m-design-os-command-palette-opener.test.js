@@ -69,10 +69,14 @@ test('command palette opener: editor wiring exposes action case and data-provide
   assert.ok(source.includes('if (tab === \'inspector\') {'))
   assert.ok(source.includes('ensureCommandsOpenerInRightInspectorSurface();'))
   assert.ok(source.includes('function renderCommandPaletteList(rawQuery = \'\') {'))
+  assert.ok(source.includes('function ensureCommandPaletteSearchFieldVisible() {'))
+  assert.ok(source.includes('commandPaletteSearchInput.hidden = false;'))
+  assert.ok(source.includes('commandPaletteSearchInput.removeAttribute(\'hidden\');'))
   assert.ok(source.includes('const sourceEntries ='))
   assert.ok(source.includes('commandPaletteDataProvider.listAll()'))
   assert.ok(source.includes('case \'open-command-palette\':'))
   assert.ok(source.includes('openCommandPaletteModal();'))
+  assert.ok(source.includes('ensureCommandPaletteSearchFieldVisible();'))
   assert.ok(source.includes('return dispatchUiCommand(commandId.trim());'))
 })
 
@@ -168,11 +172,14 @@ test('command palette opener: filter matches by label id and hotkey and trims qu
 test('command palette opener: open modal resets query renders list and focuses input', () => {
   const events = []
   const commandPaletteSearchInput = {
+    hidden: false,
     value: 'pre-existing',
+    style: {},
     focus: () => events.push('focus'),
   }
   const commandPaletteModal = { hidden: true }
   const { exported } = instantiateFunctions([
+    'ensureCommandPaletteSearchFieldVisible',
     'openCommandPaletteModal',
   ], {
     commandPaletteSearchInput,
@@ -192,6 +199,33 @@ test('command palette opener: open modal resets query renders list and focuses i
     ['open', false],
     'focus',
   ])
+})
+
+test('command palette opener: open modal restores hidden search input visibility', () => {
+  const commandPaletteSearchInput = {
+    hidden: true,
+    value: 'search',
+    style: { display: 'none' },
+    removed: [],
+    removeAttribute: (name) => {
+      commandPaletteSearchInput.removed.push(name)
+    },
+    focus: () => {},
+  }
+  const { exported } = instantiateFunctions([
+    'ensureCommandPaletteSearchFieldVisible',
+    'openCommandPaletteModal',
+  ], {
+    commandPaletteSearchInput,
+    commandPaletteModal: { hidden: true },
+    renderCommandPaletteList: () => {},
+    openSimpleModal: () => {},
+  })
+
+  exported.openCommandPaletteModal()
+  assert.equal(commandPaletteSearchInput.hidden, false)
+  assert.equal(commandPaletteSearchInput.style.display, '')
+  assert.deepEqual(toPlain(commandPaletteSearchInput.removed), ['hidden'])
 })
 
 test('command palette opener: selecting entry closes modal and dispatches command id', async () => {
