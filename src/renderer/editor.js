@@ -5027,7 +5027,23 @@ function renderCommandPaletteList(rawQuery = '') {
   }
 }
 
+function ensureCommandPaletteSearchFieldVisible() {
+  if (!commandPaletteSearchInput) return;
+  commandPaletteSearchInput.hidden = false;
+  if (typeof commandPaletteSearchInput.removeAttribute === 'function') {
+    commandPaletteSearchInput.removeAttribute('hidden');
+  }
+  if (
+    commandPaletteSearchInput.style &&
+    typeof commandPaletteSearchInput.style.display === 'string' &&
+    commandPaletteSearchInput.style.display === 'none'
+  ) {
+    commandPaletteSearchInput.style.display = '';
+  }
+}
+
 function openCommandPaletteModal() {
+  ensureCommandPaletteSearchFieldVisible();
   if (commandPaletteSearchInput) {
     commandPaletteSearchInput.value = '';
   }

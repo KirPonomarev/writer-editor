@@ -3049,6 +3049,16 @@ body.dark-theme .status-bar {
   font-size: 14px;
 }
 
+[data-command-palette-modal] [data-command-palette-search] {
+  display: block;
+  width: 100%;
+  min-height: 36px;
+}
+
+[data-command-palette-modal] [data-command-palette-search]::placeholder {
+  color: var(--text-muted);
+}
+
 .modal__textarea {
   resize: vertical;
 }
