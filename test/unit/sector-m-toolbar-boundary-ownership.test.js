@@ -1,0 +1,88 @@
+const test = require('node:test')
+const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const path = require('node:path')
+const vm = require('node:vm')
+
+const ROOT = path.resolve(__dirname, '..', '..')
+
+function readEditorSource() {
+  return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'editor.js'), 'utf8')
+}
+
+function extractFunctionSource(source, name) {
+  const signature = `function ${name}(`
+  const start = source.indexOf(signature)
+  assert.ok(start > -1, `${name} must exist`)
+  const braceStart = source.indexOf('{', start)
+  assert.ok(braceStart > start, `${name} body must exist`)
+  let depth = 0
+  for (let index = braceStart; index < source.length; index += 1) {
+    const char = source[index]
+    if (char === '{') depth += 1
+    if (char === '}') depth -= 1
+    if (depth === 0) {
+      return source.slice(start, index + 1)
+    }
+  }
+  throw new Error(`Unclosed function body for ${name}`)
+}
+
+function instantiateFunctions(functionNames, context = {}) {
+  const source = readEditorSource()
+  const script = `${functionNames.map((name) => extractFunctionSource(source, name)).join('\n\n')}\nmodule.exports = { ${functionNames.join(', ')} };`
+  const sandbox = {
+    module: { exports: {} },
+    exports: {},
+    Math,
+    Number,
+    ...context,
+  }
+  vm.runInNewContext(script, sandbox, { filename: 'sector-m-toolbar-boundary-ownership.editor-snippet.js' })
+  return { exported: sandbox.module.exports, sandbox }
+}
+
+test('toolbar boundary ownership: snap bounds are derived from main content rect instead of top bar only', () => {
+  const source = readEditorSource()
+  assert.ok(source.includes('function getFloatingToolbarSnapBounds(shellRect = toolbarShell?.getBoundingClientRect()) {'))
+  assert.ok(source.includes('const mainContentRect = mainContent?.getBoundingClientRect();'))
+  assert.ok(source.includes('left = Math.max(left, mainContentRect.left);'))
+  assert.ok(source.includes('right = Math.min(right, mainContentRect.right);'))
+  assert.ok(source.includes('const { topBarRect, left, right } = getFloatingToolbarSnapBounds(shellRect);'))
+})
+
+test('toolbar boundary ownership: snapped X position is clamped to content bounds and centered inside content', () => {
+  const { exported } = instantiateFunctions([
+    'getFloatingToolbarSnapBounds',
+    'getSnappedFloatingToolbarPosition',
+    'getSnappedFloatingToolbarX',
+  ], {
+    toolbarShell: {
+      getBoundingClientRect: () => ({ width: 360, height: 24 }),
+    },
+    topWorkBar: {
+      getBoundingClientRect: () => ({ left: 0, right: 1280, top: 40, height: 44 }),
+    },
+    mainContent: {
+      getBoundingClientRect: () => ({ left: 300, right: 980, top: 120, height: 600 }),
+    },
+    clampFloatingToolbarPosition: (position) => position,
+    floatingToolbarState: { y: 0 },
+    FLOATING_TOOLBAR_CENTER_ANCHOR_PX: 12,
+    window: { innerWidth: 1280 },
+  })
+
+  const snapped = exported.getSnappedFloatingToolbarPosition({ width: 360, height: 24 })
+  assert.equal(snapped.x, 460)
+  assert.equal(snapped.y, 50)
+  assert.equal(exported.getSnappedFloatingToolbarX(120, { width: 360 }), 300)
+  assert.equal(exported.getSnappedFloatingToolbarX(900, { width: 360 }), 620)
+})
+
+test('toolbar boundary ownership: spatial resize path refreshes snapped toolbar placement', () => {
+  const source = readEditorSource()
+  const moveSnippet = extractFunctionSource(source, 'handleSpatialResizeMove')
+  const stopSnippet = extractFunctionSource(source, 'stopSpatialResize')
+  assert.ok(moveSnippet.includes('refreshSnappedFloatingToolbarPlacement(false);'))
+  assert.ok(stopSnippet.includes('refreshSnappedFloatingToolbarPlacement(true);'))
+})
