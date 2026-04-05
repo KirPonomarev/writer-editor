@@ -4641,6 +4641,34 @@ function applyLeftTab(tab) {
   }
 }
 
+function ensureCommandsOpenerInRightInspectorSurface() {
+  if (!rightInspectorPanel) return null;
+  const actionsHost = rightInspectorPanel.querySelector('.x101-action-buttons');
+  if (!actionsHost) return null;
+
+  let commandsButton = actionsHost.querySelector('[data-action="open-command-palette"]');
+  if (!commandsButton) {
+    commandsButton = document.createElement('button');
+    commandsButton.type = 'button';
+    commandsButton.className = 'toolbar__button toolbar__button--wide x101-action-button';
+    commandsButton.dataset.action = 'open-command-palette';
+    commandsButton.textContent = 'Commands';
+    const settingsButton = actionsHost.querySelector('[data-action="open-settings"]');
+    if (settingsButton) {
+      actionsHost.insertBefore(commandsButton, settingsButton);
+    } else {
+      actionsHost.prepend(commandsButton);
+    }
+  }
+
+  commandsButton.hidden = false;
+  commandsButton.disabled = false;
+  if (!commandsButton.textContent || !commandsButton.textContent.trim()) {
+    commandsButton.textContent = 'Commands';
+  }
+  return commandsButton;
+}
+
 function applyRightTab(tab) {
   currentRightTab = tab;
   for (const button of rightTabButtons) {
@@ -4652,6 +4680,9 @@ function applyRightTab(tab) {
   if (rightSceneMetaPanel) rightSceneMetaPanel.hidden = tab !== 'scene-meta';
   if (rightCommentsPanel) rightCommentsPanel.hidden = tab !== 'comments' || !collabScopeLocal;
   if (rightHistoryPanel) rightHistoryPanel.hidden = tab !== 'history' || !collabScopeLocal;
+  if (tab === 'inspector') {
+    ensureCommandsOpenerInRightInspectorSurface();
+  }
 }
 
 function applyMode(mode) {
@@ -6134,6 +6165,7 @@ updateInspectorSnapshot();
 applyMode('write');
 applyLeftTab('project');
 applyRightTab('inspector');
+ensureCommandsOpenerInRightInspectorSurface();
 installNetworkGuard();
 void initializeCollabScopeLocal();
 if (configuratorSlotButtons.length) {

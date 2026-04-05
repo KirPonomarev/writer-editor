@@ -65,12 +65,80 @@ test('command palette opener: editor wiring exposes action case and data-provide
   assert.ok(source.includes('const commandPaletteModal = document.querySelector(\'[data-command-palette-modal]\');'))
   assert.ok(source.includes('const commandPaletteSearchInput = document.querySelector(\'[data-command-palette-search]\');'))
   assert.ok(source.includes('const commandPaletteList = document.querySelector(\'[data-command-palette-list]\');'))
+  assert.ok(source.includes('function ensureCommandsOpenerInRightInspectorSurface() {'))
+  assert.ok(source.includes('if (tab === \'inspector\') {'))
+  assert.ok(source.includes('ensureCommandsOpenerInRightInspectorSurface();'))
   assert.ok(source.includes('function renderCommandPaletteList(rawQuery = \'\') {'))
   assert.ok(source.includes('const sourceEntries ='))
   assert.ok(source.includes('commandPaletteDataProvider.listAll()'))
   assert.ok(source.includes('case \'open-command-palette\':'))
   assert.ok(source.includes('openCommandPaletteModal();'))
   assert.ok(source.includes('return dispatchUiCommand(commandId.trim());'))
+})
+
+test('command palette opener: inspector surface keeps a visible commands opener', () => {
+  const hostButtons = [
+    {
+      dataset: { action: 'open-settings' },
+      textContent: 'Settings',
+      hidden: false,
+      disabled: false,
+    },
+    {
+      dataset: { action: 'open-diagnostics' },
+      textContent: 'Diagnostics',
+      hidden: false,
+      disabled: false,
+    },
+  ]
+
+  const actionsHost = {
+    querySelector: (selector) => {
+      const match = selector.match(/data-action="([^"]+)"/)
+      if (!match) return null
+      const action = match[1]
+      return hostButtons.find((button) => button.dataset?.action === action) || null
+    },
+    insertBefore: (node, beforeNode) => {
+      const index = hostButtons.indexOf(beforeNode)
+      if (index >= 0) {
+        hostButtons.splice(index, 0, node)
+        return
+      }
+      hostButtons.push(node)
+    },
+    prepend: (node) => {
+      hostButtons.unshift(node)
+    },
+  }
+
+  const rightInspectorPanel = {
+    querySelector: (selector) => (selector === '.x101-action-buttons' ? actionsHost : null),
+  }
+
+  const { exported } = instantiateFunctions([
+    'ensureCommandsOpenerInRightInspectorSurface',
+  ], {
+    rightInspectorPanel,
+    document: {
+      createElement: () => ({
+        type: '',
+        className: '',
+        dataset: {},
+        textContent: '',
+        hidden: true,
+        disabled: true,
+      }),
+    },
+  })
+
+  const created = exported.ensureCommandsOpenerInRightInspectorSurface()
+  assert.equal(created?.dataset?.action, 'open-command-palette')
+  assert.equal(created?.hidden, false)
+  assert.equal(created?.disabled, false)
+  assert.equal(created?.textContent, 'Commands')
+  assert.equal(hostButtons[0]?.dataset?.action, 'open-command-palette')
+  assert.equal(hostButtons[1]?.dataset?.action, 'open-settings')
 })
 
 test('command palette opener: filter matches by label id and hotkey and trims query', () => {
