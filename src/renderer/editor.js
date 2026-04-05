@@ -95,6 +95,7 @@ const rightHistoryPanel = document.querySelector('[data-right-panel-history]');
 const inspectorSnapshotElement = document.querySelector('[data-inspector-snapshot]');
 const wordCountElement = document.querySelector('[data-word-count]');
 const zoomValueElement = document.querySelector('[data-zoom-value]');
+const profileSelect = document.querySelector('[data-profile-select]');
 const styleSelect = document.querySelector('[data-style-select]');
 const fontSelect = document.querySelector('[data-font-select]');
 const weightSelect = document.querySelector('[data-weight-select]');
@@ -275,7 +276,10 @@ function resolveDormantDesignOsShellModeFromLayoutMode(layoutMode) {
 }
 
 function getCurrentDesignOsStyleValue() {
-  if (styleSelect && typeof styleSelect.value === 'string' && styleSelect.value.trim()) {
+  if (typeof profileSelect !== 'undefined' && profileSelect && typeof profileSelect.value === 'string' && profileSelect.value.trim()) {
+    return profileSelect.value;
+  }
+  if (typeof styleSelect !== 'undefined' && styleSelect && typeof styleSelect.value === 'string' && styleSelect.value.trim()) {
     return styleSelect.value;
   }
   if (typeof document !== 'undefined' && document.body && document.body.classList.contains('focus-mode')) {
@@ -4856,6 +4860,12 @@ function openSettingsModal() {
   if (settingsThemeSelect) {
     settingsThemeSelect.value = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
   }
+  if (typeof profileSelect !== 'undefined' && profileSelect) {
+    profileSelect.value = getCurrentDesignOsStyleValue();
+  }
+  if (typeof styleSelect !== 'undefined' && styleSelect) {
+    styleSelect.value = getCurrentDesignOsStyleValue();
+  }
   if (settingsWrapSelect) {
     settingsWrapSelect.value = wordWrapEnabled ? 'on' : 'off';
   }
@@ -5122,7 +5132,10 @@ function applyWordWrap(enabled, persist = true) {
 function applyViewMode(mode, persist = true) {
   const isFocus = mode === 'focus';
   document.body.classList.toggle('focus-mode', isFocus);
-  if (styleSelect) {
+  if (typeof profileSelect !== 'undefined' && profileSelect) {
+    profileSelect.value = mode;
+  }
+  if (typeof styleSelect !== 'undefined' && styleSelect) {
     styleSelect.value = mode;
   }
   if (persist) {
@@ -6082,6 +6095,12 @@ if (settingsThemeSelect) {
   settingsThemeSelect.addEventListener('change', () => {
     const nextTheme = settingsThemeSelect.value === 'dark' ? 'dark' : 'light';
     window.electronAPI?.setTheme(nextTheme);
+  });
+}
+
+if (profileSelect) {
+  profileSelect.addEventListener('change', (event) => {
+    applyViewMode(event.target.value);
   });
 }
 
