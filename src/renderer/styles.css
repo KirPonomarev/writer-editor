@@ -2146,6 +2146,54 @@ body.dark-theme .toolbar__swatch::before {
   text-transform: uppercase;
 }
 
+[data-tree][hidden] + [data-left-collections] {
+  display: none;
+}
+
+.left-collections {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 24px 18px;
+  flex: 0 0 auto;
+}
+
+.left-collections__label {
+  color: #b8b1ac;
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 500;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+}
+
+.left-collections__tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.left-collections__tile {
+  min-height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(118, 92, 62, 0.08);
+  background: #efeae3;
+  box-shadow: 0 1px 1px rgba(48, 34, 23, 0.04);
+  color: #6b6560;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
 [data-right-sidebar] .sidebar__tree {
   padding-top: 10px;
 }
