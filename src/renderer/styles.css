@@ -1330,7 +1330,7 @@ body {
 }
 
 .literal-stage-a .app-layout {
-  grid-template-columns: minmax(250px, var(--app-left-sidebar-width)) minmax(640px, 1fr);
+  grid-template-columns: minmax(250px, var(--app-left-sidebar-width)) minmax(640px, 1fr) minmax(280px, var(--app-right-sidebar-width));
   gap: 0;
   padding: 0 0 30px;
 }
@@ -1340,7 +1340,10 @@ body {
   margin: 0 0 0 14px;
 }
 
-.literal-stage-a .sidebar--right,
+.literal-stage-a .sidebar--right {
+  display: flex;
+}
+
 .literal-stage-a .x101-mode-switcher {
   display: none;
 }

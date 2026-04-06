@@ -14,6 +14,10 @@ function readRendererHtml() {
   return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'index.html'), 'utf8')
 }
 
+function readRendererStyles() {
+  return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'styles.css'), 'utf8')
+}
+
 function extractFunctionSource(source, name) {
   const signature = `function ${name}(`
   const start = source.indexOf(signature)
@@ -58,6 +62,15 @@ test('command palette opener: current renderer html exposes commands button and 
   assert.ok(html.includes('data-command-palette-summary'))
   assert.ok(html.includes('data-command-palette-list'))
   assert.ok(html.includes('data-command-palette-close'))
+})
+
+test('command palette opener: literal stage keeps the right inspector visible for the commands surface', () => {
+  const styles = readRendererStyles()
+  assert.ok(styles.includes('.literal-stage-a .app-layout {'))
+  assert.ok(styles.includes('grid-template-columns: minmax(250px, var(--app-left-sidebar-width)) minmax(640px, 1fr) minmax(280px, var(--app-right-sidebar-width));'))
+  assert.ok(styles.includes('.literal-stage-a .sidebar--right {'))
+  assert.ok(styles.includes('display: flex;'))
+  assert.ok(styles.includes('.literal-stage-a .x101-mode-switcher {'))
 })
 
 test('command palette opener: editor wiring exposes action case and data-provider based rendering path', () => {
