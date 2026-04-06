@@ -73,6 +73,17 @@ test('command palette opener: literal stage keeps the right inspector visible fo
   assert.ok(styles.includes('.literal-stage-a .x101-mode-switcher {'))
 })
 
+test('command palette opener: commands modal keeps search field in viewport with bounded content and scrollable list', () => {
+  const styles = readRendererStyles()
+  assert.ok(styles.includes('[data-command-palette-modal] .modal__content {'))
+  assert.ok(styles.includes('max-height: calc(100vh - 32px);'))
+  assert.ok(styles.includes('overflow: hidden;'))
+  assert.ok(styles.includes('[data-command-palette-modal] [data-command-palette-list] {'))
+  assert.ok(styles.includes('flex: 1 1 auto;'))
+  assert.ok(styles.includes('min-height: 0;'))
+  assert.ok(styles.includes('overflow: auto;'))
+})
+
 test('command palette opener: editor wiring exposes action case and data-provider based rendering path', () => {
   const source = readEditorSource()
   assert.ok(source.includes('const commandPaletteModal = document.querySelector(\'[data-command-palette-modal]\');'))
