@@ -3049,6 +3049,21 @@ body.dark-theme .status-bar {
   font-size: 14px;
 }
 
+[data-command-palette-modal] .modal__content {
+  width: min(420px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  align-items: stretch;
+  overflow: hidden;
+}
+
+[data-command-palette-modal] .modal__title,
+[data-command-palette-modal] .modal__label,
+[data-command-palette-modal] [data-command-palette-search],
+[data-command-palette-modal] [data-command-palette-summary],
+[data-command-palette-modal] .modal__actions {
+  flex: 0 0 auto;
+}
+
 [data-command-palette-modal] [data-command-palette-search] {
   display: block !important;
   width: 100%;
@@ -3074,6 +3089,16 @@ body.dark-theme .status-bar {
   outline: none;
   border-color: rgba(118, 92, 62, 0.38);
   box-shadow: 0 0 0 3px rgba(118, 92, 62, 0.08);
+}
+
+[data-command-palette-modal] [data-command-palette-list] {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .modal__textarea {

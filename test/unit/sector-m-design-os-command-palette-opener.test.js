@@ -14,6 +14,10 @@ function readRendererHtml() {
   return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'index.html'), 'utf8')
 }
 
+function readRendererStyles() {
+  return fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'styles.css'), 'utf8')
+}
+
 function extractFunctionSource(source, name) {
   const signature = `function ${name}(`
   const start = source.indexOf(signature)
@@ -58,6 +62,17 @@ test('command palette opener: current renderer html exposes commands button and 
   assert.ok(html.includes('data-command-palette-summary'))
   assert.ok(html.includes('data-command-palette-list'))
   assert.ok(html.includes('data-command-palette-close'))
+})
+
+test('command palette opener: modal composition keeps search field above a scrollable results region', () => {
+  const styles = readRendererStyles()
+  assert.ok(styles.includes('[data-command-palette-modal] .modal__content {'))
+  assert.ok(styles.includes('max-height: calc(100vh - 48px);'))
+  assert.ok(styles.includes('overflow: hidden;'))
+  assert.ok(styles.includes('[data-command-palette-modal] [data-command-palette-list] {'))
+  assert.ok(styles.includes('flex: 1 1 auto;'))
+  assert.ok(styles.includes('min-height: 0;'))
+  assert.ok(styles.includes('overflow-y: auto;'))
 })
 
 test('command palette opener: editor wiring exposes action case and data-provider based rendering path', () => {
