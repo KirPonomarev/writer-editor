@@ -669,7 +669,7 @@ body {
 .floating-toolbar__group {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex: 0 0 auto;
   position: relative;
   z-index: 1;
@@ -678,15 +678,18 @@ body {
 .floating-toolbar__controls {
   display: inline-flex;
   align-items: center;
-  gap: 20px;
+  gap: 14px;
   flex: 0 0 auto;
   position: relative;
   z-index: 1;
 }
 
-.floating-toolbar__group--type,
+.floating-toolbar__group--type {
+  gap: 6px;
+}
+
 .floating-toolbar__group--history {
-  gap: 10px;
+  gap: 8px;
 }
 
 .floating-toolbar__group--paragraph {
@@ -781,9 +784,9 @@ body {
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: 32px;
+  height: 28px;
   border-radius: 8px;
-  background: rgba(248, 246, 243, 0.08);
+  background: rgba(248, 246, 243, 0.16);
   border: 1px solid transparent;
   box-shadow: none;
   opacity: 1;
@@ -794,12 +797,12 @@ body {
 
 .floating-toolbar__select-wrap:hover,
 .floating-toolbar__select-wrap:focus-within {
-  background: rgba(236, 231, 223, 0.28);
-  border-color: rgba(50, 36, 24, 0.05);
+  background: rgba(236, 231, 223, 0.38);
+  border-color: rgba(50, 36, 24, 0.08);
 }
 
 .floating-toolbar__select-wrap--font {
-  width: calc(136px * var(--floating-toolbar-width-scale));
+  width: calc(230px * var(--floating-toolbar-width-scale));
 }
 
 .floating-toolbar__select-wrap--font .floating-toolbar__display {
@@ -812,15 +815,15 @@ body {
 }
 
 .floating-toolbar__select-wrap--weight {
-  width: calc(104px * var(--floating-toolbar-width-scale));
+  width: calc(150px * var(--floating-toolbar-width-scale));
 }
 
 .floating-toolbar__select-wrap--size {
-  width: calc(56px * var(--floating-toolbar-width-scale));
+  width: calc(92px * var(--floating-toolbar-width-scale));
 }
 
 .floating-toolbar__select-wrap--line-height {
-  width: calc(72px * var(--floating-toolbar-width-scale));
+  width: calc(98px * var(--floating-toolbar-width-scale));
 }
 
 .floating-toolbar__select {
@@ -848,10 +851,10 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
   height: 100%;
-  padding: 0 12px;
+  padding: 0 10px;
   pointer-events: none;
 }
 
@@ -879,11 +882,12 @@ body {
   text-overflow: ellipsis;
   color: #1f1a15;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
-  line-height: 20px;
+  line-height: 16px;
   letter-spacing: 0;
   text-align: left;
+  font-variant-numeric: tabular-nums;
 }
 
 .floating-toolbar__select-icon {
@@ -916,9 +920,9 @@ body {
   min-width: 0;
   color: #3d3d3d;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
@@ -997,7 +1001,7 @@ body {
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap {
-  height: 24px;
+  height: 28px;
   border-radius: 6px;
   background: transparent;
   border-color: transparent;
@@ -1013,7 +1017,7 @@ body {
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display {
   justify-content: flex-start;
-  gap: 8px;
+  gap: 6px;
   padding: 0 10px;
 }
 
@@ -1026,16 +1030,16 @@ body {
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display-text {
   color: rgba(31, 26, 21, 0.88);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
   text-align: left;
-  line-height: 20px;
+  line-height: 16px;
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display-value {
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__line-height-icon-wrap {
@@ -1049,10 +1053,10 @@ body {
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__button {
-  height: 24px;
+  height: 28px;
   border-radius: 4px;
   color: rgba(45, 39, 33, 0.82);
-  opacity: 0.9;
+  opacity: 1;
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__button:hover {
