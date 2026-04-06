@@ -2134,6 +2134,13 @@ body.dark-theme .toolbar__swatch::before {
   padding: 16px 24px 24px;
 }
 
+.sidebar--left .sidebar__tree[data-tree] {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: clamp(300px, 52vh, 420px);
+  padding-bottom: 14px;
+}
+
 .sidebar--left [data-tree]::before {
   content: 'Document';
   display: block;
@@ -2154,7 +2161,9 @@ body.dark-theme .toolbar__swatch::before {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 0 24px 18px;
+  margin-top: 2px;
+  padding: 14px 24px 18px;
+  border-top: 1px solid rgba(118, 92, 62, 0.08);
   flex: 0 0 auto;
 }
 
