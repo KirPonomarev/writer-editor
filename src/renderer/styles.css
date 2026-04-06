@@ -678,14 +678,14 @@ body {
 .floating-toolbar__controls {
   display: inline-flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   flex: 0 0 auto;
   position: relative;
   z-index: 1;
 }
 
 .floating-toolbar__group--type {
-  gap: 6px;
+  gap: 5px;
 }
 
 .floating-toolbar__group--history {
@@ -802,7 +802,8 @@ body {
 }
 
 .floating-toolbar__select-wrap--font {
-  width: calc(230px * var(--floating-toolbar-width-scale));
+  width: calc(200px * var(--floating-toolbar-width-scale));
+  min-width: 200px;
 }
 
 .floating-toolbar__select-wrap--font .floating-toolbar__display {
@@ -815,15 +816,18 @@ body {
 }
 
 .floating-toolbar__select-wrap--weight {
-  width: calc(150px * var(--floating-toolbar-width-scale));
+  width: calc(126px * var(--floating-toolbar-width-scale));
+  min-width: 126px;
 }
 
 .floating-toolbar__select-wrap--size {
-  width: calc(92px * var(--floating-toolbar-width-scale));
+  width: calc(78px * var(--floating-toolbar-width-scale));
+  min-width: 78px;
 }
 
 .floating-toolbar__select-wrap--line-height {
-  width: calc(98px * var(--floating-toolbar-width-scale));
+  width: calc(88px * var(--floating-toolbar-width-scale));
+  min-width: 88px;
 }
 
 .floating-toolbar__select {
@@ -851,10 +855,10 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 6px;
+  gap: 5px;
   width: 100%;
   height: 100%;
-  padding: 0 10px;
+  padding: 0 9px;
   pointer-events: none;
 }
 
@@ -1017,8 +1021,8 @@ body {
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display {
   justify-content: flex-start;
-  gap: 6px;
-  padding: 0 10px;
+  gap: 5px;
+  padding: 0 9px;
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display--line-height {
@@ -1057,6 +1061,19 @@ body {
   border-radius: 4px;
   color: rgba(45, 39, 33, 0.82);
   opacity: 1;
+}
+
+.floating-toolbar__select-wrap--size .floating-toolbar__display {
+  justify-content: center;
+  padding: 0 8px;
+}
+
+.floating-toolbar__select-wrap--size .floating-toolbar__display-text {
+  flex: 0 0 auto;
+  overflow: visible;
+  text-overflow: clip;
+  text-align: center;
+  font-weight: 500;
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__button:hover {
