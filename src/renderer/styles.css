@@ -3050,13 +3050,30 @@ body.dark-theme .status-bar {
 }
 
 [data-command-palette-modal] [data-command-palette-search] {
-  display: block;
+  display: block !important;
   width: 100%;
+  box-sizing: border-box;
   min-height: 36px;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto;
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(255, 252, 247, 0.92);
+  border-color: rgba(118, 92, 62, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(118, 92, 62, 0.06);
+  color: #433d37;
 }
 
 [data-command-palette-modal] [data-command-palette-search]::placeholder {
-  color: var(--text-muted);
+  color: rgba(99, 82, 66, 0.7);
+}
+
+[data-command-palette-modal] [data-command-palette-search]:focus,
+[data-command-palette-modal] [data-command-palette-search]:focus-visible {
+  outline: none;
+  border-color: rgba(118, 92, 62, 0.38);
+  box-shadow: 0 0 0 3px rgba(118, 92, 62, 0.08);
 }
 
 .modal__textarea {

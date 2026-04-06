@@ -71,7 +71,16 @@ test('command palette opener: editor wiring exposes action case and data-provide
   assert.ok(source.includes('function renderCommandPaletteList(rawQuery = \'\') {'))
   assert.ok(source.includes('function ensureCommandPaletteSearchFieldVisible() {'))
   assert.ok(source.includes('commandPaletteSearchInput.hidden = false;'))
+  assert.ok(source.includes('commandPaletteSearchInput.disabled = false;'))
+  assert.ok(source.includes('commandPaletteSearchInput.readOnly = false;'))
+  assert.ok(source.includes('commandPaletteSearchInput.tabIndex = 0;'))
   assert.ok(source.includes('commandPaletteSearchInput.removeAttribute(\'hidden\');'))
+  assert.ok(source.includes('commandPaletteSearchInput.removeAttribute(\'disabled\');'))
+  assert.ok(source.includes('commandPaletteSearchInput.removeAttribute(\'readonly\');'))
+  assert.ok(source.includes('commandPaletteSearchInput.style.display = \'block\';'))
+  assert.ok(source.includes('commandPaletteSearchInput.style.visibility = \'visible\';'))
+  assert.ok(source.includes('commandPaletteSearchInput.style.opacity = \'1\';'))
+  assert.ok(source.includes('commandPaletteSearchInput.style.pointerEvents = \'auto\';'))
   assert.ok(source.includes('const sourceEntries ='))
   assert.ok(source.includes('commandPaletteDataProvider.listAll()'))
   assert.ok(source.includes('case \'open-command-palette\':'))
@@ -204,6 +213,9 @@ test('command palette opener: open modal resets query renders list and focuses i
 test('command palette opener: open modal restores hidden search input visibility', () => {
   const commandPaletteSearchInput = {
     hidden: true,
+    disabled: true,
+    readOnly: true,
+    tabIndex: -1,
     value: 'search',
     style: { display: 'none' },
     removed: [],
@@ -224,8 +236,15 @@ test('command palette opener: open modal restores hidden search input visibility
 
   exported.openCommandPaletteModal()
   assert.equal(commandPaletteSearchInput.hidden, false)
-  assert.equal(commandPaletteSearchInput.style.display, '')
-  assert.deepEqual(toPlain(commandPaletteSearchInput.removed), ['hidden'])
+  assert.equal(commandPaletteSearchInput.disabled, false)
+  assert.equal(commandPaletteSearchInput.readOnly, false)
+  assert.equal(commandPaletteSearchInput.tabIndex, 0)
+  assert.equal(commandPaletteSearchInput.style.display, 'block')
+  assert.equal(commandPaletteSearchInput.style.visibility, 'visible')
+  assert.equal(commandPaletteSearchInput.style.opacity, '1')
+  assert.equal(commandPaletteSearchInput.style.pointerEvents, 'auto')
+  assert.equal(commandPaletteSearchInput.style.minHeight, '36px')
+  assert.deepEqual(toPlain(commandPaletteSearchInput.removed), ['hidden', 'disabled', 'readonly'])
 })
 
 test('command palette opener: selecting entry closes modal and dispatches command id', async () => {

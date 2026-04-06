@@ -5030,15 +5030,20 @@ function renderCommandPaletteList(rawQuery = '') {
 function ensureCommandPaletteSearchFieldVisible() {
   if (!commandPaletteSearchInput) return;
   commandPaletteSearchInput.hidden = false;
+  commandPaletteSearchInput.disabled = false;
+  commandPaletteSearchInput.readOnly = false;
+  commandPaletteSearchInput.tabIndex = 0;
   if (typeof commandPaletteSearchInput.removeAttribute === 'function') {
     commandPaletteSearchInput.removeAttribute('hidden');
+    commandPaletteSearchInput.removeAttribute('disabled');
+    commandPaletteSearchInput.removeAttribute('readonly');
   }
-  if (
-    commandPaletteSearchInput.style &&
-    typeof commandPaletteSearchInput.style.display === 'string' &&
-    commandPaletteSearchInput.style.display === 'none'
-  ) {
-    commandPaletteSearchInput.style.display = '';
+  if (commandPaletteSearchInput.style) {
+    commandPaletteSearchInput.style.display = 'block';
+    commandPaletteSearchInput.style.visibility = 'visible';
+    commandPaletteSearchInput.style.opacity = '1';
+    commandPaletteSearchInput.style.pointerEvents = 'auto';
+    commandPaletteSearchInput.style.minHeight = '36px';
   }
 }
 
