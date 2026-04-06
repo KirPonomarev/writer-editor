@@ -2049,10 +2049,10 @@ body.dark-theme .toolbar__swatch::before {
 [data-left-tabs] {
   position: relative;
   flex-direction: column;
-  align-items: stretch;
-  gap: 9px;
+  align-items: flex-start;
+  gap: 10px;
   min-height: auto;
-  padding: 14px 24px 11px;
+  padding: 14px 24px 12px;
   border-bottom: 1px solid rgba(118, 92, 62, 0.12);
 }
 
@@ -2068,45 +2068,45 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 [data-left-tabs] .x101-tabs-group {
-  width: 100%;
-  gap: 2px;
-  padding: 2px;
-  border-radius: 9px;
-  border: 1px solid rgba(118, 92, 62, 0.09);
-  background: rgba(248, 244, 238, 0.56);
-  overflow: hidden;
+  width: auto;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  overflow: visible;
 }
 
 [data-left-tabs] .x101-tab-button,
 [data-left-tabs] .x101-tab-button.toolbar__button--wide {
-  min-width: 0;
-  flex: 1 1 0;
+  min-width: auto;
+  flex: 0 0 auto;
   height: 30px;
-  padding: 0 10px;
-  border-radius: 7px;
-  border-color: transparent;
+  padding: 0 13px;
+  border-radius: 9px;
+  border: none;
   color: #989089;
   font-size: 12px;
   line-height: 16px;
   font-weight: 500;
   letter-spacing: 0.01em;
+  background: transparent;
+  box-shadow: none;
 }
 
 [data-left-tabs] .x101-tab-button:hover,
 [data-left-tabs] .x101-tab-button:focus-visible {
-  background: rgba(118, 92, 62, 0.07);
+  background: rgba(118, 92, 62, 0.05);
   color: #6a625c;
 }
 
 [data-left-tabs] .x101-tab-button.is-active {
-  background: #efeae3;
+  background: #e5dfd7;
   color: #3f3934;
-  border-color: transparent;
-  box-shadow: 0 1px 2px rgba(48, 34, 23, 0.08);
+  box-shadow: 0 1px 2px rgba(48, 34, 23, 0.06);
 }
 
 [data-left-search-panel] {
-  padding: 8px 24px 12px;
+  padding: 6px 24px 12px;
 }
 
 [data-left-search-panel] .modal__input {
