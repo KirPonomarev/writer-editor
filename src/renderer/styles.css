@@ -2050,10 +2050,10 @@ body.dark-theme .toolbar__swatch::before {
   position: relative;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
+  gap: 11px;
   min-height: auto;
-  padding: 16px 24px 14px;
-  border-bottom: 1px solid rgba(118, 92, 62, 0.075);
+  padding: 17px 24px 15px;
+  border-bottom: 1px solid rgba(118, 92, 62, 0.07);
 }
 
 [data-left-tabs]::before {
@@ -2080,15 +2080,15 @@ body.dark-theme .toolbar__swatch::before {
 [data-left-tabs] .x101-tab-button.toolbar__button--wide {
   min-width: auto;
   flex: 0 0 auto;
-  height: 30px;
-  padding: 0 12px;
+  height: 29px;
+  padding: 0 11px;
   border-radius: 8px;
   border: none;
   color: #9b948d;
   font-size: 12px;
   line-height: 16px;
   font-weight: 500;
-  letter-spacing: 0.004em;
+  letter-spacing: 0.006em;
   background: transparent;
   box-shadow: none;
 }
@@ -2100,11 +2100,9 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 [data-left-tabs] .x101-tab-button.is-active {
-  background: #f7f4ef;
+  background: #faf7f2;
   color: #3f3934;
-  box-shadow:
-    inset 0 0 0 1px rgba(118, 92, 62, 0.04),
-    0 1px 1px rgba(48, 34, 23, 0.03);
+  box-shadow: inset 0 0 0 1px rgba(118, 92, 62, 0.035);
 }
 
 [data-left-search-panel] {
@@ -2133,14 +2131,14 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .sidebar--left .sidebar__tree {
-  padding: 18px 24px 18px;
+  padding: 20px 24px 20px;
 }
 
 .sidebar--left .sidebar__tree[data-tree] {
   flex: 0 1 auto;
   min-height: 0;
   max-height: clamp(204px, 29vh, 236px);
-  padding-bottom: 8px;
+  padding-bottom: 10px;
 }
 
 .sidebar--left [data-tree]::before {
@@ -2162,17 +2160,17 @@ body.dark-theme .toolbar__swatch::before {
 .left-lower-zones {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-top: 18px;
-  padding: 16px 0 20px;
-  border-top: 1px solid rgba(118, 92, 62, 0.065);
+  gap: 20px;
+  margin-top: 20px;
+  padding: 18px 0 22px;
+  border-top: 1px solid rgba(118, 92, 62, 0.055);
   flex: 0 0 auto;
 }
 
 .left-collections {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 10px;
   margin-top: 0;
   padding: 0 24px 0;
   flex: 0 0 auto;
@@ -2194,12 +2192,12 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .left-collections__tile {
-  min-height: 32px;
-  border-radius: 8px;
+  min-height: 31px;
+  border-radius: 9px;
   border: 1px solid rgba(118, 92, 62, 0.045);
-  background: rgba(248, 244, 238, 0.9);
+  background: rgba(249, 246, 241, 0.94);
   box-shadow: none;
-  color: #746d67;
+  color: #776f69;
   font-size: 12px;
   line-height: 16px;
   font-weight: 500;
@@ -2217,7 +2215,7 @@ body.dark-theme .toolbar__swatch::before {
 .left-quick-note {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 10px;
   margin-top: 0;
   padding: 0 24px 0;
   flex: 0 0 auto;
@@ -2235,12 +2233,12 @@ body.dark-theme .toolbar__swatch::before {
 .left-quick-note__card {
   border-radius: 10px;
   border: 1px solid rgba(118, 92, 62, 0.045);
-  background: rgba(248, 244, 238, 0.92);
-  color: #6d6761;
-  font-size: 12.5px;
-  line-height: 1.5;
+  background: rgba(249, 246, 241, 0.96);
+  color: #6f6963;
+  font-size: 12.25px;
+  line-height: 1.56;
   font-weight: 400;
-  padding: 13px 15px 14px;
+  padding: 14px 16px 15px;
 }
 
 [data-right-sidebar] .sidebar__tree {
@@ -2286,7 +2284,7 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .sidebar--left .tree__node + .tree__node {
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .tree__row {
@@ -2311,11 +2309,11 @@ body.dark-theme .toolbar__swatch::before {
 .sidebar--left .tree__row {
   min-height: 28px;
   height: 28px;
-  padding: 0 7px;
+  padding: 0 8px;
   color: #554f49;
   border-radius: 9px;
   font-size: 13px;
-  line-height: 18px;
+  line-height: 17px;
   font-weight: 400;
   transition: background 0.18s ease, color 0.18s ease;
 }
@@ -2385,7 +2383,7 @@ body.dark-theme .toolbar__swatch::before {
   width: 12px;
   height: 12px;
   color: #9d9690;
-  opacity: 0.76;
+  opacity: 0.68;
 }
 
 .tree__toggle.is-expanded {
@@ -2412,8 +2410,8 @@ body.dark-theme .toolbar__swatch::before {
   color: inherit;
   font-weight: 400;
   font-size: 13px;
-  line-height: 18px;
-  letter-spacing: 0.004em;
+  line-height: 17px;
+  letter-spacing: 0.002em;
 }
 
 .sidebar--left .tree__label::before {
@@ -2450,19 +2448,17 @@ body.dark-theme .toolbar__swatch::before {
   height: 5px;
   flex-basis: 5px;
   border-radius: 999px;
-  background: #9e9791;
+  background: #a59e98;
 }
 
 .sidebar--left .tree__row.is-selected .tree__label {
   flex: 0 1 auto;
   max-width: 100%;
   font-weight: 500;
-  background: #f7f3ee;
+  background: #fbf8f4;
   border-radius: 9px;
-  padding: 4px 10px;
-  box-shadow:
-    inset 0 0 0 1px rgba(118, 92, 62, 0.045),
-    0 1px 1px rgba(48, 34, 23, 0.025);
+  padding: 4px 9px;
+  box-shadow: inset 0 0 0 1px rgba(118, 92, 62, 0.04);
 }
 
 .tree__children {
