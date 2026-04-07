@@ -2303,14 +2303,12 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .right-rail-form-grid,
-.right-rail-meta-list,
 .right-rail-toggle-list {
   display: grid;
   gap: 10px;
 }
 
 .right-rail-form-row,
-.right-rail-meta-row,
 .right-rail-toggle-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(130px, 210px);
@@ -2319,7 +2317,6 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .right-rail-form-key,
-.right-rail-meta-key,
 .right-rail-toggle-key {
   color: #87817b;
   font-size: 13px;
@@ -2327,8 +2324,7 @@ body.dark-theme .toolbar__swatch::before {
   letter-spacing: 0.002em;
 }
 
-.right-rail-form-value,
-.right-rail-meta-value {
+.right-rail-form-value {
   min-height: 42px;
   padding: 0 14px;
   border-radius: 10px;
@@ -2341,39 +2337,6 @@ body.dark-theme .toolbar__swatch::before {
   font-size: 13px;
   line-height: 18px;
   text-align: center;
-}
-
-.right-rail-shell--scene {
-  gap: 24px;
-}
-
-.right-rail-shell--scene .right-rail-meta-list {
-  gap: 16px;
-}
-
-.right-rail-shell--scene .right-rail-meta-row {
-  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
-  align-items: baseline;
-}
-
-.right-rail-shell--scene .right-rail-meta-key {
-  color: #87817b;
-  font-size: 13px;
-  line-height: 18px;
-}
-
-.right-rail-shell--scene .right-rail-meta-value {
-  min-height: auto;
-  padding: 0;
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  color: #666059;
-  display: inline;
-  justify-self: end;
-  text-align: right;
-  font-size: 13px;
-  line-height: 20px;
 }
 
 .right-rail-runtime-note {
@@ -2420,39 +2383,6 @@ body.dark-theme .toolbar__swatch::before {
 .right-rail-toggle.is-on::before {
   left: 46px;
   background: #f8f7f5;
-}
-
-.right-rail-chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.right-rail-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  padding: 0 18px;
-  border-radius: 9px;
-  border: 1px solid rgba(118, 92, 62, 0.05);
-  background: rgba(255, 252, 247, 0.72);
-  color: #68625c;
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 500;
-  box-shadow: none;
-}
-
-.right-rail-note-card {
-  border-radius: 11px;
-  border: 1px solid rgba(118, 92, 62, 0.05);
-  background: rgba(249, 246, 241, 0.94);
-  color: #68625c;
-  font-size: 12px;
-  line-height: 1.45;
-  font-weight: 400;
-  padding: 16px 18px;
 }
 
 [data-right-panel-comments]:not([hidden]) {

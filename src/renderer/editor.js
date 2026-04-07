@@ -84,7 +84,6 @@ const rightSidebar = document.querySelector('[data-right-sidebar]');
 const rightTabsHost = document.querySelector('[data-right-tabs]');
 const rightTabButtons = Array.from(document.querySelectorAll('[data-right-tab]'));
 const rightInspectorPanel = document.querySelector('[data-right-panel-inspector]');
-const rightSceneMetaPanel = document.querySelector('[data-right-panel-scene-meta]');
 const rightCommentsPanel = document.querySelector('[data-right-panel-comments]');
 const rightHistoryPanel = document.querySelector('[data-right-panel-history]');
 const inspectorSnapshotElement = document.querySelector('[data-inspector-snapshot]');
@@ -4214,7 +4213,14 @@ function ensureCommandsOpenerInRightInspectorSurface() {
   return commandsButton;
 }
 
+function normalizeRightTab(tab) {
+  if (tab === 'comments') return 'comments';
+  if (tab === 'history' && collabScopeLocal) return 'history';
+  return 'inspector';
+}
+
 function applyRightTab(tab) {
+  tab = normalizeRightTab(tab);
   currentRightTab = tab;
   for (const button of rightTabButtons) {
     const active = button.dataset.rightTab === tab;
@@ -4222,7 +4228,6 @@ function applyRightTab(tab) {
     button.setAttribute('aria-pressed', active ? 'true' : 'false');
   }
   if (rightInspectorPanel) rightInspectorPanel.hidden = tab !== 'inspector';
-  if (rightSceneMetaPanel) rightSceneMetaPanel.hidden = tab !== 'scene-meta';
   if (rightCommentsPanel) rightCommentsPanel.hidden = tab !== 'comments';
   if (rightHistoryPanel) rightHistoryPanel.hidden = tab !== 'history' || !collabScopeLocal;
   if (tab === 'inspector') {
@@ -5701,9 +5706,6 @@ applyLiteralToolbarMasterVisualDefaults();
 setPlainText('');
 restoreSpatialLayoutState(currentProjectId);
 metaPanel?.classList.add('is-hidden');
-if (rightSceneMetaPanel && metaPanel) {
-  rightSceneMetaPanel.appendChild(metaPanel);
-}
 updateSaveStateText('idle');
 updateWarningStateText('none');
 updatePerfHintText('normal');
@@ -5759,7 +5761,7 @@ if (rightTabsHost) {
     const button = event.target.closest('[data-right-tab]');
     if (!button) return;
     const tab = button.dataset.rightTab;
-    if (tab === 'inspector' || tab === 'scene-meta' || tab === 'comments' || tab === 'history') {
+    if (tab === 'inspector' || tab === 'comments' || tab === 'history') {
       applyRightTab(tab);
     }
   });
