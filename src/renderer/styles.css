@@ -2154,8 +2154,8 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 [data-right-tabs] .x101-tabs-group {
-  width: auto;
-  display: inline-flex;
+  width: 100%;
+  display: flex;
   align-items: center;
   gap: 6px;
   padding: 0;
@@ -2171,7 +2171,8 @@ body.dark-theme .toolbar__swatch::before {
 [data-right-tabs] .x101-tab-button,
 [data-right-tabs] .x101-tab-button.toolbar__button--wide {
   min-width: auto;
-  flex: 0 0 auto;
+  flex: 1 1 0;
+  width: 0;
   height: 29px;
   padding: 0 11px;
   border-radius: 8px;
@@ -2183,6 +2184,8 @@ body.dark-theme .toolbar__swatch::before {
   letter-spacing: 0.006em;
   background: transparent;
   box-shadow: none;
+  white-space: nowrap;
+  text-align: center;
 }
 
 [data-right-tabs] .x101-tab-button:hover,
