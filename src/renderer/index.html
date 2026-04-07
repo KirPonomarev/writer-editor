@@ -410,27 +410,103 @@
       <aside class="sidebar sidebar--right" data-right-sidebar>
         <div class="toolbar__row toolbar__row--secondary x101-tabs-row" data-right-tabs>
           <div class="toolbar__cluster x101-tabs-group">
-            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button is-active" data-right-tab="inspector" aria-pressed="true">Inspector</button>
-            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="scene-meta" aria-pressed="false">Scene Meta</button>
-            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="comments" aria-pressed="false">Comments</button>
-            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="history" aria-pressed="false">History</button>
+            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button is-active" data-right-tab="inspector" aria-pressed="true">Инспектор</button>
+            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="scene-meta" aria-pressed="false">Сцена</button>
+            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="comments" aria-pressed="false">Комментарии</button>
+            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="history" aria-pressed="false">История</button>
           </div>
         </div>
         <div class="sidebar__tree" data-right-panel-inspector>
-          <div class="tree__empty" data-inspector-snapshot>Inspector not ready</div>
-          <div class="toolbar__cluster x101-action-buttons">
-            <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-command-palette">Commands</button>
-            <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-settings">Settings</button>
-            <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-diagnostics">Diagnostics</button>
-            <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-recovery">Recovery</button>
+          <div class="right-rail-shell right-rail-shell--inspector">
+            <section class="right-rail-section">
+              <div class="right-rail-section__label">Шрифт</div>
+              <div class="right-rail-field-list">
+                <div class="right-rail-field">
+                  <span class="right-rail-field__label">Гарнитура</span>
+                  <span class="right-rail-field__value">Из документа</span>
+                </div>
+                <div class="right-rail-field">
+                  <span class="right-rail-field__label">Начертание</span>
+                  <span class="right-rail-field__value">Текущий стиль</span>
+                </div>
+                <div class="right-rail-field">
+                  <span class="right-rail-field__label">Кегль</span>
+                  <span class="right-rail-field__value">Синхронно</span>
+                </div>
+                <div class="right-rail-field">
+                  <span class="right-rail-field__label">Интерлиньяж</span>
+                  <span class="right-rail-field__value">Из текста</span>
+                </div>
+              </div>
+            </section>
+            <section class="right-rail-section">
+              <div class="right-rail-section__label">Макет</div>
+              <div class="right-rail-field-list">
+                <div class="right-rail-field">
+                  <span class="right-rail-field__label">Формат</span>
+                  <span class="right-rail-field__value">Текущий файл</span>
+                </div>
+                <div class="right-rail-field">
+                  <span class="right-rail-field__label">Колонки</span>
+                  <span class="right-rail-field__value">Runtime</span>
+                </div>
+                <div class="right-rail-field">
+                  <span class="right-rail-field__label">Поля</span>
+                  <span class="right-rail-field__value">Без сдвига</span>
+                </div>
+                <div class="right-rail-field">
+                  <span class="right-rail-field__label">Сетка</span>
+                  <span class="right-rail-field__value">Ненавязчиво</span>
+                </div>
+              </div>
+            </section>
+            <section class="right-rail-section">
+              <div class="right-rail-section__label">Состояние</div>
+              <div class="right-rail-toggle-list" aria-hidden="true">
+                <div class="right-rail-toggle-row">
+                  <span class="right-rail-field__label">Автосохранение</span>
+                  <span class="right-rail-toggle is-on"></span>
+                </div>
+                <div class="right-rail-toggle-row">
+                  <span class="right-rail-field__label">Комментарии</span>
+                  <span class="right-rail-toggle"></span>
+                </div>
+                <div class="right-rail-toggle-row">
+                  <span class="right-rail-field__label">Режим фокуса</span>
+                  <span class="right-rail-toggle is-on"></span>
+                </div>
+              </div>
+              <div class="tree__empty right-rail-snapshot" data-inspector-snapshot>Inspector not ready</div>
+            </section>
+            <section class="right-rail-section">
+              <div class="right-rail-section__label">Действия</div>
+              <div class="toolbar__cluster x101-action-buttons">
+                <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-command-palette">Commands</button>
+                <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-settings">Settings</button>
+                <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-diagnostics">Diagnostics</button>
+                <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-recovery">Recovery</button>
+              </div>
+            </section>
           </div>
         </div>
-        <div class="sidebar__tree" data-right-panel-scene-meta hidden></div>
+        <div class="sidebar__tree" data-right-panel-scene-meta hidden>
+          <div class="right-rail-placeholder-card" data-right-scene-fallback>Поля сцены остаются в текущем runtime contract. Этот contour пока перестраивает только shell и визуальную иерархию.</div>
+        </div>
         <div class="sidebar__tree" data-right-panel-comments hidden>
-          <div class="tree__empty" data-comments-placeholder>Comments local-first only</div>
+          <div class="right-rail-shell right-rail-shell--comments">
+            <section class="right-rail-section">
+              <div class="right-rail-section__label">Комментарии</div>
+              <div class="tree__empty right-rail-placeholder-card" data-comments-placeholder>Локальные комментарии сохранены в текущем рантайме и могут получить отдельный presentation contour позже.</div>
+            </section>
+          </div>
         </div>
         <div class="sidebar__tree" data-right-panel-history hidden>
-          <div class="tree__empty" data-history-placeholder>History local-first only</div>
+          <div class="right-rail-shell right-rail-shell--history">
+            <section class="right-rail-section">
+              <div class="right-rail-section__label">История</div>
+              <div class="tree__empty right-rail-placeholder-card" data-history-placeholder>Локальная история сохранена. Более точный reference match потребует отдельного runtime contour, если останется реальный gap.</div>
+            </section>
+          </div>
         </div>
         <div class="sidebar__resize-handle sidebar__resize-handle--right" data-right-sidebar-resizer aria-hidden="true"></div>
       </aside>
