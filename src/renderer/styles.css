@@ -2133,36 +2133,35 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 [data-right-tabs] {
+  position: relative;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
+  gap: 11px;
   min-height: auto;
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid rgba(118, 92, 62, 0.04);
+  padding: 17px 24px 15px;
+  border-bottom: 1px solid rgba(118, 92, 62, 0.07);
 }
 
 [data-right-tabs]::before {
   content: 'Контекст';
   display: block;
-  color: #b2aaa2;
+  color: #b8b1ab;
   font-size: 11px;
   line-height: 14px;
   font-weight: 500;
-  letter-spacing: 0.065em;
+  letter-spacing: 0.072em;
   text-transform: uppercase;
 }
 
 [data-right-tabs] .x101-tabs-group {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  align-items: stretch;
-  gap: 4px;
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 0;
   border: none;
-  border-radius: 0;
   background: transparent;
-  box-shadow: none;
+  overflow: visible;
 }
 
 [data-right-tabs] [data-right-tab][hidden] {
@@ -2172,33 +2171,30 @@ body.dark-theme .toolbar__swatch::before {
 [data-right-tabs] .x101-tab-button,
 [data-right-tabs] .x101-tab-button.toolbar__button--wide {
   min-width: auto;
-  width: 100%;
-  justify-content: center;
-  height: 36px;
-  padding: 0 8px;
-  border-radius: 12px;
+  flex: 0 0 auto;
+  height: 29px;
+  padding: 0 11px;
+  border-radius: 8px;
   border: none;
-  color: #928a82;
-  font-size: 12.5px;
+  color: #9b948d;
+  font-size: 12px;
   line-height: 16px;
   font-weight: 500;
-  letter-spacing: 0;
+  letter-spacing: 0.006em;
   background: transparent;
   box-shadow: none;
-  text-align: center;
-  white-space: nowrap;
 }
 
 [data-right-tabs] .x101-tab-button:hover,
 [data-right-tabs] .x101-tab-button:focus-visible {
-  background: rgba(255, 252, 247, 0.56);
-  color: #625b54;
+  background: rgba(118, 92, 62, 0.028);
+  color: #6a645e;
 }
 
 [data-right-tabs] .x101-tab-button.is-active {
-  background: #fffdfa;
-  color: #46403a;
-  box-shadow: 0 1px 2px rgba(58, 46, 36, 0.04), inset 0 0 0 1px rgba(118, 92, 62, 0.045);
+  background: #faf7f2;
+  color: #3f3934;
+  box-shadow: inset 0 0 0 1px rgba(118, 92, 62, 0.035);
 }
 
 .sidebar__tree {
