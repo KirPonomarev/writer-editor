@@ -2135,35 +2135,35 @@ body.dark-theme .toolbar__swatch::before {
 [data-right-tabs] {
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: 12px;
   min-height: auto;
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid rgba(118, 92, 62, 0.045);
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(118, 92, 62, 0.04);
 }
 
 [data-right-tabs]::before {
   content: 'Контекст';
   display: block;
-  color: #b5ada5;
+  color: #b2aaa2;
   font-size: 11px;
   line-height: 14px;
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.065em;
   text-transform: uppercase;
 }
 
 [data-right-tabs] .x101-tabs-group {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 2px;
-  padding: 3px;
-  border: 1px solid rgba(118, 92, 62, 0.08);
-  border-radius: 14px;
-  background: rgba(252, 249, 244, 0.58);
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
   overflow: visible;
   flex-wrap: nowrap;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.48);
+  box-shadow: none;
 }
 
 [data-right-tabs] [data-right-tab][hidden] {
@@ -2172,18 +2172,18 @@ body.dark-theme .toolbar__swatch::before {
 
 [data-right-tabs] .x101-tab-button,
 [data-right-tabs] .x101-tab-button.toolbar__button--wide {
-  min-width: 0;
-  width: 100%;
-  flex: 1 1 0;
+  min-width: auto;
+  width: auto;
+  flex: 0 0 auto;
   justify-content: center;
-  height: 34px;
-  padding: 0 10px;
-  border-radius: 10px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 11px;
   border: none;
-  color: #938b83;
-  font-size: 12.5px;
-  line-height: 17px;
-  font-weight: 500;
+  color: #928a82;
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
   letter-spacing: 0;
   background: transparent;
   box-shadow: none;
@@ -2192,14 +2192,14 @@ body.dark-theme .toolbar__swatch::before {
 
 [data-right-tabs] .x101-tab-button:hover,
 [data-right-tabs] .x101-tab-button:focus-visible {
-  background: rgba(255, 253, 249, 0.82);
-  color: #5f5851;
+  background: rgba(255, 252, 247, 0.56);
+  color: #625b54;
 }
 
 [data-right-tabs] .x101-tab-button.is-active {
   background: #fffdfa;
-  color: #4a433d;
-  box-shadow: 0 1px 2px rgba(58, 46, 36, 0.03), inset 0 0 0 1px rgba(118, 92, 62, 0.055);
+  color: #46403a;
+  box-shadow: 0 1px 2px rgba(58, 46, 36, 0.04), inset 0 0 0 1px rgba(118, 92, 62, 0.045);
 }
 
 .sidebar__tree {
