@@ -4223,7 +4223,7 @@ function applyRightTab(tab) {
   }
   if (rightInspectorPanel) rightInspectorPanel.hidden = tab !== 'inspector';
   if (rightSceneMetaPanel) rightSceneMetaPanel.hidden = tab !== 'scene-meta';
-  if (rightCommentsPanel) rightCommentsPanel.hidden = tab !== 'comments' || !collabScopeLocal;
+  if (rightCommentsPanel) rightCommentsPanel.hidden = tab !== 'comments';
   if (rightHistoryPanel) rightHistoryPanel.hidden = tab !== 'history' || !collabScopeLocal;
   if (tab === 'inspector') {
     ensureCommandsOpenerInRightInspectorSurface();
@@ -4606,12 +4606,12 @@ async function confirmExportPreviewAndRun() {
 function applyCollabGate() {
   for (const button of rightTabButtons) {
     const tab = button.dataset.rightTab;
-    const gated = tab === 'comments' || tab === 'history';
+    const gated = tab === 'history';
     if (gated) {
       button.hidden = !collabScopeLocal;
     }
   }
-  if (!collabScopeLocal && (currentRightTab === 'comments' || currentRightTab === 'history')) {
+  if (!collabScopeLocal && currentRightTab === 'history') {
     applyRightTab('inspector');
   } else {
     applyRightTab(currentRightTab);
