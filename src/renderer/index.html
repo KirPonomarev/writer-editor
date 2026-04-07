@@ -418,67 +418,29 @@
         </div>
         <div class="sidebar__tree" data-right-panel-inspector>
           <div class="right-rail-shell right-rail-shell--inspector">
-            <section class="right-rail-section">
-              <div class="right-rail-section__label">Шрифт</div>
-              <div class="right-rail-field-list">
-                <div class="right-rail-field">
-                  <span class="right-rail-field__label">Гарнитура</span>
-                  <span class="right-rail-field__value">Из документа</span>
-                </div>
-                <div class="right-rail-field">
-                  <span class="right-rail-field__label">Начертание</span>
-                  <span class="right-rail-field__value">Текущий стиль</span>
-                </div>
-                <div class="right-rail-field">
-                  <span class="right-rail-field__label">Кегль</span>
-                  <span class="right-rail-field__value">Синхронно</span>
-                </div>
-                <div class="right-rail-field">
-                  <span class="right-rail-field__label">Интерлиньяж</span>
-                  <span class="right-rail-field__value">Из текста</span>
-                </div>
-              </div>
-            </section>
-            <section class="right-rail-section">
-              <div class="right-rail-section__label">Макет</div>
-              <div class="right-rail-field-list">
-                <div class="right-rail-field">
-                  <span class="right-rail-field__label">Формат</span>
-                  <span class="right-rail-field__value">Текущий файл</span>
-                </div>
-                <div class="right-rail-field">
-                  <span class="right-rail-field__label">Колонки</span>
-                  <span class="right-rail-field__value">Runtime</span>
-                </div>
-                <div class="right-rail-field">
-                  <span class="right-rail-field__label">Поля</span>
-                  <span class="right-rail-field__value">Без сдвига</span>
-                </div>
-                <div class="right-rail-field">
-                  <span class="right-rail-field__label">Сетка</span>
-                  <span class="right-rail-field__value">Ненавязчиво</span>
-                </div>
-              </div>
-            </section>
-            <section class="right-rail-section">
-              <div class="right-rail-section__label">Состояние</div>
-              <div class="right-rail-toggle-list" aria-hidden="true">
-                <div class="right-rail-toggle-row">
-                  <span class="right-rail-field__label">Автосохранение</span>
-                  <span class="right-rail-toggle is-on"></span>
-                </div>
-                <div class="right-rail-toggle-row">
-                  <span class="right-rail-field__label">Комментарии</span>
-                  <span class="right-rail-toggle"></span>
-                </div>
-                <div class="right-rail-toggle-row">
-                  <span class="right-rail-field__label">Режим фокуса</span>
-                  <span class="right-rail-toggle is-on"></span>
-                </div>
-              </div>
+            <section class="right-rail-surface right-rail-surface--primary">
+              <div class="right-rail-section__label">Инспектор</div>
+              <p class="right-rail-lead">Контекст текущего документа и runtime-состояние без подмены логики.</p>
               <div class="tree__empty right-rail-snapshot" data-inspector-snapshot>Inspector not ready</div>
             </section>
-            <section class="right-rail-section">
+            <section class="right-rail-surface right-rail-surface--secondary" aria-hidden="true">
+              <div class="right-rail-section__label">Иерархия</div>
+              <div class="right-rail-hierarchy">
+                <div class="right-rail-hierarchy__row">
+                  <span class="right-rail-hierarchy__key">Основное</span>
+                  <span class="right-rail-hierarchy__value">Инспектор</span>
+                </div>
+                <div class="right-rail-hierarchy__row">
+                  <span class="right-rail-hierarchy__key">Вторичное</span>
+                  <span class="right-rail-hierarchy__value">Сцена</span>
+                </div>
+                <div class="right-rail-hierarchy__row">
+                  <span class="right-rail-hierarchy__key">Runtime</span>
+                  <span class="right-rail-hierarchy__value">Комментарии и история</span>
+                </div>
+              </div>
+            </section>
+            <section class="right-rail-surface right-rail-surface--actions">
               <div class="right-rail-section__label">Действия</div>
               <div class="toolbar__cluster x101-action-buttons">
                 <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-command-palette">Commands</button>
@@ -490,22 +452,18 @@
           </div>
         </div>
         <div class="sidebar__tree" data-right-panel-scene-meta hidden>
-          <div class="right-rail-placeholder-card" data-right-scene-fallback>Поля сцены остаются в текущем runtime contract. Этот contour пока перестраивает только shell и визуальную иерархию.</div>
+          <div class="tree__empty right-rail-runtime-note" data-right-scene-fallback>Сцена остается runtime-driven. В этом контуре обновляется только информационная иерархия shell.</div>
         </div>
         <div class="sidebar__tree" data-right-panel-comments hidden>
-          <div class="right-rail-shell right-rail-shell--comments">
-            <section class="right-rail-section">
-              <div class="right-rail-section__label">Комментарии</div>
-              <div class="tree__empty right-rail-placeholder-card" data-comments-placeholder>Локальные комментарии сохранены в текущем рантайме и могут получить отдельный presentation contour позже.</div>
-            </section>
+          <div class="right-rail-shell right-rail-shell--runtime">
+            <div class="right-rail-section__label">Комментарии</div>
+            <div class="tree__empty right-rail-runtime-note" data-comments-placeholder>Локальная поверхность комментариев остается runtime-driven.</div>
           </div>
         </div>
         <div class="sidebar__tree" data-right-panel-history hidden>
-          <div class="right-rail-shell right-rail-shell--history">
-            <section class="right-rail-section">
-              <div class="right-rail-section__label">История</div>
-              <div class="tree__empty right-rail-placeholder-card" data-history-placeholder>Локальная история сохранена. Более точный reference match потребует отдельного runtime contour, если останется реальный gap.</div>
-            </section>
+          <div class="right-rail-shell right-rail-shell--runtime">
+            <div class="right-rail-section__label">История</div>
+            <div class="tree__empty right-rail-runtime-note" data-history-placeholder>Локальная история остается runtime-driven.</div>
           </div>
         </div>
         <div class="sidebar__resize-handle sidebar__resize-handle--right" data-right-sidebar-resizer aria-hidden="true"></div>
