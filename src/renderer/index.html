@@ -413,51 +413,149 @@
             <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button is-active" data-right-tab="inspector" aria-pressed="true">Инспектор</button>
             <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="scene-meta" aria-pressed="false">Сцена</button>
             <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="comments" aria-pressed="false">Комментарии</button>
-            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="history" aria-pressed="false">История</button>
           </div>
         </div>
         <div class="sidebar__tree" data-right-panel-inspector>
           <div class="right-rail-shell right-rail-shell--inspector">
-            <section class="right-rail-surface right-rail-surface--primary">
-              <div class="right-rail-section__label">Инспектор</div>
-              <p class="right-rail-lead">Контекст текущего документа и runtime-состояние без подмены логики.</p>
-              <div class="tree__empty right-rail-snapshot" data-inspector-snapshot>Inspector not ready</div>
+            <section class="right-rail-surface">
+              <div class="right-rail-section__label">Шрифт</div>
+              <div class="right-rail-form-grid">
+                <div class="right-rail-form-row">
+                  <span class="right-rail-form-key">Гарнитура</span>
+                  <span class="right-rail-form-value">EB Garamond</span>
+                </div>
+                <div class="right-rail-form-row">
+                  <span class="right-rail-form-key">Начертание</span>
+                  <span class="right-rail-form-value">Regular</span>
+                </div>
+                <div class="right-rail-form-row">
+                  <span class="right-rail-form-key">Кегль</span>
+                  <span class="right-rail-form-value">28</span>
+                </div>
+                <div class="right-rail-form-row">
+                  <span class="right-rail-form-key">Интерлиньяж</span>
+                  <span class="right-rail-form-value">1.35</span>
+                </div>
+              </div>
             </section>
-            <section class="right-rail-surface right-rail-surface--secondary" aria-hidden="true">
-              <div class="right-rail-section__label">Иерархия</div>
-              <div class="right-rail-hierarchy">
-                <div class="right-rail-hierarchy__row">
-                  <span class="right-rail-hierarchy__key">Основное</span>
-                  <span class="right-rail-hierarchy__value">Инспектор</span>
+            <section class="right-rail-surface">
+              <div class="right-rail-section__label">Макет</div>
+              <div class="right-rail-form-grid">
+                <div class="right-rail-form-row">
+                  <span class="right-rail-form-key">Формат</span>
+                  <span class="right-rail-form-value">A4</span>
                 </div>
-                <div class="right-rail-hierarchy__row">
-                  <span class="right-rail-hierarchy__key">Вторичное</span>
-                  <span class="right-rail-hierarchy__value">Сцена</span>
+                <div class="right-rail-form-row">
+                  <span class="right-rail-form-key">Колонки</span>
+                  <span class="right-rail-form-value">1</span>
                 </div>
-                <div class="right-rail-hierarchy__row">
-                  <span class="right-rail-hierarchy__key">Runtime</span>
-                  <span class="right-rail-hierarchy__value">Комментарии и история</span>
+                <div class="right-rail-form-row">
+                  <span class="right-rail-form-key">Поля</span>
+                  <span class="right-rail-form-value">Широкие</span>
+                </div>
+                <div class="right-rail-form-row">
+                  <span class="right-rail-form-key">Сетка</span>
+                  <span class="right-rail-form-value">Базовая</span>
+                </div>
+              </div>
+            </section>
+            <section class="right-rail-surface">
+              <div class="right-rail-section__label">Состояние</div>
+              <div class="right-rail-toggle-list">
+                <div class="right-rail-toggle-row">
+                  <span class="right-rail-toggle-key">Автосохранение</span>
+                  <button type="button" class="right-rail-toggle is-on" aria-label="Автосохранение"></button>
+                </div>
+                <div class="right-rail-toggle-row">
+                  <span class="right-rail-toggle-key">Комментарии</span>
+                  <button type="button" class="right-rail-toggle is-off" aria-label="Комментарии"></button>
+                </div>
+                <div class="right-rail-toggle-row">
+                  <span class="right-rail-toggle-key">Режим фокуса</span>
+                  <button type="button" class="right-rail-toggle is-on" aria-label="Режим фокуса"></button>
                 </div>
               </div>
             </section>
             <section class="right-rail-surface right-rail-surface--actions">
-              <div class="right-rail-section__label">Действия</div>
-              <div class="toolbar__cluster x101-action-buttons">
+              <div class="toolbar__cluster x101-action-buttons right-rail-actions">
                 <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-command-palette">Commands</button>
                 <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-settings">Settings</button>
                 <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-diagnostics">Diagnostics</button>
                 <button type="button" class="toolbar__button toolbar__button--wide x101-action-button" data-action="open-recovery">Recovery</button>
               </div>
+              <div class="tree__empty right-rail-runtime-note right-rail-runtime-note--compact" data-inspector-snapshot>Inspector not ready</div>
             </section>
           </div>
         </div>
         <div class="sidebar__tree" data-right-panel-scene-meta hidden>
-          <div class="tree__empty right-rail-runtime-note" data-right-scene-fallback>Сцена остается runtime-driven. В этом контуре обновляется только информационная иерархия shell.</div>
+          <div class="right-rail-shell right-rail-shell--scene">
+            <section class="right-rail-surface">
+              <div class="right-rail-section__label">Сцена</div>
+              <div class="right-rail-meta-list">
+                <div class="right-rail-meta-row">
+                  <span class="right-rail-meta-key">Название</span>
+                  <span class="right-rail-meta-value">Завязка</span>
+                </div>
+                <div class="right-rail-meta-row">
+                  <span class="right-rail-meta-key">Точка зрения</span>
+                  <span class="right-rail-meta-value">Нейтральная</span>
+                </div>
+                <div class="right-rail-meta-row">
+                  <span class="right-rail-meta-key">Место</span>
+                  <span class="right-rail-meta-value">Интерьер</span>
+                </div>
+                <div class="right-rail-meta-row">
+                  <span class="right-rail-meta-key">Время</span>
+                  <span class="right-rail-meta-value">Утро</span>
+                </div>
+              </div>
+            </section>
+            <section class="right-rail-surface">
+              <div class="right-rail-section__label">Теги</div>
+              <div class="right-rail-chip-row">
+                <span class="right-rail-chip">подготовка</span>
+                <span class="right-rail-chip">тишина</span>
+                <span class="right-rail-chip">порог</span>
+              </div>
+            </section>
+            <section class="right-rail-surface">
+              <div class="right-rail-section__label">Заметка</div>
+              <div class="right-rail-note-card">Держать метаданные видимыми, но ненавязчивыми. Контраст должен идти только от иерархии.</div>
+            </section>
+          </div>
         </div>
         <div class="sidebar__tree" data-right-panel-comments hidden>
-          <div class="right-rail-shell right-rail-shell--runtime">
-            <div class="right-rail-section__label">Комментарии</div>
-            <div class="tree__empty right-rail-runtime-note" data-comments-placeholder>Локальная поверхность комментариев остается runtime-driven.</div>
+          <div class="right-rail-shell right-rail-shell--comments">
+            <section class="right-rail-surface">
+              <div class="right-rail-section__label">Комментарии</div>
+              <div class="right-rail-comments-list">
+                <article class="right-rail-comment-card">
+                  <div class="right-rail-comment-head">
+                    <span class="right-rail-comment-avatar">Ар</span>
+                    <p class="right-rail-comment-text">Хороший ритм в начале.</p>
+                    <span class="right-rail-comment-time">11:12</span>
+                  </div>
+                  <div class="right-rail-comment-actions">Ответить · Закрыть</div>
+                </article>
+                <article class="right-rail-comment-card">
+                  <div class="right-rail-comment-head">
+                    <span class="right-rail-comment-avatar">Ми</span>
+                    <p class="right-rail-comment-text">Сократить второй абзац?</p>
+                    <span class="right-rail-comment-time">12:28</span>
+                  </div>
+                  <div class="right-rail-comment-actions">Ответить · Закрыть</div>
+                </article>
+                <article class="right-rail-comment-card">
+                  <div class="right-rail-comment-head">
+                    <span class="right-rail-comment-avatar">Юр</span>
+                    <p class="right-rail-comment-text">Оставить заметку на полях.</p>
+                    <span class="right-rail-comment-time">12:03</span>
+                  </div>
+                  <div class="right-rail-comment-actions">Ответить · Закрыть</div>
+                </article>
+              </div>
+              <div class="right-rail-comment-input" data-comments-placeholder>Написать комментарий</div>
+            </section>
           </div>
         </div>
         <div class="sidebar__tree" data-right-panel-history hidden>
