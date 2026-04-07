@@ -2289,6 +2289,10 @@ body.dark-theme .toolbar__swatch::before {
   gap: 12px;
 }
 
+.right-rail-surface--commands {
+  gap: 8px;
+}
+
 .right-rail-section__label {
   color: #aaa39d;
   font-size: 11px;
@@ -2526,6 +2530,35 @@ body.dark-theme .toolbar__swatch::before {
   padding: 0 16px;
   font-size: 13px;
   line-height: 18px;
+}
+
+.right-rail-commands-host {
+  width: auto;
+  display: inline-flex;
+  gap: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.right-rail-command-opener,
+.right-rail-command-opener.toolbar__button--wide {
+  min-width: auto;
+  height: 31px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(118, 92, 62, 0.05);
+  background: rgba(255, 252, 247, 0.7);
+  color: #7c756e;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.right-rail-command-opener:hover,
+.right-rail-command-opener:focus-visible {
+  background: rgba(255, 252, 247, 0.9);
 }
 
 [data-right-panel-history]:not([hidden]) {
