@@ -418,7 +418,7 @@
         <div class="sidebar__tree" data-right-panel-inspector>
           <div class="right-rail-shell right-rail-shell--inspector">
             <section class="right-rail-surface">
-              <div class="right-rail-section__label">Шрифт</div>
+              <div class="right-rail-section__label">Типографика</div>
               <div class="right-rail-form-grid">
                 <div class="right-rail-form-row">
                   <span class="right-rail-form-key">Гарнитура</span>
@@ -426,7 +426,7 @@
                 </div>
                 <div class="right-rail-form-row">
                   <span class="right-rail-form-key">Начертание</span>
-                  <span class="right-rail-form-value">Regular</span>
+                  <span class="right-rail-form-value">Обычное</span>
                 </div>
                 <div class="right-rail-form-row">
                   <span class="right-rail-form-key">Кегль</span>
@@ -477,9 +477,9 @@
               </div>
             </section>
             <section class="right-rail-surface right-rail-surface--commands">
-              <div class="right-rail-section__label">Действия</div>
+              <div class="right-rail-section__label">Команды</div>
               <div class="toolbar__cluster x101-action-buttons right-rail-commands-host">
-                <button type="button" class="toolbar__button toolbar__button--wide x101-action-button right-rail-command-opener" data-action="open-command-palette">Commands</button>
+                <button type="button" class="toolbar__button toolbar__button--wide x101-action-button right-rail-command-opener" data-action="open-command-palette">Команды</button>
               </div>
             </section>
           </div>
@@ -491,27 +491,36 @@
               <div class="right-rail-comments-list">
                 <article class="right-rail-comment-card">
                   <div class="right-rail-comment-head">
-                    <span class="right-rail-comment-avatar">Ар</span>
-                    <p class="right-rail-comment-text">Хороший ритм в начале.</p>
+                    <span class="right-rail-comment-avatar">АЛ</span>
+                    <div class="right-rail-comment-copy">
+                      <div class="right-rail-comment-author">Алина</div>
+                      <p class="right-rail-comment-text">Хороший ритм в начале.</p>
+                    </div>
                     <span class="right-rail-comment-time">11:12</span>
                   </div>
-                  <div class="right-rail-comment-actions">Ответить · Закрыть</div>
+                  <div class="right-rail-comment-actions">Ответить · Решено</div>
                 </article>
                 <article class="right-rail-comment-card">
                   <div class="right-rail-comment-head">
-                    <span class="right-rail-comment-avatar">Ми</span>
-                    <p class="right-rail-comment-text">Сократить второй абзац?</p>
+                    <span class="right-rail-comment-avatar">МИ</span>
+                    <div class="right-rail-comment-copy">
+                      <div class="right-rail-comment-author">Мина</div>
+                      <p class="right-rail-comment-text">Сократить второй абзац.</p>
+                    </div>
                     <span class="right-rail-comment-time">12:28</span>
                   </div>
-                  <div class="right-rail-comment-actions">Ответить · Закрыть</div>
+                  <div class="right-rail-comment-actions">Ответить · Решено</div>
                 </article>
                 <article class="right-rail-comment-card">
                   <div class="right-rail-comment-head">
-                    <span class="right-rail-comment-avatar">Юр</span>
-                    <p class="right-rail-comment-text">Оставить заметку на полях.</p>
+                    <span class="right-rail-comment-avatar">ЮР</span>
+                    <div class="right-rail-comment-copy">
+                      <div class="right-rail-comment-author">Юрий</div>
+                      <p class="right-rail-comment-text">Оставить заметку на полях.</p>
+                    </div>
                     <span class="right-rail-comment-time">12:03</span>
                   </div>
-                  <div class="right-rail-comment-actions">Ответить · Закрыть</div>
+                  <div class="right-rail-comment-actions">Ответить · Решено</div>
                 </article>
               </div>
               <div class="right-rail-comment-input" data-comments-placeholder>Написать комментарий</div>
@@ -520,8 +529,55 @@
         </div>
         <div class="sidebar__tree" data-right-panel-history hidden>
           <div class="right-rail-shell right-rail-shell--runtime">
-            <div class="right-rail-section__label">История</div>
-            <div class="tree__empty right-rail-runtime-note" data-history-placeholder>Локальная история остается runtime-driven.</div>
+            <section class="right-rail-surface right-rail-surface--history">
+              <div class="right-rail-section__label">История</div>
+              <div class="right-rail-history-list" data-history-placeholder>
+                <article class="right-rail-history-item">
+                  <span class="right-rail-history-dot" aria-hidden="true"></span>
+                  <div class="right-rail-history-copy">
+                    <div class="right-rail-history-head">
+                      <span class="right-rail-history-title">Автосохранение</span>
+                      <span class="right-rail-history-time">12:08</span>
+                    </div>
+                    <p class="right-rail-history-text">Черновик синхронизирован.</p>
+                  </div>
+                </article>
+                <article class="right-rail-history-item">
+                  <span class="right-rail-history-dot" aria-hidden="true"></span>
+                  <div class="right-rail-history-copy">
+                    <div class="right-rail-history-head">
+                      <span class="right-rail-history-title">Версия</span>
+                      <span class="right-rail-history-time">11:52</span>
+                    </div>
+                    <p class="right-rail-history-text">Блок главы обновлен.</p>
+                  </div>
+                </article>
+                <article class="right-rail-history-item">
+                  <span class="right-rail-history-dot" aria-hidden="true"></span>
+                  <div class="right-rail-history-copy">
+                    <div class="right-rail-history-head">
+                      <span class="right-rail-history-title">Автосохранение</span>
+                      <span class="right-rail-history-time">11:36</span>
+                    </div>
+                    <p class="right-rail-history-text">Настройки панели зафиксированы.</p>
+                  </div>
+                </article>
+                <article class="right-rail-history-item">
+                  <span class="right-rail-history-dot" aria-hidden="true"></span>
+                  <div class="right-rail-history-copy">
+                    <div class="right-rail-history-head">
+                      <span class="right-rail-history-title">Открытие</span>
+                      <span class="right-rail-history-time">11:14</span>
+                    </div>
+                    <p class="right-rail-history-text">Документ восстановлен.</p>
+                  </div>
+                </article>
+              </div>
+              <article class="right-rail-history-card">
+                <div class="right-rail-history-card-title">Снимок</div>
+                <p class="right-rail-history-card-text">Ручные версии можно держать в той же карточной логике, что и комментарии.</p>
+              </article>
+            </section>
           </div>
         </div>
         <div class="sidebar__resize-handle sidebar__resize-handle--right" data-right-sidebar-resizer aria-hidden="true"></div>
