@@ -2137,7 +2137,7 @@ body.dark-theme .toolbar__swatch::before {
   align-items: flex-start;
   gap: 12px;
   min-height: auto;
-  padding: 22px 24px 18px;
+  padding: 20px 24px 16px;
   border-bottom: 1px solid rgba(118, 92, 62, 0.04);
 }
 
@@ -2153,16 +2153,15 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 [data-right-tabs] .x101-tabs-group {
-  width: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 4px;
   padding: 0;
   border: none;
   border-radius: 0;
   background: transparent;
-  overflow: visible;
-  flex-wrap: nowrap;
   box-shadow: none;
 }
 
@@ -2173,21 +2172,21 @@ body.dark-theme .toolbar__swatch::before {
 [data-right-tabs] .x101-tab-button,
 [data-right-tabs] .x101-tab-button.toolbar__button--wide {
   min-width: auto;
-  width: auto;
-  flex: 0 0 auto;
+  width: 100%;
   justify-content: center;
-  height: 40px;
-  padding: 0 18px;
-  border-radius: 11px;
+  height: 36px;
+  padding: 0 8px;
+  border-radius: 12px;
   border: none;
   color: #928a82;
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 400;
+  font-size: 12.5px;
+  line-height: 16px;
+  font-weight: 500;
   letter-spacing: 0;
   background: transparent;
   box-shadow: none;
   text-align: center;
+  white-space: nowrap;
 }
 
 [data-right-tabs] .x101-tab-button:hover,
