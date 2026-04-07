@@ -2153,12 +2153,12 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 [data-right-tabs] .x101-tabs-group {
-  width: 100%;
-  gap: 10px;
+  width: auto;
+  gap: 8px;
   padding: 0;
   border: none;
   background: transparent;
-  overflow: hidden;
+  overflow: visible;
   flex-wrap: nowrap;
 }
 
@@ -2310,7 +2310,7 @@ body.dark-theme .toolbar__swatch::before {
 .right-rail-shell {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
   min-height: 100%;
 }
 
@@ -2339,7 +2339,7 @@ body.dark-theme .toolbar__swatch::before {
 .right-rail-meta-list,
 .right-rail-toggle-list {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .right-rail-form-row,
@@ -2348,7 +2348,7 @@ body.dark-theme .toolbar__swatch::before {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(130px, 210px);
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .right-rail-form-key,
@@ -2374,6 +2374,39 @@ body.dark-theme .toolbar__swatch::before {
   font-size: 13px;
   line-height: 18px;
   text-align: center;
+}
+
+.right-rail-shell--scene {
+  gap: 24px;
+}
+
+.right-rail-shell--scene .right-rail-meta-list {
+  gap: 16px;
+}
+
+.right-rail-shell--scene .right-rail-meta-row {
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  align-items: baseline;
+}
+
+.right-rail-shell--scene .right-rail-meta-key {
+  color: #87817b;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.right-rail-shell--scene .right-rail-meta-value {
+  min-height: auto;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #666059;
+  display: inline;
+  justify-self: end;
+  text-align: right;
+  font-size: 13px;
+  line-height: 20px;
 }
 
 .right-rail-runtime-note {
@@ -2470,14 +2503,14 @@ body.dark-theme .toolbar__swatch::before {
 .right-rail-comments-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .right-rail-comment-card {
   border-radius: 11px;
   border: 1px solid rgba(118, 92, 62, 0.045);
   background: rgba(250, 248, 244, 0.94);
-  padding: 12px 14px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -2511,7 +2544,7 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .right-rail-comment-time {
-  margin-top: 3px;
+  margin-top: 4px;
   color: #9c958e;
   font-size: 12px;
   line-height: 16px;
@@ -2526,7 +2559,7 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .right-rail-comment-input {
-  min-height: 60px;
+  min-height: 58px;
   border-radius: 11px;
   border: 1px solid rgba(118, 92, 62, 0.05);
   background: rgba(250, 248, 244, 0.92);
