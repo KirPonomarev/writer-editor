@@ -2535,25 +2535,25 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .right-rail-surface--history {
-  gap: 16px;
+  gap: 14px;
 }
 
 .right-rail-history-list {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  padding-left: 18px;
+  gap: 16px;
+  padding-left: 16px;
 }
 
 .right-rail-history-list::before {
   content: '';
   position: absolute;
-  top: 6px;
-  bottom: 6px;
-  left: 5px;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
   width: 1px;
-  background: rgba(118, 92, 62, 0.12);
+  background: rgba(118, 92, 62, 0.09);
 }
 
 .right-rail-history-item {
@@ -2567,11 +2567,11 @@ body.dark-theme .toolbar__swatch::before {
 .right-rail-history-dot {
   position: relative;
   z-index: 1;
-  width: 11px;
-  height: 11px;
-  margin-top: 5px;
+  width: 9px;
+  height: 9px;
+  margin-top: 4px;
   border-radius: 999px;
-  border: 1px solid rgba(118, 92, 62, 0.28);
+  border: 1px solid rgba(118, 92, 62, 0.22);
   background: #fffdf9;
 }
 
@@ -2604,20 +2604,20 @@ body.dark-theme .toolbar__swatch::before {
 
 .right-rail-history-text {
   margin: 0;
-  color: #8c847c;
+  color: #867f77;
   font-size: 12.5px;
-  line-height: 1.5;
+  line-height: 18px;
 }
 
 .right-rail-history-card {
-  border-radius: 16px;
-  border: 1px solid rgba(118, 92, 62, 0.08);
-  background: rgba(255, 252, 247, 0.94);
-  padding: 16px 17px;
+  border-radius: 14px;
+  border: 1px solid rgba(118, 92, 62, 0.075);
+  background: rgba(255, 252, 247, 0.92);
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
 }
 
 .right-rail-history-card-title {
@@ -2629,9 +2629,9 @@ body.dark-theme .toolbar__swatch::before {
 
 .right-rail-history-card-text {
   margin: 0;
-  color: #7d756d;
+  color: #7f776f;
   font-size: 12.5px;
-  line-height: 1.55;
+  line-height: 18px;
 }
 
 .tree__list {
