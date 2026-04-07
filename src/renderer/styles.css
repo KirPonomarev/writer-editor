@@ -2276,37 +2276,6 @@ body.dark-theme .toolbar__swatch::before {
   width: 100%;
 }
 
-[data-right-panel-inspector] .x101-action-buttons {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  align-items: stretch;
-  margin-top: 0;
-}
-
-[data-right-panel-inspector] .x101-action-button,
-[data-right-panel-inspector] .x101-action-button.toolbar__button--wide {
-  width: 100%;
-  min-width: 0;
-  height: 30px;
-  justify-content: center;
-  padding: 0 10px;
-  border: 1px solid rgba(118, 92, 62, 0.04);
-  border-radius: 9px;
-  background: rgba(255, 252, 247, 0.68);
-  color: #7d756e;
-  font-size: 12px;
-  line-height: 1;
-  white-space: nowrap;
-  font-weight: 400;
-  box-shadow: none;
-}
-
-[data-right-panel-inspector] .x101-action-button:hover,
-[data-right-panel-inspector] .x101-action-button:focus-visible {
-  background: rgba(255, 252, 247, 0.92);
-}
-
 .right-rail-shell {
   display: flex;
   flex-direction: column;
@@ -2318,12 +2287,6 @@ body.dark-theme .toolbar__swatch::before {
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-.right-rail-surface--actions {
-  gap: 10px;
-  margin-top: auto;
-  padding-top: 4px;
 }
 
 .right-rail-section__label {
@@ -2420,12 +2383,6 @@ body.dark-theme .toolbar__swatch::before {
   line-height: 1.4;
   white-space: pre-line;
   box-shadow: none;
-}
-
-.right-rail-runtime-note--compact {
-  padding: 8px 10px;
-  font-size: 10px;
-  line-height: 1.35;
 }
 
 .right-rail-toggle {
@@ -2575,10 +2532,6 @@ body.dark-theme .toolbar__swatch::before {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.right-rail-actions {
-  width: 100%;
 }
 
 .tree__list {
