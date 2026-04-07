@@ -20,6 +20,12 @@ import {
   nextSceneCaretAtBoundary,
   previousSceneCaretAtBoundary,
 } from './commands/flowMode.mjs';
+import {
+  buildLeftRailPresentationTree,
+  getLeftRailPresentationExpandKey,
+  getLeftRailPresentationKind,
+  isLeftRailPresentationDefaultExpanded,
+} from './leftRailPresentationModel.mjs';
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
 
 const isTiptapMode = window.__USE_TIPTAP === true;
@@ -3349,6 +3355,9 @@ function getCategoryIndexDocumentPath(node) {
 
 function getEffectiveDocumentPath(node) {
   if (!node) return '';
+  if (typeof node.effectivePath === 'string' && node.effectivePath) {
+    return node.effectivePath;
+  }
   if (node.kind === 'materials-category' || node.kind === 'reference-category') {
     return getCategoryIndexDocumentPath(node);
   }
@@ -3357,9 +3366,51 @@ function getEffectiveDocumentPath(node) {
 
 function getEffectiveDocumentKind(node) {
   if (!node) return '';
+  if (typeof node.effectiveKind === 'string' && node.effectiveKind) {
+    return node.effectiveKind;
+  }
   if (node.kind === 'materials-category') return 'material';
   if (node.kind === 'reference-category') return 'reference';
   return node.kind || '';
+}
+
+function getTreeNodeExpandKey(node) {
+  return getLeftRailPresentationExpandKey(node);
+}
+
+function getTreeNodePresentationKind(node) {
+  return getLeftRailPresentationKind(node);
+}
+
+function isTreeNodeDefaultExpanded(node) {
+  return isLeftRailPresentationDefaultExpanded(node);
+}
+
+function isTreeNodeImplicitlyExpanded(node) {
+  if (!node) return false;
+  return (
+    isTreeNodeDefaultExpanded(node) ||
+    node.kind === 'materials-root' ||
+    node.kind === 'reference-root' ||
+    node.kind === 'materials-category' ||
+    node.kind === 'reference-category'
+  );
+}
+
+function isTreeNodeRowExpandable(node) {
+  if (!node) return false;
+  return (
+    node.kind === 'part' ||
+    node.kind === 'chapter-folder' ||
+    node.kind === 'folder' ||
+    node.kind === 'roman-root' ||
+    node.kind === 'roman-section-group' ||
+    node.kind === 'mindmap-root' ||
+    node.kind === 'print-root' ||
+    node.kind === 'presentation-workspace' ||
+    node.kind === 'presentation-manuscript' ||
+    node.kind === 'presentation-notes'
+  );
 }
 
 function clearContextMenu() {
@@ -3563,6 +3614,7 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
   row.type = 'button';
   row.className = 'tree__row';
   row.dataset.level = String(level);
+  row.dataset.kind = getTreeNodePresentationKind(node);
 
   const effectivePath = getEffectiveDocumentPath(node);
   if (currentDocumentPath && effectivePath && currentDocumentPath === effectivePath) {
@@ -3595,13 +3647,13 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
   }
 
   const expandedSet = getExpandedSet(activeTab);
+  const expandKey = getTreeNodeExpandKey(node);
+  const collapsedKey = expandKey ? `collapsed:${expandKey}` : '';
+  const isImplicitlyExpanded = isTreeNodeImplicitlyExpanded(node);
   const isExpanded =
     hasChildren &&
-    (expandedSet.has(node.path) ||
-      node.kind === 'materials-root' ||
-      node.kind === 'reference-root' ||
-      node.kind === 'materials-category' ||
-      node.kind === 'reference-category');
+    (!collapsedKey || !expandedSet.has(collapsedKey)) &&
+    ((expandKey && expandedSet.has(expandKey)) || isImplicitlyExpanded);
   if (isExpanded) {
     toggle.classList.add('is-expanded');
   }
@@ -3609,10 +3661,15 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
   toggle.addEventListener('click', (event) => {
     event.stopPropagation();
     if (!hasChildren) return;
-    if (expandedSet.has(node.path)) {
-      expandedSet.delete(node.path);
+    if (isExpanded) {
+      if (isImplicitlyExpanded && collapsedKey) {
+        expandedSet.add(collapsedKey);
+      } else if (expandKey) {
+        expandedSet.delete(expandKey);
+      }
     } else {
-      expandedSet.add(node.path);
+      if (collapsedKey) expandedSet.delete(collapsedKey);
+      if (expandKey) expandedSet.add(expandKey);
     }
     saveExpandedSet(activeTab);
     renderTree();
@@ -3628,20 +3685,16 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
   row.appendChild(toggle);
   row.appendChild(label);
   row.addEventListener('click', async () => {
-    if (
-      hasChildren &&
-      (node.kind === 'part' ||
-        node.kind === 'chapter-folder' ||
-        node.kind === 'folder' ||
-        node.kind === 'roman-root' ||
-        node.kind === 'roman-section-group' ||
-        node.kind === 'mindmap-root' ||
-        node.kind === 'print-root')
-    ) {
-      if (expandedSet.has(node.path)) {
-        expandedSet.delete(node.path);
+    if (hasChildren && isTreeNodeRowExpandable(node)) {
+      if (isExpanded) {
+        if (isImplicitlyExpanded && collapsedKey) {
+          expandedSet.add(collapsedKey);
+        } else if (expandKey) {
+          expandedSet.delete(expandKey);
+        }
       } else {
-        expandedSet.add(node.path);
+        if (collapsedKey) expandedSet.delete(collapsedKey);
+        if (expandKey) expandedSet.add(expandKey);
       }
       saveExpandedSet(activeTab);
       renderTree();
@@ -3719,8 +3772,11 @@ function renderTree() {
   }
   const list = document.createElement('ul');
   list.className = 'tree__list';
+  const presentationRoot = buildLeftRailPresentationTree(treeRoot);
   const nodesToRender =
-    (treeRoot.kind === 'roman-root' ? [treeRoot] : treeRoot.children) || [];
+    (presentationRoot.kind === 'presentation-workspace'
+      ? [presentationRoot]
+      : (presentationRoot.kind === 'roman-root' ? [presentationRoot] : presentationRoot.children)) || [];
   nodesToRender.forEach((child, index) => {
     list.appendChild(renderTreeNode(child, 0, index === nodesToRender.length - 1, []));
   });

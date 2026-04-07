@@ -2433,6 +2433,14 @@ body.dark-theme .toolbar__swatch::before {
   background-image: var(--left-rail-document-icon);
 }
 
+.sidebar--left .tree__row[data-kind="presentation-manuscript"] .tree__label::before,
+.sidebar--left .tree__row[data-kind="presentation-notes"] .tree__label::before {
+  width: 14px;
+  height: 14px;
+  flex-basis: 14px;
+  background-image: var(--left-rail-folder-icon);
+}
+
 .sidebar--left .tree__row[data-level="2"] .tree__toggle.is-empty + .tree__label::before,
 .sidebar--left .tree__row[data-level="3"] .tree__toggle.is-empty + .tree__label::before {
   width: 6px;
