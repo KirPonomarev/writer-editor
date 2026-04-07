@@ -4215,7 +4215,7 @@ function ensureCommandsOpenerInRightInspectorSurface() {
 
 function normalizeRightTab(tab) {
   if (tab === 'comments') return 'comments';
-  if (tab === 'history' && collabScopeLocal) return 'history';
+  if (tab === 'history') return 'history';
   return 'inspector';
 }
 
@@ -4229,7 +4229,7 @@ function applyRightTab(tab) {
   }
   if (rightInspectorPanel) rightInspectorPanel.hidden = tab !== 'inspector';
   if (rightCommentsPanel) rightCommentsPanel.hidden = tab !== 'comments';
-  if (rightHistoryPanel) rightHistoryPanel.hidden = tab !== 'history' || !collabScopeLocal;
+  if (rightHistoryPanel) rightHistoryPanel.hidden = tab !== 'history';
   if (tab === 'inspector') {
     ensureCommandsOpenerInRightInspectorSurface();
   }
@@ -4609,18 +4609,7 @@ async function confirmExportPreviewAndRun() {
 }
 
 function applyCollabGate() {
-  for (const button of rightTabButtons) {
-    const tab = button.dataset.rightTab;
-    const gated = tab === 'history';
-    if (gated) {
-      button.hidden = !collabScopeLocal;
-    }
-  }
-  if (!collabScopeLocal && currentRightTab === 'history') {
-    applyRightTab('inspector');
-  } else {
-    applyRightTab(currentRightTab);
-  }
+  applyRightTab(currentRightTab);
   updateInspectorSnapshot();
 }
 
