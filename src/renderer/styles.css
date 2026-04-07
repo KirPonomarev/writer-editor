@@ -2544,7 +2544,7 @@ body.dark-theme .toolbar__swatch::before {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   padding-left: 16px;
 }
 
@@ -2552,78 +2552,78 @@ body.dark-theme .toolbar__swatch::before {
   content: '';
   position: absolute;
   top: 4px;
-  bottom: 4px;
-  left: 4px;
+  bottom: 7px;
+  left: 3px;
   width: 1px;
-  background: rgba(118, 92, 62, 0.09);
+  background: rgba(118, 92, 62, 0.045);
 }
 
 .right-rail-history-item {
   position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 12px;
+  gap: 10px;
   align-items: start;
 }
 
 .right-rail-history-dot {
   position: relative;
   z-index: 1;
-  width: 9px;
-  height: 9px;
+  width: 7px;
+  height: 7px;
   margin-top: 4px;
   border-radius: 999px;
-  border: 1px solid rgba(118, 92, 62, 0.22);
-  background: #fffdf9;
+  border: 1px solid rgba(118, 92, 62, 0.13);
+  background: rgba(255, 253, 249, 0.88);
 }
 
 .right-rail-history-copy {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
 }
 
 .right-rail-history-head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
-  align-items: baseline;
+  gap: 6px;
+  align-items: start;
 }
 
 .right-rail-history-title {
-  color: #544d46;
+  color: #59524b;
   font-size: 13px;
   line-height: 17px;
   font-weight: 500;
 }
 
 .right-rail-history-time {
-  color: #a9a096;
+  color: #b4aca4;
   font-size: 12px;
   line-height: 16px;
 }
 
 .right-rail-history-text {
   margin: 0;
-  color: #867f77;
+  color: #8e867e;
   font-size: 12.5px;
-  line-height: 18px;
+  line-height: 17px;
 }
 
 .right-rail-history-card {
   border-radius: 14px;
-  border: 1px solid rgba(118, 92, 62, 0.075);
-  background: rgba(255, 252, 247, 0.92);
+  border: 1px solid rgba(118, 92, 62, 0.065);
+  background: rgba(255, 252, 247, 0.9);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.54);
 }
 
 .right-rail-history-card-title {
-  color: #5c554f;
+  color: #5e5750;
   font-size: 13px;
   line-height: 17px;
   font-weight: 500;
@@ -2631,7 +2631,7 @@ body.dark-theme .toolbar__swatch::before {
 
 .right-rail-history-card-text {
   margin: 0;
-  color: #7f776f;
+  color: #847c74;
   font-size: 12.5px;
   line-height: 18px;
 }
