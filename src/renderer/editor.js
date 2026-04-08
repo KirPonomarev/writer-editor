@@ -3075,9 +3075,9 @@ function getSpatialLayoutConstraintsForViewport(viewportWidth = getSpatialLayout
     return {
       mode,
       leftMin: 250,
-      leftMax: 260,
+      leftMax: 320,
       rightMin: 250,
-      rightMax: 260,
+      rightMax: 320,
       rightVisible: true,
     };
   }

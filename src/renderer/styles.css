@@ -3683,8 +3683,8 @@ body.dark-theme .status-bar {
 @media (max-width: 1279px) {
   .app-layout {
     --app-left-sidebar-width: 260px;
-    --app-right-sidebar-width: 290px;
-    grid-template-columns: minmax(230px, var(--app-left-sidebar-width)) minmax(480px, 1fr) minmax(250px, var(--app-right-sidebar-width));
+    --app-right-sidebar-width: 260px;
+    grid-template-columns: minmax(250px, var(--app-left-sidebar-width)) minmax(480px, 1fr) minmax(250px, var(--app-right-sidebar-width));
     gap: 10px;
     padding: 10px 10px 72px;
   }
