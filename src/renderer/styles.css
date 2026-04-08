@@ -126,14 +126,14 @@ body {
 }
 
 .titlebar {
-  height: 22px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   padding: 0 12px;
   background: var(--background);
-  border-bottom: 1px solid var(--divider);
+  border-bottom: none;
   box-shadow: none;
 }
 
@@ -168,11 +168,12 @@ body {
 
 .titlebar__label {
   font-family: "Roboto Mono", ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 300;
   line-height: 1;
   letter-spacing: 0;
-  color: #4a4a4a;
+  color: var(--text-tertiary);
+  opacity: 0.55;
 }
 
 .work-bar {
