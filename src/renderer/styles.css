@@ -1449,10 +1449,10 @@ body {
 
 .configurator-panel__surface {
   width: min(
-    calc(100vw - (var(--configurator-panel-side-margin) * 2)),
+    calc(100vw - var(--app-left-sidebar-width) - var(--app-right-sidebar-width) - (var(--configurator-panel-side-margin) * 2)),
     1968px
   );
-  max-width: calc(100vw - (var(--configurator-panel-side-margin) * 2));
+  max-width: calc(100vw - var(--app-left-sidebar-width) - var(--app-right-sidebar-width) - (var(--configurator-panel-side-margin) * 2));
   max-height: calc(100vh - 32px);
   margin: 0 auto;
   padding: 48px 72px 56px;
@@ -1469,9 +1469,10 @@ body {
 
 .app-layout:has(.sidebar--right[hidden]) .configurator-panel__surface {
   width: min(
-    calc(100vw - (var(--configurator-panel-side-margin) * 2)),
+    calc(100vw - var(--app-left-sidebar-width) - (var(--configurator-panel-side-margin) * 2)),
     1968px
   );
+  max-width: calc(100vw - var(--app-left-sidebar-width) - (var(--configurator-panel-side-margin) * 2));
 }
 
 .configurator-panel__title {
@@ -3712,5 +3713,6 @@ body.dark-theme .status-bar {
       calc(100vw - var(--app-left-sidebar-width) - (var(--configurator-panel-side-margin) * 2)),
       1968px
     );
+    max-width: calc(100vw - var(--app-left-sidebar-width) - (var(--configurator-panel-side-margin) * 2));
   }
 }
