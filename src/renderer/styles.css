@@ -2068,7 +2068,7 @@ body.dark-theme .toolbar__swatch::before {
   position: relative;
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
 }
 
@@ -2912,7 +2912,7 @@ body.dark-theme .toolbar__swatch::before {
 .sidebar__resize-handle {
   position: absolute;
   top: 0;
-  right: 0;
+  right: -6px;
   width: 12px;
   height: 100%;
   cursor: col-resize;
@@ -2946,7 +2946,7 @@ body.dark-theme .sidebar__resize-handle:hover {
 
 .sidebar__resize-handle--right {
   right: auto;
-  left: 0;
+  left: -6px;
 }
 
 .sidebar__resize-handle--right::before {
