@@ -2275,8 +2275,8 @@ body.dark-theme .toolbar__swatch::before {
 
 .left-quick-note__card {
   border-radius: 10px;
-  border: 1px solid rgba(118, 92, 62, 0.045);
-  background: rgba(249, 246, 241, 0.96);
+  border: 1px solid var(--sidebar-border);
+  background: var(--card);
   color: var(--text-secondary);
   font-size: 12.25px;
   line-height: 1.56;
@@ -2377,7 +2377,7 @@ body.dark-theme .toolbar__swatch::before {
   padding: 12px 14px;
   border-radius: 10px;
   border: 1px solid var(--sidebar-border);
-  background: rgba(250, 248, 244, 0.88);
+  background: var(--card);
   color: var(--text-secondary);
   font-size: 11.5px;
   line-height: 1.48;
@@ -2434,13 +2434,15 @@ body.dark-theme .toolbar__swatch::before {
 
 .right-rail-comment-card {
   border-radius: 14px;
-  border: 1px solid rgba(118, 92, 62, 0.07);
-  background: rgba(255, 252, 247, 0.92);
+  border: 1px solid var(--sidebar-border);
+  background: var(--card);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.64);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.58),
+    var(--control-shadow);
 }
 
 .right-rail-comment-head {
@@ -2503,8 +2505,8 @@ body.dark-theme .toolbar__swatch::before {
 .right-rail-comment-input {
   min-height: 46px;
   border-radius: 14px;
-  border: 1px solid rgba(118, 92, 62, 0.07);
-  background: rgba(255, 252, 247, 0.9);
+  border: 1px solid var(--sidebar-border);
+  background: var(--card);
   color: var(--text-tertiary);
   display: flex;
   align-items: center;
@@ -2589,7 +2591,7 @@ body.dark-theme .toolbar__swatch::before {
   margin-top: 4px;
   border-radius: 999px;
   border: 1px solid var(--sidebar-border);
-  background: rgba(255, 253, 249, 0.88);
+  background: var(--card);
 }
 
 .right-rail-history-copy {
@@ -2629,12 +2631,14 @@ body.dark-theme .toolbar__swatch::before {
 .right-rail-history-card {
   border-radius: 14px;
   border: 1px solid var(--sidebar-border);
-  background: rgba(255, 252, 247, 0.9);
+  background: var(--card);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.54);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.56),
+    var(--control-shadow);
 }
 
 .right-rail-history-card-title {
