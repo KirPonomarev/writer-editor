@@ -2912,12 +2912,24 @@ body.dark-theme .toolbar__swatch::before {
 .sidebar__resize-handle {
   position: absolute;
   top: 0;
-  right: -2px;
-  width: 4px;
+  right: 0;
+  width: 12px;
   height: 100%;
   cursor: col-resize;
   background: transparent;
   transition: background 0.15s ease;
+  z-index: 2;
+}
+
+.sidebar__resize-handle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 1px;
+  background: rgba(118, 92, 62, 0.08);
+  pointer-events: none;
 }
 
 .sidebar__resize-handle:hover {
@@ -2934,7 +2946,12 @@ body.dark-theme .sidebar__resize-handle:hover {
 
 .sidebar__resize-handle--right {
   right: auto;
-  left: -2px;
+  left: 0;
+}
+
+.sidebar__resize-handle--right::before {
+  right: auto;
+  left: 0;
 }
 
 .main-content {
