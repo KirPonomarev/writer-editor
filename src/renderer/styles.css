@@ -59,6 +59,7 @@
   --canvas-padding-top: 24px;
   --canvas-padding-horizontal: 48px;
   --canvas-padding-bottom: 48px;
+  --configurator-panel-side-margin: 5mm;
   --editor-zoom: 1;
 }
 
@@ -1444,7 +1445,11 @@ body {
 }
 
 .configurator-panel__surface {
-  width: min(94vw, 1968px);
+  width: min(
+    calc(100vw - var(--app-left-sidebar-width) - var(--app-right-sidebar-width) - (var(--configurator-panel-side-margin) * 2)),
+    1968px
+  );
+  max-width: calc(100vw - (var(--configurator-panel-side-margin) * 2));
   max-height: calc(100vh - 32px);
   margin: auto;
   padding: 48px 72px 56px;
@@ -1456,6 +1461,13 @@ body {
   box-shadow:
     0 10px 20px rgba(84, 69, 56, 0.04),
     0 2px 4px rgba(84, 69, 56, 0.02);
+}
+
+.app-layout:has(.sidebar--right[hidden]) .configurator-panel__surface {
+  width: min(
+    calc(100vw - var(--app-left-sidebar-width) - (var(--configurator-panel-side-margin) * 2)),
+    1968px
+  );
 }
 
 .configurator-panel__title {
@@ -3664,5 +3676,12 @@ body.dark-theme .status-bar {
 
   .main-content {
     padding: 24px;
+  }
+
+  .configurator-panel__surface {
+    width: min(
+      calc(100vw - var(--app-left-sidebar-width) - (var(--configurator-panel-side-margin) * 2)),
+      1968px
+    );
   }
 }
