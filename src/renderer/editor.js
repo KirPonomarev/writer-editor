@@ -4011,6 +4011,10 @@ document.addEventListener('click', (event) => {
 });
 
 configuratorPanel?.addEventListener('click', (event) => {
+  if (event.target === configuratorPanel) {
+    setConfiguratorOpen(false);
+    return;
+  }
   const button = event.target.closest('.configurator-panel__slot');
   if (!button) return;
   const nextIndex = configuratorSlotButtons.indexOf(button);

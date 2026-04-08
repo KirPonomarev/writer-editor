@@ -1425,13 +1425,14 @@ body {
 }
 
 .configurator-panel {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 25;
+  z-index: 1200;
   padding: 20px;
   background: rgba(201, 194, 186, 0.28);
   backdrop-filter: blur(4px);
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .configurator-panel[hidden] {
