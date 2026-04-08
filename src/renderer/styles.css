@@ -2023,14 +2023,14 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .sidebar--left {
-  border-right: 1px solid rgba(118, 92, 62, 0.1);
+  border-right: 1px solid var(--divider);
 }
 
 .sidebar--left {
-  background: #e8e4df;
-  color: #534d47;
+  background: var(--background);
+  color: var(--sidebar-foreground);
   border: none;
-  border-right: 1px solid rgba(118, 92, 62, 0.105);
+  border-right: 1px solid var(--divider);
   box-shadow: none;
   border-radius: 0;
   --tree-row-height: 28px;
@@ -2122,10 +2122,10 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .sidebar--right {
-  background: #e8e4df;
-  color: #625c56;
+  background: var(--background);
+  color: var(--sidebar-foreground);
   border: none;
-  border-left: 1px solid rgba(118, 92, 62, 0.08);
+  border-left: 1px solid var(--divider);
   box-shadow: none;
   border-radius: 0;
 }
