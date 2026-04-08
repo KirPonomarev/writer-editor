@@ -1376,7 +1376,7 @@ body {
   grid-column: auto;
   border: none;
   border-radius: 0;
-  background: #c9c2ba;
+  background: var(--canvas-bg);
   box-shadow:
     none;
   padding: 64px 0;
@@ -3403,7 +3403,7 @@ body.dark-theme .status-bar {
   gap: 18px;
   padding: 0 16px;
   min-height: 30px;
-  background: #c9c2ba;
+  background: var(--background);
   border-top: none;
   box-shadow:
     inset 0 1px 3px rgba(0, 0, 0, 0.04);
