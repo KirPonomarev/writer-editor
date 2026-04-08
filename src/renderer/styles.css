@@ -1427,17 +1427,20 @@ body {
 
 .configurator-panel {
   position: fixed;
-  inset: 0;
+  top: 84px;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 1200;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 16px;
+  padding: 24px 16px 16px;
   box-sizing: border-box;
-  background: rgba(248, 245, 239, 0.98);
+  background: transparent;
   backdrop-filter: none;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: visible;
+  pointer-events: none;
 }
 
 .configurator-panel[hidden] {
@@ -1451,13 +1454,14 @@ body {
   );
   max-width: calc(100vw - (var(--configurator-panel-side-margin) * 2));
   max-height: calc(100vh - 32px);
-  margin: auto;
+  margin: 0 auto;
   padding: 48px 72px 56px;
   box-sizing: border-box;
   background: #fbf9f5;
   border: 1px solid rgba(226, 220, 213, 0.92);
   border-radius: 22px;
   overflow: auto;
+  pointer-events: auto;
   box-shadow:
     0 10px 20px rgba(84, 69, 56, 0.04),
     0 2px 4px rgba(84, 69, 56, 0.02);
