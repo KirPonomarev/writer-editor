@@ -26,7 +26,7 @@ const SHARED_RAIL_WIDTH_CONFIG_BY_MODE = Object.freeze({
   }),
   compact: Object.freeze({
     min: 250,
-    max: 260,
+    max: 320,
     baseline: 260,
   }),
   mobile: Object.freeze({
