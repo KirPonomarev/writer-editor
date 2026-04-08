@@ -18,6 +18,25 @@ export const DESIGN_OS_WORKSPACE_BY_EDITOR_MODE = Object.freeze({
   review: 'REVIEW',
 });
 
+const SHARED_RAIL_WIDTH_CONFIG_BY_MODE = Object.freeze({
+  desktop: Object.freeze({
+    min: 280,
+    max: 420,
+    baseline: 290,
+  }),
+  compact: Object.freeze({
+    min: 250,
+    max: 260,
+    baseline: 260,
+  }),
+  mobile: Object.freeze({
+    min: 200,
+    max: 240,
+    baseline: 240,
+    rightVisible: false,
+  }),
+});
+
 function clampInt(value, min, max, fallback) {
   const numeric = Number.isFinite(value) ? Math.trunc(value) : Math.trunc(fallback);
   return Math.max(min, Math.min(max, numeric));
@@ -28,6 +47,26 @@ function withAlpha(hexColor, alphaHex) {
   const cleaned = hexColor.trim();
   if (!/^#[0-9a-fA-F]{6}$/u.test(cleaned)) return cleaned;
   return `${cleaned}${alphaHex}`;
+}
+
+function getSharedRailWidthConfig(mode) {
+  if (mode === 'compact') return SHARED_RAIL_WIDTH_CONFIG_BY_MODE.compact;
+  if (mode === 'mobile') return SHARED_RAIL_WIDTH_CONFIG_BY_MODE.mobile;
+  return SHARED_RAIL_WIDTH_CONFIG_BY_MODE.desktop;
+}
+
+function resolveSharedRailWidthCandidate(source, config) {
+  const leftCandidate = Number(source?.leftSidebarWidth);
+  if (Number.isFinite(leftCandidate) && leftCandidate >= config.min && leftCandidate <= config.max) {
+    return clampInt(leftCandidate, config.min, config.max, config.baseline);
+  }
+
+  const rightCandidate = Number(source?.rightSidebarWidth);
+  if (Number.isFinite(rightCandidate) && rightCandidate >= config.min && rightCandidate <= config.max) {
+    return clampInt(rightCandidate, config.min, config.max, config.baseline);
+  }
+
+  return config.baseline;
 }
 
 export function deriveRuntimePlatformId() {
@@ -61,13 +100,12 @@ export function buildLayoutPatchFromSpatialState(state, options = {}) {
   const shellMode = typeof options.shellMode === 'string' && options.shellMode.trim()
     ? options.shellMode.trim()
     : 'CALM_DOCKED';
-  const baselineLeft = shellMode === 'COMPACT_DOCKED' ? 260 : 290;
-  const baselineRight = shellMode === 'COMPACT_DOCKED' ? 290 : 340;
-  const leftWidth = clampInt(source.leftSidebarWidth, 180, 640, baselineLeft);
-  const rightWidth = clampInt(source.rightSidebarWidth, 220, 460, baselineRight);
+  const sharedConfig = getSharedRailWidthConfig(shellMode === 'COMPACT_DOCKED' ? 'compact' : 'desktop');
+  const sharedWidth = resolveSharedRailWidthCandidate(source, sharedConfig);
+  const rightVisible = options.rightVisible !== false;
   return {
-    left_width: leftWidth,
-    right_width: rightWidth,
+    left_width: sharedWidth,
+    right_width: rightVisible ? sharedWidth : sharedConfig.baseline,
     bottom_height: 96,
     editor_root: 'docked',
     viewport_width: viewportWidth,
@@ -81,9 +119,12 @@ export function buildSpatialStateFromLayoutSnapshot(layout, options = {}) {
   const viewportMode = typeof options.viewportMode === 'string' && options.viewportMode.trim()
     ? options.viewportMode.trim()
     : viewportWidth <= 900 ? 'mobile' : viewportWidth <= 1280 ? 'compact' : 'desktop';
+  const sharedConfig = getSharedRailWidthConfig(viewportMode);
+  const rightVisible = options.rightVisible !== false && sharedConfig.rightVisible !== false;
+  const sharedWidth = resolveSharedRailWidthCandidate(layout, sharedConfig);
   return {
-    leftSidebarWidth: clampInt(layout?.left_width, 180, 640, viewportMode === 'compact' ? 260 : 290),
-    rightSidebarWidth: clampInt(layout?.right_width, 220, 460, viewportMode === 'compact' ? 290 : 340),
+    leftSidebarWidth: sharedWidth,
+    rightSidebarWidth: rightVisible ? sharedWidth : sharedConfig.baseline,
     viewportWidth,
     viewportMode,
     source: 'design-os-runtime',

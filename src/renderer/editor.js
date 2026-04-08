@@ -26,6 +26,10 @@ import {
   getLeftRailPresentationKind,
   isLeftRailPresentationDefaultExpanded,
 } from './leftRailPresentationModel.mjs';
+import {
+  buildLayoutPatchFromSpatialState,
+  buildSpatialStateFromLayoutSnapshot,
+} from './design-os/index.mjs';
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
 
 const isTiptapMode = window.__USE_TIPTAP === true;
@@ -163,14 +167,15 @@ const SPATIAL_LAYOUT_VERSION = 1;
 const SPATIAL_LAYOUT_MOBILE_BREAKPOINT = 900;
 const SPATIAL_LAYOUT_COMPACT_BREAKPOINT = 1280;
 const SPATIAL_LAYOUT_LEFT_MIN_WIDTH = 200;
-const SPATIAL_LAYOUT_LEFT_MAX_WIDTH = 600;
-const SPATIAL_LAYOUT_RIGHT_MIN_WIDTH = 250;
+const SPATIAL_LAYOUT_LEFT_MAX_WIDTH = 420;
+const SPATIAL_LAYOUT_RIGHT_MIN_WIDTH = 200;
 const SPATIAL_LAYOUT_RIGHT_MAX_WIDTH = 420;
 const SPATIAL_LAYOUT_DESKTOP_LEFT_BASELINE_WIDTH = 290;
-const SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH = 340;
+const SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH = 290;
 const SPATIAL_LAYOUT_COMPACT_LEFT_BASELINE_WIDTH = 260;
-const SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH = 290;
+const SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH = 260;
 const SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH = 240;
+const SPATIAL_LAYOUT_MOBILE_RIGHT_BASELINE_WIDTH = 240;
 const SAFE_RESET_BASELINE_THEME = 'light';
 const SAFE_RESET_BASELINE_FONT_FAMILY = '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 const SAFE_RESET_BASELINE_FONT_SIZE_PX = 12;
@@ -3023,7 +3028,7 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
       version: SPATIAL_LAYOUT_VERSION,
       projectId: normalizeProjectId(currentProjectId),
       leftSidebarWidth: SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH,
-      rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
+      rightSidebarWidth: SPATIAL_LAYOUT_MOBILE_RIGHT_BASELINE_WIDTH,
       viewportWidth,
       viewportMode: mode,
       savedAtUtc: '',
@@ -3061,24 +3066,24 @@ function getSpatialLayoutConstraintsForViewport(viewportWidth = getSpatialLayout
       mode,
       leftMin: SPATIAL_LAYOUT_LEFT_MIN_WIDTH,
       leftMax: SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH,
-      rightMin: SPATIAL_LAYOUT_RIGHT_MIN_WIDTH,
-      rightMax: SPATIAL_LAYOUT_RIGHT_MAX_WIDTH,
+      rightMin: SPATIAL_LAYOUT_LEFT_MIN_WIDTH,
+      rightMax: SPATIAL_LAYOUT_MOBILE_RIGHT_BASELINE_WIDTH,
       rightVisible: false,
     };
   }
   if (mode === 'compact') {
     return {
       mode,
-      leftMin: 230,
+      leftMin: 250,
       leftMax: 260,
       rightMin: 250,
-      rightMax: 290,
+      rightMax: 260,
       rightVisible: true,
     };
   }
   return {
     mode,
-    leftMin: 250,
+    leftMin: 280,
     leftMax: SPATIAL_LAYOUT_LEFT_MAX_WIDTH,
     rightMin: 280,
     rightMax: SPATIAL_LAYOUT_RIGHT_MAX_WIDTH,
@@ -3099,33 +3104,27 @@ function normalizeSpatialLayoutState(rawState, viewportWidth = getSpatialLayoutV
     return { ...fallback };
   }
 
-  const leftSidebarWidth = clampSpatialSidebarWidth(
-    rawState.leftSidebarWidth,
-    constraints.leftMin,
-    constraints.leftMax
-  );
-  const rightSidebarWidth = clampSpatialSidebarWidth(
-    rawState.rightSidebarWidth,
-    constraints.rightMin,
-    constraints.rightMax
-  );
-
-  const isValid =
-    rawState.version === SPATIAL_LAYOUT_VERSION &&
-    leftSidebarWidth >= constraints.leftMin &&
-    leftSidebarWidth <= constraints.leftMax &&
-    rightSidebarWidth >= constraints.rightMin &&
-    rightSidebarWidth <= constraints.rightMax;
-
-  if (!isValid) {
+  if (rawState.version !== SPATIAL_LAYOUT_VERSION) {
     return { ...fallback };
   }
+
+  const sharedState = buildSpatialStateFromLayoutSnapshot(
+    {
+      left_width: rawState.leftSidebarWidth,
+      right_width: rawState.rightSidebarWidth,
+      viewport_width: viewportWidth,
+    },
+    {
+      viewportMode: constraints.mode,
+      rightVisible: constraints.rightVisible,
+    }
+  );
 
   return {
     version: SPATIAL_LAYOUT_VERSION,
     projectId: normalizeProjectId(rawState.projectId || currentProjectId),
-    leftSidebarWidth,
-    rightSidebarWidth: constraints.rightVisible ? rightSidebarWidth : fallback.rightSidebarWidth,
+    leftSidebarWidth: sharedState.leftSidebarWidth,
+    rightSidebarWidth: sharedState.rightSidebarWidth,
     viewportWidth,
     viewportMode: constraints.mode,
     savedAtUtc: typeof rawState.savedAtUtc === 'string' ? rawState.savedAtUtc : '',
@@ -3169,10 +3168,16 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
   const normalizedState = normalizeSpatialLayoutState(state, viewportWidth);
   const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
   const rightVisible = constraints.rightVisible;
+  const layoutPatch = buildLayoutPatchFromSpatialState(normalizedState, {
+    viewportWidth,
+    viewportHeight: Math.max(0, Math.floor(window.innerHeight || document.documentElement.clientHeight || 0)),
+    shellMode: constraints.mode === 'compact' ? 'COMPACT_DOCKED' : 'CALM_DOCKED',
+    rightVisible,
+  });
 
   if (appLayout) {
-    appLayout.style.setProperty('--app-left-sidebar-width', `${normalizedState.leftSidebarWidth}px`);
-    appLayout.style.setProperty('--app-right-sidebar-width', `${normalizedState.rightSidebarWidth}px`);
+    appLayout.style.setProperty('--app-left-sidebar-width', `${layoutPatch.left_width}px`);
+    appLayout.style.setProperty('--app-right-sidebar-width', `${layoutPatch.right_width}px`);
   }
 
   if (rightSidebar) {
@@ -3858,8 +3863,8 @@ function startSpatialResize(side, event) {
   spatialResizeDragState = {
     side,
     startX: event.clientX,
-    startLeftWidth: draftState.leftSidebarWidth,
-    startRightWidth: draftState.rightSidebarWidth,
+    startWidth: draftState.leftSidebarWidth,
+    rightVisible: getSpatialLayoutConstraintsForViewport().rightVisible,
   };
   document.body.style.cursor = 'col-resize';
   document.body.style.userSelect = 'none';
@@ -3876,17 +3881,22 @@ function handleSpatialResizeMove(event) {
     viewportMode: constraints.mode,
   };
 
-  if (spatialResizeDragState.side === 'left') {
-    nextState.leftSidebarWidth = clampSpatialSidebarWidth(
-      spatialResizeDragState.startLeftWidth + (event.clientX - spatialResizeDragState.startX),
+  if (spatialResizeDragState.rightVisible) {
+    const delta = spatialResizeDragState.side === 'left'
+      ? event.clientX - spatialResizeDragState.startX
+      : spatialResizeDragState.startX - event.clientX;
+    const nextWidth = clampSpatialSidebarWidth(
+      spatialResizeDragState.startWidth + delta,
       constraints.leftMin,
       constraints.leftMax
     );
+    nextState.leftSidebarWidth = nextWidth;
+    nextState.rightSidebarWidth = nextWidth;
   } else {
-    nextState.rightSidebarWidth = clampSpatialSidebarWidth(
-      spatialResizeDragState.startRightWidth + (spatialResizeDragState.startX - event.clientX),
-      constraints.rightMin,
-      constraints.rightMax
+    nextState.leftSidebarWidth = clampSpatialSidebarWidth(
+      spatialResizeDragState.startWidth + (event.clientX - spatialResizeDragState.startX),
+      constraints.leftMin,
+      constraints.leftMax
     );
   }
 
@@ -4254,6 +4264,19 @@ function applyMode(mode) {
   } else {
     applyLeftTab('project');
     applyRightTab('inspector');
+  }
+  const viewportWidth = getSpatialLayoutViewportWidth();
+  const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
+  if (constraints.rightVisible) {
+    const currentSpatialState = spatialLayoutState || getSpatialLayoutBaselineForViewport(viewportWidth);
+    const normalizedSpatialState = normalizeSpatialLayoutState(currentSpatialState, viewportWidth);
+    const hasSharedWidthDrift =
+      normalizedSpatialState.leftSidebarWidth !== currentSpatialState.leftSidebarWidth ||
+      normalizedSpatialState.rightSidebarWidth !== currentSpatialState.rightSidebarWidth ||
+      normalizedSpatialState.viewportMode !== currentSpatialState.viewportMode;
+    if (hasSharedWidthDrift) {
+      applySpatialLayoutState(normalizedSpatialState, { persist: true, projectId: currentProjectId });
+    }
   }
   updateInspectorSnapshot();
 }
@@ -5474,6 +5497,7 @@ function handleUiAction(action) {
       void dispatchUiCommand(COMMAND_IDS.PROJECT_OPEN);
       return true;
     case 'save':
+      commitSpatialLayoutState(currentProjectId);
       if (flowModeState.active) {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.PLAN_FLOW_SAVE);
       } else {
