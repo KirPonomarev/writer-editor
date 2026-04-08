@@ -22,8 +22,8 @@
   --sidebar: #f8f5ef;
   --sidebar-foreground: #6d6861;
   --sidebar-border: rgba(224, 218, 210, 0.88);
-  --selected-bg: rgba(86, 52, 26, 0.18);
-  --hover-bg: rgba(86, 52, 26, 0.12);
+  --selected-bg: rgba(255, 253, 248, 0.94);
+  --hover-bg: rgba(255, 253, 248, 0.76);
   --empty-text: var(--text-muted);
   --radius: 0.625rem;
   --status-bg: rgba(255, 253, 248, 0.88);
@@ -35,12 +35,15 @@
   --style-quote-border: var(--divider);
   --style-code-bg: var(--card);
   --style-code-border: var(--toolbar-border);
-  --toolbar-chip-bg: #717d8e;
-  --toolbar-chip-text: #fffdf8;
+  --toolbar-chip-bg: rgba(255, 253, 248, 0.94);
+  --toolbar-chip-text: #6d6861;
   --tree-row-height: 32px;
   --tree-indent: 18px;
   --tree-line-color: rgba(224, 218, 210, 0.72);
   --tree-line-width: 1px;
+  --control-shadow: 0 1px 2px rgba(84, 69, 56, 0.06);
+  --control-inner-highlight: inset 0 0 0 1px rgba(255, 255, 255, 0.58);
+  --toggle-on-bg: rgba(113, 125, 142, 0.92);
   --page-bg: #fffdf8;
   --page-radius: 12px;
   --page-border: rgba(224, 218, 210, 0.88);
@@ -1806,6 +1809,7 @@ body {
 
 .toolbar__button.is-active {
   background: var(--selected-bg);
+  box-shadow: inset 0 0 0 1px var(--toolbar-control-border);
 }
 
 .toolbar__button--wide {
@@ -1973,6 +1977,9 @@ body.dark-theme .toolbar__swatch::before {
   justify-content: center;
   margin-left: 10px;
   flex: 0 0 auto;
+  box-shadow:
+    inset 0 0 0 1px var(--toolbar-control-border),
+    var(--control-shadow);
 }
 
 .toolbar.is-compact [data-compact-hidden] {
@@ -2084,7 +2091,7 @@ body.dark-theme .toolbar__swatch::before {
   padding: 0 11px;
   border-radius: 8px;
   border: none;
-  color: #9b948d;
+  color: var(--text-secondary);
   font-size: 12px;
   line-height: 16px;
   font-weight: 500;
@@ -2095,14 +2102,16 @@ body.dark-theme .toolbar__swatch::before {
 
 [data-left-tabs] .x101-tab-button:hover,
 [data-left-tabs] .x101-tab-button:focus-visible {
-  background: rgba(118, 92, 62, 0.028);
-  color: #6a645e;
+  background: var(--hover-bg);
+  color: var(--foreground);
 }
 
 [data-left-tabs] .x101-tab-button.is-active {
-  background: #faf7f2;
-  color: #3f3934;
-  box-shadow: inset 0 0 0 1px rgba(118, 92, 62, 0.035);
+  background: var(--selected-bg);
+  color: var(--foreground);
+  box-shadow:
+    inset 0 0 0 1px var(--toolbar-control-border),
+    var(--control-shadow);
 }
 
 [data-left-search-panel] {
@@ -2145,7 +2154,7 @@ body.dark-theme .toolbar__swatch::before {
 [data-right-tabs]::before {
   content: 'Контекст';
   display: block;
-  color: #b8b1ab;
+  color: var(--text-tertiary);
   font-size: 11px;
   line-height: 14px;
   font-weight: 500;
@@ -2177,7 +2186,7 @@ body.dark-theme .toolbar__swatch::before {
   padding: 0 11px;
   border-radius: 8px;
   border: none;
-  color: #9b948d;
+  color: var(--text-secondary);
   font-size: 12px;
   line-height: 16px;
   font-weight: 500;
@@ -2190,14 +2199,16 @@ body.dark-theme .toolbar__swatch::before {
 
 [data-right-tabs] .x101-tab-button:hover,
 [data-right-tabs] .x101-tab-button:focus-visible {
-  background: rgba(118, 92, 62, 0.028);
-  color: #6a645e;
+  background: var(--hover-bg);
+  color: var(--foreground);
 }
 
 [data-right-tabs] .x101-tab-button.is-active {
-  background: #faf7f2;
-  color: #3f3934;
-  box-shadow: inset 0 0 0 1px rgba(118, 92, 62, 0.035);
+  background: var(--selected-bg);
+  color: var(--foreground);
+  box-shadow:
+    inset 0 0 0 1px var(--toolbar-control-border),
+    var(--control-shadow);
 }
 
 .sidebar__tree {
@@ -2344,9 +2355,9 @@ body.dark-theme .toolbar__swatch::before {
   min-height: 32px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid rgba(118, 92, 62, 0.08);
-  background: rgba(255, 253, 249, 0.88);
-  color: #706860;
+  border: 1px solid var(--toolbar-control-border);
+  background: var(--selected-bg);
+  color: var(--foreground);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2356,7 +2367,9 @@ body.dark-theme .toolbar__swatch::before {
   line-height: 16px;
   font-weight: 500;
   text-align: center;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.68),
+    var(--control-shadow);
 }
 
 .right-rail-runtime-note {
@@ -2377,10 +2390,12 @@ body.dark-theme .toolbar__swatch::before {
   width: 44px;
   height: 24px;
   border-radius: 999px;
-  border: none;
-  background: #e7dfd6;
+  border: 1px solid var(--toolbar-control-border);
+  background: var(--selected-bg);
   justify-self: end;
-  box-shadow: inset 0 0 0 1px rgba(118, 92, 62, 0.055);
+  box-shadow:
+    var(--control-inner-highlight),
+    var(--control-shadow);
   cursor: default;
 }
 
@@ -2397,7 +2412,7 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .right-rail-toggle.is-on {
-  background: #7c8795;
+  background: var(--toggle-on-bg);
 }
 
 .right-rail-toggle.is-on::before {
@@ -2514,18 +2529,20 @@ body.dark-theme .toolbar__swatch::before {
   height: 30px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid rgba(118, 92, 62, 0.07);
-  background: rgba(255, 253, 249, 0.92);
-  color: #80776f;
+  border: 1px solid var(--toolbar-control-border);
+  background: var(--selected-bg);
+  color: var(--foreground);
   font-size: 11.5px;
   line-height: 14px;
   font-weight: 500;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.66);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.66),
+    var(--control-shadow);
 }
 
 .right-rail-command-opener:hover,
 .right-rail-command-opener:focus-visible {
-  background: rgba(255, 255, 255, 0.98);
+  background: var(--hover-bg);
 }
 
 [data-right-panel-history]:not([hidden]) {
@@ -2685,7 +2702,7 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .sidebar--left .tree__row:hover {
-  background: #efebe6;
+  background: var(--hover-bg);
 }
 
 .tree__row.is-selected {
@@ -2693,8 +2710,8 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .sidebar--left .tree__row.is-selected {
-  background: transparent;
-  color: #4a433e;
+  background: var(--selected-bg);
+  color: var(--foreground);
 }
 
 .tree__indent {
