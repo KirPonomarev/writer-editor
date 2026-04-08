@@ -56,14 +56,17 @@ function getSharedRailWidthConfig(mode) {
 }
 
 function resolveSharedRailWidthCandidate(source, config) {
-  const leftCandidate = Number(source?.leftSidebarWidth);
-  if (Number.isFinite(leftCandidate) && leftCandidate >= config.min && leftCandidate <= config.max) {
-    return clampInt(leftCandidate, config.min, config.max, config.baseline);
-  }
-
-  const rightCandidate = Number(source?.rightSidebarWidth);
-  if (Number.isFinite(rightCandidate) && rightCandidate >= config.min && rightCandidate <= config.max) {
-    return clampInt(rightCandidate, config.min, config.max, config.baseline);
+  const candidates = [
+    source?.leftSidebarWidth,
+    source?.left_width,
+    source?.rightSidebarWidth,
+    source?.right_width,
+  ];
+  for (const candidate of candidates) {
+    const numeric = Number(candidate);
+    if (Number.isFinite(numeric) && numeric >= config.min && numeric <= config.max) {
+      return clampInt(numeric, config.min, config.max, config.baseline);
+    }
   }
 
   return config.baseline;
