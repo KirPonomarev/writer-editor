@@ -1428,7 +1428,11 @@ body {
   position: fixed;
   inset: 0;
   z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
+  box-sizing: border-box;
   background: rgba(201, 194, 186, 0.28);
   backdrop-filter: blur(4px);
   overflow-y: auto;
@@ -1441,12 +1445,14 @@ body {
 
 .configurator-panel__surface {
   width: min(75vw, 1920px);
-  min-height: calc(100vh - 140px);
-  margin: 0 auto;
+  max-height: calc(100vh - 40px);
+  margin: auto;
   padding: 24px 58px 54px;
+  box-sizing: border-box;
   background: #f7f4f1;
   border: 1px solid rgba(221, 216, 210, 0.95);
   border-radius: 22px;
+  overflow: auto;
   box-shadow:
     0 22px 48px rgba(84, 69, 56, 0.14),
     0 2px 8px rgba(84, 69, 56, 0.06);
