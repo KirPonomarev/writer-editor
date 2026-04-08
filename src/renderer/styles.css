@@ -1431,10 +1431,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 18px;
   box-sizing: border-box;
-  background: rgba(201, 194, 186, 0.28);
-  backdrop-filter: blur(4px);
+  background: rgba(206, 199, 191, 0.22);
+  backdrop-filter: blur(5px);
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -1444,18 +1444,18 @@ body {
 }
 
 .configurator-panel__surface {
-  width: min(75vw, 1920px);
-  max-height: calc(100vh - 40px);
+  width: min(94vw, 1968px);
+  max-height: calc(100vh - 36px);
   margin: auto;
-  padding: 24px 58px 54px;
+  padding: 24px 54px 56px;
   box-sizing: border-box;
-  background: #f7f4f1;
-  border: 1px solid rgba(221, 216, 210, 0.95);
-  border-radius: 22px;
+  background: #faf8f4;
+  border: 1px solid rgba(226, 220, 213, 0.96);
+  border-radius: 26px;
   overflow: auto;
   box-shadow:
-    0 22px 48px rgba(84, 69, 56, 0.14),
-    0 2px 8px rgba(84, 69, 56, 0.06);
+    0 18px 38px rgba(84, 69, 56, 0.08),
+    0 2px 6px rgba(84, 69, 56, 0.04);
 }
 
 .configurator-panel__title {
@@ -1469,52 +1469,54 @@ body {
 
 .configurator-panel__divider {
   height: 1px;
-  margin: 0 0 42px;
-  background: rgba(221, 216, 210, 1);
+  margin: 0 0 44px;
+  background: rgba(227, 221, 214, 1);
 }
 
 .configurator-panel__section {
   padding: 0;
-  margin-bottom: 40px;
+  margin-bottom: 42px;
 }
 
 .configurator-panel__label {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 400;
-  line-height: 1.2;
-  color: #1a1a1a;
+  line-height: 1.18;
+  color: #23201d;
 }
 
 .configurator-panel__bucket {
-  min-height: 45px;
-  margin-top: 14px;
-  padding: 6px 20px;
+  min-height: 48px;
+  margin-top: 16px;
+  padding: 7px 18px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   flex-wrap: wrap;
-  border-radius: 0;
-  border: 1px solid rgba(26, 26, 26, 0.12);
-  background: rgba(255, 255, 255, 0.42);
-  transition: border-color 0.14s ease, background 0.14s ease;
+  border-radius: 10px;
+  border: 1px solid rgba(226, 220, 213, 0.95);
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  transition: border-color 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
 }
 
 .configurator-panel__bucket.is-drop-target {
-  border-color: rgba(221, 216, 210, 1);
-  background: rgba(221, 216, 210, 0.22);
+  border-color: rgba(220, 213, 205, 1);
+  background: rgba(238, 233, 227, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .configurator-panel__bucket-item {
   display: inline-flex;
   align-items: center;
-  gap: 14px;
-  min-height: 38px;
-  padding: 6px 10px 6px 2px;
-  border-radius: 8px;
+  gap: 10px;
+  min-height: 34px;
+  padding: 4px 9px 4px 2px;
+  border-radius: 9px;
   background: transparent;
-  color: #1a1a1a;
+  color: #23201d;
   box-sizing: border-box;
   cursor: grab;
   user-select: none;
@@ -1523,17 +1525,17 @@ body {
 }
 
 .configurator-panel__bucket-item .configurator-panel__slot-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 .configurator-panel__bucket-item .configurator-panel__slot-text {
-  color: #1a1a1a;
+  color: #23201d;
 }
 
 .configurator-panel__bucket-item.is-active {
-  background: rgba(221, 216, 210, 0.22);
-  box-shadow: inset 0 0 0 1px rgba(221, 216, 210, 0.92);
+  background: rgba(240, 235, 228, 0.62);
+  box-shadow: inset 0 0 0 1px rgba(224, 216, 208, 0.95);
 }
 
 .configurator-panel__bucket-remove {
@@ -1559,7 +1561,7 @@ body {
 }
 
 .configurator-panel__bucket-remove:hover {
-  background: rgba(221, 216, 210, 0.66);
+  background: rgba(221, 216, 210, 0.5);
 }
 
 .configurator-panel__bucket-item.is-dragging {
@@ -1569,11 +1571,11 @@ body {
 
 .configurator-panel__grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: start;
-  gap: 56px;
-  width: calc(100% - 76px);
-  margin: 0 0 0 76px;
+  gap: 44px 112px;
+  width: calc(100% - 68px);
+  margin: 0 0 0 68px;
   padding: 0;
   box-sizing: border-box;
 }
@@ -1581,65 +1583,65 @@ body {
 .configurator-panel__column {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 40px;
   min-width: 0;
 }
 
 .configurator-panel__slot {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   width: 100%;
-  min-height: 38px;
-  padding: 6px 2px;
-  border: none;
-  border-radius: 8px;
+  min-height: 34px;
+  padding: 4px 8px 4px 1px;
+  border: 1px solid transparent;
+  border-radius: 10px;
   background: transparent;
-  color: #1a1a1a;
+  color: #2b2723;
   text-align: left;
   cursor: pointer;
-  transition: background 0.14s ease, box-shadow 0.14s ease, outline-color 0.14s ease;
+  transition: background 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
   box-sizing: border-box;
   outline: none;
 }
 
 .configurator-panel__slot:hover {
-  background: rgba(221, 216, 210, 0.14);
-  box-shadow: inset 0 0 0 1px rgba(221, 216, 210, 0.72);
+  background: rgba(239, 234, 227, 0.42);
+  border-color: rgba(226, 218, 210, 0.72);
 }
 
 .configurator-panel__slot:focus,
 .configurator-panel__slot:focus-visible {
   outline: none;
-  background: rgba(221, 216, 210, 0.18);
-  box-shadow: inset 0 0 0 1px rgba(221, 216, 210, 0.92);
+  background: rgba(239, 234, 227, 0.48);
+  border-color: rgba(224, 216, 208, 0.92);
 }
 
 .configurator-panel__slot.is-selected {
-  background: rgba(221, 216, 210, 0.2);
-  box-shadow: inset 0 0 0 1px rgba(221, 216, 210, 1);
+  background: rgba(242, 237, 231, 0.74);
+  border-color: rgba(223, 215, 207, 0.95);
 }
 
 .configurator-panel__slot-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   position: relative;
-  border: 1.25px solid currentColor;
+  border: 1px solid currentColor;
   border-radius: 3px;
-  opacity: 1;
+  opacity: 0.88;
   flex: 0 0 auto;
   background:
-    linear-gradient(currentColor, currentColor) 4px 8px / 8px 1.25px no-repeat,
-    linear-gradient(currentColor, currentColor) 4px 11px / 8px 1.25px no-repeat;
+    linear-gradient(currentColor, currentColor) 4px 7px / 7px 1px no-repeat,
+    linear-gradient(currentColor, currentColor) 4px 10px / 7px 1px no-repeat;
 }
 
 .configurator-panel__slot-icon::before {
   content: '';
   position: absolute;
-  top: -1.25px;
-  right: -1.25px;
-  width: 6.5px;
-  height: 6.5px;
+  top: -1px;
+  right: -1px;
+  width: 6px;
+  height: 6px;
   background: linear-gradient(135deg, rgba(245, 244, 242, 0) 0 46%, currentColor 47% 100%);
   border-top-right-radius: 3px;
 }
@@ -1651,10 +1653,14 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 400;
   line-height: 1.25;
-  color: #1a1a1a;
+  color: #2b2723;
+}
+
+.configurator-panel__grid > .configurator-panel__column:nth-child(5) {
+  display: none;
 }
 
 .literal-stage-a #editor,
