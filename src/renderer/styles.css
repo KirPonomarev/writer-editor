@@ -2080,7 +2080,7 @@ body.dark-theme .toolbar__swatch::before {
   background: var(--background);
   color: var(--sidebar-foreground);
   border: none;
-  border-right: 1px solid var(--divider);
+  border-right: none;
   box-shadow: none;
   border-radius: 0;
   --tree-row-height: 28px;
@@ -2177,7 +2177,7 @@ body.dark-theme .toolbar__swatch::before {
   background: var(--background);
   color: var(--sidebar-foreground);
   border: none;
-  border-left: 1px solid var(--divider);
+  border-left: none;
   box-shadow: none;
   border-radius: 0;
 }
@@ -2912,8 +2912,8 @@ body.dark-theme .toolbar__swatch::before {
 .sidebar__resize-handle {
   position: absolute;
   top: 0;
-  right: -6px;
-  width: 12px;
+  right: -7px;
+  width: 14px;
   height: 100%;
   cursor: col-resize;
   background: transparent;
@@ -2926,7 +2926,7 @@ body.dark-theme .toolbar__swatch::before {
   position: absolute;
   top: 0;
   bottom: 0;
-  right: 0;
+  right: 7px;
   width: 1px;
   background: rgba(118, 92, 62, 0.08);
   pointer-events: none;
@@ -2946,12 +2946,12 @@ body.dark-theme .sidebar__resize-handle:hover {
 
 .sidebar__resize-handle--right {
   right: auto;
-  left: -6px;
+  left: -7px;
 }
 
 .sidebar__resize-handle--right::before {
   right: auto;
-  left: 0;
+  left: 7px;
 }
 
 .main-content {
