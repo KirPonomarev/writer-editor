@@ -2201,6 +2201,7 @@ body.dark-theme .toolbar__swatch::before {
   padding: 0;
   border: none;
   background: transparent;
+  min-width: 0;
   overflow: visible;
 }
 
@@ -2226,6 +2227,8 @@ body.dark-theme .toolbar__swatch::before {
   box-shadow: none;
   white-space: nowrap;
   text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 [data-right-tabs] .x101-tab-button:hover,
@@ -3657,6 +3660,19 @@ body.dark-theme .status-bar {
     grid-template-columns: minmax(230px, var(--app-left-sidebar-width)) minmax(480px, 1fr) minmax(250px, var(--app-right-sidebar-width));
     gap: 10px;
     padding: 10px 10px 72px;
+  }
+
+  [data-right-tabs] {
+    padding: 15px 20px 13px;
+  }
+
+  [data-right-tabs] .x101-tabs-group {
+    gap: 4px;
+  }
+
+  [data-right-tabs] .x101-tab-button,
+  [data-right-tabs] .x101-tab-button.toolbar__button--wide {
+    padding: 0 9px;
   }
 
   .main-content {
