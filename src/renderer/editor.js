@@ -3858,21 +3858,7 @@ if (treeContainer) {
 
 let spatialResizeDragState = null;
 
-function startSpatialResize(side, event) {
-  const draftState = spatialLayoutState || getSpatialLayoutBaselineForViewport();
-  spatialResizeDragState = {
-    side,
-    startX: event.clientX,
-    startWidth: draftState.leftSidebarWidth,
-    rightVisible: getSpatialLayoutConstraintsForViewport().rightVisible,
-  };
-  document.body.style.cursor = 'col-resize';
-  document.body.style.userSelect = 'none';
-  window.addEventListener('pointermove', handleSpatialResizeMove);
-  window.addEventListener('pointerup', stopSpatialResize);
-}
-
-function handleSpatialResizeMove(event) {
+function updateSpatialResizeFromClientX(clientX) {
   if (!spatialResizeDragState) return;
   const constraints = getSpatialLayoutConstraintsForViewport();
   const nextState = {
@@ -3883,8 +3869,8 @@ function handleSpatialResizeMove(event) {
 
   if (spatialResizeDragState.rightVisible) {
     const delta = spatialResizeDragState.side === 'left'
-      ? event.clientX - spatialResizeDragState.startX
-      : spatialResizeDragState.startX - event.clientX;
+      ? clientX - spatialResizeDragState.startX
+      : spatialResizeDragState.startX - clientX;
     const nextWidth = clampSpatialSidebarWidth(
       spatialResizeDragState.startWidth + delta,
       constraints.leftMin,
@@ -3894,7 +3880,7 @@ function handleSpatialResizeMove(event) {
     nextState.rightSidebarWidth = nextWidth;
   } else {
     nextState.leftSidebarWidth = clampSpatialSidebarWidth(
-      spatialResizeDragState.startWidth + (event.clientX - spatialResizeDragState.startX),
+      spatialResizeDragState.startWidth + (clientX - spatialResizeDragState.startX),
       constraints.leftMin,
       constraints.leftMax
     );
@@ -3904,13 +3890,111 @@ function handleSpatialResizeMove(event) {
   scheduleLayoutRefresh();
 }
 
+function bindCapturedSpatialResizeStream(target, pointerId) {
+  if (!(target instanceof Element)) return false;
+  if (!Number.isInteger(pointerId) || typeof target.setPointerCapture !== 'function') {
+    return false;
+  }
+  try {
+    target.setPointerCapture(pointerId);
+  } catch {
+    return false;
+  }
+  target.addEventListener('pointermove', handleSpatialResizeMove);
+  target.addEventListener('pointerup', stopSpatialResize);
+  target.addEventListener('pointercancel', stopSpatialResize);
+  target.addEventListener('lostpointercapture', stopSpatialResize);
+  return true;
+}
+
+function unbindCapturedSpatialResizeStream(target, pointerId) {
+  if (!(target instanceof Element)) return;
+  target.removeEventListener('pointermove', handleSpatialResizeMove);
+  target.removeEventListener('pointerup', stopSpatialResize);
+  target.removeEventListener('pointercancel', stopSpatialResize);
+  target.removeEventListener('lostpointercapture', stopSpatialResize);
+  if (
+    Number.isInteger(pointerId) &&
+    typeof target.hasPointerCapture === 'function' &&
+    target.hasPointerCapture(pointerId) &&
+    typeof target.releasePointerCapture === 'function'
+  ) {
+    try {
+      target.releasePointerCapture(pointerId);
+    } catch {}
+  }
+}
+
+function startSpatialResize(side, event) {
+  const draftState = spatialLayoutState || getSpatialLayoutBaselineForViewport();
+  const pointerTarget = event.currentTarget instanceof Element ? event.currentTarget : null;
+  const pointerId = Number.isInteger(event.pointerId) ? event.pointerId : null;
+  spatialResizeDragState = {
+    side,
+    startX: event.clientX,
+    startWidth: draftState.leftSidebarWidth,
+    rightVisible: getSpatialLayoutConstraintsForViewport().rightVisible,
+    pointerId,
+    pointerTarget,
+    streamBinding: 'none',
+  };
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+  if (bindCapturedSpatialResizeStream(pointerTarget, pointerId)) {
+    spatialResizeDragState.streamBinding = 'captured';
+    return;
+  }
+  if (event.pointerType === 'mouse') {
+    spatialResizeDragState.streamBinding = 'window-mouse';
+    window.addEventListener('mousemove', handleSpatialResizeMouseMove);
+    window.addEventListener('mouseup', stopSpatialResize);
+    return;
+  }
+  spatialResizeDragState.streamBinding = 'window-pointer';
+  window.addEventListener('pointermove', handleSpatialResizeMove);
+  window.addEventListener('pointerup', stopSpatialResize);
+  window.addEventListener('pointercancel', stopSpatialResize);
+}
+
+function handleSpatialResizeMove(event) {
+  if (!spatialResizeDragState) return;
+  if (
+    Number.isInteger(spatialResizeDragState.pointerId) &&
+    Number.isInteger(event.pointerId) &&
+    event.pointerId !== spatialResizeDragState.pointerId
+  ) {
+    return;
+  }
+  updateSpatialResizeFromClientX(event.clientX);
+  event.preventDefault();
+}
+
+function handleSpatialResizeMouseMove(event) {
+  if (!spatialResizeDragState) return;
+  if (event.buttons === 0) {
+    stopSpatialResize();
+    return;
+  }
+  updateSpatialResizeFromClientX(event.clientX);
+  event.preventDefault();
+}
+
 function stopSpatialResize() {
   if (!spatialResizeDragState) return;
+  const { pointerId, pointerTarget, streamBinding } = spatialResizeDragState;
   spatialResizeDragState = null;
   document.body.style.cursor = '';
   document.body.style.userSelect = '';
-  window.removeEventListener('pointermove', handleSpatialResizeMove);
-  window.removeEventListener('pointerup', stopSpatialResize);
+  if (streamBinding === 'captured') {
+    unbindCapturedSpatialResizeStream(pointerTarget, pointerId);
+  } else if (streamBinding === 'window-mouse') {
+    window.removeEventListener('mousemove', handleSpatialResizeMouseMove);
+    window.removeEventListener('mouseup', stopSpatialResize);
+  } else {
+    window.removeEventListener('pointermove', handleSpatialResizeMove);
+    window.removeEventListener('pointerup', stopSpatialResize);
+    window.removeEventListener('pointercancel', stopSpatialResize);
+  }
   commitSpatialLayoutState(currentProjectId);
   scheduleLayoutRefresh();
 }
