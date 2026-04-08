@@ -1444,18 +1444,18 @@ body {
 }
 
 .configurator-panel__surface {
-  width: min(94vw, 1968px);
-  max-height: calc(100vh - 36px);
+  width: min(78vw, 1560px);
+  max-height: calc(100vh - 48px);
   margin: auto;
-  padding: 24px 54px 56px;
+  padding: 48px 72px 56px;
   box-sizing: border-box;
-  background: #faf8f4;
-  border: 1px solid rgba(226, 220, 213, 0.96);
-  border-radius: 26px;
+  background: #fbf9f5;
+  border: 1px solid rgba(226, 220, 213, 0.92);
+  border-radius: 22px;
   overflow: auto;
   box-shadow:
-    0 18px 38px rgba(84, 69, 56, 0.08),
-    0 2px 6px rgba(84, 69, 56, 0.04);
+    0 14px 28px rgba(84, 69, 56, 0.06),
+    0 2px 5px rgba(84, 69, 56, 0.035);
 }
 
 .configurator-panel__title {
@@ -1469,54 +1469,57 @@ body {
 
 .configurator-panel__divider {
   height: 1px;
-  margin: 0 0 44px;
-  background: rgba(227, 221, 214, 1);
+  margin: 0 0 40px;
+  background: rgba(227, 221, 214, 0.92);
 }
 
 .configurator-panel__section {
   padding: 0;
-  margin-bottom: 42px;
+  margin-bottom: 36px;
+  width: min(100%, 1080px);
 }
 
 .configurator-panel__label {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  font-size: 20px;
-  font-weight: 400;
-  line-height: 1.18;
-  color: #23201d;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.14;
+  letter-spacing: 0.06em;
+  color: rgba(44, 39, 35, 0.68);
+  text-transform: lowercase;
 }
 
 .configurator-panel__bucket {
-  min-height: 48px;
+  min-height: 44px;
   margin-top: 16px;
-  padding: 7px 18px;
+  padding: 6px 16px;
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  border-radius: 10px;
-  border: 1px solid rgba(226, 220, 213, 0.95);
-  background: rgba(255, 255, 255, 0.5);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  border-radius: 14px;
+  border: 1px solid rgba(226, 220, 213, 0.9);
+  background: rgba(255, 255, 255, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
   transition: border-color 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
 }
 
 .configurator-panel__bucket.is-drop-target {
-  border-color: rgba(220, 213, 205, 1);
-  background: rgba(238, 233, 227, 0.42);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  border-color: rgba(220, 213, 205, 0.96);
+  background: rgba(238, 233, 227, 0.34);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.64);
 }
 
 .configurator-panel__bucket-item {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  min-height: 34px;
-  padding: 4px 9px 4px 2px;
-  border-radius: 9px;
+  min-height: 44px;
+  padding: 0 14px 0 0;
+  border-radius: 12px;
   background: transparent;
-  color: #23201d;
+  color: #2b2723;
   box-sizing: border-box;
   cursor: grab;
   user-select: none;
@@ -1525,17 +1528,17 @@ body {
 }
 
 .configurator-panel__bucket-item .configurator-panel__slot-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .configurator-panel__bucket-item .configurator-panel__slot-text {
-  color: #23201d;
+  color: #2b2723;
 }
 
 .configurator-panel__bucket-item.is-active {
-  background: rgba(240, 235, 228, 0.62);
-  box-shadow: inset 0 0 0 1px rgba(224, 216, 208, 0.95);
+  background: rgba(242, 237, 231, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(223, 215, 207, 0.92);
 }
 
 .configurator-panel__bucket-remove {
@@ -1573,9 +1576,9 @@ body {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: start;
-  gap: 44px 112px;
-  width: calc(100% - 68px);
-  margin: 0 0 0 68px;
+  gap: 28px 40px;
+  width: min(100%, 1080px);
+  margin: 32px 0 0;
   padding: 0;
   box-sizing: border-box;
 }
@@ -1583,7 +1586,7 @@ body {
 .configurator-panel__column {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 28px;
   min-width: 0;
 }
 
@@ -1592,10 +1595,10 @@ body {
   align-items: center;
   gap: 10px;
   width: 100%;
-  min-height: 34px;
-  padding: 4px 8px 4px 1px;
+  min-height: 44px;
+  padding: 0 14px 0 0;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 12px;
   background: transparent;
   color: #2b2723;
   text-align: left;
@@ -1606,33 +1609,33 @@ body {
 }
 
 .configurator-panel__slot:hover {
-  background: rgba(239, 234, 227, 0.42);
-  border-color: rgba(226, 218, 210, 0.72);
+  background: rgba(239, 234, 227, 0.34);
+  border-color: rgba(226, 218, 210, 0.7);
 }
 
 .configurator-panel__slot:focus,
 .configurator-panel__slot:focus-visible {
   outline: none;
-  background: rgba(239, 234, 227, 0.48);
-  border-color: rgba(224, 216, 208, 0.92);
+  background: rgba(239, 234, 227, 0.4);
+  border-color: rgba(224, 216, 208, 0.9);
 }
 
 .configurator-panel__slot.is-selected {
-  background: rgba(242, 237, 231, 0.74);
-  border-color: rgba(223, 215, 207, 0.95);
+  background: rgba(242, 237, 231, 0.68);
+  border-color: rgba(223, 215, 207, 0.9);
 }
 
 .configurator-panel__slot-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   position: relative;
   border: 1px solid currentColor;
   border-radius: 3px;
-  opacity: 0.88;
+  opacity: 0.78;
   flex: 0 0 auto;
   background:
-    linear-gradient(currentColor, currentColor) 4px 7px / 7px 1px no-repeat,
-    linear-gradient(currentColor, currentColor) 4px 10px / 7px 1px no-repeat;
+    linear-gradient(currentColor, currentColor) 4px 6px / 6px 1px no-repeat,
+    linear-gradient(currentColor, currentColor) 4px 9px / 6px 1px no-repeat;
 }
 
 .configurator-panel__slot-icon::before {
@@ -1640,8 +1643,8 @@ body {
   position: absolute;
   top: -1px;
   right: -1px;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   background: linear-gradient(135deg, rgba(245, 244, 242, 0) 0 46%, currentColor 47% 100%);
   border-top-right-radius: 3px;
 }
@@ -1653,9 +1656,9 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 400;
-  line-height: 1.25;
+  line-height: 1.38;
   color: #2b2723;
 }
 
