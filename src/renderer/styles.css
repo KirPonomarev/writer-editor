@@ -2891,6 +2891,9 @@ body.dark-theme .sidebar__resize-handle:hover {
   overflow: auto;
   padding: var(--canvas-padding-top) var(--canvas-padding-horizontal) var(--canvas-padding-bottom);
   background: var(--canvas-bg);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .empty-state {
@@ -2974,7 +2977,7 @@ body.dark-theme .empty-state {
   height: 100%;
   background: var(--page-bg);
   border: 1px solid var(--page-border);
-  border-radius: 0;
+  border-radius: var(--page-radius);
   box-shadow:
     var(--page-shadow-1),
     var(--page-shadow-2);
