@@ -2921,17 +2921,6 @@ body.dark-theme .toolbar__swatch::before {
   z-index: 2;
 }
 
-.sidebar__resize-handle::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 7px;
-  width: 1px;
-  background: rgba(118, 92, 62, 0.08);
-  pointer-events: none;
-}
-
 .sidebar__resize-handle:hover {
   background: rgba(0, 0, 0, 0.1);
 }
@@ -2947,11 +2936,6 @@ body.dark-theme .sidebar__resize-handle:hover {
 .sidebar__resize-handle--right {
   right: auto;
   left: -7px;
-}
-
-.sidebar__resize-handle--right::before {
-  right: auto;
-  left: 7px;
 }
 
 .main-content {

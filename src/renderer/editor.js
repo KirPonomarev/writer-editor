@@ -3907,6 +3907,28 @@ function bindCapturedSpatialResizeStream(target, pointerId) {
   return true;
 }
 
+function bindWindowSpatialResizeMouseStream() {
+  window.addEventListener('mousemove', handleSpatialResizeMouseMove);
+  window.addEventListener('mouseup', stopSpatialResize);
+}
+
+function unbindWindowSpatialResizeMouseStream() {
+  window.removeEventListener('mousemove', handleSpatialResizeMouseMove);
+  window.removeEventListener('mouseup', stopSpatialResize);
+}
+
+function bindWindowSpatialResizePointerStream() {
+  window.addEventListener('pointermove', handleSpatialResizeMove);
+  window.addEventListener('pointerup', stopSpatialResize);
+  window.addEventListener('pointercancel', stopSpatialResize);
+}
+
+function unbindWindowSpatialResizePointerStream() {
+  window.removeEventListener('pointermove', handleSpatialResizeMove);
+  window.removeEventListener('pointerup', stopSpatialResize);
+  window.removeEventListener('pointercancel', stopSpatialResize);
+}
+
 function unbindCapturedSpatialResizeStream(target, pointerId) {
   if (!(target instanceof Element)) return;
   target.removeEventListener('pointermove', handleSpatialResizeMove);
@@ -3936,28 +3958,31 @@ function startSpatialResize(side, event) {
     rightVisible: getSpatialLayoutConstraintsForViewport().rightVisible,
     pointerId,
     pointerTarget,
-    streamBinding: 'none',
+    captureBound: false,
+    mouseFallbackBound: false,
+    pointerFallbackBound: false,
   };
   document.body.style.cursor = 'col-resize';
   document.body.style.userSelect = 'none';
   if (bindCapturedSpatialResizeStream(pointerTarget, pointerId)) {
-    spatialResizeDragState.streamBinding = 'captured';
-    return;
+    spatialResizeDragState.captureBound = true;
   }
   if (event.pointerType === 'mouse') {
-    spatialResizeDragState.streamBinding = 'window-mouse';
-    window.addEventListener('mousemove', handleSpatialResizeMouseMove);
-    window.addEventListener('mouseup', stopSpatialResize);
+    spatialResizeDragState.mouseFallbackBound = true;
+    bindWindowSpatialResizeMouseStream();
     return;
   }
-  spatialResizeDragState.streamBinding = 'window-pointer';
-  window.addEventListener('pointermove', handleSpatialResizeMove);
-  window.addEventListener('pointerup', stopSpatialResize);
-  window.addEventListener('pointercancel', stopSpatialResize);
+  if (!spatialResizeDragState.captureBound) {
+    spatialResizeDragState.pointerFallbackBound = true;
+    bindWindowSpatialResizePointerStream();
+  }
 }
 
 function handleSpatialResizeMove(event) {
   if (!spatialResizeDragState) return;
+  if (spatialResizeDragState.mouseFallbackBound && event.pointerType === 'mouse') {
+    return;
+  }
   if (
     Number.isInteger(spatialResizeDragState.pointerId) &&
     Number.isInteger(event.pointerId) &&
@@ -3981,19 +4006,24 @@ function handleSpatialResizeMouseMove(event) {
 
 function stopSpatialResize() {
   if (!spatialResizeDragState) return;
-  const { pointerId, pointerTarget, streamBinding } = spatialResizeDragState;
+  const {
+    pointerId,
+    pointerTarget,
+    captureBound,
+    mouseFallbackBound,
+    pointerFallbackBound,
+  } = spatialResizeDragState;
   spatialResizeDragState = null;
   document.body.style.cursor = '';
   document.body.style.userSelect = '';
-  if (streamBinding === 'captured') {
+  if (captureBound) {
     unbindCapturedSpatialResizeStream(pointerTarget, pointerId);
-  } else if (streamBinding === 'window-mouse') {
-    window.removeEventListener('mousemove', handleSpatialResizeMouseMove);
-    window.removeEventListener('mouseup', stopSpatialResize);
-  } else {
-    window.removeEventListener('pointermove', handleSpatialResizeMove);
-    window.removeEventListener('pointerup', stopSpatialResize);
-    window.removeEventListener('pointercancel', stopSpatialResize);
+  }
+  if (mouseFallbackBound) {
+    unbindWindowSpatialResizeMouseStream();
+  }
+  if (pointerFallbackBound) {
+    unbindWindowSpatialResizePointerStream();
   }
   commitSpatialLayoutState(currentProjectId);
   scheduleLayoutRefresh();
