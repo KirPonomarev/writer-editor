@@ -2959,6 +2959,7 @@ function createWindow() {
     x: windowState.x,
     y: windowState.y,
     backgroundColor: '#dbd4ca',
+    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
