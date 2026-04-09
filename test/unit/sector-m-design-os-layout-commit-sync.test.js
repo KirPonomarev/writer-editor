@@ -47,6 +47,59 @@ test('layout commit sync: resize semantics stay independent for left and right s
   assert.equal(updateSnippet.includes('nextState.rightSidebarWidth = nextWidth;'), false, 'shared width collapse assignment must not exist');
 });
 
+test('layout commit sync: mouse drag path prefers pointer capture and only falls back when capture fails', () => {
+  const source = readEditorSource();
+  const startStart = source.indexOf('function startSpatialResize(side, event)');
+  const startEnd = source.indexOf('function handleSpatialResizeMove(event)');
+  assert.ok(startStart > -1 && startEnd > startStart, 'startSpatialResize bounds must exist');
+  const startSnippet = source.slice(startStart, startEnd);
+
+  assert.ok(startSnippet.includes('if (bindCapturedSpatialResizeStream(pointerTarget, pointerId)) {'));
+  assert.ok(startSnippet.includes("if (event.pointerType === 'mouse') {"));
+  assert.ok(startSnippet.includes('if (!spatialResizeDragState.captureBound) {'), 'mouse fallback must be gated by capture failure');
+  assert.ok(startSnippet.includes('spatialResizeDragState.mouseFallbackBound = true;'), 'mouse fallback flag must still exist');
+  assert.equal(
+    startSnippet.includes("if (event.pointerType === 'mouse') {\n    spatialResizeDragState.mouseFallbackBound = true;"),
+    false,
+    'mouse fallback must not bind unconditionally'
+  );
+  assert.equal(
+    startSnippet.includes(
+      "if (bindCapturedSpatialResizeStream(pointerTarget, pointerId)) {\n    spatialResizeDragState.captureBound = true;\n  }\n  if (event.pointerType === 'mouse') {\n    spatialResizeDragState.mouseFallbackBound = true;"
+    ),
+    false,
+    'mouse drag must not allow captureBound and mouseFallbackBound to coexist from the same successful capture path'
+  );
+});
+
+test('layout commit sync: captured mouse pointermove remains an accepted resize path and resize end keeps committed state', () => {
+  const source = readEditorSource();
+  const moveStart = source.indexOf('function handleSpatialResizeMove(event)');
+  const moveEnd = source.indexOf('function handleSpatialResizeMouseMove(event)');
+  assert.ok(moveStart > -1 && moveEnd > moveStart, 'handleSpatialResizeMove bounds must exist');
+  const moveSnippet = source.slice(moveStart, moveEnd);
+
+  assert.equal(
+    moveSnippet.includes("if (spatialResizeDragState.mouseFallbackBound && event.pointerType === 'mouse') {\n    return;\n  }"),
+    false,
+    'captured mouse pointermove must not be ignored'
+  );
+  assert.ok(
+    moveSnippet.includes('event.pointerId !== spatialResizeDragState.pointerId'),
+    'pointerId guard must remain in place'
+  );
+  assert.ok(moveSnippet.includes('updateSpatialResizeFromClientX(event.clientX);'));
+
+  const stopStart = source.indexOf('function stopSpatialResize()');
+  const stopEnd = source.indexOf('if (sidebar && sidebarResizer) {');
+  assert.ok(stopStart > -1 && stopEnd > stopStart, 'stopSpatialResize bounds must exist');
+  const stopSnippet = source.slice(stopStart, stopEnd);
+  assert.ok(stopSnippet.includes('if (captureBound) {'));
+  assert.ok(stopSnippet.includes('if (mouseFallbackBound) {'));
+  assert.ok(stopSnippet.includes('if (pointerFallbackBound) {'));
+  assert.ok(stopSnippet.includes('commitSpatialLayoutState(currentProjectId);'), 'resize_end must remain the commit point');
+});
+
 test('layout commit sync: shell controller preserves dual width model with symmetric defaults', async () => {
   const modulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'design-os', 'designOsShellController.mjs')).href;
   const {
