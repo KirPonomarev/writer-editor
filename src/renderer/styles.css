@@ -1455,7 +1455,7 @@ body {
   max-width: calc(100vw - var(--app-left-sidebar-width) - var(--app-right-sidebar-width) - (var(--configurator-panel-side-margin) * 2));
   max-height: calc(100vh - 32px);
   margin: 0 auto;
-  padding: 48px 72px 56px;
+  padding: 40px 72px 40px;
   box-sizing: border-box;
   background: #fcfaf6;
   border: 1px solid rgba(226, 220, 213, 0.92);
@@ -1486,20 +1486,20 @@ body {
 
 .configurator-panel__divider {
   height: 1px;
-  margin: 0 0 36px;
+  margin: 0 0 26px;
   background: rgba(227, 221, 214, 0.92);
 }
 
 .configurator-panel__section {
   padding: 0;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
   width: min(100%, 1080px);
 }
 
 .configurator-panel__label {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   line-height: 1.27;
   letter-spacing: 0.06em;
@@ -1508,12 +1508,12 @@ body {
 }
 
 .configurator-panel__bucket {
-  min-height: 44px;
-  margin-top: 14px;
-  padding: 6px 16px;
+  min-height: 40px;
+  margin-top: 10px;
+  padding: 5px 14px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
   border-radius: 14px;
   border: 1px solid rgba(226, 220, 213, 0.9);
@@ -1531,9 +1531,9 @@ body {
 .configurator-panel__bucket-item {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-height: 44px;
-  padding: 0 14px 0 0;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 12px 0 0;
   border-radius: 12px;
   background: transparent;
   color: #2b2723;
@@ -1545,8 +1545,8 @@ body {
 }
 
 .configurator-panel__bucket-item .configurator-panel__slot-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 .configurator-panel__bucket-item .configurator-panel__slot-text {
@@ -1593,9 +1593,9 @@ body {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: start;
-  gap: 28px 40px;
+  gap: 22px 32px;
   width: min(100%, 1080px);
-  margin: 40px 0 0;
+  margin: 28px 0 0;
   padding: 0;
   box-sizing: border-box;
 }
@@ -1603,7 +1603,7 @@ body {
 .configurator-panel__column {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 22px;
   align-items: start;
   min-width: 0;
 }
@@ -1611,11 +1611,11 @@ body {
 .configurator-panel__slot {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: fit-content;
   max-width: 100%;
-  min-height: 44px;
-  padding: 0 14px 0 0;
+  min-height: 40px;
+  padding: 0 12px 0 0;
   border: 1px solid transparent;
   border-radius: 12px;
   background: transparent;
@@ -1649,16 +1649,16 @@ body {
 }
 
 .configurator-panel__slot-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   position: relative;
   border: 1px solid currentColor;
   border-radius: 3px;
   opacity: 0.7;
   flex: 0 0 auto;
   background:
-    linear-gradient(currentColor, currentColor) 4px 6px / 6px 1px no-repeat,
-    linear-gradient(currentColor, currentColor) 4px 9px / 6px 1px no-repeat;
+    linear-gradient(currentColor, currentColor) 3px 5px / 5px 1px no-repeat,
+    linear-gradient(currentColor, currentColor) 3px 8px / 5px 1px no-repeat;
 }
 
 .configurator-panel__slot-icon::before {
@@ -1666,8 +1666,8 @@ body {
   position: absolute;
   top: -1px;
   right: -1px;
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   background: linear-gradient(135deg, rgba(245, 244, 242, 0) 0 46%, currentColor 47% 100%);
   border-top-right-radius: 3px;
 }
@@ -1679,14 +1679,14 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
-  line-height: 1.38;
+  line-height: 1.33;
   color: #2b2723;
 }
 
 .configurator-panel__column > .configurator-panel__slot:nth-child(2) {
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .configurator-panel__grid > .configurator-panel__column:nth-child(5) {
