@@ -3972,8 +3972,10 @@ function startSpatialResize(side, event) {
     spatialResizeDragState.captureBound = true;
   }
   if (event.pointerType === 'mouse') {
-    spatialResizeDragState.mouseFallbackBound = true;
-    bindWindowSpatialResizeMouseStream();
+    if (!spatialResizeDragState.captureBound) {
+      spatialResizeDragState.mouseFallbackBound = true;
+      bindWindowSpatialResizeMouseStream();
+    }
     return;
   }
   if (!spatialResizeDragState.captureBound) {
@@ -3984,9 +3986,6 @@ function startSpatialResize(side, event) {
 
 function handleSpatialResizeMove(event) {
   if (!spatialResizeDragState) return;
-  if (spatialResizeDragState.mouseFallbackBound && event.pointerType === 'mouse') {
-    return;
-  }
   if (
     Number.isInteger(spatialResizeDragState.pointerId) &&
     Number.isInteger(event.pointerId) &&
