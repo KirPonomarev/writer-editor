@@ -1478,11 +1478,11 @@ body {
 .configurator-panel__title {
   width: min(100%, 1080px);
   margin: 0 0 22px;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+  font-family: var(--font-family);
   font-size: 18px;
   font-weight: 500;
-  line-height: 1.22;
-  letter-spacing: 0.01em;
+  line-height: 24px;
+  letter-spacing: -0.01em;
   color: rgba(43, 39, 35, 0.92);
 }
 
