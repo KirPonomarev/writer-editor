@@ -5,7 +5,24 @@ import { fileURLToPath } from 'node:url';
 
 const FAIL_REASON_FORCED_NEGATIVE = 'E_PHASE05_MOVABLE_SIDE_CONTAINERS_BASELINE_FORCED_NEGATIVE';
 const FAIL_REASON_UNEXPECTED = 'E_PHASE05_MOVABLE_SIDE_CONTAINERS_BASELINE_UNEXPECTED';
-const SOURCE_PATH = 'src/renderer/editor.js';
+const EDITOR_SOURCE_PATH = 'src/renderer/editor.js';
+const PHASE04_PACKET_PATH = 'docs/OPS/STATUS/PHASE04_DESIGN_LAYER_BASELINE_PACKET_V1.json';
+
+const LOCKED_TARGET_IDS = Object.freeze([
+  'BOUNDED_MOVABLE_SIDE_CONTAINERS_BASELINE',
+  'LEFT_SIDE_CONTAINER',
+  'RIGHT_SIDE_CONTAINER',
+  'EDITOR_ROOT_FIXED_DOCKED',
+  'PROJECT_SCOPED_SPATIAL_LAYOUT_SNAPSHOT',
+  'RESIZE_END_SAFE_RESET_LAST_STABLE_RESTORE',
+  'SAFE_DEGRADATION_ON_INVALID_LAYOUT_OR_VIEWPORT_SHRINK',
+]);
+
+const LOCKED_COMMIT_POINT_IDS = Object.freeze([
+  'RESIZE_END',
+  'SAFE_RESET',
+  'RESTORE_LAST_STABLE',
+]);
 
 function parseArgs(argv) {
   const out = { json: false, forceNegative: false };
@@ -20,6 +37,10 @@ function readText(relativePath) {
   return fs.readFileSync(path.resolve(relativePath), 'utf8');
 }
 
+function readJson(relativePath) {
+  return JSON.parse(readText(relativePath));
+}
+
 function asCheck(status, measured, note) {
   return { status, measured, note };
 }
@@ -32,65 +53,89 @@ function evaluatePhase05MovableSideContainersBaselineState(input = {}) {
   const forceNegative = Boolean(input.forceNegative);
 
   try {
-    const source = readText(SOURCE_PATH);
+    const source = readText(EDITOR_SOURCE_PATH);
+    const phase04Packet = readJson(PHASE04_PACKET_PATH);
 
-    const movableSideContainersPresent = matchesAll(source, [
-      /function startSpatialResize\(side, event\)/,
-      /window\.addEventListener\('pointermove', handleSpatialResizeMove\);/,
-      /window\.addEventListener\('pointerup', stopSpatialResize\);/,
+    const phase04DesignLayerBaselinePass = Boolean(
+      phase04Packet?.artifactId === 'PHASE04_DESIGN_LAYER_BASELINE_PACKET_V1'
+      && phase04Packet?.status === 'PASS'
+      && phase04Packet?.phase04BaselineStatus === 'PASS'
+      && phase04Packet?.proof?.noFalsePhase04DesignBaselineGreenTrue === true
+    );
+
+    const leftAndRightResizeHandlesPresent = matchesAll(source, [
+      /if \(sidebar && sidebarResizer\) \{/,
       /sidebarResizer\.addEventListener\('pointerdown', \(event\) => \{/,
       /startSpatialResize\('left', event\);/,
+      /if \(rightSidebar && rightSidebarResizer\) \{/,
       /rightSidebarResizer\.addEventListener\('pointerdown', \(event\) => \{/,
       /startSpatialResize\('right', event\);/,
     ]);
-    const boundedResizePresent = matchesAll(source, [
-      /function clampSpatialSidebarWidth\(value, min, max\)/,
-      /clampSpatialSidebarWidth\(/,
-      /constraints\.leftMin/,
-      /constraints\.leftMax/,
-      /constraints\.rightMin/,
-      /constraints\.rightMax/,
-    ]);
-    const commitOnResizeEndPresent = matchesAll(source, [
-      /function stopSpatialResize\(\)/,
-      /commitSpatialLayoutState\(currentProjectId\);/,
-      /scheduleLayoutRefresh\(\);/,
-    ]);
-    const projectScopedSnapshotPresent = matchesAll(source, [
-      /function getSpatialLayoutStorageKey\(projectId = currentProjectId\)/,
+
+    const projectScopedSpatialLayoutStorage = matchesAll(source, [
       /const SPATIAL_LAYOUT_STORAGE_KEY_PREFIX = 'yalkenSpatialLayout';/,
+      /function getSpatialLayoutStorageKey\(projectId = currentProjectId\)/,
       /\? `\$\{SPATIAL_LAYOUT_STORAGE_KEY_PREFIX\}:\$\{normalizedProjectId\}`/,
       /localStorage\.setItem\(getSpatialLayoutStorageKey\(normalizedProjectId\), JSON\.stringify\(nextState\)\);/,
     ]);
-    const editorRootRemainsDocked = !/mainContentResizer/.test(source)
-      && !/editorPaneResizer/.test(source)
-      && !/floatingEditor/.test(source);
+
+    const commitPointPersistenceOnly = matchesAll(source, [
+      /function updateSpatialResizeFromClientX\(clientX\) \{[\s\S]*?applySpatialLayoutState\(nextState, \{ persist: false, projectId: currentProjectId \}\);[\s\S]*?\}/,
+      /function stopSpatialResize\(\) \{[\s\S]*?commitSpatialLayoutState\(currentProjectId\);[\s\S]*?\}/,
+    ]);
+
+    const safeResetPersistsBaseline = matchesAll(source, [
+      /function performSafeResetShell\(\)/,
+      /applySpatialLayoutState\(getSpatialLayoutBaselineForViewport\(\), \{\s*persist: true,\s*projectId: currentProjectId,\s*\}\);/,
+    ]);
+
+    const restoreLastStableRestoresSnapshot = matchesAll(source, [
+      /function performRestoreLastStableShell\(\)/,
+      /restoreSpatialLayoutState\(currentProjectId\);/,
+    ]);
+
+    const invalidViewportDegradesToBaseline = matchesAll(source, [
+      /function normalizeSpatialLayoutState\(rawState, viewportWidth = getSpatialLayoutViewportWidth\(\)\)/,
+      /const fallback = getSpatialLayoutBaselineForViewport\(viewportWidth\);/,
+      /if \(!rawState \|\| typeof rawState !== 'object'\) \{\s*return \{ \.\.\.fallback \};\s*\}/,
+      /if \(rawState\.version !== SPATIAL_LAYOUT_VERSION\) \{\s*return \{ \.\.\.fallback \};\s*\}/,
+    ]);
 
     const checkStatusById = {
-      MOVABLE_SIDE_CONTAINERS_PRESENT: asCheck(
-        movableSideContainersPresent ? 'GREEN' : 'OPEN_GAP',
-        true,
-        movableSideContainersPresent ? 'MOVABLE_SIDE_CONTAINERS_PRESENT' : 'MOVABLE_SIDE_CONTAINERS_MISSING',
+      PHASE04_DESIGN_LAYER_BASELINE_PASS: asCheck(
+        phase04DesignLayerBaselinePass ? 'GREEN' : 'OPEN_GAP',
+        phase04Packet?.status || 'UNKNOWN',
+        phase04DesignLayerBaselinePass ? 'PHASE04_DESIGN_LAYER_BASELINE_PASS' : 'PHASE04_DESIGN_LAYER_BASELINE_NOT_PASS',
       ),
-      BOUNDED_RESIZE_PRESENT: asCheck(
-        boundedResizePresent ? 'GREEN' : 'OPEN_GAP',
+      LEFT_AND_RIGHT_RESIZE_HANDLES_PRESENT: asCheck(
+        leftAndRightResizeHandlesPresent ? 'GREEN' : 'OPEN_GAP',
         true,
-        boundedResizePresent ? 'BOUNDED_RESIZE_PRESENT' : 'BOUNDED_RESIZE_MISSING',
+        leftAndRightResizeHandlesPresent ? 'LEFT_AND_RIGHT_RESIZE_HANDLES_PRESENT' : 'LEFT_AND_RIGHT_RESIZE_HANDLES_MISSING',
       ),
-      COMMIT_ON_RESIZE_END_PRESENT: asCheck(
-        commitOnResizeEndPresent ? 'GREEN' : 'OPEN_GAP',
+      PROJECT_SCOPED_SPATIAL_LAYOUT_STORAGE: asCheck(
+        projectScopedSpatialLayoutStorage ? 'GREEN' : 'OPEN_GAP',
         true,
-        commitOnResizeEndPresent ? 'COMMIT_ON_RESIZE_END_PRESENT' : 'COMMIT_ON_RESIZE_END_MISSING',
+        projectScopedSpatialLayoutStorage ? 'PROJECT_SCOPED_SPATIAL_LAYOUT_STORAGE' : 'PROJECT_SCOPED_SPATIAL_LAYOUT_STORAGE_MISSING',
       ),
-      PROJECT_SCOPED_SPATIAL_SNAPSHOT_PRESENT: asCheck(
-        projectScopedSnapshotPresent ? 'GREEN' : 'OPEN_GAP',
+      COMMIT_POINT_PERSISTENCE_ONLY: asCheck(
+        commitPointPersistenceOnly ? 'GREEN' : 'OPEN_GAP',
         true,
-        projectScopedSnapshotPresent ? 'PROJECT_SCOPED_SPATIAL_SNAPSHOT_PRESENT' : 'PROJECT_SCOPED_SPATIAL_SNAPSHOT_MISSING',
+        commitPointPersistenceOnly ? 'COMMIT_POINT_PERSISTENCE_ONLY' : 'COMMIT_POINT_PERSISTENCE_NOT_ISOLATED',
       ),
-      EDITOR_ROOT_REMAINS_DOCKED: asCheck(
-        editorRootRemainsDocked ? 'GREEN' : 'OPEN_GAP',
+      SAFE_RESET_PERSISTS_BASELINE: asCheck(
+        safeResetPersistsBaseline ? 'GREEN' : 'OPEN_GAP',
         true,
-        editorRootRemainsDocked ? 'EDITOR_ROOT_REMAINS_DOCKED' : 'EDITOR_ROOT_DOCKED_INVARIANT_BROKEN',
+        safeResetPersistsBaseline ? 'SAFE_RESET_PERSISTS_BASELINE' : 'SAFE_RESET_BASELINE_PERSISTENCE_MISSING',
+      ),
+      RESTORE_LAST_STABLE_RESTORES_SNAPSHOT: asCheck(
+        restoreLastStableRestoresSnapshot ? 'GREEN' : 'OPEN_GAP',
+        true,
+        restoreLastStableRestoresSnapshot ? 'RESTORE_LAST_STABLE_RESTORES_SNAPSHOT' : 'RESTORE_LAST_STABLE_SNAPSHOT_MISSING',
+      ),
+      INVALID_VIEWPORT_DEGRADES_TO_BASELINE: asCheck(
+        invalidViewportDegradesToBaseline ? 'GREEN' : 'OPEN_GAP',
+        true,
+        invalidViewportDegradesToBaseline ? 'INVALID_VIEWPORT_DEGRADES_TO_BASELINE' : 'INVALID_VIEWPORT_BASELINE_DEGRADATION_MISSING',
       ),
     };
 
@@ -109,6 +154,8 @@ function evaluatePhase05MovableSideContainersBaselineState(input = {}) {
         phase05ReadinessStatus: 'HOLD',
         greenCheckIds,
         openGapIds: Array.from(new Set([...openGapIds, 'FORCED_NEGATIVE_PATH'])),
+        lockedTargetIds: [...LOCKED_TARGET_IDS],
+        lockedCommitPointIds: [...LOCKED_COMMIT_POINT_IDS],
         checkStatusById,
       };
     }
@@ -120,6 +167,8 @@ function evaluatePhase05MovableSideContainersBaselineState(input = {}) {
       phase05ReadinessStatus: 'HOLD',
       greenCheckIds,
       openGapIds,
+      lockedTargetIds: [...LOCKED_TARGET_IDS],
+      lockedCommitPointIds: [...LOCKED_COMMIT_POINT_IDS],
       checkStatusById,
     };
   } catch (error) {
@@ -130,6 +179,8 @@ function evaluatePhase05MovableSideContainersBaselineState(input = {}) {
       phase05ReadinessStatus: 'UNKNOWN',
       greenCheckIds: [],
       openGapIds: ['PHASE05_MOVABLE_SIDE_CONTAINERS_BASELINE_EVALUATION_ERROR'],
+      lockedTargetIds: [...LOCKED_TARGET_IDS],
+      lockedCommitPointIds: [...LOCKED_COMMIT_POINT_IDS],
       checkStatusById: {},
       errorMessage: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
     };
