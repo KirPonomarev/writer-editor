@@ -3868,19 +3868,22 @@ function updateSpatialResizeFromClientX(clientX) {
   };
 
   if (spatialResizeDragState.rightVisible) {
-    const delta = spatialResizeDragState.side === 'left'
-      ? clientX - spatialResizeDragState.startX
-      : spatialResizeDragState.startX - clientX;
-    const nextWidth = clampSpatialSidebarWidth(
-      spatialResizeDragState.startWidth + delta,
-      constraints.leftMin,
-      constraints.leftMax
-    );
-    nextState.leftSidebarWidth = nextWidth;
-    nextState.rightSidebarWidth = nextWidth;
+    if (spatialResizeDragState.side === 'left') {
+      nextState.leftSidebarWidth = clampSpatialSidebarWidth(
+        spatialResizeDragState.startLeftWidth + (clientX - spatialResizeDragState.startX),
+        constraints.leftMin,
+        constraints.leftMax
+      );
+    } else {
+      nextState.rightSidebarWidth = clampSpatialSidebarWidth(
+        spatialResizeDragState.startRightWidth + (spatialResizeDragState.startX - clientX),
+        constraints.rightMin,
+        constraints.rightMax
+      );
+    }
   } else {
     nextState.leftSidebarWidth = clampSpatialSidebarWidth(
-      spatialResizeDragState.startWidth + (clientX - spatialResizeDragState.startX),
+      spatialResizeDragState.startLeftWidth + (clientX - spatialResizeDragState.startX),
       constraints.leftMin,
       constraints.leftMax
     );
@@ -3954,7 +3957,8 @@ function startSpatialResize(side, event) {
   spatialResizeDragState = {
     side,
     startX: event.clientX,
-    startWidth: draftState.leftSidebarWidth,
+    startLeftWidth: draftState.leftSidebarWidth,
+    startRightWidth: draftState.rightSidebarWidth,
     rightVisible: getSpatialLayoutConstraintsForViewport().rightVisible,
     pointerId,
     pointerTarget,
@@ -4384,11 +4388,11 @@ function applyMode(mode) {
   if (constraints.rightVisible) {
     const currentSpatialState = spatialLayoutState || getSpatialLayoutBaselineForViewport(viewportWidth);
     const normalizedSpatialState = normalizeSpatialLayoutState(currentSpatialState, viewportWidth);
-    const hasSharedWidthDrift =
+    const hasSpatialDrift =
       normalizedSpatialState.leftSidebarWidth !== currentSpatialState.leftSidebarWidth ||
       normalizedSpatialState.rightSidebarWidth !== currentSpatialState.rightSidebarWidth ||
       normalizedSpatialState.viewportMode !== currentSpatialState.viewportMode;
-    if (hasSharedWidthDrift) {
+    if (hasSpatialDrift) {
       applySpatialLayoutState(normalizedSpatialState, { persist: true, projectId: currentProjectId });
     }
   }

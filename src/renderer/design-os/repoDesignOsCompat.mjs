@@ -261,7 +261,7 @@ export function derivePhase05Compatibility(phase05, safeResetArtifact) {
     editor_root_fixed_docked: lockedTargets.has('EDITOR_ROOT_FIXED_DOCKED'),
     baseline_layout: createLayoutSnapshot({
       left_width: 290,
-      right_width: 340,
+      right_width: 290,
       bottom_height: 96,
       editor_root: 'docked',
       viewport_width: 1440,
@@ -270,7 +270,7 @@ export function derivePhase05Compatibility(phase05, safeResetArtifact) {
     }),
     compact_layout: createLayoutSnapshot({
       left_width: 260,
-      right_width: 290,
+      right_width: 260,
       bottom_height: 96,
       editor_root: 'docked',
       viewport_width: 1280,
@@ -279,7 +279,7 @@ export function derivePhase05Compatibility(phase05, safeResetArtifact) {
     }),
     safe_layout: createLayoutSnapshot({
       left_width: 290,
-      right_width: 340,
+      right_width: 290,
       bottom_height: 96,
       editor_root: 'docked',
       viewport_width: 1440,
@@ -454,7 +454,7 @@ export function buildRuntimeState(repoTheme, options = {}) {
   const baseTokens = adaptRepoThemeConfig(repoTheme);
   const baselineLayout = createLayoutSnapshot(phase05.baseline_layout || {
     left_width: 290,
-    right_width: 340,
+    right_width: 290,
     bottom_height: 96,
     editor_root: 'docked',
     viewport_width: 1440,

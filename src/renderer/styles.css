@@ -1347,7 +1347,7 @@ body {
 .app-layout {
   display: grid;
   --app-left-sidebar-width: 290px;
-  --app-right-sidebar-width: 340px;
+  --app-right-sidebar-width: 290px;
   grid-template-columns: minmax(250px, var(--app-left-sidebar-width)) minmax(640px, 1fr) minmax(280px, var(--app-right-sidebar-width));
   gap: 12px;
   padding: 12px 14px 76px;

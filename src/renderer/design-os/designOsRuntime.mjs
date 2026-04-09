@@ -65,7 +65,7 @@ export const DESIGN_OS_DANGEROUS_OBJECT_KEYS = Object.freeze([
 
 const DEFAULT_LAYOUT_SNAPSHOT = Object.freeze({
   left_width: 290,
-  right_width: 340,
+  right_width: 290,
   bottom_height: 96,
   editor_root: 'docked',
   viewport_width: 1440,
