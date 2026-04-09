@@ -1477,13 +1477,14 @@ body {
 
 .configurator-panel__title {
   width: min(100%, 1080px);
-  margin: 0 0 22px;
+  margin: 0 auto 22px;
   font-family: var(--font-family);
   font-size: 18px;
   font-weight: 500;
   line-height: 24px;
   letter-spacing: -0.01em;
   color: rgba(43, 39, 35, 0.92);
+  text-align: center;
 }
 
 .configurator-panel__divider {
@@ -1494,7 +1495,7 @@ body {
 
 .configurator-panel__section {
   padding: 0;
-  margin-bottom: 20px;
+  margin: 0 auto 20px;
   width: min(100%, 1080px);
 }
 
@@ -1599,7 +1600,7 @@ body {
   align-items: start;
   gap: 22px 32px;
   width: min(100%, 1080px);
-  margin: 28px 0 0;
+  margin: 28px auto 0;
   padding: 0;
   box-sizing: border-box;
 }
