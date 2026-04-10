@@ -4580,21 +4580,57 @@ function dedupeCompactRootSubmenu(items) {
   return deduped;
 }
 
+function extractCompactRootPinnedItems(nestedGroups) {
+  const pinnedItems = [];
+  const projectedGroups = nestedGroups.map((item) => {
+    if (!item || item.id !== 'view' || !Array.isArray(item.submenu)) {
+      return item;
+    }
+
+    const projectedSubmenu = [];
+    item.submenu.forEach((child) => {
+      if (child && child.id === 'view-presentation-mode') {
+        pinnedItems.push(cloneMenuTemplateItem(child));
+        return;
+      }
+      projectedSubmenu.push(child);
+    });
+
+    return {
+      ...item,
+      submenu: projectedSubmenu,
+    };
+  });
+
+  return {
+    pinnedItems,
+    projectedGroups,
+  };
+}
+
 function buildCompactMenuTemplate(template) {
   const fileMenu = template.find((item) => item && item.id === 'file');
   if (!fileMenu || !Array.isArray(fileMenu.submenu)) {
     return template.map((item) => cloneMenuTemplateItem(item));
   }
 
-  const compactRootSubmenu = fileMenu.submenu.map((item) => cloneMenuTemplateItem(item));
+  const compactRootSubmenu = [];
   const nestedGroups = template
     .filter((item) => item && item.id !== 'file')
     .map((item) => cloneMenuTemplateItem(item));
+  const { pinnedItems, projectedGroups } = extractCompactRootPinnedItems(nestedGroups);
 
-  if (compactRootSubmenu.length > 0 && nestedGroups.length > 0) {
+  compactRootSubmenu.push(...pinnedItems);
+  if (pinnedItems.length > 0 && fileMenu.submenu.length > 0) {
     compactRootSubmenu.push({ type: 'separator' });
   }
-  compactRootSubmenu.push(...nestedGroups);
+
+  compactRootSubmenu.push(...fileMenu.submenu.map((item) => cloneMenuTemplateItem(item)));
+
+  if (compactRootSubmenu.length > 0 && projectedGroups.length > 0) {
+    compactRootSubmenu.push({ type: 'separator' });
+  }
+  compactRootSubmenu.push(...projectedGroups);
 
   const compactRoot = {
     id: MENU_PRESENTATION_COMPACT_ROOT_ID,

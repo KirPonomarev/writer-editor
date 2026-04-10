@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
 
 const REPO_ROOT = process.cwd();
 const CONFIG_V2_PATH = path.join(REPO_ROOT, 'src', 'menu', 'menu-config.v2.json');
@@ -15,6 +16,32 @@ function readJson(filePath) {
 
 function getViewMenu(config) {
   return config.menus.find((menu) => menu && menu.id === 'view');
+}
+
+function extractFunctionSource(sourceText, functionName) {
+  const start = sourceText.indexOf(`function ${functionName}(`);
+  assert.notEqual(start, -1, `missing function ${functionName}`);
+
+  let bodyStart = -1;
+  let depth = 0;
+  for (let index = start; index < sourceText.length; index += 1) {
+    const char = sourceText[index];
+    if (char === '{') {
+      if (bodyStart === -1) {
+        bodyStart = index;
+      }
+      depth += 1;
+      continue;
+    }
+    if (char === '}') {
+      depth -= 1;
+      if (bodyStart !== -1 && depth === 0) {
+        return sourceText.slice(start, index + 1);
+      }
+    }
+  }
+
+  throw new Error(`unterminated function source for ${functionName}`);
 }
 
 test('menu presentation modes: canonical switch surface is authored in view menu at the required location', () => {
@@ -128,5 +155,80 @@ test('menu presentation modes: compact projection dedupes duplicate id groups be
     mainSource,
     /submenu:\s*dedupeCompactRootSubmenu\(compactRootSubmenu\)/,
     'compact root submenu must pass through dedupeCompactRootSubmenu before Menu.buildFromTemplate',
+  );
+});
+
+test('menu presentation modes: compact projection hoists the switch container above file actions and removes the duplicate from nested view', () => {
+  const mainSource = fs.readFileSync(MAIN_PATH, 'utf8');
+  const runtimeSource = [
+    extractFunctionSource(mainSource, 'cloneMenuTemplateItem'),
+    extractFunctionSource(mainSource, 'mergeCompactDuplicateMenuItem'),
+    extractFunctionSource(mainSource, 'dedupeCompactRootSubmenu'),
+    extractFunctionSource(mainSource, 'extractCompactRootPinnedItems'),
+    extractFunctionSource(mainSource, 'buildCompactMenuTemplate'),
+    `
+      result = buildCompactMenuTemplate([
+        {
+          id: 'file',
+          label: 'Документ',
+          submenu: [
+            { id: 'file-open', label: 'Открыть проект…' },
+            { id: 'file-save', label: 'Сохранить' },
+          ],
+        },
+        {
+          id: 'view',
+          label: 'Вид',
+          submenu: [
+            {
+              id: 'view-presentation-mode',
+              label: 'Режим меню',
+              submenu: [
+                { id: 'view-presentation-classic', label: 'Классический' },
+                { id: 'view-presentation-compact', label: 'Компактный' },
+              ],
+            },
+            { id: 'view-language', label: 'Язык' },
+            { id: 'view-menu-customization', label: 'Настройка меню' },
+            { id: 'view-safe-reset', label: 'Безопасный сброс' },
+          ],
+        },
+        {
+          id: 'plan',
+          label: 'План',
+          submenu: [{ id: 'plan-open', label: 'Открыть план' }],
+        },
+      ]);
+    `,
+  ].join('\n\n');
+
+  const context = {
+    MENU_PRESENTATION_COMPACT_ROOT_ID: 'compact-root',
+    process: { platform: 'darwin' },
+    result: null,
+  };
+  vm.createContext(context);
+  vm.runInContext(runtimeSource, context);
+
+  const normalizedResult = JSON.parse(JSON.stringify(context.result));
+  assert.deepEqual(
+    normalizedResult.map((item) => item.role || item.id),
+    ['appMenu', 'compact-root'],
+    'darwin compact projection must keep appMenu and one visible compact root',
+  );
+
+  const compactRoot = normalizedResult[1];
+  assert.deepEqual(
+    compactRoot.submenu.slice(0, 4).map((item) => item.type || item.id),
+    ['view-presentation-mode', 'separator', 'file-open', 'file-save'],
+    'compact root must hoist the presentation switch above file actions',
+  );
+
+  const nestedView = compactRoot.submenu.find((item) => item && item.id === 'view');
+  assert.ok(nestedView, 'expected nested view group to remain available in compact mode');
+  assert.deepEqual(
+    nestedView.submenu.map((item) => item.id),
+    ['view-language', 'view-menu-customization', 'view-safe-reset'],
+    'nested view group must keep adjacent view controls and must not duplicate the hoisted presentation switch',
   );
 });
