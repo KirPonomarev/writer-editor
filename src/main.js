@@ -158,8 +158,29 @@ const MENU_LOCALE_COMMAND_RU = 'cmd.project.view.setMenuLocaleRu';
 const MENU_LOCALE_COMMAND_EN = 'cmd.project.view.setMenuLocaleEn';
 const MENU_LOCALE_HELP_LABEL_KEY = 'menu.help';
 const MENU_LOCALE_ABOUT_LICENSES_LABEL_KEY = 'menu.help.aboutLicenses';
+const MENU_CUSTOMIZATION_SCHEMA_VERSION = 1;
+const MENU_CUSTOMIZATION_SETTING_KEY = 'menuCustomization';
+const MENU_CUSTOMIZATION_FIXED_PREFIX_IDS = Object.freeze(['file', 'edit', 'view']);
+const MENU_CUSTOMIZATION_FIXED_PREFIX_ID_SET = new Set(MENU_CUSTOMIZATION_FIXED_PREFIX_IDS);
+const MENU_CUSTOMIZATION_FIXED_TAIL_ID = 'help';
+const MENU_CUSTOMIZATION_SUBMENU_FROM_VISIBILITY_SECTIONS = 'menuCustomizationVisibilitySections';
+const MENU_CUSTOMIZATION_SUBMENU_FROM_ORDER_SECTIONS = 'menuCustomizationOrderSections';
+const MENU_CUSTOMIZATION_COMMAND_RESET = 'cmd.project.view.resetMenuCustomization';
+const MENU_CUSTOMIZATION_COMMAND_TOGGLE_VISIBILITY = 'cmd.project.view.toggleMenuSectionVisibility';
+const MENU_CUSTOMIZATION_COMMAND_MOVE_EARLIER = 'cmd.project.view.moveMenuSectionEarlier';
+const MENU_CUSTOMIZATION_COMMAND_MOVE_LATER = 'cmd.project.view.moveMenuSectionLater';
+const MENU_CUSTOMIZATION_MOVE_EARLIER_LABEL_KEY = 'menu.view.customization.moveEarlier';
+const MENU_CUSTOMIZATION_MOVE_LATER_LABEL_KEY = 'menu.view.customization.moveLater';
+const MENU_LOCAL_CUSTOMIZATION_COMMAND_IDS = new Set([
+  MENU_CUSTOMIZATION_COMMAND_RESET,
+  MENU_CUSTOMIZATION_COMMAND_TOGGLE_VISIBILITY,
+  MENU_CUSTOMIZATION_COMMAND_MOVE_EARLIER,
+  MENU_CUSTOMIZATION_COMMAND_MOVE_LATER,
+]);
 let currentMenuPresentationMode = MENU_PRESENTATION_MODE_CLASSIC;
 let currentMenuLocale = MENU_LOCALE_MODE_BASE;
+let currentMenuCustomization = createDefaultMenuCustomization();
+let currentMenuCustomizationSectionIds = [];
 const USER_DATA_FOLDER_NAME = 'craftsman';
 const LEGACY_USER_DATA_FOLDER_NAME = 'WriterEditor';
 const MIGRATION_MARKER = '.migrated-from-writer-editor';
@@ -728,6 +749,212 @@ function normalizeMenuLocale(value) {
   return MENU_LOCALE_MODE_BASE;
 }
 
+function createDefaultMenuCustomization() {
+  return {
+    schemaVersion: MENU_CUSTOMIZATION_SCHEMA_VERSION,
+    hiddenMenuIds: [],
+    menuOrder: [],
+  };
+}
+
+function isMenuLocalCustomizationCommandId(commandId) {
+  return typeof commandId === 'string' && MENU_LOCAL_CUSTOMIZATION_COMMAND_IDS.has(commandId);
+}
+
+function normalizeMenuCustomizationIdList(value, canonicalIds, includeMissing = false) {
+  const canonicalList = Array.isArray(canonicalIds)
+    ? canonicalIds.filter((id) => typeof id === 'string' && id.length > 0)
+    : [];
+  const canonicalSet = new Set(canonicalList);
+  const sourceList = Array.isArray(value) ? value : [];
+  const normalized = [];
+  const seen = new Set();
+
+  sourceList.forEach((entry) => {
+    if (typeof entry !== 'string' || entry.length === 0) {
+      return;
+    }
+    if (!canonicalSet.has(entry) || seen.has(entry)) {
+      return;
+    }
+    seen.add(entry);
+    normalized.push(entry);
+  });
+
+  if (includeMissing) {
+    canonicalList.forEach((id) => {
+      if (seen.has(id)) {
+        return;
+      }
+      seen.add(id);
+      normalized.push(id);
+    });
+  }
+
+  return normalized;
+}
+
+function normalizeMenuCustomizationState(value, canonicalIds = []) {
+  const canonicalList = Array.isArray(canonicalIds)
+    ? canonicalIds.filter((id) => typeof id === 'string' && id.length > 0)
+    : [];
+
+  if (!isRuntimeRecord(value) || Number(value.schemaVersion) !== MENU_CUSTOMIZATION_SCHEMA_VERSION) {
+    return {
+      schemaVersion: MENU_CUSTOMIZATION_SCHEMA_VERSION,
+      hiddenMenuIds: [],
+      menuOrder: canonicalList.slice(),
+    };
+  }
+
+  return {
+    schemaVersion: MENU_CUSTOMIZATION_SCHEMA_VERSION,
+    hiddenMenuIds: normalizeMenuCustomizationIdList(value.hiddenMenuIds, canonicalList, false),
+    menuOrder: normalizeMenuCustomizationIdList(value.menuOrder, canonicalList, true),
+  };
+}
+
+function cloneMenuConfigItem(item) {
+  if (!item || typeof item !== 'object') {
+    return item;
+  }
+
+  const cloned = { ...item };
+  if (Array.isArray(item.items)) {
+    cloned.items = item.items.map((child) => cloneMenuConfigItem(child));
+  }
+  if (Array.isArray(item.submenu)) {
+    cloned.submenu = item.submenu.map((child) => cloneMenuConfigItem(child));
+  }
+  return cloned;
+}
+
+function resolveCustomizableMenuSections(config) {
+  if (!isRuntimeRecord(config) || !Array.isArray(config.menus)) {
+    return [];
+  }
+
+  return config.menus
+    .filter((menuItem) => menuItem && typeof menuItem.id === 'string' && menuItem.id.length > 0)
+    .filter((menuItem) => !MENU_CUSTOMIZATION_FIXED_PREFIX_ID_SET.has(menuItem.id)
+      && menuItem.id !== MENU_CUSTOMIZATION_FIXED_TAIL_ID)
+    .map((menuItem) => ({
+      id: menuItem.id,
+      label: typeof menuItem.label === 'string' && menuItem.label.length > 0
+        ? menuItem.label
+        : menuItem.id,
+    }));
+}
+
+function resolveOrderedCustomizableMenuSections(config) {
+  const sections = resolveCustomizableMenuSections(config);
+  if (sections.length === 0) {
+    return [];
+  }
+
+  const normalizedState = normalizeMenuCustomizationState(
+    currentMenuCustomization,
+    sections.map((section) => section.id),
+  );
+  const sectionById = new Map(sections.map((section) => [section.id, section]));
+  return normalizedState.menuOrder
+    .map((sectionId) => sectionById.get(sectionId))
+    .filter(Boolean);
+}
+
+function syncCurrentMenuCustomization(config) {
+  const sectionIds = resolveCustomizableMenuSections(config).map((section) => section.id);
+  currentMenuCustomizationSectionIds = sectionIds;
+  currentMenuCustomization = normalizeMenuCustomizationState(currentMenuCustomization, sectionIds);
+  return currentMenuCustomization;
+}
+
+function isMenuCustomizationSectionHidden(sectionId) {
+  return Array.isArray(currentMenuCustomization.hiddenMenuIds)
+    && currentMenuCustomization.hiddenMenuIds.includes(sectionId);
+}
+
+function isMenuCustomizationSectionVisible(sectionId) {
+  return !isMenuCustomizationSectionHidden(sectionId);
+}
+
+function getCurrentCustomizationSectionIds() {
+  return Array.isArray(currentMenuCustomizationSectionIds)
+    ? currentMenuCustomizationSectionIds.filter((id) => typeof id === 'string' && id.length > 0)
+    : [];
+}
+
+function normalizeCustomizationStateForCurrentSections(state) {
+  return normalizeMenuCustomizationState(state, getCurrentCustomizationSectionIds());
+}
+
+function cloneMenuCustomizationState(state) {
+  return {
+    schemaVersion: MENU_CUSTOMIZATION_SCHEMA_VERSION,
+    hiddenMenuIds: Array.isArray(state?.hiddenMenuIds) ? [...state.hiddenMenuIds] : [],
+    menuOrder: Array.isArray(state?.menuOrder) ? [...state.menuOrder] : [],
+  };
+}
+
+function setCurrentMenuCustomization(nextCustomization) {
+  currentMenuCustomization = normalizeCustomizationStateForCurrentSections(nextCustomization);
+  return currentMenuCustomization;
+}
+
+function moveMenuCustomizationSection(sectionId, direction) {
+  const normalized = normalizeCustomizationStateForCurrentSections(currentMenuCustomization);
+  const sectionIds = getCurrentCustomizationSectionIds();
+  if (!sectionIds.includes(sectionId)) {
+    return normalized;
+  }
+
+  const nextOrder = normalized.menuOrder.slice();
+  const currentIndex = nextOrder.indexOf(sectionId);
+  if (currentIndex < 0) {
+    return normalized;
+  }
+
+  const nextIndex = direction === 'earlier' ? currentIndex - 1 : currentIndex + 1;
+  if (nextIndex < 0 || nextIndex >= nextOrder.length) {
+    return normalized;
+  }
+
+  const [movedItem] = nextOrder.splice(currentIndex, 1);
+  nextOrder.splice(nextIndex, 0, movedItem);
+  return {
+    schemaVersion: MENU_CUSTOMIZATION_SCHEMA_VERSION,
+    hiddenMenuIds: normalized.hiddenMenuIds.slice(),
+    menuOrder: nextOrder,
+  };
+}
+
+async function persistMenuCustomization(nextCustomization, logLabel) {
+  const normalized = setCurrentMenuCustomization(nextCustomization);
+  let persisted = false;
+
+  try {
+    const settings = await loadSettings();
+    settings[MENU_CUSTOMIZATION_SETTING_KEY] = normalized;
+    await saveSettings(settings);
+    persisted = true;
+  } catch (error) {
+    logDevError(`${logLabel}:saveSettings`, error);
+  }
+
+  try {
+    createMenu();
+    return { ok: true, persisted, menuCustomization: normalized };
+  } catch (error) {
+    logDevError(`${logLabel}:createMenu`, error);
+    return {
+      ok: false,
+      persisted,
+      menuCustomization: normalized,
+      reason: 'MENU_REBUILD_FAILED',
+    };
+  }
+}
+
 async function loadMenuPresentationModeFromSettings() {
   try {
     const settings = await loadSettings();
@@ -745,6 +972,18 @@ async function loadMenuLocaleFromSettings() {
     currentMenuLocale = normalizeMenuLocale(settings[MENU_LOCALE_SETTING_KEY]);
   } catch {
     currentMenuLocale = MENU_LOCALE_MODE_BASE;
+  }
+}
+
+async function loadMenuCustomizationFromSettings() {
+  try {
+    const settings = await loadSettings();
+    currentMenuCustomization = normalizeMenuCustomizationState(
+      settings[MENU_CUSTOMIZATION_SETTING_KEY],
+      [],
+    );
+  } catch {
+    currentMenuCustomization = createDefaultMenuCustomization();
   }
 }
 
@@ -802,6 +1041,91 @@ async function setMenuLocale(locale) {
       reason: 'MENU_REBUILD_FAILED',
     };
   }
+}
+
+async function resetMenuCustomization() {
+  return persistMenuCustomization(createDefaultMenuCustomization(), 'resetMenuCustomization');
+}
+
+async function toggleMenuSectionVisibility(sectionId) {
+  const normalized = normalizeCustomizationStateForCurrentSections(currentMenuCustomization);
+  if (typeof sectionId !== 'string' || sectionId.length === 0) {
+    return {
+      ok: false,
+      persisted: false,
+      menuCustomization: normalized,
+      reason: 'INVALID_MENU_CUSTOMIZATION_SECTION_ID',
+    };
+  }
+
+  if (!getCurrentCustomizationSectionIds().includes(sectionId)) {
+    return {
+      ok: true,
+      persisted: false,
+      menuCustomization: normalized,
+    };
+  }
+
+  const hiddenSet = new Set(normalized.hiddenMenuIds);
+  if (hiddenSet.has(sectionId)) {
+    hiddenSet.delete(sectionId);
+  } else {
+    hiddenSet.add(sectionId);
+  }
+
+  return persistMenuCustomization({
+    schemaVersion: MENU_CUSTOMIZATION_SCHEMA_VERSION,
+    hiddenMenuIds: Array.from(hiddenSet),
+    menuOrder: normalized.menuOrder.slice(),
+  }, 'toggleMenuSectionVisibility');
+}
+
+async function moveMenuSectionEarlier(sectionId) {
+  if (typeof sectionId !== 'string' || sectionId.length === 0) {
+    return {
+      ok: false,
+      persisted: false,
+      menuCustomization: normalizeCustomizationStateForCurrentSections(currentMenuCustomization),
+      reason: 'INVALID_MENU_CUSTOMIZATION_SECTION_ID',
+    };
+  }
+
+  if (!getCurrentCustomizationSectionIds().includes(sectionId)) {
+    return {
+      ok: true,
+      persisted: false,
+      menuCustomization: normalizeCustomizationStateForCurrentSections(currentMenuCustomization),
+    };
+  }
+
+  return persistMenuCustomization(
+    moveMenuCustomizationSection(sectionId, 'earlier'),
+    'moveMenuSectionEarlier',
+  );
+}
+
+async function moveMenuSectionLater(sectionId) {
+  if (typeof sectionId !== 'string' || sectionId.length === 0) {
+    return {
+      ok: false,
+      persisted: false,
+      menuCustomization: normalizeCustomizationStateForCurrentSections(currentMenuCustomization),
+      reason: 'INVALID_MENU_CUSTOMIZATION_SECTION_ID',
+    };
+  }
+
+  if (!getCurrentCustomizationSectionIds().includes(sectionId)) {
+    return {
+      ok: true,
+      persisted: false,
+      menuCustomization: normalizeCustomizationStateForCurrentSections(currentMenuCustomization),
+    };
+  }
+
+  return persistMenuCustomization(
+    moveMenuCustomizationSection(sectionId, 'later'),
+    'moveMenuSectionLater',
+  );
 }
 
 // Сохранение настроек
@@ -3482,6 +3806,10 @@ const MENU_ACTION_ALIAS_TO_COMMAND = Object.freeze({
   setFont: 'cmd.ui.font.set',
   setFontSize: 'cmd.ui.fontSize.set',
   setTheme: 'cmd.ui.theme.set',
+  resetMenuCustomization: MENU_CUSTOMIZATION_COMMAND_RESET,
+  toggleMenuSectionVisibility: MENU_CUSTOMIZATION_COMMAND_TOGGLE_VISIBILITY,
+  moveMenuSectionEarlier: MENU_CUSTOMIZATION_COMMAND_MOVE_EARLIER,
+  moveMenuSectionLater: MENU_CUSTOMIZATION_COMMAND_MOVE_LATER,
 });
 const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.new': async () => {
@@ -3665,6 +3993,27 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   [MENU_LOCALE_COMMAND_EN]: async () => {
     return setMenuLocale(MENU_LOCALE_MODE_EN);
+  },
+  [MENU_CUSTOMIZATION_COMMAND_RESET]: async () => {
+    return resetMenuCustomization();
+  },
+  [MENU_CUSTOMIZATION_COMMAND_TOGGLE_VISIBILITY]: async (payload = {}) => {
+    const sectionId = typeof payload.sectionId === 'string'
+      ? payload.sectionId
+      : (typeof payload.actionArg === 'string' ? payload.actionArg : '');
+    return toggleMenuSectionVisibility(sectionId);
+  },
+  [MENU_CUSTOMIZATION_COMMAND_MOVE_EARLIER]: async (payload = {}) => {
+    const sectionId = typeof payload.sectionId === 'string'
+      ? payload.sectionId
+      : (typeof payload.actionArg === 'string' ? payload.actionArg : '');
+    return moveMenuSectionEarlier(sectionId);
+  },
+  [MENU_CUSTOMIZATION_COMMAND_MOVE_LATER]: async (payload = {}) => {
+    const sectionId = typeof payload.sectionId === 'string'
+      ? payload.sectionId
+      : (typeof payload.actionArg === 'string' ? payload.actionArg : '');
+    return moveMenuSectionLater(sectionId);
   },
   'cmd.project.document.open': async (payload = {}) => {
     return handleUiOpenDocumentCommand(payload);
@@ -4007,6 +4356,9 @@ function resolveMenuActionToCommand(actionId) {
   if (typeof commandId !== 'string' || commandId.length === 0) {
     throw new Error(`Unknown menu action id: ${String(actionId)}`);
   }
+  if (isMenuLocalCustomizationCommandId(commandId)) {
+    return commandId;
+  }
   const resolved = resolveMenuCommandId(commandId, { enforceSunset: false });
   if (!resolved.ok) {
     throw new Error(`Menu action namespace resolution failed: ${resolved.reason || 'COMMAND_NAMESPACE_RESOLUTION_FAILED'}`);
@@ -4020,6 +4372,14 @@ function dispatchMenuCommand(commandId, payload = {}, options = {}) {
     : COMMAND_BUS_ROUTE;
   if (route !== COMMAND_BUS_ROUTE) {
     throw new Error(`Unsupported menu command route: ${route}`);
+  }
+
+  if (isMenuLocalCustomizationCommandId(commandId)) {
+    const handler = MENU_COMMAND_HANDLERS[commandId];
+    if (typeof handler !== 'function') {
+      throw new Error(`Unknown menu command id: ${String(commandId)}`);
+    }
+    return handler(payload);
   }
 
   const resolved = resolveMenuCommandId(commandId, { enforceSunset: false });
@@ -4073,10 +4433,111 @@ function cloneMenuTemplateItem(item) {
   }
 
   const cloned = { ...item };
+  if (Array.isArray(item.items)) {
+    cloned.items = item.items.map((child) => cloneMenuTemplateItem(child));
+  }
   if (Array.isArray(item.submenu)) {
     cloned.submenu = item.submenu.map((child) => cloneMenuTemplateItem(child));
   }
   return cloned;
+}
+
+function buildMenuCustomizationVisibilitySectionsSubmenu(config) {
+  const sections = resolveOrderedCustomizableMenuSections(config);
+  const hiddenSet = new Set(normalizeCustomizationStateForCurrentSections(currentMenuCustomization).hiddenMenuIds);
+
+  return sections.map((section) => ({
+    id: `view-menu-customization-visibility-${section.id}`,
+    label: section.label,
+    type: 'checkbox',
+    checked: !hiddenSet.has(section.id),
+    click: buildCommandClickHandler(MENU_CUSTOMIZATION_COMMAND_TOGGLE_VISIBILITY, {
+      actionArg: section.id,
+    }),
+  }));
+}
+
+function buildMenuCustomizationOrderSectionsSubmenu(config) {
+  const sections = resolveOrderedCustomizableMenuSections(config);
+  const localeCatalog = resolveRuntimeMenuLocaleCatalog(config);
+  const moveEarlierLabel = resolveLocalizedMenuLabel(
+    localeCatalog,
+    MENU_CUSTOMIZATION_MOVE_EARLIER_LABEL_KEY,
+    'Move Earlier',
+  );
+  const moveLaterLabel = resolveLocalizedMenuLabel(
+    localeCatalog,
+    MENU_CUSTOMIZATION_MOVE_LATER_LABEL_KEY,
+    'Move Later',
+  );
+
+  return sections.flatMap((section, index) => ([
+    {
+      id: `view-menu-customization-order-${section.id}-earlier`,
+      label: `${moveEarlierLabel}: ${section.label}`,
+      enabled: index > 0,
+      click: buildCommandClickHandler(MENU_CUSTOMIZATION_COMMAND_MOVE_EARLIER, {
+        actionArg: section.id,
+      }),
+    },
+    {
+      id: `view-menu-customization-order-${section.id}-later`,
+      label: `${moveLaterLabel}: ${section.label}`,
+      enabled: index < sections.length - 1,
+      click: buildCommandClickHandler(MENU_CUSTOMIZATION_COMMAND_MOVE_LATER, {
+        actionArg: section.id,
+      }),
+    },
+  ]));
+}
+
+function applyMenuCustomization(template, config) {
+  const clonedTemplate = Array.isArray(template)
+    ? template.map((item) => cloneMenuTemplateItem(item))
+    : [];
+  const sections = resolveCustomizableMenuSections(config);
+  const canonicalIds = sections.map((section) => section.id);
+  currentMenuCustomizationSectionIds = canonicalIds;
+  currentMenuCustomization = normalizeMenuCustomizationState(currentMenuCustomization, canonicalIds);
+
+  if (clonedTemplate.length === 0 || canonicalIds.length === 0) {
+    return clonedTemplate;
+  }
+
+  const topLevelById = new Map();
+  clonedTemplate.forEach((item) => {
+    if (item && typeof item.id === 'string' && item.id.length > 0) {
+      topLevelById.set(item.id, item);
+    }
+  });
+
+  const orderedOptionalIds = currentMenuCustomization.menuOrder.filter((id) => canonicalIds.includes(id));
+  const hiddenSet = new Set(currentMenuCustomization.hiddenMenuIds);
+  const projected = [];
+
+  MENU_CUSTOMIZATION_FIXED_PREFIX_IDS.forEach((id) => {
+    const fixedItem = topLevelById.get(id);
+    if (fixedItem) {
+      projected.push(fixedItem);
+    }
+  });
+
+  orderedOptionalIds.forEach((id) => {
+    if (hiddenSet.has(id)) {
+      return;
+    }
+    const optionalItem = topLevelById.get(id);
+    if (optionalItem) {
+      projected.push(optionalItem);
+    }
+  });
+
+  const helpItem = topLevelById.get(MENU_CUSTOMIZATION_FIXED_TAIL_ID);
+  if (helpItem) {
+    projected.push(helpItem);
+  }
+
+  return projected;
 }
 
 function mergeCompactDuplicateMenuItem(existingItem, nextItem) {
@@ -4291,12 +4752,23 @@ function buildMenuItemFromConfig(item, config, location) {
     built.visible = true;
     built.enabled = true;
   }
+  if (typeof item.type === 'string' && item.type !== 'separator') {
+    built.type = item.type;
+  }
+  if (typeof item.checked === 'boolean') {
+    built.checked = item.checked;
+  }
 
   if (item.submenuFrom !== undefined) {
-    if (item.submenuFrom !== 'fonts') {
+    if (item.submenuFrom === 'fonts') {
+      built.submenu = buildFontSubmenu(config);
+    } else if (item.submenuFrom === MENU_CUSTOMIZATION_SUBMENU_FROM_VISIBILITY_SECTIONS) {
+      built.submenu = buildMenuCustomizationVisibilitySectionsSubmenu(config);
+    } else if (item.submenuFrom === MENU_CUSTOMIZATION_SUBMENU_FROM_ORDER_SECTIONS) {
+      built.submenu = buildMenuCustomizationOrderSectionsSubmenu(config);
+    } else {
       throw new Error(`Unknown submenuFrom "${String(item.submenuFrom)}" at ${location}`);
     }
-    built.submenu = buildFontSubmenu(config);
   } else if (Array.isArray(item.items)) {
     built.submenu = item.items.map((child, index) =>
       buildMenuItemFromConfig(child, config, `${location}.items[${index}]`)
@@ -4316,6 +4788,20 @@ function buildMenuItemFromConfig(item, config, location) {
     const sourceCommandId = hasCanonicalCmdId
       ? item.canonicalCmdId
       : item.command;
+    if (isMenuLocalCustomizationCommandId(sourceCommandId)) {
+      if (sourceCommandId !== MENU_CUSTOMIZATION_COMMAND_RESET
+        && (typeof item.actionArg !== 'string' || item.actionArg.length === 0)) {
+        throw new Error(`Menu customization command requires actionArg at ${location}`);
+      }
+      if (sourceCommandId === MENU_CUSTOMIZATION_COMMAND_TOGGLE_VISIBILITY) {
+        built.type = 'checkbox';
+        built.checked = isMenuCustomizationSectionVisible(item.actionArg);
+      }
+      built.click = buildCommandClickHandler(sourceCommandId, {
+        actionArg: item.actionArg
+      });
+      return built;
+    }
     const resolved = resolveMenuCommandId(sourceCommandId, { enforceSunset: false });
     if (!resolved.ok) {
       throw new Error(`Menu command namespace validation failed at ${location}`);
@@ -4344,6 +4830,16 @@ function buildMenuItemFromConfig(item, config, location) {
       throw new Error(`Menu actionId must be string at ${location}`);
     }
     const commandId = resolveMenuActionToCommand(item.actionId);
+    if (isMenuLocalCustomizationCommandId(commandId)) {
+      if (commandId !== MENU_CUSTOMIZATION_COMMAND_RESET
+        && (typeof item.actionArg !== 'string' || item.actionArg.length === 0)) {
+        throw new Error(`Menu customization command requires actionArg at ${location}`);
+      }
+      if (commandId === MENU_CUSTOMIZATION_COMMAND_TOGGLE_VISIBILITY) {
+        built.type = 'checkbox';
+        built.checked = isMenuCustomizationSectionVisible(item.actionArg);
+      }
+    }
     built.click = buildCommandClickHandler(commandId, {
       actionArg: item.actionArg
     });
@@ -4385,9 +4881,11 @@ function createMenu() {
   try {
     const runtimeConfig = resolveRuntimeMenuBuildConfig(mode);
     const localizedConfig = applyMenuLocale(runtimeConfig);
+    syncCurrentMenuCustomization(localizedConfig);
     const template = buildMenuTemplateFromConfig(localizedConfig);
-    ensureAboutLicensesMenuEntry(template);
-    const menu = Menu.buildFromTemplate(applyMenuPresentation(template));
+    const customizedTemplate = applyMenuCustomization(template, localizedConfig);
+    ensureAboutLicensesMenuEntry(customizedTemplate);
+    const menu = Menu.buildFromTemplate(applyMenuPresentation(customizedTemplate));
     Menu.setApplicationMenu(menu);
   } catch (error) {
     logDevError('createMenu', error);
@@ -4418,6 +4916,7 @@ app.whenReady().then(async () => {
   const windowStatePromise = loadWindowStateFromSettings();
   const menuPresentationModePromise = loadMenuPresentationModeFromSettings();
   const menuLocalePromise = loadMenuLocaleFromSettings();
+  const menuCustomizationPromise = loadMenuCustomizationFromSettings();
   const initPromise = initializeApp()
     .then(() => {
       logPerfStage('init-complete');
@@ -4429,6 +4928,7 @@ app.whenReady().then(async () => {
   await windowStatePromise;
   await menuPresentationModePromise;
   await menuLocalePromise;
+  await menuCustomizationPromise;
   logPerfStage('window-state-loaded');
   createWindow();
   try {

@@ -270,7 +270,7 @@
         },
         "submenuFrom": {
           "type": "string",
-          "enum": ["fonts"]
+          "enum": ["fonts", "menuCustomizationVisibilitySections", "menuCustomizationOrderSections"]
         },
         "items": {
           "type": "array",

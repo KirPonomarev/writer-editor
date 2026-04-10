@@ -23,26 +23,17 @@ test('menu presentation modes: canonical switch surface is authored in view menu
   assert.ok(viewMenu, 'expected view menu in canonical config');
 
   const itemIds = viewMenu.items.map((item) => item.id);
-  const customizationIndex = itemIds.indexOf('view-menu-customization');
-  if (customizationIndex === -1) {
-    assert.deepEqual(
-      itemIds.slice(0, 4),
-      ['view-settings', 'view-presentation-mode', 'view-language', 'view-safe-reset'],
-      'presentation switch container must stay before language and safe reset until the customization surface lands',
-    );
-  } else {
-    assert.deepEqual(
-      itemIds.slice(0, 5),
-      [
-        'view-settings',
-        'view-presentation-mode',
-        'view-language',
-        'view-menu-customization',
-        'view-safe-reset',
-      ],
-      'presentation switch container must leave room for the bounded customization surface before safe reset',
-    );
-  }
+  assert.deepEqual(
+    itemIds.slice(0, 5),
+    [
+      'view-settings',
+      'view-presentation-mode',
+      'view-language',
+      'view-menu-customization',
+      'view-safe-reset',
+    ],
+    'presentation switch container must leave room for the bounded customization surface before safe reset',
+  );
 
   const switchContainer = viewMenu.items.find((item) => item.id === 'view-presentation-mode');
   assert.ok(switchContainer, 'expected view-presentation-mode container');
@@ -83,26 +74,17 @@ test('menu presentation modes: normalization preserves canonical placement and n
   assert.ok(viewMenu, 'expected normalized view menu');
 
   const normalizedItemIds = viewMenu.items.map((item) => item.id);
-  const normalizedCustomizationIndex = normalizedItemIds.indexOf('view-menu-customization');
-  if (normalizedCustomizationIndex === -1) {
-    assert.deepEqual(
-      normalizedItemIds.slice(0, 4),
-      ['view-settings', 'view-presentation-mode', 'view-language', 'view-safe-reset'],
-      'normalized view order must preserve the current canonical placement until the customization surface lands',
-    );
-  } else {
-    assert.deepEqual(
-      normalizedItemIds.slice(0, 5),
-      [
-        'view-settings',
-        'view-presentation-mode',
-        'view-language',
-        'view-menu-customization',
-        'view-safe-reset',
-      ],
-      'normalized view order must preserve canonical placement of presentation switch container ahead of bounded customization and safe reset',
-    );
-  }
+  assert.deepEqual(
+    normalizedItemIds.slice(0, 5),
+    [
+      'view-settings',
+      'view-presentation-mode',
+      'view-language',
+      'view-menu-customization',
+      'view-safe-reset',
+    ],
+    'normalized view order must preserve canonical placement of presentation switch container ahead of bounded customization and safe reset',
+  );
 
   const switchContainer = viewMenu.items.find((item) => item.id === 'view-presentation-mode');
   assert.ok(switchContainer, 'expected normalized presentation switch container');

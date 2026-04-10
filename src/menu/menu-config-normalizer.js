@@ -810,6 +810,7 @@ function normalizeNode(node, context, canon, visibilityMatrix, localeCatalog, di
   if (typeof node.type === 'string' && node.type.length > 0) out.type = node.type;
   if (typeof node.role === 'string' && node.role.length > 0) out.role = node.role;
   if (typeof node.accelerator === 'string' && node.accelerator.length > 0) out.accelerator = node.accelerator;
+  if (typeof node.submenuFrom === 'string' && node.submenuFrom.length > 0) out.submenuFrom = node.submenuFrom;
 
   if (Array.isArray(node.items) && node.items.length > 0) {
     out.items = node.items.map((entry, index) => normalizeNode(

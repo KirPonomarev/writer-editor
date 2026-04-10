@@ -57,10 +57,7 @@ test('menu hide-show reorder contract: the bounded customization surface is auth
 
   assert.ok(viewMenu, 'expected canonical view menu');
   const customization = getMenuItemById(viewMenu.items, 'view-menu-customization');
-  if (!customization) {
-    assert.equal(customization, null, 'the current repo can still be before the customization contour lands');
-    return;
-  }
+  assert.ok(customization, 'expected view-menu-customization container');
 
   assert.deepEqual(
     viewMenu.items.map((item) => item.id).slice(0, 5),
@@ -102,11 +99,7 @@ test('menu hide-show reorder contract: locale catalog must cover the customizati
   const viewMenu = getMenuById(config.menus, 'view');
   assert.ok(viewMenu, 'expected canonical view menu');
   const customization = getMenuItemById(viewMenu.items, 'view-menu-customization');
-
-  if (!customization) {
-    assert.equal(customization, null, 'the current repo can still be before the customization contour lands');
-    return;
-  }
+  assert.ok(customization, 'expected view-menu-customization container');
 
   const labeledNodes = [
     customization,
@@ -147,10 +140,7 @@ test('menu hide-show reorder contract: normalization preserves submenuFrom marke
   const viewMenu = getMenuById(state.normalizedConfig.menus, 'view');
   assert.ok(viewMenu, 'expected normalized view menu');
   const customization = getMenuItemById(viewMenu.items, 'view-menu-customization');
-  if (!customization) {
-    assert.equal(customization, null, 'the current repo can still be before the customization contour lands');
-    return;
-  }
+  assert.ok(customization, 'expected normalized customization container');
   assert.deepEqual(
     (customization.items || []).map((item) => item.id),
     [

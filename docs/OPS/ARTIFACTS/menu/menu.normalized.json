@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "snapshotId": "menu-default-desktop-minimal",
-  "normalizedHashSha256": "9bb0527649f915a56ab7726cbf1c138e3d895abec1a88eb5072b5d30aad9543d",
-  "generatedAt": "2026-04-10T19:52:26.242Z",
-  "generatedFromCommit": "2206d828794e6bde68ff44ff6a7a524f97ab8f2a",
+  "normalizedHashSha256": "4529a33718cf15d5df963cc73dc690a3c387b75793c2cd1d7317ac5b0375040f",
+  "generatedAt": "2026-04-10T21:04:03.816Z",
+  "generatedFromCommit": "7a765176c3ef341cb57dd3658a19c236e66e16d8",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
@@ -105,6 +105,36 @@
         "en": "View",
         "ru": "Вид"
       },
+      "menu.view.customization": {
+        "base": "Menu Customization",
+        "en": "Menu Customization",
+        "ru": "Настройка меню"
+      },
+      "menu.view.customization.moveEarlier": {
+        "base": "Move Earlier",
+        "en": "Move Earlier",
+        "ru": "Переместить выше"
+      },
+      "menu.view.customization.moveLater": {
+        "base": "Move Later",
+        "en": "Move Later",
+        "ru": "Переместить ниже"
+      },
+      "menu.view.customization.order": {
+        "base": "Order",
+        "en": "Order",
+        "ru": "Порядок"
+      },
+      "menu.view.customization.reset": {
+        "base": "Reset Menu Customization",
+        "en": "Reset Menu Customization",
+        "ru": "Сбросить настройку меню"
+      },
+      "menu.view.customization.visibility": {
+        "base": "Visibility",
+        "en": "Visibility",
+        "ru": "Видимость"
+      },
       "menu.view.language": {
         "base": "Language",
         "en": "Language",
@@ -203,6 +233,7 @@
     "cmd.project.save",
     "cmd.project.tools.openDiagnostics",
     "cmd.project.view.openSettings",
+    "cmd.project.view.resetMenuCustomization",
     "cmd.project.view.restoreLastStable",
     "cmd.project.view.safeReset",
     "cmd.project.view.setMenuLocaleBase",
@@ -627,6 +658,125 @@
           ],
           "label": "Language",
           "labelKey": "menu.view.language",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X0",
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": null,
+          "disabledReasonCode": null,
+          "enabledWhenAst": null,
+          "id": "view-menu-customization",
+          "items": [
+            {
+              "canonicalCmdId": null,
+              "disabledReasonCode": null,
+              "enabledWhenAst": null,
+              "id": "view-menu-customization-visibility",
+              "label": "Visibility",
+              "labelKey": "menu.view.customization.visibility",
+              "mode": [
+                "offline"
+              ],
+              "origin": "base",
+              "profile": [
+                "minimal",
+                "pro",
+                "guru"
+              ],
+              "sourceRefs": [
+                "src/menu/menu-config.v2.json"
+              ],
+              "stage": [
+                "X0",
+                "X1",
+                "X2",
+                "X3",
+                "X4"
+              ],
+              "submenuFrom": "menuCustomizationVisibilitySections",
+              "visibilityPolicy": "visible_enabled"
+            },
+            {
+              "canonicalCmdId": null,
+              "disabledReasonCode": null,
+              "enabledWhenAst": null,
+              "id": "view-menu-customization-order",
+              "label": "Order",
+              "labelKey": "menu.view.customization.order",
+              "mode": [
+                "offline"
+              ],
+              "origin": "base",
+              "profile": [
+                "minimal",
+                "pro",
+                "guru"
+              ],
+              "sourceRefs": [
+                "src/menu/menu-config.v2.json"
+              ],
+              "stage": [
+                "X0",
+                "X1",
+                "X2",
+                "X3",
+                "X4"
+              ],
+              "submenuFrom": "menuCustomizationOrderSections",
+              "visibilityPolicy": "visible_enabled"
+            },
+            {
+              "canonicalCmdId": "cmd.project.view.resetMenuCustomization",
+              "disabledReasonCode": null,
+              "enabledWhenAst": {
+                "args": [],
+                "op": "all"
+              },
+              "id": "view-menu-customization-reset",
+              "label": "Reset Menu Customization",
+              "labelKey": "menu.view.customization.reset",
+              "mode": [
+                "offline"
+              ],
+              "origin": "base",
+              "profile": [
+                "minimal",
+                "pro",
+                "guru"
+              ],
+              "sourceRefs": [
+                "src/menu/menu-config.v2.json"
+              ],
+              "stage": [
+                "X0",
+                "X1",
+                "X2",
+                "X3",
+                "X4"
+              ],
+              "visibilityPolicy": "visible_enabled"
+            }
+          ],
+          "label": "Menu Customization",
+          "labelKey": "menu.view.customization",
           "mode": [
             "offline"
           ],

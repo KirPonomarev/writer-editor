@@ -250,10 +250,7 @@ test('menu customization normalization preserves submenuFrom markers and the can
   const viewMenu = getMenuById(normalized.menus, 'view');
   assert.ok(viewMenu, 'expected normalized view menu');
   const customization = getMenuItemById(viewMenu.items, 'view-menu-customization');
-  if (!customization) {
-    assert.equal(customization, null, 'the current repo can still be before the customization contour lands');
-    return;
-  }
+  assert.ok(customization, 'expected normalized customization container');
   assert.deepEqual(
     (customization.items || []).map((item) => item.id),
     [

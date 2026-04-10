@@ -22,6 +22,18 @@
     "origin",
     "sourceRefs"
   ],
+  "normalizedItemOptionalFields": [
+    "accelerator",
+    "items",
+    "label",
+    "labelKey",
+    "mode",
+    "profile",
+    "role",
+    "stage",
+    "submenuFrom",
+    "type"
+  ],
   "normalizedRootOptionalFields": [
     "localeCatalog",
     "sourceRefs"
@@ -52,6 +64,7 @@
   "rules": {
     "forbidActionIdInNormalizedOutput": true,
     "forbidNonCanonicalCommandIdsInNormalizedOutput": true,
-    "enabledWhenAstOnly": true
+    "enabledWhenAstOnly": true,
+    "preserveAllowedSubmenuFromPlaceholders": true
   }
 }

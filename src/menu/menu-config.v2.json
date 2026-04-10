@@ -142,6 +142,31 @@
           ]
         },
         {
+          "id": "view-menu-customization",
+          "label": "Menu Customization",
+          "labelKey": "menu.view.customization",
+          "items": [
+            {
+              "id": "view-menu-customization-visibility",
+              "label": "Visibility",
+              "labelKey": "menu.view.customization.visibility",
+              "submenuFrom": "menuCustomizationVisibilitySections"
+            },
+            {
+              "id": "view-menu-customization-order",
+              "label": "Order",
+              "labelKey": "menu.view.customization.order",
+              "submenuFrom": "menuCustomizationOrderSections"
+            },
+            {
+              "id": "view-menu-customization-reset",
+              "label": "Reset Menu Customization",
+              "labelKey": "menu.view.customization.reset",
+              "command": "cmd.project.view.resetMenuCustomization"
+            }
+          ]
+        },
+        {
           "id": "view-safe-reset",
           "label": "Safe Reset",
           "labelKey": "menu.view.safeReset",

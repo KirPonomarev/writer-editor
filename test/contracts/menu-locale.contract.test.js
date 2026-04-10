@@ -80,26 +80,17 @@ test('menu locale contract: language switch is authored in view menu at the requ
   assert.ok(viewMenu, 'expected view menu in canonical config');
 
   const itemIds = viewMenu.items.map((item) => item.id);
-  const customizationIndex = itemIds.indexOf('view-menu-customization');
-  if (customizationIndex === -1) {
-    assert.deepEqual(
-      itemIds.slice(0, 4),
-      ['view-settings', 'view-presentation-mode', 'view-language', 'view-safe-reset'],
-      'view-language must stay after presentation switch and before safe reset until the customization surface lands',
-    );
-  } else {
-    assert.deepEqual(
-      itemIds.slice(0, 5),
-      [
-        'view-settings',
-        'view-presentation-mode',
-        'view-language',
-        'view-menu-customization',
-        'view-safe-reset',
-      ],
-      'view-language must stay before bounded customization and safe reset',
-    );
-  }
+  assert.deepEqual(
+    itemIds.slice(0, 5),
+    [
+      'view-settings',
+      'view-presentation-mode',
+      'view-language',
+      'view-menu-customization',
+      'view-safe-reset',
+    ],
+    'view-language must stay before bounded customization and safe reset',
+  );
 
   const languageSwitch = viewMenu.items.find((item) => item.id === 'view-language');
   assert.ok(languageSwitch, 'expected view-language container');
