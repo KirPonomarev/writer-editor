@@ -11,6 +11,8 @@ const MENU_CONFIG_PATH = path.join(__dirname, 'menu-config.v2.json');
 const MENU_SCHEMA_PATH = path.join(__dirname, 'menu-config.schema.v2.json');
 const MENU_SCHEMA_V1_PATH = path.join(__dirname, 'menu-config.schema.v1.json');
 const MENU_SCHEMA_V2_PATH = MENU_SCHEMA_PATH;
+const MENU_LOCALE_CATALOG_PATH = path.join(__dirname, 'menu-locale.catalog.v1.json');
+const MENU_LOCALE_CATALOG_SCHEMA_PATH = path.join(__dirname, 'menu-locale.catalog.schema.v1.json');
 const COMMAND_VISIBILITY_MATRIX_PATH = path.join(__dirname, '..', '..', 'docs', 'OPS', 'STATUS', 'COMMAND_VISIBILITY_MATRIX.json');
 const MENU_FALLBACK_MESSAGE = 'Safe fallback menu will be used.';
 const MENU_DEFAULT_MODE = ['offline'];
@@ -227,6 +229,78 @@ function validateMenuConfigAgainstSchema(menuConfig, schemaDoc) {
   return {
     ok: errors.length === 0,
     errors
+  };
+}
+
+function loadAndValidateMenuLocaleCatalog(options = {}) {
+  const catalogPath = options.catalogPath || MENU_LOCALE_CATALOG_PATH;
+  const schemaPath = options.schemaPath || MENU_LOCALE_CATALOG_SCHEMA_PATH;
+
+  let catalogRaw;
+  try {
+    catalogRaw = fsSync.readFileSync(catalogPath, 'utf8');
+  } catch (error) {
+    return {
+      ok: false,
+      failReason: `Cannot read menu locale catalog: ${error.message}`,
+      errors: [createError('E_MENU_LOCALE_CATALOG_READ', '$', String(error.message))],
+      catalog: null,
+      schema: null,
+      catalogPath,
+      schemaPath,
+    };
+  }
+
+  const catalogParsed = safeJsonParse(catalogRaw, 'Menu locale catalog');
+  if (!catalogParsed.ok) {
+    return {
+      ok: false,
+      failReason: catalogParsed.failReason,
+      errors: [createError('E_MENU_LOCALE_CATALOG_PARSE', '$', catalogParsed.failReason)],
+      catalog: null,
+      schema: null,
+      catalogPath,
+      schemaPath,
+    };
+  }
+
+  let schemaRaw;
+  try {
+    schemaRaw = fsSync.readFileSync(schemaPath, 'utf8');
+  } catch (error) {
+    return {
+      ok: false,
+      failReason: `Cannot read menu locale schema: ${error.message}`,
+      errors: [createError('E_MENU_LOCALE_SCHEMA_READ', '$', String(error.message))],
+      catalog: catalogParsed.value,
+      schema: null,
+      catalogPath,
+      schemaPath,
+    };
+  }
+
+  const schemaParsed = safeJsonParse(schemaRaw, 'Menu locale schema');
+  if (!schemaParsed.ok) {
+    return {
+      ok: false,
+      failReason: schemaParsed.failReason,
+      errors: [createError('E_MENU_LOCALE_SCHEMA_PARSE', '$', schemaParsed.failReason)],
+      catalog: catalogParsed.value,
+      schema: null,
+      catalogPath,
+      schemaPath,
+    };
+  }
+
+  const validation = validateMenuConfigAgainstSchema(catalogParsed.value, schemaParsed.value);
+  return {
+    ok: validation.ok,
+    failReason: validation.ok ? '' : validation.errors[0].message,
+    errors: validation.errors,
+    catalog: catalogParsed.value,
+    schema: schemaParsed.value,
+    catalogPath,
+    schemaPath,
   };
 }
 
@@ -577,6 +651,8 @@ function toMenuConfigRuntimeState(validationState) {
 module.exports = {
   COMMAND_VISIBILITY_MATRIX_PATH,
   MENU_CONFIG_PATH,
+  MENU_LOCALE_CATALOG_PATH,
+  MENU_LOCALE_CATALOG_SCHEMA_PATH,
   MENU_SCHEMA_PATH,
   MENU_SCHEMA_V1_PATH,
   MENU_SCHEMA_V2_PATH,
@@ -584,6 +660,7 @@ module.exports = {
   detectMenuConfigVersion,
   evaluateMenuItemEnabled,
   loadAndValidateMenuConfig,
+  loadAndValidateMenuLocaleCatalog,
   normalizeMenuConfigToV2,
   toMenuConfigRuntimeState,
   validateMenuConfigAgainstSchema

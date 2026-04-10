@@ -1381,13 +1381,6 @@
       "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
     },
     {
-      "filePath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
-      "sha256": "999bcb93a513da21edfab25443c5acc2d17f2e6f247675825edd1f68fb928159",
-      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
-      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
-      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
-    },
-    {
       "filePath": "docs/OPS/SECURITY/NPM_AUDIT_HIGH_CLOSURE_SECTOR01_D.json",
       "sha256": "33b17548ed8f333518bc1a44d0fbb4466735a76003380bc118900a93e7bbfcbc",
       "approvedBy": "ticket:TZ-SECTOR-01-D-HIGH-CLOSURE-SSOT-01",
@@ -1801,13 +1794,6 @@
       "rationale": "TZ-P1-09-RACE-SAFE-GOVERNANCE-FOR-CORE-ARTIFACTS-003-RERUN-01 approvals."
     },
     {
-      "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
-      "sha256": "33b9f0ac1a5c06ceb60c4374fb89cd9d085d196d9c3d03ddc9f9cdf2cde2d658",
-      "approvedBy": "ticket:YALKEN_DESIGN_OS_PHASE08_RELEASE_CANDIDATE_AND_COLLAB_STATUS_REGEN_001",
-      "approvedAtUtc": "2026-03-28T16:53:54.412Z",
-      "rationale": "PHASE08_NARROW_RELEASE_CANDIDATE_AND_COLLAB_STATUS_REGEN_REBIND"
-    },
-    {
       "filePath": "docs/OPS/STATUS/RELEASE_CRITICAL_IMPACT_MATRIX_V1.json",
       "sha256": "a202bbd884156e5ed6333cc14b9a2536c4c153314b95b1c68b8af3e4bdd07be0",
       "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
@@ -1897,13 +1883,6 @@
       "approvedBy": "ticket:TZ_CONTOUR_CLOSE_V4_A03_GIT_FORMALIZATION",
       "approvedAtUtc": "2026-02-28T08:20:46.000Z",
       "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
-    },
-    {
-      "filePath": "docs/OPS/STATUS/THIRD_PARTY_NOTICES_READINESS.json",
-      "sha256": "64f82cb932f43f12f8e92c088a86b1f15c1af144d52c79f54b6beadaab63e2d9",
-      "approvedBy": "ticket:TZ_X25_P0_WS05_STRICT_DOCTOR_ALIGNMENT_CLUSTER_RECOVERY_001",
-      "approvedAtUtc": "2026-02-28T23:47:23.730Z",
-      "rationale": "X25_WS05_STRICT_CLUSTER_ALIGNMENT_RECOVERY_APPROVAL_REBIND"
     },
     {
       "filePath": "docs/OPS/STATUS/THRESHOLD_SYSTEM_NORMALIZATION_V1.json",
@@ -2424,13 +2403,6 @@
       "rationale": "TAILS_GIT_FORMALIZATION_GOVERNANCE_REBIND"
     },
     {
-      "filePath": "test/contracts/command-surface-caller-trust.contract.test.js",
-      "sha256": "1e502dd8ff004f48da6a3ec98c7c794b57c1bd1461a12a717bb17b8de146c176",
-      "approvedBy": "DOCS_OPERATOR",
-      "approvedAtUtc": "2026-02-26T21:35:25.000Z",
-      "rationale": "TZ-P1-06-COMMAND-SURFACE-CALLER-TRUST-PHASE-2-003 approvals."
-    },
-    {
       "filePath": "test/contracts/concurrency-locking.contract.test.js",
       "sha256": "e160c6e827cc7ffaf101feae15fa65bd9cd565763f3f99c2b32c98c33981dbf6",
       "approvedBy": "ticket:TZ-P2-06-CONCURRENCY-LOCKING-FOR-SHARED-GOVERNANCE-ARTIFACTS-003",
@@ -2620,13 +2592,6 @@
       "rationale": "TZ-P1-02-SHARED-REMOTE-PROBE-ENGINE-WITH-TTL-003 approvals."
     },
     {
-      "filePath": "test/contracts/stage-axis-lock.contract.test.js",
-      "sha256": "30b5b1b224362f6eafb7e92e9a5b91748ef4e8ead38e0cddee36c86d679aac1e",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
-    },
-    {
       "filePath": "test/contracts/transition-exit-active-canon.contract.test.js",
       "sha256": "0662ad186cba9b56d9bbb6dd7ce9c620fc90e8e3bbdff129de748cb0f1514a35",
       "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
@@ -2716,6 +2681,104 @@
       "approvedBy": "ticket:YALKEN_DESIGN_OS_PHASE08_RELEASE_CANDIDATE_AND_COLLAB_STATUS_REGEN_001",
       "approvedAtUtc": "2026-03-28T16:53:54.412Z",
       "rationale": "PHASE08_NARROW_RELEASE_CANDIDATE_AND_COLLAB_STATUS_REGEN_REBIND"
+    },
+    {
+      "filePath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
+      "sha256": "c3b58368cf14ee43af0d5d622514a8344b1c3ac8c40b5fff4a1c57bad83c3c09",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
+      "sha256": "620d7f1fa6c6094f88d93351538f26d1b5198de5846f22e66227734015ed8f3d",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/THIRD_PARTY_NOTICES_READINESS.json",
+      "sha256": "e3b0ec14773bae7fc4d256c983f71f236fb7de05c590a6a37efaf4934f26a7df",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "test/contracts/command-surface-caller-trust.contract.test.js",
+      "sha256": "28223e8eceb126c5c6b7226fa955a02980f71412fb3d3dda483001f399cac2e8",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "test/contracts/stage-axis-lock.contract.test.js",
+      "sha256": "242180a572276bd2580ed39a7e448d7a67b2c5b16159527c14902634c259103d",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+      "sha256": "cb459feb0e9cbe54f9db8277fe0192bd8936596fa83fb8915ae0ef42c6345173",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+      "sha256": "bb535d369aafd907b88eb7ce0bb7f968f8b53c4b3fd78a32bdc2a6f80f2c4253",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MENU_CONFIG_NORMALIZATION_SPEC_v1.json",
+      "sha256": "256620104f24855bfb00746d94b605d42d50e9914f19ceb6b6733e869708b301",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
+      "sha256": "ab61780617ec145af052f06adb655473f995bcb789be2389d5e4f2b4168d2245",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "scripts/ops/menu-config-normalize.mjs",
+      "sha256": "648c055557836cf0de05cf2dc06a73a66f1be663cdbf9db569483105acc1d64e",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "test/contracts/menu-config-normalization.contract.test.js",
+      "sha256": "dcf588c4a19889279c7b47f7a6df7d871e1330ec11b71449ed01f18ffd08ef92",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "test/contracts/menu-locale.contract.test.js",
+      "sha256": "c4dc0c60f79d5c8a8c20b3c141d919a319bcabff99eeb551ee7b0ee56c6db419",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T20:15:12.000Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "test/contracts/menu-presentation-modes.contract.test.js",
+      "sha256": "b6c42bc9b6c0a4d505afc0966d8d579a18c6b43ced1fe293892ee27ab151b6c0",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T20:16:44.000Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "test/contracts/menu-snapshot-freeze-promotion.contract.test.js",
+      "sha256": "2c5b9113f5ff60db28574570e0d5897242b85451cc617d90dbfa80efcd0a056d",
+      "approvedBy": "ticket:MENU_I18N_001",
+      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
+      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
     }
   ]
 }

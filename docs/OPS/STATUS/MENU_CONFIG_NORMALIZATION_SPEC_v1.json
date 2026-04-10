@@ -22,6 +22,20 @@
     "origin",
     "sourceRefs"
   ],
+  "normalizedRootOptionalFields": [
+    "localeCatalog",
+    "sourceRefs"
+  ],
+  "localizedLabelRules": {
+    "labelKeyRequiredWhenLabelPresent": true,
+    "embeddedLocaleCatalogRequired": true,
+    "supportedLocales": [
+      "base",
+      "ru",
+      "en"
+    ],
+    "baseLabelMustMatchCanonicalLabel": true
+  },
   "visibilityPolicyValues": [
     "visible_enabled",
     "visible_disabled",

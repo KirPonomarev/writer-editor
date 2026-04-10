@@ -65,14 +65,32 @@ function makeSimpleConfig(overrides = {}) {
     fonts: [
       { id: 'font-1', label: 'Serif', value: 'serif' },
     ],
+    localeCatalog: {
+      version: 'v1',
+      locales: ['base', 'ru', 'en'],
+      entries: {
+        'menu.test.file': {
+          base: 'File',
+          ru: 'Файл',
+          en: 'File',
+        },
+        'menu.test.file.save': {
+          base: 'Save',
+          ru: 'Сохранить',
+          en: 'Save',
+        },
+      },
+    },
     menus: [
       {
         id: 'file',
         label: 'File',
+        labelKey: 'menu.test.file',
         items: [
           {
             id: 'save',
             label: 'Save',
+            labelKey: 'menu.test.file.save',
             command: 'cmd.project.save',
             enabledWhen: { op: 'all', args: [] },
             mode: ['offline'],

@@ -98,13 +98,16 @@ async function showAboutLicensesDialog() {
 }
 
 function createAboutLicensesMenuEntry() {
+  const artifactDoc = readMenuArtifactDocument(resolveRuntimeMenuArtifactPath());
+  const localeCatalog = resolveRuntimeMenuLocaleCatalog(artifactDoc);
+  const aboutLabel = resolveAboutLicensesMenuLabel();
   return {
     id: 'help',
-    label: 'Справка',
+    label: resolveLocalizedMenuLabel(localeCatalog, MENU_LOCALE_HELP_LABEL_KEY, 'Help'),
     submenu: [
       {
         id: 'help-about-licenses',
-        label: 'О программе и лицензии',
+        label: aboutLabel,
         click: () => {
           showAboutLicensesDialog().catch((error) => {
             logDevError('showAboutLicensesDialog', error);
@@ -146,7 +149,17 @@ const MENU_PRESENTATION_MODE_SETTING_KEY = 'menuPresentationMode';
 const MENU_PRESENTATION_COMPACT_ROOT_ID = 'compact-root';
 const MENU_PRESENTATION_COMMAND_CLASSIC = 'cmd.project.view.setMenuPresentationClassic';
 const MENU_PRESENTATION_COMMAND_COMPACT = 'cmd.project.view.setMenuPresentationCompact';
+const MENU_LOCALE_MODE_BASE = 'base';
+const MENU_LOCALE_MODE_RU = 'ru';
+const MENU_LOCALE_MODE_EN = 'en';
+const MENU_LOCALE_SETTING_KEY = 'menuLocale';
+const MENU_LOCALE_COMMAND_BASE = 'cmd.project.view.setMenuLocaleBase';
+const MENU_LOCALE_COMMAND_RU = 'cmd.project.view.setMenuLocaleRu';
+const MENU_LOCALE_COMMAND_EN = 'cmd.project.view.setMenuLocaleEn';
+const MENU_LOCALE_HELP_LABEL_KEY = 'menu.help';
+const MENU_LOCALE_ABOUT_LICENSES_LABEL_KEY = 'menu.help.aboutLicenses';
 let currentMenuPresentationMode = MENU_PRESENTATION_MODE_CLASSIC;
+let currentMenuLocale = MENU_LOCALE_MODE_BASE;
 const USER_DATA_FOLDER_NAME = 'craftsman';
 const LEGACY_USER_DATA_FOLDER_NAME = 'WriterEditor';
 const MIGRATION_MARKER = '.migrated-from-writer-editor';
@@ -704,6 +717,17 @@ function normalizeMenuPresentationMode(value) {
   return MENU_PRESENTATION_MODE_CLASSIC;
 }
 
+function normalizeMenuLocale(value) {
+  if (typeof value !== 'string') {
+    return MENU_LOCALE_MODE_BASE;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (normalized === MENU_LOCALE_MODE_RU) return MENU_LOCALE_MODE_RU;
+  if (normalized === MENU_LOCALE_MODE_EN) return MENU_LOCALE_MODE_EN;
+  return MENU_LOCALE_MODE_BASE;
+}
+
 async function loadMenuPresentationModeFromSettings() {
   try {
     const settings = await loadSettings();
@@ -712,6 +736,15 @@ async function loadMenuPresentationModeFromSettings() {
     );
   } catch {
     currentMenuPresentationMode = MENU_PRESENTATION_MODE_CLASSIC;
+  }
+}
+
+async function loadMenuLocaleFromSettings() {
+  try {
+    const settings = await loadSettings();
+    currentMenuLocale = normalizeMenuLocale(settings[MENU_LOCALE_SETTING_KEY]);
+  } catch {
+    currentMenuLocale = MENU_LOCALE_MODE_BASE;
   }
 }
 
@@ -738,6 +771,34 @@ async function setMenuPresentationMode(mode) {
       ok: false,
       persisted,
       menuPresentationMode: nextMode,
+      reason: 'MENU_REBUILD_FAILED',
+    };
+  }
+}
+
+async function setMenuLocale(locale) {
+  const nextLocale = normalizeMenuLocale(locale);
+  let persisted = false;
+
+  currentMenuLocale = nextLocale;
+  try {
+    const settings = await loadSettings();
+    settings[MENU_LOCALE_SETTING_KEY] = nextLocale;
+    await saveSettings(settings);
+    persisted = true;
+  } catch (error) {
+    logDevError('setMenuLocale:saveSettings', error);
+  }
+
+  try {
+    createMenu();
+    return { ok: true, persisted, menuLocale: nextLocale };
+  } catch (error) {
+    logDevError('setMenuLocale:createMenu', error);
+    return {
+      ok: false,
+      persisted,
+      menuLocale: nextLocale,
       reason: 'MENU_REBUILD_FAILED',
     };
   }
@@ -3596,6 +3657,15 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   [MENU_PRESENTATION_COMMAND_COMPACT]: async () => {
     return setMenuPresentationMode(MENU_PRESENTATION_MODE_COMPACT);
   },
+  [MENU_LOCALE_COMMAND_BASE]: async () => {
+    return setMenuLocale(MENU_LOCALE_MODE_BASE);
+  },
+  [MENU_LOCALE_COMMAND_RU]: async () => {
+    return setMenuLocale(MENU_LOCALE_MODE_RU);
+  },
+  [MENU_LOCALE_COMMAND_EN]: async () => {
+    return setMenuLocale(MENU_LOCALE_MODE_EN);
+  },
   'cmd.project.document.open': async (payload = {}) => {
     return handleUiOpenDocumentCommand(payload);
   },
@@ -3741,6 +3811,17 @@ function parseRuntimeJsonInput(pathEnvKey, jsonEnvKey, label) {
   }
 }
 
+function resolveRuntimeMenuLocaleCatalog(artifactDoc) {
+  if (isRuntimeRecord(artifactDoc) && isRuntimeRecord(artifactDoc.localeCatalog)) {
+    return artifactDoc.localeCatalog;
+  }
+  return {
+    version: 'v1',
+    locales: [MENU_LOCALE_MODE_BASE, MENU_LOCALE_MODE_RU, MENU_LOCALE_MODE_EN],
+    entries: {},
+  };
+}
+
 function normalizeRuntimeOverlayPayload(payload) {
   if (payload === null || payload === undefined) return [];
   if (Array.isArray(payload)) return payload;
@@ -3816,6 +3897,7 @@ function resolveRuntimeMenuBuildConfig(mode) {
 
   const artifactOnlyConfig = {
     fonts: Array.isArray(artifactDoc.fonts) ? artifactDoc.fonts : [],
+    localeCatalog: resolveRuntimeMenuLocaleCatalog(artifactDoc),
     menus: artifactDoc.menus,
   };
   if (sourcePolicy.fallbackToArtifactOnly) {
@@ -3898,6 +3980,9 @@ function resolveRuntimeMenuBuildConfig(mode) {
 
   return {
     fonts: Array.isArray(artifactDoc.fonts) ? artifactDoc.fonts : [],
+    localeCatalog: isRuntimeRecord(normalizerState.normalizedConfig.localeCatalog)
+      ? normalizerState.normalizedConfig.localeCatalog
+      : resolveRuntimeMenuLocaleCatalog(artifactDoc),
     menus: normalizerState.normalizedConfig.menus,
   };
 }
@@ -3994,6 +4079,45 @@ function cloneMenuTemplateItem(item) {
   return cloned;
 }
 
+function mergeCompactDuplicateMenuItem(existingItem, nextItem) {
+  const existingSubmenu = Array.isArray(existingItem?.submenu) ? existingItem.submenu : [];
+  const nextSubmenu = Array.isArray(nextItem?.submenu) ? nextItem.submenu : [];
+
+  if (existingSubmenu.length === 0 && nextSubmenu.length > 0) {
+    return nextItem;
+  }
+  if (nextSubmenu.length === 0 && existingSubmenu.length > 0) {
+    return existingItem;
+  }
+  if (nextSubmenu.length > existingSubmenu.length) {
+    return nextItem;
+  }
+  return existingItem;
+}
+
+function dedupeCompactRootSubmenu(items) {
+  const deduped = [];
+  const idToIndex = new Map();
+
+  items.forEach((item) => {
+    if (!item || typeof item !== 'object' || typeof item.id !== 'string' || item.id.length === 0) {
+      deduped.push(item);
+      return;
+    }
+
+    if (!idToIndex.has(item.id)) {
+      idToIndex.set(item.id, deduped.length);
+      deduped.push(item);
+      return;
+    }
+
+    const index = idToIndex.get(item.id);
+    deduped[index] = mergeCompactDuplicateMenuItem(deduped[index], item);
+  });
+
+  return deduped;
+}
+
 function buildCompactMenuTemplate(template) {
   const fileMenu = template.find((item) => item && item.id === 'file');
   if (!fileMenu || !Array.isArray(fileMenu.submenu)) {
@@ -4013,7 +4137,7 @@ function buildCompactMenuTemplate(template) {
   const compactRoot = {
     id: MENU_PRESENTATION_COMPACT_ROOT_ID,
     label: fileMenu.label,
-    submenu: compactRootSubmenu,
+    submenu: dedupeCompactRootSubmenu(compactRootSubmenu),
   };
 
   if (process.platform === 'darwin') {
@@ -4031,6 +4155,70 @@ function applyMenuPresentation(template) {
     return template;
   }
   return buildCompactMenuTemplate(template);
+}
+
+function resolveLocalizedMenuLabel(localeCatalog, labelKey, fallbackLabel) {
+  const entries = isRuntimeRecord(localeCatalog) && isRuntimeRecord(localeCatalog.entries)
+    ? localeCatalog.entries
+    : {};
+  const entry = isRuntimeRecord(entries) ? entries[labelKey] : null;
+  if (!entry || typeof entry !== 'object') {
+    return fallbackLabel;
+  }
+
+  const localeValue = typeof entry[currentMenuLocale] === 'string' && entry[currentMenuLocale].trim().length > 0
+    ? entry[currentMenuLocale].trim()
+    : '';
+  if (localeValue) return localeValue;
+
+  const baseValue = typeof entry.base === 'string' && entry.base.trim().length > 0
+    ? entry.base.trim()
+    : '';
+  return baseValue || fallbackLabel;
+}
+
+function localizeMenuConfigNode(node, localeCatalog) {
+  if (!node || typeof node !== 'object' || Array.isArray(node)) {
+    return node;
+  }
+
+  const localized = { ...node };
+  if (typeof node.label === 'string' && typeof node.labelKey === 'string') {
+    localized.label = resolveLocalizedMenuLabel(localeCatalog, node.labelKey, node.label);
+  }
+  if (Array.isArray(node.items)) {
+    localized.items = node.items.map((entry) => localizeMenuConfigNode(entry, localeCatalog));
+  }
+  return localized;
+}
+
+function applyMenuLocale(config) {
+  if (!config || typeof config !== 'object' || Array.isArray(config)) {
+    return config;
+  }
+
+  const localeCatalog = resolveRuntimeMenuLocaleCatalog(config);
+  return {
+    ...config,
+    localeCatalog,
+    fonts: Array.isArray(config.fonts) ? config.fonts.map((font) => ({ ...font })) : [],
+    menus: Array.isArray(config.menus)
+      ? config.menus.map((entry) => localizeMenuConfigNode(entry, localeCatalog))
+      : [],
+  };
+}
+
+function resolveAboutLicensesMenuLabel() {
+  try {
+    const artifactDoc = readMenuArtifactDocument(resolveRuntimeMenuArtifactPath());
+    return resolveLocalizedMenuLabel(
+      resolveRuntimeMenuLocaleCatalog(artifactDoc),
+      MENU_LOCALE_ABOUT_LICENSES_LABEL_KEY,
+      'О программе и лицензии',
+    );
+  } catch {
+    return 'О программе и лицензии';
+  }
 }
 
 function buildMenuItemFromConfig(item, config, location) {
@@ -4138,6 +4326,15 @@ function buildMenuItemFromConfig(item, config, location) {
       built.checked = resolved.commandId === MENU_PRESENTATION_COMMAND_CLASSIC
         ? currentMenuPresentationMode === MENU_PRESENTATION_MODE_CLASSIC
         : currentMenuPresentationMode === MENU_PRESENTATION_MODE_COMPACT;
+    } else if (resolved.commandId === MENU_LOCALE_COMMAND_BASE
+      || resolved.commandId === MENU_LOCALE_COMMAND_RU
+      || resolved.commandId === MENU_LOCALE_COMMAND_EN) {
+      built.type = 'radio';
+      built.checked = resolved.commandId === MENU_LOCALE_COMMAND_BASE
+        ? currentMenuLocale === MENU_LOCALE_MODE_BASE
+        : resolved.commandId === MENU_LOCALE_COMMAND_RU
+          ? currentMenuLocale === MENU_LOCALE_MODE_RU
+          : currentMenuLocale === MENU_LOCALE_MODE_EN;
     }
     built.click = buildCommandClickHandler(resolved.commandId, {
       actionArg: item.actionArg
@@ -4187,7 +4384,8 @@ function createMenu() {
   const mode = resolveRuntimeMenuArtifactMode();
   try {
     const runtimeConfig = resolveRuntimeMenuBuildConfig(mode);
-    const template = buildMenuTemplateFromConfig(runtimeConfig);
+    const localizedConfig = applyMenuLocale(runtimeConfig);
+    const template = buildMenuTemplateFromConfig(localizedConfig);
     ensureAboutLicensesMenuEntry(template);
     const menu = Menu.buildFromTemplate(applyMenuPresentation(template));
     Menu.setApplicationMenu(menu);
@@ -4219,6 +4417,7 @@ app.whenReady().then(async () => {
   installContentSecurityPolicy();
   const windowStatePromise = loadWindowStateFromSettings();
   const menuPresentationModePromise = loadMenuPresentationModeFromSettings();
+  const menuLocalePromise = loadMenuLocaleFromSettings();
   const initPromise = initializeApp()
     .then(() => {
       logPerfStage('init-complete');
@@ -4229,6 +4428,7 @@ app.whenReady().then(async () => {
 
   await windowStatePromise;
   await menuPresentationModePromise;
+  await menuLocalePromise;
   logPerfStage('window-state-loaded');
   createWindow();
   try {

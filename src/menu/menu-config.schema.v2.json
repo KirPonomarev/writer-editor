@@ -210,6 +210,11 @@
           "type": "string",
           "minLength": 1
         },
+        "labelKey": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9._-]+$"
+        },
         "role": {
           "type": "string",
           "enum": ["undo", "redo", "cut", "copy", "paste", "selectAll"]

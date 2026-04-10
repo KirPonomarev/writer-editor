@@ -16,6 +16,7 @@
     {
       "id": "file",
       "label": "Документ",
+      "labelKey": "menu.file",
       "mode": ["offline"],
       "profile": ["minimal", "pro", "guru"],
       "stage": ["X1", "X2", "X3", "X4"],
@@ -27,6 +28,7 @@
         {
           "id": "file-open",
           "label": "Открыть проект...",
+          "labelKey": "menu.file.open",
           "accelerator": "CmdOrCtrl+O",
           "actionId": "openDocument",
           "mode": ["offline"],
@@ -40,6 +42,7 @@
         {
           "id": "file-save",
           "label": "Сохранить",
+          "labelKey": "menu.file.save",
           "accelerator": "CmdOrCtrl+S",
           "actionId": "saveDocument",
           "mode": ["offline"],
@@ -53,6 +56,7 @@
         {
           "id": "file-export-docx",
           "label": "Экспорт DOCX",
+          "labelKey": "menu.file.exportDocx",
           "actionId": "exportDocxMin",
           "mode": ["offline"],
           "profile": ["pro", "guru"],
@@ -67,6 +71,7 @@
     {
       "id": "edit",
       "label": "Редактирование",
+      "labelKey": "menu.edit",
       "items": [
         {
           "id": "edit-copy",
@@ -84,51 +89,86 @@
     {
       "id": "view",
       "label": "View",
+      "labelKey": "menu.view",
       "items": [
         {
           "id": "view-settings",
           "label": "Settings",
+          "labelKey": "menu.view.settings",
           "command": "cmd.project.view.openSettings"
         },
         {
           "id": "view-presentation-mode",
           "label": "Presentation Mode",
+          "labelKey": "menu.view.presentation",
           "items": [
             {
               "id": "view-presentation-classic",
               "label": "Classic",
+              "labelKey": "menu.view.presentation.classic",
               "command": "cmd.project.view.setMenuPresentationClassic"
             },
             {
               "id": "view-presentation-compact",
               "label": "Compact",
+              "labelKey": "menu.view.presentation.compact",
               "command": "cmd.project.view.setMenuPresentationCompact"
+            }
+          ]
+        },
+        {
+          "id": "view-language",
+          "label": "Language",
+          "labelKey": "menu.view.language",
+          "items": [
+            {
+              "id": "view-language-base",
+              "label": "Base",
+              "labelKey": "menu.view.language.base",
+              "command": "cmd.project.view.setMenuLocaleBase"
+            },
+            {
+              "id": "view-language-ru",
+              "label": "Русский",
+              "labelKey": "menu.view.language.ru",
+              "command": "cmd.project.view.setMenuLocaleRu"
+            },
+            {
+              "id": "view-language-en",
+              "label": "English",
+              "labelKey": "menu.view.language.en",
+              "command": "cmd.project.view.setMenuLocaleEn"
             }
           ]
         },
         {
           "id": "view-safe-reset",
           "label": "Safe Reset",
+          "labelKey": "menu.view.safeReset",
           "command": "cmd.project.view.safeReset"
         },
         {
           "id": "view-restore-last-stable",
           "label": "Restore Last Stable",
+          "labelKey": "menu.view.restoreLastStable",
           "command": "cmd.project.view.restoreLastStable"
         },
         {
           "id": "view-switch-write",
           "label": "Write Mode",
+          "labelKey": "menu.view.mode.write",
           "command": "cmd.project.window.switchModeWrite"
         },
         {
           "id": "view-switch-plan",
           "label": "Plan Mode",
+          "labelKey": "menu.view.mode.plan",
           "command": "cmd.project.plan.switchMode"
         },
         {
           "id": "view-switch-review",
           "label": "Review Mode",
+          "labelKey": "menu.view.mode.review",
           "command": "cmd.project.review.switchMode"
         }
       ]
@@ -136,10 +176,12 @@
     {
       "id": "insert",
       "label": "Insert",
+      "labelKey": "menu.insert",
       "items": [
         {
           "id": "insert-add-card",
           "label": "Add Card",
+          "labelKey": "menu.insert.addCard",
           "command": "cmd.project.insert.addCard"
         }
       ]
@@ -147,10 +189,12 @@
     {
       "id": "format",
       "label": "Format",
+      "labelKey": "menu.format",
       "items": [
         {
           "id": "format-align-left",
           "label": "Align Left",
+          "labelKey": "menu.format.alignLeft",
           "command": "cmd.project.format.alignLeft"
         }
       ]
@@ -158,10 +202,12 @@
     {
       "id": "plan",
       "label": "Plan",
+      "labelKey": "menu.plan",
       "items": [
         {
           "id": "plan-mode",
           "label": "Open Plan Mode",
+          "labelKey": "menu.plan.openMode",
           "command": "cmd.project.plan.switchMode"
         }
       ]
@@ -169,15 +215,18 @@
     {
       "id": "review",
       "label": "Review",
+      "labelKey": "menu.review",
       "items": [
         {
           "id": "review-mode",
           "label": "Open Review Mode",
+          "labelKey": "menu.review.openMode",
           "command": "cmd.project.review.switchMode"
         },
         {
           "id": "review-recovery",
           "label": "Recovery",
+          "labelKey": "menu.review.recovery",
           "command": "cmd.project.review.openRecovery"
         }
       ]
@@ -185,10 +234,12 @@
     {
       "id": "tools",
       "label": "Tools",
+      "labelKey": "menu.tools",
       "items": [
         {
           "id": "tools-diagnostics",
           "label": "Diagnostics",
+          "labelKey": "menu.tools.diagnostics",
           "command": "cmd.project.tools.openDiagnostics"
         }
       ]
@@ -196,10 +247,12 @@
     {
       "id": "window",
       "label": "Window",
+      "labelKey": "menu.window",
       "items": [
         {
           "id": "window-write-mode",
           "label": "Back To Write Mode",
+          "labelKey": "menu.window.backToWrite",
           "command": "cmd.project.window.switchModeWrite"
         }
       ]
@@ -207,6 +260,7 @@
     {
       "id": "help",
       "label": "Help",
+      "labelKey": "menu.help",
       "items": []
     }
   ]

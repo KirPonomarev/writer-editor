@@ -738,7 +738,12 @@ function runExportArtifact(input = {}) {
 
   const normalizedConfig = normalizeState.output.normalizedConfig;
   const menus = Array.isArray(normalizedConfig.menus) ? normalizedConfig.menus : [];
-  const sourceRefs = collectSourceRefsFromMenus(menus);
+  const localeCatalog = isObjectRecord(normalizedConfig.localeCatalog)
+    ? normalizedConfig.localeCatalog
+    : { version: 'v1', locales: [], entries: {} };
+  const sourceRefs = Array.isArray(normalizedConfig.sourceRefs) && normalizedConfig.sourceRefs.length > 0
+    ? [...normalizedConfig.sourceRefs]
+    : collectSourceRefsFromMenus(menus);
   const commands = collectCanonicalCommandsFromMenus(menus);
   const existingArtifactDoc = readJsonIfExists(artifactPath);
   const generatedFromCommit = resolveCurrentCommit(process.cwd());
@@ -751,6 +756,7 @@ function runExportArtifact(input = {}) {
       && normalizeString(existingArtifactDoc?.context?.contextHashSha256).toLowerCase() === normalizeState.contextHashSha256
       && stableStringify(Array.isArray(existingArtifactDoc.sourceRefs) ? existingArtifactDoc.sourceRefs : []) === stableStringify(sourceRefs)
       && stableStringify(Array.isArray(existingArtifactDoc.commands) ? existingArtifactDoc.commands : []) === stableStringify(commands)
+      && stableStringify(isObjectRecord(existingArtifactDoc.localeCatalog) ? existingArtifactDoc.localeCatalog : {}) === stableStringify(localeCatalog)
       && stableStringify(Array.isArray(existingArtifactDoc.menus) ? existingArtifactDoc.menus : []) === stableStringify(menus);
     if (sameSemanticPayload) {
       generatedAt = normalizeString(existingArtifactDoc.generatedAt) || generatedAt;
@@ -770,6 +776,7 @@ function runExportArtifact(input = {}) {
         ? toRepoRelativePath(normalizeState.contextPath, process.cwd())
         : '',
     },
+    localeCatalog,
     sourceRefs,
     commands,
     menus,
