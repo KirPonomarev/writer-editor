@@ -7,22 +7,22 @@ const path = require('node:path');
 const REPO_ROOT = process.cwd();
 const V1_CONFIG_PATH = path.join(REPO_ROOT, 'src', 'menu', 'menu-config.v1.json');
 const V1_SCHEMA_PATH = path.join(REPO_ROOT, 'src', 'menu', 'menu-config.schema.v1.json');
-const V2_EXAMPLE_PATH = path.join(REPO_ROOT, 'src', 'menu', 'menu-config.v2.example.json');
+const V2_CONFIG_PATH = path.join(REPO_ROOT, 'src', 'menu', 'menu-config.v2.json');
 
 const {
   evaluateMenuItemEnabled,
   loadAndValidateMenuConfig
 } = require(path.join(REPO_ROOT, 'src', 'menu', 'menu-config-validator.js'));
 
-function readV2Example() {
-  return JSON.parse(fs.readFileSync(V2_EXAMPLE_PATH, 'utf8'));
+function readV2Config() {
+  return JSON.parse(fs.readFileSync(V2_CONFIG_PATH, 'utf8'));
 }
 
 function runWithTempV2(mutator) {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'menu-config-backcompat-contract-'));
   const configPath = path.join(tmpDir, 'menu-config.v2.json');
   try {
-    const config = readV2Example();
+    const config = readV2Config();
     mutator(config);
     fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`, 'utf8');
     return loadAndValidateMenuConfig({ configPath });

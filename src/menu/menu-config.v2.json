@@ -1,0 +1,197 @@
+{
+  "version": "v2",
+  "fonts": [
+    {
+      "id": "font-palatino",
+      "label": "Palatino",
+      "value": "Palatino, 'Palatino Linotype', 'Book Antiqua', serif"
+    },
+    {
+      "id": "font-georgia",
+      "label": "Georgia",
+      "value": "Georgia, serif"
+    }
+  ],
+  "menus": [
+    {
+      "id": "file",
+      "label": "Документ",
+      "mode": ["offline"],
+      "profile": ["minimal", "pro", "guru"],
+      "stage": ["X1", "X2", "X3", "X4"],
+      "enabledWhen": {
+        "op": "all",
+        "args": []
+      },
+      "items": [
+        {
+          "id": "file-open",
+          "label": "Открыть проект...",
+          "accelerator": "CmdOrCtrl+O",
+          "actionId": "openDocument",
+          "mode": ["offline"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "all",
+            "args": []
+          }
+        },
+        {
+          "id": "file-save",
+          "label": "Сохранить",
+          "accelerator": "CmdOrCtrl+S",
+          "actionId": "saveDocument",
+          "mode": ["offline"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "flag",
+            "name": "hasDocument"
+          }
+        },
+        {
+          "id": "file-export-docx",
+          "label": "Экспорт DOCX",
+          "actionId": "exportDocxMin",
+          "mode": ["offline"],
+          "profile": ["pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "flag",
+            "name": "hasDocument"
+          }
+        }
+      ]
+    },
+    {
+      "id": "edit",
+      "label": "Редактирование",
+      "items": [
+        {
+          "id": "edit-copy",
+          "role": "copy",
+          "mode": ["offline", "web_subset"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "flag",
+            "name": "selectionExists"
+          }
+        }
+      ]
+    },
+    {
+      "id": "view",
+      "label": "View",
+      "items": [
+        {
+          "id": "view-settings",
+          "label": "Settings",
+          "command": "cmd.project.view.openSettings"
+        },
+        {
+          "id": "view-safe-reset",
+          "label": "Safe Reset",
+          "command": "cmd.project.view.safeReset"
+        },
+        {
+          "id": "view-restore-last-stable",
+          "label": "Restore Last Stable",
+          "command": "cmd.project.view.restoreLastStable"
+        },
+        {
+          "id": "view-switch-write",
+          "label": "Write Mode",
+          "command": "cmd.project.window.switchModeWrite"
+        },
+        {
+          "id": "view-switch-plan",
+          "label": "Plan Mode",
+          "command": "cmd.project.plan.switchMode"
+        },
+        {
+          "id": "view-switch-review",
+          "label": "Review Mode",
+          "command": "cmd.project.review.switchMode"
+        }
+      ]
+    },
+    {
+      "id": "insert",
+      "label": "Insert",
+      "items": [
+        {
+          "id": "insert-add-card",
+          "label": "Add Card",
+          "command": "cmd.project.insert.addCard"
+        }
+      ]
+    },
+    {
+      "id": "format",
+      "label": "Format",
+      "items": [
+        {
+          "id": "format-align-left",
+          "label": "Align Left",
+          "command": "cmd.project.format.alignLeft"
+        }
+      ]
+    },
+    {
+      "id": "plan",
+      "label": "Plan",
+      "items": [
+        {
+          "id": "plan-mode",
+          "label": "Open Plan Mode",
+          "command": "cmd.project.plan.switchMode"
+        }
+      ]
+    },
+    {
+      "id": "review",
+      "label": "Review",
+      "items": [
+        {
+          "id": "review-mode",
+          "label": "Open Review Mode",
+          "command": "cmd.project.review.switchMode"
+        },
+        {
+          "id": "review-recovery",
+          "label": "Recovery",
+          "command": "cmd.project.review.openRecovery"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "label": "Tools",
+      "items": [
+        {
+          "id": "tools-diagnostics",
+          "label": "Diagnostics",
+          "command": "cmd.project.tools.openDiagnostics"
+        }
+      ]
+    },
+    {
+      "id": "window",
+      "label": "Window",
+      "items": [
+        {
+          "id": "window-write-mode",
+          "label": "Back To Write Mode",
+          "command": "cmd.project.window.switchModeWrite"
+        }
+      ]
+    },
+    {
+      "id": "help",
+      "label": "Help",
+      "items": []
+    }
+  ]
+}

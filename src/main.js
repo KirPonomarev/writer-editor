@@ -132,124 +132,6 @@ function ensureAboutLicensesMenuEntry(template) {
   template.push(createAboutLicensesMenuEntry());
 }
 
-function ensureX101MenuSections(template) {
-  if (!Array.isArray(template)) return;
-  const byId = new Map();
-  for (const item of template) {
-    if (item && typeof item.id === 'string' && item.id) {
-      byId.set(item.id, item);
-    }
-  }
-
-  const ensureMenu = (id, label, submenu) => {
-    const existing = byId.get(id);
-    if (existing) {
-      if (!Array.isArray(existing.submenu)) {
-        existing.submenu = [];
-      }
-      return existing;
-    }
-    const created = { id, label, submenu: Array.isArray(submenu) ? submenu : [] };
-    template.push(created);
-    byId.set(id, created);
-    return created;
-  };
-  const commandItem = (id, label, commandId, options = {}) => {
-    const item = {
-      id,
-      label,
-      click: buildCommandClickHandler(commandId),
-    };
-    if (typeof options.accelerator === 'string' && options.accelerator.length > 0) {
-      item.accelerator = options.accelerator;
-    }
-    return item;
-  };
-
-  const fileMenu = ensureMenu('file', 'File', []);
-  if (fileMenu.submenu.length === 0) {
-    fileMenu.submenu.push(
-      commandItem('file-new', 'New', 'cmd.project.new', { accelerator: process.platform === 'darwin' ? 'Cmd+N' : 'Ctrl+N' }),
-      commandItem('file-open', 'Open', 'cmd.project.open', { accelerator: process.platform === 'darwin' ? 'Cmd+O' : 'Ctrl+O' }),
-      commandItem('file-save', 'Save', 'cmd.project.save', { accelerator: process.platform === 'darwin' ? 'Cmd+S' : 'Ctrl+S' }),
-      { type: 'separator' },
-      commandItem('file-export-docx', 'Export DOCX', 'cmd.project.export.docxMin'),
-    );
-  }
-
-  const editMenu = ensureMenu('edit', 'Edit', []);
-  if (editMenu.submenu.length === 0) {
-    editMenu.submenu.push(
-      commandItem('edit-undo', 'Undo', 'cmd.project.edit.undo', { accelerator: 'CmdOrCtrl+Z' }),
-      commandItem('edit-redo', 'Redo', 'cmd.project.edit.redo', { accelerator: 'Shift+CmdOrCtrl+Z' }),
-      { type: 'separator' },
-      commandItem('edit-find', 'Find', 'cmd.project.edit.find', { accelerator: 'CmdOrCtrl+F' }),
-      commandItem('edit-replace', 'Replace', 'cmd.project.edit.replace', { accelerator: 'CmdOrCtrl+H' }),
-      { type: 'separator' },
-      { role: 'copy' },
-      { role: 'paste' },
-      { role: 'selectAll' },
-    );
-  }
-
-  const viewMenu = ensureMenu('view', 'View', []);
-  if (viewMenu.submenu.length === 0) {
-    viewMenu.submenu.push(
-      commandItem('view-settings', 'Settings', 'cmd.project.view.openSettings'),
-      commandItem('view-safe-reset', 'Safe Reset', 'cmd.project.view.safeReset'),
-      commandItem('view-restore-last-stable', 'Restore Last Stable', 'cmd.project.view.restoreLastStable'),
-      commandItem('view-switch-write', 'Write Mode', 'cmd.project.window.switchModeWrite'),
-      commandItem('view-switch-plan', 'Plan Mode', 'cmd.project.plan.switchMode'),
-      commandItem('view-switch-review', 'Review Mode', 'cmd.project.review.switchMode'),
-    );
-  }
-
-  const insertMenu = ensureMenu('insert', 'Insert', []);
-  if (insertMenu.submenu.length === 0) {
-    insertMenu.submenu.push(
-      commandItem('insert-add-card', 'Add Card', 'cmd.project.insert.addCard'),
-    );
-  }
-
-  const formatMenu = ensureMenu('format', 'Format', []);
-  if (formatMenu.submenu.length === 0) {
-    formatMenu.submenu.push(
-      commandItem('format-align-left', 'Align Left', 'cmd.project.format.alignLeft'),
-    );
-  }
-
-  const planMenu = ensureMenu('plan', 'Plan', []);
-  if (planMenu.submenu.length === 0) {
-    planMenu.submenu.push(
-      commandItem('plan-mode', 'Open Plan Mode', 'cmd.project.plan.switchMode'),
-    );
-  }
-
-  const reviewMenu = ensureMenu('review', 'Review', []);
-  if (reviewMenu.submenu.length === 0) {
-    reviewMenu.submenu.push(
-      commandItem('review-mode', 'Open Review Mode', 'cmd.project.review.switchMode'),
-      commandItem('review-recovery', 'Recovery', 'cmd.project.review.openRecovery'),
-    );
-  }
-
-  const toolsMenu = ensureMenu('tools', 'Tools', []);
-  if (toolsMenu.submenu.length === 0) {
-    toolsMenu.submenu.push(
-      commandItem('tools-diagnostics', 'Diagnostics', 'cmd.project.tools.openDiagnostics'),
-    );
-  }
-
-  const windowMenu = ensureMenu('window', 'Window', []);
-  if (windowMenu.submenu.length === 0) {
-    windowMenu.submenu.push(
-      commandItem('window-write-mode', 'Back To Write Mode', 'cmd.project.window.switchModeWrite'),
-    );
-  }
-
-  ensureMenu('help', 'Help', []);
-}
-
 function logPerfStage(label) {
   if (!isDevMode) return;
   const elapsed = Math.round(performance.now() - launchT0);
@@ -4184,7 +4066,6 @@ function createMenu() {
   try {
     const runtimeConfig = resolveRuntimeMenuBuildConfig(mode);
     const template = buildMenuTemplateFromConfig(runtimeConfig);
-    ensureX101MenuSections(template);
     ensureAboutLicensesMenuEntry(template);
     const menu = Menu.buildFromTemplate(template);
     Menu.setApplicationMenu(menu);

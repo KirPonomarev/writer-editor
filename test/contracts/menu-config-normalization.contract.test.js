@@ -9,7 +9,7 @@ const REPO_ROOT = process.cwd();
 const SPEC_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'STATUS', 'MENU_CONFIG_NORMALIZATION_SPEC_v1.json');
 const NORMALIZER_PATH = path.join(REPO_ROOT, 'src', 'menu', 'menu-config-normalizer.js');
 const OPS_SCRIPT_PATH = path.join(REPO_ROOT, 'scripts', 'ops', 'menu-config-normalize.mjs');
-const EXAMPLE_CONFIG_PATH = path.join(REPO_ROOT, 'src', 'menu', 'menu-config.v2.example.json');
+const EXAMPLE_CONFIG_PATH = path.join(REPO_ROOT, 'src', 'menu', 'menu-config.v2.json');
 const DEFAULT_CONTEXT_PATH = path.join(REPO_ROOT, 'test', 'fixtures', 'menu', 'context.default.json');
 const FAILSIGNAL_REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'FAILSIGNALS', 'FAILSIGNAL_REGISTRY.json');
 const TOKEN_CATALOG_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'TOKENS', 'TOKEN_CATALOG.json');
@@ -152,7 +152,7 @@ test('menu normalization hash is stable for absolute and repo-relative input pat
 
     const relRun = runNormalizeCli([
       '--in',
-      'src/menu/menu-config.v2.example.json',
+      'src/menu/menu-config.v2.json',
       '--context',
       DEFAULT_CONTEXT_PATH,
       '--out',

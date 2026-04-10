@@ -29,7 +29,7 @@ const RESULT_FAIL = 'FAIL';
 const FAIL_SIGNAL_SNAPSHOT_MISMATCH = 'E_MENU_SNAPSHOT_MISMATCH';
 const FAIL_SIGNAL_RUNTIME_ARTIFACT_DIVERGENCE = 'E_MENU_RUNTIME_ARTIFACT_DIVERGENCE';
 
-const DEFAULT_IN_PATH = 'src/menu/menu-config.v2.example.json';
+const DEFAULT_IN_PATH = 'src/menu/menu-config.v2.json';
 const DEFAULT_CONTEXT_PATH = 'test/fixtures/menu/context.default.json';
 const DEFAULT_SNAPSHOT_REGISTRY_PATH = 'docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json';
 const DEFAULT_SNAPSHOT_ID = 'menu-default-desktop-minimal';
@@ -219,10 +219,9 @@ function resolveNormalizeInput(input = {}) {
   const contextPathRaw = normalizeString(input.contextPath);
   const outPathRaw = normalizeString(input.outPath);
 
-  const fallbackRequired = snapshotMode || exportMode || runtimeEquivalentMode;
   return {
-    inPath: inPathRaw || (fallbackRequired ? DEFAULT_IN_PATH : ''),
-    contextPath: contextPathRaw || (fallbackRequired ? DEFAULT_CONTEXT_PATH : ''),
+    inPath: inPathRaw || DEFAULT_IN_PATH,
+    contextPath: contextPathRaw || ((snapshotMode || exportMode || runtimeEquivalentMode) ? DEFAULT_CONTEXT_PATH : ''),
     outPath: outPathRaw,
     snapshotMode,
     exportMode,
