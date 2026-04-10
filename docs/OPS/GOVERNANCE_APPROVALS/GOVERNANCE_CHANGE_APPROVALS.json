@@ -2782,10 +2782,10 @@
     },
     {
       "filePath": "test/contracts/menu-presentation-modes.contract.test.js",
-      "sha256": "b47611254f0730d3595918b3c08d182c9550e267008dfaa26a32c7bb8226a9ec",
-      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
-      "approvedAtUtc": "2026-04-10T21:13:30.000Z",
-      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind and approvals for bounded hide/show reorder contracts."
+      "sha256": "f18d1d9f5844667603413bcd1afaa4e0e88db95e5b9802351c2fe546c70f5c5b",
+      "approvedBy": "ticket:MENU_COMPACT_ROOT_MODE_TOP_001",
+      "approvedAtUtc": "2026-04-10T21:39:08.000Z",
+      "rationale": "MENU_COMPACT_ROOT_MODE_TOP_001 approves the compact menu mode switch hoist contract update with adjacent view controls preserved."
     }
   ]
 }
