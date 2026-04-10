@@ -7,9 +7,10 @@ const {
   validateEnabledWhenAst,
 } = require('./enabledwhen-eval.js');
 
-const MENU_CONFIG_PATH = path.join(__dirname, 'menu-config.v1.json');
-const MENU_SCHEMA_PATH = path.join(__dirname, 'menu-config.schema.v1.json');
-const MENU_SCHEMA_V2_PATH = path.join(__dirname, 'menu-config.schema.v2.json');
+const MENU_CONFIG_PATH = path.join(__dirname, 'menu-config.v2.json');
+const MENU_SCHEMA_PATH = path.join(__dirname, 'menu-config.schema.v2.json');
+const MENU_SCHEMA_V1_PATH = path.join(__dirname, 'menu-config.schema.v1.json');
+const MENU_SCHEMA_V2_PATH = MENU_SCHEMA_PATH;
 const COMMAND_VISIBILITY_MATRIX_PATH = path.join(__dirname, '..', '..', 'docs', 'OPS', 'STATUS', 'COMMAND_VISIBILITY_MATRIX.json');
 const MENU_FALLBACK_MESSAGE = 'Safe fallback menu will be used.';
 const MENU_DEFAULT_MODE = ['offline'];
@@ -504,7 +505,7 @@ function loadAndValidateMenuConfig(options = {}) {
 
   const configVersion = detectMenuConfigVersion(configParsed.value);
   const schemaPath =
-    options.schemaPath || (configVersion === 'v2' ? MENU_SCHEMA_V2_PATH : MENU_SCHEMA_PATH);
+    options.schemaPath || (configVersion === 'v2' ? MENU_SCHEMA_V2_PATH : MENU_SCHEMA_V1_PATH);
 
   let schemaRaw;
   try {
@@ -577,6 +578,7 @@ module.exports = {
   COMMAND_VISIBILITY_MATRIX_PATH,
   MENU_CONFIG_PATH,
   MENU_SCHEMA_PATH,
+  MENU_SCHEMA_V1_PATH,
   MENU_SCHEMA_V2_PATH,
   MENU_FALLBACK_MESSAGE,
   detectMenuConfigVersion,

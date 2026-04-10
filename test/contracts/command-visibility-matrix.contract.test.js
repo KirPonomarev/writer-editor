@@ -54,7 +54,7 @@ test('missing-visibility-matrix-ssot: matrix file exists and has mandatory MVP s
 test('command-visibility-matrix: validator/normalizer wiring exposes matrix version', () => {
   const { loadAndValidateMenuConfig } = require(VALIDATOR_PATH);
   const state = loadAndValidateMenuConfig({
-    configPath: path.join(REPO_ROOT, 'src', 'menu', 'menu-config.v2.example.json'),
+    configPath: path.join(REPO_ROOT, 'src', 'menu', 'menu-config.v2.json'),
   });
   assert.equal(state.ok, true, JSON.stringify(state.errors, null, 2));
   assert.equal(typeof state.normalizedConfig.visibilityMatrixVersion, 'string');

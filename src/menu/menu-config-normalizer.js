@@ -721,7 +721,6 @@ function normalizeNode(node, context, canon, visibilityMatrix, diagnostics, path
       diagnostics,
       `${pathRef}.items[${index}]`,
     ));
-    out.items.sort((a, b) => String(a.id || '').localeCompare(String(b.id || '')));
   }
 
   return out;
@@ -778,8 +777,6 @@ function normalizeMenuConfigPipeline(input = {}) {
     diagnostics,
     `$.menus[${index}]`,
   ));
-
-  normalizedMenus.sort((a, b) => String(a.id || '').localeCompare(String(b.id || '')));
 
   const normalizedConfig = {
     normalizedShapeVersion: normalizeString(spec.normalizedShapeVersion) || 'v1',

@@ -194,7 +194,7 @@
       "src/renderer/editor.js",
       "src/menu/menu-config-validator.js",
       "src/menu/menu-config.schema.v2.json",
-      "src/menu/menu-config.v2.example.json",
+      "src/menu/menu-config.v2.json",
       "src/menu/command-namespace-canon.js",
       "src/menu/enabledwhen-eval.js",
       "src/menu/menu-artifact-lock.js",

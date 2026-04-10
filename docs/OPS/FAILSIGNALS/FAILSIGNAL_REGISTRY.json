@@ -903,7 +903,7 @@
       "negativeTestRef": "test/contracts/stage-axis-lock.contract.test.js#stage-x5-is-rejected-by-runtime-validator",
       "precedence": 66,
       "rationale": "Runtime stage axis is locked to X0..X4; any X5+ acceptance in schema, validator, defaults, or contract path is drift.",
-      "sourceBinding": "src/menu/menu-config.schema.v2.json + src/menu/menu-config-validator.js + src/menu/menu-config.v2.example.json",
+      "sourceBinding": "src/menu/menu-config.schema.v2.json + src/menu/menu-config-validator.js + src/menu/menu-config.v2.json",
       "tier": "release"
     },
     {

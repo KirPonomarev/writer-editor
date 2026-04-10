@@ -428,7 +428,7 @@ function runMenuConfigNormalizationGuard(rootDir, isPromotionMode) {
     [
       'scripts/ops/menu-config-normalize.mjs',
       '--in',
-      'src/menu/menu-config.v2.example.json',
+      'src/menu/menu-config.v2.json',
       '--context',
       'test/fixtures/menu/context.default.json',
       '--out',
