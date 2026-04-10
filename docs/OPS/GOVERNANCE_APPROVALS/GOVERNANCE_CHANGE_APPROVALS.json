@@ -2719,31 +2719,31 @@
     },
     {
       "filePath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-      "sha256": "cb459feb0e9cbe54f9db8277fe0192bd8936596fa83fb8915ae0ef42c6345173",
-      "approvedBy": "ticket:MENU_I18N_001",
-      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
-      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+      "sha256": "08633278d53e1a121fe51e064b1c391a92ff801da7a64cd661b6c9bb4895424f",
+      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
+      "approvedAtUtc": "2026-04-10T21:16:30.000Z",
+      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind for regenerated menu artifact."
     },
     {
       "filePath": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
-      "sha256": "bb535d369aafd907b88eb7ce0bb7f968f8b53c4b3fd78a32bdc2a6f80f2c4253",
-      "approvedBy": "ticket:MENU_I18N_001",
-      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
-      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+      "sha256": "d1e067b19a37a317273aa56ee979b8f51ed732222366dabe80527336e810117f",
+      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
+      "approvedAtUtc": "2026-04-10T21:16:30.000Z",
+      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind for regenerated menu artifact lock."
     },
     {
       "filePath": "docs/OPS/STATUS/MENU_CONFIG_NORMALIZATION_SPEC_v1.json",
-      "sha256": "256620104f24855bfb00746d94b605d42d50e9914f19ceb6b6733e869708b301",
-      "approvedBy": "ticket:MENU_I18N_001",
-      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
-      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+      "sha256": "51e5510093e5c4b4daf0a83828ebeefe7d0481b2270800ce8812aefc4d4994d4",
+      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
+      "approvedAtUtc": "2026-04-10T21:16:30.000Z",
+      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind for normalization spec shape update."
     },
     {
       "filePath": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
-      "sha256": "ab61780617ec145af052f06adb655473f995bcb789be2389d5e4f2b4168d2245",
-      "approvedBy": "ticket:MENU_I18N_001",
-      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
-      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+      "sha256": "9a0a370dadb15bbf60af8b956475fc0f59b7a1cdfd90de43ce1347b2a2fda47c",
+      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
+      "approvedAtUtc": "2026-04-10T21:16:30.000Z",
+      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind for regenerated snapshot registry."
     },
     {
       "filePath": "scripts/ops/menu-config-normalize.mjs",
@@ -2753,32 +2753,39 @@
       "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
     },
     {
-      "filePath": "test/contracts/menu-config-normalization.contract.test.js",
-      "sha256": "dcf588c4a19889279c7b47f7a6df7d871e1330ec11b71449ed01f18ffd08ef92",
-      "approvedBy": "ticket:MENU_I18N_001",
-      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
-      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
-    },
-    {
-      "filePath": "test/contracts/menu-locale.contract.test.js",
-      "sha256": "c4dc0c60f79d5c8a8c20b3c141d919a319bcabff99eeb551ee7b0ee56c6db419",
-      "approvedBy": "ticket:MENU_I18N_001",
-      "approvedAtUtc": "2026-04-10T20:15:12.000Z",
-      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
-    },
-    {
-      "filePath": "test/contracts/menu-presentation-modes.contract.test.js",
-      "sha256": "b6c42bc9b6c0a4d505afc0966d8d579a18c6b43ced1fe293892ee27ab151b6c0",
-      "approvedBy": "ticket:MENU_I18N_001",
-      "approvedAtUtc": "2026-04-10T20:16:44.000Z",
-      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
-    },
-    {
       "filePath": "test/contracts/menu-snapshot-freeze-promotion.contract.test.js",
       "sha256": "2c5b9113f5ff60db28574570e0d5897242b85451cc617d90dbfa80efcd0a056d",
       "approvedBy": "ticket:MENU_I18N_001",
       "approvedAtUtc": "2026-04-10T19:56:31.112Z",
       "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "test/contracts/menu-config-normalization.contract.test.js",
+      "sha256": "b641fe7c2616fb75cb0e705068f051af2c8897ac5c9d3f2cad32b0847c90312d",
+      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
+      "approvedAtUtc": "2026-04-10T21:13:30.000Z",
+      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind and approvals for bounded hide/show reorder contracts."
+    },
+    {
+      "filePath": "test/contracts/menu-hide-show-reorder.contract.test.js",
+      "sha256": "fea43a01bcb3292bc5943fb28c81418cef08fcf44bacaadb458cc04b8d2bf12b",
+      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
+      "approvedAtUtc": "2026-04-10T21:13:30.000Z",
+      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind and approvals for bounded hide/show reorder contracts."
+    },
+    {
+      "filePath": "test/contracts/menu-locale.contract.test.js",
+      "sha256": "6a61cda2c370b421fc1d20fd08d4d09e5e2837b487a75c9feb3ea8f26c74ac03",
+      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
+      "approvedAtUtc": "2026-04-10T21:13:30.000Z",
+      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind and approvals for bounded hide/show reorder contracts."
+    },
+    {
+      "filePath": "test/contracts/menu-presentation-modes.contract.test.js",
+      "sha256": "b47611254f0730d3595918b3c08d182c9550e267008dfaa26a32c7bb8226a9ec",
+      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
+      "approvedAtUtc": "2026-04-10T21:13:30.000Z",
+      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind and approvals for bounded hide/show reorder contracts."
     }
   ]
 }

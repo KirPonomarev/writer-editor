@@ -72,6 +72,36 @@
       "ru": "Английский",
       "en": "English"
     },
+    "menu.view.customization": {
+      "base": "Menu Customization",
+      "ru": "Настройка меню",
+      "en": "Menu Customization"
+    },
+    "menu.view.customization.visibility": {
+      "base": "Visibility",
+      "ru": "Видимость",
+      "en": "Visibility"
+    },
+    "menu.view.customization.order": {
+      "base": "Order",
+      "ru": "Порядок",
+      "en": "Order"
+    },
+    "menu.view.customization.reset": {
+      "base": "Reset Menu Customization",
+      "ru": "Сбросить настройку меню",
+      "en": "Reset Menu Customization"
+    },
+    "menu.view.customization.moveEarlier": {
+      "base": "Move Earlier",
+      "ru": "Переместить выше",
+      "en": "Move Earlier"
+    },
+    "menu.view.customization.moveLater": {
+      "base": "Move Later",
+      "ru": "Переместить ниже",
+      "en": "Move Later"
+    },
     "menu.view.safeReset": {
       "base": "Safe Reset",
       "ru": "Безопасный сброс",
