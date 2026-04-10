@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "snapshotId": "menu-default-desktop-minimal",
-  "normalizedHashSha256": "9a2ce7eec05da4e636faa80d18920157c729f07e6fcf7eaca2f5226780d3f1b9",
-  "generatedAt": "2026-04-10T16:40:09.639Z",
-  "generatedFromCommit": "f15fbf75ef45e1c7356c8a0b76bc3e4ba7a7bcfa",
+  "normalizedHashSha256": "b2bb94b2a7298067e512651d3db5b84959bef6100dc638dde15101b3aedc805a",
+  "generatedAt": "2026-04-10T18:34:24.378Z",
+  "generatedFromCommit": "41e3c6a68dc25f55a2bfe8e2a0b6c7372e2fb806",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
@@ -24,6 +24,8 @@
     "cmd.project.view.openSettings",
     "cmd.project.view.restoreLastStable",
     "cmd.project.view.safeReset",
+    "cmd.project.view.setMenuPresentationClassic",
+    "cmd.project.view.setMenuPresentationCompact",
     "cmd.project.window.switchModeWrite"
   ],
   "menus": [
@@ -220,6 +222,95 @@
           },
           "id": "view-settings",
           "label": "Settings",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X0",
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": null,
+          "disabledReasonCode": null,
+          "enabledWhenAst": null,
+          "id": "view-presentation-mode",
+          "items": [
+            {
+              "canonicalCmdId": "cmd.project.view.setMenuPresentationClassic",
+              "disabledReasonCode": null,
+              "enabledWhenAst": {
+                "args": [],
+                "op": "all"
+              },
+              "id": "view-presentation-classic",
+              "label": "Classic",
+              "mode": [
+                "offline"
+              ],
+              "origin": "base",
+              "profile": [
+                "minimal",
+                "pro",
+                "guru"
+              ],
+              "sourceRefs": [
+                "src/menu/menu-config.v2.json"
+              ],
+              "stage": [
+                "X0",
+                "X1",
+                "X2",
+                "X3",
+                "X4"
+              ],
+              "visibilityPolicy": "visible_enabled"
+            },
+            {
+              "canonicalCmdId": "cmd.project.view.setMenuPresentationCompact",
+              "disabledReasonCode": null,
+              "enabledWhenAst": {
+                "args": [],
+                "op": "all"
+              },
+              "id": "view-presentation-compact",
+              "label": "Compact",
+              "mode": [
+                "offline"
+              ],
+              "origin": "base",
+              "profile": [
+                "minimal",
+                "pro",
+                "guru"
+              ],
+              "sourceRefs": [
+                "src/menu/menu-config.v2.json"
+              ],
+              "stage": [
+                "X0",
+                "X1",
+                "X2",
+                "X3",
+                "X4"
+              ],
+              "visibilityPolicy": "visible_enabled"
+            }
+          ],
+          "label": "Presentation Mode",
           "mode": [
             "offline"
           ],

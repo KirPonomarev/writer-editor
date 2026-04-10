@@ -91,6 +91,22 @@
           "command": "cmd.project.view.openSettings"
         },
         {
+          "id": "view-presentation-mode",
+          "label": "Presentation Mode",
+          "items": [
+            {
+              "id": "view-presentation-classic",
+              "label": "Classic",
+              "command": "cmd.project.view.setMenuPresentationClassic"
+            },
+            {
+              "id": "view-presentation-compact",
+              "label": "Compact",
+              "command": "cmd.project.view.setMenuPresentationCompact"
+            }
+          ]
+        },
+        {
           "id": "view-safe-reset",
           "label": "Safe Reset",
           "command": "cmd.project.view.safeReset"

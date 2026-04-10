@@ -140,6 +140,13 @@ function logPerfStage(label) {
 let diskQueue = Promise.resolve();
 const pendingTextRequests = new Map();
 let currentFontSize = 16;
+const MENU_PRESENTATION_MODE_CLASSIC = 'classic';
+const MENU_PRESENTATION_MODE_COMPACT = 'compact';
+const MENU_PRESENTATION_MODE_SETTING_KEY = 'menuPresentationMode';
+const MENU_PRESENTATION_COMPACT_ROOT_ID = 'compact-root';
+const MENU_PRESENTATION_COMMAND_CLASSIC = 'cmd.project.view.setMenuPresentationClassic';
+const MENU_PRESENTATION_COMMAND_COMPACT = 'cmd.project.view.setMenuPresentationCompact';
+let currentMenuPresentationMode = MENU_PRESENTATION_MODE_CLASSIC;
 const USER_DATA_FOLDER_NAME = 'craftsman';
 const LEGACY_USER_DATA_FOLDER_NAME = 'WriterEditor';
 const MIGRATION_MARKER = '.migrated-from-writer-editor';
@@ -682,6 +689,57 @@ async function loadSettings() {
     return JSON.parse(data);
   } catch (error) {
     return {};
+  }
+}
+
+function normalizeMenuPresentationMode(value) {
+  if (typeof value !== 'string') {
+    return MENU_PRESENTATION_MODE_CLASSIC;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (normalized === MENU_PRESENTATION_MODE_COMPACT) {
+    return MENU_PRESENTATION_MODE_COMPACT;
+  }
+  return MENU_PRESENTATION_MODE_CLASSIC;
+}
+
+async function loadMenuPresentationModeFromSettings() {
+  try {
+    const settings = await loadSettings();
+    currentMenuPresentationMode = normalizeMenuPresentationMode(
+      settings[MENU_PRESENTATION_MODE_SETTING_KEY]
+    );
+  } catch {
+    currentMenuPresentationMode = MENU_PRESENTATION_MODE_CLASSIC;
+  }
+}
+
+async function setMenuPresentationMode(mode) {
+  const nextMode = normalizeMenuPresentationMode(mode);
+  let persisted = false;
+
+  currentMenuPresentationMode = nextMode;
+  try {
+    const settings = await loadSettings();
+    settings[MENU_PRESENTATION_MODE_SETTING_KEY] = nextMode;
+    await saveSettings(settings);
+    persisted = true;
+  } catch (error) {
+    logDevError('setMenuPresentationMode:saveSettings', error);
+  }
+
+  try {
+    createMenu();
+    return { ok: true, persisted, menuPresentationMode: nextMode };
+  } catch (error) {
+    logDevError('setMenuPresentationMode:createMenu', error);
+    return {
+      ok: false,
+      persisted,
+      menuPresentationMode: nextMode,
+      reason: 'MENU_REBUILD_FAILED',
+    };
   }
 }
 
@@ -3532,6 +3590,12 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     );
     return { ok: delivered };
   },
+  [MENU_PRESENTATION_COMMAND_CLASSIC]: async () => {
+    return setMenuPresentationMode(MENU_PRESENTATION_MODE_CLASSIC);
+  },
+  [MENU_PRESENTATION_COMMAND_COMPACT]: async () => {
+    return setMenuPresentationMode(MENU_PRESENTATION_MODE_COMPACT);
+  },
   'cmd.project.document.open': async (payload = {}) => {
     return handleUiOpenDocumentCommand(payload);
   },
@@ -3918,6 +3982,57 @@ function buildFontSubmenu(config) {
   });
 }
 
+function cloneMenuTemplateItem(item) {
+  if (!item || typeof item !== 'object') {
+    return item;
+  }
+
+  const cloned = { ...item };
+  if (Array.isArray(item.submenu)) {
+    cloned.submenu = item.submenu.map((child) => cloneMenuTemplateItem(child));
+  }
+  return cloned;
+}
+
+function buildCompactMenuTemplate(template) {
+  const fileMenu = template.find((item) => item && item.id === 'file');
+  if (!fileMenu || !Array.isArray(fileMenu.submenu)) {
+    return template.map((item) => cloneMenuTemplateItem(item));
+  }
+
+  const compactRootSubmenu = fileMenu.submenu.map((item) => cloneMenuTemplateItem(item));
+  const nestedGroups = template
+    .filter((item) => item && item.id !== 'file')
+    .map((item) => cloneMenuTemplateItem(item));
+
+  if (compactRootSubmenu.length > 0 && nestedGroups.length > 0) {
+    compactRootSubmenu.push({ type: 'separator' });
+  }
+  compactRootSubmenu.push(...nestedGroups);
+
+  const compactRoot = {
+    id: MENU_PRESENTATION_COMPACT_ROOT_ID,
+    label: fileMenu.label,
+    submenu: compactRootSubmenu,
+  };
+
+  if (process.platform === 'darwin') {
+    return [
+      { role: 'appMenu' },
+      compactRoot,
+    ];
+  }
+
+  return [compactRoot];
+}
+
+function applyMenuPresentation(template) {
+  if (currentMenuPresentationMode !== MENU_PRESENTATION_MODE_COMPACT) {
+    return template;
+  }
+  return buildCompactMenuTemplate(template);
+}
+
 function buildMenuItemFromConfig(item, config, location) {
   if (!item || typeof item !== 'object' || Array.isArray(item)) {
     throw new Error(`Invalid menu item at ${location}`);
@@ -4017,6 +4132,13 @@ function buildMenuItemFromConfig(item, config, location) {
     if (!resolved.ok) {
       throw new Error(`Menu command namespace validation failed at ${location}`);
     }
+    if (resolved.commandId === MENU_PRESENTATION_COMMAND_CLASSIC
+      || resolved.commandId === MENU_PRESENTATION_COMMAND_COMPACT) {
+      built.type = 'radio';
+      built.checked = resolved.commandId === MENU_PRESENTATION_COMMAND_CLASSIC
+        ? currentMenuPresentationMode === MENU_PRESENTATION_MODE_CLASSIC
+        : currentMenuPresentationMode === MENU_PRESENTATION_MODE_COMPACT;
+    }
     built.click = buildCommandClickHandler(resolved.commandId, {
       actionArg: item.actionArg
     });
@@ -4067,7 +4189,7 @@ function createMenu() {
     const runtimeConfig = resolveRuntimeMenuBuildConfig(mode);
     const template = buildMenuTemplateFromConfig(runtimeConfig);
     ensureAboutLicensesMenuEntry(template);
-    const menu = Menu.buildFromTemplate(template);
+    const menu = Menu.buildFromTemplate(applyMenuPresentation(template));
     Menu.setApplicationMenu(menu);
   } catch (error) {
     logDevError('createMenu', error);
@@ -4096,6 +4218,7 @@ app.whenReady().then(async () => {
   await ensureUserDataFolder();
   installContentSecurityPolicy();
   const windowStatePromise = loadWindowStateFromSettings();
+  const menuPresentationModePromise = loadMenuPresentationModeFromSettings();
   const initPromise = initializeApp()
     .then(() => {
       logPerfStage('init-complete');
@@ -4105,6 +4228,7 @@ app.whenReady().then(async () => {
     });
 
   await windowStatePromise;
+  await menuPresentationModePromise;
   logPerfStage('window-state-loaded');
   createWindow();
   try {

@@ -3,10 +3,10 @@
   "snapshots": [
     {
       "id": "menu-default-desktop-minimal",
-      "normalizedHashSha256": "9a2ce7eec05da4e636faa80d18920157c729f07e6fcf7eaca2f5226780d3f1b9",
+      "normalizedHashSha256": "b2bb94b2a7298067e512651d3db5b84959bef6100dc638dde15101b3aedc805a",
       "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
-      "createdAt": "2026-04-10T16:40:15.778Z",
-      "createdFromCommit": "f15fbf75ef45e1c7356c8a0b76bc3e4ba7a7bcfa"
+      "createdAt": "2026-04-10T18:34:24.321Z",
+      "createdFromCommit": "41e3c6a68dc25f55a2bfe8e2a0b6c7372e2fb806"
     }
   ]
 }
