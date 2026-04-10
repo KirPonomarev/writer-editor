@@ -2779,6 +2779,34 @@
       "approvedBy": "ticket:MENU_I18N_001",
       "approvedAtUtc": "2026-04-10T19:56:31.112Z",
       "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+    },
+    {
+      "filePath": "test/contracts/menu-config-normalization.contract.test.js",
+      "sha256": "17c926333b1f1944ca13450bda9fd32de5873bd8f3b6dfb2d2c38927e7337fa6",
+      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
+      "approvedAtUtc": "2026-04-10T20:58:38.000Z",
+      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind and approvals for bounded hide/show reorder contracts."
+    },
+    {
+      "filePath": "test/contracts/menu-hide-show-reorder.contract.test.js",
+      "sha256": "7452e03df6b46a339c82a3563f0d012e17936005454f32f52da4ede6cf3da28c",
+      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
+      "approvedAtUtc": "2026-04-10T20:58:38.000Z",
+      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind and approvals for bounded hide/show reorder contracts."
+    },
+    {
+      "filePath": "test/contracts/menu-locale.contract.test.js",
+      "sha256": "00188048cf44a6085ac35cb7e70b778339107003fb7794ffd87e4dc28819c2bd",
+      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
+      "approvedAtUtc": "2026-04-10T20:58:38.000Z",
+      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind and approvals for bounded hide/show reorder contracts."
+    },
+    {
+      "filePath": "test/contracts/menu-presentation-modes.contract.test.js",
+      "sha256": "6aa544d5ab893a8be4632e5f114c64bb9783f4b3749c6eb0ee7d4597c1f21f79",
+      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
+      "approvedAtUtc": "2026-04-10T20:58:38.000Z",
+      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind and approvals for bounded hide/show reorder contracts."
     }
   ]
 }

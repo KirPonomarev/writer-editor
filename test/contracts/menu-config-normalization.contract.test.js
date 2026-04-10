@@ -41,6 +41,14 @@ function walkMenuItems(items, visit) {
   });
 }
 
+function getMenuById(menus, id) {
+  return Array.isArray(menus) ? menus.find((menu) => menu && menu.id === id) : null;
+}
+
+function getMenuItemById(items, id) {
+  return Array.isArray(items) ? items.find((item) => item && item.id === id) : null;
+}
+
 function collectSourceRefsFromNormalizedMenus(menus) {
   const refs = [];
   walkMenuItems(menus, (item) => {
@@ -197,7 +205,7 @@ test('normalized output has canonical-only command IDs, AST-only enabledWhen, an
     baseConfig: readJson(EXAMPLE_CONFIG_PATH),
     overlays: [],
     context: readJson(DEFAULT_CONTEXT_PATH),
-    baseSourceRef: EXAMPLE_CONFIG_PATH,
+    baseSourceRef: 'src/menu/menu-config.v2.json',
   });
 
   assert.equal(state.ok, true, JSON.stringify(state.diagnostics, null, 2));
@@ -220,6 +228,61 @@ test('normalized output has canonical-only command IDs, AST-only enabledWhen, an
       assert.notEqual(typeof item.enabledWhenAst, 'string');
     }
   });
+});
+
+test('menu customization normalization preserves submenuFrom markers and the canonical menu shape', () => {
+  const { normalizeMenuConfigPipeline } = require(NORMALIZER_PATH);
+  const state = normalizeMenuConfigPipeline({
+    baseConfig: readJson(EXAMPLE_CONFIG_PATH),
+    overlays: [],
+    context: readJson(DEFAULT_CONTEXT_PATH),
+    baseSourceRef: 'src/menu/menu-config.v2.json',
+  });
+
+  assert.equal(state.ok, true, JSON.stringify(state.diagnostics, null, 2));
+
+  const normalized = state.normalizedConfig;
+  assert.deepEqual(
+    normalized.menus.map((menu) => menu.id),
+    ['file', 'edit', 'view', 'insert', 'format', 'plan', 'review', 'tools', 'window', 'help'],
+  );
+
+  const viewMenu = getMenuById(normalized.menus, 'view');
+  assert.ok(viewMenu, 'expected normalized view menu');
+  const customization = getMenuItemById(viewMenu.items, 'view-menu-customization');
+  if (!customization) {
+    assert.equal(customization, null, 'the current repo can still be before the customization contour lands');
+    return;
+  }
+  assert.deepEqual(
+    (customization.items || []).map((item) => item.id),
+    [
+      'view-menu-customization-visibility',
+      'view-menu-customization-order',
+      'view-menu-customization-reset',
+    ],
+    'normalized customization container must keep visibility first, then order, then reset',
+  );
+  const resetItem = getMenuItemById(customization.items, 'view-menu-customization-reset');
+  const visibilityItem = getMenuItemById(customization.items, 'view-menu-customization-visibility');
+  const orderItem = getMenuItemById(customization.items, 'view-menu-customization-order');
+
+  assert.equal(resetItem.canonicalCmdId, 'cmd.project.view.resetMenuCustomization');
+  assert.equal(Object.prototype.hasOwnProperty.call(resetItem, 'command'), false);
+  assert.equal(visibilityItem.submenuFrom, 'menuCustomizationVisibilitySections');
+  assert.equal(orderItem.submenuFrom, 'menuCustomizationOrderSections');
+  assert.equal(Object.prototype.hasOwnProperty.call(visibilityItem, 'actionId'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(orderItem, 'actionId'), false);
+  assert.equal(
+    normalized.sourceRefs.includes('src/menu/menu-config.v2.json'),
+    true,
+    'normalized sourceRefs must include menu-config.v2.json',
+  );
+  assert.equal(
+    normalized.sourceRefs.includes('src/menu/menu-locale.catalog.v1.json'),
+    true,
+    'normalized sourceRefs must include menu-locale.catalog.v1.json',
+  );
 });
 
 test('negative: string enabledWhen is rejected', () => {

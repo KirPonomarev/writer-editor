@@ -80,11 +80,26 @@ test('menu locale contract: language switch is authored in view menu at the requ
   assert.ok(viewMenu, 'expected view menu in canonical config');
 
   const itemIds = viewMenu.items.map((item) => item.id);
-  assert.deepEqual(
-    itemIds.slice(0, 4),
-    ['view-settings', 'view-presentation-mode', 'view-language', 'view-safe-reset'],
-    'view-language must stay after presentation switch and before safe reset',
-  );
+  const customizationIndex = itemIds.indexOf('view-menu-customization');
+  if (customizationIndex === -1) {
+    assert.deepEqual(
+      itemIds.slice(0, 4),
+      ['view-settings', 'view-presentation-mode', 'view-language', 'view-safe-reset'],
+      'view-language must stay after presentation switch and before safe reset until the customization surface lands',
+    );
+  } else {
+    assert.deepEqual(
+      itemIds.slice(0, 5),
+      [
+        'view-settings',
+        'view-presentation-mode',
+        'view-language',
+        'view-menu-customization',
+        'view-safe-reset',
+      ],
+      'view-language must stay before bounded customization and safe reset',
+    );
+  }
 
   const languageSwitch = viewMenu.items.find((item) => item.id === 'view-language');
   assert.ok(languageSwitch, 'expected view-language container');
@@ -137,11 +152,16 @@ test('menu locale contract: main runtime applies locale before presentation and 
   assert.match(mainText, /\[MENU_LOCALE_COMMAND_EN\]: async \(\) => \{\s*return setMenuLocale\(MENU_LOCALE_MODE_EN\);\s*\}/m);
   assert.ok(mainText.includes('const localizedConfig = applyMenuLocale(runtimeConfig);'));
   assert.ok(mainText.includes('const template = buildMenuTemplateFromConfig(localizedConfig);'));
+  assert.ok(mainText.includes('const customizedTemplate = applyMenuCustomization(template, localizedConfig);'));
 
   const applyLocaleIndex = mainText.indexOf('const localizedConfig = applyMenuLocale(runtimeConfig);');
-  const applyPresentationIndex = mainText.indexOf('Menu.buildFromTemplate(applyMenuPresentation(template))');
+  const applyTemplateIndex = mainText.indexOf('const template = buildMenuTemplateFromConfig(localizedConfig);');
+  const applyCustomizationIndex = mainText.indexOf('const customizedTemplate = applyMenuCustomization(template, localizedConfig);');
+  const applyPresentationIndex = mainText.indexOf('Menu.buildFromTemplate(applyMenuPresentation(customizedTemplate))');
   assert.ok(applyLocaleIndex >= 0, 'applyMenuLocale must be present in createMenu');
-  assert.ok(applyPresentationIndex > applyLocaleIndex, 'locale application must happen before presentation projection');
+  assert.ok(applyTemplateIndex > applyLocaleIndex, 'menu template build must happen after locale application');
+  assert.ok(applyCustomizationIndex > applyTemplateIndex, 'menu customization must happen after template build');
+  assert.ok(applyPresentationIndex > applyCustomizationIndex, 'presentation projection must happen after customization');
 
   assert.ok(mainText.includes('const menuLocalePromise = loadMenuLocaleFromSettings();'));
   assert.ok(mainText.includes('await menuLocalePromise;'));
