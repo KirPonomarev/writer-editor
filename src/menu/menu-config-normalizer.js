@@ -11,6 +11,9 @@ const {
   validateEnabledWhenAst,
 } = require('./enabledwhen-eval.js');
 const {
+  loadAndValidateMenuLocaleCatalog,
+} = require('./menu-config-validator.js');
+const {
   normalizePluginOverlays,
 } = require('./plugin-overlays-loader.js');
 
@@ -58,6 +61,8 @@ const ORIGIN_ORDER = Object.freeze(DEFAULT_STACK_ORDER.reduce((acc, origin, inde
 const DEFAULT_MODE = ['offline'];
 const DEFAULT_PROFILE = ['minimal', 'pro', 'guru'];
 const DEFAULT_STAGE = ['X0', 'X1', 'X2', 'X3', 'X4'];
+const DEFAULT_MENU_LOCALES = Object.freeze(['base', 'ru', 'en']);
+const DEFAULT_LOCALE_CATALOG_SOURCE_REF = 'src/menu/menu-locale.catalog.v1.json';
 const DEFAULT_ENABLED_WHEN_AST = Object.freeze({ op: 'all', args: Object.freeze([]) });
 const STAGE_SET = new Set(DEFAULT_STAGE);
 const OVERLAY_ALLOWED_ORIGINS = new Set(Object.keys(ORIGIN_ORDER));
@@ -217,6 +222,68 @@ function createDiagnostic(code, message, details = {}) {
     code,
     message,
     ...details,
+  };
+}
+
+function normalizeMenuLocaleCatalog(inputCatalog = {}) {
+  const source = isPlainObject(inputCatalog) ? inputCatalog : {};
+  const entriesSource = isPlainObject(source.entries) ? source.entries : {};
+  const entries = {};
+
+  for (const [rawLabelKey, rawEntry] of Object.entries(entriesSource)) {
+    const labelKey = normalizeString(rawLabelKey);
+    if (!labelKey || !isPlainObject(rawEntry)) continue;
+    entries[labelKey] = {
+      base: normalizeString(rawEntry.base),
+      ru: normalizeString(rawEntry.ru),
+      en: normalizeString(rawEntry.en),
+    };
+  }
+
+  return {
+    version: normalizeString(source.version) || 'v1',
+    locales: [...DEFAULT_MENU_LOCALES],
+    entries,
+  };
+}
+
+function resolveMenuLocaleCatalog(input = {}, diagnostics) {
+  const embeddedCatalog = isPlainObject(input.localeCatalog)
+    ? input.localeCatalog
+    : (isPlainObject(input.baseConfig) && isPlainObject(input.baseConfig.localeCatalog)
+      ? input.baseConfig.localeCatalog
+      : null);
+  if (embeddedCatalog) {
+    return {
+      ok: true,
+      sourceRef: normalizeString(input.localeCatalogSourceRef) || DEFAULT_LOCALE_CATALOG_SOURCE_REF,
+      catalog: normalizeMenuLocaleCatalog(embeddedCatalog),
+    };
+  }
+
+  const validation = loadAndValidateMenuLocaleCatalog({
+    catalogPath: input.localeCatalogPath,
+  });
+  if (!validation.ok || !validation.catalog) {
+    diagnostics.errors.push(createDiagnostic(
+      'E_MENU_LOCALE_CATALOG_INVALID',
+      `Menu locale catalog validation failed: ${validation.failReason || 'INVALID_CATALOG'}`,
+      {
+        path: DEFAULT_LOCALE_CATALOG_SOURCE_REF,
+        errors: Array.isArray(validation.errors) ? validation.errors.map((entry) => entry.code) : [],
+      },
+    ));
+    return {
+      ok: false,
+      sourceRef: DEFAULT_LOCALE_CATALOG_SOURCE_REF,
+      catalog: normalizeMenuLocaleCatalog(),
+    };
+  }
+
+  return {
+    ok: true,
+    sourceRef: DEFAULT_LOCALE_CATALOG_SOURCE_REF,
+    catalog: normalizeMenuLocaleCatalog(validation.catalog),
   };
 }
 
@@ -660,11 +727,12 @@ function evaluateVisibilityPolicy({
   };
 }
 
-function normalizeNode(node, context, canon, visibilityMatrix, diagnostics, pathRef) {
+function normalizeNode(node, context, canon, visibilityMatrix, localeCatalog, diagnostics, pathRef) {
   const id = normalizeString(node.id) || pathRef.replace(/[^a-zA-Z0-9._-]/g, '_');
   const modeGate = normalizeStringArray(node.mode, DEFAULT_MODE).map((value) => value.toLowerCase());
   const profileGate = normalizeStringArray(node.profile, DEFAULT_PROFILE).map((value) => value.toLowerCase());
   const stageGate = normalizeStringArray(node.stage, DEFAULT_STAGE);
+  const labelKey = normalizeString(node.labelKey);
 
   stageGate.forEach((stageValue) => {
     if (!STAGE_SET.has(stageValue)) {
@@ -707,7 +775,38 @@ function normalizeNode(node, context, canon, visibilityMatrix, diagnostics, path
     stage: stageGate,
   };
 
-  if (typeof node.label === 'string' && node.label.length > 0) out.label = node.label;
+  if (typeof node.label === 'string' && node.label.length > 0) {
+    out.label = node.label;
+    if (!labelKey) {
+      diagnostics.errors.push(createDiagnostic(
+        'E_MENU_LOCALE_LABELKEY_REQUIRED',
+        'Menu item with label must declare labelKey.',
+        { path: pathRef, id },
+      ));
+    } else {
+      const localeEntry = isPlainObject(localeCatalog?.entries) ? localeCatalog.entries[labelKey] : null;
+      out.labelKey = labelKey;
+      if (!isPlainObject(localeEntry)) {
+        diagnostics.errors.push(createDiagnostic(
+          'E_MENU_LOCALE_ENTRY_MISSING',
+          `Missing locale catalog entry for labelKey "${labelKey}".`,
+          { path: pathRef, id, labelKey },
+        ));
+      } else if (normalizeString(localeEntry.base) !== normalizeString(node.label)) {
+        diagnostics.errors.push(createDiagnostic(
+          'E_MENU_LOCALE_BASE_LABEL_MISMATCH',
+          `Base locale text must match canonical label for "${labelKey}".`,
+          { path: pathRef, id, labelKey, expectedBase: node.label, actualBase: localeEntry.base },
+        ));
+      }
+    }
+  } else if (labelKey) {
+    diagnostics.errors.push(createDiagnostic(
+      'E_MENU_LOCALE_LABEL_REQUIRED',
+      'labelKey cannot be declared without label.',
+      { path: pathRef, id, labelKey },
+    ));
+  }
   if (typeof node.type === 'string' && node.type.length > 0) out.type = node.type;
   if (typeof node.role === 'string' && node.role.length > 0) out.role = node.role;
   if (typeof node.accelerator === 'string' && node.accelerator.length > 0) out.accelerator = node.accelerator;
@@ -718,6 +817,7 @@ function normalizeNode(node, context, canon, visibilityMatrix, diagnostics, path
       context,
       canon,
       visibilityMatrix,
+      localeCatalog,
       diagnostics,
       `${pathRef}.items[${index}]`,
     ));
@@ -768,20 +868,36 @@ function normalizeMenuConfigPipeline(input = {}) {
   const canon = getCommandNamespaceCanon();
   const visibilityMatrix = getVisibilityMatrix();
   const spec = getNormalizationSpec();
+  const localeCatalogState = resolveMenuLocaleCatalog(input, diagnostics);
+  const localeCatalog = localeCatalogState.catalog;
 
   const normalizedMenus = baseConfigInput.menus.map((node, index) => normalizeNode(
     node,
     context,
     canon,
     visibilityMatrix,
+    localeCatalog,
     diagnostics,
     `$.menus[${index}]`,
   ));
+  const rootSourceRefs = new Set([
+    baseSourceRef,
+    localeCatalogState.sourceRef,
+  ]);
+  normalizedMenus.forEach((node) => {
+    if (!isPlainObject(node) || !Array.isArray(node.sourceRefs)) return;
+    node.sourceRefs.forEach((sourceRef) => {
+      const normalizedRef = normalizeString(sourceRef);
+      if (normalizedRef) rootSourceRefs.add(normalizedRef);
+    });
+  });
 
   const normalizedConfig = {
     normalizedShapeVersion: normalizeString(spec.normalizedShapeVersion) || 'v1',
     menuConfigVersion: normalizeString(baseConfigInput.version) || 'v2',
     visibilityMatrixVersion: visibilityMatrix.version,
+    localeCatalog,
+    sourceRefs: [...rootSourceRefs].sort((a, b) => a.localeCompare(b)),
     menus: normalizedMenus,
   };
   const overlayStackApplied = [

@@ -9,6 +9,7 @@ const REPO_ROOT = process.cwd();
 const OPS_SCRIPT_PATH = path.join(REPO_ROOT, 'scripts', 'ops', 'menu-config-normalize.mjs');
 const SNAPSHOT_REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'STATUS', 'MENU_SNAPSHOT_REGISTRY.json');
 const EXAMPLE_CONFIG_PATH = path.join(REPO_ROOT, 'src', 'menu', 'menu-config.v2.json');
+const LOCALE_CATALOG_PATH = path.join(REPO_ROOT, 'src', 'menu', 'menu-locale.catalog.v1.json');
 const DEFAULT_CONTEXT_PATH = path.join(REPO_ROOT, 'test', 'fixtures', 'menu', 'context.default.json');
 const FAILSIGNAL_REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'FAILSIGNALS', 'FAILSIGNAL_REGISTRY.json');
 const TOKEN_CATALOG_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'TOKENS', 'TOKEN_CATALOG.json');
@@ -151,7 +152,12 @@ test('snapshot-check release warns and promotion fails on mismatch', () => {
     assert.equal(create.status, 0, `${create.stdout}\n${create.stderr}`);
 
     const mutatedConfig = readJson(EXAMPLE_CONFIG_PATH);
+    mutatedConfig.localeCatalog = readJson(LOCALE_CATALOG_PATH);
     mutatedConfig.menus[0].items[0].label = 'Открыть проект (mismatch)';
+    mutatedConfig.localeCatalog.entries['menu.file.open'] = {
+      ...mutatedConfig.localeCatalog.entries['menu.file.open'],
+      base: 'Открыть проект (mismatch)',
+    };
     writeJson(mutatedConfigPath, mutatedConfig);
 
     const release = runNormalizeCli([
@@ -253,15 +259,22 @@ test('determinism guard: two snapshot-check runs keep same hash and overlay-like
     assert.equal(payloadA.normalizedHashSha256, payloadB.normalizedHashSha256);
 
     const overlayLikeConfig = readJson(EXAMPLE_CONFIG_PATH);
+    overlayLikeConfig.localeCatalog = readJson(LOCALE_CATALOG_PATH);
     overlayLikeConfig.menus[0].items.push({
       id: 'file-overlay-extra',
       label: 'Overlay Extra',
+      labelKey: 'menu.test.overlayExtra',
       actionId: 'saveDocument',
       mode: ['offline'],
       profile: ['minimal', 'pro', 'guru'],
       stage: ['X1', 'X2', 'X3', 'X4'],
       enabledWhen: { op: 'all', args: [] },
     });
+    overlayLikeConfig.localeCatalog.entries['menu.test.overlayExtra'] = {
+      base: 'Overlay Extra',
+      ru: 'Оверлей экстра',
+      en: 'Overlay Extra',
+    };
     writeJson(overlayLikeConfigPath, overlayLikeConfig);
 
     const mismatch = runNormalizeCli([

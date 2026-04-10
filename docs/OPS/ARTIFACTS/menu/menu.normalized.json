@@ -1,15 +1,196 @@
 {
   "schemaVersion": 1,
   "snapshotId": "menu-default-desktop-minimal",
-  "normalizedHashSha256": "b2bb94b2a7298067e512651d3db5b84959bef6100dc638dde15101b3aedc805a",
-  "generatedAt": "2026-04-10T18:34:24.378Z",
-  "generatedFromCommit": "41e3c6a68dc25f55a2bfe8e2a0b6c7372e2fb806",
+  "normalizedHashSha256": "9bb0527649f915a56ab7726cbf1c138e3d895abec1a88eb5072b5d30aad9543d",
+  "generatedAt": "2026-04-10T19:52:26.242Z",
+  "generatedFromCommit": "2206d828794e6bde68ff44ff6a7a524f97ab8f2a",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
   },
+  "localeCatalog": {
+    "entries": {
+      "menu.edit": {
+        "base": "Редактирование",
+        "en": "Edit",
+        "ru": "Редактирование"
+      },
+      "menu.file": {
+        "base": "Документ",
+        "en": "Document",
+        "ru": "Документ"
+      },
+      "menu.file.exportDocx": {
+        "base": "Экспорт DOCX",
+        "en": "Export DOCX",
+        "ru": "Экспорт DOCX"
+      },
+      "menu.file.open": {
+        "base": "Открыть проект...",
+        "en": "Open Project...",
+        "ru": "Открыть проект..."
+      },
+      "menu.file.save": {
+        "base": "Сохранить",
+        "en": "Save",
+        "ru": "Сохранить"
+      },
+      "menu.format": {
+        "base": "Format",
+        "en": "Format",
+        "ru": "Формат"
+      },
+      "menu.format.alignLeft": {
+        "base": "Align Left",
+        "en": "Align Left",
+        "ru": "Выровнять влево"
+      },
+      "menu.help": {
+        "base": "Help",
+        "en": "Help",
+        "ru": "Справка"
+      },
+      "menu.help.aboutLicenses": {
+        "base": "О программе и лицензии",
+        "en": "About and Licenses",
+        "ru": "О программе и лицензии"
+      },
+      "menu.insert": {
+        "base": "Insert",
+        "en": "Insert",
+        "ru": "Вставка"
+      },
+      "menu.insert.addCard": {
+        "base": "Add Card",
+        "en": "Add Card",
+        "ru": "Добавить карточку"
+      },
+      "menu.plan": {
+        "base": "Plan",
+        "en": "Plan",
+        "ru": "План"
+      },
+      "menu.plan.openMode": {
+        "base": "Open Plan Mode",
+        "en": "Open Plan Mode",
+        "ru": "Открыть режим плана"
+      },
+      "menu.review": {
+        "base": "Review",
+        "en": "Review",
+        "ru": "Ревью"
+      },
+      "menu.review.openMode": {
+        "base": "Open Review Mode",
+        "en": "Open Review Mode",
+        "ru": "Открыть режим ревью"
+      },
+      "menu.review.recovery": {
+        "base": "Recovery",
+        "en": "Recovery",
+        "ru": "Восстановление"
+      },
+      "menu.tools": {
+        "base": "Tools",
+        "en": "Tools",
+        "ru": "Инструменты"
+      },
+      "menu.tools.diagnostics": {
+        "base": "Diagnostics",
+        "en": "Diagnostics",
+        "ru": "Диагностика"
+      },
+      "menu.view": {
+        "base": "View",
+        "en": "View",
+        "ru": "Вид"
+      },
+      "menu.view.language": {
+        "base": "Language",
+        "en": "Language",
+        "ru": "Язык"
+      },
+      "menu.view.language.base": {
+        "base": "Base",
+        "en": "Base",
+        "ru": "Базовый"
+      },
+      "menu.view.language.en": {
+        "base": "English",
+        "en": "English",
+        "ru": "Английский"
+      },
+      "menu.view.language.ru": {
+        "base": "Русский",
+        "en": "Russian",
+        "ru": "Русский"
+      },
+      "menu.view.mode.plan": {
+        "base": "Plan Mode",
+        "en": "Plan Mode",
+        "ru": "Режим плана"
+      },
+      "menu.view.mode.review": {
+        "base": "Review Mode",
+        "en": "Review Mode",
+        "ru": "Режим ревью"
+      },
+      "menu.view.mode.write": {
+        "base": "Write Mode",
+        "en": "Write Mode",
+        "ru": "Режим письма"
+      },
+      "menu.view.presentation": {
+        "base": "Presentation Mode",
+        "en": "Presentation Mode",
+        "ru": "Режим меню"
+      },
+      "menu.view.presentation.classic": {
+        "base": "Classic",
+        "en": "Classic",
+        "ru": "Классический"
+      },
+      "menu.view.presentation.compact": {
+        "base": "Compact",
+        "en": "Compact",
+        "ru": "Компактный"
+      },
+      "menu.view.restoreLastStable": {
+        "base": "Restore Last Stable",
+        "en": "Restore Last Stable",
+        "ru": "Восстановить последнюю стабильную"
+      },
+      "menu.view.safeReset": {
+        "base": "Safe Reset",
+        "en": "Safe Reset",
+        "ru": "Безопасный сброс"
+      },
+      "menu.view.settings": {
+        "base": "Settings",
+        "en": "Settings",
+        "ru": "Настройки"
+      },
+      "menu.window": {
+        "base": "Window",
+        "en": "Window",
+        "ru": "Окно"
+      },
+      "menu.window.backToWrite": {
+        "base": "Back To Write Mode",
+        "en": "Back To Write Mode",
+        "ru": "Вернуться в режим письма"
+      }
+    },
+    "locales": [
+      "base",
+      "ru",
+      "en"
+    ],
+    "version": "v1"
+  },
   "sourceRefs": [
-    "src/menu/menu-config.v2.json"
+    "src/menu/menu-config.v2.json",
+    "src/menu/menu-locale.catalog.v1.json"
   ],
   "commands": [
     "cmd.project.export.docxMin",
@@ -24,6 +205,9 @@
     "cmd.project.view.openSettings",
     "cmd.project.view.restoreLastStable",
     "cmd.project.view.safeReset",
+    "cmd.project.view.setMenuLocaleBase",
+    "cmd.project.view.setMenuLocaleEn",
+    "cmd.project.view.setMenuLocaleRu",
     "cmd.project.view.setMenuPresentationClassic",
     "cmd.project.view.setMenuPresentationCompact",
     "cmd.project.window.switchModeWrite"
@@ -48,6 +232,7 @@
           },
           "id": "file-open",
           "label": "Открыть проект...",
+          "labelKey": "menu.file.open",
           "mode": [
             "offline"
           ],
@@ -78,6 +263,7 @@
           },
           "id": "file-save",
           "label": "Сохранить",
+          "labelKey": "menu.file.save",
           "mode": [
             "offline"
           ],
@@ -107,6 +293,7 @@
           },
           "id": "file-export-docx",
           "label": "Экспорт DOCX",
+          "labelKey": "menu.file.exportDocx",
           "mode": [
             "offline"
           ],
@@ -128,6 +315,7 @@
         }
       ],
       "label": "Документ",
+      "labelKey": "menu.file",
       "mode": [
         "offline"
       ],
@@ -186,6 +374,7 @@
         }
       ],
       "label": "Редактирование",
+      "labelKey": "menu.edit",
       "mode": [
         "offline"
       ],
@@ -222,6 +411,7 @@
           },
           "id": "view-settings",
           "label": "Settings",
+          "labelKey": "menu.view.settings",
           "mode": [
             "offline"
           ],
@@ -258,6 +448,7 @@
               },
               "id": "view-presentation-classic",
               "label": "Classic",
+              "labelKey": "menu.view.presentation.classic",
               "mode": [
                 "offline"
               ],
@@ -288,6 +479,7 @@
               },
               "id": "view-presentation-compact",
               "label": "Compact",
+              "labelKey": "menu.view.presentation.compact",
               "mode": [
                 "offline"
               ],
@@ -311,6 +503,130 @@
             }
           ],
           "label": "Presentation Mode",
+          "labelKey": "menu.view.presentation",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X0",
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": null,
+          "disabledReasonCode": null,
+          "enabledWhenAst": null,
+          "id": "view-language",
+          "items": [
+            {
+              "canonicalCmdId": "cmd.project.view.setMenuLocaleBase",
+              "disabledReasonCode": null,
+              "enabledWhenAst": {
+                "args": [],
+                "op": "all"
+              },
+              "id": "view-language-base",
+              "label": "Base",
+              "labelKey": "menu.view.language.base",
+              "mode": [
+                "offline"
+              ],
+              "origin": "base",
+              "profile": [
+                "minimal",
+                "pro",
+                "guru"
+              ],
+              "sourceRefs": [
+                "src/menu/menu-config.v2.json"
+              ],
+              "stage": [
+                "X0",
+                "X1",
+                "X2",
+                "X3",
+                "X4"
+              ],
+              "visibilityPolicy": "visible_enabled"
+            },
+            {
+              "canonicalCmdId": "cmd.project.view.setMenuLocaleRu",
+              "disabledReasonCode": null,
+              "enabledWhenAst": {
+                "args": [],
+                "op": "all"
+              },
+              "id": "view-language-ru",
+              "label": "Русский",
+              "labelKey": "menu.view.language.ru",
+              "mode": [
+                "offline"
+              ],
+              "origin": "base",
+              "profile": [
+                "minimal",
+                "pro",
+                "guru"
+              ],
+              "sourceRefs": [
+                "src/menu/menu-config.v2.json"
+              ],
+              "stage": [
+                "X0",
+                "X1",
+                "X2",
+                "X3",
+                "X4"
+              ],
+              "visibilityPolicy": "visible_enabled"
+            },
+            {
+              "canonicalCmdId": "cmd.project.view.setMenuLocaleEn",
+              "disabledReasonCode": null,
+              "enabledWhenAst": {
+                "args": [],
+                "op": "all"
+              },
+              "id": "view-language-en",
+              "label": "English",
+              "labelKey": "menu.view.language.en",
+              "mode": [
+                "offline"
+              ],
+              "origin": "base",
+              "profile": [
+                "minimal",
+                "pro",
+                "guru"
+              ],
+              "sourceRefs": [
+                "src/menu/menu-config.v2.json"
+              ],
+              "stage": [
+                "X0",
+                "X1",
+                "X2",
+                "X3",
+                "X4"
+              ],
+              "visibilityPolicy": "visible_enabled"
+            }
+          ],
+          "label": "Language",
+          "labelKey": "menu.view.language",
           "mode": [
             "offline"
           ],
@@ -341,6 +657,7 @@
           },
           "id": "view-safe-reset",
           "label": "Safe Reset",
+          "labelKey": "menu.view.safeReset",
           "mode": [
             "offline"
           ],
@@ -371,6 +688,7 @@
           },
           "id": "view-restore-last-stable",
           "label": "Restore Last Stable",
+          "labelKey": "menu.view.restoreLastStable",
           "mode": [
             "offline"
           ],
@@ -401,6 +719,7 @@
           },
           "id": "view-switch-write",
           "label": "Write Mode",
+          "labelKey": "menu.view.mode.write",
           "mode": [
             "offline"
           ],
@@ -431,6 +750,7 @@
           },
           "id": "view-switch-plan",
           "label": "Plan Mode",
+          "labelKey": "menu.view.mode.plan",
           "mode": [
             "offline"
           ],
@@ -461,6 +781,7 @@
           },
           "id": "view-switch-review",
           "label": "Review Mode",
+          "labelKey": "menu.view.mode.review",
           "mode": [
             "offline"
           ],
@@ -484,6 +805,7 @@
         }
       ],
       "label": "View",
+      "labelKey": "menu.view",
       "mode": [
         "offline"
       ],
@@ -520,6 +842,7 @@
           },
           "id": "insert-add-card",
           "label": "Add Card",
+          "labelKey": "menu.insert.addCard",
           "mode": [
             "offline"
           ],
@@ -543,6 +866,7 @@
         }
       ],
       "label": "Insert",
+      "labelKey": "menu.insert",
       "mode": [
         "offline"
       ],
@@ -579,6 +903,7 @@
           },
           "id": "format-align-left",
           "label": "Align Left",
+          "labelKey": "menu.format.alignLeft",
           "mode": [
             "offline"
           ],
@@ -602,6 +927,7 @@
         }
       ],
       "label": "Format",
+      "labelKey": "menu.format",
       "mode": [
         "offline"
       ],
@@ -638,6 +964,7 @@
           },
           "id": "plan-mode",
           "label": "Open Plan Mode",
+          "labelKey": "menu.plan.openMode",
           "mode": [
             "offline"
           ],
@@ -661,6 +988,7 @@
         }
       ],
       "label": "Plan",
+      "labelKey": "menu.plan",
       "mode": [
         "offline"
       ],
@@ -697,6 +1025,7 @@
           },
           "id": "review-mode",
           "label": "Open Review Mode",
+          "labelKey": "menu.review.openMode",
           "mode": [
             "offline"
           ],
@@ -727,6 +1056,7 @@
           },
           "id": "review-recovery",
           "label": "Recovery",
+          "labelKey": "menu.review.recovery",
           "mode": [
             "offline"
           ],
@@ -750,6 +1080,7 @@
         }
       ],
       "label": "Review",
+      "labelKey": "menu.review",
       "mode": [
         "offline"
       ],
@@ -786,6 +1117,7 @@
           },
           "id": "tools-diagnostics",
           "label": "Diagnostics",
+          "labelKey": "menu.tools.diagnostics",
           "mode": [
             "offline"
           ],
@@ -809,6 +1141,7 @@
         }
       ],
       "label": "Tools",
+      "labelKey": "menu.tools",
       "mode": [
         "offline"
       ],
@@ -845,6 +1178,7 @@
           },
           "id": "window-write-mode",
           "label": "Back To Write Mode",
+          "labelKey": "menu.window.backToWrite",
           "mode": [
             "offline"
           ],
@@ -868,6 +1202,7 @@
         }
       ],
       "label": "Window",
+      "labelKey": "menu.window",
       "mode": [
         "offline"
       ],
@@ -895,6 +1230,7 @@
       "enabledWhenAst": null,
       "id": "help",
       "label": "Help",
+      "labelKey": "menu.help",
       "mode": [
         "offline"
       ],

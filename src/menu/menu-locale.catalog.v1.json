@@ -1,0 +1,176 @@
+{
+  "version": "v1",
+  "locales": ["base", "ru", "en"],
+  "entries": {
+    "menu.file": {
+      "base": "Документ",
+      "ru": "Документ",
+      "en": "Document"
+    },
+    "menu.file.open": {
+      "base": "Открыть проект...",
+      "ru": "Открыть проект...",
+      "en": "Open Project..."
+    },
+    "menu.file.save": {
+      "base": "Сохранить",
+      "ru": "Сохранить",
+      "en": "Save"
+    },
+    "menu.file.exportDocx": {
+      "base": "Экспорт DOCX",
+      "ru": "Экспорт DOCX",
+      "en": "Export DOCX"
+    },
+    "menu.edit": {
+      "base": "Редактирование",
+      "ru": "Редактирование",
+      "en": "Edit"
+    },
+    "menu.view": {
+      "base": "View",
+      "ru": "Вид",
+      "en": "View"
+    },
+    "menu.view.settings": {
+      "base": "Settings",
+      "ru": "Настройки",
+      "en": "Settings"
+    },
+    "menu.view.presentation": {
+      "base": "Presentation Mode",
+      "ru": "Режим меню",
+      "en": "Presentation Mode"
+    },
+    "menu.view.presentation.classic": {
+      "base": "Classic",
+      "ru": "Классический",
+      "en": "Classic"
+    },
+    "menu.view.presentation.compact": {
+      "base": "Compact",
+      "ru": "Компактный",
+      "en": "Compact"
+    },
+    "menu.view.language": {
+      "base": "Language",
+      "ru": "Язык",
+      "en": "Language"
+    },
+    "menu.view.language.base": {
+      "base": "Base",
+      "ru": "Базовый",
+      "en": "Base"
+    },
+    "menu.view.language.ru": {
+      "base": "Русский",
+      "ru": "Русский",
+      "en": "Russian"
+    },
+    "menu.view.language.en": {
+      "base": "English",
+      "ru": "Английский",
+      "en": "English"
+    },
+    "menu.view.safeReset": {
+      "base": "Safe Reset",
+      "ru": "Безопасный сброс",
+      "en": "Safe Reset"
+    },
+    "menu.view.restoreLastStable": {
+      "base": "Restore Last Stable",
+      "ru": "Восстановить последнюю стабильную",
+      "en": "Restore Last Stable"
+    },
+    "menu.view.mode.write": {
+      "base": "Write Mode",
+      "ru": "Режим письма",
+      "en": "Write Mode"
+    },
+    "menu.view.mode.plan": {
+      "base": "Plan Mode",
+      "ru": "Режим плана",
+      "en": "Plan Mode"
+    },
+    "menu.view.mode.review": {
+      "base": "Review Mode",
+      "ru": "Режим ревью",
+      "en": "Review Mode"
+    },
+    "menu.insert": {
+      "base": "Insert",
+      "ru": "Вставка",
+      "en": "Insert"
+    },
+    "menu.insert.addCard": {
+      "base": "Add Card",
+      "ru": "Добавить карточку",
+      "en": "Add Card"
+    },
+    "menu.format": {
+      "base": "Format",
+      "ru": "Формат",
+      "en": "Format"
+    },
+    "menu.format.alignLeft": {
+      "base": "Align Left",
+      "ru": "Выровнять влево",
+      "en": "Align Left"
+    },
+    "menu.plan": {
+      "base": "Plan",
+      "ru": "План",
+      "en": "Plan"
+    },
+    "menu.plan.openMode": {
+      "base": "Open Plan Mode",
+      "ru": "Открыть режим плана",
+      "en": "Open Plan Mode"
+    },
+    "menu.review": {
+      "base": "Review",
+      "ru": "Ревью",
+      "en": "Review"
+    },
+    "menu.review.openMode": {
+      "base": "Open Review Mode",
+      "ru": "Открыть режим ревью",
+      "en": "Open Review Mode"
+    },
+    "menu.review.recovery": {
+      "base": "Recovery",
+      "ru": "Восстановление",
+      "en": "Recovery"
+    },
+    "menu.tools": {
+      "base": "Tools",
+      "ru": "Инструменты",
+      "en": "Tools"
+    },
+    "menu.tools.diagnostics": {
+      "base": "Diagnostics",
+      "ru": "Диагностика",
+      "en": "Diagnostics"
+    },
+    "menu.window": {
+      "base": "Window",
+      "ru": "Окно",
+      "en": "Window"
+    },
+    "menu.window.backToWrite": {
+      "base": "Back To Write Mode",
+      "ru": "Вернуться в режим письма",
+      "en": "Back To Write Mode"
+    },
+    "menu.help": {
+      "base": "Help",
+      "ru": "Справка",
+      "en": "Help"
+    },
+    "menu.help.aboutLicenses": {
+      "base": "О программе и лицензии",
+      "ru": "О программе и лицензии",
+      "en": "About and Licenses"
+    }
+  }
+}

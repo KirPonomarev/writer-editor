@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "craftsman://menu/menu-locale.catalog.schema.v1.json",
+  "title": "Craftsman Menu Locale Catalog v1",
+  "type": "object",
+  "required": ["version", "locales", "entries"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": "v1"
+    },
+    "locales": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "string",
+        "enum": ["base", "ru", "en"]
+      }
+    },
+    "entries": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9._-]+$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/localeEntry"
+      }
+    }
+  },
+  "$defs": {
+    "localeEntry": {
+      "type": "object",
+      "required": ["base", "ru", "en"],
+      "additionalProperties": false,
+      "properties": {
+        "base": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ru": {
+          "type": "string",
+          "minLength": 1
+        },
+        "en": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

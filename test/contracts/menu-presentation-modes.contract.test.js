@@ -24,9 +24,9 @@ test('menu presentation modes: canonical switch surface is authored in view menu
 
   const itemIds = viewMenu.items.map((item) => item.id);
   assert.deepEqual(
-    itemIds.slice(0, 3),
-    ['view-settings', 'view-presentation-mode', 'view-safe-reset'],
-    'presentation switch container must be placed immediately after view-settings and before view-safe-reset',
+    itemIds.slice(0, 4),
+    ['view-settings', 'view-presentation-mode', 'view-language', 'view-safe-reset'],
+    'presentation switch container must stay before the language switch and safe reset',
   );
 
   const switchContainer = viewMenu.items.find((item) => item.id === 'view-presentation-mode');
@@ -68,9 +68,9 @@ test('menu presentation modes: normalization preserves canonical placement and n
   assert.ok(viewMenu, 'expected normalized view menu');
 
   assert.deepEqual(
-    viewMenu.items.slice(0, 3).map((item) => item.id),
-    ['view-settings', 'view-presentation-mode', 'view-safe-reset'],
-    'normalized view order must preserve canonical placement of presentation switch container',
+    viewMenu.items.slice(0, 4).map((item) => item.id),
+    ['view-settings', 'view-presentation-mode', 'view-language', 'view-safe-reset'],
+    'normalized view order must preserve canonical placement of presentation switch container ahead of language switch and safe reset',
   );
 
   const switchContainer = viewMenu.items.find((item) => item.id === 'view-presentation-mode');
@@ -100,5 +100,20 @@ test('menu presentation modes: darwin compact projection preserves a visible com
     mainSource,
     /if \(process\.platform === 'darwin'\)\s*\{\s*return \[\s*\{\s*role: 'appMenu'\s*\},\s*compactRoot,\s*\];\s*\}/m,
     'compact projection must insert an explicit appMenu adapter on darwin so the compact root remains visible',
+  );
+});
+
+test('menu presentation modes: compact projection dedupes duplicate id groups before build', () => {
+  const mainSource = fs.readFileSync(MAIN_PATH, 'utf8');
+
+  assert.match(
+    mainSource,
+    /function dedupeCompactRootSubmenu\(items\)/,
+    'compact projection must define a duplicate-id suppression step for compact root items',
+  );
+  assert.match(
+    mainSource,
+    /submenu:\s*dedupeCompactRootSubmenu\(compactRootSubmenu\)/,
+    'compact root submenu must pass through dedupeCompactRootSubmenu before Menu.buildFromTemplate',
   );
 });
