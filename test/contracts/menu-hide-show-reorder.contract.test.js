@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
 
 const REPO_ROOT = process.cwd();
 const CONFIG_PATH = path.join(REPO_ROOT, 'src', 'menu', 'menu-config.v2.json');
@@ -28,6 +29,32 @@ function getTopLevelMenuIds(config) {
 function getOptionalTopLevelMenuIds(config) {
   const fixedIds = new Set(['file', 'edit', 'view', 'help']);
   return getTopLevelMenuIds(config).filter((id) => !fixedIds.has(id));
+}
+
+function extractFunctionSource(sourceText, functionName) {
+  const start = sourceText.indexOf(`function ${functionName}(`);
+  assert.notEqual(start, -1, `missing function ${functionName}`);
+
+  let bodyStart = -1;
+  let depth = 0;
+  for (let index = start; index < sourceText.length; index += 1) {
+    const char = sourceText[index];
+    if (char === '{') {
+      if (bodyStart === -1) {
+        bodyStart = index;
+      }
+      depth += 1;
+      continue;
+    }
+    if (char === '}') {
+      depth -= 1;
+      if (bodyStart !== -1 && depth === 0) {
+        return sourceText.slice(start, index + 1);
+      }
+    }
+  }
+
+  throw new Error(`unterminated function source for ${functionName}`);
 }
 
 test('menu hide-show reorder contract: optional top-level sections are derived from the canonical top-level set', () => {
@@ -163,5 +190,54 @@ test('menu hide-show reorder contract: normalization preserves submenuFrom marke
   assert.deepEqual(
     [...state.normalizedConfig.sourceRefs].sort((a, b) => a.localeCompare(b)),
     ['src/menu/menu-config.v2.json', 'src/menu/menu-locale.catalog.v1.json'],
+  );
+});
+
+test('menu hide-show reorder contract: startup normalization preserves persisted customization before section sync', () => {
+  const mainPath = path.join(REPO_ROOT, 'src', 'main.js');
+  const mainText = fs.readFileSync(mainPath, 'utf8');
+  const runtimeSource = [
+    extractFunctionSource(mainText, 'createDefaultMenuCustomization'),
+    extractFunctionSource(mainText, 'normalizeMenuCustomizationIdList'),
+    extractFunctionSource(mainText, 'normalizeMenuCustomizationState'),
+    `
+      const storedCustomization = {
+        schemaVersion: 1,
+        hiddenMenuIds: ['insert', 'insert'],
+        menuOrder: ['insert', 'plan', 'plan'],
+      };
+      resultWithoutCanonicalIds = normalizeMenuCustomizationState(storedCustomization, []);
+      resultWithCanonicalIds = normalizeMenuCustomizationState(storedCustomization, ['insert', 'format', 'plan']);
+    `,
+  ].join('\n\n');
+
+  const context = {
+    MENU_CUSTOMIZATION_SCHEMA_VERSION: 1,
+    isRuntimeRecord(value) {
+      return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+    },
+    resultWithoutCanonicalIds: null,
+    resultWithCanonicalIds: null,
+  };
+  vm.createContext(context);
+  vm.runInContext(runtimeSource, context);
+
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(context.resultWithoutCanonicalIds)),
+    {
+      schemaVersion: 1,
+      hiddenMenuIds: ['insert'],
+      menuOrder: ['insert', 'plan'],
+    },
+    'startup load must preserve persisted customization before the runtime learns the canonical section ids',
+  );
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(context.resultWithCanonicalIds)),
+    {
+      schemaVersion: 1,
+      hiddenMenuIds: ['insert'],
+      menuOrder: ['insert', 'plan', 'format'],
+    },
+    'once canonical ids are known, normalization must still backfill missing optional sections deterministically',
   );
 });

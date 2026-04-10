@@ -2768,7 +2768,7 @@
     },
     {
       "filePath": "test/contracts/menu-hide-show-reorder.contract.test.js",
-      "sha256": "fea43a01bcb3292bc5943fb28c81418cef08fcf44bacaadb458cc04b8d2bf12b",
+      "sha256": "932d95b922b2b30fcdba2c9c0f267e0950e0848b965bfe251a476a203104bc82",
       "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
       "approvedAtUtc": "2026-04-10T21:13:30.000Z",
       "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind and approvals for bounded hide/show reorder contracts."

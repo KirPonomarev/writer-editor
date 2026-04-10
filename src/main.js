@@ -765,6 +765,7 @@ function normalizeMenuCustomizationIdList(value, canonicalIds, includeMissing = 
   const canonicalList = Array.isArray(canonicalIds)
     ? canonicalIds.filter((id) => typeof id === 'string' && id.length > 0)
     : [];
+  const useCanonicalFilter = canonicalList.length > 0;
   const canonicalSet = new Set(canonicalList);
   const sourceList = Array.isArray(value) ? value : [];
   const normalized = [];
@@ -774,14 +775,14 @@ function normalizeMenuCustomizationIdList(value, canonicalIds, includeMissing = 
     if (typeof entry !== 'string' || entry.length === 0) {
       return;
     }
-    if (!canonicalSet.has(entry) || seen.has(entry)) {
+    if ((useCanonicalFilter && !canonicalSet.has(entry)) || seen.has(entry)) {
       return;
     }
     seen.add(entry);
     normalized.push(entry);
   });
 
-  if (includeMissing) {
+  if (includeMissing && useCanonicalFilter) {
     canonicalList.forEach((id) => {
       if (seen.has(id)) {
         return;
