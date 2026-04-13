@@ -1,0 +1,10 @@
+TASK_ID: TOOLBAR_PROOFING_SPELLCHECK_DECISION_001
+CONTOUR_KIND: DECISION
+STATUS: EXECUTION_READY_AFTER_SELECTION_BRIEF_REBIND_AND_HARD_SCOPE_CHECKS
+TARGET_BRANCH: main
+BINDING_BASE_SHA: cd3c9305babcc2428db3fc2e66967377df40a061
+SELECTION_DECISION: RECLASSIFY_toolbar.proofing.spellcheck_FROM_planned_TO_blocked
+BLOCKER_REASON: offline-first spellcheck dictionary policy not selected
+PLANNED_IDS: toolbar.insert.image
+BLOCKED_IDS: toolbar.proofing.spellcheck; toolbar.proofing.grammar
+LIVE_COUNT: 17
