@@ -15,6 +15,8 @@ function readEditorFormattingState(editor) {
     return {
       bold: false,
       italic: false,
+      underline: false,
+      linkActive: false,
       bulletList: false,
       orderedList: false,
     }
@@ -23,6 +25,8 @@ function readEditorFormattingState(editor) {
   return {
     bold: Boolean(editor.isActive('bold')),
     italic: Boolean(editor.isActive('italic')),
+    underline: Boolean(editor.isActive('underline')),
+    linkActive: Boolean(editor.isActive('link')),
     bulletList: Boolean(editor.isActive('bulletList')),
     orderedList: Boolean(editor.isActive('orderedList')),
   }
@@ -60,7 +64,10 @@ function runBridgeCallback(callback, action, ...args) {
     return { performed: false, action, reason: 'BRIDGE_CALLBACK_UNAVAILABLE' }
   }
 
-  callback(...args)
+  const result = callback(...args)
+  if (result && typeof result === 'object' && Object.prototype.hasOwnProperty.call(result, 'performed')) {
+    return result
+  }
   return { performed: true, action, reason: null }
 }
 
@@ -89,6 +96,9 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
   if (commandId === 'cmd.project.format.alignLeft') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.formatAlignLeft, commandId) }
   }
+  if (commandId === 'cmd.project.format.toggleUnderline') {
+    return { handled: true, result: runEditorCommand(runtimeBridge.editor, 'toggleUnderline') }
+  }
   if (commandId === 'cmd.project.format.toggleBold') {
     return { handled: true, result: runEditorFormatCommand(runtimeBridge.editor, 'toggleBold') }
   }
@@ -115,6 +125,9 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
   }
   if (commandId === 'cmd.project.edit.replace') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.replace, commandId) }
+  }
+  if (commandId === 'cmd.project.insert.linkPrompt') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.insertLinkPrompt, commandId, commandId, payload) }
   }
   if (commandId === 'cmd.project.plan.switchMode') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.switchMode, commandId, 'plan') }

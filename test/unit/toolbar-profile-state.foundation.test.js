@@ -44,8 +44,10 @@ test('toolbar foundation catalog: live planned blocked filtering and canonical o
     'toolbar.text.lineHeight',
     'toolbar.format.bold',
     'toolbar.format.italic',
+    'toolbar.format.underline',
     'toolbar.paragraph.alignment',
     'toolbar.list.type',
+    'toolbar.insert.link',
     'toolbar.history.undo',
     'toolbar.history.redo',
   ])
