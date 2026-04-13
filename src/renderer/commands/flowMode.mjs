@@ -1,3 +1,8 @@
+import {
+  composeDocumentContentFromBase,
+  parseObservablePayload,
+} from '../documentContentEnvelope.mjs';
+
 function normalizeLineEndings(value) {
   return String(value ?? '').replaceAll('\r\n', '\n').replaceAll('\r', '\n');
 }
@@ -21,7 +26,8 @@ export function composeFlowDocument(scenes = []) {
   for (let i = 0; i < normalizedScenes.length; i += 1) {
     const scene = normalizedScenes[i] && typeof normalizedScenes[i] === 'object' ? normalizedScenes[i] : {};
     lines.push(sceneMarker(i + 1, scene.title));
-    lines.push(normalizeLineEndings(scene.content || '').trimEnd());
+    const parsed = parseObservablePayload(scene.content || '');
+    lines.push(normalizeLineEndings(parsed.text || '').trimEnd());
     if (i < normalizedScenes.length - 1) lines.push('');
   }
   return `${lines.join('\n').trimEnd()}\n`;
@@ -72,6 +78,9 @@ export function buildFlowModeM9CoreSaveErrorStatus(error, sceneCount) {
   }
   if (reason === 'flow_scene_path_missing') {
     return `Flow mode core (${count}) · save blocked: scene path missing · reopen flow mode`;
+  }
+  if (reason === 'flow_scene_rich_content_unsupported') {
+    return `Flow mode core (${count}) · save blocked: rich scene content unsupported · reopen flow mode`;
   }
   return `Flow mode core (${count}) · save blocked: invalid flow payload · reopen flow mode`;
 }
@@ -133,12 +142,27 @@ export function buildFlowSavePayload(flowText, sceneRefs = []) {
     return { ok: false, error: { code: split.code, reason: split.reason, details: split.details } };
   }
 
-  const scenes = refs.map((ref, idx) => ({
-    path: String(ref && ref.path ? ref.path : ''),
-    title: String(ref && ref.title ? ref.title : ''),
-    kind: String(ref && ref.kind ? ref.kind : 'scene'),
-    content: split.scenes[idx],
-  }));
+  const scenes = refs.map((ref, idx) => {
+    const nextContent = composeDocumentContentFromBase({
+      baseContent: String(ref && ref.content ? ref.content : ''),
+      nextVisibleText: split.scenes[idx],
+    });
+    if (!nextContent.ok) {
+      return {
+        path: String(ref && ref.path ? ref.path : ''),
+        title: String(ref && ref.title ? ref.title : ''),
+        kind: String(ref && ref.kind ? ref.kind : 'scene'),
+        error: nextContent.error,
+      };
+    }
+
+    return {
+      path: String(ref && ref.path ? ref.path : ''),
+      title: String(ref && ref.title ? ref.title : ''),
+      kind: String(ref && ref.kind ? ref.kind : 'scene'),
+      content: nextContent.content,
+    };
+  });
 
   if (scenes.some((scene) => scene.path.length === 0)) {
     return {
@@ -147,6 +171,14 @@ export function buildFlowSavePayload(flowText, sceneRefs = []) {
         code: 'M7_FLOW_SCENE_PATH_MISSING',
         reason: 'flow_scene_path_missing',
       },
+    };
+  }
+
+  const invalidScene = scenes.find((scene) => scene.error);
+  if (invalidScene) {
+    return {
+      ok: false,
+      error: invalidScene.error,
     };
   }
 

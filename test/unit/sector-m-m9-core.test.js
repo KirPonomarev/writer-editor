@@ -25,6 +25,10 @@ test('M9 core save-error status helper is deterministic for payload reasons', as
     'Flow mode core (2) · save blocked: scene path missing · reopen flow mode',
   );
   assert.equal(
+    flow.buildFlowModeM9CoreSaveErrorStatus({ reason: 'flow_scene_rich_content_unsupported' }, 2),
+    'Flow mode core (2) · save blocked: rich scene content unsupported · reopen flow mode',
+  );
+  assert.equal(
     flow.buildFlowModeM9CoreSaveErrorStatus({ reason: 'unknown_reason' }, 2),
     'Flow mode core (2) · save blocked: invalid flow payload · reopen flow mode',
   );

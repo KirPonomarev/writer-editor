@@ -2786,6 +2786,13 @@
       "approvedBy": "ticket:MENU_COMPACT_ROOT_MODE_TOP_001",
       "approvedAtUtc": "2026-04-10T21:39:08.000Z",
       "rationale": "MENU_COMPACT_ROOT_MODE_TOP_001 approves the compact menu mode switch hoist contract update with adjacent view controls preserved."
+    },
+    {
+      "filePath": "test/contracts/recovery-rich-truth.contract.test.js",
+      "sha256": "94dc3d9e533b86562869ca3c00c866a32d88ec6252fa9ead64fb5df5b85c9ebe",
+      "approvedBy": "ticket:SCENE_RICH_CONTENT_TRUTH_FOUNDATION_001",
+      "approvedAtUtc": "2026-04-13T12:00:00.000Z",
+      "rationale": "SCENE_RICH_CONTENT_TRUTH_FOUNDATION_001 approves the bounded recovery truth contract for versioned rich scene payload v2."
     }
   ]
 }

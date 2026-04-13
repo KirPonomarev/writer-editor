@@ -8,11 +8,17 @@ async function loadFlowModeModule() {
   return import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'flowMode.mjs')).href);
 }
 
+async function loadEnvelopeModule() {
+  const root = process.cwd();
+  return import(pathToFileURL(path.join(root, 'src', 'renderer', 'documentContentEnvelope.mjs')).href);
+}
+
 test('M7 flow mode compose is deterministic and keeps scene markers', async () => {
   const flow = await loadFlowModeModule();
+  const envelope = await loadEnvelopeModule();
   const scenes = [
-    { title: 'One', content: 'Alpha' },
-    { title: 'Two', content: 'Beta\nGamma\n' },
+    { title: 'One', content: envelope.composeObservablePayload({ doc: envelope.buildParagraphDocumentFromText('Alpha') }) },
+    { title: 'Two', content: envelope.composeObservablePayload({ doc: envelope.buildParagraphDocumentFromText('Beta\nGamma\n') }) },
   ];
   const out = flow.composeFlowDocument(scenes);
 
@@ -25,6 +31,7 @@ test('M7 flow mode compose is deterministic and keeps scene markers', async () =
 
 test('M7 flow mode save payload validates scene markers and mapping', async () => {
   const flow = await loadFlowModeModule();
+  const envelope = await loadEnvelopeModule();
   const text = [
     '---[ SCENE 1: One ]---',
     'Alpha',
@@ -34,19 +41,78 @@ test('M7 flow mode save payload validates scene markers and mapping', async () =
     '',
   ].join('\n');
   const refs = [
-    { path: '/tmp/a.txt', title: 'One', kind: 'scene' },
-    { path: '/tmp/b.txt', title: 'Two', kind: 'scene' },
+    { path: '/tmp/a.txt', title: 'One', kind: 'scene', content: '' },
+    { path: '/tmp/b.txt', title: 'Two', kind: 'scene', content: '' },
   ];
   const payload = flow.buildFlowSavePayload(text, refs);
   assert.equal(payload.ok, true);
-  assert.deepEqual(payload.scenes, [
-    { path: '/tmp/a.txt', title: 'One', kind: 'scene', content: 'Alpha' },
-    { path: '/tmp/b.txt', title: 'Two', kind: 'scene', content: 'Beta' },
-  ]);
+  assert.equal(payload.scenes[0].path, '/tmp/a.txt');
+  assert.equal(payload.scenes[1].path, '/tmp/b.txt');
+  assert.equal(envelope.parseObservablePayload(payload.scenes[0].content).text, 'Alpha');
+  assert.equal(envelope.parseObservablePayload(payload.scenes[1].content).text, 'Beta');
 
   const mismatch = flow.buildFlowSavePayload('---[ SCENE 1: One ]---\nOnly one', refs);
   assert.equal(mismatch.ok, false);
   assert.equal(mismatch.error.code, 'M7_FLOW_MARKER_COUNT_MISMATCH');
+});
+
+test('M7 flow mode save payload blocks lossy rich content refs', async () => {
+  const flow = await loadFlowModeModule();
+  const envelope = await loadEnvelopeModule();
+  const refs = [
+    {
+      path: '/tmp/a.txt',
+      title: 'One',
+      kind: 'scene',
+      content: envelope.composeObservablePayload({
+        doc: {
+          type: 'doc',
+          content: [
+            {
+              type: 'paragraph',
+              content: [{ type: 'text', text: 'Alpha', marks: [{ type: 'bold' }] }],
+            },
+          ],
+        },
+      }),
+    },
+  ];
+
+  const payload = flow.buildFlowSavePayload('---[ SCENE 1: One ]---\nAlpha\n', refs);
+  assert.equal(payload.ok, false);
+  assert.equal(payload.error.code, 'M7_FLOW_SCENE_RICH_CONTENT_UNSUPPORTED');
+  assert.equal(payload.error.reason, 'flow_scene_rich_content_unsupported');
+});
+
+test('M7 flow mode save payload preserves unchanged structured rich docs', async () => {
+  const flow = await loadFlowModeModule();
+  const envelope = await loadEnvelopeModule();
+  const structuredDoc = {
+    type: 'doc',
+    content: [
+      {
+        type: 'paragraph',
+        content: [
+          { type: 'text', text: 'Alpha' },
+          { type: 'hardBreak' },
+          { type: 'text', text: 'Beta' },
+        ],
+      },
+    ],
+  };
+  const refs = [
+    {
+      path: '/tmp/a.txt',
+      title: 'One',
+      kind: 'scene',
+      content: envelope.composeObservablePayload({ doc: structuredDoc }),
+    },
+  ];
+
+  const payload = flow.buildFlowSavePayload('---[ SCENE 1: One ]---\nAlpha\nBeta\n', refs);
+  assert.equal(payload.ok, true);
+  const parsed = envelope.parseObservablePayload(payload.scenes[0].content);
+  assert.deepEqual(parsed.doc, envelope.canonicalizeDocumentJson(structuredDoc));
 });
 
 test('M7 flow mode boundary helpers move caret between scenes only at boundaries', async () => {
