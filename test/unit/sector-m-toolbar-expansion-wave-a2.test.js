@@ -26,6 +26,9 @@ test('sector-m toolbar expansion wave a2: main toolbar exposes underline and lin
     'paragraph-trigger',
     'list-type',
     'insert-link',
+    'color-text',
+    'color-highlight',
+    'review-comment',
     'history-undo',
     'history-redo',
   ])

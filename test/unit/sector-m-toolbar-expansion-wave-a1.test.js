@@ -26,11 +26,16 @@ test('sector-m toolbar expansion wave a1: main toolbar exposes A1 hooks in canon
     'paragraph-trigger',
     'list-type',
     'insert-link',
+    'color-text',
+    'color-highlight',
+    'review-comment',
     'history-undo',
     'history-redo',
   ])
   assert.ok(html.includes('floating-toolbar__group--format-inline'))
   assert.ok(html.includes('floating-toolbar__group--insert'))
+  assert.ok(html.includes('floating-toolbar__group--color'))
+  assert.ok(html.includes('floating-toolbar__group--review'))
   assert.ok(html.includes('data-list-menu'))
   assert.ok(html.includes('data-list-action="no-list"'))
   assert.ok(html.includes('data-list-action="bullet"'))

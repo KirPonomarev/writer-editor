@@ -2796,10 +2796,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
-      "sha256": "9b73d32f20273890c171339f7a9a73644212ff7de8f4d3f66e9f41a7579c6dc3",
-      "approvedBy": "ticket:TOOLBAR_EXPANSION_WAVE_A2_001",
-      "approvedAtUtc": "2026-04-13T13:30:00.000Z",
-      "rationale": "TOOLBAR_EXPANSION_WAVE_A2_001 supersedes the prior toolbar command capability binding hash and approves the bounded underline and insert-link expansion."
+      "sha256": "0ef99a6adb751fdee84740d108f65176fe0bd3af06713dac168fd667558db00b",
+      "approvedBy": "ticket:TOOLBAR_EXPANSION_WAVE_B_001",
+      "approvedAtUtc": "2026-04-13T21:35:20.000Z",
+      "rationale": "TOOLBAR_EXPANSION_WAVE_B_001 supersedes the prior toolbar command capability binding hash and approves the bounded text-color, highlight-color, and review-comment opener expansion."
     }
   ]
 }

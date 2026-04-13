@@ -149,25 +149,101 @@ test('tiptap runtime bridge: canonical link prompt command id delegates only to 
   })
 })
 
-test('tiptap tiptap index: underline and link extensions are configured inertly and expose the bounded command API', () => {
+test('tiptap runtime bridge: canonical text color picker command id delegates only to runtime handler callback', async () => {
+  const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
+  const calls = []
+  const bridge = createTiptapRuntimeBridge({
+    runtimeHandlers: {
+      formatTextColorPicker(commandId, payload) {
+        calls.push({ commandId, payload })
+        return {
+          performed: true,
+          action: 'textColorPicker',
+          reason: null,
+        }
+      },
+    },
+  })
+
+  const payload = { source: 'toolbar' }
+  const result = bridge.handleRuntimeCommand({
+    commandId: 'cmd.project.format.textColorPicker',
+    payload,
+  })
+
+  assert.deepEqual(calls, [
+    {
+      commandId: 'cmd.project.format.textColorPicker',
+      payload,
+    },
+  ])
+  assert.deepEqual(result, {
+    handled: true,
+    result: { performed: true, action: 'textColorPicker', reason: null },
+    commandId: 'cmd.project.format.textColorPicker',
+  })
+})
+
+test('tiptap runtime bridge: canonical highlight color picker command id propagates negative callback result', async () => {
+  const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
+  const bridge = createTiptapRuntimeBridge({
+    runtimeHandlers: {
+      formatHighlightColorPicker() {
+        return {
+          performed: false,
+          action: 'highlightColorPicker',
+          reason: 'EDITOR_MODE_UNSUPPORTED',
+        }
+      },
+    },
+  })
+
+  const result = bridge.handleRuntimeCommand({
+    commandId: 'cmd.project.format.highlightColorPicker',
+    payload: { source: 'toolbar' },
+  })
+
+  assert.deepEqual(result, {
+    handled: true,
+    result: { performed: false, action: 'highlightColorPicker', reason: 'EDITOR_MODE_UNSUPPORTED' },
+    commandId: 'cmd.project.format.highlightColorPicker',
+  })
+})
+
+test('tiptap tiptap index: underline link color and highlight extensions are configured inertly and expose the bounded command API', () => {
   const filePath = path.join(ROOT, 'src', 'renderer', 'tiptap', 'index.js')
   const source = fs.readFileSync(filePath, 'utf8')
 
+  assert.ok(source.includes("import Color from '@tiptap/extension-color'"))
+  assert.ok(source.includes("import Highlight from '@tiptap/extension-highlight'"))
   assert.ok(source.includes("import Link from '@tiptap/extension-link'"))
+  assert.ok(source.includes("import { TextStyle } from '@tiptap/extension-text-style'"))
   assert.ok(source.includes("import Underline from '@tiptap/extension-underline'"))
   assert.ok(source.includes('StarterKit.configure({'))
   assert.ok(source.includes('link: false'))
   assert.ok(source.includes('underline: false'))
+  assert.ok(source.includes('TextStyle,'))
+  assert.ok(source.includes('Color,'))
+  assert.ok(source.includes('Highlight.configure({'))
+  assert.ok(source.includes('multicolor: true'))
   assert.ok(source.includes('Underline,'))
   assert.ok(source.includes('Link.configure({'))
   assert.ok(source.includes('autolink: false'))
   assert.ok(source.includes('linkOnPaste: false'))
   assert.ok(source.includes('openOnClick: false'))
   assert.ok(source.includes("underline: Boolean(editor.isActive('underline'))"))
+  assert.ok(source.includes('textColor,'))
+  assert.ok(source.includes('textColorActive: textColor.length > 0'))
+  assert.ok(source.includes('highlightColor,'))
+  assert.ok(source.includes('highlightActive,'))
   assert.ok(source.includes("const linkActive = Boolean(editor.isActive('link'))"))
   assert.ok(source.includes('link: linkActive'))
   assert.ok(source.includes('linkActive,'))
   assert.ok(source.includes("if (commandName === 'toggleUnderline')"))
+  assert.ok(source.includes("if (commandName === 'setColor')"))
+  assert.ok(source.includes("if (commandName === 'unsetColor')"))
+  assert.ok(source.includes("if (commandName === 'setHighlight')"))
+  assert.ok(source.includes("if (commandName === 'unsetHighlight')"))
   assert.ok(source.includes("if (commandName === 'setLink')"))
   assert.ok(source.includes("if (commandName === 'unsetLink')"))
 })

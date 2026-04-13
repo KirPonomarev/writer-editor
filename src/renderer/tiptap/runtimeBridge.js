@@ -99,6 +99,12 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
   if (commandId === 'cmd.project.format.toggleUnderline') {
     return { handled: true, result: runEditorCommand(runtimeBridge.editor, 'toggleUnderline') }
   }
+  if (commandId === 'cmd.project.format.textColorPicker') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.formatTextColorPicker, commandId, commandId, payload) }
+  }
+  if (commandId === 'cmd.project.format.highlightColorPicker') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.formatHighlightColorPicker, commandId, commandId, payload) }
+  }
   if (commandId === 'cmd.project.format.toggleBold') {
     return { handled: true, result: runEditorFormatCommand(runtimeBridge.editor, 'toggleBold') }
   }
