@@ -43,6 +43,7 @@ import {
   resolveToolbarProfileStateForProjectSwitch,
   writeToolbarProfileState,
 } from './toolbar/toolbarProfileState.mjs';
+import * as toolbarRuntimeProjectionModule from './toolbar/toolbarRuntimeProjection.mjs';
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
 
 const isTiptapMode = window.__USE_TIPTAP === true;
@@ -91,6 +92,20 @@ const toolbarSpacingMenu = document.querySelector('[data-toolbar-spacing-menu]')
 const toolbarSpacingAction = document.querySelector('[data-toolbar-spacing-action]');
 const paragraphTriggerButton = document.querySelector('[data-toolbar-item-key="paragraph-trigger"]');
 const paragraphMenu = document.querySelector('[data-paragraph-menu]');
+const toolbarRuntimeRegistry = typeof toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry === 'function'
+  ? toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry({
+      toolbar,
+      toolbarShell,
+      toolbarSpacingMenu,
+      toolbarSpacingAction,
+      paragraphMenu,
+      paragraphTriggerButton,
+      toolbarTunableItems,
+      setToolbarSpacingMenuOpen,
+      setParagraphMenuOpen,
+      scheduleToolbarAnchorUpdate,
+    })
+  : null;
 const modeSwitcher = document.querySelector('[data-mode-switcher]');
 const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
 const leftTabsHost = document.querySelector('[data-left-tabs]');
@@ -626,6 +641,92 @@ function scheduleToolbarAnchorUpdate() {
     toolbarAnchorFrameId = 0;
     updateToolbarAnchorVars();
   });
+}
+
+function isMainToolbarAnchorHidden(anchor) {
+  if (!(anchor instanceof HTMLElement)) return true;
+  return anchor.hidden || anchor.getClientRects().length === 0;
+}
+
+function getVisibleToolbarBindKeys(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot)) {
+    return null;
+  }
+  const keys =
+    snapshot.visibleBindKeys ||
+    snapshot.visibleKeys ||
+    snapshot.visibleToolbarBindKeys ||
+    snapshot.bindKeys;
+  return Array.isArray(keys) ? new Set(keys.filter((key) => typeof key === 'string' && key.length > 0)) : null;
+}
+
+function closeOrphanedMainToolbarOverlays(snapshot) {
+  const visibleBindKeys = getVisibleToolbarBindKeys(snapshot);
+  const hasVisibleItems = !snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot)
+    ? true
+    : snapshot.hasVisibleItems !== false;
+  const paragraphVisible = typeof snapshot?.paragraphTriggerVisible === 'boolean'
+    ? snapshot.paragraphTriggerVisible
+    : !hasVisibleItems
+    ? false
+    : visibleBindKeys
+    ? (
+      visibleBindKeys.has('paragraph-trigger')
+      || visibleBindKeys.has('toolbar.paragraph.alignment')
+      || visibleBindKeys.has('style-paragraph')
+    )
+    : !isMainToolbarAnchorHidden(paragraphTriggerButton);
+  const spacingVisible = hasVisibleItems;
+
+  if (paragraphMenu && !paragraphMenu.hidden && !paragraphVisible) {
+    setParagraphMenuOpen(false);
+  }
+  if (toolbarSpacingMenu && !toolbarSpacingMenu.hidden && !spacingVisible) {
+    setToolbarSpacingMenuOpen(false);
+  }
+}
+
+function restoreFocusFromHiddenMainToolbarItem() {
+  const activeElement = document.activeElement;
+  if (!(activeElement instanceof HTMLElement) || !toolbar || !toolbar.contains(activeElement)) {
+    return;
+  }
+  const activeToolbarItem = activeElement.closest('[data-toolbar-item-key]');
+  if (!(activeToolbarItem instanceof HTMLElement)) {
+    return;
+  }
+  if (!activeToolbarItem.hidden && activeToolbarItem.getClientRects().length > 0) {
+    return;
+  }
+  if (editor instanceof HTMLElement && typeof editor.focus === 'function') {
+    editor.focus({ preventScroll: true });
+    return;
+  }
+  if (typeof activeElement.blur === 'function') {
+    activeElement.blur();
+  }
+}
+
+function projectMainFloatingToolbarRuntime(reason = 'projection') {
+  if (!toolbarRuntimeRegistry || typeof toolbarRuntimeProjectionModule.applyToolbarProfileMinimal !== 'function') {
+    return null;
+  }
+  const snapshot = toolbarRuntimeProjectionModule.applyToolbarProfileMinimal(
+    toolbarRuntimeRegistry,
+    configuratorBucketState,
+    {
+      reason,
+      currentProjectId,
+      floatingToolbarState,
+      toolbarItemOffsets,
+    }
+  );
+  closeOrphanedMainToolbarOverlays(snapshot);
+  restoreFocusFromHiddenMainToolbarItem();
+  if (!snapshot || snapshot.anchorResyncRequired !== false) {
+    scheduleToolbarAnchorUpdate();
+  }
+  return snapshot;
 }
 
 function getSnappedFloatingToolbarPosition(shellRect = toolbarShell?.getBoundingClientRect()) {
@@ -1403,6 +1504,7 @@ function commitToolbarConfiguratorState(minimalIds) {
     writeToolbarProfileState(localStorage, currentProjectId, nextState);
   }
   renderToolbarConfiguratorBuckets();
+  projectMainFloatingToolbarRuntime('configurator-commit');
   return nextState;
 }
 
@@ -1417,6 +1519,7 @@ function adoptToolbarConfiguratorState(projectId = currentProjectId) {
   configuratorBucketState = resolution.state;
   renderToolbarConfiguratorLibrary();
   renderToolbarConfiguratorBuckets();
+  projectMainFloatingToolbarRuntime('configurator-adopt');
   return resolution;
 }
 
@@ -4426,6 +4529,7 @@ function performSafeResetShell() {
   setToolbarSpacingMenuOpen(false);
   setLeftToolbarSpacingTuningMode(false);
   setLeftToolbarSpacingMenuOpen(false);
+  projectMainFloatingToolbarRuntime('safe-reset-shell');
 
   if (leftSearchInput) {
     leftSearchInput.value = '';
