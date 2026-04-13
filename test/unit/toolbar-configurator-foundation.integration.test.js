@@ -65,7 +65,7 @@ test('toolbar configurator foundation: restore-last-stable and project switch re
   assert.ok(projectSwitchSnippet.includes('adoptToolbarConfiguratorState(currentProjectId);'))
 })
 
-test('toolbar configurator foundation: master is visible and profile-switch wiring is present', () => {
+test('toolbar configurator foundation: master is visible and reorder-aware wiring is present', () => {
   const source = readEditorSource()
 
   const foundationStart = source.indexOf('function initializeToolbarConfiguratorFoundation() {')
@@ -77,17 +77,21 @@ test('toolbar configurator foundation: master is visible and profile-switch wiri
   assert.ok(foundationSnippet.includes('setToolbarConfiguratorActiveProfile(profileSwitchButton.dataset.toolbarProfileSwitch || \'\');'))
   assert.ok(foundationSnippet.includes("addToolbarConfiguratorItem(libraryButton.dataset.itemId || '', getToolbarConfiguratorActiveProfile());"))
   assert.ok(foundationSnippet.includes("removeToolbarConfiguratorItem(removeButton.dataset.itemId || '', bucketKey);"))
-  assert.ok(foundationSnippet.includes("addToolbarConfiguratorItem(payload.itemId, bucketKey);"))
-  assert.ok(foundationSnippet.includes("sourceType: 'library-item'"))
-  assert.ok(foundationSnippet.includes("event.dataTransfer.effectAllowed = 'copy';"))
-  assert.equal(foundationSnippet.includes("effectAllowed = 'move'"), false)
-  assert.equal(foundationSnippet.includes('bucket.dataset.bucketIndex'), false)
-
   assert.equal(source.includes('configuratorSlotButtons'), false)
   assert.equal(source.includes('applyConfiguratorSelection'), false)
   assert.equal(source.includes('setActiveConfiguratorBucketSelection'), false)
   assert.equal(source.includes('moveConfiguratorBucketItem'), false)
   assert.equal(source.includes('handleConfiguratorBucketPointer'), false)
-  assert.ok(source.includes('item.draggable = false;'))
+  assert.ok(source.includes('item.draggable = true;'))
+  assert.ok(source.includes("sourceType: isBucketItem ? 'bucket-item' : 'library-item'"))
+  assert.ok(source.includes("bucketKey: isBucketItem"))
+  assert.ok(source.includes("sourceIndex: isBucketItem ? sourceElement.dataset.bucketIndex || '' : undefined"))
+  assert.ok(source.includes("event.dataTransfer.effectAllowed = isBucketItem ? 'move' : 'copy';"))
+  assert.ok(source.includes("setToolbarConfiguratorDropTarget(bucket, marker, hoveredItem instanceof HTMLElement && bucket.contains(hoveredItem) ? hoveredItem : null);"))
+  assert.ok(source.includes("commitToolbarConfiguratorBucketDrop(payload, bucketKey, insertionIndex, hoveredItem instanceof HTMLElement ? hoveredItem : null);"))
+  assert.ok(source.includes("bucket.classList.remove('is-drop-target', 'is-drop-target-inside');"))
+  assert.ok(source.includes('is-drop-target-before'))
+  assert.ok(source.includes('is-drop-target-after'))
+  assert.ok(source.includes('is-drop-target-inside'))
   assert.ok(source.includes('initializeToolbarConfiguratorFoundation();'))
 })
