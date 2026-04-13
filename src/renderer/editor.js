@@ -1,4 +1,6 @@
 import {
+  applyTiptapCharacterStyle,
+  applyTiptapParagraphStyle,
   getTiptapDocumentSnapshot,
   getTiptapFormattingState,
   getTiptapPlainText,
@@ -116,6 +118,8 @@ const formatUnderlineButton = document.querySelector('[data-toolbar-item-key="fo
 const colorTextButton = document.querySelector('[data-toolbar-item-key="color-text"]');
 const colorHighlightButton = document.querySelector('[data-toolbar-item-key="color-highlight"]');
 const reviewCommentsButton = document.querySelector('[data-toolbar-item-key="review-comment"]');
+const styleParagraphButton = document.querySelector('[data-toolbar-item-key="style-paragraph"]');
+const styleCharacterButton = document.querySelector('[data-toolbar-item-key="style-character"]');
 const paragraphTriggerButton = document.querySelector('[data-toolbar-item-key="paragraph-trigger"]');
 const paragraphMenu = document.querySelector('[data-paragraph-menu]');
 const listTriggerButton = document.querySelector('[data-toolbar-item-key="list-type"]');
@@ -125,6 +129,9 @@ const toolbarColorPickerOverlay = document.querySelector('[data-toolbar-color-pi
 const toolbarColorPickerTitle = document.querySelector('[data-toolbar-color-picker-title]');
 const toolbarColorPickerSwatchHost = document.querySelector('[data-toolbar-color-picker-swatches]');
 const toolbarColorPickerCloseButton = document.querySelector('[data-toolbar-color-picker-close]');
+const toolbarStylesMenu = document.querySelector('[data-toolbar-styles-menu]');
+const paragraphStyleOptionButtons = Array.from(document.querySelectorAll('[data-style-paragraph-option]'));
+const characterStyleOptionButtons = Array.from(document.querySelectorAll('[data-style-character-option]'));
 const listActionButtons = Array.from(document.querySelectorAll('[data-list-action]'));
 const toolbarRuntimeRegistry = typeof toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry === 'function'
   ? toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry({
@@ -263,6 +270,7 @@ const TOOLBAR_CONFIGURATOR_LIBRARY_GROUP_LABELS = Object.freeze({
   insert: 'insert',
   color: 'color',
   review: 'review',
+  styles: 'styles',
   history: 'history',
 });
 const TOOLBAR_COLOR_PICKER_MODE_LABELS = Object.freeze({
@@ -282,6 +290,10 @@ const TOOLBAR_COLOR_PICKER_MODE_SWATCHES = Object.freeze({
     Object.freeze({ value: '#cfe8ff', label: 'Sky' }),
     Object.freeze({ value: '#d8f0c2', label: 'Mint' }),
   ]),
+});
+const TOOLBAR_STYLES_MENU_ANCHORS = Object.freeze({
+  paragraph: 'paragraph',
+  character: 'character',
 });
 const FLOATING_TOOLBAR_DRAG_THRESHOLD_PX = 6;
 const FLOATING_TOOLBAR_ROTATE_THRESHOLD_PX = 30;
@@ -323,6 +335,14 @@ let toolbarColorPickerState = {
   selectedByMode: {
     text: '',
     highlight: '',
+  },
+};
+let toolbarStylesMenuState = {
+  open: false,
+  anchor: TOOLBAR_STYLES_MENU_ANCHORS.paragraph,
+  selectedByKind: {
+    paragraph: '',
+    character: '',
   },
 };
 let lastSearchQuery = '';
@@ -753,6 +773,7 @@ function setToolbarSpacingMenuOpen(nextOpen) {
   setParagraphMenuOpen(false);
   setListMenuOpen(false);
   setToolbarColorPickerOpen(false);
+  setToolbarStylesMenuOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
   const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
   toolbarSpacingMenu.hidden = false;
@@ -780,6 +801,7 @@ function setParagraphMenuOpen(nextOpen) {
   setToolbarSpacingMenuOpen(false);
   setListMenuOpen(false);
   setToolbarColorPickerOpen(false);
+  setToolbarStylesMenuOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
   const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
   const triggerRect = paragraphTriggerButton.getBoundingClientRect();
@@ -805,6 +827,7 @@ function setListMenuOpen(nextOpen) {
   setParagraphMenuOpen(false);
   setToolbarSpacingMenuOpen(false);
   setToolbarColorPickerOpen(false);
+  setToolbarStylesMenuOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
   const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
   const triggerRect = listTriggerButton.getBoundingClientRect();
@@ -818,6 +841,68 @@ function setListMenuOpen(nextOpen) {
   listMenu.style.left = `${nextLeft}px`;
   listMenu.style.top = `${nextTop}px`;
   listTriggerButton.setAttribute('aria-expanded', 'true');
+}
+
+function normalizeToolbarStylesMenuAnchor(anchor) {
+  return anchor === TOOLBAR_STYLES_MENU_ANCHORS.character
+    ? TOOLBAR_STYLES_MENU_ANCHORS.character
+    : TOOLBAR_STYLES_MENU_ANCHORS.paragraph;
+}
+
+function getToolbarStylesAnchorButton(anchor) {
+  return normalizeToolbarStylesMenuAnchor(anchor) === TOOLBAR_STYLES_MENU_ANCHORS.character
+    ? styleCharacterButton
+    : styleParagraphButton;
+}
+
+function setToolbarStylesMenuOpen(nextOpen, nextAnchor = toolbarStylesMenuState.anchor) {
+  if (!toolbarStylesMenu || !toolbarShell) return;
+  const anchor = normalizeToolbarStylesMenuAnchor(nextAnchor);
+  if (!nextOpen) {
+    toolbarStylesMenu.hidden = true;
+    toolbarStylesMenu.setAttribute('aria-hidden', 'true');
+    if (styleParagraphButton instanceof HTMLElement) {
+      styleParagraphButton.setAttribute('aria-expanded', 'false');
+    }
+    if (styleCharacterButton instanceof HTMLElement) {
+      styleCharacterButton.setAttribute('aria-expanded', 'false');
+    }
+    toolbarStylesMenuState = {
+      ...toolbarStylesMenuState,
+      open: false,
+      anchor,
+    };
+    return;
+  }
+  setToolbarSpacingMenuOpen(false);
+  setParagraphMenuOpen(false);
+  setListMenuOpen(false);
+  setToolbarColorPickerOpen(false);
+  const anchorButton = getToolbarStylesAnchorButton(anchor);
+  if (!(anchorButton instanceof HTMLElement)) return;
+  const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
+  const triggerRect = anchorButton.getBoundingClientRect();
+  toolbarStylesMenu.hidden = false;
+  toolbarStylesMenu.setAttribute('aria-hidden', 'false');
+  const menuRect = toolbarStylesMenu.getBoundingClientRect();
+  const rawLeft = (triggerRect.left - shellRect.left) / shellScale + ((triggerRect.width / shellScale - menuRect.width) / 2);
+  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuRect.width);
+  const nextLeft = Math.round(Math.min(Math.max(rawLeft, 0), maxLeft));
+  const nextTop = Math.round(((triggerRect.bottom - shellRect.top) / shellScale) + 10);
+  toolbarStylesMenu.style.left = `${nextLeft}px`;
+  toolbarStylesMenu.style.top = `${nextTop}px`;
+  toolbarStylesMenuState = {
+    ...toolbarStylesMenuState,
+    open: true,
+    anchor,
+  };
+  if (styleParagraphButton instanceof HTMLElement) {
+    styleParagraphButton.setAttribute('aria-expanded', anchor === TOOLBAR_STYLES_MENU_ANCHORS.paragraph ? 'true' : 'false');
+  }
+  if (styleCharacterButton instanceof HTMLElement) {
+    styleCharacterButton.setAttribute('aria-expanded', anchor === TOOLBAR_STYLES_MENU_ANCHORS.character ? 'true' : 'false');
+  }
 }
 
 function setToolbarSpacingTuningMode(nextActive) {
@@ -869,6 +954,8 @@ function updateToolbarAnchorVars() {
     setParagraphMenuOpen(true);
   } else if (!listMenu?.hidden) {
     setListMenuOpen(true);
+  } else if (!toolbarStylesMenu?.hidden) {
+    setToolbarStylesMenuOpen(true, toolbarStylesMenuState.anchor);
   }
 }
 
@@ -2396,6 +2483,41 @@ function initializeFloatingToolbarColorPickerOverlay() {
     if (event.key === 'Escape' && !toolbarColorPickerOverlay.hidden) {
       event.preventDefault();
       setToolbarColorPickerOpen(false);
+    }
+  });
+}
+
+function initializeFloatingToolbarStylesMenu() {
+  if (!toolbarShell || !toolbarStylesMenu) return;
+
+  toolbarStylesMenu.addEventListener('click', (event) => {
+    const target = event.target instanceof Element
+      ? event.target.closest('[data-style-paragraph-option], [data-style-character-option]')
+      : null;
+    if (!target) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const optionId = target.getAttribute('data-style-paragraph-option')
+      || target.getAttribute('data-style-character-option')
+      || '';
+    if (!optionId) return;
+    applyTextStyle(optionId);
+    setToolbarStylesMenuOpen(false);
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (toolbarStylesMenu.hidden) return;
+    if (toolbarStylesMenu.contains(target)) return;
+    if (target.closest('[data-toolbar-item-key="style-paragraph"], [data-toolbar-item-key="style-character"]')) return;
+    setToolbarStylesMenuOpen(false);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !toolbarStylesMenu.hidden) {
+      event.preventDefault();
+      setToolbarStylesMenuOpen(false);
     }
   });
 }
@@ -5348,7 +5470,22 @@ function applyViewMode(mode, persist = true) {
 }
 
 function applyTextStyle(action) {
-  if (!editor || !action) return;
+  if (!editor || !action) {
+    return { performed: false, action: 'applyTextStyle', reason: 'EDITOR_UNAVAILABLE', optionId: action || '' };
+  }
+  if (isTiptapMode) {
+    const tiptapResult = action.startsWith('paragraph-')
+      ? applyTiptapParagraphStyle(action)
+      : (action.startsWith('character-')
+        ? applyTiptapCharacterStyle(action)
+        : { performed: false, action: 'applyTextStyle', reason: 'UNSUPPORTED_STYLE_OPTION', optionId: action });
+    if (tiptapResult && tiptapResult.performed !== false) {
+      markAsModified();
+      updateWordCount();
+    }
+    syncToolbarFormattingState();
+    return tiptapResult;
+  }
   const text = getPlainText();
   const { start: rawStart, end: rawEnd } = getSelectionOffsets();
   const boundedStart = Math.max(0, Math.min(rawStart, rawEnd));
@@ -5356,18 +5493,29 @@ function applyTextStyle(action) {
   const start = Math.min(boundedStart, text.length);
   const end = Math.min(boundedEnd, text.length);
   let result = null;
+  let actionId = 'applyTextStyle';
+
+  if (action.startsWith('character-') && start === end) {
+    updateStatusText('Выделите текст');
+    return { performed: false, action: 'applyCharacterStyle', reason: 'NO_SELECTION', optionId: action };
+  }
 
   if (action.startsWith('paragraph-')) {
+    actionId = 'applyParagraphStyle';
     result = applyParagraphStyle(text, start, end, action);
   } else if (action.startsWith('character-')) {
+    actionId = 'applyCharacterStyle';
     result = applyCharacterStyle(text, start, end, action);
   }
 
-  if (!result) return;
+  if (!result) {
+    return { performed: false, action: actionId, reason: 'NO_OP', optionId: action };
+  }
   setPlainText(result.newText);
   setSelectionRange(result.newStart, result.newEnd);
   markAsModified();
   updateWordCount();
+  return { performed: true, action: actionId, reason: null, optionId: action };
 }
 
 function updateAlignmentButtons(activeAction) {
@@ -6026,6 +6174,8 @@ function normalizeToolbarFormattingState(input) {
     orderedList: Boolean(source.orderedList),
     link: Boolean(source.link || source.linkActive),
     linkHref: typeof source.linkHref === 'string' ? source.linkHref : '',
+    paragraphStyle: typeof source.paragraphStyle === 'string' ? source.paragraphStyle : '',
+    characterStyle: typeof source.characterStyle === 'string' ? source.characterStyle : '',
     selectionEmpty: source.selectionEmpty !== false,
   };
 }
@@ -6089,6 +6239,7 @@ function setToolbarColorPickerOpen(nextOpen, nextMode = toolbarColorPickerState.
     setParagraphMenuOpen(false);
     setListMenuOpen(false);
     setToolbarSpacingMenuOpen(false);
+    setToolbarStylesMenuOpen(false);
   }
   toolbarColorPickerState = {
     ...toolbarColorPickerState,
@@ -6168,6 +6319,28 @@ function syncToolbarShellState() {
     reviewCommentsButton.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     reviewCommentsButton.setAttribute('aria-label', 'Open comments');
   }
+  if (styleParagraphButton instanceof HTMLElement) {
+    styleParagraphButton.classList.toggle(
+      'is-open',
+      toolbarStylesMenuState.open && toolbarStylesMenuState.anchor === TOOLBAR_STYLES_MENU_ANCHORS.paragraph,
+    );
+    styleParagraphButton.classList.toggle('is-active', toolbarStylesMenuState.selectedByKind.paragraph.length > 0);
+    styleParagraphButton.setAttribute(
+      'aria-expanded',
+      toolbarStylesMenuState.open && toolbarStylesMenuState.anchor === TOOLBAR_STYLES_MENU_ANCHORS.paragraph ? 'true' : 'false',
+    );
+  }
+  if (styleCharacterButton instanceof HTMLElement) {
+    styleCharacterButton.classList.toggle(
+      'is-open',
+      toolbarStylesMenuState.open && toolbarStylesMenuState.anchor === TOOLBAR_STYLES_MENU_ANCHORS.character,
+    );
+    styleCharacterButton.classList.toggle('is-active', toolbarStylesMenuState.selectedByKind.character.length > 0);
+    styleCharacterButton.setAttribute(
+      'aria-expanded',
+      toolbarStylesMenuState.open && toolbarStylesMenuState.anchor === TOOLBAR_STYLES_MENU_ANCHORS.character ? 'true' : 'false',
+    );
+  }
   if (toolbarColorPickerOverlay instanceof HTMLElement) {
     toolbarColorPickerOverlay.classList.toggle('is-open', toolbarColorPickerState.open);
     toolbarColorPickerOverlay.dataset.toolbarColorPickerMode = normalizeToolbarColorPickerMode(toolbarColorPickerState.mode);
@@ -6178,6 +6351,18 @@ function syncToolbarShellState() {
       toolbarColorPickerOverlay.style.top = '';
     }
   }
+  paragraphStyleOptionButtons.forEach((button) => {
+    const optionId = button.getAttribute('data-style-paragraph-option') || '';
+    const active = optionId.length > 0 && optionId === toolbarStylesMenuState.selectedByKind.paragraph;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  characterStyleOptionButtons.forEach((button) => {
+    const optionId = button.getAttribute('data-style-character-option') || '';
+    const active = optionId.length > 0 && optionId === toolbarStylesMenuState.selectedByKind.character;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
   renderToolbarColorPickerOverlay();
 }
 
@@ -6209,6 +6394,13 @@ function syncToolbarFormattingState(nextState = null) {
       highlight: state.highlightColor,
     },
   };
+  toolbarStylesMenuState = {
+    ...toolbarStylesMenuState,
+    selectedByKind: {
+      paragraph: state.paragraphStyle,
+      character: state.characterStyle,
+    },
+  };
 
   if (listTriggerButton instanceof HTMLElement) {
     const hasList = state.bulletList || state.orderedList;
@@ -6225,6 +6417,24 @@ function syncToolbarFormattingState(nextState = null) {
     button.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
   syncToolbarShellState();
+}
+
+function handleToggleStylesMenu(anchor) {
+  const normalizedAnchor = normalizeToolbarStylesMenuAnchor(anchor);
+  const isOpen = toolbarStylesMenu instanceof HTMLElement
+    && !toolbarStylesMenu.hidden
+    && toolbarStylesMenuState.anchor === normalizedAnchor;
+  setToolbarStylesMenuOpen(!isOpen, normalizedAnchor);
+  syncToolbarShellState();
+  return { performed: true, action: 'toggleStylesMenu', reason: null, optionId: normalizedAnchor };
+}
+
+function handleStyleParagraphMenu() {
+  return handleToggleStylesMenu(TOOLBAR_STYLES_MENU_ANCHORS.paragraph);
+}
+
+function handleStyleCharacterMenu() {
+  return handleToggleStylesMenu(TOOLBAR_STYLES_MENU_ANCHORS.character);
 }
 
 function handleFormatTextColorPicker() {
@@ -6251,6 +6461,7 @@ function handleFormatHighlightColorPicker() {
 
 function handleReviewOpenComments() {
   setToolbarColorPickerOpen(false);
+  setToolbarStylesMenuOpen(false);
   if (currentMode === 'review' && currentRightTab === 'comments') {
     syncToolbarShellState();
     return { performed: true, action: 'reviewOpenComments', reason: null };
@@ -6396,6 +6607,12 @@ function handleUiAction(action) {
       return true;
     case 'toggle-list-menu':
       setListMenuOpen(!(listMenu && !listMenu.hidden));
+      return true;
+    case 'toggle-style-paragraph-menu':
+      handleStyleParagraphMenu();
+      return true;
+    case 'toggle-style-character-menu':
+      handleStyleCharacterMenu();
       return true;
     case 'format-bold':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TOGGLE_BOLD);
@@ -6630,6 +6847,7 @@ initializeFloatingToolbarSpacingMenu();
 initializeFloatingToolbarParagraphMenu();
 initializeFloatingToolbarListMenu();
 initializeFloatingToolbarColorPickerOverlay();
+initializeFloatingToolbarStylesMenu();
 syncToolbarFormattingState();
 initializeFloatingToolbarItemOffsetTuning();
 initializeFloatingToolbarDragFoundation();

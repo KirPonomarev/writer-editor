@@ -67,6 +67,177 @@ function normalizeFormattingColor(value) {
     : ''
 }
 
+const STRUCTURED_PARAGRAPH_STYLE_OPTIONS = new Set([
+  'paragraph-none',
+  'paragraph-title',
+  'paragraph-heading1',
+  'paragraph-heading2',
+  'paragraph-blockquote',
+])
+
+const STRUCTURED_CHARACTER_STYLE_OPTIONS = new Set([
+  'character-emphasis',
+  'character-code-span',
+])
+
+function createStructuredStyleResult(action, performed, reason, optionId = null) {
+  return {
+    performed: Boolean(performed),
+    action,
+    reason: reason || null,
+    optionId,
+  }
+}
+
+function getStructuredParagraphStyleOption(editor) {
+  if (!editor || typeof editor.isActive !== 'function') {
+    return ''
+  }
+
+  if (
+    editor.isActive('bulletList')
+    || editor.isActive('orderedList')
+    || editor.isActive('codeBlock')
+  ) {
+    return ''
+  }
+
+  if (editor.isActive('blockquote')) {
+    return 'paragraph-blockquote'
+  }
+  if (editor.isActive('heading', { level: 1 })) {
+    return 'paragraph-title'
+  }
+  if (editor.isActive('heading', { level: 2 })) {
+    return 'paragraph-heading1'
+  }
+  if (editor.isActive('heading', { level: 3 })) {
+    return 'paragraph-heading2'
+  }
+  if (editor.isActive('paragraph')) {
+    return 'paragraph-none'
+  }
+  return ''
+}
+
+function getStructuredCharacterStyleOption(editor) {
+  if (!editor || typeof editor.isActive !== 'function') {
+    return ''
+  }
+
+  if (editor.isActive('code')) {
+    return 'character-code-span'
+  }
+  if (editor.isActive('italic')) {
+    return 'character-emphasis'
+  }
+  return ''
+}
+
+function runTiptapStructuredParagraphStyle(optionId) {
+  if (!STRUCTURED_PARAGRAPH_STYLE_OPTIONS.has(optionId)) {
+    return createStructuredStyleResult('applyParagraphStyle', false, 'UNSUPPORTED_STYLE_OPTION', optionId)
+  }
+  if (!currentEditorInstance || !currentEditorInstance.commands) {
+    return createStructuredStyleResult('applyParagraphStyle', false, 'EDITOR_UNAVAILABLE', optionId)
+  }
+
+  const currentOptionId = getStructuredParagraphStyleOption(currentEditorInstance)
+  if (currentOptionId === optionId) {
+    return createStructuredStyleResult('applyParagraphStyle', false, 'NO_OP', optionId)
+  }
+
+  const chain = typeof currentEditorInstance.chain === 'function'
+    ? currentEditorInstance.chain().focus()
+    : null
+  if (!chain || typeof chain.run !== 'function') {
+    return createStructuredStyleResult('applyParagraphStyle', false, 'FORMAT_COMMAND_UNSUPPORTED', optionId)
+  }
+
+  let performed = false
+  if (optionId === 'paragraph-none') {
+    if (
+      typeof chain.clearNodes !== 'function'
+      || typeof chain.setParagraph !== 'function'
+    ) {
+      return createStructuredStyleResult('applyParagraphStyle', false, 'FORMAT_COMMAND_UNSUPPORTED', optionId)
+    }
+    performed = Boolean(chain.clearNodes().setParagraph().run())
+  } else if (optionId === 'paragraph-blockquote') {
+    if (
+      typeof chain.clearNodes !== 'function'
+      || typeof chain.setBlockquote !== 'function'
+    ) {
+      return createStructuredStyleResult('applyParagraphStyle', false, 'FORMAT_COMMAND_UNSUPPORTED', optionId)
+    }
+    performed = Boolean(chain.clearNodes().setBlockquote().run())
+  } else {
+    const levelMap = {
+      'paragraph-title': 1,
+      'paragraph-heading1': 2,
+      'paragraph-heading2': 3,
+    }
+    if (
+      typeof chain.clearNodes !== 'function'
+      || typeof chain.setHeading !== 'function'
+    ) {
+      return createStructuredStyleResult('applyParagraphStyle', false, 'FORMAT_COMMAND_UNSUPPORTED', optionId)
+    }
+    performed = Boolean(chain.clearNodes().setHeading({ level: levelMap[optionId] }).run())
+  }
+
+  notifyFormattingStateChange()
+  return createStructuredStyleResult(
+    'applyParagraphStyle',
+    performed,
+    performed ? null : 'NO_OP',
+    optionId,
+  )
+}
+
+function runTiptapStructuredCharacterStyle(optionId) {
+  if (!STRUCTURED_CHARACTER_STYLE_OPTIONS.has(optionId)) {
+    return createStructuredStyleResult('applyCharacterStyle', false, 'UNSUPPORTED_STYLE_OPTION', optionId)
+  }
+  if (!currentEditorInstance || !currentEditorInstance.commands) {
+    return createStructuredStyleResult('applyCharacterStyle', false, 'EDITOR_UNAVAILABLE', optionId)
+  }
+
+  const state = readFormattingState(currentEditorInstance)
+  if (state.selectionEmpty) {
+    return createStructuredStyleResult('applyCharacterStyle', false, 'NO_SELECTION', optionId)
+  }
+
+  let performed = false
+  if (optionId === 'character-emphasis') {
+    if (typeof currentEditorInstance.commands.toggleItalic !== 'function') {
+      return createStructuredStyleResult('applyCharacterStyle', false, 'FORMAT_COMMAND_UNSUPPORTED', optionId)
+    }
+    performed = Boolean(currentEditorInstance.commands.toggleItalic())
+  } else {
+    if (typeof currentEditorInstance.commands.toggleCode !== 'function') {
+      return createStructuredStyleResult('applyCharacterStyle', false, 'FORMAT_COMMAND_UNSUPPORTED', optionId)
+    }
+    performed = Boolean(currentEditorInstance.commands.toggleCode())
+  }
+
+  notifyFormattingStateChange()
+  return createStructuredStyleResult(
+    'applyCharacterStyle',
+    performed,
+    performed ? null : 'NO_OP',
+    optionId,
+  )
+}
+
+export function applyTiptapParagraphStyle(optionId) {
+  return runTiptapStructuredParagraphStyle(optionId)
+}
+
+export function applyTiptapCharacterStyle(optionId) {
+  return runTiptapStructuredCharacterStyle(optionId)
+}
+
 function readFormattingState(editor) {
   if (!editor || typeof editor.isActive !== 'function') {
     return {
@@ -80,6 +251,8 @@ function readFormattingState(editor) {
       link: false,
       linkActive: false,
       linkHref: '',
+      paragraphStyle: '',
+      characterStyle: '',
       selectionEmpty: true,
       bulletList: false,
       orderedList: false,
@@ -106,6 +279,8 @@ function readFormattingState(editor) {
     link: linkActive,
     linkActive,
     linkHref: linkAttributes && typeof linkAttributes.href === 'string' ? linkAttributes.href : '',
+    paragraphStyle: getStructuredParagraphStyleOption(editor),
+    characterStyle: getStructuredCharacterStyleOption(editor),
     selectionEmpty,
     bulletList: Boolean(editor.isActive('bulletList')),
     orderedList: Boolean(editor.isActive('orderedList')),

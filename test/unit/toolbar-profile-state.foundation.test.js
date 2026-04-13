@@ -51,6 +51,8 @@ test('toolbar foundation catalog: live planned blocked filtering and canonical o
     'toolbar.color.text',
     'toolbar.color.highlight',
     'toolbar.review.comment',
+    'toolbar.style.paragraph',
+    'toolbar.style.character',
     'toolbar.history.undo',
     'toolbar.history.redo',
   ])

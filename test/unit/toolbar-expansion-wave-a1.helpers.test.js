@@ -47,6 +47,8 @@ test('toolbar expansion wave a1: catalog promotes bold, italic, underline, link 
     'toolbar.color.text',
     'toolbar.color.highlight',
     'toolbar.review.comment',
+    'toolbar.style.paragraph',
+    'toolbar.style.character',
     'toolbar.history.undo',
     'toolbar.history.redo',
   ])

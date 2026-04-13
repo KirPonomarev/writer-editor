@@ -713,6 +713,10 @@ body {
   gap: 0;
 }
 
+.floating-toolbar__group--styles {
+  gap: 4px;
+}
+
 .floating-toolbar-spacing-menu {
   position: absolute;
   left: 0;
@@ -1036,6 +1040,20 @@ body {
   width: calc(28px * var(--floating-toolbar-width-scale));
 }
 
+.floating-toolbar__button--styles {
+  width: calc(28px * var(--floating-toolbar-width-scale));
+  padding: 0;
+  gap: 4px;
+}
+
+.floating-toolbar__styles-glyph {
+  min-width: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
 .floating-toolbar__button--color {
   padding: 0;
 }
@@ -1211,6 +1229,72 @@ body {
 .floating-toolbar__paragraph-menu-item:hover,
 .floating-toolbar__paragraph-menu-item.is-active {
   background: rgba(221, 216, 210, 0.4);
+}
+
+.floating-toolbar__styles-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  min-width: 238px;
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(50, 36, 24, 0.12);
+  background: rgba(248, 246, 243, 0.96);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03),
+    0 8px 20px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.floating-toolbar__styles-menu[hidden] {
+  display: none;
+}
+
+.floating-toolbar__styles-menu-section {
+  min-width: 104px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.floating-toolbar__styles-menu-title {
+  padding: 2px 10px 1px;
+  color: rgba(61, 61, 61, 0.72);
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.floating-toolbar__styles-menu-item {
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #3d3d3d;
+  min-height: 28px;
+  padding: 0 10px;
+  text-align: left;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.floating-toolbar__styles-menu-item:hover,
+.floating-toolbar__styles-menu-item.is-active {
+  background: rgba(221, 216, 210, 0.4);
+}
+
+.floating-toolbar__styles-menu-divider {
+  width: 1px;
+  margin: 2px 0;
+  background: rgba(50, 36, 24, 0.12);
+  align-self: stretch;
 }
 
 .floating-toolbar__list-menu {
