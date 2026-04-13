@@ -14,7 +14,7 @@ test('sector-m toolbar minimal runtime: editor wires the shared registry project
 
   assert.ok(source.includes("from './toolbar/toolbarRuntimeProjection.mjs'"), 'shared toolbar runtime module import must exist')
   assert.ok(source.includes('createToolbarRuntimeRegistry('), 'shared runtime registry must be created')
-  assert.ok(source.includes('applyToolbarProfileMinimal('), 'minimal profile projection must be applied')
+  assert.ok(source.includes('applyToolbarActiveProfile('), 'active profile projection must be applied')
   assert.ok(source.includes('function projectMainFloatingToolbarRuntime('), 'main toolbar projection helper must exist')
 
   const cleanupStart = source.indexOf('function closeOrphanedMainToolbarOverlays(')
@@ -35,7 +35,7 @@ test('sector-m toolbar minimal runtime: editor wires the shared registry project
   assert.ok(helperSnippet.includes('scheduleToolbarAnchorUpdate();'), 'helper must resync toolbar anchors after projection')
   assert.equal(helperSnippet.includes('leftToolbar'), false, 'projection helper must stay on the main floating toolbar path')
 
-  const commitStart = source.indexOf('function commitToolbarConfiguratorState(minimalIds) {')
+  const commitStart = source.indexOf('function commitToolbarConfiguratorState(nextState) {')
   const adoptStart = source.indexOf('function adoptToolbarConfiguratorState(projectId = currentProjectId) {')
   const initStart = source.indexOf('function initializeToolbarConfiguratorFoundation() {')
   const safeResetStart = source.indexOf('function performSafeResetShell() {')
@@ -49,13 +49,17 @@ test('sector-m toolbar minimal runtime: editor wires the shared registry project
   const safeResetSnippet = source.slice(safeResetStart, restoreStart)
   const projectSwitchSnippet = source.slice(projectSwitchStart, source.indexOf('window.electronAPI.onEditorTextRequest', projectSwitchStart))
 
+  assert.ok(commitSnippet.includes('renderToolbarConfiguratorProfileSwitch();'))
   assert.ok(commitSnippet.includes('renderToolbarConfiguratorBuckets();'))
   assert.ok(commitSnippet.includes("projectMainFloatingToolbarRuntime('configurator-commit');"))
   assert.ok(adoptSnippet.includes('renderToolbarConfiguratorLibrary();'))
+  assert.ok(adoptSnippet.includes('renderToolbarConfiguratorProfileSwitch();'))
   assert.ok(adoptSnippet.includes('renderToolbarConfiguratorBuckets();'))
   assert.ok(adoptSnippet.includes("projectMainFloatingToolbarRuntime('configurator-adopt');"))
   assert.ok(initSnippet.includes('adoptToolbarConfiguratorState(currentProjectId);'))
+  assert.ok(initSnippet.includes('setToolbarConfiguratorActiveProfile(profileSwitchButton.dataset.toolbarProfileSwitch || \'\');'))
   assert.ok(safeResetSnippet.includes('renderToolbarConfiguratorBuckets();'))
+  assert.ok(safeResetSnippet.includes('renderToolbarConfiguratorProfileSwitch();'))
   assert.ok(safeResetSnippet.includes("projectMainFloatingToolbarRuntime('safe-reset-shell');"))
   assert.ok(source.slice(restoreStart, projectSwitchStart).includes('adoptToolbarConfiguratorState(currentProjectId);'))
   assert.ok(projectSwitchSnippet.includes('restoreSpatialLayoutState(currentProjectId);'))
