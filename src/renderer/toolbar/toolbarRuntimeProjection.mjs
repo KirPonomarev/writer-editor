@@ -89,6 +89,12 @@ function getParagraphTriggerDescriptor(registry) {
     : null;
 }
 
+function getListTriggerDescriptor(registry) {
+  return Array.isArray(registry?.itemDescriptors)
+    ? registry.itemDescriptors.find((descriptor) => descriptor.bindKey === 'list-type') || null
+    : null;
+}
+
 function closeParagraphOverlay(registry, paragraphTriggerVisible) {
   if (!registry?.paragraphMenu || registry.paragraphMenu.hidden === true || paragraphTriggerVisible) {
     return;
@@ -97,6 +103,17 @@ function closeParagraphOverlay(registry, paragraphTriggerVisible) {
   const paragraphTriggerButton = registry.paragraphTriggerButton || getParagraphTriggerDescriptor(registry)?.node || null;
   if (paragraphTriggerButton && typeof paragraphTriggerButton.setAttribute === 'function') {
     paragraphTriggerButton.setAttribute('aria-expanded', 'false');
+  }
+}
+
+function closeListOverlay(registry, listTriggerVisible) {
+  if (!registry?.listMenu || registry.listMenu.hidden === true || listTriggerVisible) {
+    return;
+  }
+  registry.listMenu.hidden = true;
+  const listTriggerButton = registry.listTriggerButton || getListTriggerDescriptor(registry)?.node || null;
+  if (listTriggerButton && typeof listTriggerButton.setAttribute === 'function') {
+    listTriggerButton.setAttribute('aria-expanded', 'false');
   }
 }
 
@@ -199,9 +216,15 @@ export function createToolbarRuntimeRegistry(input = {}) {
     toolbarSpacingMenu: isNodeLike(options.toolbarSpacingMenu)
       ? options.toolbarSpacingMenu
       : queryNode(toolbarShell, '[data-toolbar-spacing-menu]'),
+    listMenu: isNodeLike(options.listMenu)
+      ? options.listMenu
+      : queryNode(toolbarShell, '[data-list-menu]'),
     paragraphTriggerButton: isNodeLike(options.paragraphTriggerButton)
       ? options.paragraphTriggerButton
       : queryNode(toolbarShell, '[data-toolbar-item-key="paragraph-trigger"]'),
+    listTriggerButton: isNodeLike(options.listTriggerButton)
+      ? options.listTriggerButton
+      : queryNode(toolbarShell, '[data-toolbar-item-key="list-type"]'),
   });
 }
 
@@ -238,7 +261,10 @@ export function resolveToolbarRuntimeSnapshot(registry) {
 
   const paragraphTriggerDescriptor = getParagraphTriggerDescriptor(registry);
   const paragraphTriggerVisible = Boolean(paragraphTriggerDescriptor?.node) && paragraphTriggerDescriptor.node.hidden !== true;
+  const listTriggerDescriptor = getListTriggerDescriptor(registry);
+  const listTriggerVisible = Boolean(listTriggerDescriptor?.node) && listTriggerDescriptor.node.hidden !== true;
   const spacingMenuVisible = Boolean(registry?.toolbarSpacingMenu) && registry.toolbarSpacingMenu.hidden !== true;
+  const listMenuVisible = Boolean(registry?.listMenu) && registry.listMenu.hidden !== true;
 
   return Object.freeze({
     visibleItemIds: Object.freeze(visibleItemIds),
@@ -248,7 +274,9 @@ export function resolveToolbarRuntimeSnapshot(registry) {
     missingBindKeys: Array.isArray(registry?.missingBindKeys) ? registry.missingBindKeys : Object.freeze([]),
     groupVisibleBindKeys: Object.freeze(groupVisibleBindKeys),
     paragraphTriggerVisible,
+    listTriggerVisible,
     spacingMenuVisible,
+    listMenuVisible,
     hasVisibleItems: visibleItemIds.length > 0,
     anchorResyncRequired: true,
   });
@@ -278,7 +306,10 @@ export function applyToolbarProfileMinimal(registry, profileState) {
 
   const paragraphTriggerDescriptor = getParagraphTriggerDescriptor(registry);
   const paragraphTriggerVisible = Boolean(paragraphTriggerDescriptor?.node) && paragraphTriggerDescriptor.node.hidden !== true;
+  const listTriggerDescriptor = getListTriggerDescriptor(registry);
+  const listTriggerVisible = Boolean(listTriggerDescriptor?.node) && listTriggerDescriptor.node.hidden !== true;
   closeParagraphOverlay(registry, paragraphTriggerVisible);
+  closeListOverlay(registry, listTriggerVisible);
   closeSpacingOverlay(registry);
 
   return resolveToolbarRuntimeSnapshot(registry);

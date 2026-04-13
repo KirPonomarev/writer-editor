@@ -28,8 +28,10 @@ test('sector-m toolbar minimal runtime: editor wires the shared registry project
   assert.ok(cleanupSnippet.includes('hasVisibleItems'), 'cleanup helper must respect the projection snapshot visibility flag')
   assert.ok(cleanupSnippet.includes('visibleBindKeys'), 'cleanup helper must inspect visible bind keys from the projection snapshot')
   assert.ok(cleanupSnippet.includes('setParagraphMenuOpen(false);'), 'cleanup helper must close orphaned paragraph overlay')
+  assert.ok(cleanupSnippet.includes('setListMenuOpen(false);'), 'cleanup helper must close orphaned list overlay')
   assert.ok(cleanupSnippet.includes('setToolbarSpacingMenuOpen(false);'), 'cleanup helper must close orphaned spacing overlay')
   assert.ok(helperSnippet.includes('restoreFocusFromHiddenMainToolbarItem();'), 'helper must restore focus away from hidden toolbar controls')
+  assert.ok(helperSnippet.includes('syncToolbarFormattingState();'), 'helper must resync derived formatting state after projection')
   assert.ok(helperSnippet.includes('scheduleToolbarAnchorUpdate();'), 'helper must resync toolbar anchors after projection')
   assert.equal(helperSnippet.includes('leftToolbar'), false, 'projection helper must stay on the main floating toolbar path')
 

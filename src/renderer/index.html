@@ -243,6 +243,28 @@
               </select>
             </div>
           </div>
+          <div class="floating-toolbar__group floating-toolbar__group--format-inline">
+            <button
+              type="button"
+              class="floating-toolbar__button floating-toolbar__button--format"
+              data-action="format-bold"
+              data-toolbar-item-key="format-bold"
+              aria-label="Bold"
+              aria-pressed="false"
+            >
+              <span class="floating-toolbar__format-glyph" aria-hidden="true">B</span>
+            </button>
+            <button
+              type="button"
+              class="floating-toolbar__button floating-toolbar__button--format floating-toolbar__button--italic"
+              data-action="format-italic"
+              data-toolbar-item-key="format-italic"
+              aria-label="Italic"
+              aria-pressed="false"
+            >
+              <span class="floating-toolbar__format-glyph" aria-hidden="true">I</span>
+            </button>
+          </div>
           <div class="floating-toolbar__group floating-toolbar__group--paragraph">
             <button
               type="button"
@@ -259,6 +281,24 @@
               </svg>
               <span class="floating-toolbar__button-label floating-toolbar__button-label--paragraph">Абзац</span>
               <svg class="floating-toolbar__caret floating-toolbar__caret--paragraph" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="floating-toolbar__button floating-toolbar__button--list"
+              data-action="toggle-list-menu"
+              data-toolbar-item-key="list-type"
+              aria-label="List type"
+              aria-haspopup="menu"
+              aria-expanded="false"
+              aria-controls="floating-toolbar-list-menu"
+            >
+              <svg class="floating-toolbar__icon floating-toolbar__icon--list" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path d="M5.5 4h7M5.5 8h7M5.5 12h7" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+                <path d="M3.2 4h.1M3.2 8h.1M3.2 12h.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              <svg class="floating-toolbar__caret floating-toolbar__caret--list" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
                 <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
@@ -281,6 +321,11 @@
           <button type="button" class="floating-toolbar__paragraph-menu-item" data-paragraph-alignment="align-center" aria-pressed="false">По центру</button>
           <button type="button" class="floating-toolbar__paragraph-menu-item" data-paragraph-alignment="align-right" aria-pressed="false">Справа</button>
           <button type="button" class="floating-toolbar__paragraph-menu-item" data-paragraph-alignment="align-justify" aria-pressed="false">По ширине</button>
+        </div>
+        <div class="floating-toolbar__list-menu" data-list-menu id="floating-toolbar-list-menu" hidden>
+          <button type="button" class="floating-toolbar__list-menu-item" data-list-action="no-list" aria-pressed="false">Без списка</button>
+          <button type="button" class="floating-toolbar__list-menu-item" data-list-action="bullet" aria-pressed="false">Маркированный</button>
+          <button type="button" class="floating-toolbar__list-menu-item" data-list-action="ordered" aria-pressed="false">Нумерованный</button>
         </div>
         <div class="floating-toolbar-spacing-menu" data-toolbar-spacing-menu hidden>
           <button

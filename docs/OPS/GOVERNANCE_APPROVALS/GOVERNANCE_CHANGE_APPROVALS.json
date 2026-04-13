@@ -2793,6 +2793,13 @@
       "approvedBy": "ticket:SCENE_RICH_CONTENT_TRUTH_FOUNDATION_001",
       "approvedAtUtc": "2026-04-13T12:00:00.000Z",
       "rationale": "SCENE_RICH_CONTENT_TRUTH_FOUNDATION_001 approves the bounded recovery truth contract for versioned rich scene payload v2."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
+      "sha256": "419cd43dd92d6d9972011586f1bb943633d260a1341f423da4e763f7978de56d",
+      "approvedBy": "ticket:TOOLBAR_EXPANSION_WAVE_A1_001",
+      "approvedAtUtc": "2026-04-13T12:30:00.000Z",
+      "rationale": "TOOLBAR_EXPANSION_WAVE_A1_001 approves command capability binding additions for TipTap-only bold, italic, and list toolbar commands."
     }
   ]
 }

@@ -28,10 +28,15 @@ export const CAPABILITY_BINDING = Object.freeze({
   'cmd.project.insert.markdownPrompt': 'cap.project.insert.markdownPrompt',
   'cmd.project.insert.flowOpen': 'cap.project.insert.flowOpen',
   'cmd.project.insert.addCard': 'cap.project.insert.addCard',
+  'cmd.project.format.toggleBold': 'cap.project.format.toggleBold',
+  'cmd.project.format.toggleItalic': 'cap.project.format.toggleItalic',
   'cmd.project.format.alignLeft': 'cap.project.format.alignLeft',
   'cmd.project.format.alignCenter': 'cap.project.format.alignCenter',
   'cmd.project.format.alignRight': 'cap.project.format.alignRight',
   'cmd.project.format.alignJustify': 'cap.project.format.alignJustify',
+  'cmd.project.list.toggleBullet': 'cap.project.list.toggleBullet',
+  'cmd.project.list.toggleOrdered': 'cap.project.list.toggleOrdered',
+  'cmd.project.list.clear': 'cap.project.list.clear',
   'cmd.project.plan.flowSave': 'cap.project.plan.flowSave',
   'cmd.project.review.exportMarkdown': 'cap.project.review.exportMarkdown',
   'cmd.project.export.docxMin': 'cap.project.export.docxMin',
@@ -75,10 +80,15 @@ export const CAPABILITY_MATRIX = Object.freeze({
     'cap.project.insert.markdownPrompt': true,
     'cap.project.insert.flowOpen': true,
     'cap.project.insert.addCard': true,
+    'cap.project.format.toggleBold': true,
+    'cap.project.format.toggleItalic': true,
     'cap.project.format.alignLeft': true,
     'cap.project.format.alignCenter': true,
     'cap.project.format.alignRight': true,
     'cap.project.format.alignJustify': true,
+    'cap.project.list.toggleBullet': true,
+    'cap.project.list.toggleOrdered': true,
+    'cap.project.list.clear': true,
     'cap.project.plan.flowSave': true,
     'cap.project.review.exportMarkdown': true,
     'cap.project.export.docxMin': true,
@@ -120,10 +130,15 @@ export const CAPABILITY_MATRIX = Object.freeze({
     'cap.project.insert.markdownPrompt': false,
     'cap.project.insert.flowOpen': false,
     'cap.project.insert.addCard': true,
+    'cap.project.format.toggleBold': true,
+    'cap.project.format.toggleItalic': true,
     'cap.project.format.alignLeft': true,
     'cap.project.format.alignCenter': true,
     'cap.project.format.alignRight': true,
     'cap.project.format.alignJustify': true,
+    'cap.project.list.toggleBullet': true,
+    'cap.project.list.toggleOrdered': true,
+    'cap.project.list.clear': true,
     'cap.project.plan.flowSave': false,
     'cap.project.review.exportMarkdown': false,
     'cap.project.export.docxMin': false,
@@ -165,10 +180,15 @@ export const CAPABILITY_MATRIX = Object.freeze({
     'cap.project.insert.markdownPrompt': false,
     'cap.project.insert.flowOpen': false,
     'cap.project.insert.addCard': true,
+    'cap.project.format.toggleBold': true,
+    'cap.project.format.toggleItalic': true,
     'cap.project.format.alignLeft': true,
     'cap.project.format.alignCenter': true,
     'cap.project.format.alignRight': true,
     'cap.project.format.alignJustify': true,
+    'cap.project.list.toggleBullet': true,
+    'cap.project.list.toggleOrdered': true,
+    'cap.project.list.clear': true,
     'cap.project.plan.flowSave': false,
     'cap.project.review.exportMarkdown': false,
     'cap.project.export.docxMin': false,
@@ -196,6 +216,31 @@ function normalizePlatformId(value) {
 
 function isDomainCommandId(commandId) {
   return commandId.startsWith('project.') || commandId.startsWith('cmd.project.');
+}
+
+const TIPTAP_RICH_COMMAND_IDS = new Set([
+  'cmd.project.format.toggleBold',
+  'cmd.project.format.toggleItalic',
+  'cmd.project.list.toggleBullet',
+  'cmd.project.list.toggleOrdered',
+  'cmd.project.list.clear',
+]);
+
+function normalizeEditorMode(value) {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+function resolveEditorMode(input, options) {
+  const fromInput = normalizeEditorMode(input && input.editorMode);
+  if (fromInput) return fromInput;
+
+  const fromOption = normalizeEditorMode(options && options.editorMode);
+  if (fromOption) return fromOption;
+
+  const defaultMode = normalizeEditorMode(options && options.defaultEditorMode);
+  if (defaultMode) return defaultMode;
+
+  return '';
 }
 
 function resolvePlatformId(input, options) {
@@ -284,6 +329,18 @@ export function enforceCapabilityForCommand(commandId, input = {}, options = {})
         commandId,
         'CAPABILITY_DISABLED_FOR_COMMAND',
         { platformId, capabilityId, commandId },
+      ),
+    };
+  }
+
+  if (TIPTAP_RICH_COMMAND_IDS.has(commandId) && resolveEditorMode(input, options) !== 'tiptap') {
+    return {
+      ok: false,
+      error: makeCapabilityError(
+        'E_CAPABILITY_DISABLED_FOR_COMMAND',
+        commandId,
+        'EDITOR_MODE_UNSUPPORTED',
+        { platformId, capabilityId, commandId, editorMode: resolveEditorMode(input, options) || 'unknown' },
       ),
     };
   }

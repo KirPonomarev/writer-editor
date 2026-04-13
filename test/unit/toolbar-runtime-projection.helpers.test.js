@@ -62,6 +62,9 @@ function wireToolbarRegistry() {
   const paragraphGroup = createStubNode('paragraph-group', {
     className: 'floating-toolbar__group floating-toolbar__group--paragraph',
   });
+  const formatGroup = createStubNode('format-group', {
+    className: 'floating-toolbar__group floating-toolbar__group--format-inline',
+  });
   const historyGroup = createStubNode('history-group', {
     className: 'floating-toolbar__group floating-toolbar__group--history',
   });
@@ -86,21 +89,36 @@ function wireToolbarRegistry() {
     dataset: { toolbarItemKey: 'paragraph-trigger' },
     hidden: false,
   });
+  const boldNode = createStubNode('bold-node', {
+    dataset: { toolbarItemKey: 'format-bold' },
+    hidden: true,
+  });
+  const italicNode = createStubNode('italic-node', {
+    dataset: { toolbarItemKey: 'format-italic' },
+    hidden: true,
+  });
+  const listTriggerNode = createStubNode('list-trigger-node', {
+    dataset: { toolbarItemKey: 'list-type' },
+    hidden: false,
+  });
   const undoNode = createStubNode('undo-node', {
     dataset: { toolbarItemKey: 'history-undo' },
     hidden: false,
   });
   const paragraphMenu = createStubNode('paragraph-menu', { hidden: false });
+  const listMenu = createStubNode('list-menu', { hidden: false });
   const spacingMenu = createStubNode('spacing-menu', { hidden: false });
 
   root.queryMap.set('[data-toolbar-shell]', shell);
   root.queryMap.set('.floating-toolbar__shell', shell);
   shell.queryMap.set('[data-paragraph-menu]', paragraphMenu);
+  shell.queryMap.set('[data-list-menu]', listMenu);
   shell.queryMap.set('[data-toolbar-spacing-menu]', spacingMenu);
   shell.queryMap.set('[data-toolbar-item-key="paragraph-trigger"]', paragraphTriggerNode);
+  shell.queryMap.set('[data-toolbar-item-key="list-type"]', listTriggerNode);
   shell.queryMap.set('[data-bind-key="paragraph-trigger"]', paragraphTriggerNode);
   shell.queryMap.set('[data-toolbar-bind-key="paragraph-trigger"]', paragraphTriggerNode);
-  shell.queryAllMap.set('.floating-toolbar__group', [typeGroup, paragraphGroup, historyGroup]);
+  shell.queryAllMap.set('.floating-toolbar__group', [typeGroup, formatGroup, paragraphGroup, historyGroup]);
 
   typeGroup.queryAllMap.set(
     '[data-toolbar-item-key], [data-bind-key], [data-toolbar-bind-key]',
@@ -108,7 +126,11 @@ function wireToolbarRegistry() {
   );
   paragraphGroup.queryAllMap.set(
     '[data-toolbar-item-key], [data-bind-key], [data-toolbar-bind-key]',
-    [paragraphTriggerNode],
+    [paragraphTriggerNode, listTriggerNode],
+  );
+  formatGroup.queryAllMap.set(
+    '[data-toolbar-item-key], [data-bind-key], [data-toolbar-bind-key]',
+    [boldNode, italicNode],
   );
   historyGroup.queryAllMap.set(
     '[data-toolbar-item-key], [data-bind-key], [data-toolbar-bind-key]',
@@ -119,15 +141,20 @@ function wireToolbarRegistry() {
     root,
     shell,
     typeGroup,
+    formatGroup,
     paragraphGroup,
     historyGroup,
     fontNode,
     weightNode,
     sizeNode,
     lineHeightNode,
+    boldNode,
+    italicNode,
     paragraphTriggerNode,
+    listTriggerNode,
     undoNode,
     paragraphMenu,
+    listMenu,
     spacingMenu,
   };
 }
@@ -147,7 +174,8 @@ test('toolbar runtime projection: registry is derived from main floating toolbar
     registry.groupDescriptors.map((group) => group.itemDescriptors.map((item) => item.bindKey)),
     [
       ['font-select', 'weight-select', 'size-select', 'line-height-select'],
-      ['paragraph-trigger'],
+      ['format-bold', 'format-italic'],
+      ['paragraph-trigger', 'list-type'],
       ['history-undo'],
     ],
   );
@@ -176,6 +204,7 @@ test('toolbar runtime projection: minimal state collapses to live canonical orde
 
   assert.deepEqual(ids, [
     'toolbar.font.family',
+    'toolbar.format.bold',
     'toolbar.history.undo',
     'toolbar.history.redo',
   ]);
@@ -204,21 +233,28 @@ test('toolbar runtime projection: minimal apply hides orphaned overlays and tole
   assert.deepEqual(snapshot.visibleBindKeys, ['history-undo']);
   assert.deepEqual(snapshot.missingBindKeys, ['history-redo']);
   assert.equal(snapshot.paragraphTriggerVisible, false);
+  assert.equal(snapshot.listTriggerVisible, false);
   assert.equal(snapshot.spacingMenuVisible, false);
+  assert.equal(snapshot.listMenuVisible, false);
   assert.equal(snapshot.anchorResyncRequired, true);
-  assert.deepEqual(snapshot.groupVisibleBindKeys, [[], [], ['history-undo']]);
+  assert.deepEqual(snapshot.groupVisibleBindKeys, [[], [], [], ['history-undo']]);
 
   assert.equal(nodes.root.hidden, false);
   assert.equal(nodes.shell.hidden, false);
   assert.equal(nodes.typeGroup.hidden, true);
+  assert.equal(nodes.formatGroup.hidden, true);
   assert.equal(nodes.paragraphGroup.hidden, true);
   assert.equal(nodes.historyGroup.hidden, false);
   assert.equal(nodes.fontNode.hidden, true);
   assert.equal(nodes.weightNode.hidden, true);
   assert.equal(nodes.sizeNode.hidden, true);
   assert.equal(nodes.lineHeightNode.hidden, true);
+  assert.equal(nodes.boldNode.hidden, true);
+  assert.equal(nodes.italicNode.hidden, true);
   assert.equal(nodes.paragraphTriggerNode.hidden, true);
+  assert.equal(nodes.listTriggerNode.hidden, true);
   assert.equal(nodes.paragraphMenu.hidden, true);
+  assert.equal(nodes.listMenu.hidden, true);
   assert.equal(nodes.spacingMenu.hidden, true);
   assert.equal(nodes.shell.calls.appendChild, 0);
   assert.equal(nodes.shell.calls.insertBefore, 0);

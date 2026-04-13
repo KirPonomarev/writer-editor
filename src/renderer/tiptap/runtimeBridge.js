@@ -10,6 +10,51 @@ function runEditorCommand(editor, commandName) {
   }
 }
 
+function readEditorFormattingState(editor) {
+  if (!editor || typeof editor.isActive !== 'function') {
+    return {
+      bold: false,
+      italic: false,
+      bulletList: false,
+      orderedList: false,
+    }
+  }
+
+  return {
+    bold: Boolean(editor.isActive('bold')),
+    italic: Boolean(editor.isActive('italic')),
+    bulletList: Boolean(editor.isActive('bulletList')),
+    orderedList: Boolean(editor.isActive('orderedList')),
+  }
+}
+
+function runEditorFormatCommand(editor, commandName) {
+  if (!editor || !editor.commands) {
+    return { performed: false, action: commandName, reason: 'EDITOR_COMMAND_UNAVAILABLE' }
+  }
+
+  if (commandName === 'clearList') {
+    const state = readEditorFormattingState(editor)
+    if (state.bulletList && typeof editor.commands.toggleBulletList === 'function') {
+      return {
+        performed: Boolean(editor.commands.toggleBulletList()),
+        action: commandName,
+        reason: null,
+      }
+    }
+    if (state.orderedList && typeof editor.commands.toggleOrderedList === 'function') {
+      return {
+        performed: Boolean(editor.commands.toggleOrderedList()),
+        action: commandName,
+        reason: null,
+      }
+    }
+    return { performed: false, action: commandName, reason: 'LIST_NOT_ACTIVE' }
+  }
+
+  return runEditorCommand(editor, commandName)
+}
+
 function runBridgeCallback(callback, action, ...args) {
   if (typeof callback !== 'function') {
     return { performed: false, action, reason: 'BRIDGE_CALLBACK_UNAVAILABLE' }
@@ -43,6 +88,21 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
   }
   if (commandId === 'cmd.project.format.alignLeft') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.formatAlignLeft, commandId) }
+  }
+  if (commandId === 'cmd.project.format.toggleBold') {
+    return { handled: true, result: runEditorFormatCommand(runtimeBridge.editor, 'toggleBold') }
+  }
+  if (commandId === 'cmd.project.format.toggleItalic') {
+    return { handled: true, result: runEditorFormatCommand(runtimeBridge.editor, 'toggleItalic') }
+  }
+  if (commandId === 'cmd.project.list.toggleBullet') {
+    return { handled: true, result: runEditorFormatCommand(runtimeBridge.editor, 'toggleBulletList') }
+  }
+  if (commandId === 'cmd.project.list.toggleOrdered') {
+    return { handled: true, result: runEditorFormatCommand(runtimeBridge.editor, 'toggleOrderedList') }
+  }
+  if (commandId === 'cmd.project.list.clear') {
+    return { handled: true, result: runEditorFormatCommand(runtimeBridge.editor, 'clearList') }
   }
   if (commandId === 'cmd.project.edit.undo') {
     return { handled: true, result: runtimeBridge.undo() }
@@ -105,6 +165,7 @@ export function createTiptapRuntimeBridge(options = {}) {
     : {}
 
   const bridge = {
+    editor,
     setRuntimeHandlers(nextHandlers = {}) {
       runtimeHandlers = nextHandlers && typeof nextHandlers === 'object' ? nextHandlers : {}
       return runtimeHandlers

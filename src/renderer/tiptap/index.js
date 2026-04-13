@@ -16,6 +16,7 @@ import {
 let currentEditorInstance = null
 let currentIpcSession = null
 let currentRuntimeBridge = null
+let currentFormattingStateHandler = null
 let unloadHookBound = false
 let runtimeCommandListenerAttached = false
 let recoveryRestoredListenerAttached = false
@@ -53,6 +54,29 @@ function readEditorDocument(editor) {
   } catch {
     return buildParagraphDocumentFromText(readEditorText(editor))
   }
+}
+
+function readFormattingState(editor) {
+  if (!editor || typeof editor.isActive !== 'function') {
+    return {
+      bold: false,
+      italic: false,
+      bulletList: false,
+      orderedList: false,
+    }
+  }
+
+  return {
+    bold: Boolean(editor.isActive('bold')),
+    italic: Boolean(editor.isActive('italic')),
+    bulletList: Boolean(editor.isActive('bulletList')),
+    orderedList: Boolean(editor.isActive('orderedList')),
+  }
+}
+
+function notifyFormattingStateChange() {
+  if (typeof currentFormattingStateHandler !== 'function') return
+  currentFormattingStateHandler(readFormattingState(currentEditorInstance))
 }
 
 function createIpcSession(editor, options = {}) {
@@ -128,6 +152,7 @@ function destroyCurrentEditor() {
   currentEditorInstance = null
   currentIpcSession = null
   currentRuntimeBridge = null
+  currentFormattingStateHandler = null
 }
 
 function ensureRuntimeListenersAttached() {
@@ -151,8 +176,12 @@ function ensureRuntimeListenersAttached() {
 export function initTiptap(mountEl, options = {}) {
   if (!mountEl) throw new Error('TipTap mount element not found (#editor)')
   const attachIpc = options.attachIpc !== false
+  const nextFormattingStateHandler = typeof options.onFormattingStateChange === 'function'
+    ? options.onFormattingStateChange
+    : null
 
   destroyCurrentEditor()
+  currentFormattingStateHandler = nextFormattingStateHandler
 
   destroyCurrentEditor()
 
@@ -185,6 +214,10 @@ export function initTiptap(mountEl, options = {}) {
     content: '<p></p>',
     onUpdate: () => {
       currentIpcSession?.handleUpdate()
+      notifyFormattingStateChange()
+    },
+    onSelectionUpdate: () => {
+      notifyFormattingStateChange()
     },
   })
 
@@ -228,6 +261,11 @@ export function setTiptapRuntimeHandlers(runtimeHandlers = {}) {
   currentRuntimeBridge.setRuntimeHandlers(runtimeHandlers)
 }
 
+export function setTiptapFormattingStateHandler(handler = null) {
+  currentFormattingStateHandler = typeof handler === 'function' ? handler : null
+  notifyFormattingStateChange()
+}
+
 export function getTiptapPlainText() {
   return readEditorText(currentEditorInstance)
 }
@@ -235,6 +273,7 @@ export function getTiptapPlainText() {
 export function setTiptapPlainText(text = '') {
   if (!currentEditorInstance) return
   currentEditorInstance.commands.setContent(buildParagraphDocumentFromText(text), false)
+  notifyFormattingStateChange()
 }
 
 export function getTiptapDocumentSnapshot() {
@@ -250,6 +289,48 @@ export function setTiptapDocumentSnapshot(snapshot = {}) {
     ? snapshot.doc
     : buildParagraphDocumentFromText(snapshot && typeof snapshot.text === 'string' ? snapshot.text : '')
   currentEditorInstance.commands.setContent(doc, false)
+  notifyFormattingStateChange()
+}
+
+export function getTiptapFormattingState() {
+  return readFormattingState(currentEditorInstance)
+}
+
+export function runTiptapFormatCommand(commandName) {
+  if (!currentEditorInstance || !currentEditorInstance.commands) {
+    return { performed: false, action: commandName, reason: 'EDITOR_UNAVAILABLE' }
+  }
+
+  const commandMap = {
+    toggleBold: () => currentEditorInstance.commands.toggleBold(),
+    toggleItalic: () => currentEditorInstance.commands.toggleItalic(),
+    toggleBulletList: () => currentEditorInstance.commands.toggleBulletList(),
+    toggleOrderedList: () => currentEditorInstance.commands.toggleOrderedList(),
+  }
+
+  if (commandName === 'clearList') {
+    const state = readFormattingState(currentEditorInstance)
+    if (state.bulletList && typeof currentEditorInstance.commands.toggleBulletList === 'function') {
+      const performed = Boolean(currentEditorInstance.commands.toggleBulletList())
+      notifyFormattingStateChange()
+      return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
+    }
+    if (state.orderedList && typeof currentEditorInstance.commands.toggleOrderedList === 'function') {
+      const performed = Boolean(currentEditorInstance.commands.toggleOrderedList())
+      notifyFormattingStateChange()
+      return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
+    }
+    return { performed: false, action: commandName, reason: 'LIST_NOT_ACTIVE' }
+  }
+
+  const command = commandMap[commandName]
+  if (typeof command !== 'function') {
+    return { performed: false, action: commandName, reason: 'FORMAT_COMMAND_UNSUPPORTED' }
+  }
+
+  const performed = Boolean(command())
+  notifyFormattingStateChange()
+  return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
 }
 
 export function undoTiptap() {
