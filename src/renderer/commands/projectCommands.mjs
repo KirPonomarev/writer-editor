@@ -40,10 +40,15 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   INSERT_MARKDOWN_PROMPT: 'cmd.project.insert.markdownPrompt',
   INSERT_FLOW_OPEN: 'cmd.project.insert.flowOpen',
   INSERT_ADD_CARD: 'cmd.project.insert.addCard',
+  FORMAT_TOGGLE_BOLD: 'cmd.project.format.toggleBold',
+  FORMAT_TOGGLE_ITALIC: 'cmd.project.format.toggleItalic',
   FORMAT_ALIGN_LEFT: 'cmd.project.format.alignLeft',
   FORMAT_ALIGN_CENTER: 'cmd.project.format.alignCenter',
   FORMAT_ALIGN_RIGHT: 'cmd.project.format.alignRight',
   FORMAT_ALIGN_JUSTIFY: 'cmd.project.format.alignJustify',
+  LIST_TOGGLE_BULLET: 'cmd.project.list.toggleBullet',
+  LIST_TOGGLE_ORDERED: 'cmd.project.list.toggleOrdered',
+  LIST_CLEAR: 'cmd.project.list.clear',
   PLAN_FLOW_SAVE: 'cmd.project.plan.flowSave',
   REVIEW_EXPORT_MARKDOWN: 'cmd.project.review.exportMarkdown',
 });
@@ -72,10 +77,15 @@ export const LEGACY_ACTION_TO_COMMAND = Object.freeze({
   'import-markdown-v1': 'cmd.project.insert.markdownPrompt',
   'flow-open-v1': 'cmd.project.insert.flowOpen',
   'add-card': 'cmd.project.insert.addCard',
+  'format-bold': 'cmd.project.format.toggleBold',
+  'format-italic': 'cmd.project.format.toggleItalic',
   'align-left': 'cmd.project.format.alignLeft',
   'align-center': 'cmd.project.format.alignCenter',
   'align-right': 'cmd.project.format.alignRight',
   'align-justify': 'cmd.project.format.alignJustify',
+  'list-bullet': 'cmd.project.list.toggleBullet',
+  'list-ordered': 'cmd.project.list.toggleOrdered',
+  'list-clear': 'cmd.project.list.clear',
   'flow-save-v1': 'cmd.project.plan.flowSave',
   'export-markdown-v1': 'cmd.project.review.exportMarkdown',
   'export-docx-min': 'cmd.project.export.docxMin',
@@ -933,6 +943,28 @@ export function registerProjectCommands(registry, options = {}) {
 
   registry.registerCommand(
     {
+      id: EXTRA_COMMAND_IDS.FORMAT_TOGGLE_BOLD,
+      label: 'Toggle Bold',
+      group: 'format',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+B',
+    },
+    async () => runUiAction(uiActions, 'formatToggleBold', EXTRA_COMMAND_IDS.FORMAT_TOGGLE_BOLD),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.FORMAT_TOGGLE_ITALIC,
+      label: 'Toggle Italic',
+      group: 'format',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: 'Cmd/Ctrl+I',
+    },
+    async () => runUiAction(uiActions, 'formatToggleItalic', EXTRA_COMMAND_IDS.FORMAT_TOGGLE_ITALIC),
+  );
+
+  registry.registerCommand(
+    {
       id: EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT,
       label: 'Align Left',
       group: 'format',
@@ -973,6 +1005,39 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: 'Cmd/Ctrl+Alt+4',
     },
     async () => runUiAction(uiActions, 'formatAlignJustify', EXTRA_COMMAND_IDS.FORMAT_ALIGN_JUSTIFY),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.LIST_TOGGLE_BULLET,
+      label: 'Toggle Bullet List',
+      group: 'list',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(uiActions, 'listToggleBullet', EXTRA_COMMAND_IDS.LIST_TOGGLE_BULLET),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.LIST_TOGGLE_ORDERED,
+      label: 'Toggle Ordered List',
+      group: 'list',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(uiActions, 'listToggleOrdered', EXTRA_COMMAND_IDS.LIST_TOGGLE_ORDERED),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.LIST_CLEAR,
+      label: 'Clear List',
+      group: 'list',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(uiActions, 'listClear', EXTRA_COMMAND_IDS.LIST_CLEAR),
   );
 
   registry.registerCommand(

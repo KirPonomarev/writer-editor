@@ -1,9 +1,12 @@
 import {
   getTiptapDocumentSnapshot,
+  getTiptapFormattingState,
   getTiptapPlainText,
   initTiptap,
   redoTiptap,
+  runTiptapFormatCommand,
   setTiptapDocumentSnapshot,
+  setTiptapFormattingStateHandler,
   setTiptapPlainText,
   setTiptapRuntimeHandlers,
   undoTiptap,
@@ -106,8 +109,13 @@ const toolbarTunableItems = Array.from(
 );
 const toolbarSpacingMenu = document.querySelector('[data-toolbar-spacing-menu]');
 const toolbarSpacingAction = document.querySelector('[data-toolbar-spacing-action]');
+const formatBoldButton = document.querySelector('[data-toolbar-item-key="format-bold"]');
+const formatItalicButton = document.querySelector('[data-toolbar-item-key="format-italic"]');
 const paragraphTriggerButton = document.querySelector('[data-toolbar-item-key="paragraph-trigger"]');
 const paragraphMenu = document.querySelector('[data-paragraph-menu]');
+const listTriggerButton = document.querySelector('[data-toolbar-item-key="list-type"]');
+const listMenu = document.querySelector('[data-list-menu]');
+const listActionButtons = Array.from(document.querySelectorAll('[data-list-action]'));
 const toolbarRuntimeRegistry = typeof toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry === 'function'
   ? toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry({
       toolbar,
@@ -116,12 +124,18 @@ const toolbarRuntimeRegistry = typeof toolbarRuntimeProjectionModule.createToolb
       toolbarSpacingAction,
       paragraphMenu,
       paragraphTriggerButton,
+      listMenu,
+      listTriggerButton,
       toolbarTunableItems,
       setToolbarSpacingMenuOpen,
       setParagraphMenuOpen,
+      setListMenuOpen,
       scheduleToolbarAnchorUpdate,
     })
   : null;
+if (isTiptapMode) {
+  setTiptapFormattingStateHandler(syncToolbarFormattingState);
+}
 const modeSwitcher = document.querySelector('[data-mode-switcher]');
 const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
 const leftTabsHost = document.querySelector('[data-left-tabs]');
@@ -234,6 +248,7 @@ const TOOLBAR_CONFIGURATOR_LIBRARY_GROUP_ORDER = Object.freeze(
 const TOOLBAR_CONFIGURATOR_LIBRARY_GROUP_LABELS = Object.freeze({
   font: 'font',
   text: 'text',
+  'format-inline': 'format',
   paragraph: 'paragraph',
   history: 'history',
 });
@@ -561,6 +576,7 @@ function setToolbarSpacingMenuOpen(nextOpen) {
     return;
   }
   setParagraphMenuOpen(false);
+  setListMenuOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
   const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
   toolbarSpacingMenu.hidden = false;
@@ -586,6 +602,7 @@ function setParagraphMenuOpen(nextOpen) {
     return;
   }
   setToolbarSpacingMenuOpen(false);
+  setListMenuOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
   const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
   const triggerRect = paragraphTriggerButton.getBoundingClientRect();
@@ -599,6 +616,30 @@ function setParagraphMenuOpen(nextOpen) {
   paragraphMenu.style.left = `${nextLeft}px`;
   paragraphMenu.style.top = `${nextTop}px`;
   paragraphTriggerButton.setAttribute('aria-expanded', 'true');
+}
+
+function setListMenuOpen(nextOpen) {
+  if (!listMenu || !listTriggerButton || !toolbarShell) return;
+  if (!nextOpen || !isTiptapMode) {
+    listMenu.hidden = true;
+    listTriggerButton.setAttribute('aria-expanded', 'false');
+    return;
+  }
+  setParagraphMenuOpen(false);
+  setToolbarSpacingMenuOpen(false);
+  const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
+  const triggerRect = listTriggerButton.getBoundingClientRect();
+  listMenu.hidden = false;
+  const menuRect = listMenu.getBoundingClientRect();
+  const desiredLeft = (triggerRect.left - shellRect.left) / shellScale;
+  const desiredTop = ((triggerRect.bottom - shellRect.top) / shellScale) + 10;
+  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuRect.width);
+  const nextLeft = Math.round(Math.min(Math.max(desiredLeft, 0), maxLeft));
+  const nextTop = Math.round(desiredTop);
+  listMenu.style.left = `${nextLeft}px`;
+  listMenu.style.top = `${nextTop}px`;
+  listTriggerButton.setAttribute('aria-expanded', 'true');
 }
 
 function setToolbarSpacingTuningMode(nextActive) {
@@ -646,6 +687,10 @@ function updateToolbarAnchorVars() {
   toolbarShell.style.setProperty('--floating-toolbar-cluster-center-y', `${Math.round(localTop + ((localBottom - localTop) / 2))}px`);
   if (!toolbarSpacingMenu?.hidden) {
     setToolbarSpacingMenuOpen(true);
+  } else if (!paragraphMenu?.hidden) {
+    setParagraphMenuOpen(true);
+  } else if (!listMenu?.hidden) {
+    setListMenuOpen(true);
   }
 }
 
@@ -693,9 +738,19 @@ function closeOrphanedMainToolbarOverlays(snapshot) {
     )
     : !isMainToolbarAnchorHidden(paragraphTriggerButton);
   const spacingVisible = hasVisibleItems;
+  const listVisible = typeof snapshot?.listTriggerVisible === 'boolean'
+    ? snapshot.listTriggerVisible
+    : !hasVisibleItems
+    ? false
+    : visibleBindKeys
+    ? visibleBindKeys.has('list-type')
+    : !isMainToolbarAnchorHidden(listTriggerButton);
 
   if (paragraphMenu && !paragraphMenu.hidden && !paragraphVisible) {
     setParagraphMenuOpen(false);
+  }
+  if (listMenu && !listMenu.hidden && !listVisible) {
+    setListMenuOpen(false);
   }
   if (toolbarSpacingMenu && !toolbarSpacingMenu.hidden && !spacingVisible) {
     setToolbarSpacingMenuOpen(false);
@@ -739,6 +794,7 @@ function projectMainFloatingToolbarRuntime(reason = 'projection') {
   );
   closeOrphanedMainToolbarOverlays(snapshot);
   restoreFocusFromHiddenMainToolbarItem();
+  syncToolbarFormattingState();
   if (!snapshot || snapshot.anchorResyncRequired !== false) {
     scheduleToolbarAnchorUpdate();
   }
@@ -1914,6 +1970,33 @@ function initializeFloatingToolbarParagraphMenu() {
   });
 }
 
+function initializeFloatingToolbarListMenu() {
+  if (!toolbarShell || !listMenu || !listTriggerButton) return;
+  listMenu.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target.closest('[data-list-action]') : null;
+    if (!target) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const action = target.dataset.listAction || '';
+    void dispatchListTypeAction(action).then(() => {
+      syncToolbarFormattingState();
+    });
+    setListMenuOpen(false);
+  });
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (!listMenu.contains(target) && target !== listTriggerButton && !listTriggerButton.contains(target)) {
+      setListMenuOpen(false);
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setListMenuOpen(false);
+    }
+  });
+}
+
 function initializeFloatingToolbarDragFoundation() {
   if (!toolbarShell) return;
   toolbarShell.addEventListener('mousedown', (event) => {
@@ -2057,10 +2140,15 @@ registerProjectCommands(commandRegistry, {
     insertMarkdownPrompt: () => handleInsertMarkdownPrompt(),
     insertFlowOpen: () => handleInsertFlowOpen(),
     insertAddCard: () => handleInsertAddCard(),
+    formatToggleBold: () => handleTiptapFormatCommand('toggleBold'),
+    formatToggleItalic: () => handleTiptapFormatCommand('toggleItalic'),
     formatAlignLeft: () => handleFormatAlign('align-left'),
     formatAlignCenter: () => handleFormatAlign('align-center'),
     formatAlignRight: () => handleFormatAlign('align-right'),
     formatAlignJustify: () => handleFormatAlign('align-justify'),
+    listToggleBullet: () => handleTiptapFormatCommand('toggleBulletList'),
+    listToggleOrdered: () => handleTiptapFormatCommand('toggleOrderedList'),
+    listClear: () => handleTiptapFormatCommand('clearList'),
     planFlowSave: () => handlePlanFlowSave(),
     reviewExportMarkdown: () => handleReviewExportMarkdown(),
   },
@@ -2142,8 +2230,18 @@ function mapCommandErrorToUi(error) {
   };
 }
 
+function withEditorModeCommandPayload(payload = {}) {
+  const basePayload = payload && typeof payload === 'object' && !Array.isArray(payload)
+    ? payload
+    : {};
+  return {
+    ...basePayload,
+    editorMode: isTiptapMode ? 'tiptap' : 'legacy',
+  };
+}
+
 async function dispatchUiCommand(commandId, payload = {}) {
-  const result = await runCommandThroughBus(runCommand, commandId, payload, {
+  const result = await runCommandThroughBus(runCommand, commandId, withEditorModeCommandPayload(payload), {
     route: COMMAND_BUS_ROUTE,
   });
   if (!result.ok) {
@@ -5449,6 +5547,74 @@ function handleFormatAlign(action) {
   return { performed: true, action };
 }
 
+function normalizeToolbarFormattingState(input) {
+  const source = input && typeof input === 'object' && !Array.isArray(input)
+    ? input
+    : {};
+  return {
+    bold: Boolean(source.bold),
+    italic: Boolean(source.italic),
+    bulletList: Boolean(source.bulletList),
+    orderedList: Boolean(source.orderedList),
+  };
+}
+
+function updateToolbarPressedButton(button, active) {
+  if (!(button instanceof HTMLElement)) return;
+  button.classList.toggle('is-pressed', active);
+  button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  button.disabled = !isTiptapMode;
+}
+
+function syncToolbarFormattingState(nextState = null) {
+  const state = isTiptapMode
+    ? normalizeToolbarFormattingState(nextState || getTiptapFormattingState())
+    : normalizeToolbarFormattingState();
+  updateToolbarPressedButton(formatBoldButton, state.bold);
+  updateToolbarPressedButton(formatItalicButton, state.italic);
+
+  if (listTriggerButton instanceof HTMLElement) {
+    const hasList = state.bulletList || state.orderedList;
+    listTriggerButton.classList.toggle('is-active', hasList);
+    listTriggerButton.disabled = !isTiptapMode;
+  }
+
+  listActionButtons.forEach((button) => {
+    const action = button.dataset.listAction || '';
+    const active = (action === 'bullet' && state.bulletList)
+      || (action === 'ordered' && state.orderedList)
+      || (action === 'no-list' && !state.bulletList && !state.orderedList);
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+}
+
+function handleTiptapFormatCommand(commandName) {
+  if (!isTiptapMode) {
+    return { performed: false, action: commandName, reason: 'EDITOR_MODE_UNSUPPORTED' };
+  }
+  const result = runTiptapFormatCommand(commandName);
+  if (result && result.performed !== false) {
+    markAsModified();
+    updateWordCount();
+  }
+  syncToolbarFormattingState();
+  return result;
+}
+
+function dispatchListTypeAction(listAction) {
+  switch (listAction) {
+    case 'no-list':
+      return dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_CLEAR);
+    case 'bullet':
+      return dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_TOGGLE_BULLET);
+    case 'ordered':
+      return dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_TOGGLE_ORDERED);
+    default:
+      return Promise.resolve({ ok: false, error: { reason: 'LIST_ACTION_UNKNOWN' } });
+  }
+}
+
 async function handlePlanFlowSave() {
   await handleFlowModeSaveUiPath();
   return { performed: true };
@@ -5520,6 +5686,15 @@ function handleUiAction(action) {
       return true;
     case 'toggle-paragraph-menu':
       setParagraphMenuOpen(!(paragraphMenu && !paragraphMenu.hidden));
+      return true;
+    case 'toggle-list-menu':
+      setListMenuOpen(!(listMenu && !listMenu.hidden));
+      return true;
+    case 'format-bold':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TOGGLE_BOLD);
+      return true;
+    case 'format-italic':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TOGGLE_ITALIC);
       return true;
     case 'undo':
       return handleUndo().performed !== false;
@@ -5728,6 +5903,8 @@ showEditorPanelFor('Yalken');
 updateWordCount();
 initializeFloatingToolbarSpacingMenu();
 initializeFloatingToolbarParagraphMenu();
+initializeFloatingToolbarListMenu();
+syncToolbarFormattingState();
 initializeFloatingToolbarItemOffsetTuning();
 initializeFloatingToolbarDragFoundation();
 initializeLeftToolbarSpacingMenu();
@@ -5942,6 +6119,7 @@ document.addEventListener('keydown', (event) => {
   }
 }, true);
 document.addEventListener('selectionchange', syncAlignmentButtonsToSelection);
+document.addEventListener('selectionchange', syncToolbarFormattingState);
 
 window.addEventListener('resize', () => {
   updateSpatialLayoutForViewportChange();
@@ -6046,6 +6224,21 @@ if (window.electronAPI) {
       insertAddCard: () => handleInsertAddCard(),
       formatAlignLeft: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
+      },
+      formatToggleBold: () => {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TOGGLE_BOLD);
+      },
+      formatToggleItalic: () => {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TOGGLE_ITALIC);
+      },
+      listToggleBullet: () => {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_TOGGLE_BULLET);
+      },
+      listToggleOrdered: () => {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_TOGGLE_ORDERED);
+      },
+      listClear: () => {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_CLEAR);
       },
       switchMode: (mode) => applyMode(mode),
     });

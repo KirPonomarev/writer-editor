@@ -985,8 +985,28 @@ body {
   background: rgba(228, 222, 214, 0.48);
 }
 
+.floating-toolbar__button[aria-pressed="true"],
+.floating-toolbar__button.is-pressed {
+  background: rgba(224, 212, 194, 0.56);
+  color: rgba(28, 23, 18, 0.96);
+}
+
 .floating-toolbar__button--paragraph {
   width: calc(28px * var(--floating-toolbar-width-scale));
+}
+
+.floating-toolbar__button--format {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.floating-toolbar__button--italic .floating-toolbar__format-glyph {
+  font-style: italic;
+}
+
+.floating-toolbar__button--list {
+  gap: 2px;
 }
 
 .floating-toolbar__button--history {
@@ -1144,6 +1164,46 @@ body {
 
 .floating-toolbar__paragraph-menu-item:hover,
 .floating-toolbar__paragraph-menu-item.is-active {
+  background: rgba(221, 216, 210, 0.4);
+}
+
+.floating-toolbar__list-menu {
+  position: absolute;
+  z-index: 4;
+  min-width: 144px;
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid rgba(50, 36, 24, 0.12);
+  background: rgba(248, 246, 243, 0.96);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03),
+    0 8px 20px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.floating-toolbar__list-menu[hidden] {
+  display: none;
+}
+
+.floating-toolbar__list-menu-item {
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #3d3d3d;
+  min-height: 28px;
+  padding: 0 10px;
+  text-align: left;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.floating-toolbar__list-menu-item:hover,
+.floating-toolbar__list-menu-item.is-active {
   background: rgba(221, 216, 210, 0.4);
 }
 

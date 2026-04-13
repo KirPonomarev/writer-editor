@@ -207,8 +207,8 @@ const TOOLBAR_FUNCTION_CATALOG_ROWS = [
     controlKind: 'toggleButton',
     bindKey: 'format-bold',
     actionAlias: null,
-    commandId: null,
-    implementationState: 'planned',
+    commandId: 'cmd.project.format.toggleBold',
+    implementationState: 'live',
     uiGroup: 'format-inline',
     blockerReason: null,
   },
@@ -229,8 +229,8 @@ const TOOLBAR_FUNCTION_CATALOG_ROWS = [
     controlKind: 'toggleButton',
     bindKey: 'format-italic',
     actionAlias: null,
-    commandId: null,
-    implementationState: 'planned',
+    commandId: 'cmd.project.format.toggleItalic',
+    implementationState: 'live',
     uiGroup: 'format-inline',
     blockerReason: null,
   },
@@ -272,10 +272,10 @@ const TOOLBAR_FUNCTION_CATALOG_ROWS = [
     },
     controlKind: 'menuTrigger',
     bindKey: 'list-type',
-    actionAlias: null,
+    actionAlias: 'toggle-list-menu',
     commandId: null,
-    implementationState: 'planned',
-    uiGroup: 'insert',
+    implementationState: 'live',
+    uiGroup: 'paragraph',
     blockerReason: null,
   },
   {
@@ -497,10 +497,24 @@ const TOOLBAR_LEGACY_DROP_LABELS_LIST = Object.freeze([
 
 export const TOOLBAR_FUNCTION_CATALOG = Object.freeze(TOOLBAR_FUNCTION_CATALOG_ROWS.map(freezeCatalogEntry));
 
+const TOOLBAR_CANONICAL_LIVE_ORDER_IDS = Object.freeze([
+  'toolbar.font.family',
+  'toolbar.font.weight',
+  'toolbar.font.size',
+  'toolbar.text.lineHeight',
+  'toolbar.format.bold',
+  'toolbar.format.italic',
+  'toolbar.paragraph.alignment',
+  'toolbar.list.type',
+  'toolbar.history.undo',
+  'toolbar.history.redo',
+]);
+
 export const TOOLBAR_CANONICAL_LIVE_ORDER = Object.freeze(
-  TOOLBAR_FUNCTION_CATALOG
-    .filter((entry) => entry.implementationState === 'live')
-    .map((entry) => entry.id),
+  TOOLBAR_CANONICAL_LIVE_ORDER_IDS.filter((itemId) => {
+    const entry = TOOLBAR_FUNCTION_CATALOG.find((catalogEntry) => catalogEntry.id === itemId);
+    return entry?.implementationState === 'live';
+  }),
 );
 
 export const TOOLBAR_LIVE_IDS = Object.freeze([...TOOLBAR_CANONICAL_LIVE_ORDER]);
@@ -525,7 +539,7 @@ export const TOOLBAR_LEGACY_DROP_LABELS = TOOLBAR_LEGACY_DROP_LABELS_LIST;
 
 const TOOLBAR_FUNCTION_CATALOG_BY_ID = new Map(TOOLBAR_FUNCTION_CATALOG.map((entry) => [entry.id, entry]));
 const TOOLBAR_FUNCTION_CATALOG_BY_STATE = new Map([
-  ['live', TOOLBAR_FUNCTION_CATALOG.filter((entry) => entry.implementationState === 'live')],
+  ['live', TOOLBAR_CANONICAL_LIVE_ORDER.map((itemId) => TOOLBAR_FUNCTION_CATALOG_BY_ID.get(itemId)).filter(Boolean)],
   ['planned', TOOLBAR_FUNCTION_CATALOG.filter((entry) => entry.implementationState === 'planned')],
   ['blocked', TOOLBAR_FUNCTION_CATALOG.filter((entry) => entry.implementationState === 'blocked')],
 ]);
