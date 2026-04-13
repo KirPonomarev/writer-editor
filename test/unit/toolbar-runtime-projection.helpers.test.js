@@ -1,145 +1,209 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
 const ROOT = path.resolve(__dirname, '..', '..');
+const GROUP_SELECTOR = '.floating-toolbar__group';
+const ITEM_SELECTOR = '[data-toolbar-item-key], [data-bind-key], [data-toolbar-bind-key]';
 
-function createStubNode(name, options = {}) {
-  const node = {
+function createNode(name, options = {}) {
+  return {
     name,
     hidden: Boolean(options.hidden),
     dataset: { ...(options.dataset || {}) },
     className: options.className || '',
+    children: [],
+    parentNode: null,
+    parentElement: null,
     calls: {
       appendChild: 0,
       insertBefore: 0,
       replaceChildren: 0,
     },
     queryMap: new Map(Object.entries(options.queryMap || {})),
-    queryAllMap: new Map(Object.entries(options.queryAllMap || {})),
     setAttribute(attributeName, value) {
       this[attributeName] = String(value);
     },
     removeAttribute(attributeName) {
       delete this[attributeName];
     },
-    appendChild() {
+    appendChild(child) {
       this.calls.appendChild += 1;
-      throw new Error(`appendChild should not run for ${this.name}`);
+      return this.insertBefore(child, null);
     },
-    insertBefore() {
+    insertBefore(child, beforeNode) {
       this.calls.insertBefore += 1;
-      throw new Error(`insertBefore should not run for ${this.name}`);
-    },
-    replaceChildren() {
-      this.calls.replaceChildren += 1;
-      throw new Error(`replaceChildren should not run for ${this.name}`);
+      if (!child || typeof child !== 'object') {
+        return child;
+      }
+
+      const currentParent = child.parentNode;
+      if (currentParent && currentParent !== this) {
+        const currentIndex = currentParent.children.indexOf(child);
+        if (currentIndex > -1) {
+          currentParent.children.splice(currentIndex, 1);
+        }
+      }
+
+      const currentIndex = this.children.indexOf(child);
+      if (currentIndex > -1) {
+        this.children.splice(currentIndex, 1);
+      }
+
+      const beforeIndex = beforeNode ? this.children.indexOf(beforeNode) : -1;
+      const targetIndex = beforeIndex >= 0 ? beforeIndex : this.children.length;
+      this.children.splice(targetIndex, 0, child);
+      child.parentNode = this;
+      child.parentElement = this;
+      return child;
     },
     querySelector(selector) {
       return this.queryMap.get(selector) || null;
     },
     querySelectorAll(selector) {
-      return this.queryAllMap.get(selector) || [];
+      if (selector === GROUP_SELECTOR || selector === ITEM_SELECTOR) {
+        return [...this.children];
+      }
+      return [];
+    },
+    closest(selector) {
+      let current = this;
+      while (current) {
+        if (selector === GROUP_SELECTOR && typeof current.className === 'string' && current.className.includes('floating-toolbar__group')) {
+          return current;
+        }
+        current = current.parentNode || null;
+      }
+      return null;
     },
   };
+}
 
-  return node;
+function connect(parent, child) {
+  parent.children.push(child);
+  child.parentNode = parent;
+  child.parentElement = parent;
+  return child;
 }
 
 function wireToolbarRegistry() {
-  const root = createStubNode('toolbar-root', {
-    dataset: { toolbar: '' },
-  });
-  const shell = createStubNode('toolbar-shell', {
-    dataset: { toolbarShell: '' },
+  const root = createNode('toolbar-root');
+  const shell = createNode('toolbar-shell');
+  const controls = createNode('toolbar-controls', {
+    className: 'floating-toolbar__controls',
   });
 
-  const typeGroup = createStubNode('type-group', {
+  const typeGroup = createNode('type-group', {
     className: 'floating-toolbar__group floating-toolbar__group--type',
   });
-  const paragraphGroup = createStubNode('paragraph-group', {
-    className: 'floating-toolbar__group floating-toolbar__group--paragraph',
-  });
-  const formatGroup = createStubNode('format-group', {
+  const formatGroup = createNode('format-group', {
     className: 'floating-toolbar__group floating-toolbar__group--format-inline',
   });
-  const historyGroup = createStubNode('history-group', {
+  const paragraphGroup = createNode('paragraph-group', {
+    className: 'floating-toolbar__group floating-toolbar__group--paragraph',
+  });
+  const historyGroup = createNode('history-group', {
     className: 'floating-toolbar__group floating-toolbar__group--history',
   });
 
-  const fontNode = createStubNode('font-node', {
+  connect(root, shell);
+  connect(shell, controls);
+  connect(controls, typeGroup);
+  connect(controls, formatGroup);
+  connect(controls, paragraphGroup);
+  connect(controls, historyGroup);
+
+  shell.queryMap.set('[data-toolbar-shell]', shell);
+  shell.queryMap.set('.floating-toolbar__shell', shell);
+  shell.queryMap.set('.floating-toolbar__controls', controls);
+  root.queryMap.set('[data-toolbar-shell]', shell);
+  root.queryMap.set('.floating-toolbar__shell', shell);
+  root.queryMap.set('.floating-toolbar__controls', controls);
+
+  const fontNode = createNode('font-node', {
     dataset: { toolbarItemKey: 'font-select' },
     hidden: true,
   });
-  const weightNode = createStubNode('weight-node', {
+  const weightNode = createNode('weight-node', {
     dataset: { toolbarItemKey: 'weight-select' },
     hidden: true,
   });
-  const sizeNode = createStubNode('size-node', {
+  const sizeNode = createNode('size-node', {
     dataset: { toolbarItemKey: 'size-select' },
     hidden: true,
   });
-  const lineHeightNode = createStubNode('line-height-node', {
+  const lineHeightNode = createNode('line-height-node', {
     dataset: { toolbarItemKey: 'line-height-select' },
     hidden: true,
   });
-  const paragraphTriggerNode = createStubNode('paragraph-trigger-node', {
-    dataset: { toolbarItemKey: 'paragraph-trigger' },
-    hidden: false,
-  });
-  const boldNode = createStubNode('bold-node', {
+  const boldNode = createNode('bold-node', {
     dataset: { toolbarItemKey: 'format-bold' },
     hidden: true,
   });
-  const italicNode = createStubNode('italic-node', {
+  const italicNode = createNode('italic-node', {
     dataset: { toolbarItemKey: 'format-italic' },
     hidden: true,
   });
-  const listTriggerNode = createStubNode('list-trigger-node', {
+  const paragraphTriggerNode = createNode('paragraph-trigger-node', {
+    dataset: { toolbarItemKey: 'paragraph-trigger' },
+    hidden: true,
+  });
+  const listTriggerNode = createNode('list-trigger-node', {
     dataset: { toolbarItemKey: 'list-type' },
-    hidden: false,
+    hidden: true,
   });
-  const undoNode = createStubNode('undo-node', {
+  const undoNode = createNode('undo-node', {
     dataset: { toolbarItemKey: 'history-undo' },
-    hidden: false,
+    hidden: true,
   });
-  const paragraphMenu = createStubNode('paragraph-menu', { hidden: false });
-  const listMenu = createStubNode('list-menu', { hidden: false });
-  const spacingMenu = createStubNode('spacing-menu', { hidden: false });
+  const redoNode = createNode('redo-node', {
+    dataset: { toolbarItemKey: 'history-redo' },
+    hidden: true,
+  });
+  const paragraphMenu = createNode('paragraph-menu', { hidden: false });
+  const listMenu = createNode('list-menu', { hidden: false });
+  const spacingMenu = createNode('spacing-menu', { hidden: false });
 
-  root.queryMap.set('[data-toolbar-shell]', shell);
-  root.queryMap.set('.floating-toolbar__shell', shell);
+  connect(typeGroup, fontNode);
+  connect(typeGroup, weightNode);
+  connect(typeGroup, sizeNode);
+  connect(typeGroup, lineHeightNode);
+  connect(formatGroup, boldNode);
+  connect(formatGroup, italicNode);
+  connect(paragraphGroup, paragraphTriggerNode);
+  connect(paragraphGroup, listTriggerNode);
+  connect(historyGroup, undoNode);
+  connect(historyGroup, redoNode);
+
   shell.queryMap.set('[data-paragraph-menu]', paragraphMenu);
   shell.queryMap.set('[data-list-menu]', listMenu);
   shell.queryMap.set('[data-toolbar-spacing-menu]', spacingMenu);
+  shell.queryMap.set('[data-toolbar-item-key="font-select"]', fontNode);
+  shell.queryMap.set('[data-toolbar-item-key="weight-select"]', weightNode);
+  shell.queryMap.set('[data-toolbar-item-key="size-select"]', sizeNode);
+  shell.queryMap.set('[data-toolbar-item-key="line-height-select"]', lineHeightNode);
+  shell.queryMap.set('[data-toolbar-item-key="format-bold"]', boldNode);
+  shell.queryMap.set('[data-toolbar-item-key="format-italic"]', italicNode);
   shell.queryMap.set('[data-toolbar-item-key="paragraph-trigger"]', paragraphTriggerNode);
   shell.queryMap.set('[data-toolbar-item-key="list-type"]', listTriggerNode);
-  shell.queryMap.set('[data-bind-key="paragraph-trigger"]', paragraphTriggerNode);
-  shell.queryMap.set('[data-toolbar-bind-key="paragraph-trigger"]', paragraphTriggerNode);
-  shell.queryAllMap.set('.floating-toolbar__group', [typeGroup, formatGroup, paragraphGroup, historyGroup]);
-
-  typeGroup.queryAllMap.set(
-    '[data-toolbar-item-key], [data-bind-key], [data-toolbar-bind-key]',
-    [fontNode, weightNode, sizeNode, lineHeightNode],
-  );
-  paragraphGroup.queryAllMap.set(
-    '[data-toolbar-item-key], [data-bind-key], [data-toolbar-bind-key]',
-    [paragraphTriggerNode, listTriggerNode],
-  );
-  formatGroup.queryAllMap.set(
-    '[data-toolbar-item-key], [data-bind-key], [data-toolbar-bind-key]',
-    [boldNode, italicNode],
-  );
-  historyGroup.queryAllMap.set(
-    '[data-toolbar-item-key], [data-bind-key], [data-toolbar-bind-key]',
-    [undoNode],
-  );
+  shell.queryMap.set('[data-toolbar-item-key="history-undo"]', undoNode);
+  shell.queryMap.set('[data-toolbar-item-key="history-redo"]', redoNode);
+  root.queryMap.set('[data-toolbar-item-key="font-select"]', fontNode);
+  root.queryMap.set('[data-toolbar-item-key="weight-select"]', weightNode);
+  root.queryMap.set('[data-toolbar-item-key="size-select"]', sizeNode);
+  root.queryMap.set('[data-toolbar-item-key="line-height-select"]', lineHeightNode);
+  root.queryMap.set('[data-toolbar-item-key="format-bold"]', boldNode);
+  root.queryMap.set('[data-toolbar-item-key="format-italic"]', italicNode);
+  root.queryMap.set('[data-toolbar-item-key="paragraph-trigger"]', paragraphTriggerNode);
+  root.queryMap.set('[data-toolbar-item-key="list-type"]', listTriggerNode);
+  root.queryMap.set('[data-toolbar-item-key="history-undo"]', undoNode);
+  root.queryMap.set('[data-toolbar-item-key="history-redo"]', redoNode);
 
   return {
     root,
     shell,
+    controls,
     typeGroup,
     formatGroup,
     paragraphGroup,
@@ -153,124 +217,135 @@ function wireToolbarRegistry() {
     paragraphTriggerNode,
     listTriggerNode,
     undoNode,
+    redoNode,
     paragraphMenu,
     listMenu,
     spacingMenu,
   };
 }
 
-test('toolbar runtime projection: registry is derived from main floating toolbar DOM containers', async () => {
+function importRuntimeProjectionModule() {
   const modulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'toolbar', 'toolbarRuntimeProjection.mjs')).href;
-  const {
-    createToolbarRuntimeRegistry,
-  } = await import(modulePath);
+  return import(modulePath);
+}
 
+test('toolbar runtime projection: registry is derived from the floating toolbar controls container only', async () => {
+  const { createToolbarRuntimeRegistry } = await importRuntimeProjectionModule();
   const nodes = wireToolbarRegistry();
   const registry = createToolbarRuntimeRegistry(nodes.root);
 
   assert.equal(registry.toolbarRoot, nodes.root);
   assert.equal(registry.toolbarShell, nodes.shell);
+  assert.equal(registry.controlsContainer, nodes.controls);
   assert.deepEqual(
-    registry.groupDescriptors.map((group) => group.itemDescriptors.map((item) => item.bindKey)),
-    [
-      ['font-select', 'weight-select', 'size-select', 'line-height-select'],
-      ['format-bold', 'format-italic'],
-      ['paragraph-trigger', 'list-type'],
-      ['history-undo'],
-    ],
+    registry.groupDescriptors.map((group) => group.element.name),
+    ['type-group', 'format-group', 'paragraph-group', 'history-group'],
   );
+  assert.equal(nodes.root.calls.appendChild, 0);
+  assert.equal(nodes.root.calls.insertBefore, 0);
   assert.equal(nodes.shell.calls.appendChild, 0);
   assert.equal(nodes.shell.calls.insertBefore, 0);
-  assert.equal(nodes.shell.calls.replaceChildren, 0);
+  assert.equal(nodes.controls.calls.appendChild, 0);
+  assert.equal(nodes.controls.calls.insertBefore, 0);
 });
 
-test('toolbar runtime projection: active profile state collapses to live canonical order only', async () => {
-  const modulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'toolbar', 'toolbarRuntimeProjection.mjs')).href;
-  const {
-    collectVisibleToolbarItemIdsFromState,
-  } = await import(modulePath);
+test('toolbar runtime projection: active profile ids preserve profile order and drop duplicates safely', async () => {
+  const { collectVisibleToolbarItemIdsFromState } = await importRuntimeProjectionModule();
 
   const ids = collectVisibleToolbarItemIdsFromState({
     activeToolbarProfile: 'master',
     toolbarProfiles: {
-      minimal: [
-        'toolbar.history.redo',
-        'toolbar.history.undo',
-      ],
+      minimal: ['toolbar.history.undo'],
       master: [
         'toolbar.history.redo',
-        'toolbar.format.italic',
+        'toolbar.format.bold',
         'toolbar.format.bold',
         'toolbar.font.family',
-        'toolbar.format.bold',
+        'toolbar.unknown.entry',
+        'toolbar.format.italic',
       ],
     },
   });
 
   assert.deepEqual(ids, [
-    'toolbar.font.family',
-    'toolbar.format.bold',
-    'toolbar.format.italic',
     'toolbar.history.redo',
+    'toolbar.format.bold',
+    'toolbar.font.family',
+    'toolbar.format.italic',
   ]);
 });
 
-test('toolbar runtime projection: active empty profile hides overlays and all live groups', async () => {
-  const modulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'toolbar', 'toolbarRuntimeProjection.mjs')).href;
-  const {
-    createToolbarRuntimeRegistry,
-    applyToolbarActiveProfile,
-  } = await import(modulePath);
-
+test('toolbar runtime projection: applyToolbarActiveProfile reorders visible items and groups within bounded containers', async () => {
+  const { createToolbarRuntimeRegistry, applyToolbarActiveProfile } = await importRuntimeProjectionModule();
   const nodes = wireToolbarRegistry();
   const registry = createToolbarRuntimeRegistry(nodes.root);
   const snapshot = applyToolbarActiveProfile(registry, {
     activeToolbarProfile: 'master',
     toolbarProfiles: {
-      minimal: [
+      minimal: ['toolbar.history.undo'],
+      master: [
+        'toolbar.history.redo',
+        'toolbar.font.size',
+        'toolbar.font.family',
+        'toolbar.font.weight',
+        'toolbar.format.italic',
+        'toolbar.format.bold',
+        'toolbar.paragraph.alignment',
         'toolbar.history.undo',
       ],
-      master: [],
     },
   });
 
-  assert.equal(snapshot.hasVisibleItems, false);
-  assert.deepEqual(snapshot.visibleItemIds, []);
-  assert.deepEqual(snapshot.visibleBindKeys, []);
-  assert.deepEqual(snapshot.missingBindKeys, ['history-redo']);
-  assert.equal(snapshot.paragraphTriggerVisible, false);
-  assert.equal(snapshot.listTriggerVisible, false);
-  assert.equal(snapshot.spacingMenuVisible, false);
-  assert.equal(snapshot.listMenuVisible, false);
+  assert.deepEqual(snapshot.visibleItemIds, [
+    'toolbar.history.redo',
+    'toolbar.history.undo',
+    'toolbar.font.size',
+    'toolbar.font.family',
+    'toolbar.font.weight',
+    'toolbar.format.italic',
+    'toolbar.format.bold',
+    'toolbar.paragraph.alignment',
+  ]);
+  assert.deepEqual(snapshot.visibleBindKeys, [
+    'history-redo',
+    'history-undo',
+    'size-select',
+    'font-select',
+    'weight-select',
+    'format-italic',
+    'format-bold',
+    'paragraph-trigger',
+  ]);
+  assert.deepEqual(snapshot.groupVisibleBindKeys, [
+    ['history-redo', 'history-undo'],
+    ['size-select', 'font-select', 'weight-select'],
+    ['format-italic', 'format-bold'],
+    ['paragraph-trigger'],
+  ]);
+  assert.equal(snapshot.hasVisibleItems, true);
   assert.equal(snapshot.anchorResyncRequired, true);
-  assert.deepEqual(snapshot.groupVisibleBindKeys, [[], [], [], []]);
-
-  assert.equal(nodes.root.hidden, false);
-  assert.equal(nodes.shell.hidden, false);
-  assert.equal(nodes.typeGroup.hidden, true);
-  assert.equal(nodes.formatGroup.hidden, true);
-  assert.equal(nodes.paragraphGroup.hidden, true);
-  assert.equal(nodes.historyGroup.hidden, true);
-  assert.equal(nodes.fontNode.hidden, true);
-  assert.equal(nodes.weightNode.hidden, true);
-  assert.equal(nodes.sizeNode.hidden, true);
-  assert.equal(nodes.lineHeightNode.hidden, true);
-  assert.equal(nodes.boldNode.hidden, true);
-  assert.equal(nodes.italicNode.hidden, true);
-  assert.equal(nodes.paragraphTriggerNode.hidden, true);
+  assert.equal(nodes.controls.calls.insertBefore > 0, true);
+  assert.equal(nodes.historyGroup.calls.insertBefore > 0, true);
+  assert.equal(nodes.typeGroup.calls.insertBefore > 0, true);
+  assert.equal(nodes.formatGroup.calls.insertBefore > 0, true);
+  assert.equal(nodes.paragraphGroup.calls.insertBefore > 0, true);
+  assert.deepEqual(nodes.controls.children.map((node) => node.name), [
+    'history-group',
+    'type-group',
+    'format-group',
+    'paragraph-group',
+  ]);
+  assert.deepEqual(nodes.historyGroup.children.filter((node) => node.hidden !== true).map((node) => node.name), ['redo-node', 'undo-node']);
+  assert.deepEqual(nodes.typeGroup.children.filter((node) => node.hidden !== true).map((node) => node.name), ['size-node', 'font-node', 'weight-node']);
+  assert.deepEqual(nodes.formatGroup.children.filter((node) => node.hidden !== true).map((node) => node.name), ['italic-node', 'bold-node']);
+  assert.deepEqual(nodes.paragraphGroup.children.filter((node) => node.hidden !== true).map((node) => node.name), ['paragraph-trigger-node']);
   assert.equal(nodes.listTriggerNode.hidden, true);
-  assert.equal(nodes.paragraphMenu.hidden, true);
   assert.equal(nodes.listMenu.hidden, true);
   assert.equal(nodes.spacingMenu.hidden, true);
 });
 
-test('toolbar runtime projection: minimal wrapper keeps minimal profile compatibility', async () => {
-  const modulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'toolbar', 'toolbarRuntimeProjection.mjs')).href;
-  const {
-    createToolbarRuntimeRegistry,
-    applyToolbarProfileMinimal,
-  } = await import(modulePath);
-
+test('toolbar runtime projection: minimal wrapper keeps minimal profile compatibility and active profile state out of the contract', async () => {
+  const { createToolbarRuntimeRegistry, applyToolbarProfileMinimal } = await importRuntimeProjectionModule();
   const nodes = wireToolbarRegistry();
   const registry = createToolbarRuntimeRegistry(nodes.root);
   const snapshot = applyToolbarProfileMinimal(registry, {
@@ -278,50 +353,37 @@ test('toolbar runtime projection: minimal wrapper keeps minimal profile compatib
     toolbarProfiles: {
       minimal: [
         'toolbar.history.undo',
+        'toolbar.font.family',
+      ],
+      master: [
+        'toolbar.format.bold',
         'toolbar.history.redo',
       ],
-      master: [],
     },
   });
 
-  assert.equal(snapshot.hasVisibleItems, true);
-  assert.deepEqual(snapshot.visibleItemIds, ['toolbar.history.undo']);
-  assert.deepEqual(snapshot.visibleBindKeys, ['history-undo']);
-  assert.deepEqual(snapshot.missingBindKeys, ['history-redo']);
-  assert.equal(snapshot.paragraphTriggerVisible, false);
-  assert.equal(snapshot.listTriggerVisible, false);
-  assert.equal(snapshot.spacingMenuVisible, false);
-  assert.equal(snapshot.listMenuVisible, false);
-  assert.equal(snapshot.anchorResyncRequired, true);
-  assert.deepEqual(snapshot.groupVisibleBindKeys, [[], [], [], ['history-undo']]);
-
-  assert.equal(nodes.root.hidden, false);
-  assert.equal(nodes.shell.hidden, false);
-  assert.equal(nodes.typeGroup.hidden, true);
+  assert.deepEqual(snapshot.visibleItemIds, [
+    'toolbar.history.undo',
+    'toolbar.font.family',
+  ]);
+  assert.deepEqual(snapshot.visibleBindKeys, [
+    'history-undo',
+    'font-select',
+  ]);
+  assert.deepEqual(snapshot.groupVisibleBindKeys, [
+    ['history-undo'],
+    ['font-select'],
+    [],
+    [],
+  ]);
+  assert.equal(nodes.historyGroup.hidden, false);
+  assert.equal(nodes.typeGroup.hidden, false);
   assert.equal(nodes.formatGroup.hidden, true);
   assert.equal(nodes.paragraphGroup.hidden, true);
-  assert.equal(nodes.historyGroup.hidden, false);
-  assert.equal(nodes.fontNode.hidden, true);
-  assert.equal(nodes.weightNode.hidden, true);
-  assert.equal(nodes.sizeNode.hidden, true);
-  assert.equal(nodes.lineHeightNode.hidden, true);
-  assert.equal(nodes.boldNode.hidden, true);
-  assert.equal(nodes.italicNode.hidden, true);
-  assert.equal(nodes.paragraphTriggerNode.hidden, true);
-  assert.equal(nodes.listTriggerNode.hidden, true);
-  assert.equal(nodes.paragraphMenu.hidden, true);
-  assert.equal(nodes.listMenu.hidden, true);
-  assert.equal(nodes.spacingMenu.hidden, true);
-});
-
-test('toolbar runtime projection: live DOM bind key order stays aligned with canonical catalog order', async () => {
-  const catalogModulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'toolbar', 'toolbarFunctionCatalog.mjs')).href;
-  const catalog = await import(catalogModulePath);
-  const html = fs.readFileSync(path.join(ROOT, 'src', 'renderer', 'index.html'), 'utf8');
-  const controlsMatch = html.match(/<div class="floating-toolbar__controls">([\s\S]*?)<div class="floating-toolbar__paragraph-menu"/);
-
-  assert.ok(controlsMatch, 'floating toolbar controls block must exist');
-
-  const bindKeys = [...controlsMatch[1].matchAll(/data-toolbar-item-key="([^"]+)"/g)].map((match) => match[1]);
-  assert.deepEqual(bindKeys, catalog.listLiveToolbarFunctionCatalogEntries().map((entry) => entry.bindKey));
+  assert.deepEqual(nodes.controls.children.map((node) => node.name), [
+    'history-group',
+    'type-group',
+    'format-group',
+    'paragraph-group',
+  ]);
 });

@@ -31,7 +31,8 @@ test('sector-m toolbar profile switch: editor wiring targets the active profile 
   assert.ok(source.includes("setToolbarConfiguratorActiveProfile(profileSwitchButton.dataset.toolbarProfileSwitch || '');"));
   assert.ok(source.includes("addToolbarConfiguratorItem(libraryButton.dataset.itemId || '', getToolbarConfiguratorActiveProfile());"));
   assert.ok(source.includes("removeToolbarConfiguratorItem(removeButton.dataset.itemId || '', bucketKey);"));
-  assert.ok(source.includes("addToolbarConfiguratorItem(payload.itemId, bucketKey);"));
+  assert.ok(source.includes("commitToolbarConfiguratorBucketDrop(payload, bucketKey, insertionIndex, hoveredItem instanceof HTMLElement ? hoveredItem : null);"));
+  assert.ok(source.includes("const sourceBucketKey = normalizeToolbarConfiguratorProfileName(payload.bucketKey || '');"));
   assert.ok(source.includes('bucket.classList.toggle(\'is-active-profile\', isActiveProfile);'));
   assert.equal(source.includes('configuratorMasterSection.hidden = true;'), false);
   assert.equal(source.includes("configuratorMasterSection.setAttribute('aria-hidden', 'true');"), false);

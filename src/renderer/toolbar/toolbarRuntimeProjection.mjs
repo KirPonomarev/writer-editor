@@ -67,18 +67,21 @@ function normalizeVisibleItemIds(profileState, catalogEntries, profileName = pro
   const availableIds = new Set(normalizedCatalogEntries.map((entry) => entry.id));
   const rawIds = getToolbarProfileIds(profileState, profileName);
   const requestedIds = new Set();
+  const orderedIds = [];
 
   for (const rawId of rawIds) {
     const itemId = typeof rawId === 'string' ? rawId.trim() : '';
     if (!itemId || !availableIds.has(itemId)) {
       continue;
     }
+    if (requestedIds.has(itemId)) {
+      continue;
+    }
     requestedIds.add(itemId);
+    orderedIds.push(itemId);
   }
 
-  return normalizedCatalogEntries
-    .map((entry) => entry.id)
-    .filter((itemId) => requestedIds.has(itemId));
+  return orderedIds.filter((itemId) => requestedIds.has(itemId));
 }
 
 function normalizeRegistryInput(input) {
@@ -144,6 +147,115 @@ function buildGroupDescriptors(groupElements, itemDescriptors) {
   }));
 }
 
+function getToolbarControlsContainer(registry) {
+  if (isNodeLike(registry?.controlsContainer)) {
+    return registry.controlsContainer;
+  }
+  if (isNodeLike(registry?.toolbarShell)) {
+    const controlsContainer = queryNode(registry.toolbarShell, '.floating-toolbar__controls');
+    return isNodeLike(controlsContainer) ? controlsContainer : registry.toolbarShell;
+  }
+  return null;
+}
+
+function getOrderedGroupElements(registry) {
+  const controlsContainer = getToolbarControlsContainer(registry);
+  const groupSelector = typeof registry?.groupSelector === 'string' && registry.groupSelector.length > 0
+    ? registry.groupSelector
+    : DEFAULT_GROUP_SELECTOR;
+  const orderedGroupElements = queryAllNodes(controlsContainer, groupSelector);
+  if (orderedGroupElements.length > 0) {
+    return orderedGroupElements;
+  }
+  return Array.isArray(registry?.groupDescriptors)
+    ? registry.groupDescriptors.map((groupDescriptor) => groupDescriptor.element).filter(Boolean)
+    : [];
+}
+
+function getItemDescriptorByNode(registry, node) {
+  if (!isNodeLike(node) || !isNodeLike(registry?.itemDescriptorByNode)) {
+    return null;
+  }
+  return registry.itemDescriptorByNode.get(node) || null;
+}
+
+function moveNodeBefore(parentNode, node, beforeNode) {
+  if (!isNodeLike(parentNode) || !isNodeLike(node) || typeof parentNode.insertBefore !== 'function') {
+    return;
+  }
+  if (node === beforeNode) {
+    return;
+  }
+  try {
+    parentNode.insertBefore(node, beforeNode || null);
+  } catch {
+    // Bounded reorder must fail safe without throwing into projection callers.
+  }
+}
+
+function getVisibleItemIndexMap(visibleItemIds) {
+  const indexByItemId = new Map();
+  for (let index = 0; index < visibleItemIds.length; index += 1) {
+    indexByItemId.set(visibleItemIds[index], index);
+  }
+  return indexByItemId;
+}
+
+function reorderVisibleItemsWithinGroup(groupDescriptor, visibleItemIndexById, visibleItemIdSet) {
+  if (!groupDescriptor?.element || !Array.isArray(groupDescriptor.itemDescriptors)) {
+    return;
+  }
+
+  const visibleDescriptors = groupDescriptor.itemDescriptors
+    .filter((descriptor) => descriptor?.node && visibleItemIdSet.has(descriptor.itemId))
+    .sort((left, right) => {
+      const leftIndex = visibleItemIndexById.get(left.itemId) ?? Number.MAX_SAFE_INTEGER;
+      const rightIndex = visibleItemIndexById.get(right.itemId) ?? Number.MAX_SAFE_INTEGER;
+      return leftIndex - rightIndex;
+    });
+
+  for (let index = visibleDescriptors.length - 1; index >= 0; index -= 1) {
+    const descriptor = visibleDescriptors[index];
+    const beforeNode = visibleDescriptors[index + 1]?.node || null;
+    moveNodeBefore(groupDescriptor.element, descriptor.node, beforeNode);
+  }
+}
+
+function reorderVisibleGroups(registry, visibleItemIndexById) {
+  const controlsContainer = getToolbarControlsContainer(registry);
+  if (!isNodeLike(controlsContainer) || typeof controlsContainer.insertBefore !== 'function') {
+    return;
+  }
+
+  const groupDescriptors = Array.isArray(registry?.groupDescriptors) ? registry.groupDescriptors : [];
+  const rankedGroupDescriptors = groupDescriptors
+    .map((groupDescriptor, index) => {
+      const visibleIndexes = Array.isArray(groupDescriptor?.itemDescriptors)
+        ? groupDescriptor.itemDescriptors
+          .filter((descriptor) => descriptor?.node && descriptor.node.hidden !== true)
+          .map((descriptor) => visibleItemIndexById.get(descriptor.itemId))
+          .filter((value) => Number.isFinite(value))
+        : [];
+      return {
+        groupDescriptor,
+        index,
+        rank: visibleIndexes.length > 0 ? Math.min(...visibleIndexes) : Number.POSITIVE_INFINITY,
+      };
+    })
+    .sort((left, right) => {
+      if (left.rank !== right.rank) {
+        return left.rank - right.rank;
+      }
+      return left.index - right.index;
+    });
+
+  for (let index = rankedGroupDescriptors.length - 1; index >= 0; index -= 1) {
+    const descriptor = rankedGroupDescriptors[index].groupDescriptor;
+    const beforeElement = rankedGroupDescriptors[index + 1]?.groupDescriptor.element || null;
+    moveNodeBefore(controlsContainer, descriptor.element, beforeElement);
+  }
+}
+
 export function collectVisibleToolbarItemIdsFromState(profileState, catalogEntries) {
   return Object.freeze([...normalizeVisibleItemIds(profileState, catalogEntries)]);
 }
@@ -158,11 +270,12 @@ export function createToolbarRuntimeRegistry(input = {}) {
       || queryNode(toolbarRoot, '.floating-toolbar__shell')
       || toolbarRoot
     );
+  const controlsContainer = queryNode(toolbarShell, '.floating-toolbar__controls') || toolbarShell;
   const groupSelector = typeof options.groupSelector === 'string' && options.groupSelector.trim()
     ? options.groupSelector.trim()
     : DEFAULT_GROUP_SELECTOR;
   const catalogEntries = normalizeCatalogEntries(options.catalogEntries);
-  const orderedGroupElements = queryAllNodes(toolbarShell, groupSelector);
+  const orderedGroupElements = queryAllNodes(controlsContainer, groupSelector);
   const groupNodeByBindKey = new Map();
   const groupElementByBindKey = new Map();
 
@@ -179,6 +292,7 @@ export function createToolbarRuntimeRegistry(input = {}) {
 
   const itemDescriptors = [];
   const itemDescriptorById = new Map();
+  const itemDescriptorByNode = new Map();
   const missingBindKeys = [];
 
   for (const entry of catalogEntries) {
@@ -207,6 +321,9 @@ export function createToolbarRuntimeRegistry(input = {}) {
 
     itemDescriptors.push(descriptor);
     itemDescriptorById.set(entry.id, descriptor);
+    if (node) {
+      itemDescriptorByNode.set(node, descriptor);
+    }
   }
 
   const groupElements = orderedGroupElements.length > 0
@@ -217,10 +334,12 @@ export function createToolbarRuntimeRegistry(input = {}) {
   return Object.freeze({
     toolbarRoot,
     toolbarShell,
+    controlsContainer,
     groupSelector,
     catalogEntries: Object.freeze([...catalogEntries]),
     itemDescriptors: Object.freeze(itemDescriptors),
     itemDescriptorById,
+    itemDescriptorByNode,
     groupDescriptors: Object.freeze(groupDescriptors),
     missingBindKeys: Object.freeze([...missingBindKeys]),
     paragraphMenu: isNodeLike(options.paragraphMenu)
@@ -244,31 +363,31 @@ export function createToolbarRuntimeRegistry(input = {}) {
 export function resolveToolbarRuntimeSnapshot(registry) {
   const itemDescriptors = Array.isArray(registry?.itemDescriptors) ? registry.itemDescriptors : [];
   const groupDescriptors = Array.isArray(registry?.groupDescriptors) ? registry.groupDescriptors : [];
+  const itemDescriptorByNode = isNodeLike(registry?.itemDescriptorByNode) ? registry.itemDescriptorByNode : new Map();
+  const orderedGroupElements = getOrderedGroupElements(registry);
   const visibleItemIds = [];
   const hiddenItemIds = [];
   const visibleBindKeys = [];
   const hiddenBindKeys = [];
   const groupVisibleBindKeys = [];
 
-  for (const descriptor of itemDescriptors) {
-    const node = descriptor?.node;
-    if (!node) {
-      continue;
+  for (const groupElement of orderedGroupElements) {
+    const visibleKeys = [];
+    const groupNodes = queryAllNodes(groupElement, TOOLBAR_ITEM_SELECTOR);
+    for (const node of groupNodes) {
+      const descriptor = itemDescriptorByNode.get(node) || itemDescriptors.find((itemDescriptor) => itemDescriptor?.node === node) || null;
+      if (!descriptor) {
+        continue;
+      }
+      if (node.hidden !== true) {
+        visibleItemIds.push(descriptor.itemId);
+        visibleBindKeys.push(descriptor.bindKey);
+        visibleKeys.push(descriptor.bindKey);
+      } else {
+        hiddenItemIds.push(descriptor.itemId);
+        hiddenBindKeys.push(descriptor.bindKey);
+      }
     }
-    const isVisible = node.hidden !== true;
-    if (isVisible) {
-      visibleItemIds.push(descriptor.itemId);
-      visibleBindKeys.push(descriptor.bindKey);
-    } else {
-      hiddenItemIds.push(descriptor.itemId);
-      hiddenBindKeys.push(descriptor.bindKey);
-    }
-  }
-
-  for (const groupDescriptor of groupDescriptors) {
-    const visibleKeys = groupDescriptor.itemDescriptors
-      .filter((descriptor) => descriptor.node && descriptor.node.hidden !== true)
-      .map((descriptor) => descriptor.bindKey);
     groupVisibleBindKeys.push(Object.freeze(visibleKeys));
   }
 
@@ -300,6 +419,7 @@ export function applyToolbarActiveProfile(registry, profileState) {
   const visibleItemIds = normalizeVisibleItemIds(profileState, catalogEntries);
   const visibleItemIdSet = new Set(visibleItemIds);
   const itemDescriptors = Array.isArray(registry?.itemDescriptors) ? registry.itemDescriptors : [];
+  const visibleItemIndexById = getVisibleItemIndexMap(visibleItemIds);
 
   for (const descriptor of itemDescriptors) {
     if (!descriptor?.node) {
@@ -307,6 +427,11 @@ export function applyToolbarActiveProfile(registry, profileState) {
     }
     descriptor.node.hidden = !visibleItemIdSet.has(descriptor.itemId);
   }
+
+  for (const groupDescriptor of Array.isArray(registry?.groupDescriptors) ? registry.groupDescriptors : []) {
+    reorderVisibleItemsWithinGroup(groupDescriptor, visibleItemIndexById, visibleItemIdSet);
+  }
+  reorderVisibleGroups(registry, visibleItemIndexById);
 
   const groupDescriptors = Array.isArray(registry?.groupDescriptors) ? registry.groupDescriptors : [];
   for (const groupDescriptor of groupDescriptors) {
