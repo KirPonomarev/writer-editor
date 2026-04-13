@@ -69,19 +69,21 @@ test('toolbar profile switch helper: v3 normalization preserves stored order and
   assert.deepEqual(normalized, {
     version: 3,
     activeToolbarProfile: 'minimal',
-    toolbarProfiles: {
-      minimal: [
-        'toolbar.list.type',
-        'toolbar.font.family',
-        'toolbar.history.undo',
-        'toolbar.format.bold',
-      ],
-      master: [
-        'toolbar.history.redo',
-        'toolbar.font.size',
-      ],
-    },
-  })
+      toolbarProfiles: {
+        minimal: [
+          'toolbar.list.type',
+          'toolbar.format.underline',
+          'toolbar.font.family',
+          'toolbar.history.undo',
+          'toolbar.format.bold',
+        ],
+        master: [
+          'toolbar.history.redo',
+          'toolbar.font.size',
+          'toolbar.insert.link',
+        ],
+      },
+    })
 })
 
 test('toolbar profile switch helper: persisted v2 migrates once to v3 and preserves minimal order', async () => {
@@ -107,25 +109,27 @@ test('toolbar profile switch helper: persisted v2 migrates once to v3 and preser
   assert.deepEqual(resolved.state, {
     version: 3,
     activeToolbarProfile: 'minimal',
-    toolbarProfiles: {
-      minimal: [
-        'toolbar.format.italic',
-        'toolbar.font.family',
-        'toolbar.font.weight',
-      ],
-      master: [
-        'toolbar.font.family',
-        'toolbar.font.weight',
-        'toolbar.font.size',
-        'toolbar.text.lineHeight',
-        'toolbar.format.bold',
-        'toolbar.format.italic',
-        'toolbar.paragraph.alignment',
-        'toolbar.list.type',
-        'toolbar.history.undo',
-        'toolbar.history.redo',
-      ],
-    },
+      toolbarProfiles: {
+        minimal: [
+          'toolbar.format.italic',
+          'toolbar.font.family',
+          'toolbar.font.weight',
+        ],
+        master: [
+          'toolbar.font.family',
+          'toolbar.font.weight',
+          'toolbar.font.size',
+          'toolbar.text.lineHeight',
+          'toolbar.format.bold',
+          'toolbar.format.italic',
+          'toolbar.format.underline',
+          'toolbar.paragraph.alignment',
+          'toolbar.list.type',
+          'toolbar.insert.link',
+          'toolbar.history.undo',
+          'toolbar.history.redo',
+        ],
+      },
   })
 })
 
@@ -159,8 +163,10 @@ test('toolbar profile switch helper: legacy migration resolves directly to v3 sh
         'toolbar.text.lineHeight',
         'toolbar.format.bold',
         'toolbar.format.italic',
+        'toolbar.format.underline',
         'toolbar.paragraph.alignment',
         'toolbar.list.type',
+        'toolbar.insert.link',
         'toolbar.history.undo',
         'toolbar.history.redo',
       ],

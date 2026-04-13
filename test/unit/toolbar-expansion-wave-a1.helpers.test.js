@@ -30,7 +30,7 @@ async function loadRuntimeBridgeModule() {
   return import(`data:text/javascript;charset=utf-8,${encodeURIComponent(source)}`)
 }
 
-test('toolbar expansion wave a1: catalog promotes only bold, italic and list type', async () => {
+test('toolbar expansion wave a1: catalog promotes bold, italic, underline, link and list type', async () => {
   const catalog = await importModule(['src', 'renderer', 'toolbar', 'toolbarFunctionCatalog.mjs'])
 
   assert.deepEqual(catalog.TOOLBAR_CANONICAL_LIVE_ORDER, [
@@ -40,8 +40,10 @@ test('toolbar expansion wave a1: catalog promotes only bold, italic and list typ
     'toolbar.text.lineHeight',
     'toolbar.format.bold',
     'toolbar.format.italic',
+    'toolbar.format.underline',
     'toolbar.paragraph.alignment',
     'toolbar.list.type',
+    'toolbar.insert.link',
     'toolbar.history.undo',
     'toolbar.history.redo',
   ])
@@ -50,10 +52,12 @@ test('toolbar expansion wave a1: catalog promotes only bold, italic and list typ
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.format.bold').commandId, 'cmd.project.format.toggleBold')
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.format.italic').implementationState, 'live')
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.format.italic').commandId, 'cmd.project.format.toggleItalic')
+  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.format.underline').implementationState, 'live')
+  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.format.underline').commandId, 'cmd.project.format.toggleUnderline')
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.list.type').implementationState, 'live')
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.list.type').actionAlias, 'toggle-list-menu')
-  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.format.underline').implementationState, 'planned')
-  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.insert.link').implementationState, 'planned')
+  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.insert.link').implementationState, 'live')
+  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.insert.link').commandId, 'cmd.project.insert.linkPrompt')
 })
 
 test('toolbar expansion wave a1: expanded seed is new-project only and saved minimal is not backfilled', async () => {
@@ -84,9 +88,11 @@ test('toolbar expansion wave a1: capability gate allows rich commands only in Ti
   const expected = [
     [projectCommands.EXTRA_COMMAND_IDS.FORMAT_TOGGLE_BOLD, 'cap.project.format.toggleBold'],
     [projectCommands.EXTRA_COMMAND_IDS.FORMAT_TOGGLE_ITALIC, 'cap.project.format.toggleItalic'],
+    [projectCommands.EXTRA_COMMAND_IDS.FORMAT_TOGGLE_UNDERLINE, 'cap.project.format.toggleUnderline'],
     [projectCommands.EXTRA_COMMAND_IDS.LIST_TOGGLE_BULLET, 'cap.project.list.toggleBullet'],
     [projectCommands.EXTRA_COMMAND_IDS.LIST_TOGGLE_ORDERED, 'cap.project.list.toggleOrdered'],
     [projectCommands.EXTRA_COMMAND_IDS.LIST_CLEAR, 'cap.project.list.clear'],
+    [projectCommands.EXTRA_COMMAND_IDS.INSERT_LINK_PROMPT, 'cap.project.insert.linkPrompt'],
   ]
 
   for (const [commandId, capabilityId] of expected) {

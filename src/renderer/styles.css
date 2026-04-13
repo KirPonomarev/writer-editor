@@ -701,6 +701,10 @@ body {
   gap: 0;
 }
 
+.floating-toolbar__group--insert {
+  gap: 0;
+}
+
 .floating-toolbar-spacing-menu {
   position: absolute;
   left: 0;
@@ -1005,8 +1009,18 @@ body {
   font-style: italic;
 }
 
+.floating-toolbar__format-glyph--underline {
+  text-decoration: underline;
+  text-decoration-thickness: 1.1px;
+  text-underline-offset: 2px;
+}
+
 .floating-toolbar__button--list {
   gap: 2px;
+}
+
+.floating-toolbar__button--insert-link {
+  width: calc(28px * var(--floating-toolbar-width-scale));
 }
 
 .floating-toolbar__button--history {
@@ -1022,6 +1036,11 @@ body {
 .floating-toolbar__icon--history {
   width: 16px;
   height: 16px;
+}
+
+.floating-toolbar__icon--link {
+  width: 15px;
+  height: 15px;
 }
 
 .floating-toolbar__button-label--paragraph,

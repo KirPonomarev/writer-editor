@@ -22,12 +22,15 @@ test('sector-m toolbar expansion wave a1: main toolbar exposes A1 hooks in canon
     'line-height-select',
     'format-bold',
     'format-italic',
+    'format-underline',
     'paragraph-trigger',
     'list-type',
+    'insert-link',
     'history-undo',
     'history-redo',
   ])
   assert.ok(html.includes('floating-toolbar__group--format-inline'))
+  assert.ok(html.includes('floating-toolbar__group--insert'))
   assert.ok(html.includes('data-list-menu'))
   assert.ok(html.includes('data-list-action="no-list"'))
   assert.ok(html.includes('data-list-action="bullet"'))
@@ -97,20 +100,30 @@ test('sector-m toolbar expansion wave a1: command ids and capability docs are ex
   }
 
   assert.ok(tiptap.includes('export function getTiptapFormattingState()'))
-  assert.ok(tiptap.includes('export function runTiptapFormatCommand(commandName)'))
+  assert.ok(tiptap.includes('export function runTiptapFormatCommand(commandName, commandPayload = undefined)'))
   assert.ok(tiptap.includes("toggleBold: () => currentEditorInstance.commands.toggleBold()"))
   assert.ok(tiptap.includes("toggleItalic: () => currentEditorInstance.commands.toggleItalic()"))
   assert.ok(tiptap.includes("toggleBulletList: () => currentEditorInstance.commands.toggleBulletList()"))
   assert.ok(tiptap.includes("toggleOrderedList: () => currentEditorInstance.commands.toggleOrderedList()"))
 })
 
-test('sector-m toolbar expansion wave a1: deferred underline and link do not leak into dependencies', () => {
+test('sector-m toolbar expansion wave a1: underline and link are live in catalog and capability truth', () => {
   const catalog = read(['src', 'renderer', 'toolbar', 'toolbarFunctionCatalog.mjs'])
-  const packageJson = read(['package.json'])
+  const projectCommands = read(['src', 'renderer', 'commands', 'projectCommands.mjs'])
+  const capability = read(['src', 'renderer', 'commands', 'capabilityPolicy.mjs'])
+  const binding = read(['docs', 'OPS', 'STATUS', 'COMMAND_CAPABILITY_BINDING.json'])
 
   assert.ok(catalog.includes("id: 'toolbar.format.underline'"))
+  assert.ok(catalog.includes("commandId: 'cmd.project.format.toggleUnderline'"))
+  assert.ok(catalog.includes("implementationState: 'live'"))
   assert.ok(catalog.includes("id: 'toolbar.insert.link'"))
-  assert.ok(catalog.includes("implementationState: 'planned'"))
-  assert.equal(packageJson.includes('@tiptap/extension-underline'), false)
-  assert.equal(packageJson.includes('@tiptap/extension-link'), false)
+  assert.ok(catalog.includes("commandId: 'cmd.project.insert.linkPrompt'"))
+  assert.ok(catalog.includes("toolbar.format.underline"))
+  assert.ok(catalog.includes("toolbar.insert.link"))
+  assert.ok(projectCommands.includes("FORMAT_TOGGLE_UNDERLINE: 'cmd.project.format.toggleUnderline'"))
+  assert.ok(projectCommands.includes("INSERT_LINK_PROMPT: 'cmd.project.insert.linkPrompt'"))
+  assert.ok(capability.includes("'cmd.project.format.toggleUnderline': 'cap.project.format.toggleUnderline'"))
+  assert.ok(capability.includes("'cmd.project.insert.linkPrompt': 'cap.project.insert.linkPrompt'"))
+  assert.ok(binding.includes('"commandId": "cmd.project.format.toggleUnderline"'))
+  assert.ok(binding.includes('"commandId": "cmd.project.insert.linkPrompt"'))
 })

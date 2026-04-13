@@ -88,6 +88,104 @@ test('tiptap runtime bridge: recovery-restored hook is deterministic', async () 
   })
 })
 
+test('tiptap runtime bridge: canonical underline command id delegates to editor.commands.toggleUnderline', async () => {
+  const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
+  let underlineCalls = 0
+  const bridge = createTiptapRuntimeBridge({
+    editor: {
+      commands: {
+        toggleUnderline() {
+          underlineCalls += 1
+          return true
+        },
+      },
+    },
+  })
+
+  const result = bridge.handleRuntimeCommand({ commandId: 'cmd.project.format.toggleUnderline' })
+  assert.equal(underlineCalls, 1)
+  assert.deepEqual(result, {
+    handled: true,
+    result: { performed: true, action: 'toggleUnderline', reason: null },
+    commandId: 'cmd.project.format.toggleUnderline',
+  })
+})
+
+test('tiptap runtime bridge: canonical link prompt command id delegates only to runtime handler callback', async () => {
+  const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
+  const calls = []
+  const bridge = createTiptapRuntimeBridge({
+    runtimeHandlers: {
+      insertLinkPrompt(commandId, payload) {
+        calls.push({ commandId, payload })
+        return {
+          performed: false,
+          action: 'insertLinkPrompt',
+          reason: 'NO_SELECTION',
+        }
+      },
+    },
+  })
+
+  const payload = {
+    selection: { from: 4, to: 11 },
+    href: 'https://example.com',
+  }
+  const result = bridge.handleRuntimeCommand({
+    commandId: 'cmd.project.insert.linkPrompt',
+    payload,
+  })
+
+  assert.deepEqual(calls, [
+    {
+      commandId: 'cmd.project.insert.linkPrompt',
+      payload,
+    },
+  ])
+  assert.deepEqual(result, {
+    handled: true,
+    result: { performed: false, action: 'insertLinkPrompt', reason: 'NO_SELECTION' },
+    commandId: 'cmd.project.insert.linkPrompt',
+  })
+})
+
+test('tiptap tiptap index: underline and link extensions are configured inertly and expose the bounded command API', () => {
+  const filePath = path.join(ROOT, 'src', 'renderer', 'tiptap', 'index.js')
+  const source = fs.readFileSync(filePath, 'utf8')
+
+  assert.ok(source.includes("import Link from '@tiptap/extension-link'"))
+  assert.ok(source.includes("import Underline from '@tiptap/extension-underline'"))
+  assert.ok(source.includes('StarterKit.configure({'))
+  assert.ok(source.includes('link: false'))
+  assert.ok(source.includes('underline: false'))
+  assert.ok(source.includes('Underline,'))
+  assert.ok(source.includes('Link.configure({'))
+  assert.ok(source.includes('autolink: false'))
+  assert.ok(source.includes('linkOnPaste: false'))
+  assert.ok(source.includes('openOnClick: false'))
+  assert.ok(source.includes("underline: Boolean(editor.isActive('underline'))"))
+  assert.ok(source.includes("const linkActive = Boolean(editor.isActive('link'))"))
+  assert.ok(source.includes('link: linkActive'))
+  assert.ok(source.includes('linkActive,'))
+  assert.ok(source.includes("if (commandName === 'toggleUnderline')"))
+  assert.ok(source.includes("if (commandName === 'setLink')"))
+  assert.ok(source.includes("if (commandName === 'unsetLink')"))
+})
+
+test('tiptap runtime bridge: dormant string command surface remains unchanged for underline and link', async () => {
+  const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
+  const bridge = createTiptapRuntimeBridge({})
+
+  assert.deepEqual(bridge.handleRuntimeCommand({ command: 'format-underline' }), {
+    handled: false,
+    command: 'format-underline',
+  })
+  assert.deepEqual(bridge.handleRuntimeCommand({ command: 'insert-link' }), {
+    handled: false,
+    command: 'insert-link',
+  })
+})
+
 test('tiptap runtime bridge: safe reset delegates to runtime handler', async () => {
   const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
   let safeResetCalls = 0

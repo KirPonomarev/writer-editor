@@ -112,10 +112,12 @@ const toolbarSpacingMenu = document.querySelector('[data-toolbar-spacing-menu]')
 const toolbarSpacingAction = document.querySelector('[data-toolbar-spacing-action]');
 const formatBoldButton = document.querySelector('[data-toolbar-item-key="format-bold"]');
 const formatItalicButton = document.querySelector('[data-toolbar-item-key="format-italic"]');
+const formatUnderlineButton = document.querySelector('[data-toolbar-item-key="format-underline"]');
 const paragraphTriggerButton = document.querySelector('[data-toolbar-item-key="paragraph-trigger"]');
 const paragraphMenu = document.querySelector('[data-paragraph-menu]');
 const listTriggerButton = document.querySelector('[data-toolbar-item-key="list-type"]');
 const listMenu = document.querySelector('[data-list-menu]');
+const insertLinkButton = document.querySelector('[data-toolbar-item-key="insert-link"]');
 const listActionButtons = Array.from(document.querySelectorAll('[data-list-action]'));
 const toolbarRuntimeRegistry = typeof toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry === 'function'
   ? toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry({
@@ -2471,6 +2473,7 @@ registerProjectCommands(commandRegistry, {
     insertAddCard: () => handleInsertAddCard(),
     formatToggleBold: () => handleTiptapFormatCommand('toggleBold'),
     formatToggleItalic: () => handleTiptapFormatCommand('toggleItalic'),
+    formatToggleUnderline: () => handleTiptapFormatCommand('toggleUnderline'),
     formatAlignLeft: () => handleFormatAlign('align-left'),
     formatAlignCenter: () => handleFormatAlign('align-center'),
     formatAlignRight: () => handleFormatAlign('align-right'),
@@ -2478,6 +2481,7 @@ registerProjectCommands(commandRegistry, {
     listToggleBullet: () => handleTiptapFormatCommand('toggleBulletList'),
     listToggleOrdered: () => handleTiptapFormatCommand('toggleOrderedList'),
     listClear: () => handleTiptapFormatCommand('clearList'),
+    insertLinkPrompt: (payload = {}) => handleInsertLinkPrompt(payload),
     planFlowSave: () => handlePlanFlowSave(),
     reviewExportMarkdown: () => handleReviewExportMarkdown(),
   },
@@ -2488,6 +2492,7 @@ const MARKDOWN_IMPORT_STATUS_MESSAGE = 'Imported Markdown v1';
 const MARKDOWN_EXPORT_STATUS_MESSAGE = 'Exported Markdown v1';
 const MARKDOWN_IMPORT_PROMPT_TITLE = 'Import Markdown v1';
 const MARKDOWN_EXPORT_PROMPT_COPY_HINT = 'Export Markdown v1 (copy text below)';
+const LINK_PROMPT_TITLE = 'Insert link';
 const FLOW_OPEN_ERROR_MESSAGE = 'Flow mode unavailable';
 const FLOW_SAVE_ERROR_MESSAGE = 'Flow mode save failed';
 
@@ -5875,6 +5880,59 @@ function handleFormatAlign(action) {
   return { performed: true, action };
 }
 
+function normalizeToolbarLinkPromptCandidate(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function normalizeToolbarLinkPromptValue(value) {
+  const raw = normalizeToolbarLinkPromptCandidate(value);
+  if (!raw) {
+    return { ok: true, href: '' };
+  }
+  if (/\s/.test(raw)) {
+    return { ok: false, reason: 'UNSAFE_SCHEME' };
+  }
+
+  let normalized = raw;
+  const lower = raw.toLowerCase();
+  if (
+    lower.startsWith('http://')
+    || lower.startsWith('https://')
+    || lower.startsWith('mailto:')
+  ) {
+    normalized = raw;
+  } else if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) {
+    return { ok: false, reason: 'UNSAFE_SCHEME' };
+  } else if (raw.startsWith('www.') || /^[^/\s]+\.[^\s]+/.test(raw)) {
+    normalized = `https://${raw}`;
+  }
+
+  try {
+    const parsed = new URL(normalized);
+    const protocol = parsed.protocol.toLowerCase();
+    if (protocol !== 'http:' && protocol !== 'https:' && protocol !== 'mailto:') {
+      return { ok: false, reason: 'UNSAFE_SCHEME' };
+    }
+    if (protocol === 'mailto:' && !parsed.pathname) {
+      return { ok: false, reason: 'UNSAFE_SCHEME' };
+    }
+    return { ok: true, href: parsed.href };
+  } catch {
+    return { ok: false, reason: 'UNSAFE_SCHEME' };
+  }
+}
+
+function readToolbarLinkPromptInitialValue(payload, state) {
+  const input = payload && typeof payload === 'object' && !Array.isArray(payload)
+    ? payload
+    : {};
+  const payloadHref = normalizeToolbarLinkPromptCandidate(input.href || input.initialHref || input.initialValue);
+  if (payloadHref) {
+    return payloadHref;
+  }
+  return normalizeToolbarLinkPromptCandidate(state.linkHref);
+}
+
 function normalizeToolbarFormattingState(input) {
   const source = input && typeof input === 'object' && !Array.isArray(input)
     ? input
@@ -5882,8 +5940,12 @@ function normalizeToolbarFormattingState(input) {
   return {
     bold: Boolean(source.bold),
     italic: Boolean(source.italic),
+    underline: Boolean(source.underline),
     bulletList: Boolean(source.bulletList),
     orderedList: Boolean(source.orderedList),
+    link: Boolean(source.link || source.linkActive),
+    linkHref: typeof source.linkHref === 'string' ? source.linkHref : '',
+    selectionEmpty: source.selectionEmpty !== false,
   };
 }
 
@@ -5900,6 +5962,8 @@ function syncToolbarFormattingState(nextState = null) {
     : normalizeToolbarFormattingState();
   updateToolbarPressedButton(formatBoldButton, state.bold);
   updateToolbarPressedButton(formatItalicButton, state.italic);
+  updateToolbarPressedButton(formatUnderlineButton, state.underline);
+  updateToolbarPressedButton(insertLinkButton, state.link);
 
   if (listTriggerButton instanceof HTMLElement) {
     const hasList = state.bulletList || state.orderedList;
@@ -5917,17 +5981,52 @@ function syncToolbarFormattingState(nextState = null) {
   });
 }
 
-function handleTiptapFormatCommand(commandName) {
+function handleTiptapFormatCommand(commandName, payload = {}) {
   if (!isTiptapMode) {
     return { performed: false, action: commandName, reason: 'EDITOR_MODE_UNSUPPORTED' };
   }
-  const result = runTiptapFormatCommand(commandName);
+  const result = runTiptapFormatCommand(commandName, payload);
   if (result && result.performed !== false) {
     markAsModified();
     updateWordCount();
   }
   syncToolbarFormattingState();
   return result;
+}
+
+function handleInsertLinkPrompt(payload = {}) {
+  if (!isTiptapMode) {
+    return { performed: false, action: 'insertLinkPrompt', reason: 'EDITOR_MODE_UNSUPPORTED' };
+  }
+
+  const state = normalizeToolbarFormattingState(getTiptapFormattingState());
+  if (state.selectionEmpty && !state.link) {
+    syncToolbarFormattingState(state);
+    return { performed: false, action: 'insertLinkPrompt', reason: 'NO_SELECTION' };
+  }
+  if (typeof window.prompt !== 'function') {
+    return { performed: false, action: 'insertLinkPrompt', reason: 'PROMPT_UNAVAILABLE' };
+  }
+
+  const response = window.prompt(LINK_PROMPT_TITLE, readToolbarLinkPromptInitialValue(payload, state));
+  if (response === null) {
+    return { performed: false, action: 'insertLinkPrompt', reason: 'USER_CANCELLED' };
+  }
+
+  const normalized = normalizeToolbarLinkPromptValue(response);
+  if (!normalized.ok) {
+    syncToolbarFormattingState(state);
+    return { performed: false, action: 'insertLinkPrompt', reason: normalized.reason };
+  }
+  if (!normalized.href) {
+    if (!state.link) {
+      syncToolbarFormattingState(state);
+      return { performed: false, action: 'insertLinkPrompt', reason: 'NO_OP' };
+    }
+    return handleTiptapFormatCommand('unsetLink');
+  }
+
+  return handleTiptapFormatCommand('setLink', { href: normalized.href });
 }
 
 function dispatchListTypeAction(listAction) {
@@ -6023,6 +6122,12 @@ function handleUiAction(action) {
       return true;
     case 'format-italic':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TOGGLE_ITALIC);
+      return true;
+    case 'format-underline':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TOGGLE_UNDERLINE);
+      return true;
+    case 'insert-link':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_LINK_PROMPT);
       return true;
     case 'undo':
       return handleUndo().performed !== false;
@@ -6559,6 +6664,7 @@ if (window.electronAPI) {
       formatToggleItalic: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TOGGLE_ITALIC);
       },
+      insertLinkPrompt: (_commandId, payload = {}) => handleInsertLinkPrompt(payload),
       listToggleBullet: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_TOGGLE_BULLET);
       },

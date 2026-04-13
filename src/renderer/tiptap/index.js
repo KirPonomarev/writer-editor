@@ -1,4 +1,6 @@
 import { Editor } from '@tiptap/core'
+import Link from '@tiptap/extension-link'
+import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import {
   attachTiptapIpc,
@@ -61,14 +63,28 @@ function readFormattingState(editor) {
     return {
       bold: false,
       italic: false,
+      underline: false,
+      link: false,
+      linkActive: false,
+      linkHref: '',
+      selectionEmpty: true,
       bulletList: false,
       orderedList: false,
     }
   }
 
+  const linkActive = Boolean(editor.isActive('link'))
+  const linkAttributes = typeof editor.getAttributes === 'function' ? editor.getAttributes('link') : null
+  const selectionEmpty = Boolean(editor.state && editor.state.selection ? editor.state.selection.empty : true)
+
   return {
     bold: Boolean(editor.isActive('bold')),
     italic: Boolean(editor.isActive('italic')),
+    underline: Boolean(editor.isActive('underline')),
+    link: linkActive,
+    linkActive,
+    linkHref: linkAttributes && typeof linkAttributes.href === 'string' ? linkAttributes.href : '',
+    selectionEmpty,
     bulletList: Boolean(editor.isActive('bulletList')),
     orderedList: Boolean(editor.isActive('orderedList')),
   }
@@ -210,7 +226,18 @@ export function initTiptap(mountEl, options = {}) {
 
   const editor = new Editor({
     element: contentEl,
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit.configure({
+        link: false,
+        underline: false,
+      }),
+      Underline,
+      Link.configure({
+        autolink: false,
+        linkOnPaste: false,
+        openOnClick: false,
+      }),
+    ],
     content: '<p></p>',
     onUpdate: () => {
       currentIpcSession?.handleUpdate()
@@ -296,16 +323,9 @@ export function getTiptapFormattingState() {
   return readFormattingState(currentEditorInstance)
 }
 
-export function runTiptapFormatCommand(commandName) {
+export function runTiptapFormatCommand(commandName, commandPayload = undefined) {
   if (!currentEditorInstance || !currentEditorInstance.commands) {
     return { performed: false, action: commandName, reason: 'EDITOR_UNAVAILABLE' }
-  }
-
-  const commandMap = {
-    toggleBold: () => currentEditorInstance.commands.toggleBold(),
-    toggleItalic: () => currentEditorInstance.commands.toggleItalic(),
-    toggleBulletList: () => currentEditorInstance.commands.toggleBulletList(),
-    toggleOrderedList: () => currentEditorInstance.commands.toggleOrderedList(),
   }
 
   if (commandName === 'clearList') {
@@ -321,6 +341,60 @@ export function runTiptapFormatCommand(commandName) {
       return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
     }
     return { performed: false, action: commandName, reason: 'LIST_NOT_ACTIVE' }
+  }
+
+  if (commandName === 'toggleUnderline') {
+    if (typeof currentEditorInstance.commands.toggleUnderline !== 'function') {
+      return { performed: false, action: commandName, reason: 'FORMAT_COMMAND_UNSUPPORTED' }
+    }
+    const performed = Boolean(currentEditorInstance.commands.toggleUnderline())
+    notifyFormattingStateChange()
+    return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
+  }
+
+  if (commandName === 'setLink') {
+    const linkPayload = commandPayload && typeof commandPayload === 'object' && !Array.isArray(commandPayload)
+      ? commandPayload
+      : null
+    if (!linkPayload || typeof linkPayload.href !== 'string' || linkPayload.href.length === 0) {
+      return { performed: false, action: commandName, reason: 'LINK_PAYLOAD_INVALID' }
+    }
+    const href = linkPayload.href.trim()
+    if (!href) {
+      return { performed: false, action: commandName, reason: 'LINK_PAYLOAD_INVALID' }
+    }
+    const chain = typeof currentEditorInstance.chain === 'function'
+      ? currentEditorInstance.chain().focus().extendMarkRange('link')
+      : null
+    if (!chain && typeof currentEditorInstance.commands.setLink !== 'function') {
+      return { performed: false, action: commandName, reason: 'FORMAT_COMMAND_UNSUPPORTED' }
+    }
+    const performed = chain && typeof chain.setLink === 'function' && typeof chain.run === 'function'
+      ? Boolean(chain.setLink({ href }).run())
+      : Boolean(currentEditorInstance.commands.setLink({ href }))
+    notifyFormattingStateChange()
+    return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
+  }
+
+  if (commandName === 'unsetLink') {
+    const chain = typeof currentEditorInstance.chain === 'function'
+      ? currentEditorInstance.chain().focus().extendMarkRange('link')
+      : null
+    if (!chain && typeof currentEditorInstance.commands.unsetLink !== 'function') {
+      return { performed: false, action: commandName, reason: 'FORMAT_COMMAND_UNSUPPORTED' }
+    }
+    const performed = chain && typeof chain.unsetLink === 'function' && typeof chain.run === 'function'
+      ? Boolean(chain.unsetLink().run())
+      : Boolean(currentEditorInstance.commands.unsetLink())
+    notifyFormattingStateChange()
+    return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
+  }
+
+  const commandMap = {
+    toggleBold: () => currentEditorInstance.commands.toggleBold(),
+    toggleItalic: () => currentEditorInstance.commands.toggleItalic(),
+    toggleBulletList: () => currentEditorInstance.commands.toggleBulletList(),
+    toggleOrderedList: () => currentEditorInstance.commands.toggleOrderedList(),
   }
 
   const command = commandMap[commandName]
