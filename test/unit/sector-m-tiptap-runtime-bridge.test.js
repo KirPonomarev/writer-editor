@@ -2,11 +2,16 @@ const test = require('node:test')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
+const { pathToFileURL } = require('node:url')
 
 const ROOT = process.cwd()
 
 async function loadEsmSourceFromFile(filePath) {
-  const code = fs.readFileSync(filePath, 'utf8')
+  let code = fs.readFileSync(filePath, 'utf8')
+  if (filePath.endsWith(path.join('tiptap', 'ipc.js'))) {
+    const envelopeHref = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'documentContentEnvelope.mjs')).href
+    code = code.replace("../documentContentEnvelope.mjs", envelopeHref)
+  }
   return import(`data:text/javascript;charset=utf-8,${encodeURIComponent(code)}`)
 }
 
@@ -193,4 +198,45 @@ test('tiptap ipc adapter seams: text request and set text are deterministic', as
   const setResult = handleSetText(incoming)
   assert.deepEqual(appliedPayload, incoming)
   assert.deepEqual(setResult, { applied: true, payload: incoming })
+})
+
+test('tiptap ipc adapter seams: attach does not register window listeners unless explicitly enabled', async () => {
+  const {
+    attachTiptapIpc,
+    detachTiptapIpc,
+    getTiptapIpcDebugState,
+  } = await loadIpcModule()
+  const previousWindow = global.window
+  const calls = []
+  global.window = {
+    electronAPI: {
+      onEditorTextRequest(handler) {
+        calls.push({ type: 'text', handler })
+      },
+      onEditorSetText(handler) {
+        calls.push({ type: 'set', handler })
+      },
+    },
+  }
+
+  try {
+    attachTiptapIpc({
+      readObservablePayload() {
+        return 'payload'
+      },
+      applyIncomingPayload() {},
+    })
+
+    const state = getTiptapIpcDebugState()
+    assert.equal(state.hasCurrentSessionRef, true)
+    assert.equal(state.listenerCount, 0)
+    assert.deepEqual(calls, [])
+  } finally {
+    detachTiptapIpc()
+    if (previousWindow === undefined) {
+      delete global.window
+    } else {
+      global.window = previousWindow
+    }
+  }
 })

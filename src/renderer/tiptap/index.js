@@ -7,6 +7,11 @@ import {
   parseObservablePayload,
 } from './ipc.js'
 import { createTiptapRuntimeBridge } from './runtimeBridge.js'
+import {
+  buildParagraphDocumentFromText,
+  createDefaultDocumentMeta,
+  canonicalizeDocumentJson,
+} from '../documentContentEnvelope.mjs'
 
 let currentEditorInstance = null
 let currentIpcSession = null
@@ -14,32 +19,6 @@ let currentRuntimeBridge = null
 let unloadHookBound = false
 let runtimeCommandListenerAttached = false
 let recoveryRestoredListenerAttached = false
-
-function cloneDefaultMeta() {
-  return {
-    synopsis: '',
-    status: 'черновик',
-    tags: { pov: '', line: '', place: '' },
-  }
-}
-
-function textToDoc(text = '') {
-  const lines = String(text || '').split('\n')
-  const content = lines.map((line) => {
-    if (!line) {
-      return { type: 'paragraph' }
-    }
-    return {
-      type: 'paragraph',
-      content: [{ type: 'text', text: line }],
-    }
-  })
-
-  return {
-    type: 'doc',
-    content: content.length ? content : [{ type: 'paragraph' }],
-  }
-}
 
 function readEditorText(editor) {
   if (!editor || typeof editor.getText !== 'function') {
@@ -64,10 +43,25 @@ function notifyDirtyState(nextDirty) {
   }).catch(() => {})
 }
 
-function createIpcSession(editor) {
+function readEditorDocument(editor) {
+  if (!editor || typeof editor.getJSON !== 'function') {
+    return buildParagraphDocumentFromText('')
+  }
+
+  try {
+    return canonicalizeDocumentJson(editor.getJSON())
+  } catch {
+    return buildParagraphDocumentFromText(readEditorText(editor))
+  }
+}
+
+function createIpcSession(editor, options = {}) {
+  const onContentParseIssue = typeof options.onContentParseIssue === 'function'
+    ? options.onContentParseIssue
+    : null
   const state = {
     metaEnabled: false,
-    meta: cloneDefaultMeta(),
+    meta: createDefaultDocumentMeta(),
     cards: [],
     path: null,
     kind: null,
@@ -79,7 +73,7 @@ function createIpcSession(editor) {
     editor,
     readObservablePayload() {
       return composeObservablePayload({
-        text: readEditorText(editor),
+        doc: readEditorDocument(editor),
         metaEnabled: state.metaEnabled,
         meta: state.meta,
         cards: state.cards,
@@ -94,6 +88,9 @@ function createIpcSession(editor) {
           : ''
 
       const parsed = parseObservablePayload(content)
+      if (parsed.issue && onContentParseIssue) {
+        onContentParseIssue(parsed.issue)
+      }
       state.metaEnabled = hasObjectPayload ? Boolean(payload.metaEnabled) : false
       state.meta = parsed.meta
       state.cards = parsed.cards
@@ -109,7 +106,7 @@ function createIpcSession(editor) {
 
       state.applyingExternalPayload = true
       try {
-        editor.commands.setContent(textToDoc(parsed.text || ''), false)
+        editor.commands.setContent(parsed.doc || buildParagraphDocumentFromText(parsed.text || ''), false)
       } finally {
         state.applyingExternalPayload = false
       }
@@ -191,9 +188,11 @@ export function initTiptap(mountEl, options = {}) {
     },
   })
 
-  currentIpcSession = attachIpc ? createIpcSession(editor) : null
+  currentIpcSession = attachIpc ? createIpcSession(editor, options) : null
   if (currentIpcSession) {
-    attachTiptapIpc(currentIpcSession)
+    attachTiptapIpc(currentIpcSession, {
+      attachWindowListeners: options.attachWindowListeners === true,
+    })
   }
   currentRuntimeBridge = createTiptapRuntimeBridge({
     editor,
@@ -235,7 +234,22 @@ export function getTiptapPlainText() {
 
 export function setTiptapPlainText(text = '') {
   if (!currentEditorInstance) return
-  currentEditorInstance.commands.setContent(textToDoc(text), false)
+  currentEditorInstance.commands.setContent(buildParagraphDocumentFromText(text), false)
+}
+
+export function getTiptapDocumentSnapshot() {
+  return {
+    doc: readEditorDocument(currentEditorInstance),
+    text: readEditorText(currentEditorInstance),
+  }
+}
+
+export function setTiptapDocumentSnapshot(snapshot = {}) {
+  if (!currentEditorInstance) return
+  const doc = snapshot && snapshot.doc && typeof snapshot.doc === 'object'
+    ? snapshot.doc
+    : buildParagraphDocumentFromText(snapshot && typeof snapshot.text === 'string' ? snapshot.text : '')
+  currentEditorInstance.commands.setContent(doc, false)
 }
 
 export function undoTiptap() {

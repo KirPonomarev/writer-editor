@@ -1,4 +1,13 @@
-import { getTiptapPlainText, initTiptap, redoTiptap, setTiptapPlainText, setTiptapRuntimeHandlers, undoTiptap } from './tiptap/index.js';
+import {
+  getTiptapDocumentSnapshot,
+  getTiptapPlainText,
+  initTiptap,
+  redoTiptap,
+  setTiptapDocumentSnapshot,
+  setTiptapPlainText,
+  setTiptapRuntimeHandlers,
+  undoTiptap,
+} from './tiptap/index.js';
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
 import {
@@ -20,6 +29,10 @@ import {
   nextSceneCaretAtBoundary,
   previousSceneCaretAtBoundary,
 } from './commands/flowMode.mjs';
+import {
+  composeObservablePayload,
+  parseObservablePayload,
+} from './documentContentEnvelope.mjs';
 import {
   buildLeftRailPresentationTree,
   getLeftRailPresentationExpandKey,
@@ -49,7 +62,10 @@ import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
 const isTiptapMode = window.__USE_TIPTAP === true;
 const editor = document.getElementById('editor');
 if (isTiptapMode) {
-  initTiptap(editor, { attachIpc: false });
+  initTiptap(editor, {
+    attachIpc: false,
+    onContentParseIssue: handleDocumentContentParseIssue,
+  });
 }
 const statusElement = document.getElementById('status');
 const saveStateElement = document.querySelector('[data-save-state]');
@@ -2209,7 +2225,12 @@ async function handleFlowModeOpenUiPath() {
 
   flowModeState = {
     active: true,
-    scenes: scenes.map((scene) => ({ path: scene.path, title: scene.title, kind: scene.kind })),
+    scenes: scenes.map((scene) => ({
+      path: scene.path,
+      title: scene.title,
+      kind: scene.kind,
+      content: scene.content,
+    })),
     dirty: false,
   };
 
@@ -2362,185 +2383,32 @@ function setPlainText(text = '', options = {}) {
   renderStyledView(text, { includePagination, preserveSelection });
 }
 
-function parseIndentedValue(lines, startIndex) {
-  const valueLines = [];
-  const firstLine = lines[startIndex];
-  const rawValue = firstLine.split(':').slice(1).join(':').trim();
-  valueLines.push(rawValue);
-  let index = startIndex + 1;
-  while (index < lines.length) {
-    const line = lines[index];
-    if (/^[a-zA-Zа-яА-ЯёЁ]+\s*:/.test(line)) {
-      break;
-    }
-    if (line.startsWith('  ') || line.startsWith('\t')) {
-      valueLines.push(line.trim());
-    }
-    index += 1;
-  }
-  return { value: valueLines.join('\n').trim(), nextIndex: index };
-}
-
-function parseTagsValue(value) {
-  const tags = { pov: '', line: '', place: '' };
-  value.split(';').forEach((chunk) => {
-    const [rawKey, ...rest] = chunk.split('=');
-    const key = (rawKey || '').trim().toLowerCase();
-    const val = rest.join('=').trim();
-    if (key === 'pov') tags.pov = val;
-    if (key === 'линия') tags.line = val;
-    if (key === 'место') tags.place = val;
-  });
-  return tags;
-}
-
-function parseMetaBlock(block) {
-  const meta = {
-    synopsis: '',
-    status: 'черновик',
-    tags: { pov: '', line: '', place: '' }
-  };
-  const body = block.replace(/\[\/?meta\]/gi, '').trim();
-  const lines = body.split('\n');
-  let index = 0;
-  while (index < lines.length) {
-    const line = lines[index].trim();
-    if (line.toLowerCase().startsWith('status:')) {
-      meta.status = line.split(':').slice(1).join(':').trim() || meta.status;
-      index += 1;
-      continue;
-    }
-    if (line.toLowerCase().startsWith('tags:')) {
-      const value = line.split(':').slice(1).join(':').trim();
-      meta.tags = parseTagsValue(value);
-      index += 1;
-      continue;
-    }
-    if (line.toLowerCase().startsWith('synopsis:')) {
-      const parsed = parseIndentedValue(lines, index);
-      meta.synopsis = parsed.value;
-      index = parsed.nextIndex;
-      continue;
-    }
-    index += 1;
-  }
-  return meta;
-}
-
-function parseCardBlock(block) {
-  const card = { title: '', text: '', tags: '' };
-  const body = block.replace(/\[\/?card\]/gi, '').trim();
-  const lines = body.split('\n');
-  let index = 0;
-  while (index < lines.length) {
-    const line = lines[index].trim();
-    if (line.toLowerCase().startsWith('title:')) {
-      card.title = line.split(':').slice(1).join(':').trim();
-      index += 1;
-      continue;
-    }
-    if (line.toLowerCase().startsWith('tags:')) {
-      card.tags = line.split(':').slice(1).join(':').trim();
-      index += 1;
-      continue;
-    }
-    if (line.toLowerCase().startsWith('text:')) {
-      const parsed = parseIndentedValue(lines, index);
-      card.text = parsed.value;
-      index = parsed.nextIndex;
-      continue;
-    }
-    index += 1;
-  }
-  return card;
-}
-
-function parseCardsBlock(block) {
-  const cards = [];
-  const body = block.replace(/\[\/?cards\]/gi, '').trim();
-  const regex = /\[card\][\s\S]*?\[\/card\]/gi;
-  let match = regex.exec(body);
-  while (match) {
-    cards.push(parseCardBlock(match[0]));
-    match = regex.exec(body);
-  }
-  return cards;
-}
-
 function parseDocumentContent(rawText = '') {
-  let content = String(rawText || '');
-  let meta = { synopsis: '', status: 'черновик', tags: { pov: '', line: '', place: '' } };
-  let cards = [];
-
-  const metaMatch = content.match(/\[meta\][\s\S]*?\[\/meta\]/i);
-  if (metaMatch) {
-    meta = parseMetaBlock(metaMatch[0]);
-    content = content.replace(metaMatch[0], '');
-  }
-
-  const cardsMatch = content.match(/\[cards\][\s\S]*?\[\/cards\]/i);
-  if (cardsMatch) {
-    cards = parseCardsBlock(cardsMatch[0]);
-    content = content.replace(cardsMatch[0], '');
-  }
-
-  content = content.replace(/\n{3,}/g, '\n\n');
-  content = content.replace(/^\n+/, '');
-  content = content.replace(/\n+$/, '');
-
-  return { text: content, meta, cards };
-}
-
-function composeMetaBlock(meta) {
-  if (!metaEnabled) return '';
-  const lines = ['[meta]'];
-  const status = meta.status || 'черновик';
-  const tags = `POV=${meta.tags.pov || ''}; линия=${meta.tags.line || ''}; место=${meta.tags.place || ''}`;
-  lines.push(`status: ${status}`);
-  lines.push(`tags: ${tags}`);
-  const synopsisLines = String(meta.synopsis || '').split('\n');
-  if (synopsisLines.length) {
-    lines.push(`synopsis: ${synopsisLines[0] || ''}`);
-    for (let i = 1; i < synopsisLines.length; i += 1) {
-      lines.push(`  ${synopsisLines[i]}`);
-    }
-  } else {
-    lines.push('synopsis:');
-  }
-  lines.push('[/meta]');
-  return lines.join('\n');
-}
-
-function composeCardsBlock(cards) {
-  if (!cards || !cards.length) return '';
-  const lines = ['[cards]'];
-  cards.forEach((card) => {
-    lines.push('[card]');
-    lines.push(`title: ${card.title || ''}`);
-    const textLines = String(card.text || '').split('\n');
-    lines.push(`text: ${textLines[0] || ''}`);
-    for (let i = 1; i < textLines.length; i += 1) {
-      lines.push(`  ${textLines[i]}`);
-    }
-    lines.push(`tags: ${card.tags || ''}`);
-    lines.push('[/card]');
-  });
-  lines.push('[/cards]');
-  return lines.join('\n');
+  return parseObservablePayload(rawText);
 }
 
 function composeDocumentContent() {
-  const parts = [];
-  const metaBlock = composeMetaBlock(currentMeta);
-  if (metaBlock) {
-    parts.push(metaBlock);
+  const tiptapSnapshot = isTiptapMode ? getTiptapDocumentSnapshot() : null;
+  return composeObservablePayload({
+    doc: tiptapSnapshot ? tiptapSnapshot.doc : null,
+    text: tiptapSnapshot ? tiptapSnapshot.text : getPlainText(),
+    metaEnabled,
+    meta: currentMeta,
+    cards: currentCards,
+  });
+}
+
+function handleDocumentContentParseIssue(issue) {
+  if (!issue || typeof issue !== 'object') {
+    return;
   }
-  parts.push(getPlainText());
-  const cardsBlock = composeCardsBlock(currentCards);
-  if (cardsBlock) {
-    parts.push(cardsBlock);
+  updateWarningStateText('recovery');
+  if (recoveryMessage) {
+    recoveryMessage.textContent = issue.userMessage || 'Recovery ready';
   }
-  return parts.filter(Boolean).join('\n\n');
+  if (typeof issue.userMessage === 'string' && issue.userMessage.length > 0) {
+    updateStatusText(issue.userMessage);
+  }
 }
 
 function getSelectionOffsets() {
@@ -6113,7 +5981,18 @@ if (window.electronAPI) {
     const parsed = parseDocumentContent(content);
     currentMeta = parsed.meta;
     currentCards = parsed.cards;
-    setPlainText(parsed.text || '');
+    plainTextBuffer = parsed.text || '';
+    if (isTiptapMode) {
+      setTiptapDocumentSnapshot({
+        doc: parsed.doc,
+        text: parsed.text || '',
+      });
+    } else {
+      setPlainText(parsed.text || '');
+    }
+    if (parsed.issue) {
+      handleDocumentContentParseIssue(parsed.issue);
+    }
     updateMetaInputs();
     updateMetaVisibility();
     updateCardsList();
