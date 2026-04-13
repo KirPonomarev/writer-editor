@@ -30,6 +30,19 @@ import {
   buildLayoutPatchFromSpatialState,
   buildSpatialStateFromLayoutSnapshot,
 } from './design-os/index.mjs';
+import {
+  getToolbarFunctionCatalogEntryById,
+  listLiveToolbarFunctionCatalogEntries,
+} from './toolbar/toolbarFunctionCatalog.mjs';
+import {
+  consumeLegacyConfiguratorBuckets,
+  createCanonicalMinimalToolbarProfileState,
+  createEphemeralBaselineToolbarProfileState,
+  createToolbarProfileState,
+  getToolbarProfileStorageKey,
+  resolveToolbarProfileStateForProjectSwitch,
+  writeToolbarProfileState,
+} from './toolbar/toolbarProfileState.mjs';
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
 
 const isTiptapMode = window.__USE_TIPTAP === true;
@@ -54,8 +67,10 @@ const leftToolbar = document.querySelector('[data-left-toolbar]');
 const leftToolbarShell = document.querySelector('[data-left-toolbar-shell]');
 const topWorkBar = document.querySelector('[data-top-work-bar]');
 const configuratorPanel = document.querySelector('[data-configurator-panel]');
+const configuratorMasterSection = document.querySelector('.configurator-panel__section--master');
+const configuratorMinimalSection = document.querySelector('.configurator-panel__section--minimal');
+const configuratorLibraryGrid = document.querySelector('.configurator-panel__grid');
 const gridTriggerButton = document.querySelector('[data-grid-button]');
-const configuratorSlotButtons = Array.from(document.querySelectorAll('.configurator-panel__slot'));
 const configuratorBuckets = Array.from(document.querySelectorAll('[data-configurator-bucket]'));
 const toolbarRotateHandles = Array.from(document.querySelectorAll('[data-toolbar-rotate-handle]'));
 const toolbarWidthHandle = document.querySelector('[data-toolbar-width-handle]');
@@ -161,7 +176,6 @@ const FLOATING_TOOLBAR_STORAGE_KEY = 'yalkenLiteralStageAToolbarState';
 const FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY = 'yalkenLiteralStageAToolbarItemOffsets';
 const LEFT_FLOATING_TOOLBAR_STORAGE_KEY = 'yalkenLeftToolbarState';
 const LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY = 'yalkenLeftToolbarButtonOffsets';
-const CONFIGURATOR_BUCKETS_STORAGE_KEY = 'yalkenConfiguratorBuckets';
 const SPATIAL_LAYOUT_STORAGE_KEY_PREFIX = 'yalkenSpatialLayout';
 const SPATIAL_LAYOUT_VERSION = 1;
 const SPATIAL_LAYOUT_MOBILE_BREAKPOINT = 900;
@@ -183,6 +197,15 @@ const SAFE_RESET_BASELINE_FONT_WEIGHT = 'light';
 const SAFE_RESET_BASELINE_LINE_HEIGHT = '1.0';
 const SAFE_RESET_BASELINE_VIEW_MODE = 'default';
 const PROJECT_WORKSPACE_RESET_TABS = Object.freeze(['project', 'outline', 'search', 'roman']);
+const TOOLBAR_CONFIGURATOR_LIBRARY_GROUP_ORDER = Object.freeze(
+  [...new Set(listLiveToolbarFunctionCatalogEntries().map((entry) => entry.uiGroup))]
+);
+const TOOLBAR_CONFIGURATOR_LIBRARY_GROUP_LABELS = Object.freeze({
+  font: 'font',
+  text: 'text',
+  paragraph: 'paragraph',
+  history: 'history',
+});
 const FLOATING_TOOLBAR_DRAG_THRESHOLD_PX = 6;
 const FLOATING_TOOLBAR_ROTATE_THRESHOLD_PX = 30;
 const FLOATING_TOOLBAR_SNAP_ZONE_PX = 30;
@@ -300,24 +323,8 @@ let leftToolbarButtonOffsetDragState = {
   originOffset: 0,
   moved: false,
 };
-let configuratorBucketState = {
-  master: [],
-  minimal: [],
-};
+let configuratorBucketState = createEphemeralBaselineToolbarProfileState();
 let activeConfiguratorDragPayload = null;
-let configuratorBucketPointerDragState = {
-  active: false,
-  draggedItem: null,
-  sourceBucketKey: '',
-  sourceIndex: -1,
-  startX: 0,
-  startY: 0,
-  moved: false,
-};
-let activeConfiguratorBucketSelection = {
-  bucketKey: '',
-  itemIndex: -1,
-};
 const AUTO_SAVE_DELAY = 600;
 const HOTPATH_RENDER_DEBOUNCE_MS = 32;
 const HOTPATH_FULL_RENDER_MIN_INTERVAL_MS = 280;
@@ -1339,44 +1346,12 @@ function toggleConfiguratorOpen() {
   return nextOpen;
 }
 
-function applyConfiguratorSelection(nextIndex) {
-  if (!configuratorSlotButtons.length) return;
-  configuratorSlotButtons.forEach((button, index) => {
-    const active = index === nextIndex;
-    button.classList.toggle('is-selected', active);
-    button.setAttribute('aria-pressed', active ? 'true' : 'false');
-  });
-}
-
-function readConfiguratorBucketState() {
-  try {
-    const raw = localStorage.getItem(CONFIGURATOR_BUCKETS_STORAGE_KEY);
-    if (!raw) return { master: [], minimal: [] };
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      return { master: [], minimal: [] };
-    }
-    return {
-      master: Array.isArray(parsed.master) ? parsed.master.filter((item) => typeof item === 'string' && item.trim()) : [],
-      minimal: Array.isArray(parsed.minimal) ? parsed.minimal.filter((item) => typeof item === 'string' && item.trim()) : [],
-    };
-  } catch {
-    return { master: [], minimal: [] };
-  }
-}
-
-function persistConfiguratorBucketState() {
-  try {
-    localStorage.setItem(CONFIGURATOR_BUCKETS_STORAGE_KEY, JSON.stringify(configuratorBucketState));
-  } catch {}
-}
-
 function writeConfiguratorDragPayload(event, payload) {
   if (!event.dataTransfer) return false;
   try {
     event.dataTransfer.setData('application/json', JSON.stringify(payload));
   } catch {}
-  event.dataTransfer.setData('text/plain', payload.label || '');
+  event.dataTransfer.setData('text/plain', payload.itemId || '');
   return true;
 }
 
@@ -1386,8 +1361,8 @@ function readConfiguratorDragPayload(event) {
   }
   const raw = event.dataTransfer?.getData('application/json') || '';
   if (!raw) {
-    const label = event.dataTransfer?.getData('text/plain')?.trim() || '';
-    return label ? { sourceType: 'slot', label } : null;
+    const itemId = event.dataTransfer?.getData('text/plain')?.trim() || '';
+    return itemId ? { sourceType: 'library-item', itemId } : null;
   }
   try {
     const payload = JSON.parse(raw);
@@ -1398,30 +1373,109 @@ function readConfiguratorDragPayload(event) {
   }
 }
 
-function setActiveConfiguratorBucketSelection(bucketKey = '', itemIndex = -1) {
-  activeConfiguratorBucketSelection = {
-    bucketKey,
-    itemIndex: Number.isInteger(itemIndex) ? itemIndex : -1,
-  };
-  configuratorBuckets.forEach((bucket) => {
-    bucket.querySelectorAll('.configurator-panel__bucket-item').forEach((item) => {
-      const itemBucketKey = item.dataset.bucketKey || '';
-      const currentIndex = Number.parseInt(item.dataset.bucketIndex || '', 10);
-      const isActive = itemBucketKey === bucketKey && currentIndex === activeConfiguratorBucketSelection.itemIndex;
-      item.classList.toggle('is-active', isActive);
+function getToolbarConfiguratorCatalogItem(itemId) {
+  const normalizedItemId = typeof itemId === 'string' ? itemId.trim() : '';
+  if (!normalizedItemId) return null;
+  return getToolbarFunctionCatalogEntryById(normalizedItemId) || null;
+}
+
+function getToolbarConfiguratorMinimalIds() {
+  const minimalIds = configuratorBucketState?.toolbarProfiles?.minimal;
+  return Array.isArray(minimalIds) ? minimalIds : [];
+}
+
+function getToolbarConfiguratorEntryPanelLabel(entry) {
+  const ruLabels = entry?.labels?.ru || null;
+  const enLabels = entry?.labels?.en || null;
+  return ruLabels?.panelLabel || enLabels?.panelLabel || entry?.id || '';
+}
+
+function getToolbarConfiguratorEntryAriaLabel(entry) {
+  const ruLabels = entry?.labels?.ru || null;
+  const enLabels = entry?.labels?.en || null;
+  return ruLabels?.ariaLabel || ruLabels?.panelLabel || enLabels?.ariaLabel || enLabels?.panelLabel || entry?.id || '';
+}
+
+function commitToolbarConfiguratorState(minimalIds) {
+  const nextState = createToolbarProfileState(minimalIds);
+  configuratorBucketState = nextState;
+  if (normalizeProjectId(currentProjectId)) {
+    writeToolbarProfileState(localStorage, currentProjectId, nextState);
+  }
+  renderToolbarConfiguratorBuckets();
+  return nextState;
+}
+
+function adoptToolbarConfiguratorState(projectId = currentProjectId) {
+  const resolution = resolveToolbarProfileStateForProjectSwitch(localStorage, projectId);
+  if (resolution.shouldConsumeLegacySource) {
+    consumeLegacyConfiguratorBuckets(localStorage);
+  }
+  if (resolution.shouldPersist) {
+    writeToolbarProfileState(localStorage, projectId, resolution.state);
+  }
+  configuratorBucketState = resolution.state;
+  renderToolbarConfiguratorLibrary();
+  renderToolbarConfiguratorBuckets();
+  return resolution;
+}
+
+function createToolbarConfiguratorLibraryButton(entry) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'configurator-panel__slot';
+  button.draggable = true;
+  button.dataset.itemId = entry.id;
+  button.dataset.uiGroup = entry.uiGroup;
+  button.setAttribute('aria-label', getToolbarConfiguratorEntryAriaLabel(entry));
+
+  const icon = document.createElement('span');
+  icon.className = 'configurator-panel__slot-icon';
+  icon.setAttribute('aria-hidden', 'true');
+
+  const text = document.createElement('span');
+  text.className = 'configurator-panel__slot-text';
+  text.textContent = getToolbarConfiguratorEntryPanelLabel(entry);
+
+  button.append(icon, text);
+  return button;
+}
+
+function renderToolbarConfiguratorLibrary() {
+  if (!configuratorLibraryGrid) return;
+  configuratorLibraryGrid.replaceChildren();
+
+  TOOLBAR_CONFIGURATOR_LIBRARY_GROUP_ORDER.forEach((groupId) => {
+    const groupItems = listLiveToolbarFunctionCatalogEntries().filter((entry) => entry.uiGroup === groupId);
+    if (!groupItems.length) return;
+
+    const column = document.createElement('div');
+    column.className = 'configurator-panel__column';
+
+    const label = document.createElement('div');
+    label.className = 'configurator-panel__label';
+    label.textContent = TOOLBAR_CONFIGURATOR_LIBRARY_GROUP_LABELS[groupId] || groupId;
+
+    column.appendChild(label);
+    groupItems.forEach((entry) => {
+      column.appendChild(createToolbarConfiguratorLibraryButton(entry));
     });
+    configuratorLibraryGrid.appendChild(column);
   });
 }
 
-function createConfiguratorBucketItem(label, bucketKey, index) {
+function createToolbarConfiguratorBucketItem(itemId, bucketKey, index) {
+  const entry = getToolbarConfiguratorCatalogItem(itemId);
+  const label = getToolbarConfiguratorEntryPanelLabel(entry) || itemId;
+
   const item = document.createElement('div');
   item.className = 'configurator-panel__bucket-item';
   item.draggable = false;
   item.dataset.bucketKey = bucketKey;
   item.dataset.bucketIndex = String(index);
-  item.setAttribute('role', 'button');
-  item.setAttribute('tabindex', '0');
-  item.setAttribute('aria-label', `${label}. Перетащите для перестановки или используйте крестик для удаления.`);
+  item.dataset.itemId = itemId;
+  item.setAttribute('role', 'listitem');
+  item.setAttribute('aria-label', label);
 
   const icon = document.createElement('span');
   icon.className = 'configurator-panel__slot-icon';
@@ -1434,277 +1488,134 @@ function createConfiguratorBucketItem(label, bucketKey, index) {
   const removeButton = document.createElement('button');
   removeButton.type = 'button';
   removeButton.className = 'configurator-panel__bucket-remove';
-  removeButton.setAttribute('aria-label', `Удалить ${label}`);
+  removeButton.dataset.configuratorRemove = 'true';
+  removeButton.dataset.itemId = itemId;
+  removeButton.setAttribute('aria-label', `Remove ${label}`);
   removeButton.textContent = '×';
 
   item.append(icon, text, removeButton);
-  item.addEventListener('mousedown', (event) => {
-    const removeTarget = event.target instanceof Element
-      ? event.target.closest('.configurator-panel__bucket-remove')
-      : null;
-    if (removeTarget) return;
-    if (event.button !== 0) return;
-    event.preventDefault();
-    const itemIndex = Number.parseInt(item.dataset.bucketIndex || '', 10);
-    if (!Number.isInteger(itemIndex)) return;
-    stopConfiguratorBucketPointerDrag();
-    configuratorBucketPointerDragState = {
-      active: true,
-      draggedItem: item,
-      sourceBucketKey: bucketKey,
-      sourceIndex: itemIndex,
-      startX: event.clientX,
-      startY: event.clientY,
-      moved: false,
-    };
-  });
-  removeButton.addEventListener('click', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const itemIndex = Number.parseInt(item.dataset.bucketIndex || '', 10);
-    if (activeConfiguratorBucketSelection.bucketKey === bucketKey && activeConfiguratorBucketSelection.itemIndex === itemIndex) {
-      setActiveConfiguratorBucketSelection('', -1);
-    }
-    removeConfiguratorBucketItem(bucketKey, itemIndex);
-  });
-  if (activeConfiguratorBucketSelection.bucketKey === bucketKey && activeConfiguratorBucketSelection.itemIndex === index) {
-    item.classList.add('is-active');
-  }
   return item;
 }
 
-function renderConfiguratorBuckets() {
+function renderToolbarConfiguratorBuckets() {
   configuratorBuckets.forEach((bucket) => {
-    const bucketKey = bucket.dataset.configuratorBucket;
-    if (!bucketKey) return;
+    const bucketKey = bucket.dataset.configuratorBucket || '';
     bucket.replaceChildren();
-    const items = configuratorBucketState[bucketKey] || [];
-    items.forEach((label, index) => {
-      bucket.appendChild(createConfiguratorBucketItem(label, bucketKey, index));
+    if (bucketKey === 'master') {
+      bucket.hidden = true;
+      return;
+    }
+    bucket.hidden = false;
+    if (bucketKey !== 'minimal') {
+      return;
+    }
+    getToolbarConfiguratorMinimalIds().forEach((itemId, index) => {
+      bucket.appendChild(createToolbarConfiguratorBucketItem(itemId, bucketKey, index));
     });
   });
 }
 
-function addConfiguratorBucketItem(bucketKey, label, insertIndex = null) {
-  if (!bucketKey || typeof label !== 'string' || !label.trim()) return;
-  if (!Array.isArray(configuratorBucketState[bucketKey])) {
-    configuratorBucketState[bucketKey] = [];
-  }
-  const items = configuratorBucketState[bucketKey];
-  const normalizedLabel = label.trim();
-  const nextIndex = Number.isInteger(insertIndex) ? Math.max(0, Math.min(insertIndex, items.length)) : items.length;
-  items.splice(nextIndex, 0, normalizedLabel);
-  persistConfiguratorBucketState();
-  renderConfiguratorBuckets();
+function addToolbarConfiguratorItem(itemId) {
+  const normalizedItemId = typeof itemId === 'string' ? itemId.trim() : '';
+  if (!normalizedItemId) return;
+  const catalogItem = getToolbarConfiguratorCatalogItem(normalizedItemId);
+  if (!catalogItem || catalogItem.implementationState !== 'live') return;
+  const minimalIds = getToolbarConfiguratorMinimalIds();
+  if (minimalIds.includes(normalizedItemId)) return;
+  commitToolbarConfiguratorState([...minimalIds, normalizedItemId]);
 }
 
-function removeConfiguratorBucketItem(bucketKey, itemIndex) {
-  if (!bucketKey || !Array.isArray(configuratorBucketState[bucketKey])) return;
-  if (!Number.isInteger(itemIndex) || itemIndex < 0 || itemIndex >= configuratorBucketState[bucketKey].length) return;
-  configuratorBucketState[bucketKey].splice(itemIndex, 1);
-  if (activeConfiguratorBucketSelection.bucketKey === bucketKey && activeConfiguratorBucketSelection.itemIndex === itemIndex) {
-    activeConfiguratorBucketSelection = { bucketKey: '', itemIndex: -1 };
-  }
-  persistConfiguratorBucketState();
-  renderConfiguratorBuckets();
+function removeToolbarConfiguratorItem(itemId) {
+  const normalizedItemId = typeof itemId === 'string' ? itemId.trim() : '';
+  if (!normalizedItemId) return;
+  const minimalIds = getToolbarConfiguratorMinimalIds();
+  const nextMinimalIds = minimalIds.filter((currentItemId) => currentItemId !== normalizedItemId);
+  if (nextMinimalIds.length === minimalIds.length) return;
+  commitToolbarConfiguratorState(nextMinimalIds);
 }
 
-function moveConfiguratorBucketItem(fromBucketKey, fromIndex, toBucketKey, toIndex) {
-  if (
-    !fromBucketKey ||
-    !toBucketKey ||
-    !Array.isArray(configuratorBucketState[fromBucketKey]) ||
-    !Array.isArray(configuratorBucketState[toBucketKey]) ||
-    !Number.isInteger(fromIndex) ||
-    fromIndex < 0 ||
-    fromIndex >= configuratorBucketState[fromBucketKey].length
-  ) {
-    return;
-  }
-
-  const [label] = configuratorBucketState[fromBucketKey].splice(fromIndex, 1);
-  if (!label) {
-    renderConfiguratorBuckets();
-    return;
-  }
-
-  let normalizedTargetIndex = Number.isInteger(toIndex)
-    ? toIndex
-    : configuratorBucketState[toBucketKey].length;
-
-  if (fromBucketKey === toBucketKey && fromIndex < normalizedTargetIndex) {
-    normalizedTargetIndex -= 1;
-  }
-
-  normalizedTargetIndex = Math.max(0, Math.min(normalizedTargetIndex, configuratorBucketState[toBucketKey].length));
-
-  configuratorBucketState[toBucketKey].splice(normalizedTargetIndex, 0, label);
-  activeConfiguratorBucketSelection = {
-    bucketKey: toBucketKey,
-    itemIndex: normalizedTargetIndex,
-  };
-  persistConfiguratorBucketState();
-  renderConfiguratorBuckets();
-}
-
-function getConfiguratorBucketDropIndex(bucket, event) {
-  const items = Array.from(bucket.querySelectorAll('.configurator-panel__bucket-item'));
-  const targetItem = event.target instanceof Element
-    ? event.target.closest('.configurator-panel__bucket-item')
-    : null;
-  if (!targetItem) {
-    return items.length;
-  }
-
-  const fallbackIndex = items.indexOf(targetItem);
-  const targetIndex = Number.parseInt(targetItem.dataset.bucketIndex || '', 10);
-  const resolvedIndex = Number.isInteger(targetIndex) ? targetIndex : fallbackIndex;
-  const rect = targetItem.getBoundingClientRect();
-  const insertAfter = event.clientX > rect.left + rect.width / 2;
-  return Math.max(0, resolvedIndex + (insertAfter ? 1 : 0));
-}
-
-function applyConfiguratorBucketDrop(bucketKey, payload, dropIndex) {
-  if (!payload || !bucketKey) return;
-  if (payload.sourceType === 'bucket-item') {
-    moveConfiguratorBucketItem(
-      payload.bucketKey || '',
-      Number.parseInt(String(payload.itemIndex), 10),
-      bucketKey,
-      dropIndex
-    );
-    activeConfiguratorDragPayload = null;
-    return;
-  }
-  addConfiguratorBucketItem(bucketKey, payload.label || '', dropIndex);
-  activeConfiguratorDragPayload = null;
-}
-
-function clearConfiguratorBucketDropTarget() {
+function clearToolbarConfiguratorDropTargets() {
   configuratorBuckets.forEach((bucket) => bucket.classList.remove('is-drop-target'));
 }
 
-function getConfiguratorBucketDropTargetFromPoint(clientX, clientY) {
-  const target = document.elementFromPoint(clientX, clientY);
-  if (!(target instanceof Element)) return null;
-  const bucket = target.closest('[data-configurator-bucket]');
-  if (!(bucket instanceof HTMLElement)) return null;
-  const bucketKey = bucket.dataset.configuratorBucket || '';
-  if (!bucketKey) return null;
-  const item = target.closest('.configurator-panel__bucket-item');
-  if (!(item instanceof HTMLElement)) {
-    return {
-      bucket,
-      bucketKey,
-      dropIndex: Array.isArray(configuratorBucketState[bucketKey]) ? configuratorBucketState[bucketKey].length : 0,
-    };
-  }
-  const itemIndex = Number.parseInt(item.dataset.bucketIndex || '', 10);
-  const rect = item.getBoundingClientRect();
-  const insertAfter = clientX > rect.left + rect.width / 2;
-  return {
-    bucket,
-    bucketKey,
-    dropIndex: Math.max(0, itemIndex + (insertAfter ? 1 : 0)),
-  };
-}
-
-function stopConfiguratorBucketPointerDrag() {
-  const draggedItem = configuratorBucketPointerDragState.draggedItem;
-  if (draggedItem instanceof HTMLElement) {
-    draggedItem.classList.remove('is-dragging');
-    draggedItem.style.removeProperty('pointer-events');
-  }
-  configuratorBucketPointerDragState = {
-    active: false,
-    draggedItem: null,
-    sourceBucketKey: '',
-    sourceIndex: -1,
-    startX: 0,
-    startY: 0,
-    moved: false,
-  };
-  clearConfiguratorBucketDropTarget();
-}
-
-function handleConfiguratorBucketPointerMove(event) {
-  if (!configuratorBucketPointerDragState.active) return;
-  if (!configuratorBucketPointerDragState.moved) {
-    const deltaX = event.clientX - configuratorBucketPointerDragState.startX;
-    const deltaY = event.clientY - configuratorBucketPointerDragState.startY;
-    const distance = Math.hypot(deltaX, deltaY);
-    if (distance < FLOATING_TOOLBAR_DRAG_THRESHOLD_PX) {
-      return;
-    }
-    configuratorBucketPointerDragState.moved = true;
-    if (configuratorBucketPointerDragState.draggedItem instanceof HTMLElement) {
-      configuratorBucketPointerDragState.draggedItem.classList.add('is-dragging');
-      configuratorBucketPointerDragState.draggedItem.style.pointerEvents = 'none';
-    }
-  }
-  const dropTarget = getConfiguratorBucketDropTargetFromPoint(event.clientX, event.clientY);
-  clearConfiguratorBucketDropTarget();
-  dropTarget?.bucket.classList.add('is-drop-target');
-}
-
-function handleConfiguratorBucketPointerUp(event) {
-  if (!configuratorBucketPointerDragState.active) return;
-  const {
-    sourceBucketKey,
-    sourceIndex,
-    moved,
-  } = configuratorBucketPointerDragState;
-  const dropTarget = getConfiguratorBucketDropTargetFromPoint(event.clientX, event.clientY);
-  stopConfiguratorBucketPointerDrag();
-  if (!moved) {
-    if (activeConfiguratorBucketSelection.bucketKey === sourceBucketKey && activeConfiguratorBucketSelection.itemIndex === sourceIndex) {
-      setActiveConfiguratorBucketSelection('', -1);
-    } else {
-      setActiveConfiguratorBucketSelection(sourceBucketKey, sourceIndex);
-    }
+function initializeToolbarConfiguratorFoundation() {
+  if (!configuratorPanel || !configuratorLibraryGrid || !configuratorBuckets.length) {
     return;
   }
-  if (!dropTarget) return;
-  moveConfiguratorBucketItem(sourceBucketKey, sourceIndex, dropTarget.bucketKey, dropTarget.dropIndex);
-}
 
-function initializeConfiguratorBuckets() {
-  if (!configuratorBuckets.length || !configuratorSlotButtons.length) return;
+  if (configuratorMasterSection) {
+    configuratorMasterSection.hidden = true;
+    configuratorMasterSection.setAttribute('aria-hidden', 'true');
+  }
+  if (configuratorMinimalSection) {
+    configuratorMinimalSection.hidden = false;
+  }
 
-  configuratorBucketState = readConfiguratorBucketState();
-  renderConfiguratorBuckets();
-  window.addEventListener('mousemove', handleConfiguratorBucketPointerMove);
-  window.addEventListener('mouseup', handleConfiguratorBucketPointerUp);
-  document.addEventListener('mousedown', (event) => {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-    if (target.closest('.configurator-panel__bucket-item')) return;
-    if (activeConfiguratorBucketSelection.bucketKey || activeConfiguratorBucketSelection.itemIndex !== -1) {
-      setActiveConfiguratorBucketSelection('', -1);
+  adoptToolbarConfiguratorState(currentProjectId);
+
+  configuratorPanel.addEventListener('click', (event) => {
+    if (event.target === configuratorPanel) {
+      setConfiguratorOpen(false);
+      return;
+    }
+
+    const removeButton = event.target instanceof Element
+      ? event.target.closest('[data-configurator-remove]')
+      : null;
+    if (removeButton instanceof HTMLElement) {
+      event.preventDefault();
+      event.stopPropagation();
+      removeToolbarConfiguratorItem(removeButton.dataset.itemId || '');
+      return;
+    }
+
+    const libraryButton = event.target instanceof Element
+      ? event.target.closest('.configurator-panel__slot[data-item-id]')
+      : null;
+    if (libraryButton instanceof HTMLElement && configuratorLibraryGrid.contains(libraryButton)) {
+      event.preventDefault();
+      event.stopPropagation();
+      addToolbarConfiguratorItem(libraryButton.dataset.itemId || '');
     }
   });
 
-  configuratorSlotButtons.forEach((button) => {
-    button.draggable = true;
-    button.addEventListener('dragstart', (event) => {
-      const text = button.querySelector('.configurator-panel__slot-text')?.textContent?.trim() || '';
-      if (!text || !event.dataTransfer) return;
-      activeConfiguratorDragPayload = { sourceType: 'slot', label: text };
-      writeConfiguratorDragPayload(event, activeConfiguratorDragPayload);
-      event.dataTransfer.effectAllowed = 'copy';
-    });
-    button.addEventListener('dragend', () => {
-      activeConfiguratorDragPayload = null;
-      configuratorBuckets.forEach((bucketElement) => bucketElement.classList.remove('is-drop-target'));
-    });
+  configuratorPanel.addEventListener('dragstart', (event) => {
+    const libraryButton = event.target instanceof Element
+      ? event.target.closest('.configurator-panel__slot[data-item-id]')
+      : null;
+    if (!(libraryButton instanceof HTMLElement) || !configuratorLibraryGrid.contains(libraryButton)) {
+      return;
+    }
+    const itemId = libraryButton.dataset.itemId || '';
+    if (!itemId || !event.dataTransfer) return;
+    activeConfiguratorDragPayload = {
+      sourceType: 'library-item',
+      itemId,
+    };
+    writeConfiguratorDragPayload(event, activeConfiguratorDragPayload);
+    event.dataTransfer.effectAllowed = 'copy';
+  });
+
+  configuratorPanel.addEventListener('dragend', () => {
+    activeConfiguratorDragPayload = null;
+    clearToolbarConfiguratorDropTargets();
   });
 
   configuratorBuckets.forEach((bucket) => {
+    const bucketKey = bucket.dataset.configuratorBucket || '';
+    if (bucketKey === 'master') {
+      bucket.hidden = true;
+      bucket.replaceChildren();
+      return;
+    }
     bucket.addEventListener('dragover', (event) => {
-      event.preventDefault();
       const payload = readConfiguratorDragPayload(event);
+      if (!payload || payload.sourceType !== 'library-item' || !payload.itemId) {
+        return;
+      }
+      event.preventDefault();
       if (event.dataTransfer) {
-        event.dataTransfer.dropEffect = payload?.sourceType === 'bucket-item' ? 'move' : 'copy';
+        event.dataTransfer.dropEffect = 'copy';
       }
       bucket.classList.add('is-drop-target');
     });
@@ -1712,13 +1623,12 @@ function initializeConfiguratorBuckets() {
       bucket.classList.remove('is-drop-target');
     });
     bucket.addEventListener('drop', (event) => {
+      const payload = readConfiguratorDragPayload(event);
       event.preventDefault();
       bucket.classList.remove('is-drop-target');
-      const bucketKey = bucket.dataset.configuratorBucket || '';
-      const payload = readConfiguratorDragPayload(event);
-      if (!payload || !bucketKey) return;
-      const dropIndex = getConfiguratorBucketDropIndex(bucket, event);
-      applyConfiguratorBucketDrop(bucketKey, payload, dropIndex);
+      if (!payload || payload.sourceType !== 'library-item' || !payload.itemId) return;
+      addToolbarConfiguratorItem(payload.itemId);
+      activeConfiguratorDragPayload = null;
     });
   });
 }
@@ -4137,18 +4047,6 @@ document.addEventListener('click', (event) => {
   }
 });
 
-configuratorPanel?.addEventListener('click', (event) => {
-  if (event.target === configuratorPanel) {
-    setConfiguratorOpen(false);
-    return;
-  }
-  const button = event.target.closest('.configurator-panel__slot');
-  if (!button) return;
-  const nextIndex = configuratorSlotButtons.indexOf(button);
-  if (nextIndex === -1) return;
-  applyConfiguratorSelection(nextIndex);
-});
-
 document.addEventListener('contextmenu', (event) => {
   if (editor && editor.contains(event.target)) {
     event.preventDefault();
@@ -4422,6 +4320,7 @@ function clearProjectWorkspaceStorage(projectId = currentProjectId) {
   if (normalizedProjectId) {
     keysToRemove.add(getActiveDocumentTitleStorageKey(normalizedProjectId));
     keysToRemove.add(getSpatialLayoutStorageKey(normalizedProjectId));
+    keysToRemove.add(getToolbarProfileStorageKey(normalizedProjectId));
     PROJECT_WORKSPACE_RESET_TABS.forEach((tab) => {
       keysToRemove.add(getTreeExpandedStorageKey(tab, normalizedProjectId));
     });
@@ -4463,8 +4362,8 @@ function performSafeResetShell() {
     localStorage.removeItem(FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY);
     localStorage.removeItem(LEFT_FLOATING_TOOLBAR_STORAGE_KEY);
     localStorage.removeItem(LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY);
-    localStorage.removeItem(CONFIGURATOR_BUCKETS_STORAGE_KEY);
   } catch {}
+  consumeLegacyConfiguratorBuckets(localStorage);
 
   applyTheme(SAFE_RESET_BASELINE_THEME);
   if (settingsThemeSelect) {
@@ -4514,10 +4413,14 @@ function performSafeResetShell() {
   persistLeftToolbarButtonOffsets();
   applyLeftFloatingToolbarState(getDefaultLeftFloatingToolbarState(), true);
 
-  configuratorBucketState = { master: [], minimal: [] };
-  setActiveConfiguratorBucketSelection('', -1);
-  persistConfiguratorBucketState();
-  renderConfiguratorBuckets();
+  const nextToolbarProfileState = normalizeProjectId(currentProjectId)
+    ? createCanonicalMinimalToolbarProfileState()
+    : createEphemeralBaselineToolbarProfileState();
+  configuratorBucketState = nextToolbarProfileState;
+  if (normalizeProjectId(currentProjectId)) {
+    writeToolbarProfileState(localStorage, currentProjectId, nextToolbarProfileState);
+  }
+  renderToolbarConfiguratorBuckets();
   setConfiguratorOpen(false);
   setToolbarSpacingTuningMode(false);
   setToolbarSpacingMenuOpen(false);
@@ -4583,9 +4486,7 @@ function performRestoreLastStableShell() {
   restoreLeftFloatingToolbarPosition();
   restoreSpatialLayoutState(currentProjectId);
 
-  configuratorBucketState = readConfiguratorBucketState();
-  setActiveConfiguratorBucketSelection('', -1);
-  renderConfiguratorBuckets();
+  adoptToolbarConfiguratorState(currentProjectId);
   setConfiguratorOpen(false);
   setToolbarSpacingTuningMode(false);
   setToolbarSpacingMenuOpen(false);
@@ -5850,11 +5751,7 @@ applyRightTab('inspector');
 ensureCommandsOpenerInRightInspectorSurface();
 installNetworkGuard();
 void initializeCollabScopeLocal();
-if (configuratorSlotButtons.length) {
-  const defaultSelectedIndex = configuratorSlotButtons.findIndex((button) => button.classList.contains('is-selected'));
-  applyConfiguratorSelection(defaultSelectedIndex >= 0 ? defaultSelectedIndex : 0);
-}
-initializeConfiguratorBuckets();
+initializeToolbarConfiguratorFoundation();
 showEditorPanelFor('Yalken');
 updateWordCount();
 initializeFloatingToolbarSpacingMenu();
@@ -6105,6 +6002,7 @@ if (window.electronAPI) {
         currentProjectId = nextProjectId;
         expandedNodesByTab = new Map();
         restoreSpatialLayoutState(currentProjectId);
+        adoptToolbarConfiguratorState(currentProjectId);
       }
     }
 
