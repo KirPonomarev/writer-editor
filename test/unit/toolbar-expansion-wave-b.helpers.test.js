@@ -48,6 +48,8 @@ test('toolbar expansion wave b: catalog promotes color and review items while sa
     'toolbar.color.text',
     'toolbar.color.highlight',
     'toolbar.review.comment',
+    'toolbar.style.paragraph',
+    'toolbar.style.character',
     'toolbar.history.undo',
     'toolbar.history.redo',
   ])

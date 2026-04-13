@@ -366,6 +366,32 @@
               </svg>
             </button>
           </div>
+          <div class="floating-toolbar__group floating-toolbar__group--styles">
+            <button
+              type="button"
+              class="floating-toolbar__button floating-toolbar__button--styles floating-toolbar__button--styles-paragraph"
+              data-action="toggle-style-paragraph-menu"
+              data-toolbar-item-key="style-paragraph"
+              aria-label="Paragraph style"
+              aria-haspopup="menu"
+              aria-expanded="false"
+              aria-controls="floating-toolbar-styles-menu"
+            >
+              <span class="floating-toolbar__styles-glyph" aria-hidden="true">P</span>
+            </button>
+            <button
+              type="button"
+              class="floating-toolbar__button floating-toolbar__button--styles floating-toolbar__button--styles-character"
+              data-action="toggle-style-character-menu"
+              data-toolbar-item-key="style-character"
+              aria-label="Character style"
+              aria-haspopup="menu"
+              aria-expanded="false"
+              aria-controls="floating-toolbar-styles-menu"
+            >
+              <span class="floating-toolbar__styles-glyph" aria-hidden="true">T</span>
+            </button>
+          </div>
           <div class="floating-toolbar__group floating-toolbar__group--history">
             <button type="button" class="floating-toolbar__button floating-toolbar__button--history" data-action="undo" data-toolbar-item-key="history-undo" aria-label="Undo">
               <svg class="floating-toolbar__icon floating-toolbar__icon--history" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -407,6 +433,22 @@
           <button type="button" class="floating-toolbar__color-picker-close" data-toolbar-color-picker-close aria-label="Close color picker">×</button>
         </div>
         <div class="floating-toolbar__color-picker-swatches" data-toolbar-color-picker-swatches></div>
+      </div>
+      <div class="floating-toolbar__styles-menu" data-toolbar-styles-menu id="floating-toolbar-styles-menu" hidden aria-hidden="true" role="dialog" aria-label="Styles menu">
+        <div class="floating-toolbar__styles-menu-section" data-style-menu-kind="paragraph">
+          <div class="floating-toolbar__styles-menu-title">Абзац</div>
+          <button type="button" class="floating-toolbar__styles-menu-item" data-style-paragraph-option="paragraph-none" aria-pressed="false">Обычный</button>
+          <button type="button" class="floating-toolbar__styles-menu-item" data-style-paragraph-option="paragraph-title" aria-pressed="false">Титул</button>
+          <button type="button" class="floating-toolbar__styles-menu-item" data-style-paragraph-option="paragraph-heading1" aria-pressed="false">Заголовок 1</button>
+          <button type="button" class="floating-toolbar__styles-menu-item" data-style-paragraph-option="paragraph-heading2" aria-pressed="false">Заголовок 2</button>
+          <button type="button" class="floating-toolbar__styles-menu-item" data-style-paragraph-option="paragraph-blockquote" aria-pressed="false">Цитата</button>
+        </div>
+        <div class="floating-toolbar__styles-menu-divider" aria-hidden="true"></div>
+        <div class="floating-toolbar__styles-menu-section" data-style-menu-kind="character">
+          <div class="floating-toolbar__styles-menu-title">Символ</div>
+          <button type="button" class="floating-toolbar__styles-menu-item" data-style-character-option="character-emphasis" aria-pressed="false">Акцент</button>
+          <button type="button" class="floating-toolbar__styles-menu-item" data-style-character-option="character-code-span" aria-pressed="false">Код</button>
+        </div>
       </div>
     </div>
     <div class="app-layout">

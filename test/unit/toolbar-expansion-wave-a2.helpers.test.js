@@ -43,6 +43,8 @@ test('toolbar expansion wave a2: canonical seed includes underline and link but 
     'toolbar.color.text',
     'toolbar.color.highlight',
     'toolbar.review.comment',
+    'toolbar.style.paragraph',
+    'toolbar.style.character',
     'toolbar.history.undo',
     'toolbar.history.redo',
   ])
