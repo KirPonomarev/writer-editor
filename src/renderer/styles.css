@@ -705,6 +705,14 @@ body {
   gap: 0;
 }
 
+.floating-toolbar__group--color {
+  gap: 6px;
+}
+
+.floating-toolbar__group--review {
+  gap: 0;
+}
+
 .floating-toolbar-spacing-menu {
   position: absolute;
   left: 0;
@@ -1023,6 +1031,25 @@ body {
   width: calc(28px * var(--floating-toolbar-width-scale));
 }
 
+.floating-toolbar__button--color,
+.floating-toolbar__button--review {
+  width: calc(28px * var(--floating-toolbar-width-scale));
+}
+
+.floating-toolbar__button--color {
+  padding: 0;
+}
+
+.floating-toolbar__button--color .floating-toolbar__button-swatch {
+  width: 16px;
+  height: 16px;
+}
+
+.floating-toolbar__button--review .floating-toolbar__icon--review {
+  width: 16px;
+  height: 16px;
+}
+
 .floating-toolbar__button--history {
   width: calc(28px * var(--floating-toolbar-width-scale));
 }
@@ -1224,6 +1251,74 @@ body {
 .floating-toolbar__list-menu-item:hover,
 .floating-toolbar__list-menu-item.is-active {
   background: rgba(221, 216, 210, 0.4);
+}
+
+.floating-toolbar__color-picker {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  min-width: 280px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(50, 36, 24, 0.12);
+  background: rgba(248, 246, 243, 0.98);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03),
+    0 10px 24px rgba(0, 0, 0, 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.floating-toolbar__color-picker[hidden] {
+  display: none;
+}
+
+.floating-toolbar__color-picker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.floating-toolbar__color-picker-title {
+  color: #3d3d3d;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.floating-toolbar__color-picker-close {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(236, 231, 223, 0.28);
+  color: rgba(45, 39, 33, 0.82);
+  cursor: pointer;
+  font: inherit;
+}
+
+.floating-toolbar__color-picker-close:hover,
+.floating-toolbar__color-picker-close:focus-visible {
+  outline: none;
+  background: rgba(236, 231, 223, 0.42);
+}
+
+.floating-toolbar__color-picker-swatches {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.floating-toolbar__color-picker-swatches .toolbar__swatch {
+  width: 28px;
+  height: 28px;
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__button--paragraph {
@@ -2206,6 +2301,25 @@ body.dark-theme .toolbar__swatch::before {
 
 .toolbar__swatch--light {
   --swatch-color: #ffdf20;
+}
+
+.toolbar__swatch--clear {
+  background: transparent;
+  color: rgba(43, 39, 35, 0.88);
+  font-size: 14px;
+  line-height: 1;
+  position: relative;
+}
+
+.toolbar__swatch--clear::before {
+  content: '×';
+  width: auto;
+  height: auto;
+  background: transparent;
+  border: none;
+  color: currentColor;
+  font-size: 15px;
+  line-height: 1;
 }
 
 .toolbar__swatch.is-active {

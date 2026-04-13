@@ -113,11 +113,18 @@ const toolbarSpacingAction = document.querySelector('[data-toolbar-spacing-actio
 const formatBoldButton = document.querySelector('[data-toolbar-item-key="format-bold"]');
 const formatItalicButton = document.querySelector('[data-toolbar-item-key="format-italic"]');
 const formatUnderlineButton = document.querySelector('[data-toolbar-item-key="format-underline"]');
+const colorTextButton = document.querySelector('[data-toolbar-item-key="color-text"]');
+const colorHighlightButton = document.querySelector('[data-toolbar-item-key="color-highlight"]');
+const reviewCommentsButton = document.querySelector('[data-toolbar-item-key="review-comment"]');
 const paragraphTriggerButton = document.querySelector('[data-toolbar-item-key="paragraph-trigger"]');
 const paragraphMenu = document.querySelector('[data-paragraph-menu]');
 const listTriggerButton = document.querySelector('[data-toolbar-item-key="list-type"]');
 const listMenu = document.querySelector('[data-list-menu]');
 const insertLinkButton = document.querySelector('[data-toolbar-item-key="insert-link"]');
+const toolbarColorPickerOverlay = document.querySelector('[data-toolbar-color-picker]');
+const toolbarColorPickerTitle = document.querySelector('[data-toolbar-color-picker-title]');
+const toolbarColorPickerSwatchHost = document.querySelector('[data-toolbar-color-picker-swatches]');
+const toolbarColorPickerCloseButton = document.querySelector('[data-toolbar-color-picker-close]');
 const listActionButtons = Array.from(document.querySelectorAll('[data-list-action]'));
 const toolbarRuntimeRegistry = typeof toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry === 'function'
   ? toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry({
@@ -253,7 +260,28 @@ const TOOLBAR_CONFIGURATOR_LIBRARY_GROUP_LABELS = Object.freeze({
   text: 'text',
   'format-inline': 'format',
   paragraph: 'paragraph',
+  insert: 'insert',
+  color: 'color',
+  review: 'review',
   history: 'history',
+});
+const TOOLBAR_COLOR_PICKER_MODE_LABELS = Object.freeze({
+  text: 'Text color',
+  highlight: 'Highlight color',
+});
+const TOOLBAR_COLOR_PICKER_MODE_SWATCHES = Object.freeze({
+  text: Object.freeze([
+    Object.freeze({ value: '#1f1a15', label: 'Ink' }),
+    Object.freeze({ value: '#8a3b2e', label: 'Brick' }),
+    Object.freeze({ value: '#2f5f8a', label: 'Blue' }),
+    Object.freeze({ value: '#2f6a4f', label: 'Green' }),
+  ]),
+  highlight: Object.freeze([
+    Object.freeze({ value: '#ffdf20', label: 'Yellow' }),
+    Object.freeze({ value: '#ffd6e7', label: 'Pink' }),
+    Object.freeze({ value: '#cfe8ff', label: 'Sky' }),
+    Object.freeze({ value: '#d8f0c2', label: 'Mint' }),
+  ]),
 });
 const FLOATING_TOOLBAR_DRAG_THRESHOLD_PX = 6;
 const FLOATING_TOOLBAR_ROTATE_THRESHOLD_PX = 30;
@@ -289,6 +317,14 @@ let collabScopeLocal = false;
 let currentMode = 'write';
 let currentLeftTab = 'project';
 let currentRightTab = 'inspector';
+let toolbarColorPickerState = {
+  open: false,
+  mode: 'text',
+  selectedByMode: {
+    text: '',
+    highlight: '',
+  },
+};
 let lastSearchQuery = '';
 let plainTextBuffer = '';
 const activeTab = 'roman';
@@ -716,6 +752,7 @@ function setToolbarSpacingMenuOpen(nextOpen) {
   }
   setParagraphMenuOpen(false);
   setListMenuOpen(false);
+  setToolbarColorPickerOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
   const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
   toolbarSpacingMenu.hidden = false;
@@ -742,6 +779,7 @@ function setParagraphMenuOpen(nextOpen) {
   }
   setToolbarSpacingMenuOpen(false);
   setListMenuOpen(false);
+  setToolbarColorPickerOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
   const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
   const triggerRect = paragraphTriggerButton.getBoundingClientRect();
@@ -766,6 +804,7 @@ function setListMenuOpen(nextOpen) {
   }
   setParagraphMenuOpen(false);
   setToolbarSpacingMenuOpen(false);
+  setToolbarColorPickerOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
   const shellScale = Math.max(floatingToolbarState.scale || 1, 0.001);
   const triggerRect = listTriggerButton.getBoundingClientRect();
@@ -2328,6 +2367,39 @@ function initializeFloatingToolbarListMenu() {
   });
 }
 
+function initializeFloatingToolbarColorPickerOverlay() {
+  if (!toolbarShell || !toolbarColorPickerOverlay) return;
+
+  toolbarColorPickerOverlay.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target.closest('[data-toolbar-color-swatch-value], [data-toolbar-color-picker-close]') : null;
+    if (!target) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (target.hasAttribute('data-toolbar-color-picker-close')) {
+      setToolbarColorPickerOpen(false);
+      return;
+    }
+    const swatchValue = target.dataset.toolbarColorSwatchValue || '';
+    setToolbarColorPickerSelection(swatchValue);
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (toolbarColorPickerOverlay.hidden) return;
+    if (toolbarColorPickerOverlay.contains(target)) return;
+    if (target.closest('[data-toolbar-item-key="color-text"], [data-toolbar-item-key="color-highlight"]')) return;
+    setToolbarColorPickerOpen(false);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !toolbarColorPickerOverlay.hidden) {
+      event.preventDefault();
+      setToolbarColorPickerOpen(false);
+    }
+  });
+}
+
 function initializeFloatingToolbarDragFoundation() {
   if (!toolbarShell) return;
   toolbarShell.addEventListener('mousedown', (event) => {
@@ -2474,6 +2546,8 @@ registerProjectCommands(commandRegistry, {
     formatToggleBold: () => handleTiptapFormatCommand('toggleBold'),
     formatToggleItalic: () => handleTiptapFormatCommand('toggleItalic'),
     formatToggleUnderline: () => handleTiptapFormatCommand('toggleUnderline'),
+    formatTextColorPicker: () => handleFormatTextColorPicker(),
+    formatHighlightColorPicker: () => handleFormatHighlightColorPicker(),
     formatAlignLeft: () => handleFormatAlign('align-left'),
     formatAlignCenter: () => handleFormatAlign('align-center'),
     formatAlignRight: () => handleFormatAlign('align-right'),
@@ -2482,6 +2556,7 @@ registerProjectCommands(commandRegistry, {
     listToggleOrdered: () => handleTiptapFormatCommand('toggleOrderedList'),
     listClear: () => handleTiptapFormatCommand('clearList'),
     insertLinkPrompt: (payload = {}) => handleInsertLinkPrompt(payload),
+    reviewOpenComments: () => handleReviewOpenComments(),
     planFlowSave: () => handlePlanFlowSave(),
     reviewExportMarkdown: () => handleReviewExportMarkdown(),
   },
@@ -4665,6 +4740,7 @@ function applyRightTab(tab) {
   if (tab === 'inspector') {
     ensureCommandsOpenerInRightInspectorSurface();
   }
+  syncToolbarShellState();
 }
 
 function applyMode(mode) {
@@ -4697,6 +4773,7 @@ function applyMode(mode) {
     }
   }
   updateInspectorSnapshot();
+  syncToolbarShellState();
 }
 
 function resolveSafeResetFontFamily() {
@@ -5941,12 +6018,167 @@ function normalizeToolbarFormattingState(input) {
     bold: Boolean(source.bold),
     italic: Boolean(source.italic),
     underline: Boolean(source.underline),
+    textColor: typeof source.textColor === 'string' ? source.textColor : '',
+    textColorActive: Boolean(source.textColorActive || (typeof source.textColor === 'string' && source.textColor.length > 0)),
+    highlightColor: typeof source.highlightColor === 'string' ? source.highlightColor : '',
+    highlightActive: Boolean(source.highlightActive || (typeof source.highlightColor === 'string' && source.highlightColor.length > 0)),
     bulletList: Boolean(source.bulletList),
     orderedList: Boolean(source.orderedList),
     link: Boolean(source.link || source.linkActive),
     linkHref: typeof source.linkHref === 'string' ? source.linkHref : '',
     selectionEmpty: source.selectionEmpty !== false,
   };
+}
+
+function normalizeToolbarColorPickerMode(mode) {
+  return mode === 'highlight' ? 'highlight' : 'text';
+}
+
+function getToolbarColorPickerSwatches(mode) {
+  return TOOLBAR_COLOR_PICKER_MODE_SWATCHES[normalizeToolbarColorPickerMode(mode)] || [];
+}
+
+function renderToolbarColorPickerOverlay() {
+  if (!(toolbarColorPickerOverlay instanceof HTMLElement)) return;
+  const mode = normalizeToolbarColorPickerMode(toolbarColorPickerState.mode);
+  const isOpen = Boolean(toolbarColorPickerState.open);
+  const selectedValue = toolbarColorPickerState.selectedByMode[mode] || '';
+
+  toolbarColorPickerOverlay.hidden = !isOpen;
+  toolbarColorPickerOverlay.dataset.toolbarColorPickerMode = mode;
+  toolbarColorPickerOverlay.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+
+  if (toolbarColorPickerTitle instanceof HTMLElement) {
+    toolbarColorPickerTitle.textContent = TOOLBAR_COLOR_PICKER_MODE_LABELS[mode] || mode;
+  }
+
+  if (toolbarColorPickerSwatchHost instanceof HTMLElement) {
+    toolbarColorPickerSwatchHost.replaceChildren();
+
+    const clearButton = document.createElement('button');
+    clearButton.type = 'button';
+    clearButton.className = 'toolbar__swatch toolbar__swatch--clear';
+    clearButton.dataset.toolbarColorSwatchValue = '';
+    clearButton.setAttribute('aria-label', `Clear ${TOOLBAR_COLOR_PICKER_MODE_LABELS[mode] || mode.toLowerCase()}`);
+    clearButton.setAttribute('aria-pressed', selectedValue === '' ? 'true' : 'false');
+    clearButton.classList.toggle('is-active', selectedValue === '');
+    clearButton.textContent = '×';
+    toolbarColorPickerSwatchHost.appendChild(clearButton);
+
+    for (const swatch of getToolbarColorPickerSwatches(mode)) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'toolbar__swatch';
+      button.dataset.toolbarColorSwatchValue = swatch.value;
+      button.setAttribute('aria-label', swatch.label);
+      button.setAttribute('aria-pressed', swatch.value === selectedValue ? 'true' : 'false');
+      button.classList.toggle('is-active', swatch.value === selectedValue);
+      button.style.setProperty('--swatch-color', swatch.value);
+      toolbarColorPickerSwatchHost.appendChild(button);
+    }
+  }
+
+  if (toolbarColorPickerCloseButton instanceof HTMLElement) {
+    toolbarColorPickerCloseButton.setAttribute('aria-label', `Close ${TOOLBAR_COLOR_PICKER_MODE_LABELS[mode] || mode.toLowerCase()}`);
+  }
+}
+
+function setToolbarColorPickerOpen(nextOpen, nextMode = toolbarColorPickerState.mode) {
+  const mode = normalizeToolbarColorPickerMode(nextMode);
+  if (nextOpen) {
+    setParagraphMenuOpen(false);
+    setListMenuOpen(false);
+    setToolbarSpacingMenuOpen(false);
+  }
+  toolbarColorPickerState = {
+    ...toolbarColorPickerState,
+    open: Boolean(nextOpen),
+    mode,
+  };
+  if (nextOpen && isTiptapMode) {
+    const state = normalizeToolbarFormattingState(getTiptapFormattingState());
+    toolbarColorPickerState = {
+      ...toolbarColorPickerState,
+      selectedByMode: {
+        ...toolbarColorPickerState.selectedByMode,
+        text: state.textColor,
+        highlight: state.highlightColor,
+      },
+    };
+  }
+  syncToolbarShellState();
+}
+
+function setToolbarColorPickerSelection(nextValue) {
+  const mode = normalizeToolbarColorPickerMode(toolbarColorPickerState.mode);
+  const value = typeof nextValue === 'string' ? nextValue.trim().toLowerCase() : '';
+  const result = mode === 'highlight'
+    ? (value
+      ? handleTiptapFormatCommand('setHighlight', { value })
+      : handleTiptapFormatCommand('unsetHighlight'))
+    : (value
+      ? handleTiptapFormatCommand('setColor', { value })
+      : handleTiptapFormatCommand('unsetColor'));
+  toolbarColorPickerState = {
+    ...toolbarColorPickerState,
+    selectedByMode: {
+      ...toolbarColorPickerState.selectedByMode,
+      [mode]: result && result.performed !== false ? value : toolbarColorPickerState.selectedByMode[mode],
+    },
+    open: false,
+  };
+  syncToolbarShellState();
+  return result;
+}
+
+function resolveToolbarColorButtonForMode(mode) {
+  return normalizeToolbarColorPickerMode(mode) === 'highlight'
+    ? colorHighlightButton
+    : colorTextButton;
+}
+
+function positionToolbarColorPickerOverlay() {
+  if (!(toolbarColorPickerOverlay instanceof HTMLElement) || !(toolbarShell instanceof HTMLElement)) return;
+  const anchorButton = resolveToolbarColorButtonForMode(toolbarColorPickerState.mode);
+  if (!(anchorButton instanceof HTMLElement)) return;
+
+  const shellRect = toolbarShell.getBoundingClientRect();
+  const anchorRect = anchorButton.getBoundingClientRect();
+  const overlayRect = toolbarColorPickerOverlay.getBoundingClientRect();
+  const rawLeft = anchorRect.left - shellRect.left + ((anchorRect.width - overlayRect.width) / 2);
+  const maxLeft = Math.max(0, shellRect.width - overlayRect.width);
+  const left = Math.min(Math.max(0, rawLeft), maxLeft);
+  const top = anchorRect.bottom - shellRect.top + 10;
+  toolbarColorPickerOverlay.style.left = `${left}px`;
+  toolbarColorPickerOverlay.style.top = `${top}px`;
+}
+
+function syncToolbarShellState() {
+  if (colorTextButton instanceof HTMLElement) {
+    colorTextButton.classList.toggle('is-open', toolbarColorPickerState.open && toolbarColorPickerState.mode === 'text');
+    colorTextButton.setAttribute('aria-label', 'Text color');
+  }
+  if (colorHighlightButton instanceof HTMLElement) {
+    colorHighlightButton.classList.toggle('is-open', toolbarColorPickerState.open && toolbarColorPickerState.mode === 'highlight');
+    colorHighlightButton.setAttribute('aria-label', 'Highlight color');
+  }
+  if (reviewCommentsButton instanceof HTMLElement) {
+    const isActive = currentRightTab === 'comments';
+    reviewCommentsButton.classList.toggle('is-pressed', isActive);
+    reviewCommentsButton.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    reviewCommentsButton.setAttribute('aria-label', 'Open comments');
+  }
+  if (toolbarColorPickerOverlay instanceof HTMLElement) {
+    toolbarColorPickerOverlay.classList.toggle('is-open', toolbarColorPickerState.open);
+    toolbarColorPickerOverlay.dataset.toolbarColorPickerMode = normalizeToolbarColorPickerMode(toolbarColorPickerState.mode);
+    if (toolbarColorPickerState.open) {
+      positionToolbarColorPickerOverlay();
+    } else {
+      toolbarColorPickerOverlay.style.left = '';
+      toolbarColorPickerOverlay.style.top = '';
+    }
+  }
+  renderToolbarColorPickerOverlay();
 }
 
 function updateToolbarPressedButton(button, active) {
@@ -5964,6 +6196,19 @@ function syncToolbarFormattingState(nextState = null) {
   updateToolbarPressedButton(formatItalicButton, state.italic);
   updateToolbarPressedButton(formatUnderlineButton, state.underline);
   updateToolbarPressedButton(insertLinkButton, state.link);
+  if (colorTextButton instanceof HTMLElement) {
+    updateToolbarPressedButton(colorTextButton, state.textColorActive);
+  }
+  if (colorHighlightButton instanceof HTMLElement) {
+    updateToolbarPressedButton(colorHighlightButton, state.highlightActive);
+  }
+  toolbarColorPickerState = {
+    ...toolbarColorPickerState,
+    selectedByMode: {
+      text: state.textColor,
+      highlight: state.highlightColor,
+    },
+  };
 
   if (listTriggerButton instanceof HTMLElement) {
     const hasList = state.bulletList || state.orderedList;
@@ -5979,6 +6224,41 @@ function syncToolbarFormattingState(nextState = null) {
     button.classList.toggle('is-active', active);
     button.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
+  syncToolbarShellState();
+}
+
+function handleFormatTextColorPicker() {
+  if (!isTiptapMode) {
+    return { performed: false, action: 'textColorPicker', reason: 'EDITOR_MODE_UNSUPPORTED' };
+  }
+  const isOpen = toolbarColorPickerOverlay instanceof HTMLElement
+    && !toolbarColorPickerOverlay.hidden
+    && toolbarColorPickerState.mode === 'text';
+  setToolbarColorPickerOpen(!isOpen, 'text');
+  return { performed: true, action: 'textColorPicker', reason: null };
+}
+
+function handleFormatHighlightColorPicker() {
+  if (!isTiptapMode) {
+    return { performed: false, action: 'highlightColorPicker', reason: 'EDITOR_MODE_UNSUPPORTED' };
+  }
+  const isOpen = toolbarColorPickerOverlay instanceof HTMLElement
+    && !toolbarColorPickerOverlay.hidden
+    && toolbarColorPickerState.mode === 'highlight';
+  setToolbarColorPickerOpen(!isOpen, 'highlight');
+  return { performed: true, action: 'highlightColorPicker', reason: null };
+}
+
+function handleReviewOpenComments() {
+  setToolbarColorPickerOpen(false);
+  if (currentMode === 'review' && currentRightTab === 'comments') {
+    syncToolbarShellState();
+    return { performed: true, action: 'reviewOpenComments', reason: null };
+  }
+  applyMode('review');
+  applyRightTab('comments');
+  syncToolbarShellState();
+  return { performed: true, action: 'reviewOpenComments', reason: null };
 }
 
 function handleTiptapFormatCommand(commandName, payload = {}) {
@@ -6126,8 +6406,20 @@ function handleUiAction(action) {
     case 'format-underline':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TOGGLE_UNDERLINE);
       return true;
+    case 'color-text':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TEXT_COLOR_PICKER);
+      return true;
+    case 'color-highlight':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_HIGHLIGHT_COLOR_PICKER);
+      return true;
     case 'insert-link':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_LINK_PROMPT);
+      return true;
+    case 'review-open-comments':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_COMMENTS);
+      return true;
+    case 'toolbar-color-picker-close':
+      setToolbarColorPickerOpen(false);
       return true;
     case 'undo':
       return handleUndo().performed !== false;
@@ -6337,6 +6629,7 @@ updateWordCount();
 initializeFloatingToolbarSpacingMenu();
 initializeFloatingToolbarParagraphMenu();
 initializeFloatingToolbarListMenu();
+initializeFloatingToolbarColorPickerOverlay();
 syncToolbarFormattingState();
 initializeFloatingToolbarItemOffsetTuning();
 initializeFloatingToolbarDragFoundation();
@@ -6664,6 +6957,8 @@ if (window.electronAPI) {
       formatToggleItalic: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TOGGLE_ITALIC);
       },
+      formatTextColorPicker: (_commandId, payload = {}) => handleFormatTextColorPicker(payload),
+      formatHighlightColorPicker: (_commandId, payload = {}) => handleFormatHighlightColorPicker(payload),
       insertLinkPrompt: (_commandId, payload = {}) => handleInsertLinkPrompt(payload),
       listToggleBullet: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_TOGGLE_BULLET);
@@ -6674,6 +6969,7 @@ if (window.electronAPI) {
       listClear: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_CLEAR);
       },
+      reviewOpenComments: () => handleReviewOpenComments(),
       switchMode: (mode) => applyMode(mode),
     });
   } else if (typeof window.electronAPI.onRuntimeCommand === 'function') {

@@ -329,6 +329,43 @@
               </svg>
             </button>
           </div>
+          <div class="floating-toolbar__group floating-toolbar__group--color">
+            <button
+              type="button"
+              class="floating-toolbar__button floating-toolbar__button--color floating-toolbar__button--color-text"
+              data-action="color-text"
+              data-toolbar-item-key="color-text"
+              aria-label="Text color"
+              aria-pressed="false"
+            >
+              <span class="toolbar__swatch toolbar__swatch--dark floating-toolbar__button-swatch" aria-hidden="true"></span>
+            </button>
+            <button
+              type="button"
+              class="floating-toolbar__button floating-toolbar__button--color floating-toolbar__button--color-highlight"
+              data-action="color-highlight"
+              data-toolbar-item-key="color-highlight"
+              aria-label="Highlight color"
+              aria-pressed="false"
+            >
+              <span class="toolbar__swatch toolbar__swatch--light floating-toolbar__button-swatch" aria-hidden="true"></span>
+            </button>
+          </div>
+          <div class="floating-toolbar__group floating-toolbar__group--review">
+            <button
+              type="button"
+              class="floating-toolbar__button floating-toolbar__button--review"
+              data-action="review-open-comments"
+              data-toolbar-item-key="review-comment"
+              aria-label="Open comments"
+              aria-pressed="false"
+            >
+              <svg class="floating-toolbar__icon floating-toolbar__icon--review" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                <path d="M3.5 3.5h9a1 1 0 0 1 1 1v5.5a1 1 0 0 1-1 1H8.2l-2.7 2.4v-2.4H3.5a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/>
+                <path d="M5 6.2h6M5 8.6h3.6" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
           <div class="floating-toolbar__group floating-toolbar__group--history">
             <button type="button" class="floating-toolbar__button floating-toolbar__button--history" data-action="undo" data-toolbar-item-key="history-undo" aria-label="Undo">
               <svg class="floating-toolbar__icon floating-toolbar__icon--history" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -363,6 +400,13 @@
             Изменить отступы
           </button>
         </div>
+      </div>
+      <div class="floating-toolbar__color-picker" data-toolbar-color-picker role="dialog" aria-label="Color picker" hidden aria-hidden="true">
+        <div class="floating-toolbar__color-picker-head">
+          <div class="floating-toolbar__color-picker-title" data-toolbar-color-picker-title>Text color</div>
+          <button type="button" class="floating-toolbar__color-picker-close" data-toolbar-color-picker-close aria-label="Close color picker">×</button>
+        </div>
+        <div class="floating-toolbar__color-picker-swatches" data-toolbar-color-picker-swatches></div>
       </div>
     </div>
     <div class="app-layout">

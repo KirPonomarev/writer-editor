@@ -1,5 +1,8 @@
 import { Editor } from '@tiptap/core'
+import Color from '@tiptap/extension-color'
+import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
+import { TextStyle } from '@tiptap/extension-text-style'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import {
@@ -58,12 +61,22 @@ function readEditorDocument(editor) {
   }
 }
 
+function normalizeFormattingColor(value) {
+  return typeof value === 'string' && value.trim().length > 0
+    ? value.trim().toLowerCase()
+    : ''
+}
+
 function readFormattingState(editor) {
   if (!editor || typeof editor.isActive !== 'function') {
     return {
       bold: false,
       italic: false,
       underline: false,
+      textColor: '',
+      textColorActive: false,
+      highlightColor: '',
+      highlightActive: false,
       link: false,
       linkActive: false,
       linkHref: '',
@@ -75,12 +88,21 @@ function readFormattingState(editor) {
 
   const linkActive = Boolean(editor.isActive('link'))
   const linkAttributes = typeof editor.getAttributes === 'function' ? editor.getAttributes('link') : null
+  const textStyleAttributes = typeof editor.getAttributes === 'function' ? editor.getAttributes('textStyle') : null
+  const highlightAttributes = typeof editor.getAttributes === 'function' ? editor.getAttributes('highlight') : null
   const selectionEmpty = Boolean(editor.state && editor.state.selection ? editor.state.selection.empty : true)
+  const textColor = normalizeFormattingColor(textStyleAttributes && textStyleAttributes.color)
+  const highlightColor = normalizeFormattingColor(highlightAttributes && highlightAttributes.color)
+  const highlightActive = Boolean(editor.isActive('highlight'))
 
   return {
     bold: Boolean(editor.isActive('bold')),
     italic: Boolean(editor.isActive('italic')),
     underline: Boolean(editor.isActive('underline')),
+    textColor,
+    textColorActive: textColor.length > 0,
+    highlightColor,
+    highlightActive,
     link: linkActive,
     linkActive,
     linkHref: linkAttributes && typeof linkAttributes.href === 'string' ? linkAttributes.href : '',
@@ -231,6 +253,11 @@ export function initTiptap(mountEl, options = {}) {
         link: false,
         underline: false,
       }),
+      TextStyle,
+      Color,
+      Highlight.configure({
+        multicolor: true,
+      }),
       Underline,
       Link.configure({
         autolink: false,
@@ -348,6 +375,98 @@ export function runTiptapFormatCommand(commandName, commandPayload = undefined) 
       return { performed: false, action: commandName, reason: 'FORMAT_COMMAND_UNSUPPORTED' }
     }
     const performed = Boolean(currentEditorInstance.commands.toggleUnderline())
+    notifyFormattingStateChange()
+    return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
+  }
+
+  if (commandName === 'setColor') {
+    const colorPayload = commandPayload && typeof commandPayload === 'object' && !Array.isArray(commandPayload)
+      ? commandPayload
+      : null
+    const value = normalizeFormattingColor(colorPayload && colorPayload.value)
+    if (!value) {
+      return { performed: false, action: commandName, reason: 'COLOR_PAYLOAD_INVALID' }
+    }
+    const state = readFormattingState(currentEditorInstance)
+    let chain = typeof currentEditorInstance.chain === 'function'
+      ? currentEditorInstance.chain().focus()
+      : null
+    if (state.selectionEmpty && state.textColorActive && chain && typeof chain.extendMarkRange === 'function') {
+      chain = chain.extendMarkRange('textStyle')
+    }
+    if (!chain && typeof currentEditorInstance.commands.setColor !== 'function') {
+      return { performed: false, action: commandName, reason: 'FORMAT_COMMAND_UNSUPPORTED' }
+    }
+    const performed = chain && typeof chain.setColor === 'function' && typeof chain.run === 'function'
+      ? Boolean(chain.setColor(value).run())
+      : Boolean(currentEditorInstance.commands.setColor(value))
+    notifyFormattingStateChange()
+    return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
+  }
+
+  if (commandName === 'unsetColor') {
+    const state = readFormattingState(currentEditorInstance)
+    if (state.selectionEmpty && !state.textColorActive) {
+      return { performed: false, action: commandName, reason: 'NO_OP' }
+    }
+    let chain = typeof currentEditorInstance.chain === 'function'
+      ? currentEditorInstance.chain().focus()
+      : null
+    if (state.selectionEmpty && state.textColorActive && chain && typeof chain.extendMarkRange === 'function') {
+      chain = chain.extendMarkRange('textStyle')
+    }
+    if (!chain && typeof currentEditorInstance.commands.unsetColor !== 'function') {
+      return { performed: false, action: commandName, reason: 'FORMAT_COMMAND_UNSUPPORTED' }
+    }
+    const performed = chain && typeof chain.unsetColor === 'function' && typeof chain.run === 'function'
+      ? Boolean(chain.unsetColor().run())
+      : Boolean(currentEditorInstance.commands.unsetColor())
+    notifyFormattingStateChange()
+    return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
+  }
+
+  if (commandName === 'setHighlight') {
+    const highlightPayload = commandPayload && typeof commandPayload === 'object' && !Array.isArray(commandPayload)
+      ? commandPayload
+      : null
+    const value = normalizeFormattingColor(highlightPayload && highlightPayload.value)
+    if (!value) {
+      return { performed: false, action: commandName, reason: 'HIGHLIGHT_PAYLOAD_INVALID' }
+    }
+    const state = readFormattingState(currentEditorInstance)
+    let chain = typeof currentEditorInstance.chain === 'function'
+      ? currentEditorInstance.chain().focus()
+      : null
+    if (state.selectionEmpty && state.highlightActive && chain && typeof chain.extendMarkRange === 'function') {
+      chain = chain.extendMarkRange('highlight')
+    }
+    if (!chain && typeof currentEditorInstance.commands.setHighlight !== 'function') {
+      return { performed: false, action: commandName, reason: 'FORMAT_COMMAND_UNSUPPORTED' }
+    }
+    const performed = chain && typeof chain.setHighlight === 'function' && typeof chain.run === 'function'
+      ? Boolean(chain.setHighlight({ color: value }).run())
+      : Boolean(currentEditorInstance.commands.setHighlight({ color: value }))
+    notifyFormattingStateChange()
+    return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
+  }
+
+  if (commandName === 'unsetHighlight') {
+    const state = readFormattingState(currentEditorInstance)
+    if (state.selectionEmpty && !state.highlightActive) {
+      return { performed: false, action: commandName, reason: 'NO_OP' }
+    }
+    let chain = typeof currentEditorInstance.chain === 'function'
+      ? currentEditorInstance.chain().focus()
+      : null
+    if (state.selectionEmpty && state.highlightActive && chain && typeof chain.extendMarkRange === 'function') {
+      chain = chain.extendMarkRange('highlight')
+    }
+    if (!chain && typeof currentEditorInstance.commands.unsetHighlight !== 'function') {
+      return { performed: false, action: commandName, reason: 'FORMAT_COMMAND_UNSUPPORTED' }
+    }
+    const performed = chain && typeof chain.unsetHighlight === 'function' && typeof chain.run === 'function'
+      ? Boolean(chain.unsetHighlight().run())
+      : Boolean(currentEditorInstance.commands.unsetHighlight())
     notifyFormattingStateChange()
     return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
   }

@@ -44,6 +44,9 @@ test('toolbar expansion wave a1: catalog promotes bold, italic, underline, link 
     'toolbar.paragraph.alignment',
     'toolbar.list.type',
     'toolbar.insert.link',
+    'toolbar.color.text',
+    'toolbar.color.highlight',
+    'toolbar.review.comment',
     'toolbar.history.undo',
     'toolbar.history.redo',
   ])
@@ -89,6 +92,8 @@ test('toolbar expansion wave a1: capability gate allows rich commands only in Ti
     [projectCommands.EXTRA_COMMAND_IDS.FORMAT_TOGGLE_BOLD, 'cap.project.format.toggleBold'],
     [projectCommands.EXTRA_COMMAND_IDS.FORMAT_TOGGLE_ITALIC, 'cap.project.format.toggleItalic'],
     [projectCommands.EXTRA_COMMAND_IDS.FORMAT_TOGGLE_UNDERLINE, 'cap.project.format.toggleUnderline'],
+    [projectCommands.EXTRA_COMMAND_IDS.FORMAT_TEXT_COLOR_PICKER, 'cap.project.format.textColorPicker'],
+    [projectCommands.EXTRA_COMMAND_IDS.FORMAT_HIGHLIGHT_COLOR_PICKER, 'cap.project.format.highlightColorPicker'],
     [projectCommands.EXTRA_COMMAND_IDS.LIST_TOGGLE_BULLET, 'cap.project.list.toggleBullet'],
     [projectCommands.EXTRA_COMMAND_IDS.LIST_TOGGLE_ORDERED, 'cap.project.list.toggleOrdered'],
     [projectCommands.EXTRA_COMMAND_IDS.LIST_CLEAR, 'cap.project.list.clear'],
