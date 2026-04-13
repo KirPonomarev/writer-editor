@@ -450,9 +450,9 @@ const TOOLBAR_FUNCTION_CATALOG_ROWS = [
     bindKey: 'proofing-spellcheck',
     actionAlias: null,
     commandId: null,
-    implementationState: 'planned',
+    implementationState: 'blocked',
     uiGroup: 'proofing',
-    blockerReason: null,
+    blockerReason: 'offline-first spellcheck dictionary policy not selected',
   },
   {
     id: 'toolbar.proofing.grammar',

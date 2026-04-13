@@ -36,6 +36,8 @@ function createMemoryStorage() {
 
 test('toolbar foundation catalog: live planned blocked filtering and canonical order are stable', async () => {
   const catalog = await loadCatalog()
+  const exactPlannedIds = ['toolbar.insert.image']
+  const exactBlockedIds = ['toolbar.proofing.spellcheck', 'toolbar.proofing.grammar']
 
   assert.deepEqual(catalog.TOOLBAR_CANONICAL_LIVE_ORDER, [
     'toolbar.font.family',
@@ -61,6 +63,16 @@ test('toolbar foundation catalog: live planned blocked filtering and canonical o
     catalog.listLiveToolbarFunctionCatalogEntries().map((entry) => entry.id),
     catalog.TOOLBAR_CANONICAL_LIVE_ORDER,
   )
+  assert.deepEqual(
+    catalog.listToolbarFunctionCatalogEntriesByImplementationState('planned').map((entry) => entry.id),
+    exactPlannedIds,
+  )
+  assert.deepEqual(
+    catalog.listToolbarFunctionCatalogEntriesByImplementationState('blocked').map((entry) => entry.id),
+    exactBlockedIds,
+  )
+  assert.deepEqual(catalog.TOOLBAR_PLANNED_IDS, exactPlannedIds)
+  assert.deepEqual(catalog.TOOLBAR_BLOCKED_IDS, exactBlockedIds)
   assert.deepEqual(
     catalog.listToolbarFunctionCatalogEntriesByImplementationState('planned').map((entry) => entry.id),
     catalog.TOOLBAR_PLANNED_IDS,

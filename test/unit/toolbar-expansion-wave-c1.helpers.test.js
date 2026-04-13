@@ -60,7 +60,11 @@ test('toolbar expansion wave c1: catalog promotes styles items while saved profi
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.style.character').actionAlias, 'toggle-style-character-menu')
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.style.character').commandId, null)
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.insert.image').implementationState, 'planned')
-  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.proofing.spellcheck').implementationState, 'planned')
+  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.proofing.spellcheck').implementationState, 'blocked')
+  assert.equal(
+    catalog.getToolbarFunctionCatalogEntryById('toolbar.proofing.spellcheck').blockerReason,
+    'offline-first spellcheck dictionary policy not selected',
+  )
 
   const seed = profile.createCanonicalMinimalToolbarProfileState()
   assert.deepEqual(seed.toolbarProfiles.minimal, catalog.TOOLBAR_CANONICAL_LIVE_ORDER)
