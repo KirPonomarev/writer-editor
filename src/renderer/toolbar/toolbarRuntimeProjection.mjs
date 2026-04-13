@@ -48,11 +48,24 @@ function normalizeCatalogEntries(catalogEntries) {
   return entries.filter((entry) => entry?.implementationState === 'live');
 }
 
-function normalizeVisibleItemIds(profileState, catalogEntries) {
+function normalizeProfileName(profileName) {
+  return profileName === 'master' ? 'master' : 'minimal';
+}
+
+function getToolbarProfileIds(profileState, profileName) {
+  const normalizedProfileName = normalizeProfileName(profileName);
+  const toolbarProfiles = profileState?.toolbarProfiles;
+  if (!toolbarProfiles || typeof toolbarProfiles !== 'object') {
+    return [];
+  }
+  const profileIds = toolbarProfiles[normalizedProfileName];
+  return Array.isArray(profileIds) ? profileIds : [];
+}
+
+function normalizeVisibleItemIds(profileState, catalogEntries, profileName = profileState?.activeToolbarProfile) {
   const normalizedCatalogEntries = normalizeCatalogEntries(catalogEntries);
   const availableIds = new Set(normalizedCatalogEntries.map((entry) => entry.id));
-  const rawMinimal = profileState?.toolbarProfiles?.minimal;
-  const rawIds = Array.isArray(rawMinimal) ? rawMinimal : [];
+  const rawIds = getToolbarProfileIds(profileState, profileName);
   const requestedIds = new Set();
 
   for (const rawId of rawIds) {
@@ -282,7 +295,7 @@ export function resolveToolbarRuntimeSnapshot(registry) {
   });
 }
 
-export function applyToolbarProfileMinimal(registry, profileState) {
+export function applyToolbarActiveProfile(registry, profileState) {
   const catalogEntries = Array.isArray(registry?.catalogEntries) ? registry.catalogEntries : [];
   const visibleItemIds = normalizeVisibleItemIds(profileState, catalogEntries);
   const visibleItemIdSet = new Set(visibleItemIds);
@@ -313,4 +326,11 @@ export function applyToolbarProfileMinimal(registry, profileState) {
   closeSpacingOverlay(registry);
 
   return resolveToolbarRuntimeSnapshot(registry);
+}
+
+export function applyToolbarProfileMinimal(registry, profileState) {
+  return applyToolbarActiveProfile(registry, {
+    ...(profileState && typeof profileState === 'object' && !Array.isArray(profileState) ? profileState : {}),
+    activeToolbarProfile: 'minimal',
+  });
 }

@@ -89,6 +89,7 @@ const topWorkBar = document.querySelector('[data-top-work-bar]');
 const configuratorPanel = document.querySelector('[data-configurator-panel]');
 const configuratorMasterSection = document.querySelector('.configurator-panel__section--master');
 const configuratorMinimalSection = document.querySelector('.configurator-panel__section--minimal');
+const configuratorProfileSwitchButtons = Array.from(document.querySelectorAll('[data-toolbar-profile-switch]'));
 const configuratorLibraryGrid = document.querySelector('.configurator-panel__grid');
 const gridTriggerButton = document.querySelector('[data-grid-button]');
 const configuratorBuckets = Array.from(document.querySelectorAll('[data-configurator-bucket]'));
@@ -369,7 +370,142 @@ let leftToolbarButtonOffsetDragState = {
   originOffset: 0,
   moved: false,
 };
-let configuratorBucketState = createEphemeralBaselineToolbarProfileState();
+const TOOLBAR_CONFIGURATOR_DEFAULT_ACTIVE_PROFILE = 'minimal';
+const TOOLBAR_CONFIGURATOR_PROFILE_NAMES = Object.freeze(['minimal', 'master']);
+const TOOLBAR_CONFIGURATOR_CANONICAL_LIVE_IDS = Object.freeze(
+  listLiveToolbarFunctionCatalogEntries().map((entry) => entry.id)
+);
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function normalizeToolbarConfiguratorProfileName(profileName) {
+  return profileName === 'master' ? 'master' : 'minimal';
+}
+
+function normalizeToolbarConfiguratorItemIds(rawIds) {
+  const normalized = createToolbarProfileState(Array.isArray(rawIds) ? rawIds : []);
+  return Array.isArray(normalized?.toolbarProfiles?.minimal)
+    ? [...normalized.toolbarProfiles.minimal]
+    : [];
+}
+
+function createToolbarConfiguratorCanonicalProfileIds() {
+  return [...TOOLBAR_CONFIGURATOR_CANONICAL_LIVE_IDS];
+}
+
+function createToolbarConfiguratorSeedState() {
+  const canonicalMinimalState = createCanonicalMinimalToolbarProfileState();
+  const canonicalMinimalIds = Array.isArray(canonicalMinimalState?.toolbarProfiles?.minimal)
+    ? canonicalMinimalState.toolbarProfiles.minimal
+    : createToolbarConfiguratorCanonicalProfileIds();
+  return Object.freeze({
+    version: 3,
+    activeToolbarProfile: TOOLBAR_CONFIGURATOR_DEFAULT_ACTIVE_PROFILE,
+    toolbarProfiles: Object.freeze({
+      minimal: Object.freeze([...canonicalMinimalIds]),
+      master: Object.freeze(createToolbarConfiguratorCanonicalProfileIds()),
+    }),
+  });
+}
+
+function createToolbarConfiguratorState(rawState = {}) {
+  const source = isPlainObject(rawState) ? rawState : {};
+  const rawToolbarProfiles = isPlainObject(source.toolbarProfiles) ? source.toolbarProfiles : {};
+  const hasMinimal = Object.prototype.hasOwnProperty.call(rawToolbarProfiles, 'minimal');
+  const hasMaster = Object.prototype.hasOwnProperty.call(rawToolbarProfiles, 'master');
+
+  return Object.freeze({
+    version: 3,
+    activeToolbarProfile: normalizeToolbarConfiguratorProfileName(source.activeToolbarProfile),
+    toolbarProfiles: Object.freeze({
+      minimal: Object.freeze(normalizeToolbarConfiguratorItemIds(hasMinimal ? rawToolbarProfiles.minimal : [])),
+      master: Object.freeze(
+        hasMaster
+          ? normalizeToolbarConfiguratorItemIds(rawToolbarProfiles.master)
+          : createToolbarConfiguratorCanonicalProfileIds()
+      ),
+    }),
+  });
+}
+
+function readToolbarConfiguratorStoredState(projectId = currentProjectId) {
+  const storageKey = getToolbarProfileStorageKey(projectId);
+  if (!storageKey) return null;
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function writeToolbarConfiguratorStoredState(projectId, state) {
+  const storageKey = getToolbarProfileStorageKey(projectId);
+  if (!storageKey) return false;
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(state));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function resolveToolbarConfiguratorState(projectId = currentProjectId) {
+  const normalizedProjectId = normalizeProjectId(projectId);
+  if (!normalizedProjectId) {
+    return {
+      source: 'ephemeral',
+      shouldPersist: false,
+      shouldConsumeLegacySource: false,
+      state: createToolbarConfiguratorSeedState(),
+    };
+  }
+
+  const rawState = readToolbarConfiguratorStoredState(normalizedProjectId);
+  if (isPlainObject(rawState)) {
+    const normalizedState = createToolbarConfiguratorState(rawState);
+    return {
+      source: 'persisted',
+      shouldPersist: JSON.stringify(rawState) !== JSON.stringify(normalizedState),
+      shouldConsumeLegacySource: false,
+      state: normalizedState,
+    };
+  }
+
+  const resolution = resolveToolbarProfileStateForProjectSwitch(localStorage, normalizedProjectId);
+  const minimalIds = Array.isArray(resolution?.state?.toolbarProfiles?.minimal)
+    ? resolution.state.toolbarProfiles.minimal
+    : [];
+  const shouldPersist = resolution?.shouldPersist !== false;
+  const shouldConsumeLegacySource = Boolean(resolution?.shouldConsumeLegacySource);
+
+  if (shouldConsumeLegacySource) {
+    return {
+      source: resolution.source || 'legacy',
+      shouldPersist,
+      shouldConsumeLegacySource,
+      state: createToolbarConfiguratorState({
+        activeToolbarProfile: TOOLBAR_CONFIGURATOR_DEFAULT_ACTIVE_PROFILE,
+        toolbarProfiles: {
+          minimal: minimalIds,
+          master: createToolbarConfiguratorCanonicalProfileIds(),
+        },
+      }),
+    };
+  }
+
+  return {
+    source: resolution?.source || 'seed',
+    shouldPersist,
+    shouldConsumeLegacySource: false,
+    state: createToolbarConfiguratorSeedState(),
+  };
+}
+
+let configuratorBucketState = createToolbarConfiguratorSeedState();
 let activeConfiguratorDragPayload = null;
 const AUTO_SAVE_DELAY = 600;
 const HOTPATH_RENDER_DEBOUNCE_MS = 32;
@@ -779,10 +915,13 @@ function restoreFocusFromHiddenMainToolbarItem() {
 }
 
 function projectMainFloatingToolbarRuntime(reason = 'projection') {
-  if (!toolbarRuntimeRegistry || typeof toolbarRuntimeProjectionModule.applyToolbarProfileMinimal !== 'function') {
+  const applyToolbarActiveProfile = typeof toolbarRuntimeProjectionModule.applyToolbarActiveProfile === 'function'
+    ? toolbarRuntimeProjectionModule.applyToolbarActiveProfile
+    : toolbarRuntimeProjectionModule.applyToolbarProfileMinimal;
+  if (!toolbarRuntimeRegistry || typeof applyToolbarActiveProfile !== 'function') {
     return null;
   }
-  const snapshot = toolbarRuntimeProjectionModule.applyToolbarProfileMinimal(
+  const snapshot = applyToolbarActiveProfile(
     toolbarRuntimeRegistry,
     configuratorBucketState,
     {
@@ -1552,11 +1691,6 @@ function getToolbarConfiguratorCatalogItem(itemId) {
   return getToolbarFunctionCatalogEntryById(normalizedItemId) || null;
 }
 
-function getToolbarConfiguratorMinimalIds() {
-  const minimalIds = configuratorBucketState?.toolbarProfiles?.minimal;
-  return Array.isArray(minimalIds) ? minimalIds : [];
-}
-
 function getToolbarConfiguratorEntryPanelLabel(entry) {
   const ruLabels = entry?.labels?.ru || null;
   const enLabels = entry?.labels?.en || null;
@@ -1569,27 +1703,52 @@ function getToolbarConfiguratorEntryAriaLabel(entry) {
   return ruLabels?.ariaLabel || ruLabels?.panelLabel || enLabels?.ariaLabel || enLabels?.panelLabel || entry?.id || '';
 }
 
-function commitToolbarConfiguratorState(minimalIds) {
-  const nextState = createToolbarProfileState(minimalIds);
-  configuratorBucketState = nextState;
+function getToolbarConfiguratorActiveProfile() {
+  return normalizeToolbarConfiguratorProfileName(configuratorBucketState?.activeToolbarProfile);
+}
+
+function getToolbarConfiguratorProfileIds(profileName = getToolbarConfiguratorActiveProfile()) {
+  const normalizedProfileName = normalizeToolbarConfiguratorProfileName(profileName);
+  const profileIds = configuratorBucketState?.toolbarProfiles?.[normalizedProfileName];
+  return Array.isArray(profileIds) ? profileIds : [];
+}
+
+function renderToolbarConfiguratorProfileSwitch() {
+  const activeProfile = getToolbarConfiguratorActiveProfile();
+  configuratorProfileSwitchButtons.forEach((button) => {
+    if (!(button instanceof HTMLElement)) return;
+    const profileName = normalizeToolbarConfiguratorProfileName(button.dataset.toolbarProfileSwitch || '');
+    const isActive = profileName === activeProfile;
+    button.classList.toggle('is-active', isActive);
+    button.setAttribute('aria-checked', isActive ? 'true' : 'false');
+    button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    button.tabIndex = isActive ? 0 : -1;
+  });
+}
+
+function commitToolbarConfiguratorState(nextState) {
+  const normalizedState = createToolbarConfiguratorState(nextState);
+  configuratorBucketState = normalizedState;
   if (normalizeProjectId(currentProjectId)) {
-    writeToolbarProfileState(localStorage, currentProjectId, nextState);
+    writeToolbarConfiguratorStoredState(currentProjectId, normalizedState);
   }
+  renderToolbarConfiguratorProfileSwitch();
   renderToolbarConfiguratorBuckets();
   projectMainFloatingToolbarRuntime('configurator-commit');
-  return nextState;
+  return normalizedState;
 }
 
 function adoptToolbarConfiguratorState(projectId = currentProjectId) {
-  const resolution = resolveToolbarProfileStateForProjectSwitch(localStorage, projectId);
+  const resolution = resolveToolbarConfiguratorState(projectId);
   if (resolution.shouldConsumeLegacySource) {
     consumeLegacyConfiguratorBuckets(localStorage);
   }
   if (resolution.shouldPersist) {
-    writeToolbarProfileState(localStorage, projectId, resolution.state);
+    writeToolbarConfiguratorStoredState(projectId, resolution.state);
   }
   configuratorBucketState = resolution.state;
   renderToolbarConfiguratorLibrary();
+  renderToolbarConfiguratorProfileSwitch();
   renderToolbarConfiguratorBuckets();
   projectMainFloatingToolbarRuntime('configurator-adopt');
   return resolution;
@@ -1665,6 +1824,7 @@ function createToolbarConfiguratorBucketItem(itemId, bucketKey, index) {
   removeButton.className = 'configurator-panel__bucket-remove';
   removeButton.dataset.configuratorRemove = 'true';
   removeButton.dataset.itemId = itemId;
+  removeButton.dataset.bucketKey = bucketKey;
   removeButton.setAttribute('aria-label', `Remove ${label}`);
   removeButton.textContent = '×';
 
@@ -1675,38 +1835,62 @@ function createToolbarConfiguratorBucketItem(itemId, bucketKey, index) {
 function renderToolbarConfiguratorBuckets() {
   configuratorBuckets.forEach((bucket) => {
     const bucketKey = bucket.dataset.configuratorBucket || '';
+    const isActiveProfile = bucketKey === getToolbarConfiguratorActiveProfile();
     bucket.replaceChildren();
-    if (bucketKey === 'master') {
-      bucket.hidden = true;
-      return;
-    }
     bucket.hidden = false;
-    if (bucketKey !== 'minimal') {
+    bucket.classList.toggle('is-active-profile', isActiveProfile);
+    if (!TOOLBAR_CONFIGURATOR_PROFILE_NAMES.includes(bucketKey)) {
       return;
     }
-    getToolbarConfiguratorMinimalIds().forEach((itemId, index) => {
+    getToolbarConfiguratorProfileIds(bucketKey).forEach((itemId, index) => {
       bucket.appendChild(createToolbarConfiguratorBucketItem(itemId, bucketKey, index));
     });
   });
 }
 
-function addToolbarConfiguratorItem(itemId) {
+function addToolbarConfiguratorItem(itemId, bucketKey = getToolbarConfiguratorActiveProfile()) {
   const normalizedItemId = typeof itemId === 'string' ? itemId.trim() : '';
   if (!normalizedItemId) return;
   const catalogItem = getToolbarConfiguratorCatalogItem(normalizedItemId);
   if (!catalogItem || catalogItem.implementationState !== 'live') return;
-  const minimalIds = getToolbarConfiguratorMinimalIds();
-  if (minimalIds.includes(normalizedItemId)) return;
-  commitToolbarConfiguratorState([...minimalIds, normalizedItemId]);
+  const targetBucketKey = normalizeToolbarConfiguratorProfileName(bucketKey);
+  const targetIds = getToolbarConfiguratorProfileIds(targetBucketKey);
+  if (targetIds.includes(normalizedItemId)) return;
+  commitToolbarConfiguratorState({
+    ...configuratorBucketState,
+    toolbarProfiles: {
+      ...configuratorBucketState.toolbarProfiles,
+      [targetBucketKey]: [...targetIds, normalizedItemId],
+    },
+  });
 }
 
-function removeToolbarConfiguratorItem(itemId) {
+function removeToolbarConfiguratorItem(itemId, bucketKey = getToolbarConfiguratorActiveProfile()) {
   const normalizedItemId = typeof itemId === 'string' ? itemId.trim() : '';
   if (!normalizedItemId) return;
-  const minimalIds = getToolbarConfiguratorMinimalIds();
-  const nextMinimalIds = minimalIds.filter((currentItemId) => currentItemId !== normalizedItemId);
-  if (nextMinimalIds.length === minimalIds.length) return;
-  commitToolbarConfiguratorState(nextMinimalIds);
+  const targetBucketKey = normalizeToolbarConfiguratorProfileName(bucketKey);
+  const targetIds = getToolbarConfiguratorProfileIds(targetBucketKey);
+  const nextIds = targetIds.filter((currentItemId) => currentItemId !== normalizedItemId);
+  if (nextIds.length === targetIds.length) return;
+  commitToolbarConfiguratorState({
+    ...configuratorBucketState,
+    toolbarProfiles: {
+      ...configuratorBucketState.toolbarProfiles,
+      [targetBucketKey]: nextIds,
+    },
+  });
+}
+
+function setToolbarConfiguratorActiveProfile(profileName) {
+  const nextProfile = normalizeToolbarConfiguratorProfileName(profileName);
+  if (nextProfile === getToolbarConfiguratorActiveProfile()) {
+    return false;
+  }
+  commitToolbarConfiguratorState({
+    ...configuratorBucketState,
+    activeToolbarProfile: nextProfile,
+  });
+  return true;
 }
 
 function clearToolbarConfiguratorDropTargets() {
@@ -1718,19 +1902,21 @@ function initializeToolbarConfiguratorFoundation() {
     return;
   }
 
-  if (configuratorMasterSection) {
-    configuratorMasterSection.hidden = true;
-    configuratorMasterSection.setAttribute('aria-hidden', 'true');
-  }
-  if (configuratorMinimalSection) {
-    configuratorMinimalSection.hidden = false;
-  }
-
   adoptToolbarConfiguratorState(currentProjectId);
 
   configuratorPanel.addEventListener('click', (event) => {
     if (event.target === configuratorPanel) {
       setConfiguratorOpen(false);
+      return;
+    }
+
+    const profileSwitchButton = event.target instanceof Element
+      ? event.target.closest('[data-toolbar-profile-switch]')
+      : null;
+    if (profileSwitchButton instanceof HTMLElement) {
+      event.preventDefault();
+      event.stopPropagation();
+      setToolbarConfiguratorActiveProfile(profileSwitchButton.dataset.toolbarProfileSwitch || '');
       return;
     }
 
@@ -1740,7 +1926,10 @@ function initializeToolbarConfiguratorFoundation() {
     if (removeButton instanceof HTMLElement) {
       event.preventDefault();
       event.stopPropagation();
-      removeToolbarConfiguratorItem(removeButton.dataset.itemId || '');
+      const bucketKey = removeButton.dataset.bucketKey
+        || removeButton.closest('[data-configurator-bucket]')?.dataset.configuratorBucket
+        || getToolbarConfiguratorActiveProfile();
+      removeToolbarConfiguratorItem(removeButton.dataset.itemId || '', bucketKey);
       return;
     }
 
@@ -1750,7 +1939,7 @@ function initializeToolbarConfiguratorFoundation() {
     if (libraryButton instanceof HTMLElement && configuratorLibraryGrid.contains(libraryButton)) {
       event.preventDefault();
       event.stopPropagation();
-      addToolbarConfiguratorItem(libraryButton.dataset.itemId || '');
+      addToolbarConfiguratorItem(libraryButton.dataset.itemId || '', getToolbarConfiguratorActiveProfile());
     }
   });
 
@@ -1778,11 +1967,6 @@ function initializeToolbarConfiguratorFoundation() {
 
   configuratorBuckets.forEach((bucket) => {
     const bucketKey = bucket.dataset.configuratorBucket || '';
-    if (bucketKey === 'master') {
-      bucket.hidden = true;
-      bucket.replaceChildren();
-      return;
-    }
     bucket.addEventListener('dragover', (event) => {
       const payload = readConfiguratorDragPayload(event);
       if (!payload || payload.sourceType !== 'library-item' || !payload.itemId) {
@@ -1802,7 +1986,7 @@ function initializeToolbarConfiguratorFoundation() {
       event.preventDefault();
       bucket.classList.remove('is-drop-target');
       if (!payload || payload.sourceType !== 'library-item' || !payload.itemId) return;
-      addToolbarConfiguratorItem(payload.itemId);
+      addToolbarConfiguratorItem(payload.itemId, bucketKey);
       activeConfiguratorDragPayload = null;
     });
   });
@@ -4482,13 +4666,12 @@ function performSafeResetShell() {
   persistLeftToolbarButtonOffsets();
   applyLeftFloatingToolbarState(getDefaultLeftFloatingToolbarState(), true);
 
-  const nextToolbarProfileState = normalizeProjectId(currentProjectId)
-    ? createCanonicalMinimalToolbarProfileState()
-    : createEphemeralBaselineToolbarProfileState();
+  const nextToolbarProfileState = createToolbarConfiguratorSeedState();
   configuratorBucketState = nextToolbarProfileState;
   if (normalizeProjectId(currentProjectId)) {
-    writeToolbarProfileState(localStorage, currentProjectId, nextToolbarProfileState);
+    writeToolbarConfiguratorStoredState(currentProjectId, nextToolbarProfileState);
   }
+  renderToolbarConfiguratorProfileSwitch();
   renderToolbarConfiguratorBuckets();
   setConfiguratorOpen(false);
   setToolbarSpacingTuningMode(false);

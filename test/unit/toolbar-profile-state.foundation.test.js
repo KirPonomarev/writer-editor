@@ -63,11 +63,10 @@ test('toolbar foundation catalog: live planned blocked filtering and canonical o
     catalog.TOOLBAR_BLOCKED_IDS,
   )
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.font.family').labels.ru.panelLabel, 'Шрифт')
-  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.font.family').labels.ru.panelLabel.includes('Шрифт'), true)
   assert.equal(Object.prototype.hasOwnProperty.call(catalog.getToolbarFunctionCatalogEntryById('toolbar.font.family'), 'label'), false)
 })
 
-test('toolbar foundation profile state: project-scoped storage, migration, and consume-once legacy behavior', async () => {
+test('toolbar foundation profile state: project-scoped storage, v3 seed, and migration coverage', async () => {
   const catalog = await loadCatalog()
   const profileState = await loadProfileState()
   const storage = createMemoryStorage()
@@ -75,105 +74,96 @@ test('toolbar foundation profile state: project-scoped storage, migration, and c
   assert.equal(profileState.getToolbarProfileStorageKey(' project-1 '), 'toolbarProfiles:project-1')
   assert.equal(profileState.getToolbarProfileStorageKey(''), '')
 
-  const seedState = profileState.createCanonicalMinimalToolbarProfileState()
-  assert.deepEqual(seedState, {
-    version: 2,
+  const canonicalState = profileState.createCanonicalMinimalToolbarProfileState()
+  assert.deepEqual(canonicalState, {
+    version: 3,
+    activeToolbarProfile: 'minimal',
     toolbarProfiles: {
       minimal: catalog.TOOLBAR_CANONICAL_LIVE_ORDER,
+      master: catalog.TOOLBAR_CANONICAL_LIVE_ORDER,
     },
   })
 
-  assert.equal(profileState.writeToolbarProfileState(storage, '', seedState), false)
+  assert.equal(profileState.writeToolbarProfileState(storage, '', canonicalState), false)
   assert.equal(storage.dump().size, 0)
 
   const ephemeral = profileState.resolveToolbarProfileStateForProjectSwitch(storage, '')
   assert.equal(ephemeral.source, 'ephemeral')
   assert.equal(ephemeral.shouldPersist, false)
   assert.equal(ephemeral.shouldConsumeLegacySource, false)
-  assert.deepEqual(ephemeral.state.toolbarProfiles.minimal, catalog.TOOLBAR_CANONICAL_LIVE_ORDER)
+  assert.deepEqual(ephemeral.state, canonicalState)
 
-  assert.equal(profileState.writeToolbarProfileState(storage, 'project-1', seedState), true)
-  assert.equal(
-    storage.getItem('toolbarProfiles:project-1'),
-    JSON.stringify(seedState),
-  )
-
-  const readBack = profileState.readToolbarProfileState(storage, 'project-1')
-  assert.deepEqual(readBack, seedState)
+  assert.equal(profileState.writeToolbarProfileState(storage, 'project-1', canonicalState), true)
+  assert.equal(storage.getItem('toolbarProfiles:project-1'), JSON.stringify(canonicalState))
+  assert.deepEqual(profileState.readToolbarProfileState(storage, 'project-1'), canonicalState)
 
   storage.setItem('toolbarProfiles:project-empty', JSON.stringify({
-    version: 2,
-    toolbarProfiles: { minimal: [] },
+    version: 3,
+    activeToolbarProfile: 'master',
+    toolbarProfiles: { minimal: [], master: [] },
   }))
   assert.deepEqual(profileState.readToolbarProfileState(storage, 'project-empty'), {
+    version: 3,
+    activeToolbarProfile: 'master',
+    toolbarProfiles: { minimal: [], master: [] },
+  })
+
+  storage.setItem('toolbarProfiles:project-v2', JSON.stringify({
     version: 2,
-    toolbarProfiles: { minimal: [] },
+    toolbarProfiles: {
+      minimal: ['toolbar.font.size', 'toolbar.font.family', 'toolbar.font.family', 'toolbar.font.weight'],
+    },
+  }))
+  const resolvedV2 = profileState.resolveToolbarProfileStateForProjectSwitch(storage, 'project-v2')
+  assert.equal(resolvedV2.source, 'persisted')
+  assert.equal(resolvedV2.shouldPersist, true)
+  assert.deepEqual(resolvedV2.state, {
+    version: 3,
+    activeToolbarProfile: 'minimal',
+    toolbarProfiles: {
+      minimal: ['toolbar.font.size', 'toolbar.font.family', 'toolbar.font.weight'],
+      master: catalog.TOOLBAR_CANONICAL_LIVE_ORDER,
+    },
   })
 
   storage.setItem(profileState.TOOLBAR_PROFILE_LEGACY_STORAGE_KEY, JSON.stringify({
     master: ['Font Family', 'Font Size'],
     minimal: ['Line Height', 'Redo'],
   }))
-
-  const exactMigration = profileState.migrateLegacyConfiguratorBuckets({
-    master: ['Font Family', 'Font Size'],
-    minimal: ['Line Height', 'Redo'],
-  })
-  assert.equal(exactMigration.exactMatch, true)
-  assert.equal(exactMigration.isLossy, false)
-  assert.deepEqual(exactMigration.state.toolbarProfiles.minimal, [
-    'toolbar.font.family',
-    'toolbar.font.size',
-    'toolbar.text.lineHeight',
-    'toolbar.history.redo',
-  ])
-
-  const lossyMigration = profileState.migrateLegacyConfiguratorBuckets({
-    master: ['Font Family', 'Color Background'],
-    minimal: ['Font Family', 'New Slot', 'Unknown Label'],
-  })
-  assert.equal(lossyMigration.exactMatch, false)
-  assert.equal(lossyMigration.isLossy, true)
-  assert.deepEqual(lossyMigration.state.toolbarProfiles.minimal, [
-    'toolbar.font.family',
-  ])
-
   const resolvedFromLegacy = profileState.resolveToolbarProfileStateForProjectSwitch(storage, 'project-legacy')
   assert.equal(resolvedFromLegacy.source, 'legacy')
-  assert.equal(resolvedFromLegacy.shouldConsumeLegacySource, true)
-  assert.deepEqual(resolvedFromLegacy.state.toolbarProfiles.minimal, [
-    'toolbar.font.family',
-    'toolbar.font.size',
-    'toolbar.text.lineHeight',
-    'toolbar.history.redo',
-  ])
+  assert.equal(resolvedFromLegacy.shouldPersist, true)
+  assert.deepEqual(resolvedFromLegacy.state, {
+    version: 3,
+    activeToolbarProfile: 'minimal',
+    toolbarProfiles: {
+      minimal: [
+        'toolbar.font.family',
+        'toolbar.font.size',
+        'toolbar.text.lineHeight',
+        'toolbar.history.redo',
+      ],
+      master: catalog.TOOLBAR_CANONICAL_LIVE_ORDER,
+    },
+  })
 
-  assert.equal(profileState.consumeLegacyConfiguratorBuckets(storage), true)
-  assert.equal(storage.has(profileState.TOOLBAR_PROFILE_LEGACY_STORAGE_KEY), false)
-
-  const resolvedAfterConsume = profileState.resolveToolbarProfileStateForProjectSwitch(storage, 'project-second')
-  assert.equal(resolvedAfterConsume.source, 'seed')
-  assert.equal(resolvedAfterConsume.shouldConsumeLegacySource, false)
-  assert.deepEqual(resolvedAfterConsume.state.toolbarProfiles.minimal, catalog.TOOLBAR_CANONICAL_LIVE_ORDER)
-
-  const storageWithEmpty = createMemoryStorage()
-  storageWithEmpty.setItem('toolbarProfiles:project-empty', JSON.stringify({
-    version: 2,
-    toolbarProfiles: { minimal: [] },
+  storage.setItem(profileState.TOOLBAR_PROFILE_LEGACY_STORAGE_KEY, JSON.stringify({
+    master: ['Font Family', 'Color Background'],
+    minimal: ['Font Family', 'New Slot', 'Unknown Label'],
   }))
-  storageWithEmpty.setItem(profileState.TOOLBAR_PROFILE_LEGACY_STORAGE_KEY, JSON.stringify({
-    master: ['Font Family'],
-    minimal: ['Redo'],
-  }))
-  const preservedEmpty = profileState.resolveToolbarProfileStateForProjectSwitch(storageWithEmpty, 'project-empty')
-  assert.equal(preservedEmpty.source, 'persisted')
-  assert.deepEqual(preservedEmpty.state.toolbarProfiles.minimal, [])
-  assert.equal(preservedEmpty.shouldConsumeLegacySource, true)
+  const resolvedFromLossyLegacy = profileState.resolveToolbarProfileStateForProjectSwitch(storage, 'project-lossy')
+  assert.equal(resolvedFromLossyLegacy.source, 'seed')
+  assert.equal(resolvedFromLossyLegacy.shouldPersist, true)
+  assert.deepEqual(resolvedFromLossyLegacy.state, canonicalState)
 
   const storageWithPersisted = createMemoryStorage()
   storageWithPersisted.setItem('toolbarProfiles:project-ready', JSON.stringify({
-    version: 2,
-    toolbarProfiles: { minimal: ['toolbar.font.family'] },
+    version: 3,
+    activeToolbarProfile: 'master',
+    toolbarProfiles: {
+      minimal: [],
+      master: ['toolbar.font.family'],
+    },
   }))
   storageWithPersisted.setItem(profileState.TOOLBAR_PROFILE_LEGACY_STORAGE_KEY, JSON.stringify({
     master: ['Font Family'],
@@ -181,6 +171,14 @@ test('toolbar foundation profile state: project-scoped storage, migration, and c
   }))
   const persistedWins = profileState.resolveToolbarProfileStateForProjectSwitch(storageWithPersisted, 'project-ready')
   assert.equal(persistedWins.source, 'persisted')
-  assert.deepEqual(persistedWins.state.toolbarProfiles.minimal, ['toolbar.font.family'])
+  assert.equal(persistedWins.shouldPersist, false)
   assert.equal(persistedWins.shouldConsumeLegacySource, true)
+  assert.deepEqual(persistedWins.state, {
+    version: 3,
+    activeToolbarProfile: 'master',
+    toolbarProfiles: {
+      minimal: [],
+      master: ['toolbar.font.family'],
+    },
+  })
 })

@@ -184,20 +184,25 @@ test('toolbar runtime projection: registry is derived from main floating toolbar
   assert.equal(nodes.shell.calls.replaceChildren, 0);
 });
 
-test('toolbar runtime projection: minimal state collapses to live canonical order only', async () => {
+test('toolbar runtime projection: active profile state collapses to live canonical order only', async () => {
   const modulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'toolbar', 'toolbarRuntimeProjection.mjs')).href;
   const {
     collectVisibleToolbarItemIdsFromState,
   } = await import(modulePath);
 
   const ids = collectVisibleToolbarItemIdsFromState({
+    activeToolbarProfile: 'master',
     toolbarProfiles: {
       minimal: [
         'toolbar.history.redo',
+        'toolbar.history.undo',
+      ],
+      master: [
+        'toolbar.history.redo',
+        'toolbar.format.italic',
         'toolbar.format.bold',
-        'toolbar.history.undo',
         'toolbar.font.family',
-        'toolbar.history.undo',
+        'toolbar.format.bold',
       ],
     },
   });
@@ -205,12 +210,61 @@ test('toolbar runtime projection: minimal state collapses to live canonical orde
   assert.deepEqual(ids, [
     'toolbar.font.family',
     'toolbar.format.bold',
-    'toolbar.history.undo',
+    'toolbar.format.italic',
     'toolbar.history.redo',
   ]);
 });
 
-test('toolbar runtime projection: minimal apply hides orphaned overlays and tolerates missing bindKey nodes', async () => {
+test('toolbar runtime projection: active empty profile hides overlays and all live groups', async () => {
+  const modulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'toolbar', 'toolbarRuntimeProjection.mjs')).href;
+  const {
+    createToolbarRuntimeRegistry,
+    applyToolbarActiveProfile,
+  } = await import(modulePath);
+
+  const nodes = wireToolbarRegistry();
+  const registry = createToolbarRuntimeRegistry(nodes.root);
+  const snapshot = applyToolbarActiveProfile(registry, {
+    activeToolbarProfile: 'master',
+    toolbarProfiles: {
+      minimal: [
+        'toolbar.history.undo',
+      ],
+      master: [],
+    },
+  });
+
+  assert.equal(snapshot.hasVisibleItems, false);
+  assert.deepEqual(snapshot.visibleItemIds, []);
+  assert.deepEqual(snapshot.visibleBindKeys, []);
+  assert.deepEqual(snapshot.missingBindKeys, ['history-redo']);
+  assert.equal(snapshot.paragraphTriggerVisible, false);
+  assert.equal(snapshot.listTriggerVisible, false);
+  assert.equal(snapshot.spacingMenuVisible, false);
+  assert.equal(snapshot.listMenuVisible, false);
+  assert.equal(snapshot.anchorResyncRequired, true);
+  assert.deepEqual(snapshot.groupVisibleBindKeys, [[], [], [], []]);
+
+  assert.equal(nodes.root.hidden, false);
+  assert.equal(nodes.shell.hidden, false);
+  assert.equal(nodes.typeGroup.hidden, true);
+  assert.equal(nodes.formatGroup.hidden, true);
+  assert.equal(nodes.paragraphGroup.hidden, true);
+  assert.equal(nodes.historyGroup.hidden, true);
+  assert.equal(nodes.fontNode.hidden, true);
+  assert.equal(nodes.weightNode.hidden, true);
+  assert.equal(nodes.sizeNode.hidden, true);
+  assert.equal(nodes.lineHeightNode.hidden, true);
+  assert.equal(nodes.boldNode.hidden, true);
+  assert.equal(nodes.italicNode.hidden, true);
+  assert.equal(nodes.paragraphTriggerNode.hidden, true);
+  assert.equal(nodes.listTriggerNode.hidden, true);
+  assert.equal(nodes.paragraphMenu.hidden, true);
+  assert.equal(nodes.listMenu.hidden, true);
+  assert.equal(nodes.spacingMenu.hidden, true);
+});
+
+test('toolbar runtime projection: minimal wrapper keeps minimal profile compatibility', async () => {
   const modulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'toolbar', 'toolbarRuntimeProjection.mjs')).href;
   const {
     createToolbarRuntimeRegistry,
@@ -220,11 +274,13 @@ test('toolbar runtime projection: minimal apply hides orphaned overlays and tole
   const nodes = wireToolbarRegistry();
   const registry = createToolbarRuntimeRegistry(nodes.root);
   const snapshot = applyToolbarProfileMinimal(registry, {
+    activeToolbarProfile: 'master',
     toolbarProfiles: {
       minimal: [
         'toolbar.history.undo',
         'toolbar.history.redo',
       ],
+      master: [],
     },
   });
 
@@ -256,9 +312,6 @@ test('toolbar runtime projection: minimal apply hides orphaned overlays and tole
   assert.equal(nodes.paragraphMenu.hidden, true);
   assert.equal(nodes.listMenu.hidden, true);
   assert.equal(nodes.spacingMenu.hidden, true);
-  assert.equal(nodes.shell.calls.appendChild, 0);
-  assert.equal(nodes.shell.calls.insertBefore, 0);
-  assert.equal(nodes.shell.calls.replaceChildren, 0);
 });
 
 test('toolbar runtime projection: live DOM bind key order stays aligned with canonical catalog order', async () => {

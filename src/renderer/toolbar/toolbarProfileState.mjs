@@ -15,20 +15,71 @@ function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-function freezeMinimalState(minimal) {
-  const minimalIds = Object.freeze([...minimal]);
+function freezeToolbarProfiles(minimal, master) {
   const toolbarProfiles = Object.freeze({
-    minimal: minimalIds,
+    minimal: Object.freeze([...minimal]),
+    master: Object.freeze([...master]),
   });
   return Object.freeze({
-    version: 2,
+    version: 3,
+    activeToolbarProfile: 'minimal',
     toolbarProfiles,
   });
 }
 
-function normalizeMinimalIdsFromAny(values) {
-  const available = new Set(Array.isArray(values) ? values.map(normalizeString).filter(Boolean) : []);
-  return TOOLBAR_CANONICAL_LIVE_ORDER.filter((itemId) => available.has(itemId));
+function freezeToolbarProfileState(activeToolbarProfile, minimal, master) {
+  const normalizedActiveToolbarProfile = activeToolbarProfile === 'master' ? 'master' : 'minimal';
+  return Object.freeze({
+    version: 3,
+    activeToolbarProfile: normalizedActiveToolbarProfile,
+    toolbarProfiles: Object.freeze({
+      minimal: Object.freeze([...minimal]),
+      master: Object.freeze([...master]),
+    }),
+  });
+}
+
+function normalizeToolbarProfileIds(values) {
+  if (!Array.isArray(values)) return [];
+  const seen = new Set();
+  const result = [];
+  for (const value of values) {
+    const itemId = normalizeString(value);
+    if (!itemId || !isLiveToolbarFunctionId(itemId) || seen.has(itemId)) continue;
+    seen.add(itemId);
+    result.push(itemId);
+  }
+  return result;
+}
+
+function normalizeToolbarProfileStateV3(raw) {
+  if (!isPlainObject(raw) || raw.version !== 3) return null;
+  const toolbarProfiles = isPlainObject(raw.toolbarProfiles) ? raw.toolbarProfiles : null;
+  if (!toolbarProfiles || !Array.isArray(toolbarProfiles.minimal) || !Array.isArray(toolbarProfiles.master)) {
+    return null;
+  }
+  return freezeToolbarProfileState(
+    normalizeString(raw.activeToolbarProfile) === 'master' ? 'master' : 'minimal',
+    normalizeToolbarProfileIds(toolbarProfiles.minimal),
+    normalizeToolbarProfileIds(toolbarProfiles.master),
+  );
+}
+
+function normalizeToolbarProfileStateV2(raw) {
+  if (!isPlainObject(raw) || raw.version !== 2) return null;
+  const toolbarProfiles = isPlainObject(raw.toolbarProfiles) ? raw.toolbarProfiles : null;
+  if (!toolbarProfiles || !Array.isArray(toolbarProfiles.minimal)) {
+    return null;
+  }
+  return freezeToolbarProfileState(
+    'minimal',
+    normalizeToolbarProfileIds(toolbarProfiles.minimal),
+    TOOLBAR_CANONICAL_LIVE_ORDER,
+  );
+}
+
+function normalizePersistedToolbarProfileState(raw) {
+  return normalizeToolbarProfileStateV3(raw) || normalizeToolbarProfileStateV2(raw);
 }
 
 function normalizeLegacyBucketLabels(value) {
@@ -37,63 +88,12 @@ function normalizeLegacyBucketLabels(value) {
   }
 
   return {
-    master: Array.isArray(value.master)
-      ? value.master.map(normalizeString).filter(Boolean)
-      : [],
-    minimal: Array.isArray(value.minimal)
-      ? value.minimal.map(normalizeString).filter(Boolean)
-      : [],
+    master: Array.isArray(value.master) ? value.master.map(normalizeString).filter(Boolean) : [],
+    minimal: Array.isArray(value.minimal) ? value.minimal.map(normalizeString).filter(Boolean) : [],
   };
 }
 
-export const TOOLBAR_PROFILE_STATE_VERSION = 2;
-export const TOOLBAR_PROFILE_STORAGE_PREFIX = 'toolbarProfiles:';
-export const TOOLBAR_PROFILE_LEGACY_STORAGE_KEY = 'yalkenConfiguratorBuckets';
-
-export function normalizeProjectId(projectId) {
-  return normalizeString(projectId);
-}
-
-export function getToolbarProfileStorageKey(projectId) {
-  const normalizedProjectId = normalizeProjectId(projectId);
-  return normalizedProjectId ? `${TOOLBAR_PROFILE_STORAGE_PREFIX}${normalizedProjectId}` : '';
-}
-
-export function createToolbarProfileState(minimalIds = []) {
-  return freezeMinimalState(normalizeMinimalIdsFromAny(minimalIds));
-}
-
-export function createCanonicalMinimalToolbarProfileState() {
-  return freezeMinimalState(TOOLBAR_CANONICAL_LIVE_ORDER);
-}
-
-export function createEphemeralBaselineToolbarProfileState() {
-  return createCanonicalMinimalToolbarProfileState();
-}
-
-export function normalizeToolbarProfileState(raw) {
-  if (!isPlainObject(raw) || raw.version !== TOOLBAR_PROFILE_STATE_VERSION) {
-    return null;
-  }
-
-  const toolbarProfiles = isPlainObject(raw.toolbarProfiles) ? raw.toolbarProfiles : null;
-  if (!toolbarProfiles) {
-    return null;
-  }
-
-  if (!Array.isArray(toolbarProfiles.minimal)) {
-    return null;
-  }
-
-  return freezeMinimalState(normalizeMinimalIdsFromAny(toolbarProfiles.minimal));
-}
-
-export function serializeToolbarProfileState(state) {
-  const normalized = normalizeToolbarProfileState(state);
-  return normalized ? JSON.stringify(normalized) : '';
-}
-
-export function readToolbarProfileState(storage, projectId) {
+function readToolbarProfileStateRecord(storage, projectId) {
   const storageKey = getToolbarProfileStorageKey(projectId);
   if (!storageKey || !storage || typeof storage.getItem !== 'function') return null;
 
@@ -103,36 +103,30 @@ export function readToolbarProfileState(storage, projectId) {
   } catch {
     return null;
   }
+
   if (raw == null || raw === '') return null;
 
   try {
     const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-    return normalizeToolbarProfileState(parsed);
+    const version = isPlainObject(parsed) && typeof parsed.version === 'number' ? parsed.version : null;
+    const state = normalizePersistedToolbarProfileState(parsed);
+    return {
+      exists: true,
+      raw,
+      version,
+      state,
+    };
   } catch {
-    return null;
+    return {
+      exists: true,
+      raw,
+      version: null,
+      state: null,
+    };
   }
 }
 
-export function writeToolbarProfileState(storage, projectId, state) {
-  const storageKey = getToolbarProfileStorageKey(projectId);
-  if (!storageKey || !storage || typeof storage.setItem !== 'function') {
-    return false;
-  }
-
-  const normalized = normalizeToolbarProfileState(state);
-  if (!normalized) {
-    return false;
-  }
-
-  try {
-    storage.setItem(storageKey, JSON.stringify(normalized));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export function readLegacyConfiguratorBuckets(storage, legacyStorageKey = TOOLBAR_PROFILE_LEGACY_STORAGE_KEY) {
+function readLegacyConfiguratorBucketRecord(storage, legacyStorageKey = TOOLBAR_PROFILE_LEGACY_STORAGE_KEY) {
   const storageKey = typeof legacyStorageKey === 'string' ? legacyStorageKey.trim() : '';
   if (!storageKey || !storage || typeof storage.getItem !== 'function') {
     return {
@@ -177,6 +171,114 @@ export function readLegacyConfiguratorBuckets(storage, legacyStorageKey = TOOLBA
   }
 }
 
+function createCanonicalToolbarProfileState() {
+  return freezeToolbarProfiles(TOOLBAR_CANONICAL_LIVE_ORDER, TOOLBAR_CANONICAL_LIVE_ORDER);
+}
+
+function createToolbarProfileStateRecord({
+  activeToolbarProfile = 'minimal',
+  minimalIds = [],
+  masterIds = [],
+} = {}) {
+  return freezeToolbarProfileState(
+    activeToolbarProfile,
+    normalizeToolbarProfileIds(minimalIds),
+    normalizeToolbarProfileIds(masterIds),
+  );
+}
+
+export const TOOLBAR_PROFILE_STATE_VERSION = 3;
+export const TOOLBAR_PROFILE_STORAGE_PREFIX = 'toolbarProfiles:';
+export const TOOLBAR_PROFILE_LEGACY_STORAGE_KEY = 'yalkenConfiguratorBuckets';
+
+export function normalizeProjectId(projectId) {
+  return normalizeString(projectId);
+}
+
+export function getToolbarProfileStorageKey(projectId) {
+  const normalizedProjectId = normalizeProjectId(projectId);
+  return normalizedProjectId ? `${TOOLBAR_PROFILE_STORAGE_PREFIX}${normalizedProjectId}` : '';
+}
+
+export function createToolbarProfileStateSnapshot({
+  activeToolbarProfile = 'minimal',
+  minimalIds = [],
+  masterIds = [],
+} = {}) {
+  return createToolbarProfileStateRecord({
+    activeToolbarProfile,
+    minimalIds,
+    masterIds,
+  });
+}
+
+export function createToolbarProfileState(input = []) {
+  if (Array.isArray(input)) {
+    return createToolbarProfileStateSnapshot({ minimalIds: input });
+  }
+  if (isPlainObject(input)) {
+    return createToolbarProfileStateSnapshot({
+      activeToolbarProfile: input.activeToolbarProfile,
+      minimalIds: Array.isArray(input.minimalIds)
+        ? input.minimalIds
+        : Array.isArray(input.toolbarProfiles?.minimal)
+          ? input.toolbarProfiles.minimal
+          : [],
+      masterIds: Array.isArray(input.masterIds)
+        ? input.masterIds
+        : Array.isArray(input.toolbarProfiles?.master)
+          ? input.toolbarProfiles.master
+          : [],
+    });
+  }
+  return createToolbarProfileStateSnapshot({ minimalIds: [] });
+}
+
+export function createCanonicalMinimalToolbarProfileState() {
+  return createCanonicalToolbarProfileState();
+}
+
+export function createEphemeralBaselineToolbarProfileState() {
+  return createCanonicalToolbarProfileState();
+}
+
+export function normalizeToolbarProfileState(raw) {
+  return normalizePersistedToolbarProfileState(raw);
+}
+
+export function serializeToolbarProfileState(state) {
+  const normalized = normalizeToolbarProfileState(state);
+  return normalized ? JSON.stringify(normalized) : '';
+}
+
+export function readToolbarProfileState(storage, projectId) {
+  const record = readToolbarProfileStateRecord(storage, projectId);
+  return record && record.state ? record.state : null;
+}
+
+export function writeToolbarProfileState(storage, projectId, state) {
+  const storageKey = getToolbarProfileStorageKey(projectId);
+  if (!storageKey || !storage || typeof storage.setItem !== 'function') {
+    return false;
+  }
+
+  const normalized = normalizeToolbarProfileState(state);
+  if (!normalized) {
+    return false;
+  }
+
+  try {
+    storage.setItem(storageKey, JSON.stringify(normalized));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function readLegacyConfiguratorBuckets(storage, legacyStorageKey = TOOLBAR_PROFILE_LEGACY_STORAGE_KEY) {
+  return readLegacyConfiguratorBucketRecord(storage, legacyStorageKey);
+}
+
 export function consumeLegacyConfiguratorBuckets(storage, legacyStorageKey = TOOLBAR_PROFILE_LEGACY_STORAGE_KEY) {
   const storageKey = typeof legacyStorageKey === 'string' ? legacyStorageKey.trim() : '';
   if (!storageKey || !storage || typeof storage.removeItem !== 'function') {
@@ -197,24 +299,22 @@ export function migrateLegacyConfiguratorBuckets(rawLegacyBuckets) {
   const matchedIds = [];
   const seenIds = new Set();
   const droppedLabels = [];
-  let exactMatch = true;
+  let hadDuplicateMatches = false;
 
   for (const legacyLabel of legacyLabels) {
     if (TOOLBAR_LEGACY_DROP_LABELS.includes(legacyLabel)) {
       droppedLabels.push(legacyLabel);
-      exactMatch = false;
       continue;
     }
 
     const itemId = resolveLegacyToolbarFunctionItemId(legacyLabel);
     if (!itemId) {
       droppedLabels.push(legacyLabel);
-      exactMatch = false;
       continue;
     }
 
     if (seenIds.has(itemId)) {
-      exactMatch = false;
+      hadDuplicateMatches = true;
       continue;
     }
 
@@ -222,26 +322,32 @@ export function migrateLegacyConfiguratorBuckets(rawLegacyBuckets) {
     matchedIds.push(itemId);
   }
 
-  const normalizedMinimal = normalizeMinimalIdsFromAny(matchedIds);
-  const canonicalMatchedIds = matchedIds.filter((itemId) => isLiveToolbarFunctionId(itemId));
-  const isCanonicalOrder = canonicalMatchedIds.length === normalizedMinimal.length
-    && canonicalMatchedIds.every((itemId, index) => normalizedMinimal[index] === itemId);
+  const minimal = normalizeToolbarProfileIds(matchedIds);
   const hasSource = legacyLabels.length > 0;
+  const canonicalMinimal = createCanonicalToolbarProfileState();
+  const isExact = hasSource
+    && matchedIds.length > 0
+    && droppedLabels.length === 0
+    && !hadDuplicateMatches
+    && minimal.length === matchedIds.length
+    && minimal.every((itemId, index) => matchedIds[index] === itemId);
   const isLossy = hasSource
     && (
       droppedLabels.length > 0
-    || normalizedMinimal.length !== matchedIds.length
-    || !isCanonicalOrder
+      || minimal.length !== matchedIds.length
+      || minimal.length === 0
+      || !isExact
     );
-  const isExact = hasSource && !isLossy && normalizedMinimal.length > 0;
 
   return {
     hasSource,
     exactMatch: isExact,
     isLossy,
     droppedLabels,
-    matchedIds: Object.freeze([...matchedIds]),
-    state: freezeMinimalState(normalizedMinimal),
+    matchedIds: Object.freeze([...minimal]),
+    state: isExact
+      ? freezeToolbarProfileState('minimal', minimal, TOOLBAR_CANONICAL_LIVE_ORDER)
+      : canonicalMinimal,
   };
 }
 
@@ -261,15 +367,21 @@ export function resolveToolbarProfileStateForProjectSwitch(storage, projectId, o
     };
   }
 
-  const storedState = readToolbarProfileState(storage, normalizedProjectId);
-  if (storedState) {
+  const storedRecord = readToolbarProfileStateRecord(storage, normalizedProjectId);
+  if (storedRecord && storedRecord.state) {
     const legacyRead = readLegacyConfiguratorBuckets(storage, legacyStorageKey);
+    const serializedState = JSON.stringify(storedRecord.state);
+    const rawJson = typeof storedRecord.raw === 'string' ? storedRecord.raw : JSON.stringify(storedRecord.raw);
+    const shouldPersist = storedRecord.version !== 3 || rawJson !== serializedState;
     return {
       source: 'persisted',
-      shouldPersist: false,
+      shouldPersist,
       shouldConsumeLegacySource: legacyRead.exists,
-      state: storedState,
-      migration: null,
+      state: storedRecord.state,
+      migration: storedRecord.version === 3 ? null : {
+        fromVersion: storedRecord.version ?? null,
+        toVersion: 3,
+      },
     };
   }
 
@@ -289,7 +401,7 @@ export function resolveToolbarProfileStateForProjectSwitch(storage, projectId, o
       source: 'seed',
       shouldPersist: true,
       shouldConsumeLegacySource: true,
-      state: createCanonicalMinimalToolbarProfileState(),
+      state: createCanonicalToolbarProfileState(),
       migration,
     };
   }
@@ -298,7 +410,7 @@ export function resolveToolbarProfileStateForProjectSwitch(storage, projectId, o
     source: 'seed',
     shouldPersist: true,
     shouldConsumeLegacySource: false,
-    state: createCanonicalMinimalToolbarProfileState(),
+    state: createCanonicalToolbarProfileState(),
     migration: null,
   };
 }
