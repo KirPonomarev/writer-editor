@@ -10,6 +10,24 @@ function runEditorCommand(editor, commandName) {
   }
 }
 
+function runFocusedEditorCommand(editor, commandName, payload = undefined) {
+  if (!editor || typeof editor.chain !== 'function') {
+    return null
+  }
+
+  const chain = editor.chain().focus()
+  if (!chain || typeof chain[commandName] !== 'function' || typeof chain.run !== 'function') {
+    return null
+  }
+
+  const nextChain = payload === undefined ? chain[commandName]() : chain[commandName](payload)
+  return {
+    performed: Boolean(nextChain.run()),
+    action: commandName,
+    reason: null,
+  }
+}
+
 function readEditorFormattingState(editor) {
   if (!editor || typeof editor.isActive !== 'function') {
     return {
@@ -40,6 +58,14 @@ function runEditorFormatCommand(editor, commandName) {
   if (commandName === 'clearList') {
     const state = readEditorFormattingState(editor)
     if (state.bulletList && typeof editor.commands.toggleBulletList === 'function') {
+      const focusedResult = runFocusedEditorCommand(editor, 'toggleBulletList')
+      if (focusedResult) {
+        return {
+          performed: focusedResult.performed,
+          action: commandName,
+          reason: focusedResult.reason,
+        }
+      }
       return {
         performed: Boolean(editor.commands.toggleBulletList()),
         action: commandName,
@@ -47,6 +73,14 @@ function runEditorFormatCommand(editor, commandName) {
       }
     }
     if (state.orderedList && typeof editor.commands.toggleOrderedList === 'function') {
+      const focusedResult = runFocusedEditorCommand(editor, 'toggleOrderedList')
+      if (focusedResult) {
+        return {
+          performed: focusedResult.performed,
+          action: commandName,
+          reason: focusedResult.reason,
+        }
+      }
       return {
         performed: Boolean(editor.commands.toggleOrderedList()),
         action: commandName,
@@ -56,6 +90,10 @@ function runEditorFormatCommand(editor, commandName) {
     return { performed: false, action: commandName, reason: 'LIST_NOT_ACTIVE' }
   }
 
+  const focusedResult = runFocusedEditorCommand(editor, commandName)
+  if (focusedResult) {
+    return focusedResult
+  }
   return runEditorCommand(editor, commandName)
 }
 
@@ -97,7 +135,7 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
     return { handled: true, result: runBridgeCallback(runtimeHandlers.formatAlignLeft, commandId) }
   }
   if (commandId === 'cmd.project.format.toggleUnderline') {
-    return { handled: true, result: runEditorCommand(runtimeBridge.editor, 'toggleUnderline') }
+    return { handled: true, result: runEditorFormatCommand(runtimeBridge.editor, 'toggleUnderline') }
   }
   if (commandId === 'cmd.project.format.textColorPicker') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.formatTextColorPicker, commandId, commandId, payload) }

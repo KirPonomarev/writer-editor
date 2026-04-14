@@ -210,15 +210,23 @@ function runTiptapStructuredCharacterStyle(optionId) {
 
   let performed = false
   if (optionId === 'character-emphasis') {
-    if (typeof currentEditorInstance.commands.toggleItalic !== 'function') {
+    const chainPerformed = runFocusedChainCommand('toggleItalic')
+    if (chainPerformed !== null) {
+      performed = chainPerformed
+    } else if (typeof currentEditorInstance.commands.toggleItalic !== 'function') {
       return createStructuredStyleResult('applyCharacterStyle', false, 'FORMAT_COMMAND_UNSUPPORTED', optionId)
+    } else {
+      performed = Boolean(currentEditorInstance.commands.toggleItalic())
     }
-    performed = Boolean(currentEditorInstance.commands.toggleItalic())
   } else {
-    if (typeof currentEditorInstance.commands.toggleCode !== 'function') {
+    const chainPerformed = runFocusedChainCommand('toggleCode')
+    if (chainPerformed !== null) {
+      performed = chainPerformed
+    } else if (typeof currentEditorInstance.commands.toggleCode !== 'function') {
       return createStructuredStyleResult('applyCharacterStyle', false, 'FORMAT_COMMAND_UNSUPPORTED', optionId)
+    } else {
+      performed = Boolean(currentEditorInstance.commands.toggleCode())
     }
-    performed = Boolean(currentEditorInstance.commands.toggleCode())
   }
 
   notifyFormattingStateChange()
@@ -290,6 +298,89 @@ function readFormattingState(editor) {
 function notifyFormattingStateChange() {
   if (typeof currentFormattingStateHandler !== 'function') return
   currentFormattingStateHandler(readFormattingState(currentEditorInstance))
+}
+
+function getTiptapDocumentContentSize(editor) {
+  const doc = editor && editor.state ? editor.state.doc : null
+  return doc && doc.content ? Math.max(1, doc.content.size) : 1
+}
+
+function getTextOffsetForDocumentPosition(editor, position) {
+  const doc = editor && editor.state ? editor.state.doc : null
+  if (!doc || typeof doc.textBetween !== 'function') {
+    return 0
+  }
+  const boundedPosition = Math.max(0, Math.min(Number(position) || 0, getTiptapDocumentContentSize(editor)))
+  try {
+    return doc.textBetween(0, boundedPosition, '\n', '\0').length
+  } catch {
+    return 0
+  }
+}
+
+function getDocumentPositionForTextOffset(editor, offset) {
+  const doc = editor && editor.state ? editor.state.doc : null
+  if (!doc || typeof doc.descendants !== 'function') {
+    return 1
+  }
+
+  const targetOffset = Math.max(0, Math.floor(Number(offset) || 0))
+  let plainOffset = 0
+  let sawTextblock = false
+  let resolvedPosition = 1
+  let matched = false
+
+  doc.descendants((node, pos) => {
+    if (!node || !node.isTextblock) {
+      return undefined
+    }
+
+    const blockStart = pos + 1
+    const blockText = typeof node.textContent === 'string' ? node.textContent : ''
+
+    if (sawTextblock) {
+      if (targetOffset === plainOffset) {
+        resolvedPosition = blockStart
+        matched = true
+        return false
+      }
+      plainOffset += 1
+      if (targetOffset < plainOffset) {
+        resolvedPosition = blockStart
+        matched = true
+        return false
+      }
+    }
+
+    sawTextblock = true
+
+    if (targetOffset <= plainOffset + blockText.length) {
+      resolvedPosition = blockStart + (targetOffset - plainOffset)
+      matched = true
+      return false
+    }
+
+    plainOffset += blockText.length
+    resolvedPosition = blockStart + blockText.length
+    return undefined
+  })
+
+  if (matched) {
+    return resolvedPosition
+  }
+  return getTiptapDocumentContentSize(editor)
+}
+
+function runFocusedChainCommand(commandName, payload = undefined) {
+  if (!currentEditorInstance || typeof currentEditorInstance.chain !== 'function') {
+    return null
+  }
+  const chain = currentEditorInstance.chain().focus()
+  if (!chain || typeof chain[commandName] !== 'function' || typeof chain.run !== 'function') {
+    return null
+  }
+  const nextChain = payload === undefined ? chain[commandName]() : chain[commandName](payload)
+  return Boolean(nextChain.run())
 }
 
 function createIpcSession(editor, options = {}) {
@@ -495,6 +586,62 @@ export function setTiptapFormattingStateHandler(handler = null) {
   notifyFormattingStateChange()
 }
 
+export function focusTiptapSurface(position = 'current') {
+  if (!currentEditorInstance) {
+    return { performed: false, action: 'focus', reason: 'EDITOR_UNAVAILABLE', position }
+  }
+
+  const normalizedPosition = position === 'start' || position === 'end' ? position : null
+  const focusCommand = currentEditorInstance.commands && typeof currentEditorInstance.commands.focus === 'function'
+    ? currentEditorInstance.commands.focus
+    : null
+  if (!focusCommand) {
+    return { performed: false, action: 'focus', reason: 'COMMAND_UNAVAILABLE', position }
+  }
+
+  const performed = normalizedPosition
+    ? Boolean(focusCommand(normalizedPosition))
+    : Boolean(focusCommand())
+  notifyFormattingStateChange()
+  return { performed, action: 'focus', reason: performed ? null : 'COMMAND_RETURNED_FALSE', position }
+}
+
+export function getTiptapSelectionOffsets() {
+  if (!currentEditorInstance || !currentEditorInstance.state || !currentEditorInstance.state.selection) {
+    return { start: 0, end: 0 }
+  }
+
+  const { from, to } = currentEditorInstance.state.selection
+  const start = getTextOffsetForDocumentPosition(currentEditorInstance, Math.min(from, to))
+  const end = getTextOffsetForDocumentPosition(currentEditorInstance, Math.max(from, to))
+  return { start, end }
+}
+
+export function setTiptapSelectionOffsets(start = 0, end = start) {
+  if (!currentEditorInstance || !currentEditorInstance.commands) {
+    return { performed: false, action: 'setSelection', reason: 'EDITOR_UNAVAILABLE' }
+  }
+
+  const boundedStart = getDocumentPositionForTextOffset(currentEditorInstance, Math.min(start, end))
+  const boundedEnd = getDocumentPositionForTextOffset(currentEditorInstance, Math.max(start, end))
+  const chainResult = runFocusedChainCommand('setTextSelection', { from: boundedStart, to: boundedEnd })
+  if (chainResult !== null) {
+    notifyFormattingStateChange()
+    return { performed: chainResult, action: 'setSelection', reason: chainResult ? null : 'COMMAND_RETURNED_FALSE' }
+  }
+
+  if (typeof currentEditorInstance.commands.setTextSelection !== 'function') {
+    return { performed: false, action: 'setSelection', reason: 'COMMAND_UNAVAILABLE' }
+  }
+
+  const performed = Boolean(currentEditorInstance.commands.setTextSelection({ from: boundedStart, to: boundedEnd }))
+  if (performed && typeof currentEditorInstance.commands.focus === 'function') {
+    currentEditorInstance.commands.focus()
+  }
+  notifyFormattingStateChange()
+  return { performed, action: 'setSelection', reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
+}
+
 export function getTiptapPlainText() {
   return readEditorText(currentEditorInstance)
 }
@@ -533,12 +680,18 @@ export function runTiptapFormatCommand(commandName, commandPayload = undefined) 
   if (commandName === 'clearList') {
     const state = readFormattingState(currentEditorInstance)
     if (state.bulletList && typeof currentEditorInstance.commands.toggleBulletList === 'function') {
-      const performed = Boolean(currentEditorInstance.commands.toggleBulletList())
+      const chainPerformed = runFocusedChainCommand('toggleBulletList')
+      const performed = chainPerformed !== null
+        ? chainPerformed
+        : Boolean(currentEditorInstance.commands.toggleBulletList())
       notifyFormattingStateChange()
       return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
     }
     if (state.orderedList && typeof currentEditorInstance.commands.toggleOrderedList === 'function') {
-      const performed = Boolean(currentEditorInstance.commands.toggleOrderedList())
+      const chainPerformed = runFocusedChainCommand('toggleOrderedList')
+      const performed = chainPerformed !== null
+        ? chainPerformed
+        : Boolean(currentEditorInstance.commands.toggleOrderedList())
       notifyFormattingStateChange()
       return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
     }
@@ -546,12 +699,17 @@ export function runTiptapFormatCommand(commandName, commandPayload = undefined) 
   }
 
   if (commandName === 'toggleUnderline') {
+    const performed = runFocusedChainCommand('toggleUnderline')
+    if (performed !== null) {
+      notifyFormattingStateChange()
+      return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
+    }
     if (typeof currentEditorInstance.commands.toggleUnderline !== 'function') {
       return { performed: false, action: commandName, reason: 'FORMAT_COMMAND_UNSUPPORTED' }
     }
-    const performed = Boolean(currentEditorInstance.commands.toggleUnderline())
+    const fallbackPerformed = Boolean(currentEditorInstance.commands.toggleUnderline())
     notifyFormattingStateChange()
-    return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
+    return { performed: fallbackPerformed, action: commandName, reason: fallbackPerformed ? null : 'COMMAND_RETURNED_FALSE' }
   }
 
   if (commandName === 'setColor') {
@@ -685,10 +843,10 @@ export function runTiptapFormatCommand(commandName, commandPayload = undefined) 
   }
 
   const commandMap = {
-    toggleBold: () => currentEditorInstance.commands.toggleBold(),
-    toggleItalic: () => currentEditorInstance.commands.toggleItalic(),
-    toggleBulletList: () => currentEditorInstance.commands.toggleBulletList(),
-    toggleOrderedList: () => currentEditorInstance.commands.toggleOrderedList(),
+    toggleBold: () => runFocusedChainCommand('toggleBold'),
+    toggleItalic: () => runFocusedChainCommand('toggleItalic'),
+    toggleBulletList: () => runFocusedChainCommand('toggleBulletList'),
+    toggleOrderedList: () => runFocusedChainCommand('toggleOrderedList'),
   }
 
   const command = commandMap[commandName]
@@ -696,7 +854,8 @@ export function runTiptapFormatCommand(commandName, commandPayload = undefined) 
     return { performed: false, action: commandName, reason: 'FORMAT_COMMAND_UNSUPPORTED' }
   }
 
-  const performed = Boolean(command())
+  const result = command()
+  const performed = typeof result === 'boolean' ? result : Boolean(result)
   notifyFormattingStateChange()
   return { performed, action: commandName, reason: performed ? null : 'COMMAND_RETURNED_FALSE' }
 }
