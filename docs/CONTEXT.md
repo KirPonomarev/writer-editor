@@ -54,6 +54,22 @@
 - security audit lane is standardized on repo mainline via generic semgrep runner and package script; generic scan is repeatable with zero findings and honest timeout reporting
 - test electron lane is ready and executed on current mainline with repeated pass runs
 
+### Toolbar configuration truth
+- toolbar configuration subsystem rebaselined to current repo truth
+- `TOOLBAR_CANONICAL_LIVE_ORDER` length is `17`
+- `TOOLBAR_PLANNED_IDS` is `[]`
+- `TOOLBAR_BLOCKED_IDS` exact order is:
+  - `toolbar.insert.image`
+  - `toolbar.proofing.spellcheck`
+  - `toolbar.proofing.grammar`
+- blocked reasons are explicit in catalog truth:
+  - image: `offline-first image asset pipeline not selected`
+  - spellcheck: `offline-first spellcheck dictionary policy not selected`
+  - grammar: `offline-first grammar engine not selected`
+- configurator `master` profile is visible in markup and profile switch flow
+- ordering is realized in runtime projection
+- old Wave C literal scope no longer matches current repo truth; truthful closure model is `Wave C1 + blocked decisions`
+
 ### Invariants
 - editor surface не источник истины,
 - локальная истина без network truth,

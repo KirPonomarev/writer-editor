@@ -10,6 +10,16 @@ const FAST_LANE_CONTRACT_TESTS = Object.freeze([
   'test/contracts/transition-exit-failsignal-token-wiring.contract.test.js',
 ]);
 
+const TOOLBAR_CLOSEOUT_TESTS = Object.freeze([
+  'test/unit/toolbar-profile-state.foundation.test.js',
+  'test/unit/toolbar-runtime-projection.helpers.test.js',
+  'test/unit/sector-m-toolbar-profile-switch.test.js',
+  'test/unit/sector-m-toolbar-profile-ordering.test.js',
+  'test/unit/toolbar-expansion-wave-c1.helpers.test.js',
+  'test/contracts/phase03-safe-reset-last-stable-foundation-state.contract.test.js',
+  'test/contracts/phase03-safe-reset-last-stable-artifact-state.contract.test.js',
+]);
+
 const FAST_LANE_FORBIDDEN_SEGMENTS = Object.freeze([
   'scripts/ops/run-wave.mjs',
   'scripts/guards/ops-current-wave-stop.mjs',
@@ -379,6 +389,47 @@ function runFastLane(rootDir, dryRun) {
   return tests.status ?? 1;
 }
 
+function readSkippedCount(stdout, stderr) {
+  const combined = `${String(stdout || '')}\n${String(stderr || '')}`;
+  const matches = [...combined.matchAll(/# skipped (\d+)/g)];
+  if (matches.length === 0) return 0;
+  const value = Number(matches[matches.length - 1][1]);
+  return Number.isInteger(value) ? value : 0;
+}
+
+function runToolbarCloseoutLane(rootDir, dryRun) {
+  const testsAbs = TOOLBAR_CLOSEOUT_TESTS
+    .map((item) => path.resolve(rootDir, item))
+    .sort();
+
+  if (dryRun) {
+    process.stdout.write(`${JSON.stringify({
+      mode: 'closeout',
+      failOnSkip: true,
+      testFiles: TOOLBAR_CLOSEOUT_TESTS.slice(),
+      command: [process.execPath, '--test', ...testsAbs].join(' '),
+    }, null, 2)}\n`);
+    return 0;
+  }
+
+  const result = spawnSync(process.execPath, ['--test', ...testsAbs], {
+    cwd: rootDir,
+    encoding: 'utf8',
+  });
+
+  if (result.stdout) process.stdout.write(result.stdout);
+  if (result.stderr) process.stderr.write(result.stderr);
+
+  const exitCode = result.status ?? 1;
+  const skippedCount = readSkippedCount(result.stdout, result.stderr);
+  if (skippedCount > 0) {
+    console.error(`TOOLBAR_CLOSEOUT_SKIP_COUNT=${skippedCount}`);
+    return 1;
+  }
+
+  return exitCode;
+}
+
 function runPerfBaselineGuard(rootDir, isPromotionMode) {
   const checkMode = isPromotionMode ? 'promotion' : 'release';
   const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
@@ -572,6 +623,11 @@ const modeArg = cli.modeArg;
 
 if (modeArg === 'fast') {
   process.exitCode = runFastLane(rootDir, dryRun);
+  return;
+}
+
+if (modeArg === 'closeout') {
+  process.exitCode = runToolbarCloseoutLane(rootDir, dryRun);
   return;
 }
 

@@ -2,11 +2,17 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const { pathToFileURL } = require('node:url');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 
 function readFile(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
+}
+
+function importRuntimeProjectionModule() {
+  const modulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'toolbar', 'toolbarRuntimeProjection.mjs')).href;
+  return import(modulePath);
 }
 
 test('sector-m toolbar profile switch: configurator markup exposes an accessible active profile radiogroup', () => {
@@ -36,4 +42,26 @@ test('sector-m toolbar profile switch: editor wiring targets the active profile 
   assert.ok(source.includes('bucket.classList.toggle(\'is-active-profile\', isActiveProfile);'));
   assert.equal(source.includes('configuratorMasterSection.hidden = true;'), false);
   assert.equal(source.includes("configuratorMasterSection.setAttribute('aria-hidden', 'true');"), false);
+});
+
+test('sector-m toolbar profile switch: active profile selection changes visible item ids', async () => {
+  const { collectVisibleToolbarItemIdsFromState } = await importRuntimeProjectionModule();
+
+  const minimalIds = collectVisibleToolbarItemIdsFromState({
+    activeToolbarProfile: 'minimal',
+    toolbarProfiles: {
+      minimal: ['toolbar.history.undo'],
+      master: ['toolbar.history.redo', 'toolbar.format.bold'],
+    },
+  });
+  const masterIds = collectVisibleToolbarItemIdsFromState({
+    activeToolbarProfile: 'master',
+    toolbarProfiles: {
+      minimal: ['toolbar.history.undo'],
+      master: ['toolbar.history.redo', 'toolbar.format.bold'],
+    },
+  });
+
+  assert.deepEqual(minimalIds, ['toolbar.history.undo']);
+  assert.deepEqual(masterIds, ['toolbar.history.redo', 'toolbar.format.bold']);
 });

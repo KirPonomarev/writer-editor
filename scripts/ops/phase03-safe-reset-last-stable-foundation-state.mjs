@@ -55,8 +55,18 @@ function evaluatePhase03SafeResetLastStableFoundationState(input = {}) {
     const mainSource = readText(MAIN_SOURCE_PATH);
     const rendererSource = readText(RENDERER_SOURCE_PATH);
 
-    const projectWorkspaceFoundationHold = projectWorkspaceState.overallStatus === 'PASS'
-      && projectWorkspaceState.foundationStatus === 'HOLD';
+    const projectWorkspaceAllowedHoldGapIds = new Set([
+      'STABLE_PROJECT_ID_READY',
+    ]);
+    const projectWorkspaceFoundationHold = projectWorkspaceState.foundationStatus === 'HOLD'
+      && (
+        projectWorkspaceState.overallStatus === 'PASS'
+        || (
+          projectWorkspaceState.overallStatus === 'HOLD'
+          && Array.isArray(projectWorkspaceState.openGapIds)
+          && projectWorkspaceState.openGapIds.every((id) => projectWorkspaceAllowedHoldGapIds.has(id))
+        )
+      );
     const packetPass = packet?.status === 'PASS';
     const foundationHold = packet?.foundationStatus === 'HOLD';
     const scopeFlagsValid = packet?.scope?.recoverySurfacePresent === true

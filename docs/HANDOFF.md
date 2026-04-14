@@ -69,6 +69,14 @@ _Generated: 2026-04-02_
 - blocked lanes remain explicit blocked debt; later items remain explicit later or hold debt.
 - security audit lane is standardized on repo mainline via generic semgrep runner and package script; generic scan is repeatable with zero findings and honest timeout reporting.
 - test electron lane is ready and executed on current mainline with repeated pass runs.
+- toolbar configuration subsystem is rebaselined to current repo truth:
+  - `LIVE_COUNT = 17`
+  - `PLANNED_IDS = []`
+  - `BLOCKED_IDS = [toolbar.insert.image, toolbar.proofing.spellcheck, toolbar.proofing.grammar]`
+  - blocked reasons are explicit and catalog-bound
+  - `master` profile is visible in configurator flow
+  - ordering runtime is realized
+  - old Wave C literal text is superseded; truthful closure is `Wave C1 + blocked decisions`
 
 ## What Is Next
 1. keep Y8 cutover truth and rollback truth as one active factual reality
