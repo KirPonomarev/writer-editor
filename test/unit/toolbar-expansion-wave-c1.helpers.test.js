@@ -59,7 +59,11 @@ test('toolbar expansion wave c1: catalog promotes styles items while saved profi
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.style.character').implementationState, 'live')
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.style.character').actionAlias, 'toggle-style-character-menu')
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.style.character').commandId, null)
-  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.insert.image').implementationState, 'planned')
+  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.insert.image').implementationState, 'blocked')
+  assert.equal(
+    catalog.getToolbarFunctionCatalogEntryById('toolbar.insert.image').blockerReason,
+    'offline-first image asset pipeline not selected',
+  )
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.proofing.spellcheck').implementationState, 'blocked')
   assert.equal(
     catalog.getToolbarFunctionCatalogEntryById('toolbar.proofing.spellcheck').blockerReason,

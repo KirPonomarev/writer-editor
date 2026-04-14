@@ -428,9 +428,9 @@ const TOOLBAR_FUNCTION_CATALOG_ROWS = [
     bindKey: 'insert-image',
     actionAlias: null,
     commandId: null,
-    implementationState: 'planned',
+    implementationState: 'blocked',
     uiGroup: 'insert',
-    blockerReason: null,
+    blockerReason: 'offline-first image asset pipeline not selected',
   },
   {
     id: 'toolbar.proofing.spellcheck',
