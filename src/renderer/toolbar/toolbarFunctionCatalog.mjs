@@ -497,6 +497,16 @@ const TOOLBAR_LEGACY_DROP_LABELS_LIST = Object.freeze([
 
 export const TOOLBAR_FUNCTION_CATALOG = Object.freeze(TOOLBAR_FUNCTION_CATALOG_ROWS.map(freezeCatalogEntry));
 
+export const TOOLBAR_DEFAULT_MINIMAL_IDS = Object.freeze([
+  'toolbar.font.family',
+  'toolbar.font.weight',
+  'toolbar.font.size',
+  'toolbar.text.lineHeight',
+  'toolbar.paragraph.alignment',
+  'toolbar.history.undo',
+  'toolbar.history.redo',
+]);
+
 const TOOLBAR_CANONICAL_LIVE_ORDER_IDS = Object.freeze([
   'toolbar.font.family',
   'toolbar.font.weight',

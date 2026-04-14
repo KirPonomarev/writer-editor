@@ -16,11 +16,24 @@ test('toolbar configurator foundation: editor adopts shared toolbar catalog and 
   assert.ok(source.includes("from './toolbar/toolbarProfileState.mjs'"))
   assert.ok(source.includes('getToolbarFunctionCatalogEntryById,'))
   assert.ok(source.includes('listLiveToolbarFunctionCatalogEntries,'))
+  assert.ok(source.includes('isImplicitExpandedToolbarProfileState,'))
   assert.ok(source.includes('resolveToolbarProfileStateForProjectSwitch,'))
   assert.ok(source.includes('writeToolbarProfileState,'))
   assert.equal(source.includes('TOOLBAR_CONFIGURATOR_CATALOG_BY_ID'), false)
   assert.equal(source.includes('TOOLBAR_CONFIGURATOR_LEGACY_LABEL_TO_ID'), false)
   assert.equal(source.includes('CONFIGURATOR_BUCKETS_STORAGE_KEY'), false)
+})
+
+test('toolbar configurator foundation: persisted exact old expanded seed is normalized through the shared matcher', () => {
+  const source = readEditorSource()
+
+  const resolveStart = source.indexOf('function resolveToolbarConfiguratorState(projectId = currentProjectId) {')
+  const resolveEnd = source.indexOf('let configuratorBucketState = createToolbarConfiguratorSeedState();')
+  assert.ok(resolveStart > -1 && resolveEnd > resolveStart, 'resolveToolbarConfiguratorState bounds must exist')
+  const resolveSnippet = source.slice(resolveStart, resolveEnd)
+  assert.ok(resolveSnippet.includes('const effectiveState = isImplicitExpandedToolbarProfileState(normalizedState)'))
+  assert.ok(resolveSnippet.includes('createToolbarConfiguratorSeedState()'))
+  assert.ok(resolveSnippet.includes('state: effectiveState,'))
 })
 
 test('toolbar configurator foundation: workspace clear and safe reset include project-scoped toolbar state lifecycle', () => {

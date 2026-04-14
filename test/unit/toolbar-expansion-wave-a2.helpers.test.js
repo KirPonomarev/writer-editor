@@ -24,7 +24,7 @@ async function importModule(parts) {
   return import(pathToFileURL(path.join(ROOT, ...parts)).href)
 }
 
-test('toolbar expansion wave a2: canonical seed includes underline and link but saved profiles are not auto backfilled', async () => {
+test('toolbar expansion wave a2: canonical default seed stays bounded while saved profiles are not auto backfilled', async () => {
   const catalog = await importModule(['src', 'renderer', 'toolbar', 'toolbarFunctionCatalog.mjs'])
   const profile = await importModule(['src', 'renderer', 'toolbar', 'toolbarProfileState.mjs'])
   const storage = createMemoryStorage()
@@ -50,7 +50,7 @@ test('toolbar expansion wave a2: canonical seed includes underline and link but 
   ])
 
   const seed = profile.createCanonicalMinimalToolbarProfileState()
-  assert.deepEqual(seed.toolbarProfiles.minimal, catalog.TOOLBAR_CANONICAL_LIVE_ORDER)
+  assert.deepEqual(seed.toolbarProfiles.minimal, catalog.TOOLBAR_DEFAULT_MINIMAL_IDS)
   assert.deepEqual(seed.toolbarProfiles.master, catalog.TOOLBAR_CANONICAL_LIVE_ORDER)
 
   storage.setItem('toolbarProfiles:existing-v3', JSON.stringify({

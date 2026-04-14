@@ -61,6 +61,7 @@ import {
   createEphemeralBaselineToolbarProfileState,
   createToolbarProfileState,
   getToolbarProfileStorageKey,
+  isImplicitExpandedToolbarProfileState,
   resolveToolbarProfileStateForProjectSwitch,
   writeToolbarProfileState,
 } from './toolbar/toolbarProfileState.mjs';
@@ -528,11 +529,14 @@ function resolveToolbarConfiguratorState(projectId = currentProjectId) {
   const rawState = readToolbarConfiguratorStoredState(normalizedProjectId);
   if (isPlainObject(rawState)) {
     const normalizedState = createToolbarConfiguratorState(rawState);
+    const effectiveState = isImplicitExpandedToolbarProfileState(normalizedState)
+      ? createToolbarConfiguratorSeedState()
+      : normalizedState;
     return {
       source: 'persisted',
-      shouldPersist: JSON.stringify(rawState) !== JSON.stringify(normalizedState),
+      shouldPersist: JSON.stringify(rawState) !== JSON.stringify(effectiveState),
       shouldConsumeLegacySource: false,
-      state: normalizedState,
+      state: effectiveState,
     };
   }
 

@@ -1,5 +1,6 @@
 import {
   TOOLBAR_CANONICAL_LIVE_ORDER,
+  TOOLBAR_DEFAULT_MINIMAL_IDS,
   TOOLBAR_LEGACY_DROP_LABELS,
   resolveLegacyToolbarFunctionItemId,
   isLiveToolbarFunctionId,
@@ -50,6 +51,13 @@ function normalizeToolbarProfileIds(values) {
     result.push(itemId);
   }
   return result;
+}
+
+function hasExactToolbarProfileIds(actual, expected) {
+  if (!Array.isArray(actual) || !Array.isArray(expected) || actual.length !== expected.length) {
+    return false;
+  }
+  return expected.every((itemId, index) => actual[index] === itemId);
 }
 
 function normalizeToolbarProfileStateV3(raw) {
@@ -172,7 +180,7 @@ function readLegacyConfiguratorBucketRecord(storage, legacyStorageKey = TOOLBAR_
 }
 
 function createCanonicalToolbarProfileState() {
-  return freezeToolbarProfiles(TOOLBAR_CANONICAL_LIVE_ORDER, TOOLBAR_CANONICAL_LIVE_ORDER);
+  return freezeToolbarProfiles(TOOLBAR_DEFAULT_MINIMAL_IDS, TOOLBAR_CANONICAL_LIVE_ORDER);
 }
 
 function createToolbarProfileStateRecord({
@@ -244,6 +252,17 @@ export function createEphemeralBaselineToolbarProfileState() {
 
 export function normalizeToolbarProfileState(raw) {
   return normalizePersistedToolbarProfileState(raw);
+}
+
+export function isImplicitExpandedToolbarProfileState(raw) {
+  const normalized = normalizeToolbarProfileState(raw);
+  if (!normalized) {
+    return false;
+  }
+
+  return normalized.activeToolbarProfile === 'minimal'
+    && hasExactToolbarProfileIds(normalized.toolbarProfiles?.minimal, TOOLBAR_CANONICAL_LIVE_ORDER)
+    && hasExactToolbarProfileIds(normalized.toolbarProfiles?.master, TOOLBAR_CANONICAL_LIVE_ORDER);
 }
 
 export function serializeToolbarProfileState(state) {
@@ -370,14 +389,17 @@ export function resolveToolbarProfileStateForProjectSwitch(storage, projectId, o
   const storedRecord = readToolbarProfileStateRecord(storage, normalizedProjectId);
   if (storedRecord && storedRecord.state) {
     const legacyRead = readLegacyConfiguratorBuckets(storage, legacyStorageKey);
-    const serializedState = JSON.stringify(storedRecord.state);
+    const normalizedStoredState = isImplicitExpandedToolbarProfileState(storedRecord.state)
+      ? createCanonicalToolbarProfileState()
+      : storedRecord.state;
+    const serializedState = JSON.stringify(normalizedStoredState);
     const rawJson = typeof storedRecord.raw === 'string' ? storedRecord.raw : JSON.stringify(storedRecord.raw);
     const shouldPersist = storedRecord.version !== 3 || rawJson !== serializedState;
     return {
       source: 'persisted',
       shouldPersist,
       shouldConsumeLegacySource: legacyRead.exists,
-      state: storedRecord.state,
+      state: normalizedStoredState,
       migration: storedRecord.version === 3 ? null : {
         fromVersion: storedRecord.version ?? null,
         toVersion: 3,
