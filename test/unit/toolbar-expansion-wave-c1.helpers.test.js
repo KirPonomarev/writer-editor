@@ -29,7 +29,7 @@ function read(parts) {
   return fs.readFileSync(path.join(ROOT, ...parts), 'utf8')
 }
 
-test('toolbar expansion wave c1: catalog promotes styles items while saved profiles are not auto backfilled', async () => {
+test('toolbar expansion wave c1: catalog promotes styles items while default seed stays bounded', async () => {
   const catalog = await importModule(['src', 'renderer', 'toolbar', 'toolbarFunctionCatalog.mjs'])
   const profile = await importModule(['src', 'renderer', 'toolbar', 'toolbarProfileState.mjs'])
   const storage = createMemoryStorage()
@@ -71,7 +71,7 @@ test('toolbar expansion wave c1: catalog promotes styles items while saved profi
   )
 
   const seed = profile.createCanonicalMinimalToolbarProfileState()
-  assert.deepEqual(seed.toolbarProfiles.minimal, catalog.TOOLBAR_CANONICAL_LIVE_ORDER)
+  assert.deepEqual(seed.toolbarProfiles.minimal, catalog.TOOLBAR_DEFAULT_MINIMAL_IDS)
   assert.deepEqual(seed.toolbarProfiles.master, catalog.TOOLBAR_CANONICAL_LIVE_ORDER)
 
   storage.setItem('toolbarProfiles:existing-wave-c1', JSON.stringify({

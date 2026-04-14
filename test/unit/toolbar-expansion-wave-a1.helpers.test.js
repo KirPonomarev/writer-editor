@@ -65,13 +65,13 @@ test('toolbar expansion wave a1: catalog promotes bold, italic, underline, link 
   assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.insert.link').commandId, 'cmd.project.insert.linkPrompt')
 })
 
-test('toolbar expansion wave a1: expanded seed is new-project only and saved minimal is not backfilled', async () => {
+test('toolbar expansion wave a1: owner default seed stays bounded and saved minimal is not backfilled', async () => {
   const catalog = await importModule(['src', 'renderer', 'toolbar', 'toolbarFunctionCatalog.mjs'])
   const profile = await importModule(['src', 'renderer', 'toolbar', 'toolbarProfileState.mjs'])
   const storage = createMemoryStorage()
 
   const seed = profile.createCanonicalMinimalToolbarProfileState()
-  assert.deepEqual(seed.toolbarProfiles.minimal, catalog.TOOLBAR_CANONICAL_LIVE_ORDER)
+  assert.deepEqual(seed.toolbarProfiles.minimal, catalog.TOOLBAR_DEFAULT_MINIMAL_IDS)
 
   storage.setItem('toolbarProfiles:existing', JSON.stringify({
     version: 2,
@@ -83,7 +83,7 @@ test('toolbar expansion wave a1: expanded seed is new-project only and saved min
 
   const next = profile.resolveToolbarProfileStateForProjectSwitch(storage, 'new-project')
   assert.equal(next.source, 'seed')
-  assert.deepEqual(next.state.toolbarProfiles.minimal, catalog.TOOLBAR_CANONICAL_LIVE_ORDER)
+  assert.deepEqual(next.state.toolbarProfiles.minimal, catalog.TOOLBAR_DEFAULT_MINIMAL_IDS)
 })
 
 test('toolbar expansion wave a1: capability gate allows rich commands only in TipTap mode', async () => {

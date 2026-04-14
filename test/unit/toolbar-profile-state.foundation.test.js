@@ -92,7 +92,7 @@ test('toolbar foundation profile state: project-scoped storage, v3 seed, and mig
     version: 3,
     activeToolbarProfile: 'minimal',
     toolbarProfiles: {
-      minimal: catalog.TOOLBAR_CANONICAL_LIVE_ORDER,
+      minimal: catalog.TOOLBAR_DEFAULT_MINIMAL_IDS,
       master: catalog.TOOLBAR_CANONICAL_LIVE_ORDER,
     },
   })
@@ -109,6 +109,19 @@ test('toolbar foundation profile state: project-scoped storage, v3 seed, and mig
   assert.equal(profileState.writeToolbarProfileState(storage, 'project-1', canonicalState), true)
   assert.equal(storage.getItem('toolbarProfiles:project-1'), JSON.stringify(canonicalState))
   assert.deepEqual(profileState.readToolbarProfileState(storage, 'project-1'), canonicalState)
+
+  storage.setItem('toolbarProfiles:project-implicit-expanded', JSON.stringify({
+    version: 3,
+    activeToolbarProfile: 'minimal',
+    toolbarProfiles: {
+      minimal: catalog.TOOLBAR_CANONICAL_LIVE_ORDER,
+      master: catalog.TOOLBAR_CANONICAL_LIVE_ORDER,
+    },
+  }))
+  const resolvedImplicitExpanded = profileState.resolveToolbarProfileStateForProjectSwitch(storage, 'project-implicit-expanded')
+  assert.equal(resolvedImplicitExpanded.source, 'persisted')
+  assert.equal(resolvedImplicitExpanded.shouldPersist, true)
+  assert.deepEqual(resolvedImplicitExpanded.state, canonicalState)
 
   storage.setItem('toolbarProfiles:project-empty', JSON.stringify({
     version: 3,
