@@ -9,6 +9,7 @@
 :root {
   --font-size: 16px;
   --font-family: 'Circe', -apple-system, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+  --ui-font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
   --background: #f8f5ef;
   --foreground: #6d6861;
   --text-secondary: rgba(109, 104, 97, 0.74);
@@ -61,6 +62,18 @@
   --canvas-padding-bottom: 48px;
   --configurator-panel-side-margin: 5mm;
   --editor-zoom: 1;
+  --titlebar-height: 22px;
+  --toolbar-bar-height: 52px;
+  --toolbar-control-height: 28px;
+  --toolbar-left-inset: 16px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-28: 28px;
+  --toolbar-left-cluster-width: calc((var(--toolbar-control-height) * 5) + (var(--space-8) * 4));
+  --toolbar-left-cluster-optical-width: calc(var(--toolbar-left-cluster-width) - var(--space-8));
+  --toolbar-center-bridge-gap: var(--space-12);
 }
 
 body.dark-theme {
@@ -180,7 +193,7 @@ body {
 .work-bar {
   position: relative;
   z-index: 10;
-  min-height: 68px;
+  min-height: var(--toolbar-bar-height);
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -249,7 +262,7 @@ body {
 .left-floating-toolbar__shell > .work-bar__cluster {
   position: relative;
   z-index: 1;
-  gap: calc(12px * var(--left-toolbar-width-scale));
+  gap: calc(var(--space-12) * var(--left-toolbar-width-scale));
   padding: 0;
   border-radius: 0;
   background: transparent;
@@ -319,20 +332,20 @@ body {
 .work-bar__cluster {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-8);
 }
 
 .work-bar__button {
-  height: 24px;
-  min-width: 24px;
+  height: var(--toolbar-control-height);
+  min-width: var(--toolbar-control-height);
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   background: linear-gradient(180deg, #f8f6f3 0%, #f0ede9 100%);
   color: #4a4a4a;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: var(--space-8);
   padding: 0 8px;
   cursor: pointer;
   transition: background 0.16s ease, color 0.16s ease;
@@ -351,11 +364,11 @@ body {
   box-shadow: none;
   gap: 0;
   padding: 0;
-  width: 32px;
-  min-width: 32px;
-  height: 32px;
+  width: var(--toolbar-control-height);
+  min-width: var(--toolbar-control-height);
+  height: var(--toolbar-control-height);
   border-radius: 6px;
-  color: #4a4a4a;
+  color: rgba(45, 39, 33, 0.84);
   opacity: 1;
   position: relative;
   transform: translateX(var(--work-bar-offset-x));
@@ -373,14 +386,14 @@ body {
 
 .left-floating-toolbar__shell.is-vertical .work-bar__button + .work-bar__button {
   margin-left: 0;
-  margin-top: calc(12px * var(--left-toolbar-width-scale));
+  margin-top: calc(var(--space-12) * var(--left-toolbar-width-scale));
 }
 
 .left-floating-toolbar__shell .work-bar__button--with-caret {
   width: auto;
   min-width: auto;
   justify-content: flex-start;
-  gap: 4px;
+  gap: var(--space-8);
 }
 
 .left-floating-toolbar__shell .work-bar__button--with-caret .work-bar__caret {
@@ -393,29 +406,29 @@ body {
 }
 
 .left-floating-toolbar__shell .work-bar__icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 }
 
 .left-floating-toolbar__shell .work-bar__button:hover,
 .left-floating-toolbar__shell .work-bar__button.is-active {
-  background: #c4c2bf;
+  background: rgba(196, 194, 191, 0.82);
   box-shadow: none;
 }
 
 .left-floating-toolbar__shell .work-bar__button.is-pressed {
-  background: #c4c2bf;
+  background: rgba(196, 194, 191, 0.82);
   box-shadow: none;
 }
 
 .left-floating-toolbar__shell .left-toolbar__button--icon-only {
-  width: 32px;
-  min-width: 32px;
+  width: var(--toolbar-control-height);
+  min-width: var(--toolbar-control-height);
 }
 
 .left-floating-toolbar__shell .left-toolbar__button--chip {
-  min-width: 32px;
-  width: 32px;
+  min-width: var(--toolbar-control-height);
+  width: var(--toolbar-control-height);
   padding: 0;
   background: transparent;
   border-radius: 6px;
@@ -431,28 +444,28 @@ body {
 }
 
 .left-floating-toolbar__shell .left-toolbar__button--search {
-  min-width: 32px;
+  min-width: var(--toolbar-control-height);
 }
 
 .left-floating-toolbar__shell .left-toolbar__button--search .work-bar__icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 }
 
 .left-floating-toolbar__shell .left-toolbar__button--chip .work-bar__icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 }
 
 .left-floating-toolbar__shell .left-toolbar__button--plus .work-bar__icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 }
 
 .left-floating-toolbar__shell .left-toolbar__button--doc .work-bar__icon,
 .left-floating-toolbar__shell .left-toolbar__button--grid .work-bar__icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 }
 
 .work-bar__button:hover {
@@ -625,7 +638,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0;
-  min-height: 24px;
+  min-height: var(--toolbar-control-height);
   padding: 0;
   border: none;
   border-radius: 8px;
@@ -635,8 +648,8 @@ body {
   pointer-events: auto;
   cursor: grab;
   user-select: none;
-  font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--ui-font-family);
+  font-variant-numeric: normal;
   transform: scale(var(--floating-toolbar-scale));
   transform-origin: left center;
   transition: box-shadow 0.18s ease, opacity 0.18s ease;
@@ -662,7 +675,7 @@ body {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 12px;
+  gap: var(--space-12);
   width: auto;
   transform-origin: center center;
 }
@@ -674,7 +687,7 @@ body {
 .floating-toolbar__group {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-12);
   flex: 0 0 auto;
   position: relative;
   z-index: 1;
@@ -683,22 +696,25 @@ body {
 .floating-toolbar__controls {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 0;
   flex: 0 0 auto;
+  margin-left: calc(var(--toolbar-left-cluster-optical-width) + var(--toolbar-center-bridge-gap));
   position: relative;
   z-index: 1;
 }
 
-.floating-toolbar__group--type {
-  gap: 5px;
+.floating-toolbar__group--type,
+.floating-toolbar__group--history {
+  gap: var(--space-12);
 }
 
-.floating-toolbar__group--history {
-  gap: 8px;
+.floating-toolbar__group--type {
+  margin-right: var(--space-20);
 }
 
 .floating-toolbar__group--paragraph {
   gap: 0;
+  margin-right: var(--space-20);
 }
 
 .floating-toolbar__group--insert {
@@ -715,6 +731,10 @@ body {
 
 .floating-toolbar__group--styles {
   gap: 4px;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__group--history {
+  padding-left: var(--space-8);
 }
 
 .floating-toolbar-spacing-menu {
@@ -767,20 +787,21 @@ body {
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 8px;
+  gap: var(--space-8);
   width: auto;
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__controls {
   flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
+  gap: var(--space-20);
+  margin-left: 0;
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__group--history {
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-12);
 }
 
 .floating-toolbar__separator {
@@ -788,7 +809,7 @@ body {
   height: 16px;
   background: #a5a09a;
   flex: 0 0 auto;
-  margin: 0 12px;
+  margin: 0;
   position: relative;
   z-index: 1;
 }
