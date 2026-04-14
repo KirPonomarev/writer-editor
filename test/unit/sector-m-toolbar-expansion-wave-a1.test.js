@@ -108,10 +108,12 @@ test('sector-m toolbar expansion wave a1: command ids and capability docs are ex
 
   assert.ok(tiptap.includes('export function getTiptapFormattingState()'))
   assert.ok(tiptap.includes('export function runTiptapFormatCommand(commandName, commandPayload = undefined)'))
-  assert.ok(tiptap.includes("toggleBold: () => currentEditorInstance.commands.toggleBold()"))
-  assert.ok(tiptap.includes("toggleItalic: () => currentEditorInstance.commands.toggleItalic()"))
-  assert.ok(tiptap.includes("toggleBulletList: () => currentEditorInstance.commands.toggleBulletList()"))
-  assert.ok(tiptap.includes("toggleOrderedList: () => currentEditorInstance.commands.toggleOrderedList()"))
+  assert.ok(tiptap.includes('function runFocusedChainCommand(commandName, payload = undefined)'))
+  assert.ok(tiptap.includes("toggleBold: () => runFocusedChainCommand('toggleBold')"))
+  assert.ok(tiptap.includes("toggleItalic: () => runFocusedChainCommand('toggleItalic')"))
+  assert.ok(tiptap.includes("toggleBulletList: () => runFocusedChainCommand('toggleBulletList')"))
+  assert.ok(tiptap.includes("toggleOrderedList: () => runFocusedChainCommand('toggleOrderedList')"))
+  assert.ok(runtimeBridge.includes('function runFocusedEditorCommand(editor, commandName, payload = undefined)'))
 })
 
 test('sector-m toolbar expansion wave a1: underline and link are live in catalog and capability truth', () => {

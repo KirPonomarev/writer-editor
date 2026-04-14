@@ -1,14 +1,17 @@
 import {
   applyTiptapCharacterStyle,
   applyTiptapParagraphStyle,
+  focusTiptapSurface,
   getTiptapDocumentSnapshot,
   getTiptapFormattingState,
+  getTiptapSelectionOffsets,
   getTiptapPlainText,
   initTiptap,
   redoTiptap,
   runTiptapFormatCommand,
   setTiptapDocumentSnapshot,
   setTiptapFormattingStateHandler,
+  setTiptapSelectionOffsets,
   setTiptapPlainText,
   setTiptapRuntimeHandlers,
   undoTiptap,
@@ -1034,8 +1037,8 @@ function restoreFocusFromHiddenMainToolbarItem() {
   if (!activeToolbarItem.hidden && activeToolbarItem.getClientRects().length > 0) {
     return;
   }
-  if (editor instanceof HTMLElement && typeof editor.focus === 'function') {
-    editor.focus({ preventScroll: true });
+  const focusResult = focusEditorSurface('current');
+  if (focusResult && focusResult.performed !== false) {
     return;
   }
   if (typeof activeElement.blur === 'function') {
@@ -2522,10 +2525,63 @@ function initializeFloatingToolbarStylesMenu() {
   });
 }
 
+function isMainToolbarInteractiveTarget(target) {
+  if (!(target instanceof Element)) return false;
+  return Boolean(
+    target.closest(
+      [
+        '.floating-toolbar__button',
+        '.floating-toolbar__select-wrap',
+        '.floating-toolbar__display',
+        '.floating-toolbar__paragraph-menu-item',
+        '.floating-toolbar__list-menu-item',
+        '.floating-toolbar__styles-menu-item',
+        '.floating-toolbar__color-picker-close',
+        '[data-toolbar-color-swatch-value]',
+        '.floating-toolbar-spacing-menu__action',
+        '.floating-toolbar__select',
+      ].join(', ')
+    )
+  );
+}
+
+function isMainToolbarSelectionPreservingTarget(target) {
+  if (!(target instanceof Element)) return false;
+  return Boolean(
+    target.closest(
+      [
+        '.floating-toolbar__button',
+        '.floating-toolbar__paragraph-menu-item',
+        '.floating-toolbar__list-menu-item',
+        '.floating-toolbar__styles-menu-item',
+        '.floating-toolbar__color-picker-close',
+        '[data-toolbar-color-swatch-value]',
+        '.floating-toolbar-spacing-menu__action',
+      ].join(', ')
+    )
+  );
+}
+
 function initializeFloatingToolbarDragFoundation() {
   if (!toolbarShell) return;
+  const preserveSelectionOnMouseDown = (event) => {
+    if (event.button !== 0) return;
+    if (!isMainToolbarSelectionPreservingTarget(event.target)) return;
+    event.preventDefault();
+  };
+  [
+    toolbarShell,
+    paragraphMenu,
+    listMenu,
+    toolbarStylesMenu,
+    toolbarColorPicker,
+    toolbarSpacingMenu,
+  ].forEach((surface) => {
+    surface?.addEventListener('mousedown', preserveSelectionOnMouseDown, true);
+  });
   toolbarShell.addEventListener('mousedown', (event) => {
     if (event.button !== 0) return;
+    if (isMainToolbarInteractiveTarget(event.target)) return;
     startFloatingToolbarInteraction('move', event);
   });
   toolbarRotateHandles.forEach((handle) => {
@@ -3042,8 +3098,7 @@ function handleDocumentContentParseIssue(issue) {
 
 function getSelectionOffsets() {
   if (isTiptapMode) {
-    const length = getPlainText().length;
-    return { start: length, end: length };
+    return getTiptapSelectionOffsets();
   }
   if (!editor) return { start: 0, end: 0 };
   const selection = window.getSelection();
@@ -3085,7 +3140,10 @@ function getNodeForOffset(offset) {
 }
 
 function setSelectionRange(start, end) {
-  if (isTiptapMode) return;
+  if (isTiptapMode) {
+    setTiptapSelectionOffsets(start, end);
+    return;
+  }
   if (!editor) return;
   const text = getPlainText();
   const normalizedStart = Math.max(0, Math.min(start, text.length));
@@ -3481,6 +3539,23 @@ function positionCaretForCurrentText() {
   setSelectionRange(textLength, textLength);
 }
 
+function focusEditorSurface(position = 'current') {
+  if (!editor) {
+    return { performed: false, action: 'focusEditorSurface', reason: 'EDITOR_UNAVAILABLE', position };
+  }
+
+  if (isTiptapMode) {
+    return focusTiptapSurface(position);
+  }
+
+  try {
+    editor.focus({ preventScroll: true });
+  } catch {
+    editor.focus();
+  }
+  return { performed: true, action: 'focusEditorSurface', reason: null, position };
+}
+
 function normalizeProjectId(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
@@ -3748,10 +3823,8 @@ function showEditorPanelFor(title) {
     }
     if (editor) {
       editor.scrollTop = 0;
-      try {
-        editor.focus({ preventScroll: true });
-      } catch {
-        editor.focus();
+      if (!isTiptapMode) {
+        focusEditorSurface('current');
       }
       positionCaretForCurrentText();
     }
@@ -5535,6 +5608,7 @@ function getAlignmentActionForLine(line) {
 }
 
 function syncAlignmentButtonsToSelection() {
+  if (isTiptapMode) return;
   if (!editor) return;
   const selection = window.getSelection();
   if (!selection || selection.rangeCount === 0) return;
@@ -6002,7 +6076,7 @@ function handleFind() {
   }
 
   lastSearchQuery = query;
-  editor.focus();
+  focusEditorSurface('current');
   setSelectionRange(index, index + query.length);
   return { performed: true, found: true, query, index };
 }

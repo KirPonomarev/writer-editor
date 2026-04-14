@@ -111,6 +111,173 @@ test('tiptap runtime bridge: canonical underline command id delegates to editor.
   })
 })
 
+test('tiptap runtime bridge: canonical bold command id prefers focused chain execution when available', async () => {
+  const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
+  let directCalls = 0
+  const trace = []
+  const bridge = createTiptapRuntimeBridge({
+    editor: {
+      commands: {
+        toggleBold() {
+          directCalls += 1
+          return true
+        },
+      },
+      chain() {
+        return {
+          focus() {
+            trace.push('focus')
+            return this
+          },
+          toggleBold() {
+            trace.push('toggleBold')
+            return this
+          },
+          run() {
+            trace.push('run')
+            return true
+          },
+        }
+      },
+    },
+  })
+
+  const result = bridge.handleRuntimeCommand({ commandId: 'cmd.project.format.toggleBold' })
+  assert.equal(directCalls, 0)
+  assert.deepEqual(trace, ['focus', 'toggleBold', 'run'])
+  assert.deepEqual(result, {
+    handled: true,
+    result: { performed: true, action: 'toggleBold', reason: null },
+    commandId: 'cmd.project.format.toggleBold',
+  })
+})
+
+test('tiptap runtime bridge: canonical italic command id prefers focused chain execution when available', async () => {
+  const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
+  let directCalls = 0
+  const trace = []
+  const bridge = createTiptapRuntimeBridge({
+    editor: {
+      commands: {
+        toggleItalic() {
+          directCalls += 1
+          return true
+        },
+      },
+      chain() {
+        return {
+          focus() {
+            trace.push('focus')
+            return this
+          },
+          toggleItalic() {
+            trace.push('toggleItalic')
+            return this
+          },
+          run() {
+            trace.push('run')
+            return true
+          },
+        }
+      },
+    },
+  })
+
+  const result = bridge.handleRuntimeCommand({ commandId: 'cmd.project.format.toggleItalic' })
+  assert.equal(directCalls, 0)
+  assert.deepEqual(trace, ['focus', 'toggleItalic', 'run'])
+  assert.deepEqual(result, {
+    handled: true,
+    result: { performed: true, action: 'toggleItalic', reason: null },
+    commandId: 'cmd.project.format.toggleItalic',
+  })
+})
+
+test('tiptap runtime bridge: canonical underline command id prefers focused chain execution when available', async () => {
+  const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
+  let directCalls = 0
+  const trace = []
+  const bridge = createTiptapRuntimeBridge({
+    editor: {
+      commands: {
+        toggleUnderline() {
+          directCalls += 1
+          return true
+        },
+      },
+      chain() {
+        return {
+          focus() {
+            trace.push('focus')
+            return this
+          },
+          toggleUnderline() {
+            trace.push('toggleUnderline')
+            return this
+          },
+          run() {
+            trace.push('run')
+            return true
+          },
+        }
+      },
+    },
+  })
+
+  const result = bridge.handleRuntimeCommand({ commandId: 'cmd.project.format.toggleUnderline' })
+  assert.equal(directCalls, 0)
+  assert.deepEqual(trace, ['focus', 'toggleUnderline', 'run'])
+  assert.deepEqual(result, {
+    handled: true,
+    result: { performed: true, action: 'toggleUnderline', reason: null },
+    commandId: 'cmd.project.format.toggleUnderline',
+  })
+})
+
+test('tiptap runtime bridge: canonical clear list command id preserves clearList action while using focused chain', async () => {
+  const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
+  let directCalls = 0
+  const trace = []
+  const bridge = createTiptapRuntimeBridge({
+    editor: {
+      commands: {
+        toggleBulletList() {
+          directCalls += 1
+          return true
+        },
+      },
+      isActive(markName) {
+        return markName === 'bulletList'
+      },
+      chain() {
+        return {
+          focus() {
+            trace.push('focus')
+            return this
+          },
+          toggleBulletList() {
+            trace.push('toggleBulletList')
+            return this
+          },
+          run() {
+            trace.push('run')
+            return true
+          },
+        }
+      },
+    },
+  })
+
+  const result = bridge.handleRuntimeCommand({ commandId: 'cmd.project.list.clear' })
+  assert.equal(directCalls, 0)
+  assert.deepEqual(trace, ['focus', 'toggleBulletList', 'run'])
+  assert.deepEqual(result, {
+    handled: true,
+    result: { performed: true, action: 'clearList', reason: null },
+    commandId: 'cmd.project.list.clear',
+  })
+})
+
 test('tiptap runtime bridge: canonical link prompt command id delegates only to runtime handler callback', async () => {
   const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
   const calls = []
