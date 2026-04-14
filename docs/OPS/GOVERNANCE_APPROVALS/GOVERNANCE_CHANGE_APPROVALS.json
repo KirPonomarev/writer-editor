@@ -2800,6 +2800,20 @@
       "approvedBy": "ticket:TOOLBAR_EXPANSION_WAVE_B_001",
       "approvedAtUtc": "2026-04-13T21:35:20.000Z",
       "rationale": "TOOLBAR_EXPANSION_WAVE_B_001 supersedes the prior toolbar command capability binding hash and approves the bounded text-color, highlight-color, and review-comment opener expansion."
+    },
+    {
+      "filePath": "scripts/ops/phase03-safe-reset-last-stable-artifact-state.mjs",
+      "sha256": "3bceaa40503313dadfc43fcaac677a5af216bcaff7dacaaad83ba69a315810ab",
+      "approvedBy": "ticket:TOOLBAR_BASELINE_TRUTHFUL_CLOSEOUT_001",
+      "approvedAtUtc": "2026-04-14T11:06:30.000Z",
+      "rationale": "TOOLBAR_BASELINE_TRUTHFUL_CLOSEOUT_001 approves phase03 safe-reset artifact evaluator alignment to current canonical command dispatch and configurator restore adoption path."
+    },
+    {
+      "filePath": "scripts/ops/phase03-safe-reset-last-stable-foundation-state.mjs",
+      "sha256": "6f7a81b6dd049ae306e1c2cef29b576299eb447f1a17d3aa8675b4f3260967f5",
+      "approvedBy": "ticket:TOOLBAR_BASELINE_TRUTHFUL_CLOSEOUT_001",
+      "approvedAtUtc": "2026-04-14T11:06:30.000Z",
+      "rationale": "TOOLBAR_BASELINE_TRUTHFUL_CLOSEOUT_001 approves phase03 safe-reset foundation evaluator alignment to current honest hold chain semantics with bounded open-gap tolerance."
     }
   ]
 }

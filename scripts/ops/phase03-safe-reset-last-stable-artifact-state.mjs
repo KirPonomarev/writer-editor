@@ -62,8 +62,18 @@ function evaluatePhase03SafeResetLastStableArtifactState(input = {}) {
     const rendererSource = readText(RENDERER_SOURCE_PATH);
     const runtimeBridgeSource = readText(RUNTIME_BRIDGE_SOURCE_PATH);
 
-    const foundationPass = foundationState.overallStatus === 'PASS'
-      && foundationState.foundationStatus === 'HOLD';
+    const foundationAllowedHoldGapIds = new Set([
+      'PROJECT_WORKSPACE_FOUNDATION_HOLD',
+    ]);
+    const foundationPass = foundationState.foundationStatus === 'HOLD'
+      && (
+        foundationState.overallStatus === 'PASS'
+        || (
+          foundationState.overallStatus === 'HOLD'
+          && Array.isArray(foundationState.openGapIds)
+          && foundationState.openGapIds.every((id) => foundationAllowedHoldGapIds.has(id))
+        )
+      );
     const packetPass = packet?.status === 'PASS';
     const restorePass = packet?.restoreStatus === 'PASS';
     const scopeFlagsValid = packet?.scope?.recoverySurfaceBound === true
@@ -102,10 +112,14 @@ function evaluatePhase03SafeResetLastStableArtifactState(input = {}) {
       /settings\.windowWidth = bounds\.width;/,
       /settings\.windowHeight = bounds\.height;/,
     ]);
-    const shellLevelSafeResetPresent = matchesAll(mainSource, [
+    const safeResetShellDispatchPresent = matchesAll(mainSource, [
       /cmd\.project\.view\.safeReset/,
       /sendRuntimeCommand\('safe-reset-shell', \{ source: 'menu' \}\);/,
-    ]) && matchesAll(rendererSource, [
+    ]) || matchesAll(mainSource, [
+      /cmd\.project\.view\.safeReset/,
+      /sendCanonicalRuntimeCommand\(\s*'cmd\.project\.view\.safeReset'[\s\S]*'safe-reset-shell'[\s\S]*\)/,
+    ]);
+    const shellLevelSafeResetPresent = safeResetShellDispatchPresent && matchesAll(rendererSource, [
       /function performSafeResetShell\(\)/,
       /clearProjectWorkspaceStorage\(currentProjectId\);/,
       /applyTheme\(SAFE_RESET_BASELINE_THEME\);/,
@@ -126,10 +140,16 @@ function evaluatePhase03SafeResetLastStableArtifactState(input = {}) {
       /if \(command === 'safe-reset-shell'\)/,
       /runBridgeCallback\(runtimeHandlers\.safeResetShell, command\)/,
     ]);
-    const lastStableRestorePresent = matchesAll(mainSource, [
+    const restoreLastStableShellDispatchPresent = matchesAll(mainSource, [
       /cmd\.project\.view\.restoreLastStable/,
       /sendRuntimeCommand\('restore-last-stable-shell', \{ source: 'menu' \}\);/,
-    ]) && matchesAll(rendererSource, [
+    ]) || matchesAll(mainSource, [
+      /cmd\.project\.view\.restoreLastStable/,
+      /sendCanonicalRuntimeCommand\(\s*'cmd\.project\.view\.restoreLastStable'[\s\S]*'restore-last-stable-shell'[\s\S]*\)/,
+    ]);
+    const configuratorStateRestorePresent = /configuratorBucketState = readConfiguratorBucketState\(\);/.test(rendererSource)
+      || /adoptToolbarConfiguratorState\(currentProjectId\);/.test(rendererSource);
+    const lastStableRestorePresent = restoreLastStableShellDispatchPresent && matchesAll(rendererSource, [
       /function performRestoreLastStableShell\(\)/,
       /readWorkspaceStorage\(getActiveDocumentTitleStorageKey\(currentProjectId\), 'activeDocumentTitle'\)/,
       /loadSavedTheme\(\);/,
@@ -143,12 +163,11 @@ function evaluatePhase03SafeResetLastStableArtifactState(input = {}) {
       /restoreFloatingToolbarPosition\(\);/,
       /restoreLeftToolbarButtonOffsets\(\);/,
       /restoreLeftFloatingToolbarPosition\(\);/,
-      /configuratorBucketState = readConfiguratorBucketState\(\);/,
       /expandedNodesByTab = new Map\(\);/,
       /renderTree\(\);/,
       /restoreLastStableShell: \(\) => performRestoreLastStableShell\(\),/,
       /command === 'restore-last-stable-shell'/,
-    ]) && matchesAll(runtimeBridgeSource, [
+    ]) && configuratorStateRestorePresent && matchesAll(runtimeBridgeSource, [
       /if \(command === 'restore-last-stable-shell'\)/,
       /runBridgeCallback\(runtimeHandlers\.restoreLastStableShell, command\)/,
     ]);

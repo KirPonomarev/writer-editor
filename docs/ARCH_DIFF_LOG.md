@@ -31,3 +31,12 @@
 - Риск: если исключение начнёт расширяться, main.js снова станет вторым structural source.
 - Rollback: перенести help-about-licenses в canonical menu authoring source и убрать ensureAboutLicensesMenuEntry из main.js.
 - План удаления исключения: закрыть вместе с следующим контуром menu i18n или menu modes, когда help surface будет полностью переведена в canonical authoring chain.
+
+## 2026-04-14 — Toolbar Wave C Literal Baseline Deviation
+
+- Контекст: после `TOOLBAR_EXPANSION_WAVE_C1_001` repo truth закрыла оставшиеся пункты `toolbar.insert.image` и `toolbar.proofing.spellcheck` как explicit blocked decisions, а не как live Wave C delivery.
+- Что нарушаем: старую literal формулировку baseline, где полный Wave C предполагал live promotion для image и spellcheck.
+- Причина: для image и spellcheck отсутствует безопасно выбранный offline-first execution path; форсированная live-promotion создала бы ложный green и недостоверную capability truth.
+- Риск: если deviation не зафиксировать явно, docs и acceptance могут расходиться с catalog truth и снова создать split-brain.
+- Rollback: либо реализовать полноценные offline-first image и spellcheck paths и перевести элементы в live, либо сохранить blocked и поддерживать factual rebaseline в docs и tests.
+- План удаления исключения: снять исключение, когда для image и spellcheck будет принято owner-approved runtime решение и закрыт соответствующий write contour без false-green.

@@ -180,3 +180,15 @@ This allowance does not authorize early shell runtime or spatial runtime.
 - но не становится автоматическим release criterion для `Writer v1`.
 - release hardening остаётся последним обязательным runtime axis для текущего `Writer v1`.
 - любой broader freedom после него допускается только как post-version-one evaluation only.
+
+## 13. Toolbar Rebaseline Note
+
+Для toolbar configuration subsystem current operating truth зафиксирована как factual rebaseline, а не как literal continuation старого transition текста:
+- `LIVE_COUNT = 17`
+- `PLANNED_IDS = []`
+- `BLOCKED_IDS = [toolbar.insert.image, toolbar.proofing.spellcheck, toolbar.proofing.grammar]`
+- `master` profile visible in configurator surface
+- ordering runtime realized
+
+Wave C literal wording из старого baseline больше не является current repo truth.
+Current closure model для Wave C: `C1 live delivery + explicit blocked decisions`.
