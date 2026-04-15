@@ -5,15 +5,16 @@ STATUS: EXECUTION_READY_AFTER_REBIND
 CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.0
 TARGET_BRANCH: main
-SELECTED_BASE_SHA: 97248d679bc88ee422abf970a90b3c78ad665294
-BINDING_BASE_SHA: 97248d679bc88ee422abf970a90b3c78ad665294
+SELECTED_BASE_SHA: CAPTURE_AT_ACTUAL_START
+BINDING_BASE_SHA: CAPTURE_AT_ACTUAL_START
 VERIFIED_AT_UTC: CAPTURE_AT_ACTUAL_START
 DELIVERY_POLICY: COMMIT_NOT_REQUIRED_BY_TASK_POLICY_PUSH_NOT_REQUIRED_BY_TASK_POLICY_PR_NOT_REQUIRED_BY_TASK_POLICY_MERGE_NOT_REQUIRED_BY_TASK_POLICY
 
 ## MICRO_GOAL
 
-- Честно заякорить current toolbar truth на той же зелёной базе без runtime repair и без forward migration.
+- Честно заякорить current toolbar truth на live verified base без runtime repair и без forward migration.
 - Сверить packet language с живым source truth и focused truth test set.
+- Подтвердить, что между carrier-green basis `TOOLBAR_PHASE_00A_BASE_REBIND_AND_VERIFY_001` и live selected base не появилось toolbar source drift.
 - Классифицировать результат как `GREEN_CURRENT_TRUTH_ALIGNED`, `RED_DOC_DRIFT_ONLY`, `RED_SOURCE_TRUTH_DRIFT`, `RED_RUNTIME_REPAIR_REQUIRED` или `BLOCKED_ENV`.
 
 ## ARTIFACT
@@ -48,11 +49,12 @@ DELIVERY_POLICY: COMMIT_NOT_REQUIRED_BY_TASK_POLICY_PUSH_NOT_REQUIRED_BY_TASK_PO
 
 ### ENTRY_CRITERIA
 
-- `TOOLBAR_PHASE_00A_BASE_REBIND_AND_VERIFY_001` green on the same base.
+- `TOOLBAR_PHASE_00A_BASE_REBIND_AND_VERIFY_001` green carrier basis exists.
 - First contour independent review confirmed `GREEN_NO_CARRIER_DEFECT`.
 - Current local dirty root must not be used as execution base.
-- Clean isolated worktree from `SELECTED_BASE_SHA` is required.
-- Remote main SHA must still equal `SELECTED_BASE_SHA` at actual start.
+- Fetch remote and capture live `origin/main` SHA at actual start.
+- Clean isolated worktree from captured live `SELECTED_BASE_SHA` is required.
+- Diff from `TOOLBAR_PHASE_00A_BASE_REBIND_AND_VERIFY_001` basis to captured live `SELECTED_BASE_SHA` must not contain toolbar source, focused test or dependency drift.
 
 ## CONTRACT_SHAPES
 
@@ -69,41 +71,44 @@ DELIVERY_POLICY: COMMIT_NOT_REQUIRED_BY_TASK_POLICY_PUSH_NOT_REQUIRED_BY_TASK_PO
 
 1. Create clean isolated worktree from `SELECTED_BASE_SHA`.
 2. Record `HEAD_SHA_BEFORE`, local branch and worktree state.
-3. Fetch remote and confirm remote main SHA equals `SELECTED_BASE_SHA`.
-4. Run focused truth test set only.
-5. Capture current truth table from `toolbarFunctionCatalog.mjs`, `toolbarProfileState.mjs`, `toolbarRuntimeProjection.mjs`, `index.html` and `editor.js`.
-6. Compare current truth table against phase plan language.
-7. Classify result as `GREEN_CURRENT_TRUTH_ALIGNED`, `RED_DOC_DRIFT_ONLY`, `RED_SOURCE_TRUTH_DRIFT`, `RED_RUNTIME_REPAIR_REQUIRED` or `BLOCKED_ENV`.
-8. If green, close Phase 01 as report-only pass.
-9. If `RED_DOC_DRIFT_ONLY`, open `TOOLBAR_PHASE_01B_DOC_REBIND_PATCH_001`.
-10. If `RED_SOURCE_TRUTH_DRIFT`, open `TOOLBAR_PHASE_01C_SOURCE_TRUTH_PATCH_001`.
-11. If `RED_RUNTIME_REPAIR_REQUIRED`, stop and defer to Phase 03.
+3. Fetch remote and capture live `origin/main` SHA as `SELECTED_BASE_SHA` and `BINDING_BASE_SHA`.
+4. Confirm toolbar slice delta from `TOOLBAR_PHASE_00A_BASE_REBIND_AND_VERIFY_001` basis to captured live `SELECTED_BASE_SHA` is docs-only or empty.
+5. Run focused truth test set only.
+6. Capture current truth table from `toolbarFunctionCatalog.mjs`, `toolbarProfileState.mjs`, `toolbarRuntimeProjection.mjs`, `index.html` and `editor.js`.
+7. Compare current truth table against phase plan language.
+8. Classify result as `GREEN_CURRENT_TRUTH_ALIGNED`, `RED_DOC_DRIFT_ONLY`, `RED_SOURCE_TRUTH_DRIFT`, `RED_RUNTIME_REPAIR_REQUIRED` or `BLOCKED_ENV`.
+9. If green, close Phase 01 as report-only pass.
+10. If `RED_DOC_DRIFT_ONLY`, open `TOOLBAR_PHASE_01B_DOC_REBIND_PATCH_001`.
+11. If `RED_SOURCE_TRUTH_DRIFT`, open `TOOLBAR_PHASE_01C_SOURCE_TRUTH_PATCH_001`.
+12. If `RED_RUNTIME_REPAIR_REQUIRED`, stop and defer to Phase 03.
 
 ## CHECKS
 
 ### PRE_CHECKS
 
 - `CHECK_01_PRE_FETCH_REMOTE`: fetch remote metadata
-- `CHECK_02_PRE_REMOTE_MAIN_EQUALS_SELECTED_BASE`: remote main SHA match
+- `CHECK_02_PRE_CAPTURE_LIVE_SELECTED_BASE`: live remote main SHA captured as selected base
 - `CHECK_03_PRE_CREATE_ISOLATED_WORKTREE`: clean isolation true
 - `CHECK_04_PRE_00A_HANDOFF_PRESENT`: first contour green handoff fields present
+- `CHECK_05_PRE_00A_TO_LIVE_TOOLBAR_DELTA`: no toolbar source, focused test or dependency drift since 00A basis
 
 ### POST_CHECKS
 
-- `CHECK_05_POST_FOCUSED_NODE_TEST_CMD`: `toolbar-profile-state.foundation.test.js`, `toolbar-runtime-projection.helpers.test.js`, `sector-m-toolbar-profile-switch.test.js`, `sector-m-toolbar-profile-ordering.test.js`
-- `CHECK_06_POST_CURRENT_TRUTH_TABLE_CAPTURE`: live order, planned ids, blocked ids, profile state, runtime projection and master visibility captured
-- `CHECK_07_POST_DRIFT_CLASSIFICATION`: drift classification explicit
-- `CHECK_08_POST_NO_SOURCE_WRITES`: source diff empty
-- `CHECK_09_POST_NEXT_STEP_RECORDED`: next step explicit
+- `CHECK_06_POST_FOCUSED_NODE_TEST_CMD`: `toolbar-profile-state.foundation.test.js`, `toolbar-runtime-projection.helpers.test.js`, `sector-m-toolbar-profile-switch.test.js`, `sector-m-toolbar-profile-ordering.test.js`
+- `CHECK_07_POST_CURRENT_TRUTH_TABLE_CAPTURE`: live order, planned ids, blocked ids, profile state, runtime projection and master visibility captured
+- `CHECK_08_POST_DRIFT_CLASSIFICATION`: drift classification explicit
+- `CHECK_09_POST_NO_SOURCE_WRITES`: source diff empty
+- `CHECK_10_POST_NEXT_STEP_RECORDED`: next step explicit
 
 ### ACCEPTANCE
 
 - `ACCEPTANCE_01_CURRENT_TRUTH_TABLE_MATCHES_ALL_12_ANCHORS`
-- `ACCEPTANCE_02_FOCUSED_TRUTH_TEST_SET_GREEN`
-- `ACCEPTANCE_03_NO_EXECUTION_LANGUAGE_CONTRADICTS_CURRENT_17_LIVE_3_BLOCKED_MASTER_VISIBLE_ORDERING_REALIZED_TRUTH`
-- `ACCEPTANCE_04_SOURCE_DIFF_EMPTY`
-- `ACCEPTANCE_05_RESULT_CLASSIFIED_HONESTLY`
-- `ACCEPTANCE_06_NEXT_STEP_RECORDED_WITHOUT_SCOPE_EXPANSION`
+- `ACCEPTANCE_02_00A_TO_LIVE_TOOLBAR_DELTA_IS_DOCS_ONLY_OR_EMPTY`
+- `ACCEPTANCE_03_FOCUSED_TRUTH_TEST_SET_GREEN`
+- `ACCEPTANCE_04_NO_EXECUTION_LANGUAGE_CONTRADICTS_CURRENT_17_LIVE_3_BLOCKED_MASTER_VISIBLE_ORDERING_REALIZED_TRUTH`
+- `ACCEPTANCE_05_SOURCE_DIFF_EMPTY`
+- `ACCEPTANCE_06_RESULT_CLASSIFIED_HONESTLY`
+- `ACCEPTANCE_07_NEXT_STEP_RECORDED_WITHOUT_SCOPE_EXPANSION`
 
 ### CLASSIFICATION_VALUES
 
@@ -146,8 +151,9 @@ DELIVERY_POLICY: COMMIT_NOT_REQUIRED_BY_TASK_POLICY_PUSH_NOT_REQUIRED_BY_TASK_PO
 
 ## STOP_CONDITION
 
-- stop if remote main moved from `SELECTED_BASE_SHA`
+- stop if live selected base cannot be captured and rebound at actual start
 - stop if clean isolation cannot be obtained
+- stop if 00A basis to live base delta contains toolbar source, focused test or dependency drift
 - stop if any runtime repair becomes necessary to make Phase 01 green
 - stop if any storage change beyond profile state becomes necessary
 - stop if any forward migration language enters Phase 01
@@ -200,7 +206,7 @@ Rules:
 - no silent scope expansion into forward migration
 - report exact failed check and exact drift classification
 - if target branch drifted request new owner approved base SHA
+- if 00A basis to live base delta is not docs-only or empty open a separate carrier reassessment packet instead of forcing Phase 01
 - if doc drift only is found, open `TOOLBAR_PHASE_01B_DOC_REBIND_PATCH_001`
 - if source truth drift is found, open `TOOLBAR_PHASE_01C_SOURCE_TRUTH_PATCH_001`
 - if runtime repair is required, stop and defer to Phase 03
-
