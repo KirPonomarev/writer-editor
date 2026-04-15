@@ -1,0 +1,21 @@
+{
+  "ticketId": "TOOLBAR_TEST_DESIGN_VISUAL_ORACLE_001",
+  "objective": "FREEZE_ONE_OWNER_APPROVED_HISTORICAL_TOOLBAR_TEST_DESIGN_BASELINE",
+  "result": "DONE",
+  "sourceCommitSha": "f15fbf75ef45e1c7356c8a0b76bc3e4ba7a7bcfa",
+  "currentMainlineHeadShaAtRecord": "3b38b35a4be0f8d5bb6dbf25e593f7c7601610ad",
+  "tagName": "toolbar_test_design_visual_oracle_approved_2026_04_09",
+  "ownerApprovalTrue": true,
+  "historicalOnlyTrue": true,
+  "testDesignOnlyTrue": true,
+  "notReleaseCanonTrue": true,
+  "evidenceRefs": [
+    "TOOLBAR_TEST_DESIGN_VISUAL_ORACLE_HISTORICAL_RECORD_V1.json",
+    "ticket-meta.json",
+    "2026-04-15--toolbar-test-design-visual-oracle-preservation.md"
+  ],
+  "notes": [
+    "This package preserves the owner-approved toolbar visual state before menu function expansion and before toolbar catalog runtime expansion.",
+    "This package must not be used to rewrite current mainline truth by implication."
+  ]
+}

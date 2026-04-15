@@ -1,0 +1,15 @@
+{
+  "ticketId": "TOOLBAR_TEST_DESIGN_VISUAL_ORACLE_001",
+  "taskId": "TOOLBAR-TEST-DESIGN-VISUAL-ORACLE-PRESERVATION-001",
+  "artifactClass": "HISTORICAL_TEST_DESIGN_VISUAL_ORACLE",
+  "status": "DONE",
+  "ownerApprovedTrue": true,
+  "stateClass": "TEST_DESIGN_ONLY",
+  "doesNotOverrideCurrentMainlineReality": true,
+  "notReleaseCanon": true,
+  "promotionRequiresExplicitOwnerDecision": true,
+  "baseCommitSha": "f15fbf75ef45e1c7356c8a0b76bc3e4ba7a7bcfa",
+  "recordHeadSha": "3b38b35a4be0f8d5bb6dbf25e593f7c7601610ad",
+  "tagName": "toolbar_test_design_visual_oracle_approved_2026_04_09",
+  "approvedAtUtc": "2026-04-15T13:47:11Z"
+}

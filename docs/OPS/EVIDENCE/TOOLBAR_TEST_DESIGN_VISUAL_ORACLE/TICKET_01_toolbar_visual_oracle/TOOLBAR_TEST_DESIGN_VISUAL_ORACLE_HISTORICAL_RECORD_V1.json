@@ -1,0 +1,68 @@
+{
+  "artifactId": "TOOLBAR_TEST_DESIGN_VISUAL_ORACLE_HISTORICAL_RECORD_V1",
+  "schemaVersion": 1,
+  "status": "OWNER_APPROVED_HISTORICAL_ORACLE_BOUND",
+  "oracleClass": "TEST_DESIGN_ONLY",
+  "visualSourceType": "HISTORICAL_OWNER_APPROVED_LIVE_RUNTIME_BASELINE",
+  "visualBaselinePolicy": {
+    "temporaryIterationAcceptanceBaselineTrue": true,
+    "permanentProductDesignCanonFalse": true,
+    "futureRedesignAllowedTrue": true,
+    "doesNotOverrideCurrentMainlineReality": true,
+    "promotionRequiresExplicitOwnerDecision": true
+  },
+  "sourcePriority": [
+    "HISTORICAL_SOURCE_COMMIT",
+    "OWNER_APPROVAL_IN_LIVE_RUNTIME",
+    "THREAD_FORENSIC_BINDING",
+    "CURRENT_REPO_RECORD"
+  ],
+  "binding": {
+    "baseCommitSha": "f15fbf75ef45e1c7356c8a0b76bc3e4ba7a7bcfa",
+    "baseCommitDateMsk": "2026-04-09T22:23:37+03:00",
+    "recordHeadSha": "3b38b35a4be0f8d5bb6dbf25e593f7c7601610ad",
+    "recordedAtUtc": "2026-04-15T13:47:11Z",
+    "tagName": "toolbar_test_design_visual_oracle_approved_2026_04_09"
+  },
+  "ownerApproval": {
+    "approvedTrue": true,
+    "approvalMode": "LIVE_RUNTIME_CONFIRMATION",
+    "approvedAtUtc": "2026-04-15T13:47:11Z",
+    "approvalSummary": "Owner confirmed the launched historical state as the exact visual previously approved."
+  },
+  "historicalFacts": {
+    "toolbarTitle": "Функции тулбара",
+    "placeholderPolicy": "NEW_SLOT_REMAINS_NEW_SLOT_AT_THIS_STAGE",
+    "knownVisiblePlaceholders": [
+      "Color Background",
+      "No Background",
+      "New Slot"
+    ],
+    "menuCatalogLayerNotYetActiveTrue": true,
+    "toolbarCatalogRuntimeExpansionNotYetActiveTrue": true
+  },
+  "runtimeVerification": {
+    "historicalWorktreeLaunchSucceededTrue": true,
+    "rendererBuildSucceededTrue": true,
+    "electronWindowReachedVisibleStateTrue": true,
+    "screenCaptureStatus": "SYSTEM_CAPTURE_UNAVAILABLE_DURING_PACKETIZATION",
+    "screenCaptureRequiredFollowup": false
+  },
+  "doNotDrift": [
+    "overall_toolbar_geometry",
+    "left_cluster_balance",
+    "compact_panel_visual_language",
+    "title_Функции_тулбара",
+    "placeholder_slots_remain_unrenamed_at_this_stage"
+  ],
+  "nonGoals": [
+    "This artifact does not redefine current mainline toolbar truth.",
+    "This artifact does not promote the test design to product release canon.",
+    "This artifact does not authorize silent renaming or feature admission."
+  ],
+  "threadEvidenceSummary": {
+    "acceptedVisualStateRecordedTrue": true,
+    "ownerVisualProofStatusPassRecordedTrue": true,
+    "visualSavepointPrecedesMenuFunctionDiscussionTrue": true
+  }
+}
