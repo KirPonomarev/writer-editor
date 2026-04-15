@@ -16,6 +16,8 @@ test('sector-m toolbar minimal runtime: editor wires the shared registry project
   assert.ok(source.includes('createToolbarRuntimeRegistry('), 'shared runtime registry must be created')
   assert.ok(source.includes('applyToolbarActiveProfile('), 'active profile projection must be applied')
   assert.ok(source.includes('function projectMainFloatingToolbarRuntime('), 'main toolbar projection helper must exist')
+  assert.ok(source.includes('let toolbarRuntimeRegistry'), 'runtime registry must stay rebindable for live root refresh')
+  assert.ok(source.includes('snapshot?.registry'), 'projection helper must accept refreshed runtime registry snapshots')
 
   const cleanupStart = source.indexOf('function closeOrphanedMainToolbarOverlays(')
   const helperStart = source.indexOf('function projectMainFloatingToolbarRuntime(')
@@ -27,12 +29,15 @@ test('sector-m toolbar minimal runtime: editor wires the shared registry project
 
   assert.ok(cleanupSnippet.includes('hasVisibleItems'), 'cleanup helper must respect the projection snapshot visibility flag')
   assert.ok(cleanupSnippet.includes('visibleBindKeys'), 'cleanup helper must inspect visible bind keys from the projection snapshot')
-  assert.ok(cleanupSnippet.includes('setParagraphMenuOpen(false);'), 'cleanup helper must close orphaned paragraph overlay')
-  assert.ok(cleanupSnippet.includes('setListMenuOpen(false);'), 'cleanup helper must close orphaned list overlay')
-  assert.ok(cleanupSnippet.includes('setToolbarSpacingMenuOpen(false);'), 'cleanup helper must close orphaned spacing overlay')
+  assert.ok(cleanupSnippet.includes('currentParagraphMenu.hidden = true;'), 'cleanup helper must close orphaned paragraph overlay on the current runtime registry')
+  assert.ok(cleanupSnippet.includes("currentParagraphTriggerButton.setAttribute('aria-expanded', 'false');"), 'cleanup helper must reset paragraph trigger aria on the current runtime registry')
+  assert.ok(cleanupSnippet.includes('currentListMenu.hidden = true;'), 'cleanup helper must close orphaned list overlay on the current runtime registry')
+  assert.ok(cleanupSnippet.includes("currentListTriggerButton.setAttribute('aria-expanded', 'false');"), 'cleanup helper must reset list trigger aria on the current runtime registry')
+  assert.ok(cleanupSnippet.includes('currentSpacingMenu.hidden = true;'), 'cleanup helper must close orphaned spacing overlay on the current runtime registry')
   assert.ok(helperSnippet.includes('restoreFocusFromHiddenMainToolbarItem();'), 'helper must restore focus away from hidden toolbar controls')
   assert.ok(helperSnippet.includes('syncToolbarFormattingState();'), 'helper must resync derived formatting state after projection')
   assert.ok(helperSnippet.includes('scheduleToolbarAnchorUpdate();'), 'helper must resync toolbar anchors after projection')
+  assert.ok(helperSnippet.includes('toolbarRuntimeRegistry = snapshot.registry;'), 'helper must adopt the refreshed runtime registry after projection')
   assert.equal(helperSnippet.includes('leftToolbar'), false, 'projection helper must stay on the main floating toolbar path')
 
   const commitStart = source.indexOf('function commitToolbarConfiguratorState(nextState) {')

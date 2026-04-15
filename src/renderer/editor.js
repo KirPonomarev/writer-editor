@@ -137,21 +137,9 @@ const toolbarStylesMenu = document.querySelector('[data-toolbar-styles-menu]');
 const paragraphStyleOptionButtons = Array.from(document.querySelectorAll('[data-style-paragraph-option]'));
 const characterStyleOptionButtons = Array.from(document.querySelectorAll('[data-style-character-option]'));
 const listActionButtons = Array.from(document.querySelectorAll('[data-list-action]'));
-const toolbarRuntimeRegistry = typeof toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry === 'function'
+let toolbarRuntimeRegistry = typeof toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry === 'function'
   ? toolbarRuntimeProjectionModule.createToolbarRuntimeRegistry({
       toolbar,
-      toolbarShell,
-      toolbarSpacingMenu,
-      toolbarSpacingAction,
-      paragraphMenu,
-      paragraphTriggerButton,
-      listMenu,
-      listTriggerButton,
-      toolbarTunableItems,
-      setToolbarSpacingMenuOpen,
-      setParagraphMenuOpen,
-      setListMenuOpen,
-      scheduleToolbarAnchorUpdate,
     })
   : null;
 if (isTiptapMode) {
@@ -993,7 +981,14 @@ function getVisibleToolbarBindKeys(snapshot) {
   return Array.isArray(keys) ? new Set(keys.filter((key) => typeof key === 'string' && key.length > 0)) : null;
 }
 
+function getCurrentMainToolbarRoot() {
+  return document.querySelector('[data-toolbar]') || toolbar;
+}
+
 function closeOrphanedMainToolbarOverlays(snapshot) {
+  const runtimeRegistry = snapshot?.registry && typeof snapshot.registry === 'object'
+    ? snapshot.registry
+    : toolbarRuntimeRegistry;
   const visibleBindKeys = getVisibleToolbarBindKeys(snapshot);
   const hasVisibleItems = !snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot)
     ? true
@@ -1008,7 +1003,7 @@ function closeOrphanedMainToolbarOverlays(snapshot) {
       || visibleBindKeys.has('toolbar.paragraph.alignment')
       || visibleBindKeys.has('style-paragraph')
     )
-    : !isMainToolbarAnchorHidden(paragraphTriggerButton);
+    : !isMainToolbarAnchorHidden(runtimeRegistry?.paragraphTriggerButton || paragraphTriggerButton);
   const spacingVisible = hasVisibleItems;
   const listVisible = typeof snapshot?.listTriggerVisible === 'boolean'
     ? snapshot.listTriggerVisible
@@ -1016,22 +1011,35 @@ function closeOrphanedMainToolbarOverlays(snapshot) {
     ? false
     : visibleBindKeys
     ? visibleBindKeys.has('list-type')
-    : !isMainToolbarAnchorHidden(listTriggerButton);
+    : !isMainToolbarAnchorHidden(runtimeRegistry?.listTriggerButton || listTriggerButton);
 
-  if (paragraphMenu && !paragraphMenu.hidden && !paragraphVisible) {
-    setParagraphMenuOpen(false);
+  const currentParagraphMenu = runtimeRegistry?.paragraphMenu || paragraphMenu;
+  const currentParagraphTriggerButton = runtimeRegistry?.paragraphTriggerButton || paragraphTriggerButton;
+  const currentListMenu = runtimeRegistry?.listMenu || listMenu;
+  const currentListTriggerButton = runtimeRegistry?.listTriggerButton || listTriggerButton;
+  const currentSpacingMenu = runtimeRegistry?.toolbarSpacingMenu || toolbarSpacingMenu;
+
+  if (currentParagraphMenu && !currentParagraphMenu.hidden && !paragraphVisible) {
+    currentParagraphMenu.hidden = true;
+    if (currentParagraphTriggerButton && typeof currentParagraphTriggerButton.setAttribute === 'function') {
+      currentParagraphTriggerButton.setAttribute('aria-expanded', 'false');
+    }
   }
-  if (listMenu && !listMenu.hidden && !listVisible) {
-    setListMenuOpen(false);
+  if (currentListMenu && !currentListMenu.hidden && !listVisible) {
+    currentListMenu.hidden = true;
+    if (currentListTriggerButton && typeof currentListTriggerButton.setAttribute === 'function') {
+      currentListTriggerButton.setAttribute('aria-expanded', 'false');
+    }
   }
-  if (toolbarSpacingMenu && !toolbarSpacingMenu.hidden && !spacingVisible) {
-    setToolbarSpacingMenuOpen(false);
+  if (currentSpacingMenu && !currentSpacingMenu.hidden && !spacingVisible) {
+    currentSpacingMenu.hidden = true;
   }
 }
 
 function restoreFocusFromHiddenMainToolbarItem() {
   const activeElement = document.activeElement;
-  if (!(activeElement instanceof HTMLElement) || !toolbar || !toolbar.contains(activeElement)) {
+  const currentToolbar = getCurrentMainToolbarRoot();
+  if (!(activeElement instanceof HTMLElement) || !(currentToolbar instanceof HTMLElement) || !currentToolbar.contains(activeElement)) {
     return;
   }
   const activeToolbarItem = activeElement.closest('[data-toolbar-item-key]');
@@ -1067,6 +1075,9 @@ function projectMainFloatingToolbarRuntime(reason = 'projection') {
       toolbarItemOffsets,
     }
   );
+  if (snapshot?.registry && snapshot.registry !== toolbarRuntimeRegistry) {
+    toolbarRuntimeRegistry = snapshot.registry;
+  }
   closeOrphanedMainToolbarOverlays(snapshot);
   restoreFocusFromHiddenMainToolbarItem();
   syncToolbarFormattingState();
