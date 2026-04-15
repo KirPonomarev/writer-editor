@@ -1,10 +1,28 @@
 import { listLiveToolbarFunctionCatalogEntries } from './toolbarFunctionCatalog.mjs';
 
 const DEFAULT_GROUP_SELECTOR = '.floating-toolbar__group';
+const DEFAULT_TOOLBAR_SELECTOR = '[data-toolbar]';
+const DEFAULT_TOOLBAR_SHELL_SELECTOR = '[data-toolbar-shell]';
+const DEFAULT_TOOLBAR_CONTROLS_SELECTOR = '.floating-toolbar__controls';
 const TOOLBAR_ITEM_SELECTOR = '[data-toolbar-item-key], [data-bind-key], [data-toolbar-bind-key]';
 
 function isNodeLike(value) {
   return Boolean(value) && typeof value === 'object';
+}
+
+function isConnectedNode(value) {
+  return isNodeLike(value) && value.isConnected !== false;
+}
+
+function queryDocumentNode(documentLike, selector) {
+  if (!isNodeLike(documentLike) || typeof documentLike.querySelector !== 'function') {
+    return null;
+  }
+  try {
+    return documentLike.querySelector(selector);
+  } catch {
+    return null;
+  }
 }
 
 function queryNode(root, selector) {
@@ -91,6 +109,45 @@ function normalizeRegistryInput(input) {
   return isNodeLike(input) ? input : {};
 }
 
+function getToolbarOwnerDocument(toolbarNode, fallbackDocument = null) {
+  if (isNodeLike(toolbarNode?.ownerDocument)) {
+    return toolbarNode.ownerDocument;
+  }
+  return isNodeLike(fallbackDocument) ? fallbackDocument : null;
+}
+
+function resolveToolbarRoot(options = {}) {
+  const toolbarSelector = typeof options.toolbarSelector === 'string' && options.toolbarSelector.trim()
+    ? options.toolbarSelector.trim()
+    : DEFAULT_TOOLBAR_SELECTOR;
+  const ownerDocument = getToolbarOwnerDocument(options.toolbar, options.ownerDocument);
+  const discoveredToolbar = queryDocumentNode(ownerDocument, toolbarSelector);
+  if (isNodeLike(discoveredToolbar)) {
+    return discoveredToolbar;
+  }
+  const explicitToolbar = isConnectedNode(options.toolbar)
+    ? options.toolbar
+    : null;
+  if (explicitToolbar) {
+    return explicitToolbar;
+  }
+  return null;
+}
+
+function resolveToolbarShell(toolbarRoot, options = {}) {
+  if (isConnectedNode(options.toolbarShell)) {
+    return options.toolbarShell;
+  }
+  return queryNode(toolbarRoot, DEFAULT_TOOLBAR_SHELL_SELECTOR)
+    || queryNode(toolbarRoot, '.floating-toolbar__shell')
+    || toolbarRoot
+    || null;
+}
+
+function resolveToolbarControlsContainer(toolbarShell) {
+  return queryNode(toolbarShell, DEFAULT_TOOLBAR_CONTROLS_SELECTOR) || toolbarShell || null;
+}
+
 function getDescriptorNodeBindKey(node) {
   if (!isNodeLike(node) || !isNodeLike(node.dataset)) {
     return '';
@@ -152,7 +209,7 @@ function getToolbarControlsContainer(registry) {
     return registry.controlsContainer;
   }
   if (isNodeLike(registry?.toolbarShell)) {
-    const controlsContainer = queryNode(registry.toolbarShell, '.floating-toolbar__controls');
+    const controlsContainer = queryNode(registry.toolbarShell, DEFAULT_TOOLBAR_CONTROLS_SELECTOR);
     return isNodeLike(controlsContainer) ? controlsContainer : registry.toolbarShell;
   }
   return null;
@@ -262,15 +319,17 @@ export function collectVisibleToolbarItemIdsFromState(profileState, catalogEntri
 
 export function createToolbarRuntimeRegistry(input = {}) {
   const options = normalizeRegistryInput(input);
-  const toolbarRoot = isNodeLike(options.toolbar) ? options.toolbar : null;
-  const toolbarShell = isNodeLike(options.toolbarShell)
-    ? options.toolbarShell
-    : (
-      queryNode(toolbarRoot, '[data-toolbar-shell]')
-      || queryNode(toolbarRoot, '.floating-toolbar__shell')
-      || toolbarRoot
-    );
-  const controlsContainer = queryNode(toolbarShell, '.floating-toolbar__controls') || toolbarShell;
+  const toolbarSelector = typeof options.toolbarSelector === 'string' && options.toolbarSelector.trim()
+    ? options.toolbarSelector.trim()
+    : DEFAULT_TOOLBAR_SELECTOR;
+  const ownerDocument = getToolbarOwnerDocument(options.toolbar, options.ownerDocument);
+  const toolbarRoot = resolveToolbarRoot({
+    ...options,
+    toolbarSelector,
+    ownerDocument,
+  });
+  const toolbarShell = resolveToolbarShell(toolbarRoot, options);
+  const controlsContainer = resolveToolbarControlsContainer(toolbarShell);
   const groupSelector = typeof options.groupSelector === 'string' && options.groupSelector.trim()
     ? options.groupSelector.trim()
     : DEFAULT_GROUP_SELECTOR;
@@ -335,6 +394,8 @@ export function createToolbarRuntimeRegistry(input = {}) {
     toolbarRoot,
     toolbarShell,
     controlsContainer,
+    toolbarSelector,
+    ownerDocument,
     groupSelector,
     catalogEntries: Object.freeze([...catalogEntries]),
     itemDescriptors: Object.freeze(itemDescriptors),
@@ -357,6 +418,75 @@ export function createToolbarRuntimeRegistry(input = {}) {
     listTriggerButton: isNodeLike(options.listTriggerButton)
       ? options.listTriggerButton
       : queryNode(toolbarShell, '[data-toolbar-item-key="list-type"]'),
+  });
+}
+
+function registryNeedsRefresh(registry) {
+  if (!isNodeLike(registry)) {
+    return false;
+  }
+  const liveToolbarRoot = resolveToolbarRoot({
+    toolbar: registry.toolbarRoot,
+    toolbarSelector: registry.toolbarSelector,
+    ownerDocument: registry.ownerDocument,
+  });
+  const liveToolbarShell = resolveToolbarShell(liveToolbarRoot);
+  const liveControlsContainer = resolveToolbarControlsContainer(liveToolbarShell);
+  if (!isNodeLike(liveToolbarRoot) || !isNodeLike(liveToolbarShell) || !isNodeLike(liveControlsContainer)) {
+    return true;
+  }
+  if (liveToolbarRoot !== registry.toolbarRoot || liveToolbarShell !== registry.toolbarShell || liveControlsContainer !== registry.controlsContainer) {
+    return true;
+  }
+  return Array.isArray(registry.itemDescriptors)
+    && registry.itemDescriptors.some((descriptor) => descriptor?.node && descriptor.node.isConnected === false);
+}
+
+function refreshToolbarRuntimeRegistry(registry) {
+  if (!isNodeLike(registry)) {
+    return null;
+  }
+  if (!registryNeedsRefresh(registry)) {
+    return registry;
+  }
+  const liveToolbarRoot = resolveToolbarRoot({
+    toolbar: registry.toolbarRoot,
+    toolbarSelector: registry.toolbarSelector,
+    ownerDocument: registry.ownerDocument,
+  });
+  if (!isNodeLike(liveToolbarRoot)) {
+    return null;
+  }
+  const refreshedRegistry = createToolbarRuntimeRegistry({
+    toolbar: liveToolbarRoot,
+    toolbarSelector: registry.toolbarSelector,
+    ownerDocument: registry.ownerDocument,
+    groupSelector: registry.groupSelector,
+    catalogEntries: registry.catalogEntries,
+  });
+  if (!isNodeLike(refreshedRegistry.toolbarShell) || !isNodeLike(refreshedRegistry.controlsContainer)) {
+    return null;
+  }
+  return refreshedRegistry;
+}
+
+function buildFailClosedToolbarRuntimeSnapshot(registry, reason = 'stale-root') {
+  return Object.freeze({
+    visibleItemIds: Object.freeze([]),
+    hiddenItemIds: Object.freeze([]),
+    visibleBindKeys: Object.freeze([]),
+    hiddenBindKeys: Object.freeze([]),
+    missingBindKeys: Array.isArray(registry?.missingBindKeys) ? registry.missingBindKeys : Object.freeze([]),
+    groupVisibleBindKeys: Object.freeze([]),
+    paragraphTriggerVisible: false,
+    listTriggerVisible: false,
+    spacingMenuVisible: false,
+    listMenuVisible: false,
+    hasVisibleItems: false,
+    anchorResyncRequired: false,
+    failClosed: true,
+    failClosedReason: reason,
+    registry,
   });
 }
 
@@ -415,10 +545,14 @@ export function resolveToolbarRuntimeSnapshot(registry) {
 }
 
 export function applyToolbarActiveProfile(registry, profileState) {
-  const catalogEntries = Array.isArray(registry?.catalogEntries) ? registry.catalogEntries : [];
+  const activeRegistry = refreshToolbarRuntimeRegistry(registry);
+  if (!activeRegistry) {
+    return buildFailClosedToolbarRuntimeSnapshot(registry, 'stale-root');
+  }
+  const catalogEntries = Array.isArray(activeRegistry?.catalogEntries) ? activeRegistry.catalogEntries : [];
   const visibleItemIds = normalizeVisibleItemIds(profileState, catalogEntries);
   const visibleItemIdSet = new Set(visibleItemIds);
-  const itemDescriptors = Array.isArray(registry?.itemDescriptors) ? registry.itemDescriptors : [];
+  const itemDescriptors = Array.isArray(activeRegistry?.itemDescriptors) ? activeRegistry.itemDescriptors : [];
   const visibleItemIndexById = getVisibleItemIndexMap(visibleItemIds);
 
   for (const descriptor of itemDescriptors) {
@@ -428,12 +562,12 @@ export function applyToolbarActiveProfile(registry, profileState) {
     descriptor.node.hidden = !visibleItemIdSet.has(descriptor.itemId);
   }
 
-  for (const groupDescriptor of Array.isArray(registry?.groupDescriptors) ? registry.groupDescriptors : []) {
+  for (const groupDescriptor of Array.isArray(activeRegistry?.groupDescriptors) ? activeRegistry.groupDescriptors : []) {
     reorderVisibleItemsWithinGroup(groupDescriptor, visibleItemIndexById, visibleItemIdSet);
   }
-  reorderVisibleGroups(registry, visibleItemIndexById);
+  reorderVisibleGroups(activeRegistry, visibleItemIndexById);
 
-  const groupDescriptors = Array.isArray(registry?.groupDescriptors) ? registry.groupDescriptors : [];
+  const groupDescriptors = Array.isArray(activeRegistry?.groupDescriptors) ? activeRegistry.groupDescriptors : [];
   for (const groupDescriptor of groupDescriptors) {
     if (!groupDescriptor?.element) {
       continue;
@@ -442,15 +576,20 @@ export function applyToolbarActiveProfile(registry, profileState) {
     groupDescriptor.element.hidden = !groupVisible;
   }
 
-  const paragraphTriggerDescriptor = getParagraphTriggerDescriptor(registry);
+  const paragraphTriggerDescriptor = getParagraphTriggerDescriptor(activeRegistry);
   const paragraphTriggerVisible = Boolean(paragraphTriggerDescriptor?.node) && paragraphTriggerDescriptor.node.hidden !== true;
-  const listTriggerDescriptor = getListTriggerDescriptor(registry);
+  const listTriggerDescriptor = getListTriggerDescriptor(activeRegistry);
   const listTriggerVisible = Boolean(listTriggerDescriptor?.node) && listTriggerDescriptor.node.hidden !== true;
-  closeParagraphOverlay(registry, paragraphTriggerVisible);
-  closeListOverlay(registry, listTriggerVisible);
-  closeSpacingOverlay(registry);
+  closeParagraphOverlay(activeRegistry, paragraphTriggerVisible);
+  closeListOverlay(activeRegistry, listTriggerVisible);
+  closeSpacingOverlay(activeRegistry);
 
-  return resolveToolbarRuntimeSnapshot(registry);
+  return Object.freeze({
+    ...resolveToolbarRuntimeSnapshot(activeRegistry),
+    failClosed: false,
+    failClosedReason: '',
+    registry: activeRegistry,
+  });
 }
 
 export function applyToolbarProfileMinimal(registry, profileState) {
