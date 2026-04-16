@@ -717,6 +717,12 @@ body {
   gap: 4px;
 }
 
+.floating-toolbar__group[hidden],
+.floating-toolbar__button[hidden],
+.floating-toolbar__select-wrap[hidden] {
+  display: none !important;
+}
+
 .floating-toolbar-spacing-menu {
   position: absolute;
   left: 0;
