@@ -1843,12 +1843,6 @@ body {
   transition: border-color 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
 }
 
-.configurator-panel__bucket.is-active-profile {
-  box-shadow:
-    inset 0 0 0 1px rgba(193, 175, 154, 0.38),
-    0 1px 3px rgba(84, 69, 56, 0.02);
-}
-
 .configurator-panel__bucket.is-drop-target {
   background:
     linear-gradient(
