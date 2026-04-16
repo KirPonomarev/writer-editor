@@ -1,0 +1,57 @@
+# TOOLBAR_CONTOUR_05_NONBLOCKED_CONTRADICTION_SELECTION_BRIEF_001
+
+## Task Identity
+- TASK_ID: TOOLBAR_CONTOUR_05_NONBLOCKED_CONTRADICTION_SELECTION_BRIEF_001
+- TASK_CLASS: DOCS_ONLY_SELECTION_BRIEF
+- TYPE: OPS_REPORT
+- STATUS: PREPARED_ONLY_NOT_OPENED
+- CANON_VERSION: v3.13a-final
+- BLOCKING_SOURCE: CANON_CONTEXT_HANDOFF_ONLY
+- PRIMARY_TRUTH_BASE: CURRENT_MAINLINE_ONLY_PLUS_FRESH_LIVE_REPRO_ONLY
+- REFERENCE_MAINLINE_SHA: e14e361860416082e081d251a444104d50863abb
+
+## Current Live State
+- LOCAL_FOURTH_CONTOUR_STATUS: CLOSED_AFTER_VALID_REPRO_RECLASSIFICATION
+- REPO_WIDE_CLOSURE_TRUTH: PRESERVE_CURRENT_MAINLINE_CLOSURE_TRUTH
+- NEW_LIVE_NONBLOCKED_CONTRADICTION_REPROVED: FALSE_ON_CURRENT_EVIDENCE
+- CURRENT_GATE_STATUS: WAIT_FOR_EXPLICIT_NEW_CONTRADICTION_SELECTION_ONLY
+
+## Non-Authorization Boundary
+- This brief does not open a write contour.
+- This brief does not authorize runtime mutation by implication.
+- This brief does not reuse historical 04H or 04J assumptions.
+- This brief does not claim a fifth write contour already exists.
+
+## Admission Rule For Any Real Fifth Contour
+- CONDITION_01: A new live nonblocked contradiction must be reproved on current mainline.
+- CONDITION_02: The repro must run on a clean isolated worktree from the captured current mainline SHA.
+- CONDITION_03: The repro must classify one exact dominant layer.
+- CONDITION_04: Only after that classification may one bounded execution packet be prepared.
+
+## Allowed Outcomes
+- OUTCOME_01: KEEP_SYMBOLIC_CLOSEOUT_READY_AND_DO_NOT_OPEN_ANY_NEW_WRITE_CONTOUR
+- OUTCOME_02: PREPARE_ONE_EXPLICIT_EVIDENCE_BACKED_EXECUTION_BRIEF_ONLY_AFTER_NEW_CONTRADICTION_REPRO
+
+## Required Inputs For Future Selection
+- FRESH_CURRENT_MAINLINE_SHA
+- CLEAN_ISOLATED_WORKTREE
+- EXACT_REPRO_STEPS
+- SCREEN_OR_PROBE_EVIDENCE
+- DOMINANT_LAYER_CLASSIFICATION
+- ALLOWLIST_PROPOSAL
+- STOP_RULES
+- DELIVERY_POLICY
+
+## Explicit Prohibitions
+- No contour 05 write packet by narrative continuity alone.
+- No contour 05 write packet from stale local dirty state.
+- No contour 05 write packet from invalid overlay-hit assumptions.
+- No contour 05 write packet without fresh live repro on current mainline.
+
+## Evidence Basis
+- CANON_AND_CONTEXT_REQUIRE_ONE_EXPLICIT_EVIDENCE_BACKED_NONBLOCKED_CONTOUR_SELECTION_BRIEF_ONLY
+- HANDOFF_REQUIRES_PRESERVING_CURRENT_MAINLINE_CLOSURE_TRUTH_IF_NO_NEW_CONTRADICTION_IS_REPROVED
+- LOCAL_CONTOUR_04_CLOSEOUT_CONFIRMS_NO_REMAINING_VALID_EDITOR_HIT_DEFECT_ON_CURRENT_EVIDENCE
+
+## Single Next Step
+WAIT_FOR_A_NEW_LIVE_NONBLOCKED_CONTRADICTION_OR_OWNER_DIRECTION_TO_PREPARE_ONE_EXPLICIT_SELECTION_PACKET_ONLY
