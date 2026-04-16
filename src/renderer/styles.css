@@ -1983,11 +1983,11 @@ body {
 
 .configurator-panel__grid {
   display: grid;
-  grid-template-columns: repeat(4, max-content);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   justify-content: center;
   align-items: start;
-  gap: 22px 32px;
-  width: min(100%, 1080px);
+  gap: 20px 28px;
+  width: min(100%, 1120px);
   margin: 28px auto 0;
   padding: 0;
   box-sizing: border-box;
@@ -1996,17 +1996,17 @@ body {
 .configurator-panel__column {
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  align-items: start;
+  gap: 14px;
+  align-items: stretch;
   min-width: 0;
 }
 
 .configurator-panel__slot {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 10px;
-  width: fit-content;
-  max-width: 100%;
+  width: 100%;
   min-height: 40px;
   padding: 0 14px 0 12px;
   border: 1px solid transparent;
@@ -2020,16 +2020,56 @@ body {
   outline: none;
 }
 
-.configurator-panel__slot:hover {
+.configurator-panel__slot:not([disabled]):hover {
   background: rgba(243, 238, 232, 0.38);
   border-color: rgba(226, 218, 210, 0.76);
 }
 
-.configurator-panel__slot:focus,
-.configurator-panel__slot:focus-visible {
+.configurator-panel__slot:not([disabled]):focus,
+.configurator-panel__slot:not([disabled]):focus-visible {
   outline: none;
   background: rgba(243, 238, 232, 0.46);
   border-color: rgba(224, 216, 208, 0.92);
+}
+
+.configurator-panel__slot--placeholder,
+.configurator-panel__slot[data-slot-placeholder="true"] {
+  background: rgba(250, 246, 240, 0.7);
+  border-color: rgba(226, 218, 210, 0.7);
+  color: rgba(130, 121, 111, 0.72);
+  cursor: default;
+  box-shadow: none;
+}
+
+.configurator-panel__slot--placeholder .configurator-panel__slot-icon,
+.configurator-panel__slot[data-slot-placeholder="true"] .configurator-panel__slot-icon {
+  color: rgba(130, 121, 111, 0.5);
+  opacity: 0.72;
+}
+
+.configurator-panel__slot--placeholder .configurator-panel__slot-text,
+.configurator-panel__slot[data-slot-placeholder="true"] .configurator-panel__slot-text {
+  color: rgba(130, 121, 111, 0.74);
+}
+
+.configurator-panel__slot.is-blocked,
+.configurator-panel__slot[disabled]:not([data-slot-placeholder="true"]) {
+  background: rgba(243, 238, 232, 0.22);
+  border-color: rgba(226, 218, 210, 0.54);
+  color: rgba(109, 104, 97, 0.66);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.configurator-panel__slot.is-blocked .configurator-panel__slot-icon,
+.configurator-panel__slot[disabled]:not([data-slot-placeholder="true"]) .configurator-panel__slot-icon {
+  color: rgba(109, 104, 97, 0.44);
+  opacity: 0.72;
+}
+
+.configurator-panel__slot.is-blocked .configurator-panel__slot-text,
+.configurator-panel__slot[disabled]:not([data-slot-placeholder="true"]) .configurator-panel__slot-text {
+  color: rgba(109, 104, 97, 0.68);
 }
 
 .configurator-panel__slot.is-selected {
@@ -2073,16 +2113,12 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  font-family: var(--font-family);
   font-size: 13px;
   font-weight: 400;
   line-height: 1.28;
   letter-spacing: -0.01em;
   color: rgba(43, 39, 35, 0.92);
-}
-
-.configurator-panel__column > .configurator-panel__slot:nth-child(2) {
-  margin-top: 2px;
 }
 
 .configurator-panel__grid > .configurator-panel__column:nth-child(5) {
