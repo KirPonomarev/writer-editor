@@ -142,9 +142,6 @@ let toolbarRuntimeRegistry = typeof toolbarRuntimeProjectionModule.createToolbar
       toolbar,
     })
   : null;
-if (isTiptapMode) {
-  setTiptapFormattingStateHandler(syncToolbarFormattingState);
-}
 const modeSwitcher = document.querySelector('[data-mode-switcher]');
 const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
 const leftTabsHost = document.querySelector('[data-left-tabs]');
@@ -2589,7 +2586,7 @@ function initializeFloatingToolbarDragFoundation() {
     paragraphMenu,
     listMenu,
     toolbarStylesMenu,
-    toolbarColorPicker,
+    toolbarColorPickerOverlay,
     toolbarSpacingMenu,
   ].forEach((surface) => {
     surface?.addEventListener('mousedown', preserveSelectionOnMouseDown, true);
@@ -6938,6 +6935,9 @@ initializeFloatingToolbarListMenu();
 initializeFloatingToolbarColorPickerOverlay();
 initializeFloatingToolbarStylesMenu();
 syncToolbarFormattingState();
+if (isTiptapMode) {
+  setTiptapFormattingStateHandler(syncToolbarFormattingState);
+}
 initializeFloatingToolbarItemOffsetTuning();
 initializeFloatingToolbarDragFoundation();
 initializeLeftToolbarSpacingMenu();
