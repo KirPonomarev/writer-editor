@@ -248,20 +248,9 @@ const SAFE_RESET_BASELINE_FONT_WEIGHT = 'light';
 const SAFE_RESET_BASELINE_LINE_HEIGHT = '1.0';
 const SAFE_RESET_BASELINE_VIEW_MODE = 'default';
 const PROJECT_WORKSPACE_RESET_TABS = Object.freeze(['project', 'outline', 'search', 'roman']);
-const TOOLBAR_CONFIGURATOR_LIBRARY_GROUP_ORDER = Object.freeze(
-  [...new Set(listLiveToolbarFunctionCatalogEntries().map((entry) => entry.uiGroup))]
-);
-const TOOLBAR_CONFIGURATOR_LIBRARY_GROUP_LABELS = Object.freeze({
-  font: 'font',
-  text: 'text',
-  'format-inline': 'format',
-  paragraph: 'paragraph',
-  insert: 'insert',
-  color: 'color',
-  review: 'review',
-  styles: 'styles',
-  history: 'history',
-});
+const TOOLBAR_CONFIGURATOR_LIBRARY_COLUMN_COUNT = 4;
+const TOOLBAR_CONFIGURATOR_LIBRARY_MIN_SLOT_COUNT = 20;
+const TOOLBAR_CONFIGURATOR_LIBRARY_PLACEHOLDER_TEXT = 'New Slot';
 const TOOLBAR_COLOR_PICKER_MODE_LABELS = Object.freeze({
   text: 'Text color',
   highlight: 'Highlight color',
@@ -1862,6 +1851,147 @@ function getToolbarConfiguratorBucketItems(bucket) {
   return Array.from(bucket.querySelectorAll('.configurator-panel__bucket-item[data-item-id]'));
 }
 
+function listToolbarConfiguratorLibraryEntries() {
+  return listLiveToolbarFunctionCatalogEntries();
+}
+
+function getToolbarConfiguratorLibraryColumns(entries = listToolbarConfiguratorLibraryEntries()) {
+  const safeEntries = Array.isArray(entries) ? entries.filter(Boolean) : [];
+  const slotCount = Math.max(
+    TOOLBAR_CONFIGURATOR_LIBRARY_MIN_SLOT_COUNT,
+    Math.ceil(safeEntries.length / TOOLBAR_CONFIGURATOR_LIBRARY_COLUMN_COUNT) * TOOLBAR_CONFIGURATOR_LIBRARY_COLUMN_COUNT,
+  );
+  const columns = Array.from({ length: TOOLBAR_CONFIGURATOR_LIBRARY_COLUMN_COUNT }, () => []);
+  for (let index = 0; index < slotCount; index += 1) {
+    const entry = safeEntries[index] || null;
+    columns[index % TOOLBAR_CONFIGURATOR_LIBRARY_COLUMN_COUNT].push(entry
+      ? {
+          kind: 'item',
+          itemId: entry.id,
+          entry,
+        }
+      : {
+          kind: 'placeholder',
+          itemId: '',
+          label: TOOLBAR_CONFIGURATOR_LIBRARY_PLACEHOLDER_TEXT,
+          slotIndex: index,
+        });
+  }
+  return columns;
+}
+
+function isToolbarConfiguratorProtectedBucket(bucketKey) {
+  return normalizeToolbarConfiguratorProfileName(bucketKey) === 'master';
+}
+
+function getToolbarConfiguratorBucketDropIntent(payload, bucketKey) {
+  const normalizedItemId = typeof payload?.itemId === 'string' ? payload.itemId.trim() : '';
+  if (!normalizedItemId) return null;
+
+  const targetBucketKey = normalizeToolbarConfiguratorProfileName(bucketKey);
+  if (payload?.sourceType !== 'bucket-item') {
+    return targetBucketKey === 'minimal' ? 'insert' : null;
+  }
+
+  const sourceBucketKey = normalizeToolbarConfiguratorProfileName(payload.bucketKey || '');
+  if (sourceBucketKey === targetBucketKey) {
+    return 'reorder';
+  }
+  if (sourceBucketKey === 'master' && targetBucketKey === 'minimal') {
+    return 'copy-from-master';
+  }
+  if (sourceBucketKey === 'minimal' && targetBucketKey === 'master') {
+    return 'return-to-master';
+  }
+  return null;
+}
+
+function moveToolbarConfiguratorItemWithinBucket(itemIds, itemId, insertionIndex) {
+  const nextIds = Array.isArray(itemIds) ? [...itemIds] : [];
+  const normalizedItemId = typeof itemId === 'string' ? itemId.trim() : '';
+  const currentIndex = nextIds.indexOf(normalizedItemId);
+  if (!normalizedItemId || currentIndex < 0) return null;
+
+  nextIds.splice(currentIndex, 1);
+  let nextInsertIndex = Math.min(
+    Math.max(Number.isFinite(insertionIndex) ? Math.trunc(insertionIndex) : nextIds.length, 0),
+    nextIds.length,
+  );
+  nextIds.splice(nextInsertIndex, 0, normalizedItemId);
+  return nextIds.join('\u0000') === itemIds.join('\u0000') ? null : nextIds;
+}
+
+function insertToolbarConfiguratorItemIntoBucket(itemIds, itemId, insertionIndex) {
+  const nextIds = Array.isArray(itemIds) ? [...itemIds] : [];
+  const normalizedItemId = typeof itemId === 'string' ? itemId.trim() : '';
+  if (!normalizedItemId) return null;
+
+  const currentIndex = nextIds.indexOf(normalizedItemId);
+  if (currentIndex >= 0) {
+    nextIds.splice(currentIndex, 1);
+  }
+  let nextInsertIndex = Math.min(
+    Math.max(Number.isFinite(insertionIndex) ? Math.trunc(insertionIndex) : nextIds.length, 0),
+    nextIds.length,
+  );
+  nextIds.splice(nextInsertIndex, 0, normalizedItemId);
+  return nextIds.join('\u0000') === itemIds.join('\u0000') ? null : nextIds;
+}
+
+function resolveToolbarConfiguratorInterBucketTransfer(state, payload, bucketKey, insertionIndex) {
+  const normalizedState = isPlainObject(state) ? state : createToolbarConfiguratorSeedState();
+  const normalizedItemId = typeof payload?.itemId === 'string' ? payload.itemId.trim() : '';
+  const sourceBucketKey = normalizeToolbarConfiguratorProfileName(payload?.bucketKey || '');
+  const targetBucketKey = normalizeToolbarConfiguratorProfileName(bucketKey);
+  if (!normalizedItemId || sourceBucketKey === targetBucketKey) {
+    return null;
+  }
+
+  const minimalIds = Array.isArray(normalizedState?.toolbarProfiles?.minimal)
+    ? [...normalizedState.toolbarProfiles.minimal]
+    : [];
+  const masterIds = Array.isArray(normalizedState?.toolbarProfiles?.master)
+    ? [...normalizedState.toolbarProfiles.master]
+    : [];
+
+  if (!masterIds.includes(normalizedItemId)) {
+    return null;
+  }
+
+  if (sourceBucketKey === 'master' && targetBucketKey === 'minimal') {
+    const nextMinimalIds = insertToolbarConfiguratorItemIntoBucket(minimalIds, normalizedItemId, insertionIndex);
+    if (!nextMinimalIds) return null;
+    return {
+      ...normalizedState,
+      toolbarProfiles: {
+        ...normalizedState.toolbarProfiles,
+        minimal: nextMinimalIds,
+        master: masterIds,
+      },
+    };
+  }
+
+  if (sourceBucketKey === 'minimal' && targetBucketKey === 'master') {
+    if (!minimalIds.includes(normalizedItemId)) {
+      return null;
+    }
+    const nextMinimalIds = minimalIds.filter((currentItemId) => currentItemId !== normalizedItemId);
+    if (nextMinimalIds.length === minimalIds.length) {
+      return null;
+    }
+    return {
+      ...normalizedState,
+      toolbarProfiles: {
+        ...normalizedState.toolbarProfiles,
+        minimal: nextMinimalIds,
+        master: masterIds,
+      },
+    };
+  }
+
+  return null;
+}
+
 function clearToolbarConfiguratorDragSource() {
   if (activeConfiguratorDragElement instanceof HTMLElement) {
     activeConfiguratorDragElement.classList.remove('is-dragging');
@@ -1873,6 +2003,7 @@ function clearToolbarConfiguratorDropTargets() {
   configuratorBuckets.forEach((bucket) => {
     bucket.classList.remove('is-drop-target', 'is-drop-target-inside');
     delete bucket.dataset.dropIndex;
+    delete bucket.dataset.dropIntent;
     bucket.querySelectorAll('.configurator-panel__bucket-item.is-drop-target-before, .configurator-panel__bucket-item.is-drop-target-after').forEach((item) => {
       item.classList.remove('is-drop-target-before', 'is-drop-target-after');
     });
@@ -1925,29 +2056,56 @@ function getToolbarConfiguratorBucketInsertionIndex(bucket, event, hoveredItem =
 }
 
 function commitToolbarConfiguratorBucketDrop(payload, bucketKey, insertionIndex, hoveredItem = null) {
-  const normalizedBucketKey = normalizeToolbarConfiguratorProfileName(bucketKey);
+  const targetBucketKey = normalizeToolbarConfiguratorProfileName(bucketKey);
   const normalizedItemId = typeof payload?.itemId === 'string' ? payload.itemId.trim() : '';
   if (!normalizedItemId) return false;
 
   const catalogItem = getToolbarConfiguratorCatalogItem(normalizedItemId);
   if (!catalogItem || catalogItem.implementationState !== 'live') return false;
 
-  const currentIds = getToolbarConfiguratorProfileIds(normalizedBucketKey);
+  const dropIntent = getToolbarConfiguratorBucketDropIntent(payload, targetBucketKey);
+  if (!dropIntent) return false;
+
+  const currentIds = getToolbarConfiguratorProfileIds(targetBucketKey);
   const nextIds = [...currentIds];
   const clampedIndex = Math.min(Math.max(Number.isFinite(insertionIndex) ? insertionIndex : nextIds.length, 0), nextIds.length);
 
   if (payload?.sourceType === 'bucket-item') {
-    const normalizedSourceBucketKey = normalizeToolbarConfiguratorProfileName(payload.bucketKey || '');
-    if (normalizedSourceBucketKey !== normalizedBucketKey) return false;
+    if (dropIntent === 'return-to-master') {
+      const nextState = resolveToolbarConfiguratorInterBucketTransfer(
+        configuratorBucketState,
+        payload,
+        targetBucketKey,
+        clampedIndex,
+      );
+      if (!nextState) return false;
+      commitToolbarConfiguratorState(nextState);
+      return true;
+    }
 
-    const currentIndex = nextIds.indexOf(normalizedItemId);
-    if (currentIndex < 0) return false;
-    if (hoveredItem instanceof HTMLElement && hoveredItem.dataset.itemId === normalizedItemId) return false;
-
-    nextIds.splice(currentIndex, 1);
-    const nextInsertIndex = Math.min(Math.max(clampedIndex, 0), nextIds.length);
-    if (nextInsertIndex === currentIndex) return false;
-    nextIds.splice(nextInsertIndex, 0, normalizedItemId);
+    if (dropIntent === 'copy-from-master') {
+      const nextState = resolveToolbarConfiguratorInterBucketTransfer(
+        configuratorBucketState,
+        payload,
+        targetBucketKey,
+        clampedIndex,
+      );
+      if (!nextState) return false;
+      commitToolbarConfiguratorState(nextState);
+      return true;
+    } else {
+      if (hoveredItem instanceof HTMLElement && hoveredItem.dataset.itemId === normalizedItemId) return false;
+      const reorderedIds = moveToolbarConfiguratorItemWithinBucket(nextIds, normalizedItemId, clampedIndex);
+      if (!reorderedIds) return false;
+      commitToolbarConfiguratorState({
+        ...configuratorBucketState,
+        toolbarProfiles: {
+          ...configuratorBucketState.toolbarProfiles,
+          [targetBucketKey]: reorderedIds,
+        },
+      });
+      return true;
+    }
   } else {
     if (nextIds.includes(normalizedItemId)) return false;
     nextIds.splice(clampedIndex, 0, normalizedItemId);
@@ -1961,7 +2119,7 @@ function commitToolbarConfiguratorBucketDrop(payload, bucketKey, insertionIndex,
     ...configuratorBucketState,
     toolbarProfiles: {
       ...configuratorBucketState.toolbarProfiles,
-      [normalizedBucketKey]: nextIds,
+      [targetBucketKey]: nextIds,
     },
   });
   return true;
@@ -1986,6 +2144,7 @@ function commitToolbarConfiguratorState(nextState) {
   if (normalizeProjectId(currentProjectId)) {
     writeToolbarConfiguratorStoredState(currentProjectId, normalizedState);
   }
+  renderToolbarConfiguratorLibrary();
   renderToolbarConfiguratorProfileSwitch();
   renderToolbarConfiguratorBuckets();
   projectMainFloatingToolbarRuntime('configurator-commit');
@@ -2009,13 +2168,27 @@ function adoptToolbarConfiguratorState(projectId = currentProjectId) {
 }
 
 function createToolbarConfiguratorLibraryButton(entry) {
+  const isPlaceholder = entry?.kind === 'placeholder';
+  const catalogEntry = isPlaceholder ? null : entry?.entry || entry || null;
+  const isLiveEntry = !isPlaceholder && catalogEntry?.implementationState === 'live';
+  const isSelected = isLiveEntry && getToolbarConfiguratorProfileIds(getToolbarConfiguratorActiveProfile()).includes(catalogEntry.id);
   const button = document.createElement('button');
   button.type = 'button';
-  button.className = 'configurator-panel__slot';
-  button.draggable = true;
-  button.dataset.itemId = entry.id;
-  button.dataset.uiGroup = entry.uiGroup;
-  button.setAttribute('aria-label', getToolbarConfiguratorEntryAriaLabel(entry));
+  button.className = `configurator-panel__slot${isPlaceholder ? ' configurator-panel__slot--placeholder' : ''}`;
+  button.draggable = isLiveEntry;
+  button.disabled = !isLiveEntry;
+  if (isLiveEntry) {
+    button.dataset.itemId = catalogEntry.id;
+  } else {
+    button.dataset.slotPlaceholder = 'true';
+  }
+  button.dataset.implementationState = catalogEntry?.implementationState || '';
+  button.setAttribute('aria-label', isPlaceholder ? TOOLBAR_CONFIGURATOR_LIBRARY_PLACEHOLDER_TEXT : getToolbarConfiguratorEntryAriaLabel(catalogEntry));
+  button.setAttribute('aria-disabled', isLiveEntry ? 'false' : 'true');
+  if (isSelected) {
+    button.classList.add('is-selected');
+    button.setAttribute('aria-pressed', 'true');
+  }
 
   const icon = document.createElement('span');
   icon.className = 'configurator-panel__slot-icon';
@@ -2023,7 +2196,9 @@ function createToolbarConfiguratorLibraryButton(entry) {
 
   const text = document.createElement('span');
   text.className = 'configurator-panel__slot-text';
-  text.textContent = getToolbarConfiguratorEntryPanelLabel(entry);
+  text.textContent = isPlaceholder
+    ? (entry?.label || TOOLBAR_CONFIGURATOR_LIBRARY_PLACEHOLDER_TEXT)
+    : getToolbarConfiguratorEntryPanelLabel(catalogEntry);
 
   button.append(icon, text);
   return button;
@@ -2033,18 +2208,10 @@ function renderToolbarConfiguratorLibrary() {
   if (!configuratorLibraryGrid) return;
   configuratorLibraryGrid.replaceChildren();
 
-  TOOLBAR_CONFIGURATOR_LIBRARY_GROUP_ORDER.forEach((groupId) => {
-    const groupItems = listLiveToolbarFunctionCatalogEntries().filter((entry) => entry.uiGroup === groupId);
-    if (!groupItems.length) return;
-
+  getToolbarConfiguratorLibraryColumns().forEach((groupItems) => {
     const column = document.createElement('div');
     column.className = 'configurator-panel__column';
 
-    const label = document.createElement('div');
-    label.className = 'configurator-panel__label';
-    label.textContent = TOOLBAR_CONFIGURATOR_LIBRARY_GROUP_LABELS[groupId] || groupId;
-
-    column.appendChild(label);
     groupItems.forEach((entry) => {
       column.appendChild(createToolbarConfiguratorLibraryButton(entry));
     });
@@ -2055,6 +2222,7 @@ function renderToolbarConfiguratorLibrary() {
 function createToolbarConfiguratorBucketItem(itemId, bucketKey, index) {
   const entry = getToolbarConfiguratorCatalogItem(itemId);
   const label = getToolbarConfiguratorEntryPanelLabel(entry) || itemId;
+  const isProtectedBucket = isToolbarConfiguratorProtectedBucket(bucketKey);
 
   const item = document.createElement('div');
   item.className = 'configurator-panel__bucket-item';
@@ -2081,6 +2249,8 @@ function createToolbarConfiguratorBucketItem(itemId, bucketKey, index) {
   removeButton.dataset.bucketKey = bucketKey;
   removeButton.setAttribute('aria-label', `Remove ${label}`);
   removeButton.textContent = '×';
+  removeButton.hidden = isProtectedBucket;
+  removeButton.disabled = isProtectedBucket;
 
   item.append(icon, text, removeButton);
   return item;
@@ -2108,6 +2278,7 @@ function addToolbarConfiguratorItem(itemId, bucketKey = getToolbarConfiguratorAc
   const catalogItem = getToolbarConfiguratorCatalogItem(normalizedItemId);
   if (!catalogItem || catalogItem.implementationState !== 'live') return;
   const targetBucketKey = normalizeToolbarConfiguratorProfileName(bucketKey);
+  if (isToolbarConfiguratorProtectedBucket(targetBucketKey)) return;
   const targetIds = getToolbarConfiguratorProfileIds(targetBucketKey);
   if (targetIds.includes(normalizedItemId)) return;
   commitToolbarConfiguratorState({
@@ -2123,6 +2294,7 @@ function removeToolbarConfiguratorItem(itemId, bucketKey = getToolbarConfigurato
   const normalizedItemId = typeof itemId === 'string' ? itemId.trim() : '';
   if (!normalizedItemId) return;
   const targetBucketKey = normalizeToolbarConfiguratorProfileName(bucketKey);
+  if (isToolbarConfiguratorProtectedBucket(targetBucketKey)) return;
   const targetIds = getToolbarConfiguratorProfileIds(targetBucketKey);
   const nextIds = targetIds.filter((currentItemId) => currentItemId !== normalizedItemId);
   if (nextIds.length === targetIds.length) return;
@@ -2205,13 +2377,18 @@ function initializeToolbarConfiguratorFoundation() {
     if (!isLibraryButton && !isBucketItem) {
       return;
     }
+    const sourceBucketKey = isBucketItem
+      ? normalizeToolbarConfiguratorProfileName(
+        sourceElement.dataset.bucketKey || sourceElement.closest('[data-configurator-bucket]')?.dataset.configuratorBucket || ''
+      )
+      : '';
     const itemId = sourceElement.dataset.itemId || '';
     if (!itemId || !event.dataTransfer) return;
     activeConfiguratorDragPayload = {
       sourceType: isBucketItem ? 'bucket-item' : 'library-item',
       itemId,
       bucketKey: isBucketItem
-        ? sourceElement.dataset.bucketKey || sourceElement.closest('[data-configurator-bucket]')?.dataset.configuratorBucket || ''
+        ? sourceBucketKey
         : undefined,
       sourceIndex: isBucketItem ? sourceElement.dataset.bucketIndex || '' : undefined,
     };
@@ -2231,48 +2408,46 @@ function initializeToolbarConfiguratorFoundation() {
     const bucketKey = bucket.dataset.configuratorBucket || '';
     bucket.addEventListener('dragover', (event) => {
       const payload = readConfiguratorDragPayload(event);
-      if (!payload || !payload.sourceType || !payload.itemId) {
-        return;
-      }
-      if (payload.sourceType === 'bucket-item') {
-        const sourceBucketKey = normalizeToolbarConfiguratorProfileName(payload.bucketKey || '');
-        if (sourceBucketKey !== bucketKey) {
-          return;
-        }
-      }
+      const dropIntent = getToolbarConfiguratorBucketDropIntent(payload, bucketKey);
+      if (!payload || !payload.sourceType || !payload.itemId || !dropIntent) return;
       const hoveredItem = event.target instanceof Element
         ? event.target.closest('.configurator-panel__bucket-item[data-item-id]')
         : null;
-      const insertionIndex = getToolbarConfiguratorBucketInsertionIndex(bucket, event, hoveredItem);
-      const marker = hoveredItem instanceof HTMLElement && bucket.contains(hoveredItem)
-        ? (event.clientX < hoveredItem.getBoundingClientRect().left + hoveredItem.getBoundingClientRect().width / 2 ? 'before' : 'after')
-        : 'inside';
+      const insertionIndex = dropIntent === 'return-to-master'
+        ? getToolbarConfiguratorProfileIds('master').length
+        : getToolbarConfiguratorBucketInsertionIndex(bucket, event, hoveredItem);
+      const marker = dropIntent === 'return-to-master'
+        ? 'inside'
+        : hoveredItem instanceof HTMLElement && bucket.contains(hoveredItem)
+          ? (event.clientX < hoveredItem.getBoundingClientRect().left + hoveredItem.getBoundingClientRect().width / 2 ? 'before' : 'after')
+          : 'inside';
       setToolbarConfiguratorDropTarget(bucket, marker, hoveredItem instanceof HTMLElement && bucket.contains(hoveredItem) ? hoveredItem : null);
       event.preventDefault();
       if (event.dataTransfer) {
         event.dataTransfer.dropEffect = payload.sourceType === 'bucket-item' ? 'move' : 'copy';
       }
       bucket.dataset.dropIndex = String(insertionIndex);
+      bucket.dataset.dropIntent = dropIntent;
     });
     bucket.addEventListener('dragleave', () => {
       clearToolbarConfiguratorDropTargets();
     });
     bucket.addEventListener('drop', (event) => {
       const payload = readConfiguratorDragPayload(event);
+      const dropIntent = getToolbarConfiguratorBucketDropIntent(payload, bucketKey);
       const hoveredItem = event.target instanceof Element
         ? event.target.closest('.configurator-panel__bucket-item[data-item-id]')
         : null;
-      const insertionIndex = getToolbarConfiguratorBucketInsertionIndex(bucket, event, hoveredItem);
+      const insertionIndex = dropIntent === 'return-to-master'
+        ? getToolbarConfiguratorProfileIds('master').length
+        : getToolbarConfiguratorBucketInsertionIndex(bucket, event, hoveredItem);
       event.preventDefault();
       clearToolbarConfiguratorDropTargets();
       delete bucket.dataset.dropIndex;
-      if (!payload || !payload.sourceType || !payload.itemId) return;
-      if (payload.sourceType === 'bucket-item') {
-        const sourceBucketKey = normalizeToolbarConfiguratorProfileName(payload.bucketKey || '');
-        if (sourceBucketKey !== bucketKey) {
-          activeConfiguratorDragPayload = null;
-          return;
-        }
+      delete bucket.dataset.dropIntent;
+      if (!payload || !payload.sourceType || !payload.itemId || !dropIntent) {
+        activeConfiguratorDragPayload = null;
+        return;
       }
       commitToolbarConfiguratorBucketDrop(payload, bucketKey, insertionIndex, hoveredItem instanceof HTMLElement ? hoveredItem : null);
       activeConfiguratorDragPayload = null;
