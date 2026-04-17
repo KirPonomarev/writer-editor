@@ -2294,7 +2294,6 @@ function renderToolbarConfiguratorLibrary() {
 function createToolbarConfiguratorBucketItem(itemId, bucketKey, index) {
   const entry = getToolbarConfiguratorCatalogItem(itemId);
   const label = getToolbarConfiguratorEntryPanelLabel(entry) || itemId;
-  const isProtectedBucket = isToolbarConfiguratorProtectedBucket(bucketKey);
   const isActiveItem = isToolbarConfiguratorBucketItemSelected(bucketKey, itemId);
 
   const item = document.createElement('div');
@@ -2323,8 +2322,6 @@ function createToolbarConfiguratorBucketItem(itemId, bucketKey, index) {
   removeButton.dataset.bucketKey = bucketKey;
   removeButton.setAttribute('aria-label', `Remove ${label}`);
   removeButton.textContent = '×';
-  removeButton.hidden = isProtectedBucket;
-  removeButton.disabled = isProtectedBucket;
 
   item.append(icon, text, removeButton);
   return item;
@@ -2366,7 +2363,6 @@ function removeToolbarConfiguratorItem(itemId, bucketKey = getToolbarConfigurato
   const normalizedItemId = typeof itemId === 'string' ? itemId.trim() : '';
   if (!normalizedItemId) return;
   const targetBucketKey = normalizeToolbarConfiguratorProfileName(bucketKey);
-  if (isToolbarConfiguratorProtectedBucket(targetBucketKey)) return;
   const targetIds = getToolbarConfiguratorProfileIds(targetBucketKey);
   const nextIds = targetIds.filter((currentItemId) => currentItemId !== normalizedItemId);
   if (nextIds.length === targetIds.length) return;

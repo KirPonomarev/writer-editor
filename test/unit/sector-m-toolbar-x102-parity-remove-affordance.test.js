@@ -81,7 +81,7 @@ test('sector-m toolbar x102 parity remove affordance: bucket surface no longer d
   assert.ok(styles.includes('.configurator-panel__bucket-item.is-active .configurator-panel__bucket-remove'))
 })
 
-test('sector-m toolbar x102 parity remove affordance: editor wiring binds remove discoverability to click or selection on minimal bucket items', () => {
+test('sector-m toolbar x102 parity remove affordance: editor wiring binds remove discoverability to click or selection on bucket items', () => {
   const source = readEditorSource()
 
   assert.ok(source.includes('let activeConfiguratorBucketItemSelection = {'))
@@ -89,8 +89,6 @@ test('sector-m toolbar x102 parity remove affordance: editor wiring binds remove
   assert.ok(source.includes("configuratorPanel.addEventListener('focusin', (event) => {"))
   assert.ok(source.includes("event.target.closest('.configurator-panel__bucket-item[data-item-id]')"))
   assert.ok(source.includes('item.tabIndex = 0;'))
-  assert.ok(source.includes('removeButton.hidden = isProtectedBucket;'))
-  assert.ok(source.includes('removeButton.disabled = isProtectedBucket;'))
 })
 
 test('sector-m toolbar x102 parity remove affordance: bucket item selection normalizes, renders, and reconciles honestly', () => {
