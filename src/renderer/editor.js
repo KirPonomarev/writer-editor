@@ -1853,6 +1853,11 @@ function getToolbarConfiguratorProfileIds(profileName = getToolbarConfiguratorAc
   return Array.isArray(profileIds) ? profileIds : [];
 }
 
+function syncToolbarConfiguratorLibraryGridVisibility(profileName = getToolbarConfiguratorActiveProfile()) {
+  if (!(configuratorLibraryGrid instanceof HTMLElement)) return;
+  configuratorLibraryGrid.hidden = normalizeToolbarConfiguratorProfileName(profileName) !== 'master';
+}
+
 function createToolbarConfiguratorBucketItemSelection(bucketKey = '', itemId = '') {
   const normalizedItemId = typeof itemId === 'string' ? itemId.trim() : '';
   const normalizedBucketKey = TOOLBAR_CONFIGURATOR_PROFILE_NAMES.includes(bucketKey) ? bucketKey : '';
@@ -2206,6 +2211,7 @@ function renderToolbarConfiguratorProfileSwitch() {
     button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     button.tabIndex = isActive ? 0 : -1;
   });
+  syncToolbarConfiguratorLibraryGridVisibility(activeProfile);
 }
 
 function commitToolbarConfiguratorState(nextState) {
@@ -2346,6 +2352,7 @@ function renderToolbarConfiguratorBuckets() {
       bucket.appendChild(createToolbarConfiguratorBucketItem(itemId, bucketKey, index));
     });
   });
+  syncToolbarConfiguratorLibraryGridVisibility(activeProfile);
 }
 
 function addToolbarConfiguratorItem(itemId, bucketKey = getToolbarConfiguratorActiveProfile()) {
@@ -2384,6 +2391,7 @@ function removeToolbarConfiguratorItem(itemId, bucketKey = getToolbarConfigurato
 
 function setToolbarConfiguratorActiveProfile(profileName) {
   const nextProfile = normalizeToolbarConfiguratorProfileName(profileName);
+  syncToolbarConfiguratorLibraryGridVisibility(nextProfile);
   if (nextProfile === getToolbarConfiguratorActiveProfile()) {
     return false;
   }
@@ -2401,6 +2409,7 @@ function initializeToolbarConfiguratorFoundation() {
   }
 
   adoptToolbarConfiguratorState(currentProjectId);
+  syncToolbarConfiguratorLibraryGridVisibility();
 
   configuratorPanel.addEventListener('click', (event) => {
     if (event.target === configuratorPanel) {
