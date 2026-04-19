@@ -1848,11 +1848,21 @@ body {
 }
 
 .configurator-panel__section--minimal .configurator-panel__bucket {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: center;
+  justify-items: stretch;
   padding-left: 0;
   padding-right: 0;
-  column-gap: 28px;
-  row-gap: 20px;
-  justify-content: space-between;
+  column-gap: 12px;
+  row-gap: 0;
+  justify-content: initial;
+}
+
+.configurator-panel__section--minimal .configurator-panel__bucket-item {
+  display: flex;
+  width: 100%;
+  min-width: 0;
 }
 
 .configurator-panel__bucket.is-drop-target {
