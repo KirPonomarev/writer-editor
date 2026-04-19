@@ -53,10 +53,15 @@ test('sector-m toolbar profile switch: active profile drives section and shared 
   const renderEnd = source.indexOf('function addToolbarConfiguratorItem(');
   assert.ok(renderStart > -1 && renderEnd > renderStart, 'renderToolbarConfiguratorBuckets bounds must exist');
   const renderSnippet = source.slice(renderStart, renderEnd);
+  const helperStart = source.indexOf('function syncToolbarConfiguratorLibraryGridVisibility(');
+  const helperEnd = source.indexOf('function createToolbarConfiguratorBucketItemSelection(');
+  assert.ok(helperStart > -1 && helperEnd > helperStart, 'syncToolbarConfiguratorLibraryGridVisibility bounds must exist');
+  const helperSnippet = source.slice(helperStart, helperEnd);
 
   assert.ok(renderSnippet.includes("configuratorMasterSection.hidden = activeProfile !== 'master';"));
   assert.ok(renderSnippet.includes("configuratorMinimalSection.hidden = activeProfile !== 'minimal';"));
-  assert.ok(renderSnippet.includes("configuratorLibraryGrid.hidden = activeProfile !== 'master';"));
+  assert.ok(renderSnippet.includes('syncToolbarConfiguratorLibraryGridVisibility(activeProfile);'));
+  assert.ok(helperSnippet.includes("configuratorLibraryGrid.hidden = normalizeToolbarConfiguratorProfileName(profileName) !== 'master';"));
   assert.equal(renderSnippet.includes('toolbarProfiles:'), false);
   assert.equal(renderSnippet.includes('writeToolbarConfiguratorStoredState('), false);
 });
