@@ -27,20 +27,23 @@ test('sector-m toolbar profile switch: configurator markup exposes an accessible
   assert.ok(html.includes('aria-checked="false"'));
 });
 
-test('sector-m toolbar profile switch: editor wiring targets the active profile and bucket-specific mutations', () => {
+test('sector-m toolbar profile switch: editor wiring keeps active profile semantics while hiding the master block section', () => {
   const source = readFile('src/renderer/editor.js');
 
   assert.ok(source.includes('applyToolbarActiveProfile('));
   assert.ok(source.includes('function getToolbarConfiguratorActiveProfile()'));
   assert.ok(source.includes('function setToolbarConfiguratorActiveProfile(profileName)'));
+  assert.ok(source.includes('function syncToolbarConfiguratorSectionVisibility()'));
   assert.ok(source.includes("renderToolbarConfiguratorProfileSwitch();"));
   assert.ok(source.includes("setToolbarConfiguratorActiveProfile(profileSwitchButton.dataset.toolbarProfileSwitch || '');"));
   assert.ok(source.includes("addToolbarConfiguratorItem(libraryButton.dataset.itemId || '', getToolbarConfiguratorActiveProfile());"));
   assert.ok(source.includes("removeToolbarConfiguratorItem(removeButton.dataset.itemId || '', bucketKey);"));
   assert.ok(source.includes("commitToolbarConfiguratorBucketDrop(payload, bucketKey, insertionIndex, hoveredItem instanceof HTMLElement ? hoveredItem : null);"));
   assert.ok(source.includes("const sourceBucketKey = normalizeToolbarConfiguratorProfileName(payload.bucketKey || '');"));
+  assert.ok(source.includes('syncToolbarConfiguratorSectionVisibility();'));
+  assert.ok(source.includes('configuratorMasterSection.hidden = true;'));
+  assert.ok(source.includes('configuratorMinimalSection.hidden = false;'));
   assert.equal(source.includes('bucket.classList.toggle(\'is-active-profile\', isActiveProfile);'), false);
-  assert.equal(source.includes('configuratorMasterSection.hidden = true;'), false);
   assert.equal(source.includes("configuratorMasterSection.setAttribute('aria-hidden', 'true');"), false);
 });
 

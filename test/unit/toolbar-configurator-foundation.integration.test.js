@@ -78,15 +78,22 @@ test('toolbar configurator foundation: restore-last-stable and project switch re
   assert.ok(projectSwitchSnippet.includes('adoptToolbarConfiguratorState(currentProjectId);'))
 })
 
-test('toolbar configurator foundation: master is visible and reorder-aware wiring is present', () => {
+test('toolbar configurator foundation: master block is hidden while master profile wiring stays reorder-aware', () => {
   const source = readEditorSource()
 
   const foundationStart = source.indexOf('function initializeToolbarConfiguratorFoundation() {')
   const foundationEnd = source.indexOf('function updateTransformingClass() {')
   assert.ok(foundationStart > -1 && foundationEnd > foundationStart, 'initializeToolbarConfiguratorFoundation bounds must exist')
   const foundationSnippet = source.slice(foundationStart, foundationEnd)
-  assert.equal(foundationSnippet.includes('configuratorMasterSection.hidden = true;'), false)
-  assert.equal(foundationSnippet.includes("configuratorMasterSection.setAttribute('aria-hidden', 'true');"), false)
+  const renderStart = source.indexOf('function renderToolbarConfiguratorBuckets() {')
+  const renderEnd = source.indexOf('function addToolbarConfiguratorItem(', renderStart)
+  assert.ok(renderStart > -1 && renderEnd > renderStart, 'renderToolbarConfiguratorBuckets bounds must exist')
+  const renderSnippet = source.slice(renderStart, renderEnd)
+  assert.ok(renderSnippet.includes('syncToolbarConfiguratorSectionVisibility();'))
+  assert.ok(source.includes('function syncToolbarConfiguratorSectionVisibility() {'))
+  assert.ok(source.includes('configuratorMasterSection.hidden = true;'))
+  assert.ok(source.includes('configuratorMinimalSection.hidden = false;'))
+  assert.equal(source.includes("configuratorMasterSection.setAttribute('aria-hidden', 'true');"), false)
   assert.ok(foundationSnippet.includes('setToolbarConfiguratorActiveProfile(profileSwitchButton.dataset.toolbarProfileSwitch || \'\');'))
   assert.ok(foundationSnippet.includes("addToolbarConfiguratorItem(libraryButton.dataset.itemId || '', getToolbarConfiguratorActiveProfile());"))
   assert.ok(foundationSnippet.includes("removeToolbarConfiguratorItem(removeButton.dataset.itemId || '', bucketKey);"))
