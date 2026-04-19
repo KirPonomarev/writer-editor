@@ -2329,7 +2329,7 @@ function createToolbarConfiguratorBucketItem(itemId, bucketKey, index) {
 
 function syncToolbarConfiguratorSectionVisibility() {
   if (configuratorMasterSection instanceof HTMLElement) {
-    configuratorMasterSection.hidden = true;
+    configuratorMasterSection.hidden = getToolbarConfiguratorActiveProfile() !== 'master';
   }
   if (configuratorMinimalSection instanceof HTMLElement) {
     configuratorMinimalSection.hidden = false;
