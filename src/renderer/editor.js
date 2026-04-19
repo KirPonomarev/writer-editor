@@ -2332,7 +2332,7 @@ function syncToolbarConfiguratorSectionVisibility() {
     configuratorMasterSection.hidden = getToolbarConfiguratorActiveProfile() !== 'master';
   }
   if (configuratorMinimalSection instanceof HTMLElement) {
-    configuratorMinimalSection.hidden = false;
+    configuratorMinimalSection.hidden = getToolbarConfiguratorActiveProfile() === 'master';
   }
 }
 
