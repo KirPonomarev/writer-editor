@@ -2327,7 +2327,17 @@ function createToolbarConfiguratorBucketItem(itemId, bucketKey, index) {
   return item;
 }
 
+function syncToolbarConfiguratorSectionVisibility() {
+  if (configuratorMasterSection instanceof HTMLElement) {
+    configuratorMasterSection.hidden = true;
+  }
+  if (configuratorMinimalSection instanceof HTMLElement) {
+    configuratorMinimalSection.hidden = false;
+  }
+}
+
 function renderToolbarConfiguratorBuckets() {
+  syncToolbarConfiguratorSectionVisibility();
   configuratorBuckets.forEach((bucket) => {
     const bucketKey = bucket.dataset.configuratorBucket || '';
     bucket.replaceChildren();
