@@ -1797,6 +1797,10 @@ body {
   width: min(100%, 1080px);
 }
 
+.configurator-panel__section--minimal {
+  width: min(100%, 1120px);
+}
+
 .configurator-panel__label {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
@@ -1841,6 +1845,14 @@ body {
     ) bottom center / 100% 1px no-repeat;
   box-shadow: none;
   transition: border-color 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
+}
+
+.configurator-panel__section--minimal .configurator-panel__bucket {
+  padding-left: 0;
+  padding-right: 0;
+  column-gap: 28px;
+  row-gap: 20px;
+  justify-content: space-between;
 }
 
 .configurator-panel__bucket.is-drop-target {
