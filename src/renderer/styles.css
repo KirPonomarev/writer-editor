@@ -1865,6 +1865,16 @@ body {
   min-width: 0;
 }
 
+.configurator-panel__section--minimal .configurator-panel__slot-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: break-word;
+  line-height: 1.15;
+}
+
 .configurator-panel__bucket.is-drop-target {
   background:
     linear-gradient(
