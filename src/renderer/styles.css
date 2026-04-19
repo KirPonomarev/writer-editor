@@ -1855,6 +1855,18 @@ body {
   justify-content: space-between;
 }
 
+@media (max-width: 1500px) {
+  .configurator-panel__section--minimal .configurator-panel__bucket {
+    column-gap: 20px;
+  }
+}
+
+@media (max-width: 1440px) {
+  .configurator-panel__section--minimal .configurator-panel__bucket {
+    justify-content: center;
+  }
+}
+
 .configurator-panel__bucket.is-drop-target {
   background:
     linear-gradient(
