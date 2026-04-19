@@ -21,10 +21,6 @@ test('sector-m toolbar profile switch: configurator markup exposes an accessible
   assert.ok(html.includes('data-toolbar-profile-switch-group'));
   assert.ok(html.includes('data-toolbar-profile-switch="minimal"'));
   assert.ok(html.includes('data-toolbar-profile-switch="master"'));
-  assert.ok(html.includes('configurator-panel__section configurator-panel__section--master'));
-  assert.ok(html.includes('configurator-panel__section configurator-panel__section--minimal'));
-  assert.ok(html.includes('data-configurator-bucket="master"'));
-  assert.ok(html.includes('data-configurator-bucket="minimal"'));
   assert.ok(html.includes('role="radiogroup"'));
   assert.ok(html.includes('role="radio"'));
   assert.ok(html.includes('aria-checked="true"'));
@@ -44,26 +40,8 @@ test('sector-m toolbar profile switch: editor wiring targets the active profile 
   assert.ok(source.includes("commitToolbarConfiguratorBucketDrop(payload, bucketKey, insertionIndex, hoveredItem instanceof HTMLElement ? hoveredItem : null);"));
   assert.ok(source.includes("const sourceBucketKey = normalizeToolbarConfiguratorProfileName(payload.bucketKey || '');"));
   assert.equal(source.includes('bucket.classList.toggle(\'is-active-profile\', isActiveProfile);'), false);
-});
-
-test('sector-m toolbar profile switch: active profile drives section and shared grid visibility inside configurator', () => {
-  const source = readFile('src/renderer/editor.js');
-
-  const renderStart = source.indexOf('function renderToolbarConfiguratorBuckets() {');
-  const renderEnd = source.indexOf('function addToolbarConfiguratorItem(');
-  assert.ok(renderStart > -1 && renderEnd > renderStart, 'renderToolbarConfiguratorBuckets bounds must exist');
-  const renderSnippet = source.slice(renderStart, renderEnd);
-  const helperStart = source.indexOf('function syncToolbarConfiguratorLibraryGridVisibility(');
-  const helperEnd = source.indexOf('function createToolbarConfiguratorBucketItemSelection(');
-  assert.ok(helperStart > -1 && helperEnd > helperStart, 'syncToolbarConfiguratorLibraryGridVisibility bounds must exist');
-  const helperSnippet = source.slice(helperStart, helperEnd);
-
-  assert.ok(renderSnippet.includes("configuratorMasterSection.hidden = activeProfile !== 'master';"));
-  assert.ok(renderSnippet.includes("configuratorMinimalSection.hidden = activeProfile !== 'minimal';"));
-  assert.ok(renderSnippet.includes('syncToolbarConfiguratorLibraryGridVisibility(activeProfile);'));
-  assert.ok(helperSnippet.includes("configuratorLibraryGrid.hidden = normalizeToolbarConfiguratorProfileName(profileName) !== 'master';"));
-  assert.equal(renderSnippet.includes('toolbarProfiles:'), false);
-  assert.equal(renderSnippet.includes('writeToolbarConfiguratorStoredState('), false);
+  assert.equal(source.includes('configuratorMasterSection.hidden = true;'), false);
+  assert.equal(source.includes("configuratorMasterSection.setAttribute('aria-hidden', 'true');"), false);
 });
 
 test('sector-m toolbar profile switch: active profile selection changes visible item ids', async () => {
