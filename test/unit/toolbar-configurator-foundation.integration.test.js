@@ -78,7 +78,7 @@ test('toolbar configurator foundation: restore-last-stable and project switch re
   assert.ok(projectSwitchSnippet.includes('adoptToolbarConfiguratorState(currentProjectId);'))
 })
 
-test('toolbar configurator foundation: master block is hidden while master profile wiring stays reorder-aware', () => {
+test('toolbar configurator foundation: master block visibility follows active profile while master wiring stays reorder-aware', () => {
   const source = readEditorSource()
 
   const foundationStart = source.indexOf('function initializeToolbarConfiguratorFoundation() {')
@@ -91,8 +91,9 @@ test('toolbar configurator foundation: master block is hidden while master profi
   const renderSnippet = source.slice(renderStart, renderEnd)
   assert.ok(renderSnippet.includes('syncToolbarConfiguratorSectionVisibility();'))
   assert.ok(source.includes('function syncToolbarConfiguratorSectionVisibility() {'))
-  assert.ok(source.includes('configuratorMasterSection.hidden = true;'))
+  assert.ok(source.includes("configuratorMasterSection.hidden = getToolbarConfiguratorActiveProfile() !== 'master';"))
   assert.ok(source.includes('configuratorMinimalSection.hidden = false;'))
+  assert.equal(source.includes('configuratorMasterSection.hidden = true;'), false)
   assert.equal(source.includes("configuratorMasterSection.setAttribute('aria-hidden', 'true');"), false)
   assert.ok(foundationSnippet.includes('setToolbarConfiguratorActiveProfile(profileSwitchButton.dataset.toolbarProfileSwitch || \'\');'))
   assert.ok(foundationSnippet.includes("addToolbarConfiguratorItem(libraryButton.dataset.itemId || '', getToolbarConfiguratorActiveProfile());"))

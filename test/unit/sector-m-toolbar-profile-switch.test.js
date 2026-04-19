@@ -27,7 +27,7 @@ test('sector-m toolbar profile switch: configurator markup exposes an accessible
   assert.ok(html.includes('aria-checked="false"'));
 });
 
-test('sector-m toolbar profile switch: editor wiring keeps active profile semantics while hiding the master block section', () => {
+test('sector-m toolbar profile switch: editor wiring keeps active profile semantics while scope-hiding the master block', () => {
   const source = readFile('src/renderer/editor.js');
 
   assert.ok(source.includes('applyToolbarActiveProfile('));
@@ -41,8 +41,9 @@ test('sector-m toolbar profile switch: editor wiring keeps active profile semant
   assert.ok(source.includes("commitToolbarConfiguratorBucketDrop(payload, bucketKey, insertionIndex, hoveredItem instanceof HTMLElement ? hoveredItem : null);"));
   assert.ok(source.includes("const sourceBucketKey = normalizeToolbarConfiguratorProfileName(payload.bucketKey || '');"));
   assert.ok(source.includes('syncToolbarConfiguratorSectionVisibility();'));
-  assert.ok(source.includes('configuratorMasterSection.hidden = true;'));
+  assert.ok(source.includes("configuratorMasterSection.hidden = getToolbarConfiguratorActiveProfile() !== 'master';"));
   assert.ok(source.includes('configuratorMinimalSection.hidden = false;'));
+  assert.equal(source.includes('configuratorMasterSection.hidden = true;'), false);
   assert.equal(source.includes('bucket.classList.toggle(\'is-active-profile\', isActiveProfile);'), false);
   assert.equal(source.includes("configuratorMasterSection.setAttribute('aria-hidden', 'true');"), false);
 });
