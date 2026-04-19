@@ -2328,13 +2328,6 @@ function createToolbarConfiguratorBucketItem(itemId, bucketKey, index) {
 }
 
 function renderToolbarConfiguratorBuckets() {
-  const activeProfile = getToolbarConfiguratorActiveProfile();
-  if (configuratorMasterSection instanceof HTMLElement) {
-    configuratorMasterSection.hidden = activeProfile !== 'master';
-  }
-  if (configuratorMinimalSection instanceof HTMLElement) {
-    configuratorMinimalSection.hidden = activeProfile !== 'minimal';
-  }
   configuratorBuckets.forEach((bucket) => {
     const bucketKey = bucket.dataset.configuratorBucket || '';
     bucket.replaceChildren();
