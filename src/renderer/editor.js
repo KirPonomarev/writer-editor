@@ -1842,6 +1842,11 @@ function getToolbarConfiguratorProfileIds(profileName = getToolbarConfiguratorAc
   return Array.isArray(profileIds) ? profileIds : [];
 }
 
+function syncToolbarConfiguratorLibraryGridVisibility(profileName = getToolbarConfiguratorActiveProfile()) {
+  if (!(configuratorLibraryGrid instanceof HTMLElement)) return;
+  configuratorLibraryGrid.hidden = normalizeToolbarConfiguratorProfileName(profileName) !== 'master';
+}
+
 function getToolbarConfiguratorBucketItems(bucket) {
   if (!(bucket instanceof HTMLElement)) return [];
   return Array.from(bucket.querySelectorAll('.configurator-panel__bucket-item[data-item-id]'));
@@ -1963,6 +1968,7 @@ function renderToolbarConfiguratorProfileSwitch() {
     button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     button.tabIndex = isActive ? 0 : -1;
   });
+  syncToolbarConfiguratorLibraryGridVisibility(activeProfile);
 }
 
 function commitToolbarConfiguratorState(nextState) {
@@ -2085,6 +2091,7 @@ function renderToolbarConfiguratorBuckets() {
       bucket.appendChild(createToolbarConfiguratorBucketItem(itemId, bucketKey, index));
     });
   });
+  syncToolbarConfiguratorLibraryGridVisibility();
 }
 
 function addToolbarConfiguratorItem(itemId, bucketKey = getToolbarConfiguratorActiveProfile()) {
@@ -2122,6 +2129,7 @@ function removeToolbarConfiguratorItem(itemId, bucketKey = getToolbarConfigurato
 
 function setToolbarConfiguratorActiveProfile(profileName) {
   const nextProfile = normalizeToolbarConfiguratorProfileName(profileName);
+  syncToolbarConfiguratorLibraryGridVisibility(nextProfile);
   if (nextProfile === getToolbarConfiguratorActiveProfile()) {
     return false;
   }
@@ -2138,6 +2146,7 @@ function initializeToolbarConfiguratorFoundation() {
   }
 
   adoptToolbarConfiguratorState(currentProjectId);
+  syncToolbarConfiguratorLibraryGridVisibility();
 
   configuratorPanel.addEventListener('click', (event) => {
     if (event.target === configuratorPanel) {
@@ -6472,10 +6481,23 @@ function handleReviewOpenComments() {
   return { performed: true, action: 'reviewOpenComments', reason: null };
 }
 
+function focusEditorBeforeToolbarFormatCommand() {
+  if (!(editor instanceof HTMLElement) || typeof editor.focus !== 'function') {
+    return false;
+  }
+  try {
+    editor.focus({ preventScroll: true });
+  } catch {
+    editor.focus();
+  }
+  return true;
+}
+
 function handleTiptapFormatCommand(commandName, payload = {}) {
   if (!isTiptapMode) {
     return { performed: false, action: commandName, reason: 'EDITOR_MODE_UNSUPPORTED' };
   }
+  focusEditorBeforeToolbarFormatCommand();
   const result = runTiptapFormatCommand(commandName, payload);
   if (result && result.performed !== false) {
     markAsModified();
