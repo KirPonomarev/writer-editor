@@ -1861,6 +1861,10 @@ body {
   transition: border-color 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
 }
 
+.configurator-panel__section--master .configurator-panel__bucket {
+  padding-left: 0;
+}
+
 .configurator-panel__section--minimal .configurator-panel__bucket {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(108px, max-content));
