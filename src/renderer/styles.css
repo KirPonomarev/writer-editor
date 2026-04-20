@@ -1869,7 +1869,7 @@ body {
   padding-left: 0;
   padding-right: 0;
   column-gap: 28px;
-  row-gap: 20px;
+  row-gap: 16px;
 }
 
 @media (max-width: 1500px) {
