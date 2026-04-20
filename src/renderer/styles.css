@@ -1865,7 +1865,7 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(108px, max-content));
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
   padding-left: 0;
   padding-right: 0;
   column-gap: 28px;
@@ -1880,7 +1880,7 @@ body {
 
 @media (max-width: 1440px) {
   .configurator-panel__section--minimal .configurator-panel__bucket {
-    justify-content: center;
+    justify-content: start;
   }
 }
 
