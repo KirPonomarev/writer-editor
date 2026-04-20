@@ -1804,11 +1804,11 @@ body {
 
 .configurator-panel__profile-switch:has([data-toolbar-profile-switch="minimal"].is-active) ~ .configurator-panel__section--minimal + .configurator-panel__grid {
   margin-top: 24px;
-  row-gap: 16px;
+  row-gap: 12px;
 }
 
 .configurator-panel__profile-switch:has([data-toolbar-profile-switch="minimal"].is-active) ~ .configurator-panel__section--minimal + .configurator-panel__grid > .configurator-panel__column {
-  gap: 16px;
+  gap: 12px;
 }
 
 .configurator-panel__label {
