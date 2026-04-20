@@ -1741,7 +1741,7 @@ body {
 
 .configurator-panel__title {
   width: min(100%, 1080px);
-  margin: 0 auto 22px;
+  margin: 0 auto 24px;
   font-family: var(--font-family);
   font-size: 18px;
   font-weight: 500;
@@ -1753,7 +1753,7 @@ body {
 
 .configurator-panel__profile-switch {
   width: min(100%, 1080px);
-  margin: 0 auto 18px;
+  margin: 0 auto 16px;
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -1787,7 +1787,7 @@ body {
 
 .configurator-panel__divider {
   height: 1px;
-  margin: 0 0 26px;
+  margin: 0 0 24px;
   background: rgba(227, 221, 214, 0.92);
 }
 
@@ -1798,7 +1798,17 @@ body {
 }
 
 .configurator-panel__section--minimal {
+  margin-bottom: 24px;
   width: min(100%, 1120px);
+}
+
+.configurator-panel__profile-switch:has([data-toolbar-profile-switch="minimal"].is-active) ~ .configurator-panel__section--minimal + .configurator-panel__grid {
+  margin-top: 24px;
+  row-gap: 16px;
+}
+
+.configurator-panel__profile-switch:has([data-toolbar-profile-switch="minimal"].is-active) ~ .configurator-panel__section--minimal + .configurator-panel__grid > .configurator-panel__column {
+  gap: 16px;
 }
 
 .configurator-panel__label {
