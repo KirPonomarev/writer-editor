@@ -1848,11 +1848,14 @@ body {
 }
 
 .configurator-panel__section--minimal .configurator-panel__bucket {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(108px, max-content));
+  align-items: center;
+  justify-content: space-between;
   padding-left: 0;
   padding-right: 0;
   column-gap: 28px;
   row-gap: 20px;
-  justify-content: space-between;
 }
 
 @media (max-width: 1500px) {
