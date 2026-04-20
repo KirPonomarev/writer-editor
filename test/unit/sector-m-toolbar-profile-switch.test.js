@@ -41,6 +41,12 @@ test('sector-m toolbar profile switch: editor wiring keeps active profile semant
   assert.ok(source.includes("commitToolbarConfiguratorBucketDrop(payload, bucketKey, insertionIndex, hoveredItem instanceof HTMLElement ? hoveredItem : null);"));
   assert.ok(source.includes("const sourceBucketKey = normalizeToolbarConfiguratorProfileName(payload.bucketKey || '');"));
   assert.ok(source.includes('syncToolbarConfiguratorSectionVisibility();'));
+  assert.ok(source.includes('function listToolbarConfiguratorLibraryEntries() {'));
+  assert.ok(source.includes("const activeProfile = getToolbarConfiguratorActiveProfile();"));
+  assert.ok(source.includes("const activeProfileIds = activeProfile === 'minimal'"));
+  assert.ok(source.includes("? new Set(getToolbarConfiguratorProfileIds(activeProfile))"));
+  assert.ok(source.includes(": new Set();"));
+  assert.ok(source.includes("return listLiveToolbarFunctionCatalogEntries().filter((entry) => !activeProfileIds.has(entry.id));"));
   assert.ok(source.includes("configuratorMasterSection.hidden = getToolbarConfiguratorActiveProfile() !== 'master';"));
   assert.ok(source.includes("configuratorMinimalSection.hidden = getToolbarConfiguratorActiveProfile() === 'master';"));
   assert.equal(source.includes('configuratorMasterSection.hidden = true;'), false);
