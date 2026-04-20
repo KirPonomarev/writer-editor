@@ -1989,6 +1989,19 @@ body {
   display: inline-flex;
 }
 
+.configurator-panel__section--minimal .configurator-panel__bucket-remove {
+  display: inline-flex;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.configurator-panel__section--minimal .configurator-panel__bucket-item.is-active .configurator-panel__bucket-remove {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .configurator-panel__bucket-remove:hover {
   background: rgba(221, 216, 210, 0.5);
 }
