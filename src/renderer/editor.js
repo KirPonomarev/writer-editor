@@ -1964,7 +1964,7 @@ function getToolbarConfiguratorBucketDropIntent(payload, bucketKey) {
 
   const targetBucketKey = normalizeToolbarConfiguratorProfileName(bucketKey);
   if (payload?.sourceType !== 'bucket-item') {
-    return targetBucketKey === 'minimal' ? 'insert' : null;
+    return targetBucketKey === 'minimal' || targetBucketKey === 'master' ? 'insert' : null;
   }
 
   const sourceBucketKey = normalizeToolbarConfiguratorProfileName(payload.bucketKey || '');
@@ -2361,7 +2361,6 @@ function addToolbarConfiguratorItem(itemId, bucketKey = getToolbarConfiguratorAc
   const catalogItem = getToolbarConfiguratorCatalogItem(normalizedItemId);
   if (!catalogItem || catalogItem.implementationState !== 'live') return;
   const targetBucketKey = normalizeToolbarConfiguratorProfileName(bucketKey);
-  if (isToolbarConfiguratorProtectedBucket(targetBucketKey)) return;
   const targetIds = getToolbarConfiguratorProfileIds(targetBucketKey);
   if (targetIds.includes(normalizedItemId)) return;
   commitToolbarConfiguratorState({
