@@ -1991,6 +1991,26 @@ body {
 
 .configurator-panel__section--minimal .configurator-panel__bucket-remove {
   display: inline-flex;
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 1px);
+  margin-left: 0;
+  transform: translateY(-50%);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.14s ease, visibility 0.14s ease;
+}
+
+.configurator-panel__section--minimal .configurator-panel__bucket-item.is-active .configurator-panel__bucket-remove {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.configurator-panel__section--minimal .configurator-panel__bucket-remove {
+  display: inline-flex;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
