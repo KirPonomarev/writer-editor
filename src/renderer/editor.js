@@ -1922,7 +1922,11 @@ function getToolbarConfiguratorBucketItems(bucket) {
 }
 
 function listToolbarConfiguratorLibraryEntries() {
-  return listLiveToolbarFunctionCatalogEntries();
+  const activeProfile = getToolbarConfiguratorActiveProfile();
+  const activeProfileIds = activeProfile === 'minimal'
+    ? new Set(getToolbarConfiguratorProfileIds(activeProfile))
+    : new Set();
+  return listLiveToolbarFunctionCatalogEntries().filter((entry) => !activeProfileIds.has(entry.id));
 }
 
 function getToolbarConfiguratorLibraryColumns(entries = listToolbarConfiguratorLibraryEntries()) {
