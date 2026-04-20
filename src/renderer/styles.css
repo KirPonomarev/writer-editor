@@ -1811,6 +1811,10 @@ body {
   gap: 12px;
 }
 
+.configurator-panel__profile-switch:has([data-toolbar-profile-switch="minimal"].is-active) ~ .configurator-panel__section--minimal + .configurator-panel__grid > .configurator-panel__column > .configurator-panel__slot {
+  min-height: 36px;
+}
+
 .configurator-panel__label {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
