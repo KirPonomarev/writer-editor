@@ -3832,6 +3832,7 @@ body.dark-theme .empty-state {
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+  overscroll-behavior-y: auto;
   scrollbar-gutter: stable both-edges;
   scrollbar-width: none;
 }
