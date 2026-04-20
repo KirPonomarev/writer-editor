@@ -1812,7 +1812,7 @@ body {
 }
 
 .configurator-panel__profile-switch:has([data-toolbar-profile-switch="minimal"].is-active) ~ .configurator-panel__section--minimal + .configurator-panel__grid > .configurator-panel__column > .configurator-panel__slot {
-  min-height: 36px;
+  min-height: 32px;
 }
 
 .configurator-panel__label {
