@@ -5,7 +5,7 @@
 - TASK_CLASS: DOCS_ONLY_OWNER_DECISION_RESOLUTION
 - DOCUMENT_TYPE: FINAL_REVISED_DOCS_ONLY_OWNER_DECISION_RESOLUTION
 - DOCUMENT_STATUS: FINAL_FOR_OWNER_REVIEW
-- ACTIVE_CANON: v3_13a_final
+- ACTIVE_CANON: v3.13a-final
 - BLOCKING_SOURCE: ACTIVE_CANON_ONLY
 - PRIMARY_LAYER: GROUP_05_DOCS_AND_STATUS
 - PRIMARY_TRUTH_BASE: LIVE_REMOTE_MAIN_ONLY_PLUS_ACCEPTED_OWNER_OUTCOME_01
@@ -57,7 +57,7 @@ This resolution preserves keep-blocked truth, preserves stop-and-freeze, and doe
 - THIS_RESOLUTION_ONLY_FORMALIZES_KEEP_BLOCKED_FOR_CURRENT_SCOPE_A
 
 ## Current Mainline Evidence Basis
-- CANON_STATUS.json confirms `v3_13a_final` as active canon.
+- CANON_STATUS.json confirms `v3.13a-final` as active canon.
 - CONTEXT.md confirms current scope A remains symbolic closeout ready on mainline.
 - CONTEXT.md confirms blocked debt remains explicit blocked and later debt.
 - CONTEXT.md confirms `toolbar.proofing.grammar` remains inside `TOOLBAR_BLOCKED_IDS`.
