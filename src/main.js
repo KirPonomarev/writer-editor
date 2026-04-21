@@ -3302,7 +3302,9 @@ function createWindow() {
 
   const useLegacyEditor = process.env.USE_LEGACY_EDITOR === '1';
   const useTiptap = !useLegacyEditor;
-  mainWindow.loadFile('src/renderer/index.html', { query: { USE_TIPTAP: (useTiptap ? '1' : '0') } });
+  mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'), {
+    query: { USE_TIPTAP: (useTiptap ? '1' : '0') },
+  });
 
   mainWindow.webContents.on('before-input-event', (event, input) => {
     if (input.key === 'Escape' && mainWindow && mainWindow.isFullScreen()) {

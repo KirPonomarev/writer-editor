@@ -26,7 +26,7 @@ function buildSnapshot(editorText) {
     scenarios: {
       'U7-S01': {
         editorRootAnchor: /const editor = document\.getElementById\('editor'\);/.test(editorText),
-        commandRegistryWired: /registerProjectCommands\(commandRegistry,\s*\{\s*electronAPI:\s*window\.electronAPI\s*\}\);/.test(editorText),
+        commandRegistryWired: /registerProjectCommands\(commandRegistry,\s*\{\s*electronAPI:\s*window\.electronAPI,\s*uiActions:/.test(editorText),
         loadTreeCall: /\bloadTree\(\);/.test(editorText),
       },
       'U7-S02': {
