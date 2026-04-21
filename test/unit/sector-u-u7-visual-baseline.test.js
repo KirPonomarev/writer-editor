@@ -26,7 +26,7 @@ function buildSnapshot(editorText) {
     scenarios: {
       'U7-S01': {
         editorRootAnchor: /const editor = document\.getElementById\('editor'\);/.test(editorText),
-        commandRegistryWired: /registerProjectCommands\(commandRegistry,\s*\{\s*electronAPI:\s*window\.electronAPI,\s*uiActions:/.test(editorText),
+        commandRegistryWired: /registerProjectCommands\(commandRegistry,\s*\{(?=[\s\S]*?electronAPI:\s*window\.electronAPI)(?=[\s\S]*?uiActions:\s*\{)(?=[\s\S]*?openSettings:\s*\(\)\s*=>\s*openSettingsModal\(\))(?=[\s\S]*?safeResetShell:\s*\(\)\s*=>\s*performSafeResetShell\(\))(?=[\s\S]*?restoreLastStableShell:\s*\(\)\s*=>\s*performRestoreLastStableShell\(\))[\s\S]*?\}\);/.test(editorText),
         loadTreeCall: /\bloadTree\(\);/.test(editorText),
       },
       'U7-S02': {
