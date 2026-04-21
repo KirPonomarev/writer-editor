@@ -3,6 +3,12 @@
 Короткая хронология изменений и решений. Это не полный лог чата, а сжатые записи “что сделали / зачем / что дальше”.
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
+## 2026-04-21
+- False-green: merged `YALKEN_U7_AND_CAPTURE_FALSE_GREEN_CLOSEOUT_001`; U7 sourcebinding and capture route were rebound honestly on current mainline with real runtime artifacts.
+- X102: completed `YALKEN_BLOCK01_CURRENT_MAINLINE_VISUAL_REPROOF_001` as report-only reproof on the current selected-base snapshot; result is `STOP_AND_FREEZE`.
+- Design write: no new live nonblocked Group 01 visual delta was proved by the X102 Block 01 reproof, so no design write contour was opened.
+- Docs: rebound `HANDOFF.md`, `CONTEXT.md`, and `WORKLOG.md` to the accepted April 21 reality without opening a new runtime or design contour.
+
 ## 2026-03-11
 - Process: принят минимальный advisory UI-process layer в существующих repo docs без нового канона и без нового blocking-layer.
 - Reason: UI быстро эволюционирует, но репозиторий должен хранить только устойчивые инварианты и текущий исполнимый срез.
