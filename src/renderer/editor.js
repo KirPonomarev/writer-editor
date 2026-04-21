@@ -3009,6 +3009,12 @@ const runCommand = createCommandRunner(commandRegistry, {
 registerProjectCommands(commandRegistry, {
   electronAPI: window.electronAPI,
   uiActions: {
+    openSettings: () => openSettingsModal(),
+    safeResetShell: () => performSafeResetShell(),
+    restoreLastStableShell: () => performRestoreLastStableShell(),
+    openDiagnostics: () => openDiagnosticsModal(),
+    openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
+    switchMode: (mode) => applyMode(mode),
     undo: () => handleUndo(),
     redo: () => handleRedo(),
     find: () => handleFind(),
