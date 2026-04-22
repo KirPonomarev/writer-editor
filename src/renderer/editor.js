@@ -42,6 +42,11 @@ import {
   parseObservablePayload,
 } from './documentContentEnvelope.mjs';
 import {
+  createDefaultBookProfile,
+  normalizeBookProfile,
+} from '../core/bookProfile.mjs';
+import { resolvePageLayoutMetrics } from '../core/pageLayoutMetrics.mjs';
+import {
   buildLeftRailPresentationTree,
   getLeftRailPresentationExpandKey,
   getLeftRailPresentationKind,
@@ -563,56 +568,65 @@ const UI_ERROR_FALLBACK_SEVERITY = 'ERROR';
 
 const PX_PER_MM_AT_ZOOM_1 = 595 / 210;
 const ZOOM_DEFAULT = 1.0;
-const PAGE_GAP_MM = 20 / (595 / 210);
+const PAGE_GAP_MM = 20 / PX_PER_MM_AT_ZOOM_1;
 const CANVAS_PADDING_PX = 48;
-const MARGIN_MM = 25.4;
-const PAGE_FORMATS = {
-  A4: 210,
-  A5: 148,
-  A6: 105
-};
 const DEFAULT_ACTIVE_BOOK_PROFILE_ID = 'A4';
+const DEFAULT_ACTIVE_BOOK_PROFILE = Object.freeze(
+  createDefaultBookProfile({
+    profileId: DEFAULT_ACTIVE_BOOK_PROFILE_ID,
+    formatId: DEFAULT_ACTIVE_BOOK_PROFILE_ID,
+  })
+);
 
-function normalizeBookProfileId(profileId) {
-  if (typeof profileId !== 'string') {
-    return DEFAULT_ACTIVE_BOOK_PROFILE_ID;
+function createCanonicalActiveBookProfileSource(source = {}) {
+  if (!source || typeof source !== 'object' || Array.isArray(source)) {
+    return DEFAULT_ACTIVE_BOOK_PROFILE;
   }
-  const normalized = profileId.trim().toUpperCase();
-  return Object.prototype.hasOwnProperty.call(PAGE_FORMATS, normalized)
-    ? normalized
+  const profileIdCandidate = typeof source.profileId === 'string' && source.profileId.trim()
+    ? source.profileId.trim().toUpperCase()
     : DEFAULT_ACTIVE_BOOK_PROFILE_ID;
-}
-
-function createCanonicalActiveBookProfileSource(profileId = DEFAULT_ACTIVE_BOOK_PROFILE_ID) {
-  return Object.freeze({
-    profileId: normalizeBookProfileId(profileId)
+  const formatIdCandidate = typeof source.formatId === 'string' && source.formatId.trim()
+    ? source.formatId.trim().toUpperCase()
+    : profileIdCandidate;
+  const normalized = normalizeBookProfile({
+    ...DEFAULT_ACTIVE_BOOK_PROFILE,
+    ...source,
+    profileId: profileIdCandidate,
+    formatId: formatIdCandidate,
   });
+  return normalized.ok ? Object.freeze(normalized.value) : DEFAULT_ACTIVE_BOOK_PROFILE;
 }
 
 let activeBookProfileSource = createCanonicalActiveBookProfileSource();
 
-function getActiveBookProfilePageWidthMm(source = activeBookProfileSource) {
-  const profileId = normalizeBookProfileId(source?.profileId);
-  return PAGE_FORMATS[profileId] || PAGE_FORMATS.A4;
+function getActiveBookProfile(source = activeBookProfileSource) {
+  const normalized = normalizeBookProfile(source);
+  return normalized.ok ? normalized.value : DEFAULT_ACTIVE_BOOK_PROFILE;
 }
 
-function mmToPx(mm, zoom = ZOOM_DEFAULT) {
-  return mm * PX_PER_MM_AT_ZOOM_1 * zoom;
-}
-
-function getPageMetrics({ pageWidthMm, zoom = ZOOM_DEFAULT }) {
-  const pageHeightMm = pageWidthMm * Math.SQRT2;
-  const marginPx = mmToPx(MARGIN_MM, zoom);
+function getPageMetrics({ profile = getActiveBookProfile(), zoom = ZOOM_DEFAULT } = {}) {
+  const metricsResult = resolvePageLayoutMetrics(profile, {
+    zoom,
+    pxPerMm: PX_PER_MM_AT_ZOOM_1,
+  });
+  if (!metricsResult.ok) {
+    const fallbackResult = resolvePageLayoutMetrics(DEFAULT_ACTIVE_BOOK_PROFILE, {
+      zoom: ZOOM_DEFAULT,
+      pxPerMm: PX_PER_MM_AT_ZOOM_1,
+    });
+    if (!fallbackResult.ok) {
+      return null;
+    }
+    return {
+      ...fallbackResult.value,
+      pageGapPx: Math.round(PAGE_GAP_MM * ZOOM_DEFAULT * PX_PER_MM_AT_ZOOM_1),
+      canvasPaddingPx: CANVAS_PADDING_PX,
+    };
+  }
   return {
-    pageWidthPx: mmToPx(pageWidthMm, zoom),
-    pageHeightPx: mmToPx(pageHeightMm, zoom),
-    marginTopPx: marginPx,
-    marginRightPx: marginPx,
-    marginBottomPx: marginPx,
-    marginLeftPx: marginPx,
-    pageGapPx: mmToPx(PAGE_GAP_MM, zoom),
+    ...metricsResult.value,
+    pageGapPx: Math.round(PAGE_GAP_MM * zoom * PX_PER_MM_AT_ZOOM_1),
     canvasPaddingPx: CANVAS_PADDING_PX,
-    pageHeightMm
   };
 }
 
@@ -628,8 +642,10 @@ function applyPageViewCssVars(metrics) {
   root.style.setProperty('--canvas-padding-px', `${metrics.canvasPaddingPx}px`);
 }
 
-const initialPageMetrics = getPageMetrics({ pageWidthMm: getActiveBookProfilePageWidthMm(), zoom: ZOOM_DEFAULT });
-applyPageViewCssVars(initialPageMetrics);
+const initialPageMetrics = getPageMetrics({ profile: getActiveBookProfile(), zoom: ZOOM_DEFAULT });
+if (initialPageMetrics) {
+  applyPageViewCssVars(initialPageMetrics);
+}
 
 function canStartFloatingToolbarDrag(target) {
   if (!target || !(target instanceof Element)) return false;
@@ -5709,8 +5725,10 @@ function setEditorZoom(value, persist = true) {
   const quantized = Math.round(value / EDITOR_ZOOM_STEP) * EDITOR_ZOOM_STEP;
   const nextZoom = Math.max(EDITOR_ZOOM_MIN, Math.min(EDITOR_ZOOM_MAX, quantized));
   editorZoom = nextZoom;
-  const metrics = getPageMetrics({ pageWidthMm: getActiveBookProfilePageWidthMm(), zoom: editorZoom });
-  applyPageViewCssVars(metrics);
+  const metrics = getPageMetrics({ profile: getActiveBookProfile(), zoom: editorZoom });
+  if (metrics) {
+    applyPageViewCssVars(metrics);
+  }
   updateZoomValue();
   if (!persist) {
     return;

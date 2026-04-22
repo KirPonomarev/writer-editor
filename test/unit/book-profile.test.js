@@ -68,6 +68,23 @@ test('book profile validation rejects persisted screen chrome fields and unknown
   assert.ok(formatFailure.issues.some((issue) => issue.code === 'E_PAGE_FORMAT_ID'));
 });
 
+test('book profile validation rejects geometry that conflicts with canonical non-custom format', async () => {
+  const bookProfile = await loadModule('src/core/bookProfile.mjs');
+
+  const valid = bookProfile.createDefaultBookProfile({
+    profileId: 'invalid-geometry',
+    formatId: 'A4',
+  });
+  const invalid = bookProfile.validateBookProfile({
+    ...valid,
+    widthMm: 200,
+    heightMm: 297,
+  });
+
+  assert.equal(invalid.ok, false);
+  assert.ok(invalid.issues.some((issue) => issue.code === 'E_BOOK_PROFILE_FORMAT_DIMENSIONS'));
+});
+
 test('book profile validation rejects geometry that does not match the declared format and orientation', async () => {
   const bookProfile = await loadModule('src/core/bookProfile.mjs');
 
