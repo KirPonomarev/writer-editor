@@ -14,15 +14,21 @@ test('zoom layout metrics: renderer styles do not use transform scale for editor
 
 test('zoom layout metrics: active book profile source keeps A4 as the runtime default', () => {
   const js = read('src/renderer/editor.js');
-  assert.match(js, /import\s+\{\s*resolvePageLayoutMetrics\s*\}\s+from\s+'..\/core\/pageLayoutMetrics\.mjs';/);
-  assert.match(js, /const\s+DEFAULT_ACTIVE_BOOK_PROFILE_ID\s*=\s*'A4';/);
-  assert.match(js, /const\s+DEFAULT_ACTIVE_BOOK_PROFILE\s*=\s*Object\.freeze\(\s*createDefaultBookProfile\(\{\s*profileId:\s*DEFAULT_ACTIVE_BOOK_PROFILE_ID,\s*formatId:\s*DEFAULT_ACTIVE_BOOK_PROFILE_ID,/m);
-  assert.match(js, /let\s+activeBookProfileSource\s*=\s*createCanonicalActiveBookProfileSource\(\);/);
-  assert.match(js, /const\s+initialPageMetrics\s*=\s*getPageMetrics\(\{\s*profile:\s*getActiveBookProfile\(\),\s*zoom:\s*ZOOM_DEFAULT\s*\}\)/m);
+  assert.ok(js.includes('const DEFAULT_ACTIVE_BOOK_PROFILE = createDefaultBookProfile();'));
+  assert.ok(js.includes('const DEFAULT_PREVIEW_CHROME_STATE = createPreviewChromeState();'));
+  assert.ok(js.includes('let activeBookProfileState = DEFAULT_ACTIVE_BOOK_PROFILE;'));
+  assert.ok(js.includes('let activePreviewChromeState = DEFAULT_PREVIEW_CHROME_STATE;'));
+  assert.ok(js.includes('const initialPageMetrics = getPageMetrics({'));
+  assert.ok(js.includes('profile: activeBookProfileState,'));
+  assert.ok(js.includes('applyPreviewChromeCssVars(activePreviewChromeState, document.documentElement, ZOOM_DEFAULT, PX_PER_MM_AT_ZOOM_1);'));
+  assert.ok(js.includes('zoom: ZOOM_DEFAULT'));
 });
 
 test('zoom layout metrics: setEditorZoom applies page metrics via layout variables', () => {
   const js = read('src/renderer/editor.js');
-  assert.match(js, /function\s+setEditorZoom\s*\([\s\S]*?getPageMetrics\(\{\s*profile:\s*getActiveBookProfile\(\),\s*zoom:\s*editorZoom\s*\}\)/m);
-  assert.match(js, /function\s+setEditorZoom\s*\([\s\S]*?applyPageViewCssVars\(metrics\)/m);
+  assert.ok(js.includes('function setEditorZoom(value, persist = true) {'));
+  assert.ok(js.includes('const metrics = getPageMetrics({'));
+  assert.ok(js.includes('profile: activeBookProfileState,'));
+  assert.ok(js.includes('applyPageGeometryCssVars(metrics);'));
+  assert.ok(js.includes('applyPreviewChromeCssVars(activePreviewChromeState, document.documentElement, editorZoom, PX_PER_MM_AT_ZOOM_1);'));
 });

@@ -54,16 +54,12 @@ test('write surface book profile: geometry stays in bookProfile and preview chro
     marginRightMm: 18,
     marginBottomMm: 22,
     marginLeftMm: 18,
-    zoom: 1.5,
-    pageWidthPx: 900,
-    contentWidthPx: 600,
-    viewportWidthPx: 1440,
   });
 
-  assert.equal(Object.prototype.hasOwnProperty.call(profile, 'zoom'), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(profile, 'pageWidthPx'), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(profile, 'contentWidthPx'), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(profile, 'viewportWidthPx'), false);
+  assert.deepEqual(Object.keys(profile), bookProfile.BOOK_PROFILE_MODEL_KEYS);
+  for (const key of bookProfile.BOOK_PROFILE_SCREEN_CHROME_KEYS) {
+    assert.equal(Object.prototype.hasOwnProperty.call(profile, key), false);
+  }
 
   const normalized = bookProfile.normalizeBookProfile({
     ...profile,
@@ -76,15 +72,17 @@ test('write surface book profile: geometry stays in bookProfile and preview chro
 
   assert.equal(normalized.ok, true);
   assert.deepEqual(Object.keys(normalized.value), bookProfile.BOOK_PROFILE_MODEL_KEYS);
-  assert.equal(Object.prototype.hasOwnProperty.call(normalized.value, 'zoom'), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(normalized.value, 'pageWidthPx'), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(normalized.value, 'contentWidthPx'), false);
+  for (const key of bookProfile.BOOK_PROFILE_SCREEN_CHROME_KEYS) {
+    assert.equal(Object.prototype.hasOwnProperty.call(normalized.value, key), false);
+  }
 
   const metrics = pageLayoutMetrics.resolvePageLayoutMetrics(normalized.value, { zoom: 1.25 });
   assert.equal(metrics.ok, true);
   assert.equal(metrics.value.formatId, 'A5');
   assert.equal(metrics.value.pageWidthMm, 148);
   assert.equal(metrics.value.pageHeightMm, 210);
+  assert.equal(Object.prototype.hasOwnProperty.call(metrics.value, 'pageGapMm'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(metrics.value, 'canvasPaddingPx'), false);
   assert.ok(metrics.value.pageWidthPx > 0);
   assert.ok(metrics.value.contentWidthPx < metrics.value.pageWidthPx);
 });

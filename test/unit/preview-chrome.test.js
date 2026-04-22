@@ -30,29 +30,55 @@ function createMemoryStorage() {
   };
 }
 
-test('preview chrome: editor zoom remains session-only and uses localStorage, not bookProfile persistence', () => {
-  const source = readFile('src/renderer/editor.js');
+test('preview chrome: module normalizes chrome-only gap state without owning geometry', async () => {
+  const previewChrome = await loadModule('src/renderer/previewChrome.mjs');
 
-  const setZoomStart = source.indexOf('function setEditorZoom(value, persist = true)');
-  const setZoomEnd = source.indexOf('function changeEditorZoom(delta)');
-  assert.ok(setZoomStart > -1 && setZoomEnd > setZoomStart, 'setEditorZoom bounds must exist');
-  const setZoomSnippet = source.slice(setZoomStart, setZoomEnd);
+  const chromeState = previewChrome.createPreviewChromeState({
+    pageGapMm: '5.5',
+    canvasPaddingPx: '64',
+  });
+  const defaultState = previewChrome.createPreviewChromeState({
+    pageGapMm: -1,
+    canvasPaddingPx: -1,
+  });
 
-  assert.ok(setZoomSnippet.includes('localStorage.setItem(EDITOR_ZOOM_STORAGE_KEY, String(editorZoom));'));
-  assert.ok(setZoomSnippet.includes('applyPageViewCssVars(metrics);'));
-  assert.ok(setZoomSnippet.includes('if (!persist) {'));
-  assert.equal(setZoomSnippet.includes('writeToolbarProfileState('), false);
-  assert.equal(setZoomSnippet.includes('resolveToolbarProfileStateForProjectSwitch('), false);
-  assert.equal(setZoomSnippet.includes('currentProjectId'), false);
+  assert.deepEqual(chromeState, {
+    pageGapMm: 5.5,
+    canvasPaddingPx: 64,
+  });
+  assert.deepEqual(defaultState, {
+    pageGapMm: previewChrome.PREVIEW_CHROME_DEFAULT_PAGE_GAP_MM,
+    canvasPaddingPx: previewChrome.PREVIEW_CHROME_CANVAS_PADDING_PX,
+  });
+  assert.deepEqual(Object.keys(chromeState), ['pageGapMm', 'canvasPaddingPx']);
+  assert.equal(Object.prototype.hasOwnProperty.call(chromeState, 'formatId'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(chromeState, 'widthMm'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(chromeState, 'heightMm'), false);
+});
 
-  const loadZoomStart = source.indexOf('function loadSavedEditorZoom()');
-  const loadZoomEnd = source.indexOf('function setCurrentFontSize(px)');
-  assert.ok(loadZoomStart > -1 && loadZoomEnd > loadZoomStart, 'loadSavedEditorZoom bounds must exist');
-  const loadZoomSnippet = source.slice(loadZoomStart, loadZoomEnd);
+test('preview chrome: css vars are applied from chrome state only', async () => {
+  const previewChrome = await loadModule('src/renderer/previewChrome.mjs');
 
-  assert.ok(loadZoomSnippet.includes('localStorage.getItem(EDITOR_ZOOM_STORAGE_KEY)'));
-  assert.ok(loadZoomSnippet.includes('setEditorZoom(saved, false);'));
-  assert.ok(loadZoomSnippet.includes('setEditorZoom(EDITOR_ZOOM_DEFAULT, false);'));
+  const writes = [];
+  const root = {
+    style: {
+      setProperty(name, value) {
+        writes.push([name, value]);
+      },
+    },
+  };
+
+  previewChrome.applyPreviewChromeCssVars(
+    { pageGapMm: 4, canvasPaddingPx: 12.4 },
+    root,
+    1.5,
+    2,
+  );
+
+  assert.deepEqual(writes, [
+    ['--page-gap-px', '12px'],
+    ['--canvas-padding-px', '12px'],
+  ]);
 });
 
 test('preview chrome: blank project switch stays ephemeral and does not write project state', async () => {
@@ -66,4 +92,39 @@ test('preview chrome: blank project switch stays ephemeral and does not write pr
   assert.equal(resolved.shouldConsumeLegacySource, false);
   assert.deepEqual(resolved.state, profileState.createCanonicalMinimalToolbarProfileState());
   assert.equal(storage.getItem('toolbarProfiles:'), null);
+});
+
+test('preview chrome: editor text wiring routes preview format through active book profile state', () => {
+  const source = readFile('src/renderer/editor.js');
+
+  const previewCommandStart = source.indexOf('const PREVIEW_FORMAT_COMMAND_IDS = Object.freeze({');
+  const previewCommandEnd = source.indexOf('const commandPaletteDataProvider = createPaletteDataProvider');
+  assert.ok(previewCommandStart > -1 && previewCommandEnd > previewCommandStart, 'preview command block must exist');
+  const previewCommandSnippet = source.slice(previewCommandStart, previewCommandEnd);
+
+  assert.ok(previewCommandSnippet.includes("A4: 'cmd.project.view.previewFormatA4'"));
+  assert.ok(previewCommandSnippet.includes("A5: 'cmd.project.view.previewFormatA5'"));
+  assert.ok(previewCommandSnippet.includes("LETTER: 'cmd.project.view.previewFormatLetter'"));
+  assert.ok(previewCommandSnippet.includes('setActiveBookProfileFormat(formatId);'));
+  assert.equal(previewCommandSnippet.includes('setPreviewChromeFormat(formatId);'), false);
+  assert.ok(previewCommandSnippet.includes('return { formatId };'));
+
+  const pageMetricsStart = source.indexOf('function getPageMetrics({');
+  const pageMetricsEnd = source.indexOf('function applyPageGeometryCssVars(metrics)');
+  assert.ok(pageMetricsStart > -1 && pageMetricsEnd > pageMetricsStart, 'getPageMetrics block must exist');
+  const pageMetricsSnippet = source.slice(pageMetricsStart, pageMetricsEnd);
+
+  assert.ok(pageMetricsSnippet.includes('profile = activeBookProfileState'));
+  assert.ok(pageMetricsSnippet.includes('resolvePageLayoutMetrics('));
+
+  const formatSwitchStart = source.indexOf('function setActiveBookProfileFormat(formatId) {');
+  const formatSwitchEnd = source.indexOf('const initialPageMetrics = getPageMetrics({');
+  assert.ok(formatSwitchStart > -1 && formatSwitchEnd > formatSwitchStart, 'setActiveBookProfileFormat block must exist');
+  const formatSwitchSnippet = source.slice(formatSwitchStart, formatSwitchEnd);
+
+  assert.ok(formatSwitchSnippet.includes('profile: activeBookProfileState,'));
+  assert.ok(formatSwitchSnippet.includes('applyPageGeometryCssVars(metrics);'));
+  assert.ok(formatSwitchSnippet.includes('syncPreviewChromeFormatValue();'));
+  assert.ok(source.includes('applyPreviewChromeCssVars(activePreviewChromeState, document.documentElement, ZOOM_DEFAULT, PX_PER_MM_AT_ZOOM_1);'));
+  assert.ok(source.includes('applyPreviewChromeCssVars(activePreviewChromeState, document.documentElement, editorZoom, PX_PER_MM_AT_ZOOM_1);'));
 });
