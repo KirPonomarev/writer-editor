@@ -3,6 +3,10 @@
 Короткая хронология изменений и решений. Это не полный лог чата, а сжатые записи “что сделали / зачем / что дальше”.
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
+## 2026-04-22
+- Transfer closeout: correct main head `b101939f03996479e90441b1d0cd8ffb4d110e0f` was confirmed and the transfer axis was closed.
+- Authority rebind: local checkout `a670f276759889ce90d1aa535ac7c84746b9f470` was downgraded as non-authority.
+
 ## 2026-04-21
 - False-green: merged `YALKEN_U7_AND_CAPTURE_FALSE_GREEN_CLOSEOUT_001`; U7 sourcebinding and capture route were rebound honestly on current mainline with real runtime artifacts.
 - X102: completed `YALKEN_BLOCK01_CURRENT_MAINLINE_VISUAL_REPROOF_001` as report-only reproof on the current selected-base snapshot; result is `STOP_AND_FREEZE`.
