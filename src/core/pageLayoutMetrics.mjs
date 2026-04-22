@@ -1,6 +1,7 @@
 import { normalizeBookProfile } from './bookProfile.mjs';
 
-export const PX_PER_MM_AT_ZOOM_1 = 96 / 25.4;
+export const PX_PER_MM_AT_ZOOM_1 = 595 / 210;
+export const PAGE_LAYOUT_RUNTIME_PX_PER_MM_BASELINE = PX_PER_MM_AT_ZOOM_1;
 
 function round(value, precision = 3) {
   const factor = 10 ** precision;
@@ -52,7 +53,7 @@ export function resolvePageLayoutMetrics(profile, options = {}) {
 
   const pxPerMmResult = readPositiveNumber(
     options.pxPerMm,
-    PX_PER_MM_AT_ZOOM_1,
+    PAGE_LAYOUT_RUNTIME_PX_PER_MM_BASELINE,
     'E_PAGE_LAYOUT_PX_PER_MM',
     '$.pxPerMm',
     'pxPerMm',
