@@ -45,7 +45,10 @@ import {
   createDefaultBookProfile,
   normalizeBookProfile,
 } from '../core/bookProfile.mjs';
-import { resolvePageLayoutMetrics } from '../core/pageLayoutMetrics.mjs';
+import {
+  PX_PER_MM_AT_ZOOM_1,
+  resolvePageLayoutMetrics,
+} from '../core/pageLayoutMetrics.mjs';
 import {
   buildLeftRailPresentationTree,
   getLeftRailPresentationExpandKey,
@@ -579,7 +582,6 @@ const UI_ERROR_MAP_SCHEMA_VERSION = 'ui-error-map.v1';
 const UI_ERROR_FALLBACK_MESSAGE = 'Операция не выполнена';
 const UI_ERROR_FALLBACK_SEVERITY = 'ERROR';
 
-const PX_PER_MM_AT_ZOOM_1 = 595 / 210;
 const ZOOM_DEFAULT = 1.0;
 const DEFAULT_ACTIVE_BOOK_PROFILE = createDefaultBookProfile();
 const DEFAULT_PREVIEW_CHROME_STATE = createPreviewChromeState();
