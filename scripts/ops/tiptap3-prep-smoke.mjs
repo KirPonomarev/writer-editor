@@ -16,18 +16,34 @@ const FORCED_NEGATIVE_FAIL_REASON = 'E_TIPTAP_RUNTIME_PROOFHOOK_FORCED_NEGATIVE'
 const UNEXPECTED_ERROR_FAIL_REASON = 'E_TIPTAP_RUNTIME_PROOFHOOK_UNEXPECTED';
 const SEAM_FAIL_PREFIX = 'E_TIPTAP_RUNTIME_PROOFHOOK_SEAM_FAIL';
 
-function loadModuleByVm(filePath, exportNames) {
+function loadModuleByVm(filePath, exportNames, dependencies = {}) {
   const sourceText = fs.readFileSync(filePath, 'utf8');
-  const evalSource = sourceText
+  const dependencySource = Object.entries(dependencies)
+    .map(([specifier, names]) => {
+      const list = Array.isArray(names) ? names.join(', ') : Object.keys(names || {}).join(', ');
+      return `const { ${list} } = __deps[${JSON.stringify(specifier)}];`;
+    })
+    .join('\n');
+  const evalSource = `${dependencySource}\n${sourceText}`
+    .replace(
+      /import\s*\{\s*composeObservablePayload,\s*parseObservablePayload,\s*\}\s*from\s*['"]\.\.\/documentContentEnvelope\.mjs['"]\s*/u,
+      '',
+    )
+    .replace(/export\s*\{\s*composeObservablePayload,\s*parseObservablePayload\s*\}\s*/u, '')
     .replace(/export function /g, 'function ')
     .concat(`\nmodule.exports = { ${exportNames.join(', ')} };`);
 
   const context = {
     window: {},
+    globalThis: null,
+    self: null,
+    __deps: dependencies,
     module: { exports: {} },
     exports: {},
     console,
   };
+  context.globalThis = context;
+  context.self = context;
   vm.createContext(context);
   new vm.Script(evalSource, { filename: filePath }).runInContext(context);
   return {
@@ -54,16 +70,27 @@ function evaluateProofhookState(input = {}) {
   const ipcPath = path.resolve('src/renderer/tiptap/ipc.js');
   const runtimeBridgePath = path.resolve('src/renderer/tiptap/runtimeBridge.js');
 
+  const envelopePath = path.resolve('src/renderer/documentContentEnvelope.mjs');
+  const envelopeModule = loadModuleByVm(envelopePath, [
+    'composeObservablePayload',
+    'parseObservablePayload',
+  ]).exports;
   const ipcModule = loadModuleByVm(ipcPath, [
+    'composeObservablePayload',
+    'parseObservablePayload',
+    'createTextRequestHandler',
+    'createSetTextHandler',
     'attachTiptapIpc',
     'detachTiptapIpc',
     'getTiptapIpcDebugState',
-  ]);
+  ], {
+    '../documentContentEnvelope.mjs': envelopeModule,
+  });
   const runtimeBridgeModule = loadModuleByVm(runtimeBridgePath, [
     'runTiptapUndo',
     'runTiptapRedo',
     'normalizeRecoveryPayload',
-  ]);
+  ]).exports;
 
   ipcModule.context.window.electronAPI = {
     onEditorTextRequest(callback) {
@@ -82,7 +109,7 @@ function evaluateProofhookState(input = {}) {
     detachTiptapIpc,
     getTiptapIpcDebugState,
   } = ipcModule.exports;
-  const { runTiptapUndo, runTiptapRedo, normalizeRecoveryPayload } = runtimeBridgeModule.exports;
+  const { runTiptapUndo, runTiptapRedo, normalizeRecoveryPayload } = runtimeBridgeModule;
 
   const sessionA = {
     readObservablePayload: () => 'alpha',
@@ -99,11 +126,11 @@ function evaluateProofhookState(input = {}) {
 
   const seamResults = {};
 
-  attachTiptapIpc(sessionA);
-  attachTiptapIpc(sessionA);
+  attachTiptapIpc(sessionA, { attachWindowListeners: true });
+  attachTiptapIpc(sessionA, { attachWindowListeners: true });
   const listenersReady = listeners.length === 1 && setTextListeners.length === 1;
   listeners[0]?.({ requestId: 'req-a' });
-  attachTiptapIpc(sessionB);
+  attachTiptapIpc(sessionB, { attachWindowListeners: true });
   listeners[0]?.({ requestId: 'req-b' });
   detachTiptapIpc(sessionA);
   listeners[0]?.({ requestId: 'req-c' });
@@ -116,9 +143,9 @@ function evaluateProofhookState(input = {}) {
     && responses[2]?.text === 'bravo'
   );
 
-  attachTiptapIpc(sessionA);
+  attachTiptapIpc(sessionA, { attachWindowListeners: true });
   setTextListeners[0]?.({ content: 'seed-a' });
-  attachTiptapIpc(sessionB);
+  attachTiptapIpc(sessionB, { attachWindowListeners: true });
   setTextListeners[0]?.({ content: 'seed-b' });
   seamResults['set-text-determinism'] = Boolean(
     receivedPayloads[0]?.lane === 'A'

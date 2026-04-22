@@ -32,6 +32,11 @@ function loadModuleByVm(filePath, exportNames) {
   return context.module.exports;
 }
 
+async function loadDocumentContentEnvelopeModule() {
+  const moduleUrl = new URL('../../src/renderer/documentContentEnvelope.mjs', import.meta.url);
+  return import(moduleUrl.href);
+}
+
 function parseArgs(argv) {
   const out = {
     json: false,
@@ -45,10 +50,9 @@ function parseArgs(argv) {
   return out;
 }
 
-function evaluatePersistenceSeams() {
-  const ipcPath = path.resolve('src/renderer/tiptap/ipc.js');
+async function evaluatePersistenceSeams() {
   const runtimeBridgePath = path.resolve('src/renderer/tiptap/runtimeBridge.js');
-  const ipcModule = loadModuleByVm(ipcPath, ['composeObservablePayload', 'parseObservablePayload']);
+  const ipcModule = await loadDocumentContentEnvelopeModule();
   const runtimeBridgeModule = loadModuleByVm(runtimeBridgePath, ['normalizeRecoveryPayload']);
   const { composeObservablePayload, parseObservablePayload } = ipcModule;
   const { normalizeRecoveryPayload } = runtimeBridgeModule;
@@ -132,9 +136,9 @@ function evaluatePersistenceSeams() {
   return seamResults;
 }
 
-export function evaluatePhase00TiptapPersistenceProofhook(input = {}) {
+export async function evaluatePhase00TiptapPersistenceProofhook(input = {}) {
   const forceNegative = Boolean(input.forceNegative);
-  const seamResults = evaluatePersistenceSeams();
+  const seamResults = await evaluatePersistenceSeams();
   const failedSeam = COVERED_SEAMS.find((id) => seamResults[id] !== true) || '';
 
   if (forceNegative) {
@@ -169,13 +173,13 @@ export function evaluatePhase00TiptapPersistenceProofhook(input = {}) {
   };
 }
 
-function runCli() {
+async function runCli() {
   const args = parseArgs(process.argv.slice(2));
   const forceNegative = args.forceNegative || process.env.PHASE00_TIPTAP_PERSISTENCE_FORCE_NEGATIVE === '1';
 
   let state;
   try {
-    state = evaluatePhase00TiptapPersistenceProofhook({ forceNegative });
+    state = await evaluatePhase00TiptapPersistenceProofhook({ forceNegative });
   } catch (error) {
     state = {
       ok: false,
@@ -201,5 +205,5 @@ function runCli() {
 
 const selfPath = fileURLToPath(import.meta.url);
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(selfPath)) {
-  runCli();
+  await runCli();
 }
