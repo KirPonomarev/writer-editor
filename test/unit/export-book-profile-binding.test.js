@@ -21,10 +21,6 @@ async function loadModules() {
   };
 }
 
-function hasBookProfileQueryHook(source) {
-  return /query\.[\w.]*bookProfile/i.test(source) || /query\.[\w.]*pageSetup/i.test(source);
-}
-
 test('export book profile binding: command forwards canonical bookProfile options to backend intact', async () => {
   const { createCommandRegistry, createCommandRunner, COMMAND_IDS, registerProjectCommands } = await loadModules();
   const bookProfile = {
@@ -113,14 +109,19 @@ test('export book profile binding: main export path no longer hardcodes A4 secti
 test('export book profile binding: export can obtain bound page setup from renderer or bounded query bridge', () => {
   const mainSource = read('src/main.js');
   const preloadSource = read('src/preload.js');
+  const editorSource = read('src/renderer/editor.js');
 
-  const editorTextResponseCarriesStructuredPayload =
-    /pending\.resolve\(payload\)/.test(mainSource)
-    || /pending\.resolve\(payload\.[a-zA-Z0-9_]+\)/.test(mainSource) && /bookProfile|pageLayoutMetrics/.test(mainSource);
-  const boundedQueryHookExists = hasBookProfileQueryHook(mainSource) || hasBookProfileQueryHook(preloadSource);
+  const snapshotBridgeExists =
+    mainSource.includes("mainWindow.webContents.send('editor:snapshot-request', { requestId });")
+    && mainSource.includes("ipcMain.on('editor:snapshot-response'")
+    && preloadSource.includes("ipcRenderer.on('editor:snapshot-request'")
+    && preloadSource.includes("ipcRenderer.send('editor:snapshot-response'")
+    && editorSource.includes('window.electronAPI.onEditorSnapshotRequest')
+    && editorSource.includes('window.electronAPI.sendEditorSnapshotResponse')
+    && editorSource.includes('bookProfile: getActiveBookProfile()');
 
   assert.ok(
-    editorTextResponseCarriesStructuredPayload || boundedQueryHookExists,
-    'export needs either structured editor:text-response payload or bounded query bridge access to persisted page setup',
+    snapshotBridgeExists,
+    'export needs a bounded editor snapshot bridge carrying canonical bookProfile for page setup binding',
   );
 });

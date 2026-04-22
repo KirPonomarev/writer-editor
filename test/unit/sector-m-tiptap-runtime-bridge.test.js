@@ -488,6 +488,8 @@ test('tiptap runtime bridge: command surface is locked for dormant bootstrap sli
     'open-export-preview',
     'insert-add-card',
     'format-align-left',
+    'toggle-preview',
+    'toggle-preview-frame',
     'switch-mode-plan',
     'switch-mode-review',
     'switch-mode-write',

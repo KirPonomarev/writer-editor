@@ -142,6 +142,7 @@ function logPerfStage(label) {
 }
 let diskQueue = Promise.resolve();
 const pendingTextRequests = new Map();
+const pendingSnapshotRequests = new Map();
 let currentFontSize = 16;
 const MENU_PRESENTATION_MODE_CLASSIC = 'classic';
 const MENU_PRESENTATION_MODE_COMPACT = 'compact';
@@ -284,6 +285,15 @@ function createStableProjectId() {
   return `project-${randomPart}`;
 }
 
+function isPlainObjectValue(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
 function normalizeStableProjectId(projectId) {
   if (typeof projectId !== 'string') {
     return '';
@@ -305,8 +315,23 @@ function normalizeStableProjectId(projectId) {
   return normalized;
 }
 
+function canonicalizeComparableValue(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => canonicalizeComparableValue(item));
+  }
+  if (isPlainObjectValue(value)) {
+    return Object.keys(value)
+      .sort()
+      .reduce((acc, key) => {
+        acc[key] = canonicalizeComparableValue(value[key]);
+        return acc;
+      }, {});
+  }
+  return value;
+}
+
 function getProjectManifestComparable(manifest) {
-  if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
+  if (!isPlainObjectValue(manifest)) {
     return null;
   }
 
@@ -314,12 +339,27 @@ function getProjectManifestComparable(manifest) {
     schemaVersion: manifest.schemaVersion,
     projectId: typeof manifest.projectId === 'string' ? manifest.projectId.trim() : manifest.projectId,
     projectName: typeof manifest.projectName === 'string' ? manifest.projectName.trim() : manifest.projectName,
-    createdAtUtc: typeof manifest.createdAtUtc === 'string' ? manifest.createdAtUtc.trim() : manifest.createdAtUtc
+    createdAtUtc: typeof manifest.createdAtUtc === 'string' ? manifest.createdAtUtc.trim() : manifest.createdAtUtc,
+    bookProfile: Object.prototype.hasOwnProperty.call(manifest, 'bookProfile')
+      ? canonicalizeComparableValue(manifest.bookProfile)
+      : undefined,
   };
 }
 
-function normalizeProjectManifest(manifest, projectName = DEFAULT_PROJECT_NAME) {
-  const source = manifest && typeof manifest === 'object' && !Array.isArray(manifest) ? manifest : {};
+let bookProfileModulePromise = null;
+function loadBookProfileModule() {
+  if (!bookProfileModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'core', 'bookProfile.mjs')).href;
+    bookProfileModulePromise = import(modulePath).catch((error) => {
+      bookProfileModulePromise = null;
+      throw error;
+    });
+  }
+  return bookProfileModulePromise;
+}
+
+async function normalizeProjectManifest(manifest, projectName = DEFAULT_PROJECT_NAME) {
+  const source = isPlainObjectValue(manifest) ? manifest : {};
   const stableProjectId = normalizeStableProjectId(source.projectId);
   const projectId = stableProjectId || createStableProjectId();
   const normalizedProjectName = typeof source.projectName === 'string' && source.projectName.trim().length > 0
@@ -328,13 +368,32 @@ function normalizeProjectManifest(manifest, projectName = DEFAULT_PROJECT_NAME) 
   const createdAtUtc = typeof source.createdAtUtc === 'string' && source.createdAtUtc.trim().length > 0
     ? source.createdAtUtc.trim()
     : new Date().toISOString();
+  let bookProfile;
 
-  return {
+  if (Object.prototype.hasOwnProperty.call(source, 'bookProfile') && isPlainObjectValue(source.bookProfile)) {
+    try {
+      const { normalizeBookProfile } = await loadBookProfileModule();
+      const normalizedBookProfileResult = normalizeBookProfile(source.bookProfile);
+      if (normalizedBookProfileResult.ok) {
+        bookProfile = normalizedBookProfileResult.value;
+      }
+    } catch (error) {
+      logDevError('normalizeProjectManifest:bookProfile', error);
+    }
+  }
+
+  const normalizedManifest = {
     schemaVersion: PROJECT_MANIFEST_SCHEMA_VERSION,
     projectId,
     projectName: normalizedProjectName,
-    createdAtUtc
+    createdAtUtc,
   };
+
+  if (bookProfile) {
+    normalizedManifest.bookProfile = bookProfile;
+  }
+
+  return normalizedManifest;
 }
 
 async function readProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
@@ -342,9 +401,9 @@ async function readProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
   try {
     const raw = await fs.readFile(manifestPath, 'utf8');
     const parsed = JSON.parse(raw);
-    const sourceManifest = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null;
+    const sourceManifest = isPlainObjectValue(parsed) ? parsed : null;
     return {
-      manifest: normalizeProjectManifest(sourceManifest || {}, projectName),
+      manifest: await normalizeProjectManifest(sourceManifest || {}, projectName),
       sourceManifestComparable: getProjectManifestComparable(sourceManifest)
     };
   } catch {
@@ -357,7 +416,7 @@ async function ensureProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
   const existingManifestRecord = await readProjectManifest(projectName);
   const existingManifest = existingManifestRecord ? existingManifestRecord.manifest : null;
   const sourceManifestComparable = existingManifestRecord ? existingManifestRecord.sourceManifestComparable : null;
-  const nextManifest = normalizeProjectManifest(existingManifest || {}, projectName);
+  const nextManifest = await normalizeProjectManifest(existingManifest || {}, projectName);
   const shouldWrite = !sourceManifestComparable
     || JSON.stringify(sourceManifestComparable) !== JSON.stringify(nextManifest);
 
@@ -390,7 +449,9 @@ async function resolveProjectBindingForFile(filePath) {
   const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
   return {
     manifestPath,
-    projectId: manifest.projectId
+    projectRoot,
+    projectId: manifest.projectId,
+    manifest,
   };
 }
 
@@ -425,7 +486,7 @@ async function findProjectBindingByProjectId(projectId) {
       const manifestPath = path.join(documentsRoot, entry.name, PROJECT_MANIFEST_FILENAME);
       try {
         const raw = await fs.readFile(manifestPath, 'utf8');
-        const manifest = normalizeProjectManifest(JSON.parse(raw), entry.name);
+        const manifest = await normalizeProjectManifest(JSON.parse(raw), entry.name);
         if (manifest.projectId === normalizedProjectId) {
           return {
             manifestPath,
@@ -572,7 +633,8 @@ function sendEditorText(payload) {
       path: typeof payload.path === 'string' ? payload.path : '',
       kind: typeof payload.kind === 'string' ? payload.kind : '',
       metaEnabled: Boolean(payload.metaEnabled),
-      projectId: typeof payload.projectId === 'string' ? payload.projectId : ''
+      projectId: typeof payload.projectId === 'string' ? payload.projectId : '',
+      bookProfile: isPlainObjectValue(payload.bookProfile) ? payload.bookProfile : null,
     };
     mainWindow.webContents.send('editor:set-text', safePayload);
     return;
@@ -588,7 +650,8 @@ async function attachProjectIdToEditorPayload(payload) {
     path: typeof source.path === 'string' ? source.path : '',
     kind: typeof source.kind === 'string' ? source.kind : '',
     metaEnabled: Boolean(source.metaEnabled),
-    projectId: ''
+    projectId: '',
+    bookProfile: null,
   };
 
   if (!nextPayload.path) {
@@ -598,6 +661,9 @@ async function attachProjectIdToEditorPayload(payload) {
   const projectBinding = await resolveProjectBindingForFile(nextPayload.path);
   if (projectBinding && typeof projectBinding.projectId === 'string' && projectBinding.projectId.trim()) {
     nextPayload.projectId = projectBinding.projectId.trim();
+  }
+  if (projectBinding && isPlainObjectValue(projectBinding.manifest) && isPlainObjectValue(projectBinding.manifest.bookProfile)) {
+    nextPayload.bookProfile = projectBinding.manifest.bookProfile;
   }
 
   return nextPayload;
@@ -609,7 +675,46 @@ function sendEditorFontSize(px) {
   }
 }
 
-function requestEditorText(timeoutMs = 2500) {
+function normalizeEditorSnapshotPayload(payload) {
+  if (typeof payload === 'string') {
+    return {
+      content: payload,
+      plainText: payload,
+      bookProfile: null,
+    };
+  }
+
+  const source = isPlainObjectValue(payload) ? payload : {};
+  const content = typeof source.content === 'string'
+    ? source.content
+    : typeof source.text === 'string'
+      ? source.text
+      : '';
+  return {
+    content,
+    plainText: typeof source.plainText === 'string' ? source.plainText : content,
+    bookProfile: isPlainObjectValue(source.bookProfile) ? source.bookProfile : null,
+  };
+}
+
+function requestEditorSnapshot(timeoutMs = 2500) {
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    return Promise.reject(new Error('No active window'));
+  }
+
+  return new Promise((resolve, reject) => {
+    const requestId = crypto.randomBytes(8).toString('hex');
+    const timeoutId = setTimeout(() => {
+      pendingSnapshotRequests.delete(requestId);
+      reject(new Error('Timed out waiting for editor snapshot'));
+    }, timeoutMs);
+
+    pendingSnapshotRequests.set(requestId, { resolve, reject, timeoutId });
+    mainWindow.webContents.send('editor:snapshot-request', { requestId });
+  });
+}
+
+async function requestEditorText(timeoutMs = 2500) {
   if (!mainWindow || mainWindow.isDestroyed()) {
     return Promise.reject(new Error('No active window'));
   }
@@ -632,6 +737,60 @@ function clearPendingTextRequests(reason) {
     pending.reject(new Error(reason));
   }
   pendingTextRequests.clear();
+
+  for (const [requestId, pending] of pendingSnapshotRequests.entries()) {
+    clearTimeout(pending.timeoutId);
+    pending.reject(new Error(reason));
+  }
+  pendingSnapshotRequests.clear();
+}
+
+async function persistProjectManifestAtPath(manifestPath, manifest, operationLabel = 'save project manifest') {
+  const writeResult = await queueDiskOperation(
+    () => fileManager.writeFileAtomic(manifestPath, JSON.stringify(manifest, null, 2)),
+    operationLabel,
+  );
+  if (!writeResult.success) {
+    throw new Error(writeResult.error || 'Failed to save project manifest');
+  }
+}
+
+async function persistBookProfileForFile(filePath, bookProfile, operationLabel = 'save project manifest') {
+  if (typeof filePath !== 'string' || !filePath.trim()) {
+    return { persisted: false, manifest: null };
+  }
+
+  const projectBinding = await resolveProjectBindingForFile(filePath);
+  if (!projectBinding || !projectBinding.manifestPath) {
+    return { persisted: false, manifest: null };
+  }
+
+  const sourceManifest = isPlainObjectValue(projectBinding.manifest) ? projectBinding.manifest : {};
+  const projectNameHint = typeof sourceManifest.projectName === 'string' && sourceManifest.projectName.trim()
+    ? sourceManifest.projectName.trim()
+    : path.basename(projectBinding.projectRoot || getProjectRootPath());
+  const nextManifest = await normalizeProjectManifest(
+    {
+      ...sourceManifest,
+      bookProfile,
+    },
+    projectNameHint,
+  );
+  const sourceComparable = JSON.stringify(getProjectManifestComparable(sourceManifest));
+  const nextComparable = JSON.stringify(getProjectManifestComparable(nextManifest));
+
+  if (sourceComparable === nextComparable) {
+    return {
+      persisted: false,
+      manifest: nextManifest,
+    };
+  }
+
+  await persistProjectManifestAtPath(projectBinding.manifestPath, nextManifest, operationLabel);
+  return {
+    persisted: true,
+    manifest: nextManifest,
+  };
 }
 
 function isFileUrl(url) {
@@ -1236,6 +1395,42 @@ function loadMarkdownIoModule() {
   return markdownIoModulePromise;
 }
 
+let docxPageSetupBindModulePromise = null;
+function loadDocxPageSetupBindModule() {
+  if (!docxPageSetupBindModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'docxPageSetupBind.mjs')).href;
+    docxPageSetupBindModulePromise = import(modulePath).catch((error) => {
+      docxPageSetupBindModulePromise = null;
+      throw error;
+    });
+  }
+  return docxPageSetupBindModulePromise;
+}
+
+let semanticMappingModulePromise = null;
+function loadSemanticMappingModule() {
+  if (!semanticMappingModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'derived', 'semanticMapping.mjs')).href;
+    semanticMappingModulePromise = import(modulePath).catch((error) => {
+      semanticMappingModulePromise = null;
+      throw error;
+    });
+  }
+  return semanticMappingModulePromise;
+}
+
+let styleMapModulePromise = null;
+function loadStyleMapModule() {
+  if (!styleMapModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'derived', 'styleMap.mjs')).href;
+    styleMapModulePromise = import(modulePath).catch((error) => {
+      styleMapModulePromise = null;
+      throw error;
+    });
+  }
+  return styleMapModulePromise;
+}
+
 function mapMarkdownErrorCode(inputCode, inputReason) {
   const code = typeof inputCode === 'string' ? inputCode : '';
   const reason = typeof inputReason === 'string' ? inputReason : '';
@@ -1557,12 +1752,60 @@ function buildStoredZip(entries) {
   return Buffer.concat([...localParts, ...centralParts, end]);
 }
 
-function buildDocxMinBuffer(sourceText) {
-  const normalized = String(sourceText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  const lines = normalized.length > 0 ? normalized.split('\n') : [''];
-  const paragraphs = lines
-    .map((line) => `<w:p><w:r><w:t xml:space="preserve">${escapeXml(line)}</w:t></w:r></w:p>`)
-    .join('');
+function normalizeSemanticKind(value) {
+  const kind = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (!kind) return 'paragraph';
+  if (kind === 'scene-heading' || kind === 'sceneheading' || kind === 'scene_heading') return 'sceneHeading';
+  if (kind === 'page-break' || kind === 'pagebreak' || kind === 'page_break') return 'pageBreak';
+  if (kind === 'list-item' || kind === 'listitem' || kind === 'list_item') return 'listItem';
+  if (kind === 'code-block' || kind === 'codeblock' || kind === 'code_block') return 'codeBlock';
+  return kind;
+}
+
+function resolveDocxParagraphStyleId(styleDescriptor, semanticKind) {
+  const role = typeof styleDescriptor?.role === 'string' ? styleDescriptor.role.trim().toLowerCase() : '';
+  if (role === 'heading' || semanticKind === 'heading') return 'Heading1';
+  if (role === 'scene_heading' || role === 'sceneheading' || semanticKind === 'sceneHeading') return 'Heading2';
+  return '';
+}
+
+async function buildDocxMinBuffer(editorSnapshot) {
+  const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
+  const plainText = String(snapshot.plainText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const [
+    docxPageSetupBindModule,
+    semanticMappingModule,
+    styleMapModule,
+  ] = await Promise.all([
+    loadDocxPageSetupBindModule(),
+    loadSemanticMappingModule(),
+    loadStyleMapModule(),
+  ]);
+  const semanticMap = semanticMappingModule.mapSemanticEntries({
+    sourceId: 'docx-export',
+    text: plainText,
+  });
+  const styleMap = styleMapModule.createStyleMap();
+  const pageBreakToken = semanticMappingModule.PAGE_BREAK_TOKEN_V1;
+  const sectionPropertiesXml = docxPageSetupBindModule.buildDocxSectionPropertiesXml(snapshot.bookProfile);
+  const entries = Array.isArray(semanticMap.entries) ? semanticMap.entries : [];
+  const paragraphs = entries.length > 0
+    ? entries.map((entry) => {
+      const semanticKind = normalizeSemanticKind(entry && entry.kind);
+      const styleDescriptor = styleMap.resolve(entry);
+      const styleId = resolveDocxParagraphStyleId(styleDescriptor, semanticKind);
+      if (semanticKind === 'pageBreak' || String(entry?.text || '').trim() === pageBreakToken) {
+        return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+      }
+
+      const text = typeof entry?.text === 'string' ? entry.text : '';
+      const styleXml = styleId ? `<w:pPr><w:pStyle w:val="${escapeXml(styleId)}"/></w:pPr>` : '';
+      if (!text) {
+        return `<w:p>${styleXml}</w:p>`;
+      }
+      return `<w:p>${styleXml}<w:r><w:t xml:space="preserve">${escapeXml(text)}</w:t></w:r></w:p>`;
+    }).join('')
+    : '<w:p/>';
 
   const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
@@ -1578,10 +1821,7 @@ function buildDocxMinBuffer(sourceText) {
 <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
   <w:body>
     ${paragraphs}
-    <w:sectPr>
-      <w:pgSz w:w="11906" w:h="16838"/>
-      <w:pgMar w:top="1417" w:right="1417" w:bottom="1417" w:left="1417" w:header="708" w:footer="708" w:gutter="0"/>
-    </w:sectPr>
+    ${sectionPropertiesXml}
   </w:body>
 </w:document>`;
 
@@ -1628,10 +1868,16 @@ async function handleExportDocxMin(payloadRaw) {
     });
   }
 
-  let sourceText = payload.bufferSource;
-  if (!sourceText) {
+  let editorSnapshot = payload.bufferSource
+    ? {
+      content: payload.bufferSource,
+      plainText: payload.bufferSource,
+      bookProfile: isPlainObjectValue(payload.options.bookProfile) ? payload.options.bookProfile : null,
+    }
+    : null;
+  if (!editorSnapshot) {
     try {
-      sourceText = await requestEditorText();
+      editorSnapshot = await requestEditorSnapshot();
     } catch (error) {
       return makeTypedExportError('E_EXPORT_TEXT_UNAVAILABLE', 'EDITOR_TEXT_UNAVAILABLE', {
         message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
@@ -1641,7 +1887,7 @@ async function handleExportDocxMin(payloadRaw) {
 
   let documentBuffer;
   try {
-    documentBuffer = buildDocxMinBuffer(sourceText);
+    documentBuffer = await buildDocxMinBuffer(editorSnapshot);
   } catch (error) {
     return makeTypedExportError('E_EXPORT_BUILD_FAILED', 'DOCX_BUILD_FAILED', {
       message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
@@ -2649,7 +2895,23 @@ ipcMain.on('editor:text-response', (_, payload) => {
 
   clearTimeout(pending.timeoutId);
   pendingTextRequests.delete(requestId);
-  pending.resolve(typeof payload.text === 'string' ? payload.text : '');
+  pending.resolve(typeof payload?.text === 'string' ? payload.text : '');
+});
+
+ipcMain.on('editor:snapshot-response', (_, payload) => {
+  const requestId = typeof payload?.requestId === 'string' ? payload.requestId : '';
+  if (!requestId) {
+    return;
+  }
+
+  const pending = pendingSnapshotRequests.get(requestId);
+  if (!pending) {
+    return;
+  }
+
+  clearTimeout(pending.timeoutId);
+  pendingSnapshotRequests.delete(requestId);
+  pending.resolve(normalizeEditorSnapshotPayload(payload ? payload.snapshot : null));
 });
 
 async function executeFileCommand(intentRaw) {
@@ -3435,28 +3697,32 @@ async function autoSave() {
 
   autoSaveInProgress = true;
   try {
-    const content = await requestEditorText();
+    const snapshot = await requestEditorSnapshot();
+    const content = snapshot.content;
     const currentHash = computeHash(content);
 
-    if (currentHash === lastAutosaveHash) {
-      setDirtyState(false);
-      return true;
-    }
-
     if (currentFilePath) {
-      const saveResult = await queueDiskOperation(
-        () => fileManager.writeFileAtomic(currentFilePath, content),
-        'autosave file'
-      );
-      if (!saveResult.success) {
-        updateStatus('Ошибка сохранения');
-        return false;
+      if (currentHash !== lastAutosaveHash) {
+        const saveResult = await queueDiskOperation(
+          () => fileManager.writeFileAtomic(currentFilePath, content),
+          'autosave file'
+        );
+        if (!saveResult.success) {
+          updateStatus('Ошибка сохранения');
+          return false;
+        }
       }
+      await persistBookProfileForFile(currentFilePath, snapshot.bookProfile, 'autosave project manifest');
 
       lastAutosaveHash = currentHash;
       setDirtyState(false);
       updateStatus('Автосохранено');
       await saveLastFile();
+      return true;
+    }
+
+    if (currentHash === lastAutosaveHash) {
+      setDirtyState(false);
       return true;
     }
 
@@ -3490,7 +3756,8 @@ async function createBackup() {
 
   try {
     if (currentFilePath) {
-      const content = await requestEditorText();
+      const snapshot = await requestEditorSnapshot();
+      const content = snapshot.content;
       const hash = computeHash(content);
       if (backupHashes.get(currentFilePath) === hash) {
         return;
@@ -3547,14 +3814,15 @@ async function handleSave() {
     return false;
   }
 
-  let content;
+  let snapshot;
   try {
-    content = await requestEditorText();
+    snapshot = await requestEditorSnapshot();
   } catch (error) {
     updateStatus('Ошибка');
     logDevError('handleSave', error);
     return false;
   }
+  const content = snapshot.content;
   const wasUntitled = currentFilePath === null;
 
   if (currentFilePath) {
@@ -3567,6 +3835,7 @@ async function handleSave() {
       'save existing file'
     );
     if (saveResult.success) {
+      await persistBookProfileForFile(currentFilePath, snapshot.bookProfile, 'save project manifest');
       lastAutosaveHash = computeHash(content);
       setDirtyState(false);
       updateStatus('Сохранено');
@@ -3601,6 +3870,7 @@ async function handleSave() {
       'save new file'
     );
     if (saveResult.success) {
+      await persistBookProfileForFile(filePath, snapshot.bookProfile, 'save project manifest');
       lastAutosaveHash = computeHash(content);
       currentFilePath = filePath;
       await saveLastFile();
@@ -3623,14 +3893,15 @@ async function handleSaveAs() {
     return false;
   }
 
-  let content;
+  let snapshot;
   try {
-    content = await requestEditorText();
+    snapshot = await requestEditorSnapshot();
   } catch (error) {
     updateStatus('Ошибка');
     logDevError('handleSaveAs', error);
     return false;
   }
+  const content = snapshot.content;
 
   const wasUntitled = currentFilePath === null;
   const result = await dialog.showSaveDialog(mainWindow, {
@@ -3657,6 +3928,7 @@ async function handleSaveAs() {
       'save as file'
     );
     if (saveResult.success) {
+      await persistBookProfileForFile(filePath, snapshot.bookProfile, 'save project manifest');
       lastAutosaveHash = computeHash(content);
       currentFilePath = filePath;
       await saveLastFile();

@@ -7,10 +7,6 @@ function read(relativePath) {
   return fs.readFileSync(path.join(process.cwd(), relativePath), 'utf8');
 }
 
-function hasBookProfileQueryHook(source) {
-  return /query\.[\w.]*bookProfile/i.test(source) || /query\.[\w.]*pageSetup/i.test(source);
-}
-
 test('book profile persistence: project manifest source carries canonical bookProfile state', () => {
   const source = read('src/main.js');
 
@@ -33,16 +29,22 @@ test('book profile persistence: project manifest source carries canonical bookPr
 test('book profile persistence: reopen path exposes persisted bookProfile or a bounded query hook', () => {
   const mainSource = read('src/main.js');
   const preloadSource = read('src/preload.js');
+  const editorSource = read('src/renderer/editor.js');
 
   const editorPayloadCarriesBookProfile =
     /bookProfile\s*:\s*.*bookProfile/.test(mainSource)
     || mainSource.includes('safePayload.bookProfile')
     || mainSource.includes("mainWindow.webContents.send('editor:set-text', safePayload)")
       && mainSource.includes('bookProfile');
-  const boundedQueryHookExists = hasBookProfileQueryHook(mainSource) || hasBookProfileQueryHook(preloadSource);
+  const snapshotBridgeExists =
+    preloadSource.includes("ipcRenderer.on('editor:snapshot-request'")
+    && preloadSource.includes("ipcRenderer.send('editor:snapshot-response'")
+    && editorSource.includes('window.electronAPI.onEditorSnapshotRequest')
+    && editorSource.includes('window.electronAPI.sendEditorSnapshotResponse')
+    && editorSource.includes('composeEditorSnapshot()');
 
   assert.ok(
-    editorPayloadCarriesBookProfile || boundedQueryHookExists,
-    'save-reopen needs either editor:set-text bookProfile payload or a bounded query bridge for project bookProfile',
+    editorPayloadCarriesBookProfile || snapshotBridgeExists,
+    'save-reopen needs either editor:set-text bookProfile payload or a bounded snapshot bridge for project bookProfile',
   );
 });

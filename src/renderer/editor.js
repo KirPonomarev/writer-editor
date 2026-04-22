@@ -3620,6 +3620,28 @@ function composeDocumentContent() {
   });
 }
 
+function composeEditorSnapshot() {
+  return {
+    content: composeDocumentContent(),
+    plainText: getPlainText(),
+    bookProfile: getActiveBookProfile(),
+  };
+}
+
+function applyIncomingBookProfile(bookProfile) {
+  const normalizedResult = normalizeBookProfile(bookProfile);
+  activeBookProfileState = normalizedResult.ok ? normalizedResult.value : DEFAULT_ACTIVE_BOOK_PROFILE;
+  const metrics = getPageMetrics({
+    profile: activeBookProfileState,
+    zoom: editorZoom,
+  });
+  if (metrics) {
+    applyPageGeometryCssVars(metrics);
+  }
+  syncPreviewChromeFormatValue();
+  scheduleLayoutPreviewRefresh();
+}
+
 function handleDocumentContentParseIssue(issue) {
   if (!issue || typeof issue !== 'object') {
     return;
@@ -7705,9 +7727,11 @@ if (window.electronAPI) {
     const hasPath = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'path');
     const hasKind = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'kind');
     const hasProjectId = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'projectId');
+    const hasBookProfile = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'bookProfile');
     const path = hasPath ? payload.path : '';
     const kind = hasKind ? payload.kind : '';
     const projectId = hasProjectId && typeof payload.projectId === 'string' ? payload.projectId : '';
+    const bookProfile = hasBookProfile ? payload.bookProfile : null;
     const nextMetaEnabled = typeof payload === 'object' && payload ? Boolean(payload.metaEnabled) : false;
 
     clearFlowModeState();
@@ -7726,6 +7750,11 @@ if (window.electronAPI) {
         restoreSpatialLayoutState(currentProjectId);
         adoptToolbarConfiguratorState(currentProjectId);
       }
+    }
+    if (hasBookProfile) {
+      applyIncomingBookProfile(bookProfile);
+    } else {
+      applyIncomingBookProfile(null);
     }
 
     const parsed = parseDocumentContent(content);
@@ -7763,6 +7792,12 @@ if (window.electronAPI) {
   window.electronAPI.onEditorTextRequest(({ requestId }) => {
     window.electronAPI.sendEditorTextResponse(requestId, composeDocumentContent());
   });
+
+  if (typeof window.electronAPI.onEditorSnapshotRequest === 'function') {
+    window.electronAPI.onEditorSnapshotRequest(({ requestId }) => {
+      window.electronAPI.sendEditorSnapshotResponse(requestId, composeEditorSnapshot());
+    });
+  }
 
   window.electronAPI.onEditorSetFontSize(({ px }) => {
     if (Number.isFinite(px)) {
