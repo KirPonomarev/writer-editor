@@ -571,6 +571,30 @@ const PAGE_FORMATS = {
   A5: 148,
   A6: 105
 };
+const DEFAULT_ACTIVE_BOOK_PROFILE_ID = 'A4';
+
+function normalizeBookProfileId(profileId) {
+  if (typeof profileId !== 'string') {
+    return DEFAULT_ACTIVE_BOOK_PROFILE_ID;
+  }
+  const normalized = profileId.trim().toUpperCase();
+  return Object.prototype.hasOwnProperty.call(PAGE_FORMATS, normalized)
+    ? normalized
+    : DEFAULT_ACTIVE_BOOK_PROFILE_ID;
+}
+
+function createCanonicalActiveBookProfileSource(profileId = DEFAULT_ACTIVE_BOOK_PROFILE_ID) {
+  return Object.freeze({
+    profileId: normalizeBookProfileId(profileId)
+  });
+}
+
+let activeBookProfileSource = createCanonicalActiveBookProfileSource();
+
+function getActiveBookProfilePageWidthMm(source = activeBookProfileSource) {
+  const profileId = normalizeBookProfileId(source?.profileId);
+  return PAGE_FORMATS[profileId] || PAGE_FORMATS.A4;
+}
 
 function mmToPx(mm, zoom = ZOOM_DEFAULT) {
   return mm * PX_PER_MM_AT_ZOOM_1 * zoom;
@@ -604,8 +628,7 @@ function applyPageViewCssVars(metrics) {
   root.style.setProperty('--canvas-padding-px', `${metrics.canvasPaddingPx}px`);
 }
 
-const initialPageWidthMm = PAGE_FORMATS.A4;
-const initialPageMetrics = getPageMetrics({ pageWidthMm: initialPageWidthMm, zoom: ZOOM_DEFAULT });
+const initialPageMetrics = getPageMetrics({ pageWidthMm: getActiveBookProfilePageWidthMm(), zoom: ZOOM_DEFAULT });
 applyPageViewCssVars(initialPageMetrics);
 
 function canStartFloatingToolbarDrag(target) {
@@ -5686,7 +5709,7 @@ function setEditorZoom(value, persist = true) {
   const quantized = Math.round(value / EDITOR_ZOOM_STEP) * EDITOR_ZOOM_STEP;
   const nextZoom = Math.max(EDITOR_ZOOM_MIN, Math.min(EDITOR_ZOOM_MAX, quantized));
   editorZoom = nextZoom;
-  const metrics = getPageMetrics({ pageWidthMm: initialPageWidthMm, zoom: editorZoom });
+  const metrics = getPageMetrics({ pageWidthMm: getActiveBookProfilePageWidthMm(), zoom: editorZoom });
   applyPageViewCssVars(metrics);
   updateZoomValue();
   if (!persist) {
