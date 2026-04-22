@@ -63,6 +63,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   sendEditorTextResponse: (requestId, text) => {
     ipcRenderer.send('editor:text-response', { requestId, text });
   },
+  onEditorSnapshotRequest: (callback) => {
+    ipcRenderer.on('editor:snapshot-request', (event, payload) => callback(payload));
+  },
+  sendEditorSnapshotResponse: (requestId, snapshot) => {
+    ipcRenderer.send('editor:snapshot-response', { requestId, snapshot });
+  },
   onEditorSetFontSize: (callback) => {
     ipcRenderer.on('editor:set-font-size', (event, payload) => callback(payload));
   },
