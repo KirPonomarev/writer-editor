@@ -1,4 +1,14 @@
 const LAYOUT_MEASURE_PROVIDER_SCHEMA_VERSION = 'derived.layoutMeasureProvider.v1';
+const TEXT_MEASUREMENT_CACHE_MAX = 2048;
+
+const PAGE_BREAK_MEASUREMENT = Object.freeze({
+  width: 0,
+  height: 0,
+  lineCount: 0,
+  charCount: 0,
+  forcedBreak: true,
+  styleKey: '',
+});
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -23,8 +33,10 @@ function normalizeConfig(config) {
 
 function resolveNodeText(node) {
   if (!isPlainObject(node)) return '';
-  if (typeof node.text === 'string') return node.text;
-  if (typeof node.value === 'string') return node.value;
+  const text = node.text;
+  if (typeof text === 'string') return text;
+  const value = node.value;
+  if (typeof value === 'string') return value;
   return '';
 }
 
@@ -51,25 +63,51 @@ function measureText(text, config) {
   };
 }
 
+function pruneTextMeasurementCache(cache) {
+  while (cache.size > TEXT_MEASUREMENT_CACHE_MAX) {
+    const oldestKey = cache.keys().next().value;
+    if (typeof oldestKey !== 'string') break;
+    cache.delete(oldestKey);
+  }
+}
+
 export function createLayoutMeasureProvider(config = {}) {
   const normalizedConfig = normalizeConfig(config);
+  const charsPerLine = Math.max(1, Math.floor(normalizedConfig.bodyWidth / Math.max(normalizedConfig.charWidth, 1)));
+  const textMeasurementCache = new Map();
+  const cacheStats = {
+    textHits: 0,
+    textMisses: 0,
+  };
+
+  function measureTextCached(text) {
+    const normalizedText = String(text || '');
+    const cached = textMeasurementCache.get(normalizedText);
+    if (cached) {
+      cacheStats.textHits += 1;
+      textMeasurementCache.delete(normalizedText);
+      textMeasurementCache.set(normalizedText, cached);
+      return cached;
+    }
+
+    const measured = Object.freeze(measureText(normalizedText, normalizedConfig));
+    cacheStats.textMisses += 1;
+    textMeasurementCache.set(normalizedText, measured);
+    pruneTextMeasurementCache(textMeasurementCache);
+    return measured;
+  }
 
   function measureNode(node) {
     if (!isPlainObject(node)) {
       throw new Error('E_LAYOUT_MEASURE_NODE_REQUIRED');
     }
+
     if (node.isPageBreak || node.semanticKind === 'pageBreak') {
-      return {
-        width: 0,
-        height: 0,
-        lineCount: 0,
-        charCount: 0,
-        forcedBreak: true,
-      };
+      return { ...PAGE_BREAK_MEASUREMENT };
     }
 
     const text = resolveNodeText(node);
-    const measured = measureText(text, normalizedConfig);
+    const measured = measureTextCached(text);
     return {
       ...measured,
       forcedBreak: false,
@@ -103,7 +141,14 @@ export function createLayoutMeasureProvider(config = {}) {
     schemaVersion: LAYOUT_MEASURE_PROVIDER_SCHEMA_VERSION,
     config: Object.freeze({ ...normalizedConfig }),
     measureText(text) {
-      return measureText(text, normalizedConfig);
+      return { ...measureTextCached(text) };
+    },
+    getCacheStats() {
+      return {
+        textHits: cacheStats.textHits,
+        textMisses: cacheStats.textMisses,
+        textEntryCount: textMeasurementCache.size,
+      };
     },
     measureNode,
     measureFlow,
