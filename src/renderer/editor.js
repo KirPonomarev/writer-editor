@@ -223,10 +223,6 @@ const EDITOR_ZOOM_MIN = 0.5;
 const EDITOR_ZOOM_MAX = 2.0;
 const EDITOR_ZOOM_STEP = 0.05;
 const EDITOR_ZOOM_DEFAULT = 1.0;
-const BLOCK01_SHELL_CONTEXT_CLASS = 'block01-shell-context';
-const BLOCK01_CONFIGURATOR_OPEN_CLASS = 'block01-configurator-open';
-const BLOCK01_CONTEXT_VIEW_MODE = 'focus';
-const BLOCK01_CONTEXT_ZOOM = 0.65;
 const FLOATING_TOOLBAR_STORAGE_KEY = 'yalkenLiteralStageAToolbarState';
 const FLOATING_TOOLBAR_ITEM_OFFSETS_STORAGE_KEY = 'yalkenLiteralStageAToolbarItemOffsets';
 const LEFT_FLOATING_TOOLBAR_STORAGE_KEY = 'yalkenLeftToolbarState';
@@ -338,11 +334,6 @@ let flowModeState = {
   active: false,
   scenes: [],
   dirty: false,
-};
-let block01ShellContextState = {
-  locked: false,
-  previousViewMode: SAFE_RESET_BASELINE_VIEW_MODE,
-  previousZoom: EDITOR_ZOOM_DEFAULT,
 };
 let metaEnabled = false;
 let currentCards = [];
@@ -1798,7 +1789,6 @@ function setConfiguratorOpen(nextOpen) {
     gridTriggerButton.setAttribute('aria-expanded', nextOpen ? 'true' : 'false');
     gridTriggerButton.setAttribute('aria-pressed', nextOpen ? 'true' : 'false');
   }
-  syncBlock01ShellContextClasses();
 }
 
 function toggleConfiguratorOpen() {
@@ -4062,91 +4052,11 @@ function persistSpatialLayoutState(state, projectId = currentProjectId) {
   return nextState;
 }
 
-function getCurrentViewModeId() {
-  if (styleSelect && typeof styleSelect.value === 'string' && styleSelect.value.trim()) {
-    return styleSelect.value;
-  }
-  return document.body.classList.contains('focus-mode') ? 'focus' : 'default';
-}
-
-function isBlock01ShellContextEligible() {
-  return document.body.classList.contains('literal-stage-a')
-    && currentMode === 'write'
-    && !flowModeState.active
-    && Boolean(editorPanel?.classList.contains('active'));
-}
-
-function isBlock01ShellContextActive() {
-  return block01ShellContextState.locked && isBlock01ShellContextEligible();
-}
-
-function syncBlock01ShellContextClasses() {
-  const active = isBlock01ShellContextActive();
-  document.body.classList.toggle(BLOCK01_SHELL_CONTEXT_CLASS, active);
-  document.body.classList.toggle(
-    BLOCK01_CONFIGURATOR_OPEN_CLASS,
-    active && Boolean(configuratorPanel && !configuratorPanel.hidden)
-  );
-}
-
-function getBlock01SpatialLayoutBaseState() {
-  return spatialLayoutState || getSpatialLayoutBaselineForViewport(getSpatialLayoutViewportWidth());
-}
-
-function reapplyBlock01ShellSpatialLayout() {
-  applySpatialLayoutState(getBlock01SpatialLayoutBaseState(), {
-    persist: false,
-    projectId: currentProjectId,
-  });
-}
-
-function enterBlock01ShellContext() {
-  if (!document.body.classList.contains('literal-stage-a')) return false;
-  if (!block01ShellContextState.locked) {
-    block01ShellContextState = {
-      locked: true,
-      previousViewMode: getCurrentViewModeId(),
-      previousZoom: editorZoom,
-    };
-  }
-  if (getCurrentViewModeId() !== BLOCK01_CONTEXT_VIEW_MODE) {
-    applyViewMode(BLOCK01_CONTEXT_VIEW_MODE, false);
-  }
-  if (Math.abs(editorZoom - BLOCK01_CONTEXT_ZOOM) > 0.001) {
-    setEditorZoom(BLOCK01_CONTEXT_ZOOM, false);
-  }
-  syncBlock01ShellContextClasses();
-  reapplyBlock01ShellSpatialLayout();
-  return true;
-}
-
-function exitBlock01ShellContext() {
-  if (!block01ShellContextState.locked) {
-    syncBlock01ShellContextClasses();
-    return false;
-  }
-  const { previousViewMode, previousZoom } = block01ShellContextState;
-  block01ShellContextState = {
-    locked: false,
-    previousViewMode: SAFE_RESET_BASELINE_VIEW_MODE,
-    previousZoom: EDITOR_ZOOM_DEFAULT,
-  };
-  if (getCurrentViewModeId() !== previousViewMode) {
-    applyViewMode(previousViewMode, false);
-  }
-  if (Math.abs(editorZoom - previousZoom) > 0.001) {
-    setEditorZoom(previousZoom, false);
-  }
-  syncBlock01ShellContextClasses();
-  reapplyBlock01ShellSpatialLayout();
-  return true;
-}
-
 function applySpatialLayoutState(state, { persist = false, projectId = currentProjectId } = {}) {
   const viewportWidth = getSpatialLayoutViewportWidth();
   const normalizedState = normalizeSpatialLayoutState(state, viewportWidth);
   const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
-  const rightVisible = isBlock01ShellContextActive() ? false : constraints.rightVisible;
+  const rightVisible = constraints.rightVisible;
   const layoutPatch = buildLayoutPatchFromSpatialState(normalizedState, {
     viewportWidth,
     viewportHeight: Math.max(0, Math.floor(window.innerHeight || document.documentElement.clientHeight || 0)),
@@ -4211,12 +4121,6 @@ function showEditorPanelFor(title) {
     }
   } catch {}
 
-  if (isBlock01ShellContextEligible()) {
-    enterBlock01ShellContext();
-  } else {
-    syncBlock01ShellContextClasses();
-  }
-
   requestAnimationFrame(() => {
     if (mainContent) {
       mainContent.scrollTop = 0;
@@ -4233,7 +4137,6 @@ function showEditorPanelFor(title) {
 
 function collapseSelection() {
   clearFlowModeState();
-  exitBlock01ShellContext();
   editorPanel?.classList.remove('active');
   mainContent?.classList.remove('main-content--editor');
   emptyState?.classList.remove('hidden');
@@ -5354,11 +5257,6 @@ function applyMode(mode) {
   } else {
     applyLeftTab('project');
     applyRightTab('inspector');
-  }
-  if (mode === 'write' && editorPanel?.classList.contains('active') && !flowModeState.active) {
-    enterBlock01ShellContext();
-  } else {
-    exitBlock01ShellContext();
   }
   const viewportWidth = getSpatialLayoutViewportWidth();
   const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);

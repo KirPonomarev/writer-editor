@@ -1689,45 +1689,6 @@ body {
   color: rgba(58, 44, 32, 0.46);
 }
 
-.literal-stage-a.block01-shell-context .app-layout {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.literal-stage-a.block01-shell-context .sidebar,
-.literal-stage-a.block01-shell-context .sidebar__resize-handle {
-  display: none;
-}
-
-.literal-stage-a.block01-shell-context .main-content {
-  grid-column: 1 / -1;
-}
-
-.literal-stage-a.block01-shell-context .editor-panel-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.literal-stage-a.block01-shell-context .configurator-panel {
-  top: 84px;
-  right: auto;
-  bottom: auto;
-  left: 50%;
-  width: min(calc(100vw - 72px), 1200px);
-  max-height: min(calc(100vh - 108px), 600px);
-  padding: 0;
-  transform: translateX(-50%);
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.literal-stage-a.block01-shell-context .configurator-panel__surface,
-.literal-stage-a.block01-shell-context .app-layout:has(.sidebar--right[hidden]) .configurator-panel__surface {
-  width: 100%;
-  max-width: 100%;
-  max-height: min(calc(100vh - 108px), 600px);
-  margin: 0;
-}
-
 .configurator-panel {
   position: fixed;
   top: 84px;
