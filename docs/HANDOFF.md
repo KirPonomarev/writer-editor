@@ -1,6 +1,6 @@
 # HANDOFF (Yalken Writer)
 
-_Generated: 2026-04-21_
+_Generated: 2026-04-22_
 
 ## Start Here
 - Active execution canon resolver: `docs/OPS/STATUS/CANON_STATUS.json`
@@ -24,9 +24,9 @@ _Generated: 2026-04-21_
 
 ## Snapshot
 - Snapshot class: current-mainline factual snapshot, not a permanent local machine invariant
-- selectedBaseSha: `a0f4e47cc2afa6ab84e0bf9cd63bc908c573d8aa`
-- bindingBaseSha: `a0f4e47cc2afa6ab84e0bf9cd63bc908c573d8aa`
-- reboundAtUtc: `2026-04-21T14:18:25Z`
+- selectedBaseSha: `b101939f03996479e90441b1d0cd8ffb4d110e0f`
+- bindingBaseSha: `b101939f03996479e90441b1d0cd8ffb4d110e0f`
+- reboundAtUtc: `2026-04-22T06:46:13Z`
 - Product: `Yalken Writer`
 - Mode: desktop-first, offline-first
 - Active axis: `Writer v1`
@@ -57,6 +57,9 @@ _Generated: 2026-04-21_
 - Y8_FORMAL_CUTOVER_PACKET_RECORD_V1.json is active.
 - Y8_FORMAL_CUTOVER_ROLLBACK_PACKET_V1.json is active.
 - Y9_NOT_OPENED_BY_IMPLICATION: TRUE
+- The wrong launch came from local branch/head `a670f276759889ce90d1aa535ac7c84746b9f470` and it is not authority.
+- The repeated launch and owner confirmation were on main head `b101939f03996479e90441b1d0cd8ffb4d110e0f`.
+- Prep frame `YALKEN_DESIGN_OS_PREP_AND_SELECTION_FRAME_V7` is archival only.
 - Repo-wide done is confirmed on main after merge gate and post-merge reconfirm.
 - shell safe-reset and restore proof closure contour is merged on current mainline.
 - ci and ops command injection hardening contour is merged on current mainline.
