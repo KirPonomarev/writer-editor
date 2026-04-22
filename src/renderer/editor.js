@@ -43,15 +43,19 @@ import {
 } from './documentContentEnvelope.mjs';
 import {
   createDefaultBookProfile,
-  normalizeBookProfile,
 } from '../core/bookProfile.mjs';
-import { resolvePageLayoutMetrics } from '../core/pageLayoutMetrics.mjs';
 import {
   buildLeftRailPresentationTree,
   getLeftRailPresentationExpandKey,
   getLeftRailPresentationKind,
   isLeftRailPresentationDefaultExpanded,
 } from './leftRailPresentationModel.mjs';
+import {
+  applyPreviewChromeCssVars,
+  createPreviewChromeState,
+  PREVIEW_CHROME_DEFAULT_FORMAT_ID,
+  resolvePreviewChromeMetrics,
+} from './previewChrome.mjs';
 import {
   buildLayoutPatchFromSpatialState,
   buildSpatialStateFromLayoutSnapshot,
@@ -161,6 +165,10 @@ const rightTabButtons = Array.from(document.querySelectorAll('[data-right-tab]')
 const rightInspectorPanel = document.querySelector('[data-right-panel-inspector]');
 const rightCommentsPanel = document.querySelector('[data-right-panel-comments]');
 const rightHistoryPanel = document.querySelector('[data-right-panel-history]');
+const previewChromeFormatValueElement = Array.from(document.querySelectorAll('.right-rail-form-row')).find((row) => {
+  const key = row.querySelector('.right-rail-form-key');
+  return key && key.textContent && key.textContent.trim() === 'Формат';
+})?.querySelector('.right-rail-form-value');
 const inspectorSnapshotElement = document.querySelector('[data-inspector-snapshot]');
 const wordCountElement = document.querySelector('[data-word-count]');
 const zoomValueElement = document.querySelector('[data-zoom-value]');
@@ -568,9 +576,7 @@ const UI_ERROR_FALLBACK_SEVERITY = 'ERROR';
 
 const PX_PER_MM_AT_ZOOM_1 = 595 / 210;
 const ZOOM_DEFAULT = 1.0;
-const PAGE_GAP_MM = 20 / PX_PER_MM_AT_ZOOM_1;
-const CANVAS_PADDING_PX = 48;
-const DEFAULT_ACTIVE_BOOK_PROFILE_ID = 'A4';
+const DEFAULT_ACTIVE_BOOK_PROFILE_ID = PREVIEW_CHROME_DEFAULT_FORMAT_ID;
 const DEFAULT_ACTIVE_BOOK_PROFILE = Object.freeze(
   createDefaultBookProfile({
     profileId: DEFAULT_ACTIVE_BOOK_PROFILE_ID,
@@ -578,74 +584,93 @@ const DEFAULT_ACTIVE_BOOK_PROFILE = Object.freeze(
   })
 );
 
-function createCanonicalActiveBookProfileSource(source = {}) {
+function createCanonicalPreviewChromeState(source = {}) {
   if (!source || typeof source !== 'object' || Array.isArray(source)) {
-    return DEFAULT_ACTIVE_BOOK_PROFILE;
+    return createPreviewChromeState({
+      formatId: DEFAULT_ACTIVE_BOOK_PROFILE_ID,
+    });
   }
-  const profileIdCandidate = typeof source.profileId === 'string' && source.profileId.trim()
-    ? source.profileId.trim().toUpperCase()
-    : DEFAULT_ACTIVE_BOOK_PROFILE_ID;
   const formatIdCandidate = typeof source.formatId === 'string' && source.formatId.trim()
     ? source.formatId.trim().toUpperCase()
-    : profileIdCandidate;
-  const normalized = normalizeBookProfile({
-    ...DEFAULT_ACTIVE_BOOK_PROFILE,
-    ...source,
-    profileId: profileIdCandidate,
+    : DEFAULT_ACTIVE_BOOK_PROFILE_ID;
+  return createPreviewChromeState({
     formatId: formatIdCandidate,
   });
-  return normalized.ok ? Object.freeze(normalized.value) : DEFAULT_ACTIVE_BOOK_PROFILE;
 }
 
-let activeBookProfileSource = createCanonicalActiveBookProfileSource();
+let activePreviewChromeState = createCanonicalPreviewChromeState();
 
-function getActiveBookProfile(source = activeBookProfileSource) {
-  const normalized = normalizeBookProfile(source);
-  return normalized.ok ? normalized.value : DEFAULT_ACTIVE_BOOK_PROFILE;
+function getActivePreviewChrome(source = activePreviewChromeState) {
+  return createCanonicalPreviewChromeState(source);
 }
 
-function getPageMetrics({ profile = getActiveBookProfile(), zoom = ZOOM_DEFAULT } = {}) {
-  const metricsResult = resolvePageLayoutMetrics(profile, {
+function getPageMetrics({
+  profile = DEFAULT_ACTIVE_BOOK_PROFILE,
+  chrome = getActivePreviewChrome(),
+  zoom = ZOOM_DEFAULT,
+} = {}) {
+  const metricsResult = resolvePreviewChromeMetrics({
+    profile,
+    chrome,
     zoom,
     pxPerMm: PX_PER_MM_AT_ZOOM_1,
   });
   if (!metricsResult.ok) {
-    const fallbackResult = resolvePageLayoutMetrics(DEFAULT_ACTIVE_BOOK_PROFILE, {
+    const fallbackResult = resolvePreviewChromeMetrics({
+      profile: DEFAULT_ACTIVE_BOOK_PROFILE,
+      chrome: createPreviewChromeState({
+        formatId: DEFAULT_ACTIVE_BOOK_PROFILE_ID,
+      }),
       zoom: ZOOM_DEFAULT,
       pxPerMm: PX_PER_MM_AT_ZOOM_1,
     });
     if (!fallbackResult.ok) {
       return null;
     }
-    return {
-      ...fallbackResult.value,
-      pageGapPx: Math.round(PAGE_GAP_MM * ZOOM_DEFAULT * PX_PER_MM_AT_ZOOM_1),
-      canvasPaddingPx: CANVAS_PADDING_PX,
-    };
+    return fallbackResult.value;
   }
-  return {
-    ...metricsResult.value,
-    pageGapPx: Math.round(PAGE_GAP_MM * zoom * PX_PER_MM_AT_ZOOM_1),
-    canvasPaddingPx: CANVAS_PADDING_PX,
-  };
+  return metricsResult.value;
 }
 
 function applyPageViewCssVars(metrics) {
-  const root = document.documentElement;
-  root.style.setProperty('--page-width-px', `${Math.round(metrics.pageWidthPx)}px`);
-  root.style.setProperty('--page-height-px', `${Math.round(metrics.pageHeightPx)}px`);
-  root.style.setProperty('--page-gap-px', `${Math.round(metrics.pageGapPx)}px`);
-  root.style.setProperty('--page-margin-top-px', `${Math.round(metrics.marginTopPx)}px`);
-  root.style.setProperty('--page-margin-right-px', `${Math.round(metrics.marginRightPx)}px`);
-  root.style.setProperty('--page-margin-bottom-px', `${Math.round(metrics.marginBottomPx)}px`);
-  root.style.setProperty('--page-margin-left-px', `${Math.round(metrics.marginLeftPx)}px`);
-  root.style.setProperty('--canvas-padding-px', `${metrics.canvasPaddingPx}px`);
+  applyPreviewChromeCssVars(metrics);
 }
 
-const initialPageMetrics = getPageMetrics({ profile: getActiveBookProfile(), zoom: ZOOM_DEFAULT });
+function syncPreviewChromeFormatValue() {
+  if (previewChromeFormatValueElement) {
+    previewChromeFormatValueElement.textContent = activePreviewChromeState.formatId;
+  }
+}
+
+function setPreviewChromeFormat(formatId) {
+  const nextState = createCanonicalPreviewChromeState({ formatId });
+  if (nextState.formatId === activePreviewChromeState.formatId) {
+    syncPreviewChromeFormatValue();
+    return nextState;
+  }
+
+  activePreviewChromeState = nextState;
+  const metrics = getPageMetrics({
+    profile: DEFAULT_ACTIVE_BOOK_PROFILE,
+    chrome: activePreviewChromeState,
+    zoom: editorZoom,
+  });
+  if (metrics) {
+    applyPageViewCssVars(metrics);
+  }
+  syncPreviewChromeFormatValue();
+  return nextState;
+}
+
+const initialPageMetrics = getPageMetrics({
+  profile: DEFAULT_ACTIVE_BOOK_PROFILE,
+  chrome: activePreviewChromeState,
+  zoom: ZOOM_DEFAULT,
+});
 if (initialPageMetrics) {
   applyPageViewCssVars(initialPageMetrics);
 }
+syncPreviewChromeFormatValue();
 
 function canStartFloatingToolbarDrag(target) {
   if (!target || !(target instanceof Element)) return false;
@@ -3081,6 +3106,31 @@ registerProjectCommands(commandRegistry, {
     planFlowSave: () => handlePlanFlowSave(),
     reviewExportMarkdown: () => handleReviewExportMarkdown(),
   },
+});
+const PREVIEW_FORMAT_COMMAND_IDS = Object.freeze({
+  A4: 'cmd.project.view.previewFormatA4',
+  A5: 'cmd.project.view.previewFormatA5',
+  LETTER: 'cmd.project.view.previewFormatLetter',
+});
+
+[
+  { id: PREVIEW_FORMAT_COMMAND_IDS.A4, label: 'Preview Format A4', formatId: 'A4' },
+  { id: PREVIEW_FORMAT_COMMAND_IDS.A5, label: 'Preview Format A5', formatId: 'A5' },
+  { id: PREVIEW_FORMAT_COMMAND_IDS.LETTER, label: 'Preview Format Letter', formatId: 'LETTER' },
+].forEach(({ id, label, formatId }) => {
+  commandRegistry.registerCommand(
+    {
+      id,
+      label,
+      group: 'view',
+      surface: ['palette'],
+      hotkey: '',
+    },
+    async () => {
+      setPreviewChromeFormat(formatId);
+      return { formatId };
+    },
+  );
 });
 const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });
 window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;
@@ -5725,7 +5775,11 @@ function setEditorZoom(value, persist = true) {
   const quantized = Math.round(value / EDITOR_ZOOM_STEP) * EDITOR_ZOOM_STEP;
   const nextZoom = Math.max(EDITOR_ZOOM_MIN, Math.min(EDITOR_ZOOM_MAX, quantized));
   editorZoom = nextZoom;
-  const metrics = getPageMetrics({ profile: getActiveBookProfile(), zoom: editorZoom });
+  const metrics = getPageMetrics({
+    profile: DEFAULT_ACTIVE_BOOK_PROFILE,
+    chrome: activePreviewChromeState,
+    zoom: editorZoom,
+  });
   if (metrics) {
     applyPageViewCssVars(metrics);
   }
@@ -7631,6 +7685,12 @@ if (window.electronAPI) {
         handleInsertAddCard();
       } else if (command === 'format-align-left') {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
+      } else if (command === 'switch-preview-format-a4') {
+        void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.A4);
+      } else if (command === 'switch-preview-format-a5') {
+        void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.A5);
+      } else if (command === 'switch-preview-format-letter') {
+        void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.LETTER);
       } else if (command === 'switch-mode-plan') {
         applyMode('plan');
       } else if (command === 'switch-mode-review') {
