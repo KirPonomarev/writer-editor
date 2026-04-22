@@ -43,7 +43,9 @@ import {
 } from './documentContentEnvelope.mjs';
 import {
   createDefaultBookProfile,
+  normalizeBookProfile,
 } from '../core/bookProfile.mjs';
+import { resolvePageLayoutMetrics } from '../core/pageLayoutMetrics.mjs';
 import {
   buildLeftRailPresentationTree,
   getLeftRailPresentationExpandKey,
@@ -53,8 +55,6 @@ import {
 import {
   applyPreviewChromeCssVars,
   createPreviewChromeState,
-  PREVIEW_CHROME_DEFAULT_FORMAT_ID,
-  resolvePreviewChromeMetrics,
 } from './previewChrome.mjs';
 import {
   buildLayoutPatchFromSpatialState,
@@ -576,100 +576,106 @@ const UI_ERROR_FALLBACK_SEVERITY = 'ERROR';
 
 const PX_PER_MM_AT_ZOOM_1 = 595 / 210;
 const ZOOM_DEFAULT = 1.0;
-const DEFAULT_ACTIVE_BOOK_PROFILE_ID = PREVIEW_CHROME_DEFAULT_FORMAT_ID;
-const DEFAULT_ACTIVE_BOOK_PROFILE = Object.freeze(
-  createDefaultBookProfile({
-    profileId: DEFAULT_ACTIVE_BOOK_PROFILE_ID,
-    formatId: DEFAULT_ACTIVE_BOOK_PROFILE_ID,
-  })
-);
+const DEFAULT_ACTIVE_BOOK_PROFILE = createDefaultBookProfile();
+const DEFAULT_PREVIEW_CHROME_STATE = createPreviewChromeState();
 
-function createCanonicalPreviewChromeState(source = {}) {
-  if (!source || typeof source !== 'object' || Array.isArray(source)) {
-    return createPreviewChromeState({
-      formatId: DEFAULT_ACTIVE_BOOK_PROFILE_ID,
-    });
-  }
-  const formatIdCandidate = typeof source.formatId === 'string' && source.formatId.trim()
-    ? source.formatId.trim().toUpperCase()
-    : DEFAULT_ACTIVE_BOOK_PROFILE_ID;
-  return createPreviewChromeState({
-    formatId: formatIdCandidate,
-  });
-}
-
-let activePreviewChromeState = createCanonicalPreviewChromeState();
+let activeBookProfileState = DEFAULT_ACTIVE_BOOK_PROFILE;
+let activePreviewChromeState = DEFAULT_PREVIEW_CHROME_STATE;
 
 function getActivePreviewChrome(source = activePreviewChromeState) {
-  return createCanonicalPreviewChromeState(source);
+  return createPreviewChromeState(source);
+}
+
+function getActiveBookProfile(source = activeBookProfileState) {
+  const normalizedResult = normalizeBookProfile(source);
+  return normalizedResult.ok ? normalizedResult.value : DEFAULT_ACTIVE_BOOK_PROFILE;
 }
 
 function getPageMetrics({
-  profile = DEFAULT_ACTIVE_BOOK_PROFILE,
-  chrome = getActivePreviewChrome(),
+  profile = activeBookProfileState,
   zoom = ZOOM_DEFAULT,
+  pxPerMm = PX_PER_MM_AT_ZOOM_1,
 } = {}) {
-  const metricsResult = resolvePreviewChromeMetrics({
-    profile,
-    chrome,
+  const normalizedResult = normalizeBookProfile(profile);
+  const resolvedProfile = normalizedResult.ok ? normalizedResult.value : DEFAULT_ACTIVE_BOOK_PROFILE;
+  const metricsResult = resolvePageLayoutMetrics(resolvedProfile, {
     zoom,
+    pxPerMm,
+  });
+  if (metricsResult.ok) {
+    return metricsResult.value;
+  }
+
+  if (resolvedProfile === DEFAULT_ACTIVE_BOOK_PROFILE) {
+    return null;
+  }
+
+  const fallbackResult = resolvePageLayoutMetrics(DEFAULT_ACTIVE_BOOK_PROFILE, {
+    zoom: ZOOM_DEFAULT,
     pxPerMm: PX_PER_MM_AT_ZOOM_1,
   });
-  if (!metricsResult.ok) {
-    const fallbackResult = resolvePreviewChromeMetrics({
-      profile: DEFAULT_ACTIVE_BOOK_PROFILE,
-      chrome: createPreviewChromeState({
-        formatId: DEFAULT_ACTIVE_BOOK_PROFILE_ID,
-      }),
-      zoom: ZOOM_DEFAULT,
-      pxPerMm: PX_PER_MM_AT_ZOOM_1,
-    });
-    if (!fallbackResult.ok) {
-      return null;
-    }
-    return fallbackResult.value;
+  if (!fallbackResult.ok) {
+    return null;
   }
-  return metricsResult.value;
+
+  return fallbackResult.value;
 }
 
-function applyPageViewCssVars(metrics) {
-  applyPreviewChromeCssVars(metrics);
+function applyPageGeometryCssVars(metrics) {
+  if (!metrics) {
+    return;
+  }
+
+  document.documentElement.style.setProperty('--page-width-px', `${Math.round(metrics.pageWidthPx)}px`);
+  document.documentElement.style.setProperty('--page-height-px', `${Math.round(metrics.pageHeightPx)}px`);
+  document.documentElement.style.setProperty('--page-margin-top-px', `${Math.round(metrics.marginTopPx)}px`);
+  document.documentElement.style.setProperty('--page-margin-right-px', `${Math.round(metrics.marginRightPx)}px`);
+  document.documentElement.style.setProperty('--page-margin-bottom-px', `${Math.round(metrics.marginBottomPx)}px`);
+  document.documentElement.style.setProperty('--page-margin-left-px', `${Math.round(metrics.marginLeftPx)}px`);
 }
 
 function syncPreviewChromeFormatValue() {
   if (previewChromeFormatValueElement) {
-    previewChromeFormatValueElement.textContent = activePreviewChromeState.formatId;
+    previewChromeFormatValueElement.textContent = getActiveBookProfile().formatId;
   }
 }
 
-function setPreviewChromeFormat(formatId) {
-  const nextState = createCanonicalPreviewChromeState({ formatId });
-  if (nextState.formatId === activePreviewChromeState.formatId) {
+function setActiveBookProfileFormat(formatId) {
+  const nextProfileResult = normalizeBookProfile({
+    ...activeBookProfileState,
+    formatId,
+  });
+  if (!nextProfileResult.ok) {
     syncPreviewChromeFormatValue();
-    return nextState;
+    return activeBookProfileState;
   }
 
-  activePreviewChromeState = nextState;
+  const nextProfile = nextProfileResult.value;
+  if (nextProfile.formatId === activeBookProfileState.formatId) {
+    syncPreviewChromeFormatValue();
+    return nextProfile;
+  }
+
+  activeBookProfileState = nextProfile;
   const metrics = getPageMetrics({
-    profile: DEFAULT_ACTIVE_BOOK_PROFILE,
-    chrome: activePreviewChromeState,
+    profile: activeBookProfileState,
     zoom: editorZoom,
   });
   if (metrics) {
-    applyPageViewCssVars(metrics);
+    applyPageGeometryCssVars(metrics);
   }
   syncPreviewChromeFormatValue();
-  return nextState;
+  return nextProfile;
 }
 
 const initialPageMetrics = getPageMetrics({
-  profile: DEFAULT_ACTIVE_BOOK_PROFILE,
-  chrome: activePreviewChromeState,
+  profile: activeBookProfileState,
   zoom: ZOOM_DEFAULT,
 });
 if (initialPageMetrics) {
-  applyPageViewCssVars(initialPageMetrics);
+  applyPageGeometryCssVars(initialPageMetrics);
 }
+applyPreviewChromeCssVars(activePreviewChromeState, document.documentElement, ZOOM_DEFAULT, PX_PER_MM_AT_ZOOM_1);
 syncPreviewChromeFormatValue();
 
 function canStartFloatingToolbarDrag(target) {
@@ -3127,7 +3133,7 @@ const PREVIEW_FORMAT_COMMAND_IDS = Object.freeze({
       hotkey: '',
     },
     async () => {
-      setPreviewChromeFormat(formatId);
+      setActiveBookProfileFormat(formatId);
       return { formatId };
     },
   );
@@ -5776,13 +5782,13 @@ function setEditorZoom(value, persist = true) {
   const nextZoom = Math.max(EDITOR_ZOOM_MIN, Math.min(EDITOR_ZOOM_MAX, quantized));
   editorZoom = nextZoom;
   const metrics = getPageMetrics({
-    profile: DEFAULT_ACTIVE_BOOK_PROFILE,
-    chrome: activePreviewChromeState,
+    profile: activeBookProfileState,
     zoom: editorZoom,
   });
   if (metrics) {
-    applyPageViewCssVars(metrics);
+    applyPageGeometryCssVars(metrics);
   }
+  applyPreviewChromeCssVars(activePreviewChromeState, document.documentElement, editorZoom, PX_PER_MM_AT_ZOOM_1);
   updateZoomValue();
   if (!persist) {
     return;
