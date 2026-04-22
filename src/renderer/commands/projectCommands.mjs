@@ -37,6 +37,8 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   VIEW_ZOOM_OUT: 'cmd.project.view.zoomOut',
   VIEW_ZOOM_IN: 'cmd.project.view.zoomIn',
   VIEW_TOGGLE_WRAP: 'cmd.project.view.toggleWrap',
+  VIEW_TOGGLE_PREVIEW: 'cmd.project.view.togglePreview',
+  VIEW_TOGGLE_PREVIEW_FRAME: 'cmd.project.view.togglePreviewFrame',
   INSERT_MARKDOWN_PROMPT: 'cmd.project.insert.markdownPrompt',
   INSERT_FLOW_OPEN: 'cmd.project.insert.flowOpen',
   INSERT_ADD_CARD: 'cmd.project.insert.addCard',
@@ -79,6 +81,8 @@ export const LEGACY_ACTION_TO_COMMAND = Object.freeze({
   'zoom-out': 'cmd.project.view.zoomOut',
   'zoom-in': 'cmd.project.view.zoomIn',
   'toggle-wrap': 'cmd.project.view.toggleWrap',
+  'toggle-preview': 'cmd.project.view.togglePreview',
+  'toggle-preview-frame': 'cmd.project.view.togglePreviewFrame',
   'import-markdown-v1': 'cmd.project.insert.markdownPrompt',
   'flow-open-v1': 'cmd.project.insert.flowOpen',
   'add-card': 'cmd.project.insert.addCard',
@@ -916,6 +920,28 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: 'Cmd/Ctrl+Alt+W',
     },
     async () => runUiAction(uiActions, 'toggleWrap', EXTRA_COMMAND_IDS.VIEW_TOGGLE_WRAP),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW,
+      label: 'Toggle Preview',
+      group: 'view',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(uiActions, 'togglePreview', EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW_FRAME,
+      label: 'Toggle Preview Frame',
+      group: 'view',
+      surface: ['menu', 'palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => runUiAction(uiActions, 'togglePreviewFrame', EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW_FRAME),
   );
 
   registry.registerCommand(

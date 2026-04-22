@@ -4247,3 +4247,133 @@ body.dark-theme .status-bar {
     max-width: calc(100vw - var(--app-left-sidebar-width) - (var(--configurator-panel-side-margin) * 2));
   }
 }
+
+.main-content--editor.is-layout-preview-visible {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 24px;
+}
+
+.main-content--editor.is-layout-preview-visible .editor-panel-wrapper {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.layout-preview-dock {
+  width: min(420px, 34vw);
+  min-width: 300px;
+  max-width: 420px;
+  align-self: flex-start;
+  position: sticky;
+  top: 0;
+  max-height: calc(100vh - 96px);
+  overflow: auto;
+  border: 1px solid var(--page-border);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--page-shadow-1);
+  padding: 12px;
+}
+
+.layout-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.layout-preview__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.layout-preview__title {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.layout-preview__meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.layout-preview__pages {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.layout-preview__pages.is-frame-off .layout-preview__page {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.layout-preview__empty {
+  border: 1px dashed var(--toolbar-control-border);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.layout-preview__page-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.layout-preview__page-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.layout-preview__page {
+  background: var(--page-bg);
+  border: 1px solid var(--page-border);
+  border-radius: 10px;
+  box-shadow: var(--page-shadow-1);
+}
+
+.layout-preview__page-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.layout-preview__line {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--foreground);
+}
+
+.layout-preview__line--scene-heading {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.layout-preview__line--code-block {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  background: var(--style-code-bg);
+  border: 1px solid var(--style-code-border);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.layout-preview__line--quote {
+  border-left: 2px solid var(--style-quote-border);
+  padding-left: 8px;
+  opacity: 0.9;
+}

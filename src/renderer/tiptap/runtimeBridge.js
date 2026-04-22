@@ -170,6 +170,12 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
   if (commandId === 'cmd.project.edit.replace') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.replace, commandId) }
   }
+  if (commandId === 'cmd.project.view.togglePreview') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.togglePreview, commandId) }
+  }
+  if (commandId === 'cmd.project.view.togglePreviewFrame') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.togglePreviewFrame, commandId) }
+  }
   if (commandId === 'cmd.project.insert.linkPrompt') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.insertLinkPrompt, commandId, commandId, payload) }
   }
@@ -277,6 +283,12 @@ export function createTiptapRuntimeBridge(options = {}) {
       }
       if (command === 'format-align-left') {
         return { handled: true, result: runBridgeCallback(runtimeHandlers.formatAlignLeft, command), command }
+      }
+      if (command === 'toggle-preview') {
+        return { handled: true, result: runBridgeCallback(runtimeHandlers.togglePreview, command), command }
+      }
+      if (command === 'toggle-preview-frame') {
+        return { handled: true, result: runBridgeCallback(runtimeHandlers.togglePreviewFrame, command), command }
       }
       if (command === 'switch-mode-plan') {
         return { handled: true, result: runBridgeCallback(runtimeHandlers.switchMode, command, 'plan'), command }

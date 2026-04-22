@@ -57,6 +57,11 @@ import {
   createPreviewChromeState,
 } from './previewChrome.mjs';
 import {
+  buildLayoutPreviewSnapshot,
+  createLayoutPreviewState,
+  renderLayoutPreviewSnapshot,
+} from './layoutPreview.mjs';
+import {
   buildLayoutPatchFromSpatialState,
   buildSpatialStateFromLayoutSnapshot,
 } from './design-os/index.mjs';
@@ -578,9 +583,13 @@ const PX_PER_MM_AT_ZOOM_1 = 595 / 210;
 const ZOOM_DEFAULT = 1.0;
 const DEFAULT_ACTIVE_BOOK_PROFILE = createDefaultBookProfile();
 const DEFAULT_PREVIEW_CHROME_STATE = createPreviewChromeState();
+const DEFAULT_LAYOUT_PREVIEW_STATE = createLayoutPreviewState();
 
 let activeBookProfileState = DEFAULT_ACTIVE_BOOK_PROFILE;
 let activePreviewChromeState = DEFAULT_PREVIEW_CHROME_STATE;
+let activeLayoutPreviewState = DEFAULT_LAYOUT_PREVIEW_STATE;
+let layoutPreviewHost = null;
+let layoutPreviewRefreshTimerId = null;
 
 function getActivePreviewChrome(source = activePreviewChromeState) {
   return createPreviewChromeState(source);
@@ -664,6 +673,7 @@ function setActiveBookProfileFormat(formatId) {
   if (metrics) {
     applyPageGeometryCssVars(metrics);
   }
+  scheduleLayoutPreviewRefresh();
   syncPreviewChromeFormatValue();
   return nextProfile;
 }
@@ -677,6 +687,127 @@ if (initialPageMetrics) {
 }
 applyPreviewChromeCssVars(activePreviewChromeState, document.documentElement, ZOOM_DEFAULT, PX_PER_MM_AT_ZOOM_1);
 syncPreviewChromeFormatValue();
+
+function ensureLayoutPreviewHost() {
+  if (layoutPreviewHost) {
+    return layoutPreviewHost;
+  }
+  if (!(mainContent instanceof HTMLElement)) {
+    return null;
+  }
+  const host = document.createElement('aside');
+  host.className = 'layout-preview-dock';
+  host.hidden = true;
+  host.setAttribute('aria-live', 'polite');
+  host.setAttribute('aria-label', 'Layout preview');
+  mainContent.appendChild(host);
+  layoutPreviewHost = host;
+  return layoutPreviewHost;
+}
+
+function clearLayoutPreviewHost() {
+  const host = ensureLayoutPreviewHost();
+  if (!host) {
+    return;
+  }
+  host.replaceChildren();
+}
+
+function buildActiveLayoutPreviewSnapshot() {
+  const metrics = getPageMetrics({
+    profile: activeBookProfileState,
+    zoom: editorZoom,
+  });
+  if (!metrics) {
+    return null;
+  }
+  return buildLayoutPreviewSnapshot({
+    text: getPlainText(),
+    profile: getActiveBookProfile(),
+    metrics,
+    selectionRange: getSelectionOffsets(),
+  });
+}
+
+function refreshLayoutPreviewNow() {
+  const host = ensureLayoutPreviewHost();
+  if (!host) {
+    return;
+  }
+  if (!activeLayoutPreviewState.enabled || currentMode !== 'write') {
+    clearLayoutPreviewHost();
+    return;
+  }
+  const snapshot = buildActiveLayoutPreviewSnapshot();
+  if (!snapshot) {
+    clearLayoutPreviewHost();
+    return;
+  }
+  renderLayoutPreviewSnapshot(host, snapshot, activeLayoutPreviewState);
+}
+
+function scheduleLayoutPreviewRefresh() {
+  if (!activeLayoutPreviewState.enabled || currentMode !== 'write') {
+    return;
+  }
+  if (layoutPreviewRefreshTimerId) {
+    window.clearTimeout(layoutPreviewRefreshTimerId);
+    layoutPreviewRefreshTimerId = null;
+  }
+  layoutPreviewRefreshTimerId = window.setTimeout(() => {
+    layoutPreviewRefreshTimerId = null;
+    refreshLayoutPreviewNow();
+  }, 120);
+}
+
+function syncLayoutPreviewVisibility() {
+  const host = ensureLayoutPreviewHost();
+  if (!host) {
+    return;
+  }
+  const shouldShow = activeLayoutPreviewState.enabled && currentMode === 'write';
+  host.hidden = !shouldShow;
+  if (mainContent instanceof HTMLElement) {
+    mainContent.classList.toggle('is-layout-preview-visible', shouldShow);
+  }
+  if (!shouldShow) {
+    clearLayoutPreviewHost();
+    if (layoutPreviewRefreshTimerId) {
+      window.clearTimeout(layoutPreviewRefreshTimerId);
+      layoutPreviewRefreshTimerId = null;
+    }
+    return;
+  }
+  refreshLayoutPreviewNow();
+}
+
+function handleToggleLayoutPreview() {
+  activeLayoutPreviewState = createLayoutPreviewState({
+    ...activeLayoutPreviewState,
+    enabled: !activeLayoutPreviewState.enabled,
+  });
+  syncLayoutPreviewVisibility();
+  updateInspectorSnapshot();
+  return {
+    performed: true,
+    enabled: activeLayoutPreviewState.enabled,
+  };
+}
+
+function handleToggleLayoutPreviewFrame() {
+  activeLayoutPreviewState = createLayoutPreviewState({
+    ...activeLayoutPreviewState,
+    frameMode: !activeLayoutPreviewState.frameMode,
+  });
+  if (activeLayoutPreviewState.enabled) {
+    syncLayoutPreviewVisibility();
+  }
+  updateInspectorSnapshot();
+  return {
+    performed: true,
+    frameMode: activeLayoutPreviewState.frameMode,
+  };
+}
 
 function canStartFloatingToolbarDrag(target) {
   if (!target || !(target instanceof Element)) return false;
@@ -3092,6 +3223,8 @@ registerProjectCommands(commandRegistry, {
     zoomOut: () => handleZoomOut(),
     zoomIn: () => handleZoomIn(),
     toggleWrap: () => handleToggleWrap(),
+    togglePreview: () => handleToggleLayoutPreview(),
+    togglePreviewFrame: () => handleToggleLayoutPreviewFrame(),
     insertMarkdownPrompt: () => handleInsertMarkdownPrompt(),
     insertFlowOpen: () => handleInsertFlowOpen(),
     insertAddCard: () => handleInsertAddCard(),
@@ -3455,16 +3588,19 @@ function setPlainText(text = '', options = {}) {
   if (isTiptapMode) {
     cancelDeferredRenderWork();
     setTiptapPlainText(text);
+    scheduleLayoutPreviewRefresh();
     return;
   }
   const includePagination = options.includePagination !== false;
   const preserveSelection = options.preserveSelection !== false;
   if (options.deferRender === true) {
     scheduleDeferredHotpathRender({ includePagination, preserveSelection });
+    scheduleLayoutPreviewRefresh();
     return;
   }
   cancelDeferredRenderWork();
   renderStyledView(text, { includePagination, preserveSelection });
+  scheduleLayoutPreviewRefresh();
 }
 
 function parseDocumentContent(rawText = '') {
@@ -5366,6 +5502,7 @@ function applyMode(mode) {
       applySpatialLayoutState(normalizedSpatialState, { persist: true, projectId: currentProjectId });
     }
   }
+  syncLayoutPreviewVisibility();
   updateInspectorSnapshot();
   syncToolbarShellState();
 }
@@ -5789,6 +5926,7 @@ function setEditorZoom(value, persist = true) {
     applyPageGeometryCssVars(metrics);
   }
   applyPreviewChromeCssVars(activePreviewChromeState, document.documentElement, editorZoom, PX_PER_MM_AT_ZOOM_1);
+  scheduleLayoutPreviewRefresh();
   updateZoomValue();
   if (!persist) {
     return;
@@ -7075,6 +7213,12 @@ function handleUiAction(action) {
     case 'toggle-wrap':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_WRAP);
       return true;
+    case 'toggle-preview':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW);
+      return true;
+    case 'toggle-preview-frame':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW_FRAME);
+      return true;
     case 'zoom-out':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_ZOOM_OUT);
       return true;
@@ -7648,6 +7792,8 @@ if (window.electronAPI) {
       openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
       openExportPreview: () => openExportPreviewModal(),
       insertAddCard: () => handleInsertAddCard(),
+      togglePreview: () => handleToggleLayoutPreview(),
+      togglePreviewFrame: () => handleToggleLayoutPreviewFrame(),
       formatAlignLeft: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
       },
@@ -7697,6 +7843,10 @@ if (window.electronAPI) {
         void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.A5);
       } else if (command === 'switch-preview-format-letter') {
         void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.LETTER);
+      } else if (command === 'toggle-preview') {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW);
+      } else if (command === 'toggle-preview-frame') {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW_FRAME);
       } else if (command === 'switch-mode-plan') {
         applyMode('plan');
       } else if (command === 'switch-mode-review') {
