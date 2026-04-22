@@ -15,8 +15,17 @@ function normalizeKind(value) {
   if (kind === 'page-break' || kind === 'pagebreak' || kind === 'page_break') {
     return 'pageBreak';
   }
-  if (kind === 'pagebreaktoken' || kind === 'pageBreakToken') {
+  if (kind === 'pagebreaktoken' || kind === 'page_break_token') {
     return 'pageBreak';
+  }
+  if (kind === 'scene-heading' || kind === 'sceneheading' || kind === 'scene_heading') {
+    return 'sceneHeading';
+  }
+  if (kind === 'list-item' || kind === 'listitem' || kind === 'list_item') {
+    return 'listItem';
+  }
+  if (kind === 'code-block' || kind === 'codeblock' || kind === 'code_block') {
+    return 'codeBlock';
   }
   return kind;
 }

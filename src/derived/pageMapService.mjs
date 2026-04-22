@@ -40,6 +40,16 @@ function normalizeProfile(profile) {
   };
 }
 
+function normalizeRules(rules) {
+  const source = isPlainObject(rules) ? rules : {};
+  return {
+    strictOverflow: Boolean(source.strictOverflow),
+    chapterStartRule: String(source.chapterStartRule || '').trim().toLowerCase() === 'continuous'
+      ? 'continuous'
+      : 'next-page',
+  };
+}
+
 function createPage(pageNumber) {
   return {
     pageNumber,
@@ -54,11 +64,12 @@ export function paginateLayoutFlow(input = {}) {
   const flowNodes = normalizeFlow(input.flow);
   const profile = normalizeProfile(input.profile);
   const styleMap = isPlainObject(input.styleMap) && typeof input.styleMap.resolve === 'function' ? input.styleMap : null;
+  const rules = normalizeRules(input.rules);
   const providedMeasurements = normalizeMeasurements(input.measurements);
   const measureProvider = isPlainObject(input.measureProvider) && typeof input.measureProvider.measureNode === 'function'
     ? input.measureProvider
     : createLayoutMeasureProvider(profile);
-  const strictOverflow = Boolean(input.rules && input.rules.strictOverflow);
+  const strictOverflow = rules.strictOverflow;
 
   if (!Array.isArray(flowNodes)) {
     throw new Error('E_PAGE_MAP_FLOW_REQUIRED');
@@ -94,6 +105,8 @@ export function paginateLayoutFlow(input = {}) {
     const nodeId = typeof node.id === 'string' && node.id.trim() ? node.id.trim() : `flow:${index}`;
     const semanticKind = typeof node.semanticKind === 'string' ? node.semanticKind : '';
     const isPageBreak = Boolean(node.isPageBreak) || semanticKind === 'pageBreak' || node.styleKey === 'semantic.pageBreak';
+    const chapterStart = Boolean(node.chapterStart) || semanticKind === 'sceneHeading';
+    const chapterStartBreak = chapterStart && rules.chapterStartRule === 'next-page';
 
     if (isPageBreak) {
       if (currentPage && currentPage.nodeIds.length > 0) {
@@ -109,6 +122,18 @@ export function paginateLayoutFlow(input = {}) {
       }
       currentPage.explicitBreakBefore = true;
       continue;
+    }
+
+    if (chapterStartBreak && currentPage && currentPage.nodeIds.length > 0) {
+      finalizePage();
+      nextPageNumber += 1;
+      pageBreaks.push({
+        nodeId,
+        beforePageNumber: nextPageNumber,
+        reason: 'chapterStart',
+      });
+      currentPage = createPage(nextPageNumber);
+      currentPage.explicitBreakBefore = true;
     }
 
     startPage();
@@ -151,6 +176,7 @@ export function paginateLayoutFlow(input = {}) {
       pageBreakCount: pageBreaks.length,
       overflowCount: pages.filter((page) => page.overflow).length,
       strictOverflow,
+      chapterStartRule: rules.chapterStartRule,
     },
   };
 }
