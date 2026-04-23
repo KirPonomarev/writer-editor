@@ -582,6 +582,9 @@ const HOTPATH_FULL_RENDER_MIN_INTERVAL_MS = 280;
 const HOTPATH_PAGINATION_IDLE_DELAY_MS = 220;
 const HOTPATH_PAGINATION_IDLE_TIMEOUT_MS = 750;
 const PAGINATION_MEASURE_BATCH_SIZE = 12;
+const CENTRAL_SHEET_STRIP_PROOF_CLASS = 'tiptap-host--central-sheet-strip-proof';
+const CENTRAL_SHEET_STRIP_MEASURING_CLASS = 'tiptap-host--central-sheet-strip-measuring';
+const MAX_CENTRAL_SHEET_PROOF_PAGES = 5;
 const UI_ERROR_MAP_SCHEMA_VERSION = 'ui-error-map.v1';
 const UI_ERROR_FALLBACK_MESSAGE = 'Операция не выполнена';
 const UI_ERROR_FALLBACK_SEVERITY = 'ERROR';
@@ -597,6 +600,7 @@ let activeLayoutPreviewState = DEFAULT_LAYOUT_PREVIEW_STATE;
 const layoutPreviewSnapshotCache = createLayoutPreviewSnapshotCache();
 let layoutPreviewHost = null;
 let layoutPreviewRefreshTimerId = null;
+let centralSheetStripRefreshFrameId = null;
 
 function getActivePreviewChrome(source = activePreviewChromeState) {
   return createPreviewChromeState(source);
@@ -648,6 +652,141 @@ function applyPageGeometryCssVars(metrics) {
   document.documentElement.style.setProperty('--page-margin-right-px', `${Math.round(metrics.marginRightPx)}px`);
   document.documentElement.style.setProperty('--page-margin-bottom-px', `${Math.round(metrics.marginBottomPx)}px`);
   document.documentElement.style.setProperty('--page-margin-left-px', `${Math.round(metrics.marginLeftPx)}px`);
+}
+
+function getRootCssPxValue(name, fallback = 0) {
+  const raw = window.getComputedStyle(document.documentElement).getPropertyValue(name);
+  const parsed = Number.parseFloat(raw);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function getCentralSheetContentMetrics(metrics) {
+  return {
+    widthPx: Math.max(1, Math.round(metrics.pageWidthPx - metrics.marginLeftPx - metrics.marginRightPx)),
+    heightPx: Math.max(1, Math.round(metrics.pageHeightPx - metrics.marginTopPx - metrics.marginBottomPx)),
+  };
+}
+
+function ensureCentralSheetStripShell() {
+  if (!isTiptapMode || !(editor instanceof HTMLElement)) {
+    return null;
+  }
+  let strip = editor.querySelector('.tiptap-sheet-strip');
+  if (strip instanceof HTMLElement) {
+    return strip;
+  }
+  strip = document.createElement('div');
+  strip.className = 'tiptap-sheet-strip';
+  editor.prepend(strip);
+  return strip;
+}
+
+function renderCentralSheetStripShellPages(pageCount) {
+  const strip = ensureCentralSheetStripShell();
+  if (!(strip instanceof HTMLElement)) {
+    return;
+  }
+  const nextPageCount = Math.max(0, pageCount);
+  if (strip.childElementCount === nextPageCount) {
+    return;
+  }
+  if (nextPageCount === 0) {
+    strip.replaceChildren();
+    return;
+  }
+  const fragment = document.createDocumentFragment();
+  for (let pageIndex = 0; pageIndex < nextPageCount; pageIndex += 1) {
+    const wrap = document.createElement('div');
+    wrap.className = 'tiptap-page-wrap';
+    wrap.dataset.pageIndex = String(pageIndex);
+    const page = document.createElement('div');
+    page.className = 'tiptap-page';
+    const content = document.createElement('div');
+    content.className = 'tiptap-page__content';
+    page.appendChild(content);
+    wrap.appendChild(page);
+    fragment.appendChild(wrap);
+  }
+  strip.replaceChildren(fragment);
+}
+
+function measureCentralSheetNaturalHeight(proseMirror) {
+  if (!(proseMirror instanceof HTMLElement) || !(editor instanceof HTMLElement)) {
+    return 0;
+  }
+  editor.classList.add(CENTRAL_SHEET_STRIP_MEASURING_CLASS);
+  const naturalHeight = Math.max(
+    proseMirror.scrollHeight,
+    proseMirror.offsetHeight,
+    Math.ceil(proseMirror.getBoundingClientRect().height),
+  );
+  editor.classList.remove(CENTRAL_SHEET_STRIP_MEASURING_CLASS);
+  return naturalHeight;
+}
+
+function clearCentralSheetStripProof() {
+  if (!(editor instanceof HTMLElement)) {
+    return;
+  }
+  editor.classList.remove(CENTRAL_SHEET_STRIP_PROOF_CLASS);
+  editor.classList.remove(CENTRAL_SHEET_STRIP_MEASURING_CLASS);
+  delete editor.dataset.centralSheetCount;
+  editor.style.removeProperty('--central-sheet-count');
+  editor.style.removeProperty('--central-sheet-strip-width-px');
+  editor.style.removeProperty('--central-sheet-content-width-px');
+  editor.style.removeProperty('--central-sheet-content-height-px');
+  renderCentralSheetStripShellPages(0);
+}
+
+function refreshCentralSheetStripProof() {
+  if (!isTiptapMode || !(editor instanceof HTMLElement)) {
+    return;
+  }
+  const tiptapEditor = editor.querySelector('.tiptap-editor');
+  const proseMirror = editor.querySelector('.ProseMirror');
+  if (!(tiptapEditor instanceof HTMLElement) || !(proseMirror instanceof HTMLElement)) {
+    clearCentralSheetStripProof();
+    return;
+  }
+  const metrics = getPageMetrics({
+    profile: activeBookProfileState,
+    zoom: editorZoom,
+  });
+  if (!metrics) {
+    clearCentralSheetStripProof();
+    return;
+  }
+
+  const { widthPx, heightPx } = getCentralSheetContentMetrics(metrics);
+  const pageGapPx = Math.max(0, Math.round(getRootCssPxValue('--page-gap-px', 24)));
+  const naturalHeight = measureCentralSheetNaturalHeight(proseMirror);
+  const pageCount = Math.max(1, Math.ceil(naturalHeight / heightPx));
+  if (pageCount > MAX_CENTRAL_SHEET_PROOF_PAGES) {
+    clearCentralSheetStripProof();
+    return;
+  }
+  const stripWidthPx = Math.round((metrics.pageWidthPx * pageCount) + (pageGapPx * Math.max(0, pageCount - 1)));
+
+  editor.style.setProperty('--central-sheet-count', String(pageCount));
+  editor.style.setProperty('--central-sheet-strip-width-px', `${stripWidthPx}px`);
+  editor.style.setProperty('--central-sheet-content-width-px', `${widthPx}px`);
+  editor.style.setProperty('--central-sheet-content-height-px', `${heightPx}px`);
+  editor.dataset.centralSheetCount = String(pageCount);
+  renderCentralSheetStripShellPages(pageCount);
+  editor.classList.add(CENTRAL_SHEET_STRIP_PROOF_CLASS);
+}
+
+function scheduleCentralSheetStripProofRefresh() {
+  if (!isTiptapMode || !(editor instanceof HTMLElement)) {
+    return;
+  }
+  if (centralSheetStripRefreshFrameId) {
+    return;
+  }
+  centralSheetStripRefreshFrameId = window.requestAnimationFrame(() => {
+    centralSheetStripRefreshFrameId = null;
+    refreshCentralSheetStripProof();
+  });
 }
 
 function syncPreviewChromeFormatValue() {
@@ -702,6 +841,7 @@ function setActiveBookProfileFormat(formatId) {
     applyPageGeometryCssVars(metrics);
   }
   scheduleLayoutPreviewRefresh();
+  scheduleCentralSheetStripProofRefresh();
   syncPreviewChromeFormatValue();
   return nextProfile;
 }
@@ -5961,6 +6101,7 @@ function setEditorZoom(value, persist = true) {
   }
   applyPreviewChromeCssVars(activePreviewChromeState, document.documentElement, editorZoom, PX_PER_MM_AT_ZOOM_1);
   scheduleLayoutPreviewRefresh();
+  scheduleCentralSheetStripProofRefresh();
   updateZoomValue();
   if (!persist) {
     return;
@@ -7737,6 +7878,7 @@ document.addEventListener('selectionchange', syncToolbarFormattingState);
 window.addEventListener('resize', () => {
   updateSpatialLayoutForViewportChange();
   scheduleLayoutRefresh();
+  scheduleCentralSheetStripProofRefresh();
 });
 
 if (window.electronAPI) {
@@ -7797,6 +7939,7 @@ if (window.electronAPI) {
 
     localDirty = false;
     updateWordCount();
+    scheduleCentralSheetStripProofRefresh();
 
     const resolvedTitle = title || getTitleFromPath(path);
     if (resolvedTitle) {
@@ -7920,6 +8063,7 @@ if (isTiptapMode) {
     syncPlainTextBufferFromEditorDom();
     markAsModified();
     updateWordCount();
+    scheduleCentralSheetStripProofRefresh();
   });
 } else {
   editor.addEventListener('pointerdown', (event) => {
@@ -8045,3 +8189,6 @@ if (window.electronAPI) {
 
 setCurrentFontSize(currentFontSizePx);
 updateWordCount();
+if (isTiptapMode) {
+  scheduleCentralSheetStripProofRefresh();
+}
