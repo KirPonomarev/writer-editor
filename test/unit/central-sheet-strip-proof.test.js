@@ -715,6 +715,56 @@ async function runDeleteKeySmoke(win) {
   };
 }
 
+async function runArrowLeftSmoke(win) {
+  const stateAToken = 'k04LArrowProbe_abcXYZ';
+  const expectedFragment = 'k04LArrowProbe_abcXYMZ';
+  const failedFragment = 'k04LArrowProbe_abcXYZM';
+  win.focus();
+  await sleep(100);
+  const insertionPoint = await placeCursorAtEditorEnd(win);
+  if (!insertionPoint.ok) {
+    return {
+      stateAToken,
+      expectedFragment,
+      failedFragment,
+      insertionPoint,
+      caret: null,
+      stateA: null,
+      stateB: null,
+    };
+  }
+
+  await win.webContents.insertText(' ' + stateAToken);
+  await sleep(350);
+  const caret = await placeCaretInFirstTextOccurrence(win, stateAToken, stateAToken.length);
+  const stateA = await collectState(win, 'arrow-left-state-a');
+  if (!caret.ok) {
+    return {
+      stateAToken,
+      expectedFragment,
+      failedFragment,
+      insertionPoint,
+      caret,
+      stateA,
+      stateB: null,
+    };
+  }
+
+  await sendFocusedEditorKey(win, 'Left');
+  await win.webContents.insertText('M');
+  await sleep(700);
+  const stateB = await collectState(win, 'arrow-left-state-b');
+  return {
+    stateAToken,
+    expectedFragment,
+    failedFragment,
+    insertionPoint,
+    caret,
+    stateA,
+    stateB,
+  };
+}
+
 async function saveCapture(win, outDirPath, basename) {
   const image = await win.webContents.capturePage();
   await fs.writeFile(path.join(outDirPath, basename), image.toPNG());
@@ -763,6 +813,10 @@ app.whenReady().then(async () => {
     await setEditorPayload(win, paragraphCount);
     await sleep(900);
 
+    const arrowLeftSmoke = await runArrowLeftSmoke(win);
+    await setEditorPayload(win, paragraphCount);
+    await sleep(900);
+
     const a5Click = await clickAction(win, 'switch-preview-format-a5');
     await sleep(900);
     const a5State = await collectState(win, 'A5');
@@ -786,6 +840,7 @@ app.whenReady().then(async () => {
       smallPasteSmoke,
       backspaceSmoke,
       deleteKeySmoke,
+      arrowLeftSmoke,
       a5Click,
       a5State,
       letterClick,
@@ -1099,6 +1154,60 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
   assert.equal(
     result.deleteKeySmoke.stateB.proseText.length,
     result.deleteKeySmoke.stateA.proseText.length - 1,
+  );
+
+  assert.equal(result.arrowLeftSmoke.insertionPoint.ok, true);
+  assert.equal(result.arrowLeftSmoke.insertionPoint.centralSheetFlow, 'horizontal');
+  assert.equal(result.arrowLeftSmoke.insertionPoint.tiptapEditorCount, 1);
+  assert.equal(result.arrowLeftSmoke.insertionPoint.proseMirrorCount, 1);
+  assert.equal(result.arrowLeftSmoke.insertionPoint.activeElementInsideProse, true);
+  assert.equal(result.arrowLeftSmoke.insertionPoint.selectionInsideProse, true);
+  assert.equal(result.arrowLeftSmoke.caret.ok, true);
+  assert.equal(result.arrowLeftSmoke.caret.centralSheetFlow, 'horizontal');
+  assert.equal(result.arrowLeftSmoke.caret.tiptapEditorCount, 1);
+  assert.equal(result.arrowLeftSmoke.caret.proseMirrorCount, 1);
+  assert.equal(result.arrowLeftSmoke.caret.activeElementInsideProse, true);
+  assert.equal(result.arrowLeftSmoke.caret.selectionInsideProse, true);
+  assert.equal(result.arrowLeftSmoke.caret.selectionCollapsed, true);
+  assert.equal(result.arrowLeftSmoke.stateA.centralSheetFlow, 'horizontal');
+  assert.equal(result.arrowLeftSmoke.stateA.tiptapEditorCount, 1);
+  assert.equal(result.arrowLeftSmoke.stateA.proseMirrorCount, 1);
+  assert.equal(result.arrowLeftSmoke.stateA.activeElementInsideProse, true);
+  assert.equal(result.arrowLeftSmoke.stateA.selectionInsideProse, true);
+  assert.equal(result.arrowLeftSmoke.stateA.selectionCollapsed, true);
+  assert.equal(
+    result.arrowLeftSmoke.stateA.proseText.split(result.arrowLeftSmoke.stateAToken).length - 1,
+    1,
+  );
+  assert.equal(
+    result.arrowLeftSmoke.stateA.proseText.split(result.arrowLeftSmoke.expectedFragment).length - 1,
+    0,
+  );
+  assert.equal(
+    result.arrowLeftSmoke.stateA.proseText.split(result.arrowLeftSmoke.failedFragment).length - 1,
+    0,
+  );
+  assert.equal(result.arrowLeftSmoke.stateB.centralSheetFlow, 'horizontal');
+  assert.equal(result.arrowLeftSmoke.stateB.tiptapEditorCount, 1);
+  assert.equal(result.arrowLeftSmoke.stateB.proseMirrorCount, 1);
+  assert.equal(result.arrowLeftSmoke.stateB.activeElementInsideProse, true);
+  assert.equal(result.arrowLeftSmoke.stateB.selectionInsideProse, true);
+  assert.equal(result.arrowLeftSmoke.stateB.selectionCollapsed, true);
+  assert.equal(
+    result.arrowLeftSmoke.stateB.proseText.split(result.arrowLeftSmoke.expectedFragment).length - 1,
+    1,
+  );
+  assert.equal(
+    result.arrowLeftSmoke.stateB.proseText.split(result.arrowLeftSmoke.stateAToken).length - 1,
+    0,
+  );
+  assert.equal(
+    result.arrowLeftSmoke.stateB.proseText.split(result.arrowLeftSmoke.failedFragment).length - 1,
+    0,
+  );
+  assert.equal(
+    result.arrowLeftSmoke.stateB.proseText.length,
+    result.arrowLeftSmoke.stateA.proseText.length + 1,
   );
 
   assert.equal(result.a5Click.ok, true);
