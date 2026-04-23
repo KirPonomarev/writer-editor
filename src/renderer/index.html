@@ -604,7 +604,49 @@
               <div class="right-rail-form-grid">
                 <div class="right-rail-form-row">
                   <span class="right-rail-form-key">Формат</span>
-                  <span class="right-rail-form-value">A4</span>
+                  <div class="right-rail-segmented-control" data-preview-format-control aria-label="Формат листа">
+                    <button
+                      type="button"
+                      class="right-rail-segmented-button is-active"
+                      data-action="switch-preview-format-a4"
+                      data-preview-format-option="A4"
+                      aria-pressed="true"
+                    >A4</button>
+                    <button
+                      type="button"
+                      class="right-rail-segmented-button"
+                      data-action="switch-preview-format-a5"
+                      data-preview-format-option="A5"
+                      aria-pressed="false"
+                    >A5</button>
+                    <button
+                      type="button"
+                      class="right-rail-segmented-button"
+                      data-action="switch-preview-format-letter"
+                      data-preview-format-option="LETTER"
+                      aria-pressed="false"
+                    >Letter</button>
+                  </div>
+                </div>
+                <div class="right-rail-form-row">
+                  <span class="right-rail-form-key">Preview</span>
+                  <button
+                    type="button"
+                    class="right-rail-action-pill"
+                    data-action="toggle-preview"
+                    data-layout-preview-toggle
+                    aria-pressed="false"
+                  >Off</button>
+                </div>
+                <div class="right-rail-form-row">
+                  <span class="right-rail-form-key">Рамка</span>
+                  <button
+                    type="button"
+                    class="right-rail-action-pill is-active"
+                    data-action="toggle-preview-frame"
+                    data-layout-preview-frame-toggle
+                    aria-pressed="true"
+                  >On</button>
                 </div>
                 <div class="right-rail-form-row">
                   <span class="right-rail-form-key">Колонки</span>

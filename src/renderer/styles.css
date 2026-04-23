@@ -2939,6 +2939,65 @@ body.dark-theme .toolbar__swatch::before {
     var(--control-shadow);
 }
 
+.right-rail-segmented-control {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 32px;
+  padding: 2px;
+  border-radius: 999px;
+  border: 1px solid var(--toolbar-control-border);
+  background: var(--selected-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.68),
+    var(--control-shadow);
+}
+
+.right-rail-segmented-button,
+.right-rail-action-pill {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 11.5px;
+  line-height: 16px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+
+.right-rail-segmented-button {
+  min-height: 26px;
+  padding: 0 9px;
+}
+
+.right-rail-action-pill {
+  justify-self: end;
+  min-width: 54px;
+  min-height: 32px;
+  padding: 0 13px;
+  border: 1px solid var(--toolbar-control-border);
+  background: var(--selected-bg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.68),
+    var(--control-shadow);
+}
+
+.right-rail-segmented-button.is-active,
+.right-rail-action-pill.is-active {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+.right-rail-segmented-button:focus-visible,
+.right-rail-action-pill:focus-visible {
+  outline: 2px solid rgba(85, 79, 70, 0.34);
+  outline-offset: 2px;
+}
+
 .right-rail-runtime-note {
   margin: 0;
   padding: 12px 14px;

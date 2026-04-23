@@ -178,6 +178,9 @@ const previewChromeFormatValueElement = Array.from(document.querySelectorAll('.r
   const key = row.querySelector('.right-rail-form-key');
   return key && key.textContent && key.textContent.trim() === 'Формат';
 })?.querySelector('.right-rail-form-value');
+const previewFormatButtons = Array.from(document.querySelectorAll('[data-preview-format-option]'));
+const layoutPreviewToggleButton = document.querySelector('[data-layout-preview-toggle]');
+const layoutPreviewFrameToggleButton = document.querySelector('[data-layout-preview-frame-toggle]');
 const inspectorSnapshotElement = document.querySelector('[data-inspector-snapshot]');
 const wordCountElement = document.querySelector('[data-word-count]');
 const zoomValueElement = document.querySelector('[data-zoom-value]');
@@ -648,8 +651,29 @@ function applyPageGeometryCssVars(metrics) {
 }
 
 function syncPreviewChromeFormatValue() {
+  const activeFormatId = getActiveBookProfile().formatId;
   if (previewChromeFormatValueElement) {
-    previewChromeFormatValueElement.textContent = getActiveBookProfile().formatId;
+    previewChromeFormatValueElement.textContent = activeFormatId;
+  }
+  previewFormatButtons.forEach((button) => {
+    const isActive = button.dataset.previewFormatOption === activeFormatId;
+    button.classList.toggle('is-active', isActive);
+    button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+}
+
+function syncLayoutPreviewControlStates() {
+  if (layoutPreviewToggleButton) {
+    const isEnabled = activeLayoutPreviewState.enabled;
+    layoutPreviewToggleButton.classList.toggle('is-active', isEnabled);
+    layoutPreviewToggleButton.setAttribute('aria-pressed', isEnabled ? 'true' : 'false');
+    layoutPreviewToggleButton.textContent = isEnabled ? 'On' : 'Off';
+  }
+  if (layoutPreviewFrameToggleButton) {
+    const isFrameEnabled = activeLayoutPreviewState.frameMode;
+    layoutPreviewFrameToggleButton.classList.toggle('is-active', isFrameEnabled);
+    layoutPreviewFrameToggleButton.setAttribute('aria-pressed', isFrameEnabled ? 'true' : 'false');
+    layoutPreviewFrameToggleButton.textContent = isFrameEnabled ? 'On' : 'Off';
   }
 }
 
@@ -691,6 +715,7 @@ if (initialPageMetrics) {
 }
 applyPreviewChromeCssVars(activePreviewChromeState, document.documentElement, ZOOM_DEFAULT, PX_PER_MM_AT_ZOOM_1);
 syncPreviewChromeFormatValue();
+syncLayoutPreviewControlStates();
 
 function ensureLayoutPreviewHost() {
   if (layoutPreviewHost) {
@@ -765,6 +790,7 @@ function scheduleLayoutPreviewRefresh() {
 }
 
 function syncLayoutPreviewVisibility() {
+  syncLayoutPreviewControlStates();
   const host = ensureLayoutPreviewHost();
   if (!host) {
     return;
@@ -803,6 +829,7 @@ function handleToggleLayoutPreviewFrame() {
     ...activeLayoutPreviewState,
     frameMode: !activeLayoutPreviewState.frameMode,
   });
+  syncLayoutPreviewControlStates();
   if (activeLayoutPreviewState.enabled) {
     syncLayoutPreviewVisibility();
   }
@@ -7238,6 +7265,15 @@ function handleUiAction(action) {
       return true;
     case 'toggle-wrap':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_WRAP);
+      return true;
+    case 'switch-preview-format-a4':
+      void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.A4);
+      return true;
+    case 'switch-preview-format-a5':
+      void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.A5);
+      return true;
+    case 'switch-preview-format-letter':
+      void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.LETTER);
       return true;
     case 'toggle-preview':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW);

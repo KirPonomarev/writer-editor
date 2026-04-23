@@ -190,6 +190,8 @@ test('layout commit sync: runtime bridge command surface remains unchanged', () 
     'open-export-preview',
     'insert-add-card',
     'format-align-left',
+    'toggle-preview',
+    'toggle-preview-frame',
     'switch-mode-plan',
     'switch-mode-review',
     'switch-mode-write',
