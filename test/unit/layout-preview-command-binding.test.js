@@ -17,8 +17,19 @@ function sliceBetween(source, startMarker, endMarker) {
 }
 
 test('layout preview command binding: preview controls are routed through commands, not raw DOM behavior', () => {
+  const html = read('src/renderer/index.html');
   const editor = read('src/renderer/editor.js');
   const runtimeBridge = read('src/renderer/tiptap/runtimeBridge.js');
+
+  assert.ok(html.includes('data-preview-format-control'));
+  assert.ok(html.includes('data-preview-format-option="A4"'));
+  assert.ok(html.includes('data-preview-format-option="A5"'));
+  assert.ok(html.includes('data-preview-format-option="LETTER"'));
+  assert.ok(html.includes('data-action="switch-preview-format-a4"'));
+  assert.ok(html.includes('data-action="switch-preview-format-a5"'));
+  assert.ok(html.includes('data-action="switch-preview-format-letter"'));
+  assert.ok(html.includes('data-layout-preview-toggle'));
+  assert.ok(html.includes('data-layout-preview-frame-toggle'));
 
   const previewCommandSnippet = sliceBetween(
     editor,
@@ -32,6 +43,38 @@ test('layout preview command binding: preview controls are routed through comman
   assert.equal(previewCommandSnippet.includes('setPreviewChromeFormat(formatId);'), false);
   assert.ok(editor.includes('togglePreview: () => handleToggleLayoutPreview(),'));
   assert.ok(editor.includes('togglePreviewFrame: () => handleToggleLayoutPreviewFrame(),'));
+  assert.ok(editor.includes("const previewFormatButtons = Array.from(document.querySelectorAll('[data-preview-format-option]'));"));
+  assert.ok(editor.includes("const layoutPreviewToggleButton = document.querySelector('[data-layout-preview-toggle]');"));
+  assert.ok(editor.includes("const layoutPreviewFrameToggleButton = document.querySelector('[data-layout-preview-frame-toggle]');"));
+
+  const syncFormatSnippet = sliceBetween(
+    editor,
+    'function syncPreviewChromeFormatValue() {',
+    'function syncLayoutPreviewControlStates() {',
+  );
+  assert.ok(syncFormatSnippet.includes("button.dataset.previewFormatOption === activeFormatId"));
+  assert.ok(syncFormatSnippet.includes("button.classList.toggle('is-active', isActive);"));
+  assert.ok(syncFormatSnippet.includes("button.setAttribute('aria-pressed', isActive ? 'true' : 'false');"));
+
+  const syncPreviewControlSnippet = sliceBetween(
+    editor,
+    'function syncLayoutPreviewControlStates() {',
+    'function setActiveBookProfileFormat(formatId) {',
+  );
+  assert.ok(syncPreviewControlSnippet.includes("layoutPreviewToggleButton.setAttribute('aria-pressed', isEnabled ? 'true' : 'false');"));
+  assert.ok(syncPreviewControlSnippet.includes("layoutPreviewFrameToggleButton.setAttribute('aria-pressed', isFrameEnabled ? 'true' : 'false');"));
+
+  const handleUiActionSnippet = sliceBetween(
+    editor,
+    'function handleUiAction(action) {',
+    "    case 'toggle-paragraph-menu':",
+  );
+  assert.ok(handleUiActionSnippet.includes("case 'switch-preview-format-a4':"));
+  assert.ok(handleUiActionSnippet.includes('dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.A4)'));
+  assert.ok(handleUiActionSnippet.includes("case 'switch-preview-format-a5':"));
+  assert.ok(handleUiActionSnippet.includes('dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.A5)'));
+  assert.ok(handleUiActionSnippet.includes("case 'switch-preview-format-letter':"));
+  assert.ok(handleUiActionSnippet.includes('dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.LETTER)'));
 
   const exportPreviewSnippet = sliceBetween(
     editor,
