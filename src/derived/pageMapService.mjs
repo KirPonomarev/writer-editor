@@ -12,6 +12,14 @@ function normalizeNumber(value, fallback) {
   return Number.isFinite(number) && number >= 0 ? number : fallback;
 }
 
+function normalizeChapterStartRule(value) {
+  const rule = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (rule === 'next-page' || rule === 'next_page' || rule === 'nextpage') {
+    return 'next-page';
+  }
+  return 'continuous';
+}
+
 function normalizeFlow(flow) {
   if (Array.isArray(flow)) return flow;
   if (isPlainObject(flow) && Array.isArray(flow.nodes)) return flow.nodes;
@@ -50,6 +58,30 @@ function createPage(pageNumber) {
   };
 }
 
+function hasPageContent(page) {
+  return Boolean(page && Array.isArray(page.nodeIds) && page.nodeIds.length > 0);
+}
+
+function isChapterNode(node) {
+  if (!isPlainObject(node)) return false;
+
+  const semanticKind = typeof node.semanticKind === 'string' ? node.semanticKind.trim().toLowerCase() : '';
+  const layoutRole = typeof node.layoutRole === 'string' ? node.layoutRole.trim().toLowerCase() : '';
+  const kind = typeof node.kind === 'string' ? node.kind.trim().toLowerCase() : '';
+  const styleRole = typeof node.style?.role === 'string' ? node.style.role.trim().toLowerCase() : '';
+  const styleKey = typeof node.styleKey === 'string' ? node.styleKey.trim().toLowerCase() : '';
+
+  return semanticKind === 'chapter'
+    || semanticKind === 'chapterheading'
+    || semanticKind.startsWith('chapter:')
+    || layoutRole === 'chapter'
+    || kind === 'chapter'
+    || kind === 'chapter-heading'
+    || styleRole === 'chapter'
+    || styleKey === 'semantic.chapter'
+    || styleKey === 'semantic.chapterheading';
+}
+
 export function paginateLayoutFlow(input = {}) {
   const flowNodes = normalizeFlow(input.flow);
   const profile = normalizeProfile(input.profile);
@@ -59,6 +91,7 @@ export function paginateLayoutFlow(input = {}) {
     ? input.measureProvider
     : createLayoutMeasureProvider(profile);
   const strictOverflow = Boolean(input.rules && input.rules.strictOverflow);
+  const chapterStartRule = normalizeChapterStartRule(input.rules && input.rules.chapterStartRule);
 
   if (!Array.isArray(flowNodes)) {
     throw new Error('E_PAGE_MAP_FLOW_REQUIRED');
@@ -85,6 +118,32 @@ export function paginateLayoutFlow(input = {}) {
     }
   }
 
+  function advanceToNextPage({ explicitBreakBefore = false } = {}) {
+    nextPageNumber += 1;
+    currentPage = createPage(nextPageNumber);
+    currentPage.explicitBreakBefore = explicitBreakBefore;
+  }
+
+  function maybeBreakBeforeNode(node) {
+    const style = isPlainObject(node.style) ? node.style : null;
+    const shouldBreakBefore = Boolean(style?.pageBreakBefore)
+      || (chapterStartRule === 'next-page' && isChapterNode(node));
+
+    if (!shouldBreakBefore) {
+      return;
+    }
+
+    if (hasPageContent(currentPage)) {
+      finalizePage();
+      advanceToNextPage();
+      return;
+    }
+
+    if (!currentPage) {
+      startPage();
+    }
+  }
+
   for (let index = 0; index < flowNodes.length; index += 1) {
     const node = isPlainObject(flowNodes[index]) ? flowNodes[index] : null;
     if (!node) {
@@ -96,21 +155,18 @@ export function paginateLayoutFlow(input = {}) {
     const isPageBreak = Boolean(node.isPageBreak) || semanticKind === 'pageBreak' || node.styleKey === 'semantic.pageBreak';
 
     if (isPageBreak) {
-      if (currentPage && currentPage.nodeIds.length > 0) {
-        finalizePage();
-      }
+      finalizePage();
       nextPageNumber += 1;
       pageBreaks.push({
         nodeId,
         beforePageNumber: nextPageNumber,
       });
-      if (!currentPage) {
-        currentPage = createPage(nextPageNumber);
-      }
+      currentPage = createPage(nextPageNumber);
       currentPage.explicitBreakBefore = true;
       continue;
     }
 
+    maybeBreakBeforeNode(node);
     startPage();
     const measurement = providedMeasurements.get(nodeId) || measureProvider.measureNode(node, { profile, styleMap });
     const height = normalizeNumber(measurement?.height, 0);
@@ -131,6 +187,11 @@ export function paginateLayoutFlow(input = {}) {
         throw new Error('E_PAGE_MAP_OVERFLOW_STRICT');
       }
       currentPage.overflow = true;
+    }
+
+    if (Boolean(node.style && node.style.pageBreakAfter) && hasPageContent(currentPage)) {
+      finalizePage();
+      advanceToNextPage();
     }
   }
 
