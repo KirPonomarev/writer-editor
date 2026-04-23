@@ -4010,10 +4010,6 @@ body.dark-theme .empty-state {
   overflow: hidden;
 }
 
-.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof > .tiptap-page-wrap .ProseMirror > * {
-  break-inside: avoid;
-}
-
 body.dark-theme .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof {
   background:
     linear-gradient(
@@ -4060,12 +4056,14 @@ body.dark-theme .main-content--editor #editor.tiptap-host.tiptap-host--central-s
 
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof.tiptap-host--central-sheet-strip-measuring > .tiptap-page-wrap .tiptap-editor {
   position: static;
-  width: 100%;
+  width: var(--central-sheet-content-width-px);
   height: auto;
-  max-width: 100%;
+  max-width: var(--central-sheet-content-width-px);
 }
 
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof.tiptap-host--central-sheet-strip-measuring > .tiptap-page-wrap .ProseMirror {
+  width: var(--central-sheet-content-width-px);
+  max-width: var(--central-sheet-content-width-px);
   height: auto;
   min-height: calc(var(--page-height-px) - var(--page-margin-top-px) - var(--page-margin-bottom-px));
   column-width: auto;

@@ -724,13 +724,19 @@ function measureCentralSheetNaturalHeight(proseMirror) {
   return naturalHeight;
 }
 
-function clearCentralSheetStripProof() {
+function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   if (!(editor instanceof HTMLElement)) {
     return;
   }
   editor.classList.remove(CENTRAL_SHEET_STRIP_PROOF_CLASS);
   editor.classList.remove(CENTRAL_SHEET_STRIP_MEASURING_CLASS);
   delete editor.dataset.centralSheetCount;
+  delete editor.dataset.centralSheetFlow;
+  if (overflowReason) {
+    editor.dataset.centralSheetOverflowReason = overflowReason;
+  } else {
+    delete editor.dataset.centralSheetOverflowReason;
+  }
   editor.style.removeProperty('--central-sheet-count');
   editor.style.removeProperty('--central-sheet-strip-width-px');
   editor.style.removeProperty('--central-sheet-content-width-px');
@@ -759,19 +765,21 @@ function refreshCentralSheetStripProof() {
 
   const { widthPx, heightPx } = getCentralSheetContentMetrics(metrics);
   const pageGapPx = Math.max(0, Math.round(getRootCssPxValue('--page-gap-px', 24)));
+  editor.style.setProperty('--central-sheet-content-width-px', `${widthPx}px`);
+  editor.style.setProperty('--central-sheet-content-height-px', `${heightPx}px`);
   const naturalHeight = measureCentralSheetNaturalHeight(proseMirror);
   const pageCount = Math.max(1, Math.ceil(naturalHeight / heightPx));
   if (pageCount > MAX_CENTRAL_SHEET_PROOF_PAGES) {
-    clearCentralSheetStripProof();
+    clearCentralSheetStripProof({ overflowReason: 'max-page-count' });
     return;
   }
   const stripWidthPx = Math.round((metrics.pageWidthPx * pageCount) + (pageGapPx * Math.max(0, pageCount - 1)));
 
   editor.style.setProperty('--central-sheet-count', String(pageCount));
   editor.style.setProperty('--central-sheet-strip-width-px', `${stripWidthPx}px`);
-  editor.style.setProperty('--central-sheet-content-width-px', `${widthPx}px`);
-  editor.style.setProperty('--central-sheet-content-height-px', `${heightPx}px`);
   editor.dataset.centralSheetCount = String(pageCount);
+  editor.dataset.centralSheetFlow = 'horizontal';
+  delete editor.dataset.centralSheetOverflowReason;
   renderCentralSheetStripShellPages(pageCount);
   editor.classList.add(CENTRAL_SHEET_STRIP_PROOF_CLASS);
 }

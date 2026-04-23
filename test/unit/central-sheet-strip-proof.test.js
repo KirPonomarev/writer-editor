@@ -57,6 +57,11 @@ function buildPlainText(paragraphCount) {
   )).join('\\n\\n');
 }
 
+function buildLongParagraphText() {
+  const sentence = 'Это один длинный абзац для проверки границы горизонтальной ленты листов. ';
+  return Array.from({ length: 420 }, () => sentence).join('');
+}
+
 async function setEditorPayload(win, paragraphCount) {
   win.webContents.send('editor:set-text', {
     content: buildPlainText(paragraphCount),
@@ -65,6 +70,18 @@ async function setEditorPayload(win, paragraphCount) {
     kind: 'chapter-file',
     metaEnabled: true,
     projectId: 'central-sheet-strip-proof',
+    bookProfile: null,
+  });
+}
+
+async function setLongParagraphPayload(win) {
+  win.webContents.send('editor:set-text', {
+    content: buildLongParagraphText(),
+    title: 'central-sheet-strip-proof-long-paragraph',
+    path: '',
+    kind: 'chapter-file',
+    metaEnabled: true,
+    projectId: 'central-sheet-strip-proof-long-paragraph',
     bookProfile: null,
   });
 }
@@ -83,6 +100,7 @@ async function collectState(win, label) {
     const canvas = document.querySelector('.main-content--editor');
     const host = document.querySelector('#editor.tiptap-host');
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
+    const rightSidebar = document.querySelector('[data-right-sidebar]');
     const pageWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
     const directWrap = host ? host.querySelector(':scope > .tiptap-page-wrap') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
@@ -94,6 +112,8 @@ async function collectState(win, label) {
     });
     const firstPageRect = pageRects[0] || null;
     const secondPageRect = pageRects[1] || null;
+    const lastPageRect = pageRects[pageRects.length - 1] || null;
+    const rightSidebarRect = rightSidebar ? rightSidebar.getBoundingClientRect() : null;
     const rootStyles = getComputedStyle(document.documentElement);
     const pageCssVars = {
       widthPx: parseFloat(rootStyles.getPropertyValue('--page-width-px')) || null,
@@ -122,6 +142,14 @@ async function collectState(win, label) {
 
     const lastNode = textNodes[textNodes.length - 1] || null;
     let lastTextRect = null;
+    const textRects = [];
+    textNodes.forEach((node) => {
+      const fullRange = document.createRange();
+      fullRange.selectNodeContents(node);
+      [...fullRange.getClientRects()].forEach((rect) => {
+        textRects.push({ x: rect.x, y: rect.y, width: rect.width, height: rect.height });
+      });
+    });
     if (lastNode && lastNode.textContent.length > 0) {
       const range = document.createRange();
       range.setStart(lastNode, Math.max(0, lastNode.textContent.length - 1));
@@ -129,11 +157,38 @@ async function collectState(win, label) {
       const rect = range.getBoundingClientRect();
       lastTextRect = { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
     }
+    const gapTextRects = firstPageRect && secondPageRect
+      ? textRects.filter((rect) => (
+          rect.x > firstPageRect.x + firstPageRect.width
+          && rect.x + rect.width < secondPageRect.x
+        ))
+      : [];
+    const overflowTextRects = lastPageRect
+      ? textRects.filter((rect) => (
+          rect.x < pageRects[0].x
+          || rect.x + rect.width > lastPageRect.x + lastPageRect.width + 1
+          || rect.y < lastPageRect.y - 1
+          || rect.y + rect.height > lastPageRect.y + lastPageRect.height + 1
+        ))
+      : [];
+    const occupiedSheetIndexes = new Set();
+    pageRects.forEach((pageRect, pageIndex) => {
+      if (textRects.some((rect) => (
+        rect.x < pageRect.x + pageRect.width
+        && rect.x + rect.width > pageRect.x
+        && rect.y < pageRect.y + pageRect.height
+        && rect.y + rect.height > pageRect.y
+      ))) {
+        occupiedSheetIndexes.add(pageIndex);
+      }
+    });
 
     return {
       label: ${JSON.stringify('runtime-state')},
       proofClass: Boolean(host && host.classList.contains('tiptap-host--central-sheet-strip-proof')),
       measuringClass: Boolean(host && host.classList.contains('tiptap-host--central-sheet-strip-measuring')),
+      centralSheetFlow: host ? host.dataset.centralSheetFlow || null : null,
+      centralSheetOverflowReason: host ? host.dataset.centralSheetOverflowReason || null : null,
       tiptapEditorCount: host ? host.querySelectorAll('.tiptap-editor').length : 0,
       proseMirrorCount: host ? host.querySelectorAll('.ProseMirror').length : 0,
       pageWrapCount: pageWraps.length,
@@ -154,6 +209,15 @@ async function collectState(win, label) {
         && lastTextRect.x >= secondPageRect.x
         && lastTextRect.x <= secondPageRect.x + secondPageRect.width
       ),
+      lastTextOnLastSheet: Boolean(
+        lastPageRect
+        && lastTextRect
+        && lastTextRect.x >= lastPageRect.x
+        && lastTextRect.x <= lastPageRect.x + lastPageRect.width
+      ),
+      gapTextRectsCount: gapTextRects.length,
+      overflowTextRectsCount: overflowTextRects.length,
+      occupiedSheetCount: occupiedSheetIndexes.size,
       pageRects,
       pageGapPx: firstPageRect && secondPageRect
         ? Math.round((secondPageRect.x - (firstPageRect.x + firstPageRect.width)) * 100) / 100
@@ -183,9 +247,18 @@ async function collectState(win, label) {
       scrollers: {
         hostScrollHeight: host ? host.scrollHeight : null,
         hostClientHeight: host ? host.clientHeight : null,
+        hostScrollWidth: host ? host.scrollWidth : null,
+        hostClientWidth: host ? host.clientWidth : null,
         proseScrollHeight: prose ? prose.scrollHeight : null,
         proseClientHeight: prose ? prose.clientHeight : null,
       },
+      rightSidebar: rightSidebarRect ? {
+        width: rightSidebarRect.width,
+        height: rightSidebarRect.height,
+        x: rightSidebarRect.x,
+        right: rightSidebarRect.right,
+        visible: rightSidebarRect.width >= 280 && rightSidebarRect.right <= window.innerWidth + 1,
+      } : null,
       formatPressed: {
         A4: document.querySelector('[data-preview-format-option="A4"]')?.getAttribute('aria-pressed') || null,
         A5: document.querySelector('[data-preview-format-option="A5"]')?.getAttribute('aria-pressed') || null,
@@ -195,22 +268,24 @@ async function collectState(win, label) {
   })()\`, true);
 }
 
-async function findTwoSheetFixture(win) {
+async function findHorizontalFixture(win) {
+  let lastState = null;
   for (let paragraphCount = 1; paragraphCount <= 12; paragraphCount += 1) {
     await setEditorPayload(win, paragraphCount);
-    await sleep(900);
-    const state = await collectState(win, 'A4_' + String(paragraphCount));
+    await sleep(550);
+    const state = await collectState(win, 'A4');
+    lastState = state;
     if (
-      state.proofClass
+      state.centralSheetFlow === 'horizontal'
       && state.pageWrapCount === 2
-      && state.secondSheetVisible
-      && state.lastTextBeyondFirstSheet
-      && state.lastTextOnSecondSheet
+      && state.gapTextRectsCount === 0
+      && state.overflowTextRectsCount === 0
+      && state.lastTextOnSecondSheet === true
     ) {
       return { paragraphCount, state };
     }
   }
-  throw new Error('TWO_SHEET_FIXTURE_NOT_FOUND');
+  throw new Error('NO_HORIZONTAL_TWO_SHEET_FIXTURE ' + JSON.stringify(lastState));
 }
 
 async function saveCapture(win, outDirPath, basename) {
@@ -234,8 +309,7 @@ app.whenReady().then(async () => {
     win.setContentSize(2048, 1110);
     await sleep(1200);
 
-    const fitted = await findTwoSheetFixture(win);
-    const a4State = await collectState(win, 'A4');
+    const { paragraphCount, state: a4State } = await findHorizontalFixture(win);
     await saveCapture(win, outDir, 'central-a4.png');
 
     const a5Click = await clickAction(win, 'switch-preview-format-a5');
@@ -248,13 +322,18 @@ app.whenReady().then(async () => {
     const letterState = await collectState(win, 'Letter');
     await saveCapture(win, outDir, 'central-letter.png');
 
+    await setLongParagraphPayload(win);
+    await sleep(900);
+    const longParagraphState = await collectState(win, 'long-paragraph');
+
     const result = {
-      paragraphCount: fitted.paragraphCount,
+      paragraphCount,
       a4State,
       a5Click,
       a5State,
       letterClick,
       letterState,
+      longParagraphState,
     };
     await fs.writeFile(path.join(outDir, 'result.json'), JSON.stringify(result, null, 2));
     app.exit(0);
@@ -311,20 +390,29 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
   const letterGapDrift = Math.abs(result.letterState.pageGapPx - result.letterState.pageCssVars.gapPx);
 
   assert.ok(result.paragraphCount >= 1);
+  assert.ok(result.paragraphCount <= 12);
 
   assert.equal(result.a4State.proofClass, true);
   assert.equal(result.a4State.measuringClass, false);
+  assert.equal(result.a4State.centralSheetFlow, 'horizontal');
+  assert.equal(result.a4State.centralSheetOverflowReason, null);
   assert.equal(result.a4State.tiptapEditorCount, 1);
   assert.equal(result.a4State.proseMirrorCount, 1);
   assert.equal(result.a4State.directWrapPresent, true);
   assert.equal(result.a4State.pageWrapCount, 2);
   assert.equal(result.a4State.secondSheetVisible, true);
+  assert.equal(result.a4State.gapTextRectsCount, 0);
+  assert.equal(result.a4State.overflowTextRectsCount, 0);
+  assert.equal(result.a4State.occupiedSheetCount, 2);
   assert.equal(result.a4State.lastTextBeyondFirstSheet, true);
   assert.equal(result.a4State.lastTextOnSecondSheet, true);
   assert.equal(result.a4State.scrollers.hostScrollHeight, result.a4State.scrollers.hostClientHeight);
+  assert.equal(result.a4State.scrollers.hostScrollWidth, result.a4State.scrollers.hostClientWidth);
   assert.equal(result.a4State.proseComputed.overflowX, 'hidden');
   assert.equal(result.a4State.proseComputed.overflowY, 'hidden');
   assert.equal(result.a4State.formatPressed.A4, 'true');
+  assert.equal(result.a4State.rightSidebar.visible, true);
+  assert.ok(result.a4State.rightSidebar.width >= 280);
   assert.ok(a4WidthDrift <= 1, `A4 page width drifted by ${a4WidthDrift}px`);
   assert.ok(a4HeightDrift <= 1, `A4 page height drifted by ${a4HeightDrift}px`);
   assert.ok(a4GapDrift <= 1, `A4 page gap drifted by ${a4GapDrift}px`);
@@ -335,11 +423,18 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
 
   assert.equal(result.a5Click.ok, true);
   assert.equal(result.a5State.proofClass, true);
+  assert.equal(result.a5State.centralSheetFlow, 'horizontal');
   assert.equal(result.a5State.tiptapEditorCount, 1);
   assert.equal(result.a5State.proseMirrorCount, 1);
   assert.equal(result.a5State.secondSheetVisible, true);
+  assert.equal(result.a5State.gapTextRectsCount, 0);
+  assert.equal(result.a5State.overflowTextRectsCount, 0);
+  assert.equal(result.a5State.occupiedSheetCount, result.a5State.pageWrapCount);
   assert.equal(result.a5State.lastTextBeyondFirstSheet, true);
+  assert.equal(result.a5State.lastTextOnLastSheet, true);
   assert.equal(result.a5State.formatPressed.A5, 'true');
+  assert.equal(result.a5State.rightSidebar.visible, true);
+  assert.ok(result.a5State.rightSidebar.width >= 280);
   assert.ok(result.a5State.pageRects[0].width < result.a4State.pageRects[0].width);
   assert.ok(result.a5State.pageWrapCount >= result.a4State.pageWrapCount);
   assert.ok(a5WidthDrift <= 1, `A5 page width drifted by ${a5WidthDrift}px`);
@@ -348,10 +443,28 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
 
   assert.equal(result.letterClick.ok, true);
   assert.equal(result.letterState.proofClass, true);
+  assert.equal(result.letterState.centralSheetFlow, 'horizontal');
+  assert.equal(result.letterState.tiptapEditorCount, 1);
+  assert.equal(result.letterState.proseMirrorCount, 1);
+  assert.equal(result.letterState.secondSheetVisible, true);
+  assert.equal(result.letterState.gapTextRectsCount, 0);
+  assert.equal(result.letterState.overflowTextRectsCount, 0);
+  assert.equal(result.letterState.occupiedSheetCount, result.letterState.pageWrapCount);
+  assert.equal(result.letterState.lastTextBeyondFirstSheet, true);
+  assert.equal(result.letterState.lastTextOnLastSheet, true);
+  assert.equal(result.letterState.rightSidebar.visible, true);
+  assert.ok(result.letterState.rightSidebar.width >= 280);
   assert.equal(result.letterState.formatPressed.Letter, 'true');
   assert.ok(letterWidthDrift <= 1, `Letter page width drifted by ${letterWidthDrift}px`);
   assert.ok(letterHeightDrift <= 1, `Letter page height drifted by ${letterHeightDrift}px`);
   assert.ok(letterGapDrift <= 1, `Letter page gap drifted by ${letterGapDrift}px`);
+
+  assert.equal(result.longParagraphState.proofClass, false);
+  assert.equal(result.longParagraphState.centralSheetFlow, null);
+  assert.equal(result.longParagraphState.centralSheetOverflowReason, 'max-page-count');
+  assert.equal(result.longParagraphState.tiptapEditorCount, 1);
+  assert.equal(result.longParagraphState.proseMirrorCount, 1);
+  assert.equal(result.longParagraphState.pageWrapCount, 0);
 });
 
 test('central sheet strip proof: source remains renderer-only and bounded', () => {
@@ -360,7 +473,8 @@ test('central sheet strip proof: source remains renderer-only and bounded', () =
 
   assert.equal((editorText.match(/initTiptap\(/g) || []).length, 1);
   assert.ok(editorText.includes('const MAX_CENTRAL_SHEET_PROOF_PAGES = 5;'));
-  assert.ok(editorText.includes('function clearCentralSheetStripProof() {'));
+  assert.ok(editorText.includes("editor.dataset.centralSheetFlow = 'horizontal';"));
+  assert.ok(editorText.includes("clearCentralSheetStripProof({ overflowReason: 'max-page-count' });"));
   assert.equal(editorText.includes("from '../derived/pageMapService.mjs'"), false);
   assert.equal(editorText.includes("from '../derived/layoutInvalidation.mjs'"), false);
   assert.equal(editorText.includes("from './layoutPreview.mjs'"), true);
