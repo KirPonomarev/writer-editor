@@ -206,6 +206,7 @@ async function collectState(win, label) {
         && window.getSelection().rangeCount > 0
         && window.getSelection().isCollapsed
       ),
+      selectionText: window.getSelection() ? window.getSelection().toString() : '',
       tiptapEditorCount: host ? host.querySelectorAll('.tiptap-editor').length : 0,
       proseMirrorCount: host ? host.querySelectorAll('.ProseMirror').length : 0,
       pageWrapCount: pageWraps.length,
@@ -459,6 +460,62 @@ async function runEnterUndoRedoSmoke(win) {
   };
 }
 
+async function selectFirstTextOccurrence(win, token) {
+  return win.webContents.executeJavaScript(\`((token) => {
+    const host = document.querySelector('#editor.tiptap-host');
+    const prose = host ? host.querySelector('.ProseMirror') : null;
+    if (!host || !prose) {
+      return { ok: false, reason: 'EDITOR_MISSING' };
+    }
+    const walker = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        return node.textContent && node.textContent.includes(token)
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_SKIP;
+      },
+    });
+    const node = walker.nextNode();
+    if (!node) {
+      return { ok: false, reason: 'TOKEN_MISSING', token };
+    }
+    const start = node.textContent.indexOf(token);
+    const range = document.createRange();
+    range.setStart(node, start);
+    range.setEnd(node, start + token.length);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    prose.focus();
+    return {
+      ok: true,
+      token,
+      beforeText: prose.textContent || '',
+      selectionText: selection.toString(),
+      centralSheetFlow: host.dataset.centralSheetFlow || null,
+      tiptapEditorCount: host.querySelectorAll('.tiptap-editor').length,
+      proseMirrorCount: host.querySelectorAll('.ProseMirror').length,
+      activeElementInsideProse: document.activeElement === prose || prose.contains(document.activeElement),
+      selectionInsideProse: prose.contains(selection.anchorNode) && prose.contains(selection.focusNode),
+      selectionCollapsed: selection.isCollapsed,
+    };
+  })(\${JSON.stringify(token)})\`, true);
+}
+
+async function runSelectionReplaceSmoke(win) {
+  const selectedToken = 'проверочный';
+  const replacementToken = 'замененный-04h';
+  win.focus();
+  await sleep(100);
+  const before = await selectFirstTextOccurrence(win, selectedToken);
+  if (!before.ok) {
+    return { selectedToken, replacementToken, before, after: null };
+  }
+  await win.webContents.insertText(replacementToken);
+  await sleep(700);
+  const after = await collectState(win, 'selection-replace-smoke');
+  return { selectedToken, replacementToken, before, after };
+}
+
 async function saveCapture(win, outDirPath, basename) {
   const image = await win.webContents.capturePage();
   await fs.writeFile(path.join(outDirPath, basename), image.toPNG());
@@ -491,6 +548,10 @@ app.whenReady().then(async () => {
     await setEditorPayload(win, paragraphCount);
     await sleep(900);
 
+    const selectionReplaceSmoke = await runSelectionReplaceSmoke(win);
+    await setEditorPayload(win, paragraphCount);
+    await sleep(900);
+
     const a5Click = await clickAction(win, 'switch-preview-format-a5');
     await sleep(900);
     const a5State = await collectState(win, 'A5');
@@ -510,6 +571,7 @@ app.whenReady().then(async () => {
       a4State,
       inputSmoke,
       enterUndoRedoSmoke,
+      selectionReplaceSmoke,
       a5Click,
       a5State,
       letterClick,
@@ -667,6 +729,33 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
   assert.equal(redoStateB.proseText.includes(result.enterUndoRedoSmoke.marker), true);
   assert.equal(redoStateB.gapTextRectsCount, 0);
   assert.equal(redoStateB.overflowTextRectsCount, 0);
+
+  assert.equal(result.selectionReplaceSmoke.before.ok, true);
+  assert.equal(result.selectionReplaceSmoke.before.centralSheetFlow, 'horizontal');
+  assert.equal(result.selectionReplaceSmoke.before.tiptapEditorCount, 1);
+  assert.equal(result.selectionReplaceSmoke.before.proseMirrorCount, 1);
+  assert.equal(result.selectionReplaceSmoke.before.activeElementInsideProse, true);
+  assert.equal(result.selectionReplaceSmoke.before.selectionInsideProse, true);
+  assert.equal(result.selectionReplaceSmoke.before.selectionCollapsed, false);
+  assert.equal(result.selectionReplaceSmoke.before.selectionText, result.selectionReplaceSmoke.selectedToken);
+  assert.equal(result.selectionReplaceSmoke.before.beforeText.includes(result.selectionReplaceSmoke.selectedToken), true);
+  assert.equal(result.selectionReplaceSmoke.before.beforeText.includes(result.selectionReplaceSmoke.replacementToken), false);
+  assert.equal(result.selectionReplaceSmoke.after.centralSheetFlow, 'horizontal');
+  assert.equal(result.selectionReplaceSmoke.after.tiptapEditorCount, 1);
+  assert.equal(result.selectionReplaceSmoke.after.proseMirrorCount, 1);
+  assert.equal(result.selectionReplaceSmoke.after.activeElementInsideProse, true);
+  assert.equal(result.selectionReplaceSmoke.after.selectionInsideProse, true);
+  assert.equal(result.selectionReplaceSmoke.after.selectionCollapsed, true);
+  assert.equal(result.selectionReplaceSmoke.after.proseText.includes(result.selectionReplaceSmoke.replacementToken), true);
+  assert.equal(result.selectionReplaceSmoke.after.proseText.length, (
+    result.selectionReplaceSmoke.before.beforeText.length
+    - result.selectionReplaceSmoke.selectedToken.length
+    + result.selectionReplaceSmoke.replacementToken.length
+  ));
+  assert.equal(result.selectionReplaceSmoke.after.proseText.includes('центральной ленты листов'), true);
+  assert.equal(result.selectionReplaceSmoke.after.proseText.includes('без второго редактора'), true);
+  assert.equal(result.selectionReplaceSmoke.after.gapTextRectsCount, 0);
+  assert.equal(result.selectionReplaceSmoke.after.overflowTextRectsCount, 0);
 
   assert.equal(result.a5Click.ok, true);
   assert.equal(result.a5State.proofClass, true);
