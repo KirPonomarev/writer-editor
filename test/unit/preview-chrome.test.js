@@ -136,3 +136,28 @@ test('preview chrome: editor text wiring routes preview format through active bo
   assert.ok(source.includes('applyPreviewChromeCssVars(activePreviewChromeState, document.documentElement, ZOOM_DEFAULT, PX_PER_MM_AT_ZOOM_1);'));
   assert.ok(source.includes('applyPreviewChromeCssVars(activePreviewChromeState, document.documentElement, editorZoom, PX_PER_MM_AT_ZOOM_1);'));
 });
+
+test('preview chrome: frame toggle changes only derived preview page chrome', () => {
+  const styles = readFile('src/renderer/styles.css');
+  const layoutPreview = readFile('src/renderer/layoutPreview.mjs');
+
+  const frameOffStart = styles.indexOf('.layout-preview__pages.is-frame-off .layout-preview__page {');
+  const frameOffEnd = styles.indexOf('.layout-preview__pages.is-frame-off .layout-preview__page-content {');
+  assert.ok(frameOffStart > -1 && frameOffEnd > frameOffStart, 'frame-off page style block must exist');
+  const frameOffSnippet = styles.slice(frameOffStart, frameOffEnd);
+
+  assert.ok(frameOffSnippet.includes('background: transparent;'));
+  assert.ok(frameOffSnippet.includes('border-color: transparent;'));
+  assert.ok(frameOffSnippet.includes('box-shadow: none;'));
+
+  const frameOffContentStart = frameOffEnd;
+  const frameOffContentEnd = styles.indexOf('.layout-preview__empty {', frameOffContentStart);
+  assert.ok(frameOffContentEnd > frameOffContentStart, 'frame-off content style block must stay scoped before empty state');
+  const frameOffContentSnippet = styles.slice(frameOffContentStart, frameOffContentEnd);
+  assert.ok(frameOffContentSnippet.includes('padding: 0;'));
+
+  assert.ok(layoutPreview.includes("host.dataset.previewFrame = resolvedState.frameMode ? 'on' : 'off';"));
+  assert.ok(layoutPreview.includes("pagesHost.classList.toggle('is-frame-off', !resolvedState.frameMode);"));
+  assert.equal(layoutPreview.includes('localStorage'), false);
+  assert.equal(layoutPreview.includes('writeFileAtomic'), false);
+});

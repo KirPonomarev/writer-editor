@@ -86,6 +86,10 @@ test('live command wiring: right rail controls pass command bus and mutate UI st
   const frame = await dispatch(EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW_FRAME);
   assert.equal(frame.ok, true);
   assert.equal(state.frameMode, false);
+
+  const frameAgain = await dispatch(EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW_FRAME);
+  assert.equal(frameAgain.ok, true);
+  assert.equal(state.frameMode, true);
 });
 
 test('live command wiring: TipTap runtime bridge forwards format commands without DOM mutation', async () => {
@@ -118,6 +122,37 @@ test('live command wiring: TipTap runtime bridge forwards format commands withou
     command: 'switch-preview-format-letter',
   });
   assert.deepEqual(formatCalls, ['A5', 'LETTER']);
+});
+
+test('live command wiring: TipTap runtime bridge forwards preview frame toggle without DOM mutation', async () => {
+  const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule();
+  let frameToggleCount = 0;
+  const bridge = createTiptapRuntimeBridge({
+    runtimeHandlers: {
+      togglePreviewFrame() {
+        frameToggleCount += 1;
+        return { performed: true, frameMode: frameToggleCount % 2 === 0 };
+      },
+    },
+  });
+
+  assert.deepEqual(bridge.handleRuntimeCommand({ commandId: 'cmd.project.view.togglePreviewFrame' }), {
+    handled: true,
+    result: {
+      performed: true,
+      frameMode: false,
+    },
+    commandId: 'cmd.project.view.togglePreviewFrame',
+  });
+  assert.deepEqual(bridge.handleRuntimeCommand({ command: 'toggle-preview-frame' }), {
+    handled: true,
+    result: {
+      performed: true,
+      frameMode: true,
+    },
+    command: 'toggle-preview-frame',
+  });
+  assert.equal(frameToggleCount, 2);
 });
 
 test('live command wiring: command capability binding stays explicit and denies unknown project commands', async () => {
