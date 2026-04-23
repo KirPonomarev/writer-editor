@@ -486,6 +486,46 @@ async function selectFirstTextOccurrence(win, token) {
     selection.removeAllRanges();
     selection.addRange(range);
     prose.focus();
+    const toPlainRect = (rect) => rect ? ({
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+      top: rect.top,
+      right: rect.right,
+      bottom: rect.bottom,
+      left: rect.left,
+    }) : null;
+    const selectionRects = [...range.getClientRects()]
+      .map(toPlainRect)
+      .filter((rect) => rect && rect.width > 0 && rect.height > 0);
+    const hostRect = toPlainRect(host.getBoundingClientRect());
+    const activeViewportRect = hostRect ? {
+      x: Math.max(hostRect.left, 0),
+      y: Math.max(hostRect.top, 0),
+      width: Math.max(0, Math.min(hostRect.right, window.innerWidth) - Math.max(hostRect.left, 0)),
+      height: Math.max(0, Math.min(hostRect.bottom, window.innerHeight) - Math.max(hostRect.top, 0)),
+      top: Math.max(hostRect.top, 0),
+      right: Math.min(hostRect.right, window.innerWidth),
+      bottom: Math.min(hostRect.bottom, window.innerHeight),
+      left: Math.max(hostRect.left, 0),
+    } : null;
+    const visibilityTolerancePx = 2;
+    const selectionRectsObservable = Boolean(
+      selectionRects.length > 0
+      && activeViewportRect
+      && activeViewportRect.width > 0
+      && activeViewportRect.height > 0
+    );
+    const allSelectionRectsWithinViewport = Boolean(
+      selectionRectsObservable
+      && selectionRects.every((rect) => (
+        rect.top >= activeViewportRect.top - visibilityTolerancePx
+        && rect.bottom <= activeViewportRect.bottom + visibilityTolerancePx
+        && rect.left >= activeViewportRect.left - visibilityTolerancePx
+        && rect.right <= activeViewportRect.right + visibilityTolerancePx
+      ))
+    );
     return {
       ok: true,
       token,
@@ -497,6 +537,11 @@ async function selectFirstTextOccurrence(win, token) {
       activeElementInsideProse: document.activeElement === prose || prose.contains(document.activeElement),
       selectionInsideProse: prose.contains(selection.anchorNode) && prose.contains(selection.focusNode),
       selectionCollapsed: selection.isCollapsed,
+      selectionRects,
+      activeViewportRect,
+      visibilityTolerancePx,
+      selectionRectsObservable,
+      allSelectionRectsWithinViewport,
     };
   })(\${JSON.stringify(token)})\`, true);
 }
@@ -842,6 +887,38 @@ async function runCaretVisibilitySmoke(win) {
   };
 }
 
+async function runSelectionVisibilitySmoke(win) {
+  const selectedToken = 'проверочный';
+  const stateAToken = 'k04TSelectionProbe_abcXYZ';
+  const selectedSubstring = 'cXY';
+  win.focus();
+  await sleep(100);
+  const seedSelection = await selectFirstTextOccurrence(win, selectedToken);
+  if (!seedSelection.ok) {
+    return {
+      selectedToken,
+      stateAToken,
+      selectedSubstring,
+      seedSelection,
+      rangeSelection: null,
+      stateA: null,
+    };
+  }
+
+  await win.webContents.insertText(stateAToken);
+  await sleep(350);
+  const rangeSelection = await selectFirstTextOccurrence(win, selectedSubstring);
+  const stateA = await collectState(win, 'selection-visibility-state-a');
+  return {
+    selectedToken,
+    stateAToken,
+    selectedSubstring,
+    seedSelection,
+    rangeSelection,
+    stateA,
+  };
+}
+
 async function saveCapture(win, outDirPath, basename) {
   const image = await win.webContents.capturePage();
   await fs.writeFile(path.join(outDirPath, basename), image.toPNG());
@@ -898,6 +975,10 @@ app.whenReady().then(async () => {
     await setEditorPayload(win, paragraphCount);
     await sleep(900);
 
+    const selectionVisibilitySmoke = await runSelectionVisibilitySmoke(win);
+    await setEditorPayload(win, paragraphCount);
+    await sleep(900);
+
     const a5Click = await clickAction(win, 'switch-preview-format-a5');
     await sleep(900);
     const a5State = await collectState(win, 'A5');
@@ -923,6 +1004,7 @@ app.whenReady().then(async () => {
       deleteKeySmoke,
       arrowLeftSmoke,
       caretVisibilitySmoke,
+      selectionVisibilitySmoke,
       a5Click,
       a5State,
       letterClick,
@@ -1320,6 +1402,39 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
   assert.equal(result.caretVisibilitySmoke.stateA.selectionCollapsed, true);
   assert.equal(
     result.caretVisibilitySmoke.stateA.proseText.split(result.caretVisibilitySmoke.stateAToken).length - 1,
+    1,
+  );
+
+  assert.equal(result.selectionVisibilitySmoke.seedSelection.ok, true);
+  assert.equal(result.selectionVisibilitySmoke.seedSelection.centralSheetFlow, 'horizontal');
+  assert.equal(result.selectionVisibilitySmoke.seedSelection.tiptapEditorCount, 1);
+  assert.equal(result.selectionVisibilitySmoke.seedSelection.proseMirrorCount, 1);
+  assert.equal(result.selectionVisibilitySmoke.seedSelection.activeElementInsideProse, true);
+  assert.equal(result.selectionVisibilitySmoke.seedSelection.selectionInsideProse, true);
+  assert.equal(result.selectionVisibilitySmoke.seedSelection.selectionCollapsed, false);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.ok, true);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.token, result.selectionVisibilitySmoke.selectedSubstring);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.selectionText, result.selectionVisibilitySmoke.selectedSubstring);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.centralSheetFlow, 'horizontal');
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.tiptapEditorCount, 1);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.proseMirrorCount, 1);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.activeElementInsideProse, true);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.selectionInsideProse, true);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.selectionCollapsed, false);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.selectionRectsObservable, true);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.allSelectionRectsWithinViewport, true);
+  assert.ok(result.selectionVisibilitySmoke.rangeSelection.selectionRects.length >= 1);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.activeViewportRect.width > 0, true);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.activeViewportRect.height > 0, true);
+  assert.equal(result.selectionVisibilitySmoke.stateA.centralSheetFlow, 'horizontal');
+  assert.equal(result.selectionVisibilitySmoke.stateA.tiptapEditorCount, 1);
+  assert.equal(result.selectionVisibilitySmoke.stateA.proseMirrorCount, 1);
+  assert.equal(result.selectionVisibilitySmoke.stateA.activeElementInsideProse, true);
+  assert.equal(result.selectionVisibilitySmoke.stateA.selectionInsideProse, true);
+  assert.equal(result.selectionVisibilitySmoke.stateA.selectionCollapsed, false);
+  assert.equal(result.selectionVisibilitySmoke.rangeSelection.beforeText, result.selectionVisibilitySmoke.stateA.proseText);
+  assert.equal(
+    result.selectionVisibilitySmoke.stateA.proseText.split(result.selectionVisibilitySmoke.stateAToken).length - 1,
     1,
   );
 
