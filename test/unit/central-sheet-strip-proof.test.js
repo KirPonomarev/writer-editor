@@ -189,6 +189,17 @@ async function collectState(win, label) {
       measuringClass: Boolean(host && host.classList.contains('tiptap-host--central-sheet-strip-measuring')),
       centralSheetFlow: host ? host.dataset.centralSheetFlow || null : null,
       centralSheetOverflowReason: host ? host.dataset.centralSheetOverflowReason || null : null,
+      activeElementInsideProse: Boolean(
+        prose
+        && (document.activeElement === prose || prose.contains(document.activeElement))
+      ),
+      selectionInsideProse: Boolean(
+        prose
+        && window.getSelection()
+        && prose.contains(window.getSelection().anchorNode)
+        && prose.contains(window.getSelection().focusNode)
+      ),
+      proseText: prose ? prose.textContent || '' : '',
       tiptapEditorCount: host ? host.querySelectorAll('.tiptap-editor').length : 0,
       proseMirrorCount: host ? host.querySelectorAll('.ProseMirror').length : 0,
       pageWrapCount: pageWraps.length,
@@ -288,6 +299,64 @@ async function findHorizontalFixture(win) {
   throw new Error('NO_HORIZONTAL_TWO_SHEET_FIXTURE ' + JSON.stringify(lastState));
 }
 
+async function placeCursorAtEditorEnd(win) {
+  return win.webContents.executeJavaScript(\`(() => {
+    const host = document.querySelector('#editor.tiptap-host');
+    const prose = host ? host.querySelector('.ProseMirror') : null;
+    if (!host || !prose) {
+      return { ok: false, reason: 'EDITOR_MISSING' };
+    }
+    const walker = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        return node.textContent && node.textContent.trim()
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_SKIP;
+      },
+    });
+    let lastTextNode = null;
+    let current = walker.nextNode();
+    while (current) {
+      lastTextNode = current;
+      current = walker.nextNode();
+    }
+    const range = document.createRange();
+    if (lastTextNode) {
+      range.setStart(lastTextNode, lastTextNode.textContent.length);
+      range.setEnd(lastTextNode, lastTextNode.textContent.length);
+    } else {
+      range.selectNodeContents(prose);
+      range.collapse(false);
+    }
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    prose.focus();
+    return {
+      ok: true,
+      beforeText: prose.textContent || '',
+      centralSheetFlow: host.dataset.centralSheetFlow || null,
+      tiptapEditorCount: host.querySelectorAll('.tiptap-editor').length,
+      proseMirrorCount: host.querySelectorAll('.ProseMirror').length,
+      activeElementInsideProse: document.activeElement === prose || prose.contains(document.activeElement),
+      selectionInsideProse: prose.contains(selection.anchorNode) && prose.contains(selection.focusNode),
+    };
+  })()\`, true);
+}
+
+async function runActiveInputSmoke(win) {
+  const marker = ' input-smoke-04f';
+  win.focus();
+  await sleep(100);
+  const before = await placeCursorAtEditorEnd(win);
+  if (!before.ok) {
+    return { marker, before, after: null };
+  }
+  await win.webContents.insertText(marker);
+  await sleep(700);
+  const after = await collectState(win, 'input-smoke');
+  return { marker, before, after };
+}
+
 async function saveCapture(win, outDirPath, basename) {
   const image = await win.webContents.capturePage();
   await fs.writeFile(path.join(outDirPath, basename), image.toPNG());
@@ -312,6 +381,10 @@ app.whenReady().then(async () => {
     const { paragraphCount, state: a4State } = await findHorizontalFixture(win);
     await saveCapture(win, outDir, 'central-a4.png');
 
+    const inputSmoke = await runActiveInputSmoke(win);
+    await setEditorPayload(win, paragraphCount);
+    await sleep(900);
+
     const a5Click = await clickAction(win, 'switch-preview-format-a5');
     await sleep(900);
     const a5State = await collectState(win, 'A5');
@@ -329,6 +402,7 @@ app.whenReady().then(async () => {
     const result = {
       paragraphCount,
       a4State,
+      inputSmoke,
       a5Click,
       a5State,
       letterClick,
@@ -420,6 +494,23 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
   assert.equal(result.a4State.firstPageComputed.borderTopWidth, '1px');
   assert.notEqual(result.a4State.firstPageComputed.borderTopColor, result.a4State.canvasComputed.backgroundColor);
   assert.notEqual(result.a4State.firstPageComputed.boxShadow, 'none');
+
+  assert.equal(result.inputSmoke.before.ok, true);
+  assert.equal(result.inputSmoke.before.centralSheetFlow, 'horizontal');
+  assert.equal(result.inputSmoke.before.tiptapEditorCount, 1);
+  assert.equal(result.inputSmoke.before.proseMirrorCount, 1);
+  assert.equal(result.inputSmoke.before.activeElementInsideProse, true);
+  assert.equal(result.inputSmoke.before.selectionInsideProse, true);
+  assert.equal(result.inputSmoke.after.proofClass, true);
+  assert.equal(result.inputSmoke.after.centralSheetFlow, 'horizontal');
+  assert.equal(result.inputSmoke.after.tiptapEditorCount, 1);
+  assert.equal(result.inputSmoke.after.proseMirrorCount, 1);
+  assert.equal(result.inputSmoke.after.activeElementInsideProse, true);
+  assert.equal(result.inputSmoke.after.selectionInsideProse, true);
+  assert.equal(result.inputSmoke.after.proseText.includes(result.inputSmoke.marker), true);
+  assert.ok(result.inputSmoke.after.proseText.length > result.inputSmoke.before.beforeText.length);
+  assert.equal(result.inputSmoke.after.gapTextRectsCount, 0);
+  assert.equal(result.inputSmoke.after.overflowTextRectsCount, 0);
 
   assert.equal(result.a5Click.ok, true);
   assert.equal(result.a5State.proofClass, true);
