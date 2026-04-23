@@ -107,15 +107,17 @@ export function paginateLayoutFlow(input = {}) {
     const isPageBreak = Boolean(node.isPageBreak) || semanticKind === 'pageBreak' || node.styleKey === 'semantic.pageBreak';
     const chapterStart = Boolean(node.chapterStart) || semanticKind === 'sceneHeading';
     const chapterStartBreak = chapterStart && rules.chapterStartRule === 'next-page';
+    const nodeStyle = isPlainObject(node.style) ? node.style : {};
+    const stylePageBreakBefore = nodeStyle.pageBreakBefore === true && !chapterStart;
+    const stylePageBreakAfter = nodeStyle.pageBreakAfter === true;
 
     if (isPageBreak) {
-      if (currentPage && currentPage.nodeIds.length > 0) {
-        finalizePage();
-      }
+      finalizePage();
       nextPageNumber += 1;
       pageBreaks.push({
         nodeId,
         beforePageNumber: nextPageNumber,
+        reason: 'explicit',
       });
       if (!currentPage) {
         currentPage = createPage(nextPageNumber);
@@ -134,6 +136,17 @@ export function paginateLayoutFlow(input = {}) {
       });
       currentPage = createPage(nextPageNumber);
       currentPage.explicitBreakBefore = true;
+    }
+
+    if (stylePageBreakBefore && currentPage && currentPage.nodeIds.length > 0) {
+      finalizePage();
+      nextPageNumber += 1;
+      pageBreaks.push({
+        nodeId,
+        beforePageNumber: nextPageNumber,
+        reason: 'stylePageBreakBefore',
+      });
+      currentPage = createPage(nextPageNumber);
     }
 
     startPage();
@@ -156,6 +169,17 @@ export function paginateLayoutFlow(input = {}) {
         throw new Error('E_PAGE_MAP_OVERFLOW_STRICT');
       }
       currentPage.overflow = true;
+    }
+
+    if (stylePageBreakAfter) {
+      finalizePage();
+      nextPageNumber += 1;
+      pageBreaks.push({
+        nodeId,
+        beforePageNumber: nextPageNumber,
+        reason: 'stylePageBreakAfter',
+      });
+      currentPage = createPage(nextPageNumber);
     }
   }
 
