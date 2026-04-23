@@ -528,6 +528,49 @@ async function placeCaretInFirstTextOccurrence(win, token, offset) {
     selection.removeAllRanges();
     selection.addRange(range);
     prose.focus();
+    const toPlainRect = (rect) => rect ? ({
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height,
+      top: rect.top,
+      right: rect.right,
+      bottom: rect.bottom,
+      left: rect.left,
+    }) : null;
+    const rangeRects = [...range.getClientRects()].map(toPlainRect);
+    const rangeBoundingRect = toPlainRect(range.getBoundingClientRect());
+    const caretRect = rangeRects.find((rect) => rect && rect.height > 0) || rangeBoundingRect;
+    const hostRect = toPlainRect(host.getBoundingClientRect());
+    const activeViewportRect = hostRect ? {
+      x: Math.max(hostRect.left, 0),
+      y: Math.max(hostRect.top, 0),
+      width: Math.max(0, Math.min(hostRect.right, window.innerWidth) - Math.max(hostRect.left, 0)),
+      height: Math.max(0, Math.min(hostRect.bottom, window.innerHeight) - Math.max(hostRect.top, 0)),
+      top: Math.max(hostRect.top, 0),
+      right: Math.min(hostRect.right, window.innerWidth),
+      bottom: Math.min(hostRect.bottom, window.innerHeight),
+      left: Math.max(hostRect.left, 0),
+    } : null;
+    const visibilityTolerancePx = 2;
+    const rectObservable = Boolean(
+      caretRect
+      && activeViewportRect
+      && Number.isFinite(caretRect.top)
+      && Number.isFinite(caretRect.bottom)
+      && Number.isFinite(caretRect.left)
+      && Number.isFinite(caretRect.right)
+      && caretRect.height > 0
+      && activeViewportRect.width > 0
+      && activeViewportRect.height > 0
+    );
+    const withinViewport = Boolean(
+      rectObservable
+      && caretRect.top >= activeViewportRect.top - visibilityTolerancePx
+      && caretRect.bottom <= activeViewportRect.bottom + visibilityTolerancePx
+      && caretRect.left >= activeViewportRect.left - visibilityTolerancePx
+      && caretRect.right <= activeViewportRect.right + visibilityTolerancePx
+    );
     return {
       ok: true,
       token,
@@ -539,6 +582,11 @@ async function placeCaretInFirstTextOccurrence(win, token, offset) {
       activeElementInsideProse: document.activeElement === prose || prose.contains(document.activeElement),
       selectionInsideProse: prose.contains(selection.anchorNode) && prose.contains(selection.focusNode),
       selectionCollapsed: selection.isCollapsed,
+      caretRect,
+      activeViewportRect,
+      visibilityTolerancePx,
+      rectObservable,
+      withinViewport,
     };
   })(\${JSON.stringify(token)}, \${JSON.stringify(offset)})\`, true);
 }
@@ -765,6 +813,35 @@ async function runArrowLeftSmoke(win) {
   };
 }
 
+async function runCaretVisibilitySmoke(win) {
+  const selectedToken = 'проверочный';
+  const stateAToken = 'k04SCaretProbe_abcXYZ';
+  win.focus();
+  await sleep(100);
+  const seedSelection = await selectFirstTextOccurrence(win, selectedToken);
+  if (!seedSelection.ok) {
+    return {
+      selectedToken,
+      stateAToken,
+      seedSelection,
+      caret: null,
+      stateA: null,
+    };
+  }
+
+  await win.webContents.insertText(stateAToken);
+  await sleep(350);
+  const caret = await placeCaretInFirstTextOccurrence(win, stateAToken, stateAToken.length);
+  const stateA = await collectState(win, 'caret-visibility-state-a');
+  return {
+    selectedToken,
+    stateAToken,
+    seedSelection,
+    caret,
+    stateA,
+  };
+}
+
 async function saveCapture(win, outDirPath, basename) {
   const image = await win.webContents.capturePage();
   await fs.writeFile(path.join(outDirPath, basename), image.toPNG());
@@ -817,6 +894,10 @@ app.whenReady().then(async () => {
     await setEditorPayload(win, paragraphCount);
     await sleep(900);
 
+    const caretVisibilitySmoke = await runCaretVisibilitySmoke(win);
+    await setEditorPayload(win, paragraphCount);
+    await sleep(900);
+
     const a5Click = await clickAction(win, 'switch-preview-format-a5');
     await sleep(900);
     const a5State = await collectState(win, 'A5');
@@ -841,6 +922,7 @@ app.whenReady().then(async () => {
       backspaceSmoke,
       deleteKeySmoke,
       arrowLeftSmoke,
+      caretVisibilitySmoke,
       a5Click,
       a5State,
       letterClick,
@@ -1208,6 +1290,37 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
   assert.equal(
     result.arrowLeftSmoke.stateB.proseText.length,
     result.arrowLeftSmoke.stateA.proseText.length + 1,
+  );
+
+  assert.equal(result.caretVisibilitySmoke.seedSelection.ok, true);
+  assert.equal(result.caretVisibilitySmoke.seedSelection.centralSheetFlow, 'horizontal');
+  assert.equal(result.caretVisibilitySmoke.seedSelection.tiptapEditorCount, 1);
+  assert.equal(result.caretVisibilitySmoke.seedSelection.proseMirrorCount, 1);
+  assert.equal(result.caretVisibilitySmoke.seedSelection.activeElementInsideProse, true);
+  assert.equal(result.caretVisibilitySmoke.seedSelection.selectionInsideProse, true);
+  assert.equal(result.caretVisibilitySmoke.seedSelection.selectionCollapsed, false);
+  assert.equal(result.caretVisibilitySmoke.caret.ok, true);
+  assert.equal(result.caretVisibilitySmoke.caret.centralSheetFlow, 'horizontal');
+  assert.equal(result.caretVisibilitySmoke.caret.tiptapEditorCount, 1);
+  assert.equal(result.caretVisibilitySmoke.caret.proseMirrorCount, 1);
+  assert.equal(result.caretVisibilitySmoke.caret.activeElementInsideProse, true);
+  assert.equal(result.caretVisibilitySmoke.caret.selectionInsideProse, true);
+  assert.equal(result.caretVisibilitySmoke.caret.selectionCollapsed, true);
+  assert.equal(result.caretVisibilitySmoke.caret.rectObservable, true);
+  assert.equal(result.caretVisibilitySmoke.caret.withinViewport, true);
+  assert.equal(result.caretVisibilitySmoke.caret.caretRect.width >= 0, true);
+  assert.equal(result.caretVisibilitySmoke.caret.caretRect.height > 0, true);
+  assert.equal(result.caretVisibilitySmoke.caret.activeViewportRect.width > 0, true);
+  assert.equal(result.caretVisibilitySmoke.caret.activeViewportRect.height > 0, true);
+  assert.equal(result.caretVisibilitySmoke.stateA.centralSheetFlow, 'horizontal');
+  assert.equal(result.caretVisibilitySmoke.stateA.tiptapEditorCount, 1);
+  assert.equal(result.caretVisibilitySmoke.stateA.proseMirrorCount, 1);
+  assert.equal(result.caretVisibilitySmoke.stateA.activeElementInsideProse, true);
+  assert.equal(result.caretVisibilitySmoke.stateA.selectionInsideProse, true);
+  assert.equal(result.caretVisibilitySmoke.stateA.selectionCollapsed, true);
+  assert.equal(
+    result.caretVisibilitySmoke.stateA.proseText.split(result.caretVisibilitySmoke.stateAToken).length - 1,
+    1,
   );
 
   assert.equal(result.a5Click.ok, true);
