@@ -621,6 +621,55 @@ async function runSmallPasteSmoke(win) {
   };
 }
 
+async function runBackspaceSmoke(win) {
+  const selectedToken = 'проверочный';
+  const stateAToken = 'abcXYZ';
+  const expectedFragment = 'abcYZ';
+  win.focus();
+  await sleep(100);
+  const seedSelection = await selectFirstTextOccurrence(win, selectedToken);
+  if (!seedSelection.ok) {
+    return {
+      selectedToken,
+      stateAToken,
+      expectedFragment,
+      seedSelection,
+      caret: null,
+      stateA: null,
+      stateB: null,
+    };
+  }
+
+  await win.webContents.insertText(stateAToken);
+  await sleep(350);
+  const caret = await placeCaretInFirstTextOccurrence(win, stateAToken, 'abcX'.length);
+  const stateA = await collectState(win, 'backspace-state-a');
+  if (!caret.ok) {
+    return {
+      selectedToken,
+      stateAToken,
+      expectedFragment,
+      seedSelection,
+      caret,
+      stateA,
+      stateB: null,
+    };
+  }
+
+  await sendFocusedEditorKey(win, 'Backspace');
+  await sleep(700);
+  const stateB = await collectState(win, 'backspace-state-b');
+  return {
+    selectedToken,
+    stateAToken,
+    expectedFragment,
+    seedSelection,
+    caret,
+    stateA,
+    stateB,
+  };
+}
+
 async function saveCapture(win, outDirPath, basename) {
   const image = await win.webContents.capturePage();
   await fs.writeFile(path.join(outDirPath, basename), image.toPNG());
@@ -661,6 +710,10 @@ app.whenReady().then(async () => {
     await setEditorPayload(win, paragraphCount);
     await sleep(900);
 
+    const backspaceSmoke = await runBackspaceSmoke(win);
+    await setEditorPayload(win, paragraphCount);
+    await sleep(900);
+
     const a5Click = await clickAction(win, 'switch-preview-format-a5');
     await sleep(900);
     const a5State = await collectState(win, 'A5');
@@ -682,6 +735,7 @@ app.whenReady().then(async () => {
       enterUndoRedoSmoke,
       selectionReplaceSmoke,
       smallPasteSmoke,
+      backspaceSmoke,
       a5Click,
       a5State,
       letterClick,
@@ -909,6 +963,47 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
   assert.equal(result.smallPasteSmoke.stateB.proseText.includes('без второго редактора'), true);
   assert.equal(result.smallPasteSmoke.stateB.gapTextRectsCount, 0);
   assert.equal(result.smallPasteSmoke.stateB.overflowTextRectsCount, 0);
+
+  assert.equal(result.backspaceSmoke.seedSelection.ok, true);
+  assert.equal(result.backspaceSmoke.seedSelection.centralSheetFlow, 'horizontal');
+  assert.equal(result.backspaceSmoke.seedSelection.tiptapEditorCount, 1);
+  assert.equal(result.backspaceSmoke.seedSelection.proseMirrorCount, 1);
+  assert.equal(result.backspaceSmoke.seedSelection.activeElementInsideProse, true);
+  assert.equal(result.backspaceSmoke.seedSelection.selectionInsideProse, true);
+  assert.equal(result.backspaceSmoke.seedSelection.selectionCollapsed, false);
+  assert.equal(result.backspaceSmoke.caret.ok, true);
+  assert.equal(result.backspaceSmoke.caret.centralSheetFlow, 'horizontal');
+  assert.equal(result.backspaceSmoke.caret.tiptapEditorCount, 1);
+  assert.equal(result.backspaceSmoke.caret.proseMirrorCount, 1);
+  assert.equal(result.backspaceSmoke.caret.activeElementInsideProse, true);
+  assert.equal(result.backspaceSmoke.caret.selectionInsideProse, true);
+  assert.equal(result.backspaceSmoke.caret.selectionCollapsed, true);
+  assert.equal(result.backspaceSmoke.stateA.centralSheetFlow, 'horizontal');
+  assert.equal(result.backspaceSmoke.stateA.tiptapEditorCount, 1);
+  assert.equal(result.backspaceSmoke.stateA.proseMirrorCount, 1);
+  assert.equal(result.backspaceSmoke.stateA.activeElementInsideProse, true);
+  assert.equal(result.backspaceSmoke.stateA.selectionInsideProse, true);
+  assert.equal(result.backspaceSmoke.stateA.selectionCollapsed, true);
+  assert.equal(result.backspaceSmoke.stateA.proseText.includes(result.backspaceSmoke.stateAToken), true);
+  assert.equal(result.backspaceSmoke.stateA.proseText.includes(result.backspaceSmoke.expectedFragment), false);
+  assert.equal(result.backspaceSmoke.stateA.gapTextRectsCount, 0);
+  assert.equal(result.backspaceSmoke.stateA.overflowTextRectsCount, 0);
+  assert.equal(result.backspaceSmoke.stateB.centralSheetFlow, 'horizontal');
+  assert.equal(result.backspaceSmoke.stateB.tiptapEditorCount, 1);
+  assert.equal(result.backspaceSmoke.stateB.proseMirrorCount, 1);
+  assert.equal(result.backspaceSmoke.stateB.activeElementInsideProse, true);
+  assert.equal(result.backspaceSmoke.stateB.selectionInsideProse, true);
+  assert.equal(result.backspaceSmoke.stateB.selectionCollapsed, true);
+  assert.equal(result.backspaceSmoke.stateB.proseText.includes(result.backspaceSmoke.expectedFragment), true);
+  assert.equal(result.backspaceSmoke.stateB.proseText.includes(result.backspaceSmoke.stateAToken), false);
+  assert.equal(
+    result.backspaceSmoke.stateB.proseText.length,
+    result.backspaceSmoke.stateA.proseText.length - 1,
+  );
+  assert.equal(result.backspaceSmoke.stateB.proseText.includes('центральной ленты листов'), true);
+  assert.equal(result.backspaceSmoke.stateB.proseText.includes('без второго редактора'), true);
+  assert.equal(result.backspaceSmoke.stateB.gapTextRectsCount, 0);
+  assert.equal(result.backspaceSmoke.stateB.overflowTextRectsCount, 0);
 
   assert.equal(result.a5Click.ok, true);
   assert.equal(result.a5State.proofClass, true);
