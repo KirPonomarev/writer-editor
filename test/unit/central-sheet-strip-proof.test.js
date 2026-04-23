@@ -22,7 +22,7 @@ function writeHelperScript(tempDir) {
   const helperSource = `
 const path = require('path');
 const fs = require('fs/promises');
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, clipboard } = require('electron');
 
 const cleanRoot = process.env.CENTRAL_PROOF_ROOT;
 const outDir = process.env.CENTRAL_PROOF_OUT_DIR;
@@ -501,6 +501,48 @@ async function selectFirstTextOccurrence(win, token) {
   })(\${JSON.stringify(token)})\`, true);
 }
 
+async function placeCaretInFirstTextOccurrence(win, token, offset) {
+  return win.webContents.executeJavaScript(\`((token, offset) => {
+    const host = document.querySelector('#editor.tiptap-host');
+    const prose = host ? host.querySelector('.ProseMirror') : null;
+    if (!host || !prose) {
+      return { ok: false, reason: 'EDITOR_MISSING' };
+    }
+    const walker = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        return node.textContent && node.textContent.includes(token)
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_SKIP;
+      },
+    });
+    const node = walker.nextNode();
+    if (!node) {
+      return { ok: false, reason: 'TOKEN_MISSING', token };
+    }
+    const start = node.textContent.indexOf(token);
+    const caretOffset = start + offset;
+    const range = document.createRange();
+    range.setStart(node, caretOffset);
+    range.setEnd(node, caretOffset);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    prose.focus();
+    return {
+      ok: true,
+      token,
+      offset,
+      beforeText: prose.textContent || '',
+      centralSheetFlow: host.dataset.centralSheetFlow || null,
+      tiptapEditorCount: host.querySelectorAll('.tiptap-editor').length,
+      proseMirrorCount: host.querySelectorAll('.ProseMirror').length,
+      activeElementInsideProse: document.activeElement === prose || prose.contains(document.activeElement),
+      selectionInsideProse: prose.contains(selection.anchorNode) && prose.contains(selection.focusNode),
+      selectionCollapsed: selection.isCollapsed,
+    };
+  })(\${JSON.stringify(token)}, \${JSON.stringify(offset)})\`, true);
+}
+
 async function runSelectionReplaceSmoke(win) {
   const selectedToken = 'проверочный';
   const replacementToken = 'замененный-04h';
@@ -514,6 +556,69 @@ async function runSelectionReplaceSmoke(win) {
   await sleep(700);
   const after = await collectState(win, 'selection-replace-smoke');
   return { selectedToken, replacementToken, before, after };
+}
+
+async function runSmallPasteSmoke(win) {
+  const selectedToken = 'проверочный';
+  const stateAToken = 'alpha--omega';
+  const pastePayload = 'paste-04i';
+  const expectedFragment = 'alpha-paste-04i-omega';
+  win.focus();
+  await sleep(100);
+  const seedSelection = await selectFirstTextOccurrence(win, selectedToken);
+  if (!seedSelection.ok) {
+    return {
+      selectedToken,
+      stateAToken,
+      pastePayload,
+      expectedFragment,
+      seedSelection,
+      caret: null,
+      pasteResult: null,
+      stateA: null,
+      stateB: null,
+    };
+  }
+
+  await win.webContents.insertText(stateAToken);
+  await sleep(350);
+  const caret = await placeCaretInFirstTextOccurrence(win, stateAToken, 'alpha-'.length);
+  const stateA = await collectState(win, 'small-paste-state-a');
+  if (!caret.ok) {
+    return {
+      selectedToken,
+      stateAToken,
+      pastePayload,
+      expectedFragment,
+      seedSelection,
+      caret,
+      pasteResult: null,
+      stateA,
+      stateB: null,
+    };
+  }
+
+  clipboard.writeText(pastePayload);
+  let pasteResult = null;
+  if (typeof win.webContents.paste === 'function') {
+    win.webContents.paste();
+    pasteResult = { ok: true, method: 'webContents.paste' };
+  } else {
+    pasteResult = { ok: false, reason: 'WEB_CONTENTS_PASTE_MISSING' };
+  }
+  await sleep(700);
+  const stateB = await collectState(win, 'small-paste-state-b');
+  return {
+    selectedToken,
+    stateAToken,
+    pastePayload,
+    expectedFragment,
+    seedSelection,
+    caret,
+    pasteResult,
+    stateA,
+    stateB,
+  };
 }
 
 async function saveCapture(win, outDirPath, basename) {
@@ -552,6 +657,10 @@ app.whenReady().then(async () => {
     await setEditorPayload(win, paragraphCount);
     await sleep(900);
 
+    const smallPasteSmoke = await runSmallPasteSmoke(win);
+    await setEditorPayload(win, paragraphCount);
+    await sleep(900);
+
     const a5Click = await clickAction(win, 'switch-preview-format-a5');
     await sleep(900);
     const a5State = await collectState(win, 'A5');
@@ -572,6 +681,7 @@ app.whenReady().then(async () => {
       inputSmoke,
       enterUndoRedoSmoke,
       selectionReplaceSmoke,
+      smallPasteSmoke,
       a5Click,
       a5State,
       letterClick,
@@ -756,6 +866,49 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
   assert.equal(result.selectionReplaceSmoke.after.proseText.includes('без второго редактора'), true);
   assert.equal(result.selectionReplaceSmoke.after.gapTextRectsCount, 0);
   assert.equal(result.selectionReplaceSmoke.after.overflowTextRectsCount, 0);
+
+  assert.equal(result.smallPasteSmoke.seedSelection.ok, true);
+  assert.equal(result.smallPasteSmoke.seedSelection.centralSheetFlow, 'horizontal');
+  assert.equal(result.smallPasteSmoke.seedSelection.tiptapEditorCount, 1);
+  assert.equal(result.smallPasteSmoke.seedSelection.proseMirrorCount, 1);
+  assert.equal(result.smallPasteSmoke.seedSelection.activeElementInsideProse, true);
+  assert.equal(result.smallPasteSmoke.seedSelection.selectionInsideProse, true);
+  assert.equal(result.smallPasteSmoke.seedSelection.selectionCollapsed, false);
+  assert.equal(result.smallPasteSmoke.caret.ok, true);
+  assert.equal(result.smallPasteSmoke.caret.centralSheetFlow, 'horizontal');
+  assert.equal(result.smallPasteSmoke.caret.tiptapEditorCount, 1);
+  assert.equal(result.smallPasteSmoke.caret.proseMirrorCount, 1);
+  assert.equal(result.smallPasteSmoke.caret.activeElementInsideProse, true);
+  assert.equal(result.smallPasteSmoke.caret.selectionInsideProse, true);
+  assert.equal(result.smallPasteSmoke.caret.selectionCollapsed, true);
+  assert.equal(result.smallPasteSmoke.pasteResult.ok, true);
+  assert.equal(result.smallPasteSmoke.stateA.centralSheetFlow, 'horizontal');
+  assert.equal(result.smallPasteSmoke.stateA.tiptapEditorCount, 1);
+  assert.equal(result.smallPasteSmoke.stateA.proseMirrorCount, 1);
+  assert.equal(result.smallPasteSmoke.stateA.activeElementInsideProse, true);
+  assert.equal(result.smallPasteSmoke.stateA.selectionInsideProse, true);
+  assert.equal(result.smallPasteSmoke.stateA.selectionCollapsed, true);
+  assert.equal(result.smallPasteSmoke.stateA.proseText.includes(result.smallPasteSmoke.stateAToken), true);
+  assert.equal(result.smallPasteSmoke.stateA.proseText.includes(result.smallPasteSmoke.pastePayload), false);
+  assert.equal(result.smallPasteSmoke.stateA.proseText.includes('центральной ленты листов'), true);
+  assert.equal(result.smallPasteSmoke.stateA.gapTextRectsCount, 0);
+  assert.equal(result.smallPasteSmoke.stateA.overflowTextRectsCount, 0);
+  assert.equal(result.smallPasteSmoke.stateB.centralSheetFlow, 'horizontal');
+  assert.equal(result.smallPasteSmoke.stateB.tiptapEditorCount, 1);
+  assert.equal(result.smallPasteSmoke.stateB.proseMirrorCount, 1);
+  assert.equal(result.smallPasteSmoke.stateB.activeElementInsideProse, true);
+  assert.equal(result.smallPasteSmoke.stateB.selectionInsideProse, true);
+  assert.equal(result.smallPasteSmoke.stateB.selectionCollapsed, true);
+  assert.equal(result.smallPasteSmoke.stateB.proseText.includes(result.smallPasteSmoke.expectedFragment), true);
+  assert.equal(result.smallPasteSmoke.stateB.proseText.includes(result.smallPasteSmoke.stateAToken), false);
+  assert.equal(
+    result.smallPasteSmoke.stateB.proseText.length,
+    result.smallPasteSmoke.stateA.proseText.length + result.smallPasteSmoke.pastePayload.length,
+  );
+  assert.equal(result.smallPasteSmoke.stateB.proseText.includes('центральной ленты листов'), true);
+  assert.equal(result.smallPasteSmoke.stateB.proseText.includes('без второго редактора'), true);
+  assert.equal(result.smallPasteSmoke.stateB.gapTextRectsCount, 0);
+  assert.equal(result.smallPasteSmoke.stateB.overflowTextRectsCount, 0);
 
   assert.equal(result.a5Click.ok, true);
   assert.equal(result.a5State.proofClass, true);
