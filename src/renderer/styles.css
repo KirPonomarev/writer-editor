@@ -4369,8 +4369,13 @@ body.dark-theme .status-bar {
 }
 
 .layout-preview__pages.is-frame-off .layout-preview__page {
+  background: transparent;
   border-color: transparent;
   box-shadow: none;
+}
+
+.layout-preview__pages.is-frame-off .layout-preview__page-content {
+  padding: 0;
 }
 
 .layout-preview__empty {
