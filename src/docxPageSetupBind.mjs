@@ -6,20 +6,21 @@ function roundTwips(valueMm) {
   return Math.max(0, Math.round(Number(valueMm || 0) * TWIPS_PER_MM));
 }
 
+function createInvalidBookProfileError(normalizedResult) {
+  const issueCodes = Array.isArray(normalizedResult?.issues)
+    ? normalizedResult.issues.map((issue) => issue?.code).filter(Boolean)
+    : [];
+  const suffix = issueCodes.length ? `:${issueCodes.join(',')}` : '';
+  const error = new Error(`E_DOCX_BOOK_PROFILE_INVALID${suffix}`);
+  error.code = 'E_DOCX_BOOK_PROFILE_INVALID';
+  error.issues = Array.isArray(normalizedResult?.issues) ? normalizedResult.issues : [];
+  return error;
+}
+
 export function buildDocxPageSetup(profile) {
   const normalizedResult = normalizeBookProfile(profile);
   if (!normalizedResult.ok) {
-    return {
-      pageWidthTwips: roundTwips(210),
-      pageHeightTwips: roundTwips(297),
-      marginTopTwips: roundTwips(25.4),
-      marginRightTwips: roundTwips(25.4),
-      marginBottomTwips: roundTwips(25.4),
-      marginLeftTwips: roundTwips(25.4),
-      headerTwips: roundTwips(12.7),
-      footerTwips: roundTwips(12.7),
-      gutterTwips: 0,
-    };
+    throw createInvalidBookProfileError(normalizedResult);
   }
 
   const value = normalizedResult.value;

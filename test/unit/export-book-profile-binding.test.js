@@ -153,3 +153,25 @@ test('export book profile binding: canonical normalized bookProfile drives disti
     '<w:sectPr><w:pgSz w:w="11906" w:h="8391"/><w:pgMar w:top="1134" w:right="1020" w:bottom="1247" w:left="1020" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr>',
   );
 });
+
+test('export book profile binding: invalid bookProfile fails closed instead of falling back to A4', async () => {
+  const { docxPageSetupBind } = await loadModules();
+
+  assert.throws(
+    () => docxPageSetupBind.buildDocxPageSetup(null),
+    /E_DOCX_BOOK_PROFILE_INVALID:E_BOOK_PROFILE_OBJECT/u,
+  );
+  assert.throws(
+    () => docxPageSetupBind.buildDocxSectionPropertiesXml({ formatId: 'UNKNOWN' }),
+    /E_DOCX_BOOK_PROFILE_INVALID:E_PAGE_FORMAT_ID/u,
+  );
+});
+
+test('export book profile binding: backend delegates section setup to the fail-closed bind layer', () => {
+  const mainSource = read('src/main.js');
+  const bindSource = read('src/docxPageSetupBind.mjs');
+
+  assert.equal(mainSource.includes('buildDocxSectionPropertiesXml(snapshot.bookProfile)'), true);
+  assert.equal(bindSource.includes('roundTwips(210)'), false);
+  assert.equal(bindSource.includes('roundTwips(297)'), false);
+});
