@@ -80,18 +80,26 @@ async function clickAction(win, action) {
 
 async function collectState(win, label) {
   return win.webContents.executeJavaScript(\`(() => {
+    const canvas = document.querySelector('.main-content--editor');
     const host = document.querySelector('#editor.tiptap-host');
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const pageWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
     const directWrap = host ? host.querySelector(':scope > .tiptap-page-wrap') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
     const tiptapEditor = host ? host.querySelector('.tiptap-editor') : null;
+    const firstPage = pageWraps[0] ? pageWraps[0].querySelector('.tiptap-page') : null;
     const pageRects = pageWraps.map((el) => {
       const rect = el.getBoundingClientRect();
       return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
     });
     const firstPageRect = pageRects[0] || null;
     const secondPageRect = pageRects[1] || null;
+    const rootStyles = getComputedStyle(document.documentElement);
+    const pageCssVars = {
+      widthPx: parseFloat(rootStyles.getPropertyValue('--page-width-px')) || null,
+      heightPx: parseFloat(rootStyles.getPropertyValue('--page-height-px')) || null,
+      gapPx: parseFloat(rootStyles.getPropertyValue('--page-gap-px')) || null,
+    };
 
     const walker = prose
       ? document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
@@ -147,12 +155,30 @@ async function collectState(win, label) {
         && lastTextRect.x <= secondPageRect.x + secondPageRect.width
       ),
       pageRects,
+      pageGapPx: firstPageRect && secondPageRect
+        ? Math.round((secondPageRect.x - (firstPageRect.x + firstPageRect.width)) * 100) / 100
+        : null,
+      pageCssVars,
       lastTextRect,
       proseComputed: prose ? {
         columnWidth: getComputedStyle(prose).columnWidth,
         columnGap: getComputedStyle(prose).columnGap,
         overflowX: getComputedStyle(prose).overflowX,
         overflowY: getComputedStyle(prose).overflowY,
+      } : null,
+      canvasComputed: canvas ? {
+        backgroundColor: getComputedStyle(canvas).backgroundColor,
+        backgroundImage: getComputedStyle(canvas).backgroundImage,
+      } : null,
+      hostComputed: host ? {
+        backgroundColor: getComputedStyle(host).backgroundColor,
+        backgroundImage: getComputedStyle(host).backgroundImage,
+      } : null,
+      firstPageComputed: firstPage ? {
+        backgroundColor: getComputedStyle(firstPage).backgroundColor,
+        borderTopColor: getComputedStyle(firstPage).borderTopColor,
+        borderTopWidth: getComputedStyle(firstPage).borderTopWidth,
+        boxShadow: getComputedStyle(firstPage).boxShadow,
       } : null,
       scrollers: {
         hostScrollHeight: host ? host.scrollHeight : null,
@@ -163,7 +189,7 @@ async function collectState(win, label) {
       formatPressed: {
         A4: document.querySelector('[data-preview-format-option="A4"]')?.getAttribute('aria-pressed') || null,
         A5: document.querySelector('[data-preview-format-option="A5"]')?.getAttribute('aria-pressed') || null,
-        Letter: document.querySelector('[data-preview-format-option="Letter"]')?.getAttribute('aria-pressed') || null,
+        Letter: document.querySelector('[data-preview-format-option="LETTER"]')?.getAttribute('aria-pressed') || null,
       },
     };
   })()\`, true);
@@ -217,11 +243,18 @@ app.whenReady().then(async () => {
     const a5State = await collectState(win, 'A5');
     await saveCapture(win, outDir, 'central-a5.png');
 
+    const letterClick = await clickAction(win, 'switch-preview-format-letter');
+    await sleep(900);
+    const letterState = await collectState(win, 'Letter');
+    await saveCapture(win, outDir, 'central-letter.png');
+
     const result = {
       paragraphCount: fitted.paragraphCount,
       a4State,
       a5Click,
       a5State,
+      letterClick,
+      letterState,
     };
     await fs.writeFile(path.join(outDir, 'result.json'), JSON.stringify(result, null, 2));
     app.exit(0);
@@ -267,6 +300,15 @@ function runProofHelper(t) {
 
 test('central sheet strip proof: renderer creates a real second central sheet without a second Tiptap', { timeout: 60000 }, (t) => {
   const result = runProofHelper(t);
+  const a4WidthDrift = Math.abs(result.a4State.pageRects[0].width - result.a4State.pageCssVars.widthPx);
+  const a4HeightDrift = Math.abs(result.a4State.pageRects[0].height - result.a4State.pageCssVars.heightPx);
+  const a4GapDrift = Math.abs(result.a4State.pageGapPx - result.a4State.pageCssVars.gapPx);
+  const a5WidthDrift = Math.abs(result.a5State.pageRects[0].width - result.a5State.pageCssVars.widthPx);
+  const a5HeightDrift = Math.abs(result.a5State.pageRects[0].height - result.a5State.pageCssVars.heightPx);
+  const a5GapDrift = Math.abs(result.a5State.pageGapPx - result.a5State.pageCssVars.gapPx);
+  const letterWidthDrift = Math.abs(result.letterState.pageRects[0].width - result.letterState.pageCssVars.widthPx);
+  const letterHeightDrift = Math.abs(result.letterState.pageRects[0].height - result.letterState.pageCssVars.heightPx);
+  const letterGapDrift = Math.abs(result.letterState.pageGapPx - result.letterState.pageCssVars.gapPx);
 
   assert.ok(result.paragraphCount >= 1);
 
@@ -283,6 +325,13 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
   assert.equal(result.a4State.proseComputed.overflowX, 'hidden');
   assert.equal(result.a4State.proseComputed.overflowY, 'hidden');
   assert.equal(result.a4State.formatPressed.A4, 'true');
+  assert.ok(a4WidthDrift <= 1, `A4 page width drifted by ${a4WidthDrift}px`);
+  assert.ok(a4HeightDrift <= 1, `A4 page height drifted by ${a4HeightDrift}px`);
+  assert.ok(a4GapDrift <= 1, `A4 page gap drifted by ${a4GapDrift}px`);
+  assert.equal(result.a4State.hostComputed.backgroundImage === 'none', false);
+  assert.equal(result.a4State.firstPageComputed.borderTopWidth, '1px');
+  assert.notEqual(result.a4State.firstPageComputed.borderTopColor, result.a4State.canvasComputed.backgroundColor);
+  assert.notEqual(result.a4State.firstPageComputed.boxShadow, 'none');
 
   assert.equal(result.a5Click.ok, true);
   assert.equal(result.a5State.proofClass, true);
@@ -293,6 +342,16 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
   assert.equal(result.a5State.formatPressed.A5, 'true');
   assert.ok(result.a5State.pageRects[0].width < result.a4State.pageRects[0].width);
   assert.ok(result.a5State.pageWrapCount >= result.a4State.pageWrapCount);
+  assert.ok(a5WidthDrift <= 1, `A5 page width drifted by ${a5WidthDrift}px`);
+  assert.ok(a5HeightDrift <= 1, `A5 page height drifted by ${a5HeightDrift}px`);
+  assert.ok(a5GapDrift <= 1, `A5 page gap drifted by ${a5GapDrift}px`);
+
+  assert.equal(result.letterClick.ok, true);
+  assert.equal(result.letterState.proofClass, true);
+  assert.equal(result.letterState.formatPressed.Letter, 'true');
+  assert.ok(letterWidthDrift <= 1, `Letter page width drifted by ${letterWidthDrift}px`);
+  assert.ok(letterHeightDrift <= 1, `Letter page height drifted by ${letterHeightDrift}px`);
+  assert.ok(letterGapDrift <= 1, `Letter page gap drifted by ${letterGapDrift}px`);
 });
 
 test('central sheet strip proof: source remains renderer-only and bounded', () => {
