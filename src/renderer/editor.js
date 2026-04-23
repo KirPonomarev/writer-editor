@@ -60,7 +60,8 @@ import {
   createPreviewChromeState,
 } from './previewChrome.mjs';
 import {
-  buildLayoutPreviewSnapshot,
+  buildCachedLayoutPreviewSnapshot,
+  createLayoutPreviewSnapshotCache,
   createLayoutPreviewState,
   renderLayoutPreviewSnapshot,
 } from './layoutPreview.mjs';
@@ -590,6 +591,7 @@ const DEFAULT_LAYOUT_PREVIEW_STATE = createLayoutPreviewState();
 let activeBookProfileState = DEFAULT_ACTIVE_BOOK_PROFILE;
 let activePreviewChromeState = DEFAULT_PREVIEW_CHROME_STATE;
 let activeLayoutPreviewState = DEFAULT_LAYOUT_PREVIEW_STATE;
+const layoutPreviewSnapshotCache = createLayoutPreviewSnapshotCache();
 let layoutPreviewHost = null;
 let layoutPreviewRefreshTimerId = null;
 
@@ -723,12 +725,12 @@ function buildActiveLayoutPreviewSnapshot() {
   if (!metrics) {
     return null;
   }
-  return buildLayoutPreviewSnapshot({
+  return buildCachedLayoutPreviewSnapshot({
     text: getPlainText(),
     profile: getActiveBookProfile(),
     metrics,
     selectionRange: getSelectionOffsets(),
-  });
+  }, layoutPreviewSnapshotCache);
 }
 
 function refreshLayoutPreviewNow() {

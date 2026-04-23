@@ -5,6 +5,9 @@ import { createStyleMap } from '../derived/styleMap.mjs';
 
 const LAYOUT_PREVIEW_SCHEMA_VERSION = 'renderer.layoutPreview.v1';
 const LAYOUT_PREVIEW_STATE_SCHEMA_VERSION = 'renderer.layoutPreview.state.v1';
+const LAYOUT_PREVIEW_CACHE_SCHEMA_VERSION = 'renderer.layoutPreview.cache.v1';
+const DEFAULT_LAYOUT_PREVIEW_PAGE_WINDOW_SIZE = 24;
+const DEFAULT_LAYOUT_PREVIEW_CACHE_ENTRIES = 8;
 
 function isPlainObject(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -20,6 +23,11 @@ function normalizeString(value) {
 
 function normalizeChapterStartRule(value) {
   return normalizeString(value).toLowerCase() === 'continuous' ? 'continuous' : 'next-page';
+}
+
+function normalizePositiveInteger(value, fallback) {
+  const number = Number(value);
+  return Number.isInteger(number) && number > 0 ? number : fallback;
 }
 
 function stableSerialize(value) {
@@ -294,7 +302,56 @@ export function createLayoutPreviewState(input = {}) {
     schemaVersion: LAYOUT_PREVIEW_STATE_SCHEMA_VERSION,
     enabled: Boolean(source.enabled),
     frameMode: source.frameMode !== false,
+    pageWindowStart: normalizePositiveInteger(source.pageWindowStart, 1),
+    pageWindowSize: normalizePositiveInteger(source.pageWindowSize, DEFAULT_LAYOUT_PREVIEW_PAGE_WINDOW_SIZE),
   });
+}
+
+export function buildLayoutPreviewSnapshotCacheKey(input = {}) {
+  const source = isPlainObject(input) ? input : {};
+  return hashValue({
+    text: typeof source.text === 'string' ? source.text : '',
+    sourceId: normalizeString(source.sourceId) || 'renderer-editor',
+    profile: isPlainObject(source.profile) ? source.profile : {},
+    metrics: isPlainObject(source.metrics) ? source.metrics : {},
+    selectionRange: normalizeSelectionRange(source.selectionRange),
+  });
+}
+
+export function createLayoutPreviewSnapshotCache(input = {}) {
+  const source = isPlainObject(input) ? input : {};
+  const maxEntries = normalizePositiveInteger(source.maxEntries, DEFAULT_LAYOUT_PREVIEW_CACHE_ENTRIES);
+  const entries = new Map();
+
+  return {
+    schemaVersion: LAYOUT_PREVIEW_CACHE_SCHEMA_VERSION,
+    maxEntries,
+    get size() {
+      return entries.size;
+    },
+    get(cacheKey) {
+      if (!entries.has(cacheKey)) return null;
+      const snapshot = entries.get(cacheKey);
+      entries.delete(cacheKey);
+      entries.set(cacheKey, snapshot);
+      return snapshot;
+    },
+    set(cacheKey, snapshot) {
+      if (!cacheKey || !isPlainObject(snapshot)) return null;
+      if (entries.has(cacheKey)) {
+        entries.delete(cacheKey);
+      }
+      entries.set(cacheKey, snapshot);
+      while (entries.size > maxEntries) {
+        const oldestKey = entries.keys().next().value;
+        entries.delete(oldestKey);
+      }
+      return snapshot;
+    },
+    clear() {
+      entries.clear();
+    },
+  };
 }
 
 export function buildLayoutPreviewSnapshot(input = {}) {
@@ -359,6 +416,38 @@ export function buildLayoutPreviewSnapshot(input = {}) {
   };
 }
 
+export function buildCachedLayoutPreviewSnapshot(input = {}, cache = null) {
+  if (!cache || typeof cache.get !== 'function' || typeof cache.set !== 'function') {
+    return buildLayoutPreviewSnapshot(input);
+  }
+  const cacheKey = buildLayoutPreviewSnapshotCacheKey(input);
+  const cached = cache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+  const snapshot = buildLayoutPreviewSnapshot(input);
+  return cache.set(cacheKey, snapshot) || snapshot;
+}
+
+function resolvePageWindow(pages, state) {
+  const pageCount = Array.isArray(pages) ? pages.length : 0;
+  const pageWindowSize = normalizePositiveInteger(state?.pageWindowSize, DEFAULT_LAYOUT_PREVIEW_PAGE_WINDOW_SIZE);
+  const pageWindowStart = Math.min(
+    Math.max(1, normalizePositiveInteger(state?.pageWindowStart, 1)),
+    Math.max(1, pageCount),
+  );
+  const startIndex = Math.max(0, pageWindowStart - 1);
+  const endIndex = Math.min(pageCount, startIndex + pageWindowSize);
+  return {
+    startIndex,
+    endIndex,
+    startPageNumber: pageCount > 0 ? startIndex + 1 : 0,
+    endPageNumber: pageCount > 0 ? endIndex : 0,
+    pageCount,
+    pageWindowSize,
+  };
+}
+
 export function renderLayoutPreviewSnapshot(host, snapshot, state = createLayoutPreviewState()) {
   if (!(host instanceof HTMLElement)) {
     return;
@@ -375,6 +464,8 @@ export function renderLayoutPreviewSnapshot(host, snapshot, state = createLayout
   const flowNodes = Array.isArray(snapshot.flow?.nodes) ? snapshot.flow.nodes : [];
   const nodeMap = new Map(flowNodes.map((node) => [node.id, node]));
   const pages = Array.isArray(snapshot.pageMap?.pages) ? snapshot.pageMap.pages : [];
+  const pageWindow = resolvePageWindow(pages, resolvedState);
+  const visiblePages = pages.slice(pageWindow.startIndex, pageWindow.endIndex);
 
   const root = document.createElement('section');
   root.className = 'layout-preview';
@@ -395,6 +486,9 @@ export function renderLayoutPreviewSnapshot(host, snapshot, state = createLayout
   const pagesHost = document.createElement('div');
   pagesHost.className = 'layout-preview__pages';
   pagesHost.classList.toggle('is-frame-off', !resolvedState.frameMode);
+  pagesHost.dataset.pageWindowStart = String(pageWindow.startPageNumber);
+  pagesHost.dataset.pageWindowEnd = String(pageWindow.endPageNumber);
+  pagesHost.dataset.pageCount = String(pageWindow.pageCount);
 
   if (pages.length === 0) {
     const empty = document.createElement('div');
@@ -402,7 +496,14 @@ export function renderLayoutPreviewSnapshot(host, snapshot, state = createLayout
     empty.textContent = 'No pages generated for current content.';
     pagesHost.appendChild(empty);
   } else {
-    for (const page of pages) {
+    if (visiblePages.length < pages.length) {
+      const windowMeta = document.createElement('div');
+      windowMeta.className = 'layout-preview__window-meta';
+      windowMeta.textContent = `Showing pages ${pageWindow.startPageNumber}-${pageWindow.endPageNumber} of ${pageWindow.pageCount}`;
+      pagesHost.appendChild(windowMeta);
+    }
+
+    for (const page of visiblePages) {
       const pageWrap = document.createElement('article');
       pageWrap.className = 'layout-preview__page-wrap';
       pageWrap.dataset.pageNumber = String(page.pageNumber);
