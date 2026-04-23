@@ -1,0 +1,1 @@
+@test/unit/live-command-wiring.test.js
