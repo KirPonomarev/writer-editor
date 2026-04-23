@@ -223,6 +223,99 @@ test('layout preview runtime: render path windows visible pages without changing
   }
 });
 
+test('layout preview runtime: editor-derived text marker is visible in rendered preview lines', async () => {
+  const mod = await loadModule('src/renderer/layoutPreview.mjs');
+  const previousHTMLElement = global.HTMLElement;
+  const previousDocument = global.document;
+
+  class FakeClassList {
+    constructor() {
+      this.tokens = new Set();
+    }
+
+    toggle(token, force) {
+      if (force) this.tokens.add(token);
+      else this.tokens.delete(token);
+    }
+  }
+
+  class FakeElement {
+    constructor(tagName) {
+      this.tagName = String(tagName || '').toUpperCase();
+      this.children = [];
+      this.dataset = {};
+      this.attributes = {};
+      this.className = '';
+      this.classList = new FakeClassList();
+      this.textContent = '';
+    }
+
+    append(...children) {
+      for (const child of children) this.appendChild(child);
+    }
+
+    appendChild(child) {
+      this.children.push(child);
+      return child;
+    }
+
+    replaceChildren(...children) {
+      this.children = children;
+    }
+
+    setAttribute(name, value) {
+      this.attributes[name] = String(value);
+    }
+  }
+
+  global.HTMLElement = FakeElement;
+  global.document = {
+    createElement(tagName) {
+      return new FakeElement(tagName);
+    },
+  };
+
+  try {
+    const marker = 'k04OPreviewVisibleMarker';
+    const input = createPreviewInput({
+      text: [
+        'Chapter One',
+        '',
+        `Horizontal sheet preview text ${marker}`,
+        'Plain surrounding text',
+      ].join('\n'),
+      sourceId: 'horizontal-sheet-preview-text-visibility-parity',
+    });
+    const countMarker = (value) => String(value || '').split(marker).length - 1;
+
+    assert.equal(countMarker(input.text), 1);
+
+    const snapshot = mod.buildLayoutPreviewSnapshot(input);
+    const snapshotMarkerCount = snapshot.flow.nodes.reduce(
+      (count, node) => count + countMarker(node.text),
+      0,
+    );
+    assert.equal(snapshotMarkerCount, 1);
+
+    const host = new FakeElement('div');
+    mod.renderLayoutPreviewSnapshot(
+      host,
+      snapshot,
+      mod.createLayoutPreviewState({ enabled: true, pageWindowStart: 1, pageWindowSize: 10 }),
+    );
+
+    const lines = collectElementsByClass(host, 'layout-preview__line');
+    const renderedMarkerCount = lines.reduce(
+      (count, line) => count + countMarker(line.textContent),
+      0,
+    );
+    assert.equal(renderedMarkerCount, 1);
+  } finally {
+    global.HTMLElement = previousHTMLElement;
+    global.document = previousDocument;
+  }
+});
+
 test('layout preview runtime: module has no storage or editable-page side effects', () => {
   const source = read('src/renderer/layoutPreview.mjs');
   const forbiddenTokens = [
