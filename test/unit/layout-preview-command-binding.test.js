@@ -19,6 +19,8 @@ function sliceBetween(source, startMarker, endMarker) {
 test('layout preview command binding: preview controls are routed through commands, not raw DOM behavior', () => {
   const html = read('src/renderer/index.html');
   const editor = read('src/renderer/editor.js');
+  const projectCommands = read('src/renderer/commands/projectCommands.mjs');
+  const capabilityPolicy = read('src/renderer/commands/capabilityPolicy.mjs');
   const runtimeBridge = read('src/renderer/tiptap/runtimeBridge.js');
 
   assert.ok(html.includes('data-preview-format-control'));
@@ -36,13 +38,22 @@ test('layout preview command binding: preview controls are routed through comman
     'const PREVIEW_FORMAT_COMMAND_IDS = Object.freeze({',
     'const commandPaletteDataProvider = createPaletteDataProvider',
   );
-  assert.ok(previewCommandSnippet.includes("A4: 'cmd.project.view.previewFormatA4'"));
-  assert.ok(previewCommandSnippet.includes("A5: 'cmd.project.view.previewFormatA5'"));
-  assert.ok(previewCommandSnippet.includes("LETTER: 'cmd.project.view.previewFormatLetter'"));
-  assert.ok(previewCommandSnippet.includes('setActiveBookProfileFormat(formatId);'));
+  assert.ok(previewCommandSnippet.includes('A4: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A4'));
+  assert.ok(previewCommandSnippet.includes('A5: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A5'));
+  assert.ok(previewCommandSnippet.includes('LETTER: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_LETTER'));
   assert.equal(previewCommandSnippet.includes('setPreviewChromeFormat(formatId);'), false);
+  assert.ok(projectCommands.includes("VIEW_PREVIEW_FORMAT_A4: 'cmd.project.view.previewFormatA4'"));
+  assert.ok(projectCommands.includes("VIEW_PREVIEW_FORMAT_A5: 'cmd.project.view.previewFormatA5'"));
+  assert.ok(projectCommands.includes("VIEW_PREVIEW_FORMAT_LETTER: 'cmd.project.view.previewFormatLetter'"));
+  assert.ok(projectCommands.includes("'switch-preview-format-a5': 'cmd.project.view.previewFormatA5'"));
+  assert.ok(projectCommands.includes("runUiAction(uiActions, 'setPreviewFormat', id, { formatId })"));
+  assert.ok(capabilityPolicy.includes("'cmd.project.view.previewFormatA5': 'cap.project.view.previewFormatA5'"));
+  assert.ok(capabilityPolicy.includes("'cmd.project.view.togglePreview': 'cap.project.view.togglePreview'"));
+  assert.ok(capabilityPolicy.includes("'cmd.project.view.togglePreviewFrame': 'cap.project.view.togglePreviewFrame'"));
   assert.ok(editor.includes('togglePreview: () => handleToggleLayoutPreview(),'));
   assert.ok(editor.includes('togglePreviewFrame: () => handleToggleLayoutPreviewFrame(),'));
+  assert.ok(editor.includes('setPreviewFormat: ({ formatId } = {}) => setActiveBookProfileFormat(formatId),'));
+  assert.ok(editor.includes('setPreviewFormat: (formatId) => setActiveBookProfileFormat(formatId),'));
   assert.ok(editor.includes("const previewFormatButtons = Array.from(document.querySelectorAll('[data-preview-format-option]'));"));
   assert.ok(editor.includes("const layoutPreviewToggleButton = document.querySelector('[data-layout-preview-toggle]');"));
   assert.ok(editor.includes("const layoutPreviewFrameToggleButton = document.querySelector('[data-layout-preview-frame-toggle]');"));
@@ -106,6 +117,10 @@ test('layout preview command binding: preview controls are routed through comman
   assert.ok(runtimeCommandSnippet.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW)'));
   assert.ok(runtimeCommandSnippet.includes("command === 'toggle-preview-frame'"));
   assert.ok(runtimeCommandSnippet.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW_FRAME)'));
+  assert.ok(runtimeBridge.includes("commandId === 'cmd.project.view.previewFormatA5'"));
+  assert.ok(runtimeBridge.includes("runBridgeCallback(runtimeHandlers.setPreviewFormat, commandId, 'A5')"));
+  assert.ok(runtimeBridge.includes("command === 'switch-preview-format-letter'"));
+  assert.ok(runtimeBridge.includes("runBridgeCallback(runtimeHandlers.setPreviewFormat, command, 'LETTER')"));
 
   const runtimeBridgeSnippet = sliceBetween(
     runtimeBridge,

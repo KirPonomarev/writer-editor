@@ -3877,6 +3877,7 @@ body.dark-theme .empty-state {
 .main-content--editor #editor.tiptap-host .tiptap-page-wrap {
   width: var(--page-width-px);
   height: var(--page-height-px);
+  min-height: var(--page-height-px);
   margin: 0 auto 24px;
 }
 

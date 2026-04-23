@@ -37,6 +37,9 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   VIEW_ZOOM_OUT: 'cmd.project.view.zoomOut',
   VIEW_ZOOM_IN: 'cmd.project.view.zoomIn',
   VIEW_TOGGLE_WRAP: 'cmd.project.view.toggleWrap',
+  VIEW_PREVIEW_FORMAT_A4: 'cmd.project.view.previewFormatA4',
+  VIEW_PREVIEW_FORMAT_A5: 'cmd.project.view.previewFormatA5',
+  VIEW_PREVIEW_FORMAT_LETTER: 'cmd.project.view.previewFormatLetter',
   VIEW_TOGGLE_PREVIEW: 'cmd.project.view.togglePreview',
   VIEW_TOGGLE_PREVIEW_FRAME: 'cmd.project.view.togglePreviewFrame',
   INSERT_MARKDOWN_PROMPT: 'cmd.project.insert.markdownPrompt',
@@ -81,6 +84,9 @@ export const LEGACY_ACTION_TO_COMMAND = Object.freeze({
   'zoom-out': 'cmd.project.view.zoomOut',
   'zoom-in': 'cmd.project.view.zoomIn',
   'toggle-wrap': 'cmd.project.view.toggleWrap',
+  'switch-preview-format-a4': 'cmd.project.view.previewFormatA4',
+  'switch-preview-format-a5': 'cmd.project.view.previewFormatA5',
+  'switch-preview-format-letter': 'cmd.project.view.previewFormatLetter',
   'toggle-preview': 'cmd.project.view.togglePreview',
   'toggle-preview-frame': 'cmd.project.view.togglePreviewFrame',
   'import-markdown-v1': 'cmd.project.insert.markdownPrompt',
@@ -921,6 +927,35 @@ export function registerProjectCommands(registry, options = {}) {
     },
     async () => runUiAction(uiActions, 'toggleWrap', EXTRA_COMMAND_IDS.VIEW_TOGGLE_WRAP),
   );
+
+  [
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A4,
+      label: 'Preview Format A4',
+      formatId: 'A4',
+    },
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A5,
+      label: 'Preview Format A5',
+      formatId: 'A5',
+    },
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_LETTER,
+      label: 'Preview Format Letter',
+      formatId: 'LETTER',
+    },
+  ].forEach(({ id, label, formatId }) => {
+    registry.registerCommand(
+      {
+        id,
+        label,
+        group: 'view',
+        surface: ['menu', 'palette', 'toolbar'],
+        hotkey: '',
+      },
+      async () => runUiAction(uiActions, 'setPreviewFormat', id, { formatId }),
+    );
+  });
 
   registry.registerCommand(
     {

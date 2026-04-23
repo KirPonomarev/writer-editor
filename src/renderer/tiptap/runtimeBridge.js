@@ -176,6 +176,15 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
   if (commandId === 'cmd.project.view.togglePreviewFrame') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.togglePreviewFrame, commandId) }
   }
+  if (commandId === 'cmd.project.view.previewFormatA4') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.setPreviewFormat, commandId, 'A4') }
+  }
+  if (commandId === 'cmd.project.view.previewFormatA5') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.setPreviewFormat, commandId, 'A5') }
+  }
+  if (commandId === 'cmd.project.view.previewFormatLetter') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.setPreviewFormat, commandId, 'LETTER') }
+  }
   if (commandId === 'cmd.project.insert.linkPrompt') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.insertLinkPrompt, commandId, commandId, payload) }
   }
@@ -289,6 +298,15 @@ export function createTiptapRuntimeBridge(options = {}) {
       }
       if (command === 'toggle-preview-frame') {
         return { handled: true, result: runBridgeCallback(runtimeHandlers.togglePreviewFrame, command), command }
+      }
+      if (command === 'switch-preview-format-a4') {
+        return { handled: true, result: runBridgeCallback(runtimeHandlers.setPreviewFormat, command, 'A4'), command }
+      }
+      if (command === 'switch-preview-format-a5') {
+        return { handled: true, result: runBridgeCallback(runtimeHandlers.setPreviewFormat, command, 'A5'), command }
+      }
+      if (command === 'switch-preview-format-letter') {
+        return { handled: true, result: runBridgeCallback(runtimeHandlers.setPreviewFormat, command, 'LETTER'), command }
       }
       if (command === 'switch-mode-plan') {
         return { handled: true, result: runBridgeCallback(runtimeHandlers.switchMode, command, 'plan'), command }

@@ -96,18 +96,26 @@ test('preview chrome: blank project switch stays ephemeral and does not write pr
 
 test('preview chrome: editor text wiring routes preview format through active book profile state', () => {
   const source = readFile('src/renderer/editor.js');
+  const projectCommands = readFile('src/renderer/commands/projectCommands.mjs');
+  const capabilityPolicy = readFile('src/renderer/commands/capabilityPolicy.mjs');
 
   const previewCommandStart = source.indexOf('const PREVIEW_FORMAT_COMMAND_IDS = Object.freeze({');
   const previewCommandEnd = source.indexOf('const commandPaletteDataProvider = createPaletteDataProvider');
   assert.ok(previewCommandStart > -1 && previewCommandEnd > previewCommandStart, 'preview command block must exist');
   const previewCommandSnippet = source.slice(previewCommandStart, previewCommandEnd);
 
-  assert.ok(previewCommandSnippet.includes("A4: 'cmd.project.view.previewFormatA4'"));
-  assert.ok(previewCommandSnippet.includes("A5: 'cmd.project.view.previewFormatA5'"));
-  assert.ok(previewCommandSnippet.includes("LETTER: 'cmd.project.view.previewFormatLetter'"));
-  assert.ok(previewCommandSnippet.includes('setActiveBookProfileFormat(formatId);'));
+  assert.ok(previewCommandSnippet.includes('A4: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A4'));
+  assert.ok(previewCommandSnippet.includes('A5: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A5'));
+  assert.ok(previewCommandSnippet.includes('LETTER: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_LETTER'));
   assert.equal(previewCommandSnippet.includes('setPreviewChromeFormat(formatId);'), false);
-  assert.ok(previewCommandSnippet.includes('return { formatId };'));
+  assert.ok(projectCommands.includes("VIEW_PREVIEW_FORMAT_A4: 'cmd.project.view.previewFormatA4'"));
+  assert.ok(projectCommands.includes("VIEW_PREVIEW_FORMAT_A5: 'cmd.project.view.previewFormatA5'"));
+  assert.ok(projectCommands.includes("VIEW_PREVIEW_FORMAT_LETTER: 'cmd.project.view.previewFormatLetter'"));
+  assert.ok(projectCommands.includes("runUiAction(uiActions, 'setPreviewFormat', id, { formatId })"));
+  assert.ok(capabilityPolicy.includes("'cmd.project.view.previewFormatA5': 'cap.project.view.previewFormatA5'"));
+  assert.ok(capabilityPolicy.includes("'cmd.project.view.togglePreview': 'cap.project.view.togglePreview'"));
+  assert.ok(source.includes('setPreviewFormat: ({ formatId } = {}) => setActiveBookProfileFormat(formatId),'));
+  assert.ok(source.includes('setPreviewFormat: (formatId) => setActiveBookProfileFormat(formatId),'));
 
   const pageMetricsStart = source.indexOf('function getPageMetrics({');
   const pageMetricsEnd = source.indexOf('function applyPageGeometryCssVars(metrics)');

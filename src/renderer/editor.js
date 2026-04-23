@@ -3254,6 +3254,7 @@ registerProjectCommands(commandRegistry, {
     zoomOut: () => handleZoomOut(),
     zoomIn: () => handleZoomIn(),
     toggleWrap: () => handleToggleWrap(),
+    setPreviewFormat: ({ formatId } = {}) => setActiveBookProfileFormat(formatId),
     togglePreview: () => handleToggleLayoutPreview(),
     togglePreviewFrame: () => handleToggleLayoutPreviewFrame(),
     insertMarkdownPrompt: () => handleInsertMarkdownPrompt(),
@@ -3278,29 +3279,9 @@ registerProjectCommands(commandRegistry, {
   },
 });
 const PREVIEW_FORMAT_COMMAND_IDS = Object.freeze({
-  A4: 'cmd.project.view.previewFormatA4',
-  A5: 'cmd.project.view.previewFormatA5',
-  LETTER: 'cmd.project.view.previewFormatLetter',
-});
-
-[
-  { id: PREVIEW_FORMAT_COMMAND_IDS.A4, label: 'Preview Format A4', formatId: 'A4' },
-  { id: PREVIEW_FORMAT_COMMAND_IDS.A5, label: 'Preview Format A5', formatId: 'A5' },
-  { id: PREVIEW_FORMAT_COMMAND_IDS.LETTER, label: 'Preview Format Letter', formatId: 'LETTER' },
-].forEach(({ id, label, formatId }) => {
-  commandRegistry.registerCommand(
-    {
-      id,
-      label,
-      group: 'view',
-      surface: ['palette'],
-      hotkey: '',
-    },
-    async () => {
-      setActiveBookProfileFormat(formatId);
-      return { formatId };
-    },
-  );
+  A4: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A4,
+  A5: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A5,
+  LETTER: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_LETTER,
 });
 const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });
 window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;
@@ -7867,6 +7848,7 @@ if (window.electronAPI) {
       openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
       openExportPreview: () => openExportPreviewModal(),
       insertAddCard: () => handleInsertAddCard(),
+      setPreviewFormat: (formatId) => setActiveBookProfileFormat(formatId),
       togglePreview: () => handleToggleLayoutPreview(),
       togglePreviewFrame: () => handleToggleLayoutPreviewFrame(),
       formatAlignLeft: () => {

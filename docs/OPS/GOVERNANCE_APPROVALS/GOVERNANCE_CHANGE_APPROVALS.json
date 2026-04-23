@@ -2796,10 +2796,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
-      "sha256": "0ef99a6adb751fdee84740d108f65176fe0bd3af06713dac168fd667558db00b",
-      "approvedBy": "ticket:TOOLBAR_EXPANSION_WAVE_B_001",
-      "approvedAtUtc": "2026-04-13T21:35:20.000Z",
-      "rationale": "TOOLBAR_EXPANSION_WAVE_B_001 supersedes the prior toolbar command capability binding hash and approves the bounded text-color, highlight-color, and review-comment opener expansion."
+      "sha256": "97705f0fbbf21a9d4153d7eb728e0e23fa23dd2c1fa6995efe3feaef59183097",
+      "approvedBy": "ticket:CONTOUR_02_LIVE_COMMAND_WIRING_AND_BEHAVIOR_TESTS",
+      "approvedAtUtc": "2026-04-23T12:00:00.000Z",
+      "rationale": "CONTOUR_02_LIVE_COMMAND_WIRING approves bounded view-command capability bindings for right rail format, preview, and frame controls without storage, export, or page-map authority."
     },
     {
       "filePath": "scripts/ops/phase03-safe-reset-last-stable-artifact-state.mjs",
