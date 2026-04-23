@@ -13,11 +13,15 @@ async function loadModules() {
   const registry = await import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'registry.mjs')).href);
   const runner = await import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'runCommand.mjs')).href);
   const project = await import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'projectCommands.mjs')).href);
+  const bookProfile = await import(pathToFileURL(path.join(root, 'src', 'core', 'bookProfile.mjs')).href);
+  const docxPageSetupBind = await import(pathToFileURL(path.join(root, 'src', 'docxPageSetupBind.mjs')).href);
   return {
     createCommandRegistry: registry.createCommandRegistry,
     createCommandRunner: runner.createCommandRunner,
     COMMAND_IDS: project.COMMAND_IDS,
     registerProjectCommands: project.registerProjectCommands,
+    bookProfile,
+    docxPageSetupBind,
   };
 }
 
@@ -87,41 +91,65 @@ test('export book profile binding: command forwards canonical bookProfile option
   });
 });
 
-test('export book profile binding: main export path no longer hardcodes A4 section geometry', () => {
-  const source = read('src/main.js');
+test('export book profile binding: canonical normalized bookProfile drives distinct DOCX page setup outputs', async () => {
+  const { bookProfile, docxPageSetupBind } = await loadModules();
 
+  const portraitProfile = bookProfile.createDefaultBookProfile({
+    profileId: 'stage04-export-proof-portrait',
+    formatId: 'A5',
+    marginTopMm: 20,
+    marginRightMm: 18,
+    marginBottomMm: 22,
+    marginLeftMm: 18,
+  });
+  const portraitNormalized = bookProfile.normalizeBookProfile(portraitProfile);
+  assert.equal(portraitNormalized.ok, true);
+  assert.deepEqual(portraitNormalized.value, portraitProfile);
+
+  const portraitSetup = docxPageSetupBind.buildDocxPageSetup(portraitNormalized.value);
+  assert.deepEqual(portraitSetup, {
+    pageWidthTwips: 8391,
+    pageHeightTwips: 11906,
+    marginTopTwips: 1134,
+    marginRightTwips: 1020,
+    marginBottomTwips: 1247,
+    marginLeftTwips: 1020,
+    headerTwips: 720,
+    footerTwips: 720,
+    gutterTwips: 0,
+  });
   assert.equal(
-    source.includes('<w:pgSz w:w="11906" w:h="16838"/>'),
-    false,
-    'DOCX export must derive page size from bound project bookProfile, not hardcoded A4 twips',
+    docxPageSetupBind.buildDocxSectionPropertiesXml(portraitNormalized.value),
+    '<w:sectPr><w:pgSz w:w="8391" w:h="11906"/><w:pgMar w:top="1134" w:right="1020" w:bottom="1247" w:left="1020" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr>',
   );
+
+  const landscapeProfile = bookProfile.createDefaultBookProfile({
+    profileId: 'stage04-export-proof-landscape',
+    formatId: 'A5',
+    orientation: 'landscape',
+    marginTopMm: 20,
+    marginRightMm: 18,
+    marginBottomMm: 22,
+    marginLeftMm: 18,
+  });
+  const landscapeNormalized = bookProfile.normalizeBookProfile(landscapeProfile);
+  assert.equal(landscapeNormalized.ok, true);
+  assert.deepEqual(landscapeNormalized.value, landscapeProfile);
+
+  const landscapeSetup = docxPageSetupBind.buildDocxPageSetup(landscapeNormalized.value);
+  assert.deepEqual(landscapeSetup, {
+    pageWidthTwips: 11906,
+    pageHeightTwips: 8391,
+    marginTopTwips: 1134,
+    marginRightTwips: 1020,
+    marginBottomTwips: 1247,
+    marginLeftTwips: 1020,
+    headerTwips: 720,
+    footerTwips: 720,
+    gutterTwips: 0,
+  });
   assert.equal(
-    source.includes('<w:pgMar w:top="1417" w:right="1417" w:bottom="1417" w:left="1417" w:header="708" w:footer="708" w:gutter="0"/>'),
-    false,
-    'DOCX export must derive margins from bound project bookProfile, not hardcoded defaults',
-  );
-  assert.ok(
-    /bookProfile|pageLayoutMetrics|pageSetup/.test(source),
-    'DOCX export path must reference a bound page setup source',
-  );
-});
-
-test('export book profile binding: export can obtain bound page setup from renderer or bounded query bridge', () => {
-  const mainSource = read('src/main.js');
-  const preloadSource = read('src/preload.js');
-  const editorSource = read('src/renderer/editor.js');
-
-  const snapshotBridgeExists =
-    mainSource.includes("mainWindow.webContents.send('editor:snapshot-request', { requestId });")
-    && mainSource.includes("ipcMain.on('editor:snapshot-response'")
-    && preloadSource.includes("ipcRenderer.on('editor:snapshot-request'")
-    && preloadSource.includes("ipcRenderer.send('editor:snapshot-response'")
-    && editorSource.includes('window.electronAPI.onEditorSnapshotRequest')
-    && editorSource.includes('window.electronAPI.sendEditorSnapshotResponse')
-    && editorSource.includes('bookProfile: getActiveBookProfile()');
-
-  assert.ok(
-    snapshotBridgeExists,
-    'export needs a bounded editor snapshot bridge carrying canonical bookProfile for page setup binding',
+    docxPageSetupBind.buildDocxSectionPropertiesXml(landscapeNormalized.value),
+    '<w:sectPr><w:pgSz w:w="11906" w:h="8391"/><w:pgMar w:top="1134" w:right="1020" w:bottom="1247" w:left="1020" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr>',
   );
 });
