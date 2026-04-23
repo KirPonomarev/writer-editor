@@ -200,6 +200,12 @@ async function collectState(win, label) {
         && prose.contains(window.getSelection().focusNode)
       ),
       proseText: prose ? prose.textContent || '' : '',
+      proseParagraphCount: prose ? prose.querySelectorAll('p').length : 0,
+      selectionCollapsed: Boolean(
+        window.getSelection()
+        && window.getSelection().rangeCount > 0
+        && window.getSelection().isCollapsed
+      ),
       tiptapEditorCount: host ? host.querySelectorAll('.tiptap-editor').length : 0,
       proseMirrorCount: host ? host.querySelectorAll('.ProseMirror').length : 0,
       pageWrapCount: pageWraps.length,
@@ -357,6 +363,102 @@ async function runActiveInputSmoke(win) {
   return { marker, before, after };
 }
 
+async function sendFocusedEditorKey(win, keyCode, modifiers = []) {
+  win.webContents.sendInputEvent({ type: 'keyDown', keyCode, modifiers });
+  win.webContents.sendInputEvent({ type: 'keyUp', keyCode, modifiers });
+  await sleep(200);
+}
+
+async function sendFocusedEditorUndo(win) {
+  const modifier = process.platform === 'darwin' ? 'meta' : 'control';
+  await sendFocusedEditorKey(win, 'Z', [modifier]);
+}
+
+async function sendFocusedEditorRedo(win) {
+  const modifier = process.platform === 'darwin' ? 'meta' : 'control';
+  const modifiers = process.platform === 'darwin' ? [modifier, 'shift'] : [modifier];
+  await sendFocusedEditorKey(win, process.platform === 'darwin' ? 'Z' : 'Y', modifiers);
+}
+
+function isStateA(stateA, state, marker) {
+  return Boolean(
+    state
+    && state.centralSheetFlow === 'horizontal'
+    && state.activeElementInsideProse
+    && state.selectionInsideProse
+    && state.selectionCollapsed
+    && state.proseMirrorCount === 1
+    && state.tiptapEditorCount === 1
+    && state.proseText === stateA.proseText
+    && state.proseParagraphCount === stateA.proseParagraphCount
+    && !state.proseText.includes(marker)
+  );
+}
+
+function isStateB(stateB, state, marker) {
+  return Boolean(
+    state
+    && state.centralSheetFlow === 'horizontal'
+    && state.activeElementInsideProse
+    && state.selectionInsideProse
+    && state.selectionCollapsed
+    && state.proseMirrorCount === 1
+    && state.tiptapEditorCount === 1
+    && state.proseText === stateB.proseText
+    && state.proseParagraphCount === stateB.proseParagraphCount
+    && state.proseText.includes(marker)
+  );
+}
+
+async function runEnterUndoRedoSmoke(win) {
+  const marker = ' enter-undo-redo-04g';
+  win.focus();
+  await sleep(100);
+  const before = await placeCursorAtEditorEnd(win);
+  const stateA = await collectState(win, 'enter-undo-redo-state-a');
+  if (!before.ok) {
+    return { marker, before, stateA, stateB: null, undoStates: [], redoStates: [] };
+  }
+
+  await sendFocusedEditorKey(win, 'Enter');
+  await win.webContents.insertText(marker);
+  await sleep(700);
+  const stateB = await collectState(win, 'enter-undo-redo-state-b');
+
+  const undoStates = [];
+  let undoReachedStateA = false;
+  for (let step = 0; step < 2 && !undoReachedStateA; step += 1) {
+    await sendFocusedEditorUndo(win);
+    await sleep(300);
+    const state = await collectState(win, 'enter-undo-redo-undo-' + String(step + 1));
+    undoStates.push(state);
+    undoReachedStateA = isStateA(stateA, state, marker);
+  }
+
+  const redoStates = [];
+  let redoReachedStateB = false;
+  for (let step = 0; step < undoStates.length && !redoReachedStateB; step += 1) {
+    await sendFocusedEditorRedo(win);
+    await sleep(300);
+    const state = await collectState(win, 'enter-undo-redo-redo-' + String(step + 1));
+    redoStates.push(state);
+    redoReachedStateB = isStateB(stateB, state, marker);
+  }
+
+  return {
+    marker,
+    before,
+    stateA,
+    stateB,
+    undoStates,
+    redoStates,
+    undoReachedStateA,
+    redoReachedStateB,
+    undoStepCount: undoStates.length,
+    redoStepCount: redoStates.length,
+  };
+}
+
 async function saveCapture(win, outDirPath, basename) {
   const image = await win.webContents.capturePage();
   await fs.writeFile(path.join(outDirPath, basename), image.toPNG());
@@ -385,6 +487,10 @@ app.whenReady().then(async () => {
     await setEditorPayload(win, paragraphCount);
     await sleep(900);
 
+    const enterUndoRedoSmoke = await runEnterUndoRedoSmoke(win);
+    await setEditorPayload(win, paragraphCount);
+    await sleep(900);
+
     const a5Click = await clickAction(win, 'switch-preview-format-a5');
     await sleep(900);
     const a5State = await collectState(win, 'A5');
@@ -403,6 +509,7 @@ app.whenReady().then(async () => {
       paragraphCount,
       a4State,
       inputSmoke,
+      enterUndoRedoSmoke,
       a5Click,
       a5State,
       letterClick,
@@ -511,6 +618,55 @@ test('central sheet strip proof: renderer creates a real second central sheet wi
   assert.ok(result.inputSmoke.after.proseText.length > result.inputSmoke.before.beforeText.length);
   assert.equal(result.inputSmoke.after.gapTextRectsCount, 0);
   assert.equal(result.inputSmoke.after.overflowTextRectsCount, 0);
+
+  assert.equal(result.enterUndoRedoSmoke.before.ok, true);
+  assert.equal(result.enterUndoRedoSmoke.stateA.centralSheetFlow, 'horizontal');
+  assert.equal(result.enterUndoRedoSmoke.stateA.tiptapEditorCount, 1);
+  assert.equal(result.enterUndoRedoSmoke.stateA.proseMirrorCount, 1);
+  assert.equal(result.enterUndoRedoSmoke.stateA.activeElementInsideProse, true);
+  assert.equal(result.enterUndoRedoSmoke.stateA.selectionInsideProse, true);
+  assert.equal(result.enterUndoRedoSmoke.stateA.selectionCollapsed, true);
+  assert.equal(result.enterUndoRedoSmoke.stateA.proseText.includes(result.enterUndoRedoSmoke.marker), false);
+  assert.equal(result.enterUndoRedoSmoke.stateB.centralSheetFlow, 'horizontal');
+  assert.equal(result.enterUndoRedoSmoke.stateB.tiptapEditorCount, 1);
+  assert.equal(result.enterUndoRedoSmoke.stateB.proseMirrorCount, 1);
+  assert.equal(result.enterUndoRedoSmoke.stateB.activeElementInsideProse, true);
+  assert.equal(result.enterUndoRedoSmoke.stateB.selectionInsideProse, true);
+  assert.equal(result.enterUndoRedoSmoke.stateB.selectionCollapsed, true);
+  assert.equal(result.enterUndoRedoSmoke.stateB.proseText.includes(result.enterUndoRedoSmoke.marker), true);
+  assert.ok(result.enterUndoRedoSmoke.stateB.proseText.length > result.enterUndoRedoSmoke.stateA.proseText.length);
+  assert.ok(result.enterUndoRedoSmoke.stateB.proseParagraphCount > result.enterUndoRedoSmoke.stateA.proseParagraphCount);
+  assert.equal(result.enterUndoRedoSmoke.stateB.gapTextRectsCount, 0);
+  assert.equal(result.enterUndoRedoSmoke.stateB.overflowTextRectsCount, 0);
+  assert.ok(result.enterUndoRedoSmoke.undoStepCount >= 1);
+  assert.ok(result.enterUndoRedoSmoke.undoStepCount <= 2);
+  assert.equal(result.enterUndoRedoSmoke.undoReachedStateA, true);
+  const undoStateA = result.enterUndoRedoSmoke.undoStates[result.enterUndoRedoSmoke.undoStates.length - 1];
+  assert.equal(undoStateA.centralSheetFlow, 'horizontal');
+  assert.equal(undoStateA.tiptapEditorCount, 1);
+  assert.equal(undoStateA.proseMirrorCount, 1);
+  assert.equal(undoStateA.activeElementInsideProse, true);
+  assert.equal(undoStateA.selectionInsideProse, true);
+  assert.equal(undoStateA.selectionCollapsed, true);
+  assert.equal(undoStateA.proseText, result.enterUndoRedoSmoke.stateA.proseText);
+  assert.equal(undoStateA.proseParagraphCount, result.enterUndoRedoSmoke.stateA.proseParagraphCount);
+  assert.equal(undoStateA.proseText.includes(result.enterUndoRedoSmoke.marker), false);
+  assert.equal(undoStateA.gapTextRectsCount, 0);
+  assert.equal(undoStateA.overflowTextRectsCount, 0);
+  assert.equal(result.enterUndoRedoSmoke.redoStepCount, result.enterUndoRedoSmoke.undoStepCount);
+  assert.equal(result.enterUndoRedoSmoke.redoReachedStateB, true);
+  const redoStateB = result.enterUndoRedoSmoke.redoStates[result.enterUndoRedoSmoke.redoStates.length - 1];
+  assert.equal(redoStateB.centralSheetFlow, 'horizontal');
+  assert.equal(redoStateB.tiptapEditorCount, 1);
+  assert.equal(redoStateB.proseMirrorCount, 1);
+  assert.equal(redoStateB.activeElementInsideProse, true);
+  assert.equal(redoStateB.selectionInsideProse, true);
+  assert.equal(redoStateB.selectionCollapsed, true);
+  assert.equal(redoStateB.proseText, result.enterUndoRedoSmoke.stateB.proseText);
+  assert.equal(redoStateB.proseParagraphCount, result.enterUndoRedoSmoke.stateB.proseParagraphCount);
+  assert.equal(redoStateB.proseText.includes(result.enterUndoRedoSmoke.marker), true);
+  assert.equal(redoStateB.gapTextRectsCount, 0);
+  assert.equal(redoStateB.overflowTextRectsCount, 0);
 
   assert.equal(result.a5Click.ok, true);
   assert.equal(result.a5State.proofClass, true);
