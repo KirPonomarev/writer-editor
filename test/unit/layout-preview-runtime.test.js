@@ -30,6 +30,47 @@ function collectKeys(value, output = new Set()) {
   return output;
 }
 
+function createPreviewInput(overrides = {}) {
+  return {
+    text: [
+      'Chapter One',
+      '',
+      'Alpha beta gamma delta epsilon',
+      '[[PAGE_BREAK]]',
+      'Chapter Two',
+      '',
+      'Omega omega omega omega omega',
+    ].join('\n'),
+    profile: {
+      formatId: 'A4',
+      chapterStartRule: 'next-page',
+      allowExplicitPageBreaks: true,
+    },
+    metrics: {
+      pageWidthMm: 210,
+      pageHeightMm: 297,
+      pageWidthPx: 1197,
+      pageHeightPx: 1693,
+      contentWidthPx: 907,
+      contentHeightPx: 1403,
+    },
+    selectionRange: { start: 0, end: 12 },
+    sourceId: 'runtime-preview-test',
+    ...overrides,
+  };
+}
+
+function collectElementsByClass(root, className, output = []) {
+  if (!root || typeof root !== 'object') return output;
+  const classes = typeof root.className === 'string' ? root.className.split(/\s+/u) : [];
+  if (classes.includes(className)) output.push(root);
+  const children = Array.isArray(root.children) ? root.children : [];
+  for (const child of children) {
+    collectElementsByClass(child, className, output);
+  }
+  return output;
+}
+
 test('layout preview runtime: snapshot is derived, deterministic, and storage-clean', async () => {
   const mod = await loadModule('src/renderer/layoutPreview.mjs');
 
@@ -37,59 +78,8 @@ test('layout preview runtime: snapshot is derived, deterministic, and storage-cl
   assert.equal(state.enabled, false);
   assert.equal(state.frameMode, true);
 
-  const snapshotA = mod.buildLayoutPreviewSnapshot({
-    text: [
-      'Chapter One',
-      '',
-      'Alpha beta gamma delta epsilon',
-      '[[PAGE_BREAK]]',
-      'Chapter Two',
-      '',
-      'Omega omega omega omega omega',
-    ].join('\n'),
-    profile: {
-      formatId: 'A4',
-      chapterStartRule: 'next-page',
-      allowExplicitPageBreaks: true,
-    },
-    metrics: {
-      pageWidthMm: 210,
-      pageHeightMm: 297,
-      pageWidthPx: 1197,
-      pageHeightPx: 1693,
-      contentWidthPx: 907,
-      contentHeightPx: 1403,
-    },
-    selectionRange: { start: 0, end: 12 },
-    sourceId: 'runtime-preview-test',
-  });
-
-  const snapshotB = mod.buildLayoutPreviewSnapshot({
-    text: [
-      'Chapter One',
-      '',
-      'Alpha beta gamma delta epsilon',
-      '[[PAGE_BREAK]]',
-      'Chapter Two',
-      '',
-      'Omega omega omega omega omega',
-    ].join('\n'),
-    profile: {
-      formatId: 'A4',
-      chapterStartRule: 'next-page',
-      allowExplicitPageBreaks: true,
-    },
-    metrics: {
-      pageWidthMm: 210,
-      pageHeightMm: 297,
-      pageWidthPx: 1197,
-      pageHeightPx: 1693,
-      contentWidthPx: 907,
-      contentHeightPx: 1403,
-    },
-    selectionRange: { start: 0, end: 12 },
-    sourceId: 'runtime-preview-test',
-  });
+  const snapshotA = mod.buildLayoutPreviewSnapshot(createPreviewInput());
+  const snapshotB = mod.buildLayoutPreviewSnapshot(createPreviewInput());
 
   assert.equal(snapshotA.schemaVersion, 'renderer.layoutPreview.v1');
   assert.equal(snapshotA.profile.formatId, 'A4');
@@ -112,6 +102,124 @@ test('layout preview runtime: snapshot is derived, deterministic, and storage-cl
   ];
   for (const forbiddenKey of forbiddenCanonicalKeys) {
     assert.equal(keySet.has(forbiddenKey), false, `snapshot leaked canonical key ${forbiddenKey}`);
+  }
+});
+
+test('layout preview runtime: invalidation cache hits stable inputs and evicts stale entries', async () => {
+  const mod = await loadModule('src/renderer/layoutPreview.mjs');
+  const cache = mod.createLayoutPreviewSnapshotCache({ maxEntries: 2 });
+
+  const first = mod.buildCachedLayoutPreviewSnapshot(createPreviewInput(), cache);
+  const second = mod.buildCachedLayoutPreviewSnapshot(createPreviewInput(), cache);
+  assert.equal(second, first);
+  assert.equal(cache.size, 1);
+
+  const changedText = mod.buildCachedLayoutPreviewSnapshot(createPreviewInput({ text: 'Changed text' }), cache);
+  assert.notEqual(changedText, first);
+  assert.equal(cache.size, 2);
+
+  const changedSource = mod.buildCachedLayoutPreviewSnapshot(createPreviewInput({ sourceId: 'other-source' }), cache);
+  assert.notEqual(changedSource, first);
+  assert.equal(cache.size, 2);
+
+  const afterEviction = mod.buildCachedLayoutPreviewSnapshot(createPreviewInput(), cache);
+  assert.notEqual(afterEviction, first);
+  assert.equal(cache.size, 2);
+});
+
+test('layout preview runtime: render path windows visible pages without changing page map truth', async () => {
+  const mod = await loadModule('src/renderer/layoutPreview.mjs');
+  const previousHTMLElement = global.HTMLElement;
+  const previousDocument = global.document;
+
+  class FakeClassList {
+    constructor() {
+      this.tokens = new Set();
+    }
+
+    toggle(token, force) {
+      if (force) this.tokens.add(token);
+      else this.tokens.delete(token);
+    }
+  }
+
+  class FakeElement {
+    constructor(tagName) {
+      this.tagName = String(tagName || '').toUpperCase();
+      this.children = [];
+      this.dataset = {};
+      this.attributes = {};
+      this.className = '';
+      this.classList = new FakeClassList();
+      this.textContent = '';
+    }
+
+    append(...children) {
+      for (const child of children) this.appendChild(child);
+    }
+
+    appendChild(child) {
+      this.children.push(child);
+      return child;
+    }
+
+    replaceChildren(...children) {
+      this.children = children;
+    }
+
+    setAttribute(name, value) {
+      this.attributes[name] = String(value);
+    }
+  }
+
+  global.HTMLElement = FakeElement;
+  global.document = {
+    createElement(tagName) {
+      return new FakeElement(tagName);
+    },
+  };
+
+  try {
+    const host = new FakeElement('div');
+    const snapshot = {
+      profile: { formatId: 'A4' },
+      flow: {
+        nodes: Array.from({ length: 5 }, (_, index) => ({
+          id: `node-${index + 1}`,
+          semanticKind: 'paragraph',
+          text: `Node ${index + 1}`,
+        })),
+      },
+      pageMap: {
+        pages: Array.from({ length: 5 }, (_, index) => ({
+          pageNumber: index + 1,
+          nodeIds: [`node-${index + 1}`],
+        })),
+        meta: { pageCount: 5 },
+      },
+    };
+
+    mod.renderLayoutPreviewSnapshot(
+      host,
+      snapshot,
+      mod.createLayoutPreviewState({ enabled: true, pageWindowStart: 2, pageWindowSize: 2 }),
+    );
+
+    const pageWraps = collectElementsByClass(host, 'layout-preview__page-wrap');
+    assert.deepEqual(pageWraps.map((item) => item.dataset.pageNumber), ['2', '3']);
+    assert.equal(snapshot.pageMap.pages.length, 5);
+
+    const windowMeta = collectElementsByClass(host, 'layout-preview__window-meta');
+    assert.equal(windowMeta.length, 1);
+    assert.equal(windowMeta[0].textContent, 'Showing pages 2-3 of 5');
+
+    const pagesHost = collectElementsByClass(host, 'layout-preview__pages')[0];
+    assert.equal(pagesHost.dataset.pageWindowStart, '2');
+    assert.equal(pagesHost.dataset.pageWindowEnd, '3');
+    assert.equal(pagesHost.dataset.pageCount, '5');
+  } finally {
+    global.HTMLElement = previousHTMLElement;
+    global.document = previousDocument;
   }
 });
 
