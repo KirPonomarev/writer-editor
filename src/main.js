@@ -5308,3 +5308,12 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
+
+module.exports = {
+  ensureProjectManifest,
+  getProjectManifestComparable,
+  normalizeProjectManifest,
+  persistBookProfileForFile,
+  persistProjectManifestAtPath,
+  readProjectManifest,
+};
