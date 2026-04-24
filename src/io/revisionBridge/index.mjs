@@ -3311,7 +3311,7 @@ function revisionSessionSkeletonAdmissionPreviewCheckStatusCounts(preview) {
   for (const key of Object.keys(counts)) {
     if (!REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_STATUS_COUNT_KEYS.includes(key)) {
       reasons.push(revisionSessionSkeletonAdmissionPreviewReason(
-        `placementAdmissionPreview.countsByStatus.${key}`,
+        'placementAdmissionPreview.countsByStatus',
         'countsByStatus contains an unsupported key',
       ));
     }
@@ -3339,7 +3339,7 @@ function revisionSessionSkeletonAdmissionPreviewCheckReasonCounts(preview) {
   for (const key of Object.keys(counts)) {
     if (!REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_REASON_CODES.includes(key)) {
       reasons.push(revisionSessionSkeletonAdmissionPreviewReason(
-        `placementAdmissionPreview.countsByReasonCode.${key}`,
+        'placementAdmissionPreview.countsByReasonCode',
         'countsByReasonCode contains an unsupported key',
       ));
     } else if (!revisionSessionSkeletonAdmissionPreviewCheckSafeCount(counts[key])) {
@@ -3352,27 +3352,22 @@ function revisionSessionSkeletonAdmissionPreviewCheckReasonCounts(preview) {
   return reasons;
 }
 
-function revisionSessionSkeletonAdmissionPreviewFindRejectKey(value, prefix) {
-  if (!value || typeof value !== 'object') return null;
+function revisionSessionSkeletonAdmissionPreviewHasRejectKey(value) {
+  if (!value || typeof value !== 'object') return false;
   if (Array.isArray(value)) {
     for (let index = 0; index < value.length; index += 1) {
-      const found = revisionSessionSkeletonAdmissionPreviewFindRejectKey(
-        value[index],
-        `${prefix}.${index}`,
-      );
-      if (found) return found;
+      if (revisionSessionSkeletonAdmissionPreviewHasRejectKey(value[index])) return true;
     }
-    return null;
+    return false;
   }
   for (const key of Object.keys(value)) {
     const lowerKey = key.toLowerCase();
     if (REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_REJECT_KEYS.includes(lowerKey)) {
-      return `${prefix}.${key}`;
+      return true;
     }
-    const found = revisionSessionSkeletonAdmissionPreviewFindRejectKey(value[key], `${prefix}.${key}`);
-    if (found) return found;
+    if (revisionSessionSkeletonAdmissionPreviewHasRejectKey(value[key])) return true;
   }
-  return null;
+  return false;
 }
 
 function revisionSessionSkeletonAdmissionPreviewCheckPreview(preview) {
@@ -3459,13 +3454,9 @@ function revisionSessionSkeletonAdmissionPreviewCheckPreview(preview) {
   }
   reasons.push(...revisionSessionSkeletonAdmissionPreviewCheckStatusCounts(preview));
   reasons.push(...revisionSessionSkeletonAdmissionPreviewCheckReasonCounts(preview));
-  const rejectKey = revisionSessionSkeletonAdmissionPreviewFindRejectKey(
-    preview,
-    'placementAdmissionPreview',
-  );
-  if (rejectKey) {
+  if (revisionSessionSkeletonAdmissionPreviewHasRejectKey(preview)) {
     reasons.push(revisionSessionSkeletonAdmissionPreviewReason(
-      rejectKey,
+      'placementAdmissionPreview',
       'placementAdmissionPreview contains an unsupported delegated key',
     ));
   }

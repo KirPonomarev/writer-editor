@@ -269,7 +269,7 @@ test('RB-17 delegated count maps are required, bounded, and public-key only', as
     ],
     [
       { ...validPreview, countsByStatus: { ...validPreview.countsByStatus, path: 1 } },
-      'placementAdmissionPreview.countsByStatus.path',
+      'placementAdmissionPreview.countsByStatus',
     ],
     [
       { ...validPreview, countsByStatus: { ...validPreview.countsByStatus, evaluated: -1 } },
@@ -277,7 +277,7 @@ test('RB-17 delegated count maps are required, bounded, and public-key only', as
     ],
     [
       { ...validPreview, countsByReasonCode: { ...validPreview.countsByReasonCode, PRIVATE_REASON: 1 } },
-      'placementAdmissionPreview.countsByReasonCode.PRIVATE_REASON',
+      'placementAdmissionPreview.countsByReasonCode',
     ],
     [
       {
@@ -339,12 +339,14 @@ test('RB-17 hostile nested delegated preview keys fail closed and never leak', a
   for (const placementAdmissionPreview of cases) {
     const result = bridge.previewRevisionSessionSkeletonAdmission(validInput(placementAdmissionPreview));
     const keys = collectKeys(result).map((key) => key.toLowerCase());
+    const serialized = JSON.stringify(result).toLowerCase();
 
     assertSkeletonReturnShape(result);
     assert.equal(result.status, 'hardFail');
     assert.equal(result.placementAdmissionPreview, null);
     for (const forbiddenKey of forbiddenKeys) {
       assert.equal(keys.includes(forbiddenKey), false, `${forbiddenKey} must not leak`);
+      assert.equal(serialized.includes(forbiddenKey), false, `${forbiddenKey} must not leak as a value`);
     }
   }
 });
