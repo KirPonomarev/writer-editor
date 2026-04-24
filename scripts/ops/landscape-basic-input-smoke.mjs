@@ -41,6 +41,26 @@ const PREPARE_INPUT_SOURCE = `(() => (async () => {
       };
     };
     const readPressed = (selector) => document.querySelector(selector)?.getAttribute('aria-pressed') || '';
+    const findInputPageBinding = () => {
+      const editorHost = document.getElementById('editor');
+      const proseMirrors = Array.from((editorHost || document).querySelectorAll('.ProseMirror'));
+      const target = proseMirrors[0] || null;
+      const inputEditor = target ? target.closest('.tiptap-editor') : null;
+      const inputPageContent = inputEditor ? inputEditor.closest('.tiptap-page__content') : null;
+      const inputPage = inputPageContent ? inputPageContent.closest('.tiptap-page') : null;
+      const inputPageWrap = inputPage ? inputPage.closest('.tiptap-page-wrap') : null;
+      const firstTiptapPage = document.querySelector('.tiptap-page');
+      return {
+        editorHost,
+        proseMirrors,
+        target,
+        inputEditor,
+        inputPageContent,
+        inputPage,
+        inputPageWrap,
+        firstTiptapPage,
+      };
+    };
 
     stage = 'landscape_click';
     const landscapeButton = document.querySelector('[data-preview-orientation-option="landscape"]');
@@ -48,30 +68,41 @@ const PREPARE_INPUT_SOURCE = `(() => (async () => {
     landscapeButton.click();
 
     stage = 'landscape_rect';
-    const page = await waitFor(() => {
-      const candidate = document.querySelector('.tiptap-page');
-      const rect = rectOf(candidate);
-      return candidate && readPressed('[data-preview-orientation-option="landscape"]') === 'true' && rect.width > rect.height
+    const binding = await waitFor(() => {
+      const candidate = findInputPageBinding();
+      const rect = rectOf(candidate.inputPage);
+      return candidate.inputPage
+        && readPressed('[data-preview-orientation-option="landscape"]') === 'true'
+        && rect.width > rect.height
         ? candidate
         : null;
-    }, 'landscape-tiptap-page');
+    }, 'landscape-input-tiptap-page');
+    const page = binding.inputPage;
     const pageRect = rectOf(page);
+    const firstPageRect = rectOf(binding.firstTiptapPage);
     metrics.landscapeControlActivated = readPressed('[data-preview-orientation-option="landscape"]') === 'true';
     metrics.tiptapPageRect = pageRect;
+    metrics.inputTiptapPageRect = pageRect;
+    metrics.firstTiptapPageRect = firstPageRect;
     metrics.tiptapPageWidthGtHeight = pageRect.width > pageRect.height;
 
     stage = 'target_selection';
-    const proseMirrors = Array.from(document.querySelectorAll('.ProseMirror'));
+    const proseMirrors = binding.proseMirrors;
     metrics.proseMirrorCount = proseMirrors.length;
     if (proseMirrors.length !== 1) return fail('PROSEMIRROR_COUNT_NOT_ONE', 'Expected exactly one ProseMirror instance.');
 
-    const target = proseMirrors[0];
+    const target = binding.target;
     const targetRect = rectOf(target);
     metrics.targetRect = targetRect;
     metrics.targetVisible = targetRect.width > 0 && targetRect.height > 0;
     metrics.targetInsideTiptapPage = page.contains(target);
+    metrics.targetInsideFirstTiptapPage = Boolean(binding.firstTiptapPage && binding.firstTiptapPage.contains(target));
+    metrics.inputPageInsideSheetStrip = Boolean(page.closest('.tiptap-sheet-strip'));
+    metrics.firstTiptapPageInsideSheetStrip = Boolean(binding.firstTiptapPage && binding.firstTiptapPage.closest('.tiptap-sheet-strip'));
+    metrics.inputPageSelectedByClosestAncestor = true;
     if (!metrics.targetVisible) return fail('TARGET_NOT_VISIBLE', 'ProseMirror target has no visible rect.');
-    if (!metrics.targetInsideTiptapPage) return fail('TARGET_OUTSIDE_TIPTAP_PAGE', 'ProseMirror target is not inside .tiptap-page.');
+    if (metrics.inputPageInsideSheetStrip) return fail('INPUT_PAGE_IS_DECORATIVE_CHROME', 'Selected input page is inside .tiptap-sheet-strip.');
+    if (!metrics.targetInsideTiptapPage) return fail('TARGET_OUTSIDE_INPUT_TIPTAP_PAGE', 'ProseMirror target is not inside the bound input .tiptap-page.');
 
     stage = 'focus';
     const clickX = Math.max(targetRect.left + 8, targetRect.left + Math.min(24, Math.max(1, targetRect.width - 1)));
