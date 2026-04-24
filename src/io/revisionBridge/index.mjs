@@ -90,6 +90,21 @@ export const REVISION_BRIDGE_PLACEMENT_EVALUATION_REASON_CODES = Object.freeze([
   PLACEMENT_EVALUATION_UNRESOLVED_CODE,
   PLACEMENT_EVALUATION_HARD_FAIL_CODE,
 ]);
+export const REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_SCHEMA = 'revision-bridge.comment-anchor-placement-batch-diagnostics.v1';
+const PLACEMENT_BATCH_DIAGNOSTICS_EVALUATED_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_EVALUATED';
+const PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED';
+const PLACEMENT_BATCH_DIAGNOSTICS_DIAGNOSTICS_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_DIAGNOSTICS';
+const PLACEMENT_BATCH_DIAGNOSTICS_UNRESOLVED_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_UNRESOLVED';
+const PLACEMENT_BATCH_DIAGNOSTICS_HARD_FAIL_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_HARD_FAIL';
+export const REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_REASON_CODES = Object.freeze([
+  PLACEMENT_BATCH_DIAGNOSTICS_EVALUATED_CODE,
+  PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE,
+  PLACEMENT_BATCH_DIAGNOSTICS_DIAGNOSTICS_CODE,
+  PLACEMENT_BATCH_DIAGNOSTICS_UNRESOLVED_CODE,
+  PLACEMENT_BATCH_DIAGNOSTICS_HARD_FAIL_CODE,
+  ...REVISION_BRIDGE_PLACEMENT_EVALUATION_REASON_CODES,
+  ...REVISION_BRIDGE_ANCHOR_CONFIDENCE_REASON_CODES,
+]);
 
 const REVIEWGRAPH_ITEM_KINDS = [
   'commentThread',
@@ -2765,6 +2780,160 @@ function evaluateCommentAnchorPlacementProof(input = {}, context = {}) {
 // RB_13_PLACEMENT_EVALUATION_CONTRACTS_END
 
 export { evaluateCommentAnchorPlacementProof };
+
+export function evaluateCommentAnchorPlacementBatchDiagnostics(input = {}) {
+  return placementBatchDiagnosticsEvaluate(input);
+}
+
+// RB_14_PLACEMENT_BATCH_DIAGNOSTICS_CONTRACTS_START
+function placementBatchDiagnosticsCountsByStatus() {
+  return {
+    evaluated: 0,
+    diagnostics: 0,
+    unresolved: 0,
+    hardFail: 0,
+  };
+}
+
+function placementBatchDiagnosticsCountsByReasonCode() {
+  const counts = {};
+  for (const code of REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_REASON_CODES) {
+    counts[code] = 0;
+  }
+  return counts;
+}
+
+function placementBatchDiagnosticsCheck(input) {
+  if (!isPlainObject(input)) {
+    return {
+      ok: false,
+      field: 'input',
+      message: 'input must be a plain object',
+    };
+  }
+  if (!Array.isArray(input.placements)) {
+    return {
+      ok: false,
+      field: 'placements',
+      message: 'placements must be an array',
+    };
+  }
+  const context = input.context || {};
+  if (!isPlainObject(context)) {
+    return {
+      ok: false,
+      field: 'context',
+      message: 'context must be a plain object',
+    };
+  }
+  return {
+    ok: true,
+    placements: input.placements,
+    context,
+  };
+}
+
+function placementBatchDiagnosticsAddReasonCount(counts, code) {
+  const normalized = normalizeString(code);
+  if (Object.hasOwn(counts, normalized)) counts[normalized] += 1;
+}
+
+function placementBatchDiagnosticsStatus(countsByStatus) {
+  if (countsByStatus.hardFail > 0) return 'hardFail';
+  if (countsByStatus.unresolved > 0) return 'unresolved';
+  if (countsByStatus.diagnostics > 0) return 'diagnostics';
+  return 'evaluated';
+}
+
+function placementBatchDiagnosticsCode(status) {
+  if (status === 'hardFail') return PLACEMENT_BATCH_DIAGNOSTICS_HARD_FAIL_CODE;
+  if (status === 'unresolved') return PLACEMENT_BATCH_DIAGNOSTICS_UNRESOLVED_CODE;
+  if (status === 'diagnostics') return PLACEMENT_BATCH_DIAGNOSTICS_DIAGNOSTICS_CODE;
+  return PLACEMENT_BATCH_DIAGNOSTICS_EVALUATED_CODE;
+}
+
+function placementBatchDiagnosticsEnvelope(
+  status,
+  code,
+  total,
+  countsByStatus,
+  countsByReasonCode,
+  evaluations,
+  diagnostics,
+) {
+  return {
+    schemaVersion: REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_SCHEMA,
+    type: 'revisionBridge.commentAnchorPlacement.batchDiagnostics',
+    status,
+    code,
+    reason: code,
+    total,
+    countsByStatus,
+    countsByReasonCode,
+    evaluations,
+    diagnostics,
+  };
+}
+
+function placementBatchDiagnosticsFromEvaluationDiagnostics(evaluation, index) {
+  const diagnostics = [];
+  for (const diagnostic of evaluation.diagnostics || []) {
+    diagnostics.push({
+      code: normalizeString(diagnostic.code),
+      field: placementEvaluationDiagnosticField(diagnostic.field),
+      message: placementEvaluationDiagnosticMessage(diagnostic.message),
+      index,
+    });
+  }
+  return diagnostics;
+}
+
+function placementBatchDiagnosticsEvaluate(input) {
+  const countsByStatus = placementBatchDiagnosticsCountsByStatus();
+  const countsByReasonCode = placementBatchDiagnosticsCountsByReasonCode();
+  const checked = placementBatchDiagnosticsCheck(input);
+  if (checked.ok !== true) {
+    countsByReasonCode[PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE] = 1;
+    return placementBatchDiagnosticsEnvelope(
+      'hardFail',
+      PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE,
+      0,
+      countsByStatus,
+      countsByReasonCode,
+      [],
+      [{
+        code: PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE,
+        field: checked.field,
+        message: checked.message,
+      }],
+    );
+  }
+
+  const evaluations = [];
+  const diagnostics = [];
+  for (let index = 0; index < checked.placements.length; index += 1) {
+    const evaluation = evaluateCommentAnchorPlacementProof(checked.placements[index], checked.context);
+    evaluations.push({ index, evaluation });
+    if (Object.hasOwn(countsByStatus, evaluation.status)) countsByStatus[evaluation.status] += 1;
+    for (const reasonCode of evaluation.reasonCodes || []) {
+      placementBatchDiagnosticsAddReasonCount(countsByReasonCode, reasonCode);
+    }
+    diagnostics.push(...placementBatchDiagnosticsFromEvaluationDiagnostics(evaluation, index));
+  }
+
+  const status = placementBatchDiagnosticsStatus(countsByStatus);
+  const code = placementBatchDiagnosticsCode(status);
+  return placementBatchDiagnosticsEnvelope(
+    status,
+    code,
+    checked.placements.length,
+    countsByStatus,
+    countsByReasonCode,
+    evaluations,
+    diagnostics,
+  );
+}
+// RB_14_PLACEMENT_BATCH_DIAGNOSTICS_CONTRACTS_END
 
 function reviewGraphValidationFailure(reasons, value = null) {
   return {
