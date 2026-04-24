@@ -448,6 +448,27 @@ function resolvePageWindow(pages, state) {
   };
 }
 
+function normalizePositivePixel(value) {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? Math.round(number) : 0;
+}
+
+function applyPreviewPageMetrics(pageSurface, metrics = {}) {
+  if (!(pageSurface instanceof HTMLElement) || !isPlainObject(metrics)) {
+    return;
+  }
+  const widthPx = normalizePositivePixel(metrics.pageWidthPx);
+  const heightPx = normalizePositivePixel(metrics.pageHeightPx);
+  if (widthPx <= 0 || heightPx <= 0) {
+    return;
+  }
+  pageSurface.dataset.pageWidthPx = String(widthPx);
+  pageSurface.dataset.pageHeightPx = String(heightPx);
+  pageSurface.dataset.pageOrientation = widthPx > heightPx ? 'landscape' : 'portrait';
+  pageSurface.style.aspectRatio = `${widthPx} / ${heightPx}`;
+  pageSurface.style.width = '100%';
+}
+
 export function renderLayoutPreviewSnapshot(host, snapshot, state = createLayoutPreviewState()) {
   if (!(host instanceof HTMLElement)) {
     return;
@@ -515,6 +536,7 @@ export function renderLayoutPreviewSnapshot(host, snapshot, state = createLayout
 
       const pageSurface = document.createElement('div');
       pageSurface.className = 'layout-preview__page';
+      applyPreviewPageMetrics(pageSurface, snapshot.metrics);
       const pageContent = document.createElement('div');
       pageContent.className = 'layout-preview__page-content';
 

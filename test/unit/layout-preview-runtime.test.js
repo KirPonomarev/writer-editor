@@ -151,6 +151,7 @@ test('layout preview runtime: render path windows visible pages without changing
       this.attributes = {};
       this.className = '';
       this.classList = new FakeClassList();
+      this.style = {};
       this.textContent = '';
     }
 
@@ -197,6 +198,10 @@ test('layout preview runtime: render path windows visible pages without changing
         })),
         meta: { pageCount: 5 },
       },
+      metrics: {
+        pageWidthPx: 1200,
+        pageHeightPx: 800,
+      },
     };
 
     mod.renderLayoutPreviewSnapshot(
@@ -208,6 +213,34 @@ test('layout preview runtime: render path windows visible pages without changing
     const pageWraps = collectElementsByClass(host, 'layout-preview__page-wrap');
     assert.deepEqual(pageWraps.map((item) => item.dataset.pageNumber), ['2', '3']);
     assert.equal(snapshot.pageMap.pages.length, 5);
+
+    const previewPages = collectElementsByClass(host, 'layout-preview__page');
+    assert.equal(previewPages.length, 2);
+    assert.deepEqual(
+      previewPages.map((item) => ({
+        width: item.dataset.pageWidthPx,
+        height: item.dataset.pageHeightPx,
+        orientation: item.dataset.pageOrientation,
+        aspectRatio: item.style.aspectRatio,
+        widthStyle: item.style.width,
+      })),
+      [
+        {
+          width: '1200',
+          height: '800',
+          orientation: 'landscape',
+          aspectRatio: '1200 / 800',
+          widthStyle: '100%',
+        },
+        {
+          width: '1200',
+          height: '800',
+          orientation: 'landscape',
+          aspectRatio: '1200 / 800',
+          widthStyle: '100%',
+        },
+      ],
+    );
 
     const windowMeta = collectElementsByClass(host, 'layout-preview__window-meta');
     assert.equal(windowMeta.length, 1);
@@ -247,6 +280,7 @@ test('layout preview runtime: editor-derived text marker is visible in rendered 
       this.attributes = {};
       this.className = '';
       this.classList = new FakeClassList();
+      this.style = {};
       this.textContent = '';
     }
 
