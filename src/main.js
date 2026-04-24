@@ -19,6 +19,7 @@ const {
 } = require('./core/io/path-boundary');
 const { buildDocxMinBuffer: buildDocxMinBufferCore } = require('./export/docx/docxMinBuilder');
 const { runDocxMinExport } = require('./export/docx/docxMinExportHandler');
+const { writeBufferAtomic } = require('./export/docx/atomicWriteBuffer');
 
 const launchT0 = performance.now();
 let mainWindow;
@@ -1680,19 +1681,6 @@ async function buildDocxMinBuffer(editorSnapshot) {
     semanticMappingModule,
     styleMapModule,
   });
-}
-
-async function writeBufferAtomic(filePath, buffer) {
-  const directory = path.dirname(filePath);
-  const baseName = path.basename(filePath);
-  const randomSuffix = crypto.randomBytes(5).toString('hex');
-  const tempPath = joinPathSegmentsWithinRoot(directory, [`${baseName}.${randomSuffix}.tmp`], {
-    resolveSymlinks: false,
-  });
-
-  await fs.mkdir(directory, { recursive: true });
-  await fs.writeFile(tempPath, buffer);
-  await fs.rename(tempPath, filePath);
 }
 
 async function handleExportDocxMin(payloadRaw) {
