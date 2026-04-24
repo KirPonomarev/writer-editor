@@ -38,6 +38,7 @@ test('live command wiring: right rail controls pass command bus and mutate UI st
 
   const state = {
     formatId: 'A4',
+    orientation: 'portrait',
     previewEnabled: false,
     frameMode: true,
   };
@@ -48,6 +49,10 @@ test('live command wiring: right rail controls pass command bus and mutate UI st
       setPreviewFormat({ formatId } = {}) {
         state.formatId = formatId;
         return { formatId };
+      },
+      setPreviewOrientation({ orientation } = {}) {
+        state.orientation = orientation;
+        return { orientation };
       },
       togglePreview() {
         state.previewEnabled = !state.previewEnabled;
@@ -78,6 +83,17 @@ test('live command wiring: right rail controls pass command bus and mutate UI st
   const a4 = await dispatch(EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A4);
   assert.equal(a4.ok, true);
   assert.equal(state.formatId, 'A4');
+  assert.equal(state.orientation, 'portrait');
+
+  const landscape = await dispatch(EXTRA_COMMAND_IDS.VIEW_PREVIEW_ORIENTATION_LANDSCAPE);
+  assert.equal(landscape.ok, true);
+  assert.equal(state.orientation, 'landscape');
+  assert.equal(state.formatId, 'A4');
+
+  const portrait = await dispatch(EXTRA_COMMAND_IDS.VIEW_PREVIEW_ORIENTATION_PORTRAIT);
+  assert.equal(portrait.ok, true);
+  assert.equal(state.orientation, 'portrait');
+  assert.equal(state.formatId, 'A4');
 
   const preview = await dispatch(EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW);
   assert.equal(preview.ok, true);
@@ -95,10 +111,14 @@ test('live command wiring: right rail controls pass command bus and mutate UI st
 test('live command wiring: TipTap runtime bridge forwards format commands without DOM mutation', async () => {
   const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule();
   const formatCalls = [];
+  const orientationCalls = [];
   const bridge = createTiptapRuntimeBridge({
     runtimeHandlers: {
       setPreviewFormat(formatId) {
         formatCalls.push(formatId);
+      },
+      setPreviewOrientation(orientation) {
+        orientationCalls.push(orientation);
       },
     },
   });
@@ -122,6 +142,25 @@ test('live command wiring: TipTap runtime bridge forwards format commands withou
     command: 'switch-preview-format-letter',
   });
   assert.deepEqual(formatCalls, ['A5', 'LETTER']);
+  assert.deepEqual(bridge.handleRuntimeCommand({ commandId: 'cmd.project.view.previewOrientationLandscape' }), {
+    handled: true,
+    result: {
+      performed: true,
+      action: 'cmd.project.view.previewOrientationLandscape',
+      reason: null,
+    },
+    commandId: 'cmd.project.view.previewOrientationLandscape',
+  });
+  assert.deepEqual(bridge.handleRuntimeCommand({ command: 'switch-preview-orientation-portrait' }), {
+    handled: true,
+    result: {
+      performed: true,
+      action: 'switch-preview-orientation-portrait',
+      reason: null,
+    },
+    command: 'switch-preview-orientation-portrait',
+  });
+  assert.deepEqual(orientationCalls, ['landscape', 'portrait']);
 });
 
 test('live command wiring: TipTap runtime bridge forwards preview frame toggle without DOM mutation', async () => {

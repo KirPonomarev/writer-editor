@@ -182,6 +182,7 @@ const previewChromeFormatValueElement = Array.from(document.querySelectorAll('.r
   return key && key.textContent && key.textContent.trim() === 'Формат';
 })?.querySelector('.right-rail-form-value');
 const previewFormatButtons = Array.from(document.querySelectorAll('[data-preview-format-option]'));
+const previewOrientationButtons = Array.from(document.querySelectorAll('[data-preview-orientation-option]'));
 const layoutPreviewToggleButton = document.querySelector('[data-layout-preview-toggle]');
 const layoutPreviewFrameToggleButton = document.querySelector('[data-layout-preview-frame-toggle]');
 const inspectorSnapshotElement = document.querySelector('[data-inspector-snapshot]');
@@ -806,12 +807,19 @@ function scheduleCentralSheetStripProofRefresh() {
 }
 
 function syncPreviewChromeFormatValue() {
-  const activeFormatId = getActiveBookProfile().formatId;
+  const activeProfile = getActiveBookProfile();
+  const activeFormatId = activeProfile.formatId;
+  const activeOrientation = activeProfile.orientation;
   if (previewChromeFormatValueElement) {
     previewChromeFormatValueElement.textContent = activeFormatId;
   }
   previewFormatButtons.forEach((button) => {
     const isActive = button.dataset.previewFormatOption === activeFormatId;
+    button.classList.toggle('is-active', isActive);
+    button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+  previewOrientationButtons.forEach((button) => {
+    const isActive = button.dataset.previewOrientationOption === activeOrientation;
     button.classList.toggle('is-active', isActive);
     button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
@@ -844,6 +852,36 @@ function setActiveBookProfileFormat(formatId) {
 
   const nextProfile = nextProfileResult.value;
   if (nextProfile.formatId === activeBookProfileState.formatId) {
+    syncPreviewChromeFormatValue();
+    return nextProfile;
+  }
+
+  activeBookProfileState = nextProfile;
+  const metrics = getPageMetrics({
+    profile: activeBookProfileState,
+    zoom: editorZoom,
+  });
+  if (metrics) {
+    applyPageGeometryCssVars(metrics);
+  }
+  scheduleLayoutPreviewRefresh();
+  scheduleCentralSheetStripProofRefresh();
+  syncPreviewChromeFormatValue();
+  return nextProfile;
+}
+
+function setActiveBookProfileOrientation(orientation) {
+  const nextProfileResult = normalizeBookProfile({
+    ...activeBookProfileState,
+    orientation,
+  });
+  if (!nextProfileResult.ok) {
+    syncPreviewChromeFormatValue();
+    return activeBookProfileState;
+  }
+
+  const nextProfile = nextProfileResult.value;
+  if (nextProfile.orientation === activeBookProfileState.orientation) {
     syncPreviewChromeFormatValue();
     return nextProfile;
   }
@@ -3411,6 +3449,7 @@ registerProjectCommands(commandRegistry, {
     zoomIn: () => handleZoomIn(),
     toggleWrap: () => handleToggleWrap(),
     setPreviewFormat: ({ formatId } = {}) => setActiveBookProfileFormat(formatId),
+    setPreviewOrientation: ({ orientation } = {}) => setActiveBookProfileOrientation(orientation),
     togglePreview: () => handleToggleLayoutPreview(),
     togglePreviewFrame: () => handleToggleLayoutPreviewFrame(),
     insertMarkdownPrompt: () => handleInsertMarkdownPrompt(),
@@ -3438,6 +3477,10 @@ const PREVIEW_FORMAT_COMMAND_IDS = Object.freeze({
   A4: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A4,
   A5: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A5,
   LETTER: EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_LETTER,
+});
+const PREVIEW_ORIENTATION_COMMAND_IDS = Object.freeze({
+  PORTRAIT: EXTRA_COMMAND_IDS.VIEW_PREVIEW_ORIENTATION_PORTRAIT,
+  LANDSCAPE: EXTRA_COMMAND_IDS.VIEW_PREVIEW_ORIENTATION_LANDSCAPE,
 });
 const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });
 window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;
@@ -7413,6 +7456,12 @@ function handleUiAction(action) {
     case 'switch-preview-format-letter':
       void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.LETTER);
       return true;
+    case 'switch-preview-orientation-portrait':
+      void dispatchUiCommand(PREVIEW_ORIENTATION_COMMAND_IDS.PORTRAIT);
+      return true;
+    case 'switch-preview-orientation-landscape':
+      void dispatchUiCommand(PREVIEW_ORIENTATION_COMMAND_IDS.LANDSCAPE);
+      return true;
     case 'toggle-preview':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW);
       return true;
@@ -8008,6 +8057,7 @@ if (window.electronAPI) {
       openExportPreview: () => openExportPreviewModal(),
       insertAddCard: () => handleInsertAddCard(),
       setPreviewFormat: (formatId) => setActiveBookProfileFormat(formatId),
+      setPreviewOrientation: (orientation) => setActiveBookProfileOrientation(orientation),
       togglePreview: () => handleToggleLayoutPreview(),
       togglePreviewFrame: () => handleToggleLayoutPreviewFrame(),
       formatAlignLeft: () => {
@@ -8059,6 +8109,10 @@ if (window.electronAPI) {
         void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.A5);
       } else if (command === 'switch-preview-format-letter') {
         void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.LETTER);
+      } else if (command === 'switch-preview-orientation-portrait') {
+        void dispatchUiCommand(PREVIEW_ORIENTATION_COMMAND_IDS.PORTRAIT);
+      } else if (command === 'switch-preview-orientation-landscape') {
+        void dispatchUiCommand(PREVIEW_ORIENTATION_COMMAND_IDS.LANDSCAPE);
       } else if (command === 'toggle-preview') {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_TOGGLE_PREVIEW);
       } else if (command === 'toggle-preview-frame') {
