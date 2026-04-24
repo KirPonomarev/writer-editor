@@ -7,7 +7,8 @@ const { pathToFileURL } = require('node:url');
 
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-p0-safety-kernel.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH];
+const RB02_TEST_PATH = 'test/contracts/revision-bridge-reviewgraph-contract.contract.test.js';
+const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB02_TEST_PATH];
 const WIRING_NEEDLES = [
   'revisionBridge',
   'RevisionBridge',
