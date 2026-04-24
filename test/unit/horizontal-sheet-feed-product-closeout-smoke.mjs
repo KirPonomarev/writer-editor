@@ -90,16 +90,69 @@ async function setEditorPayload(win, paragraphCount) {
 
 async function collectState(win, label) {
   return win.webContents.executeJavaScript(\`((payload) => {
-    const toPlainRect = (rect) => rect ? ({
-      x: rect.x,
-      y: rect.y,
-      width: rect.width,
-      height: rect.height,
-      top: rect.top,
-      right: rect.right,
-      bottom: rect.bottom,
-      left: rect.left,
-    }) : null;
+    const toPlainRect = (rect) => {
+      if (!rect) return null;
+      const left = Number.isFinite(rect.left) ? rect.left : rect.x;
+      const top = Number.isFinite(rect.top) ? rect.top : rect.y;
+      const right = Number.isFinite(rect.right) ? rect.right : left + rect.width;
+      const bottom = Number.isFinite(rect.bottom) ? rect.bottom : top + rect.height;
+      return {
+        x: left,
+        y: top,
+        width: right - left,
+        height: bottom - top,
+        top,
+        right,
+        bottom,
+        left,
+      };
+    };
+    const rectFromEdges = (left, top, right, bottom) => toPlainRect({
+      left,
+      top,
+      right,
+      bottom,
+      width: right - left,
+      height: bottom - top,
+    });
+    const intersectRects = (a, b) => {
+      const left = Math.max(a.left, b.left);
+      const top = Math.max(a.top, b.top);
+      const right = Math.min(a.right, b.right);
+      const bottom = Math.min(a.bottom, b.bottom);
+      return right > left && bottom > top ? rectFromEdges(left, top, right, bottom) : null;
+    };
+    const rectIntersects = (a, b, tolerance = 0) => (
+      a.left < b.right - tolerance
+      && a.right > b.left + tolerance
+      && a.top < b.bottom - tolerance
+      && a.bottom > b.top + tolerance
+    );
+    const overflowClips = new Set(['auto', 'clip', 'hidden', 'scroll']);
+    const clipTextRectToAncestors = (rect, textNode) => {
+      let visibleRect = toPlainRect(rect);
+      let element = textNode.parentElement;
+      while (element && visibleRect) {
+        const style = getComputedStyle(element);
+        if (style.display === 'none' || style.visibility === 'hidden') {
+          return null;
+        }
+        const clipsX = overflowClips.has(style.overflowX);
+        const clipsY = overflowClips.has(style.overflowY);
+        if (clipsX || clipsY) {
+          const bounds = toPlainRect(element.getBoundingClientRect());
+          const clipRect = rectFromEdges(
+            clipsX ? bounds.left : visibleRect.left,
+            clipsY ? bounds.top : visibleRect.top,
+            clipsX ? bounds.right : visibleRect.right,
+            clipsY ? bounds.bottom : visibleRect.bottom
+          );
+          visibleRect = intersectRects(visibleRect, clipRect);
+        }
+        element = element.parentElement;
+      }
+      return visibleRect && visibleRect.width > 0 && visibleRect.height > 0 ? visibleRect : null;
+    };
     const stableTextHash = (text) => {
       let hash = 2166136261;
       for (const char of String(text)) {
@@ -143,7 +196,8 @@ async function collectState(win, label) {
           },
         })
       : null;
-    const textRects = [];
+    const rawTextRects = [];
+    const visibleTextRects = [];
     if (walker) {
       let current = walker.nextNode();
       while (current) {
@@ -151,34 +205,58 @@ async function collectState(win, label) {
         range.selectNodeContents(current);
         [...range.getClientRects()].forEach((rect) => {
           if (rect.width > 0 && rect.height > 0) {
-            textRects.push(toPlainRect(rect));
+            const rawRect = toPlainRect(rect);
+            const visibleRect = clipTextRectToAncestors(rawRect, current);
+            rawTextRects.push(rawRect);
+            if (visibleRect) {
+              visibleTextRects.push(visibleRect);
+            }
           }
         });
         current = walker.nextNode();
       }
     }
-    const gapTextRects = firstPageRect && secondPageRect
-      ? textRects.filter((rect) => (
-          rect.x > firstPageRect.x + firstPageRect.width
-          && rect.x + rect.width < secondPageRect.x
-        ))
+    const gapBandRect = firstPageRect && secondPageRect
+      ? rectFromEdges(
+          firstPageRect.right,
+          Math.min(firstPageRect.top, secondPageRect.top) - 1,
+          secondPageRect.left,
+          Math.max(firstPageRect.bottom, secondPageRect.bottom) + 1
+        )
+      : null;
+    const rectInsideAnySheet = (rect) => pageRects.some((pageRect) => (
+      rect.left >= pageRect.left - 1
+      && rect.right <= pageRect.right + 1
+      && rect.top >= pageRect.top - 1
+      && rect.bottom <= pageRect.bottom + 1
+    ));
+    const rectCenterInside = (rect, bounds) => {
+      const centerX = rect.left + (rect.width / 2);
+      const centerY = rect.top + (rect.height / 2);
+      return centerX >= bounds.left - 1
+        && centerX <= bounds.right + 1
+        && centerY >= bounds.top - 1
+        && centerY <= bounds.bottom + 1;
+    };
+    const rectCenterInsideAnySheet = (rect) => pageRects.some((pageRect) => rectCenterInside(rect, pageRect));
+    const gapTextRects = gapBandRect
+      ? visibleTextRects.filter((rect) => rectCenterInside(rect, gapBandRect))
       : [];
-    const overflowTextRects = firstPageRect && lastPageRect
-      ? textRects.filter((rect) => (
-          rect.x < firstPageRect.x - 1
-          || rect.x + rect.width > lastPageRect.x + lastPageRect.width + 1
-          || rect.y < lastPageRect.y - 1
-          || rect.y + rect.height > lastPageRect.y + lastPageRect.height + 1
-        ))
+    const rawLayoutGapTextRects = gapBandRect
+      ? rawTextRects.filter((rect) => rectIntersects(rect, gapBandRect, 1))
+      : [];
+    const overflowTextRects = pageRects.length
+      ? visibleTextRects.filter((rect) => !rectCenterInsideAnySheet(rect))
+      : [];
+    const edgeBleedTextRects = pageRects.length
+      ? visibleTextRects.filter((rect) => !rectInsideAnySheet(rect) && rectCenterInsideAnySheet(rect))
+      : [];
+    const rawLayoutOverflowTextRects = pageRects.length
+      ? rawTextRects.filter((rect) => !rectInsideAnySheet(rect))
       : [];
     const occupiedSheetIndexes = new Set();
     pageRects.forEach((pageRect, pageIndex) => {
-      if (textRects.some((rect) => (
-        rect.x < pageRect.x + pageRect.width
-        && rect.x + rect.width > pageRect.x
-        && rect.y < pageRect.y + pageRect.height
-        && rect.y + rect.height > pageRect.y
-      ))) {
+      if (visibleTextRects.some((rect) => rectIntersects(rect, pageRect, 1))) {
         occupiedSheetIndexes.add(pageIndex);
       }
     });
@@ -220,6 +298,11 @@ async function collectState(win, label) {
       secondSheetSameRow,
       gapTextRectsCount: gapTextRects.length,
       overflowTextRectsCount: overflowTextRects.length,
+      edgeBleedTextRectsCount: edgeBleedTextRects.length,
+      rawLayoutGapTextRectsCount: rawLayoutGapTextRects.length,
+      rawLayoutOverflowTextRectsCount: rawLayoutOverflowTextRects.length,
+      visibleTextRectsCount: visibleTextRects.length,
+      rawLayoutTextRectsCount: rawTextRects.length,
       occupiedSheetCount: occupiedSheetIndexes.size,
     };
   })(\${JSON.stringify({ label, marker })})\`, true);
