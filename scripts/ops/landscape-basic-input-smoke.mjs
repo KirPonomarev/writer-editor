@@ -9,6 +9,7 @@ const CHILD_PREFIX = 'LANDSCAPE_BASIC_INPUT_CHILD:';
 const ENVELOPE_PREFIX = 'LANDSCAPE_BASIC_INPUT_ENVELOPE:';
 const TYPED_ASCII = 'Z';
 const POST_ENTER_ASCII = 'Y';
+const SMALL_PASTE_PAYLOAD = 'PASTE_05BW_alpha';
 
 const PREPARE_INPUT_SOURCE = `(() => (async () => {
   const metrics = {};
@@ -168,7 +169,7 @@ const TEXT_DELTA_SOURCE = `((typedAscii) => {
   }
 })(${JSON.stringify(TYPED_ASCII)})`;
 
-const READ_EDITOR_STATE_SOURCE = `((label, typedAscii, postEnterAscii) => {
+const READ_EDITOR_STATE_SOURCE = `((label, typedAscii, postEnterAscii, smallPastePayload) => {
   const metrics = { label };
   try {
     const readPressed = (selector) => document.querySelector(selector)?.getAttribute('aria-pressed') || '';
@@ -197,6 +198,8 @@ const READ_EDITOR_STATE_SOURCE = `((label, typedAscii, postEnterAscii) => {
     metrics.textLength = text.length;
     metrics.containsTypedAscii = text.includes(typedAscii);
     metrics.containsPostEnterAscii = text.includes(postEnterAscii);
+    metrics.containsSmallPastePayload = text.includes(smallPastePayload);
+    metrics.smallPastePayloadLength = smallPastePayload.length;
     metrics.paragraphCount = paragraphs.length;
     metrics.paragraphTexts = paragraphTexts;
     metrics.activeElementInsideProseMirror = Boolean(target && target.contains(document.activeElement));
@@ -232,7 +235,7 @@ function createChildSource({ rootDir, tempRoot }) {
   return `\
 const fs = require('fs');
 const path = require('path');
-const { app, BrowserWindow, dialog, session } = require('electron');
+const { app, BrowserWindow, clipboard, dialog, session } = require('electron');
 
 const rootDir = ${JSON.stringify(rootDir)};
 const tempRoot = ${JSON.stringify(tempRoot)};
@@ -241,6 +244,7 @@ const textDeltaSource = ${JSON.stringify(TEXT_DELTA_SOURCE)};
 const readEditorStateSource = ${JSON.stringify(READ_EDITOR_STATE_SOURCE)};
 const typedAscii = ${JSON.stringify(TYPED_ASCII)};
 const postEnterAscii = ${JSON.stringify(POST_ENTER_ASCII)};
+const smallPastePayload = ${JSON.stringify(SMALL_PASTE_PAYLOAD)};
 let networkRequests = 0;
 let dialogCalls = 0;
 
@@ -267,6 +271,8 @@ async function readEditorState(win, label) {
     + JSON.stringify(typedAscii)
     + ','
     + JSON.stringify(postEnterAscii)
+    + ','
+    + JSON.stringify(smallPastePayload)
     + ')';
   return win.webContents.executeJavaScript(source, true);
 }
@@ -497,6 +503,57 @@ app.whenReady().then(async () => {
         } : null)));
     if (redoFailure) {
       emit(basePayload(redoFailure.stage, metrics, redoFailure));
+      app.exit(1);
+      return;
+    }
+
+    const pasteBeforeState = await readEditorState(win, 'paste_before');
+    Object.assign(metrics, prefixMetrics('pasteBefore', pasteBeforeState && pasteBeforeState.metrics ? pasteBeforeState.metrics : {}));
+    const pasteBeforeMetrics = pasteBeforeState && pasteBeforeState.metrics ? pasteBeforeState.metrics : {};
+    if (!pasteBeforeState || pasteBeforeState.ok !== 1) {
+      emit(basePayload('paste_before', metrics, pasteBeforeState && pasteBeforeState.failure ? pasteBeforeState.failure : {
+        errorCode: 'PASTE_BEFORE_STATE_FAILED',
+        errorMessage: 'Paste before-state probe did not return ok.',
+        stage: 'paste_before',
+      }));
+      app.exit(1);
+      return;
+    }
+
+    clipboard.writeText(smallPastePayload);
+    metrics.smallPasteMechanism = 'electron_clipboard_writeText_plus_webContents_paste';
+    metrics.smallPastePayload = smallPastePayload;
+    win.focus();
+    win.webContents.paste();
+    await sleep(350);
+    const pasteState = await readEditorState(win, 'paste_delta');
+    Object.assign(metrics, prefixMetrics('paste', pasteState && pasteState.metrics ? pasteState.metrics : {}));
+    const pasteMetrics = pasteState && pasteState.metrics ? pasteState.metrics : {};
+    metrics.pasteTextChanged = pasteMetrics.text !== pasteBeforeMetrics.text;
+    metrics.pasteTextLengthDelta = Number(pasteMetrics.textLength || 0) - Number(pasteBeforeMetrics.textLength || 0);
+    metrics.pasteTextLengthIncreased = metrics.pasteTextLengthDelta >= smallPastePayload.length;
+    metrics.pastePayloadPresent = Boolean(pasteMetrics.containsSmallPastePayload);
+    const pasteFailure = !pasteState || pasteState.ok !== 1
+      ? (pasteState && pasteState.failure ? pasteState.failure : {
+          errorCode: 'PASTE_DELTA_FAILED',
+          errorMessage: 'Paste delta probe did not return ok.',
+          stage: 'paste_delta',
+        })
+      : (!pasteMetrics.activeElementInsideProseMirror ? {
+          errorCode: 'PASTE_FOCUS_LEFT_PROSEMIRROR',
+          errorMessage: 'Focus was not inside ProseMirror after deterministic paste.',
+          stage: 'paste_delta',
+        } : (!metrics.pasteTextChanged || !metrics.pastePayloadPresent || !metrics.pasteTextLengthIncreased ? {
+          errorCode: 'PASTE_TEXT_DELTA_MISSING',
+          errorMessage: 'Small plain-text paste payload did not produce the required ProseMirror text delta.',
+          stage: 'paste_delta',
+        } : (!pasteMetrics.landscapeControlActivated || !pasteMetrics.tiptapPageWidthGtHeight ? {
+          errorCode: 'LANDSCAPE_LOST_AFTER_PASTE',
+          errorMessage: 'Landscape sheet geometry was not preserved after small plain-text paste.',
+          stage: 'paste_delta',
+        } : null)));
+    if (pasteFailure) {
+      emit(basePayload(pasteFailure.stage, metrics, pasteFailure));
       app.exit(1);
       return;
     }
