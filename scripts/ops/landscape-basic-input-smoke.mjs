@@ -4,10 +4,11 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-const TIMEOUT_MS = 10000;
+const TIMEOUT_MS = 15000;
 const CHILD_PREFIX = 'LANDSCAPE_BASIC_INPUT_CHILD:';
 const ENVELOPE_PREFIX = 'LANDSCAPE_BASIC_INPUT_ENVELOPE:';
 const TYPED_ASCII = 'Z';
+const POST_ENTER_ASCII = 'Y';
 
 const PREPARE_INPUT_SOURCE = `(() => (async () => {
   const metrics = {};
@@ -120,6 +121,7 @@ const PREPARE_INPUT_SOURCE = `(() => (async () => {
     metrics.activeElementInsideProseMirror = target.contains(document.activeElement);
     metrics.textBefore = target.textContent || '';
     metrics.textBeforeLength = metrics.textBefore.length;
+    metrics.paragraphCountBefore = target.querySelectorAll('p').length;
 
     return {
       ok: 1,
@@ -166,6 +168,66 @@ const TEXT_DELTA_SOURCE = `((typedAscii) => {
   }
 })(${JSON.stringify(TYPED_ASCII)})`;
 
+const READ_EDITOR_STATE_SOURCE = `((label, typedAscii, postEnterAscii) => {
+  const metrics = { label };
+  try {
+    const readPressed = (selector) => document.querySelector(selector)?.getAttribute('aria-pressed') || '';
+    const rectOf = (element) => {
+      if (!element) return { exists: false, width: 0, height: 0, left: 0, top: 0 };
+      const rect = element.getBoundingClientRect();
+      return {
+        exists: true,
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+        left: Math.round(rect.left),
+        top: Math.round(rect.top),
+      };
+    };
+    const proseMirrors = Array.from(document.querySelectorAll('.ProseMirror'));
+    const target = proseMirrors[0] || null;
+    const inputEditor = target ? target.closest('.tiptap-editor') : null;
+    const inputPageContent = inputEditor ? inputEditor.closest('.tiptap-page__content') : null;
+    const inputPage = inputPageContent ? inputPageContent.closest('.tiptap-page') : null;
+    const text = target ? target.textContent || '' : '';
+    const paragraphs = target ? Array.from(target.querySelectorAll('p')) : [];
+    const paragraphTexts = paragraphs.map((paragraph) => paragraph.textContent || '');
+    const pageRect = rectOf(inputPage);
+    metrics.proseMirrorCount = proseMirrors.length;
+    metrics.text = text;
+    metrics.textLength = text.length;
+    metrics.containsTypedAscii = text.includes(typedAscii);
+    metrics.containsPostEnterAscii = text.includes(postEnterAscii);
+    metrics.paragraphCount = paragraphs.length;
+    metrics.paragraphTexts = paragraphTexts;
+    metrics.activeElementInsideProseMirror = Boolean(target && target.contains(document.activeElement));
+    metrics.landscapeControlActivated = readPressed('[data-preview-orientation-option="landscape"]') === 'true';
+    metrics.inputTiptapPageRect = pageRect;
+    metrics.tiptapPageWidthGtHeight = pageRect.width > pageRect.height;
+    metrics.inputPageInsideSheetStrip = Boolean(inputPage && inputPage.closest('.tiptap-sheet-strip'));
+    return {
+      ok: target ? 1 : 0,
+      stage: label,
+      metrics,
+      failure: target ? null : {
+        errorCode: 'PROSEMIRROR_MISSING_IN_STATE_READ',
+        errorMessage: 'ProseMirror target missing while reading editor state.',
+        stage: label,
+      },
+    };
+  } catch (error) {
+    return {
+      ok: 0,
+      stage: label,
+      metrics,
+      failure: {
+        errorCode: 'EDITOR_STATE_READ_EXCEPTION',
+        errorMessage: error && error.message ? error.message : String(error),
+        stage: label,
+      },
+    };
+  }
+})`;
+
 function createChildSource({ rootDir, tempRoot }) {
   return `\
 const fs = require('fs');
@@ -176,7 +238,9 @@ const rootDir = ${JSON.stringify(rootDir)};
 const tempRoot = ${JSON.stringify(tempRoot)};
 const prepareInputSource = ${JSON.stringify(PREPARE_INPUT_SOURCE)};
 const textDeltaSource = ${JSON.stringify(TEXT_DELTA_SOURCE)};
+const readEditorStateSource = ${JSON.stringify(READ_EDITOR_STATE_SOURCE)};
 const typedAscii = ${JSON.stringify(TYPED_ASCII)};
+const postEnterAscii = ${JSON.stringify(POST_ENTER_ASCII)};
 let networkRequests = 0;
 let dialogCalls = 0;
 
@@ -186,6 +250,44 @@ function emit(payload) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function prefixMetrics(prefix, metrics = {}) {
+  return Object.fromEntries(Object.entries(metrics).map(([key, value]) => {
+    const nextKey = key ? prefix + key[0].toUpperCase() + key.slice(1) : prefix;
+    return [nextKey, value];
+  }));
+}
+
+async function readEditorState(win, label) {
+  const source = readEditorStateSource
+    + '('
+    + JSON.stringify(label)
+    + ','
+    + JSON.stringify(typedAscii)
+    + ','
+    + JSON.stringify(postEnterAscii)
+    + ')';
+  return win.webContents.executeJavaScript(source, true);
+}
+
+async function sendFocusedEditorKey(win, keyCode, modifiers = []) {
+  win.focus();
+  win.webContents.sendInputEvent({ type: 'keyDown', keyCode, modifiers });
+  win.webContents.sendInputEvent({ type: 'keyUp', keyCode, modifiers });
+  await sleep(250);
+}
+
+async function sendFocusedEditorUndo(win) {
+  const modifier = process.platform === 'darwin' ? 'meta' : 'control';
+  await sendFocusedEditorKey(win, 'Z', [modifier]);
+}
+
+async function sendFocusedEditorRedo(win) {
+  const modifier = process.platform === 'darwin' ? 'meta' : 'control';
+  const keyCode = process.platform === 'darwin' ? 'Z' : 'Y';
+  const modifiers = process.platform === 'darwin' ? [modifier, 'shift'] : [modifier];
+  await sendFocusedEditorKey(win, keyCode, modifiers);
 }
 
 function basePayload(stage, metrics = {}, failure = null) {
@@ -299,6 +401,102 @@ app.whenReady().then(async () => {
         } : null));
     if (inputFailure) {
       emit(basePayload(inputFailure.stage, metrics, inputFailure));
+      app.exit(1);
+      return;
+    }
+
+    await sendFocusedEditorKey(win, 'Enter');
+    await win.webContents.insertText(postEnterAscii);
+    await sleep(250);
+    const enterState = await readEditorState(win, 'enter_delta');
+    Object.assign(metrics, prefixMetrics('enter', enterState && enterState.metrics ? enterState.metrics : {}));
+    const enterMetrics = enterState && enterState.metrics ? enterState.metrics : {};
+    metrics.enterTextChanged = enterMetrics.text !== metrics.textAfter;
+    metrics.enterParagraphCountGteTwo = Number(enterMetrics.paragraphCount || 0) >= 2;
+    const enterFailure = !enterState || enterState.ok !== 1
+      ? (enterState && enterState.failure ? enterState.failure : {
+          errorCode: 'ENTER_DELTA_FAILED',
+          errorMessage: 'Enter delta probe did not return ok.',
+          stage: 'enter_delta',
+        })
+      : (!enterMetrics.containsTypedAscii || !enterMetrics.containsPostEnterAscii ? {
+          errorCode: 'ENTER_TEXT_MISSING',
+          errorMessage: 'Enter delta text does not contain both controlled ASCII markers.',
+          stage: 'enter_delta',
+        } : (!metrics.enterParagraphCountGteTwo ? {
+          errorCode: 'ENTER_PARAGRAPH_NOT_CREATED',
+          errorMessage: 'Enter did not create a second paragraph in the ProseMirror document.',
+          stage: 'enter_delta',
+        } : (!enterMetrics.landscapeControlActivated || !enterMetrics.tiptapPageWidthGtHeight ? {
+          errorCode: 'LANDSCAPE_LOST_AFTER_ENTER',
+          errorMessage: 'Landscape sheet geometry was not preserved after Enter.',
+          stage: 'enter_delta',
+        } : null)));
+    if (enterFailure) {
+      emit(basePayload(enterFailure.stage, metrics, enterFailure));
+      app.exit(1);
+      return;
+    }
+
+    await sendFocusedEditorUndo(win);
+    const undoState = await readEditorState(win, 'undo_delta');
+    Object.assign(metrics, prefixMetrics('undo', undoState && undoState.metrics ? undoState.metrics : {}));
+    const undoMetrics = undoState && undoState.metrics ? undoState.metrics : {};
+    metrics.undoTextChanged = undoMetrics.text !== enterMetrics.text;
+    metrics.undoTextLengthReduced = Number(undoMetrics.textLength || 0) < Number(enterMetrics.textLength || 0);
+    metrics.undoRemovedPostEnterAscii = !undoMetrics.containsPostEnterAscii;
+    const undoFailure = !undoState || undoState.ok !== 1
+      ? (undoState && undoState.failure ? undoState.failure : {
+          errorCode: 'UNDO_DELTA_FAILED',
+          errorMessage: 'Undo delta probe did not return ok.',
+          stage: 'undo_delta',
+        })
+      : (!metrics.undoTextChanged ? {
+          errorCode: 'UNDO_TEXT_NOT_CHANGED',
+          errorMessage: 'Undo did not change ProseMirror text after Enter and second insert.',
+          stage: 'undo_delta',
+        } : (!metrics.undoTextLengthReduced || !metrics.undoRemovedPostEnterAscii ? {
+          errorCode: 'UNDO_TEXT_UNEXPECTED',
+          errorMessage: 'Undo did not reduce text state away from the post-Enter controlled ASCII marker.',
+          stage: 'undo_delta',
+        } : (!undoMetrics.landscapeControlActivated || !undoMetrics.tiptapPageWidthGtHeight ? {
+          errorCode: 'LANDSCAPE_LOST_AFTER_UNDO',
+          errorMessage: 'Landscape sheet geometry was not preserved after undo.',
+          stage: 'undo_delta',
+        } : null)));
+    if (undoFailure) {
+      emit(basePayload(undoFailure.stage, metrics, undoFailure));
+      app.exit(1);
+      return;
+    }
+
+    await sendFocusedEditorRedo(win);
+    const redoState = await readEditorState(win, 'redo_delta');
+    Object.assign(metrics, prefixMetrics('redo', redoState && redoState.metrics ? redoState.metrics : {}));
+    const redoMetrics = redoState && redoState.metrics ? redoState.metrics : {};
+    metrics.redoRestoredEnterText = redoMetrics.text === enterMetrics.text;
+    metrics.redoRestoredParagraphs = Number(redoMetrics.paragraphCount || 0) >= 2;
+    const redoFailure = !redoState || redoState.ok !== 1
+      ? (redoState && redoState.failure ? redoState.failure : {
+          errorCode: 'REDO_DELTA_FAILED',
+          errorMessage: 'Redo delta probe did not return ok.',
+          stage: 'redo_delta',
+        })
+      : (!metrics.redoRestoredEnterText || !redoMetrics.containsTypedAscii || !redoMetrics.containsPostEnterAscii ? {
+          errorCode: 'REDO_TEXT_NOT_RESTORED',
+          errorMessage: 'Redo did not restore the post-Enter controlled text state.',
+          stage: 'redo_delta',
+        } : (!metrics.redoRestoredParagraphs ? {
+          errorCode: 'REDO_PARAGRAPH_NOT_RESTORED',
+          errorMessage: 'Redo did not restore the second paragraph state.',
+          stage: 'redo_delta',
+        } : (!redoMetrics.landscapeControlActivated || !redoMetrics.tiptapPageWidthGtHeight ? {
+          errorCode: 'LANDSCAPE_LOST_AFTER_REDO',
+          errorMessage: 'Landscape sheet geometry was not preserved after redo.',
+          stage: 'redo_delta',
+        } : null)));
+    if (redoFailure) {
+      emit(basePayload(redoFailure.stage, metrics, redoFailure));
       app.exit(1);
       return;
     }
