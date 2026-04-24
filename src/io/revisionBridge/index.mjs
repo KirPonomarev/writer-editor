@@ -28,6 +28,34 @@ export const REVISION_BRIDGE_BLOCK_KINDS = Object.freeze([
   'tablePlaceholder',
   'unsupportedObjectPlaceholder',
 ]);
+export const REVISION_BRIDGE_INLINE_RANGE_SCHEMA = 'revision-bridge.inline-range.v1';
+export const REVISION_BRIDGE_COMMENT_ANCHOR_PLACEMENT_SCHEMA = 'revision-bridge.comment-anchor-placement.v1';
+export const REVISION_BRIDGE_INLINE_ANCHOR_KINDS = Object.freeze([
+  'point',
+  'span',
+  'deleted',
+  'orphan',
+]);
+export const REVISION_BRIDGE_MATCH_CONFIDENCE_LEVELS = Object.freeze([
+  'exact',
+  'strongHigh',
+  'weakHigh',
+  'approximate',
+  'unresolved',
+]);
+export const REVISION_BRIDGE_RISK_CLASSES = Object.freeze([
+  'low',
+  'medium',
+  'high',
+  'critical',
+]);
+export const REVISION_BRIDGE_AUTOMATION_POLICIES = Object.freeze([
+  'autoEligible',
+  'manualConfirmRequired',
+  'manualOnly',
+  'diagnosticsOnly',
+  'hardFail',
+]);
 
 const REVIEWGRAPH_ITEM_KINDS = [
   'commentThread',
@@ -1610,6 +1638,270 @@ export function deriveRevisionBlocksFromPlainSceneText(input = {}) {
     }));
 }
 // RB_09_BLOCK_LINEAGE_CONTRACTS_END
+
+// RB_10_INLINE_RANGE_ANCHOR_CONTRACTS_START
+const INLINE_RANGE_VALID_CODE = 'REVISION_BRIDGE_INLINE_RANGE_VALID';
+const INLINE_RANGE_INVALID_CODE = 'E_REVISION_BRIDGE_INLINE_RANGE_INVALID';
+const COMMENT_ANCHOR_PLACEMENT_VALID_CODE = 'REVISION_BRIDGE_COMMENT_ANCHOR_PLACEMENT_VALID';
+const COMMENT_ANCHOR_PLACEMENT_INVALID_CODE = 'E_REVISION_BRIDGE_COMMENT_ANCHOR_PLACEMENT_INVALID';
+const COMMENT_ANCHOR_PLACEMENT_FORBIDDEN_TEXT_FIELDS = [
+  'body',
+  'text',
+  'messages',
+  'commentText',
+];
+
+function inlineRangeInput(input) {
+  return isPlainObject(input) ? input : {};
+}
+
+function inlineRangePosition(value) {
+  return Number.isSafeInteger(value) && value >= 0 ? value : null;
+}
+
+function inlineRangeReason(code, field, message) {
+  return { code, field, message };
+}
+
+function inlineRangeValidationFailure(reasons, value = null) {
+  return {
+    ok: false,
+    type: 'revisionBridge.inlineRange.validation',
+    code: INLINE_RANGE_INVALID_CODE,
+    reason: reasons[0]?.code || INLINE_RANGE_INVALID_CODE,
+    reasons,
+    value,
+  };
+}
+
+function inlineRangeValidationSuccess(value) {
+  return {
+    ok: true,
+    type: 'revisionBridge.inlineRange.validation',
+    code: INLINE_RANGE_VALID_CODE,
+    reason: INLINE_RANGE_VALID_CODE,
+    reasons: [],
+    value: cloneJsonSafe(value),
+  };
+}
+
+function commentAnchorPlacementValidationFailure(reasons, value = null) {
+  return {
+    ok: false,
+    type: 'revisionBridge.commentAnchorPlacement.validation',
+    code: COMMENT_ANCHOR_PLACEMENT_INVALID_CODE,
+    reason: reasons[0]?.code || COMMENT_ANCHOR_PLACEMENT_INVALID_CODE,
+    reasons,
+    value,
+  };
+}
+
+function commentAnchorPlacementValidationSuccess(value) {
+  return {
+    ok: true,
+    type: 'revisionBridge.commentAnchorPlacement.validation',
+    code: COMMENT_ANCHOR_PLACEMENT_VALID_CODE,
+    reason: COMMENT_ANCHOR_PLACEMENT_VALID_CODE,
+    reasons: [],
+    value: cloneJsonSafe(value),
+  };
+}
+
+function inlineRangeNormalizeTargetScope(value) {
+  const scope = isPlainObject(value) ? value : {};
+  return {
+    type: normalizeString(scope.type),
+    id: normalizeString(scope.id),
+  };
+}
+
+function inlineRangeBlockTextFromContext(blockId, context) {
+  if (!blockId || !isPlainObject(context)) return null;
+  const blocks = context.blocks;
+  if (Array.isArray(blocks)) {
+    const block = blocks.find((candidate) => isPlainObject(candidate) && normalizeString(candidate.blockId) === blockId);
+    return block ? normalizeRevisionBlockText(block.text) : null;
+  }
+  if (isPlainObject(blocks)) {
+    const block = blocks[blockId];
+    if (typeof block === 'string') return normalizeRevisionBlockText(block);
+    if (isPlainObject(block)) return normalizeRevisionBlockText(block.text);
+  }
+  return null;
+}
+
+function inlineRangeContextHasBlocks(context) {
+  return isPlainObject(context) && (Array.isArray(context.blocks) || isPlainObject(context.blocks));
+}
+
+export function isRevisionInlineAnchorKind(value) {
+  return REVISION_BRIDGE_INLINE_ANCHOR_KINDS.includes(value);
+}
+
+export function isRevisionMatchConfidence(value) {
+  return REVISION_BRIDGE_MATCH_CONFIDENCE_LEVELS.includes(value);
+}
+
+export function isRevisionRiskClass(value) {
+  return REVISION_BRIDGE_RISK_CLASSES.includes(value);
+}
+
+export function isRevisionAutomationPolicy(value) {
+  return REVISION_BRIDGE_AUTOMATION_POLICIES.includes(value);
+}
+
+export function createInlineRange(input = {}) {
+  const range = inlineRangeInput(input);
+  const kind = isRevisionInlineAnchorKind(range.kind) ? range.kind : 'point';
+  const confidence = isRevisionMatchConfidence(range.confidence) ? range.confidence : (kind === 'orphan' ? 'unresolved' : 'exact');
+  const automationPolicy = isRevisionAutomationPolicy(range.automationPolicy)
+    ? range.automationPolicy
+    : (kind === 'orphan' ? 'diagnosticsOnly' : 'manualOnly');
+  const from = inlineRangePosition(range.from);
+  const to = inlineRangePosition(range.to);
+  return cloneJsonSafe({
+    schemaVersion: REVISION_BRIDGE_INLINE_RANGE_SCHEMA,
+    kind,
+    blockId: normalizeString(range.blockId),
+    lineageId: normalizeString(range.lineageId),
+    from,
+    to,
+    quote: normalizeString(range.quote),
+    prefix: normalizeString(range.prefix),
+    suffix: normalizeString(range.suffix),
+    confidence,
+    riskClass: isRevisionRiskClass(range.riskClass) ? range.riskClass : 'low',
+    automationPolicy,
+    deletedTarget: range.deletedTarget === true,
+    reasonCodes: normalizeStringArray(range.reasonCodes),
+  });
+}
+
+function collectInlineRangeReasons(input, range, context) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(invalidField('inlineRange', 'inlineRange must be an object'));
+    return reasons;
+  }
+  if (input.schemaVersion !== REVISION_BRIDGE_INLINE_RANGE_SCHEMA) {
+    reasons.push(invalidField('inlineRange.schemaVersion', 'inlineRange schemaVersion is not supported'));
+  }
+  if (!isRevisionInlineAnchorKind(input.kind)) {
+    reasons.push(invalidField('inlineRange.kind', 'inlineRange kind is not supported'));
+  }
+  if (!hasOwnField(input, 'from') || inlineRangePosition(input.from) === null) {
+    reasons.push(invalidField('inlineRange.from', 'inlineRange from must be a non-negative safe integer'));
+  }
+  if (!hasOwnField(input, 'to') || inlineRangePosition(input.to) === null) {
+    reasons.push(invalidField('inlineRange.to', 'inlineRange to must be a non-negative safe integer'));
+  }
+  if (!isRevisionMatchConfidence(input.confidence)) {
+    reasons.push(invalidField('inlineRange.confidence', 'inlineRange confidence is not supported'));
+  }
+  if (!isRevisionRiskClass(input.riskClass)) {
+    reasons.push(invalidField('inlineRange.riskClass', 'inlineRange riskClass is not supported'));
+  }
+  if (!isRevisionAutomationPolicy(input.automationPolicy)) {
+    reasons.push(invalidField('inlineRange.automationPolicy', 'inlineRange automationPolicy is not supported'));
+  }
+  if (!Array.isArray(input.reasonCodes)) {
+    reasons.push(invalidField('inlineRange.reasonCodes', 'inlineRange reasonCodes must be an array'));
+  }
+
+  if (range.kind === 'point' && range.from !== range.to) {
+    reasons.push(invalidField('inlineRange', 'point inlineRange must have matching from and to'));
+  }
+  if (range.kind === 'span' && !(range.from < range.to)) {
+    reasons.push(invalidField('inlineRange', 'span inlineRange must have from less than to'));
+  }
+  if (range.kind === 'deleted') {
+    if (!(range.from <= range.to)) reasons.push(invalidField('inlineRange', 'deleted inlineRange must have from less than or equal to to'));
+    if (range.deletedTarget !== true) reasons.push(invalidField('inlineRange.deletedTarget', 'deleted inlineRange must have deletedTarget true'));
+    if (range.automationPolicy === 'autoEligible') reasons.push(invalidField('inlineRange.automationPolicy', 'deleted inlineRange cannot be autoEligible'));
+  }
+  if (range.kind === 'orphan') {
+    if (range.blockId) reasons.push(invalidField('inlineRange.blockId', 'orphan inlineRange must not set blockId'));
+    if (range.confidence !== 'unresolved') reasons.push(invalidField('inlineRange.confidence', 'orphan inlineRange must be unresolved'));
+    if (range.automationPolicy !== 'diagnosticsOnly' && range.automationPolicy !== 'hardFail') {
+      reasons.push(invalidField('inlineRange.automationPolicy', 'orphan inlineRange must be diagnosticsOnly or hardFail'));
+    }
+  }
+  if ((range.confidence === 'approximate' || range.confidence === 'unresolved') && range.automationPolicy === 'autoEligible') {
+    reasons.push(invalidField('inlineRange.automationPolicy', 'approximate or unresolved inlineRange cannot be autoEligible'));
+  }
+
+  const blockText = inlineRangeBlockTextFromContext(range.blockId, context);
+  if (range.kind !== 'orphan' && inlineRangeContextHasBlocks(context)) {
+    if (blockText === null) {
+      reasons.push(invalidField('inlineRange.blockId', 'inlineRange blockId is not present in context blocks'));
+    } else if (range.to > blockText.length) {
+      reasons.push(invalidField('inlineRange.to', 'inlineRange to exceeds context block text length'));
+    }
+  }
+  if (range.confidence === 'exact' && range.quote && blockText !== null && !blockText.includes(range.quote)) {
+    reasons.push(inlineRangeReason(
+      'REVISION_BRIDGE_INLINE_RANGE_STALE_QUOTE',
+      'inlineRange.quote',
+      'exact inlineRange quote is not present in context block text',
+    ));
+  }
+  return reasons;
+}
+
+export function validateInlineRange(input = {}, context = {}) {
+  const range = createInlineRange(input);
+  const reasons = collectInlineRangeReasons(input, range, context);
+  if (reasons.length > 0) return inlineRangeValidationFailure(reasons, range);
+  return inlineRangeValidationSuccess(range);
+}
+
+export function createCommentAnchorPlacement(input = {}) {
+  const placement = inlineRangeInput(input);
+  return cloneJsonSafe({
+    schemaVersion: REVISION_BRIDGE_COMMENT_ANCHOR_PLACEMENT_SCHEMA,
+    placementId: normalizeString(placement.placementId),
+    threadId: normalizeString(placement.threadId),
+    targetScope: inlineRangeNormalizeTargetScope(placement.targetScope),
+    inlineRange: createInlineRange(placement.inlineRange),
+    resolvedState: normalizeString(placement.resolvedState),
+    acceptedState: normalizeString(placement.acceptedState),
+    diagnosticsOnly: placement.diagnosticsOnly === true,
+  });
+}
+
+export function validateCommentAnchorPlacement(input = {}, context = {}) {
+  const placement = createCommentAnchorPlacement(input);
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(invalidField('commentAnchorPlacement', 'commentAnchorPlacement must be an object'));
+    return commentAnchorPlacementValidationFailure(reasons, placement);
+  }
+  if (input.schemaVersion !== REVISION_BRIDGE_COMMENT_ANCHOR_PLACEMENT_SCHEMA) {
+    reasons.push(invalidField('commentAnchorPlacement.schemaVersion', 'commentAnchorPlacement schemaVersion is not supported'));
+  }
+  if (!normalizeString(input.placementId)) reasons.push(missingField('commentAnchorPlacement.placementId'));
+  if (!normalizeString(input.threadId)) reasons.push(missingField('commentAnchorPlacement.threadId'));
+  if (!isPlainObject(input.targetScope)) {
+    reasons.push(invalidField('commentAnchorPlacement.targetScope', 'commentAnchorPlacement targetScope must be an object'));
+  } else if (!normalizeString(input.targetScope.type)) {
+    reasons.push(missingField('commentAnchorPlacement.targetScope.type'));
+  }
+  for (const field of COMMENT_ANCHOR_PLACEMENT_FORBIDDEN_TEXT_FIELDS) {
+    if (hasOwnField(input, field)) {
+      reasons.push(invalidField(`commentAnchorPlacement.${field}`, 'commentAnchorPlacement must not duplicate comment content'));
+    }
+  }
+  const inlineRangeResult = validateInlineRange(input.inlineRange, context);
+  for (const reason of inlineRangeResult.reasons) {
+    reasons.push({
+      ...reason,
+      field: reason.field.replace(/^inlineRange/u, 'commentAnchorPlacement.inlineRange'),
+    });
+  }
+  if (reasons.length > 0) return commentAnchorPlacementValidationFailure(reasons, placement);
+  return commentAnchorPlacementValidationSuccess(placement);
+}
+// RB_10_INLINE_RANGE_ANCHOR_CONTRACTS_END
 
 function reviewGraphValidationFailure(reasons, value = null) {
   return {
