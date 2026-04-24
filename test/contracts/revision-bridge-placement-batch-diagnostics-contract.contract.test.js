@@ -116,6 +116,20 @@ function changedFilesFromGitStatus(statusText) {
     .map((line) => line.slice(3).replace(/^"|"$/gu, ''));
 }
 
+function changedFilesFromGitDiff(diffText) {
+  return diffText
+    .split('\n')
+    .filter((line) => line !== '');
+}
+
+function packageManifestFiles(filePaths) {
+  return filePaths.filter((filePath) => (
+    filePath === 'package.json'
+    || filePath === 'package-lock.json'
+    || filePath === 'npm-shrinkwrap.json'
+  ));
+}
+
 test('RB-14 exports exact schema function and frozen reason catalog', async () => {
   const bridge = await loadBridge();
 
@@ -588,14 +602,16 @@ test('RB-14 source section has no forbidden side effect or dependency tokens', (
 });
 
 test('RB-14 changed files stay allowlisted and package manifests are untouched', () => {
-  const statusText = execFileSync('git', ['status', '--short'], { encoding: 'utf8' });
-  const changedFiles = changedFilesFromGitStatus(statusText);
-  const outsideAllowlist = changedFiles.filter((filePath) => !ALLOWLIST.includes(filePath));
-  const packageManifestDiff = changedFiles.filter((filePath) => (
-    filePath === 'package.json'
-    || filePath === 'package-lock.json'
-    || filePath === 'npm-shrinkwrap.json'
-  ));
+  const statusText = execFileSync('git', ['status', '--short', '-uall'], { encoding: 'utf8' });
+  const diffText = execFileSync('git', ['diff', '--name-only', 'HEAD~1..HEAD'], { encoding: 'utf8' });
+  const worktreeFiles = changedFilesFromGitStatus(statusText);
+  const committedFiles = changedFilesFromGitDiff(diffText);
+  const outsideAllowlist = [...worktreeFiles, ...committedFiles]
+    .filter((filePath) => !ALLOWLIST.includes(filePath));
+  const packageManifestDiff = [
+    ...packageManifestFiles(worktreeFiles),
+    ...packageManifestFiles(committedFiles),
+  ];
 
   assert.deepEqual(outsideAllowlist, []);
   assert.deepEqual(packageManifestDiff, []);
