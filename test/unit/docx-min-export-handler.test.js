@@ -1,5 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs/promises');
+const os = require('node:os');
+const path = require('node:path');
 
 const { runDocxMinExport } = require('../../src/export/docx/docxMinExportHandler');
 
@@ -126,4 +129,60 @@ test('docx min export handler returns canceled without builder or write port cal
   assert.deepEqual(result.error.details, { requestId: 'req-canceled' });
   assert.equal(calls.buildDocxMinBuffer, 0);
   assert.equal(calls.writeBufferAtomic, 0);
+});
+
+test('docx min export handler can write through a temp-only injected filesystem port with cleanup', async () => {
+  const documentBuffer = Buffer.from('docx-min-temp-buffer');
+  let tempDir = '';
+  let outPath = '';
+
+  try {
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'yalken-docx-export-'));
+    outPath = path.join(tempDir, 'export.docx');
+
+    const result = await runDocxMinExport({
+      requestId: 'req-temp',
+      outPath,
+      outDir: '',
+      bufferSource: 'Horizontal sheet temp export text',
+      options: {},
+    }, {
+      normalizeExportPayload(input) {
+        return input;
+      },
+      makeTypedExportError,
+      resolveDocxExportPath(input) {
+        return input.outPath;
+      },
+      async requestEditorSnapshot() {
+        throw new Error('should not request snapshot');
+      },
+      async buildDocxMinBuffer() {
+        return documentBuffer;
+      },
+      async queueDiskOperation(operation) {
+        return operation();
+      },
+      async writeBufferAtomic(targetPath, buffer) {
+        await fs.writeFile(targetPath, buffer);
+      },
+      updateStatus() {},
+    });
+
+    assert.deepEqual(result, {
+      ok: 1,
+      outPath,
+      bytesWritten: documentBuffer.length,
+    });
+    assert.equal(await fs.readFile(outPath, 'utf8'), documentBuffer.toString('utf8'));
+  } finally {
+    if (tempDir) {
+      await fs.rm(tempDir, { recursive: true, force: true });
+    }
+  }
+
+  await assert.rejects(
+    fs.access(outPath),
+    (error) => error && error.code === 'ENOENT',
+  );
 });
