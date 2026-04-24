@@ -71,6 +71,12 @@ export const REVISION_BRIDGE_ANCHOR_CONFIDENCE_REASON_CODES = Object.freeze([
   'REVISION_BRIDGE_ANCHOR_CONFIDENCE_WEAK_ANCHOR',
   'REVISION_BRIDGE_ANCHOR_CONFIDENCE_UNRESOLVED_ANCHOR',
 ]);
+const MATCH_PROOF_BUILT_CODE = 'REVISION_BRIDGE_MATCH_PROOF_BUILT';
+export const REVISION_BRIDGE_MATCH_PROOF_SCHEMA = 'revision-bridge.match-proof.v1';
+export const REVISION_BRIDGE_MATCH_PROOF_REASON_CODES = Object.freeze([
+  MATCH_PROOF_BUILT_CODE,
+  ...REVISION_BRIDGE_ANCHOR_CONFIDENCE_REASON_CODES,
+]);
 
 const REVIEWGRAPH_ITEM_KINDS = [
   'commentThread',
@@ -2181,6 +2187,358 @@ export function evaluateInlineRangeAnchorConfidence(input = {}, context = {}) {
   };
 }
 // RB_11_ANCHOR_CONFIDENCE_ENGINE_CONTRACTS_END
+
+// RB_12_MATCH_PROOF_CONTRACTS_START
+function matchProofRangeInput(input) {
+  if (!isPlainObject(input)) return {};
+  return isPlainObject(input.inlineRange) ? input.inlineRange : input;
+}
+
+function matchProofDiagnostic(code, field, message) {
+  return { code, field, message };
+}
+
+function matchProofAddDiagnostic(diagnostics, code, field, message) {
+  if (!diagnostics.some((diagnostic) => diagnostic.code === code && diagnostic.field === field)) {
+    diagnostics.push(matchProofDiagnostic(code, field, message));
+  }
+}
+
+function matchProofTextFromEntry(entry) {
+  if (typeof entry === 'string') return normalizeRevisionBlockText(entry);
+  if (isPlainObject(entry)) return normalizeRevisionBlockText(entry.text);
+  return null;
+}
+
+function matchProofBlockFromContext(blockId, context) {
+  if (!blockId || !isPlainObject(context)) return { found: false, text: null, lineageId: '' };
+  if (Array.isArray(context.blocks)) {
+    const block = context.blocks.find((candidate) => isPlainObject(candidate) && normalizeString(candidate.blockId) === blockId);
+    return {
+      found: block !== undefined,
+      text: matchProofTextFromEntry(block),
+      lineageId: isPlainObject(block) ? normalizeString(block.lineageId) : '',
+    };
+  }
+  if (isPlainObject(context.blocks)) {
+    const block = context.blocks[blockId];
+    return {
+      found: block !== undefined,
+      text: matchProofTextFromEntry(block),
+      lineageId: isPlainObject(block) ? normalizeString(block.lineageId) : '',
+    };
+  }
+  if (isPlainObject(context.blockMap)) {
+    const block = context.blockMap[blockId];
+    return {
+      found: block !== undefined,
+      text: matchProofTextFromEntry(block),
+      lineageId: isPlainObject(block) ? normalizeString(block.lineageId) : '',
+    };
+  }
+  return { found: false, text: null, lineageId: '' };
+}
+
+function matchProofRangeInBounds(range, text) {
+  return text !== null
+    && Number.isSafeInteger(range.from)
+    && Number.isSafeInteger(range.to)
+    && range.from >= 0
+    && range.to >= 0
+    && range.from <= range.to
+    && range.to <= text.length;
+}
+
+function matchProofProofForSide(expected, observed) {
+  return {
+    expected,
+    observed,
+    matched: expected === observed,
+  };
+}
+
+function matchProofInlineRangeSnapshot(inlineRange) {
+  return cloneJsonSafe({
+    schemaVersion: inlineRange.schemaVersion,
+    kind: inlineRange.kind,
+    blockId: inlineRange.blockId,
+    lineageId: inlineRange.lineageId,
+    from: inlineRange.from,
+    to: inlineRange.to,
+    quote: inlineRange.quote,
+    prefix: inlineRange.prefix,
+    suffix: inlineRange.suffix,
+    confidence: inlineRange.confidence,
+    riskClass: inlineRange.riskClass,
+    deletedTarget: inlineRange.deletedTarget,
+    reasonCodes: inlineRange.reasonCodes,
+  });
+}
+
+function matchProofResult(status, reasonCodes, diagnostics, inlineRange, block, comparedRange, observedQuote, prefixProof, suffixProof) {
+  return {
+    schemaVersion: REVISION_BRIDGE_MATCH_PROOF_SCHEMA,
+    type: 'revisionBridge.matchProof',
+    status,
+    code: REVISION_BRIDGE_MATCH_PROOF_REASON_CODES[0],
+    reason: reasonCodes[0] || REVISION_BRIDGE_MATCH_PROOF_REASON_CODES[0],
+    inlineRange: matchProofInlineRangeSnapshot(inlineRange),
+    blockRef: {
+      blockId: inlineRange.blockId,
+      lineageId: inlineRange.lineageId || block.lineageId,
+      hasContextBlock: block.found === true && block.text !== null,
+    },
+    comparedRange: cloneJsonSafe(comparedRange),
+    expectedQuote: inlineRange.quote,
+    observedQuote,
+    prefixProof: cloneJsonSafe(prefixProof),
+    suffixProof: cloneJsonSafe(suffixProof),
+    reasonCodes: cloneJsonSafe(reasonCodes),
+    diagnostics: cloneJsonSafe(diagnostics),
+  };
+}
+
+function matchProofReasonCodes(diagnostics) {
+  const codes = [];
+  for (const diagnostic of diagnostics) {
+    if (!codes.includes(diagnostic.code)) codes.push(diagnostic.code);
+  }
+  return codes;
+}
+
+function matchProofHasAny(diagnostics, codes) {
+  return diagnostics.some((diagnostic) => codes.includes(diagnostic.code));
+}
+
+function matchProofMapValidationReason(reason, diagnostics) {
+  if (reason.code === 'REVISION_BRIDGE_INLINE_RANGE_STALE_QUOTE') {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_STALE_QUOTE',
+      reason.field,
+      'quote is not present in the target block',
+    );
+  } else if (reason.field === 'inlineRange.blockId') {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_MISSING_BLOCK',
+      reason.field,
+      reason.message,
+    );
+  } else if (reason.field === 'inlineRange.to') {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_OUT_OF_BOUNDS',
+      reason.field,
+      reason.message,
+    );
+  } else {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_VALIDATION_FAILED',
+      reason.field,
+      reason.message,
+    );
+  }
+}
+
+export function buildInlineRangeMatchProof(input = {}, context = {}) {
+  const rangeInput = matchProofRangeInput(input);
+  const inlineRange = createInlineRange(rangeInput);
+  const diagnostics = [];
+  let validation;
+
+  try {
+    validation = validateInlineRange(rangeInput, context);
+  } catch {
+    validation = {
+      ok: false,
+      reasons: [
+        matchProofDiagnostic(
+          'REVISION_BRIDGE_ANCHOR_CONFIDENCE_VALIDATION_FAILED',
+          'inlineRange',
+          'inlineRange validation failed',
+        ),
+      ],
+    };
+  }
+
+  for (const reason of validation.reasons || []) {
+    matchProofMapValidationReason(reason, diagnostics);
+  }
+
+  const block = matchProofBlockFromContext(inlineRange.blockId, context);
+  if (inlineRange.kind !== 'orphan' && block.text === null) {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_MISSING_BLOCK',
+      'inlineRange.blockId',
+      'target block is not present in the supplied context',
+    );
+  }
+  if (inlineRange.kind === 'orphan') {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_ORPHAN',
+      'inlineRange.kind',
+      'orphan anchor remains unresolved',
+    );
+  }
+  if (inlineRange.kind === 'deleted' || inlineRange.deletedTarget === true) {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_DELETED_TARGET',
+      'inlineRange.deletedTarget',
+      'deleted target remains unresolved',
+    );
+  }
+  if (inlineRange.confidence === 'weakHigh' || inlineRange.confidence === 'approximate') {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_WEAK_ANCHOR',
+      'inlineRange.confidence',
+      'weak or approximate anchor is only partially proven',
+    );
+  }
+  if (inlineRange.confidence === 'unresolved') {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_UNRESOLVED_ANCHOR',
+      'inlineRange.confidence',
+      'unresolved anchor remains unresolved',
+    );
+  }
+
+  const originalRange = {
+    from: inlineRange.from,
+    to: inlineRange.to,
+    inBounds: matchProofRangeInBounds(inlineRange, block.text),
+  };
+  if (block.text !== null && inlineRange.kind !== 'orphan' && !originalRange.inBounds) {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_OUT_OF_BOUNDS',
+      'inlineRange',
+      'target range is outside the target block',
+    );
+  }
+
+  let comparedRange = originalRange;
+  let exactRange = false;
+  if (originalRange.inBounds) {
+    exactRange = inlineRange.quote === ''
+      ? inlineRange.from === inlineRange.to
+      : block.text.slice(inlineRange.from, inlineRange.to) === inlineRange.quote;
+  }
+
+  if (block.text !== null && originalRange.inBounds && inlineRange.quote && !exactRange) {
+    const firstIndex = block.text.indexOf(inlineRange.quote);
+    if (firstIndex >= 0) {
+      comparedRange = {
+        from: firstIndex,
+        to: firstIndex + inlineRange.quote.length,
+        inBounds: true,
+      };
+      matchProofAddDiagnostic(
+        diagnostics,
+        'REVISION_BRIDGE_ANCHOR_CONFIDENCE_QUOTE_ELSEWHERE',
+        'inlineRange.quote',
+        'quote exists in the block but not at the target range',
+      );
+    } else {
+      matchProofAddDiagnostic(
+        diagnostics,
+        'REVISION_BRIDGE_ANCHOR_CONFIDENCE_STALE_QUOTE',
+        'inlineRange.quote',
+        'quote is not present in the target block',
+      );
+    }
+  }
+
+  const observedQuote = comparedRange.inBounds ? block.text.slice(comparedRange.from, comparedRange.to) : '';
+  const prefixObserved = comparedRange.inBounds
+    ? block.text.slice(Math.max(0, comparedRange.from - inlineRange.prefix.length), comparedRange.from)
+    : '';
+  const suffixObserved = comparedRange.inBounds
+    ? block.text.slice(comparedRange.to, comparedRange.to + inlineRange.suffix.length)
+    : '';
+  const prefixProof = matchProofProofForSide(inlineRange.prefix, prefixObserved);
+  const suffixProof = matchProofProofForSide(inlineRange.suffix, suffixObserved);
+
+  if (comparedRange.inBounds && !prefixProof.matched) {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_PREFIX_MISMATCH',
+      'inlineRange.prefix',
+      'prefix does not match text before the compared range',
+    );
+  }
+  if (comparedRange.inBounds && !suffixProof.matched) {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_SUFFIX_MISMATCH',
+      'inlineRange.suffix',
+      'suffix does not match text after the compared range',
+    );
+  }
+
+  const hardCodes = [
+    'REVISION_BRIDGE_ANCHOR_CONFIDENCE_VALIDATION_FAILED',
+    'REVISION_BRIDGE_ANCHOR_CONFIDENCE_OUT_OF_BOUNDS',
+  ];
+  const unresolvedCodes = [
+    'REVISION_BRIDGE_ANCHOR_CONFIDENCE_MISSING_BLOCK',
+    'REVISION_BRIDGE_ANCHOR_CONFIDENCE_STALE_QUOTE',
+    'REVISION_BRIDGE_ANCHOR_CONFIDENCE_ORPHAN',
+    'REVISION_BRIDGE_ANCHOR_CONFIDENCE_DELETED_TARGET',
+    'REVISION_BRIDGE_ANCHOR_CONFIDENCE_UNRESOLVED_ANCHOR',
+  ];
+
+  const exactProof = exactRange
+    && originalRange.from === comparedRange.from
+    && originalRange.to === comparedRange.to
+    && prefixProof.matched
+    && suffixProof.matched
+    && !matchProofHasAny(diagnostics, hardCodes)
+    && !matchProofHasAny(diagnostics, unresolvedCodes)
+    && !matchProofHasAny(diagnostics, [
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_QUOTE_ELSEWHERE',
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_PREFIX_MISMATCH',
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_SUFFIX_MISMATCH',
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_WEAK_ANCHOR',
+    ]);
+
+  if (exactProof) {
+    matchProofAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_EXACT_RANGE',
+      'inlineRange',
+      'quote matches the target range exactly',
+    );
+  }
+
+  const reasonCodes = matchProofReasonCodes(diagnostics);
+  const status = matchProofHasAny(diagnostics, hardCodes)
+    ? 'hardFail'
+    : matchProofHasAny(diagnostics, unresolvedCodes)
+      ? 'unresolved'
+      : exactProof
+        ? 'matched'
+        : 'partial';
+
+  return matchProofResult(
+    status,
+    reasonCodes,
+    diagnostics,
+    inlineRange,
+    block,
+    comparedRange,
+    observedQuote,
+    prefixProof,
+    suffixProof,
+  );
+}
+// RB_12_MATCH_PROOF_CONTRACTS_END
 
 function reviewGraphValidationFailure(reasons, value = null) {
   return {
