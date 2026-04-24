@@ -2785,6 +2785,10 @@ export function evaluateCommentAnchorPlacementBatchDiagnostics(input = {}) {
   return placementBatchDiagnosticsEvaluate(input);
 }
 
+export function previewRevisionSessionPlacementAdmission(input = {}) {
+  return placementAdmissionPreviewEvaluate(input);
+}
+
 // RB_14_PLACEMENT_BATCH_DIAGNOSTICS_CONTRACTS_START
 function placementBatchDiagnosticsCountsByStatus() {
   return {
@@ -3014,6 +3018,189 @@ function placementBatchDiagnosticsEvaluate(input) {
   );
 }
 // RB_14_PLACEMENT_BATCH_DIAGNOSTICS_CONTRACTS_END
+
+// RB_16_PLACEMENT_ADMISSION_PREVIEW_CONTRACTS_START
+const PLACEMENT_ADMISSION_PREVIEW_SCHEMA = 'revision-bridge.revision-session-placement-admission-preview.v1';
+const PLACEMENT_ADMISSION_PREVIEW_ADMIT_CODE = 'REVISION_BRIDGE_REVISION_SESSION_PLACEMENT_ADMISSION_PREVIEW_ADMIT';
+const PLACEMENT_ADMISSION_PREVIEW_BLOCK_CODE = 'REVISION_BRIDGE_REVISION_SESSION_PLACEMENT_ADMISSION_PREVIEW_BLOCK';
+const PLACEMENT_ADMISSION_PREVIEW_DEFAULT_BLOCKING_STATUSES = Object.freeze([
+  'unresolved',
+  'hardFail',
+]);
+const PLACEMENT_ADMISSION_PREVIEW_VALID_STATUSES = Object.freeze([
+  'evaluated',
+  'diagnostics',
+  'unresolved',
+  'hardFail',
+]);
+
+function placementAdmissionPreviewStatuses(input) {
+  if (!hasOwnField(input, 'blockingStatuses')) {
+    return { ok: true, value: [...PLACEMENT_ADMISSION_PREVIEW_DEFAULT_BLOCKING_STATUSES] };
+  }
+  if (!Array.isArray(input.blockingStatuses) || input.blockingStatuses.length === 0) {
+    return { ok: false, value: [] };
+  }
+  const value = [];
+  for (const item of input.blockingStatuses) {
+    if (typeof item !== 'string') return { ok: false, value: [] };
+    const status = normalizeString(item);
+    if (!PLACEMENT_ADMISSION_PREVIEW_VALID_STATUSES.includes(status)) return { ok: false, value: [] };
+    if (!value.includes(status)) value.push(status);
+  }
+  if (value.length === 0) return { ok: false, value: [] };
+  return { ok: true, value };
+}
+
+function placementAdmissionPreviewValidEvaluationItem(item) {
+  if (!isPlainObject(item) || !Number.isSafeInteger(item.index) || item.index < 0) return false;
+  if (!isPlainObject(item.evaluation)) return false;
+  if (!PLACEMENT_ADMISSION_PREVIEW_VALID_STATUSES.includes(item.evaluation.status)) return false;
+  return Array.isArray(item.evaluation.reasonCodes);
+}
+
+function placementAdmissionPreviewValidDiagnosticItem(item) {
+  return isPlainObject(item) && Number.isSafeInteger(item.index) && item.index >= 0;
+}
+
+function placementAdmissionPreviewBatch(input) {
+  if (!isPlainObject(input)) return { ok: false, value: null };
+  const batch = input.batchDiagnostics;
+  if (!isPlainObject(batch)) return { ok: false, value: null };
+  if (batch.type !== 'revisionBridge.commentAnchorPlacement.batchDiagnostics') return { ok: false, value: null };
+  if (!PLACEMENT_ADMISSION_PREVIEW_VALID_STATUSES.includes(batch.status)) return { ok: false, value: null };
+  if (!Number.isSafeInteger(batch.total) || batch.total < 0) return { ok: false, value: null };
+  if (!Array.isArray(batch.evaluations)) return { ok: false, value: null };
+  if (batch.total !== batch.evaluations.length) return { ok: false, value: null };
+  if (!Array.isArray(batch.diagnostics)) return { ok: false, value: null };
+  if (!isPlainObject(batch.diagnosticSummary)) return { ok: false, value: null };
+  for (const item of batch.evaluations) {
+    if (!placementAdmissionPreviewValidEvaluationItem(item)) return { ok: false, value: null };
+  }
+  for (const item of batch.diagnostics) {
+    if (!placementAdmissionPreviewValidDiagnosticItem(item)) return { ok: false, value: null };
+  }
+  return { ok: true, value: batch };
+}
+
+function placementAdmissionPreviewCode(status) {
+  if (status === 'hardFail') return PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE;
+  if (status === 'block') return PLACEMENT_ADMISSION_PREVIEW_BLOCK_CODE;
+  return PLACEMENT_ADMISSION_PREVIEW_ADMIT_CODE;
+}
+
+function placementAdmissionPreviewSummary(items) {
+  const sortedItems = [...items].sort(placementBatchDiagnosticsCompareSummaryItems);
+  return {
+    schemaVersion: PLACEMENT_ADMISSION_PREVIEW_SCHEMA,
+    sortOrder: [...PLACEMENT_BATCH_DIAGNOSTICS_SUMMARY_ORDER],
+    total: sortedItems.length,
+    items: sortedItems,
+  };
+}
+
+function placementAdmissionPreviewSummaryFromEvaluations(evaluations) {
+  const items = [];
+  for (const item of evaluations) {
+    for (const reasonCode of item.evaluation.reasonCodes) {
+      if (REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_REASON_CODES.includes(reasonCode)) {
+        placementBatchDiagnosticsAddSummaryItem(items, item.evaluation.status, reasonCode, item.index);
+      }
+    }
+  }
+  return placementAdmissionPreviewSummary(items);
+}
+
+function placementAdmissionPreviewInvalidSummary() {
+  return placementAdmissionPreviewSummary([{
+    severity: 'hardFail',
+    code: PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE,
+    count: 1,
+    indexes: [],
+  }]);
+}
+
+function placementAdmissionPreviewEnvelope(
+  status,
+  blockingStatuses,
+  sourceStatus,
+  sourceTotal,
+  blockingEvaluations,
+  blockingDiagnostics,
+  diagnosticSummary,
+) {
+  const countsByStatus = placementBatchDiagnosticsCountsByStatus();
+  const countsByReasonCode = placementBatchDiagnosticsCountsByReasonCode();
+  for (const item of blockingEvaluations) {
+    if (Object.hasOwn(countsByStatus, item.evaluation.status)) countsByStatus[item.evaluation.status] += 1;
+    for (const reasonCode of item.evaluation.reasonCodes) {
+      placementBatchDiagnosticsAddReasonCount(countsByReasonCode, reasonCode);
+    }
+  }
+  const code = placementAdmissionPreviewCode(status);
+  return {
+    schemaVersion: PLACEMENT_ADMISSION_PREVIEW_SCHEMA,
+    type: 'revisionBridge.revisionSession.placementAdmissionPreview',
+    status,
+    code,
+    reason: code,
+    canAdmit: status === 'admit',
+    sourceStatus,
+    sourceTotal,
+    blockingStatuses,
+    total: blockingEvaluations.length,
+    countsByStatus,
+    countsByReasonCode,
+    blockingEvaluations,
+    blockingDiagnostics,
+    diagnosticSummary,
+  };
+}
+
+function placementAdmissionPreviewInvalid(blockingStatuses, source) {
+  return placementAdmissionPreviewEnvelope(
+    'hardFail',
+    blockingStatuses,
+    source ? source.status : '',
+    source ? source.total : 0,
+    [],
+    [],
+    placementAdmissionPreviewInvalidSummary(),
+  );
+}
+
+function placementAdmissionPreviewEvaluate(input) {
+  const statuses = placementAdmissionPreviewStatuses(isPlainObject(input) ? input : {});
+  const source = placementAdmissionPreviewBatch(input);
+  const sourceStatus = source.ok === true ? source.value.status : '';
+  const sourceTotal = source.ok === true ? source.value.total : 0;
+  if (statuses.ok !== true || source.ok !== true) {
+    return placementAdmissionPreviewInvalid(
+      statuses.ok === true ? statuses.value : [],
+      source.ok === true ? source.value : null,
+    );
+  }
+
+  const blockingEvaluations = source.value.evaluations
+    .filter((item) => statuses.value.includes(item.evaluation.status))
+    .sort((left, right) => left.index - right.index)
+    .map((item) => placementEvaluationClone(item));
+  const indexes = blockingEvaluations.map((item) => item.index);
+  const blockingDiagnostics = source.value.diagnostics
+    .filter((item) => indexes.includes(item.index))
+    .map((item) => placementEvaluationClone(item));
+  const status = blockingEvaluations.length > 0 ? 'block' : 'admit';
+  return placementAdmissionPreviewEnvelope(
+    status,
+    [...statuses.value],
+    sourceStatus,
+    sourceTotal,
+    blockingEvaluations,
+    blockingDiagnostics,
+    placementAdmissionPreviewSummaryFromEvaluations(blockingEvaluations),
+  );
+}
+// RB_16_PLACEMENT_ADMISSION_PREVIEW_CONTRACTS_END
 
 function reviewGraphValidationFailure(reasons, value = null) {
   return {
