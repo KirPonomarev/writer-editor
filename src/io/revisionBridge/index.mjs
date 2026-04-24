@@ -126,6 +126,70 @@ export const DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES = Object.freeze({
   CLEAN_INVENTORY: 'DOCX_PACKAGE_CLEAN',
 });
 
+export const DOCX_PART_POLICY_SCHEMA = 'revision-bridge.docx-part-policy.v1';
+
+export const DOCX_PART_POLICY_DECISIONS = Object.freeze({
+  ACCEPTED: 'accepted',
+  DEGRADED: 'degraded',
+  REJECTED: 'rejected',
+});
+
+export const DOCX_PART_POLICY_DIAGNOSTIC_CODES = Object.freeze({
+  INPUT_REJECTED: 'DOCX_PART_POLICY_INPUT_REJECTED',
+  PACKAGE_REJECTED: 'DOCX_PART_POLICY_PACKAGE_REJECTED',
+  MAIN_DOCUMENT_MISSING: 'DOCX_PART_POLICY_MAIN_DOCUMENT_MISSING',
+  MAIN_DOCUMENT_DUPLICATE: 'DOCX_PART_POLICY_MAIN_DOCUMENT_DUPLICATE',
+  RELATIONSHIP_REQUIRES_FUTURE_PARSER: 'DOCX_PART_POLICY_RELATIONSHIP_REQUIRES_FUTURE_PARSER',
+  UNSUPPORTED_STORY_DIAGNOSTICS_ONLY: 'DOCX_PART_POLICY_UNSUPPORTED_STORY_DIAGNOSTICS_ONLY',
+  UNKNOWN_PART_DIAGNOSTICS_ONLY: 'DOCX_PART_POLICY_UNKNOWN_PART_DIAGNOSTICS_ONLY',
+  DIRECTORY_DIAGNOSTICS_ONLY: 'DOCX_PART_POLICY_DIRECTORY_DIAGNOSTICS_ONLY',
+  MEDIA_DIAGNOSTICS_ONLY: 'DOCX_PART_POLICY_MEDIA_DIAGNOSTICS_ONLY',
+  ACCEPTED: 'DOCX_PART_POLICY_ACCEPTED',
+});
+
+const DOCX_PART_POLICY_CATEGORY_KEYS = [
+  'mainDocumentPart',
+  'knownSupportPart',
+  'mediaPart',
+  'relationshipPart',
+  'unsupportedStoryPart',
+  'unknownPart',
+  'directoryPart',
+];
+
+const DOCX_PART_POLICY_KNOWN_SUPPORT_PARTS = [
+  '[Content_Types].xml',
+  'docProps/app.xml',
+  'docProps/core.xml',
+  'docProps/custom.xml',
+  'word/fontTable.xml',
+  'word/numbering.xml',
+  'word/settings.xml',
+  'word/styles.xml',
+  'word/theme/theme1.xml',
+];
+
+const DOCX_PART_POLICY_DEGRADED_CATEGORY_CODES = Object.freeze({
+  mediaPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY,
+  relationshipPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_REQUIRES_FUTURE_PARSER,
+  unsupportedStoryPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY,
+  unknownPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNKNOWN_PART_DIAGNOSTICS_ONLY,
+  directoryPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY,
+});
+
+const DOCX_PART_POLICY_INPUT_REJECT_KEYS = [
+  'p' + 'ath',
+  'p' + 'aths',
+  'file' + 'P' + 'ath',
+  'file' + 'H' + 'andle',
+  'docx' + 'F' + 'ile',
+  'b' + 'ytes',
+  'b' + 'uffer',
+  'raw',
+  'x' + 'ml',
+  'z' + 'ip',
+];
+
 const DOCX_PACKAGE_BOUNDARY_INPUT_REJECT_KEYS = [
   'p' + 'ath',
   'file' + 'P' + 'ath',
@@ -955,6 +1019,263 @@ export function materializeDocxPackageInventoryFromZipBytes(input) {
   return docxZipInventorySuccess(centralResult.inventory);
 }
 // RB_06_DOCX_ZIP_INVENTORY_MATERIALIZER_END
+
+// RB_08_DOCX_PART_POLICY_CLASSIFIER_START
+const DOCX_PART_POLICY_TYPE = 'docxPartPolicyClassification';
+
+const DOCX_PART_POLICY_CATEGORY_NAMES = [
+  'mainDocumentPart',
+  'knownSupportPart',
+  'mediaPart',
+  'relationshipPart',
+  'unsupportedStoryPart',
+  'unknownPart',
+  'directoryPart',
+];
+
+const DOCX_PART_POLICY_DIAGNOSTIC_MESSAGES = Object.freeze({
+  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.INPUT_REJECTED]: 'input must be caller-supplied inventory metadata',
+  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.PACKAGE_REJECTED]: 'package boundary inspection rejected the inventory',
+  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.MAIN_DOCUMENT_MISSING]: 'main document part is missing',
+  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.MAIN_DOCUMENT_DUPLICATE]: 'main document part is duplicated',
+  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_REQUIRES_FUTURE_PARSER]: 'relationship part requires a future parser',
+  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY]: 'unsupported story part is diagnostics-only',
+  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNKNOWN_PART_DIAGNOSTICS_ONLY]: 'unknown part is diagnostics-only',
+  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY]: 'directory part is diagnostics-only',
+  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY]: 'media part is diagnostics-only',
+  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.ACCEPTED]: 'part policy accepted metadata-only inventory',
+});
+
+function docxPartPolicyEmptyCategories() {
+  const categories = {};
+  for (const category of DOCX_PART_POLICY_CATEGORY_NAMES) {
+    categories[category] = { count: 0, entryIds: [] };
+  }
+  return categories;
+}
+
+function docxPartPolicyDiagnostic(code, options = {}) {
+  const diagnostic = {
+    code,
+    severity: options.severity || (code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.ACCEPTED ? 'info' : 'warning'),
+    message: DOCX_PART_POLICY_DIAGNOSTIC_MESSAGES[code] || code,
+  };
+  if (options.category !== undefined) diagnostic.category = options.category;
+  if (options.entryId !== undefined) diagnostic.entryId = options.entryId;
+  if (options.sourceCode !== undefined) diagnostic.sourceCode = options.sourceCode;
+  return diagnostic;
+}
+
+function docxPartPolicyEligibility(decision, diagnostics) {
+  const parserRequired = diagnostics.some((diagnostic) => (
+    diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_REQUIRES_FUTURE_PARSER
+    || diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY
+    || diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNKNOWN_PART_DIAGNOSTICS_ONLY
+    || diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY
+    || diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY
+  ));
+  return {
+    safe: true,
+    parserCandidateOnly: decision === DOCX_PART_POLICY_DECISIONS.ACCEPTED && !parserRequired,
+    canCreateReviewPacket: false,
+    canPreviewApply: false,
+    canImportMutate: false,
+    canWriteStorage: false,
+  };
+}
+
+function docxPartPolicyInputRejected(input) {
+  if (typeof input === 'string') return true;
+  if (!input || typeof input !== 'object') return false;
+  return isDocxPackageBoundaryRejectedInput(input)
+    || typeof input.nodeType === 'number'
+    || typeof input.nodeName === 'string'
+    || typeof input.tagName === 'string'
+    || hasOwnField(input, 'documentElement')
+    || hasOwnField(input, 'childNodes')
+    || hasOwnField(input, 'ownerDocument')
+    || (typeof input.name === 'string' && typeof input.arrayBuffer === 'function');
+}
+
+function docxPartPolicyNormalizeInput(input) {
+  if (docxPartPolicyInputRejected(input)) return { rejected: true };
+  const hasWrappedInventory = isPlainObject(input) && hasOwnField(input, 'inventory');
+  const inventory = hasWrappedInventory ? input.inventory : input;
+  const inspection = isPlainObject(input) && hasOwnField(input, 'inspection') ? input.inspection : null;
+  return { inventory, inspection };
+}
+
+function docxPartPolicyEntryId(entry, index) {
+  return typeof entry?.id === 'string' && entry.id.trim() ? entry.id.trim() : String(index);
+}
+
+function docxPartPolicyEntryMarkers(entry) {
+  return Array.isArray(entry?.markers)
+    ? entry.markers.filter((marker) => typeof marker === 'string').slice().sort()
+    : [];
+}
+
+function docxPartPolicyEntryCategories(entry) {
+  const markers = docxPartPolicyEntryMarkers(entry);
+  const categories = [];
+  if (entry?.kind === 'directory') categories.push('directoryPart');
+  if (entry?.kind === 'unknownPart') categories.push('unknownPart');
+  if (entry?.kind === 'relationshipPart' || markers.includes('relationship')) categories.push('relationshipPart');
+  if (entry?.story === 'unsupported' || markers.includes('unsupportedStory')) categories.push('unsupportedStoryPart');
+  if (markers.includes('mediaPart')) categories.push('mediaPart');
+  if (entry?.story === 'main' || markers.includes('documentPart') || entry?.id === 'word/document.xml') {
+    categories.push('mainDocumentPart');
+  }
+  if (entry?.kind === 'knownPart' && categories.length === 0) categories.push('knownSupportPart');
+  return categories.length > 0 ? categories : ['unknownPart'];
+}
+
+function docxPartPolicyEvidenceForEntry(entry, index, category) {
+  const evidence = {
+    category,
+    entryId: docxPartPolicyEntryId(entry, index),
+    kind: typeof entry?.kind === 'string' ? entry.kind : undefined,
+    story: typeof entry?.story === 'string' ? entry.story : undefined,
+    markers: docxPartPolicyEntryMarkers(entry),
+    byteSize: isFiniteNonnegativeInteger(entry?.byteSize) ? entry.byteSize : undefined,
+    compressedSize: isFiniteNonnegativeInteger(entry?.compressedSize) ? entry.compressedSize : undefined,
+  };
+  for (const key of Object.keys(evidence)) {
+    if (evidence[key] === undefined) delete evidence[key];
+  }
+  return evidence;
+}
+
+function docxPartPolicyAddCategory(categories, category, entryId) {
+  categories[category].count += 1;
+  categories[category].entryIds.push(entryId);
+}
+
+function docxPartPolicySeverityForInspection(inspection) {
+  return inspection?.classification === 'quarantined' || inspection?.classification === 'malformed'
+    ? 'error'
+    : 'warning';
+}
+
+function docxPartPolicyInspectionEvidence(inspection) {
+  return {
+    category: 'packageInspection',
+    classification: typeof inspection?.classification === 'string' ? inspection.classification : undefined,
+    status: typeof inspection?.status === 'string' ? inspection.status : undefined,
+    code: typeof inspection?.code === 'string' ? inspection.code : undefined,
+  };
+}
+
+function docxPartPolicyResult(decision, code, diagnostics, categories, evidence) {
+  const sortedDiagnostics = diagnostics.slice().sort((left, right) => (
+    String(left.code).localeCompare(String(right.code))
+    || String(left.category || '').localeCompare(String(right.category || ''))
+    || String(left.entryId || '').localeCompare(String(right.entryId || ''))
+  ));
+  const sortedEvidence = evidence.slice().sort((left, right) => (
+    String(left.category).localeCompare(String(right.category))
+    || String(left.entryId || '').localeCompare(String(right.entryId || ''))
+    || String(left.code || '').localeCompare(String(right.code || ''))
+  ));
+  for (const category of DOCX_PART_POLICY_CATEGORY_NAMES) {
+    categories[category].entryIds.sort();
+  }
+  return {
+    schemaVersion: DOCX_PART_POLICY_SCHEMA,
+    type: DOCX_PART_POLICY_TYPE,
+    status: decision,
+    code,
+    reason: code,
+    decision,
+    categories,
+    diagnostics: sortedDiagnostics,
+    evidence: sortedEvidence,
+    eligibility: docxPartPolicyEligibility(decision, sortedDiagnostics),
+  };
+}
+
+export function classifyDocxPartPolicy(input = {}) {
+  const normalized = docxPartPolicyNormalizeInput(input);
+  const categories = docxPartPolicyEmptyCategories();
+  const evidence = [];
+  const diagnostics = [];
+
+  if (normalized.rejected) {
+    const code = DOCX_PART_POLICY_DIAGNOSTIC_CODES.INPUT_REJECTED;
+    diagnostics.push(docxPartPolicyDiagnostic(code, { severity: 'error' }));
+    return docxPartPolicyResult(DOCX_PART_POLICY_DECISIONS.REJECTED, code, diagnostics, categories, evidence);
+  }
+
+  const inspection = normalized.inspection || inspectDocxPackageInventory(normalized.inventory);
+  evidence.push(docxPartPolicyInspectionEvidence(inspection));
+  if (inspection.classification === 'malformed' || inspection.classification === 'quarantined') {
+    const code = DOCX_PART_POLICY_DIAGNOSTIC_CODES.PACKAGE_REJECTED;
+    diagnostics.push(docxPartPolicyDiagnostic(code, {
+      severity: docxPartPolicySeverityForInspection(inspection),
+      sourceCode: inspection.code,
+    }));
+    return docxPartPolicyResult(DOCX_PART_POLICY_DECISIONS.REJECTED, code, diagnostics, categories, evidence);
+  }
+
+  const entries = Array.isArray(normalized.inventory?.entries) ? normalized.inventory.entries : [];
+  entries.forEach((entry, index) => {
+    const entryId = docxPartPolicyEntryId(entry, index);
+    for (const category of docxPartPolicyEntryCategories(entry)) {
+      docxPartPolicyAddCategory(categories, category, entryId);
+      evidence.push(docxPartPolicyEvidenceForEntry(entry, index, category));
+    }
+  });
+
+  if (categories.mainDocumentPart.count === 0) {
+    diagnostics.push(docxPartPolicyDiagnostic(DOCX_PART_POLICY_DIAGNOSTIC_CODES.MAIN_DOCUMENT_MISSING, {
+      category: 'mainDocumentPart',
+    }));
+  }
+  if (categories.mainDocumentPart.count > 1) {
+    for (const entryId of categories.mainDocumentPart.entryIds) {
+      diagnostics.push(docxPartPolicyDiagnostic(DOCX_PART_POLICY_DIAGNOSTIC_CODES.MAIN_DOCUMENT_DUPLICATE, {
+        category: 'mainDocumentPart',
+        entryId,
+      }));
+    }
+  }
+
+  const degradedCategories = [
+    ['relationshipPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_REQUIRES_FUTURE_PARSER],
+    ['unsupportedStoryPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY],
+    ['unknownPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNKNOWN_PART_DIAGNOSTICS_ONLY],
+    ['directoryPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY],
+    ['mediaPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY],
+  ];
+  for (const [category, diagnosticCode] of degradedCategories) {
+    for (const entryId of categories[category].entryIds) {
+      diagnostics.push(docxPartPolicyDiagnostic(diagnosticCode, { category, entryId }));
+    }
+  }
+
+  if (inspection.classification === 'suspicious' && diagnostics.length === 0) {
+    diagnostics.push(docxPartPolicyDiagnostic(DOCX_PART_POLICY_DIAGNOSTIC_CODES.PACKAGE_REJECTED, {
+      severity: 'warning',
+      sourceCode: inspection.code,
+    }));
+  }
+
+  if (diagnostics.length > 0) {
+    const code = diagnostics.some((diagnostic) => diagnostic.severity === 'error')
+      ? DOCX_PART_POLICY_DIAGNOSTIC_CODES.PACKAGE_REJECTED
+      : diagnostics[0].code;
+    return docxPartPolicyResult(DOCX_PART_POLICY_DECISIONS.DEGRADED, code, diagnostics, categories, evidence);
+  }
+
+  return docxPartPolicyResult(
+    DOCX_PART_POLICY_DECISIONS.ACCEPTED,
+    DOCX_PART_POLICY_DIAGNOSTIC_CODES.ACCEPTED,
+    [],
+    categories,
+    evidence,
+  );
+}
+// RB_08_DOCX_PART_POLICY_CLASSIFIER_END
 
 function missingField(field) {
   return {
