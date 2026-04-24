@@ -141,6 +141,18 @@ function deepClone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function changedFilesFromGitStatus(statusText) {
+  return statusText
+    .split('\n')
+    .filter((line) => line !== '')
+    .map((line) => line.slice(3).replace(/^"|"$/gu, ''));
+}
+
+function changedFilesOutsideAllowlist(changedFiles) {
+  const allowedPaths = new Set(ALLOWLIST);
+  return changedFiles.filter((filePath) => !allowedPaths.has(filePath));
+}
+
 test('revision bridge exports RB-02 schema constants and pure contract functions', async () => {
   const bridge = await loadBridge();
   const expectedExports = [
@@ -388,18 +400,26 @@ test('RB-02 does not change dependency manifests from HEAD', () => {
 });
 
 test('RB-02 changed files stay inside the exact task allowlist', () => {
-  const status = execFileSync('git', ['status', '--porcelain', '-uall'], { encoding: 'utf8' })
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean);
-  const changedFiles = status.map((line) => line.slice(3).replace(/^"|"$/gu, ''));
-  const allowedBasenames = new Set(ALLOWLIST.map((filePath) => path.basename(filePath)));
-  const allowedPaths = new Set(ALLOWLIST);
+  const changedFiles = changedFilesFromGitStatus(
+    execFileSync('git', ['status', '--porcelain', '-uall'], { encoding: 'utf8' }),
+  );
+
+  assert.deepEqual(changedFilesOutsideAllowlist(changedFiles), []);
+});
+
+test('RB-02 changed-file allowlist accepts clean and exact allowed paths only', () => {
+  assert.deepEqual(changedFilesOutsideAllowlist([]), []);
+  assert.deepEqual(changedFilesOutsideAllowlist([TEST_PATH]), []);
+  assert.deepEqual(changedFilesOutsideAllowlist(ALLOWLIST), []);
 
   assert.deepEqual(
-    changedFiles.filter((filePath) => (
-      !allowedPaths.has(filePath) && !allowedBasenames.has(path.basename(filePath))
-    )),
-    [],
+    changedFilesOutsideAllowlist([
+      `tmp/${path.basename(TEST_PATH)}`,
+      'tmp/rb02b-probe-unique.js',
+    ]),
+    [
+      `tmp/${path.basename(TEST_PATH)}`,
+      'tmp/rb02b-probe-unique.js',
+    ],
   );
 });
