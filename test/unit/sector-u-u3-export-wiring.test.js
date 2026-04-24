@@ -76,6 +76,43 @@ test('u3 export wiring: command uses electronAPI.exportDocxMin and returns deter
   });
 });
 
+test('u3 export wiring: horizontal sheet text flows into export bufferSource payload', async () => {
+  const { createCommandRegistry, createCommandRunner, COMMAND_IDS, registerProjectCommands } = await loadModules();
+  const horizontalSheetText = 'Центральная лента листов: активный горизонтальный лист сохраняет plain text для DOCX export.';
+  const request = {
+    requestId: 'u3-horizontal-sheet-export-input',
+    outPath: '/tmp/u3-horizontal-sheet.docx',
+    bufferSource: horizontalSheetText,
+  };
+  let callCount = 0;
+  let capturedPayload = null;
+  const electronAPI = {
+    exportDocxMin: async (payload) => {
+      callCount += 1;
+      capturedPayload = payload;
+      return { ok: 1, outPath: payload.outPath, bytesWritten: 321 };
+    },
+  };
+
+  const registry = createCommandRegistry();
+  registerProjectCommands(registry, { electronAPI });
+  const runCommand = createCommandRunner(registry);
+
+  const result = await runCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN, request);
+  assert.equal(callCount, 1);
+  assert.equal(capturedPayload.requestId, request.requestId);
+  assert.equal(capturedPayload.outPath, request.outPath);
+  assert.equal(capturedPayload.bufferSource, horizontalSheetText);
+  assert.deepEqual(result, {
+    ok: true,
+    value: {
+      exported: true,
+      outPath: request.outPath,
+      bytesWritten: 321,
+    },
+  });
+});
+
 test('u3 export wiring: command maps typed backend error without random fields', async () => {
   const { createCommandRegistry, createCommandRunner, COMMAND_IDS, registerProjectCommands } = await loadModules();
   const fixtureError = readFixtureJson('export-error.json');
