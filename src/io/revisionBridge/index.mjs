@@ -77,6 +77,19 @@ export const REVISION_BRIDGE_MATCH_PROOF_REASON_CODES = Object.freeze([
   MATCH_PROOF_BUILT_CODE,
   ...REVISION_BRIDGE_ANCHOR_CONFIDENCE_REASON_CODES,
 ]);
+export const REVISION_BRIDGE_PLACEMENT_EVALUATION_SCHEMA = 'revision-bridge.comment-anchor-placement-evaluation.v1';
+const PLACEMENT_EVALUATION_EVALUATED_CODE = 'REVISION_BRIDGE_PLACEMENT_EVALUATION_EVALUATED';
+const PLACEMENT_EVALUATION_VALIDATION_FAILED_CODE = 'REVISION_BRIDGE_PLACEMENT_EVALUATION_VALIDATION_FAILED';
+const PLACEMENT_EVALUATION_DIAGNOSTICS_CODE = 'REVISION_BRIDGE_PLACEMENT_EVALUATION_DIAGNOSTICS';
+const PLACEMENT_EVALUATION_UNRESOLVED_CODE = 'REVISION_BRIDGE_PLACEMENT_EVALUATION_UNRESOLVED';
+const PLACEMENT_EVALUATION_HARD_FAIL_CODE = 'REVISION_BRIDGE_PLACEMENT_EVALUATION_HARD_FAIL';
+export const REVISION_BRIDGE_PLACEMENT_EVALUATION_REASON_CODES = Object.freeze([
+  PLACEMENT_EVALUATION_EVALUATED_CODE,
+  PLACEMENT_EVALUATION_VALIDATION_FAILED_CODE,
+  PLACEMENT_EVALUATION_DIAGNOSTICS_CODE,
+  PLACEMENT_EVALUATION_UNRESOLVED_CODE,
+  PLACEMENT_EVALUATION_HARD_FAIL_CODE,
+]);
 
 const REVIEWGRAPH_ITEM_KINDS = [
   'commentThread',
@@ -2539,6 +2552,219 @@ export function buildInlineRangeMatchProof(input = {}, context = {}) {
   );
 }
 // RB_12_MATCH_PROOF_CONTRACTS_END
+
+// RB_13_PLACEMENT_EVALUATION_CONTRACTS_START
+function placementEvaluationClone(value) {
+  if (value === null) return null;
+  const valueType = typeof value;
+  if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') return value;
+  if (Array.isArray(value)) return value.map((item) => placementEvaluationClone(item));
+  if (isPlainObject(value)) {
+    const clone = {};
+    for (const key of Object.keys(value)) {
+      const clonedValue = placementEvaluationClone(value[key]);
+      if (clonedValue !== undefined) clone[key] = clonedValue;
+    }
+    return clone;
+  }
+  return undefined;
+}
+
+function placementEvaluationInlineRangeSnapshot(inlineRange) {
+  return {
+    schemaVersion: inlineRange.schemaVersion,
+    kind: inlineRange.kind,
+    blockId: inlineRange.blockId,
+    lineageId: inlineRange.lineageId,
+    from: inlineRange.from,
+    to: inlineRange.to,
+    quote: inlineRange.quote,
+    prefix: inlineRange.prefix,
+    suffix: inlineRange.suffix,
+    confidence: inlineRange.confidence,
+    riskClass: inlineRange.riskClass,
+    deletedTarget: inlineRange.deletedTarget,
+    reasonCodes: placementEvaluationClone(inlineRange.reasonCodes),
+  };
+}
+
+function placementEvaluationSnapshot(placement) {
+  return {
+    schemaVersion: placement.schemaVersion,
+    placementId: placement.placementId,
+    threadId: placement.threadId,
+    targetScope: {
+      type: placement.targetScope.type,
+      id: placement.targetScope.id,
+    },
+    inlineRange: placementEvaluationInlineRangeSnapshot(placement.inlineRange),
+    resolvedState: placement.resolvedState,
+    acceptedState: placement.acceptedState,
+    diagnosticsOnly: placement.diagnosticsOnly,
+  };
+}
+
+function placementEvaluationDiagnosticField(field) {
+  const normalized = normalizeString(field);
+  const blockedFields = [
+    'commentAnchorPlacement.body',
+    'commentAnchorPlacement.text',
+    'commentAnchorPlacement.messages',
+    'commentAnchorPlacement.commentText',
+  ];
+  if (blockedFields.includes(normalized)) return 'commentAnchorPlacement';
+  if (normalized === 'inlineRange') return 'commentAnchorPlacement.inlineRange';
+  if (normalized.startsWith('inlineRange.')) return `commentAnchorPlacement.${normalized}`;
+  if (normalized.endsWith('.automationPolicy')) return normalized.slice(0, -'.automationPolicy'.length);
+  return normalized;
+}
+
+function placementEvaluationDiagnosticMessage(message) {
+  return normalizeString(message).replace(/automationPolicy/gu, 'policy');
+}
+
+function placementEvaluationReasonSnapshot(reason) {
+  return {
+    code: normalizeString(reason.code),
+    field: placementEvaluationDiagnosticField(reason.field),
+    message: placementEvaluationDiagnosticMessage(reason.message),
+  };
+}
+
+function placementEvaluationValidationSnapshot(validation) {
+  return {
+    ok: validation.ok === true,
+    type: normalizeString(validation.type),
+    code: normalizeString(validation.code),
+    reason: normalizeString(validation.reason),
+    reasons: (Array.isArray(validation.reasons) ? validation.reasons : [])
+      .map((reason) => placementEvaluationReasonSnapshot(reason)),
+  };
+}
+
+function placementEvaluationAddDiagnostic(diagnostics, code, field, message) {
+  const diagnostic = {
+    code: normalizeString(code),
+    field: placementEvaluationDiagnosticField(field),
+    message: placementEvaluationDiagnosticMessage(message),
+  };
+  if (!diagnostic.code) return;
+  const exists = diagnostics.some((candidate) => (
+    candidate.code === diagnostic.code
+    && candidate.field === diagnostic.field
+    && candidate.message === diagnostic.message
+  ));
+  if (!exists) diagnostics.push(diagnostic);
+}
+
+function placementEvaluationPushReasonCode(reasonCodes, code) {
+  const normalized = normalizeString(code);
+  if (
+    REVISION_BRIDGE_ANCHOR_CONFIDENCE_REASON_CODES.includes(normalized)
+    && !reasonCodes.includes(normalized)
+  ) {
+    reasonCodes.push(normalized);
+  }
+}
+
+function placementEvaluationValidationHardFailed(validation) {
+  if (validation.ok === true) return false;
+  return (validation.reasons || []).some((reason) => {
+    const field = normalizeString(reason.field);
+    return !field.startsWith('commentAnchorPlacement.inlineRange');
+  });
+}
+
+function placementEvaluationStatus(validation, matchProof, confidenceEvaluation) {
+  if (
+    placementEvaluationValidationHardFailed(validation)
+    || matchProof.status === 'hardFail'
+    || confidenceEvaluation.status === 'hardFail'
+    || confidenceEvaluation.automationPolicy === 'hardFail'
+  ) {
+    return 'hardFail';
+  }
+  if (
+    matchProof.status === 'unresolved'
+    || confidenceEvaluation.confidence === 'unresolved'
+    || confidenceEvaluation.automationPolicy === 'diagnosticsOnly'
+  ) {
+    return 'unresolved';
+  }
+  if (
+    matchProof.status !== 'matched'
+    || confidenceEvaluation.status !== 'evaluated'
+    || confidenceEvaluation.confidence !== 'exact'
+  ) {
+    return 'diagnostics';
+  }
+  return 'evaluated';
+}
+
+function placementEvaluationCode(status, validation) {
+  if (validation.ok !== true) return PLACEMENT_EVALUATION_VALIDATION_FAILED_CODE;
+  if (status === 'hardFail') return PLACEMENT_EVALUATION_HARD_FAIL_CODE;
+  if (status === 'unresolved') return PLACEMENT_EVALUATION_UNRESOLVED_CODE;
+  if (status === 'diagnostics') return PLACEMENT_EVALUATION_DIAGNOSTICS_CODE;
+  return PLACEMENT_EVALUATION_EVALUATED_CODE;
+}
+
+function placementEvaluationDiagnostics(validation, matchProof, confidenceEvaluation) {
+  const diagnostics = [];
+  for (const reason of validation.reasons || []) {
+    placementEvaluationAddDiagnostic(
+      diagnostics,
+      PLACEMENT_EVALUATION_VALIDATION_FAILED_CODE,
+      reason.field,
+      reason.message,
+    );
+  }
+  for (const diagnostic of matchProof.diagnostics || []) {
+    placementEvaluationAddDiagnostic(diagnostics, diagnostic.code, diagnostic.field, diagnostic.message);
+  }
+  for (const diagnostic of confidenceEvaluation.diagnostics || []) {
+    placementEvaluationAddDiagnostic(diagnostics, diagnostic.code, diagnostic.field, diagnostic.message);
+  }
+  return diagnostics;
+}
+
+function placementEvaluationReasonCodes(code, matchProof, confidenceEvaluation) {
+  const reasonCodes = [code];
+  for (const reasonCode of matchProof.reasonCodes || []) {
+    placementEvaluationPushReasonCode(reasonCodes, reasonCode);
+  }
+  for (const reasonCode of confidenceEvaluation.reasonCodes || []) {
+    placementEvaluationPushReasonCode(reasonCodes, reasonCode);
+  }
+  return reasonCodes;
+}
+
+function evaluateCommentAnchorPlacementProof(input = {}, context = {}) {
+  const validation = validateCommentAnchorPlacement(input, context);
+  const placement = validation.value || createCommentAnchorPlacement(input);
+  const matchProof = buildInlineRangeMatchProof(placement.inlineRange, context);
+  const confidenceEvaluation = evaluateInlineRangeAnchorConfidence(placement.inlineRange, context);
+  const status = placementEvaluationStatus(validation, matchProof, confidenceEvaluation);
+  const code = placementEvaluationCode(status, validation);
+  const reasonCodes = placementEvaluationReasonCodes(code, matchProof, confidenceEvaluation);
+
+  return {
+    schemaVersion: REVISION_BRIDGE_PLACEMENT_EVALUATION_SCHEMA,
+    type: 'revisionBridge.commentAnchorPlacement.evaluation',
+    status,
+    code,
+    reason: reasonCodes[0] || code,
+    placement: placementEvaluationSnapshot(placement),
+    validation: placementEvaluationValidationSnapshot(validation),
+    matchProof: placementEvaluationClone(matchProof),
+    confidenceEvaluation: placementEvaluationClone(confidenceEvaluation),
+    reasonCodes,
+    diagnostics: placementEvaluationDiagnostics(validation, matchProof, confidenceEvaluation),
+  };
+}
+// RB_13_PLACEMENT_EVALUATION_CONTRACTS_END
+
+export { evaluateCommentAnchorPlacementProof };
 
 function reviewGraphValidationFailure(reasons, value = null) {
   return {
