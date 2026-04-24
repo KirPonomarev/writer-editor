@@ -108,6 +108,7 @@ test('export book profile binding: canonical normalized bookProfile drives disti
 
   const portraitSetup = docxPageSetupBind.buildDocxPageSetup(portraitNormalized.value);
   assert.deepEqual(portraitSetup, {
+    orientation: 'portrait',
     pageWidthTwips: 8391,
     pageHeightTwips: 11906,
     marginTopTwips: 1134,
@@ -138,6 +139,7 @@ test('export book profile binding: canonical normalized bookProfile drives disti
 
   const landscapeSetup = docxPageSetupBind.buildDocxPageSetup(landscapeNormalized.value);
   assert.deepEqual(landscapeSetup, {
+    orientation: 'landscape',
     pageWidthTwips: 11906,
     pageHeightTwips: 8391,
     marginTopTwips: 1134,
@@ -150,7 +152,7 @@ test('export book profile binding: canonical normalized bookProfile drives disti
   });
   assert.equal(
     docxPageSetupBind.buildDocxSectionPropertiesXml(landscapeNormalized.value),
-    '<w:sectPr><w:pgSz w:w="11906" w:h="8391"/><w:pgMar w:top="1134" w:right="1020" w:bottom="1247" w:left="1020" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr>',
+    '<w:sectPr><w:pgSz w:w="11906" w:h="8391" w:orient="landscape"/><w:pgMar w:top="1134" w:right="1020" w:bottom="1247" w:left="1020" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr>',
   );
 });
 
@@ -168,10 +170,13 @@ test('export book profile binding: invalid bookProfile fails closed instead of f
 });
 
 test('export book profile binding: backend delegates section setup to the fail-closed bind layer', () => {
-  const mainSource = read('src/main.js');
+  const builderSource = read('src/export/docx/docxMinBuilder.js');
   const bindSource = read('src/docxPageSetupBind.mjs');
 
-  assert.equal(mainSource.includes('buildDocxSectionPropertiesXml(snapshot.bookProfile)'), true);
+  assert.equal(
+    builderSource.includes('deps.docxPageSetupBindModule.buildDocxSectionPropertiesXml(snapshot.bookProfile)'),
+    true,
+  );
   assert.equal(bindSource.includes('roundTwips(210)'), false);
   assert.equal(bindSource.includes('roundTwips(297)'), false);
 });

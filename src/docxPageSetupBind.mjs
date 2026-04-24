@@ -25,6 +25,7 @@ export function buildDocxPageSetup(profile) {
 
   const value = normalizedResult.value;
   return {
+    orientation: value.orientation,
     pageWidthTwips: roundTwips(value.widthMm),
     pageHeightTwips: roundTwips(value.heightMm),
     marginTopTwips: roundTwips(value.marginTopMm),
@@ -39,5 +40,6 @@ export function buildDocxPageSetup(profile) {
 
 export function buildDocxSectionPropertiesXml(profile) {
   const pageSetup = buildDocxPageSetup(profile);
-  return `<w:sectPr><w:pgSz w:w="${pageSetup.pageWidthTwips}" w:h="${pageSetup.pageHeightTwips}"/><w:pgMar w:top="${pageSetup.marginTopTwips}" w:right="${pageSetup.marginRightTwips}" w:bottom="${pageSetup.marginBottomTwips}" w:left="${pageSetup.marginLeftTwips}" w:header="${pageSetup.headerTwips}" w:footer="${pageSetup.footerTwips}" w:gutter="${pageSetup.gutterTwips}"/></w:sectPr>`;
+  const orientationAttribute = pageSetup.orientation === 'landscape' ? ' w:orient="landscape"' : '';
+  return `<w:sectPr><w:pgSz w:w="${pageSetup.pageWidthTwips}" w:h="${pageSetup.pageHeightTwips}"${orientationAttribute}/><w:pgMar w:top="${pageSetup.marginTopTwips}" w:right="${pageSetup.marginRightTwips}" w:bottom="${pageSetup.marginBottomTwips}" w:left="${pageSetup.marginLeftTwips}" w:header="${pageSetup.headerTwips}" w:footer="${pageSetup.footerTwips}" w:gutter="${pageSetup.gutterTwips}"/></w:sectPr>`;
 }
