@@ -158,6 +158,19 @@ function changedFilesOutsideAllowlist(changedFiles) {
   return changedFiles.filter((filePath) => !allowedPaths.has(filePath));
 }
 
+function findForbiddenKeys(value, forbiddenKeys, pathSegments = []) {
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) => findForbiddenKeys(item, forbiddenKeys, pathSegments.concat(String(index))));
+  }
+  if (!value || typeof value !== 'object') return [];
+
+  return Object.keys(value).flatMap((key) => {
+    const keyPath = pathSegments.concat(key);
+    const nested = findForbiddenKeys(value[key], forbiddenKeys, keyPath);
+    return forbiddenKeys.includes(key) ? [keyPath.join('.'), ...nested] : nested;
+  });
+}
+
 test('RB-03 exports review packet preview schema and builder', async () => {
   const bridge = await loadBridge();
 
@@ -276,12 +289,7 @@ test('RB-03 preview does not authorize apply or call apply safety', async () => 
   const result = bridge.buildRevisionPacketPreview(validPreviewInput());
 
   assert.equal(result.ok, true);
-  assert.equal(Object.prototype.hasOwnProperty.call(result, 'canApply'), false);
-  assert.deepEqual(result.session.reviewGraph.textChanges[0].apply, {
-    mode: 'manual',
-    authorized: false,
-    canApply: false,
-  });
+  assert.deepEqual(findForbiddenKeys(result, ['apply', 'applyPlan', 'authorized', 'canApply']), []);
   assert.equal(builderSection.includes('evaluateRevisionBridgeApplySafety'), false);
   assert.equal(builderSection.includes('APPLY_BLOCKED_CODE'), false);
 });

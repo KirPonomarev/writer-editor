@@ -59,6 +59,13 @@ const STRUCTURAL_CHANGE_FORBIDDEN_AUTO_FIELDS = [
   'canAutoApply',
 ];
 
+const REVIEW_PACKET_PREVIEW_FORBIDDEN_APPLY_FIELDS = [
+  'apply',
+  'applyPlan',
+  'authorized',
+  'canApply',
+];
+
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
@@ -676,6 +683,18 @@ function reviewPacketPreviewReady(session) {
   };
 }
 
+function stripReviewPacketPreviewApplyFields(value) {
+  if (Array.isArray(value)) return value.map((item) => stripReviewPacketPreviewApplyFields(item));
+  if (!isPlainObject(value)) return value;
+
+  const stripped = {};
+  for (const key of Object.keys(value)) {
+    if (REVIEW_PACKET_PREVIEW_FORBIDDEN_APPLY_FIELDS.includes(key)) continue;
+    stripped[key] = stripReviewPacketPreviewApplyFields(value[key]);
+  }
+  return stripped;
+}
+
 function collectReviewPacketPreviewInputReasons(input) {
   const reasons = [];
   if (!isPlainObject(input)) {
@@ -722,7 +741,7 @@ export function buildRevisionPacketPreview(input = {}) {
 
   const validation = validateRevisionSession(buildRevisionPacketPreviewCandidate(input));
   if (!validation.ok) return reviewPacketPreviewDiagnostics(validation.reasons);
-  return reviewPacketPreviewReady(validation.value);
+  return reviewPacketPreviewReady(stripReviewPacketPreviewApplyFields(validation.value));
 }
 
 function normalizeTargetScope(input) {
