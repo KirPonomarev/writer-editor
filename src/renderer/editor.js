@@ -87,7 +87,10 @@ import {
 import * as toolbarRuntimeProjectionModule from './toolbar/toolbarRuntimeProjection.mjs';
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
 
-const { resolveCentralSheetStripProofDecision } = centralSheetStripProofDecision;
+const {
+  resolveCentralSheetStripProofDecision,
+  selectActiveLayoutPreviewSnapshotPageCount,
+} = centralSheetStripProofDecision;
 
 const isTiptapMode = window.__USE_TIPTAP === true;
 const editor = document.getElementById('editor');
@@ -771,10 +774,15 @@ function refreshCentralSheetStripProof() {
   const pageGapPx = Math.max(0, Math.round(getRootCssPxValue('--page-gap-px', 24)));
   editor.style.setProperty('--central-sheet-content-width-px', `${widthPx}px`);
   editor.style.setProperty('--central-sheet-content-height-px', `${heightPx}px`);
-  const naturalHeight = measureCentralSheetNaturalHeight(proseMirror);
+  const activeLayoutPreviewSnapshot = buildActiveLayoutPreviewSnapshot();
+  const activeLayoutPreviewSnapshotPageCount = selectActiveLayoutPreviewSnapshotPageCount(activeLayoutPreviewSnapshot);
+  const naturalHeight = activeLayoutPreviewSnapshotPageCount
+    ? 0
+    : measureCentralSheetNaturalHeight(proseMirror);
   const centralSheetDecision = resolveCentralSheetStripProofDecision({
     naturalHeight,
     contentHeightPx: heightPx,
+    activeLayoutPreviewSnapshot,
     maxPageCount: MAX_CENTRAL_SHEET_PROOF_PAGES,
   });
   const { pageCount } = centralSheetDecision;
