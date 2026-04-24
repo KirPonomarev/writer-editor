@@ -74,6 +74,7 @@ function assertBatchReturnShape(result) {
     'countsByReasonCode',
     'evaluations',
     'diagnostics',
+    'diagnosticSummary',
   ]);
 }
 
@@ -113,6 +114,20 @@ function changedFilesFromGitStatus(statusText) {
     .split('\n')
     .filter((line) => line !== '')
     .map((line) => line.slice(3).replace(/^"|"$/gu, ''));
+}
+
+function changedFilesFromGitDiff(diffText) {
+  return diffText
+    .split('\n')
+    .filter((line) => line !== '');
+}
+
+function packageManifestFiles(filePaths) {
+  return filePaths.filter((filePath) => (
+    filePath === 'package.json'
+    || filePath === 'package-lock.json'
+    || filePath === 'npm-shrinkwrap.json'
+  ));
 }
 
 test('RB-14 exports exact schema function and frozen reason catalog', async () => {
@@ -172,6 +187,12 @@ test('RB-14 empty valid batch returns evaluated zero-count envelope', async () =
   });
   assert.deepEqual(result.evaluations, []);
   assert.deepEqual(result.diagnostics, []);
+  assert.deepEqual(result.diagnosticSummary, {
+    schemaVersion: 'revision-bridge.comment-anchor-placement-batch-diagnostics.v1',
+    sortOrder: ['hardFail', 'unresolved', 'diagnostics', 'evaluated'],
+    total: 0,
+    items: [],
+  });
   assert.equal(Object.values(result.countsByReasonCode).every((count) => count === 0), true);
 });
 
@@ -214,6 +235,55 @@ test('RB-14 mixed batch returns deterministic total counts and delegated reason 
   assert.equal(result.countsByReasonCode.REVISION_BRIDGE_ANCHOR_CONFIDENCE_STALE_QUOTE, 1);
   assert.equal(result.countsByReasonCode.REVISION_BRIDGE_ANCHOR_CONFIDENCE_PREFIX_MISMATCH, 1);
   assert.deepEqual(result.evaluations.map((item) => item.index), [0, 1, 2, 3]);
+  assert.deepEqual(result.diagnosticSummary, {
+    schemaVersion: 'revision-bridge.comment-anchor-placement-batch-diagnostics.v1',
+    sortOrder: ['hardFail', 'unresolved', 'diagnostics', 'evaluated'],
+    total: 7,
+    items: [
+      {
+        severity: 'unresolved',
+        code: 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_STALE_QUOTE',
+        count: 1,
+        indexes: [2],
+      },
+      {
+        severity: 'unresolved',
+        code: 'REVISION_BRIDGE_PLACEMENT_EVALUATION_UNRESOLVED',
+        count: 1,
+        indexes: [2],
+      },
+      {
+        severity: 'diagnostics',
+        code: 'REVISION_BRIDGE_PLACEMENT_EVALUATION_DIAGNOSTICS',
+        count: 2,
+        indexes: [1, 3],
+      },
+      {
+        severity: 'diagnostics',
+        code: 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_PREFIX_MISMATCH',
+        count: 1,
+        indexes: [3],
+      },
+      {
+        severity: 'diagnostics',
+        code: 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_QUOTE_ELSEWHERE',
+        count: 1,
+        indexes: [1],
+      },
+      {
+        severity: 'evaluated',
+        code: 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_EXACT_RANGE',
+        count: 1,
+        indexes: [0],
+      },
+      {
+        severity: 'evaluated',
+        code: 'REVISION_BRIDGE_PLACEMENT_EVALUATION_EVALUATED',
+        count: 1,
+        indexes: [0],
+      },
+    ],
+  });
 });
 
 test('RB-14 delegated anchor evidence remains visible in counts and per-item diagnostics', async () => {
@@ -322,6 +392,17 @@ test('RB-14 invalid batch input returns hardFail envelope without throwing', asy
     field: 'input',
     message: 'input must be a plain object',
   }]);
+  assert.deepEqual(result.diagnosticSummary, {
+    schemaVersion: 'revision-bridge.comment-anchor-placement-batch-diagnostics.v1',
+    sortOrder: ['hardFail', 'unresolved', 'diagnostics', 'evaluated'],
+    total: 1,
+    items: [{
+      severity: 'hardFail',
+      code: 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED',
+      count: 1,
+      indexes: [],
+    }],
+  });
 });
 
 test('RB-14 invalid individual placement is delegated to RB-13 and counted from evaluation result', async () => {
@@ -343,6 +424,53 @@ test('RB-14 invalid individual placement is delegated to RB-13 and counted from 
   for (const reasonCode of directEvaluation.reasonCodes) {
     assert.equal(result.countsByReasonCode[reasonCode], 1);
   }
+  assert.deepEqual(result.diagnosticSummary, {
+    schemaVersion: 'revision-bridge.comment-anchor-placement-batch-diagnostics.v1',
+    sortOrder: ['hardFail', 'unresolved', 'diagnostics', 'evaluated'],
+    total: 2,
+    items: [
+      {
+        severity: 'hardFail',
+        code: 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_EXACT_RANGE',
+        count: 1,
+        indexes: [0],
+      },
+      {
+        severity: 'hardFail',
+        code: 'REVISION_BRIDGE_PLACEMENT_EVALUATION_VALIDATION_FAILED',
+        count: 1,
+        indexes: [0],
+      },
+    ],
+  });
+});
+
+test('RB-15 evaluated-only batch includes evaluated reason codes with placement indexes', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateCommentAnchorPlacementBatchDiagnostics({
+    placements: [validPlacement({ placementId: 'evaluated-only' })],
+    context: validContext(),
+  });
+
+  assert.deepEqual(result.diagnosticSummary, {
+    schemaVersion: 'revision-bridge.comment-anchor-placement-batch-diagnostics.v1',
+    sortOrder: ['hardFail', 'unresolved', 'diagnostics', 'evaluated'],
+    total: 2,
+    items: [
+      {
+        severity: 'evaluated',
+        code: 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_EXACT_RANGE',
+        count: 1,
+        indexes: [0],
+      },
+      {
+        severity: 'evaluated',
+        code: 'REVISION_BRIDGE_PLACEMENT_EVALUATION_EVALUATED',
+        count: 1,
+        indexes: [0],
+      },
+    ],
+  });
 });
 
 test('RB-14 evaluation wrappers preserve index and full RB-13 evaluation envelope', async () => {
@@ -474,14 +602,16 @@ test('RB-14 source section has no forbidden side effect or dependency tokens', (
 });
 
 test('RB-14 changed files stay allowlisted and package manifests are untouched', () => {
-  const statusText = execFileSync('git', ['status', '--short'], { encoding: 'utf8' });
-  const changedFiles = changedFilesFromGitStatus(statusText);
-  const outsideAllowlist = changedFiles.filter((filePath) => !ALLOWLIST.includes(filePath));
-  const packageManifestDiff = changedFiles.filter((filePath) => (
-    filePath === 'package.json'
-    || filePath === 'package-lock.json'
-    || filePath === 'npm-shrinkwrap.json'
-  ));
+  const statusText = execFileSync('git', ['status', '--short', '-uall'], { encoding: 'utf8' });
+  const diffText = execFileSync('git', ['diff', '--name-only', 'HEAD~1..HEAD'], { encoding: 'utf8' });
+  const worktreeFiles = changedFilesFromGitStatus(statusText);
+  const committedFiles = changedFilesFromGitDiff(diffText);
+  const outsideAllowlist = [...worktreeFiles, ...committedFiles]
+    .filter((filePath) => !ALLOWLIST.includes(filePath));
+  const packageManifestDiff = [
+    ...packageManifestFiles(worktreeFiles),
+    ...packageManifestFiles(committedFiles),
+  ];
 
   assert.deepEqual(outsideAllowlist, []);
   assert.deepEqual(packageManifestDiff, []);

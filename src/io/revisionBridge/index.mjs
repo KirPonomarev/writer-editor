@@ -2803,6 +2803,13 @@ function placementBatchDiagnosticsCountsByReasonCode() {
   return counts;
 }
 
+const PLACEMENT_BATCH_DIAGNOSTICS_SUMMARY_ORDER = Object.freeze([
+  'hardFail',
+  'unresolved',
+  'diagnostics',
+  'evaluated',
+]);
+
 function placementBatchDiagnosticsCheck(input) {
   if (!isPlainObject(input)) {
     return {
@@ -2838,6 +2845,68 @@ function placementBatchDiagnosticsAddReasonCount(counts, code) {
   if (Object.hasOwn(counts, normalized)) counts[normalized] += 1;
 }
 
+function placementBatchDiagnosticsSummaryRank(severity) {
+  const rank = PLACEMENT_BATCH_DIAGNOSTICS_SUMMARY_ORDER.indexOf(severity);
+  return rank === -1 ? PLACEMENT_BATCH_DIAGNOSTICS_SUMMARY_ORDER.length : rank;
+}
+
+function placementBatchDiagnosticsSummaryFirstIndex(item) {
+  return item.indexes.length > 0 ? item.indexes[0] : -1;
+}
+
+function placementBatchDiagnosticsCompareSummaryItems(left, right) {
+  const severityDelta = placementBatchDiagnosticsSummaryRank(left.severity)
+    - placementBatchDiagnosticsSummaryRank(right.severity);
+  if (severityDelta !== 0) return severityDelta;
+  const countDelta = right.count - left.count;
+  if (countDelta !== 0) return countDelta;
+  const codeDelta = left.code.localeCompare(right.code);
+  if (codeDelta !== 0) return codeDelta;
+  return placementBatchDiagnosticsSummaryFirstIndex(left)
+    - placementBatchDiagnosticsSummaryFirstIndex(right);
+}
+
+function placementBatchDiagnosticsAddSummaryItem(items, severity, code, index) {
+  const normalizedSeverity = normalizeString(severity);
+  const normalizedCode = normalizeString(code);
+  if (!normalizedSeverity || !normalizedCode) return;
+  let item = items.find((candidate) => (
+    candidate.severity === normalizedSeverity
+    && candidate.code === normalizedCode
+  ));
+  if (!item) {
+    item = {
+      severity: normalizedSeverity,
+      code: normalizedCode,
+      count: 0,
+      indexes: [],
+    };
+    items.push(item);
+  }
+  item.count += 1;
+  if (Number.isSafeInteger(index) && !item.indexes.includes(index)) item.indexes.push(index);
+}
+
+function placementBatchDiagnosticsSummary(items) {
+  const sortedItems = [...items].sort(placementBatchDiagnosticsCompareSummaryItems);
+  return {
+    schemaVersion: REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_SCHEMA,
+    sortOrder: [...PLACEMENT_BATCH_DIAGNOSTICS_SUMMARY_ORDER],
+    total: sortedItems.length,
+    items: sortedItems,
+  };
+}
+
+function placementBatchDiagnosticsSummaryFromEvaluations(evaluations) {
+  const items = [];
+  for (const item of evaluations) {
+    for (const reasonCode of item.evaluation.reasonCodes || []) {
+      placementBatchDiagnosticsAddSummaryItem(items, item.evaluation.status, reasonCode, item.index);
+    }
+  }
+  return placementBatchDiagnosticsSummary(items);
+}
+
 function placementBatchDiagnosticsStatus(countsByStatus) {
   if (countsByStatus.hardFail > 0) return 'hardFail';
   if (countsByStatus.unresolved > 0) return 'unresolved';
@@ -2860,6 +2929,7 @@ function placementBatchDiagnosticsEnvelope(
   countsByReasonCode,
   evaluations,
   diagnostics,
+  diagnosticSummary,
 ) {
   return {
     schemaVersion: REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_SCHEMA,
@@ -2872,6 +2942,7 @@ function placementBatchDiagnosticsEnvelope(
     countsByReasonCode,
     evaluations,
     diagnostics,
+    diagnosticSummary,
   };
 }
 
@@ -2894,6 +2965,12 @@ function placementBatchDiagnosticsEvaluate(input) {
   const checked = placementBatchDiagnosticsCheck(input);
   if (checked.ok !== true) {
     countsByReasonCode[PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE] = 1;
+    const diagnosticSummary = placementBatchDiagnosticsSummary([{
+      severity: 'hardFail',
+      code: PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE,
+      count: 1,
+      indexes: [],
+    }]);
     return placementBatchDiagnosticsEnvelope(
       'hardFail',
       PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE,
@@ -2906,6 +2983,7 @@ function placementBatchDiagnosticsEvaluate(input) {
         field: checked.field,
         message: checked.message,
       }],
+      diagnosticSummary,
     );
   }
 
@@ -2923,6 +3001,7 @@ function placementBatchDiagnosticsEvaluate(input) {
 
   const status = placementBatchDiagnosticsStatus(countsByStatus);
   const code = placementBatchDiagnosticsCode(status);
+  const diagnosticSummary = placementBatchDiagnosticsSummaryFromEvaluations(evaluations);
   return placementBatchDiagnosticsEnvelope(
     status,
     code,
@@ -2931,6 +3010,7 @@ function placementBatchDiagnosticsEvaluate(input) {
     countsByReasonCode,
     evaluations,
     diagnostics,
+    diagnosticSummary,
   );
 }
 // RB_14_PLACEMENT_BATCH_DIAGNOSTICS_CONTRACTS_END
