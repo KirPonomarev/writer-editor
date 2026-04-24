@@ -11,6 +11,7 @@ const API_SHAPE_SOURCE = `(() => ({
   invokeUiCommandBridgeType: typeof window.electronAPI?.invokeUiCommandBridge,
   invokeWorkspaceQueryBridgeType: typeof window.electronAPI?.invokeWorkspaceQueryBridge
 }))()`;
+const DEFAULT_RENDERER_PROBE_LABEL = 'apiShape';
 
 function normalizeTimeoutMs(value) {
   if (!Number.isInteger(value) || value <= 0) return DEFAULT_TIMEOUT_MS;
@@ -36,7 +37,12 @@ function parseHarnessResult(stdout) {
   return JSON.parse(line.slice('PRODUCTION_APP_RUNTIME_HARNESS_RESULT:'.length));
 }
 
-function createChildSource({ rootDir, tempRoot }) {
+function createChildSource({
+  rootDir,
+  tempRoot,
+  rendererProbeSource = API_SHAPE_SOURCE,
+  rendererProbeLabel = DEFAULT_RENDERER_PROBE_LABEL,
+}) {
   return `\
 const path = require('path');
 const fs = require('fs');
@@ -44,7 +50,8 @@ const { app, BrowserWindow, dialog, session } = require('electron');
 
 const rootDir = ${JSON.stringify(rootDir)};
 const tempRoot = ${JSON.stringify(tempRoot)};
-const apiShapeSource = ${JSON.stringify(API_SHAPE_SOURCE)};
+const rendererProbeSource = ${JSON.stringify(rendererProbeSource || API_SHAPE_SOURCE)};
+const rendererProbeLabel = ${JSON.stringify(rendererProbeLabel || DEFAULT_RENDERER_PROBE_LABEL)};
 let networkRequests = 0;
 let dialogCalls = 0;
 
@@ -124,16 +131,21 @@ app.whenReady().then(async () => {
   try {
     const win = await waitForWindow();
     await waitForLoad(win);
-    const apiShape = await win.webContents.executeJavaScript(apiShapeSource, true);
-    emitResult({
+    const rendererProbe = await win.webContents.executeJavaScript(rendererProbeSource, true);
+    const payload = {
       ok: 1,
       appReady: app.isReady(),
       windowCount: BrowserWindow.getAllWindows().length,
       loadComplete: true,
-      apiShape,
+      rendererProbeLabel,
+      rendererProbe,
       networkRequests,
       dialogCalls,
-    });
+    };
+    if (rendererProbeLabel === 'apiShape') {
+      payload.apiShape = rendererProbe;
+    }
+    emitResult(payload);
     app.exit(0);
   } catch (error) {
     emitResult({
@@ -149,9 +161,14 @@ app.whenReady().then(async () => {
 `;
 }
 
-async function writeChildFile(tempRoot, rootDir) {
+async function writeChildFile(tempRoot, rootDir, options = {}) {
   const childPath = path.join(tempRoot, 'production-app-runtime-harness-child.cjs');
-  await fs.writeFile(childPath, createChildSource({ rootDir, tempRoot }), 'utf8');
+  await fs.writeFile(childPath, createChildSource({
+    rootDir,
+    tempRoot,
+    rendererProbeSource: options.rendererProbeSource,
+    rendererProbeLabel: options.rendererProbeLabel,
+  }), 'utf8');
   return childPath;
 }
 
@@ -164,7 +181,10 @@ export async function runProductionAppRuntimeHarness(options = {}) {
 
   try {
     const electronBinary = await resolveElectronBinary(rootDir, options.electronBinary || '');
-    const childPath = await writeChildFile(tempRoot, rootDir);
+    const childPath = await writeChildFile(tempRoot, rootDir, {
+      rendererProbeSource: options.rendererProbeSource,
+      rendererProbeLabel: options.rendererProbeLabel,
+    });
     const stdoutChunks = [];
     const stderrChunks = [];
 
