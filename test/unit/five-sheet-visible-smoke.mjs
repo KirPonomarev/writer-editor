@@ -133,8 +133,13 @@ async function collectState(win, label) {
     return {
       label: \${JSON.stringify(label)},
       proofClass: Boolean(host && host.classList.contains('tiptap-host--central-sheet-strip-proof')),
+      centralSheetCount: host ? host.dataset.centralSheetCount || null : null,
       centralSheetFlow: host ? host.dataset.centralSheetFlow || null : null,
       centralSheetOverflowReason: host ? host.dataset.centralSheetOverflowReason || null : null,
+      centralSheetBoundedOverflowReason: host ? host.dataset.centralSheetBoundedOverflowReason || null : null,
+      centralSheetBoundedOverflowSourcePageCount: host ? host.dataset.centralSheetBoundedOverflowSourcePageCount || null : null,
+      centralSheetBoundedOverflowVisiblePageCount: host ? host.dataset.centralSheetBoundedOverflowVisiblePageCount || null : null,
+      centralSheetBoundedOverflowHiddenPageCount: host ? host.dataset.centralSheetBoundedOverflowHiddenPageCount || null : null,
       text: prose ? prose.textContent || '' : '',
       visibleSheetCount: pageWraps.length,
       viewportVisibleSheetCount,
@@ -180,15 +185,25 @@ async function findFiveSheetFixture(win) {
     lastState = state;
     if (
       state.centralSheetFlow === 'horizontal'
-      && state.visibleSheetCount >= 5
-      && state.occupiedSheetCount >= 5
+      && state.centralSheetCount === '5'
+      && state.visibleSheetCount === 5
+      && state.viewportVisibleSheetCount === 5
+      && state.occupiedSheetCount === 5
+      && state.centralSheetOverflowReason === null
+      && state.centralSheetBoundedOverflowReason === null
+      && state.centralSheetBoundedOverflowSourcePageCount === null
+      && state.centralSheetBoundedOverflowVisiblePageCount === null
+      && state.centralSheetBoundedOverflowHiddenPageCount === null
       && state.proseMirrorCount === 1
       && state.tiptapEditorCount === 1
       && state.prosePageTruthCount === 0
     ) {
       return { paragraphCount, state };
     }
-    if (state.centralSheetOverflowReason === 'max-page-count') {
+    if (
+      state.centralSheetOverflowReason === 'max-page-count'
+      || state.centralSheetBoundedOverflowReason === 'max-page-count'
+    ) {
       break;
     }
   }
@@ -296,15 +311,27 @@ const result = JSON.parse(rawResult);
 
 assert.equal(exitCode, 0, `electron helper failed with ${exitCode}\n${stdout}\n${stderr}`);
 assert.equal(result.ok, true);
-assert.equal(result.fixture.visibleSheetCount >= 5, true);
-assert.equal(result.fixture.viewportVisibleSheetCount >= 5, true);
-assert.equal(result.fixture.occupiedSheetCount >= 5, true);
+assert.equal(result.fixture.centralSheetCount, '5');
+assert.equal(result.fixture.visibleSheetCount, 5);
+assert.equal(result.fixture.viewportVisibleSheetCount, 5);
+assert.equal(result.fixture.occupiedSheetCount, 5);
+assert.equal(result.fixture.centralSheetOverflowReason, null);
+assert.equal(result.fixture.centralSheetBoundedOverflowReason, null);
+assert.equal(result.fixture.centralSheetBoundedOverflowSourcePageCount, null);
+assert.equal(result.fixture.centralSheetBoundedOverflowVisiblePageCount, null);
+assert.equal(result.fixture.centralSheetBoundedOverflowHiddenPageCount, null);
 assert.equal(result.fixture.proseMirrorCount, 1);
 assert.equal(result.fixture.tiptapEditorCount, 1);
 assert.equal(result.fixture.prosePageTruthCount, 0);
-assert.equal(result.beforeInput.visibleSheetCount >= 5, true);
-assert.equal(result.beforeInput.viewportVisibleSheetCount >= 5, true);
-assert.equal(result.beforeInput.occupiedSheetCount >= 5, true);
+assert.equal(result.beforeInput.centralSheetCount, '5');
+assert.equal(result.beforeInput.visibleSheetCount, 5);
+assert.equal(result.beforeInput.viewportVisibleSheetCount, 5);
+assert.equal(result.beforeInput.occupiedSheetCount, 5);
+assert.equal(result.beforeInput.centralSheetOverflowReason, null);
+assert.equal(result.beforeInput.centralSheetBoundedOverflowReason, null);
+assert.equal(result.beforeInput.centralSheetBoundedOverflowSourcePageCount, null);
+assert.equal(result.beforeInput.centralSheetBoundedOverflowVisiblePageCount, null);
+assert.equal(result.beforeInput.centralSheetBoundedOverflowHiddenPageCount, null);
 assert.equal(result.beforeInput.proseMirrorCount, 1);
 assert.equal(result.beforeInput.tiptapEditorCount, 1);
 assert.equal(result.beforeInput.prosePageTruthCount, 0);
@@ -312,9 +339,15 @@ assert.equal(result.beforeInput.rightInspectorVisible, true);
 assert.equal(hashText(result.beforeInput.text), hashText(result.fixture.text));
 assert.equal(result.focus.ok, true);
 assert.equal(result.focus.activeElementInsideProse, true);
-assert.equal(result.afterInput.visibleSheetCount >= 5, true);
-assert.equal(result.afterInput.viewportVisibleSheetCount >= 5, true);
-assert.equal(result.afterInput.occupiedSheetCount >= 5, true);
+assert.equal(result.afterInput.centralSheetCount, '5');
+assert.equal(result.afterInput.visibleSheetCount, 5);
+assert.equal(result.afterInput.viewportVisibleSheetCount, 5);
+assert.equal(result.afterInput.occupiedSheetCount, 5);
+assert.equal(result.afterInput.centralSheetOverflowReason, null);
+assert.equal(result.afterInput.centralSheetBoundedOverflowReason, null);
+assert.equal(result.afterInput.centralSheetBoundedOverflowSourcePageCount, null);
+assert.equal(result.afterInput.centralSheetBoundedOverflowVisiblePageCount, null);
+assert.equal(result.afterInput.centralSheetBoundedOverflowHiddenPageCount, null);
 assert.equal(result.afterInput.proseMirrorCount, 1);
 assert.equal(result.afterInput.tiptapEditorCount, 1);
 assert.equal(result.afterInput.prosePageTruthCount, 0);
