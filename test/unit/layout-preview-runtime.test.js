@@ -60,6 +60,26 @@ function createPreviewInput(overrides = {}) {
   };
 }
 
+function normalizePageMapBoundaries(pageMap) {
+  return {
+    pages: pageMap.pages.map((page) => ({
+      pageNumber: page.pageNumber,
+      nodeIds: page.nodeIds,
+      overflow: Boolean(page.overflow),
+    })),
+    pageBreaks: pageMap.pageBreaks.map((item) => ({
+      nodeId: item.nodeId,
+      beforePageNumber: item.beforePageNumber,
+      reason: item.reason,
+    })),
+    meta: {
+      pageCount: pageMap.meta.pageCount,
+      pageBreakCount: pageMap.meta.pageBreakCount,
+      overflowCount: pageMap.meta.overflowCount,
+    },
+  };
+}
+
 function collectElementsByClass(root, className, output = []) {
   if (!root || typeof root !== 'object') return output;
   const classes = typeof root.className === 'string' ? root.className.split(/\s+/u) : [];
@@ -103,6 +123,96 @@ test('layout preview runtime: snapshot is derived, deterministic, and storage-cl
   for (const forbiddenKey of forbiddenCanonicalKeys) {
     assert.equal(keySet.has(forbiddenKey), false, `snapshot leaked canonical key ${forbiddenKey}`);
   }
+});
+
+test('layout preview runtime: pageMapService and preview pagination match for one landscape fixture', async () => {
+  const layoutPreview = await loadModule('src/renderer/layoutPreview.mjs');
+  const semanticMapping = await loadModule('src/derived/semanticMapping.mjs');
+  const styleMapMod = await loadModule('src/derived/styleMap.mjs');
+  const flowMod = await loadModule('src/derived/normalizedLayoutFlow.mjs');
+  const measureMod = await loadModule('src/derived/layoutMeasureProvider.mjs');
+  const pageMapMod = await loadModule('src/derived/pageMapService.mjs');
+
+  const fixture = {
+    text: [
+      'Landscape proof intro alpha beta gamma',
+      '',
+      'Body paragraph before explicit page break',
+      semanticMapping.PAGE_BREAK_TOKEN_V1,
+      'Body paragraph after explicit page break',
+      'Tail paragraph on second landscape page',
+    ].join('\n'),
+    profile: {
+      formatId: 'A4',
+      orientation: 'landscape',
+      chapterStartRule: 'next-page',
+      allowExplicitPageBreaks: true,
+    },
+    metrics: {
+      pageWidthMm: 297,
+      pageHeightMm: 210,
+      pageWidthPx: 1693,
+      pageHeightPx: 1197,
+      contentWidthPx: 1403,
+      contentHeightPx: 907,
+    },
+    selectionRange: { start: 0, end: 12 },
+    sourceId: '05be-landscape-pair-proof',
+  };
+
+  assert.equal(fixture.metrics.pageWidthPx > fixture.metrics.pageHeightPx, true);
+  assert.equal(fixture.metrics.pageWidthMm > fixture.metrics.pageHeightMm, true);
+  assert.equal(fixture.text.includes(semanticMapping.PAGE_BREAK_TOKEN_V1), true);
+
+  const previewSnapshot = layoutPreview.buildLayoutPreviewSnapshot(fixture);
+  const styleMap = styleMapMod.createStyleMap();
+  const semanticMap = semanticMapping.mapSemanticEntries({
+    sourceId: fixture.sourceId,
+    text: fixture.text,
+  });
+  const flow = flowMod.buildNormalizedLayoutFlow({
+    semanticMap,
+    styleMap,
+    rules: {
+      pageBreakToken: semanticMapping.PAGE_BREAK_TOKEN_V1,
+      chapterStartRule: fixture.profile.chapterStartRule,
+    },
+  });
+  const profile = {
+    pageWidth: fixture.metrics.pageWidthMm,
+    pageHeight: fixture.metrics.pageHeightMm,
+    bodyWidth: Math.max(40, Math.round(fixture.metrics.contentWidthPx / 11)),
+    bodyHeight: Math.max(20, Math.round(fixture.metrics.contentHeightPx / 28)),
+  };
+  const measureProvider = measureMod.createLayoutMeasureProvider({
+    bodyWidth: profile.bodyWidth,
+    bodyHeight: profile.bodyHeight,
+    charWidth: 1,
+    lineHeight: 1,
+    lineGap: 0,
+  });
+  const servicePageMap = pageMapMod.paginateLayoutFlow({
+    flow,
+    profile,
+    styleMap,
+    measureProvider,
+    rules: {
+      chapterStartRule: fixture.profile.chapterStartRule,
+    },
+  });
+
+  const previewBoundaries = normalizePageMapBoundaries(previewSnapshot.pageMap);
+  const serviceBoundaries = normalizePageMapBoundaries(servicePageMap);
+  assert.deepEqual(previewBoundaries, serviceBoundaries);
+  assert.equal(previewBoundaries.meta.pageCount, 2);
+  assert.deepEqual(
+    previewBoundaries.pageBreaks,
+    [{
+      nodeId: 'semantic:05be-landscape-pair-proof:0002:pageBreak',
+      beforePageNumber: 2,
+      reason: 'explicit',
+    }],
+  );
 });
 
 test('layout preview runtime: invalidation cache hits stable inputs and evicts stale entries', async () => {
