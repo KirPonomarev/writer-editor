@@ -7,6 +7,7 @@ const { pathToFileURL } = require('node:url');
 
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-placement-batch-diagnostics-contract.contract.test.js';
+const BINDING_BASE_SHA = '43bab3bdfe894e5fc5bc6ebd232bdeb068cad393';
 const ALLOWLIST = [MODULE_PATH, TEST_PATH];
 
 async function loadBridge() {
@@ -91,6 +92,26 @@ function assertPlacementEvaluationReturnShape(result) {
     'confidenceEvaluation',
     'reasonCodes',
     'diagnostics',
+  ]);
+}
+
+function assertPlacementAdmissionPreviewReturnShape(result) {
+  assert.deepEqual(Object.keys(result), [
+    'schemaVersion',
+    'type',
+    'status',
+    'code',
+    'reason',
+    'canAdmit',
+    'sourceStatus',
+    'sourceTotal',
+    'blockingStatuses',
+    'total',
+    'countsByStatus',
+    'countsByReasonCode',
+    'blockingEvaluations',
+    'blockingDiagnostics',
+    'diagnosticSummary',
   ]);
 }
 
@@ -564,6 +585,274 @@ test('RB-14 keeps RB-13 public return shape unchanged', async () => {
   assertPlacementEvaluationReturnShape(result);
 });
 
+test('RB-16 exports placement admission preview only, with exact return shape', async () => {
+  const bridge = await loadBridge();
+  const batchDiagnostics = bridge.evaluateCommentAnchorPlacementBatchDiagnostics({
+    placements: [],
+    context: {},
+  });
+  const result = bridge.previewRevisionSessionPlacementAdmission({ batchDiagnostics });
+
+  assert.equal(typeof bridge.previewRevisionSessionPlacementAdmission, 'function');
+  assert.deepEqual(Object.keys(bridge).filter((key) => /filter/iu.test(key)), []);
+  assertPlacementAdmissionPreviewReturnShape(result);
+  assert.equal(result.schemaVersion, 'revision-bridge.revision-session-placement-admission-preview.v1');
+  assert.equal(result.type, 'revisionBridge.revisionSession.placementAdmissionPreview');
+});
+
+test('RB-16 evaluated-only and diagnostics-only sources admit with default blocking statuses', async () => {
+  const bridge = await loadBridge();
+  const evaluatedBatch = bridge.evaluateCommentAnchorPlacementBatchDiagnostics({
+    placements: [validPlacement({ placementId: 'evaluated-only' })],
+    context: validContext(),
+  });
+  const diagnosticsBatch = bridge.evaluateCommentAnchorPlacementBatchDiagnostics({
+    placements: [
+      validPlacement({
+        placementId: 'diagnostics-only',
+        inlineRange: validInlineRange({ from: 6, to: 10, quote: 'Alpha' }),
+      }),
+    ],
+    context: validContext('Alpha beta Alpha.'),
+  });
+
+  for (const batchDiagnostics of [evaluatedBatch, diagnosticsBatch]) {
+    const result = bridge.previewRevisionSessionPlacementAdmission({ batchDiagnostics });
+
+    assertPlacementAdmissionPreviewReturnShape(result);
+    assert.equal(result.status, 'admit');
+    assert.equal(result.canAdmit, true);
+    assert.deepEqual(result.blockingStatuses, ['unresolved', 'hardFail']);
+    assert.equal(result.sourceStatus, batchDiagnostics.status);
+    assert.equal(result.sourceTotal, batchDiagnostics.total);
+    assert.equal(result.total, 0);
+    assert.deepEqual(result.countsByStatus, {
+      evaluated: 0,
+      diagnostics: 0,
+      unresolved: 0,
+      hardFail: 0,
+    });
+    assert.deepEqual(result.blockingEvaluations, []);
+    assert.deepEqual(result.blockingDiagnostics, []);
+    assert.equal(result.diagnosticSummary.total, 0);
+    assert.deepEqual(result.diagnosticSummary.items, []);
+  }
+});
+
+test('RB-16 unresolved source blocks with only unresolved indexes and evidence', async () => {
+  const bridge = await loadBridge();
+  const batchDiagnostics = bridge.evaluateCommentAnchorPlacementBatchDiagnostics({
+    placements: [
+      validPlacement({ placementId: 'evaluated' }),
+      validPlacement({
+        placementId: 'unresolved',
+        inlineRange: validInlineRange({ to: 13, quote: 'Missing quote' }),
+      }),
+      validPlacement({
+        placementId: 'diagnostics',
+        inlineRange: validInlineRange({ from: 6, to: 10, quote: 'Alpha' }),
+      }),
+    ],
+    context: validContext('Alpha beta Alpha.'),
+  });
+  const result = bridge.previewRevisionSessionPlacementAdmission({ batchDiagnostics });
+
+  assert.equal(result.status, 'block');
+  assert.equal(result.canAdmit, false);
+  assert.equal(result.sourceStatus, 'unresolved');
+  assert.equal(result.sourceTotal, 3);
+  assert.equal(result.total, 1);
+  assert.deepEqual(result.blockingEvaluations.map((item) => item.index), [1]);
+  assert.deepEqual([...new Set(result.blockingDiagnostics.map((item) => item.index))], [1]);
+  assert.deepEqual(result.countsByStatus, {
+    evaluated: 0,
+    diagnostics: 0,
+    unresolved: 1,
+    hardFail: 0,
+  });
+  assert.equal(result.countsByReasonCode.REVISION_BRIDGE_PLACEMENT_EVALUATION_UNRESOLVED, 1);
+  assert.equal(result.countsByReasonCode.REVISION_BRIDGE_PLACEMENT_EVALUATION_DIAGNOSTICS, 0);
+  assert.deepEqual(
+    result.diagnosticSummary.items.map((item) => ({ severity: item.severity, code: item.code, indexes: item.indexes })),
+    [
+      {
+        severity: 'unresolved',
+        code: 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_STALE_QUOTE',
+        indexes: [1],
+      },
+      {
+        severity: 'unresolved',
+        code: 'REVISION_BRIDGE_PLACEMENT_EVALUATION_UNRESOLVED',
+        indexes: [1],
+      },
+    ],
+  );
+});
+
+test('RB-16 hardFail source blocks and preserves hardFail evidence', async () => {
+  const bridge = await loadBridge();
+  const batchDiagnostics = bridge.evaluateCommentAnchorPlacementBatchDiagnostics({
+    placements: [
+      validPlacement({
+        placementId: 'hard-fail',
+        threadId: '',
+        body: 'COMMENT_SECRET_BODY',
+      }),
+    ],
+    context: validContext(),
+  });
+  const result = bridge.previewRevisionSessionPlacementAdmission({ batchDiagnostics });
+
+  assert.equal(batchDiagnostics.status, 'hardFail');
+  assert.equal(result.status, 'block');
+  assert.equal(result.canAdmit, false);
+  assert.deepEqual(result.blockingEvaluations.map((item) => item.index), [0]);
+  assert.equal(result.blockingEvaluations[0].evaluation.status, 'hardFail');
+  assert.deepEqual([...new Set(result.blockingDiagnostics.map((item) => item.index))], [0]);
+  assert.equal(result.countsByStatus.hardFail, 1);
+  assert.equal(result.countsByReasonCode.REVISION_BRIDGE_PLACEMENT_EVALUATION_VALIDATION_FAILED, 1);
+  assert.equal(result.diagnosticSummary.items.every((item) => item.severity === 'hardFail'), true);
+});
+
+test('RB-16 custom diagnostics blocking excludes evaluated placements', async () => {
+  const bridge = await loadBridge();
+  const batchDiagnostics = bridge.evaluateCommentAnchorPlacementBatchDiagnostics({
+    placements: [
+      validPlacement({ placementId: 'evaluated' }),
+      validPlacement({
+        placementId: 'diagnostics',
+        inlineRange: validInlineRange({ from: 6, to: 10, quote: 'Alpha' }),
+      }),
+    ],
+    context: validContext('Alpha beta Alpha.'),
+  });
+  const result = bridge.previewRevisionSessionPlacementAdmission({
+    batchDiagnostics,
+    blockingStatuses: [' diagnostics ', 'diagnostics'],
+  });
+
+  assert.equal(result.status, 'block');
+  assert.deepEqual(result.blockingStatuses, ['diagnostics']);
+  assert.deepEqual(result.blockingEvaluations.map((item) => item.index), [1]);
+  assert.deepEqual([...new Set(result.blockingDiagnostics.map((item) => item.index))], [1]);
+  assert.deepEqual(result.countsByStatus, {
+    evaluated: 0,
+    diagnostics: 1,
+    unresolved: 0,
+    hardFail: 0,
+  });
+  assert.equal(result.countsByReasonCode.REVISION_BRIDGE_ANCHOR_CONFIDENCE_EXACT_RANGE, 0);
+  assert.equal(result.countsByReasonCode.REVISION_BRIDGE_PLACEMENT_EVALUATION_EVALUATED, 0);
+});
+
+test('RB-16 empty valid batch admits with zero blocking totals', async () => {
+  const bridge = await loadBridge();
+  const batchDiagnostics = bridge.evaluateCommentAnchorPlacementBatchDiagnostics({
+    placements: [],
+    context: {},
+  });
+  const result = bridge.previewRevisionSessionPlacementAdmission({ batchDiagnostics });
+
+  assert.equal(result.status, 'admit');
+  assert.equal(result.canAdmit, true);
+  assert.equal(result.sourceStatus, 'evaluated');
+  assert.equal(result.sourceTotal, 0);
+  assert.equal(result.total, 0);
+  assert.deepEqual(result.blockingEvaluations, []);
+  assert.deepEqual(result.blockingDiagnostics, []);
+  assert.equal(Object.values(result.countsByReasonCode).every((count) => count === 0), true);
+  assert.equal(result.diagnosticSummary.total, 0);
+});
+
+test('RB-16 malformed input and invalid blocking statuses hardFail without throwing', async () => {
+  const bridge = await loadBridge();
+  const validBatch = bridge.evaluateCommentAnchorPlacementBatchDiagnostics({
+    placements: [],
+    context: {},
+  });
+  const cases = [
+    null,
+    {},
+    { batchDiagnostics: null },
+    { batchDiagnostics: {} },
+    { batchDiagnostics: { ...validBatch, type: 'bad' } },
+    { batchDiagnostics: { ...validBatch, status: 'bad' } },
+    { batchDiagnostics: { ...validBatch, total: -1 } },
+    { batchDiagnostics: { ...validBatch, total: 1 } },
+    { batchDiagnostics: { ...validBatch, evaluations: {} } },
+    { batchDiagnostics: { ...validBatch, diagnostics: {} } },
+    { batchDiagnostics: { ...validBatch, diagnosticSummary: null } },
+    { batchDiagnostics: validBatch, blockingStatuses: [] },
+    { batchDiagnostics: validBatch, blockingStatuses: [''] },
+    { batchDiagnostics: validBatch, blockingStatuses: ['unknown'] },
+    { batchDiagnostics: validBatch, blockingStatuses: [1] },
+  ];
+
+  for (const input of cases) {
+    assert.doesNotThrow(() => bridge.previewRevisionSessionPlacementAdmission(input));
+    const result = bridge.previewRevisionSessionPlacementAdmission(input);
+
+    assertPlacementAdmissionPreviewReturnShape(result);
+    assert.equal(result.status, 'hardFail');
+    assert.equal(result.canAdmit, false);
+    assert.equal(result.total, 0);
+    assert.deepEqual(result.blockingEvaluations, []);
+    assert.deepEqual(result.blockingDiagnostics, []);
+    assert.equal(Object.values(result.countsByReasonCode).every((count) => count === 0), true);
+    assert.deepEqual(result.diagnosticSummary.items, [{
+      severity: 'hardFail',
+      code: 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED',
+      count: 1,
+      indexes: [],
+    }]);
+  }
+});
+
+test('RB-16 unknown retained source reason code is suppressed from counts and summary', async () => {
+  const bridge = await loadBridge();
+  const batchDiagnostics = bridge.evaluateCommentAnchorPlacementBatchDiagnostics({
+    placements: [
+      validPlacement({
+        placementId: 'unresolved',
+        inlineRange: validInlineRange({ to: 13, quote: 'Missing quote' }),
+      }),
+    ],
+    context: validContext(),
+  });
+  const mutatedBatch = deepClone(batchDiagnostics);
+  mutatedBatch.evaluations[0].evaluation.reasonCodes.push('REVISION_BRIDGE_PRIVATE_REASON');
+  const result = bridge.previewRevisionSessionPlacementAdmission({ batchDiagnostics: mutatedBatch });
+
+  assert.equal(result.status, 'block');
+  assert.equal(Object.hasOwn(result.countsByReasonCode, 'REVISION_BRIDGE_PRIVATE_REASON'), false);
+  assert.equal(JSON.stringify(result.diagnosticSummary).includes('REVISION_BRIDGE_PRIVATE_REASON'), false);
+  assert.equal(result.countsByReasonCode.REVISION_BRIDGE_PLACEMENT_EVALUATION_UNRESOLVED, 1);
+});
+
+test('RB-16 input batch, nested evidence, summary, and status list are not mutated', async () => {
+  const bridge = await loadBridge();
+  const batchDiagnostics = bridge.evaluateCommentAnchorPlacementBatchDiagnostics({
+    placements: [
+      validPlacement({
+        placementId: 'unresolved',
+        inlineRange: validInlineRange({ to: 13, quote: 'Missing quote' }),
+      }),
+    ],
+    context: validContext(),
+  });
+  const blockingStatuses = [' unresolved ', 'hardFail', 'unresolved'];
+  const beforeBatch = deepClone(batchDiagnostics);
+  const beforeStatuses = deepClone(blockingStatuses);
+
+  const result = bridge.previewRevisionSessionPlacementAdmission({ batchDiagnostics, blockingStatuses });
+
+  assert.deepEqual(batchDiagnostics, beforeBatch);
+  assert.deepEqual(blockingStatuses, beforeStatuses);
+  assert.notEqual(result.blockingEvaluations[0], batchDiagnostics.evaluations[0]);
+  assert.notEqual(result.blockingEvaluations[0].evaluation, batchDiagnostics.evaluations[0].evaluation);
+  assert.notEqual(result.blockingDiagnostics[0], batchDiagnostics.diagnostics[0]);
+});
+
 test('RB-14 source section has no forbidden side effect or dependency tokens', () => {
   const source = fs.readFileSync(path.join(process.cwd(), MODULE_PATH), 'utf8');
   const start = source.indexOf('// RB_14_PLACEMENT_BATCH_DIAGNOSTICS_CONTRACTS_START');
@@ -601,9 +890,46 @@ test('RB-14 source section has no forbidden side effect or dependency tokens', (
   }
 });
 
-test('RB-14 changed files stay allowlisted and package manifests are untouched', () => {
+test('RB-16 source section has no forbidden side effect or dependency tokens', () => {
+  const source = fs.readFileSync(path.join(process.cwd(), MODULE_PATH), 'utf8');
+  const start = source.indexOf('// RB_16_PLACEMENT_ADMISSION_PREVIEW_CONTRACTS_START');
+  const end = source.indexOf('// RB_16_PLACEMENT_ADMISSION_PREVIEW_CONTRACTS_END');
+  assert.notEqual(start, -1);
+  assert.notEqual(end, -1);
+  const section = source.slice(start, end);
+  const forbiddenTokens = [
+    'parser',
+    'storage',
+    'network',
+    'UI',
+    'apply',
+    'patch',
+    'command',
+    'dependency',
+    'write',
+    'save',
+    'import',
+    'export',
+    'ipc',
+    'electron',
+    'fetch',
+    'Date.now',
+    'Math.random',
+    'setTimeout',
+    'setInterval',
+    'fs',
+    'child_process',
+    'require',
+  ];
+
+  for (const token of forbiddenTokens) {
+    assert.equal(section.includes(token), false, `${token} must not appear in RB-16 section`);
+  }
+});
+
+test('RB-16 changed files stay allowlisted from worktree and binding-base branch diff', () => {
   const statusText = execFileSync('git', ['status', '--short', '-uall'], { encoding: 'utf8' });
-  const diffText = execFileSync('git', ['diff', '--name-only', 'HEAD~1..HEAD'], { encoding: 'utf8' });
+  const diffText = execFileSync('git', ['diff', '--name-only', `${BINDING_BASE_SHA}..HEAD`], { encoding: 'utf8' });
   const worktreeFiles = changedFilesFromGitStatus(statusText);
   const committedFiles = changedFilesFromGitDiff(diffText);
   const outsideAllowlist = [...worktreeFiles, ...committedFiles]
