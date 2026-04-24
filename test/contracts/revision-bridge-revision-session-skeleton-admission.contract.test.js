@@ -234,6 +234,8 @@ test('RB-17 malformed placement preview hardFails without throwing', async () =>
     { ...(await admitPlacementPreview()), canAdmit: 'yes' },
     { ...(await admitPlacementPreview()), sourceTotal: 1.5 },
     { ...(await admitPlacementPreview()), blockingStatuses: {} },
+    { ...(await admitPlacementPreview()), countsByStatus: undefined },
+    { ...(await admitPlacementPreview()), countsByReasonCode: undefined },
     { ...(await admitPlacementPreview()), diagnosticSummary: null },
   ];
 
@@ -250,6 +252,100 @@ test('RB-17 malformed placement preview hardFails without throwing', async () =>
     assert.equal(result.placementAdmissionPreview, null);
     assert.equal(result.reasons.length > 0, true);
     assert.equal(result.reasons[0].field.startsWith('placementAdmissionPreview'), true);
+  }
+});
+
+test('RB-17 delegated count maps are required, bounded, and public-key only', async () => {
+  const bridge = await loadBridge();
+  const validPreview = await admitPlacementPreview();
+  const cases = [
+    [
+      { ...validPreview, countsByStatus: undefined },
+      'placementAdmissionPreview.countsByStatus',
+    ],
+    [
+      { ...validPreview, countsByReasonCode: undefined },
+      'placementAdmissionPreview.countsByReasonCode',
+    ],
+    [
+      { ...validPreview, countsByStatus: { ...validPreview.countsByStatus, path: 1 } },
+      'placementAdmissionPreview.countsByStatus.path',
+    ],
+    [
+      { ...validPreview, countsByStatus: { ...validPreview.countsByStatus, evaluated: -1 } },
+      'placementAdmissionPreview.countsByStatus.evaluated',
+    ],
+    [
+      { ...validPreview, countsByReasonCode: { ...validPreview.countsByReasonCode, PRIVATE_REASON: 1 } },
+      'placementAdmissionPreview.countsByReasonCode.PRIVATE_REASON',
+    ],
+    [
+      {
+        ...validPreview,
+        countsByReasonCode: {
+          ...validPreview.countsByReasonCode,
+          REVISION_BRIDGE_PLACEMENT_EVALUATION_EVALUATED: 1.5,
+        },
+      },
+      'placementAdmissionPreview.countsByReasonCode.REVISION_BRIDGE_PLACEMENT_EVALUATION_EVALUATED',
+    ],
+  ];
+
+  for (const [placementAdmissionPreview, field] of cases) {
+    const result = bridge.previewRevisionSessionSkeletonAdmission(validInput(placementAdmissionPreview));
+
+    assertSkeletonReturnShape(result);
+    assert.equal(result.status, 'hardFail');
+    assert.equal(result.canAdmit, false);
+    assert.equal(result.candidateSession, null);
+    assert.equal(result.placementAdmissionPreview, null);
+    assert.equal(result.reasons.some((reason) => reason.field === field), true);
+  }
+});
+
+test('RB-17 hostile nested delegated preview keys fail closed and never leak', async () => {
+  const bridge = await loadBridge();
+  const validPreview = await admitPlacementPreview();
+  const cases = [
+    {
+      ...validPreview,
+      countsByStatus: { ...validPreview.countsByStatus, path: 1 },
+    },
+    {
+      ...validPreview,
+      diagnosticSummary: {
+        ...validPreview.diagnosticSummary,
+        items: [{ apply: true, code: 'hostile' }],
+      },
+    },
+    {
+      ...validPreview,
+      blockingEvaluations: [{ index: 0, evaluation: { storage: true } }],
+    },
+  ];
+  const forbiddenKeys = [
+    'path',
+    'apply',
+    'storage',
+    'parser',
+    'ui',
+    'ipc',
+    'network',
+    'command',
+    'write',
+    'save',
+  ];
+
+  for (const placementAdmissionPreview of cases) {
+    const result = bridge.previewRevisionSessionSkeletonAdmission(validInput(placementAdmissionPreview));
+    const keys = collectKeys(result).map((key) => key.toLowerCase());
+
+    assertSkeletonReturnShape(result);
+    assert.equal(result.status, 'hardFail');
+    assert.equal(result.placementAdmissionPreview, null);
+    for (const forbiddenKey of forbiddenKeys) {
+      assert.equal(keys.includes(forbiddenKey), false, `${forbiddenKey} must not leak`);
+    }
   }
 });
 
