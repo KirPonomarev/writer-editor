@@ -5,6 +5,8 @@ const REVIEWGRAPH_VALID_CODE = 'REVISION_BRIDGE_REVIEWGRAPH_VALID';
 const REVIEWGRAPH_INVALID_CODE = 'E_REVISION_BRIDGE_REVIEWGRAPH_INVALID';
 const REVIEW_PACKET_PREVIEW_READY_CODE = 'REVISION_BRIDGE_REVIEW_PACKET_PREVIEW_READY';
 const REVIEW_PACKET_PREVIEW_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_REVIEW_PACKET_PREVIEW_DIAGNOSTICS';
+const PARSED_REVIEW_SURFACE_ADAPTER_READY_CODE = 'REVISION_BRIDGE_PARSED_REVIEW_SURFACE_ADAPTER_READY';
+const PARSED_REVIEW_SURFACE_ADAPTER_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_PARSED_REVIEW_SURFACE_ADAPTER_DIAGNOSTICS';
 
 export const REVISION_BRIDGE_P0_PACKET_SCHEMA = 'revision-bridge-p0.packet.v1';
 export const REVISION_BRIDGE_REVISION_SESSION_SCHEMA = 'revision-bridge.revision-session.v1';
@@ -64,6 +66,29 @@ const REVIEW_PACKET_PREVIEW_FORBIDDEN_APPLY_FIELDS = [
   'applyPlan',
   'authorized',
   'canApply',
+];
+
+const PARSED_REVIEW_SURFACE_COLLECTIONS = [
+  'commentThreads',
+  'commentPlacements',
+  'textChanges',
+  'structuralChanges',
+  'diagnosticItems',
+  'decisionStates',
+];
+
+const PARSED_REVIEW_SURFACE_KEYS = [
+  ...PARSED_REVIEW_SURFACE_COLLECTIONS,
+  'unsupportedItems',
+];
+
+const PARSED_REVIEW_SURFACE_ALIAS_KEYS = [
+  'comments',
+  'changes',
+  'suggestions',
+  'docxComments',
+  'paragraphs',
+  'revisions',
 ];
 
 function isPlainObject(value) {
@@ -742,6 +767,159 @@ export function buildRevisionPacketPreview(input = {}) {
   const validation = validateRevisionSession(buildRevisionPacketPreviewCandidate(input));
   if (!validation.ok) return reviewPacketPreviewDiagnostics(validation.reasons);
   return reviewPacketPreviewReady(stripReviewPacketPreviewApplyFields(validation.value));
+}
+
+function parsedReviewSurfaceAdapterDiagnostics(reasons, reviewPacket, previewInput, previewResult) {
+  return stripReviewPacketPreviewApplyFields({
+    ok: false,
+    type: 'revisionBridge.parsedReviewSurfaceAdapter',
+    status: 'diagnostics',
+    code: PARSED_REVIEW_SURFACE_ADAPTER_DIAGNOSTICS_CODE,
+    reason: reasons[0]?.code || PARSED_REVIEW_SURFACE_ADAPTER_DIAGNOSTICS_CODE,
+    reasons,
+    reviewPacket,
+    previewInput,
+    revisionBridgePreviewResult: previewResult,
+  });
+}
+
+function parsedReviewSurfaceAdapterReady(reviewPacket, previewInput, previewResult) {
+  return stripReviewPacketPreviewApplyFields({
+    ok: true,
+    type: 'revisionBridge.parsedReviewSurfaceAdapter',
+    status: 'preview',
+    code: PARSED_REVIEW_SURFACE_ADAPTER_READY_CODE,
+    reason: PARSED_REVIEW_SURFACE_ADAPTER_READY_CODE,
+    reasons: [],
+    reviewPacket,
+    previewInput,
+    revisionBridgePreviewResult: previewResult,
+  });
+}
+
+function collectParsedReviewSurfaceInputReasons(input) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(invalidField('parsedReviewSurfaceAdapter', 'parsed review surface adapter input must be an object'));
+    return reasons;
+  }
+  if (!normalizeString(input.projectId)) reasons.push(missingField('projectId'));
+  if (!normalizeString(input.sessionId)) reasons.push(missingField('sessionId'));
+  if (!normalizeString(input.baselineHash)) reasons.push(missingField('baselineHash'));
+  if (hasOwnField(input, 'createdAt') && typeof input.createdAt !== 'string') {
+    reasons.push(invalidField('createdAt', 'createdAt must be a caller-supplied string'));
+  }
+  if (hasOwnField(input, 'updatedAt') && typeof input.updatedAt !== 'string') {
+    reasons.push(invalidField('updatedAt', 'updatedAt must be a caller-supplied string'));
+  }
+  if (!isPlainObject(input.parsedSurface)) {
+    reasons.push(missingField('parsedSurface'));
+  }
+  return reasons;
+}
+
+function collectParsedSurfaceKeyReasons(parsedSurface) {
+  const reasons = [];
+  if (!isPlainObject(parsedSurface)) return reasons;
+
+  for (const key of Object.keys(parsedSurface).sort()) {
+    if (PARSED_REVIEW_SURFACE_ALIAS_KEYS.includes(key)) {
+      reasons.push(invalidField(
+        `parsedSurface.${key}`,
+        'parsed review surface alias keys are not accepted',
+      ));
+      continue;
+    }
+    if (!PARSED_REVIEW_SURFACE_KEYS.includes(key)) {
+      reasons.push(invalidField(
+        `parsedSurface.${key}`,
+        'parsed review surface key is not supported',
+      ));
+    }
+  }
+  return reasons;
+}
+
+function readParsedSurfaceCollection(parsedSurface, collectionName, reasons) {
+  if (!isPlainObject(parsedSurface) || !hasOwnField(parsedSurface, collectionName)) return [];
+  const collection = parsedSurface[collectionName];
+  if (!Array.isArray(collection)) {
+    reasons.push(invalidField(`parsedSurface.${collectionName}`, `${collectionName} must be an array`));
+    return [];
+  }
+  return collection.map((item) => cloneJsonSafe(item));
+}
+
+function normalizeUnsupportedItemDiagnosticCandidate(item, index) {
+  return {
+    diagnosticId: normalizeString(item.unsupportedId) || `unsupported-item-${index}`,
+    severity: item.severity,
+    message: item.message,
+    targetScope: item.targetScope,
+    relatedItemId: item.relatedItemId,
+    createdAt: item.createdAt,
+  };
+}
+
+function readUnsupportedItemDiagnostics(parsedSurface, reasons) {
+  if (!isPlainObject(parsedSurface) || !hasOwnField(parsedSurface, 'unsupportedItems')) return [];
+  const unsupportedItems = parsedSurface.unsupportedItems;
+  if (!Array.isArray(unsupportedItems)) {
+    reasons.push(invalidField('parsedSurface.unsupportedItems', 'unsupportedItems must be an array'));
+    return [];
+  }
+
+  const diagnostics = [];
+  unsupportedItems.forEach((item, index) => {
+    if (!isPlainObject(item)) {
+      reasons.push(invalidField(
+        `parsedSurface.unsupportedItems.${index}`,
+        'unsupportedItems entry must be an object',
+      ));
+      return;
+    }
+    diagnostics.push(normalizeUnsupportedItemDiagnosticCandidate(item, index));
+  });
+  return diagnostics;
+}
+
+function buildParsedReviewSurfaceReviewPacket(input, reasons) {
+  const parsedSurface = isPlainObject(input) && isPlainObject(input.parsedSurface) ? input.parsedSurface : {};
+  const reviewPacket = {};
+  for (const collectionName of PARSED_REVIEW_SURFACE_COLLECTIONS) {
+    reviewPacket[collectionName] = readParsedSurfaceCollection(parsedSurface, collectionName, reasons);
+  }
+  reviewPacket.diagnosticItems = reviewPacket.diagnosticItems.concat(
+    readUnsupportedItemDiagnostics(parsedSurface, reasons),
+  );
+  return reviewPacket;
+}
+
+function buildParsedReviewSurfacePreviewInput(input, reviewPacket) {
+  const previewInput = {
+    projectId: isPlainObject(input) ? input.projectId : undefined,
+    sessionId: isPlainObject(input) ? input.sessionId : undefined,
+    baselineHash: isPlainObject(input) ? input.baselineHash : undefined,
+    reviewPacket,
+  };
+  if (isPlainObject(input) && hasOwnField(input, 'createdAt')) previewInput.createdAt = input.createdAt;
+  if (isPlainObject(input) && hasOwnField(input, 'updatedAt')) previewInput.updatedAt = input.updatedAt;
+  return previewInput;
+}
+
+export function adaptParsedReviewSurfaceToReviewPacketPreviewInput(input = {}) {
+  const reasons = collectParsedReviewSurfaceInputReasons(input);
+  if (isPlainObject(input?.parsedSurface)) reasons.push(...collectParsedSurfaceKeyReasons(input.parsedSurface));
+
+  const reviewPacket = buildParsedReviewSurfaceReviewPacket(input, reasons);
+  const previewInput = buildParsedReviewSurfacePreviewInput(input, reviewPacket);
+  const previewResult = buildRevisionPacketPreview(previewInput);
+  const finalReasons = reasons.concat(previewResult.ok ? [] : previewResult.reasons);
+
+  if (finalReasons.length > 0) {
+    return parsedReviewSurfaceAdapterDiagnostics(finalReasons, reviewPacket, previewInput, previewResult);
+  }
+  return parsedReviewSurfaceAdapterReady(reviewPacket, previewInput, previewResult);
 }
 
 function normalizeTargetScope(input) {
