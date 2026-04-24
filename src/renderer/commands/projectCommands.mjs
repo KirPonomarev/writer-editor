@@ -40,6 +40,8 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   VIEW_PREVIEW_FORMAT_A4: 'cmd.project.view.previewFormatA4',
   VIEW_PREVIEW_FORMAT_A5: 'cmd.project.view.previewFormatA5',
   VIEW_PREVIEW_FORMAT_LETTER: 'cmd.project.view.previewFormatLetter',
+  VIEW_PREVIEW_ORIENTATION_PORTRAIT: 'cmd.project.view.previewOrientationPortrait',
+  VIEW_PREVIEW_ORIENTATION_LANDSCAPE: 'cmd.project.view.previewOrientationLandscape',
   VIEW_TOGGLE_PREVIEW: 'cmd.project.view.togglePreview',
   VIEW_TOGGLE_PREVIEW_FRAME: 'cmd.project.view.togglePreviewFrame',
   INSERT_MARKDOWN_PROMPT: 'cmd.project.insert.markdownPrompt',
@@ -87,6 +89,8 @@ export const LEGACY_ACTION_TO_COMMAND = Object.freeze({
   'switch-preview-format-a4': 'cmd.project.view.previewFormatA4',
   'switch-preview-format-a5': 'cmd.project.view.previewFormatA5',
   'switch-preview-format-letter': 'cmd.project.view.previewFormatLetter',
+  'switch-preview-orientation-portrait': 'cmd.project.view.previewOrientationPortrait',
+  'switch-preview-orientation-landscape': 'cmd.project.view.previewOrientationLandscape',
   'toggle-preview': 'cmd.project.view.togglePreview',
   'toggle-preview-frame': 'cmd.project.view.togglePreviewFrame',
   'import-markdown-v1': 'cmd.project.insert.markdownPrompt',
@@ -954,6 +958,30 @@ export function registerProjectCommands(registry, options = {}) {
         hotkey: '',
       },
       async () => runUiAction(uiActions, 'setPreviewFormat', id, { formatId }),
+    );
+  });
+
+  [
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_PREVIEW_ORIENTATION_PORTRAIT,
+      label: 'Preview Orientation Portrait',
+      orientation: 'portrait',
+    },
+    {
+      id: EXTRA_COMMAND_IDS.VIEW_PREVIEW_ORIENTATION_LANDSCAPE,
+      label: 'Preview Orientation Landscape',
+      orientation: 'landscape',
+    },
+  ].forEach(({ id, label, orientation }) => {
+    registry.registerCommand(
+      {
+        id,
+        label,
+        group: 'view',
+        surface: ['menu', 'palette', 'toolbar'],
+        hotkey: '',
+      },
+      async () => runUiAction(uiActions, 'setPreviewOrientation', id, { orientation }),
     );
   });
 

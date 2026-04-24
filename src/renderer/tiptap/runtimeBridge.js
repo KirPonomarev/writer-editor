@@ -185,6 +185,12 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
   if (commandId === 'cmd.project.view.previewFormatLetter') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.setPreviewFormat, commandId, 'LETTER') }
   }
+  if (commandId === 'cmd.project.view.previewOrientationPortrait') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.setPreviewOrientation, commandId, 'portrait') }
+  }
+  if (commandId === 'cmd.project.view.previewOrientationLandscape') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.setPreviewOrientation, commandId, 'landscape') }
+  }
   if (commandId === 'cmd.project.insert.linkPrompt') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.insertLinkPrompt, commandId, commandId, payload) }
   }
@@ -307,6 +313,12 @@ export function createTiptapRuntimeBridge(options = {}) {
       }
       if (command === 'switch-preview-format-letter') {
         return { handled: true, result: runBridgeCallback(runtimeHandlers.setPreviewFormat, command, 'LETTER'), command }
+      }
+      if (command === 'switch-preview-orientation-portrait') {
+        return { handled: true, result: runBridgeCallback(runtimeHandlers.setPreviewOrientation, command, 'portrait'), command }
+      }
+      if (command === 'switch-preview-orientation-landscape') {
+        return { handled: true, result: runBridgeCallback(runtimeHandlers.setPreviewOrientation, command, 'landscape'), command }
       }
       if (command === 'switch-mode-plan') {
         return { handled: true, result: runBridgeCallback(runtimeHandlers.switchMode, command, 'plan'), command }
