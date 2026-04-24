@@ -49,6 +49,7 @@ import {
   PX_PER_MM_AT_ZOOM_1,
   resolvePageLayoutMetrics,
 } from '../core/pageLayoutMetrics.mjs';
+import centralSheetStripProofDecision from './centralSheetStripProofDecision.js';
 import {
   buildLeftRailPresentationTree,
   getLeftRailPresentationExpandKey,
@@ -85,6 +86,8 @@ import {
 } from './toolbar/toolbarProfileState.mjs';
 import * as toolbarRuntimeProjectionModule from './toolbar/toolbarRuntimeProjection.mjs';
 import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
+
+const { resolveCentralSheetStripProofDecision } = centralSheetStripProofDecision;
 
 const isTiptapMode = window.__USE_TIPTAP === true;
 const editor = document.getElementById('editor');
@@ -768,9 +771,14 @@ function refreshCentralSheetStripProof() {
   editor.style.setProperty('--central-sheet-content-width-px', `${widthPx}px`);
   editor.style.setProperty('--central-sheet-content-height-px', `${heightPx}px`);
   const naturalHeight = measureCentralSheetNaturalHeight(proseMirror);
-  const pageCount = Math.max(1, Math.ceil(naturalHeight / heightPx));
-  if (pageCount > MAX_CENTRAL_SHEET_PROOF_PAGES) {
-    clearCentralSheetStripProof({ overflowReason: 'max-page-count' });
+  const centralSheetDecision = resolveCentralSheetStripProofDecision({
+    naturalHeight,
+    contentHeightPx: heightPx,
+    maxPageCount: MAX_CENTRAL_SHEET_PROOF_PAGES,
+  });
+  const { pageCount } = centralSheetDecision;
+  if (!centralSheetDecision.shouldRender) {
+    clearCentralSheetStripProof({ overflowReason: centralSheetDecision.overflowReason });
     return;
   }
   const stripWidthPx = Math.round((metrics.pageWidthPx * pageCount) + (pageGapPx * Math.max(0, pageCount - 1)));
