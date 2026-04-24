@@ -570,6 +570,392 @@ function collectForbiddenFieldReasons(input, fields, prefix, message) {
   return reasons;
 }
 
+// RB_06_DOCX_ZIP_INVENTORY_MATERIALIZER_START
+const DOCX_ZIP_INVENTORY_MATERIALIZATION_TYPE = 'docxZipInventoryMaterialization';
+const DOCX_ZIP_INVENTORY_MATERIALIZED_CODE = 'DOCX_ZIP_INVENTORY_MATERIALIZED';
+
+const DOCX_ZIP_INVENTORY_BOUNDS = Object.freeze({
+  MAX_INPUT_BYTES: 52428800,
+  MAX_EOCD_SEARCH_BYTES: 65557,
+  MAX_CENTRAL_DIRECTORY_BYTES: 2097152,
+  MAX_ENTRIES: 512,
+  MAX_ENTRY_NAME_BYTES: 1024,
+  MAX_ENTRY_EXTRA_BYTES: 4096,
+  MAX_ENTRY_COMMENT_BYTES: 4096,
+  MAX_ENTRY_UNCOMPRESSED_BYTES: 10485760,
+  MAX_TOTAL_UNCOMPRESSED_BYTES: 52428800,
+  MAX_RELATIONSHIP_ENTRIES: 64,
+  MAX_UNSUPPORTED_STORY_ENTRIES: 32,
+});
+
+const DOCX_ZIP_INVENTORY_DIAGNOSTIC_MESSAGES = Object.freeze({
+  DOCX_ZIP_BYTES_INPUT_INVALID: 'input must be caller-supplied binary data',
+  DOCX_ZIP_BYTES_INPUT_TOO_LARGE: 'input exceeds byte limit',
+  DOCX_ZIP_EOCD_NOT_FOUND: 'end marker was not found',
+  DOCX_ZIP_EOCD_TRUNCATED: 'end marker is truncated',
+  DOCX_ZIP_MULTI_DISK_UNSUPPORTED: 'multi-disk archive is not supported',
+  DOCX_ZIP64_UNSUPPORTED: 'ZIP64 archive is not supported',
+  DOCX_ZIP_CENTRAL_DIRECTORY_TRUNCATED: 'central directory is truncated',
+  DOCX_ZIP_CENTRAL_DIRECTORY_TOO_LARGE: 'central directory exceeds byte limit',
+  DOCX_ZIP_ENTRY_COUNT_EXCEEDED: 'entry count exceeds limit',
+  DOCX_ZIP_ENTRY_NAME_TOO_LARGE: 'entry name exceeds byte limit',
+  DOCX_ZIP_ENTRY_EXTRA_TOO_LARGE: 'entry extra field exceeds byte limit',
+  DOCX_ZIP_ENTRY_COMMENT_TOO_LARGE: 'entry comment exceeds byte limit',
+  DOCX_ZIP_ENTRY_ENCRYPTED_UNSUPPORTED: 'encrypted entry is not supported',
+  DOCX_ZIP_ENTRY_UNCOMPRESSED_SIZE_EXCEEDED: 'entry uncompressed size exceeds limit',
+  DOCX_ZIP_TOTAL_UNCOMPRESSED_SIZE_EXCEEDED: 'total uncompressed size exceeds limit',
+  DOCX_ZIP_ENTRY_NAME_INVALID: 'entry name is invalid',
+  DOCX_ZIP_ENTRY_OFFSET_INVALID: 'entry offset is invalid',
+});
+
+const DOCX_ZIP_INVENTORY_KNOWN_PARTS = [
+  '[Content_Types].xml',
+  'docProps/core.xml',
+  'docProps/app.xml',
+  'word/styles.xml',
+  'word/settings.xml',
+  'word/numbering.xml',
+  'word/fontTable.xml',
+  'word/theme/theme1.xml',
+];
+
+const DOCX_ZIP_CENTRAL_FILE_SIGNATURE = 0x02014b50;
+const DOCX_ZIP_END_SIGNATURE = 0x06054b50;
+const DOCX_ZIP64_LOCATOR_SIGNATURE = 0x07064b50;
+const DOCX_ZIP_CENTRAL_FILE_FIXED_BYTES = 46;
+const DOCX_ZIP_END_FIXED_BYTES = 22;
+const DOCX_ZIP_FLAG_ENCRYPTED = 1;
+const DOCX_ZIP_U16_MAX = 0xffff;
+const DOCX_ZIP_U32_MAX = 0xffffffff;
+
+function docxZipInventoryBoundsCopy() {
+  return { ...DOCX_ZIP_INVENTORY_BOUNDS };
+}
+
+function docxZipInventoryDiagnostic(code, options = {}) {
+  const diagnostic = {
+    code,
+    severity: 'error',
+    message: DOCX_ZIP_INVENTORY_DIAGNOSTIC_MESSAGES[code] || code,
+  };
+  if (options.entryId !== undefined) diagnostic.entryId = options.entryId;
+  if (options.limit !== undefined) diagnostic.limit = options.limit;
+  if (options.actual !== undefined) diagnostic.actual = options.actual;
+  return diagnostic;
+}
+
+function docxZipInventoryFailure(code, options = {}) {
+  const diagnostic = docxZipInventoryDiagnostic(code, options);
+  return {
+    ok: false,
+    type: DOCX_ZIP_INVENTORY_MATERIALIZATION_TYPE,
+    status: 'rejected',
+    code,
+    reason: code,
+    diagnostics: [diagnostic],
+    bounds: docxZipInventoryBoundsCopy(),
+  };
+}
+
+function docxZipInventorySuccess(inventory) {
+  return {
+    ok: true,
+    type: DOCX_ZIP_INVENTORY_MATERIALIZATION_TYPE,
+    status: 'materialized',
+    code: DOCX_ZIP_INVENTORY_MATERIALIZED_CODE,
+    reason: DOCX_ZIP_INVENTORY_MATERIALIZED_CODE,
+    inventory,
+    inspection: inspectDocxPackageInventory(inventory),
+    diagnostics: [],
+    bounds: docxZipInventoryBoundsCopy(),
+  };
+}
+
+function isDocxZipInventoryAcceptedView(value) {
+  return value instanceof Uint8Array || value instanceof DataView;
+}
+
+function docxZipInventoryInputToBytes(input) {
+  if (input instanceof ArrayBuffer) return new Uint8Array(input);
+  if (isDocxZipInventoryAcceptedView(input)) {
+    return new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
+  }
+  if (typeof Buffer !== 'undefined' && Buffer.isBuffer(input)) return input;
+  return null;
+}
+
+function docxZipReadU16(bytes, cursor) {
+  return bytes[cursor] | (bytes[cursor + 1] << 8);
+}
+
+function docxZipReadU32(bytes, cursor) {
+  return (
+    bytes[cursor]
+    | (bytes[cursor + 1] << 8)
+    | (bytes[cursor + 2] << 16)
+    | (bytes[cursor + 3] << 24)
+  ) >>> 0;
+}
+
+function docxZipFindEndRecord(bytes) {
+  if (bytes.byteLength < DOCX_ZIP_END_FIXED_BYTES) return null;
+  const lower = Math.max(0, bytes.byteLength - DOCX_ZIP_INVENTORY_BOUNDS.MAX_EOCD_SEARCH_BYTES);
+  for (let cursor = bytes.byteLength - DOCX_ZIP_END_FIXED_BYTES; cursor >= lower; cursor -= 1) {
+    if (docxZipReadU32(bytes, cursor) === DOCX_ZIP_END_SIGNATURE) return cursor;
+  }
+  return null;
+}
+
+function docxZipHasZip64Locator(bytes, endOffset) {
+  return endOffset >= 20
+    && docxZipReadU32(bytes, endOffset - 20) === DOCX_ZIP64_LOCATOR_SIGNATURE;
+}
+
+function docxZipReadAsciiName(bytes, cursor, size) {
+  let name = '';
+  for (let index = 0; index < size; index += 1) {
+    const value = bytes[cursor + index];
+    if (value < 0x20 || value > 0x7e) return null;
+    name += String.fromCharCode(value);
+  }
+  return name;
+}
+
+function docxZipInventoryNameInvalid(name) {
+  if (!name) return true;
+  if (name.startsWith('/') || name.startsWith('\\')) return true;
+  if (/^[A-Za-z]:/u.test(name)) return true;
+  return name.split(/[\\/]/u).some((segment) => segment === '..');
+}
+
+function docxZipUnsupportedStoryName(name) {
+  return (
+    /^word\/header[^/]*\.xml$/u.test(name)
+    || /^word\/footer[^/]*\.xml$/u.test(name)
+    || name === 'word/footnotes.xml'
+    || name === 'word/endnotes.xml'
+    || name === 'word/comments.xml'
+    || /^word\/textbox[^/]*\.xml$/u.test(name)
+  );
+}
+
+function docxZipClassifyEntry(name) {
+  if (name.endsWith('/') || name.endsWith('\\')) {
+    return { kind: 'directory' };
+  }
+  if (name.includes('_rels/') || name.endsWith('.rels')) {
+    return { kind: 'relationshipPart', markers: ['relationship'] };
+  }
+  if (name === 'word/document.xml') {
+    return { kind: 'knownPart', story: 'main', markers: ['documentPart'] };
+  }
+  if (DOCX_ZIP_INVENTORY_KNOWN_PARTS.includes(name)) {
+    return { kind: 'knownPart' };
+  }
+  if (name.startsWith('word/media/')) {
+    return { kind: 'knownPart', markers: ['mediaPart'] };
+  }
+  if (docxZipUnsupportedStoryName(name)) {
+    return { kind: 'knownPart', story: 'unsupported', markers: ['unsupportedStory'] };
+  }
+  return { kind: 'unknownPart' };
+}
+
+function docxZipBuildEntry(name, byteSize, compressedSize) {
+  const classified = docxZipClassifyEntry(name);
+  const entry = {
+    id: name,
+    kind: classified.kind,
+    byteSize,
+    compressedSize,
+  };
+  if (classified.story !== undefined) entry.story = classified.story;
+  if (classified.markers !== undefined) entry.markers = classified.markers.slice();
+  return entry;
+}
+
+function docxZipValidateEndRecord(bytes, endOffset) {
+  if (endOffset === null) {
+    return bytes.byteLength < DOCX_ZIP_END_FIXED_BYTES
+      ? { failure: docxZipInventoryFailure('DOCX_ZIP_EOCD_TRUNCATED') }
+      : { failure: docxZipInventoryFailure('DOCX_ZIP_EOCD_NOT_FOUND') };
+  }
+
+  const endCommentSize = docxZipReadU16(bytes, endOffset + 20);
+  if (endOffset + DOCX_ZIP_END_FIXED_BYTES + endCommentSize !== bytes.byteLength) {
+    return { failure: docxZipInventoryFailure('DOCX_ZIP_EOCD_TRUNCATED') };
+  }
+
+  const diskIndex = docxZipReadU16(bytes, endOffset + 4);
+  const centralDiskIndex = docxZipReadU16(bytes, endOffset + 6);
+  const diskEntryCount = docxZipReadU16(bytes, endOffset + 8);
+  const entryCount = docxZipReadU16(bytes, endOffset + 10);
+  const centralSize = docxZipReadU32(bytes, endOffset + 12);
+  const centralOffset = docxZipReadU32(bytes, endOffset + 16);
+
+  if (diskIndex !== 0 || centralDiskIndex !== 0 || diskEntryCount !== entryCount) {
+    return { failure: docxZipInventoryFailure('DOCX_ZIP_MULTI_DISK_UNSUPPORTED') };
+  }
+  if (
+    docxZipHasZip64Locator(bytes, endOffset)
+    || diskEntryCount === DOCX_ZIP_U16_MAX
+    || entryCount === DOCX_ZIP_U16_MAX
+    || centralSize === DOCX_ZIP_U32_MAX
+    || centralOffset === DOCX_ZIP_U32_MAX
+  ) {
+    return { failure: docxZipInventoryFailure('DOCX_ZIP64_UNSUPPORTED') };
+  }
+  if (centralSize > DOCX_ZIP_INVENTORY_BOUNDS.MAX_CENTRAL_DIRECTORY_BYTES) {
+    return {
+      failure: docxZipInventoryFailure('DOCX_ZIP_CENTRAL_DIRECTORY_TOO_LARGE', {
+        limit: DOCX_ZIP_INVENTORY_BOUNDS.MAX_CENTRAL_DIRECTORY_BYTES,
+        actual: centralSize,
+      }),
+    };
+  }
+  if (entryCount > DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRIES) {
+    return {
+      failure: docxZipInventoryFailure('DOCX_ZIP_ENTRY_COUNT_EXCEEDED', {
+        limit: DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRIES,
+        actual: entryCount,
+      }),
+    };
+  }
+  if (centralOffset + centralSize > endOffset || centralOffset + centralSize > bytes.byteLength) {
+    return { failure: docxZipInventoryFailure('DOCX_ZIP_CENTRAL_DIRECTORY_TRUNCATED') };
+  }
+  return {
+    record: {
+      centralOffset,
+      centralSize,
+      entryCount,
+    },
+  };
+}
+
+function docxZipParseCentralDirectory(bytes, record) {
+  const entries = [];
+  let totalByteSize = 0;
+  let cursor = record.centralOffset;
+  const centralEnd = record.centralOffset + record.centralSize;
+
+  for (let index = 0; index < record.entryCount; index += 1) {
+    if (cursor + DOCX_ZIP_CENTRAL_FILE_FIXED_BYTES > centralEnd) {
+      return { failure: docxZipInventoryFailure('DOCX_ZIP_CENTRAL_DIRECTORY_TRUNCATED') };
+    }
+    if (docxZipReadU32(bytes, cursor) !== DOCX_ZIP_CENTRAL_FILE_SIGNATURE) {
+      return { failure: docxZipInventoryFailure('DOCX_ZIP_CENTRAL_DIRECTORY_TRUNCATED') };
+    }
+
+    const flags = docxZipReadU16(bytes, cursor + 8);
+    const compressedSize = docxZipReadU32(bytes, cursor + 20);
+    const byteSize = docxZipReadU32(bytes, cursor + 24);
+    const nameSize = docxZipReadU16(bytes, cursor + 28);
+    const extraSize = docxZipReadU16(bytes, cursor + 30);
+    const commentSize = docxZipReadU16(bytes, cursor + 32);
+    const diskStart = docxZipReadU16(bytes, cursor + 34);
+    const localOffset = docxZipReadU32(bytes, cursor + 42);
+    const recordSize = DOCX_ZIP_CENTRAL_FILE_FIXED_BYTES + nameSize + extraSize + commentSize;
+
+    if (cursor + recordSize > centralEnd) {
+      return { failure: docxZipInventoryFailure('DOCX_ZIP_CENTRAL_DIRECTORY_TRUNCATED') };
+    }
+    if (flags & DOCX_ZIP_FLAG_ENCRYPTED) {
+      return { failure: docxZipInventoryFailure('DOCX_ZIP_ENTRY_ENCRYPTED_UNSUPPORTED') };
+    }
+    if (
+      compressedSize === DOCX_ZIP_U32_MAX
+      || byteSize === DOCX_ZIP_U32_MAX
+      || localOffset === DOCX_ZIP_U32_MAX
+    ) {
+      return { failure: docxZipInventoryFailure('DOCX_ZIP64_UNSUPPORTED') };
+    }
+    if (diskStart !== 0) {
+      return { failure: docxZipInventoryFailure('DOCX_ZIP_MULTI_DISK_UNSUPPORTED') };
+    }
+    if (nameSize > DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRY_NAME_BYTES) {
+      return {
+        failure: docxZipInventoryFailure('DOCX_ZIP_ENTRY_NAME_TOO_LARGE', {
+          limit: DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRY_NAME_BYTES,
+          actual: nameSize,
+        }),
+      };
+    }
+    if (extraSize > DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRY_EXTRA_BYTES) {
+      return {
+        failure: docxZipInventoryFailure('DOCX_ZIP_ENTRY_EXTRA_TOO_LARGE', {
+          limit: DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRY_EXTRA_BYTES,
+          actual: extraSize,
+        }),
+      };
+    }
+    if (commentSize > DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRY_COMMENT_BYTES) {
+      return {
+        failure: docxZipInventoryFailure('DOCX_ZIP_ENTRY_COMMENT_TOO_LARGE', {
+          limit: DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRY_COMMENT_BYTES,
+          actual: commentSize,
+        }),
+      };
+    }
+    if (localOffset >= record.centralOffset || localOffset >= bytes.byteLength) {
+      return { failure: docxZipInventoryFailure('DOCX_ZIP_ENTRY_OFFSET_INVALID') };
+    }
+    if (byteSize > DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRY_UNCOMPRESSED_BYTES) {
+      return {
+        failure: docxZipInventoryFailure('DOCX_ZIP_ENTRY_UNCOMPRESSED_SIZE_EXCEEDED', {
+          limit: DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRY_UNCOMPRESSED_BYTES,
+          actual: byteSize,
+        }),
+      };
+    }
+
+    totalByteSize += byteSize;
+    if (totalByteSize > DOCX_ZIP_INVENTORY_BOUNDS.MAX_TOTAL_UNCOMPRESSED_BYTES) {
+      return {
+        failure: docxZipInventoryFailure('DOCX_ZIP_TOTAL_UNCOMPRESSED_SIZE_EXCEEDED', {
+          limit: DOCX_ZIP_INVENTORY_BOUNDS.MAX_TOTAL_UNCOMPRESSED_BYTES,
+          actual: totalByteSize,
+        }),
+      };
+    }
+
+    const name = docxZipReadAsciiName(bytes, cursor + DOCX_ZIP_CENTRAL_FILE_FIXED_BYTES, nameSize);
+    if (docxZipInventoryNameInvalid(name)) {
+      return { failure: docxZipInventoryFailure('DOCX_ZIP_ENTRY_NAME_INVALID') };
+    }
+
+    entries.push(docxZipBuildEntry(name, byteSize, compressedSize));
+    cursor += recordSize;
+  }
+
+  if (cursor !== centralEnd) {
+    return { failure: docxZipInventoryFailure('DOCX_ZIP_CENTRAL_DIRECTORY_TRUNCATED') };
+  }
+  return { inventory: { entries } };
+}
+
+export function materializeDocxPackageInventoryFromZipBytes(input) {
+  const bytes = docxZipInventoryInputToBytes(input);
+  if (bytes === null) return docxZipInventoryFailure('DOCX_ZIP_BYTES_INPUT_INVALID');
+  if (bytes.byteLength > DOCX_ZIP_INVENTORY_BOUNDS.MAX_INPUT_BYTES) {
+    return {
+      ...docxZipInventoryFailure('DOCX_ZIP_BYTES_INPUT_TOO_LARGE', {
+        limit: DOCX_ZIP_INVENTORY_BOUNDS.MAX_INPUT_BYTES,
+        actual: bytes.byteLength,
+      }),
+    };
+  }
+
+  const endOffset = docxZipFindEndRecord(bytes);
+  const endResult = docxZipValidateEndRecord(bytes, endOffset);
+  if (endResult.failure) return endResult.failure;
+
+  const centralResult = docxZipParseCentralDirectory(bytes, endResult.record);
+  if (centralResult.failure) return centralResult.failure;
+  return docxZipInventorySuccess(centralResult.inventory);
+}
+// RB_06_DOCX_ZIP_INVENTORY_MATERIALIZER_END
+
 function missingField(field) {
   return {
     code: 'REVISION_BRIDGE_FIELD_REQUIRED',
