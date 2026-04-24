@@ -3299,6 +3299,53 @@ function revisionSessionSkeletonAdmissionPreviewCheckSafeCount(value) {
   return Number.isSafeInteger(value) && value >= 0;
 }
 
+function revisionSessionSkeletonAdmissionPreviewStatusCode(status) {
+  if (status === 'admit') return PLACEMENT_ADMISSION_PREVIEW_ADMIT_CODE;
+  if (status === 'block') return PLACEMENT_ADMISSION_PREVIEW_BLOCK_CODE;
+  if (status === 'hardFail') return PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE;
+  return '';
+}
+
+function revisionSessionSkeletonAdmissionPreviewCheckScalars(preview) {
+  const reasons = [];
+  const expectedCode = revisionSessionSkeletonAdmissionPreviewStatusCode(preview.status);
+  if (preview.canAdmit !== (preview.status === 'admit')) {
+    reasons.push(revisionSessionSkeletonAdmissionPreviewReason(
+      'placementAdmissionPreview.canAdmit',
+      'canAdmit must match status',
+    ));
+  }
+  if (!expectedCode || preview.code !== expectedCode) {
+    reasons.push(revisionSessionSkeletonAdmissionPreviewReason(
+      'placementAdmissionPreview.code',
+      'code must match status',
+    ));
+  }
+  if (!expectedCode || preview.reason !== expectedCode) {
+    reasons.push(revisionSessionSkeletonAdmissionPreviewReason(
+      'placementAdmissionPreview.reason',
+      'reason must match status',
+    ));
+  }
+  if (!PLACEMENT_ADMISSION_PREVIEW_VALID_STATUSES.includes(preview.sourceStatus)) {
+    reasons.push(revisionSessionSkeletonAdmissionPreviewReason(
+      'placementAdmissionPreview.sourceStatus',
+      'sourceStatus must be a known source status',
+    ));
+  }
+  if (Array.isArray(preview.blockingStatuses)) {
+    for (let index = 0; index < preview.blockingStatuses.length; index += 1) {
+      if (!PLACEMENT_ADMISSION_PREVIEW_VALID_STATUSES.includes(preview.blockingStatuses[index])) {
+        reasons.push(revisionSessionSkeletonAdmissionPreviewReason(
+          `placementAdmissionPreview.blockingStatuses.${index}`,
+          'blockingStatuses entry must be a known status',
+        ));
+      }
+    }
+  }
+  return reasons;
+}
+
 function revisionSessionSkeletonAdmissionPreviewCheckStatusCounts(preview) {
   const counts = preview.countsByStatus;
   if (!isPlainObject(counts)) {
@@ -3343,6 +3390,14 @@ function revisionSessionSkeletonAdmissionPreviewCheckReasonCounts(preview) {
         'countsByReasonCode contains an unsupported key',
       ));
     } else if (!revisionSessionSkeletonAdmissionPreviewCheckSafeCount(counts[key])) {
+      reasons.push(revisionSessionSkeletonAdmissionPreviewReason(
+        `placementAdmissionPreview.countsByReasonCode.${key}`,
+        `${key} count must be a safe non-negative integer`,
+      ));
+    }
+  }
+  for (const key of REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_REASON_CODES) {
+    if (!revisionSessionSkeletonAdmissionPreviewCheckSafeCount(counts[key])) {
       reasons.push(revisionSessionSkeletonAdmissionPreviewReason(
         `placementAdmissionPreview.countsByReasonCode.${key}`,
         `${key} count must be a safe non-negative integer`,
@@ -3452,6 +3507,7 @@ function revisionSessionSkeletonAdmissionPreviewCheckPreview(preview) {
   for (const check of checks) {
     if (check) reasons.push(check);
   }
+  reasons.push(...revisionSessionSkeletonAdmissionPreviewCheckScalars(preview));
   reasons.push(...revisionSessionSkeletonAdmissionPreviewCheckStatusCounts(preview));
   reasons.push(...revisionSessionSkeletonAdmissionPreviewCheckReasonCounts(preview));
   if (revisionSessionSkeletonAdmissionPreviewHasRejectKey(preview)) {
