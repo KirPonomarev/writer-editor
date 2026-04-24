@@ -8,7 +8,8 @@ const { pathToFileURL } = require('node:url');
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-p0-safety-kernel.contract.test.js';
 const RB02_TEST_PATH = 'test/contracts/revision-bridge-reviewgraph-contract.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB02_TEST_PATH];
+const RB03_TEST_PATH = 'test/contracts/revision-bridge-review-packet-preview-contract.contract.test.js';
+const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB02_TEST_PATH, RB03_TEST_PATH];
 const WIRING_NEEDLES = [
   'revisionBridge',
   'RevisionBridge',
@@ -281,7 +282,6 @@ test('revision bridge does not change dependency manifests from HEAD', () => {
 test('revision bridge changed files stay inside the task allowlist', () => {
   const status = execFileSync('git', ['status', '--porcelain', '-uall'], { encoding: 'utf8' })
     .split('\n')
-    .map((line) => line.trim())
     .filter(Boolean);
   const changedFiles = status.map((line) => line.slice(3).replace(/^"|"$/gu, ''));
 

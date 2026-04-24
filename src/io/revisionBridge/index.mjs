@@ -3,6 +3,8 @@ const PACKET_INVALID_CODE = 'E_REVISION_BRIDGE_PACKET_INVALID';
 const APPLY_BLOCKED_CODE = 'E_REVISION_BRIDGE_APPLY_BLOCKED';
 const REVIEWGRAPH_VALID_CODE = 'REVISION_BRIDGE_REVIEWGRAPH_VALID';
 const REVIEWGRAPH_INVALID_CODE = 'E_REVISION_BRIDGE_REVIEWGRAPH_INVALID';
+const REVIEW_PACKET_PREVIEW_READY_CODE = 'REVISION_BRIDGE_REVIEW_PACKET_PREVIEW_READY';
+const REVIEW_PACKET_PREVIEW_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_REVIEW_PACKET_PREVIEW_DIAGNOSTICS';
 
 export const REVISION_BRIDGE_P0_PACKET_SCHEMA = 'revision-bridge-p0.packet.v1';
 export const REVISION_BRIDGE_REVISION_SESSION_SCHEMA = 'revision-bridge.revision-session.v1';
@@ -12,6 +14,7 @@ export const REVISION_BRIDGE_TEXT_CHANGE_SCHEMA = 'revision-bridge.text-change.v
 export const REVISION_BRIDGE_STRUCTURAL_CHANGE_SCHEMA = 'revision-bridge.structural-change.v1';
 export const REVISION_BRIDGE_DIAGNOSTIC_ITEM_SCHEMA = 'revision-bridge.diagnostic-item.v1';
 export const REVISION_BRIDGE_DECISION_STATE_SCHEMA = 'revision-bridge.decision-state.v1';
+export const REVISION_BRIDGE_REVIEW_PACKET_PREVIEW_SCHEMA = 'revision-bridge.review-packet-preview.v1';
 
 const REVIEWGRAPH_ITEM_KINDS = [
   'commentThread',
@@ -54,6 +57,13 @@ const STRUCTURAL_CHANGE_FORBIDDEN_AUTO_FIELDS = [
   'autoApplyEnabled',
   'canApply',
   'canAutoApply',
+];
+
+const REVIEW_PACKET_PREVIEW_FORBIDDEN_APPLY_FIELDS = [
+  'apply',
+  'applyPlan',
+  'authorized',
+  'canApply',
 ];
 
 function isPlainObject(value) {
@@ -647,6 +657,91 @@ export function validateRevisionSession(input = {}) {
   const reasons = collectRevisionSessionValidationReasons(input, session);
   if (reasons.length > 0) return reviewGraphValidationFailure(reasons);
   return reviewGraphValidationSuccess(session);
+}
+
+function reviewPacketPreviewDiagnostics(reasons) {
+  return {
+    ok: false,
+    type: 'revisionBridge.reviewPacketPreview',
+    status: 'diagnostics',
+    code: REVIEW_PACKET_PREVIEW_DIAGNOSTICS_CODE,
+    reason: reasons[0]?.code || REVIEW_PACKET_PREVIEW_DIAGNOSTICS_CODE,
+    reasons,
+    session: null,
+  };
+}
+
+function reviewPacketPreviewReady(session) {
+  return {
+    ok: true,
+    type: 'revisionBridge.reviewPacketPreview',
+    status: 'preview',
+    code: REVIEW_PACKET_PREVIEW_READY_CODE,
+    reason: REVIEW_PACKET_PREVIEW_READY_CODE,
+    reasons: [],
+    session,
+  };
+}
+
+function stripReviewPacketPreviewApplyFields(value) {
+  if (Array.isArray(value)) return value.map((item) => stripReviewPacketPreviewApplyFields(item));
+  if (!isPlainObject(value)) return value;
+
+  const stripped = {};
+  for (const key of Object.keys(value)) {
+    if (REVIEW_PACKET_PREVIEW_FORBIDDEN_APPLY_FIELDS.includes(key)) continue;
+    stripped[key] = stripReviewPacketPreviewApplyFields(value[key]);
+  }
+  return stripped;
+}
+
+function collectReviewPacketPreviewInputReasons(input) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(invalidField('reviewPacketPreview', 'reviewPacketPreview input must be an object'));
+    return reasons;
+  }
+  if (!normalizeString(input.projectId)) reasons.push(missingField('projectId'));
+  if (!normalizeString(input.sessionId)) reasons.push(missingField('sessionId'));
+  if (!normalizeString(input.baselineHash)) reasons.push(missingField('baselineHash'));
+  if (!isPlainObject(input.reviewPacket)) {
+    reasons.push(missingField('reviewPacket'));
+  }
+  if (hasOwnField(input, 'createdAt') && typeof input.createdAt !== 'string') {
+    reasons.push(invalidField('createdAt', 'createdAt must be a caller-supplied string'));
+  }
+  if (hasOwnField(input, 'updatedAt') && typeof input.updatedAt !== 'string') {
+    reasons.push(invalidField('updatedAt', 'updatedAt must be a caller-supplied string'));
+  }
+  return reasons;
+}
+
+function buildRevisionPacketPreviewCandidate(input) {
+  const reviewPacket = isPlainObject(input.reviewPacket) ? input.reviewPacket : {};
+  return {
+    sessionId: input.sessionId,
+    projectId: input.projectId,
+    baselineHash: input.baselineHash,
+    createdAt: hasOwnField(input, 'createdAt') ? input.createdAt : '',
+    updatedAt: hasOwnField(input, 'updatedAt') ? input.updatedAt : '',
+    reviewGraph: {
+      commentThreads: reviewPacket.commentThreads,
+      commentPlacements: reviewPacket.commentPlacements,
+      textChanges: reviewPacket.textChanges,
+      structuralChanges: reviewPacket.structuralChanges,
+      diagnosticItems: reviewPacket.diagnosticItems,
+      decisionStates: reviewPacket.decisionStates,
+    },
+  };
+}
+
+export function buildRevisionPacketPreview(input = {}) {
+  const inputReasons = collectReviewPacketPreviewInputReasons(input);
+  if (inputReasons.length > 0) return reviewPacketPreviewDiagnostics(inputReasons);
+
+  const validation = validateRevisionSession(buildRevisionPacketPreviewCandidate(input));
+  if (!validation.ok) return reviewPacketPreviewDiagnostics(validation.reasons);
+  return reviewPacketPreviewReady(stripReviewPacketPreviewApplyFields(validation.value));
 }
 
 function normalizeTargetScope(input) {
