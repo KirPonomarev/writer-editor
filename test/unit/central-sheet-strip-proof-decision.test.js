@@ -24,6 +24,7 @@ test('central sheet decision keeps normal content renderable as a derived budget
     }),
     {
       pageCount: 2,
+      visiblePageCount: 2,
       overflowReason: '',
       shouldRender: true,
     },
@@ -37,6 +38,7 @@ test('central sheet decision keeps normal content renderable as a derived budget
     }),
     {
       pageCount: 1,
+      visiblePageCount: 1,
       overflowReason: '',
       shouldRender: true,
     },
@@ -52,6 +54,7 @@ test('central sheet decision reports max-page-count overflow without persisting 
     }),
     {
       pageCount: 7,
+      visiblePageCount: 0,
       overflowReason: CENTRAL_SHEET_MAX_PAGE_COUNT_OVERFLOW_REASON,
       shouldRender: false,
     },
@@ -78,7 +81,34 @@ test('central sheet decision selects valid active layout preview snapshot page c
     }),
     {
       pageCount: 3,
+      visiblePageCount: 3,
       overflowReason: '',
+      shouldRender: true,
+    },
+  );
+});
+
+test('central sheet decision bounds valid snapshot overflow while preserving source page count', () => {
+  const activeLayoutPreviewSnapshot = {
+    schemaVersion: 'renderer.layoutPreview.v1',
+    pageMap: {
+      schemaVersion: 'renderer.pageMap.v1',
+      pages: Array.from({ length: 7 }, (_, index) => ({ pageNumber: index + 1 })),
+      meta: { pageCount: 7 },
+    },
+  };
+
+  assert.deepEqual(
+    resolveCentralSheetStripProofDecision({
+      activeLayoutPreviewSnapshot,
+      naturalHeight: 0,
+      contentHeightPx: 300,
+      maxPageCount: 5,
+    }),
+    {
+      pageCount: 7,
+      visiblePageCount: 5,
+      overflowReason: CENTRAL_SHEET_MAX_PAGE_COUNT_OVERFLOW_REASON,
       shouldRender: true,
     },
   );
@@ -100,6 +130,7 @@ test('central sheet decision falls back to DOM metrics when active layout previe
     }),
     {
       pageCount: 2,
+      visiblePageCount: 2,
       overflowReason: '',
       shouldRender: true,
     },
@@ -118,5 +149,11 @@ test('central sheet decision is a DOM-free helper consumed by editor runtime', (
   assert.match(editorSource, /const activeLayoutPreviewSnapshotPageCount = selectActiveLayoutPreviewSnapshotPageCount\(activeLayoutPreviewSnapshot\);/);
   assert.match(editorSource, /const naturalHeight = activeLayoutPreviewSnapshotPageCount\s*\?\s*0\s*:\s*measureCentralSheetNaturalHeight\(proseMirror\);/s);
   assert.match(editorSource, /resolveCentralSheetStripProofDecision\(\{\s*naturalHeight,\s*contentHeightPx: heightPx,\s*activeLayoutPreviewSnapshot,\s*maxPageCount: MAX_CENTRAL_SHEET_PROOF_PAGES,\s*\}\)/s);
+  assert.match(editorSource, /const \{ pageCount, visiblePageCount \} = centralSheetDecision;/);
+  assert.match(editorSource, /renderCentralSheetStripShellPages\(visiblePageCount\);/);
+  assert.match(editorSource, /delete editor\.dataset\.centralSheetOverflowReason;/);
+  assert.match(editorSource, /editor\.dataset\.centralSheetBoundedOverflowReason = overflowReason;/);
+  assert.match(editorSource, /editor\.dataset\.centralSheetBoundedOverflowSourcePageCount = String\(pageCount\);/);
+  assert.match(editorSource, /editor\.dataset\.centralSheetBoundedOverflowVisiblePageCount = String\(visiblePageCount\);/);
   assert.match(editorSource, /clearCentralSheetStripProof\(\{ overflowReason: centralSheetDecision\.overflowReason \}\);/);
 });

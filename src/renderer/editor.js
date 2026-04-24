@@ -739,6 +739,10 @@ function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   editor.classList.remove(CENTRAL_SHEET_STRIP_MEASURING_CLASS);
   delete editor.dataset.centralSheetCount;
   delete editor.dataset.centralSheetFlow;
+  delete editor.dataset.centralSheetBoundedOverflowReason;
+  delete editor.dataset.centralSheetBoundedOverflowSourcePageCount;
+  delete editor.dataset.centralSheetBoundedOverflowVisiblePageCount;
+  delete editor.dataset.centralSheetBoundedOverflowHiddenPageCount;
   if (overflowReason) {
     editor.dataset.centralSheetOverflowReason = overflowReason;
   } else {
@@ -749,6 +753,26 @@ function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   editor.style.removeProperty('--central-sheet-content-width-px');
   editor.style.removeProperty('--central-sheet-content-height-px');
   renderCentralSheetStripShellPages(0);
+}
+
+function syncCentralSheetStripOverflowMetadata({ pageCount, visiblePageCount, overflowReason } = {}) {
+  if (!(editor instanceof HTMLElement)) {
+    return;
+  }
+  const hasBoundedOverflow = overflowReason === 'max-page-count' && visiblePageCount > 0 && pageCount > visiblePageCount;
+  if (!hasBoundedOverflow) {
+    delete editor.dataset.centralSheetOverflowReason;
+    delete editor.dataset.centralSheetBoundedOverflowReason;
+    delete editor.dataset.centralSheetBoundedOverflowSourcePageCount;
+    delete editor.dataset.centralSheetBoundedOverflowVisiblePageCount;
+    delete editor.dataset.centralSheetBoundedOverflowHiddenPageCount;
+    return;
+  }
+  delete editor.dataset.centralSheetOverflowReason;
+  editor.dataset.centralSheetBoundedOverflowReason = overflowReason;
+  editor.dataset.centralSheetBoundedOverflowSourcePageCount = String(pageCount);
+  editor.dataset.centralSheetBoundedOverflowVisiblePageCount = String(visiblePageCount);
+  editor.dataset.centralSheetBoundedOverflowHiddenPageCount = String(pageCount - visiblePageCount);
 }
 
 function refreshCentralSheetStripProof() {
@@ -785,19 +809,21 @@ function refreshCentralSheetStripProof() {
     activeLayoutPreviewSnapshot,
     maxPageCount: MAX_CENTRAL_SHEET_PROOF_PAGES,
   });
-  const { pageCount } = centralSheetDecision;
+  const { pageCount, visiblePageCount } = centralSheetDecision;
   if (!centralSheetDecision.shouldRender) {
     clearCentralSheetStripProof({ overflowReason: centralSheetDecision.overflowReason });
     return;
   }
-  const stripWidthPx = Math.round((metrics.pageWidthPx * pageCount) + (pageGapPx * Math.max(0, pageCount - 1)));
+  const stripWidthPx = Math.round(
+    (metrics.pageWidthPx * visiblePageCount) + (pageGapPx * Math.max(0, visiblePageCount - 1)),
+  );
 
-  editor.style.setProperty('--central-sheet-count', String(pageCount));
+  editor.style.setProperty('--central-sheet-count', String(visiblePageCount));
   editor.style.setProperty('--central-sheet-strip-width-px', `${stripWidthPx}px`);
-  editor.dataset.centralSheetCount = String(pageCount);
+  editor.dataset.centralSheetCount = String(visiblePageCount);
   editor.dataset.centralSheetFlow = 'horizontal';
-  delete editor.dataset.centralSheetOverflowReason;
-  renderCentralSheetStripShellPages(pageCount);
+  syncCentralSheetStripOverflowMetadata(centralSheetDecision);
+  renderCentralSheetStripShellPages(visiblePageCount);
   editor.classList.add(CENTRAL_SHEET_STRIP_PROOF_CLASS);
 }
 
