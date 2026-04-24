@@ -1,5 +1,5 @@
 import { buildAnchorMap } from '../derived/anchorMap.mjs';
-import { createLayoutMeasureProvider } from '../derived/layoutMeasureProvider.mjs';
+import { paginateLayoutFlow } from '../derived/pageMapService.mjs';
 import { mapSemanticEntries, PAGE_BREAK_TOKEN_V1 } from '../derived/semanticMapping.mjs';
 import { createStyleMap } from '../derived/styleMap.mjs';
 
@@ -179,115 +179,6 @@ function buildPaginationProfile(metrics) {
   };
 }
 
-function createPage(pageNumber) {
-  return {
-    pageNumber,
-    nodeIds: [],
-    height: 0,
-    overflow: false,
-    explicitBreakBefore: false,
-  };
-}
-
-function paginateFlow(flow, metrics, chapterStartRule) {
-  const profile = buildPaginationProfile(metrics);
-  const measureProvider = createLayoutMeasureProvider({
-    bodyWidth: profile.bodyWidth,
-    bodyHeight: profile.bodyHeight,
-    charWidth: profile.charWidth,
-    lineHeight: profile.lineHeight,
-    lineGap: profile.lineGap,
-  });
-
-  const pages = [];
-  const pageBreaks = [];
-  let nextPageNumber = 1;
-  let currentPage = null;
-
-  function startPage() {
-    if (!currentPage) {
-      currentPage = createPage(nextPageNumber);
-    }
-  }
-
-  function finalizePage() {
-    if (!currentPage) return;
-    if (currentPage.nodeIds.length === 0 && !currentPage.explicitBreakBefore) {
-      currentPage = null;
-      return;
-    }
-    pages.push(currentPage);
-    currentPage = null;
-  }
-
-  const nodes = Array.isArray(flow.nodes) ? flow.nodes : [];
-  for (let index = 0; index < nodes.length; index += 1) {
-    const node = isPlainObject(nodes[index]) ? nodes[index] : null;
-    if (!node) continue;
-    const chapterStartBreak = Boolean(node.chapterStart) && chapterStartRule === 'next-page';
-
-    if (node.isPageBreak) {
-      if (currentPage && currentPage.nodeIds.length > 0) {
-        finalizePage();
-      }
-      nextPageNumber += 1;
-      pageBreaks.push({
-        nodeId: node.id,
-        beforePageNumber: nextPageNumber,
-        reason: 'explicit',
-      });
-      if (!currentPage) {
-        currentPage = createPage(nextPageNumber);
-      }
-      currentPage.explicitBreakBefore = true;
-      continue;
-    }
-
-    if (chapterStartBreak && currentPage && currentPage.nodeIds.length > 0) {
-      finalizePage();
-      nextPageNumber += 1;
-      pageBreaks.push({
-        nodeId: node.id,
-        beforePageNumber: nextPageNumber,
-        reason: 'chapterStart',
-      });
-      currentPage = createPage(nextPageNumber);
-      currentPage.explicitBreakBefore = true;
-    }
-
-    startPage();
-    const measurement = measureProvider.measureNode(node);
-    const height = Number.isFinite(Number(measurement.height)) ? Number(measurement.height) : 0;
-    if (currentPage.height > 0 && currentPage.height + height > profile.bodyHeight) {
-      finalizePage();
-      nextPageNumber += 1;
-      currentPage = createPage(nextPageNumber);
-    }
-    currentPage.nodeIds.push(node.id);
-    currentPage.height += height;
-    currentPage.overflow = currentPage.height > profile.bodyHeight;
-  }
-
-  finalizePage();
-
-  return {
-    schemaVersion: 'renderer.pageMap.v1',
-    profile: {
-      pageWidth: profile.pageWidth,
-      pageHeight: profile.pageHeight,
-      bodyWidth: profile.bodyWidth,
-      bodyHeight: profile.bodyHeight,
-    },
-    pages,
-    pageBreaks,
-    meta: {
-      pageCount: pages.length,
-      pageBreakCount: pageBreaks.length,
-      overflowCount: pages.filter((page) => page.overflow).length,
-    },
-  };
-}
-
 function buildStyleSummary(styleMap) {
   return {
     schemaVersion: styleMap.schemaVersion,
@@ -365,7 +256,15 @@ export function buildLayoutPreviewSnapshot(input = {}) {
     sourceId,
     chapterStartRule,
   });
-  const pageMap = paginateFlow(flow, metrics, chapterStartRule);
+  const paginationProfile = buildPaginationProfile(metrics);
+  const pageMap = paginateLayoutFlow({
+    flow,
+    profile: paginationProfile,
+    styleMap,
+    rules: {
+      chapterStartRule,
+    },
+  });
   const selectionRange = normalizeSelectionRange(source.selectionRange);
   const anchorMap = buildAnchorMap({
     flow,
