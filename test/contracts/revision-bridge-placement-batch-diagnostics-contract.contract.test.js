@@ -8,7 +8,7 @@ const { pathToFileURL } = require('node:url');
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-placement-batch-diagnostics-contract.contract.test.js';
 const RB17_TEST_PATH = 'test/contracts/revision-bridge-revision-session-skeleton-admission.contract.test.js';
-const BINDING_BASE_SHA = '43bab3bdfe894e5fc5bc6ebd232bdeb068cad393';
+const BINDING_BASE_SHA = 'c1ae247411f80335b6b2b7b4badf21953a52d40b';
 const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB17_TEST_PATH];
 
 async function loadBridge() {

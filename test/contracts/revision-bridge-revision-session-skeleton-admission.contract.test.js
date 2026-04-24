@@ -8,7 +8,7 @@ const { pathToFileURL } = require('node:url');
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-revision-session-skeleton-admission.contract.test.js';
 const RB16_TEST_PATH = 'test/contracts/revision-bridge-placement-batch-diagnostics-contract.contract.test.js';
-const BINDING_BASE_SHA = '27b7bca0d0c1e2106b07a5247bea46576ef723a3';
+const BINDING_BASE_SHA = 'c1ae247411f80335b6b2b7b4badf21953a52d40b';
 const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB16_TEST_PATH];
 
 async function loadBridge() {
@@ -305,6 +305,18 @@ test('RB-17 delegated count maps are required, bounded, and public-key only', as
     missingReasonPreview,
     'placementAdmissionPreview.countsByReasonCode.REVISION_BRIDGE_PLACEMENT_EVALUATION_EVALUATED',
   ]);
+  const mismatchedStatusCountsPreview = deepClone(validPreview);
+  mismatchedStatusCountsPreview.countsByStatus.evaluated = 999;
+  cases.push([
+    mismatchedStatusCountsPreview,
+    'placementAdmissionPreview.countsByStatus',
+  ]);
+  const mismatchedReasonCountsPreview = deepClone(validPreview);
+  mismatchedReasonCountsPreview.countsByReasonCode.REVISION_BRIDGE_PLACEMENT_EVALUATION_EVALUATED = 999;
+  cases.push([
+    mismatchedReasonCountsPreview,
+    'placementAdmissionPreview.countsByReasonCode',
+  ]);
 
   for (const [placementAdmissionPreview, field] of cases) {
     const result = bridge.previewRevisionSessionSkeletonAdmission(validInput(placementAdmissionPreview));
@@ -361,6 +373,57 @@ test('RB-17 delegated scalar fields are canonical and hostile values never leak'
     assert.equal(result.candidateSession, null);
     assert.equal(result.placementAdmissionPreview, null);
     assert.equal(result.reasons.some((reason) => reason.field === field), true);
+    assertForbiddenTokensAbsent(result, forbiddenTokens);
+  }
+});
+
+test('RB-17 delegated nested scalar values fail closed and never leak', async () => {
+  const bridge = await loadBridge();
+  const validPreview = await blockPlacementPreview();
+  const cases = [
+    (preview) => {
+      preview.blockingEvaluations[0].evaluation.reasonCodes.push('network');
+      return preview;
+    },
+    (preview) => {
+      preview.blockingDiagnostics[0].code = 'command';
+      return preview;
+    },
+    (preview) => {
+      preview.blockingDiagnostics[0].message = 'save';
+      return preview;
+    },
+    (preview) => {
+      preview.diagnosticSummary.items[0].code = 'command';
+      return preview;
+    },
+    (preview) => {
+      preview.diagnosticSummary.total = 999;
+      return preview;
+    },
+  ];
+  const forbiddenTokens = [
+    'apply',
+    'path',
+    'storage',
+    'parser',
+    'ui',
+    'ipc',
+    'network',
+    'command',
+    'write',
+    'save',
+  ];
+
+  for (const buildCase of cases) {
+    const result = bridge.previewRevisionSessionSkeletonAdmission(validInput(buildCase(deepClone(validPreview))));
+
+    assertSkeletonReturnShape(result);
+    assert.equal(result.status, 'hardFail');
+    assert.equal(result.canAdmit, false);
+    assert.equal(result.candidateSession, null);
+    assert.equal(result.placementAdmissionPreview, null);
+    assert.equal(result.reasons.some((reason) => reason.field.startsWith('placementAdmissionPreview')), true);
     assertForbiddenTokensAbsent(result, forbiddenTokens);
   }
 });
