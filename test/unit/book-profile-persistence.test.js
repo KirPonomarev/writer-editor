@@ -145,6 +145,15 @@ test('book profile persistence: canonical bookProfile survives manifest write an
     marginBottomMm: 22,
     marginLeftMm: 18,
   });
+  const landscapeBookProfile = bookProfile.createDefaultBookProfile({
+    profileId: 'stage02-book-profile-landscape',
+    formatId: 'A5',
+    orientation: 'landscape',
+    marginTopMm: 20,
+    marginRightMm: 18,
+    marginBottomMm: 22,
+    marginLeftMm: 18,
+  });
 
   const originalGetDocumentsPath = fileManager.getDocumentsPath;
   fileManager.getDocumentsPath = () => documentsRoot;
@@ -182,4 +191,31 @@ test('book profile persistence: canonical bookProfile survives manifest write an
 
   assert.equal(secondWriteResult.persisted, false);
   assert.deepEqual(secondWriteResult.manifest.bookProfile, canonicalBookProfile);
+
+  const landscapeWriteResult = await main.persistBookProfileForFile(
+    documentPath,
+    landscapeBookProfile,
+    'save project manifest landscape',
+  );
+
+  assert.equal(landscapeWriteResult.persisted, true);
+  assert.equal(landscapeWriteResult.manifest.bookProfile.orientation, 'landscape');
+  assert.ok(
+    landscapeWriteResult.manifest.bookProfile.widthMm
+      > landscapeWriteResult.manifest.bookProfile.heightMm,
+  );
+
+  const landscapeRawManifest = JSON.parse(await fsPromises.readFile(manifestPath, 'utf8'));
+  assert.deepEqual(landscapeRawManifest.bookProfile, landscapeBookProfile);
+  assert.equal(landscapeRawManifest.bookProfile.orientation, 'landscape');
+  assert.ok(landscapeRawManifest.bookProfile.widthMm > landscapeRawManifest.bookProfile.heightMm);
+
+  const reopenedLandscapeManifestRecord = await main.readProjectManifest();
+  assert.ok(reopenedLandscapeManifestRecord);
+  assert.deepEqual(reopenedLandscapeManifestRecord.manifest.bookProfile, landscapeBookProfile);
+  assert.equal(reopenedLandscapeManifestRecord.manifest.bookProfile.orientation, 'landscape');
+  assert.ok(
+    reopenedLandscapeManifestRecord.manifest.bookProfile.widthMm
+      > reopenedLandscapeManifestRecord.manifest.bookProfile.heightMm,
+  );
 });
