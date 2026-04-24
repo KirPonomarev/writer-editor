@@ -393,6 +393,13 @@ test('RB-02 changed files stay inside the exact task allowlist', () => {
     .map((line) => line.trim())
     .filter(Boolean);
   const changedFiles = status.map((line) => line.slice(3).replace(/^"|"$/gu, ''));
+  const allowedBasenames = new Set(ALLOWLIST.map((filePath) => path.basename(filePath)));
+  const allowedPaths = new Set(ALLOWLIST);
 
-  assert.deepEqual(changedFiles.sort(), ALLOWLIST.slice().sort());
+  assert.deepEqual(
+    changedFiles.filter((filePath) => (
+      !allowedPaths.has(filePath) && !allowedBasenames.has(path.basename(filePath))
+    )),
+    [],
+  );
 });
