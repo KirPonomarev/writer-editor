@@ -38,6 +38,45 @@ const FILE_NAVIGATION_FAIL_SIGNAL = 'E_RUNTIME_WIRING_BEFORE_STAGE';
 const CORRESPONDING_SOURCE_BASE_URL = 'https://github.com/KirPon2024/writer-editor';
 const ABOUT_LICENSE_TEXT_FALLBACK = 'Yalken is licensed under AGPL-3.0-or-later.';
 
+function isPrimaryPasteShortcut(input) {
+  if (!input || input.type !== 'keyDown') return false;
+  const key = typeof input.key === 'string' ? input.key.toLowerCase() : '';
+  if (key !== 'v') return false;
+  if (input.isAutoRepeat === true) return false;
+  if (input.alt || input.shift) return false;
+
+  const primaryPressed = process.platform === 'darwin' ? input.meta : input.control;
+  const secondaryPressed = process.platform === 'darwin' ? input.control : input.meta;
+  return Boolean(primaryPressed && !secondaryPressed);
+}
+
+function handlePrimaryPasteShortcut(event, input, win) {
+  if (!isPrimaryPasteShortcut(input)) return false;
+  if (!win || win.isDestroyed() || !win.webContents || win.webContents.isDestroyed()) return false;
+  if (typeof win.isFocused === 'function' && !win.isFocused()) return false;
+
+  const focusProbeScript = `(() => {
+    const active = document.activeElement;
+    if (!active || typeof active.closest !== 'function') return false;
+    const editor = active.closest('.ProseMirror');
+    return Boolean(editor && editor.isContentEditable && editor.contains(active));
+  })()`;
+
+  win.webContents.executeJavaScript(focusProbeScript, true)
+    .then((isProseMirrorFocused) => {
+      if (!isProseMirrorFocused) return;
+      if (!win || win.isDestroyed() || !win.webContents || win.webContents.isDestroyed()) return;
+      if (typeof win.isFocused === 'function' && !win.isFocused()) return;
+      win.webContents.paste();
+    })
+    .catch((error) => {
+      if (typeof logDevError === 'function') {
+        logDevError('handlePrimaryPasteShortcut:focusProbe', error);
+      }
+    });
+  return true;
+}
+
 function resolveRepoRootForAbout() {
   return path.resolve(__dirname, '..');
 }
@@ -3359,7 +3398,10 @@ function createWindow() {
     if (input.key === 'Escape' && mainWindow && mainWindow.isFullScreen()) {
       event.preventDefault();
       mainWindow.setFullScreen(false);
+      return;
     }
+
+    handlePrimaryPasteShortcut(event, input, mainWindow);
   });
 
   // Открыть последний файл и применить настройки после загрузки
