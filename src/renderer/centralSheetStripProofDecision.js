@@ -12,15 +12,25 @@ function toPositiveInteger(value, fallback) {
   return Number.isInteger(number) && number > 0 ? number : fallback;
 }
 
+function selectActiveLayoutPreviewSnapshotPageCount(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object' || Array.isArray(snapshot)) {
+    return null;
+  }
+  const pageCount = snapshot.pageMap?.meta?.pageCount;
+  return toPositiveInteger(pageCount, null);
+}
+
 function resolveCentralSheetStripProofDecision({
   naturalHeight,
   contentHeightPx,
   maxPageCount,
+  activeLayoutPreviewSnapshot,
 } = {}) {
+  const activeLayoutPreviewSnapshotPageCount = selectActiveLayoutPreviewSnapshotPageCount(activeLayoutPreviewSnapshot);
   const resolvedContentHeightPx = toPositiveNumber(contentHeightPx, 1);
   const resolvedNaturalHeight = Math.max(0, toPositiveNumber(naturalHeight, 0));
   const resolvedMaxPageCount = toPositiveInteger(maxPageCount, 1);
-  const pageCount = Math.max(1, Math.ceil(resolvedNaturalHeight / resolvedContentHeightPx));
+  const pageCount = activeLayoutPreviewSnapshotPageCount || Math.max(1, Math.ceil(resolvedNaturalHeight / resolvedContentHeightPx));
 
   if (pageCount > resolvedMaxPageCount) {
     return {
@@ -40,4 +50,5 @@ function resolveCentralSheetStripProofDecision({
 module.exports = {
   CENTRAL_SHEET_MAX_PAGE_COUNT_OVERFLOW_REASON,
   resolveCentralSheetStripProofDecision,
+  selectActiveLayoutPreviewSnapshotPageCount,
 };
