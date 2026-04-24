@@ -17,6 +17,17 @@ export const REVISION_BRIDGE_STRUCTURAL_CHANGE_SCHEMA = 'revision-bridge.structu
 export const REVISION_BRIDGE_DIAGNOSTIC_ITEM_SCHEMA = 'revision-bridge.diagnostic-item.v1';
 export const REVISION_BRIDGE_DECISION_STATE_SCHEMA = 'revision-bridge.decision-state.v1';
 export const REVISION_BRIDGE_REVIEW_PACKET_PREVIEW_SCHEMA = 'revision-bridge.review-packet-preview.v1';
+export const REVISION_BRIDGE_BLOCK_SCHEMA = 'revision-bridge.block.v1';
+export const REVISION_BRIDGE_BLOCK_LINEAGE_SCHEMA = 'revision-bridge.block-lineage.v1';
+export const REVISION_BRIDGE_BLOCK_KINDS = Object.freeze([
+  'paragraph',
+  'heading',
+  'quote',
+  'listItem',
+  'separator',
+  'tablePlaceholder',
+  'unsupportedObjectPlaceholder',
+]);
 
 const REVIEWGRAPH_ITEM_KINDS = [
   'commentThread',
@@ -1292,6 +1303,313 @@ function invalidField(field, message) {
     message,
   };
 }
+
+// RB_09_BLOCK_LINEAGE_CONTRACTS_START
+const REVISION_BLOCK_VALID_CODE = 'REVISION_BRIDGE_BLOCK_VALID';
+const REVISION_BLOCK_INVALID_CODE = 'E_REVISION_BRIDGE_BLOCK_INVALID';
+const REVISION_BLOCK_LINEAGE_VALID_CODE = 'REVISION_BRIDGE_BLOCK_LINEAGE_VALID';
+const REVISION_BLOCK_LINEAGE_INVALID_CODE = 'E_REVISION_BRIDGE_BLOCK_LINEAGE_INVALID';
+
+function revisionBlockCanonicalJson(value) {
+  if (value === null) return 'null';
+  const valueType = typeof value;
+  if (valueType === 'string') return JSON.stringify(value);
+  if (valueType === 'number') return Number.isFinite(value) ? JSON.stringify(value) : 'null';
+  if (valueType === 'boolean') return value ? 'true' : 'false';
+  if (Array.isArray(value)) return `[${value.map((item) => revisionBlockCanonicalJson(item)).join(',')}]`;
+  if (isPlainObject(value)) {
+    return `{${Object.keys(value).sort().map((key) => (
+      `${JSON.stringify(key)}:${revisionBlockCanonicalJson(value[key])}`
+    )).join(',')}}`;
+  }
+  return 'null';
+}
+
+function revisionBlockHash(value) {
+  const text = revisionBlockCanonicalJson(value);
+  let hash = 2166136261;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = (hash * 16777619) >>> 0;
+  }
+  return hash.toString(16).padStart(8, '0');
+}
+
+function revisionBlockCleanRecord(value) {
+  return isPlainObject(value) ? cloneJsonSafe(value) || {} : {};
+}
+
+function revisionBlockInput(input) {
+  return isPlainObject(input) ? input : {};
+}
+
+function revisionBlockValidationFailure(reasons, value = null) {
+  return {
+    ok: false,
+    type: 'revisionBridge.block.validation',
+    code: REVISION_BLOCK_INVALID_CODE,
+    reason: reasons[0]?.code || REVISION_BLOCK_INVALID_CODE,
+    reasons,
+    value,
+  };
+}
+
+function revisionBlockValidationSuccess(value) {
+  return {
+    ok: true,
+    type: 'revisionBridge.block.validation',
+    code: REVISION_BLOCK_VALID_CODE,
+    reason: REVISION_BLOCK_VALID_CODE,
+    reasons: [],
+    value: cloneJsonSafe(value),
+  };
+}
+
+function revisionBlockLineageValidationFailure(reasons, value = null) {
+  return {
+    ok: false,
+    type: 'revisionBridge.blockLineage.validation',
+    code: REVISION_BLOCK_LINEAGE_INVALID_CODE,
+    reason: reasons[0]?.code || REVISION_BLOCK_LINEAGE_INVALID_CODE,
+    reasons,
+    value,
+  };
+}
+
+function revisionBlockLineageValidationSuccess(value) {
+  return {
+    ok: true,
+    type: 'revisionBridge.blockLineage.validation',
+    code: REVISION_BLOCK_LINEAGE_VALID_CODE,
+    reason: REVISION_BLOCK_LINEAGE_VALID_CODE,
+    reasons: [],
+    value: cloneJsonSafe(value),
+  };
+}
+
+function collectRevisionBlockCycleReasons(edges, knownBlockIds) {
+  const reasons = [];
+  const outgoing = {};
+  for (const blockId of knownBlockIds) outgoing[blockId] = [];
+  edges.forEach((edge) => {
+    if (isPlainObject(edge) && outgoing[edge.fromBlockId]) outgoing[edge.fromBlockId].push(edge.toBlockId);
+  });
+
+  const visiting = {};
+  const visited = {};
+  function visit(blockId, trail) {
+    if (visiting[blockId]) {
+      reasons.push(invalidField('lineageEdges', `lineage cycle detected at ${blockId}`));
+      return;
+    }
+    if (visited[blockId]) return;
+    visiting[blockId] = true;
+    for (const nextBlockId of outgoing[blockId] || []) {
+      if (knownBlockIds.includes(nextBlockId)) visit(nextBlockId, trail.concat(nextBlockId));
+    }
+    visiting[blockId] = false;
+    visited[blockId] = true;
+  }
+
+  for (const blockId of knownBlockIds) visit(blockId, [blockId]);
+  return reasons.slice(0, 1);
+}
+
+export function isRevisionBlockKind(value) {
+  return REVISION_BRIDGE_BLOCK_KINDS.includes(value);
+}
+
+export function normalizeRevisionBlockText(value) {
+  return typeof value === 'string' ? value.replace(/\r\n?/gu, '\n').trim() : '';
+}
+
+export function createRevisionBlockOrder(value) {
+  return Number.isSafeInteger(value) && value >= 0 ? value : null;
+}
+
+export function createRevisionBlockVersionHash(input = {}) {
+  const block = revisionBlockInput(input);
+  return `rbvh_${revisionBlockHash({
+    schemaVersion: REVISION_BRIDGE_BLOCK_SCHEMA,
+    kind: isRevisionBlockKind(block.kind) ? block.kind : 'paragraph',
+    text: normalizeRevisionBlockText(block.text),
+    attrs: revisionBlockCleanRecord(block.attrs),
+  })}`;
+}
+
+export function createRevisionBlockLineageId(input = {}) {
+  const block = revisionBlockInput(input);
+  const explicitSeed = normalizeString(block.lineageSeed);
+  const seed = explicitSeed || revisionBlockCanonicalJson({
+    sceneId: normalizeString(block.sceneId),
+    order: createRevisionBlockOrder(block.order),
+    kind: isRevisionBlockKind(block.kind) ? block.kind : 'paragraph',
+    text: normalizeRevisionBlockText(block.text),
+  });
+  return `rbli_${revisionBlockHash({
+    schemaVersion: REVISION_BRIDGE_BLOCK_LINEAGE_SCHEMA,
+    seed,
+  })}`;
+}
+
+export function createRevisionBlockInstanceId(input = {}) {
+  const block = revisionBlockInput(input);
+  return `rbbi_${revisionBlockHash({
+    schemaVersion: REVISION_BRIDGE_BLOCK_SCHEMA,
+    sceneId: normalizeString(block.sceneId),
+    order: createRevisionBlockOrder(block.order),
+    kind: isRevisionBlockKind(block.kind) ? block.kind : 'paragraph',
+    lineageId: createRevisionBlockLineageId(block),
+  })}`;
+}
+
+export function createRevisionBlock(input = {}) {
+  const block = revisionBlockInput(input);
+  const kind = isRevisionBlockKind(block.kind) ? block.kind : 'paragraph';
+  const order = createRevisionBlockOrder(block.order);
+  const candidate = {
+    schemaVersion: REVISION_BRIDGE_BLOCK_SCHEMA,
+    blockId: normalizeString(block.blockId) || createRevisionBlockInstanceId({ ...block, kind, order }),
+    lineageId: normalizeString(block.lineageId) || createRevisionBlockLineageId({ ...block, kind, order }),
+    versionHash: normalizeString(block.versionHash) || createRevisionBlockVersionHash({ ...block, kind }),
+    kind,
+    order,
+    text: normalizeRevisionBlockText(block.text),
+    attrs: revisionBlockCleanRecord(block.attrs),
+    source: revisionBlockCleanRecord(block.source),
+  };
+  return cloneJsonSafe(candidate);
+}
+
+function collectRevisionBlockReasons(input, block, prefix) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(invalidField(prefix, `${prefix} must be an object`));
+    return reasons;
+  }
+  if (input.schemaVersion !== REVISION_BRIDGE_BLOCK_SCHEMA) reasons.push(invalidField(`${prefix}.schemaVersion`, 'block schemaVersion is not supported'));
+  if (!normalizeString(input.blockId || block.blockId)) reasons.push(missingField(`${prefix}.blockId`));
+  if (!normalizeString(input.lineageId || block.lineageId)) reasons.push(missingField(`${prefix}.lineageId`));
+  if (!normalizeString(input.versionHash || block.versionHash)) reasons.push(missingField(`${prefix}.versionHash`));
+  if (!hasOwnField(input, 'kind')) {
+    reasons.push(missingField(`${prefix}.kind`));
+  } else if (!isRevisionBlockKind(input.kind)) {
+    reasons.push(invalidField(`${prefix}.kind`, 'block kind is not supported'));
+  }
+  if (!hasOwnField(input, 'order') || createRevisionBlockOrder(input.order) === null) {
+    reasons.push(invalidField(`${prefix}.order`, 'block order must be a non-negative safe integer'));
+  }
+  if (hasOwnField(input, 'attrs') && !isPlainObject(input.attrs)) {
+    reasons.push(invalidField(`${prefix}.attrs`, 'block attrs must be an object'));
+  }
+  if (hasOwnField(input, 'source') && !isPlainObject(input.source)) {
+    reasons.push(invalidField(`${prefix}.source`, 'block source must be an object'));
+  }
+  return reasons;
+}
+
+export function validateRevisionBlock(input = {}) {
+  const block = createRevisionBlock(input);
+  const reasons = collectRevisionBlockReasons(input, block, 'block');
+  if (reasons.length > 0) return revisionBlockValidationFailure(reasons);
+  return revisionBlockValidationSuccess(block);
+}
+
+export function validateRevisionBlockLineage(input = {}) {
+  const lineage = revisionBlockInput(input);
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(invalidField('blockLineage', 'blockLineage must be an object'));
+    return revisionBlockLineageValidationFailure(reasons);
+  }
+  if (lineage.schemaVersion !== REVISION_BRIDGE_BLOCK_LINEAGE_SCHEMA) {
+    reasons.push(invalidField('blockLineage.schemaVersion', 'blockLineage schemaVersion is not supported'));
+  }
+  if (!Array.isArray(lineage.blocks)) {
+    reasons.push(invalidField('blockLineage.blocks', 'blockLineage blocks must be an array'));
+    return revisionBlockLineageValidationFailure(reasons);
+  }
+
+  const blockIds = [];
+  lineage.blocks.forEach((candidate, index) => {
+    if (!isPlainObject(candidate)) {
+      reasons.push(invalidField(`blockLineage.blocks.${index}`, 'blockLineage block must be an object'));
+      return;
+    }
+    const blockResult = validateRevisionBlock(candidate);
+    for (const reason of blockResult.reasons) {
+      reasons.push({
+        ...reason,
+        field: reason.field.replace(/^block/u, `blockLineage.blocks.${index}`),
+      });
+    }
+    const blockId = normalizeString(candidate.blockId);
+    if (blockId) {
+      if (blockIds.includes(blockId)) reasons.push(invalidField(`blockLineage.blocks.${index}.blockId`, 'blockId must be unique'));
+      blockIds.push(blockId);
+    }
+  });
+
+  if (hasOwnField(lineage, 'lineageEdges')) {
+    if (!Array.isArray(lineage.lineageEdges)) {
+      reasons.push(invalidField('blockLineage.lineageEdges', 'blockLineage lineageEdges must be an array'));
+    } else {
+      lineage.lineageEdges.forEach((edge, index) => {
+        if (!isPlainObject(edge)) {
+          reasons.push(invalidField(`blockLineage.lineageEdges.${index}`, 'lineage edge must be an object'));
+          return;
+        }
+        const fromBlockId = normalizeString(edge.fromBlockId);
+        const toBlockId = normalizeString(edge.toBlockId);
+        if (!fromBlockId) reasons.push(missingField(`blockLineage.lineageEdges.${index}.fromBlockId`));
+        if (!toBlockId) reasons.push(missingField(`blockLineage.lineageEdges.${index}.toBlockId`));
+        if (fromBlockId && !blockIds.includes(fromBlockId)) {
+          reasons.push(invalidField(`blockLineage.lineageEdges.${index}.fromBlockId`, 'lineage edge references an unknown block'));
+        }
+        if (toBlockId && !blockIds.includes(toBlockId)) {
+          reasons.push(invalidField(`blockLineage.lineageEdges.${index}.toBlockId`, 'lineage edge references an unknown block'));
+        }
+        if (fromBlockId && toBlockId && fromBlockId === toBlockId) {
+          reasons.push(invalidField(`blockLineage.lineageEdges.${index}`, 'lineage edge must not reference itself'));
+        }
+      });
+      if (reasons.length === 0) {
+        reasons.push(...collectRevisionBlockCycleReasons(lineage.lineageEdges, blockIds));
+      }
+    }
+  }
+
+  if (reasons.length > 0) return revisionBlockLineageValidationFailure(reasons);
+  return revisionBlockLineageValidationSuccess({
+    schemaVersion: REVISION_BRIDGE_BLOCK_LINEAGE_SCHEMA,
+    blocks: lineage.blocks.map((block) => createRevisionBlock(block)),
+    lineageEdges: Array.isArray(lineage.lineageEdges) ? cloneJsonSafe(lineage.lineageEdges) : [],
+  });
+}
+
+export function deriveRevisionBlocksFromPlainSceneText(input = {}) {
+  const source = revisionBlockInput(input);
+  const sceneId = normalizeString(source.sceneId);
+  const text = normalizeRevisionBlockText(source.text);
+  if (!text) return [];
+  return text
+    .split(/\n[ \t]*\n+/u)
+    .map((paragraphText) => normalizeRevisionBlockText(paragraphText))
+    .filter(Boolean)
+    .map((paragraphText, order) => createRevisionBlock({
+      sceneId,
+      lineageSeed: `${sceneId}:${order}:paragraph`,
+      kind: 'paragraph',
+      order,
+      text: paragraphText,
+      attrs: {},
+      source: {
+        kind: 'plainSceneText',
+        sceneId,
+      },
+    }));
+}
+// RB_09_BLOCK_LINEAGE_CONTRACTS_END
 
 function reviewGraphValidationFailure(reasons, value = null) {
   return {
