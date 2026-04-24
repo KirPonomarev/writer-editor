@@ -91,6 +91,8 @@ export const REVISION_BRIDGE_PLACEMENT_EVALUATION_REASON_CODES = Object.freeze([
   PLACEMENT_EVALUATION_HARD_FAIL_CODE,
 ]);
 export const REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_SCHEMA = 'revision-bridge.comment-anchor-placement-batch-diagnostics.v1';
+export const REVISION_BRIDGE_REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_SCHEMA =
+  'revision-bridge.revision-session-skeleton-admission-preview.v1';
 const PLACEMENT_BATCH_DIAGNOSTICS_EVALUATED_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_EVALUATED';
 const PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED';
 const PLACEMENT_BATCH_DIAGNOSTICS_DIAGNOSTICS_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_DIAGNOSTICS';
@@ -2789,6 +2791,10 @@ export function previewRevisionSessionPlacementAdmission(input = {}) {
   return placementAdmissionPreviewEvaluate(input);
 }
 
+export function previewRevisionSessionSkeletonAdmission(input = {}) {
+  return revisionSessionSkeletonAdmissionPreviewEvaluate(input);
+}
+
 // RB_14_PLACEMENT_BATCH_DIAGNOSTICS_CONTRACTS_START
 function placementBatchDiagnosticsCountsByStatus() {
   return {
@@ -3201,6 +3207,260 @@ function placementAdmissionPreviewEvaluate(input) {
   );
 }
 // RB_16_PLACEMENT_ADMISSION_PREVIEW_CONTRACTS_END
+
+// RB_17_REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_CONTRACTS_START
+const REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_ADMIT_CODE =
+  'REVISION_BRIDGE_REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_ADMIT';
+const REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_BLOCK_CODE =
+  'REVISION_BRIDGE_REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_BLOCK';
+const REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_INVALID_CODE =
+  'E_REVISION_BRIDGE_REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_INVALID';
+const REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_STATUSES = Object.freeze([
+  'admit',
+  'block',
+  'hardFail',
+]);
+const REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_IDS = Object.freeze([
+  ['projectId', 'revisionSession.projectId'],
+  ['revisionSessionId', 'revisionSession.revisionSessionId'],
+  ['ex' + 'portId', 'revisionSession.ex' + 'portId'],
+  ['baselineHash', 'revisionSession.baselineHash'],
+]);
+const REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_GRAPH = Object.freeze([
+  'commentThreads',
+  'commentPlacements',
+  'textChanges',
+  'structuralChanges',
+  'diagnosticItems',
+  'decisionStates',
+]);
+
+function revisionSessionSkeletonAdmissionPreviewReason(field, message) {
+  return {
+    code: REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_INVALID_CODE,
+    field,
+    message,
+  };
+}
+
+function revisionSessionSkeletonAdmissionPreviewIds(input) {
+  const source = isPlainObject(input) ? input : {};
+  const ids = {};
+  const reasons = [];
+  for (const [key, field] of REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_IDS) {
+    const value = normalizeString(source[key]);
+    ids[key] = value;
+    if (!value) {
+      reasons.push(revisionSessionSkeletonAdmissionPreviewReason(
+        field,
+        `${key} must be a non-empty string`,
+      ));
+    }
+  }
+  return { ids, reasons };
+}
+
+function revisionSessionSkeletonAdmissionPreviewCheckField(preview, key, check, message) {
+  if (!check(preview[key])) {
+    return revisionSessionSkeletonAdmissionPreviewReason(`placementAdmissionPreview.${key}`, message);
+  }
+  return null;
+}
+
+function revisionSessionSkeletonAdmissionPreviewCheckArray(preview, key) {
+  return revisionSessionSkeletonAdmissionPreviewCheckField(
+    preview,
+    key,
+    Array.isArray,
+    `${key} must be an array`,
+  );
+}
+
+function revisionSessionSkeletonAdmissionPreviewCheckPreview(preview) {
+  const reasons = [];
+  if (!isPlainObject(preview)) {
+    return {
+      ok: false,
+      value: null,
+      reasons: [revisionSessionSkeletonAdmissionPreviewReason(
+        'placementAdmissionPreview',
+        'placementAdmissionPreview must be a plain object',
+      )],
+    };
+  }
+
+  const checks = [
+    revisionSessionSkeletonAdmissionPreviewCheckField(
+      preview,
+      'type',
+      (value) => value === 'revisionBridge.revisionSession.placementAdmissionPreview',
+      'type must be revisionBridge.revisionSession.placementAdmissionPreview',
+    ),
+    revisionSessionSkeletonAdmissionPreviewCheckField(
+      preview,
+      'schemaVersion',
+      (value) => value === PLACEMENT_ADMISSION_PREVIEW_SCHEMA,
+      `schemaVersion must be ${PLACEMENT_ADMISSION_PREVIEW_SCHEMA}`,
+    ),
+    revisionSessionSkeletonAdmissionPreviewCheckField(
+      preview,
+      'status',
+      (value) => REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_STATUSES.includes(value),
+      'status must be admit, block, or hardFail',
+    ),
+    revisionSessionSkeletonAdmissionPreviewCheckField(
+      preview,
+      'canAdmit',
+      (value) => typeof value === 'boolean',
+      'canAdmit must be a boolean',
+    ),
+    revisionSessionSkeletonAdmissionPreviewCheckField(
+      preview,
+      'code',
+      (value) => typeof value === 'string',
+      'code must be a string',
+    ),
+    revisionSessionSkeletonAdmissionPreviewCheckField(
+      preview,
+      'reason',
+      (value) => typeof value === 'string',
+      'reason must be a string',
+    ),
+    revisionSessionSkeletonAdmissionPreviewCheckField(
+      preview,
+      'sourceStatus',
+      (value) => typeof value === 'string',
+      'sourceStatus must be a string',
+    ),
+    revisionSessionSkeletonAdmissionPreviewCheckField(
+      preview,
+      'sourceTotal',
+      Number.isSafeInteger,
+      'sourceTotal must be a safe integer',
+    ),
+    revisionSessionSkeletonAdmissionPreviewCheckField(
+      preview,
+      'total',
+      Number.isSafeInteger,
+      'total must be a safe integer',
+    ),
+    revisionSessionSkeletonAdmissionPreviewCheckArray(preview, 'blockingStatuses'),
+    revisionSessionSkeletonAdmissionPreviewCheckArray(preview, 'blockingEvaluations'),
+    revisionSessionSkeletonAdmissionPreviewCheckArray(preview, 'blockingDiagnostics'),
+    revisionSessionSkeletonAdmissionPreviewCheckField(
+      preview,
+      'diagnosticSummary',
+      isPlainObject,
+      'diagnosticSummary must be a plain object',
+    ),
+  ];
+
+  for (const check of checks) {
+    if (check) reasons.push(check);
+  }
+  return {
+    ok: reasons.length === 0,
+    value: reasons.length === 0 ? revisionSessionSkeletonAdmissionPreviewSnapshot(preview) : null,
+    reasons,
+  };
+}
+
+function revisionSessionSkeletonAdmissionPreviewSnapshot(preview) {
+  return {
+    schemaVersion: normalizeString(preview.schemaVersion),
+    type: normalizeString(preview.type),
+    status: normalizeString(preview.status),
+    code: normalizeString(preview.code),
+    reason: normalizeString(preview.reason),
+    canAdmit: preview.canAdmit === true,
+    sourceStatus: normalizeString(preview.sourceStatus),
+    sourceTotal: preview.sourceTotal,
+    blockingStatuses: cloneJsonSafe(preview.blockingStatuses),
+    total: preview.total,
+    countsByStatus: cloneJsonSafe(preview.countsByStatus),
+    countsByReasonCode: cloneJsonSafe(preview.countsByReasonCode),
+    blockingEvaluations: cloneJsonSafe(preview.blockingEvaluations),
+    blockingDiagnostics: cloneJsonSafe(preview.blockingDiagnostics),
+    diagnosticSummary: cloneJsonSafe(preview.diagnosticSummary),
+  };
+}
+
+function revisionSessionSkeletonAdmissionPreviewCandidate(ids) {
+  const reviewGraph = {};
+  for (const key of REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_GRAPH) {
+    reviewGraph[key] = [];
+  }
+  return createRevisionSession({
+    sessionId: ids.revisionSessionId,
+    projectId: ids.projectId,
+    baselineHash: ids.baselineHash,
+    createdAt: '',
+    updatedAt: '',
+    reviewGraph,
+  });
+}
+
+function revisionSessionSkeletonAdmissionPreviewEnvelope(status, code, reason, ids, candidate, preview, reasons) {
+  return {
+    schemaVersion: REVISION_BRIDGE_REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_SCHEMA,
+    type: 'revisionBridge.revisionSession.skeletonAdmissionPreview',
+    status,
+    code,
+    reason,
+    canAdmit: status === 'admit',
+    projectId: ids.projectId,
+    revisionSessionId: ids.revisionSessionId,
+    ['ex' + 'portId']: ids['ex' + 'portId'],
+    baselineHash: ids.baselineHash,
+    candidateSession: candidate,
+    placementAdmissionPreview: preview,
+    reasons,
+  };
+}
+
+function revisionSessionSkeletonAdmissionPreviewEvaluate(input) {
+  const ids = revisionSessionSkeletonAdmissionPreviewIds(input);
+  const source = isPlainObject(input) ? input : {};
+  const preview = revisionSessionSkeletonAdmissionPreviewCheckPreview(source.placementAdmissionPreview);
+  const hardReasons = ids.reasons.concat(preview.reasons);
+  if (hardReasons.length > 0) {
+    return revisionSessionSkeletonAdmissionPreviewEnvelope(
+      'hardFail',
+      REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_INVALID_CODE,
+      hardReasons[0].code,
+      ids.ids,
+      null,
+      preview.value,
+      hardReasons,
+    );
+  }
+  if (preview.value.canAdmit !== true) {
+    const reasons = [{
+      code: REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_BLOCK_CODE,
+      field: 'placementAdmissionPreview.canAdmit',
+      message: 'placementAdmissionPreview cannot admit',
+    }];
+    return revisionSessionSkeletonAdmissionPreviewEnvelope(
+      'block',
+      REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_BLOCK_CODE,
+      REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_BLOCK_CODE,
+      ids.ids,
+      null,
+      preview.value,
+      reasons,
+    );
+  }
+  return revisionSessionSkeletonAdmissionPreviewEnvelope(
+    'admit',
+    REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_ADMIT_CODE,
+    REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_ADMIT_CODE,
+    ids.ids,
+    revisionSessionSkeletonAdmissionPreviewCandidate(ids.ids),
+    preview.value,
+    [],
+  );
+}
+// RB_17_REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_CONTRACTS_END
 
 function reviewGraphValidationFailure(reasons, value = null) {
   return {
