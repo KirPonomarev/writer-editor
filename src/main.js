@@ -18,6 +18,7 @@ const {
   sanitizePathFieldsWithinRoot,
 } = require('./core/io/path-boundary');
 const { buildDocxMinBuffer: buildDocxMinBufferCore } = require('./export/docx/docxMinBuilder');
+const { runDocxMinExport } = require('./export/docx/docxMinExportHandler');
 
 const launchT0 = performance.now();
 let mainWindow;
@@ -1695,68 +1696,17 @@ async function writeBufferAtomic(filePath, buffer) {
 }
 
 async function handleExportDocxMin(payloadRaw) {
-  const payload = normalizeExportPayload(payloadRaw);
-  if (!payload) {
-    return makeTypedExportError('E_EXPORT_PAYLOAD_INVALID', 'PAYLOAD_INVALID');
-  }
-  if (payload.pathBoundaryError) {
-    return makeTypedExportError('E_PATH_BOUNDARY_VIOLATION', 'PATH_BOUNDARY_VIOLATION', buildPathBoundaryDetails(payload.pathBoundaryError));
-  }
-
-  let outPath = '';
-  try {
-    outPath = await resolveDocxExportPath(payload);
-  } catch (error) {
-    return makeTypedExportError('E_EXPORT_DIALOG_FAILED', 'EXPORT_DIALOG_FAILED', {
-      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
-    });
-  }
-  if (!outPath) {
-    return makeTypedExportError('E_EXPORT_CANCELED', 'EXPORT_DIALOG_CANCELED', {
-      requestId: payload.requestId,
-    });
-  }
-
-  let editorSnapshot = payload.bufferSource
-    ? {
-      content: payload.bufferSource,
-      plainText: payload.bufferSource,
-      bookProfile: isPlainObjectValue(payload.options.bookProfile) ? payload.options.bookProfile : null,
-    }
-    : null;
-  if (!editorSnapshot) {
-    try {
-      editorSnapshot = await requestEditorSnapshot();
-    } catch (error) {
-      return makeTypedExportError('E_EXPORT_TEXT_UNAVAILABLE', 'EDITOR_TEXT_UNAVAILABLE', {
-        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
-      });
-    }
-  }
-
-  let documentBuffer;
-  try {
-    documentBuffer = await buildDocxMinBuffer(editorSnapshot);
-  } catch (error) {
-    return makeTypedExportError('E_EXPORT_BUILD_FAILED', 'DOCX_BUILD_FAILED', {
-      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
-    });
-  }
-
-  try {
-    await queueDiskOperation(() => writeBufferAtomic(outPath, documentBuffer), 'export docx min');
-    updateStatus('DOCX MIN экспортирован');
-    return {
-      ok: 1,
-      outPath,
-      bytesWritten: documentBuffer.length,
-    };
-  } catch (error) {
-    return makeTypedExportError('E_EXPORT_WRITE_FAILED', 'DOCX_WRITE_FAILED', {
-      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
-      outPath,
-    });
-  }
+  return runDocxMinExport(payloadRaw, {
+    normalizeExportPayload,
+    makeTypedExportError,
+    buildPathBoundaryDetails,
+    resolveDocxExportPath,
+    requestEditorSnapshot,
+    buildDocxMinBuffer,
+    queueDiskOperation,
+    writeBufferAtomic,
+    updateStatus,
+  });
 }
 
 async function handleImportMarkdownV1(payloadRaw) {
