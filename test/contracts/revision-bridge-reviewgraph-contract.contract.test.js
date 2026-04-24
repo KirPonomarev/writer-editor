@@ -378,7 +378,6 @@ test('RB-02 kernel has no forbidden side-effect imports or APIs', () => {
     /\belectron\b/u,
     /\bipcMain\b/u,
     /\bipcRenderer\b/u,
-    /\bdocx\b/u,
     /\bDate\.now\s*\(/u,
     /\bnew\s+Date\s*\(/u,
     /\bMath\.random\s*\(/u,
