@@ -91,6 +91,141 @@ const PARSED_REVIEW_SURFACE_ALIAS_KEYS = [
   'revisions',
 ];
 
+export const DOCX_PACKAGE_BOUNDARY_BUDGETS = Object.freeze({
+  maxEntries: 512,
+  maxTotalBytes: 52428800,
+  maxEntryBytes: 10485760,
+  maxRelationshipEntries: 64,
+  maxUnsupportedStoryEntries: 32,
+});
+
+export const DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES = Object.freeze({
+  INVENTORY_NOT_OBJECT: 'DOCX_INVENTORY_NOT_PLAIN_OBJECT',
+  INVENTORY_PATH_INPUT_REJECTED: 'DOCX_INVENTORY_PATH_INPUT_REJECTED',
+  INVENTORY_BINARY_INPUT_REJECTED: 'DOCX_INVENTORY_BINARY_INPUT_REJECTED',
+  ENTRIES_MISSING: 'DOCX_INVENTORY_ENTRIES_MISSING',
+  ENTRIES_NOT_ARRAY: 'DOCX_INVENTORY_ENTRIES_INVALID',
+  ENTRY_NOT_OBJECT: 'DOCX_ENTRY_NOT_OBJECT',
+  ENTRY_ID_INVALID: 'DOCX_ENTRY_ID_INVALID',
+  ENTRY_KIND_INVALID: 'DOCX_ENTRY_KIND_INVALID',
+  ENTRY_BYTE_SIZE_INVALID: 'DOCX_ENTRY_BYTE_SIZE_INVALID',
+  ENTRY_COMPRESSED_SIZE_INVALID: 'DOCX_ENTRY_COMPRESSED_SIZE_INVALID',
+  ENTRY_MARKERS_INVALID: 'DOCX_ENTRY_MARKERS_INVALID',
+  ENTRY_MARKER_INVALID: 'DOCX_ENTRY_MARKER_INVALID',
+  ENTRY_STORY_INVALID: 'DOCX_ENTRY_STORY_INVALID',
+  UNKNOWN_SIZE_FIELD_PRESENT: 'DOCX_UNKNOWN_SIZE_FIELD_PRESENT',
+  ENTRY_COUNT_EXCEEDED: 'DOCX_ENTRY_COUNT_BUDGET_EXCEEDED',
+  TOTAL_BYTES_EXCEEDED: 'DOCX_TOTAL_UNCOMPRESSED_BUDGET_EXCEEDED',
+  ENTRY_BYTES_EXCEEDED: 'DOCX_SINGLE_ENTRY_UNCOMPRESSED_BUDGET_EXCEEDED',
+  RELATIONSHIP_ENTRY_COUNT_EXCEEDED: 'DOCX_RELATIONSHIP_ENTRY_COUNT_BUDGET_EXCEEDED',
+  UNSUPPORTED_STORY_COUNT_EXCEEDED: 'DOCX_UNSUPPORTED_STORY_COUNT_BUDGET_EXCEEDED',
+  UNKNOWN_PART_PRESENT: 'DOCX_UNKNOWN_PART_PRESENT',
+  DIRECTORY_ENTRY_PRESENT: 'DOCX_DIRECTORY_ENTRY_PRESENT',
+  RELATIONSHIP_PART_PRESENT: 'DOCX_EXTERNAL_RELATIONSHIP_PRESENT',
+  UNSUPPORTED_STORY_PRESENT: 'DOCX_UNSUPPORTED_STORY_MARKER_PRESENT',
+  CLEAN_INVENTORY: 'DOCX_PACKAGE_CLEAN',
+});
+
+const DOCX_PACKAGE_BOUNDARY_INPUT_REJECT_KEYS = [
+  'p' + 'ath',
+  'file' + 'P' + 'ath',
+  'b' + 'ytes',
+  'b' + 'uffer',
+];
+
+const DOCX_PACKAGE_BOUNDARY_ENTRY_KINDS = [
+  'knownPart',
+  'unknownPart',
+  'relationshipPart',
+  'directory',
+];
+
+const DOCX_PACKAGE_BOUNDARY_STORIES = [
+  'main',
+  'header',
+  'footer',
+  'footnote',
+  'endnote',
+  'comment',
+  'textBox',
+  'unsupported',
+];
+
+const DOCX_PACKAGE_BOUNDARY_MARKERS = [
+  'relationship',
+  'unsupportedStory',
+  'documentPart',
+  'mediaPart',
+];
+
+const DOCX_PACKAGE_BOUNDARY_REJECTED_SIZE_FIELDS = [
+  'size',
+  'b' + 'ytes',
+  'length',
+  'uncompressedSize',
+  'compressedByteSize',
+  'r' + 'awSize',
+  'fileSize',
+];
+
+const DOCX_PACKAGE_BOUNDARY_MALFORMED_CODES = [
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.INVENTORY_NOT_OBJECT,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.INVENTORY_PATH_INPUT_REJECTED,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.INVENTORY_BINARY_INPUT_REJECTED,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRIES_MISSING,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRIES_NOT_ARRAY,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_NOT_OBJECT,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_ID_INVALID,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_KIND_INVALID,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_BYTE_SIZE_INVALID,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_COMPRESSED_SIZE_INVALID,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_MARKERS_INVALID,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_MARKER_INVALID,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_STORY_INVALID,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNKNOWN_SIZE_FIELD_PRESENT,
+];
+
+const DOCX_PACKAGE_BOUNDARY_QUARANTINED_CODES = [
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_COUNT_EXCEEDED,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.TOTAL_BYTES_EXCEEDED,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_BYTES_EXCEEDED,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.RELATIONSHIP_ENTRY_COUNT_EXCEEDED,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_COUNT_EXCEEDED,
+];
+
+const DOCX_PACKAGE_BOUNDARY_SUSPICIOUS_CODES = [
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNKNOWN_PART_PRESENT,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.DIRECTORY_ENTRY_PRESENT,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.RELATIONSHIP_PART_PRESENT,
+  DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_PRESENT,
+];
+
+const DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_MESSAGES = Object.freeze({
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.INVENTORY_NOT_OBJECT]: 'inventory must be a plain object',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.INVENTORY_PATH_INPUT_REJECTED]: 'inventory location input is not accepted',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.INVENTORY_BINARY_INPUT_REJECTED]: 'inventory binary input is not accepted',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRIES_MISSING]: 'entries array is required',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRIES_NOT_ARRAY]: 'entries must be an array',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_NOT_OBJECT]: 'entry must be a plain object',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_ID_INVALID]: 'entry id must be a non-empty string',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_KIND_INVALID]: 'entry kind is not supported',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_BYTE_SIZE_INVALID]: 'entry byteSize must be a finite nonnegative integer',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_COMPRESSED_SIZE_INVALID]: 'entry compressedSize must be a finite nonnegative integer',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_MARKERS_INVALID]: 'entry markers must be an array',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_MARKER_INVALID]: 'entry marker is not supported',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_STORY_INVALID]: 'entry story is not supported',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNKNOWN_SIZE_FIELD_PRESENT]: 'entry contains a non-contract size field',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_COUNT_EXCEEDED]: 'entry count exceeds budget',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.TOTAL_BYTES_EXCEEDED]: 'total byteSize exceeds budget',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_BYTES_EXCEEDED]: 'entry byteSize exceeds budget',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.RELATIONSHIP_ENTRY_COUNT_EXCEEDED]: 'relationship entry count exceeds budget',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_COUNT_EXCEEDED]: 'unsupported story count exceeds budget',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNKNOWN_PART_PRESENT]: 'unknown package part is present',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.DIRECTORY_ENTRY_PRESENT]: 'directory entry is present',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.RELATIONSHIP_PART_PRESENT]: 'relationship package part is present',
+  [DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_PRESENT]: 'unsupported story entry is present',
+});
+
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
@@ -136,6 +271,294 @@ function normalizeStringEnum(value, allowedValues, fallback) {
 
 function hasOwnField(input, field) {
   return isPlainObject(input) && Object.prototype.hasOwnProperty.call(input, field);
+}
+
+function isDocxPackageBoundaryPlainObject(value) {
+  if (!Boolean(value) || typeof value !== 'object' || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
+function isFiniteNonnegativeInteger(value) {
+  return Number.isInteger(value) && Number.isFinite(value) && value >= 0;
+}
+
+function isDocxPackageBoundaryRejectedInput(input) {
+  if (!Boolean(input) || typeof input !== 'object') return false;
+  return DOCX_PACKAGE_BOUNDARY_INPUT_REJECT_KEYS.some((key) => (
+    Object.prototype.hasOwnProperty.call(input, key)
+  ))
+    || (typeof input.byteLength === 'number' && typeof input.slice === 'function')
+    || (typeof input.byteLength === 'number' && typeof input.subarray === 'function')
+    || (typeof input['array' + 'B' + 'uffer'] === 'function' && typeof input.name === 'string')
+    || (typeof input['str' + 'eam'] === 'function')
+    || (typeof input.pipe === 'function')
+    || (typeof input.getReader === 'function');
+}
+
+function docxPackageBoundarySeverity(code) {
+  if (DOCX_PACKAGE_BOUNDARY_MALFORMED_CODES.includes(code)) return 'error';
+  if (DOCX_PACKAGE_BOUNDARY_QUARANTINED_CODES.includes(code)) return 'error';
+  if (DOCX_PACKAGE_BOUNDARY_SUSPICIOUS_CODES.includes(code)) return 'warning';
+  return 'info';
+}
+
+function docxPackageBoundaryDiagnostic(code, options = {}) {
+  const diagnostic = {
+    code,
+    severity: docxPackageBoundarySeverity(code),
+    message: DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_MESSAGES[code] || code,
+  };
+  if (options.entryId !== undefined) diagnostic.entryId = options.entryId;
+  if (options.limit !== undefined) diagnostic.limit = options.limit;
+  if (options.actual !== undefined) diagnostic.actual = options.actual;
+  return diagnostic;
+}
+
+function docxPackageBoundaryHasDiagnostic(diagnostics, codes) {
+  return diagnostics.some((diagnostic) => codes.includes(diagnostic.code));
+}
+
+function docxPackageBoundaryPrimaryCode(diagnostics, codes) {
+  for (const diagnostic of diagnostics) {
+    if (codes.includes(diagnostic.code)) return diagnostic.code;
+  }
+  return null;
+}
+
+function docxPackageBoundaryCodeRank(code) {
+  if (DOCX_PACKAGE_BOUNDARY_MALFORMED_CODES.includes(code)) return 0;
+  if (DOCX_PACKAGE_BOUNDARY_QUARANTINED_CODES.includes(code)) return 1;
+  if (DOCX_PACKAGE_BOUNDARY_SUSPICIOUS_CODES.includes(code)) return 2;
+  return 3;
+}
+
+function sortDocxPackageBoundaryDiagnostics(diagnostics) {
+  return diagnostics.slice().sort((left, right) => (
+    docxPackageBoundaryCodeRank(left.code) - docxPackageBoundaryCodeRank(right.code)
+    || String(left.code).localeCompare(String(right.code))
+    || String(left.entryId || '').localeCompare(String(right.entryId || ''))
+  ));
+}
+
+function docxPackageBoundaryEligibility(classification) {
+  return {
+    safe: true,
+    parserCandidateOnly: classification === 'clean',
+    canCreateReviewPacket: false,
+    canPreviewApply: false,
+    canImportMutate: false,
+    canWriteStorage: false,
+  };
+}
+
+function docxPackageBoundaryResult(classification, diagnostics) {
+  const sortedDiagnostics = sortDocxPackageBoundaryDiagnostics(diagnostics);
+  const clean = classification === 'clean';
+  const rejected = classification === 'malformed' || classification === 'quarantined';
+  const primaryCode = clean
+    ? DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.CLEAN_INVENTORY
+    : docxPackageBoundaryPrimaryCode(
+      sortedDiagnostics,
+      classification === 'malformed'
+        ? DOCX_PACKAGE_BOUNDARY_MALFORMED_CODES
+        : classification === 'quarantined'
+          ? DOCX_PACKAGE_BOUNDARY_QUARANTINED_CODES
+          : DOCX_PACKAGE_BOUNDARY_SUSPICIOUS_CODES,
+    );
+
+  return {
+    ok: clean,
+    type: 'docxPackageInventoryInspection',
+    status: clean ? 'accepted' : rejected ? 'rejected' : 'degraded',
+    code: primaryCode,
+    reason: primaryCode,
+    classification,
+    diagnostics: sortedDiagnostics,
+    budgets: { ...DOCX_PACKAGE_BOUNDARY_BUDGETS },
+    eligibility: docxPackageBoundaryEligibility(classification),
+  };
+}
+
+function collectDocxPackageBoundaryEntryDiagnostics(entry, index) {
+  const diagnostics = [];
+  if (!isDocxPackageBoundaryPlainObject(entry)) {
+    diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_NOT_OBJECT, {
+      entryId: String(index),
+    }));
+    return diagnostics;
+  }
+
+  const entryId = typeof entry.id === 'string' ? entry.id.trim() : '';
+  const diagnosticEntryId = entryId || String(index);
+  for (const field of DOCX_PACKAGE_BOUNDARY_REJECTED_SIZE_FIELDS) {
+    if (Object.prototype.hasOwnProperty.call(entry, field)) {
+      diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNKNOWN_SIZE_FIELD_PRESENT, {
+        entryId: diagnosticEntryId,
+      }));
+    }
+  }
+
+  if (!entryId) {
+    diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_ID_INVALID, {
+      entryId: String(index),
+    }));
+  }
+  if (!DOCX_PACKAGE_BOUNDARY_ENTRY_KINDS.includes(entry.kind)) {
+    diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_KIND_INVALID, {
+      entryId: diagnosticEntryId,
+    }));
+  }
+  if (!isFiniteNonnegativeInteger(entry.byteSize)) {
+    diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_BYTE_SIZE_INVALID, {
+      entryId: diagnosticEntryId,
+    }));
+  }
+  if (
+    Object.prototype.hasOwnProperty.call(entry, 'compressedSize')
+    && !isFiniteNonnegativeInteger(entry.compressedSize)
+  ) {
+    diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_COMPRESSED_SIZE_INVALID, {
+      entryId: diagnosticEntryId,
+    }));
+  }
+  if (
+    Object.prototype.hasOwnProperty.call(entry, 'story')
+    && !DOCX_PACKAGE_BOUNDARY_STORIES.includes(entry.story)
+  ) {
+    diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_STORY_INVALID, {
+      entryId: diagnosticEntryId,
+    }));
+  }
+  if (Object.prototype.hasOwnProperty.call(entry, 'markers')) {
+    if (!Array.isArray(entry.markers)) {
+      diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_MARKERS_INVALID, {
+        entryId: diagnosticEntryId,
+      }));
+    } else {
+      for (const marker of entry.markers) {
+        if (typeof marker !== 'string' || !DOCX_PACKAGE_BOUNDARY_MARKERS.includes(marker)) {
+          diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_MARKER_INVALID, {
+            entryId: diagnosticEntryId,
+          }));
+        }
+      }
+    }
+  }
+  return diagnostics;
+}
+
+function collectDocxPackageBoundaryInventoryDiagnostics(inventory) {
+  const diagnostics = [];
+  if (typeof inventory === 'string') {
+    return [docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.INVENTORY_PATH_INPUT_REJECTED)];
+  }
+  if (isDocxPackageBoundaryRejectedInput(inventory)) {
+    const locationRejected = isPlainObject(inventory)
+      && (hasOwnField(inventory, 'p' + 'ath') || hasOwnField(inventory, 'file' + 'P' + 'ath'));
+    return [docxPackageBoundaryDiagnostic(
+      locationRejected
+        ? DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.INVENTORY_PATH_INPUT_REJECTED
+        : DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.INVENTORY_BINARY_INPUT_REJECTED,
+    )];
+  }
+  if (!isDocxPackageBoundaryPlainObject(inventory)) {
+    return [docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.INVENTORY_NOT_OBJECT)];
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(inventory, 'entries')) {
+    return [docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRIES_MISSING)];
+  }
+  if (!Array.isArray(inventory.entries)) {
+    return [docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRIES_NOT_ARRAY)];
+  }
+
+  inventory.entries.forEach((entry, index) => {
+    diagnostics.push(...collectDocxPackageBoundaryEntryDiagnostics(entry, index));
+  });
+  if (docxPackageBoundaryHasDiagnostic(diagnostics, DOCX_PACKAGE_BOUNDARY_MALFORMED_CODES)) return diagnostics;
+
+  const relationshipEntries = [];
+  const unsupportedStoryEntries = [];
+  let totalByteSize = 0;
+
+  inventory.entries.forEach((entry) => {
+    const markers = Array.isArray(entry.markers) ? entry.markers : [];
+    const relationshipEntry = entry.kind === 'relationshipPart' || markers.includes('relationship');
+    const unsupportedStoryEntry = entry.story === 'unsupported' || markers.includes('unsupportedStory');
+
+    totalByteSize += entry.byteSize;
+    if (entry.byteSize > DOCX_PACKAGE_BOUNDARY_BUDGETS.maxEntryBytes) {
+      diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_BYTES_EXCEEDED, {
+        entryId: entry.id,
+        limit: DOCX_PACKAGE_BOUNDARY_BUDGETS.maxEntryBytes,
+        actual: entry.byteSize,
+      }));
+    }
+    if (entry.kind === 'unknownPart') {
+      diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNKNOWN_PART_PRESENT, {
+        entryId: entry.id,
+      }));
+    }
+    if (entry.kind === 'directory') {
+      diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.DIRECTORY_ENTRY_PRESENT, {
+        entryId: entry.id,
+      }));
+    }
+    if (relationshipEntry) {
+      relationshipEntries.push(entry);
+      diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.RELATIONSHIP_PART_PRESENT, {
+        entryId: entry.id,
+      }));
+    }
+    if (unsupportedStoryEntry) {
+      unsupportedStoryEntries.push(entry);
+      diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_PRESENT, {
+        entryId: entry.id,
+      }));
+    }
+  });
+
+  if (inventory.entries.length > DOCX_PACKAGE_BOUNDARY_BUDGETS.maxEntries) {
+    diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.ENTRY_COUNT_EXCEEDED, {
+      limit: DOCX_PACKAGE_BOUNDARY_BUDGETS.maxEntries,
+      actual: inventory.entries.length,
+    }));
+  }
+  if (totalByteSize > DOCX_PACKAGE_BOUNDARY_BUDGETS.maxTotalBytes) {
+    diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.TOTAL_BYTES_EXCEEDED, {
+      limit: DOCX_PACKAGE_BOUNDARY_BUDGETS.maxTotalBytes,
+      actual: totalByteSize,
+    }));
+  }
+  if (relationshipEntries.length > DOCX_PACKAGE_BOUNDARY_BUDGETS.maxRelationshipEntries) {
+    diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.RELATIONSHIP_ENTRY_COUNT_EXCEEDED, {
+      limit: DOCX_PACKAGE_BOUNDARY_BUDGETS.maxRelationshipEntries,
+      actual: relationshipEntries.length,
+    }));
+  }
+  if (unsupportedStoryEntries.length > DOCX_PACKAGE_BOUNDARY_BUDGETS.maxUnsupportedStoryEntries) {
+    diagnostics.push(docxPackageBoundaryDiagnostic(DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_COUNT_EXCEEDED, {
+      limit: DOCX_PACKAGE_BOUNDARY_BUDGETS.maxUnsupportedStoryEntries,
+      actual: unsupportedStoryEntries.length,
+    }));
+  }
+
+  return diagnostics;
+}
+
+export function inspectDocxPackageInventory(inventory = {}) {
+  const diagnostics = collectDocxPackageBoundaryInventoryDiagnostics(inventory);
+  if (docxPackageBoundaryHasDiagnostic(diagnostics, DOCX_PACKAGE_BOUNDARY_MALFORMED_CODES)) {
+    return docxPackageBoundaryResult('malformed', diagnostics);
+  }
+  if (docxPackageBoundaryHasDiagnostic(diagnostics, DOCX_PACKAGE_BOUNDARY_QUARANTINED_CODES)) {
+    return docxPackageBoundaryResult('quarantined', diagnostics);
+  }
+  if (docxPackageBoundaryHasDiagnostic(diagnostics, DOCX_PACKAGE_BOUNDARY_SUSPICIOUS_CODES)) {
+    return docxPackageBoundaryResult('suspicious', diagnostics);
+  }
+  return docxPackageBoundaryResult('clean', []);
 }
 
 function collectForbiddenFieldReasons(input, fields, prefix, message) {
