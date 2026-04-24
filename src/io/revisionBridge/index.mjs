@@ -30,6 +30,7 @@ export const REVISION_BRIDGE_BLOCK_KINDS = Object.freeze([
 ]);
 export const REVISION_BRIDGE_INLINE_RANGE_SCHEMA = 'revision-bridge.inline-range.v1';
 export const REVISION_BRIDGE_COMMENT_ANCHOR_PLACEMENT_SCHEMA = 'revision-bridge.comment-anchor-placement.v1';
+export const REVISION_BRIDGE_ANCHOR_CONFIDENCE_EVALUATION_SCHEMA = 'revision-bridge.anchor-confidence-evaluation.v1';
 export const REVISION_BRIDGE_INLINE_ANCHOR_KINDS = Object.freeze([
   'point',
   'span',
@@ -55,6 +56,20 @@ export const REVISION_BRIDGE_AUTOMATION_POLICIES = Object.freeze([
   'manualOnly',
   'diagnosticsOnly',
   'hardFail',
+]);
+export const REVISION_BRIDGE_ANCHOR_CONFIDENCE_REASON_CODES = Object.freeze([
+  'REVISION_BRIDGE_ANCHOR_CONFIDENCE_EXACT_RANGE',
+  'REVISION_BRIDGE_ANCHOR_CONFIDENCE_VALIDATION_FAILED',
+  'REVISION_BRIDGE_ANCHOR_CONFIDENCE_MISSING_BLOCK',
+  'REVISION_BRIDGE_ANCHOR_CONFIDENCE_OUT_OF_BOUNDS',
+  'REVISION_BRIDGE_ANCHOR_CONFIDENCE_STALE_QUOTE',
+  'REVISION_BRIDGE_ANCHOR_CONFIDENCE_QUOTE_ELSEWHERE',
+  'REVISION_BRIDGE_ANCHOR_CONFIDENCE_PREFIX_MISMATCH',
+  'REVISION_BRIDGE_ANCHOR_CONFIDENCE_SUFFIX_MISMATCH',
+  'REVISION_BRIDGE_ANCHOR_CONFIDENCE_ORPHAN',
+  'REVISION_BRIDGE_ANCHOR_CONFIDENCE_DELETED_TARGET',
+  'REVISION_BRIDGE_ANCHOR_CONFIDENCE_WEAK_ANCHOR',
+  'REVISION_BRIDGE_ANCHOR_CONFIDENCE_UNRESOLVED_ANCHOR',
 ]);
 
 const REVIEWGRAPH_ITEM_KINDS = [
@@ -1902,6 +1917,270 @@ export function validateCommentAnchorPlacement(input = {}, context = {}) {
   return commentAnchorPlacementValidationSuccess(placement);
 }
 // RB_10_INLINE_RANGE_ANCHOR_CONTRACTS_END
+
+// RB_11_ANCHOR_CONFIDENCE_ENGINE_CONTRACTS_START
+const ANCHOR_CONFIDENCE_READY_CODE = 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_EVALUATED';
+const ANCHOR_CONFIDENCE_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_ANCHOR_CONFIDENCE_DIAGNOSTICS';
+const ANCHOR_CONFIDENCE_HARD_FAIL_CODE = 'E_REVISION_BRIDGE_ANCHOR_CONFIDENCE_HARD_FAIL';
+
+function anchorConfidenceRangeInput(input) {
+  if (!isPlainObject(input)) return {};
+  return isPlainObject(input.inlineRange) ? input.inlineRange : input;
+}
+
+function anchorConfidenceDiagnostic(code, field, message) {
+  return { code, field, message };
+}
+
+function anchorConfidenceAddDiagnostic(diagnostics, code, field, message) {
+  if (!diagnostics.some((diagnostic) => diagnostic.code === code && diagnostic.field === field)) {
+    diagnostics.push(anchorConfidenceDiagnostic(code, field, message));
+  }
+}
+
+function anchorConfidenceTextFromEntry(entry) {
+  if (typeof entry === 'string') return normalizeRevisionBlockText(entry);
+  if (isPlainObject(entry)) return normalizeRevisionBlockText(entry.text);
+  return null;
+}
+
+function anchorConfidenceBlockTextFromContext(blockId, context) {
+  if (!blockId || !isPlainObject(context)) return { hasIndex: false, text: null };
+  if (Array.isArray(context.blocks)) {
+    const block = context.blocks.find((candidate) => isPlainObject(candidate) && normalizeString(candidate.blockId) === blockId);
+    return { hasIndex: true, text: anchorConfidenceTextFromEntry(block) };
+  }
+  if (isPlainObject(context.blocks)) {
+    return { hasIndex: true, text: anchorConfidenceTextFromEntry(context.blocks[blockId]) };
+  }
+  if (isPlainObject(context.blockMap)) {
+    return { hasIndex: true, text: anchorConfidenceTextFromEntry(context.blockMap[blockId]) };
+  }
+  return { hasIndex: false, text: null };
+}
+
+function anchorConfidenceRiskRank(riskClass) {
+  const index = REVISION_BRIDGE_RISK_CLASSES.indexOf(riskClass);
+  return index === -1 ? REVISION_BRIDGE_RISK_CLASSES.indexOf('critical') : index;
+}
+
+function anchorConfidenceMaxRisk(left, right) {
+  return anchorConfidenceRiskRank(left) >= anchorConfidenceRiskRank(right) ? left : right;
+}
+
+function anchorConfidenceHasHardFailure(diagnostics) {
+  return diagnostics.some((diagnostic) => (
+    diagnostic.code === 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_VALIDATION_FAILED'
+    || diagnostic.code === 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_OUT_OF_BOUNDS'
+  ));
+}
+
+function anchorConfidenceHasUnresolvedFailure(diagnostics) {
+  return diagnostics.some((diagnostic) => (
+    diagnostic.code === 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_MISSING_BLOCK'
+    || diagnostic.code === 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_STALE_QUOTE'
+    || diagnostic.code === 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_ORPHAN'
+    || diagnostic.code === 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_DELETED_TARGET'
+    || diagnostic.code === 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_UNRESOLVED_ANCHOR'
+  ));
+}
+
+export function evaluateInlineRangeAnchorConfidence(input = {}, context = {}) {
+  const rangeInput = anchorConfidenceRangeInput(input);
+  const inlineRange = createInlineRange(rangeInput);
+  const validation = validateInlineRange(rangeInput, context);
+  const diagnostics = [];
+  const block = anchorConfidenceBlockTextFromContext(inlineRange.blockId, context);
+  let exactRange = false;
+  let riskClass = isRevisionRiskClass(inlineRange.riskClass) ? inlineRange.riskClass : 'critical';
+
+  if (!validation.ok) {
+    for (const reason of validation.reasons) {
+      if (reason.code === 'REVISION_BRIDGE_INLINE_RANGE_STALE_QUOTE') {
+        anchorConfidenceAddDiagnostic(
+          diagnostics,
+          'REVISION_BRIDGE_ANCHOR_CONFIDENCE_STALE_QUOTE',
+          reason.field,
+          'quote is not present in the target block',
+        );
+      } else if (reason.field === 'inlineRange.blockId') {
+        anchorConfidenceAddDiagnostic(
+          diagnostics,
+          'REVISION_BRIDGE_ANCHOR_CONFIDENCE_MISSING_BLOCK',
+          reason.field,
+          reason.message,
+        );
+      } else if (reason.field === 'inlineRange.to') {
+        anchorConfidenceAddDiagnostic(
+          diagnostics,
+          'REVISION_BRIDGE_ANCHOR_CONFIDENCE_OUT_OF_BOUNDS',
+          reason.field,
+          reason.message,
+        );
+      } else {
+        anchorConfidenceAddDiagnostic(
+          diagnostics,
+          'REVISION_BRIDGE_ANCHOR_CONFIDENCE_VALIDATION_FAILED',
+          reason.field,
+          reason.message,
+        );
+      }
+    }
+  }
+
+  if (inlineRange.kind === 'orphan') {
+    anchorConfidenceAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_ORPHAN',
+      'inlineRange.kind',
+      'orphan anchor remains unresolved',
+    );
+  }
+  if (inlineRange.kind === 'deleted' || inlineRange.deletedTarget === true) {
+    anchorConfidenceAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_DELETED_TARGET',
+      'inlineRange.deletedTarget',
+      'deleted target is not eligible for automation',
+    );
+  }
+  if (inlineRange.confidence === 'weakHigh' || inlineRange.confidence === 'approximate') {
+    anchorConfidenceAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_WEAK_ANCHOR',
+      'inlineRange.confidence',
+      'weak or approximate anchor needs manual review',
+    );
+  }
+  if (inlineRange.confidence === 'unresolved') {
+    anchorConfidenceAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_UNRESOLVED_ANCHOR',
+      'inlineRange.confidence',
+      'unresolved anchor cannot be automated',
+    );
+  }
+
+  if (inlineRange.kind !== 'orphan' && block.hasIndex && block.text === null) {
+    anchorConfidenceAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_MISSING_BLOCK',
+      'inlineRange.blockId',
+      'target block is not present in the supplied context',
+    );
+  }
+
+  if (block.text !== null && inlineRange.kind !== 'orphan') {
+    const rangeInBounds = inlineRange.from !== null
+      && inlineRange.to !== null
+      && inlineRange.from <= inlineRange.to
+      && inlineRange.from <= block.text.length
+      && inlineRange.to <= block.text.length;
+
+    if (!rangeInBounds) {
+      anchorConfidenceAddDiagnostic(
+        diagnostics,
+        'REVISION_BRIDGE_ANCHOR_CONFIDENCE_OUT_OF_BOUNDS',
+        'inlineRange',
+        'target range is outside the target block',
+      );
+    } else {
+      const quoteAtRange = inlineRange.quote === ''
+        ? inlineRange.from === inlineRange.to
+        : block.text.slice(inlineRange.from, inlineRange.to) === inlineRange.quote;
+      exactRange = inlineRange.confidence === 'exact' && quoteAtRange;
+
+      if (inlineRange.quote && !quoteAtRange) {
+        const quoteCode = block.text.includes(inlineRange.quote)
+          ? 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_QUOTE_ELSEWHERE'
+          : 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_STALE_QUOTE';
+        anchorConfidenceAddDiagnostic(
+          diagnostics,
+          quoteCode,
+          'inlineRange.quote',
+          quoteCode === 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_QUOTE_ELSEWHERE'
+            ? 'quote exists in the block but not at the target range'
+            : 'quote is not present in the target block',
+        );
+      }
+
+      if (inlineRange.prefix && block.text.slice(Math.max(0, inlineRange.from - inlineRange.prefix.length), inlineRange.from) !== inlineRange.prefix) {
+        anchorConfidenceAddDiagnostic(
+          diagnostics,
+          'REVISION_BRIDGE_ANCHOR_CONFIDENCE_PREFIX_MISMATCH',
+          'inlineRange.prefix',
+          'prefix does not match text before the target range',
+        );
+      }
+      if (inlineRange.suffix && block.text.slice(inlineRange.to, inlineRange.to + inlineRange.suffix.length) !== inlineRange.suffix) {
+        anchorConfidenceAddDiagnostic(
+          diagnostics,
+          'REVISION_BRIDGE_ANCHOR_CONFIDENCE_SUFFIX_MISMATCH',
+          'inlineRange.suffix',
+          'suffix does not match text after the target range',
+        );
+      }
+    }
+  }
+
+  const hardFailure = anchorConfidenceHasHardFailure(diagnostics);
+  const unresolvedFailure = anchorConfidenceHasUnresolvedFailure(diagnostics);
+  let confidence = inlineRange.confidence;
+  let automationPolicy = 'manualOnly';
+
+  if (hardFailure) {
+    confidence = 'unresolved';
+    riskClass = 'critical';
+    automationPolicy = 'hardFail';
+  } else if (unresolvedFailure) {
+    confidence = 'unresolved';
+    riskClass = anchorConfidenceMaxRisk(riskClass, 'high');
+    automationPolicy = 'diagnosticsOnly';
+  } else if (exactRange && diagnostics.length === 0) {
+    confidence = 'exact';
+    riskClass = 'low';
+    automationPolicy = 'manualConfirmRequired';
+    anchorConfidenceAddDiagnostic(
+      diagnostics,
+      'REVISION_BRIDGE_ANCHOR_CONFIDENCE_EXACT_RANGE',
+      'inlineRange',
+      'quote matches the target range exactly',
+    );
+  } else if (diagnostics.length > 0) {
+    confidence = confidence === 'exact' ? 'approximate' : confidence;
+    riskClass = anchorConfidenceMaxRisk(riskClass, 'medium');
+    automationPolicy = 'manualOnly';
+  }
+
+  const reasonCodes = diagnostics.map((diagnostic) => diagnostic.code);
+  const status = automationPolicy === 'hardFail'
+    ? 'hardFail'
+    : (diagnostics.length > 0 && reasonCodes[0] !== 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_EXACT_RANGE' ? 'diagnostics' : 'evaluated');
+  const code = status === 'hardFail'
+    ? ANCHOR_CONFIDENCE_HARD_FAIL_CODE
+    : (status === 'diagnostics' ? ANCHOR_CONFIDENCE_DIAGNOSTICS_CODE : ANCHOR_CONFIDENCE_READY_CODE);
+
+  return {
+    schemaVersion: REVISION_BRIDGE_ANCHOR_CONFIDENCE_EVALUATION_SCHEMA,
+    type: 'revisionBridge.anchorConfidence.evaluation',
+    status,
+    code,
+    reason: reasonCodes[0] || code,
+    inlineRange: cloneJsonSafe({
+      ...inlineRange,
+      confidence,
+      riskClass,
+      automationPolicy,
+      reasonCodes,
+    }),
+    confidence,
+    riskClass,
+    automationPolicy,
+    reasonCodes: cloneJsonSafe(reasonCodes),
+    diagnostics: cloneJsonSafe(diagnostics),
+  };
+}
+// RB_11_ANCHOR_CONFIDENCE_ENGINE_CONTRACTS_END
 
 function reviewGraphValidationFailure(reasons, value = null) {
   return {
