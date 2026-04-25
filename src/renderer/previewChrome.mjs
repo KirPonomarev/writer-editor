@@ -1,6 +1,6 @@
 import { PX_PER_MM_AT_ZOOM_1 } from '../core/pageLayoutMetrics.mjs';
 
-export const PREVIEW_CHROME_DEFAULT_PAGE_GAP_MM = 20 / PX_PER_MM_AT_ZOOM_1;
+export const PREVIEW_CHROME_DEFAULT_PAGE_GAP_MM = 64 / PX_PER_MM_AT_ZOOM_1;
 export const PREVIEW_CHROME_CANVAS_PADDING_PX = 48;
 
 function isPlainObject(value) {
