@@ -237,6 +237,173 @@ test('layout preview runtime: invalidation cache hits stable inputs and evicts s
   assert.equal(cache.size, 2);
 });
 
+test('layout preview runtime: pure virtual viewport window math covers start middle and end', async () => {
+  const mod = await loadModule('src/renderer/layoutPreview.mjs');
+  const baseInput = {
+    totalPageCount: 10,
+    pageHeight: 1000,
+    pageGap: 100,
+    viewportHeight: 1000,
+    domBudget: 5,
+    overscan: 1,
+  };
+
+  const start = mod.buildVirtualViewportWindowMathContract({ ...baseInput, scrollTop: -50 });
+  assert.equal(start.contractVersion, 'renderer.virtualViewportWindowMathContract.v1');
+  assert.equal(start.runtimeOnly, true);
+  assert.equal(start.windowingEnabled, true);
+  assert.equal(start.rendererBinding, false);
+  assert.equal(start.productUiDone, false);
+  assert.equal(start.domBoundedClaim, false);
+  assert.equal(start.performanceClaim, false);
+  assert.equal(start.totalVirtualHeight, 10900);
+  assert.equal(start.scrollTop, 0);
+  assert.equal(start.firstVisiblePage, 1);
+  assert.equal(start.lastVisiblePage, 1);
+  assert.equal(start.firstRenderedPage, 1);
+  assert.equal(start.lastRenderedPage, 2);
+  assert.equal(start.renderedPageCount, 2);
+  assert.equal(start.overscanBefore, 0);
+  assert.equal(start.overscanAfter, 1);
+  assert.equal(start.topSpacerHeight, 0);
+  assert.equal(start.bottomSpacerHeight, 8800);
+
+  const middle = mod.buildVirtualViewportWindowMathContract({ ...baseInput, scrollTop: 4400 });
+  assert.equal(middle.firstVisiblePage, 5);
+  assert.equal(middle.lastVisiblePage, 5);
+  assert.equal(middle.firstRenderedPage, 4);
+  assert.equal(middle.lastRenderedPage, 6);
+  assert.equal(middle.renderedPageCount, 3);
+  assert.equal(middle.overscanBefore, 1);
+  assert.equal(middle.overscanAfter, 1);
+  assert.equal(middle.topSpacerHeight, 3300);
+  assert.equal(middle.bottomSpacerHeight, 4400);
+
+  const end = mod.buildVirtualViewportWindowMathContract({ ...baseInput, scrollTop: 20000 });
+  assert.equal(end.scrollTop, 9900);
+  assert.equal(end.firstVisiblePage, 10);
+  assert.equal(end.lastVisiblePage, 10);
+  assert.equal(end.firstRenderedPage, 9);
+  assert.equal(end.lastRenderedPage, 10);
+  assert.equal(end.renderedPageCount, 2);
+  assert.equal(end.overscanAfter, 0);
+  assert.equal(end.topSpacerHeight, 8800);
+  assert.equal(end.bottomSpacerHeight, 0);
+});
+
+test('layout preview runtime: virtual viewport math stays bounded for 5 10 50 and 100 pages', async () => {
+  const mod = await loadModule('src/renderer/layoutPreview.mjs');
+  const pageHeight = 900;
+  const pageGap = 36;
+  const pageStride = 936;
+  const domBudget = 7;
+  const cases = [5, 10, 50, 100].map((totalPageCount) => mod.buildVirtualViewportWindowMathContract({
+    totalPageCount,
+    pageHeight,
+    pageGap,
+    viewportHeight: 1200,
+    domBudget,
+    overscan: 2,
+    scrollTop: Math.floor(((totalPageCount * pageHeight) + ((totalPageCount - 1) * pageGap)) / 2),
+  }));
+
+  for (const result of cases) {
+    assert.equal(result.pageStride, pageStride);
+    assert.equal(result.renderedPageCount <= domBudget, true);
+    assert.equal(result.lastRenderedPage >= result.firstRenderedPage, true);
+    assert.equal(result.totalVirtualHeight, (result.totalPageCount * pageHeight) + ((result.totalPageCount - 1) * pageGap));
+    assert.equal(result.deferredScopes.includes('rendererBinding'), true);
+    assert.equal(result.deferredScopes.includes('noBleedRenderer'), true);
+    assert.equal(result.implementedScopes.includes('pureVisibleWindowMath'), true);
+  }
+
+  const tenPage = cases.find((item) => item.totalPageCount === 10);
+  const fiftyPage = cases.find((item) => item.totalPageCount === 50);
+  const hundredPage = cases.find((item) => item.totalPageCount === 100);
+  assert.equal(fiftyPage.renderedPageCount, tenPage.renderedPageCount);
+  assert.equal(hundredPage.renderedPageCount, tenPage.renderedPageCount);
+  assert.equal(fiftyPage.topSpacerHeight > 0, true);
+  assert.equal(fiftyPage.bottomSpacerHeight > 0, true);
+  assert.equal(hundredPage.topSpacerHeight > 0, true);
+  assert.equal(hundredPage.bottomSpacerHeight > 0, true);
+});
+
+test('layout preview runtime: virtual viewport math exposes spacer height without render-all claim', async () => {
+  const mod = await loadModule('src/renderer/layoutPreview.mjs');
+  const result = mod.buildVirtualViewportWindowMathContract({
+    totalPageCount: 100,
+    pageHeight: 800,
+    pageGap: 40,
+    viewportHeight: 1600,
+    domBudget: 8,
+    overscan: 2,
+    scrollTop: 40 * 840,
+  });
+
+  assert.equal(result.totalPageCount, 100);
+  assert.equal(result.renderedPageCount <= result.domBudget, true);
+  assert.equal(result.renderedPageCount < result.totalPageCount, true);
+  assert.equal(result.topSpacerHeight > 0, true);
+  assert.equal(result.bottomSpacerHeight > 0, true);
+  assert.equal(result.totalVirtualHeight, 83960);
+  assert.equal(result.rendererBinding, false);
+  assert.equal(result.productUiDone, false);
+  assert.equal(result.domBoundedClaim, false);
+  assert.equal(result.performanceClaim, false);
+});
+
+test('layout preview runtime: virtual viewport math handles page gap and boundary positions explicitly', async () => {
+  const mod = await loadModule('src/renderer/layoutPreview.mjs');
+  const baseInput = {
+    totalPageCount: 3,
+    pageHeight: 100,
+    pageGap: 100,
+    viewportHeight: 1,
+    domBudget: 5,
+    overscan: 1,
+  };
+
+  const pageTail = mod.buildVirtualViewportWindowMathContract({ ...baseInput, scrollTop: 99 });
+  assert.equal(pageTail.viewportHitsPage, true);
+  assert.equal(pageTail.visiblePageCount, 1);
+  assert.equal(pageTail.firstVisiblePage, 1);
+  assert.equal(pageTail.lastVisiblePage, 1);
+
+  const gapOnly = mod.buildVirtualViewportWindowMathContract({ ...baseInput, scrollTop: 150 });
+  assert.equal(gapOnly.viewportHitsPage, false);
+  assert.equal(gapOnly.visiblePageCount, 0);
+  assert.equal(gapOnly.firstVisiblePage, 2);
+  assert.equal(gapOnly.lastVisiblePage, 2);
+  assert.equal(gapOnly.firstRenderedPage, 1);
+  assert.equal(gapOnly.lastRenderedPage, 3);
+
+  const nextPageStart = mod.buildVirtualViewportWindowMathContract({ ...baseInput, scrollTop: 200 });
+  assert.equal(nextPageStart.viewportHitsPage, true);
+  assert.equal(nextPageStart.visiblePageCount, 1);
+  assert.equal(nextPageStart.firstVisiblePage, 2);
+  assert.equal(nextPageStart.lastVisiblePage, 2);
+});
+
+test('layout preview runtime: virtual viewport math flags incomplete visible coverage when budget is too small', async () => {
+  const mod = await loadModule('src/renderer/layoutPreview.mjs');
+  const result = mod.buildVirtualViewportWindowMathContract({
+    totalPageCount: 20,
+    pageHeight: 100,
+    pageGap: 0,
+    viewportHeight: 500,
+    domBudget: 3,
+    overscan: 1,
+    scrollTop: 0,
+  });
+
+  assert.equal(result.visiblePageCount, 5);
+  assert.equal(result.renderedPageCount, 3);
+  assert.equal(result.visibleCoverageComplete, false);
+  assert.equal(result.visiblePagesOmitted, true);
+  assert.equal(result.firstRenderedPage, 1);
+  assert.equal(result.lastRenderedPage, 3);
+});
+
 test('layout preview runtime: render path windows visible pages without changing page map truth', async () => {
   const mod = await loadModule('src/renderer/layoutPreview.mjs');
   const previousHTMLElement = global.HTMLElement;
