@@ -425,10 +425,10 @@ test('layout preview runtime: editor-derived text marker is visible in rendered 
       text: [
         'Chapter One',
         '',
-        `Horizontal sheet preview text ${marker}`,
+        `Vertical sheet preview text ${marker}`,
         'Plain surrounding text',
       ].join('\n'),
-      sourceId: 'horizontal-sheet-preview-text-visibility-parity',
+      sourceId: 'vertical-sheet-preview-text-visibility-parity',
     });
     const countMarker = (value) => String(value || '').split(marker).length - 1;
 

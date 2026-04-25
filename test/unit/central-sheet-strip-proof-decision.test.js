@@ -61,7 +61,7 @@ test('central sheet decision reports max-page-count overflow without persisting 
   );
 });
 
-test('central sheet decision selects valid active layout preview snapshot page count before DOM metrics', () => {
+test('central sheet decision uses measured height when it proves snapshot undercount', () => {
   const activeLayoutPreviewSnapshot = {
     schemaVersion: 'renderer.layoutPreview.v1',
     pageMap: {
@@ -80,9 +80,9 @@ test('central sheet decision selects valid active layout preview snapshot page c
       maxPageCount: 5,
     }),
     {
-      pageCount: 3,
-      visiblePageCount: 3,
-      overflowReason: '',
+      pageCount: 7,
+      visiblePageCount: 5,
+      overflowReason: CENTRAL_SHEET_MAX_PAGE_COUNT_OVERFLOW_REASON,
       shouldRender: true,
     },
   );
@@ -146,8 +146,8 @@ test('central sheet decision is a DOM-free helper consumed by editor runtime', (
   assert.doesNotMatch(helperSource, /\bHTMLElement\b/);
   assert.match(editorSource, /import centralSheetStripProofDecision from '\.\/centralSheetStripProofDecision\.js';/);
   assert.match(editorSource, /const activeLayoutPreviewSnapshot = buildActiveLayoutPreviewSnapshot\(\);/);
-  assert.match(editorSource, /const activeLayoutPreviewSnapshotPageCount = selectActiveLayoutPreviewSnapshotPageCount\(activeLayoutPreviewSnapshot\);/);
-  assert.match(editorSource, /const naturalHeight = activeLayoutPreviewSnapshotPageCount\s*\?\s*0\s*:\s*measureCentralSheetNaturalHeight\(proseMirror\);/s);
+  assert.doesNotMatch(editorSource, /activeLayoutPreviewSnapshotPageCount\s*\?\s*0\s*:\s*measureCentralSheetNaturalHeight\(proseMirror\);/s);
+  assert.match(editorSource, /const naturalHeight = measureCentralSheetNaturalHeight\(proseMirror\);/);
   assert.match(editorSource, /resolveCentralSheetStripProofDecision\(\{\s*naturalHeight,\s*contentHeightPx: heightPx,\s*activeLayoutPreviewSnapshot,\s*maxPageCount: MAX_CENTRAL_SHEET_PROOF_PAGES,\s*\}\)/s);
   assert.match(editorSource, /const \{ pageCount, visiblePageCount \} = centralSheetDecision;/);
   assert.match(editorSource, /renderCentralSheetStripShellPages\(visiblePageCount\);/);

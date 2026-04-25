@@ -79,10 +79,34 @@ async function collectState(win, label) {
     const pageWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
     const pageRects = pageWraps.map((el) => {
       const rect = el.getBoundingClientRect();
-      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+      return {
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+        left: rect.left,
+        right: rect.right,
+        top: rect.top,
+        bottom: rect.bottom,
+      };
     });
     const firstPageRect = pageRects[0] || null;
     const secondPageRect = pageRects[1] || null;
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    const isRectVisibleInViewport = (rect) => (
+      rect.x < viewportWidth
+      && rect.x + rect.width > 0
+      && rect.y < viewportHeight
+      && rect.y + rect.height > 0
+    );
+    const viewportVisibleSheetRects = pageRects.filter(isRectVisibleInViewport);
+    const rectsIntersect = (a, b) => (
+      a.x < b.x + b.width
+      && a.x + a.width > b.x
+      && a.y < b.y + b.height
+      && a.y + a.height > b.y
+    );
     const rightSidebarRect = rightSidebar ? rightSidebar.getBoundingClientRect() : null;
     const walker = prose
       ? document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
@@ -120,12 +144,22 @@ async function collectState(win, label) {
         occupiedSheetIndexes.add(pageIndex);
       }
     });
-    const gapTextRects = firstPageRect && secondPageRect
+    const horizontalGapTextRects = firstPageRect && secondPageRect
       ? textRects.filter((rect) => (
           rect.x > firstPageRect.x + firstPageRect.width
           && rect.x + rect.width < secondPageRect.x
         ))
       : [];
+    const verticalGapTextRects = firstPageRect && secondPageRect
+      ? textRects.filter((rect) => (
+          rect.y > firstPageRect.y + firstPageRect.height
+          && rect.y + rect.height < secondPageRect.y
+        ))
+      : [];
+    const visibleTextRects = textRects.filter(isRectVisibleInViewport);
+    const visibleTextOutsideVisibleSheetRects = visibleTextRects.filter((rect) => (
+      !viewportVisibleSheetRects.some((pageRect) => rectsIntersect(rect, pageRect))
+    ));
     return {
       label: \${JSON.stringify(label)},
       proofClass: Boolean(host && host.classList.contains('tiptap-host--central-sheet-strip-proof')),
@@ -133,9 +167,14 @@ async function collectState(win, label) {
       centralSheetOverflowReason: host ? host.dataset.centralSheetOverflowReason || null : null,
       text: prose ? prose.textContent || '' : '',
       visibleSheetCount: pageWraps.length,
+      viewportVisibleSheetCount: viewportVisibleSheetRects.length,
       occupiedSheetCount: occupiedSheetIndexes.size,
-      secondSheetVisible: Boolean(firstPageRect && secondPageRect && secondPageRect.x > firstPageRect.x + 24),
-      gapTextRectsCount: gapTextRects.length,
+      secondSheetBelow: Boolean(firstPageRect && secondPageRect && secondPageRect.y > firstPageRect.y + 24),
+      secondSheetRightOfFirst: Boolean(firstPageRect && secondPageRect && secondPageRect.x > firstPageRect.x + 24),
+      horizontalGapTextRectsCount: horizontalGapTextRects.length,
+      verticalGapTextRectsCount: verticalGapTextRects.length,
+      visibleTextRectCount: visibleTextRects.length,
+      visibleTextOutsideVisibleSheetRectCount: visibleTextOutsideVisibleSheetRects.length,
       proseMirrorCount: host ? host.querySelectorAll('.ProseMirror').length : 0,
       tiptapEditorCount: host ? host.querySelectorAll('.tiptap-editor').length : 0,
       activeElementInsideProse: Boolean(prose && (document.activeElement === prose || prose.contains(document.activeElement))),
@@ -174,13 +213,14 @@ async function findTwoSheetFixture(win) {
     const state = await collectState(win, 'candidate-' + String(paragraphCount));
     lastState = state;
     if (
-      state.centralSheetFlow === 'horizontal'
+      state.centralSheetFlow === 'vertical'
       && state.visibleSheetCount >= 2
       && state.occupiedSheetCount >= 2
-      && state.secondSheetVisible
+      && state.secondSheetBelow
+      && !state.secondSheetRightOfFirst
       && state.proseMirrorCount === 1
       && state.tiptapEditorCount === 1
-      && state.gapTextRectsCount === 0
+      && state.verticalGapTextRectsCount === 0
     ) {
       return { paragraphCount, state };
     }
@@ -292,15 +332,29 @@ assert.equal(result.fixture.visibleSheetCount >= 2, true);
 assert.equal(result.fixture.occupiedSheetCount >= 2, true);
 assert.equal(result.fixture.proseMirrorCount, 1);
 assert.equal(result.fixture.tiptapEditorCount, 1);
-assert.equal(result.fixture.secondSheetVisible, true);
-assert.equal(result.fixture.gapTextRectsCount, 0);
+assert.equal(result.fixture.centralSheetFlow, 'vertical');
+assert.equal(result.fixture.secondSheetBelow, true);
+assert.equal(result.fixture.secondSheetRightOfFirst, false);
+assert.equal(result.fixture.verticalGapTextRectsCount, 0);
 assert.equal(result.beforeInput.visibleSheetCount >= 2, true);
+assert.equal(result.beforeInput.viewportVisibleSheetCount >= 1, true);
+assert.equal(result.beforeInput.centralSheetFlow, 'vertical');
+assert.equal(result.beforeInput.secondSheetBelow, true);
+assert.equal(result.beforeInput.secondSheetRightOfFirst, false);
+assert.equal(result.beforeInput.verticalGapTextRectsCount, 0);
+assert.equal(result.beforeInput.visibleTextOutsideVisibleSheetRectCount, 0);
 assert.equal(result.beforeInput.proseMirrorCount, 1);
 assert.equal(result.beforeInput.rightInspectorVisible, true);
 assert.equal(hashText(result.beforeInput.text), hashText(result.fixture.text));
 assert.equal(result.focus.ok, true);
 assert.equal(result.focus.activeElementInsideProse, true);
 assert.equal(result.afterInput.visibleSheetCount >= 2, true);
+assert.equal(result.afterInput.viewportVisibleSheetCount >= 1, true);
+assert.equal(result.afterInput.centralSheetFlow, 'vertical');
+assert.equal(result.afterInput.secondSheetBelow, true);
+assert.equal(result.afterInput.secondSheetRightOfFirst, false);
+assert.equal(result.afterInput.verticalGapTextRectsCount, 0);
+assert.equal(result.afterInput.visibleTextOutsideVisibleSheetRectCount, 0);
 assert.equal(result.afterInput.proseMirrorCount, 1);
 assert.equal(result.afterInput.tiptapEditorCount, 1);
 assert.equal(result.afterInput.activeElementInsideProse, true);
@@ -313,8 +367,15 @@ const summary = {
   ok: true,
   outputDir,
   paragraphCount: result.paragraphCount,
+  centralSheetFlow: result.afterInput.centralSheetFlow,
   visibleSheetCount: result.afterInput.visibleSheetCount,
+  viewportVisibleSheetCount: result.afterInput.viewportVisibleSheetCount,
   occupiedSheetCount: result.afterInput.occupiedSheetCount,
+  secondSheetBelow: result.afterInput.secondSheetBelow,
+  secondSheetRightOfFirst: result.afterInput.secondSheetRightOfFirst,
+  verticalGapTextRectsCount: result.afterInput.verticalGapTextRectsCount,
+  visibleTextRectCount: result.afterInput.visibleTextRectCount,
+  visibleTextOutsideVisibleSheetRectCount: result.afterInput.visibleTextOutsideVisibleSheetRectCount,
   proseMirrorCount: result.afterInput.proseMirrorCount,
   tiptapEditorCount: result.afterInput.tiptapEditorCount,
   activeElementInsideProse: result.afterInput.activeElementInsideProse,
