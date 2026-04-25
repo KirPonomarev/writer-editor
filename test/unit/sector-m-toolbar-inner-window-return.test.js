@@ -74,6 +74,8 @@ test('sector-m toolbar inner window return: lower area rebuilds as a 4x5 live-pl
       labels: { ru: { panelLabel: `Пункт ${index + 1}` } },
       implementationState: 'live',
     })),
+    getToolbarConfiguratorActiveProfile: () => 'minimal',
+    getToolbarConfiguratorProfileIds: () => [],
     TOOLBAR_CONFIGURATOR_LIBRARY_COLUMN_COUNT: 4,
     TOOLBAR_CONFIGURATOR_LIBRARY_MIN_SLOT_COUNT: 20,
     TOOLBAR_CONFIGURATOR_LIBRARY_PLACEHOLDER_TEXT: 'New Slot',

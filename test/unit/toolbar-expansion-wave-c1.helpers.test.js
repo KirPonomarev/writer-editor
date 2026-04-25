@@ -121,10 +121,17 @@ test('toolbar expansion wave c1: tiptap styles stay structured and do not reuse 
   assert.ok(tiptapSource.includes("characterStyle: getStructuredCharacterStyleOption(editor)"))
 })
 
-test('toolbar expansion wave c1: source pins styles label truth and typed result reasons', () => {
+test('toolbar expansion wave c1: source pins styles label truth and typed result reasons', async () => {
+  const catalog = await importModule(['src', 'renderer', 'toolbar', 'toolbarFunctionCatalog.mjs'])
   const editorSource = read(['src', 'renderer', 'editor.js'])
 
-  assert.ok(editorSource.includes("styles: 'styles'"))
+  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.style.paragraph').labels.en.panelLabel, 'Paragraph style')
+  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.style.character').labels.en.panelLabel, 'Character style')
+  assert.ok(editorSource.includes('const TOOLBAR_STYLES_MENU_ANCHORS = Object.freeze({'))
+  assert.ok(editorSource.includes("paragraph: 'paragraph'"))
+  assert.ok(editorSource.includes("character: 'character'"))
+  assert.ok(editorSource.includes('toolbarStylesMenuState.anchor === TOOLBAR_STYLES_MENU_ANCHORS.paragraph'))
+  assert.ok(editorSource.includes('toolbarStylesMenuState.anchor === TOOLBAR_STYLES_MENU_ANCHORS.character'))
   assert.ok(editorSource.includes("return { performed: false, action: 'applyCharacterStyle', reason: 'NO_SELECTION', optionId: action };"))
   assert.ok(editorSource.includes("return { performed: false, action: actionId, reason: 'NO_OP', optionId: action };"))
   assert.ok(editorSource.includes('function handleStyleParagraphMenu()'))
