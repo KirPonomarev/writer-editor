@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { hashCanonicalValue } from './browser-safe-hash.mjs';
 
 export const CORE_COMMAND_IDS = Object.freeze({
   PROJECT_CREATE: 'project.create',
@@ -9,23 +9,8 @@ function cloneJson(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function canonicalSerialize(value) {
-  if (value === null) return 'null';
-  const t = typeof value;
-  if (t === 'number') return Number.isFinite(value) ? String(value) : 'null';
-  if (t === 'boolean') return value ? 'true' : 'false';
-  if (t === 'string') return JSON.stringify(value);
-  if (Array.isArray(value)) return `[${value.map((item) => canonicalSerialize(item)).join(',')}]`;
-  if (t === 'object') {
-    const keys = Object.keys(value).sort();
-    return `{${keys.map((key) => `${JSON.stringify(key)}:${canonicalSerialize(value[key])}`).join(',')}}`;
-  }
-  return 'null';
-}
-
 export function hashCoreState(state) {
-  const canonical = canonicalSerialize(state);
-  return createHash('sha256').update(Buffer.from(canonical, 'utf8')).digest('hex');
+  return hashCanonicalValue(state);
 }
 
 export function createInitialCoreState() {
