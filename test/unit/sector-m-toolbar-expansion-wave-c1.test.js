@@ -57,7 +57,11 @@ test('sector-m toolbar expansion wave c1: editor wiring keeps styles local and m
   assert.ok(editorSource.includes("case 'toggle-style-character-menu':"))
   assert.ok(editorSource.includes('applyTextStyle(optionId);'))
   assert.ok(editorSource.includes("setToolbarStylesMenuOpen(false);"))
-  assert.ok(editorSource.includes("styles: 'styles'"))
+  assert.ok(editorSource.includes('const TOOLBAR_STYLES_MENU_ANCHORS = Object.freeze({'))
+  assert.ok(editorSource.includes("paragraph: 'paragraph'"))
+  assert.ok(editorSource.includes("character: 'character'"))
+  assert.ok(editorSource.includes('toolbarStylesMenuState.anchor === TOOLBAR_STYLES_MENU_ANCHORS.paragraph'))
+  assert.ok(editorSource.includes('toolbarStylesMenuState.anchor === TOOLBAR_STYLES_MENU_ANCHORS.character'))
 
   const spacingStart = editorSource.indexOf('function setToolbarSpacingMenuOpen(nextOpen)')
   const paragraphStart = editorSource.indexOf('function setParagraphMenuOpen(nextOpen)')

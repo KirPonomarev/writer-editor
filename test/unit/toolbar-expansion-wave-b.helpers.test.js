@@ -172,12 +172,19 @@ test('toolbar expansion wave b: command registry and capability policy expose bo
   )
 })
 
-test('toolbar expansion wave b: source pins explicit library labels and collapsed cursor color semantics', () => {
+test('toolbar expansion wave b: source pins explicit library labels and collapsed cursor color semantics', async () => {
+  const catalog = await importModule(['src', 'renderer', 'toolbar', 'toolbarFunctionCatalog.mjs'])
   const editorSource = read(['src', 'renderer', 'editor.js'])
   const tiptapSource = read(['src', 'renderer', 'tiptap', 'index.js'])
 
-  assert.ok(editorSource.includes("color: 'color'"))
-  assert.ok(editorSource.includes("review: 'review'"))
+  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.color.text').labels.en.panelLabel, 'Text color')
+  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.color.highlight').labels.en.panelLabel, 'Highlight')
+  assert.equal(catalog.getToolbarFunctionCatalogEntryById('toolbar.review.comment').labels.en.panelLabel, 'Comment')
+  assert.ok(editorSource.includes('const TOOLBAR_COLOR_PICKER_MODE_LABELS = Object.freeze({'))
+  assert.ok(editorSource.includes("text: 'Text color'"))
+  assert.ok(editorSource.includes("highlight: 'Highlight color'"))
+  assert.ok(editorSource.includes('reviewCommentsButton.setAttribute'))
+  assert.ok(editorSource.includes("'Open comments'"))
   assert.ok(editorSource.includes("Object.freeze({ value: '#1f1a15', label: 'Ink' })"))
   assert.ok(editorSource.includes("Object.freeze({ value: '#8a3b2e', label: 'Brick' })"))
   assert.ok(editorSource.includes("Object.freeze({ value: '#2f5f8a', label: 'Blue' })"))
