@@ -40,7 +40,7 @@ function extractFunctionBody(source, functionName) {
   assert.fail(`Unterminated ${functionName} body`);
 }
 
-test('main process keeps a focus-gated primary paste bridge for ProseMirror', async () => {
+test('main process keeps primary paste bridge gated by renderer focus signal', async () => {
   const mainPath = join(process.cwd(), 'src', 'main.js');
   const content = await readFile(mainPath, 'utf8');
   const detectorBody = extractFunctionBody(content, 'isPrimaryPasteShortcut');
@@ -54,10 +54,15 @@ test('main process keeps a focus-gated primary paste bridge for ProseMirror', as
   assert.match(detectorBody, /process\.platform\s*===\s*['"]darwin['"]\s*\?\s*input\.meta\s*:\s*input\.control/);
   assert.match(detectorBody, /process\.platform\s*===\s*['"]darwin['"]\s*\?\s*input\.control\s*:\s*input\.meta/);
   assert.match(content, /function\s+handlePrimaryPasteShortcut\s*\(/);
-  assert.match(handlerBody, /win\.webContents\.executeJavaScript\(/);
-  assert.match(handlerBody, /\.ProseMirror/);
-  assert.match(handlerBody, /document\.activeElement/);
-  assert.match(handlerBody, /isContentEditable/);
+  assert.match(content, /EDITOR_PASTE_FOCUS_STATE_CHANNEL/);
+  assert.match(content, /normalizeEditorPasteFocusState/);
+  assert.match(content, /isEditorPasteTargetFocused\s*=\s*focused/);
+  assert.match(handlerBody, /isEditorPasteTargetFocused\s*!==\s*true/);
   assert.match(handlerBody, /win\.webContents\.paste\(\)/);
+  assert.doesNotMatch(handlerBody, /executeJavaScript/);
+  assert.doesNotMatch(handlerBody, /focusProbeScript/);
+  assert.doesNotMatch(handlerBody, /document\.activeElement/);
+  assert.doesNotMatch(handlerBody, /\.ProseMirror/);
+  assert.doesNotMatch(handlerBody, /isContentEditable/);
   assert.doesNotMatch(handlerBody, /event\.preventDefault\(\)/);
 });

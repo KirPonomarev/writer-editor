@@ -99,6 +99,33 @@ if (isTiptapMode) {
     onContentParseIssue: handleDocumentContentParseIssue,
   });
 }
+
+function isEditorPasteTargetFocused() {
+  const activeElement = document.activeElement;
+  if (!(activeElement instanceof HTMLElement) || typeof activeElement.closest !== 'function') {
+    return false;
+  }
+  const proseMirror = activeElement.closest('.ProseMirror');
+  return Boolean(proseMirror instanceof HTMLElement && proseMirror.isContentEditable && proseMirror.contains(activeElement));
+}
+
+function notifyEditorPasteFocusState() {
+  if (!window.electronAPI || typeof window.electronAPI.notifyEditorPasteFocusState !== 'function') {
+    return;
+  }
+  window.electronAPI.notifyEditorPasteFocusState(isEditorPasteTargetFocused());
+}
+
+if (window.electronAPI && typeof window.electronAPI.notifyEditorPasteFocusState === 'function') {
+  document.addEventListener('focusin', notifyEditorPasteFocusState);
+  document.addEventListener('focusout', () => {
+    window.requestAnimationFrame(notifyEditorPasteFocusState);
+  });
+  window.addEventListener('blur', () => {
+    window.electronAPI.notifyEditorPasteFocusState(false);
+  });
+  notifyEditorPasteFocusState();
+}
 const statusElement = document.getElementById('status');
 const saveStateElement = document.querySelector('[data-save-state]');
 const warningStateElement = document.querySelector('[data-warning-state]');

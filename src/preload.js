@@ -7,6 +7,7 @@ const FLOW_SAVE_V1_CHANNEL = 'm:cmd:project:flow:save:v1';
 const UI_COMMAND_BRIDGE_CHANNEL = 'ui:command-bridge';
 const WORKSPACE_QUERY_BRIDGE_CHANNEL = 'ui:workspace-query-bridge';
 const SAVE_LIFECYCLE_SIGNAL_BRIDGE_CHANNEL = 'ui:save-lifecycle-signal-bridge';
+const EDITOR_PASTE_FOCUS_STATE_CHANNEL = 'editor:paste-focus-state';
 const COMMAND_BUS_ROUTE = 'command.bus';
 const PROJECT_NEW_COMMAND_ID = 'cmd.project.new';
 const PROJECT_OPEN_COMMAND_ID = 'cmd.project.open';
@@ -225,6 +226,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   notifyDirtyState: (state) => {
     ipcRenderer.send('dirty-changed', state);
+  },
+  notifyEditorPasteFocusState: (focused) => {
+    ipcRenderer.send(EDITOR_PASTE_FOCUS_STATE_CHANNEL, { focused: focused === true });
   },
   requestAutoSave: () => {
     return ipcRenderer.invoke('ui:request-autosave');

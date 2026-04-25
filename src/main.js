@@ -25,6 +25,7 @@ const launchT0 = performance.now();
 let mainWindow;
 let currentFilePath = null; // Путь к текущему открытому файлу
 let isDirty = false;
+let isEditorPasteTargetFocused = false;
 let autoSaveInProgress = false;
 let isQuitting = false;
 let isWindowClosing = false;
@@ -37,6 +38,13 @@ const FILE_NAVIGATION_FAIL_CODE = 'E_PATH_BOUNDARY_VIOLATION';
 const FILE_NAVIGATION_FAIL_SIGNAL = 'E_RUNTIME_WIRING_BEFORE_STAGE';
 const CORRESPONDING_SOURCE_BASE_URL = 'https://github.com/KirPon2024/writer-editor';
 const ABOUT_LICENSE_TEXT_FALLBACK = 'Yalken is licensed under AGPL-3.0-or-later.';
+const EDITOR_PASTE_FOCUS_STATE_CHANNEL = 'editor:paste-focus-state';
+
+function normalizeEditorPasteFocusState(payload) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return null;
+  if (typeof payload.focused !== 'boolean') return null;
+  return payload.focused;
+}
 
 function isPrimaryPasteShortcut(input) {
   if (!input || input.type !== 'keyDown') return false;
@@ -54,26 +62,8 @@ function handlePrimaryPasteShortcut(event, input, win) {
   if (!isPrimaryPasteShortcut(input)) return false;
   if (!win || win.isDestroyed() || !win.webContents || win.webContents.isDestroyed()) return false;
   if (typeof win.isFocused === 'function' && !win.isFocused()) return false;
-
-  const focusProbeScript = `(() => {
-    const active = document.activeElement;
-    if (!active || typeof active.closest !== 'function') return false;
-    const editor = active.closest('.ProseMirror');
-    return Boolean(editor && editor.isContentEditable && editor.contains(active));
-  })()`;
-
-  win.webContents.executeJavaScript(focusProbeScript, true)
-    .then((isProseMirrorFocused) => {
-      if (!isProseMirrorFocused) return;
-      if (!win || win.isDestroyed() || !win.webContents || win.webContents.isDestroyed()) return;
-      if (typeof win.isFocused === 'function' && !win.isFocused()) return;
-      win.webContents.paste();
-    })
-    .catch((error) => {
-      if (typeof logDevError === 'function') {
-        logDevError('handlePrimaryPasteShortcut:focusProbe', error);
-      }
-    });
+  if (isEditorPasteTargetFocused !== true) return true;
+  win.webContents.paste();
   return true;
 }
 
@@ -2740,6 +2730,12 @@ ipcMain.on('editor:snapshot-response', (_, payload) => {
   pending.resolve(normalizeEditorSnapshotPayload(payload ? payload.snapshot : null));
 });
 
+ipcMain.on(EDITOR_PASTE_FOCUS_STATE_CHANNEL, (_, payload) => {
+  const focused = normalizeEditorPasteFocusState(payload);
+  if (focused === null) return;
+  isEditorPasteTargetFocused = focused;
+});
+
 async function executeFileCommand(intentRaw) {
   const intent = typeof intentRaw === 'string' ? intentRaw : '';
   try {
@@ -3402,6 +3398,9 @@ function createWindow() {
     }
 
     handlePrimaryPasteShortcut(event, input, mainWindow);
+  });
+  mainWindow.on('blur', () => {
+    isEditorPasteTargetFocused = false;
   });
 
   // Открыть последний файл и применить настройки после загрузки
