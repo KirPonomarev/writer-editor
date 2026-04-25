@@ -73,8 +73,10 @@ async function saveCapture(win, basename) {
 async function collectState(win, label) {
   return win.webContents.executeJavaScript(\`(() => {
     const host = document.querySelector('#editor.tiptap-host');
+    const canvas = document.querySelector('.main-content--editor');
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
+    const leftSidebar = document.querySelector('.sidebar--left');
     const rightSidebar = document.querySelector('[data-right-sidebar]');
     const pageWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
     const pageRects = pageWraps.map((el) => {
@@ -92,6 +94,22 @@ async function collectState(win, label) {
     });
     const firstPageRect = pageRects[0] || null;
     const secondPageRect = pageRects[1] || null;
+    const hostDomRect = host ? host.getBoundingClientRect() : null;
+    const stripDomRect = strip ? strip.getBoundingClientRect() : null;
+    const canvasDomRect = canvas ? canvas.getBoundingClientRect() : null;
+    const leftSidebarDomRect = leftSidebar ? leftSidebar.getBoundingClientRect() : null;
+    const hostRect = hostDomRect
+      ? { x: hostDomRect.x, y: hostDomRect.y, width: hostDomRect.width, height: hostDomRect.height, left: hostDomRect.left, right: hostDomRect.right, top: hostDomRect.top, bottom: hostDomRect.bottom }
+      : null;
+    const stripRect = stripDomRect
+      ? { x: stripDomRect.x, y: stripDomRect.y, width: stripDomRect.width, height: stripDomRect.height, left: stripDomRect.left, right: stripDomRect.right, top: stripDomRect.top, bottom: stripDomRect.bottom }
+      : null;
+    const canvasRect = canvasDomRect
+      ? { x: canvasDomRect.x, y: canvasDomRect.y, width: canvasDomRect.width, height: canvasDomRect.height, left: canvasDomRect.left, right: canvasDomRect.right, top: canvasDomRect.top, bottom: canvasDomRect.bottom }
+      : null;
+    const leftSidebarRect = leftSidebarDomRect
+      ? { x: leftSidebarDomRect.x, y: leftSidebarDomRect.y, width: leftSidebarDomRect.width, height: leftSidebarDomRect.height, left: leftSidebarDomRect.left, right: leftSidebarDomRect.right, top: leftSidebarDomRect.top, bottom: leftSidebarDomRect.bottom }
+      : null;
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
     const isRectVisibleInViewport = (rect) => (
@@ -160,6 +178,26 @@ async function collectState(win, label) {
     const visibleTextOutsideVisibleSheetRects = visibleTextRects.filter((rect) => (
       !viewportVisibleSheetRects.some((pageRect) => rectsIntersect(rect, pageRect))
     ));
+    const centerX = (rect) => (rect ? rect.left + (rect.width / 2) : null);
+    const sheetStackCenterX = centerX(firstPageRect);
+    const canvasCenterX = centerX(canvasRect);
+    const hostCenterX = centerX(hostRect);
+    const stripCenterX = centerX(stripRect);
+    const railGapCenterX = leftSidebarRect && rightSidebarRect
+      ? (leftSidebarRect.right + rightSidebarRect.left) / 2
+      : null;
+    const sheetStackCanvasCenterDeltaPx = sheetStackCenterX !== null && canvasCenterX !== null
+      ? Math.abs(sheetStackCenterX - canvasCenterX)
+      : null;
+    const sheetStackHostCenterDeltaPx = sheetStackCenterX !== null && hostCenterX !== null
+      ? Math.abs(sheetStackCenterX - hostCenterX)
+      : null;
+    const stripCanvasCenterDeltaPx = stripCenterX !== null && canvasCenterX !== null
+      ? Math.abs(stripCenterX - canvasCenterX)
+      : null;
+    const sheetStackRailGapCenterDeltaPx = sheetStackCenterX !== null && railGapCenterX !== null
+      ? Math.abs(sheetStackCenterX - railGapCenterX)
+      : null;
     return {
       label: \${JSON.stringify(label)},
       proofClass: Boolean(host && host.classList.contains('tiptap-host--central-sheet-strip-proof')),
@@ -178,8 +216,20 @@ async function collectState(win, label) {
       proseMirrorCount: host ? host.querySelectorAll('.ProseMirror').length : 0,
       tiptapEditorCount: host ? host.querySelectorAll('.tiptap-editor').length : 0,
       activeElementInsideProse: Boolean(prose && (document.activeElement === prose || prose.contains(document.activeElement))),
+      sheetStackCanvasCenterDeltaPx,
+      sheetStackHostCenterDeltaPx,
+      stripCanvasCenterDeltaPx,
+      sheetStackRailGapCenterDeltaPx,
+      sheetStackCenteredInCanvas: sheetStackCanvasCenterDeltaPx !== null && sheetStackCanvasCenterDeltaPx <= 1,
+      sheetStackCenteredInHost: sheetStackHostCenterDeltaPx !== null && sheetStackHostCenterDeltaPx <= 1,
+      stripCenteredInCanvas: stripCanvasCenterDeltaPx !== null && stripCanvasCenterDeltaPx <= 1,
+      sheetStackCenteredBetweenSidebars: sheetStackRailGapCenterDeltaPx !== null && sheetStackRailGapCenterDeltaPx <= 1,
       rightInspectorVisible: Boolean(rightSidebarRect && rightSidebarRect.width >= 280 && rightSidebarRect.height > 0),
       rightInspectorWidth: rightSidebarRect ? rightSidebarRect.width : 0,
+      hostRect,
+      stripRect,
+      canvasRect,
+      leftSidebarRect,
       pageRects,
     };
   })()\`, true);
@@ -343,6 +393,10 @@ assert.equal(result.beforeInput.secondSheetBelow, true);
 assert.equal(result.beforeInput.secondSheetRightOfFirst, false);
 assert.equal(result.beforeInput.verticalGapTextRectsCount, 0);
 assert.equal(result.beforeInput.visibleTextOutsideVisibleSheetRectCount, 0);
+assert.equal(result.beforeInput.sheetStackCenteredInCanvas, true);
+assert.equal(result.beforeInput.sheetStackCenteredInHost, true);
+assert.equal(result.beforeInput.stripCenteredInCanvas, true);
+assert.equal(result.beforeInput.sheetStackCenteredBetweenSidebars, true);
 assert.equal(result.beforeInput.proseMirrorCount, 1);
 assert.equal(result.beforeInput.rightInspectorVisible, true);
 assert.equal(hashText(result.beforeInput.text), hashText(result.fixture.text));
@@ -355,6 +409,10 @@ assert.equal(result.afterInput.secondSheetBelow, true);
 assert.equal(result.afterInput.secondSheetRightOfFirst, false);
 assert.equal(result.afterInput.verticalGapTextRectsCount, 0);
 assert.equal(result.afterInput.visibleTextOutsideVisibleSheetRectCount, 0);
+assert.equal(result.afterInput.sheetStackCenteredInCanvas, true);
+assert.equal(result.afterInput.sheetStackCenteredInHost, true);
+assert.equal(result.afterInput.stripCenteredInCanvas, true);
+assert.equal(result.afterInput.sheetStackCenteredBetweenSidebars, true);
 assert.equal(result.afterInput.proseMirrorCount, 1);
 assert.equal(result.afterInput.tiptapEditorCount, 1);
 assert.equal(result.afterInput.activeElementInsideProse, true);
@@ -376,6 +434,10 @@ const summary = {
   verticalGapTextRectsCount: result.afterInput.verticalGapTextRectsCount,
   visibleTextRectCount: result.afterInput.visibleTextRectCount,
   visibleTextOutsideVisibleSheetRectCount: result.afterInput.visibleTextOutsideVisibleSheetRectCount,
+  sheetStackCanvasCenterDeltaPx: result.afterInput.sheetStackCanvasCenterDeltaPx,
+  sheetStackHostCenterDeltaPx: result.afterInput.sheetStackHostCenterDeltaPx,
+  stripCanvasCenterDeltaPx: result.afterInput.stripCanvasCenterDeltaPx,
+  sheetStackRailGapCenterDeltaPx: result.afterInput.sheetStackRailGapCenterDeltaPx,
   proseMirrorCount: result.afterInput.proseMirrorCount,
   tiptapEditorCount: result.afterInput.tiptapEditorCount,
   activeElementInsideProse: result.afterInput.activeElementInsideProse,

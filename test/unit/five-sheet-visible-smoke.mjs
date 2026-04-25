@@ -74,8 +74,10 @@ async function saveCapture(win, basename) {
 async function collectState(win, label) {
   return win.webContents.executeJavaScript(\`(() => {
     const host = document.querySelector('#editor.tiptap-host');
+    const canvas = document.querySelector('.main-content--editor');
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
+    const leftSidebar = document.querySelector('.sidebar--left');
     const rightSidebar = document.querySelector('[data-right-sidebar]');
     const pageWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
     const pageRects = pageWraps.map((el) => {
@@ -91,6 +93,23 @@ async function collectState(win, label) {
         bottom: rect.bottom,
       };
     });
+    const firstPageRect = pageRects[0] || null;
+    const hostDomRect = host ? host.getBoundingClientRect() : null;
+    const stripDomRect = strip ? strip.getBoundingClientRect() : null;
+    const canvasDomRect = canvas ? canvas.getBoundingClientRect() : null;
+    const leftSidebarDomRect = leftSidebar ? leftSidebar.getBoundingClientRect() : null;
+    const hostRect = hostDomRect
+      ? { x: hostDomRect.x, y: hostDomRect.y, width: hostDomRect.width, height: hostDomRect.height, left: hostDomRect.left, right: hostDomRect.right, top: hostDomRect.top, bottom: hostDomRect.bottom }
+      : null;
+    const stripRect = stripDomRect
+      ? { x: stripDomRect.x, y: stripDomRect.y, width: stripDomRect.width, height: stripDomRect.height, left: stripDomRect.left, right: stripDomRect.right, top: stripDomRect.top, bottom: stripDomRect.bottom }
+      : null;
+    const canvasRect = canvasDomRect
+      ? { x: canvasDomRect.x, y: canvasDomRect.y, width: canvasDomRect.width, height: canvasDomRect.height, left: canvasDomRect.left, right: canvasDomRect.right, top: canvasDomRect.top, bottom: canvasDomRect.bottom }
+      : null;
+    const leftSidebarRect = leftSidebarDomRect
+      ? { x: leftSidebarDomRect.x, y: leftSidebarDomRect.y, width: leftSidebarDomRect.width, height: leftSidebarDomRect.height, left: leftSidebarDomRect.left, right: leftSidebarDomRect.right, top: leftSidebarDomRect.top, bottom: leftSidebarDomRect.bottom }
+      : null;
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
     const viewportVisibleSheetCount = pageRects.filter((rect) => (
@@ -156,6 +175,26 @@ async function collectState(win, label) {
     const visibleTextOutsideVisibleSheetRects = visibleTextRects.filter((rect) => (
       !viewportVisibleSheetRects.some((pageRect) => rectsIntersect(rect, pageRect))
     ));
+    const centerX = (rect) => (rect ? rect.left + (rect.width / 2) : null);
+    const sheetStackCenterX = centerX(firstPageRect);
+    const canvasCenterX = centerX(canvasRect);
+    const hostCenterX = centerX(hostRect);
+    const stripCenterX = centerX(stripRect);
+    const railGapCenterX = leftSidebarRect && rightSidebarRect
+      ? (leftSidebarRect.right + rightSidebarRect.left) / 2
+      : null;
+    const sheetStackCanvasCenterDeltaPx = sheetStackCenterX !== null && canvasCenterX !== null
+      ? Math.abs(sheetStackCenterX - canvasCenterX)
+      : null;
+    const sheetStackHostCenterDeltaPx = sheetStackCenterX !== null && hostCenterX !== null
+      ? Math.abs(sheetStackCenterX - hostCenterX)
+      : null;
+    const stripCanvasCenterDeltaPx = stripCenterX !== null && canvasCenterX !== null
+      ? Math.abs(stripCenterX - canvasCenterX)
+      : null;
+    const sheetStackRailGapCenterDeltaPx = sheetStackCenterX !== null && railGapCenterX !== null
+      ? Math.abs(sheetStackCenterX - railGapCenterX)
+      : null;
     const verticallyStackedSheetPairCount = pageRects.slice(1).filter((rect, index) => {
       const previous = pageRects[index];
       return previous
@@ -188,8 +227,20 @@ async function collectState(win, label) {
       tiptapEditorCount: host ? host.querySelectorAll('.tiptap-editor').length : 0,
       prosePageTruthCount,
       activeElementInsideProse: Boolean(prose && (document.activeElement === prose || prose.contains(document.activeElement))),
+      sheetStackCanvasCenterDeltaPx,
+      sheetStackHostCenterDeltaPx,
+      stripCanvasCenterDeltaPx,
+      sheetStackRailGapCenterDeltaPx,
+      sheetStackCenteredInCanvas: sheetStackCanvasCenterDeltaPx !== null && sheetStackCanvasCenterDeltaPx <= 1,
+      sheetStackCenteredInHost: sheetStackHostCenterDeltaPx !== null && sheetStackHostCenterDeltaPx <= 1,
+      stripCenteredInCanvas: stripCanvasCenterDeltaPx !== null && stripCanvasCenterDeltaPx <= 1,
+      sheetStackCenteredBetweenSidebars: sheetStackRailGapCenterDeltaPx !== null && sheetStackRailGapCenterDeltaPx <= 1,
       rightInspectorVisible: Boolean(rightSidebarRect && rightSidebarRect.width >= 280 && rightSidebarRect.height > 0),
       rightInspectorWidth: rightSidebarRect ? rightSidebarRect.width : 0,
+      hostRect,
+      stripRect,
+      canvasRect,
+      leftSidebarRect,
       pageRects,
     };
   })()\`, true);
@@ -371,6 +422,10 @@ assert.equal(result.beforeInput.centralSheetFlow, 'vertical');
 assert.equal(result.beforeInput.visibleSheetCount, 5);
 assert.equal(result.beforeInput.viewportVisibleSheetCount >= 1, true);
 assert.equal(result.beforeInput.visibleTextOutsideVisibleSheetRectCount, 0);
+assert.equal(result.beforeInput.sheetStackCenteredInCanvas, true);
+assert.equal(result.beforeInput.sheetStackCenteredInHost, true);
+assert.equal(result.beforeInput.stripCenteredInCanvas, true);
+assert.equal(result.beforeInput.sheetStackCenteredBetweenSidebars, true);
 assert.equal(result.beforeInput.verticallyStackedSheetPairCount, 4);
 assert.equal(result.beforeInput.rightFlowSheetPairCount, 0);
 assert.equal(result.beforeInput.occupiedSheetCount, 5);
@@ -392,6 +447,10 @@ assert.equal(result.afterInput.centralSheetFlow, 'vertical');
 assert.equal(result.afterInput.visibleSheetCount, 5);
 assert.equal(result.afterInput.viewportVisibleSheetCount >= 1, true);
 assert.equal(result.afterInput.visibleTextOutsideVisibleSheetRectCount, 0);
+assert.equal(result.afterInput.sheetStackCenteredInCanvas, true);
+assert.equal(result.afterInput.sheetStackCenteredInHost, true);
+assert.equal(result.afterInput.stripCenteredInCanvas, true);
+assert.equal(result.afterInput.sheetStackCenteredBetweenSidebars, true);
 assert.equal(result.afterInput.verticallyStackedSheetPairCount, 4);
 assert.equal(result.afterInput.rightFlowSheetPairCount, 0);
 assert.equal(result.afterInput.occupiedSheetCount, 5);
@@ -419,6 +478,10 @@ const summary = {
   viewportVisibleSheetCount: result.afterInput.viewportVisibleSheetCount,
   visibleTextRectCount: result.afterInput.visibleTextRectCount,
   visibleTextOutsideVisibleSheetRectCount: result.afterInput.visibleTextOutsideVisibleSheetRectCount,
+  sheetStackCanvasCenterDeltaPx: result.afterInput.sheetStackCanvasCenterDeltaPx,
+  sheetStackHostCenterDeltaPx: result.afterInput.sheetStackHostCenterDeltaPx,
+  stripCanvasCenterDeltaPx: result.afterInput.stripCanvasCenterDeltaPx,
+  sheetStackRailGapCenterDeltaPx: result.afterInput.sheetStackRailGapCenterDeltaPx,
   boundedOverflowReason: result.afterInput.centralSheetBoundedOverflowReason,
   boundedOverflowSourcePageCount: result.afterInput.centralSheetBoundedOverflowSourcePageCount,
   boundedOverflowVisiblePageCount: result.afterInput.centralSheetBoundedOverflowVisiblePageCount,
