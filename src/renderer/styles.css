@@ -3976,6 +3976,14 @@ body.dark-theme .empty-state {
   flex: 0 0 auto;
 }
 
+.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof .tiptap-sheet-strip > .tiptap-sheet-strip__spacer {
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  flex: 0 0 auto;
+  pointer-events: none;
+}
+
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof .tiptap-sheet-strip > .tiptap-page-wrap .tiptap-page {
   width: 100%;
   height: 100%;

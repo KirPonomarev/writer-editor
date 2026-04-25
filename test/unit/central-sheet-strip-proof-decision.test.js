@@ -54,9 +54,9 @@ test('central sheet decision reports max-page-count overflow without persisting 
     }),
     {
       pageCount: 7,
-      visiblePageCount: 0,
+      visiblePageCount: 5,
       overflowReason: CENTRAL_SHEET_MAX_PAGE_COUNT_OVERFLOW_REASON,
-      shouldRender: false,
+      shouldRender: true,
     },
   );
 });
@@ -148,9 +148,10 @@ test('central sheet decision is a DOM-free helper consumed by editor runtime', (
   assert.match(editorSource, /const activeLayoutPreviewSnapshot = buildActiveLayoutPreviewSnapshot\(\);/);
   assert.doesNotMatch(editorSource, /activeLayoutPreviewSnapshotPageCount\s*\?\s*0\s*:\s*measureCentralSheetNaturalHeight\(proseMirror\);/s);
   assert.match(editorSource, /const naturalHeight = measureCentralSheetNaturalHeight\(proseMirror\);/);
-  assert.match(editorSource, /resolveCentralSheetStripProofDecision\(\{\s*naturalHeight,\s*contentHeightPx: heightPx,\s*activeLayoutPreviewSnapshot,\s*maxPageCount: MAX_CENTRAL_SHEET_PROOF_PAGES,\s*\}\)/s);
-  assert.match(editorSource, /const \{ pageCount, visiblePageCount \} = centralSheetDecision;/);
-  assert.match(editorSource, /renderCentralSheetStripShellPages\(visiblePageCount\);/);
+  assert.match(editorSource, /resolveCentralSheetStripProofDecision\(\{\s*naturalHeight,\s*contentHeightPx: heightPx,\s*activeLayoutPreviewSnapshot,\s*maxPageCount: CENTRAL_SHEET_RUNTIME_WINDOW_DOM_BUDGET,\s*\}\)/s);
+  assert.match(editorSource, /const \{ pageCount \} = centralSheetDecision;/);
+  assert.match(editorSource, /const pageWindow = resolveCentralSheetViewportRuntimeWindow\(\{/);
+  assert.match(editorSource, /renderCentralSheetStripShellPages\(pageWindow\);/);
   assert.match(editorSource, /delete editor\.dataset\.centralSheetOverflowReason;/);
   assert.match(editorSource, /editor\.dataset\.centralSheetBoundedOverflowReason = overflowReason;/);
   assert.match(editorSource, /editor\.dataset\.centralSheetBoundedOverflowSourcePageCount = String\(pageCount\);/);

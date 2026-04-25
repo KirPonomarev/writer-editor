@@ -61,6 +61,7 @@ import {
   createPreviewChromeState,
 } from './previewChrome.mjs';
 import {
+  buildVirtualViewportWindowMathContract,
   buildCachedLayoutPreviewSnapshot,
   createLayoutPreviewSnapshotCache,
   createLayoutPreviewState,
@@ -617,7 +618,8 @@ const HOTPATH_PAGINATION_IDLE_TIMEOUT_MS = 750;
 const PAGINATION_MEASURE_BATCH_SIZE = 12;
 const CENTRAL_SHEET_STRIP_PROOF_CLASS = 'tiptap-host--central-sheet-strip-proof';
 const CENTRAL_SHEET_STRIP_MEASURING_CLASS = 'tiptap-host--central-sheet-strip-measuring';
-const MAX_CENTRAL_SHEET_PROOF_PAGES = 5;
+const CENTRAL_SHEET_RUNTIME_WINDOW_DOM_BUDGET = 15;
+const CENTRAL_SHEET_RUNTIME_WINDOW_OVERSCAN = 1;
 const UI_ERROR_MAP_SCHEMA_VERSION = 'ui-error-map.v1';
 const UI_ERROR_FALLBACK_MESSAGE = 'Операция не выполнена';
 const UI_ERROR_FALLBACK_SEVERITY = 'ERROR';
@@ -634,6 +636,8 @@ const layoutPreviewSnapshotCache = createLayoutPreviewSnapshotCache();
 let layoutPreviewHost = null;
 let layoutPreviewRefreshTimerId = null;
 let centralSheetStripRefreshFrameId = null;
+let centralSheetStripScrollContainer = null;
+let centralSheetStripGlobalScrollBound = false;
 
 function getActivePreviewChrome(source = activePreviewChromeState) {
   return createPreviewChromeState(source);
@@ -714,24 +718,59 @@ function ensureCentralSheetStripShell() {
   return strip;
 }
 
-function renderCentralSheetStripShellPages(pageCount) {
+function appendCentralSheetStripSpacer({ fragment, kind, heightPx }) {
+  const normalizedHeightPx = Math.max(0, Math.round(Number(heightPx) || 0));
+  if (!(fragment instanceof DocumentFragment) || normalizedHeightPx <= 0) {
+    return;
+  }
+  const spacer = document.createElement('div');
+  spacer.className = `tiptap-sheet-strip__spacer tiptap-sheet-strip__spacer--${kind}`;
+  spacer.dataset.kind = String(kind || 'unknown');
+  spacer.dataset.spacerHeightPx = String(normalizedHeightPx);
+  spacer.style.height = `${normalizedHeightPx}px`;
+  fragment.appendChild(spacer);
+}
+
+function renderCentralSheetStripShellPages(pageWindow) {
   const strip = ensureCentralSheetStripShell();
   if (!(strip instanceof HTMLElement)) {
     return;
   }
-  const nextPageCount = Math.max(0, pageCount);
-  if (strip.childElementCount === nextPageCount) {
+  const normalizedWindow = pageWindow && typeof pageWindow === 'object' ? pageWindow : null;
+  const renderedPageCount = normalizedWindow
+    ? Math.max(0, Number(normalizedWindow.renderedPageCount) || 0)
+    : 0;
+  if (renderedPageCount === 0) {
+    strip.replaceChildren();
+    delete strip.dataset.windowSignature;
     return;
   }
-  if (nextPageCount === 0) {
-    strip.replaceChildren();
+  const firstRenderedPage = Math.max(1, Number(normalizedWindow.firstRenderedPage) || 1);
+  const lastRenderedPage = Math.max(firstRenderedPage, Number(normalizedWindow.lastRenderedPage) || firstRenderedPage);
+  const topSpacerHeight = Math.max(0, Math.round(Number(normalizedWindow.topSpacerHeight) || 0));
+  const bottomSpacerHeight = Math.max(0, Math.round(Number(normalizedWindow.bottomSpacerHeight) || 0));
+  const nextWindowSignature = [
+    firstRenderedPage,
+    lastRenderedPage,
+    topSpacerHeight,
+    bottomSpacerHeight,
+    renderedPageCount,
+  ].join(':');
+  if (strip.dataset.windowSignature === nextWindowSignature) {
     return;
   }
   const fragment = document.createDocumentFragment();
-  for (let pageIndex = 0; pageIndex < nextPageCount; pageIndex += 1) {
+  appendCentralSheetStripSpacer({
+    fragment,
+    kind: 'top',
+    heightPx: topSpacerHeight,
+  });
+  for (let pageNumber = firstRenderedPage; pageNumber <= lastRenderedPage; pageNumber += 1) {
+    const pageIndex = pageNumber - 1;
     const wrap = document.createElement('div');
     wrap.className = 'tiptap-page-wrap';
     wrap.dataset.pageIndex = String(pageIndex);
+    wrap.dataset.pageNumber = String(pageNumber);
     const page = document.createElement('div');
     page.className = 'tiptap-page';
     const content = document.createElement('div');
@@ -740,7 +779,13 @@ function renderCentralSheetStripShellPages(pageCount) {
     wrap.appendChild(page);
     fragment.appendChild(wrap);
   }
+  appendCentralSheetStripSpacer({
+    fragment,
+    kind: 'bottom',
+    heightPx: bottomSpacerHeight,
+  });
   strip.replaceChildren(fragment);
+  strip.dataset.windowSignature = nextWindowSignature;
 }
 
 function measureCentralSheetNaturalHeight(proseMirror) {
@@ -785,6 +830,12 @@ function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   delete editor.dataset.centralSheetBoundedOverflowSourcePageCount;
   delete editor.dataset.centralSheetBoundedOverflowVisiblePageCount;
   delete editor.dataset.centralSheetBoundedOverflowHiddenPageCount;
+  delete editor.dataset.centralSheetRenderedPageCount;
+  delete editor.dataset.centralSheetTotalPageCount;
+  delete editor.dataset.centralSheetWindowFirstRenderedPage;
+  delete editor.dataset.centralSheetWindowLastRenderedPage;
+  delete editor.dataset.centralSheetWindowVisiblePageCount;
+  delete editor.dataset.centralSheetWindowingEnabled;
   if (overflowReason) {
     editor.dataset.centralSheetOverflowReason = overflowReason;
   } else {
@@ -793,12 +844,13 @@ function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   editor.style.removeProperty('--central-sheet-count');
   editor.style.removeProperty('--central-sheet-strip-width-px');
   editor.style.removeProperty('--central-sheet-strip-height-px');
+  editor.style.removeProperty('--central-sheet-total-virtual-height-px');
   editor.style.removeProperty('--central-sheet-content-width-px');
   editor.style.removeProperty('--central-sheet-content-height-px');
   editor.style.removeProperty('--central-sheet-page-stride-px');
   editor.style.removeProperty('--central-sheet-editor-height-px');
   editor.style.removeProperty('--central-sheet-line-guard-px');
-  renderCentralSheetStripShellPages(0);
+  renderCentralSheetStripShellPages(null);
 }
 
 function syncCentralSheetStripOverflowMetadata({ pageCount, visiblePageCount, overflowReason } = {}) {
@@ -819,6 +871,46 @@ function syncCentralSheetStripOverflowMetadata({ pageCount, visiblePageCount, ov
   editor.dataset.centralSheetBoundedOverflowSourcePageCount = String(pageCount);
   editor.dataset.centralSheetBoundedOverflowVisiblePageCount = String(visiblePageCount);
   editor.dataset.centralSheetBoundedOverflowHiddenPageCount = String(pageCount - visiblePageCount);
+}
+
+function resolveCentralSheetViewportRuntimeWindow({
+  totalPageCount,
+  pageHeightPx,
+  pageGapPx,
+} = {}) {
+  if (!(editor instanceof HTMLElement)) {
+    return null;
+  }
+  const scrollContainer = editor.closest('.main-content--editor');
+  const hostRect = editor.getBoundingClientRect();
+  let viewportHeightPx = 0;
+  let viewportTopPx = 0;
+  if (scrollContainer instanceof HTMLElement) {
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const resolvedViewportTopPx = Math.max(0, containerRect.top - hostRect.top);
+    const resolvedViewportBottomPx = Math.min(
+      hostRect.height,
+      containerRect.bottom - hostRect.top,
+    );
+    viewportTopPx = Math.max(0, Math.round(resolvedViewportTopPx));
+    viewportHeightPx = Math.max(1, Math.round(resolvedViewportBottomPx - resolvedViewportTopPx));
+  }
+  if (viewportHeightPx <= 0) {
+    viewportTopPx = 0;
+    viewportHeightPx = Math.max(
+      1,
+      Math.round((window.innerHeight || hostRect.height || pageHeightPx || 1)),
+    );
+  }
+  return buildVirtualViewportWindowMathContract({
+    totalPageCount: Math.max(0, Number(totalPageCount) || 0),
+    pageHeight: Math.max(1, Math.round(Number(pageHeightPx) || 1)),
+    pageGap: Math.max(0, Math.round(Number(pageGapPx) || 0)),
+    scrollTop: viewportTopPx,
+    viewportHeight: viewportHeightPx,
+    domBudget: CENTRAL_SHEET_RUNTIME_WINDOW_DOM_BUDGET,
+    overscan: CENTRAL_SHEET_RUNTIME_WINDOW_OVERSCAN,
+  });
 }
 
 function refreshCentralSheetStripProof() {
@@ -852,31 +944,50 @@ function refreshCentralSheetStripProof() {
     naturalHeight,
     contentHeightPx: heightPx,
     activeLayoutPreviewSnapshot,
-    maxPageCount: MAX_CENTRAL_SHEET_PROOF_PAGES,
+    maxPageCount: CENTRAL_SHEET_RUNTIME_WINDOW_DOM_BUDGET,
   });
-  const { pageCount, visiblePageCount } = centralSheetDecision;
+  const { pageCount } = centralSheetDecision;
   if (!centralSheetDecision.shouldRender) {
     clearCentralSheetStripProof({ overflowReason: centralSheetDecision.overflowReason });
     return;
   }
-  const stripHeightPx = Math.round(
-    (metrics.pageHeightPx * visiblePageCount) + (pageGapPx * Math.max(0, visiblePageCount - 1)),
-  );
+  const pageWindow = resolveCentralSheetViewportRuntimeWindow({
+    totalPageCount: pageCount,
+    pageHeightPx: metrics.pageHeightPx,
+    pageGapPx,
+  });
+  if (!pageWindow || pageWindow.windowingEnabled !== true) {
+    clearCentralSheetStripProof({ overflowReason: 'viewport-window-unavailable' });
+    return;
+  }
+  const renderedPageCount = Math.max(0, Number(pageWindow.renderedPageCount) || 0);
+  const stripHeightPx = Math.round(pageWindow.totalVirtualHeight || 0);
   const pageStridePx = Math.round(metrics.pageHeightPx + pageGapPx);
   const editorHeightPx = Math.max(
     heightPx,
     Math.round(stripHeightPx - metrics.marginTopPx - metrics.marginBottomPx),
   );
 
-  editor.style.setProperty('--central-sheet-count', String(visiblePageCount));
+  editor.style.setProperty('--central-sheet-count', String(renderedPageCount));
   editor.style.setProperty('--central-sheet-strip-width-px', `${Math.round(metrics.pageWidthPx)}px`);
   editor.style.setProperty('--central-sheet-strip-height-px', `${stripHeightPx}px`);
+  editor.style.setProperty('--central-sheet-total-virtual-height-px', `${stripHeightPx}px`);
   editor.style.setProperty('--central-sheet-page-stride-px', `${pageStridePx}px`);
   editor.style.setProperty('--central-sheet-editor-height-px', `${editorHeightPx}px`);
-  editor.dataset.centralSheetCount = String(visiblePageCount);
+  editor.dataset.centralSheetCount = String(renderedPageCount);
   editor.dataset.centralSheetFlow = 'vertical';
-  syncCentralSheetStripOverflowMetadata(centralSheetDecision);
-  renderCentralSheetStripShellPages(visiblePageCount);
+  editor.dataset.centralSheetRenderedPageCount = String(renderedPageCount);
+  editor.dataset.centralSheetTotalPageCount = String(pageCount);
+  editor.dataset.centralSheetWindowFirstRenderedPage = String(pageWindow.firstRenderedPage);
+  editor.dataset.centralSheetWindowLastRenderedPage = String(pageWindow.lastRenderedPage);
+  editor.dataset.centralSheetWindowVisiblePageCount = String(pageWindow.visiblePageCount);
+  editor.dataset.centralSheetWindowingEnabled = pageWindow.windowingEnabled ? 'true' : 'false';
+  syncCentralSheetStripOverflowMetadata({
+    pageCount,
+    visiblePageCount: renderedPageCount,
+    overflowReason: renderedPageCount < pageCount ? 'max-page-count' : '',
+  });
+  renderCentralSheetStripShellPages(pageWindow);
   editor.classList.add(CENTRAL_SHEET_STRIP_PROOF_CLASS);
 }
 
@@ -884,6 +995,7 @@ function scheduleCentralSheetStripProofRefresh() {
   if (!isTiptapMode || !(editor instanceof HTMLElement)) {
     return;
   }
+  bindCentralSheetStripScrollRefresh();
   if (centralSheetStripRefreshFrameId) {
     return;
   }
@@ -891,6 +1003,34 @@ function scheduleCentralSheetStripProofRefresh() {
     centralSheetStripRefreshFrameId = null;
     refreshCentralSheetStripProof();
   });
+}
+
+function bindCentralSheetStripScrollRefresh() {
+  if (!isTiptapMode || !(editor instanceof HTMLElement)) {
+    return;
+  }
+  const nextScrollContainer = editor.closest('.main-content--editor');
+  if (centralSheetStripScrollContainer === nextScrollContainer) {
+    return;
+  }
+  if (centralSheetStripScrollContainer instanceof HTMLElement) {
+    centralSheetStripScrollContainer.removeEventListener('scroll', scheduleCentralSheetStripProofRefresh);
+  }
+  centralSheetStripScrollContainer = nextScrollContainer instanceof HTMLElement
+    ? nextScrollContainer
+    : null;
+  if (centralSheetStripScrollContainer instanceof HTMLElement) {
+    centralSheetStripScrollContainer.addEventListener('scroll', scheduleCentralSheetStripProofRefresh, {
+      passive: true,
+    });
+  }
+  if (!centralSheetStripGlobalScrollBound) {
+    window.addEventListener('scroll', scheduleCentralSheetStripProofRefresh, {
+      capture: true,
+      passive: true,
+    });
+    centralSheetStripGlobalScrollBound = true;
+  }
 }
 
 function syncPreviewChromeFormatValue() {
