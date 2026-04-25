@@ -75,11 +75,57 @@ async function saveCapture(win, basename) {
   await fs.writeFile(path.join(outputDir, basename), image.toPNG());
 }
 
+async function scrollEditorViewport(win, ratio) {
+  return win.webContents.executeJavaScript(\`(() => {
+    const main = document.querySelector('.main-content');
+    if (!(main instanceof HTMLElement)) return { scrollTop: 0, scrollHeight: 0, clientHeight: 0 };
+    const maxScrollTop = Math.max(0, main.scrollHeight - main.clientHeight);
+    main.scrollTop = Math.round(maxScrollTop * \${JSON.stringify(ratio)});
+    return {
+      scrollTop: main.scrollTop,
+      scrollHeight: main.scrollHeight,
+      clientHeight: main.clientHeight,
+      maxScrollTop,
+    };
+  })()\`, true);
+}
+
+async function runInputSmoke(win) {
+  return win.webContents.executeJavaScript(\`(() => {
+    const host = document.querySelector('#editor.tiptap-host');
+    const prose = host ? host.querySelector('.ProseMirror') : null;
+    if (!(prose instanceof HTMLElement)) {
+      return { ok: false, reason: 'NO_PROSEMIRROR' };
+    }
+    prose.focus();
+    const before = prose.textContent || '';
+    const selection = window.getSelection();
+    const canSelect = Boolean(selection);
+    document.execCommand('insertText', false, ' no-bleed-input-smoke ');
+    const afterInsert = prose.textContent || '';
+    document.execCommand('undo');
+    const afterUndo = prose.textContent || '';
+    document.execCommand('redo');
+    const afterRedo = prose.textContent || '';
+    return {
+      ok: afterInsert.includes('no-bleed-input-smoke')
+        && afterUndo === before
+        && afterRedo.includes('no-bleed-input-smoke'),
+      activeElementInsideProse: prose.contains(document.activeElement),
+      canSelect,
+      inserted: afterInsert.includes('no-bleed-input-smoke'),
+      undone: afterUndo === before,
+      redone: afterRedo.includes('no-bleed-input-smoke'),
+    };
+  })()\`, true);
+}
+
 async function collectState(win, label) {
   return win.webContents.executeJavaScript(\`(() => {
     const host = document.querySelector('#editor.tiptap-host');
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
+    const tiptapEditor = host ? host.querySelector('.tiptap-editor') : null;
     const pageWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
     const pageRects = pageWraps.map((el) => {
       const rect = el.getBoundingClientRect();
@@ -141,8 +187,26 @@ async function collectState(win, label) {
       && a.top < b.bottom
       && a.bottom > b.top
     );
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    const visibleInViewport = (rect) => (
+      rect.left < viewportWidth
+      && rect.right > 0
+      && rect.top < viewportHeight
+      && rect.bottom > 0
+    );
+    const visibleTextRects = textRects.filter(visibleInViewport);
     const textGapIntersectionCount = textRects.filter((textRect) => (
       gapRects.some((gapRect) => gapRect.height > 0 && intersects(textRect, gapRect))
+    )).length;
+    const visibleTextGapIntersectionCount = visibleTextRects.filter((textRect) => (
+      gapRects.some((gapRect) => gapRect.height > 0 && intersects(textRect, gapRect))
+    )).length;
+    const textInsideSheetRectCount = textRects.filter((textRect) => (
+      pageRects.some((pageRect) => intersects(textRect, pageRect))
+    )).length;
+    const visibleTextInsideSheetRectCount = visibleTextRects.filter((textRect) => (
+      pageRects.some((pageRect) => intersects(textRect, pageRect))
     )).length;
     const rightFlowSheetPairCount = pageRects.slice(1).filter((rect, index) => {
       const previous = pageRects[index];
@@ -154,6 +218,7 @@ async function collectState(win, label) {
     }).length;
     const gapHeights = gapRects.map((rect) => Math.round(rect.height));
     const rootStyles = getComputedStyle(document.documentElement);
+    const editorStyles = tiptapEditor ? getComputedStyle(tiptapEditor) : null;
     return {
       label: \${JSON.stringify(label)},
       centralSheetFlow: host ? host.dataset.centralSheetFlow || null : null,
@@ -163,9 +228,16 @@ async function collectState(win, label) {
       minGapPx: gapHeights.length ? Math.min(...gapHeights) : 0,
       maxGapPx: gapHeights.length ? Math.max(...gapHeights) : 0,
       textGapIntersectionCount,
+      visibleTextGapIntersectionCount,
+      textInsideSheetRectCount,
+      visibleTextInsideSheetRectCount,
+      visibleTextRectCount: visibleTextRects.length,
       proseMirrorCount: host ? host.querySelectorAll('.ProseMirror').length : 0,
       tiptapEditorCount: host ? host.querySelectorAll('.tiptap-editor').length : 0,
       prosePageTruthCount: prose ? prose.querySelectorAll('[data-page-index], [data-page-number], [data-page-id]').length : 0,
+      editorMaskImage: editorStyles ? editorStyles.maskImage || '' : '',
+      editorWebkitMaskImage: editorStyles ? editorStyles.webkitMaskImage || '' : '',
+      activeElementInsideProse: prose ? prose.contains(document.activeElement) : false,
       rightFlowSheetPairCount,
       verticallyStackedSheetPairCount,
     };
@@ -218,20 +290,48 @@ app.whenReady().then(async () => {
     await fs.mkdir(outputDir, { recursive: true });
     const win = await waitForWindow();
     await waitForLoad(win);
-    win.setContentSize(3840, 1110);
+    win.setContentSize(1280, 1410);
     await sleep(1200);
     const fixture = await findFiveSheetFixture(win);
     await setEditorPayload(win, fixture.paragraphCount);
     await sleep(800);
-    const state = await collectState(win, 'after-layout');
-    await saveCapture(win, 'vertical-sheet-gap-after-layout.png');
+    const topScroll = await scrollEditorViewport(win, 0);
+    await sleep(250);
+    const topState = await collectState(win, 'top');
+    await saveCapture(win, 'vertical-sheet-gap-top.png');
+    const middleScroll = await scrollEditorViewport(win, 0.5);
+    await sleep(250);
+    const middleState = await collectState(win, 'middle-scroll');
+    await saveCapture(win, 'vertical-sheet-gap-middle-scroll.png');
+    const afterScroll = await scrollEditorViewport(win, 1);
+    await sleep(250);
+    const afterScrollState = await collectState(win, 'after-scroll');
+    await saveCapture(win, 'vertical-sheet-gap-after-scroll.png');
+    await scrollEditorViewport(win, 0);
+    await sleep(250);
+    const inputSmoke = await runInputSmoke(win);
     const payload = {
       ok: true,
       paragraphCount: fixture.paragraphCount,
-      state,
+      state: topState,
+      states: {
+        top: topState,
+        middle: middleState,
+        afterScroll: afterScrollState,
+      },
+      scroll: {
+        top: topScroll,
+        middle: middleScroll,
+        afterScroll,
+      },
+      inputSmoke,
       networkRequests,
       dialogCalls,
-      screenshot: path.join(outputDir, 'vertical-sheet-gap-after-layout.png'),
+      screenshots: [
+        path.join(outputDir, 'vertical-sheet-gap-top.png'),
+        path.join(outputDir, 'vertical-sheet-gap-middle-scroll.png'),
+        path.join(outputDir, 'vertical-sheet-gap-after-scroll.png'),
+      ],
     };
     await fs.writeFile(path.join(outputDir, 'result.json'), JSON.stringify(payload, null, 2));
     process.stdout.write('VERTICAL_SHEET_GAP_ELECTRON_RESULT:' + JSON.stringify(payload) + '\\\\n');
@@ -265,6 +365,9 @@ assert.equal(editorText.includes('metrics.pageHeightPx * visiblePageCount'), tru
 assert.equal(cssText.includes('flex-direction: column;'), true);
 assert.equal(cssText.includes('gap: var(--page-gap-px);'), true);
 assert.equal(cssText.includes('column-width: var(--central-sheet-content-width-px);'), false);
+assert.equal(cssText.includes('mask-image: repeating-linear-gradient('), true);
+assert.equal(cssText.includes('-webkit-mask-image: repeating-linear-gradient('), true);
+assert.equal(cssText.includes('mask-size: 100% var(--central-sheet-page-stride-px);'), true);
 
 const helperPath = path.join(outputDir, 'vertical-sheet-gap-helper.cjs');
 await mkdir(outputDir, { recursive: true });
@@ -298,21 +401,39 @@ const exitCode = await new Promise((resolve) => {
 const rawResult = await readFile(path.join(outputDir, 'result.json'), 'utf8');
 const result = JSON.parse(rawResult);
 const state = result.state || {};
+const states = Object.values(result.states || {});
 
 assert.equal(exitCode, 0, `electron helper failed with ${exitCode}\n${stdout}\n${stderr}`);
 assert.equal(result.ok, true);
-assert.equal(state.centralSheetFlow, 'vertical');
-assert.equal(state.visibleSheetCount, 5);
-assert.equal(state.verticallyStackedSheetPairCount, 4);
-assert.equal(state.rightFlowSheetPairCount, 0);
-assert.equal(state.minGapPx >= 24, true);
-assert.equal(state.maxGapPx <= 72, true);
-assert.equal(state.textGapIntersectionCount, 0);
-assert.equal(state.proseMirrorCount, 1);
-assert.equal(state.tiptapEditorCount, 1);
-assert.equal(state.prosePageTruthCount, 0);
+assert.equal(states.length, 3);
+for (const measuredState of states) {
+  assert.equal(measuredState.centralSheetFlow, 'vertical');
+  assert.equal(measuredState.visibleSheetCount, 5);
+  assert.equal(measuredState.verticallyStackedSheetPairCount, 4);
+  assert.equal(measuredState.rightFlowSheetPairCount, 0);
+  assert.equal(measuredState.minGapPx >= 24, true);
+  assert.equal(measuredState.maxGapPx <= 72, true);
+  assert.equal(measuredState.textGapIntersectionCount, 0);
+  assert.equal(measuredState.visibleTextGapIntersectionCount, 0);
+  assert.equal(measuredState.textInsideSheetRectCount > 0, true);
+  assert.equal(measuredState.visibleTextInsideSheetRectCount > 0, true);
+  assert.equal(measuredState.visibleTextRectCount > 0, true);
+  assert.equal(measuredState.proseMirrorCount, 1);
+  assert.equal(measuredState.tiptapEditorCount, 1);
+  assert.equal(measuredState.prosePageTruthCount, 0);
+  assert.equal(
+    String(measuredState.editorMaskImage || measuredState.editorWebkitMaskImage || '').includes('repeating-linear-gradient'),
+    true,
+  );
+}
+assert.equal(result.inputSmoke && result.inputSmoke.ok, true);
+assert.equal(result.inputSmoke && result.inputSmoke.inserted, true);
+assert.equal(result.inputSmoke && result.inputSmoke.undone, true);
+assert.equal(result.inputSmoke && result.inputSmoke.redone, true);
 assert.equal(result.networkRequests, 0);
 assert.equal(result.dialogCalls, 0);
+assert.equal(Array.isArray(result.screenshots), true);
+assert.equal(result.screenshots.length, 3);
 
 console.log('VERTICAL_SHEET_GAP_SMOKE_SUMMARY:' + JSON.stringify({
   ok: true,
@@ -325,6 +446,9 @@ console.log('VERTICAL_SHEET_GAP_SMOKE_SUMMARY:' + JSON.stringify({
   flow: state.centralSheetFlow,
   visibleSheetCount: state.visibleSheetCount,
   textGapIntersectionCount: state.textGapIntersectionCount,
+  visibleTextGapIntersectionCount: state.visibleTextGapIntersectionCount,
   proseMirrorCount: state.proseMirrorCount,
-  screenshot: result.screenshot,
+  inputSmoke: result.inputSmoke,
+  scroll: result.scroll,
+  screenshots: result.screenshots,
 }));
