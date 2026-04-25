@@ -7,8 +7,11 @@ const LAYOUT_PREVIEW_SCHEMA_VERSION = 'renderer.layoutPreview.v1';
 const LAYOUT_PREVIEW_STATE_SCHEMA_VERSION = 'renderer.layoutPreview.state.v1';
 const LAYOUT_PREVIEW_CACHE_SCHEMA_VERSION = 'renderer.layoutPreview.cache.v1';
 const TIPTAP_PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION = 'renderer.tiptapPageMapRuntimeContract.v1';
+const VIRTUAL_VIEWPORT_WINDOW_MATH_CONTRACT_SCHEMA_VERSION = 'renderer.virtualViewportWindowMathContract.v1';
 const DEFAULT_LAYOUT_PREVIEW_PAGE_WINDOW_SIZE = 24;
 const DEFAULT_LAYOUT_PREVIEW_CACHE_ENTRIES = 8;
+const DEFAULT_VIRTUAL_VIEWPORT_DOM_BUDGET = 15;
+const DEFAULT_VIRTUAL_VIEWPORT_OVERSCAN = 1;
 
 function isPlainObject(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -29,6 +32,20 @@ function normalizeChapterStartRule(value) {
 function normalizePositiveInteger(value, fallback) {
   const number = Number(value);
   return Number.isInteger(number) && number > 0 ? number : fallback;
+}
+
+function normalizeNonNegativeInteger(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isInteger(number) && number >= 0 ? number : fallback;
+}
+
+function normalizeNonNegativeNumber(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : fallback;
+}
+
+function clampNumber(value, min, max) {
+  return Math.min(Math.max(value, min), max);
 }
 
 function stableSerialize(value) {
@@ -407,6 +424,143 @@ export function buildTiptapPageMapRuntimeContract(input = {}, cache = null) {
       storageTruth: false,
       exportTruth: false,
     },
+  };
+}
+
+export function buildVirtualViewportWindowMathContract(input = {}) {
+  const source = isPlainObject(input) ? input : {};
+  const totalPageCount = normalizeNonNegativeInteger(source.totalPageCount, 0);
+  const pageHeight = normalizePositiveInteger(source.pageHeight, 1);
+  const pageGap = normalizeNonNegativeInteger(source.pageGap, 0);
+  const pageStride = pageHeight + pageGap;
+  const viewportHeight = normalizePositiveInteger(source.viewportHeight, pageHeight);
+  const domBudget = normalizePositiveInteger(source.domBudget, DEFAULT_VIRTUAL_VIEWPORT_DOM_BUDGET);
+  const overscan = normalizeNonNegativeInteger(source.overscan, DEFAULT_VIRTUAL_VIEWPORT_OVERSCAN);
+  const totalVirtualHeight = totalPageCount > 0
+    ? (totalPageCount * pageHeight) + ((totalPageCount - 1) * pageGap)
+    : 0;
+  const maxScrollTop = Math.max(0, totalVirtualHeight - viewportHeight);
+  const scrollTop = clampNumber(Math.round(normalizeNonNegativeNumber(source.scrollTop, 0)), 0, maxScrollTop);
+
+  if (totalPageCount <= 0) {
+    return {
+      contractVersion: VIRTUAL_VIEWPORT_WINDOW_MATH_CONTRACT_SCHEMA_VERSION,
+      runtimeOnly: true,
+      windowingEnabled: false,
+      rendererBinding: false,
+      productUiDone: false,
+      domBoundedClaim: false,
+      performanceClaim: false,
+      totalPageCount,
+      scrollTop,
+      viewportHeight,
+      pageHeight,
+      pageGap,
+      pageStride,
+      domBudget,
+      overscan,
+      totalVirtualHeight,
+      maxScrollTop,
+      viewportTop: scrollTop,
+      viewportBottom: scrollTop + viewportHeight,
+      firstVisiblePage: 0,
+      lastVisiblePage: 0,
+      visiblePageCount: 0,
+      viewportHitsPage: false,
+      visibleCoverageComplete: true,
+      visiblePagesOmitted: false,
+      firstRenderedPage: 0,
+      lastRenderedPage: 0,
+      renderedPageCount: 0,
+      overscanBefore: 0,
+      overscanAfter: 0,
+      topSpacerHeight: 0,
+      bottomSpacerHeight: 0,
+      implementedScopes: ['pureVisibleWindowMath'],
+      deferredScopes: ['rendererBinding', 'noBleedRenderer', 'textContinuation', 'liveDomPerf'],
+    };
+  }
+
+  const viewportTop = scrollTop;
+  const viewportBottom = scrollTop + viewportHeight;
+  const pageTop = (pageNumber) => (pageNumber - 1) * pageStride;
+  const pageBottom = (pageNumber) => pageTop(pageNumber) + pageHeight;
+  let firstVisiblePage = clampNumber(Math.floor(viewportTop / pageStride) + 1, 1, totalPageCount);
+  if (pageBottom(firstVisiblePage) <= viewportTop && firstVisiblePage < totalPageCount) {
+    firstVisiblePage += 1;
+  }
+
+  let viewportHitsPage = pageTop(firstVisiblePage) < viewportBottom && pageBottom(firstVisiblePage) > viewportTop;
+
+  let lastVisiblePage = firstVisiblePage;
+  if (viewportHitsPage) {
+    lastVisiblePage = clampNumber(Math.floor(Math.max(viewportTop, viewportBottom - 1) / pageStride) + 1, firstVisiblePage, totalPageCount);
+    while (lastVisiblePage > firstVisiblePage && pageTop(lastVisiblePage) >= viewportBottom) {
+      lastVisiblePage -= 1;
+    }
+    while (lastVisiblePage < totalPageCount && pageTop(lastVisiblePage + 1) < viewportBottom) {
+      lastVisiblePage += 1;
+    }
+  }
+
+  const visiblePageCount = viewportHitsPage ? lastVisiblePage - firstVisiblePage + 1 : 0;
+  const renderedCapacity = Math.max(1, domBudget);
+
+  let firstRenderedPage = firstVisiblePage;
+  let lastRenderedPage = lastVisiblePage;
+  let visibleCoverageComplete = true;
+  if (visiblePageCount > renderedCapacity) {
+    lastRenderedPage = Math.min(totalPageCount, firstVisiblePage + renderedCapacity - 1);
+    visibleCoverageComplete = false;
+  } else {
+    let remainingSlots = renderedCapacity - Math.max(1, visiblePageCount);
+    const preferredBefore = Math.min(overscan, firstVisiblePage - 1, remainingSlots);
+    firstRenderedPage -= preferredBefore;
+    remainingSlots -= preferredBefore;
+
+    const preferredAfter = Math.min(overscan, totalPageCount - lastVisiblePage, remainingSlots);
+    lastRenderedPage += preferredAfter;
+  }
+
+  const renderedPageCount = lastRenderedPage - firstRenderedPage + 1;
+  const pagesBeforeFirstRendered = Math.max(0, firstRenderedPage - 1);
+  const pagesAfterLastRendered = Math.max(0, totalPageCount - lastRenderedPage);
+
+  return {
+    contractVersion: VIRTUAL_VIEWPORT_WINDOW_MATH_CONTRACT_SCHEMA_VERSION,
+    runtimeOnly: true,
+    windowingEnabled: true,
+    rendererBinding: false,
+    productUiDone: false,
+    domBoundedClaim: false,
+    performanceClaim: false,
+    totalPageCount,
+    scrollTop,
+    viewportHeight,
+    pageHeight,
+    pageGap,
+    pageStride,
+    domBudget,
+    overscan,
+    totalVirtualHeight,
+    maxScrollTop,
+    viewportTop,
+    viewportBottom,
+    firstVisiblePage,
+    lastVisiblePage,
+    visiblePageCount,
+    viewportHitsPage,
+    visibleCoverageComplete,
+    visiblePagesOmitted: !visibleCoverageComplete,
+    firstRenderedPage,
+    lastRenderedPage,
+    renderedPageCount,
+    overscanBefore: firstVisiblePage - firstRenderedPage,
+    overscanAfter: Math.max(0, lastRenderedPage - lastVisiblePage),
+    topSpacerHeight: pagesBeforeFirstRendered * pageStride,
+    bottomSpacerHeight: pagesAfterLastRendered * pageStride,
+    implementedScopes: ['pureVisibleWindowMath'],
+    deferredScopes: ['rendererBinding', 'noBleedRenderer', 'textContinuation', 'liveDomPerf'],
   };
 }
 
