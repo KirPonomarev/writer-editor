@@ -10,6 +10,7 @@ const TIPTAP_PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION = 'renderer.tiptapPageMapR
 const VIRTUAL_VIEWPORT_WINDOW_MATH_CONTRACT_SCHEMA_VERSION = 'renderer.virtualViewportWindowMathContract.v1';
 const DEFAULT_LAYOUT_PREVIEW_PAGE_WINDOW_SIZE = 24;
 const DEFAULT_LAYOUT_PREVIEW_CACHE_ENTRIES = 8;
+const DEFAULT_LAYOUT_PREVIEW_PAGE_GAP_PX = 24;
 const DEFAULT_VIRTUAL_VIEWPORT_DOM_BUDGET = 15;
 const DEFAULT_VIRTUAL_VIEWPORT_OVERSCAN = 1;
 
@@ -207,12 +208,22 @@ function buildStyleSummary(styleMap) {
 
 export function createLayoutPreviewState(input = {}) {
   const source = isPlainObject(input) ? input : {};
+  const pageWindowSize = normalizePositiveInteger(source.pageWindowSize, DEFAULT_LAYOUT_PREVIEW_PAGE_WINDOW_SIZE);
+  const scrollTopCandidate = source.pageWindowScrollTop === null ? null : Number(source.pageWindowScrollTop);
   return Object.freeze({
     schemaVersion: LAYOUT_PREVIEW_STATE_SCHEMA_VERSION,
     enabled: Boolean(source.enabled),
     frameMode: source.frameMode !== false,
     pageWindowStart: normalizePositiveInteger(source.pageWindowStart, 1),
-    pageWindowSize: normalizePositiveInteger(source.pageWindowSize, DEFAULT_LAYOUT_PREVIEW_PAGE_WINDOW_SIZE),
+    pageWindowSize,
+    pageWindowScrollTop: scrollTopCandidate === null
+      ? null
+      : (Number.isFinite(scrollTopCandidate) && scrollTopCandidate >= 0 ? scrollTopCandidate : null),
+    pageWindowViewportHeightPx: normalizePositiveInteger(source.pageWindowViewportHeightPx, 0),
+    pageWindowDomBudget: normalizePositiveInteger(source.pageWindowDomBudget, pageWindowSize),
+    pageWindowOverscan: normalizeNonNegativeInteger(source.pageWindowOverscan, 0),
+    pageGapPx: normalizeNonNegativeInteger(source.pageGapPx, DEFAULT_LAYOUT_PREVIEW_PAGE_GAP_PX),
+    pageHeightPx: normalizePositiveInteger(source.pageHeightPx, 0),
   });
 }
 
@@ -567,19 +578,49 @@ export function buildVirtualViewportWindowMathContract(input = {}) {
 function resolvePageWindow(pages, state) {
   const pageCount = Array.isArray(pages) ? pages.length : 0;
   const pageWindowSize = normalizePositiveInteger(state?.pageWindowSize, DEFAULT_LAYOUT_PREVIEW_PAGE_WINDOW_SIZE);
-  const pageWindowStart = Math.min(
-    Math.max(1, normalizePositiveInteger(state?.pageWindowStart, 1)),
-    Math.max(1, pageCount),
-  );
-  const startIndex = Math.max(0, pageWindowStart - 1);
-  const endIndex = Math.min(pageCount, startIndex + pageWindowSize);
+  const pageWindowStart = Math.min(Math.max(1, normalizePositiveInteger(state?.pageWindowStart, 1)), Math.max(1, pageCount));
+  const pageHeight = normalizePositivePixel(state?.pageHeightPx) || 1;
+  const pageGap = normalizeNonNegativeInteger(state?.pageGapPx, DEFAULT_LAYOUT_PREVIEW_PAGE_GAP_PX);
+  const pageStride = pageHeight + pageGap;
+  const fallbackWindowSize = Math.min(pageWindowSize, Math.max(1, pageCount));
+  const fallbackScrollTop = (pageWindowStart - 1) * pageStride;
+  const fallbackViewportHeight = Math.max(1, (fallbackWindowSize * pageStride) - pageGap);
+  const resolvedScrollTop = state?.pageWindowScrollTop === null
+    ? fallbackScrollTop
+    : normalizeNonNegativeNumber(state?.pageWindowScrollTop, fallbackScrollTop);
+  const windowContract = buildVirtualViewportWindowMathContract({
+    totalPageCount: pageCount,
+    pageHeight,
+    pageGap,
+    scrollTop: resolvedScrollTop,
+    viewportHeight: normalizePositiveInteger(state?.pageWindowViewportHeightPx, fallbackViewportHeight),
+    domBudget: normalizePositiveInteger(state?.pageWindowDomBudget, fallbackWindowSize),
+    overscan: normalizeNonNegativeInteger(state?.pageWindowOverscan, 0),
+  });
+  const startIndex = Math.max(0, windowContract.firstRenderedPage - 1);
+  const endIndex = Math.min(pageCount, windowContract.lastRenderedPage);
+  const visibleStartPageNumber = windowContract.viewportHitsPage ? windowContract.firstVisiblePage : 0;
+  const visibleEndPageNumber = windowContract.viewportHitsPage ? windowContract.lastVisiblePage : 0;
+
   return {
     startIndex,
     endIndex,
     startPageNumber: pageCount > 0 ? startIndex + 1 : 0,
     endPageNumber: pageCount > 0 ? endIndex : 0,
+    visibleStartPageNumber,
+    visibleEndPageNumber,
     pageCount,
     pageWindowSize,
+    topSpacerHeight: windowContract.topSpacerHeight,
+    bottomSpacerHeight: windowContract.bottomSpacerHeight,
+    renderedPageCount: windowContract.renderedPageCount,
+    visiblePageCount: windowContract.visiblePageCount,
+    visibleCoverageComplete: windowContract.visibleCoverageComplete,
+    visiblePagesOmitted: windowContract.visiblePagesOmitted,
+    previewBinding: true,
+    productRuntimeBinding: false,
+    rendererBinding: windowContract.rendererBinding,
+    productUiDone: windowContract.productUiDone,
   };
 }
 
@@ -604,6 +645,22 @@ function applyPreviewPageMetrics(pageSurface, metrics = {}) {
   pageSurface.style.width = '100%';
 }
 
+function appendPreviewWindowSpacer(pagesHost, position, heightPx) {
+  if (!(pagesHost instanceof HTMLElement)) {
+    return;
+  }
+  const normalizedHeight = normalizePositivePixel(heightPx);
+  if (normalizedHeight <= 0) {
+    return;
+  }
+  const spacer = document.createElement('div');
+  spacer.className = `layout-preview__window-spacer layout-preview__window-spacer--${position}`;
+  spacer.dataset.position = String(position || 'unknown');
+  spacer.dataset.heightPx = String(normalizedHeight);
+  spacer.style.height = `${normalizedHeight}px`;
+  pagesHost.appendChild(spacer);
+}
+
 export function renderLayoutPreviewSnapshot(host, snapshot, state = createLayoutPreviewState()) {
   if (!(host instanceof HTMLElement)) {
     return;
@@ -620,7 +677,7 @@ export function renderLayoutPreviewSnapshot(host, snapshot, state = createLayout
   const flowNodes = Array.isArray(snapshot.flow?.nodes) ? snapshot.flow.nodes : [];
   const nodeMap = new Map(flowNodes.map((node) => [node.id, node]));
   const pages = Array.isArray(snapshot.pageMap?.pages) ? snapshot.pageMap.pages : [];
-  const pageWindow = resolvePageWindow(pages, resolvedState);
+  const pageWindow = resolvePageWindow(pages, { ...resolvedState, ...(snapshot.metrics || {}) });
   const visiblePages = pages.slice(pageWindow.startIndex, pageWindow.endIndex);
 
   const root = document.createElement('section');
@@ -645,6 +702,16 @@ export function renderLayoutPreviewSnapshot(host, snapshot, state = createLayout
   pagesHost.dataset.pageWindowStart = String(pageWindow.startPageNumber);
   pagesHost.dataset.pageWindowEnd = String(pageWindow.endPageNumber);
   pagesHost.dataset.pageCount = String(pageWindow.pageCount);
+  pagesHost.dataset.visibleWindowStart = String(pageWindow.visibleStartPageNumber);
+  pagesHost.dataset.visibleWindowEnd = String(pageWindow.visibleEndPageNumber);
+  pagesHost.dataset.renderedPageCount = String(pageWindow.renderedPageCount);
+  pagesHost.dataset.visiblePageCount = String(pageWindow.visiblePageCount);
+  pagesHost.dataset.visibleCoverageComplete = pageWindow.visibleCoverageComplete ? 'true' : 'false';
+  pagesHost.dataset.visiblePagesOmitted = pageWindow.visiblePagesOmitted ? 'true' : 'false';
+  pagesHost.dataset.previewBinding = pageWindow.previewBinding ? 'true' : 'false';
+  pagesHost.dataset.productRuntimeBinding = pageWindow.productRuntimeBinding ? 'true' : 'false';
+  pagesHost.dataset.rendererBinding = pageWindow.rendererBinding ? 'true' : 'false';
+  pagesHost.dataset.productUiDone = pageWindow.productUiDone ? 'true' : 'false';
 
   if (pages.length === 0) {
     const empty = document.createElement('div');
@@ -658,6 +725,13 @@ export function renderLayoutPreviewSnapshot(host, snapshot, state = createLayout
       windowMeta.textContent = `Showing pages ${pageWindow.startPageNumber}-${pageWindow.endPageNumber} of ${pageWindow.pageCount}`;
       pagesHost.appendChild(windowMeta);
     }
+
+    const virtualMeta = document.createElement('div');
+    virtualMeta.className = 'layout-preview__window-virtual-meta';
+    virtualMeta.textContent = `Visible ${pageWindow.visibleStartPageNumber}-${pageWindow.visibleEndPageNumber} · Rendered ${pageWindow.startPageNumber}-${pageWindow.endPageNumber} · previewBinding=true · productRuntimeBinding=false`;
+    pagesHost.appendChild(virtualMeta);
+
+    appendPreviewWindowSpacer(pagesHost, 'top', pageWindow.topSpacerHeight);
 
     for (const page of visiblePages) {
       const pageWrap = document.createElement('article');
@@ -690,6 +764,8 @@ export function renderLayoutPreviewSnapshot(host, snapshot, state = createLayout
       pageWrap.appendChild(pageSurface);
       pagesHost.appendChild(pageWrap);
     }
+
+    appendPreviewWindowSpacer(pagesHost, 'bottom', pageWindow.bottomSpacerHeight);
   }
 
   root.appendChild(pagesHost);
