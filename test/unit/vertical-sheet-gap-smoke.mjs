@@ -70,9 +70,71 @@ async function setEditorPayload(win, paragraphCount) {
   });
 }
 
+async function captureBottomMarginInk(win, image) {
+  const geometry = await win.webContents.executeJavaScript([
+    '(() => {',
+    '  const rootStyles = getComputedStyle(document.documentElement);',
+    '  const readRootPx = (name) => {',
+    '    const value = Number.parseFloat(rootStyles.getPropertyValue(name));',
+    '    return Number.isFinite(value) ? value : 0;',
+    '  };',
+    '  const host = document.querySelector("#editor.tiptap-host");',
+    '  const strip = host ? host.querySelector(".tiptap-sheet-strip") : null;',
+    '  const pageWraps = strip ? [...strip.querySelectorAll(":scope > .tiptap-page-wrap")] : [];',
+    '  return {',
+    '    viewportWidth: window.innerWidth,',
+    '    viewportHeight: window.innerHeight,',
+    '    marginLeftPx: readRootPx("--page-margin-left-px"),',
+    '    marginRightPx: readRootPx("--page-margin-right-px"),',
+    '    marginBottomPx: readRootPx("--page-margin-bottom-px"),',
+    '    pageRects: pageWraps.map((el) => {',
+    '      const rect = el.getBoundingClientRect();',
+    '      return {',
+    '        left: rect.left,',
+    '        right: rect.right,',
+    '        top: rect.top,',
+    '        bottom: rect.bottom,',
+    '        width: rect.width,',
+    '        height: rect.height,',
+    '      };',
+    '    }),',
+    '  };',
+    '})()',
+  ].join('\\n'), true);
+  const size = image.getSize();
+  const bitmap = image.getBitmap();
+  const scaleX = geometry.viewportWidth > 0 ? size.width / geometry.viewportWidth : 1;
+  const scaleY = geometry.viewportHeight > 0 ? size.height / geometry.viewportHeight : 1;
+  let inkPixelCount = 0;
+  let sampledPixelCount = 0;
+  for (const rect of geometry.pageRects || []) {
+    const left = Math.max(0, Math.floor((rect.left + geometry.marginLeftPx + 8) * scaleX));
+    const right = Math.min(size.width, Math.ceil((rect.right - geometry.marginRightPx - 8) * scaleX));
+    const top = Math.max(0, Math.floor((rect.bottom - geometry.marginBottomPx + 8) * scaleY));
+    const bottom = Math.min(size.height, Math.ceil((rect.bottom - 8) * scaleY));
+    if (right <= left || bottom <= top) continue;
+    for (let y = top; y < bottom; y += 4) {
+      for (let x = left; x < right; x += 4) {
+        const index = ((y * size.width) + x) * 4;
+        const blue = bitmap[index];
+        const green = bitmap[index + 1];
+        const red = bitmap[index + 2];
+        const alpha = bitmap[index + 3];
+        sampledPixelCount += 1;
+        const luma = (0.2126 * red) + (0.7152 * green) + (0.0722 * blue);
+        if (alpha > 180 && luma < 135) {
+          inkPixelCount += 1;
+        }
+      }
+    }
+  }
+  return { inkPixelCount, sampledPixelCount };
+}
+
 async function saveCapture(win, basename) {
   const image = await win.webContents.capturePage();
   await fs.writeFile(path.join(outputDir, basename), image.toPNG());
+  return captureBottomMarginInk(win, image);
 }
 
 async function scrollEditorViewport(win, ratio) {
@@ -151,6 +213,29 @@ async function collectState(win, label) {
         height: rect.top - previous.bottom,
       };
     });
+    const rootStyles = getComputedStyle(document.documentElement);
+    const readRootPx = (name) => {
+      const value = Number.parseFloat(rootStyles.getPropertyValue(name));
+      return Number.isFinite(value) ? value : 0;
+    };
+    const marginTopPx = readRootPx('--page-margin-top-px');
+    const marginBottomPx = readRootPx('--page-margin-bottom-px');
+    const contentRects = pageRects.map((rect) => ({
+      left: rect.left,
+      right: rect.right,
+      top: rect.top + marginTopPx,
+      bottom: rect.bottom - marginBottomPx,
+      width: rect.width,
+      height: Math.max(0, rect.height - marginTopPx - marginBottomPx),
+    }));
+    const bottomMarginRects = pageRects.map((rect) => ({
+      left: rect.left,
+      right: rect.right,
+      top: rect.bottom - marginBottomPx,
+      bottom: rect.bottom,
+      width: rect.width,
+      height: marginBottomPx,
+    }));
     const walker = prose
       ? document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
           acceptNode(node) {
@@ -208,6 +293,15 @@ async function collectState(win, label) {
     const visibleTextInsideSheetRectCount = visibleTextRects.filter((textRect) => (
       pageRects.some((pageRect) => intersects(textRect, pageRect))
     )).length;
+    const textInsideContentRectCount = textRects.filter((textRect) => (
+      contentRects.some((contentRect) => intersects(textRect, contentRect))
+    )).length;
+    const textBottomMarginIntersectionCount = textRects.filter((textRect) => (
+      bottomMarginRects.some((bottomMarginRect) => bottomMarginRect.height > 0 && intersects(textRect, bottomMarginRect))
+    )).length;
+    const visibleTextBottomMarginIntersectionCount = visibleTextRects.filter((textRect) => (
+      bottomMarginRects.some((bottomMarginRect) => bottomMarginRect.height > 0 && intersects(textRect, bottomMarginRect))
+    )).length;
     const rightFlowSheetPairCount = pageRects.slice(1).filter((rect, index) => {
       const previous = pageRects[index];
       return previous && rect.left > previous.left + 24;
@@ -217,8 +311,8 @@ async function collectState(win, label) {
       return previous && rect.top > previous.top + 24 && Math.abs(rect.left - previous.left) <= 2;
     }).length;
     const gapHeights = gapRects.map((rect) => Math.round(rect.height));
-    const rootStyles = getComputedStyle(document.documentElement);
     const editorStyles = tiptapEditor ? getComputedStyle(tiptapEditor) : null;
+    const hostStyles = host ? getComputedStyle(host) : null;
     return {
       label: \${JSON.stringify(label)},
       centralSheetFlow: host ? host.dataset.centralSheetFlow || null : null,
@@ -231,12 +325,16 @@ async function collectState(win, label) {
       visibleTextGapIntersectionCount,
       textInsideSheetRectCount,
       visibleTextInsideSheetRectCount,
+      textInsideContentRectCount,
+      textBottomMarginIntersectionCount,
+      visibleTextBottomMarginIntersectionCount,
       visibleTextRectCount: visibleTextRects.length,
       proseMirrorCount: host ? host.querySelectorAll('.ProseMirror').length : 0,
       tiptapEditorCount: host ? host.querySelectorAll('.tiptap-editor').length : 0,
       prosePageTruthCount: prose ? prose.querySelectorAll('[data-page-index], [data-page-number], [data-page-id]').length : 0,
       editorMaskImage: editorStyles ? editorStyles.maskImage || '' : '',
       editorWebkitMaskImage: editorStyles ? editorStyles.webkitMaskImage || '' : '',
+      lineGuardPx: hostStyles ? hostStyles.getPropertyValue('--central-sheet-line-guard-px').trim() : '',
       activeElementInsideProse: prose ? prose.contains(document.activeElement) : false,
       rightFlowSheetPairCount,
       verticallyStackedSheetPairCount,
@@ -298,15 +396,15 @@ app.whenReady().then(async () => {
     const topScroll = await scrollEditorViewport(win, 0);
     await sleep(250);
     const topState = await collectState(win, 'top');
-    await saveCapture(win, 'vertical-sheet-gap-top.png');
+    const topInk = await saveCapture(win, 'vertical-sheet-gap-top.png');
     const middleScroll = await scrollEditorViewport(win, 0.5);
     await sleep(250);
     const middleState = await collectState(win, 'middle-scroll');
-    await saveCapture(win, 'vertical-sheet-gap-middle-scroll.png');
+    const middleInk = await saveCapture(win, 'vertical-sheet-gap-middle-scroll.png');
     const afterScroll = await scrollEditorViewport(win, 1);
     await sleep(250);
     const afterScrollState = await collectState(win, 'after-scroll');
-    await saveCapture(win, 'vertical-sheet-gap-after-scroll.png');
+    const afterScrollInk = await saveCapture(win, 'vertical-sheet-gap-after-scroll.png');
     await scrollEditorViewport(win, 0);
     await sleep(250);
     const inputSmoke = await runInputSmoke(win);
@@ -323,6 +421,11 @@ app.whenReady().then(async () => {
         top: topScroll,
         middle: middleScroll,
         afterScroll,
+      },
+      bottomMarginInk: {
+        top: topInk,
+        middle: middleInk,
+        afterScroll: afterScrollInk,
       },
       inputSmoke,
       networkRequests,
@@ -362,6 +465,8 @@ assert.equal(editorText.includes("editor.dataset.centralSheetFlow = 'vertical';"
 assert.equal(editorText.includes("getRootCssPxValue('--page-gap-px', 24)"), true);
 assert.equal(editorText.includes('metrics.pageHeightPx + pageGapPx'), true);
 assert.equal(editorText.includes('metrics.pageHeightPx * visiblePageCount'), true);
+assert.equal(editorText.includes('resolveCentralSheetLineGuardPx(proseMirror)'), true);
+assert.equal(editorText.includes("editor.style.setProperty('--central-sheet-line-guard-px'"), true);
 assert.equal(cssText.includes('flex-direction: column;'), true);
 assert.equal(cssText.includes('gap: var(--page-gap-px);'), true);
 assert.equal(cssText.includes('column-width: var(--central-sheet-content-width-px);'), false);
@@ -417,14 +522,20 @@ for (const measuredState of states) {
   assert.equal(measuredState.visibleTextGapIntersectionCount, 0);
   assert.equal(measuredState.textInsideSheetRectCount > 0, true);
   assert.equal(measuredState.visibleTextInsideSheetRectCount > 0, true);
+  assert.equal(measuredState.textInsideContentRectCount > 0, true);
   assert.equal(measuredState.visibleTextRectCount > 0, true);
   assert.equal(measuredState.proseMirrorCount, 1);
   assert.equal(measuredState.tiptapEditorCount, 1);
   assert.equal(measuredState.prosePageTruthCount, 0);
+  assert.equal(Number.parseFloat(measuredState.lineGuardPx) >= 24, true);
   assert.equal(
     String(measuredState.editorMaskImage || measuredState.editorWebkitMaskImage || '').includes('repeating-linear-gradient'),
     true,
   );
+}
+for (const inkState of Object.values(result.bottomMarginInk || {})) {
+  assert.equal(inkState.sampledPixelCount > 0, true);
+  assert.equal(inkState.inkPixelCount, 0);
 }
 assert.equal(result.inputSmoke && result.inputSmoke.ok, true);
 assert.equal(result.inputSmoke && result.inputSmoke.inserted, true);
@@ -447,6 +558,10 @@ console.log('VERTICAL_SHEET_GAP_SMOKE_SUMMARY:' + JSON.stringify({
   visibleSheetCount: state.visibleSheetCount,
   textGapIntersectionCount: state.textGapIntersectionCount,
   visibleTextGapIntersectionCount: state.visibleTextGapIntersectionCount,
+  textBottomMarginIntersectionCount: state.textBottomMarginIntersectionCount,
+  visibleTextBottomMarginIntersectionCount: state.visibleTextBottomMarginIntersectionCount,
+  bottomMarginInk: result.bottomMarginInk,
+  lineGuardPx: state.lineGuardPx,
   proseMirrorCount: state.proseMirrorCount,
   inputSmoke: result.inputSmoke,
   scroll: result.scroll,
