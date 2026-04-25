@@ -523,10 +523,146 @@ test('layout preview runtime: render path windows visible pages without changing
     assert.equal(windowMeta.length, 1);
     assert.equal(windowMeta[0].textContent, 'Showing pages 2-3 of 5');
 
+    const virtualMeta = collectElementsByClass(host, 'layout-preview__window-virtual-meta');
+    assert.equal(virtualMeta.length, 1);
+    assert.equal(virtualMeta[0].textContent.includes('previewBinding=true'), true);
+    assert.equal(virtualMeta[0].textContent.includes('productRuntimeBinding=false'), true);
+
     const pagesHost = collectElementsByClass(host, 'layout-preview__pages')[0];
     assert.equal(pagesHost.dataset.pageWindowStart, '2');
     assert.equal(pagesHost.dataset.pageWindowEnd, '3');
     assert.equal(pagesHost.dataset.pageCount, '5');
+    assert.equal(pagesHost.dataset.visibleWindowStart, '2');
+    assert.equal(pagesHost.dataset.visibleWindowEnd, '3');
+    assert.equal(pagesHost.dataset.renderedPageCount, '2');
+    assert.equal(pagesHost.dataset.visiblePageCount, '2');
+    assert.equal(pagesHost.dataset.visibleCoverageComplete, 'true');
+    assert.equal(pagesHost.dataset.visiblePagesOmitted, 'false');
+    assert.equal(pagesHost.dataset.previewBinding, 'true');
+    assert.equal(pagesHost.dataset.productRuntimeBinding, 'false');
+    assert.equal(pagesHost.dataset.rendererBinding, 'false');
+    assert.equal(pagesHost.dataset.productUiDone, 'false');
+
+    const topSpacer = collectElementsByClass(host, 'layout-preview__window-spacer--top');
+    const bottomSpacer = collectElementsByClass(host, 'layout-preview__window-spacer--bottom');
+    assert.equal(topSpacer.length, 1);
+    assert.equal(bottomSpacer.length, 1);
+    assert.equal(topSpacer[0].dataset.heightPx, '824');
+    assert.equal(bottomSpacer[0].dataset.heightPx, '1648');
+    assert.equal(topSpacer[0].style.height, '824px');
+    assert.equal(bottomSpacer[0].style.height, '1648px');
+  } finally {
+    global.HTMLElement = previousHTMLElement;
+    global.document = previousDocument;
+  }
+});
+
+test('layout preview runtime: render path marks omitted visible coverage when viewport exceeds dom budget', async () => {
+  const mod = await loadModule('src/renderer/layoutPreview.mjs');
+  const previousHTMLElement = global.HTMLElement;
+  const previousDocument = global.document;
+
+  class FakeClassList {
+    constructor() {
+      this.tokens = new Set();
+    }
+
+    toggle(token, force) {
+      if (force) this.tokens.add(token);
+      else this.tokens.delete(token);
+    }
+  }
+
+  class FakeElement {
+    constructor(tagName) {
+      this.tagName = String(tagName || '').toUpperCase();
+      this.children = [];
+      this.dataset = {};
+      this.attributes = {};
+      this.className = '';
+      this.classList = new FakeClassList();
+      this.style = {};
+      this.textContent = '';
+    }
+
+    append(...children) {
+      for (const child of children) this.appendChild(child);
+    }
+
+    appendChild(child) {
+      this.children.push(child);
+      return child;
+    }
+
+    replaceChildren(...children) {
+      this.children = children;
+    }
+
+    setAttribute(name, value) {
+      this.attributes[name] = String(value);
+    }
+  }
+
+  global.HTMLElement = FakeElement;
+  global.document = {
+    createElement(tagName) {
+      return new FakeElement(tagName);
+    },
+  };
+
+  try {
+    const host = new FakeElement('div');
+    const snapshot = {
+      profile: { formatId: 'A4' },
+      flow: {
+        nodes: Array.from({ length: 20 }, (_, index) => ({
+          id: `node-${index + 1}`,
+          semanticKind: 'paragraph',
+          text: `Node ${index + 1}`,
+        })),
+      },
+      pageMap: {
+        pages: Array.from({ length: 20 }, (_, index) => ({
+          pageNumber: index + 1,
+          nodeIds: [`node-${index + 1}`],
+        })),
+        meta: { pageCount: 20 },
+      },
+      metrics: {
+        pageWidthPx: 1000,
+        pageHeightPx: 100,
+      },
+    };
+
+    mod.renderLayoutPreviewSnapshot(
+      host,
+      snapshot,
+      mod.createLayoutPreviewState({
+        enabled: true,
+        pageWindowStart: 1,
+        pageWindowSize: 3,
+        pageWindowScrollTop: 0,
+        pageWindowViewportHeightPx: 500,
+        pageWindowDomBudget: 3,
+        pageWindowOverscan: 1,
+        pageGapPx: 0,
+      }),
+    );
+
+    const pagesHost = collectElementsByClass(host, 'layout-preview__pages')[0];
+    const pageWraps = collectElementsByClass(host, 'layout-preview__page-wrap');
+    assert.deepEqual(pageWraps.map((item) => item.dataset.pageNumber), ['1', '2', '3']);
+    assert.equal(snapshot.pageMap.pages.length, 20);
+    assert.equal(pagesHost.dataset.visibleWindowStart, '1');
+    assert.equal(pagesHost.dataset.visibleWindowEnd, '5');
+    assert.equal(pagesHost.dataset.pageWindowStart, '1');
+    assert.equal(pagesHost.dataset.pageWindowEnd, '3');
+    assert.equal(pagesHost.dataset.visiblePageCount, '5');
+    assert.equal(pagesHost.dataset.renderedPageCount, '3');
+    assert.equal(pagesHost.dataset.visibleCoverageComplete, 'false');
+    assert.equal(pagesHost.dataset.visiblePagesOmitted, 'true');
+    assert.equal(pagesHost.dataset.previewBinding, 'true');
+    assert.equal(pagesHost.dataset.productRuntimeBinding, 'false');
   } finally {
     global.HTMLElement = previousHTMLElement;
     global.document = previousDocument;
