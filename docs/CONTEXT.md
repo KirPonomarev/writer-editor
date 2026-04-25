@@ -1,6 +1,6 @@
 # CONTEXT (Yalken Writer)
 
-Этот файл фиксирует фактическое текущее состояние репозитория после repo-level closure и последующих bounded false-green remediation contours, уже смерженных на main.
+Этот файл фиксирует фактическое текущее состояние репозитория после repo-level closure, последующих bounded false-green remediation contours и принятой vertical sheets baseline, уже смерженных на main.
 
 ## Как читать репозиторий
 - Верхний repo entrypoint: `CANON.md`
@@ -58,6 +58,14 @@
 - that reproof ended with STOP_AND_FREEZE for design write and did not prove a new live nonblocked Group 01 delta
 - design write lane remains closed after the latest X102 reproof
 
+### Vertical sheets accepted baseline
+- Vertical sheets accepted baseline is merged on current mainline at `4c4eca3aba79c7d689d39b822f689f8939ca58ce`.
+- Primary editor flow has an accepted vertical sheet baseline: one Tiptap editor remains the text source, sheets are a derived visual projection, and page gaps remain view-only layout.
+- The accepted evidence set includes `vertical-sheet-feed-smoke`, `vertical-sheet-gap-smoke`, `five-sheet-visible-smoke`, and `vertical-sheet-input-stability-smoke`.
+- `VERTICAL_SHEET_PERFORMANCE_BASELINE_RUN_001` observed 10, 50, and 100 page scenarios as report-only baseline evidence; it is not a hard performance gate and not a repo-persisted artifact.
+- This baseline does not claim full Word-like pagination, export parity, tables/cards/media pagination, horizontal multi-page overview, or toolbar test-tail closure.
+- Page numbers, page gaps, and sheet boundaries are not document truth and must not be written into project state by implication.
+
 ### Toolbar configuration truth
 - toolbar configuration subsystem rebaselined to current repo truth
 - `TOOLBAR_CANONICAL_LIVE_ORDER` length is `17`
@@ -94,7 +102,8 @@ Release hardening remains the last mandatory runtime axis that was closed before
 Repo-wide done подтверждён на main после merge gate и post-merge reconfirm.
 Formal Y8 cutover packet is explicitly bound on main with explicit rollback packet in the same operating reality.
 Owner visual confirmation for the transferred variant on main is true.
-b101939f03996479e90441b1d0cd8ffb4d110e0f is the current confirmed live point for this variant.
+b101939f03996479e90441b1d0cd8ffb4d110e0f is the historical confirmed live point for that transferred variant.
+4c4eca3aba79c7d689d39b822f689f8939ca58ce is the current mainline point for the accepted vertical sheets baseline.
 Source anchor `e1f36ef` was successfully reproduced on main.
 Local checkout `a670f276759889ce90d1aa535ac7c84746b9f470` is not source of truth.
 Prep frame `YALKEN_DESIGN_OS_PREP_AND_SELECTION_FRAME_V7` is archival only.
@@ -130,3 +139,4 @@ No further transfer is required for this variant; the transfer axis is closed.
 - если новых live nonblocked contradictions не переподтверждено, сохранять current mainline closure truth,
 - при отсутствии новых live nonblocked contradictions текущий статус: symbolic closeout ready with blocked and later freeze,
 - если новый live nonblocked contradiction переподтверждён, следующий шаг только один: one explicit evidence-backed nonblocked contour selection brief.
+- after vertical sheets factual sync, the next move must still be selected as exactly one explicit contour; no automatic runtime, export, toolbar, or perf write opens by this text.

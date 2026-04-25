@@ -1,6 +1,6 @@
 # HANDOFF (Yalken Writer)
 
-_Generated: 2026-04-22_
+_Generated: 2026-04-25_
 
 ## Start Here
 - Active execution canon resolver: `docs/OPS/STATUS/CANON_STATUS.json`
@@ -24,15 +24,15 @@ _Generated: 2026-04-22_
 
 ## Snapshot
 - Snapshot class: current-mainline factual snapshot, not a permanent local machine invariant
-- selectedBaseSha: `b101939f03996479e90441b1d0cd8ffb4d110e0f`
-- bindingBaseSha: `b101939f03996479e90441b1d0cd8ffb4d110e0f`
-- reboundAtUtc: `2026-04-22T06:46:13Z`
+- selectedBaseSha: `4c4eca3aba79c7d689d39b822f689f8939ca58ce`
+- bindingBaseSha: `4c4eca3aba79c7d689d39b822f689f8939ca58ce`
+- reboundAtUtc: `2026-04-25T10:08:05Z`
 - Product: `Yalken Writer`
 - Mode: desktop-first, offline-first
 - Active axis: `Writer v1`
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
-- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet and rollback packet
+- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, and accepted vertical sheets baseline
 
 ## Local Machine State
 - This file describes a snapshot-bound mainline reality, not the forever-current state of the local machine.
@@ -76,6 +76,11 @@ _Generated: 2026-04-22_
 - X102 Block 01 visual reproof completed report-only against the current selected-base snapshot and ended with STOP_AND_FREEZE.
 - No new live nonblocked Group 01 visual delta was proved by that reproof.
 - Design write lane remains closed after the latest X102 reproof.
+- vertical sheets accepted baseline is merged on current mainline at `4c4eca3aba79c7d689d39b822f689f8939ca58ce`.
+- primary editor flow has accepted vertical sheet behavior: one Tiptap editor, derived visual sheet stack, view-only page gaps, and no page truth written into project state by implication.
+- accepted vertical evidence includes `vertical-sheet-feed-smoke`, `vertical-sheet-gap-smoke`, `five-sheet-visible-smoke`, and `vertical-sheet-input-stability-smoke`.
+- `VERTICAL_SHEET_PERFORMANCE_BASELINE_RUN_001` is report-only baseline evidence for 10, 50, and 100 page scenarios; it is not a hard performance gate and not a repo-persisted artifact.
+- vertical acceptance does not close export parity, tables/cards/media pagination, horizontal multi-page overview, or toolbar test tails.
 - toolbar configuration subsystem is rebaselined to current repo truth:
   - `LIVE_COUNT = 17`
   - `PLANNED_IDS = []`
@@ -91,6 +96,7 @@ _Generated: 2026-04-22_
 3. if no new live nonblocked contradiction is reproved, preserve current mainline closure truth
 4. current no-contradiction state should remain symbolic closeout ready with blocked or later freeze
 5. if a new live nonblocked contradiction is reproved, open one explicit evidence-backed contour selection brief only
+6. after vertical sheets factual sync, select exactly one next contour; do not open automatic runtime, export, toolbar, perf, or docs work by implication
 
 ## Working Agreement
 - Bounded contours only
