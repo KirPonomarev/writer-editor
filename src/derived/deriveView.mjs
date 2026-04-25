@@ -1,8 +1,10 @@
-import { createHash } from 'node:crypto';
+import { hashCanonicalValue } from '../core/browser-safe-hash.mjs';
 import { hashCoreState } from '../core/runtime.mjs';
 
 const DEFAULT_VIEW_ID = 'derived.view';
 const DEFAULT_OP = 'derived.view';
+
+export { hashCanonicalValue };
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -10,26 +12,6 @@ function isPlainObject(value) {
 
 function cloneJson(value) {
   return JSON.parse(JSON.stringify(value));
-}
-
-function canonicalSerialize(value) {
-  if (value === null) return 'null';
-  const t = typeof value;
-  if (t === 'number') return Number.isFinite(value) ? String(value) : 'null';
-  if (t === 'boolean') return value ? 'true' : 'false';
-  if (t === 'string') return JSON.stringify(value);
-  if (Array.isArray(value)) return `[${value.map((item) => canonicalSerialize(item)).join(',')}]`;
-  if (t === 'object') {
-    const keys = Object.keys(value).sort();
-    return `{${keys.map((key) => `${JSON.stringify(key)}:${canonicalSerialize(value[key])}`).join(',')}}`;
-  }
-  return 'null';
-}
-
-export function hashCanonicalValue(value) {
-  return createHash('sha256')
-    .update(Buffer.from(canonicalSerialize(value), 'utf8'))
-    .digest('hex');
 }
 
 function typedError(code, op, reason, details) {
