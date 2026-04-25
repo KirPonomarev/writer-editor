@@ -4042,8 +4042,8 @@ body.dark-theme .empty-state {
   shape-outside: repeating-linear-gradient(
     to bottom,
     transparent 0,
-    transparent var(--central-sheet-content-height-px),
-    #000 var(--central-sheet-content-height-px),
+    transparent calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px)),
+    #000 calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px)),
     #000 var(--central-sheet-page-stride-px)
   );
 }

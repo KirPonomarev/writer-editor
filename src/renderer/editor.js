@@ -757,6 +757,22 @@ function measureCentralSheetNaturalHeight(proseMirror) {
   return naturalHeight;
 }
 
+function resolveCentralSheetLineGuardPx(proseMirror) {
+  if (!(proseMirror instanceof HTMLElement)) {
+    return 32;
+  }
+  const styles = window.getComputedStyle(proseMirror);
+  const parsedLineHeight = Number.parseFloat(styles.lineHeight);
+  const parsedFontSize = Number.parseFloat(styles.fontSize);
+  const fallbackLineHeight = Number.isFinite(parsedFontSize) && parsedFontSize > 0
+    ? parsedFontSize * 1.625
+    : 32;
+  const lineHeight = Number.isFinite(parsedLineHeight) && parsedLineHeight > 0
+    ? parsedLineHeight
+    : fallbackLineHeight;
+  return Math.max(56, Math.min(128, Math.ceil((lineHeight * 2.25) + 2)));
+}
+
 function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   if (!(editor instanceof HTMLElement)) {
     return;
@@ -781,6 +797,7 @@ function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   editor.style.removeProperty('--central-sheet-content-height-px');
   editor.style.removeProperty('--central-sheet-page-stride-px');
   editor.style.removeProperty('--central-sheet-editor-height-px');
+  editor.style.removeProperty('--central-sheet-line-guard-px');
   renderCentralSheetStripShellPages(0);
 }
 
@@ -825,8 +842,10 @@ function refreshCentralSheetStripProof() {
 
   const { widthPx, heightPx } = getCentralSheetContentMetrics(metrics);
   const pageGapPx = Math.max(0, Math.round(getRootCssPxValue('--page-gap-px', 24)));
+  const lineGuardPx = resolveCentralSheetLineGuardPx(proseMirror);
   editor.style.setProperty('--central-sheet-content-width-px', `${widthPx}px`);
   editor.style.setProperty('--central-sheet-content-height-px', `${heightPx}px`);
+  editor.style.setProperty('--central-sheet-line-guard-px', `${lineGuardPx}px`);
   const activeLayoutPreviewSnapshot = buildActiveLayoutPreviewSnapshot();
   const naturalHeight = measureCentralSheetNaturalHeight(proseMirror);
   const centralSheetDecision = resolveCentralSheetStripProofDecision({
