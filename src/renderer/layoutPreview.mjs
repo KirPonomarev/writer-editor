@@ -6,6 +6,7 @@ import { createStyleMap } from '../derived/styleMap.mjs';
 const LAYOUT_PREVIEW_SCHEMA_VERSION = 'renderer.layoutPreview.v1';
 const LAYOUT_PREVIEW_STATE_SCHEMA_VERSION = 'renderer.layoutPreview.state.v1';
 const LAYOUT_PREVIEW_CACHE_SCHEMA_VERSION = 'renderer.layoutPreview.cache.v1';
+const TIPTAP_PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION = 'renderer.tiptapPageMapRuntimeContract.v1';
 const DEFAULT_LAYOUT_PREVIEW_PAGE_WINDOW_SIZE = 24;
 const DEFAULT_LAYOUT_PREVIEW_CACHE_ENTRIES = 8;
 
@@ -326,6 +327,87 @@ export function buildCachedLayoutPreviewSnapshot(input = {}, cache = null) {
   }
   const snapshot = buildLayoutPreviewSnapshot(input);
   return cache.set(cacheKey, snapshot) || snapshot;
+}
+
+function resolveContractTextSource(input = {}) {
+  const source = isPlainObject(input) ? input : {};
+  const providedBindingSource = normalizeString(source.bindingSource);
+  const textProvider = typeof source.textProvider === 'function' ? source.textProvider : null;
+  if (textProvider) {
+    const text = textProvider();
+    const bindingSource = providedBindingSource === 'currentTiptapPlainText'
+      ? 'currentTiptapPlainText'
+      : 'explicitEditorTextProvider';
+    return {
+      text: typeof text === 'string' ? text : '',
+      bindingSource,
+      primaryTiptapBinding: true,
+    };
+  }
+
+  return {
+    text: typeof source.text === 'string' ? source.text : '',
+    bindingSource: 'staticTextInput',
+    primaryTiptapBinding: false,
+  };
+}
+
+function buildDerivedPageSummaries(pageMap = {}) {
+  const pages = Array.isArray(pageMap.pages) ? pageMap.pages : [];
+  return pages.map((page) => {
+    const nodeIds = Array.isArray(page.nodeIds) ? page.nodeIds : [];
+    return {
+      pageNumber: Number(page.pageNumber) || 0,
+      nodeCount: nodeIds.length,
+      nodeIds,
+      overflow: Boolean(page.overflow),
+    };
+  });
+}
+
+export function buildTiptapPageMapRuntimeContract(input = {}, cache = null) {
+  const source = isPlainObject(input) ? input : {};
+  const textSource = resolveContractTextSource(source);
+  const snapshotInput = {
+    ...source,
+    text: textSource.text,
+  };
+  delete snapshotInput.textProvider;
+  delete snapshotInput.bindingSource;
+
+  const snapshot = buildCachedLayoutPreviewSnapshot(snapshotInput, cache);
+  const pageMap = isPlainObject(snapshot.pageMap) ? snapshot.pageMap : {};
+  const totalPageCount = Number(pageMap.meta?.pageCount) || (Array.isArray(pageMap.pages) ? pageMap.pages.length : 0);
+  const sourceTextHash = hashValue({
+    bindingSource: textSource.bindingSource,
+    text: textSource.text,
+  });
+  const profileHash = hashValue({
+    profile: isPlainObject(source.profile) ? source.profile : {},
+    metrics: isPlainObject(source.metrics) ? source.metrics : {},
+  });
+
+  return {
+    contractVersion: TIPTAP_PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION,
+    runtimeOnly: true,
+    primaryTiptapBinding: textSource.primaryTiptapBinding,
+    bindingSource: textSource.bindingSource,
+    sourceTextHash,
+    profileHash,
+    totalPageCount,
+    derivedPageSummaries: buildDerivedPageSummaries(pageMap),
+    confidence: {
+      level: 'approximate',
+      pagination: 'block-or-paragraph-derived',
+      geometry: 'no-real-rects-in-c01',
+    },
+    limits: {
+      implementedScopes: ['runtimeDerivedPageMapContract'],
+      deferredScopes: ['visibleWindow', 'noBleedRenderer', 'realPageRects', 'realGapRects'],
+      storageTruth: false,
+      exportTruth: false,
+    },
+  };
 }
 
 function resolvePageWindow(pages, state) {
