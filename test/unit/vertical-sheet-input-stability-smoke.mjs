@@ -588,7 +588,7 @@ app.whenReady().then(async () => {
     await win.webContents.insertText(' ');
     await sleep(200);
     clipboard.writeText(buildLargePasteText());
-    await pressKey(win, 'V', [primaryModifier()]);
+    win.webContents.paste();
     await sleep(1000);
     const afterPaste = await collectState(win, 'after-paste');
     await saveCapture(win, 'vertical-input-stability-after-paste.png');
