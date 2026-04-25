@@ -27,7 +27,6 @@ function resolveCentralSheetStripProofDecision({
   activeLayoutPreviewSnapshot,
 } = {}) {
   const activeLayoutPreviewSnapshotPageCount = selectActiveLayoutPreviewSnapshotPageCount(activeLayoutPreviewSnapshot);
-  const hasActiveLayoutPreviewSnapshotPageCount = Boolean(activeLayoutPreviewSnapshotPageCount);
   const resolvedContentHeightPx = toPositiveNumber(contentHeightPx, 1);
   const resolvedNaturalHeight = Math.max(0, toPositiveNumber(naturalHeight, 0));
   const resolvedMaxPageCount = toPositiveInteger(maxPageCount, 1);
@@ -35,20 +34,11 @@ function resolveCentralSheetStripProofDecision({
   const pageCount = Math.max(activeLayoutPreviewSnapshotPageCount || 0, measuredPageCount);
 
   if (pageCount > resolvedMaxPageCount) {
-    if (hasActiveLayoutPreviewSnapshotPageCount) {
-      return {
-        pageCount,
-        visiblePageCount: resolvedMaxPageCount,
-        overflowReason: CENTRAL_SHEET_MAX_PAGE_COUNT_OVERFLOW_REASON,
-        shouldRender: true,
-      };
-    }
-
     return {
       pageCount,
-      visiblePageCount: 0,
+      visiblePageCount: resolvedMaxPageCount,
       overflowReason: CENTRAL_SHEET_MAX_PAGE_COUNT_OVERFLOW_REASON,
-      shouldRender: false,
+      shouldRender: true,
     };
   }
 

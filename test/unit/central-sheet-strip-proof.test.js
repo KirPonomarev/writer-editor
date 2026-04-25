@@ -71,10 +71,11 @@ test('central sheet strip proof: source remains renderer-only and bounded', () =
   const cssText = readFile('src/renderer/styles.css');
 
   assert.equal((editorText.match(/initTiptap\(/g) || []).length, 1);
-  assert.ok(editorText.includes('const MAX_CENTRAL_SHEET_PROOF_PAGES = 5;'));
+  assert.ok(editorText.includes('const CENTRAL_SHEET_RUNTIME_WINDOW_DOM_BUDGET = 15;'));
   assert.ok(editorText.includes("editor.dataset.centralSheetFlow = 'vertical';"));
   assert.equal(editorText.includes("editor.dataset.centralSheetFlow = 'horizontal';"), false);
-  assert.ok(editorText.includes('visiblePageCount'));
+  assert.ok(editorText.includes('renderedPageCount'));
+  assert.ok(editorText.includes('centralSheetTotalPageCount'));
   assert.ok(editorText.includes('centralSheetBoundedOverflowReason'));
   assert.ok(editorText.includes('centralSheetBoundedOverflowSourcePageCount'));
   assert.ok(editorText.includes('centralSheetBoundedOverflowVisiblePageCount'));
@@ -82,6 +83,7 @@ test('central sheet strip proof: source remains renderer-only and bounded', () =
   assert.ok(editorText.includes('--central-sheet-strip-height-px'));
   assert.ok(editorText.includes('--central-sheet-page-stride-px'));
   assert.ok(editorText.includes('--central-sheet-editor-height-px'));
+  assert.ok(editorText.includes('buildVirtualViewportWindowMathContract'));
   assert.match(
     editorText,
     /clearCentralSheetStripProof\(\{ overflowReason: centralSheetDecision\.overflowReason \}\);/,
@@ -92,6 +94,7 @@ test('central sheet strip proof: source remains renderer-only and bounded', () =
 
   assert.ok(cssText.includes('#editor.tiptap-host.tiptap-host--central-sheet-strip-proof > .tiptap-page-wrap'));
   assert.ok(cssText.includes('.tiptap-sheet-strip > .tiptap-page-wrap'));
+  assert.ok(cssText.includes('.tiptap-sheet-strip > .tiptap-sheet-strip__spacer'));
   assert.ok(cssText.includes('flex-direction: column;'));
   assert.ok(cssText.includes('shape-outside: repeating-linear-gradient('));
   assert.equal(cssText.includes('column-width: var(--central-sheet-content-width-px);'), false);
