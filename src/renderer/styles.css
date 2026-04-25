@@ -3913,6 +3913,8 @@ body.dark-theme .empty-state {
 
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof {
   position: relative;
+  margin-left: auto;
+  margin-right: auto;
   width: var(--page-width-px);
   max-width: var(--page-width-px);
   height: var(--central-sheet-strip-height-px);
