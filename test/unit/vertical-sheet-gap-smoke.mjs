@@ -280,7 +280,11 @@ async function collectState(win, label) {
       && rect.top < viewportHeight
       && rect.bottom > 0
     );
+    const visiblePageRects = pageRects.filter(visibleInViewport);
     const visibleTextRects = textRects.filter(visibleInViewport);
+    const visibleTextOutsideVisibleSheetRectCount = visibleTextRects.filter((textRect) => (
+      !visiblePageRects.some((pageRect) => intersects(textRect, pageRect))
+    )).length;
     const textGapIntersectionCount = textRects.filter((textRect) => (
       gapRects.some((gapRect) => gapRect.height > 0 && intersects(textRect, gapRect))
     )).length;
@@ -315,7 +319,15 @@ async function collectState(win, label) {
     const hostStyles = host ? getComputedStyle(host) : null;
     return {
       label: \${JSON.stringify(label)},
+      proofClass: Boolean(host && host.classList.contains('tiptap-host--central-sheet-strip-proof')),
       centralSheetFlow: host ? host.dataset.centralSheetFlow || null : null,
+      centralSheetRenderedPageCount: host ? host.dataset.centralSheetRenderedPageCount || host.dataset.centralSheetCount || null : null,
+      centralSheetTotalPageCount: host ? host.dataset.centralSheetTotalPageCount || host.dataset.centralSheetCount || null : null,
+      centralSheetWindowingEnabled: host ? host.dataset.centralSheetWindowingEnabled || null : null,
+      centralSheetBoundedOverflowReason: host ? host.dataset.centralSheetBoundedOverflowReason || null : null,
+      centralSheetBoundedOverflowSourcePageCount: host ? host.dataset.centralSheetBoundedOverflowSourcePageCount || null : null,
+      centralSheetBoundedOverflowVisiblePageCount: host ? host.dataset.centralSheetBoundedOverflowVisiblePageCount || null : null,
+      centralSheetBoundedOverflowHiddenPageCount: host ? host.dataset.centralSheetBoundedOverflowHiddenPageCount || null : null,
       visibleSheetCount: pageWraps.length,
       pageGapCssPx: rootStyles.getPropertyValue('--page-gap-px').trim(),
       gapHeights,
@@ -329,6 +341,7 @@ async function collectState(win, label) {
       textBottomMarginIntersectionCount,
       visibleTextBottomMarginIntersectionCount,
       visibleTextRectCount: visibleTextRects.length,
+      visibleTextOutsideVisibleSheetRectCount,
       proseMirrorCount: host ? host.querySelectorAll('.ProseMirror').length : 0,
       tiptapEditorCount: host ? host.querySelectorAll('.tiptap-editor').length : 0,
       prosePageTruthCount: prose ? prose.querySelectorAll('[data-page-index], [data-page-number], [data-page-id]').length : 0,
@@ -349,12 +362,28 @@ async function findFiveSheetFixture(win) {
     await sleep(700);
     const state = await collectState(win, 'candidate-' + String(paragraphCount));
     lastState = state;
+    const renderedPageCount = Number(state.centralSheetRenderedPageCount || state.visibleSheetCount || 0);
+    const totalPageCount = Number(state.centralSheetTotalPageCount || renderedPageCount || 0);
+    const hasBoundedOverflow = totalPageCount > renderedPageCount;
     if (
-      state.centralSheetFlow === 'vertical'
-      && state.visibleSheetCount === 5
-      && state.verticallyStackedSheetPairCount === 4
+      state.proofClass === true
+      && state.centralSheetFlow === 'vertical'
+      && renderedPageCount >= 2
+      && renderedPageCount <= 15
+      && state.visibleSheetCount === renderedPageCount
+      && state.verticallyStackedSheetPairCount === Math.max(0, renderedPageCount - 1)
       && state.rightFlowSheetPairCount === 0
+      && state.visibleTextOutsideVisibleSheetRectCount === 0
+      && totalPageCount >= 5
+      && state.centralSheetWindowingEnabled === 'true'
+      && (
+        hasBoundedOverflow
+          ? state.centralSheetBoundedOverflowReason === 'max-page-count'
+          : state.centralSheetBoundedOverflowReason === null
+      )
       && state.proseMirrorCount === 1
+      && state.tiptapEditorCount === 1
+      && state.prosePageTruthCount === 0
     ) {
       return { paragraphCount, state };
     }
@@ -464,7 +493,8 @@ assert.equal(defaultGapAtFullZoom <= 72, true);
 assert.equal(editorText.includes("editor.dataset.centralSheetFlow = 'vertical';"), true);
 assert.equal(editorText.includes("getRootCssPxValue('--page-gap-px', 24)"), true);
 assert.equal(editorText.includes('metrics.pageHeightPx + pageGapPx'), true);
-assert.equal(editorText.includes('metrics.pageHeightPx * visiblePageCount'), true);
+assert.equal(editorText.includes('pageWindow.totalVirtualHeight'), true);
+assert.equal(editorText.includes('stripHeightPx - metrics.marginTopPx - metrics.marginBottomPx'), true);
 assert.equal(editorText.includes('resolveCentralSheetLineGuardPx(proseMirror)'), true);
 assert.equal(editorText.includes("editor.style.setProperty('--central-sheet-line-guard-px'"), true);
 assert.equal(cssText.includes('flex-direction: column;'), true);
@@ -512,21 +542,38 @@ assert.equal(exitCode, 0, `electron helper failed with ${exitCode}\n${stdout}\n$
 assert.equal(result.ok, true);
 assert.equal(states.length, 3);
 for (const measuredState of states) {
+  const renderedPageCount = Number(measuredState.centralSheetRenderedPageCount || measuredState.visibleSheetCount || 0);
+  const totalPageCount = Number(measuredState.centralSheetTotalPageCount || renderedPageCount || 0);
+  const hasBoundedOverflow = totalPageCount > renderedPageCount;
+  assert.equal(measuredState.proofClass, true);
   assert.equal(measuredState.centralSheetFlow, 'vertical');
-  assert.equal(measuredState.visibleSheetCount, 5);
-  assert.equal(measuredState.verticallyStackedSheetPairCount, 4);
+  assert.equal(renderedPageCount >= 2, true);
+  assert.equal(renderedPageCount <= 15, true);
+  assert.equal(measuredState.visibleSheetCount, renderedPageCount);
+  assert.equal(measuredState.verticallyStackedSheetPairCount, Math.max(0, renderedPageCount - 1));
   assert.equal(measuredState.rightFlowSheetPairCount, 0);
+  assert.equal(measuredState.centralSheetWindowingEnabled, 'true');
   assert.equal(measuredState.minGapPx >= 24, true);
   assert.equal(measuredState.maxGapPx <= 72, true);
   assert.equal(measuredState.textGapIntersectionCount, 0);
   assert.equal(measuredState.visibleTextGapIntersectionCount, 0);
+  assert.equal(measuredState.visibleTextOutsideVisibleSheetRectCount, 0);
   assert.equal(measuredState.textInsideSheetRectCount > 0, true);
   assert.equal(measuredState.visibleTextInsideSheetRectCount > 0, true);
   assert.equal(measuredState.textInsideContentRectCount > 0, true);
+  assert.equal(measuredState.textBottomMarginIntersectionCount, 0);
+  assert.equal(measuredState.visibleTextBottomMarginIntersectionCount, 0);
   assert.equal(measuredState.visibleTextRectCount > 0, true);
   assert.equal(measuredState.proseMirrorCount, 1);
   assert.equal(measuredState.tiptapEditorCount, 1);
   assert.equal(measuredState.prosePageTruthCount, 0);
+  assert.equal(totalPageCount >= renderedPageCount, true);
+  assert.equal(
+    hasBoundedOverflow
+      ? measuredState.centralSheetBoundedOverflowReason === 'max-page-count'
+      : measuredState.centralSheetBoundedOverflowReason === null,
+    true,
+  );
   assert.equal(Number.parseFloat(measuredState.lineGuardPx) >= 24, true);
   assert.equal(
     String(measuredState.editorMaskImage || measuredState.editorWebkitMaskImage || '').includes('repeating-linear-gradient'),

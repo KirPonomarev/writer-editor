@@ -110,20 +110,21 @@ async function collectState(win, label) {
     const leftSidebarRect = leftSidebarDomRect
       ? { x: leftSidebarDomRect.x, y: leftSidebarDomRect.y, width: leftSidebarDomRect.width, height: leftSidebarDomRect.height, left: leftSidebarDomRect.left, right: leftSidebarDomRect.right, top: leftSidebarDomRect.top, bottom: leftSidebarDomRect.bottom }
       : null;
-    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-    const viewportVisibleSheetCount = pageRects.filter((rect) => (
-      rect.x < viewportWidth
-      && rect.x + rect.width > 0
-      && rect.y < viewportHeight
-      && rect.y + rect.height > 0
-    )).length;
+    const viewportRect = canvasRect
+      ? { left: canvasRect.left, right: canvasRect.right, top: canvasRect.top, bottom: canvasRect.bottom }
+      : {
+          left: 0,
+          right: window.innerWidth || document.documentElement.clientWidth || 0,
+          top: 0,
+          bottom: window.innerHeight || document.documentElement.clientHeight || 0,
+        };
     const isRectVisibleInViewport = (rect) => (
-      rect.x < viewportWidth
-      && rect.x + rect.width > 0
-      && rect.y < viewportHeight
-      && rect.y + rect.height > 0
+      rect.x < viewportRect.right
+      && rect.x + rect.width > viewportRect.left
+      && rect.y < viewportRect.bottom
+      && rect.y + rect.height > viewportRect.top
     );
+    const viewportVisibleSheetCount = pageRects.filter(isRectVisibleInViewport).length;
     const viewportVisibleSheetRects = pageRects.filter(isRectVisibleInViewport);
     const rectsIntersect = (a, b) => (
       a.x < b.x + b.width
@@ -227,6 +228,7 @@ async function collectState(win, label) {
       viewportVisibleSheetCount,
       visibleTextRectCount: visibleTextRects.length,
       visibleTextOutsideVisibleSheetRectCount: visibleTextOutsideVisibleSheetRects.length,
+      visibleTextOutsideVisibleSheetRects: visibleTextOutsideVisibleSheetRects.slice(0, 12),
       verticallyStackedSheetPairCount,
       rightFlowSheetPairCount,
       occupiedSheetCount: occupiedSheetIndexes.size,
@@ -407,6 +409,7 @@ app.whenReady().then(async () => {
     const longDocumentWindowScroll = await scrollEditorViewportToBottom(win);
     await sleep(900);
     const longDocumentWindowAfterScroll = await collectState(win, 'long-window-after-scroll');
+    await saveCapture(win, '05bz-b1-five-visible-long-window-after-scroll.png');
     const payload = {
       ok: true,
       paragraphCount: fixture.paragraphCount,
@@ -424,6 +427,7 @@ app.whenReady().then(async () => {
       screenshots: [
         path.join(outputDir, '05bz-b1-five-visible-before-input.png'),
         path.join(outputDir, '05bz-b1-five-visible-after-input.png'),
+        path.join(outputDir, '05bz-b1-five-visible-long-window-after-scroll.png'),
       ],
     };
     await fs.writeFile(path.join(outputDir, 'result.json'), JSON.stringify(payload, null, 2));
@@ -492,6 +496,7 @@ assert.equal(
     : result.fixture.centralSheetBoundedOverflowReason === null,
   true,
 );
+assert.equal(result.fixture.proofClass, true);
 assert.equal(result.fixture.proseMirrorCount, 1);
 assert.equal(result.fixture.tiptapEditorCount, 1);
 assert.equal(result.fixture.prosePageTruthCount, 0);
@@ -503,6 +508,7 @@ assert.equal(result.beforeInput.centralSheetFlow, 'vertical');
 assert.equal(result.beforeInput.visibleSheetCount, beforeRenderedPageCount);
 assert.equal(result.beforeInput.viewportVisibleSheetCount >= 1, true);
 assert.equal(result.beforeInput.visibleTextOutsideVisibleSheetRectCount, 0);
+assert.equal(result.beforeInput.proofClass, true);
 assert.equal(result.beforeInput.sheetStackCenteredInCanvas, true);
 assert.equal(result.beforeInput.sheetStackCenteredInHost, true);
 assert.equal(result.beforeInput.stripCenteredInCanvas, true);
@@ -530,7 +536,8 @@ const afterHasBoundedOverflow = afterTotalPageCount > afterRenderedPageCount;
 assert.equal(result.afterInput.centralSheetFlow, 'vertical');
 assert.equal(result.afterInput.visibleSheetCount, afterRenderedPageCount);
 assert.equal(result.afterInput.viewportVisibleSheetCount >= 1, true);
-assert.equal(result.afterInput.visibleTextOutsideVisibleSheetRectCount <= 6, true);
+assert.equal(result.afterInput.visibleTextOutsideVisibleSheetRectCount, 0);
+assert.equal(result.afterInput.proofClass, true);
 assert.equal(result.afterInput.sheetStackCenteredInCanvas, true);
 assert.equal(result.afterInput.sheetStackCenteredInHost, true);
 assert.equal(result.afterInput.stripCenteredInCanvas, true);
@@ -568,13 +575,17 @@ assert.equal(result.longDocumentWindowFixture.state.proseMirrorCount, 1);
 assert.equal(result.longDocumentWindowFixture.state.tiptapEditorCount, 1);
 assert.equal(result.longDocumentWindowFixture.state.prosePageTruthCount, 0);
 assert.equal(result.longDocumentWindowBeforeScroll.centralSheetWindowingEnabled, 'true');
+assert.equal(result.longDocumentWindowBeforeScroll.proofClass, true);
 assert.equal(Number(result.longDocumentWindowBeforeScroll.centralSheetRenderedPageCount) <= 15, true);
 assert.equal(Number(result.longDocumentWindowBeforeScroll.centralSheetWindowFirstRenderedPage) >= 1, true);
+assert.equal(result.longDocumentWindowBeforeScroll.visibleTextOutsideVisibleSheetRectCount, 0);
 assert.equal(result.longDocumentWindowScroll.ok, true);
 assert.equal(Number(result.longDocumentWindowScroll.scrollTop) > 0, true);
 assert.equal(result.longDocumentWindowAfterScroll.centralSheetWindowingEnabled, 'true');
+assert.equal(result.longDocumentWindowAfterScroll.proofClass, true);
 assert.equal(Number(result.longDocumentWindowAfterScroll.centralSheetTotalPageCount) >= 16, true);
 assert.equal(Number(result.longDocumentWindowAfterScroll.centralSheetRenderedPageCount) <= 15, true);
+assert.equal(result.longDocumentWindowAfterScroll.visibleTextOutsideVisibleSheetRectCount, 0);
 assert.equal(
   Number(result.longDocumentWindowAfterScroll.centralSheetWindowFirstRenderedPage)
     > Number(result.longDocumentWindowBeforeScroll.centralSheetWindowFirstRenderedPage),
