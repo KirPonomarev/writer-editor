@@ -31,7 +31,8 @@ function resolveCentralSheetStripProofDecision({
   const resolvedContentHeightPx = toPositiveNumber(contentHeightPx, 1);
   const resolvedNaturalHeight = Math.max(0, toPositiveNumber(naturalHeight, 0));
   const resolvedMaxPageCount = toPositiveInteger(maxPageCount, 1);
-  const pageCount = activeLayoutPreviewSnapshotPageCount || Math.max(1, Math.ceil(resolvedNaturalHeight / resolvedContentHeightPx));
+  const measuredPageCount = Math.max(1, Math.ceil(resolvedNaturalHeight / resolvedContentHeightPx));
+  const pageCount = Math.max(activeLayoutPreviewSnapshotPageCount || 0, measuredPageCount);
 
   if (pageCount > resolvedMaxPageCount) {
     if (hasActiveLayoutPreviewSnapshotPageCount) {

@@ -89,7 +89,6 @@ import uiErrorMapDoc from '../../docs/OPS/STATUS/UI_ERROR_MAP.json';
 
 const {
   resolveCentralSheetStripProofDecision,
-  selectActiveLayoutPreviewSnapshotPageCount,
 } = centralSheetStripProofDecision;
 
 const isTiptapMode = window.__USE_TIPTAP === true;
@@ -750,8 +749,11 @@ function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   }
   editor.style.removeProperty('--central-sheet-count');
   editor.style.removeProperty('--central-sheet-strip-width-px');
+  editor.style.removeProperty('--central-sheet-strip-height-px');
   editor.style.removeProperty('--central-sheet-content-width-px');
   editor.style.removeProperty('--central-sheet-content-height-px');
+  editor.style.removeProperty('--central-sheet-page-stride-px');
+  editor.style.removeProperty('--central-sheet-editor-height-px');
   renderCentralSheetStripShellPages(0);
 }
 
@@ -799,10 +801,7 @@ function refreshCentralSheetStripProof() {
   editor.style.setProperty('--central-sheet-content-width-px', `${widthPx}px`);
   editor.style.setProperty('--central-sheet-content-height-px', `${heightPx}px`);
   const activeLayoutPreviewSnapshot = buildActiveLayoutPreviewSnapshot();
-  const activeLayoutPreviewSnapshotPageCount = selectActiveLayoutPreviewSnapshotPageCount(activeLayoutPreviewSnapshot);
-  const naturalHeight = activeLayoutPreviewSnapshotPageCount
-    ? 0
-    : measureCentralSheetNaturalHeight(proseMirror);
+  const naturalHeight = measureCentralSheetNaturalHeight(proseMirror);
   const centralSheetDecision = resolveCentralSheetStripProofDecision({
     naturalHeight,
     contentHeightPx: heightPx,
@@ -814,14 +813,22 @@ function refreshCentralSheetStripProof() {
     clearCentralSheetStripProof({ overflowReason: centralSheetDecision.overflowReason });
     return;
   }
-  const stripWidthPx = Math.round(
-    (metrics.pageWidthPx * visiblePageCount) + (pageGapPx * Math.max(0, visiblePageCount - 1)),
+  const stripHeightPx = Math.round(
+    (metrics.pageHeightPx * visiblePageCount) + (pageGapPx * Math.max(0, visiblePageCount - 1)),
+  );
+  const pageStridePx = Math.round(metrics.pageHeightPx + pageGapPx);
+  const editorHeightPx = Math.max(
+    heightPx,
+    Math.round(stripHeightPx - metrics.marginTopPx - metrics.marginBottomPx),
   );
 
   editor.style.setProperty('--central-sheet-count', String(visiblePageCount));
-  editor.style.setProperty('--central-sheet-strip-width-px', `${stripWidthPx}px`);
+  editor.style.setProperty('--central-sheet-strip-width-px', `${Math.round(metrics.pageWidthPx)}px`);
+  editor.style.setProperty('--central-sheet-strip-height-px', `${stripHeightPx}px`);
+  editor.style.setProperty('--central-sheet-page-stride-px', `${pageStridePx}px`);
+  editor.style.setProperty('--central-sheet-editor-height-px', `${editorHeightPx}px`);
   editor.dataset.centralSheetCount = String(visiblePageCount);
-  editor.dataset.centralSheetFlow = 'horizontal';
+  editor.dataset.centralSheetFlow = 'vertical';
   syncCentralSheetStripOverflowMetadata(centralSheetDecision);
   renderCentralSheetStripShellPages(visiblePageCount);
   editor.classList.add(CENTRAL_SHEET_STRIP_PROOF_CLASS);

@@ -39,6 +39,32 @@ test('central sheet strip proof: bounded snapshot window keeps renderable centra
   );
 });
 
+test('central sheet strip proof: measured height prevents page-map undercount false-green', () => {
+  const activeLayoutPreviewSnapshot = {
+    schemaVersion: 'renderer.layoutPreview.v1',
+    pageMap: {
+      schemaVersion: 'renderer.pageMap.v1',
+      pages: Array.from({ length: 2 }, (_, index) => ({ pageNumber: index + 1 })),
+      meta: { pageCount: 2 },
+    },
+  };
+
+  assert.deepEqual(
+    resolveCentralSheetStripProofDecision({
+      activeLayoutPreviewSnapshot,
+      naturalHeight: 1200,
+      contentHeightPx: 300,
+      maxPageCount: 5,
+    }),
+    {
+      pageCount: 4,
+      visiblePageCount: 4,
+      overflowReason: '',
+      shouldRender: true,
+    },
+  );
+});
+
 
 test('central sheet strip proof: source remains renderer-only and bounded', () => {
   const editorText = readFile('src/renderer/editor.js');
@@ -46,12 +72,16 @@ test('central sheet strip proof: source remains renderer-only and bounded', () =
 
   assert.equal((editorText.match(/initTiptap\(/g) || []).length, 1);
   assert.ok(editorText.includes('const MAX_CENTRAL_SHEET_PROOF_PAGES = 5;'));
-  assert.ok(editorText.includes("editor.dataset.centralSheetFlow = 'horizontal';"));
+  assert.ok(editorText.includes("editor.dataset.centralSheetFlow = 'vertical';"));
+  assert.equal(editorText.includes("editor.dataset.centralSheetFlow = 'horizontal';"), false);
   assert.ok(editorText.includes('visiblePageCount'));
   assert.ok(editorText.includes('centralSheetBoundedOverflowReason'));
   assert.ok(editorText.includes('centralSheetBoundedOverflowSourcePageCount'));
   assert.ok(editorText.includes('centralSheetBoundedOverflowVisiblePageCount'));
   assert.ok(editorText.includes('centralSheetBoundedOverflowHiddenPageCount'));
+  assert.ok(editorText.includes('--central-sheet-strip-height-px'));
+  assert.ok(editorText.includes('--central-sheet-page-stride-px'));
+  assert.ok(editorText.includes('--central-sheet-editor-height-px'));
   assert.match(
     editorText,
     /clearCentralSheetStripProof\(\{ overflowReason: centralSheetDecision\.overflowReason \}\);/,
@@ -62,6 +92,10 @@ test('central sheet strip proof: source remains renderer-only and bounded', () =
 
   assert.ok(cssText.includes('#editor.tiptap-host.tiptap-host--central-sheet-strip-proof > .tiptap-page-wrap'));
   assert.ok(cssText.includes('.tiptap-sheet-strip > .tiptap-page-wrap'));
-  assert.ok(cssText.includes('column-width: var(--central-sheet-content-width-px);'));
+  assert.ok(cssText.includes('flex-direction: column;'));
+  assert.ok(cssText.includes('shape-outside: repeating-linear-gradient('));
+  assert.equal(cssText.includes('column-width: var(--central-sheet-content-width-px);'), false);
+  assert.equal(cssText.includes('column-gap: calc(var(--page-gap-px) + var(--page-margin-left-px) + var(--page-margin-right-px));'), false);
+  assert.equal(cssText.includes('column-fill: auto;'), false);
   assert.ok(cssText.includes('pointer-events: auto;'));
 });
