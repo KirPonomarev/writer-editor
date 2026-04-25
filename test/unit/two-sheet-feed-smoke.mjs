@@ -110,13 +110,19 @@ async function collectState(win, label) {
     const leftSidebarRect = leftSidebarDomRect
       ? { x: leftSidebarDomRect.x, y: leftSidebarDomRect.y, width: leftSidebarDomRect.width, height: leftSidebarDomRect.height, left: leftSidebarDomRect.left, right: leftSidebarDomRect.right, top: leftSidebarDomRect.top, bottom: leftSidebarDomRect.bottom }
       : null;
-    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+    const viewportRect = canvasRect
+      ? { left: canvasRect.left, right: canvasRect.right, top: canvasRect.top, bottom: canvasRect.bottom }
+      : {
+          left: 0,
+          right: window.innerWidth || document.documentElement.clientWidth || 0,
+          top: 0,
+          bottom: window.innerHeight || document.documentElement.clientHeight || 0,
+        };
     const isRectVisibleInViewport = (rect) => (
-      rect.x < viewportWidth
-      && rect.x + rect.width > 0
-      && rect.y < viewportHeight
-      && rect.y + rect.height > 0
+      rect.x < viewportRect.right
+      && rect.x + rect.width > viewportRect.left
+      && rect.y < viewportRect.bottom
+      && rect.y + rect.height > viewportRect.top
     );
     const viewportVisibleSheetRects = pageRects.filter(isRectVisibleInViewport);
     const rectsIntersect = (a, b) => (
@@ -264,8 +270,9 @@ async function findTwoSheetFixture(win) {
     lastState = state;
     if (
       state.centralSheetFlow === 'vertical'
-      && state.visibleSheetCount >= 2
-      && state.occupiedSheetCount >= 2
+      && state.proofClass === true
+      && state.visibleSheetCount === 2
+      && state.occupiedSheetCount === 2
       && state.secondSheetBelow
       && !state.secondSheetRightOfFirst
       && state.proseMirrorCount === 1
@@ -378,15 +385,17 @@ const result = JSON.parse(rawResult);
 
 assert.equal(exitCode, 0, `electron helper failed with ${exitCode}\n${stdout}\n${stderr}`);
 assert.equal(result.ok, true);
-assert.equal(result.fixture.visibleSheetCount >= 2, true);
-assert.equal(result.fixture.occupiedSheetCount >= 2, true);
+assert.equal(result.fixture.proofClass, true);
+assert.equal(result.fixture.visibleSheetCount, 2);
+assert.equal(result.fixture.occupiedSheetCount, 2);
 assert.equal(result.fixture.proseMirrorCount, 1);
 assert.equal(result.fixture.tiptapEditorCount, 1);
 assert.equal(result.fixture.centralSheetFlow, 'vertical');
 assert.equal(result.fixture.secondSheetBelow, true);
 assert.equal(result.fixture.secondSheetRightOfFirst, false);
 assert.equal(result.fixture.verticalGapTextRectsCount, 0);
-assert.equal(result.beforeInput.visibleSheetCount >= 2, true);
+assert.equal(result.beforeInput.proofClass, true);
+assert.equal(result.beforeInput.visibleSheetCount, 2);
 assert.equal(result.beforeInput.viewportVisibleSheetCount >= 1, true);
 assert.equal(result.beforeInput.centralSheetFlow, 'vertical');
 assert.equal(result.beforeInput.secondSheetBelow, true);
@@ -402,7 +411,8 @@ assert.equal(result.beforeInput.rightInspectorVisible, true);
 assert.equal(hashText(result.beforeInput.text), hashText(result.fixture.text));
 assert.equal(result.focus.ok, true);
 assert.equal(result.focus.activeElementInsideProse, true);
-assert.equal(result.afterInput.visibleSheetCount >= 2, true);
+assert.equal(result.afterInput.proofClass, true);
+assert.equal(result.afterInput.visibleSheetCount, 2);
 assert.equal(result.afterInput.viewportVisibleSheetCount >= 1, true);
 assert.equal(result.afterInput.centralSheetFlow, 'vertical');
 assert.equal(result.afterInput.secondSheetBelow, true);
