@@ -886,7 +886,7 @@ body {
   gap: var(--toolbar-chrome-gap-xs);
   width: 100%;
   height: 100%;
-  padding: 0 9px;
+  padding: 0 var(--toolbar-chrome-gap-sm);
   pointer-events: none;
 }
 
@@ -903,7 +903,7 @@ body {
   justify-items: center;
   justify-content: center;
   gap: var(--toolbar-chrome-gap-xxs);
-  padding: 0 8px;
+  padding: 0 var(--toolbar-chrome-gap-sm);
 }
 
 .floating-toolbar__display-text {
@@ -950,12 +950,13 @@ body {
 .floating-toolbar__display-value {
   grid-column: 2;
   min-width: 0;
-  color: #3d3d3d;
+  color: rgba(31, 26, 21, 0.86);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
   font-size: 13px;
   font-weight: 500;
   line-height: 17px;
   text-align: center;
+  letter-spacing: 0.008em;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1118,13 +1119,13 @@ body {
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display {
   justify-content: flex-start;
   gap: var(--toolbar-chrome-gap-xs);
-  padding: 0 9px;
+  padding: 0 var(--toolbar-chrome-gap-sm);
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display--line-height {
   grid-template-columns: 12px minmax(0, 1fr) 10px;
-  gap: var(--toolbar-chrome-gap-xxs);
-  padding: 0 8px;
+  gap: var(--toolbar-chrome-gap-xs);
+  padding: 0 var(--toolbar-chrome-gap-sm);
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display-text {
@@ -1139,7 +1140,8 @@ body {
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display-value {
   font-size: 13px;
   font-weight: 500;
-  line-height: 16px;
+  line-height: 17px;
+  letter-spacing: 0.008em;
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__line-height-icon-wrap {
@@ -1160,16 +1162,32 @@ body {
 }
 
 .floating-toolbar__select-wrap--size .floating-toolbar__display {
-  justify-content: center;
-  padding: 0 8px;
+  justify-content: space-between;
+  gap: var(--toolbar-chrome-gap-sm);
+  padding: 0 var(--toolbar-chrome-gap-sm);
 }
 
 .floating-toolbar__select-wrap--size .floating-toolbar__display-text {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  min-width: 2ch;
   overflow: visible;
   text-overflow: clip;
-  text-align: center;
+  text-align: right;
   font-weight: 500;
+  letter-spacing: 0.008em;
+  font-variant-numeric: tabular-nums;
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--size,
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--line-height {
+  background: var(--toolbar-chrome-quiet-bg);
+}
+
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--size:hover,
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--size:focus-within,
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--line-height:hover,
+.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--line-height:focus-within {
+  background: var(--toolbar-chrome-hover-bg);
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__button:hover {

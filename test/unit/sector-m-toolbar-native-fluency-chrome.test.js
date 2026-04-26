@@ -44,11 +44,33 @@ test('sector-m toolbar native fluency chrome: tokenized spacing ladder and quiet
 
 test('sector-m toolbar native fluency chrome: numeric controls remain readable and width-scale tuning stays intact', () => {
   const styles = readStylesSource();
+  const sizeDisplaySection = sliceSection(
+    styles,
+    '.floating-toolbar__select-wrap--size .floating-toolbar__display {',
+    '.floating-toolbar__select-wrap--size .floating-toolbar__display-text {'
+  );
+  const sizeDisplayTextSection = sliceSection(
+    styles,
+    '.floating-toolbar__select-wrap--size .floating-toolbar__display-text {',
+    '.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--size,'
+  );
+  const horizontalNumericQuietSection = sliceSection(
+    styles,
+    '.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--size,',
+    '.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__button:hover {'
+  );
 
   assert.ok(styles.includes('width: calc(132px * var(--floating-toolbar-width-scale));'));
   assert.ok(styles.includes('width: calc(84px * var(--floating-toolbar-width-scale));'));
   assert.ok(styles.includes('width: calc(96px * var(--floating-toolbar-width-scale));'));
   assert.ok(styles.includes('line-height: 17px;'));
+  assert.ok(sizeDisplaySection.includes('justify-content: space-between;'));
+  assert.ok(sizeDisplaySection.includes('gap: var(--toolbar-chrome-gap-sm);'));
+  assert.ok(sizeDisplaySection.includes('padding: 0 var(--toolbar-chrome-gap-sm);'));
+  assert.ok(sizeDisplayTextSection.includes('text-align: right;'));
+  assert.ok(sizeDisplayTextSection.includes('font-variant-numeric: tabular-nums;'));
+  assert.ok(horizontalNumericQuietSection.includes('background: var(--toolbar-chrome-quiet-bg);'));
+  assert.ok(horizontalNumericQuietSection.includes('background: var(--toolbar-chrome-hover-bg);'));
   assert.ok(styles.includes('font-variant-numeric: tabular-nums;'));
   assert.ok(styles.includes('--floating-toolbar-width-scale: 1;'));
   assert.ok(styles.includes('--left-toolbar-width-scale: 1;'));
