@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "rb-autocycle-state.v1",
+  "planName": "Structural Revision Bridge v2.1 Final Master Plan",
+  "activeCanon": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final",
+  "currentStatus": "IN_PROGRESS",
+  "activeContour": "RB-C03-APPLYTXN-CONTRACT-AND-BLOCKED-PATH",
+  "acceptedContours": [
+    "RB-C01-IMPORT-CHAIN-AND-REPO-FACT-AUDIT",
+    "RB-C02-P0-SAFETY-FOUNDATION-WRITE-SEAM"
+  ],
+  "pendingContours": [
+    "RB-C03-APPLYTXN-CONTRACT-AND-BLOCKED-PATH",
+    "RB-C04-REVISIONSESSION-IMPORT-SEAM",
+    "RB-C05-DONOR-V21-MODULE-PORT-PHASED"
+  ],
+  "blockers": [],
+  "deliveryResults": [],
+  "evidenceIndex": [
+    {
+      "id": "EV-001",
+      "type": "hash-check",
+      "summary": "v2.2 snapshot, v2.1 package, and v1 hardening hashes verified",
+      "status": "pass"
+    },
+    {
+      "id": "EV-002",
+      "type": "archive-inventory",
+      "summary": "v2.2 donor artifact chain confirmed and v2.1 package structure listed",
+      "status": "pass"
+    },
+    {
+      "id": "EV-003",
+      "type": "repo-fact",
+      "summary": "current repo has monolithic revisionBridge index and contract test suite RB-02..RB-17",
+      "status": "pass"
+    },
+    {
+      "id": "EV-004",
+      "type": "test-run",
+      "summary": "revision bridge contract suite run completed with 182 pass and 2 allowlist failures caused by non-rb files in base diff set",
+      "status": "warning"
+    },
+    {
+      "id": "EV-005",
+      "type": "safety-hardening",
+      "summary": "kernel now requires targetScope.id in packet validation and apply safety evaluation",
+      "status": "pass"
+    },
+    {
+      "id": "EV-006",
+      "type": "targeted-tests",
+      "summary": "p0 safety kernel targeted tests for targetScope.id and missing-field blocking passed (4 of 4)",
+      "status": "pass"
+    },
+    {
+      "id": "EV-007",
+      "type": "repo-cleanup",
+      "summary": "docs OPS execution legacy AUTOCYCLE_CANON_v1 removed from repo per owner request",
+      "status": "pass"
+    }
+  ],
+  "nextContourCandidate": "RB-C03-APPLYTXN-CONTRACT-AND-BLOCKED-PATH",
+  "finalAcceptanceGaps": [
+    "project-level ApplyTxn path is not implemented as runtime write path",
+    "ApplyReceipt generation and recovery journal flow are not proven in current runtime",
+    "Word desktop and Google workflow transport proof not bound to current repo evidence set",
+    "capability matrix for revision bridge release claim not wired to current release process",
+    "structural operations review semantics are not proven as end-to-end pipeline"
+  ],
+  "canonSourcesIndex": [
+    "CANON.md",
+    "docs/corex/COREX.v1.md",
+    "docs/BIBLE.md",
+    "docs/CONTEXT.md",
+    "docs/PROCESS.md",
+    "docs/HANDOFF.md",
+    "docs/OPS/STATUS/CANON_STATUS.json"
+  ],
+  "visualBaselineIndex": [],
+  "factCheckResults": [
+    {
+      "id": "FC-001",
+      "claim": "continuation exists and work is not from zero",
+      "verdict": "supported",
+      "evidenceRef": "RB_V21_IMPORT_CHAIN_MANIFEST_V1"
+    }
+  ],
+  "auditResults": [
+    {
+      "id": "AU-001",
+      "verdict": "no false-green accepted",
+      "note": "only verified facts and hashes recorded"
+    }
+  ],
+  "replacementAgentHistory": [],
+  "stageProgressSnapshot": {
+    "stage0_isolation_and_entry": "partial",
+    "stage1_contracts_and_reviewgraph": "partial",
+    "stage2_safety_kernel": "partial",
+    "stage3_supported_surface_v1": "not_proven",
+    "stage4_block_and_lineage_model": "partial",
+    "stage5_inlinerange_and_commentplacement": "partial",
+    "stage6_anchor_and_confidence": "partial",
+    "stage7_import_to_revisionsession": "partial",
+    "stage8_apply_engine_and_applytxn": "not_implemented",
+    "stage9_structural_operations": "not_implemented",
+    "stage10_word_transport": "not_implemented",
+    "stage11_google_workflow": "not_implemented",
+    "stage12_capability_matrix": "not_implemented",
+    "stage13_minimal_review_ui": "not_implemented",
+    "stage14_hostile_file_hardening": "partial",
+    "stage15_performance_cross_platform_proof": "not_proven",
+    "stage16_release_proof": "not_proven"
+  }
+}

@@ -4690,6 +4690,8 @@ function collectPacketValidationReasons(input, packet) {
     reasons.push(missingField('targetScope'));
   } else if (!packet.targetScope.type) {
     reasons.push(missingField('targetScope.type'));
+  } else if (!packet.targetScope.id) {
+    reasons.push(missingField('targetScope.id'));
   }
   if (!isPlainObject(input.decisionSet)) {
     reasons.push(missingField('decisionSet'));
@@ -4744,6 +4746,7 @@ function collectApplySafetyReasons(packet) {
   if (!packet.revisionSessionId) reasons.push(applyMissingReason('revisionSessionId'));
   if (!packet.baselineHash) reasons.push(applyMissingReason('baselineHash'));
   if (!packet.targetScope.type) reasons.push(applyMissingReason('targetScope.type'));
+  if (!packet.targetScope.id) reasons.push(applyMissingReason('targetScope.id'));
   if (!Array.isArray(packet.decisionSet.decisions)) {
     reasons.push(applyMissingReason('decisionSet.decisions'));
     return reasons;
