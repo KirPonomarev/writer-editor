@@ -68,6 +68,7 @@ import {
   renderLayoutPreviewSnapshot,
 } from './layoutPreview.mjs';
 import {
+  createRepoGroundedDesignOsBrowserRuntime,
   buildLayoutPatchFromSpatialState,
   buildSpatialStateFromLayoutSnapshot,
 } from './design-os/index.mjs';
@@ -464,9 +465,38 @@ const TOOLBAR_CONFIGURATOR_PROFILE_NAMES = Object.freeze(['minimal', 'master']);
 const TOOLBAR_CONFIGURATOR_CANONICAL_LIVE_IDS = Object.freeze(
   listLiveToolbarFunctionCatalogEntries().map((entry) => entry.id)
 );
+const Y4_RENDERER_LIVE_WIRING_ACTIVE = 'Y4_RENDERER_LIVE_WIRING_ACTIVE';
+let designOsRuntimeBootstrap = null;
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function buildY4RendererLiveWiringProductTruth() {
+  return {
+    project_id: normalizeProjectId(currentProjectId) || 'y4-renderer-live-wiring',
+    scenes: { s1: 'renderer-live-wiring' },
+    active_scene_id: 's1',
+  };
+}
+
+function applyDesignOsRuntimeWiring() {
+  const root = document.documentElement;
+  try {
+    designOsRuntimeBootstrap = createRepoGroundedDesignOsBrowserRuntime({
+      productTruth: buildY4RendererLiveWiringProductTruth(),
+    });
+    if (root) {
+      root.setAttribute('data-y4-renderer-live-wiring', Y4_RENDERER_LIVE_WIRING_ACTIVE);
+    }
+    return designOsRuntimeBootstrap;
+  } catch {
+    designOsRuntimeBootstrap = null;
+    if (root) {
+      root.removeAttribute('data-y4-renderer-live-wiring');
+    }
+    return null;
+  }
 }
 
 function normalizeToolbarConfiguratorProfileName(profileName) {
@@ -8503,6 +8533,7 @@ if (window.electronAPI) {
 }
 
 setCurrentFontSize(currentFontSizePx);
+applyDesignOsRuntimeWiring();
 updateWordCount();
 if (isTiptapMode) {
   scheduleCentralSheetStripProofRefresh();
