@@ -66,7 +66,7 @@ function stableTextHash(text) {
 }
 
 function buildParagraph(index, extra = '') {
-  const sentence = 'Boundary backspace stability paragraph for a visual sheet boundary over one Tiptap editor.';
+  const sentence = 'Vertical boundary input paragraph for caret and deletion stability over a derived sheet stack.';
   return sentence + ' ' + String(index + 1) + '. ' + sentence + (extra ? ' ' + extra + ' ' : ' ') + sentence;
 }
 
@@ -216,15 +216,12 @@ async function placeCaretAfterTargetSentinel(win) {
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
     const derivedWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
-    const firstSheet = derivedWraps[0] || null;
-    if (!host || !strip || !prose || !firstSheet) {
+    if (!host || !strip || !prose || !derivedWraps.length) {
       return { ok: false, reason: 'SURFACE_MISSING' };
     }
     const text = prose.textContent || '';
     const fullTargetCount = exactTokenCount(text, fullTarget);
     const truncatedTargetCount = exactTokenCount(text, truncatedTarget);
-    const firstSheetRectRaw = firstSheet.getBoundingClientRect();
-    const firstSheetRect = toPlainRect(firstSheetRectRaw);
     const pageRects = derivedWraps.map((el, index) => ({ index, ...toPlainRect(el.getBoundingClientRect()) }));
     const walker = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
@@ -253,7 +250,8 @@ async function placeCaretAfterTargetSentinel(win) {
         const sheetIndex = sentinelRect ? pageRects.findIndex((rect) => (
           centerX >= rect.left && centerX <= rect.right && centerY >= rect.top && centerY <= rect.bottom
         )) : -1;
-        const distanceFromSheetBottom = sentinelRect ? firstSheetRect.bottom - sentinelRect.bottom : null;
+        const sheetRect = sheetIndex >= 0 ? pageRects[sheetIndex] : null;
+        const distanceFromSheetBottom = sentinelRect && sheetRect ? sheetRect.bottom - sentinelRect.bottom : null;
         matches.push({
           textNode: current,
           startOffset: index,
@@ -261,6 +259,7 @@ async function placeCaretAfterTargetSentinel(win) {
           targetRects,
           sentinelRect,
           sheetIndex,
+          sheetRect,
           distanceFromSheetBottom,
         });
         from = index + fullTarget.length;
@@ -268,20 +267,61 @@ async function placeCaretAfterTargetSentinel(win) {
       }
       current = walker.nextNode();
     }
-    const selected = matches.find((item) => (
+    const isInBoundaryBand = (item) => (
       item.sentinelRect
-      && item.sheetIndex === 0
+      && item.sheetIndex >= 0
       && item.distanceFromSheetBottom >= 24
       && item.distanceFromSheetBottom <= 220
-      && item.sentinelRect.left >= firstSheetRect.left
-      && item.sentinelRect.right <= firstSheetRect.right
-      && item.sentinelRect.top >= firstSheetRect.top
-      && item.sentinelRect.bottom <= firstSheetRect.bottom
+      && item.sentinelRect.left >= item.sheetRect.left
+      && item.sentinelRect.right <= item.sheetRect.right
+      && item.sentinelRect.top >= item.sheetRect.top
+      && item.sentinelRect.bottom <= item.sheetRect.bottom
+    );
+    let selected = matches.find((item) => (
+      isInBoundaryBand(item)
     )) || null;
+    let pageRectsUsed = pageRects;
+    if (!selected && matches.length === 1) {
+      const match = matches[0];
+      const scrollNode = (match.textNode && match.textNode.parentElement) ? match.textNode.parentElement : prose;
+      if (scrollNode && typeof scrollNode.scrollIntoView === 'function') {
+        scrollNode.scrollIntoView({ block: 'center', inline: 'nearest' });
+      }
+      const refreshedWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
+      const refreshedPageRects = refreshedWraps.map((el, index) => ({ index, ...toPlainRect(el.getBoundingClientRect()) }));
+      const targetRange = document.createRange();
+      targetRange.setStart(match.textNode, match.startOffset);
+      targetRange.setEnd(match.textNode, match.startOffset + fullTarget.length);
+      const sentinelRange = document.createRange();
+      sentinelRange.setStart(match.textNode, match.caretOffset - 1);
+      sentinelRange.setEnd(match.textNode, match.caretOffset);
+      const targetRects = [...targetRange.getClientRects()].map(toPlainRect).filter(Boolean);
+      const sentinelRects = [...sentinelRange.getClientRects()].map(toPlainRect).filter(Boolean);
+      const sentinelRect = sentinelRects[0] || targetRects[targetRects.length - 1] || null;
+      const centerX = sentinelRect ? sentinelRect.left + sentinelRect.width / 2 : null;
+      const centerY = sentinelRect ? sentinelRect.top + sentinelRect.height / 2 : null;
+      const sheetIndex = sentinelRect ? refreshedPageRects.findIndex((rect) => (
+        centerX >= rect.left && centerX <= rect.right && centerY >= rect.top && centerY <= rect.bottom
+      )) : -1;
+      const sheetRect = sheetIndex >= 0 ? refreshedPageRects[sheetIndex] : null;
+      const distanceFromSheetBottom = sentinelRect && sheetRect ? sheetRect.bottom - sentinelRect.bottom : null;
+      const rescored = {
+        ...match,
+        targetRects,
+        sentinelRect,
+        sheetIndex,
+        sheetRect,
+        distanceFromSheetBottom,
+      };
+      if (isInBoundaryBand(rescored)) {
+        selected = rescored;
+        pageRectsUsed = refreshedPageRects;
+      }
+    }
     if (!selected) {
       return {
         ok: false,
-        reason: 'NO_UNIQUE_TARGET_SENTINEL_IN_SAFE_BOUNDARY_BAND',
+        reason: 'NO_TARGET_SENTINEL_IN_SAFE_BOUNDARY_BAND',
         fullTargetCount,
         truncatedTargetCount,
         matchCount: matches.length,
@@ -291,8 +331,7 @@ async function placeCaretAfterTargetSentinel(win) {
           sheetIndex: item.sheetIndex,
           distanceFromSheetBottom: item.distanceFromSheetBottom,
         })),
-        firstSheetRect,
-        pageRects,
+        pageRects: pageRectsUsed,
       };
     }
     const range = document.createRange();
@@ -330,8 +369,7 @@ async function placeCaretAfterTargetSentinel(win) {
       browserSelectionText: selection ? selection.toString() : '',
       targetRects: selected.targetRects,
       sentinelRect: selected.sentinelRect,
-      firstSheetRect,
-      pageRects,
+      pageRects: pageRectsUsed,
       sheetIndex: selected.sheetIndex,
       distanceFromSheetBottom: selected.distanceFromSheetBottom,
       selectionInsideProseMirror,
@@ -356,7 +394,7 @@ async function findBoundaryFixture(win) {
       lastState = state;
       lastCaretPlacement = caretPlacement;
       if (
-        state.centralSheetFlow === 'horizontal'
+        state.centralSheetFlow === 'vertical'
         && state.sourceWrapperCount === 1
         && state.sourceEditorWrapperCount === 1
         && state.derivedSheetCount >= 2
@@ -368,7 +406,7 @@ async function findBoundaryFixture(win) {
         && state.fullTargetCount === 1
         && state.truncatedTargetCount === 0
         && caretPlacement.ok
-        && caretPlacement.sheetIndex === 0
+        && caretPlacement.sheetIndex >= 0
       ) {
         return { beforeParagraphCount, afterParagraphCount, state, caretPlacement };
       }
@@ -552,7 +590,7 @@ assert.equal(exactTokenCount(result.beforeBackspace.text, result.metrics.fullTar
 assert.equal(exactTokenCount(result.beforeBackspace.text, result.metrics.truncatedTarget), 0, 'truncated target must not be exact before Backspace');
 assert.equal(exactTokenCount(result.afterBackspace.text, result.metrics.fullTarget), 0, 'full target must be removed after Backspace');
 assert.equal(exactTokenCount(result.afterBackspace.text, result.metrics.truncatedTarget), 1, 'truncated target must appear once after Backspace');
-assert.equal(result.fixture.centralSheetFlow, 'horizontal', 'fixture must use central sheet horizontal flow');
+assert.equal(result.fixture.centralSheetFlow, 'vertical', 'fixture must use central sheet vertical flow');
 assert.equal(result.beforeBackspace.centralSheetOverflowReason, null, 'runtime positive guard must not use overflow fallback');
 assert.equal(result.afterBackspace.centralSheetOverflowReason, null, 'runtime positive guard must not overflow after Backspace');
 assert.equal(result.caretPlacement.ok, true, 'caret must be placed after sentinel X');
@@ -560,7 +598,7 @@ assert.equal(result.caretPlacement.precedingChar, 'X', 'caret must be immediatel
 assert.equal(result.caretPlacement.fullTargetCount, 1, 'caret placement must see one full target');
 assert.equal(result.caretPlacement.truncatedTargetCount, 0, 'caret placement must see no exact truncated target');
 assert.equal(result.caretPlacement.matchCount, 1, 'target must be unique in the editor');
-assert.equal(result.caretPlacement.sheetIndex, 0, 'target sentinel must be on the first derived sheet');
+assert.equal(result.caretPlacement.sheetIndex >= 0, true, 'target sentinel must be on a rendered derived sheet');
 assert.equal(
   result.caretPlacement.distanceFromSheetBottom >= 24 && result.caretPlacement.distanceFromSheetBottom <= 220,
   true,
