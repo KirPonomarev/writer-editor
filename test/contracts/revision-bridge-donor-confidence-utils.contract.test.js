@@ -31,6 +31,8 @@ test('RB-20 exports donor confidence helpers', async () => {
   assert.equal(typeof bridge.normalizeRevisionBridgeConfidenceLevel, 'function');
   assert.equal(typeof bridge.summarizeRevisionBridgeConfidenceLevels, 'function');
   assert.equal(typeof bridge.resolveRevisionBridgeOverallConfidence, 'function');
+  assert.equal(typeof bridge.makeRevisionBridgeDiagnostic, 'function');
+  assert.equal(typeof bridge.formatRevisionBridgeDiagnosticsAsText, 'function');
 });
 
 test('RB-20 normalizes donor aliases and canonical values', async () => {
@@ -106,6 +108,74 @@ test('RB-20 helper inputs are not mutated', async () => {
 
   assert.deepEqual(list, beforeList);
   assert.deepEqual(counts, beforeCounts);
+});
+
+test('RB-20 diagnostic helper normalizes fallback values', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.makeRevisionBridgeDiagnostic('', null, [], 77);
+
+  assert.deepEqual(result, {
+    code: 'RB_UNKNOWN',
+    message: 'Unknown Revision Bridge diagnostic',
+    severity: 'warn',
+    details: {},
+  });
+});
+
+test('RB-20 diagnostics formatter is deterministic and donor-compatible', async () => {
+  const bridge = await loadBridge();
+  const bundle = {
+    manifest: {
+      id: 'session-1',
+      exportSessionId: 'export-1',
+      status: 'diagnosed',
+      overallConfidence: 'weakHigh',
+      sourceFilename: 'draft.docx',
+      baselineHash: 'baseline-1',
+      projectId: 'project-1',
+    },
+    diagnostics: [
+      { code: 'RB_CODE', message: 'Issue detected' },
+    ],
+    unresolvedItems: [
+      { id: 'u-1', kind: 'comment', message: 'Manual placement required' },
+    ],
+    structuralChanges: [
+      { id: 's-1', operation: 'split-scene', policy: 'manualOnly' },
+    ],
+    commentPlacements: [
+      { id: 'p-1', anchorType: 'span-anchor', confidence: 'weak-high' },
+    ],
+  };
+  const before = deepClone(bundle);
+
+  const first = bridge.formatRevisionBridgeDiagnosticsAsText(bundle);
+  const second = bridge.formatRevisionBridgeDiagnosticsAsText(bundle);
+
+  assert.deepEqual(first, second);
+  assert.deepEqual(bundle, before);
+  assert.equal(first, [
+    'revisionSessionId=session-1',
+    'exportSessionId=export-1',
+    'status=diagnosed',
+    'overallConfidence=weakHigh',
+    'sourceFilename=draft.docx',
+    'baselineHash=baseline-1',
+    'projectId=project-1',
+    '',
+    '[diagnostics]',
+    '- RB_CODE :: Issue detected',
+    '',
+    '[unresolved]',
+    '- u-1 :: comment :: Manual placement required',
+    '',
+    '[structural]',
+    '- s-1 :: split-scene :: manualOnly',
+    '',
+    '[comments]',
+    '- p-1 :: span-anchor :: high',
+    '',
+  ].join('\n'));
 });
 
 test('RB-20 source section has no forbidden side-effect tokens', () => {

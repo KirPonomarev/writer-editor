@@ -176,6 +176,59 @@ export function resolveRevisionBridgeOverallConfidence(counts = {}) {
   }
   return 'exact';
 }
+
+function revisionBridgeLegacyConfidence(value) {
+  const confidence = normalizeRevisionBridgeConfidenceLevel(value);
+  if (confidence === 'strongHigh' || confidence === 'weakHigh') return 'high';
+  return confidence;
+}
+
+export function makeRevisionBridgeDiagnostic(code, message, details = {}, severity = 'warn') {
+  return {
+    code: typeof code === 'string' && code ? code : 'RB_UNKNOWN',
+    message: typeof message === 'string' ? message : 'Unknown Revision Bridge diagnostic',
+    severity: typeof severity === 'string' ? severity : 'warn',
+    details: isPlainObject(details) ? cloneJsonSafe(details) : {},
+  };
+}
+
+export function formatRevisionBridgeDiagnosticsAsText(bundle = {}) {
+  const source = isPlainObject(bundle) ? bundle : {};
+  const manifest = isPlainObject(source.manifest) ? source.manifest : {};
+  const lines = [];
+  lines.push(`revisionSessionId=${normalizeString(manifest.id)}`);
+  lines.push(`exportSessionId=${normalizeString(manifest.exportSessionId)}`);
+  lines.push(`status=${normalizeString(manifest.status)}`);
+  lines.push(`overallConfidence=${normalizeString(manifest.overallConfidence)}`);
+  lines.push(`sourceFilename=${normalizeString(manifest.sourceFilename)}`);
+  lines.push(`baselineHash=${normalizeString(manifest.baselineHash)}`);
+  lines.push(`projectId=${normalizeString(manifest.projectId)}`);
+  lines.push('');
+  lines.push('[diagnostics]');
+  for (const row of Array.isArray(source.diagnostics) ? source.diagnostics : []) {
+    const item = isPlainObject(row) ? row : {};
+    lines.push(`- ${normalizeString(item.code) || 'RB_UNKNOWN'} :: ${normalizeString(item.message)}`);
+  }
+  lines.push('');
+  lines.push('[unresolved]');
+  for (const row of Array.isArray(source.unresolvedItems) ? source.unresolvedItems : []) {
+    const item = isPlainObject(row) ? row : {};
+    lines.push(`- ${normalizeString(item.id) || 'item'} :: ${normalizeString(item.kind) || 'unknown'} :: ${normalizeString(item.message)}`);
+  }
+  lines.push('');
+  lines.push('[structural]');
+  for (const row of Array.isArray(source.structuralChanges) ? source.structuralChanges : []) {
+    const item = isPlainObject(row) ? row : {};
+    lines.push(`- ${normalizeString(item.id) || 'structural'} :: ${normalizeString(item.operation) || 'unknown'} :: ${normalizeString(item.policy)}`);
+  }
+  lines.push('');
+  lines.push('[comments]');
+  for (const row of Array.isArray(source.commentPlacements) ? source.commentPlacements : []) {
+    const item = isPlainObject(row) ? row : {};
+    lines.push(`- ${normalizeString(item.id) || 'placement'} :: ${normalizeString(item.anchorType)} :: ${revisionBridgeLegacyConfidence(item.confidence)}`);
+  }
+  return `${lines.join('\n')}\n`;
+}
 // RB_20_DONOR_CONFIDENCE_UTILS_END
 
 const REVIEWGRAPH_ITEM_KINDS = [
