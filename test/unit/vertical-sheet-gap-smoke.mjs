@@ -9,6 +9,8 @@ import { pathToFileURL } from 'node:url';
 const rootDir = path.resolve(new URL('../..', import.meta.url).pathname);
 const requireFromHere = createRequire(import.meta.url);
 const electronBinary = requireFromHere('electron');
+const FORCED_DEVICE_SCALE_FACTOR = 2;
+const DEVICE_PIXEL_TOLERANCE_PX = 1;
 const outputDir = process.env.VERTICAL_SHEET_GAP_OUT_DIR
   ? path.resolve(process.env.VERTICAL_SHEET_GAP_OUT_DIR)
   : await mkdtemp(path.join(os.tmpdir(), 'vertical-sheet-gap-'));
@@ -29,9 +31,12 @@ const { app, BrowserWindow, dialog, session } = require('electron');
 
 const rootDir = ${JSON.stringify(rootDir)};
 const outputDir = ${JSON.stringify(outputDir)};
+const forcedDeviceScaleFactor = ${JSON.stringify(FORCED_DEVICE_SCALE_FACTOR)};
+const devicePixelTolerancePx = ${JSON.stringify(DEVICE_PIXEL_TOLERANCE_PX)};
 const mainEntrypoint = path.join(rootDir, 'src', 'main' + '.js');
 let networkRequests = 0;
 let dialogCalls = 0;
+const rendererDiagnostics = [];
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -47,7 +52,15 @@ function buildPlainText(paragraphCount) {
 async function waitForWindow() {
   for (let attempt = 0; attempt < 200; attempt += 1) {
     const win = BrowserWindow.getAllWindows()[0];
-    if (win) return win;
+    if (win) {
+      win.webContents.on('console-message', (_event, level, message, line, sourceId) => {
+        rendererDiagnostics.push({ level, message, line, sourceId });
+      });
+      win.webContents.on('render-process-gone', (_event, details) => {
+        rendererDiagnostics.push({ level: 'render-process-gone', message: JSON.stringify(details), line: 0, sourceId: '' });
+      });
+      return win;
+    }
     await sleep(100);
   }
   throw new Error('WINDOW_NOT_CREATED');
@@ -134,7 +147,27 @@ async function captureBottomMarginInk(win, image) {
 async function saveCapture(win, basename) {
   const image = await win.webContents.capturePage();
   await fs.writeFile(path.join(outputDir, basename), image.toPNG());
-  return captureBottomMarginInk(win, image);
+  const ink = await captureBottomMarginInk(win, image);
+  const imageSize = image.getSize();
+  const viewport = await win.webContents.executeJavaScript(\`(() => ({
+    viewportWidth: window.innerWidth,
+    viewportHeight: window.innerHeight,
+    devicePixelRatio: window.devicePixelRatio,
+  }))()\`, true);
+  const expectedBitmapWidth = Math.round(viewport.viewportWidth * viewport.devicePixelRatio);
+  const expectedBitmapHeight = Math.round(viewport.viewportHeight * viewport.devicePixelRatio);
+  return {
+    ...ink,
+    bitmapWidth: imageSize.width,
+    bitmapHeight: imageSize.height,
+    viewportWidth: viewport.viewportWidth,
+    viewportHeight: viewport.viewportHeight,
+    devicePixelRatio: viewport.devicePixelRatio,
+    expectedBitmapWidth,
+    expectedBitmapHeight,
+    bitmapWidthDeltaDevicePx: Math.abs(imageSize.width - expectedBitmapWidth),
+    bitmapHeightDeltaDevicePx: Math.abs(imageSize.height - expectedBitmapHeight),
+  };
 }
 
 async function scrollEditorViewport(win, ratio) {
@@ -188,6 +221,7 @@ async function collectState(win, label) {
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
     const tiptapEditor = host ? host.querySelector('.tiptap-editor') : null;
+    const primaryTextSurfaceNodes = [host, strip, tiptapEditor, prose].filter(Boolean);
     const pageWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
     const pageRects = pageWraps.map((el) => {
       const rect = el.getBoundingClientRect();
@@ -220,6 +254,8 @@ async function collectState(win, label) {
     };
     const marginTopPx = readRootPx('--page-margin-top-px');
     const marginBottomPx = readRootPx('--page-margin-bottom-px');
+    const centralSheetContentHeightPx = readRootPx('--central-sheet-content-height-px');
+    const centralSheetPageStridePx = readRootPx('--central-sheet-page-stride-px');
     const contentRects = pageRects.map((rect) => ({
       left: rect.left,
       right: rect.right,
@@ -236,6 +272,10 @@ async function collectState(win, label) {
       width: rect.width,
       height: marginBottomPx,
     }));
+    const devicePixelRatio = window.devicePixelRatio || 1;
+    const forcedDeviceScaleFactor = \${JSON.stringify(forcedDeviceScaleFactor)};
+    const devicePixelTolerancePx = \${JSON.stringify(devicePixelTolerancePx)};
+    const cssPixelTolerancePx = devicePixelTolerancePx / devicePixelRatio;
     const walker = prose
       ? document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
           acceptNode(node) {
@@ -246,9 +286,11 @@ async function collectState(win, label) {
         })
       : null;
     const textRects = [];
+    let nonEmptyTextNodeCount = 0;
     if (walker) {
       let current = walker.nextNode();
       while (current) {
+        nonEmptyTextNodeCount += 1;
         const range = document.createRange();
         range.selectNodeContents(current);
         [...range.getClientRects()].forEach((rect) => {
@@ -272,6 +314,46 @@ async function collectState(win, label) {
       && a.top < b.bottom
       && a.bottom > b.top
     );
+    const intersectsWithTolerance = (a, b, tolerancePx) => (
+      a.left < b.right - tolerancePx
+      && a.right > b.left + tolerancePx
+      && a.top < b.bottom - tolerancePx
+      && a.bottom > b.top + tolerancePx
+    );
+    const containedWithinTolerance = (inner, outer, tolerancePx) => (
+      inner.left >= outer.left - tolerancePx
+      && inner.right <= outer.right + tolerancePx
+      && inner.top >= outer.top - tolerancePx
+      && inner.bottom <= outer.bottom + tolerancePx
+    );
+    const transformScaleEvidence = primaryTextSurfaceNodes.map((node) => {
+      const styles = getComputedStyle(node);
+      const transform = styles.transform || '';
+      const matrixMatch = transform.match(/^matrix\\\\(([^)]+)\\\\)$/u);
+      const matrix3dMatch = transform.match(/^matrix3d\\\\(([^)]+)\\\\)$/u);
+      let scaleX = 1;
+      let scaleY = 1;
+      if (matrixMatch) {
+        const parts = matrixMatch[1].split(',').map((part) => Number.parseFloat(part.trim()));
+        if (parts.length >= 4 && parts.every(Number.isFinite)) {
+          scaleX = Math.hypot(parts[0], parts[1]);
+          scaleY = Math.hypot(parts[2], parts[3]);
+        }
+      } else if (matrix3dMatch) {
+        const parts = matrix3dMatch[1].split(',').map((part) => Number.parseFloat(part.trim()));
+        if (parts.length >= 16 && parts.every(Number.isFinite)) {
+          scaleX = Math.hypot(parts[0], parts[1], parts[2]);
+          scaleY = Math.hypot(parts[4], parts[5], parts[6]);
+        }
+      }
+      return {
+        className: node.className || node.id || node.nodeName,
+        transform,
+        scaleX,
+        scaleY,
+        hasScaleTransform: Math.abs(scaleX - 1) > 0.0001 || Math.abs(scaleY - 1) > 0.0001,
+      };
+    });
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
     const visibleInViewport = (rect) => (
@@ -282,14 +364,51 @@ async function collectState(win, label) {
     );
     const visiblePageRects = pageRects.filter(visibleInViewport);
     const visibleTextRects = textRects.filter(visibleInViewport);
+    const editorRect = tiptapEditor ? tiptapEditor.getBoundingClientRect() : null;
+    const editorContentRects = editorRect && centralSheetContentHeightPx > 0 && centralSheetPageStridePx > 0
+      ? Array.from({ length: Math.max(1, pageRects.length) }, (_, index) => ({
+          left: editorRect.left,
+          right: editorRect.right,
+          top: editorRect.top + (index * centralSheetPageStridePx),
+          bottom: editorRect.top + (index * centralSheetPageStridePx) + centralSheetContentHeightPx,
+          width: editorRect.width,
+          height: centralSheetContentHeightPx,
+        })).filter(visibleInViewport)
+      : contentRects;
+    const visibleTextRectsClippedToViewport = visibleTextRects.map((textRect) => ({
+      left: Math.max(textRect.left, 0),
+      right: Math.min(textRect.right, viewportWidth),
+      top: Math.max(textRect.top, 0),
+      bottom: Math.min(textRect.bottom, viewportHeight),
+    }));
+    const visiblePaintedTextRects = visibleTextRectsClippedToViewport.flatMap((textRect) => (
+      editorContentRects
+        .filter((contentRect) => intersects(textRect, contentRect))
+        .map((contentRect) => ({
+          left: Math.max(textRect.left, contentRect.left),
+          right: Math.min(textRect.right, contentRect.right),
+          top: Math.max(textRect.top, contentRect.top),
+          bottom: Math.min(textRect.bottom, contentRect.bottom),
+        }))
+        .filter((rect) => rect.left < rect.right && rect.top < rect.bottom)
+    ));
+    const visibleTextOutsideContentRectByDeviceToleranceCount = visiblePaintedTextRects.filter((textRect) => (
+      !editorContentRects.some((contentRect) => containedWithinTolerance(textRect, contentRect, cssPixelTolerancePx))
+    )).length;
     const visibleTextOutsideVisibleSheetRectCount = visibleTextRects.filter((textRect) => (
       !visiblePageRects.some((pageRect) => intersects(textRect, pageRect))
     )).length;
     const textGapIntersectionCount = textRects.filter((textRect) => (
       gapRects.some((gapRect) => gapRect.height > 0 && intersects(textRect, gapRect))
     )).length;
+    const textGapIntersectionByDeviceToleranceCount = textRects.filter((textRect) => (
+      gapRects.some((gapRect) => gapRect.height > 0 && intersectsWithTolerance(textRect, gapRect, cssPixelTolerancePx))
+    )).length;
     const visibleTextGapIntersectionCount = visibleTextRects.filter((textRect) => (
       gapRects.some((gapRect) => gapRect.height > 0 && intersects(textRect, gapRect))
+    )).length;
+    const visibleTextGapIntersectionByDeviceToleranceCount = visibleTextRects.filter((textRect) => (
+      gapRects.some((gapRect) => gapRect.height > 0 && intersectsWithTolerance(textRect, gapRect, cssPixelTolerancePx))
     )).length;
     const textInsideSheetRectCount = textRects.filter((textRect) => (
       pageRects.some((pageRect) => intersects(textRect, pageRect))
@@ -306,6 +425,14 @@ async function collectState(win, label) {
     const visibleTextBottomMarginIntersectionCount = visibleTextRects.filter((textRect) => (
       bottomMarginRects.some((bottomMarginRect) => bottomMarginRect.height > 0 && intersects(textRect, bottomMarginRect))
     )).length;
+    const visibleTextBottomMarginIntersectionByDeviceToleranceCount = visibleTextRects.filter((textRect) => (
+      bottomMarginRects.some((bottomMarginRect) => (
+        bottomMarginRect.height > 0 && intersectsWithTolerance(textRect, bottomMarginRect, cssPixelTolerancePx)
+      ))
+    )).length;
+    const visibleTextClipMaskLossCandidateCount = visibleTextGapIntersectionByDeviceToleranceCount
+      + visibleTextBottomMarginIntersectionByDeviceToleranceCount
+      + visibleTextOutsideVisibleSheetRectCount;
     const rightFlowSheetPairCount = pageRects.slice(1).filter((rect, index) => {
       const previous = pageRects[index];
       return previous && rect.left > previous.left + 24;
@@ -319,6 +446,10 @@ async function collectState(win, label) {
     const hostStyles = host ? getComputedStyle(host) : null;
     return {
       label: \${JSON.stringify(label)},
+      forcedDeviceScaleFactor,
+      devicePixelRatio,
+      devicePixelTolerancePx,
+      cssPixelTolerancePx,
       proofClass: Boolean(host && host.classList.contains('tiptap-host--central-sheet-strip-proof')),
       centralSheetFlow: host ? host.dataset.centralSheetFlow || null : null,
       centralSheetRenderedPageCount: host ? host.dataset.centralSheetRenderedPageCount || host.dataset.centralSheetCount || null : null,
@@ -334,19 +465,28 @@ async function collectState(win, label) {
       minGapPx: gapHeights.length ? Math.min(...gapHeights) : 0,
       maxGapPx: gapHeights.length ? Math.max(...gapHeights) : 0,
       textGapIntersectionCount,
+      textGapIntersectionByDeviceToleranceCount,
       visibleTextGapIntersectionCount,
+      visibleTextGapIntersectionByDeviceToleranceCount,
       textInsideSheetRectCount,
       visibleTextInsideSheetRectCount,
       textInsideContentRectCount,
       textBottomMarginIntersectionCount,
       visibleTextBottomMarginIntersectionCount,
+      visibleTextBottomMarginIntersectionByDeviceToleranceCount,
+      visibleTextClipMaskLossCandidateCount,
       visibleTextRectCount: visibleTextRects.length,
+      textRectCount: textRects.length,
+      nonEmptyTextNodeCount,
+      visibleTextOutsideContentRectByDeviceToleranceCount,
       visibleTextOutsideVisibleSheetRectCount,
       proseMirrorCount: host ? host.querySelectorAll('.ProseMirror').length : 0,
       tiptapEditorCount: host ? host.querySelectorAll('.tiptap-editor').length : 0,
       prosePageTruthCount: prose ? prose.querySelectorAll('[data-page-index], [data-page-number], [data-page-id]').length : 0,
       editorMaskImage: editorStyles ? editorStyles.maskImage || '' : '',
       editorWebkitMaskImage: editorStyles ? editorStyles.webkitMaskImage || '' : '',
+      transformScaleEvidence,
+      primaryTextSurfaceScaleTransformCount: transformScaleEvidence.filter((item) => item.hasScaleTransform).length,
       lineGuardPx: hostStyles ? hostStyles.getPropertyValue('--central-sheet-line-guard-px').trim() : '',
       activeElementInsideProse: prose ? prose.contains(document.activeElement) : false,
       rightFlowSheetPairCount,
@@ -392,7 +532,7 @@ async function findFiveSheetFixture(win) {
 }
 
 app.disableHardwareAcceleration();
-app.commandLine.appendSwitch('force-device-scale-factor', '1');
+app.commandLine.appendSwitch('force-device-scale-factor', String(forcedDeviceScaleFactor));
 app.commandLine.appendSwitch('high-dpi-support', '1');
 app.setPath('userData', path.join(outputDir, 'user-data'));
 for (const method of ['showOpenDialog', 'showSaveDialog', 'showMessageBox']) {
@@ -439,6 +579,13 @@ app.whenReady().then(async () => {
     const inputSmoke = await runInputSmoke(win);
     const payload = {
       ok: true,
+      deviceScaleEvidence: {
+        forcedDeviceScaleFactor,
+        devicePixelTolerancePx,
+        commandLineForceDeviceScaleFactor: app.commandLine.getSwitchValue('force-device-scale-factor'),
+        commandLineHighDpiSupport: app.commandLine.getSwitchValue('high-dpi-support'),
+        devicePixelRatio: topState.devicePixelRatio,
+      },
       paragraphCount: fixture.paragraphCount,
       state: topState,
       states: {
@@ -459,6 +606,7 @@ app.whenReady().then(async () => {
       inputSmoke,
       networkRequests,
       dialogCalls,
+      rendererDiagnostics,
       screenshots: [
         path.join(outputDir, 'vertical-sheet-gap-top.png'),
         path.join(outputDir, 'vertical-sheet-gap-middle-scroll.png'),
@@ -469,7 +617,13 @@ app.whenReady().then(async () => {
     process.stdout.write('VERTICAL_SHEET_GAP_ELECTRON_RESULT:' + JSON.stringify(payload) + '\\\\n');
     app.exit(0);
   } catch (error) {
-    const payload = { ok: false, error: error && error.stack ? error.stack : String(error), networkRequests, dialogCalls };
+    const payload = {
+      ok: false,
+      error: error && error.stack ? error.stack : String(error),
+      networkRequests,
+      dialogCalls,
+      rendererDiagnostics,
+    };
     await fs.writeFile(path.join(outputDir, 'result.json'), JSON.stringify(payload, null, 2));
     process.stdout.write('VERTICAL_SHEET_GAP_ELECTRON_RESULT:' + JSON.stringify(payload) + '\\\\n');
     app.exit(1);
@@ -540,6 +694,12 @@ const states = Object.values(result.states || {});
 
 assert.equal(exitCode, 0, `electron helper failed with ${exitCode}\n${stdout}\n${stderr}`);
 assert.equal(result.ok, true);
+assert.equal(Number.isFinite(DEVICE_PIXEL_TOLERANCE_PX), true);
+assert.equal(DEVICE_PIXEL_TOLERANCE_PX, 1);
+assert.equal(result.deviceScaleEvidence && result.deviceScaleEvidence.forcedDeviceScaleFactor, FORCED_DEVICE_SCALE_FACTOR);
+assert.equal(result.deviceScaleEvidence && result.deviceScaleEvidence.commandLineForceDeviceScaleFactor, String(FORCED_DEVICE_SCALE_FACTOR));
+assert.equal(result.deviceScaleEvidence && result.deviceScaleEvidence.commandLineHighDpiSupport, '1');
+assert.equal(result.deviceScaleEvidence && result.deviceScaleEvidence.devicePixelRatio, FORCED_DEVICE_SCALE_FACTOR);
 assert.equal(states.length, 3);
 for (const measuredState of states) {
   const renderedPageCount = Number(measuredState.centralSheetRenderedPageCount || measuredState.visibleSheetCount || 0);
@@ -550,20 +710,31 @@ for (const measuredState of states) {
   assert.equal(renderedPageCount >= 2, true);
   assert.equal(renderedPageCount <= 15, true);
   assert.equal(measuredState.visibleSheetCount, renderedPageCount);
+  assert.equal(measuredState.forcedDeviceScaleFactor, FORCED_DEVICE_SCALE_FACTOR);
+  assert.equal(measuredState.devicePixelRatio, FORCED_DEVICE_SCALE_FACTOR);
+  assert.equal(measuredState.devicePixelTolerancePx, DEVICE_PIXEL_TOLERANCE_PX);
+  assert.equal(measuredState.cssPixelTolerancePx, DEVICE_PIXEL_TOLERANCE_PX / FORCED_DEVICE_SCALE_FACTOR);
   assert.equal(measuredState.verticallyStackedSheetPairCount, Math.max(0, renderedPageCount - 1));
   assert.equal(measuredState.rightFlowSheetPairCount, 0);
   assert.equal(measuredState.centralSheetWindowingEnabled, 'true');
   assert.equal(measuredState.minGapPx >= 24, true);
   assert.equal(measuredState.maxGapPx <= 72, true);
+  assert.equal(measuredState.textRectCount > 0, true);
+  assert.equal(measuredState.nonEmptyTextNodeCount > 0, true);
+  assert.equal(measuredState.visibleTextRectCount > 0, true);
   assert.equal(measuredState.textGapIntersectionCount, 0);
+  assert.equal(measuredState.textGapIntersectionByDeviceToleranceCount, 0);
   assert.equal(measuredState.visibleTextGapIntersectionCount, 0);
+  assert.equal(measuredState.visibleTextGapIntersectionByDeviceToleranceCount, 0);
   assert.equal(measuredState.visibleTextOutsideVisibleSheetRectCount, 0);
+  assert.equal(measuredState.visibleTextOutsideContentRectByDeviceToleranceCount, 0);
+  assert.equal(measuredState.visibleTextClipMaskLossCandidateCount, 0);
   assert.equal(measuredState.textInsideSheetRectCount > 0, true);
   assert.equal(measuredState.visibleTextInsideSheetRectCount > 0, true);
   assert.equal(measuredState.textInsideContentRectCount > 0, true);
   assert.equal(measuredState.textBottomMarginIntersectionCount, 0);
   assert.equal(measuredState.visibleTextBottomMarginIntersectionCount, 0);
-  assert.equal(measuredState.visibleTextRectCount > 0, true);
+  assert.equal(measuredState.visibleTextBottomMarginIntersectionByDeviceToleranceCount, 0);
   assert.equal(measuredState.proseMirrorCount, 1);
   assert.equal(measuredState.tiptapEditorCount, 1);
   assert.equal(measuredState.prosePageTruthCount, 0);
@@ -579,10 +750,16 @@ for (const measuredState of states) {
     String(measuredState.editorMaskImage || measuredState.editorWebkitMaskImage || '').includes('repeating-linear-gradient'),
     true,
   );
+  assert.equal(Array.isArray(measuredState.transformScaleEvidence), true);
+  assert.equal(measuredState.transformScaleEvidence.length >= 4, true);
+  assert.equal(measuredState.primaryTextSurfaceScaleTransformCount, 0);
 }
 for (const inkState of Object.values(result.bottomMarginInk || {})) {
   assert.equal(inkState.sampledPixelCount > 0, true);
   assert.equal(inkState.inkPixelCount, 0);
+  assert.equal(inkState.devicePixelRatio, FORCED_DEVICE_SCALE_FACTOR);
+  assert.equal(inkState.bitmapWidthDeltaDevicePx <= DEVICE_PIXEL_TOLERANCE_PX, true);
+  assert.equal(inkState.bitmapHeightDeltaDevicePx <= DEVICE_PIXEL_TOLERANCE_PX, true);
 }
 assert.equal(result.inputSmoke && result.inputSmoke.ok, true);
 assert.equal(result.inputSmoke && result.inputSmoke.inserted, true);
@@ -605,8 +782,15 @@ console.log('VERTICAL_SHEET_GAP_SMOKE_SUMMARY:' + JSON.stringify({
   visibleSheetCount: state.visibleSheetCount,
   textGapIntersectionCount: state.textGapIntersectionCount,
   visibleTextGapIntersectionCount: state.visibleTextGapIntersectionCount,
+  textGapIntersectionByDeviceToleranceCount: state.textGapIntersectionByDeviceToleranceCount,
+  visibleTextGapIntersectionByDeviceToleranceCount: state.visibleTextGapIntersectionByDeviceToleranceCount,
   textBottomMarginIntersectionCount: state.textBottomMarginIntersectionCount,
   visibleTextBottomMarginIntersectionCount: state.visibleTextBottomMarginIntersectionCount,
+  visibleTextBottomMarginIntersectionByDeviceToleranceCount: state.visibleTextBottomMarginIntersectionByDeviceToleranceCount,
+  visibleTextClipMaskLossCandidateCount: state.visibleTextClipMaskLossCandidateCount,
+  visibleTextOutsideContentRectByDeviceToleranceCount: state.visibleTextOutsideContentRectByDeviceToleranceCount,
+  deviceScaleEvidence: result.deviceScaleEvidence,
+  transformScaleEvidence: state.transformScaleEvidence,
   bottomMarginInk: result.bottomMarginInk,
   lineGuardPx: state.lineGuardPx,
   proseMirrorCount: state.proseMirrorCount,
