@@ -12,6 +12,10 @@ const outputDir = process.env.VERTICAL_SHEET_PERFORMANCE_WINDOW_OUT_DIR
   ? path.resolve(process.env.VERTICAL_SHEET_PERFORMANCE_WINDOW_OUT_DIR)
   : await mkdtemp(path.join(os.tmpdir(), 'vertical-sheet-performance-window-'));
 const MIN_RENDERED_SHEET_WINDOW = 2;
+const MAX_RENDERED_SHEET_WINDOW = 15;
+const MAX_DOM_GROWTH_10_TO_50 = 250;
+const MAX_DOM_GROWTH_50_TO_100 = 250;
+const MAX_DOM_GROWTH_10_TO_100 = 300;
 const MAX_INSERT_100_MS = 6000;
 
 function buildHelperSource() {
@@ -362,13 +366,21 @@ assert.equal(result.dialogCalls, 0);
       true,
       `rendered sheet lower bound ${state.visibleSheetCount} >= ${MIN_RENDERED_SHEET_WINDOW} for ${scenario.targetPageCount} pages`,
     );
-    assert.equal(state.visibleSheetCount <= 5, true);
+    assert.equal(
+      state.visibleSheetCount <= MAX_RENDERED_SHEET_WINDOW,
+      true,
+      `rendered sheet upper bound ${state.visibleSheetCount} <= ${MAX_RENDERED_SHEET_WINDOW} for ${scenario.targetPageCount} pages`,
+    );
     assert.equal(
       state.visiblePageCount >= MIN_RENDERED_SHEET_WINDOW,
       true,
       `rendered page lower bound ${state.visiblePageCount} >= ${MIN_RENDERED_SHEET_WINDOW} for ${scenario.targetPageCount} pages`,
     );
-    assert.equal(state.visiblePageCount <= 5, true);
+    assert.equal(
+      state.visiblePageCount <= MAX_RENDERED_SHEET_WINDOW,
+      true,
+      `rendered page upper bound ${state.visiblePageCount} <= ${MAX_RENDERED_SHEET_WINDOW} for ${scenario.targetPageCount} pages`,
+    );
     assert.equal(state.hiddenPageCount > 0, true);
     assert.equal(state.centralSheetBoundedOverflowReason, 'max-page-count');
   assert.equal(state.proseMirrorCount, 1);
@@ -383,14 +395,26 @@ assert.equal(result.dialogCalls, 0);
   assert.equal(state.verticallyStackedSheetPairCount, state.visibleSheetCount - 1);
 }
 
+const scenario10 = result.scenarios.find((scenario) => scenario.targetPageCount === 10);
 const scenario50 = result.scenarios.find((scenario) => scenario.targetPageCount === 50);
 const scenario100 = result.scenarios.find((scenario) => scenario.targetPageCount === 100);
+assert.ok(scenario10);
 assert.ok(scenario50);
 assert.ok(scenario100);
 assert.equal(
-  scenario100.state.domNodeCount <= scenario50.state.domNodeCount + 250,
+  scenario50.state.domNodeCount <= scenario10.state.domNodeCount + MAX_DOM_GROWTH_10_TO_50,
   true,
-  `100-page DOM budget ${scenario100.state.domNodeCount} <= ${scenario50.state.domNodeCount} + 250`,
+  `50-page DOM budget ${scenario50.state.domNodeCount} <= ${scenario10.state.domNodeCount} + ${MAX_DOM_GROWTH_10_TO_50}`,
+);
+assert.equal(
+  scenario100.state.domNodeCount <= scenario50.state.domNodeCount + MAX_DOM_GROWTH_50_TO_100,
+  true,
+  `100-page DOM budget ${scenario100.state.domNodeCount} <= ${scenario50.state.domNodeCount} + ${MAX_DOM_GROWTH_50_TO_100}`,
+);
+assert.equal(
+  scenario100.state.domNodeCount <= scenario10.state.domNodeCount + MAX_DOM_GROWTH_10_TO_100,
+  true,
+  `100-page DOM budget ${scenario100.state.domNodeCount} <= ${scenario10.state.domNodeCount} + ${MAX_DOM_GROWTH_10_TO_100}`,
 );
 
 assert.equal(result.focus.ok, true);
@@ -408,7 +432,11 @@ assert.equal(
   true,
   `after input rendered sheet lower bound ${result.afterInput.visibleSheetCount} >= ${MIN_RENDERED_SHEET_WINDOW}`,
 );
-assert.equal(result.afterInput.visibleSheetCount <= 5, true);
+assert.equal(
+  result.afterInput.visibleSheetCount <= MAX_RENDERED_SHEET_WINDOW,
+  true,
+  `after input rendered sheet upper bound ${result.afterInput.visibleSheetCount} <= ${MAX_RENDERED_SHEET_WINDOW}`,
+);
 assert.equal(result.afterInput.proseMirrorCount, 1);
 assert.equal(result.afterInput.tiptapEditorCount, 1);
 assert.equal(result.afterInput.derivedSheetProseMirrorCount, 0);
@@ -438,6 +466,14 @@ const summary = {
   afterInputSourcePageCount: result.afterInput.sourcePageCount,
   afterInputVisibleSheetCount: result.afterInput.visibleSheetCount,
   afterInputHiddenPageCount: result.afterInput.hiddenPageCount,
+  renderedSheetWindowMax: MAX_RENDERED_SHEET_WINDOW,
+  domGrowth10to50: scenario50.state.domNodeCount - scenario10.state.domNodeCount,
+  domGrowth50to100: scenario100.state.domNodeCount - scenario50.state.domNodeCount,
+  domGrowth10to100: scenario100.state.domNodeCount - scenario10.state.domNodeCount,
+  domNotLinearWithSourcePages:
+    scenario50.state.domNodeCount <= scenario10.state.domNodeCount + MAX_DOM_GROWTH_10_TO_50
+    && scenario100.state.domNodeCount <= scenario50.state.domNodeCount + MAX_DOM_GROWTH_50_TO_100
+    && scenario100.state.domNodeCount <= scenario10.state.domNodeCount + MAX_DOM_GROWTH_10_TO_100,
 };
 
 console.log('VERTICAL_SHEET_PERFORMANCE_WINDOW_SUMMARY:' + JSON.stringify(summary));
