@@ -4813,3 +4813,178 @@ export function evaluateRevisionBridgeApplySafety(input = {}) {
 
   return blockedApplyResult(reasons);
 }
+
+export const REVISION_BRIDGE_APPLY_TXN_SCHEMA = 'revision-bridge.apply-txn.v1';
+export const REVISION_BRIDGE_APPLY_TXN_PREVIEW_SCHEMA = 'revision-bridge.apply-txn-preview.v1';
+export const REVISION_BRIDGE_APPLY_TXN_STATES = Object.freeze([
+  'Prepared',
+  'WritingTemps',
+  'Committing',
+  'Verifying',
+  'Applied',
+  'Failed',
+  'Recovering',
+  'Closed',
+]);
+const APPLY_TXN_VALID_CODE = 'REVISION_BRIDGE_APPLY_TXN_VALID';
+const APPLY_TXN_INVALID_CODE = 'E_REVISION_BRIDGE_APPLY_TXN_INVALID';
+const APPLY_TXN_PREVIEW_BLOCKED_CODE = 'E_REVISION_BRIDGE_APPLY_TXN_BLOCKED';
+const APPLY_TXN_RUNTIME_NOT_ENABLED_CODE = 'REVISION_BRIDGE_APPLY_TXN_RUNTIME_NOT_ENABLED';
+const APPLY_TXN_INVALID_TRANSITION_CODE = 'REVISION_BRIDGE_APPLY_TXN_INVALID_TRANSITION';
+const APPLY_TXN_MISSING_TRANSITION_SIDE_CODE = 'REVISION_BRIDGE_APPLY_TXN_TRANSITION_FIELDS_REQUIRED';
+const APPLY_TXN_DECISION_SET_EMPTY_CODE = 'REVISION_BRIDGE_APPLY_TXN_DECISION_SET_EMPTY';
+export const REVISION_BRIDGE_APPLY_TXN_REASON_CODES = Object.freeze([
+  APPLY_TXN_RUNTIME_NOT_ENABLED_CODE,
+  APPLY_TXN_INVALID_TRANSITION_CODE,
+  APPLY_TXN_MISSING_TRANSITION_SIDE_CODE,
+  APPLY_TXN_DECISION_SET_EMPTY_CODE,
+  'REVISION_BRIDGE_FIELD_REQUIRED',
+  'REVISION_BRIDGE_FIELD_INVALID',
+]);
+
+const APPLY_TXN_ALLOWED_TRANSITIONS = Object.freeze({
+  Prepared: Object.freeze(['WritingTemps', 'Failed']),
+  WritingTemps: Object.freeze(['Committing', 'Failed']),
+  Committing: Object.freeze(['Verifying', 'Failed']),
+  Verifying: Object.freeze(['Applied', 'Failed']),
+  Applied: Object.freeze(['Closed', 'Recovering']),
+  Failed: Object.freeze(['Recovering', 'Closed']),
+  Recovering: Object.freeze(['Closed', 'Failed']),
+  Closed: Object.freeze([]),
+});
+
+function normalizeApplyTxnState(value) {
+  const state = normalizeString(value);
+  return REVISION_BRIDGE_APPLY_TXN_STATES.includes(state) ? state : '';
+}
+
+function normalizeApplyTxnTargetScope(input) {
+  const scope = isPlainObject(input) ? input : {};
+  return {
+    type: normalizeString(scope.type),
+    id: normalizeString(scope.id),
+    sceneIds: Array.isArray(scope.sceneIds)
+      ? [...new Set(scope.sceneIds.map((item) => normalizeString(item)).filter(Boolean))]
+      : [],
+  };
+}
+
+function normalizeApplyTxnCandidate(input) {
+  const txn = isPlainObject(input) ? input : {};
+  const decisionSet = normalizeDecisionSet(txn.decisionSet);
+  return {
+    schemaVersion: normalizeString(txn.schemaVersion),
+    projectId: normalizeString(txn.projectId),
+    revisionSessionId: normalizeString(txn.revisionSessionId),
+    baselineHash: normalizeString(txn.baselineHash),
+    targetScope: normalizeApplyTxnTargetScope(txn.targetScope),
+    decisionSet,
+    fromState: normalizeApplyTxnState(txn.fromState),
+    toState: normalizeApplyTxnState(txn.toState),
+  };
+}
+
+function collectApplyTxnValidationReasons(input, txn) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(invalidField('applyTxn', 'applyTxn must be an object'));
+    return reasons;
+  }
+  if (!txn.schemaVersion) {
+    reasons.push(missingField('schemaVersion'));
+  } else if (txn.schemaVersion !== REVISION_BRIDGE_APPLY_TXN_SCHEMA) {
+    reasons.push(invalidField('schemaVersion', 'schemaVersion is not supported'));
+  }
+  if (!txn.projectId) reasons.push(missingField('projectId'));
+  if (!txn.revisionSessionId) reasons.push(missingField('revisionSessionId'));
+  if (!txn.baselineHash) reasons.push(missingField('baselineHash'));
+  if (!isPlainObject(input.targetScope)) {
+    reasons.push(missingField('targetScope'));
+  } else if (!txn.targetScope.type) {
+    reasons.push(missingField('targetScope.type'));
+  } else if (!txn.targetScope.id) {
+    reasons.push(missingField('targetScope.id'));
+  }
+  if (!isPlainObject(input.decisionSet)) {
+    reasons.push(missingField('decisionSet'));
+  } else if (!Array.isArray(input.decisionSet.decisions)) {
+    reasons.push(invalidField('decisionSet.decisions', 'decisionSet.decisions must be an array'));
+  } else if (txn.decisionSet.decisions.length === 0) {
+    reasons.push({
+      code: APPLY_TXN_DECISION_SET_EMPTY_CODE,
+      field: 'decisionSet.decisions',
+      message: 'decisionSet must include at least one decision',
+    });
+  }
+
+  const inputFromState = normalizeString(input.fromState);
+  const inputToState = normalizeString(input.toState);
+  const hasTransitionIntent = Boolean(inputFromState || inputToState);
+  if (hasTransitionIntent) {
+    if (!txn.fromState || !txn.toState) {
+      reasons.push({
+        code: APPLY_TXN_MISSING_TRANSITION_SIDE_CODE,
+        field: !txn.fromState ? 'fromState' : 'toState',
+        message: 'fromState and toState are both required when transition is provided',
+      });
+    } else {
+      const allowedNext = APPLY_TXN_ALLOWED_TRANSITIONS[txn.fromState] || [];
+      if (!allowedNext.includes(txn.toState)) {
+        reasons.push({
+          code: APPLY_TXN_INVALID_TRANSITION_CODE,
+          field: 'toState',
+          message: `${txn.fromState} cannot transition to ${txn.toState}`,
+        });
+      }
+    }
+  }
+  return reasons;
+}
+
+// RB_18_APPLY_TXN_CONTRACTS_START
+export function validateRevisionBridgeApplyTxn(input = {}) {
+  const applyTxn = normalizeApplyTxnCandidate(input);
+  const reasons = collectApplyTxnValidationReasons(input, applyTxn);
+  if (reasons.length > 0) {
+    return {
+      ok: false,
+      type: 'revisionBridge.applyTxnValidation',
+      code: APPLY_TXN_INVALID_CODE,
+      reason: reasons[0]?.code || APPLY_TXN_INVALID_CODE,
+      reasons,
+      applyTxn: null,
+    };
+  }
+  return {
+    ok: true,
+    type: 'revisionBridge.applyTxnValidation',
+    code: APPLY_TXN_VALID_CODE,
+    reason: APPLY_TXN_VALID_CODE,
+    reasons: [],
+    applyTxn: cloneJsonSafe(applyTxn),
+  };
+}
+
+export function previewRevisionBridgeApplyTxn(input = {}) {
+  const validation = validateRevisionBridgeApplyTxn(input);
+  const applyTxn = validation.ok ? validation.applyTxn : normalizeApplyTxnCandidate(input);
+  const reasons = validation.ok
+    ? [{
+      code: APPLY_TXN_RUNTIME_NOT_ENABLED_CODE,
+      field: 'applyTxn',
+      message: 'ApplyTxn runtime execution is not enabled in contract-only mode',
+    }]
+    : validation.reasons;
+  return {
+    schemaVersion: REVISION_BRIDGE_APPLY_TXN_PREVIEW_SCHEMA,
+    type: 'revisionBridge.applyTxnPreview',
+    status: 'blocked',
+    code: APPLY_TXN_PREVIEW_BLOCKED_CODE,
+    reason: reasons[0]?.code || APPLY_TXN_PREVIEW_BLOCKED_CODE,
+    canOpen: false,
+    applyTxn: cloneJsonSafe(applyTxn),
+    allowedTransitions: cloneJsonSafe(APPLY_TXN_ALLOWED_TRANSITIONS),
+    reasons,
+  };
+}
+// RB_18_APPLY_TXN_CONTRACTS_END
