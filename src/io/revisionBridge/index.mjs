@@ -36,6 +36,7 @@ export const REVISION_BRIDGE_REVISION_SESSION_VERSION_TAGS = Object.freeze({
 export const REVISION_BRIDGE_REVISION_SESSION_STATE_INVARIANTS_SCHEMA =
   'revision-bridge.revision-session-state-invariants.v1';
 export const REVISION_BRIDGE_DOCX_REVIEW_PROFILE_ID = 'revision-bridge-docx-review-profile-v1';
+export const REVISION_BRIDGE_SUPPORTED_SURFACE_V1_SCHEMA = 'revision-bridge.supported-surface.v1';
 export const REVISION_BRIDGE_COMMENT_THREAD_SCHEMA = 'revision-bridge.comment-thread.v1';
 export const REVISION_BRIDGE_COMMENT_PLACEMENT_SCHEMA = 'revision-bridge.comment-placement.v1';
 export const REVISION_BRIDGE_TEXT_CHANGE_SCHEMA = 'revision-bridge.text-change.v1';
@@ -567,6 +568,121 @@ function cloneJsonSafe(value) {
   }
   return undefined;
 }
+
+// RB_27_SUPPORTED_SURFACE_V1_CONTRACTS_START
+const REVISION_BRIDGE_SUPPORTED_SURFACE_V1 = Object.freeze({
+  supported: Object.freeze([
+    'mainDocumentStory',
+    'paragraph',
+    'heading',
+    'quote',
+    'listItem',
+    'inlineCommentRange',
+    'trackedInsert',
+    'trackedDelete',
+    'sceneOrder',
+    'blockMoveCandidate',
+    'sceneSplitCandidate',
+    'sceneMergeCandidate',
+  ]),
+  manualOnly: Object.freeze([
+    'sceneReorder',
+    'sceneSplit',
+    'sceneMerge',
+    'blockMove',
+    'blockInsert',
+    'blockDelete',
+    'blockSplit',
+    'blockMerge',
+    'blockCopyRisk',
+  ]),
+  diagnosticsOnly: Object.freeze([
+    'table',
+    'header',
+    'footer',
+    'footnote',
+    'endnote',
+    'textBox',
+    'contentControl',
+    'unsupportedObject',
+  ]),
+});
+
+function normalizeRevisionBridgeSurfaceKey(value) {
+  return normalizeString(value).replace(/\s+/gu, '');
+}
+
+export function getRevisionBridgeSupportedSurfaceV1() {
+  return {
+    schemaVersion: REVISION_BRIDGE_SUPPORTED_SURFACE_V1_SCHEMA,
+    supported: [...REVISION_BRIDGE_SUPPORTED_SURFACE_V1.supported],
+    manualOnly: [...REVISION_BRIDGE_SUPPORTED_SURFACE_V1.manualOnly],
+    diagnosticsOnly: [...REVISION_BRIDGE_SUPPORTED_SURFACE_V1.diagnosticsOnly],
+    policy: {
+      outsideSupportedSurface: 'diagnosticsOnlyOrManualOnly',
+      releaseClaimBoundToEvidence: true,
+    },
+  };
+}
+
+export function classifyRevisionBridgeSurfaceItem(value = '') {
+  const item = normalizeRevisionBridgeSurfaceKey(value);
+  if (!item) {
+    return {
+      item: '',
+      tier: 'unsupported',
+      code: 'REVISION_BRIDGE_SUPPORTED_SURFACE_UNKNOWN',
+    };
+  }
+  if (REVISION_BRIDGE_SUPPORTED_SURFACE_V1.supported.includes(item)) {
+    return {
+      item,
+      tier: 'supported',
+      code: 'REVISION_BRIDGE_SUPPORTED_SURFACE_SUPPORTED',
+    };
+  }
+  if (REVISION_BRIDGE_SUPPORTED_SURFACE_V1.manualOnly.includes(item)) {
+    return {
+      item,
+      tier: 'manualOnly',
+      code: 'REVISION_BRIDGE_SUPPORTED_SURFACE_MANUAL_ONLY',
+    };
+  }
+  if (REVISION_BRIDGE_SUPPORTED_SURFACE_V1.diagnosticsOnly.includes(item)) {
+    return {
+      item,
+      tier: 'diagnosticsOnly',
+      code: 'REVISION_BRIDGE_SUPPORTED_SURFACE_DIAGNOSTICS_ONLY',
+    };
+  }
+  return {
+    item,
+    tier: 'unsupported',
+    code: 'REVISION_BRIDGE_SUPPORTED_SURFACE_UNKNOWN',
+  };
+}
+
+export function evaluateRevisionBridgeSupportedSurface(input = {}) {
+  const source = isPlainObject(input) ? input : {};
+  const items = Array.isArray(source.items) ? source.items : [];
+  const classifications = items.map((item) => classifyRevisionBridgeSurfaceItem(item));
+  const counts = {
+    supported: 0,
+    manualOnly: 0,
+    diagnosticsOnly: 0,
+    unsupported: 0,
+  };
+  for (const row of classifications) {
+    if (Object.hasOwn(counts, row.tier)) counts[row.tier] += 1;
+  }
+  return {
+    schemaVersion: REVISION_BRIDGE_SUPPORTED_SURFACE_V1_SCHEMA,
+    type: 'revisionBridge.supportedSurfaceEvaluation',
+    counts,
+    items: classifications,
+  };
+}
+// RB_27_SUPPORTED_SURFACE_V1_CONTRACTS_END
 
 function normalizeNumber(value) {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
