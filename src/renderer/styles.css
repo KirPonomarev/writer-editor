@@ -504,7 +504,6 @@ body {
 }
 
 .left-floating-toolbar__transform-handle--rotate,
-.left-floating-toolbar__transform-handle--scale,
 .left-floating-toolbar__transform-handle--width {
   top: var(--left-toolbar-cluster-center-y);
   transform: translateY(-50%);
@@ -516,12 +515,6 @@ body {
   cursor: pointer;
 }
 
-.left-floating-toolbar__transform-handle--scale {
-  left: var(--left-toolbar-cluster-right);
-  margin-left: 52px;
-  cursor: nwse-resize;
-}
-
 .left-floating-toolbar__transform-handle--width {
   left: var(--left-toolbar-cluster-left);
   margin-left: -8px;
@@ -530,7 +523,6 @@ body {
 }
 
 .left-floating-toolbar__shell.is-vertical .left-floating-toolbar__transform-handle--rotate,
-.left-floating-toolbar__shell.is-vertical .left-floating-toolbar__transform-handle--scale,
 .left-floating-toolbar__shell.is-vertical .left-floating-toolbar__transform-handle--width {
   left: var(--left-toolbar-cluster-center-x);
   right: auto;
@@ -542,11 +534,6 @@ body {
 .left-floating-toolbar__shell.is-vertical .left-floating-toolbar__transform-handle--rotate {
   top: var(--left-toolbar-cluster-bottom);
   margin-top: 8px;
-}
-
-.left-floating-toolbar__shell.is-vertical .left-floating-toolbar__transform-handle--scale {
-  top: var(--left-toolbar-cluster-bottom);
-  margin-top: 52px;
 }
 
 .left-floating-toolbar__shell.is-vertical .left-floating-toolbar__transform-handle--width {
@@ -1512,7 +1499,6 @@ body {
 }
 
 .floating-toolbar__transform-handle--rotate,
-.floating-toolbar__transform-handle--scale,
 .floating-toolbar__transform-handle--width {
   top: var(--floating-toolbar-cluster-center-y);
   transform: translateY(-50%);
@@ -1524,12 +1510,6 @@ body {
   cursor: pointer;
 }
 
-.floating-toolbar__transform-handle--scale {
-  left: var(--floating-toolbar-cluster-right);
-  margin-left: 52px;
-  cursor: nwse-resize;
-}
-
 .floating-toolbar__transform-handle--width {
   left: var(--floating-toolbar-cluster-left);
   margin-left: -8px;
@@ -1538,7 +1518,6 @@ body {
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__transform-handle--rotate,
-.floating-toolbar__shell.is-vertical .floating-toolbar__transform-handle--scale,
 .floating-toolbar__shell.is-vertical .floating-toolbar__transform-handle--width {
   left: var(--floating-toolbar-cluster-center-x);
   right: auto;
@@ -1550,11 +1529,6 @@ body {
 .floating-toolbar__shell.is-vertical .floating-toolbar__transform-handle--rotate {
   top: var(--floating-toolbar-cluster-bottom);
   margin-top: 8px;
-}
-
-.floating-toolbar__shell.is-vertical .floating-toolbar__transform-handle--scale {
-  top: var(--floating-toolbar-cluster-bottom);
-  margin-top: 52px;
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__transform-handle--width {
