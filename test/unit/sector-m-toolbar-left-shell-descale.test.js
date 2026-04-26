@@ -47,6 +47,11 @@ test('sector-m toolbar left shell descale: runtime removes shell scale branch an
     false,
     'left shell mousemove runtime must not include scale mode branch'
   );
+  assert.equal(
+    dragFoundationSnippet.includes('[data-left-toolbar-scale-handle]'),
+    false,
+    'left shell drag foundation guards must not keep stale scale-handle selector tails'
+  );
 
   const visualSnippet = sliceSection(
     source,
@@ -79,9 +84,10 @@ test('sector-m toolbar left shell descale: runtime removes shell scale branch an
     'function applyLeftFloatingToolbarState(partialState, persist = true) {',
     'function restoreLeftFloatingToolbarPosition() {'
   );
-  assert.ok(
-    stateApplySnippet.includes('scale: 1,'),
-    'left shell apply state must hard-reset scale to 1'
+  assert.equal(
+    stateApplySnippet.includes('scale:'),
+    false,
+    'left shell apply state must not keep scale keys'
   );
   assert.equal(
     stateApplySnippet.includes('FLOATING_TOOLBAR_SCALE_MIN'),
@@ -94,9 +100,10 @@ test('sector-m toolbar left shell descale: runtime removes shell scale branch an
     'function readLeftFloatingToolbarState() {',
     'function persistLeftFloatingToolbarState() {'
   );
-  assert.ok(
-    readStateSnippet.includes('scale: 1,'),
-    'left shell persisted state must sanitize scale to 1'
+  assert.equal(
+    readStateSnippet.includes('scale:'),
+    false,
+    'left shell persisted state must not keep scale keys'
   );
   assert.equal(
     readStateSnippet.includes('const scale = Number(parsed.scale);'),

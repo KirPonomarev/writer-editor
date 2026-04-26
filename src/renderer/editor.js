@@ -154,6 +154,9 @@ const toolbarRotateHandles = Array.from(document.querySelectorAll('[data-toolbar
 const toolbarWidthHandle = document.querySelector('[data-toolbar-width-handle]');
 const leftToolbarRotateHandles = Array.from(document.querySelectorAll('[data-left-toolbar-rotate-handle]'));
 const leftToolbarWidthHandle = document.querySelector('[data-left-toolbar-width-handle]');
+Array.from(document.querySelectorAll('[data-toolbar-scale-handle], [data-left-toolbar-scale-handle]')).forEach((handle) => {
+  handle.remove();
+});
 const leftToolbarCluster = document.querySelector('.left-floating-toolbar .work-bar__cluster');
 const leftToolbarButtons = Array.from(document.querySelectorAll('.left-floating-toolbar .work-bar__button[data-action]'));
 const leftToolbarSpacingMenu = document.querySelector('[data-left-toolbar-spacing-menu]');
@@ -405,7 +408,6 @@ let floatingToolbarState = {
   y: 0,
   isVertical: false,
   isDetached: false,
-  scale: 1,
   widthScale: 1,
   dockedWidthScale: 1,
   freeWidthScale: 1,
@@ -416,7 +418,6 @@ let leftFloatingToolbarState = {
   y: 0,
   isVertical: false,
   isDetached: false,
-  scale: 1,
   widthScale: 1,
 };
 let floatingToolbarInteractionState = {
@@ -1344,7 +1345,6 @@ function readFloatingToolbarState() {
       y,
       isVertical: Boolean(parsed.isVertical),
       isDetached: Boolean(parsed.isDetached),
-      scale: 1,
       widthScale: Boolean(parsed.isDetached) ? resolvedFreeWidthScale : resolvedDockedWidthScale,
       dockedWidthScale: resolvedDockedWidthScale,
       freeWidthScale: resolvedFreeWidthScale,
@@ -1796,7 +1796,6 @@ function getDefaultFloatingToolbarState(shellRect = toolbarShell?.getBoundingCli
     y: snapped.y,
     isVertical: false,
     isDetached: false,
-    scale: 1,
     widthScale: 1,
     dockedWidthScale: 1,
     freeWidthScale: 1,
@@ -1862,7 +1861,6 @@ function applyFloatingToolbarState(partialState, persist = true) {
     y: nextPosition.y,
     isVertical: Boolean(partialState.isVertical),
     isDetached: nextIsDetached,
-    scale: 1,
     widthScale: nextIsDetached ? nextFreeWidthScale : nextDockedWidthScale,
     dockedWidthScale: nextDockedWidthScale,
     freeWidthScale: nextFreeWidthScale,
@@ -1914,7 +1912,6 @@ function readLeftFloatingToolbarState() {
       y,
       isVertical: Boolean(parsed.isVertical),
       isDetached: Boolean(parsed.isDetached),
-      scale: 1,
       widthScale: Number.isFinite(widthScale) ? widthScale : 1,
     };
   } catch {
@@ -2098,7 +2095,6 @@ function getDefaultLeftFloatingToolbarState(shellRect = leftToolbarShell?.getBou
     y: snapped.y,
     isVertical: false,
     isDetached: false,
-    scale: 1,
     widthScale: 1,
   };
 }
@@ -2123,7 +2119,6 @@ function applyLeftFloatingToolbarState(partialState, persist = true) {
     y: nextPosition.y,
     isVertical: Boolean(partialState.isVertical),
     isDetached: Boolean(partialState.isDetached),
-    scale: 1,
     widthScale: Math.min(
       Math.max(partialState.widthScale, FLOATING_TOOLBAR_WIDTH_SCALE_MIN),
       FLOATING_TOOLBAR_WIDTH_SCALE_MAX
@@ -2304,7 +2299,7 @@ function initializeLeftToolbarSpacingMenu() {
   if (!leftToolbarCluster || !leftToolbarSpacingMenu || !leftToolbarSpacingAction) return;
   setLeftToolbarSpacingTuningMode(false);
   leftToolbarCluster.addEventListener('contextmenu', (event) => {
-    if (event.target instanceof Element && event.target.closest('[data-left-toolbar-rotate-handle], [data-left-toolbar-width-handle], [data-left-toolbar-scale-handle]')) {
+    if (event.target instanceof Element && event.target.closest('[data-left-toolbar-rotate-handle], [data-left-toolbar-width-handle]')) {
       return;
     }
     event.preventDefault();
@@ -2421,7 +2416,7 @@ function initializeLeftFloatingToolbarDragFoundation() {
       leftFloatingToolbarSuppressClickOnce = false;
       return;
     }
-    if (target.closest('button, select, option, input, textarea, label, [data-left-toolbar-rotate-handle], [data-left-toolbar-width-handle], [data-left-toolbar-scale-handle]')) {
+    if (target.closest('button, select, option, input, textarea, label, [data-left-toolbar-rotate-handle], [data-left-toolbar-width-handle]')) {
       return;
     }
     setLeftFloatingToolbarHandlesVisible(!leftFloatingToolbarHandlesVisible);
@@ -3338,7 +3333,7 @@ function initializeFloatingToolbarSpacingMenu() {
   if (!toolbarShell || !toolbarSpacingMenu || !toolbarSpacingAction) return;
   setToolbarSpacingTuningMode(false);
   toolbarShell.addEventListener('contextmenu', (event) => {
-    if (event.target instanceof Element && event.target.closest('[data-toolbar-rotate-handle], [data-toolbar-width-handle], [data-toolbar-scale-handle]')) {
+    if (event.target instanceof Element && event.target.closest('[data-toolbar-rotate-handle], [data-toolbar-width-handle]')) {
       return;
     }
     event.preventDefault();
@@ -3632,7 +3627,7 @@ function initializeFloatingToolbarDragFoundation() {
       floatingToolbarSuppressClickOnce = false;
       return;
     }
-    if (target.closest('button, select, option, input, textarea, label, [data-toolbar-rotate-handle], [data-toolbar-width-handle], [data-toolbar-scale-handle]')) {
+    if (target.closest('button, select, option, input, textarea, label, [data-toolbar-rotate-handle], [data-toolbar-width-handle]')) {
       return;
     }
     setFloatingToolbarHandlesVisible(!floatingToolbarHandlesVisible);
