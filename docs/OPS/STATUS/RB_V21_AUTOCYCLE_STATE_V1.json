@@ -3,7 +3,7 @@
   "planName": "Structural Revision Bridge v2.1 Final Master Plan",
   "activeCanon": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final",
   "currentStatus": "IN_PROGRESS",
-  "activeContour": "RB-C10-ANCHOR-CONFIDENCE-COVERAGE-STAGE6",
+  "activeContour": "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
   "acceptedContours": [
     "RB-C01-IMPORT-CHAIN-AND-REPO-FACT-AUDIT",
     "RB-C02-P0-SAFETY-FOUNDATION-WRITE-SEAM",
@@ -13,10 +13,10 @@
     "RB-C06-APPLY-RECEIPT-CONTRACT-STAGE8",
     "RB-C07-SUPPORTED-SURFACE-V1-DECLARATION-STAGE3",
     "RB-C08-BLOCK-LINEAGE-COVERAGE-STAGE4",
-    "RB-C09-COMMENT-PLACEMENT-COVERAGE-STAGE5"
+    "RB-C09-COMMENT-PLACEMENT-COVERAGE-STAGE5",
+    "RB-C10-ANCHOR-CONFIDENCE-COVERAGE-STAGE6"
   ],
   "pendingContours": [
-    "RB-C10-ANCHOR-CONFIDENCE-COVERAGE-STAGE6",
     "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
     "RB-C12-APPLY-TXN-RUNTIME-PATH-STAGE8",
     "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9",
@@ -85,6 +85,15 @@
       "branch": "codex/revision-bridge-v21-autocycle-c01",
       "push": "success",
       "note": "RB-28 block identity risk contract commit pushed via env -u GH_TOKEN"
+    },
+    {
+      "id": "DR-007",
+      "contourId": "RB-C09-COMMENT-PLACEMENT-COVERAGE-STAGE5",
+      "result": "branch_pushed",
+      "branch": "codex/revision-bridge-v21-autocycle-c01",
+      "push": "success",
+      "commitSha": "163d4286",
+      "note": "RB-29 comment decision separation contour commit pushed via env -u GH_TOKEN"
     }
   ],
   "evidenceIndex": [
@@ -309,9 +318,33 @@
       "type": "contour-close",
       "summary": "C09 accepted as Stage 5 comment placement decision-state separation contour and active contour moved to C10",
       "status": "pass"
+    },
+    {
+      "id": "EV-038",
+      "type": "delivery",
+      "summary": "RB-29 contour delivery push completed for commit 163d4286 on branch codex/revision-bridge-v21-autocycle-c01",
+      "status": "pass"
+    },
+    {
+      "id": "EV-039",
+      "type": "anchor-disagreement-summary-contract",
+      "summary": "RB-30 anchor disagreement summary contract added to make Stage 6 disagreement diagnostics explicitly measurable and aggregated",
+      "status": "pass"
+    },
+    {
+      "id": "EV-040",
+      "type": "targeted-tests",
+      "summary": "RB-30 contract suite passed (6 of 6) covering schema export, disagreement aggregation, malformed-entry diagnostics, determinism and allowlist constraints",
+      "status": "pass"
+    },
+    {
+      "id": "EV-041",
+      "type": "contour-close",
+      "summary": "C10 accepted as Stage 6 anchor disagreement visibility contour and active contour moved to C11",
+      "status": "pass"
     }
   ],
-  "nextContourCandidate": "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
+  "nextContourCandidate": "RB-C12-APPLY-TXN-RUNTIME-PATH-STAGE8",
   "finalAcceptanceGaps": [
     "project-level ApplyTxn path is not implemented as runtime write path",
     "ApplyReceipt generation and recovery journal flow are not proven in current runtime",
@@ -347,6 +380,12 @@
       "claim": "resolvedState and acceptedState are evaluated as orthogonal comment decision dimensions",
       "verdict": "supported",
       "evidenceRef": "evaluateRevisionBridgeCommentDecisionSeparation"
+    },
+    {
+      "id": "FC-004",
+      "claim": "anchor disagreement reasons are explicitly aggregated and surfaced as deterministic summary evidence",
+      "verdict": "supported",
+      "evidenceRef": "summarizeRevisionBridgeAnchorDisagreements"
     }
   ],
   "auditResults": [
@@ -387,8 +426,13 @@
     },
     {
       "id": "AU-008",
+      "verdict": "accepted",
+      "note": "C10 accepted: anchor-confidence disagreement reasons are explicitly summarized and test-covered as measurable diagnostics evidence"
+    },
+    {
+      "id": "AU-009",
       "verdict": "in_progress",
-      "note": "C10 active: anchor-confidence coverage contour selected after C09 close"
+      "note": "C11 active: import-session runtime bridge contour selected after C10 close"
     }
   ],
   "replacementAgentHistory": [],
@@ -399,7 +443,7 @@
     "stage3_supported_surface_v1": "partial_with_supported_surface_v1_contracts",
     "stage4_block_and_lineage_model": "partial_with_block_identity_risk_contracts",
     "stage5_inlinerange_and_commentplacement": "partial_with_comment_decision_separation_contracts",
-    "stage6_anchor_and_confidence": "partial_with_donor_confidence_and_diagnostics_utils",
+    "stage6_anchor_and_confidence": "partial_with_donor_confidence_diagnostics_and_anchor_disagreement_summary_contracts",
     "stage7_import_to_revisionsession": "contract_seam_preview_ready_no_runtime_apply",
     "stage8_apply_engine_and_applytxn": "partial_with_applytxn_and_applyreceipt_contracts",
     "stage9_structural_operations": "not_implemented",

@@ -61,6 +61,8 @@ export const REVISION_BRIDGE_BLOCK_KINDS = Object.freeze([
 export const REVISION_BRIDGE_INLINE_RANGE_SCHEMA = 'revision-bridge.inline-range.v1';
 export const REVISION_BRIDGE_COMMENT_ANCHOR_PLACEMENT_SCHEMA = 'revision-bridge.comment-anchor-placement.v1';
 export const REVISION_BRIDGE_ANCHOR_CONFIDENCE_EVALUATION_SCHEMA = 'revision-bridge.anchor-confidence-evaluation.v1';
+export const REVISION_BRIDGE_ANCHOR_DISAGREEMENT_SUMMARY_SCHEMA =
+  'revision-bridge.anchor-disagreement-summary.v1';
 export const REVISION_BRIDGE_INLINE_ANCHOR_KINDS = Object.freeze([
   'point',
   'span',
@@ -2389,6 +2391,17 @@ function anchorConfidenceHasUnresolvedFailure(diagnostics) {
   ));
 }
 
+function anchorDisagreementSummaryInitialCounts() {
+  return {
+    REVISION_BRIDGE_ANCHOR_CONFIDENCE_QUOTE_ELSEWHERE: 0,
+    REVISION_BRIDGE_ANCHOR_CONFIDENCE_PREFIX_MISMATCH: 0,
+    REVISION_BRIDGE_ANCHOR_CONFIDENCE_SUFFIX_MISMATCH: 0,
+    REVISION_BRIDGE_ANCHOR_CONFIDENCE_STALE_QUOTE: 0,
+    REVISION_BRIDGE_ANCHOR_CONFIDENCE_MISSING_BLOCK: 0,
+    REVISION_BRIDGE_ANCHOR_CONFIDENCE_OUT_OF_BOUNDS: 0,
+  };
+}
+
 export function evaluateInlineRangeAnchorConfidence(input = {}, context = {}) {
   const rangeInput = anchorConfidenceRangeInput(input);
   const inlineRange = createInlineRange(rangeInput);
@@ -2584,6 +2597,65 @@ export function evaluateInlineRangeAnchorConfidence(input = {}, context = {}) {
     diagnostics: cloneJsonSafe(diagnostics),
   };
 }
+
+// RB_30_ANCHOR_DISAGREEMENT_SUMMARY_CONTRACTS_START
+export function summarizeRevisionBridgeAnchorDisagreements(input = {}) {
+  const source = isPlainObject(input) ? input : {};
+  const entries = Array.isArray(source.entries) ? source.entries : [];
+  const counts = anchorDisagreementSummaryInitialCounts();
+  const diagnostics = [];
+  let totalEvaluated = 0;
+  let totalWithDisagreement = 0;
+
+  entries.forEach((entry, index) => {
+    if (!isPlainObject(entry)) {
+      diagnostics.push(invalidField(
+        `entries.${index}`,
+        'anchor disagreement entry must be an object',
+      ));
+      return;
+    }
+    const evaluation = isPlainObject(entry.evaluation)
+      ? entry.evaluation
+      : evaluateInlineRangeAnchorConfidence(entry.inlineRange || entry, entry.context || {});
+    if (!isPlainObject(evaluation) || !Array.isArray(evaluation.reasonCodes)) {
+      diagnostics.push(invalidField(
+        `entries.${index}.evaluation`,
+        'entry evaluation must include reasonCodes array',
+      ));
+      return;
+    }
+    totalEvaluated += 1;
+    let hasDisagreement = false;
+    const seenCodes = new Set();
+    for (const reasonCode of evaluation.reasonCodes) {
+      if (Object.hasOwn(counts, reasonCode)) {
+        if (seenCodes.has(reasonCode)) continue;
+        seenCodes.add(reasonCode);
+        counts[reasonCode] += 1;
+        hasDisagreement = true;
+      }
+    }
+    if (hasDisagreement) totalWithDisagreement += 1;
+  });
+
+  return {
+    schemaVersion: REVISION_BRIDGE_ANCHOR_DISAGREEMENT_SUMMARY_SCHEMA,
+    type: 'revisionBridge.anchorDisagreement.summary',
+    status: diagnostics.length > 0 ? 'invalid' : 'evaluated',
+    code: diagnostics.length > 0
+      ? REVIEWGRAPH_INVALID_CODE
+      : REVIEWGRAPH_VALID_CODE,
+    reason: diagnostics.length > 0
+      ? diagnostics[0].code
+      : REVIEWGRAPH_VALID_CODE,
+    diagnostics,
+    totalEvaluated,
+    totalWithDisagreement,
+    counts,
+  };
+}
+// RB_30_ANCHOR_DISAGREEMENT_SUMMARY_CONTRACTS_END
 // RB_11_ANCHOR_CONFIDENCE_ENGINE_CONTRACTS_END
 
 // RB_12_MATCH_PROOF_CONTRACTS_START
