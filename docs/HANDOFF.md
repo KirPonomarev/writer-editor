@@ -1,6 +1,6 @@
 # HANDOFF (Yalken Writer)
 
-_Generated: 2026-04-25_
+_Generated: 2026-04-26_
 
 ## Start Here
 - Active execution canon resolver: `docs/OPS/STATUS/CANON_STATUS.json`
@@ -24,15 +24,15 @@ _Generated: 2026-04-25_
 
 ## Snapshot
 - Snapshot class: current-mainline factual snapshot, not a permanent local machine invariant
-- selectedBaseSha: `4c4eca3aba79c7d689d39b822f689f8939ca58ce`
-- bindingBaseSha: `4c4eca3aba79c7d689d39b822f689f8939ca58ce`
-- reboundAtUtc: `2026-04-25T10:08:05Z`
+- selectedBaseSha: `792f28077973721669aef9cf78d9385b1fb1db29`
+- bindingBaseSha: `792f28077973721669aef9cf78d9385b1fb1db29`
+- reboundAtUtc: `2026-04-26T06:13:06Z`
 - Product: `Yalken Writer`
 - Mode: desktop-first, offline-first
 - Active axis: `Writer v1`
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
-- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, and accepted vertical sheets baseline
+- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, accepted vertical sheets baseline, and C05 long-document closeout.
 
 ## Local Machine State
 - This file describes a snapshot-bound mainline reality, not the forever-current state of the local machine.
@@ -73,10 +73,11 @@ _Generated: 2026-04-25_
 - blocked lanes remain explicit blocked debt; later items remain explicit later or hold debt.
 - security audit lane is standardized on repo mainline via generic semgrep runner and package script; generic scan is repeatable with zero findings and honest timeout reporting.
 - test electron lane is ready and executed on current mainline with repeated pass runs.
-- X102 Block 01 visual reproof completed report-only against the current selected-base snapshot and ended with STOP_AND_FREEZE.
+- X102 Block 01 visual reproof completed report-only against the selected-base snapshot at the time of X102 reproof and ended with STOP_AND_FREEZE.
 - No new live nonblocked Group 01 visual delta was proved by that reproof.
 - Design write lane remains closed after the latest X102 reproof.
-- vertical sheets accepted baseline is merged on current mainline at `4c4eca3aba79c7d689d39b822f689f8939ca58ce`.
+- vertical sheets accepted baseline merge point on main history is `4c4eca3aba79c7d689d39b822f689f8939ca58ce`.
+- current mainline head includes C05 long-document performance closeout at `792f28077973721669aef9cf78d9385b1fb1db29` from contour source commit `58a2aced76bb914b3128024ad75588f789b24b28`.
 - primary editor flow has accepted vertical sheet behavior: one Tiptap editor, derived visual sheet stack, view-only page gaps, and no page truth written into project state by implication.
 - accepted vertical evidence includes `vertical-sheet-feed-smoke`, `vertical-sheet-gap-smoke`, `five-sheet-visible-smoke`, and `vertical-sheet-input-stability-smoke`.
 - `VERTICAL_SHEET_PERFORMANCE_BASELINE_RUN_001` is report-only baseline evidence for 10, 50, and 100 page scenarios; it is not a hard performance gate and not a repo-persisted artifact.
