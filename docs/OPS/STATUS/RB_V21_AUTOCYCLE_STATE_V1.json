@@ -13,8 +13,24 @@
   "pendingContours": [
     "RB-C05-DONOR-V21-MODULE-PORT-PHASED"
   ],
-  "blockers": [],
-  "deliveryResults": [],
+  "blockers": [
+    {
+      "id": "BL-001",
+      "type": "delivery-auth",
+      "summary": "git push to origin is blocked by missing or invalid GitHub credentials in local environment",
+      "status": "open"
+    }
+  ],
+  "deliveryResults": [
+    {
+      "id": "DR-001",
+      "contourId": "RB-C05-DONOR-V21-MODULE-PORT-PHASED",
+      "result": "local_commit_only",
+      "commitSha": "4eb6a9fd",
+      "push": "failed_auth",
+      "note": "remote rejected credentials: Invalid username or token"
+    }
+  ],
   "evidenceIndex": [
     {
       "id": "EV-001",
