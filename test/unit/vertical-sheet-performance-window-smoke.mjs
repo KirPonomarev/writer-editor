@@ -11,6 +11,8 @@ const electronBinary = requireFromHere('electron');
 const outputDir = process.env.VERTICAL_SHEET_PERFORMANCE_WINDOW_OUT_DIR
   ? path.resolve(process.env.VERTICAL_SHEET_PERFORMANCE_WINDOW_OUT_DIR)
   : await mkdtemp(path.join(os.tmpdir(), 'vertical-sheet-performance-window-'));
+const MIN_RENDERED_SHEET_WINDOW = 2;
+const MAX_INSERT_100_MS = 6000;
 
 function buildHelperSource() {
   return `
@@ -350,15 +352,25 @@ assert.equal(result.scenarios.length, 3);
 assert.equal(result.networkRequests, 0);
 assert.equal(result.dialogCalls, 0);
 
-for (const scenario of result.scenarios) {
-  const state = scenario.state;
-  assert.equal(state.sourcePageCount >= scenario.targetPageCount, true, `source pages for ${scenario.targetPageCount}`);
-  assert.equal(state.centralSheetFlow, 'vertical');
-  assert.equal(state.visibleSheetCount > 0, true);
-  assert.equal(state.visibleSheetCount <= 5, true);
-  assert.equal(state.visiblePageCount <= 5, true);
-  assert.equal(state.hiddenPageCount > 0, true);
-  assert.equal(state.centralSheetBoundedOverflowReason, 'max-page-count');
+  for (const scenario of result.scenarios) {
+    const state = scenario.state;
+    assert.equal(state.sourcePageCount >= scenario.targetPageCount, true, `source pages for ${scenario.targetPageCount}`);
+    assert.equal(state.centralSheetFlow, 'vertical');
+    assert.equal(state.visibleSheetCount > 0, true);
+    assert.equal(
+      state.visibleSheetCount >= MIN_RENDERED_SHEET_WINDOW,
+      true,
+      `rendered sheet lower bound ${state.visibleSheetCount} >= ${MIN_RENDERED_SHEET_WINDOW} for ${scenario.targetPageCount} pages`,
+    );
+    assert.equal(state.visibleSheetCount <= 5, true);
+    assert.equal(
+      state.visiblePageCount >= MIN_RENDERED_SHEET_WINDOW,
+      true,
+      `rendered page lower bound ${state.visiblePageCount} >= ${MIN_RENDERED_SHEET_WINDOW} for ${scenario.targetPageCount} pages`,
+    );
+    assert.equal(state.visiblePageCount <= 5, true);
+    assert.equal(state.hiddenPageCount > 0, true);
+    assert.equal(state.centralSheetBoundedOverflowReason, 'max-page-count');
   assert.equal(state.proseMirrorCount, 1);
   assert.equal(state.tiptapEditorCount, 1);
   assert.equal(state.sourceWrapperCount, 1);
@@ -386,6 +398,16 @@ assert.equal(result.focus.proseMirrorCount, 1);
 assert.equal(result.focus.tiptapEditorCount, 1);
 assert.equal(result.beforeInput.sourcePageCount >= 100, true);
 assert.equal(result.afterInput.sourcePageCount >= 100, true);
+assert.equal(
+  result.insertMs100 <= MAX_INSERT_100_MS,
+  true,
+  `insertMs100 ${result.insertMs100}ms <= ${MAX_INSERT_100_MS}ms`,
+);
+assert.equal(
+  result.afterInput.visibleSheetCount >= MIN_RENDERED_SHEET_WINDOW,
+  true,
+  `after input rendered sheet lower bound ${result.afterInput.visibleSheetCount} >= ${MIN_RENDERED_SHEET_WINDOW}`,
+);
 assert.equal(result.afterInput.visibleSheetCount <= 5, true);
 assert.equal(result.afterInput.proseMirrorCount, 1);
 assert.equal(result.afterInput.tiptapEditorCount, 1);
