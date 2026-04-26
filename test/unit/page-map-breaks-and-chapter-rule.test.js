@@ -86,6 +86,18 @@ test('page map preserves derived numbering for consecutive explicit page breaks'
   assert.deepEqual(pageMap.pages.map((page) => page.pageNumber), [2, 3]);
   assert.deepEqual(pageMap.pages[0].nodeIds, []);
   assert.equal(pageNumberForNode(pageMap, 'body'), 3);
+  assert.equal(pageMap.totalPageCount, pageMap.pages.length);
+  assert.equal(pageMap.runtimeContractSchemaVersion, 'derived.pageMap.runtimeContract.v1');
+  assert.equal(Array.isArray(pageMap.pageRects), true);
+  assert.equal(Array.isArray(pageMap.gapRects), true);
+  assert.equal(pageMap.pageRects.length, pageMap.pages.length);
+  assert.equal(pageMap.gapRects.length, Math.max(0, pageMap.pages.length - 1));
+  assert.equal(typeof pageMap.sourceRevisionToken, 'string');
+  assert.equal(typeof pageMap.profileRevisionToken, 'string');
+  assert.equal(pageMap.meta.pageRectCount, pageMap.pageRects.length);
+  assert.equal(pageMap.meta.gapRectCount, pageMap.gapRects.length);
+  assert.equal(pageMap.meta.sourceRevisionToken, pageMap.sourceRevisionToken);
+  assert.equal(pageMap.meta.profileRevisionToken, pageMap.profileRevisionToken);
 });
 
 test('page map keeps chapter start next-page and continuous rules stable', async () => {
@@ -245,4 +257,19 @@ test('minimal TipTap page map runtime contract invalidates after text and profil
   }), cache);
   assert.notEqual(changedMetrics.profileHash, first.profileHash);
   assert.equal(changedMetrics.bindingSource, 'currentTiptapPlainText');
+});
+
+test('page map runtime contract tokens are deterministic for identical inputs', async () => {
+  const nodes = [
+    { id: 'intro', semanticKind: 'paragraph', text: 'Intro text' },
+    { id: 'chapter', semanticKind: 'sceneHeading', text: 'Chapter one', chapterStart: true },
+    { id: 'tail', semanticKind: 'paragraph', text: 'Tail text' },
+  ];
+  const first = await paginate(nodes, { chapterStartRule: 'next-page' });
+  const second = await paginate(nodes, { chapterStartRule: 'next-page' });
+
+  assert.equal(first.sourceRevisionToken, second.sourceRevisionToken);
+  assert.equal(first.profileRevisionToken, second.profileRevisionToken);
+  assert.deepEqual(first.pageRects, second.pageRects);
+  assert.deepEqual(first.gapRects, second.gapRects);
 });

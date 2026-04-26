@@ -2,6 +2,7 @@ import { hashCanonicalValue } from './deriveView.mjs';
 import { createLayoutMeasureProvider } from './layoutMeasureProvider.mjs';
 
 const PAGE_MAP_SCHEMA_VERSION = 'derived.pageMap.v1';
+const PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION = 'derived.pageMap.runtimeContract.v1';
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -32,11 +33,17 @@ function normalizeMeasurements(measurements) {
 
 function normalizeProfile(profile) {
   const source = isPlainObject(profile) ? profile : {};
+  const pageWidth = normalizeNumber(source.pageWidth, 80);
+  const pageHeight = normalizeNumber(source.pageHeight, 40);
+  const bodyWidth = normalizeNumber(source.bodyWidth, pageWidth);
+  const bodyHeight = normalizeNumber(source.bodyHeight, pageHeight);
+  const pageGap = normalizeNumber(source.pageGap, 1);
   return {
-    pageWidth: normalizeNumber(source.pageWidth, 80),
-    pageHeight: normalizeNumber(source.pageHeight, 40),
-    bodyWidth: normalizeNumber(source.bodyWidth, normalizeNumber(source.pageWidth, 80)),
-    bodyHeight: normalizeNumber(source.bodyHeight, normalizeNumber(source.pageHeight, 40)),
+    pageWidth,
+    pageHeight,
+    bodyWidth,
+    bodyHeight,
+    pageGap,
   };
 }
 
@@ -58,6 +65,66 @@ function createPage(pageNumber) {
     overflow: false,
     explicitBreakBefore: false,
   };
+}
+
+function toCanonicalMeasurements(measurementsMap) {
+  if (!(measurementsMap instanceof Map) || measurementsMap.size === 0) return [];
+  return Array.from(measurementsMap.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([nodeId, measurement]) => ({
+      nodeId,
+      height: normalizeNumber(measurement?.height, 0),
+      forcedBreak: Boolean(measurement?.forcedBreak),
+    }));
+}
+
+function buildPageRects(pages, profile) {
+  const pageRects = [];
+  for (let index = 0; index < pages.length; index += 1) {
+    const page = pages[index];
+    const top = index * (profile.pageHeight + profile.pageGap);
+    const bottom = top + profile.pageHeight;
+    pageRects.push({
+      pageNumber: page.pageNumber,
+      index,
+      top,
+      bottom,
+      left: 0,
+      right: profile.pageWidth,
+      width: profile.pageWidth,
+      height: profile.pageHeight,
+      contentTop: top,
+      contentBottom: top + profile.bodyHeight,
+      contentLeft: 0,
+      contentRight: profile.bodyWidth,
+      contentWidth: profile.bodyWidth,
+      contentHeight: profile.bodyHeight,
+    });
+  }
+  return pageRects;
+}
+
+function buildGapRects(pageRects, profile) {
+  if (!Array.isArray(pageRects) || pageRects.length <= 1) return [];
+  const gapRects = [];
+  for (let index = 0; index < pageRects.length - 1; index += 1) {
+    const fromPage = pageRects[index];
+    const toPage = pageRects[index + 1];
+    const top = fromPage.bottom;
+    const bottom = top + profile.pageGap;
+    gapRects.push({
+      index,
+      fromPageNumber: fromPage.pageNumber,
+      toPageNumber: toPage.pageNumber,
+      top,
+      bottom,
+      left: 0,
+      right: profile.pageWidth,
+      width: profile.pageWidth,
+      height: profile.pageGap,
+    });
+  }
+  return gapRects;
 }
 
 export function paginateLayoutFlow(input = {}) {
@@ -185,11 +252,27 @@ export function paginateLayoutFlow(input = {}) {
 
   finalizePage();
 
+  const sourceRevisionToken = hashCanonicalValue({
+    flow: flowNodes,
+    measurements: toCanonicalMeasurements(providedMeasurements),
+    chapterStartRule: rules.chapterStartRule,
+    strictOverflow,
+  });
+  const profileRevisionToken = hashCanonicalValue(profile);
+  const pageRects = buildPageRects(pages, profile);
+  const gapRects = buildGapRects(pageRects, profile);
+
   const pageMap = {
     schemaVersion: PAGE_MAP_SCHEMA_VERSION,
+    runtimeContractSchemaVersion: PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION,
     profile,
+    totalPageCount: pages.length,
     pages,
     pageBreaks,
+    pageRects,
+    gapRects,
+    sourceRevisionToken,
+    profileRevisionToken,
   };
 
   return {
@@ -201,8 +284,12 @@ export function paginateLayoutFlow(input = {}) {
       overflowCount: pages.filter((page) => page.overflow).length,
       strictOverflow,
       chapterStartRule: rules.chapterStartRule,
+      pageRectCount: pageRects.length,
+      gapRectCount: gapRects.length,
+      sourceRevisionToken,
+      profileRevisionToken,
     },
   };
 }
 
-export { PAGE_MAP_SCHEMA_VERSION };
+export { PAGE_MAP_SCHEMA_VERSION, PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION };
