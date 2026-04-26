@@ -613,7 +613,6 @@ body {
 }
 
 .floating-toolbar__shell {
-  --floating-toolbar-scale: 1;
   --floating-toolbar-width-scale: 1;
   --floating-toolbar-cluster-left: 0px;
   --floating-toolbar-cluster-right: 0px;
@@ -637,8 +636,6 @@ body {
   user-select: none;
   font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-variant-numeric: tabular-nums;
-  transform: scale(var(--floating-toolbar-scale));
-  transform-origin: left center;
   transition: box-shadow 0.18s ease, opacity 0.18s ease;
 }
 
@@ -664,7 +661,6 @@ body {
   justify-content: flex-start;
   gap: 12px;
   width: auto;
-  transform-origin: center center;
 }
 
 .floating-toolbar__shell.is-snapped {
