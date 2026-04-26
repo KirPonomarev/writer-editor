@@ -46,6 +46,7 @@ export const REVISION_BRIDGE_DECISION_STATE_SCHEMA = 'revision-bridge.decision-s
 export const REVISION_BRIDGE_REVIEW_PACKET_PREVIEW_SCHEMA = 'revision-bridge.review-packet-preview.v1';
 export const REVISION_BRIDGE_BLOCK_SCHEMA = 'revision-bridge.block.v1';
 export const REVISION_BRIDGE_BLOCK_LINEAGE_SCHEMA = 'revision-bridge.block-lineage.v1';
+export const REVISION_BRIDGE_BLOCK_IDENTITY_RISK_SCHEMA = 'revision-bridge.block-identity-risk.v1';
 export const REVISION_BRIDGE_BLOCK_KINDS = Object.freeze([
   'paragraph',
   'heading',
@@ -1967,6 +1968,91 @@ export function deriveRevisionBlocksFromPlainSceneText(input = {}) {
         sceneId,
       },
     }));
+}
+
+function normalizeRevisionBlockIdentityComparable(value) {
+  return normalizeRevisionBlockText(value).replace(/\s+/gu, ' ').toLowerCase();
+}
+
+function revisionBlockIdentityDiagnostic(code, block, index, message) {
+  return {
+    code,
+    severity: code === 'REVISION_BRIDGE_BLOCK_COPY_AMBIGUITY' ? 'warning' : 'error',
+    riskClass: code === 'REVISION_BRIDGE_BLOCK_COPY_AMBIGUITY' ? 'high' : 'critical',
+    automationPolicy: 'manualOnly',
+    blockId: normalizeString(block.blockId),
+    lineageId: normalizeString(block.lineageId),
+    index,
+    message,
+  };
+}
+
+export function evaluateRevisionBlockIdentityRisks(input = {}) {
+  const source = revisionBlockInput(input);
+  const candidates = Array.isArray(source.blocks) ? source.blocks : [];
+  const blocks = candidates
+    .map((item) => createRevisionBlock(item))
+    .filter((item) => isPlainObject(item));
+  const diagnostics = [];
+  const byComparableText = {};
+
+  blocks.forEach((block, index) => {
+    const blockId = normalizeString(block.blockId);
+    const orderText = String(createRevisionBlockOrder(block.order));
+    const visibleText = normalizeRevisionBlockIdentityComparable(block.text);
+    const blockIdComparable = normalizeRevisionBlockIdentityComparable(blockId);
+    if (blockId && orderText !== 'null' && blockId === orderText) {
+      diagnostics.push(revisionBlockIdentityDiagnostic(
+        'REVISION_BRIDGE_BLOCK_ID_EQUALS_ORDER',
+        block,
+        index,
+        'blockId must not equal visible paragraph index',
+      ));
+    }
+    if (blockId && visibleText && blockIdComparable === visibleText) {
+      diagnostics.push(revisionBlockIdentityDiagnostic(
+        'REVISION_BRIDGE_BLOCK_ID_EQUALS_VISIBLE_TEXT',
+        block,
+        index,
+        'blockId must not equal visible text',
+      ));
+    }
+    if (block.kind === 'heading' && blockId && visibleText && blockIdComparable === visibleText) {
+      diagnostics.push(revisionBlockIdentityDiagnostic(
+        'REVISION_BRIDGE_BLOCK_ID_EQUALS_HEADING_TEXT',
+        block,
+        index,
+        'blockId must not equal heading text',
+      ));
+    }
+    if (visibleText) {
+      if (!Array.isArray(byComparableText[visibleText])) byComparableText[visibleText] = [];
+      byComparableText[visibleText].push({ block, index });
+    }
+  });
+
+  Object.keys(byComparableText).forEach((key) => {
+    const rows = byComparableText[key];
+    if (!Array.isArray(rows) || rows.length < 2) return;
+    rows.forEach(({ block, index }) => {
+      diagnostics.push(revisionBlockIdentityDiagnostic(
+        'REVISION_BRIDGE_BLOCK_COPY_AMBIGUITY',
+        block,
+        index,
+        'duplicated visible text creates block copy ambiguity',
+      ));
+    });
+  });
+
+  return {
+    schemaVersion: REVISION_BRIDGE_BLOCK_IDENTITY_RISK_SCHEMA,
+    type: 'revisionBridge.blockIdentityRisk',
+    status: 'evaluated',
+    code: diagnostics.length > 0
+      ? 'REVISION_BRIDGE_BLOCK_IDENTITY_RISK_FOUND'
+      : 'REVISION_BRIDGE_BLOCK_IDENTITY_RISK_NONE',
+    diagnostics,
+  };
 }
 // RB_09_BLOCK_LINEAGE_CONTRACTS_END
 

@@ -3,17 +3,17 @@
   "planName": "Structural Revision Bridge v2.1 Final Master Plan",
   "activeCanon": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final",
   "currentStatus": "IN_PROGRESS",
-  "activeContour": "RB-C07-SUPPORTED-SURFACE-V1-DECLARATION-STAGE3",
+  "activeContour": "RB-C08-BLOCK-LINEAGE-COVERAGE-STAGE4",
   "acceptedContours": [
     "RB-C01-IMPORT-CHAIN-AND-REPO-FACT-AUDIT",
     "RB-C02-P0-SAFETY-FOUNDATION-WRITE-SEAM",
     "RB-C03-APPLYTXN-CONTRACT-AND-BLOCKED-PATH",
     "RB-C04-REVISIONSESSION-IMPORT-SEAM",
     "RB-C05-DONOR-V21-MODULE-PORT-PHASED",
-    "RB-C06-APPLY-RECEIPT-CONTRACT-STAGE8"
+    "RB-C06-APPLY-RECEIPT-CONTRACT-STAGE8",
+    "RB-C07-SUPPORTED-SURFACE-V1-DECLARATION-STAGE3"
   ],
   "pendingContours": [
-    "RB-C07-SUPPORTED-SURFACE-V1-DECLARATION-STAGE3",
     "RB-C08-BLOCK-LINEAGE-COVERAGE-STAGE4",
     "RB-C09-COMMENT-PLACEMENT-COVERAGE-STAGE5",
     "RB-C10-ANCHOR-CONFIDENCE-COVERAGE-STAGE6",
@@ -77,6 +77,14 @@
       "branch": "codex/revision-bridge-v21-autocycle-c01",
       "push": "success",
       "note": "RB-27 SupportedSurfaceV1 contract commit pushed via env -u GH_TOKEN"
+    },
+    {
+      "id": "DR-006",
+      "contourId": "RB-C08-BLOCK-LINEAGE-COVERAGE-STAGE4",
+      "result": "branch_pushed",
+      "branch": "codex/revision-bridge-v21-autocycle-c01",
+      "push": "success",
+      "note": "RB-28 block identity risk contract commit pushed via env -u GH_TOKEN"
     }
   ],
   "evidenceIndex": [
@@ -265,9 +273,27 @@
       "type": "targeted-tests",
       "summary": "RB-27 contract suite passed (6 of 6) covering canonical declaration, classification tiers, deterministic evaluation and allowlist constraints",
       "status": "pass"
+    },
+    {
+      "id": "EV-032",
+      "type": "contour-close",
+      "summary": "C07 accepted as Stage 3 supported surface declaration contour with explicit tier contracts",
+      "status": "pass"
+    },
+    {
+      "id": "EV-033",
+      "type": "block-identity-risk-contract",
+      "summary": "RB-28 block identity risk diagnostics added for blockId equals order, visible text, heading text and duplicate-text copy ambiguity",
+      "status": "pass"
+    },
+    {
+      "id": "EV-034",
+      "type": "targeted-tests",
+      "summary": "RB-28 contract suite passed (7 of 7) covering identity-risk diagnostics, determinism and allowlist constraints",
+      "status": "pass"
     }
   ],
-  "nextContourCandidate": "RB-C08-BLOCK-LINEAGE-COVERAGE-STAGE4",
+  "nextContourCandidate": "RB-C09-COMMENT-PLACEMENT-COVERAGE-STAGE5",
   "finalAcceptanceGaps": [
     "project-level ApplyTxn path is not implemented as runtime write path",
     "ApplyReceipt generation and recovery journal flow are not proven in current runtime",
@@ -322,8 +348,13 @@
     },
     {
       "id": "AU-005",
+      "verdict": "accepted",
+      "note": "C07 accepted: SupportedSurfaceV1 declaration and tier classification formalized with deterministic contract evaluation"
+    },
+    {
+      "id": "AU-006",
       "verdict": "in_progress",
-      "note": "C07 active: SupportedSurfaceV1 declaration and tier classification are now formalized for Stage 3 scope"
+      "note": "C08 active: block lineage scope now extends with explicit identity and copy-ambiguity risk diagnostics"
     }
   ],
   "replacementAgentHistory": [],
@@ -332,7 +363,7 @@
     "stage1_contracts_and_reviewgraph": "partial_with_revision_session_state_machine_version_tags_and_state_invariants_contracts",
     "stage2_safety_kernel": "partial",
     "stage3_supported_surface_v1": "partial_with_supported_surface_v1_contracts",
-    "stage4_block_and_lineage_model": "partial",
+    "stage4_block_and_lineage_model": "partial_with_block_identity_risk_contracts",
     "stage5_inlinerange_and_commentplacement": "partial",
     "stage6_anchor_and_confidence": "partial_with_donor_confidence_and_diagnostics_utils",
     "stage7_import_to_revisionsession": "contract_seam_preview_ready_no_runtime_apply",
