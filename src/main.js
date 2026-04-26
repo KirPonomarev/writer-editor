@@ -39,6 +39,27 @@ const FILE_NAVIGATION_FAIL_SIGNAL = 'E_RUNTIME_WIRING_BEFORE_STAGE';
 const CORRESPONDING_SOURCE_BASE_URL = 'https://github.com/KirPon2024/writer-editor';
 const ABOUT_LICENSE_TEXT_FALLBACK = 'Yalken is licensed under AGPL-3.0-or-later.';
 const EDITOR_PASTE_FOCUS_STATE_CHANNEL = 'editor:paste-focus-state';
+const singleInstanceLockAcquired = app.requestSingleInstanceLock();
+
+function focusExistingMainWindow() {
+  if (!mainWindow || mainWindow.isDestroyed()) return false;
+  if (typeof mainWindow.isMinimized === 'function' && mainWindow.isMinimized()) {
+    mainWindow.restore();
+  }
+  if (typeof mainWindow.isVisible === 'function' && !mainWindow.isVisible()) {
+    mainWindow.show();
+  }
+  mainWindow.focus();
+  return true;
+}
+
+if (!singleInstanceLockAcquired) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    focusExistingMainWindow();
+  });
+}
 
 function normalizeEditorPasteFocusState(payload) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return null;
@@ -5048,6 +5069,9 @@ async function initializeApp() {
 }
 
 app.whenReady().then(async () => {
+  if (!singleInstanceLockAcquired) {
+    return;
+  }
   logPerfStage('when-ready');
   app.setName('Yalken');
   await ensureUserDataFolder();
