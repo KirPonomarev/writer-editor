@@ -71,31 +71,19 @@ test('sector-m toolbar main shell descale: main runtime removes shell scale bran
   );
 });
 
-test('sector-m toolbar main shell descale: left toolbar scale path remains intact', () => {
-  const source = readFile('src', 'renderer', 'editor.js');
-  const leftDragSnippet = sliceSection(
-    source,
-    'function initializeLeftFloatingToolbarDragFoundation() {',
-    'function setConfiguratorOpen(nextOpen) {'
-  );
-
-  assert.ok(
-    leftDragSnippet.includes("startLeftFloatingToolbarInteraction('scale', event);"),
-    'left toolbar scale-handle interaction must remain bound'
-  );
-  assert.ok(
-    leftDragSnippet.includes("} else if (mode === 'scale') {"),
-    'left toolbar scale mode branch must remain active'
-  );
-
+test('sector-m toolbar main shell descale: css keeps main shell descaled and left width tuning intact', () => {
   const stylesSource = readFile('src', 'renderer', 'styles.css');
-  assert.ok(
-    stylesSource.includes('transform: scale(var(--left-toolbar-scale));'),
-    'left toolbar shell scale transform must stay untouched'
-  );
   assert.equal(
     stylesSource.includes('transform: scale(var(--floating-toolbar-scale));'),
     false,
     'main toolbar shell scale transform must be removed'
+  );
+  assert.ok(
+    stylesSource.includes('--left-toolbar-width-scale'),
+    'left toolbar width-scale css variable must stay available'
+  );
+  assert.ok(
+    stylesSource.includes('.left-floating-toolbar__transform-handle--width'),
+    'left toolbar width handle css affordance must stay available'
   );
 });

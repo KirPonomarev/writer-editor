@@ -154,7 +154,6 @@ const toolbarRotateHandles = Array.from(document.querySelectorAll('[data-toolbar
 const toolbarWidthHandle = document.querySelector('[data-toolbar-width-handle]');
 const leftToolbarRotateHandles = Array.from(document.querySelectorAll('[data-left-toolbar-rotate-handle]'));
 const leftToolbarWidthHandle = document.querySelector('[data-left-toolbar-width-handle]');
-const leftToolbarScaleHandle = document.querySelector('[data-left-toolbar-scale-handle]');
 const leftToolbarCluster = document.querySelector('.left-floating-toolbar .work-bar__cluster');
 const leftToolbarButtons = Array.from(document.querySelectorAll('.left-floating-toolbar .work-bar__button[data-action]'));
 const leftToolbarSpacingMenu = document.querySelector('[data-left-toolbar-spacing-menu]');
@@ -337,8 +336,6 @@ const FLOATING_TOOLBAR_SNAP_ZONE_PX = 30;
 const FLOATING_TOOLBAR_CENTER_ANCHOR_PX = 30;
 const FLOATING_TOOLBAR_ITEM_SNAP_THRESHOLD_PX = 10;
 const FLOATING_TOOLBAR_VISIBLE_STRIP_PX = 56;
-const FLOATING_TOOLBAR_SCALE_MIN = 0.5;
-const FLOATING_TOOLBAR_SCALE_MAX = 2.0;
 const FLOATING_TOOLBAR_WIDTH_SCALE_MIN = 0.1;
 const FLOATING_TOOLBAR_WIDTH_SCALE_MAX = 2.0;
 const FONT_WEIGHT_PRESETS = Object.freeze({
@@ -1910,7 +1907,6 @@ function readLeftFloatingToolbarState() {
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
     const x = Number(parsed.x);
     const y = Number(parsed.y);
-    const scale = Number(parsed.scale);
     const widthScale = Number(parsed.widthScale);
     if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
     return {
@@ -1918,7 +1914,7 @@ function readLeftFloatingToolbarState() {
       y,
       isVertical: Boolean(parsed.isVertical),
       isDetached: Boolean(parsed.isDetached),
-      scale: Number.isFinite(scale) ? scale : 1,
+      scale: 1,
       widthScale: Number.isFinite(widthScale) ? widthScale : 1,
     };
   } catch {
@@ -2017,10 +2013,9 @@ function setLeftToolbarSpacingMenuOpen(nextOpen, position = null) {
   const clusterRect = leftToolbarCluster?.getBoundingClientRect();
   leftToolbarSpacingMenu.hidden = false;
   const menuRect = leftToolbarSpacingMenu.getBoundingClientRect();
-  const shellScale = Math.max(leftFloatingToolbarState.scale || 1, 0.001);
-  const clusterLeft = clusterRect ? (clusterRect.left - shellRect.left) / shellScale : 0;
-  const clusterRight = clusterRect ? (clusterRect.right - shellRect.left) / shellScale : 0;
-  const clusterBottom = clusterRect ? (clusterRect.bottom - shellRect.top) / shellScale : 0;
+  const clusterLeft = clusterRect ? clusterRect.left - shellRect.left : 0;
+  const clusterRight = clusterRect ? clusterRect.right - shellRect.left : 0;
+  const clusterBottom = clusterRect ? clusterRect.bottom - shellRect.top : 0;
   const clusterCenterX = clusterLeft + ((clusterRight - clusterLeft) / 2);
   const desiredLeft = clusterCenterX - (menuRect.width / 2);
   const desiredTop = clusterBottom + 18;
@@ -2047,7 +2042,6 @@ function setLeftToolbarSpacingTuningMode(nextActive) {
 function updateLeftToolbarAnchorVars() {
   if (!leftToolbarShell || !leftToolbarButtons.length) return;
   const shellRect = leftToolbarShell.getBoundingClientRect();
-  const shellScale = Math.max(leftFloatingToolbarState.scale || 1, 0.001);
   const buttonRects = leftToolbarButtons
     .map((button) => button.getBoundingClientRect())
     .filter((rect) => rect.width > 0 && rect.height > 0);
@@ -2063,10 +2057,10 @@ function updateLeftToolbarAnchorVars() {
     top: buttonRects[0].top,
     bottom: buttonRects[0].bottom,
   });
-  const localLeft = (bounds.left - shellRect.left) / shellScale;
-  const localRight = (bounds.right - shellRect.left) / shellScale;
-  const localTop = (bounds.top - shellRect.top) / shellScale;
-  const localBottom = (bounds.bottom - shellRect.top) / shellScale;
+  const localLeft = bounds.left - shellRect.left;
+  const localRight = bounds.right - shellRect.left;
+  const localTop = bounds.top - shellRect.top;
+  const localBottom = bounds.bottom - shellRect.top;
   leftToolbarShell.style.setProperty('--left-toolbar-cluster-left', `${Math.round(localLeft)}px`);
   leftToolbarShell.style.setProperty('--left-toolbar-cluster-right', `${Math.round(localRight)}px`);
   leftToolbarShell.style.setProperty('--left-toolbar-cluster-top', `${Math.round(localTop)}px`);
@@ -2111,7 +2105,6 @@ function getDefaultLeftFloatingToolbarState(shellRect = leftToolbarShell?.getBou
 
 function applyLeftFloatingToolbarVisualState() {
   if (!leftToolbarShell) return;
-  leftToolbarShell.style.setProperty('--left-toolbar-scale', String(leftFloatingToolbarState.scale));
   leftToolbarShell.style.setProperty('--left-toolbar-width-scale', String(leftFloatingToolbarState.widthScale));
   leftToolbarShell.classList.toggle('is-vertical', leftFloatingToolbarState.isVertical);
   leftToolbarShell.classList.toggle('is-snapped', !leftFloatingToolbarState.isDetached);
@@ -2130,7 +2123,7 @@ function applyLeftFloatingToolbarState(partialState, persist = true) {
     y: nextPosition.y,
     isVertical: Boolean(partialState.isVertical),
     isDetached: Boolean(partialState.isDetached),
-    scale: Math.min(Math.max(partialState.scale, FLOATING_TOOLBAR_SCALE_MIN), FLOATING_TOOLBAR_SCALE_MAX),
+    scale: 1,
     widthScale: Math.min(
       Math.max(partialState.widthScale, FLOATING_TOOLBAR_WIDTH_SCALE_MIN),
       FLOATING_TOOLBAR_WIDTH_SCALE_MAX
@@ -2364,10 +2357,6 @@ function initializeLeftFloatingToolbarDragFoundation() {
     event.stopPropagation();
     startLeftFloatingToolbarInteraction('width', event);
   });
-  leftToolbarScaleHandle?.addEventListener('mousedown', (event) => {
-    event.stopPropagation();
-    startLeftFloatingToolbarInteraction('scale', event);
-  });
 
   document.addEventListener('mousemove', (event) => {
     const { mode, origin } = leftFloatingToolbarInteractionState;
@@ -2415,12 +2404,6 @@ function initializeLeftFloatingToolbarDragFoundation() {
       applyLeftFloatingToolbarState({
         ...origin,
         widthScale: origin.widthScale + (deltaX * 0.01),
-      }, false);
-    } else if (mode === 'scale') {
-      leftFloatingToolbarInteractionState.active = true;
-      applyLeftFloatingToolbarState({
-        ...origin,
-        scale: origin.scale + (deltaX * 0.01),
       }, false);
     }
     event.preventDefault();

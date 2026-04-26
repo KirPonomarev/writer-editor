@@ -199,7 +199,6 @@ body {
 }
 
 .left-floating-toolbar__shell {
-  --left-toolbar-scale: 1;
   --left-toolbar-width-scale: 1;
   --left-toolbar-cluster-left: 0px;
   --left-toolbar-cluster-right: 0px;
@@ -215,8 +214,6 @@ body {
   pointer-events: auto;
   cursor: grab;
   user-select: none;
-  transform: scale(var(--left-toolbar-scale));
-  transform-origin: left center;
 }
 
 .left-floating-toolbar__shell::before {
