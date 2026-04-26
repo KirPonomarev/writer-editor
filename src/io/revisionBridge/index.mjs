@@ -39,6 +39,8 @@ export const REVISION_BRIDGE_DOCX_REVIEW_PROFILE_ID = 'revision-bridge-docx-revi
 export const REVISION_BRIDGE_SUPPORTED_SURFACE_V1_SCHEMA = 'revision-bridge.supported-surface.v1';
 export const REVISION_BRIDGE_COMMENT_THREAD_SCHEMA = 'revision-bridge.comment-thread.v1';
 export const REVISION_BRIDGE_COMMENT_PLACEMENT_SCHEMA = 'revision-bridge.comment-placement.v1';
+export const REVISION_BRIDGE_COMMENT_DECISION_SEPARATION_SCHEMA =
+  'revision-bridge.comment-decision-separation.v1';
 export const REVISION_BRIDGE_TEXT_CHANGE_SCHEMA = 'revision-bridge.text-change.v1';
 export const REVISION_BRIDGE_STRUCTURAL_CHANGE_SCHEMA = 'revision-bridge.structural-change.v1';
 export const REVISION_BRIDGE_DIAGNOSTIC_ITEM_SCHEMA = 'revision-bridge.diagnostic-item.v1';
@@ -4359,6 +4361,12 @@ export function normalizeCommentPlacement(input = {}) {
     confidence: normalizeNumber(placement.confidence),
     policy: normalizeStringEnum(placement.policy, ['exact', 'fuzzy', 'manual'], 'manual'),
     selector: cloneJsonSafe(placement.selector) || null,
+    resolvedState: normalizeStringEnum(placement.resolvedState, ['open', 'resolved'], 'open'),
+    acceptedState: normalizeStringEnum(
+      placement.acceptedState,
+      ['pending', 'accepted', 'rejected', 'deferred'],
+      'pending',
+    ),
     createdAt: normalizeString(placement.createdAt),
   };
 }
@@ -4403,6 +4411,82 @@ export function validateCommentPlacement(input = {}) {
   if (reasons.length > 0) return reviewGraphValidationFailure(reasons);
   return reviewGraphValidationSuccess(placement);
 }
+
+// RB_29_COMMENT_DECISION_SEPARATION_CONTRACTS_START
+function commentDecisionSeparationInitialCounts() {
+  return {
+    open: 0,
+    resolved: 0,
+  };
+}
+
+function commentAcceptanceInitialCounts() {
+  return {
+    pending: 0,
+    accepted: 0,
+    rejected: 0,
+    deferred: 0,
+  };
+}
+
+function commentDecisionMatrixKey(resolvedState, acceptedState) {
+  return `${resolvedState}::${acceptedState}`;
+}
+
+export function evaluateRevisionBridgeCommentDecisionSeparation(input = {}) {
+  const source = isPlainObject(input) ? input : {};
+  const rows = Array.isArray(source.commentPlacements) ? source.commentPlacements : [];
+  const countsByResolvedState = commentDecisionSeparationInitialCounts();
+  const countsByAcceptedState = commentAcceptanceInitialCounts();
+  const matrix = {};
+  const diagnostics = [];
+
+  rows.forEach((placementInput, index) => {
+    if (!isPlainObject(placementInput)) {
+      diagnostics.push(invalidField(
+        `commentPlacements.${index}`,
+        'comment placement entry must be an object',
+      ));
+      return;
+    }
+    const placement = normalizeCommentPlacement(placementInput);
+    if (!Object.hasOwn(countsByResolvedState, placement.resolvedState)) {
+      diagnostics.push(invalidField(
+        `commentPlacements.${index}.resolvedState`,
+        'resolvedState is not supported',
+      ));
+      return;
+    }
+    if (!Object.hasOwn(countsByAcceptedState, placement.acceptedState)) {
+      diagnostics.push(invalidField(
+        `commentPlacements.${index}.acceptedState`,
+        'acceptedState is not supported',
+      ));
+      return;
+    }
+    countsByResolvedState[placement.resolvedState] += 1;
+    countsByAcceptedState[placement.acceptedState] += 1;
+    const key = commentDecisionMatrixKey(placement.resolvedState, placement.acceptedState);
+    matrix[key] = Number.isSafeInteger(matrix[key]) ? matrix[key] + 1 : 1;
+  });
+
+  return {
+    schemaVersion: REVISION_BRIDGE_COMMENT_DECISION_SEPARATION_SCHEMA,
+    type: 'revisionBridge.commentDecisionSeparation',
+    status: diagnostics.length > 0 ? 'invalid' : 'evaluated',
+    code: diagnostics.length > 0
+      ? REVIEWGRAPH_INVALID_CODE
+      : REVIEWGRAPH_VALID_CODE,
+    reason: diagnostics.length > 0
+      ? diagnostics[0].code
+      : REVIEWGRAPH_VALID_CODE,
+    diagnostics,
+    countsByResolvedState,
+    countsByAcceptedState,
+    matrix,
+  };
+}
+// RB_29_COMMENT_DECISION_SEPARATION_CONTRACTS_END
 
 export function normalizeTextChange(input = {}) {
   const change = isPlainObject(input) ? input : {};

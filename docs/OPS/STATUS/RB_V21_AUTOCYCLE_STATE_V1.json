@@ -3,7 +3,7 @@
   "planName": "Structural Revision Bridge v2.1 Final Master Plan",
   "activeCanon": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final",
   "currentStatus": "IN_PROGRESS",
-  "activeContour": "RB-C08-BLOCK-LINEAGE-COVERAGE-STAGE4",
+  "activeContour": "RB-C10-ANCHOR-CONFIDENCE-COVERAGE-STAGE6",
   "acceptedContours": [
     "RB-C01-IMPORT-CHAIN-AND-REPO-FACT-AUDIT",
     "RB-C02-P0-SAFETY-FOUNDATION-WRITE-SEAM",
@@ -11,11 +11,11 @@
     "RB-C04-REVISIONSESSION-IMPORT-SEAM",
     "RB-C05-DONOR-V21-MODULE-PORT-PHASED",
     "RB-C06-APPLY-RECEIPT-CONTRACT-STAGE8",
-    "RB-C07-SUPPORTED-SURFACE-V1-DECLARATION-STAGE3"
+    "RB-C07-SUPPORTED-SURFACE-V1-DECLARATION-STAGE3",
+    "RB-C08-BLOCK-LINEAGE-COVERAGE-STAGE4",
+    "RB-C09-COMMENT-PLACEMENT-COVERAGE-STAGE5"
   ],
   "pendingContours": [
-    "RB-C08-BLOCK-LINEAGE-COVERAGE-STAGE4",
-    "RB-C09-COMMENT-PLACEMENT-COVERAGE-STAGE5",
     "RB-C10-ANCHOR-CONFIDENCE-COVERAGE-STAGE6",
     "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
     "RB-C12-APPLY-TXN-RUNTIME-PATH-STAGE8",
@@ -291,9 +291,27 @@
       "type": "targeted-tests",
       "summary": "RB-28 contract suite passed (7 of 7) covering identity-risk diagnostics, determinism and allowlist constraints",
       "status": "pass"
+    },
+    {
+      "id": "EV-035",
+      "type": "comment-decision-separation-contract",
+      "summary": "RB-29 comment decision separation contract added with orthogonal resolved and accepted state matrix and deterministic diagnostics",
+      "status": "pass"
+    },
+    {
+      "id": "EV-036",
+      "type": "targeted-tests",
+      "summary": "RB-29 contract suite passed (6 of 6) covering schema export, orthogonal matrix, malformed-entry diagnostics, determinism and allowlist constraints",
+      "status": "pass"
+    },
+    {
+      "id": "EV-037",
+      "type": "contour-close",
+      "summary": "C09 accepted as Stage 5 comment placement decision-state separation contour and active contour moved to C10",
+      "status": "pass"
     }
   ],
-  "nextContourCandidate": "RB-C09-COMMENT-PLACEMENT-COVERAGE-STAGE5",
+  "nextContourCandidate": "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
   "finalAcceptanceGaps": [
     "project-level ApplyTxn path is not implemented as runtime write path",
     "ApplyReceipt generation and recovery journal flow are not proven in current runtime",
@@ -323,6 +341,12 @@
       "claim": "autocycle now tracks full master-plan contour queue rather than single-contour loop",
       "verdict": "supported",
       "evidenceRef": "RB_V21_AUTOCYCLE_STATE_V1.pendingContours"
+    },
+    {
+      "id": "FC-003",
+      "claim": "resolvedState and acceptedState are evaluated as orthogonal comment decision dimensions",
+      "verdict": "supported",
+      "evidenceRef": "evaluateRevisionBridgeCommentDecisionSeparation"
     }
   ],
   "auditResults": [
@@ -353,8 +377,18 @@
     },
     {
       "id": "AU-006",
+      "verdict": "accepted",
+      "note": "C08 accepted: block identity and copy-ambiguity risk diagnostics are deterministic and covered by targeted contracts"
+    },
+    {
+      "id": "AU-007",
+      "verdict": "accepted",
+      "note": "C09 accepted: comment decision separation keeps resolved and accepted states independent with explicit diagnostics on malformed entries"
+    },
+    {
+      "id": "AU-008",
       "verdict": "in_progress",
-      "note": "C08 active: block lineage scope now extends with explicit identity and copy-ambiguity risk diagnostics"
+      "note": "C10 active: anchor-confidence coverage contour selected after C09 close"
     }
   ],
   "replacementAgentHistory": [],
@@ -364,7 +398,7 @@
     "stage2_safety_kernel": "partial",
     "stage3_supported_surface_v1": "partial_with_supported_surface_v1_contracts",
     "stage4_block_and_lineage_model": "partial_with_block_identity_risk_contracts",
-    "stage5_inlinerange_and_commentplacement": "partial",
+    "stage5_inlinerange_and_commentplacement": "partial_with_comment_decision_separation_contracts",
     "stage6_anchor_and_confidence": "partial_with_donor_confidence_and_diagnostics_utils",
     "stage7_import_to_revisionsession": "contract_seam_preview_ready_no_runtime_apply",
     "stage8_apply_engine_and_applytxn": "partial_with_applytxn_and_applyreceipt_contracts",
