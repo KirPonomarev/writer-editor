@@ -40,3 +40,12 @@
 - Риск: если deviation не зафиксировать явно, docs и acceptance могут расходиться с catalog truth и снова создать split-brain.
 - Rollback: либо реализовать полноценные offline-first image и spellcheck paths и перевести элементы в live, либо сохранить blocked и поддерживать factual rebaseline в docs и tests.
 - План удаления исключения: снять исключение, когда для image и spellcheck будет принято owner-approved runtime решение и закрыт соответствующий write contour без false-green.
+
+## 2026-04-26 — Toolbar Scale Markup Parity Index Structure Exception
+
+- Контекст: contour `TOOLBAR_SCALE_MARKUP_PARITY_CLOSEOUT_001` удаляет устаревшие scale-handle узлы и scale-class tails из `index.html` после runtime descale.
+- Что нарушаем: правило не менять структуру `src/renderer/index.html` без отдельного ТЗ.
+- Причина: без очистки markup остаются stale scale tails и временный runtime purge path, что создает архитектурный шум и false-green risk.
+- Риск: случайное удаление нужных узлов могло бы повлиять на drag affordance или поведение toolbar shell.
+- Rollback: вернуть commit `22ce7a40b0e975fb67a4d3c74ecb0e2c7bc67393` через `git revert` если проявится регрессия move/width/rotate.
+- План удаления исключения: исключение считается закрытым сразу после merge этого контура, потому что оно одноразовое и не вводит новый постоянный bypass.

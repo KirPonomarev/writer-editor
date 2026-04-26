@@ -154,9 +154,6 @@ const toolbarRotateHandles = Array.from(document.querySelectorAll('[data-toolbar
 const toolbarWidthHandle = document.querySelector('[data-toolbar-width-handle]');
 const leftToolbarRotateHandles = Array.from(document.querySelectorAll('[data-left-toolbar-rotate-handle]'));
 const leftToolbarWidthHandle = document.querySelector('[data-left-toolbar-width-handle]');
-Array.from(document.querySelectorAll('[data-toolbar-scale-handle], [data-left-toolbar-scale-handle]')).forEach((handle) => {
-  handle.remove();
-});
 const leftToolbarCluster = document.querySelector('.left-floating-toolbar .work-bar__cluster');
 const leftToolbarButtons = Array.from(document.querySelectorAll('.left-floating-toolbar .work-bar__button[data-action]'));
 const leftToolbarSpacingMenu = document.querySelector('[data-left-toolbar-spacing-menu]');
