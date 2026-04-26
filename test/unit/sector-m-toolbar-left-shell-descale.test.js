@@ -69,10 +69,14 @@ test('sector-m toolbar left shell descale: runtime removes shell scale branch an
     'function applyLeftFloatingToolbarVisualState() {',
     'function applyLeftFloatingToolbarState(partialState, persist = true) {'
   );
+  assert.ok(
+    visualSnippet.includes("leftToolbarShell.style.removeProperty('--left-toolbar-scale');"),
+    'left shell visual state must explicitly remove legacy shell scale css var'
+  );
   assert.equal(
-    visualSnippet.includes("'--left-toolbar-scale'"),
+    visualSnippet.includes("setProperty('--left-toolbar-scale'"),
     false,
-    'left shell visual state must not set shell scale css var'
+    'left shell visual state must not emit shell scale css var'
   );
   assert.ok(
     visualSnippet.includes("'--left-toolbar-width-scale'"),
