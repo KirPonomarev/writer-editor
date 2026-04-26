@@ -54,12 +54,13 @@
 - blocked lanes remain explicit blocked debt; later items remain explicit later or hold debt
 - security audit lane is standardized on repo mainline via generic semgrep runner and package script; generic scan is repeatable with zero findings and honest timeout reporting
 - test electron lane is ready and executed on current mainline with repeated pass runs
-- X102 Block 01 visual reproof completed report-only on the current selected-base snapshot
+- X102 Block 01 visual reproof completed report-only on the selected-base snapshot at the time of X102 reproof
 - that reproof ended with STOP_AND_FREEZE for design write and did not prove a new live nonblocked Group 01 delta
 - design write lane remains closed after the latest X102 reproof
 
 ### Vertical sheets accepted baseline
-- Vertical sheets accepted baseline is merged on current mainline at `4c4eca3aba79c7d689d39b822f689f8939ca58ce`.
+- Vertical sheets accepted baseline merge point on main history is `4c4eca3aba79c7d689d39b822f689f8939ca58ce`.
+- Current mainline head that includes C05 long-document performance window closeout is `792f28077973721669aef9cf78d9385b1fb1db29` (source contour commit `58a2aced76bb914b3128024ad75588f789b24b28`).
 - Primary editor flow has an accepted vertical sheet baseline: one Tiptap editor remains the text source, sheets are a derived visual projection, and page gaps remain view-only layout.
 - The accepted evidence set includes `vertical-sheet-feed-smoke`, `vertical-sheet-gap-smoke`, `five-sheet-visible-smoke`, and `vertical-sheet-input-stability-smoke`.
 - `VERTICAL_SHEET_PERFORMANCE_BASELINE_RUN_001` observed 10, 50, and 100 page scenarios as report-only baseline evidence; it is not a hard performance gate and not a repo-persisted artifact.
@@ -103,7 +104,8 @@ Repo-wide done подтверждён на main после merge gate и post-me
 Formal Y8 cutover packet is explicitly bound on main with explicit rollback packet in the same operating reality.
 Owner visual confirmation for the transferred variant on main is true.
 b101939f03996479e90441b1d0cd8ffb4d110e0f is the historical confirmed live point for that transferred variant.
-4c4eca3aba79c7d689d39b822f689f8939ca58ce is the current mainline point for the accepted vertical sheets baseline.
+4c4eca3aba79c7d689d39b822f689f8939ca58ce is the baseline merge point for the accepted vertical sheets flow on main history.
+792f28077973721669aef9cf78d9385b1fb1db29 is the current mainline head that already contains C05 long-document performance closeout.
 Source anchor `e1f36ef` was successfully reproduced on main.
 Local checkout `a670f276759889ce90d1aa535ac7c84746b9f470` is not source of truth.
 Prep frame `YALKEN_DESIGN_OS_PREP_AND_SELECTION_FRAME_V7` is archival only.

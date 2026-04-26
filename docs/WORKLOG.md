@@ -3,6 +3,11 @@
 Короткая хронология изменений и решений. Это не полный лог чата, а сжатые записи “что сделали / зачем / что дальше”.
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
+## 2026-04-26
+- Vertical closeout chain: main head `792f28077973721669aef9cf78d9385b1fb1db29` contains C05 long-document performance contour from source commit `58a2aced76bb914b3128024ad75588f789b24b28`.
+- Scope truth: C05 changed only `editor.js`, `editor.bundle.js`, and `vertical-sheet-performance-window-smoke.mjs`; no storage or export files were touched.
+- Docs refresh: factual snapshot docs were rebound to current mainline head and baseline wording was corrected from “current mainline baseline point” to “baseline merge point on main history”.
+
 ## 2026-04-22
 - Transfer closeout: correct main head `b101939f03996479e90441b1d0cd8ffb4d110e0f` was confirmed and the transfer axis was closed.
 - Authority rebind: local checkout `a670f276759889ce90d1aa535ac7c84746b9f470` was downgraded as non-authority.
