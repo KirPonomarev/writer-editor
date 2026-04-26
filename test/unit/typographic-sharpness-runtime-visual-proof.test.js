@@ -167,10 +167,10 @@ async function collectProof(win) {
   })()\`, true);
 }
 
-async function captureEvidence(win, proof) {
+async function captureEvidence(win, proof, fullBasename, cropBasename) {
   await fs.mkdir(outputDir, { recursive: true });
   const fullImage = await win.capturePage();
-  await fs.writeFile(path.join(outputDir, 'sharpness-proof-100.png'), fullImage.toPNG());
+  await fs.writeFile(path.join(outputDir, fullBasename), fullImage.toPNG());
 
   if (proof.proseRect && proof.proseRect.width > 0 && proof.proseRect.height > 0) {
     const crop = {
@@ -180,8 +180,22 @@ async function captureEvidence(win, proof) {
       height: Math.max(1, Math.min(500, Math.floor(proof.proseRect.height))),
     };
     const cropImage = await win.capturePage(crop);
-    await fs.writeFile(path.join(outputDir, 'sharpness-proof-crop.png'), cropImage.toPNG());
+    await fs.writeFile(path.join(outputDir, cropBasename), cropImage.toPNG());
   }
+}
+
+async function zoomIn(win) {
+  return win.webContents.executeJavaScript(\`(() => {
+    const trigger = document.querySelector('[data-action="zoom-in"]');
+    const valueEl = document.querySelector('[data-zoom-value]');
+    const before = valueEl ? valueEl.textContent : '';
+    if (!trigger) {
+      return { ok: false, reason: 'ZOOM_IN_ACTION_NOT_FOUND', before };
+    }
+    trigger.click();
+    const after = valueEl ? valueEl.textContent : '';
+    return { ok: true, before, after };
+  })()\`, true);
 }
 
 async function main() {
@@ -202,9 +216,19 @@ async function main() {
   await waitForEditor(win);
   await setEditorText(win);
   await sleep(500);
-  const proof = await collectProof(win);
-  await captureEvidence(win, proof);
-  await fs.writeFile(proofJsonPath, JSON.stringify(proof, null, 2));
+  const baseProof = await collectProof(win);
+  await captureEvidence(win, baseProof, 'sharpness-proof-100.png', 'sharpness-proof-crop.png');
+
+  const zoomStep = await zoomIn(win);
+  await sleep(250);
+  const zoomProof = await collectProof(win);
+  await captureEvidence(win, zoomProof, 'sharpness-proof-zoom.png', 'sharpness-proof-zoom-crop.png');
+
+  await fs.writeFile(proofJsonPath, JSON.stringify({
+    base: baseProof,
+    zoom: zoomProof,
+    zoomStep,
+  }, null, 2));
   app.quit();
 }
 
@@ -304,18 +328,42 @@ test('typographic sharpness runtime proof: optional Electron DOM and screenshot 
   assert.equal(result.status, 0, `electron proof failed\nSTDOUT:\n${result.stdout}\nSTDERR:\n${result.stderr}`);
   const proofJsonPath = path.join(outputDir, 'sharpness-proof-runtime.json');
   assert.ok(fs.existsSync(proofJsonPath), `missing runtime proof json\nSTDOUT:\n${result.stdout}\nSTDERR:\n${result.stderr}`);
-  const proof = JSON.parse(fs.readFileSync(proofJsonPath, 'utf8'));
+  const payload = JSON.parse(fs.readFileSync(proofJsonPath, 'utf8'));
+  const proof = payload && typeof payload === 'object' ? payload : {};
+  const baseProof = proof.base && typeof proof.base === 'object' ? proof.base : null;
+  const zoomProof = proof.zoom && typeof proof.zoom === 'object' ? proof.zoom : null;
+  const zoomStep = proof.zoomStep && typeof proof.zoomStep === 'object' ? proof.zoomStep : null;
 
-  assert.equal(proof.hostCount, 1);
-  assert.equal(proof.proseMirrorCount, 1);
-  assert.equal(proof.tiptapEditorCount, 1);
-  assert.equal(proof.canvasCountInsideHost, 0);
-  assert.ok(proof.textNodeCount > 0);
-  assert.ok(proof.textLength > 0);
-  assert.equal(proof.proseTag === 'canvas', false);
-  assert.equal(transformLooksScaled(proof.transforms.host), false);
-  assert.equal(transformLooksScaled(proof.transforms.editor), false);
-  assert.equal(transformLooksScaled(proof.transforms.prose), false);
+  assert.ok(baseProof, 'missing base proof payload');
+  assert.ok(zoomProof, 'missing zoom proof payload');
+  assert.ok(zoomStep, 'missing zoom step payload');
+  assert.equal(zoomStep.ok, true, JSON.stringify(zoomStep));
+  assert.ok(String(zoomStep.after || '').length > 0, JSON.stringify(zoomStep));
+
+  assert.equal(baseProof.hostCount, 1);
+  assert.equal(baseProof.proseMirrorCount, 1);
+  assert.equal(baseProof.tiptapEditorCount, 1);
+  assert.equal(baseProof.canvasCountInsideHost, 0);
+  assert.ok(baseProof.textNodeCount > 0);
+  assert.ok(baseProof.textLength > 0);
+  assert.equal(baseProof.proseTag === 'canvas', false);
+  assert.equal(transformLooksScaled(baseProof.transforms.host), false);
+  assert.equal(transformLooksScaled(baseProof.transforms.editor), false);
+  assert.equal(transformLooksScaled(baseProof.transforms.prose), false);
+
+  assert.equal(zoomProof.hostCount, 1);
+  assert.equal(zoomProof.proseMirrorCount, 1);
+  assert.equal(zoomProof.tiptapEditorCount, 1);
+  assert.equal(zoomProof.canvasCountInsideHost, 0);
+  assert.ok(zoomProof.textNodeCount > 0);
+  assert.ok(zoomProof.textLength > 0);
+  assert.equal(zoomProof.proseTag === 'canvas', false);
+  assert.equal(transformLooksScaled(zoomProof.transforms.host), false);
+  assert.equal(transformLooksScaled(zoomProof.transforms.editor), false);
+  assert.equal(transformLooksScaled(zoomProof.transforms.prose), false);
+
   assert.ok(fs.existsSync(path.join(outputDir, 'sharpness-proof-100.png')));
   assert.ok(fs.existsSync(path.join(outputDir, 'sharpness-proof-crop.png')));
+  assert.ok(fs.existsSync(path.join(outputDir, 'sharpness-proof-zoom.png')));
+  assert.ok(fs.existsSync(path.join(outputDir, 'sharpness-proof-zoom-crop.png')));
 });
