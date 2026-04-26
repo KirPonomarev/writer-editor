@@ -14,7 +14,7 @@ const FAIL_REASON_FORCED_NEGATIVE = 'E_Y4_RENDERER_LIVE_WIRING_FORCED_NEGATIVE';
 const FAIL_REASON_UNEXPECTED = 'E_Y4_RENDERER_LIVE_WIRING_UNEXPECTED';
 const Y4_MARKER = 'Y4_RENDERER_LIVE_WIRING_ACTIVE';
 const EDITOR_SOURCE_PATH = 'src/renderer/editor.js';
-const EDITOR_BUNDLE_PATH = 'src/renderer/editor.bundle.js';
+const RUNTIME_ENTRYPOINT_BUNDLE_PROOF_MODE = 'DELEGATED_TO_BUNDLE_CHECKER';
 const X15_PRESET_SCHEMA_PATH = 'docs/OPS/STATUS/X15_PROFILE_PRESETS_SCHEMA_v1.json';
 const X15_MODE_POLICY_PATH = 'docs/OPS/STATUS/X15_MODE_SHELL_POLICY_v1.json';
 
@@ -127,7 +127,6 @@ function evaluateY4RendererLiveWiringState(input = {}) {
     const presetSchema = readJson(X15_PRESET_SCHEMA_PATH);
     const modePolicy = readJson(X15_MODE_POLICY_PATH);
     const editorSource = readText(EDITOR_SOURCE_PATH);
-    const editorBundle = readText(EDITOR_BUNDLE_PATH);
 
     const bootstrap = createRepoGroundedDesignOsBrowserRuntime({
       productTruth: {
@@ -145,7 +144,6 @@ function evaluateY4RendererLiveWiringState(input = {}) {
     const sourceMarkerPresent = editorSource.includes(Y4_MARKER);
     const sourceBootstrapPresent = editorSource.includes('createRepoGroundedDesignOsBrowserRuntime');
     const sourceApplyFnPresent = editorSource.includes('applyDesignOsRuntimeWiring');
-    const bundleMarkerPresent = editorBundle.includes(Y4_MARKER);
     const runtimeBootstrapped = Boolean(runtime);
     const phase04LiveThroughRuntime = hasAll(phase04LockedTargets, REQUIRED_PHASE04_LOCKED_TARGETS);
 
@@ -195,18 +193,16 @@ function evaluateY4RendererLiveWiringState(input = {}) {
     }
 
     const x15PolicyLiveThroughRuntime = modeChecksGreen;
-    const runtimeEntrypointBundleValidated = sourceMarkerPresent
+    const sourceRuntimeWiringPresent = sourceMarkerPresent
       && sourceBootstrapPresent
-      && sourceApplyFnPresent
-      && bundleMarkerPresent;
+      && sourceApplyFnPresent;
+    const runtimeEntrypointBundleValidated = null;
 
     const checkStatusById = {
       RUNTIME_BOOTSTRAP_READY: asCheck(runtimeBootstrapped ? 'GREEN' : 'OPEN_GAP', true, runtimeBootstrapped ? 'RUNTIME_BOOTSTRAP_READY' : 'RUNTIME_BOOTSTRAP_FAILED'),
       PHASE04_LIVE_THROUGH_RUNTIME: asCheck(phase04LiveThroughRuntime ? 'GREEN' : 'OPEN_GAP', true, phase04LiveThroughRuntime ? 'PHASE04_LIVE_THROUGH_RUNTIME' : 'PHASE04_RUNTIME_GAP'),
       X15_POLICY_LIVE_THROUGH_RUNTIME: asCheck(x15PolicyLiveThroughRuntime ? 'GREEN' : 'OPEN_GAP', true, x15PolicyLiveThroughRuntime ? 'X15_POLICY_LIVE_THROUGH_RUNTIME' : 'X15_POLICY_RUNTIME_GAP'),
-      EDITOR_SOURCE_RUNTIME_WIRING_PRESENT: asCheck(sourceMarkerPresent && sourceBootstrapPresent && sourceApplyFnPresent ? 'GREEN' : 'OPEN_GAP', true, sourceMarkerPresent && sourceBootstrapPresent && sourceApplyFnPresent ? 'EDITOR_SOURCE_RUNTIME_WIRING_PRESENT' : 'EDITOR_SOURCE_RUNTIME_WIRING_MISSING'),
-      EDITOR_BUNDLE_RUNTIME_WIRING_PRESENT: asCheck(bundleMarkerPresent ? 'GREEN' : 'OPEN_GAP', true, bundleMarkerPresent ? 'EDITOR_BUNDLE_RUNTIME_WIRING_PRESENT' : 'EDITOR_BUNDLE_RUNTIME_WIRING_MISSING'),
-      RUNTIME_ENTRYPOINT_BUNDLE_VALIDATED: asCheck(runtimeEntrypointBundleValidated ? 'GREEN' : 'OPEN_GAP', true, runtimeEntrypointBundleValidated ? 'RUNTIME_ENTRYPOINT_BUNDLE_VALIDATED' : 'RUNTIME_ENTRYPOINT_BUNDLE_NOT_VALIDATED'),
+      EDITOR_SOURCE_RUNTIME_WIRING_PRESENT: asCheck(sourceRuntimeWiringPresent ? 'GREEN' : 'OPEN_GAP', true, sourceRuntimeWiringPresent ? 'EDITOR_SOURCE_RUNTIME_WIRING_PRESENT' : 'EDITOR_SOURCE_RUNTIME_WIRING_MISSING'),
     };
 
     const greenCheckIds = Object.entries(checkStatusById)
@@ -225,6 +221,7 @@ function evaluateY4RendererLiveWiringState(input = {}) {
         phase04LiveThroughRuntime,
         x15PolicyLiveThroughRuntime,
         runtimeEntrypointBundleValidated,
+        runtimeEntrypointBundleProofMode: RUNTIME_ENTRYPOINT_BUNDLE_PROOF_MODE,
         modeChecks,
         greenCheckIds,
         openGapIds: Array.from(new Set([...openGapIds, 'FORCED_NEGATIVE_PATH'])),
@@ -244,6 +241,7 @@ function evaluateY4RendererLiveWiringState(input = {}) {
       phase04LiveThroughRuntime,
       x15PolicyLiveThroughRuntime,
       runtimeEntrypointBundleValidated,
+      runtimeEntrypointBundleProofMode: RUNTIME_ENTRYPOINT_BUNDLE_PROOF_MODE,
       modeChecks,
       greenCheckIds,
       openGapIds,
@@ -263,6 +261,7 @@ function evaluateY4RendererLiveWiringState(input = {}) {
       phase04LiveThroughRuntime: false,
       x15PolicyLiveThroughRuntime: false,
       runtimeEntrypointBundleValidated: false,
+      runtimeEntrypointBundleProofMode: RUNTIME_ENTRYPOINT_BUNDLE_PROOF_MODE,
       modeChecks: {},
       greenCheckIds: [],
       openGapIds: ['Y4_RUNTIME_WIRING_EVALUATION_ERROR'],

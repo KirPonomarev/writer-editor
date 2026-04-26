@@ -29,12 +29,13 @@ test('Y4 renderer live wiring state: positive run validates runtime bootstrap, p
   assert.equal(payload.y4RendererLiveWiringStatus, 'PASS');
   assert.equal(payload.phase04LiveThroughRuntime, true);
   assert.equal(payload.x15PolicyLiveThroughRuntime, true);
-  assert.equal(payload.runtimeEntrypointBundleValidated, true);
+  assert.equal(payload.runtimeEntrypointBundleValidated, null);
+  assert.equal(payload.runtimeEntrypointBundleProofMode, 'DELEGATED_TO_BUNDLE_CHECKER');
   assert.equal(payload.openGapIds.length, 0);
   assert.equal(payload.greenCheckIds.includes('RUNTIME_BOOTSTRAP_READY'), true);
   assert.equal(payload.greenCheckIds.includes('PHASE04_LIVE_THROUGH_RUNTIME'), true);
   assert.equal(payload.greenCheckIds.includes('X15_POLICY_LIVE_THROUGH_RUNTIME'), true);
-  assert.equal(payload.greenCheckIds.includes('RUNTIME_ENTRYPOINT_BUNDLE_VALIDATED'), true);
+  assert.equal(payload.greenCheckIds.includes('EDITOR_SOURCE_RUNTIME_WIRING_PRESENT'), true);
   assert.equal(payload.modeChecks.write.requiredCommandsCovered, true);
   assert.equal(payload.modeChecks.plan.requiredCommandsCovered, true);
   assert.equal(payload.modeChecks.review.requiredCommandsCovered, true);
