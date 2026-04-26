@@ -19,6 +19,7 @@ function sliceSection(source, startToken, endToken) {
 
 test('sector-m toolbar left shell descale: runtime removes shell scale branch and keeps move/width/rotate', () => {
   const source = readFile('src', 'renderer', 'editor.js');
+  const indexSource = readFile('src', 'renderer', 'index.html');
   const dragFoundationSnippet = sliceSection(
     source,
     'function initializeLeftFloatingToolbarDragFoundation() {',
@@ -51,6 +52,16 @@ test('sector-m toolbar left shell descale: runtime removes shell scale branch an
     dragFoundationSnippet.includes('[data-left-toolbar-scale-handle]'),
     false,
     'left shell drag foundation guards must not keep stale scale-handle selector tails'
+  );
+  assert.equal(
+    source.includes("document.querySelectorAll('[data-toolbar-scale-handle], [data-left-toolbar-scale-handle]')"),
+    false,
+    'left shell runtime must not keep temporary scale-handle purge query tail'
+  );
+  assert.equal(
+    indexSource.includes('data-left-toolbar-scale-handle'),
+    false,
+    'left shell markup must not keep stale scale-handle node'
   );
 
   const visualSnippet = sliceSection(
