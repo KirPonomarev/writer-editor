@@ -111,6 +111,18 @@
       "type": "targeted-tests",
       "summary": "RB-20 expanded contract suite passed (9 of 9) and RB-19 or RB-18 regression subsets stayed green",
       "status": "pass"
+    },
+    {
+      "id": "EV-017",
+      "type": "donor-port-phase",
+      "summary": "RB-21 RevisionSession lifecycle state machine contracts added with explicit allowed transitions and transition metadata guards",
+      "status": "pass"
+    },
+    {
+      "id": "EV-018",
+      "type": "targeted-tests",
+      "summary": "RB-21 contract suite passed (8 of 8) covering lifecycle normalization, transition validity, deterministic behavior, and allowlist constraints",
+      "status": "pass"
     }
   ],
   "nextContourCandidate": "RB-C05-DONOR-V21-MODULE-PORT-PHASED",
@@ -153,13 +165,13 @@
     {
       "id": "AU-003",
       "verdict": "in_progress",
-      "note": "C05 phase keeps donor port bounded to pure confidence and diagnostics utilities without IO or runtime apply wiring"
+      "note": "C05 phase stays bounded to pure contract ports without IO or runtime apply wiring; latest increment adds RevisionSession lifecycle state machine contracts"
     }
   ],
   "replacementAgentHistory": [],
   "stageProgressSnapshot": {
     "stage0_isolation_and_entry": "partial",
-    "stage1_contracts_and_reviewgraph": "partial",
+    "stage1_contracts_and_reviewgraph": "partial_with_revision_session_state_machine_contracts",
     "stage2_safety_kernel": "partial",
     "stage3_supported_surface_v1": "not_proven",
     "stage4_block_and_lineage_model": "partial",

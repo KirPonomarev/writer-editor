@@ -10,6 +10,20 @@ const PARSED_REVIEW_SURFACE_ADAPTER_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_PARSED
 
 export const REVISION_BRIDGE_P0_PACKET_SCHEMA = 'revision-bridge-p0.packet.v1';
 export const REVISION_BRIDGE_REVISION_SESSION_SCHEMA = 'revision-bridge.revision-session.v1';
+export const REVISION_BRIDGE_REVISION_SESSION_STATES = Object.freeze([
+  'Exported',
+  'Imported',
+  'Diagnosed',
+  'Decisioned',
+  'Planned',
+  'Applying',
+  'Applied',
+  'Failed',
+  'Verified',
+  'Closed',
+  'Reopened',
+  'Quarantined',
+]);
 export const REVISION_BRIDGE_COMMENT_THREAD_SCHEMA = 'revision-bridge.comment-thread.v1';
 export const REVISION_BRIDGE_COMMENT_PLACEMENT_SCHEMA = 'revision-bridge.comment-placement.v1';
 export const REVISION_BRIDGE_TEXT_CHANGE_SCHEMA = 'revision-bridge.text-change.v1';
@@ -303,6 +317,21 @@ const PARSED_REVIEW_SURFACE_ALIAS_KEYS = [
   'paragraphs',
   'revisions',
 ];
+
+const REVISION_SESSION_ALLOWED_TRANSITIONS = Object.freeze({
+  Exported: Object.freeze(['Imported', 'Quarantined']),
+  Imported: Object.freeze(['Diagnosed', 'Failed', 'Quarantined']),
+  Diagnosed: Object.freeze(['Decisioned', 'Failed', 'Quarantined']),
+  Decisioned: Object.freeze(['Planned', 'Failed', 'Quarantined']),
+  Planned: Object.freeze(['Applying', 'Failed', 'Quarantined']),
+  Applying: Object.freeze(['Applied', 'Failed', 'Quarantined']),
+  Applied: Object.freeze(['Verified', 'Failed']),
+  Failed: Object.freeze(['Reopened', 'Closed', 'Quarantined']),
+  Verified: Object.freeze(['Closed', 'Reopened']),
+  Closed: Object.freeze(['Reopened']),
+  Reopened: Object.freeze(['Imported', 'Diagnosed', 'Closed']),
+  Quarantined: Object.freeze(['Reopened', 'Closed']),
+});
 
 export const DOCX_PACKAGE_BOUNDARY_BUDGETS = Object.freeze({
   maxEntries: 512,
@@ -4365,6 +4394,91 @@ function normalizeReviewGraph(input = {}) {
   };
 }
 
+// RB_21_REVISION_SESSION_STATE_MACHINE_CONTRACTS_START
+function resolveRevisionSessionStateInput(input = {}) {
+  if (!isPlainObject(input)) return '';
+  if (hasOwnField(input, 'sessionState')) return input.sessionState;
+  if (hasOwnField(input, 'state')) return input.state;
+  return '';
+}
+
+function resolveRevisionSessionPreviousStateInput(input = {}) {
+  if (!isPlainObject(input)) return '';
+  if (hasOwnField(input, 'previousSessionState')) return input.previousSessionState;
+  if (hasOwnField(input, 'previousState')) return input.previousState;
+  return '';
+}
+
+export function normalizeRevisionSessionState(state, fallback = '') {
+  const normalized = normalizeString(state);
+  if (!normalized) return fallback;
+  return REVISION_BRIDGE_REVISION_SESSION_STATES.includes(normalized) ? normalized : fallback;
+}
+
+export function isRevisionSessionStateTransitionAllowed(fromState, toState) {
+  const from = normalizeRevisionSessionState(fromState);
+  const to = normalizeRevisionSessionState(toState);
+  if (!from || !to) return false;
+  const allowed = REVISION_SESSION_ALLOWED_TRANSITIONS[from];
+  return Array.isArray(allowed) ? allowed.includes(to) : false;
+}
+
+function collectRevisionSessionStateMachineReasons(input, session) {
+  const reasons = [];
+  const hasState = hasOwnField(input, 'sessionState') || hasOwnField(input, 'state');
+  const hasPreviousState = hasOwnField(input, 'previousSessionState') || hasOwnField(input, 'previousState');
+  const hasStateChangedAt = hasOwnField(input, 'stateChangedAt');
+
+  if (hasState && !normalizeRevisionSessionState(resolveRevisionSessionStateInput(input))) {
+    reasons.push(invalidField(
+      'revisionSession.sessionState',
+      'RevisionSession sessionState is not supported',
+    ));
+  }
+
+  if (hasPreviousState && !normalizeRevisionSessionState(resolveRevisionSessionPreviousStateInput(input))) {
+    reasons.push(invalidField(
+      'revisionSession.previousSessionState',
+      'RevisionSession previousSessionState is not supported',
+    ));
+  }
+
+  if (hasStateChangedAt && typeof input.stateChangedAt !== 'string') {
+    reasons.push(invalidField(
+      'revisionSession.stateChangedAt',
+      'RevisionSession stateChangedAt must be a string',
+    ));
+  }
+
+  if (session.previousSessionState && !session.stateChangedAt) {
+    reasons.push(missingField('revisionSession.stateChangedAt'));
+  }
+
+  if (!session.previousSessionState && session.stateChangedAt) {
+    reasons.push(invalidField(
+      'revisionSession.stateChangedAt',
+      'stateChangedAt requires previousSessionState',
+    ));
+  }
+
+  if (session.previousSessionState) {
+    if (session.previousSessionState === session.sessionState) {
+      reasons.push(invalidField(
+        'revisionSession.sessionState',
+        'RevisionSession transition must change state',
+      ));
+    } else if (!isRevisionSessionStateTransitionAllowed(session.previousSessionState, session.sessionState)) {
+      reasons.push(invalidField(
+        'revisionSession.sessionState',
+        'RevisionSession state transition is not allowed',
+      ));
+    }
+  }
+
+  return reasons;
+}
+// RB_21_REVISION_SESSION_STATE_MACHINE_CONTRACTS_END
+
 export function normalizeRevisionSession(input = {}) {
   const session = isPlainObject(input) ? input : {};
   return {
@@ -4372,6 +4486,9 @@ export function normalizeRevisionSession(input = {}) {
     sessionId: normalizeString(session.sessionId),
     projectId: normalizeString(session.projectId),
     baselineHash: normalizeString(session.baselineHash),
+    sessionState: normalizeRevisionSessionState(resolveRevisionSessionStateInput(session), 'Imported'),
+    previousSessionState: normalizeRevisionSessionState(resolveRevisionSessionPreviousStateInput(session)),
+    stateChangedAt: normalizeString(session.stateChangedAt),
     createdAt: normalizeString(session.createdAt),
     updatedAt: normalizeString(session.updatedAt),
     reviewGraph: normalizeReviewGraph(session.reviewGraph),
@@ -4431,6 +4548,7 @@ function collectRevisionSessionValidationReasons(input, session) {
   if (!session.sessionId) reasons.push(missingField('revisionSession.sessionId'));
   if (!session.projectId) reasons.push(missingField('revisionSession.projectId'));
   if (!session.baselineHash) reasons.push(missingField('revisionSession.baselineHash'));
+  reasons.push(...collectRevisionSessionStateMachineReasons(input, session));
   if (!isPlainObject(input.reviewGraph)) {
     reasons.push(missingField('revisionSession.reviewGraph'));
     return reasons;
