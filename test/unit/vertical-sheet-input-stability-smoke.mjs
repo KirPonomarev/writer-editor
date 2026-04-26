@@ -818,12 +818,16 @@ assert.equal(result.afterMarkerA.markerACount, 1, 'typed marker A must appear on
 assert.equal(result.afterEnter.paragraphCount > result.afterMarkerA.paragraphCount, true, 'Enter must increase paragraph/block count');
 assert.equal(result.afterEnterUndo.paragraphCount, result.afterMarkerA.paragraphCount, 'undo immediately after Enter must restore previous paragraph count');
 assert.equal(result.afterEnterUndo.markerACount, 1, 'undo immediately after Enter must preserve marker A');
+assert.equal(result.afterEnterUndo.textHash, result.afterMarkerA.textHash, 'undo immediately after Enter must restore text hash');
 assert.equal(result.afterEnterRedo.paragraphCount, result.afterEnter.paragraphCount, 'redo immediately after Enter undo must restore Enter paragraph count');
 assert.equal(result.afterEnterRedo.markerACount, 1, 'redo immediately after Enter undo must preserve marker A');
+assert.equal(result.afterEnterRedo.textHash, result.afterEnter.textHash, 'redo immediately after Enter undo must restore Enter text hash');
 assert.equal(result.afterMarkerB.markerBCount, 1, 'typed marker B must appear once before undo');
 assert.equal(result.afterUndo.markerBCount, 0, 'undo must remove marker B');
+assert.equal(result.afterUndo.textHash, result.afterEnterRedo.textHash, 'undo after marker B must restore pre-marker text hash');
 assert.equal(result.afterRedo.markerBCount, 1, 'redo must restore marker B');
 assert.equal(result.afterRedo.markerACount, 1, 'redo state must preserve marker A once');
+assert.equal(result.afterRedo.textHash, result.afterMarkerB.textHash, 'redo after marker B undo must restore marker B text hash');
 assert.equal(result.afterPaste.pasteStartCount, 1, 'clipboard paste must insert start marker once');
 assert.equal(result.afterPaste.pasteEndCount, 1, 'clipboard paste must insert end marker once');
 assert.equal(result.afterPaste.textLength > result.afterRedo.textLength, true, 'clipboard paste must grow text length');
@@ -873,6 +877,10 @@ const summary = {
   markerBAfterType: result.afterMarkerB.markerBCount,
   markerBAfterUndo: result.afterUndo.markerBCount,
   markerBAfterRedo: result.afterRedo.markerBCount,
+  enterUndoHashRestored: result.afterEnterUndo.textHash === result.afterMarkerA.textHash,
+  enterRedoHashRestored: result.afterEnterRedo.textHash === result.afterEnter.textHash,
+  markerUndoHashRestored: result.afterUndo.textHash === result.afterEnterRedo.textHash,
+  markerRedoHashRestored: result.afterRedo.textHash === result.afterMarkerB.textHash,
   pasteStartAfterPaste: result.afterPaste.pasteStartCount,
   pasteEndAfterPaste: result.afterPaste.pasteEndCount,
   backspaceFullTargetAfter: result.afterBackspace.fullTargetCount,
