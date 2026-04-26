@@ -139,6 +139,18 @@
       "type": "targeted-tests",
       "summary": "RB-21 contract suite passed (8 of 8) covering lifecycle normalization, transition validity, deterministic behavior, and allowlist constraints",
       "status": "pass"
+    },
+    {
+      "id": "EV-019",
+      "type": "donor-port-phase",
+      "summary": "RB-22 RevisionSession version tags contracts added: parserVersion, matcherVersion, policyVersion, receiptVersion with deterministic defaults",
+      "status": "pass"
+    },
+    {
+      "id": "EV-020",
+      "type": "targeted-tests",
+      "summary": "RB-22 contract suite passed (6 of 6) covering default version tags, custom tags, type guards, determinism, and allowlist checks",
+      "status": "pass"
     }
   ],
   "nextContourCandidate": "RB-C05-DONOR-V21-MODULE-PORT-PHASED",
@@ -181,13 +193,13 @@
     {
       "id": "AU-003",
       "verdict": "in_progress",
-      "note": "C05 phase stays bounded to pure contract ports without IO or runtime apply wiring; latest increment adds RevisionSession lifecycle state machine contracts"
+      "note": "C05 phase stays bounded to pure contract ports without IO or runtime apply wiring; latest increments add RevisionSession lifecycle state machine and version tags contracts"
     }
   ],
   "replacementAgentHistory": [],
   "stageProgressSnapshot": {
     "stage0_isolation_and_entry": "partial",
-    "stage1_contracts_and_reviewgraph": "partial_with_revision_session_state_machine_contracts",
+    "stage1_contracts_and_reviewgraph": "partial_with_revision_session_state_machine_and_version_tags_contracts",
     "stage2_safety_kernel": "partial",
     "stage3_supported_surface_v1": "not_proven",
     "stage4_block_and_lineage_model": "partial",

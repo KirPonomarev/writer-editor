@@ -24,6 +24,12 @@ export const REVISION_BRIDGE_REVISION_SESSION_STATES = Object.freeze([
   'Reopened',
   'Quarantined',
 ]);
+export const REVISION_BRIDGE_REVISION_SESSION_VERSION_TAGS = Object.freeze({
+  parserVersion: 'revision-bridge.parser.v1',
+  matcherVersion: 'revision-bridge.matcher.v1',
+  policyVersion: 'revision-bridge.policy.v1',
+  receiptVersion: 'revision-bridge.receipt.v1',
+});
 export const REVISION_BRIDGE_COMMENT_THREAD_SCHEMA = 'revision-bridge.comment-thread.v1';
 export const REVISION_BRIDGE_COMMENT_PLACEMENT_SCHEMA = 'revision-bridge.comment-placement.v1';
 export const REVISION_BRIDGE_TEXT_CHANGE_SCHEMA = 'revision-bridge.text-change.v1';
@@ -4479,8 +4485,37 @@ function collectRevisionSessionStateMachineReasons(input, session) {
 }
 // RB_21_REVISION_SESSION_STATE_MACHINE_CONTRACTS_END
 
+// RB_22_REVISION_SESSION_VERSION_TAGS_CONTRACTS_START
+export function normalizeRevisionSessionVersionTags(input = {}) {
+  const source = isPlainObject(input) ? input : {};
+  return {
+    parserVersion: normalizeString(source.parserVersion) || REVISION_BRIDGE_REVISION_SESSION_VERSION_TAGS.parserVersion,
+    matcherVersion: normalizeString(source.matcherVersion) || REVISION_BRIDGE_REVISION_SESSION_VERSION_TAGS.matcherVersion,
+    policyVersion: normalizeString(source.policyVersion) || REVISION_BRIDGE_REVISION_SESSION_VERSION_TAGS.policyVersion,
+    receiptVersion: normalizeString(source.receiptVersion) || REVISION_BRIDGE_REVISION_SESSION_VERSION_TAGS.receiptVersion,
+  };
+}
+
+function collectRevisionSessionVersionTagReasons(input) {
+  const reasons = [];
+  if (!isPlainObject(input)) return reasons;
+  const fields = ['parserVersion', 'matcherVersion', 'policyVersion', 'receiptVersion'];
+  for (const field of fields) {
+    if (!hasOwnField(input, field)) continue;
+    if (typeof input[field] !== 'string') {
+      reasons.push(invalidField(
+        `revisionSession.${field}`,
+        `RevisionSession ${field} must be a string`,
+      ));
+    }
+  }
+  return reasons;
+}
+// RB_22_REVISION_SESSION_VERSION_TAGS_CONTRACTS_END
+
 export function normalizeRevisionSession(input = {}) {
   const session = isPlainObject(input) ? input : {};
+  const versionTags = normalizeRevisionSessionVersionTags(session);
   return {
     schemaVersion: REVISION_BRIDGE_REVISION_SESSION_SCHEMA,
     sessionId: normalizeString(session.sessionId),
@@ -4489,6 +4524,10 @@ export function normalizeRevisionSession(input = {}) {
     sessionState: normalizeRevisionSessionState(resolveRevisionSessionStateInput(session), 'Imported'),
     previousSessionState: normalizeRevisionSessionState(resolveRevisionSessionPreviousStateInput(session)),
     stateChangedAt: normalizeString(session.stateChangedAt),
+    parserVersion: versionTags.parserVersion,
+    matcherVersion: versionTags.matcherVersion,
+    policyVersion: versionTags.policyVersion,
+    receiptVersion: versionTags.receiptVersion,
     createdAt: normalizeString(session.createdAt),
     updatedAt: normalizeString(session.updatedAt),
     reviewGraph: normalizeReviewGraph(session.reviewGraph),
@@ -4549,6 +4588,7 @@ function collectRevisionSessionValidationReasons(input, session) {
   if (!session.projectId) reasons.push(missingField('revisionSession.projectId'));
   if (!session.baselineHash) reasons.push(missingField('revisionSession.baselineHash'));
   reasons.push(...collectRevisionSessionStateMachineReasons(input, session));
+  reasons.push(...collectRevisionSessionVersionTagReasons(input));
   if (!isPlainObject(input.reviewGraph)) {
     reasons.push(missingField('revisionSession.reviewGraph'));
     return reasons;
