@@ -30,6 +30,8 @@ export const REVISION_BRIDGE_REVISION_SESSION_VERSION_TAGS = Object.freeze({
   policyVersion: 'revision-bridge.policy.v1',
   receiptVersion: 'revision-bridge.receipt.v1',
 });
+export const REVISION_BRIDGE_REVISION_SESSION_STATE_INVARIANTS_SCHEMA =
+  'revision-bridge.revision-session-state-invariants.v1';
 export const REVISION_BRIDGE_COMMENT_THREAD_SCHEMA = 'revision-bridge.comment-thread.v1';
 export const REVISION_BRIDGE_COMMENT_PLACEMENT_SCHEMA = 'revision-bridge.comment-placement.v1';
 export const REVISION_BRIDGE_TEXT_CHANGE_SCHEMA = 'revision-bridge.text-change.v1';
@@ -4513,6 +4515,101 @@ function collectRevisionSessionVersionTagReasons(input) {
 }
 // RB_22_REVISION_SESSION_VERSION_TAGS_CONTRACTS_END
 
+// RB_23_REVISION_SESSION_STATE_INVARIANTS_CONTRACTS_START
+function revisionSessionReviewGraphItemCount(graph = {}) {
+  if (!isPlainObject(graph)) return 0;
+  const collections = [
+    'commentThreads',
+    'commentPlacements',
+    'textChanges',
+    'structuralChanges',
+    'diagnosticItems',
+    'decisionStates',
+  ];
+  let total = 0;
+  for (const key of collections) {
+    const value = graph[key];
+    if (Array.isArray(value)) total += value.length;
+  }
+  return total;
+}
+
+function collectRevisionSessionStateInvariantReasons(session) {
+  const reasons = [];
+  const graph = isPlainObject(session.reviewGraph) ? session.reviewGraph : {};
+  const state = normalizeRevisionSessionState(session.sessionState, 'Imported');
+  const decisions = Array.isArray(graph.decisionStates) ? graph.decisionStates : [];
+  const diagnostics = Array.isArray(graph.diagnosticItems) ? graph.diagnosticItems : [];
+
+  if (state === 'Exported' && revisionSessionReviewGraphItemCount(graph) > 0) {
+    reasons.push(invalidField(
+      'revisionSession.reviewGraph',
+      'Exported RevisionSession must not contain imported review graph items',
+    ));
+  }
+
+  if (['Decisioned', 'Planned', 'Applying', 'Applied', 'Verified', 'Closed'].includes(state)) {
+    if (decisions.length === 0) {
+      reasons.push(invalidField(
+        'revisionSession.reviewGraph.decisionStates',
+        `${state} RevisionSession requires decisionStates`,
+      ));
+    }
+    if (state === 'Decisioned' && decisions.some((decision) => decision.status === 'pending')) {
+      reasons.push(invalidField(
+        'revisionSession.reviewGraph.decisionStates',
+        'Decisioned RevisionSession cannot include pending decisions',
+      ));
+    }
+  }
+
+  if (['Applying', 'Applied', 'Verified', 'Closed'].includes(state)) {
+    if (!decisions.some((decision) => decision.status === 'accepted')) {
+      reasons.push(invalidField(
+        'revisionSession.reviewGraph.decisionStates',
+        `${state} RevisionSession requires at least one accepted decision`,
+      ));
+    }
+  }
+
+  if (['Failed', 'Quarantined'].includes(state) && diagnostics.length === 0) {
+    reasons.push(invalidField(
+      'revisionSession.reviewGraph.diagnosticItems',
+      `${state} RevisionSession requires diagnosticItems`,
+    ));
+  }
+
+  return reasons;
+}
+
+export function evaluateRevisionSessionStateInvariants(input = {}) {
+  const session = normalizeRevisionSession(input);
+  const reasons = collectRevisionSessionStateInvariantReasons(session);
+  if (reasons.length > 0) {
+    return {
+      ok: false,
+      schemaVersion: REVISION_BRIDGE_REVISION_SESSION_STATE_INVARIANTS_SCHEMA,
+      type: 'revisionBridge.revisionSessionStateInvariants',
+      status: 'invalid',
+      code: REVIEWGRAPH_INVALID_CODE,
+      reason: reasons[0].code || REVIEWGRAPH_INVALID_CODE,
+      reasons,
+      value: null,
+    };
+  }
+  return {
+    ok: true,
+    schemaVersion: REVISION_BRIDGE_REVISION_SESSION_STATE_INVARIANTS_SCHEMA,
+    type: 'revisionBridge.revisionSessionStateInvariants',
+    status: 'valid',
+    code: REVIEWGRAPH_VALID_CODE,
+    reason: REVIEWGRAPH_VALID_CODE,
+    reasons: [],
+    value: session,
+  };
+}
+// RB_23_REVISION_SESSION_STATE_INVARIANTS_CONTRACTS_END
+
 export function normalizeRevisionSession(input = {}) {
   const session = isPlainObject(input) ? input : {};
   const versionTags = normalizeRevisionSessionVersionTags(session);
@@ -4588,6 +4685,7 @@ function collectRevisionSessionValidationReasons(input, session) {
   if (!session.projectId) reasons.push(missingField('revisionSession.projectId'));
   if (!session.baselineHash) reasons.push(missingField('revisionSession.baselineHash'));
   reasons.push(...collectRevisionSessionStateMachineReasons(input, session));
+  reasons.push(...collectRevisionSessionStateInvariantReasons(session));
   reasons.push(...collectRevisionSessionVersionTagReasons(input));
   if (!isPlainObject(input.reviewGraph)) {
     reasons.push(missingField('revisionSession.reviewGraph'));

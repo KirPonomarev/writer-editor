@@ -18,7 +18,8 @@
       "id": "BL-001",
       "type": "delivery-auth",
       "summary": "git push to origin is blocked by missing or invalid GitHub credentials in local environment",
-      "status": "open"
+      "status": "resolved",
+      "resolution": "push succeeds when GH_TOKEN is unset for git command and gh keyring credential is used"
     }
   ],
   "deliveryResults": [
@@ -29,6 +30,14 @@
       "commitSha": "4eb6a9fd",
       "push": "failed_auth",
       "note": "remote rejected credentials: Invalid username or token"
+    },
+    {
+      "id": "DR-002",
+      "contourId": "RB-C05-DONOR-V21-MODULE-PORT-PHASED",
+      "result": "branch_pushed",
+      "branch": "codex/revision-bridge-v21-autocycle-c01",
+      "push": "success",
+      "note": "push succeeded with env -u GH_TOKEN git push origin HEAD:codex/revision-bridge-v21-autocycle-c01"
     }
   ],
   "evidenceIndex": [
@@ -151,6 +160,18 @@
       "type": "targeted-tests",
       "summary": "RB-22 contract suite passed (6 of 6) covering default version tags, custom tags, type guards, determinism, and allowlist checks",
       "status": "pass"
+    },
+    {
+      "id": "EV-021",
+      "type": "donor-port-phase",
+      "summary": "RB-23 RevisionSession state invariants contracts added for state-bound constraints without runtime apply wiring",
+      "status": "pass"
+    },
+    {
+      "id": "EV-022",
+      "type": "targeted-tests",
+      "summary": "RB-23 contract suite passed (8 of 8) covering exported-empty graph, decision-state invariants, accepted-decision requirement, failed-quarantined diagnostics, determinism, and allowlist checks",
+      "status": "pass"
     }
   ],
   "nextContourCandidate": "RB-C05-DONOR-V21-MODULE-PORT-PHASED",
@@ -193,13 +214,13 @@
     {
       "id": "AU-003",
       "verdict": "in_progress",
-      "note": "C05 phase stays bounded to pure contract ports without IO or runtime apply wiring; latest increments add RevisionSession lifecycle state machine and version tags contracts"
+      "note": "C05 phase stays bounded to pure contract ports without IO or runtime apply wiring; latest increments add RevisionSession lifecycle state machine, version tags, and state invariants contracts"
     }
   ],
   "replacementAgentHistory": [],
   "stageProgressSnapshot": {
     "stage0_isolation_and_entry": "partial",
-    "stage1_contracts_and_reviewgraph": "partial_with_revision_session_state_machine_and_version_tags_contracts",
+    "stage1_contracts_and_reviewgraph": "partial_with_revision_session_state_machine_version_tags_and_state_invariants_contracts",
     "stage2_safety_kernel": "partial",
     "stage3_supported_surface_v1": "not_proven",
     "stage4_block_and_lineage_model": "partial",
