@@ -1820,6 +1820,8 @@ function getDefaultFloatingToolbarState(shellRect = toolbarShell?.getBoundingCli
 
 function applyFloatingToolbarVisualState() {
   if (!toolbarShell) return;
+  toolbarShell.style.transform = 'none';
+  toolbarShell.style.removeProperty('--floating-toolbar-scale');
   toolbarShell.style.setProperty(
     '--floating-toolbar-width-scale',
     String(floatingToolbarState.isDetached ? floatingToolbarState.freeWidthScale : floatingToolbarState.dockedWidthScale)
@@ -2116,6 +2118,8 @@ function getDefaultLeftFloatingToolbarState(shellRect = leftToolbarShell?.getBou
 
 function applyLeftFloatingToolbarVisualState() {
   if (!leftToolbarShell) return;
+  leftToolbarShell.style.transform = 'none';
+  leftToolbarShell.style.removeProperty('--left-toolbar-scale');
   leftToolbarShell.style.setProperty('--left-toolbar-width-scale', String(leftFloatingToolbarState.widthScale));
   leftToolbarShell.classList.toggle('is-vertical', leftFloatingToolbarState.isVertical);
   leftToolbarShell.classList.toggle('is-snapped', !leftFloatingToolbarState.isDetached);
