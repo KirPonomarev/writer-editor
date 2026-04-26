@@ -25,6 +25,7 @@ async function loadModule(relativePath) {
 
 function buildHelperSource() {
   return `
+const assert = require('node:assert/strict');
 const path = require('node:path');
 const fs = require('node:fs/promises');
 const { app, BrowserWindow, dialog, session } = require('electron');
@@ -47,6 +48,47 @@ function buildPlainText(paragraphCount) {
   return Array.from({ length: paragraphCount }, (_, index) => (
     paragraph + ' ' + String(index + 1) + '. ' + paragraph
   )).join('\\\\n\\\\n');
+}
+
+function parseTransformScale(transform) {
+  const normalizedTransform = String(transform || '').trim();
+  const readTransformParts = (name) => {
+    const prefix = name + '(';
+    if (!normalizedTransform.startsWith(prefix) || !normalizedTransform.endsWith(')')) {
+      return null;
+    }
+    return normalizedTransform
+      .slice(prefix.length, -1)
+      .split(',')
+      .map((part) => Number.parseFloat(part.trim()));
+  };
+  const matrixParts = readTransformParts('matrix');
+  const matrix3dParts = matrixParts ? null : readTransformParts('matrix3d');
+  let scaleX = 1;
+  let scaleY = 1;
+  if (matrixParts) {
+    if (matrixParts.length >= 4 && matrixParts.every(Number.isFinite)) {
+      scaleX = Math.hypot(matrixParts[0], matrixParts[1]);
+      scaleY = Math.hypot(matrixParts[2], matrixParts[3]);
+    }
+  } else if (matrix3dParts) {
+    if (matrix3dParts.length >= 16 && matrix3dParts.every(Number.isFinite)) {
+      scaleX = Math.hypot(matrix3dParts[0], matrix3dParts[1], matrix3dParts[2]);
+      scaleY = Math.hypot(matrix3dParts[4], matrix3dParts[5], matrix3dParts[6]);
+    }
+  }
+  return {
+    scaleX,
+    scaleY,
+    hasScaleTransform: Math.abs(scaleX - 1) > 0.0001 || Math.abs(scaleY - 1) > 0.0001,
+  };
+}
+
+function assertTransformParserFixtures() {
+  assert.equal(parseTransformScale('matrix(2, 0, 0, 2, 0, 0)').hasScaleTransform, true);
+  assert.equal(parseTransformScale('matrix3d(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)').hasScaleTransform, true);
+  assert.equal(parseTransformScale('matrix(1, 0, 0, 1, 0, 0)').hasScaleTransform, false);
+  assert.equal(parseTransformScale('matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)').hasScaleTransform, false);
 }
 
 async function waitForWindow() {
@@ -217,6 +259,7 @@ async function runInputSmoke(win) {
 
 async function collectState(win, label) {
   return win.webContents.executeJavaScript(\`(() => {
+    const parseTransformScale = \${parseTransformScale.toString()};
     const host = document.querySelector('#editor.tiptap-host');
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
@@ -329,29 +372,11 @@ async function collectState(win, label) {
     const transformScaleEvidence = primaryTextSurfaceNodes.map((node) => {
       const styles = getComputedStyle(node);
       const transform = styles.transform || '';
-      const matrixMatch = transform.match(/^matrix\\\\(([^)]+)\\\\)$/u);
-      const matrix3dMatch = transform.match(/^matrix3d\\\\(([^)]+)\\\\)$/u);
-      let scaleX = 1;
-      let scaleY = 1;
-      if (matrixMatch) {
-        const parts = matrixMatch[1].split(',').map((part) => Number.parseFloat(part.trim()));
-        if (parts.length >= 4 && parts.every(Number.isFinite)) {
-          scaleX = Math.hypot(parts[0], parts[1]);
-          scaleY = Math.hypot(parts[2], parts[3]);
-        }
-      } else if (matrix3dMatch) {
-        const parts = matrix3dMatch[1].split(',').map((part) => Number.parseFloat(part.trim()));
-        if (parts.length >= 16 && parts.every(Number.isFinite)) {
-          scaleX = Math.hypot(parts[0], parts[1], parts[2]);
-          scaleY = Math.hypot(parts[4], parts[5], parts[6]);
-        }
-      }
+      const scaleEvidence = parseTransformScale(transform);
       return {
         className: node.className || node.id || node.nodeName,
         transform,
-        scaleX,
-        scaleY,
-        hasScaleTransform: Math.abs(scaleX - 1) > 0.0001 || Math.abs(scaleY - 1) > 0.0001,
+        ...scaleEvidence,
       };
     });
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
@@ -531,6 +556,7 @@ async function findFiveSheetFixture(win) {
   throw new Error('NO_FIVE_SHEET_GAP_FIXTURE ' + JSON.stringify(lastState));
 }
 
+assertTransformParserFixtures();
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('force-device-scale-factor', String(forcedDeviceScaleFactor));
 app.commandLine.appendSwitch('high-dpi-support', '1');
