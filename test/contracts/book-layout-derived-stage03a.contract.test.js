@@ -81,6 +81,18 @@ test('book layout derived stage03a contract: mixed node kinds, provided measurem
 
   assert.deepEqual(first, second);
   assert.equal(first.pages.length >= 2, true);
+  assert.equal(first.totalPageCount, first.pages.length);
+  assert.equal(first.runtimeContractSchemaVersion, 'derived.pageMap.runtimeContract.v1');
+  assert.equal(Array.isArray(first.pageRects), true);
+  assert.equal(Array.isArray(first.gapRects), true);
+  assert.equal(first.pageRects.length, first.pages.length);
+  assert.equal(first.gapRects.length, Math.max(0, first.pages.length - 1));
+  assert.equal(first.meta.pageRectCount, first.pageRects.length);
+  assert.equal(first.meta.gapRectCount, first.gapRects.length);
+  assert.equal(typeof first.sourceRevisionToken, 'string');
+  assert.equal(typeof first.profileRevisionToken, 'string');
+  assert.equal(first.meta.sourceRevisionToken, first.sourceRevisionToken);
+  assert.equal(first.meta.profileRevisionToken, first.profileRevisionToken);
   assert.equal(first.pageBreaks.some((item) => item.reason === 'chapterStart'), true);
   assert.equal(first.pageBreaks.some((item) => item.nodeId === 'semantic:scene-stage03a:0003:pageBreak'), true);
 
@@ -96,6 +108,8 @@ test('book layout derived stage03a contract: mixed node kinds, provided measurem
   });
   assert.equal(overflow.pages.some((page) => page.overflow), true);
   assert.equal(overflow.meta.overflowCount >= 1, true);
+  assert.equal(overflow.totalPageCount, overflow.pages.length);
+  assert.equal(overflow.pageRects.length, overflow.pages.length);
 
   assert.throws(
     () => pageMapMod.paginateLayoutFlow({
