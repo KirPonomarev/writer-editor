@@ -5361,6 +5361,8 @@ export function evaluateRevisionBridgeApplySafety(input = {}) {
 
 export const REVISION_BRIDGE_APPLY_TXN_SCHEMA = 'revision-bridge.apply-txn.v1';
 export const REVISION_BRIDGE_APPLY_TXN_PREVIEW_SCHEMA = 'revision-bridge.apply-txn-preview.v1';
+export const REVISION_BRIDGE_APPLY_RECEIPT_SCHEMA = 'revision-bridge.apply-receipt.v1';
+export const REVISION_BRIDGE_APPLY_RECEIPT_PREVIEW_SCHEMA = 'revision-bridge.apply-receipt-preview.v1';
 export const REVISION_BRIDGE_APPLY_TXN_STATES = Object.freeze([
   'Prepared',
   'WritingTemps',
@@ -5378,11 +5380,22 @@ const APPLY_TXN_RUNTIME_NOT_ENABLED_CODE = 'REVISION_BRIDGE_APPLY_TXN_RUNTIME_NO
 const APPLY_TXN_INVALID_TRANSITION_CODE = 'REVISION_BRIDGE_APPLY_TXN_INVALID_TRANSITION';
 const APPLY_TXN_MISSING_TRANSITION_SIDE_CODE = 'REVISION_BRIDGE_APPLY_TXN_TRANSITION_FIELDS_REQUIRED';
 const APPLY_TXN_DECISION_SET_EMPTY_CODE = 'REVISION_BRIDGE_APPLY_TXN_DECISION_SET_EMPTY';
+const APPLY_RECEIPT_VALID_CODE = 'REVISION_BRIDGE_APPLY_RECEIPT_VALID';
+const APPLY_RECEIPT_INVALID_CODE = 'E_REVISION_BRIDGE_APPLY_RECEIPT_INVALID';
+const APPLY_RECEIPT_PREVIEW_BLOCKED_CODE = 'E_REVISION_BRIDGE_APPLY_RECEIPT_BLOCKED';
+const APPLY_RECEIPT_RUNTIME_NOT_ENABLED_CODE = 'REVISION_BRIDGE_APPLY_RECEIPT_RUNTIME_NOT_ENABLED';
+const APPLY_RECEIPT_WRITE_SET_EMPTY_CODE = 'REVISION_BRIDGE_APPLY_RECEIPT_WRITE_SET_EMPTY';
 export const REVISION_BRIDGE_APPLY_TXN_REASON_CODES = Object.freeze([
   APPLY_TXN_RUNTIME_NOT_ENABLED_CODE,
   APPLY_TXN_INVALID_TRANSITION_CODE,
   APPLY_TXN_MISSING_TRANSITION_SIDE_CODE,
   APPLY_TXN_DECISION_SET_EMPTY_CODE,
+  'REVISION_BRIDGE_FIELD_REQUIRED',
+  'REVISION_BRIDGE_FIELD_INVALID',
+]);
+export const REVISION_BRIDGE_APPLY_RECEIPT_REASON_CODES = Object.freeze([
+  APPLY_RECEIPT_RUNTIME_NOT_ENABLED_CODE,
+  APPLY_RECEIPT_WRITE_SET_EMPTY_CODE,
   'REVISION_BRIDGE_FIELD_REQUIRED',
   'REVISION_BRIDGE_FIELD_INVALID',
 ]);
@@ -5533,6 +5546,155 @@ export function previewRevisionBridgeApplyTxn(input = {}) {
   };
 }
 // RB_18_APPLY_TXN_CONTRACTS_END
+
+// RB_26_APPLY_RECEIPT_CONTRACTS_START
+function normalizeApplyReceiptStatus(value) {
+  const status = normalizeString(value);
+  return ['applied', 'failed', 'blocked'].includes(status) ? status : 'blocked';
+}
+
+function normalizeApplyReceiptWriteEntry(input = {}) {
+  const entry = isPlainObject(input) ? input : {};
+  return {
+    entityKind: normalizeString(entry.entityKind),
+    entityId: normalizeString(entry.entityId),
+    beforeHash: normalizeString(entry.beforeHash),
+    afterHash: normalizeString(entry.afterHash),
+  };
+}
+
+function normalizeApplyReceiptDecisionSummary(input = {}) {
+  const source = isPlainObject(input) ? input : {};
+  const toCount = (value) => {
+    if (!Number.isFinite(Number(value))) return 0;
+    const count = Math.floor(Number(value));
+    return count > 0 ? count : 0;
+  };
+  return {
+    total: toCount(source.total),
+    accepted: toCount(source.accepted),
+    rejected: toCount(source.rejected),
+    deferred: toCount(source.deferred),
+  };
+}
+
+function normalizeApplyReceiptCandidate(input = {}) {
+  const receipt = isPlainObject(input) ? input : {};
+  return {
+    schemaVersion: normalizeString(receipt.schemaVersion),
+    receiptId: normalizeString(receipt.receiptId),
+    applyTxnId: normalizeString(receipt.applyTxnId),
+    projectId: normalizeString(receipt.projectId),
+    revisionSessionId: normalizeString(receipt.revisionSessionId),
+    baselineHash: normalizeString(receipt.baselineHash),
+    targetScope: normalizeApplyTxnTargetScope(receipt.targetScope),
+    status: normalizeApplyReceiptStatus(receipt.status),
+    decisionSummary: normalizeApplyReceiptDecisionSummary(receipt.decisionSummary),
+    writes: Array.isArray(receipt.writes)
+      ? receipt.writes.map((entry) => normalizeApplyReceiptWriteEntry(entry))
+      : [],
+    runtimeMode: normalizeString(receipt.runtimeMode) || 'contractOnly',
+    createdAt: normalizeString(receipt.createdAt),
+  };
+}
+
+function collectApplyReceiptValidationReasons(input, receipt) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(invalidField('applyReceipt', 'applyReceipt must be an object'));
+    return reasons;
+  }
+  if (!receipt.schemaVersion) {
+    reasons.push(missingField('schemaVersion'));
+  } else if (receipt.schemaVersion !== REVISION_BRIDGE_APPLY_RECEIPT_SCHEMA) {
+    reasons.push(invalidField('schemaVersion', 'schemaVersion is not supported'));
+  }
+  if (!receipt.receiptId) reasons.push(missingField('receiptId'));
+  if (!receipt.projectId) reasons.push(missingField('projectId'));
+  if (!receipt.revisionSessionId) reasons.push(missingField('revisionSessionId'));
+  if (!receipt.baselineHash) reasons.push(missingField('baselineHash'));
+  if (!isPlainObject(input.targetScope)) {
+    reasons.push(missingField('targetScope'));
+  } else if (!receipt.targetScope.type) {
+    reasons.push(missingField('targetScope.type'));
+  } else if (!receipt.targetScope.id) {
+    reasons.push(missingField('targetScope.id'));
+  }
+  if (!isPlainObject(input.decisionSummary)) reasons.push(missingField('decisionSummary'));
+  if (!Array.isArray(input.writes)) {
+    reasons.push(missingField('writes'));
+  } else if (receipt.status === 'applied' && receipt.writes.length === 0) {
+    reasons.push({
+      code: APPLY_RECEIPT_WRITE_SET_EMPTY_CODE,
+      field: 'writes',
+      message: 'applied receipt must include at least one write entry',
+    });
+  }
+
+  receipt.writes.forEach((entry, index) => {
+    if (!entry.entityKind) reasons.push(missingField(`writes.${index}.entityKind`));
+    if (!entry.entityId) reasons.push(missingField(`writes.${index}.entityId`));
+    if (!entry.beforeHash) reasons.push(missingField(`writes.${index}.beforeHash`));
+    if (!entry.afterHash) reasons.push(missingField(`writes.${index}.afterHash`));
+  });
+
+  const counted = receipt.decisionSummary.accepted + receipt.decisionSummary.rejected + receipt.decisionSummary.deferred;
+  if (receipt.decisionSummary.total > 0 && counted > receipt.decisionSummary.total) {
+    reasons.push(invalidField(
+      'decisionSummary.total',
+      'decisionSummary total must be greater or equal to accepted, rejected and deferred sum',
+    ));
+  }
+  return reasons;
+}
+
+export function validateRevisionBridgeApplyReceipt(input = {}) {
+  const applyReceipt = normalizeApplyReceiptCandidate(input);
+  const reasons = collectApplyReceiptValidationReasons(input, applyReceipt);
+  if (reasons.length > 0) {
+    return {
+      ok: false,
+      type: 'revisionBridge.applyReceiptValidation',
+      code: APPLY_RECEIPT_INVALID_CODE,
+      reason: reasons[0]?.code || APPLY_RECEIPT_INVALID_CODE,
+      reasons,
+      applyReceipt: null,
+    };
+  }
+  return {
+    ok: true,
+    type: 'revisionBridge.applyReceiptValidation',
+    code: APPLY_RECEIPT_VALID_CODE,
+    reason: APPLY_RECEIPT_VALID_CODE,
+    reasons: [],
+    applyReceipt: cloneJsonSafe(applyReceipt),
+  };
+}
+
+export function previewRevisionBridgeApplyReceipt(input = {}) {
+  const validation = validateRevisionBridgeApplyReceipt(input);
+  const applyReceipt = validation.ok
+    ? validation.applyReceipt
+    : normalizeApplyReceiptCandidate(input);
+  const reasons = validation.ok
+    ? [{
+      code: APPLY_RECEIPT_RUNTIME_NOT_ENABLED_CODE,
+      field: 'applyReceipt',
+      message: 'ApplyReceipt persistence is not enabled in contract-only mode',
+    }]
+    : validation.reasons;
+  return {
+    schemaVersion: REVISION_BRIDGE_APPLY_RECEIPT_PREVIEW_SCHEMA,
+    type: 'revisionBridge.applyReceiptPreview',
+    status: 'blocked',
+    code: APPLY_RECEIPT_PREVIEW_BLOCKED_CODE,
+    reason: reasons[0]?.code || APPLY_RECEIPT_PREVIEW_BLOCKED_CODE,
+    canPersist: false,
+    applyReceipt: cloneJsonSafe(applyReceipt),
+    reasons,
+  };
+}
+// RB_26_APPLY_RECEIPT_CONTRACTS_END
 
 // RB_19_REVISION_SESSION_IMPORT_SEAM_PREVIEW_CONTRACTS_START
 const REVISION_SESSION_IMPORT_SEAM_PREVIEW_READY_CODE =
