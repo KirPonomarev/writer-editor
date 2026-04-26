@@ -1024,27 +1024,9 @@ function refreshCentralSheetStripProof() {
     clearCentralSheetStripProof({ overflowReason: 'viewport-window-unavailable' });
     return;
   }
-  const pageStridePx = Math.round(metrics.pageHeightPx + pageGapPx);
-  const minimumInitialRenderedPageCount = Math.min(
-    pageCount,
-    Math.max(4, Number(pageWindow.renderedPageCount) || 0),
-  );
-  const initialWindowStartsAtFirstPage = Math.max(1, Number(pageWindow.firstRenderedPage) || 1) === 1;
-  const initialWindowEndsTooEarly = Math.max(0, Number(pageWindow.lastRenderedPage) || 0) < minimumInitialRenderedPageCount;
-  const normalizedPageWindow = initialWindowStartsAtFirstPage && initialWindowEndsTooEarly
-    ? {
-      ...pageWindow,
-      firstRenderedPage: 1,
-      lastRenderedPage: minimumInitialRenderedPageCount,
-      renderedPageCount: minimumInitialRenderedPageCount,
-      topSpacerHeight: 0,
-      bottomSpacerHeight: Math.max(0, pageCount - minimumInitialRenderedPageCount) * pageStridePx,
-      visiblePagesOmitted: minimumInitialRenderedPageCount < pageCount,
-      visibleCoverageComplete: Math.max(0, Number(pageWindow.lastVisiblePage) || 0) <= minimumInitialRenderedPageCount,
-    }
-    : pageWindow;
-  const renderedPageCount = Math.max(0, Number(normalizedPageWindow.renderedPageCount) || 0);
+  const renderedPageCount = Math.max(0, Number(pageWindow.renderedPageCount) || 0);
   const stripHeightPx = Math.round(pageWindow.totalVirtualHeight || 0);
+  const pageStridePx = Math.round(metrics.pageHeightPx + pageGapPx);
   const editorHeightPx = Math.max(
     heightPx,
     Math.round(stripHeightPx - metrics.marginTopPx - metrics.marginBottomPx),
@@ -1060,16 +1042,16 @@ function refreshCentralSheetStripProof() {
   editor.dataset.centralSheetFlow = 'vertical';
   editor.dataset.centralSheetRenderedPageCount = String(renderedPageCount);
   editor.dataset.centralSheetTotalPageCount = String(pageCount);
-  editor.dataset.centralSheetWindowFirstRenderedPage = String(normalizedPageWindow.firstRenderedPage);
-  editor.dataset.centralSheetWindowLastRenderedPage = String(normalizedPageWindow.lastRenderedPage);
-  editor.dataset.centralSheetWindowVisiblePageCount = String(normalizedPageWindow.visiblePageCount);
-  editor.dataset.centralSheetWindowingEnabled = normalizedPageWindow.windowingEnabled ? 'true' : 'false';
+  editor.dataset.centralSheetWindowFirstRenderedPage = String(pageWindow.firstRenderedPage);
+  editor.dataset.centralSheetWindowLastRenderedPage = String(pageWindow.lastRenderedPage);
+  editor.dataset.centralSheetWindowVisiblePageCount = String(pageWindow.visiblePageCount);
+  editor.dataset.centralSheetWindowingEnabled = pageWindow.windowingEnabled ? 'true' : 'false';
   syncCentralSheetStripOverflowMetadata({
     pageCount,
     visiblePageCount: renderedPageCount,
     overflowReason: renderedPageCount < pageCount ? 'max-page-count' : '',
   });
-  renderCentralSheetStripShellPages(normalizedPageWindow);
+  renderCentralSheetStripShellPages(pageWindow);
   editor.classList.add(CENTRAL_SHEET_STRIP_PROOF_CLASS);
 }
 
