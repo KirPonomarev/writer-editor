@@ -321,7 +321,7 @@ async function findTwoSheetFixture(win) {
     lastState = state;
     lastBoundaryCandidate = boundaryCandidate;
     if (
-      state.centralSheetFlow === 'horizontal'
+      state.centralSheetFlow === 'vertical'
       && state.visibleSheetCount >= 2
       && state.proseMirrorCount === 1
       && state.tiptapEditorCount === 1
@@ -472,7 +472,7 @@ for (const state of states) {
   assert.equal(state.prosePageTruthCount, 0, `${state.label} must not create page truth inside ProseMirror`);
 }
 
-assert.equal(result.fixture.centralSheetFlow, 'horizontal', 'fixture must use central sheet horizontal flow');
+assert.equal(result.fixture.centralSheetFlow, 'vertical', 'fixture must use central sheet vertical flow');
 assert.ok(result.beforeEnter.visibleSheetCount >= 2, 'baseline text must show at least two visible sheets');
 assert.equal(result.boundaryCandidate.ok, true, 'boundary coordinate candidate must be found');
 assert.equal(result.boundaryCandidate.insideTextRect, true, 'boundary coordinate must be inside a real text rect');

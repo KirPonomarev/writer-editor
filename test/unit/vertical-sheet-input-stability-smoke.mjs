@@ -166,6 +166,7 @@ async function collectState(win, label) {
     const host = document.querySelector('#editor.tiptap-host');
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
+    const canvas = document.querySelector('.main-content--editor');
     const rightSidebar = document.querySelector('[data-right-sidebar]');
     const sourceWraps = host ? [...host.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
     const derivedWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
@@ -202,6 +203,25 @@ async function collectState(win, label) {
         current = walker.nextNode();
       }
     }
+    const canvasRect = canvas ? toPlainRect(canvas.getBoundingClientRect()) : null;
+    const viewportRect = canvasRect || {
+      left: 0,
+      top: 0,
+      right: window.innerWidth || document.documentElement.clientWidth || 0,
+      bottom: window.innerHeight || document.documentElement.clientHeight || 0,
+    };
+    const isRectVisibleInViewport = (rect) => (
+      rect
+      && rect.left < viewportRect.right
+      && rect.right > viewportRect.left
+      && rect.top < viewportRect.bottom
+      && rect.bottom > viewportRect.top
+    );
+    const visiblePageRects = pageRects.filter(isRectVisibleInViewport);
+    const visibleTextRects = textRects.filter(isRectVisibleInViewport);
+    const visibleTextOutsideVisibleSheetRectCount = visibleTextRects.filter((textRect) => (
+      !visiblePageRects.some((pageRect) => intersects(textRect, pageRect))
+    )).length;
     const textGapIntersectionCount = textRects.filter((textRect) => (
       textRect && gapRects.some((gapRect) => gapRect.height > 0 && intersects(textRect, gapRect))
     )).length;
@@ -227,15 +247,28 @@ async function collectState(win, label) {
     const text = prose ? prose.textContent || '' : '';
     return {
       label: payload.label,
+      proofClass: Boolean(host && host.classList.contains('tiptap-host--central-sheet-strip-proof')),
       centralSheetCount: host ? host.dataset.centralSheetCount || null : null,
+      centralSheetRenderedPageCount: host ? host.dataset.centralSheetRenderedPageCount || host.dataset.centralSheetCount || null : null,
+      centralSheetTotalPageCount: host ? host.dataset.centralSheetTotalPageCount || host.dataset.centralSheetCount || null : null,
+      centralSheetWindowFirstRenderedPage: host ? host.dataset.centralSheetWindowFirstRenderedPage || null : null,
+      centralSheetWindowLastRenderedPage: host ? host.dataset.centralSheetWindowLastRenderedPage || null : null,
+      centralSheetWindowVisiblePageCount: host ? host.dataset.centralSheetWindowVisiblePageCount || null : null,
+      centralSheetWindowingEnabled: host ? host.dataset.centralSheetWindowingEnabled || null : null,
       centralSheetFlow: host ? host.dataset.centralSheetFlow || null : null,
       centralSheetOverflowReason: host ? host.dataset.centralSheetOverflowReason || null : null,
       centralSheetBoundedOverflowReason: host ? host.dataset.centralSheetBoundedOverflowReason || null : null,
+      centralSheetBoundedOverflowSourcePageCount: host ? host.dataset.centralSheetBoundedOverflowSourcePageCount || null : null,
+      centralSheetBoundedOverflowVisiblePageCount: host ? host.dataset.centralSheetBoundedOverflowVisiblePageCount || null : null,
+      centralSheetBoundedOverflowHiddenPageCount: host ? host.dataset.centralSheetBoundedOverflowHiddenPageCount || null : null,
       text,
       textLength: text.length,
       textHash: stableTextHash(text),
       paragraphCount: prose ? prose.querySelectorAll('p').length : 0,
       visibleSheetCount: derivedWraps.length,
+      viewportVisibleSheetCount: visiblePageRects.length,
+      visibleTextRectCount: visibleTextRects.length,
+      visibleTextOutsideVisibleSheetRectCount,
       sourceWrapperCount: sourceWraps.length,
       sourceEditorWrapperCount: sourceWraps.filter((el) => el.querySelector('.ProseMirror') || el.querySelector('.tiptap-editor')).length,
       sourceWrapperProseMirrorCount: sourceWraps.reduce((sum, el) => sum + el.querySelectorAll('.ProseMirror').length, 0),
@@ -467,15 +500,28 @@ async function findFiveSheetFixture(win) {
     await sleep(700);
     const state = await collectState(win, 'candidate-' + String(paragraphCount));
     lastState = state;
+    const renderedPageCount = Number(state.centralSheetRenderedPageCount || state.visibleSheetCount || 0);
+    const totalPageCount = Number(state.centralSheetTotalPageCount || renderedPageCount || 0);
+    const hasBoundedOverflow = totalPageCount > renderedPageCount;
     if (
-      state.centralSheetFlow === 'vertical'
-      && state.centralSheetCount === '5'
-      && state.visibleSheetCount === 5
-      && state.verticallyStackedSheetPairCount === 4
+      state.proofClass === true
+      && state.centralSheetFlow === 'vertical'
+      && renderedPageCount >= 2
+      && renderedPageCount <= 15
+      && totalPageCount >= 5
+      && state.visibleSheetCount === renderedPageCount
+      && state.verticallyStackedSheetPairCount === Math.max(0, renderedPageCount - 1)
       && state.rightFlowSheetPairCount === 0
+      && state.centralSheetWindowingEnabled === 'true'
       && state.minGapPx >= 24
       && state.maxGapPx <= 72
       && state.textGapIntersectionCount === 0
+      && state.visibleTextOutsideVisibleSheetRectCount === 0
+      && (
+        hasBoundedOverflow
+          ? state.centralSheetBoundedOverflowReason === 'max-page-count'
+          : state.centralSheetBoundedOverflowReason === null
+      )
       && state.proseMirrorCount === 1
       && state.tiptapEditorCount === 1
       && state.sourceWrapperCount === 1
@@ -501,14 +547,27 @@ async function findBoundaryFixture(win) {
       const caretPlacement = await placeCaretAfterTargetSentinel(win);
       lastState = state;
       lastCaretPlacement = caretPlacement;
+      const renderedPageCount = Number(state.centralSheetRenderedPageCount || state.visibleSheetCount || 0);
+      const totalPageCount = Number(state.centralSheetTotalPageCount || renderedPageCount || 0);
+      const hasBoundedOverflow = totalPageCount > renderedPageCount;
       if (
-        state.centralSheetFlow === 'vertical'
-        && state.visibleSheetCount === 5
-        && state.verticallyStackedSheetPairCount === 4
+        state.proofClass === true
+        && state.centralSheetFlow === 'vertical'
+        && renderedPageCount >= 2
+        && renderedPageCount <= 15
+        && state.visibleSheetCount === renderedPageCount
+        && state.verticallyStackedSheetPairCount === Math.max(0, renderedPageCount - 1)
         && state.rightFlowSheetPairCount === 0
+        && state.centralSheetWindowingEnabled === 'true'
         && state.minGapPx >= 24
         && state.maxGapPx <= 72
         && state.textGapIntersectionCount === 0
+        && state.visibleTextOutsideVisibleSheetRectCount === 0
+        && (
+          hasBoundedOverflow
+            ? state.centralSheetBoundedOverflowReason === 'max-page-count'
+            : state.centralSheetBoundedOverflowReason === null
+        )
         && state.sourceWrapperCount === 1
         && state.sourceEditorWrapperCount === 1
         && state.derivedSheetProseMirrorCount === 0
@@ -662,13 +721,29 @@ app.whenReady().then(async () => {
 }
 
 function assertVerticalState(state) {
+  const renderedPageCount = Number(state.centralSheetRenderedPageCount || state.visibleSheetCount || 0);
+  const totalPageCount = Number(state.centralSheetTotalPageCount || renderedPageCount || 0);
+  const hasBoundedOverflow = totalPageCount > renderedPageCount;
+  assert.equal(state.proofClass, true, `${state.label} must stay in central sheet strip proof mode`);
   assert.equal(state.centralSheetFlow, 'vertical', `${state.label} must keep vertical central sheet flow`);
-  assert.equal(state.visibleSheetCount, 5, `${state.label} must keep five visible derived sheets`);
-  assert.equal(state.verticallyStackedSheetPairCount, 4, `${state.label} must stack sheets down`);
+  assert.equal(renderedPageCount >= 2, true, `${state.label} rendered page count must stay bounded and non-trivial`);
+  assert.equal(renderedPageCount <= 15, true, `${state.label} rendered page count must stay within runtime window budget`);
+  assert.equal(totalPageCount >= renderedPageCount, true, `${state.label} total page count must not be below rendered page count`);
+  assert.equal(state.visibleSheetCount, renderedPageCount, `${state.label} visible sheet count must match rendered page count`);
+  assert.equal(state.verticallyStackedSheetPairCount, Math.max(0, renderedPageCount - 1), `${state.label} must stack sheets down`);
   assert.equal(state.rightFlowSheetPairCount, 0, `${state.label} must not place the next sheet to the right`);
+  assert.equal(state.centralSheetWindowingEnabled, 'true', `${state.label} must keep viewport windowing enabled`);
   assert.equal(state.minGapPx >= 24, true, `${state.label} minimum gap must stay at least 24px`);
   assert.equal(state.maxGapPx <= 72, true, `${state.label} maximum gap must stay at most 72px`);
   assert.equal(state.textGapIntersectionCount, 0, `${state.label} text must not intersect sheet gaps`);
+  assert.equal(state.visibleTextOutsideVisibleSheetRectCount, 0, `${state.label} visible text must stay inside visible sheets`);
+  assert.equal(
+    hasBoundedOverflow
+      ? state.centralSheetBoundedOverflowReason === 'max-page-count'
+      : state.centralSheetBoundedOverflowReason === null,
+    true,
+    `${state.label} bounded overflow metadata must match rendered window`,
+  );
   assert.equal(state.proseMirrorCount, 1, `${state.label} must keep one ProseMirror`);
   assert.equal(state.tiptapEditorCount, 1, `${state.label} must keep one Tiptap editor shell`);
   assert.equal(state.sourceWrapperCount, 1, `${state.label} must keep one direct source editor wrapper`);
