@@ -596,6 +596,13 @@ assert.equal(
     >= Number(result.longDocumentWindowAfterScroll.centralSheetWindowFirstRenderedPage),
   true,
 );
+const longDocumentBeforeText = result.longDocumentWindowBeforeScroll.text || '';
+const longDocumentAfterText = result.longDocumentWindowAfterScroll.text || '';
+const longDocumentBeforeTextHash = hashText(longDocumentBeforeText);
+const longDocumentAfterTextHash = hashText(longDocumentAfterText);
+assert.equal(longDocumentBeforeText.length > 0, true);
+assert.equal(longDocumentAfterText.length > 0, true);
+assert.equal(longDocumentAfterTextHash, longDocumentBeforeTextHash);
 assert.equal(result.longDocumentWindowAfterScroll.proseMirrorCount, 1);
 assert.equal(result.longDocumentWindowAfterScroll.tiptapEditorCount, 1);
 assert.equal(result.longDocumentWindowAfterScroll.prosePageTruthCount, 0);
@@ -645,6 +652,11 @@ const summary = {
   longDocumentBeforeFirstRenderedPage: result.longDocumentWindowBeforeScroll.centralSheetWindowFirstRenderedPage,
   longDocumentAfterFirstRenderedPage: result.longDocumentWindowAfterScroll.centralSheetWindowFirstRenderedPage,
   longDocumentAfterLastRenderedPage: result.longDocumentWindowAfterScroll.centralSheetWindowLastRenderedPage,
+  longDocumentBeforeTextLength: longDocumentBeforeText.length,
+  longDocumentAfterTextLength: longDocumentAfterText.length,
+  longDocumentBeforeTextHash,
+  longDocumentAfterTextHash,
+  longDocumentTextStable: longDocumentBeforeTextHash === longDocumentAfterTextHash,
   screenshots: result.screenshots,
 };
 
