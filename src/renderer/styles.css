@@ -235,6 +235,7 @@ body {
   pointer-events: auto;
   cursor: grab;
   user-select: none;
+  transform: none;
 }
 
 .left-floating-toolbar__shell::before {
@@ -641,6 +642,7 @@ body {
   font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-variant-numeric: tabular-nums;
   transition: box-shadow 0.18s ease, opacity 0.18s ease;
+  transform: none;
 }
 
 .floating-toolbar__shell::before {
