@@ -93,6 +93,8 @@ export const REVISION_BRIDGE_PLACEMENT_EVALUATION_REASON_CODES = Object.freeze([
 export const REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_SCHEMA = 'revision-bridge.comment-anchor-placement-batch-diagnostics.v1';
 export const REVISION_BRIDGE_REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_SCHEMA =
   'revision-bridge.revision-session-skeleton-admission-preview.v1';
+export const REVISION_BRIDGE_REVISION_SESSION_IMPORT_SEAM_PREVIEW_SCHEMA =
+  'revision-bridge.revision-session-import-seam-preview.v1';
 const PLACEMENT_BATCH_DIAGNOSTICS_EVALUATED_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_EVALUATED';
 const PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED';
 const PLACEMENT_BATCH_DIAGNOSTICS_DIAGNOSTICS_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_DIAGNOSTICS';
@@ -2795,6 +2797,10 @@ export function previewRevisionSessionSkeletonAdmission(input = {}) {
   return revisionSessionSkeletonAdmissionPreviewEvaluate(input);
 }
 
+export function previewRevisionSessionImportSeam(input = {}) {
+  return revisionSessionImportSeamPreviewEvaluate(input);
+}
+
 // RB_14_PLACEMENT_BATCH_DIAGNOSTICS_CONTRACTS_START
 function placementBatchDiagnosticsCountsByStatus() {
   return {
@@ -4988,3 +4994,227 @@ export function previewRevisionBridgeApplyTxn(input = {}) {
   };
 }
 // RB_18_APPLY_TXN_CONTRACTS_END
+
+// RB_19_REVISION_SESSION_IMPORT_SEAM_PREVIEW_CONTRACTS_START
+const REVISION_SESSION_IMPORT_SEAM_PREVIEW_READY_CODE =
+  'REVISION_BRIDGE_REVISION_SESSION_IMPORT_SEAM_PREVIEW_READY';
+const REVISION_SESSION_IMPORT_SEAM_PREVIEW_BLOCKED_CODE =
+  'REVISION_BRIDGE_REVISION_SESSION_IMPORT_SEAM_PREVIEW_BLOCKED';
+const REVISION_SESSION_IMPORT_SEAM_PREVIEW_DIAGNOSTICS_CODE =
+  'E_REVISION_BRIDGE_REVISION_SESSION_IMPORT_SEAM_PREVIEW_DIAGNOSTICS';
+
+function revisionSessionImportSeamPreviewIds(input) {
+  const source = isPlainObject(input) ? input : {};
+  return {
+    projectId: normalizeString(source.projectId),
+    revisionSessionId: normalizeString(source.revisionSessionId),
+    exportId: normalizeString(source.exportId),
+    baselineHash: normalizeString(source.baselineHash),
+  };
+}
+
+function revisionSessionImportSeamPreviewInputReasons(input, ids) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(invalidField(
+      'revisionSessionImportSeamPreview',
+      'revisionSession import seam preview input must be an object',
+    ));
+    return reasons;
+  }
+  if (!ids.projectId) reasons.push(missingField('projectId'));
+  if (!ids.revisionSessionId) reasons.push(missingField('revisionSessionId'));
+  if (!ids.exportId) reasons.push(missingField('exportId'));
+  if (!ids.baselineHash) reasons.push(missingField('baselineHash'));
+  if (!isPlainObject(input.parsedSurface)) reasons.push(missingField('parsedSurface'));
+  if (hasOwnField(input, 'createdAt') && typeof input.createdAt !== 'string') {
+    reasons.push(invalidField('createdAt', 'createdAt must be a caller-supplied string'));
+  }
+  if (hasOwnField(input, 'updatedAt') && typeof input.updatedAt !== 'string') {
+    reasons.push(invalidField('updatedAt', 'updatedAt must be a caller-supplied string'));
+  }
+  if (hasOwnField(input, 'context') && !isPlainObject(input.context)) {
+    reasons.push(invalidField('context', 'context must be a plain object'));
+  }
+  return reasons;
+}
+
+function revisionSessionImportSeamPreviewAnchorCandidate(input, index) {
+  if (!isPlainObject(input)) return null;
+  if (
+    input.schemaVersion === REVISION_BRIDGE_COMMENT_ANCHOR_PLACEMENT_SCHEMA
+    && isPlainObject(input.inlineRange)
+  ) {
+    return cloneJsonSafe(input);
+  }
+
+  const placement = normalizeCommentPlacement(input);
+  const from = Number.isSafeInteger(placement.range.from) ? placement.range.from : 0;
+  const to = Number.isSafeInteger(placement.range.to) ? placement.range.to : from;
+  return {
+    schemaVersion: REVISION_BRIDGE_COMMENT_ANCHOR_PLACEMENT_SCHEMA,
+    placementId: placement.placementId || `placement-${index}`,
+    threadId: placement.threadId || `thread-${index}`,
+    targetScope: cloneJsonSafe(placement.targetScope),
+    inlineRange: {
+      schemaVersion: REVISION_BRIDGE_INLINE_RANGE_SCHEMA,
+      kind: 'span',
+      blockId: placement.anchor.value,
+      lineageId: '',
+      from,
+      to: to >= from ? to : from,
+      quote: placement.quote,
+      prefix: placement.prefix,
+      suffix: placement.suffix,
+      confidence: 'exact',
+      riskClass: 'low',
+      automationPolicy: 'manualOnly',
+      deletedTarget: false,
+      reasonCodes: [],
+    },
+    resolvedState: 'open',
+    acceptedState: 'pending',
+    diagnosticsOnly: false,
+  };
+}
+
+function revisionSessionImportSeamPreviewPlacementCandidates(parsedSurface) {
+  const placements = isPlainObject(parsedSurface) && Array.isArray(parsedSurface.commentPlacements)
+    ? parsedSurface.commentPlacements
+    : [];
+  return placements
+    .map((item, index) => revisionSessionImportSeamPreviewAnchorCandidate(item, index))
+    .filter((item) => isPlainObject(item));
+}
+
+function revisionSessionImportSeamPreviewEnvelope(
+  status,
+  code,
+  ids,
+  adapterResult,
+  batchDiagnostics,
+  placementAdmissionPreview,
+  skeletonAdmissionPreview,
+  reasons,
+) {
+  return {
+    schemaVersion: REVISION_BRIDGE_REVISION_SESSION_IMPORT_SEAM_PREVIEW_SCHEMA,
+    type: 'revisionBridge.revisionSession.importSeamPreview',
+    status,
+    code,
+    reason: reasons[0]?.code || code,
+    canCreateRevisionSession: status === 'ready',
+    canMutateManuscript: false,
+    projectId: ids.projectId,
+    revisionSessionId: ids.revisionSessionId,
+    exportId: ids.exportId,
+    baselineHash: ids.baselineHash,
+    parsedReviewSurfaceAdapter: cloneJsonSafe(adapterResult),
+    placementBatchDiagnostics: cloneJsonSafe(batchDiagnostics),
+    placementAdmissionPreview: cloneJsonSafe(placementAdmissionPreview),
+    skeletonAdmissionPreview: cloneJsonSafe(skeletonAdmissionPreview),
+    candidateSession: status === 'ready' ? cloneJsonSafe(skeletonAdmissionPreview?.candidateSession) : null,
+    reasons: cloneJsonSafe(reasons),
+  };
+}
+
+function revisionSessionImportSeamPreviewEvaluate(input) {
+  const source = isPlainObject(input) ? input : {};
+  const ids = revisionSessionImportSeamPreviewIds(source);
+  const inputReasons = revisionSessionImportSeamPreviewInputReasons(input, ids);
+  if (inputReasons.length > 0) {
+    return revisionSessionImportSeamPreviewEnvelope(
+      'diagnostics',
+      REVISION_SESSION_IMPORT_SEAM_PREVIEW_DIAGNOSTICS_CODE,
+      ids,
+      null,
+      null,
+      null,
+      null,
+      inputReasons,
+    );
+  }
+
+  const adapterInput = {
+    projectId: ids.projectId,
+    sessionId: ids.revisionSessionId,
+    baselineHash: ids.baselineHash,
+    parsedSurface: cloneJsonSafe(source.parsedSurface),
+  };
+  if (hasOwnField(source, 'createdAt')) adapterInput.createdAt = source.createdAt;
+  if (hasOwnField(source, 'updatedAt')) adapterInput.updatedAt = source.updatedAt;
+
+  const adapterResult = adaptParsedReviewSurfaceToReviewPacketPreviewInput(adapterInput);
+  if (adapterResult.ok !== true) {
+    return revisionSessionImportSeamPreviewEnvelope(
+      'diagnostics',
+      REVISION_SESSION_IMPORT_SEAM_PREVIEW_DIAGNOSTICS_CODE,
+      ids,
+      adapterResult,
+      null,
+      null,
+      null,
+      adapterResult.reasons || [],
+    );
+  }
+
+  const placementCandidates = revisionSessionImportSeamPreviewPlacementCandidates(source.parsedSurface);
+  const batchDiagnostics = evaluateCommentAnchorPlacementBatchDiagnostics({
+    placements: placementCandidates,
+    context: isPlainObject(source.context) ? cloneJsonSafe(source.context) : {},
+  });
+  const placementAdmissionInput = {
+    batchDiagnostics,
+  };
+  if (Array.isArray(source.blockingStatuses)) {
+    placementAdmissionInput.blockingStatuses = cloneJsonSafe(source.blockingStatuses);
+  }
+  const placementAdmissionPreview = previewRevisionSessionPlacementAdmission(placementAdmissionInput);
+  const skeletonAdmissionPreview = previewRevisionSessionSkeletonAdmission({
+    projectId: ids.projectId,
+    revisionSessionId: ids.revisionSessionId,
+    exportId: ids.exportId,
+    baselineHash: ids.baselineHash,
+    placementAdmissionPreview,
+  });
+
+  if (skeletonAdmissionPreview.status === 'admit') {
+    return revisionSessionImportSeamPreviewEnvelope(
+      'ready',
+      REVISION_SESSION_IMPORT_SEAM_PREVIEW_READY_CODE,
+      ids,
+      adapterResult,
+      batchDiagnostics,
+      placementAdmissionPreview,
+      skeletonAdmissionPreview,
+      [],
+    );
+  }
+  if (skeletonAdmissionPreview.status === 'block') {
+    return revisionSessionImportSeamPreviewEnvelope(
+      'blocked',
+      REVISION_SESSION_IMPORT_SEAM_PREVIEW_BLOCKED_CODE,
+      ids,
+      adapterResult,
+      batchDiagnostics,
+      placementAdmissionPreview,
+      skeletonAdmissionPreview,
+      skeletonAdmissionPreview.reasons || [],
+    );
+  }
+  return revisionSessionImportSeamPreviewEnvelope(
+    'diagnostics',
+    REVISION_SESSION_IMPORT_SEAM_PREVIEW_DIAGNOSTICS_CODE,
+    ids,
+    adapterResult,
+    batchDiagnostics,
+    placementAdmissionPreview,
+    skeletonAdmissionPreview,
+    skeletonAdmissionPreview.reasons || [{
+      code: REVISION_SESSION_IMPORT_SEAM_PREVIEW_DIAGNOSTICS_CODE,
+      field: 'skeletonAdmissionPreview',
+      message: 'skeleton admission preview returned diagnostics',
+    }],
+  );
+}
+// RB_19_REVISION_SESSION_IMPORT_SEAM_PREVIEW_CONTRACTS_END

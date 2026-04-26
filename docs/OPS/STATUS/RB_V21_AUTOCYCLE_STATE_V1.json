@@ -3,14 +3,14 @@
   "planName": "Structural Revision Bridge v2.1 Final Master Plan",
   "activeCanon": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final",
   "currentStatus": "IN_PROGRESS",
-  "activeContour": "RB-C04-REVISIONSESSION-IMPORT-SEAM",
+  "activeContour": "RB-C05-DONOR-V21-MODULE-PORT-PHASED",
   "acceptedContours": [
     "RB-C01-IMPORT-CHAIN-AND-REPO-FACT-AUDIT",
     "RB-C02-P0-SAFETY-FOUNDATION-WRITE-SEAM",
-    "RB-C03-APPLYTXN-CONTRACT-AND-BLOCKED-PATH"
+    "RB-C03-APPLYTXN-CONTRACT-AND-BLOCKED-PATH",
+    "RB-C04-REVISIONSESSION-IMPORT-SEAM"
   ],
   "pendingContours": [
-    "RB-C04-REVISIONSESSION-IMPORT-SEAM",
     "RB-C05-DONOR-V21-MODULE-PORT-PHASED"
   ],
   "blockers": [],
@@ -75,9 +75,21 @@
       "type": "regression-smoke",
       "summary": "targeted p0 regression checks passed for deterministic validation and targetScope.id requirement",
       "status": "pass"
+    },
+    {
+      "id": "EV-011",
+      "type": "import-seam-contract",
+      "summary": "RB-19 revision session import seam preview added as contract-only composition with no manuscript mutation path",
+      "status": "pass"
+    },
+    {
+      "id": "EV-012",
+      "type": "targeted-tests",
+      "summary": "RB-19 contract suite passed (7 of 7) and RB-18 regression subset passed (9 of 9) on shared module",
+      "status": "pass"
     }
   ],
-  "nextContourCandidate": "RB-C04-REVISIONSESSION-IMPORT-SEAM",
+  "nextContourCandidate": "RB-C05-DONOR-V21-MODULE-PORT-PHASED",
   "finalAcceptanceGaps": [
     "project-level ApplyTxn path is not implemented as runtime write path",
     "ApplyReceipt generation and recovery journal flow are not proven in current runtime",
@@ -108,6 +120,11 @@
       "id": "AU-001",
       "verdict": "no false-green accepted",
       "note": "only verified facts and hashes recorded"
+    },
+    {
+      "id": "AU-002",
+      "verdict": "accepted",
+      "note": "C04 remained bounded to contract seam preview and did not add runtime write path"
     }
   ],
   "replacementAgentHistory": [],
@@ -119,7 +136,7 @@
     "stage4_block_and_lineage_model": "partial",
     "stage5_inlinerange_and_commentplacement": "partial",
     "stage6_anchor_and_confidence": "partial",
-    "stage7_import_to_revisionsession": "partial",
+    "stage7_import_to_revisionsession": "contract_seam_preview_ready_no_runtime_apply",
     "stage8_apply_engine_and_applytxn": "contract_only_blocked_preview",
     "stage9_structural_operations": "not_implemented",
     "stage10_word_transport": "not_implemented",
