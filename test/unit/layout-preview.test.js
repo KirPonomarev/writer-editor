@@ -120,6 +120,36 @@ test('layout preview foundation: deterministic flow, page map, anchor map, and i
   assert.notEqual(keyA.invalidationKey, keyC.invalidationKey);
 });
 
+test('layout preview foundation: explicit more-than-five viewport window keeps dom bounded without render-all', async () => {
+  const layoutPreview = await loadModule('src/renderer/layoutPreview.mjs');
+
+  const contract = layoutPreview.buildVirtualViewportWindowMathContract({
+    totalPageCount: 12,
+    pageHeight: 100,
+    pageGap: 0,
+    viewportHeight: 600,
+    domBudget: 4,
+    overscan: 0,
+    scrollTop: 0,
+  });
+
+  assert.equal(contract.totalPageCount, 12);
+  assert.equal(contract.firstVisiblePage, 1);
+  assert.equal(contract.lastVisiblePage, 6);
+  assert.equal(contract.visiblePageCount, 6);
+  assert.equal(contract.firstRenderedPage, 1);
+  assert.equal(contract.lastRenderedPage, 4);
+  assert.equal(contract.renderedPageCount, 4);
+  assert.equal(contract.renderedPageCount < contract.totalPageCount, true);
+  assert.equal(contract.visibleCoverageComplete, false);
+  assert.equal(contract.visiblePagesOmitted, true);
+  assert.equal(contract.windowingEnabled, true);
+  assert.equal(contract.domBoundedClaim, false);
+  assert.equal(contract.performanceClaim, false);
+  assert.equal(contract.topSpacerHeight, 0);
+  assert.equal(contract.bottomSpacerHeight, 800);
+});
+
 test('layout preview foundation: raw DOM source attempts fail close', async () => {
   const flowMod = await loadModule('src/derived/normalizedLayoutFlow.mjs');
   const styleMapMod = await loadModule('src/derived/styleMap.mjs');
