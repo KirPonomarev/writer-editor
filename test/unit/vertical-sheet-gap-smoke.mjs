@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import fsSync from 'node:fs';
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
@@ -8,7 +9,39 @@ import { pathToFileURL } from 'node:url';
 
 const rootDir = path.resolve(new URL('../..', import.meta.url).pathname);
 const requireFromHere = createRequire(import.meta.url);
-const electronBinary = requireFromHere('electron');
+
+function listSharedSearchRoots() {
+  const parentDir = path.dirname(rootDir);
+  const roots = [rootDir];
+  try {
+    const siblingRoots = fsSync.readdirSync(parentDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && entry.name.startsWith('writer-editor'))
+      .map((entry) => path.join(parentDir, entry.name));
+    for (const candidate of siblingRoots) {
+      if (!roots.includes(candidate)) {
+        roots.push(candidate);
+      }
+    }
+  } catch {
+    // Ignore sibling discovery failures and fall back to explicit roots only.
+  }
+  return roots;
+}
+
+function resolveElectronBinary() {
+  for (const searchRoot of listSharedSearchRoots()) {
+    try {
+      const resolvedPath = requireFromHere.resolve('electron', { paths: [searchRoot] });
+      return requireFromHere(resolvedPath);
+    } catch {
+      // Continue scanning sibling worktrees for shared toolchain installs.
+    }
+  }
+  throw new Error('ELECTRON_MODULE_NOT_FOUND');
+}
+
+const electronBinary = resolveElectronBinary();
+const forceNegativeProof = process.env.VERTICAL_SHEET_GAP_FORCE_NEGATIVE === '1';
 const FORCED_DEVICE_SCALE_FACTOR = 2;
 const DEVICE_PIXEL_TOLERANCE_PX = 1;
 const outputDir = process.env.VERTICAL_SHEET_GAP_OUT_DIR
@@ -795,6 +828,9 @@ assert.equal(result.networkRequests, 0);
 assert.equal(result.dialogCalls, 0);
 assert.equal(Array.isArray(result.screenshots), true);
 assert.equal(result.screenshots.length, 3);
+if (forceNegativeProof) {
+  assert.equal(state.textBottomMarginIntersectionCount > 0, true, 'NEGATIVE_PROOF_EXPECTED_FAIL');
+}
 
 console.log('VERTICAL_SHEET_GAP_SMOKE_SUMMARY:' + JSON.stringify({
   ok: true,
