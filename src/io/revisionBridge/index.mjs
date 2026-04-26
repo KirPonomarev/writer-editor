@@ -110,6 +110,74 @@ export const REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_REASON_CODES = Object.f
   ...REVISION_BRIDGE_ANCHOR_CONFIDENCE_REASON_CODES,
 ]);
 
+// RB_20_DONOR_CONFIDENCE_UTILS_START
+const REVISION_BRIDGE_CONFIDENCE_NORMALIZATION_ALIASES = Object.freeze({
+  exact: 'exact',
+  high: 'strongHigh',
+  stronghigh: 'strongHigh',
+  'strong-high': 'strongHigh',
+  strong_high: 'strongHigh',
+  'strong high': 'strongHigh',
+  weakhigh: 'weakHigh',
+  'weak-high': 'weakHigh',
+  weak_high: 'weakHigh',
+  'weak high': 'weakHigh',
+  approximate: 'approximate',
+  unresolved: 'unresolved',
+});
+
+export function normalizeRevisionBridgeConfidenceLevel(value) {
+  const key = normalizeString(value).toLowerCase();
+  if (!key) return 'unresolved';
+  if (REVISION_BRIDGE_MATCH_CONFIDENCE_LEVELS.includes(key)) return key;
+  return REVISION_BRIDGE_CONFIDENCE_NORMALIZATION_ALIASES[key] || 'unresolved';
+}
+
+export function summarizeRevisionBridgeConfidenceLevels(items = []) {
+  const counts = {
+    exact: 0,
+    strongHigh: 0,
+    weakHigh: 0,
+    high: 0,
+    approximate: 0,
+    unresolved: 0,
+  };
+  for (const item of Array.isArray(items) ? items : []) {
+    const candidate = isPlainObject(item) ? item.confidence : item;
+    const confidence = normalizeRevisionBridgeConfidenceLevel(candidate);
+    if (confidence === 'strongHigh') {
+      counts.strongHigh += 1;
+      counts.high += 1;
+    } else if (confidence === 'weakHigh') {
+      counts.weakHigh += 1;
+      counts.high += 1;
+    } else if (Object.hasOwn(counts, confidence)) {
+      counts[confidence] += 1;
+    } else {
+      counts.unresolved += 1;
+    }
+  }
+  return counts;
+}
+
+function safeConfidenceCount(value) {
+  if (!Number.isFinite(Number(value))) return 0;
+  const normalized = Math.floor(Number(value));
+  return normalized > 0 ? normalized : 0;
+}
+
+export function resolveRevisionBridgeOverallConfidence(counts = {}) {
+  const source = isPlainObject(counts) ? counts : {};
+  if (safeConfidenceCount(source.unresolved) > 0) return 'unresolved';
+  if (safeConfidenceCount(source.approximate) > 0) return 'approximate';
+  if (safeConfidenceCount(source.weakHigh) > 0) return 'weakHigh';
+  if (safeConfidenceCount(source.strongHigh) > 0 || safeConfidenceCount(source.high) > 0) {
+    return 'strongHigh';
+  }
+  return 'exact';
+}
+// RB_20_DONOR_CONFIDENCE_UTILS_END
+
 const REVIEWGRAPH_ITEM_KINDS = [
   'commentThread',
   'commentPlacement',
