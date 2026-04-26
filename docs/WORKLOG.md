@@ -7,6 +7,12 @@
 - Vertical closeout chain: main head `792f28077973721669aef9cf78d9385b1fb1db29` contains C05 long-document performance contour from source commit `58a2aced76bb914b3128024ad75588f789b24b28`.
 - Scope truth: C05 changed only `editor.js`, `editor.bundle.js`, and `vertical-sheet-performance-window-smoke.mjs`; no storage or export files were touched.
 - Docs refresh: factual snapshot docs were rebound to current mainline head and baseline wording was corrected from “current mainline baseline point” to “baseline merge point on main history”.
+- Toolbar contour closeout: merged `TOOLBAR_METRIC_SHELL_DESCALE_002` from commit `8e41f0600fccabb43abd773aee40aa5ccb9628f5` through PR `749`.
+- Toolbar contour closeout: merged `TOOLBAR_NATIVE_FLUENCY_VISUAL_REFINE_001` from commit `59c398d8ba02390fff5dc0a435f26d1f142fbb7a` through PR `750`.
+- Toolbar runtime truth: effective whole-shell scale path removed, width-scale metric channel preserved, rotate or width mechanics unchanged.
+- Toolbar quality evidence: targeted toolbar tests passed and independent post-audit passed for both contours.
+- CI evidence: required checks passed on both merged PRs (`oss-policy`, `x1-runtime-parity` on ubuntu and windows).
+- Post-merge docs sync: `CONTEXT.md` and `HANDOFF.md` rebound to include factual toolbar closeout without opening runtime scope.
 
 ## 2026-04-22
 - Transfer closeout: correct main head `b101939f03996479e90441b1d0cd8ffb4d110e0f` was confirmed and the transfer axis was closed.
