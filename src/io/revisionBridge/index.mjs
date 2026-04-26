@@ -12,6 +12,7 @@ export const REVISION_BRIDGE_P0_PACKET_SCHEMA = 'revision-bridge-p0.packet.v1';
 export const REVISION_BRIDGE_REVISION_SESSION_SCHEMA = 'revision-bridge.revision-session.v1';
 export const REVISION_BRIDGE_EXPORT_MANIFEST_SCHEMA = 'revision-bridge.export-manifest.v1';
 export const REVISION_BRIDGE_TRANSPORT_ENVELOPE_SCHEMA = 'revision-bridge.transport-envelope.v1';
+export const REVISION_BRIDGE_TRANSPORT_BINDING_SCHEMA = 'revision-bridge.transport-envelope-binding.v1';
 export const REVISION_BRIDGE_REVISION_SESSION_STATES = Object.freeze([
   'Exported',
   'Imported',
@@ -4697,6 +4698,76 @@ export function buildRevisionBridgeTransportEnvelope(exportManifest = {}) {
     sceneOrder,
     sceneCount: sceneOrder.length,
     createdAt: normalizeString(manifest.createdAt),
+  };
+}
+
+export function evaluateRevisionBridgeTransportBinding(input = {}) {
+  const source = isPlainObject(input) ? input : {};
+  const exportManifest = isPlainObject(source.exportManifest) ? source.exportManifest : null;
+  const transportEnvelope = isPlainObject(source.transportEnvelope) ? source.transportEnvelope : null;
+  const reasons = [];
+
+  if (!exportManifest) {
+    reasons.push(missingField('exportManifest'));
+  }
+  if (!transportEnvelope) {
+    reasons.push(missingField('transportEnvelope'));
+  }
+  if (reasons.length > 0) {
+    return {
+      ok: false,
+      schemaVersion: REVISION_BRIDGE_TRANSPORT_BINDING_SCHEMA,
+      type: 'revisionBridge.transportBinding',
+      status: 'advisory',
+      code: REVIEWGRAPH_INVALID_CODE,
+      reason: reasons[0].code || REVIEWGRAPH_INVALID_CODE,
+      reasons,
+    };
+  }
+
+  const checks = [
+    ['exportId', normalizeString(exportManifest.id), normalizeString(transportEnvelope.exportId)],
+    ['projectId', normalizeString(exportManifest.projectId), normalizeString(transportEnvelope.projectId)],
+    ['baselineHash', normalizeString(exportManifest.baselineHash), normalizeString(transportEnvelope.baselineHash)],
+    ['docFingerprint', normalizeString(exportManifest.docFingerprint), normalizeString(transportEnvelope.docFingerprint)],
+  ];
+
+  for (const [field, manifestValue, envelopeValue] of checks) {
+    if (!manifestValue || !envelopeValue) {
+      reasons.push(invalidField(
+        `transportBinding.${field}`,
+        'Transport binding requires both manifest and envelope values',
+      ));
+      continue;
+    }
+    if (manifestValue !== envelopeValue) {
+      reasons.push(invalidField(
+        `transportBinding.${field}`,
+        'Transport envelope does not match local export manifest',
+      ));
+    }
+  }
+
+  if (reasons.length > 0) {
+    return {
+      ok: false,
+      schemaVersion: REVISION_BRIDGE_TRANSPORT_BINDING_SCHEMA,
+      type: 'revisionBridge.transportBinding',
+      status: 'mismatch',
+      code: REVIEWGRAPH_INVALID_CODE,
+      reason: reasons[0].code || REVIEWGRAPH_INVALID_CODE,
+      reasons,
+    };
+  }
+
+  return {
+    ok: true,
+    schemaVersion: REVISION_BRIDGE_TRANSPORT_BINDING_SCHEMA,
+    type: 'revisionBridge.transportBinding',
+    status: 'verified',
+    code: REVIEWGRAPH_VALID_CODE,
+    reason: REVIEWGRAPH_VALID_CODE,
+    reasons: [],
   };
 }
 // RB_24_EXPORT_MANIFEST_TRANSPORT_ENVELOPE_CONTRACTS_END

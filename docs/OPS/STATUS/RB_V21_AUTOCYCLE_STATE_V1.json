@@ -184,6 +184,18 @@
       "type": "targeted-tests",
       "summary": "RB-24 contract suite passed (5 of 5) covering schema exports, deterministic manifest/envelope build, purity guards, and allowlist constraints",
       "status": "pass"
+    },
+    {
+      "id": "EV-025",
+      "type": "donor-port-phase",
+      "summary": "RB-25 trust-model contract added: transport envelope binding evaluation against local export manifest with verified, mismatch and advisory statuses",
+      "status": "pass"
+    },
+    {
+      "id": "EV-026",
+      "type": "targeted-tests",
+      "summary": "RB-25 contract suite passed (7 of 7) covering binding verification, mismatch detection, advisory mode, determinism, and allowlist constraints",
+      "status": "pass"
     }
   ],
   "nextContourCandidate": "RB-C05-DONOR-V21-MODULE-PORT-PHASED",
@@ -226,7 +238,7 @@
     {
       "id": "AU-003",
       "verdict": "in_progress",
-      "note": "C05 phase stays bounded to pure contract ports without IO or runtime apply wiring; latest increments add RevisionSession lifecycle contracts plus deterministic ExportManifest and TransportEnvelope builders"
+      "note": "C05 phase stays bounded to pure contract ports without IO or runtime apply wiring; latest increments add RevisionSession lifecycle contracts plus deterministic ExportManifest, TransportEnvelope and transport-binding trust checks"
     }
   ],
   "replacementAgentHistory": [],
@@ -241,7 +253,7 @@
     "stage7_import_to_revisionsession": "contract_seam_preview_ready_no_runtime_apply",
     "stage8_apply_engine_and_applytxn": "contract_only_blocked_preview",
     "stage9_structural_operations": "not_implemented",
-    "stage10_word_transport": "contract_only_export_manifest_and_transport_envelope_builders",
+    "stage10_word_transport": "contract_only_export_manifest_envelope_and_binding_checks",
     "stage11_google_workflow": "not_implemented",
     "stage12_capability_matrix": "not_implemented",
     "stage13_minimal_review_ui": "not_implemented",
