@@ -352,6 +352,29 @@ test('layout preview runtime: virtual viewport math exposes spacer height withou
   assert.equal(result.performanceClaim, false);
 });
 
+test('layout preview runtime: virtual viewport math keeps long documents beyond five pages while dom stays bounded', async () => {
+  const mod = await loadModule('src/renderer/layoutPreview.mjs');
+  const result = mod.buildVirtualViewportWindowMathContract({
+    totalPageCount: 500,
+    pageHeight: 120,
+    pageGap: 24,
+    viewportHeight: 900,
+    domBudget: 15,
+    overscan: 1,
+    scrollTop: 0,
+  });
+
+  assert.equal(result.totalPageCount, 500);
+  assert.equal(result.firstVisiblePage, 1);
+  assert.equal(result.lastVisiblePage > 5, true);
+  assert.equal(result.visiblePageCount > 5, true);
+  assert.equal(result.renderedPageCount <= 15, true);
+  assert.equal(result.renderedPageCount < result.totalPageCount, true);
+  assert.equal(result.windowingEnabled, true);
+  assert.equal(result.visibleCoverageComplete, true);
+  assert.equal(result.visiblePagesOmitted, false);
+});
+
 test('layout preview runtime: virtual viewport math handles page gap and boundary positions explicitly', async () => {
   const mod = await loadModule('src/renderer/layoutPreview.mjs');
   const baseInput = {
@@ -661,6 +684,119 @@ test('layout preview runtime: render path marks omitted visible coverage when vi
     assert.equal(pagesHost.dataset.renderedPageCount, '3');
     assert.equal(pagesHost.dataset.visibleCoverageComplete, 'false');
     assert.equal(pagesHost.dataset.visiblePagesOmitted, 'true');
+    assert.equal(pagesHost.dataset.previewBinding, 'true');
+    assert.equal(pagesHost.dataset.productRuntimeBinding, 'false');
+  } finally {
+    global.HTMLElement = previousHTMLElement;
+    global.document = previousDocument;
+  }
+});
+
+test('layout preview runtime: render path keeps more-than-five pages with bounded window rendering', async () => {
+  const mod = await loadModule('src/renderer/layoutPreview.mjs');
+  const previousHTMLElement = global.HTMLElement;
+  const previousDocument = global.document;
+
+  class FakeClassList {
+    constructor() {
+      this.tokens = new Set();
+    }
+
+    toggle(token, force) {
+      if (force) this.tokens.add(token);
+      else this.tokens.delete(token);
+    }
+  }
+
+  class FakeElement {
+    constructor(tagName) {
+      this.tagName = String(tagName || '').toUpperCase();
+      this.children = [];
+      this.dataset = {};
+      this.attributes = {};
+      this.className = '';
+      this.classList = new FakeClassList();
+      this.style = {};
+      this.textContent = '';
+    }
+
+    append(...children) {
+      for (const child of children) this.appendChild(child);
+    }
+
+    appendChild(child) {
+      this.children.push(child);
+      return child;
+    }
+
+    replaceChildren(...children) {
+      this.children = children;
+    }
+
+    setAttribute(name, value) {
+      this.attributes[name] = String(value);
+    }
+  }
+
+  global.HTMLElement = FakeElement;
+  global.document = {
+    createElement(tagName) {
+      return new FakeElement(tagName);
+    },
+  };
+
+  try {
+    const host = new FakeElement('div');
+    const snapshot = {
+      profile: { formatId: 'A4' },
+      flow: {
+        nodes: Array.from({ length: 50 }, (_, index) => ({
+          id: `node-${index + 1}`,
+          semanticKind: 'paragraph',
+          text: `Node ${index + 1}`,
+        })),
+      },
+      pageMap: {
+        pages: Array.from({ length: 50 }, (_, index) => ({
+          pageNumber: index + 1,
+          nodeIds: [`node-${index + 1}`],
+        })),
+        meta: { pageCount: 50 },
+      },
+      metrics: {
+        pageWidthPx: 1000,
+        pageHeightPx: 120,
+      },
+    };
+
+    mod.renderLayoutPreviewSnapshot(
+      host,
+      snapshot,
+      mod.createLayoutPreviewState({
+        enabled: true,
+        pageWindowStart: 1,
+        pageWindowSize: 24,
+        pageWindowScrollTop: 0,
+        pageWindowViewportHeightPx: 900,
+        pageWindowDomBudget: 15,
+        pageWindowOverscan: 1,
+        pageGapPx: 24,
+      }),
+    );
+
+    const pagesHost = collectElementsByClass(host, 'layout-preview__pages')[0];
+    const pageWraps = collectElementsByClass(host, 'layout-preview__page-wrap');
+
+    assert.equal(Number(pagesHost.dataset.pageCount), 50);
+    assert.equal(Number(pagesHost.dataset.visibleWindowEnd), 7);
+    assert.equal(Number(pagesHost.dataset.visiblePageCount), 7);
+    assert.equal(Number(pagesHost.dataset.pageWindowEnd), 8);
+    assert.equal(Number(pagesHost.dataset.renderedPageCount) <= 15, true);
+    assert.equal(Number(pagesHost.dataset.renderedPageCount) < Number(pagesHost.dataset.pageCount), true);
+    assert.equal(Number(pagesHost.dataset.renderedPageCount), 8);
+    assert.equal(pageWraps.length, Number(pagesHost.dataset.renderedPageCount));
+    assert.equal(pagesHost.dataset.visibleCoverageComplete, 'true');
+    assert.equal(pagesHost.dataset.visiblePagesOmitted, 'false');
     assert.equal(pagesHost.dataset.previewBinding, 'true');
     assert.equal(pagesHost.dataset.productRuntimeBinding, 'false');
   } finally {
