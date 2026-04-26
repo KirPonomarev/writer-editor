@@ -223,6 +223,24 @@ function transformLooksScaled(value) {
   return /matrix|scale/u.test(normalized);
 }
 
+function resolveElectronBinaryOrNull() {
+  try {
+    return require('electron');
+  } catch (error) {
+    const message = String(error && error.message ? error.message : '');
+    if (error && error.code === 'MODULE_NOT_FOUND' && /\belectron\b/u.test(message)) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+const electronProofRequested = process.env.SHARPNESS_RUN_ELECTRON_PROOF === '1';
+const electronBinary = electronProofRequested ? resolveElectronBinaryOrNull() : null;
+const electronProofSkipReason = !electronProofRequested
+  ? 'set SHARPNESS_RUN_ELECTRON_PROOF=1 to collect local screenshot evidence'
+  : (!electronBinary ? 'electron module is unavailable in this environment' : false);
+
 test('typographic sharpness runtime proof: primary text source guards are deterministic', () => {
   const css = read(STYLES_PATH);
   const editorSource = read(EDITOR_SOURCE_PATH);
@@ -258,9 +276,7 @@ test('typographic sharpness runtime proof: reference packet remains quality guar
 });
 
 test('typographic sharpness runtime proof: optional Electron DOM and screenshot evidence', {
-  skip: process.env.SHARPNESS_RUN_ELECTRON_PROOF !== '1'
-    ? 'set SHARPNESS_RUN_ELECTRON_PROOF=1 to collect local screenshot evidence'
-    : false,
+  skip: electronProofSkipReason,
 }, () => {
   const outputDir = process.env.SHARPNESS_PROOF_OUT_DIR
     ? path.resolve(process.env.SHARPNESS_PROOF_OUT_DIR)
@@ -268,7 +284,6 @@ test('typographic sharpness runtime proof: optional Electron DOM and screenshot 
   const helperPath = path.join(os.tmpdir(), `sharpness-proof-helper-${process.pid}.cjs`);
   fs.writeFileSync(helperPath, makeElectronProofHelperSource(outputDir), 'utf8');
 
-  const electronBinary = require('electron');
   const electronEnv = {
     ...process.env,
     SHARPNESS_PROOF_OUT_DIR: outputDir,
