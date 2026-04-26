@@ -14,6 +14,7 @@
 | Project | License | MVP Now | Later | Notes |
 |---|---|---|---|---|
 | Spec Kit (GitHub) | MIT | процесс спека→план→таски→проверки | — | `docs/references/spec-kit.md` |
+| Native Fluency and Typographic Sharpness | Reference-only | advisory quality guard for sharp native-feel UI and viewport text sharpness | execution brief input only | `docs/references/native-fluency-typographic-sharpness.md` |
 | Manuskript | GPLv3+ | UX структуры (outline/cards), идеи хранения | multi-file проект, экспорт | `docs/references/projects/manuskript.md` |
 | novelWriter | GPLv3 | find in project (UX), маркеры/мета‑синтаксис | проектный формат, multi-doc | `docs/references/projects/novelwriter.md` |
 | ghostwriter | GPLv3 | find/replace UX, focus-mode идеи | экспорт/preview | `docs/references/projects/ghostwriter.md` |
