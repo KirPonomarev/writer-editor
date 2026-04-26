@@ -83,6 +83,16 @@
 - ordering is realized in runtime projection
 - old Wave C literal scope no longer matches current repo truth; truthful closure model is `Wave C1 + blocked decisions`
 
+### Toolbar post-merge factual closeout
+- contour `TOOLBAR_METRIC_SHELL_DESCALE_002` is merged on main from commit `8e41f0600fccabb43abd773aee40aa5ccb9628f5` via PR `749`
+- contour `TOOLBAR_NATIVE_FLUENCY_VISUAL_REFINE_001` is merged on main from commit `59c398d8ba02390fff5dc0a435f26d1f142fbb7a` via PR `750`
+- whole-shell scale is removed as effective toolbar sizing path in accepted runtime state
+- width-scale channel remains preserved as metric tuning path in accepted runtime state
+- native fluency toolbar contract remains enforced: no transform-scale shell path and no blur trick in toolbar shell sections
+- targeted toolbar verification for both contours is pass and independent post-audit is pass
+- required checks on both merged PRs passed: `oss-policy`, `x1-runtime-parity (ubuntu-latest)`, `x1-runtime-parity (windows-latest)`
+- this closeout does not open any automatic runtime contour; next move remains exactly one explicit owner-selected contour
+
 ### Invariants
 - editor surface не источник истины,
 - локальная истина без network truth,

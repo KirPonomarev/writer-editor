@@ -90,6 +90,11 @@ _Generated: 2026-04-26_
   - `master` profile is visible in configurator flow
   - ordering runtime is realized
   - old Wave C literal text is superseded; truthful closure is `Wave C1 + blocked decisions`
+- toolbar contour `TOOLBAR_METRIC_SHELL_DESCALE_002` is merged on main from commit `8e41f0600fccabb43abd773aee40aa5ccb9628f5` via PR `749`
+- toolbar contour `TOOLBAR_NATIVE_FLUENCY_VISUAL_REFINE_001` is merged on main from commit `59c398d8ba02390fff5dc0a435f26d1f142fbb7a` via PR `750`
+- whole-shell scale is removed as effective toolbar sizing path while width-scale remains preserved as metric channel
+- native fluency toolbar contract is reconfirmed on main with targeted tests and independent post-audit pass
+- required checks for both merged toolbar contours passed: `oss-policy`, `x1-runtime-parity (ubuntu-latest)`, `x1-runtime-parity (windows-latest)`
 
 ## What Is Next
 1. keep Y8 cutover truth and rollback truth as one active factual reality
