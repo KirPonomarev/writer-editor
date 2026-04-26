@@ -1585,6 +1585,24 @@ function setToolbarSpacingTuningMode(nextActive) {
   }
 }
 
+function getToolbarAnchorSnapStep() {
+  const dpr = Number(window.devicePixelRatio);
+  return Number.isFinite(dpr) && dpr >= 2 ? 0.5 : 1;
+}
+
+function snapToolbarAnchorValue(value) {
+  if (!Number.isFinite(value)) return 0;
+  const step = getToolbarAnchorSnapStep();
+  return Math.round(value / step) * step;
+}
+
+function setToolbarAnchorVar(host, name, value) {
+  if (!(host instanceof HTMLElement)) return;
+  const snapped = snapToolbarAnchorValue(value);
+  const cssValue = Number.isInteger(snapped) ? String(snapped) : snapped.toFixed(1);
+  host.style.setProperty(name, `${cssValue}px`);
+}
+
 function updateToolbarAnchorVars() {
   if (!toolbarShell || !toolbarTunableItems.length) return;
   const shellRect = toolbarShell.getBoundingClientRect();
@@ -1607,12 +1625,12 @@ function updateToolbarAnchorVars() {
   const localRight = bounds.right - shellRect.left;
   const localTop = bounds.top - shellRect.top;
   const localBottom = bounds.bottom - shellRect.top;
-  toolbarShell.style.setProperty('--floating-toolbar-cluster-left', `${Math.round(localLeft)}px`);
-  toolbarShell.style.setProperty('--floating-toolbar-cluster-right', `${Math.round(localRight)}px`);
-  toolbarShell.style.setProperty('--floating-toolbar-cluster-top', `${Math.round(localTop)}px`);
-  toolbarShell.style.setProperty('--floating-toolbar-cluster-bottom', `${Math.round(localBottom)}px`);
-  toolbarShell.style.setProperty('--floating-toolbar-cluster-center-x', `${Math.round(localLeft + ((localRight - localLeft) / 2))}px`);
-  toolbarShell.style.setProperty('--floating-toolbar-cluster-center-y', `${Math.round(localTop + ((localBottom - localTop) / 2))}px`);
+  setToolbarAnchorVar(toolbarShell, '--floating-toolbar-cluster-left', localLeft);
+  setToolbarAnchorVar(toolbarShell, '--floating-toolbar-cluster-right', localRight);
+  setToolbarAnchorVar(toolbarShell, '--floating-toolbar-cluster-top', localTop);
+  setToolbarAnchorVar(toolbarShell, '--floating-toolbar-cluster-bottom', localBottom);
+  setToolbarAnchorVar(toolbarShell, '--floating-toolbar-cluster-center-x', localLeft + ((localRight - localLeft) / 2));
+  setToolbarAnchorVar(toolbarShell, '--floating-toolbar-cluster-center-y', localTop + ((localBottom - localTop) / 2));
   if (!toolbarSpacingMenu?.hidden) {
     setToolbarSpacingMenuOpen(true);
   } else if (!paragraphMenu?.hidden) {
@@ -2055,12 +2073,12 @@ function updateLeftToolbarAnchorVars() {
   const localRight = bounds.right - shellRect.left;
   const localTop = bounds.top - shellRect.top;
   const localBottom = bounds.bottom - shellRect.top;
-  leftToolbarShell.style.setProperty('--left-toolbar-cluster-left', `${Math.round(localLeft)}px`);
-  leftToolbarShell.style.setProperty('--left-toolbar-cluster-right', `${Math.round(localRight)}px`);
-  leftToolbarShell.style.setProperty('--left-toolbar-cluster-top', `${Math.round(localTop)}px`);
-  leftToolbarShell.style.setProperty('--left-toolbar-cluster-bottom', `${Math.round(localBottom)}px`);
-  leftToolbarShell.style.setProperty('--left-toolbar-cluster-center-x', `${Math.round(localLeft + ((localRight - localLeft) / 2))}px`);
-  leftToolbarShell.style.setProperty('--left-toolbar-cluster-center-y', `${Math.round(localTop + ((localBottom - localTop) / 2))}px`);
+  setToolbarAnchorVar(leftToolbarShell, '--left-toolbar-cluster-left', localLeft);
+  setToolbarAnchorVar(leftToolbarShell, '--left-toolbar-cluster-right', localRight);
+  setToolbarAnchorVar(leftToolbarShell, '--left-toolbar-cluster-top', localTop);
+  setToolbarAnchorVar(leftToolbarShell, '--left-toolbar-cluster-bottom', localBottom);
+  setToolbarAnchorVar(leftToolbarShell, '--left-toolbar-cluster-center-x', localLeft + ((localRight - localLeft) / 2));
+  setToolbarAnchorVar(leftToolbarShell, '--left-toolbar-cluster-center-y', localTop + ((localBottom - localTop) / 2));
 }
 
 function scheduleLeftToolbarAnchorUpdate() {
