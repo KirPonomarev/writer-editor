@@ -10,6 +10,8 @@ const PARSED_REVIEW_SURFACE_ADAPTER_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_PARSED
 
 export const REVISION_BRIDGE_P0_PACKET_SCHEMA = 'revision-bridge-p0.packet.v1';
 export const REVISION_BRIDGE_REVISION_SESSION_SCHEMA = 'revision-bridge.revision-session.v1';
+export const REVISION_BRIDGE_EXPORT_MANIFEST_SCHEMA = 'revision-bridge.export-manifest.v1';
+export const REVISION_BRIDGE_TRANSPORT_ENVELOPE_SCHEMA = 'revision-bridge.transport-envelope.v1';
 export const REVISION_BRIDGE_REVISION_SESSION_STATES = Object.freeze([
   'Exported',
   'Imported',
@@ -32,6 +34,7 @@ export const REVISION_BRIDGE_REVISION_SESSION_VERSION_TAGS = Object.freeze({
 });
 export const REVISION_BRIDGE_REVISION_SESSION_STATE_INVARIANTS_SCHEMA =
   'revision-bridge.revision-session-state-invariants.v1';
+export const REVISION_BRIDGE_DOCX_REVIEW_PROFILE_ID = 'revision-bridge-docx-review-profile-v1';
 export const REVISION_BRIDGE_COMMENT_THREAD_SCHEMA = 'revision-bridge.comment-thread.v1';
 export const REVISION_BRIDGE_COMMENT_PLACEMENT_SCHEMA = 'revision-bridge.comment-placement.v1';
 export const REVISION_BRIDGE_TEXT_CHANGE_SCHEMA = 'revision-bridge.text-change.v1';
@@ -4609,6 +4612,94 @@ export function evaluateRevisionSessionStateInvariants(input = {}) {
   };
 }
 // RB_23_REVISION_SESSION_STATE_INVARIANTS_CONTRACTS_END
+
+// RB_24_EXPORT_MANIFEST_TRANSPORT_ENVELOPE_CONTRACTS_START
+function normalizeRevisionBridgeSceneBaseline(scene = {}) {
+  const source = isPlainObject(scene) ? scene : {};
+  return {
+    sceneId: normalizeString(source.sceneId),
+    sceneHash: normalizeString(source.sceneHash),
+    sceneStructuralHash: normalizeString(source.sceneStructuralHash),
+    title: normalizeString(source.title),
+    orderIndex: Number.isFinite(Number(source.orderIndex)) ? Number(source.orderIndex) : 0,
+    sourcePath: normalizeString(source.sourcePath),
+    relativePath: normalizeString(source.relativePath),
+  };
+}
+
+function normalizeRevisionBridgeBlockBaseline(block = {}) {
+  const source = isPlainObject(block) ? block : {};
+  return {
+    blockInstanceId: normalizeString(source.blockInstanceId || source.blockId),
+    blockLineageId: normalizeString(source.blockLineageId),
+    blockVersionHash: normalizeString(source.blockVersionHash || source.textHash),
+    blockKind: normalizeString(source.blockKind || 'paragraph'),
+    blockOrder: Number.isFinite(Number(source.blockOrder ?? source.ordinal)) ? Number(source.blockOrder ?? source.ordinal) : 0,
+    blockHash: normalizeString(source.blockHash),
+    blockTextHash: normalizeString(source.blockTextHash || source.textHash),
+    blockStructuralHash: normalizeString(source.blockStructuralHash),
+    sceneId: normalizeString(source.sceneId),
+  };
+}
+
+function normalizeRevisionBridgeSceneOrder(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => normalizeString(item))
+    .filter((item) => Boolean(item));
+}
+
+export function buildRevisionBridgeExportManifest(snapshot = {}, manifest = {}) {
+  const safeSnapshot = isPlainObject(snapshot) ? snapshot : {};
+  const safeManifest = isPlainObject(manifest) ? manifest : {};
+  const sceneOrder = normalizeRevisionBridgeSceneOrder(
+    Array.isArray(safeManifest.sceneOrder) ? safeManifest.sceneOrder : safeSnapshot.sceneOrder,
+  );
+  const scenes = Array.isArray(safeSnapshot.sceneBaselines)
+    ? safeSnapshot.sceneBaselines.map((scene) => normalizeRevisionBridgeSceneBaseline(scene))
+    : [];
+  const blocks = Array.isArray(safeSnapshot.blockBaselines)
+    ? safeSnapshot.blockBaselines.map((block) => normalizeRevisionBridgeBlockBaseline(block))
+    : [];
+
+  return {
+    schemaVersion: REVISION_BRIDGE_EXPORT_MANIFEST_SCHEMA,
+    kind: 'ExportManifest',
+    id: normalizeString(safeManifest.id),
+    projectId: normalizeString(safeManifest.projectId || safeSnapshot.projectId),
+    profileId: normalizeString(safeManifest.profileId || safeSnapshot.profileId || REVISION_BRIDGE_DOCX_REVIEW_PROFILE_ID),
+    createdAt: normalizeString(safeManifest.createdAt),
+    baselineHash: normalizeString(safeManifest.baselineHash || safeSnapshot.baselineHash),
+    docFingerprint: normalizeString(safeManifest.docFingerprint || safeSnapshot.docFingerprintPlan),
+    sourceVersion: normalizeString(safeManifest.sourceVersion || safeSnapshot.sourceVersion),
+    sceneOrder,
+    scenes,
+    blocks,
+    trust: {
+      localCanonical: true,
+      embeddedTransportIsAdvisory: true,
+    },
+  };
+}
+
+export function buildRevisionBridgeTransportEnvelope(exportManifest = {}) {
+  const manifest = isPlainObject(exportManifest) ? exportManifest : {};
+  const sceneOrder = normalizeRevisionBridgeSceneOrder(manifest.sceneOrder);
+  return {
+    schemaVersion: REVISION_BRIDGE_TRANSPORT_ENVELOPE_SCHEMA,
+    kind: 'TransportEnvelope',
+    advisory: true,
+    exportId: normalizeString(manifest.id),
+    projectId: normalizeString(manifest.projectId),
+    profileId: normalizeString(manifest.profileId || REVISION_BRIDGE_DOCX_REVIEW_PROFILE_ID),
+    baselineHash: normalizeString(manifest.baselineHash),
+    docFingerprint: normalizeString(manifest.docFingerprint),
+    sceneOrder,
+    sceneCount: sceneOrder.length,
+    createdAt: normalizeString(manifest.createdAt),
+  };
+}
+// RB_24_EXPORT_MANIFEST_TRANSPORT_ENVELOPE_CONTRACTS_END
 
 export function normalizeRevisionSession(input = {}) {
   const session = isPlainObject(input) ? input : {};

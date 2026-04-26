@@ -172,6 +172,18 @@
       "type": "targeted-tests",
       "summary": "RB-23 contract suite passed (8 of 8) covering exported-empty graph, decision-state invariants, accepted-decision requirement, failed-quarantined diagnostics, determinism, and allowlist checks",
       "status": "pass"
+    },
+    {
+      "id": "EV-023",
+      "type": "donor-port-phase",
+      "summary": "RB-24 export manifest and transport envelope contracts ported as deterministic pure builders without IO, crypto or runtime side effects",
+      "status": "pass"
+    },
+    {
+      "id": "EV-024",
+      "type": "targeted-tests",
+      "summary": "RB-24 contract suite passed (5 of 5) covering schema exports, deterministic manifest/envelope build, purity guards, and allowlist constraints",
+      "status": "pass"
     }
   ],
   "nextContourCandidate": "RB-C05-DONOR-V21-MODULE-PORT-PHASED",
@@ -214,7 +226,7 @@
     {
       "id": "AU-003",
       "verdict": "in_progress",
-      "note": "C05 phase stays bounded to pure contract ports without IO or runtime apply wiring; latest increments add RevisionSession lifecycle state machine, version tags, and state invariants contracts"
+      "note": "C05 phase stays bounded to pure contract ports without IO or runtime apply wiring; latest increments add RevisionSession lifecycle contracts plus deterministic ExportManifest and TransportEnvelope builders"
     }
   ],
   "replacementAgentHistory": [],
@@ -229,7 +241,7 @@
     "stage7_import_to_revisionsession": "contract_seam_preview_ready_no_runtime_apply",
     "stage8_apply_engine_and_applytxn": "contract_only_blocked_preview",
     "stage9_structural_operations": "not_implemented",
-    "stage10_word_transport": "not_implemented",
+    "stage10_word_transport": "contract_only_export_manifest_and_transport_envelope_builders",
     "stage11_google_workflow": "not_implemented",
     "stage12_capability_matrix": "not_implemented",
     "stage13_minimal_review_ui": "not_implemented",
