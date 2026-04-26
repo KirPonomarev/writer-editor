@@ -74,10 +74,14 @@ test('sector-m toolbar main shell descale: main runtime removes shell scale bran
     'function applyFloatingToolbarVisualState() {',
     'function applyFloatingToolbarState(partialState, persist = true) {'
   );
+  assert.ok(
+    visualSnippet.includes("toolbarShell.style.removeProperty('--floating-toolbar-scale');"),
+    'main shell visual state must explicitly remove legacy shell scale css var'
+  );
   assert.equal(
-    visualSnippet.includes("'--floating-toolbar-scale'"),
+    visualSnippet.includes("setProperty('--floating-toolbar-scale'"),
     false,
-    'main shell visual state must not set floating shell scale css var'
+    'main shell visual state must not emit floating shell scale css var'
   );
 
   const anchorSnippet = sliceSection(
