@@ -718,17 +718,57 @@ function ensureCentralSheetStripShell() {
   return strip;
 }
 
-function appendCentralSheetStripSpacer({ fragment, kind, heightPx }) {
+function appendCentralSheetStripSpacer({
+  fragment,
+  kind,
+  heightPx,
+  existingNode = null,
+}) {
   const normalizedHeightPx = Math.max(0, Math.round(Number(heightPx) || 0));
   if (!(fragment instanceof DocumentFragment) || normalizedHeightPx <= 0) {
     return;
   }
-  const spacer = document.createElement('div');
+  const spacer = existingNode instanceof HTMLElement
+    ? existingNode
+    : document.createElement('div');
   spacer.className = `tiptap-sheet-strip__spacer tiptap-sheet-strip__spacer--${kind}`;
   spacer.dataset.kind = String(kind || 'unknown');
   spacer.dataset.spacerHeightPx = String(normalizedHeightPx);
   spacer.style.height = `${normalizedHeightPx}px`;
   fragment.appendChild(spacer);
+}
+
+function ensureCentralSheetStripPageWrapShell(existingWrap = null) {
+  const wrap = existingWrap instanceof HTMLElement
+    ? existingWrap
+    : document.createElement('div');
+  wrap.className = 'tiptap-page-wrap';
+
+  const firstChild = wrap.firstElementChild;
+  let page = firstChild instanceof HTMLElement && firstChild.classList.contains('tiptap-page')
+    ? firstChild
+    : null;
+  if (!(page instanceof HTMLElement) || wrap.childElementCount !== 1) {
+    page = document.createElement('div');
+    page.className = 'tiptap-page';
+    wrap.replaceChildren(page);
+  } else {
+    page.className = 'tiptap-page';
+  }
+
+  const pageFirstChild = page.firstElementChild;
+  let content = pageFirstChild instanceof HTMLElement && pageFirstChild.classList.contains('tiptap-page__content')
+    ? pageFirstChild
+    : null;
+  if (!(content instanceof HTMLElement) || page.childElementCount !== 1) {
+    content = document.createElement('div');
+    content.className = 'tiptap-page__content';
+    page.replaceChildren(content);
+  } else {
+    content.className = 'tiptap-page__content';
+  }
+
+  return wrap;
 }
 
 function renderCentralSheetStripShellPages(pageWindow) {
@@ -759,30 +799,30 @@ function renderCentralSheetStripShellPages(pageWindow) {
   if (strip.dataset.windowSignature === nextWindowSignature) {
     return;
   }
+  const existingTopSpacer = strip.querySelector(':scope > .tiptap-sheet-strip__spacer--top');
+  const existingBottomSpacer = strip.querySelector(':scope > .tiptap-sheet-strip__spacer--bottom');
+  const existingPageWraps = [...strip.querySelectorAll(':scope > .tiptap-page-wrap')]
+    .filter((node) => node instanceof HTMLElement);
   const fragment = document.createDocumentFragment();
   appendCentralSheetStripSpacer({
     fragment,
     kind: 'top',
     heightPx: topSpacerHeight,
+    existingNode: existingTopSpacer,
   });
-  for (let pageNumber = firstRenderedPage; pageNumber <= lastRenderedPage; pageNumber += 1) {
-    const pageIndex = pageNumber - 1;
-    const wrap = document.createElement('div');
-    wrap.className = 'tiptap-page-wrap';
+  for (let offset = 0; offset < renderedPageCount; offset += 1) {
+    const pageNumber = Math.min(lastRenderedPage, firstRenderedPage + offset);
+    const pageIndex = Math.max(0, pageNumber - 1);
+    const wrap = ensureCentralSheetStripPageWrapShell(existingPageWraps[offset] || null);
     wrap.dataset.pageIndex = String(pageIndex);
     wrap.dataset.pageNumber = String(pageNumber);
-    const page = document.createElement('div');
-    page.className = 'tiptap-page';
-    const content = document.createElement('div');
-    content.className = 'tiptap-page__content';
-    page.appendChild(content);
-    wrap.appendChild(page);
     fragment.appendChild(wrap);
   }
   appendCentralSheetStripSpacer({
     fragment,
     kind: 'bottom',
     heightPx: bottomSpacerHeight,
+    existingNode: existingBottomSpacer,
   });
   strip.replaceChildren(fragment);
   strip.dataset.windowSignature = nextWindowSignature;
