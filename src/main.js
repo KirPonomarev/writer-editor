@@ -20,6 +20,7 @@ const {
 const { buildDocxMinBuffer: buildDocxMinBufferCore } = require('./export/docx/docxMinBuilder');
 const { runDocxMinExport } = require('./export/docx/docxMinExportHandler');
 const { writeBufferAtomic } = require('./export/docx/atomicWriteBuffer');
+const { createCommandSurfaceKernel } = require('./command/commandSurfaceKernel');
 
 const launchT0 = performance.now();
 let mainWindow;
@@ -271,6 +272,45 @@ const EXPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:export:markdownV1:v1';
 const FLOW_OPEN_V1_CHANNEL = 'm:cmd:project:flow:open:v1';
 const FLOW_SAVE_V1_CHANNEL = 'm:cmd:project:flow:save:v1';
 const MARKDOWN_RELIABILITY_LOG_PATH = path.join(os.tmpdir(), 'writer-editor-ops-state', 'markdown-io.log');
+const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
+  PROJECT_OPEN: 'cmd.project.open',
+  PROJECT_SAVE: 'cmd.project.save',
+  PROJECT_SAVE_AS: 'cmd.project.saveAs',
+  PROJECT_IMPORT_MARKDOWN_V1: 'cmd.project.importMarkdownV1',
+  PROJECT_EXPORT_MARKDOWN_V1: 'cmd.project.exportMarkdownV1',
+});
+let internalCommandSurfaceKernel = null;
+
+function getInternalCommandSurfaceKernel() {
+  if (internalCommandSurfaceKernel) {
+    return internalCommandSurfaceKernel;
+  }
+  internalCommandSurfaceKernel = createCommandSurfaceKernel({
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_OPEN]: async () => {
+      await ensureCleanAction(handleOpen);
+      return { ok: true };
+    },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE]: async () => {
+      const saved = await handleSave();
+      return { ok: saved === true };
+    },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS]: async () => {
+      const savedAs = await handleSaveAs();
+      return { ok: savedAs === true };
+    },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1]: async (payload = {}) => {
+      return handleImportMarkdownV1(payload);
+    },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1]: async (payload = {}) => {
+      return handleExportMarkdownV1(payload);
+    },
+  });
+  return internalCommandSurfaceKernel;
+}
+
+function dispatchCommandSurfaceKernel(commandId, payload = {}) {
+  return getInternalCommandSurfaceKernel().dispatch(commandId, payload);
+}
 
 function sanitizeFilename(name) {
   const safe = String(name || '')
@@ -2759,24 +2799,32 @@ ipcMain.on(EDITOR_PASTE_FOCUS_STATE_CHANNEL, (_, payload) => {
 
 async function executeFileCommand(intentRaw) {
   const intent = typeof intentRaw === 'string' ? intentRaw : '';
+  const commandId = {
+    open: COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_OPEN,
+    save: COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE,
+    saveAs: COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS,
+  }[intent] || '';
   try {
     if (intent === 'new') {
       await ensureCleanAction(handleNew);
       return { ok: true, intent };
     }
-    if (intent === 'open') {
-      await ensureCleanAction(handleOpen);
-      return { ok: true, intent };
+    if (!commandId) {
+      return { ok: false, reason: 'FILE_COMMAND_INTENT_UNSUPPORTED', intent };
     }
-    if (intent === 'save') {
-      const saved = await handleSave();
-      return saved ? { ok: true, intent } : { ok: false, reason: 'FILE_SAVE_FAILED', intent };
+    const result = await dispatchCommandSurfaceKernel(commandId, {});
+    if (result && (result.ok === true || result.ok === 1)) {
+      return { ok: true, intent, commandId };
     }
-    if (intent === 'saveAs') {
-      const savedAs = await handleSaveAs();
-      return savedAs ? { ok: true, intent } : { ok: false, reason: 'FILE_SAVE_AS_FAILED', intent };
-    }
-    return { ok: false, reason: 'FILE_COMMAND_INTENT_UNSUPPORTED', intent };
+    return {
+      ok: false,
+      reason: result && result.error && typeof result.error.reason === 'string'
+        ? result.error.reason
+        : 'COMMAND_EXECUTION_FAILED',
+      intent,
+      commandId,
+      error: result && result.error && typeof result.error === 'object' ? result.error : undefined,
+    };
   } catch (error) {
     logDevError(`file-command:${intent || 'unknown'}`, error);
     return {
@@ -2808,19 +2856,19 @@ ipcMain.handle(EXPORT_DOCX_MIN_CHANNEL, async (_, payload) => {
 });
 
 ipcMain.handle(IMPORT_MARKDOWN_V1_CHANNEL, async (_, payload) => {
-  return handleImportMarkdownV1(payload);
+  return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);
 });
 
 ipcMain.handle(EXPORT_MARKDOWN_V1_CHANNEL, async (_, payload) => {
-  return handleExportMarkdownV1(payload);
+  return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, payload);
 });
 
 ipcMain.handle(FLOW_OPEN_V1_CHANNEL, async () => {
-  return handleFlowOpenV1();
+  return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_FLOW_OPEN_V1, {});
 });
 
 ipcMain.handle(FLOW_SAVE_V1_CHANNEL, async (_, payload) => {
-  return handleFlowSaveV1(payload);
+  return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_FLOW_SAVE_V1, payload);
 });
 
 ipcMain.handle('ui:request-autosave', async () => {

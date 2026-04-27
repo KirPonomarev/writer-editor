@@ -54,6 +54,8 @@ test('preload file lifecycle bridge: main command bridge allowlist includes only
 test('preload file lifecycle bridge: main reuses existing file lifecycle semantics for bridged commands', () => {
   const source = read('src/main.js')
 
+  assert.ok(source.includes('const { createCommandSurfaceKernel } = require(\'./command/commandSurfaceKernel\');'))
+  assert.ok(source.includes('function dispatchCommandSurfaceKernel(commandId, payload = {}) {'))
   assert.ok(source.includes("'cmd.project.new': async () => {"))
   assert.ok(source.includes('await ensureCleanAction(handleNew);'))
   assert.ok(source.includes("'cmd.project.open': async () => {"))

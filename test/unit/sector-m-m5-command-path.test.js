@@ -102,6 +102,8 @@ test('M5 typed IO errors remain stable through command layer', async () => {
 test('M5 main command handlers reference reliability primitives (static guard)', () => {
   const mainPath = path.join(process.cwd(), 'src', 'main.js');
   const mainText = fs.readFileSync(mainPath, 'utf8');
+  assert.match(mainText, /createCommandSurfaceKernel/);
+  assert.match(mainText, /dispatchCommandSurfaceKernel/);
   assert.match(mainText, /writeMarkdownWithRecovery/);
   assert.match(mainText, /readMarkdownWithRecovery|readMarkdownWithLimits/);
   assert.match(mainText, /code\.startsWith\('E_IO_'/);
