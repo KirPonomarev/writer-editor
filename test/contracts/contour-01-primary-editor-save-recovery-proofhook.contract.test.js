@@ -47,23 +47,33 @@ function parseJsonOutput(run) {
   return payload;
 }
 
-test('contour-01 primary editor save/recovery proofhook: positive admitted path is green', () => {
+test('contour-01 primary editor save/recovery proofhook: historical admitted claim is explicitly retired against current architecture', () => {
   const run = runProofhook();
-  assert.equal(run.status, 0, `expected positive pass:\n${run.stdout}\n${run.stderr}`);
+  assert.equal(run.status, 0, `expected truthful retirement result:\n${run.stdout}\n${run.stderr}`);
 
   const payload = parseJsonOutput(run);
   assert.equal(payload.ok, true);
-  assert.equal(payload[TOKEN_NAME], 1);
+  assert.equal(payload[TOKEN_NAME], 0);
   assert.equal(payload.failReason, '');
   assert.equal(payload.forcedNegative, false);
+  assert.equal(payload.retiredClaim, true);
+  assert.equal(payload.admissionActive, false);
+  assert.equal(payload.status, 'RETIRED_HISTORICAL_PROOF_ONLY');
+  assert.equal(
+    payload.retirementReason,
+    'HISTORICAL_ADMITTED_SAVE_PATH_RETIRED_CURRENT_MAINLINE_USES_COMMAND_SURFACE_SAVE',
+  );
   assert.deepEqual(payload.coveredSeams, SEAM_IDS);
   assert.deepEqual(payload.provenOutOfScopeClaims, []);
   assert.deepEqual(payload.outOfScopeNotClaimed, OUT_OF_SCOPE_IDS);
-
-  for (const seamId of SEAM_IDS) {
-    assert.equal(payload.seamResults[seamId], true, `seam ${seamId} should be proven`);
-  }
-  assert.deepEqual(payload.missingChecks, []);
+  assert.equal(payload.seamResults['boundary-read-seam'], true);
+  assert.equal(payload.seamResults['autosave-reopen-recovery-path'], true);
+  assert.equal(payload.seamResults['ui-recovery-restored-channel'], true);
+  assert.equal(payload.seamResults['menu-save-command-path'], false);
+  assert.ok(Array.isArray(payload.missingChecks));
+  assert.ok(payload.missingChecks.includes('menu-save-command-path:mainMenuFileSavePresentation'));
+  assert.ok(payload.missingChecks.includes('menu-save-command-path:preloadFileSaveInvoke'));
+  assert.ok(payload.missingChecks.includes('menu-save-command-path:mainHandleSaveCallsBoundaryRead'));
 });
 
 test('contour-01 primary editor save/recovery proofhook: forced negative fails deterministically', () => {
