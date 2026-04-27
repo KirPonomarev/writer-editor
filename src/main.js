@@ -829,6 +829,44 @@ function clearPendingTextRequests(reason) {
   pendingSnapshotRequests.clear();
 }
 
+async function readCanonicalExportSnapshot(payload = {}) {
+  if (typeof currentFilePath !== 'string' || !currentFilePath.trim()) {
+    throw new Error('No saved canonical document is open');
+  }
+  if (!isAllowedFilePath(currentFilePath)) {
+    throw new Error('Current canonical document path is not allowed');
+  }
+  if (isDirty) {
+    throw new Error('Unsaved editor state cannot be used as canonical export source');
+  }
+
+  const content = await fs.readFile(currentFilePath, 'utf8');
+  let bookProfile = (
+    payload.options
+    && isPlainObjectValue(payload.options)
+    && isPlainObjectValue(payload.options.bookProfile)
+  )
+    ? payload.options.bookProfile
+    : null;
+
+  if (!bookProfile) {
+    const projectBinding = await resolveProjectBindingForFile(currentFilePath);
+    if (
+      projectBinding
+      && isPlainObjectValue(projectBinding.manifest)
+      && isPlainObjectValue(projectBinding.manifest.bookProfile)
+    ) {
+      bookProfile = projectBinding.manifest.bookProfile;
+    }
+  }
+
+  return normalizeEditorSnapshotPayload({
+    content,
+    plainText: content,
+    bookProfile,
+  });
+}
+
 async function persistProjectManifestAtPath(manifestPath, manifest, operationLabel = 'save project manifest') {
   const writeResult = await queueDiskOperation(
     () => fileManager.writeFileAtomic(manifestPath, JSON.stringify(manifest, null, 2)),
@@ -1781,7 +1819,7 @@ async function handleExportDocxMin(payloadRaw) {
     makeTypedExportError,
     buildPathBoundaryDetails,
     resolveDocxExportPath,
-    requestEditorSnapshot,
+    readCanonicalExportSnapshot,
     buildDocxMinBuffer,
     queueDiskOperation,
     writeBufferAtomic,
