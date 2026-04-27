@@ -3,7 +3,7 @@
   "scope": "OPS_GOVERNANCE_LAYER",
   "files": {
     "docs/OPS/CLAIMS/CRITICAL_CLAIM_MATRIX.json": {
-      "sha256": "f688f792545b00a9d4a9b4bbc2d2ec78d4ae5d2248beefd87b0ccd40892017be"
+      "sha256": "aea6cf24f2aa6b51dc2a188f16acb3e80f188b3e3763d8b4c2264b84121d3989"
     },
     "docs/OPS/DOCTOR/INVARIANTS.md": {
       "sha256": "e81a034f85becb689ccb0b3b221ba84e98b14571de13f90362dbf61eff77c438"
@@ -12,12 +12,12 @@
       "sha256": "6ce87586218af226f2e797fa311d7cddeb4d942fba22c1ea19b7cf763986dd40"
     },
     "docs/OPS/TOKENS/TOKEN_CATALOG_LOCK.json": {
-      "sha256": "38144b099d2bab8f64f7c2df255e468343a10ed36298db524204da56694ce6bc"
+      "sha256": "14476e37ab35fd86f2b9a7d94f76de5b22e7e52a42894f14947d68b548268a64"
     },
     "docs/OPS/TOKENS/TOKEN_DECLARATION.json": {
-      "sha256": "ab754000a03a3c380711956f94ad30ebf58dd1285b079bc0034b9a057b621f34"
+      "sha256": "2760abd61b5fdc038eac91c2aee083b00d2136a003f4891cb90a47b16ed91e3e"
     }
   },
-  "global_sha256": "eb5e5f88e0f539d2dca3166b6c2bbd5ff9010053f44a6c0c200e593831648c52",
-  "generated_at": "2026-03-28T17:13:11.343Z"
+  "global_sha256": "fe28221593eb23cd8aa1f2350585202fa42efab7496603bc215d210af794c338",
+  "generated_at": "2026-04-27T23:41:48.415Z"
 }

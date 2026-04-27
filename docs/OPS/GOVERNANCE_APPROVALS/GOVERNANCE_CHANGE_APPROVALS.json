@@ -17,10 +17,10 @@
     },
     {
       "filePath": "docs/OPS/BASELINE/OPS_GOVERNANCE_BASELINE_v1.0.json",
-      "approvedBy": "ticket:YALKEN_DESIGN_OS_PHASE08_OPS_GOVERNANCE_BASELINE_REGEN_001",
-      "rationale": "PHASE_08_OPS_GOVERNANCE_BASELINE_REGEN_CANONICAL_REBIND",
-      "sha256": "9277d4c4116b63671fc2da83640df08d5e2b7a5345a30d2df66c120a8e536ae1",
-      "approvedAtUtc": "2026-03-28T17:14:57.714Z"
+      "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
+      "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the bounded OPS governance baseline regeneration required after the new recovery readability token and claim rows changed canonical governed-file hashes.",
+      "sha256": "055515c2dec5f4544243b7436d35c8ba180298255d0cd4feab0b13036e9c9b4e",
+      "approvedAtUtc": "2026-04-28T00:00:00.000Z"
     },
     {
       "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
@@ -2870,6 +2870,13 @@
       "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
       "approvedAtUtc": "2026-04-27T23:33:13.000Z",
       "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the bounded token catalog row for RECOVERY_HUMAN_READABLE_OK with the existing recovery proofhook and contract references."
+    },
+    {
+      "filePath": "docs/OPS/TOKENS/TOKEN_CATALOG_LOCK.json",
+      "sha256": "8bdc2e7b9f328f707737e89906c4de2103efa207adebc45a26be53ae5fe0147c",
+      "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
+      "approvedAtUtc": "2026-04-28T00:00:00.000Z",
+      "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the bounded token catalog immutability lock regeneration required after the authoritative token declaration gained RECOVERY_HUMAN_READABLE_OK."
     },
     {
       "filePath": "docs/OPS/CLAIMS/CRITICAL_CLAIM_MATRIX.json",
