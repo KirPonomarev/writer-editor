@@ -17,10 +17,10 @@
     },
     {
       "filePath": "docs/OPS/BASELINE/OPS_GOVERNANCE_BASELINE_v1.0.json",
-      "approvedBy": "ticket:YALKEN_DESIGN_OS_PHASE08_OPS_GOVERNANCE_BASELINE_REGEN_001",
-      "rationale": "PHASE_08_OPS_GOVERNANCE_BASELINE_REGEN_CANONICAL_REBIND",
-      "sha256": "9277d4c4116b63671fc2da83640df08d5e2b7a5345a30d2df66c120a8e536ae1",
-      "approvedAtUtc": "2026-03-28T17:14:57.714Z"
+      "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
+      "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the bounded OPS governance baseline regeneration required after the new recovery readability token and claim rows changed canonical governed-file hashes.",
+      "sha256": "055515c2dec5f4544243b7436d35c8ba180298255d0cd4feab0b13036e9c9b4e",
+      "approvedAtUtc": "2026-04-28T00:00:00.000Z"
     },
     {
       "filePath": "docs/OPS/EVIDENCE/P0_CONTOUR/TICKET_01/advisory-blocking-drift-cases.json",
@@ -2334,10 +2334,10 @@
     },
     {
       "filePath": "scripts/ops/token-declaration-state.mjs",
-      "sha256": "e81d4cd979c23ab692fe57075465a00dce32ef574bb55ba27d6bdee3d8c0a521",
-      "approvedBy": "ticket:TZ-SECTOR-01-B-REQUIREDSET-CATALOG-DRIFT-FIX-001",
-      "approvedAtUtc": "2026-02-22T11:11:58.000Z",
-      "rationale": "Sector 01 Ticket B: token catalog + token declaration validator drift fix (no required set change)"
+      "sha256": "6a4b9a77724f72ea5fdeb17dd5f40ad2c8d0a64b226b5a9701280b308e6d69b4",
+      "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
+      "approvedAtUtc": "2026-04-27T23:33:13.000Z",
+      "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the bounded authoritative probe extension so TOKEN_DECLARATION existing tokens include the merged RECOVERY_HUMAN_READABLE_OK emission."
     },
     {
       "filePath": "scripts/ops/x2-readiness-gate-state.mjs",
@@ -2684,10 +2684,10 @@
     },
     {
       "filePath": "docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json",
-      "sha256": "c3b58368cf14ee43af0d5d622514a8344b1c3ac8c40b5fff4a1c57bad83c3c09",
-      "approvedBy": "ticket:MENU_I18N_001",
-      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
-      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+      "sha256": "480a720d5f877f5109ea1e0462950bd60500b7823221f0ab7417d98c90e98495",
+      "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
+      "approvedAtUtc": "2026-04-27T23:33:13.000Z",
+      "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the dedicated failsignal row for readable recovery proof failure and the bounded precedence rebind that keeps registry ordering valid."
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
@@ -2856,6 +2856,41 @@
       "approvedBy": "ticket:RECOVERY_READABILITY_DONOR_PORT_001",
       "approvedAtUtc": "2026-04-27T23:21:01.000Z",
       "rationale": "RECOVERY_READABILITY_DONOR_PORT_001 approves the dedicated readable recovery pack and tamper-reject contract used to prove restore-drill readability semantics."
+    },
+    {
+      "filePath": "docs/OPS/TOKENS/TOKEN_DECLARATION.json",
+      "sha256": "cbe4267e9370ba41cc47b0b88e335fa0e32045b8ea69ec35f49bf25f3cb96a0c",
+      "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
+      "approvedAtUtc": "2026-04-27T23:33:13.000Z",
+      "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the existing-token declaration rebind for RECOVERY_HUMAN_READABLE_OK after the detector path was merged and proven green."
+    },
+    {
+      "filePath": "docs/OPS/TOKENS/TOKEN_CATALOG.json",
+      "sha256": "5c2767281b2d43196b74840d64251c77061f1f745028017532c12889faf1b37e",
+      "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
+      "approvedAtUtc": "2026-04-27T23:33:13.000Z",
+      "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the bounded token catalog row for RECOVERY_HUMAN_READABLE_OK with the existing recovery proofhook and contract references."
+    },
+    {
+      "filePath": "docs/OPS/TOKENS/TOKEN_CATALOG_LOCK.json",
+      "sha256": "8bdc2e7b9f328f707737e89906c4de2103efa207adebc45a26be53ae5fe0147c",
+      "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
+      "approvedAtUtc": "2026-04-28T00:00:00.000Z",
+      "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the bounded token catalog immutability lock regeneration required after the authoritative token declaration gained RECOVERY_HUMAN_READABLE_OK."
+    },
+    {
+      "filePath": "docs/OPS/CLAIMS/CRITICAL_CLAIM_MATRIX.json",
+      "sha256": "49768bd3220c8460d216099294427fd841f902e2a590d2314ca98b53390f257a",
+      "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
+      "approvedAtUtc": "2026-04-27T23:33:13.000Z",
+      "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the dedicated critical claim row for RECOVERY_HUMAN_READABLE so central claim tracing matches the merged detector path."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/BINDING_SCHEMA_V1.json",
+      "sha256": "107eab8c9c126c4ec8ff823688450340f144f61bdcf000ccd14533897d52c7b7",
+      "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
+      "approvedAtUtc": "2026-04-27T23:33:13.000Z",
+      "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the single binding schema record for RECOVERY_HUMAN_READABLE_OK against the existing recovery proofhook and formal kernel evidence path."
     }
   ]
 }

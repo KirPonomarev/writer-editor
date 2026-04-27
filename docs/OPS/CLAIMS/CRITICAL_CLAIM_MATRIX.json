@@ -525,6 +525,14 @@
       "sourceBinding": "doctor"
     },
     {
+      "claimId": "RECOVERY_HUMAN_READABLE",
+      "requiredToken": "RECOVERY_HUMAN_READABLE_OK",
+      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
+      "failSignal": "E_RECOVERY_HUMAN_READABLE_NOT_OK",
+      "blocking": true,
+      "sourceBinding": "doctor"
+    },
+    {
       "claimId": "RECOVERY_IO",
       "requiredToken": "RECOVERY_IO_OK",
       "proofHook": "DOCTOR_MODE=delivery node scripts/doctor.mjs",

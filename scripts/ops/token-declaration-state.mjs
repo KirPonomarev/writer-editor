@@ -60,6 +60,7 @@ function collectAuthoritativeTokens() {
     'scripts/ops/failsignal-registry-state.mjs',
     'scripts/ops/lossless-map-state.mjs',
     'scripts/ops/proofhook-integrity-state.mjs',
+    'scripts/ops/recovery-io-state.mjs',
     'scripts/ops/token-catalog-state.mjs',
   ];
 

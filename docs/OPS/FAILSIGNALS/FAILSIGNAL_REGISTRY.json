@@ -729,6 +729,20 @@
     },
     {
       "blocking": false,
+      "code": "E_RECOVERY_HUMAN_READABLE_NOT_OK",
+      "modeMatrix": {
+        "prCore": "advisory",
+        "promotion": "advisory",
+        "release": "blocking"
+      },
+      "negativeTestRef": "test/contracts/recovery-human-readable.contract.test.js#tampered-content-fails-validation-and-restore-drill-is-rejected",
+      "precedence": 54,
+      "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 registers the dedicated readable recovery detector fail path so central claim binding does not collapse into the broader RECOVERY_IO aggregate.",
+      "sourceBinding": "recovery_readability_central_binding_001",
+      "tier": "release"
+    },
+    {
+      "blocking": false,
       "code": "E_RECOVERY_IO_NOT_OK",
       "modeMatrix": {
         "prCore": "advisory",
@@ -736,7 +750,7 @@
         "release": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 54,
+      "precedence": 55,
       "rationale": "P0-02 reconcile registration for E_RECOVERY_IO_NOT_OK; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -750,7 +764,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 55,
+      "precedence": 56,
       "rationale": "P0-02 reconcile registration for E_RELEASE_ARTIFACT_SOURCES_FAIL; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -764,7 +778,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js#promotion-mode-mismatch-fails-while-release-mode-mismatch-warns",
-      "precedence": 56,
+      "precedence": 57,
       "rationale": "Release-candidate lock drift is advisory for PR/release checks and promotion-blocking for canonical release cuts.",
       "tier": "release"
     },
@@ -777,7 +791,7 @@
         "promotion": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 57,
+      "precedence": 58,
       "rationale": "P0-02 reconcile registration for E_REMOTE_UNAVAILABLE; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -791,7 +805,7 @@
         "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 58,
+      "precedence": 59,
       "rationale": "P0-02 reconcile registration for E_REQUIRED_SET_CONTAINS_TARGET; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -805,7 +819,7 @@
         "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 59,
+      "precedence": 60,
       "rationale": "P0-02 reconcile registration for E_REQUIRED_TOKEN_SET_DRIFT; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -819,7 +833,7 @@
         "promotion": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 60,
+      "precedence": 61,
       "rationale": "P0-02 reconcile registration for E_RUNTIME_WIRING_BEFORE_STAGE; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -828,7 +842,7 @@
       "blocking": true,
       "code": "E_SCOPEFLAG_UNKNOWN",
       "negativeTestRef": "test/contracts/wave-freshness-and-stage-activation.contract.test.js#unknown-scopeflag",
-      "precedence": 61,
+      "precedence": 62,
       "rationale": "Unknown scope flag cannot participate in machine stage activation and must fail deterministically.",
       "tier": "release",
       "modeMatrix": {
@@ -846,7 +860,7 @@
         "release": "blocking"
       },
       "negativeTestRef": "test/contracts/execution-sequence-lock.contract.test.js#promotion-mode-drift-fails-while-release-mode-warns",
-      "precedence": 62,
+      "precedence": 63,
       "rationale": "Execution sequence order drift is advisory in PR and blocking for release/promotion to keep LAW A1 machine-bound against canonical SSOT.",
       "tier": "release"
     },
@@ -859,7 +873,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 63,
+      "precedence": 64,
       "rationale": "P0-02 reconcile registration for E_SHARED_CODE_RATIO_BELOW_MIN; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -873,7 +887,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 64,
+      "precedence": 65,
       "rationale": "P0-02 reconcile registration for E_SSOT_ANCHOR_DRIFT; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -887,7 +901,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 65,
+      "precedence": 66,
       "rationale": "P0-02 reconcile registration for E_SSOT_ANCHOR_MISSING; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -901,7 +915,7 @@
         "release": "blocking"
       },
       "negativeTestRef": "test/contracts/stage-axis-lock.contract.test.js#stage-x5-is-rejected-by-runtime-validator",
-      "precedence": 66,
+      "precedence": 67,
       "rationale": "Runtime stage axis is locked to X0..X4; any X5+ acceptance in schema, validator, defaults, or contract path is drift.",
       "sourceBinding": "src/menu/menu-config.schema.v2.json + src/menu/menu-config-validator.js + src/menu/menu-config.v2.json",
       "tier": "release"
@@ -910,7 +924,7 @@
       "blocking": true,
       "code": "E_STAGE_METRICS_MISSING",
       "negativeTestRef": "test/contracts/wave-freshness-and-stage-activation.contract.test.js#stage-metrics-missing-promotion",
-      "precedence": 67,
+      "precedence": 68,
       "rationale": "Promotion mode requires metrics evidence for the target stage before stage-gated binding can be trusted.",
       "tier": "release",
       "modeMatrix": {
@@ -923,7 +937,7 @@
       "blocking": true,
       "code": "E_STAGE_PROMOTION_INVALID",
       "negativeTestRef": "test/contracts/wave-freshness-and-stage-activation.contract.test.js#promotion-without-record",
-      "precedence": 68,
+      "precedence": 69,
       "rationale": "Promotion mode without a valid promotion record or stage-consistent transition is invalid.",
       "tier": "release",
       "modeMatrix": {
@@ -941,7 +955,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 69,
+      "precedence": 70,
       "rationale": "P0-02 reconcile registration for E_TOKEN_CATALOG_INVALID; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -955,7 +969,7 @@
         "release": "advisory"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 70,
+      "precedence": 71,
       "rationale": "P0-02 reconcile registration for E_TOKEN_DECLARATION_INVALID; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -969,7 +983,7 @@
         "release": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
-      "precedence": 71,
+      "precedence": 72,
       "rationale": "P0-02 reconcile registration for E_TOKEN_SOURCE_CONFLICT; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
       "sourceBinding": "reconcile_p0_02",
       "tier": "release"
@@ -978,7 +992,7 @@
       "blocking": true,
       "code": "E_VERIFY_ATTESTATION_INVALID",
       "negativeTestRef": "test/contracts/verify-attestation.contract.test.js#wrong-signer-fails-signature-gate",
-      "precedence": 72,
+      "precedence": 73,
       "rationale": "Post-merge attestation verification is invalid when signature trust chain or signer binding is not satisfied.",
       "tier": "release",
       "modeMatrix": {
@@ -991,7 +1005,7 @@
       "blocking": true,
       "code": "E_WAVE_RESULT_STALE",
       "negativeTestRef": "test/contracts/wave-freshness-and-stage-activation.contract.test.js#ttl-stale-reuse",
-      "precedence": 73,
+      "precedence": 74,
       "rationale": "Wave result reuse is allowed only for matching hash with valid TTL to prevent stale-green reuse.",
       "tier": "release",
       "modeMatrix": {
@@ -1004,7 +1018,7 @@
       "blocking": true,
       "code": "E_X3_RECOVERY_SMOKE_FAILED",
       "negativeTestRef": "test/contracts/x3-recovery-smoke.contract.test.js#forced-failure",
-      "precedence": 74,
+      "precedence": 75,
       "rationale": "X3 deterministic recovery smoke proofhook must pass before promotion-tier readiness can be considered green.",
       "tier": "release",
       "modeMatrix": {
