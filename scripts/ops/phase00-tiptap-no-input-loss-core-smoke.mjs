@@ -1,10 +1,83 @@
 #!/usr/bin/env node
+import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import { getSchema } from '@tiptap/core';
-import StarterKit from '@tiptap/starter-kit';
-import { EditorState, TextSelection } from '@tiptap/pm/state';
-import { history, undo, redo } from '@tiptap/pm/history';
+
+const localRequire = createRequire(import.meta.url);
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(moduleDir, '..', '..');
+
+function hasTiptapInstall(nodeModulesRoot) {
+  if (typeof nodeModulesRoot !== 'string' || !nodeModulesRoot) {
+    return false;
+  }
+  return fs.existsSync(path.join(nodeModulesRoot, '@tiptap', 'core', 'dist', 'index.cjs'))
+    && fs.existsSync(path.join(nodeModulesRoot, '@tiptap', 'starter-kit', 'dist', 'index.cjs'))
+    && fs.existsSync(path.join(nodeModulesRoot, '@tiptap', 'pm', 'dist', 'state', 'index.cjs'))
+    && fs.existsSync(path.join(nodeModulesRoot, '@tiptap', 'pm', 'dist', 'history', 'index.cjs'));
+}
+
+function collectWorktreeNodeModulesRoots() {
+  const roots = [];
+  const result = spawnSync('git', ['worktree', 'list', '--porcelain'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+  if (result.status !== 0) {
+    return roots;
+  }
+  for (const line of String(result.stdout || '').split('\n')) {
+    if (!line.startsWith('worktree ')) {
+      continue;
+    }
+    const worktreePath = line.slice('worktree '.length).trim();
+    if (!worktreePath) {
+      continue;
+    }
+    roots.push(path.join(worktreePath, 'node_modules'));
+  }
+  return roots;
+}
+
+function resolveTiptapNodeModulesRoot() {
+  const candidates = [
+    process.env.PHASE00_TIPTAP_NODE_MODULES_ROOT || '',
+    path.join(repoRoot, 'node_modules'),
+    ...collectWorktreeNodeModulesRoots(),
+  ];
+  for (const candidate of candidates) {
+    if (hasTiptapInstall(candidate)) {
+      return candidate;
+    }
+  }
+  throw new Error('E_PHASE00_TIPTAP_NODE_MODULES_UNAVAILABLE');
+}
+
+function readModuleExport(moduleValue, key) {
+  if (moduleValue && Object.prototype.hasOwnProperty.call(moduleValue, key)) {
+    return moduleValue[key];
+  }
+  if (moduleValue && moduleValue.default && Object.prototype.hasOwnProperty.call(moduleValue.default, key)) {
+    return moduleValue.default[key];
+  }
+  return undefined;
+}
+
+const tiptapNodeModulesRoot = resolveTiptapNodeModulesRoot();
+const coreModule = localRequire(path.join(tiptapNodeModulesRoot, '@tiptap', 'core', 'dist', 'index.cjs'));
+const starterKitModule = localRequire(path.join(tiptapNodeModulesRoot, '@tiptap', 'starter-kit', 'dist', 'index.cjs'));
+const pmStateModule = localRequire(path.join(tiptapNodeModulesRoot, '@tiptap', 'pm', 'dist', 'state', 'index.cjs'));
+const pmHistoryModule = localRequire(path.join(tiptapNodeModulesRoot, '@tiptap', 'pm', 'dist', 'history', 'index.cjs'));
+
+const getSchema = readModuleExport(coreModule, 'getSchema');
+const StarterKit = starterKitModule && starterKitModule.default ? starterKitModule.default : starterKitModule;
+const EditorState = readModuleExport(pmStateModule, 'EditorState');
+const TextSelection = readModuleExport(pmStateModule, 'TextSelection');
+const history = readModuleExport(pmHistoryModule, 'history');
+const undo = readModuleExport(pmHistoryModule, 'undo');
+const redo = readModuleExport(pmHistoryModule, 'redo');
 
 const PATH_UNDER_TEST = 'TIPTAP_PRIMARY_PATH_MODEL_LAYER';
 const COVERED_CASE_IDS = Object.freeze([
