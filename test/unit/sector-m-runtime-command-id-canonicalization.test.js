@@ -49,7 +49,7 @@ test('runtime command id canonicalization: main emits canonical commandId envelo
 test('runtime command id canonicalization: editor non-tiptap runtime consumer handles payload.commandId first for adopted ids', () => {
   const source = read('src/renderer/editor.js')
 
-  assert.ok(source.includes('function handleCanonicalRuntimeCommandId(commandId) {'))
+  assert.ok(source.includes('function handleCanonicalRuntimeCommandId(commandId, runtimePayload = null) {'))
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS) {'))
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.VIEW_SAFE_RESET) {'))
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.VIEW_RESTORE_LAST_STABLE) {'))
@@ -61,7 +61,8 @@ test('runtime command id canonicalization: editor non-tiptap runtime consumer ha
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.REVIEW_SWITCH_MODE) {'))
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE) {'))
   assert.ok(source.includes('const commandId = payload && typeof payload.commandId === \'string\' ? payload.commandId : \'\';'))
-  assert.ok(source.includes('if (handleCanonicalRuntimeCommandId(commandId)) {'))
+  assert.ok(source.includes('const commandPayload = payload && payload.payload && typeof payload.payload === \'object\' && !Array.isArray(payload.payload)'))
+  assert.ok(source.includes('if (handleCanonicalRuntimeCommandId(commandId, commandPayload)) {'))
 
   assert.ok(source.includes("} else if (command === 'open-export-preview') {"))
 })
