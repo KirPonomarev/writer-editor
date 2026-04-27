@@ -46,6 +46,15 @@
       "schemaRef": "cache.v1",
       "migrationPolicy": "not_applicable",
       "safeToDelete": true
+    },
+    {
+      "id": "project.revision_bridge.export_manifest.v1",
+      "stability": "Experimental",
+      "kind": "revision_bridge_export_manifest",
+      "pathPattern": "project/revision_bridge/export-manifest-*.json",
+      "schemaRef": "revision_bridge_export_manifest.v1",
+      "migrationPolicy": "required",
+      "safeToDelete": false
     }
   ]
 }

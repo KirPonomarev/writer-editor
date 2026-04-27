@@ -227,7 +227,8 @@ const PROJECT_SUBFOLDERS = {
   materials: 'materials',
   reference: 'reference',
   trash: 'trash',
-  backups: 'backups'
+  backups: 'backups',
+  revisionBridge: 'revision_bridge'
 };
 const MATERIALS_SECTION_LABELS = ['Заметки', 'Исследования', 'Идеи/черновики', 'Вырезки'];
 const REFERENCE_SECTION_LABELS = ['Персонажи', 'Локации', 'Термины/глоссарий', 'События/таймлайн'];
@@ -280,6 +281,11 @@ function getProjectManifestPath(projectName = DEFAULT_PROJECT_NAME) {
   return joinPathSegmentsWithinRoot(getProjectRootPath(projectName), [PROJECT_MANIFEST_FILENAME], {
     resolveSymlinks: false,
   });
+}
+
+function buildRevisionBridgeExportManifestBasename(exportId) {
+  const safeExportId = sanitizeFilename(typeof exportId === 'string' ? exportId : 'export');
+  return `export-manifest-${safeExportId}.json`;
 }
 
 function buildSectionDefinitions(labels) {
@@ -1824,6 +1830,48 @@ async function enrichRevisionBridgeExportSnapshot(editorSnapshot, payload = {}) 
   };
 }
 
+async function persistRevisionBridgeExportManifest(exportManifest) {
+  const manifest = exportManifest && typeof exportManifest === 'object' && !Array.isArray(exportManifest)
+    ? exportManifest
+    : null;
+  if (!manifest || typeof manifest.id !== 'string' || !manifest.id.trim()) {
+    throw new Error('REVISION_BRIDGE_EXPORT_MANIFEST_INVALID');
+  }
+  if (typeof currentFilePath !== 'string' || !currentFilePath.trim()) {
+    throw new Error('REVISION_BRIDGE_EXPORT_MANIFEST_FILE_UNBOUND');
+  }
+
+  const projectBinding = await resolveProjectBindingForFile(currentFilePath);
+  if (!projectBinding || !projectBinding.projectRoot || !projectBinding.manifestPath) {
+    throw new Error('REVISION_BRIDGE_EXPORT_MANIFEST_PROJECT_UNBOUND');
+  }
+
+  const sourceManifest = isPlainObjectValue(projectBinding.manifest) ? projectBinding.manifest : {};
+  const projectNameHint = typeof sourceManifest.projectName === 'string' && sourceManifest.projectName.trim()
+    ? sourceManifest.projectName.trim()
+    : path.basename(projectBinding.projectRoot || getProjectRootPath());
+  await ensureProjectStructure(projectNameHint);
+
+  const revisionBridgePath = getProjectSectionPath('revisionBridge', projectNameHint);
+  const artifactBasename = buildRevisionBridgeExportManifestBasename(manifest.id);
+  const artifactPath = joinPathSegmentsWithinRoot(revisionBridgePath, [artifactBasename], { resolveSymlinks: false });
+  const writeResult = await queueDiskOperation(
+    () => fileManager.writeFileAtomic(artifactPath, JSON.stringify(manifest, null, 2)),
+    'save revision bridge export manifest',
+  );
+  if (!writeResult.success) {
+    throw new Error(writeResult.error || 'REVISION_BRIDGE_EXPORT_MANIFEST_WRITE_FAILED');
+  }
+
+  return {
+    kind: 'ExportManifest',
+    stored: true,
+    fileName: artifactBasename,
+    exportId: manifest.id,
+    schemaVersion: typeof manifest.schemaVersion === 'string' ? manifest.schemaVersion : '',
+  };
+}
+
 async function handleExportDocxMin(payloadRaw) {
   let revisionBridgeModule;
   try {
@@ -1846,6 +1894,7 @@ async function handleExportDocxMin(payloadRaw) {
     writeBufferAtomic,
     updateStatus,
     enrichRevisionBridgeExportSnapshot,
+    persistRevisionBridgeExportManifest,
     evaluateRevisionBridgeExportRuntimeSnapshot: revisionBridgeModule.evaluateRevisionBridgeExportRuntimeSnapshot,
     buildRevisionBridgeExportManifest: revisionBridgeModule.buildRevisionBridgeExportManifest,
   });
@@ -2280,6 +2329,7 @@ async function ensureProjectStructure(projectName = DEFAULT_PROJECT_NAME) {
   const referencePath = getProjectSectionPath('reference', projectName);
   const trashPath = getProjectSectionPath('trash', projectName);
   const backupsPath = getProjectSectionPath('backups', projectName);
+  const revisionBridgePath = getProjectSectionPath('revisionBridge', projectName);
 
   await fs.mkdir(projectRoot, { recursive: true });
   await fs.mkdir(romanPath, { recursive: true });
@@ -2289,6 +2339,7 @@ async function ensureProjectStructure(projectName = DEFAULT_PROJECT_NAME) {
   await fs.mkdir(referencePath, { recursive: true });
   await fs.mkdir(trashPath, { recursive: true });
   await fs.mkdir(backupsPath, { recursive: true });
+  await fs.mkdir(revisionBridgePath, { recursive: true });
 
   for (const section of MATERIALS_SECTIONS) {
     await fs.mkdir(joinPathSegmentsWithinRoot(materialsPath, [section.dirName], { resolveSymlinks: false }), {
