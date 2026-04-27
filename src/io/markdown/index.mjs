@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { TextDecoder } from 'node:util';
 import { atomicWriteFile } from './atomicWriteFile.mjs';
@@ -112,6 +113,332 @@ function pickErrorDetails(error) {
 function normalizeRecoverySnapshotScanLimit(value) {
   if (Number.isInteger(value) && value >= 1 && value <= 20) return value;
   return 3;
+}
+
+function buildTransactionIntentId(nowFn = Date.now) {
+  const stamp = Number(nowFn());
+  const safeStamp = Number.isFinite(stamp) && stamp >= 0 ? Math.trunc(stamp) : Date.now();
+  return `tx_${safeStamp}_${process.pid}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function buildTransactionIntentPath(targetPath) {
+  const directory = path.dirname(targetPath);
+  const baseName = path.basename(targetPath);
+  return path.join(directory, `.${baseName}.tx.intent.json`);
+}
+
+function buildRecoveryPackId(nowFn = Date.now) {
+  const stamp = Number(nowFn());
+  const safeStamp = Number.isFinite(stamp) && stamp >= 0 ? Math.trunc(stamp) : Date.now();
+  return String(safeStamp).padStart(13, '0');
+}
+
+function buildRecoveryPackPath(targetPath, recoveryId, outputRoot) {
+  const directory = typeof outputRoot === 'string' && outputRoot.trim().length > 0
+    ? path.resolve(outputRoot.trim())
+    : path.join(os.tmpdir(), 'writer-editor-recovery-packs');
+  const baseName = path.basename(targetPath);
+  return path.join(directory, `${recoveryId}-${baseName}.recovery`);
+}
+
+function buildRecoveryPackManifest(recoveryPackPath) {
+  return path.join(recoveryPackPath, 'manifest.recovery.json');
+}
+
+function buildRecoveryPackGuide(recoveryPackPath) {
+  return path.join(recoveryPackPath, 'RECOVERY.md');
+}
+
+function buildRecoveryPackContent(recoveryPackPath) {
+  return path.join(recoveryPackPath, 'content.md');
+}
+
+function normalizeTransactionStageHook(input) {
+  return typeof input === 'function' ? input : null;
+}
+
+async function emitTransactionStage(stageHook, stage, payload) {
+  if (!stageHook) return;
+  await stageHook({
+    stage,
+    ...payload,
+  });
+}
+
+async function writeTransactionIntent(intentPath, payload, options = {}) {
+  await atomicWriteFile(intentPath, `${JSON.stringify(payload, null, 2)}\n`, {
+    safetyMode: options.safetyMode,
+  });
+}
+
+async function readTransactionIntent(targetPath) {
+  const intentPath = buildTransactionIntentPath(targetPath);
+  try {
+    const raw = await fs.readFile(intentPath, 'utf8');
+    const parsed = JSON.parse(raw);
+    return {
+      ...parsed,
+      intentPath,
+      corrupt: false,
+    };
+  } catch (error) {
+    if (error && error.code === 'ENOENT') return null;
+    return {
+      transactionId: '',
+      targetPath,
+      state: 'CORRUPT_INTENT',
+      intentPath,
+      corrupt: true,
+      corruptMessage: error && error.message ? String(error.message) : 'intent_parse_failed',
+    };
+  }
+}
+
+async function clearTransactionIntent(targetPath) {
+  const intentPath = buildTransactionIntentPath(targetPath);
+  await fs.unlink(intentPath).catch((error) => {
+    if (error && error.code !== 'ENOENT') throw error;
+  });
+  return { intentPath };
+}
+
+export async function createMarkdownRecoveryPack(targetPathRaw, options = {}) {
+  const targetPath = resolveSourcePath(targetPathRaw);
+  const text = normalizeMarkdownInput(options.text);
+  const recoveryId = typeof options.recoveryId === 'string' && options.recoveryId.trim().length > 0
+    ? options.recoveryId.trim()
+    : buildRecoveryPackId(options.now);
+  const recoveryPackPath = buildRecoveryPackPath(targetPath, recoveryId, options.outputRoot);
+  const manifestPath = buildRecoveryPackManifest(recoveryPackPath);
+  const guidePath = buildRecoveryPackGuide(recoveryPackPath);
+  const contentPath = buildRecoveryPackContent(recoveryPackPath);
+  const textHash = computeSha256Bytes(Buffer.from(text, 'utf8'));
+
+  await fs.mkdir(recoveryPackPath, { recursive: true });
+
+  const manifest = {
+    schemaVersion: 'markdown-recovery-pack.v1',
+    recoveryId,
+    createdAt: new Date(Number(options.now ? options.now() : Date.now())).toISOString(),
+    targetPath,
+    sourceKind: typeof options.sourceKind === 'string' && options.sourceKind.length > 0 ? options.sourceKind : 'primary',
+    snapshotPath: typeof options.snapshotPath === 'string' ? options.snapshotPath : '',
+    transactionId: options.transaction && typeof options.transaction.transactionId === 'string'
+      ? options.transaction.transactionId
+      : '',
+    transactionState: options.transaction && typeof options.transaction.state === 'string'
+      ? options.transaction.state
+      : '',
+    byteLen: Buffer.byteLength(text, 'utf8'),
+    textHash,
+    contentFile: 'content.md',
+    recoveryAction: typeof options.recoveryAction === 'string' && options.recoveryAction.length > 0
+      ? options.recoveryAction
+      : (options.sourceKind === 'snapshot' ? 'OPEN_SNAPSHOT' : 'ABORT'),
+  };
+
+  const guideLines = [
+    `# Recovery Pack`,
+    '',
+    `Recovery id: ${manifest.recoveryId}`,
+    `Created: ${manifest.createdAt}`,
+    `Target: ${path.basename(targetPath)}`,
+    `Source kind: ${manifest.sourceKind}`,
+    manifest.snapshotPath ? `Snapshot: ${manifest.snapshotPath}` : 'Snapshot: none',
+    manifest.transactionId ? `Transaction: ${manifest.transactionId}` : 'Transaction: none',
+    '',
+    '## Restore instructions',
+    '',
+    '1. Review content.md as the human-readable recovery source.',
+    '2. Review manifest.recovery.json for hashes and source metadata.',
+    '3. Restore content.md into the target path or run the restore drill helper.',
+  ];
+
+  await atomicWriteFile(contentPath, text, { safetyMode: options.safetyMode });
+  await atomicWriteFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, { safetyMode: options.safetyMode });
+  await atomicWriteFile(guidePath, `${guideLines.join('\n')}\n`, { safetyMode: options.safetyMode });
+
+  return {
+    ok: 1,
+    recoveryPackPath,
+    manifestPath,
+    guidePath,
+    contentPath,
+    manifest,
+  };
+}
+
+export async function validateMarkdownRecoveryPack(recoveryPackPathRaw) {
+  const recoveryPackPath = path.resolve(String(recoveryPackPathRaw || '').trim());
+  const manifestPath = buildRecoveryPackManifest(recoveryPackPath);
+  const guidePath = buildRecoveryPackGuide(recoveryPackPath);
+  const contentPath = buildRecoveryPackContent(recoveryPackPath);
+  const failures = [];
+  let manifest = null;
+
+  try {
+    await fs.access(manifestPath);
+  } catch {
+    failures.push('manifest.recovery.json missing');
+  }
+
+  try {
+    await fs.access(guidePath);
+  } catch {
+    failures.push('RECOVERY.md missing');
+  }
+
+  try {
+    await fs.access(contentPath);
+  } catch {
+    failures.push('content.md missing');
+  }
+
+  if (failures.length === 0) {
+    try {
+      manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
+      const content = await fs.readFile(contentPath, 'utf8');
+      const guide = await fs.readFile(guidePath, 'utf8');
+      if (manifest.schemaVersion !== 'markdown-recovery-pack.v1') failures.push('schemaVersion mismatch');
+      if (manifest.contentFile !== 'content.md') failures.push('contentFile mismatch');
+      if (computeSha256Bytes(Buffer.from(content, 'utf8')) !== manifest.textHash) failures.push('textHash mismatch');
+      if (!guide.includes('Restore instructions')) failures.push('RECOVERY.md missing instructions');
+    } catch (error) {
+      failures.push(error && error.message ? String(error.message) : 'recovery_pack_validation_failed');
+    }
+  }
+
+  return {
+    ok: failures.length === 0,
+    recoveryPackPath,
+    manifest,
+    failures,
+  };
+}
+
+export async function restoreMarkdownFromRecoveryPack(recoveryPackPathRaw, restoreTargetPathRaw, options = {}) {
+  const validation = await validateMarkdownRecoveryPack(recoveryPackPathRaw);
+  if (!validation.ok) {
+    throw createMarkdownIoError('E_IO_RECOVERY_PACK_INVALID', 'recovery_pack_invalid', {
+      recoveryPackPath: validation.recoveryPackPath,
+      failures: validation.failures,
+    });
+  }
+
+  const restoreTargetPath = resolveSourcePath(restoreTargetPathRaw);
+  const contentPath = buildRecoveryPackContent(validation.recoveryPackPath);
+  const content = await fs.readFile(contentPath, 'utf8');
+  const result = await atomicWriteFile(restoreTargetPath, content, {
+    safetyMode: options.safetyMode,
+  });
+
+  return {
+    ok: 1,
+    restoreTargetPath: result.targetPath,
+    textHash: computeSha256Bytes(Buffer.from(content, 'utf8')),
+    bytesWritten: result.bytesWritten,
+  };
+}
+
+export async function restoreMarkdownRecoveryDrill(recoveryPackPathRaw, options = {}) {
+  const validation = await validateMarkdownRecoveryPack(recoveryPackPathRaw);
+  if (!validation.ok) {
+    throw createMarkdownIoError('E_IO_RECOVERY_PACK_INVALID', 'recovery_pack_invalid', {
+      recoveryPackPath: validation.recoveryPackPath,
+      failures: validation.failures,
+    });
+  }
+
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'markdown-recovery-drill-'));
+  const restoreTargetPath = path.join(tempRoot, path.basename(validation.manifest.targetPath || 'restored.md'));
+  const restored = await restoreMarkdownFromRecoveryPack(validation.recoveryPackPath, restoreTargetPath, options);
+
+  return {
+    ok: restored.textHash === validation.manifest.textHash,
+    recoveryPackPath: validation.recoveryPackPath,
+    restoreTargetPath,
+    textHash: restored.textHash,
+    expectedTextHash: validation.manifest.textHash,
+  };
+}
+
+export async function writeMarkdownWithTransactionRecovery(targetPath, markdown, options = {}) {
+  const text = normalizeMarkdownInput(markdown);
+  const resolvedPath = resolveSourcePath(targetPath);
+  const safetyMode = normalizeSafetyMode(options.safetyMode);
+  const stageHook = normalizeTransactionStageHook(options.afterStage);
+  const transactionId = buildTransactionIntentId(options.now);
+  const intentPath = buildTransactionIntentPath(resolvedPath);
+
+  const baseIntent = {
+    schemaVersion: 'markdown-transaction-intent.v1',
+    transactionId,
+    targetPath: resolvedPath,
+    createdAt: new Date(Number(options.now ? options.now() : Date.now())).toISOString(),
+    state: 'INTENT_CREATED',
+    nextTextHash: computeSha256Bytes(Buffer.from(text, 'utf8')),
+    snapshotCreated: false,
+    snapshotPath: '',
+    recoveryPackPath: '',
+  };
+
+  await writeTransactionIntent(intentPath, baseIntent, { safetyMode });
+  await emitTransactionStage(stageHook, 'INTENT_CREATED', { targetPath: resolvedPath, intentPath, transactionId });
+
+  const snapshot = await createRecoverySnapshot(resolvedPath, {
+    maxSnapshots: options.maxSnapshots,
+    now: options.now,
+  });
+
+  const snapshotIntent = {
+    ...baseIntent,
+    state: 'SNAPSHOT_CREATED',
+    updatedAt: new Date(Number(options.now ? options.now() : Date.now())).toISOString(),
+    snapshotCreated: snapshot.snapshotCreated,
+    snapshotPath: snapshot.snapshotPath,
+  };
+
+  await writeTransactionIntent(intentPath, snapshotIntent, { safetyMode });
+  await emitTransactionStage(stageHook, 'SNAPSHOT_CREATED', {
+    targetPath: resolvedPath,
+    intentPath,
+    transactionId,
+    snapshotPath: snapshot.snapshotPath,
+    snapshotCreated: snapshot.snapshotCreated,
+  });
+
+  const writeResult = await atomicWriteFile(resolvedPath, text, {
+    safetyMode,
+    beforeRename: options.beforeRename,
+    afterTempWrite: options.afterTempWrite,
+  });
+
+  const committedIntent = {
+    ...snapshotIntent,
+    state: 'WRITE_COMMITTED',
+    updatedAt: new Date(Number(options.now ? options.now() : Date.now())).toISOString(),
+    bytesWritten: writeResult.bytesWritten,
+  };
+  await writeTransactionIntent(intentPath, committedIntent, { safetyMode });
+  await emitTransactionStage(stageHook, 'WRITE_COMMITTED', {
+    targetPath: resolvedPath,
+    intentPath,
+    transactionId,
+    bytesWritten: writeResult.bytesWritten,
+  });
+
+  await clearTransactionIntent(resolvedPath);
+
+  return {
+    outPath: writeResult.targetPath,
+    bytesWritten: writeResult.bytesWritten,
+    safetyMode: writeResult.safetyMode,
+    snapshotCreated: snapshot.snapshotCreated,
+    snapshotPath: snapshot.snapshotPath,
+    purgedSnapshots: snapshot.purgedSnapshots,
+    transactionId,
+    intentPath,
+  };
 }
 
 export async function writeMarkdownWithRecovery(targetPath, markdown, options = {}) {
@@ -286,13 +613,86 @@ export async function replayMarkdownRecovery(sourcePath, options = {}) {
   };
 }
 
+export async function readMarkdownWithTransactionRecovery(sourcePath, options = {}) {
+  const resolvedPath = resolveSourcePath(sourcePath);
+  const pendingIntent = await readTransactionIntent(resolvedPath);
+
+  if (!pendingIntent) {
+    return readMarkdownWithRecovery(resolvedPath, options);
+  }
+
+  if (!pendingIntent.corrupt && pendingIntent.state === 'WRITE_COMMITTED') {
+    const committed = await readMarkdownWithRecovery(resolvedPath, options);
+    const committedHash = computeSha256Bytes(Buffer.from(committed.text, 'utf8'));
+    if (!pendingIntent.nextTextHash || committedHash === pendingIntent.nextTextHash) {
+      await clearTransactionIntent(resolvedPath);
+      return {
+        ...committed,
+        recoveredFromCommittedIntent: true,
+      };
+    }
+  }
+
+  let recovered = null;
+  try {
+    recovered = await readMarkdownWithRecovery(resolvedPath, options);
+  } catch {}
+
+  let recoveryPackPath = '';
+  if (pendingIntent.recoveryPackPath) {
+    const validation = await validateMarkdownRecoveryPack(pendingIntent.recoveryPackPath).catch(() => ({ ok: false }));
+    if (validation.ok) {
+      recoveryPackPath = pendingIntent.recoveryPackPath;
+    }
+  }
+
+  if (!recoveryPackPath && recovered && typeof recovered.text === 'string') {
+    const pack = await createMarkdownRecoveryPack(resolvedPath, {
+      text: recovered.text,
+      sourceKind: recovered.sourceKind,
+      snapshotPath: recovered.snapshotPath || '',
+      transaction: pendingIntent,
+      now: options.now,
+      safetyMode: options.safetyMode,
+      recoveryAction: recovered.sourceKind === 'snapshot' ? 'OPEN_SNAPSHOT' : 'ABORT',
+    });
+    recoveryPackPath = pack.recoveryPackPath;
+    if (!pendingIntent.corrupt) {
+      await writeTransactionIntent(pendingIntent.intentPath, {
+        ...pendingIntent,
+        recoveryPackPath,
+      }, {
+        safetyMode: options.safetyMode,
+      });
+    }
+  }
+
+  throw createMarkdownIoError('E_IO_STATE_AMBIGUOUS_AFTER_CRASH', 'ambiguous_state_after_crash', {
+    targetPath: resolvedPath,
+    intentPath: pendingIntent.intentPath,
+    transactionId: pendingIntent.transactionId || '',
+    transactionState: pendingIntent.state || '',
+    corruptIntent: pendingIntent.corrupt === true,
+    snapshotPath: pendingIntent.snapshotPath || '',
+    recoveryAction: recovered && recovered.sourceKind === 'snapshot' ? 'OPEN_SNAPSHOT' : 'ABORT',
+    recoveryActions: recovered && recovered.sourceKind === 'snapshot' ? ['OPEN_SNAPSHOT', 'ABORT'] : ['ABORT'],
+    recoveryPackPath,
+  });
+}
+
 export {
   atomicWriteFile,
   appendReliabilityLog,
   buildReliabilityLogRecord,
+  buildRecoveryPackContent,
+  buildRecoveryPackGuide,
+  buildRecoveryPackManifest,
+  buildTransactionIntentPath,
+  clearTransactionIntent,
   computeSha256Bytes,
   createRecoverySnapshot,
   createMarkdownIoError,
   listRecoverySnapshots,
   normalizeSafetyMode,
+  readTransactionIntent,
 };
