@@ -22,7 +22,7 @@ function readBindingDoc() {
   return JSON.parse(read('docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json'))
 }
 
-test.skip('command kernel shell action adoption: projectCommands defines and registers all eight existing shell action ids', async () => {
+test('command kernel shell action adoption: projectCommands defines and registers all eight existing shell action ids', async () => {
   const source = read('src/renderer/commands/projectCommands.mjs')
   const projectCommands = await loadProjectCommands()
 
@@ -45,7 +45,7 @@ test.skip('command kernel shell action adoption: projectCommands defines and reg
   assert.ok(source.includes('id: EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE,'))
 })
 
-test.skip('command kernel shell action adoption: mode switch commands reuse one switchMode ui action with fixed modes', () => {
+test('command kernel shell action adoption: mode switch commands reuse one switchMode ui action with fixed modes', () => {
   const source = read('src/renderer/commands/projectCommands.mjs')
 
   assert.ok(source.includes("'switchMode',"))
@@ -57,7 +57,7 @@ test.skip('command kernel shell action adoption: mode switch commands reuse one 
   assert.ok(source.includes("{ mode: 'write' }"))
 })
 
-test.skip('command kernel shell action adoption: editor exposes required uiActions for shell actions and mode switching', () => {
+test('command kernel shell action adoption: editor exposes required uiActions for shell actions and mode switching', () => {
   const source = read('src/renderer/editor.js')
 
   assert.ok(source.includes('openSettings: () => openSettingsModal(),'))
@@ -65,12 +65,11 @@ test.skip('command kernel shell action adoption: editor exposes required uiActio
   assert.ok(source.includes('restoreLastStableShell: () => performRestoreLastStableShell(),'))
   assert.ok(source.includes('openDiagnostics: () => openDiagnosticsModal(),'))
   assert.ok(source.includes("openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),"))
-  assert.ok(source.includes('switchMode: (payload = {}) => {'))
-  assert.ok(source.includes("if (mode === 'write' || mode === 'plan' || mode === 'review') {"))
-  assert.ok(source.includes('applyMode(mode);'))
+  const switchModeBindings = source.match(/switchMode:\s*\(mode\)\s*=>\s*applyMode\(mode\),/g) ?? []
+  assert.equal(switchModeBindings.length, 2)
 })
 
-test.skip('command kernel shell action adoption: runtime and docs capability bindings match for eight shell action ids and platform matrix is explicit', async () => {
+test('command kernel shell action adoption: runtime and docs capability bindings match for eight shell action ids and platform matrix is explicit', async () => {
   const projectCommands = await loadProjectCommands()
   const capabilityPolicy = await loadCapabilityPolicy()
   const bindingDoc = readBindingDoc()
@@ -97,7 +96,7 @@ test.skip('command kernel shell action adoption: runtime and docs capability bin
   }
 })
 
-test.skip('command kernel shell action adoption: out-of-scope surfaces remain unchanged by intent', () => {
+test('command kernel shell action adoption: out-of-scope surfaces remain unchanged by intent', () => {
   const mainSource = read('src/main.js')
   const preloadSource = read('src/preload.js')
   const tiptapSource = read('src/renderer/tiptap/index.js')
