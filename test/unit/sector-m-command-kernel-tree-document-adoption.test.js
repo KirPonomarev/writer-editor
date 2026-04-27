@@ -22,7 +22,7 @@ function readBindingDoc() {
   return JSON.parse(read('docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json'))
 }
 
-test.skip('command kernel tree-document adoption: projectCommands defines and registers five stable command ids', async () => {
+test('command kernel tree-document adoption: projectCommands defines and registers five stable command ids', async () => {
   const projectCommandsSource = read('src/renderer/commands/projectCommands.mjs')
   const projectCommands = await loadProjectCommands()
 
@@ -38,14 +38,25 @@ test.skip('command kernel tree-document adoption: projectCommands defines and re
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.TREE_DELETE_NODE,'))
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.TREE_REORDER_NODE,'))
 
-  assert.ok(projectCommandsSource.includes('response = await electronAPI.openDocument({ path, title, kind });'))
-  assert.ok(projectCommandsSource.includes('response = await electronAPI.createNode({ parentPath, kind, name });'))
-  assert.ok(projectCommandsSource.includes('response = await electronAPI.renameNode({ path, name });'))
-  assert.ok(projectCommandsSource.includes('response = await electronAPI.deleteNode({ path });'))
-  assert.ok(projectCommandsSource.includes('response = await electronAPI.reorderNode({ path, direction });'))
+  assert.equal(projectCommandsSource.includes('electronAPI.openDocument('), false)
+  assert.equal(projectCommandsSource.includes('electronAPI.createNode('), false)
+  assert.equal(projectCommandsSource.includes('electronAPI.renameNode('), false)
+  assert.equal(projectCommandsSource.includes('electronAPI.deleteNode('), false)
+  assert.equal(projectCommandsSource.includes('electronAPI.reorderNode('), false)
+
+  assert.ok(projectCommandsSource.includes('commandId: EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,'))
+  assert.ok(projectCommandsSource.includes('payload: { path, title, kind },'))
+  assert.ok(projectCommandsSource.includes('commandId: EXTRA_COMMAND_IDS.TREE_CREATE_NODE,'))
+  assert.ok(projectCommandsSource.includes('payload: { parentPath, kind, name },'))
+  assert.ok(projectCommandsSource.includes('commandId: EXTRA_COMMAND_IDS.TREE_RENAME_NODE,'))
+  assert.ok(projectCommandsSource.includes('payload: { path, name },'))
+  assert.ok(projectCommandsSource.includes('commandId: EXTRA_COMMAND_IDS.TREE_DELETE_NODE,'))
+  assert.ok(projectCommandsSource.includes('payload: { path },'))
+  assert.ok(projectCommandsSource.includes('commandId: EXTRA_COMMAND_IDS.TREE_REORDER_NODE,'))
+  assert.ok(projectCommandsSource.includes('payload: { path, direction },'))
 })
 
-test.skip('command kernel tree-document adoption: runtime and docs capability bindings match for new command ids', async () => {
+test('command kernel tree-document adoption: runtime and docs capability bindings match for new command ids', async () => {
   const projectCommands = await loadProjectCommands()
   const capabilityPolicy = await loadCapabilityPolicy()
   const bindingDoc = readBindingDoc()
@@ -69,7 +80,7 @@ test.skip('command kernel tree-document adoption: runtime and docs capability bi
   }
 })
 
-test.skip('command kernel tree-document adoption: editor routes tree and document actions via dispatchUiCommand only', () => {
+test('command kernel tree-document adoption: editor routes tree and document actions via dispatchUiCommand only', () => {
   const source = read('src/renderer/editor.js')
 
   assert.equal(source.includes('window.electronAPI.openDocument('), false)
@@ -80,12 +91,12 @@ test.skip('command kernel tree-document adoption: editor routes tree and documen
 
   assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, {'))
   assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, {'))
-  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, { path, name })'))
-  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, { path })'))
-  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, { path, direction })'))
+  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, { path: node.path, name })'))
+  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, { path: node.path })'))
+  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, { path: node.path, direction })'))
 })
 
-test.skip('command kernel tree-document adoption: tree click and context actions continue through openDocumentNode and handlers', () => {
+test('command kernel tree-document adoption: tree click and context actions continue through openDocumentNode and handlers', () => {
   const source = read('src/renderer/editor.js')
 
   assert.ok(source.includes('const opened = await openDocumentNode(node);'))
@@ -95,7 +106,7 @@ test.skip('command kernel tree-document adoption: tree click and context actions
   assert.ok(source.includes("items.push({ label: 'Вверх', onClick: () => handleReorderNode(node, 'up') });"))
 })
 
-test.skip('command kernel tree-document adoption: loadTree data fetch and signal paths remain unchanged', () => {
+test('command kernel tree-document adoption: loadTree data fetch and signal paths remain unchanged', () => {
   const source = read('src/renderer/editor.js')
 
   assert.ok(source.includes('async function loadTree() {'))

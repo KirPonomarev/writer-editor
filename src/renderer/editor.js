@@ -5319,20 +5319,21 @@ function closeCardModal() {
 }
 
 async function openDocumentNode(node) {
-  if (!window.electronAPI || !window.electronAPI.openDocument) return false;
   const documentPath = getEffectiveDocumentPath(node);
   if (!documentPath) return false;
   try {
-    const result = await window.electronAPI.openDocument({
+    const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, {
       path: documentPath,
       title: node.label,
       kind: getEffectiveDocumentKind(node)
     });
     if (!result || result.ok === false) {
-      if (result && result.cancelled) {
-        return false;
-      }
-      updateStatusText('Ошибка');
+      return false;
+    }
+    const value = result.value && typeof result.value === 'object' && !Array.isArray(result.value)
+      ? result.value
+      : null;
+    if (value && value.cancelled) {
       return false;
     }
     currentDocumentPath = documentPath;
@@ -5342,7 +5343,6 @@ async function openDocumentNode(node) {
     updateInspectorSnapshot();
     return true;
   } catch {
-    updateStatusText('Ошибка');
     return false;
   }
 }
@@ -5350,13 +5350,12 @@ async function openDocumentNode(node) {
 async function handleCreateNode(node, kind, promptLabel) {
   const name = window.prompt(promptLabel || 'Название', '');
   if (!name) return;
-  const result = await window.electronAPI.createNode({
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, {
     parentPath: node.path,
     kind,
     name
   });
   if (!result || result.ok === false) {
-    updateStatusText('Ошибка');
     return;
   }
   await loadTree();
@@ -5365,13 +5364,15 @@ async function handleCreateNode(node, kind, promptLabel) {
 async function handleRenameNode(node) {
   const name = window.prompt('Новое имя', node.label || '');
   if (!name) return;
-  const result = await window.electronAPI.renameNode({ path: node.path, name });
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, { path: node.path, name });
   if (!result || result.ok === false) {
-    updateStatusText('Ошибка');
     return;
   }
-  if (currentDocumentPath && result.path && currentDocumentPath === node.path) {
-    currentDocumentPath = result.path;
+  const value = result.value && typeof result.value === 'object' && !Array.isArray(result.value)
+    ? result.value
+    : null;
+  if (currentDocumentPath && value && value.path && currentDocumentPath === node.path) {
+    currentDocumentPath = value.path;
   }
   await loadTree();
 }
@@ -5379,9 +5380,8 @@ async function handleRenameNode(node) {
 async function handleDeleteNode(node) {
   const confirmed = window.confirm('Переместить в корзину?');
   if (!confirmed) return;
-  const result = await window.electronAPI.deleteNode({ path: node.path });
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, { path: node.path });
   if (!result || result.ok === false) {
-    updateStatusText('Ошибка');
     return;
   }
   if (currentDocumentPath && currentDocumentPath === node.path) {
@@ -5395,12 +5395,15 @@ async function handleDeleteNode(node) {
 }
 
 async function handleReorderNode(node, direction) {
-  const result = await window.electronAPI.reorderNode({ path: node.path, direction });
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, { path: node.path, direction });
   if (!result || result.ok === false) {
     return;
   }
-  if (currentDocumentPath && result.path && currentDocumentPath === node.path) {
-    currentDocumentPath = result.path;
+  const value = result.value && typeof result.value === 'object' && !Array.isArray(result.value)
+    ? result.value
+    : null;
+  if (currentDocumentPath && value && value.path && currentDocumentPath === node.path) {
+    currentDocumentPath = value.path;
   }
   await loadTree();
 }
