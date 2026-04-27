@@ -3,7 +3,7 @@
   "planName": "Structural Revision Bridge v2.1 Final Master Plan",
   "activeCanon": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final",
   "currentStatus": "IN_PROGRESS",
-  "activeContour": "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10",
+  "activeContour": "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10",
   "acceptedContours": [
     "RB-C01-IMPORT-CHAIN-AND-REPO-FACT-AUDIT",
     "RB-C02-P0-SAFETY-FOUNDATION-WRITE-SEAM",
@@ -17,10 +17,10 @@
     "RB-C10-ANCHOR-CONFIDENCE-COVERAGE-STAGE6",
     "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
     "RB-C12-APPLY-TXN-RUNTIME-PATH-STAGE8",
-    "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9"
+    "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9",
+    "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10"
   ],
   "pendingContours": [
-    "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10",
     "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10",
     "RB-C15-GOOGLE-WORKFLOW-PROOF-STAGE11",
     "RB-C16-CAPABILITY-MATRIX-STAGE12",
@@ -50,7 +50,7 @@
         "DOCX_CLOSURE_EVIDENCE_V1 is static runtime wiring verification only",
         "v1 hardening donor report explicitly says full external Word or Google round-trip manual smoke was not executed"
       ],
-      "nextContourCandidate": "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10"
+      "nextContourCandidate": "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10"
     }
   ],
   "deliveryResults": [
@@ -149,6 +149,15 @@
       "push": "success",
       "commitSha": "9695073f",
       "note": "RB-33 structural ops manual review contour commit pushed via env -u GH_TOKEN"
+    },
+    {
+      "id": "DR-012",
+      "contourId": "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10",
+      "result": "branch_pushed",
+      "branch": "codex/revision-bridge-v21-autocycle-c01",
+      "push": "success",
+      "commitSha": "519bb286",
+      "note": "RB-34 export runtime snapshot readiness contour commit pushed via env -u GH_TOKEN"
     }
   ],
   "evidenceIndex": [
@@ -493,6 +502,18 @@
       "type": "targeted-tests",
       "summary": "RB-34 contract suite passed (6 of 6) covering schema export, current entrypoint advisory classification, transport-ready acceptance, empty-array negative coverage, purity guards and allowlist constraints",
       "status": "pass"
+    },
+    {
+      "id": "EV-058",
+      "type": "contour-close",
+      "summary": "C14A accepted as Stage 10 prerequisite contour and active contour moved to C14B after push-backed contract proof",
+      "status": "pass"
+    },
+    {
+      "id": "EV-059",
+      "type": "delivery",
+      "summary": "RB-34 contour delivery push completed for commit 519bb286 on branch codex/revision-bridge-v21-autocycle-c01",
+      "status": "pass"
     }
   ],
   "evidenceLedger": [
@@ -560,6 +581,19 @@
       "SOURCE_BASENAME": "docxMinBuilder.js",
       "REVIEWER": "orchestrator",
       "VERDICT": "blocked"
+    },
+    {
+      "CONTOUR_ID": "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10",
+      "CLAIM_CLASS": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED",
+      "EVIDENCE_TYPE": "targeted_test",
+      "COMMAND": "node --test revision-bridge-export-runtime-snapshot.contract.test.js",
+      "RESULT": "pass_6_of_6",
+      "ARTIFACT_BASENAME": "",
+      "ARTIFACT_CHECKSUM": "",
+      "TEST_BASENAME": "revision-bridge-export-runtime-snapshot.contract.test.js",
+      "SOURCE_BASENAME": "index.mjs",
+      "REVIEWER": "orchestrator",
+      "VERDICT": "accepted"
     }
   ],
   "claimClassIndex": [
@@ -613,6 +647,10 @@
     },
     {
       "contourId": "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9",
+      "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED"
+    },
+    {
+      "contourId": "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10",
       "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED"
     }
   ],
@@ -747,8 +785,13 @@
     },
     {
       "id": "AU-013",
+      "verdict": "accepted",
+      "note": "C14A accepted: export runtime snapshot readiness contracts make the current Stage 10 prerequisite gap explicit without overclaiming runtime binding"
+    },
+    {
+      "id": "AU-014",
       "verdict": "in_progress",
-      "note": "C14A active: replacement contour is narrowed to export-runtime-snapshot readiness contracts without touching main, preload, renderer or DOCX runtime wiring"
+      "note": "C14B active: next Stage 10 contour is narrowed to runtime binding of export manifest prerequisites into the shipping export path without claiming Word proof yet"
     }
   ],
   "reviewResults": [
@@ -797,7 +840,7 @@
     "stage7_import_to_revisionsession": "contract_seam_preview_ready_with_registry_record_bridge_no_runtime_apply",
     "stage8_apply_engine_and_applytxn": "partial_with_applytxn_applyreceipt_and_applyplan_preview_contracts",
     "stage9_structural_operations": "partial_with_manual_review_preview_contracts",
-    "stage10_word_transport": "blocked_on_export_runtime_snapshot_and_entrypoint_binding_with_contract_only_manifest_envelope_binding_checks_and_export_snapshot_readiness_contract",
+    "stage10_word_transport": "blocked_on_word_transport_proof_but_advanced_to_export_runtime_snapshot_readiness_contract_with_next_runtime_manifest_binding_contour_active",
     "stage11_google_workflow": "not_implemented",
     "stage12_capability_matrix": "not_implemented",
     "stage13_minimal_review_ui": "not_implemented",
