@@ -9,7 +9,7 @@ function read(filePath) {
   return fs.readFileSync(path.join(ROOT, filePath), 'utf8')
 }
 
-test.skip('preload workspace query bridge: preload exposes one typed query bridge api', () => {
+test('preload workspace query bridge: preload exposes one typed query bridge api', () => {
   const source = read('src/preload.js')
 
   assert.equal((source.match(/invokeWorkspaceQueryBridge:\s*\(request\)\s*=>\s*\{/g) || []).length, 1)
@@ -17,7 +17,7 @@ test.skip('preload workspace query bridge: preload exposes one typed query bridg
   assert.ok(source.includes("return ipcRenderer.invoke(WORKSPACE_QUERY_BRIDGE_CHANNEL, { queryId, payload });"))
 })
 
-test.skip('preload workspace query bridge: main has one query bridge handler with strict allowlist', () => {
+test('preload workspace query bridge: main has one query bridge handler with strict allowlist', () => {
   const source = read('src/main.js')
 
   assert.equal((source.match(/ipcMain\.handle\('ui:workspace-query-bridge'/g) || []).length, 1)
@@ -28,7 +28,7 @@ test.skip('preload workspace query bridge: main has one query bridge handler wit
   assert.ok(source.includes("return { ok: false, error: 'QUERY_ID_NOT_ALLOWED' };"))
 })
 
-test.skip('preload workspace query bridge: editor loadTree and initializeCollabScopeLocal use query bridge only', () => {
+test('preload workspace query bridge: editor loadTree and initializeCollabScopeLocal use query bridge only', () => {
   const source = read('src/renderer/editor.js')
 
   assert.ok(source.includes("const result = await invokeWorkspaceQueryBridge('query.projectTree', { tab: activeTab });"))
@@ -38,7 +38,7 @@ test.skip('preload workspace query bridge: editor loadTree and initializeCollabS
   assert.equal(source.includes('window.electronAPI.getCollabScopeLocal()'), false)
 })
 
-test.skip('preload workspace query bridge: existing query semantics and out-of-scope paths stay compatible', () => {
+test('preload workspace query bridge: existing query semantics and out-of-scope paths stay compatible', () => {
   const preloadSource = read('src/preload.js')
   const mainSource = read('src/main.js')
   const editorSource = read('src/renderer/editor.js')
