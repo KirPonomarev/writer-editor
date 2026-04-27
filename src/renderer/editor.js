@@ -8600,6 +8600,14 @@ if (window.electronAPI) {
       void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
       return true;
     }
+    if (commandId === EXTRA_COMMAND_IDS.EDIT_FIND) {
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.EDIT_REPLACE) {
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
+      return true;
+    }
     if (commandId === EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE) {
       applyMode('plan');
       return true;
@@ -8624,6 +8632,12 @@ if (window.electronAPI) {
       openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
       openExportPreview: () => openExportPreviewModal(),
       insertAddCard: () => handleInsertAddCard(),
+      find: () => {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
+      },
+      replace: () => {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
+      },
       setPreviewFormat: (formatId) => setActiveBookProfileFormat(formatId),
       setPreviewOrientation: (orientation) => setActiveBookProfileOrientation(orientation),
       togglePreview: () => handleToggleLayoutPreview(),
@@ -8677,6 +8691,10 @@ if (window.electronAPI) {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);
       } else if (command === 'redo' || command === 'edit-redo') {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
+      } else if (command === 'search') {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
+      } else if (command === 'replace') {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REPLACE);
       } else if (command === 'switch-preview-format-a4') {
         void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.A4);
       } else if (command === 'switch-preview-format-a5') {
