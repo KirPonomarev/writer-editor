@@ -8592,6 +8592,14 @@ if (window.electronAPI) {
       void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
       return true;
     }
+    if (commandId === EXTRA_COMMAND_IDS.EDIT_UNDO) {
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.EDIT_REDO) {
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
+      return true;
+    }
     if (commandId === EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE) {
       applyMode('plan');
       return true;
@@ -8665,6 +8673,10 @@ if (window.electronAPI) {
         handleInsertAddCard();
       } else if (command === 'format-align-left') {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
+      } else if (command === 'undo' || command === 'edit-undo') {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);
+      } else if (command === 'redo' || command === 'edit-redo') {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_REDO);
       } else if (command === 'switch-preview-format-a4') {
         void dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.A4);
       } else if (command === 'switch-preview-format-a5') {
