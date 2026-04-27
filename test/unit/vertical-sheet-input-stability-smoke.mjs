@@ -730,6 +730,8 @@ function assertVerticalState(state) {
   assert.equal(renderedPageCount <= 15, true, `${state.label} rendered page count must stay within runtime window budget`);
   assert.equal(totalPageCount >= renderedPageCount, true, `${state.label} total page count must not be below rendered page count`);
   assert.equal(state.visibleSheetCount, renderedPageCount, `${state.label} visible sheet count must match rendered page count`);
+  assert.equal(state.viewportVisibleSheetCount > 0, true, `${state.label} viewport must always contain at least one rendered sheet`);
+  assert.equal(state.visibleTextRectCount > 0, true, `${state.label} viewport must always contain visible text rects`);
   assert.equal(state.verticallyStackedSheetPairCount, Math.max(0, renderedPageCount - 1), `${state.label} must stack sheets down`);
   assert.equal(state.rightFlowSheetPairCount, 0, `${state.label} must not place the next sheet to the right`);
   assert.equal(state.centralSheetWindowingEnabled, 'true', `${state.label} must keep viewport windowing enabled`);
@@ -888,6 +890,8 @@ const summary = {
   backspaceUndoFullTargetAfter: result.afterBackspaceUndo.fullTargetCount,
   backspaceRedoTruncatedTargetAfter: result.afterBackspaceRedo.truncatedTargetCount,
   boundaryDistanceFromSheetBottom: result.boundaryCaretPlacement.distanceFromSheetBottom,
+  viewportVisibleSheetCount: result.afterBackspaceRedo.viewportVisibleSheetCount,
+  visibleTextRectCount: result.afterBackspaceRedo.visibleTextRectCount,
   networkRequests: result.networkRequests,
   dialogCalls: result.dialogCalls,
   screenshots: result.screenshots.map((item) => path.basename(item)),

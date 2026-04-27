@@ -662,6 +662,25 @@ let layoutPreviewRefreshTimerId = null;
 let centralSheetStripRefreshFrameId = null;
 let centralSheetStripScrollContainer = null;
 let centralSheetStripGlobalScrollBound = false;
+let centralSheetStripRefreshMode = 'full';
+let centralSheetStripCachedRuntimeState = null;
+let centralSheetStripCacheDirty = false;
+let centralSheetStripLastScrollTop = 0;
+let centralSheetStripLastAppliedSignature = '';
+let centralSheetStripPendingStructuralInput = false;
+let centralSheetStripStructuralSettleFrameId = null;
+let centralSheetStripStructuralSettleSignature = '';
+let centralSheetStripStructuralStablePassCount = 0;
+let centralSheetStripStructuralGuardActive = false;
+
+function resetCentralSheetStripStructuralSettleState() {
+  if (centralSheetStripStructuralSettleFrameId) {
+    window.cancelAnimationFrame(centralSheetStripStructuralSettleFrameId);
+    centralSheetStripStructuralSettleFrameId = null;
+  }
+  centralSheetStripStructuralSettleSignature = '';
+  centralSheetStripStructuralStablePassCount = 0;
+}
 
 function getActivePreviewChrome(source = activePreviewChromeState) {
   return createPreviewChromeState(source);
@@ -882,10 +901,51 @@ function resolveCentralSheetLineGuardPx(proseMirror) {
   return Math.max(56, Math.min(128, Math.ceil((lineHeight * 2.25) + 2)));
 }
 
+function resolveCentralSheetStructuralMinimumPageCount({
+  proseMirror,
+  pageStridePx,
+  marginBottomPx,
+} = {}) {
+  if (!(proseMirror instanceof HTMLElement)) {
+    return 1;
+  }
+  const lastBlock = proseMirror.lastElementChild;
+  if (!(lastBlock instanceof HTMLElement)) {
+    return 1;
+  }
+  const proseRect = proseMirror.getBoundingClientRect();
+  const lastBlockRect = lastBlock.getBoundingClientRect();
+  const resolvedPageStridePx = Math.max(1, Math.round(Number(pageStridePx) || 1));
+  const resolvedMarginBottomPx = Math.max(0, Math.round(Number(marginBottomPx) || 0));
+  const requiredBottomOffsetPx = Math.max(
+    0,
+    Math.ceil(lastBlockRect.bottom - proseRect.top) + resolvedMarginBottomPx,
+  );
+  return Math.max(1, Math.ceil(requiredBottomOffsetPx / resolvedPageStridePx));
+}
+
+function beginCentralSheetStripStructuralTransition() {
+  centralSheetStripPendingStructuralInput = true;
+  centralSheetStripStructuralGuardActive = true;
+  centralSheetStripCacheDirty = true;
+  resetCentralSheetStripStructuralSettleState();
+}
+
+function finishCentralSheetStripStructuralTransition() {
+  centralSheetStripPendingStructuralInput = false;
+  centralSheetStripStructuralGuardActive = false;
+  resetCentralSheetStripStructuralSettleState();
+}
+
 function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   if (!(editor instanceof HTMLElement)) {
     return;
   }
+  finishCentralSheetStripStructuralTransition();
+  centralSheetStripCachedRuntimeState = null;
+  centralSheetStripCacheDirty = false;
+  centralSheetStripLastScrollTop = 0;
+  centralSheetStripLastAppliedSignature = '';
   editor.classList.remove(CENTRAL_SHEET_STRIP_PROOF_CLASS);
   editor.classList.remove(CENTRAL_SHEET_STRIP_MEASURING_CLASS);
   delete editor.dataset.centralSheetCount;
@@ -946,10 +1006,10 @@ function resolveCentralSheetViewportRuntimeWindow({
     return null;
   }
   const scrollContainer = editor.closest('.main-content--editor');
-  const hostRect = editor.getBoundingClientRect();
   let viewportHeightPx = 0;
   let viewportTopPx = 0;
   if (scrollContainer instanceof HTMLElement) {
+    const hostRect = editor.getBoundingClientRect();
     const containerRect = scrollContainer.getBoundingClientRect();
     const resolvedViewportTopPx = Math.max(0, containerRect.top - hostRect.top);
     const resolvedViewportBottomPx = Math.min(
@@ -960,6 +1020,7 @@ function resolveCentralSheetViewportRuntimeWindow({
     viewportHeightPx = Math.max(1, Math.round(resolvedViewportBottomPx - resolvedViewportTopPx));
   }
   if (viewportHeightPx <= 0) {
+    const hostRect = editor.getBoundingClientRect();
     viewportTopPx = 0;
     viewportHeightPx = Math.max(
       1,
@@ -1009,31 +1070,27 @@ function resolveCentralSheetViewportRuntimeWindow({
   };
 }
 
-function refreshCentralSheetStripProof() {
-  if (!isTiptapMode || !(editor instanceof HTMLElement)) {
-    return;
-  }
-  const tiptapEditor = editor.querySelector('.tiptap-editor');
-  const proseMirror = editor.querySelector('.ProseMirror');
-  if (!(tiptapEditor instanceof HTMLElement) || !(proseMirror instanceof HTMLElement)) {
-    clearCentralSheetStripProof();
-    return;
+function buildCentralSheetStripRuntimeState({ proseMirror, reuseCachedDecision = false } = {}) {
+  if (reuseCachedDecision && centralSheetStripCachedRuntimeState) {
+    return centralSheetStripCachedRuntimeState;
   }
   const metrics = getPageMetrics({
     profile: activeBookProfileState,
     zoom: editorZoom,
   });
   if (!metrics) {
-    clearCentralSheetStripProof();
-    return;
+    return null;
   }
 
   const { widthPx, heightPx } = getCentralSheetContentMetrics(metrics);
   const pageGapPx = Math.max(0, Math.round(getRootCssPxValue('--page-gap-px', 24)));
   const lineGuardPx = resolveCentralSheetLineGuardPx(proseMirror);
-  editor.style.setProperty('--central-sheet-content-width-px', `${widthPx}px`);
-  editor.style.setProperty('--central-sheet-content-height-px', `${heightPx}px`);
-  editor.style.setProperty('--central-sheet-line-guard-px', `${lineGuardPx}px`);
+  const pageStridePx = Math.round(metrics.pageHeightPx + pageGapPx);
+  const structuralMinimumPageCount = resolveCentralSheetStructuralMinimumPageCount({
+    proseMirror,
+    pageStridePx,
+    marginBottomPx: metrics.marginBottomPx,
+  });
   const activeLayoutPreviewSnapshot = buildActiveLayoutPreviewSnapshot();
   const naturalHeight = measureCentralSheetNaturalHeight(proseMirror);
   const centralSheetDecision = resolveCentralSheetStripProofDecision({
@@ -1042,25 +1099,55 @@ function refreshCentralSheetStripProof() {
     activeLayoutPreviewSnapshot,
     maxPageCount: CENTRAL_SHEET_RUNTIME_WINDOW_DOM_BUDGET,
   });
-  const { pageCount } = centralSheetDecision;
-  if (!centralSheetDecision.shouldRender) {
-    clearCentralSheetStripProof({ overflowReason: centralSheetDecision.overflowReason });
-    return;
+  const {
+    pageCount: decisionPageCount,
+    shouldRender,
+    overflowReason,
+  } = centralSheetDecision;
+  return {
+    metrics,
+    contentWidthPx: widthPx,
+    contentHeightPx: heightPx,
+    pageGapPx,
+    lineGuardPx,
+    decisionPageCount,
+    structuralMinimumPageCount,
+    pageCount: Math.max(decisionPageCount, structuralMinimumPageCount),
+    shouldRender,
+    overflowReason,
+  };
+}
+
+function applyCentralSheetStripRuntimeState(runtimeState) {
+  if (!(editor instanceof HTMLElement) || !runtimeState) {
+    return false;
   }
+  const {
+    metrics,
+    contentWidthPx,
+    contentHeightPx,
+    pageGapPx,
+    lineGuardPx,
+    decisionPageCount,
+    structuralMinimumPageCount,
+    pageCount,
+  } = runtimeState;
+  editor.style.setProperty('--central-sheet-content-width-px', `${contentWidthPx}px`);
+  editor.style.setProperty('--central-sheet-content-height-px', `${contentHeightPx}px`);
+  editor.style.setProperty('--central-sheet-line-guard-px', `${lineGuardPx}px`);
   const pageWindow = resolveCentralSheetViewportRuntimeWindow({
     totalPageCount: pageCount,
     pageHeightPx: metrics.pageHeightPx,
     pageGapPx,
   });
   if (!pageWindow || pageWindow.windowingEnabled !== true) {
-    clearCentralSheetStripProof({ overflowReason: 'viewport-window-unavailable' });
-    return;
+    return false;
   }
   const renderedPageCount = Math.max(0, Number(pageWindow.renderedPageCount) || 0);
   const stripHeightPx = Math.round(pageWindow.totalVirtualHeight || 0);
   const pageStridePx = Math.round(metrics.pageHeightPx + pageGapPx);
   const editorHeightPx = Math.max(
-    heightPx,
+    contentHeightPx,
     Math.round(stripHeightPx - metrics.marginTopPx - metrics.marginBottomPx),
   );
 
@@ -1078,6 +1165,16 @@ function refreshCentralSheetStripProof() {
   editor.dataset.centralSheetWindowLastRenderedPage = String(pageWindow.lastRenderedPage);
   editor.dataset.centralSheetWindowVisiblePageCount = String(pageWindow.visiblePageCount);
   editor.dataset.centralSheetWindowingEnabled = pageWindow.windowingEnabled ? 'true' : 'false';
+  centralSheetStripLastAppliedSignature = [
+    decisionPageCount,
+    structuralMinimumPageCount,
+    pageCount,
+    Number(pageWindow.firstRenderedPage || 0),
+    Number(pageWindow.lastRenderedPage || 0),
+    renderedPageCount,
+    stripHeightPx,
+    editorHeightPx,
+  ].join(':');
   syncCentralSheetStripOverflowMetadata({
     pageCount,
     visiblePageCount: renderedPageCount,
@@ -1085,19 +1182,126 @@ function refreshCentralSheetStripProof() {
   });
   renderCentralSheetStripShellPages(pageWindow);
   editor.classList.add(CENTRAL_SHEET_STRIP_PROOF_CLASS);
+  centralSheetStripLastScrollTop = Math.max(0, Number(pageWindow.scrollTop) || 0);
+  return true;
 }
 
-function scheduleCentralSheetStripProofRefresh() {
+function refreshCentralSheetStripProof({ reuseCachedDecision = false } = {}) {
+  if (!isTiptapMode || !(editor instanceof HTMLElement)) {
+    return;
+  }
+  const tiptapEditor = editor.querySelector('.tiptap-editor');
+  const proseMirror = editor.querySelector('.ProseMirror');
+  if (!(tiptapEditor instanceof HTMLElement) || !(proseMirror instanceof HTMLElement)) {
+    clearCentralSheetStripProof();
+    return false;
+  }
+  const effectiveReuseCachedDecision = (
+    reuseCachedDecision === true
+    && !centralSheetStripStructuralGuardActive
+  );
+  const runtimeState = buildCentralSheetStripRuntimeState({
+    proseMirror,
+    reuseCachedDecision: effectiveReuseCachedDecision,
+  });
+  if (!runtimeState) {
+    clearCentralSheetStripProof();
+    return false;
+  }
+  if (!runtimeState.shouldRender) {
+    clearCentralSheetStripProof({ overflowReason: runtimeState.overflowReason });
+    return false;
+  }
+  if (!effectiveReuseCachedDecision) {
+    centralSheetStripCachedRuntimeState = runtimeState;
+    centralSheetStripCacheDirty = false;
+  }
+  if (!applyCentralSheetStripRuntimeState(runtimeState)) {
+    clearCentralSheetStripProof({ overflowReason: 'viewport-window-unavailable' });
+    return false;
+  }
+  return true;
+}
+
+function scheduleCentralSheetStripProofRefreshOnScroll() {
   if (!isTiptapMode || !(editor instanceof HTMLElement)) {
     return;
   }
   bindCentralSheetStripScrollRefresh();
-  if (centralSheetStripRefreshFrameId) {
+  if (!(centralSheetStripScrollContainer instanceof HTMLElement) || !centralSheetStripCachedRuntimeState) {
+    refreshCentralSheetStripProof();
     return;
   }
+  const nextScrollTop = Math.max(0, Number(centralSheetStripScrollContainer.scrollTop) || 0);
+  const pageStridePx = Math.max(
+    1,
+    Math.round(
+      Number(centralSheetStripCachedRuntimeState.metrics?.pageHeightPx || 0)
+      + Number(centralSheetStripCachedRuntimeState.pageGapPx || 0),
+    ),
+  );
+  const scrollDeltaPx = Math.abs(nextScrollTop - centralSheetStripLastScrollTop);
+  if (!centralSheetStripCacheDirty && scrollDeltaPx < Math.max(32, Math.round(pageStridePx / 2))) {
+    refreshCentralSheetStripProof({ reuseCachedDecision: true });
+    return;
+  }
+  refreshCentralSheetStripProof();
+}
+
+function scheduleCentralSheetStripProofRefresh({ scrollOnly = false } = {}) {
+  if (!isTiptapMode || !(editor instanceof HTMLElement)) {
+    return;
+  }
+  bindCentralSheetStripScrollRefresh();
+  const nextRefreshMode = scrollOnly ? 'scroll' : 'full';
+  if (centralSheetStripRefreshFrameId) {
+    if (nextRefreshMode === 'full') {
+      centralSheetStripRefreshMode = 'full';
+      centralSheetStripCacheDirty = true;
+    }
+    return;
+  }
+  if (nextRefreshMode === 'full') {
+    centralSheetStripCacheDirty = true;
+  }
+  centralSheetStripRefreshMode = nextRefreshMode;
   centralSheetStripRefreshFrameId = window.requestAnimationFrame(() => {
     centralSheetStripRefreshFrameId = null;
-    refreshCentralSheetStripProof();
+    const refreshMode = centralSheetStripRefreshMode;
+    centralSheetStripRefreshMode = 'full';
+    refreshCentralSheetStripProof({ reuseCachedDecision: refreshMode === 'scroll' });
+  });
+}
+
+function scheduleCentralSheetStripPostStructuralRefresh() {
+  if (!isTiptapMode || !(editor instanceof HTMLElement)) {
+    return;
+  }
+  if (!centralSheetStripStructuralGuardActive || centralSheetStripStructuralSettleFrameId) {
+    return;
+  }
+  centralSheetStripStructuralSettleFrameId = window.requestAnimationFrame(() => {
+    centralSheetStripStructuralSettleFrameId = null;
+    centralSheetStripCacheDirty = true;
+    const applied = refreshCentralSheetStripProof();
+    if (!centralSheetStripStructuralGuardActive) {
+      return;
+    }
+    if (!applied || !centralSheetStripLastAppliedSignature) {
+      scheduleCentralSheetStripPostStructuralRefresh();
+      return;
+    }
+    if (centralSheetStripLastAppliedSignature === centralSheetStripStructuralSettleSignature) {
+      centralSheetStripStructuralStablePassCount += 1;
+    } else {
+      centralSheetStripStructuralSettleSignature = centralSheetStripLastAppliedSignature;
+      centralSheetStripStructuralStablePassCount = 0;
+    }
+    if (centralSheetStripStructuralStablePassCount >= 1) {
+      finishCentralSheetStripStructuralTransition();
+      return;
+    }
+    scheduleCentralSheetStripPostStructuralRefresh();
   });
 }
 
@@ -1110,18 +1314,18 @@ function bindCentralSheetStripScrollRefresh() {
     return;
   }
   if (centralSheetStripScrollContainer instanceof HTMLElement) {
-    centralSheetStripScrollContainer.removeEventListener('scroll', scheduleCentralSheetStripProofRefresh);
+    centralSheetStripScrollContainer.removeEventListener('scroll', scheduleCentralSheetStripProofRefreshOnScroll);
   }
   centralSheetStripScrollContainer = nextScrollContainer instanceof HTMLElement
     ? nextScrollContainer
     : null;
   if (centralSheetStripScrollContainer instanceof HTMLElement) {
-    centralSheetStripScrollContainer.addEventListener('scroll', scheduleCentralSheetStripProofRefresh, {
+    centralSheetStripScrollContainer.addEventListener('scroll', scheduleCentralSheetStripProofRefreshOnScroll, {
       passive: true,
     });
   }
   if (!centralSheetStripGlobalScrollBound) {
-    window.addEventListener('scroll', scheduleCentralSheetStripProofRefresh, {
+    window.addEventListener('scroll', scheduleCentralSheetStripProofRefreshOnScroll, {
       capture: true,
       passive: true,
     });
@@ -7205,6 +7409,7 @@ function handleReplace() {
 function handleUndo() {
   if (!editor) return { performed: false };
   if (isTiptapMode) {
+    beginCentralSheetStripStructuralTransition();
     return undoTiptap();
   }
   editor.focus();
@@ -7215,6 +7420,7 @@ function handleUndo() {
 function handleRedo() {
   if (!editor) return { performed: false };
   if (isTiptapMode) {
+    beginCentralSheetStripStructuralTransition();
     return redoTiptap();
   }
   editor.focus();
@@ -8436,11 +8642,57 @@ if (window.electronAPI) {
 }
 
 if (isTiptapMode) {
+  editor.addEventListener('keydown', (event) => {
+    if (event.isComposing) {
+      return;
+    }
+    const key = typeof event.key === 'string' ? event.key : '';
+    const normalizedKey = key.toLowerCase();
+    const isPrimaryModifier = isMac ? event.metaKey : event.ctrlKey;
+    const isUndoRedoKey = isPrimaryModifier && !event.altKey && normalizedKey === 'z';
+    const isStructuralKey = (
+      key === 'Enter'
+      || key === 'Backspace'
+      || key === 'Delete'
+      || isUndoRedoKey
+    );
+    if (!isStructuralKey) {
+      return;
+    }
+    beginCentralSheetStripStructuralTransition();
+  });
+  editor.addEventListener('beforeinput', (event) => {
+    const inputType = typeof event.inputType === 'string' ? event.inputType : '';
+    centralSheetStripPendingStructuralInput = (
+      inputType === 'insertParagraph'
+      || inputType === 'insertLineBreak'
+      || inputType === 'historyUndo'
+      || inputType === 'historyRedo'
+      || inputType === 'insertFromPaste'
+      || inputType === 'deleteContentBackward'
+      || inputType === 'deleteContentForward'
+    );
+    if (centralSheetStripPendingStructuralInput) {
+      beginCentralSheetStripStructuralTransition();
+    }
+  });
+  editor.addEventListener('paste', () => {
+    beginCentralSheetStripStructuralTransition();
+  });
   editor.addEventListener('input', () => {
+    const needsPostStructuralRefresh = centralSheetStripPendingStructuralInput;
     scheduleIncrementalInputDomSync();
     syncPlainTextBufferFromEditorDom();
     scheduleDeferredHotpathRender({ includePagination: false, preserveSelection: true });
     scheduleDeferredPaginationRefresh();
+    if (needsPostStructuralRefresh) {
+      scheduleCentralSheetStripProofRefresh();
+      scheduleCentralSheetStripPostStructuralRefresh();
+    } else if (centralSheetStripCachedRuntimeState) {
+      scheduleCentralSheetStripProofRefresh({ scrollOnly: true });
+    } else {
+      scheduleCentralSheetStripProofRefresh();
+    }
     markAsModified();
     updateWordCount();
   });
