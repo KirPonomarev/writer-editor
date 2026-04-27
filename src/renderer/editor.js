@@ -4122,6 +4122,16 @@ async function invokeWorkspaceQueryBridge(queryId, payload = {}) {
   return window.electronAPI.invokeWorkspaceQueryBridge({ queryId, payload });
 }
 
+async function invokeSaveLifecycleSignalBridge(signalId, payload = {}) {
+  if (signalId !== 'signal.localDirty.set' && signalId !== 'signal.autoSave.request') {
+    return null;
+  }
+  if (!window.electronAPI || typeof window.electronAPI.invokeSaveLifecycleSignalBridge !== 'function') {
+    return { ok: false, error: 'SAVE_LIFECYCLE_SIGNAL_BRIDGE_UNAVAILABLE' };
+  }
+  return window.electronAPI.invokeSaveLifecycleSignalBridge({ signalId, payload });
+}
+
 function resolveSceneFromImportResult(importResult) {
   if (!importResult || importResult.ok !== true) return null;
   const value = importResult.value;
@@ -4202,9 +4212,7 @@ async function handleFlowModeOpenUiPath() {
   setPlainText(composeFlowDocument(scenes));
   updateWordCount();
   localDirty = false;
-  if (window.electronAPI && typeof window.electronAPI.notifyDirtyState === 'function') {
-    window.electronAPI.notifyDirtyState(false);
-  }
+  await invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: false });
   showEditorPanelFor('Flow mode');
   updateStatusText(buildFlowModeM9KickoffStatus('open', scenes.length, { m8Kickoff: true, m9Kickoff: true }));
 }
@@ -4234,9 +4242,7 @@ async function handleFlowModeSaveUiPath() {
     dirty: false,
   };
   localDirty = false;
-  if (window.electronAPI && typeof window.electronAPI.notifyDirtyState === 'function') {
-    window.electronAPI.notifyDirtyState(false);
-  }
+  await invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: false });
   updateStatusText(buildFlowModeM9KickoffStatus('save', payload.scenes.length, { m8Kickoff: true, m9Kickoff: true }));
 }
 
@@ -6738,7 +6744,7 @@ function setCurrentFontSize(px) {
 }
 
 function scheduleAutoSave(delay = AUTO_SAVE_DELAY) {
-  if (!window.electronAPI || typeof window.electronAPI.requestAutoSave !== 'function') {
+  if (!window.electronAPI || typeof window.electronAPI.invokeSaveLifecycleSignalBridge !== 'function') {
     return;
   }
 
@@ -6747,8 +6753,7 @@ function scheduleAutoSave(delay = AUTO_SAVE_DELAY) {
   }
 
   autoSaveTimerId = window.setTimeout(() => {
-    window.electronAPI
-      .requestAutoSave()
+    invokeSaveLifecycleSignalBridge('signal.autoSave.request')
       .catch(() => {})
       .finally(() => {
         autoSaveTimerId = null;
@@ -6769,9 +6774,7 @@ function markAsModified() {
 
   if (!localDirty) {
     localDirty = true;
-    if (window.electronAPI && window.electronAPI.notifyDirtyState) {
-      window.electronAPI.notifyDirtyState(true);
-    }
+    void invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: true });
   }
   updateSaveStateText('unsaved');
   updatePerfHintText('typing');

@@ -106,12 +106,12 @@ test('command kernel tree-document adoption: tree click and context actions cont
   assert.ok(source.includes("items.push({ label: 'Вверх', onClick: () => handleReorderNode(node, 'up') });"))
 })
 
-test('command kernel tree-document adoption: loadTree data fetch and signal paths remain unchanged', () => {
+test('command kernel tree-document adoption: loadTree data fetch uses query bridge and signal paths remain canonicalized', () => {
   const source = read('src/renderer/editor.js')
 
   assert.ok(source.includes('async function loadTree() {'))
-  assert.ok(source.includes('const result = await window.electronAPI.getProjectTree(activeTab);'))
-  assert.ok(source.includes('window.electronAPI.notifyDirtyState(true);'))
-  assert.ok(source.includes('.requestAutoSave()'))
-  assert.ok(source.includes('window.electronAPI.getCollabScopeLocal'))
+  assert.ok(source.includes("const result = await invokeWorkspaceQueryBridge('query.projectTree', { tab: activeTab });"))
+  assert.ok(source.includes("void invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: true });"))
+  assert.ok(source.includes("invokeSaveLifecycleSignalBridge('signal.autoSave.request')"))
+  assert.ok(source.includes("collabScopeLocal = (await invokeWorkspaceQueryBridge('query.collabScopeLocal')) === true;"))
 })
