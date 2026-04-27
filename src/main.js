@@ -40,7 +40,9 @@ const FILE_NAVIGATION_FAIL_SIGNAL = 'E_RUNTIME_WIRING_BEFORE_STAGE';
 const CORRESPONDING_SOURCE_BASE_URL = 'https://github.com/KirPon2024/writer-editor';
 const ABOUT_LICENSE_TEXT_FALLBACK = 'Yalken is licensed under AGPL-3.0-or-later.';
 const EDITOR_PASTE_FOCUS_STATE_CHANNEL = 'editor:paste-focus-state';
-const singleInstanceLockAcquired = app.requestSingleInstanceLock();
+const singleInstanceLockAcquired = typeof app.requestSingleInstanceLock === 'function'
+  ? app.requestSingleInstanceLock()
+  : true;
 
 function focusExistingMainWindow() {
   if (!mainWindow || mainWindow.isDestroyed()) return false;

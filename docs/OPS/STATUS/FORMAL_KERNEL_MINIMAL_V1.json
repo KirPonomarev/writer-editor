@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "FORMAL_KERNEL_MINIMAL_V1",
+  "authorityClass": "OWNER_MAP_DIRECTION_UNDER_ACTIVE_CANON",
+  "blockingLaw": false,
+  "notes": [
+    "This artifact records the minimal formal kernel binding contour only.",
+    "It does not redefine active release law or token governance."
+  ],
+  "items": [
+    {
+      "invariantId": "TEXT_NO_LOSS",
+      "bindingClass": "advisory_downgrade",
+      "status": "ADVISORY",
+      "reasonCode": "CURRENT_DETECTOR_PATH_NOT_GREEN",
+      "reason": "The current phase00 no-input-loss rollup detector path is present but not green on clean authority mainline.",
+      "evidenceRefs": [
+        "scripts/ops/phase00-no-input-loss-rollup.mjs",
+        "test/contracts/phase00-no-input-loss-rollup.contract.test.js"
+      ],
+      "advisoryProbe": "node scripts/ops/phase00-no-input-loss-rollup.mjs --json"
+    },
+    {
+      "invariantId": "EXPORT_SOURCE_CANONICAL",
+      "bindingClass": "detector_bound",
+      "status": "BOUND",
+      "detectorToken": "RELEASE_ARTIFACT_SOURCES_OK",
+      "proofHook": "node scripts/ops/release-artifact-sources-state.mjs --json",
+      "positiveContractRef": "test/contracts/release-artifact-sources.contract.test.js"
+    },
+    {
+      "invariantId": "RECOVERY_HUMAN_READABLE",
+      "bindingClass": "advisory_downgrade",
+      "status": "ADVISORY",
+      "reasonCode": "NO_HONEST_DETECTOR_PATH",
+      "reason": "Existing recovery IO and rich truth evidence do not yet prove human readability as a blocking detector.",
+      "evidenceRefs": [
+        "scripts/ops/recovery-io-state.mjs",
+        "test/contracts/recovery-rich-truth.contract.test.js"
+      ]
+    }
+  ]
+}

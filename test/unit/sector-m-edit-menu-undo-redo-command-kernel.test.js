@@ -31,7 +31,10 @@ test('edit menu undo redo command kernel: main edit menu uses command items and 
 test('edit menu undo redo command kernel: editor canonical runtime path handles undo redo with existing behavior', () => {
   const source = read('src/renderer/editor.js')
 
-  assert.ok(source.includes('function handleCanonicalRuntimeCommandId(commandId) {'))
+  assert.match(
+    source,
+    /function handleCanonicalRuntimeCommandId\(commandId,\s*runtimePayload\s*=\s*null\)\s*\{/
+  )
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.EDIT_UNDO) {'))
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.EDIT_REDO) {'))
   assert.ok(source.includes('void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_UNDO);'))

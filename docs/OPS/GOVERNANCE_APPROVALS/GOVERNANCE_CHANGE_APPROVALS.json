@@ -2814,6 +2814,34 @@
       "approvedBy": "ticket:TOOLBAR_BASELINE_TRUTHFUL_CLOSEOUT_001",
       "approvedAtUtc": "2026-04-14T11:06:30.000Z",
       "rationale": "TOOLBAR_BASELINE_TRUTHFUL_CLOSEOUT_001 approves phase03 safe-reset foundation evaluator alignment to current honest hold chain semantics with bounded open-gap tolerance."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/FORMAL_KERNEL_MINIMAL_V1.json",
+      "sha256": "beaeb505696a947017c87f6829f52b728a1e70a76e126f8f5a728a9ec9fecbe1",
+      "approvedBy": "ticket:FORMAL_KERNEL_MINIMAL_001",
+      "approvedAtUtc": "2026-04-28T12:00:00.000Z",
+      "rationale": "FORMAL_KERNEL_MINIMAL_001 approves the bounded three-row formal kernel artifact with detector-bound export source and explicit advisory downgrade for non-green or non-honest detector paths."
+    },
+    {
+      "filePath": "scripts/ops/formal-kernel-minimal-state.mjs",
+      "sha256": "cf048372adb2edf2d66c648118d66dba77941350323632e183c74801793588d0",
+      "approvedBy": "ticket:FORMAL_KERNEL_MINIMAL_001",
+      "approvedAtUtc": "2026-04-28T12:00:00.000Z",
+      "rationale": "FORMAL_KERNEL_MINIMAL_001 approves the bounded state evaluator for the three-row formal kernel artifact without touching release token governance."
+    },
+    {
+      "filePath": "test/contracts/formal-kernel-minimal.contract.test.js",
+      "sha256": "d1d682285c3252a2c5105cc9c99c55ea372ba0b40b40f55f492c651d2703d906",
+      "approvedBy": "ticket:FORMAL_KERNEL_MINIMAL_001",
+      "approvedAtUtc": "2026-04-28T12:00:00.000Z",
+      "rationale": "FORMAL_KERNEL_MINIMAL_001 approves the bounded contract that validates exact three-row shape, deterministic state evaluation, and explicit advisory downgrade semantics."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "1266014acdf2a75923ee3fe3eefbe05e9daea7a3cceeeba6c744a5dc5c7449e6",
+      "approvedBy": "ticket:BASELINE_RED_HYGIENE_002",
+      "approvedAtUtc": "2026-04-28T12:30:00.000Z",
+      "rationale": "BASELINE_RED_HYGIENE_002 approves the exact M7 scope-map rebind for sector-m-edit-menu-undo-redo-command-kernel.test.js so branch-level scope guards match the proven bounded hygiene delta."
     }
   ]
 }
