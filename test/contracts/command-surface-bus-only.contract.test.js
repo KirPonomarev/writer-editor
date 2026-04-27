@@ -29,6 +29,7 @@ function loadBusModule() {
 const FORBIDDEN_EDITOR_COMMAND_APIS = Object.freeze([
   'window.electronAPI.newFile(',
   'window.electronAPI.openFile(',
+  'window.electronAPI.fileOpen(',
   'window.electronAPI.saveFile(',
   'window.electronAPI.saveAs(',
   'window.electronAPI.exportDocxMin(',
@@ -163,7 +164,8 @@ function evaluateBusOnlySurface(textMap) {
   }
 
   const hasHotkeyOrToolbarDispatch =
-    editorText.includes('dispatchUiCommand(COMMAND_IDS.PROJECT_OPEN)')
+    editorText.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_NEW)')
+    && editorText.includes('dispatchUiCommand(COMMAND_IDS.PROJECT_OPEN)')
     && editorText.includes('dispatchUiCommand(COMMAND_IDS.PROJECT_SAVE)')
     && editorText.includes('dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN)');
   if (!hasHotkeyOrToolbarDispatch) {
