@@ -8043,16 +8043,16 @@ function handleUiAction(action) {
       toggleToolbarCompactMode();
       return true;
     case 'open-settings':
-      openSettingsModal();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS);
       return true;
     case 'open-command-palette':
       openCommandPaletteModal();
       return true;
     case 'open-diagnostics':
-      openDiagnosticsModal();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS);
       return true;
     case 'open-recovery':
-      openRecoveryModal('Recovery modal opened manually');
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_RECOVERY);
       return true;
     default:
       return false;
