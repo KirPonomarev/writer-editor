@@ -2835,6 +2835,13 @@
       "approvedBy": "ticket:FORMAL_KERNEL_MINIMAL_001",
       "approvedAtUtc": "2026-04-28T12:00:00.000Z",
       "rationale": "FORMAL_KERNEL_MINIMAL_001 approves the bounded contract that validates exact three-row shape, deterministic state evaluation, and explicit advisory downgrade semantics."
+    },
+    {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "1266014acdf2a75923ee3fe3eefbe05e9daea7a3cceeeba6c744a5dc5c7449e6",
+      "approvedBy": "ticket:BASELINE_RED_HYGIENE_002",
+      "approvedAtUtc": "2026-04-28T12:30:00.000Z",
+      "rationale": "BASELINE_RED_HYGIENE_002 approves the exact M7 scope-map rebind for sector-m-edit-menu-undo-redo-command-kernel.test.js so branch-level scope guards match the proven bounded hygiene delta."
     }
   ]
 }
