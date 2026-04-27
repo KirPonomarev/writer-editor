@@ -68,6 +68,7 @@
       "result": "branch_pushed",
       "branch": "codex/revision-bridge-v21-autocycle-c01",
       "push": "success",
+      "commitSha": "7d54efd9",
       "note": "RB-26 ApplyReceipt contract commit pushed via env -u GH_TOKEN"
     },
     {
@@ -76,6 +77,7 @@
       "result": "branch_pushed",
       "branch": "codex/revision-bridge-v21-autocycle-c01",
       "push": "success",
+      "commitSha": "5b679300",
       "note": "RB-27 SupportedSurfaceV1 contract commit pushed via env -u GH_TOKEN"
     },
     {
@@ -84,6 +86,7 @@
       "result": "branch_pushed",
       "branch": "codex/revision-bridge-v21-autocycle-c01",
       "push": "success",
+      "commitSha": "5d4ed421",
       "note": "RB-28 block identity risk contract commit pushed via env -u GH_TOKEN"
     },
     {
@@ -121,6 +124,15 @@
       "push": "success",
       "commitSha": "956b9216",
       "note": "RB-32 apply plan preview contour commit pushed via env -u GH_TOKEN"
+    },
+    {
+      "id": "DR-011",
+      "contourId": "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9",
+      "result": "branch_pushed",
+      "branch": "codex/revision-bridge-v21-autocycle-c01",
+      "push": "success",
+      "commitSha": "9695073f",
+      "note": "RB-33 structural ops manual review contour commit pushed via env -u GH_TOKEN"
     }
   ],
   "evidenceIndex": [
@@ -441,6 +453,12 @@
       "type": "contour-close",
       "summary": "C13 accepted as Stage 9 structural manual-review preview contour and active contour moved to C14",
       "status": "pass"
+    },
+    {
+      "id": "EV-054",
+      "type": "delivery",
+      "summary": "RB-33 contour delivery push completed for commit 9695073f on branch codex/revision-bridge-v21-autocycle-c01",
+      "status": "pass"
     }
   ],
   "evidenceLedger": [
@@ -498,6 +516,34 @@
     }
   ],
   "claimClassIndex": [
+    {
+      "contourId": "RB-C01-IMPORT-CHAIN-AND-REPO-FACT-AUDIT",
+      "claimClass": "CLAIM_CLASS_DOCUMENT_ONLY"
+    },
+    {
+      "contourId": "RB-C02-P0-SAFETY-FOUNDATION-WRITE-SEAM",
+      "claimClass": "CLAIM_CLASS_STATIC_SOURCE+CLAIM_CLASS_UNIT_TESTED"
+    },
+    {
+      "contourId": "RB-C03-APPLYTXN-CONTRACT-AND-BLOCKED-PATH",
+      "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED"
+    },
+    {
+      "contourId": "RB-C04-REVISIONSESSION-IMPORT-SEAM",
+      "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED"
+    },
+    {
+      "contourId": "RB-C05-DONOR-V21-MODULE-PORT-PHASED",
+      "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED"
+    },
+    {
+      "contourId": "RB-C06-APPLY-RECEIPT-CONTRACT-STAGE8",
+      "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED"
+    },
+    {
+      "contourId": "RB-C07-SUPPORTED-SURFACE-V1-DECLARATION-STAGE3",
+      "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED"
+    },
     {
       "contourId": "RB-C08-BLOCK-LINEAGE-COVERAGE-STAGE4",
       "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED"
@@ -663,6 +709,14 @@
       "reviewType": "inspector",
       "verdict": "accepted",
       "note": "repeat C13 review after fixes found no remaining findings"
+    },
+    {
+      "id": "RV-003",
+      "contourId": "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9",
+      "reviewer": "James",
+      "reviewType": "state_review",
+      "verdict": "fix_in_contour",
+      "note": "state review identified missing evidenceLedger and reviewResults fields, C12 delivery record omission, missing commitSha backfill and claim class coverage gaps; corrections applied in current contour"
     }
   ],
   "replacementAgentHistory": [],
