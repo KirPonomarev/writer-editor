@@ -1452,6 +1452,18 @@ function loadStyleMapModule() {
   return styleMapModulePromise;
 }
 
+let revisionBridgeModulePromise = null;
+function loadRevisionBridgeModule() {
+  if (!revisionBridgeModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'index.mjs')).href;
+    revisionBridgeModulePromise = import(modulePath).catch((error) => {
+      revisionBridgeModulePromise = null;
+      throw error;
+    });
+  }
+  return revisionBridgeModulePromise;
+}
+
 function mapMarkdownErrorCode(inputCode, inputReason) {
   const code = typeof inputCode === 'string' ? inputCode : '';
   const reason = typeof inputReason === 'string' ? inputReason : '';
@@ -1712,7 +1724,108 @@ async function buildDocxMinBuffer(editorSnapshot) {
   });
 }
 
+function buildRevisionBridgeSceneTitle(relativePath) {
+  const fileName = typeof relativePath === 'string' ? relativePath.trim() : '';
+  if (!fileName) {
+    return 'Current Scene';
+  }
+  return path.basename(fileName, path.extname(fileName)) || fileName;
+}
+
+async function enrichRevisionBridgeExportSnapshot(editorSnapshot, payload = {}) {
+  const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
+  const plainText = String(snapshot.plainText || '');
+  if (!plainText.trim()) {
+    return snapshot;
+  }
+  if (typeof currentFilePath !== 'string' || !currentFilePath.trim()) {
+    return snapshot;
+  }
+
+  const projectBinding = await resolveProjectBindingForFile(currentFilePath);
+  if (!projectBinding || !projectBinding.projectId || !projectBinding.manifestPath) {
+    return snapshot;
+  }
+
+  const relativePath = getProjectRelativeFilePath(currentFilePath, projectBinding.manifestPath);
+  if (!relativePath) {
+    return snapshot;
+  }
+
+  const [revisionBridgeModule, semanticMappingModule] = await Promise.all([
+    loadRevisionBridgeModule(),
+    loadSemanticMappingModule(),
+  ]);
+  const sceneId = `scene-${computeHash(`${projectBinding.projectId}:${relativePath}`)}`;
+  const semanticMap = semanticMappingModule.mapSemanticEntries({
+    sourceId: sceneId,
+    text: plainText,
+  });
+  const entries = Array.isArray(semanticMap.entries) ? semanticMap.entries : [];
+  if (entries.length === 0) {
+    return snapshot;
+  }
+
+  const manifestSchemaVersion = String(projectBinding.manifest?.schemaVersion || 'project-manifest.v1');
+  const baselineHash = computeHash(plainText);
+  const structureSeed = entries.map((entry) => ({
+    kind: typeof entry?.kind === 'string' ? entry.kind : 'paragraph',
+    ordinal: Number.isFinite(entry?.ordinal) ? entry.ordinal : 0,
+    range: entry?.sourceRange || null,
+  }));
+  const sceneStructuralHash = computeHash(JSON.stringify(structureSeed));
+  const sceneHash = computeHash(`${baselineHash}:${sceneStructuralHash}`);
+  const sceneOrder = [sceneId];
+  const sceneBaselines = [{
+    sceneId,
+    sceneHash,
+    sceneStructuralHash,
+    title: buildRevisionBridgeSceneTitle(relativePath),
+    orderIndex: 0,
+    sourcePath: relativePath,
+    relativePath,
+  }];
+  const blockBaselines = entries.map((entry, index) => {
+    const entryText = typeof entry?.text === 'string' ? entry.text : '';
+    const entryKind = typeof entry?.kind === 'string' ? entry.kind : 'paragraph';
+    const startOffset = Number.isFinite(entry?.sourceRange?.startOffset) ? entry.sourceRange.startOffset : index;
+    const endOffset = Number.isFinite(entry?.sourceRange?.endOffset) ? entry.sourceRange.endOffset : startOffset + Math.max(entryText.length, 1);
+    const blockLineageId = `lineage-${computeHash(`${sceneId}:${entryKind}:${index}`)}`;
+    const blockTextHash = computeHash(entryText);
+    const blockStructuralHash = computeHash(`${entryKind}:${startOffset}:${endOffset}`);
+    const blockVersionHash = computeHash(`${blockTextHash}:${blockStructuralHash}`);
+    const blockHash = computeHash(`${sceneId}:${blockVersionHash}`);
+    return {
+      blockInstanceId: `block-${computeHash(`${blockLineageId}:${blockVersionHash}`)}`,
+      blockLineageId,
+      blockVersionHash,
+      blockKind: entryKind,
+      blockOrder: index,
+      blockHash,
+      blockTextHash,
+      blockStructuralHash,
+      sceneId,
+    };
+  });
+
+  return {
+    ...snapshot,
+    exportKind: 'docx-min',
+    exportedAtUtc: new Date().toISOString(),
+    requestId: typeof payload?.requestId === 'string' ? payload.requestId : '',
+    projectId: projectBinding.projectId,
+    profileId: revisionBridgeModule.REVISION_BRIDGE_DOCX_REVIEW_PROFILE_ID,
+    baselineHash,
+    docFingerprintPlan: computeHash(`${projectBinding.projectId}:${relativePath}:${baselineHash}:${sceneStructuralHash}`),
+    sourceVersion: `project-manifest:${manifestSchemaVersion}`,
+    sceneOrder,
+    sceneBaselines,
+    blockBaselines,
+  };
+}
+
 async function handleExportDocxMin(payloadRaw) {
+  const revisionBridgeModule = await loadRevisionBridgeModule();
   return runDocxMinExport(payloadRaw, {
     normalizeExportPayload,
     makeTypedExportError,
@@ -1723,6 +1836,9 @@ async function handleExportDocxMin(payloadRaw) {
     queueDiskOperation,
     writeBufferAtomic,
     updateStatus,
+    enrichRevisionBridgeExportSnapshot,
+    evaluateRevisionBridgeExportRuntimeSnapshot: revisionBridgeModule.evaluateRevisionBridgeExportRuntimeSnapshot,
+    buildRevisionBridgeExportManifest: revisionBridgeModule.buildRevisionBridgeExportManifest,
   });
 }
 
