@@ -978,18 +978,31 @@ function resolveCentralSheetViewportRuntimeWindow({
   if (!runtimeWindow || runtimeWindow.windowingEnabled !== true) {
     return runtimeWindow;
   }
-  if (runtimeWindow.totalPageCount <= 3 || runtimeWindow.lastRenderedPage >= 4) {
+  if (runtimeWindow.totalPageCount <= 3 || runtimeWindow.renderedPageCount >= 4) {
     return runtimeWindow;
   }
-  const minimumLastRenderedPage = Math.min(runtimeWindow.totalPageCount, 4);
-  const firstRenderedPage = Math.max(1, runtimeWindow.firstRenderedPage);
+  const minimumRenderedPageCount = Math.min(runtimeWindow.totalPageCount, 4);
+  let firstRenderedPage = Math.max(1, runtimeWindow.firstRenderedPage);
+  let lastRenderedPage = Math.max(firstRenderedPage, runtimeWindow.lastRenderedPage);
+  const minimumLastRenderedPage = Math.min(
+    runtimeWindow.totalPageCount,
+    firstRenderedPage + minimumRenderedPageCount - 1,
+  );
   const pageStride = Math.max(1, runtimeWindow.pageStride);
-  const lastRenderedPage = Math.max(firstRenderedPage, minimumLastRenderedPage);
+  lastRenderedPage = Math.max(lastRenderedPage, minimumLastRenderedPage);
+  const minimumFirstRenderedPage = Math.max(
+    1,
+    lastRenderedPage - minimumRenderedPageCount + 1,
+  );
+  firstRenderedPage = Math.min(firstRenderedPage, minimumFirstRenderedPage);
   return {
     ...runtimeWindow,
+    firstRenderedPage,
     lastRenderedPage,
     renderedPageCount: (lastRenderedPage - firstRenderedPage) + 1,
+    topSpacerHeight: Math.max(0, firstRenderedPage - 1) * pageStride,
     bottomSpacerHeight: Math.max(0, runtimeWindow.totalPageCount - lastRenderedPage) * pageStride,
+    overscanBefore: Math.max(0, runtimeWindow.firstVisiblePage - firstRenderedPage),
     overscanAfter: Math.max(0, lastRenderedPage - runtimeWindow.lastVisiblePage),
     visibleCoverageComplete: true,
     visiblePagesOmitted: false,
