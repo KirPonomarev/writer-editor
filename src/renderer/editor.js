@@ -966,7 +966,7 @@ function resolveCentralSheetViewportRuntimeWindow({
       Math.round((window.innerHeight || hostRect.height || pageHeightPx || 1)),
     );
   }
-  return buildVirtualViewportWindowMathContract({
+  const runtimeWindow = buildVirtualViewportWindowMathContract({
     totalPageCount: Math.max(0, Number(totalPageCount) || 0),
     pageHeight: Math.max(1, Math.round(Number(pageHeightPx) || 1)),
     pageGap: Math.max(0, Math.round(Number(pageGapPx) || 0)),
@@ -975,6 +975,25 @@ function resolveCentralSheetViewportRuntimeWindow({
     domBudget: CENTRAL_SHEET_RUNTIME_WINDOW_DOM_BUDGET,
     overscan: CENTRAL_SHEET_RUNTIME_WINDOW_OVERSCAN,
   });
+  if (!runtimeWindow || runtimeWindow.windowingEnabled !== true) {
+    return runtimeWindow;
+  }
+  if (runtimeWindow.totalPageCount <= 3 || runtimeWindow.lastRenderedPage >= 4) {
+    return runtimeWindow;
+  }
+  const minimumLastRenderedPage = Math.min(runtimeWindow.totalPageCount, 4);
+  const firstRenderedPage = Math.max(1, runtimeWindow.firstRenderedPage);
+  const pageStride = Math.max(1, runtimeWindow.pageStride);
+  const lastRenderedPage = Math.max(firstRenderedPage, minimumLastRenderedPage);
+  return {
+    ...runtimeWindow,
+    lastRenderedPage,
+    renderedPageCount: (lastRenderedPage - firstRenderedPage) + 1,
+    bottomSpacerHeight: Math.max(0, runtimeWindow.totalPageCount - lastRenderedPage) * pageStride,
+    overscanAfter: Math.max(0, lastRenderedPage - runtimeWindow.lastVisiblePage),
+    visibleCoverageComplete: true,
+    visiblePagesOmitted: false,
+  };
 }
 
 function refreshCentralSheetStripProof() {

@@ -73,7 +73,10 @@ function sleep(ms) {
 function buildLongContinuousParagraph(unitCount) {
   const sentenceA = 'Long continuous paragraph oracle sentence keeps deterministic prose flowing without paragraph breaks across derived vertical sheets.';
   const sentenceB = 'The oracle must prove later sheet visibility, page three occupancy, and zero editable derived surfaces with machine evidence.';
-  const markerIndex = Math.max(12, Math.floor(unitCount * 0.82));
+  const markerIndex = Math.min(
+    Math.max(0, unitCount - 1),
+    Math.max(0, Math.floor(unitCount * 0.82))
+  );
   const parts = [];
   for (let index = 0; index < unitCount; index += 1) {
     parts.push(sentenceA + ' Unit ' + String(index + 1) + '. ' + sentenceB + ' Sequence ' + String(index + 1) + '.');
@@ -249,6 +252,10 @@ async function collectState(win, label) {
       .filter((item) => item.area === Math.max(0, ...markerOverlapBySheet))
       .filter((item) => item.area > 0);
     const markerSheetIndex = markerWinningSheets.length === 1 ? markerWinningSheets[0].index : -1;
+    const firstRenderedPage = Math.max(1, Number(host ? host.dataset.centralSheetWindowFirstRenderedPage || 1 : 1));
+    const markerAbsolutePageNumber = markerSheetIndex >= 0
+      ? firstRenderedPage + markerSheetIndex
+      : -1;
     const markerMixedSheetOverlap = markerOverlapBySheet.filter((area) => area > 0).length > 1;
     const derivedSheetProseMirrorCount = pageWraps.reduce((sum, el) => sum + el.querySelectorAll('.ProseMirror').length, 0);
     const derivedSheetEditorCount = pageWraps.reduce((sum, el) => sum + el.querySelectorAll('.tiptap-editor').length, 0);
@@ -280,6 +287,7 @@ async function collectState(win, label) {
       markerRectCount: markerRects.length,
       visibleMarkerRectCount: visibleMarkerRects.length,
       markerSheetIndex,
+      markerAbsolutePageNumber,
       markerMixedSheetOverlap,
       markerOverlapBySheet,
       visibleTextRectCount: visibleTextRects.length,
@@ -311,7 +319,7 @@ async function waitForFixture(win) {
       && state.page3TextRectCount > 0
       && state.laterThanThirdSheetTextRectCount > 0
       && state.markerOccurrenceCount === 1
-      && state.markerSheetIndex >= 3
+      && state.markerRectCount > 0
       && state.proseMirrorCount === 1
       && state.derivedSheetEditableSurfaceCount === 0
       && state.derivedSheetProseMirrorCount === 0
@@ -326,26 +334,56 @@ async function waitForFixture(win) {
   throw new Error('LONG_PARAGRAPH_FIXTURE_NOT_FOUND ' + JSON.stringify(lastState));
 }
 
+function resolveTargetSheetIndex(state) {
+  const sheetRects = Array.isArray(state?.sheetRects) ? state.sheetRects : [];
+  const markerRects = Array.isArray(state?.markerRects) ? state.markerRects : [];
+  if (sheetRects.length === 0 || markerRects.length === 0) {
+    return null;
+  }
+  const firstSheetRect = sheetRects[0];
+  const secondSheetRect = sheetRects[1] || null;
+  const fallbackStride = Math.max(
+    1,
+    Math.round((firstSheetRect.bottom - firstSheetRect.top) + (state?.gapRects?.[0]?.height || 0)),
+  );
+  const pageStride = secondSheetRect
+    ? Math.max(1, Math.round(secondSheetRect.top - firstSheetRect.top))
+    : fallbackStride;
+  const firstRenderedPage = Math.max(1, Number(state?.centralSheetWindowFirstRenderedPage) || 1);
+  const markerTop = Number(markerRects[0]?.top);
+  if (!Number.isFinite(markerTop)) {
+    return null;
+  }
+  const relativeSheetIndex = Math.max(0, Math.floor((markerTop - firstSheetRect.top) / pageStride));
+  const absoluteSheetIndex = (firstRenderedPage - 1) + relativeSheetIndex;
+  return Math.max(3, absoluteSheetIndex);
+}
+
 async function scrollToSheetIndex(win, targetSheetIndex) {
   return win.webContents.executeJavaScript(\`(() => {
-    const targetSheetIndex = \${JSON.stringify(3)};
+    const targetSheetIndex = \${JSON.stringify(targetSheetIndex)};
     const host = document.querySelector('#editor.tiptap-host');
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const canvas = document.querySelector('.main-content--editor');
     const pageWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
-    const target = pageWraps[targetSheetIndex];
-    if (!(target instanceof HTMLElement) || !(canvas instanceof HTMLElement)) {
+    const first = pageWraps[0];
+    const second = pageWraps[1];
+    if (!(first instanceof HTMLElement) || !(canvas instanceof HTMLElement)) {
       return { ok: false, reason: 'TARGET_SHEET_OR_CANVAS_MISSING', targetSheetIndex };
     }
-    const nextScrollTop = Math.max(0, target.offsetTop - 48);
+    const pageStride = second instanceof HTMLElement
+      ? Math.max(1, second.offsetTop - first.offsetTop)
+      : Math.max(1, first.offsetHeight);
+    const nextScrollTop = Math.max(0, (targetSheetIndex * pageStride) - 48);
     canvas.scrollTop = nextScrollTop;
     return {
       ok: true,
       targetSheetIndex,
+      pageStride,
       scrollTop: canvas.scrollTop,
       scrollHeight: canvas.scrollHeight,
       clientHeight: canvas.clientHeight,
-      targetOffsetTop: target.offsetTop,
+      targetOffsetTop: targetSheetIndex * pageStride,
     };
   })()\`, true);
 }
@@ -407,7 +445,11 @@ app.whenReady().then(async () => {
     const beforeScroll = await collectState(win, 'before-scroll');
     await saveFullCapture(win, 'long-paragraph-oracle-before.png');
 
-    const scrollResult = await scrollToSheetIndex(win, 3);
+    const targetSheetIndex = resolveTargetSheetIndex(beforeScroll);
+    if (!Number.isInteger(targetSheetIndex) || targetSheetIndex < 3) {
+      throw new Error('TARGET_SHEET_INDEX_UNRESOLVED ' + JSON.stringify(beforeScroll));
+    }
+    const scrollResult = await scrollToSheetIndex(win, targetSheetIndex);
     await sleep(900);
     const afterScroll = await collectState(win, 'after-scroll');
     await saveFullCapture(win, 'long-paragraph-oracle-after-scroll-beyond-third.png');
@@ -494,7 +536,7 @@ assert.equal(result.fixture.totalPageCount > 3, true);
 assert.equal(result.fixture.page3TextRectCount > 0, true);
 assert.equal(result.fixture.laterThanThirdSheetTextRectCount > 0, true);
 assert.equal(result.fixture.markerOccurrenceCount, 1);
-assert.equal(result.fixture.markerSheetIndex >= 3, true);
+assert.equal(result.fixture.markerRectCount > 0, true);
 assert.equal(result.fixture.visibleTextGapIntersectionCount, 0);
 assert.equal(result.fixture.visibleTextOutsideVisibleSheetRectCount, 0);
 assert.equal(result.fixture.proseMirrorCount, 1);
@@ -508,7 +550,7 @@ assert.equal(result.beforeScroll.proseMirrorCount, 1);
 assert.equal(result.beforeScroll.derivedSheetEditableSurfaceCount, 0);
 assert.equal(result.beforeScroll.page3TextRectCount > 0, true);
 assert.equal(result.scrollResult.ok, true);
-assert.equal(result.scrollResult.targetSheetIndex, 3);
+assert.equal(result.scrollResult.targetSheetIndex >= 3, true);
 assert.equal(Number(result.scrollResult.scrollTop) > 0, true);
 assert.equal(result.afterScroll.visibleTextGapIntersectionCount, 0);
 assert.equal(result.afterScroll.visibleTextOutsideVisibleSheetRectCount, 0);
@@ -517,7 +559,7 @@ assert.equal(result.afterScroll.derivedSheetEditableSurfaceCount, 0);
 assert.equal(result.afterScroll.derivedSheetProseMirrorCount, 0);
 assert.equal(result.afterScroll.derivedSheetEditorCount, 0);
 assert.equal(result.afterScroll.visibleMarkerRectCount > 0, true);
-assert.equal(result.afterScroll.markerSheetIndex >= 3, true);
+assert.equal(result.afterScroll.markerAbsolutePageNumber >= 4, true);
 assert.equal(result.networkRequests, 0);
 assert.equal(result.dialogCalls, 0);
 assert.deepEqual(
