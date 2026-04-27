@@ -8072,14 +8072,14 @@ function triggerLeftToolbarAction(action) {
       }
       return true;
     case 'new':
-      if (window.electronAPI && typeof window.electronAPI.fileOpen === 'function') {
-        void window.electronAPI.fileOpen({ intent: 'new' });
+      if (typeof dispatchUiCommand === 'function') {
+        void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_NEW);
         return true;
       }
       break;
     case 'open':
-      if (window.electronAPI && typeof window.electronAPI.fileOpen === 'function') {
-        void window.electronAPI.fileOpen({ intent: 'open' });
+      if (typeof dispatchUiCommand === 'function') {
+        void dispatchUiCommand(COMMAND_IDS.PROJECT_OPEN);
         return true;
       }
       break;
