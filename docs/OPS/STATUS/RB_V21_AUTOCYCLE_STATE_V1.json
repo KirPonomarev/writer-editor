@@ -3,7 +3,7 @@
   "planName": "Structural Revision Bridge v2.1 Final Master Plan",
   "activeCanon": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final",
   "currentStatus": "IN_PROGRESS",
-  "activeContour": "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10",
+  "activeContour": "RB-C14C-WORD-EXPORT-MANIFEST-ARTIFACT-STAGE10",
   "acceptedContours": [
     "RB-C01-IMPORT-CHAIN-AND-REPO-FACT-AUDIT",
     "RB-C02-P0-SAFETY-FOUNDATION-WRITE-SEAM",
@@ -18,10 +18,11 @@
     "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
     "RB-C12-APPLY-TXN-RUNTIME-PATH-STAGE8",
     "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9",
-    "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10"
+    "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10",
+    "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10"
   ],
   "pendingContours": [
-    "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10",
+    "RB-C14C-WORD-EXPORT-MANIFEST-ARTIFACT-STAGE10",
     "RB-C15-GOOGLE-WORKFLOW-PROOF-STAGE11",
     "RB-C16-CAPABILITY-MATRIX-STAGE12",
     "RB-C17-MINIMAL-REVIEW-UI-STAGE13",
@@ -41,16 +42,17 @@
       "id": "BL-002",
       "type": "stage10-word-transport-proof",
       "layer": "runtime",
-      "summary": "Stage 10 Word transport proof is blocked because the shipping export entrypoint emits only content, plainText and bookProfile while revision bridge transport contracts require projectId, baselineHash, docFingerprint, sourceVersion, sceneOrder, sceneBaselines and blockBaselines",
+      "summary": "Stage 10 Word transport proof remains blocked because the shipping export path now returns project-bound manifest-binding evidence for the bounded current-scene case, but it still does not persist a local ExportManifest artifact, does not bind transport envelope data into the DOCX package, and has no current-repo Word smoke artifact",
       "status": "open",
       "evidence": [
-        "composeEditorSnapshot returns content plainText bookProfile only",
+        "handleExportDocxMin plus runDocxMinExport now enrich the shipping export snapshot and return revisionBridge manifest-binding evidence for project-bound current-scene export",
+        "no persisted ExportManifest artifact exists yet in the shipping export path",
         "buildRevisionBridgeTransportEnvelope is referenced only in revision bridge contract tests",
         "docxMinBuilder writes only Content_Types rels and word/document.xml",
         "DOCX_CLOSURE_EVIDENCE_V1 is static runtime wiring verification only",
         "v1 hardening donor report explicitly says full external Word or Google round-trip manual smoke was not executed"
       ],
-      "nextContourCandidate": "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10"
+      "nextContourCandidate": "RB-C14C-WORD-EXPORT-MANIFEST-ARTIFACT-STAGE10"
     }
   ],
   "deliveryResults": [
@@ -158,6 +160,15 @@
       "push": "success",
       "commitSha": "519bb286",
       "note": "RB-34 export runtime snapshot readiness contour commit pushed via env -u GH_TOKEN"
+    },
+    {
+      "id": "DR-013",
+      "contourId": "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10",
+      "result": "branch_pushed",
+      "branch": "codex/revision-bridge-v21-autocycle-c01",
+      "push": "success",
+      "commitSha": "84aaf5a5",
+      "note": "RB-C14B export manifest evidence seam contour pushed with initial seam commit 2fbe9c89 and hardening follow-up 84aaf5a5"
     }
   ],
   "evidenceIndex": [
@@ -514,6 +525,30 @@
       "type": "delivery",
       "summary": "RB-34 contour delivery push completed for commit 519bb286 on branch codex/revision-bridge-v21-autocycle-c01",
       "status": "pass"
+    },
+    {
+      "id": "EV-060",
+      "type": "runtime-wiring",
+      "summary": "RB-C14B binds main-side project scoped export enrichment into the shipping DOCX export path and returns revisionBridge manifest-binding evidence while leaving the DOCX package shape unchanged",
+      "status": "pass"
+    },
+    {
+      "id": "EV-061",
+      "type": "targeted-tests",
+      "summary": "RB-C14B targeted tests passed: docx-min export handler 9 of 9, RB-34 functional subset 5 of 5, and u3 export wiring 4 of 4",
+      "status": "pass"
+    },
+    {
+      "id": "EV-062",
+      "type": "contour-close",
+      "summary": "C14B accepted as the Stage 10 shipping export manifest-binding evidence contour and active contour moved to C14C for local ExportManifest artifact work",
+      "status": "pass"
+    },
+    {
+      "id": "EV-063",
+      "type": "delivery",
+      "summary": "RB-C14B contour delivery push completed for final commit 84aaf5a5 on branch codex/revision-bridge-v21-autocycle-c01",
+      "status": "pass"
     }
   ],
   "evidenceLedger": [
@@ -594,6 +629,19 @@
       "SOURCE_BASENAME": "index.mjs",
       "REVIEWER": "orchestrator",
       "VERDICT": "accepted"
+    },
+    {
+      "CONTOUR_ID": "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10",
+      "CLAIM_CLASS": "CLAIM_CLASS_STATIC_SOURCE+CLAIM_CLASS_UNIT_TESTED",
+      "EVIDENCE_TYPE": "targeted_test",
+      "COMMAND": "node --test docx-min-export-handler.test.js && node --test --test-name-pattern RB-34_subset revision-bridge-export-runtime-snapshot.contract.test.js && node --test sector-u-u3-export-wiring.test.js",
+      "RESULT": "pass_handler_9_of_9_plus_rb34_subset_5_of_5_plus_u3_4_of_4",
+      "ARTIFACT_BASENAME": "",
+      "ARTIFACT_CHECKSUM": "",
+      "TEST_BASENAME": "docx-min-export-handler.test.js",
+      "SOURCE_BASENAME": "main.js",
+      "REVIEWER": "orchestrator",
+      "VERDICT": "accepted"
     }
   ],
   "claimClassIndex": [
@@ -652,9 +700,13 @@
     {
       "contourId": "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10",
       "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED"
+    },
+    {
+      "contourId": "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10",
+      "claimClass": "CLAIM_CLASS_STATIC_SOURCE+CLAIM_CLASS_UNIT_TESTED"
     }
   ],
-  "nextContourCandidate": "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10",
+  "nextContourCandidate": "RB-C14C-WORD-EXPORT-MANIFEST-ARTIFACT-STAGE10",
   "finalAcceptanceGaps": [
     "project-level ApplyTxn path is not implemented as runtime write path",
     "ApplyReceipt generation and recovery journal flow are not proven in current runtime",
@@ -720,6 +772,12 @@
       "claim": "current shipping DOCX export entrypoint is not transport-ready for Stage 10 because its runtime snapshot lacks revision bridge manifest prerequisites and the DOCX builder does not emit transport metadata parts",
       "verdict": "supported",
       "evidenceRef": "composeEditorSnapshot plus buildDocxMinBuffer plus evaluateRevisionBridgeExportRuntimeSnapshot"
+    },
+    {
+      "id": "FC-009",
+      "claim": "shipping DOCX export path now enriches project-bound current-scene exports with revision bridge manifest prerequisites and returns manifest-binding evidence without persisting an ExportManifest artifact or changing DOCX package shape",
+      "verdict": "supported",
+      "evidenceRef": "handleExportDocxMin plus runDocxMinExport plus enrichRevisionBridgeExportSnapshot"
     }
   ],
   "auditResults": [
@@ -790,8 +848,8 @@
     },
     {
       "id": "AU-014",
-      "verdict": "in_progress",
-      "note": "C14B active: next Stage 10 contour is narrowed to runtime binding of export manifest prerequisites into the shipping export path without claiming Word proof yet"
+      "verdict": "accepted",
+      "note": "C14B accepted: shipping export path now exposes bounded project-bound manifest-binding evidence with typed failure guards while keeping DOCX package shape unchanged and Word proof scope explicitly unproven"
     }
   ],
   "reviewResults": [
@@ -826,6 +884,22 @@
       "reviewType": "fact_check",
       "verdict": "blocked",
       "note": "Stage 10 proof rejected for current repo because buildRevisionBridgeTransportEnvelope has no shipping entrypoint binding, composeEditorSnapshot is transport-incomplete, docxMinBuilder emits a three-part package only, and donor reports are not current repo evidence"
+    },
+    {
+      "id": "RV-005",
+      "contourId": "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10",
+      "reviewer": "orchestrator",
+      "reviewType": "audit",
+      "verdict": "fix_in_contour",
+      "note": "initial C14B review found untyped evaluator, manifest builder and revision bridge module load failure seams; all three were fixed in scope before acceptance"
+    },
+    {
+      "id": "RV-006",
+      "contourId": "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10",
+      "reviewer": "orchestrator",
+      "reviewType": "final_review",
+      "verdict": "accepted",
+      "note": "C14B final review confirmed main.js and docxMinExportHandler.js bind revision bridge manifest evidence into the shipping export path with targeted tests green and no DOCX package or persisted artifact widening"
     }
   ],
   "replacementAgentHistory": [],
@@ -840,7 +914,7 @@
     "stage7_import_to_revisionsession": "contract_seam_preview_ready_with_registry_record_bridge_no_runtime_apply",
     "stage8_apply_engine_and_applytxn": "partial_with_applytxn_applyreceipt_and_applyplan_preview_contracts",
     "stage9_structural_operations": "partial_with_manual_review_preview_contracts",
-    "stage10_word_transport": "blocked_on_word_transport_proof_but_advanced_to_export_runtime_snapshot_readiness_contract_with_next_runtime_manifest_binding_contour_active",
+    "stage10_word_transport": "blocked_on_full_word_transport_proof_but_advanced_to_shipping_export_manifest_binding_evidence_with_c14c_local_export_manifest_artifact_contour_active",
     "stage11_google_workflow": "not_implemented",
     "stage12_capability_matrix": "not_implemented",
     "stage13_minimal_review_ui": "not_implemented",
