@@ -51,15 +51,15 @@ test('formal kernel minimal state is green and deterministic', () => {
   assert.deepEqual(firstPayload, secondPayload);
 });
 
-test('formal kernel minimal keeps recovery human readable as explicit advisory downgrade', () => {
+test('formal kernel minimal promotes recovery human readable only through a detector-bound proof', () => {
   const artifact = JSON.parse(fs.readFileSync(ARTIFACT_PATH, 'utf8'));
   const recoveryRow = artifact.items.find((item) => item.invariantId === 'RECOVERY_HUMAN_READABLE');
   assert.ok(recoveryRow);
-  assert.equal(recoveryRow.bindingClass, 'advisory_downgrade');
-  assert.equal(recoveryRow.status, 'ADVISORY');
-  assert.equal(recoveryRow.reasonCode, 'NO_HONEST_DETECTOR_PATH');
-  assert.ok(Array.isArray(recoveryRow.evidenceRefs));
-  assert.equal(recoveryRow.evidenceRefs.length >= 2, true);
+  assert.equal(recoveryRow.bindingClass, 'detector_bound');
+  assert.equal(recoveryRow.status, 'BOUND');
+  assert.equal(recoveryRow.detectorToken, 'RECOVERY_HUMAN_READABLE_OK');
+  assert.equal(recoveryRow.proofHook, 'node scripts/ops/recovery-io-state.mjs --json');
+  assert.equal(recoveryRow.positiveContractRef, 'test/contracts/recovery-human-readable.contract.test.js');
 });
 
 test('formal kernel minimal keeps text no loss as explicit advisory downgrade until detector path is green', () => {
