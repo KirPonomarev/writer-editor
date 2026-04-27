@@ -86,7 +86,7 @@ test('central sheet strip proof: source remains renderer-only and bounded', () =
   assert.ok(editorText.includes('buildVirtualViewportWindowMathContract'));
   assert.match(
     editorText,
-    /clearCentralSheetStripProof\(\{ overflowReason: centralSheetDecision\.overflowReason \}\);/,
+    /clearCentralSheetStripProof\(\{ overflowReason: runtimeState\.overflowReason \}\);/,
   );
   assert.equal(editorText.includes("from '../derived/pageMapService.mjs'"), false);
   assert.equal(editorText.includes("from '../derived/layoutInvalidation.mjs'"), false);
