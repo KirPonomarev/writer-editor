@@ -92,3 +92,59 @@ test('M7 commands keep typed errors stable and do not expose stack', async () =>
   assert.equal(saveFail.error.reason, 'FLOW_SAVE_IPC_FAILED');
   assert.equal(Object.prototype.hasOwnProperty.call(saveFail.error, 'stack'), false);
 });
+
+test('M7 commands unwrap bridge value when outer command bridge status is false but inner flow result is ok', async () => {
+  const {
+    createCommandRegistry,
+    createCommandRunner,
+    registerProjectCommands,
+    COMMAND_IDS,
+  } = await loadCommandModules();
+
+  const registry = createCommandRegistry();
+  registerProjectCommands(registry, {
+    electronAPI: {
+      invokeUiCommandBridge: async (request) => {
+        if (request.commandId === COMMAND_IDS.PROJECT_FLOW_OPEN_V1) {
+          return {
+            ok: false,
+            reason: 'COMMAND_EXECUTION_FAILED',
+            value: {
+              ok: 1,
+              scenes: [{ path: '/tmp/a.txt', title: 'One', kind: 'scene', content: 'Alpha' }],
+            },
+          };
+        }
+        if (request.commandId === COMMAND_IDS.PROJECT_FLOW_SAVE_V1) {
+          return {
+            ok: false,
+            reason: 'COMMAND_EXECUTION_FAILED',
+            value: {
+              ok: 1,
+              savedCount: 1,
+            },
+          };
+        }
+        return { ok: false, reason: 'UNEXPECTED_COMMAND' };
+      },
+    },
+  });
+  const runCommand = createCommandRunner(registry);
+
+  const opened = await runCommand(COMMAND_IDS.PROJECT_FLOW_OPEN_V1);
+  assert.deepEqual(opened, {
+    ok: true,
+    value: {
+      opened: true,
+      scenes: [{ path: '/tmp/a.txt', title: 'One', kind: 'scene', content: 'Alpha' }],
+    },
+  });
+
+  const saved = await runCommand(COMMAND_IDS.PROJECT_FLOW_SAVE_V1, {
+    scenes: [{ path: '/tmp/a.txt', content: 'Alpha' }],
+  });
+  assert.deepEqual(saved, {
+    ok: true,
+    value: { saved: true, savedCount: 1 },
+  });
+});

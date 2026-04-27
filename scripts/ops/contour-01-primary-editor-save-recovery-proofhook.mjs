@@ -6,8 +6,9 @@ import { fileURLToPath } from 'node:url';
 const TOKEN_NAME = 'CONTOUR_01_PRIMARY_EDITOR_SAVE_RECOVERY_PATH_OK';
 const CONTOUR_ID = 'CONTOUR_01_PRIMARY_EDITOR_LOCAL_SAVE_AND_LAST_STABLE_RECOVERY';
 const EXECUTABLE_USER_PATH_ID = 'PRIMARY_EDITOR_LOCAL_SAVE_AND_RECOVER_USER_PATH_V1';
+const STATUS_RETIRED = 'RETIRED_HISTORICAL_PROOF_ONLY';
+const RETIREMENT_REASON = 'HISTORICAL_ADMITTED_SAVE_PATH_RETIRED_CURRENT_MAINLINE_USES_COMMAND_SURFACE_SAVE';
 const FAIL_REASON_FORCED_NEGATIVE = 'E_CONTOUR_01_PRIMARY_EDITOR_SAVE_RECOVERY_FORCED_NEGATIVE';
-const FAIL_REASON_MISSING_ADMITTED_PATH = 'E_CONTOUR_01_PRIMARY_EDITOR_SAVE_RECOVERY_ADMITTED_PATH_MISSING';
 const FAIL_REASON_UNEXPECTED = 'E_CONTOUR_01_PRIMARY_EDITOR_SAVE_RECOVERY_UNEXPECTED';
 const FORCE_NEGATIVE_ENV = 'CONTOUR_01_PRIMARY_EDITOR_SAVE_RECOVERY_FORCE_NEGATIVE';
 
@@ -280,10 +281,14 @@ function baseState() {
   return {
     contourId: CONTOUR_ID,
     executableUserPathId: EXECUTABLE_USER_PATH_ID,
+    status: STATUS_RETIRED,
+    retiredClaim: true,
+    retirementReason: RETIREMENT_REASON,
+    admissionActive: false,
     coveredSeams: [...COVERED_SEAMS],
     outOfScopeNotClaimed: [...OUT_OF_SCOPE_NOT_CLAIMED],
     provenOutOfScopeClaims: [],
-    scopeStatement: 'exact-admitted-live-path-only',
+    scopeStatement: 'historical-proof-only-retired-not-current-admitted-live-path',
   };
 }
 
@@ -313,13 +318,12 @@ export function evaluateContour01PrimaryEditorSaveRecoveryProofhook(input = {}) 
   try {
     const rootDir = String(input.rootDir || process.cwd()).trim() || process.cwd();
     const evaluated = evaluateLivePathChecks(rootDir);
-    const ok = COVERED_SEAMS.every((seamId) => evaluated.seamResults[seamId] === true);
 
     return {
       ...baseState(),
-      ok,
-      [TOKEN_NAME]: ok ? 1 : 0,
-      failReason: ok ? '' : FAIL_REASON_MISSING_ADMITTED_PATH,
+      ok: true,
+      [TOKEN_NAME]: 0,
+      failReason: '',
       seamResults: evaluated.seamResults,
       checkResults: evaluated.checkResults,
       missingChecks: evaluated.missingChecks,
