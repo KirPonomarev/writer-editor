@@ -43,6 +43,8 @@ export const REVISION_BRIDGE_COMMENT_DECISION_SEPARATION_SCHEMA =
   'revision-bridge.comment-decision-separation.v1';
 export const REVISION_BRIDGE_TEXT_CHANGE_SCHEMA = 'revision-bridge.text-change.v1';
 export const REVISION_BRIDGE_STRUCTURAL_CHANGE_SCHEMA = 'revision-bridge.structural-change.v1';
+export const REVISION_BRIDGE_STRUCTURAL_OPS_MANUAL_REVIEW_SCHEMA =
+  'revision-bridge.structural-ops-manual-review.v1';
 export const REVISION_BRIDGE_DIAGNOSTIC_ITEM_SCHEMA = 'revision-bridge.diagnostic-item.v1';
 export const REVISION_BRIDGE_DECISION_STATE_SCHEMA = 'revision-bridge.decision-state.v1';
 export const REVISION_BRIDGE_REVIEW_PACKET_PREVIEW_SCHEMA = 'revision-bridge.review-packet-preview.v1';
@@ -4662,6 +4664,99 @@ export function validateStructuralChange(input = {}) {
   if (reasons.length > 0) return reviewGraphValidationFailure(reasons);
   return reviewGraphValidationSuccess(change);
 }
+
+// RB_33_STRUCTURAL_OPS_MANUAL_REVIEW_CONTRACTS_START
+function structuralOpBlastRadius(kind) {
+  const normalizedKind = normalizeString(kind);
+  if (
+    normalizedKind === 'scene-reorder'
+    || normalizedKind === 'scene-split'
+    || normalizedKind === 'split-scene'
+    || normalizedKind === 'scene-merge'
+    || normalizedKind === 'merge-scene'
+    || normalizedKind === 'block-move'
+    || normalizedKind === 'block-split'
+    || normalizedKind === 'block-merge'
+  ) {
+    return 'high';
+  }
+  if (normalizedKind === 'block-insert' || normalizedKind === 'block-delete') return 'medium';
+  return 'low';
+}
+
+function structuralOpAffectedCommentCount(change, placements) {
+  const targetScopeType = normalizeString(change?.targetScope?.type);
+  const targetScopeId = normalizeString(change?.targetScope?.id);
+  if (!targetScopeType || !targetScopeId) return 0;
+  return placements.filter((placement) => (
+    isPlainObject(placement)
+    && normalizeString(placement?.targetScope?.type) === targetScopeType
+    && normalizeString(placement?.targetScope?.id) === targetScopeId
+  )).length;
+}
+
+export function previewRevisionBridgeStructuralOpsManualReview(input = {}) {
+  const source = isPlainObject(input) ? input : {};
+  const changeInputs = Array.isArray(source.structuralChanges) ? source.structuralChanges : [];
+  const commentPlacements = Array.isArray(source.commentPlacements) ? source.commentPlacements : [];
+  const reasons = [];
+  const operations = [];
+
+  changeInputs.forEach((changeInput, index) => {
+    if (!isPlainObject(changeInput)) {
+      reasons.push(invalidField(
+        `structuralChanges.${index}`,
+        'structural change entry must be an object',
+      ));
+      return;
+    }
+    const validation = validateStructuralChange(changeInput);
+    if (!validation.ok) {
+      for (const reason of validation.reasons) {
+        reasons.push({
+          ...reason,
+          field: reason.field.replace(/^structuralChange/u, `structuralChanges.${index}`),
+        });
+      }
+      return;
+    }
+    const change = validation.value;
+    if (!change.targetScope.type) {
+      reasons.push(missingField(`structuralChanges.${index}.targetScope.type`));
+      return;
+    }
+    if (!change.targetScope.id) {
+      reasons.push(missingField(`structuralChanges.${index}.targetScope.id`));
+      return;
+    }
+    operations.push({
+      structuralChangeId: change.structuralChangeId,
+      kind: change.kind,
+      targetScope: cloneJsonSafe(change.targetScope),
+      blastRadius: structuralOpBlastRadius(change.kind),
+      affectedCommentCount: structuralOpAffectedCommentCount(change, commentPlacements),
+      manualOnly: true,
+      diagnosticsOnly: true,
+      beforeAfterPreviewRequired: true,
+    });
+  });
+
+  return {
+    schemaVersion: REVISION_BRIDGE_STRUCTURAL_OPS_MANUAL_REVIEW_SCHEMA,
+    type: 'revisionBridge.structuralOps.manualReviewPreview',
+    status: reasons.length > 0 ? 'invalid' : 'evaluated',
+    code: reasons.length > 0
+      ? REVIEWGRAPH_INVALID_CODE
+      : REVIEWGRAPH_VALID_CODE,
+    reason: reasons.length > 0
+      ? reasons[0].code
+      : REVIEWGRAPH_VALID_CODE,
+    canApply: false,
+    operations,
+    reasons,
+  };
+}
+// RB_33_STRUCTURAL_OPS_MANUAL_REVIEW_CONTRACTS_END
 
 export function normalizeDiagnosticItem(input = {}) {
   const item = isPlainObject(input) ? input : {};
