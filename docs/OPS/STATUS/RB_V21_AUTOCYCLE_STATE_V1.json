@@ -2,7 +2,7 @@
   "schemaVersion": "rb-autocycle-state.v1",
   "planName": "Structural Revision Bridge v2.1 Final Master Plan",
   "activeCanon": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final",
-  "currentStatus": "IN_PROGRESS",
+  "currentStatus": "STOP_OWNER",
   "activeContour": "RB-C14C-WORD-EXPORT-MANIFEST-ARTIFACT-STAGE10",
   "acceptedContours": [
     "RB-C01-IMPORT-CHAIN-AND-REPO-FACT-AUDIT",
@@ -53,6 +53,20 @@
         "v1 hardening donor report explicitly says full external Word or Google round-trip manual smoke was not executed"
       ],
       "nextContourCandidate": "RB-C14C-WORD-EXPORT-MANIFEST-ARTIFACT-STAGE10"
+    },
+    {
+      "id": "BL-003",
+      "type": "stage10-export-manifest-storage-policy",
+      "layer": "owner_decision",
+      "summary": "C14C cannot start as a write contour because current repo canon and on-disk artifact truth do not define a non-deletable local storage slot for ExportManifest artifacts",
+      "status": "open",
+      "evidence": [
+        "PROJECT_SUBFOLDERS define roman mindmap print materials reference trash and backups only",
+        "ONDISK_ARTIFACTS lists project manifest, scene documents, backups, recovery and cache but no export manifest artifact kind or path pattern",
+        "current shipping path returns revisionBridge manifest-binding evidence only and does not yet persist any local ExportManifest artifact"
+      ],
+      "nextContourCandidate": "RB-C14C-WORD-EXPORT-MANIFEST-ARTIFACT-STAGE10",
+      "ownerDecisionRequired": true
     }
   ],
   "deliveryResults": [
@@ -549,6 +563,12 @@
       "type": "delivery",
       "summary": "RB-C14B contour delivery push completed for final commit 84aaf5a5 on branch codex/revision-bridge-v21-autocycle-c01",
       "status": "pass"
+    },
+    {
+      "id": "EV-064",
+      "type": "owner-checkpoint",
+      "summary": "C14C storage policy gap confirmed: current repo truth defines no canonical non-deletable ExportManifest artifact slot, so the next write contour is blocked on owner-level storage decision",
+      "status": "warning"
     }
   ],
   "evidenceLedger": [
@@ -778,6 +798,12 @@
       "claim": "shipping DOCX export path now enriches project-bound current-scene exports with revision bridge manifest prerequisites and returns manifest-binding evidence without persisting an ExportManifest artifact or changing DOCX package shape",
       "verdict": "supported",
       "evidenceRef": "handleExportDocxMin plus runDocxMinExport plus enrichRevisionBridgeExportSnapshot"
+    },
+    {
+      "id": "FC-010",
+      "claim": "current repo truth does not define a canonical non-deletable storage slot for ExportManifest artifacts",
+      "verdict": "supported",
+      "evidenceRef": "PROJECT_SUBFOLDERS plus ONDISK_ARTIFACTS"
     }
   ],
   "auditResults": [
@@ -850,6 +876,11 @@
       "id": "AU-014",
       "verdict": "accepted",
       "note": "C14B accepted: shipping export path now exposes bounded project-bound manifest-binding evidence with typed failure guards while keeping DOCX package shape unchanged and Word proof scope explicitly unproven"
+    },
+    {
+      "id": "AU-015",
+      "verdict": "stop_owner",
+      "note": "C14C cannot be opened as a write contour yet because ExportManifest artifact placement is not derivable from current canon or repo storage truth"
     }
   ],
   "reviewResults": [
@@ -900,6 +931,14 @@
       "reviewType": "final_review",
       "verdict": "accepted",
       "note": "C14B final review confirmed main.js and docxMinExportHandler.js bind revision bridge manifest evidence into the shipping export path with targeted tests green and no DOCX package or persisted artifact widening"
+    },
+    {
+      "id": "RV-007",
+      "contourId": "RB-C14C-WORD-EXPORT-MANIFEST-ARTIFACT-STAGE10",
+      "reviewer": "orchestrator",
+      "reviewType": "owner_checkpoint",
+      "verdict": "stop_owner",
+      "note": "current repo truth does not define where a canonical local ExportManifest artifact may be persisted without inventing a new storage policy"
     }
   ],
   "replacementAgentHistory": [],
@@ -914,7 +953,7 @@
     "stage7_import_to_revisionsession": "contract_seam_preview_ready_with_registry_record_bridge_no_runtime_apply",
     "stage8_apply_engine_and_applytxn": "partial_with_applytxn_applyreceipt_and_applyplan_preview_contracts",
     "stage9_structural_operations": "partial_with_manual_review_preview_contracts",
-    "stage10_word_transport": "blocked_on_full_word_transport_proof_but_advanced_to_shipping_export_manifest_binding_evidence_with_c14c_local_export_manifest_artifact_contour_active",
+    "stage10_word_transport": "blocked_on_full_word_transport_proof_and_currently_stop_owner_for_c14c_export_manifest_storage_slot_decision",
     "stage11_google_workflow": "not_implemented",
     "stage12_capability_matrix": "not_implemented",
     "stage13_minimal_review_ui": "not_implemented",
