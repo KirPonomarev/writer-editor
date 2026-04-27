@@ -13,6 +13,8 @@ export const REVISION_BRIDGE_REVISION_SESSION_SCHEMA = 'revision-bridge.revision
 export const REVISION_BRIDGE_EXPORT_MANIFEST_SCHEMA = 'revision-bridge.export-manifest.v1';
 export const REVISION_BRIDGE_TRANSPORT_ENVELOPE_SCHEMA = 'revision-bridge.transport-envelope.v1';
 export const REVISION_BRIDGE_TRANSPORT_BINDING_SCHEMA = 'revision-bridge.transport-envelope-binding.v1';
+export const REVISION_BRIDGE_EXPORT_RUNTIME_SNAPSHOT_SCHEMA =
+  'revision-bridge.export-runtime-snapshot-readiness.v1';
 export const REVISION_BRIDGE_REVISION_SESSION_STATES = Object.freeze([
   'Exported',
   'Imported',
@@ -5230,6 +5232,87 @@ export function evaluateRevisionBridgeTransportBinding(input = {}) {
   };
 }
 // RB_24_EXPORT_MANIFEST_TRANSPORT_ENVELOPE_CONTRACTS_END
+
+// RB_34_EXPORT_RUNTIME_SNAPSHOT_READINESS_CONTRACTS_START
+export function normalizeRevisionBridgeExportRuntimeSnapshot(snapshot = {}) {
+  const source = isPlainObject(snapshot) ? snapshot : {};
+  return {
+    projectId: normalizeString(source.projectId),
+    baselineHash: normalizeString(source.baselineHash),
+    docFingerprint: normalizeString(source.docFingerprint || source.docFingerprintPlan),
+    sourceVersion: normalizeString(source.sourceVersion),
+    profileId: normalizeString(source.profileId || source.reviewProfileId || REVISION_BRIDGE_DOCX_REVIEW_PROFILE_ID),
+    content: normalizeString(source.content),
+    plainText: normalizeString(source.plainText),
+    bookProfile: isPlainObject(source.bookProfile) ? { ...source.bookProfile } : null,
+    sceneOrder: normalizeRevisionBridgeSceneOrder(source.sceneOrder),
+    sceneBaselines: Array.isArray(source.sceneBaselines)
+      ? source.sceneBaselines.map((scene) => normalizeRevisionBridgeSceneBaseline(scene))
+      : [],
+    blockBaselines: Array.isArray(source.blockBaselines)
+      ? source.blockBaselines.map((block) => normalizeRevisionBridgeBlockBaseline(block))
+      : [],
+  };
+}
+
+export function evaluateRevisionBridgeExportRuntimeSnapshot(snapshot = {}) {
+  const source = isPlainObject(snapshot) ? snapshot : {};
+  const normalized = normalizeRevisionBridgeExportRuntimeSnapshot(source);
+  const reasons = [];
+
+  if (!normalized.projectId) reasons.push(missingField('projectId'));
+  if (!normalized.baselineHash) reasons.push(missingField('baselineHash'));
+  if (!normalized.docFingerprint) reasons.push(missingField('docFingerprint'));
+  if (!normalized.sourceVersion) reasons.push(missingField('sourceVersion'));
+
+  if (!Array.isArray(source.sceneOrder)) {
+    reasons.push(missingField('sceneOrder'));
+  } else if (normalized.sceneOrder.length === 0) {
+    reasons.push(invalidField('sceneOrder', 'sceneOrder must contain at least one scene id'));
+  }
+
+  if (!Array.isArray(source.sceneBaselines)) {
+    reasons.push(missingField('sceneBaselines'));
+  } else if (normalized.sceneBaselines.length === 0) {
+    reasons.push(invalidField('sceneBaselines', 'sceneBaselines must contain at least one scene baseline'));
+  }
+
+  if (!Array.isArray(source.blockBaselines)) {
+    reasons.push(missingField('blockBaselines'));
+  } else if (normalized.blockBaselines.length === 0) {
+    reasons.push(invalidField('blockBaselines', 'blockBaselines must contain at least one block baseline'));
+  }
+
+  const minimalEditorSnapshot = Boolean(normalized.content || normalized.plainText || normalized.bookProfile);
+  const hasInvalidReason = reasons.some((reason) => reason?.code === 'REVISION_BRIDGE_FIELD_INVALID');
+  const ready = reasons.length === 0;
+
+  return {
+    ok: ready,
+    schemaVersion: REVISION_BRIDGE_EXPORT_RUNTIME_SNAPSHOT_SCHEMA,
+    type: 'revisionBridge.exportRuntimeSnapshotReadiness',
+    status: ready ? 'ready' : (hasInvalidReason ? 'invalid' : (minimalEditorSnapshot ? 'advisory' : 'invalid')),
+    code: ready ? REVIEWGRAPH_VALID_CODE : REVIEWGRAPH_INVALID_CODE,
+    reason: ready ? REVIEWGRAPH_VALID_CODE : (reasons[0]?.code || REVIEWGRAPH_INVALID_CODE),
+    reasons,
+    requiredFields: [
+      'projectId',
+      'baselineHash',
+      'docFingerprint',
+      'sourceVersion',
+      'sceneOrder',
+      'sceneBaselines',
+      'blockBaselines',
+    ],
+    snapshot: normalized,
+    eligibility: {
+      canBuildManifest: ready,
+      canBuildTransportEnvelope: ready,
+      canBindExportEntrypoint: ready,
+    },
+  };
+}
+// RB_34_EXPORT_RUNTIME_SNAPSHOT_READINESS_CONTRACTS_END
 
 export function normalizeRevisionSession(input = {}) {
   const session = isPlainObject(input) ? input : {};

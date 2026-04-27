@@ -3,7 +3,7 @@
   "planName": "Structural Revision Bridge v2.1 Final Master Plan",
   "activeCanon": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final",
   "currentStatus": "IN_PROGRESS",
-  "activeContour": "RB-C14-WORD-TRANSPORT-PROOF-STAGE10",
+  "activeContour": "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10",
   "acceptedContours": [
     "RB-C01-IMPORT-CHAIN-AND-REPO-FACT-AUDIT",
     "RB-C02-P0-SAFETY-FOUNDATION-WRITE-SEAM",
@@ -20,7 +20,8 @@
     "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9"
   ],
   "pendingContours": [
-    "RB-C14-WORD-TRANSPORT-PROOF-STAGE10",
+    "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10",
+    "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10",
     "RB-C15-GOOGLE-WORKFLOW-PROOF-STAGE11",
     "RB-C16-CAPABILITY-MATRIX-STAGE12",
     "RB-C17-MINIMAL-REVIEW-UI-STAGE13",
@@ -35,6 +36,21 @@
       "summary": "git push to origin is blocked by missing or invalid GitHub credentials in local environment",
       "status": "resolved",
       "resolution": "push succeeds when GH_TOKEN is unset for git command and gh keyring credential is used"
+    },
+    {
+      "id": "BL-002",
+      "type": "stage10-word-transport-proof",
+      "layer": "runtime",
+      "summary": "Stage 10 Word transport proof is blocked because the shipping export entrypoint emits only content, plainText and bookProfile while revision bridge transport contracts require projectId, baselineHash, docFingerprint, sourceVersion, sceneOrder, sceneBaselines and blockBaselines",
+      "status": "open",
+      "evidence": [
+        "composeEditorSnapshot returns content plainText bookProfile only",
+        "buildRevisionBridgeTransportEnvelope is referenced only in revision bridge contract tests",
+        "docxMinBuilder writes only Content_Types rels and word/document.xml",
+        "DOCX_CLOSURE_EVIDENCE_V1 is static runtime wiring verification only",
+        "v1 hardening donor report explicitly says full external Word or Google round-trip manual smoke was not executed"
+      ],
+      "nextContourCandidate": "RB-C14A-EXPORT-RUNTIME-SNAPSHOT-STAGE10"
     }
   ],
   "deliveryResults": [
@@ -459,6 +475,24 @@
       "type": "delivery",
       "summary": "RB-33 contour delivery push completed for commit 9695073f on branch codex/revision-bridge-v21-autocycle-c01",
       "status": "pass"
+    },
+    {
+      "id": "EV-055",
+      "type": "blocker-audit",
+      "summary": "C14 audit proved Stage 10 cannot be accepted from current repo evidence: transport builders are not bound to the shipping export entrypoint, DOCX builder emits only a minimal three-part package, and no current-repo Word smoke artifact is present",
+      "status": "warning"
+    },
+    {
+      "id": "EV-056",
+      "type": "export-runtime-snapshot-contract",
+      "summary": "RB-34 export runtime snapshot readiness contract added to make Stage 10 prerequisites explicit and to classify the current entrypoint snapshot shape as transport-incomplete advisory input",
+      "status": "pass"
+    },
+    {
+      "id": "EV-057",
+      "type": "targeted-tests",
+      "summary": "RB-34 contract suite passed (6 of 6) covering schema export, current entrypoint advisory classification, transport-ready acceptance, empty-array negative coverage, purity guards and allowlist constraints",
+      "status": "pass"
     }
   ],
   "evidenceLedger": [
@@ -513,6 +547,19 @@
       "SOURCE_BASENAME": "index.mjs",
       "REVIEWER": "Galileo",
       "VERDICT": "accepted"
+    },
+    {
+      "CONTOUR_ID": "RB-C14-WORD-TRANSPORT-PROOF-STAGE10",
+      "CLAIM_CLASS": "CLAIM_CLASS_DOCUMENT_ONLY",
+      "EVIDENCE_TYPE": "blocker_audit",
+      "COMMAND": "rg plus targeted node tests and local artifact audit",
+      "RESULT": "blocked_current_repo_word_transport_proof",
+      "ARTIFACT_BASENAME": "DOCX_CLOSURE_EVIDENCE_V1.json",
+      "ARTIFACT_CHECKSUM": "",
+      "TEST_BASENAME": "revision-bridge-export-runtime-snapshot.contract.test.js",
+      "SOURCE_BASENAME": "docxMinBuilder.js",
+      "REVIEWER": "orchestrator",
+      "VERDICT": "blocked"
     }
   ],
   "claimClassIndex": [
@@ -569,7 +616,7 @@
       "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED"
     }
   ],
-  "nextContourCandidate": "RB-C15-GOOGLE-WORKFLOW-PROOF-STAGE11",
+  "nextContourCandidate": "RB-C14B-WORD-EXPORT-MANIFEST-BINDING-STAGE10",
   "finalAcceptanceGaps": [
     "project-level ApplyTxn path is not implemented as runtime write path",
     "ApplyReceipt generation and recovery journal flow are not proven in current runtime",
@@ -629,6 +676,12 @@
       "claim": "structural operations now expose deterministic manual-review preview with blast radius and affected comment counts while keeping canApply false",
       "verdict": "supported",
       "evidenceRef": "previewRevisionBridgeStructuralOpsManualReview"
+    },
+    {
+      "id": "FC-008",
+      "claim": "current shipping DOCX export entrypoint is not transport-ready for Stage 10 because its runtime snapshot lacks revision bridge manifest prerequisites and the DOCX builder does not emit transport metadata parts",
+      "verdict": "supported",
+      "evidenceRef": "composeEditorSnapshot plus buildDocxMinBuffer plus evaluateRevisionBridgeExportRuntimeSnapshot"
     }
   ],
   "auditResults": [
@@ -689,8 +742,13 @@
     },
     {
       "id": "AU-012",
+      "verdict": "blocked",
+      "note": "C14 blocked: current repo only proves static wiring and pure transport contracts; Stage 10 Word proof would be false green because export entrypoint lacks manifest-ready snapshot data and DOCX output lacks transport payload parts"
+    },
+    {
+      "id": "AU-013",
       "verdict": "in_progress",
-      "note": "C14 active: Word transport proof contour selected after C13 close"
+      "note": "C14A active: replacement contour is narrowed to export-runtime-snapshot readiness contracts without touching main, preload, renderer or DOCX runtime wiring"
     }
   ],
   "reviewResults": [
@@ -717,6 +775,14 @@
       "reviewType": "state_review",
       "verdict": "fix_in_contour",
       "note": "state review identified missing evidenceLedger and reviewResults fields, C12 delivery record omission, missing commitSha backfill and claim class coverage gaps; corrections applied in current contour"
+    },
+    {
+      "id": "RV-004",
+      "contourId": "RB-C14-WORD-TRANSPORT-PROOF-STAGE10",
+      "reviewer": "orchestrator",
+      "reviewType": "fact_check",
+      "verdict": "blocked",
+      "note": "Stage 10 proof rejected for current repo because buildRevisionBridgeTransportEnvelope has no shipping entrypoint binding, composeEditorSnapshot is transport-incomplete, docxMinBuilder emits a three-part package only, and donor reports are not current repo evidence"
     }
   ],
   "replacementAgentHistory": [],
@@ -731,7 +797,7 @@
     "stage7_import_to_revisionsession": "contract_seam_preview_ready_with_registry_record_bridge_no_runtime_apply",
     "stage8_apply_engine_and_applytxn": "partial_with_applytxn_applyreceipt_and_applyplan_preview_contracts",
     "stage9_structural_operations": "partial_with_manual_review_preview_contracts",
-    "stage10_word_transport": "contract_only_export_manifest_envelope_and_binding_checks",
+    "stage10_word_transport": "blocked_on_export_runtime_snapshot_and_entrypoint_binding_with_contract_only_manifest_envelope_binding_checks_and_export_snapshot_readiness_contract",
     "stage11_google_workflow": "not_implemented",
     "stage12_capability_matrix": "not_implemented",
     "stage13_minimal_review_ui": "not_implemented",
