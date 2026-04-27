@@ -5725,6 +5725,7 @@ export function evaluateRevisionBridgeApplySafety(input = {}) {
 
 export const REVISION_BRIDGE_APPLY_TXN_SCHEMA = 'revision-bridge.apply-txn.v1';
 export const REVISION_BRIDGE_APPLY_TXN_PREVIEW_SCHEMA = 'revision-bridge.apply-txn-preview.v1';
+export const REVISION_BRIDGE_APPLY_PLAN_SCHEMA = 'revision-bridge.apply-plan.v1';
 export const REVISION_BRIDGE_APPLY_RECEIPT_SCHEMA = 'revision-bridge.apply-receipt.v1';
 export const REVISION_BRIDGE_APPLY_RECEIPT_PREVIEW_SCHEMA = 'revision-bridge.apply-receipt-preview.v1';
 export const REVISION_BRIDGE_APPLY_TXN_STATES = Object.freeze([
@@ -5744,6 +5745,7 @@ const APPLY_TXN_RUNTIME_NOT_ENABLED_CODE = 'REVISION_BRIDGE_APPLY_TXN_RUNTIME_NO
 const APPLY_TXN_INVALID_TRANSITION_CODE = 'REVISION_BRIDGE_APPLY_TXN_INVALID_TRANSITION';
 const APPLY_TXN_MISSING_TRANSITION_SIDE_CODE = 'REVISION_BRIDGE_APPLY_TXN_TRANSITION_FIELDS_REQUIRED';
 const APPLY_TXN_DECISION_SET_EMPTY_CODE = 'REVISION_BRIDGE_APPLY_TXN_DECISION_SET_EMPTY';
+const APPLY_PLAN_NO_ACCEPTED_DECISIONS_CODE = 'REVISION_BRIDGE_APPLY_PLAN_NO_ACCEPTED_DECISIONS';
 const APPLY_RECEIPT_VALID_CODE = 'REVISION_BRIDGE_APPLY_RECEIPT_VALID';
 const APPLY_RECEIPT_INVALID_CODE = 'E_REVISION_BRIDGE_APPLY_RECEIPT_INVALID';
 const APPLY_RECEIPT_PREVIEW_BLOCKED_CODE = 'E_REVISION_BRIDGE_APPLY_RECEIPT_BLOCKED';
@@ -5909,6 +5911,71 @@ export function previewRevisionBridgeApplyTxn(input = {}) {
     reasons,
   };
 }
+
+// RB_32_APPLY_PLAN_PREVIEW_CONTRACTS_START
+function applyPlanAcceptedDecisionIds(decisions = []) {
+  return decisions
+    .filter((decision) => isPlainObject(decision) && decision.status === 'accepted')
+    .map((decision) => normalizeString(decision.decisionId))
+    .filter(Boolean);
+}
+
+function applyPlanScopeSceneIds(targetScope = {}) {
+  const scope = isPlainObject(targetScope) ? targetScope : {};
+  if (Array.isArray(scope.sceneIds) && scope.sceneIds.length > 0) {
+    return scope.sceneIds.map((sceneId) => normalizeString(sceneId)).filter(Boolean);
+  }
+  const scopeId = normalizeString(scope.id);
+  return scopeId ? [scopeId] : [];
+}
+
+export function previewRevisionBridgeApplyPlan(input = {}) {
+  const validation = validateRevisionBridgeApplyTxn(input);
+  const applyTxn = validation.ok ? validation.applyTxn : normalizeApplyTxnCandidate(input);
+  const acceptedDecisionIds = applyPlanAcceptedDecisionIds(applyTxn.decisionSet?.decisions || []);
+  const sceneIds = applyPlanScopeSceneIds(applyTxn.targetScope);
+  const reasons = validation.ok
+    ? (acceptedDecisionIds.length > 0
+      ? [{
+        code: APPLY_TXN_RUNTIME_NOT_ENABLED_CODE,
+        field: 'applyPlan',
+        message: 'ApplyPlan runtime execution is not enabled in contract-only mode',
+      }]
+      : [{
+        code: APPLY_PLAN_NO_ACCEPTED_DECISIONS_CODE,
+        field: 'decisionSet.decisions.status',
+        message: 'ApplyPlan requires at least one accepted decision',
+      }])
+    : validation.reasons;
+  const sceneBuckets = sceneIds.map((sceneId) => ({
+    sceneId,
+    decisionIds: cloneJsonSafe(acceptedDecisionIds),
+    decisionCount: acceptedDecisionIds.length,
+  }));
+
+  return {
+    schemaVersion: REVISION_BRIDGE_APPLY_PLAN_SCHEMA,
+    type: 'revisionBridge.applyPlanPreview',
+    status: 'blocked',
+    code: APPLY_TXN_PREVIEW_BLOCKED_CODE,
+    reason: reasons[0]?.code || APPLY_TXN_PREVIEW_BLOCKED_CODE,
+    canApply: false,
+    applyTxn: cloneJsonSafe(applyTxn),
+    applyPlan: {
+      scopeType: normalizeString(applyTxn.targetScope?.type),
+      scopeId: normalizeString(applyTxn.targetScope?.id),
+      sceneBuckets,
+      acceptedDecisionIds: cloneJsonSafe(acceptedDecisionIds),
+      decisionSummary: {
+        total: Array.isArray(applyTxn.decisionSet?.decisions) ? applyTxn.decisionSet.decisions.length : 0,
+        accepted: acceptedDecisionIds.length,
+      },
+      runtimeMode: 'contractOnly',
+    },
+    reasons,
+  };
+}
+// RB_32_APPLY_PLAN_PREVIEW_CONTRACTS_END
 // RB_18_APPLY_TXN_CONTRACTS_END
 
 // RB_26_APPLY_RECEIPT_CONTRACTS_START

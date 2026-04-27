@@ -3,7 +3,7 @@
   "planName": "Structural Revision Bridge v2.1 Final Master Plan",
   "activeCanon": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final",
   "currentStatus": "IN_PROGRESS",
-  "activeContour": "RB-C12-APPLY-TXN-RUNTIME-PATH-STAGE8",
+  "activeContour": "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9",
   "acceptedContours": [
     "RB-C01-IMPORT-CHAIN-AND-REPO-FACT-AUDIT",
     "RB-C02-P0-SAFETY-FOUNDATION-WRITE-SEAM",
@@ -15,10 +15,10 @@
     "RB-C08-BLOCK-LINEAGE-COVERAGE-STAGE4",
     "RB-C09-COMMENT-PLACEMENT-COVERAGE-STAGE5",
     "RB-C10-ANCHOR-CONFIDENCE-COVERAGE-STAGE6",
-    "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7"
+    "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
+    "RB-C12-APPLY-TXN-RUNTIME-PATH-STAGE8"
   ],
   "pendingContours": [
-    "RB-C12-APPLY-TXN-RUNTIME-PATH-STAGE8",
     "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9",
     "RB-C14-WORD-TRANSPORT-PROOF-STAGE10",
     "RB-C15-GOOGLE-WORKFLOW-PROOF-STAGE11",
@@ -103,6 +103,15 @@
       "push": "success",
       "commitSha": "4b90edcf",
       "note": "RB-30 anchor disagreement summary contour commit pushed via env -u GH_TOKEN"
+    },
+    {
+      "id": "DR-009",
+      "contourId": "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
+      "result": "branch_pushed",
+      "branch": "codex/revision-bridge-v21-autocycle-c01",
+      "push": "success",
+      "commitSha": "cf45ebc7",
+      "note": "RB-31 revision session registry record contour commit pushed via env -u GH_TOKEN"
     }
   ],
   "evidenceIndex": [
@@ -375,6 +384,30 @@
       "type": "contour-close",
       "summary": "C11 accepted as Stage 7 registry-record bridge contour and active contour moved to C12",
       "status": "pass"
+    },
+    {
+      "id": "EV-046",
+      "type": "delivery",
+      "summary": "RB-31 contour delivery push completed for commit cf45ebc7 on branch codex/revision-bridge-v21-autocycle-c01",
+      "status": "pass"
+    },
+    {
+      "id": "EV-047",
+      "type": "apply-plan-preview-contract",
+      "summary": "RB-32 apply-plan preview contract added to Stage 8 with deterministic accepted-decision bucketing by target scope scenes in contract-only mode",
+      "status": "pass"
+    },
+    {
+      "id": "EV-048",
+      "type": "targeted-tests",
+      "summary": "RB-32 contract suite passed (7 of 7) covering schema export, accepted decision bucketing, no-accepted negative gate, invalid ApplyTxn handling, determinism and allowlist constraints",
+      "status": "pass"
+    },
+    {
+      "id": "EV-049",
+      "type": "contour-close",
+      "summary": "C12 accepted as Stage 8 apply-plan preview contour and active contour moved to C13",
+      "status": "pass"
     }
   ],
   "claimClassIndex": [
@@ -392,10 +425,14 @@
     },
     {
       "contourId": "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
+      "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED+CLAIM_CLASS_DELIVERY_COMPLETE"
+    },
+    {
+      "contourId": "RB-C12-APPLY-TXN-RUNTIME-PATH-STAGE8",
       "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED"
     }
   ],
-  "nextContourCandidate": "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9",
+  "nextContourCandidate": "RB-C14-WORD-TRANSPORT-PROOF-STAGE10",
   "finalAcceptanceGaps": [
     "project-level ApplyTxn path is not implemented as runtime write path",
     "ApplyReceipt generation and recovery journal flow are not proven in current runtime",
@@ -443,6 +480,12 @@
       "claim": "import seam preview is bound into registry-only record without manuscript mutation path",
       "verdict": "supported",
       "evidenceRef": "buildRevisionSessionRegistryRecord"
+    },
+    {
+      "id": "FC-006",
+      "claim": "ApplyTxn and decisionSet are now bound to deterministic contract-only apply-plan preview buckets by scope sceneIds",
+      "verdict": "supported",
+      "evidenceRef": "previewRevisionBridgeApplyPlan"
     }
   ],
   "auditResults": [
@@ -493,8 +536,13 @@
     },
     {
       "id": "AU-010",
+      "verdict": "accepted",
+      "note": "C12 accepted: ApplyTxn scope and decisions now emit deterministic contract-only apply-plan preview with explicit no-accepted blocking reason"
+    },
+    {
+      "id": "AU-011",
       "verdict": "in_progress",
-      "note": "C12 active: ApplyTxn runtime path contour selected after C11 close"
+      "note": "C13 active: structural operations manual contour selected after C12 close"
     }
   ],
   "replacementAgentHistory": [],
@@ -507,7 +555,7 @@
     "stage5_inlinerange_and_commentplacement": "partial_with_comment_decision_separation_contracts",
     "stage6_anchor_and_confidence": "partial_with_donor_confidence_diagnostics_and_anchor_disagreement_summary_contracts",
     "stage7_import_to_revisionsession": "contract_seam_preview_ready_with_registry_record_bridge_no_runtime_apply",
-    "stage8_apply_engine_and_applytxn": "partial_with_applytxn_and_applyreceipt_contracts",
+    "stage8_apply_engine_and_applytxn": "partial_with_applytxn_applyreceipt_and_applyplan_preview_contracts",
     "stage9_structural_operations": "not_implemented",
     "stage10_word_transport": "contract_only_export_manifest_envelope_and_binding_checks",
     "stage11_google_workflow": "not_implemented",
