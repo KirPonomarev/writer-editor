@@ -30,14 +30,11 @@
     },
     {
       "invariantId": "RECOVERY_HUMAN_READABLE",
-      "bindingClass": "advisory_downgrade",
-      "status": "ADVISORY",
-      "reasonCode": "NO_HONEST_DETECTOR_PATH",
-      "reason": "Existing recovery IO and rich truth evidence do not yet prove human readability as a blocking detector.",
-      "evidenceRefs": [
-        "scripts/ops/recovery-io-state.mjs",
-        "test/contracts/recovery-rich-truth.contract.test.js"
-      ]
+      "bindingClass": "detector_bound",
+      "status": "BOUND",
+      "detectorToken": "RECOVERY_HUMAN_READABLE_OK",
+      "proofHook": "node scripts/ops/recovery-io-state.mjs --json",
+      "positiveContractRef": "test/contracts/recovery-human-readable.contract.test.js"
     }
   ]
 }

@@ -2817,10 +2817,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/FORMAL_KERNEL_MINIMAL_V1.json",
-      "sha256": "beaeb505696a947017c87f6829f52b728a1e70a76e126f8f5a728a9ec9fecbe1",
-      "approvedBy": "ticket:FORMAL_KERNEL_MINIMAL_001",
-      "approvedAtUtc": "2026-04-28T12:00:00.000Z",
-      "rationale": "FORMAL_KERNEL_MINIMAL_001 approves the bounded three-row formal kernel artifact with detector-bound export source and explicit advisory downgrade for non-green or non-honest detector paths."
+      "sha256": "897078745a1daea062ca29b4d25ba86d668d3499422e7e6df8b90307a81645ca",
+      "approvedBy": "ticket:RECOVERY_READABILITY_DONOR_PORT_001",
+      "approvedAtUtc": "2026-04-27T23:21:01.000Z",
+      "rationale": "RECOVERY_READABILITY_DONOR_PORT_001 approves bounded promotion of the recovery human-readable formal kernel row after a real detector path and restore-drill proof became green."
     },
     {
       "filePath": "scripts/ops/formal-kernel-minimal-state.mjs",
@@ -2831,10 +2831,10 @@
     },
     {
       "filePath": "test/contracts/formal-kernel-minimal.contract.test.js",
-      "sha256": "d1d682285c3252a2c5105cc9c99c55ea372ba0b40b40f55f492c651d2703d906",
-      "approvedBy": "ticket:FORMAL_KERNEL_MINIMAL_001",
-      "approvedAtUtc": "2026-04-28T12:00:00.000Z",
-      "rationale": "FORMAL_KERNEL_MINIMAL_001 approves the bounded contract that validates exact three-row shape, deterministic state evaluation, and explicit advisory downgrade semantics."
+      "sha256": "3704d911fcef621078641bf34043db57b69e173df2cec0ce22be6ca8de8cdc3e",
+      "approvedBy": "ticket:RECOVERY_READABILITY_DONOR_PORT_001",
+      "approvedAtUtc": "2026-04-27T23:21:01.000Z",
+      "rationale": "RECOVERY_READABILITY_DONOR_PORT_001 approves the bounded formal kernel contract rebind so recovery human-readable is accepted only through the new detector-backed path."
     },
     {
       "filePath": "scripts/ops/sector-m-scope-map.json",
@@ -2842,6 +2842,20 @@
       "approvedBy": "ticket:BASELINE_RED_HYGIENE_002",
       "approvedAtUtc": "2026-04-28T12:30:00.000Z",
       "rationale": "BASELINE_RED_HYGIENE_002 approves the exact M7 scope-map rebind for sector-m-edit-menu-undo-redo-command-kernel.test.js so branch-level scope guards match the proven bounded hygiene delta."
+    },
+    {
+      "filePath": "scripts/ops/recovery-io-state.mjs",
+      "sha256": "949763a4c6cd27fac49494ec3735aa3f002b96734c814143cd806769d9d53b68",
+      "approvedBy": "ticket:RECOVERY_READABILITY_DONOR_PORT_001",
+      "approvedAtUtc": "2026-04-27T23:21:01.000Z",
+      "rationale": "RECOVERY_READABILITY_DONOR_PORT_001 approves the narrow recovery state evaluator extension that emits RECOVERY_HUMAN_READABLE_OK from a dedicated machine proof."
+    },
+    {
+      "filePath": "test/contracts/recovery-human-readable.contract.test.js",
+      "sha256": "0697fce29e4b9ba1430259d4028a73654d6c0cb12a3343b602a16a5e1472d587",
+      "approvedBy": "ticket:RECOVERY_READABILITY_DONOR_PORT_001",
+      "approvedAtUtc": "2026-04-27T23:21:01.000Z",
+      "rationale": "RECOVERY_READABILITY_DONOR_PORT_001 approves the dedicated readable recovery pack and tamper-reject contract used to prove restore-drill readability semantics."
     }
   ]
 }

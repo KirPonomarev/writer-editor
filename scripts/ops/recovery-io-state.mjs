@@ -13,6 +13,7 @@ const PROOFS = Object.freeze([
   { token: 'RECOVERY_TYPED_ERRORS_OK', testPath: 'test/contracts/recovery-typed-errors.contract.test.js' },
   { token: 'RECOVERY_REPLAY_OK', testPath: 'test/contracts/recovery-replay.contract.test.js' },
   { token: 'RECOVERY_ACTION_CANON_OK', testPath: 'test/contracts/recovery-action-canon.contract.test.js' },
+  { token: 'RECOVERY_HUMAN_READABLE_OK', testPath: 'test/contracts/recovery-human-readable.contract.test.js' },
 ]);
 
 function runProof(testPath) {
@@ -55,6 +56,7 @@ export function evaluateRecoveryIoState() {
     RECOVERY_TYPED_ERRORS_OK: 0,
     RECOVERY_REPLAY_OK: 0,
     RECOVERY_ACTION_CANON_OK: 0,
+    RECOVERY_HUMAN_READABLE_OK: 0,
     RECOVERY_IO_OK: 0,
     failingProofs: [],
     failReason: '',
@@ -85,6 +87,7 @@ export function evaluateRecoveryIoState() {
     && state.RECOVERY_TYPED_ERRORS_OK === 1
     && state.RECOVERY_REPLAY_OK === 1
     && state.RECOVERY_ACTION_CANON_OK === 1
+    && state.RECOVERY_HUMAN_READABLE_OK === 1
     ? 1
     : 0;
 
@@ -112,6 +115,7 @@ function printTokens(state) {
   console.log(`RECOVERY_TYPED_ERRORS_OK=${state.RECOVERY_TYPED_ERRORS_OK}`);
   console.log(`RECOVERY_REPLAY_OK=${state.RECOVERY_REPLAY_OK}`);
   console.log(`RECOVERY_ACTION_CANON_OK=${state.RECOVERY_ACTION_CANON_OK}`);
+  console.log(`RECOVERY_HUMAN_READABLE_OK=${state.RECOVERY_HUMAN_READABLE_OK}`);
   console.log(`RECOVERY_IO_OK=${state.RECOVERY_IO_OK}`);
   console.log(`RECOVERY_IO_FAILING_PROOFS=${JSON.stringify(state.failingProofs)}`);
   if (state.failReason) {
