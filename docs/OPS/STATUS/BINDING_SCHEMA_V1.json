@@ -50,6 +50,23 @@
       "UPDATED_AT_UTC": "2026-02-28T12:00:00.000Z"
     },
     {
+      "TOKEN_ID": "RECOVERY_HUMAN_READABLE_OK",
+      "MACHINE_CHECK_ID": "MC_TOKEN_RECOVERY_HUMAN_READABLE_BINDING",
+      "COMMAND_ID": "validate-token-binding-recovery-human-readable",
+      "OUTPUT_ARTIFACT": "RECOVERY_HUMAN_READABLE_BINDING_V1.json",
+      "PROOFHOOK_REF": "node scripts/ops/recovery-io-state.mjs --json",
+      "POSITIVE_CONTRACT_REF": "test/contracts/recovery-human-readable.contract.test.js#recovery-pack-writes-readable-guide-content-and-manifest-with-restore-drill-pass",
+      "NEGATIVE_CONTRACT_REF": "test/contracts/recovery-human-readable.contract.test.js#tampered-content-fails-validation-and-restore-drill-is-rejected",
+      "FAILSIGNAL_CODE": "E_RECOVERY_HUMAN_READABLE_NOT_OK",
+      "MODE_DISPOSITION": "release_blocking",
+      "SOURCE_BINDING_REF": "docs/OPS/TOKENS/TOKEN_CATALOG.json#RECOVERY_HUMAN_READABLE_OK",
+      "REQUIRED_SCOPE": "formal_kernel_recovery_readability",
+      "OWNER": "GOVERNANCE_CORE_OWNER",
+      "ROLLBACK_REF": "docs/OPS/STATUS/FORMAL_KERNEL_MINIMAL_V1.json",
+      "EVIDENCE_REF": "test/contracts/recovery-human-readable.contract.test.js",
+      "UPDATED_AT_UTC": "2026-04-28T00:00:00.000Z"
+    },
+    {
       "TOKEN_ID": "RECOVERY_IO_OK",
       "MACHINE_CHECK_ID": "MC_TOKEN_RECOVERY_IO_BINDING",
       "COMMAND_ID": "validate-token-binding-recovery-io",
