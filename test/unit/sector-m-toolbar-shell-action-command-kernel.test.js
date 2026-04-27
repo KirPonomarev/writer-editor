@@ -9,7 +9,7 @@ function read(filePath) {
   return fs.readFileSync(path.join(ROOT, filePath), 'utf8')
 }
 
-test.skip('toolbar shell action command kernel: editor handleUiAction routes toolbar shell actions through dispatchUiCommand', () => {
+test('toolbar shell action command kernel: editor handleUiAction routes toolbar shell actions through dispatchUiCommand', () => {
   const source = read('src/renderer/editor.js')
 
   const blockMatch = source.match(/function handleUiAction\(action\) \{[\s\S]*?\n\}/)
@@ -29,17 +29,17 @@ test.skip('toolbar shell action command kernel: editor handleUiAction routes too
   assert.equal(block.includes("openRecoveryModal('Recovery modal opened manually');"), false)
 
   assert.ok(block.includes("case 'export-docx-min':"))
-  assert.ok(block.includes('openExportPreviewModal();'))
+  assert.ok(block.includes('void dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);'))
 })
 
-test.skip('toolbar shell action command kernel: x101 toolbar action map points to existing command paths for shell actions', () => {
+test('toolbar shell action command kernel: x101 toolbar action map points to existing command paths for shell actions', () => {
   const source = read('docs/OPS/STATUS/X101_MENU_COMMAND_MAP_LOCK_V1.json')
 
   assert.ok(source.includes('"open-settings": "EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS"'))
   assert.ok(source.includes('"open-diagnostics": "EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS"'))
   assert.ok(source.includes('"open-recovery": "EXTRA_COMMAND_IDS.REVIEW_OPEN_RECOVERY"'))
 
-  assert.ok(source.includes('"export-docx-min": "COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN_THROUGH_PREVIEW_CONFIRM"'))
+  assert.ok(source.includes('"export-docx-min": "COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN"'))
   assert.ok(source.includes('"search": "EXTRA_COMMAND_IDS.EDIT_FIND"'))
   assert.ok(source.includes('"replace": "EXTRA_COMMAND_IDS.EDIT_REPLACE"'))
   assert.ok(source.includes('{ "label": "Copy", "role": "copy" }'))
@@ -51,7 +51,7 @@ test.skip('toolbar shell action command kernel: x101 toolbar action map points t
   assert.equal(source.includes('"open-recovery": "LOCAL_MODAL_HANDLER"'), false)
 })
 
-test.skip('toolbar shell action command kernel: out-of-scope command kernel and runtime bridge files remain compatible', () => {
+test('toolbar shell action command kernel: out-of-scope command kernel and runtime bridge files remain compatible', () => {
   const mainSource = read('src/main.js')
   const projectCommandsSource = read('src/renderer/commands/projectCommands.mjs')
   const capabilitySource = read('src/renderer/commands/capabilityPolicy.mjs')
