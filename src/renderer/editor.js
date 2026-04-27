@@ -8563,6 +8563,50 @@ if (window.electronAPI) {
     });
   }
 
+  function handleCanonicalRuntimeCommandId(commandId) {
+    if (commandId === EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS) {
+      openSettingsModal();
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.VIEW_SAFE_RESET) {
+      performSafeResetShell();
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.VIEW_RESTORE_LAST_STABLE) {
+      performRestoreLastStableShell();
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS) {
+      openDiagnosticsModal();
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.REVIEW_OPEN_RECOVERY) {
+      openRecoveryModal('Recovery modal opened from menu');
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.INSERT_ADD_CARD) {
+      handleInsertAddCard();
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT) {
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT);
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE) {
+      applyMode('plan');
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.REVIEW_SWITCH_MODE) {
+      applyMode('review');
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE) {
+      applyMode('write');
+      return true;
+    }
+    return false;
+  }
+
   if (isTiptapMode) {
     setTiptapRuntimeHandlers({
       openSettings: () => openSettingsModal(),
@@ -8602,8 +8646,10 @@ if (window.electronAPI) {
     });
   } else if (typeof window.electronAPI.onRuntimeCommand === 'function') {
     window.electronAPI.onRuntimeCommand((payload) => {
+      const commandId = payload && typeof payload.commandId === 'string' ? payload.commandId : '';
       const command = payload && typeof payload.command === 'string' ? payload.command : '';
-      if (command === 'open-settings') {
+      if (handleCanonicalRuntimeCommandId(commandId)) {
+      } else if (command === 'open-settings') {
         openSettingsModal();
       } else if (command === 'safe-reset-shell') {
         performSafeResetShell();

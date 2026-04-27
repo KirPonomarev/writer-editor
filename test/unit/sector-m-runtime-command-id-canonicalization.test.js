@@ -15,7 +15,7 @@ async function loadRuntimeBridgeModule() {
   return import(`data:text/javascript;charset=utf-8,${encodeURIComponent(source)}`)
 }
 
-test.skip('runtime command id canonicalization: main emits canonical commandId envelope for adopted runtime menu ids', () => {
+test('runtime command id canonicalization: main emits canonical commandId envelope for adopted runtime menu ids', () => {
   const source = read('src/main.js')
 
   assert.ok(source.includes('function sendCanonicalRuntimeCommand(commandId, payload = {}, legacyCommand = \'\') {'))
@@ -46,7 +46,7 @@ test.skip('runtime command id canonicalization: main emits canonical commandId e
   assert.equal(source.includes("sendRuntimeCommand('switch-mode-write'"), false)
 })
 
-test.skip('runtime command id canonicalization: editor non-tiptap runtime consumer handles payload.commandId first for adopted ids', () => {
+test('runtime command id canonicalization: editor non-tiptap runtime consumer handles payload.commandId first for adopted ids', () => {
   const source = read('src/renderer/editor.js')
 
   assert.ok(source.includes('function handleCanonicalRuntimeCommandId(commandId) {'))
@@ -66,7 +66,7 @@ test.skip('runtime command id canonicalization: editor non-tiptap runtime consum
   assert.ok(source.includes("} else if (command === 'open-export-preview') {"))
 })
 
-test.skip('runtime command id canonicalization: tiptap runtime bridge handles payload.commandId first for adopted ids and mode mapping', async () => {
+test('runtime command id canonicalization: tiptap runtime bridge handles payload.commandId first for adopted ids and mode mapping', async () => {
   const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
 
   let settingsCalls = 0
@@ -120,7 +120,7 @@ test.skip('runtime command id canonicalization: tiptap runtime bridge handles pa
   assert.deepEqual(switchModes, ['plan', 'review', 'write'])
 })
 
-test.skip('runtime command id canonicalization: out-of-scope surfaces remain compatible', () => {
+test('runtime command id canonicalization: out-of-scope surfaces remain compatible', () => {
   const mainSource = read('src/main.js')
   const projectCommandsSource = read('src/renderer/commands/projectCommands.mjs')
   const capabilitySource = read('src/renderer/commands/capabilityPolicy.mjs')
@@ -128,7 +128,8 @@ test.skip('runtime command id canonicalization: out-of-scope surfaces remain com
   const preloadSource = read('src/preload.js')
   const tiptapIndexSource = read('src/renderer/tiptap/index.js')
 
-  assert.ok(mainSource.includes("sendRuntimeCommand('open-export-preview', {"))
+  assert.ok(mainSource.includes("sendCanonicalRuntimeCommand("))
+  assert.ok(mainSource.includes("'open-export-preview'"))
   assert.ok(projectCommandsSource.includes("VIEW_OPEN_SETTINGS: 'cmd.project.view.openSettings'"))
   assert.ok(capabilitySource.includes("'cmd.project.view.openSettings': 'cap.project.view.openSettings'"))
   assert.ok(bindingDoc.includes('"commandId": "cmd.project.view.openSettings"'))
