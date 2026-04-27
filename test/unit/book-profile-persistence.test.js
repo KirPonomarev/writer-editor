@@ -30,6 +30,7 @@ async function loadMainWithElectronStub() {
         }
         return ROOT;
       },
+      requestSingleInstanceLock: () => true,
       setPath: () => {},
       whenReady: () => new Promise(() => {}),
       on: () => {},
