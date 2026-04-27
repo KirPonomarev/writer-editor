@@ -8563,7 +8563,10 @@ if (window.electronAPI) {
     });
   }
 
-  function handleCanonicalRuntimeCommandId(commandId) {
+  function handleCanonicalRuntimeCommandId(commandId, runtimePayload = null) {
+    const payload = runtimePayload && typeof runtimePayload === 'object' && !Array.isArray(runtimePayload)
+      ? runtimePayload
+      : {};
     if (commandId === EXTRA_COMMAND_IDS.VIEW_OPEN_SETTINGS) {
       openSettingsModal();
       return true;
@@ -8620,6 +8623,10 @@ if (window.electronAPI) {
       applyMode('write');
       return true;
     }
+    if (commandId === COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN && payload.preview === true) {
+      openExportPreviewModal();
+      return true;
+    }
     return false;
   }
 
@@ -8670,7 +8677,10 @@ if (window.electronAPI) {
     window.electronAPI.onRuntimeCommand((payload) => {
       const commandId = payload && typeof payload.commandId === 'string' ? payload.commandId : '';
       const command = payload && typeof payload.command === 'string' ? payload.command : '';
-      if (handleCanonicalRuntimeCommandId(commandId)) {
+      const commandPayload = payload && payload.payload && typeof payload.payload === 'object' && !Array.isArray(payload.payload)
+        ? payload.payload
+        : null;
+      if (handleCanonicalRuntimeCommandId(commandId, commandPayload)) {
       } else if (command === 'open-settings') {
         openSettingsModal();
       } else if (command === 'safe-reset-shell') {
