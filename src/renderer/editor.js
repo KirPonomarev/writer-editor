@@ -4112,6 +4112,16 @@ async function invokePreloadUiCommandBridge(commandId, payload = {}) {
   });
 }
 
+async function invokeWorkspaceQueryBridge(queryId, payload = {}) {
+  if (queryId !== 'query.projectTree' && queryId !== 'query.collabScopeLocal') {
+    return null;
+  }
+  if (!window.electronAPI || typeof window.electronAPI.invokeWorkspaceQueryBridge !== 'function') {
+    return null;
+  }
+  return window.electronAPI.invokeWorkspaceQueryBridge({ queryId, payload });
+}
+
 function resolveSceneFromImportResult(importResult) {
   if (!importResult || importResult.ok !== true) return null;
   const value = importResult.value;
@@ -5672,9 +5682,9 @@ function renderTree() {
 }
 
 async function loadTree() {
-  if (!window.electronAPI || !window.electronAPI.getProjectTree) return;
+  if (!window.electronAPI || typeof window.electronAPI.invokeWorkspaceQueryBridge !== 'function') return;
   try {
-    const result = await window.electronAPI.getProjectTree(activeTab);
+    const result = await invokeWorkspaceQueryBridge('query.projectTree', { tab: activeTab });
     if (!result || result.ok === false) {
       updateStatusText('Ошибка');
       return;
@@ -6634,8 +6644,8 @@ function applyCollabGate() {
 
 async function initializeCollabScopeLocal() {
   try {
-    if (window.electronAPI && typeof window.electronAPI.getCollabScopeLocal === 'function') {
-      collabScopeLocal = await window.electronAPI.getCollabScopeLocal();
+    if (window.electronAPI && typeof window.electronAPI.invokeWorkspaceQueryBridge === 'function') {
+      collabScopeLocal = (await invokeWorkspaceQueryBridge('query.collabScopeLocal')) === true;
     } else {
       collabScopeLocal = localStorage.getItem('COLLAB_SCOPE_LOCAL') === 'true';
     }
