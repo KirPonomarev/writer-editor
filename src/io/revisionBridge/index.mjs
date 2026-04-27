@@ -127,6 +127,8 @@ export const REVISION_BRIDGE_REVISION_SESSION_SKELETON_ADMISSION_PREVIEW_SCHEMA 
   'revision-bridge.revision-session-skeleton-admission-preview.v1';
 export const REVISION_BRIDGE_REVISION_SESSION_IMPORT_SEAM_PREVIEW_SCHEMA =
   'revision-bridge.revision-session-import-seam-preview.v1';
+export const REVISION_BRIDGE_REVISION_SESSION_REGISTRY_RECORD_SCHEMA =
+  'revision-bridge.revision-session-registry-record.v1';
 const PLACEMENT_BATCH_DIAGNOSTICS_EVALUATED_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_EVALUATED';
 const PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_VALIDATION_FAILED';
 const PLACEMENT_BATCH_DIAGNOSTICS_DIAGNOSTICS_CODE = 'REVISION_BRIDGE_PLACEMENT_BATCH_DIAGNOSTICS_DIAGNOSTICS';
@@ -3239,6 +3241,10 @@ export function previewRevisionSessionImportSeam(input = {}) {
   return revisionSessionImportSeamPreviewEvaluate(input);
 }
 
+export function buildRevisionSessionRegistryRecord(input = {}) {
+  return revisionSessionRegistryRecordBuild(input);
+}
+
 // RB_14_PLACEMENT_BATCH_DIAGNOSTICS_CONTRACTS_START
 function placementBatchDiagnosticsCountsByStatus() {
   return {
@@ -6277,3 +6283,100 @@ function revisionSessionImportSeamPreviewEvaluate(input) {
   );
 }
 // RB_19_REVISION_SESSION_IMPORT_SEAM_PREVIEW_CONTRACTS_END
+
+// RB_31_REVISION_SESSION_REGISTRY_RECORD_CONTRACTS_START
+function revisionSessionRegistryGraphCount(value) {
+  return Array.isArray(value) ? value.length : 0;
+}
+
+function revisionSessionRegistryGraphCounts(candidateSession) {
+  const session = isPlainObject(candidateSession) ? candidateSession : {};
+  const graph = isPlainObject(session.reviewGraph) ? session.reviewGraph : {};
+  return {
+    commentThreads: revisionSessionRegistryGraphCount(graph.commentThreads),
+    commentPlacements: revisionSessionRegistryGraphCount(graph.commentPlacements),
+    textChanges: revisionSessionRegistryGraphCount(graph.textChanges),
+    structuralChanges: revisionSessionRegistryGraphCount(graph.structuralChanges),
+    diagnosticItems: revisionSessionRegistryGraphCount(graph.diagnosticItems),
+    decisionStates: revisionSessionRegistryGraphCount(graph.decisionStates),
+  };
+}
+
+function revisionSessionRegistryImportPreview(input) {
+  if (!isPlainObject(input)) return {};
+  return isPlainObject(input.importPreview) ? input.importPreview : input;
+}
+
+function revisionSessionRegistryInputReasons(input, preview) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(invalidField(
+      'revisionSessionRegistryRecord',
+      'revision session registry record input must be an object',
+    ));
+    return reasons;
+  }
+  if (!isPlainObject(preview)) {
+    reasons.push(missingField('importPreview'));
+    return reasons;
+  }
+  if (
+    hasOwnField(preview, 'schemaVersion')
+    && preview.schemaVersion !== REVISION_BRIDGE_REVISION_SESSION_IMPORT_SEAM_PREVIEW_SCHEMA
+  ) {
+    reasons.push(invalidField(
+      'importPreview.schemaVersion',
+      'import preview schemaVersion is not supported',
+    ));
+  }
+  if (!normalizeString(preview.projectId)) reasons.push(missingField('importPreview.projectId'));
+  if (!normalizeString(preview.revisionSessionId)) reasons.push(missingField('importPreview.revisionSessionId'));
+  if (!normalizeString(preview.exportId)) reasons.push(missingField('importPreview.exportId'));
+  if (!normalizeString(preview.baselineHash)) reasons.push(missingField('importPreview.baselineHash'));
+  if (preview.canMutateManuscript === true) {
+    reasons.push(invalidField(
+      'importPreview.canMutateManuscript',
+      'import preview cannot allow manuscript mutation',
+    ));
+  }
+  return reasons;
+}
+
+export function revisionSessionRegistryRecordBuild(input = {}) {
+  const source = isPlainObject(input) ? input : {};
+  const preview = revisionSessionRegistryImportPreview(input);
+  const reasons = revisionSessionRegistryInputReasons(input, preview);
+  const previewStatus = normalizeStringEnum(preview.status, ['ready', 'blocked', 'diagnostics'], 'diagnostics');
+  const previewReasons = Array.isArray(preview.reasons) ? cloneJsonSafe(preview.reasons) : [];
+  const graphCounts = revisionSessionRegistryGraphCounts(preview.candidateSession);
+
+  return {
+    schemaVersion: REVISION_BRIDGE_REVISION_SESSION_REGISTRY_RECORD_SCHEMA,
+    type: 'revisionBridge.revisionSession.registryRecord',
+    status: reasons.length > 0 ? 'invalid' : 'recorded',
+    code: reasons.length > 0
+      ? REVIEWGRAPH_INVALID_CODE
+      : REVIEWGRAPH_VALID_CODE,
+    reason: reasons.length > 0
+      ? reasons[0].code
+      : REVIEWGRAPH_VALID_CODE,
+    projectId: normalizeString(preview.projectId),
+    revisionSessionId: normalizeString(preview.revisionSessionId),
+    exportId: normalizeString(preview.exportId),
+    baselineHash: normalizeString(preview.baselineHash),
+    importPreviewStatus: previewStatus,
+    importPreviewCode: normalizeString(preview.code),
+    importPreviewReason: normalizeString(preview.reason),
+    candidateSessionAvailable: isPlainObject(preview.candidateSession),
+    sessionState: previewStatus === 'ready' ? 'Imported' : 'Diagnosed',
+    storagePolicy: 'registryOnly',
+    canMutateManuscript: false,
+    importReasonCount: previewReasons.length,
+    reviewGraphCounts: graphCounts,
+    createdAt: normalizeString(source.createdAt || preview.createdAt),
+    updatedAt: normalizeString(source.updatedAt || preview.updatedAt),
+    importReasons: previewReasons,
+    reasons: cloneJsonSafe(reasons),
+  };
+}
+// RB_31_REVISION_SESSION_REGISTRY_RECORD_CONTRACTS_END

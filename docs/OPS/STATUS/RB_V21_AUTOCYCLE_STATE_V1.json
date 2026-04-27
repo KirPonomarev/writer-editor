@@ -3,7 +3,7 @@
   "planName": "Structural Revision Bridge v2.1 Final Master Plan",
   "activeCanon": "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final",
   "currentStatus": "IN_PROGRESS",
-  "activeContour": "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
+  "activeContour": "RB-C12-APPLY-TXN-RUNTIME-PATH-STAGE8",
   "acceptedContours": [
     "RB-C01-IMPORT-CHAIN-AND-REPO-FACT-AUDIT",
     "RB-C02-P0-SAFETY-FOUNDATION-WRITE-SEAM",
@@ -14,10 +14,10 @@
     "RB-C07-SUPPORTED-SURFACE-V1-DECLARATION-STAGE3",
     "RB-C08-BLOCK-LINEAGE-COVERAGE-STAGE4",
     "RB-C09-COMMENT-PLACEMENT-COVERAGE-STAGE5",
-    "RB-C10-ANCHOR-CONFIDENCE-COVERAGE-STAGE6"
+    "RB-C10-ANCHOR-CONFIDENCE-COVERAGE-STAGE6",
+    "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7"
   ],
   "pendingContours": [
-    "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
     "RB-C12-APPLY-TXN-RUNTIME-PATH-STAGE8",
     "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9",
     "RB-C14-WORD-TRANSPORT-PROOF-STAGE10",
@@ -94,6 +94,15 @@
       "push": "success",
       "commitSha": "163d4286",
       "note": "RB-29 comment decision separation contour commit pushed via env -u GH_TOKEN"
+    },
+    {
+      "id": "DR-008",
+      "contourId": "RB-C10-ANCHOR-CONFIDENCE-COVERAGE-STAGE6",
+      "result": "branch_pushed",
+      "branch": "codex/revision-bridge-v21-autocycle-c01",
+      "push": "success",
+      "commitSha": "4b90edcf",
+      "note": "RB-30 anchor disagreement summary contour commit pushed via env -u GH_TOKEN"
     }
   ],
   "evidenceIndex": [
@@ -342,9 +351,51 @@
       "type": "contour-close",
       "summary": "C10 accepted as Stage 6 anchor disagreement visibility contour and active contour moved to C11",
       "status": "pass"
+    },
+    {
+      "id": "EV-042",
+      "type": "delivery",
+      "summary": "RB-30 contour delivery push completed for commit 4b90edcf on branch codex/revision-bridge-v21-autocycle-c01",
+      "status": "pass"
+    },
+    {
+      "id": "EV-043",
+      "type": "revision-session-registry-contract",
+      "summary": "RB-31 revision session registry record contract added to bind import seam preview into deterministic registry-only evidence without manuscript mutation path",
+      "status": "pass"
+    },
+    {
+      "id": "EV-044",
+      "type": "targeted-tests",
+      "summary": "RB-31 contract suite passed (7 of 7) covering schema export, ready and blocked preview mapping, malformed-input rejection, determinism and allowlist constraints",
+      "status": "pass"
+    },
+    {
+      "id": "EV-045",
+      "type": "contour-close",
+      "summary": "C11 accepted as Stage 7 registry-record bridge contour and active contour moved to C12",
+      "status": "pass"
     }
   ],
-  "nextContourCandidate": "RB-C12-APPLY-TXN-RUNTIME-PATH-STAGE8",
+  "claimClassIndex": [
+    {
+      "contourId": "RB-C08-BLOCK-LINEAGE-COVERAGE-STAGE4",
+      "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED+CLAIM_CLASS_DELIVERY_COMPLETE"
+    },
+    {
+      "contourId": "RB-C09-COMMENT-PLACEMENT-COVERAGE-STAGE5",
+      "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED+CLAIM_CLASS_DELIVERY_COMPLETE"
+    },
+    {
+      "contourId": "RB-C10-ANCHOR-CONFIDENCE-COVERAGE-STAGE6",
+      "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED+CLAIM_CLASS_DELIVERY_COMPLETE"
+    },
+    {
+      "contourId": "RB-C11-IMPORT-SESSION-RUNTIME-BRIDGE-STAGE7",
+      "claimClass": "CLAIM_CLASS_CONTRACT_ONLY+CLAIM_CLASS_UNIT_TESTED"
+    }
+  ],
+  "nextContourCandidate": "RB-C13-STRUCTURAL-OPS-MANUAL-STAGE9",
   "finalAcceptanceGaps": [
     "project-level ApplyTxn path is not implemented as runtime write path",
     "ApplyReceipt generation and recovery journal flow are not proven in current runtime",
@@ -386,6 +437,12 @@
       "claim": "anchor disagreement reasons are explicitly aggregated and surfaced as deterministic summary evidence",
       "verdict": "supported",
       "evidenceRef": "summarizeRevisionBridgeAnchorDisagreements"
+    },
+    {
+      "id": "FC-005",
+      "claim": "import seam preview is bound into registry-only record without manuscript mutation path",
+      "verdict": "supported",
+      "evidenceRef": "buildRevisionSessionRegistryRecord"
     }
   ],
   "auditResults": [
@@ -431,8 +488,13 @@
     },
     {
       "id": "AU-009",
+      "verdict": "accepted",
+      "note": "C11 accepted: import seam preview now has deterministic registry record bridge with explicit safety guard against manuscript mutation claim"
+    },
+    {
+      "id": "AU-010",
       "verdict": "in_progress",
-      "note": "C11 active: import-session runtime bridge contour selected after C10 close"
+      "note": "C12 active: ApplyTxn runtime path contour selected after C11 close"
     }
   ],
   "replacementAgentHistory": [],
@@ -444,7 +506,7 @@
     "stage4_block_and_lineage_model": "partial_with_block_identity_risk_contracts",
     "stage5_inlinerange_and_commentplacement": "partial_with_comment_decision_separation_contracts",
     "stage6_anchor_and_confidence": "partial_with_donor_confidence_diagnostics_and_anchor_disagreement_summary_contracts",
-    "stage7_import_to_revisionsession": "contract_seam_preview_ready_no_runtime_apply",
+    "stage7_import_to_revisionsession": "contract_seam_preview_ready_with_registry_record_bridge_no_runtime_apply",
     "stage8_apply_engine_and_applytxn": "partial_with_applytxn_and_applyreceipt_contracts",
     "stage9_structural_operations": "not_implemented",
     "stage10_word_transport": "contract_only_export_manifest_envelope_and_binding_checks",
