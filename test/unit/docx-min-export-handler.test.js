@@ -17,9 +17,9 @@ function makeTypedExportError(code, reason, details = {}) {
   };
 }
 
-test('docx min export handler uses explicit outPath and injected write port', async () => {
+test('docx min export handler uses canonical export snapshot and injected write port', async () => {
   const calls = {
-    requestEditorSnapshot: 0,
+    readCanonicalExportSnapshot: 0,
     writes: [],
   };
   const documentBuffer = Buffer.from('docx-min-buffer');
@@ -27,10 +27,15 @@ test('docx min export handler uses explicit outPath and injected write port', as
     requestId: 'req-1',
     outPath: '/tmp/yalken-export.docx',
     outDir: '',
-    bufferSource: 'Horizontal sheet export text',
+    bufferSource: 'stale live editor text that must be ignored',
     options: {
       bookProfile: { formatId: 'A4' },
     },
+  };
+  const canonicalSnapshot = {
+    content: 'Saved canonical text',
+    plainText: 'Saved canonical text',
+    bookProfile: { formatId: 'A4' },
   };
 
   const result = await runDocxMinExport(payload, {
@@ -43,13 +48,10 @@ test('docx min export handler uses explicit outPath and injected write port', as
       calls.resolvedPayload = input;
       return input.outPath;
     },
-    async requestEditorSnapshot() {
-      calls.requestEditorSnapshot += 1;
-      return {
-        content: 'fallback',
-        plainText: 'fallback',
-        bookProfile: null,
-      };
+    async readCanonicalExportSnapshot(input) {
+      calls.readCanonicalExportSnapshot += 1;
+      calls.canonicalPayload = input;
+      return canonicalSnapshot;
     },
     async buildDocxMinBuffer(snapshot) {
       calls.builderSnapshot = snapshot;
@@ -74,12 +76,9 @@ test('docx min export handler uses explicit outPath and injected write port', as
   });
   assert.equal(calls.normalizedInput, payload);
   assert.equal(calls.resolvedPayload, payload);
-  assert.equal(calls.requestEditorSnapshot, 0);
-  assert.deepEqual(calls.builderSnapshot, {
-    content: 'Horizontal sheet export text',
-    plainText: 'Horizontal sheet export text',
-    bookProfile: { formatId: 'A4' },
-  });
+  assert.equal(calls.canonicalPayload, payload);
+  assert.equal(calls.readCanonicalExportSnapshot, 1);
+  assert.deepEqual(calls.builderSnapshot, canonicalSnapshot);
   assert.equal(calls.queueLabel, 'export docx min');
   assert.equal(calls.writes.length, 1);
   assert.equal(calls.writes[0].outPath, '/tmp/yalken-export.docx');
@@ -107,8 +106,8 @@ test('docx min export handler returns canceled without builder or write port cal
     resolveDocxExportPath() {
       return '';
     },
-    async requestEditorSnapshot() {
-      throw new Error('should not request snapshot');
+    async readCanonicalExportSnapshot() {
+      throw new Error('should not read canonical snapshot');
     },
     async buildDocxMinBuffer() {
       calls.buildDocxMinBuffer += 1;
@@ -154,8 +153,12 @@ test('docx min export handler can write through a temp-only injected filesystem 
       resolveDocxExportPath(input) {
         return input.outPath;
       },
-      async requestEditorSnapshot() {
-        throw new Error('should not request snapshot');
+      async readCanonicalExportSnapshot() {
+        return {
+          content: 'Saved canonical temp export text',
+          plainText: 'Saved canonical temp export text',
+          bookProfile: null,
+        };
       },
       async buildDocxMinBuffer() {
         return documentBuffer;
@@ -185,4 +188,48 @@ test('docx min export handler can write through a temp-only injected filesystem 
     fs.access(outPath),
     (error) => error && error.code === 'ENOENT',
   );
+});
+
+test('docx min export handler rejects bufferSource-only export when canonical source is unavailable', async () => {
+  const calls = {
+    buildDocxMinBuffer: 0,
+    writeBufferAtomic: 0,
+  };
+
+  const result = await runDocxMinExport({
+    requestId: 'req-noncanonical',
+    outPath: '/tmp/noncanonical.docx',
+    outDir: '',
+    bufferSource: 'live editor text only',
+    options: {},
+  }, {
+    normalizeExportPayload(input) {
+      return input;
+    },
+    makeTypedExportError,
+    resolveDocxExportPath(input) {
+      return input.outPath;
+    },
+    async readCanonicalExportSnapshot() {
+      throw new Error('no saved canonical source');
+    },
+    async buildDocxMinBuffer() {
+      calls.buildDocxMinBuffer += 1;
+      return Buffer.from('should-not-build');
+    },
+    async queueDiskOperation(operation) {
+      return operation();
+    },
+    async writeBufferAtomic() {
+      calls.writeBufferAtomic += 1;
+    },
+    updateStatus() {},
+  });
+
+  assert.equal(result.ok, 0);
+  assert.equal(result.error.code, 'E_EXPORT_CANONICAL_SOURCE_UNAVAILABLE');
+  assert.equal(result.error.reason, 'CANONICAL_SOURCE_UNAVAILABLE');
+  assert.deepEqual(result.error.details, { message: 'no saved canonical source' });
+  assert.equal(calls.buildDocxMinBuffer, 0);
+  assert.equal(calls.writeBufferAtomic, 0);
 });

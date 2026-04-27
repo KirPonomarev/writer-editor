@@ -16,11 +16,37 @@ function requireDependency(deps, name) {
   return value;
 }
 
+function normalizeCanonicalExportSnapshot(payload) {
+  if (typeof payload === 'string') {
+    return {
+      content: payload,
+      plainText: payload,
+      bookProfile: null,
+    };
+  }
+
+  const source = isPlainObjectValue(payload) ? payload : {};
+  const content = typeof source.content === 'string'
+    ? source.content
+    : typeof source.text === 'string'
+      ? source.text
+      : '';
+  if (!content) {
+    return null;
+  }
+
+  return {
+    content,
+    plainText: typeof source.plainText === 'string' ? source.plainText : content,
+    bookProfile: isPlainObjectValue(source.bookProfile) ? source.bookProfile : null,
+  };
+}
+
 async function runDocxMinExport(payloadRaw, deps = {}) {
   const normalizeExportPayload = requireDependency(deps, 'normalizeExportPayload');
   const makeTypedExportError = requireDependency(deps, 'makeTypedExportError');
   const resolveDocxExportPath = requireDependency(deps, 'resolveDocxExportPath');
-  const requestEditorSnapshot = requireDependency(deps, 'requestEditorSnapshot');
+  const readCanonicalExportSnapshot = requireDependency(deps, 'readCanonicalExportSnapshot');
   const buildDocxMinBuffer = requireDependency(deps, 'buildDocxMinBuffer');
   const queueDiskOperation = requireDependency(deps, 'queueDiskOperation');
   const writeBufferAtomic = requireDependency(deps, 'writeBufferAtomic');
@@ -55,21 +81,16 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
     });
   }
 
-  let editorSnapshot = payload.bufferSource
-    ? {
-      content: payload.bufferSource,
-      plainText: payload.bufferSource,
-      bookProfile: isPlainObjectValue(payload.options.bookProfile) ? payload.options.bookProfile : null,
-    }
-    : null;
+  let editorSnapshot;
+  try {
+    editorSnapshot = normalizeCanonicalExportSnapshot(await readCanonicalExportSnapshot(payload));
+  } catch (error) {
+    return makeTypedExportError('E_EXPORT_CANONICAL_SOURCE_UNAVAILABLE', 'CANONICAL_SOURCE_UNAVAILABLE', {
+      message: getErrorMessage(error),
+    });
+  }
   if (!editorSnapshot) {
-    try {
-      editorSnapshot = await requestEditorSnapshot();
-    } catch (error) {
-      return makeTypedExportError('E_EXPORT_TEXT_UNAVAILABLE', 'EDITOR_TEXT_UNAVAILABLE', {
-        message: getErrorMessage(error),
-      });
-    }
+    return makeTypedExportError('E_EXPORT_CANONICAL_SOURCE_INVALID', 'CANONICAL_SOURCE_INVALID');
   }
 
   let documentBuffer;
