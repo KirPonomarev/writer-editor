@@ -74,6 +74,7 @@ async function collectState(win, label) {
     const host = document.querySelector('#editor.tiptap-host');
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
+    const canvas = document.querySelector('.main-content--editor');
     const sourceWraps = host ? [...host.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
     const pageWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
     pageWraps.forEach((el) => {
@@ -99,6 +100,7 @@ async function collectState(win, label) {
       && a.bottom > b.top
     );
     const pageRects = pageWraps.map((el) => toPlainRect(el.getBoundingClientRect())).filter(Boolean);
+    const canvasRect = canvas ? toPlainRect(canvas.getBoundingClientRect()) : null;
     const gapRects = pageRects.slice(1).map((rect, index) => {
       const previous = pageRects[index];
       return {
@@ -131,6 +133,12 @@ async function collectState(win, label) {
         current = walker.nextNode();
       }
     }
+    const visibleViewportSheetCount = canvasRect
+      ? pageRects.filter((pageRect) => pageRect && intersects(pageRect, canvasRect)).length
+      : 0;
+    const visibleViewportTextRectCount = canvasRect
+      ? textRects.filter((textRect) => textRect && intersects(textRect, canvasRect)).length
+      : 0;
     const textGapIntersectionCount = textRects.filter((textRect) => (
       textRect && gapRects.some((gapRect) => gapRect.height > 0 && intersects(textRect, gapRect))
     )).length;
@@ -167,10 +175,15 @@ async function collectState(win, label) {
       centralSheetCount: host ? host.dataset.centralSheetCount || null : null,
       centralSheetOverflowReason: host ? host.dataset.centralSheetOverflowReason || null : null,
       centralSheetBoundedOverflowReason: host ? host.dataset.centralSheetBoundedOverflowReason || null : null,
+      firstRenderedPage: Number(host ? host.dataset.centralSheetWindowFirstRenderedPage || 0 : 0),
+      lastRenderedPage: Number(host ? host.dataset.centralSheetWindowLastRenderedPage || 0 : 0),
       sourcePageCount,
       visiblePageCount,
       hiddenPageCount,
       visibleSheetCount: pageWraps.length,
+      visibleViewportSheetCount,
+      visibleViewportTextRectCount,
+      scrollTop: canvas instanceof HTMLElement ? canvas.scrollTop : 0,
       probeIds: pageWraps.map((el) => el.dataset.performanceProbeId || ''),
       domNodeCount: document.querySelectorAll('*').length,
       textLength: text.length,
@@ -189,6 +202,40 @@ async function collectState(win, label) {
       gapHeights: gapRects.map((rect) => Math.round(rect.height)),
     };
   })()\`, true);
+}
+
+async function scrollEditorViewport(win, ratio) {
+  return win.webContents.executeJavaScript(\`(() => {
+    const ratio = \${JSON.stringify(ratio)};
+    const canvas = document.querySelector('.main-content--editor');
+    if (!(canvas instanceof HTMLElement)) {
+      return { ok: false, reason: 'EDITOR_CANVAS_MISSING' };
+    }
+    const maxScrollTop = Math.max(0, canvas.scrollHeight - canvas.clientHeight);
+    canvas.scrollTop = Math.round(maxScrollTop * ratio);
+    return {
+      ok: true,
+      ratio,
+      scrollTop: canvas.scrollTop,
+      maxScrollTop,
+      clientHeight: canvas.clientHeight,
+      scrollHeight: canvas.scrollHeight,
+    };
+  })()\`, true);
+}
+
+async function collectScrollTransition(win, label, ratio) {
+  const beforeScroll = await collectState(win, label + '-before-scroll');
+  const scrollResult = await scrollEditorViewport(win, ratio);
+  const afterScrollSync = await collectState(win, label + '-after-scroll-sync');
+  await sleep(48);
+  const afterScrollSettled = await collectState(win, label + '-after-scroll-settled');
+  return {
+    beforeScroll,
+    scrollResult,
+    afterScrollSync,
+    afterScrollSettled,
+  };
 }
 
 async function waitForScenario(win, label, targetPageCount) {
@@ -277,6 +324,7 @@ app.whenReady().then(async () => {
       await runScenario(win, 100, 2200),
     ];
     const beforeInput = await collectState(win, 'before-input-100');
+    const scrollTransition = await collectScrollTransition(win, 'scroll-window-100', 0.82);
     const focus = await focusEditorEnd(win);
     const insertStart = Date.now();
     await win.webContents.insertText(' ' + marker + ' ');
@@ -291,6 +339,7 @@ app.whenReady().then(async () => {
       ok: true,
       scenarios,
       beforeInput,
+      scrollTransition,
       focus,
       afterInput,
       insertMs100: Date.now() - insertStart,
@@ -420,6 +469,27 @@ assert.equal(
 assert.equal(result.focus.ok, true);
 assert.equal(result.focus.proseMirrorCount, 1);
 assert.equal(result.focus.tiptapEditorCount, 1);
+assert.equal(result.scrollTransition.scrollResult.ok, true);
+assert.equal(
+  result.scrollTransition.afterScrollSync.visibleViewportSheetCount > 0,
+  true,
+  `after scroll sync viewport must never be blank, got ${result.scrollTransition.afterScrollSync.visibleViewportSheetCount}`,
+);
+assert.equal(
+  result.scrollTransition.afterScrollSettled.visibleViewportSheetCount > 0,
+  true,
+  `after scroll settled viewport must show sheets, got ${result.scrollTransition.afterScrollSettled.visibleViewportSheetCount}`,
+);
+assert.equal(
+  result.scrollTransition.afterScrollSettled.visibleViewportTextRectCount > 0,
+  true,
+  `after scroll settled viewport must show text, got ${result.scrollTransition.afterScrollSettled.visibleViewportTextRectCount}`,
+);
+assert.equal(
+  result.scrollTransition.afterScrollSettled.firstRenderedPage > result.scrollTransition.beforeScroll.firstRenderedPage,
+  true,
+  `scroll should advance rendered window, got ${result.scrollTransition.beforeScroll.firstRenderedPage} -> ${result.scrollTransition.afterScrollSettled.firstRenderedPage}`,
+);
 assert.equal(result.beforeInput.sourcePageCount >= 100, true);
 assert.equal(result.afterInput.sourcePageCount >= 100, true);
 assert.equal(
@@ -462,6 +532,11 @@ const summary = {
   })),
   insertMs100: result.insertMs100,
   fullVisibleSheetRebuildAfterInput: result.fullVisibleSheetRebuildAfterInput,
+  scrollViewportSheetCountSync: result.scrollTransition.afterScrollSync.visibleViewportSheetCount,
+  scrollViewportSheetCountSettled: result.scrollTransition.afterScrollSettled.visibleViewportSheetCount,
+  scrollViewportTextRectCountSettled: result.scrollTransition.afterScrollSettled.visibleViewportTextRectCount,
+  scrollRenderedWindowShift:
+    result.scrollTransition.afterScrollSettled.firstRenderedPage - result.scrollTransition.beforeScroll.firstRenderedPage,
   afterInputDomNodeCount: result.afterInput.domNodeCount,
   afterInputSourcePageCount: result.afterInput.sourcePageCount,
   afterInputVisibleSheetCount: result.afterInput.visibleSheetCount,
