@@ -186,3 +186,410 @@ test('docx min export handler can write through a temp-only injected filesystem 
     (error) => error && error.code === 'ENOENT',
   );
 });
+
+test('docx min export handler surfaces revision bridge manifest-binding evidence for ready export', async () => {
+  const documentBuffer = Buffer.from('docx-min-rb-buffer');
+  const enrichedSnapshot = {
+    content: 'Scene one',
+    plainText: 'Scene one',
+    bookProfile: { formatId: 'A4' },
+    projectId: 'project-1',
+    baselineHash: 'baseline-1',
+    docFingerprintPlan: 'doc-fingerprint-1',
+    sourceVersion: 'project-manifest:v1',
+    exportedAtUtc: '2026-04-27T10:00:00.000Z',
+    sceneOrder: ['scene-1'],
+    sceneBaselines: [{ sceneId: 'scene-1' }],
+    blockBaselines: [{ blockInstanceId: 'block-1' }],
+  };
+  const calls = {
+    writes: [],
+  };
+
+  const result = await runDocxMinExport({
+    requestId: 'rb-ready',
+    outPath: '/tmp/rb-ready.docx',
+    outDir: '',
+    bufferSource: 'Scene one',
+    options: {},
+  }, {
+    normalizeExportPayload(input) {
+      return input;
+    },
+    makeTypedExportError,
+    resolveDocxExportPath(input) {
+      return input.outPath;
+    },
+    async requestEditorSnapshot() {
+      throw new Error('should not request snapshot');
+    },
+    async enrichRevisionBridgeExportSnapshot(snapshot, payload) {
+      calls.enrichArgs = { snapshot, payload };
+      return enrichedSnapshot;
+    },
+    evaluateRevisionBridgeExportRuntimeSnapshot(snapshot) {
+      calls.evaluatedSnapshot = snapshot;
+      return {
+        ok: true,
+        status: 'ready',
+        code: 'REVISION_BRIDGE_REVIEWGRAPH_VALID',
+        reason: 'REVISION_BRIDGE_REVIEWGRAPH_VALID',
+        requiredFields: [],
+        reasons: [],
+      };
+    },
+    buildRevisionBridgeExportManifest(snapshot, manifestInput) {
+      calls.manifestArgs = { snapshot, manifestInput };
+      return {
+        schemaVersion: 'revision-bridge.export-manifest.v1',
+        kind: 'ExportManifest',
+        id: manifestInput.id,
+        projectId: snapshot.projectId,
+        baselineHash: snapshot.baselineHash,
+        docFingerprint: snapshot.docFingerprintPlan,
+        sourceVersion: manifestInput.sourceVersion,
+        sceneOrder: snapshot.sceneOrder,
+        scenes: snapshot.sceneBaselines,
+        blocks: snapshot.blockBaselines,
+      };
+    },
+    async persistRevisionBridgeExportManifest(manifest) {
+      calls.persistedManifest = manifest;
+      return {
+        kind: 'ExportManifest',
+        stored: true,
+        fileName: 'export-manifest-rb-ready.json',
+        exportId: manifest.id,
+        schemaVersion: manifest.schemaVersion,
+      };
+    },
+    async buildDocxMinBuffer(snapshot) {
+      calls.builderSnapshot = snapshot;
+      return documentBuffer;
+    },
+    async queueDiskOperation(operation) {
+      return operation();
+    },
+    async writeBufferAtomic(outPath, buffer) {
+      calls.writes.push({ outPath, buffer });
+    },
+    updateStatus() {},
+  });
+
+  assert.equal(result.ok, 1);
+  assert.equal(result.bytesWritten, documentBuffer.length);
+  assert.deepEqual(calls.builderSnapshot, enrichedSnapshot);
+  assert.equal(result.revisionBridge.readiness.status, 'ready');
+  assert.deepEqual(result.revisionBridge.exportManifest, {
+    schemaVersion: 'revision-bridge.export-manifest.v1',
+    kind: 'ExportManifest',
+    id: 'rb-ready',
+    projectId: 'project-1',
+    baselineHash: 'baseline-1',
+    docFingerprint: 'doc-fingerprint-1',
+    sourceVersion: 'project-manifest:v1',
+    sceneOrder: ['scene-1'],
+    sceneCount: 1,
+    blockCount: 1,
+  });
+  assert.deepEqual(result.revisionBridge.exportManifestArtifact, {
+    kind: 'ExportManifest',
+    stored: true,
+    fileName: 'export-manifest-rb-ready.json',
+    exportId: 'rb-ready',
+    schemaVersion: 'revision-bridge.export-manifest.v1',
+  });
+  assert.equal(calls.writes.length, 1);
+});
+
+test('docx min export handler keeps revision bridge evidence non-ready without enrichment', async () => {
+  const documentBuffer = Buffer.from('docx-min-advisory-buffer');
+  const result = await runDocxMinExport({
+    requestId: 'rb-advisory',
+    outPath: '/tmp/rb-advisory.docx',
+    outDir: '',
+    bufferSource: 'Advisory text',
+    options: {},
+  }, {
+    normalizeExportPayload(input) {
+      return input;
+    },
+    makeTypedExportError,
+    resolveDocxExportPath(input) {
+      return input.outPath;
+    },
+    async requestEditorSnapshot() {
+      throw new Error('should not request snapshot');
+    },
+    evaluateRevisionBridgeExportRuntimeSnapshot(snapshot) {
+      assert.deepEqual(snapshot, {
+        content: 'Advisory text',
+        plainText: 'Advisory text',
+        bookProfile: null,
+      });
+      return {
+        ok: false,
+        status: 'advisory',
+        code: 'E_REVISION_BRIDGE_REVIEWGRAPH_INVALID',
+        reason: 'E_REVISION_BRIDGE_REVIEWGRAPH_INVALID',
+        requiredFields: ['projectId'],
+        reasons: [{ field: 'projectId', code: 'missing_field', message: 'projectId is required' }],
+      };
+    },
+    buildRevisionBridgeExportManifest() {
+      throw new Error('manifest must not build when readiness is false');
+    },
+    async buildDocxMinBuffer() {
+      return documentBuffer;
+    },
+    async queueDiskOperation(operation) {
+      return operation();
+    },
+    async writeBufferAtomic() {},
+    updateStatus() {},
+  });
+
+  assert.equal(result.ok, 1);
+  assert.equal(result.revisionBridge.readiness.ok, false);
+  assert.equal(result.revisionBridge.readiness.status, 'advisory');
+  assert.equal(Object.prototype.hasOwnProperty.call(result.revisionBridge, 'exportManifest'), false);
+});
+
+test('docx min export handler omits revision bridge evidence on early typed failure', async () => {
+  const result = await runDocxMinExport({
+    requestId: 'rb-path-fail',
+    outPath: '/tmp/rb-path-fail.docx',
+    outDir: '',
+    bufferSource: 'unused',
+    options: {},
+  }, {
+    normalizeExportPayload() {
+      return {
+        requestId: 'rb-path-fail',
+        pathBoundaryError: { failSignal: 'E_PATH_BOUNDARY_VIOLATION' },
+      };
+    },
+    makeTypedExportError,
+    resolveDocxExportPath() {
+      throw new Error('should not resolve path');
+    },
+    async requestEditorSnapshot() {
+      throw new Error('should not request snapshot');
+    },
+    async buildDocxMinBuffer() {
+      throw new Error('should not build');
+    },
+    async queueDiskOperation(operation) {
+      return operation();
+    },
+    async writeBufferAtomic() {},
+    updateStatus() {},
+  });
+
+  assert.equal(result.ok, 0);
+  assert.equal(result.error.code, 'E_PATH_BOUNDARY_VIOLATION');
+  assert.equal(Object.prototype.hasOwnProperty.call(result, 'revisionBridge'), false);
+});
+
+test('docx min export handler returns typed failure when revision bridge evaluation throws', async () => {
+  let writeCount = 0;
+  let buildCount = 0;
+
+  const result = await runDocxMinExport({
+    requestId: 'rb-eval-throw',
+    outPath: '/tmp/rb-eval-throw.docx',
+    outDir: '',
+    bufferSource: 'Scene one',
+    options: {},
+  }, {
+    normalizeExportPayload(input) {
+      return input;
+    },
+    makeTypedExportError,
+    resolveDocxExportPath(input) {
+      return input.outPath;
+    },
+    async requestEditorSnapshot() {
+      throw new Error('should not request snapshot');
+    },
+    evaluateRevisionBridgeExportRuntimeSnapshot() {
+      throw new Error('RB_EVAL_BROKEN');
+    },
+    async buildDocxMinBuffer() {
+      buildCount += 1;
+      return Buffer.from('should-not-build');
+    },
+    async queueDiskOperation(operation) {
+      return operation();
+    },
+    async writeBufferAtomic() {
+      writeCount += 1;
+    },
+    updateStatus() {},
+  });
+
+  assert.equal(result.ok, 0);
+  assert.equal(result.error.code, 'E_EXPORT_REVISION_BRIDGE_EVAL_FAILED');
+  assert.equal(buildCount, 0);
+  assert.equal(writeCount, 0);
+});
+
+test('docx min export handler returns typed failure when revision bridge manifest build throws', async () => {
+  let writeCount = 0;
+  let buildCount = 0;
+
+  const result = await runDocxMinExport({
+    requestId: 'rb-manifest-throw',
+    outPath: '/tmp/rb-manifest-throw.docx',
+    outDir: '',
+    bufferSource: 'Scene one',
+    options: {},
+  }, {
+    normalizeExportPayload(input) {
+      return input;
+    },
+    makeTypedExportError,
+    resolveDocxExportPath(input) {
+      return input.outPath;
+    },
+    async requestEditorSnapshot() {
+      throw new Error('should not request snapshot');
+    },
+    async enrichRevisionBridgeExportSnapshot(snapshot) {
+      return {
+        ...snapshot,
+        projectId: 'project-1',
+        baselineHash: 'baseline-1',
+        docFingerprintPlan: 'doc-fingerprint-1',
+        sourceVersion: 'project-manifest:v1',
+        exportedAtUtc: '2026-04-27T10:00:00.000Z',
+        sceneOrder: ['scene-1'],
+        sceneBaselines: [{ sceneId: 'scene-1' }],
+        blockBaselines: [{ blockInstanceId: 'block-1' }],
+      };
+    },
+    evaluateRevisionBridgeExportRuntimeSnapshot() {
+      return {
+        ok: true,
+        status: 'ready',
+        code: 'REVISION_BRIDGE_REVIEWGRAPH_VALID',
+        reason: 'REVISION_BRIDGE_REVIEWGRAPH_VALID',
+        requiredFields: [],
+        reasons: [],
+      };
+    },
+    buildRevisionBridgeExportManifest() {
+      throw new Error('RB_MANIFEST_BROKEN');
+    },
+    async buildDocxMinBuffer() {
+      buildCount += 1;
+      return Buffer.from('should-not-build');
+    },
+    async queueDiskOperation(operation) {
+      return operation();
+    },
+    async writeBufferAtomic() {
+      writeCount += 1;
+    },
+    updateStatus() {},
+  });
+
+  assert.equal(result.ok, 0);
+  assert.equal(result.error.code, 'E_EXPORT_REVISION_BRIDGE_MANIFEST_FAILED');
+  assert.equal(buildCount, 0);
+  assert.equal(writeCount, 0);
+});
+
+test('docx min export handler returns typed failure when revision bridge manifest persistence throws', async () => {
+  let writeCount = 0;
+  let buildCount = 0;
+
+  const result = await runDocxMinExport({
+    requestId: 'rb-manifest-write-throw',
+    outPath: '/tmp/rb-manifest-write-throw.docx',
+    outDir: '',
+    bufferSource: 'Scene one',
+    options: {},
+  }, {
+    normalizeExportPayload(input) {
+      return input;
+    },
+    makeTypedExportError,
+    resolveDocxExportPath(input) {
+      return input.outPath;
+    },
+    async requestEditorSnapshot() {
+      throw new Error('should not request snapshot');
+    },
+    async enrichRevisionBridgeExportSnapshot(snapshot) {
+      return {
+        ...snapshot,
+        projectId: 'project-1',
+        baselineHash: 'baseline-1',
+        docFingerprintPlan: 'doc-fingerprint-1',
+        sourceVersion: 'project-manifest:v1',
+        exportedAtUtc: '2026-04-27T10:00:00.000Z',
+        sceneOrder: ['scene-1'],
+        sceneBaselines: [{ sceneId: 'scene-1' }],
+        blockBaselines: [{ blockInstanceId: 'block-1' }],
+      };
+    },
+    evaluateRevisionBridgeExportRuntimeSnapshot() {
+      return {
+        ok: true,
+        status: 'ready',
+        code: 'REVISION_BRIDGE_REVIEWGRAPH_VALID',
+        reason: 'REVISION_BRIDGE_REVIEWGRAPH_VALID',
+        requiredFields: [],
+        reasons: [],
+      };
+    },
+    buildRevisionBridgeExportManifest(snapshot, manifestInput) {
+      return {
+        schemaVersion: 'revision-bridge.export-manifest.v1',
+        kind: 'ExportManifest',
+        id: manifestInput.id,
+        projectId: snapshot.projectId,
+        baselineHash: snapshot.baselineHash,
+        docFingerprint: snapshot.docFingerprintPlan,
+        sourceVersion: manifestInput.sourceVersion,
+        sceneOrder: snapshot.sceneOrder,
+        scenes: snapshot.sceneBaselines,
+        blocks: snapshot.blockBaselines,
+      };
+    },
+    async persistRevisionBridgeExportManifest() {
+      throw new Error('RB_MANIFEST_WRITE_BROKEN');
+    },
+    async buildDocxMinBuffer() {
+      buildCount += 1;
+      return Buffer.from('docx-built-before-persist');
+    },
+    async queueDiskOperation(operation) {
+      return operation();
+    },
+    async writeBufferAtomic() {
+      writeCount += 1;
+    },
+    updateStatus() {},
+  });
+
+  assert.equal(result.ok, 0);
+  assert.equal(result.error.code, 'E_EXPORT_REVISION_BRIDGE_MANIFEST_WRITE_FAILED');
+  assert.equal(buildCount, 1);
+  assert.equal(writeCount, 0);
+});
+
+test('docx min export source binding: main.js wires revision bridge enrichment into handler seam', async () => {
+  const mainText = await fs.readFile(path.join(process.cwd(), 'src', 'main.js'), 'utf8');
+
+  assert.match(mainText, /function loadRevisionBridgeModule\(/u);
+  assert.match(mainText, /async function enrichRevisionBridgeExportSnapshot\(/u);
+  assert.match(mainText, /async function persistRevisionBridgeExportManifest\(/u);
+  assert.match(mainText, /buildRevisionBridgeExportManifestBasename\(/u);
+  assert.match(mainText, /enrichRevisionBridgeExportSnapshot,/u);
+  assert.match(mainText, /persistRevisionBridgeExportManifest,/u);
+  assert.match(mainText, /evaluateRevisionBridgeExportRuntimeSnapshot:\s*revisionBridgeModule\.evaluateRevisionBridgeExportRuntimeSnapshot/u);
+  assert.match(mainText, /buildRevisionBridgeExportManifest:\s*revisionBridgeModule\.buildRevisionBridgeExportManifest/u);
+  assert.match(mainText, /E_EXPORT_REVISION_BRIDGE_MODULE_LOAD_FAILED/u);
+});

@@ -28,6 +28,18 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
   const buildPathBoundaryDetails = typeof deps.buildPathBoundaryDetails === 'function'
     ? deps.buildPathBoundaryDetails
     : (error) => error;
+  const enrichRevisionBridgeExportSnapshot = typeof deps.enrichRevisionBridgeExportSnapshot === 'function'
+    ? deps.enrichRevisionBridgeExportSnapshot
+    : null;
+  const persistRevisionBridgeExportManifest = typeof deps.persistRevisionBridgeExportManifest === 'function'
+    ? deps.persistRevisionBridgeExportManifest
+    : null;
+  const evaluateRevisionBridgeExportRuntimeSnapshot = typeof deps.evaluateRevisionBridgeExportRuntimeSnapshot === 'function'
+    ? deps.evaluateRevisionBridgeExportRuntimeSnapshot
+    : null;
+  const buildRevisionBridgeExportManifest = typeof deps.buildRevisionBridgeExportManifest === 'function'
+    ? deps.buildRevisionBridgeExportManifest
+    : null;
 
   const payload = normalizeExportPayload(payloadRaw);
   if (!payload) {
@@ -72,23 +84,105 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
     }
   }
 
+  let revisionBridge = null;
+  let exportSnapshot = editorSnapshot;
+  let exportManifest = null;
+  if (enrichRevisionBridgeExportSnapshot) {
+    try {
+      exportSnapshot = await enrichRevisionBridgeExportSnapshot(editorSnapshot, payload);
+    } catch (error) {
+      return makeTypedExportError('E_EXPORT_REVISION_BRIDGE_ENRICH_FAILED', 'REVISION_BRIDGE_ENRICH_FAILED', {
+        message: getErrorMessage(error),
+      });
+    }
+  }
+
+  if (evaluateRevisionBridgeExportRuntimeSnapshot) {
+    let readiness;
+    try {
+      readiness = evaluateRevisionBridgeExportRuntimeSnapshot(exportSnapshot);
+    } catch (error) {
+      return makeTypedExportError('E_EXPORT_REVISION_BRIDGE_EVAL_FAILED', 'REVISION_BRIDGE_EVAL_FAILED', {
+        message: getErrorMessage(error),
+      });
+    }
+    revisionBridge = {
+      readiness: {
+        ok: Boolean(readiness && readiness.ok),
+        status: readiness && typeof readiness.status === 'string' ? readiness.status : 'advisory',
+        code: readiness && typeof readiness.code === 'string' ? readiness.code : '',
+        reason: readiness && typeof readiness.reason === 'string' ? readiness.reason : '',
+        requiredFields: Array.isArray(readiness && readiness.requiredFields) ? readiness.requiredFields.slice() : [],
+        reasons: Array.isArray(readiness && readiness.reasons)
+          ? readiness.reasons.map((item) => ({
+            field: item && typeof item.field === 'string' ? item.field : '',
+            code: item && typeof item.code === 'string' ? item.code : '',
+            message: item && typeof item.message === 'string' ? item.message : '',
+          }))
+          : [],
+      },
+    };
+
+    if (revisionBridge.readiness.ok && buildRevisionBridgeExportManifest) {
+      let manifest;
+      try {
+        manifest = buildRevisionBridgeExportManifest(exportSnapshot, {
+          id: payload.requestId,
+          createdAt: typeof exportSnapshot?.exportedAtUtc === 'string' ? exportSnapshot.exportedAtUtc : '',
+          sourceVersion: typeof exportSnapshot?.sourceVersion === 'string' ? exportSnapshot.sourceVersion : '',
+        });
+      } catch (error) {
+        return makeTypedExportError('E_EXPORT_REVISION_BRIDGE_MANIFEST_FAILED', 'REVISION_BRIDGE_MANIFEST_FAILED', {
+          message: getErrorMessage(error),
+        });
+      }
+      exportManifest = manifest;
+      revisionBridge.exportManifest = {
+        schemaVersion: typeof manifest?.schemaVersion === 'string' ? manifest.schemaVersion : '',
+        kind: typeof manifest?.kind === 'string' ? manifest.kind : '',
+        id: typeof manifest?.id === 'string' ? manifest.id : '',
+        projectId: typeof manifest?.projectId === 'string' ? manifest.projectId : '',
+        baselineHash: typeof manifest?.baselineHash === 'string' ? manifest.baselineHash : '',
+        docFingerprint: typeof manifest?.docFingerprint === 'string' ? manifest.docFingerprint : '',
+        sourceVersion: typeof manifest?.sourceVersion === 'string' ? manifest.sourceVersion : '',
+        sceneOrder: Array.isArray(manifest?.sceneOrder) ? manifest.sceneOrder.slice() : [],
+        sceneCount: Array.isArray(manifest?.scenes) ? manifest.scenes.length : 0,
+        blockCount: Array.isArray(manifest?.blocks) ? manifest.blocks.length : 0,
+      };
+    }
+  }
+
   let documentBuffer;
   try {
-    documentBuffer = await buildDocxMinBuffer(editorSnapshot);
+    documentBuffer = await buildDocxMinBuffer(exportSnapshot);
   } catch (error) {
     return makeTypedExportError('E_EXPORT_BUILD_FAILED', 'DOCX_BUILD_FAILED', {
       message: getErrorMessage(error),
     });
   }
 
+  if (exportManifest && persistRevisionBridgeExportManifest) {
+    try {
+      revisionBridge.exportManifestArtifact = await persistRevisionBridgeExportManifest(exportManifest);
+    } catch (error) {
+      return makeTypedExportError('E_EXPORT_REVISION_BRIDGE_MANIFEST_WRITE_FAILED', 'REVISION_BRIDGE_MANIFEST_WRITE_FAILED', {
+        message: getErrorMessage(error),
+      });
+    }
+  }
+
   try {
     await queueDiskOperation(() => writeBufferAtomic(outPath, documentBuffer), 'export docx min');
     updateStatus('DOCX MIN экспортирован');
-    return {
+    const result = {
       ok: 1,
       outPath,
       bytesWritten: documentBuffer.length,
     };
+    if (revisionBridge) {
+      result.revisionBridge = revisionBridge;
+    }
+    return result;
   } catch (error) {
     return makeTypedExportError('E_EXPORT_WRITE_FAILED', 'DOCX_WRITE_FAILED', {
       message: getErrorMessage(error),

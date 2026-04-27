@@ -35,3 +35,11 @@ test('project manifest binding: settings persist and restore by projectId plus r
   assert.match(source, /const\s+projectBinding\s*=\s*await\s+findProjectBindingByProjectId\(lastProjectId\);/);
   assert.match(source, /delete\s+settings\.lastFilePath;/);
 });
+
+test('project manifest binding: revision bridge project section is explicit and created in project structure', () => {
+  const source = readMainSource();
+
+  assert.match(source, /revisionBridge:\s*'revision_bridge'/);
+  assert.match(source, /const\s+revisionBridgePath\s*=\s*getProjectSectionPath\('revisionBridge',\s*projectName\);/);
+  assert.match(source, /await\s+fs\.mkdir\(revisionBridgePath,\s*\{\s*recursive:\s*true\s*\}\);/);
+});

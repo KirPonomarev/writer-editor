@@ -248,7 +248,8 @@ const PROJECT_SUBFOLDERS = {
   materials: 'materials',
   reference: 'reference',
   trash: 'trash',
-  backups: 'backups'
+  backups: 'backups',
+  revisionBridge: 'revision_bridge'
 };
 const MATERIALS_SECTION_LABELS = ['Заметки', 'Исследования', 'Идеи/черновики', 'Вырезки'];
 const REFERENCE_SECTION_LABELS = ['Персонажи', 'Локации', 'Термины/глоссарий', 'События/таймлайн'];
@@ -301,6 +302,11 @@ function getProjectManifestPath(projectName = DEFAULT_PROJECT_NAME) {
   return joinPathSegmentsWithinRoot(getProjectRootPath(projectName), [PROJECT_MANIFEST_FILENAME], {
     resolveSymlinks: false,
   });
+}
+
+function buildRevisionBridgeExportManifestBasename(exportId) {
+  const safeExportId = sanitizeFilename(typeof exportId === 'string' ? exportId : 'export');
+  return `export-manifest-${safeExportId}.json`;
 }
 
 function buildSectionDefinitions(labels) {
@@ -1473,6 +1479,18 @@ function loadStyleMapModule() {
   return styleMapModulePromise;
 }
 
+let revisionBridgeModulePromise = null;
+function loadRevisionBridgeModule() {
+  if (!revisionBridgeModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'index.mjs')).href;
+    revisionBridgeModulePromise = import(modulePath).catch((error) => {
+      revisionBridgeModulePromise = null;
+      throw error;
+    });
+  }
+  return revisionBridgeModulePromise;
+}
+
 function mapMarkdownErrorCode(inputCode, inputReason) {
   const code = typeof inputCode === 'string' ? inputCode : '';
   const reason = typeof inputReason === 'string' ? inputReason : '';
@@ -1733,7 +1751,159 @@ async function buildDocxMinBuffer(editorSnapshot) {
   });
 }
 
+function buildRevisionBridgeSceneTitle(relativePath) {
+  const fileName = typeof relativePath === 'string' ? relativePath.trim() : '';
+  if (!fileName) {
+    return 'Current Scene';
+  }
+  return path.basename(fileName, path.extname(fileName)) || fileName;
+}
+
+async function enrichRevisionBridgeExportSnapshot(editorSnapshot, payload = {}) {
+  const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
+  const plainText = String(snapshot.plainText || '');
+  if (!plainText.trim()) {
+    return snapshot;
+  }
+  if (typeof currentFilePath !== 'string' || !currentFilePath.trim()) {
+    return snapshot;
+  }
+
+  const projectBinding = await resolveProjectBindingForFile(currentFilePath);
+  if (!projectBinding || !projectBinding.projectId || !projectBinding.manifestPath) {
+    return snapshot;
+  }
+
+  const relativePath = getProjectRelativeFilePath(currentFilePath, projectBinding.manifestPath);
+  if (!relativePath) {
+    return snapshot;
+  }
+
+  const [revisionBridgeModule, semanticMappingModule] = await Promise.all([
+    loadRevisionBridgeModule(),
+    loadSemanticMappingModule(),
+  ]);
+  const sceneId = `scene-${computeHash(`${projectBinding.projectId}:${relativePath}`)}`;
+  const semanticMap = semanticMappingModule.mapSemanticEntries({
+    sourceId: sceneId,
+    text: plainText,
+  });
+  const entries = Array.isArray(semanticMap.entries) ? semanticMap.entries : [];
+  if (entries.length === 0) {
+    return snapshot;
+  }
+
+  const manifestSchemaVersion = String(projectBinding.manifest?.schemaVersion || 'project-manifest.v1');
+  const baselineHash = computeHash(plainText);
+  const structureSeed = entries.map((entry) => ({
+    kind: typeof entry?.kind === 'string' ? entry.kind : 'paragraph',
+    ordinal: Number.isFinite(entry?.ordinal) ? entry.ordinal : 0,
+    range: entry?.sourceRange || null,
+  }));
+  const sceneStructuralHash = computeHash(JSON.stringify(structureSeed));
+  const sceneHash = computeHash(`${baselineHash}:${sceneStructuralHash}`);
+  const sceneOrder = [sceneId];
+  const sceneBaselines = [{
+    sceneId,
+    sceneHash,
+    sceneStructuralHash,
+    title: buildRevisionBridgeSceneTitle(relativePath),
+    orderIndex: 0,
+    sourcePath: relativePath,
+    relativePath,
+  }];
+  const blockBaselines = entries.map((entry, index) => {
+    const entryText = typeof entry?.text === 'string' ? entry.text : '';
+    const entryKind = typeof entry?.kind === 'string' ? entry.kind : 'paragraph';
+    const startOffset = Number.isFinite(entry?.sourceRange?.startOffset) ? entry.sourceRange.startOffset : index;
+    const endOffset = Number.isFinite(entry?.sourceRange?.endOffset) ? entry.sourceRange.endOffset : startOffset + Math.max(entryText.length, 1);
+    const blockLineageId = `lineage-${computeHash(`${sceneId}:${entryKind}:${index}`)}`;
+    const blockTextHash = computeHash(entryText);
+    const blockStructuralHash = computeHash(`${entryKind}:${startOffset}:${endOffset}`);
+    const blockVersionHash = computeHash(`${blockTextHash}:${blockStructuralHash}`);
+    const blockHash = computeHash(`${sceneId}:${blockVersionHash}`);
+    return {
+      blockInstanceId: `block-${computeHash(`${blockLineageId}:${blockVersionHash}`)}`,
+      blockLineageId,
+      blockVersionHash,
+      blockKind: entryKind,
+      blockOrder: index,
+      blockHash,
+      blockTextHash,
+      blockStructuralHash,
+      sceneId,
+    };
+  });
+
+  return {
+    ...snapshot,
+    exportKind: 'docx-min',
+    exportedAtUtc: new Date().toISOString(),
+    requestId: typeof payload?.requestId === 'string' ? payload.requestId : '',
+    projectId: projectBinding.projectId,
+    profileId: revisionBridgeModule.REVISION_BRIDGE_DOCX_REVIEW_PROFILE_ID,
+    baselineHash,
+    docFingerprintPlan: computeHash(`${projectBinding.projectId}:${relativePath}:${baselineHash}:${sceneStructuralHash}`),
+    sourceVersion: `project-manifest:${manifestSchemaVersion}`,
+    sceneOrder,
+    sceneBaselines,
+    blockBaselines,
+  };
+}
+
+async function persistRevisionBridgeExportManifest(exportManifest) {
+  const manifest = exportManifest && typeof exportManifest === 'object' && !Array.isArray(exportManifest)
+    ? exportManifest
+    : null;
+  if (!manifest || typeof manifest.id !== 'string' || !manifest.id.trim()) {
+    throw new Error('REVISION_BRIDGE_EXPORT_MANIFEST_INVALID');
+  }
+  if (typeof currentFilePath !== 'string' || !currentFilePath.trim()) {
+    throw new Error('REVISION_BRIDGE_EXPORT_MANIFEST_FILE_UNBOUND');
+  }
+
+  const projectBinding = await resolveProjectBindingForFile(currentFilePath);
+  if (!projectBinding || !projectBinding.projectRoot || !projectBinding.manifestPath) {
+    throw new Error('REVISION_BRIDGE_EXPORT_MANIFEST_PROJECT_UNBOUND');
+  }
+
+  const sourceManifest = isPlainObjectValue(projectBinding.manifest) ? projectBinding.manifest : {};
+  const projectNameHint = typeof sourceManifest.projectName === 'string' && sourceManifest.projectName.trim()
+    ? sourceManifest.projectName.trim()
+    : path.basename(projectBinding.projectRoot || getProjectRootPath());
+  await ensureProjectStructure(projectNameHint);
+
+  const revisionBridgePath = getProjectSectionPath('revisionBridge', projectNameHint);
+  const artifactBasename = buildRevisionBridgeExportManifestBasename(manifest.id);
+  const artifactPath = joinPathSegmentsWithinRoot(revisionBridgePath, [artifactBasename], { resolveSymlinks: false });
+  const writeResult = await queueDiskOperation(
+    () => fileManager.writeFileAtomic(artifactPath, JSON.stringify(manifest, null, 2)),
+    'save revision bridge export manifest',
+  );
+  if (!writeResult.success) {
+    throw new Error(writeResult.error || 'REVISION_BRIDGE_EXPORT_MANIFEST_WRITE_FAILED');
+  }
+
+  return {
+    kind: 'ExportManifest',
+    stored: true,
+    fileName: artifactBasename,
+    exportId: manifest.id,
+    schemaVersion: typeof manifest.schemaVersion === 'string' ? manifest.schemaVersion : '',
+  };
+}
+
 async function handleExportDocxMin(payloadRaw) {
+  let revisionBridgeModule;
+  try {
+    revisionBridgeModule = await loadRevisionBridgeModule();
+  } catch (error) {
+    return makeTypedExportError(
+      'E_EXPORT_REVISION_BRIDGE_MODULE_LOAD_FAILED',
+      'REVISION_BRIDGE_MODULE_LOAD_FAILED',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
   return runDocxMinExport(payloadRaw, {
     normalizeExportPayload,
     makeTypedExportError,
@@ -1744,6 +1914,10 @@ async function handleExportDocxMin(payloadRaw) {
     queueDiskOperation,
     writeBufferAtomic,
     updateStatus,
+    enrichRevisionBridgeExportSnapshot,
+    persistRevisionBridgeExportManifest,
+    evaluateRevisionBridgeExportRuntimeSnapshot: revisionBridgeModule.evaluateRevisionBridgeExportRuntimeSnapshot,
+    buildRevisionBridgeExportManifest: revisionBridgeModule.buildRevisionBridgeExportManifest,
   });
 }
 
@@ -2176,6 +2350,7 @@ async function ensureProjectStructure(projectName = DEFAULT_PROJECT_NAME) {
   const referencePath = getProjectSectionPath('reference', projectName);
   const trashPath = getProjectSectionPath('trash', projectName);
   const backupsPath = getProjectSectionPath('backups', projectName);
+  const revisionBridgePath = getProjectSectionPath('revisionBridge', projectName);
 
   await fs.mkdir(projectRoot, { recursive: true });
   await fs.mkdir(romanPath, { recursive: true });
@@ -2185,6 +2360,7 @@ async function ensureProjectStructure(projectName = DEFAULT_PROJECT_NAME) {
   await fs.mkdir(referencePath, { recursive: true });
   await fs.mkdir(trashPath, { recursive: true });
   await fs.mkdir(backupsPath, { recursive: true });
+  await fs.mkdir(revisionBridgePath, { recursive: true });
 
   for (const section of MATERIALS_SECTIONS) {
     await fs.mkdir(joinPathSegmentsWithinRoot(materialsPath, [section.dirName], { resolveSymlinks: false }), {

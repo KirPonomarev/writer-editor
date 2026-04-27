@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "rb-import-chain-manifest.v1",
+  "planName": "Structural Revision Bridge v2.1 Final Master Plan",
+  "status": "CONTINUATION_FOUND",
+  "result": "NOT_FROM_ZERO",
+  "generatedAtUtc": "2026-04-26T00:00:00Z",
+  "evidenceScope": "V1_TO_V2_2",
+  "sourceOfTruth": [
+    {
+      "label": "V2_2_SNAPSHOT",
+      "basename": "revision-bridge-v2.2-current-repo-snapshot.zip",
+      "sha256": "e6a029c47323388ddc183ec1f0b2ac2654da4df8ba0a320f434b9f55f55d700f",
+      "note": "contains donor-artifacts for v2.1 and meta reports"
+    },
+    {
+      "label": "V2_1_PACKAGE",
+      "basename": "revision-bridge-v2.1-package.zip",
+      "sha256": "f85f4b6e267e120402a9623adcf0ede8d76c3ce5121c1819bac9879acfe7459c",
+      "note": "matches donor artifact inside v2.2 snapshot"
+    },
+    {
+      "label": "V1_HARDENING_BASE",
+      "basename": "writer-editor-revision-bridge-v1-hardening.zip",
+      "sha256": "139ce7065cb42831a3f3b11aeeafb9cafe632643368f05da7fb6cb94f218238c",
+      "note": "stable v1 hardening baseline"
+    }
+  ],
+  "duplicateConfirmation": [
+    {
+      "basenameA": "writer-editor-revision-bridge-v1-hardening.zip",
+      "basenameB": "writer-editor-revision-bridge-v1-hardening(1).zip",
+      "sha256Equal": true
+    }
+  ],
+  "invalidArchives": [
+    {
+      "basename": "revision-bridge-v2-archive.zip",
+      "reason": "empty placeholder archive"
+    },
+    {
+      "basename": "revision-bridge-v2-archive(1).zip",
+      "reason": "empty placeholder archive"
+    },
+    {
+      "basename": "revision-bridge-v2-archive-corrected.zip",
+      "reason": "empty placeholder archive"
+    }
+  ],
+  "repoComparison": {
+    "currentRepoRevisionBridgeFiles": [
+      "index.mjs"
+    ],
+    "donorV21RevisionBridgeFiles": [
+      "revisionBridgeAnchors.mjs",
+      "revisionBridgeApply.mjs",
+      "revisionBridgeCommands.mjs",
+      "revisionBridgeComments.mjs",
+      "revisionBridgeDiagnostics.mjs",
+      "revisionBridgeDiff.mjs",
+      "revisionBridgeDocxExport.mjs",
+      "revisionBridgeDocxImport.mjs",
+      "revisionBridgeDocxParse.mjs",
+      "revisionBridgeExportSession.mjs",
+      "revisionBridgeHostileScan.mjs",
+      "revisionBridgeMatching.mjs",
+      "revisionBridgeModel.mjs",
+      "revisionBridgeSnapshot.mjs",
+      "revisionBridgeStorage.mjs",
+      "revisionBridgeStructural.mjs"
+    ],
+    "comparisonResult": "donor_v21_is_modular_current_repo_is_monolithic"
+  },
+  "recommendedExecutionBase": "V2_2_SNAPSHOT_PLUS_V2_1_DONOR_PLUS_V1_HARDENING_BASE",
+  "nextStep": "use donor chain as reference and port bounded seams into current repo with safety-first contours"
+}

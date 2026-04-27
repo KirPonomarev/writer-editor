@@ -153,6 +153,25 @@ test('revision bridge rejects malformed decision entries', async () => {
   );
 });
 
+test('revision bridge rejects missing targetScope.id', async () => {
+  const kernel = await loadKernel();
+  const packet = {
+    ...validPacket(),
+    targetScope: {
+      type: 'scene',
+    },
+  };
+
+  const result = kernel.validateRevisionBridgePacket(packet);
+
+  assert.equal(result.ok, false);
+  assert.equal(result.code, 'E_REVISION_BRIDGE_PACKET_INVALID');
+  assert.equal(result.reasons.some((reason) => (
+    reason.code === 'REVISION_BRIDGE_FIELD_REQUIRED'
+    && reason.field === 'targetScope.id'
+  )), true);
+});
+
 test('revision bridge apply safety returns stable blocked result shape', async () => {
   const kernel = await loadKernel();
 
@@ -184,6 +203,7 @@ test('revision bridge blocks unsafe apply requests with missing required fields'
   const cases = [
     ['projectId', { ...validPacket(), projectId: '' }],
     ['targetScope.type', { ...validPacket(), targetScope: {} }],
+    ['targetScope.id', { ...validPacket(), targetScope: { type: 'scene' } }],
     ['baselineHash', { ...validPacket(), baselineHash: '' }],
     ['decisionSet', { ...validPacket(), decisionSet: undefined }],
   ];
