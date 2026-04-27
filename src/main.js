@@ -3989,16 +3989,13 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return { ok: true };
   },
   'cmd.project.open': async () => {
-    await ensureCleanAction(handleOpen);
-    return { ok: true };
+    return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_OPEN, {});
   },
   'cmd.project.save': async () => {
-    const saved = await handleSave();
-    return { ok: saved === true };
+    return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE, {});
   },
   'cmd.project.saveAs': async () => {
-    const savedAs = await handleSaveAs();
-    return { ok: savedAs === true };
+    return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS, {});
   },
   'cmd.project.edit.undo': () => {
     const delivered = sendCanonicalRuntimeCommand(
@@ -4056,10 +4053,10 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return { ok: Boolean(response && response.ok === 1) };
   },
   'cmd.project.importMarkdownV1': async (payload = {}) => {
-    return handleImportMarkdownV1(payload);
+    return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);
   },
   'cmd.project.exportMarkdownV1': async (payload = {}) => {
-    return handleExportMarkdownV1(payload);
+    return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, payload);
   },
   'cmd.project.flowOpenV1': async () => {
     return handleFlowOpenV1();
