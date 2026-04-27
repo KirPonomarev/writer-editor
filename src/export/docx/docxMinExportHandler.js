@@ -94,7 +94,14 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
   }
 
   if (evaluateRevisionBridgeExportRuntimeSnapshot) {
-    const readiness = evaluateRevisionBridgeExportRuntimeSnapshot(exportSnapshot);
+    let readiness;
+    try {
+      readiness = evaluateRevisionBridgeExportRuntimeSnapshot(exportSnapshot);
+    } catch (error) {
+      return makeTypedExportError('E_EXPORT_REVISION_BRIDGE_EVAL_FAILED', 'REVISION_BRIDGE_EVAL_FAILED', {
+        message: getErrorMessage(error),
+      });
+    }
     revisionBridge = {
       readiness: {
         ok: Boolean(readiness && readiness.ok),
@@ -113,11 +120,18 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
     };
 
     if (revisionBridge.readiness.ok && buildRevisionBridgeExportManifest) {
-      const manifest = buildRevisionBridgeExportManifest(exportSnapshot, {
-        id: payload.requestId,
-        createdAt: typeof exportSnapshot?.exportedAtUtc === 'string' ? exportSnapshot.exportedAtUtc : '',
-        sourceVersion: typeof exportSnapshot?.sourceVersion === 'string' ? exportSnapshot.sourceVersion : '',
-      });
+      let manifest;
+      try {
+        manifest = buildRevisionBridgeExportManifest(exportSnapshot, {
+          id: payload.requestId,
+          createdAt: typeof exportSnapshot?.exportedAtUtc === 'string' ? exportSnapshot.exportedAtUtc : '',
+          sourceVersion: typeof exportSnapshot?.sourceVersion === 'string' ? exportSnapshot.sourceVersion : '',
+        });
+      } catch (error) {
+        return makeTypedExportError('E_EXPORT_REVISION_BRIDGE_MANIFEST_FAILED', 'REVISION_BRIDGE_MANIFEST_FAILED', {
+          message: getErrorMessage(error),
+        });
+      }
       revisionBridge.exportManifest = {
         schemaVersion: typeof manifest?.schemaVersion === 'string' ? manifest.schemaVersion : '',
         kind: typeof manifest?.kind === 'string' ? manifest.kind : '',

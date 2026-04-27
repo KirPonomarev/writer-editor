@@ -1825,7 +1825,16 @@ async function enrichRevisionBridgeExportSnapshot(editorSnapshot, payload = {}) 
 }
 
 async function handleExportDocxMin(payloadRaw) {
-  const revisionBridgeModule = await loadRevisionBridgeModule();
+  let revisionBridgeModule;
+  try {
+    revisionBridgeModule = await loadRevisionBridgeModule();
+  } catch (error) {
+    return makeTypedExportError(
+      'E_EXPORT_REVISION_BRIDGE_MODULE_LOAD_FAILED',
+      'REVISION_BRIDGE_MODULE_LOAD_FAILED',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
   return runDocxMinExport(payloadRaw, {
     normalizeExportPayload,
     makeTypedExportError,
