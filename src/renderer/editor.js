@@ -8424,10 +8424,12 @@ if (window.electronAPI) {
 
 if (isTiptapMode) {
   editor.addEventListener('input', () => {
+    scheduleIncrementalInputDomSync();
     syncPlainTextBufferFromEditorDom();
+    scheduleDeferredHotpathRender({ includePagination: false, preserveSelection: true });
+    scheduleDeferredPaginationRefresh();
     markAsModified();
     updateWordCount();
-    scheduleCentralSheetStripProofRefresh();
   });
 } else {
   editor.addEventListener('pointerdown', (event) => {
