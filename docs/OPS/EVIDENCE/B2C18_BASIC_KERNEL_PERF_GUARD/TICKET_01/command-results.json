@@ -1,0 +1,73 @@
+{
+  "allPassed": true,
+  "commands": [
+    {
+      "command": "node scripts/ops/b2c18-basic-kernel-perf-guard-state.mjs --write --json",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "State packet regenerated with PASS status and zero fail rows."
+    },
+    {
+      "command": "node --test test/contracts/b2c18-basic-kernel-perf-guard.contract.test.js",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "3 tests passed, 0 failed."
+    },
+    {
+      "command": "node --test test/contracts/b2c17-migration-killpoint-proof.contract.test.js",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "3 tests passed, 0 failed."
+    },
+    {
+      "command": "node --test test/contracts/b2c16-migration-policy-minimal.contract.test.js",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "3 tests passed, 0 failed."
+    },
+    {
+      "command": "node --test test/contracts/b2c15-restore-drill-and-quarantine.contract.test.js",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "3 tests passed, 0 failed."
+    },
+    {
+      "command": "npm run oss:policy",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "OSS policy OK: no Tiptap Pro and no private registry."
+    },
+    {
+      "command": "git diff --name-only -- package.json package-lock.json",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "No dependency manifest diffs reported."
+    },
+    {
+      "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "No UI baseline diffs reported."
+    },
+    {
+      "command": "git diff --name-only -- src/renderer/editor.js src/renderer/editor.bundle.js src/renderer/tiptap src/renderer/commands src/command src/core/engine.ts src/core/reducer.ts",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "No editor behavior surface diffs reported."
+    },
+    {
+      "command": "git diff --name-only -- src/contracts src/core/io src/io src/utils/fileManager.js src/utils/backupManager.js src/utils/flowSceneBatchAtomic.js",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "No schema or storage runtime diffs reported."
+    },
+    {
+      "command": "git diff --name-only -- scripts/perf src/contracts/runtime src/collab src/shared/recoveryActionCanon.mjs",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "No perf infrastructure, telemetry, collab, or recovery runtime diffs reported."
+    }
+  ],
+  "status": "EXECUTED_AND_RECORDED",
+  "taskId": "B2C18_BASIC_KERNEL_PERF_GUARD"
+}

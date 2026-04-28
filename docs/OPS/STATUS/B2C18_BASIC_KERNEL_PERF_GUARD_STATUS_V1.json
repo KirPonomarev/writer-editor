@@ -1,0 +1,384 @@
+{
+  "artifactId": "B2C18_BASIC_KERNEL_PERF_GUARD_STATUS_V1",
+  "B2C18_BASIC_KERNEL_PERF_GUARD_OK": 1,
+  "donor": {
+    "acceptedUse": "NO_DONOR_ARCHIVE_CONSULTED",
+    "consultedEntries": [],
+    "primaryBasename": "NONE",
+    "primarySha256": "NOT_APPLICABLE",
+    "rejectedUse": "NO_ARCHIVE_RUNTIME_IMPORT_NO_BROAD_OVERLAY_NO_RELEASE_PERF_CLAIM_NO_B2C19_NO_B2C20_NO_BLOCK2_EXIT"
+  },
+  "failRows": [],
+  "failSignal": "",
+  "ok": true,
+  "proof": {
+    "b2c17Binding": {
+      "artifactId": "B2C17_MIGRATION_KILLPOINT_PROOF_STATUS_V1",
+      "killpointCount": 10,
+      "ok": true,
+      "sourceBasename": "B2C17_MIGRATION_KILLPOINT_PROOF_STATUS_V1.json",
+      "status": "PASS",
+      "statusHash": "3381be5f26c0dd241d1ba9da25963428aa197d39f7708916af63aff5b67999f0",
+      "tokenValue": 1
+    },
+    "b2c17StateBound": true,
+    "budgetTableHash": "612b5b54ac3251ddd74dfc4f3ba4db798ae6e320b09c9b256596a435ff5b5636",
+    "commandResultsBinding": {
+      "allPassed": true,
+      "commandCount": 11,
+      "ok": true,
+      "sourceBasename": "command-results.json",
+      "status": "EXECUTED_AND_RECORDED",
+      "statusHash": "8f8e64e922dd3c7734e1c7fd4baf787e5f9b15e57dde676d0c3c70104ff5051e"
+    },
+    "commandResultsNoPendingOk": true,
+    "deterministicInputSmokeRecordedOk": true,
+    "deterministicOpenProjectSmokeRecordedOk": true,
+    "deterministicRuntimeBudgetGuardOnly": true,
+    "deterministicSaveSmokeRecordedOk": true,
+    "deterministicSceneSwitchSmokeRecordedOk": true,
+    "fullBookRebuildRejectedOnTypingOk": true,
+    "fullLayoutRejectedOnTypingOk": true,
+    "fullPreflightRejectedOnTypingOk": true,
+    "harnessBoundary": {
+      "b2c19Admitted": false,
+      "b2c20Admitted": false,
+      "block2ExitAdmitted": false,
+      "claimStatus": "BASIC_DETERMINISTIC_GUARD_ONLY",
+      "editorBehaviorChangeAdmitted": false,
+      "realBenchmarkInfrastructureAdmitted": false,
+      "releasePerfClaimAdmitted": false,
+      "runtimeTelemetryAdmitted": false,
+      "storageSchemaChangeAdmitted": false
+    },
+    "hotPathProofHash": "2bb48ed3aeb0c2292633ac00265852f7315452c214d0f2fcdc847b9cee135abf",
+    "noB2C19ClaimOk": true,
+    "noB2C20ClaimOk": true,
+    "noBlock2ExitClaimOk": true,
+    "noDependencyChangeOk": true,
+    "noEditorBehaviorChangeOk": true,
+    "noRealBenchmarkInfrastructureOk": true,
+    "noReleaseScaleClaimOk": true,
+    "noRuntimeTelemetryOk": true,
+    "noStorageOrSchemaChangeOk": true,
+    "noUiChangeOk": true,
+    "projectSearchRejectedOnTypingOk": true,
+    "recoveryPackSyncRejectedOnTypingOk": true,
+    "repoBound": true,
+    "smokeRowCount": 4,
+    "statusPacketDeepEqualReady": true,
+    "typingHotPathProhibitionsExplicitOk": true
+  },
+  "runtime": {
+    "budgetTable": [
+      {
+        "allowedWork": [
+          "PROJECT_MANIFEST_OPEN",
+          "SCENE_REGISTRY_ADMISSION",
+          "INITIAL_SCENE_BIND"
+        ],
+        "budgetClass": "BASIC_GUARD_RAIL",
+        "editorBehaviorChanged": false,
+        "interaction": "OPEN_PROJECT",
+        "notes": "Deterministic model row only; no wall-clock or release-scale claim.",
+        "prohibitedWork": [
+          "REAL_BENCHMARK_INFRASTRUCTURE",
+          "RELEASE_PERF_CLAIM",
+          "RUNTIME_TELEMETRY"
+        ],
+        "realBenchmark": false,
+        "releaseBenchmark": false,
+        "rowId": "OPEN_PROJECT_SMOKE",
+        "rowKind": "DETERMINISTIC_MODEL_SMOKE",
+        "runtimeTelemetry": false,
+        "trigger": "PROJECT_OPEN",
+        "unit": "MODEL_STEP_BUDGET"
+      },
+      {
+        "allowedWork": [
+          "SCENE_POINTER_SWAP",
+          "SCENE_LOCAL_RENDER_BIND",
+          "DIRTY_STATE_PRESERVE"
+        ],
+        "budgetClass": "BASIC_GUARD_RAIL",
+        "editorBehaviorChanged": false,
+        "interaction": "SCENE_SWITCH",
+        "notes": "Scene switch row proves bounded swap only, not a whole-book recompute.",
+        "prohibitedWork": [
+          "FULL_LAYOUT_RECALC",
+          "FULL_BOOK_REBUILD",
+          "PROJECT_SEARCH_SWEEP"
+        ],
+        "realBenchmark": false,
+        "releaseBenchmark": false,
+        "rowId": "SCENE_SWITCH_SMOKE",
+        "rowKind": "DETERMINISTIC_MODEL_SMOKE",
+        "runtimeTelemetry": false,
+        "trigger": "SCENE_ACTIVATE",
+        "unit": "MODEL_STEP_BUDGET"
+      },
+      {
+        "allowedWork": [
+          "ATOMIC_SAVE_PATH",
+          "RECOVERY_WRITE_ALREADY_CANONICAL",
+          "DIRTY_FLAG_CLEAR"
+        ],
+        "budgetClass": "BASIC_GUARD_RAIL",
+        "editorBehaviorChanged": false,
+        "interaction": "SAVE_PROJECT",
+        "notes": "Save smoke row is deterministic scope modeling only and does not reopen recovery runtime.",
+        "prohibitedWork": [
+          "REAL_BENCHMARK_INFRASTRUCTURE",
+          "RELEASE_PERF_CLAIM",
+          "PRODUCT_RELEASE_SLO_CLAIM"
+        ],
+        "realBenchmark": false,
+        "releaseBenchmark": false,
+        "rowId": "SAVE_SMOKE",
+        "rowKind": "DETERMINISTIC_MODEL_SMOKE",
+        "runtimeTelemetry": false,
+        "trigger": "SAVE_COMMAND",
+        "unit": "MODEL_STEP_BUDGET"
+      },
+      {
+        "allowedWork": [
+          "SCENE_LOCAL_MUTATION",
+          "LOCAL_DIRTY_MARK",
+          "DEFERRED_SAVE_INTENT"
+        ],
+        "budgetClass": "HOT_PATH_TYPING_GUARD",
+        "editorBehaviorChanged": false,
+        "interaction": "INPUT",
+        "notes": "Typing hot path remains scene-local and rejects cross-project or release-grade work.",
+        "prohibitedWork": [
+          "FULL_BOOK_REBUILD",
+          "PROJECT_SEARCH_SWEEP",
+          "FULL_LAYOUT_RECALC",
+          "FULL_PREFLIGHT",
+          "RECOVERY_PACK_SYNC",
+          "RUNTIME_TELEMETRY"
+        ],
+        "realBenchmark": false,
+        "releaseBenchmark": false,
+        "rowId": "INPUT_SMOKE",
+        "rowKind": "DETERMINISTIC_MODEL_SMOKE",
+        "runtimeTelemetry": false,
+        "trigger": "SCENE_TYPING",
+        "unit": "MODEL_STEP_BUDGET"
+      }
+    ],
+    "guardModel": "BASIC_DETERMINISTIC_RUNTIME_BUDGET_GUARD_ONLY",
+    "negativeCases": [
+      {
+        "caseId": "NEGATIVE_FULL_BOOK_REBUILD_ON_TYPING_REJECTED",
+        "observedCode": "E_B2C18_FULL_BOOK_REBUILD_ON_TYPING_REJECTED",
+        "observedDisposition": "REJECTED_TYPING_HOT_PATH_SCOPE",
+        "ok": true,
+        "rejectedClaim": "FULL_BOOK_REBUILD",
+        "trigger": "TYPING_HOT_PATH"
+      },
+      {
+        "caseId": "NEGATIVE_PROJECT_SEARCH_ON_TYPING_REJECTED",
+        "observedCode": "E_B2C18_PROJECT_SEARCH_ON_TYPING_REJECTED",
+        "observedDisposition": "REJECTED_TYPING_HOT_PATH_SCOPE",
+        "ok": true,
+        "rejectedClaim": "PROJECT_SEARCH_SWEEP",
+        "trigger": "TYPING_HOT_PATH"
+      },
+      {
+        "caseId": "NEGATIVE_FULL_LAYOUT_ON_TYPING_REJECTED",
+        "observedCode": "E_B2C18_FULL_LAYOUT_ON_TYPING_REJECTED",
+        "observedDisposition": "REJECTED_TYPING_HOT_PATH_SCOPE",
+        "ok": true,
+        "rejectedClaim": "FULL_LAYOUT_RECALC",
+        "trigger": "TYPING_HOT_PATH"
+      },
+      {
+        "caseId": "NEGATIVE_FULL_PREFLIGHT_ON_TYPING_REJECTED",
+        "observedCode": "E_B2C18_FULL_PREFLIGHT_ON_TYPING_REJECTED",
+        "observedDisposition": "REJECTED_TYPING_HOT_PATH_SCOPE",
+        "ok": true,
+        "rejectedClaim": "FULL_PREFLIGHT",
+        "trigger": "TYPING_HOT_PATH"
+      },
+      {
+        "caseId": "NEGATIVE_RECOVERY_PACK_SYNC_ON_TYPING_REJECTED",
+        "observedCode": "E_B2C18_RECOVERY_PACK_SYNC_ON_TYPING_REJECTED",
+        "observedDisposition": "REJECTED_TYPING_HOT_PATH_SCOPE",
+        "ok": true,
+        "rejectedClaim": "RECOVERY_PACK_SYNC",
+        "trigger": "TYPING_HOT_PATH"
+      },
+      {
+        "caseId": "NEGATIVE_RUNTIME_TELEMETRY_ON_TYPING_REJECTED",
+        "observedCode": "E_B2C18_RUNTIME_TELEMETRY_ON_TYPING_REJECTED",
+        "observedDisposition": "REJECTED_TYPING_HOT_PATH_SCOPE",
+        "ok": true,
+        "rejectedClaim": "RUNTIME_TELEMETRY",
+        "trigger": "TYPING_HOT_PATH"
+      },
+      {
+        "caseId": "NEGATIVE_REAL_BENCHMARK_INFRASTRUCTURE_CLAIM_REJECTED",
+        "observedCode": "E_B2C18_REAL_BENCHMARK_INFRASTRUCTURE_REJECTED",
+        "observedDisposition": "REJECTED_SCOPE_CLAIM",
+        "ok": true,
+        "rejectedClaim": "REAL_BENCHMARK_INFRASTRUCTURE",
+        "trigger": "SCOPE_CLAIM"
+      },
+      {
+        "caseId": "NEGATIVE_EDITOR_BEHAVIOR_CHANGE_CLAIM_REJECTED",
+        "observedCode": "E_B2C18_EDITOR_BEHAVIOR_CHANGE_REJECTED",
+        "observedDisposition": "REJECTED_SCOPE_CLAIM",
+        "ok": true,
+        "rejectedClaim": "EDITOR_BEHAVIOR_CHANGE",
+        "trigger": "SCOPE_CLAIM"
+      },
+      {
+        "caseId": "NEGATIVE_RELEASE_PERF_CLAIM_REJECTED",
+        "observedCode": "E_B2C18_RELEASE_PERF_CLAIM_REJECTED",
+        "observedDisposition": "REJECTED_SCOPE_CLAIM",
+        "ok": true,
+        "rejectedClaim": "RELEASE_PERF_CLAIM",
+        "trigger": "SCOPE_CLAIM"
+      },
+      {
+        "caseId": "NEGATIVE_B2C19_CLAIM_REJECTED",
+        "observedCode": "E_B2C18_B2C19_CLAIM_REJECTED",
+        "observedDisposition": "REJECTED_SCOPE_CLAIM",
+        "ok": true,
+        "rejectedClaim": "B2C19_AUDIT_CLAIM",
+        "trigger": "SCOPE_CLAIM"
+      },
+      {
+        "caseId": "NEGATIVE_B2C20_CLAIM_REJECTED",
+        "observedCode": "E_B2C18_B2C20_CLAIM_REJECTED",
+        "observedDisposition": "REJECTED_SCOPE_CLAIM",
+        "ok": true,
+        "rejectedClaim": "B2C20_EXIT_CLAIM",
+        "trigger": "SCOPE_CLAIM"
+      },
+      {
+        "caseId": "NEGATIVE_BLOCK2_EXIT_CLAIM_REJECTED",
+        "observedCode": "E_B2C18_BLOCK2_EXIT_CLAIM_REJECTED",
+        "observedDisposition": "REJECTED_SCOPE_CLAIM",
+        "ok": true,
+        "rejectedClaim": "BLOCK2_EXIT_CLAIM",
+        "trigger": "SCOPE_CLAIM"
+      }
+    ],
+    "positiveCases": [
+      {
+        "caseId": "POSITIVE_REQUIRED_SMOKE_ROWS_RECORDED",
+        "observedSmokeRowCount": 4,
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_INPUT_ROW_STAYS_SCENE_LOCAL",
+        "observedBudgetClass": "HOT_PATH_TYPING_GUARD",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_SCENE_SWITCH_ROW_HAS_NO_FULL_LAYOUT",
+        "observedProhibition": "FULL_LAYOUT_RECALC",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_SAVE_ROW_STAYS_NON_RELEASE",
+        "observedInteraction": "SAVE_PROJECT",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_OPEN_PROJECT_ROW_HAS_NO_TELEMETRY",
+        "observedInteraction": "OPEN_PROJECT",
+        "ok": true
+      }
+    ],
+    "smokeRows": [
+      {
+        "budgetClass": "BASIC_GUARD_RAIL",
+        "interaction": "OPEN_PROJECT",
+        "notes": "Deterministic model row only; no wall-clock or release-scale claim.",
+        "realBenchmark": false,
+        "releaseBenchmark": false,
+        "rowId": "OPEN_PROJECT_SMOKE",
+        "rowKind": "DETERMINISTIC_MODEL_SMOKE",
+        "runtimeTelemetry": false
+      },
+      {
+        "budgetClass": "BASIC_GUARD_RAIL",
+        "interaction": "SCENE_SWITCH",
+        "notes": "Scene switch row proves bounded swap only, not a whole-book recompute.",
+        "realBenchmark": false,
+        "releaseBenchmark": false,
+        "rowId": "SCENE_SWITCH_SMOKE",
+        "rowKind": "DETERMINISTIC_MODEL_SMOKE",
+        "runtimeTelemetry": false
+      },
+      {
+        "budgetClass": "BASIC_GUARD_RAIL",
+        "interaction": "SAVE_PROJECT",
+        "notes": "Save smoke row is deterministic scope modeling only and does not reopen recovery runtime.",
+        "realBenchmark": false,
+        "releaseBenchmark": false,
+        "rowId": "SAVE_SMOKE",
+        "rowKind": "DETERMINISTIC_MODEL_SMOKE",
+        "runtimeTelemetry": false
+      },
+      {
+        "budgetClass": "HOT_PATH_TYPING_GUARD",
+        "interaction": "INPUT",
+        "notes": "Typing hot path remains scene-local and rejects cross-project or release-grade work.",
+        "realBenchmark": false,
+        "releaseBenchmark": false,
+        "rowId": "INPUT_SMOKE",
+        "rowKind": "DETERMINISTIC_MODEL_SMOKE",
+        "runtimeTelemetry": false
+      }
+    ],
+    "typingHotPath": {
+      "allowedWork": [
+        "SCENE_LOCAL_MUTATION",
+        "LOCAL_DIRTY_MARK",
+        "SELECTION_UPDATE",
+        "DEFERRED_SAVE_INTENT"
+      ],
+      "disposition": "BOUNDED_SCENE_LOCAL_ONLY",
+      "editorBehaviorChangeAllowed": false,
+      "prohibitedOperations": [
+        "FULL_BOOK_REBUILD",
+        "PROJECT_SEARCH_SWEEP",
+        "FULL_LAYOUT_RECALC",
+        "FULL_PREFLIGHT",
+        "RECOVERY_PACK_SYNC",
+        "RUNTIME_TELEMETRY"
+      ],
+      "realBenchmarkAllowed": false,
+      "releaseClaimAllowed": false,
+      "runtimeTelemetryAllowed": false,
+      "trigger": "SCENE_TYPING"
+    }
+  },
+  "schemaVersion": 1,
+  "scope": {
+    "b2c14ScopeReopen": false,
+    "b2c15ScopeReopen": false,
+    "b2c19AuditClaim": false,
+    "b2c20ExitClaim": false,
+    "block2ExitClaim": false,
+    "block3StartClaim": false,
+    "cloudOrNetworkTelemetry": false,
+    "dependencyChanged": false,
+    "editorBehaviorChanged": false,
+    "productReleaseSloClaim": false,
+    "realBenchmarkInfrastructure": false,
+    "recoveryRuntimeModified": false,
+    "releaseClaim": false,
+    "releasePerfClaim": false,
+    "runtimeTelemetry": false,
+    "schemaChanged": false,
+    "storageFormatChanged": false,
+    "uiTouched": false
+  },
+  "status": "PASS",
+  "taskId": "B2C18_BASIC_KERNEL_PERF_GUARD"
+}

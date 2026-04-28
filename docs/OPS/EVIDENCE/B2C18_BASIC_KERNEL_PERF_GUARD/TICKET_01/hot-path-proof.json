@@ -1,0 +1,208 @@
+{
+  "proof": {
+    "fullBookRebuildRejectedOnTypingOk": true,
+    "fullLayoutRejectedOnTypingOk": true,
+    "fullPreflightRejectedOnTypingOk": true,
+    "noB2C19ClaimOk": true,
+    "noB2C20ClaimOk": true,
+    "noBlock2ExitClaimOk": true,
+    "noRealBenchmarkInfrastructureOk": true,
+    "noReleaseScaleClaimOk": true,
+    "noRuntimeTelemetryOk": true,
+    "projectSearchRejectedOnTypingOk": true,
+    "recoveryPackSyncRejectedOnTypingOk": true,
+    "typingHotPathProhibitionsExplicitOk": true
+  },
+  "runtime": {
+    "hotPathProofHash": "2bb48ed3aeb0c2292633ac00265852f7315452c214d0f2fcdc847b9cee135abf",
+    "negativeCases": [
+      {
+        "caseId": "NEGATIVE_FULL_BOOK_REBUILD_ON_TYPING_REJECTED",
+        "observedCode": "E_B2C18_FULL_BOOK_REBUILD_ON_TYPING_REJECTED",
+        "observedDisposition": "REJECTED_TYPING_HOT_PATH_SCOPE",
+        "ok": true,
+        "rejectedClaim": "FULL_BOOK_REBUILD",
+        "trigger": "TYPING_HOT_PATH"
+      },
+      {
+        "caseId": "NEGATIVE_PROJECT_SEARCH_ON_TYPING_REJECTED",
+        "observedCode": "E_B2C18_PROJECT_SEARCH_ON_TYPING_REJECTED",
+        "observedDisposition": "REJECTED_TYPING_HOT_PATH_SCOPE",
+        "ok": true,
+        "rejectedClaim": "PROJECT_SEARCH_SWEEP",
+        "trigger": "TYPING_HOT_PATH"
+      },
+      {
+        "caseId": "NEGATIVE_FULL_LAYOUT_ON_TYPING_REJECTED",
+        "observedCode": "E_B2C18_FULL_LAYOUT_ON_TYPING_REJECTED",
+        "observedDisposition": "REJECTED_TYPING_HOT_PATH_SCOPE",
+        "ok": true,
+        "rejectedClaim": "FULL_LAYOUT_RECALC",
+        "trigger": "TYPING_HOT_PATH"
+      },
+      {
+        "caseId": "NEGATIVE_FULL_PREFLIGHT_ON_TYPING_REJECTED",
+        "observedCode": "E_B2C18_FULL_PREFLIGHT_ON_TYPING_REJECTED",
+        "observedDisposition": "REJECTED_TYPING_HOT_PATH_SCOPE",
+        "ok": true,
+        "rejectedClaim": "FULL_PREFLIGHT",
+        "trigger": "TYPING_HOT_PATH"
+      },
+      {
+        "caseId": "NEGATIVE_RECOVERY_PACK_SYNC_ON_TYPING_REJECTED",
+        "observedCode": "E_B2C18_RECOVERY_PACK_SYNC_ON_TYPING_REJECTED",
+        "observedDisposition": "REJECTED_TYPING_HOT_PATH_SCOPE",
+        "ok": true,
+        "rejectedClaim": "RECOVERY_PACK_SYNC",
+        "trigger": "TYPING_HOT_PATH"
+      },
+      {
+        "caseId": "NEGATIVE_RUNTIME_TELEMETRY_ON_TYPING_REJECTED",
+        "observedCode": "E_B2C18_RUNTIME_TELEMETRY_ON_TYPING_REJECTED",
+        "observedDisposition": "REJECTED_TYPING_HOT_PATH_SCOPE",
+        "ok": true,
+        "rejectedClaim": "RUNTIME_TELEMETRY",
+        "trigger": "TYPING_HOT_PATH"
+      },
+      {
+        "caseId": "NEGATIVE_REAL_BENCHMARK_INFRASTRUCTURE_CLAIM_REJECTED",
+        "observedCode": "E_B2C18_REAL_BENCHMARK_INFRASTRUCTURE_REJECTED",
+        "observedDisposition": "REJECTED_SCOPE_CLAIM",
+        "ok": true,
+        "rejectedClaim": "REAL_BENCHMARK_INFRASTRUCTURE",
+        "trigger": "SCOPE_CLAIM"
+      },
+      {
+        "caseId": "NEGATIVE_EDITOR_BEHAVIOR_CHANGE_CLAIM_REJECTED",
+        "observedCode": "E_B2C18_EDITOR_BEHAVIOR_CHANGE_REJECTED",
+        "observedDisposition": "REJECTED_SCOPE_CLAIM",
+        "ok": true,
+        "rejectedClaim": "EDITOR_BEHAVIOR_CHANGE",
+        "trigger": "SCOPE_CLAIM"
+      },
+      {
+        "caseId": "NEGATIVE_RELEASE_PERF_CLAIM_REJECTED",
+        "observedCode": "E_B2C18_RELEASE_PERF_CLAIM_REJECTED",
+        "observedDisposition": "REJECTED_SCOPE_CLAIM",
+        "ok": true,
+        "rejectedClaim": "RELEASE_PERF_CLAIM",
+        "trigger": "SCOPE_CLAIM"
+      },
+      {
+        "caseId": "NEGATIVE_B2C19_CLAIM_REJECTED",
+        "observedCode": "E_B2C18_B2C19_CLAIM_REJECTED",
+        "observedDisposition": "REJECTED_SCOPE_CLAIM",
+        "ok": true,
+        "rejectedClaim": "B2C19_AUDIT_CLAIM",
+        "trigger": "SCOPE_CLAIM"
+      },
+      {
+        "caseId": "NEGATIVE_B2C20_CLAIM_REJECTED",
+        "observedCode": "E_B2C18_B2C20_CLAIM_REJECTED",
+        "observedDisposition": "REJECTED_SCOPE_CLAIM",
+        "ok": true,
+        "rejectedClaim": "B2C20_EXIT_CLAIM",
+        "trigger": "SCOPE_CLAIM"
+      },
+      {
+        "caseId": "NEGATIVE_BLOCK2_EXIT_CLAIM_REJECTED",
+        "observedCode": "E_B2C18_BLOCK2_EXIT_CLAIM_REJECTED",
+        "observedDisposition": "REJECTED_SCOPE_CLAIM",
+        "ok": true,
+        "rejectedClaim": "BLOCK2_EXIT_CLAIM",
+        "trigger": "SCOPE_CLAIM"
+      }
+    ],
+    "positiveCases": [
+      {
+        "caseId": "POSITIVE_REQUIRED_SMOKE_ROWS_RECORDED",
+        "observedSmokeRowCount": 4,
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_INPUT_ROW_STAYS_SCENE_LOCAL",
+        "observedBudgetClass": "HOT_PATH_TYPING_GUARD",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_SCENE_SWITCH_ROW_HAS_NO_FULL_LAYOUT",
+        "observedProhibition": "FULL_LAYOUT_RECALC",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_SAVE_ROW_STAYS_NON_RELEASE",
+        "observedInteraction": "SAVE_PROJECT",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_OPEN_PROJECT_ROW_HAS_NO_TELEMETRY",
+        "observedInteraction": "OPEN_PROJECT",
+        "ok": true
+      }
+    ],
+    "smokeRows": [
+      {
+        "budgetClass": "BASIC_GUARD_RAIL",
+        "interaction": "OPEN_PROJECT",
+        "notes": "Deterministic model row only; no wall-clock or release-scale claim.",
+        "realBenchmark": false,
+        "releaseBenchmark": false,
+        "rowId": "OPEN_PROJECT_SMOKE",
+        "rowKind": "DETERMINISTIC_MODEL_SMOKE",
+        "runtimeTelemetry": false
+      },
+      {
+        "budgetClass": "BASIC_GUARD_RAIL",
+        "interaction": "SCENE_SWITCH",
+        "notes": "Scene switch row proves bounded swap only, not a whole-book recompute.",
+        "realBenchmark": false,
+        "releaseBenchmark": false,
+        "rowId": "SCENE_SWITCH_SMOKE",
+        "rowKind": "DETERMINISTIC_MODEL_SMOKE",
+        "runtimeTelemetry": false
+      },
+      {
+        "budgetClass": "BASIC_GUARD_RAIL",
+        "interaction": "SAVE_PROJECT",
+        "notes": "Save smoke row is deterministic scope modeling only and does not reopen recovery runtime.",
+        "realBenchmark": false,
+        "releaseBenchmark": false,
+        "rowId": "SAVE_SMOKE",
+        "rowKind": "DETERMINISTIC_MODEL_SMOKE",
+        "runtimeTelemetry": false
+      },
+      {
+        "budgetClass": "HOT_PATH_TYPING_GUARD",
+        "interaction": "INPUT",
+        "notes": "Typing hot path remains scene-local and rejects cross-project or release-grade work.",
+        "realBenchmark": false,
+        "releaseBenchmark": false,
+        "rowId": "INPUT_SMOKE",
+        "rowKind": "DETERMINISTIC_MODEL_SMOKE",
+        "runtimeTelemetry": false
+      }
+    ],
+    "typingHotPath": {
+      "allowedWork": [
+        "SCENE_LOCAL_MUTATION",
+        "LOCAL_DIRTY_MARK",
+        "SELECTION_UPDATE",
+        "DEFERRED_SAVE_INTENT"
+      ],
+      "disposition": "BOUNDED_SCENE_LOCAL_ONLY",
+      "editorBehaviorChangeAllowed": false,
+      "prohibitedOperations": [
+        "FULL_BOOK_REBUILD",
+        "PROJECT_SEARCH_SWEEP",
+        "FULL_LAYOUT_RECALC",
+        "FULL_PREFLIGHT",
+        "RECOVERY_PACK_SYNC",
+        "RUNTIME_TELEMETRY"
+      ],
+      "realBenchmarkAllowed": false,
+      "releaseClaimAllowed": false,
+      "runtimeTelemetryAllowed": false,
+      "trigger": "SCENE_TYPING"
+    }
+  }
+}
