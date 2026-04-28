@@ -25,5 +25,19 @@
 - `src/contracts/index.ts` MUST remain free of runtime logic.
 
 ## Current contracts
-- `first.contract.ts`
-- `core-state.contract.ts` (exports `CoreStateSnapshot`)
+- `core-command.contract.ts`
+- `core-event.contract.ts`
+- `core-state.contract.ts`
+- `scene-document.contract.ts`
+- `scene-block.contract.ts`
+- `scene-inline-range.contract.ts`
+- `runtime` barrel with:
+  - `runtime-execution.contract.ts`
+  - `runtime-effects.contract.ts`
+  - `runtime-queue.contract.ts`
+  - `runtime-trace.contract.ts`
+
+## Out of minimal root barrel
+- `dialog-port.contract.ts`
+- `filesystem-port.contract.ts`
+- `platform-info-port.contract.ts`
