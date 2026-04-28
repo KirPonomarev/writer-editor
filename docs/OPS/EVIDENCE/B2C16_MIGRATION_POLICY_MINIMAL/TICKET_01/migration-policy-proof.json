@@ -1,0 +1,122 @@
+{
+  "proof": {
+    "actualMigrationExecutionRejectedOk": true,
+    "backupPreconditionOk": true,
+    "currentSchemaVersion": 1,
+    "deterministicInMemoryPolicyOnly": true,
+    "migrationAdvisoryWhenUntouchedOk": true,
+    "migrationRequiredFlagExplicitOk": true,
+    "missingBackupStopsOk": true,
+    "missingBackupStopsPolicyOk": true,
+    "missingRecoveryPackStopsOk": true,
+    "missingRecoveryPackStopsPolicyOk": true,
+    "missingRollbackStopsOk": true,
+    "missingRollbackStopsPolicyOk": true,
+    "mixedVersionNotAcceptedCleanOk": true,
+    "mixedVersionPolicyStopsOrQuarantinesOk": true,
+    "policyBoundary": {
+      "backupExecutionAdmitted": false,
+      "blockingWhenRuntimeTouched": true,
+      "claimStatus": "ADVISORY_WHEN_UNTOUCHED",
+      "matrixShape": "VERSION_AND_PRECONDITION_POLICY_ROWS_ONLY",
+      "quarantineRuntimeAdmitted": false,
+      "runtimeExecutionAdmitted": false,
+      "storageRewriteAdmitted": false
+    },
+    "recoveryPackPreconditionOk": true,
+    "repoBound": true,
+    "rollbackPreconditionOk": true,
+    "silentDataRewriteRejectedOk": true,
+    "unknownFutureNotCleanMutableOk": true,
+    "unknownFutureVersionRestrictedOk": true,
+    "unknownOldNotSilentlyUpgradedOk": true,
+    "unknownOldVersionStopsOk": true,
+    "validSchemaVersionOpensCleanPolicyOk": true,
+    "versionPolicyMatrixHash": "0a9ef8ccf2c19b6cd46d64c5fe51b1f7ab4472d51bfe9cb2c747c40a79e79b60",
+    "versionPolicyRowCount": 10
+  },
+  "runtime": {
+    "negativeCases": [
+      {
+        "caseId": "NEGATIVE_UNKNOWN_FUTURE_NOT_CLEAN_MUTABLE",
+        "observedCode": "E_B2C16_UNKNOWN_FUTURE_RESTRICTED",
+        "observedDisposition": "OPEN_READ_ONLY_RESTRICTED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_UNKNOWN_OLD_NOT_SILENTLY_UPGRADED",
+        "observedCode": "E_B2C16_EXPLICIT_MIGRATION_REQUIRED",
+        "observedDisposition": "STOP_RESTRICTED_EXPLICIT_MIGRATION_REQUIRED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MIXED_VERSION_NOT_ACCEPTED_CLEAN",
+        "observedCode": "E_B2C16_MIXED_VERSION_STOP",
+        "observedDisposition": "STOP_QUARANTINE_POLICY_ONLY",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MISSING_BACKUP_STOPS",
+        "observedCode": "E_B2C16_BACKUP_REQUIRED",
+        "observedDisposition": "STOP_BACKUP_REQUIRED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MISSING_RECOVERY_PACK_STOPS",
+        "observedCode": "E_B2C16_RECOVERY_PACK_REQUIRED",
+        "observedDisposition": "STOP_RECOVERY_PACK_REQUIRED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MISSING_ROLLBACK_STOPS",
+        "observedCode": "E_B2C16_ROLLBACK_REQUIRED",
+        "observedDisposition": "STOP_ROLLBACK_REQUIRED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_SILENT_DATA_REWRITE_REJECTED",
+        "observedCode": "E_B2C16_SILENT_DATA_REWRITE_REJECTED",
+        "observedDisposition": "REJECTED_OUT_OF_SCOPE",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_ACTUAL_MIGRATION_EXECUTION_REJECTED_OUT_OF_SCOPE",
+        "observedCode": "E_B2C16_ACTUAL_MIGRATION_EXECUTION_OUT_OF_SCOPE",
+        "observedDisposition": "REJECTED_OUT_OF_SCOPE",
+        "ok": true
+      }
+    ],
+    "positiveCases": [
+      {
+        "caseId": "POSITIVE_CURRENT_VERSION_OPENS_CLEAN",
+        "migrationRequired": false,
+        "observedDisposition": "OPEN_CLEAN_MUTABLE",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_UNKNOWN_FUTURE_READ_ONLY_RESTRICTED",
+        "migrationRequired": false,
+        "observedDisposition": "OPEN_READ_ONLY_RESTRICTED",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_UNKNOWN_OLD_EXPLICIT_MIGRATION_REQUIRED",
+        "migrationRequired": true,
+        "observedDisposition": "STOP_RESTRICTED_EXPLICIT_MIGRATION_REQUIRED",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_PRECONDITIONS_READY_POLICY_ONLY",
+        "migrationRequired": true,
+        "observedDisposition": "PRECONDITIONS_READY_POLICY_ONLY",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_MIXED_VERSION_STOPS_QUARANTINE_POLICY_ONLY",
+        "migrationRequired": false,
+        "observedDisposition": "STOP_QUARANTINE_POLICY_ONLY",
+        "ok": true
+      }
+    ]
+  }
+}

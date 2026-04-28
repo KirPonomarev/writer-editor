@@ -1,0 +1,22 @@
+{
+  "acceptedUse": "POLICY_ROW_IDEAS_VERSION_MATRIX_SHAPE_NEGATIVE_CASE_IDEAS_BACKUP_RECOVERY_ROLLBACK_ONLY",
+  "consultedEntries": [
+    "migration-policy.js",
+    "migration-policy.test.js"
+  ],
+  "donor": {
+    "acceptedUse": "POLICY_ROW_IDEAS_VERSION_MATRIX_SHAPE_NEGATIVE_CASE_IDEAS_BACKUP_RECOVERY_ROLLBACK_ONLY",
+    "consultedEntries": [
+      "migration-policy.js",
+      "migration-policy.test.js"
+    ],
+    "primaryBasename": "writer-editor-longform-v5_1-block2-trusted-kernel-pack-v1.zip",
+    "primarySha256": "7189d8357f340d89112b02a57eb9315f9af4695ac00e3a2707801e4d97320791",
+    "rejectedUse": "NO_RUNTIME_IMPORT_NO_BROAD_KERNEL_OVERLAY_NO_DATA_MIGRATION_NO_BACKUP_EXECUTION_NO_BLOCK2_EXIT"
+  },
+  "mappedContour": "B2C16_MIGRATION_POLICY_MINIMAL",
+  "referenceArchivesConsulted": [
+    "writer-editor-longform-v5_1-block2-trusted-kernel-pack-v1.zip"
+  ],
+  "rejectedUse": "NO_RUNTIME_IMPORT_NO_BROAD_KERNEL_OVERLAY_NO_DATA_MIGRATION_NO_BACKUP_EXECUTION_NO_BLOCK2_EXIT"
+}
