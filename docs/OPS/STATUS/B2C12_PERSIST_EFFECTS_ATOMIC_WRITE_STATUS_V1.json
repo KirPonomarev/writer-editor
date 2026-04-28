@@ -1,0 +1,22 @@
+{
+  "B2C12_PERSIST_EFFECTS_ATOMIC_WRITE_OK": 1,
+  "batchRecoveryFailureMarkerOk": true,
+  "broadStorageRewriteTouched": false,
+  "commitMarkerNegativeOk": true,
+  "directSequentialSceneWriteRemovedOk": true,
+  "failRows": [],
+  "failSignal": "",
+  "fileLevelAtomicityPresentOk": true,
+  "flowOpenGuardBlocksStaleBatchOk": true,
+  "flowSaveGuardBlocksStaleBatchOk": true,
+  "flowSaveUsesBatchAtomicHelperOk": true,
+  "markerReadExportOk": true,
+  "migrationScopeTouched": false,
+  "ok": true,
+  "partialBatchRollbackOk": true,
+  "positiveBatchCommitOk": true,
+  "recoveryEvidenceMinimalOk": true,
+  "recoveryReadableScopeTouched": false,
+  "saveReopenScopeTouched": false,
+  "staleBatchRejectOk": true
+}
