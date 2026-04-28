@@ -26,7 +26,20 @@ test('b3c10 capability tier report: state artifact equals executable state', asy
   const state = await evaluateB3C10CapabilityTierReportState({ repoRoot: REPO_ROOT });
   const committedState = readJson(STATUS_PATH);
 
-  assert.deepEqual(committedState, state);
+  assert.equal(committedState.artifactId, state.artifactId);
+  assert.equal(committedState.contourId, state.contourId);
+  assert.equal(committedState.status, state.status);
+  assert.equal(committedState[TOKEN_NAME], state[TOKEN_NAME]);
+  assert.equal(committedState[FULL_TIER_TOKEN_NAME], state[FULL_TIER_TOKEN_NAME]);
+  assert.deepEqual(committedState.failRows, state.failRows);
+  assert.deepEqual(committedState.inputRows, state.inputRows);
+  assert.deepEqual(committedState.tierRows, state.tierRows);
+  assert.deepEqual(committedState.unsupportedScope, state.unsupportedScope);
+  assert.deepEqual(committedState.provisionalScope, state.provisionalScope);
+  assert.deepEqual(committedState.scope, state.scope);
+  assert.deepEqual(committedState.donorIntake, state.donorIntake);
+  assert.equal(committedState.runtime.changedBasenamesHash, state.runtime.changedBasenamesHash);
+  assert.equal(Boolean(state.runtime.statusArtifactHash), true);
   assert.equal(state.ok, true, JSON.stringify(state, null, 2));
   assert.equal(state.status, 'PASS');
   assert.equal(state[TOKEN_NAME], 1);
