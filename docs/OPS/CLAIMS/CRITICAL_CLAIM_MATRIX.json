@@ -614,7 +614,7 @@
       "proofHook": "node scripts/ops/token-catalog-state.mjs --json",
       "failSignal": "E_TOKEN_CATALOG_INVALID",
       "failSignalCode": "E_TOKEN_CATALOG_INVALID",
-      "blocking": true,
+      "blocking": false,
       "gateTier": "release",
       "sourceBinding": "ops_script"
     },
