@@ -1,0 +1,39 @@
+{
+  "contourId": "MAIN_SYNC_C02_SELECTED_REPLAY_PLAN_AND_DRY_RUN",
+  "contractTest": "main-sync-c02-selected-replay-plan-and-dry-run.contract.test.js",
+  "dryRunGreen": true,
+  "evidenceArtifacts": [
+    "replay-plan.json",
+    "dry-run.json",
+    "sha-mapping.json",
+    "test-results.json",
+    "next-write-contour.json",
+    "conflict-summary.json"
+  ],
+  "formalRepoTruth": "MAIN_AFTER_MERGE_GATE_AND_POST_MERGE_RECONFIRM",
+  "nextStep": "MAIN_SYNC_C03_REPLAY_TO_MAIN_PR",
+  "notes": [
+    "This contour proves replay readiness only.",
+    "This contour does not create a PR to main and does not merge to main.",
+    "Any captured conflict remains classified but unresolved inside C02.",
+    "Earlier sync contour artifacts are bound as source inputs here and are not re-gated as current-root contracts."
+  ],
+  "recordedAtUtc": "2026-04-28T13:01:58.991Z",
+  "replayCommitCount": 7,
+  "reportScript": "main-sync-c02-selected-replay-plan-and-dry-run-report.mjs",
+  "rootRole": "SOURCE_OF_REQUIRED_CONTENT_ONLY",
+  "scope": "REPLAY_PLAN_AND_DRY_RUN_PACKET_ONLY",
+  "selectedMethodId": "CHERRY_PICK_REPLAY_TO_MAIN",
+  "sourceArtifactsBasenames": [
+    "MAIN_SYNC_C01_OWNER_METHOD_DECISION_STATUS_V1.json",
+    "MAIN_SYNC_C01_AHEAD_INVENTORY_STATUS_V1.json",
+    "MAIN_SYNC_C02_MERGEABILITY_STATUS_V1.json",
+    "MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION_RECORD_V1.json"
+  ],
+  "sourceHeadCommitSha": "3fcbd048e2c3cc93484839201a6a8ee99f452a27",
+  "stateScript": "main-sync-c02-selected-replay-plan-and-dry-run-state.mjs",
+  "status": "ACTIVE",
+  "taskBasename": "MAIN_SYNC_C02_SELECTED_REPLAY_PLAN_AND_DRY_RUN",
+  "token": "MAIN_SYNC_C02_SELECTED_REPLAY_PLAN_AND_DRY_RUN_OK",
+  "version": 1
+}

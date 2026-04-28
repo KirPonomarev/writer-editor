@@ -1,0 +1,11 @@
+{
+  "executedGateBasenames": [
+    "main-sync-c02-selected-replay-plan-and-dry-run.contract.test.js",
+    "OSS_POLICY"
+  ],
+  "generatedAtUtc": "2026-04-28T13:01:58.991Z",
+  "localReportScriptExecuted": true,
+  "readinessGateOnly": true,
+  "runId": "TZ_MAIN_SYNC_C02_SELECTED_REPLAY_PLAN_AND_DRY_RUN_001",
+  "ticketId": "TZ_MAIN_SYNC_C02_SELECTED_REPLAY_PLAN_AND_DRY_RUN_001"
+}

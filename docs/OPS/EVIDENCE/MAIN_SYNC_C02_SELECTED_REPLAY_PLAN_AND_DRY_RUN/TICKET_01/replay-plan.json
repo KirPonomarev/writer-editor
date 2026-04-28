@@ -1,0 +1,241 @@
+{
+  "generatedAtUtc": "2026-04-28T13:01:58.991Z",
+  "ok": true,
+  "replayPlan": {
+    "carryforwardWindowCount": 612,
+    "excludedWindowCount": 0,
+    "expectedDiffBasenames": [
+      "admission-summary.json",
+      "allowed-method-matrix.json",
+      "command-results.json",
+      "conflict-set.json",
+      "decision-summary.json",
+      "excluded-set.json",
+      "first-parent-window.json",
+      "forbidden-method-matrix.json",
+      "included-set.json",
+      "inventory-meta.json",
+      "MAIN_SYNC_C01_AHEAD_INVENTORY_STATUS_V1.json",
+      "MAIN_SYNC_C01_OWNER_METHOD_DECISION_STATUS_V1.json",
+      "MAIN_SYNC_C02_MERGEABILITY_STATUS_V1.json",
+      "MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION_RECORD_V1.json",
+      "main-sync-c01-ahead-inventory-report.mjs",
+      "main-sync-c01-ahead-inventory-state.mjs",
+      "main-sync-c01-ahead-inventory.contract.test.js",
+      "main-sync-c01-owner-method-decision-report.mjs",
+      "main-sync-c01-owner-method-decision-state.mjs",
+      "main-sync-c01-owner-method-decision.contract.test.js",
+      "main-sync-c02-mergeability-report.mjs",
+      "main-sync-c02-mergeability-state.mjs",
+      "main-sync-c02-mergeability.contract.test.js",
+      "main-sync-c02-remediation-history-bridge-admission-report.mjs",
+      "main-sync-c02-remediation-history-bridge-admission-state.mjs",
+      "main-sync-c02-remediation-history-bridge-admission.contract.test.js",
+      "merge-window.json",
+      "mergeability-summary.json",
+      "next-write-contour.json",
+      "pre-pr-verification.json",
+      "probe-meta.json",
+      "ranked-method-matrix.json",
+      "rejected-methods-matrix.json",
+      "risk-rollback.json",
+      "risk-rows.json",
+      "summary.json"
+    ],
+    "expectedDiffPathCount": 38,
+    "rebindBaseSha": "0b3cc7f91400df650dcb875453dda4b389bbeb3e",
+    "replayCommitCount": 7,
+    "replayCommits": [
+      {
+        "changedBasenames": [
+          "excluded-set.json",
+          "first-parent-window.json",
+          "included-set.json",
+          "inventory-meta.json",
+          "MAIN_SYNC_C01_AHEAD_INVENTORY_STATUS_V1.json",
+          "main-sync-c01-ahead-inventory-report.mjs",
+          "main-sync-c01-ahead-inventory-state.mjs",
+          "main-sync-c01-ahead-inventory.contract.test.js",
+          "merge-window.json",
+          "risk-rows.json",
+          "summary.json"
+        ],
+        "changedPaths": [
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C01/TICKET_01/excluded-set.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C01/TICKET_01/first-parent-window.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C01/TICKET_01/included-set.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C01/TICKET_01/inventory-meta.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C01/TICKET_01/merge-window.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C01/TICKET_01/risk-rows.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C01/TICKET_01/summary.json",
+          "docs/OPS/STATUS/MAIN_SYNC_C01_AHEAD_INVENTORY_STATUS_V1.json",
+          "scripts/ops/main-sync-c01-ahead-inventory-report.mjs",
+          "scripts/ops/main-sync-c01-ahead-inventory-state.mjs",
+          "test/contracts/main-sync-c01-ahead-inventory.contract.test.js"
+        ],
+        "order": 1,
+        "purpose": "MAIN_SYNC_C01_AHEAD_INVENTORY_PACKET",
+        "sha": "58be93cba971e789a93245a4bb5b9b0471ad0d0f",
+        "subject": "ops: add main sync c01 ahead inventory packet"
+      },
+      {
+        "changedBasenames": [
+          "command-results.json",
+          "conflict-set.json",
+          "MAIN_SYNC_C02_MERGEABILITY_STATUS_V1.json",
+          "main-sync-c02-mergeability-report.mjs",
+          "main-sync-c02-mergeability-state.mjs",
+          "main-sync-c02-mergeability.contract.test.js",
+          "mergeability-summary.json",
+          "pre-pr-verification.json",
+          "probe-meta.json"
+        ],
+        "changedPaths": [
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02/TICKET_01/command-results.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02/TICKET_01/conflict-set.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02/TICKET_01/mergeability-summary.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02/TICKET_01/pre-pr-verification.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02/TICKET_01/probe-meta.json",
+          "docs/OPS/STATUS/MAIN_SYNC_C02_MERGEABILITY_STATUS_V1.json",
+          "scripts/ops/main-sync-c02-mergeability-report.mjs",
+          "scripts/ops/main-sync-c02-mergeability-state.mjs",
+          "test/contracts/main-sync-c02-mergeability.contract.test.js"
+        ],
+        "order": 2,
+        "purpose": "MAIN_SYNC_C02_MERGEABILITY_PACKET_ADD",
+        "sha": "0e457faa3585bc566bc650f748652ca891f950fa",
+        "subject": "ops: add main sync c02 mergeability blocker packet"
+      },
+      {
+        "changedBasenames": [
+          "command-results.json",
+          "main-sync-c02-mergeability-report.mjs",
+          "main-sync-c02-mergeability-state.mjs",
+          "main-sync-c02-mergeability.contract.test.js",
+          "mergeability-summary.json",
+          "pre-pr-verification.json",
+          "probe-meta.json"
+        ],
+        "changedPaths": [
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02/TICKET_01/command-results.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02/TICKET_01/mergeability-summary.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02/TICKET_01/pre-pr-verification.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02/TICKET_01/probe-meta.json",
+          "scripts/ops/main-sync-c02-mergeability-report.mjs",
+          "scripts/ops/main-sync-c02-mergeability-state.mjs",
+          "test/contracts/main-sync-c02-mergeability.contract.test.js"
+        ],
+        "order": 3,
+        "purpose": "MAIN_SYNC_C02_MERGEABILITY_PACKET_FINALIZE",
+        "sha": "8c94955b49991294d1e2342c4bc5729d76a2b9e1",
+        "subject": "ops: finalize main sync c02 blocker packet"
+      },
+      {
+        "changedBasenames": [
+          "admission-summary.json",
+          "allowed-method-matrix.json",
+          "forbidden-method-matrix.json",
+          "MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION_RECORD_V1.json",
+          "main-sync-c02-remediation-history-bridge-admission-report.mjs",
+          "main-sync-c02-remediation-history-bridge-admission-state.mjs",
+          "main-sync-c02-remediation-history-bridge-admission.contract.test.js",
+          "next-write-contour.json",
+          "ranked-method-matrix.json",
+          "risk-rollback.json"
+        ],
+        "changedPaths": [
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION/TICKET_01/admission-summary.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION/TICKET_01/allowed-method-matrix.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION/TICKET_01/forbidden-method-matrix.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION/TICKET_01/next-write-contour.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION/TICKET_01/ranked-method-matrix.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION/TICKET_01/risk-rollback.json",
+          "docs/OPS/STATUS/MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION_RECORD_V1.json",
+          "scripts/ops/main-sync-c02-remediation-history-bridge-admission-report.mjs",
+          "scripts/ops/main-sync-c02-remediation-history-bridge-admission-state.mjs",
+          "test/contracts/main-sync-c02-remediation-history-bridge-admission.contract.test.js"
+        ],
+        "order": 4,
+        "purpose": "MAIN_SYNC_C02_REMEDIATION_ADMISSION_ADD",
+        "sha": "8b1fdbf5ca4ceae76af75226497947e2630d5411",
+        "subject": "ops: add main sync c02 history bridge admission"
+      },
+      {
+        "changedBasenames": [
+          "admission-summary.json",
+          "MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION_RECORD_V1.json",
+          "main-sync-c02-remediation-history-bridge-admission-state.mjs",
+          "main-sync-c02-remediation-history-bridge-admission.contract.test.js"
+        ],
+        "changedPaths": [
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION/TICKET_01/admission-summary.json",
+          "docs/OPS/STATUS/MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION_RECORD_V1.json",
+          "scripts/ops/main-sync-c02-remediation-history-bridge-admission-state.mjs",
+          "test/contracts/main-sync-c02-remediation-history-bridge-admission.contract.test.js"
+        ],
+        "order": 5,
+        "purpose": "MAIN_SYNC_C02_REMEDIATION_ADMISSION_FINALIZE",
+        "sha": "aacabb6d7c576b62c6facc1c337697aae1542296",
+        "subject": "ops: finalize history bridge admission packet"
+      },
+      {
+        "changedBasenames": [
+          "decision-summary.json",
+          "MAIN_SYNC_C01_OWNER_METHOD_DECISION_STATUS_V1.json",
+          "main-sync-c01-owner-method-decision-report.mjs",
+          "main-sync-c01-owner-method-decision-state.mjs",
+          "main-sync-c01-owner-method-decision.contract.test.js",
+          "next-write-contour.json",
+          "rejected-methods-matrix.json",
+          "risk-rollback.json"
+        ],
+        "changedPaths": [
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C01_OWNER_METHOD_DECISION/TICKET_01/decision-summary.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C01_OWNER_METHOD_DECISION/TICKET_01/next-write-contour.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C01_OWNER_METHOD_DECISION/TICKET_01/rejected-methods-matrix.json",
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C01_OWNER_METHOD_DECISION/TICKET_01/risk-rollback.json",
+          "docs/OPS/STATUS/MAIN_SYNC_C01_OWNER_METHOD_DECISION_STATUS_V1.json",
+          "scripts/ops/main-sync-c01-owner-method-decision-report.mjs",
+          "scripts/ops/main-sync-c01-owner-method-decision-state.mjs",
+          "test/contracts/main-sync-c01-owner-method-decision.contract.test.js"
+        ],
+        "order": 6,
+        "purpose": "MAIN_SYNC_C01_OWNER_METHOD_DECISION_ADD",
+        "sha": "0619e80356bce68e2ec20f76c41fa39fc23c76d9",
+        "subject": "ops: add main sync c01 owner method decision packet"
+      },
+      {
+        "changedBasenames": [
+          "decision-summary.json",
+          "MAIN_SYNC_C01_OWNER_METHOD_DECISION_STATUS_V1.json",
+          "main-sync-c01-owner-method-decision-state.mjs"
+        ],
+        "changedPaths": [
+          "docs/OPS/EVIDENCE/MAIN_SYNC_C01_OWNER_METHOD_DECISION/TICKET_01/decision-summary.json",
+          "docs/OPS/STATUS/MAIN_SYNC_C01_OWNER_METHOD_DECISION_STATUS_V1.json",
+          "scripts/ops/main-sync-c01-owner-method-decision-state.mjs"
+        ],
+        "order": 7,
+        "purpose": "MAIN_SYNC_C01_OWNER_METHOD_DECISION_FINALIZE",
+        "sha": "8c68c84b456cc3194eac399bdd1a2ea2f62be349",
+        "subject": "ops: finalize main sync c01 owner method decision packet"
+      }
+    ],
+    "replayExecutableScopeMode": "POST_REBIND_PACKET_CHAIN_ONLY",
+    "scopeClass": "PACKET_ONLY_SYNC_TAIL_AFTER_REBIND_BASE",
+    "selectedMethodId": "CHERRY_PICK_REPLAY_TO_MAIN",
+    "sourceInventoryMode": "C01_INCLUDED_SET_AS_SOURCE_INVENTORY_ONLY"
+  },
+  "runId": "TZ_MAIN_SYNC_C02_SELECTED_REPLAY_PLAN_AND_DRY_RUN_001",
+  "selectedMethodId": "CHERRY_PICK_REPLAY_TO_MAIN",
+  "sourceFacts": {
+    "c01BoundRootSha": "0b3cc7f91400df650dcb875453dda4b389bbeb3e",
+    "c01ExcludedWindowCount": 0,
+    "c01IncludedWindowCount": 612,
+    "c02FailReason": "BLOCKING_UNRELATED_HISTORIES",
+    "c02MergeabilityClass": "BLOCKING_UNRELATED_HISTORIES",
+    "currentRootHead": "3fcbd048e2c3cc93484839201a6a8ee99f452a27",
+    "currentRootHeadDescendsFromC01BoundRoot": true
+  },
+  "ticketId": "TZ_MAIN_SYNC_C02_SELECTED_REPLAY_PLAN_AND_DRY_RUN_001"
+}
