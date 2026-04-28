@@ -1,0 +1,193 @@
+{
+  "artifactId": "B2C15_RESTORE_DRILL_AND_QUARANTINE_STATUS_V1",
+  "B2C15_RESTORE_DRILL_AND_QUARANTINE_OK": 1,
+  "donor": {
+    "acceptedUse": "B2C14_STYLE_AND_NEGATIVE_CASE_NAMING_ONLY",
+    "consultedEntries": [
+      "recovery-pack.js",
+      "recovery-readable-quarantine.test.js"
+    ],
+    "primaryBasename": "writer-editor-longform-v5_1-block2-trusted-kernel-pack-v1.zip",
+    "primarySha256": "7189d8357f340d89112b02a57eb9315f9af4695ac00e3a2707801e4d97320791",
+    "rejectedUse": "NO_DONOR_RUNTIME_IMPORT_NO_BROAD_OVERLAY_NO_BLOCK2_EXIT_NO_B2C16_B2C17_B2C18"
+  },
+  "failRows": [],
+  "failSignal": "",
+  "ok": true,
+  "proof": {
+    "blockOrderEqualityOk": true,
+    "corruptSceneQuarantinedOk": true,
+    "deterministicFixtureReplayOnly": true,
+    "hashAlgorithm": "sha256",
+    "hashMismatchStoppedOk": true,
+    "machineWrittenReadableArtifactOk": true,
+    "missingBlockStoppedOk": true,
+    "multiSceneRestoreOk": true,
+    "repoBound": true,
+    "sceneOrderEqualityOk": true,
+    "scopeClaims": {
+      "b2c16MigrationClaim": false,
+      "b2c17KillpointClaim": false,
+      "b2c18PerfClaim": false,
+      "block2ExitClaim": false,
+      "dependencyChanged": false,
+      "exportChanged": false,
+      "generalImportExportClaim": false,
+      "networkOrCloud": false,
+      "schemaChanged": false,
+      "storageFormatChanged": false,
+      "uiTouched": false
+    },
+    "silentMergeRejectedOk": true,
+    "singleSceneRestoreOk": true,
+    "staleSnapshotRejectedOk": true,
+    "textHashEqualityOk": true,
+    "unknownVersionNotCleanOk": true
+  },
+  "runtime": {
+    "fixtures": {
+      "multi": {
+        "fixtureId": "b2c15-multi-scene-project-fixture-v1",
+        "manifestHash": "b4740461df347509926db40153e27f1caa751d721f85151f5044493d935693d5",
+        "recoveryHash": "f505c8d89058dc4e3d88ed4849bfaba5e01fc959f907018b8304b3902643fcb8",
+        "sceneOrder": [
+          "scene-multi-001",
+          "scene-multi-002"
+        ]
+      },
+      "single": {
+        "fixtureId": "b2c15-single-scene-project-fixture-v1",
+        "manifestHash": "098667e3743dc39c6bd29b2806716662ecfe233bea0030c0e3006575e5b695fa",
+        "recoveryHash": "082291424f7f2589f3e2ed7f16f336cfd7b2f21702bd5e67ba7ee49fbf42cc21",
+        "sceneOrder": [
+          "scene-single-001"
+        ]
+      }
+    },
+    "negativeCases": [
+      {
+        "caseId": "NEGATIVE_HASH_MISMATCH_STOPS",
+        "failRows": [
+          "SCENE_HASH_OR_TEXT_HASH_MISMATCH_scene-multi-001"
+        ],
+        "observedCode": "E_B2C15_HASH_MISMATCH",
+        "observedMode": "STOP",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_UNKNOWN_VERSION_NOT_CLEAN",
+        "failRows": [
+          "SCENE_VERSION_UNSUPPORTED_scene-multi-001"
+        ],
+        "observedCode": "E_B2C15_UNKNOWN_VERSION",
+        "observedMode": "STOP",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MISSING_BLOCK_STOPS",
+        "failRows": [
+          "BLOCK_ID_SET_MISMATCH_scene-multi-002"
+        ],
+        "observedCode": "E_B2C15_MISSING_BLOCK",
+        "observedMode": "STOP",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_STALE_SNAPSHOT_REJECTED",
+        "failRows": [
+          "SOURCE_MANIFEST_HASH_MISMATCH"
+        ],
+        "observedCode": "E_B2C15_STALE_SNAPSHOT",
+        "observedMode": "STOP",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_SILENT_MERGE_REJECTED",
+        "failRows": [
+          "RECOVERY_SCENE_SET_INCOMPLETE",
+          "RECOVERY_SCENE_ID_SET_MISMATCH"
+        ],
+        "observedCode": "E_B2C15_SILENT_MERGE_REJECTED",
+        "observedMode": "STOP",
+        "ok": true
+      }
+    ],
+    "positiveCases": [
+      {
+        "blockOrderEquality": true,
+        "caseId": "POSITIVE_SINGLE_SCENE_RESTORE",
+        "ok": true,
+        "recoveryHash": "082291424f7f2589f3e2ed7f16f336cfd7b2f21702bd5e67ba7ee49fbf42cc21",
+        "replayMode": "OPEN_CLEAN",
+        "restoredManifestHash": "098667e3743dc39c6bd29b2806716662ecfe233bea0030c0e3006575e5b695fa",
+        "sceneCount": 1,
+        "sceneOrderEquality": true,
+        "sourceManifestHash": "098667e3743dc39c6bd29b2806716662ecfe233bea0030c0e3006575e5b695fa",
+        "textHashEquality": true
+      },
+      {
+        "blockOrderEquality": true,
+        "caseId": "POSITIVE_MULTI_SCENE_RESTORE",
+        "ok": true,
+        "recoveryHash": "f505c8d89058dc4e3d88ed4849bfaba5e01fc959f907018b8304b3902643fcb8",
+        "replayMode": "OPEN_CLEAN",
+        "restoredManifestHash": "b4740461df347509926db40153e27f1caa751d721f85151f5044493d935693d5",
+        "sceneCount": 2,
+        "sceneOrderEquality": true,
+        "sourceManifestHash": "b4740461df347509926db40153e27f1caa751d721f85151f5044493d935693d5",
+        "textHashEquality": true
+      }
+    ],
+    "quarantineArtifact": {
+      "artifactType": "b2c15.quarantine.artifact.v1",
+      "createdAtIso": "2026-04-28T10:15:00.000Z",
+      "openClean": false,
+      "originalTextHash": "f06640cf387113403ea4b9e8fb078ca621f5ef0a67b997f56e4d10b751dd61f5",
+      "projectId": "b2c15-multi-scene-project",
+      "quarantineHash": "d73a7a04d6d5c8c258b0fcf0e7239ffd6963bd94f40efe29ed42d7f036ffdaff",
+      "readableSummary": "Scene scene-multi-002 moved to quarantine: Block parent scene id does not match scene id..",
+      "reason": "Block parent scene id does not match scene id.",
+      "sceneId": "scene-multi-002",
+      "sceneOrder": 1,
+      "schemaVersion": 1,
+      "snapshotId": "b2c15-multi-scene-project-snapshot-v1",
+      "supportBundle": false,
+      "taskId": "B2C15_RESTORE_DRILL_AND_QUARANTINE",
+      "title": "Counterpoint",
+      "uiFlow": false
+    },
+    "quarantineArtifactValidation": {
+      "code": "",
+      "failRows": [],
+      "ok": true
+    },
+    "quarantineCase": {
+      "acceptedSceneCount": 1,
+      "caseId": "NEGATIVE_CORRUPT_SCENE_QUARANTINED",
+      "failRows": [
+        "SCENE_QUARANTINED_scene-multi-002",
+        "OPEN_CLEAN_DENIED"
+      ],
+      "observedCode": "E_B2C15_QUARANTINE_REQUIRED",
+      "observedMode": "QUARANTINE",
+      "ok": true,
+      "quarantinedSceneCount": 1
+    }
+  },
+  "schemaVersion": 1,
+  "scope": {
+    "b2c16MigrationClaim": false,
+    "b2c17KillpointClaim": false,
+    "b2c18PerfClaim": false,
+    "block2ExitClaim": false,
+    "dependencyChanged": false,
+    "exportChanged": false,
+    "generalImportExportClaim": false,
+    "networkOrCloud": false,
+    "schemaChanged": false,
+    "storageFormatChanged": false,
+    "uiTouched": false
+  },
+  "status": "PASS",
+  "taskId": "B2C15_RESTORE_DRILL_AND_QUARANTINE"
+}

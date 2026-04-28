@@ -1,0 +1,109 @@
+{
+  "proof": {
+    "blockOrderEqualityOk": true,
+    "hashMismatchStoppedOk": true,
+    "missingBlockStoppedOk": true,
+    "multiSceneRestoreOk": true,
+    "sceneOrderEqualityOk": true,
+    "silentMergeRejectedOk": true,
+    "singleSceneRestoreOk": true,
+    "staleSnapshotRejectedOk": true,
+    "textHashEqualityOk": true,
+    "unknownVersionNotCleanOk": true
+  },
+  "runtime": {
+    "fixtures": {
+      "multi": {
+        "fixtureId": "b2c15-multi-scene-project-fixture-v1",
+        "manifestHash": "b4740461df347509926db40153e27f1caa751d721f85151f5044493d935693d5",
+        "recoveryHash": "f505c8d89058dc4e3d88ed4849bfaba5e01fc959f907018b8304b3902643fcb8",
+        "sceneOrder": [
+          "scene-multi-001",
+          "scene-multi-002"
+        ]
+      },
+      "single": {
+        "fixtureId": "b2c15-single-scene-project-fixture-v1",
+        "manifestHash": "098667e3743dc39c6bd29b2806716662ecfe233bea0030c0e3006575e5b695fa",
+        "recoveryHash": "082291424f7f2589f3e2ed7f16f336cfd7b2f21702bd5e67ba7ee49fbf42cc21",
+        "sceneOrder": [
+          "scene-single-001"
+        ]
+      }
+    },
+    "negativeCases": [
+      {
+        "caseId": "NEGATIVE_HASH_MISMATCH_STOPS",
+        "failRows": [
+          "SCENE_HASH_OR_TEXT_HASH_MISMATCH_scene-multi-001"
+        ],
+        "observedCode": "E_B2C15_HASH_MISMATCH",
+        "observedMode": "STOP",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_UNKNOWN_VERSION_NOT_CLEAN",
+        "failRows": [
+          "SCENE_VERSION_UNSUPPORTED_scene-multi-001"
+        ],
+        "observedCode": "E_B2C15_UNKNOWN_VERSION",
+        "observedMode": "STOP",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MISSING_BLOCK_STOPS",
+        "failRows": [
+          "BLOCK_ID_SET_MISMATCH_scene-multi-002"
+        ],
+        "observedCode": "E_B2C15_MISSING_BLOCK",
+        "observedMode": "STOP",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_STALE_SNAPSHOT_REJECTED",
+        "failRows": [
+          "SOURCE_MANIFEST_HASH_MISMATCH"
+        ],
+        "observedCode": "E_B2C15_STALE_SNAPSHOT",
+        "observedMode": "STOP",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_SILENT_MERGE_REJECTED",
+        "failRows": [
+          "RECOVERY_SCENE_SET_INCOMPLETE",
+          "RECOVERY_SCENE_ID_SET_MISMATCH"
+        ],
+        "observedCode": "E_B2C15_SILENT_MERGE_REJECTED",
+        "observedMode": "STOP",
+        "ok": true
+      }
+    ],
+    "positiveCases": [
+      {
+        "blockOrderEquality": true,
+        "caseId": "POSITIVE_SINGLE_SCENE_RESTORE",
+        "ok": true,
+        "recoveryHash": "082291424f7f2589f3e2ed7f16f336cfd7b2f21702bd5e67ba7ee49fbf42cc21",
+        "replayMode": "OPEN_CLEAN",
+        "restoredManifestHash": "098667e3743dc39c6bd29b2806716662ecfe233bea0030c0e3006575e5b695fa",
+        "sceneCount": 1,
+        "sceneOrderEquality": true,
+        "sourceManifestHash": "098667e3743dc39c6bd29b2806716662ecfe233bea0030c0e3006575e5b695fa",
+        "textHashEquality": true
+      },
+      {
+        "blockOrderEquality": true,
+        "caseId": "POSITIVE_MULTI_SCENE_RESTORE",
+        "ok": true,
+        "recoveryHash": "f505c8d89058dc4e3d88ed4849bfaba5e01fc959f907018b8304b3902643fcb8",
+        "replayMode": "OPEN_CLEAN",
+        "restoredManifestHash": "b4740461df347509926db40153e27f1caa751d721f85151f5044493d935693d5",
+        "sceneCount": 2,
+        "sceneOrderEquality": true,
+        "sourceManifestHash": "b4740461df347509926db40153e27f1caa751d721f85151f5044493d935693d5",
+        "textHashEquality": true
+      }
+    ]
+  }
+}

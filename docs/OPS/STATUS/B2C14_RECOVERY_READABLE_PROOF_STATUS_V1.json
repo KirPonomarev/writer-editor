@@ -320,8 +320,7 @@
       "rubricVersion": 1,
       "taskId": "B2C14_RECOVERY_READABLE_PROOF"
     },
-    "readableGuideHash": "77300587d13e8a702fe80311ffeb778ce55ce6ab5910729b916ca1cbb0a5a5b1",
-    "repoRootBasename": "writer-editor-b2c14-recovery-readable-proof-001"
+    "readableGuideHash": "77300587d13e8a702fe80311ffeb778ce55ce6ab5910729b916ca1cbb0a5a5b1"
   },
   "schemaVersion": 1,
   "scope": {

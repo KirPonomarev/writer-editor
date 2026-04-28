@@ -1,0 +1,43 @@
+{
+  "artifact": {
+    "artifactType": "b2c15.quarantine.artifact.v1",
+    "createdAtIso": "2026-04-28T10:15:00.000Z",
+    "openClean": false,
+    "originalTextHash": "f06640cf387113403ea4b9e8fb078ca621f5ef0a67b997f56e4d10b751dd61f5",
+    "projectId": "b2c15-multi-scene-project",
+    "quarantineHash": "d73a7a04d6d5c8c258b0fcf0e7239ffd6963bd94f40efe29ed42d7f036ffdaff",
+    "readableSummary": "Scene scene-multi-002 moved to quarantine: Block parent scene id does not match scene id..",
+    "reason": "Block parent scene id does not match scene id.",
+    "sceneId": "scene-multi-002",
+    "sceneOrder": 1,
+    "schemaVersion": 1,
+    "snapshotId": "b2c15-multi-scene-project-snapshot-v1",
+    "supportBundle": false,
+    "taskId": "B2C15_RESTORE_DRILL_AND_QUARANTINE",
+    "title": "Counterpoint",
+    "uiFlow": false
+  },
+  "proof": {
+    "corruptSceneQuarantinedOk": true,
+    "machineWrittenReadableArtifactOk": true
+  },
+  "runtime": {
+    "quarantineArtifactValidation": {
+      "code": "",
+      "failRows": [],
+      "ok": true
+    },
+    "quarantineCase": {
+      "acceptedSceneCount": 1,
+      "caseId": "NEGATIVE_CORRUPT_SCENE_QUARANTINED",
+      "failRows": [
+        "SCENE_QUARANTINED_scene-multi-002",
+        "OPEN_CLEAN_DENIED"
+      ],
+      "observedCode": "E_B2C15_QUARANTINE_REQUIRED",
+      "observedMode": "QUARANTINE",
+      "ok": true,
+      "quarantinedSceneCount": 1
+    }
+  }
+}
