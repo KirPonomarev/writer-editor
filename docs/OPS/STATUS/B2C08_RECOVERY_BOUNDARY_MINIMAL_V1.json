@@ -1,0 +1,109 @@
+{
+  "artifactId": "B2C08_RECOVERY_BOUNDARY_MINIMAL_V1",
+  "schemaVersion": 1,
+  "taskId": "B2C08_RECOVERY_BOUNDARY_MINIMAL",
+  "status": "PASS",
+  "boundary": {
+    "recoveryBoundaryId": "SNAPSHOT_PRIMARY_READ_FALLBACK",
+    "admittedBoundaryRows": [
+      {
+        "rowId": "HUMAN_READABLE_RECOVERY_ARTIFACT",
+        "proofLevel": "SNAPSHOT_TEXT_READABILITY"
+      },
+      {
+        "rowId": "RECOVERY_SNAPSHOT_RESTORE_BOUNDARY",
+        "proofLevel": "TYPED_SNAPSHOT_FALLBACK"
+      },
+      {
+        "rowId": "RECOVERY_REPLAY_DETERMINISM",
+        "proofLevel": "REPLAY_HASH_DETERMINISM"
+      }
+    ],
+    "advisoryBoundaryRows": [
+      {
+        "rowId": "FULL_RECOVERY_PROTOCOL",
+        "proofLevel": "ADVISORY_ONLY_OUT_OF_SCOPE"
+      },
+      {
+        "rowId": "LAST_STABLE_RUNTIME_RESTORE",
+        "proofLevel": "ADVISORY_ONLY_SHELL_PROTOCOL_SEPARATE"
+      }
+    ]
+  },
+  "proofBinding": {
+    "bindingMode": "DETECTOR_IDS_ONLY",
+    "boundaryRows": [
+      {
+        "rowId": "HUMAN_READABLE_RECOVERY_ARTIFACT",
+        "detectorId": "B2C08_HUMAN_READABLE_RECOVERY_ARTIFACT_PROOF_BINDING_V1"
+      },
+      {
+        "rowId": "RECOVERY_SNAPSHOT_RESTORE_BOUNDARY",
+        "detectorId": "B2C08_RECOVERY_SNAPSHOT_RESTORE_BOUNDARY_PROOF_BINDING_V1"
+      },
+      {
+        "rowId": "RECOVERY_REPLAY_DETERMINISM",
+        "detectorId": "B2C08_RECOVERY_REPLAY_DETERMINISM_PROOF_BINDING_V1"
+      }
+    ]
+  },
+  "proofSurfaces": {
+    "canonBoundary": {
+      "document": "docs/BIBLE.md",
+      "requirements": [
+        "atomic write required",
+        "recovery required"
+      ]
+    },
+    "snapshotArtifact": {
+      "module": "src/io/markdown/snapshotFile.mjs",
+      "fallbackContract": "test/contracts/recovery-snapshot-fallback.contract.test.js",
+      "snapshotUnit": "test/unit/sector-m-m5-snapshot.test.js",
+      "ioState": "scripts/ops/recovery-io-state.mjs"
+    },
+    "restoreBoundary": {
+      "module": "src/io/markdown/index.mjs",
+      "fallbackContract": "test/contracts/recovery-snapshot-fallback.contract.test.js",
+      "typedErrorsContract": "test/contracts/recovery-typed-errors.contract.test.js",
+      "corruptionContract": "test/contracts/recovery-corruption.contract.test.js"
+    },
+    "sourceTruthBinding": {
+      "host": "src/main.js",
+      "bindingContract": "test/contracts/projectManifestBinding.test.js",
+      "recordA": "docs/OPS/STATUS/MIOS_FIRST_VERTICAL_SLICE_DEFINITION_RECORD_V1.json",
+      "recordB": "docs/OPS/STATUS/MIOS_SECOND_VERTICAL_SLICE_DEFINITION_RECORD_V1.json"
+    },
+    "replayBoundary": {
+      "module": "src/io/markdown/index.mjs",
+      "replayContract": "test/contracts/recovery-replay.contract.test.js",
+      "smokeProofhook": "scripts/ops/x3-recovery-smoke-proofhook.mjs",
+      "smokeContract": "test/contracts/x3-recovery-smoke.contract.test.js"
+    },
+    "actionCanonBoundary": {
+      "canon": "src/shared/recoveryActionCanon.mjs",
+      "typedGuidance": "src/main.js",
+      "contract": "test/contracts/recovery-action-canon.contract.test.js",
+      "logModule": "src/io/markdown/reliabilityLog.mjs"
+    }
+  },
+  "advisoryBoundary": {
+    "fullRecoveryProtocolPromotion": "ADVISORY_ONLY_FULL_PROTOCOL_OUT_OF_SCOPE",
+    "lastStableRuntimePromotion": "ADVISORY_ONLY_SHELL_LAST_STABLE_PROTOCOL_SEPARATE",
+    "queueingPromotion": "ADVISORY_ONLY_QUEUEING_IS_SEPARATE_DOMAIN",
+    "concurrencyPromotion": "ADVISORY_ONLY_CONCURRENCY_IS_SEPARATE_DOMAIN",
+    "forbiddenPromotionAreas": [
+      "queueing",
+      "concurrency",
+      "fullRecoveryProtocol",
+      "runtimeCommandSurfaceExpansion",
+      "crossProjectRuntimeOrchestration",
+      "extraRecoveryCluster"
+    ],
+    "notes": [
+      "B2C08 admits only the minimal recovery boundary.",
+      "Human-readable recovery is admitted only as a verifiable snapshot artifact boundary.",
+      "Snapshot fallback and replay determinism are admitted only where machine proof already exists.",
+      "Full recovery protocol, shell last-stable runtime behavior, queueing, and concurrency remain out of scope."
+    ]
+  }
+}
