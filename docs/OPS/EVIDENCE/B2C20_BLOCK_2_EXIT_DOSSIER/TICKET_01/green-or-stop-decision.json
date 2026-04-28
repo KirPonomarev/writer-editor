@@ -1,0 +1,10 @@
+{
+  "block2Closed": true,
+  "block3StartClaim": false,
+  "blockingRows": [],
+  "decision": "GREEN",
+  "greenMeans": "BLOCK_2_EXIT_RULE_SATISFIED_ONLY",
+  "nextStep": "STOP_BEFORE_NEXT_OWNER_APPROVED_BLOCK",
+  "releaseReadyClaim": false,
+  "taskId": "B2C20_BLOCK_2_EXIT_DOSSIER"
+}

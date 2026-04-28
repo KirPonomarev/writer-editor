@@ -1,0 +1,59 @@
+{
+  "allPassed": true,
+  "commandCount": 10,
+  "commands": [
+    {
+      "command": "node scripts/ops/b2c20-block-2-exit-dossier-state.mjs --write --json",
+      "index": 1,
+      "result": "PASS"
+    },
+    {
+      "command": "node --test test/contracts/b2c20-block-2-exit-dossier.contract.test.js",
+      "index": 2,
+      "result": "PASS"
+    },
+    {
+      "command": "node --test test/contracts/b2c19-independent-kernel-audit.contract.test.js",
+      "index": 3,
+      "result": "PASS"
+    },
+    {
+      "command": "node --test test/contracts/b2c18-basic-kernel-perf-guard.contract.test.js",
+      "index": 4,
+      "result": "PASS"
+    },
+    {
+      "command": "node --test test/contracts/b2c17-migration-killpoint-proof.contract.test.js",
+      "index": 5,
+      "result": "PASS"
+    },
+    {
+      "command": "node --test test/contracts/b2c16-migration-policy-minimal.contract.test.js",
+      "index": 6,
+      "result": "PASS"
+    },
+    {
+      "command": "npm run oss:policy",
+      "index": 7,
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --name-only -- package.json package-lock.json",
+      "index": 8,
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+      "index": 9,
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --name-only -- src src-electron scripts -- :(exclude)scripts/ops/b2c20-block-2-exit-dossier-state.mjs",
+      "index": 10,
+      "result": "PASS"
+    }
+  ],
+  "noPending": true,
+  "status": "EXECUTED_AND_RECORDED",
+  "taskId": "B2C20_BLOCK_2_EXIT_DOSSIER"
+}

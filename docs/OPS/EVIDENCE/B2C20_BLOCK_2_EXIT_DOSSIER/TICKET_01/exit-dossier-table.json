@@ -1,0 +1,48 @@
+{
+  "rowCount": 7,
+  "rows": [
+    {
+      "evidence": "B2C19 status packet is the primary fact source for B2C20.",
+      "input": "B2C19_INDEPENDENT_KERNEL_AUDIT",
+      "rowId": "B2C19_PRIMARY_AUDIT_BOUND",
+      "status": "PASS"
+    },
+    {
+      "evidence": "0 blocking findings",
+      "input": "finding-classification.json",
+      "rowId": "B2C19_BLOCKING_FINDINGS_ZERO",
+      "status": "PASS"
+    },
+    {
+      "evidence": "allPassed and noPending are true",
+      "input": "B2C19 command-results.json",
+      "rowId": "B2C19_COMMAND_RESULTS_BOUND",
+      "status": "PASS"
+    },
+    {
+      "evidence": "12 advisory findings",
+      "input": "B2C19 advisory findings",
+      "rowId": "B2C01_TO_B2C04_LEGACY_GAPS_ADVISORY",
+      "status": "PASS"
+    },
+    {
+      "evidence": "15 of 15 required status contours pass shape check",
+      "input": "status packet spot check",
+      "rowId": "B2C05_TO_B2C19_STATUS_PACKETS_PRESENT",
+      "status": "PASS"
+    },
+    {
+      "evidence": "Block 2 green is not a release-ready claim and does not start Block 3.",
+      "input": "B2C20 scope flags",
+      "rowId": "BLOCK_2_EXIT_ONLY_NOT_RELEASE",
+      "status": "PASS"
+    },
+    {
+      "evidence": "B2C20 writes only OPS status, evidence, state script, and contract test.",
+      "input": "B2C20 scope flags",
+      "rowId": "NO_RUNTIME_UI_DEPENDENCY_SCHEMA_STORAGE_EXPORT_CHANGE",
+      "status": "PASS"
+    }
+  ],
+  "taskId": "B2C20_BLOCK_2_EXIT_DOSSIER"
+}
