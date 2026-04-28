@@ -1,0 +1,454 @@
+{
+  "artifactId": "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1",
+  "auditRows": [
+    {
+      "command": "npm run oss:policy",
+      "embeddedCheck": "NO_TIPTAP_PRO_NO_TIPTAP_CLOUD",
+      "id": "OSS_POLICY_LOCAL_CHECK_PASS",
+      "status": "PASS"
+    },
+    {
+      "command": "npm audit --omit=dev --json",
+      "highOrCriticalProductionFindings": "NOT_EMBEDDED_IN_STATUS_ARTIFACT",
+      "id": "NPM_AUDIT_LOCAL_STATUS_RECORDED",
+      "status": "LIMITED",
+      "taxonomy": "LIMITED_EXTERNAL_COMMAND_RECORDED_SEPARATELY_NOT_RELEASE_GREEN"
+    }
+  ],
+  "b3c14InputRow": {
+    "basename": "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+    "carriedForwardLimitRowCount": 7,
+    "passed": true,
+    "releaseGreen": 0,
+    "token": 1
+  },
+  "b3c15InputRow": {
+    "basename": "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
+    "passed": true,
+    "releaseGreen": 0,
+    "signatureToken": 1,
+    "token": 1,
+    "verifyToken": 1
+  },
+  "B3C16_RELEASE_GREEN_OK": 0,
+  "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_OK": 1,
+  "contourId": "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE",
+  "dependencyRows": {
+    "allPackageNameCount": 403,
+    "direct": {
+      "dependencies": [
+        "@tiptap/core",
+        "@tiptap/extension-color",
+        "@tiptap/extension-highlight",
+        "@tiptap/extension-link",
+        "@tiptap/extension-text-style",
+        "@tiptap/extension-underline",
+        "@tiptap/pm",
+        "@tiptap/starter-kit"
+      ],
+      "devDependencies": [
+        "electron",
+        "electron-builder",
+        "esbuild"
+      ]
+    },
+    "docxLibraryRow": {
+      "currentStatus": "LIMITED_NONE_EXTERNAL_DOCX_LIB_CURRENTLY_DECLARED",
+      "directMatches": [],
+      "externalDocxLibraryCount": 0,
+      "id": "DOCX_LIBRARY_SINGLE_OR_NONE_WITH_LIMIT",
+      "lockMatches": [],
+      "noPackageBuildClaim": true,
+      "status": "PASS"
+    },
+    "forbiddenRows": [
+      {
+        "category": "PRO_DEPENDENCY",
+        "directMatches": [],
+        "id": "NO_TIPTAP_PRO_DEPENDENCY",
+        "lockMatches": [],
+        "status": "PASS"
+      },
+      {
+        "category": "CLOUD_DEPENDENCY",
+        "directMatches": [],
+        "id": "NO_TIPTAP_CLOUD_DEPENDENCY",
+        "lockMatches": [],
+        "status": "PASS"
+      },
+      {
+        "category": "UI_FRAMEWORK",
+        "directMatches": [],
+        "id": "NO_FORBIDDEN_UI_FRAMEWORK",
+        "lockMatches": [],
+        "status": "PASS"
+      },
+      {
+        "category": "STATE_MANAGER",
+        "directMatches": [],
+        "id": "NO_FORBIDDEN_STATE_MANAGER",
+        "lockMatches": [],
+        "status": "PASS"
+      }
+    ],
+    "productionAllowedRow": {
+      "devDependencyRule": "EXISTING_ELECTRON_ESBUILD_PACKAGING_TOOLING_ONLY",
+      "directDependencies": [
+        "@tiptap/core",
+        "@tiptap/extension-color",
+        "@tiptap/extension-highlight",
+        "@tiptap/extension-link",
+        "@tiptap/extension-text-style",
+        "@tiptap/extension-underline",
+        "@tiptap/pm",
+        "@tiptap/starter-kit"
+      ],
+      "directDevDependencies": [
+        "electron",
+        "electron-builder",
+        "esbuild"
+      ],
+      "id": "DEPENDENCY_ALLOWLIST_MATCHES_CANON",
+      "productionDependencyRule": "TOP_LEVEL_PRODUCTION_DEPENDENCIES_MUST_BE_CANON_ALLOWED",
+      "status": "PASS"
+    },
+    "topLevelNames": [
+      "@tiptap/core",
+      "@tiptap/extension-color",
+      "@tiptap/extension-highlight",
+      "@tiptap/extension-link",
+      "@tiptap/extension-text-style",
+      "@tiptap/extension-underline",
+      "@tiptap/pm",
+      "@tiptap/starter-kit",
+      "electron",
+      "electron-builder",
+      "esbuild"
+    ]
+  },
+  "donorIntake": {
+    "activeCanonOverDonor": true,
+    "archiveRows": [
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 132,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "ADMISSION_REPORT.md",
+          "atomic.js",
+          "attestation.js",
+          "binding-integrity.test.js",
+          "binding.mjs",
+          "BLOCK_2",
+          "BLOCK_2_EXIT_REPORT.md",
+          "BLOCK_2_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "block2-baseline-node-test-output.tap",
+          "block2-contracts-deep.test.js",
+          "block2-dossier.js",
+          "block2-exit-dossier.json",
+          "block2-exit-dossier.mjs",
+          "block2-exit-dossier.stdout.json",
+          "block2-unit-proof.json",
+          "block3-capability-xplat-i18n-a11y.test.js"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 146,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "ADMISSION_REPORT.md",
+          "atomic.js",
+          "attestation.js",
+          "binding-integrity.test.js",
+          "binding.mjs",
+          "BLOCK_2",
+          "BLOCK_2_EXIT_REPORT.md",
+          "BLOCK_2_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3_V2_DEEP_REWORK_REPORT.md",
+          "BLOCK_3_V3_PERFECTION_REPORT.md",
+          "block2-baseline-node-test-output.tap",
+          "block2-contracts-deep.test.js",
+          "block2-dossier.js",
+          "block2-exit-dossier.json",
+          "block2-exit-dossier.mjs",
+          "block2-exit-dossier.stdout.json"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 45,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "package-json-longform-scripts.patch",
+          "release-dossier.js",
+          "release-dossier.mjs",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 83,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "package-json-longform-deps.patch",
+          "package-json-longform-scripts.patch",
+          "package.mjs",
+          "release-dossier.js",
+          "release-dossier.mjs",
+          "VALIDATION_REPORT.md"
+        ]
+      }
+    ],
+    "class": "READ_ONLY_CONTEXT_ONLY",
+    "codeImported": false,
+    "completionClaimImported": false,
+    "dependencyClaimImported": false
+  },
+  "failRows": [],
+  "failSignal": "",
+  "negativeRows": [
+    {
+      "id": "FORBIDDEN_PRO_DEPENDENCY_NEGATIVE",
+      "rejectsClaim": "TIPTAP_PRO_ALLOWED",
+      "status": "PASS"
+    },
+    {
+      "id": "FORBIDDEN_CLOUD_DEPENDENCY_NEGATIVE",
+      "rejectsClaim": "TIPTAP_CLOUD_ALLOWED",
+      "status": "PASS"
+    },
+    {
+      "id": "FORBIDDEN_UI_FRAMEWORK_NEGATIVE",
+      "rejectsClaim": "UI_FRAMEWORK_ALLOWED",
+      "status": "PASS"
+    },
+    {
+      "id": "FORBIDDEN_STATE_MANAGER_NEGATIVE",
+      "rejectsClaim": "STATE_MANAGER_ALLOWED",
+      "status": "PASS"
+    },
+    {
+      "id": "MULTIPLE_DOCX_LIB_NEGATIVE",
+      "rejectsClaim": "MULTIPLE_DOCX_LIBS_ALLOWED",
+      "status": "PASS"
+    },
+    {
+      "id": "PACKAGE_MANIFEST_CHANGE_NEGATIVE",
+      "rejectsClaim": "PACKAGE_MANIFEST_CHANGE_ALLOWED",
+      "status": "PASS"
+    },
+    {
+      "id": "PACKAGE_BUILD_NEGATIVE",
+      "rejectsClaim": "PACKAGE_BUILD_DONE_IN_B3C16",
+      "status": "PASS"
+    },
+    {
+      "id": "PACKAGE_HASH_NEGATIVE",
+      "rejectsClaim": "PACKAGE_HASH_GENERATED_IN_B3C16",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_GREEN_FALSE_NEGATIVE",
+      "rejectsClaim": "RELEASE_GREEN_CLAIM_IN_B3C16",
+      "status": "PASS"
+    },
+    {
+      "id": "DONOR_DEPENDENCY_CLAIM_NEGATIVE",
+      "rejectsClaim": "DONOR_ARCHIVE_DEPENDENCY_CLAIM_IMPORTED",
+      "status": "PASS"
+    }
+  ],
+  "ok": true,
+  "packageManifestRows": [
+    {
+      "changedBasenames": [],
+      "id": "PACKAGE_MANIFESTS_READ_ONLY",
+      "readOnlyInputs": [
+        "package.json",
+        "package-lock.json"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "proof": {
+    "b3c14LimitsPreserved": true,
+    "b3c15AttestationBound": true,
+    "dependencyAllowlistPass": true,
+    "docxLibrarySingleOrNone": true,
+    "donorIntakeContextOnly": true,
+    "forbiddenDependencyRowsPass": true,
+    "limitedAuditCannotSetReleaseGreen": true,
+    "negativeRowsComplete": true,
+    "negativeRowsPass": true,
+    "noPackageBuildNoPackageHash": true,
+    "npmAuditStatusRecorded": true,
+    "ossPolicyLocalCheckBound": true,
+    "packageManifestsReadOnly": true,
+    "releaseGreenFalseBecauseB3C16Only": true
+  },
+  "releaseGreen": false,
+  "releaseRows": [
+    {
+      "id": "NO_PACKAGE_BUILD_NO_PACKAGE_HASH_NO_RELEASE_GREEN",
+      "packageBuild": false,
+      "packageHashGeneration": false,
+      "releaseGreen": false,
+      "status": "PASS"
+    }
+  ],
+  "repo": {
+    "headSha": "6a1297a31bc0602eab9253d55763c2bfb3b605eb",
+    "repoRootBinding": "WORKTREE_INDEPENDENT"
+  },
+  "rollbackRef": "ROLLBACK_SUPPLY_CHAIN_RELEASE_SCOPE",
+  "runtime": {
+    "changedBasenames": [
+      "b3c16-supply-chain-release-scope-state.mjs",
+      "b3c16-supply-chain-release-scope.contract.test.js",
+      "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "8c32810ce564ce6059eebb3897b7f994ec60714d62dfe32bc3bebc6c5ec3a1dd",
+    "commandRows": {
+      "allPassed": null,
+      "commandCount": 14,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c16-supply-chain-release-scope-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c16-supply-chain-release-scope.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c15-attestation-chain.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c14-release-dossier-minimal.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c13-trust-surface-accessibility.contract.test.js",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c12-i18n-text-anchor-safety.contract.test.js",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c11-xplat-normalization-baseline.contract.test.js",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c10-capability-tier-report.contract.test.js",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c09-performance-baseline-binding.contract.test.js",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 10,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm audit --omit=dev --json",
+          "index": 11,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --check",
+          "index": 12,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 13,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css src/main.js src/preload.js src/export src/io",
+          "index": 14,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE"
+    },
+    "statusArtifactHash": "0b71bb2304971cd2993fdf4ad3071c53de8b9e17e662f2c94d13c54513486e8b"
+  },
+  "scope": {
+    "a11yCertification": false,
+    "allowedWriteBasenames": [
+      "b3c16-supply-chain-release-scope-state.mjs",
+      "b3c16-supply-chain-release-scope.contract.test.js",
+      "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1.json"
+    ],
+    "exportRewrite": false,
+    "newDependency": false,
+    "packageBuild": false,
+    "packageHashGeneration": false,
+    "packageManifestChange": false,
+    "perfFix": false,
+    "readOnlyInputs": [
+      "package.json",
+      "package-lock.json",
+      "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+      "B3C15_ATTESTATION_CHAIN_STATUS_V1.json"
+    ],
+    "releaseGreenClaim": false,
+    "securityRewrite": false,
+    "storageChange": false,
+    "uiChange": false,
+    "xplatCertification": false
+  },
+  "status": "PASS",
+  "successWording": "PASS_AS_SUPPLY_CHAIN_RELEASE_SCOPE_WITHOUT_PACKAGE_BUILD_OR_RELEASE_GREEN",
+  "tokenSemantics": "SUPPLY_CHAIN_READINESS_SCOPE_ONLY_RELEASE_GREEN_REMAINS_FALSE"
+}
