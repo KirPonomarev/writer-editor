@@ -41,6 +41,7 @@ test('history bridge admission: record and summary agree on STOP recommendation 
   assert.equal(state.localGitFacts.mergeBaseExists, false);
   assert.equal(state.c02BlockerFacts.c02FailReason, 'BLOCKING_UNRELATED_HISTORIES');
   assert.equal(state.c02BlockerFacts.c02MergeabilityClass, 'BLOCKING_UNRELATED_HISTORIES');
+  assert.equal(state.checks.localHeadDescendsFromRoot, true);
   assert.equal(state.recommendation.methodId, 'STOP');
   assert.equal(summary.recommendation.methodId, 'STOP');
   assert.equal(next.c03Blocked, true);

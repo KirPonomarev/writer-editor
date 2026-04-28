@@ -26,7 +26,7 @@
     "Silent rebase and history rewrite remain forbidden by active canon.",
     "No automatic bridge method is admitted by the current blocker packet."
   ],
-  "recordedAtUtc": "2026-04-28T12:20:36.594Z",
+  "recordedAtUtc": "2026-04-28T12:22:04.993Z",
   "reportScript": "main-sync-c02-remediation-history-bridge-admission-report.mjs",
   "runtimeAdmissionGranted": false,
   "runtimeWritesAdmitted": false,

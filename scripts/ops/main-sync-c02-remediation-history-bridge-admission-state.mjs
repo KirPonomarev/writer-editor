@@ -101,6 +101,7 @@ export function evaluateMainSyncC02RemediationHistoryBridgeAdmission(input = {})
   const boundRootMatchesOrigin = originRoot.ok && originRoot.stdout === rootSha;
   const boundMainMatchesOrigin = originMain.ok && originMain.stdout === mainSha;
   const localHeadMatchesRoot = head.ok && head.stdout === rootSha;
+  const localHeadDescendsFromRoot = runGit(repoRoot, ['merge-base', '--is-ancestor', rootSha, head.stdout || '']).ok;
   const noMergeBase = !mergeBase.ok;
   const blockerMatchesArtifacts = c02Status.status === 'FAILED'
     && c02Summary.failReason === 'BLOCKING_UNRELATED_HISTORIES'
@@ -111,7 +112,7 @@ export function evaluateMainSyncC02RemediationHistoryBridgeAdmission(input = {})
 
   if (!boundRootMatchesOrigin) issues.push({ code: 'BOUND_ROOT_DRIFT', expected: rootSha, actual: originRoot.stdout || '' });
   if (!boundMainMatchesOrigin) issues.push({ code: 'BOUND_MAIN_DRIFT', expected: mainSha, actual: originMain.stdout || '' });
-  if (!localHeadMatchesRoot) issues.push({ code: 'LOCAL_HEAD_DRIFT', expected: rootSha, actual: head.stdout || '' });
+  if (!localHeadDescendsFromRoot) issues.push({ code: 'LOCAL_HEAD_DRIFT', expected: rootSha, actual: head.stdout || '' });
   if (!noMergeBase) issues.push({ code: 'MERGE_BASE_EXISTS' });
   if (!blockerMatchesArtifacts) issues.push({ code: 'C02_BLOCKER_ARTIFACT_MISMATCH' });
 
@@ -227,6 +228,7 @@ export function evaluateMainSyncC02RemediationHistoryBridgeAdmission(input = {})
       boundRootMatchesOrigin,
       boundMainMatchesOrigin,
       localHeadMatchesRoot,
+      localHeadDescendsFromRoot,
       noMergeBase,
       blockerMatchesArtifacts,
     },
