@@ -1,0 +1,112 @@
+{
+  "artifactId": "B2C09_COMMAND_SURFACE_KERNEL_V1",
+  "schemaVersion": 1,
+  "taskId": "B2C09_COMMAND_SURFACE_KERNEL",
+  "status": "PASS",
+  "boundary": {
+    "commandSurfaceId": "ZERO_BYPASS_COMMAND_KERNEL",
+    "admittedBoundaryRows": [
+      {
+        "rowId": "ZERO_BYPASS_SINGLE_ENTRY",
+        "proofLevel": "COMMAND_BUS_ROUTE_AND_BYPASS_NEGATIVES"
+      },
+      {
+        "rowId": "COMMAND_NAMESPACE_CANONICAL_RESOLUTION",
+        "proofLevel": "CANON_ALIAS_AND_PROMOTION_BOUNDARY"
+      },
+      {
+        "rowId": "TYPED_COMMAND_FAILURE_SHAPE",
+        "proofLevel": "DETERMINISTIC_TYPED_FAILURE_NORMALIZATION"
+      }
+    ],
+    "advisoryBoundaryRows": [
+      {
+        "rowId": "COMMAND_SHELL_ORCHESTRATION_SPLIT",
+        "proofLevel": "ADVISORY_ONLY_SHELL_AND_TREE_ACTIONS_REMAIN_SEPARATE"
+      },
+      {
+        "rowId": "RELEASE_PERMISSION_RUNTIME_GATING",
+        "proofLevel": "ADVISORY_ONLY_RELEASE_AND_PERMISSION_SCOPE_OUT_OF_KERNEL"
+      }
+    ]
+  },
+  "proofBinding": {
+    "bindingMode": "DETECTOR_IDS_ONLY",
+    "boundaryRows": [
+      {
+        "rowId": "ZERO_BYPASS_SINGLE_ENTRY",
+        "detectorId": "B2C09_ZERO_BYPASS_SINGLE_ENTRY_PROOF_BINDING_V1"
+      },
+      {
+        "rowId": "COMMAND_NAMESPACE_CANONICAL_RESOLUTION",
+        "detectorId": "B2C09_COMMAND_NAMESPACE_CANONICAL_RESOLUTION_PROOF_BINDING_V1"
+      },
+      {
+        "rowId": "TYPED_COMMAND_FAILURE_SHAPE",
+        "detectorId": "B2C09_TYPED_COMMAND_FAILURE_SHAPE_PROOF_BINDING_V1"
+      }
+    ]
+  },
+  "proofSurfaces": {
+    "canonBoundary": {
+      "documents": [
+        "CANON.md",
+        "BIBLE.md",
+        "XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md"
+      ],
+      "requirements": [
+        "zero-bypass command surface",
+        "command kernel lock"
+      ]
+    },
+    "zeroBypassSingleEntry": {
+      "state": "command-surface-state.mjs",
+      "busGuard": "commandBusGuard.mjs",
+      "singleEntryContract": "command-surface-single-entry.contract.test.js",
+      "busOnlyContract": "command-surface-bus-only.contract.test.js",
+      "bindingSchema": "BINDING_SCHEMA_V1.json",
+      "machineRegistry": "MACHINE_CHECK_REGISTRY_V1.json"
+    },
+    "namespaceBoundary": {
+      "resolver": "commandNamespaceCanon.mjs",
+      "catalog": "command-catalog.v1.mjs",
+      "projectCommands": "projectCommands.mjs",
+      "canonContract": "command-namespace-canon-and-alias-bridge.contract.test.js",
+      "sunsetContract": "command-namespace-sunset-promotion.contract.test.js"
+    },
+    "typedFailureBoundary": {
+      "runner": "runCommand.mjs",
+      "registry": "registry.mjs",
+      "capabilityGate": "capabilityPolicy.mjs",
+      "unitA": "sector-u-u1-command-layer.test.js",
+      "unitB": "sector-u-u5-runCommand-errors.test.js"
+    },
+    "routingTruth": {
+      "editor": "editor.js",
+      "main": "main.js",
+      "preload": "preload.js"
+    }
+  },
+  "advisoryBoundary": {
+    "zeroBypassPromotion": "ADVISORY_ONLY_OUTSIDE_MACHINE_PROVED_KERNEL_ROWS",
+    "shellOrchestrationPromotion": "ADVISORY_ONLY_EDITOR_MAIN_AND_RUNTIME_BRIDGE_COOWN_ACTION_CHOREOGRAPHY",
+    "releasePermissionPromotion": "ADVISORY_ONLY_RELEASE_AND_PERMISSION_BOUNDARY_NOT_ADMITTED_HERE",
+    "queueingPromotion": "ADVISORY_ONLY_QUEUEING_IS_SEPARATE_DOMAIN",
+    "concurrencyPromotion": "ADVISORY_ONLY_CONCURRENCY_IS_SEPARATE_DOMAIN",
+    "forbiddenPromotionAreas": [
+      "queueing",
+      "concurrency",
+      "releaseGating",
+      "permissionModel",
+      "runtimeOrchestration",
+      "recoveryProtocol",
+      "extraCommandCluster"
+    ],
+    "notes": [
+      "B2C09 admits only the minimal machine-proved command kernel boundary.",
+      "Zero bypass is admitted only for the command.bus single-entry kernel path.",
+      "Namespace canon and typed failure shape are admitted only where direct machine proof already exists.",
+      "Shell choreography, tree mutation helpers, release gating, permission expansion, queueing, concurrency, and recovery routing remain out of scope."
+    ]
+  }
+}
