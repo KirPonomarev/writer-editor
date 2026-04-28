@@ -1,0 +1,1055 @@
+{
+  "artifactId": "B3C20_BLOCK_3_EXIT_DOSSIER_STATUS_V1",
+  "B3C20_BLOCK_3_EXIT_DOSSIER_OK": 1,
+  "B3C20_RELEASE_GREEN_OK": 0,
+  "blockDecision": {
+    "block4Started": false,
+    "decision": "BLOCK_3_STOP_NOT_RELEASE_GREEN",
+    "expectedDecision": "STOP_NOT_RELEASE_GREEN",
+    "nextStep": "STOP_FOR_OWNER_DECISION",
+    "ownerReviewPacketReady": true,
+    "releaseGatesGreen": false,
+    "status": "PASS",
+    "visibleLimitsRemain": true
+  },
+  "contourId": "B3C20_BLOCK_3_EXIT_DOSSIER",
+  "decisionRows": [
+    {
+      "id": "ALL_B3C01_TO_B3C19_INPUT_ARTIFACTS_BOUND",
+      "inputCount": 19,
+      "status": "PASS"
+    },
+    {
+      "id": "B3C19_AUDIT_BOUND",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_GREEN_REMAINS_FALSE_UNLESS_ALL_RELEASE_GATES_GREEN",
+      "status": "PASS"
+    },
+    {
+      "id": "UNSUPPORTED_SCOPE_REMAINS_VISIBLE",
+      "status": "PASS",
+      "visibleLimitCount": 11
+    },
+    {
+      "id": "STOP_STATUS_HAS_EXACT_NEXT_STEP",
+      "nextStep": "STOP_FOR_OWNER_DECISION",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_FALSE_RELEASE_GREEN",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_DOC_ONLY_CLOSE",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "NO_ACTIVE_CANON_PROMOTION",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "NO_REQUIRED_TOKEN_SET_EXPANSION",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_NEW_DEPENDENCY",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "NO_RUNTIME_LAYER_CHANGE",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_BLOCK_4_STARTED",
+      "status": "PASS"
+    },
+    {
+      "id": "DONOR_CONTEXT_ONLY",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "PRIOR_CONTOURS_NOT_REWRITTEN",
+      "status": "PASS"
+    },
+    {
+      "id": "OWNER_REVIEW_PACKET_READY",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_RELEASE_FIX_ATTEMPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "B3C19_NOT_REPLACED_BY_NEW_AUDIT",
+      "status": "PASS"
+    },
+    {
+      "artifact": "B3C20_BLOCK_3_EXIT_DOSSIER_STATUS_V1.json",
+      "id": "MACHINE_BOUND_EXIT_STATUS",
+      "status": "PASS"
+    }
+  ],
+  "donorIntake": {
+    "activeCanonOverDonor": true,
+    "archiveRows": [
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 132,
+        "exitCompletionClaimImported": false,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "ADMISSION_REPORT.md",
+          "atomic.js",
+          "attestation.js",
+          "binding-integrity.test.js",
+          "binding.mjs",
+          "BLOCK_2",
+          "BLOCK_2_EXIT_REPORT.md",
+          "BLOCK_2_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "block2-baseline-node-test-output.tap",
+          "block2-contracts-deep.test.js",
+          "block2-dossier.js",
+          "block2-exit-dossier.json",
+          "block2-exit-dossier.mjs",
+          "block2-exit-dossier.stdout.json",
+          "block2-unit-proof.json",
+          "block3-capability-xplat-i18n-a11y.test.js"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 146,
+        "exitCompletionClaimImported": false,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "ADMISSION_REPORT.md",
+          "atomic.js",
+          "attestation.js",
+          "binding-integrity.test.js",
+          "binding.mjs",
+          "BLOCK_2",
+          "BLOCK_2_EXIT_REPORT.md",
+          "BLOCK_2_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3_V2_DEEP_REWORK_REPORT.md",
+          "BLOCK_3_V3_PERFECTION_REPORT.md",
+          "block2-baseline-node-test-output.tap",
+          "block2-contracts-deep.test.js",
+          "block2-dossier.js",
+          "block2-exit-dossier.json",
+          "block2-exit-dossier.mjs",
+          "block2-exit-dossier.stdout.json"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 45,
+        "exitCompletionClaimImported": false,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "release-dossier.js",
+          "release-dossier.mjs",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 83,
+        "exitCompletionClaimImported": false,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "release-dossier.js",
+          "release-dossier.mjs",
+          "VALIDATION_REPORT.md"
+        ]
+      }
+    ],
+    "class": "READ_ONLY_CONTEXT_ONLY",
+    "codeImported": false,
+    "completionClaimImported": false,
+    "dependencyClaimImported": false,
+    "exitCompletionClaimImported": false
+  },
+  "dossierSections": [
+    {
+      "id": "EXPORT_SOURCE_STATUS",
+      "inputCount": 2,
+      "rows": [
+        {
+          "basename": "B3C01_COMMAND_KERNEL_SCOPE_LOCK_STATUS_V1.json",
+          "id": "B3C01",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        },
+        {
+          "basename": "B3C02_COMPILE_IR_BASELINE_STATUS_V1.json",
+          "id": "B3C02",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "EXPORT_VALIDATION_STATUS",
+      "inputCount": 2,
+      "rows": [
+        {
+          "basename": "B3C03_DOCX_ARTIFACT_VALIDATION_STATUS_V1.json",
+          "id": "B3C03",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        },
+        {
+          "basename": "B3C04_DETERMINISTIC_EXPORT_MODE_STATUS_V1.json",
+          "id": "B3C04",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "PERMISSION_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C05_PERMISSION_SCOPE_ENFORCED_STATUS_V1.json",
+          "id": "B3C05",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "NO_NETWORK_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C06_NO_NETWORK_WRITING_PATH_STATUS_V1.json",
+          "id": "B3C06",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "SECURITY_STATUS",
+      "inputCount": 2,
+      "rows": [
+        {
+          "basename": "B3C07_SECURITY_RUNTIME_BOUNDARY_STATUS_V1.json",
+          "id": "B3C07",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        },
+        {
+          "basename": "B3C08_SUPPORT_BUNDLE_PRIVACY_STATUS_V1.json",
+          "id": "B3C08",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "PERF_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json",
+          "id": "B3C09",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PROVISIONAL_GAP",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "CAPABILITY_TIER_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+          "id": "B3C10",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "XPLAT_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+          "id": "B3C11",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "I18N_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+          "id": "B3C12",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "A11Y_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+          "id": "B3C13",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_DOSSIER_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+          "id": "B3C14",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "ATTESTATION_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
+          "id": "B3C15",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "SUPPLY_CHAIN_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1.json",
+          "id": "B3C16",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "FUTURE_LANES_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C17_FUTURE_LANES_NONBLOCKING_STATUS_V1.json",
+          "id": "B3C17",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "PRODUCTION_HARDENING_QUEUE_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C18_PRODUCTION_HARDENING_QUEUE_STATUS_V1.json",
+          "id": "B3C18",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "INDEPENDENT_RELEASE_AUDIT_STATUS",
+      "inputCount": 1,
+      "rows": [
+        {
+          "basename": "B3C19_INDEPENDENT_RELEASE_AUDIT_STATUS_V1.json",
+          "id": "B3C19",
+          "passed": true,
+          "releaseGreen": 0,
+          "status": "PASS_AUDIT_WITH_RELEASE_GREEN_FALSE",
+          "token": 1
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "id": "UNSUPPORTED_SCOPE_STATUS",
+      "status": "PASS",
+      "visibleLimitCount": 11
+    },
+    {
+      "decision": "BLOCK_3_STOP_NOT_RELEASE_GREEN",
+      "id": "STOP_OR_RELEASE_DECISION",
+      "nextStep": "STOP_FOR_OWNER_DECISION",
+      "status": "PASS"
+    }
+  ],
+  "failRows": [],
+  "failSignal": "",
+  "inputRows": [
+    {
+      "basename": "B3C01_COMMAND_KERNEL_SCOPE_LOCK_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C01",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "EXPORT_SOURCE_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C01_COMMAND_KERNEL_SCOPE_LOCK_OK"
+    },
+    {
+      "basename": "B3C02_COMPILE_IR_BASELINE_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C02",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "EXPORT_SOURCE_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C02_COMPILE_IR_BASELINE_OK"
+    },
+    {
+      "basename": "B3C03_DOCX_ARTIFACT_VALIDATION_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C03",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "EXPORT_VALIDATION_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C03_DOCX_ARTIFACT_VALIDATION_OK"
+    },
+    {
+      "basename": "B3C04_DETERMINISTIC_EXPORT_MODE_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C04",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "EXPORT_VALIDATION_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C04_DETERMINISTIC_EXPORT_MODE_OK"
+    },
+    {
+      "basename": "B3C05_PERMISSION_SCOPE_ENFORCED_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C05",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "PERMISSION_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C05_PERMISSION_SCOPE_ENFORCED_OK"
+    },
+    {
+      "basename": "B3C06_NO_NETWORK_WRITING_PATH_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C06",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "NO_NETWORK_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C06_NO_NETWORK_WRITING_PATH_OK"
+    },
+    {
+      "basename": "B3C07_SECURITY_RUNTIME_BOUNDARY_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C07",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "SECURITY_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C07_SECURITY_RUNTIME_BOUNDARY_OK"
+    },
+    {
+      "basename": "B3C08_SUPPORT_BUNDLE_PRIVACY_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C08",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "SECURITY_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C08_SUPPORT_BUNDLE_PRIVACY_OK"
+    },
+    {
+      "basename": "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C09",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "PERF_STATUS",
+      "status": "PROVISIONAL_GAP",
+      "token": 1,
+      "tokenName": "B3C09_PERFORMANCE_BASELINE_BINDING_OK"
+    },
+    {
+      "basename": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C10",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "CAPABILITY_TIER_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C10_CAPABILITY_TIER_REPORT_OK"
+    },
+    {
+      "basename": "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C11",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "XPLAT_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C11_XPLAT_NORMALIZATION_BASELINE_OK"
+    },
+    {
+      "basename": "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C12",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "I18N_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C12_I18N_TEXT_ANCHOR_SAFETY_OK"
+    },
+    {
+      "basename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C13",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "section": "A11Y_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C13_TRUST_SURFACE_ACCESSIBILITY_OK"
+    },
+    {
+      "basename": "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C14",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "B3C14_RELEASE_GREEN_OK",
+      "section": "RELEASE_DOSSIER_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C14_RELEASE_DOSSIER_MINIMAL_OK"
+    },
+    {
+      "basename": "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C15",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "B3C15_RELEASE_GREEN_OK",
+      "section": "ATTESTATION_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C15_ATTESTATION_CHAIN_OK"
+    },
+    {
+      "basename": "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C16",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "B3C16_RELEASE_GREEN_OK",
+      "section": "SUPPLY_CHAIN_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_OK"
+    },
+    {
+      "basename": "B3C17_FUTURE_LANES_NONBLOCKING_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C17",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "B3C17_RELEASE_GREEN_OK",
+      "section": "FUTURE_LANES_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C17_FUTURE_LANES_NONBLOCKING_OK"
+    },
+    {
+      "basename": "B3C18_PRODUCTION_HARDENING_QUEUE_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C18",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "B3C18_RELEASE_GREEN_OK",
+      "section": "PRODUCTION_HARDENING_QUEUE_STATUS",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C18_PRODUCTION_HARDENING_QUEUE_OK"
+    },
+    {
+      "basename": "B3C19_INDEPENDENT_RELEASE_AUDIT_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C19",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "B3C19_RELEASE_GREEN_OK",
+      "section": "INDEPENDENT_RELEASE_AUDIT_STATUS",
+      "status": "PASS_AUDIT_WITH_RELEASE_GREEN_FALSE",
+      "token": 1,
+      "tokenName": "B3C19_INDEPENDENT_RELEASE_AUDIT_OK"
+    }
+  ],
+  "negativeRows": [
+    {
+      "id": "INPUT_ARTIFACT_MISSING_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_GREEN_CLAIMED_WHILE_LIMITS_VISIBLE_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "UNSUPPORTED_SCOPE_HIDDEN_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "STOP_HAS_NO_NEXT_STEP_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "DOC_ONLY_CLOSE_ACCEPTED_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "BLOCK_4_STARTED_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_FIX_ATTEMPTED_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "RUNTIME_CHANGE_ADDED_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "NEW_DEPENDENCY_ADDED_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "ACTIVE_CANON_PROMOTED_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "REQUIRED_TOKEN_SET_EXPANDED_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "PRIOR_CONTOUR_STATUS_REWRITTEN_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "DONOR_COMPLETION_CLAIM_IMPORTED_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_WITHOUT_DOSSIER_ACCEPTED_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "NETWORK_ESCAPE_ACCEPTED_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "PERMISSION_ESCAPE_ACCEPTED_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "B3C19_AUDIT_REPLACED_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "MACHINE_BOUND_STATUS_MISSING_NEGATIVE",
+      "status": "PASS"
+    },
+    {
+      "id": "BLOCK_3_CLOSE_GREEN_WHILE_LIMITS_VISIBLE_NEGATIVE",
+      "status": "PASS"
+    }
+  ],
+  "ok": true,
+  "ownerReviewPacket": {
+    "currentDecision": "BLOCK_3_STOP_NOT_RELEASE_GREEN",
+    "nextStep": "STOP_FOR_OWNER_DECISION",
+    "releaseGreenAllowedOnlyIf": "ALL_RELEASE_GATES_GREEN_BY_MACHINE_PROOF_AND_NO_VISIBLE_LIMITS_AND_B3C19_RELEASE_GREEN_OK_1",
+    "status": "READY"
+  },
+  "proof": {
+    "activeCanonNotPromoted": true,
+    "allInputsBound": true,
+    "b3c19AuditBound": true,
+    "b3c19NotReplacedByNewAudit": true,
+    "block3StopNotReleaseGreen": true,
+    "donorIntakeContextOnly": true,
+    "finalNextStepIsStopForOwnerDecision": true,
+    "machineBoundExitStatus": true,
+    "negativeRowsComplete": true,
+    "negativeRowsPass": true,
+    "noBlock4Started": true,
+    "noDocOnlyClose": true,
+    "noFalseReleaseGreen": true,
+    "noNewDependency": true,
+    "noReleaseFixAttempted": true,
+    "noRuntimeLayerChange": true,
+    "ownerReviewPacketReady": true,
+    "priorContoursNotRewritten": true,
+    "requiredTokenSetNotExpanded": true,
+    "stopStatusHasExactNextStep": true,
+    "unsupportedScopeRemainsVisible": true,
+    "visibleLimitsPass": true
+  },
+  "releaseGreen": false,
+  "repo": {
+    "headSha": "dba618d2fab02a0176d610f0e59bd5584f407909",
+    "repoRootBinding": "WORKTREE_INDEPENDENT"
+  },
+  "rollbackRef": "ROLLBACK_BLOCK_3_EXIT_DOSSIER_GOVERNANCE",
+  "runtime": {
+    "changedBasenames": [
+      "b3c20-block-3-exit-dossier-state.mjs",
+      "b3c20-block-3-exit-dossier.contract.test.js",
+      "B3C20_BLOCK_3_EXIT_DOSSIER_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "feb8dde9ea15ddaf4fdca6c2eb23249bbe6488b3d72c37637da567a20ca86618",
+    "commandRows": {
+      "allPassed": null,
+      "commandCount": 7,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c20-block-3-exit-dossier-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c01-command-kernel-scope-lock.contract.test.js test/contracts/b3c02-compile-ir-baseline.contract.test.js test/contracts/b3c03-docx-artifact-validation.contract.test.js test/contracts/b3c04-deterministic-export-mode.contract.test.js test/contracts/b3c05-permission-scope-enforced.contract.test.js test/contracts/b3c06-no-network-writing-path.contract.test.js test/contracts/b3c07-security-runtime-boundary.contract.test.js test/contracts/b3c08-support-bundle-privacy.contract.test.js test/contracts/b3c09-performance-baseline-binding.contract.test.js test/contracts/b3c10-capability-tier-report.contract.test.js test/contracts/b3c11-xplat-normalization-baseline.contract.test.js test/contracts/b3c12-i18n-text-anchor-safety.contract.test.js test/contracts/b3c13-trust-surface-accessibility.contract.test.js test/contracts/b3c14-release-dossier-minimal.contract.test.js test/contracts/b3c15-attestation-chain.contract.test.js test/contracts/b3c16-supply-chain-release-scope.contract.test.js test/contracts/b3c17-future-lanes-nonblocking.contract.test.js test/contracts/b3c18-production-hardening-queue.contract.test.js test/contracts/b3c19-independent-release-audit.contract.test.js test/contracts/b3c20-block-3-exit-dossier.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --check",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git status --short --untracked-files=all -- package.json package-lock.json",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git status --short --untracked-files=all -- CANON.md docs/OPS/STATUS/CANON_STATUS.json docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json docs/OPS/TOKENS/TOKEN_CATALOG.json docs/OPS/TOKENS/TOKEN_CATALOG_LOCK.json",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git status --short --untracked-files=all -- src/renderer/index.html src/renderer/styles.css src/main.js src/preload.js src/export src/io src/security src/collab",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C20_BLOCK_3_EXIT_DOSSIER"
+    },
+    "statusArtifactHash": "bf9a55d2bc0cd3a95c223b6dd8c3ad211b722ca52980c2d69c6251125d1a5310"
+  },
+  "scope": {
+    "activeCanonPromotion": false,
+    "allowedWriteBasenames": [
+      "b3c20-block-3-exit-dossier-state.mjs",
+      "b3c20-block-3-exit-dossier.contract.test.js",
+      "B3C20_BLOCK_3_EXIT_DOSSIER_STATUS_V1.json"
+    ],
+    "b3c19AuditReplaced": false,
+    "block4Started": false,
+    "directInputs": [
+      "B3C01_COMMAND_KERNEL_SCOPE_LOCK_STATUS_V1.json",
+      "B3C02_COMPILE_IR_BASELINE_STATUS_V1.json",
+      "B3C03_DOCX_ARTIFACT_VALIDATION_STATUS_V1.json",
+      "B3C04_DETERMINISTIC_EXPORT_MODE_STATUS_V1.json",
+      "B3C05_PERMISSION_SCOPE_ENFORCED_STATUS_V1.json",
+      "B3C06_NO_NETWORK_WRITING_PATH_STATUS_V1.json",
+      "B3C07_SECURITY_RUNTIME_BOUNDARY_STATUS_V1.json",
+      "B3C08_SUPPORT_BUNDLE_PRIVACY_STATUS_V1.json",
+      "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json",
+      "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+      "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+      "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+      "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+      "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
+      "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1.json",
+      "B3C17_FUTURE_LANES_NONBLOCKING_STATUS_V1.json",
+      "B3C18_PRODUCTION_HARDENING_QUEUE_STATUS_V1.json",
+      "B3C19_INDEPENDENT_RELEASE_AUDIT_STATUS_V1.json"
+    ],
+    "donorCompletionClaimImported": false,
+    "exportRewrite": false,
+    "machineBoundStatusMissing": false,
+    "newDependency": false,
+    "packageManifestChange": false,
+    "priorContourStatusRewritten": false,
+    "releaseFixAttempted": false,
+    "releaseGreenClaim": false,
+    "requiredTokenExpansion": false,
+    "runtimeChangeAdded": false,
+    "securityRewrite": false,
+    "storageChange": false,
+    "uiChange": false
+  },
+  "status": "PASS_EXIT_DOSSIER_WITH_STOP_NOT_RELEASE_GREEN",
+  "successWording": "PASS_AS_BLOCK_3_EXIT_DOSSIER_WITH_MACHINE_BOUND_STOP_NOT_RELEASE_GREEN",
+  "tokenSemantics": "BLOCK_3_EXIT_DOSSIER_PROOF_ONLY_RELEASE_GREEN_REMAINS_FALSE_AND_NEXT_STEP_IS_STOP",
+  "visibleLimitRows": [
+    {
+      "expected": "PROVISIONAL_GAP",
+      "id": "B3C09_PROVISIONAL_GAP",
+      "input": "B3C09",
+      "source": "status",
+      "status": "PASS",
+      "value": "PROVISIONAL_GAP",
+      "visible": true
+    },
+    {
+      "expected": 0,
+      "id": "B3C10_FULL_TIER_GREEN_OK_0",
+      "input": "B3C10",
+      "source": "B3C10_FULL_TIER_GREEN_OK",
+      "status": "PASS",
+      "value": 0,
+      "visible": true
+    },
+    {
+      "expected": 0,
+      "id": "B3C11_FULL_REAL_PLATFORM_XPLAT_OK_0",
+      "input": "B3C11",
+      "source": "B3C11_FULL_REAL_PLATFORM_XPLAT_OK",
+      "status": "PASS",
+      "value": 0,
+      "visible": true
+    },
+    {
+      "expected": 0,
+      "id": "B3C12_FULL_GLOBAL_I18N_OK_0",
+      "input": "B3C12",
+      "source": "B3C12_FULL_GLOBAL_I18N_OK",
+      "status": "PASS",
+      "value": 0,
+      "visible": true
+    },
+    {
+      "expected": 0,
+      "id": "B3C13_FULL_APP_A11Y_OK_0",
+      "input": "B3C13",
+      "source": "B3C13_FULL_APP_A11Y_OK",
+      "status": "PASS",
+      "value": 0,
+      "visible": true
+    },
+    {
+      "expected": 0,
+      "id": "B3C14_RELEASE_GREEN_OK_0",
+      "input": "B3C14",
+      "source": "B3C14_RELEASE_GREEN_OK",
+      "status": "PASS",
+      "value": 0,
+      "visible": true
+    },
+    {
+      "expected": 0,
+      "id": "B3C15_RELEASE_GREEN_OK_0",
+      "input": "B3C15",
+      "source": "B3C15_RELEASE_GREEN_OK",
+      "status": "PASS",
+      "value": 0,
+      "visible": true
+    },
+    {
+      "expected": 0,
+      "id": "B3C16_RELEASE_GREEN_OK_0",
+      "input": "B3C16",
+      "source": "B3C16_RELEASE_GREEN_OK",
+      "status": "PASS",
+      "value": 0,
+      "visible": true
+    },
+    {
+      "expected": 0,
+      "id": "B3C17_RELEASE_GREEN_OK_0",
+      "input": "B3C17",
+      "source": "B3C17_RELEASE_GREEN_OK",
+      "status": "PASS",
+      "value": 0,
+      "visible": true
+    },
+    {
+      "expected": 0,
+      "id": "B3C18_RELEASE_GREEN_OK_0",
+      "input": "B3C18",
+      "source": "B3C18_RELEASE_GREEN_OK",
+      "status": "PASS",
+      "value": 0,
+      "visible": true
+    },
+    {
+      "expected": 0,
+      "id": "B3C19_RELEASE_GREEN_OK_0",
+      "input": "B3C19",
+      "source": "B3C19_RELEASE_GREEN_OK",
+      "status": "PASS",
+      "value": 0,
+      "visible": true
+    }
+  ]
+}
