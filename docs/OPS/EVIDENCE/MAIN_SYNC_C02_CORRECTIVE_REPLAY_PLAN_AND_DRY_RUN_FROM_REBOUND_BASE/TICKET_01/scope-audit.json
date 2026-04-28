@@ -1,0 +1,7 @@
+{
+  "allowedReplayPayloadClass": "CANONICAL_B2C_CHAIN_ONLY",
+  "controlPlaneScopeClass": "SYNC_PACKET_COMMITS_821_TO_825_BINDING_ONLY",
+  "forbiddenReplayPayloadClass": "PACKET_ONLY_SYNC_TAIL_REPLAY",
+  "ok": true,
+  "payloadCount": 13
+}

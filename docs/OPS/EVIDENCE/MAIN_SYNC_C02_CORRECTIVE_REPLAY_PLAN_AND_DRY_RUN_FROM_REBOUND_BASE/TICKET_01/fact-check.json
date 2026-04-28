@@ -1,0 +1,10 @@
+{
+  "cleanupOk": true,
+  "conflictFiles": [
+    "index.ts"
+  ],
+  "dryRunClass": "STOP_UNRESOLVED_CONFLICT",
+  "firstStoppedOrder": 1,
+  "firstStoppedSha": "24996555943e80fc3aa616becea731645771b4a8",
+  "ok": true
+}

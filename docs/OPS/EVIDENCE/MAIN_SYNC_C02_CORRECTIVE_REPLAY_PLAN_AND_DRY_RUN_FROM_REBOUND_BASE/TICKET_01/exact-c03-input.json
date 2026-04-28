@@ -1,0 +1,12 @@
+{
+  "exactC03Input": {
+    "allowedReplayPayloadClass": "CANONICAL_B2C_CHAIN_ONLY",
+    "bindingBaseMainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+    "bindingBaseRootSha": "88bac2e3945726a678d05ed5bdc54379c36314b9",
+    "dryRunClass": "STOP_UNRESOLVED_CONFLICT",
+    "dryRunReady": false,
+    "nextContour": "MAIN_SYNC_C03_REPLAY_TO_MAIN_PR",
+    "selectedMethodId": "CHERRY_PICK_REPLAY_TO_MAIN"
+  },
+  "ok": false
+}

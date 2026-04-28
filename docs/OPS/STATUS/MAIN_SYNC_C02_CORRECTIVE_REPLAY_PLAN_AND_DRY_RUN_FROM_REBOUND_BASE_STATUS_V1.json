@@ -1,0 +1,18 @@
+{
+  "allowedReplayPayloadClass": "CANONICAL_B2C_CHAIN_ONLY",
+  "boundMainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+  "boundRootSha": "88bac2e3945726a678d05ed5bdc54379c36314b9",
+  "contourId": "MAIN_SYNC_C02_CORRECTIVE_REPLAY_PLAN_AND_DRY_RUN_FROM_REBOUND_BASE",
+  "contractTest": "main-sync-c02-corrective-replay-plan-and-dry-run-from-rebound-base.contract.test.js",
+  "dryRunClass": "STOP_UNRESOLVED_CONFLICT",
+  "forbiddenReplayPayloadClass": "PACKET_ONLY_SYNC_TAIL_REPLAY",
+  "nextStep": "MAIN_SYNC_C03_REPLAY_TO_MAIN_PR",
+  "recordedAtUtc": "2026-04-28T13:29:06.501Z",
+  "reportScript": "main-sync-c02-corrective-replay-plan-and-dry-run-from-rebound-base-report.mjs",
+  "scope": "CORRECTIVE_REPLAY_PLAN_AND_DRY_RUN_ONLY",
+  "stateScript": "main-sync-c02-corrective-replay-plan-and-dry-run-from-rebound-base-state.mjs",
+  "status": "FAILED",
+  "taskBasename": "MAIN_SYNC_C02_CORRECTIVE_REPLAY_PLAN_AND_DRY_RUN_FROM_REBOUND_BASE",
+  "token": "MAIN_SYNC_C02_CORRECTIVE_REPLAY_PLAN_AND_DRY_RUN_FROM_REBOUND_BASE_OK",
+  "version": 1
+}

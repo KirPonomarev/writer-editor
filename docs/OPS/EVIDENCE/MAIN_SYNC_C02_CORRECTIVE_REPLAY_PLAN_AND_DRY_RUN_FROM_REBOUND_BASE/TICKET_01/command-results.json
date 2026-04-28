@@ -1,0 +1,42 @@
+[
+  {
+    "checkId": "MAIN_SYNC_C02_CORRECTIVE_REPLAY_CONTRACT",
+    "command": "node --test test/contracts/main-sync-c02-corrective-replay-plan-and-dry-run-from-rebound-base.contract.test.js",
+    "exitCode": 0,
+    "ok": true,
+    "stderr": "",
+    "stdout": "✔ corrective c02: stop packet keeps payload bound to canonical B2C chain only (1636.259083ms)\n✔ corrective c02: invalid root sha fails rebound binding checks (48.358667ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1738.795041"
+  },
+  {
+    "checkId": "B2C10_CONTRACT",
+    "command": "node --test test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
+    "exitCode": 0,
+    "ok": true,
+    "stderr": "",
+    "stdout": "✔ b2c10 bypass negative matrix: current canonical core remains green and advisory tails are explicit (45.41375ms)\n✔ b2c10 bypass negative matrix: mandatory bypass routes are machine-proved rejected (14.016ms)\n✔ b2c10 bypass negative matrix: extra existing mutation surfaces stay advisory and signals stay out of scope (14.715458ms)\n✔ b2c10 bypass negative matrix: committed status packet matches executable state (14.85325ms)\nℹ tests 4\nℹ suites 0\nℹ pass 4\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 135.235291"
+  },
+  {
+    "checkId": "B2C11_CONTRACT",
+    "command": "node --test test/contracts/b2c11-command-effect-model.contract.test.js",
+    "exitCode": 0,
+    "ok": true,
+    "stderr": "",
+    "stdout": "✔ b2c11 command effect model: command boundary is green and direct bridge payload calls are eliminated (12.987209ms)\n✔ b2c11 command effect model: operation plan is deterministic and storage scope stays untouched (0.687208ms)\n✔ b2c11 command effect model: committed status packet matches executable state (0.961833ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 58.028583"
+  },
+  {
+    "checkId": "B2C12_CONTRACT",
+    "command": "node --test test/contracts/b2c12-persist-effects-atomic-write.contract.test.js",
+    "exitCode": 0,
+    "ok": true,
+    "stderr": "",
+    "stdout": "✔ b2c12 persist effects atomic write: batch helper is wired into flow save and open guard blocks stale batch state (108.016042ms)\n✔ b2c12 persist effects atomic write: partial batch state is rejected and minimal recovery evidence remains (68.656583ms)\n✔ b2c12 persist effects atomic write: committed status packet matches executable state (70.28475ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 291.649917"
+  },
+  {
+    "checkId": "OSS_POLICY",
+    "command": "npm run oss:policy",
+    "exitCode": 0,
+    "ok": true,
+    "stderr": "",
+    "stdout": "> craftsman@1.0.2 oss:policy\n> node scripts/check-no-paid-tiptap.mjs\n\n✅ OSS policy OK: no Tiptap Pro / no private registry"
+  }
+]
