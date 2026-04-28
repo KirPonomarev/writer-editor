@@ -22,7 +22,7 @@
     "volatileFieldNegativeBound": true
   },
   "repo": {
-    "repoRootBasename": "writer-editor-b3c02-compile-ir-baseline-001",
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
     "statusBasename": "B3C02_COMPILE_IR_BASELINE_STATUS_V1.json",
     "writtenFrom": "b3c02-compile-ir-baseline-state.mjs"
   },
