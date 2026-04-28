@@ -75,6 +75,52 @@ test('preload transfer and flow bridge: main bridge reuses existing export impor
   assert.ok(source.includes("ipcMain.handle(FLOW_SAVE_V1_CHANNEL, async (_, payload) => {"))
 })
 
+test('preload transfer and flow bridge: flow open blocks stale batch state before tree read and scene creation', () => {
+  const source = read('src/main.js')
+
+  assert.ok(source.includes('async function getFlowBatchGuard(projectRoot) {'))
+  assert.ok(source.includes("return makeFlowModeError(FLOW_OPEN_V1_CHANNEL, 'M7_FLOW_BATCH_STALE', 'flow_open_batch_recovery_required', {"))
+
+  const guardIndex = source.indexOf("flow_open_batch_recovery_required")
+  const treeIndex = source.indexOf('const romanRoot = await buildRomanTree();')
+  const createIndex = source.indexOf("() => fileManager.writeFileAtomic(filePath, '')")
+
+  assert.notEqual(guardIndex, -1)
+  assert.notEqual(treeIndex, -1)
+  assert.notEqual(createIndex, -1)
+  assert.ok(guardIndex < treeIndex)
+  assert.ok(guardIndex < createIndex)
+})
+
+test('preload transfer and flow bridge: flow save blocks stale batch state and routes persistence through one batch helper call', () => {
+  const source = read('src/main.js')
+
+  assert.ok(source.includes("return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M7_FLOW_BATCH_STALE', 'flow_save_batch_recovery_required', {"))
+  assert.ok(source.includes('() => writeFlowSceneBatchAtomic({'))
+  assert.ok(source.includes("'save flow scene batch'"))
+  assert.equal(source.includes("() => fileManager.writeFileAtomic(scene.path, scene.content)"), false)
+
+  const guardIndex = source.indexOf('flow_save_batch_recovery_required')
+  const batchIndex = source.indexOf('() => writeFlowSceneBatchAtomic({')
+  const statusIndex = source.indexOf("updateStatus('Flow mode сохранен');")
+
+  assert.notEqual(guardIndex, -1)
+  assert.notEqual(batchIndex, -1)
+  assert.notEqual(statusIndex, -1)
+  assert.ok(guardIndex < batchIndex)
+  assert.ok(batchIndex < statusIndex)
+})
+
+test('preload transfer and flow bridge: flow save forwards batch helper typed errors without rewriting code and reason', () => {
+  const source = read('src/main.js')
+
+  assert.ok(source.includes("typeof writeResult.error.code === 'string'"))
+  assert.ok(source.includes("typeof writeResult.error.reason === 'string'"))
+  assert.ok(source.includes('return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, errorCode, errorReason, errorDetails);'))
+  assert.ok(source.includes('M7_FLOW_IO_WRITE_FAIL'))
+  assert.ok(source.includes('flow_save_write_failed'))
+})
+
 test('preload transfer and flow bridge: out-of-scope surfaces remain present and compatible', () => {
   const preloadSource = read('src/preload.js')
   const capabilitySource = read('src/renderer/commands/capabilityPolicy.mjs')

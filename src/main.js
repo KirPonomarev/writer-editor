@@ -11,6 +11,10 @@ const fileManager = require('./utils/fileManager');
 const backupManager = require('./utils/backupManager');
 const { hasDirectoryContent, copyDirectoryContents } = require('./utils/fsHelpers');
 const {
+  readFlowSceneBatchMarkers,
+  writeFlowSceneBatchAtomic,
+} = require('./utils/flowSceneBatchAtomic');
+const {
   isPathInsideBoundary,
   joinPathSegmentsWithinRoot,
   resolveValidatedPath,
@@ -1865,9 +1869,24 @@ function makeFlowModeError(op, code, reason, details = {}) {
   };
 }
 
+async function getFlowBatchGuard(projectRoot) {
+  const staleMarkers = await readFlowSceneBatchMarkers(projectRoot);
+  return {
+    hasBlockingBatchState: staleMarkers.length > 0,
+    staleMarkers,
+  };
+}
+
 async function handleFlowOpenV1() {
   try {
     await ensureProjectStructure();
+    const projectRoot = getProjectRootPath();
+    const batchGuard = await getFlowBatchGuard(projectRoot);
+    if (batchGuard.hasBlockingBatchState) {
+      return makeFlowModeError(FLOW_OPEN_V1_CHANNEL, 'M7_FLOW_BATCH_STALE', 'flow_open_batch_recovery_required', {
+        staleMarkers: batchGuard.staleMarkers,
+      });
+    }
     const romanRoot = await buildRomanTree();
     const flowNodes = collectFlowEditableNodes(romanRoot, []);
 
@@ -1924,6 +1943,13 @@ async function handleFlowSaveV1(payloadRaw) {
 
   try {
     await ensureProjectStructure();
+    const projectRoot = getProjectRootPath();
+    const batchGuard = await getFlowBatchGuard(projectRoot);
+    if (batchGuard.hasBlockingBatchState) {
+      return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M7_FLOW_BATCH_STALE', 'flow_save_batch_recovery_required', {
+        staleMarkers: batchGuard.staleMarkers,
+      });
+    }
     const romanRoot = await buildRomanTree();
     const allowedNodes = collectFlowEditableNodes(romanRoot, []);
     const allowed = new Map(allowedNodes.map((item) => [item.path, item]));
@@ -1960,16 +1986,24 @@ async function handleFlowSaveV1(payloadRaw) {
       });
     }
 
-    for (const scene of normalizedScenes) {
-      const writeResult = await queueDiskOperation(
-        () => fileManager.writeFileAtomic(scene.path, scene.content),
-        'save flow scene',
-      );
-      if (!writeResult.success) {
-        return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M7_FLOW_IO_WRITE_FAIL', 'flow_save_write_failed', {
-          path: scene.path,
-        });
-      }
+    const writeResult = await queueDiskOperation(
+      () => writeFlowSceneBatchAtomic({
+        projectRoot,
+        entries: normalizedScenes,
+      }),
+      'save flow scene batch',
+    );
+    if (!writeResult || writeResult.ok !== true) {
+      const errorCode = writeResult && writeResult.error && typeof writeResult.error.code === 'string'
+        ? writeResult.error.code
+        : 'M7_FLOW_IO_WRITE_FAIL';
+      const errorReason = writeResult && writeResult.error && typeof writeResult.error.reason === 'string'
+        ? writeResult.error.reason
+        : 'flow_save_write_failed';
+      const errorDetails = writeResult && writeResult.error && writeResult.error.details && typeof writeResult.error.details === 'object'
+        ? writeResult.error.details
+        : {};
+      return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, errorCode, errorReason, errorDetails);
     }
 
     updateStatus('Flow mode сохранен');
