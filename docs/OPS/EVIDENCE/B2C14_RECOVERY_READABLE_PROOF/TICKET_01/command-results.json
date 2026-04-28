@@ -1,0 +1,43 @@
+{
+  "allPassed": true,
+  "commands": [
+    {
+      "command": "node scripts/ops/b2c14-recovery-readable-proof-state.mjs --write --json",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "State packet regenerated with PASS status and zero fail rows."
+    },
+    {
+      "command": "node --test test/contracts/b2c14-recovery-readable-proof.contract.test.js",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "3 tests passed, 0 failed."
+    },
+    {
+      "command": "node --test test/contracts/b2c13-save-reopen-text-no-loss.contract.test.js",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "3 tests passed, 0 failed."
+    },
+    {
+      "command": "node scripts/ops/b2c12-persist-effects-atomic-write-state.mjs --json",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "Atomic write proof returned ok true with zero fail rows."
+    },
+    {
+      "command": "npm run oss:policy",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "OSS policy OK: no Tiptap Pro and no private registry."
+    },
+    {
+      "command": "git diff --name-only -- package.json package-lock.json src/renderer/index.html src/renderer/styles.css",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "No forbidden-file diffs reported."
+    }
+  ],
+  "status": "EXECUTED_AND_RECORDED",
+  "taskId": "B2C14_RECOVERY_READABLE_PROOF"
+}
