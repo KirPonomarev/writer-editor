@@ -1,0 +1,12 @@
+{
+  "driftNegativeOk": true,
+  "missingSaveNegativeOk": true,
+  "positiveSaveOk": true,
+  "repoBound": true,
+  "saveLayer": "writeFlowSceneBatchAtomic",
+  "sceneCount": 2,
+  "staleMarkerCountAfterCommit": 0,
+  "textHashAlgorithm": "sha256_visible_text",
+  "textHashMatchesAfterReopen": true,
+  "visibleTextMatchesAfterReopen": true
+}

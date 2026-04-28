@@ -1,0 +1,51 @@
+{
+  "artifactId": "B2C13_SAVE_REOPEN_TEXT_NO_LOSS_STATUS_V1",
+  "B2C13_SAVE_REOPEN_TEXT_NO_LOSS_OK": 1,
+  "donor": {
+    "claimBoundary": "ARCHIVE_OVERLAY_READY_FOR_REPO_INTEGRATION_NO_RELEASE_CLAIM",
+    "primaryBasename": "writer-editor-longform-v5_1-block2-trusted-kernel-pack-v1.zip",
+    "primarySha256": "7189d8357f340d89112b02a57eb9315f9af4695ac00e3a2707801e4d97320791"
+  },
+  "failRows": [],
+  "failSignal": "",
+  "ok": true,
+  "proof": {
+    "driftNegativeOk": true,
+    "missingSaveNegativeOk": true,
+    "positiveSaveOk": true,
+    "repoBound": true,
+    "saveLayer": "writeFlowSceneBatchAtomic",
+    "sceneCount": 2,
+    "staleMarkerCountAfterCommit": 0,
+    "textHashAlgorithm": "sha256_visible_text",
+    "textHashMatchesAfterReopen": true,
+    "visibleTextMatchesAfterReopen": true
+  },
+  "runtime": {
+    "missingSaveDetected": true,
+    "negativeDriftDetected": true,
+    "positiveSaveOk": true,
+    "sceneAHashMatchesAfterReopen": true,
+    "sceneAIssueCodeAfterReopen": "",
+    "sceneAVersionAfterReopen": 2,
+    "sceneAVisibleTextMatchesAfterReopen": true,
+    "sceneBHashMatchesAfterReopen": true,
+    "sceneBIssueCodeAfterReopen": "",
+    "sceneBVersionAfterReopen": 2,
+    "sceneBVisibleTextMatchesAfterReopen": true,
+    "sceneCount": 2,
+    "staleMarkerCountAfterCommit": 0
+  },
+  "schemaVersion": 1,
+  "scope": {
+    "b2c14Closed": false,
+    "b2c15Closed": false,
+    "contour": "B2C13_ONLY",
+    "docxDependencyImported": false,
+    "electronRuntimeClaim": false,
+    "releaseClaim": false,
+    "uiTouched": false
+  },
+  "status": "PASS",
+  "taskId": "B2C13_SAVE_REOPEN_TEXT_NO_LOSS"
+}

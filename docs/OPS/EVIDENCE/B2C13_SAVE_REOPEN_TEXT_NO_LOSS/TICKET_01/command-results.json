@@ -1,0 +1,9 @@
+{
+  "commands": [
+    "node scripts/ops/b2c13-save-reopen-text-no-loss-state.mjs --write --json",
+    "node --test test/contracts/b2c13-save-reopen-text-no-loss.contract.test.js",
+    "npm run oss:policy",
+    "node scripts/ops/b2c12-persist-effects-atomic-write-state.mjs --json"
+  ],
+  "status": "RECORDED_BY_B2C13_STATE_SCRIPT"
+}
