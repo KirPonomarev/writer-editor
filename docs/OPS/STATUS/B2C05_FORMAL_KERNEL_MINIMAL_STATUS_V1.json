@@ -1,0 +1,89 @@
+{
+  "artifactId": "B2C05_FORMAL_KERNEL_MINIMAL_STATUS_V1",
+  "schemaVersion": 1,
+  "taskId": "B2C05_FORMAL_KERNEL_MINIMAL",
+  "status": "PASS",
+  "maxInvariantCount": 3,
+  "formalKernel": {
+    "invariantCount": 3,
+    "invariants": [
+      {
+        "invariantId": "TEXT_NO_LOSS",
+        "kind": "DATA_INVARIANT",
+        "statement": "text no loss",
+        "semanticProof": {
+          "modulePath": "src/renderer/documentContentEnvelope.mjs",
+          "contractPath": "test/unit/scene-rich-truth.helpers.test.js",
+          "requiredFunctions": [
+            "buildParagraphDocumentFromText",
+            "composeObservablePayload",
+            "parseObservablePayload",
+            "composeDocumentContentFromBase"
+          ]
+        }
+      },
+      {
+        "invariantId": "EXPORT_SOURCE_BINDING",
+        "kind": "BINDING_RULE",
+        "statement": "export source binding",
+        "semanticProof": {
+          "evidenceArtifact": "docs/OPS/STATUS/DOCX_CLOSURE_EVIDENCE_V1.json",
+          "expectedCommandId": "cmd.project.export.docxMin",
+          "requiredChecks": [
+            "exportChannelPresent",
+            "ipcHandlerPresent",
+            "documentXmlBuilderPresent",
+            "atomicWritePathPresent",
+            "menuCommandWiringPresent"
+          ]
+        }
+      },
+      {
+        "invariantId": "CANONICAL_RECOVERY_READABILITY",
+        "kind": "FORMAL_CLAIM",
+        "statement": "canonical recovery readability",
+        "semanticProof": {
+          "modulePath": "src/renderer/documentContentEnvelope.mjs",
+          "contractPath": "test/contracts/recovery-rich-truth.contract.test.js",
+          "requiredFunctions": [
+            "buildParagraphDocumentFromText",
+            "composeObservablePayload",
+            "parseObservablePayload"
+          ]
+        }
+      }
+    ]
+  },
+  "proofBinding": {
+    "bindingMode": "DETECTOR_IDS_ONLY",
+    "byInvariant": [
+      {
+        "invariantId": "TEXT_NO_LOSS",
+        "detectorId": "B2C05_TEXT_NO_LOSS_PROOF_BINDING_V1"
+      },
+      {
+        "invariantId": "EXPORT_SOURCE_BINDING",
+        "detectorId": "B2C05_EXPORT_SOURCE_BINDING_PROOF_BINDING_V1"
+      },
+      {
+        "invariantId": "CANONICAL_RECOVERY_READABILITY",
+        "detectorId": "B2C05_CANONICAL_RECOVERY_READABILITY_PROOF_BINDING_V1"
+      }
+    ]
+  },
+  "advisoryBoundary": {
+    "unprovedPolicy": "ADVISORY_ONLY",
+    "forbiddenPromotionAreas": [
+      "stateMachine",
+      "recoveryProtocol",
+      "runtimeMutationProtocol",
+      "exportPipelineMechanics"
+    ],
+    "notes": [
+      "Only three initial invariants are allowed in B2C05.",
+      "Text no loss remains a data invariant only.",
+      "Export source binding remains a binding rule only.",
+      "Canonical recovery readability remains a formal claim only."
+    ]
+  }
+}
