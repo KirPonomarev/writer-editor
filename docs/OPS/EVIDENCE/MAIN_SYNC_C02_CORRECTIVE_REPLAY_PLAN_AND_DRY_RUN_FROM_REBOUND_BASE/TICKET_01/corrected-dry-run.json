@@ -1,0 +1,33 @@
+{
+  "changedBasenamesAtStop": [
+    "index.ts",
+    "scene-document-admission.contract.test.js",
+    "scene-document.contract.ts",
+    "scene-empty.valid.json",
+    "scene-full.valid.json",
+    "scene-invalid-block-field.invalid.json",
+    "scene-invalid-metadata.invalid.json",
+    "scene-invalid-order.invalid.json",
+    "scene-invalid-schema-version.invalid.json",
+    "scene-minimal.valid.json",
+    "scene-missing-id.invalid.json",
+    "scene-multi-block.valid.json",
+    "scene-unknown-field.invalid.json",
+    "scene-unknown-version.read-only.json",
+    "sceneDocumentAdmission.mjs"
+  ],
+  "cleanReplayCount": 0,
+  "cleanupOk": true,
+  "conflictCount": 1,
+  "conflictFiles": [
+    "index.ts"
+  ],
+  "generatedAtUtc": "2026-04-28T13:29:06.501Z",
+  "ok": false,
+  "replayClass": "STOP_UNRESOLVED_CONFLICT",
+  "runId": "TZ_MAIN_SYNC_C02_CORRECTIVE_REPLAY_PLAN_AND_DRY_RUN_FROM_REBOUND_BASE_001",
+  "stoppedAtOrder": 1,
+  "stoppedAtSha": "24996555943e80fc3aa616becea731645771b4a8",
+  "stoppedAtSubject": "Merge pull request #808 from KirPonomarev/codex/b2c01-scene-contract-admission-001",
+  "ticketId": "TZ_MAIN_SYNC_C02_CORRECTIVE_REPLAY_PLAN_AND_DRY_RUN_FROM_REBOUND_BASE_001"
+}

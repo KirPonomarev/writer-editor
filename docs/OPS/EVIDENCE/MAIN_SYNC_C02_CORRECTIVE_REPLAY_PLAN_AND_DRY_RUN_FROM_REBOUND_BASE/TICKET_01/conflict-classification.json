@@ -1,0 +1,10 @@
+{
+  "classification": "BLOCKING_UNRESOLVED_CONFLICT",
+  "conflictCount": 1,
+  "conflictFiles": [
+    "index.ts"
+  ],
+  "replayClass": "STOP_UNRESOLVED_CONFLICT",
+  "stoppedAtOrder": 1,
+  "stoppedAtSha": "24996555943e80fc3aa616becea731645771b4a8"
+}

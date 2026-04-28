@@ -1,0 +1,110 @@
+{
+  "correctedReplayPlan": {
+    "controlPlaneArtifacts": [
+      "MAIN_SYNC_C01_AHEAD_INVENTORY_STATUS_V1.json",
+      "MAIN_SYNC_C02_MERGEABILITY_STATUS_V1.json",
+      "MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION_RECORD_V1.json",
+      "MAIN_SYNC_C01_OWNER_METHOD_DECISION_STATUS_V1.json",
+      "MAIN_SYNC_C02_SELECTED_REPLAY_PLAN_AND_DRY_RUN_STATUS_V1.json"
+    ],
+    "replayUnitCount": 13,
+    "replayUnitModel": "MERGE_COMMIT_MAINLINE_1_SEQUENCE",
+    "replayUnits": [
+      {
+        "order": 1,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "24996555943e80fc3aa616becea731645771b4a8",
+        "subject": "Merge pull request #808 from KirPonomarev/codex/b2c01-scene-contract-admission-001"
+      },
+      {
+        "order": 2,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "78b5ddbeab010e3b24edad00d65a2a6519d18e83",
+        "subject": "Merge pull request #809 from KirPonomarev/codex/b2c02-block-contract-admission-001"
+      },
+      {
+        "order": 3,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "74e59b3594c6b80ce7a5086c730d0cf56c2cbf1d",
+        "subject": "Merge pull request #810 from KirPonomarev/codex/b2c03-inlinerange-contract-admission-001"
+      },
+      {
+        "order": 4,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "42075630e23fd48df11c5d62c8771596484ac88c",
+        "subject": "Merge pull request #811 from KirPonomarev/codex/b2c04-public-contracts-minimal-001"
+      },
+      {
+        "order": 5,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "ecd1e26452849a8858c84d65f645874d8df3e3d0",
+        "subject": "Merge pull request #812 from KirPonomarev/codex/b2c05-formal-kernel-minimal-001"
+      },
+      {
+        "order": 6,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "bf85d8b53a832e01b4e952ab18190ee6ed0bdb7b",
+        "subject": "Merge pull request #813 from KirPonomarev/codex/b2c06-project-lifecycle-state-machine-001"
+      },
+      {
+        "order": 7,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "a4bc03adcc32fc9a80e870064ed3c2acd392d04c",
+        "subject": "Merge pull request #814 from KirPonomarev/codex/b2c07-transaction-boundary-minimal-001"
+      },
+      {
+        "order": 8,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "6c6ae1a5914c8481aeb9673b8329fb6194b798ca",
+        "subject": "Merge pull request #815 from KirPonomarev/codex/b2c08-recovery-boundary-minimal-001"
+      },
+      {
+        "order": 9,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "69406a57cdb06472d38c719f679f1f153584af50",
+        "subject": "Merge pull request #816 from KirPonomarev/codex/b2c09-command-surface-kernel-001"
+      },
+      {
+        "order": 10,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "808285e759017351cf8dbc60ae2a9658f8ed2284",
+        "subject": "Merge pull request #817 from KirPonomarev/codex/b2c10-migration-safety-proof-001"
+      },
+      {
+        "order": 11,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "2fad0e8116173456ea5536c269b29a13aef2e8a3",
+        "subject": "Merge pull request #818 from KirPonomarev/codex/b2c10-command-bypass-negative-matrix-001"
+      },
+      {
+        "order": 12,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "21d14560446df0a79d59df9dd42f3aae12f28b7b",
+        "subject": "Merge pull request #819 from KirPonomarev/codex/b2c11-command-effect-model-001"
+      },
+      {
+        "order": 13,
+        "payloadClass": "CANONICAL_B2C_PAYLOAD",
+        "replayMethod": "CHERRY_PICK_MERGE_MAINLINE_1",
+        "sourceSha": "0b3cc7f91400df650dcb875453dda4b389bbeb3e",
+        "subject": "Merge pull request #820 from KirPonomarev/codex/b2c12-persist-effects-atomic-write-001"
+      }
+    ]
+  },
+  "generatedAtUtc": "2026-04-28T13:29:06.501Z",
+  "ok": true,
+  "runId": "TZ_MAIN_SYNC_C02_CORRECTIVE_REPLAY_PLAN_AND_DRY_RUN_FROM_REBOUND_BASE_001",
+  "ticketId": "TZ_MAIN_SYNC_C02_CORRECTIVE_REPLAY_PLAN_AND_DRY_RUN_FROM_REBOUND_BASE_001"
+}
