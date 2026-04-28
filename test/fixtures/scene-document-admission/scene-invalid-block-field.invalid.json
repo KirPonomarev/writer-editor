@@ -5,6 +5,8 @@
   "order": 0,
   "blocks": [
     {
+      "id": "block-invalid-field-1",
+      "sceneId": "scene-invalid-block",
       "type": "paragraph",
       "text": "Alpha",
       "marks": []

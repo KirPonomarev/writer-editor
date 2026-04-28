@@ -5,16 +5,21 @@
   "order": 2,
   "blocks": [
     {
-      "type": "paragraph",
+      "id": "block-multi-1",
+      "sceneId": "scene-multi",
+      "type": "heading",
       "text": "Alpha"
     },
     {
-      "type": "paragraph",
+      "id": "block-multi-2",
+      "sceneId": "scene-multi",
+      "type": "blockquote",
       "text": "Beta"
     },
     {
-      "type": "paragraph",
-      "text": ""
+      "id": "block-multi-3",
+      "sceneId": "scene-multi",
+      "type": "thematicBreak"
     }
   ]
 }

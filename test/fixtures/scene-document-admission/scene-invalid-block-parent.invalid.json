@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "scene-invalid-parent",
+  "title": "Invalid Parent",
+  "order": 0,
+  "blocks": [
+    {
+      "id": "block-invalid-parent-1",
+      "sceneId": "other-scene",
+      "type": "paragraph",
+      "text": "Alpha"
+    }
+  ]
+}
