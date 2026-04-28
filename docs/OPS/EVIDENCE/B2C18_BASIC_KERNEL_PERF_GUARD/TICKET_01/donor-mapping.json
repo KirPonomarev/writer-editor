@@ -1,0 +1,14 @@
+{
+  "acceptedUse": "NO_DONOR_ARCHIVE_CONSULTED",
+  "consultedEntries": [],
+  "donor": {
+    "acceptedUse": "NO_DONOR_ARCHIVE_CONSULTED",
+    "consultedEntries": [],
+    "primaryBasename": "NONE",
+    "primarySha256": "NOT_APPLICABLE",
+    "rejectedUse": "NO_ARCHIVE_RUNTIME_IMPORT_NO_BROAD_OVERLAY_NO_RELEASE_PERF_CLAIM_NO_B2C19_NO_B2C20_NO_BLOCK2_EXIT"
+  },
+  "mappedContour": "B2C18_BASIC_KERNEL_PERF_GUARD",
+  "referenceArchivesConsulted": [],
+  "rejectedUse": "NO_ARCHIVE_RUNTIME_IMPORT_NO_BROAD_OVERLAY_NO_RELEASE_PERF_CLAIM_NO_B2C19_NO_B2C20_NO_BLOCK2_EXIT"
+}
