@@ -1,0 +1,651 @@
+{
+  "artifactId": "B2C17_MIGRATION_KILLPOINT_PROOF_STATUS_V1",
+  "B2C17_MIGRATION_KILLPOINT_PROOF_OK": 1,
+  "donor": {
+    "acceptedUse": "KILLPOINT_SEQUENCE_DISPOSITION_CODES_RECOVERY_BOUNDARY_AND_NEGATIVE_CASE_SHAPE_ONLY",
+    "consultedEntries": [
+      "migration-policy.js",
+      "recovery-pack.js",
+      "atomic-recovery-killpoint.test.js"
+    ],
+    "primaryBasename": "writer-editor-longform-v5_1-block2-trusted-kernel-pack-v1.zip",
+    "primarySha256": "7189d8357f340d89112b02a57eb9315f9af4695ac00e3a2707801e4d97320791",
+    "rejectedUse": "NO_RUNTIME_IMPORT_NO_REAL_MIGRATION_NO_USER_DATA_ROLLBACK_NO_BACKUP_ROTATION_RUNTIME_NO_SCOPE_REOPEN_NO_BLOCK2_EXIT"
+  },
+  "failRows": [],
+  "failSignal": "",
+  "ok": true,
+  "proof": {
+    "b2c16Binding": {
+      "artifactId": "B2C16_MIGRATION_POLICY_MINIMAL_STATUS_V1",
+      "currentSchemaVersion": 1,
+      "ok": true,
+      "sourceBasename": "B2C16_MIGRATION_POLICY_MINIMAL_STATUS_V1.json",
+      "status": "PASS",
+      "statusHash": "6fdd71dd0f8f81e12ba265475faf8152d0a3cc2599261b811d6be3e0b7a7eef9",
+      "tokenValue": 1
+    },
+    "b2c16PolicyBound": true,
+    "backupPreconditionRespectedOk": true,
+    "block2ExitClaimFalseOk": true,
+    "everyKillpointEndsRecoverableOrExplicitStopOk": true,
+    "everyKillpointHasExpectedDispositionOk": true,
+    "everyKillpointHasExplicitInputStateOk": true,
+    "everyKillpointHasUnsafeFailureCodeOk": true,
+    "harnessBoundary": {
+      "actualRollbackExecutionAdmitted": false,
+      "backupRotationRuntimeAdmitted": false,
+      "block2ExitAdmitted": false,
+      "claimStatus": "SIMULATED_PROOF_ONLY",
+      "productionStorageMigrationRuntimeAdmitted": false,
+      "realUserDataMigrationAdmitted": false,
+      "releaseAdmitted": false,
+      "runtimeExecutionAdmitted": false,
+      "schemaVersionChangeAdmitted": false,
+      "storageFormatChangeAdmitted": false
+    },
+    "killpointCount": 10,
+    "killpointMatrixHash": "8a51fc2cce20e448927714dd3a2259a648c99cb558e9e95275a5bfc4ceb51c76",
+    "mixedOldNewDataRejectedOk": true,
+    "noDocOnlyEvidenceOk": true,
+    "realMigrationExecutionRejectedOk": true,
+    "recoveryOutcomeHash": "37eac5006a07a1fb990f417d64ae54a79d295863db4bc4f5c32902916d922551",
+    "recoveryPackPreconditionRespectedOk": true,
+    "repoBound": true,
+    "requiredKillpoints": [
+      "AFTER_INTENT",
+      "AFTER_BACKUP",
+      "AFTER_RECOVERY_PACK",
+      "AFTER_FIRST_DATA_WRITE",
+      "AFTER_PARTIAL_RENAME",
+      "BEFORE_MANIFEST_WRITE",
+      "AFTER_MANIFEST_RENAME",
+      "BEFORE_LEDGER",
+      "AFTER_LEDGER",
+      "BACKUP_ROTATION_FAILURE"
+    ],
+    "rollbackDecisionAvailableOrStopExplicitOk": true,
+    "rollbackPlanPreconditionRespectedOk": true,
+    "sceneTextLossRejectedOk": true,
+    "simulatedDeterministicHarnessOnly": true
+  },
+  "runtime": {
+    "currentSchemaVersion": 1,
+    "killpointMatrix": [
+      {
+        "input": {
+          "actualMigrationExecuted": false,
+          "backupPresent": false,
+          "backupRotationAttempted": false,
+          "dependencyChanged": false,
+          "firstDataWriteStarted": false,
+          "fromSchemaVersion": 0,
+          "intentWritten": true,
+          "ledgerWritten": false,
+          "manifestRenamed": false,
+          "mixedOldNewDataVisible": false,
+          "newManifestLive": false,
+          "newSceneSetLive": false,
+          "oldManifestLive": true,
+          "oldSceneSetLive": true,
+          "partialRenameVisible": false,
+          "recoveryPackPresent": false,
+          "rollbackPlanPresent": true,
+          "sceneTextLossObserved": false,
+          "schemaVersionBumped": false,
+          "storageFormatChanged": false,
+          "toSchemaVersion": 1,
+          "uiTouched": false
+        },
+        "killpointId": "AFTER_INTENT",
+        "outcome": {
+          "expectedDisposition": "RECOVER_OLD_STATE_ONLY",
+          "explicitStop": false,
+          "failCode": "E_B2C17_KILLPOINT_AFTER_INTENT_UNSAFE",
+          "mixedOldNewRejected": false,
+          "recoverable": true,
+          "recoveryAction": "OPEN_OLD_STATE_ONLY",
+          "rollbackDecision": "ABORT_PENDING_INTENT_KEEP_OLD_STATE",
+          "runtimeExecution": false,
+          "sceneTextLossRejected": false
+        },
+        "sequence": 1
+      },
+      {
+        "input": {
+          "actualMigrationExecuted": false,
+          "backupPresent": true,
+          "backupRotationAttempted": false,
+          "dependencyChanged": false,
+          "firstDataWriteStarted": false,
+          "fromSchemaVersion": 0,
+          "intentWritten": true,
+          "ledgerWritten": false,
+          "manifestRenamed": false,
+          "mixedOldNewDataVisible": false,
+          "newManifestLive": false,
+          "newSceneSetLive": false,
+          "oldManifestLive": true,
+          "oldSceneSetLive": true,
+          "partialRenameVisible": false,
+          "recoveryPackPresent": false,
+          "rollbackPlanPresent": true,
+          "sceneTextLossObserved": false,
+          "schemaVersionBumped": false,
+          "storageFormatChanged": false,
+          "toSchemaVersion": 1,
+          "uiTouched": false
+        },
+        "killpointId": "AFTER_BACKUP",
+        "outcome": {
+          "expectedDisposition": "STOP_BACKUP_READY_OLD_STATE_CANONICAL",
+          "explicitStop": false,
+          "failCode": "E_B2C17_KILLPOINT_AFTER_BACKUP_UNSAFE",
+          "mixedOldNewRejected": false,
+          "recoverable": true,
+          "recoveryAction": "RESTORE_FROM_BACKUP_IF_RUNTIME_WAS_TOUCHED",
+          "rollbackDecision": "BACKUP_READY_RECOVERY_ALLOWED",
+          "runtimeExecution": false,
+          "sceneTextLossRejected": false
+        },
+        "sequence": 2
+      },
+      {
+        "input": {
+          "actualMigrationExecuted": false,
+          "backupPresent": true,
+          "backupRotationAttempted": false,
+          "dependencyChanged": false,
+          "firstDataWriteStarted": false,
+          "fromSchemaVersion": 0,
+          "intentWritten": true,
+          "ledgerWritten": false,
+          "manifestRenamed": false,
+          "mixedOldNewDataVisible": false,
+          "newManifestLive": false,
+          "newSceneSetLive": false,
+          "oldManifestLive": true,
+          "oldSceneSetLive": true,
+          "partialRenameVisible": false,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "sceneTextLossObserved": false,
+          "schemaVersionBumped": false,
+          "storageFormatChanged": false,
+          "toSchemaVersion": 1,
+          "uiTouched": false
+        },
+        "killpointId": "AFTER_RECOVERY_PACK",
+        "outcome": {
+          "expectedDisposition": "STOP_RECOVERY_PACK_READY",
+          "explicitStop": false,
+          "failCode": "E_B2C17_KILLPOINT_AFTER_RECOVERY_PACK_UNSAFE",
+          "mixedOldNewRejected": false,
+          "recoverable": true,
+          "recoveryAction": "USE_RECOVERY_PACK_OR_BACKUP",
+          "rollbackDecision": "RECOVERY_PACK_READY_ROLLBACK_ALLOWED",
+          "runtimeExecution": false,
+          "sceneTextLossRejected": false
+        },
+        "sequence": 3
+      },
+      {
+        "input": {
+          "actualMigrationExecuted": false,
+          "backupPresent": true,
+          "backupRotationAttempted": false,
+          "dependencyChanged": false,
+          "firstDataWriteStarted": true,
+          "fromSchemaVersion": 0,
+          "intentWritten": true,
+          "ledgerWritten": false,
+          "manifestRenamed": false,
+          "mixedOldNewDataVisible": false,
+          "newManifestLive": false,
+          "newSceneSetLive": false,
+          "oldManifestLive": true,
+          "oldSceneSetLive": true,
+          "partialRenameVisible": false,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "sceneTextLossObserved": true,
+          "schemaVersionBumped": false,
+          "storageFormatChanged": false,
+          "toSchemaVersion": 1,
+          "uiTouched": false
+        },
+        "killpointId": "AFTER_FIRST_DATA_WRITE",
+        "outcome": {
+          "expectedDisposition": "STOP_SCENE_TEXT_LOSS_REJECTED",
+          "explicitStop": false,
+          "failCode": "E_B2C17_KILLPOINT_AFTER_FIRST_DATA_WRITE_UNSAFE",
+          "mixedOldNewRejected": false,
+          "recoverable": true,
+          "recoveryAction": "RESTORE_FROM_BACKUP_OR_RECOVERY_PACK",
+          "rollbackDecision": "ROLLBACK_REQUIRED_BEFORE_ANY_REOPEN",
+          "runtimeExecution": false,
+          "sceneTextLossRejected": true
+        },
+        "sequence": 4
+      },
+      {
+        "input": {
+          "actualMigrationExecuted": false,
+          "backupPresent": true,
+          "backupRotationAttempted": false,
+          "dependencyChanged": false,
+          "firstDataWriteStarted": true,
+          "fromSchemaVersion": 0,
+          "intentWritten": true,
+          "ledgerWritten": false,
+          "manifestRenamed": false,
+          "mixedOldNewDataVisible": true,
+          "newManifestLive": false,
+          "newSceneSetLive": true,
+          "oldManifestLive": true,
+          "oldSceneSetLive": true,
+          "partialRenameVisible": true,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "sceneTextLossObserved": false,
+          "schemaVersionBumped": false,
+          "storageFormatChanged": false,
+          "toSchemaVersion": 1,
+          "uiTouched": false
+        },
+        "killpointId": "AFTER_PARTIAL_RENAME",
+        "outcome": {
+          "expectedDisposition": "STOP_MIXED_OLD_NEW_DATA_REJECTED",
+          "explicitStop": false,
+          "failCode": "E_B2C17_KILLPOINT_AFTER_PARTIAL_RENAME_UNSAFE",
+          "mixedOldNewRejected": true,
+          "recoverable": true,
+          "recoveryAction": "ROLLBACK_TO_BACKUP_REQUIRED",
+          "rollbackDecision": "ROLLBACK_TO_BACKUP_MANDATORY",
+          "runtimeExecution": false,
+          "sceneTextLossRejected": false
+        },
+        "sequence": 5
+      },
+      {
+        "input": {
+          "actualMigrationExecuted": false,
+          "backupPresent": true,
+          "backupRotationAttempted": false,
+          "dependencyChanged": false,
+          "firstDataWriteStarted": true,
+          "fromSchemaVersion": 0,
+          "intentWritten": true,
+          "ledgerWritten": false,
+          "manifestRenamed": false,
+          "mixedOldNewDataVisible": true,
+          "newManifestLive": false,
+          "newSceneSetLive": true,
+          "oldManifestLive": true,
+          "oldSceneSetLive": false,
+          "partialRenameVisible": true,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "sceneTextLossObserved": false,
+          "schemaVersionBumped": false,
+          "storageFormatChanged": false,
+          "toSchemaVersion": 1,
+          "uiTouched": false
+        },
+        "killpointId": "BEFORE_MANIFEST_WRITE",
+        "outcome": {
+          "expectedDisposition": "STOP_MIXED_DATA_BEFORE_MANIFEST_REJECTED",
+          "explicitStop": false,
+          "failCode": "E_B2C17_KILLPOINT_BEFORE_MANIFEST_WRITE_UNSAFE",
+          "mixedOldNewRejected": true,
+          "recoverable": true,
+          "recoveryAction": "RESTORE_BACKUP_THEN_REBUILD_MANIFEST",
+          "rollbackDecision": "ROLLBACK_PLAN_REQUIRED",
+          "runtimeExecution": false,
+          "sceneTextLossRejected": false
+        },
+        "sequence": 6
+      },
+      {
+        "input": {
+          "actualMigrationExecuted": false,
+          "backupPresent": true,
+          "backupRotationAttempted": false,
+          "dependencyChanged": false,
+          "firstDataWriteStarted": true,
+          "fromSchemaVersion": 0,
+          "intentWritten": true,
+          "ledgerWritten": false,
+          "manifestRenamed": true,
+          "mixedOldNewDataVisible": false,
+          "newManifestLive": true,
+          "newSceneSetLive": true,
+          "oldManifestLive": false,
+          "oldSceneSetLive": false,
+          "partialRenameVisible": false,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "sceneTextLossObserved": false,
+          "schemaVersionBumped": false,
+          "storageFormatChanged": false,
+          "toSchemaVersion": 1,
+          "uiTouched": false
+        },
+        "killpointId": "AFTER_MANIFEST_RENAME",
+        "outcome": {
+          "expectedDisposition": "STOP_LEDGER_PENDING_EXPLICIT",
+          "explicitStop": true,
+          "failCode": "E_B2C17_KILLPOINT_AFTER_MANIFEST_RENAME_UNSAFE",
+          "mixedOldNewRejected": false,
+          "recoverable": true,
+          "recoveryAction": "ROLLBACK_TO_BACKUP_OR_KEEP_STOPPED",
+          "rollbackDecision": "",
+          "runtimeExecution": false,
+          "sceneTextLossRejected": false
+        },
+        "sequence": 7
+      },
+      {
+        "input": {
+          "actualMigrationExecuted": false,
+          "backupPresent": true,
+          "backupRotationAttempted": false,
+          "dependencyChanged": false,
+          "firstDataWriteStarted": true,
+          "fromSchemaVersion": 0,
+          "intentWritten": true,
+          "ledgerWritten": false,
+          "manifestRenamed": true,
+          "mixedOldNewDataVisible": false,
+          "newManifestLive": true,
+          "newSceneSetLive": true,
+          "oldManifestLive": false,
+          "oldSceneSetLive": false,
+          "partialRenameVisible": false,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "sceneTextLossObserved": false,
+          "schemaVersionBumped": false,
+          "storageFormatChanged": false,
+          "toSchemaVersion": 1,
+          "uiTouched": false
+        },
+        "killpointId": "BEFORE_LEDGER",
+        "outcome": {
+          "expectedDisposition": "STOP_BEFORE_LEDGER_EXPLICIT",
+          "explicitStop": true,
+          "failCode": "E_B2C17_KILLPOINT_BEFORE_LEDGER_UNSAFE",
+          "mixedOldNewRejected": false,
+          "recoverable": true,
+          "recoveryAction": "KEEP_STOPPED_UNTIL_LEDGER_DECISION",
+          "rollbackDecision": "",
+          "runtimeExecution": false,
+          "sceneTextLossRejected": false
+        },
+        "sequence": 8
+      },
+      {
+        "input": {
+          "actualMigrationExecuted": false,
+          "backupPresent": true,
+          "backupRotationAttempted": false,
+          "dependencyChanged": false,
+          "firstDataWriteStarted": true,
+          "fromSchemaVersion": 0,
+          "intentWritten": true,
+          "ledgerWritten": true,
+          "manifestRenamed": true,
+          "mixedOldNewDataVisible": false,
+          "newManifestLive": true,
+          "newSceneSetLive": true,
+          "oldManifestLive": false,
+          "oldSceneSetLive": false,
+          "partialRenameVisible": false,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "sceneTextLossObserved": false,
+          "schemaVersionBumped": false,
+          "storageFormatChanged": false,
+          "toSchemaVersion": 1,
+          "uiTouched": false
+        },
+        "killpointId": "AFTER_LEDGER",
+        "outcome": {
+          "expectedDisposition": "STOP_SCOPE_ONLY_NO_RUNTIME_MIGRATION_ADMISSION",
+          "explicitStop": true,
+          "failCode": "E_B2C17_KILLPOINT_AFTER_LEDGER_UNSAFE",
+          "mixedOldNewRejected": false,
+          "recoverable": false,
+          "recoveryAction": "NO_RUNTIME_CLAIM_ALLOWED",
+          "rollbackDecision": "",
+          "runtimeExecution": false,
+          "sceneTextLossRejected": false
+        },
+        "sequence": 9
+      },
+      {
+        "input": {
+          "actualMigrationExecuted": false,
+          "backupPresent": true,
+          "backupRotationAttempted": true,
+          "dependencyChanged": false,
+          "firstDataWriteStarted": false,
+          "fromSchemaVersion": 0,
+          "intentWritten": true,
+          "ledgerWritten": false,
+          "manifestRenamed": false,
+          "mixedOldNewDataVisible": false,
+          "newManifestLive": false,
+          "newSceneSetLive": false,
+          "oldManifestLive": true,
+          "oldSceneSetLive": true,
+          "partialRenameVisible": false,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "sceneTextLossObserved": false,
+          "schemaVersionBumped": false,
+          "storageFormatChanged": false,
+          "toSchemaVersion": 1,
+          "uiTouched": false
+        },
+        "killpointId": "BACKUP_ROTATION_FAILURE",
+        "outcome": {
+          "expectedDisposition": "STOP_BACKUP_ROTATION_RUNTIME_REJECTED",
+          "explicitStop": true,
+          "failCode": "E_B2C17_KILLPOINT_BACKUP_ROTATION_FAILURE_UNSAFE",
+          "mixedOldNewRejected": false,
+          "recoverable": false,
+          "recoveryAction": "NO_ROTATION_RUNTIME_ALLOWED",
+          "rollbackDecision": "",
+          "runtimeExecution": false,
+          "sceneTextLossRejected": false
+        },
+        "sequence": 10
+      }
+    ],
+    "negativeCases": [
+      {
+        "caseId": "NEGATIVE_MIXED_OLD_NEW_DATA_REJECTED",
+        "observedCode": "E_B2C17_KILLPOINT_AFTER_PARTIAL_RENAME_UNSAFE",
+        "observedDisposition": "STOP_MIXED_OLD_NEW_DATA_REJECTED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_SCENE_TEXT_LOSS_REJECTED",
+        "observedCode": "E_B2C17_KILLPOINT_AFTER_FIRST_DATA_WRITE_UNSAFE",
+        "observedDisposition": "STOP_SCENE_TEXT_LOSS_REJECTED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_REAL_MIGRATION_EXECUTION_REJECTED_OUT_OF_SCOPE",
+        "observedCode": "E_B2C17_ACTUAL_MIGRATION_EXECUTION_OUT_OF_SCOPE",
+        "observedDisposition": "REJECTED_OUT_OF_SCOPE",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_BACKUP_ROTATION_RUNTIME_REJECTED_OUT_OF_SCOPE",
+        "observedCode": "E_B2C17_BACKUP_ROTATION_RUNTIME_OUT_OF_SCOPE",
+        "observedDisposition": "REJECTED_OUT_OF_SCOPE",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_DOC_ONLY_EVIDENCE_REJECTED",
+        "observedCode": "E_B2C17_DOC_ONLY_EVIDENCE_REJECTED",
+        "observedDisposition": "REJECTED_DOC_ONLY_EVIDENCE",
+        "ok": true
+      }
+    ],
+    "positiveCases": [
+      {
+        "caseId": "POSITIVE_REQUIRED_KILLPOINT_SET_COMPLETE",
+        "observedKillpointCount": 10,
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_AFTER_INTENT_OLD_STATE_REOPEN_ONLY",
+        "observedDisposition": "RECOVER_OLD_STATE_ONLY",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_AFTER_RECOVERY_PACK_HAS_RECOVERY_BOUNDARY",
+        "observedDisposition": "STOP_RECOVERY_PACK_READY",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_AFTER_MANIFEST_RENAME_STOPS_FOR_LEDGER",
+        "observedDisposition": "STOP_LEDGER_PENDING_EXPLICIT",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_AFTER_LEDGER_STILL_HAS_NO_RUNTIME_ADMISSION",
+        "observedDisposition": "STOP_SCOPE_ONLY_NO_RUNTIME_MIGRATION_ADMISSION",
+        "ok": true
+      }
+    ],
+    "recoveryOutcomes": [
+      {
+        "expectedDisposition": "RECOVER_OLD_STATE_ONLY",
+        "explicitStop": false,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_INTENT_UNSAFE",
+        "killpointId": "AFTER_INTENT",
+        "recoverable": true,
+        "recoveryAction": "OPEN_OLD_STATE_ONLY",
+        "rollbackDecision": "ABORT_PENDING_INTENT_KEEP_OLD_STATE"
+      },
+      {
+        "expectedDisposition": "STOP_BACKUP_READY_OLD_STATE_CANONICAL",
+        "explicitStop": false,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_BACKUP_UNSAFE",
+        "killpointId": "AFTER_BACKUP",
+        "recoverable": true,
+        "recoveryAction": "RESTORE_FROM_BACKUP_IF_RUNTIME_WAS_TOUCHED",
+        "rollbackDecision": "BACKUP_READY_RECOVERY_ALLOWED"
+      },
+      {
+        "expectedDisposition": "STOP_RECOVERY_PACK_READY",
+        "explicitStop": false,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_RECOVERY_PACK_UNSAFE",
+        "killpointId": "AFTER_RECOVERY_PACK",
+        "recoverable": true,
+        "recoveryAction": "USE_RECOVERY_PACK_OR_BACKUP",
+        "rollbackDecision": "RECOVERY_PACK_READY_ROLLBACK_ALLOWED"
+      },
+      {
+        "expectedDisposition": "STOP_SCENE_TEXT_LOSS_REJECTED",
+        "explicitStop": false,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_FIRST_DATA_WRITE_UNSAFE",
+        "killpointId": "AFTER_FIRST_DATA_WRITE",
+        "recoverable": true,
+        "recoveryAction": "RESTORE_FROM_BACKUP_OR_RECOVERY_PACK",
+        "rollbackDecision": "ROLLBACK_REQUIRED_BEFORE_ANY_REOPEN"
+      },
+      {
+        "expectedDisposition": "STOP_MIXED_OLD_NEW_DATA_REJECTED",
+        "explicitStop": false,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_PARTIAL_RENAME_UNSAFE",
+        "killpointId": "AFTER_PARTIAL_RENAME",
+        "recoverable": true,
+        "recoveryAction": "ROLLBACK_TO_BACKUP_REQUIRED",
+        "rollbackDecision": "ROLLBACK_TO_BACKUP_MANDATORY"
+      },
+      {
+        "expectedDisposition": "STOP_MIXED_DATA_BEFORE_MANIFEST_REJECTED",
+        "explicitStop": false,
+        "failCode": "E_B2C17_KILLPOINT_BEFORE_MANIFEST_WRITE_UNSAFE",
+        "killpointId": "BEFORE_MANIFEST_WRITE",
+        "recoverable": true,
+        "recoveryAction": "RESTORE_BACKUP_THEN_REBUILD_MANIFEST",
+        "rollbackDecision": "ROLLBACK_PLAN_REQUIRED"
+      },
+      {
+        "expectedDisposition": "STOP_LEDGER_PENDING_EXPLICIT",
+        "explicitStop": true,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_MANIFEST_RENAME_UNSAFE",
+        "killpointId": "AFTER_MANIFEST_RENAME",
+        "recoverable": true,
+        "recoveryAction": "ROLLBACK_TO_BACKUP_OR_KEEP_STOPPED",
+        "rollbackDecision": ""
+      },
+      {
+        "expectedDisposition": "STOP_BEFORE_LEDGER_EXPLICIT",
+        "explicitStop": true,
+        "failCode": "E_B2C17_KILLPOINT_BEFORE_LEDGER_UNSAFE",
+        "killpointId": "BEFORE_LEDGER",
+        "recoverable": true,
+        "recoveryAction": "KEEP_STOPPED_UNTIL_LEDGER_DECISION",
+        "rollbackDecision": ""
+      },
+      {
+        "expectedDisposition": "STOP_SCOPE_ONLY_NO_RUNTIME_MIGRATION_ADMISSION",
+        "explicitStop": true,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_LEDGER_UNSAFE",
+        "killpointId": "AFTER_LEDGER",
+        "recoverable": false,
+        "recoveryAction": "NO_RUNTIME_CLAIM_ALLOWED",
+        "rollbackDecision": ""
+      },
+      {
+        "expectedDisposition": "STOP_BACKUP_ROTATION_RUNTIME_REJECTED",
+        "explicitStop": true,
+        "failCode": "E_B2C17_KILLPOINT_BACKUP_ROTATION_FAILURE_UNSAFE",
+        "killpointId": "BACKUP_ROTATION_FAILURE",
+        "recoverable": false,
+        "recoveryAction": "NO_ROTATION_RUNTIME_ALLOWED",
+        "rollbackDecision": ""
+      }
+    ],
+    "requiredKillpoints": [
+      "AFTER_INTENT",
+      "AFTER_BACKUP",
+      "AFTER_RECOVERY_PACK",
+      "AFTER_FIRST_DATA_WRITE",
+      "AFTER_PARTIAL_RENAME",
+      "BEFORE_MANIFEST_WRITE",
+      "AFTER_MANIFEST_RENAME",
+      "BEFORE_LEDGER",
+      "AFTER_LEDGER",
+      "BACKUP_ROTATION_FAILURE"
+    ]
+  },
+  "schemaVersion": 1,
+  "scope": {
+    "actualRollbackExecutionOnUserData": false,
+    "b2c14ScopeReopen": false,
+    "b2c15ScopeReopen": false,
+    "b2c18PerfClaim": false,
+    "b2c19AuditClaim": false,
+    "b2c20ScopeClaim": false,
+    "backupRotationRuntime": false,
+    "block2ExitClaim": false,
+    "block3StartClaim": false,
+    "dependencyChanged": false,
+    "productionStorageMigrationRuntime": false,
+    "realUserDataMigration": false,
+    "releaseClaim": false,
+    "schemaChanged": false,
+    "storageFormatChanged": false,
+    "uiTouched": false
+  },
+  "status": "PASS",
+  "taskId": "B2C17_MIGRATION_KILLPOINT_PROOF"
+}
