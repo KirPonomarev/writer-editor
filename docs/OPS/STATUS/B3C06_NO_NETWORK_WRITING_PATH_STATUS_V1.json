@@ -1,0 +1,346 @@
+{
+  "artifactId": "B3C06_NO_NETWORK_WRITING_PATH_STATUS_V1",
+  "B3C06_NO_NETWORK_WRITING_PATH_OK": 1,
+  "contourId": "B3C06_NO_NETWORK_WRITING_PATH",
+  "failRows": [],
+  "failSignal": "",
+  "monitor": {
+    "failSignal": "E_B3C06_NETWORK_ATTEMPT",
+    "helperRole": "PROOF_HELPER_NOT_PRODUCT_NETWORK_STACK"
+  },
+  "ok": true,
+  "proof": {
+    "b3c05InputBound": true,
+    "negativeMatrixBound": true,
+    "networkDenyMonitorBound": true,
+    "noB3C07SecurityRuntimeBoundaryClaim": true,
+    "noDocOnlyEvidence": true,
+    "noExportPipelineRewrite": true,
+    "noMainPreloadIpcRewrite": true,
+    "noNewDependency": true,
+    "noProductNetworkStackRewrite": true,
+    "noReleaseClaim": true,
+    "noStorageRewrite": true,
+    "noUiChange": true,
+    "productRouteSearchEvidenceBound": true,
+    "worktreeIndependentStatus": true,
+    "writingPathReplayBound": true,
+    "zeroOutboundAttemptArtifactBound": true
+  },
+  "repo": {
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
+    "statusBasename": "B3C06_NO_NETWORK_WRITING_PATH_STATUS_V1.json",
+    "writtenFrom": "b3c06-no-network-writing-path-state.mjs"
+  },
+  "runtime": {
+    "changedBasenames": [
+      "network-deny-monitor.js",
+      "b3c06-no-network-writing-path-state.mjs",
+      "b3c06-no-network-writing-path.contract.test.js",
+      "B3C06_NO_NETWORK_WRITING_PATH_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "35860ff24375bf0fb17ab5d694a72a986ac7a14ad4acd86af8965ea2210f39a2",
+    "commandResults": {
+      "allPassed": null,
+      "commandCount": 11,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c06-no-network-writing-path-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c06-no-network-writing-path.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c05-permission-scope-enforced.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c04-deterministic-export-mode.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c03-docx-artifact-validation.contract.test.js",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/path-boundary-guard.contract.test.js",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/collab-no-network-wiring.contract.test.js",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+          "index": 10,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/io src/main.js src/preload.js src/export",
+          "index": 11,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C06_NO_NETWORK_WRITING_PATH"
+    },
+    "negativeRows": [
+      {
+        "denied": true,
+        "failSignal": "E_B3C06_NETWORK_ATTEMPT",
+        "reason": "DENIED_BY_B3C06_MONITOR",
+        "route": "fetch"
+      },
+      {
+        "denied": true,
+        "failSignal": "E_B3C06_NETWORK_ATTEMPT",
+        "reason": "DENIED_BY_B3C06_MONITOR",
+        "route": "websocket"
+      },
+      {
+        "denied": true,
+        "failSignal": "E_B3C06_NETWORK_ATTEMPT",
+        "reason": "DENIED_BY_B3C06_MONITOR",
+        "route": "xml-http-request"
+      },
+      {
+        "denied": true,
+        "failSignal": "E_B3C06_NETWORK_ATTEMPT",
+        "reason": "DENIED_BY_B3C06_MONITOR",
+        "route": "http.request"
+      },
+      {
+        "denied": true,
+        "failSignal": "E_B3C06_NETWORK_ATTEMPT",
+        "reason": "DENIED_BY_B3C06_MONITOR",
+        "route": "https.request"
+      },
+      {
+        "denied": true,
+        "failSignal": "E_B3C06_NETWORK_ATTEMPT",
+        "reason": "DENIED_BY_B3C06_MONITOR",
+        "route": "http.get"
+      },
+      {
+        "denied": true,
+        "failSignal": "E_B3C06_NETWORK_ATTEMPT",
+        "reason": "DENIED_BY_B3C06_MONITOR",
+        "route": "https.get"
+      },
+      {
+        "denied": true,
+        "failSignal": "E_B3C06_NETWORK_ATTEMPT",
+        "reason": "DENIED_BY_B3C06_MONITOR",
+        "route": "remote.image"
+      },
+      {
+        "denied": true,
+        "failSignal": "E_B3C06_NETWORK_ATTEMPT",
+        "reason": "DENIED_BY_B3C06_MONITOR",
+        "route": "update.check"
+      },
+      {
+        "denied": true,
+        "failSignal": "E_B3C06_NETWORK_ATTEMPT",
+        "reason": "DENIED_BY_B3C06_MONITOR",
+        "route": "analytics"
+      },
+      {
+        "denied": true,
+        "failSignal": "E_B3C06_NETWORK_ATTEMPT",
+        "reason": "DENIED_BY_B3C06_MONITOR",
+        "route": "cloud.sync"
+      }
+    ],
+    "passFailRows": [
+      {
+        "id": "B3C05_INPUT_BOUND",
+        "passed": true
+      },
+      {
+        "id": "OPEN_EDIT_SAVE_EXPORT_REPLAY_ZERO_OUTBOUND",
+        "passed": true
+      },
+      {
+        "id": "REPLAY_USES_DECLARED_WRITING_PATH_STEPS",
+        "passed": true
+      },
+      {
+        "id": "REPLAY_EXECUTES_OPEN_EDIT_SAVE_EXPORT_STEPS",
+        "passed": true
+      },
+      {
+        "id": "REPLAY_STORAGE_MUTATION_IS_TEMP_FIXTURE_ONLY",
+        "passed": true
+      },
+      {
+        "id": "FETCH_NEGATIVE_DENIED",
+        "passed": true
+      },
+      {
+        "id": "WEBSOCKET_NEGATIVE_DENIED",
+        "passed": true
+      },
+      {
+        "id": "XML_HTTP_REQUEST_NEGATIVE_DENIED",
+        "passed": true
+      },
+      {
+        "id": "HTTP_NEGATIVE_DENIED",
+        "passed": true
+      },
+      {
+        "id": "HTTPS_NEGATIVE_DENIED",
+        "passed": true
+      },
+      {
+        "id": "HTTP_GET_NEGATIVE_DENIED",
+        "passed": true
+      },
+      {
+        "id": "HTTPS_GET_NEGATIVE_DENIED",
+        "passed": true
+      },
+      {
+        "id": "REMOTE_IMAGE_NEGATIVE_DENIED",
+        "passed": true
+      },
+      {
+        "id": "UPDATE_CHECK_NEGATIVE_DENIED",
+        "passed": true
+      },
+      {
+        "id": "ANALYTICS_NEGATIVE_DENIED",
+        "passed": true
+      },
+      {
+        "id": "CLOUD_SYNC_NEGATIVE_DENIED",
+        "passed": true
+      },
+      {
+        "id": "PRODUCT_ROUTE_SEARCH_HAS_NO_WRITING_PATH_NETWORK_CALL",
+        "passed": true
+      },
+      {
+        "id": "HELPER_IS_NOT_PRODUCT_NETWORK_STACK",
+        "passed": true
+      }
+    ],
+    "productRouteEvidence": [
+      {
+        "basename": "main.js",
+        "hasAnalyticsRoute": false,
+        "hasCloudSyncRoute": false,
+        "hasFetchCall": false,
+        "hasNodeHttpGet": false,
+        "hasNodeHttpRequest": false,
+        "hasUpdateCheckRoute": false,
+        "hasWebSocketConstructor": false,
+        "hasXmlHttpRequest": false
+      },
+      {
+        "basename": "preload.js",
+        "hasAnalyticsRoute": false,
+        "hasCloudSyncRoute": false,
+        "hasFetchCall": false,
+        "hasNodeHttpGet": false,
+        "hasNodeHttpRequest": false,
+        "hasUpdateCheckRoute": false,
+        "hasWebSocketConstructor": false,
+        "hasXmlHttpRequest": false
+      },
+      {
+        "basename": "editor.js",
+        "hasAnalyticsRoute": false,
+        "hasCloudSyncRoute": false,
+        "hasFetchCall": false,
+        "hasNodeHttpGet": false,
+        "hasNodeHttpRequest": false,
+        "hasUpdateCheckRoute": false,
+        "hasWebSocketConstructor": false,
+        "hasXmlHttpRequest": false
+      },
+      {
+        "basename": "docxMinExportHandler.js",
+        "hasAnalyticsRoute": false,
+        "hasCloudSyncRoute": false,
+        "hasFetchCall": false,
+        "hasNodeHttpGet": false,
+        "hasNodeHttpRequest": false,
+        "hasUpdateCheckRoute": false,
+        "hasWebSocketConstructor": false,
+        "hasXmlHttpRequest": false
+      },
+      {
+        "basename": "permission-scope.js",
+        "hasAnalyticsRoute": false,
+        "hasCloudSyncRoute": false,
+        "hasFetchCall": false,
+        "hasNodeHttpGet": false,
+        "hasNodeHttpRequest": false,
+        "hasUpdateCheckRoute": false,
+        "hasWebSocketConstructor": false,
+        "hasXmlHttpRequest": false
+      }
+    ],
+    "writingPathReplay": {
+      "editStep": true,
+      "exportBytes": 1459,
+      "exportStep": true,
+      "openStep": true,
+      "outboundAttemptCount": 0,
+      "replayKind": "BOUNDED_LOCAL_RUNTIME_REPLAY",
+      "saveStep": true,
+      "stepCount": 4,
+      "steps": [
+        "open",
+        "edit",
+        "save",
+        "export"
+      ],
+      "storageMutationScope": "TEMP_FIXTURE_ONLY",
+      "usedExistingPublicSeamsOnly": true,
+      "zeroOutboundAttempts": true
+    }
+  },
+  "scope": {
+    "b3c07SecurityRuntimeBoundaryClaim": false,
+    "deliveryNetworkSeparated": true,
+    "docxDependencyChanged": false,
+    "exportPipelineRewritten": false,
+    "helperRole": "PROOF_HELPER_NOT_PRODUCT_NETWORK_STACK",
+    "layer": "B3C06_NO_NETWORK_WRITING_PATH",
+    "mainPreloadIpcRewritten": false,
+    "permissionScopeRewritten": false,
+    "productNetworkStackRewritten": false,
+    "proofHelperOnly": true,
+    "releaseClaim": false,
+    "releaseDossierStarted": false,
+    "storageFormatChanged": false,
+    "storageMutated": false,
+    "uiTouched": false,
+    "writingPathNetworkDenialOnly": true
+  },
+  "status": "PASS"
+}
