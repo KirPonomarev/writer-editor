@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "scene-full",
+  "title": "Full Scene",
+  "order": 4,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Full body"
+    }
+  ],
+  "metadata": {
+    "stage": "draft",
+    "notes": {
+      "owner": "alpha"
+    },
+    "tags": [
+      "pov",
+      "outline"
+    ]
+  }
+}

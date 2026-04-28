@@ -7,6 +7,11 @@ export type { CoreStateSnapshot } from "./core-state.contract";
 export type { FileSystemPort } from "./filesystem-port.contract";
 export type { DialogPort } from "./dialog-port.contract";
 export type { PlatformInfoPort } from "./platform-info-port.contract";
+export type {
+  SceneDocumentBlockContract,
+  SceneDocumentContract,
+  SceneDocumentSchemaVersion,
+} from "./scene-document.contract";
 
 export type {
   RuntimeExecutionContract,
