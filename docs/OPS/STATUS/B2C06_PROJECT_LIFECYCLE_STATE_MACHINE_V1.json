@@ -1,0 +1,122 @@
+{
+  "artifactId": "B2C06_PROJECT_LIFECYCLE_STATE_MACHINE_V1",
+  "schemaVersion": 1,
+  "taskId": "B2C06_PROJECT_LIFECYCLE_STATE_MACHINE",
+  "status": "PASS",
+  "graph": {
+    "entryStateId": "ENTRY_EMPTY",
+    "mainStateIds": [
+      "ENTRY_EMPTY",
+      "OPEN_CLEAN",
+      "OPEN_DIRTY"
+    ],
+    "advisoryStateIds": [
+      "RECOVERED"
+    ],
+    "admittedTransitions": [
+      {
+        "transitionId": "ENTRY_EMPTY_TO_OPEN_CLEAN",
+        "from": "ENTRY_EMPTY",
+        "to": "OPEN_CLEAN",
+        "proofLevel": "AVAILABILITY_ONLY"
+      },
+      {
+        "transitionId": "OPEN_CLEAN_TO_OPEN_DIRTY",
+        "from": "OPEN_CLEAN",
+        "to": "OPEN_DIRTY",
+        "proofLevel": "SIGNAL_AND_LABEL"
+      }
+    ],
+    "advisoryTransitions": [
+      {
+        "transitionId": "OPEN_DIRTY_TO_OPEN_CLEAN",
+        "from": "OPEN_DIRTY",
+        "to": "OPEN_CLEAN",
+        "proofLevel": "SIGNAL_PRESENT_ONLY"
+      },
+      {
+        "transitionId": "OPEN_ANY_TO_RECOVERED",
+        "from": "OPEN_ANY",
+        "to": "RECOVERED",
+        "proofLevel": "IO_LEVEL_ONLY"
+      }
+    ]
+  },
+  "proofBinding": {
+    "bindingMode": "DETECTOR_IDS_ONLY",
+    "stateRows": [
+      {
+        "stateId": "ENTRY_EMPTY",
+        "detectorId": "B2C06_ENTRY_EMPTY_PROOF_BINDING_V1"
+      },
+      {
+        "stateId": "OPEN_CLEAN",
+        "detectorId": "B2C06_OPEN_CLEAN_PROOF_BINDING_V1"
+      },
+      {
+        "stateId": "OPEN_DIRTY",
+        "detectorId": "B2C06_OPEN_DIRTY_PROOF_BINDING_V1"
+      }
+    ],
+    "transitionRows": [
+      {
+        "transitionId": "ENTRY_EMPTY_TO_OPEN_CLEAN",
+        "detectorId": "B2C06_ENTRY_EMPTY_TO_OPEN_CLEAN_PROOF_BINDING_V1"
+      },
+      {
+        "transitionId": "OPEN_CLEAN_TO_OPEN_DIRTY",
+        "detectorId": "B2C06_OPEN_CLEAN_TO_OPEN_DIRTY_PROOF_BINDING_V1"
+      }
+    ]
+  },
+  "proofSurfaces": {
+    "entryEmpty": {
+      "script": "scripts/ops/x19-ws01-first-run-and-empty-state-flow-state.mjs",
+      "contract": "test/contracts/x19-ws01-first-run-and-empty-state-flow.contract.test.js"
+    },
+    "uiTransitions": {
+      "artifact": "docs/OPS/STATUS/UI_STATE_TRANSITIONS.json",
+      "guard": "scripts/guards/sector-u-ui-state-transitions.mjs",
+      "contract": "test/unit/sector-u-u4-ui-state-transitions.test.js"
+    },
+    "cleanDirtyLabels": {
+      "module": "src/renderer/commands/flowMode.mjs",
+      "contract": "test/unit/sector-m-m8-core.test.js"
+    },
+    "dirtySignal": {
+      "source": "src/renderer/tiptap/index.js",
+      "contract": "test/unit/sector-m-tiptap-save-lifecycle-tail-closure.test.js"
+    },
+    "recoveryIoAdvisory": {
+      "module": "src/io/markdown/index.mjs",
+      "contract": "test/contracts/recovery-snapshot-fallback.contract.test.js"
+    },
+    "staleSavePathAdvisory": {
+      "proofhook": "scripts/ops/contour-01-primary-editor-save-recovery-proofhook.mjs",
+      "contract": "test/contracts/contour-01-primary-editor-save-recovery-proofhook.contract.test.js"
+    },
+    "workspaceBindingAdvisory": {
+      "artifactState": "scripts/ops/phase03-project-workspace-state-artifact-state.mjs",
+      "foundationState": "scripts/ops/phase03-project-workspace-state-foundation-state.mjs"
+    }
+  },
+  "advisoryBoundary": {
+    "saveCompletionStatePromotion": "ADVISORY_ONLY_UNTIL_FULL_PROJECT_SAVE_PATH_IS_GREEN",
+    "recoveredStatePromotion": "ADVISORY_ONLY_UNTIL_RECOVERED_PROJECT_STATE_IS_MACHINE_PROVED_WITHOUT_PROTOCOL_LEAK",
+    "workspaceBindingPromotion": "ADVISORY_ONLY_UNTIL_PHASE03_FOUNDATION_CHAIN_IS_GREEN",
+    "forbiddenPromotionAreas": [
+      "transactionStateMachine",
+      "recoveryProtocol",
+      "autosaveCadence",
+      "queueing",
+      "concurrency",
+      "runtimeCommandSurfaceExpansion"
+    ],
+    "notes": [
+      "B2C06 admits only the minimal project lifecycle graph.",
+      "RECOVERED stays advisory in this contour.",
+      "OPEN_DIRTY_TO_OPEN_CLEAN stays advisory until the full save path is green.",
+      "Any extra state cluster is out of scope for B2C06."
+    ]
+  }
+}
