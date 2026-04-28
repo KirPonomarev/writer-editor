@@ -1,0 +1,109 @@
+{
+  "artifactId": "B2C07_TRANSACTION_BOUNDARY_MINIMAL_V1",
+  "schemaVersion": 1,
+  "taskId": "B2C07_TRANSACTION_BOUNDARY_MINIMAL",
+  "status": "PASS",
+  "boundary": {
+    "transactionUnitId": "SCENE",
+    "admittedBoundaryRows": [
+      {
+        "rowId": "CORE_SINGLE_SCENE_MUTATION_UNIT",
+        "proofLevel": "CORE_RUNTIME_SCENE_BOUND"
+      },
+      {
+        "rowId": "APPLY_PREV_HASH_GATE",
+        "proofLevel": "PREV_HASH_TYPED_REJECTION"
+      },
+      {
+        "rowId": "EVENTLOG_APPEND_ONLY_REPLAY_CHAIN",
+        "proofLevel": "APPEND_ONLY_AND_REPLAY_DETERMINISM"
+      }
+    ],
+    "advisoryBoundaryRows": [
+      {
+        "rowId": "SCENE_TRANSACTION_ATOMICITY",
+        "proofLevel": "ADVISORY_ONLY_UNTIL_DEDICATED_COMMIT_PROOF"
+      },
+      {
+        "rowId": "CROSS_SCENE_BATCH_ATOMICITY",
+        "proofLevel": "ADVISORY_ONLY_MULTI_SCENE_FLOW_SAVE_EXISTS"
+      }
+    ]
+  },
+  "proofBinding": {
+    "bindingMode": "DETECTOR_IDS_ONLY",
+    "boundaryRows": [
+      {
+        "rowId": "CORE_SINGLE_SCENE_MUTATION_UNIT",
+        "detectorId": "B2C07_CORE_SINGLE_SCENE_MUTATION_UNIT_PROOF_BINDING_V1"
+      },
+      {
+        "rowId": "APPLY_PREV_HASH_GATE",
+        "detectorId": "B2C07_APPLY_PREV_HASH_GATE_PROOF_BINDING_V1"
+      },
+      {
+        "rowId": "EVENTLOG_APPEND_ONLY_REPLAY_CHAIN",
+        "detectorId": "B2C07_EVENTLOG_APPEND_ONLY_REPLAY_CHAIN_PROOF_BINDING_V1"
+      }
+    ]
+  },
+  "proofSurfaces": {
+    "canonBoundary": {
+      "document": "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+      "section": "A13"
+    },
+    "coreSingleScene": {
+      "runtime": "src/core/runtime.mjs",
+      "contracts": "src/core/contracts.ts",
+      "runtimeContract": "test/unit/core-runtime.test.js",
+      "typedErrorsContract": "test/contracts/core-typed-errors.contract.test.js",
+      "hashContract": "test/contracts/core-deterministic-hash.contract.test.js"
+    },
+    "applyPrevHashGate": {
+      "module": "src/collab/applyEventLog.mjs",
+      "state": "scripts/ops/collab-apply-pipeline-state.mjs",
+      "deterministicContract": "test/contracts/collab-apply-pipeline-deterministic.contract.test.js",
+      "typedErrorsContract": "test/contracts/collab-apply-pipeline-typed-errors.contract.test.js",
+      "noNetworkContract": "test/contracts/collab-no-network-wiring.contract.test.js"
+    },
+    "eventLogReplay": {
+      "module": "src/collab/eventLog.mjs",
+      "state": "scripts/ops/collab-eventlog-state.mjs",
+      "appendOnlyContract": "test/contracts/collab-eventlog-append-only.contract.test.js",
+      "idempotencyContract": "test/contracts/collab-eventlog-idempotency.contract.test.js",
+      "replayContract": "test/contracts/collab-eventlog-replay-deterministic.contract.test.js",
+      "schemaContract": "test/contracts/collab-eventlog-schema.contract.test.js"
+    },
+    "queueDomainSeparate": {
+      "state": "scripts/ops/collab-causal-queue-readiness-state.mjs",
+      "contract": "test/contracts/collab-causal-queue-readiness.contract.test.js"
+    },
+    "existingBoundaryNegatives": {
+      "pathBoundaryContract": "test/contracts/path-boundary-behavioral-proof.contract.test.js",
+      "flowBoundaryContract": "test/unit/sector-m-m7-flow-mode.test.js",
+      "flowBridgeContract": "test/unit/sector-m-m7-commands.test.js"
+    }
+  },
+  "advisoryBoundary": {
+    "sceneTransactionAtomicityPromotion": "ADVISORY_ONLY_UNTIL_DEDICATED_SCENE_COMMIT_PROOF_IS_GREEN",
+    "crossSceneBatchPromotion": "ADVISORY_ONLY_MULTI_SCENE_FLOW_SAVE_EXISTS_WITHOUT_GROUP_ROLLBACK_PROOF",
+    "queueingPromotion": "ADVISORY_ONLY_QUEUEING_IS_SEPARATE_DOMAIN",
+    "recoveryProtocolPromotion": "ADVISORY_ONLY_RECOVERY_PROTOCOL_OUT_OF_SCOPE",
+    "forbiddenPromotionAreas": [
+      "queueing",
+      "concurrency",
+      "orderingKeyRuntime",
+      "recoveryProtocol",
+      "runtimeCommandSurfaceExpansion",
+      "crossSceneBatchAtomicity",
+      "extraTransactionCluster"
+    ],
+    "notes": [
+      "B2C07 admits only the minimal transaction boundary.",
+      "Scene remains the only admitted transaction unit in this contour.",
+      "applyEventLog prevHash gate is admitted as a boundary gate, not as a queue model.",
+      "event log append-only and replay determinism are admitted as boundary truth, not as transport policy.",
+      "Multi-scene flow save exists and therefore group atomicity stays advisory in this contour."
+    ]
+  }
+}
