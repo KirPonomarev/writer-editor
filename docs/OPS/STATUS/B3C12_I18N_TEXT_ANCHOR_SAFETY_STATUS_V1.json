@@ -1,0 +1,478 @@
+{
+  "artifactId": "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1",
+  "b3c11Limitations": {
+    "fullRealPlatformXplat": false,
+    "platformLimitRowsVisible": [
+      "LINUX",
+      "MACOS",
+      "WINDOWS"
+    ],
+    "realPlatformStatus": "LIMITED",
+    "unsupportedScope": [
+      "B3C10_MULTI_PLATFORM_REAL_FIXTURE_SET",
+      "REAL_LINUX_PLATFORM_MATRIX",
+      "REAL_MACOS_RELEASE_MATRIX",
+      "REAL_WINDOWS_PLATFORM_MATRIX"
+    ]
+  },
+  "B3C12_FULL_GLOBAL_I18N_OK": 0,
+  "B3C12_I18N_TEXT_ANCHOR_SAFETY_OK": 1,
+  "contourId": "B3C12_I18N_TEXT_ANCHOR_SAFETY",
+  "contractFixtureStatus": "PASS",
+  "donorIntake": {
+    "activeCanonOverDonor": true,
+    "archiveRows": [
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 132,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "block3-capability-xplat-i18n-a11y.test.js",
+          "i18n-anchor.js",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 146,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3_V2_DEEP_REWORK_REPORT.md",
+          "BLOCK_3_V3_PERFECTION_REPORT.md",
+          "block3-capability-xplat-i18n-a11y.test.js",
+          "i18n-anchor.js",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 45,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 83,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md"
+        ]
+      }
+    ],
+    "archivesFound": [
+      "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+      "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+      "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+      "writer-editor-longform-v5_1-turnkey-pack-v3.zip"
+    ],
+    "class": "READ_ONLY_CONTEXT_ONLY",
+    "codeImported": false,
+    "completionClaimImported": false,
+    "outputLocation": "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+    "suggestedRows": [
+      "GRAPHEME_FIXTURE_MATRIX",
+      "SNIPPET_BOUNDARY_ROWS",
+      "I18N_LIMIT_ROWS",
+      "UNSUPPORTED_SCOPE"
+    ]
+  },
+  "failRows": [],
+  "failSignal": "",
+  "fixtureMatrix": [
+    {
+      "endOffset": 5,
+      "id": "COMBINING_MARK",
+      "offsetUnit": "utf16_code_unit",
+      "rule": "ACCEPT_ONLY_FULL_GRAPHEME_BOUNDARIES_WITH_EXISTING_UTF16_OFFSETS",
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION",
+      "startOffset": 3,
+      "status": "PASS"
+    },
+    {
+      "endOffset": 12,
+      "id": "EMOJI_SEQUENCE",
+      "offsetUnit": "utf16_code_unit",
+      "rule": "ACCEPT_ONLY_FULL_GRAPHEME_BOUNDARIES_WITH_EXISTING_UTF16_OFFSETS",
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION",
+      "startOffset": 1,
+      "status": "PASS"
+    },
+    {
+      "endOffset": 3,
+      "id": "CJK_TEXT",
+      "offsetUnit": "utf16_code_unit",
+      "rule": "ACCEPT_ONLY_FULL_GRAPHEME_BOUNDARIES_WITH_EXISTING_UTF16_OFFSETS",
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION",
+      "startOffset": 2,
+      "status": "PASS"
+    },
+    {
+      "endOffset": 1,
+      "id": "RIGHT_TO_LEFT_ANCHOR_ONLY",
+      "offsetUnit": "utf16_code_unit",
+      "rule": "ACCEPT_ONLY_FULL_GRAPHEME_BOUNDARIES_WITH_EXISTING_UTF16_OFFSETS",
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION",
+      "startOffset": 0,
+      "status": "PASS"
+    },
+    {
+      "endOffset": 3,
+      "id": "MIXED_SCRIPT_TEXT",
+      "offsetUnit": "utf16_code_unit",
+      "rule": "ACCEPT_ONLY_FULL_GRAPHEME_BOUNDARIES_WITH_EXISTING_UTF16_OFFSETS",
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION",
+      "startOffset": 2,
+      "status": "PASS"
+    },
+    {
+      "endOffset": 5,
+      "id": "SEARCH_SNIPPET_PURE_TEXT",
+      "rule": "SNIPPET_EXPANDS_TO_GRAPHEME_BOUNDARY_AND_DOES_NOT_CLAIM_RENDERER_SEARCH_UI",
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION",
+      "startOffset": 3,
+      "status": "PASS"
+    },
+    {
+      "id": "GRAPHEME_SPLIT_NEGATIVE",
+      "rejectedCode": "E_SCENE_INLINE_RANGE_GRAPHEME_SPLIT",
+      "rule": "SPLIT_GRAPHEME_RANGE_REJECTED_BY_EXISTING_ADMISSION",
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION",
+      "status": "PASS"
+    },
+    {
+      "id": "SNIPPET_SPLIT_NEGATIVE",
+      "rule": "SNIPPET_SPLIT_IS_NORMALIZED_TO_SAFE_BOUNDARY_NOT_ACCEPTED_AS_RAW_SPLIT",
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION",
+      "status": "PASS"
+    },
+    {
+      "id": "ANCHOR_SHIFT_NEGATIVE",
+      "rejectedCode": "E_SCENE_INLINE_RANGE_GRAPHEME_SPLIT",
+      "rule": "SHIFTED_ANCHOR_REQUIRES_REVALIDATION_BEFORE_ACCEPTANCE",
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION",
+      "status": "PASS"
+    },
+    {
+      "existingOffsetUnit": "utf16_code_unit",
+      "id": "OFFSET_UNIT_MISMATCH_NEGATIVE",
+      "rejectedClaimedOffsetUnit": "grapheme",
+      "rule": "B3C12_DOES_NOT_REDECLARE_EXISTING_INLINE_OFFSET_UNIT",
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION",
+      "status": "PASS"
+    }
+  ],
+  "i18nLimitRows": [
+    {
+      "id": "BIDI_LAYOUT_LIMITED",
+      "reason": "B3C12_PROVES_ANCHOR_BOUNDARIES_ONLY_NOT_BIDI_LAYOUT_RENDERING",
+      "releaseSupportClaim": false,
+      "status": "LIMITED"
+    },
+    {
+      "id": "LANGUAGE_COVERAGE_LIMITED",
+      "reason": "FIXTURE_SET_IS_CONTRACT_BASELINE_NOT_REAL_LANGUAGE_CERTIFICATION",
+      "releaseSupportClaim": false,
+      "status": "LIMITED"
+    },
+    {
+      "id": "FONT_SHAPING_NOT_CLAIMED",
+      "reason": "FONT_SHAPING_AND_RENDERING_ARE_OUT_OF_SCOPE",
+      "releaseSupportClaim": false,
+      "status": "NOT_CLAIMED"
+    },
+    {
+      "id": "FULL_LOCALE_SORT_NOT_CLAIMED",
+      "reason": "B3C11_KEEPS_CODEPOINT_STABLE_SORT_ONLY",
+      "releaseSupportClaim": false,
+      "status": "NOT_CLAIMED"
+    },
+    {
+      "id": "SEGMENTER_FALLBACK_LIMITED",
+      "reason": "FALLBACK_IS_DECLARED_LIMITED_AND_CANNOT_SUPPORT_FULL_I18N_GREEN",
+      "releaseSupportClaim": false,
+      "status": "LIMIT_DECLARED_WITH_INTL_SEGMENTER_AVAILABLE"
+    }
+  ],
+  "inputRows": [
+    {
+      "basename": "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C11_XPLAT_NORMALIZATION_BASELINE_OK"
+    }
+  ],
+  "offsetUnitDeclaration": {
+    "existingOffsetUnit": "utf16_code_unit",
+    "globalOffsetUnitRedefined": false,
+    "publicContractBasename": "inline-range.contract.ts",
+    "schemaMutation": false,
+    "sourceBasename": "sceneInlineRangeAdmission.mjs",
+    "testedAnchorPolicy": "GRAPHEME_CLUSTER_BOUNDARY_VALIDATION_ON_EXISTING_UTF16_OFFSETS"
+  },
+  "ok": true,
+  "passFailRows": [
+    {
+      "id": "COMBINING_MARK",
+      "passed": true,
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION"
+    },
+    {
+      "id": "EMOJI_SEQUENCE",
+      "passed": true,
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION"
+    },
+    {
+      "id": "CJK_TEXT",
+      "passed": true,
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION"
+    },
+    {
+      "id": "RIGHT_TO_LEFT_ANCHOR_ONLY",
+      "passed": true,
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION"
+    },
+    {
+      "id": "MIXED_SCRIPT_TEXT",
+      "passed": true,
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION"
+    },
+    {
+      "id": "SEARCH_SNIPPET_PURE_TEXT",
+      "passed": true,
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION"
+    },
+    {
+      "id": "GRAPHEME_SPLIT_NEGATIVE",
+      "passed": true,
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION"
+    },
+    {
+      "id": "SNIPPET_SPLIT_NEGATIVE",
+      "passed": true,
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION"
+    },
+    {
+      "id": "ANCHOR_SHIFT_NEGATIVE",
+      "passed": true,
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION"
+    },
+    {
+      "id": "OFFSET_UNIT_MISMATCH_NEGATIVE",
+      "passed": true,
+      "source": "NODE_BUILTINS_AND_EXISTING_INLINE_ADMISSION"
+    }
+  ],
+  "proof": {
+    "all10FixtureRowsExist": true,
+    "b3c11InputBound": true,
+    "b3c11PlatformLimitsVisible": true,
+    "changedBasenamesHashRecorded": true,
+    "contractFixtureStatusSeparated": true,
+    "donorIntakeContextOnly": true,
+    "existingInlineRangeOffsetUnitBound": true,
+    "existingIntlSegmenterUseBound": true,
+    "i18nLimitRowsComplete": true,
+    "inlineRangeSchemaNotMutated": true,
+    "noA11yTrustSurfaceProof": true,
+    "noAtomicWriteTouch": true,
+    "noB3C09PerfGapFix": true,
+    "noB3C11PlatformLimitFix": true,
+    "nodeBuiltinsOnly": true,
+    "noExportRewrite": true,
+    "noFullBidiLayoutEngineClaim": true,
+    "noFullGlobalI18nGreen": true,
+    "noNewDependency": true,
+    "noProjectStoreTouch": true,
+    "noReleaseClaim": true,
+    "noReleaseI18nSupportClaim": true,
+    "noRendererSearchUiChange": true,
+    "noSecurityRewrite": true,
+    "noStorageRewrite": true,
+    "noUiChange": true,
+    "noXplatCertification": true,
+    "realLanguageCoverageStatusSeparated": true,
+    "statusArtifactHashRecorded": true,
+    "testCommandRowsRecorded": true
+  },
+  "provisionalScope": [
+    {
+      "id": "FULL_GLOBAL_I18N_GREEN",
+      "status": "FORBIDDEN_IN_B3C12"
+    },
+    {
+      "id": "B3C13_TRUST_SURFACE_A11Y",
+      "status": "DEFERRED_TO_B3C13"
+    }
+  ],
+  "realLanguageCoverageStatus": "LIMITED",
+  "repo": {
+    "headSha": "3dd5f10d5f09f0be9ed01b42f153f2eaf883a69c",
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
+    "statusBasename": "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+    "writtenFrom": "b3c12-i18n-text-anchor-safety-state.mjs"
+  },
+  "runtime": {
+    "changedBasenames": [
+      "b3c12-i18n-text-anchor-safety-state.mjs",
+      "b3c12-i18n-text-anchor-safety.contract.test.js",
+      "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "ccd18c4a006f39caed2832c7e42968d5917f04fd6801372870ed28f6def075d5",
+    "commandResults": {
+      "allPassed": null,
+      "commandCount": 10,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c12-i18n-text-anchor-safety-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c12-i18n-text-anchor-safety.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c11-xplat-normalization-baseline.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c10-capability-tier-report.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c09-performance-baseline-binding.contract.test.js",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --check",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/io src/export src/main.js src/preload.js src/core/sceneInlineRangeAdmission.mjs src/contracts/inline-range.contract.ts",
+          "index": 10,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C12_I18N_TEXT_ANCHOR_SAFETY"
+    },
+    "statusArtifactHash": "b667017114fcf4ffc4f60cd5591bbbf5caa666acfd88a931da8f29889651e57e"
+  },
+  "scope": {
+    "a11yTrustSurfaceProof": false,
+    "atomicWriteTouched": false,
+    "b3c09PerfGapFix": false,
+    "b3c11PlatformLimitFix": false,
+    "contractBaselineOnly": true,
+    "editorRendererRewritten": false,
+    "exportPipelineRewritten": false,
+    "fullBidiLayoutEngineClaim": false,
+    "fullGlobalI18nGreenClaim": false,
+    "i18nTextAnchorSafetyOnly": true,
+    "inlineRangeSchemaMutated": false,
+    "layer": "B3C12_I18N_TEXT_ANCHOR_SAFETY",
+    "newDependency": false,
+    "projectStoreTouched": false,
+    "proseMirrorTiptapChanged": false,
+    "releaseClaim": false,
+    "releaseI18nSupportClaim": false,
+    "rendererSearchUiChange": false,
+    "securityPolicyRewritten": false,
+    "storageFormatChanged": false,
+    "storageMutated": false,
+    "translationOrLocaleFeatureClaim": false,
+    "uiTouched": false,
+    "xplatCertification": false
+  },
+  "segmenterPolicy": {
+    "fallbackLimited": false,
+    "fullI18nGreenClaim": false,
+    "policy": "INTL_SEGMENTER_IF_AVAILABLE_WITH_LIMITED_FALLBACK_DECLARED",
+    "segmenterAvailable": true
+  },
+  "status": "PASS",
+  "successWording": "PASS_AS_TRUTHFUL_I18N_ANCHOR_CONTRACT_BASELINE_WITH_LIMITS_NOT_GLOBAL_I18N_GREEN",
+  "testedLanguageSet": {
+    "bidiLayoutEngineRun": false,
+    "contractFixtureOnly": true,
+    "realLanguageMatrixRun": false,
+    "releaseSupportClaim": false
+  },
+  "tokenSemantics": "ANCHOR_BOUNDARY_CONTRACT_ONLY_NOT_RELEASE_I18N_SUPPORT",
+  "unsupportedScope": [
+    {
+      "id": "FULL_GLOBAL_I18N_SUPPORT",
+      "reason": "NOT_CLAIMED_IN_B3C12"
+    },
+    {
+      "id": "BIDI_LAYOUT_RENDERING",
+      "reason": "ANCHOR_BOUNDARIES_ONLY_NO_LAYOUT_ENGINE_CLAIM"
+    },
+    {
+      "id": "REAL_LANGUAGE_COVERAGE_MATRIX",
+      "reason": "CONTRACT_FIXTURES_ONLY"
+    },
+    {
+      "id": "RENDERER_SEARCH_UI_CHANGE",
+      "reason": "OUT_OF_SCOPE_FOR_B3C12"
+    },
+    {
+      "id": "XPLAT_CERTIFICATION",
+      "reason": "B3C11_LIMITS_REMAIN_VISIBLE"
+    }
+  ]
+}
