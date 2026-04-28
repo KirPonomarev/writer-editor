@@ -1,0 +1,14 @@
+{
+  "c03StillBlocked": true,
+  "exactC02Input": {
+    "admissionRef": "admission-summary.json",
+    "blockerRef": "mergeability-summary.json",
+    "excludedSetRef": "excluded-set.json",
+    "executionGranted": false,
+    "includedSetRef": "included-set.json",
+    "nextContour": "MAIN_SYNC_C02_SELECTED_REPLAY_PLAN_AND_DRY_RUN",
+    "selectedMethodId": "CHERRY_PICK_REPLAY_TO_MAIN"
+  },
+  "ownerAcceptanceRequired": false,
+  "selectedMethod": "CHERRY_PICK_REPLAY_TO_MAIN"
+}
