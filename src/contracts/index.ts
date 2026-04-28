@@ -32,6 +32,10 @@ export type {
   SceneBlockContract,
   SceneBlockTypeContract,
 } from "./scene-block.contract";
+export type {
+  SceneInlineMarkTypeContract,
+  SceneInlineRangeContract,
+} from "./scene-inline-range.contract";
 
 export type {
   RuntimeExecutionContract,
