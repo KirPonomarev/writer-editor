@@ -1,0 +1,100 @@
+{
+  "negativeCases": [
+    {
+      "caseId": "NEGATIVE_UNREADABLE_PACK",
+      "expectedCode": "E_B2C14_UNREADABLE_PACK",
+      "failRows": [
+        "SECTIONS_UNREADABLE"
+      ],
+      "observedCode": "E_B2C14_UNREADABLE_PACK",
+      "ok": true
+    },
+    {
+      "caseId": "NEGATIVE_MISSING_SCENE_LIST",
+      "expectedCode": "E_B2C14_SCENE_LIST_MISSING",
+      "failRows": [
+        "SCENE_LIST_MISSING"
+      ],
+      "observedCode": "E_B2C14_SCENE_LIST_MISSING",
+      "ok": true
+    },
+    {
+      "caseId": "NEGATIVE_MISSING_TEXT_SNAPSHOT",
+      "expectedCode": "E_B2C14_TEXT_SNAPSHOT_MISSING",
+      "failRows": [
+        "SCENE_TEXT_SNAPSHOT_MISSING"
+      ],
+      "observedCode": "E_B2C14_TEXT_SNAPSHOT_MISSING",
+      "ok": true
+    },
+    {
+      "caseId": "NEGATIVE_MISSING_HASH_SECTION",
+      "expectedCode": "E_B2C14_HASH_SECTION_MISSING",
+      "failRows": [
+        "HASH_SECTION_MISSING"
+      ],
+      "observedCode": "E_B2C14_HASH_SECTION_MISSING",
+      "ok": true
+    },
+    {
+      "caseId": "NEGATIVE_STALE_TIMESTAMP_BINDING",
+      "expectedCode": "E_B2C14_TIMESTAMP_BINDING_STALE",
+      "failRows": [
+        "TIMESTAMP_BINDING_HASH_INVALID"
+      ],
+      "observedCode": "E_B2C14_TIMESTAMP_BINDING_STALE",
+      "ok": true
+    },
+    {
+      "caseId": "NEGATIVE_CONTENT_BOUNDARY_VIOLATION",
+      "expectedCode": "E_B2C14_CONTENT_BOUNDARY_VIOLATION",
+      "failRows": [
+        "CONTENT_BOUNDARY_INVALID_scene-001"
+      ],
+      "observedCode": "E_B2C14_CONTENT_BOUNDARY_VIOLATION",
+      "ok": true
+    }
+  ],
+  "positiveValidation": {
+    "code": "",
+    "failRows": [],
+    "ok": true
+  },
+  "readabilityChecks": [
+    "projectSummary",
+    "sceneList",
+    "sceneTextSnapshot",
+    "blockOrder",
+    "errorSummary_or_reason",
+    "humanReadableRestoreGuidanceText",
+    "hashSection",
+    "timestampSection",
+    "machineReplayCompanionReference",
+    "readableContentBoundary"
+  ],
+  "requiredFalseClaims": [
+    "restoreDrillClaim",
+    "restoredProjectEqualityClaim",
+    "quarantineCloseClaim",
+    "b2c15Claim",
+    "block2ExitClaim",
+    "uiTouched",
+    "dependencyChanged",
+    "networkOrCloud"
+  ],
+  "requiredSections": [
+    "projectSummary",
+    "sceneList",
+    "sceneTextSnapshot",
+    "blockOrder",
+    "errorSummary",
+    "reason",
+    "humanReadableRestoreGuidanceText",
+    "hashSection",
+    "timestampSection",
+    "machineReplayCompanionReference",
+    "readableContentBoundary"
+  ],
+  "rubricVersion": 1,
+  "taskId": "B2C14_RECOVERY_READABLE_PROOF"
+}

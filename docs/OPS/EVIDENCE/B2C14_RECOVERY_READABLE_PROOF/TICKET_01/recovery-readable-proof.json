@@ -1,0 +1,210 @@
+{
+  "proof": {
+    "deterministicFixtureId": "B2C14_READABILITY_FIXTURE_V1",
+    "hashAlgorithm": "sha256",
+    "negativeContentBoundaryViolationRejectOk": true,
+    "negativeMissingHashSectionRejectOk": true,
+    "negativeMissingSceneListRejectOk": true,
+    "negativeMissingTextSnapshotRejectOk": true,
+    "negativeStaleHashTimestampBindingRejectOk": true,
+    "negativeUnreadablePackRejectOk": true,
+    "positiveReadablePackOk": true,
+    "readableSectionsPresent": true,
+    "repoBound": true,
+    "scopeClaims": {
+      "b2c15Claim": false,
+      "block2ExitClaim": false,
+      "dependencyChanged": false,
+      "networkOrCloud": false,
+      "quarantineCloseClaim": false,
+      "restoredProjectEqualityClaim": false,
+      "restoreDrillClaim": false,
+      "uiTouched": false
+    },
+    "sections": {
+      "blockOrder": [
+        {
+          "blockIds": [
+            "scene-001-block-001",
+            "scene-001-block-002"
+          ],
+          "sceneId": "scene-001",
+          "sceneOrder": 1
+        },
+        {
+          "blockIds": [
+            "scene-002-block-001",
+            "scene-002-block-002"
+          ],
+          "sceneId": "scene-002",
+          "sceneOrder": 2
+        }
+      ],
+      "errorSummary": {
+        "reasonCode": "RECOVERY_READABILITY_REVIEW_REQUIRED",
+        "summary": "Readable artifact is admitted as a human review boundary only."
+      },
+      "hashSection": {
+        "algorithm": "sha256",
+        "contentHash": "188dc5fcc5efb4614d0553ff0724ec189609047cac907702dadfd1e1ae425787",
+        "manifestHash": "a771566d0e34344d924c9d79e71af3cfafc282bca462d0376e83555313f098cb",
+        "sceneHashes": [
+          {
+            "sceneId": "scene-001",
+            "textHash": "103ebe18b459aff20688720b86f4c5057aba0f53faf1f3225a5816ff5d4d2aa6"
+          },
+          {
+            "sceneId": "scene-002",
+            "textHash": "6e1c09e76729d133069ba7a9a0fa10b3e5997de246c08bcc65d17d019f15b818"
+          }
+        ],
+        "timestampBindingHash": "6d3c082a7016b911ce886531ce30fad7ac1a009ffd38a72154b5a20336647c2c"
+      },
+      "humanReadableRestoreGuidanceText": [
+        "Open the readable snapshots in scene order.",
+        "Copy only the content below the readable content delimiter.",
+        "Verify scene text hashes before any manual restore action.",
+        "Use the machine replay companion reference for order and hash replay only."
+      ],
+      "machineReplayCompanionReference": {
+        "fileBasename": "manifest.recovery.json",
+        "manifestHash": "a771566d0e34344d924c9d79e71af3cfafc282bca462d0376e83555313f098cb",
+        "orderedSceneIds": [
+          "scene-001",
+          "scene-002"
+        ],
+        "refId": "machine-replay-companion-v1",
+        "replayMode": "ORDER_AND_HASH_ONLY"
+      },
+      "projectSummary": {
+        "projectId": "b2c14-readable-proof-project",
+        "projectTitle": "B2C14 Readable Proof Fixture",
+        "readablePurpose": "READABILITY_ONLY_PROOF",
+        "sceneCount": 2,
+        "totalBlockCount": 4
+      },
+      "readableContentBoundary": {
+        "boundaryProtected": true,
+        "copyRule": "COPY_ONLY_TEXT_BELOW_DELIMITER",
+        "delimiter": "--- RECOVERY CONTENT START ---"
+      },
+      "reason": "READABILITY_PROOF_ONLY_RECOVERY_GUIDE",
+      "sceneList": [
+        {
+          "blockCount": 2,
+          "order": 1,
+          "sceneId": "scene-001",
+          "title": "Opening",
+          "wordCount": 6
+        },
+        {
+          "blockCount": 2,
+          "order": 2,
+          "sceneId": "scene-002",
+          "title": "Counterpoint",
+          "wordCount": 7
+        }
+      ],
+      "sceneTextSnapshot": [
+        {
+          "blockIds": [
+            "scene-001-block-001",
+            "scene-001-block-002"
+          ],
+          "order": 1,
+          "rawSnapshot": "# Opening\n\nScene id: scene-001\nScene order: 1\nBlock order: scene-001-block-001, scene-001-block-002\nText hash: 103ebe18b459aff20688720b86f4c5057aba0f53faf1f3225a5816ff5d4d2aa6\n\nReadable recovery snapshot. Copy only content below the delimiter.\n--- RECOVERY CONTENT START ---\n  Opening paragraph.\nSecond line remains readable.\n",
+          "sceneId": "scene-001",
+          "textHash": "103ebe18b459aff20688720b86f4c5057aba0f53faf1f3225a5816ff5d4d2aa6",
+          "title": "Opening"
+        },
+        {
+          "blockIds": [
+            "scene-002-block-001",
+            "scene-002-block-002"
+          ],
+          "order": 2,
+          "rawSnapshot": "# Counterpoint\n\nScene id: scene-002\nScene order: 2\nBlock order: scene-002-block-001, scene-002-block-002\nText hash: 6e1c09e76729d133069ba7a9a0fa10b3e5997de246c08bcc65d17d019f15b818\n\nReadable recovery snapshot. Copy only content below the delimiter.\n--- RECOVERY CONTENT START ---\nCounterpoint starts here.\nTrailing spaces stay visible.  \n",
+          "sceneId": "scene-002",
+          "textHash": "6e1c09e76729d133069ba7a9a0fa10b3e5997de246c08bcc65d17d019f15b818",
+          "title": "Counterpoint"
+        }
+      ],
+      "timestampSection": {
+        "bindingHash": "6d3c082a7016b911ce886531ce30fad7ac1a009ffd38a72154b5a20336647c2c",
+        "bindingMode": "TIMESTAMP_PLUS_CONTENT_HASH",
+        "generatedAtIso": "2026-04-28T09:44:00.000Z"
+      }
+    },
+    "timestampMode": "TIMESTAMP_PLUS_CONTENT_HASH"
+  },
+  "runtime": {
+    "machineReplayCompanionHash": "054ba443670079d64416ca0e69990165ee59dea32a10bd5d5639a43467b053cd",
+    "negativeCases": [
+      {
+        "caseId": "NEGATIVE_UNREADABLE_PACK",
+        "expectedCode": "E_B2C14_UNREADABLE_PACK",
+        "failRows": [
+          "SECTIONS_UNREADABLE"
+        ],
+        "observedCode": "E_B2C14_UNREADABLE_PACK",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MISSING_SCENE_LIST",
+        "expectedCode": "E_B2C14_SCENE_LIST_MISSING",
+        "failRows": [
+          "SCENE_LIST_MISSING"
+        ],
+        "observedCode": "E_B2C14_SCENE_LIST_MISSING",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MISSING_TEXT_SNAPSHOT",
+        "expectedCode": "E_B2C14_TEXT_SNAPSHOT_MISSING",
+        "failRows": [
+          "SCENE_TEXT_SNAPSHOT_MISSING"
+        ],
+        "observedCode": "E_B2C14_TEXT_SNAPSHOT_MISSING",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MISSING_HASH_SECTION",
+        "expectedCode": "E_B2C14_HASH_SECTION_MISSING",
+        "failRows": [
+          "HASH_SECTION_MISSING"
+        ],
+        "observedCode": "E_B2C14_HASH_SECTION_MISSING",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_STALE_TIMESTAMP_BINDING",
+        "expectedCode": "E_B2C14_TIMESTAMP_BINDING_STALE",
+        "failRows": [
+          "TIMESTAMP_BINDING_HASH_INVALID"
+        ],
+        "observedCode": "E_B2C14_TIMESTAMP_BINDING_STALE",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_CONTENT_BOUNDARY_VIOLATION",
+        "expectedCode": "E_B2C14_CONTENT_BOUNDARY_VIOLATION",
+        "failRows": [
+          "CONTENT_BOUNDARY_INVALID_scene-001"
+        ],
+        "observedCode": "E_B2C14_CONTENT_BOUNDARY_VIOLATION",
+        "ok": true
+      }
+    ],
+    "positiveValidation": {
+      "code": "",
+      "derived": {
+        "expectedContentHash": "188dc5fcc5efb4614d0553ff0724ec189609047cac907702dadfd1e1ae425787",
+        "expectedManifestHash": "a771566d0e34344d924c9d79e71af3cfafc282bca462d0376e83555313f098cb",
+        "expectedTimestampBindingHash": "6d3c082a7016b911ce886531ce30fad7ac1a009ffd38a72154b5a20336647c2c"
+      },
+      "failRows": [],
+      "ok": true
+    },
+    "readableGuideHash": "77300587d13e8a702fe80311ffeb778ce55ce6ab5910729b916ca1cbb0a5a5b1"
+  }
+}
