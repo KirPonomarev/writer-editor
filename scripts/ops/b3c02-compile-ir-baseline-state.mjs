@@ -302,7 +302,7 @@ export async function evaluateB3C02CompileIRBaselineState({ repoRoot = process.c
     repo: {
       statusBasename: STATUS_BASENAME,
       writtenFrom: path.basename(fileURLToPath(import.meta.url)),
-      repoRootBasename: path.basename(repoRoot),
+      repoRootBinding: 'WORKTREE_INDEPENDENT',
     },
   };
   return stableSort(state);
