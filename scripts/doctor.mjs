@@ -3760,7 +3760,7 @@ function evaluateM7PhaseTokens(sectorMStatus, m6Reliability) {
         && preloadText.includes('FLOW_SAVE_V1_CHANNEL')
         && preloadText.includes('saveFlowModeV1')
         && mainText.includes('handleFlowSaveV1')
-        && mainText.includes('writeFileAtomic(scene.path, scene.content)')
+        && mainText.includes('writeFlowSceneBatchAtomic')
         && editorText.includes('handleFlowModeSaveUiPath')
         && editorText.includes('nextSceneCaretAtBoundary')
         && editorText.includes('previousSceneCaretAtBoundary')

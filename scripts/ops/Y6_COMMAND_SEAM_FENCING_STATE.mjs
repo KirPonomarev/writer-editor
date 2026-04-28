@@ -11,6 +11,7 @@ const TOKEN_NAME = 'Y6_COMMAND_SEAM_FENCING_OK';
 const EDITOR_SOURCE_PATH = 'src/renderer/editor.js';
 const PRELOAD_SOURCE_PATH = 'src/preload.js';
 const PROJECT_COMMANDS_SOURCE_PATH = 'src/renderer/commands/projectCommands.mjs';
+const COMMAND_EFFECT_MODEL_SOURCE_PATH = 'src/renderer/commands/commandEffectModel.mjs';
 const MAIN_SOURCE_PATH = 'src/main.js';
 const BUNDLE_PATH = 'src/renderer/editor.bundle.js';
 const FAILSIGNAL_REGISTRY_PATH = 'docs/OPS/FAILSIGNALS/FAILSIGNAL_REGISTRY.json';
@@ -93,6 +94,9 @@ function evaluateY6CommandSeamFencingState(input = {}) {
   const projectCommandsSource = typeof input.projectCommandsSource === 'string'
     ? input.projectCommandsSource
     : readText(PROJECT_COMMANDS_SOURCE_PATH);
+  const commandEffectModelSource = typeof input.commandEffectModelSource === 'string'
+    ? input.commandEffectModelSource
+    : readText(COMMAND_EFFECT_MODEL_SOURCE_PATH);
   const mainSource = typeof input.mainSource === 'string' ? input.mainSource : readText(MAIN_SOURCE_PATH);
 
   const commandSurfaceState = evaluateCommandSurfaceState();
@@ -120,7 +124,15 @@ function evaluateY6CommandSeamFencingState(input = {}) {
     projectCommandsBridgeOnly:
       projectCommandsSource.includes('async function invokeFileLifecycleBridge(electronAPI, commandId) {') &&
       projectCommandsSource.includes('async function invokeTransferAndFlowCommandBridge(electronAPI, commandId, payload = {}) {') &&
-      projectCommandsSource.includes('electronAPI.invokeUiCommandBridge({') &&
+      projectCommandsSource.includes('async function invokeBridgeOnlyCommand(electronAPI, commandId, payload = {}) {') &&
+      projectCommandsSource.includes("effectType: 'electron-bridge-only',") &&
+      commandEffectModelSource.includes("if (effectType === 'electron-bridge-only') {") &&
+      commandEffectModelSource.includes("kind: 'electron-bridge',") &&
+      commandEffectModelSource.includes('route: COMMAND_BRIDGE_ROUTE,') &&
+      commandEffectModelSource.includes('electronAPI.invokeUiCommandBridge({') &&
+      commandEffectModelSource.includes('route: plan.route,') &&
+      commandEffectModelSource.includes('commandId: plan.commandId,') &&
+      commandEffectModelSource.includes('payload: plan.payload,') &&
       FORBIDDEN_PROJECT_COMMANDS_DIRECT_FALLBACKS.every((marker) => !projectCommandsSource.includes(marker)),
     mainTrustBoundaryAllowlistPresent:
       mainSource.includes("'cmd.project.new'") &&
