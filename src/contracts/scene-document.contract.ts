@@ -1,15 +1,12 @@
-export type SceneDocumentSchemaVersion = 1;
+import type { SceneBlockContract } from "./scene-block.contract";
 
-export type SceneDocumentBlockContract = {
-  type: string;
-  text: string;
-};
+export type SceneDocumentSchemaVersion = 1;
 
 export type SceneDocumentContract = {
   schemaVersion: SceneDocumentSchemaVersion;
   id: string;
   title: string;
   order: number;
-  blocks: SceneDocumentBlockContract[];
+  blocks: SceneBlockContract[];
   metadata?: Record<string, unknown>;
 };

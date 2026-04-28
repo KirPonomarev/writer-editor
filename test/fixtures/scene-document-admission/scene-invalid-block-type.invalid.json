@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "scene-invalid-type",
+  "title": "Invalid Type",
+  "order": 0,
+  "blocks": [
+    {
+      "id": "block-invalid-type-1",
+      "sceneId": "scene-invalid-type",
+      "type": "list",
+      "text": "Alpha"
+    }
+  ]
+}

@@ -5,6 +5,8 @@
   "order": 0,
   "blocks": [
     {
+      "id": "block-minimal-1",
+      "sceneId": "scene-minimal",
       "type": "paragraph",
       "text": "Alpha"
     }

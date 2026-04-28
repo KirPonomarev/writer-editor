@@ -5,8 +5,14 @@
   "order": 4,
   "blocks": [
     {
+      "id": "block-full-1",
+      "sceneId": "scene-full",
       "type": "paragraph",
-      "text": "Full body"
+      "text": "Full body",
+      "markRefs": [
+        "mark-alpha",
+        "mark-beta"
+      ]
     }
   ],
   "metadata": {
