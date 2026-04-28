@@ -1,0 +1,8 @@
+[
+  {
+    "count": 0,
+    "description": "C01 inventories the full bound main-to-root range and excludes no commits from that bound range.",
+    "entries": [],
+    "setId": "NO_BOUND_ROOT_COMMITS_EXCLUDED_AT_C01"
+  }
+]

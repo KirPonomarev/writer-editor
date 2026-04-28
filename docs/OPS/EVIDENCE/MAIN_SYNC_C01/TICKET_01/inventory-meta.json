@@ -1,0 +1,10 @@
+{
+  "branchName": "codex/main-sync-c01-ahead-inventory-001",
+  "generatedAtUtc": "2026-04-28T11:51:44.753Z",
+  "headEqualsBoundRoot": true,
+  "headSha": "0b3cc7f91400df650dcb875453dda4b389bbeb3e",
+  "originMainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+  "sourceDriftProven": true,
+  "sourceTicketId": "TZ_MAIN_SYNC_C01_AHEAD_INVENTORY_001",
+  "ticketId": "TZ_MAIN_SYNC_C01_AHEAD_INVENTORY_001"
+}

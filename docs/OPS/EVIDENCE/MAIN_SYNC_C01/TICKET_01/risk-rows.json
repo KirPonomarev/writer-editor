@@ -1,0 +1,26 @@
+[
+  {
+    "detail": "Reachable ahead set is much larger than first-parent window and must not be promoted blindly.",
+    "metric": 1736,
+    "riskId": "ROOT_MAIN_REACHABLE_RANGE_LARGE",
+    "severity": "HIGH"
+  },
+  {
+    "detail": "Bound promotion window mixes carryforward, rebind, and canonical B2C chain commits.",
+    "metric": 612,
+    "riskId": "FIRST_PARENT_WINDOW_MIXED_CLASSES",
+    "severity": "MEDIUM"
+  },
+  {
+    "detail": "Bound root ahead inventory is valid even though root is not a direct descendant of the bound main head.",
+    "metric": 1,
+    "riskId": "BOUND_ROOT_HISTORY_DIVERGED_FROM_BOUND_MAIN",
+    "severity": "INFO"
+  },
+  {
+    "detail": "C01 classifies scope only and does not approve or execute root-to-main promotion.",
+    "metric": 1,
+    "riskId": "PROMOTION_DEFERRED_TO_C02",
+    "severity": "INFO"
+  }
+]
