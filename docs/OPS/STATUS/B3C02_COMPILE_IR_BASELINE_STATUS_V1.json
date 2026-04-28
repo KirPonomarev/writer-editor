@@ -1,0 +1,171 @@
+{
+  "artifactId": "B3C02_COMPILE_IR_BASELINE_STATUS_V1",
+  "B3C02_COMPILE_IR_BASELINE_OK": 1,
+  "contourId": "B3C02_COMPILE_IR_BASELINE",
+  "failRows": [],
+  "failSignal": "",
+  "ok": true,
+  "proof": {
+    "b3c01InputBound": true,
+    "blockOrderNegativeBound": true,
+    "canonicalInputDerived": true,
+    "compileIRSchemaBound": true,
+    "deterministicHashBound": true,
+    "donorScopeMinimal": true,
+    "noDependencyChange": true,
+    "noDocxGeneration": true,
+    "noReleaseClaim": true,
+    "noStorageRewrite": true,
+    "noUiChange": true,
+    "sceneOrderNegativeBound": true,
+    "sourceHashNegativeBound": true,
+    "volatileFieldNegativeBound": true
+  },
+  "repo": {
+    "repoRootBasename": "writer-editor-b3c02-compile-ir-baseline-001",
+    "statusBasename": "B3C02_COMPILE_IR_BASELINE_STATUS_V1.json",
+    "writtenFrom": "b3c02-compile-ir-baseline-state.mjs"
+  },
+  "runtime": {
+    "commandResults": {
+      "allPassed": true,
+      "commandCount": 6,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c02-compile-ir-baseline-state.mjs --write --json",
+          "index": 1,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b3c02-compile-ir-baseline.contract.test.js",
+          "index": 2,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b3c01-command-kernel-scope-lock.contract.test.js",
+          "index": 3,
+          "result": "PASS"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 4,
+          "result": "PASS"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 5,
+          "result": "PASS"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+          "index": 6,
+          "result": "PASS"
+        }
+      ],
+      "noPending": true,
+      "status": "EXECUTED_AND_RECORDED",
+      "taskId": "B3C02_COMPILE_IR_BASELINE"
+    },
+    "compileIRArtifact": {
+      "blockCounts": {
+        "scene-one": 1,
+        "scene-two": 1
+      },
+      "compileIRHash": "040c56c36cd1e7e35cf50f60f7bf779efdc0a353598556d89817882626492c15",
+      "formatVersion": "compile-ir-v1",
+      "laterTargets": [
+        "markdown",
+        "txt",
+        "html",
+        "epub"
+      ],
+      "projectId": "b3c02-project",
+      "sceneOrder": [
+        "scene-one",
+        "scene-two"
+      ],
+      "schemaVersion": 1,
+      "sourceBinding": "canonical-project-scenes",
+      "sourceHash": "f9c10895c15987b477503e86da6ee5a5c6e6d87601951572b1c7836743700920",
+      "volatileFields": [
+        "createdAt"
+      ]
+    },
+    "forbiddenInputKeys": [
+      "bufferSource",
+      "dom",
+      "editorSnapshot",
+      "html",
+      "liveEditorState",
+      "liveText",
+      "plainText",
+      "previewModel",
+      "rendererState",
+      "screenText"
+    ],
+    "passFailRows": [
+      {
+        "id": "MINIMAL_IR_ACCEPTANCE",
+        "passed": true
+      },
+      {
+        "id": "MULTI_SCENE_SEQUENCE",
+        "passed": true
+      },
+      {
+        "id": "INLINE_MARK_ACCEPTANCE",
+        "passed": true
+      },
+      {
+        "id": "STYLE_MAP_ACCEPTANCE",
+        "passed": true
+      },
+      {
+        "id": "SOURCE_HASH_REJECTION",
+        "passed": true
+      },
+      {
+        "id": "SCENE_ORDER_REJECTION",
+        "passed": true
+      },
+      {
+        "id": "BLOCK_ORDER_REJECTION",
+        "passed": true
+      },
+      {
+        "id": "VOLATILE_CREATED_AT_EXCLUDED_FROM_HASH",
+        "passed": true
+      },
+      {
+        "id": "FORBIDDEN_LIVE_EDITOR_SOURCE_REJECTION",
+        "passed": true
+      },
+      {
+        "id": "B3C01_INPUT_BOUND",
+        "passed": true
+      }
+    ],
+    "sourceBasenames": [
+      "compile-ir.js",
+      "b3c02-compile-ir-baseline-state.mjs",
+      "b3c02-compile-ir-baseline.contract.test.js",
+      "B3C02_COMPILE_IR_BASELINE_STATUS_V1.json"
+    ],
+    "sourceBasenamesHash": "dc7c448a74afa0b5e6615d5ab9cbe2c7666c52c660b87ab68dedfca788bd80c9"
+  },
+  "scope": {
+    "attestationStarted": false,
+    "capabilityTierClaim": false,
+    "compileIRIsDerivedNotTruth": true,
+    "dependencyChanged": false,
+    "docxGenerationStarted": false,
+    "docxValidationStarted": false,
+    "layer": "B3C02_COMPILE_IR_BASELINE",
+    "releaseDossierStarted": false,
+    "securityRuntimeStarted": false,
+    "storageRuntimeChanged": false,
+    "supplyChainStarted": false,
+    "uiTouched": false
+  },
+  "status": "PASS"
+}
