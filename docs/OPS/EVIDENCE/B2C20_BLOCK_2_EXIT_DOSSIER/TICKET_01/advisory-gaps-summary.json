@@ -1,0 +1,113 @@
+{
+  "count": 12,
+  "rows": [
+    {
+      "blocking": false,
+      "classification": "ADVISORY",
+      "contourId": "B2C01",
+      "findingId": "B2C01_STATUS_PACKET_GAP",
+      "gapType": "STATUS_PACKET_GAP",
+      "hasMachineEvidence": false,
+      "legacyNamingGap": true
+    },
+    {
+      "blocking": false,
+      "classification": "ADVISORY",
+      "contourId": "B2C01",
+      "findingId": "B2C01_CONTRACT_TEST_GAP",
+      "gapType": "CONTRACT_TEST_GAP",
+      "hasMachineEvidence": false,
+      "legacyNamingGap": true
+    },
+    {
+      "blocking": false,
+      "classification": "ADVISORY",
+      "contourId": "B2C01",
+      "findingId": "B2C01_COMMAND_RESULTS_GAP",
+      "gapType": "COMMAND_RESULTS_GAP",
+      "hasMachineEvidence": false,
+      "legacyNamingGap": true
+    },
+    {
+      "blocking": false,
+      "classification": "ADVISORY",
+      "contourId": "B2C02",
+      "findingId": "B2C02_STATUS_PACKET_GAP",
+      "gapType": "STATUS_PACKET_GAP",
+      "hasMachineEvidence": false,
+      "legacyNamingGap": true
+    },
+    {
+      "blocking": false,
+      "classification": "ADVISORY",
+      "contourId": "B2C02",
+      "findingId": "B2C02_CONTRACT_TEST_GAP",
+      "gapType": "CONTRACT_TEST_GAP",
+      "hasMachineEvidence": false,
+      "legacyNamingGap": true
+    },
+    {
+      "blocking": false,
+      "classification": "ADVISORY",
+      "contourId": "B2C02",
+      "findingId": "B2C02_COMMAND_RESULTS_GAP",
+      "gapType": "COMMAND_RESULTS_GAP",
+      "hasMachineEvidence": false,
+      "legacyNamingGap": true
+    },
+    {
+      "blocking": false,
+      "classification": "ADVISORY",
+      "contourId": "B2C03",
+      "findingId": "B2C03_STATUS_PACKET_GAP",
+      "gapType": "STATUS_PACKET_GAP",
+      "hasMachineEvidence": false,
+      "legacyNamingGap": true
+    },
+    {
+      "blocking": false,
+      "classification": "ADVISORY",
+      "contourId": "B2C03",
+      "findingId": "B2C03_CONTRACT_TEST_GAP",
+      "gapType": "CONTRACT_TEST_GAP",
+      "hasMachineEvidence": false,
+      "legacyNamingGap": true
+    },
+    {
+      "blocking": false,
+      "classification": "ADVISORY",
+      "contourId": "B2C03",
+      "findingId": "B2C03_COMMAND_RESULTS_GAP",
+      "gapType": "COMMAND_RESULTS_GAP",
+      "hasMachineEvidence": false,
+      "legacyNamingGap": true
+    },
+    {
+      "blocking": false,
+      "classification": "ADVISORY",
+      "contourId": "B2C04",
+      "findingId": "B2C04_STATUS_PACKET_GAP",
+      "gapType": "STATUS_PACKET_GAP",
+      "hasMachineEvidence": false,
+      "legacyNamingGap": true
+    },
+    {
+      "blocking": false,
+      "classification": "ADVISORY",
+      "contourId": "B2C04",
+      "findingId": "B2C04_CONTRACT_TEST_GAP",
+      "gapType": "CONTRACT_TEST_GAP",
+      "hasMachineEvidence": false,
+      "legacyNamingGap": true
+    },
+    {
+      "blocking": false,
+      "classification": "ADVISORY",
+      "contourId": "B2C04",
+      "findingId": "B2C04_COMMAND_RESULTS_GAP",
+      "gapType": "COMMAND_RESULTS_GAP",
+      "hasMachineEvidence": false,
+      "legacyNamingGap": true
+    }
+  ]
+}

@@ -1,0 +1,488 @@
+{
+  "artifactId": "B2C20_BLOCK_2_EXIT_DOSSIER_STATUS_V1",
+  "B2C20_BLOCK_2_EXIT_DOSSIER_OK": 1,
+  "failRows": [],
+  "failSignal": "",
+  "ok": true,
+  "proof": {
+    "advisoryGapCount": 12,
+    "b2c19BlockingFindingsZero": true,
+    "b2c19CommandResultsAllPassed": true,
+    "b2c19CommandResultsHash": "e668abc71c3fc4e816df68f962a31b3bcb69fcd102ba1283ea5c9936f5c27138",
+    "b2c19DiscoveredArtifactIndexHash": "552c143cffb11bbecce1b2e9e4d0eb71e61e506c532ad9f84772c0b1c4038c71",
+    "b2c19FindingClassificationHash": "3cfafc3c92fb83f38a0615761f00ccffc85c005ef676dba217edd31f76f52c41",
+    "b2c19IndependentAuditTableHash": "ccb79f89bf8ca55d247e187115781fa67d7d170bc210d07e7f78edf4b24e2d3e",
+    "b2c19NoB2c20StartClaimBeforeThisContour": true,
+    "b2c19Ok": true,
+    "b2c19PrimaryInputBound": true,
+    "b2c19StatusHash": "8b10302e9f84d655b4b4abcf62f9a9c606e490e6680387f1bf84612d44413ac9",
+    "block2GreenMeansExitOnly": true,
+    "blockingGapCount": 0,
+    "commandResultsBound": true,
+    "exitDossierRows": 7,
+    "noBlock3Start": true,
+    "noDependencyChange": true,
+    "noExportChange": true,
+    "noFactualDocCutover": true,
+    "noFullReaudit": true,
+    "nonblockingGapCount": 8,
+    "noOldContourFixing": true,
+    "noProductRuntimeChange": true,
+    "noReleaseReadyClaim": true,
+    "noSchemaChange": true,
+    "noStorageFormatChange": true,
+    "noUiChange": true,
+    "requiredStatusPacketsPresent": true
+  },
+  "runtime": {
+    "advisoryGapsSummary": {
+      "count": 12,
+      "rows": [
+        {
+          "blocking": false,
+          "classification": "ADVISORY",
+          "contourId": "B2C01",
+          "findingId": "B2C01_STATUS_PACKET_GAP",
+          "gapType": "STATUS_PACKET_GAP",
+          "hasMachineEvidence": false,
+          "legacyNamingGap": true
+        },
+        {
+          "blocking": false,
+          "classification": "ADVISORY",
+          "contourId": "B2C01",
+          "findingId": "B2C01_CONTRACT_TEST_GAP",
+          "gapType": "CONTRACT_TEST_GAP",
+          "hasMachineEvidence": false,
+          "legacyNamingGap": true
+        },
+        {
+          "blocking": false,
+          "classification": "ADVISORY",
+          "contourId": "B2C01",
+          "findingId": "B2C01_COMMAND_RESULTS_GAP",
+          "gapType": "COMMAND_RESULTS_GAP",
+          "hasMachineEvidence": false,
+          "legacyNamingGap": true
+        },
+        {
+          "blocking": false,
+          "classification": "ADVISORY",
+          "contourId": "B2C02",
+          "findingId": "B2C02_STATUS_PACKET_GAP",
+          "gapType": "STATUS_PACKET_GAP",
+          "hasMachineEvidence": false,
+          "legacyNamingGap": true
+        },
+        {
+          "blocking": false,
+          "classification": "ADVISORY",
+          "contourId": "B2C02",
+          "findingId": "B2C02_CONTRACT_TEST_GAP",
+          "gapType": "CONTRACT_TEST_GAP",
+          "hasMachineEvidence": false,
+          "legacyNamingGap": true
+        },
+        {
+          "blocking": false,
+          "classification": "ADVISORY",
+          "contourId": "B2C02",
+          "findingId": "B2C02_COMMAND_RESULTS_GAP",
+          "gapType": "COMMAND_RESULTS_GAP",
+          "hasMachineEvidence": false,
+          "legacyNamingGap": true
+        },
+        {
+          "blocking": false,
+          "classification": "ADVISORY",
+          "contourId": "B2C03",
+          "findingId": "B2C03_STATUS_PACKET_GAP",
+          "gapType": "STATUS_PACKET_GAP",
+          "hasMachineEvidence": false,
+          "legacyNamingGap": true
+        },
+        {
+          "blocking": false,
+          "classification": "ADVISORY",
+          "contourId": "B2C03",
+          "findingId": "B2C03_CONTRACT_TEST_GAP",
+          "gapType": "CONTRACT_TEST_GAP",
+          "hasMachineEvidence": false,
+          "legacyNamingGap": true
+        },
+        {
+          "blocking": false,
+          "classification": "ADVISORY",
+          "contourId": "B2C03",
+          "findingId": "B2C03_COMMAND_RESULTS_GAP",
+          "gapType": "COMMAND_RESULTS_GAP",
+          "hasMachineEvidence": false,
+          "legacyNamingGap": true
+        },
+        {
+          "blocking": false,
+          "classification": "ADVISORY",
+          "contourId": "B2C04",
+          "findingId": "B2C04_STATUS_PACKET_GAP",
+          "gapType": "STATUS_PACKET_GAP",
+          "hasMachineEvidence": false,
+          "legacyNamingGap": true
+        },
+        {
+          "blocking": false,
+          "classification": "ADVISORY",
+          "contourId": "B2C04",
+          "findingId": "B2C04_CONTRACT_TEST_GAP",
+          "gapType": "CONTRACT_TEST_GAP",
+          "hasMachineEvidence": false,
+          "legacyNamingGap": true
+        },
+        {
+          "blocking": false,
+          "classification": "ADVISORY",
+          "contourId": "B2C04",
+          "findingId": "B2C04_COMMAND_RESULTS_GAP",
+          "gapType": "COMMAND_RESULTS_GAP",
+          "hasMachineEvidence": false,
+          "legacyNamingGap": true
+        }
+      ]
+    },
+    "b2c19PrimaryInput": {
+      "discoveredArtifactIndexRows": 18,
+      "independentAuditRows": 7,
+      "statusBasename": "B2C19_INDEPENDENT_KERNEL_AUDIT_STATUS_V1.json"
+    },
+    "blockingGapsSummary": {
+      "count": 0,
+      "rows": []
+    },
+    "commandResults": {
+      "allPassed": true,
+      "commandCount": 10,
+      "commands": [
+        {
+          "command": "node scripts/ops/b2c20-block-2-exit-dossier-state.mjs --write --json",
+          "index": 1,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b2c20-block-2-exit-dossier.contract.test.js",
+          "index": 2,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b2c19-independent-kernel-audit.contract.test.js",
+          "index": 3,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b2c18-basic-kernel-perf-guard.contract.test.js",
+          "index": 4,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b2c17-migration-killpoint-proof.contract.test.js",
+          "index": 5,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b2c16-migration-policy-minimal.contract.test.js",
+          "index": 6,
+          "result": "PASS"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 7,
+          "result": "PASS"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 8,
+          "result": "PASS"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+          "index": 9,
+          "result": "PASS"
+        },
+        {
+          "command": "git diff --name-only -- src src-electron scripts -- :(exclude)scripts/ops/b2c20-block-2-exit-dossier-state.mjs",
+          "index": 10,
+          "result": "PASS"
+        }
+      ],
+      "noPending": true,
+      "status": "EXECUTED_AND_RECORDED",
+      "taskId": "B2C20_BLOCK_2_EXIT_DOSSIER"
+    },
+    "exitDossierTable": [
+      {
+        "evidence": "B2C19 status packet is the primary fact source for B2C20.",
+        "input": "B2C19_INDEPENDENT_KERNEL_AUDIT",
+        "rowId": "B2C19_PRIMARY_AUDIT_BOUND",
+        "status": "PASS"
+      },
+      {
+        "evidence": "0 blocking findings",
+        "input": "finding-classification.json",
+        "rowId": "B2C19_BLOCKING_FINDINGS_ZERO",
+        "status": "PASS"
+      },
+      {
+        "evidence": "allPassed and noPending are true",
+        "input": "B2C19 command-results.json",
+        "rowId": "B2C19_COMMAND_RESULTS_BOUND",
+        "status": "PASS"
+      },
+      {
+        "evidence": "12 advisory findings",
+        "input": "B2C19 advisory findings",
+        "rowId": "B2C01_TO_B2C04_LEGACY_GAPS_ADVISORY",
+        "status": "PASS"
+      },
+      {
+        "evidence": "15 of 15 required status contours pass shape check",
+        "input": "status packet spot check",
+        "rowId": "B2C05_TO_B2C19_STATUS_PACKETS_PRESENT",
+        "status": "PASS"
+      },
+      {
+        "evidence": "Block 2 green is not a release-ready claim and does not start Block 3.",
+        "input": "B2C20 scope flags",
+        "rowId": "BLOCK_2_EXIT_ONLY_NOT_RELEASE",
+        "status": "PASS"
+      },
+      {
+        "evidence": "B2C20 writes only OPS status, evidence, state script, and contract test.",
+        "input": "B2C20 scope flags",
+        "rowId": "NO_RUNTIME_UI_DEPENDENCY_SCHEMA_STORAGE_EXPORT_CHANGE",
+        "status": "PASS"
+      }
+    ],
+    "greenOrStopDecision": {
+      "block2Closed": true,
+      "block3StartClaim": false,
+      "blockingRows": [],
+      "decision": "GREEN",
+      "greenMeans": "BLOCK_2_EXIT_RULE_SATISFIED_ONLY",
+      "nextStep": "STOP_BEFORE_NEXT_OWNER_APPROVED_BLOCK",
+      "releaseReadyClaim": false,
+      "taskId": "B2C20_BLOCK_2_EXIT_DOSSIER"
+    },
+    "nonblockingGapsSummary": {
+      "count": 8,
+      "rows": [
+        {
+          "blocking": false,
+          "classification": "NONBLOCKING",
+          "contourId": "B2C05",
+          "findingId": "B2C05_COMMAND_RESULTS_GAP",
+          "gapType": "COMMAND_RESULTS_GAP",
+          "hasMachineEvidence": true,
+          "legacyNamingGap": false
+        },
+        {
+          "blocking": false,
+          "classification": "NONBLOCKING",
+          "contourId": "B2C06",
+          "findingId": "B2C06_COMMAND_RESULTS_GAP",
+          "gapType": "COMMAND_RESULTS_GAP",
+          "hasMachineEvidence": true,
+          "legacyNamingGap": false
+        },
+        {
+          "blocking": false,
+          "classification": "NONBLOCKING",
+          "contourId": "B2C07",
+          "findingId": "B2C07_COMMAND_RESULTS_GAP",
+          "gapType": "COMMAND_RESULTS_GAP",
+          "hasMachineEvidence": true,
+          "legacyNamingGap": false
+        },
+        {
+          "blocking": false,
+          "classification": "NONBLOCKING",
+          "contourId": "B2C08",
+          "findingId": "B2C08_COMMAND_RESULTS_GAP",
+          "gapType": "COMMAND_RESULTS_GAP",
+          "hasMachineEvidence": true,
+          "legacyNamingGap": false
+        },
+        {
+          "blocking": false,
+          "classification": "NONBLOCKING",
+          "contourId": "B2C09",
+          "findingId": "B2C09_COMMAND_RESULTS_GAP",
+          "gapType": "COMMAND_RESULTS_GAP",
+          "hasMachineEvidence": true,
+          "legacyNamingGap": false
+        },
+        {
+          "blocking": false,
+          "classification": "NONBLOCKING",
+          "contourId": "B2C10",
+          "findingId": "B2C10_COMMAND_RESULTS_GAP",
+          "gapType": "COMMAND_RESULTS_GAP",
+          "hasMachineEvidence": true,
+          "legacyNamingGap": false
+        },
+        {
+          "blocking": false,
+          "classification": "NONBLOCKING",
+          "contourId": "B2C11",
+          "findingId": "B2C11_COMMAND_RESULTS_GAP",
+          "gapType": "COMMAND_RESULTS_GAP",
+          "hasMachineEvidence": true,
+          "legacyNamingGap": false
+        },
+        {
+          "blocking": false,
+          "classification": "NONBLOCKING",
+          "contourId": "B2C12",
+          "findingId": "B2C12_COMMAND_RESULTS_GAP",
+          "gapType": "COMMAND_RESULTS_GAP",
+          "hasMachineEvidence": true,
+          "legacyNamingGap": false
+        }
+      ]
+    },
+    "requiredStatusRows": [
+      {
+        "contourId": "B2C05",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C05_FORMAL_KERNEL_MINIMAL_STATUS_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C06",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C06_PROJECT_LIFECYCLE_STATE_MACHINE_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C07",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C07_TRANSACTION_BOUNDARY_MINIMAL_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C08",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C08_RECOVERY_BOUNDARY_MINIMAL_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C09",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C09_COMMAND_SURFACE_KERNEL_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C10",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C10_COMMAND_BYPASS_NEGATIVE_MATRIX_STATUS_V1.json",
+          "docs/OPS/STATUS/B2C10_MIGRATION_SAFETY_PROOF_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C11",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C11_COMMAND_EFFECT_MODEL_STATUS_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C12",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C12_PERSIST_EFFECTS_ATOMIC_WRITE_STATUS_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C13",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C13_SAVE_REOPEN_TEXT_NO_LOSS_STATUS_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C14",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C14_RECOVERY_READABLE_PROOF_STATUS_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C15",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C15_RESTORE_DRILL_AND_QUARANTINE_STATUS_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C16",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C16_MIGRATION_POLICY_MINIMAL_STATUS_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C17",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C17_MIGRATION_KILLPOINT_PROOF_STATUS_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C18",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C18_BASIC_KERNEL_PERF_GUARD_STATUS_V1.json"
+        ]
+      },
+      {
+        "contourId": "B2C19",
+        "exists": true,
+        "okShape": true,
+        "statusFiles": [
+          "docs/OPS/STATUS/B2C19_INDEPENDENT_KERNEL_AUDIT_STATUS_V1.json"
+        ]
+      }
+    ]
+  },
+  "scope": {
+    "b2c19PrimaryInputMissing": false,
+    "block3StartClaim": false,
+    "dependencyChanged": false,
+    "exportChanged": false,
+    "factualDocCutoverClaim": false,
+    "fullReauditOfB2c01ToB2c18": false,
+    "oldContourFixing": false,
+    "productRuntimeChanged": false,
+    "releaseReadyClaim": false,
+    "schemaChanged": false,
+    "storageFormatChanged": false,
+    "uiTouched": false
+  }
+}
