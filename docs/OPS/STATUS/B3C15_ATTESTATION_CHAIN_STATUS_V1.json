@@ -1,0 +1,544 @@
+{
+  "artifactId": "B3C15_ATTESTATION_CHAIN_STATUS_V1",
+  "ATTESTATION_SIGNATURE_OK": 1,
+  "b3c14CarriedForwardLimitRows": [
+    {
+      "id": "B3C09_UNSUPPORTED_MEASUREMENTS",
+      "platformRows": [],
+      "provisionalScope": [],
+      "rows": [
+        "EXPORT_DOCX_P95_MS",
+        "SCENE_SWITCH_P95_MS"
+      ],
+      "sourceBasename": "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json",
+      "status": "BOUND_LIMIT",
+      "unsupportedScope": []
+    },
+    {
+      "id": "B3C10_PROVISIONAL_PERF_AND_PLATFORM_SCOPE",
+      "platformRows": [],
+      "provisionalScope": [
+        "B3C09_PROVISIONAL_PERF_GAP",
+        "NEXT_REQUIRED_MEASUREMENTS"
+      ],
+      "rows": [],
+      "sourceBasename": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+      "status": "BOUND_LIMIT",
+      "unsupportedScope": [
+        "EXPORT_DOCX_P95_MS",
+        "MULTI_PLATFORM_REAL_FIXTURE_SET",
+        "SCENE_SWITCH_P95_MS"
+      ]
+    },
+    {
+      "id": "B3C11_REAL_PLATFORM_LIMITS",
+      "platformRows": [
+        "LINUX:UNTESTED_LIMITED",
+        "MACOS:CURRENT_PLATFORM_ONLY_LIMITED",
+        "WINDOWS:UNTESTED_LIMITED"
+      ],
+      "provisionalScope": [],
+      "rows": [],
+      "sourceBasename": "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+      "status": "BOUND_LIMIT",
+      "unsupportedScope": []
+    },
+    {
+      "id": "B3C12_I18N_LIMITS",
+      "platformRows": [],
+      "provisionalScope": [],
+      "rows": [],
+      "sourceBasename": "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+      "status": "BOUND_LIMIT",
+      "unsupportedScope": [
+        "BIDI_LAYOUT_RENDERING",
+        "FULL_GLOBAL_I18N_SUPPORT",
+        "REAL_LANGUAGE_COVERAGE_MATRIX",
+        "RENDERER_SEARCH_UI_CHANGE",
+        "XPLAT_CERTIFICATION"
+      ]
+    },
+    {
+      "id": "B3C13_A11Y_LIMIT_ROWS",
+      "platformRows": [],
+      "provisionalScope": [],
+      "rows": [
+        "NO_BROAD_UI_POLISH_CLAIM",
+        "NO_FULL_APP_A11Y_CLAIM",
+        "NO_NEW_TRUST_SURFACE_CREATION",
+        "NO_RELEASE_A11Y_CERTIFICATION",
+        "TRUST_SURFACE_ONLY_SCOPE"
+      ],
+      "sourceBasename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "status": "BOUND_LIMIT",
+      "unsupportedScope": []
+    },
+    {
+      "id": "B3C13_A11Y_UNSUPPORTED_SCOPE",
+      "platformRows": [],
+      "provisionalScope": [],
+      "rows": [],
+      "sourceBasename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "status": "BOUND_LIMIT",
+      "unsupportedScope": [
+        "BROAD_UI_POLISH",
+        "FULL_APP_ACCESSIBILITY",
+        "NEW_TRUST_SURFACE_CREATION",
+        "RELEASE_A11Y_CERTIFICATION"
+      ]
+    },
+    {
+      "id": "B3C13_B3C14_HANDOFF",
+      "platformRows": [],
+      "provisionalScope": [
+        "B3C14_RELEASE_DOSSIER_MINIMAL:HANDOFF_ONLY"
+      ],
+      "rows": [],
+      "sourceBasename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "status": "BOUND_LIMIT",
+      "unsupportedScope": []
+    }
+  ],
+  "b3c14InputRow": {
+    "basename": "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+    "dossierStatus": "COMPLETE_WITH_LIMITS",
+    "passed": true,
+    "releaseGreen": false,
+    "status": "PASS",
+    "tokenName": "B3C14_RELEASE_DOSSIER_MINIMAL_OK"
+  },
+  "B3C15_ATTESTATION_CHAIN_OK": 1,
+  "B3C15_RELEASE_GREEN_OK": 0,
+  "contourId": "B3C15_ATTESTATION_CHAIN",
+  "donorIntake": {
+    "activeCanonOverDonor": true,
+    "archiveRows": [
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 132,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "ADMISSION_REPORT.md",
+          "atomic.js",
+          "attestation.js",
+          "binding-integrity.test.js",
+          "binding.mjs",
+          "BLOCK_2",
+          "BLOCK_2_EXIT_REPORT.md",
+          "BLOCK_2_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "block2-baseline-node-test-output.tap",
+          "block2-contracts-deep.test.js",
+          "block2-dossier.js",
+          "block2-exit-dossier.json",
+          "block2-exit-dossier.mjs",
+          "block2-exit-dossier.stdout.json",
+          "block2-unit-proof.json",
+          "block3-capability-xplat-i18n-a11y.test.js"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 146,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "ADMISSION_REPORT.md",
+          "atomic.js",
+          "attestation.js",
+          "binding-integrity.test.js",
+          "binding.mjs",
+          "BLOCK_2",
+          "BLOCK_2_EXIT_REPORT.md",
+          "BLOCK_2_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3_V2_DEEP_REWORK_REPORT.md",
+          "BLOCK_3_V3_PERFECTION_REPORT.md",
+          "block2-baseline-node-test-output.tap",
+          "block2-contracts-deep.test.js",
+          "block2-dossier.js",
+          "block2-exit-dossier.json",
+          "block2-exit-dossier.mjs",
+          "block2-exit-dossier.stdout.json"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 45,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "release-dossier.js",
+          "release-dossier.mjs",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 83,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "release-dossier.js",
+          "release-dossier.mjs",
+          "VALIDATION_REPORT.md"
+        ]
+      }
+    ],
+    "archivesFound": [
+      "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+      "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+      "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+      "writer-editor-longform-v5_1-turnkey-pack-v3.zip"
+    ],
+    "class": "READ_ONLY_CONTEXT_ONLY",
+    "codeImported": false,
+    "completionClaimImported": false,
+    "outputLocation": "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
+    "suggestedRows": [
+      "ATTESTATION_PAYLOAD_FIELDS",
+      "SIGNATURE_ROWS",
+      "VERIFY_ROWS",
+      "NEGATIVE_ROWS"
+    ]
+  },
+  "failRows": [],
+  "failSignal": "",
+  "negativeRows": [
+    {
+      "id": "SELF_SIGNED_NEGATIVE",
+      "rejectsClaim": "SELF_SIGNED_PAYLOAD_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "INVALID_SIGNATURE_NEGATIVE",
+      "rejectsClaim": "INVALID_SIGNATURE_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "STALE_HEAD_NEGATIVE",
+      "rejectsClaim": "STALE_HEAD_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "HASH_MISMATCH_NEGATIVE",
+      "rejectsClaim": "HASH_MISMATCH_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "MISSING_EXTERNAL_INPUT_NEGATIVE",
+      "rejectsClaim": "MISSING_EXTERNAL_INPUT_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "CHANGED_EXTERNAL_INPUT_NEGATIVE",
+      "rejectsClaim": "CHANGED_EXTERNAL_INPUT_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "OFFLINE_ATTESTATION_CHAIN_BREAK_NEGATIVE",
+      "rejectsClaim": "OFFLINE_ATTESTATION_CHAIN_BREAK_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "DOC_ONLY_ATTESTATION_NEGATIVE",
+      "rejectsClaim": "DOC_TEXT_WITHOUT_SIGNATURE_OR_VERIFY_ARTIFACT",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_GREEN_FALSE_NEGATIVE",
+      "rejectsClaim": "RELEASE_GREEN_CLAIM_IN_B3C15",
+      "status": "PASS"
+    }
+  ],
+  "ok": true,
+  "payload": {
+    "commandLog": {
+      "commands": [
+        "node scripts/ops/b3c15-attestation-chain-state.mjs --write --json",
+        "node --test test/contracts/b3c15-attestation-chain.contract.test.js",
+        "node --test test/contracts/b3c14-release-dossier-minimal.contract.test.js",
+        "node --test test/contracts/b3c13-trust-surface-accessibility.contract.test.js",
+        "node --test test/contracts/b3c12-i18n-text-anchor-safety.contract.test.js",
+        "node --test test/contracts/b3c11-xplat-normalization-baseline.contract.test.js",
+        "node --test test/contracts/b3c10-capability-tier-report.contract.test.js",
+        "node --test test/contracts/b3c09-performance-baseline-binding.contract.test.js"
+      ],
+      "id": "B3C15_MINIMAL_COMMAND_LOG_LIMITED",
+      "status": "LIMITED_FIXTURE_NOT_FULL_RELEASE_RUN"
+    },
+    "evidenceHash": "2b12a0acef3adebd453de1946f37305d6872c5b87e94c73a375f09cf2131cbb7",
+    "externalImmutableInputHash": "c0ab6d9988758761b299841ecb1cea76c0b82074047247becbe97acf6d40cbe0",
+    "headBinding": "REPO_HEAD_AT_EVALUATION",
+    "headSha": "513400a4e34835e242e1cd1ecdab190b8643cde3",
+    "proofhookInputHash": "5a82a800a2cbb5cfc69f58186aaf2ee4ffc63aaca4e3311f50916175f8f7d5a6",
+    "releaseProfile": {
+      "id": "B3C15_MINIMAL_RELEASE_PROFILE_LIMITED",
+      "status": "LIMITED_FIXTURE_NOT_FULL_RELEASE_RUN"
+    },
+    "requiredSetHash": "255ba4859aa6f0facd47703b67795197a741247deec0581e347d9768f29c1f03",
+    "reviewerResult": {
+      "hash": "c0ab6d9988758761b299841ecb1cea76c0b82074047247becbe97acf6d40cbe0",
+      "id": "B3C15_EXTERNAL_REVIEWER_RESULT",
+      "status": "EXTERNAL_INPUT_BOUND"
+    },
+    "schemaVersion": 1,
+    "tokenResultsHash": "dfd6bd827fa59156ddd880ebc9593e9c2ab7414d0ca10eb7e04cc07329091c1d"
+  },
+  "payloadHash": "6be31927c7f80a0524b2c0d55d757e06d8b72c2db431857c3f79220db15d2f05",
+  "proof": {
+    "attestationSignatureReleaseTokenBound": true,
+    "b3c14AllSevenCarriedForwardLimitRowsPreserved": true,
+    "b3c14CarriedForwardLimitRowCount": 7,
+    "b3c14CarriedForwardLimitsVisible": true,
+    "b3c14InputBound": true,
+    "b3c14ReleaseGreenFalse": true,
+    "changedBasenamesHashRecorded": true,
+    "changedExternalInputCannotPass": true,
+    "docOnlyAttestationCannotPass": true,
+    "donorIntakeContextOnly": true,
+    "externalImmutableInputCallerSupplied": true,
+    "externalImmutableInputNotPayloadDerived": true,
+    "externalImmutableInputPresent": true,
+    "hashMismatchCannotPass": true,
+    "missingExternalInputCannotPass": true,
+    "negativeRowsComplete": true,
+    "negativeRowsPass": true,
+    "nodeBuiltinsOnly": true,
+    "noNewDependency": true,
+    "noPackageBuild": true,
+    "noPackageHashGeneration": true,
+    "noReleaseClaim": true,
+    "noRuntimeLayerRewrite": true,
+    "noSupplyChainImplementation": true,
+    "offlineAttestationChainBreakNegativeBound": true,
+    "releaseGreenFalseBecauseB3C15Only": true,
+    "selfSignedCannotPass": true,
+    "signatureRowsComplete": true,
+    "signatureRowsPass": true,
+    "staleHeadCannotPass": true,
+    "statusArtifactHashRecorded": true,
+    "testCommandRowsRecorded": true,
+    "verifyAttestationReleaseTokenBound": true,
+    "verifyRowsComplete": true,
+    "verifyRowsPass": true
+  },
+  "releaseGreen": false,
+  "repo": {
+    "headSha": "513400a4e34835e242e1cd1ecdab190b8643cde3",
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
+    "statusBasename": "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
+    "writtenFrom": "b3c15-attestation-chain-state.mjs"
+  },
+  "rollbackRef": "ROLLBACK_ATTESTATION_SCHEME",
+  "runtime": {
+    "changedBasenames": [
+      "b3c15-attestation-chain-state.mjs",
+      "b3c15-attestation-chain.contract.test.js",
+      "B3C15_ATTESTATION_CHAIN_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "01f2aee9bb48a2363d65f55e1d328482d9a1863c0d4cdb0d7116ab0738a391e6",
+    "commandResults": {
+      "allPassed": null,
+      "commandCount": 12,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c15-attestation-chain-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c15-attestation-chain.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c14-release-dossier-minimal.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c13-trust-surface-accessibility.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c12-i18n-text-anchor-safety.contract.test.js",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c11-xplat-normalization-baseline.contract.test.js",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c10-capability-tier-report.contract.test.js",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c09-performance-baseline-binding.contract.test.js",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --check",
+          "index": 10,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 11,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css src/renderer/editor.js src/io src/export src/main.js src/preload.js",
+          "index": 12,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C15_ATTESTATION_CHAIN"
+    },
+    "statusArtifactHash": "7a3d7023bce8e154f35aa62205dbd53941f5a6a41f2fd979c7643039bbaf67da"
+  },
+  "scope": {
+    "a11yCertification": false,
+    "attestationChainOnly": true,
+    "b3c09ToB3c13Reopen": false,
+    "b3c14Rewrite": false,
+    "block2Reopen": false,
+    "commandSurfaceChange": false,
+    "exportRewrite": false,
+    "layer": "B3C15_ATTESTATION_CHAIN",
+    "newDependency": false,
+    "packageBuild": false,
+    "packageHashGeneration": false,
+    "perfFix": false,
+    "releaseClaim": false,
+    "releaseGreenClaim": false,
+    "securityRewrite": false,
+    "storageChange": false,
+    "supplyChainImplementation": false,
+    "uiWork": false,
+    "xplatCertification": false
+  },
+  "signature": {
+    "hash": "d0077ca396ecc17a5627cb7f14f7e0637fd082df1b0c960b83920f57c5957cfe",
+    "rawStored": false,
+    "type": "HMAC_SHA256_EXTERNAL_INPUT_BOUND"
+  },
+  "signatureRows": [
+    {
+      "fields": [
+        "commandLog",
+        "evidenceHash",
+        "externalImmutableInputHash",
+        "headBinding",
+        "headSha",
+        "proofhookInputHash",
+        "releaseProfile",
+        "requiredSetHash",
+        "reviewerResult",
+        "schemaVersion",
+        "tokenResultsHash"
+      ],
+      "id": "ATTESTATION_PAYLOAD_SCHEMA_BOUND",
+      "status": "PASS"
+    },
+    {
+      "id": "ATTESTATION_SIGNATURE_CREATED",
+      "signatureHash": "d0077ca396ecc17a5627cb7f14f7e0637fd082df1b0c960b83920f57c5957cfe",
+      "signatureType": "HMAC_SHA256_EXTERNAL_INPUT_BOUND",
+      "status": "PASS"
+    },
+    {
+      "id": "ATTESTATION_SIGNATURE_VERIFIES",
+      "status": "PASS",
+      "verifyReason": "VERIFY_OK"
+    },
+    {
+      "externalImmutableInputHash": "c0ab6d9988758761b299841ecb1cea76c0b82074047247becbe97acf6d40cbe0",
+      "id": "ATTESTATION_EXTERNAL_INPUT_BOUND",
+      "status": "PASS"
+    },
+    {
+      "headBinding": "REPO_HEAD_AT_EVALUATION",
+      "headSha": "513400a4e34835e242e1cd1ecdab190b8643cde3",
+      "id": "ATTESTATION_HEAD_SHA_BOUND_DYNAMICALLY",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS",
+  "successWording": "PASS_AS_MINIMAL_ATTESTATION_CHAIN_WITH_EXTERNAL_INPUT_NOT_RELEASE_GREEN",
+  "tokenSemantics": "ATTESTATION_SIGNATURE_AND_VERIFY_CHAIN_ONLY_RELEASE_GREEN_REMAINS_FALSE",
+  "VERIFY_ATTESTATION_OK": 1,
+  "verifyRows": [
+    {
+      "id": "VERIFY_VALID_SIGNATURE_PASS",
+      "reason": "VERIFY_OK",
+      "status": "PASS"
+    },
+    {
+      "id": "VERIFY_SELF_SIGNED_FAIL",
+      "reason": "SELF_SIGNED_OR_DERIVED_EXTERNAL_INPUT",
+      "status": "PASS"
+    },
+    {
+      "id": "VERIFY_INVALID_SIGNATURE_FAIL",
+      "reason": "SIGNATURE_MISMATCH",
+      "status": "PASS"
+    },
+    {
+      "id": "VERIFY_STALE_HEAD_FAIL",
+      "reason": "STALE_HEAD_SHA",
+      "status": "PASS"
+    },
+    {
+      "id": "VERIFY_HASH_MISMATCH_FAIL",
+      "reason": "PAYLOAD_HASH_MISMATCH",
+      "status": "PASS"
+    },
+    {
+      "id": "VERIFY_MISSING_EXTERNAL_INPUT_FAIL",
+      "reason": "EXTERNAL_INPUT_MISSING",
+      "status": "PASS"
+    },
+    {
+      "id": "VERIFY_CHANGED_EXTERNAL_INPUT_FAIL",
+      "reason": "EXTERNAL_INPUT_HASH_MISMATCH",
+      "status": "PASS"
+    }
+  ]
+}
