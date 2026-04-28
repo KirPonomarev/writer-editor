@@ -1,0 +1,44 @@
+{
+  "boundRefs": {
+    "mainBranch": "main",
+    "mainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+    "rootBranch": "codex/toolbar-baseline-truthful-closeout-001",
+    "rootSha": "33e9c027ea24fbd01c0eaf4519fa2a7c2ec530d6"
+  },
+  "c01Rebind": {
+    "c01BoundRootSha": "0b3cc7f91400df650dcb875453dda4b389bbeb3e",
+    "canonicalSetCount": 13,
+    "currentRootDescendsFromC01Root": true
+  },
+  "checks": {
+    "boundMainMatchesOriginMain": true,
+    "boundRootMatchesOriginRoot": true,
+    "c01CanonicalCountOk": true,
+    "c01RootAncestor": true,
+    "c01StatusActive": true,
+    "c01SummaryOk": true,
+    "currentHeadMatchesBoundRoot": true,
+    "mainShaReadable": true,
+    "probeCleanupOk": true,
+    "rootShaReadable": true
+  },
+  "failReason": "BLOCKING_UNRELATED_HISTORIES",
+  "generatedAtUtc": "2026-04-28T12:06:08.860Z",
+  "issues": [
+    {
+      "code": "BLOCKING_UNRELATED_HISTORIES"
+    }
+  ],
+  "ok": false,
+  "probe": {
+    "cleanupOk": true,
+    "conflictCount": 0,
+    "mergeabilityClass": "BLOCKING_UNRELATED_HISTORIES",
+    "mergeBaseFound": false,
+    "mergeBaseSha": "",
+    "mergeExitCode": 128,
+    "mergeStderr": "fatal: refusing to merge unrelated histories"
+  },
+  "runId": "TZ_MAIN_SYNC_C02_MERGEABILITY_001",
+  "ticketId": "TZ_MAIN_SYNC_C02_MERGEABILITY_001"
+}

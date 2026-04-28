@@ -1,0 +1,9 @@
+{
+  "contractTest": "test/contracts/main-sync-c02-mergeability.contract.test.js",
+  "reportScript": "scripts/ops/main-sync-c02-mergeability-report.mjs",
+  "scope": "Bound root-to-main mergeability probe and pre-PR readiness inputs for C03 only",
+  "stateScript": "scripts/ops/main-sync-c02-mergeability-state.mjs",
+  "status": "FAILED",
+  "token": "MAIN_SYNC_C02_MERGEABILITY_READY_OK",
+  "version": 1
+}
