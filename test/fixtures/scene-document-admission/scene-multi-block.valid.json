@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "scene-multi",
+  "title": "Multi Block",
+  "order": 2,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Alpha"
+    },
+    {
+      "type": "paragraph",
+      "text": "Beta"
+    },
+    {
+      "type": "paragraph",
+      "text": ""
+    }
+  ]
+}

@@ -23,6 +23,11 @@ export type {
   LongformProjectManifest,
   LongformProjectManifestSceneEntry,
 } from "./longform-project.contract";
+export type {
+  SceneDocumentBlockContract,
+  SceneDocumentContract,
+  SceneDocumentSchemaVersion,
+} from "./scene-document.contract";
 
 export type {
   RuntimeExecutionContract,
