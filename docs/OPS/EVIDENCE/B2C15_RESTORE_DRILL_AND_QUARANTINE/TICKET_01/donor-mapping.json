@@ -1,0 +1,22 @@
+{
+  "acceptedUse": "B2C14_STYLE_AND_NEGATIVE_CASE_NAMING_ONLY",
+  "consultedEntries": [
+    "recovery-pack.js",
+    "recovery-readable-quarantine.test.js"
+  ],
+  "donor": {
+    "acceptedUse": "B2C14_STYLE_AND_NEGATIVE_CASE_NAMING_ONLY",
+    "consultedEntries": [
+      "recovery-pack.js",
+      "recovery-readable-quarantine.test.js"
+    ],
+    "primaryBasename": "writer-editor-longform-v5_1-block2-trusted-kernel-pack-v1.zip",
+    "primarySha256": "7189d8357f340d89112b02a57eb9315f9af4695ac00e3a2707801e4d97320791",
+    "rejectedUse": "NO_DONOR_RUNTIME_IMPORT_NO_BROAD_OVERLAY_NO_BLOCK2_EXIT_NO_B2C16_B2C17_B2C18"
+  },
+  "mappedContour": "B2C15_RESTORE_DRILL_AND_QUARANTINE",
+  "referenceArchivesConsulted": [
+    "writer-editor-longform-v5_1-block2-trusted-kernel-pack-v1.zip"
+  ],
+  "rejectedUse": "NO_DONOR_RUNTIME_IMPORT_NO_BROAD_OVERLAY_NO_BLOCK2_EXIT_NO_B2C16_B2C17_B2C18"
+}

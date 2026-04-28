@@ -600,7 +600,6 @@ export async function evaluateB2C14RecoveryReadableProofState(input = {}) {
       readableGuideHash: sha256Text(packet.sections.humanReadableRestoreGuidanceText.join('\n')),
       machineReplayCompanionHash: sha256Text(stableStringify(packet.sections.machineReplayCompanionReference)),
       readabilityRubric,
-      repoRootBasename: path.basename(repoRoot),
     },
   };
 }
