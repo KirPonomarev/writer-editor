@@ -1,0 +1,385 @@
+{
+  "artifactId": "B3C01_COMMAND_KERNEL_SCOPE_LOCK_STATUS_V1",
+  "B3C01_COMMAND_KERNEL_SCOPE_LOCK_OK": 1,
+  "contourId": "B3C01_COMMAND_KERNEL_SCOPE_LOCK",
+  "failRows": [],
+  "failSignal": "",
+  "ok": true,
+  "proof": {
+    "b2c09B2c10B2c11B2c12InputsBound": true,
+    "block2ClosedInputBound": true,
+    "block3AdmissionExplicit": true,
+    "commandCapabilityBindingBound": true,
+    "commandIdStandardBound": true,
+    "commandResultsBound": true,
+    "commandSurfaceFilesMapped": true,
+    "commandVisibilityMatrixBound": true,
+    "denylistRowsComplete": true,
+    "noBlock2Reopen": true,
+    "noDependencyChange": true,
+    "noExportChange": true,
+    "noFactualDocCutover": true,
+    "noPluginRuntime": true,
+    "noReleaseReadyClaim": true,
+    "noRuntimeCodeStarted": true,
+    "noSchemaChange": true,
+    "noStorageFormatChange": true,
+    "noUiChange": true,
+    "scopeLockRowsComplete": true,
+    "testMatrixRowsComplete": true
+  },
+  "runtime": {
+    "commandResults": {
+      "allPassed": true,
+      "commandCount": 11,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c01-command-kernel-scope-lock-state.mjs --write --json",
+          "index": 1,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b3c01-command-kernel-scope-lock.contract.test.js",
+          "index": 2,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b2c20-block-2-exit-dossier.contract.test.js",
+          "index": 3,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b2c09-command-surface-kernel.contract.test.js",
+          "index": 4,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
+          "index": 5,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b2c11-command-effect-model.contract.test.js",
+          "index": 6,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b2c12-persist-effects-atomic-write.contract.test.js",
+          "index": 7,
+          "result": "PASS"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 8,
+          "result": "PASS"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 9,
+          "result": "PASS"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+          "index": 10,
+          "result": "PASS"
+        },
+        {
+          "command": "git diff --name-only -- src src-electron scripts -- :(exclude)scripts/ops/b3c01-command-kernel-scope-lock-state.mjs",
+          "index": 11,
+          "result": "PASS"
+        }
+      ],
+      "noPending": true,
+      "status": "EXECUTED_AND_RECORDED",
+      "taskId": "B3C01_COMMAND_KERNEL_SCOPE_LOCK"
+    },
+    "commandSurfaceMap": [
+      {
+        "basename": "commandSurfaceKernel.js",
+        "exists": true,
+        "hash": "ff7e2afb38351d279859d02b7935a1bfa4fe5c46c6c25ded2fbd9f2e847aadd8",
+        "relPath": "src/command/commandSurfaceKernel.js"
+      },
+      {
+        "basename": "command-catalog.v1.mjs",
+        "exists": true,
+        "hash": "bcf32af7544c8358a0c7bbc890bfa1a84520eb66124a4c73024fe49b99bb4382",
+        "relPath": "src/renderer/commands/command-catalog.v1.mjs"
+      },
+      {
+        "basename": "registry.mjs",
+        "exists": true,
+        "hash": "30fbc50b2350d11e79834b873eb6cb63edc6cd1672872a7a6fe2186a4b25aeaf",
+        "relPath": "src/renderer/commands/registry.mjs"
+      },
+      {
+        "basename": "runCommand.mjs",
+        "exists": true,
+        "hash": "da7b4d0974eaebdcbc4d55bfcaefcae85f19d34f4277f321200bcdddbbd8718f",
+        "relPath": "src/renderer/commands/runCommand.mjs"
+      },
+      {
+        "basename": "capabilityPolicy.mjs",
+        "exists": true,
+        "hash": "a0c06217f1225c710329f63a12ce5fd74cb778e39a200e5c4cc1cc1ed441d301",
+        "relPath": "src/renderer/commands/capabilityPolicy.mjs"
+      },
+      {
+        "basename": "commandBusGuard.mjs",
+        "exists": true,
+        "hash": "50010a4bab4c9669f3ab2148805c8c19fadf64fc787c4aaf4e26b74f0a017fe4",
+        "relPath": "src/renderer/commands/commandBusGuard.mjs"
+      },
+      {
+        "basename": "commandEffectModel.mjs",
+        "exists": true,
+        "hash": "192a1e730066f567fc0952abcfea50c12d8d7761191e6b1e9be116b8d46dc241",
+        "relPath": "src/renderer/commands/commandEffectModel.mjs"
+      },
+      {
+        "basename": "command-namespace-canon.js",
+        "exists": true,
+        "hash": "10dce36e275f00a165e8e83598937819bb04ba6ed61a0919e8875bd8d9886a03",
+        "relPath": "src/menu/command-namespace-canon.js"
+      },
+      {
+        "basename": "platform-capability-resolver.mjs",
+        "exists": true,
+        "hash": "65d02a1b978527ce748fbf96fdf09eef703c47fa58004553091a00db8e4cd581",
+        "relPath": "scripts/guards/platform-capability-resolver.mjs"
+      }
+    ],
+    "denylist": {
+      "rowCount": 10,
+      "rows": [
+        {
+          "denied": "PRODUCT_RUNTIME_CODE_IN_B3C01",
+          "reason": "B3C01 is admission and scope lock only."
+        },
+        {
+          "denied": "UI_CHANGE",
+          "reason": "Visibility surfaces are inputs, not write targets."
+        },
+        {
+          "denied": "STORAGE_FORMAT_CHANGE",
+          "reason": "B3C01 does not change persistence protocols."
+        },
+        {
+          "denied": "SCHEMA_CHANGE",
+          "reason": "B3C01 does not change project schema."
+        },
+        {
+          "denied": "DEPENDENCY_CHANGE",
+          "reason": "Command kernel admission needs no new dependency."
+        },
+        {
+          "denied": "EXPORT_REWRITE",
+          "reason": "Export is outside this contour."
+        },
+        {
+          "denied": "PLUGIN_SYSTEM",
+          "reason": "Executable plugin runtime is forbidden in v1."
+        },
+        {
+          "denied": "RELEASE_READY_CLAIM",
+          "reason": "Block 3 scope lock is not release readiness."
+        },
+        {
+          "denied": "FACTUAL_DOC_CUTOVER",
+          "reason": "No product truth cutover in B3C01."
+        },
+        {
+          "denied": "REOPEN_BLOCK_2",
+          "reason": "Block 2 is consumed as green input only."
+        }
+      ],
+      "taskId": "B3C01_COMMAND_KERNEL_SCOPE_LOCK"
+    },
+    "inputStatusBindings": [
+      {
+        "basename": "B2C20_BLOCK_2_EXIT_DOSSIER_STATUS_V1.json",
+        "exists": true,
+        "hash": "92ec57094295fc0530628874923dc11ca3a60b7367f9865e517f751822f32c45",
+        "inputId": "B2C20",
+        "ok": true
+      },
+      {
+        "basename": "B2C09_COMMAND_SURFACE_KERNEL_V1.json",
+        "exists": true,
+        "hash": "90d0b9389e802485596d3e282ae715846bbf57b059c4335b2866a07952def21d",
+        "inputId": "B2C09",
+        "ok": true
+      },
+      {
+        "basename": "B2C10_COMMAND_BYPASS_NEGATIVE_MATRIX_STATUS_V1.json",
+        "exists": true,
+        "hash": "d18171e6d935c4c0573548c9f41f133c94856a5a80a03395140eb18302985e99",
+        "inputId": "B2C10",
+        "ok": true
+      },
+      {
+        "basename": "B2C11_COMMAND_EFFECT_MODEL_STATUS_V1.json",
+        "exists": true,
+        "hash": "50bbc0cb39806f6ec08d631a667702e7bf21f73317ab1823857f94c196b82cf3",
+        "inputId": "B2C11",
+        "ok": true
+      },
+      {
+        "basename": "B2C12_PERSIST_EFFECTS_ATOMIC_WRITE_STATUS_V1.json",
+        "exists": true,
+        "hash": "ff5f64b743e5075601e67b93969192d5c35c2ac1fdd14e00c5cad056867a01a6",
+        "inputId": "B2C12",
+        "ok": true
+      },
+      {
+        "basename": "COMMAND_ID_STANDARD_V1.json",
+        "exists": true,
+        "hash": "79375f5ba0c9ec0872f27425d45bd92d5844a10243d6a8e893114cc865c8e6f3",
+        "inputId": "COMMAND_ID_STANDARD",
+        "ok": true
+      },
+      {
+        "basename": "COMMAND_CAPABILITY_BINDING.json",
+        "exists": true,
+        "hash": "97705f0fbbf21a9d4153d7eb728e0e23fa23dd2c1fa6995efe3feaef59183097",
+        "inputId": "COMMAND_CAPABILITY_BINDING",
+        "ok": true
+      },
+      {
+        "basename": "COMMAND_VISIBILITY_MATRIX.json",
+        "exists": true,
+        "hash": "7a63188682a891abda86db9ecf04c0994fbd942d381919cb2d87ca2c70144a89",
+        "inputId": "COMMAND_VISIBILITY_MATRIX",
+        "ok": true
+      }
+    ],
+    "nextStep": "PLAN_B3C02_FIRST_RUNTIME_COMMAND_KERNEL_CONTOUR",
+    "scopeLockTable": {
+      "rowCount": 8,
+      "rows": [
+        {
+          "rowId": "COMMAND_KERNEL_OWNS_COMMAND_MEANING",
+          "statement": "Command ids, command meaning, capability binding, and availability belong to the command kernel layer.",
+          "status": "LOCKED"
+        },
+        {
+          "rowId": "UI_VISIBILITY_IS_NOT_AVAILABILITY",
+          "statement": "UI surfaces may show or hide commands, but do not authorize command execution.",
+          "status": "LOCKED"
+        },
+        {
+          "rowId": "SINGLE_APPROVED_ENTRY_PATH",
+          "statement": "Approved command execution must pass through the command bus or command kernel entry path.",
+          "status": "LOCKED"
+        },
+        {
+          "rowId": "DIRECT_MUTATION_ROUTES_DENIED",
+          "statement": "Known bypass routes remain denied by B2C10 and must not be reopened by Block 3.",
+          "status": "LOCKED"
+        },
+        {
+          "rowId": "VALIDATE_APPLY_PERSIST_BOUNDARY",
+          "statement": "Command effects keep validate, apply, operation plan, and persist boundaries explicit.",
+          "status": "LOCKED"
+        },
+        {
+          "rowId": "PERSIST_EFFECTS_ONLY_WRITE_LAYER",
+          "statement": "Persist effects remains the only write layer for storage-side command effects.",
+          "status": "LOCKED"
+        },
+        {
+          "rowId": "NO_PLUGIN_RUNTIME",
+          "statement": "Block 3 does not create an executable plugin runtime.",
+          "status": "LOCKED"
+        },
+        {
+          "rowId": "NO_RELEASE_CLAIM",
+          "statement": "Block 3 admission does not claim release readiness.",
+          "status": "LOCKED"
+        }
+      ],
+      "taskId": "B3C01_COMMAND_KERNEL_SCOPE_LOCK"
+    },
+    "testMatrix": {
+      "rowCount": 15,
+      "rows": [
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "COMMAND_ID_REGISTRY_SHAPE_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "COMMAND_CAPABILITY_POLICY_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "COMMAND_VISIBILITY_NOT_AVAILABILITY_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "APPROVED_COMMAND_ROUTE_POSITIVE_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "DIRECT_ROUTE_NEGATIVE_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "BYPASS_DENIAL_REGRESSION_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "VALIDATE_PHASE_PURITY_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "APPLY_PHASE_NO_IO_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "PERSIST_EFFECTS_ONLY_WRITE_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "UNKNOWN_COMMAND_REJECTION_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "DISABLED_COMMAND_REJECTION_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "NO_UI_AUTHORITY_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "NO_NEW_DEPENDENCY_POLICY_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "OSS_POLICY_TEST"
+        },
+        {
+          "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+          "testId": "BLOCK_2_REGRESSION_SPOT_CHECKS"
+        }
+      ],
+      "taskId": "B3C01_COMMAND_KERNEL_SCOPE_LOCK"
+    }
+  },
+  "scope": {
+    "block2Reopened": false,
+    "block3AdmissionExplicit": true,
+    "dependencyChanged": false,
+    "exportChanged": false,
+    "factualDocCutoverClaim": false,
+    "pluginRuntimeStarted": false,
+    "productRuntimeChanged": false,
+    "releaseReadyClaim": false,
+    "runtimeContourStarted": false,
+    "schemaChanged": false,
+    "storageFormatChanged": false,
+    "uiTouched": false
+  },
+  "status": "PASS"
+}

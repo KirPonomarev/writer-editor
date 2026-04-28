@@ -1,0 +1,66 @@
+{
+  "rowCount": 15,
+  "rows": [
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "COMMAND_ID_REGISTRY_SHAPE_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "COMMAND_CAPABILITY_POLICY_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "COMMAND_VISIBILITY_NOT_AVAILABILITY_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "APPROVED_COMMAND_ROUTE_POSITIVE_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "DIRECT_ROUTE_NEGATIVE_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "BYPASS_DENIAL_REGRESSION_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "VALIDATE_PHASE_PURITY_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "APPLY_PHASE_NO_IO_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "PERSIST_EFFECTS_ONLY_WRITE_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "UNKNOWN_COMMAND_REJECTION_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "DISABLED_COMMAND_REJECTION_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "NO_UI_AUTHORITY_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "NO_NEW_DEPENDENCY_POLICY_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "OSS_POLICY_TEST"
+    },
+    {
+      "status": "REQUIRED_FOR_RUNTIME_CONTOUR",
+      "testId": "BLOCK_2_REGRESSION_SPOT_CHECKS"
+    }
+  ],
+  "taskId": "B3C01_COMMAND_KERNEL_SCOPE_LOCK"
+}

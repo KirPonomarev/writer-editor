@@ -1,0 +1,62 @@
+{
+  "rowCount": 8,
+  "rows": [
+    {
+      "basename": "B2C20_BLOCK_2_EXIT_DOSSIER_STATUS_V1.json",
+      "exists": true,
+      "hash": "92ec57094295fc0530628874923dc11ca3a60b7367f9865e517f751822f32c45",
+      "inputId": "B2C20",
+      "ok": true
+    },
+    {
+      "basename": "B2C09_COMMAND_SURFACE_KERNEL_V1.json",
+      "exists": true,
+      "hash": "90d0b9389e802485596d3e282ae715846bbf57b059c4335b2866a07952def21d",
+      "inputId": "B2C09",
+      "ok": true
+    },
+    {
+      "basename": "B2C10_COMMAND_BYPASS_NEGATIVE_MATRIX_STATUS_V1.json",
+      "exists": true,
+      "hash": "d18171e6d935c4c0573548c9f41f133c94856a5a80a03395140eb18302985e99",
+      "inputId": "B2C10",
+      "ok": true
+    },
+    {
+      "basename": "B2C11_COMMAND_EFFECT_MODEL_STATUS_V1.json",
+      "exists": true,
+      "hash": "50bbc0cb39806f6ec08d631a667702e7bf21f73317ab1823857f94c196b82cf3",
+      "inputId": "B2C11",
+      "ok": true
+    },
+    {
+      "basename": "B2C12_PERSIST_EFFECTS_ATOMIC_WRITE_STATUS_V1.json",
+      "exists": true,
+      "hash": "ff5f64b743e5075601e67b93969192d5c35c2ac1fdd14e00c5cad056867a01a6",
+      "inputId": "B2C12",
+      "ok": true
+    },
+    {
+      "basename": "COMMAND_ID_STANDARD_V1.json",
+      "exists": true,
+      "hash": "79375f5ba0c9ec0872f27425d45bd92d5844a10243d6a8e893114cc865c8e6f3",
+      "inputId": "COMMAND_ID_STANDARD",
+      "ok": true
+    },
+    {
+      "basename": "COMMAND_CAPABILITY_BINDING.json",
+      "exists": true,
+      "hash": "97705f0fbbf21a9d4153d7eb728e0e23fa23dd2c1fa6995efe3feaef59183097",
+      "inputId": "COMMAND_CAPABILITY_BINDING",
+      "ok": true
+    },
+    {
+      "basename": "COMMAND_VISIBILITY_MATRIX.json",
+      "exists": true,
+      "hash": "7a63188682a891abda86db9ecf04c0994fbd942d381919cb2d87ca2c70144a89",
+      "inputId": "COMMAND_VISIBILITY_MATRIX",
+      "ok": true
+    }
+  ],
+  "taskId": "B3C01_COMMAND_KERNEL_SCOPE_LOCK"
+}

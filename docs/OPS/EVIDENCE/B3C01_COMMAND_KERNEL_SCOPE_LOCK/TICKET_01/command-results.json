@@ -1,0 +1,64 @@
+{
+  "allPassed": true,
+  "commandCount": 11,
+  "commands": [
+    {
+      "command": "node scripts/ops/b3c01-command-kernel-scope-lock-state.mjs --write --json",
+      "index": 1,
+      "result": "PASS"
+    },
+    {
+      "command": "node --test test/contracts/b3c01-command-kernel-scope-lock.contract.test.js",
+      "index": 2,
+      "result": "PASS"
+    },
+    {
+      "command": "node --test test/contracts/b2c20-block-2-exit-dossier.contract.test.js",
+      "index": 3,
+      "result": "PASS"
+    },
+    {
+      "command": "node --test test/contracts/b2c09-command-surface-kernel.contract.test.js",
+      "index": 4,
+      "result": "PASS"
+    },
+    {
+      "command": "node --test test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
+      "index": 5,
+      "result": "PASS"
+    },
+    {
+      "command": "node --test test/contracts/b2c11-command-effect-model.contract.test.js",
+      "index": 6,
+      "result": "PASS"
+    },
+    {
+      "command": "node --test test/contracts/b2c12-persist-effects-atomic-write.contract.test.js",
+      "index": 7,
+      "result": "PASS"
+    },
+    {
+      "command": "npm run oss:policy",
+      "index": 8,
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --name-only -- package.json package-lock.json",
+      "index": 9,
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+      "index": 10,
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --name-only -- src src-electron scripts -- :(exclude)scripts/ops/b3c01-command-kernel-scope-lock-state.mjs",
+      "index": 11,
+      "result": "PASS"
+    }
+  ],
+  "noPending": true,
+  "status": "EXECUTED_AND_RECORDED",
+  "taskId": "B3C01_COMMAND_KERNEL_SCOPE_LOCK"
+}
