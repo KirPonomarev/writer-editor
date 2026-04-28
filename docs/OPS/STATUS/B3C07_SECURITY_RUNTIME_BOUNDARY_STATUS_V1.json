@@ -1,0 +1,583 @@
+{
+  "artifactId": "B3C07_SECURITY_RUNTIME_BOUNDARY_STATUS_V1",
+  "B3C07_SECURITY_RUNTIME_BOUNDARY_OK": 1,
+  "contourId": "B3C07_SECURITY_RUNTIME_BOUNDARY",
+  "failRows": [],
+  "failSignal": "",
+  "monitor": {
+    "failSignal": "E_B3C07_SECURITY_BOUNDARY_NOT_OK",
+    "helperRole": "PROOF_HELPER_NOT_RUNTIME_SECURITY_ENFORCER"
+  },
+  "ok": true,
+  "proof": {
+    "b3c05InputBound": true,
+    "b3c06InputBound": true,
+    "cspPolicyBound": true,
+    "invalidPayloadPathEscapeAndCommandInjectionDenied": true,
+    "ipcAllowlistBoundaryBound": true,
+    "navigationAndNewWindowBound": true,
+    "noDocOnlyEvidence": true,
+    "noExportPipelineRewrite": true,
+    "noMainPreloadIpcRewrite": true,
+    "noNetworkDenyMonitorRewrite": true,
+    "noNewDependency": true,
+    "noPermissionManifestRewrite": true,
+    "noReleaseClaim": true,
+    "noRuntimeSecurityRewrite": true,
+    "noStorageFormatRewrite": true,
+    "noStorageMutation": true,
+    "noSupportBundlePrivacyClaim": true,
+    "noUiChange": true,
+    "remoteCodeBoundaryBound": true,
+    "worktreeIndependentStatus": true
+  },
+  "repo": {
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
+    "statusBasename": "B3C07_SECURITY_RUNTIME_BOUNDARY_STATUS_V1.json",
+    "writtenFrom": "b3c07-security-runtime-boundary-state.mjs"
+  },
+  "runtime": {
+    "changedBasenames": [
+      "security-runtime-boundary.js",
+      "b3c07-security-runtime-boundary-state.mjs",
+      "b3c07-security-runtime-boundary.contract.test.js",
+      "B3C07_SECURITY_RUNTIME_BOUNDARY_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "8e77d951abe47c6c38765bf1de6e9f2cf4ac1504c0125749d0da84429f3c2111",
+    "commandResults": {
+      "allPassed": null,
+      "commandCount": 13,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c07-security-runtime-boundary-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c07-security-runtime-boundary.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c06-no-network-writing-path.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c05-permission-scope-enforced.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/path-boundary-guard.contract.test.js",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/unit/noExecuteJavaScript.test.js",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/unit/sector-m-preload-file-lifecycle-command-bridge.test.js",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/unit/sector-m-preload-workspace-query-bridge.test.js",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/unit/sector-m-preload-save-lifecycle-signal-bridge.test.js",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 10,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 11,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+          "index": 12,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/io src/export src/main.js src/preload.js",
+          "index": 13,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C07_SECURITY_RUNTIME_BOUNDARY"
+    },
+    "cspRows": [
+      {
+        "id": "CSP_POLICY_DECLARED",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_HAS_DEFAULT_SELF",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_HAS_SCRIPT_SELF",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_HAS_OBJECT_NONE",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_HAS_BASE_URI_NONE",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_HAS_FRAME_ANCESTORS_NONE",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_INSTALLED_ON_HEADERS",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_LIMITED_TO_FILE_MAIN_FRAME",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_DOES_NOT_ALLOW_UNSAFE_EVAL",
+        "missingMarkers": [],
+        "passed": true
+      }
+    ],
+    "ipcRows": [
+      {
+        "id": "COMMAND_BRIDGE_HANDLER_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "COMMAND_BRIDGE_ROUTE_REQUIRED",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "COMMAND_BRIDGE_ALLOWLIST_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "WORKSPACE_QUERY_BRIDGE_ALLOWLIST_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "SAVE_LIFECYCLE_SIGNAL_ALLOWLIST_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "PRELOAD_EXPOSES_CONTEXT_BRIDGE_ONLY",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "PRELOAD_COMMAND_BRIDGE_NORMALIZES_RECORDS",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "PRELOAD_TREE_COMMAND_DENY_PRESENT",
+        "missingMarkers": [],
+        "passed": true
+      }
+    ],
+    "navigationRows": [
+      {
+        "id": "NEW_WINDOW_HANDLER_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "NEW_WINDOW_DENIED",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "WILL_NAVIGATE_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "WILL_REDIRECT_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "EXTERNAL_NAVIGATION_PREVENTS_DEFAULT",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "FILE_URL_ONLY_NAVIGATION_RULE_PRESENT",
+        "missingMarkers": [],
+        "passed": true
+      }
+    ],
+    "negativeRows": [
+      {
+        "denied": true,
+        "details": {
+          "primitive": "blockExternalNavigation"
+        },
+        "failSignal": "E_B3C07_SECURITY_BOUNDARY_NOT_OK",
+        "reason": "DENIED_BY_B3C07_PROOF_MATRIX",
+        "route": "navigation.http"
+      },
+      {
+        "denied": true,
+        "details": {
+          "primitive": "setWindowOpenHandler deny"
+        },
+        "failSignal": "E_B3C07_SECURITY_BOUNDARY_NOT_OK",
+        "reason": "DENIED_BY_B3C07_PROOF_MATRIX",
+        "route": "new-window"
+      },
+      {
+        "denied": true,
+        "details": {
+          "primitive": "source absence"
+        },
+        "failSignal": "E_B3C07_SECURITY_BOUNDARY_NOT_OK",
+        "reason": "DENIED_BY_B3C07_PROOF_MATRIX",
+        "route": "remote-code.execute-javascript"
+      },
+      {
+        "denied": true,
+        "details": {
+          "primitive": "source absence"
+        },
+        "failSignal": "E_B3C07_SECURITY_BOUNDARY_NOT_OK",
+        "reason": "DENIED_BY_B3C07_PROOF_MATRIX",
+        "route": "remote-code.eval"
+      },
+      {
+        "denied": true,
+        "details": {
+          "primitive": "COMMAND_ID_NOT_ALLOWED"
+        },
+        "failSignal": "E_B3C07_SECURITY_BOUNDARY_NOT_OK",
+        "reason": "DENIED_BY_B3C07_PROOF_MATRIX",
+        "route": "ipc.unknown-command"
+      },
+      {
+        "denied": true,
+        "details": {
+          "primitive": "permission payload validation"
+        },
+        "failSignal": "E_PERMISSION_SCOPE_VIOLATION",
+        "reason": "PATH_FIELD_MISSING",
+        "route": "ipc.invalid-payload"
+      },
+      {
+        "denied": true,
+        "details": {
+          "primitive": "path boundary reuse"
+        },
+        "failSignal": "E_PERMISSION_SCOPE_VIOLATION",
+        "reason": "PATH_SCOPE_DENIED",
+        "route": "ipc.path-escape"
+      },
+      {
+        "denied": true,
+        "details": {
+          "primitive": "forbidden shell permission"
+        },
+        "failSignal": "E_PERMISSION_SCOPE_VIOLATION",
+        "reason": "FORBIDDEN_PERMISSION_SCOPE",
+        "route": "ipc.command-injection"
+      }
+    ],
+    "passFailRows": [
+      {
+        "id": "B3C05_PERMISSION_SCOPE_INPUT_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "B3C06_NO_NETWORK_INPUT_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_POLICY_DECLARED",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_HAS_DEFAULT_SELF",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_HAS_SCRIPT_SELF",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_HAS_OBJECT_NONE",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_HAS_BASE_URI_NONE",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_HAS_FRAME_ANCESTORS_NONE",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_INSTALLED_ON_HEADERS",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_LIMITED_TO_FILE_MAIN_FRAME",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "CSP_DOES_NOT_ALLOW_UNSAFE_EVAL",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "NEW_WINDOW_HANDLER_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "NEW_WINDOW_DENIED",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "WILL_NAVIGATE_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "WILL_REDIRECT_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "EXTERNAL_NAVIGATION_PREVENTS_DEFAULT",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "FILE_URL_ONLY_NAVIGATION_RULE_PRESENT",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "PRODUCT_SOURCE_HAS_NO_EXECUTE_JAVASCRIPT",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "PRODUCT_SOURCE_HAS_NO_EVAL",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "PRODUCT_SOURCE_HAS_NO_NEW_FUNCTION",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "BROWSER_WINDOW_CONTEXT_IS_ISOLATED",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "BROWSER_WINDOW_NODE_INTEGRATION_DISABLED",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "BROWSER_WINDOW_SANDBOX_ENABLED",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "COMMAND_BRIDGE_HANDLER_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "COMMAND_BRIDGE_ROUTE_REQUIRED",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "COMMAND_BRIDGE_ALLOWLIST_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "WORKSPACE_QUERY_BRIDGE_ALLOWLIST_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "SAVE_LIFECYCLE_SIGNAL_ALLOWLIST_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "PRELOAD_EXPOSES_CONTEXT_BRIDGE_ONLY",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "PRELOAD_COMMAND_BRIDGE_NORMALIZES_RECORDS",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "PRELOAD_TREE_COMMAND_DENY_PRESENT",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "NEGATIVE_NAVIGATION_HTTP",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "NEGATIVE_NEW_WINDOW",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "NEGATIVE_REMOTE_CODE_EXECUTE_JAVASCRIPT",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "NEGATIVE_REMOTE_CODE_EVAL",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "NEGATIVE_IPC_UNKNOWN_COMMAND",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "NEGATIVE_IPC_INVALID_PAYLOAD",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "NEGATIVE_IPC_PATH_ESCAPE",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "NEGATIVE_IPC_COMMAND_INJECTION",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "HELPER_IS_NOT_RUNTIME_SECURITY_ENFORCER",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "PRODUCT_SOURCE_BASELINES_BOUND",
+        "missingMarkers": [],
+        "passed": true
+      }
+    ],
+    "productSourceBasenames": [
+      "main.js",
+      "preload.js"
+    ],
+    "remoteCodeRows": [
+      {
+        "id": "PRODUCT_SOURCE_HAS_NO_EXECUTE_JAVASCRIPT",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "PRODUCT_SOURCE_HAS_NO_EVAL",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "PRODUCT_SOURCE_HAS_NO_NEW_FUNCTION",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "BROWSER_WINDOW_CONTEXT_IS_ISOLATED",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "BROWSER_WINDOW_NODE_INTEGRATION_DISABLED",
+        "missingMarkers": [],
+        "passed": true
+      },
+      {
+        "id": "BROWSER_WINDOW_SANDBOX_ENABLED",
+        "missingMarkers": [],
+        "passed": true
+      }
+    ]
+  },
+  "scope": {
+    "b3c08SupportBundlePrivacyClaim": false,
+    "broadSecurityFrameworkClaim": false,
+    "cspWidened": false,
+    "docxDependencyChanged": false,
+    "exportPipelineRewritten": false,
+    "helperRole": "PROOF_HELPER_NOT_RUNTIME_SECURITY_ENFORCER",
+    "ipcAllowlistWidened": false,
+    "layer": "B3C07_SECURITY_RUNTIME_BOUNDARY",
+    "mainPreloadRuntimeChanged": false,
+    "navigationPolicyWidened": false,
+    "networkRuntimeMonitorRewritten": false,
+    "permissionScopeRewritten": false,
+    "proofHelperOnly": true,
+    "releaseClaim": false,
+    "releaseDossierStarted": false,
+    "securityRuntimeBoundaryOnly": true,
+    "storageFormatChanged": false,
+    "storageMutated": false,
+    "uiTouched": false
+  },
+  "status": "PASS"
+}
