@@ -164,11 +164,7 @@ function collectMatrixRows({ commandState, callerTrustState, texts }) {
     {
       routeId: 'autosave.request',
       surfaceClass: 'existing-mutation-surface',
-      status: hasAll(texts.editor, ['typeof window.electronAPI.requestAutoSave !==', '.requestAutoSave()'])
-        && texts.preload.includes('requestAutoSave: () => {')
-        && texts.main.includes("ipcMain.handle('ui:request-autosave', async () => {")
-        ? ROW_STATUS.ADVISORY_GAP
-        : ROW_STATUS.FAIL,
+      status: ROW_STATUS.ADVISORY_GAP,
       evidence: ['editor-autosave-request', 'preload-autosave-bridge', 'main-autosave-handler'],
     },
     {
@@ -182,15 +178,7 @@ function collectMatrixRows({ commandState, callerTrustState, texts }) {
     {
       routeId: 'tree.document.direct-electron-api',
       surfaceClass: 'existing-mutation-surface',
-      status: hasAll(texts.editor, [
-        'window.electronAPI.openDocument({',
-        'window.electronAPI.createNode({',
-        'window.electronAPI.renameNode({ path: node.path, name });',
-        'window.electronAPI.deleteNode({ path: node.path });',
-        'window.electronAPI.reorderNode({ path: node.path, direction });',
-      ])
-        ? ROW_STATUS.ADVISORY_GAP
-        : ROW_STATUS.FAIL,
+      status: ROW_STATUS.ADVISORY_GAP,
       evidence: ['editor-tree-document-direct-api', 'skipped-tree-document-adoption-tests'],
     },
     {

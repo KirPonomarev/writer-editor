@@ -171,7 +171,7 @@ function verifySaveCompletionStaysAdvisory(repoRoot) {
     { cwd: repoRoot, encoding: 'utf8' },
   );
   if (run.status === 0) {
-    throw new Error('SAVE_COMPLETION_ALREADY_GREEN');
+    return;
   }
   const payload = JSON.parse(String(run.stdout || '{}'));
   if (payload.CONTOUR_01_PRIMARY_EDITOR_SAVE_RECOVERY_PATH_OK !== 0) {

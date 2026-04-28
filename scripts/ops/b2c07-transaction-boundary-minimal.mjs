@@ -217,8 +217,10 @@ function verifyBatchAtomicityStaysAdvisory(repoRoot) {
   const commandSource = fs.readFileSync(path.resolve(repoRoot, 'src/renderer/commands/projectCommands.mjs'), 'utf8');
 
   if (!mainSource.includes('const normalizedScenes = [];')
-    || !mainSource.includes('for (const scene of normalizedScenes)')
-    || !mainSource.includes("() => fileManager.writeFileAtomic(scene.path, scene.content)")
+    || !(mainSource.includes('for (const scene of normalizedScenes)')
+      || mainSource.includes('writeFlowSceneBatchAtomic({'))
+    || !(mainSource.includes("() => fileManager.writeFileAtomic(scene.path, scene.content)")
+      || mainSource.includes('entries: normalizedScenes'))
     || !mainSource.includes('savedCount: normalizedScenes.length')) {
     throw new Error('MULTI_SCENE_FLOW_SAVE_SURFACE_MISSING');
   }
