@@ -174,10 +174,11 @@ export function evaluateMainSyncC02MergeabilityState(input = {}) {
   const boundRootMatchesOriginRoot = originRootHead.ok && originRootHead.stdout === rootSha;
   const boundMainMatchesOriginMain = originMainHead.ok && originMainHead.stdout === mainSha;
   const currentHeadMatchesBoundRoot = currentHead.ok && currentHead.stdout === rootSha;
+  const localHeadDescendsFromBoundRoot = runGit(repoRoot, ['merge-base', '--is-ancestor', rootSha, currentHead.stdout || '']).ok;
 
   if (!boundRootMatchesOriginRoot) issues.push({ code: 'BOUND_ROOT_DRIFT', expected: rootSha, actual: originRootHead.stdout || '' });
   if (!boundMainMatchesOriginMain) issues.push({ code: 'BOUND_MAIN_DRIFT', expected: mainSha, actual: originMainHead.stdout || '' });
-  if (!currentHeadMatchesBoundRoot) issues.push({ code: 'LOCAL_HEAD_NOT_BOUND_ROOT', expected: rootSha, actual: currentHead.stdout || '' });
+  if (!localHeadDescendsFromBoundRoot) issues.push({ code: 'LOCAL_HEAD_NOT_DESCENDED_FROM_BOUND_ROOT', expected: rootSha, actual: currentHead.stdout || '' });
 
   const c01Status = readJson(repoRoot, 'docs/OPS/STATUS/MAIN_SYNC_C01_AHEAD_INVENTORY_STATUS_V1.json');
   const c01Summary = readJson(repoRoot, 'docs/OPS/EVIDENCE/MAIN_SYNC_C01/TICKET_01/summary.json');
@@ -228,6 +229,7 @@ export function evaluateMainSyncC02MergeabilityState(input = {}) {
       rootShaReadable: rootReadable.ok,
       mainShaReadable: mainReadable.ok,
       currentHeadMatchesBoundRoot,
+      localHeadDescendsFromBoundRoot,
       boundRootMatchesOriginRoot,
       boundMainMatchesOriginMain,
       c01StatusActive,

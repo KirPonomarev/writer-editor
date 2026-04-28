@@ -17,13 +17,14 @@
     "c01RootAncestor": true,
     "c01StatusActive": true,
     "c01SummaryOk": true,
-    "currentHeadMatchesBoundRoot": true,
+    "currentHeadMatchesBoundRoot": false,
+    "localHeadDescendsFromBoundRoot": true,
     "mainShaReadable": true,
     "probeCleanupOk": true,
     "rootShaReadable": true
   },
   "failReason": "BLOCKING_UNRELATED_HISTORIES",
-  "generatedAtUtc": "2026-04-28T12:06:08.860Z",
+  "generatedAtUtc": "2026-04-28T12:09:23.631Z",
   "issues": [
     {
       "code": "BLOCKING_UNRELATED_HISTORIES"

@@ -136,6 +136,7 @@ function main() {
     boundMainSha: state.boundRefs.mainSha,
     boundRootSha: state.boundRefs.rootSha,
     currentHeadMatchesBoundRoot: state.checks.currentHeadMatchesBoundRoot,
+    localHeadDescendsFromBoundRoot: state.checks.localHeadDescendsFromBoundRoot,
   });
   writeJson(path.join(outputDir, 'mergeability-summary.json'), {
     generatedAtUtc,

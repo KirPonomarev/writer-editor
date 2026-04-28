@@ -5,7 +5,7 @@
     "exitCode": 0,
     "ok": true,
     "stderr": "",
-    "stdout": "✔ main sync c01 ahead inventory: status metadata and positive state agree on bound snapshot and classification counts (160.464708ms)\n✔ main sync c01 ahead inventory: invalid bound root sha fails machine checks (69.279667ms)\n✔ main sync c01 ahead inventory: repeatability is stable across three runs (449.351875ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 722.976708"
+    "stdout": "✔ main sync c01 ahead inventory: status metadata and positive state agree on bound snapshot and classification counts (162.998458ms)\n✔ main sync c01 ahead inventory: invalid bound root sha fails machine checks (73.177458ms)\n✔ main sync c01 ahead inventory: repeatability is stable across three runs (471.481375ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 755.972709"
   },
   {
     "checkId": "B2C10_CONTRACT",
@@ -13,7 +13,7 @@
     "exitCode": 0,
     "ok": true,
     "stderr": "",
-    "stdout": "✔ b2c10 bypass negative matrix: current canonical core remains green and advisory tails are explicit (37.36ms)\n✔ b2c10 bypass negative matrix: mandatory bypass routes are machine-proved rejected (14.255916ms)\n✔ b2c10 bypass negative matrix: extra existing mutation surfaces stay advisory and signals stay out of scope (14.800458ms)\n✔ b2c10 bypass negative matrix: committed status packet matches executable state (15.065709ms)\nℹ tests 4\nℹ suites 0\nℹ pass 4\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 126.688125"
+    "stdout": "✔ b2c10 bypass negative matrix: current canonical core remains green and advisory tails are explicit (55.478125ms)\n✔ b2c10 bypass negative matrix: mandatory bypass routes are machine-proved rejected (15.757167ms)\n✔ b2c10 bypass negative matrix: extra existing mutation surfaces stay advisory and signals stay out of scope (15.873583ms)\n✔ b2c10 bypass negative matrix: committed status packet matches executable state (15.511584ms)\nℹ tests 4\nℹ suites 0\nℹ pass 4\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 154.710375"
   },
   {
     "checkId": "B2C11_CONTRACT",
@@ -21,7 +21,7 @@
     "exitCode": 0,
     "ok": true,
     "stderr": "",
-    "stdout": "✔ b2c11 command effect model: command boundary is green and direct bridge payload calls are eliminated (14.295917ms)\n✔ b2c11 command effect model: operation plan is deterministic and storage scope stays untouched (0.739791ms)\n✔ b2c11 command effect model: committed status packet matches executable state (0.973709ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 60.337709"
+    "stdout": "✔ b2c11 command effect model: command boundary is green and direct bridge payload calls are eliminated (13.848209ms)\n✔ b2c11 command effect model: operation plan is deterministic and storage scope stays untouched (0.703667ms)\n✔ b2c11 command effect model: committed status packet matches executable state (0.807833ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 61.025958"
   },
   {
     "checkId": "B2C12_CONTRACT",
@@ -29,7 +29,7 @@
     "exitCode": 0,
     "ok": true,
     "stderr": "",
-    "stdout": "✔ b2c12 persist effects atomic write: batch helper is wired into flow save and open guard blocks stale batch state (99.650125ms)\n✔ b2c12 persist effects atomic write: partial batch state is rejected and minimal recovery evidence remains (74.977ms)\n✔ b2c12 persist effects atomic write: committed status packet matches executable state (70.011333ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 291.265625"
+    "stdout": "✔ b2c12 persist effects atomic write: batch helper is wired into flow save and open guard blocks stale batch state (127.42425ms)\n✔ b2c12 persist effects atomic write: partial batch state is rejected and minimal recovery evidence remains (72.2405ms)\n✔ b2c12 persist effects atomic write: committed status packet matches executable state (58.660708ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 302.116292"
   },
   {
     "checkId": "OSS_POLICY",

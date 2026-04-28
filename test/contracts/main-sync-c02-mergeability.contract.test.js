@@ -41,6 +41,7 @@ test('main sync c02 mergeability: status metadata and report agree on exact unre
   assert.equal(state.checks.c01StatusActive, true);
   assert.equal(state.checks.c01SummaryOk, true);
   assert.equal(state.checks.c01RootAncestor, true);
+  assert.equal(state.checks.localHeadDescendsFromBoundRoot, true);
   assert.equal(state.probe.mergeBaseFound, false);
   assert.equal(state.probe.mergeabilityClass, 'BLOCKING_UNRELATED_HISTORIES');
   assert.equal(state.probe.conflictCount, 0);
