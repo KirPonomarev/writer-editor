@@ -1,0 +1,10 @@
+{
+  "c03Blocked": true,
+  "ownerAcceptanceRequired": true,
+  "recommendation": {
+    "classification": "RECOMMENDED",
+    "exactNextWriteContour": "NONE_OWNER_DECISION_REQUIRED",
+    "methodId": "STOP",
+    "reason": "Current canon and recorded blocker packet do not admit any automatic history-bridge write method."
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "allowedWriteDomain": "NONE",
+  "blockedWriteDomain": "ROOT_TO_MAIN_PROMOTION_AND_HISTORY_BRIDGE_EXECUTION",
+  "broadShellAdmissionClaimed": false,
+  "contourId": "MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION",
+  "contractTest": "main-sync-c02-remediation-history-bridge-admission.contract.test.js",
+  "decisionOwner": "MAIN_INTEGRATOR",
+  "evidenceArtifacts": [
+    "allowed-method-matrix.json",
+    "forbidden-method-matrix.json",
+    "ranked-method-matrix.json",
+    "admission-summary.json",
+    "risk-rollback.json",
+    "next-write-contour.json"
+  ],
+  "formalCutoverClaimed": false,
+  "nextStep": "NONE_OWNER_DECISION_REQUIRED",
+  "notes": [
+    "This is a report-only admission contour.",
+    "This record does not approve any history-bridge write automatically.",
+    "Any next write contour requires owner acceptance of one explicit method or continued STOP."
+  ],
+  "promotionDecision": "STOP",
+  "reasons": [
+    "The committed C02 blocker packet still reports unrelated histories with no merge-base.",
+    "Silent rebase and history rewrite remain forbidden by active canon.",
+    "No automatic bridge method is admitted by the current blocker packet."
+  ],
+  "recordedAtUtc": "2026-04-28T12:22:04.993Z",
+  "reportScript": "main-sync-c02-remediation-history-bridge-admission-report.mjs",
+  "runtimeAdmissionGranted": false,
+  "runtimeWritesAdmitted": false,
+  "scope": "REPORT_ONLY_ADMISSION_AFTER_C02_STOP",
+  "sourceArtifactsBasenames": [
+    "MAIN_SYNC_C02_MERGEABILITY_STATUS_V1.json",
+    "mergeability-summary.json",
+    "conflict-set.json",
+    "pre-pr-verification.json"
+  ],
+  "sourceHeadCommitSha": "15611164c07d6b6a98e7d2c0617e9e8fa99ac887",
+  "stateScript": "main-sync-c02-remediation-history-bridge-admission-state.mjs",
+  "status": "MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_RUNTIME_WRITES_NOT_ADMITTED",
+  "taskBasename": "MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION"
+}

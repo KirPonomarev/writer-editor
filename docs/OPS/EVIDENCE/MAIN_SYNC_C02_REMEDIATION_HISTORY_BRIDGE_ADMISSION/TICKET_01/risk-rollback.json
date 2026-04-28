@@ -1,0 +1,31 @@
+{
+  "riskRows": [
+    {
+      "detail": "Current root and main still have unrelated histories, so C03 remains blocked.",
+      "riskId": "NO_MERGE_BASE_PERSISTS",
+      "severity": "HIGH"
+    },
+    {
+      "detail": "Any replay path could widen scope unless the exact commit allowlist and rollback are declared first.",
+      "riskId": "CHERRY_PICK_SCOPE_WIDENING",
+      "severity": "HIGH"
+    },
+    {
+      "detail": "Default branch truth cannot be switched locally without canon-level cutover.",
+      "riskId": "DEFAULT_BRANCH_TRUTH_BREAK",
+      "severity": "HIGH"
+    }
+  ],
+  "rollbackRows": [
+    {
+      "action": "Maintain STOP state and do not open any root-to-main PR contour.",
+      "rollbackId": "KEEP_C03_BLOCKED",
+      "trigger": "No owner-approved history bridge method exists."
+    },
+    {
+      "action": "Reject method and return to exact STOP with unchanged blocker packet.",
+      "rollbackId": "REJECT_REWRITE_METHODS",
+      "trigger": "Any proposed fix implies rebase or hidden history rewrite."
+    }
+  ]
+}

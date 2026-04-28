@@ -1,0 +1,32 @@
+{
+  "boundRefs": {
+    "mainBranch": "main",
+    "mainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+    "rootBranch": "codex/toolbar-baseline-truthful-closeout-001",
+    "rootSha": "15611164c07d6b6a98e7d2c0617e9e8fa99ac887"
+  },
+  "c02BlockerFacts": {
+    "c02ConflictCount": 0,
+    "c02FailReason": "BLOCKING_UNRELATED_HISTORIES",
+    "c02MergeabilityClass": "BLOCKING_UNRELATED_HISTORIES",
+    "c02MergeExitCode": 128,
+    "c02PrePrGreen": true,
+    "c02Status": "FAILED"
+  },
+  "generatedAtUtc": "2026-04-28T12:22:04.993Z",
+  "localGitFacts": {
+    "mainRootSha": "ec2cf8317442c984feec59ba9edff90496ff1c2a",
+    "mergeBaseExists": false,
+    "mergeBaseSha": "",
+    "rootRootSha": "12eb791ac501a0b5700ef586645cc67d391655b1"
+  },
+  "ok": true,
+  "recommendation": {
+    "classification": "RECOMMENDED",
+    "exactNextWriteContour": "NONE_OWNER_DECISION_REQUIRED",
+    "methodId": "STOP",
+    "reason": "Current canon and recorded blocker packet do not admit any automatic history-bridge write method."
+  },
+  "runId": "TZ_MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION_001",
+  "ticketId": "TZ_MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION_001"
+}

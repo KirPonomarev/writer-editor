@@ -1,0 +1,20 @@
+[
+  {
+    "classification": "RECOMMENDED",
+    "methodId": "STOP",
+    "rank": 1,
+    "reason": "Current canon allows no automatic bridge method from the recorded blocker packet."
+  },
+  {
+    "classification": "ESCALATION_ONLY",
+    "methodId": "CHERRY_PICK_REPLAY",
+    "rank": 2,
+    "reason": "Only candidate that avoids rewrite, but still needs explicit owner approval and a new write contour."
+  },
+  {
+    "classification": "ESCALATION_ONLY",
+    "methodId": "DEFAULT_BRANCH_SWITCH",
+    "rank": 3,
+    "reason": "Governance-scale move, not a local remediation shortcut."
+  }
+]

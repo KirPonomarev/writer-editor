@@ -1,0 +1,17 @@
+[
+  {
+    "classification": "FORBIDDEN",
+    "methodId": "EXPLICIT_ALLOW_UNRELATED_HISTORIES_MERGE",
+    "reason": "No canon allowance exists and the recorded blocker packet rejects the path before any PR promotion."
+  },
+  {
+    "classification": "ESCALATION_ONLY",
+    "methodId": "CHERRY_PICK_REPLAY",
+    "reason": "Could preserve PR-only delivery shape but requires owner-level governance decision and explicit scope/rollback definition."
+  },
+  {
+    "classification": "ESCALATION_ONLY",
+    "methodId": "DEFAULT_BRANCH_SWITCH",
+    "reason": "Would require canon-level truth-surface cutover rather than local remediation."
+  }
+]
