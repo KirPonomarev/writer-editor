@@ -1,0 +1,46 @@
+{
+  "rowCount": 8,
+  "rows": [
+    {
+      "rowId": "COMMAND_KERNEL_OWNS_COMMAND_MEANING",
+      "statement": "Command ids, command meaning, capability binding, and availability belong to the command kernel layer.",
+      "status": "LOCKED"
+    },
+    {
+      "rowId": "UI_VISIBILITY_IS_NOT_AVAILABILITY",
+      "statement": "UI surfaces may show or hide commands, but do not authorize command execution.",
+      "status": "LOCKED"
+    },
+    {
+      "rowId": "SINGLE_APPROVED_ENTRY_PATH",
+      "statement": "Approved command execution must pass through the command bus or command kernel entry path.",
+      "status": "LOCKED"
+    },
+    {
+      "rowId": "DIRECT_MUTATION_ROUTES_DENIED",
+      "statement": "Known bypass routes remain denied by B2C10 and must not be reopened by Block 3.",
+      "status": "LOCKED"
+    },
+    {
+      "rowId": "VALIDATE_APPLY_PERSIST_BOUNDARY",
+      "statement": "Command effects keep validate, apply, operation plan, and persist boundaries explicit.",
+      "status": "LOCKED"
+    },
+    {
+      "rowId": "PERSIST_EFFECTS_ONLY_WRITE_LAYER",
+      "statement": "Persist effects remains the only write layer for storage-side command effects.",
+      "status": "LOCKED"
+    },
+    {
+      "rowId": "NO_PLUGIN_RUNTIME",
+      "statement": "Block 3 does not create an executable plugin runtime.",
+      "status": "LOCKED"
+    },
+    {
+      "rowId": "NO_RELEASE_CLAIM",
+      "statement": "Block 3 admission does not claim release readiness.",
+      "status": "LOCKED"
+    }
+  ],
+  "taskId": "B3C01_COMMAND_KERNEL_SCOPE_LOCK"
+}

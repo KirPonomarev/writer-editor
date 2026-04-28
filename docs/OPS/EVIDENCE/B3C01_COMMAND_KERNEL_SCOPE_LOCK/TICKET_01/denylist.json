@@ -1,0 +1,46 @@
+{
+  "rowCount": 10,
+  "rows": [
+    {
+      "denied": "PRODUCT_RUNTIME_CODE_IN_B3C01",
+      "reason": "B3C01 is admission and scope lock only."
+    },
+    {
+      "denied": "UI_CHANGE",
+      "reason": "Visibility surfaces are inputs, not write targets."
+    },
+    {
+      "denied": "STORAGE_FORMAT_CHANGE",
+      "reason": "B3C01 does not change persistence protocols."
+    },
+    {
+      "denied": "SCHEMA_CHANGE",
+      "reason": "B3C01 does not change project schema."
+    },
+    {
+      "denied": "DEPENDENCY_CHANGE",
+      "reason": "Command kernel admission needs no new dependency."
+    },
+    {
+      "denied": "EXPORT_REWRITE",
+      "reason": "Export is outside this contour."
+    },
+    {
+      "denied": "PLUGIN_SYSTEM",
+      "reason": "Executable plugin runtime is forbidden in v1."
+    },
+    {
+      "denied": "RELEASE_READY_CLAIM",
+      "reason": "Block 3 scope lock is not release readiness."
+    },
+    {
+      "denied": "FACTUAL_DOC_CUTOVER",
+      "reason": "No product truth cutover in B3C01."
+    },
+    {
+      "denied": "REOPEN_BLOCK_2",
+      "reason": "Block 2 is consumed as green input only."
+    }
+  ],
+  "taskId": "B3C01_COMMAND_KERNEL_SCOPE_LOCK"
+}

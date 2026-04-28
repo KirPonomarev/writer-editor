@@ -1,0 +1,60 @@
+{
+  "rowCount": 9,
+  "rows": [
+    {
+      "basename": "commandSurfaceKernel.js",
+      "exists": true,
+      "hash": "ff7e2afb38351d279859d02b7935a1bfa4fe5c46c6c25ded2fbd9f2e847aadd8",
+      "relPath": "src/command/commandSurfaceKernel.js"
+    },
+    {
+      "basename": "command-catalog.v1.mjs",
+      "exists": true,
+      "hash": "bcf32af7544c8358a0c7bbc890bfa1a84520eb66124a4c73024fe49b99bb4382",
+      "relPath": "src/renderer/commands/command-catalog.v1.mjs"
+    },
+    {
+      "basename": "registry.mjs",
+      "exists": true,
+      "hash": "30fbc50b2350d11e79834b873eb6cb63edc6cd1672872a7a6fe2186a4b25aeaf",
+      "relPath": "src/renderer/commands/registry.mjs"
+    },
+    {
+      "basename": "runCommand.mjs",
+      "exists": true,
+      "hash": "da7b4d0974eaebdcbc4d55bfcaefcae85f19d34f4277f321200bcdddbbd8718f",
+      "relPath": "src/renderer/commands/runCommand.mjs"
+    },
+    {
+      "basename": "capabilityPolicy.mjs",
+      "exists": true,
+      "hash": "a0c06217f1225c710329f63a12ce5fd74cb778e39a200e5c4cc1cc1ed441d301",
+      "relPath": "src/renderer/commands/capabilityPolicy.mjs"
+    },
+    {
+      "basename": "commandBusGuard.mjs",
+      "exists": true,
+      "hash": "50010a4bab4c9669f3ab2148805c8c19fadf64fc787c4aaf4e26b74f0a017fe4",
+      "relPath": "src/renderer/commands/commandBusGuard.mjs"
+    },
+    {
+      "basename": "commandEffectModel.mjs",
+      "exists": true,
+      "hash": "192a1e730066f567fc0952abcfea50c12d8d7761191e6b1e9be116b8d46dc241",
+      "relPath": "src/renderer/commands/commandEffectModel.mjs"
+    },
+    {
+      "basename": "command-namespace-canon.js",
+      "exists": true,
+      "hash": "10dce36e275f00a165e8e83598937819bb04ba6ed61a0919e8875bd8d9886a03",
+      "relPath": "src/menu/command-namespace-canon.js"
+    },
+    {
+      "basename": "platform-capability-resolver.mjs",
+      "exists": true,
+      "hash": "65d02a1b978527ce748fbf96fdf09eef703c47fa58004553091a00db8e4cd581",
+      "relPath": "scripts/guards/platform-capability-resolver.mjs"
+    }
+  ],
+  "taskId": "B3C01_COMMAND_KERNEL_SCOPE_LOCK"
+}
