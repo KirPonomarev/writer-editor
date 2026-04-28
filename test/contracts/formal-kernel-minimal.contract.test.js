@@ -62,14 +62,13 @@ test('formal kernel minimal promotes recovery human readable only through a dete
   assert.equal(recoveryRow.positiveContractRef, 'test/contracts/recovery-human-readable.contract.test.js');
 });
 
-test('formal kernel minimal keeps text no loss as explicit advisory downgrade until detector path is green', () => {
+test('formal kernel minimal promotes text no loss only through a detector-bound rollup proof', () => {
   const artifact = JSON.parse(fs.readFileSync(ARTIFACT_PATH, 'utf8'));
   const textRow = artifact.items.find((item) => item.invariantId === 'TEXT_NO_LOSS');
   assert.ok(textRow);
-  assert.equal(textRow.bindingClass, 'advisory_downgrade');
-  assert.equal(textRow.status, 'ADVISORY');
-  assert.equal(textRow.reasonCode, 'CURRENT_DETECTOR_PATH_NOT_GREEN');
-  assert.equal(typeof textRow.advisoryProbe, 'string');
-  assert.ok(Array.isArray(textRow.evidenceRefs));
-  assert.equal(textRow.evidenceRefs.length >= 2, true);
+  assert.equal(textRow.bindingClass, 'detector_bound');
+  assert.equal(textRow.status, 'BOUND');
+  assert.equal(textRow.detectorToken, 'TEXT_NO_LOSS_OK');
+  assert.equal(textRow.proofHook, 'node scripts/ops/phase00-no-input-loss-rollup.mjs --json');
+  assert.equal(textRow.positiveContractRef, 'test/contracts/phase00-no-input-loss-rollup.contract.test.js');
 });

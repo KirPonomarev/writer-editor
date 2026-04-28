@@ -10,15 +10,11 @@
   "items": [
     {
       "invariantId": "TEXT_NO_LOSS",
-      "bindingClass": "advisory_downgrade",
-      "status": "ADVISORY",
-      "reasonCode": "CURRENT_DETECTOR_PATH_NOT_GREEN",
-      "reason": "The current phase00 no-input-loss rollup detector path is present but not green on clean authority mainline.",
-      "evidenceRefs": [
-        "scripts/ops/phase00-no-input-loss-rollup.mjs",
-        "test/contracts/phase00-no-input-loss-rollup.contract.test.js"
-      ],
-      "advisoryProbe": "node scripts/ops/phase00-no-input-loss-rollup.mjs --json"
+      "bindingClass": "detector_bound",
+      "status": "BOUND",
+      "detectorToken": "TEXT_NO_LOSS_OK",
+      "proofHook": "node scripts/ops/phase00-no-input-loss-rollup.mjs --json",
+      "positiveContractRef": "test/contracts/phase00-no-input-loss-rollup.contract.test.js"
     },
     {
       "invariantId": "EXPORT_SOURCE_CANONICAL",
