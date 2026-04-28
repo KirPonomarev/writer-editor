@@ -1,0 +1,329 @@
+{
+  "artifactId": "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1",
+  "B3C09_PERFORMANCE_BASELINE_BINDING_OK": 1,
+  "B3C09_PROVISIONAL_PERF_GAP": 1,
+  "contourId": "B3C09_PERFORMANCE_BASELINE_BINDING",
+  "declaredTier": {
+    "escalationForbiddenInThisContour": true,
+    "id": "TIER_0_SINGLE_SCENE",
+    "scope": "SINGLE_SCENE_WORDS_5000_ASSETS_5_SINGLE_DESKTOP_PLATFORM"
+  },
+  "failRows": [],
+  "failSignal": "",
+  "hotPathRows": [
+    {
+      "failSignal": "",
+      "id": "HOT_PATH_SYNC_NEGATIVE_SOURCE_SCAN",
+      "passed": true,
+      "source": "scripts/ops/perf-state.mjs -> scripts/ops/hotpath-policy-state.mjs"
+    }
+  ],
+  "measurements": {
+    "perfLite": {
+      "failedMetrics": [],
+      "fixtureBytes": 373392,
+      "fixturePath": "test/fixtures/perf/long-scene.txt",
+      "metrics": {
+        "longTaskCount": 0,
+        "openP95Ms": 2.818,
+        "reopenP95Ms": 0.56,
+        "runs": 9,
+        "saveP95Ms": 0.419,
+        "typeBurstP95Ms": 0.612
+      },
+      "runs": 9,
+      "status": "PASS",
+      "thresholdsMs": {
+        "openP95Ms": 2000,
+        "reopenP95Ms": 2000,
+        "saveP95Ms": 1500,
+        "typeBurstP95Ms": 50
+      },
+      "timestampUtc": "2026-04-28T20:03:23.891Z",
+      "toolVersion": "perf-lite.v1"
+    },
+    "perfState": {
+      "failingProofs": [],
+      "failReason": "",
+      "fixturePath": "",
+      "HOTPATH_POLICY_OK": 1,
+      "metrics": {
+        "command_dispatch_p95_ms": 0.131,
+        "core_apply_median_ms": 0.209,
+        "open_median_ms": 0.016,
+        "save_median_ms": 0.017,
+        "startup_ms": 8.267
+      },
+      "PERF_BASELINE_OK": 1,
+      "PERF_FIXTURE_OK": 1,
+      "PERF_RUNNER_DETERMINISTIC_OK": 1,
+      "PERF_THRESHOLD_OK": 1,
+      "perfRunCommitSha": "67f89a61e67f983a452b99b90ca795c1ed38d9a6",
+      "perfRunConfigHash": "d0667dac0d03ae3e7a08e9f274227885458d5a8ddfede788ef1165ec06af82ca",
+      "perfRunVerdict": "PASS",
+      "policyPath": "",
+      "thresholds": {
+        "command_dispatch_p95_ms": 60,
+        "open_median_ms": 60,
+        "save_median_ms": 60
+      },
+      "thresholdsPath": "",
+      "TOOL_VERSION": "perf-state.v1"
+    }
+  },
+  "ok": true,
+  "p95Rows": [
+    {
+      "id": "OPEN_P95_MS",
+      "passed": true,
+      "source": "perf-lite.openP95Ms",
+      "status": "PASS",
+      "supported": true,
+      "threshold": 1000,
+      "value": 2.818
+    },
+    {
+      "id": "SCENE_SWITCH_P95_MS",
+      "passed": null,
+      "reason": "EXISTING_PERF_RUN_FIXTURE_HAS_SCENE_SWITCH_PROBE_BUT_RUNNER_DOES_NOT_MEASURE_SCENE_SWITCH_P95",
+      "source": "unsupported",
+      "status": "UNSUPPORTED",
+      "supported": false,
+      "threshold": 50,
+      "value": null
+    },
+    {
+      "id": "SAVE_P95_MS",
+      "passed": true,
+      "source": "perf-lite.saveP95Ms",
+      "status": "PASS",
+      "supported": true,
+      "threshold": 40,
+      "value": 0.419
+    },
+    {
+      "id": "INPUT_P95_MS",
+      "passed": true,
+      "source": "perf-lite.typeBurstP95Ms",
+      "status": "PASS",
+      "supported": true,
+      "threshold": 16,
+      "value": 0.612
+    },
+    {
+      "id": "EXPORT_DOCX_P95_MS",
+      "passed": null,
+      "reason": "EXISTING_PERF_FIXTURE_PROBES_EXPORT_COMMAND_UNWIRED_ERROR_ONLY_NOT_DOCX_GENERATION_P95",
+      "source": "unsupported",
+      "status": "UNSUPPORTED",
+      "supported": false,
+      "threshold": 2000,
+      "value": null
+    },
+    {
+      "id": "MEMORY_PEAK_MB",
+      "passed": true,
+      "source": "process.memoryUsage.rss",
+      "status": "PASS",
+      "supported": true,
+      "threshold": 160,
+      "value": 47.25
+    }
+  ],
+  "PERF_BASELINE_OK": 0,
+  "proof": {
+    "changedBasenamesHashRecorded": true,
+    "existingPerfLiteReused": true,
+    "existingPerfStateReused": true,
+    "fullPerfBaselineGreen": false,
+    "inputStatusesBound": true,
+    "noAttestation": true,
+    "noCapabilityTierReport": true,
+    "noExportPipelineRewrite": true,
+    "noNewDependency": true,
+    "noProductRuntimeRewrite": true,
+    "noReleaseClaim": true,
+    "noReleaseDossier": true,
+    "noUiChange": true,
+    "provisionalGapRecorded": true,
+    "statusArtifactHashRecorded": true,
+    "testCommandRowsRecorded": true
+  },
+  "repo": {
+    "headSha": "67f89a61e67f983a452b99b90ca795c1ed38d9a6",
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
+    "statusBasename": "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json",
+    "writtenFrom": "b3c09-performance-baseline-binding-state.mjs"
+  },
+  "runtime": {
+    "changedBasenames": [
+      "b3c09-performance-baseline-binding-state.mjs",
+      "b3c09-performance-baseline-binding.contract.test.js",
+      "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "173a6c28fb3529c385806b6ae37aeb07a34f56a518f63eae833e3a49714d910e",
+    "commandResults": {
+      "allPassed": null,
+      "commandCount": 12,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c09-performance-baseline-binding-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c09-performance-baseline-binding.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/perf-fixture.contract.test.js test/contracts/perf-runner-deterministic.contract.test.js test/contracts/perf-thresholds.contract.test.js test/contracts/perf-lite-entrypoint-and-fixture.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c08-support-bundle-privacy.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c07-security-runtime-boundary.contract.test.js",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c06-no-network-writing-path.contract.test.js",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c05-permission-scope-enforced.contract.test.js",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --check",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 10,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+          "index": 11,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/io src/export src/main.js src/preload.js",
+          "index": 12,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C09_PERFORMANCE_BASELINE_BINDING"
+    },
+    "environment": {
+      "arch": "arm64",
+      "cpuCount": 8,
+      "node": "v24.12.0",
+      "platform": "darwin"
+    },
+    "measurementPolicy": {
+      "p95RowsUseExistingBoundedPerfReplay": true,
+      "releaseScaleClaimForbidden": true,
+      "unsupportedRowsDoNotSetPerfBaselineOk": true
+    },
+    "statusArtifactHash": "d61707756044b286496704b65ae108c8e70158909a2ef01c337edf13874ac357"
+  },
+  "scope": {
+    "attestationClaim": false,
+    "capabilityTierReportWritten": false,
+    "exportPipelineRewritten": false,
+    "layer": "B3C09_PERFORMANCE_BASELINE_BINDING",
+    "mainPreloadIpcRewritten": false,
+    "networkRuntimeMonitorRewritten": false,
+    "newDependency": false,
+    "performanceBaselineBindingOnly": true,
+    "permissionScopeRewritten": false,
+    "productRuntimeRewritten": false,
+    "proofHelperOnly": true,
+    "releaseClaim": false,
+    "releaseDossierClaim": false,
+    "scaleClaim": false,
+    "securityRuntimeBoundaryRewritten": false,
+    "storageFormatChanged": false,
+    "storageMutated": false,
+    "uiTouched": false
+  },
+  "status": "PROVISIONAL_GAP",
+  "thresholdBreachRows": [
+    {
+      "failSignal": "",
+      "id": "OPEN_P95_MS_THRESHOLD_CHECK",
+      "passed": true,
+      "threshold": 1000,
+      "value": 2.818
+    },
+    {
+      "failSignal": "",
+      "id": "SAVE_P95_MS_THRESHOLD_CHECK",
+      "passed": true,
+      "threshold": 40,
+      "value": 0.419
+    },
+    {
+      "failSignal": "",
+      "id": "INPUT_P95_MS_THRESHOLD_CHECK",
+      "passed": true,
+      "threshold": 16,
+      "value": 0.612
+    },
+    {
+      "failSignal": "",
+      "id": "MEMORY_PEAK_MB_THRESHOLD_CHECK",
+      "passed": true,
+      "threshold": 160,
+      "value": 47.25
+    }
+  ],
+  "thresholds": {
+    "exportDocxP95Ms": 2000,
+    "inputP95Ms": 16,
+    "memoryPeakMb": 160,
+    "openP95Ms": 1000,
+    "saveP95Ms": 40,
+    "sceneSwitchP95Ms": 50
+  },
+  "unsupportedRows": [
+    {
+      "id": "SCENE_SWITCH_P95_MS",
+      "passed": null,
+      "reason": "EXISTING_PERF_RUN_FIXTURE_HAS_SCENE_SWITCH_PROBE_BUT_RUNNER_DOES_NOT_MEASURE_SCENE_SWITCH_P95",
+      "source": "unsupported",
+      "status": "UNSUPPORTED",
+      "supported": false,
+      "threshold": 50,
+      "value": null
+    },
+    {
+      "id": "EXPORT_DOCX_P95_MS",
+      "passed": null,
+      "reason": "EXISTING_PERF_FIXTURE_PROBES_EXPORT_COMMAND_UNWIRED_ERROR_ONLY_NOT_DOCX_GENERATION_P95",
+      "source": "unsupported",
+      "status": "UNSUPPORTED",
+      "supported": false,
+      "threshold": 2000,
+      "value": null
+    }
+  ]
+}
