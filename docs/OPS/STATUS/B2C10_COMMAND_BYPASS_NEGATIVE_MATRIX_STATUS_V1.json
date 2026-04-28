@@ -1,0 +1,196 @@
+{
+  "admittedMandatoryBypassCount": 5,
+  "advisoryGapCount": 3,
+  "advisoryGapRows": [
+    "autosave.request",
+    "editor.paste-handler",
+    "tree.document.direct-electron-api"
+  ],
+  "approvedEntryCount": 1,
+  "B2C10_COMMAND_BYPASS_NEGATIVE_MATRIX_OK": 1,
+  "callerTrustCoreOk": true,
+  "callerTrustState": {
+    "advisoryToBlockingDriftCount": 0,
+    "aliasIndirectionRuntimeNegativeCheck": true,
+    "callerIdentityRequiredCheck": true,
+    "fastPathCacheRequiredCheck": true,
+    "mandatoryBypassScenariosCheck": true,
+    "payloadContractRequiredCheck": true,
+    "tokenOk": 1
+  },
+  "commandSurfaceCoreOk": true,
+  "commandSurfaceState": {
+    "missingScenarioIds": [],
+    "tokenBypassTests": 1,
+    "tokenEnforced": 1,
+    "tokenSingleEntry": 1
+  },
+  "contourId": "B2C10_COMMAND_BYPASS_NEGATIVE_MATRIX",
+  "coverageMatrix": [
+    {
+      "evidence": [
+        "command-surface-caller-trust"
+      ],
+      "routeId": "alias.indirection",
+      "status": "PROVED_REJECTED",
+      "surfaceClass": "indirection-bypass"
+    },
+    {
+      "evidence": [
+        "editor-autosave-request",
+        "preload-autosave-bridge",
+        "main-autosave-handler"
+      ],
+      "routeId": "autosave.request",
+      "status": "ADVISORY_GAP",
+      "surfaceClass": "existing-mutation-surface"
+    },
+    {
+      "evidence": [
+        "editor-dispatch-through-bus",
+        "preload-ui-command-bridge",
+        "main-ui-command-bridge"
+      ],
+      "routeId": "command.bus",
+      "status": "PROVED_APPROVED_ENTRY",
+      "surfaceClass": "canonical-entry"
+    },
+    {
+      "evidence": [
+        "command-surface-single-entry",
+        "command-surface-state"
+      ],
+      "routeId": "context.button.direct",
+      "status": "PROVED_REJECTED",
+      "surfaceClass": "mandatory-bypass"
+    },
+    {
+      "evidence": [
+        "tiptap-dirty-state-compat-signal"
+      ],
+      "routeId": "dirty-state.signal-bridge",
+      "status": "OUT_OF_SCOPE_SIGNAL",
+      "surfaceClass": "signal-surface"
+    },
+    {
+      "evidence": [
+        "editor-paste-listener"
+      ],
+      "routeId": "editor.paste-handler",
+      "status": "ADVISORY_GAP",
+      "surfaceClass": "existing-mutation-surface"
+    },
+    {
+      "evidence": [
+        "command-surface-single-entry",
+        "command-surface-state"
+      ],
+      "routeId": "hotkey.direct",
+      "status": "PROVED_REJECTED",
+      "surfaceClass": "mandatory-bypass"
+    },
+    {
+      "evidence": [
+        "command-surface-caller-trust"
+      ],
+      "routeId": "interactive.fast-path-replay",
+      "status": "PROVED_REJECTED",
+      "surfaceClass": "fast-path-cache-bypass"
+    },
+    {
+      "evidence": [
+        "command-surface-caller-trust"
+      ],
+      "routeId": "invalid.payload",
+      "status": "PROVED_REJECTED",
+      "surfaceClass": "payload-contract-bypass"
+    },
+    {
+      "evidence": [
+        "command-surface-bus-only"
+      ],
+      "routeId": "ipc.direct-channel",
+      "status": "PROVED_REJECTED",
+      "surfaceClass": "direct-ipc-bypass"
+    },
+    {
+      "evidence": [
+        "command-surface-single-entry",
+        "command-surface-state"
+      ],
+      "routeId": "ipc.renderer-main.direct",
+      "status": "PROVED_REJECTED",
+      "surfaceClass": "mandatory-bypass"
+    },
+    {
+      "evidence": [
+        "command-surface-bus-only"
+      ],
+      "routeId": "menu.direct-handler",
+      "status": "PROVED_REJECTED",
+      "surfaceClass": "direct-menu-bypass"
+    },
+    {
+      "evidence": [
+        "command-surface-single-entry",
+        "command-surface-state"
+      ],
+      "routeId": "palette.direct",
+      "status": "PROVED_REJECTED",
+      "surfaceClass": "mandatory-bypass"
+    },
+    {
+      "evidence": [
+        "command-surface-single-entry",
+        "command-surface-state"
+      ],
+      "routeId": "plugin.overlay.exec",
+      "status": "PROVED_REJECTED",
+      "surfaceClass": "mandatory-bypass"
+    },
+    {
+      "evidence": [
+        "command-surface-bus-only"
+      ],
+      "routeId": "renderer.direct-command-ipc",
+      "status": "PROVED_REJECTED",
+      "surfaceClass": "direct-renderer-bypass"
+    },
+    {
+      "evidence": [
+        "tiptap-save-lifecycle-signal-bridge"
+      ],
+      "routeId": "save-lifecycle.signal-bridge",
+      "status": "OUT_OF_SCOPE_SIGNAL",
+      "surfaceClass": "signal-surface"
+    },
+    {
+      "evidence": [
+        "editor-tree-document-direct-api",
+        "skipped-tree-document-adoption-tests"
+      ],
+      "routeId": "tree.document.direct-electron-api",
+      "status": "ADVISORY_GAP",
+      "surfaceClass": "existing-mutation-surface"
+    },
+    {
+      "evidence": [
+        "command-surface-caller-trust"
+      ],
+      "routeId": "untrusted.caller",
+      "status": "PROVED_REJECTED",
+      "surfaceClass": "caller-identity-bypass"
+    }
+  ],
+  "failReason": "",
+  "failRows": [],
+  "failSignal": "",
+  "ok": true,
+  "outOfScopeSignalCount": 2,
+  "outOfScopeSignalRows": [
+    "dirty-state.signal-bridge",
+    "save-lifecycle.signal-bridge"
+  ],
+  "provedRejectedCount": 12,
+  "schemaVersion": 1
+}
