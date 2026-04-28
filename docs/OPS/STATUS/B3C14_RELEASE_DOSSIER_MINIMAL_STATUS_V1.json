@@ -1,0 +1,582 @@
+{
+  "artifactId": "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1",
+  "B3C14_RELEASE_DOSSIER_MINIMAL_OK": 1,
+  "B3C14_RELEASE_GREEN_OK": 0,
+  "carriedForwardLimitRows": [
+    {
+      "id": "B3C09_UNSUPPORTED_MEASUREMENTS",
+      "rows": [
+        "EXPORT_DOCX_P95_MS",
+        "SCENE_SWITCH_P95_MS"
+      ],
+      "sourceBasename": "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json",
+      "status": "BOUND_LIMIT"
+    },
+    {
+      "id": "B3C10_PROVISIONAL_PERF_AND_PLATFORM_SCOPE",
+      "provisionalScope": [
+        "B3C09_PROVISIONAL_PERF_GAP",
+        "NEXT_REQUIRED_MEASUREMENTS"
+      ],
+      "sourceBasename": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+      "status": "BOUND_LIMIT",
+      "unsupportedScope": [
+        "EXPORT_DOCX_P95_MS",
+        "MULTI_PLATFORM_REAL_FIXTURE_SET",
+        "SCENE_SWITCH_P95_MS"
+      ]
+    },
+    {
+      "id": "B3C11_REAL_PLATFORM_LIMITS",
+      "platformRows": [
+        "LINUX:UNTESTED_LIMITED",
+        "MACOS:CURRENT_PLATFORM_ONLY_LIMITED",
+        "WINDOWS:UNTESTED_LIMITED"
+      ],
+      "sourceBasename": "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+      "status": "BOUND_LIMIT"
+    },
+    {
+      "id": "B3C12_I18N_LIMITS",
+      "sourceBasename": "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+      "status": "BOUND_LIMIT",
+      "unsupportedScope": [
+        "BIDI_LAYOUT_RENDERING",
+        "FULL_GLOBAL_I18N_SUPPORT",
+        "REAL_LANGUAGE_COVERAGE_MATRIX",
+        "RENDERER_SEARCH_UI_CHANGE",
+        "XPLAT_CERTIFICATION"
+      ]
+    },
+    {
+      "id": "B3C13_A11Y_LIMIT_ROWS",
+      "rows": [
+        "NO_BROAD_UI_POLISH_CLAIM",
+        "NO_FULL_APP_A11Y_CLAIM",
+        "NO_NEW_TRUST_SURFACE_CREATION",
+        "NO_RELEASE_A11Y_CERTIFICATION",
+        "TRUST_SURFACE_ONLY_SCOPE"
+      ],
+      "sourceBasename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "status": "BOUND_LIMIT"
+    },
+    {
+      "id": "B3C13_A11Y_UNSUPPORTED_SCOPE",
+      "sourceBasename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "status": "BOUND_LIMIT",
+      "unsupportedScope": [
+        "BROAD_UI_POLISH",
+        "FULL_APP_ACCESSIBILITY",
+        "NEW_TRUST_SURFACE_CREATION",
+        "RELEASE_A11Y_CERTIFICATION"
+      ]
+    },
+    {
+      "id": "B3C13_B3C14_HANDOFF",
+      "provisionalScope": [
+        "B3C14_RELEASE_DOSSIER_MINIMAL:HANDOFF_ONLY"
+      ],
+      "sourceBasename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "status": "BOUND_LIMIT"
+    }
+  ],
+  "contourId": "B3C14_RELEASE_DOSSIER_MINIMAL",
+  "donorIntake": {
+    "activeCanonOverDonor": true,
+    "archiveRows": [
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 132,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "ADMISSION_REPORT.md",
+          "atomic.js",
+          "attestation.js",
+          "binding-integrity.test.js",
+          "binding.mjs",
+          "BLOCK_2",
+          "BLOCK_2_EXIT_REPORT.md",
+          "BLOCK_2_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "block2-baseline-node-test-output.tap",
+          "block2-contracts-deep.test.js",
+          "block2-dossier.js",
+          "block2-exit-dossier.json",
+          "block2-exit-dossier.mjs",
+          "block2-exit-dossier.stdout.json",
+          "block2-unit-proof.json",
+          "block3-capability-xplat-i18n-a11y.test.js"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 146,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "ADMISSION_REPORT.md",
+          "atomic.js",
+          "attestation.js",
+          "binding-integrity.test.js",
+          "binding.mjs",
+          "BLOCK_2",
+          "BLOCK_2_EXIT_REPORT.md",
+          "BLOCK_2_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3_V2_DEEP_REWORK_REPORT.md",
+          "BLOCK_3_V3_PERFECTION_REPORT.md",
+          "block2-baseline-node-test-output.tap",
+          "block2-contracts-deep.test.js",
+          "block2-dossier.js",
+          "block2-exit-dossier.json",
+          "block2-exit-dossier.mjs",
+          "block2-exit-dossier.stdout.json"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 45,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "docx-export.js",
+          "export-gate.js",
+          "export-gate.test.js",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "perf-smoke.js",
+          "perf-smoke.test.js",
+          "perf-state.mjs",
+          "release-dossier.js",
+          "release-dossier.mjs",
+          "security-permission.test.js",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 83,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "docx-export.js",
+          "export-gate.js",
+          "export-gate.test.js",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "kernel-perf-smoke.json",
+          "perf-smoke.js",
+          "perf-smoke.test.js",
+          "perf-state.mjs",
+          "release-dossier.js",
+          "release-dossier.mjs",
+          "security-permission.test.js",
+          "VALIDATION_REPORT.md"
+        ]
+      }
+    ],
+    "archivesFound": [
+      "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+      "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+      "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+      "writer-editor-longform-v5_1-turnkey-pack-v3.zip"
+    ],
+    "class": "READ_ONLY_CONTEXT_ONLY",
+    "codeImported": false,
+    "completionClaimImported": false,
+    "outputLocation": "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+    "suggestedRows": [
+      "RELEASE_DOSSIER_SECTION_ROWS",
+      "LIMIT_ROWS",
+      "NEGATIVE_ROWS",
+      "B3C15_HANDOFF",
+      "B3C16_HANDOFF"
+    ]
+  },
+  "dossierStatus": "COMPLETE_WITH_LIMITS",
+  "failRows": [],
+  "failSignal": "",
+  "handoffRows": [
+    {
+      "id": "B3C15_ATTESTATION_CHAIN",
+      "status": "HANDOFF_ONLY"
+    },
+    {
+      "id": "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE",
+      "status": "HANDOFF_ONLY"
+    }
+  ],
+  "inputRows": [
+    {
+      "basename": "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json",
+      "headSha": "67f89a61e67f983a452b99b90ca795c1ed38d9a6",
+      "passed": true,
+      "status": "PROVISIONAL_GAP",
+      "tokenName": "B3C09_PERFORMANCE_BASELINE_BINDING_OK"
+    },
+    {
+      "basename": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+      "headSha": "b43febe75bc402f1d0f984874a6380751cfbaacb",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C10_CAPABILITY_TIER_REPORT_OK"
+    },
+    {
+      "basename": "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+      "headSha": "4ddc0bc0645b6dcb03c213f43b8e77e5b40af135",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C11_XPLAT_NORMALIZATION_BASELINE_OK"
+    },
+    {
+      "basename": "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+      "headSha": "3dd5f10d5f09f0be9ed01b42f153f2eaf883a69c",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C12_I18N_TEXT_ANCHOR_SAFETY_OK"
+    },
+    {
+      "basename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "headSha": "17d6fa1ddf83301079408899848cd419e0f48cec",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C13_TRUST_SURFACE_ACCESSIBILITY_OK"
+    }
+  ],
+  "limitRows": [
+    {
+      "id": "PACKAGE_HASHES_LIMITED_NO_PACKAGE_BUILD",
+      "reason": "B3C14_DOES_NOT_BUILD_PACKAGE_OR_GENERATE_PACKAGE_HASH",
+      "status": "LIMITED"
+    },
+    {
+      "id": "B3C09_PERF_GAP_BLOCKS_FULL_TIER_GREEN",
+      "reason": "PERF_BASELINE_OK_REMAINS_ZERO",
+      "status": "LIMITED"
+    },
+    {
+      "id": "B3C11_REAL_PLATFORM_MATRIX_LIMITED",
+      "reason": "REAL_PLATFORM_XPLAT_NOT_FULL_GREEN",
+      "status": "LIMITED"
+    },
+    {
+      "id": "B3C12_FULL_GLOBAL_I18N_NOT_CLAIMED",
+      "reason": "GLOBAL_I18N_NOT_CLAIMED",
+      "status": "LIMITED"
+    },
+    {
+      "id": "B3C13_FULL_APP_A11Y_NOT_CLAIMED",
+      "reason": "FULL_APP_A11Y_NOT_CLAIMED",
+      "status": "LIMITED"
+    },
+    {
+      "id": "ATTESTATION_HANDOFF_ONLY",
+      "reason": "B3C15_ATTESTATION_CHAIN_NOT_IMPLEMENTED_IN_B3C14",
+      "status": "LIMITED"
+    },
+    {
+      "id": "SUPPLY_CHAIN_HANDOFF_ONLY",
+      "reason": "B3C16_SUPPLY_CHAIN_NOT_IMPLEMENTED_IN_B3C14",
+      "status": "LIMITED"
+    },
+    {
+      "id": "NO_BLOCK2_REOPEN",
+      "reason": "B3C14_REFERENCES_PRIOR_KERNEL_EVIDENCE_WITHOUT_REOPENING_BLOCK2",
+      "status": "LIMITED"
+    }
+  ],
+  "negativeRows": [
+    {
+      "id": "RELEASE_WITHOUT_DOSSIER_NEGATIVE",
+      "rejectsClaim": "RELEASE_WITHOUT_DOSSIER",
+      "status": "PASS"
+    },
+    {
+      "id": "FALSE_GREEN_NEGATIVE",
+      "rejectsClaim": "RELEASE_GREEN_WHILE_LIMITS_REMAIN",
+      "status": "PASS"
+    },
+    {
+      "id": "DOC_ONLY_RELEASE_NEGATIVE",
+      "rejectsClaim": "DOC_ONLY_RELEASE_EVIDENCE",
+      "status": "PASS"
+    },
+    {
+      "id": "MISSING_ARTIFACT_NEGATIVE",
+      "rejectsClaim": "MISSING_ARTIFACT_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "UNSUPPORTED_SCOPE_OVERCLAIM_NEGATIVE",
+      "rejectsClaim": "UNSUPPORTED_SCOPE_OVERCLAIM",
+      "status": "PASS"
+    }
+  ],
+  "ok": true,
+  "proof": {
+    "a11yLimitedStatusVisible": true,
+    "attestationHandoffOnly": true,
+    "b3c09InputBound": true,
+    "b3c10InputBound": true,
+    "b3c11InputBound": true,
+    "b3c12InputBound": true,
+    "b3c13InputBound": true,
+    "carriedForwardLimitRowsRecorded": true,
+    "carriedForwardLimitsBound": true,
+    "changedBasenamesHashRecorded": true,
+    "donorIntakeContextOnly": true,
+    "i18nLimitedStatusVisible": true,
+    "limitRowsComplete": true,
+    "negativeRowsComplete": true,
+    "negativeRowsPass": true,
+    "noAttestationImplementation": true,
+    "noBlock2Reopen": true,
+    "nodeBuiltinsOnly": true,
+    "noNewDependency": true,
+    "noPackageBuild": true,
+    "noPackageHashGeneration": true,
+    "noReleaseClaim": true,
+    "noRuntimeLayerRewrite": true,
+    "noSupplyChainImplementation": true,
+    "packageHashesLimitedNoPackageBuild": true,
+    "performanceGapBlocksFullTierGreen": true,
+    "releaseGreenFalseBecauseLimited": true,
+    "sectionRowsComplete": true,
+    "statusArtifactHashRecorded": true,
+    "supplyChainHandoffOnly": true,
+    "testCommandRowsRecorded": true,
+    "xplatLimitedStatusVisible": true
+  },
+  "releaseGreen": false,
+  "releaseGreenReason": "LIMIT_ROWS_REMAIN_BOUND_AND_PACKAGE_ATTESTATION_SUPPLY_CHAIN_ARE_HANDOFF_ONLY",
+  "repo": {
+    "headSha": "7a9739d1f6e1791026b15f494b69a8c3eb3acf42",
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
+    "statusBasename": "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+    "writtenFrom": "b3c14-release-dossier-minimal-state.mjs"
+  },
+  "runtime": {
+    "changedBasenames": [
+      "b3c14-release-dossier-minimal-state.mjs",
+      "b3c14-release-dossier-minimal.contract.test.js",
+      "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "379500aab4f1fb960ad98a918188236bcd3941cae39ad9a75d2eb00b02031436",
+    "commandResults": {
+      "allPassed": null,
+      "commandCount": 11,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c14-release-dossier-minimal-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c14-release-dossier-minimal.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c13-trust-surface-accessibility.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c12-i18n-text-anchor-safety.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c11-xplat-normalization-baseline.contract.test.js",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c10-capability-tier-report.contract.test.js",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c09-performance-baseline-binding.contract.test.js",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --check",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 10,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css src/renderer/editor.js src/io src/export src/main.js src/preload.js",
+          "index": 11,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C14_RELEASE_DOSSIER_MINIMAL"
+    },
+    "statusArtifactHash": "e5abaf20201182de656b682f9adce051ef455719fd047eb40318bd7a735012c5"
+  },
+  "scope": {
+    "a11yCertification": false,
+    "attestationImplementation": false,
+    "block2Reopen": false,
+    "commandSurfaceChange": false,
+    "exportRewrite": false,
+    "layer": "B3C14_RELEASE_DOSSIER_MINIMAL",
+    "newDependency": false,
+    "packageBuild": false,
+    "packageHashGeneration": false,
+    "perfFix": false,
+    "releaseClaim": false,
+    "releaseGreenClaim": false,
+    "releaseReportOnly": true,
+    "securityRewrite": false,
+    "storageChange": false,
+    "supplyChainImplementation": false,
+    "uiWork": false,
+    "xplatCertification": false
+  },
+  "sectionRows": [
+    {
+      "id": "RELEASE_SUMMARY",
+      "source": "B3C14_EXECUTABLE_DOSSIER_STATE",
+      "status": "BOUND"
+    },
+    {
+      "id": "CAPABILITY_TIER",
+      "reason": "FULL_TIER_GREEN_FALSE",
+      "source": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+      "status": "LIMITED"
+    },
+    {
+      "id": "ACTIVE_CANON",
+      "source": "CANON_STATUS.json",
+      "status": "BOUND"
+    },
+    {
+      "id": "SOURCE_HEAD",
+      "source": "7a9739d1f6e1791026b15f494b69a8c3eb3acf42",
+      "status": "BOUND"
+    },
+    {
+      "id": "PACKAGE_HASHES",
+      "reason": "PACKAGE_HASH_GENERATION_DEFERRED",
+      "source": "B3C14_NO_PACKAGE_BUILD_IN_SCOPE",
+      "status": "LIMITED"
+    },
+    {
+      "id": "TEST_RESULTS",
+      "source": "B3C14_COMMAND_ROWS_DECLARED_FOR_EXTERNAL_RUNNER",
+      "status": "BOUND"
+    },
+    {
+      "id": "PROJECT_DOCTOR",
+      "reason": "B3C14_DOES_NOT_REOPEN_BLOCK2_OR_RUN_RELEASE_DOCTOR_CLAIM",
+      "source": "doctor.mjs",
+      "status": "LIMITED"
+    },
+    {
+      "id": "RECOVERY_DRILL",
+      "reason": "NO_FRESH_RELEASE_RECOVERY_DRILL_IN_B3C14",
+      "source": "PREVIOUS_KERNEL_ARTIFACTS_REFERENCED_ONLY",
+      "status": "LIMITED"
+    },
+    {
+      "id": "EXPORT_VALIDATION",
+      "reason": "NO_EXPORT_REWRITE_OR_FRESH_PACKAGE_EXPORT_IN_B3C14",
+      "source": "PREVIOUS_EXPORT_ARTIFACTS_REFERENCED_ONLY",
+      "status": "LIMITED"
+    },
+    {
+      "id": "SECURITY",
+      "reason": "NO_SECURITY_REWRITE_OR_RELEASE_CERTIFICATION_IN_B3C14",
+      "source": "PREVIOUS_SECURITY_ARTIFACTS_REFERENCED_ONLY",
+      "status": "LIMITED"
+    },
+    {
+      "id": "PERFORMANCE",
+      "reason": "PROVISIONAL_PERF_GAP_BOUND",
+      "source": "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json",
+      "status": "LIMITED"
+    },
+    {
+      "id": "UNSUPPORTED_SCOPE",
+      "reason": [
+        "REAL_PLATFORM_MATRIX_LIMITED",
+        "GLOBAL_I18N_LIMITED",
+        "FULL_APP_A11Y_NOT_CLAIMED"
+      ],
+      "source": "B3C14_LIMIT_ROWS",
+      "status": "BOUND"
+    }
+  ],
+  "status": "PASS",
+  "successWording": "PASS_AS_MINIMAL_RELEASE_DOSSIER_WITH_LIMITS_NOT_RELEASE_GREEN",
+  "tokenSemantics": "DOSSIER_COMPLETE_WITH_LIMITS_ONLY_RELEASE_GREEN_REMAINS_FALSE",
+  "unsupportedScope": [
+    {
+      "id": "PACKAGE_HASHES_LIMITED_NO_PACKAGE_BUILD",
+      "reason": "B3C14_DOES_NOT_BUILD_PACKAGE_OR_GENERATE_PACKAGE_HASH"
+    },
+    {
+      "id": "B3C09_PERF_GAP_BLOCKS_FULL_TIER_GREEN",
+      "reason": "PERF_BASELINE_OK_REMAINS_ZERO"
+    },
+    {
+      "id": "B3C11_REAL_PLATFORM_MATRIX_LIMITED",
+      "reason": "REAL_PLATFORM_XPLAT_NOT_FULL_GREEN"
+    },
+    {
+      "id": "B3C12_FULL_GLOBAL_I18N_NOT_CLAIMED",
+      "reason": "GLOBAL_I18N_NOT_CLAIMED"
+    },
+    {
+      "id": "B3C13_FULL_APP_A11Y_NOT_CLAIMED",
+      "reason": "FULL_APP_A11Y_NOT_CLAIMED"
+    },
+    {
+      "id": "ATTESTATION_HANDOFF_ONLY",
+      "reason": "B3C15_ATTESTATION_CHAIN_NOT_IMPLEMENTED_IN_B3C14"
+    },
+    {
+      "id": "SUPPLY_CHAIN_HANDOFF_ONLY",
+      "reason": "B3C16_SUPPLY_CHAIN_NOT_IMPLEMENTED_IN_B3C14"
+    },
+    {
+      "id": "NO_BLOCK2_REOPEN",
+      "reason": "B3C14_REFERENCES_PRIOR_KERNEL_EVIDENCE_WITHOUT_REOPENING_BLOCK2"
+    }
+  ]
+}
