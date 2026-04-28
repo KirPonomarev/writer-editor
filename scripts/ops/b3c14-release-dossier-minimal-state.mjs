@@ -228,7 +228,8 @@ function buildSectionRows(repoRoot, statuses) {
     {
       id: 'SOURCE_HEAD',
       status: 'BOUND',
-      source: getGitHead(repoRoot),
+      source: 'REPO_HEAD_AT_EVALUATION',
+      headSha: getGitHead(repoRoot),
     },
     {
       id: 'PACKAGE_HASHES',

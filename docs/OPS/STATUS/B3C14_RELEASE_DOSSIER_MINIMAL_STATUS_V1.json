@@ -369,7 +369,7 @@
   "releaseGreen": false,
   "releaseGreenReason": "LIMIT_ROWS_REMAIN_BOUND_AND_PACKAGE_ATTESTATION_SUPPLY_CHAIN_ARE_HANDOFF_ONLY",
   "repo": {
-    "headSha": "7a9739d1f6e1791026b15f494b69a8c3eb3acf42",
+    "headSha": "1ca1b203a6109a54bd14abbb807203e581c19e1b",
     "repoRootBinding": "WORKTREE_INDEPENDENT",
     "statusBasename": "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
     "writtenFrom": "b3c14-release-dossier-minimal-state.mjs"
@@ -446,7 +446,7 @@
       "status": "DECLARED_FOR_EXTERNAL_RUNNER",
       "taskId": "B3C14_RELEASE_DOSSIER_MINIMAL"
     },
-    "statusArtifactHash": "e5abaf20201182de656b682f9adce051ef455719fd047eb40318bd7a735012c5"
+    "statusArtifactHash": "5fb33cedf7635dd4900fa223a5fad4b0c20f666999060b6486b13432e051d392"
   },
   "scope": {
     "a11yCertification": false,
@@ -486,8 +486,9 @@
       "status": "BOUND"
     },
     {
+      "headSha": "1ca1b203a6109a54bd14abbb807203e581c19e1b",
       "id": "SOURCE_HEAD",
-      "source": "7a9739d1f6e1791026b15f494b69a8c3eb3acf42",
+      "source": "REPO_HEAD_AT_EVALUATION",
       "status": "BOUND"
     },
     {
