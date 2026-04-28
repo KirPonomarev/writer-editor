@@ -75,10 +75,6 @@ function readJson(repoRoot, relPath) {
   return JSON.parse(fs.readFileSync(path.join(repoRoot, relPath), 'utf8'));
 }
 
-function firstLine(text) {
-  return normalizeString(String(text).split('\n')[0] || '');
-}
-
 export function evaluateMainSyncC01OwnerMethodDecision(input = {}) {
   const repoRoot = path.resolve(normalizeString(input.repoRoot) || process.cwd());
   const rootSha = normalizeString(input.rootSha || DEFAULT_ROOT_SHA);

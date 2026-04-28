@@ -16,7 +16,7 @@
     "This contour does not authorize replay execution or dry run.",
     "C02 remains the first replay-readiness contour."
   ],
-  "recordedAtUtc": "2026-04-28T12:49:12.377Z",
+  "recordedAtUtc": "2026-04-28T12:50:23.383Z",
   "reportScript": "main-sync-c01-owner-method-decision-report.mjs",
   "rootRole": "SOURCE_OF_REQUIRED_CONTENT_ONLY",
   "scope": "OWNER_METHOD_SELECTION_PACKET_ONLY",
