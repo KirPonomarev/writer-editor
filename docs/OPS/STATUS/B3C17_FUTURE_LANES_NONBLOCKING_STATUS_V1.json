@@ -1,0 +1,644 @@
+{
+  "artifactId": "B3C17_FUTURE_LANES_NONBLOCKING_STATUS_V1",
+  "b3c16InputRow": {
+    "auditStatus": [
+      {
+        "id": "OSS_POLICY_LOCAL_CHECK_PASS",
+        "status": "PASS"
+      },
+      {
+        "id": "NPM_AUDIT_LOCAL_STATUS_RECORDED",
+        "status": "LIMITED"
+      }
+    ],
+    "basename": "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1.json",
+    "docxLibraryStatus": "LIMITED_NONE_EXTERNAL_DOCX_LIB_CURRENTLY_DECLARED",
+    "noPackageBuild": true,
+    "noPackageHash": true,
+    "passed": true,
+    "releaseGreen": 0,
+    "token": 1
+  },
+  "B3C17_FUTURE_LANES_NONBLOCKING_OK": 1,
+  "B3C17_RELEASE_GREEN_OK": 0,
+  "contourId": "B3C17_FUTURE_LANES_NONBLOCKING",
+  "donorIntake": {
+    "activeCanonOverDonor": true,
+    "archiveRows": [
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 132,
+        "found": true,
+        "futureLaneCompletionClaimImported": false,
+        "listed": true,
+        "relevantBasenames": [
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "CLAIM_BINDING_MATRIX.json",
+          "future-lanes.js",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "supply-chain.js",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 146,
+        "found": true,
+        "futureLaneCompletionClaimImported": false,
+        "listed": true,
+        "relevantBasenames": [
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3_V2_DEEP_REWORK_REPORT.md",
+          "BLOCK_3_V3_PERFECTION_REPORT.md",
+          "CLAIM_BINDING_MATRIX.json",
+          "future-lanes.js",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "supply-chain.js",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 45,
+        "found": true,
+        "futureLaneCompletionClaimImported": false,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 83,
+        "found": true,
+        "futureLaneCompletionClaimImported": false,
+        "listed": true,
+        "relevantBasenames": [
+          "CLAIM_BINDING_MATRIX.json",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md"
+        ]
+      }
+    ],
+    "class": "READ_ONLY_CONTEXT_ONLY",
+    "codeImported": false,
+    "completionClaimImported": false,
+    "dependencyClaimImported": false,
+    "futureLaneCompletionClaimImported": false
+  },
+  "failRows": [],
+  "failSignal": "",
+  "laneRows": [
+    {
+      "authority": "ADVISORY_UNTIL_PROMOTED",
+      "blocksP0ReleaseKernel": false,
+      "derivedOnly": false,
+      "id": "COMMENTS_PARKED_NONBLOCKING",
+      "lane": "comments",
+      "optional": false,
+      "promotionRequiredBeforeBlocking": true,
+      "runtimeImplemented": false,
+      "status": "PARKED_NONBLOCKING"
+    },
+    {
+      "authority": "ADVISORY_UNTIL_PROMOTED",
+      "blocksP0ReleaseKernel": false,
+      "derivedOnly": false,
+      "id": "HISTORY_PARKED_NONBLOCKING",
+      "lane": "history",
+      "optional": false,
+      "promotionRequiredBeforeBlocking": true,
+      "runtimeImplemented": false,
+      "status": "PARKED_NONBLOCKING"
+    },
+    {
+      "authority": "ADVISORY_UNTIL_PROMOTED",
+      "blocksP0ReleaseKernel": false,
+      "derivedOnly": false,
+      "id": "COLLAB_PARKED_NONBLOCKING",
+      "lane": "collab",
+      "optional": false,
+      "promotionRequiredBeforeBlocking": true,
+      "runtimeImplemented": false,
+      "status": "PARKED_NONBLOCKING"
+    },
+    {
+      "authority": "ADVISORY_UNTIL_PROMOTED",
+      "blocksP0ReleaseKernel": false,
+      "derivedOnly": true,
+      "id": "MINDMAP_PARKED_NONBLOCKING",
+      "lane": "mindmap",
+      "optional": false,
+      "promotionRequiredBeforeBlocking": true,
+      "runtimeImplemented": false,
+      "status": "PARKED_NONBLOCKING"
+    },
+    {
+      "authority": "ADVISORY_UNTIL_PROMOTED",
+      "blocksP0ReleaseKernel": false,
+      "derivedOnly": false,
+      "id": "AI_PARKED_NONBLOCKING_NO_REMOTE_MODEL",
+      "lane": "ai",
+      "optional": false,
+      "promotionRequiredBeforeBlocking": true,
+      "runtimeImplemented": false,
+      "status": "PARKED_NONBLOCKING"
+    },
+    {
+      "authority": "ADVISORY_UNTIL_PROMOTED",
+      "blocksP0ReleaseKernel": false,
+      "derivedOnly": false,
+      "id": "MOBILE_PARKED_NONBLOCKING",
+      "lane": "mobile",
+      "optional": false,
+      "promotionRequiredBeforeBlocking": true,
+      "runtimeImplemented": false,
+      "status": "PARKED_NONBLOCKING"
+    },
+    {
+      "authority": "ADVISORY_UNTIL_PROMOTED",
+      "blocksP0ReleaseKernel": false,
+      "derivedOnly": false,
+      "id": "WEB_PARKED_NONBLOCKING",
+      "lane": "web",
+      "optional": false,
+      "promotionRequiredBeforeBlocking": true,
+      "runtimeImplemented": false,
+      "status": "PARKED_NONBLOCKING"
+    },
+    {
+      "authority": "ADVISORY_UNTIL_PROMOTED",
+      "blocksP0ReleaseKernel": false,
+      "derivedOnly": false,
+      "id": "ADVANCED_TABLES_PARKED_NONBLOCKING",
+      "lane": "advancedTables",
+      "optional": false,
+      "promotionRequiredBeforeBlocking": true,
+      "runtimeImplemented": false,
+      "status": "PARKED_NONBLOCKING"
+    },
+    {
+      "authority": "ADVISORY_UNTIL_PROMOTED",
+      "blocksP0ReleaseKernel": false,
+      "derivedOnly": true,
+      "id": "AUTHOR_GRAPH_OPTIONAL_DERIVED_PARKED_NONBLOCKING",
+      "lane": "authorGraph",
+      "optional": true,
+      "promotionRequiredBeforeBlocking": true,
+      "runtimeImplemented": false,
+      "status": "PARKED_NONBLOCKING"
+    }
+  ],
+  "negativeRows": [
+    {
+      "id": "FUTURE_LANE_RUNTIME_IMPLEMENTATION_NEGATIVE",
+      "rejectsClaim": "FUTURE_LANE_RUNTIME_IMPLEMENTED_IN_B3C17",
+      "status": "PASS"
+    },
+    {
+      "id": "P1_P2_BLOCKS_P0_NEGATIVE",
+      "rejectsClaim": "P1_P2_LANE_BLOCKS_P0_RELEASE_KERNEL",
+      "status": "PASS"
+    },
+    {
+      "id": "REMOTE_AI_NEGATIVE",
+      "rejectsClaim": "REMOTE_AI_CALL_INTRODUCED",
+      "status": "PASS"
+    },
+    {
+      "id": "NETWORK_PATH_NEGATIVE",
+      "rejectsClaim": "NETWORK_PATH_INTRODUCED_BY_B3C17",
+      "status": "PASS"
+    },
+    {
+      "id": "COLLAB_TRANSPORT_NEGATIVE",
+      "rejectsClaim": "COLLAB_TRANSPORT_INTRODUCED",
+      "status": "PASS"
+    },
+    {
+      "id": "CANONICAL_STORAGE_REWRITE_NEGATIVE",
+      "rejectsClaim": "CANONICAL_STORAGE_REWRITE_INTRODUCED",
+      "status": "PASS"
+    },
+    {
+      "id": "NEW_DEPENDENCY_NEGATIVE",
+      "rejectsClaim": "NEW_DEPENDENCY_INTRODUCED",
+      "status": "PASS"
+    },
+    {
+      "id": "ACTIVE_CANON_PROMOTION_NEGATIVE",
+      "rejectsClaim": "ACTIVE_CANON_PROMOTED_BY_B3C17",
+      "status": "PASS"
+    },
+    {
+      "id": "REQUIRED_TOKEN_EXPANSION_NEGATIVE",
+      "rejectsClaim": "REQUIRED_TOKEN_SET_EXPANDED_BY_B3C17",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_GREEN_FALSE_NEGATIVE",
+      "rejectsClaim": "RELEASE_GREEN_CLAIM_IN_B3C17",
+      "status": "PASS"
+    },
+    {
+      "id": "DONOR_FUTURE_LANE_COMPLETION_CLAIM_NEGATIVE",
+      "rejectsClaim": "DONOR_FUTURE_LANE_COMPLETION_CLAIM_IMPORTED",
+      "status": "PASS"
+    },
+    {
+      "id": "MISSING_PROMOTION_CRITERIA_NEGATIVE",
+      "rejectsClaim": "FUTURE_LANE_PARKED_WITHOUT_PROMOTION_CRITERIA",
+      "status": "PASS"
+    }
+  ],
+  "nonblockingRows": [
+    {
+      "futureLaneBlockingAuthority": false,
+      "id": "NO_FUTURE_LANE_BLOCKS_P0_RELEASE_KERNEL",
+      "status": "PASS"
+    },
+    {
+      "authority": "ADVISORY_UNTIL_PROMOTED",
+      "id": "PARKING_LOT_ADVISORY_ONLY",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "ACTIVE_CANON_NOT_PROMOTED",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "REQUIRED_TOKEN_SET_NOT_EXPANDED",
+      "status": "PASS"
+    },
+    {
+      "docxLibraryStatus": "LIMITED_NONE_EXTERNAL_DOCX_LIB_CURRENTLY_DECLARED",
+      "id": "B3C16_LIMITED_SUPPLY_CHAIN_STATUS_PRESERVED",
+      "noPackageBuild": true,
+      "noPackageHash": true,
+      "releaseGreen": 0,
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "NO_NEW_NETWORK_PATH_IN_B3C17_DIFF",
+      "proofClass": "DIFF_GUARD_NOT_REPO_WIDE_ABSENCE_CLAIM",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_REMOTE_AI_CALL",
+      "proofClass": "B3C17_GOVERNANCE_DIFF_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_COLLAB_TRANSPORT",
+      "proofClass": "B3C17_GOVERNANCE_DIFF_ONLY",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "NO_CANONICAL_STORAGE_REWRITE",
+      "proofClass": "DIFF_GUARD",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_NEW_DEPENDENCY",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "PACKAGE_MANIFESTS_READ_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_GREEN_FALSE",
+      "releaseGreen": false,
+      "status": "PASS"
+    },
+    {
+      "id": "DONOR_ARCHIVES_CONTEXT_ONLY",
+      "status": "PASS"
+    }
+  ],
+  "ok": true,
+  "promotionCriteriaRows": [
+    {
+      "authority": "MINIMAL_PROMOTION_GATE_NOT_CURRENT_SCOPE",
+      "criteria": [
+        "stable block anchor model",
+        "anchor persistence proof",
+        "no canonical storage rewrite",
+        "local review packet proof"
+      ],
+      "id": "COMMENTS_PARKED_NONBLOCKING_PROMOTION_CRITERIA",
+      "lane": "comments",
+      "optional": false,
+      "status": "PASS"
+    },
+    {
+      "authority": "MINIMAL_PROMOTION_GATE_NOT_CURRENT_SCOPE",
+      "criteria": [
+        "deterministic replay proof",
+        "restore safety proof",
+        "no write path regression",
+        "bounded storage growth proof"
+      ],
+      "id": "HISTORY_PARKED_NONBLOCKING_PROMOTION_CRITERIA",
+      "lane": "history",
+      "optional": false,
+      "status": "PASS"
+    },
+    {
+      "authority": "MINIMAL_PROMOTION_GATE_NOT_CURRENT_SCOPE",
+      "criteria": [
+        "local event log proven first",
+        "deterministic merge replay",
+        "explicit stage id",
+        "explicit scope flag",
+        "no network in MVP path"
+      ],
+      "id": "COLLAB_PARKED_NONBLOCKING_PROMOTION_CRITERIA",
+      "lane": "collab",
+      "optional": false,
+      "status": "PASS"
+    },
+    {
+      "authority": "MINIMAL_PROMOTION_GATE_NOT_CURRENT_SCOPE",
+      "criteria": [
+        "derived graph only",
+        "no orphan nodes",
+        "graph hash stable",
+        "canonical text untouched"
+      ],
+      "id": "MINDMAP_PARKED_NONBLOCKING_PROMOTION_CRITERIA",
+      "lane": "mindmap",
+      "optional": false,
+      "status": "PASS"
+    },
+    {
+      "authority": "MINIMAL_PROMOTION_GATE_NOT_CURRENT_SCOPE",
+      "criteria": [
+        "local offline only",
+        "explicit opt in",
+        "reversible apply",
+        "attributable diff",
+        "no remote model call"
+      ],
+      "id": "AI_PARKED_NONBLOCKING_NO_REMOTE_MODEL_PROMOTION_CRITERIA",
+      "lane": "ai",
+      "optional": false,
+      "status": "PASS"
+    },
+    {
+      "authority": "MINIMAL_PROMOTION_GATE_NOT_CURRENT_SCOPE",
+      "criteria": [
+        "canonical project unchanged",
+        "shell adapter boundary proven",
+        "recovery parity declared"
+      ],
+      "id": "MOBILE_PARKED_NONBLOCKING_PROMOTION_CRITERIA",
+      "lane": "mobile",
+      "optional": false,
+      "status": "PASS"
+    },
+    {
+      "authority": "MINIMAL_PROMOTION_GATE_NOT_CURRENT_SCOPE",
+      "criteria": [
+        "canonical project unchanged",
+        "shell adapter boundary proven",
+        "export parity declared"
+      ],
+      "id": "WEB_PARKED_NONBLOCKING_PROMOTION_CRITERIA",
+      "lane": "web",
+      "optional": false,
+      "status": "PASS"
+    },
+    {
+      "authority": "MINIMAL_PROMOTION_GATE_NOT_CURRENT_SCOPE",
+      "criteria": [
+        "explicit schema promotion",
+        "export proof",
+        "no silent block shape expansion"
+      ],
+      "id": "ADVANCED_TABLES_PARKED_NONBLOCKING_PROMOTION_CRITERIA",
+      "lane": "advancedTables",
+      "optional": false,
+      "status": "PASS"
+    },
+    {
+      "authority": "MINIMAL_PROMOTION_GATE_NOT_CURRENT_SCOPE",
+      "criteria": [
+        "derived graph only",
+        "source hash binding",
+        "canonical text untouched",
+        "no release blocker"
+      ],
+      "id": "AUTHOR_GRAPH_OPTIONAL_DERIVED_PARKED_NONBLOCKING_PROMOTION_CRITERIA",
+      "lane": "authorGraph",
+      "optional": true,
+      "status": "PASS"
+    }
+  ],
+  "proof": {
+    "activeCanonNotPromoted": true,
+    "allRequiredLanesParked": true,
+    "b3c16InputBound": true,
+    "b3c16LimitsPreserved": true,
+    "donorIntakeContextOnly": true,
+    "negativeRowsComplete": true,
+    "negativeRowsPass": true,
+    "noCanonicalStorageRewrite": true,
+    "noCollabTransport": true,
+    "noFutureLaneBlocksP0": true,
+    "noNewDependency": true,
+    "noNewNetworkPathInB3C17Diff": true,
+    "noRemoteAiCall": true,
+    "optionalAuthorGraphDerivedParked": true,
+    "parkingLotAdvisoryOnly": true,
+    "promotionCriteriaComplete": true,
+    "releaseGreenFalseBecauseB3C17Only": true,
+    "requiredTokenSetNotExpanded": true,
+    "transitiveEvidencePass": true
+  },
+  "releaseGreen": false,
+  "repo": {
+    "headSha": "42599538e26e017b0e4e0bf9062a6f9075e788d0",
+    "repoRootBinding": "WORKTREE_INDEPENDENT"
+  },
+  "rollbackRef": "ROLLBACK_FUTURE_LANES_NONBLOCKING_GOVERNANCE",
+  "runtime": {
+    "changedBasenames": [
+      "b3c17-future-lanes-nonblocking-state.mjs",
+      "b3c17-future-lanes-nonblocking.contract.test.js",
+      "B3C17_FUTURE_LANES_NONBLOCKING_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "148bf35d9a875539e094479969160712282c446e15f25a0142825a16b37b18aa",
+    "commandRows": {
+      "allPassed": null,
+      "commandCount": 15,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c17-future-lanes-nonblocking-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c17-future-lanes-nonblocking.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c16-supply-chain-release-scope.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c15-attestation-chain.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c14-release-dossier-minimal.contract.test.js",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c13-trust-surface-accessibility.contract.test.js",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c12-i18n-text-anchor-safety.contract.test.js",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c11-xplat-normalization-baseline.contract.test.js",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c10-capability-tier-report.contract.test.js",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c09-performance-baseline-binding.contract.test.js",
+          "index": 10,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 11,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --check",
+          "index": 12,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 13,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- CANON.md docs/OPS/STATUS/CANON_STATUS.json docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json docs/OPS/TOKENS/TOKEN_CATALOG.json docs/OPS/TOKENS/TOKEN_CATALOG_LOCK.json",
+          "index": 14,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css src/main.js src/preload.js src/export src/io src/security src/collab",
+          "index": 15,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C17_FUTURE_LANES_NONBLOCKING"
+    },
+    "statusArtifactHash": "0cc988328d449f0608f1e8c6f72dcf4e91f00c6edb0a8dbf88e30e7864ad8da5"
+  },
+  "scope": {
+    "a11yCertification": false,
+    "activeCanonPromotion": false,
+    "allowedWriteBasenames": [
+      "b3c17-future-lanes-nonblocking-state.mjs",
+      "b3c17-future-lanes-nonblocking.contract.test.js",
+      "B3C17_FUTURE_LANES_NONBLOCKING_STATUS_V1.json"
+    ],
+    "collabTransport": false,
+    "directInputs": [
+      "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1.json"
+    ],
+    "exportRewrite": false,
+    "futureLaneRuntimeImplementation": false,
+    "networkPathIntroducedByB3C17": false,
+    "newDependency": false,
+    "packageBuild": false,
+    "packageHashGeneration": false,
+    "packageManifestChange": false,
+    "perfFix": false,
+    "releaseGreenClaim": false,
+    "remoteAiCall": false,
+    "requiredTokenExpansion": false,
+    "scopeGuardInputs": [
+      "package.json",
+      "package-lock.json"
+    ],
+    "securityRewrite": false,
+    "storageChange": false,
+    "transitiveCarriedEvidence": [
+      "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+      "B3C15_ATTESTATION_CHAIN_STATUS_V1.json"
+    ],
+    "uiChange": false,
+    "xplatCertification": false
+  },
+  "status": "PASS",
+  "successWording": "PASS_AS_FUTURE_LANES_PARKED_ADVISORY_NONBLOCKING_NOT_RELEASE_GREEN",
+  "tokenSemantics": "FUTURE_LANES_NONBLOCKING_GOVERNANCE_PROOF_ONLY_RELEASE_GREEN_REMAINS_FALSE",
+  "transitiveEvidenceRows": [
+    {
+      "basename": "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+      "passed": true,
+      "releaseGreen": 0,
+      "role": "TRANSITIVE_CARRIED_EVIDENCE",
+      "token": 1
+    },
+    {
+      "basename": "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
+      "passed": true,
+      "releaseGreen": 0,
+      "role": "TRANSITIVE_CARRIED_EVIDENCE",
+      "token": 1
+    }
+  ]
+}
