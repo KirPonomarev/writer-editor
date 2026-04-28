@@ -2898,6 +2898,20 @@
       "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
       "approvedAtUtc": "2026-04-27T23:33:13.000Z",
       "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the single binding schema record for RECOVERY_HUMAN_READABLE_OK against the existing recovery proofhook and formal kernel evidence path."
+    },
+    {
+      "filePath": "scripts/ops/governance-approval-state.mjs",
+      "sha256": "713e9266b99c0438e73b310c5a2b1c8efa194f3720c60b01383692e5cedd802f",
+      "approvedBy": "ticket:GOVERNANCE_APPROVAL_HARNESS_REPAIR_001",
+      "approvedAtUtc": "2026-04-28T00:00:00.000Z",
+      "rationale": "GOVERNANCE_APPROVAL_HARNESS_REPAIR_001 approves the bounded stdout flush repair so governance approval state emits complete JSON without truncation while preserving the existing approval semantics."
+    },
+    {
+      "filePath": "test/contracts/governance-approval-state.contract.test.js",
+      "sha256": "3509f8c6f58a52a70b83c7ae4ea6c8047a1644f57117f953fff3c03b0d0c8c5b",
+      "approvedBy": "ticket:GOVERNANCE_APPROVAL_HARNESS_REPAIR_001",
+      "approvedAtUtc": "2026-04-28T00:00:00.000Z",
+      "rationale": "GOVERNANCE_APPROVAL_HARNESS_REPAIR_001 approves the bounded contract harness repair so the positive path parses complete governance JSON and the negative path uses a guaranteed mismatched SHA fixture."
     }
   ]
 }

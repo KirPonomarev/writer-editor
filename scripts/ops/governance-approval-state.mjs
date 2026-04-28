@@ -366,7 +366,7 @@ function main() {
   } else {
     printHuman(state);
   }
-  process.exit(state.ok ? 0 : 1);
+  process.exitCode = state.ok ? 0 : 1;
 }
 
 const isEntrypoint = process.argv[1]

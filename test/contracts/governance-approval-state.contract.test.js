@@ -34,6 +34,14 @@ function sha256File(filePath) {
   return crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
 }
 
+function mutateHexSha(hex) {
+  const value = String(hex || '').toLowerCase();
+  assert.match(value, /^[0-9a-f]{64}$/u, 'sha fixture must be 64 lowercase hex chars');
+  const last = value.slice(-1);
+  const replacement = last === 'f' ? '0' : 'f';
+  return `${value.slice(0, -1)}${replacement}`;
+}
+
 test('governance approval state: repository registry is valid', () => {
   const result = runState(process.cwd(), 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json');
   assert.equal(result.status, 0, `expected pass:\n${result.stdout}\n${result.stderr}`);
@@ -81,7 +89,7 @@ test('governance approval state: hash mismatch fails with canonical reason', () 
     approvals: [
       {
         filePath: targetRelPath,
-        sha256: sha256File(targetAbsPath).replace(/.$/u, '0'),
+        sha256: mutateHexSha(sha256File(targetAbsPath)),
         approvedBy: 'contract-test',
         approvedAtUtc: '2026-02-13T00:00:00.000Z',
         rationale: 'negative mismatch fixture',
