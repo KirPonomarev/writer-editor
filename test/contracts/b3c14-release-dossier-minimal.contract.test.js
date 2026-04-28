@@ -21,6 +21,12 @@ function readJson(targetPath) {
   return JSON.parse(fs.readFileSync(targetPath, 'utf8'));
 }
 
+function normalizeDynamicSectionRows(rows) {
+  return rows.map((row) => (row.id === 'SOURCE_HEAD'
+    ? { ...row, headSha: 'DYNAMIC_REPO_HEAD' }
+    : row));
+}
+
 test('b3c14 release dossier minimal: state artifact matches stable executable fields', async () => {
   const { evaluateB3C14ReleaseDossierMinimalState, TOKEN_NAME, RELEASE_GREEN_TOKEN_NAME } = await loadModule();
   const state = await evaluateB3C14ReleaseDossierMinimalState({ repoRoot: REPO_ROOT });
@@ -34,7 +40,7 @@ test('b3c14 release dossier minimal: state artifact matches stable executable fi
   assert.equal(committedState[RELEASE_GREEN_TOKEN_NAME], state[RELEASE_GREEN_TOKEN_NAME]);
   assert.deepEqual(committedState.failRows, state.failRows);
   assert.deepEqual(committedState.inputRows, state.inputRows);
-  assert.deepEqual(committedState.sectionRows, state.sectionRows);
+  assert.deepEqual(normalizeDynamicSectionRows(committedState.sectionRows), normalizeDynamicSectionRows(state.sectionRows));
   assert.deepEqual(committedState.limitRows, state.limitRows);
   assert.deepEqual(committedState.carriedForwardLimitRows, state.carriedForwardLimitRows);
   assert.deepEqual(committedState.negativeRows, state.negativeRows);
@@ -50,6 +56,8 @@ test('b3c14 release dossier minimal: state artifact matches stable executable fi
   assert.equal(state[RELEASE_GREEN_TOKEN_NAME], 0);
   assert.deepEqual(state.failRows, []);
   assert.equal(state.repo.repoRootBinding, 'WORKTREE_INDEPENDENT');
+  assert.equal(Boolean(committedState.sectionRows.find((row) => row.id === 'SOURCE_HEAD').headSha), true);
+  assert.equal(Boolean(state.sectionRows.find((row) => row.id === 'SOURCE_HEAD').headSha), true);
 });
 
 test('b3c14 release dossier minimal: CLI status remains worktree independent outside repo cwd', () => {
@@ -104,6 +112,8 @@ test('b3c14 release dossier minimal: required dossier sections are complete and 
   assert.equal(byId.get('RELEASE_SUMMARY').status, 'BOUND');
   assert.equal(byId.get('ACTIVE_CANON').status, 'BOUND');
   assert.equal(byId.get('SOURCE_HEAD').status, 'BOUND');
+  assert.equal(byId.get('SOURCE_HEAD').source, 'REPO_HEAD_AT_EVALUATION');
+  assert.equal(Boolean(byId.get('SOURCE_HEAD').headSha), true);
   assert.equal(byId.get('PACKAGE_HASHES').status, 'LIMITED');
   assert.equal(byId.get('PERFORMANCE').status, 'LIMITED');
   assert.equal(byId.get('UNSUPPORTED_SCOPE').status, 'BOUND');
