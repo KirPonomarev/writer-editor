@@ -1,0 +1,12 @@
+[
+  {
+    "classification": "FORBIDDEN",
+    "methodId": "REBASE_REWRITE",
+    "reason": "Silent rebase and history rewrite are forbidden by active canon and delivery rules."
+  },
+  {
+    "classification": "FORBIDDEN",
+    "methodId": "SILENT_HISTORY_REINTERPRETATION",
+    "reason": "Cannot reinterpret unrelated histories as mergeable without a new owner-approved method decision."
+  }
+]
