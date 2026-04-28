@@ -1,0 +1,34 @@
+{
+  "boundRefs": {
+    "mainBranch": "main",
+    "mainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+    "rootBranch": "codex/toolbar-baseline-truthful-closeout-001",
+    "rootSha": "6f08f94d6866ce3108d6e68d980e35b9e02d71b0"
+  },
+  "exactNextWriteScopeInput": {
+    "allowedReplayPayloadClass": "CANONICAL_B2C_CHAIN_ONLY",
+    "bindingBaseMainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+    "bindingBaseRootSha": "6f08f94d6866ce3108d6e68d980e35b9e02d71b0",
+    "c03StillBlocked": true,
+    "executionApproved": false,
+    "forbiddenReplayPayloadClass": "PACKET_ONLY_SYNC_TAIL_REPLAY",
+    "nextContour": "MAIN_SYNC_C02_CORRECTIVE_REPLAY_PLAN_AND_DRY_RUN_FROM_REBOUND_BASE"
+  },
+  "generatedAtUtc": "2026-04-28T13:18:19.463Z",
+  "ok": true,
+  "pr825Classification": {
+    "canonicalAcceptanceState": "NOT_CANONICALLY_ACCEPTED",
+    "deliveryState": "DELIVERED",
+    "dryRunRecordedByPr825": "GREEN",
+    "failureClass": "SCOPE_DRIFT",
+    "mergedTargetHeadSha": "6f08f94d6866ce3108d6e68d980e35b9e02d71b0",
+    "prNumber": 825,
+    "scopeClassRecordedByPr825": "PACKET_ONLY_SYNC_TAIL_AFTER_REBIND_BASE"
+  },
+  "runId": "TZ_MAIN_SYNC_C02_CORRECTION_REBIND_AND_SCOPE_RESTORATION_ADMISSION_001",
+  "ticketId": "TZ_MAIN_SYNC_C02_CORRECTION_REBIND_AND_SCOPE_RESTORATION_ADMISSION_001",
+  "truthSurface": {
+    "formalRepoTruth": "MAIN_AFTER_MERGE_GATE_AND_POST_MERGE_RECONFIRM",
+    "rootRole": "SOURCE_OF_REQUIRED_CONTENT_ONLY"
+  }
+}

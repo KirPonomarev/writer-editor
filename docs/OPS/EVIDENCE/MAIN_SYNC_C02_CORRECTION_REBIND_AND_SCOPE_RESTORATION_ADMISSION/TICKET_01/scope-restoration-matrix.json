@@ -1,0 +1,100 @@
+{
+  "allowedCorrectionDomain": {
+    "classification": "CANONICAL_B2C_CHAIN_ONLY",
+    "firstPayloadSha": "24996555943e80fc3aa616becea731645771b4a8",
+    "lastPayloadSha": "0b3cc7f91400df650dcb875453dda4b389bbeb3e",
+    "payloadCount": 13,
+    "payloadSetId": "CANONICAL_B2C01_B2C12_CHAIN",
+    "payloadSubjects": [
+      "Merge pull request #808 from KirPonomarev/codex/b2c01-scene-contract-admission-001",
+      "Merge pull request #809 from KirPonomarev/codex/b2c02-block-contract-admission-001",
+      "Merge pull request #810 from KirPonomarev/codex/b2c03-inlinerange-contract-admission-001",
+      "Merge pull request #811 from KirPonomarev/codex/b2c04-public-contracts-minimal-001",
+      "Merge pull request #812 from KirPonomarev/codex/b2c05-formal-kernel-minimal-001",
+      "Merge pull request #813 from KirPonomarev/codex/b2c06-project-lifecycle-state-machine-001",
+      "Merge pull request #814 from KirPonomarev/codex/b2c07-transaction-boundary-minimal-001",
+      "Merge pull request #815 from KirPonomarev/codex/b2c08-recovery-boundary-minimal-001",
+      "Merge pull request #816 from KirPonomarev/codex/b2c09-command-surface-kernel-001",
+      "Merge pull request #817 from KirPonomarev/codex/b2c10-migration-safety-proof-001",
+      "Merge pull request #818 from KirPonomarev/codex/b2c10-command-bypass-negative-matrix-001",
+      "Merge pull request #819 from KirPonomarev/codex/b2c11-command-effect-model-001",
+      "Merge pull request #820 from KirPonomarev/codex/b2c12-persist-effects-atomic-write-001"
+    ]
+  },
+  "controlPlaneBindingOnly": {
+    "artifacts": [
+      "MAIN_SYNC_C01_AHEAD_INVENTORY_STATUS_V1.json",
+      "MAIN_SYNC_C02_MERGEABILITY_STATUS_V1.json",
+      "MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION_RECORD_V1.json",
+      "MAIN_SYNC_C01_OWNER_METHOD_DECISION_STATUS_V1.json",
+      "MAIN_SYNC_C02_SELECTED_REPLAY_PLAN_AND_DRY_RUN_STATUS_V1.json"
+    ],
+    "classification": "SYNC_PACKET_COMMITS_821_TO_825_BINDING_ONLY",
+    "packetReplayCommitCount": 7,
+    "packetReplayPurposes": [
+      "MAIN_SYNC_C01_AHEAD_INVENTORY_PACKET",
+      "MAIN_SYNC_C02_MERGEABILITY_PACKET_ADD",
+      "MAIN_SYNC_C02_MERGEABILITY_PACKET_FINALIZE",
+      "MAIN_SYNC_C02_REMEDIATION_ADMISSION_ADD",
+      "MAIN_SYNC_C02_REMEDIATION_ADMISSION_FINALIZE",
+      "MAIN_SYNC_C01_OWNER_METHOD_DECISION_ADD",
+      "MAIN_SYNC_C01_OWNER_METHOD_DECISION_FINALIZE"
+    ]
+  },
+  "forbiddenCorrectionDomain": {
+    "classification": "PACKET_ONLY_SYNC_TAIL_REPLAY",
+    "reason": "PR_825 replayed sync control plane packet chain instead of canonical B2C payload.",
+    "replayBasenames": [
+      "admission-summary.json",
+      "allowed-method-matrix.json",
+      "command-results.json",
+      "conflict-set.json",
+      "decision-summary.json",
+      "excluded-set.json",
+      "first-parent-window.json",
+      "forbidden-method-matrix.json",
+      "included-set.json",
+      "inventory-meta.json",
+      "MAIN_SYNC_C01_AHEAD_INVENTORY_STATUS_V1.json",
+      "MAIN_SYNC_C01_OWNER_METHOD_DECISION_STATUS_V1.json",
+      "MAIN_SYNC_C02_MERGEABILITY_STATUS_V1.json",
+      "MAIN_SYNC_C02_REMEDIATION_HISTORY_BRIDGE_ADMISSION_RECORD_V1.json",
+      "main-sync-c01-ahead-inventory-report.mjs",
+      "main-sync-c01-ahead-inventory-state.mjs",
+      "main-sync-c01-ahead-inventory.contract.test.js",
+      "main-sync-c01-owner-method-decision-report.mjs",
+      "main-sync-c01-owner-method-decision-state.mjs",
+      "main-sync-c01-owner-method-decision.contract.test.js",
+      "main-sync-c02-mergeability-report.mjs",
+      "main-sync-c02-mergeability-state.mjs",
+      "main-sync-c02-mergeability.contract.test.js",
+      "main-sync-c02-remediation-history-bridge-admission-report.mjs",
+      "main-sync-c02-remediation-history-bridge-admission-state.mjs",
+      "main-sync-c02-remediation-history-bridge-admission.contract.test.js",
+      "merge-window.json",
+      "mergeability-summary.json",
+      "next-write-contour.json",
+      "pre-pr-verification.json",
+      "probe-meta.json",
+      "ranked-method-matrix.json",
+      "rejected-methods-matrix.json",
+      "risk-rollback.json",
+      "risk-rows.json",
+      "summary.json"
+    ],
+    "replayCommitCount": 7,
+    "replaySubjects": [
+      "ops: add main sync c01 ahead inventory packet",
+      "ops: add main sync c02 mergeability blocker packet",
+      "ops: finalize main sync c02 blocker packet",
+      "ops: add main sync c02 history bridge admission",
+      "ops: finalize history bridge admission packet",
+      "ops: add main sync c01 owner method decision packet",
+      "ops: finalize main sync c01 owner method decision packet"
+    ]
+  },
+  "generatedAtUtc": "2026-04-28T13:18:19.463Z",
+  "ok": true,
+  "runId": "TZ_MAIN_SYNC_C02_CORRECTION_REBIND_AND_SCOPE_RESTORATION_ADMISSION_001",
+  "ticketId": "TZ_MAIN_SYNC_C02_CORRECTION_REBIND_AND_SCOPE_RESTORATION_ADMISSION_001"
+}
