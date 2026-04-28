@@ -1,0 +1,424 @@
+{
+  "artifactId": "B2C16_MIGRATION_POLICY_MINIMAL_STATUS_V1",
+  "B2C16_MIGRATION_POLICY_MINIMAL_OK": 1,
+  "donor": {
+    "acceptedUse": "POLICY_ROW_IDEAS_VERSION_MATRIX_SHAPE_NEGATIVE_CASE_IDEAS_BACKUP_RECOVERY_ROLLBACK_ONLY",
+    "consultedEntries": [
+      "migration-policy.js",
+      "migration-policy.test.js"
+    ],
+    "primaryBasename": "writer-editor-longform-v5_1-block2-trusted-kernel-pack-v1.zip",
+    "primarySha256": "7189d8357f340d89112b02a57eb9315f9af4695ac00e3a2707801e4d97320791",
+    "rejectedUse": "NO_RUNTIME_IMPORT_NO_BROAD_KERNEL_OVERLAY_NO_DATA_MIGRATION_NO_BACKUP_EXECUTION_NO_BLOCK2_EXIT"
+  },
+  "failRows": [],
+  "failSignal": "",
+  "ok": true,
+  "proof": {
+    "actualMigrationExecutionRejectedOk": true,
+    "backupPreconditionOk": true,
+    "currentSchemaVersion": 1,
+    "deterministicInMemoryPolicyOnly": true,
+    "migrationAdvisoryWhenUntouchedOk": true,
+    "migrationRequiredFlagExplicitOk": true,
+    "missingBackupStopsOk": true,
+    "missingBackupStopsPolicyOk": true,
+    "missingRecoveryPackStopsOk": true,
+    "missingRecoveryPackStopsPolicyOk": true,
+    "missingRollbackStopsOk": true,
+    "missingRollbackStopsPolicyOk": true,
+    "mixedVersionNotAcceptedCleanOk": true,
+    "mixedVersionPolicyStopsOrQuarantinesOk": true,
+    "policyBoundary": {
+      "backupExecutionAdmitted": false,
+      "blockingWhenRuntimeTouched": true,
+      "claimStatus": "ADVISORY_WHEN_UNTOUCHED",
+      "matrixShape": "VERSION_AND_PRECONDITION_POLICY_ROWS_ONLY",
+      "quarantineRuntimeAdmitted": false,
+      "runtimeExecutionAdmitted": false,
+      "storageRewriteAdmitted": false
+    },
+    "recoveryPackPreconditionOk": true,
+    "repoBound": true,
+    "rollbackPreconditionOk": true,
+    "silentDataRewriteRejectedOk": true,
+    "unknownFutureNotCleanMutableOk": true,
+    "unknownFutureVersionRestrictedOk": true,
+    "unknownOldNotSilentlyUpgradedOk": true,
+    "unknownOldVersionStopsOk": true,
+    "validSchemaVersionOpensCleanPolicyOk": true,
+    "versionPolicyMatrixHash": "0a9ef8ccf2c19b6cd46d64c5fe51b1f7ab4472d51bfe9cb2c747c40a79e79b60",
+    "versionPolicyRowCount": 10
+  },
+  "runtime": {
+    "currentSchemaVersion": 1,
+    "negativeCases": [
+      {
+        "caseId": "NEGATIVE_UNKNOWN_FUTURE_NOT_CLEAN_MUTABLE",
+        "observedCode": "E_B2C16_UNKNOWN_FUTURE_RESTRICTED",
+        "observedDisposition": "OPEN_READ_ONLY_RESTRICTED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_UNKNOWN_OLD_NOT_SILENTLY_UPGRADED",
+        "observedCode": "E_B2C16_EXPLICIT_MIGRATION_REQUIRED",
+        "observedDisposition": "STOP_RESTRICTED_EXPLICIT_MIGRATION_REQUIRED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MIXED_VERSION_NOT_ACCEPTED_CLEAN",
+        "observedCode": "E_B2C16_MIXED_VERSION_STOP",
+        "observedDisposition": "STOP_QUARANTINE_POLICY_ONLY",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MISSING_BACKUP_STOPS",
+        "observedCode": "E_B2C16_BACKUP_REQUIRED",
+        "observedDisposition": "STOP_BACKUP_REQUIRED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MISSING_RECOVERY_PACK_STOPS",
+        "observedCode": "E_B2C16_RECOVERY_PACK_REQUIRED",
+        "observedDisposition": "STOP_RECOVERY_PACK_REQUIRED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_MISSING_ROLLBACK_STOPS",
+        "observedCode": "E_B2C16_ROLLBACK_REQUIRED",
+        "observedDisposition": "STOP_ROLLBACK_REQUIRED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_SILENT_DATA_REWRITE_REJECTED",
+        "observedCode": "E_B2C16_SILENT_DATA_REWRITE_REJECTED",
+        "observedDisposition": "REJECTED_OUT_OF_SCOPE",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_ACTUAL_MIGRATION_EXECUTION_REJECTED_OUT_OF_SCOPE",
+        "observedCode": "E_B2C16_ACTUAL_MIGRATION_EXECUTION_OUT_OF_SCOPE",
+        "observedDisposition": "REJECTED_OUT_OF_SCOPE",
+        "ok": true
+      }
+    ],
+    "policyBoundary": {
+      "backupExecutionAdmitted": false,
+      "blockingWhenRuntimeTouched": true,
+      "claimStatus": "ADVISORY_WHEN_UNTOUCHED",
+      "matrixShape": "VERSION_AND_PRECONDITION_POLICY_ROWS_ONLY",
+      "quarantineRuntimeAdmitted": false,
+      "runtimeExecutionAdmitted": false,
+      "storageRewriteAdmitted": false
+    },
+    "positiveCases": [
+      {
+        "caseId": "POSITIVE_CURRENT_VERSION_OPENS_CLEAN",
+        "migrationRequired": false,
+        "observedDisposition": "OPEN_CLEAN_MUTABLE",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_UNKNOWN_FUTURE_READ_ONLY_RESTRICTED",
+        "migrationRequired": false,
+        "observedDisposition": "OPEN_READ_ONLY_RESTRICTED",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_UNKNOWN_OLD_EXPLICIT_MIGRATION_REQUIRED",
+        "migrationRequired": true,
+        "observedDisposition": "STOP_RESTRICTED_EXPLICIT_MIGRATION_REQUIRED",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_PRECONDITIONS_READY_POLICY_ONLY",
+        "migrationRequired": true,
+        "observedDisposition": "PRECONDITIONS_READY_POLICY_ONLY",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_MIXED_VERSION_STOPS_QUARANTINE_POLICY_ONLY",
+        "migrationRequired": false,
+        "observedDisposition": "STOP_QUARANTINE_POLICY_ONLY",
+        "ok": true
+      }
+    ],
+    "versionPolicyMatrix": [
+      {
+        "input": {
+          "schemaVersion": 1
+        },
+        "outcome": {
+          "advisoryWhenUntouched": false,
+          "classification": "CURRENT",
+          "cleanMutable": true,
+          "code": "",
+          "disposition": "OPEN_CLEAN_MUTABLE",
+          "migrationRequired": false,
+          "quarantine": false,
+          "readOnlyRestricted": false,
+          "runtimeExecution": false,
+          "schemaVersion": 1,
+          "silentUpgrade": false,
+          "status": "ALLOW_CLEAN",
+          "stop": false
+        },
+        "rowId": "CURRENT_VERSION_OPEN_CLEAN",
+        "rowType": "VERSION_OPEN_POLICY"
+      },
+      {
+        "input": {
+          "schemaVersion": 99
+        },
+        "outcome": {
+          "advisoryWhenUntouched": false,
+          "classification": "UNKNOWN_FUTURE",
+          "cleanMutable": false,
+          "code": "E_B2C16_UNKNOWN_FUTURE_RESTRICTED",
+          "disposition": "OPEN_READ_ONLY_RESTRICTED",
+          "migrationRequired": false,
+          "quarantine": false,
+          "readOnlyRestricted": true,
+          "runtimeExecution": false,
+          "schemaVersion": 99,
+          "silentUpgrade": false,
+          "status": "ALLOW_RESTRICTED",
+          "stop": false
+        },
+        "rowId": "UNKNOWN_FUTURE_READ_ONLY_RESTRICTED",
+        "rowType": "VERSION_OPEN_POLICY"
+      },
+      {
+        "input": {
+          "schemaVersion": 0
+        },
+        "outcome": {
+          "advisoryWhenUntouched": true,
+          "classification": "UNKNOWN_OLD",
+          "cleanMutable": false,
+          "code": "E_B2C16_EXPLICIT_MIGRATION_REQUIRED",
+          "disposition": "STOP_RESTRICTED_EXPLICIT_MIGRATION_REQUIRED",
+          "migrationRequired": true,
+          "quarantine": false,
+          "readOnlyRestricted": false,
+          "runtimeExecution": false,
+          "schemaVersion": 0,
+          "silentUpgrade": false,
+          "status": "STOP_POLICY_ONLY",
+          "stop": true
+        },
+        "rowId": "UNKNOWN_OLD_STOP_MIGRATION_REQUIRED",
+        "rowType": "VERSION_OPEN_POLICY"
+      },
+      {
+        "input": {
+          "backupPresent": true,
+          "fromVersion": 0,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "toVersion": 1
+        },
+        "outcome": {
+          "advisoryWhenUntouched": true,
+          "backupPresent": true,
+          "code": "",
+          "disposition": "PRECONDITIONS_READY_POLICY_ONLY",
+          "fromVersion": 0,
+          "migrationRequired": true,
+          "missing": [],
+          "missingPolicy": "STOP_BACKUP_REQUIRED",
+          "ok": true,
+          "recoveryPackPresent": true,
+          "required": true,
+          "rollbackPlanPresent": true,
+          "runtimeExecution": false,
+          "stop": false,
+          "toVersion": 1
+        },
+        "rowId": "BACKUP_PRECONDITION_REQUIRED",
+        "rowType": "MIGRATION_PRECONDITION"
+      },
+      {
+        "input": {
+          "backupPresent": true,
+          "fromVersion": 0,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "toVersion": 1
+        },
+        "outcome": {
+          "advisoryWhenUntouched": true,
+          "backupPresent": true,
+          "code": "",
+          "disposition": "PRECONDITIONS_READY_POLICY_ONLY",
+          "fromVersion": 0,
+          "migrationRequired": true,
+          "missing": [],
+          "missingPolicy": "STOP_RECOVERY_PACK_REQUIRED",
+          "ok": true,
+          "recoveryPackPresent": true,
+          "required": true,
+          "rollbackPlanPresent": true,
+          "runtimeExecution": false,
+          "stop": false,
+          "toVersion": 1
+        },
+        "rowId": "RECOVERY_PACK_PRECONDITION_REQUIRED",
+        "rowType": "MIGRATION_PRECONDITION"
+      },
+      {
+        "input": {
+          "backupPresent": true,
+          "fromVersion": 0,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "toVersion": 1
+        },
+        "outcome": {
+          "advisoryWhenUntouched": true,
+          "backupPresent": true,
+          "code": "",
+          "disposition": "PRECONDITIONS_READY_POLICY_ONLY",
+          "fromVersion": 0,
+          "migrationRequired": true,
+          "missing": [],
+          "missingPolicy": "STOP_ROLLBACK_REQUIRED",
+          "ok": true,
+          "recoveryPackPresent": true,
+          "required": true,
+          "rollbackPlanPresent": true,
+          "runtimeExecution": false,
+          "stop": false,
+          "toVersion": 1
+        },
+        "rowId": "ROLLBACK_PRECONDITION_REQUIRED",
+        "rowType": "MIGRATION_PRECONDITION"
+      },
+      {
+        "input": {
+          "backupPresent": false,
+          "fromVersion": 0,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "toVersion": 1
+        },
+        "outcome": {
+          "advisoryWhenUntouched": true,
+          "backupPresent": false,
+          "code": "E_B2C16_BACKUP_REQUIRED",
+          "disposition": "STOP_BACKUP_REQUIRED",
+          "fromVersion": 0,
+          "migrationRequired": true,
+          "missing": [
+            "BACKUP"
+          ],
+          "ok": false,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": true,
+          "runtimeExecution": false,
+          "stop": true,
+          "toVersion": 1
+        },
+        "rowId": "MISSING_BACKUP_STOPS_POLICY",
+        "rowType": "MIGRATION_PRECONDITION"
+      },
+      {
+        "input": {
+          "backupPresent": true,
+          "fromVersion": 0,
+          "recoveryPackPresent": false,
+          "rollbackPlanPresent": true,
+          "toVersion": 1
+        },
+        "outcome": {
+          "advisoryWhenUntouched": true,
+          "backupPresent": true,
+          "code": "E_B2C16_RECOVERY_PACK_REQUIRED",
+          "disposition": "STOP_RECOVERY_PACK_REQUIRED",
+          "fromVersion": 0,
+          "migrationRequired": true,
+          "missing": [
+            "RECOVERY_PACK"
+          ],
+          "ok": false,
+          "recoveryPackPresent": false,
+          "rollbackPlanPresent": true,
+          "runtimeExecution": false,
+          "stop": true,
+          "toVersion": 1
+        },
+        "rowId": "MISSING_RECOVERY_PACK_STOPS_POLICY",
+        "rowType": "MIGRATION_PRECONDITION"
+      },
+      {
+        "input": {
+          "backupPresent": true,
+          "fromVersion": 0,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": false,
+          "toVersion": 1
+        },
+        "outcome": {
+          "advisoryWhenUntouched": true,
+          "backupPresent": true,
+          "code": "E_B2C16_ROLLBACK_REQUIRED",
+          "disposition": "STOP_ROLLBACK_REQUIRED",
+          "fromVersion": 0,
+          "migrationRequired": true,
+          "missing": [
+            "ROLLBACK"
+          ],
+          "ok": false,
+          "recoveryPackPresent": true,
+          "rollbackPlanPresent": false,
+          "runtimeExecution": false,
+          "stop": true,
+          "toVersion": 1
+        },
+        "rowId": "MISSING_ROLLBACK_STOPS_POLICY",
+        "rowType": "MIGRATION_PRECONDITION"
+      },
+      {
+        "input": {
+          "schemaVersions": [
+            0,
+            1
+          ]
+        },
+        "outcome": {
+          "code": "E_B2C16_MIXED_VERSION_STOP",
+          "disposition": "STOP_QUARANTINE_POLICY_ONLY",
+          "ok": false,
+          "quarantine": true,
+          "runtimeExecution": false,
+          "schemaVersions": [
+            0,
+            1
+          ],
+          "stop": true
+        },
+        "rowId": "MIXED_VERSION_STOP_QUARANTINE_POLICY_ONLY",
+        "rowType": "MIXED_VERSION_POLICY"
+      }
+    ]
+  },
+  "schemaVersion": 1,
+  "scope": {
+    "actualBackupExecutionClaim": false,
+    "actualDataMigrationClaim": false,
+    "b2c17KillpointClaim": false,
+    "b2c18PerfClaim": false,
+    "block2ExitClaim": false,
+    "dependencyChanged": false,
+    "exportChanged": false,
+    "generalImportExportClaim": false,
+    "networkOrCloud": false,
+    "quarantineRuntimeClaim": false,
+    "rollbackDrillClaim": false,
+    "schemaChanged": false,
+    "storageFormatChanged": false,
+    "uiTouched": false
+  },
+  "status": "PASS",
+  "taskId": "B2C16_MIGRATION_POLICY_MINIMAL"
+}
