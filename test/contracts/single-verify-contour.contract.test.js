@@ -6,7 +6,7 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 
 const SCRIPT_PATH = 'scripts/ops/verify-contour-state.mjs';
-const TOKEN_NAME = 'GOVERNANCE_SINGLE_VERIFY_CONTOUR_ENFORCED_OK';
+const TOKEN_NAME = 'SINGLE_VERIFY_CONTOUR_ENFORCED_OK';
 const FAIL_CODE = 'E_DOUBLE_VERIFY_CONTOUR_DETECTED';
 
 function runScript(args = []) {
