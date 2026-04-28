@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import path from 'node:path';
 import fs from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { evaluatePhase00NoInputLossCore } from './phase00-tiptap-no-input-loss-core-smoke.mjs';
-import { evaluatePhase00TiptapPersistenceProofhook } from './phase00-tiptap-persistence-smoke.mjs';
 
 const REQUIRED_CASE_IDS = Object.freeze([
   'NIL_BASIC_TYPING',
@@ -26,6 +26,7 @@ const EVIDENCE_SOURCES = Object.freeze([
 
 const FAIL_REASON_FORCED_NEGATIVE = 'E_NO_INPUT_LOSS_ROLLUP_FORCED_NEGATIVE';
 const FAIL_REASON_UNEXPECTED = 'E_NO_INPUT_LOSS_ROLLUP_UNEXPECTED';
+const DETECTOR_TOKEN = 'TEXT_NO_LOSS_OK';
 
 function parseArgs(argv) {
   const out = { json: false, forceNegative: false };
@@ -154,10 +155,44 @@ function buildCaseStatusById(coreState, persistenceState) {
   return statusById;
 }
 
+function readPersistenceState() {
+  const result = spawnSync(
+    process.execPath,
+    [path.resolve('scripts/ops/phase00-tiptap-persistence-smoke.mjs'), '--json'],
+    {
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        FORCE_COLOR: '0',
+        NO_COLOR: '1',
+      },
+    },
+  );
+  const rawOutput = String(result.stdout || '').trim();
+
+  if (!rawOutput) {
+    const stderr = String(result.stderr || '').trim();
+    throw new Error(stderr || 'PERSISTENCE_PROOFHOOK_JSON_MISSING');
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(rawOutput);
+  } catch {
+    throw new Error('PERSISTENCE_PROOFHOOK_JSON_INVALID');
+  }
+
+  if (!payload || typeof payload !== 'object' || typeof payload.seamResults !== 'object' || payload.seamResults === null) {
+    throw new Error('PERSISTENCE_PROOFHOOK_SHAPE_INVALID');
+  }
+
+  return payload;
+}
+
 function evaluateRollupState(input = {}) {
   const forceNegative = Boolean(input.forceNegative);
   const coreState = evaluatePhase00NoInputLossCore({ forceNegative: false });
-  const persistenceState = evaluatePhase00TiptapPersistenceProofhook({ forceNegative: false });
+  const persistenceState = readPersistenceState();
   const caseStatusById = buildCaseStatusById(coreState, persistenceState);
 
   const greenCaseIds = REQUIRED_CASE_IDS.filter((id) => caseStatusById[id].status === 'GREEN');
@@ -177,6 +212,10 @@ function evaluateRollupState(input = {}) {
       falsePassGuard: 'OVERALL_STATUS_MUST_BE_HOLD_WHEN_ANY_REQUIRED_CASE_IS_NOT_GREEN',
       scope: 'ROLLUP_ONLY_CURRENT_MEASURED_02C_AND_02D_EVIDENCE',
       forcedNegative: true,
+      token: {
+        [DETECTOR_TOKEN]: 0,
+      },
+      [DETECTOR_TOKEN]: 0,
     };
   }
 
@@ -192,6 +231,10 @@ function evaluateRollupState(input = {}) {
     falsePassGuard: 'OVERALL_STATUS_MUST_BE_HOLD_WHEN_ANY_REQUIRED_CASE_IS_NOT_GREEN',
     scope: 'ROLLUP_ONLY_CURRENT_MEASURED_02C_AND_02D_EVIDENCE',
     forcedNegative: false,
+    token: {
+      [DETECTOR_TOKEN]: overallStatus === 'PASS' ? 1 : 0,
+    },
+    [DETECTOR_TOKEN]: overallStatus === 'PASS' ? 1 : 0,
   };
 }
 
@@ -211,6 +254,10 @@ export function evaluatePhase00NoInputLossRollup(input = {}) {
       falsePassGuard: 'OVERALL_STATUS_MUST_BE_HOLD_WHEN_ANY_REQUIRED_CASE_IS_NOT_GREEN',
       scope: 'ROLLUP_ONLY_CURRENT_MEASURED_02C_AND_02D_EVIDENCE',
       forcedNegative: Boolean(input.forceNegative),
+      token: {
+        [DETECTOR_TOKEN]: 0,
+      },
+      [DETECTOR_TOKEN]: 0,
       errorMessage: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
     };
   }

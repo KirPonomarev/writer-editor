@@ -2817,10 +2817,17 @@
     },
     {
       "filePath": "docs/OPS/STATUS/FORMAL_KERNEL_MINIMAL_V1.json",
-      "sha256": "897078745a1daea062ca29b4d25ba86d668d3499422e7e6df8b90307a81645ca",
-      "approvedBy": "ticket:RECOVERY_READABILITY_DONOR_PORT_001",
-      "approvedAtUtc": "2026-04-27T23:21:01.000Z",
-      "rationale": "RECOVERY_READABILITY_DONOR_PORT_001 approves bounded promotion of the recovery human-readable formal kernel row after a real detector path and restore-drill proof became green."
+      "sha256": "fa49ce5e66e2ca2e21473f2dfd02af7b517f33c08b2f45c6950a678c57cb0a1c",
+      "approvedBy": "ticket:TEXT_NO_LOSS_FORMAL_PROMOTION_001",
+      "approvedAtUtc": "2026-04-28T00:00:00.000Z",
+      "rationale": "TEXT_NO_LOSS_FORMAL_PROMOTION_001 approves the bounded formal kernel artifact rebind that promotes TEXT_NO_LOSS from advisory to detector-bound after the repaired rollup proof became green."
+    },
+    {
+      "filePath": "scripts/ops/phase00-no-input-loss-rollup.mjs",
+      "sha256": "a4920df348ae5206a63a161af03a79bdde56ffac778a391799b3a5df9a8db010",
+      "approvedBy": "ticket:TEXT_NO_LOSS_FORMAL_PROMOTION_001",
+      "approvedAtUtc": "2026-04-28T00:00:00.000Z",
+      "rationale": "TEXT_NO_LOSS_FORMAL_PROMOTION_001 approves the narrow rollup seam repair and detector-token emission for the phase00 text-no-loss proofhook without touching editor runtime or storage behavior."
     },
     {
       "filePath": "scripts/ops/formal-kernel-minimal-state.mjs",
@@ -2831,10 +2838,10 @@
     },
     {
       "filePath": "test/contracts/formal-kernel-minimal.contract.test.js",
-      "sha256": "3704d911fcef621078641bf34043db57b69e173df2cec0ce22be6ca8de8cdc3e",
-      "approvedBy": "ticket:RECOVERY_READABILITY_DONOR_PORT_001",
-      "approvedAtUtc": "2026-04-27T23:21:01.000Z",
-      "rationale": "RECOVERY_READABILITY_DONOR_PORT_001 approves the bounded formal kernel contract rebind so recovery human-readable is accepted only through the new detector-backed path."
+      "sha256": "4a3b548488a6958b8731242e5a3cd8fa2315b6dd8a5979a5ffb4208c453326ac",
+      "approvedBy": "ticket:TEXT_NO_LOSS_FORMAL_PROMOTION_001",
+      "approvedAtUtc": "2026-04-28T00:00:00.000Z",
+      "rationale": "TEXT_NO_LOSS_FORMAL_PROMOTION_001 approves the bounded formal kernel contract rebind so TEXT_NO_LOSS is accepted only through the repaired green rollup detector path."
     },
     {
       "filePath": "scripts/ops/sector-m-scope-map.json",
