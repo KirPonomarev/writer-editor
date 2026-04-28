@@ -1,0 +1,1070 @@
+{
+  "artifactId": "B3C19_INDEPENDENT_RELEASE_AUDIT_STATUS_V1",
+  "auditRows": [
+    {
+      "contour": "B3C01",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_COMMAND_KERNEL_SCOPE_LOCK",
+      "layer": "EXPORT_ADMISSION_CURRENT_REPO_TRUTH",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C01_COMMAND_KERNEL_SCOPE_LOCK_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C02",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_COMPILE_IR",
+      "layer": "EXPORT_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C02_COMPILE_IR_BASELINE_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C03",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_DOCX_VALIDATION",
+      "layer": "EXPORT_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C03_DOCX_ARTIFACT_VALIDATION_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C04",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_DETERMINISTIC_EXPORT",
+      "layer": "EXPORT_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C04_DETERMINISTIC_EXPORT_MODE_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C05",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_PERMISSION_SCOPE",
+      "layer": "SECURITY_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C05_PERMISSION_SCOPE_ENFORCED_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C06",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_NO_NETWORK",
+      "layer": "SECURITY_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C06_NO_NETWORK_WRITING_PATH_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C07",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_SECURITY_BOUNDARY",
+      "layer": "SECURITY_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C07_SECURITY_RUNTIME_BOUNDARY_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C08",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_SUPPORT_PRIVACY",
+      "layer": "SECURITY_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C08_SUPPORT_BUNDLE_PRIVACY_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C09",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_PERF_BASELINE",
+      "layer": "PERFORMANCE_AND_CAPABILITY_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C10",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_CAPABILITY_REPORT",
+      "layer": "PERFORMANCE_AND_CAPABILITY_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C11",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_XPLAT_NORMALIZATION",
+      "layer": "XPLAT_I18N_A11Y_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C12",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_I18N_ANCHORS",
+      "layer": "XPLAT_I18N_A11Y_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C13",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_A11Y_TRUST_SURFACE",
+      "layer": "XPLAT_I18N_A11Y_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C14",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_RELEASE_DOSSIER",
+      "layer": "RELEASE_GOVERNANCE_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C15",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_ATTESTATION_CHAIN",
+      "layer": "RELEASE_GOVERNANCE_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C16",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_SUPPLY_CHAIN",
+      "layer": "RELEASE_GOVERNANCE_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C17",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_FUTURE_LANES",
+      "layer": "FUTURE_AND_HARDENING_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C17_FUTURE_LANES_NONBLOCKING_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    },
+    {
+      "contour": "B3C18",
+      "evidenceBound": true,
+      "findingClass": "NONE",
+      "id": "AUDIT_PRODUCTION_HARDENING_QUEUE",
+      "layer": "FUTURE_AND_HARDENING_LAYER",
+      "releaseGreen": 0,
+      "sourceBasename": "B3C18_PRODUCTION_HARDENING_QUEUE_STATUS_V1.json",
+      "status": "PASS",
+      "unsupportedScopeVisible": true
+    }
+  ],
+  "B3C19_INDEPENDENT_RELEASE_AUDIT_OK": 1,
+  "B3C19_RELEASE_GREEN_OK": 0,
+  "contourId": "B3C19_INDEPENDENT_RELEASE_AUDIT",
+  "donorIntake": {
+    "activeCanonOverDonor": true,
+    "archiveRows": [
+      {
+        "auditCompletionClaimImported": false,
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 132,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "ADMISSION_REPORT.md",
+          "atomic.js",
+          "attestation.js",
+          "binding-integrity.test.js",
+          "binding.mjs",
+          "BLOCK_2",
+          "BLOCK_2_EXIT_REPORT.md",
+          "BLOCK_2_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "block2-baseline-node-test-output.tap",
+          "block2-contracts-deep.test.js",
+          "block2-dossier.js",
+          "block2-exit-dossier.json",
+          "block2-exit-dossier.mjs",
+          "block2-exit-dossier.stdout.json",
+          "block2-unit-proof.json",
+          "block3-capability-xplat-i18n-a11y.test.js"
+        ]
+      },
+      {
+        "auditCompletionClaimImported": false,
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 146,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "ADMISSION_REPORT.md",
+          "atomic.js",
+          "attestation.js",
+          "binding-integrity.test.js",
+          "binding.mjs",
+          "BLOCK_2",
+          "BLOCK_2_EXIT_REPORT.md",
+          "BLOCK_2_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3_V2_DEEP_REWORK_REPORT.md",
+          "BLOCK_3_V3_PERFECTION_REPORT.md",
+          "block2-baseline-node-test-output.tap",
+          "block2-contracts-deep.test.js",
+          "block2-dossier.js",
+          "block2-exit-dossier.json",
+          "block2-exit-dossier.mjs",
+          "block2-exit-dossier.stdout.json"
+        ]
+      },
+      {
+        "auditCompletionClaimImported": false,
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 45,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "docx-export.js",
+          "export-gate.js",
+          "export-gate.test.js",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "perf-smoke.js",
+          "perf-smoke.test.js",
+          "perf-state.mjs",
+          "release-dossier.js",
+          "release-dossier.mjs",
+          "security-permission.test.js",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "auditCompletionClaimImported": false,
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 83,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "docx-export.js",
+          "export-gate.js",
+          "export-gate.test.js",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "kernel-perf-smoke.json",
+          "perf-smoke.js",
+          "perf-smoke.test.js",
+          "perf-state.mjs",
+          "release-dossier.js",
+          "release-dossier.mjs",
+          "security-permission.test.js",
+          "VALIDATION_REPORT.md"
+        ]
+      }
+    ],
+    "auditCompletionClaimImported": false,
+    "class": "READ_ONLY_CONTEXT_ONLY",
+    "codeImported": false,
+    "completionClaimImported": false,
+    "dependencyClaimImported": false
+  },
+  "failRows": [],
+  "failSignal": "",
+  "findingRows": [
+    {
+      "blocking": false,
+      "evidenceBasename": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+      "findingId": "B3C10_DECLARED_LIMIT_VISIBLE",
+      "layer": "PERFORMANCE_AND_CAPABILITY_LAYER",
+      "nextContour": "B3C20_BLOCK_3_EXIT_DOSSIER",
+      "reason": "LIMIT_OR_GAP_ALREADY_DECLARED_WITH_NO_RELEASE_GREEN_AND_NO_FALSE_CLAIM",
+      "requiredCorrection": "KEEP_UNSUPPORTED_SCOPE_VISIBLE",
+      "severity": "NONBLOCKING"
+    },
+    {
+      "blocking": false,
+      "evidenceBasename": "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+      "findingId": "B3C11_DECLARED_LIMIT_VISIBLE",
+      "layer": "XPLAT_I18N_A11Y_LAYER",
+      "nextContour": "B3C20_BLOCK_3_EXIT_DOSSIER",
+      "reason": "LIMIT_OR_GAP_ALREADY_DECLARED_WITH_NO_RELEASE_GREEN_AND_NO_FALSE_CLAIM",
+      "requiredCorrection": "KEEP_UNSUPPORTED_SCOPE_VISIBLE",
+      "severity": "NONBLOCKING"
+    },
+    {
+      "blocking": false,
+      "evidenceBasename": "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+      "findingId": "B3C12_DECLARED_LIMIT_VISIBLE",
+      "layer": "XPLAT_I18N_A11Y_LAYER",
+      "nextContour": "B3C20_BLOCK_3_EXIT_DOSSIER",
+      "reason": "LIMIT_OR_GAP_ALREADY_DECLARED_WITH_NO_RELEASE_GREEN_AND_NO_FALSE_CLAIM",
+      "requiredCorrection": "KEEP_UNSUPPORTED_SCOPE_VISIBLE",
+      "severity": "NONBLOCKING"
+    },
+    {
+      "blocking": false,
+      "evidenceBasename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "findingId": "B3C13_DECLARED_LIMIT_VISIBLE",
+      "layer": "XPLAT_I18N_A11Y_LAYER",
+      "nextContour": "B3C20_BLOCK_3_EXIT_DOSSIER",
+      "reason": "LIMIT_OR_GAP_ALREADY_DECLARED_WITH_NO_RELEASE_GREEN_AND_NO_FALSE_CLAIM",
+      "requiredCorrection": "KEEP_UNSUPPORTED_SCOPE_VISIBLE",
+      "severity": "NONBLOCKING"
+    }
+  ],
+  "inputRows": [
+    {
+      "auditId": "AUDIT_COMMAND_KERNEL_SCOPE_LOCK",
+      "basename": "B3C01_COMMAND_KERNEL_SCOPE_LOCK_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C01",
+      "layer": "EXPORT_ADMISSION_CURRENT_REPO_TRUTH",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C01_COMMAND_KERNEL_SCOPE_LOCK_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_COMPILE_IR",
+      "basename": "B3C02_COMPILE_IR_BASELINE_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C02",
+      "layer": "EXPORT_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C02_COMPILE_IR_BASELINE_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_DOCX_VALIDATION",
+      "basename": "B3C03_DOCX_ARTIFACT_VALIDATION_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C03",
+      "layer": "EXPORT_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C03_DOCX_ARTIFACT_VALIDATION_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_DETERMINISTIC_EXPORT",
+      "basename": "B3C04_DETERMINISTIC_EXPORT_MODE_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C04",
+      "layer": "EXPORT_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C04_DETERMINISTIC_EXPORT_MODE_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_PERMISSION_SCOPE",
+      "basename": "B3C05_PERMISSION_SCOPE_ENFORCED_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C05",
+      "layer": "SECURITY_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C05_PERMISSION_SCOPE_ENFORCED_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_NO_NETWORK",
+      "basename": "B3C06_NO_NETWORK_WRITING_PATH_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C06",
+      "layer": "SECURITY_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C06_NO_NETWORK_WRITING_PATH_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_SECURITY_BOUNDARY",
+      "basename": "B3C07_SECURITY_RUNTIME_BOUNDARY_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C07",
+      "layer": "SECURITY_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C07_SECURITY_RUNTIME_BOUNDARY_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_SUPPORT_PRIVACY",
+      "basename": "B3C08_SUPPORT_BUNDLE_PRIVACY_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C08",
+      "layer": "SECURITY_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C08_SUPPORT_BUNDLE_PRIVACY_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_PERF_BASELINE",
+      "basename": "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C09",
+      "layer": "PERFORMANCE_AND_CAPABILITY_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PROVISIONAL_GAP",
+      "token": 1,
+      "tokenName": "B3C09_PERFORMANCE_BASELINE_BINDING_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_CAPABILITY_REPORT",
+      "basename": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C10",
+      "layer": "PERFORMANCE_AND_CAPABILITY_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C10_CAPABILITY_TIER_REPORT_OK",
+      "visibleLimitRows": [
+        {
+          "key": "B3C10_FULL_TIER_GREEN_OK",
+          "pass": true,
+          "value": 0,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "auditId": "AUDIT_XPLAT_NORMALIZATION",
+      "basename": "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C11",
+      "layer": "XPLAT_I18N_A11Y_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C11_XPLAT_NORMALIZATION_BASELINE_OK",
+      "visibleLimitRows": [
+        {
+          "key": "B3C11_FULL_REAL_PLATFORM_XPLAT_OK",
+          "pass": true,
+          "value": 0,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "auditId": "AUDIT_I18N_ANCHORS",
+      "basename": "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C12",
+      "layer": "XPLAT_I18N_A11Y_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C12_I18N_TEXT_ANCHOR_SAFETY_OK",
+      "visibleLimitRows": [
+        {
+          "key": "B3C12_FULL_GLOBAL_I18N_OK",
+          "pass": true,
+          "value": 0,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "auditId": "AUDIT_A11Y_TRUST_SURFACE",
+      "basename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C13",
+      "layer": "XPLAT_I18N_A11Y_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C13_TRUST_SURFACE_ACCESSIBILITY_OK",
+      "visibleLimitRows": [
+        {
+          "key": "B3C13_FULL_APP_A11Y_OK",
+          "pass": true,
+          "value": 0,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "auditId": "AUDIT_RELEASE_DOSSIER",
+      "basename": "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C14",
+      "layer": "RELEASE_GOVERNANCE_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "B3C14_RELEASE_GREEN_OK",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C14_RELEASE_DOSSIER_MINIMAL_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_ATTESTATION_CHAIN",
+      "basename": "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C15",
+      "layer": "RELEASE_GOVERNANCE_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "B3C15_RELEASE_GREEN_OK",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C15_ATTESTATION_CHAIN_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_SUPPLY_CHAIN",
+      "basename": "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C16",
+      "layer": "RELEASE_GOVERNANCE_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "B3C16_RELEASE_GREEN_OK",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_FUTURE_LANES",
+      "basename": "B3C17_FUTURE_LANES_NONBLOCKING_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C17",
+      "layer": "FUTURE_AND_HARDENING_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "B3C17_RELEASE_GREEN_OK",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C17_FUTURE_LANES_NONBLOCKING_OK",
+      "visibleLimitRows": []
+    },
+    {
+      "auditId": "AUDIT_PRODUCTION_HARDENING_QUEUE",
+      "basename": "B3C18_PRODUCTION_HARDENING_QUEUE_STATUS_V1.json",
+      "failRowCount": 0,
+      "id": "B3C18",
+      "layer": "FUTURE_AND_HARDENING_LAYER",
+      "ok": true,
+      "passed": true,
+      "releaseGreen": 0,
+      "releaseGreenTokenName": "B3C18_RELEASE_GREEN_OK",
+      "status": "PASS",
+      "token": 1,
+      "tokenName": "B3C18_PRODUCTION_HARDENING_QUEUE_OK",
+      "visibleLimitRows": []
+    }
+  ],
+  "layerMixRows": [
+    {
+      "auditRowsPass": true,
+      "id": "EXPORT_STORAGE_LAYER_MIX",
+      "proofClass": "B3C19_AUDIT_TABLE_AND_DIFF_GUARD",
+      "runtimeDiffEmpty": true,
+      "status": "PASS"
+    },
+    {
+      "auditRowsPass": true,
+      "id": "SECURITY_DELIVERY_LAYER_MIX",
+      "proofClass": "B3C19_AUDIT_TABLE_AND_DIFF_GUARD",
+      "runtimeDiffEmpty": true,
+      "status": "PASS"
+    },
+    {
+      "auditRowsPass": true,
+      "id": "RELEASE_P0C_LAYER_MIX",
+      "proofClass": "B3C19_AUDIT_TABLE_AND_DIFF_GUARD",
+      "runtimeDiffEmpty": true,
+      "status": "PASS"
+    },
+    {
+      "auditRowsPass": true,
+      "id": "FUTURE_LANES_P0B_LAYER_MIX",
+      "proofClass": "B3C19_AUDIT_TABLE_AND_DIFF_GUARD",
+      "runtimeDiffEmpty": true,
+      "status": "PASS"
+    },
+    {
+      "auditRowsPass": true,
+      "id": "DOC_ONLY_EVIDENCE",
+      "proofClass": "B3C19_AUDIT_TABLE_AND_DIFF_GUARD",
+      "runtimeDiffEmpty": true,
+      "status": "PASS"
+    },
+    {
+      "auditRowsPass": true,
+      "id": "MISSING_NEGATIVE_TESTS",
+      "proofClass": "B3C19_AUDIT_TABLE_AND_DIFF_GUARD",
+      "runtimeDiffEmpty": true,
+      "status": "PASS"
+    },
+    {
+      "auditRowsPass": true,
+      "id": "MISSING_ROLLBACK_REFS",
+      "proofClass": "B3C19_AUDIT_TABLE_AND_DIFF_GUARD",
+      "runtimeDiffEmpty": true,
+      "status": "PASS"
+    },
+    {
+      "auditRowsPass": true,
+      "id": "UNSUPPORTED_SCOPE_OVERCLAIM",
+      "proofClass": "B3C19_AUDIT_TABLE_AND_DIFF_GUARD",
+      "runtimeDiffEmpty": true,
+      "status": "PASS"
+    },
+    {
+      "auditRowsPass": true,
+      "id": "RELEASE_WITHOUT_DOSSIER",
+      "proofClass": "B3C19_AUDIT_TABLE_AND_DIFF_GUARD",
+      "runtimeDiffEmpty": true,
+      "status": "PASS"
+    },
+    {
+      "auditRowsPass": true,
+      "id": "SELF_SIGNED_ATTESTATION",
+      "proofClass": "B3C19_AUDIT_TABLE_AND_DIFF_GUARD",
+      "runtimeDiffEmpty": true,
+      "status": "PASS"
+    },
+    {
+      "auditRowsPass": true,
+      "id": "NETWORK_IN_WRITING_PATH",
+      "proofClass": "B3C19_AUDIT_TABLE_AND_DIFF_GUARD",
+      "runtimeDiffEmpty": true,
+      "status": "PASS"
+    },
+    {
+      "auditRowsPass": true,
+      "id": "PERMISSION_ESCAPE",
+      "proofClass": "B3C19_AUDIT_TABLE_AND_DIFF_GUARD",
+      "runtimeDiffEmpty": true,
+      "status": "PASS"
+    }
+  ],
+  "negativeRows": [
+    {
+      "id": "INPUT_ARTIFACT_MISSING_NEGATIVE",
+      "rejectsClaim": "INPUT_ARTIFACT_MISSING_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "INPUT_TOKEN_FALSE_GREEN_NEGATIVE",
+      "rejectsClaim": "INPUT_TOKEN_FALSE_GREEN_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_GREEN_CLAIMED_NEGATIVE",
+      "rejectsClaim": "RELEASE_GREEN_CLAIMED_IN_B3C19",
+      "status": "PASS"
+    },
+    {
+      "id": "UNSUPPORTED_SCOPE_HIDDEN_NEGATIVE",
+      "rejectsClaim": "UNSUPPORTED_SCOPE_HIDDEN",
+      "status": "PASS"
+    },
+    {
+      "id": "DOC_ONLY_EVIDENCE_ACCEPTED_NEGATIVE",
+      "rejectsClaim": "DOC_ONLY_EVIDENCE_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "MISSING_NEGATIVE_TEST_ACCEPTED_NEGATIVE",
+      "rejectsClaim": "MISSING_NEGATIVE_TEST_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "MISSING_ROLLBACK_REF_ACCEPTED_NEGATIVE",
+      "rejectsClaim": "MISSING_ROLLBACK_REF_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_WITHOUT_DOSSIER_ACCEPTED_NEGATIVE",
+      "rejectsClaim": "RELEASE_WITHOUT_DOSSIER_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "SELF_SIGNED_ATTESTATION_ACCEPTED_NEGATIVE",
+      "rejectsClaim": "SELF_SIGNED_ATTESTATION_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "NETWORK_ESCAPE_ACCEPTED_NEGATIVE",
+      "rejectsClaim": "NETWORK_ESCAPE_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "PERMISSION_ESCAPE_ACCEPTED_NEGATIVE",
+      "rejectsClaim": "PERMISSION_ESCAPE_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "LAYER_MIX_ACCEPTED_NEGATIVE",
+      "rejectsClaim": "LAYER_MIX_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "B3C20_STARTED_NEGATIVE",
+      "rejectsClaim": "B3C20_STARTED_INSIDE_B3C19",
+      "status": "PASS"
+    },
+    {
+      "id": "NEW_DEPENDENCY_ADDED_NEGATIVE",
+      "rejectsClaim": "NEW_DEPENDENCY_ADDED",
+      "status": "PASS"
+    },
+    {
+      "id": "RUNTIME_CHANGE_ADDED_NEGATIVE",
+      "rejectsClaim": "RUNTIME_CHANGE_ADDED",
+      "status": "PASS"
+    },
+    {
+      "id": "DONOR_COMPLETION_CLAIM_IMPORTED_NEGATIVE",
+      "rejectsClaim": "DONOR_COMPLETION_CLAIM_IMPORTED",
+      "status": "PASS"
+    },
+    {
+      "id": "RUNTIME_FIX_ATTEMPTED_NEGATIVE",
+      "rejectsClaim": "RUNTIME_FIX_ATTEMPTED_IN_AUDIT_CONTOUR",
+      "status": "PASS"
+    },
+    {
+      "id": "PRIOR_CONTOUR_STATUS_REWRITTEN_NEGATIVE",
+      "rejectsClaim": "PRIOR_CONTOUR_STATUS_REWRITTEN",
+      "status": "PASS"
+    },
+    {
+      "id": "BLOCKING_FINDING_DOWNGRADED_NEGATIVE",
+      "rejectsClaim": "BLOCKING_FINDING_DOWNGRADED",
+      "status": "PASS"
+    },
+    {
+      "id": "BLOCK2_CLOSURE_REOPENED_WITHOUT_FRESH_CONTRADICTION_NEGATIVE",
+      "rejectsClaim": "BLOCK2_CLOSURE_REOPENED_WITHOUT_FRESH_CONTRADICTION",
+      "status": "PASS"
+    }
+  ],
+  "nonblockingRows": [
+    {
+      "id": "ALL_INPUT_ARTIFACTS_BOUND",
+      "inputCount": 18,
+      "status": "PASS"
+    },
+    {
+      "id": "B3C01_TO_B3C08_CARRIED_INPUTS_CLASSIFIED",
+      "policy": "CARRIED_PRE_RELEASE_INPUTS_NOT_REIMPLEMENTED_IN_B3C19",
+      "status": "PASS"
+    },
+    {
+      "id": "B3C09_TO_B3C18_TESTS_RECONFIRMED",
+      "proofClass": "LOCAL_AND_POST_MERGE_TEST_RUN_REQUIRED",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_GREEN_REMAINS_FALSE",
+      "releaseGreen": false,
+      "status": "PASS"
+    },
+    {
+      "id": "UNSUPPORTED_SCOPE_REMAINS_VISIBLE",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_FALSE_RELEASE_CLAIM",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_DOC_ONLY_CLOSE_CLAIM",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "NO_ACTIVE_CANON_PROMOTION",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "NO_REQUIRED_TOKEN_SET_EXPANSION",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_NEW_DEPENDENCY",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "NO_RUNTIME_LAYER_CHANGE",
+      "status": "PASS"
+    },
+    {
+      "id": "B3C20_NOT_STARTED",
+      "status": "PASS"
+    },
+    {
+      "id": "DONOR_CONTEXT_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_RUNTIME_FIX_ATTEMPTED",
+      "status": "PASS"
+    },
+    {
+      "findingCount": 4,
+      "id": "FINDINGS_CLASSIFIED_WITH_SCHEMA",
+      "status": "PASS"
+    },
+    {
+      "blockingFindingCount": 0,
+      "id": "NO_UNANSWERED_BLOCKING_FINDING",
+      "status": "PASS"
+    }
+  ],
+  "ok": true,
+  "proof": {
+    "activeCanonNotPromoted": true,
+    "allInputsBound": true,
+    "auditRowsComplete": true,
+    "auditRowsPass": true,
+    "b3c01ToB3c08CarriedInputsClassified": true,
+    "b3c09ToB3c18TestsReconfirmed": true,
+    "b3c20NotStarted": true,
+    "donorIntakeContextOnly": true,
+    "findingsClassifiedWithSchema": true,
+    "layerMixRowsComplete": true,
+    "layerMixRowsPass": true,
+    "negativeRowsComplete": true,
+    "negativeRowsPass": true,
+    "noDocOnlyCloseClaim": true,
+    "noFalseReleaseClaim": true,
+    "noNewDependency": true,
+    "noRuntimeFixAttempted": true,
+    "noRuntimeLayerChange": true,
+    "noUnansweredBlockingFinding": true,
+    "releaseGreenFalseBecauseB3C19Only": true,
+    "requiredTokenSetNotExpanded": true,
+    "unsupportedScopeRemainsVisible": true
+  },
+  "releaseGreen": false,
+  "repo": {
+    "headSha": "8937fe3414b5b649f271b455c45bc0652416d267",
+    "repoRootBinding": "WORKTREE_INDEPENDENT"
+  },
+  "rollbackRef": "ROLLBACK_INDEPENDENT_RELEASE_AUDIT_GOVERNANCE",
+  "runtime": {
+    "changedBasenames": [
+      "b3c19-independent-release-audit-state.mjs",
+      "b3c19-independent-release-audit.contract.test.js",
+      "B3C19_INDEPENDENT_RELEASE_AUDIT_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "b6d411c8e1d621af605539eb1f5480750825d3a9e2c574d9566ad1ac86d947b6",
+    "commandRows": {
+      "allPassed": null,
+      "commandCount": 7,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c19-independent-release-audit-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c01-command-kernel-scope-lock.contract.test.js test/contracts/b3c02-compile-ir-baseline.contract.test.js test/contracts/b3c03-docx-artifact-validation.contract.test.js test/contracts/b3c04-deterministic-export-mode.contract.test.js test/contracts/b3c05-permission-scope-enforced.contract.test.js test/contracts/b3c06-no-network-writing-path.contract.test.js test/contracts/b3c07-security-runtime-boundary.contract.test.js test/contracts/b3c08-support-bundle-privacy.contract.test.js test/contracts/b3c09-performance-baseline-binding.contract.test.js test/contracts/b3c10-capability-tier-report.contract.test.js test/contracts/b3c11-xplat-normalization-baseline.contract.test.js test/contracts/b3c12-i18n-text-anchor-safety.contract.test.js test/contracts/b3c13-trust-surface-accessibility.contract.test.js test/contracts/b3c14-release-dossier-minimal.contract.test.js test/contracts/b3c15-attestation-chain.contract.test.js test/contracts/b3c16-supply-chain-release-scope.contract.test.js test/contracts/b3c17-future-lanes-nonblocking.contract.test.js test/contracts/b3c18-production-hardening-queue.contract.test.js test/contracts/b3c19-independent-release-audit.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --check",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- CANON.md docs/OPS/STATUS/CANON_STATUS.json docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json docs/OPS/TOKENS/TOKEN_CATALOG.json docs/OPS/TOKENS/TOKEN_CATALOG_LOCK.json",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css src/main.js src/preload.js src/export src/io src/security src/collab",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C19_INDEPENDENT_RELEASE_AUDIT"
+    },
+    "statusArtifactHash": "629a8977a6b4987d733bac5fb33ece51a4c7e201c93b0d8d6024b4ffd6f7d3cf"
+  },
+  "scope": {
+    "activeCanonPromotion": false,
+    "allowedWriteBasenames": [
+      "b3c19-independent-release-audit-state.mjs",
+      "b3c19-independent-release-audit.contract.test.js",
+      "B3C19_INDEPENDENT_RELEASE_AUDIT_STATUS_V1.json"
+    ],
+    "b3c20Started": false,
+    "block2ClosureReopenedWithoutFreshContradiction": false,
+    "directInputs": [
+      "B3C01_COMMAND_KERNEL_SCOPE_LOCK_STATUS_V1.json",
+      "B3C02_COMPILE_IR_BASELINE_STATUS_V1.json",
+      "B3C03_DOCX_ARTIFACT_VALIDATION_STATUS_V1.json",
+      "B3C04_DETERMINISTIC_EXPORT_MODE_STATUS_V1.json",
+      "B3C05_PERMISSION_SCOPE_ENFORCED_STATUS_V1.json",
+      "B3C06_NO_NETWORK_WRITING_PATH_STATUS_V1.json",
+      "B3C07_SECURITY_RUNTIME_BOUNDARY_STATUS_V1.json",
+      "B3C08_SUPPORT_BUNDLE_PRIVACY_STATUS_V1.json",
+      "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json",
+      "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+      "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+      "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+      "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+      "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+      "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
+      "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1.json",
+      "B3C17_FUTURE_LANES_NONBLOCKING_STATUS_V1.json",
+      "B3C18_PRODUCTION_HARDENING_QUEUE_STATUS_V1.json"
+    ],
+    "donorCompletionClaimImported": false,
+    "exportRewrite": false,
+    "newDependency": false,
+    "packageManifestChange": false,
+    "priorContourStatusRewritten": false,
+    "releaseGreenClaim": false,
+    "requiredTokenExpansion": false,
+    "runtimeChangeAdded": false,
+    "runtimeFixAttempted": false,
+    "securityRewrite": false,
+    "storageChange": false,
+    "uiChange": false
+  },
+  "status": "PASS_AUDIT_WITH_RELEASE_GREEN_FALSE",
+  "successWording": "PASS_AS_INDEPENDENT_RELEASE_AUDIT_WITH_RELEASE_GREEN_FALSE_AND_NO_UNANSWERED_BLOCKING_FINDING",
+  "tokenSemantics": "INDEPENDENT_RELEASE_AUDIT_PROOF_ONLY_RELEASE_GREEN_REMAINS_FALSE"
+}
