@@ -1,0 +1,15 @@
+{
+  "generatedAtUtc": "2026-04-28T13:48:45.444Z",
+  "localRootClassification": {
+    "dirtyRootTouched": false,
+    "localHygieneRequiredForMainTruth": false,
+    "localRootDirtyObservedBeforeCloseout": true,
+    "note": "LOCAL_ROOT_DIRTY_STATE_IS_USER_WORK_OR_SEPARATE_PRODUCT_TAIL_NOT_REQUIRED_FOR_MAIN_SYNC_TRUTH"
+  },
+  "nextStep": "STOP_AND_RETURN_TO_BLOCK2",
+  "ok": true,
+  "remoteTail": {
+    "promotionBranch": "codex/main-sync-c02-conflict-remediation-replay-run-001",
+    "promotionBranchDeleted": true
+  }
+}
