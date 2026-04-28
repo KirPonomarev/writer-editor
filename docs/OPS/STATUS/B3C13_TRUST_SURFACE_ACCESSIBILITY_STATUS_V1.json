@@ -1,0 +1,507 @@
+{
+  "artifactId": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1",
+  "b3c12Limitations": {
+    "a11yDeferredToB3c13": true,
+    "fullGlobalI18n": false,
+    "realLanguageCoverageStatus": "LIMITED"
+  },
+  "B3C13_FULL_APP_A11Y_OK": 0,
+  "B3C13_TRUST_SURFACE_ACCESSIBILITY_OK": 1,
+  "checkRows": [
+    {
+      "evidence": "NATIVE_BUTTON_CLOSE_AND_COMMAND_ROUTE_PRESENT",
+      "id": "KEYBOARD_OPERABLE",
+      "status": "PASS",
+      "surfaceId": "RECOVERY_SURFACE"
+    },
+    {
+      "evidence": "FOCUS_VISIBLE_STYLE_PRESENT",
+      "id": "FOCUS_VISIBLE",
+      "status": "PASS",
+      "surfaceId": "RECOVERY_SURFACE"
+    },
+    {
+      "evidence": "TEXT_MESSAGE_NODE_PRESENT",
+      "id": "NOT_COLOR_ONLY",
+      "status": "PASS",
+      "surfaceId": "RECOVERY_SURFACE"
+    },
+    {
+      "evidence": "RECOVERY_MESSAGE_TEXTCONTENT_PRESENT",
+      "id": "ERROR_TEXT_PRESENT",
+      "status": "PASS",
+      "surfaceId": "RECOVERY_SURFACE"
+    },
+    {
+      "evidence": "ARIA_LABEL_ON_DIALOG_PRESENT",
+      "id": "SCREEN_READER_LABEL_PRESENT",
+      "status": "PASS",
+      "surfaceId": "RECOVERY_SURFACE"
+    }
+  ],
+  "contourId": "B3C13_TRUST_SURFACE_ACCESSIBILITY",
+  "donorIntake": {
+    "activeCanonOverDonor": true,
+    "archiveRows": [
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 132,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "block3-capability-xplat-i18n-a11y.test.js",
+          "command-surface.js",
+          "command-surface.test.js",
+          "doctor.mjs",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "project-doctor.js",
+          "recovery-pack.js",
+          "recovery-readable-quarantine.test.js",
+          "save-reopen-recovery.test.js",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 146,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3_V2_DEEP_REWORK_REPORT.md",
+          "BLOCK_3_V3_PERFECTION_REPORT.md",
+          "block3-capability-xplat-i18n-a11y.test.js",
+          "command-surface.js",
+          "command-surface.test.js",
+          "doctor.mjs",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "project-doctor.js",
+          "recovery-pack.js",
+          "recovery-readable-quarantine.test.js",
+          "save-reopen-recovery.test.js",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 45,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "command-surface.js",
+          "command-surface.test.js",
+          "doctor.mjs",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "project-doctor.js",
+          "recovery-pack.js",
+          "save-reopen-recovery.test.js",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 83,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "command-surface.js",
+          "command-surface.test.js",
+          "doctor.mjs",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "project-doctor.js",
+          "recovery-pack.js",
+          "save-reopen-recovery.test.js",
+          "VALIDATION_REPORT.md"
+        ]
+      }
+    ],
+    "archivesFound": [
+      "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+      "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+      "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+      "writer-editor-longform-v5_1-turnkey-pack-v3.zip"
+    ],
+    "class": "READ_ONLY_CONTEXT_ONLY",
+    "codeImported": false,
+    "completionClaimImported": false,
+    "outputLocation": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+    "suggestedRows": [
+      "TRUST_SURFACE_ROWS",
+      "A11Y_CHECK_ROWS",
+      "NEGATIVE_ROWS",
+      "LIMIT_ROWS"
+    ]
+  },
+  "failRows": [],
+  "failSignal": "",
+  "inputRows": [
+    {
+      "basename": "B3C12_I18N_TEXT_ANCHOR_SAFETY_STATUS_V1.json",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C12_I18N_TEXT_ANCHOR_SAFETY_OK"
+    }
+  ],
+  "limitRows": [
+    {
+      "id": "NO_FULL_APP_A11Y_CLAIM",
+      "reason": "B3C13_IS_TRUST_SURFACE_BASELINE_ONLY",
+      "releaseCertificationClaim": false,
+      "status": "LIMITED"
+    },
+    {
+      "id": "NO_RELEASE_A11Y_CERTIFICATION",
+      "reason": "B3C13_DOES_NOT_CERTIFY_RELEASE_ACCESSIBILITY",
+      "releaseCertificationClaim": false,
+      "status": "LIMITED"
+    },
+    {
+      "id": "NO_BROAD_UI_POLISH_CLAIM",
+      "reason": "NO_BROAD_UI_POLISH_OR_REDESIGN_IN_SCOPE",
+      "releaseCertificationClaim": false,
+      "status": "LIMITED"
+    },
+    {
+      "id": "NO_NEW_TRUST_SURFACE_CREATION",
+      "reason": "MISSING_SURFACES_ARE_RECORDED_NOT_CREATED",
+      "releaseCertificationClaim": false,
+      "status": "LIMITED"
+    },
+    {
+      "id": "TRUST_SURFACE_ONLY_SCOPE",
+      "reason": "B3C13_DOES_NOT_TOUCH_STORAGE_EXPORT_SECURITY_OR_COMMAND_LAYERS",
+      "releaseCertificationClaim": false,
+      "status": "LIMITED"
+    }
+  ],
+  "missingOrLimitedSurfaceCount": 3,
+  "negativeRows": [
+    {
+      "id": "COLOR_ONLY_NEGATIVE",
+      "rejectsClaim": "COLOR_ONLY_STATUS",
+      "status": "PASS"
+    },
+    {
+      "id": "MISSING_FOCUS_NEGATIVE",
+      "rejectsClaim": "MISSING_FOCUS_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "MISSING_LABEL_NEGATIVE",
+      "rejectsClaim": "MISSING_LABEL_ACCEPTED",
+      "status": "PASS"
+    },
+    {
+      "id": "MISSING_ERROR_TEXT_NEGATIVE",
+      "rejectsClaim": "MISSING_ERROR_TEXT_ACCEPTED",
+      "status": "PASS"
+    }
+  ],
+  "ok": true,
+  "passFailRows": [
+    {
+      "classification": "RUNTIME_BOUND",
+      "id": "RECOVERY_SURFACE",
+      "passed": true
+    },
+    {
+      "classification": "PRESENT_BUT_NOT_RUNTIME_BOUND",
+      "id": "PREFLIGHT_SURFACE",
+      "passed": true
+    },
+    {
+      "classification": "PROVISIONAL",
+      "id": "CONFLICT_REVIEW_SURFACE",
+      "passed": true
+    },
+    {
+      "classification": "PRESENT_BUT_NOT_RUNTIME_BOUND",
+      "id": "PROJECT_DOCTOR_SURFACE",
+      "passed": true
+    },
+    {
+      "id": "KEYBOARD_OPERABLE",
+      "passed": true,
+      "surfaceId": "RECOVERY_SURFACE"
+    },
+    {
+      "id": "FOCUS_VISIBLE",
+      "passed": true,
+      "surfaceId": "RECOVERY_SURFACE"
+    },
+    {
+      "id": "NOT_COLOR_ONLY",
+      "passed": true,
+      "surfaceId": "RECOVERY_SURFACE"
+    },
+    {
+      "id": "ERROR_TEXT_PRESENT",
+      "passed": true,
+      "surfaceId": "RECOVERY_SURFACE"
+    },
+    {
+      "id": "SCREEN_READER_LABEL_PRESENT",
+      "passed": true,
+      "surfaceId": "RECOVERY_SURFACE"
+    },
+    {
+      "id": "COLOR_ONLY_NEGATIVE",
+      "passed": true
+    },
+    {
+      "id": "MISSING_FOCUS_NEGATIVE",
+      "passed": true
+    },
+    {
+      "id": "MISSING_LABEL_NEGATIVE",
+      "passed": true
+    },
+    {
+      "id": "MISSING_ERROR_TEXT_NEGATIVE",
+      "passed": true
+    }
+  ],
+  "proof": {
+    "atLeastOneRuntimeBoundSurface": true,
+    "b3c12InputBound": true,
+    "b3c12LimitedStatusVisible": true,
+    "changedBasenamesHashRecorded": true,
+    "checkRowsComplete": true,
+    "donorIntakeContextOnly": true,
+    "limitRowsComplete": true,
+    "missingSurfacesRecordedNotCreated": true,
+    "negativeRowsComplete": true,
+    "noBaseClassChange": true,
+    "noBroadUiRedesign": true,
+    "noCommandSurfaceChange": true,
+    "nodeBuiltinsOnly": true,
+    "noExportChange": true,
+    "noFullAppA11yClaim": true,
+    "noI18nGlobalGreen": true,
+    "noNewDependency": true,
+    "noNewTrustSurfaceCreation": true,
+    "noNewUiFramework": true,
+    "noPerformanceClaimFix": true,
+    "noReleaseA11yCertification": true,
+    "noReleaseDossierWork": true,
+    "noRendererStructureChange": true,
+    "noSecurityPolicyRewrite": true,
+    "noStorageChange": true,
+    "noXplatCertification": true,
+    "statusArtifactHashRecorded": true,
+    "surfaceRowsComplete": true,
+    "testCommandRowsRecorded": true,
+    "trustSurfaceA11yStatusLimited": true
+  },
+  "provisionalScope": [
+    {
+      "id": "B3C14_RELEASE_DOSSIER_MINIMAL",
+      "status": "HANDOFF_ONLY"
+    }
+  ],
+  "repo": {
+    "headSha": "17d6fa1ddf83301079408899848cd419e0f48cec",
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
+    "statusBasename": "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json",
+    "writtenFrom": "b3c13-trust-surface-accessibility-state.mjs"
+  },
+  "runtime": {
+    "changedBasenames": [
+      "b3c13-trust-surface-accessibility-state.mjs",
+      "b3c13-trust-surface-accessibility.contract.test.js",
+      "B3C13_TRUST_SURFACE_ACCESSIBILITY_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "80b92059b05eef30a97d7de656583b335f9146f7569c1d472485d67611f7fa7b",
+    "commandResults": {
+      "allPassed": null,
+      "commandCount": 10,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c13-trust-surface-accessibility-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c13-trust-surface-accessibility.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c12-i18n-text-anchor-safety.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c11-xplat-normalization-baseline.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c10-capability-tier-report.contract.test.js",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c09-performance-baseline-binding.contract.test.js",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --check",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css src/renderer/editor.js src/io src/export src/main.js src/preload.js",
+          "index": 10,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C13_TRUST_SURFACE_ACCESSIBILITY"
+    },
+    "statusArtifactHash": "4708eae2cf6065d2e42b9c4dd0fc2b5e486e800e882f6294b38b50af35840392"
+  },
+  "runtimeBoundSurfaceCount": 1,
+  "scope": {
+    "baseClassChanged": false,
+    "broadUiRedesign": false,
+    "commandSurfaceChange": false,
+    "contractBaselineOnly": true,
+    "exportChange": false,
+    "fullAppA11yClaim": false,
+    "i18nGlobalGreen": false,
+    "layer": "B3C13_TRUST_SURFACE_ACCESSIBILITY",
+    "newDependency": false,
+    "newTrustSurfaceCreated": false,
+    "newUiFramework": false,
+    "performanceClaimFix": false,
+    "releaseA11yCertificationClaim": false,
+    "releaseDossierWork": false,
+    "rendererStructureChanged": false,
+    "securityPolicyRewrite": false,
+    "storageChange": false,
+    "trustSurfaceAccessibilityOnly": true,
+    "xplatCertification": false
+  },
+  "status": "PASS",
+  "successWording": "PASS_AS_TRUTHFUL_TRUST_SURFACE_ACCESSIBILITY_BASELINE_WITH_LIMITS_NOT_FULL_APP_A11Y",
+  "surfaceRows": [
+    {
+      "basenames": [
+        "index.html",
+        "editor.js",
+        "main.js"
+      ],
+      "classification": "RUNTIME_BOUND",
+      "evidence": {
+        "ariaLabel": true,
+        "ariaModal": true,
+        "commandPath": true,
+        "dialogRole": true,
+        "messageNode": true,
+        "nativeCloseButton": true
+      },
+      "id": "RECOVERY_SURFACE",
+      "runtimeBound": true,
+      "status": "PASS"
+    },
+    {
+      "basenames": [
+        "safe-local-wave-preflight-state.mjs",
+        "SAFE_LOCAL_WAVE_PREFLIGHT_v2.json"
+      ],
+      "classification": "PRESENT_BUT_NOT_RUNTIME_BOUND",
+      "evidence": {
+        "opsPreflightExists": true,
+        "runtimeUiTrustSurface": false
+      },
+      "id": "PREFLIGHT_SURFACE",
+      "runtimeBound": false,
+      "status": "LIMITED"
+    },
+    {
+      "basenames": [
+        "conflictEnvelope.mjs",
+        "index.mjs"
+      ],
+      "classification": "PROVISIONAL",
+      "evidence": {
+        "conflictEnvelopeExists": true,
+        "runtimeUiTrustSurface": false
+      },
+      "id": "CONFLICT_REVIEW_SURFACE",
+      "runtimeBound": false,
+      "status": "LIMITED"
+    },
+    {
+      "basenames": [
+        "doctor.mjs",
+        "package.json"
+      ],
+      "classification": "PRESENT_BUT_NOT_RUNTIME_BOUND",
+      "evidence": {
+        "doctorScriptExists": true,
+        "runtimeUiTrustSurface": false
+      },
+      "id": "PROJECT_DOCTOR_SURFACE",
+      "runtimeBound": false,
+      "status": "LIMITED"
+    }
+  ],
+  "tokenSemantics": "TRUST_SURFACE_A11Y_BASELINE_ONLY_NOT_RELEASE_CERTIFICATION",
+  "trustSurfaceA11yStatus": "LIMITED_PASS",
+  "unsupportedScope": [
+    {
+      "id": "FULL_APP_ACCESSIBILITY",
+      "reason": "NOT_CLAIMED_IN_B3C13"
+    },
+    {
+      "id": "RELEASE_A11Y_CERTIFICATION",
+      "reason": "DEFERRED_OR_OUT_OF_SCOPE_FOR_B3C13"
+    },
+    {
+      "id": "BROAD_UI_POLISH",
+      "reason": "FORBIDDEN_BY_CONTOUR_SCOPE"
+    },
+    {
+      "id": "NEW_TRUST_SURFACE_CREATION",
+      "reason": "MISSING_SURFACES_RECORDED_NOT_CREATED"
+    }
+  ]
+}
