@@ -509,6 +509,7 @@ export async function evaluateB3C15AttestationChainState(input = {}) {
     payloadHash: sha256Text(stableJson(payload)),
     signature: {
       type: 'HMAC_SHA256_EXTERNAL_INPUT_BOUND',
+      binding: 'DYNAMIC_REPO_HEAD_AND_EXTERNAL_INPUT',
       hash: sha256Text(signature),
       rawStored: false,
     },

@@ -293,7 +293,7 @@
     "evidenceHash": "2b12a0acef3adebd453de1946f37305d6872c5b87e94c73a375f09cf2131cbb7",
     "externalImmutableInputHash": "c0ab6d9988758761b299841ecb1cea76c0b82074047247becbe97acf6d40cbe0",
     "headBinding": "REPO_HEAD_AT_EVALUATION",
-    "headSha": "513400a4e34835e242e1cd1ecdab190b8643cde3",
+    "headSha": "48bca9e77b74ee6201766f5c36b2cb9461d3a3e0",
     "proofhookInputHash": "5a82a800a2cbb5cfc69f58186aaf2ee4ffc63aaca4e3311f50916175f8f7d5a6",
     "releaseProfile": {
       "id": "B3C15_MINIMAL_RELEASE_PROFILE_LIMITED",
@@ -308,7 +308,7 @@
     "schemaVersion": 1,
     "tokenResultsHash": "dfd6bd827fa59156ddd880ebc9593e9c2ab7414d0ca10eb7e04cc07329091c1d"
   },
-  "payloadHash": "6be31927c7f80a0524b2c0d55d757e06d8b72c2db431857c3f79220db15d2f05",
+  "payloadHash": "44d13c0b5ec0890d97e87b93bd0ddbc7b919cf877b567a49fd03477aff294c08",
   "proof": {
     "attestationSignatureReleaseTokenBound": true,
     "b3c14AllSevenCarriedForwardLimitRowsPreserved": true,
@@ -348,7 +348,7 @@
   },
   "releaseGreen": false,
   "repo": {
-    "headSha": "513400a4e34835e242e1cd1ecdab190b8643cde3",
+    "headSha": "48bca9e77b74ee6201766f5c36b2cb9461d3a3e0",
     "repoRootBinding": "WORKTREE_INDEPENDENT",
     "statusBasename": "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
     "writtenFrom": "b3c15-attestation-chain-state.mjs"
@@ -431,7 +431,7 @@
       "status": "DECLARED_FOR_EXTERNAL_RUNNER",
       "taskId": "B3C15_ATTESTATION_CHAIN"
     },
-    "statusArtifactHash": "7a3d7023bce8e154f35aa62205dbd53941f5a6a41f2fd979c7643039bbaf67da"
+    "statusArtifactHash": "64eecae8e0f5046426d7faaa6070a4bedcf79e9fbf9b588c67056dd64fbdbf7d"
   },
   "scope": {
     "a11yCertification": false,
@@ -455,7 +455,8 @@
     "xplatCertification": false
   },
   "signature": {
-    "hash": "d0077ca396ecc17a5627cb7f14f7e0637fd082df1b0c960b83920f57c5957cfe",
+    "binding": "DYNAMIC_REPO_HEAD_AND_EXTERNAL_INPUT",
+    "hash": "1680c8b3a8788c6cbacb10f590cd6409b172b0b7eb8df39b2a048f9cf812c0f6",
     "rawStored": false,
     "type": "HMAC_SHA256_EXTERNAL_INPUT_BOUND"
   },
@@ -479,7 +480,7 @@
     },
     {
       "id": "ATTESTATION_SIGNATURE_CREATED",
-      "signatureHash": "d0077ca396ecc17a5627cb7f14f7e0637fd082df1b0c960b83920f57c5957cfe",
+      "signatureHash": "1680c8b3a8788c6cbacb10f590cd6409b172b0b7eb8df39b2a048f9cf812c0f6",
       "signatureType": "HMAC_SHA256_EXTERNAL_INPUT_BOUND",
       "status": "PASS"
     },
@@ -495,7 +496,7 @@
     },
     {
       "headBinding": "REPO_HEAD_AT_EVALUATION",
-      "headSha": "513400a4e34835e242e1cd1ecdab190b8643cde3",
+      "headSha": "48bca9e77b74ee6201766f5c36b2cb9461d3a3e0",
       "id": "ATTESTATION_HEAD_SHA_BOUND_DYNAMICALLY",
       "status": "PASS"
     }
