@@ -207,6 +207,17 @@ test('mode-matrix single authority: claim blocking flag cannot override canonica
   assert.equal(state.claimOverrideViolationCount, 0);
 });
 
+test('mode-matrix single authority: TOKEN_CATALOG_VALID does not conflict with advisory canonical disposition', async () => {
+  const { evaluateModeMatrixSingleAuthorityState } = await loadModeMatrixStateModule();
+  const state = evaluateModeMatrixSingleAuthorityState({ repoRoot: REPO_ROOT });
+
+  const tokenCatalogConflicts = state.details.claimState.claimModeDispositionConflicts.filter(
+    (row) => row.claimId === 'TOKEN_CATALOG_VALID',
+  );
+
+  assert.deepEqual(tokenCatalogConflicts, []);
+});
+
 test('mode-matrix single authority: phase precedence is applied before new V1 verdicts', async () => {
   const { evaluateModeMatrixSingleAuthorityState } = await loadModeMatrixStateModule();
   const state = evaluateModeMatrixSingleAuthorityState({ repoRoot: REPO_ROOT });
