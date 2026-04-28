@@ -1,0 +1,495 @@
+{
+  "artifactId": "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1",
+  "b3c10Limitations": {
+    "fullTierGreen": false,
+    "multiPlatformRealFixtureSetBound": true,
+    "unsupportedScope": [
+      "EXPORT_DOCX_P95_MS",
+      "MULTI_PLATFORM_REAL_FIXTURE_SET",
+      "SCENE_SWITCH_P95_MS"
+    ]
+  },
+  "B3C11_FULL_REAL_PLATFORM_XPLAT_OK": 0,
+  "B3C11_XPLAT_NORMALIZATION_BASELINE_OK": 1,
+  "contourId": "B3C11_XPLAT_NORMALIZATION_BASELINE",
+  "contractFixtureStatus": "PASS",
+  "donorIntake": {
+    "activeCanonOverDonor": true,
+    "archiveRows": [
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 132,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "block3-capability-xplat-i18n-a11y.test.js",
+          "capability-tier.js",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md",
+          "xplat-normalization.js"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 146,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3_V2_DEEP_REWORK_REPORT.md",
+          "BLOCK_3_V3_PERFECTION_REPORT.md",
+          "block3-capability-xplat-i18n-a11y.test.js",
+          "capability-tier.js",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md",
+          "xplat-normalization.js"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 45,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 83,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md"
+        ]
+      }
+    ],
+    "archivesFound": [
+      "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+      "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+      "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+      "writer-editor-longform-v5_1-turnkey-pack-v3.zip"
+    ],
+    "class": "READ_ONLY_CONTEXT_ONLY",
+    "codeImported": false,
+    "completionClaimImported": false,
+    "outputLocation": "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+    "suggestedRows": [
+      "XPLAT_FIXTURE_MATRIX",
+      "PLATFORM_LIMIT_ROWS",
+      "UNSUPPORTED_SCOPE",
+      "PROVISIONAL_SCOPE"
+    ]
+  },
+  "failRows": [],
+  "failSignal": "",
+  "fixtureMatrix": [
+    {
+      "id": "WINDOWS_RESERVED_NAMES",
+      "input": "CON.txt",
+      "output": "_CON.txt",
+      "rule": "PREFIX_WINDOWS_RESERVED_DEVICE_NAME",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "TRAILING_DOT",
+      "input": "chapter.",
+      "output": "chapter",
+      "rule": "STRIP_TRAILING_DOT",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "TRAILING_SPACE",
+      "input": "chapter ",
+      "output": "chapter",
+      "rule": "STRIP_TRAILING_SPACE",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "ILLEGAL_CHARACTER",
+      "input": "draft:one?.md",
+      "output": "draft_one_.md",
+      "rule": "REPLACE_ILLEGAL_FILENAME_CHARS",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "PATH_LENGTH",
+      "input": "260_PLUS_PATH",
+      "output": "LIMITED_BY_PLATFORM_POLICY",
+      "rule": "CLASSIFY_PATH_LENGTH_LIMIT_NOT_RELEASE_SUPPORT",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "FILE_LOCK",
+      "input": "LOCKED_FILE_WRITE_ATTEMPT",
+      "output": "RETRY_OR_STOP_REQUIRED",
+      "rule": "CLASSIFY_FILE_LOCK_AS_PLATFORM_LIMIT",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "CASE_COLLISION",
+      "input": "Scene.md vs scene.md",
+      "output": "CASE_COLLISION_REQUIRES_STOP",
+      "rule": "DETECT_CASE_INSENSITIVE_COLLISION",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "SEPARATOR",
+      "input": "foo\\bar/baz",
+      "output": "foo/bar/baz",
+      "rule": "NORMALIZE_SEPARATORS_TO_PORTABLE_FORM",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "MACOS_NFC",
+      "input": "Café",
+      "output": "Café",
+      "rule": "DECLARE_NFC_CANONICAL_TEXT_NORMALIZATION",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "MACOS_NFD",
+      "input": "Café",
+      "output": "Café",
+      "rule": "NORMALIZE_NFD_TO_NFC_FOR_COMPARISON",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "LINUX_CASE_DIVERGENCE",
+      "input": "Scene.md and scene.md",
+      "output": "CASE_SENSITIVE_PLATFORM_LIMIT",
+      "rule": "CLASSIFY_LINUX_CASE_DIVERGENCE",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "NEWLINE_DRIFT",
+      "input": "a\r\nb\rc",
+      "output": "a\nb\nc",
+      "rule": "NORMALIZE_CRLF_AND_CR_TO_LF",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "LOCALE_SORT",
+      "input": "z,a,ae",
+      "output": "CODEPOINT_STABLE_SORT_ONLY",
+      "rule": "NO_LOCALE_DEPENDENT_SORT_CLAIM",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "TIMESTAMP_PRECISION",
+      "input": "mtime_ns_or_ms",
+      "output": "TIMESTAMP_PRECISION_LIMIT_DECLARED",
+      "rule": "NO_CROSS_FS_PRECISION_CLAIM",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "RENAME_BEHAVIOR",
+      "input": "case_only_rename",
+      "output": "TWO_STEP_RENAME_REQUIRED_ON_CASE_INSENSITIVE_FS",
+      "rule": "CLASSIFY_RENAME_PLATFORM_LIMIT",
+      "source": "NODE_BUILTINS_ONLY",
+      "status": "PASS"
+    }
+  ],
+  "inputRows": [
+    {
+      "basename": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C10_CAPABILITY_TIER_REPORT_OK"
+    }
+  ],
+  "ok": true,
+  "passFailRows": [
+    {
+      "id": "WINDOWS_RESERVED_NAMES",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "TRAILING_DOT",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "TRAILING_SPACE",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "ILLEGAL_CHARACTER",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "PATH_LENGTH",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "FILE_LOCK",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "CASE_COLLISION",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "SEPARATOR",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "MACOS_NFC",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "MACOS_NFD",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "LINUX_CASE_DIVERGENCE",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "NEWLINE_DRIFT",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "LOCALE_SORT",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "TIMESTAMP_PRECISION",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    },
+    {
+      "id": "RENAME_BEHAVIOR",
+      "passed": true,
+      "source": "NODE_BUILTINS_ONLY"
+    }
+  ],
+  "platformLimitRows": [
+    {
+      "platform": "WINDOWS",
+      "reason": "REAL_WINDOWS_PLATFORM_MATRIX_NOT_RUN_IN_B3C11",
+      "releaseSupportClaim": false,
+      "status": "UNTESTED_LIMITED"
+    },
+    {
+      "platform": "MACOS",
+      "reason": "CURRENT_HOST_CAN_RUN_DARWIN_CONTRACTS_BUT_NOT_FULL_MACOS_RELEASE_MATRIX",
+      "releaseSupportClaim": false,
+      "status": "CURRENT_PLATFORM_ONLY_LIMITED"
+    },
+    {
+      "platform": "LINUX",
+      "reason": "REAL_LINUX_PLATFORM_MATRIX_NOT_RUN_IN_B3C11",
+      "releaseSupportClaim": false,
+      "status": "UNTESTED_LIMITED"
+    }
+  ],
+  "proof": {
+    "all15FixtureRowsExist": true,
+    "b3c10InputBound": true,
+    "b3c10MultiPlatformLimitBound": true,
+    "changedBasenamesHashRecorded": true,
+    "contractFixtureStatusSeparated": true,
+    "donorIntakeContextOnly": true,
+    "noA11yTrustSurfaceProof": true,
+    "noAtomicWriteTouch": true,
+    "noB3C09PerfGapFix": true,
+    "nodeBuiltinsOnly": true,
+    "noExportRewrite": true,
+    "noFullXplatReleaseGreen": true,
+    "noI18nGraphemeAnchorProof": true,
+    "noInlineOffsetUnitProof": true,
+    "noNewDependency": true,
+    "noProjectStoreTouch": true,
+    "noReleaseClaim": true,
+    "noSecurityRewrite": true,
+    "noStorageRewrite": true,
+    "noSupportedPlatformReleaseClaim": true,
+    "noUiChange": true,
+    "platformLimitRowsComplete": true,
+    "realPlatformStatusSeparated": true,
+    "statusArtifactHashRecorded": true,
+    "testCommandRowsRecorded": true
+  },
+  "provisionalScope": [
+    {
+      "id": "FULL_REAL_PLATFORM_XPLAT_GREEN",
+      "status": "FORBIDDEN_IN_B3C11"
+    },
+    {
+      "id": "B3C12_GRAPHEME_AND_INLINE_ANCHOR_SAFETY",
+      "status": "DEFERRED_TO_B3C12"
+    }
+  ],
+  "realPlatformStatus": "LIMITED",
+  "repo": {
+    "headSha": "4ddc0bc0645b6dcb03c213f43b8e77e5b40af135",
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
+    "statusBasename": "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json",
+    "writtenFrom": "b3c11-xplat-normalization-baseline-state.mjs"
+  },
+  "runtime": {
+    "changedBasenames": [
+      "b3c11-xplat-normalization-baseline-state.mjs",
+      "b3c11-xplat-normalization-baseline.contract.test.js",
+      "B3C11_XPLAT_NORMALIZATION_BASELINE_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "de7a306bf09ce4a9cb84551f10912967254ba7ee500e641eaf0bbe94e037f0cf",
+    "commandResults": {
+      "allPassed": null,
+      "commandCount": 9,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c11-xplat-normalization-baseline-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c11-xplat-normalization-baseline.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c10-capability-tier-report.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c09-performance-baseline-binding.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --check",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/io src/export src/main.js src/preload.js",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C11_XPLAT_NORMALIZATION_BASELINE"
+    },
+    "statusArtifactHash": "53c017b359ae689b338b501521642e76d77eacbd40ee8474ef07bfaddc201b1b"
+  },
+  "scope": {
+    "a11yTrustSurfaceProof": false,
+    "atomicWriteTouched": false,
+    "b3c09PerfGapFix": false,
+    "contractBaselineOnly": true,
+    "exportPipelineRewritten": false,
+    "fullXplatGreenClaim": false,
+    "i18nGraphemeAnchorProof": false,
+    "inlineOffsetUnitProof": false,
+    "layer": "B3C11_XPLAT_NORMALIZATION_BASELINE",
+    "newDependency": false,
+    "projectStoreTouched": false,
+    "realPlatformCertification": false,
+    "releaseClaim": false,
+    "securityPolicyRewritten": false,
+    "storageFormatChanged": false,
+    "storageMutated": false,
+    "supportedPlatformReleaseClaim": false,
+    "uiTouched": false,
+    "xplatNormalizationOnly": true
+  },
+  "status": "PASS",
+  "successWording": "PASS_AS_TRUTHFUL_BASELINE_WITH_LIMITS_NOT_FULL_XPLAT_RELEASE_GREEN",
+  "testedPlatformSet": {
+    "arch": "arm64",
+    "currentPlatformOnly": true,
+    "node": "v24.12.0",
+    "platform": "darwin",
+    "realPlatformMatrixRun": false,
+    "releaseSupportClaim": false
+  },
+  "tokenSemantics": "BASELINE_REPORT_ONLY_NOT_RELEASE_XPLAT_GREEN",
+  "unsupportedScope": [
+    {
+      "id": "REAL_WINDOWS_PLATFORM_MATRIX",
+      "reason": "NOT_RUN_IN_B3C11"
+    },
+    {
+      "id": "REAL_MACOS_RELEASE_MATRIX",
+      "reason": "CURRENT_HOST_ONLY_NOT_FULL_RELEASE_MATRIX"
+    },
+    {
+      "id": "REAL_LINUX_PLATFORM_MATRIX",
+      "reason": "NOT_RUN_IN_B3C11"
+    },
+    {
+      "id": "B3C10_MULTI_PLATFORM_REAL_FIXTURE_SET",
+      "reason": "BOUND_FROM_B3C10_UNSUPPORTED_SCOPE"
+    }
+  ]
+}
