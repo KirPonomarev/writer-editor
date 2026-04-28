@@ -1,0 +1,104 @@
+{
+  "artifactId": "B2C10_MIGRATION_SAFETY_PROOF_V1",
+  "schemaVersion": 1,
+  "taskId": "B2C10_MIGRATION_SAFETY_PROOF",
+  "status": "PASS",
+  "boundary": {
+    "migrationSafetyId": "ZERO_SILENT_REWRITE_MIGRATION_BOUNDARY",
+    "admittedBoundaryRows": [
+      {
+        "rowId": "DECLARED_MIGRATION_CHAIN_COMPLETE",
+        "proofLevel": "DECLARED_CHAIN_COVERAGE_100"
+      },
+      {
+        "rowId": "DOCUMENTS_TEMP_SWAP_AND_MARKER_ORDERING",
+        "proofLevel": "MARKER_BEFORE_SWAP_AND_BACKUP_RESTORE"
+      },
+      {
+        "rowId": "CRASH_WINDOW_NEGATIVE_GUARDS",
+        "proofLevel": "CRASH_WINDOW_NEGATIVES_AND_SOURCE_HARDENING"
+      }
+    ],
+    "advisoryBoundaryRows": [
+      {
+        "rowId": "UNKNOWN_VERSION_AUTOREWRITE",
+        "proofLevel": "ADVISORY_ONLY_NOT_MACHINE_PROVED"
+      },
+      {
+        "rowId": "RELEASE_XPLAT_MIGRATION_POLICY",
+        "proofLevel": "ADVISORY_ONLY_OUT_OF_SCOPE"
+      }
+    ]
+  },
+  "proofBinding": {
+    "bindingMode": "DETECTOR_IDS_ONLY",
+    "boundaryRows": [
+      {
+        "rowId": "DECLARED_MIGRATION_CHAIN_COMPLETE",
+        "detectorId": "B2C10_DECLARED_MIGRATION_CHAIN_COMPLETE_PROOF_BINDING_V1"
+      },
+      {
+        "rowId": "DOCUMENTS_TEMP_SWAP_AND_MARKER_ORDERING",
+        "detectorId": "B2C10_DOCUMENTS_TEMP_SWAP_AND_MARKER_ORDERING_PROOF_BINDING_V1"
+      },
+      {
+        "rowId": "CRASH_WINDOW_NEGATIVE_GUARDS",
+        "detectorId": "B2C10_CRASH_WINDOW_NEGATIVE_GUARDS_PROOF_BINDING_V1"
+      }
+    ]
+  },
+  "proofSurfaces": {
+    "canonBoundary": {
+      "documents": [
+        "CANON.md",
+        "BIBLE.md",
+        "CONTEXT.md"
+      ],
+      "requirements": [
+        "atomic write required",
+        "recovery required",
+        "provenance for export and migrations"
+      ]
+    },
+    "completenessBoundary": {
+      "state": "migration-completeness-verifier-state.mjs",
+      "contract": "migration-completeness-verifier.contract.test.js",
+      "phaseLock": "phase02-core-lock-state.mjs"
+    },
+    "documentsSwapBoundary": {
+      "module": "fileManager.js",
+      "declaredChainState": "migration-completeness-verifier-state.mjs",
+      "crashWindowState": "p2-ws02-migration-crash-window-reduction-state.mjs",
+      "legacyRepairContract": "migrationHardening.test.js"
+    },
+    "userDataBoundary": {
+      "module": "main.js",
+      "declaredChainState": "migration-completeness-verifier-state.mjs"
+    },
+    "crashWindowBoundary": {
+      "state": "p2-ws02-migration-crash-window-reduction-state.mjs",
+      "contract": "p2-ws02-migration-crash-window-reduction.contract.test.js"
+    }
+  },
+  "advisoryBoundary": {
+    "unknownVersionPromotion": "ADVISORY_ONLY_UNKNOWN_VERSION_AUTOREWRITE_NOT_MACHINE_PROVED",
+    "noSilentRewritePromotion": "ADVISORY_ONLY_OUTSIDE_MACHINE_PROVED_DOCUMENTS_SWAP_ROWS",
+    "releaseXplatPromotion": "ADVISORY_ONLY_RELEASE_AND_XPLAT_POLICY_OUT_OF_SCOPE",
+    "runtimeMigrationPromotion": "ADVISORY_ONLY_RUNTIME_MIGRATION_ORCHESTRATION_OUT_OF_SCOPE",
+    "forbiddenPromotionAreas": [
+      "releaseProtocol",
+      "xplatNormalization",
+      "runtimeMigrationOrchestration",
+      "permissionModel",
+      "queueing",
+      "concurrency",
+      "extraMigrationCluster"
+    ],
+    "notes": [
+      "B2C10 admits only the minimal machine-proved migration safety boundary.",
+      "Declared migration chain completeness is admitted only where repository patterns and verifier state are green.",
+      "No silent rewrite is admitted only for the temp swap and marker ordering rows that are directly machine-checked.",
+      "Unknown version auto-rewrite, release policy, xplat normalization, and runtime migration orchestration remain out of scope."
+    ]
+  }
+}

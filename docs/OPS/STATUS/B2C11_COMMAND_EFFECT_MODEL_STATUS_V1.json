@@ -1,0 +1,33 @@
+{
+  "advisoryTailRows": [],
+  "atomicWriteTouched": false,
+  "B2C11_COMMAND_EFFECT_MODEL_OK": 1,
+  "boundaryRefsOk": true,
+  "bridgeResponseShapeOk": true,
+  "buildPhaseSideEffectFreeOk": true,
+  "commandEffectExportsOk": true,
+  "commandPathChain": [
+    "dispatchMenuCommand",
+    "runCommandThroughBus",
+    "createCommandRunner",
+    "registry.handler",
+    "buildCommandOperationPlan",
+    "persistCommandOperationPlan"
+  ],
+  "directProjectBridgeCallsRemaining": [],
+  "directProjectBridgePayloadCallsRemaining": [],
+  "directWriteMarkersRemaining": [],
+  "failRows": [],
+  "failSignal": "",
+  "ledgerMarkersRemaining": [],
+  "ok": true,
+  "operationPlanDeterministicOk": true,
+  "persistBridgeOnlyWriteOk": true,
+  "persistEffectsOnlyWriteOk": true,
+  "persistUiOnlyWriteOk": true,
+  "recoveryMarkersRemaining": [],
+  "recoveryPackTouched": false,
+  "storageRewriteTouched": false,
+  "transactionProtocolTouched": false,
+  "validatePurityOk": true
+}

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "scene-full",
+  "title": "Full Scene",
+  "order": 4,
+  "blocks": [
+    {
+      "id": "block-full-1",
+      "sceneId": "scene-full",
+      "type": "paragraph",
+      "text": "Full body",
+      "markRefs": [
+        "mark-alpha",
+        "mark-beta"
+      ]
+    }
+  ],
+  "metadata": {
+    "stage": "draft",
+    "notes": {
+      "owner": "alpha"
+    },
+    "tags": [
+      "pov",
+      "outline"
+    ]
+  }
+}

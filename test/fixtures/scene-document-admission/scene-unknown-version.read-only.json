@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 2,
+  "id": "scene-v2",
+  "title": "Future Scene",
+  "order": 0,
+  "blocks": [
+    {
+      "id": "block-v2-1",
+      "sceneId": "scene-v2",
+      "type": "paragraph",
+      "text": "Forward"
+    }
+  ],
+  "metadata": {
+    "source": "future"
+  }
+}
