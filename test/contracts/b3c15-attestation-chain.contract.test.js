@@ -32,6 +32,13 @@ function normalizeDynamicState(state) {
       ...state.repo,
       headSha: 'DYNAMIC_REPO_HEAD',
     },
+    signature: {
+      ...state.signature,
+      hash: 'DYNAMIC_SIGNATURE_HASH',
+    },
+    signatureRows: state.signatureRows.map((row) => (row.id === 'ATTESTATION_SIGNATURE_CREATED'
+      ? { ...row, signatureHash: 'DYNAMIC_SIGNATURE_HASH' }
+      : row)),
   };
 }
 
@@ -59,8 +66,8 @@ test('b3c15 attestation chain: state artifact matches stable executable fields',
   assert.deepEqual(committedState.b3c14InputRow, state.b3c14InputRow);
   assert.deepEqual(committedState.b3c14CarriedForwardLimitRows, state.b3c14CarriedForwardLimitRows);
   assert.deepEqual(normalizedCommitted.payload, normalizedState.payload);
-  assert.deepEqual(committedState.signature, state.signature);
-  assert.deepEqual(committedState.signatureRows, state.signatureRows);
+  assert.deepEqual(normalizedCommitted.signature, normalizedState.signature);
+  assert.deepEqual(normalizedCommitted.signatureRows, normalizedState.signatureRows);
   assert.deepEqual(committedState.verifyRows, state.verifyRows);
   assert.deepEqual(committedState.negativeRows, state.negativeRows);
   assert.deepEqual(committedState.scope, state.scope);
@@ -75,6 +82,7 @@ test('b3c15 attestation chain: state artifact matches stable executable fields',
   assert.equal(state[VERIFY_TOKEN_NAME], 1);
   assert.deepEqual(state.failRows, []);
   assert.equal(state.repo.repoRootBinding, 'WORKTREE_INDEPENDENT');
+  assert.equal(state.signature.binding, 'DYNAMIC_REPO_HEAD_AND_EXTERNAL_INPUT');
 });
 
 test('b3c15 attestation chain: CLI status remains worktree independent outside repo cwd', () => {
@@ -159,6 +167,7 @@ test('b3c15 attestation chain: required signature rows are present and pass', as
   ]);
   assert.equal(state.signatureRows.every((row) => row.status === 'PASS'), true);
   assert.equal(byId.get('ATTESTATION_SIGNATURE_CREATED').signatureType, 'HMAC_SHA256_EXTERNAL_INPUT_BOUND');
+  assert.equal(state.signature.binding, 'DYNAMIC_REPO_HEAD_AND_EXTERNAL_INPUT');
   assert.equal(byId.get('ATTESTATION_HEAD_SHA_BOUND_DYNAMICALLY').headBinding, 'REPO_HEAD_AT_EVALUATION');
   assert.equal(state.proof.signatureRowsComplete, true);
   assert.equal(state.proof.signatureRowsPass, true);
