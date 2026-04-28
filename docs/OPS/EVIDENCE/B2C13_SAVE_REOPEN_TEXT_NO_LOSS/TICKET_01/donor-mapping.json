@@ -1,0 +1,10 @@
+{
+  "acceptedUse": "INPUT_AND_TEST_IDEAS_ONLY",
+  "donor": {
+    "claimBoundary": "ARCHIVE_OVERLAY_READY_FOR_REPO_INTEGRATION_NO_RELEASE_CLAIM",
+    "primaryBasename": "writer-editor-longform-v5_1-block2-trusted-kernel-pack-v1.zip",
+    "primarySha256": "7189d8357f340d89112b02a57eb9315f9af4695ac00e3a2707801e4d97320791"
+  },
+  "mappedContour": "B2C13_SAVE_REOPEN_TEXT_NO_LOSS",
+  "rejectedUse": "BLIND_OVERLAY_OR_RELEASE_CLAIM"
+}
