@@ -1,0 +1,40 @@
+{
+  "boundRefs": {
+    "mainBranch": "main",
+    "mainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+    "rootBranch": "codex/toolbar-baseline-truthful-closeout-001",
+    "rootSha": "24c4e0da33fb6bafa74f5c1c8f7d501fb9fcdcc5"
+  },
+  "generatedAtUtc": "2026-04-28T12:50:23.383Z",
+  "localGitFacts": {
+    "headSha": "0619e80356bce68e2ec20f76c41fa39fc23c76d9",
+    "originMainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+    "originRootSha": "24c4e0da33fb6bafa74f5c1c8f7d501fb9fcdcc5"
+  },
+  "nextContour": "MAIN_SYNC_C02_SELECTED_REPLAY_PLAN_AND_DRY_RUN",
+  "ok": true,
+  "ownerAcceptanceSource": "THREAD_OWNER_DECISION_BOUND_BY_C01_PACKET",
+  "runId": "TZ_MAIN_SYNC_C01_OWNER_METHOD_DECISION_001",
+  "selectedMethod": {
+    "acceptedCost": "NEW_SHA_VALUES_ALLOWED",
+    "classification": "OWNER_APPROVED_METHOD_SELECTION_ONLY",
+    "executionGranted": false,
+    "methodId": "CHERRY_PICK_REPLAY_TO_MAIN",
+    "nextContour": "MAIN_SYNC_C02_SELECTED_REPLAY_PLAN_AND_DRY_RUN",
+    "rationale": "Main remains the formal repo truth surface while required root content is replayed into main through an approved PR path."
+  },
+  "sourceFacts": {
+    "admissionPromotionDecision": "STOP",
+    "admissionRuntimeWritesAdmitted": false,
+    "c01BoundRootSha": "0b3cc7f91400df650dcb875453dda4b389bbeb3e",
+    "c01ExcludedWindowCount": 0,
+    "c01IncludedWindowCount": 612,
+    "c02FailReason": "BLOCKING_UNRELATED_HISTORIES",
+    "c02MergeabilityClass": "BLOCKING_UNRELATED_HISTORIES"
+  },
+  "ticketId": "TZ_MAIN_SYNC_C01_OWNER_METHOD_DECISION_001",
+  "truthSurface": {
+    "formalRepoTruth": "MAIN_AFTER_MERGE_GATE_AND_POST_MERGE_RECONFIRM",
+    "rootRole": "SOURCE_OF_REQUIRED_CONTENT_ONLY"
+  }
+}

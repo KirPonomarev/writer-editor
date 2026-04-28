@@ -1,0 +1,17 @@
+[
+  {
+    "classification": "FORBIDDEN",
+    "methodId": "REBASE_REWRITE",
+    "reason": "Silent rebase and history rewrite remain forbidden by canon and delivery policy."
+  },
+  {
+    "classification": "NOT_SELECTED",
+    "methodId": "ALLOW_UNRELATED_HISTORIES_MERGE",
+    "reason": "The selected path preserves main as formal truth without introducing a merge exception."
+  },
+  {
+    "classification": "NOT_SELECTED",
+    "methodId": "DEFAULT_BRANCH_SWITCH",
+    "reason": "The selected path does not change the active truth surface away from main."
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "riskRows": [
+    {
+      "detail": "Replay into main will produce new commit SHAs and must carry explicit mapping and audit in later contours.",
+      "riskId": "REPLAY_CREATES_NEW_SHA_VALUES",
+      "severity": "MEDIUM"
+    },
+    {
+      "detail": "C02 must keep replay scope bound to the included set only and must not widen to carryforward history by default.",
+      "riskId": "SCOPE_EXPANSION_VIA_REPLAY",
+      "severity": "HIGH"
+    },
+    {
+      "detail": "Any attempt to treat root as formal truth before main promotion would recreate split-brain.",
+      "riskId": "FORMAL_TRUTH_DRIFT",
+      "severity": "HIGH"
+    }
+  ],
+  "rollbackRows": [
+    {
+      "action": "Stop and preserve this contour as selection-only with no new execution authority.",
+      "rollbackId": "KEEP_METHOD_SELECTION_ONLY",
+      "trigger": "Any later contour attempts replay execution without the approved C02 replay plan packet."
+    },
+    {
+      "action": "Reject the contour and keep main as the sole formal truth surface.",
+      "rollbackId": "REJECT_TRUTH_SURFACE_CHANGE",
+      "trigger": "Any later contour implies default branch switch or root truth promotion."
+    }
+  ]
+}
