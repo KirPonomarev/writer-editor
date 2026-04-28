@@ -1,0 +1,9 @@
+{
+  "contractTest": "test/contracts/main-sync-c01-ahead-inventory.contract.test.js",
+  "reportScript": "scripts/ops/main-sync-c01-ahead-inventory-report.mjs",
+  "scope": "Bound remote-root ahead inventory and promotion scope classification snapshot for C02 inputs only",
+  "stateScript": "scripts/ops/main-sync-c01-ahead-inventory-state.mjs",
+  "status": "ACTIVE",
+  "token": "MAIN_SYNC_C01_AHEAD_INVENTORY_OK",
+  "version": 1
+}

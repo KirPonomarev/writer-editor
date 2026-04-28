@@ -1,0 +1,35 @@
+{
+  "boundRefs": {
+    "mainBranch": "main",
+    "mainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+    "rangeSpec": "0d6955c1bd8ccbae425510b0c07e2b0edf445130..0b3cc7f91400df650dcb875453dda4b389bbeb3e",
+    "rootBranch": "codex/toolbar-baseline-truthful-closeout-001",
+    "rootSha": "0b3cc7f91400df650dcb875453dda4b389bbeb3e"
+  },
+  "checks": {
+    "b2cChainIdentifiedOk": true,
+    "countsOk": true,
+    "divergentHistoryObserved": true,
+    "explicitExcludedSetOk": true,
+    "firstParentCoverageOk": true,
+    "firstParentWindowPresent": true,
+    "mainShaReadable": true,
+    "rootDescendsFromMain": false,
+    "rootShaReadable": true
+  },
+  "counts": {
+    "canonicalB2CFirstParentCount": 13,
+    "carryforwardFirstParentCount": 596,
+    "firstParentAheadCount": 612,
+    "mergeAheadReachableCount": 531,
+    "nonMergeAheadReachableCount": 1205,
+    "preB2CRebindFirstParentCount": 3,
+    "totalAheadReachableCount": 1736
+  },
+  "generatedAtUtc": "2026-04-28T11:51:44.753Z",
+  "ok": true,
+  "repeatabilityStable": true,
+  "runId": "TZ_MAIN_SYNC_C01_AHEAD_INVENTORY_001",
+  "ticketId": "TZ_MAIN_SYNC_C01_AHEAD_INVENTORY_001",
+  "token": "MAIN_SYNC_C01_AHEAD_INVENTORY_OK"
+}
