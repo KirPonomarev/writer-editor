@@ -1,0 +1,453 @@
+{
+  "artifactId": "B3C08_SUPPORT_BUNDLE_PRIVACY_STATUS_V1",
+  "B3C08_SUPPORT_BUNDLE_PRIVACY_OK": 1,
+  "contourId": "B3C08_SUPPORT_BUNDLE_PRIVACY",
+  "failRows": [],
+  "failSignal": "",
+  "monitor": {
+    "failSignal": "E_B3C08_SUPPORT_BUNDLE_PRIVACY_NOT_OK",
+    "helperRole": "PROOF_HELPER_NOT_PRODUCT_SUPPORT_BUNDLE"
+  },
+  "ok": true,
+  "proof": {
+    "b3c05InputBound": true,
+    "b3c06InputBound": true,
+    "b3c07InputBound": true,
+    "defaultBundleFieldAllowlistBound": true,
+    "forbiddenStringScanBound": true,
+    "noAttestationClaim": true,
+    "noDocOnlyEvidence": true,
+    "noExportPipelineRewrite": true,
+    "noMainPreloadIpcRewrite": true,
+    "noNetworkDenyMonitorRewrite": true,
+    "noNetworkUploadBound": true,
+    "noNewDependency": true,
+    "noPerformanceBaselineClaim": true,
+    "noPermissionManifestRewrite": true,
+    "noProductSupportBundleClaim": true,
+    "noReleaseClaim": true,
+    "noReleaseDossierClaim": true,
+    "noRuntimeSecurityRewrite": true,
+    "noStorageFormatRewrite": true,
+    "noStorageMutation": true,
+    "noUiChange": true,
+    "privatePathNormalizationCheckBound": true,
+    "redactionOutputSnapshotBound": true,
+    "worktreeIndependentStatus": true
+  },
+  "repo": {
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
+    "statusBasename": "B3C08_SUPPORT_BUNDLE_PRIVACY_STATUS_V1.json",
+    "writtenFrom": "b3c08-support-bundle-privacy-state.mjs"
+  },
+  "runtime": {
+    "changedBasenames": [
+      "support-bundle-privacy.js",
+      "b3c08-support-bundle-privacy-state.mjs",
+      "b3c08-support-bundle-privacy.contract.test.js",
+      "B3C08_SUPPORT_BUNDLE_PRIVACY_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "d2792e5e2f9c72a631311b81997be21492f8628cb78e9805b3cd56265036dfaa",
+    "commandResults": {
+      "allPassed": null,
+      "commandCount": 10,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c08-support-bundle-privacy-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c08-support-bundle-privacy.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c07-security-runtime-boundary.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c06-no-network-writing-path.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c05-permission-scope-enforced.contract.test.js",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/path-boundary-guard.contract.test.js",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/io src/export src/main.js src/preload.js",
+          "index": 10,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C08_SUPPORT_BUNDLE_PRIVACY"
+    },
+    "forbiddenStringCount": 5,
+    "forbiddenStringsPresentInSnapshot": [],
+    "passFailRows": [
+      {
+        "id": "B3C05_INPUT_BOUND",
+        "passed": true
+      },
+      {
+        "id": "B3C06_INPUT_BOUND",
+        "passed": true
+      },
+      {
+        "id": "B3C07_INPUT_BOUND",
+        "passed": true
+      },
+      {
+        "id": "SAFE_DIAGNOSTIC_BUNDLE_ACCEPTED",
+        "passed": true,
+        "reason": "SAFE_DEFAULT_ACCEPTED",
+        "route": "support.safe-default"
+      },
+      {
+        "id": "BODY_LEAK_DENIED",
+        "passed": true,
+        "reason": "FORBIDDEN_STRING_ABSENT",
+        "route": "support.body-leak"
+      },
+      {
+        "id": "SCENE_TITLE_LEAK_DENIED",
+        "passed": true,
+        "reason": "FORBIDDEN_STRING_ABSENT",
+        "route": "support.scene-title-leak"
+      },
+      {
+        "id": "PRIVATE_PATH_LEAK_DENIED",
+        "passed": true,
+        "reason": "FORBIDDEN_STRING_ABSENT",
+        "route": "support.private-path-leak"
+      },
+      {
+        "id": "ASSET_BINARY_LEAK_DENIED",
+        "passed": true,
+        "reason": "FORBIDDEN_STRING_ABSENT",
+        "route": "support.asset-binary-leak"
+      },
+      {
+        "id": "UNREDACTED_ERROR_DENIED",
+        "passed": true,
+        "reason": "FORBIDDEN_STRING_ABSENT",
+        "route": "support.unredacted-error-leak"
+      },
+      {
+        "id": "NETWORK_UPLOAD_ABSENT",
+        "passed": true,
+        "reason": "B3C06_NETWORK_DENY_MATRIX_BOUND",
+        "route": "support.network-upload"
+      },
+      {
+        "id": "RELEASE_DOSSIER_CLAIM_ABSENT",
+        "passed": true,
+        "reason": "NO_RELEASE_DOSSIER_CLAIM",
+        "route": "support.release-dossier-claim"
+      },
+      {
+        "id": "ATTESTATION_CLAIM_ABSENT",
+        "passed": true,
+        "reason": "NO_ATTESTATION_CLAIM",
+        "route": "support.attestation-claim"
+      },
+      {
+        "id": "REDACTION_APPLIED",
+        "passed": true,
+        "reason": "REDACTION_TOKEN_PRESENT",
+        "route": "support.redaction"
+      },
+      {
+        "id": "OPT_IN_REQUIRED_FOR_EXPANDED_FIELDS",
+        "passed": true,
+        "reason": "EXPANDED_FIELDS_DISABLED_BY_DEFAULT",
+        "route": "support.opt-in"
+      },
+      {
+        "id": "EVIDENCE_NOT_TRUTH_BOUND",
+        "passed": true,
+        "reason": "DIAGNOSTIC_EVIDENCE_NOT_MANUSCRIPT_TRUTH",
+        "route": "support.evidence-not-truth"
+      },
+      {
+        "id": "REDACTION_OUTPUT_SNAPSHOT_BOUND",
+        "passed": true,
+        "reason": "SNAPSHOT_BOUND",
+        "route": "support.snapshot"
+      },
+      {
+        "id": "FORBIDDEN_STRING_SCAN_BOUND",
+        "passed": true,
+        "reason": "NO_FORBIDDEN_STRINGS",
+        "route": "support.forbidden-scan"
+      },
+      {
+        "id": "PRIVATE_PATH_NORMALIZATION_CHECK_BOUND",
+        "passed": true,
+        "reason": "PRIVATE_PATH_REDACTED_AND_BOUNDARY_REJECTED",
+        "route": "support.private-path-normalization"
+      },
+      {
+        "id": "DEFAULT_BUNDLE_FIELD_ALLOWLIST_BOUND",
+        "passed": true,
+        "reason": "FIELD_ALLOWLIST_OK",
+        "route": "support.field-allowlist"
+      },
+      {
+        "id": "DEFAULT_BUNDLE_HAS_NO_FORBIDDEN_FIELD_NAMES",
+        "passed": true,
+        "reason": "FIELD_ALLOWLIST_OK",
+        "route": "support.field-allowlist"
+      }
+    ],
+    "privacyRows": [
+      {
+        "denied": false,
+        "failSignal": "",
+        "id": "SAFE_DIAGNOSTIC_BUNDLE_ACCEPTED",
+        "passed": true,
+        "reason": "SAFE_DEFAULT_ACCEPTED",
+        "route": "support.safe-default"
+      },
+      {
+        "denied": true,
+        "failSignal": "",
+        "id": "BODY_LEAK_DENIED",
+        "passed": true,
+        "reason": "FORBIDDEN_STRING_ABSENT",
+        "route": "support.body-leak"
+      },
+      {
+        "denied": true,
+        "failSignal": "",
+        "id": "SCENE_TITLE_LEAK_DENIED",
+        "passed": true,
+        "reason": "FORBIDDEN_STRING_ABSENT",
+        "route": "support.scene-title-leak"
+      },
+      {
+        "denied": true,
+        "failSignal": "",
+        "id": "PRIVATE_PATH_LEAK_DENIED",
+        "passed": true,
+        "reason": "FORBIDDEN_STRING_ABSENT",
+        "route": "support.private-path-leak"
+      },
+      {
+        "denied": true,
+        "failSignal": "",
+        "id": "ASSET_BINARY_LEAK_DENIED",
+        "passed": true,
+        "reason": "FORBIDDEN_STRING_ABSENT",
+        "route": "support.asset-binary-leak"
+      },
+      {
+        "denied": true,
+        "failSignal": "",
+        "id": "UNREDACTED_ERROR_DENIED",
+        "passed": true,
+        "reason": "FORBIDDEN_STRING_ABSENT",
+        "route": "support.unredacted-error-leak"
+      },
+      {
+        "denied": true,
+        "details": {
+          "observedRoutes": [
+            "analytics",
+            "cloud.sync",
+            "fetch",
+            "http.get",
+            "http.request",
+            "https.get",
+            "https.request",
+            "remote.image",
+            "update.check",
+            "websocket",
+            "xml-http-request"
+          ],
+          "requiredRoutes": [
+            "fetch",
+            "websocket",
+            "xml-http-request",
+            "http.request",
+            "https.request",
+            "http.get",
+            "https.get",
+            "remote.image",
+            "update.check",
+            "analytics",
+            "cloud.sync"
+          ]
+        },
+        "failSignal": "",
+        "id": "NETWORK_UPLOAD_ABSENT",
+        "passed": true,
+        "reason": "B3C06_NETWORK_DENY_MATRIX_BOUND",
+        "route": "support.network-upload"
+      },
+      {
+        "denied": true,
+        "failSignal": "",
+        "id": "RELEASE_DOSSIER_CLAIM_ABSENT",
+        "passed": true,
+        "reason": "NO_RELEASE_DOSSIER_CLAIM",
+        "route": "support.release-dossier-claim"
+      },
+      {
+        "denied": true,
+        "failSignal": "",
+        "id": "ATTESTATION_CLAIM_ABSENT",
+        "passed": true,
+        "reason": "NO_ATTESTATION_CLAIM",
+        "route": "support.attestation-claim"
+      },
+      {
+        "denied": false,
+        "failSignal": "",
+        "id": "REDACTION_APPLIED",
+        "passed": true,
+        "reason": "REDACTION_TOKEN_PRESENT",
+        "route": "support.redaction"
+      },
+      {
+        "denied": false,
+        "failSignal": "",
+        "id": "OPT_IN_REQUIRED_FOR_EXPANDED_FIELDS",
+        "passed": true,
+        "reason": "EXPANDED_FIELDS_DISABLED_BY_DEFAULT",
+        "route": "support.opt-in"
+      },
+      {
+        "denied": false,
+        "failSignal": "",
+        "id": "EVIDENCE_NOT_TRUTH_BOUND",
+        "passed": true,
+        "reason": "DIAGNOSTIC_EVIDENCE_NOT_MANUSCRIPT_TRUTH",
+        "route": "support.evidence-not-truth"
+      },
+      {
+        "denied": false,
+        "failSignal": "",
+        "id": "REDACTION_OUTPUT_SNAPSHOT_BOUND",
+        "passed": true,
+        "reason": "SNAPSHOT_BOUND",
+        "route": "support.snapshot"
+      },
+      {
+        "denied": false,
+        "failSignal": "",
+        "id": "FORBIDDEN_STRING_SCAN_BOUND",
+        "passed": true,
+        "reason": "NO_FORBIDDEN_STRINGS",
+        "route": "support.forbidden-scan"
+      },
+      {
+        "denied": false,
+        "failSignal": "",
+        "id": "PRIVATE_PATH_NORMALIZATION_CHECK_BOUND",
+        "passed": true,
+        "reason": "PRIVATE_PATH_REDACTED_AND_BOUNDARY_REJECTED",
+        "route": "support.private-path-normalization"
+      },
+      {
+        "denied": false,
+        "details": {
+          "topLevelKeys": [
+            "bundleId",
+            "createdAtPolicy",
+            "diagnosticCodes",
+            "eventCounts",
+            "privacy",
+            "redactedErrors",
+            "runtime",
+            "schemaVersion"
+          ]
+        },
+        "failSignal": "",
+        "id": "DEFAULT_BUNDLE_FIELD_ALLOWLIST_BOUND",
+        "passed": true,
+        "reason": "FIELD_ALLOWLIST_OK",
+        "route": "support.field-allowlist"
+      },
+      {
+        "denied": false,
+        "details": {
+          "forbiddenFieldNames": [
+            "manuscriptBody",
+            "sceneTitle",
+            "sceneTitles",
+            "privatePath",
+            "privatePaths",
+            "assetBinary",
+            "assetBinaries",
+            "releaseDossier",
+            "attestation"
+          ]
+        },
+        "failSignal": "",
+        "id": "DEFAULT_BUNDLE_HAS_NO_FORBIDDEN_FIELD_NAMES",
+        "passed": true,
+        "reason": "FIELD_ALLOWLIST_OK",
+        "route": "support.field-allowlist"
+      }
+    ],
+    "privatePathNormalization": {
+      "acceptedAsRelativePublicPath": false,
+      "basename": "private-draft.yalken",
+      "boundaryFailReason": "PATH_ABSOLUTE_FORBIDDEN",
+      "boundaryFailSignal": "E_PATH_BOUNDARY_VIOLATION",
+      "redactedPath": "<private-path:private-draft.yalken>",
+      "sourceValueStored": false
+    },
+    "redactionOutputSnapshot": "{\n  \"bundleId\": \"B3C08_DEFAULT_SUPPORT_BUNDLE_PRIVACY_PROOF\",\n  \"createdAtPolicy\": \"DECLARED_VOLATILE_OMITTED_FROM_PRIVACY_SCAN\",\n  \"diagnosticCodes\": [\n    \"E_RECOVERY_IO_NOT_OK\",\n    \"E_PATH_BOUNDARY_VIOLATION\"\n  ],\n  \"eventCounts\": {\n    \"errors\": 1,\n    \"warnings\": 2\n  },\n  \"privacy\": {\n    \"defaultBundleOnly\": true,\n    \"evidenceNotManuscriptTruth\": true,\n    \"expandedBundleOptInRequired\": true,\n    \"helperRole\": \"PROOF_HELPER_NOT_PRODUCT_SUPPORT_BUNDLE\",\n    \"noAttestationClaim\": true,\n    \"noNetworkUpload\": true,\n    \"noReleaseDossierClaim\": true,\n    \"proofHelperOnly\": true\n  },\n  \"redactedErrors\": [\n    {\n      \"message\": \"Failed while opening [REDACTED_BY_B3C08]: [REDACTED_BY_B3C08]\",\n      \"pathRedaction\": \"<private-path:private-draft.yalken>\"\n    }\n  ],\n  \"runtime\": {\n    \"offline\": true,\n    \"platform\": \"test-only\"\n  },\n  \"schemaVersion\": 1\n}"
+  },
+  "scope": {
+    "attestationClaim": false,
+    "cspChanged": false,
+    "docxDependencyChanged": false,
+    "exportPipelineRewritten": false,
+    "helperRole": "PROOF_HELPER_NOT_PRODUCT_SUPPORT_BUNDLE",
+    "ipcChanged": false,
+    "layer": "B3C08_SUPPORT_BUNDLE_PRIVACY",
+    "navigationChanged": false,
+    "networkRuntimeMonitorRewritten": false,
+    "performanceBaselineClaim": false,
+    "permissionScopeRewritten": false,
+    "productSupportBundleFeatureClaim": false,
+    "proofHelperOnly": true,
+    "releaseClaim": false,
+    "releaseDossierClaim": false,
+    "storageFormatChanged": false,
+    "storageMutated": false,
+    "supportBundlePrivacyOnly": true,
+    "supportBundleUiCreated": false,
+    "uiTouched": false
+  },
+  "status": "PASS"
+}
