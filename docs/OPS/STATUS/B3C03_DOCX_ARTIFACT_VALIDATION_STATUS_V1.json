@@ -1,0 +1,175 @@
+{
+  "artifactId": "B3C03_DOCX_ARTIFACT_VALIDATION_STATUS_V1",
+  "B3C03_DOCX_ARTIFACT_VALIDATION_OK": 1,
+  "contourId": "B3C03_DOCX_ARTIFACT_VALIDATION",
+  "failRows": [],
+  "failSignal": "",
+  "ok": true,
+  "proof": {
+    "b3c02InputBound": true,
+    "blockOrderBound": true,
+    "contentExtractabilityBound": true,
+    "corruptPackageNegativeBound": true,
+    "emptyDocumentNegativeBound": true,
+    "excerptOrderBound": true,
+    "fileOnlyNegativeBound": true,
+    "minimalInlineMarkBound": true,
+    "noDocxExporterRewrite": true,
+    "noLayoutFidelityClaim": true,
+    "noNewDependency": true,
+    "noReleaseClaim": true,
+    "noStorageRewrite": true,
+    "noStyleFidelityClaim": true,
+    "noUiChange": true,
+    "orderNegativeBound": true,
+    "packageValidityBound": true,
+    "worktreeIndependentStatus": true
+  },
+  "repo": {
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
+    "statusBasename": "B3C03_DOCX_ARTIFACT_VALIDATION_STATUS_V1.json",
+    "writtenFrom": "b3c03-docx-artifact-validation-state.mjs"
+  },
+  "runtime": {
+    "changedBasenames": [
+      "docxArtifactValidator.js",
+      "b3c03-docx-artifact-validation-state.mjs",
+      "b3c03-docx-artifact-validation.contract.test.js",
+      "B3C03_DOCX_ARTIFACT_VALIDATION_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "d143b97b2115251d443163630d58095053b84a57c52dbdd03ca91a25247e7c4f",
+    "commandResults": {
+      "allPassed": true,
+      "commandCount": 11,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c03-docx-artifact-validation-state.mjs --write --json",
+          "index": 1,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b3c03-docx-artifact-validation.contract.test.js",
+          "index": 2,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b3c02-compile-ir-baseline.contract.test.js",
+          "index": 3,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b3c01-command-kernel-scope-lock.contract.test.js",
+          "index": 4,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/contracts/b2c20-block-2-exit-dossier.contract.test.js",
+          "index": 5,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/unit/docx-min-export-handler.test.js",
+          "index": 6,
+          "result": "PASS"
+        },
+        {
+          "command": "node --test test/unit/docx-min-builder.test.js",
+          "index": 7,
+          "result": "PASS"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 8,
+          "result": "PASS"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 9,
+          "result": "PASS"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+          "index": 10,
+          "result": "PASS"
+        },
+        {
+          "command": "git diff --name-only -- src/io src/main.js src/preload.js",
+          "index": 11,
+          "result": "PASS"
+        }
+      ],
+      "noPending": true,
+      "status": "EXECUTED_AND_RECORDED",
+      "taskId": "B3C03_DOCX_ARTIFACT_VALIDATION"
+    },
+    "passFailRows": [
+      {
+        "id": "DOCX_PACKAGE_VALIDITY",
+        "passed": true
+      },
+      {
+        "id": "DOCX_CONTENT_EXTRACTABILITY",
+        "passed": true
+      },
+      {
+        "id": "DOCX_EXCERPT_ORDER",
+        "passed": true
+      },
+      {
+        "id": "DOCX_BLOCK_ORDER",
+        "passed": true
+      },
+      {
+        "id": "DOCX_MINIMAL_INLINE_MARK",
+        "passed": true
+      },
+      {
+        "id": "DOCX_FILE_ONLY_NEGATIVE",
+        "passed": true
+      },
+      {
+        "id": "DOCX_CORRUPT_NEGATIVE",
+        "passed": true
+      },
+      {
+        "id": "DOCX_EMPTY_NEGATIVE",
+        "passed": true
+      },
+      {
+        "id": "DOCX_ORDER_NEGATIVE",
+        "passed": true
+      },
+      {
+        "id": "B3C02_INPUT_BOUND",
+        "passed": true
+      }
+    ],
+    "validationArtifact": {
+      "compileIRHash": "cc33c791f5d3e0c30f9ae56d087eca93a936df5038b0c91c3ab087f2a38e519f",
+      "entryNames": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "word/document.xml"
+      ],
+      "noLayoutFidelityClaim": true,
+      "noStyleFidelityClaim": true,
+      "paragraphCount": 4,
+      "rawArtifactHash": "34c0f32d3a0546ca40ee83d849cab8f43ef034568addab1bc2b43eaf6e2d0299",
+      "validationScope": "CONTENT_ORDER_AND_MINIMAL_MARKS_ONLY"
+    }
+  },
+  "scope": {
+    "compileIRRemainsDerivedInput": true,
+    "deterministicExportModeStarted": false,
+    "docxDependencyChanged": false,
+    "docxExporterRewritten": false,
+    "layer": "B3C03_DOCX_ARTIFACT_VALIDATION",
+    "layoutFidelityClaim": false,
+    "releaseClaim": false,
+    "releaseDossierStarted": false,
+    "storageFormatChanged": false,
+    "styleFidelityClaim": false,
+    "uiTouched": false
+  },
+  "status": "PASS"
+}
