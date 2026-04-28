@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "scene-minimal",
+  "title": "Minimal Scene",
+  "order": 0,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Alpha"
+    }
+  ]
+}

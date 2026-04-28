@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "scene-invalid-block",
+  "title": "Invalid Block",
+  "order": 0,
+  "blocks": [
+    {
+      "type": "paragraph",
+      "text": "Alpha",
+      "marks": []
+    }
+  ]
+}
