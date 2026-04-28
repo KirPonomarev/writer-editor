@@ -28,6 +28,10 @@ export type {
   SceneDocumentContract,
   SceneDocumentSchemaVersion,
 } from "./scene-document.contract";
+export type {
+  SceneBlockContract,
+  SceneBlockTypeContract,
+} from "./scene-block.contract";
 
 export type {
   RuntimeExecutionContract,

@@ -1,4 +1,9 @@
 import { createHash } from 'node:crypto';
+import {
+  SCENE_BLOCK_ALLOWED_FIELDS,
+  admitSceneBlock,
+  buildSceneBlockHashInput,
+} from './sceneBlockAdmission.mjs';
 
 export const SCENE_DOCUMENT_SCHEMA_VERSION = 1;
 export const SCENE_DOCUMENT_OP = 'scene.document.admission';
@@ -10,10 +15,7 @@ export const SCENE_DOCUMENT_ALLOWED_FIELDS = Object.freeze([
   'blocks',
   'metadata',
 ]);
-export const SCENE_DOCUMENT_BLOCK_ALLOWED_FIELDS = Object.freeze([
-  'type',
-  'text',
-]);
+export const SCENE_DOCUMENT_BLOCK_ALLOWED_FIELDS = SCENE_BLOCK_ALLOWED_FIELDS;
 export const SCENE_DOCUMENT_HASH_FIELDS = Object.freeze([
   'schemaVersion',
   'id',
@@ -72,18 +74,6 @@ function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-function normalizeText(value) {
-  return typeof value === 'string' ? value : '';
-}
-
-function buildBlockHashInput(block) {
-  if (!isPlainObject(block)) return null;
-  return {
-    type: normalizeString(block.type),
-    text: normalizeText(block.text),
-  };
-}
-
 export function buildSceneDocumentHashInput(source = {}) {
   const raw = isPlainObject(source) ? source : {};
   return {
@@ -92,7 +82,7 @@ export function buildSceneDocumentHashInput(source = {}) {
     title: normalizeString(raw.title),
     order: Number.isInteger(raw.order) ? raw.order : null,
     blocks: Array.isArray(raw.blocks)
-      ? raw.blocks.map((block) => buildBlockHashInput(block))
+      ? raw.blocks.map((block) => buildSceneBlockHashInput(block))
       : null,
   };
 }
@@ -144,64 +134,6 @@ function normalizeMetadata(source) {
   }
   const cloned = cloneJson(source);
   return isPlainObject(cloned) ? cloned : {};
-}
-
-function normalizeSceneBlock(source, index) {
-  if (!isPlainObject(source)) {
-    return {
-      ok: false,
-      error: makeTypedError(
-        'E_SCENE_DOCUMENT_BLOCK_INVALID',
-        'SCENE_DOCUMENT_BLOCK_INVALID',
-        { index },
-      ),
-    };
-  }
-
-  const unknownFields = Object.keys(source)
-    .filter((fieldName) => !SCENE_DOCUMENT_BLOCK_ALLOWED_FIELDS.includes(fieldName))
-    .sort();
-  if (unknownFields.length > 0) {
-    return {
-      ok: false,
-      error: makeTypedError(
-        'E_SCENE_DOCUMENT_BLOCK_UNKNOWN_FIELD',
-        'SCENE_DOCUMENT_BLOCK_UNKNOWN_FIELD',
-        { index, unknownFields },
-      ),
-    };
-  }
-
-  const type = normalizeString(source.type);
-  if (!type) {
-    return {
-      ok: false,
-      error: makeTypedError(
-        'E_SCENE_DOCUMENT_BLOCK_TYPE_REQUIRED',
-        'SCENE_DOCUMENT_BLOCK_TYPE_REQUIRED',
-        { index },
-      ),
-    };
-  }
-
-  if (typeof source.text !== 'string') {
-    return {
-      ok: false,
-      error: makeTypedError(
-        'E_SCENE_DOCUMENT_BLOCK_TEXT_INVALID',
-        'SCENE_DOCUMENT_BLOCK_TEXT_INVALID',
-        { index },
-      ),
-    };
-  }
-
-  return {
-    ok: true,
-    block: {
-      type,
-      text: source.text,
-    },
-  };
 }
 
 export function admitSceneDocument(source = {}) {
@@ -287,7 +219,10 @@ export function admitSceneDocument(source = {}) {
 
   const blocks = [];
   for (let index = 0; index < source.blocks.length; index += 1) {
-    const normalizedBlock = normalizeSceneBlock(source.blocks[index], index);
+    const normalizedBlock = admitSceneBlock(source.blocks[index], {
+      index,
+      sceneId: id,
+    });
     if (!normalizedBlock.ok) {
       return {
         ...rejectSceneDocument(

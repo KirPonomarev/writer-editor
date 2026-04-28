@@ -72,7 +72,10 @@ test('scene document admission: invalid fixtures are rejected with focused field
     ['scene-invalid-schema-version.invalid.json', 'E_SCENE_DOCUMENT_SCHEMA_VERSION_INVALID'],
     ['scene-invalid-metadata.invalid.json', 'E_SCENE_DOCUMENT_METADATA_INVALID'],
     ['scene-unknown-field.invalid.json', 'E_SCENE_DOCUMENT_UNKNOWN_FIELD'],
-    ['scene-invalid-block-field.invalid.json', 'E_SCENE_DOCUMENT_BLOCK_UNKNOWN_FIELD'],
+    ['scene-invalid-block-field.invalid.json', 'E_SCENE_BLOCK_UNKNOWN_FIELD'],
+    ['scene-invalid-block-parent.invalid.json', 'E_SCENE_BLOCK_PARENT_SCENE_MISMATCH'],
+    ['scene-invalid-block-text.invalid.json', 'E_SCENE_BLOCK_TEXT_INVALID'],
+    ['scene-invalid-block-type.invalid.json', 'E_SCENE_BLOCK_TYPE_INVALID'],
   ]);
 
   for (const [basename, code] of expectations.entries()) {
@@ -116,8 +119,11 @@ test('scene document admission: scene id title order and block list feed the can
     order: 0,
     blocks: [
       {
+        id: 'block-minimal-1',
+        sceneId: 'scene-minimal',
         type: 'paragraph',
         text: 'Alpha',
+        markRefs: [],
       },
     ],
   });
@@ -142,6 +148,47 @@ test('scene document admission: acceptance hash stays stable when only excluded 
   assert.equal(second.ok, true);
   assert.equal(first.normalizedHashSha256, second.normalizedHashSha256);
   assert.deepEqual(first.hashInput, second.hashInput);
+});
+
+test('scene document admission: block order participates in canonical hash stability', async () => {
+  const admission = await loadSceneAdmission();
+  const first = readJsonFixture('scene-multi-block.valid.json');
+  const second = readJsonFixture('scene-multi-block.valid.json');
+  second.blocks = [second.blocks[1], second.blocks[0], second.blocks[2]];
+
+  const firstResult = admission.admitSceneDocument(first);
+  const secondResult = admission.admitSceneDocument(second);
+
+  assert.equal(firstResult.ok, true);
+  assert.equal(secondResult.ok, true);
+  assert.notEqual(firstResult.normalizedHashSha256, secondResult.normalizedHashSha256);
+});
+
+test('scene document admission: block split changes canonical hash deterministically', async () => {
+  const admission = await loadSceneAdmission();
+  const first = readJsonFixture('scene-minimal.valid.json');
+  const second = readJsonFixture('scene-minimal.valid.json');
+  second.blocks = [
+    {
+      id: 'block-minimal-1a',
+      sceneId: 'scene-minimal',
+      type: 'paragraph',
+      text: 'Al',
+    },
+    {
+      id: 'block-minimal-1b',
+      sceneId: 'scene-minimal',
+      type: 'paragraph',
+      text: 'pha',
+    },
+  ];
+
+  const firstResult = admission.admitSceneDocument(first);
+  const secondResult = admission.admitSceneDocument(second);
+
+  assert.equal(firstResult.ok, true);
+  assert.equal(secondResult.ok, true);
+  assert.notEqual(firstResult.normalizedHashSha256, secondResult.normalizedHashSha256);
 });
 
 test('scene document admission: rejection hash stays stable when only unknown-field values change', async () => {
