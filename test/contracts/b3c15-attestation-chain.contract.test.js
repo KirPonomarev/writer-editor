@@ -36,9 +36,15 @@ function normalizeDynamicState(state) {
       ...state.signature,
       hash: 'DYNAMIC_SIGNATURE_HASH',
     },
-    signatureRows: state.signatureRows.map((row) => (row.id === 'ATTESTATION_SIGNATURE_CREATED'
-      ? { ...row, signatureHash: 'DYNAMIC_SIGNATURE_HASH' }
-      : row)),
+    signatureRows: state.signatureRows.map((row) => {
+      if (row.id === 'ATTESTATION_SIGNATURE_CREATED') {
+        return { ...row, signatureHash: 'DYNAMIC_SIGNATURE_HASH' };
+      }
+      if (row.id === 'ATTESTATION_HEAD_SHA_BOUND_DYNAMICALLY') {
+        return { ...row, headSha: 'DYNAMIC_REPO_HEAD' };
+      }
+      return row;
+    }),
   };
 }
 
