@@ -1,0 +1,374 @@
+{
+  "artifactId": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1",
+  "B3C10_CAPABILITY_TIER_REPORT_OK": 1,
+  "B3C10_FULL_TIER_GREEN_OK": 0,
+  "contourId": "B3C10_CAPABILITY_TIER_REPORT",
+  "donorIntake": {
+    "activeCanonOverDonor": true,
+    "archiveRows": [
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 132,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "ADMISSION_REPORT.md",
+          "atomic.js",
+          "attestation.js",
+          "binding-integrity.test.js",
+          "binding.mjs",
+          "BLOCK_2",
+          "BLOCK_2_EXIT_REPORT.md",
+          "BLOCK_2_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "block2-baseline-node-test-output.tap",
+          "block2-contracts-deep.test.js",
+          "block2-dossier.js",
+          "block2-exit-dossier.json"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 146,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "a11y-trust.js",
+          "ADMISSION_REPORT.md",
+          "atomic.js",
+          "attestation.js",
+          "binding-integrity.test.js",
+          "binding.mjs",
+          "BLOCK_2",
+          "BLOCK_2_EXIT_REPORT.md",
+          "BLOCK_2_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3_V2_DEEP_REWORK_REPORT.md",
+          "BLOCK_3_V3_PERFECTION_REPORT.md",
+          "block2-baseline-node-test-output.tap",
+          "block2-contracts-deep.test.js"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 45,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "perf-smoke.js",
+          "perf-smoke.test.js",
+          "perf-state.mjs",
+          "release-dossier.js",
+          "release-dossier.mjs",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "entryCount": 83,
+        "found": true,
+        "listed": true,
+        "relevantBasenames": [
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "kernel-perf-smoke.json",
+          "perf-smoke.js",
+          "perf-smoke.test.js",
+          "perf-state.mjs",
+          "release-dossier.js",
+          "release-dossier.mjs",
+          "VALIDATION_REPORT.md"
+        ]
+      }
+    ],
+    "archivesFound": [
+      "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+      "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+      "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+      "writer-editor-longform-v5_1-turnkey-pack-v3.zip"
+    ],
+    "class": "READ_ONLY_CONTEXT_ONLY",
+    "codeImported": false,
+    "completionClaimImported": false,
+    "outputLocation": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+    "suggestedRows": [
+      "CAPABILITY_TIER_REPORT",
+      "SUPPORTED_SCOPE",
+      "UNSUPPORTED_SCOPE",
+      "PROVISIONAL_SCOPE",
+      "DOWNGRADE_REASON"
+    ]
+  },
+  "exitRule": "RELEASE_PROMISE_MATCHES_TESTED_TIER",
+  "failRows": [],
+  "failSignal": "",
+  "inputRows": [
+    {
+      "basename": "B3C02_COMPILE_IR_BASELINE_STATUS_V1.json",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C02_COMPILE_IR_BASELINE_OK"
+    },
+    {
+      "basename": "B3C03_DOCX_ARTIFACT_VALIDATION_STATUS_V1.json",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C03_DOCX_ARTIFACT_VALIDATION_OK"
+    },
+    {
+      "basename": "B3C04_DETERMINISTIC_EXPORT_MODE_STATUS_V1.json",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C04_DETERMINISTIC_EXPORT_MODE_OK"
+    },
+    {
+      "basename": "B3C05_PERMISSION_SCOPE_ENFORCED_STATUS_V1.json",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C05_PERMISSION_SCOPE_ENFORCED_OK"
+    },
+    {
+      "basename": "B3C06_NO_NETWORK_WRITING_PATH_STATUS_V1.json",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C06_NO_NETWORK_WRITING_PATH_OK"
+    },
+    {
+      "basename": "B3C07_SECURITY_RUNTIME_BOUNDARY_STATUS_V1.json",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C07_SECURITY_RUNTIME_BOUNDARY_OK"
+    },
+    {
+      "basename": "B3C08_SUPPORT_BUNDLE_PRIVACY_STATUS_V1.json",
+      "passed": true,
+      "status": "PASS",
+      "tokenName": "B3C08_SUPPORT_BUNDLE_PRIVACY_OK"
+    },
+    {
+      "basename": "B3C09_PERFORMANCE_BASELINE_BINDING_STATUS_V1.json",
+      "passed": true,
+      "status": "PROVISIONAL_GAP",
+      "tokenName": "B3C09_PERFORMANCE_BASELINE_BINDING_OK"
+    }
+  ],
+  "ok": true,
+  "proof": {
+    "b3c09ProvisionalGapBound": true,
+    "changedBasenamesHashRecorded": true,
+    "donorIntakeContextOnly": true,
+    "inputStatusesBound": true,
+    "noAttestationClaim": true,
+    "noB3C02ToB3C09Mutation": true,
+    "noExportRewrite": true,
+    "noFullTierGreen": true,
+    "noMvpReleaseClaim": true,
+    "noNewDependency": true,
+    "noReleaseClaim": true,
+    "noSecurityRewrite": true,
+    "noStorageChange": true,
+    "noSupplyChainClaim": true,
+    "noUiChange": true,
+    "statusArtifactHashRecorded": true,
+    "testCommandRowsRecorded": true,
+    "unsupportedRowsBound": true
+  },
+  "provisionalScope": [
+    {
+      "bound": true,
+      "effect": "FULL_TIER_GREEN_FORBIDDEN",
+      "id": "B3C09_PROVISIONAL_PERF_GAP"
+    },
+    {
+      "bound": true,
+      "id": "NEXT_REQUIRED_MEASUREMENTS",
+      "rows": [
+        "SCENE_SWITCH_P95_MS",
+        "EXPORT_DOCX_P95_MS"
+      ]
+    }
+  ],
+  "repo": {
+    "headSha": "b43febe75bc402f1d0f984874a6380751cfbaacb",
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
+    "statusBasename": "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json",
+    "writtenFrom": "b3c10-capability-tier-report-state.mjs"
+  },
+  "reportClass": "TRUTHFUL_CAPABILITY_REPORT_NOT_PERF_GREEN_NOT_RELEASE_GREEN",
+  "runtime": {
+    "changedBasenames": [
+      "b3c10-capability-tier-report-state.mjs",
+      "b3c10-capability-tier-report.contract.test.js",
+      "B3C10_CAPABILITY_TIER_REPORT_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "d6ec8c5f68e82940cf0fa9cf97e878028d7d2db93a8b24fdf1b0ccd419d19eb3",
+    "commandResults": {
+      "allPassed": null,
+      "commandCount": 9,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c10-capability-tier-report-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c10-capability-tier-report.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c09-performance-baseline-binding.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c08-support-bundle-privacy.contract.test.js test/contracts/b3c07-security-runtime-boundary.contract.test.js test/contracts/b3c06-no-network-writing-path.contract.test.js test/contracts/b3c05-permission-scope-enforced.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --check",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/io src/export src/main.js src/preload.js",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C10_CAPABILITY_TIER_REPORT"
+    },
+    "statusArtifactHash": "59d1e1fb760c5be753c1c7e2f9ba89d60d717aa5b86d197eee16705ca7737b33"
+  },
+  "scope": {
+    "attestationClaim": false,
+    "capabilityReportOnly": true,
+    "exportPipelineRewritten": false,
+    "fullTierGreenClaim": false,
+    "layer": "B3C10_CAPABILITY_TIER_REPORT",
+    "mvpReleaseClaim": false,
+    "newDependency": false,
+    "perfMeasurementImplemented": false,
+    "privacyRuntimeRewritten": false,
+    "productRuntimeRewritten": false,
+    "releaseClaim": false,
+    "reportClassificationOnly": true,
+    "securityRuntimeBoundaryRewritten": false,
+    "storageFormatChanged": false,
+    "storageMutated": false,
+    "supplyChainClaim": false,
+    "uiTouched": false
+  },
+  "status": "PASS",
+  "testedPlatformSet": {
+    "arch": "arm64",
+    "node": "v24.12.0",
+    "platform": "darwin",
+    "scope": "CURRENT_SINGLE_DESKTOP_PLATFORM_ONLY",
+    "widerPlatformClaim": false
+  },
+  "testedScope": {
+    "measuredRows": [
+      {
+        "id": "OPEN_P95_MS",
+        "source": "perf-lite.openP95Ms",
+        "threshold": 1000,
+        "value": 2.818
+      },
+      {
+        "id": "SAVE_P95_MS",
+        "source": "perf-lite.saveP95Ms",
+        "threshold": 40,
+        "value": 0.419
+      },
+      {
+        "id": "INPUT_P95_MS",
+        "source": "perf-lite.typeBurstP95Ms",
+        "threshold": 16,
+        "value": 0.612
+      },
+      {
+        "id": "MEMORY_PEAK_MB",
+        "source": "process.memoryUsage.rss",
+        "threshold": 160,
+        "value": 47.25
+      }
+    ],
+    "reportDoesNotMutateInputs": true,
+    "source": "B3C02_TO_B3C09_MACHINE_ARTIFACTS_ONLY"
+  },
+  "tierRows": [
+    {
+      "downgradeReason": "B3C09_PROVISIONAL_PERF_GAP_BLOCKS_FULL_TIER_GREEN",
+      "fullTierGreen": false,
+      "id": "TIER_0_SINGLE_SCENE",
+      "releasePromiseAllowed": false,
+      "status": "PROVISIONAL",
+      "testedRows": [
+        "OPEN_P95_MS",
+        "SAVE_P95_MS",
+        "INPUT_P95_MS",
+        "MEMORY_PEAK_MB"
+      ],
+      "unsupportedRows": [
+        "EXPORT_DOCX_P95_MS",
+        "SCENE_SWITCH_P95_MS"
+      ]
+    }
+  ],
+  "unsupportedScope": [
+    {
+      "id": "SCENE_SWITCH_P95_MS",
+      "reason": "EXISTING_PERF_RUN_FIXTURE_HAS_SCENE_SWITCH_PROBE_BUT_RUNNER_DOES_NOT_MEASURE_SCENE_SWITCH_P95",
+      "sourceContour": "B3C09_PERFORMANCE_BASELINE_BINDING"
+    },
+    {
+      "id": "EXPORT_DOCX_P95_MS",
+      "reason": "EXISTING_PERF_FIXTURE_PROBES_EXPORT_COMMAND_UNWIRED_ERROR_ONLY_NOT_DOCX_GENERATION_P95",
+      "sourceContour": "B3C09_PERFORMANCE_BASELINE_BINDING"
+    },
+    {
+      "id": "MULTI_PLATFORM_REAL_FIXTURE_SET",
+      "reason": "B3C10_CURRENT_REPORT_BINDS_CURRENT_SINGLE_DESKTOP_PLATFORM_ONLY",
+      "sourceContour": "B3C10_CAPABILITY_TIER_REPORT"
+    }
+  ]
+}
