@@ -1,0 +1,24 @@
+{
+  "acceptedUse": "KILLPOINT_SEQUENCE_DISPOSITION_CODES_RECOVERY_BOUNDARY_AND_NEGATIVE_CASE_SHAPE_ONLY",
+  "consultedEntries": [
+    "migration-policy.js",
+    "recovery-pack.js",
+    "atomic-recovery-killpoint.test.js"
+  ],
+  "donor": {
+    "acceptedUse": "KILLPOINT_SEQUENCE_DISPOSITION_CODES_RECOVERY_BOUNDARY_AND_NEGATIVE_CASE_SHAPE_ONLY",
+    "consultedEntries": [
+      "migration-policy.js",
+      "recovery-pack.js",
+      "atomic-recovery-killpoint.test.js"
+    ],
+    "primaryBasename": "writer-editor-longform-v5_1-block2-trusted-kernel-pack-v1.zip",
+    "primarySha256": "7189d8357f340d89112b02a57eb9315f9af4695ac00e3a2707801e4d97320791",
+    "rejectedUse": "NO_RUNTIME_IMPORT_NO_REAL_MIGRATION_NO_USER_DATA_ROLLBACK_NO_BACKUP_ROTATION_RUNTIME_NO_SCOPE_REOPEN_NO_BLOCK2_EXIT"
+  },
+  "mappedContour": "B2C17_MIGRATION_KILLPOINT_PROOF",
+  "referenceArchivesConsulted": [
+    "writer-editor-longform-v5_1-block2-trusted-kernel-pack-v1.zip"
+  ],
+  "rejectedUse": "NO_RUNTIME_IMPORT_NO_REAL_MIGRATION_NO_USER_DATA_ROLLBACK_NO_BACKUP_ROTATION_RUNTIME_NO_SCOPE_REOPEN_NO_BLOCK2_EXIT"
+}

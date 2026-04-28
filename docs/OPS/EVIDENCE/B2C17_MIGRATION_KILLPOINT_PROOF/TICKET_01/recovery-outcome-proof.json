@@ -1,0 +1,163 @@
+{
+  "proof": {
+    "everyKillpointEndsRecoverableOrExplicitStopOk": true,
+    "mixedOldNewDataRejectedOk": true,
+    "noDocOnlyEvidenceOk": true,
+    "realMigrationExecutionRejectedOk": true,
+    "rollbackDecisionAvailableOrStopExplicitOk": true,
+    "sceneTextLossRejectedOk": true
+  },
+  "runtime": {
+    "negativeCases": [
+      {
+        "caseId": "NEGATIVE_MIXED_OLD_NEW_DATA_REJECTED",
+        "observedCode": "E_B2C17_KILLPOINT_AFTER_PARTIAL_RENAME_UNSAFE",
+        "observedDisposition": "STOP_MIXED_OLD_NEW_DATA_REJECTED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_SCENE_TEXT_LOSS_REJECTED",
+        "observedCode": "E_B2C17_KILLPOINT_AFTER_FIRST_DATA_WRITE_UNSAFE",
+        "observedDisposition": "STOP_SCENE_TEXT_LOSS_REJECTED",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_REAL_MIGRATION_EXECUTION_REJECTED_OUT_OF_SCOPE",
+        "observedCode": "E_B2C17_ACTUAL_MIGRATION_EXECUTION_OUT_OF_SCOPE",
+        "observedDisposition": "REJECTED_OUT_OF_SCOPE",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_BACKUP_ROTATION_RUNTIME_REJECTED_OUT_OF_SCOPE",
+        "observedCode": "E_B2C17_BACKUP_ROTATION_RUNTIME_OUT_OF_SCOPE",
+        "observedDisposition": "REJECTED_OUT_OF_SCOPE",
+        "ok": true
+      },
+      {
+        "caseId": "NEGATIVE_DOC_ONLY_EVIDENCE_REJECTED",
+        "observedCode": "E_B2C17_DOC_ONLY_EVIDENCE_REJECTED",
+        "observedDisposition": "REJECTED_DOC_ONLY_EVIDENCE",
+        "ok": true
+      }
+    ],
+    "positiveCases": [
+      {
+        "caseId": "POSITIVE_REQUIRED_KILLPOINT_SET_COMPLETE",
+        "observedKillpointCount": 10,
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_AFTER_INTENT_OLD_STATE_REOPEN_ONLY",
+        "observedDisposition": "RECOVER_OLD_STATE_ONLY",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_AFTER_RECOVERY_PACK_HAS_RECOVERY_BOUNDARY",
+        "observedDisposition": "STOP_RECOVERY_PACK_READY",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_AFTER_MANIFEST_RENAME_STOPS_FOR_LEDGER",
+        "observedDisposition": "STOP_LEDGER_PENDING_EXPLICIT",
+        "ok": true
+      },
+      {
+        "caseId": "POSITIVE_AFTER_LEDGER_STILL_HAS_NO_RUNTIME_ADMISSION",
+        "observedDisposition": "STOP_SCOPE_ONLY_NO_RUNTIME_MIGRATION_ADMISSION",
+        "ok": true
+      }
+    ],
+    "recoveryOutcomes": [
+      {
+        "expectedDisposition": "RECOVER_OLD_STATE_ONLY",
+        "explicitStop": false,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_INTENT_UNSAFE",
+        "killpointId": "AFTER_INTENT",
+        "recoverable": true,
+        "recoveryAction": "OPEN_OLD_STATE_ONLY",
+        "rollbackDecision": "ABORT_PENDING_INTENT_KEEP_OLD_STATE"
+      },
+      {
+        "expectedDisposition": "STOP_BACKUP_READY_OLD_STATE_CANONICAL",
+        "explicitStop": false,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_BACKUP_UNSAFE",
+        "killpointId": "AFTER_BACKUP",
+        "recoverable": true,
+        "recoveryAction": "RESTORE_FROM_BACKUP_IF_RUNTIME_WAS_TOUCHED",
+        "rollbackDecision": "BACKUP_READY_RECOVERY_ALLOWED"
+      },
+      {
+        "expectedDisposition": "STOP_RECOVERY_PACK_READY",
+        "explicitStop": false,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_RECOVERY_PACK_UNSAFE",
+        "killpointId": "AFTER_RECOVERY_PACK",
+        "recoverable": true,
+        "recoveryAction": "USE_RECOVERY_PACK_OR_BACKUP",
+        "rollbackDecision": "RECOVERY_PACK_READY_ROLLBACK_ALLOWED"
+      },
+      {
+        "expectedDisposition": "STOP_SCENE_TEXT_LOSS_REJECTED",
+        "explicitStop": false,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_FIRST_DATA_WRITE_UNSAFE",
+        "killpointId": "AFTER_FIRST_DATA_WRITE",
+        "recoverable": true,
+        "recoveryAction": "RESTORE_FROM_BACKUP_OR_RECOVERY_PACK",
+        "rollbackDecision": "ROLLBACK_REQUIRED_BEFORE_ANY_REOPEN"
+      },
+      {
+        "expectedDisposition": "STOP_MIXED_OLD_NEW_DATA_REJECTED",
+        "explicitStop": false,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_PARTIAL_RENAME_UNSAFE",
+        "killpointId": "AFTER_PARTIAL_RENAME",
+        "recoverable": true,
+        "recoveryAction": "ROLLBACK_TO_BACKUP_REQUIRED",
+        "rollbackDecision": "ROLLBACK_TO_BACKUP_MANDATORY"
+      },
+      {
+        "expectedDisposition": "STOP_MIXED_DATA_BEFORE_MANIFEST_REJECTED",
+        "explicitStop": false,
+        "failCode": "E_B2C17_KILLPOINT_BEFORE_MANIFEST_WRITE_UNSAFE",
+        "killpointId": "BEFORE_MANIFEST_WRITE",
+        "recoverable": true,
+        "recoveryAction": "RESTORE_BACKUP_THEN_REBUILD_MANIFEST",
+        "rollbackDecision": "ROLLBACK_PLAN_REQUIRED"
+      },
+      {
+        "expectedDisposition": "STOP_LEDGER_PENDING_EXPLICIT",
+        "explicitStop": true,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_MANIFEST_RENAME_UNSAFE",
+        "killpointId": "AFTER_MANIFEST_RENAME",
+        "recoverable": true,
+        "recoveryAction": "ROLLBACK_TO_BACKUP_OR_KEEP_STOPPED",
+        "rollbackDecision": ""
+      },
+      {
+        "expectedDisposition": "STOP_BEFORE_LEDGER_EXPLICIT",
+        "explicitStop": true,
+        "failCode": "E_B2C17_KILLPOINT_BEFORE_LEDGER_UNSAFE",
+        "killpointId": "BEFORE_LEDGER",
+        "recoverable": true,
+        "recoveryAction": "KEEP_STOPPED_UNTIL_LEDGER_DECISION",
+        "rollbackDecision": ""
+      },
+      {
+        "expectedDisposition": "STOP_SCOPE_ONLY_NO_RUNTIME_MIGRATION_ADMISSION",
+        "explicitStop": true,
+        "failCode": "E_B2C17_KILLPOINT_AFTER_LEDGER_UNSAFE",
+        "killpointId": "AFTER_LEDGER",
+        "recoverable": false,
+        "recoveryAction": "NO_RUNTIME_CLAIM_ALLOWED",
+        "rollbackDecision": ""
+      },
+      {
+        "expectedDisposition": "STOP_BACKUP_ROTATION_RUNTIME_REJECTED",
+        "explicitStop": true,
+        "failCode": "E_B2C17_KILLPOINT_BACKUP_ROTATION_FAILURE_UNSAFE",
+        "killpointId": "BACKUP_ROTATION_FAILURE",
+        "recoverable": false,
+        "recoveryAction": "NO_ROTATION_RUNTIME_ALLOWED",
+        "rollbackDecision": ""
+      }
+    ]
+  }
+}
