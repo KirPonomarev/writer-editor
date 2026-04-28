@@ -1,0 +1,169 @@
+{
+  "artifactId": "B3C04_DETERMINISTIC_EXPORT_MODE_STATUS_V1",
+  "B3C04_DETERMINISTIC_EXPORT_MODE_OK": 1,
+  "contourId": "B3C04_DETERMINISTIC_EXPORT_MODE",
+  "failRows": [],
+  "failSignal": "",
+  "ok": true,
+  "proof": {
+    "b3c03InputBound": true,
+    "changedOrderNegativeBound": true,
+    "changedTextNegativeBound": true,
+    "declaredVolatileFieldsBound": true,
+    "noDocxExporterRewrite": true,
+    "noFullDocxNormalizerFramework": true,
+    "noLayoutFidelityClaim": true,
+    "noNewDependency": true,
+    "noReleaseClaim": true,
+    "noReleaseGatePromotion": true,
+    "noStorageRewrite": true,
+    "noStyleFidelityClaim": true,
+    "noUiChange": true,
+    "unchangedIRStableHashBound": true,
+    "volatileMetadataIgnored": true,
+    "worktreeIndependentStatus": true
+  },
+  "repo": {
+    "repoRootBinding": "WORKTREE_INDEPENDENT",
+    "statusBasename": "B3C04_DETERMINISTIC_EXPORT_MODE_STATUS_V1.json",
+    "writtenFrom": "b3c04-deterministic-export-mode-state.mjs"
+  },
+  "runtime": {
+    "changedBasenames": [
+      "deterministic-export-hash.js",
+      "b3c04-deterministic-export-mode-state.mjs",
+      "b3c04-deterministic-export-mode.contract.test.js",
+      "B3C04_DETERMINISTIC_EXPORT_MODE_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "72b9e2f0d9464dee2a502acf99281a1d99324dfeeb451c85d4b5b91a4e3751fa",
+    "commandResults": {
+      "allPassed": null,
+      "commandCount": 10,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c04-deterministic-export-mode-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c04-deterministic-export-mode.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c03-docx-artifact-validation.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c02-compile-ir-baseline.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/unit/docx-min-builder.test.js",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/unit/docx-min-export-handler.test.js",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/io src/main.js src/preload.js",
+          "index": 10,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C04_DETERMINISTIC_EXPORT_MODE"
+    },
+    "hashArtifact": {
+      "changedOrderHash": "c47c7cd6beed6736c427b0a490e169376d8c59fb052d431b55cd9d92f08441c6",
+      "changedTextHash": "067b68963c5a502e089054eec3acdb241cae3078cac02959a8bd1cc22468d1db",
+      "compileIRHash": "b4d586b56fe5cf79b37bce956f50f2c7c11c2694b81a918a334e646e9d310a6f",
+      "declaredVolatileFields": [
+        "docProps.core.creator",
+        "docProps.core.lastModifiedBy",
+        "docProps.core.created",
+        "docProps.core.modified",
+        "xml.attribute.pkg:id",
+        "xml.attribute.packageId",
+        "xml.attribute.documentId",
+        "xml.attribute.docId"
+      ],
+      "normalizationScope": "DOCX_STORED_ZIP_ENTRIES_AND_DECLARED_VOLATILE_XML_FIELDS_ONLY",
+      "normalizedEntryCount": 4,
+      "unchangedHashA": "57c235ba4ec14b6125c474367fa9e527be854cd17772a81080cc3d15ce1f0a2c",
+      "unchangedHashB": "57c235ba4ec14b6125c474367fa9e527be854cd17772a81080cc3d15ce1f0a2c"
+    },
+    "passFailRows": [
+      {
+        "id": "B3C03_INPUT_BOUND",
+        "passed": true
+      },
+      {
+        "id": "UNCHANGED_IR_STABLE_NORMALIZED_HASH",
+        "passed": true
+      },
+      {
+        "id": "CHANGED_TEXT_CHANGES_NORMALIZED_HASH",
+        "passed": true
+      },
+      {
+        "id": "CHANGED_ORDER_CHANGES_NORMALIZED_HASH",
+        "passed": true
+      },
+      {
+        "id": "VOLATILE_METADATA_IGNORED",
+        "passed": true
+      },
+      {
+        "id": "DECLARED_VOLATILE_FIELDS_BOUND",
+        "passed": true
+      },
+      {
+        "id": "NO_RELEASE_GATE_PROMOTION",
+        "passed": true
+      },
+      {
+        "id": "NO_STYLE_OR_LAYOUT_FIDELITY_CLAIM",
+        "passed": true
+      }
+    ]
+  },
+  "scope": {
+    "compileIRRemainsDerivedInput": true,
+    "docxDependencyChanged": false,
+    "docxExporterRewritten": false,
+    "fullDocxNormalizerFramework": false,
+    "helperRole": "PROOF_HELPER_NOT_RELEASE_GATE",
+    "layer": "B3C04_DETERMINISTIC_EXPORT_MODE",
+    "layoutFidelityClaim": false,
+    "releaseClaim": false,
+    "releaseDossierStarted": false,
+    "releaseGatePromotion": false,
+    "storageFormatChanged": false,
+    "styleFidelityClaim": false,
+    "uiTouched": false
+  },
+  "status": "PASS"
+}
