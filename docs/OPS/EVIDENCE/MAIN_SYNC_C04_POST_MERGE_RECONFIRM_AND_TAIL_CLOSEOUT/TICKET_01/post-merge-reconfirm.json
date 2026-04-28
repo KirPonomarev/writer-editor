@@ -1,0 +1,27 @@
+{
+  "checks": {
+    "headDescendsFromMain": true,
+    "mergeCommitReachableFromMain": true,
+    "originMainBound": true,
+    "promotionBranchDeleted": true,
+    "requiredContentPresent": true
+  },
+  "generatedAtUtc": "2026-04-28T13:48:45.444Z",
+  "missingBasenames": [],
+  "ok": true,
+  "requiredBasenames": [
+    "B2C05_FORMAL_KERNEL_MINIMAL_STATUS_V1.json",
+    "B2C06_PROJECT_LIFECYCLE_STATE_MACHINE_V1.json",
+    "B2C07_TRANSACTION_BOUNDARY_MINIMAL_V1.json",
+    "B2C08_RECOVERY_BOUNDARY_MINIMAL_V1.json",
+    "B2C09_COMMAND_SURFACE_KERNEL_V1.json",
+    "B2C10_MIGRATION_SAFETY_PROOF_V1.json",
+    "B2C10_COMMAND_BYPASS_NEGATIVE_MATRIX_STATUS_V1.json",
+    "B2C11_COMMAND_EFFECT_MODEL_STATUS_V1.json",
+    "B2C12_PERSIST_EFFECTS_ATOMIC_WRITE_STATUS_V1.json",
+    "scene-document.contract.ts",
+    "scene-block.contract.ts",
+    "scene-inline-range.contract.ts",
+    "flowSceneBatchAtomic.js"
+  ]
+}

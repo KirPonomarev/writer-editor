@@ -1,0 +1,14 @@
+{
+  "contourId": "MAIN_SYNC_C04_POST_MERGE_RECONFIRM_AND_TAIL_CLOSEOUT",
+  "finalMainSha": "34773f5d84323bdd58399faa3284ca932f9f08cf",
+  "formalRepoTruth": "MAIN_AFTER_MERGE_GATE_AND_POST_MERGE_RECONFIRM",
+  "nextStep": "STOP_AND_RETURN_TO_BLOCK2",
+  "promotionMergeSha": "34773f5d84323bdd58399faa3284ca932f9f08cf",
+  "promotionPrNumber": 829,
+  "recordedAtUtc": "2026-04-28T13:48:45.444Z",
+  "status": "ACTIVE",
+  "syncTailClosed": true,
+  "taskBasename": "MAIN_SYNC_C04_POST_MERGE_RECONFIRM_AND_TAIL_CLOSEOUT",
+  "token": "MAIN_SYNC_C04_POST_MERGE_RECONFIRM_AND_TAIL_CLOSEOUT_OK",
+  "version": 1
+}
