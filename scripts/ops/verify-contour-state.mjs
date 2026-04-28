@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const TOKEN_NAME = 'GOVERNANCE_SINGLE_VERIFY_CONTOUR_ENFORCED_OK';
+const TOKEN_NAME = 'SINGLE_VERIFY_CONTOUR_ENFORCED_OK';
 const FAIL_CODE = 'E_DOUBLE_VERIFY_CONTOUR_DETECTED';
 const DEFAULT_OPS_DIR = 'scripts/ops';
 const DEFAULT_CLAIMS_PATH = 'docs/OPS/CLAIMS/CRITICAL_CLAIM_MATRIX.json';

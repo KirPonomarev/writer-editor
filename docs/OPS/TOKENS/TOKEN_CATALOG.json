@@ -576,7 +576,7 @@
     },
     {
       "tokenId": "SINGLE_VERIFY_CONTOUR_ENFORCED_OK",
-      "promotionState": "target",
+      "promotionState": "existing",
       "gateTier": "release",
       "requiredWhen": null,
       "proofHook": "node scripts/ops/verify-contour-state.mjs --json",
