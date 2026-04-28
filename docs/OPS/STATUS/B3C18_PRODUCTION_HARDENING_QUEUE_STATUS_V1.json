@@ -1,0 +1,731 @@
+{
+  "artifactId": "B3C18_PRODUCTION_HARDENING_QUEUE_STATUS_V1",
+  "b3c17InputRow": {
+    "activeCanonNotPromoted": true,
+    "basename": "B3C17_FUTURE_LANES_NONBLOCKING_STATUS_V1.json",
+    "futureLanesParked": true,
+    "passed": true,
+    "releaseGreen": 0,
+    "requiredTokenSetNotExpanded": true,
+    "token": 1
+  },
+  "B3C18_PRODUCTION_HARDENING_QUEUE_OK": 1,
+  "B3C18_RELEASE_GREEN_OK": 0,
+  "contourId": "B3C18_PRODUCTION_HARDENING_QUEUE",
+  "donorIntake": {
+    "activeCanonOverDonor": true,
+    "archiveRows": [
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v1.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 132,
+        "found": true,
+        "hardeningCompletionClaimImported": false,
+        "listed": true,
+        "relevantBasenames": [
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "command-effect-model.test.js",
+          "corpus-generator.js",
+          "generate-corpus.mjs",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-block3-release-export-security-scale-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 146,
+        "found": true,
+        "hardeningCompletionClaimImported": false,
+        "listed": true,
+        "relevantBasenames": [
+          "BLOCK_3",
+          "BLOCK_3_EXIT_REPORT.md",
+          "BLOCK_3_IMPLEMENTATION_REPORT.md",
+          "BLOCK_3_V2_DEEP_REWORK_REPORT.md",
+          "BLOCK_3_V3_PERFECTION_REPORT.md",
+          "block3-deep-hardening.test.js",
+          "command-effect-model.test.js",
+          "corpus-generator.js",
+          "generate-corpus.mjs",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v2.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 45,
+        "found": true,
+        "hardeningCompletionClaimImported": false,
+        "listed": true,
+        "relevantBasenames": [
+          "corpus-generator.js",
+          "generate-corpus.mjs",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md"
+        ]
+      },
+      {
+        "authority": "CONTEXT_ONLY",
+        "basename": "writer-editor-longform-v5_1-turnkey-pack-v3.zip",
+        "codeImported": false,
+        "completionClaimImported": false,
+        "dependencyClaimImported": false,
+        "entryCount": 83,
+        "found": true,
+        "hardeningCompletionClaimImported": false,
+        "listed": true,
+        "relevantBasenames": [
+          "corpus-generator.js",
+          "generate-corpus.mjs",
+          "INTEGRATION_NOTES.md",
+          "INTEGRATION_REPORT.md",
+          "VALIDATION_REPORT.md"
+        ]
+      }
+    ],
+    "class": "READ_ONLY_CONTEXT_ONLY",
+    "codeImported": false,
+    "completionClaimImported": false,
+    "dependencyClaimImported": false,
+    "hardeningCompletionClaimImported": false
+  },
+  "failRows": [],
+  "failSignal": "",
+  "negativeRows": [
+    {
+      "id": "HARDENING_RUNTIME_IMPLEMENTATION_NEGATIVE",
+      "rejectsClaim": "HARDENING_RUNTIME_IMPLEMENTED_IN_B3C18",
+      "status": "PASS"
+    },
+    {
+      "id": "P0C_BLOCKS_P0B_NEGATIVE",
+      "rejectsClaim": "P0C_BLOCKS_P0B_RELEASE_KERNEL",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_CLAIM_DEPENDS_ON_P0C_NEGATIVE",
+      "rejectsClaim": "RELEASE_CLAIM_DEPENDS_ON_P0C_QUEUE",
+      "status": "PASS"
+    },
+    {
+      "id": "NETWORK_PATH_NEGATIVE",
+      "rejectsClaim": "NETWORK_PATH_INTRODUCED_BY_B3C18",
+      "status": "PASS"
+    },
+    {
+      "id": "OBSERVABILITY_RUNTIME_NEGATIVE",
+      "rejectsClaim": "OBSERVABILITY_RUNTIME_INTRODUCED",
+      "status": "PASS"
+    },
+    {
+      "id": "FUZZER_RUNTIME_NEGATIVE",
+      "rejectsClaim": "OPERATION_FUZZER_RUNTIME_INTRODUCED",
+      "status": "PASS"
+    },
+    {
+      "id": "CORPUS_GENERATOR_RUNTIME_NEGATIVE",
+      "rejectsClaim": "CORPUS_GENERATOR_RUNTIME_INTRODUCED",
+      "status": "PASS"
+    },
+    {
+      "id": "THREAT_MODEL_IMPLEMENTATION_NEGATIVE",
+      "rejectsClaim": "THREAT_MODEL_IMPLEMENTED_AS_CURRENT_SCOPE",
+      "status": "PASS"
+    },
+    {
+      "id": "MODEL_TEST_IMPLEMENTATION_NEGATIVE",
+      "rejectsClaim": "MODEL_TESTS_IMPLEMENTED_AS_CURRENT_SCOPE",
+      "status": "PASS"
+    },
+    {
+      "id": "METAMORPHIC_IMPLEMENTATION_NEGATIVE",
+      "rejectsClaim": "METAMORPHIC_SUITES_IMPLEMENTED_AS_CURRENT_SCOPE",
+      "status": "PASS"
+    },
+    {
+      "id": "CANONICAL_STORAGE_REWRITE_NEGATIVE",
+      "rejectsClaim": "CANONICAL_STORAGE_REWRITE_INTRODUCED",
+      "status": "PASS"
+    },
+    {
+      "id": "NEW_DEPENDENCY_NEGATIVE",
+      "rejectsClaim": "NEW_DEPENDENCY_INTRODUCED",
+      "status": "PASS"
+    },
+    {
+      "id": "ACTIVE_CANON_PROMOTION_NEGATIVE",
+      "rejectsClaim": "ACTIVE_CANON_PROMOTED_BY_B3C18",
+      "status": "PASS"
+    },
+    {
+      "id": "REQUIRED_TOKEN_EXPANSION_NEGATIVE",
+      "rejectsClaim": "REQUIRED_TOKEN_SET_EXPANDED_BY_B3C18",
+      "status": "PASS"
+    },
+    {
+      "id": "B3C19_AUDIT_STARTED_NEGATIVE",
+      "rejectsClaim": "B3C19_AUDIT_STARTED_INSIDE_B3C18",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_GREEN_FALSE_NEGATIVE",
+      "rejectsClaim": "RELEASE_GREEN_CLAIM_IN_B3C18",
+      "status": "PASS"
+    },
+    {
+      "id": "DONOR_HARDENING_COMPLETION_CLAIM_NEGATIVE",
+      "rejectsClaim": "DONOR_HARDENING_COMPLETION_CLAIM_IMPORTED",
+      "status": "PASS"
+    },
+    {
+      "id": "MISSING_PROMOTION_GATE_NEGATIVE",
+      "rejectsClaim": "HARDENING_QUEUE_WITHOUT_PROMOTION_GATE",
+      "status": "PASS"
+    }
+  ],
+  "nonblockingRows": [
+    {
+      "id": "P0C_NOT_BLOCKING_P0B",
+      "p0cBlocksP0b": false,
+      "status": "PASS"
+    },
+    {
+      "id": "NO_RELEASE_CLAIM_DEPENDS_ON_P0C",
+      "releaseClaimDependsOnP0c": false,
+      "status": "PASS"
+    },
+    {
+      "id": "NO_RUNTIME_HARDENING_IMPLEMENTATION",
+      "proofClass": "GOVERNANCE_QUEUE_ONLY",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "ACTIVE_CANON_NOT_PROMOTED",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "REQUIRED_TOKEN_SET_NOT_EXPANDED",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "NO_NEW_NETWORK_PATH_IN_B3C18_DIFF",
+      "proofClass": "DIFF_GUARD_NOT_REPO_WIDE_ABSENCE_CLAIM",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "NO_CANONICAL_STORAGE_REWRITE",
+      "proofClass": "DIFF_GUARD",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_NEW_DEPENDENCY",
+      "status": "PASS"
+    },
+    {
+      "changedBasenames": [],
+      "id": "PACKAGE_MANIFESTS_READ_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "B3C19_AUDIT_NOT_STARTED",
+      "status": "PASS"
+    },
+    {
+      "id": "RELEASE_GREEN_FALSE",
+      "releaseGreen": false,
+      "status": "PASS"
+    },
+    {
+      "id": "DONOR_CONTEXT_ONLY",
+      "status": "PASS"
+    },
+    {
+      "id": "NO_SCOPE_BLOAT_WITH_FIXED_12_QUEUE_SET",
+      "queueCount": 12,
+      "status": "PASS"
+    },
+    {
+      "futureLanesParked": true,
+      "id": "B3C17_LIMITS_PRESERVED",
+      "releaseGreen": 0,
+      "status": "PASS"
+    }
+  ],
+  "ok": true,
+  "promotionGateRows": [
+    {
+      "authority": "P0C_PROMOTION_GATE_NOT_CURRENT_IMPLEMENTATION",
+      "gate": [
+        "active model contract",
+        "seed corpus",
+        "negative oracle",
+        "runtime budget guard"
+      ],
+      "id": "MODEL_BASED_TEST_QUEUE_STAGED_NONBLOCKING_PROMOTION_GATE",
+      "queue": "modelBasedTests",
+      "status": "PASS"
+    },
+    {
+      "authority": "P0C_PROMOTION_GATE_NOT_CURRENT_IMPLEMENTATION",
+      "gate": [
+        "relation list",
+        "fixture generator",
+        "deterministic replay",
+        "false positive budget"
+      ],
+      "id": "METAMORPHIC_SUITE_QUEUE_STAGED_NONBLOCKING_PROMOTION_GATE",
+      "queue": "metamorphicSuites",
+      "status": "PASS"
+    },
+    {
+      "authority": "P0C_PROMOTION_GATE_NOT_CURRENT_IMPLEMENTATION",
+      "gate": [
+        "layer rules",
+        "import boundary check",
+        "allowed exception log",
+        "rollback rule"
+      ],
+      "id": "ARCHITECTURE_FITNESS_QUEUE_STAGED_NONBLOCKING_PROMOTION_GATE",
+      "queue": "architectureFitness",
+      "status": "PASS"
+    },
+    {
+      "authority": "P0C_PROMOTION_GATE_NOT_CURRENT_IMPLEMENTATION",
+      "gate": [
+        "full dependency audit",
+        "license audit",
+        "package hashes",
+        "release packaging scope"
+      ],
+      "id": "SUPPLY_CHAIN_DEEPENING_QUEUE_STAGED_NONBLOCKING_PROMOTION_GATE",
+      "queue": "supplyChainDeepening",
+      "status": "PASS"
+    },
+    {
+      "authority": "P0C_PROMOTION_GATE_NOT_CURRENT_IMPLEMENTATION",
+      "gate": [
+        "threat inventory",
+        "mitigation rows",
+        "residual risk rows",
+        "owner review"
+      ],
+      "id": "THREAT_MODEL_QUEUE_STAGED_NONBLOCKING_PROMOTION_GATE",
+      "queue": "threatModel",
+      "status": "PASS"
+    },
+    {
+      "authority": "P0C_PROMOTION_GATE_NOT_CURRENT_IMPLEMENTATION",
+      "gate": [
+        "real language fixture matrix",
+        "renderer selection proof",
+        "export parity proof"
+      ],
+      "id": "I18N_DEEPENING_QUEUE_STAGED_NONBLOCKING_PROMOTION_GATE",
+      "queue": "i18nDeepening",
+      "status": "PASS"
+    },
+    {
+      "authority": "P0C_PROMOTION_GATE_NOT_CURRENT_IMPLEMENTATION",
+      "gate": [
+        "trust surface audit",
+        "keyboard path proof",
+        "screen reader labels",
+        "non color only checks"
+      ],
+      "id": "A11Y_POLISH_QUEUE_STAGED_NONBLOCKING_PROMOTION_GATE",
+      "queue": "a11yPolish",
+      "status": "PASS"
+    },
+    {
+      "authority": "P0C_PROMOTION_GATE_NOT_CURRENT_IMPLEMENTATION",
+      "gate": [
+        "local only logs",
+        "privacy redaction",
+        "no network upload",
+        "retention policy"
+      ],
+      "id": "LOCAL_OBSERVABILITY_QUEUE_STAGED_NONBLOCKING_PROMOTION_GATE",
+      "queue": "localObservability",
+      "status": "PASS"
+    },
+    {
+      "authority": "P0C_PROMOTION_GATE_NOT_CURRENT_IMPLEMENTATION",
+      "gate": [
+        "error classes",
+        "user safe messages",
+        "recovery actions",
+        "support bundle mapping"
+      ],
+      "id": "PRODUCT_ERROR_TAXONOMY_QUEUE_STAGED_NONBLOCKING_PROMOTION_GATE",
+      "queue": "productErrorTaxonomy",
+      "status": "PASS"
+    },
+    {
+      "authority": "P0C_PROMOTION_GATE_NOT_CURRENT_IMPLEMENTATION",
+      "gate": [
+        "kill point list",
+        "platform matrix",
+        "recovery evidence",
+        "bounded runtime"
+      ],
+      "id": "CRASH_MATRIX_DEEPENING_QUEUE_STAGED_NONBLOCKING_PROMOTION_GATE",
+      "queue": "crashMatrixDeepening",
+      "status": "PASS"
+    },
+    {
+      "authority": "P0C_PROMOTION_GATE_NOT_CURRENT_IMPLEMENTATION",
+      "gate": [
+        "operation generator",
+        "corpus bounds",
+        "deterministic seed",
+        "no typing hot path work"
+      ],
+      "id": "OPERATION_FUZZER_QUEUE_STAGED_NONBLOCKING_PROMOTION_GATE",
+      "queue": "operationFuzzer",
+      "status": "PASS"
+    },
+    {
+      "authority": "P0C_PROMOTION_GATE_NOT_CURRENT_IMPLEMENTATION",
+      "gate": [
+        "fixture tier policy",
+        "privacy safe synthetic data",
+        "size budgets",
+        "reproducible seeds"
+      ],
+      "id": "CORPUS_GENERATOR_QUEUE_STAGED_NONBLOCKING_PROMOTION_GATE",
+      "queue": "corpusGenerator",
+      "status": "PASS"
+    }
+  ],
+  "proof": {
+    "activeCanonNotPromoted": true,
+    "allQueuesStagedNonblocking": true,
+    "b3c17InputBound": true,
+    "b3c17LimitsPreserved": true,
+    "b3c19AuditNotStarted": true,
+    "donorIntakeContextOnly": true,
+    "negativeRowsComplete": true,
+    "negativeRowsPass": true,
+    "noCanonicalStorageRewrite": true,
+    "noNewDependency": true,
+    "noNewNetworkPathInB3C18Diff": true,
+    "noReleaseClaimDependsOnP0c": true,
+    "noRuntimeHardeningImplementation": true,
+    "p0cNotBlockingP0b": true,
+    "promotionGatesComplete": true,
+    "releaseGreenFalseBecauseB3C18Only": true,
+    "requiredTokenSetNotExpanded": true,
+    "transitiveEvidencePass": true
+  },
+  "queueRows": [
+    {
+      "authority": "P0C_ADVISORY_UNTIL_PROMOTED",
+      "blocksP0BReleaseKernel": false,
+      "id": "MODEL_BASED_TEST_QUEUE_STAGED_NONBLOCKING",
+      "promotionRequiredBeforeBlocking": true,
+      "queue": "modelBasedTests",
+      "releaseClaimDependsOnThisQueue": false,
+      "runtimeImplemented": false,
+      "status": "STAGED_ADVISORY_NONBLOCKING"
+    },
+    {
+      "authority": "P0C_ADVISORY_UNTIL_PROMOTED",
+      "blocksP0BReleaseKernel": false,
+      "id": "METAMORPHIC_SUITE_QUEUE_STAGED_NONBLOCKING",
+      "promotionRequiredBeforeBlocking": true,
+      "queue": "metamorphicSuites",
+      "releaseClaimDependsOnThisQueue": false,
+      "runtimeImplemented": false,
+      "status": "STAGED_ADVISORY_NONBLOCKING"
+    },
+    {
+      "authority": "P0C_ADVISORY_UNTIL_PROMOTED",
+      "blocksP0BReleaseKernel": false,
+      "id": "ARCHITECTURE_FITNESS_QUEUE_STAGED_NONBLOCKING",
+      "promotionRequiredBeforeBlocking": true,
+      "queue": "architectureFitness",
+      "releaseClaimDependsOnThisQueue": false,
+      "runtimeImplemented": false,
+      "status": "STAGED_ADVISORY_NONBLOCKING"
+    },
+    {
+      "authority": "P0C_ADVISORY_UNTIL_PROMOTED",
+      "blocksP0BReleaseKernel": false,
+      "id": "SUPPLY_CHAIN_DEEPENING_QUEUE_STAGED_NONBLOCKING",
+      "promotionRequiredBeforeBlocking": true,
+      "queue": "supplyChainDeepening",
+      "releaseClaimDependsOnThisQueue": false,
+      "runtimeImplemented": false,
+      "status": "STAGED_ADVISORY_NONBLOCKING"
+    },
+    {
+      "authority": "P0C_ADVISORY_UNTIL_PROMOTED",
+      "blocksP0BReleaseKernel": false,
+      "id": "THREAT_MODEL_QUEUE_STAGED_NONBLOCKING",
+      "promotionRequiredBeforeBlocking": true,
+      "queue": "threatModel",
+      "releaseClaimDependsOnThisQueue": false,
+      "runtimeImplemented": false,
+      "status": "STAGED_ADVISORY_NONBLOCKING"
+    },
+    {
+      "authority": "P0C_ADVISORY_UNTIL_PROMOTED",
+      "blocksP0BReleaseKernel": false,
+      "id": "I18N_DEEPENING_QUEUE_STAGED_NONBLOCKING",
+      "promotionRequiredBeforeBlocking": true,
+      "queue": "i18nDeepening",
+      "releaseClaimDependsOnThisQueue": false,
+      "runtimeImplemented": false,
+      "status": "STAGED_ADVISORY_NONBLOCKING"
+    },
+    {
+      "authority": "P0C_ADVISORY_UNTIL_PROMOTED",
+      "blocksP0BReleaseKernel": false,
+      "id": "A11Y_POLISH_QUEUE_STAGED_NONBLOCKING",
+      "promotionRequiredBeforeBlocking": true,
+      "queue": "a11yPolish",
+      "releaseClaimDependsOnThisQueue": false,
+      "runtimeImplemented": false,
+      "status": "STAGED_ADVISORY_NONBLOCKING"
+    },
+    {
+      "authority": "P0C_ADVISORY_UNTIL_PROMOTED",
+      "blocksP0BReleaseKernel": false,
+      "id": "LOCAL_OBSERVABILITY_QUEUE_STAGED_NONBLOCKING",
+      "promotionRequiredBeforeBlocking": true,
+      "queue": "localObservability",
+      "releaseClaimDependsOnThisQueue": false,
+      "runtimeImplemented": false,
+      "status": "STAGED_ADVISORY_NONBLOCKING"
+    },
+    {
+      "authority": "P0C_ADVISORY_UNTIL_PROMOTED",
+      "blocksP0BReleaseKernel": false,
+      "id": "PRODUCT_ERROR_TAXONOMY_QUEUE_STAGED_NONBLOCKING",
+      "promotionRequiredBeforeBlocking": true,
+      "queue": "productErrorTaxonomy",
+      "releaseClaimDependsOnThisQueue": false,
+      "runtimeImplemented": false,
+      "status": "STAGED_ADVISORY_NONBLOCKING"
+    },
+    {
+      "authority": "P0C_ADVISORY_UNTIL_PROMOTED",
+      "blocksP0BReleaseKernel": false,
+      "id": "CRASH_MATRIX_DEEPENING_QUEUE_STAGED_NONBLOCKING",
+      "promotionRequiredBeforeBlocking": true,
+      "queue": "crashMatrixDeepening",
+      "releaseClaimDependsOnThisQueue": false,
+      "runtimeImplemented": false,
+      "status": "STAGED_ADVISORY_NONBLOCKING"
+    },
+    {
+      "authority": "P0C_ADVISORY_UNTIL_PROMOTED",
+      "blocksP0BReleaseKernel": false,
+      "id": "OPERATION_FUZZER_QUEUE_STAGED_NONBLOCKING",
+      "promotionRequiredBeforeBlocking": true,
+      "queue": "operationFuzzer",
+      "releaseClaimDependsOnThisQueue": false,
+      "runtimeImplemented": false,
+      "status": "STAGED_ADVISORY_NONBLOCKING"
+    },
+    {
+      "authority": "P0C_ADVISORY_UNTIL_PROMOTED",
+      "blocksP0BReleaseKernel": false,
+      "id": "CORPUS_GENERATOR_QUEUE_STAGED_NONBLOCKING",
+      "promotionRequiredBeforeBlocking": true,
+      "queue": "corpusGenerator",
+      "releaseClaimDependsOnThisQueue": false,
+      "runtimeImplemented": false,
+      "status": "STAGED_ADVISORY_NONBLOCKING"
+    }
+  ],
+  "releaseGreen": false,
+  "repo": {
+    "headSha": "ac9fc291f37164ae5ddbdfe1a02c8a797767bfe5",
+    "repoRootBinding": "WORKTREE_INDEPENDENT"
+  },
+  "rollbackRef": "ROLLBACK_PRODUCTION_HARDENING_QUEUE_GOVERNANCE",
+  "runtime": {
+    "changedBasenames": [
+      "b3c18-production-hardening-queue-state.mjs",
+      "b3c18-production-hardening-queue.contract.test.js",
+      "B3C18_PRODUCTION_HARDENING_QUEUE_STATUS_V1.json"
+    ],
+    "changedBasenamesHash": "4998db6c115d796524088dad8889d417572d6b8306037537f56ebae0b05fce4f",
+    "commandRows": {
+      "allPassed": null,
+      "commandCount": 16,
+      "commands": [
+        {
+          "command": "node scripts/ops/b3c18-production-hardening-queue-state.mjs --write --json",
+          "index": 1,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c18-production-hardening-queue.contract.test.js",
+          "index": 2,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c17-future-lanes-nonblocking.contract.test.js",
+          "index": 3,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c16-supply-chain-release-scope.contract.test.js",
+          "index": 4,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c15-attestation-chain.contract.test.js",
+          "index": 5,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c14-release-dossier-minimal.contract.test.js",
+          "index": 6,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c13-trust-surface-accessibility.contract.test.js",
+          "index": 7,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c12-i18n-text-anchor-safety.contract.test.js",
+          "index": 8,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c11-xplat-normalization-baseline.contract.test.js",
+          "index": 9,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c10-capability-tier-report.contract.test.js",
+          "index": 10,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "node --test test/contracts/b3c09-performance-baseline-binding.contract.test.js",
+          "index": 11,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "npm run oss:policy",
+          "index": 12,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --check",
+          "index": 13,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- package.json package-lock.json",
+          "index": 14,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- CANON.md docs/OPS/STATUS/CANON_STATUS.json docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json docs/OPS/TOKENS/TOKEN_CATALOG.json docs/OPS/TOKENS/TOKEN_CATALOG_LOCK.json",
+          "index": 15,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        },
+        {
+          "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css src/main.js src/preload.js src/export src/io src/security src/collab",
+          "index": 16,
+          "result": "EXTERNAL_RUN_REQUIRED"
+        }
+      ],
+      "noPending": null,
+      "selfExecuted": false,
+      "status": "DECLARED_FOR_EXTERNAL_RUNNER",
+      "taskId": "B3C18_PRODUCTION_HARDENING_QUEUE"
+    },
+    "statusArtifactHash": "1c0f1b3b281a0961606367edcec303469f817998cc6e1bb4899ff46c116bfb56"
+  },
+  "scope": {
+    "activeCanonPromotion": false,
+    "allowedWriteBasenames": [
+      "b3c18-production-hardening-queue-state.mjs",
+      "b3c18-production-hardening-queue.contract.test.js",
+      "B3C18_PRODUCTION_HARDENING_QUEUE_STATUS_V1.json"
+    ],
+    "b3c19AuditStarted": false,
+    "corpusGeneratorRuntime": false,
+    "directInputs": [
+      "B3C17_FUTURE_LANES_NONBLOCKING_STATUS_V1.json"
+    ],
+    "donorHardeningCompletionClaimImported": false,
+    "exportRewrite": false,
+    "fuzzerRuntime": false,
+    "hardeningRuntimeImplementation": false,
+    "metamorphicImplementation": false,
+    "modelTestImplementation": false,
+    "networkPathIntroducedByB3C18": false,
+    "newDependency": false,
+    "observabilityRuntime": false,
+    "packageManifestChange": false,
+    "releaseGreenClaim": false,
+    "requiredTokenExpansion": false,
+    "scopeGuardInputs": [
+      "package.json",
+      "package-lock.json"
+    ],
+    "securityRewrite": false,
+    "storageChange": false,
+    "threatModelImplementation": false,
+    "transitiveCarriedEvidence": [
+      "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+      "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
+      "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1.json"
+    ],
+    "uiChange": false
+  },
+  "status": "PASS",
+  "successWording": "PASS_AS_PRODUCTION_HARDENING_QUEUE_STAGED_ADVISORY_NONBLOCKING_NOT_RELEASE_GREEN",
+  "tokenSemantics": "P0C_HARDENING_QUEUE_GOVERNANCE_PROOF_ONLY_RELEASE_GREEN_REMAINS_FALSE",
+  "transitiveEvidenceRows": [
+    {
+      "basename": "B3C14_RELEASE_DOSSIER_MINIMAL_STATUS_V1.json",
+      "passed": true,
+      "releaseGreen": 0,
+      "role": "TRANSITIVE_CARRIED_EVIDENCE",
+      "token": 1
+    },
+    {
+      "basename": "B3C15_ATTESTATION_CHAIN_STATUS_V1.json",
+      "passed": true,
+      "releaseGreen": 0,
+      "role": "TRANSITIVE_CARRIED_EVIDENCE",
+      "token": 1
+    },
+    {
+      "basename": "B3C16_SUPPLY_CHAIN_RELEASE_SCOPE_STATUS_V1.json",
+      "passed": true,
+      "releaseGreen": 0,
+      "role": "TRANSITIVE_CARRIED_EVIDENCE",
+      "token": 1
+    }
+  ]
+}
