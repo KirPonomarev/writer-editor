@@ -287,17 +287,17 @@
       "tier": "release"
     },
     {
-      "blocking": false,
+      "blocking": true,
       "code": "E_E2E_CRITICAL_USER_PATH_NOT_OK",
       "modeMatrix": {
         "prCore": "advisory",
-        "promotion": "advisory",
+        "promotion": "blocking",
         "release": "blocking"
       },
       "negativeTestRef": "test/contracts/failsignal-registry.contract.test.js#schema-invalid",
       "precedence": 21,
-      "rationale": "P0-02 reconcile registration for E_E2E_CRITICAL_USER_PATH_NOT_OK; advisory-only to prevent blocking surface expansion before dedicated token wiring.",
-      "sourceBinding": "reconcile_p0_02",
+      "rationale": "E2E critical user path is deterministic minimum release evidence and blocks release or promotion when a required step is missing.",
+      "sourceBinding": "scripts/ops/e2e-critical-user-path-state.mjs + test/contracts/e2e-critical-user-path.contract.test.js",
       "tier": "release"
     },
     {

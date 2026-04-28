@@ -275,7 +275,7 @@
       "proofHook": "node scripts/ops/e2e-critical-user-path-state.mjs --json",
       "failSignal": "E_E2E_CRITICAL_USER_PATH_NOT_OK",
       "failSignalCode": "E_E2E_CRITICAL_USER_PATH_NOT_OK",
-      "blocking": false,
+      "blocking": true,
       "gateTier": "release",
       "sourceBinding": "ops_script+contract_test",
       "positiveContractRef": "test/contracts/e2e-critical-user-path.contract.test.js#required-scenario-set-returns-pass-equals-one",
