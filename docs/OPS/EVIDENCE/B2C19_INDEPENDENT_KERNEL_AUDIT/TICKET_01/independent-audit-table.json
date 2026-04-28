@@ -1,0 +1,197 @@
+{
+  "hash": "557fbce63fa5830ce8891bb7039873d4e5ebe4d199c45d7b0a83ff1109f89654",
+  "rows": [
+    {
+      "contours": [
+        "B2C01",
+        "B2C02",
+        "B2C03",
+        "B2C04"
+      ],
+      "gapRows": [
+        {
+          "classification": "ADVISORY",
+          "contourId": "B2C01",
+          "gapType": "STATUS_PACKET_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "contourId": "B2C01",
+          "gapType": "CONTRACT_TEST_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "contourId": "B2C01",
+          "gapType": "COMMAND_RESULTS_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "contourId": "B2C02",
+          "gapType": "STATUS_PACKET_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "contourId": "B2C02",
+          "gapType": "CONTRACT_TEST_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "contourId": "B2C02",
+          "gapType": "COMMAND_RESULTS_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "contourId": "B2C03",
+          "gapType": "STATUS_PACKET_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "contourId": "B2C03",
+          "gapType": "CONTRACT_TEST_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "contourId": "B2C03",
+          "gapType": "COMMAND_RESULTS_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "contourId": "B2C04",
+          "gapType": "STATUS_PACKET_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "contourId": "B2C04",
+          "gapType": "CONTRACT_TEST_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "contourId": "B2C04",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "layer": "CONTRACTS",
+      "machineEvidenceRows": 0,
+      "pass": true,
+      "rowType": "PASS_FAIL_AUDIT_ROW",
+      "status": "PASS"
+    },
+    {
+      "contours": [
+        "B2C05",
+        "B2C06",
+        "B2C07",
+        "B2C08"
+      ],
+      "gapRows": [
+        {
+          "classification": "NONBLOCKING",
+          "contourId": "B2C05",
+          "gapType": "COMMAND_RESULTS_GAP"
+        },
+        {
+          "classification": "NONBLOCKING",
+          "contourId": "B2C06",
+          "gapType": "COMMAND_RESULTS_GAP"
+        },
+        {
+          "classification": "NONBLOCKING",
+          "contourId": "B2C07",
+          "gapType": "COMMAND_RESULTS_GAP"
+        },
+        {
+          "classification": "NONBLOCKING",
+          "contourId": "B2C08",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "layer": "FORMAL_STATE",
+      "machineEvidenceRows": 4,
+      "pass": true,
+      "rowType": "PASS_FAIL_AUDIT_ROW",
+      "status": "PASS"
+    },
+    {
+      "contours": [
+        "B2C09",
+        "B2C10",
+        "B2C11"
+      ],
+      "gapRows": [
+        {
+          "classification": "NONBLOCKING",
+          "contourId": "B2C09",
+          "gapType": "COMMAND_RESULTS_GAP"
+        },
+        {
+          "classification": "NONBLOCKING",
+          "contourId": "B2C10",
+          "gapType": "COMMAND_RESULTS_GAP"
+        },
+        {
+          "classification": "NONBLOCKING",
+          "contourId": "B2C11",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "layer": "COMMAND_MUTATION",
+      "machineEvidenceRows": 3,
+      "pass": true,
+      "rowType": "PASS_FAIL_AUDIT_ROW",
+      "status": "PASS"
+    },
+    {
+      "contours": [
+        "B2C12",
+        "B2C13"
+      ],
+      "gapRows": [
+        {
+          "classification": "NONBLOCKING",
+          "contourId": "B2C12",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "layer": "PERSISTENCE",
+      "machineEvidenceRows": 2,
+      "pass": true,
+      "rowType": "PASS_FAIL_AUDIT_ROW",
+      "status": "PASS"
+    },
+    {
+      "contours": [
+        "B2C14",
+        "B2C15"
+      ],
+      "gapRows": [],
+      "layer": "RECOVERY",
+      "machineEvidenceRows": 2,
+      "pass": true,
+      "rowType": "PASS_FAIL_AUDIT_ROW",
+      "status": "PASS"
+    },
+    {
+      "contours": [
+        "B2C16",
+        "B2C17"
+      ],
+      "gapRows": [],
+      "layer": "MIGRATION",
+      "machineEvidenceRows": 2,
+      "pass": true,
+      "rowType": "PASS_FAIL_AUDIT_ROW",
+      "status": "PASS"
+    },
+    {
+      "contours": [
+        "B2C18"
+      ],
+      "gapRows": [],
+      "layer": "RUNTIME_BUDGET",
+      "machineEvidenceRows": 1,
+      "pass": true,
+      "rowType": "PASS_FAIL_AUDIT_ROW",
+      "status": "PASS"
+    }
+  ]
+}
