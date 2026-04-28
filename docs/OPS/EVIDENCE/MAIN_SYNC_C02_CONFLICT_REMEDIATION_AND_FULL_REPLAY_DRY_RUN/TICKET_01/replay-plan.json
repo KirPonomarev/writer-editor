@@ -1,0 +1,185 @@
+{
+  "generatedAtUtc": "2026-04-28T13:43:55.159Z",
+  "ok": true,
+  "payload": {
+    "allowedPayloadClass": "CANONICAL_B2C_CHAIN_ONLY",
+    "forbiddenPayloadClass": "PACKET_ONLY_SYNC_TAIL_REPLAY",
+    "sourceCount": 13,
+    "sourceShas": [
+      "24996555943e80fc3aa616becea731645771b4a8",
+      "78b5ddbeab010e3b24edad00d65a2a6519d18e83",
+      "74e59b3594c6b80ce7a5086c730d0cf56c2cbf1d",
+      "42075630e23fd48df11c5d62c8771596484ac88c",
+      "ecd1e26452849a8858c84d65f645874d8df3e3d0",
+      "bf85d8b53a832e01b4e952ab18190ee6ed0bdb7b",
+      "a4bc03adcc32fc9a80e870064ed3c2acd392d04c",
+      "6c6ae1a5914c8481aeb9673b8329fb6194b798ca",
+      "69406a57cdb06472d38c719f679f1f153584af50",
+      "808285e759017351cf8dbc60ae2a9658f8ed2284",
+      "2fad0e8116173456ea5536c269b29a13aef2e8a3",
+      "21d14560446df0a79d59df9dd42f3aae12f28b7b",
+      "0b3cc7f91400df650dcb875453dda4b389bbeb3e"
+    ]
+  },
+  "replay": {
+    "adjustmentCommit": {
+      "sha": "286c082a1ea86dd5b2fd0caa143fccf9dd065eaf",
+      "subject": "replay: adapt b2c checks to current main truth"
+    },
+    "changedBasenames": [
+      "B2C05_FORMAL_KERNEL_MINIMAL_STATUS_V1.json",
+      "b2c05-formal-kernel-minimal-proof.mjs",
+      "b2c05-formal-kernel-minimal.contract.test.js",
+      "B2C06_PROJECT_LIFECYCLE_STATE_MACHINE_V1.json",
+      "b2c06-project-lifecycle-state.contract.test.js",
+      "b2c06-project-lifecycle-state.mjs",
+      "B2C07_TRANSACTION_BOUNDARY_MINIMAL_V1.json",
+      "b2c07-transaction-boundary-minimal.contract.test.js",
+      "b2c07-transaction-boundary-minimal.mjs",
+      "B2C08_RECOVERY_BOUNDARY_MINIMAL_V1.json",
+      "b2c08-recovery-boundary-minimal.contract.test.js",
+      "b2c08-recovery-boundary-minimal.mjs",
+      "B2C09_COMMAND_SURFACE_KERNEL_V1.json",
+      "b2c09-command-surface-kernel.contract.test.js",
+      "b2c09-command-surface-kernel.mjs",
+      "B2C10_COMMAND_BYPASS_NEGATIVE_MATRIX_STATUS_V1.json",
+      "B2C10_MIGRATION_SAFETY_PROOF_V1.json",
+      "b2c10-command-bypass-negative-matrix-state.mjs",
+      "b2c10-command-bypass-negative-matrix.contract.test.js",
+      "b2c10-migration-safety-proof.contract.test.js",
+      "b2c10-migration-safety-proof.mjs",
+      "B2C11_COMMAND_EFFECT_MODEL_STATUS_V1.json",
+      "b2c11-command-effect-model-state.mjs",
+      "b2c11-command-effect-model.contract.test.js",
+      "B2C12_PERSIST_EFFECTS_ATOMIC_WRITE_STATUS_V1.json",
+      "b2c12-persist-effects-atomic-write-state.mjs",
+      "b2c12-persist-effects-atomic-write.contract.test.js",
+      "commandEffectModel.mjs",
+      "first.contract.ts",
+      "flowSceneBatchAtomic.js",
+      "index.ts",
+      "inline-combining-mark.valid.json",
+      "inline-emoji-sequence.valid.json",
+      "inline-grapheme.valid.json",
+      "inline-multimark-range.valid.json",
+      "inline-out-of-block.invalid.json",
+      "inline-reversed-range.invalid.json",
+      "inline-simple-range.valid.json",
+      "inline-split-grapheme.invalid.json",
+      "inline-unknown-mark.invalid.json",
+      "main.js",
+      "projectCommands.mjs",
+      "public-contracts-minimal.contract.test.js",
+      "README.md",
+      "scene-block-admission.contract.test.js",
+      "scene-block.contract.ts",
+      "scene-document-admission.contract.test.js",
+      "scene-document.contract.ts",
+      "scene-empty.valid.json",
+      "scene-full.valid.json",
+      "scene-inline-range-admission.contract.test.js",
+      "scene-inline-range.contract.ts",
+      "scene-invalid-block-field.invalid.json",
+      "scene-invalid-block-parent.invalid.json",
+      "scene-invalid-block-text.invalid.json",
+      "scene-invalid-block-type.invalid.json",
+      "scene-invalid-metadata.invalid.json",
+      "scene-invalid-order.invalid.json",
+      "scene-invalid-schema-version.invalid.json",
+      "scene-minimal.valid.json",
+      "scene-missing-id.invalid.json",
+      "scene-multi-block.valid.json",
+      "scene-unknown-field.invalid.json",
+      "scene-unknown-version.read-only.json",
+      "sceneBlockAdmission.mjs",
+      "sceneDocumentAdmission.mjs",
+      "sceneInlineRangeAdmission.mjs",
+      "sector-m-m7-flow-batch-atomicity.test.js",
+      "sector-m-preload-transfer-and-flow-command-bridge.test.js",
+      "sector-u-u8-command-effect-model.test.js"
+    ],
+    "replayCommitCount": 14,
+    "replayMapping": [
+      {
+        "order": 1,
+        "replaySha": "1df786f24ccea57c88bbd6b79e86cc48d15c059e",
+        "replaySubject": "replay: apply b2c01 scene contract admission",
+        "sourceSha": "24996555943e80fc3aa616becea731645771b4a8"
+      },
+      {
+        "order": 2,
+        "replaySha": "0f5880484477c0f84bd7219bb967d671db162c53",
+        "replaySubject": "replay: apply b2c02 block contract admission",
+        "sourceSha": "78b5ddbeab010e3b24edad00d65a2a6519d18e83"
+      },
+      {
+        "order": 3,
+        "replaySha": "b3989fee47ccd896c2ddc58a3e318eb1a1042f9e",
+        "replaySubject": "replay: apply canonical b2c unit 74e59b3594c6b80ce7a5086c730d0cf56c2cbf1d",
+        "sourceSha": "74e59b3594c6b80ce7a5086c730d0cf56c2cbf1d"
+      },
+      {
+        "order": 4,
+        "replaySha": "0b8841e99980f30c26738182eec6002572292a42",
+        "replaySubject": "replay: apply canonical b2c unit 42075630e23fd48df11c5d62c8771596484ac88c",
+        "sourceSha": "42075630e23fd48df11c5d62c8771596484ac88c"
+      },
+      {
+        "order": 5,
+        "replaySha": "eca57adad892dcbe7ec44656ceb53a2e2349011d",
+        "replaySubject": "replay: apply canonical b2c unit ecd1e26452849a8858c84d65f645874d8df3e3d0",
+        "sourceSha": "ecd1e26452849a8858c84d65f645874d8df3e3d0"
+      },
+      {
+        "order": 6,
+        "replaySha": "e0caba57a608a7cf5ba0c9448b31edcefe3bc5fd",
+        "replaySubject": "replay: apply canonical b2c unit bf85d8b53a832e01b4e952ab18190ee6ed0bdb7b",
+        "sourceSha": "bf85d8b53a832e01b4e952ab18190ee6ed0bdb7b"
+      },
+      {
+        "order": 7,
+        "replaySha": "c85b5dc74c9dfd38f5e1704a2cc24c73d54ea6f7",
+        "replaySubject": "replay: apply canonical b2c unit a4bc03adcc32fc9a80e870064ed3c2acd392d04c",
+        "sourceSha": "a4bc03adcc32fc9a80e870064ed3c2acd392d04c"
+      },
+      {
+        "order": 8,
+        "replaySha": "a0784708b85ff0426550c683b5128d4ede90194e",
+        "replaySubject": "replay: apply canonical b2c unit 6c6ae1a5914c8481aeb9673b8329fb6194b798ca",
+        "sourceSha": "6c6ae1a5914c8481aeb9673b8329fb6194b798ca"
+      },
+      {
+        "order": 9,
+        "replaySha": "db0141216fbdde7f15fdd4a59f76070dfffb5cc0",
+        "replaySubject": "replay: apply canonical b2c unit 69406a57cdb06472d38c719f679f1f153584af50",
+        "sourceSha": "69406a57cdb06472d38c719f679f1f153584af50"
+      },
+      {
+        "order": 10,
+        "replaySha": "ce8eef11faaa298eef357a080fa8cdd2d5f263da",
+        "replaySubject": "replay: apply canonical b2c unit 808285e759017351cf8dbc60ae2a9658f8ed2284",
+        "sourceSha": "808285e759017351cf8dbc60ae2a9658f8ed2284"
+      },
+      {
+        "order": 11,
+        "replaySha": "cadce1c7fcab6e71665e4bf519f9ed050e2c3713",
+        "replaySubject": "replay: apply canonical b2c unit 2fad0e8116173456ea5536c269b29a13aef2e8a3",
+        "sourceSha": "2fad0e8116173456ea5536c269b29a13aef2e8a3"
+      },
+      {
+        "order": 12,
+        "replaySha": "9631dcf655c93f46055d9359c3286912f1f6c533",
+        "replaySubject": "replay: apply canonical b2c unit 21d14560446df0a79d59df9dd42f3aae12f28b7b",
+        "sourceSha": "21d14560446df0a79d59df9dd42f3aae12f28b7b"
+      },
+      {
+        "order": 13,
+        "replaySha": "39c1cba554a3429d67ad066cd15a023fed739b23",
+        "replaySubject": "replay: apply canonical b2c unit 0b3cc7f91400df650dcb875453dda4b389bbeb3e",
+        "sourceSha": "0b3cc7f91400df650dcb875453dda4b389bbeb3e"
+      }
+    ],
+    "replayReady": true
+  },
+  "runId": "TZ_MAIN_SYNC_C02_CONFLICT_REMEDIATION_AND_FULL_REPLAY_DRY_RUN_001"
+}

@@ -1,0 +1,14 @@
+{
+  "exactC03Input": {
+    "allowedPayloadClass": "CANONICAL_B2C_CHAIN_ONLY",
+    "baseMainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+    "dryRunReady": true,
+    "nextContour": "MAIN_SYNC_C03_REPLAY_TO_MAIN_PR",
+    "replayBranch": "codex/main-sync-c02-conflict-remediation-replay-run-001",
+    "replayHeadSha": "286c082a1ea86dd5b2fd0caa143fccf9dd065eaf",
+    "selectedMethodId": "CHERRY_PICK_REPLAY_TO_MAIN"
+  },
+  "generatedAtUtc": "2026-04-28T13:43:55.159Z",
+  "ok": true,
+  "runId": "TZ_MAIN_SYNC_C02_CONFLICT_REMEDIATION_AND_FULL_REPLAY_DRY_RUN_001"
+}

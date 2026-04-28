@@ -1,0 +1,17 @@
+{
+  "allowedPayloadClass": "CANONICAL_B2C_CHAIN_ONLY",
+  "boundMainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+  "boundRootSha": "ba9d7d6ee4b46a38b1b0dc9b9b990d7bd55a1645",
+  "contourId": "MAIN_SYNC_C02_CONFLICT_REMEDIATION_AND_FULL_REPLAY_DRY_RUN",
+  "forbiddenPayloadClass": "PACKET_ONLY_SYNC_TAIL_REPLAY",
+  "nextStep": "MAIN_SYNC_C03_REPLAY_TO_MAIN_PR",
+  "recordedAtUtc": "2026-04-28T13:43:55.159Z",
+  "replayBranch": "codex/main-sync-c02-conflict-remediation-replay-run-001",
+  "replayHeadSha": "286c082a1ea86dd5b2fd0caa143fccf9dd065eaf",
+  "replayReady": true,
+  "scope": "CANONICAL_B2C_CHAIN_FULL_REPLAY_WITH_CONFLICT_REMEDIATION",
+  "status": "ACTIVE",
+  "taskBasename": "MAIN_SYNC_C02_CONFLICT_REMEDIATION_AND_FULL_REPLAY_DRY_RUN",
+  "token": "MAIN_SYNC_C02_CONFLICT_REMEDIATION_AND_FULL_REPLAY_DRY_RUN_OK",
+  "version": 1
+}

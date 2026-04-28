@@ -1,0 +1,9 @@
+{
+  "allowedPayloadClass": "CANONICAL_B2C_CHAIN_ONLY",
+  "forbiddenPayloadClass": "PACKET_ONLY_SYNC_TAIL_REPLAY",
+  "generatedAtUtc": "2026-04-28T13:43:55.159Z",
+  "ok": true,
+  "replayCommitCount": 14,
+  "runId": "TZ_MAIN_SYNC_C02_CONFLICT_REMEDIATION_AND_FULL_REPLAY_DRY_RUN_001",
+  "sourceCount": 13
+}

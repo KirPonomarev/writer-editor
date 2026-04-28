@@ -1,0 +1,18 @@
+{
+  "conflictRemediation": {
+    "conflictBasenames": [
+      "index.ts"
+    ],
+    "conflictCount": 1,
+    "resolutionBasenames": [
+      "index.ts",
+      "b2c06-project-lifecycle-state.mjs",
+      "b2c07-transaction-boundary-minimal.mjs",
+      "b2c10-command-bypass-negative-matrix-state.mjs",
+      "public-contracts-minimal.contract.test.js"
+    ]
+  },
+  "generatedAtUtc": "2026-04-28T13:43:55.159Z",
+  "ok": true,
+  "runId": "TZ_MAIN_SYNC_C02_CONFLICT_REMEDIATION_AND_FULL_REPLAY_DRY_RUN_001"
+}
