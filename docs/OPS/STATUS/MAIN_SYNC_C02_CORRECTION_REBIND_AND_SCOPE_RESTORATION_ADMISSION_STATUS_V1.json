@@ -1,0 +1,20 @@
+{
+  "allowedReplayPayloadClass": "CANONICAL_B2C_CHAIN_ONLY",
+  "contourId": "MAIN_SYNC_C02_CORRECTION_REBIND_AND_SCOPE_RESTORATION_ADMISSION",
+  "contractTest": "main-sync-c02-correction-rebind-and-scope-restoration-admission.contract.test.js",
+  "currentMainHeadSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+  "currentRootHeadSha": "6f08f94d6866ce3108d6e68d980e35b9e02d71b0",
+  "forbiddenReplayPayloadClass": "PACKET_ONLY_SYNC_TAIL_REPLAY",
+  "formalRepoTruth": "MAIN_AFTER_MERGE_GATE_AND_POST_MERGE_RECONFIRM",
+  "nextStep": "MAIN_SYNC_C02_CORRECTIVE_REPLAY_PLAN_AND_DRY_RUN_FROM_REBOUND_BASE",
+  "pr825CanonicalAcceptanceState": "NOT_CANONICALLY_ACCEPTED",
+  "recordedAtUtc": "2026-04-28T13:18:19.463Z",
+  "reportScript": "main-sync-c02-correction-rebind-and-scope-restoration-admission-report.mjs",
+  "rootRole": "SOURCE_OF_REQUIRED_CONTENT_ONLY",
+  "scope": "REBIND_AND_SCOPE_RESTORATION_PACKET_ONLY",
+  "stateScript": "main-sync-c02-correction-rebind-and-scope-restoration-admission-state.mjs",
+  "status": "ACTIVE",
+  "taskBasename": "MAIN_SYNC_C02_CORRECTION_REBIND_AND_SCOPE_RESTORATION_ADMISSION",
+  "token": "MAIN_SYNC_C02_CORRECTION_REBIND_AND_SCOPE_RESTORATION_ADMISSION_OK",
+  "version": 1
+}

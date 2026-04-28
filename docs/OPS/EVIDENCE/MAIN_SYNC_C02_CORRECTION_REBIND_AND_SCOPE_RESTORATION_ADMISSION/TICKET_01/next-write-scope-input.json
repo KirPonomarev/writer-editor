@@ -1,0 +1,12 @@
+{
+  "exactNextWriteScopeInput": {
+    "allowedReplayPayloadClass": "CANONICAL_B2C_CHAIN_ONLY",
+    "bindingBaseMainSha": "0d6955c1bd8ccbae425510b0c07e2b0edf445130",
+    "bindingBaseRootSha": "6f08f94d6866ce3108d6e68d980e35b9e02d71b0",
+    "c03StillBlocked": true,
+    "executionApproved": false,
+    "forbiddenReplayPayloadClass": "PACKET_ONLY_SYNC_TAIL_REPLAY",
+    "nextContour": "MAIN_SYNC_C02_CORRECTIVE_REPLAY_PLAN_AND_DRY_RUN_FROM_REBOUND_BASE"
+  },
+  "ok": true
+}

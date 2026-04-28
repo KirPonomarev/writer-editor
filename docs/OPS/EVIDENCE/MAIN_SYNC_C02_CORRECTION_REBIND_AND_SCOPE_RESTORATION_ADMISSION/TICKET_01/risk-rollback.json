@@ -1,0 +1,31 @@
+{
+  "riskRows": [
+    {
+      "detail": "Treating PR 825 as green would legitimize packet-tail replay as payload and break canonical scope control.",
+      "riskId": "PR_825_ACCEPTANCE_DRIFT",
+      "severity": "HIGH"
+    },
+    {
+      "detail": "Any further write must bind to root head 6f08f94d... or stop again under delivery enforcement.",
+      "riskId": "MOVED_ROOT_BASE",
+      "severity": "HIGH"
+    },
+    {
+      "detail": "Sync packet commits 821 through 825 must remain governance bindings only unless owner explicitly expands scope.",
+      "riskId": "CONTROL_PLANE_AS_PAYLOAD",
+      "severity": "HIGH"
+    }
+  ],
+  "rollbackRows": [
+    {
+      "action": "Do not open any main promotion contour and preserve C03 as blocked.",
+      "rollbackId": "KEEP_C03_BLOCKED",
+      "trigger": "No corrected replay-readiness contour exists on the new binding base."
+    },
+    {
+      "action": "Reject the contour and restore canonical B2C chain only as the allowed future payload scope.",
+      "rollbackId": "REJECT_PACKET_TAIL_REPLAY",
+      "trigger": "Any new contour proposes packet-only sync tail replay as payload."
+    }
+  ]
+}

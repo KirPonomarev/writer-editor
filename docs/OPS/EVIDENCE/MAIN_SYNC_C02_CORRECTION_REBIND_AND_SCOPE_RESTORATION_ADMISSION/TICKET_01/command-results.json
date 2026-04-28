@@ -1,0 +1,18 @@
+[
+  {
+    "checkId": "MAIN_SYNC_C02_CORRECTION_REBIND_CONTRACT",
+    "command": "node --test test/contracts/main-sync-c02-correction-rebind-and-scope-restoration-admission.contract.test.js",
+    "exitCode": 0,
+    "ok": true,
+    "stderr": "",
+    "stdout": "✔ main sync c02 correction admission: rebinding and scope restoration are machine bound (60.279583ms)\n✔ main sync c02 correction admission: invalid root sha fails rebinding checks (40.223542ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 165.721083"
+  },
+  {
+    "checkId": "OSS_POLICY",
+    "command": "npm run oss:policy",
+    "exitCode": 0,
+    "ok": true,
+    "stderr": "",
+    "stdout": "> craftsman@1.0.2 oss:policy\n> node scripts/check-no-paid-tiptap.mjs\n\n✅ OSS policy OK: no Tiptap Pro / no private registry"
+  }
+]
