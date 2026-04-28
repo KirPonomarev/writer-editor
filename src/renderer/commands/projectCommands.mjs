@@ -1,4 +1,10 @@
 import { COMMAND_CATALOG_V1, getCommandCatalogById } from './command-catalog.v1.mjs';
+import {
+  buildCommandOperationPlan,
+  captureCommandEffectCapabilities,
+  persistCommandOperationPlan,
+  unwrapBridgeResponseValue,
+} from './commandEffectModel.mjs';
 
 const COMMAND_KEY_TO_ID = Object.freeze(
   Object.fromEntries(COMMAND_CATALOG_V1.map((entry) => [entry.key, entry.id])),
@@ -148,20 +154,29 @@ function registerCatalogCommand(registry, commandId, handler) {
 }
 
 async function runUiAction(uiActions, actionName, commandId, payload = {}) {
-  const action = uiActions && typeof uiActions[actionName] === 'function'
-    ? uiActions[actionName]
-    : null;
-  if (!action) {
-    return fail(
-      'E_COMMAND_FAILED',
+  const capabilities = captureCommandEffectCapabilities({ uiActions });
+  const planResult = buildCommandOperationPlan(
+    {
+      effectType: 'ui-action',
       commandId,
-      'UI_ACTION_UNAVAILABLE',
-      { action: actionName },
+      actionName,
+      payload,
+      unavailableCode: 'E_COMMAND_FAILED',
+      unavailableReason: 'UI_ACTION_UNAVAILABLE',
+    },
+    capabilities,
+  );
+  if (!planResult.ok) {
+    return fail(
+      planResult.error.code,
+      planResult.error.op,
+      planResult.error.reason,
+      planResult.error.details,
     );
   }
 
   try {
-    const result = await action(payload);
+    const result = await persistCommandOperationPlan(planResult.value, { uiActions });
     return ok({
       performed: true,
       action: actionName,
@@ -180,29 +195,30 @@ async function runUiAction(uiActions, actionName, commandId, payload = {}) {
 }
 
 async function invokeFileLifecycleBridge(electronAPI, commandId) {
-  if (electronAPI && typeof electronAPI.invokeUiCommandBridge === 'function') {
-    return electronAPI.invokeUiCommandBridge({
-      route: COMMAND_BRIDGE_ROUTE,
+  const fallbackMap = {
+    [EXTRA_COMMAND_IDS.PROJECT_NEW]: { methodName: 'openFile', payload: { intent: 'new' } },
+    [COMMAND_IDS.PROJECT_OPEN]: { methodName: 'openFile', payload: { intent: 'open' } },
+    [COMMAND_IDS.PROJECT_SAVE]: { methodName: 'saveFile', payload: { intent: 'save' } },
+    [EXTRA_COMMAND_IDS.PROJECT_SAVE_AS]: { methodName: 'saveAs', payload: { intent: 'saveAs' } },
+  };
+  const fallback = fallbackMap[commandId] || null;
+  const capabilities = captureCommandEffectCapabilities({ electronAPI });
+  const planResult = buildCommandOperationPlan(
+    {
+      effectType: 'electron-bridge-or-legacy',
       commandId,
       payload: {},
-    });
-  }
-  const fallbackMap = {
-    [EXTRA_COMMAND_IDS.PROJECT_NEW]: ['openFile', { intent: 'new' }],
-    [COMMAND_IDS.PROJECT_OPEN]: ['openFile', { intent: 'open' }],
-    [COMMAND_IDS.PROJECT_SAVE]: ['saveFile', { intent: 'save' }],
-    [EXTRA_COMMAND_IDS.PROJECT_SAVE_AS]: ['saveAs', { intent: 'saveAs' }],
-  };
-  const fallback = fallbackMap[commandId];
-  if (!fallback || !electronAPI || typeof electronAPI !== 'object') {
+      fallbackMethodName: fallback ? fallback.methodName : '',
+      legacyPayload: fallback ? fallback.payload : undefined,
+      unavailableCode: 'E_COMMAND_FAILED',
+      unavailableReason: 'ELECTRON_API_UNAVAILABLE',
+    },
+    capabilities,
+  );
+  if (!planResult.ok) {
     throw new Error('ELECTRON_API_UNAVAILABLE');
   }
-  const [methodName, payload] = fallback;
-  const method = electronAPI[methodName];
-  if (typeof method !== 'function') {
-    throw new Error('ELECTRON_API_UNAVAILABLE');
-  }
-  const legacyResult = await method.call(electronAPI, payload);
+  const legacyResult = await persistCommandOperationPlan(planResult.value, { electronAPI });
   if (legacyResult && typeof legacyResult === 'object' && !Array.isArray(legacyResult)) {
     return legacyResult;
   }
@@ -210,13 +226,6 @@ async function invokeFileLifecycleBridge(electronAPI, commandId) {
 }
 
 async function invokeTransferAndFlowCommandBridge(electronAPI, commandId, payload = {}) {
-  if (electronAPI && typeof electronAPI.invokeUiCommandBridge === 'function') {
-    return electronAPI.invokeUiCommandBridge({
-      route: COMMAND_BRIDGE_ROUTE,
-      commandId,
-      payload,
-    });
-  }
   const fallbackMap = {
     [COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN]: 'exportDocxMin',
     [COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1]: 'importMarkdownV1',
@@ -225,34 +234,45 @@ async function invokeTransferAndFlowCommandBridge(electronAPI, commandId, payloa
     [COMMAND_IDS.PROJECT_FLOW_SAVE_V1]: 'saveFlowModeV1',
   };
   const methodName = fallbackMap[commandId];
-  if (!methodName || !electronAPI || typeof electronAPI !== 'object') {
+  const capabilities = captureCommandEffectCapabilities({ electronAPI });
+  const planResult = buildCommandOperationPlan(
+    {
+      effectType: 'electron-bridge-or-legacy',
+      commandId,
+      payload,
+      fallbackMethodName: methodName,
+      legacyPayload: commandId === COMMAND_IDS.PROJECT_FLOW_OPEN_V1 ? undefined : payload,
+      unavailableCode: 'E_COMMAND_FAILED',
+      unavailableReason: 'ELECTRON_API_UNAVAILABLE',
+    },
+    capabilities,
+  );
+  if (!planResult.ok) {
     throw new Error('ELECTRON_API_UNAVAILABLE');
   }
-  const method = electronAPI[methodName];
-  if (typeof method !== 'function') {
-    throw new Error('ELECTRON_API_UNAVAILABLE');
-  }
-  const legacyResult = commandId === COMMAND_IDS.PROJECT_FLOW_OPEN_V1
-    ? await method.call(electronAPI)
-    : await method.call(electronAPI, payload);
+  const legacyResult = await persistCommandOperationPlan(planResult.value, { electronAPI });
   if (legacyResult && typeof legacyResult === 'object' && !Array.isArray(legacyResult)) {
     return legacyResult;
   }
   return { ok: legacyResult ? 1 : 0 };
 }
 
-function unwrapBridgeResponseValue(response) {
-  if (
-    response &&
-    typeof response === 'object' &&
-    !Array.isArray(response) &&
-    response.value &&
-    typeof response.value === 'object' &&
-    !Array.isArray(response.value)
-  ) {
-    return response.value;
+async function invokeBridgeOnlyCommand(electronAPI, commandId, payload = {}) {
+  const capabilities = captureCommandEffectCapabilities({ electronAPI });
+  const planResult = buildCommandOperationPlan(
+    {
+      effectType: 'electron-bridge-only',
+      commandId,
+      payload,
+      unavailableCode: 'E_COMMAND_FAILED',
+      unavailableReason: 'ELECTRON_API_UNAVAILABLE',
+    },
+    capabilities,
+  );
+  if (!planResult.ok) {
+    throw new Error('ELECTRON_API_UNAVAILABLE');
   }
-  return response;
+  return persistCommandOperationPlan(planResult.value, { electronAPI });
 }
 
 export function resolveLegacyActionToCommand(actionId, context = {}) {
@@ -562,7 +582,7 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => {
-      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
+      if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, 'ELECTRON_API_UNAVAILABLE');
       }
       const path = typeof input.path === 'string' ? input.path.trim() : '';
@@ -574,11 +594,11 @@ export function registerProjectCommands(registry, options = {}) {
 
       let response;
       try {
-        response = await electronAPI.invokeUiCommandBridge({
-          route: COMMAND_BRIDGE_ROUTE,
-          commandId: EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,
-          payload: { path, title, kind },
-        });
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,
+          { path, title, kind },
+        );
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
@@ -621,7 +641,7 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => {
-      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
+      if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'ELECTRON_API_UNAVAILABLE');
       }
       const parentPath = typeof input.parentPath === 'string' ? input.parentPath.trim() : '';
@@ -633,11 +653,11 @@ export function registerProjectCommands(registry, options = {}) {
 
       let response;
       try {
-        response = await electronAPI.invokeUiCommandBridge({
-          route: COMMAND_BRIDGE_ROUTE,
-          commandId: EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
-          payload: { parentPath, kind, name },
-        });
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
+          { parentPath, kind, name },
+        );
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
@@ -677,7 +697,7 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => {
-      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
+      if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'ELECTRON_API_UNAVAILABLE');
       }
       const path = typeof input.path === 'string' ? input.path.trim() : '';
@@ -688,11 +708,11 @@ export function registerProjectCommands(registry, options = {}) {
 
       let response;
       try {
-        response = await electronAPI.invokeUiCommandBridge({
-          route: COMMAND_BRIDGE_ROUTE,
-          commandId: EXTRA_COMMAND_IDS.TREE_RENAME_NODE,
-          payload: { path, name },
-        });
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.TREE_RENAME_NODE,
+          { path, name },
+        );
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
@@ -736,7 +756,7 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => {
-      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
+      if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'ELECTRON_API_UNAVAILABLE');
       }
       const path = typeof input.path === 'string' ? input.path.trim() : '';
@@ -746,11 +766,11 @@ export function registerProjectCommands(registry, options = {}) {
 
       let response;
       try {
-        response = await electronAPI.invokeUiCommandBridge({
-          route: COMMAND_BRIDGE_ROUTE,
-          commandId: EXTRA_COMMAND_IDS.TREE_DELETE_NODE,
-          payload: { path },
-        });
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.TREE_DELETE_NODE,
+          { path },
+        );
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
@@ -790,7 +810,7 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => {
-      if (!electronAPI || typeof electronAPI.invokeUiCommandBridge !== 'function') {
+      if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'ELECTRON_API_UNAVAILABLE');
       }
       const path = typeof input.path === 'string' ? input.path.trim() : '';
@@ -801,11 +821,11 @@ export function registerProjectCommands(registry, options = {}) {
 
       let response;
       try {
-        response = await electronAPI.invokeUiCommandBridge({
-          route: COMMAND_BRIDGE_ROUTE,
-          commandId: EXTRA_COMMAND_IDS.TREE_REORDER_NODE,
-          payload: { path, direction },
-        });
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.TREE_REORDER_NODE,
+          { path, direction },
+        );
       } catch (error) {
         return fail(
           'E_COMMAND_FAILED',
