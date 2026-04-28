@@ -9,11 +9,23 @@ function read(filePath) {
   return fs.readFileSync(path.join(ROOT, filePath), 'utf8')
 }
 
+function assertCommandBridgePath(source, commandEffectSource, commandId, payloadMarker) {
+  assert.ok(source.includes(`invokeBridgeOnlyCommand(\n          electronAPI,\n          EXTRA_COMMAND_IDS.${commandId},\n          ${payloadMarker},\n        );`))
+  assert.ok(commandEffectSource.includes("if (effectType === 'electron-bridge-only') {"))
+  assert.ok(commandEffectSource.includes('kind: \'electron-bridge\','))
+  assert.ok(commandEffectSource.includes('route: COMMAND_BRIDGE_ROUTE,'))
+  assert.ok(commandEffectSource.includes('return electronAPI.invokeUiCommandBridge({'))
+  assert.ok(commandEffectSource.includes('route: plan.route,'))
+  assert.ok(commandEffectSource.includes('commandId: plan.commandId,'))
+  assert.ok(commandEffectSource.includes('payload: plan.payload,'))
+}
+
 test('preload tree document bridge: projectCommands routes five existing tree and document commands through invokeUiCommandBridge', () => {
   const source = read('src/renderer/commands/projectCommands.mjs')
+  const commandEffectSource = read('src/renderer/commands/commandEffectModel.mjs')
 
-  assert.ok(source.includes("const COMMAND_BRIDGE_ROUTE = 'command.bus';"))
-  assert.ok(source.includes('electronAPI.invokeUiCommandBridge({'))
+  assert.ok(source.includes('invokeBridgeOnlyCommand('))
+  assert.ok(commandEffectSource.includes("const COMMAND_BRIDGE_ROUTE = 'command.bus';"))
 
   assert.equal(source.includes('electronAPI.openDocument('), false)
   assert.equal(source.includes('electronAPI.createNode('), false)
@@ -21,11 +33,11 @@ test('preload tree document bridge: projectCommands routes five existing tree an
   assert.equal(source.includes('electronAPI.deleteNode('), false)
   assert.equal(source.includes('electronAPI.reorderNode('), false)
 
-  assert.ok(source.includes('commandId: EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN'))
-  assert.ok(source.includes('commandId: EXTRA_COMMAND_IDS.TREE_CREATE_NODE'))
-  assert.ok(source.includes('commandId: EXTRA_COMMAND_IDS.TREE_RENAME_NODE'))
-  assert.ok(source.includes('commandId: EXTRA_COMMAND_IDS.TREE_DELETE_NODE'))
-  assert.ok(source.includes('commandId: EXTRA_COMMAND_IDS.TREE_REORDER_NODE'))
+  assertCommandBridgePath(source, commandEffectSource, 'PROJECT_DOCUMENT_OPEN', '{ path, title, kind }')
+  assertCommandBridgePath(source, commandEffectSource, 'TREE_CREATE_NODE', '{ parentPath, kind, name }')
+  assertCommandBridgePath(source, commandEffectSource, 'TREE_RENAME_NODE', '{ path, name }')
+  assertCommandBridgePath(source, commandEffectSource, 'TREE_DELETE_NODE', '{ path }')
+  assertCommandBridgePath(source, commandEffectSource, 'TREE_REORDER_NODE', '{ path, direction }')
 })
 
 test('preload tree document bridge: main bridge allowlist includes only existing cmd.ui set and existing tree document ids', () => {

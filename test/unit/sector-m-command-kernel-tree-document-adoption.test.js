@@ -22,8 +22,29 @@ function readBindingDoc() {
   return JSON.parse(read('docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json'))
 }
 
+function createCaptureRegistry() {
+  const handlers = new Map()
+  return {
+    registry: {
+      registerCommand(meta, handler) {
+        handlers.set(meta.id, { meta, handler })
+      },
+    },
+    handlers,
+  }
+}
+
+function assertBridgeCall(call, expectedCommandId, expectedPayload) {
+  assert.deepEqual(call, {
+    route: 'command.bus',
+    commandId: expectedCommandId,
+    payload: expectedPayload,
+  })
+}
+
 test('command kernel tree-document adoption: projectCommands defines and registers five stable command ids', async () => {
   const projectCommandsSource = read('src/renderer/commands/projectCommands.mjs')
+  const commandEffectSource = read('src/renderer/commands/commandEffectModel.mjs')
   const projectCommands = await loadProjectCommands()
 
   assert.equal(projectCommands.EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, 'cmd.project.document.open')
@@ -44,16 +65,73 @@ test('command kernel tree-document adoption: projectCommands defines and registe
   assert.equal(projectCommandsSource.includes('electronAPI.deleteNode('), false)
   assert.equal(projectCommandsSource.includes('electronAPI.reorderNode('), false)
 
-  assert.ok(projectCommandsSource.includes('commandId: EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,'))
-  assert.ok(projectCommandsSource.includes('payload: { path, title, kind },'))
-  assert.ok(projectCommandsSource.includes('commandId: EXTRA_COMMAND_IDS.TREE_CREATE_NODE,'))
-  assert.ok(projectCommandsSource.includes('payload: { parentPath, kind, name },'))
-  assert.ok(projectCommandsSource.includes('commandId: EXTRA_COMMAND_IDS.TREE_RENAME_NODE,'))
-  assert.ok(projectCommandsSource.includes('payload: { path, name },'))
-  assert.ok(projectCommandsSource.includes('commandId: EXTRA_COMMAND_IDS.TREE_DELETE_NODE,'))
-  assert.ok(projectCommandsSource.includes('payload: { path },'))
-  assert.ok(projectCommandsSource.includes('commandId: EXTRA_COMMAND_IDS.TREE_REORDER_NODE,'))
-  assert.ok(projectCommandsSource.includes('payload: { path, direction },'))
+  assert.ok(projectCommandsSource.includes('invokeBridgeOnlyCommand('))
+  assert.ok(projectCommandsSource.includes("effectType: 'electron-bridge-only',"))
+  assert.ok(commandEffectSource.includes('electronAPI.invokeUiCommandBridge({'))
+  assert.ok(commandEffectSource.includes('route: plan.route,'))
+  assert.ok(commandEffectSource.includes('commandId: plan.commandId,'))
+  assert.ok(commandEffectSource.includes('payload: plan.payload,'))
+  assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,'))
+  assert.ok(projectCommandsSource.includes('{ path, title, kind },'))
+  assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_CREATE_NODE,'))
+  assert.ok(projectCommandsSource.includes('{ parentPath, kind, name },'))
+  assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_RENAME_NODE,'))
+  assert.ok(projectCommandsSource.includes('{ path, name },'))
+  assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_DELETE_NODE,'))
+  assert.ok(projectCommandsSource.includes('{ path },'))
+  assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_REORDER_NODE,'))
+  assert.ok(projectCommandsSource.includes('{ path, direction },'))
+})
+
+test('command kernel tree-document adoption: tree document commands execute exact command bridge payloads', async () => {
+  const projectCommands = await loadProjectCommands()
+  const calls = []
+  const electronAPI = {
+    invokeUiCommandBridge(request) {
+      calls.push(request)
+      return { ok: 1 }
+    },
+  }
+  const { registry, handlers } = createCaptureRegistry()
+  projectCommands.registerProjectCommands(registry, { electronAPI })
+
+  const cases = [
+    [
+      projectCommands.EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,
+      { path: 'scene-1.md', title: 'Scene 1', kind: 'scene' },
+      { path: 'scene-1.md', title: 'Scene 1', kind: 'scene' },
+    ],
+    [
+      projectCommands.EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
+      { parentPath: 'book', kind: 'scene', name: 'New Scene' },
+      { parentPath: 'book', kind: 'scene', name: 'New Scene' },
+    ],
+    [
+      projectCommands.EXTRA_COMMAND_IDS.TREE_RENAME_NODE,
+      { path: 'book/old.md', name: 'New Name' },
+      { path: 'book/old.md', name: 'New Name' },
+    ],
+    [
+      projectCommands.EXTRA_COMMAND_IDS.TREE_DELETE_NODE,
+      { path: 'book/delete.md' },
+      { path: 'book/delete.md' },
+    ],
+    [
+      projectCommands.EXTRA_COMMAND_IDS.TREE_REORDER_NODE,
+      { path: 'book/reorder.md', direction: 'up' },
+      { path: 'book/reorder.md', direction: 'up' },
+    ],
+  ]
+
+  for (const [commandId, input, expectedPayload] of cases) {
+    const registered = handlers.get(commandId)
+    assert.ok(registered, `missing registered handler for ${commandId}`)
+    const before = calls.length
+    const result = await registered.handler(input)
+    assert.equal(result.ok, true)
+    assert.equal(calls.length, before + 1)
+    assertBridgeCall(calls.at(-1), commandId, expectedPayload)
+  }
 })
 
 test('command kernel tree-document adoption: runtime and docs capability bindings match for new command ids', async () => {

@@ -148,7 +148,7 @@ async function pressKey(win, keyCode, modifiers = []) {
   win.webContents.sendInputEvent({ type: 'keyUp', keyCode, modifiers });
 }
 
-async function findTwoSheetFixture(win) {
+async function findVerticalSheetFixture(win) {
   let lastState = null;
   for (let paragraphCount = 1; paragraphCount <= 20; paragraphCount += 1) {
     await setEditorPayload(win, paragraphCount);
@@ -156,7 +156,7 @@ async function findTwoSheetFixture(win) {
     const state = await collectState(win, 'candidate-' + String(paragraphCount));
     lastState = state;
     if (
-      state.centralSheetFlow === 'horizontal'
+      state.centralSheetFlow === 'vertical'
       && state.visibleSheetCount >= 2
       && state.proseMirrorCount === 1
       && state.tiptapEditorCount === 1
@@ -168,7 +168,7 @@ async function findTwoSheetFixture(win) {
       break;
     }
   }
-  throw new Error('NO_TWO_SHEET_FIXTURE ' + JSON.stringify(lastState));
+  throw new Error('NO_VERTICAL_SHEET_FIXTURE ' + JSON.stringify(lastState));
 }
 
 app.disableHardwareAcceleration();
@@ -200,7 +200,7 @@ app.whenReady().then(async () => {
     win.setContentSize(2048, 1110);
     await sleep(1200);
 
-    const fixture = await findTwoSheetFixture(win);
+    const fixture = await findVerticalSheetFixture(win);
     await setEditorPayload(win, fixture.paragraphCount);
     await sleep(800);
     const beforeInput = await collectState(win, 'before-input');
@@ -314,7 +314,7 @@ for (const state of states) {
   assert.equal(state.prosePageTruthCount, 0, `${state.label} must not create page truth inside ProseMirror`);
 }
 
-assert.equal(result.fixture.centralSheetFlow, 'horizontal', 'fixture must use central sheet horizontal flow');
+assert.equal(result.fixture.centralSheetFlow, 'vertical', 'fixture must use central sheet vertical flow');
 assert.ok(result.beforeInput.visibleSheetCount >= 2, 'baseline text must show at least two visible sheets');
 assert.ok(result.afterRedo.visibleSheetCount >= 2, 'state after redo must show at least two visible sheets');
 assert.equal(result.focus.ok, true, 'focus setup must succeed');

@@ -1963,10 +1963,10 @@
     },
     {
       "filePath": "scripts/doctor.mjs",
-      "sha256": "8a9435a7a14746aad462035230a2188711cb2277da44cf56a81a9ce3389539c6",
-      "approvedBy": "ticket:TZ-24B-CONSOLIDATE-UNBLOCK-AND-COMMIT-008",
-      "approvedAtUtc": "2026-02-18T12:05:00.000Z",
-      "rationale": "Consolidate TZ-24B closure payload and strict wave governance approvals."
+      "sha256": "141d353eaa9827b048f3338cbb4a0cb2c17271bdae56bdce712ea91f1327215d",
+      "approvedBy": "ticket:BLOCK3_TAIL_AUDIT_CLOSEOUT_001",
+      "approvedAtUtc": "2026-04-29T00:00:00.000Z",
+      "rationale": "BLOCK3_TAIL_AUDIT_CLOSEOUT_001 approves the bounded Sector M doctor marker rebind from direct scene write detection to the current atomic batch save helper; no governance semantics, token catalog, release gate, UI, dependency, or runtime path expansion."
     },
     {
       "filePath": "scripts/ops/attestation-trust-lock-state.mjs",
@@ -2912,6 +2912,13 @@
       "approvedBy": "ticket:GOVERNANCE_APPROVAL_HARNESS_REPAIR_001",
       "approvedAtUtc": "2026-04-28T00:00:00.000Z",
       "rationale": "GOVERNANCE_APPROVAL_HARNESS_REPAIR_001 approves the bounded contract harness repair so the positive path parses complete governance JSON and the negative path uses a guaranteed mismatched SHA fixture."
+    },
+    {
+      "filePath": "scripts/ops/Y6_COMMAND_SEAM_FENCING_STATE.mjs",
+      "sha256": "cf20471b8ce7d3a1c4c35abe0b50a95333f94e9f3385ac1cc4a314c163e4b0cd",
+      "approvedBy": "ticket:BLOCK3_TAIL_AUDIT_CLOSEOUT_001",
+      "approvedAtUtc": "2026-04-29T00:00:00.000Z",
+      "rationale": "BLOCK3_TAIL_AUDIT_CLOSEOUT_001 approves the bounded Y6 proofhook rebind to the current commandEffectModel bridge-only executor; no command namespace, runtime behavior, UI, dependency, release gate, or token catalog expansion."
     }
   ]
 }
