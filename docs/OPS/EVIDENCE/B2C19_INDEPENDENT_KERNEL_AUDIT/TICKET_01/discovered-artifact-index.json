@@ -1,0 +1,603 @@
+{
+  "hash": "f9829489a50a34f5c779f477f07a4c1097d94b07ed82d916df3ac8b3eb703232",
+  "rows": [
+    {
+      "commandResultsFiles": [],
+      "contourId": "B2C01",
+      "contractTests": [],
+      "coverage": "GAP_ONLY",
+      "evidenceFiles": [],
+      "gapRows": [
+        {
+          "classification": "ADVISORY",
+          "gapType": "STATUS_PACKET_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "gapType": "CONTRACT_TEST_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "hasMachineEvidence": false,
+      "layer": "CONTRACTS",
+      "legacyNamingAllowed": true,
+      "scripts": [],
+      "statusFiles": [],
+      "statusSummary": {
+        "basename": "",
+        "ok": false,
+        "statusHash": "",
+        "tokenName": "",
+        "tokenValue": 0
+      },
+      "storageOrRecoverySafetyClaim": false
+    },
+    {
+      "commandResultsFiles": [],
+      "contourId": "B2C02",
+      "contractTests": [],
+      "coverage": "GAP_ONLY",
+      "evidenceFiles": [],
+      "gapRows": [
+        {
+          "classification": "ADVISORY",
+          "gapType": "STATUS_PACKET_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "gapType": "CONTRACT_TEST_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "hasMachineEvidence": false,
+      "layer": "CONTRACTS",
+      "legacyNamingAllowed": true,
+      "scripts": [],
+      "statusFiles": [],
+      "statusSummary": {
+        "basename": "",
+        "ok": false,
+        "statusHash": "",
+        "tokenName": "",
+        "tokenValue": 0
+      },
+      "storageOrRecoverySafetyClaim": false
+    },
+    {
+      "commandResultsFiles": [],
+      "contourId": "B2C03",
+      "contractTests": [],
+      "coverage": "GAP_ONLY",
+      "evidenceFiles": [],
+      "gapRows": [
+        {
+          "classification": "ADVISORY",
+          "gapType": "STATUS_PACKET_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "gapType": "CONTRACT_TEST_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "hasMachineEvidence": false,
+      "layer": "CONTRACTS",
+      "legacyNamingAllowed": true,
+      "scripts": [],
+      "statusFiles": [],
+      "statusSummary": {
+        "basename": "",
+        "ok": false,
+        "statusHash": "",
+        "tokenName": "",
+        "tokenValue": 0
+      },
+      "storageOrRecoverySafetyClaim": false
+    },
+    {
+      "commandResultsFiles": [],
+      "contourId": "B2C04",
+      "contractTests": [],
+      "coverage": "GAP_ONLY",
+      "evidenceFiles": [],
+      "gapRows": [
+        {
+          "classification": "ADVISORY",
+          "gapType": "STATUS_PACKET_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "gapType": "CONTRACT_TEST_GAP"
+        },
+        {
+          "classification": "ADVISORY",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "hasMachineEvidence": false,
+      "layer": "CONTRACTS",
+      "legacyNamingAllowed": true,
+      "scripts": [],
+      "statusFiles": [],
+      "statusSummary": {
+        "basename": "",
+        "ok": false,
+        "statusHash": "",
+        "tokenName": "",
+        "tokenValue": 0
+      },
+      "storageOrRecoverySafetyClaim": false
+    },
+    {
+      "commandResultsFiles": [],
+      "contourId": "B2C05",
+      "contractTests": [
+        "test/contracts/b2c05-formal-kernel-minimal.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [],
+      "gapRows": [
+        {
+          "classification": "NONBLOCKING",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "hasMachineEvidence": true,
+      "layer": "FORMAL_STATE",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c05-formal-kernel-minimal-proof.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C05_FORMAL_KERNEL_MINIMAL_STATUS_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C05_FORMAL_KERNEL_MINIMAL_STATUS_V1.json",
+        "ok": true,
+        "statusHash": "eb1fb4047015dd73378831326c71e507a0ce441b94ae1513be75bd084b9c310b",
+        "tokenName": "B2C05_FORMAL_KERNEL_MINIMAL_OK",
+        "tokenValue": 0
+      },
+      "storageOrRecoverySafetyClaim": false
+    },
+    {
+      "commandResultsFiles": [],
+      "contourId": "B2C06",
+      "contractTests": [
+        "test/contracts/b2c06-project-lifecycle-state.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [],
+      "gapRows": [
+        {
+          "classification": "NONBLOCKING",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "hasMachineEvidence": true,
+      "layer": "FORMAL_STATE",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c06-project-lifecycle-state.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C06_PROJECT_LIFECYCLE_STATE_MACHINE_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C06_PROJECT_LIFECYCLE_STATE_MACHINE_V1.json",
+        "ok": true,
+        "statusHash": "9a432655cd804fafc95403b648a962da8de85db31544d0c16e96cd4c6271bf12",
+        "tokenName": "B2C06_PROJECT_LIFECYCLE_STATE_MACHINE_OK",
+        "tokenValue": 0
+      },
+      "storageOrRecoverySafetyClaim": false
+    },
+    {
+      "commandResultsFiles": [],
+      "contourId": "B2C07",
+      "contractTests": [
+        "test/contracts/b2c07-transaction-boundary-minimal.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [],
+      "gapRows": [
+        {
+          "classification": "NONBLOCKING",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "hasMachineEvidence": true,
+      "layer": "FORMAL_STATE",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c07-transaction-boundary-minimal.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C07_TRANSACTION_BOUNDARY_MINIMAL_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C07_TRANSACTION_BOUNDARY_MINIMAL_V1.json",
+        "ok": true,
+        "statusHash": "4757ab905a0ba3502af65fc8f99d42839a1a5ab338ea62539a543816c0890cf1",
+        "tokenName": "B2C07_TRANSACTION_BOUNDARY_MINIMAL_OK",
+        "tokenValue": 0
+      },
+      "storageOrRecoverySafetyClaim": false
+    },
+    {
+      "commandResultsFiles": [],
+      "contourId": "B2C08",
+      "contractTests": [
+        "test/contracts/b2c08-recovery-boundary-minimal.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [],
+      "gapRows": [
+        {
+          "classification": "NONBLOCKING",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "hasMachineEvidence": true,
+      "layer": "FORMAL_STATE",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c08-recovery-boundary-minimal.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C08_RECOVERY_BOUNDARY_MINIMAL_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C08_RECOVERY_BOUNDARY_MINIMAL_V1.json",
+        "ok": true,
+        "statusHash": "8f519f4b350cf0f17ee62dc8970e1f8b1b3a5ed2f9274da8620e4aa6eabfebea",
+        "tokenName": "B2C08_RECOVERY_BOUNDARY_MINIMAL_OK",
+        "tokenValue": 0
+      },
+      "storageOrRecoverySafetyClaim": false
+    },
+    {
+      "commandResultsFiles": [],
+      "contourId": "B2C09",
+      "contractTests": [
+        "test/contracts/b2c09-command-surface-kernel.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [],
+      "gapRows": [
+        {
+          "classification": "NONBLOCKING",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "hasMachineEvidence": true,
+      "layer": "COMMAND_MUTATION",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c09-command-surface-kernel.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C09_COMMAND_SURFACE_KERNEL_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C09_COMMAND_SURFACE_KERNEL_V1.json",
+        "ok": true,
+        "statusHash": "90d0b9389e802485596d3e282ae715846bbf57b059c4335b2866a07952def21d",
+        "tokenName": "B2C09_COMMAND_SURFACE_KERNEL_OK",
+        "tokenValue": 0
+      },
+      "storageOrRecoverySafetyClaim": false
+    },
+    {
+      "commandResultsFiles": [],
+      "contourId": "B2C10",
+      "contractTests": [
+        "test/contracts/b2c10-command-bypass-negative-matrix.contract.test.js",
+        "test/contracts/b2c10-migration-safety-proof.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [],
+      "gapRows": [
+        {
+          "classification": "NONBLOCKING",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "hasMachineEvidence": true,
+      "layer": "COMMAND_MUTATION",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c10-command-bypass-negative-matrix-state.mjs",
+        "scripts/ops/b2c10-migration-safety-proof.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C10_COMMAND_BYPASS_NEGATIVE_MATRIX_STATUS_V1.json",
+        "docs/OPS/STATUS/B2C10_MIGRATION_SAFETY_PROOF_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C10_COMMAND_BYPASS_NEGATIVE_MATRIX_STATUS_V1.json",
+        "ok": true,
+        "statusHash": "d18171e6d935c4c0573548c9f41f133c94856a5a80a03395140eb18302985e99",
+        "tokenName": "B2C10_COMMAND_BYPASS_NEGATIVE_MATRIX_OK",
+        "tokenValue": 1
+      },
+      "storageOrRecoverySafetyClaim": false
+    },
+    {
+      "commandResultsFiles": [],
+      "contourId": "B2C11",
+      "contractTests": [
+        "test/contracts/b2c11-command-effect-model.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [],
+      "gapRows": [
+        {
+          "classification": "NONBLOCKING",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "hasMachineEvidence": true,
+      "layer": "COMMAND_MUTATION",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c11-command-effect-model-state.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C11_COMMAND_EFFECT_MODEL_STATUS_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C11_COMMAND_EFFECT_MODEL_STATUS_V1.json",
+        "ok": true,
+        "statusHash": "50bbc0cb39806f6ec08d631a667702e7bf21f73317ab1823857f94c196b82cf3",
+        "tokenName": "B2C11_COMMAND_EFFECT_MODEL_OK",
+        "tokenValue": 1
+      },
+      "storageOrRecoverySafetyClaim": false
+    },
+    {
+      "commandResultsFiles": [],
+      "contourId": "B2C12",
+      "contractTests": [
+        "test/contracts/b2c12-persist-effects-atomic-write.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [],
+      "gapRows": [
+        {
+          "classification": "NONBLOCKING",
+          "gapType": "COMMAND_RESULTS_GAP"
+        }
+      ],
+      "hasMachineEvidence": true,
+      "layer": "PERSISTENCE",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c12-persist-effects-atomic-write-state.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C12_PERSIST_EFFECTS_ATOMIC_WRITE_STATUS_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C12_PERSIST_EFFECTS_ATOMIC_WRITE_STATUS_V1.json",
+        "ok": true,
+        "statusHash": "ff5f64b743e5075601e67b93969192d5c35c2ac1fdd14e00c5cad056867a01a6",
+        "tokenName": "B2C12_PERSIST_EFFECTS_ATOMIC_WRITE_OK",
+        "tokenValue": 1
+      },
+      "storageOrRecoverySafetyClaim": true
+    },
+    {
+      "commandResultsFiles": [
+        "docs/OPS/EVIDENCE/B2C13_SAVE_REOPEN_TEXT_NO_LOSS/TICKET_01/command-results.json"
+      ],
+      "contourId": "B2C13",
+      "contractTests": [
+        "test/contracts/b2c13-save-reopen-text-no-loss.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [
+        "docs/OPS/EVIDENCE/B2C13_SAVE_REOPEN_TEXT_NO_LOSS/TICKET_01/command-results.json",
+        "docs/OPS/EVIDENCE/B2C13_SAVE_REOPEN_TEXT_NO_LOSS/TICKET_01/donor-mapping.json",
+        "docs/OPS/EVIDENCE/B2C13_SAVE_REOPEN_TEXT_NO_LOSS/TICKET_01/save-reopen-proof.json"
+      ],
+      "gapRows": [],
+      "hasMachineEvidence": true,
+      "layer": "PERSISTENCE",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c13-save-reopen-text-no-loss-state.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C13_SAVE_REOPEN_TEXT_NO_LOSS_STATUS_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C13_SAVE_REOPEN_TEXT_NO_LOSS_STATUS_V1.json",
+        "ok": true,
+        "statusHash": "341b36a5013a1631b329b83354e0388a782ad514665782f887003b07138cd2b1",
+        "tokenName": "B2C13_SAVE_REOPEN_TEXT_NO_LOSS_OK",
+        "tokenValue": 1
+      },
+      "storageOrRecoverySafetyClaim": true
+    },
+    {
+      "commandResultsFiles": [
+        "docs/OPS/EVIDENCE/B2C14_RECOVERY_READABLE_PROOF/TICKET_01/command-results.json"
+      ],
+      "contourId": "B2C14",
+      "contractTests": [
+        "test/contracts/b2c14-recovery-readable-proof.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [
+        "docs/OPS/EVIDENCE/B2C14_RECOVERY_READABLE_PROOF/TICKET_01/command-results.json",
+        "docs/OPS/EVIDENCE/B2C14_RECOVERY_READABLE_PROOF/TICKET_01/donor-mapping.json",
+        "docs/OPS/EVIDENCE/B2C14_RECOVERY_READABLE_PROOF/TICKET_01/readability-rubric.json",
+        "docs/OPS/EVIDENCE/B2C14_RECOVERY_READABLE_PROOF/TICKET_01/recovery-readable-proof.json"
+      ],
+      "gapRows": [],
+      "hasMachineEvidence": true,
+      "layer": "RECOVERY",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c14-recovery-readable-proof-state.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C14_RECOVERY_READABLE_PROOF_STATUS_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C14_RECOVERY_READABLE_PROOF_STATUS_V1.json",
+        "ok": true,
+        "statusHash": "fe5ab65c06a52dee008e30cb7b52478d8c17f6e512b51188049893fb3e06e6b9",
+        "tokenName": "B2C14_RECOVERY_READABLE_PROOF_OK",
+        "tokenValue": 1
+      },
+      "storageOrRecoverySafetyClaim": true
+    },
+    {
+      "commandResultsFiles": [
+        "docs/OPS/EVIDENCE/B2C15_RESTORE_DRILL_AND_QUARANTINE/TICKET_01/command-results.json"
+      ],
+      "contourId": "B2C15",
+      "contractTests": [
+        "test/contracts/b2c15-restore-drill-and-quarantine.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [
+        "docs/OPS/EVIDENCE/B2C15_RESTORE_DRILL_AND_QUARANTINE/TICKET_01/command-results.json",
+        "docs/OPS/EVIDENCE/B2C15_RESTORE_DRILL_AND_QUARANTINE/TICKET_01/donor-mapping.json",
+        "docs/OPS/EVIDENCE/B2C15_RESTORE_DRILL_AND_QUARANTINE/TICKET_01/quarantine-proof.json",
+        "docs/OPS/EVIDENCE/B2C15_RESTORE_DRILL_AND_QUARANTINE/TICKET_01/restore-drill-proof.json"
+      ],
+      "gapRows": [],
+      "hasMachineEvidence": true,
+      "layer": "RECOVERY",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c15-restore-drill-and-quarantine-state.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C15_RESTORE_DRILL_AND_QUARANTINE_STATUS_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C15_RESTORE_DRILL_AND_QUARANTINE_STATUS_V1.json",
+        "ok": true,
+        "statusHash": "157f08b24da389c68bbc47bb96bb85c4c24a3aeb20b98a86c9c66a13a336e2d1",
+        "tokenName": "B2C15_RESTORE_DRILL_AND_QUARANTINE_OK",
+        "tokenValue": 1
+      },
+      "storageOrRecoverySafetyClaim": true
+    },
+    {
+      "commandResultsFiles": [
+        "docs/OPS/EVIDENCE/B2C16_MIGRATION_POLICY_MINIMAL/TICKET_01/command-results.json"
+      ],
+      "contourId": "B2C16",
+      "contractTests": [
+        "test/contracts/b2c16-migration-policy-minimal.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [
+        "docs/OPS/EVIDENCE/B2C16_MIGRATION_POLICY_MINIMAL/TICKET_01/command-results.json",
+        "docs/OPS/EVIDENCE/B2C16_MIGRATION_POLICY_MINIMAL/TICKET_01/donor-mapping.json",
+        "docs/OPS/EVIDENCE/B2C16_MIGRATION_POLICY_MINIMAL/TICKET_01/migration-policy-proof.json",
+        "docs/OPS/EVIDENCE/B2C16_MIGRATION_POLICY_MINIMAL/TICKET_01/version-policy-matrix.json"
+      ],
+      "gapRows": [],
+      "hasMachineEvidence": true,
+      "layer": "MIGRATION",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c16-migration-policy-minimal-state.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C16_MIGRATION_POLICY_MINIMAL_STATUS_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C16_MIGRATION_POLICY_MINIMAL_STATUS_V1.json",
+        "ok": true,
+        "statusHash": "6fdd71dd0f8f81e12ba265475faf8152d0a3cc2599261b811d6be3e0b7a7eef9",
+        "tokenName": "B2C16_MIGRATION_POLICY_MINIMAL_OK",
+        "tokenValue": 1
+      },
+      "storageOrRecoverySafetyClaim": true
+    },
+    {
+      "commandResultsFiles": [
+        "docs/OPS/EVIDENCE/B2C17_MIGRATION_KILLPOINT_PROOF/TICKET_01/command-results.json"
+      ],
+      "contourId": "B2C17",
+      "contractTests": [
+        "test/contracts/b2c17-migration-killpoint-proof.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [
+        "docs/OPS/EVIDENCE/B2C17_MIGRATION_KILLPOINT_PROOF/TICKET_01/command-results.json",
+        "docs/OPS/EVIDENCE/B2C17_MIGRATION_KILLPOINT_PROOF/TICKET_01/donor-mapping.json",
+        "docs/OPS/EVIDENCE/B2C17_MIGRATION_KILLPOINT_PROOF/TICKET_01/killpoint-matrix.json",
+        "docs/OPS/EVIDENCE/B2C17_MIGRATION_KILLPOINT_PROOF/TICKET_01/recovery-outcome-proof.json"
+      ],
+      "gapRows": [],
+      "hasMachineEvidence": true,
+      "layer": "MIGRATION",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c17-migration-killpoint-proof-state.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C17_MIGRATION_KILLPOINT_PROOF_STATUS_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C17_MIGRATION_KILLPOINT_PROOF_STATUS_V1.json",
+        "ok": true,
+        "statusHash": "3381be5f26c0dd241d1ba9da25963428aa197d39f7708916af63aff5b67999f0",
+        "tokenName": "B2C17_MIGRATION_KILLPOINT_PROOF_OK",
+        "tokenValue": 1
+      },
+      "storageOrRecoverySafetyClaim": true
+    },
+    {
+      "commandResultsFiles": [
+        "docs/OPS/EVIDENCE/B2C18_BASIC_KERNEL_PERF_GUARD/TICKET_01/command-results.json"
+      ],
+      "contourId": "B2C18",
+      "contractTests": [
+        "test/contracts/b2c18-basic-kernel-perf-guard.contract.test.js"
+      ],
+      "coverage": "COVERED_OR_LEGACY_GAP_ROWS",
+      "evidenceFiles": [
+        "docs/OPS/EVIDENCE/B2C18_BASIC_KERNEL_PERF_GUARD/TICKET_01/command-results.json",
+        "docs/OPS/EVIDENCE/B2C18_BASIC_KERNEL_PERF_GUARD/TICKET_01/donor-mapping.json",
+        "docs/OPS/EVIDENCE/B2C18_BASIC_KERNEL_PERF_GUARD/TICKET_01/hot-path-proof.json",
+        "docs/OPS/EVIDENCE/B2C18_BASIC_KERNEL_PERF_GUARD/TICKET_01/perf-budget-table.json"
+      ],
+      "gapRows": [],
+      "hasMachineEvidence": true,
+      "layer": "RUNTIME_BUDGET",
+      "legacyNamingAllowed": false,
+      "scripts": [
+        "scripts/ops/b2c18-basic-kernel-perf-guard-state.mjs"
+      ],
+      "statusFiles": [
+        "docs/OPS/STATUS/B2C18_BASIC_KERNEL_PERF_GUARD_STATUS_V1.json"
+      ],
+      "statusSummary": {
+        "basename": "B2C18_BASIC_KERNEL_PERF_GUARD_STATUS_V1.json",
+        "ok": true,
+        "statusHash": "30451c8be197a2202cea9a7f0bb99242aea24d41b2f9c61448095f21c45f0c57",
+        "tokenName": "B2C18_BASIC_KERNEL_PERF_GUARD_OK",
+        "tokenValue": 1
+      },
+      "storageOrRecoverySafetyClaim": false
+    }
+  ]
+}

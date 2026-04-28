@@ -1,0 +1,61 @@
+{
+  "allPassed": true,
+  "commands": [
+    {
+      "command": "node scripts/ops/b2c19-independent-kernel-audit-state.mjs --write --json",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "Required command completed successfully."
+    },
+    {
+      "command": "node --test test/contracts/b2c19-independent-kernel-audit.contract.test.js",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "Required command completed successfully."
+    },
+    {
+      "command": "node --test test/contracts/b2c18-basic-kernel-perf-guard.contract.test.js",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "Required command completed successfully."
+    },
+    {
+      "command": "node --test test/contracts/b2c17-migration-killpoint-proof.contract.test.js",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "Required command completed successfully."
+    },
+    {
+      "command": "node --test test/contracts/b2c16-migration-policy-minimal.contract.test.js",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "Required command completed successfully."
+    },
+    {
+      "command": "npm run oss:policy",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "Required command completed successfully."
+    },
+    {
+      "command": "git diff --name-only -- package.json package-lock.json",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "Guarded diff command produced no out-of-scope changes."
+    },
+    {
+      "command": "git diff --name-only -- src/renderer/index.html src/renderer/styles.css",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "Guarded diff command produced no out-of-scope changes."
+    },
+    {
+      "command": "git diff --name-only -- src src-electron scripts -- . :(exclude)scripts/ops/b2c19-independent-kernel-audit-state.mjs",
+      "exitCode": 0,
+      "result": "PASS",
+      "summary": "Guarded diff command produced no out-of-scope changes."
+    }
+  ],
+  "status": "EXECUTED_AND_RECORDED",
+  "taskId": "B2C19_INDEPENDENT_KERNEL_AUDIT"
+}
