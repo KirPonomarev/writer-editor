@@ -673,6 +673,7 @@ let centralSheetStripStructuralSettleFrameId = null;
 let centralSheetStripStructuralSettleSignature = '';
 let centralSheetStripStructuralStablePassCount = 0;
 let centralSheetStripStructuralGuardActive = false;
+let derivedPageMapRuntimeBridgeRefreshSerial = 0;
 
 function resetCentralSheetStripStructuralSettleState() {
   if (centralSheetStripStructuralSettleFrameId) {
@@ -739,6 +740,32 @@ function getRootCssPxValue(name, fallback = 0) {
   const raw = window.getComputedStyle(document.documentElement).getPropertyValue(name);
   const parsed = Number.parseFloat(raw);
   return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function stableSerializeRuntimeAdapter(value) {
+  if (value === null) return 'null';
+  const type = typeof value;
+  if (type === 'number') return Number.isFinite(value) ? String(value) : 'null';
+  if (type === 'boolean') return value ? 'true' : 'false';
+  if (type === 'string') return JSON.stringify(value);
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableSerializeRuntimeAdapter(item)).join(',')}]`;
+  }
+  if (type === 'object') {
+    const keys = Object.keys(value).sort();
+    return `{${keys.map((key) => `${JSON.stringify(key)}:${stableSerializeRuntimeAdapter(value[key])}`).join(',')}}`;
+  }
+  return 'null';
+}
+
+function hashRuntimeAdapterValue(value) {
+  let hash = 0x811c9dc5;
+  const source = stableSerializeRuntimeAdapter(value);
+  for (let index = 0; index < source.length; index += 1) {
+    hash ^= source.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash.toString(16).padStart(8, '0');
 }
 
 function getCentralSheetContentMetrics(metrics) {
@@ -961,6 +988,7 @@ function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   delete editor.dataset.centralSheetWindowLastRenderedPage;
   delete editor.dataset.centralSheetWindowVisiblePageCount;
   delete editor.dataset.centralSheetWindowingEnabled;
+  clearDerivedPageMapRuntimeBridgeDataset();
   if (overflowReason) {
     editor.dataset.centralSheetOverflowReason = overflowReason;
   } else {
@@ -996,6 +1024,110 @@ function syncCentralSheetStripOverflowMetadata({ pageCount, visiblePageCount, ov
   editor.dataset.centralSheetBoundedOverflowSourcePageCount = String(pageCount);
   editor.dataset.centralSheetBoundedOverflowVisiblePageCount = String(visiblePageCount);
   editor.dataset.centralSheetBoundedOverflowHiddenPageCount = String(pageCount - visiblePageCount);
+}
+
+function getRenderedWindowPageNumbers(pageWindow) {
+  if (!pageWindow || typeof pageWindow !== 'object') {
+    return [];
+  }
+  const firstRenderedPage = Math.max(1, Number(pageWindow.firstRenderedPage) || 1);
+  const renderedPageCount = Math.max(0, Number(pageWindow.renderedPageCount) || 0);
+  return Array.from({ length: renderedPageCount }, (_, index) => firstRenderedPage + index);
+}
+
+function buildDerivedPageMapRuntimeBridge({
+  activeLayoutPreviewSnapshot,
+  pageWindow,
+} = {}) {
+  const snapshot = activeLayoutPreviewSnapshot && typeof activeLayoutPreviewSnapshot === 'object'
+    ? activeLayoutPreviewSnapshot
+    : null;
+  const pageMap = snapshot && snapshot.pageMap && typeof snapshot.pageMap === 'object'
+    ? snapshot.pageMap
+    : null;
+  const contract = pageMap && pageMap.contract && typeof pageMap.contract === 'object'
+    ? pageMap.contract
+    : {};
+  const renderedWindowPageNumbers = getRenderedWindowPageNumbers(pageWindow);
+  const pageMapHash = typeof pageMap?.meta?.pageMapHash === 'string'
+    ? pageMap.meta.pageMapHash
+    : '';
+  const sourceContractHash = pageMapHash
+    ? hashRuntimeAdapterValue({
+      contract,
+      pageMapHash,
+      runtimeContractSchemaVersion: pageMap.runtimeContractSchemaVersion || '',
+    })
+    : '';
+  const bridgeSource = isTiptapMode ? 'tiptapPlainTextProvider' : 'plainTextBuffer';
+  const editorTextHash = typeof snapshot?.flow?.meta?.flowHash === 'string'
+    ? snapshot.flow.meta.flowHash
+    : hashRuntimeAdapterValue({
+      bridgeSource,
+      text: getPlainText(),
+    });
+  const pageMapProductRuntimeBinding = contract.productRuntimeBinding === true;
+  const truthBoundaryOk = (
+    contract.derived === true
+    && contract.derivedOnly === true
+    && contract.runtimeOnly === true
+    && contract.textTruth === false
+    && contract.storageTruth === false
+    && contract.exportTruth === false
+    && pageMapProductRuntimeBinding === false
+  );
+
+  return {
+    bridgeActive: Boolean(
+      truthBoundaryOk
+      && sourceContractHash
+      && pageWindow
+      && pageWindow.windowingEnabled === true
+      && renderedWindowPageNumbers.length > 0,
+    ),
+    bridgeSource,
+    sourceContractHash,
+    editorTextHash,
+    renderedWindowPageNumbers,
+    textTruth: false,
+    storageTruth: false,
+    exportTruth: false,
+    pageMapProductRuntimeBinding,
+  };
+}
+
+function clearDerivedPageMapRuntimeBridgeDataset() {
+  if (!(editor instanceof HTMLElement)) {
+    return;
+  }
+  delete editor.dataset.derivedPageMapRuntimeBridgeActive;
+  delete editor.dataset.derivedPageMapRuntimeBridgeSource;
+  delete editor.dataset.derivedPageMapRuntimeBridgeSourceContractHash;
+  delete editor.dataset.derivedPageMapRuntimeBridgeEditorTextHash;
+  delete editor.dataset.derivedPageMapRuntimeBridgeRenderedWindowPageNumbers;
+  delete editor.dataset.derivedPageMapRuntimeBridgeTextTruth;
+  delete editor.dataset.derivedPageMapRuntimeBridgeStorageTruth;
+  delete editor.dataset.derivedPageMapRuntimeBridgeExportTruth;
+  delete editor.dataset.derivedPageMapRuntimeBridgePageMapProductRuntimeBinding;
+  delete editor.dataset.derivedPageMapRuntimeBridgeRefreshSerial;
+}
+
+function syncDerivedPageMapRuntimeBridgeDataset(bridge) {
+  if (!(editor instanceof HTMLElement) || !bridge) {
+    clearDerivedPageMapRuntimeBridgeDataset();
+    return;
+  }
+  derivedPageMapRuntimeBridgeRefreshSerial += 1;
+  editor.dataset.derivedPageMapRuntimeBridgeActive = bridge.bridgeActive ? 'true' : 'false';
+  editor.dataset.derivedPageMapRuntimeBridgeSource = String(bridge.bridgeSource || '');
+  editor.dataset.derivedPageMapRuntimeBridgeSourceContractHash = String(bridge.sourceContractHash || '');
+  editor.dataset.derivedPageMapRuntimeBridgeEditorTextHash = String(bridge.editorTextHash || '');
+  editor.dataset.derivedPageMapRuntimeBridgeRenderedWindowPageNumbers = bridge.renderedWindowPageNumbers.join(',');
+  editor.dataset.derivedPageMapRuntimeBridgeTextTruth = bridge.textTruth ? 'true' : 'false';
+  editor.dataset.derivedPageMapRuntimeBridgeStorageTruth = bridge.storageTruth ? 'true' : 'false';
+  editor.dataset.derivedPageMapRuntimeBridgeExportTruth = bridge.exportTruth ? 'true' : 'false';
+  editor.dataset.derivedPageMapRuntimeBridgePageMapProductRuntimeBinding = bridge.pageMapProductRuntimeBinding ? 'true' : 'false';
+  editor.dataset.derivedPageMapRuntimeBridgeRefreshSerial = String(derivedPageMapRuntimeBridgeRefreshSerial);
 }
 
 function resolveCentralSheetViewportRuntimeWindow({
@@ -1116,6 +1248,7 @@ function buildCentralSheetStripRuntimeState({ proseMirror, reuseCachedDecision =
     pageCount: Math.max(decisionPageCount, structuralMinimumPageCount),
     shouldRender,
     overflowReason,
+    activeLayoutPreviewSnapshot,
   };
 }
 
@@ -1129,6 +1262,7 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
     contentHeightPx,
     pageGapPx,
     lineGuardPx,
+    activeLayoutPreviewSnapshot,
     decisionPageCount,
     structuralMinimumPageCount,
     pageCount,
@@ -1142,6 +1276,7 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
     pageGapPx,
   });
   if (!pageWindow || pageWindow.windowingEnabled !== true) {
+    clearDerivedPageMapRuntimeBridgeDataset();
     return false;
   }
   const renderedPageCount = Math.max(0, Number(pageWindow.renderedPageCount) || 0);
@@ -1166,6 +1301,10 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
   editor.dataset.centralSheetWindowLastRenderedPage = String(pageWindow.lastRenderedPage);
   editor.dataset.centralSheetWindowVisiblePageCount = String(pageWindow.visiblePageCount);
   editor.dataset.centralSheetWindowingEnabled = pageWindow.windowingEnabled ? 'true' : 'false';
+  syncDerivedPageMapRuntimeBridgeDataset(buildDerivedPageMapRuntimeBridge({
+    activeLayoutPreviewSnapshot,
+    pageWindow,
+  }));
   centralSheetStripLastAppliedSignature = [
     decisionPageCount,
     structuralMinimumPageCount,
