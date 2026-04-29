@@ -117,8 +117,20 @@ async function collectState(win, label) {
   })()\`, true);
 }
 
-async function lockBoundaryCoordinate(win) {
+async function lockBoundaryTextPosition(win) {
   return win.webContents.executeJavaScript(\`(() => {
+    function serializeRect(rect) {
+      return {
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+        top: rect.top,
+        bottom: rect.bottom,
+        left: rect.left,
+        right: rect.right,
+      };
+    }
     const host = document.querySelector('#editor.tiptap-host');
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
@@ -134,115 +146,145 @@ async function lockBoundaryCoordinate(win) {
           : NodeFilter.FILTER_SKIP;
       },
     });
-    const textRects = [];
+    const textOffsets = [];
+    const allTextRects = [];
+    let nodeIndex = 0;
     let current = walker.nextNode();
     while (current) {
-      const range = document.createRange();
-      range.selectNodeContents(current);
-      [...range.getClientRects()].forEach((rect) => {
-        const insideFirstSheet = (
-          rect.left < firstSheetRect.right
-          && rect.right > firstSheetRect.left
-          && rect.top < firstSheetRect.bottom
-          && rect.bottom > firstSheetRect.top
-        );
-        if (insideFirstSheet && rect.width > 2 && rect.height > 2) {
-          textRects.push({
-            x: rect.x,
-            y: rect.y,
-            width: rect.width,
-            height: rect.height,
-            top: rect.top,
-            bottom: rect.bottom,
-            left: rect.left,
-            right: rect.right,
-            distanceFromSheetBottom: firstSheetRect.bottom - rect.bottom,
-          });
-        }
-      });
+      const text = current.textContent || '';
+      for (let offset = 0; offset < text.length; offset += 1) {
+        const range = document.createRange();
+        range.setStart(current, offset);
+        range.setEnd(current, offset + 1);
+        [...range.getClientRects()].forEach((rect) => {
+          const insideFirstSheet = (
+            rect.left < firstSheetRect.right
+            && rect.right > firstSheetRect.left
+            && rect.top < firstSheetRect.bottom
+            && rect.bottom > firstSheetRect.top
+          );
+          if (insideFirstSheet && rect.width > 0.5 && rect.height > 2) {
+            const serializedRect = {
+              ...serializeRect(rect),
+              distanceFromSheetBottom: firstSheetRect.bottom - rect.bottom,
+            };
+            allTextRects.push(serializedRect);
+            textOffsets.push({
+              nodeIndex,
+              offset,
+              nodeTextLength: text.length,
+              char: text.slice(offset, offset + 1),
+              textRect: serializedRect,
+            });
+          }
+        });
+      }
+      nodeIndex += 1;
       current = walker.nextNode();
     }
     const safeBandMin = 24;
     const safeBandMax = 220;
-    const candidates = textRects
-      .filter((rect) => rect.distanceFromSheetBottom >= safeBandMin && rect.distanceFromSheetBottom <= safeBandMax)
-      .sort((a, b) => a.distanceFromSheetBottom - b.distanceFromSheetBottom);
-    const fallbackCandidates = textRects
-      .filter((rect) => rect.distanceFromSheetBottom >= 0)
-      .sort((a, b) => a.distanceFromSheetBottom - b.distanceFromSheetBottom);
+    const candidates = textOffsets
+      .filter((item) => item.textRect.distanceFromSheetBottom >= safeBandMin && item.textRect.distanceFromSheetBottom <= safeBandMax)
+      .sort((a, b) => a.textRect.distanceFromSheetBottom - b.textRect.distanceFromSheetBottom);
+    const fallbackCandidates = textOffsets
+      .filter((item) => item.textRect.distanceFromSheetBottom >= 0)
+      .sort((a, b) => a.textRect.distanceFromSheetBottom - b.textRect.distanceFromSheetBottom);
     const selected = candidates[0] || null;
     if (!selected) {
       return {
         ok: false,
-        reason: 'NO_TEXT_RECT_IN_SAFE_BOUNDARY_BAND',
-        firstSheetRect: {
-          x: firstSheetRect.x,
-          y: firstSheetRect.y,
-          width: firstSheetRect.width,
-          height: firstSheetRect.height,
-          top: firstSheetRect.top,
-          bottom: firstSheetRect.bottom,
-          left: firstSheetRect.left,
-          right: firstSheetRect.right,
-        },
+        reason: 'NO_TEXT_NODE_OFFSET_IN_SAFE_BOUNDARY_BAND',
+        firstSheetRect: serializeRect(firstSheetRect),
         nearestTextRect: fallbackCandidates[0] || null,
-        textRectCount: textRects.length,
+        textRectCount: allTextRects.length,
+        textOffsetCount: textOffsets.length,
         safeBandMin,
         safeBandMax,
       };
     }
-    const x = Math.max(selected.left + 1, Math.min(selected.right - 1, selected.left + selected.width * 0.72));
-    const y = selected.top + selected.height / 2;
-    const insideTextRect = x >= selected.left && x <= selected.right && y >= selected.top && y <= selected.bottom;
+    const x = selected.textRect.left + selected.textRect.width / 2;
+    const y = selected.textRect.top + selected.textRect.height / 2;
+    const insideTextRect = x >= selected.textRect.left && x <= selected.textRect.right && y >= selected.textRect.top && y <= selected.textRect.bottom;
     const insideFirstSheet = x >= firstSheetRect.left && x <= firstSheetRect.right && y >= firstSheetRect.top && y <= firstSheetRect.bottom;
-    let caretRange = null;
-    let proofStrength = 'NONE';
-    if (typeof document.caretRangeFromPoint === 'function') {
-      caretRange = document.caretRangeFromPoint(x, y);
-      proofStrength = caretRange ? 'REAL_COORDINATE_CARET_RANGE_FROM_POINT_PASS' : 'NONE';
-    }
-    if (!caretRange && typeof document.caretPositionFromPoint === 'function') {
-      const caretPosition = document.caretPositionFromPoint(x, y);
-      if (caretPosition) {
-        caretRange = document.createRange();
-        caretRange.setStart(caretPosition.offsetNode, caretPosition.offset);
-        caretRange.collapse(true);
-        proofStrength = 'REAL_COORDINATE_CARET_POSITION_FROM_POINT_PASS';
-      }
-    }
-    const caretNode = caretRange ? caretRange.startContainer : null;
-    const caretElement = caretNode && caretNode.nodeType === Node.TEXT_NODE
-      ? caretNode.parentElement
-      : caretNode;
-    const caretInsideProse = Boolean(caretElement && (caretElement === prose || prose.contains(caretElement)));
     return {
-      ok: Boolean(caretRange && caretInsideProse && insideTextRect && insideFirstSheet),
-      reason: caretRange ? null : 'COORDINATE_CARET_API_NO_RESULT',
-      proofStrength,
-      boundaryCoordinate: { x, y },
-      selectedTextRect: selected,
-      firstSheetRect: {
-        x: firstSheetRect.x,
-        y: firstSheetRect.y,
-        width: firstSheetRect.width,
-        height: firstSheetRect.height,
-        top: firstSheetRect.top,
-        bottom: firstSheetRect.bottom,
-        left: firstSheetRect.left,
-        right: firstSheetRect.right,
-      },
+      ok: Boolean(insideTextRect && insideFirstSheet && selected.offset >= 0 && selected.offset < selected.nodeTextLength),
+      reason: null,
+      proofStrength: 'GEOMETRY_TO_TEXT_NODE_OFFSET_PASS',
+      boundaryPoint: { x, y },
+      selectedTextOffset: selected,
+      firstSheetRect: serializeRect(firstSheetRect),
       insideTextRect,
       insideFirstSheet,
-      caretInsideProse,
-      textRectCount: textRects.length,
+      textRectCount: allTextRects.length,
+      textOffsetCount: textOffsets.length,
       safeBandMin,
       safeBandMax,
     };
   })()\`, true);
 }
 
-async function placeCaretAtBoundary(win, coordinate) {
-  return win.webContents.executeJavaScript(\`((point) => {
+async function placeCaretAtBoundary(win) {
+  return win.webContents.executeJavaScript(\`(() => {
+    function serializeRect(rect) {
+      return {
+        x: rect.x,
+        y: rect.y,
+        width: rect.width,
+        height: rect.height,
+        top: rect.top,
+        bottom: rect.bottom,
+        left: rect.left,
+        right: rect.right,
+      };
+    }
+    function findBoundaryTextOffset(prose, firstSheet) {
+      const firstSheetRect = firstSheet.getBoundingClientRect();
+      const walker = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          return node.textContent && node.textContent.trim()
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_SKIP;
+        },
+      });
+      const offsets = [];
+      let nodeIndex = 0;
+      let current = walker.nextNode();
+      while (current) {
+        const text = current.textContent || '';
+        for (let offset = 0; offset < text.length; offset += 1) {
+          const range = document.createRange();
+          range.setStart(current, offset);
+          range.setEnd(current, offset + 1);
+          [...range.getClientRects()].forEach((rect) => {
+            const insideFirstSheet = (
+              rect.left < firstSheetRect.right
+              && rect.right > firstSheetRect.left
+              && rect.top < firstSheetRect.bottom
+              && rect.bottom > firstSheetRect.top
+            );
+            if (insideFirstSheet && rect.width > 0.5 && rect.height > 2) {
+              offsets.push({
+                node: current,
+                nodeIndex,
+                offset,
+                nodeTextLength: text.length,
+                textRect: {
+                  ...serializeRect(rect),
+                  distanceFromSheetBottom: firstSheetRect.bottom - rect.bottom,
+                },
+              });
+            }
+          });
+        }
+        nodeIndex += 1;
+        current = walker.nextNode();
+      }
+      const candidates = offsets
+        .filter((item) => item.textRect.distanceFromSheetBottom >= 24 && item.textRect.distanceFromSheetBottom <= 220)
+        .sort((a, b) => a.textRect.distanceFromSheetBottom - b.textRect.distanceFromSheetBottom);
+      return candidates[0] || null;
+    }
     const host = document.querySelector('#editor.tiptap-host');
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
@@ -250,35 +292,31 @@ async function placeCaretAtBoundary(win, coordinate) {
     if (!prose || !firstSheet) {
       return { ok: false, reason: 'PROSEMIRROR_OR_SHEET_MISSING' };
     }
-    let range = null;
-    let proofStrength = 'NONE';
-    if (typeof document.caretRangeFromPoint === 'function') {
-      range = document.caretRangeFromPoint(point.x, point.y);
-      proofStrength = range ? 'REAL_COORDINATE_CARET_RANGE_FROM_POINT_PASS' : 'NONE';
+    const selected = findBoundaryTextOffset(prose, firstSheet);
+    if (!selected) {
+      return { ok: false, reason: 'NO_TEXT_NODE_OFFSET_IN_SAFE_BOUNDARY_BAND', proofStrength: 'NONE' };
     }
-    if (!range && typeof document.caretPositionFromPoint === 'function') {
-      const position = document.caretPositionFromPoint(point.x, point.y);
-      if (position) {
-        range = document.createRange();
-        range.setStart(position.offsetNode, position.offset);
-        range.collapse(true);
-        proofStrength = 'REAL_COORDINATE_CARET_POSITION_FROM_POINT_PASS';
-      }
-    }
-    if (!range) {
-      return { ok: false, reason: 'COORDINATE_CARET_API_NO_RESULT', proofStrength };
-    }
+    const range = document.createRange();
+    range.setStart(selected.node, selected.offset);
     range.collapse(true);
+    prose.focus({ preventScroll: true });
     const selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
-    prose.focus();
     const selectionNode = range.commonAncestorContainer;
     const selectionElement = selectionNode && selectionNode.nodeType === Node.TEXT_NODE
       ? selectionNode.parentElement
       : selectionNode;
     const selectionInsideProse = Boolean(selectionElement && (selectionElement === prose || prose.contains(selectionElement)));
     const activeElementInsideProse = document.activeElement === prose || prose.contains(document.activeElement);
+    const liveSelection = window.getSelection();
+    const selectionAnchorMatchesTextOffset = Boolean(
+      liveSelection
+      && liveSelection.rangeCount === 1
+      && liveSelection.isCollapsed
+      && liveSelection.anchorNode === selected.node
+      && liveSelection.anchorOffset === selected.offset
+    );
     const firstSheetRectRaw = firstSheet.getBoundingClientRect();
     const firstSheetRect = {
       x: firstSheetRectRaw.x,
@@ -291,23 +329,117 @@ async function placeCaretAtBoundary(win, coordinate) {
       right: firstSheetRectRaw.right,
     };
     const selectionRectInsideBoundarySafeBand = (
-      point.x >= firstSheetRect.left
-      && point.x <= firstSheetRect.right
-      && point.y >= firstSheetRect.top
-      && point.y <= firstSheetRect.bottom
-      && firstSheetRect.bottom - point.y >= 24
-      && firstSheetRect.bottom - point.y <= 220
+      selected.textRect.left >= firstSheetRect.left
+      && selected.textRect.right <= firstSheetRect.right
+      && selected.textRect.top >= firstSheetRect.top
+      && selected.textRect.bottom <= firstSheetRect.bottom
+      && selected.textRect.distanceFromSheetBottom >= 24
+      && selected.textRect.distanceFromSheetBottom <= 220
     );
     return {
-      ok: selectionInsideProse && activeElementInsideProse && selectionRectInsideBoundarySafeBand,
-      proofStrength,
+      ok: selectionInsideProse && activeElementInsideProse && selectionRectInsideBoundarySafeBand && selectionAnchorMatchesTextOffset,
+      proofStrength: 'GEOMETRY_TO_TEXT_NODE_OFFSET_PASS',
+      selectedTextOffset: {
+        nodeIndex: selected.nodeIndex,
+        offset: selected.offset,
+        nodeTextLength: selected.nodeTextLength,
+        textRect: selected.textRect,
+      },
       selectionInsideProse,
       activeElementInsideProse,
+      selectionAnchorMatchesTextOffset,
+      selectionCollapsed: Boolean(liveSelection && liveSelection.isCollapsed),
       selectionRectInsideBoundarySafeBand,
       proseMirrorCount: host.querySelectorAll('.ProseMirror').length,
       tiptapEditorCount: host.querySelectorAll('.tiptap-editor').length,
     };
-  })(\${JSON.stringify(coordinate)})\`, true);
+  })()\`, true);
+}
+
+async function runNegativeTextOffsetControl(win) {
+  return win.webContents.executeJavaScript(\`(() => {
+    const host = document.querySelector('#editor.tiptap-host');
+    const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
+    const prose = host ? host.querySelector('.ProseMirror') : null;
+    const firstSheet = strip ? strip.querySelector(':scope > .tiptap-page-wrap') : null;
+    if (!prose || !firstSheet) {
+      return { ok: false, reason: 'PROSEMIRROR_OR_SHEET_MISSING' };
+    }
+    const firstSheetRect = firstSheet.getBoundingClientRect();
+    const walker = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        return node.textContent && node.textContent.trim()
+          ? NodeFilter.FILTER_ACCEPT
+          : NodeFilter.FILTER_SKIP;
+      },
+    });
+    const textOffsets = [];
+    let current = walker.nextNode();
+    while (current) {
+      const text = current.textContent || '';
+      for (let offset = 0; offset < text.length; offset += 1) {
+        const range = document.createRange();
+        range.setStart(current, offset);
+        range.setEnd(current, offset + 1);
+        [...range.getClientRects()].forEach((rect) => {
+          const insideFirstSheet = (
+            rect.left < firstSheetRect.right
+            && rect.right > firstSheetRect.left
+            && rect.top < firstSheetRect.bottom
+            && rect.bottom > firstSheetRect.top
+          );
+          if (insideFirstSheet && rect.width > 0.5 && rect.height > 2) {
+            textOffsets.push({
+              offset,
+              nodeTextLength: text.length,
+              left: rect.left,
+              right: rect.right,
+              top: rect.top,
+              bottom: rect.bottom,
+              width: rect.width,
+              height: rect.height,
+              distanceFromSheetBottom: firstSheetRect.bottom - rect.bottom,
+            });
+          }
+        });
+      }
+      current = walker.nextNode();
+    }
+    const selected = textOffsets
+      .filter((rect) => rect.distanceFromSheetBottom >= 24 && rect.distanceFromSheetBottom <= 220)
+      .sort((a, b) => a.distanceFromSheetBottom - b.distanceFromSheetBottom)[0];
+    if (!selected) {
+      return { ok: false, reason: 'NO_TEXT_NODE_OFFSET_FOR_NEGATIVE_CONTROL' };
+    }
+    const candidatePoints = [
+      { x: firstSheetRect.left + 8, y: selected.top + selected.height / 2, kind: 'left-margin' },
+      { x: firstSheetRect.right - 8, y: selected.top + selected.height / 2, kind: 'right-margin' },
+      { x: selected.left - 12, y: selected.top + selected.height / 2, kind: 'before-line-text' },
+      { x: selected.right + 12, y: selected.top + selected.height / 2, kind: 'after-line-text' },
+    ].filter((point) => (
+      point.x > firstSheetRect.left
+      && point.x < firstSheetRect.right
+      && point.y > firstSheetRect.top
+      && point.y < firstSheetRect.bottom
+    ));
+    const negativePoint = candidatePoints.find((point) => !textOffsets.some((rect) => (
+      point.x >= rect.left
+      && point.x <= rect.right
+      && point.y >= rect.top
+      && point.y <= rect.bottom
+    )));
+    if (!negativePoint) {
+      return { ok: false, reason: 'NEGATIVE_CONTROL_POINT_OVER_TEXT' };
+    }
+    return {
+      ok: true,
+      reason: 'NO_TEXT_NODE_OFFSET_PROOF',
+      negativePoint,
+      attemptedTextNodeOffsetResolution: true,
+      matchedTextNodeOffset: false,
+      textOffsetCount: textOffsets.length,
+    };
+  })()\`, true);
 }
 
 async function findTwoSheetFixture(win) {
@@ -317,7 +449,7 @@ async function findTwoSheetFixture(win) {
     await setEditorPayload(win, paragraphCount);
     await sleep(700);
     const state = await collectState(win, 'candidate-' + String(paragraphCount));
-    const boundaryCandidate = await lockBoundaryCoordinate(win);
+    const boundaryCandidate = await lockBoundaryTextPosition(win);
     lastState = state;
     lastBoundaryCandidate = boundaryCandidate;
     if (
@@ -375,11 +507,15 @@ app.whenReady().then(async () => {
     await setEditorPayload(win, fixture.paragraphCount);
     await sleep(800);
     const beforeEnter = await collectState(win, 'before-enter');
-    const boundaryCandidate = await lockBoundaryCoordinate(win);
+    const boundaryCandidate = await lockBoundaryTextPosition(win);
     if (!boundaryCandidate.ok) {
-      throw new Error('BOUNDARY_COORDINATE_NOT_PROVABLE ' + JSON.stringify(boundaryCandidate));
+      throw new Error('BOUNDARY_TEXT_OFFSET_NOT_PROVABLE ' + JSON.stringify(boundaryCandidate));
     }
-    const caretPlacement = await placeCaretAtBoundary(win, boundaryCandidate.boundaryCoordinate);
+    const negativeTextOffsetControl = await runNegativeTextOffsetControl(win);
+    if (!negativeTextOffsetControl.ok || negativeTextOffsetControl.reason !== 'NO_TEXT_NODE_OFFSET_PROOF') {
+      throw new Error('NEGATIVE_TEXT_OFFSET_CONTROL_NOT_PROVABLE ' + JSON.stringify(negativeTextOffsetControl));
+    }
+    const caretPlacement = await placeCaretAtBoundary(win);
     if (!caretPlacement.ok) {
       throw new Error('BOUNDARY_CARET_PLACEMENT_NOT_PROVABLE ' + JSON.stringify(caretPlacement));
     }
@@ -403,6 +539,7 @@ app.whenReady().then(async () => {
       fixture: fixture.state,
       beforeEnter,
       boundaryCandidate,
+      negativeTextOffsetControl,
       caretPlacement,
       afterEnter,
       afterType,
@@ -474,20 +611,29 @@ for (const state of states) {
 
 assert.equal(result.fixture.centralSheetFlow, 'vertical', 'fixture must use central sheet vertical flow');
 assert.ok(result.beforeEnter.visibleSheetCount >= 2, 'baseline text must show at least two visible sheets');
-assert.equal(result.boundaryCandidate.ok, true, 'boundary coordinate candidate must be found');
-assert.equal(result.boundaryCandidate.insideTextRect, true, 'boundary coordinate must be inside a real text rect');
-assert.equal(result.boundaryCandidate.insideFirstSheet, true, 'boundary coordinate must be inside first visual sheet');
-assert.match(
-  result.caretPlacement.proofStrength,
-  /^REAL_COORDINATE_CARET_(RANGE|POSITION)_FROM_POINT_PASS$/u,
-  'caret placement must use a real browser coordinate caret API'
+assert.equal(result.boundaryCandidate.ok, true, 'boundary text offset candidate must be found');
+assert.equal(result.boundaryCandidate.proofStrength, 'GEOMETRY_TO_TEXT_NODE_OFFSET_PASS', 'boundary proof must use DOM geometry to text node offset');
+assert.equal(result.boundaryCandidate.insideTextRect, true, 'boundary point must be inside a real text rect');
+assert.equal(result.boundaryCandidate.insideFirstSheet, true, 'boundary point must be inside first visual sheet');
+assert.equal(result.boundaryCandidate.selectedTextOffset.offset >= 0, true, 'boundary text offset must be non-negative');
+assert.equal(
+  result.boundaryCandidate.selectedTextOffset.offset < result.boundaryCandidate.selectedTextOffset.nodeTextLength,
+  true,
+  'boundary text offset must be inside text node length'
 );
+assert.equal(result.negativeTextOffsetControl.ok, true, 'negative text offset control must run');
+assert.equal(result.negativeTextOffsetControl.reason, 'NO_TEXT_NODE_OFFSET_PROOF', 'negative control must prove no text node offset for non-text point');
+assert.equal(result.negativeTextOffsetControl.attemptedTextNodeOffsetResolution, true, 'negative control must attempt text node offset resolution');
+assert.equal(result.negativeTextOffsetControl.matchedTextNodeOffset, false, 'negative control must not match a text node offset');
+assert.equal(result.caretPlacement.proofStrength, 'GEOMETRY_TO_TEXT_NODE_OFFSET_PASS', 'caret placement must use DOM geometry to text node offset');
 assert.equal(result.caretPlacement.selectionInsideProse, true, 'selection must be inside ProseMirror before Enter');
 assert.equal(result.caretPlacement.activeElementInsideProse, true, 'active element must be inside ProseMirror before Enter');
+assert.equal(result.caretPlacement.selectionCollapsed, true, 'selection must be collapsed before Enter');
+assert.equal(result.caretPlacement.selectionAnchorMatchesTextOffset, true, 'live selection must match proven text node offset before Enter');
 assert.equal(
   result.afterEnter.paragraphCount > result.beforeEnter.paragraphCount,
   true,
-  'Enter from boundary coordinate must increase paragraph count'
+  'Enter from boundary text offset must increase paragraph count'
 );
 assert.equal(result.afterEnter.activeElementInsideProse, true, 'active element must remain inside ProseMirror after Enter');
 assert.equal(result.afterEnter.selectionInsideProse, true, 'selection must remain inside ProseMirror after Enter');
@@ -507,8 +653,14 @@ const summary = {
   proseMirrorCount: result.afterType.proseMirrorCount,
   tiptapEditorCount: result.afterType.tiptapEditorCount,
   prosePageTruthCount: result.afterType.prosePageTruthCount,
-  boundaryCoordinateFound: result.boundaryCandidate.ok,
-  distanceFromFirstSheetBottom: result.boundaryCandidate.selectedTextRect.distanceFromSheetBottom,
+  boundaryTextOffsetFound: result.boundaryCandidate.ok,
+  boundaryTextOffset: result.boundaryCandidate.selectedTextOffset.offset,
+  boundaryTextLength: result.boundaryCandidate.selectedTextOffset.nodeTextLength,
+  distanceFromFirstSheetBottom: result.boundaryCandidate.selectedTextOffset.textRect.distanceFromSheetBottom,
+  negativeControlReason: result.negativeTextOffsetControl.reason,
+  negativeControlAttemptedTextNodeOffsetResolution: result.negativeTextOffsetControl.attemptedTextNodeOffsetResolution,
+  negativeControlMatchedTextNodeOffset: result.negativeTextOffsetControl.matchedTextNodeOffset,
+  selectionAnchorMatchesTextOffset: result.caretPlacement.selectionAnchorMatchesTextOffset,
   paragraphCountBeforeEnter: result.beforeEnter.paragraphCount,
   paragraphCountAfterEnter: result.afterEnter.paragraphCount,
   markerAfterType: markerCount(result.afterType.text, result.marker),
