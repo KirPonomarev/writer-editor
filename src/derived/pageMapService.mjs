@@ -3,6 +3,7 @@ import { createLayoutMeasureProvider } from './layoutMeasureProvider.mjs';
 
 const PAGE_MAP_SCHEMA_VERSION = 'derived.pageMap.v1';
 const PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION = 'derived.pageMap.runtimeContract.v1';
+const PAGE_MAP_DERIVED_SOURCE = 'canonical-derived-layout-flow';
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -265,6 +266,17 @@ export function paginateLayoutFlow(input = {}) {
   const pageMap = {
     schemaVersion: PAGE_MAP_SCHEMA_VERSION,
     runtimeContractSchemaVersion: PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION,
+    contract: {
+      derived: true,
+      derivedOnly: true,
+      runtimeOnly: true,
+      textTruth: false,
+      notTextTruth: true,
+      storageTruth: false,
+      exportTruth: false,
+      productRuntimeBinding: false,
+      source: PAGE_MAP_DERIVED_SOURCE,
+    },
     profile,
     totalPageCount: pages.length,
     pages,
@@ -292,4 +304,4 @@ export function paginateLayoutFlow(input = {}) {
   };
 }
 
-export { PAGE_MAP_SCHEMA_VERSION, PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION };
+export { PAGE_MAP_DERIVED_SOURCE, PAGE_MAP_SCHEMA_VERSION, PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION };

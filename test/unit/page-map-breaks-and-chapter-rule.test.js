@@ -88,6 +88,17 @@ test('page map preserves derived numbering for consecutive explicit page breaks'
   assert.equal(pageNumberForNode(pageMap, 'body'), 3);
   assert.equal(pageMap.totalPageCount, pageMap.pages.length);
   assert.equal(pageMap.runtimeContractSchemaVersion, 'derived.pageMap.runtimeContract.v1');
+  assert.deepEqual(pageMap.contract, {
+    derived: true,
+    derivedOnly: true,
+    runtimeOnly: true,
+    textTruth: false,
+    notTextTruth: true,
+    storageTruth: false,
+    exportTruth: false,
+    productRuntimeBinding: false,
+    source: 'canonical-derived-layout-flow',
+  });
   assert.equal(Array.isArray(pageMap.pageRects), true);
   assert.equal(Array.isArray(pageMap.gapRects), true);
   assert.equal(pageMap.pageRects.length, pageMap.pages.length);
@@ -98,6 +109,7 @@ test('page map preserves derived numbering for consecutive explicit page breaks'
   assert.equal(pageMap.meta.gapRectCount, pageMap.gapRects.length);
   assert.equal(pageMap.meta.sourceRevisionToken, pageMap.sourceRevisionToken);
   assert.equal(pageMap.meta.profileRevisionToken, pageMap.profileRevisionToken);
+  assert.equal(typeof pageMap.meta.pageMapHash, 'string');
 });
 
 test('page map keeps chapter start next-page and continuous rules stable', async () => {
@@ -190,11 +202,18 @@ test('minimal TipTap page map runtime contract binds to explicit editor text pro
   const contract = layoutPreview.buildTiptapPageMapRuntimeContract(createContractInput());
 
   assert.equal(contract.contractVersion, 'renderer.tiptapPageMapRuntimeContract.v1');
+  assert.equal(contract.derivedOnly, true);
   assert.equal(contract.runtimeOnly, true);
+  assert.equal(contract.textTruth, false);
+  assert.equal(contract.notTextTruth, true);
+  assert.equal(contract.storageTruth, false);
+  assert.equal(contract.exportTruth, false);
   assert.equal(contract.primaryTiptapBinding, true);
   assert.equal(contract.bindingSource, 'currentTiptapPlainText');
   assert.equal(typeof contract.sourceTextHash, 'string');
+  assert.equal(typeof contract.sourceIdentityHash, 'string');
   assert.equal(typeof contract.profileHash, 'string');
+  assert.equal(typeof contract.contractHash, 'string');
   assert.equal(contract.totalPageCount >= 2, true);
   assert.equal(Array.isArray(contract.derivedPageSummaries), true);
   assert.equal(contract.derivedPageSummaries.length, contract.totalPageCount);
@@ -208,10 +227,45 @@ test('minimal TipTap page map runtime contract binds to explicit editor text pro
   assert.equal(contract.limits.exportTruth, false);
   assert.equal(Object.prototype.hasOwnProperty.call(contract, 'pageRects'), false);
   assert.equal(Object.prototype.hasOwnProperty.call(contract, 'gapRects'), false);
+  assert.deepEqual(contract.derivedPageMapContract, {
+    schemaVersion: 'derived.pageMap.runtimeContract.v1',
+    derived: true,
+    derivedOnly: true,
+    runtimeOnly: true,
+    textTruth: false,
+    notTextTruth: true,
+    storageTruth: false,
+    exportTruth: false,
+    productRuntimeBinding: false,
+    source: 'canonical-derived-layout-flow',
+    sourceRevisionToken: contract.derivedPageMapContract.sourceRevisionToken,
+    profileRevisionToken: contract.derivedPageMapContract.profileRevisionToken,
+    pageMapHash: contract.derivedPageMapContract.pageMapHash,
+  });
+  assert.equal(typeof contract.derivedPageMapContract.sourceRevisionToken, 'string');
+  assert.equal(typeof contract.derivedPageMapContract.profileRevisionToken, 'string');
+  assert.equal(typeof contract.derivedPageMapContract.pageMapHash, 'string');
 
   const keySet = collectKeys(contract);
-  for (const forbiddenKey of ['projectManifest', 'assets', 'backups', 'atomicWrite', 'recovery', 'storage']) {
-    assert.equal(keySet.has(forbiddenKey), false, `contract leaked storage key ${forbiddenKey}`);
+  for (const forbiddenKey of [
+    'projectManifest',
+    'assets',
+    'backups',
+    'atomicWrite',
+    'recovery',
+    'storage',
+    'exportPipeline',
+    'docx',
+    'text',
+    'html',
+    'content',
+    'plainText',
+    'pmDoc',
+    'json',
+    'marks',
+    'attrs',
+  ]) {
+    assert.equal(keySet.has(forbiddenKey), false, `contract leaked forbidden key ${forbiddenKey}`);
   }
 });
 
@@ -224,10 +278,23 @@ test('minimal TipTap page map runtime contract invalidates after text and profil
 
   assert.deepEqual(firstRepeat, first);
 
+  const firstNoCache = layoutPreview.buildTiptapPageMapRuntimeContract(firstInput);
+  const secondNoCache = layoutPreview.buildTiptapPageMapRuntimeContract(createContractInput());
+  assert.equal(firstNoCache.sourceTextHash, secondNoCache.sourceTextHash);
+  assert.equal(firstNoCache.sourceIdentityHash, secondNoCache.sourceIdentityHash);
+  assert.equal(firstNoCache.profileHash, secondNoCache.profileHash);
+  assert.equal(firstNoCache.contractHash, secondNoCache.contractHash);
+  assert.deepEqual(firstNoCache.derivedPageSummaries, secondNoCache.derivedPageSummaries);
+
   const changedText = layoutPreview.buildTiptapPageMapRuntimeContract(createContractInput({
     textProvider: () => 'Changed text for runtime contract',
   }), cache);
   assert.notEqual(changedText.sourceTextHash, first.sourceTextHash);
+  assert.notEqual(changedText.sourceIdentityHash, first.sourceIdentityHash);
+  assert.equal(changedText.profileHash, first.profileHash);
+  assert.notEqual(changedText.contractHash, first.contractHash);
+  assert.notEqual(changedText.derivedPageMapContract.sourceRevisionToken, first.derivedPageMapContract.sourceRevisionToken);
+  assert.notEqual(changedText.derivedPageMapContract.pageMapHash, first.derivedPageMapContract.pageMapHash);
   assert.notEqual(changedText.totalPageCount, 0);
 
   const changedProfile = layoutPreview.buildTiptapPageMapRuntimeContract(createContractInput({
@@ -237,7 +304,12 @@ test('minimal TipTap page map runtime contract invalidates after text and profil
       allowExplicitPageBreaks: true,
     },
   }), cache);
+  assert.equal(changedProfile.sourceTextHash, first.sourceTextHash);
+  assert.equal(changedProfile.sourceIdentityHash, first.sourceIdentityHash);
   assert.notEqual(changedProfile.profileHash, first.profileHash);
+  assert.notEqual(changedProfile.contractHash, first.contractHash);
+  assert.notEqual(changedProfile.derivedPageMapContract.sourceRevisionToken, first.derivedPageMapContract.sourceRevisionToken);
+  assert.notEqual(changedProfile.derivedPageMapContract.pageMapHash, first.derivedPageMapContract.pageMapHash);
   assert.equal(changedProfile.bindingSource, 'currentTiptapPlainText');
 
   const changedMetrics = layoutPreview.buildTiptapPageMapRuntimeContract(createContractInput({
@@ -255,8 +327,21 @@ test('minimal TipTap page map runtime contract invalidates after text and profil
       allowExplicitPageBreaks: true,
     },
   }), cache);
+  assert.equal(changedMetrics.sourceTextHash, first.sourceTextHash);
+  assert.equal(changedMetrics.sourceIdentityHash, first.sourceIdentityHash);
   assert.notEqual(changedMetrics.profileHash, first.profileHash);
+  assert.notEqual(changedMetrics.contractHash, first.contractHash);
+  assert.equal(changedMetrics.derivedPageMapContract.sourceRevisionToken, first.derivedPageMapContract.sourceRevisionToken);
+  assert.notEqual(changedMetrics.derivedPageMapContract.profileRevisionToken, first.derivedPageMapContract.profileRevisionToken);
+  assert.notEqual(changedMetrics.derivedPageMapContract.pageMapHash, first.derivedPageMapContract.pageMapHash);
   assert.equal(changedMetrics.bindingSource, 'currentTiptapPlainText');
+
+  const changedSourceId = layoutPreview.buildTiptapPageMapRuntimeContract(createContractInput({
+    sourceId: 'runtime-contract-test-alt-source',
+  }), cache);
+  assert.equal(changedSourceId.sourceTextHash, first.sourceTextHash);
+  assert.notEqual(changedSourceId.sourceIdentityHash, first.sourceIdentityHash);
+  assert.notEqual(changedSourceId.contractHash, first.contractHash);
 });
 
 test('page map runtime contract tokens are deterministic for identical inputs', async () => {
@@ -270,6 +355,38 @@ test('page map runtime contract tokens are deterministic for identical inputs', 
 
   assert.equal(first.sourceRevisionToken, second.sourceRevisionToken);
   assert.equal(first.profileRevisionToken, second.profileRevisionToken);
+  assert.equal(first.meta.pageMapHash, second.meta.pageMapHash);
   assert.deepEqual(first.pageRects, second.pageRects);
   assert.deepEqual(first.gapRects, second.gapRects);
+
+  const changedRule = await paginate(nodes, { chapterStartRule: 'continuous' });
+  assert.notEqual(changedRule.sourceRevisionToken, first.sourceRevisionToken);
+  assert.equal(changedRule.profileRevisionToken, first.profileRevisionToken);
+  assert.notEqual(changedRule.meta.pageMapHash, first.meta.pageMapHash);
+
+  const pageMapMod = await loadModule('src/derived/pageMapService.mjs');
+  const stableProfileA = pageMapMod.paginateLayoutFlow({
+    flow: { nodes },
+    profile: {
+      pageWidth: 210,
+      pageHeight: 297,
+      bodyWidth: 120,
+      bodyHeight: 100,
+    },
+    measurements: nodes.map((node) => ({ nodeId: node.id, height: 1 })),
+    rules: { chapterStartRule: 'next-page' },
+  });
+  const stableProfileB = pageMapMod.paginateLayoutFlow({
+    flow: { nodes },
+    profile: {
+      bodyHeight: 100,
+      bodyWidth: 120,
+      pageHeight: 297,
+      pageWidth: 210,
+    },
+    measurements: nodes.map((node) => ({ height: 1, nodeId: node.id })),
+    rules: { chapterStartRule: 'next-page' },
+  });
+  assert.equal(stableProfileA.profileRevisionToken, stableProfileB.profileRevisionToken);
+  assert.equal(stableProfileA.meta.pageMapHash, stableProfileB.meta.pageMapHash);
 });
