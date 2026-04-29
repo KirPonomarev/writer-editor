@@ -1,0 +1,169 @@
+{
+  "artifactId": "EDITORIAL_SHEET_HOTPATH_STATUS_V1",
+  "taskId": "CONTOUR_08D_HOTPATH_SMOKE_CLOSEOUT_STATUS_REBIND",
+  "status": "HOTPATH_SMOKE_CLOSEOUT_STATUS_REBOUND_ONLY",
+  "ok": true,
+  "proofSource": "TRACKED_EXECUTABLE_COMMANDS_NOT_THIS_FILE",
+  "repo": {
+    "headSha": "11d23c3b7c6dd244e7f6c3288b15d44d0ceca01f",
+    "statusBasename": "EDITORIAL_SHEET_HOTPATH_STATUS_V1.json",
+    "repoWrites": "STATUS_ARTIFACT_ONLY"
+  },
+  "scope": {
+    "macosEditorSheetDesignPhaseReadinessClaim": false,
+    "productionReleaseClaim": false,
+    "releaseCandidateClaim": false,
+    "fullPerformanceCertificationClaim": false,
+    "fullB3C09GreenClaim": false,
+    "productRuntimeChanged": false,
+    "proofHarnessChanged": false,
+    "testsChanged": false,
+    "storageChanged": false,
+    "exportChanged": false,
+    "dependencyChanged": false,
+    "uiChanged": false,
+    "singleActiveSceneScope": true
+  },
+  "hotpathGateResults": {
+    "hotPathIncrementalRenderOk": 1,
+    "hotpathAcceptanceGuardOk": 1,
+    "hotpathContracts": {
+      "status": "PASS",
+      "passCount": 7,
+      "failCount": 0
+    },
+    "inputP95Check": {
+      "status": "PASS",
+      "measuredP95Ms": 0.0002499999999940883,
+      "measuredMedianMs": 0.00020800000001486296,
+      "thresholdMs": 60,
+      "sampleCount": 200
+    },
+    "longTaskBudgetProof": {
+      "status": "PASS",
+      "measuredP95Ms": 0.0002920000000017353,
+      "measuredMedianMs": 0.0002500000000011937,
+      "maxSampleMs": 0.0007919999999970173,
+      "thresholdMs": 60,
+      "sampleCount": 200,
+      "overBudgetSamplesCount": 0
+    }
+  },
+  "primaryElectronSmoke": {
+    "status": "PASS",
+    "twoConsecutivePasses": true,
+    "passCount": 2,
+    "failCount": 0,
+    "trackedBasenames": [
+      "vertical-sheet-performance-window-smoke.mjs",
+      "editor-hotpath-no-full-rerender-per-input.contract.test.js"
+    ],
+    "latestRun": {
+      "targetPageCount": 100,
+      "sourcePageCount": 553,
+      "visibleSheetCount": 4,
+      "hiddenPageCount": 549,
+      "domNodeCount": 789,
+      "domGrowth10to100": 0,
+      "insertMs100": 3821,
+      "fullVisibleSheetRebuildAfterInput": false,
+      "scrollViewportSheetCountSync": 2,
+      "scrollViewportSheetCountSettled": 2,
+      "scrollViewportTextRectCountSettled": 52,
+      "scrollRenderedWindowShift": 451,
+      "networkRequests": 0,
+      "dialogCalls": 0
+    },
+    "priorTransientClassified": {
+      "status": "RECORDED_NOT_HIDDEN",
+      "observedInContour": "CONTOUR_08C",
+      "reason": "ONE_NONCONFIRMED_SCROLL_SYNC_BLANK_VIEWPORT_FAILURE_BEFORE_ISOLATED_RERUN_PASS",
+      "blocksThisStatus": false
+    }
+  },
+  "b3c09ObservedState": {
+    "B3C09_PERFORMANCE_BASELINE_BINDING_OK": 1,
+    "B3C09_PROVISIONAL_PERF_GAP": 1,
+    "PERF_BASELINE_OK": 0,
+    "status": "PROVISIONAL_GAP",
+    "B3C09_NOT_MODIFIED": true,
+    "B3C09_FULL_GREEN_CLAIM": false,
+    "B3C09_CONTRACT_RESULT": {
+      "status": "PASS",
+      "passCount": 8,
+      "failCount": 0
+    },
+    "supportedRows": [
+      {
+        "id": "OPEN_P95_MS",
+        "status": "PASS",
+        "threshold": 1000,
+        "value": 2.692
+      },
+      {
+        "id": "SAVE_P95_MS",
+        "status": "PASS",
+        "threshold": 40,
+        "value": 1.67
+      },
+      {
+        "id": "INPUT_P95_MS",
+        "status": "PASS",
+        "threshold": 16,
+        "value": 0.561
+      },
+      {
+        "id": "MEMORY_PEAK_MB",
+        "status": "PASS",
+        "threshold": 160,
+        "value": 47.063
+      }
+    ],
+    "unsupportedRows": [
+      {
+        "id": "SCENE_SWITCH_P95_MS",
+        "status": "UNSUPPORTED",
+        "blockingForContour08HotpathScope": false,
+        "classification": "OUTSIDE_SINGLE_ACTIVE_SCENE_HOTPATH_P95_SCOPE",
+        "reason": "B3C09_RUNNER_DOES_NOT_MEASURE_SCENE_SWITCH_P95_AND_CURRENT_EDITORIAL_SHEET_SCOPE_IS_SINGLE_ACTIVE_SCENE"
+      },
+      {
+        "id": "EXPORT_DOCX_P95_MS",
+        "status": "UNSUPPORTED",
+        "blockingForContour08HotpathScope": false,
+        "classification": "DEFERRED_TO_CONTOUR_10_DATA_EXPORT_ACCEPTANCE",
+        "reason": "CONTOUR_08_HOTPATH_SMOKE_DOES_NOT_CERTIFY_DOCX_GENERATION_P95"
+      }
+    ]
+  },
+  "supportingMeasurements": {
+    "perfLite": {
+      "classification": "SUPPORTING_MEASUREMENT_ONLY",
+      "status": "PASS",
+      "runs": 9,
+      "openP95Ms": 2.692,
+      "typeBurstP95Ms": 0.561,
+      "saveP95Ms": 1.67,
+      "reopenP95Ms": 0.867,
+      "longTaskCount": 0
+    },
+    "perfBaselineCheck": {
+      "classification": "SUPPORTING_MEASUREMENT_ONLY",
+      "status": "PASS"
+    }
+  },
+  "policyChecks": {
+    "ossPolicy": "PASS",
+    "auditHigh": "PASS_ZERO_VULNERABILITIES",
+    "diffCheck": "PASS",
+    "changedBasenameBudget": "PASS_ONE_STATUS_ARTIFACT"
+  },
+  "limitations": [
+    "THIS_FILE_IS_NOT_A_PROOF_SOURCE",
+    "B3C09_REMAINS_PROVISIONAL_WHILE_PERF_BASELINE_OK_IS_ZERO",
+    "EXPORT_DOCX_P95_MS_REMAINS_DEFERRED_TO_CONTOUR_10",
+    "SCENE_SWITCH_P95_MS_IS_NOT_PROMOTED_FOR_CURRENT_SINGLE_ACTIVE_SCENE_SCOPE",
+    "NO_RELEASE_OR_DESIGN_READINESS_CLAIM_IS_MADE"
+  ],
+  "nextStep": "CONTOUR_09_BUNDLE_PARITY_AND_TRACKED_LANE_REBIND_PLAN"
+}
