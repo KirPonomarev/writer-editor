@@ -224,15 +224,36 @@ async function scrollEditorViewport(win, ratio) {
   })()\`, true);
 }
 
+async function waitForViewportAfterScroll(win, label, beforeScroll) {
+  let lastState = null;
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    await sleep(32);
+    const state = await collectState(win, label + '-after-scroll-sync-' + String(attempt + 1));
+    lastState = state;
+    if (
+      state.visibleViewportSheetCount > 0
+      && state.firstRenderedPage > beforeScroll.firstRenderedPage
+    ) {
+      return state;
+    }
+  }
+  return lastState;
+}
+
 async function collectScrollTransition(win, label, ratio) {
   const beforeScroll = await collectState(win, label + '-before-scroll');
   const scrollResult = await scrollEditorViewport(win, ratio);
-  const afterScrollSync = await collectState(win, label + '-after-scroll-sync');
+  const afterScrollImmediate = await collectState(win, label + '-after-scroll-immediate');
+  const afterScrollSync = afterScrollImmediate.visibleViewportSheetCount > 0
+    && afterScrollImmediate.firstRenderedPage > beforeScroll.firstRenderedPage
+    ? afterScrollImmediate
+    : await waitForViewportAfterScroll(win, label, beforeScroll);
   await sleep(48);
   const afterScrollSettled = await collectState(win, label + '-after-scroll-settled');
   return {
     beforeScroll,
     scrollResult,
+    afterScrollImmediate,
     afterScrollSync,
     afterScrollSettled,
   };
@@ -532,6 +553,8 @@ const summary = {
   })),
   insertMs100: result.insertMs100,
   fullVisibleSheetRebuildAfterInput: result.fullVisibleSheetRebuildAfterInput,
+  scrollViewportSheetCountImmediate: result.scrollTransition.afterScrollImmediate.visibleViewportSheetCount,
+  scrollViewportTextRectCountImmediate: result.scrollTransition.afterScrollImmediate.visibleViewportTextRectCount,
   scrollViewportSheetCountSync: result.scrollTransition.afterScrollSync.visibleViewportSheetCount,
   scrollViewportSheetCountSettled: result.scrollTransition.afterScrollSettled.visibleViewportSheetCount,
   scrollViewportTextRectCountSettled: result.scrollTransition.afterScrollSettled.visibleViewportTextRectCount,
