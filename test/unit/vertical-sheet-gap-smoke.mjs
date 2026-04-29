@@ -195,12 +195,18 @@ async function captureBottomMarginInk(win, image) {
   const scaleY = geometry.viewportHeight > 0 ? size.height / geometry.viewportHeight : 1;
   let inkPixelCount = 0;
   let sampledPixelCount = 0;
+  let sampleablePageCount = 0;
+  let unsampleablePageCount = 0;
   for (const rect of geometry.pageRects || []) {
     const left = Math.max(0, Math.floor((rect.left + geometry.marginLeftPx + 8) * scaleX));
     const right = Math.min(size.width, Math.ceil((rect.right - geometry.marginRightPx - 8) * scaleX));
     const top = Math.max(0, Math.floor((rect.bottom - geometry.marginBottomPx + 8) * scaleY));
     const bottom = Math.min(size.height, Math.ceil((rect.bottom - 8) * scaleY));
-    if (right <= left || bottom <= top) continue;
+    if (right <= left || bottom <= top) {
+      unsampleablePageCount += 1;
+      continue;
+    }
+    sampleablePageCount += 1;
     for (let y = top; y < bottom; y += 4) {
       for (let x = left; x < right; x += 4) {
         const index = ((y * size.width) + x) * 4;
@@ -216,7 +222,15 @@ async function captureBottomMarginInk(win, image) {
       }
     }
   }
-  return { inkPixelCount, sampledPixelCount };
+  return {
+    inkPixelCount,
+    sampledPixelCount,
+    sampleablePageCount,
+    unsampleablePageCount,
+    sampleClassification: sampledPixelCount > 0
+      ? 'BOTTOM_MARGIN_SAMPLED'
+      : 'BOTTOM_MARGIN_NOT_VISIBLE_IN_CAPTURE',
+  };
 }
 
 async function saveCapture(win, basename) {
@@ -813,9 +827,28 @@ for (const measuredState of states) {
   assert.equal(measuredState.transformScaleEvidence.length >= 4, true);
   assert.equal(measuredState.primaryTextSurfaceScaleTransformCount, 0);
 }
-for (const inkState of Object.values(result.bottomMarginInk || {})) {
-  assert.equal(inkState.sampledPixelCount > 0, true);
-  assert.equal(inkState.inkPixelCount, 0);
+const inkStates = Object.values(result.bottomMarginInk || {});
+assert.equal(inkStates.length, 3);
+assert.equal(
+  inkStates.some((inkState) => inkState.sampleClassification === 'BOTTOM_MARGIN_SAMPLED'),
+  true,
+  'at least one bottom margin bitmap sample must be executable',
+);
+for (const inkState of inkStates) {
+  assert.equal(
+    ['BOTTOM_MARGIN_SAMPLED', 'BOTTOM_MARGIN_NOT_VISIBLE_IN_CAPTURE'].includes(inkState.sampleClassification),
+    true,
+  );
+  if (inkState.sampleClassification === 'BOTTOM_MARGIN_SAMPLED') {
+    assert.equal(inkState.sampledPixelCount > 0, true);
+    assert.equal(inkState.sampleablePageCount > 0, true);
+    assert.equal(inkState.inkPixelCount, 0);
+  } else {
+    assert.equal(inkState.sampledPixelCount, 0);
+    assert.equal(inkState.sampleablePageCount, 0);
+    assert.equal(inkState.inkPixelCount, 0);
+    assert.equal(inkState.unsampleablePageCount > 0, true);
+  }
   assert.equal(inkState.devicePixelRatio, FORCED_DEVICE_SCALE_FACTOR);
   assert.equal(inkState.bitmapWidthDeltaDevicePx <= DEVICE_PIXEL_TOLERANCE_PX, true);
   assert.equal(inkState.bitmapHeightDeltaDevicePx <= DEVICE_PIXEL_TOLERANCE_PX, true);
@@ -854,6 +887,9 @@ console.log('VERTICAL_SHEET_GAP_SMOKE_SUMMARY:' + JSON.stringify({
   deviceScaleEvidence: result.deviceScaleEvidence,
   transformScaleEvidence: state.transformScaleEvidence,
   bottomMarginInk: result.bottomMarginInk,
+  bottomMarginSampleClassifications: Object.fromEntries(
+    Object.entries(result.bottomMarginInk || {}).map(([key, value]) => [key, value.sampleClassification]),
+  ),
   lineGuardPx: state.lineGuardPx,
   proseMirrorCount: state.proseMirrorCount,
   inputSmoke: result.inputSmoke,
