@@ -1,12 +1,12 @@
 {
-  "rcId": "rc-b91542605f20-3e59fc22",
-  "baseCommitSha": "b91542605f20e154f041526594fa8bcc7f491393",
-  "menuArtifactHash": "3e59fc22d5946d1ff940863bbc3a761a51ecd35999732d9de50b120018791ddf",
-  "menuSnapshotHash": "6f2ffb602b87514b944e4f5c60111e6e728f0c2d0c8596767b8ae780559ee353",
+  "rcId": "rc-66b68ab7e4d0-08633278",
+  "baseCommitSha": "66b68ab7e4d097b6700752f34718537792708663",
+  "menuArtifactHash": "08633278d53e1a121fe51e064b1c391a92ff801da7a64cd661b6c9bb4895424f",
+  "menuSnapshotHash": "4529a33718cf15d5df963cc73dc690a3c387b75793c2cd1d7317ac5b0375040f",
   "perfBaselineHash": "4c2ba9bc56ac34e0e1a6dbabb0bd4506d348699837ed287078e85325244977e3",
-  "tokenCatalogHash": "8074af7ba472c211886c9b04a0af6bba2af9d8aa0231c0c3675cc1cac819f8bf",
-  "failsignalRegistryHash": "999bcb93a513da21edfab25443c5acc2d17f2e6f247675825edd1f68fb928159",
+  "tokenCatalogHash": "5c2767281b2d43196b74840d64251c77061f1f745028017532c12889faf1b37e",
+  "failsignalRegistryHash": "480a720d5f877f5109ea1e0462950bd60500b7823221f0ab7417d98c90e98495",
   "requiredTokenSetHash": "53845afe43620c1da737dba37aaf96a86d09e3a0cc5ee4b086b1912282956ac5",
-  "createdAt": "2026-04-02T17:38:29.902Z",
+  "createdAt": "2026-04-29T11:50:36.035Z",
   "createdByMode": "release"
 }
