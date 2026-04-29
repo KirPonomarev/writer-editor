@@ -8,6 +8,21 @@ async function loadModule(relativePath) {
   return import(fileUrl);
 }
 
+const EXPECTED_BOOK_PROFILE_MODEL_KEYS = [
+  'schemaVersion',
+  'profileId',
+  'formatId',
+  'widthMm',
+  'heightMm',
+  'orientation',
+  'marginTopMm',
+  'marginRightMm',
+  'marginBottomMm',
+  'marginLeftMm',
+  'chapterStartRule',
+  'allowExplicitPageBreaks',
+];
+
 test('book profile defaults to A4 and exposes only Stage 01 presets', async () => {
   const bookProfile = await loadModule('src/core/bookProfile.mjs');
   const registry = await loadModule('src/core/pageFormatRegistry.mjs');
@@ -23,6 +38,69 @@ test('book profile defaults to A4 and exposes only Stage 01 presets', async () =
   assert.equal(profile.widthMm, 210);
   assert.equal(profile.heightMm, 297);
   assert.equal(profile.orientation, 'portrait');
+});
+
+test('book profile model proves supported format dimensions, margins, schema, and orientation', async () => {
+  const bookProfile = await loadModule('src/core/bookProfile.mjs');
+
+  const cases = [
+    { formatId: 'A4', widthMm: 210, heightMm: 297 },
+    { formatId: 'A5', widthMm: 148, heightMm: 210 },
+    { formatId: 'LETTER', widthMm: 215.9, heightMm: 279.4 },
+  ];
+
+  for (const entry of cases) {
+    const portrait = bookProfile.createDefaultBookProfile({
+      profileId: `${entry.formatId.toLowerCase()}-portrait-proof`,
+      formatId: entry.formatId,
+      orientation: 'portrait',
+      marginTopMm: 12,
+      marginRightMm: 14,
+      marginBottomMm: 16,
+      marginLeftMm: 18,
+    });
+    assert.equal(portrait.schemaVersion, bookProfile.BOOK_PROFILE_SCHEMA_VERSION);
+    assert.equal(portrait.formatId, entry.formatId);
+    assert.equal(portrait.widthMm, entry.widthMm);
+    assert.equal(portrait.heightMm, entry.heightMm);
+    assert.equal(portrait.orientation, 'portrait');
+    assert.equal(portrait.marginTopMm, 12);
+    assert.equal(portrait.marginRightMm, 14);
+    assert.equal(portrait.marginBottomMm, 16);
+    assert.equal(portrait.marginLeftMm, 18);
+    assert.deepEqual(Object.keys(portrait), EXPECTED_BOOK_PROFILE_MODEL_KEYS);
+    assert.deepEqual(bookProfile.BOOK_PROFILE_MODEL_KEYS, EXPECTED_BOOK_PROFILE_MODEL_KEYS);
+
+    const landscape = bookProfile.createDefaultBookProfile({
+      profileId: `${entry.formatId.toLowerCase()}-landscape-proof`,
+      formatId: entry.formatId,
+      orientation: 'landscape',
+    });
+    assert.equal(landscape.formatId, entry.formatId);
+    assert.equal(landscape.widthMm, entry.heightMm);
+    assert.equal(landscape.heightMm, entry.widthMm);
+    assert.equal(landscape.orientation, 'landscape');
+    assert.deepEqual(Object.keys(landscape), EXPECTED_BOOK_PROFILE_MODEL_KEYS);
+  }
+});
+
+test('book profile model defaults missing format to A4 and rejects unknown formats', async () => {
+  const bookProfile = await loadModule('src/core/bookProfile.mjs');
+
+  const defaulted = bookProfile.normalizeBookProfile({
+    profileId: 'missing-format-proof',
+  });
+  assert.equal(defaulted.ok, true);
+  assert.equal(defaulted.value.formatId, 'A4');
+  assert.equal(defaulted.value.widthMm, 210);
+  assert.equal(defaulted.value.heightMm, 297);
+
+  const rejected = bookProfile.normalizeBookProfile({
+    profileId: 'unknown-format-proof',
+    formatId: 'TABLOID',
+  });
+  assert.equal(rejected.ok, false);
+  assert.ok(rejected.issues.some((issue) => issue.code === 'E_PAGE_FORMAT_ID'));
 });
 
 test('book profile strips screen chrome fields from normalized output', async () => {
