@@ -405,23 +405,50 @@ export function buildTiptapPageMapRuntimeContract(input = {}, cache = null) {
 
   const snapshot = buildCachedLayoutPreviewSnapshot(snapshotInput, cache);
   const pageMap = isPlainObject(snapshot.pageMap) ? snapshot.pageMap : {};
+  const pageMapContract = isPlainObject(pageMap.contract) ? pageMap.contract : {};
   const totalPageCount = Number(pageMap.meta?.pageCount) || (Array.isArray(pageMap.pages) ? pageMap.pages.length : 0);
   const sourceTextHash = hashValue({
     bindingSource: textSource.bindingSource,
+    text: textSource.text,
+  });
+  const sourceIdentityHash = hashValue({
+    bindingSource: textSource.bindingSource,
+    sourceId: normalizeString(source.sourceId) || 'renderer-editor',
     text: textSource.text,
   });
   const profileHash = hashValue({
     profile: isPlainObject(source.profile) ? source.profile : {},
     metrics: isPlainObject(source.metrics) ? source.metrics : {},
   });
-
-  return {
-    contractVersion: TIPTAP_PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION,
+  const derivedPageMapContract = {
+    schemaVersion: typeof pageMap.runtimeContractSchemaVersion === 'string' ? pageMap.runtimeContractSchemaVersion : '',
+    derived: pageMapContract.derived === true,
+    derivedOnly: pageMapContract.derivedOnly === true,
     runtimeOnly: true,
+    textTruth: false,
+    notTextTruth: true,
+    storageTruth: false,
+    exportTruth: false,
+    productRuntimeBinding: false,
+    source: typeof pageMapContract.source === 'string' ? pageMapContract.source : '',
+    sourceRevisionToken: typeof pageMap.sourceRevisionToken === 'string' ? pageMap.sourceRevisionToken : '',
+    profileRevisionToken: typeof pageMap.profileRevisionToken === 'string' ? pageMap.profileRevisionToken : '',
+    pageMapHash: typeof pageMap.meta?.pageMapHash === 'string' ? pageMap.meta.pageMapHash : '',
+  };
+  const contract = {
+    contractVersion: TIPTAP_PAGE_MAP_RUNTIME_CONTRACT_SCHEMA_VERSION,
+    derivedOnly: true,
+    runtimeOnly: true,
+    textTruth: false,
+    notTextTruth: true,
+    storageTruth: false,
+    exportTruth: false,
     primaryTiptapBinding: textSource.primaryTiptapBinding,
     bindingSource: textSource.bindingSource,
     sourceTextHash,
+    sourceIdentityHash,
     profileHash,
+    derivedPageMapContract,
     totalPageCount,
     derivedPageSummaries: buildDerivedPageSummaries(pageMap),
     confidence: {
@@ -435,6 +462,11 @@ export function buildTiptapPageMapRuntimeContract(input = {}, cache = null) {
       storageTruth: false,
       exportTruth: false,
     },
+  };
+
+  return {
+    ...contract,
+    contractHash: hashValue(contract),
   };
 }
 
