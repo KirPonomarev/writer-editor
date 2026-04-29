@@ -70,6 +70,10 @@ function computeMedian(values) {
 }
 
 function measureInputHandlerBody(inputHandlerBody, iterations, warmupIterations) {
+  const centralSheetStripPendingStructuralInput = false;
+  const scheduleCentralSheetStripProofRefresh = () => {};
+  const scheduleCentralSheetStripPostStructuralRefresh = () => {};
+  const centralSheetStripCachedRuntimeState = null;
   const scheduleIncrementalInputDomSync = () => {};
   const syncPlainTextBufferFromEditorDom = () => {};
   const scheduleDeferredHotpathRender = () => {};
@@ -84,6 +88,10 @@ function measureInputHandlerBody(inputHandlerBody, iterations, warmupIterations)
       'syncPlainTextBufferFromEditorDom',
       'scheduleDeferredHotpathRender',
       'scheduleDeferredPaginationRefresh',
+      'scheduleCentralSheetStripProofRefresh',
+      'scheduleCentralSheetStripPostStructuralRefresh',
+      'centralSheetStripPendingStructuralInput',
+      'centralSheetStripCachedRuntimeState',
       'markAsModified',
       'updateWordCount',
       inputHandlerBody,
@@ -109,6 +117,10 @@ function measureInputHandlerBody(inputHandlerBody, iterations, warmupIterations)
         syncPlainTextBufferFromEditorDom,
         scheduleDeferredHotpathRender,
         scheduleDeferredPaginationRefresh,
+        scheduleCentralSheetStripProofRefresh,
+        scheduleCentralSheetStripPostStructuralRefresh,
+        centralSheetStripPendingStructuralInput,
+        centralSheetStripCachedRuntimeState,
         markAsModified,
         updateWordCount,
       );
@@ -136,6 +148,10 @@ function measureInputHandlerBody(inputHandlerBody, iterations, warmupIterations)
         syncPlainTextBufferFromEditorDom,
         scheduleDeferredHotpathRender,
         scheduleDeferredPaginationRefresh,
+        scheduleCentralSheetStripProofRefresh,
+        scheduleCentralSheetStripPostStructuralRefresh,
+        centralSheetStripPendingStructuralInput,
+        centralSheetStripCachedRuntimeState,
         markAsModified,
         updateWordCount,
       );
