@@ -1,0 +1,133 @@
+{
+  "task_id": "CONTOUR_09C_PROOF_CHAIN_CLOSEOUT_STATUS_REBIND",
+  "status": "CONTOUR_09_STATUS_RECORDS_TRACKED_PROOF_CHAIN_CLOSEOUT",
+  "authority_class": "STATUS_RECORD_ONLY_NOT_BEHAVIORAL_PROOF",
+  "verified_at_utc": "2026-04-29T18:07:43Z",
+  "head_sha": "1e7cbd3b0f4161c56643d9b633a064e73760f0fb",
+  "status_artifact_basename": "EDITORIAL_SHEET_PROOF_CHAIN_STATUS_V1.json",
+  "repo_writes": "STATUS_ARTIFACT_ONLY",
+  "parent_contours": [
+    {
+      "id": "CONTOUR_09A",
+      "result": "STOP_NOT_DONE",
+      "reason": "independent primary Electron smoke red blocked bundle parity admission"
+    },
+    {
+      "id": "CONTOUR_09A1",
+      "result": "DONE_MERGED",
+      "merge_sha": "1e7cbd3b0f4161c56643d9b633a064e73760f0fb",
+      "commit_sha": "8e636d079492b2dc77030b92c24f64aa5c7513b9"
+    },
+    {
+      "id": "CONTOUR_09B",
+      "result": "DONE_REPORT_ONLY",
+      "head_sha": "1e7cbd3b0f4161c56643d9b633a064e73760f0fb"
+    }
+  ],
+  "proof_sources": {
+    "behavioral_proof_rule": "TRACKED_EXECUTABLE_COMMANDS_NOT_THIS_FILE",
+    "bundle_parity": {
+      "status": "PASS",
+      "commands": [
+        "node scripts/check-packaged-renderer-bundle.mjs",
+        "shasum -a 256 src/renderer/editor.bundle.js dist/renderer/editor.bundle.js"
+      ],
+      "entrypoint_check": "REPO_RUNTIME_ENTRYPOINT_CHECK_PASS",
+      "source_dist_bundle_sha256_match": true,
+      "bundle_sha256": "35b77dfe6946e68d825bcc93c9b675f55238d6ef820fb83fcaa9ffa8300895a0"
+    },
+    "primary_runtime_lane": {
+      "status": "PASS",
+      "command": "node --test test/unit/vertical-sheet-performance-window-smoke.mjs test/contracts/editor-hotpath-no-full-rerender-per-input.contract.test.js",
+      "tracked_basenames": [
+        "vertical-sheet-performance-window-smoke.mjs",
+        "editor-hotpath-no-full-rerender-per-input.contract.test.js"
+      ],
+      "test_total": "4_PASS_0_FAIL_0_SKIP_0_TODO",
+      "latest_summary": {
+        "source_page_count": 553,
+        "visible_sheet_count": 4,
+        "hidden_page_count": 549,
+        "dom_node_count": 789,
+        "dom_growth_10_to_100": 0,
+        "insert_ms_100": 4780,
+        "full_visible_sheet_rebuild_after_input": false,
+        "scroll_viewport_sheet_count_immediate": 0,
+        "scroll_viewport_text_rect_count_immediate": 52,
+        "scroll_viewport_sheet_count_sync": 2,
+        "scroll_viewport_sheet_count_settled": 2,
+        "scroll_viewport_text_rect_count_settled": 52,
+        "scroll_rendered_window_shift": 451
+      }
+    },
+    "integrity_checks": {
+      "skip_only_todo_scan": "PASS_NO_MATCHES",
+      "diff_check_before_artifact_write": "PASS",
+      "proof_rerun_file_changes_before_artifact_write": false
+    }
+  },
+  "decision_inputs": {
+    "bundle_parity": "PASS",
+    "primary_runtime_lane": "PASS",
+    "tracked_proof_chain": "PASS"
+  },
+  "decision_exclusions": {
+    "support_lane": "DIAGNOSTIC_ONLY_NOT_DECISION_INPUT",
+    "status_artifact": "NOT_BEHAVIORAL_PROOF",
+    "screenshots": "NOT_USED_FOR_GREEN",
+    "untracked_tests": "NOT_USED_FOR_GREEN"
+  },
+  "diagnostic_support_lane": {
+    "classification": "SUPPORTING_DIAGNOSTIC_ONLY",
+    "excluded_from_decision_inputs": true,
+    "latest_known_result": "PASS_FROM_CONTOUR_09B",
+    "tracked_basenames": [
+      "hot-path-incremental-render.contract.test.js",
+      "hotpath-acceptance-guard.contract.test.js",
+      "vertical-sheet-input-stability-smoke.mjs",
+      "vertical-sheet-gap-smoke.mjs",
+      "five-sheet-visible-smoke.mjs",
+      "layout-preview-runtime.test.js"
+    ]
+  },
+  "residual_risks": [
+    {
+      "id": "IMMEDIATE_SCROLL_SAMPLE_CAN_BE_BLANK",
+      "status": "RECORDED_NOT_HIDDEN",
+      "classification": "BOUNDED_ASYNC_TRANSIENT",
+      "evidence": "latest closeout run reported immediate sheet count 0 while sync and settled counts recovered to 2",
+      "blocks_contour_09_closeout": false,
+      "forbidden_claim": "no immediate scroll blank can ever occur"
+    },
+    {
+      "id": "B3C09_FULL_PERFORMANCE_BASELINE",
+      "status": "NOT_CLAIMED",
+      "classification": "OUTSIDE_CONTOUR_09_CLOSEOUT"
+    }
+  ],
+  "non_goals": {
+    "macos_editor_sheet_design_phase_readiness_claim": false,
+    "production_release_claim": false,
+    "release_candidate_claim": false,
+    "runtime_code_work": false,
+    "export_work": false,
+    "storage_work": false,
+    "visual_redesign": false,
+    "dependency_change": false
+  },
+  "stop_rules": {
+    "primary_lane_red": "STOP_NOT_DONE",
+    "bundle_parity_red": "STOP_NOT_DONE",
+    "status_only_green_wording": "STOP_NOT_DONE",
+    "support_lane_as_decision_input": "STOP_NOT_DONE",
+    "release_or_design_ready_claim": "STOP_NOT_DONE"
+  },
+  "limitations": [
+    "THIS_FILE_RECORDS_THE_CLOSEOUT_DECISION_BUT_DOES_NOT_PROVE_RUNTIME_BEHAVIOR",
+    "CONTOUR_09A_STOP_HISTORY_REMAINS_VISIBLE",
+    "SUPPORT_LANE_IS_DIAGNOSTIC_ONLY",
+    "NO_RELEASE_CLAIM_IS_MADE",
+    "NO_DESIGN_READINESS_CLAIM_IS_MADE"
+  ],
+  "next_step": "PLAN_CONTOUR_10_DATA_EXPORT_ACCEPTANCE"
+}
