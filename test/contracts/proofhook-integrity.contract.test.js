@@ -15,6 +15,12 @@ function runState(args = []) {
   });
 }
 
+function runScript(args = []) {
+  return spawnSync(process.execPath, [SCRIPT_PATH, ...args], {
+    encoding: 'utf8',
+  });
+}
+
 function parseJsonOutput(result) {
   let parsed = null;
   assert.doesNotThrow(() => {
@@ -71,4 +77,120 @@ test('proofhook integrity: tampered closure file fails with deterministic signal
   assert.notEqual(payload.details.closureHashComputed, payload.details.closureHashLocked);
   assert.ok(Array.isArray(payload.details.mismatches));
   assert.ok(payload.details.mismatches.some((item) => item.path === 'beta.txt'));
+});
+
+test('proofhook integrity: print lock emits deterministic proposal without pass token semantics', () => {
+  const args = ['--print-lock', '--lock-path', FIXTURE_LOCK_PATH, '--root', FIXTURE_DIR];
+  const first = runScript(args);
+  const second = runScript(args);
+
+  assert.equal(first.status, 0, `first print failed:\n${first.stdout}\n${first.stderr}`);
+  assert.equal(second.status, 0, `second print failed:\n${second.stdout}\n${second.stderr}`);
+  assert.equal(first.stdout, second.stdout);
+
+  const payload = JSON.parse(first.stdout);
+  assert.equal(payload.kind, 'proofhook_integrity_lock_proposal');
+  assert.equal(payload.token, undefined);
+  assert.equal(payload.okTokenEmitted, undefined);
+  assert.equal(payload.tokens, undefined);
+  assert.equal(payload.PROOFHOOK_INTEGRITY_OK, undefined);
+  assert.equal(payload.lock.closureHash, 'd1e1feb172547a38904e64f48da891a84b89e10789eff1edf599ab5de83c8cea');
+});
+
+test('proofhook integrity: write lock requires an explicit target lock path', () => {
+  const result = runScript(['--write-lock', '--lock-path', FIXTURE_LOCK_PATH, '--root', FIXTURE_DIR]);
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /PROOFHOOK_LOCK_WRITE_REQUIRES_EXPLICIT_TARGET_LOCK_PATH=1/);
+});
+
+test('proofhook integrity: production lock write requires allow production flag', () => {
+  const result = runScript([
+    '--write-lock',
+    '--lock-path',
+    FIXTURE_LOCK_PATH,
+    '--target-lock-path',
+    'docs/OPS/PROOFHOOKS/PROOFHOOK_INTEGRITY_LOCK.json',
+  ]);
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /PROOFHOOK_LOCK_PRODUCTION_WRITE_REQUIRES_ALLOW_FLAG=1/);
+});
+
+test('proofhook integrity: print and write modes are mutually exclusive', () => {
+  const result = runScript([
+    '--print-lock',
+    '--write-lock',
+    '--lock-path',
+    FIXTURE_LOCK_PATH,
+    '--target-lock-path',
+    path.join(os.tmpdir(), 'proofhook-integrity-mode-conflict.json'),
+    '--root',
+    FIXTURE_DIR,
+  ]);
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /PROOFHOOK_LOCK_MODE_CONFLICT=1/);
+});
+
+test('proofhook integrity: write lock reads source and updates only explicit target path', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'proofhook-integrity-write-'));
+  const tmpSourceLockPath = path.join(tmpDir, 'PROOFHOOK_INTEGRITY_LOCK_SOURCE.json');
+  const tmpTargetLockPath = path.join(tmpDir, 'PROOFHOOK_INTEGRITY_LOCK_TARGET.json');
+  const tmpAlphaPath = path.join(tmpDir, 'alpha.txt');
+  const tmpBetaPath = path.join(tmpDir, 'beta.txt');
+
+  fs.copyFileSync(path.join(FIXTURE_DIR, 'PROOFHOOK_INTEGRITY_LOCK.json'), tmpSourceLockPath);
+  fs.copyFileSync(path.join(FIXTURE_DIR, 'alpha.txt'), tmpAlphaPath);
+  fs.copyFileSync(path.join(FIXTURE_DIR, 'beta.txt'), tmpBetaPath);
+  fs.writeFileSync(tmpBetaPath, 'proofhook beta fixture tampered v2\n', 'utf8');
+  const alphaBefore = fs.readFileSync(tmpAlphaPath, 'utf8');
+  const betaBefore = fs.readFileSync(tmpBetaPath, 'utf8');
+  const sourceBefore = fs.readFileSync(tmpSourceLockPath, 'utf8');
+  const sourceClosurePathsBefore = JSON.stringify(JSON.parse(sourceBefore).closurePaths);
+
+  const result = runScript([
+    '--write-lock',
+    '--lock-path',
+    tmpSourceLockPath,
+    '--target-lock-path',
+    tmpTargetLockPath,
+    '--root',
+    tmpDir,
+  ]);
+  const validation = runState(['--lock-path', tmpTargetLockPath, '--root', tmpDir]);
+
+  assert.equal(result.status, 0, `write failed:\n${result.stdout}\n${result.stderr}`);
+  assert.equal(fs.readFileSync(tmpSourceLockPath, 'utf8'), sourceBefore);
+  assert.ok(fs.existsSync(tmpTargetLockPath));
+  assert.equal(JSON.stringify(JSON.parse(fs.readFileSync(tmpTargetLockPath, 'utf8')).closurePaths), sourceClosurePathsBefore);
+  assert.equal(fs.readFileSync(tmpAlphaPath, 'utf8'), alphaBefore);
+  assert.equal(fs.readFileSync(tmpBetaPath, 'utf8'), betaBefore);
+  assert.equal(validation.status, 0, `validation failed:\n${validation.stdout}\n${validation.stderr}`);
+  assert.deepEqual(
+    fs.readdirSync(tmpDir).filter((item) => item.endsWith('.tmp')),
+    [],
+  );
+
+  fs.rmSync(tmpDir, { recursive: true, force: true });
+});
+
+test('proofhook integrity: default validation does not write a mismatched lock', () => {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'proofhook-integrity-default-'));
+  const tmpLockPath = path.join(tmpDir, 'PROOFHOOK_INTEGRITY_LOCK.json');
+  const tmpAlphaPath = path.join(tmpDir, 'alpha.txt');
+  const tmpBetaPath = path.join(tmpDir, 'beta.txt');
+
+  fs.copyFileSync(path.join(FIXTURE_DIR, 'PROOFHOOK_INTEGRITY_LOCK.json'), tmpLockPath);
+  fs.copyFileSync(path.join(FIXTURE_DIR, 'alpha.txt'), tmpAlphaPath);
+  fs.copyFileSync(path.join(FIXTURE_DIR, 'beta.txt'), tmpBetaPath);
+  fs.writeFileSync(tmpBetaPath, 'proofhook beta fixture tampered v2\n', 'utf8');
+  const lockBefore = fs.readFileSync(tmpLockPath, 'utf8');
+
+  const result = runState(['--lock-path', tmpLockPath, '--root', tmpDir]);
+
+  assert.notEqual(result.status, 0);
+  assert.equal(fs.readFileSync(tmpLockPath, 'utf8'), lockBefore);
+
+  fs.rmSync(tmpDir, { recursive: true, force: true });
 });

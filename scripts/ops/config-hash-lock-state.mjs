@@ -166,6 +166,71 @@ function buildFailState(lockedConfigHash, observedConfigHash, details) {
   };
 }
 
+function buildGeneratedLock(rootDir, lockPath) {
+  const parsed = parseLock(lockPath);
+  if (!parsed.ok || !parsed.lock) {
+    throw new Error(`Cannot generate config hash lock from invalid lock: ${parsed.error || 'LOCK_INVALID'}`);
+  }
+
+  const inputHashes = {};
+  const observedItems = [];
+  for (const filePath of parsed.lock.inputs) {
+    const hashState = resolveFileHash(rootDir, filePath);
+    if (!hashState.ok) {
+      throw new Error(`Cannot hash config input ${filePath}: ${hashState.hash}`);
+    }
+    inputHashes[filePath] = hashState.hash;
+    observedItems.push({ path: filePath, sha256: hashState.hash });
+  }
+
+  return {
+    version: parsed.lock.version,
+    inputs: parsed.lock.inputs,
+    inputHashes,
+    configHash: computeConfigHash(observedItems),
+  };
+}
+
+function createProposalPayload(lock) {
+  return {
+    kind: 'config_hash_lock_proposal',
+    lock,
+  };
+}
+
+function stableJson(value) {
+  return `${JSON.stringify(value, null, 2)}\n`;
+}
+
+function normalizeResolvedPath(rootDir, relativePath) {
+  const normalized = normalizeRelativePath(relativePath);
+  if (!normalized) return '';
+  return path.resolve(path.resolve(rootDir), normalized);
+}
+
+function isDefaultProductionLockPath(rootDir, lockPath) {
+  const target = path.resolve(lockPath);
+  const defaultTarget = normalizeResolvedPath(rootDir, DEFAULT_LOCK_PATH);
+  return Boolean(defaultTarget) && target === defaultTarget;
+}
+
+function writeGeneratedLock(lockPath, lock) {
+  const dir = path.dirname(lockPath);
+  const base = path.basename(lockPath);
+  const tmpPath = path.join(dir, `.${base}.${process.pid}.${Date.now()}.tmp`);
+  try {
+    fs.writeFileSync(tmpPath, stableJson(lock), { encoding: 'utf8', flag: 'wx' });
+    fs.renameSync(tmpPath, lockPath);
+  } catch (error) {
+    try {
+      fs.rmSync(tmpPath, { force: true });
+    } catch {
+      // Best effort cleanup for a failed temp write.
+    }
+    throw error;
+  }
+}
+
 export function evaluateConfigHashLockState(input = {}) {
   const lockPath = String(
     input.lockPath || process.env.CONFIG_HASH_LOCK_PATH || DEFAULT_LOCK_PATH,
@@ -222,14 +287,29 @@ export function evaluateConfigHashLockState(input = {}) {
 function parseArgs(argv) {
   const out = {
     json: false,
+    printLock: false,
+    writeLock: false,
+    allowProductionLockWrite: false,
     lockPath: '',
+    explicitLockPath: false,
+    targetLockPath: '',
+    explicitTargetLockPath: false,
     rootDir: '',
   };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === '--json') out.json = true;
+    if (arg === '--print-lock') out.printLock = true;
+    if (arg === '--write-lock') out.writeLock = true;
+    if (arg === '--allow-production-lock-write') out.allowProductionLockWrite = true;
     if (arg === '--lock-path' && i + 1 < argv.length) {
       out.lockPath = String(argv[i + 1] || '').trim();
+      out.explicitLockPath = true;
+      i += 1;
+    }
+    if (arg === '--target-lock-path' && i + 1 < argv.length) {
+      out.targetLockPath = String(argv[i + 1] || '').trim();
+      out.explicitTargetLockPath = true;
       i += 1;
     }
     if (arg === '--root' && i + 1 < argv.length) {
@@ -252,6 +332,36 @@ function printHuman(state) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
+  const rootDir = args.rootDir || process.cwd();
+  const lockPath = args.lockPath || DEFAULT_LOCK_PATH;
+  const targetLockPath = args.targetLockPath || '';
+  if (args.printLock && args.writeLock) {
+    console.error('CONFIG_HASH_LOCK_MODE_CONFLICT=1');
+    process.exit(2);
+  }
+  if (args.writeLock && !args.explicitTargetLockPath) {
+    console.error('CONFIG_HASH_LOCK_WRITE_REQUIRES_EXPLICIT_TARGET_LOCK_PATH=1');
+    process.exit(2);
+  }
+  if (args.writeLock && isDefaultProductionLockPath(rootDir, targetLockPath) && !args.allowProductionLockWrite) {
+    console.error('CONFIG_HASH_LOCK_PRODUCTION_WRITE_REQUIRES_ALLOW_FLAG=1');
+    process.exit(2);
+  }
+  if (args.printLock || args.writeLock) {
+    let lock;
+    try {
+      lock = buildGeneratedLock(rootDir, lockPath);
+    } catch (error) {
+      console.error(`CONFIG_HASH_LOCK_GENERATION_ERROR=${error instanceof Error ? error.message : String(error)}`);
+      process.exit(1);
+    }
+    if (args.writeLock) {
+      writeGeneratedLock(targetLockPath, lock);
+    }
+    process.stdout.write(stableJson(createProposalPayload(lock)));
+    process.exit(0);
+  }
+
   const state = evaluateConfigHashLockState({
     lockPath: args.lockPath || undefined,
     rootDir: args.rootDir || undefined,
