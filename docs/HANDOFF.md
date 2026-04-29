@@ -24,9 +24,9 @@ _Generated: 2026-04-26_
 
 ## Snapshot
 - Snapshot class: current-mainline factual snapshot, not a permanent local machine invariant
-- selectedBaseSha: `792f28077973721669aef9cf78d9385b1fb1db29`
-- bindingBaseSha: `792f28077973721669aef9cf78d9385b1fb1db29`
-- reboundAtUtc: `2026-04-26T06:13:06Z`
+- selectedBaseSha: `e1bf558b973a0c2d540dcfdd7d72d5125fded199`
+- bindingBaseSha: `e1bf558b973a0c2d540dcfdd7d72d5125fded199`
+- reboundAtUtc: `2026-04-29T11:12:55Z`
 - Product: `Yalken Writer`
 - Mode: desktop-first, offline-first
 - Active axis: `Writer v1`
