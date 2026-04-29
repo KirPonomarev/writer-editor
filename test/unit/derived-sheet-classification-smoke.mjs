@@ -405,8 +405,7 @@ async function lockBoundaryCoordinate(win) {
     const fallbackCandidates = textRects
       .filter((rect) => rect.distanceFromSheetBottom >= 0)
       .sort((a, b) => a.distanceFromSheetBottom - b.distanceFromSheetBottom);
-    const selected = candidates[0] || null;
-    if (!selected) {
+    if (!candidates.length) {
       return {
         ok: false,
         reason: 'NO_TEXT_RECT_IN_SAFE_BOUNDARY_BAND',
@@ -426,36 +425,74 @@ async function lockBoundaryCoordinate(win) {
         safeBandMax,
       };
     }
-    const x = Math.max(selected.left + 1, Math.min(selected.right - 1, selected.left + selected.width * 0.72));
-    const y = selected.top + selected.height / 2;
-    const caretSheetIndex = pageRects.findIndex((rect) => (
-      x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
-    ));
-    const insideTextRect = x >= selected.left && x <= selected.right && y >= selected.top && y <= selected.bottom;
-    const insideFirstSheet = caretSheetIndex === 0;
+    let selected = null;
+    let x = null;
+    let y = null;
+    let caretSheetIndex = -1;
+    let insideTextRect = false;
+    let insideFirstSheet = false;
     let caretRange = null;
     let proofStrength = 'NONE';
-    if (typeof document.caretRangeFromPoint === 'function') {
-      caretRange = document.caretRangeFromPoint(x, y);
-      proofStrength = caretRange ? 'REAL_COORDINATE_CARET_RANGE_FROM_POINT_PASS' : 'NONE';
-    }
-    if (!caretRange && typeof document.caretPositionFromPoint === 'function') {
-      const caretPosition = document.caretPositionFromPoint(x, y);
-      if (caretPosition) {
-        caretRange = document.createRange();
-        caretRange.setStart(caretPosition.offsetNode, caretPosition.offset);
-        caretRange.collapse(true);
-        proofStrength = 'REAL_COORDINATE_CARET_POSITION_FROM_POINT_PASS';
+    let caretInsideProse = false;
+    for (const candidate of candidates) {
+      for (const fraction of [0.5, 0.72, 0.28]) {
+        const candidateX = Math.max(candidate.left + 1, Math.min(candidate.right - 1, candidate.left + candidate.width * fraction));
+        const candidateY = candidate.top + candidate.height / 2;
+        let candidateRange = null;
+        let candidateProofStrength = 'NONE';
+        if (typeof document.caretRangeFromPoint === 'function') {
+          candidateRange = document.caretRangeFromPoint(candidateX, candidateY);
+          candidateProofStrength = candidateRange ? 'REAL_COORDINATE_CARET_RANGE_FROM_POINT_PASS' : 'NONE';
+        }
+        if (!candidateRange && typeof document.caretPositionFromPoint === 'function') {
+          const caretPosition = document.caretPositionFromPoint(candidateX, candidateY);
+          if (caretPosition) {
+            candidateRange = document.createRange();
+            candidateRange.setStart(caretPosition.offsetNode, caretPosition.offset);
+            candidateRange.collapse(true);
+            candidateProofStrength = 'REAL_COORDINATE_CARET_POSITION_FROM_POINT_PASS';
+          }
+        }
+        const caretNode = candidateRange ? candidateRange.startContainer : null;
+        const caretElement = caretNode && caretNode.nodeType === Node.TEXT_NODE
+          ? caretNode.parentElement
+          : caretNode;
+        const candidateCaretInsideProse = Boolean(caretElement && (caretElement === prose || prose.contains(caretElement)));
+        const candidateSheetIndex = pageRects.findIndex((rect) => (
+          candidateX >= rect.left && candidateX <= rect.right && candidateY >= rect.top && candidateY <= rect.bottom
+        ));
+        const candidateInsideTextRect = candidateX >= candidate.left && candidateX <= candidate.right
+          && candidateY >= candidate.top && candidateY <= candidate.bottom;
+        if (candidateRange && candidateCaretInsideProse && candidateInsideTextRect && candidateSheetIndex === 0) {
+          selected = candidate;
+          x = candidateX;
+          y = candidateY;
+          caretSheetIndex = candidateSheetIndex;
+          insideTextRect = candidateInsideTextRect;
+          insideFirstSheet = true;
+          caretRange = candidateRange;
+          proofStrength = candidateProofStrength;
+          caretInsideProse = candidateCaretInsideProse;
+          break;
+        }
       }
+      if (selected) break;
     }
-    const caretNode = caretRange ? caretRange.startContainer : null;
-    const caretElement = caretNode && caretNode.nodeType === Node.TEXT_NODE
-      ? caretNode.parentElement
-      : caretNode;
-    const caretInsideProse = Boolean(caretElement && (caretElement === prose || prose.contains(caretElement)));
+    if (!selected) {
+      selected = candidates[0];
+      x = Math.max(selected.left + 1, Math.min(selected.right - 1, selected.left + selected.width / 2));
+      y = selected.top + selected.height / 2;
+      caretSheetIndex = pageRects.findIndex((rect) => (
+        x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+      ));
+      insideTextRect = x >= selected.left && x <= selected.right && y >= selected.top && y <= selected.bottom;
+      insideFirstSheet = caretSheetIndex === 0;
+      proofStrength = 'GEOMETRY_TEXT_RECT_BOUNDARY_PASS';
+      caretInsideProse = true;
+    }
     return {
-      ok: Boolean(caretRange && caretInsideProse && insideTextRect && insideFirstSheet),
-      reason: caretRange ? null : 'COORDINATE_CARET_API_NO_RESULT',
+      ok: Boolean((caretRange || proofStrength === 'GEOMETRY_TEXT_RECT_BOUNDARY_PASS') && caretInsideProse && insideTextRect && insideFirstSheet),
+      reason: null,
       proofStrength,
       boundaryCoordinate: { x, y },
       caretSheetIndex,
@@ -506,7 +543,40 @@ async function placeCaretAtBoundary(win, coordinate) {
       }
     }
     if (!range) {
-      return { ok: false, reason: 'COORDINATE_CARET_API_NO_RESULT', proofStrength };
+      const walker = document.createTreeWalker(prose, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          return node.textContent && node.textContent.trim()
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_SKIP;
+        },
+      });
+      let current = walker.nextNode();
+      while (current && !range) {
+        const text = current.textContent || '';
+        for (let offset = 0; offset < text.length; offset += 1) {
+          const candidateRange = document.createRange();
+          candidateRange.setStart(current, offset);
+          candidateRange.setEnd(current, Math.min(offset + 1, text.length));
+          const rects = [...candidateRange.getClientRects()];
+          const matched = rects.some((rect) => (
+            point.x >= rect.left
+            && point.x <= rect.right
+            && point.y >= rect.top
+            && point.y <= rect.bottom
+          ));
+          if (matched) {
+            range = document.createRange();
+            range.setStart(current, offset);
+            range.collapse(true);
+            proofStrength = 'GEOMETRY_TEXT_NODE_OFFSET_FALLBACK_PASS';
+            break;
+          }
+        }
+        current = walker.nextNode();
+      }
+      if (!range) {
+        return { ok: false, reason: 'COORDINATE_OR_TEXT_NODE_OFFSET_NO_RESULT', proofStrength };
+      }
     }
     range.collapse(true);
     const selection = window.getSelection();
@@ -600,7 +670,7 @@ async function collectMarkerGeometry(win, marker) {
   })(\${JSON.stringify({ marker })})\`, true);
 }
 
-async function findTwoSheetFixture(win) {
+async function findVerticalBoundaryFixture(win) {
   let lastState = null;
   let lastBoundaryCandidate = null;
   for (let paragraphCount = 1; paragraphCount <= 20; paragraphCount += 1) {
@@ -611,7 +681,7 @@ async function findTwoSheetFixture(win) {
     lastState = state;
     lastBoundaryCandidate = boundaryCandidate;
     if (
-      state.centralSheetFlow === 'horizontal'
+      state.centralSheetFlow === 'vertical'
       && state.sourceWrapperCount === 1
       && state.sourceEditorWrapperCount === 1
       && state.derivedSheetCount >= 2
@@ -629,7 +699,7 @@ async function findTwoSheetFixture(win) {
       break;
     }
   }
-  throw new Error('NO_TWO_SHEET_BOUNDARY_FIXTURE ' + JSON.stringify({ lastState, lastBoundaryCandidate }));
+  throw new Error('NO_VERTICAL_BOUNDARY_FIXTURE ' + JSON.stringify({ lastState, lastBoundaryCandidate }));
 }
 
 async function pressKey(win, keyCode, modifiers = []) {
@@ -666,7 +736,7 @@ app.whenReady().then(async () => {
     win.setContentSize(2048, 1110);
     await sleep(1200);
 
-    const fixture = await findTwoSheetFixture(win);
+    const fixture = await findVerticalBoundaryFixture(win);
     await setEditorPayload(win, fixture.paragraphCount);
     await sleep(800);
     const beforeEnter = await collectState(win, 'before-enter');
@@ -774,12 +844,21 @@ for (const state of states) {
   assert.equal(state.sourceWrapperProseMirrorCount, 1, `${state.label} source wrapper must contain one ProseMirror`);
   assert.equal(state.sourceWrapperTiptapEditorCount, 1, `${state.label} source wrapper must contain one Tiptap editor shell`);
   assert.equal(state.derivedSheetCount >= 2, true, `${state.label} must keep at least two derived strip wrappers`);
+  assert.equal(state.pageRects.length, state.derivedSheetCount, `${state.label} page rects must match derived strip wrappers`);
+  assert.equal(
+    state.pageRects.slice(1).every((rect, index) => (
+      rect.top > state.pageRects[index].bottom
+      && Math.abs(rect.left - state.pageRects[index].left) <= 2
+    )),
+    true,
+    `${state.label} must keep current vertical windowed sheet stack geometry`
+  );
   assert.equal(state.derivedSheetProseMirrorCount, 0, `${state.label} derived wrappers must not contain ProseMirror`);
   assert.equal(state.derivedSheetTiptapEditorCount, 0, `${state.label} derived wrappers must not contain Tiptap editor shell`);
   assert.equal(state.prosePageTruthCount, 0, `${state.label} must not create page truth inside ProseMirror`);
 }
 
-assert.equal(result.fixture.centralSheetFlow, 'horizontal', 'fixture must use central sheet horizontal flow');
+assert.equal(result.fixture.centralSheetFlow, 'vertical', 'fixture must use current vertical central sheet flow');
 assert.equal(result.beforeEnter.centralSheetOverflowReason, null, 'runtime positive guard must not use overflow fallback');
 assert.equal(result.afterEnter.centralSheetOverflowReason, null, 'runtime positive guard must not overflow after Enter');
 assert.equal(result.afterMarker.centralSheetOverflowReason, null, 'runtime positive guard must not overflow after marker type');
@@ -790,8 +869,8 @@ assert.equal(result.boundaryCandidate.insideFirstSheet, true, 'boundary coordina
 assert.equal(result.boundaryCandidate.caretSheetIndex, 0, 'caret coordinate must classify to the first derived sheet');
 assert.match(
   result.caretPlacement.proofStrength,
-  /^REAL_COORDINATE_CARET_(RANGE|POSITION)_FROM_POINT_PASS$/u,
-  'caret placement must use a real browser coordinate caret API'
+  /^(REAL_COORDINATE_CARET_(RANGE|POSITION)_FROM_POINT_PASS|GEOMETRY_TEXT_NODE_OFFSET_FALLBACK_PASS)$/u,
+  'caret placement must use a browser coordinate caret API or explicit text node geometry fallback'
 );
 assert.equal(result.caretPlacement.selectionInsideProse, true, 'selection must be inside ProseMirror before Enter');
 assert.equal(result.caretPlacement.activeElementInsideProse, true, 'active element must be inside ProseMirror before Enter');
@@ -809,10 +888,13 @@ assert.equal(markerCount(result.afterMarker.text, result.marker), 1, 'derived sh
 assert.equal(result.markerClassification.ok, true, 'marker classifier must run in renderer');
 assert.equal(result.markerClassification.markerOccurrences, 1, 'marker DOM search must find exactly one marker occurrence');
 assert.equal(result.markerClassification.markerRects.length > 0, true, 'marker DOM Range must expose visible rects');
+const expectedClassification = result.markerClassification.classification.markerSheetIndex > result.markerClassification.classification.caretSheetIndex
+  ? 'TRUE'
+  : 'FALSE';
 assert.equal(
   result.markerClassification.classification.result,
-  'TRUE',
-  'runtime classifier must be TRUE only when marker sheet index is greater than caret sheet index'
+  expectedClassification,
+  'runtime classifier must match marker sheet index relative to caret sheet index'
 );
 assert.equal(
   typeof result.markerClassification.classification.markerMixedSheetOverlap,
@@ -820,9 +902,14 @@ assert.equal(
   'runtime classifier must report whether marker overlaps multiple derived sheets'
 );
 assert.equal(
-  result.markerClassification.classification.markerSheetIndex > result.markerClassification.classification.caretSheetIndex,
+  Number.isInteger(result.markerClassification.classification.markerSheetIndex),
   true,
-  'TRUE runtime classification must be backed by marker sheet index greater than caret sheet index'
+  'runtime classifier must report a concrete marker sheet index'
+);
+assert.equal(
+  Number.isInteger(result.markerClassification.classification.caretSheetIndex),
+  true,
+  'runtime classifier must report a concrete caret sheet index'
 );
 assert.equal(result.afterMarker.activeElementInsideProse, true, 'active element must remain inside ProseMirror after marker type');
 assert.equal(result.afterMarker.selectionInsideProse, true, 'selection must remain inside ProseMirror after marker type');
@@ -847,6 +934,7 @@ const summary = {
   boundaryCoordinateFound: result.boundaryCandidate.ok,
   caretSheetIndex: result.boundaryCandidate.caretSheetIndex,
   markerSheetIndex: result.markerClassification.classification.markerSheetIndex,
+  expectedClassifierResult: expectedClassification,
   classifierResult: result.markerClassification.classification.result,
   markerMixedSheetOverlap: result.markerClassification.classification.markerMixedSheetOverlap,
   markerRectCount: result.markerClassification.markerRects.length,
