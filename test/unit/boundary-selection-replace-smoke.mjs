@@ -57,8 +57,13 @@ function stableTextHash(text) {
 function buildPlainText(paragraphCount) {
   const sentence = 'Derived sheet selection replace proof paragraph for a visual sheet boundary over one Tiptap editor.';
   return Array.from({ length: paragraphCount }, (_, index) => {
-    const token = '06C_SELECT_TARGET_' + String(index + 1).padStart(2, '0');
-    return sentence + ' ' + String(index + 1) + '. ' + sentence + ' ' + token + ' ' + sentence;
+    const paragraphId = String(index + 1).padStart(2, '0');
+    const tokenA = '06C_SELECT_TARGET_' + paragraphId + '_A';
+    const tokenB = '06C_SELECT_TARGET_' + paragraphId + '_B';
+    const tokenC = '06C_SELECT_TARGET_' + paragraphId + '_C';
+    return tokenA + ' ' + sentence + ' ' + String(index + 1) + '. '
+      + tokenB + ' ' + sentence + ' '
+      + tokenC + ' ' + sentence;
   }).join('\\n\\n');
 }
 
@@ -351,7 +356,7 @@ async function lockBoundarySelection(win) {
   })()\`, true);
 }
 
-async function findTwoSheetFixture(win) {
+async function findVerticalBoundarySelectionFixture(win) {
   let lastState = null;
   let lastBoundarySelection = null;
   for (let paragraphCount = 1; paragraphCount <= 20; paragraphCount += 1) {
@@ -362,7 +367,7 @@ async function findTwoSheetFixture(win) {
     lastState = state;
     lastBoundarySelection = boundarySelection;
     if (
-      state.centralSheetFlow === 'horizontal'
+      state.centralSheetFlow === 'vertical'
       && state.sourceWrapperCount === 1
       && state.sourceEditorWrapperCount === 1
       && state.derivedSheetCount >= 2
@@ -380,7 +385,7 @@ async function findTwoSheetFixture(win) {
       break;
     }
   }
-  throw new Error('NO_TWO_SHEET_BOUNDARY_SELECTION_FIXTURE ' + JSON.stringify({ lastState, lastBoundarySelection }));
+  throw new Error('NO_VERTICAL_BOUNDARY_SELECTION_FIXTURE ' + JSON.stringify({ lastState, lastBoundarySelection }));
 }
 
 app.disableHardwareAcceleration();
@@ -412,7 +417,7 @@ app.whenReady().then(async () => {
     win.setContentSize(2048, 1110);
     await sleep(1200);
 
-    const fixture = await findTwoSheetFixture(win);
+    const fixture = await findVerticalBoundarySelectionFixture(win);
     await setEditorPayload(win, fixture.paragraphCount);
     await sleep(800);
     const marker = '06C_REPLACED_SELECTION_MARKER';
@@ -548,12 +553,21 @@ for (const state of states) {
   assert.equal(state.sourceWrapperProseMirrorCount, 1, `${state.label} source wrapper must contain one ProseMirror`);
   assert.equal(state.sourceWrapperTiptapEditorCount, 1, `${state.label} source wrapper must contain one Tiptap editor shell`);
   assert.equal(state.derivedSheetCount >= 2, true, `${state.label} must keep at least two derived strip wrappers`);
+  assert.equal(state.pageRects.length, state.derivedSheetCount, `${state.label} page rects must match derived strip wrappers`);
+  assert.equal(
+    state.pageRects.slice(1).every((rect, index) => (
+      rect.top > state.pageRects[index].bottom
+      && Math.abs(rect.left - state.pageRects[index].left) <= 2
+    )),
+    true,
+    `${state.label} must keep current vertical windowed sheet stack geometry`
+  );
   assert.equal(state.derivedSheetProseMirrorCount, 0, `${state.label} derived wrappers must not contain ProseMirror`);
   assert.equal(state.derivedSheetEditorCount, 0, `${state.label} derived wrappers must not contain Tiptap editor shell`);
   assert.equal(state.prosePageTruthCount, 0, `${state.label} must not create page truth inside ProseMirror`);
 }
 
-assert.equal(result.fixture.centralSheetFlow, 'horizontal', 'fixture must use central sheet horizontal flow');
+assert.equal(result.fixture.centralSheetFlow, 'vertical', 'fixture must use current vertical central sheet flow');
 assert.equal(result.beforeReplace.centralSheetOverflowReason, null, 'runtime positive guard must not use overflow fallback');
 assert.equal(result.afterReplace.centralSheetOverflowReason, null, 'runtime positive guard must not overflow after replace');
 assert.equal(result.selectionPlacement.ok, true, 'boundary selection must be placed');
