@@ -4547,12 +4547,14 @@ body.dark-theme .status-bar {
   display: flex;
   align-items: flex-start;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 24px;
 }
 
 .main-content--editor.is-layout-preview-visible .editor-panel-wrapper {
-  flex: 1 1 auto;
-  min-width: 0;
+  flex: 0 0 auto;
+  min-width: min(100%, var(--page-width-px));
+  max-width: 100%;
 }
 
 .layout-preview-dock {
