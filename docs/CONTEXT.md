@@ -58,11 +58,11 @@
 - that reproof ended with STOP_AND_FREEZE for design write and did not prove a new live nonblocked Group 01 delta
 - design write lane remains closed after the latest X102 reproof
 
-### Vertical sheets accepted baseline
-- Vertical sheets accepted baseline merge point on main history is `4c4eca3aba79c7d689d39b822f689f8939ca58ce`.
+### Vertical sheets historical baseline and current quarantine
+- Vertical sheets historical baseline merge point on main history is `4c4eca3aba79c7d689d39b822f689f8939ca58ce`.
 - Current mainline head that includes C05 long-document performance window closeout is `792f28077973721669aef9cf78d9385b1fb1db29` (source contour commit `58a2aced76bb914b3128024ad75588f789b24b28`).
-- Primary editor flow has an accepted vertical sheet baseline: one Tiptap editor remains the text source, sheets are a derived visual projection, and page gaps remain view-only layout.
-- The accepted evidence set includes `vertical-sheet-feed-smoke`, `vertical-sheet-gap-smoke`, `five-sheet-visible-smoke`, and `vertical-sheet-input-stability-smoke`.
+- Primary editor flow had a historical vertical sheet baseline on that evidence; current 01R recheck quarantines that as not currently green because tracked vertical sheet red tests now exist.
+- The historical accepted evidence set included `vertical-sheet-feed-smoke`, `vertical-sheet-gap-smoke`, `five-sheet-visible-smoke`, and `vertical-sheet-input-stability-smoke`; current recheck records `five-sheet-visible-smoke`, `vertical-sheet-gap-smoke`, `derived-sheet-classification-smoke`, `boundary-enter-flow-smoke`, and `boundary-selection-replace-smoke` as blockers before any renewed design readiness claim.
 - `VERTICAL_SHEET_PERFORMANCE_BASELINE_RUN_001` observed 10, 50, and 100 page scenarios as report-only baseline evidence; it is not a hard performance gate and not a repo-persisted artifact.
 - This baseline does not claim full Word-like pagination, export parity, tables/cards/media pagination, horizontal multi-page overview, or toolbar test-tail closure.
 - Page numbers, page gaps, and sheet boundaries are not document truth and must not be written into project state by implication.
@@ -114,7 +114,7 @@ Repo-wide done подтверждён на main после merge gate и post-me
 Formal Y8 cutover packet is explicitly bound on main with explicit rollback packet in the same operating reality.
 Owner visual confirmation for the transferred variant on main is true.
 b101939f03996479e90441b1d0cd8ffb4d110e0f is the historical confirmed live point for that transferred variant.
-4c4eca3aba79c7d689d39b822f689f8939ca58ce is the baseline merge point for the accepted vertical sheets flow on main history.
+4c4eca3aba79c7d689d39b822f689f8939ca58ce is the baseline merge point for the historical vertical sheets flow on main history; current 01R recheck quarantines vertical sheet readiness until tracked reds are repaired.
 792f28077973721669aef9cf78d9385b1fb1db29 is the current mainline head that already contains C05 long-document performance closeout.
 Source anchor `e1f36ef` was successfully reproduced on main.
 Local checkout `a670f276759889ce90d1aa535ac7c84746b9f470` is not source of truth.

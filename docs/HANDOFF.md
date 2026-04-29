@@ -32,7 +32,7 @@ _Generated: 2026-04-26_
 - Active axis: `Writer v1`
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
-- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, accepted vertical sheets baseline, and C05 long-document closeout.
+- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, historical vertical sheets baseline, C05 long-document closeout, and current 01R quarantine for tracked vertical sheet reds.
 
 ## Local Machine State
 - This file describes a snapshot-bound mainline reality, not the forever-current state of the local machine.
@@ -76,10 +76,10 @@ _Generated: 2026-04-26_
 - X102 Block 01 visual reproof completed report-only against the selected-base snapshot at the time of X102 reproof and ended with STOP_AND_FREEZE.
 - No new live nonblocked Group 01 visual delta was proved by that reproof.
 - Design write lane remains closed after the latest X102 reproof.
-- vertical sheets accepted baseline merge point on main history is `4c4eca3aba79c7d689d39b822f689f8939ca58ce`.
+- vertical sheets historical baseline merge point on main history is `4c4eca3aba79c7d689d39b822f689f8939ca58ce`; current 01R recheck quarantines vertical sheet readiness until tracked reds are repaired.
 - current mainline head includes C05 long-document performance closeout at `792f28077973721669aef9cf78d9385b1fb1db29` from contour source commit `58a2aced76bb914b3128024ad75588f789b24b28`.
-- primary editor flow has accepted vertical sheet behavior: one Tiptap editor, derived visual sheet stack, view-only page gaps, and no page truth written into project state by implication.
-- accepted vertical evidence includes `vertical-sheet-feed-smoke`, `vertical-sheet-gap-smoke`, `five-sheet-visible-smoke`, and `vertical-sheet-input-stability-smoke`.
+- primary editor flow keeps the intended invariant of one Tiptap editor, derived visual sheet stack, view-only page gaps, and no page truth written into project state by implication; current readiness is not green while tracked vertical sheet reds remain.
+- historical vertical evidence included `vertical-sheet-feed-smoke`, `vertical-sheet-gap-smoke`, `five-sheet-visible-smoke`, and `vertical-sheet-input-stability-smoke`; current 01R recheck records tracked red blockers before any renewed design readiness claim.
 - `VERTICAL_SHEET_PERFORMANCE_BASELINE_RUN_001` is report-only baseline evidence for 10, 50, and 100 page scenarios; it is not a hard performance gate and not a repo-persisted artifact.
 - vertical acceptance does not close export parity, tables/cards/media pagination, horizontal multi-page overview, or toolbar test tails.
 - toolbar configuration subsystem is rebaselined to current repo truth:
