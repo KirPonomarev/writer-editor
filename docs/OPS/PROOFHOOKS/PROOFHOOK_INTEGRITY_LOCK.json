@@ -12,14 +12,14 @@
     "test/fixtures/proofhook-integrity/beta.txt"
   ],
   "closureFileHashes": {
-    "docs/OPS/CLAIMS/CRITICAL_CLAIM_MATRIX.json": "0b70cf8a6d0ac4436d513f0fc13eaf187159fe29b423aabc1fea3f5b81822088",
+    "docs/OPS/CLAIMS/CRITICAL_CLAIM_MATRIX.json": "49768bd3220c8460d216099294427fd841f902e2a590d2314ca98b53390f257a",
     "docs/OPS/EXECUTION/REQUIRED_TOKEN_SET.json": "53845afe43620c1da737dba37aaf96a86d09e3a0cc5ee4b086b1912282956ac5",
-    "docs/OPS/TOKENS/TOKEN_DECLARATION.json": "b3db3e5b7d2dbc8f457e0049a9425fdd6e8fd5e95069e2c4af6aa2a04501e349",
+    "docs/OPS/TOKENS/TOKEN_DECLARATION.json": "cbe4267e9370ba41cc47b0b88e335fa0e32045b8ea69ec35f49bf25f3cb96a0c",
     "scripts/ops/critical-claim-matrix-state.mjs": "68e449b8ec53f99aaac0a410807a8285ec823db10bca372cc5e359da1d42801f",
     "scripts/ops/generate-required-token-set.mjs": "87024c2e2ec2aff27f2272e4d6637dfddf6af88da38b2d2f85d3d2b1c8c8d774",
-    "scripts/ops/proofhook-integrity-state.mjs": "5053b2f3c93d039f627f24253d93c310fd07f3cbf149bcd0a4fe91e83a86aa26",
+    "scripts/ops/proofhook-integrity-state.mjs": "c0b862b6d9b1a333c5cdfdebe2a3240bf81b098cda718a8f9a416f6fd5c9c5d8",
     "test/fixtures/proofhook-integrity/alpha.txt": "a0e148c5e6d6a8fecc12bf68581c9eba02ff2a884da95ca379acc0bdcb6b7e52",
     "test/fixtures/proofhook-integrity/beta.txt": "56c8339c4f4bf0d47462f11b43155e6fe81b13cac3a553822f1c70e0e8001f68"
   },
-  "closureHash": "5f1e89ea33f7b3642bc1dd73ebae7903e90779b3790a88b91efcd0cec5590494"
+  "closureHash": "f217cf51358f403ed662d26a893a64a8df8553dd1759f9634e4c9c3cc014943f"
 }
