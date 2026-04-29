@@ -94,6 +94,60 @@ test('preview chrome: blank project switch stays ephemeral and does not write pr
   assert.equal(storage.getItem('toolbarProfiles:'), null);
 });
 
+test('preview chrome: sheet format commands pass command bus and reject bypass routes', async () => {
+  const registryModule = await loadModule('src/renderer/commands/registry.mjs');
+  const runnerModule = await loadModule('src/renderer/commands/runCommand.mjs');
+  const projectCommands = await loadModule('src/renderer/commands/projectCommands.mjs');
+  const commandBus = await loadModule('src/renderer/commands/commandBusGuard.mjs');
+
+  const calls = [];
+  const registry = registryModule.createCommandRegistry();
+  projectCommands.registerProjectCommands(registry, {
+    electronAPI: {},
+    uiActions: {
+      setPreviewFormat({ formatId } = {}) {
+        calls.push(formatId);
+        return { formatId };
+      },
+    },
+  });
+  const runCommand = runnerModule.createCommandRunner(registry, {
+    capability: { defaultPlatformId: 'node' },
+  });
+  const dispatch = (commandId, options = {}) => commandBus.runCommandThroughBus(
+    runCommand,
+    commandId,
+    {},
+    {
+      route: commandBus.COMMAND_BUS_ROUTE,
+      callerId: 'context-button',
+      ...options,
+    },
+  );
+
+  const a4 = await dispatch(projectCommands.EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A4);
+  const a5 = await dispatch(projectCommands.EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A5);
+  const letter = await dispatch(projectCommands.EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_LETTER);
+
+  assert.equal(a4.ok, true);
+  assert.equal(a5.ok, true);
+  assert.equal(letter.ok, true);
+  assert.deepEqual(calls, ['A4', 'A5', 'LETTER']);
+
+  const beforeBypassCount = calls.length;
+  const bypass = await dispatch(projectCommands.EXTRA_COMMAND_IDS.VIEW_PREVIEW_FORMAT_A5, {
+    route: 'context.button.direct',
+  });
+  assert.equal(bypass.ok, false);
+  assert.equal(bypass.error.code, 'E_COMMAND_SURFACE_BYPASS');
+  assert.equal(calls.length, beforeBypassCount);
+
+  const unknown = await dispatch('cmd.project.view.previewFormatTabloid');
+  assert.equal(unknown.ok, false);
+  assert.equal(unknown.error.code, 'E_COMMAND_NOT_FOUND');
+  assert.equal(calls.length, beforeBypassCount);
+});
+
 test('preview chrome: editor text wiring routes preview format through active book profile state', () => {
   const source = readFile('src/renderer/editor.js');
   const projectCommands = readFile('src/renderer/commands/projectCommands.mjs');
