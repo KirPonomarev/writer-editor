@@ -24,6 +24,7 @@ export const READINESS_RULE = '5000_READINESS_REQUIRES_TRACKED_5000_PASS';
 export const CANDIDATE_RULE = '10000_CANDIDATE_DOES_NOT_RAISE_SUPPORTED_TIER';
 export const SUPPORTED_SCALE_CEILING = 5000;
 export const DIAGNOSTIC_BOUNDARY_PAGE_COUNTS = Object.freeze([25000]);
+export const SCROLL_RANGE_LIMIT_RULE = 'END_MARKER_HIDDEN_AT_MAX_SCROLL_TOP_IS_SCROLL_RANGE_CLAMP';
 
 export const ROW_DEFINITIONS = Object.freeze([
   {
@@ -131,6 +132,18 @@ function requireObservedMetric(issues, row, metricName) {
   if (!row?.observed || !Object.prototype.hasOwnProperty.call(row.observed, metricName)) {
     issues.push(`ROW_OBSERVED_${metricName.toUpperCase()}_MISSING_${row?.id || 'UNKNOWN'}`);
   }
+}
+
+function getEndMarkerScroll(row) {
+  const markerScrolls = Array.isArray(row?.observed?.markerScrolls) ? row.observed.markerScrolls : [];
+  return markerScrolls.find((entry) => normalizeString(entry?.markerName) === 'END') || null;
+}
+
+function markerScrollIndicatesClamp(markerScroll) {
+  const visibleRectCount = Number(markerScroll?.visibleRectCount || 0);
+  const scrollTop = Number(markerScroll?.scrollTop || 0);
+  const maxScrollTop = Number(markerScroll?.maxScrollTop || 0);
+  return visibleRectCount <= 0 && maxScrollTop > 0 && scrollTop >= maxScrollTop;
 }
 
 function stableSort(value) {
@@ -436,6 +449,18 @@ function summarizeScaleRow(summary) {
     typingUndoRestoredHash: typing?.undoRestoredHash === true,
     typingRedoRestoredTypedHash: typing?.redoRestoredTypedHash === true,
     typingCleanupRestoredHash: typing?.cleanupRestoredHash === true,
+    markerScrolls: Array.isArray(highestScenario?.markerScrolls)
+      ? highestScenario.markerScrolls.map((item) => ({
+          markerName: normalizeString(item?.markerName),
+          scrollTop: Number(item?.scrollTop || 0),
+          scrollHeight: Number(item?.scrollHeight || 0),
+          clientHeight: Number(item?.clientHeight || 0),
+          maxScrollTop: Number(item?.maxScrollTop || 0),
+          visibleRectCount: Number(item?.visibleRectCount || 0),
+          firstRenderedPage: Number(item?.firstRenderedPage || 0),
+          lastRenderedPage: Number(item?.lastRenderedPage || 0),
+        }))
+      : [],
   };
 }
 
@@ -571,6 +596,16 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
     .filter((pageCount) => pageCount > provisionalObservedCeiling);
   const tracked5000Pass = trackedScaleRows.some((row) => row.pageCount === 5000 && row.status === 'PASS');
   const trackedCandidate10000Pass = trackedCandidateRows.some((row) => row.pageCount === 10000 && row.status === 'PASS');
+  const scaleAndCandidateRows = rows.filter((row) => row.rowClass === 'tracked-scale' || row.rowClass === 'tracked-candidate');
+  const endMarkerScrolls = scaleAndCandidateRows.map((row) => getEndMarkerScroll(row)).filter(Boolean);
+  const scrollHeightLimitObserved = endMarkerScrolls.reduce(
+    (max, entry) => Math.max(max, Number(entry.scrollHeight || 0)),
+    0,
+  );
+  const maxScrollTopObserved = endMarkerScrolls.reduce(
+    (max, entry) => Math.max(max, Number(entry.maxScrollTop || 0)),
+    0,
+  );
   const ok = failedRowIds.length === 0;
 
   return stableSort({
@@ -623,12 +658,30 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
       supportedTierRaised: false,
       rule: CANDIDATE_RULE,
     },
+    diagnosticBoundaryPolicy: {
+      destructiveDiagnosticPageCounts: [...DIAGNOSTIC_BOUNDARY_PAGE_COUNTS],
+      readinessClaim: false,
+      supportedTierRaised: false,
+      acceptancePromotion: false,
+      heavyRunByDefault: false,
+      sourceClass: 'POLICY_ONLY_NO_HEAVY_RUN',
+    },
+    scrollRangeLimitGuard: {
+      rule: SCROLL_RANGE_LIMIT_RULE,
+      sourceClass: 'HARNESS_OBSERVED_OR_FIXTURED_CONTRACT',
+      endMarkerVisibleRequiredForAcceptanceRows: true,
+      childOkParentFailCannotGreenlight: true,
+      scrollRangeClampDetected: false,
+      scrollHeightLimitObserved,
+      maxScrollTopObserved,
+    },
     rules: {
       writeExecutesExplicitRows: true,
       explicitScaleRowsRequired: true,
       diagnosticRowsDoNotRaiseCeiling: true,
       trackedCandidatesDoNotRaiseSupportedTier: true,
       diagnosticBoundary25000DoesNotRaiseCeiling: true,
+      scrollRangeClampCannotGreenlightAcceptance: true,
       readinessRequiresTracked5000Pass: true,
       refreshAuthority: WRITE_AUTHORITY_RULE,
     },
@@ -652,6 +705,18 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
   if (!Array.isArray(artifact?.diagnosticBoundaryPageCounts)) issues.push('DIAGNOSTIC_BOUNDARY_PAGE_COUNTS_MISSING');
   if (normalizeString(artifact?.readiness?.rule) !== READINESS_RULE) issues.push('READINESS_RULE_INVALID');
   if (normalizeString(artifact?.candidates?.rule) !== CANDIDATE_RULE) issues.push('CANDIDATE_RULE_INVALID');
+  if (normalizeString(artifact?.scrollRangeLimitGuard?.rule) !== SCROLL_RANGE_LIMIT_RULE) {
+    issues.push('SCROLL_RANGE_LIMIT_RULE_INVALID');
+  }
+  if (artifact?.scrollRangeLimitGuard?.endMarkerVisibleRequiredForAcceptanceRows !== true) {
+    issues.push('SCROLL_RANGE_END_MARKER_REQUIREMENT_MISSING');
+  }
+  if (artifact?.scrollRangeLimitGuard?.childOkParentFailCannotGreenlight !== true) {
+    issues.push('SCROLL_RANGE_CHILD_OK_PARENT_FAIL_GUARD_MISSING');
+  }
+  if (artifact?.scrollRangeLimitGuard?.sourceClass !== 'HARNESS_OBSERVED_OR_FIXTURED_CONTRACT') {
+    issues.push('SCROLL_RANGE_SOURCE_CLASS_INVALID');
+  }
 
   const rowIds = rows.map((row) => normalizeString(row?.id));
   const expectedIdHash = sha256Text(EXPECTED_ROW_IDS.join('\n'));
@@ -686,8 +751,20 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
         'typingUndoRestoredHash',
         'typingRedoRestoredTypedHash',
         'typingCleanupRestoredHash',
+        'markerScrolls',
       ]) {
         requireObservedMetric(issues, row, metricName);
+      }
+      const endMarkerScroll = getEndMarkerScroll(row);
+      if (!endMarkerScroll) {
+        issues.push(`ROW_END_MARKER_SCROLL_MISSING_${rowDefinition.id}`);
+      } else {
+        if (Number(endMarkerScroll.visibleRectCount || 0) <= 0) {
+          issues.push(`ROW_END_MARKER_NOT_VISIBLE_${rowDefinition.id}`);
+        }
+        if (markerScrollIndicatesClamp(endMarkerScroll)) {
+          issues.push(`SCROLL_RANGE_CLAMP_${rowDefinition.id}`);
+        }
       }
     }
   }
@@ -742,6 +819,15 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
 
   const trackedScaleRows = rows.filter((row) => normalizeString(row?.rowClass) === 'tracked-scale');
   const trackedCandidateRows = rows.filter((row) => normalizeString(row?.rowClass) === 'tracked-candidate');
+  const scrollRangeClampDetected = rows
+    .filter((row) => normalizeString(row?.rowClass) === 'tracked-scale' || normalizeString(row?.rowClass) === 'tracked-candidate')
+    .some((row) => markerScrollIndicatesClamp(getEndMarkerScroll(row)));
+  if (Boolean(artifact?.scrollRangeLimitGuard?.scrollRangeClampDetected) !== scrollRangeClampDetected) {
+    issues.push('SCROLL_RANGE_CLAMP_FLAG_INVALID');
+  }
+  if (scrollRangeClampDetected) {
+    issues.push('SCROLL_RANGE_CLAMP_DETECTED');
+  }
   const expectedCeiling = trackedScaleRows
     .filter((row) => normalizeString(row?.status) === 'PASS')
     .reduce((max, row) => Math.max(max, Number(row?.pageCount || 0)), 0);
@@ -787,6 +873,27 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
   }
   if (artifact?.candidates?.supportedTierRaised === true) {
     issues.push('CANDIDATE_SUPPORTED_TIER_RAISED');
+  }
+  if (artifact?.diagnosticBoundaryPolicy?.sourceClass !== 'POLICY_ONLY_NO_HEAVY_RUN') {
+    issues.push('DIAGNOSTIC_BOUNDARY_POLICY_SOURCE_INVALID');
+  }
+  if (artifact?.diagnosticBoundaryPolicy?.readinessClaim !== false) {
+    issues.push('DIAGNOSTIC_BOUNDARY_READINESS_CLAIMED');
+  }
+  if (artifact?.diagnosticBoundaryPolicy?.supportedTierRaised !== false) {
+    issues.push('DIAGNOSTIC_BOUNDARY_SUPPORTED_TIER_RAISED');
+  }
+  if (artifact?.diagnosticBoundaryPolicy?.acceptancePromotion !== false) {
+    issues.push('DIAGNOSTIC_BOUNDARY_ACCEPTANCE_PROMOTED');
+  }
+  if (artifact?.diagnosticBoundaryPolicy?.heavyRunByDefault !== false) {
+    issues.push('DIAGNOSTIC_BOUNDARY_HEAVY_RUN_DEFAULT');
+  }
+  const actualDestructiveDiagnosticPageCounts = Array.isArray(artifact?.diagnosticBoundaryPolicy?.destructiveDiagnosticPageCounts)
+    ? artifact.diagnosticBoundaryPolicy.destructiveDiagnosticPageCounts.map((pageCount) => Number(pageCount || 0))
+    : [];
+  if (sha256Text(DIAGNOSTIC_BOUNDARY_PAGE_COUNTS.join('\n')) !== sha256Text(actualDestructiveDiagnosticPageCounts.join('\n'))) {
+    issues.push('DIAGNOSTIC_BOUNDARY_POLICY_COUNTS_DO_NOT_MATCH');
   }
   if (
     rows.some((row) => Number(row?.pageCount || 0) === 25000 && row?.diagnosticOnly !== true)

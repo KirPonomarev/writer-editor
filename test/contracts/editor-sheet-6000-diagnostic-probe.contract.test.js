@@ -41,6 +41,18 @@ function collectBoundaryPolicyIssues({ stressArtifact, closeoutSummary }) {
   if (JSON.stringify(stressArtifact?.diagnosticBoundaryPageCounts || []) !== JSON.stringify(DIAGNOSTIC_BOUNDARY_COUNTS)) {
     issues.push('DIAGNOSTIC_BOUNDARY_COUNTS_CHANGED');
   }
+  if (JSON.stringify(stressArtifact?.diagnosticBoundaryPolicy?.destructiveDiagnosticPageCounts || []) !== JSON.stringify(DIAGNOSTIC_BOUNDARY_COUNTS)) {
+    issues.push('DIAGNOSTIC_BOUNDARY_POLICY_COUNTS_CHANGED');
+  }
+  if (stressArtifact?.diagnosticBoundaryPolicy?.readinessClaim !== false) {
+    issues.push('DIAGNOSTIC_BOUNDARY_READINESS_CLAIMED');
+  }
+  if (stressArtifact?.diagnosticBoundaryPolicy?.supportedTierRaised !== false) {
+    issues.push('DIAGNOSTIC_BOUNDARY_SUPPORTED_TIER_RAISED');
+  }
+  if (stressArtifact?.diagnosticBoundaryPolicy?.acceptancePromotion !== false) {
+    issues.push('DIAGNOSTIC_BOUNDARY_ACCEPTANCE_PROMOTED');
+  }
   if (stressArtifact?.readiness?.editorialSheet6000Ready === true) {
     issues.push('READINESS_6000_CLAIMED');
   }
@@ -119,6 +131,11 @@ test('editor sheet 6000 diagnostic probe: committed stress status keeps 5000 as 
   assert.equal(artifact.readiness.tracked5000Pass, true);
   assert.equal(artifact.candidates.trackedCandidate10000Pass, true);
   assert.equal(artifact.candidates.supportedTierRaised, false);
+  assert.deepEqual(artifact.diagnosticBoundaryPolicy.destructiveDiagnosticPageCounts, DIAGNOSTIC_BOUNDARY_COUNTS);
+  assert.equal(artifact.diagnosticBoundaryPolicy.readinessClaim, false);
+  assert.equal(artifact.diagnosticBoundaryPolicy.supportedTierRaised, false);
+  assert.equal(artifact.diagnosticBoundaryPolicy.acceptancePromotion, false);
+  assert.equal(artifact.diagnosticBoundaryPolicy.heavyRunByDefault, false);
   assert.equal(artifact.trackedScalePageCounts.includes(6000), false);
   assert.equal(artifact.trackedCandidatePageCounts.includes(6000), false);
   assert.equal(artifact.rows.some((row) => Number(row.pageCount || 0) === 6000), false);
@@ -151,6 +168,12 @@ test('editor sheet 6000 diagnostic probe: boundary policy rejects simulated 6000
       ...artifact.candidates,
       supportedTierRaised: true,
     },
+    diagnosticBoundaryPolicy: {
+      ...artifact.diagnosticBoundaryPolicy,
+      readinessClaim: true,
+      supportedTierRaised: true,
+      acceptancePromotion: true,
+    },
   };
   const promotedSummary = {
     ...closeoutSummary,
@@ -172,6 +195,9 @@ test('editor sheet 6000 diagnostic probe: boundary policy rejects simulated 6000
   assert.ok(issues.includes('SUPPORTED_TIER_ABOVE_5000'));
   assert.ok(issues.includes('READINESS_6000_CLAIMED'));
   assert.ok(issues.includes('TRACKED_6000_PASS_CLAIMED'));
+  assert.ok(issues.includes('DIAGNOSTIC_BOUNDARY_READINESS_CLAIMED'));
+  assert.ok(issues.includes('DIAGNOSTIC_BOUNDARY_SUPPORTED_TIER_RAISED'));
+  assert.ok(issues.includes('DIAGNOSTIC_BOUNDARY_ACCEPTANCE_PROMOTED'));
   assert.ok(issues.includes('CLOSEOUT_6000_UNSUPPORTED_BOUNDARY_MISSING'));
   assert.ok(issues.includes('CLOSEOUT_POSITIVE_6000_CLAIM_editorialSheet6000Ready'));
   assert.ok(issues.includes('CLOSEOUT_supportedTier_ABOVE_5000'));

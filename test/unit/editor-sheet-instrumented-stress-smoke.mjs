@@ -748,6 +748,9 @@ const summary = {
     markerScrolls: scenario.markerScrolls.map((item) => ({
       markerName: item.markerName,
       scrollTop: item.scrollResult.scrollTop,
+      scrollHeight: item.scrollResult.scrollHeight,
+      clientHeight: item.scrollResult.clientHeight,
+      maxScrollTop: item.scrollResult.maxScrollTop,
       visibleRectCount: item.after.marker[item.markerName].visibleRectCount,
       firstRenderedPage: item.after.centralSheetWindowFirstRenderedPage,
       lastRenderedPage: item.after.centralSheetWindowLastRenderedPage,

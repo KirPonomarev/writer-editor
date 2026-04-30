@@ -9,6 +9,16 @@
   "diagnosticBoundaryPageCounts": [
     25000
   ],
+  "diagnosticBoundaryPolicy": {
+    "acceptancePromotion": false,
+    "destructiveDiagnosticPageCounts": [
+      25000
+    ],
+    "heavyRunByDefault": false,
+    "readinessClaim": false,
+    "sourceClass": "POLICY_ONLY_NO_HEAVY_RUN",
+    "supportedTierRaised": false
+  },
   "diagnosticOnlyRowIds": [
     "VIEWPORT_CONTINUITY",
     "INPUT_CONTINUITY",
@@ -36,7 +46,7 @@
     "GAP_CONTINUITY"
   ],
   "failedRowIds": [],
-  "generatedAtUtc": "2026-04-30T16:02:53.051Z",
+  "generatedAtUtc": "2026-04-30T16:16:25.977Z",
   "ok": true,
   "provisionalObservedCeiling": 5000,
   "readiness": {
@@ -45,11 +55,11 @@
     "tracked5000Pass": true
   },
   "repo": {
-    "branchName": "codex/editorial-sheet-10000-candidate-01",
+    "branchName": "codex/editorial-sheet-scroll-limit-guard-02",
     "detachedHead": false,
-    "headSha": "5b816cf255d57ea51d807a2d40e4f1f5250a0e8d",
+    "headSha": "89c29c7d0dec6dc208583ec3b70ceee5011f954f",
     "originMainAncestorOfHead": true,
-    "originMainHeadSha": "7ceb4d15ba6f55d2e3997cd58ee19dd09ba04b74",
+    "originMainHeadSha": "08095e2c7dd9f4550ba2b4401e9d7d0a4411b9b0",
     "repoRootBinding": "WORKTREE_LOCAL",
     "statusBasename": "EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
     "worktreeClean": true,
@@ -66,192 +76,452 @@
     {
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 12768,
+      "durationMs": 13079,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T16:01:11.577Z",
+      "finishedAtUtc": "2026-04-30T16:14:38.625Z",
       "id": "TRACKED_SCALE_2000",
       "observed": {
         "actualPageCount": 2300,
         "dialogCalls": 0,
         "domNodeCount": 789,
         "hiddenPageCount": 2296,
-        "loadMs": 5693,
+        "loadMs": 5781,
+        "markerScrolls": [
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 1,
+            "lastRenderedPage": 4,
+            "markerName": "START",
+            "maxScrollTop": 1041317,
+            "scrollHeight": 1041996,
+            "scrollTop": 0,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 442,
+            "lastRenderedPage": 445,
+            "markerName": "P25",
+            "maxScrollTop": 1041317,
+            "scrollHeight": 1041996,
+            "scrollTop": 200345,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 885,
+            "lastRenderedPage": 888,
+            "markerName": "MIDDLE",
+            "maxScrollTop": 1041317,
+            "scrollHeight": 1041996,
+            "scrollTop": 401039,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 1327,
+            "lastRenderedPage": 1331,
+            "markerName": "P75",
+            "maxScrollTop": 1041317,
+            "scrollHeight": 1041996,
+            "scrollTop": 601538,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 1770,
+            "lastRenderedPage": 1773,
+            "markerName": "END",
+            "maxScrollTop": 1041317,
+            "scrollHeight": 1041996,
+            "scrollTop": 802037,
+            "visibleRectCount": 2
+          }
+        ],
         "networkRequests": 0,
         "renderedSheetShellCount": 4,
         "targetPageCount": 2000,
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 269,
+        "typingTypeMs": 260,
         "typingUndoRestoredHash": true
       },
       "pageCount": 2000,
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-04-30T16:00:58.809Z",
+      "startedAtUtc": "2026-04-30T16:14:25.546Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "5dd8d32df16d7bcc41e29673e22d6908f1f7b88aebe72d87aef70eb737d7453b",
-      "stdoutTail": "ectCount\":2,\"firstRenderedPage\":1770,\"lastRenderedPage\":1773}],\"textHashStable\":true,\"typing\":{\"typeMs\":269,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (12727.981916ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 12733.59425\n"
+      "stdoutSummaryHash": "ee52d7f3a97ff54cfc80dfffb1ee1c6ae8544a31701386724800b7b5e73fbcc2",
+      "stdoutTail": "eRectCount\":2,\"firstRenderedPage\":1770,\"lastRenderedPage\":1773}],\"textHashStable\":true,\"typing\":{\"typeMs\":260,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (13024.022ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 13029.480334\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 13484,
+      "durationMs": 13608,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T16:01:25.406Z",
+      "finishedAtUtc": "2026-04-30T16:14:52.543Z",
       "id": "TRACKED_SCALE_3000",
       "observed": {
         "actualPageCount": 3448,
         "dialogCalls": 0,
         "domNodeCount": 789,
         "hiddenPageCount": 3444,
-        "loadMs": 6361,
+        "loadMs": 6430,
+        "markerScrolls": [
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 1,
+            "lastRenderedPage": 4,
+            "markerName": "START",
+            "maxScrollTop": 1561361,
+            "scrollHeight": 1562040,
+            "scrollTop": 0,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 663,
+            "lastRenderedPage": 667,
+            "markerName": "P25",
+            "maxScrollTop": 1561361,
+            "scrollHeight": 1562040,
+            "scrollTop": 300575,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 1327,
+            "lastRenderedPage": 1331,
+            "markerName": "MIDDLE",
+            "maxScrollTop": 1561361,
+            "scrollHeight": 1562040,
+            "scrollTop": 601499,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 1991,
+            "lastRenderedPage": 1995,
+            "markerName": "P75",
+            "maxScrollTop": 1561361,
+            "scrollHeight": 1562040,
+            "scrollTop": 902228,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 2655,
+            "lastRenderedPage": 2659,
+            "markerName": "END",
+            "maxScrollTop": 1561361,
+            "scrollHeight": 1562040,
+            "scrollTop": 1202957,
+            "visibleRectCount": 2
+          }
+        ],
         "networkRequests": 0,
         "renderedSheetShellCount": 4,
         "targetPageCount": 3000,
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 427,
+        "typingTypeMs": 406,
         "typingUndoRestoredHash": true
       },
       "pageCount": 3000,
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-04-30T16:01:11.922Z",
+      "startedAtUtc": "2026-04-30T16:14:38.935Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "cc36a465f8792b56baf5cfd5cfed5c56f3a2a005b1fd1184038900bd3b20de89",
-      "stdoutTail": "ectCount\":2,\"firstRenderedPage\":2655,\"lastRenderedPage\":2659}],\"textHashStable\":true,\"typing\":{\"typeMs\":427,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (13439.70725ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 13445.558125\n"
+      "stdoutSummaryHash": "826c5cfdaca54a098938fbe319a0a50c26e1bce1547902ae3f24ce335bb1d538",
+      "stdoutTail": "ectCount\":2,\"firstRenderedPage\":2655,\"lastRenderedPage\":2659}],\"textHashStable\":true,\"typing\":{\"typeMs\":406,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (13563.555583ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 13568.72425\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 12795,
+      "durationMs": 12868,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T16:01:38.492Z",
+      "finishedAtUtc": "2026-04-30T16:15:05.708Z",
       "id": "TRACKED_SCALE_4000",
       "observed": {
         "actualPageCount": 4476,
         "dialogCalls": 0,
         "domNodeCount": 982,
         "hiddenPageCount": 4472,
-        "loadMs": 5740,
+        "loadMs": 5682,
+        "markerScrolls": [
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 1,
+            "lastRenderedPage": 4,
+            "markerName": "START",
+            "maxScrollTop": 2027045,
+            "scrollHeight": 2027724,
+            "scrollTop": 0,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 886,
+            "lastRenderedPage": 889,
+            "markerName": "P25",
+            "maxScrollTop": 2027045,
+            "scrollHeight": 2027724,
+            "scrollTop": 401576,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 1773,
+            "lastRenderedPage": 1777,
+            "markerName": "MIDDLE",
+            "maxScrollTop": 2027045,
+            "scrollHeight": 2027724,
+            "scrollTop": 803462,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 2660,
+            "lastRenderedPage": 2664,
+            "markerName": "P75",
+            "maxScrollTop": 2027045,
+            "scrollHeight": 2027724,
+            "scrollTop": 1205360,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 3547,
+            "lastRenderedPage": 3551,
+            "markerName": "END",
+            "maxScrollTop": 2027045,
+            "scrollHeight": 2027724,
+            "scrollTop": 1607071,
+            "visibleRectCount": 2
+          }
+        ],
         "networkRequests": 0,
         "renderedSheetShellCount": 4,
         "targetPageCount": 4000,
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 329,
+        "typingTypeMs": 334,
         "typingUndoRestoredHash": true
       },
       "pageCount": 4000,
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-04-30T16:01:25.697Z",
+      "startedAtUtc": "2026-04-30T16:14:52.840Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "7939046b264af9fbbf9a7bf7f6bd5394338c3e0e921a55ed962473a2d9136158",
-      "stdoutTail": "ctCount\":2,\"firstRenderedPage\":3547,\"lastRenderedPage\":3551}],\"textHashStable\":true,\"typing\":{\"typeMs\":329,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (12754.586125ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 12758.879667\n"
+      "stdoutSummaryHash": "9a2ec6935d38c532244d2d608bdf2e4a90674f00be15b9d07fc4fa4336cd7cc1",
+      "stdoutTail": "ctCount\":2,\"firstRenderedPage\":3547,\"lastRenderedPage\":3551}],\"textHashStable\":true,\"typing\":{\"typeMs\":334,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (12821.360458ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 12826.394833\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 13066,
+      "durationMs": 13164,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T16:01:51.599Z",
+      "finishedAtUtc": "2026-04-30T16:15:19.167Z",
       "id": "TRACKED_SCALE_5000",
       "observed": {
         "actualPageCount": 5596,
         "dialogCalls": 0,
         "domNodeCount": 1031,
         "hiddenPageCount": 5592,
-        "loadMs": 6000,
+        "loadMs": 6003,
+        "markerScrolls": [
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 1,
+            "lastRenderedPage": 4,
+            "markerName": "START",
+            "maxScrollTop": 2534405,
+            "scrollHeight": 2535084,
+            "scrollTop": 0,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 1108,
+            "lastRenderedPage": 1111,
+            "markerName": "P25",
+            "maxScrollTop": 2534405,
+            "scrollHeight": 2535084,
+            "scrollTop": 502009,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 2217,
+            "lastRenderedPage": 2220,
+            "markerName": "MIDDLE",
+            "maxScrollTop": 2534405,
+            "scrollHeight": 2535084,
+            "scrollTop": 1004359,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 3325,
+            "lastRenderedPage": 3329,
+            "markerName": "P75",
+            "maxScrollTop": 2534405,
+            "scrollHeight": 2535084,
+            "scrollTop": 1506638,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 4434,
+            "lastRenderedPage": 4437,
+            "markerName": "END",
+            "maxScrollTop": 2534405,
+            "scrollHeight": 2535084,
+            "scrollTop": 2008754,
+            "visibleRectCount": 2
+          }
+        ],
         "networkRequests": 0,
         "renderedSheetShellCount": 4,
         "targetPageCount": 5000,
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 460,
+        "typingTypeMs": 488,
         "typingUndoRestoredHash": true
       },
       "pageCount": 5000,
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-04-30T16:01:38.533Z",
+      "startedAtUtc": "2026-04-30T16:15:06.003Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "c0d47d6c7c4077cd1c5ae6143e3f6ea265b91790ff001573d71d7b307cb8b9cb",
-      "stdoutTail": "ctCount\":2,\"firstRenderedPage\":4434,\"lastRenderedPage\":4437}],\"textHashStable\":true,\"typing\":{\"typeMs\":460,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (13022.731375ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 13028.394792\n"
+      "stdoutSummaryHash": "f3dad1f68a82b0c5cb63d3fbfa86c8f8c55978978e175c611431e0cb2856648f",
+      "stdoutTail": "ctCount\":2,\"firstRenderedPage\":4434,\"lastRenderedPage\":4437}],\"textHashStable\":true,\"typing\":{\"typeMs\":488,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (13117.600959ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 13123.409166\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 13989,
+      "durationMs": 14144,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T16:02:05.884Z",
+      "finishedAtUtc": "2026-04-30T16:15:33.610Z",
       "id": "TRACKED_CANDIDATE_10000",
       "observed": {
         "actualPageCount": 11251,
         "dialogCalls": 0,
         "domNodeCount": 1276,
         "hiddenPageCount": 11247,
-        "loadMs": 6756,
+        "loadMs": 6899,
+        "markerScrolls": [
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 1,
+            "lastRenderedPage": 4,
+            "markerName": "START",
+            "maxScrollTop": 5096120,
+            "scrollHeight": 5096799,
+            "scrollTop": 0,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 2217,
+            "lastRenderedPage": 2220,
+            "markerName": "P25",
+            "maxScrollTop": 5096120,
+            "scrollHeight": 5096799,
+            "scrollTop": 1004359,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 4435,
+            "lastRenderedPage": 4438,
+            "markerName": "MIDDLE",
+            "maxScrollTop": 5096120,
+            "scrollHeight": 5096799,
+            "scrollTop": 2009176,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 6653,
+            "lastRenderedPage": 6656,
+            "markerName": "P75",
+            "maxScrollTop": 5096120,
+            "scrollHeight": 5096799,
+            "scrollTop": 3013798,
+            "visibleRectCount": 2
+          },
+          {
+            "clientHeight": 679,
+            "firstRenderedPage": 8870,
+            "lastRenderedPage": 8874,
+            "markerName": "END",
+            "maxScrollTop": 5096120,
+            "scrollHeight": 5096799,
+            "scrollTop": 4018420,
+            "visibleRectCount": 2
+          }
+        ],
         "networkRequests": 0,
         "renderedSheetShellCount": 4,
         "targetPageCount": 10000,
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 772,
+        "typingTypeMs": 813,
         "typingUndoRestoredHash": true
       },
       "pageCount": 10000,
       "rowClass": "tracked-candidate",
-      "startedAtUtc": "2026-04-30T16:01:51.895Z",
+      "startedAtUtc": "2026-04-30T16:15:19.466Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "485825565864b8f0408b9bc736beed0504b4a6b07e351a61c422831f4f4e9de8",
-      "stdoutTail": "ctCount\":2,\"firstRenderedPage\":8870,\"lastRenderedPage\":8874}],\"textHashStable\":true,\"typing\":{\"typeMs\":772,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (13948.263292ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 13952.743542\n"
+      "stdoutSummaryHash": "c64befc2f7ab1e540680ae4c60c9e9befbb1671fe17471ed707f011f90c9c08a",
+      "stdoutTail": "ectCount\":2,\"firstRenderedPage\":8870,\"lastRenderedPage\":8874}],\"textHashStable\":true,\"typing\":{\"typeMs\":813,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (14097.14075ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 14103.336125\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/vertical-sheet-performance-window-smoke.mjs",
       "diagnosticOnly": true,
-      "durationMs": 18869,
+      "durationMs": 20724,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T16:02:25.045Z",
+      "finishedAtUtc": "2026-04-30T16:15:54.634Z",
       "id": "VIEWPORT_CONTINUITY",
       "observed": {
         "afterInputHiddenPageCount": 549,
         "afterInputVisibleSheetCount": 4,
         "domNotLinearWithSourcePages": true,
         "fullVisibleSheetRebuildAfterInput": false,
-        "insertMs100": 3252,
+        "insertMs100": 4230,
         "scrollRenderedWindowShift": 508,
-        "scrollViewportSheetCountImmediate": 3,
+        "scrollViewportSheetCountImmediate": 0,
         "scrollViewportSheetCountSettled": 3,
         "scrollViewportSheetCountSync": 3,
         "scrollViewportTextRectCountSettled": 44
       },
       "rowClass": "diagnostic-viewport",
-      "startedAtUtc": "2026-04-30T16:02:06.176Z",
+      "startedAtUtc": "2026-04-30T16:15:33.910Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "8ae35a695aa7a35d2da23c0f99e34676001736ac9ce6f22daf884fd0bf109ea5",
-      "stdoutTail": ":789,\"afterInputSourcePageCount\":553,\"afterInputVisibleSheetCount\":4,\"afterInputHiddenPageCount\":549,\"renderedSheetWindowMax\":15,\"domGrowth10to50\":0,\"domGrowth50to100\":0,\"domGrowth10to100\":0,\"domNotLinearWithSourcePages\":true}\n✔ test/unit/vertical-sheet-performance-window-smoke.mjs (18826.08675ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 18831.548708\n"
+      "stdoutSummaryHash": "4a8f5e90778307fff7f498ae69d84dcaee50b66ed337712c10d8875a319234f7",
+      "stdoutTail": "789,\"afterInputSourcePageCount\":553,\"afterInputVisibleSheetCount\":4,\"afterInputHiddenPageCount\":549,\"renderedSheetWindowMax\":15,\"domGrowth10to50\":0,\"domGrowth50to100\":0,\"domGrowth10to100\":0,\"domNotLinearWithSourcePages\":true}\n✔ test/unit/vertical-sheet-performance-window-smoke.mjs (20679.065792ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 20684.451625\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/vertical-sheet-input-stability-smoke.mjs",
       "diagnosticOnly": true,
-      "durationMs": 17790,
+      "durationMs": 20972,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T16:02:43.124Z",
+      "finishedAtUtc": "2026-04-30T16:16:15.900Z",
       "id": "INPUT_CONTINUITY",
       "observed": {
         "backspaceRedoTruncatedTargetAfter": 1,
@@ -267,19 +537,19 @@
         "visibleTextRectCount": 39
       },
       "rowClass": "diagnostic-input",
-      "startedAtUtc": "2026-04-30T16:02:25.334Z",
+      "startedAtUtc": "2026-04-30T16:15:54.928Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "65d0ea6ec28e1f7395161b32ba921f7721471dc5cc57f6fad354bc49a79ce891",
-      "stdoutTail": "ibleSheetCount\":2,\"visibleTextRectCount\":39,\"networkRequests\":0,\"dialogCalls\":0,\"screenshots\":[\"vertical-input-stability-before.png\",\"vertical-input-stability-after-paste.png\",\"vertical-input-stability-after-backspace-redo.png\"]}\\n✔ test/unit/vertical-sheet-input-stability-smoke.mjs (17748.129583ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 17752.6925\n"
+      "stdoutSummaryHash": "6169eaa090996f4d7c41acc0d460913c0eadfb5125b94c37a2928ec495188935",
+      "stdoutTail": "leSheetCount\":2,\"visibleTextRectCount\":39,\"networkRequests\":0,\"dialogCalls\":0,\"screenshots\":[\"vertical-input-stability-before.png\",\"vertical-input-stability-after-paste.png\",\"vertical-input-stability-after-backspace-redo.png\"]}\\n✔ test/unit/vertical-sheet-input-stability-smoke.mjs (20926.925291ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 20931.786584\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/vertical-sheet-gap-smoke.mjs",
       "diagnosticOnly": true,
-      "durationMs": 9879,
+      "durationMs": 9907,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T16:02:53.051Z",
+      "finishedAtUtc": "2026-04-30T16:16:25.976Z",
       "id": "GAP_CONTINUITY",
       "observed": {
         "liveGapMaxPx": 32,
@@ -291,11 +561,11 @@
         "visibleTextGapIntersectionCount": 0
       },
       "rowClass": "diagnostic-gap",
-      "startedAtUtc": "2026-04-30T16:02:43.172Z",
+      "startedAtUtc": "2026-04-30T16:16:16.069Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "f94969936da7e7f2928e886088d434a5b9dcc8b31927f624b001fede7115e3b4",
-      "stdoutTail": "-gap-top.png\",\"/var/folders/qq/p9w353w13lqb3n8vdv_lf2f80000gn/T/vertical-sheet-gap-zXfH2j/vertical-sheet-gap-middle-scroll.png\",\"/var/folders/qq/p9w353w13lqb3n8vdv_lf2f80000gn/T/vertical-sheet-gap-zXfH2j/vertical-sheet-gap-after-scroll.png\"]}\n✔ test/unit/vertical-sheet-gap-smoke.mjs (9825.772625ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 9832.482875\n"
+      "stdoutSummaryHash": "ec929c91d18f2b6052116971e61937a65278bcbc8888e98712e7a14c19e7852f",
+      "stdoutTail": "-gap-top.png\",\"/var/folders/qq/p9w353w13lqb3n8vdv_lf2f80000gn/T/vertical-sheet-gap-3Tspm3/vertical-sheet-gap-middle-scroll.png\",\"/var/folders/qq/p9w353w13lqb3n8vdv_lf2f80000gn/T/vertical-sheet-gap-3Tspm3/vertical-sheet-gap-after-scroll.png\"]}\n✔ test/unit/vertical-sheet-gap-smoke.mjs (9866.506666ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 9871.926708\n"
     }
   ],
   "rules": {
@@ -304,10 +574,20 @@
     "explicitScaleRowsRequired": true,
     "readinessRequiresTracked5000Pass": true,
     "refreshAuthority": "CURRENT_CLEAN_MAINLINE_OR_CODEX_CONTOUR_BRANCH",
+    "scrollRangeClampCannotGreenlightAcceptance": true,
     "trackedCandidatesDoNotRaiseSupportedTier": true,
     "writeExecutesExplicitRows": true
   },
   "schemaVersion": 3,
+  "scrollRangeLimitGuard": {
+    "childOkParentFailCannotGreenlight": true,
+    "endMarkerVisibleRequiredForAcceptanceRows": true,
+    "maxScrollTopObserved": 5096120,
+    "rule": "END_MARKER_HIDDEN_AT_MAX_SCROLL_TOP_IS_SCROLL_RANGE_CLAMP",
+    "scrollHeightLimitObserved": 5096799,
+    "scrollRangeClampDetected": false,
+    "sourceClass": "HARNESS_OBSERVED_OR_FIXTURED_CONTRACT"
+  },
   "status": "PASS",
   "supportedTier": 5000,
   "taskId": "CONTOUR_04_WRITE_IMPL",
