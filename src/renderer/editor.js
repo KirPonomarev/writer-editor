@@ -645,6 +645,10 @@ const CENTRAL_SHEET_STRIP_PROOF_CLASS = 'tiptap-host--central-sheet-strip-proof'
 const CENTRAL_SHEET_STRIP_MEASURING_CLASS = 'tiptap-host--central-sheet-strip-measuring';
 const CENTRAL_SHEET_RUNTIME_WINDOW_DOM_BUDGET = 15;
 const CENTRAL_SHEET_RUNTIME_WINDOW_OVERSCAN = 1;
+const CENTRAL_SHEET_LARGE_PAYLOAD_FAST_PATH_CHAR_THRESHOLD = 2500000;
+const CENTRAL_SHEET_LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE = 520;
+const CENTRAL_SHEET_LARGE_PAYLOAD_PRESENTATION_CHUNK_TARGET_CHARS = 12000;
+const CENTRAL_SHEET_LARGE_PAYLOAD_PRESENTATION_CHUNK_MIN_CHARS = 8000;
 const UI_ERROR_MAP_SCHEMA_VERSION = 'ui-error-map.v1';
 const UI_ERROR_FALLBACK_MESSAGE = 'Операция не выполнена';
 const UI_ERROR_FALLBACK_SEVERITY = 'ERROR';
@@ -673,6 +677,9 @@ let centralSheetStripStructuralSettleFrameId = null;
 let centralSheetStripStructuralSettleSignature = '';
 let centralSheetStripStructuralStablePassCount = 0;
 let centralSheetStripStructuralGuardActive = false;
+let centralSheetStripLargePayloadFastPathActive = false;
+let centralSheetStripLargePayloadFastPathText = '';
+let centralSheetStripLargePayloadFastPathDirty = false;
 let derivedPageMapRuntimeBridgeRefreshSerial = 0;
 
 function resetCentralSheetStripStructuralSettleState() {
@@ -772,6 +779,128 @@ function getCentralSheetContentMetrics(metrics) {
   return {
     widthPx: Math.max(1, Math.round(metrics.pageWidthPx - metrics.marginLeftPx - metrics.marginRightPx)),
     heightPx: Math.max(1, Math.round(metrics.pageHeightPx - metrics.marginTopPx - metrics.marginBottomPx)),
+  };
+}
+
+function normalizeLargePayloadFastPathText(value = '') {
+  return String(value ?? '').replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+}
+
+function shouldUseCentralSheetLargePayloadFastPath(text = '') {
+  if (!isTiptapMode) {
+    return false;
+  }
+  const normalizedText = normalizeLargePayloadFastPathText(text);
+  return (
+    normalizedText.length >= CENTRAL_SHEET_LARGE_PAYLOAD_FAST_PATH_CHAR_THRESHOLD
+    && !normalizedText.includes('\n')
+  );
+}
+
+function clearCentralSheetLargePayloadFastPath() {
+  centralSheetStripLargePayloadFastPathActive = false;
+  centralSheetStripLargePayloadFastPathText = '';
+  centralSheetStripLargePayloadFastPathDirty = false;
+}
+
+function beginCentralSheetLargePayloadFastPath(text = '') {
+  centralSheetStripLargePayloadFastPathActive = true;
+  centralSheetStripLargePayloadFastPathText = normalizeLargePayloadFastPathText(text);
+  centralSheetStripLargePayloadFastPathDirty = false;
+}
+
+function markCentralSheetLargePayloadFastPathDirty() {
+  if (!centralSheetStripLargePayloadFastPathActive) {
+    return;
+  }
+  centralSheetStripLargePayloadFastPathDirty = true;
+}
+
+function readCentralSheetLargePayloadFastPathText() {
+  if (!centralSheetStripLargePayloadFastPathActive) {
+    return '';
+  }
+  if (!centralSheetStripLargePayloadFastPathDirty) {
+    return centralSheetStripLargePayloadFastPathText;
+  }
+  const proseMirror = editor instanceof HTMLElement
+    ? editor.querySelector('.ProseMirror')
+    : null;
+  return proseMirror instanceof HTMLElement
+    ? String(proseMirror.textContent || '').replace(/\u00a0/g, ' ')
+    : centralSheetStripLargePayloadFastPathText;
+}
+
+function isCentralSheetLargePayloadBlockedInputType(inputType = '') {
+  return (
+    inputType === 'insertParagraph'
+    || inputType === 'insertLineBreak'
+  );
+}
+
+function shouldBlockCentralSheetLargePayloadPaste(event) {
+  if (!centralSheetStripLargePayloadFastPathActive) {
+    return false;
+  }
+  const clipboardText = typeof event?.clipboardData?.getData === 'function'
+    ? event.clipboardData.getData('text/plain')
+    : '';
+  return normalizeLargePayloadFastPathText(clipboardText).includes('\n');
+}
+
+function blockCentralSheetLargePayloadStructuralEdit(event) {
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+  updateWarningStateText('large document structural edit blocked');
+}
+
+function estimateCentralSheetPageCountFromText(text = '') {
+  const normalizedLength = Math.max(0, normalizeLargePayloadFastPathText(text).length);
+  return Math.max(
+    1,
+    Math.ceil(normalizedLength / CENTRAL_SHEET_LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE),
+  );
+}
+
+function splitLargeSingleParagraphForPresentation(text = '') {
+  const normalizedText = normalizeLargePayloadFastPathText(text);
+  const chunks = [];
+  let cursor = 0;
+  while (cursor < normalizedText.length) {
+    const hardEnd = Math.min(
+      normalizedText.length,
+      cursor + CENTRAL_SHEET_LARGE_PAYLOAD_PRESENTATION_CHUNK_TARGET_CHARS,
+    );
+    if (hardEnd >= normalizedText.length) {
+      chunks.push(normalizedText.slice(cursor));
+      break;
+    }
+    const minEnd = Math.min(
+      normalizedText.length,
+      cursor + CENTRAL_SHEET_LARGE_PAYLOAD_PRESENTATION_CHUNK_MIN_CHARS,
+    );
+    const candidate = normalizedText.slice(minEnd, hardEnd);
+    const whitespaceOffset = Math.max(candidate.lastIndexOf(' '), candidate.lastIndexOf('\t'));
+    const splitAt = whitespaceOffset >= 0
+      ? minEnd + whitespaceOffset + 1
+      : hardEnd;
+    chunks.push(normalizedText.slice(cursor, splitAt));
+    cursor = splitAt;
+  }
+  return chunks.filter((chunk) => chunk.length > 0);
+}
+
+function buildLargeSingleParagraphPresentationDoc(text = '') {
+  const chunks = splitLargeSingleParagraphForPresentation(text);
+  return {
+    type: 'doc',
+    content: chunks.length > 0
+      ? chunks.map((chunk) => ({
+        type: 'paragraph',
+        content: [{ type: 'text', text: chunk }],
+      }))
+      : [{ type: 'paragraph' }],
   };
 }
 
@@ -1027,6 +1156,44 @@ function resetCentralSheetStripForIncomingPayload() {
   centralSheetStripCacheDirty = true;
 }
 
+function applyEstimatedCentralSheetStripRuntimeStateFromText(text = '') {
+  if (!isTiptapMode || !(editor instanceof HTMLElement)) {
+    return false;
+  }
+  const metrics = getPageMetrics({
+    profile: activeBookProfileState,
+    zoom: editorZoom,
+  });
+  if (!metrics) {
+    return false;
+  }
+  const { widthPx, heightPx } = getCentralSheetContentMetrics(metrics);
+  const pageGapPx = Math.max(0, Math.round(getRootCssPxValue('--page-gap-px', 24)));
+  const estimatedPageCount = estimateCentralSheetPageCountFromText(text);
+  const runtimeState = {
+    metrics,
+    contentWidthPx: widthPx,
+    contentHeightPx: heightPx,
+    pageGapPx,
+    lineGuardPx: 0,
+    decisionPageCount: estimatedPageCount,
+    structuralMinimumPageCount: estimatedPageCount,
+    pageCount: estimatedPageCount,
+    shouldRender: true,
+    overflowReason: estimatedPageCount > CENTRAL_SHEET_RUNTIME_WINDOW_DOM_BUDGET ? 'max-page-count' : '',
+    activeLayoutPreviewSnapshot: null,
+    skipDerivedPageMapRuntimeBridge: true,
+    estimatedLargePayload: true,
+  };
+  const applied = applyCentralSheetStripRuntimeState(runtimeState);
+  if (!applied) {
+    return false;
+  }
+  centralSheetStripCachedRuntimeState = runtimeState;
+  centralSheetStripCacheDirty = false;
+  return true;
+}
+
 function syncCentralSheetStripOverflowMetadata({ pageCount, visiblePageCount, overflowReason } = {}) {
   if (!(editor instanceof HTMLElement)) {
     return;
@@ -1277,6 +1444,7 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
     pageGapPx,
     lineGuardPx,
     activeLayoutPreviewSnapshot,
+    skipDerivedPageMapRuntimeBridge,
     decisionPageCount,
     structuralMinimumPageCount,
     pageCount,
@@ -1315,10 +1483,24 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
   editor.dataset.centralSheetWindowLastRenderedPage = String(pageWindow.lastRenderedPage);
   editor.dataset.centralSheetWindowVisiblePageCount = String(pageWindow.visiblePageCount);
   editor.dataset.centralSheetWindowingEnabled = pageWindow.windowingEnabled ? 'true' : 'false';
-  syncDerivedPageMapRuntimeBridgeDataset(buildDerivedPageMapRuntimeBridge({
-    activeLayoutPreviewSnapshot,
-    pageWindow,
-  }));
+  if (skipDerivedPageMapRuntimeBridge === true) {
+    syncDerivedPageMapRuntimeBridgeDataset({
+      bridgeActive: false,
+      bridgeSource: 'largePayloadFastPath',
+      sourceContractHash: '',
+      editorTextHash: '',
+      renderedWindowPageNumbers: getRenderedWindowPageNumbers(pageWindow),
+      textTruth: false,
+      storageTruth: false,
+      exportTruth: false,
+      pageMapProductRuntimeBinding: false,
+    });
+  } else {
+    syncDerivedPageMapRuntimeBridgeDataset(buildDerivedPageMapRuntimeBridge({
+      activeLayoutPreviewSnapshot,
+      pageWindow,
+    }));
+  }
   centralSheetStripLastAppliedSignature = [
     decisionPageCount,
     structuralMinimumPageCount,
@@ -1395,7 +1577,13 @@ function scheduleCentralSheetStripProofRefreshOnScroll() {
     ),
   );
   const scrollDeltaPx = Math.abs(nextScrollTop - centralSheetStripLastScrollTop);
-  if (!centralSheetStripCacheDirty && scrollDeltaPx < Math.max(32, Math.round(pageStridePx / 2))) {
+  if (
+    !centralSheetStripCacheDirty
+    && (
+      centralSheetStripCachedRuntimeState.estimatedLargePayload === true
+      || scrollDeltaPx < Math.max(32, Math.round(pageStridePx / 2))
+    )
+  ) {
     refreshCentralSheetStripProof({ reuseCachedDecision: true });
     return;
   }
@@ -1407,7 +1595,12 @@ function scheduleCentralSheetStripProofRefresh({ scrollOnly = false } = {}) {
     return;
   }
   bindCentralSheetStripScrollRefresh();
-  const nextRefreshMode = scrollOnly ? 'scroll' : 'full';
+  const shouldKeepEstimatedLargePayloadState = (
+    centralSheetStripLargePayloadFastPathActive
+    && centralSheetStripCachedRuntimeState?.estimatedLargePayload === true
+    && !centralSheetStripStructuralGuardActive
+  );
+  const nextRefreshMode = (scrollOnly || shouldKeepEstimatedLargePayloadState) ? 'scroll' : 'full';
   if (centralSheetStripRefreshFrameId) {
     if (nextRefreshMode === 'full') {
       centralSheetStripRefreshMode = 'full';
@@ -4455,6 +4648,10 @@ async function handleMarkdownExportUiPath() {
 }
 
 function getPlainText() {
+  if (centralSheetStripLargePayloadFastPathActive) {
+    plainTextBuffer = readCentralSheetLargePayloadFastPathText();
+    return plainTextBuffer;
+  }
   if (isTiptapMode) {
     plainTextBuffer = getTiptapPlainText();
   }
@@ -4515,6 +4712,15 @@ function parseDocumentContent(rawText = '') {
 }
 
 function composeDocumentContent() {
+  if (isTiptapMode && centralSheetStripLargePayloadFastPathActive) {
+    return composeObservablePayload({
+      doc: null,
+      text: readCentralSheetLargePayloadFastPathText(),
+      metaEnabled,
+      meta: currentMeta,
+      cards: currentCards,
+    });
+  }
   const tiptapSnapshot = isTiptapMode ? getTiptapDocumentSnapshot() : null;
   return composeObservablePayload({
     doc: tiptapSnapshot ? tiptapSnapshot.doc : null,
@@ -4875,6 +5081,11 @@ function scheduleIncrementalInputDomSync() {
 }
 
 function syncPlainTextBufferFromEditorDom() {
+  if (centralSheetStripLargePayloadFastPathActive) {
+    markCentralSheetLargePayloadFastPathDirty();
+    plainTextBuffer = readCentralSheetLargePayloadFastPathText();
+    return;
+  }
   if (isTiptapMode) {
     plainTextBuffer = getTiptapPlainText();
     return;
@@ -5290,7 +5501,9 @@ function showEditorPanelFor(title) {
       if (!isTiptapMode) {
         focusEditorSurface('current');
       }
-      positionCaretForCurrentText();
+      if (!centralSheetStripLargePayloadFastPathActive) {
+        positionCaretForCurrentText();
+      }
       scheduleCentralSheetStripProofRefresh();
     }
   });
@@ -8723,6 +8936,13 @@ if (window.electronAPI) {
     currentMeta = parsed.meta;
     currentCards = parsed.cards;
     plainTextBuffer = parsed.text || '';
+    const useLargePayloadFastPath = !parsed.doc && shouldUseCentralSheetLargePayloadFastPath(parsed.text || '');
+    if (useLargePayloadFastPath) {
+      beginCentralSheetLargePayloadFastPath(parsed.text || '');
+      parsed.doc = buildLargeSingleParagraphPresentationDoc(parsed.text || '');
+    } else {
+      clearCentralSheetLargePayloadFastPath();
+    }
     if (isTiptapMode) {
       resetCentralSheetStripForIncomingPayload();
       setTiptapDocumentSnapshot({
@@ -8730,6 +8950,9 @@ if (window.electronAPI) {
         text: parsed.text || '',
       });
       resetCentralSheetStripForIncomingPayload();
+      if (useLargePayloadFastPath) {
+        applyEstimatedCentralSheetStripRuntimeStateFromText(parsed.text || '');
+      }
     } else {
       setPlainText(parsed.text || '');
     }
@@ -8742,7 +8965,9 @@ if (window.electronAPI) {
 
     localDirty = false;
     updateWordCount();
-    scheduleCentralSheetStripProofRefresh();
+    if (!useLargePayloadFastPath) {
+      scheduleCentralSheetStripProofRefresh();
+    }
 
     const resolvedTitle = title || getTitleFromPath(path);
     if (resolvedTitle) {
@@ -8958,6 +9183,11 @@ if (isTiptapMode) {
       return;
     }
     const key = typeof event.key === 'string' ? event.key : '';
+    if (centralSheetStripLargePayloadFastPathActive && key === 'Enter') {
+      blockCentralSheetLargePayloadStructuralEdit(event);
+      finishCentralSheetStripStructuralTransition();
+      return;
+    }
     const normalizedKey = key.toLowerCase();
     const isPrimaryModifier = isMac ? event.metaKey : event.ctrlKey;
     const isUndoRedoKey = isPrimaryModifier && !event.altKey && normalizedKey === 'z';
@@ -8974,6 +9204,15 @@ if (isTiptapMode) {
   });
   editor.addEventListener('beforeinput', (event) => {
     const inputType = typeof event.inputType === 'string' ? event.inputType : '';
+    if (
+      centralSheetStripLargePayloadFastPathActive
+      && isCentralSheetLargePayloadBlockedInputType(inputType)
+    ) {
+      blockCentralSheetLargePayloadStructuralEdit(event);
+      centralSheetStripPendingStructuralInput = false;
+      finishCentralSheetStripStructuralTransition();
+      return;
+    }
     centralSheetStripPendingStructuralInput = (
       inputType === 'insertParagraph'
       || inputType === 'insertLineBreak'
@@ -8987,7 +9226,12 @@ if (isTiptapMode) {
       beginCentralSheetStripStructuralTransition();
     }
   });
-  editor.addEventListener('paste', () => {
+  editor.addEventListener('paste', (event) => {
+    if (shouldBlockCentralSheetLargePayloadPaste(event)) {
+      blockCentralSheetLargePayloadStructuralEdit(event);
+      finishCentralSheetStripStructuralTransition();
+      return;
+    }
     beginCentralSheetStripStructuralTransition();
   });
   editor.addEventListener('input', () => {
