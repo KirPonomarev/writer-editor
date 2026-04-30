@@ -52,6 +52,9 @@ export const REASON_CODES = Object.freeze({
   COMMENT_APPLY_OUT_OF_SCOPE: 'COMMENT_APPLY_OUT_OF_SCOPE',
   MISSING_PRECONDITION: 'MISSING_PRECONDITION',
   UNSUPPORTED_OP_KIND: 'UNSUPPORTED_OP_KIND',
+  EFFECT_PRECONDITION_MISSING: 'EFFECT_PRECONDITION_MISSING',
+  NON_CONTRACT_APPLYOP_FORBIDDEN: 'NON_CONTRACT_APPLYOP_FORBIDDEN',
+  RUNTIME_WRITE_FORBIDDEN_IN_CONTOUR: 'RUNTIME_WRITE_FORBIDDEN_IN_CONTOUR',
   VIEWMODE_MISMATCH: 'VIEWMODE_MISMATCH',
   REVISION_MISMATCH: 'REVISION_MISMATCH',
 });
@@ -617,5 +620,109 @@ export function compileExactTextApplyOps(patchSet, environment = {}) {
       ? (patchSet?.reviewOps || []).map((op) => createContractOnlyApplyOp(op, patchSet))
       : [],
     blockedReasons: uniqueBlockedReasons,
+  };
+}
+
+function validateExactTextApplyEffectPreviewInput(applyOp) {
+  const reasons = [];
+  if (applyOp?.contractOnly !== true) {
+    reasons.push(REASON_CODES.NON_CONTRACT_APPLYOP_FORBIDDEN);
+  }
+  if (applyOp?.runtimeWritable !== false) {
+    reasons.push(REASON_CODES.RUNTIME_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (applyOp?.opKind !== 'EXACT_TEXT_REPLACE') {
+    reasons.push(REASON_CODES.EFFECT_PRECONDITION_MISSING);
+  }
+  if (
+    !hasValue(applyOp?.opId)
+    || !hasValue(applyOp?.canonicalHash)
+    || !hasValue(applyOp?.target?.sceneId)
+    || !hasValue(applyOp?.tests?.projectIdEquals)
+    || !hasValue(applyOp?.tests?.baselineHashEquals)
+    || !hasValue(applyOp?.tests?.blockVersionHashEquals)
+    || !hasValue(applyOp?.patch?.expectedText)
+    || !hasValue(applyOp?.patch?.replacementText)
+  ) {
+    reasons.push(REASON_CODES.EFFECT_PRECONDITION_MISSING);
+  }
+  reasons.push(...(applyOp?.reasonCodes || []));
+  return uniqueStrings(reasons);
+}
+
+function createExactTextApplyEffectPreview(applyOp) {
+  const exactTextBefore = normalizeText(applyOp.patch.expectedText);
+  const exactTextAfter = normalizeText(applyOp.patch.replacementText);
+  const beforeHash = canonicalHash({
+    effectPreviewTextKind: 'EXACT_TEXT_BEFORE',
+    text: exactTextBefore,
+  });
+  const afterHashPreview = canonicalHash({
+    effectPreviewTextKind: 'EXACT_TEXT_AFTER_PREVIEW',
+    text: exactTextAfter,
+  });
+  const previewCore = {
+    effectPreviewKind: 'EXACT_TEXT_REPLACE_EFFECT_PREVIEW',
+    sourceApplyOpId: applyOp.opId,
+    sourceApplyOpHash: applyOp.canonicalHash,
+    projectId: applyOp.tests.projectIdEquals,
+    sceneId: applyOp.target.sceneId,
+    baselineHash: applyOp.tests.baselineHashEquals,
+    blockVersionHash: applyOp.tests.blockVersionHashEquals,
+    exactTextBefore,
+    exactTextAfter,
+    beforeHash,
+    afterHashPreview,
+    inversePatchPreview: {
+      expectedText: exactTextAfter,
+      replacementText: exactTextBefore,
+    },
+    runtimeWritable: false,
+  };
+  const previewWithId = {
+    effectPreviewId: `effect_preview_${canonicalHash(previewCore).slice(0, 16)}`,
+    ...previewCore,
+  };
+  return {
+    ...previewWithId,
+    canonicalHash: canonicalHash(previewWithId),
+  };
+}
+
+export function compileExactTextApplyEffectPreviews(applyResult = {}) {
+  const blockedReasons = [
+    ...(applyResult?.blockedReasons || []),
+  ];
+  if (applyResult?.contractOnly !== true) {
+    blockedReasons.push(REASON_CODES.NON_CONTRACT_APPLYOP_FORBIDDEN);
+  }
+  if (applyResult?.runtimeWritable !== false) {
+    blockedReasons.push(REASON_CODES.RUNTIME_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (!Array.isArray(applyResult?.applyOps)) {
+    blockedReasons.push(REASON_CODES.EFFECT_PRECONDITION_MISSING);
+  }
+  for (const applyOp of applyResult?.applyOps || []) {
+    blockedReasons.push(...validateExactTextApplyEffectPreviewInput(applyOp));
+  }
+
+  const uniqueBlockedReasons = uniqueStrings(blockedReasons);
+  const effectPreviews = uniqueBlockedReasons.length === 0
+    ? (applyResult.applyOps || []).map(createExactTextApplyEffectPreview)
+    : [];
+  const planCore = {
+    planKind: 'EXACT_TEXT_APPLY_EFFECT_PREVIEW_PLAN',
+    contractOnly: true,
+    runtimeWritable: false,
+    effectPreviews,
+    blockedReasons: uniqueBlockedReasons,
+  };
+  const planWithId = {
+    planId: `effect_plan_${canonicalHash(planCore).slice(0, 16)}`,
+    ...planCore,
+  };
+  return {
+    ...planWithId,
+    canonicalHash: canonicalHash(planWithId),
   };
 }
