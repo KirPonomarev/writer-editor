@@ -57,6 +57,11 @@ export const REASON_CODES = Object.freeze({
   NON_CONTRACT_APPLYOP_FORBIDDEN: 'NON_CONTRACT_APPLYOP_FORBIDDEN',
   RUNTIME_WRITE_FORBIDDEN_IN_CONTOUR: 'RUNTIME_WRITE_FORBIDDEN_IN_CONTOUR',
   PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR: 'PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR',
+  BACKUP_CAPABILITY_MISSING: 'BACKUP_CAPABILITY_MISSING',
+  ATOMIC_WRITE_CAPABILITY_MISSING: 'ATOMIC_WRITE_CAPABILITY_MISSING',
+  RECOVERY_SNAPSHOT_CAPABILITY_MISSING: 'RECOVERY_SNAPSHOT_CAPABILITY_MISSING',
+  NON_DETERMINISTIC_STORAGE_PORT: 'NON_DETERMINISTIC_STORAGE_PORT',
+  FS_MUTATION_FORBIDDEN_IN_CONTOUR: 'FS_MUTATION_FORBIDDEN_IN_CONTOUR',
   VIEWMODE_MISMATCH: 'VIEWMODE_MISMATCH',
   REVISION_MISMATCH: 'REVISION_MISMATCH',
 });
@@ -890,6 +895,169 @@ export function compileExactTextWritePlanReceiptContract(input = {}) {
     runtimeWritable: false,
     writePlans,
     receiptContracts,
+    blockedReasons: uniqueBlockedReasons,
+  };
+  return {
+    ...resultCore,
+    canonicalHash: canonicalHash(resultCore),
+  };
+}
+
+function storagePortCapabilityReasons(capabilities = {}, input = {}) {
+  const reasons = [];
+  if (capabilities.canBackupBeforeWrite !== true) {
+    reasons.push(REASON_CODES.BACKUP_CAPABILITY_MISSING);
+  }
+  if (capabilities.canAtomicWriteSceneText !== true) {
+    reasons.push(REASON_CODES.ATOMIC_WRITE_CAPABILITY_MISSING);
+  }
+  if (capabilities.canCreateReadableRecoverySnapshot !== true) {
+    reasons.push(REASON_CODES.RECOVERY_SNAPSHOT_CAPABILITY_MISSING);
+  }
+  if (capabilities.deterministicObservationIds !== true) {
+    reasons.push(REASON_CODES.NON_DETERMINISTIC_STORAGE_PORT);
+  }
+  if (
+    input?.fsMutationRequested === true
+    || input?.productWrite === true
+    || capabilities.productPathAccess === true
+  ) {
+    reasons.push(REASON_CODES.FS_MUTATION_FORBIDDEN_IN_CONTOUR);
+  }
+  return uniqueStrings(reasons);
+}
+
+function createObservationRequest({ requestKind, writePlan, receiptContract, purpose }) {
+  const requestCore = {
+    requestKind,
+    requestMode: 'MOCK_OBSERVATION_REQUEST_ONLY',
+    executedIo: false,
+    deterministic: true,
+    purpose,
+    sourceWritePlanId: writePlan.writePlanId,
+    sourceWritePlanHash: writePlan.canonicalHash,
+    sourceReceiptContractId: receiptContract.receiptContractId,
+    sourceReceiptContractHash: receiptContract.canonicalHash,
+    projectId: writePlan.projectId,
+    sceneId: writePlan.sceneId,
+    beforeHash: writePlan.beforeHash,
+    afterHashExpected: writePlan.afterHashExpected,
+  };
+  const requestWithId = {
+    requestId: `storage_request_${canonicalHash(requestCore).slice(0, 16)}`,
+    ...requestCore,
+  };
+  return {
+    ...requestWithId,
+    canonicalHash: canonicalHash(requestWithId),
+  };
+}
+
+function createStorageAdapterCallPlan(writePlan, receiptContract, capabilities) {
+  const requiredCapabilities = [
+    'CAN_BACKUP_BEFORE_WRITE',
+    'CAN_ATOMIC_WRITE_SCENE_TEXT',
+    'CAN_CREATE_READABLE_RECOVERY_SNAPSHOT',
+    'CAN_REPORT_BEFORE_HASH',
+    'CAN_REPORT_AFTER_HASH',
+    'DETERMINISTIC_OBSERVATION_IDS',
+    'NO_PRODUCT_PATH_ACCESS_IN_THIS_CONTOUR',
+  ];
+  const backupObservationRequest = createObservationRequest({
+    requestKind: 'BACKUP_BEFORE_WRITE_OBSERVATION_REQUEST',
+    writePlan,
+    receiptContract,
+    purpose: 'BACKUP_BEFORE_WRITE_REQUIRED',
+  });
+  const atomicWriteObservationRequest = createObservationRequest({
+    requestKind: 'ATOMIC_WRITE_OBSERVATION_REQUEST',
+    writePlan,
+    receiptContract,
+    purpose: 'ATOMIC_SCENE_TEXT_WRITE_REQUIRED',
+  });
+  const recoverySnapshotObservationRequest = createObservationRequest({
+    requestKind: 'RECOVERY_SNAPSHOT_OBSERVATION_REQUEST',
+    writePlan,
+    receiptContract,
+    purpose: 'READABLE_RECOVERY_SNAPSHOT_REQUIRED',
+  });
+  const callPlanCore = {
+    callPlanKind: 'EXACT_TEXT_STORAGE_ADAPTER_CALL_PLAN_CONTRACT',
+    contractOnly: true,
+    fsMutationPerformed: false,
+    productWriteClaimed: false,
+    sourceWritePlanId: writePlan.writePlanId,
+    sourceWritePlanHash: writePlan.canonicalHash,
+    sourceReceiptContractId: receiptContract.receiptContractId,
+    sourceReceiptContractHash: receiptContract.canonicalHash,
+    requiredCapabilities,
+    capabilitySnapshot: {
+      canBackupBeforeWrite: capabilities.canBackupBeforeWrite === true,
+      canAtomicWriteSceneText: capabilities.canAtomicWriteSceneText === true,
+      canCreateReadableRecoverySnapshot: capabilities.canCreateReadableRecoverySnapshot === true,
+      canReportBeforeHash: capabilities.canReportBeforeHash === true,
+      canReportAfterHash: capabilities.canReportAfterHash === true,
+      deterministicObservationIds: capabilities.deterministicObservationIds === true,
+      productPathAccess: capabilities.productPathAccess === true,
+    },
+    backupObservationRequest,
+    atomicWriteObservationRequest,
+    recoverySnapshotObservationRequest,
+    blockedReasons: [],
+  };
+  const callPlanWithId = {
+    callPlanId: `storage_call_plan_${canonicalHash(callPlanCore).slice(0, 16)}`,
+    ...callPlanCore,
+  };
+  return {
+    ...callPlanWithId,
+    canonicalHash: canonicalHash(callPlanWithId),
+  };
+}
+
+export function compileExactTextStorageAdapterCallPlan(input = {}) {
+  const writePlans = input?.writePlanReceiptResult?.writePlans || [];
+  const receiptContracts = input?.writePlanReceiptResult?.receiptContracts || [];
+  const capabilities = input?.storagePortCapabilities || {};
+  const blockedReasons = [
+    ...(input?.writePlanReceiptResult?.blockedReasons || []),
+    ...storagePortCapabilityReasons(capabilities, input),
+  ];
+  if (input?.writePlanReceiptResult?.contractOnly !== true) {
+    blockedReasons.push(REASON_CODES.NON_CONTRACT_APPLYOP_FORBIDDEN);
+  }
+  if (input?.writePlanReceiptResult?.runtimeWritable !== false) {
+    blockedReasons.push(REASON_CODES.RUNTIME_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (
+    writePlans.length !== 1
+    || receiptContracts.length !== 1
+    || !hasValue(writePlans[0]?.canonicalHash)
+    || !hasValue(receiptContracts[0]?.canonicalHash)
+  ) {
+    blockedReasons.push(REASON_CODES.EFFECT_PRECONDITION_MISSING);
+  }
+
+  const uniqueBlockedReasons = uniqueStrings(blockedReasons);
+  const callPlans = uniqueBlockedReasons.length === 0
+    ? [createStorageAdapterCallPlan(writePlans[0], receiptContracts[0], capabilities)]
+    : [];
+  const resultCore = {
+    resultKind: 'EXACT_TEXT_STORAGE_ADAPTER_CALL_PLAN_RESULT',
+    contractOnly: true,
+    fsMutationPerformed: false,
+    tempFixtureWritePerformed: false,
+    productWriteClaimed: false,
+    productManuscriptMutationClaimed: false,
+    durableReceiptClaimed: false,
+    productStorageSafetyClaimed: false,
+    crashRecoveryClaimed: false,
+    applyTxnClaimed: false,
+    publicSurfaceClaimed: false,
+    docxImportClaimed: false,
+    releaseClaimed: false,
+    storagePrimitiveChanged: false,
+    callPlans,
     blockedReasons: uniqueBlockedReasons,
   };
   return {
