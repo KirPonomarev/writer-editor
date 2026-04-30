@@ -10,7 +10,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_5000_CLOSEOUT_SUMMARY.json",
-      "sha256": "fbf2baf35d992186cfbd5ddc6693d7311aff6bcbe4158a57e2ed697bef3c47cb",
+      "sha256": "218710aaf32a854d9fed0b61bd4767ae90343dc9d81b1446a6b2a646ebaf4823",
       "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
       "approvedAtUtc": "2026-04-30T17:45:00.000Z",
       "rationale": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION owner-approved narrow macOS design phase promotion from 5000 supported tier to 10000 supported tier, preserving no production, cross-platform, export, storage, collaboration, comments, history, 25000, 40000, or 41750-plus claims."
@@ -2957,7 +2957,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "deab1134793fb475e8e8aa34c0484de9ddb90fcaaa50044511859f89a7c1ce06",
+      "sha256": "6dabb5a538a95e610aeeacb77cff94ccf67155970068d305db28b95979953b00",
       "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
       "approvedAtUtc": "2026-04-30T17:45:00.000Z",
       "rationale": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION owner-approved narrow macOS design phase promotion from 5000 supported tier to 10000 supported tier, preserving no production, cross-platform, export, storage, collaboration, comments, history, 25000, 40000, or 41750-plus claims."
@@ -2985,7 +2985,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_10000_MACOS_DESIGN_PHASE_CLOSEOUT_SUMMARY.json",
-      "sha256": "2037b4c8808a74b65abd65e8d71ab8ccc3f0fd6aa0ec62e4a9cdf7ecb99261a0",
+      "sha256": "7e9463eb70325c688849639208c2f3aca95097731f59be806fcae11955da2cea",
       "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
       "approvedAtUtc": "2026-04-30T17:45:00.000Z",
       "rationale": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION owner-approved narrow macOS design phase promotion from 5000 supported tier to 10000 supported tier, preserving no production, cross-platform, export, storage, collaboration, comments, history, 25000, 40000, or 41750-plus claims."
