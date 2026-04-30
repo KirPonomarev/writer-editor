@@ -3,9 +3,11 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const zlib = require('node:zlib');
+const vm = require('node:vm');
 const { pathToFileURL } = require('node:url');
 
 const MODULE_BASENAME = 'hostilePackageGate.mjs';
+const MAIN_BASENAME = 'main.js';
 const REQUIRED_SECURITY_CORE_EXPORT_NAME = 'inspectDocxIntakeEnvelopeDecision';
 const FORBIDDEN_SECURITY_CORE_EXPORT_NAME_PATTERNS = Object.freeze([
   /enable/iu,
@@ -24,6 +26,49 @@ const FORBIDDEN_DOCX_INTAKE_RUNTIME_ACTIONS = Object.freeze(['IMPORT', 'PARSE', 
 
 async function loadGate() {
   return import(pathToFileURL(path.join(process.cwd(), 'src', 'revisionBridge', MODULE_BASENAME)).href);
+}
+
+function readMainSource() {
+  return fs.readFileSync(path.join(process.cwd(), 'src', MAIN_BASENAME), 'utf8');
+}
+
+function readProjectSource(...parts) {
+  return fs.readFileSync(path.join(process.cwd(), ...parts), 'utf8');
+}
+
+function extractFunctionSource(source, name) {
+  const signature = `function ${name}(`;
+  const signatureStart = source.indexOf(signature);
+  assert.ok(signatureStart > -1, `${name} must exist`);
+  const asyncPrefix = 'async ';
+  const start = source.slice(Math.max(0, signatureStart - asyncPrefix.length), signatureStart) === asyncPrefix
+    ? signatureStart - asyncPrefix.length
+    : signatureStart;
+  const braceStart = source.indexOf('{', start);
+  assert.ok(braceStart > start, `${name} body must exist`);
+  let depth = 0;
+  for (let index = braceStart; index < source.length; index += 1) {
+    const char = source[index];
+    if (char === '{') depth += 1;
+    if (char === '}') depth -= 1;
+    if (depth === 0) {
+      return source.slice(start, index + 1);
+    }
+  }
+  throw new Error(`Unclosed function body for ${name}`);
+}
+
+function instantiateMainFunctions(functionNames, context = {}) {
+  const source = readMainSource();
+  const script = `${functionNames.map((name) => extractFunctionSource(source, name)).join('\n\n')}\nmodule.exports = { ${functionNames.join(', ')} };`;
+  const sandbox = {
+    module: { exports: {} },
+    exports: {},
+    Buffer,
+    ...context,
+  };
+  vm.runInNewContext(script, sandbox, { filename: 'docx-diagnostic-envelope-probe.main-snippet.js' });
+  return sandbox.module.exports;
 }
 
 function inspectSecurityCoreExportSurface(exportNames) {
@@ -992,5 +1037,85 @@ test('DOCX intake envelope result-shape guard rejects import authorization and r
       [`RUNTIME_ACTION_${runtimeAction}`],
     );
     assert.throws(() => assertDocxIntakeEnvelopeResultShape(runtimeFixture), { name: 'AssertionError' });
+  }
+});
+
+test('DOCX diagnostic envelope probe is private main scope only', () => {
+  const mainSource = readMainSource();
+  const preloadSource = readProjectSource('src', 'preload.js');
+  const commandCatalogSource = readProjectSource('src', 'renderer', 'commands', 'command-catalog.v1.mjs');
+  const projectCommandsSource = readProjectSource('src', 'renderer', 'commands', 'projectCommands.mjs');
+  const probeSource = extractFunctionSource(mainSource, 'inspectDocxDiagnosticEnvelopeForTest');
+
+  assert.equal(mainSource.includes('function inspectDocxDiagnosticEnvelopeForTest('), true);
+  assert.equal(/ipcMain\.handle\([^)]*inspectDocxDiagnosticEnvelopeForTest/u.test(mainSource), false);
+  assert.equal(/UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS[\s\S]*inspectDocxDiagnosticEnvelopeForTest/u.test(mainSource), false);
+  assert.equal(/MENU_COMMAND_HANDLERS[\s\S]*inspectDocxDiagnosticEnvelopeForTest/u.test(mainSource), false);
+  assert.equal(preloadSource.includes('inspectDocxDiagnosticEnvelopeForTest'), false);
+  assert.equal(commandCatalogSource.includes('inspectDocxDiagnosticEnvelopeForTest'), false);
+  assert.equal(projectCommandsSource.includes('inspectDocxDiagnosticEnvelopeForTest'), false);
+  assert.equal(/writeFile|writeBufferAtomic|fileManager|currentFilePath|createRevision|RevisionSession/u.test(probeSource), false);
+});
+
+test('DOCX diagnostic envelope probe returns 001D safe decision without import authorization', async () => {
+  const gate = await loadGate();
+  const { inspectDocxDiagnosticEnvelopeForTest } = instantiateMainFunctions(
+    ['inspectDocxDiagnosticEnvelopeForTest'],
+    {
+      loadDocxIntakeEnvelopeModule: async () => ({
+        inspectDocxIntakeEnvelopeDecision: gate.inspectDocxIntakeEnvelopeDecision,
+      }),
+    },
+  );
+
+  assert.equal(inspectDocxDiagnosticEnvelopeForTest.length, 1);
+  const report = await inspectDocxDiagnosticEnvelopeForTest(safeXmlPackage());
+
+  assert.equal(
+    report.decisionStatus,
+    gate.DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_GATE_CLEARED_NOT_IMPORT_AUTHORIZED,
+  );
+  assert.equal(report.diagnosticProbeVersion, 'DOCX_DIAGNOSTIC_ENVELOPE_PROBE_001');
+  assert.equal(report.diagnosticOnly, true);
+  assert.equal(report.docxImportAuthorized, false);
+  assert.equal(report.runtimeAction, 'NONE');
+});
+
+test('DOCX diagnostic envelope probe preserves blocked 001D outcomes without writes', async () => {
+  const gate = await loadGate();
+  const { inspectDocxDiagnosticEnvelopeForTest } = instantiateMainFunctions(
+    ['inspectDocxDiagnosticEnvelopeForTest'],
+    {
+      loadDocxIntakeEnvelopeModule: async () => ({
+        inspectDocxIntakeEnvelopeDecision: gate.inspectDocxIntakeEnvelopeDecision,
+      }),
+    },
+  );
+  const reports = [
+    await inspectDocxDiagnosticEnvelopeForTest(Buffer.from('not a zip')),
+    await inspectDocxDiagnosticEnvelopeForTest(safeXmlPackage([
+      { name: 'word/_rels/document.xml.rels', content: '<Relationships><Relationship TargetMode="External" /></Relationships>' },
+    ])),
+    await inspectDocxDiagnosticEnvelopeForTest(safeXmlPackage([
+      { name: 'word/vbaProject.bin', content: 'opaque' },
+    ])),
+  ];
+
+  assert.equal(
+    reports[0].decisionStatus,
+    gate.DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_PACKAGE_GATE_BLOCKED,
+  );
+  assert.equal(
+    reports[1].decisionStatus,
+    gate.DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_XML_PREFLIGHT_BLOCKED,
+  );
+  assert.equal(
+    reports[2].decisionStatus,
+    gate.DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_SECURITY_SURFACE_BLOCKED,
+  );
+  for (const report of reports) {
+    assert.equal(report.diagnosticOnly, true);
+    assert.equal(report.docxImportAuthorized, false);
+    assert.equal(report.runtimeAction, 'NONE');
   }
 });

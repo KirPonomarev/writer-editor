@@ -1236,6 +1236,31 @@ function loadMarkdownIoModule() {
   return markdownIoModulePromise;
 }
 
+let docxIntakeEnvelopeModulePromise = null;
+function loadDocxIntakeEnvelopeModule() {
+  if (!docxIntakeEnvelopeModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'revisionBridge', 'hostilePackageGate.mjs')).href;
+    docxIntakeEnvelopeModulePromise = import(modulePath).catch((error) => {
+      docxIntakeEnvelopeModulePromise = null;
+      throw error;
+    });
+  }
+  return docxIntakeEnvelopeModulePromise;
+}
+
+async function inspectDocxDiagnosticEnvelopeForTest(inputBuffer) {
+  const { inspectDocxIntakeEnvelopeDecision } = await loadDocxIntakeEnvelopeModule();
+  const buffer = Buffer.isBuffer(inputBuffer) ? inputBuffer : Buffer.from(inputBuffer || []);
+  const envelopeDecision = inspectDocxIntakeEnvelopeDecision(buffer);
+  return {
+    ...envelopeDecision,
+    diagnosticProbeVersion: 'DOCX_DIAGNOSTIC_ENVELOPE_PROBE_001',
+    diagnosticOnly: true,
+    docxImportAuthorized: false,
+    runtimeAction: 'NONE',
+  };
+}
+
 function mapMarkdownErrorCode(inputCode, inputReason) {
   const code = typeof inputCode === 'string' ? inputCode : '';
   const reason = typeof inputReason === 'string' ? inputReason : '';
