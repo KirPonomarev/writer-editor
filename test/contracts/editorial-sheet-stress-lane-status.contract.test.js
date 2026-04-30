@@ -177,6 +177,63 @@ test('editorial sheet stress lane: outer evaluation fails on FAIL status token z
   }
 });
 
+test('editorial sheet stress lane: outer evaluation rejects 6000 tracked-scale promotion attempts', async () => {
+  const artifact = readArtifact();
+  const trackedScale6000Row = {
+    ...artifact.rows.find((row) => row.id === 'TRACKED_SCALE_5000'),
+    id: 'TRACKED_SCALE_6000',
+    pageCount: 6000,
+    observed: {
+      ...artifact.rows.find((row) => row.id === 'TRACKED_SCALE_5000').observed,
+      targetPageCount: 6000,
+      actualPageCount: 6720,
+    },
+  };
+  const cases = [
+    {
+      name: 'tracked-scale-page-count-list-only',
+      mutate(source) {
+        return {
+          ...source,
+          trackedScalePageCounts: [...source.trackedScalePageCounts, 6000],
+        };
+      },
+      expectedIssue: 'TRACKED_SCALE_PAGE_COUNTS_DO_NOT_MATCH',
+    },
+    {
+      name: 'injected-tracked-scale-row',
+      mutate(source) {
+        return {
+          ...source,
+          explicitRowIds: [...source.explicitRowIds, 'TRACKED_SCALE_6000'],
+          executedRowIds: [...source.executedRowIds, 'TRACKED_SCALE_6000'],
+          trackedScalePageCounts: [...source.trackedScalePageCounts, 6000],
+          provisionalObservedCeiling: 6000,
+          rows: [...source.rows, trackedScale6000Row],
+          readiness: {
+            ...source.readiness,
+            editorialSheet6000Ready: true,
+            tracked6000Pass: true,
+          },
+        };
+      },
+      expectedIssue: 'ROW_SET_MISMATCH',
+    },
+  ];
+
+  for (const testCase of cases) {
+    const mutated = testCase.mutate(artifact);
+    const { tmpDir, targetPath } = writeTempArtifact(mutated);
+    const result = runCli(['--status-path', targetPath]);
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+
+    assert.equal(result.status, 1, `${testCase.name}\n${result.stdout}\n${result.stderr}`);
+    const payload = JSON.parse(String(result.stdout || '{}'));
+    assert.equal(payload.evaluation.ok, false, testCase.name);
+    assert.ok(payload.evaluation.issues.includes(testCase.expectedIssue), testCase.name);
+  }
+});
+
 test('editorial sheet stress lane: write authority rejects dirty or non-mainline execution states', async () => {
   const { evaluateWriteAuthority, WRITE_AUTHORITY_RULE } = await loadModule();
 

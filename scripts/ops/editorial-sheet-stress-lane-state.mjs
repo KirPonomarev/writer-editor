@@ -578,6 +578,7 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
   if (!Array.isArray(artifact?.failedRowIds)) issues.push('FAILED_ROW_IDS_MISSING');
   if (!Array.isArray(artifact?.diagnosticOnlyRowIds)) issues.push('DIAGNOSTIC_ONLY_ROW_IDS_MISSING');
   if (!Array.isArray(artifact?.unsupportedAboveCurrentProof)) issues.push('UNSUPPORTED_ABOVE_CURRENT_PROOF_MISSING');
+  if (!Array.isArray(artifact?.trackedScalePageCounts)) issues.push('TRACKED_SCALE_PAGE_COUNTS_MISSING');
   if (normalizeString(artifact?.readiness?.rule) !== READINESS_RULE) issues.push('READINESS_RULE_INVALID');
 
   const rowIds = rows.map((row) => normalizeString(row?.id));
@@ -622,6 +623,13 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
     : [];
   if (sha256Text(DIAGNOSTIC_ONLY_ROW_IDS.join('\n')) !== sha256Text(actualDiagnosticRowIds.join('\n'))) {
     issues.push('DIAGNOSTIC_ONLY_ROW_IDS_DO_NOT_MATCH');
+  }
+
+  const actualTrackedScalePageCounts = Array.isArray(artifact?.trackedScalePageCounts)
+    ? artifact.trackedScalePageCounts.map((pageCount) => Number(pageCount || 0))
+    : [];
+  if (sha256Text(TRACKED_SCALE_PAGE_COUNTS.join('\n')) !== sha256Text(actualTrackedScalePageCounts.join('\n'))) {
+    issues.push('TRACKED_SCALE_PAGE_COUNTS_DO_NOT_MATCH');
   }
 
   const trackedScaleRows = rows.filter((row) => normalizeString(row?.rowClass) === 'tracked-scale');

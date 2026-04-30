@@ -697,6 +697,9 @@ if (exitCode === 124 && allowResourceStop) {
     targetPageCount,
     outputDir,
     checkpointCount: checkpoints.trim().split(/\r?\n/u).filter(Boolean).length,
+    diagnosticOnly: true,
+    readinessClaim: false,
+    supportedTierRaised: false,
   }));
   process.exit(0);
 }
@@ -757,6 +760,7 @@ const summary = {
 
 console.log('EDITOR_SHEET_6000_LIGHT_HEALTH_PROBE_SUMMARY:' + JSON.stringify({
   ...summary,
+  status: 'DIAGNOSTIC_ONLY_PASS',
   diagnosticOnly: true,
   readinessClaim: false,
   supportedTierRaised: false,
