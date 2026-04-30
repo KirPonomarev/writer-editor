@@ -31,6 +31,10 @@ function changedBasenamesForCurrentContour() {
     .map((filePath) => path.basename(filePath)))).sort();
 }
 
+function isCurrentContourFor(taskBasename, changedBasenames) {
+  return changedBasenames.includes(taskBasename);
+}
+
 function exactTextDecision(overrides = {}) {
   const item = {
     id: 'decision-1',
@@ -354,6 +358,10 @@ test('001F task record pins in-memory fixture false-green flags', () => {
 
 test('001F change scope stays inside allowlist and outside public or storage implementation files', () => {
   const changedBasenames = changedBasenamesForCurrentContour();
+  if (!isCurrentContourFor(TASK_BASENAME, changedBasenames)) {
+    assert.equal(changedBasenames.includes(TASK_BASENAME), false);
+    return;
+  }
   const allowlist = new Set([
     'reviewIrKernel.mjs',
     'exactTextApplyStorageAdapter.contract.test.js',

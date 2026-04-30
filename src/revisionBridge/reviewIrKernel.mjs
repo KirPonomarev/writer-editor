@@ -64,6 +64,12 @@ export const REASON_CODES = Object.freeze({
   PORT_FIXTURE_CAPABILITY_MISSING: 'PORT_FIXTURE_CAPABILITY_MISSING',
   RECEIPT_CONTRACT_MISMATCH: 'RECEIPT_CONTRACT_MISMATCH',
   STORAGE_CALL_PLAN_MISMATCH: 'STORAGE_CALL_PLAN_MISMATCH',
+  STORAGE_ADMISSION_REQUIRED: 'STORAGE_ADMISSION_REQUIRED',
+  OWNER_ADMISSION_MISSING: 'OWNER_ADMISSION_MISSING',
+  MULTI_SCOPE_STORAGE_WRITE_BLOCKED: 'MULTI_SCOPE_STORAGE_WRITE_BLOCKED',
+  STRUCTURAL_STORAGE_WRITE_BLOCKED: 'STRUCTURAL_STORAGE_WRITE_BLOCKED',
+  RECEIPT_CAPABILITY_MISSING: 'RECEIPT_CAPABILITY_MISSING',
+  PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR: 'PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR',
   NON_DETERMINISTIC_STORAGE_PORT: 'NON_DETERMINISTIC_STORAGE_PORT',
   FS_MUTATION_FORBIDDEN_IN_CONTOUR: 'FS_MUTATION_FORBIDDEN_IN_CONTOUR',
   VIEWMODE_MISMATCH: 'VIEWMODE_MISMATCH',
@@ -1297,6 +1303,168 @@ export function compileExactTextInMemoryStoragePortFixture(input = {}) {
     storageImportsAdded: false,
     storagePrimitiveChanged: false,
     fixtureExecutions,
+    blockedReasons: uniqueBlockedReasons,
+  };
+  return {
+    ...resultCore,
+    canonicalHash: canonicalHash(resultCore),
+  };
+}
+
+function storageAdmissionCapabilityReasons(capabilities = {}, input = {}) {
+  const reasons = [];
+  if (capabilities.canBackupBeforeWrite !== true) {
+    reasons.push(REASON_CODES.BACKUP_CAPABILITY_MISSING);
+  }
+  if (capabilities.canAtomicWriteSceneText !== true) {
+    reasons.push(REASON_CODES.ATOMIC_WRITE_CAPABILITY_MISSING);
+  }
+  if (capabilities.canCreateReadableRecoverySnapshot !== true) {
+    reasons.push(REASON_CODES.RECOVERY_SNAPSHOT_CAPABILITY_MISSING);
+  }
+  if (capabilities.canPersistReceipt !== true) {
+    reasons.push(REASON_CODES.RECEIPT_CAPABILITY_MISSING);
+  }
+  if (capabilities.publicSurfaceAvailable === true || input?.publicSurfaceRequested === true) {
+    reasons.push(REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (
+    input?.fsMutationRequested === true
+    || input?.tempDirRequested === true
+    || input?.productWrite === true
+    || input?.runtimeWritable === true
+    || capabilities.productPathAccess === true
+  ) {
+    reasons.push(REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  return uniqueStrings(reasons);
+}
+
+function storageAdmissionScopeReasons(policy = {}, fixtureExecution) {
+  const reasons = [];
+  const sourceScope = policy.sourceScope || {};
+  const allowedKinds = new Set(policy.allowedOperationKinds || ['TEXT_REPLACE', 'EXACT_TEXT_REPLACE']);
+  if (policy.ownerAdmissionApproved !== true || policy.realStorageAdmissionRequested !== true) {
+    reasons.push(REASON_CODES.OWNER_ADMISSION_MISSING);
+  }
+  if (policy.singleSceneOnly !== true || sourceScope.multiScene === true || sourceScope.sceneCount > 1) {
+    reasons.push(REASON_CODES.MULTI_SCOPE_STORAGE_WRITE_BLOCKED);
+  }
+  if (
+    policy.exactTextOnly !== true
+    || sourceScope.structural === true
+    || sourceScope.operationKind === 'MOVE'
+    || sourceScope.operationKind === 'SPLIT'
+    || sourceScope.operationKind === 'MERGE'
+    || (hasValue(sourceScope.operationKind) && !allowedKinds.has(sourceScope.operationKind))
+  ) {
+    reasons.push(REASON_CODES.STRUCTURAL_STORAGE_WRITE_BLOCKED);
+  }
+  if (
+    !fixtureExecution
+    || fixtureExecution.contractOnly !== true
+    || fixtureExecution.inMemoryOnly !== true
+    || fixtureExecution.filesystemWritePerformed !== false
+    || fixtureExecution.productWritePerformed !== false
+    || !hasValue(fixtureExecution.canonicalHash)
+    || !hasValue(fixtureExecution.sourceCallPlanHash)
+    || !hasValue(fixtureExecution.sourceWritePlanHash)
+    || !hasValue(fixtureExecution.sourceReceiptContractHash)
+  ) {
+    reasons.push(REASON_CODES.STORAGE_ADMISSION_REQUIRED);
+  }
+  return uniqueStrings(reasons);
+}
+
+function createStorageAdmissionDecision(fixtureExecution, policy, capabilities) {
+  const decisionCore = {
+    admissionDecisionKind: 'EXACT_TEXT_STORAGE_ADMISSION_DECISION',
+    admissionMode: 'PURE_DATA_GATE_ONLY',
+    runtimeStorageAdmitted: true,
+    admittedForNextContourOnly: true,
+    productWritePerformed: false,
+    filesystemWritePerformed: false,
+    tempFixtureWritePerformed: false,
+    sourceFixtureExecutionId: fixtureExecution.fixtureExecutionId,
+    sourceFixtureExecutionHash: fixtureExecution.canonicalHash,
+    sourceCallPlanId: fixtureExecution.sourceCallPlanId,
+    sourceCallPlanHash: fixtureExecution.sourceCallPlanHash,
+    sourceWritePlanId: fixtureExecution.sourceWritePlanId,
+    sourceWritePlanHash: fixtureExecution.sourceWritePlanHash,
+    sourceReceiptContractId: fixtureExecution.sourceReceiptContractId,
+    sourceReceiptContractHash: fixtureExecution.sourceReceiptContractHash,
+    policySnapshot: {
+      ownerAdmissionApproved: policy.ownerAdmissionApproved === true,
+      realStorageAdmissionRequested: policy.realStorageAdmissionRequested === true,
+      exactTextOnly: policy.exactTextOnly === true,
+      singleSceneOnly: policy.singleSceneOnly === true,
+      sourceScope: policy.sourceScope || {},
+    },
+    capabilitySnapshot: {
+      canBackupBeforeWrite: capabilities.canBackupBeforeWrite === true,
+      canAtomicWriteSceneText: capabilities.canAtomicWriteSceneText === true,
+      canCreateReadableRecoverySnapshot: capabilities.canCreateReadableRecoverySnapshot === true,
+      canPersistReceipt: capabilities.canPersistReceipt === true,
+      productPathAccess: capabilities.productPathAccess === true,
+      publicSurfaceAvailable: capabilities.publicSurfaceAvailable === true,
+    },
+  };
+  const decisionWithId = {
+    admissionDecisionId: `storage_admission_${canonicalHash(decisionCore).slice(0, 16)}`,
+    ...decisionCore,
+  };
+  return {
+    ...decisionWithId,
+    canonicalHash: canonicalHash(decisionWithId),
+  };
+}
+
+export function compileExactTextStorageAdmissionGate(input = {}) {
+  const fixtureExecutions = input?.storagePortFixtureResult?.fixtureExecutions || [];
+  const policy = input?.storageAdmissionPolicy || {};
+  const capabilities = input?.storageAdmissionCapabilities || {};
+  const fixtureExecution = fixtureExecutions[0];
+  const blockedReasons = [
+    ...(input?.storagePortFixtureResult?.blockedReasons || []),
+    ...storageAdmissionCapabilityReasons(capabilities, input),
+    ...storageAdmissionScopeReasons(policy, fixtureExecution),
+  ];
+  if (input?.storagePortFixtureResult?.contractOnly !== true || input?.storagePortFixtureResult?.inMemoryOnly !== true) {
+    blockedReasons.push(REASON_CODES.NON_CONTRACT_APPLYOP_FORBIDDEN);
+  }
+  if (input?.storagePortFixtureResult?.filesystemWritePerformed !== false || input?.storagePortFixtureResult?.productWritePerformed !== false) {
+    blockedReasons.push(REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (fixtureExecutions.length !== 1) {
+    blockedReasons.push(REASON_CODES.STORAGE_ADMISSION_REQUIRED);
+  }
+
+  const uniqueBlockedReasons = uniqueStrings(blockedReasons);
+  const admissionDecisions = uniqueBlockedReasons.length === 0
+    ? [createStorageAdmissionDecision(fixtureExecution, policy, capabilities)]
+    : [];
+  const resultCore = {
+    resultKind: 'EXACT_TEXT_STORAGE_ADMISSION_GATE_RESULT',
+    contractOnly: true,
+    admissionGateOnly: true,
+    runtimeStorageAdmitted: admissionDecisions.length === 1,
+    filesystemWritePerformed: false,
+    fsMutationPerformed: false,
+    tempDirUsed: false,
+    tempFixtureWritePerformed: false,
+    productWritePerformed: false,
+    productWriteClaimed: false,
+    durableReceiptClaimed: false,
+    productStorageSafetyClaimed: false,
+    crashRecoveryClaimed: false,
+    applyTxnClaimed: false,
+    publicSurfaceClaimed: false,
+    docxImportClaimed: false,
+    uiChanged: false,
+    releaseClaimed: false,
+    storageImportsAdded: false,
+    storagePrimitiveChanged: false,
+    admissionDecisions,
     blockedReasons: uniqueBlockedReasons,
   };
   return {
