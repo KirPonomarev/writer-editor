@@ -245,6 +245,7 @@ async function collectState(win, label, markerTokens, options = {}) {
       centralSheetRenderedPageCount: Number(host ? host.dataset.centralSheetRenderedPageCount || host.dataset.centralSheetCount || 0 : 0),
       centralSheetTotalPageCount: Number(host ? host.dataset.centralSheetTotalPageCount || host.dataset.centralSheetCount || 0 : 0),
       centralSheetWindowingEnabled: host ? host.dataset.centralSheetWindowingEnabled || null : null,
+      centralSheetLargePayloadFastPathActive: host ? host.dataset.centralSheetLargePayloadFastPathActive || 'false' : 'false',
       centralSheetWindowFirstRenderedPage: Number(host ? host.dataset.centralSheetWindowFirstRenderedPage || 0 : 0),
       centralSheetWindowLastRenderedPage: Number(host ? host.dataset.centralSheetWindowLastRenderedPage || 0 : 0),
       centralSheetBoundedOverflowReason: host ? host.dataset.centralSheetBoundedOverflowReason || null : null,
@@ -604,6 +605,13 @@ function assertScenario(scenario) {
   assert.equal(scenario.initialState.centralSheetWindowFirstRenderedPage <= 2, true, `${scenario.label} must render the top sheet window after payload replacement`);
   assert.equal(scenario.initialState.proseMirrorCount, 1);
   assert.equal(scenario.initialState.tiptapEditorCount, 1);
+  if (scenario.targetPageCount >= 4000) {
+    assert.equal(
+      scenario.initialState.centralSheetLargePayloadFastPathActive,
+      'true',
+      `${scenario.label} must activate large payload fast path at this target`,
+    );
+  }
   assert.equal(scenario.initialState.derivedSheetProseMirrorCount, 0);
   assert.equal(scenario.initialState.derivedSheetEditorCount, 0);
   assert.equal(scenario.initialState.prosePageTruthCount, 0);
