@@ -1249,15 +1249,58 @@ function loadDocxIntakeEnvelopeModule() {
 }
 
 async function inspectDocxDiagnosticEnvelopeForTest(inputBuffer) {
-  const { inspectDocxIntakeEnvelopeDecision } = await loadDocxIntakeEnvelopeModule();
-  const buffer = Buffer.isBuffer(inputBuffer) ? inputBuffer : Buffer.from(inputBuffer || []);
-  const envelopeDecision = inspectDocxIntakeEnvelopeDecision(buffer);
+  let buffer;
+  if (Buffer.isBuffer(inputBuffer)) {
+    buffer = inputBuffer;
+  } else if (Object.prototype.toString.call(inputBuffer) === '[object Uint8Array]') {
+    buffer = Buffer.from(inputBuffer);
+  } else {
+    return buildDocxDiagnosticEnvelopeProbeError(
+      'E_DOCX_DIAGNOSTIC_INPUT_INVALID',
+      'INPUT_INVALID',
+      'DOCX diagnostic probe accepts only Buffer or Uint8Array input.',
+    );
+  }
+
+  let intakeEnvelopeModule;
+  try {
+    intakeEnvelopeModule = await loadDocxIntakeEnvelopeModule();
+  } catch {
+    return buildDocxDiagnosticEnvelopeProbeError(
+      'E_DOCX_DIAGNOSTIC_MODULE_LOAD_FAILED',
+      'MODULE_LOAD_FAILED',
+      'DOCX diagnostic probe could not load the private intake envelope module.',
+    );
+  }
+
+  try {
+    const envelopeDecision = intakeEnvelopeModule.inspectDocxIntakeEnvelopeDecision(buffer);
+    return {
+      ...envelopeDecision,
+      diagnosticProbeVersion: 'DOCX_DIAGNOSTIC_ENVELOPE_PROBE_002',
+      diagnosticOnly: true,
+      docxImportAuthorized: false,
+      runtimeAction: 'NONE',
+    };
+  } catch {
+    return buildDocxDiagnosticEnvelopeProbeError(
+      'E_DOCX_DIAGNOSTIC_ENVELOPE_DECISION_FAILED',
+      'ENVELOPE_DECISION_FAILED',
+      'DOCX diagnostic probe intake envelope inspection failed.',
+    );
+  }
+}
+
+function buildDocxDiagnosticEnvelopeProbeError(code, reason, message) {
   return {
-    ...envelopeDecision,
-    diagnosticProbeVersion: 'DOCX_DIAGNOSTIC_ENVELOPE_PROBE_001',
+    ok: false,
+    code,
+    reason,
+    diagnosticProbeVersion: 'DOCX_DIAGNOSTIC_ENVELOPE_PROBE_002',
     diagnosticOnly: true,
     docxImportAuthorized: false,
     runtimeAction: 'NONE',
+    message,
   };
 }
 

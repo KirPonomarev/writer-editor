@@ -1060,7 +1060,7 @@ test('DOCX diagnostic envelope probe is private main scope only', () => {
 test('DOCX diagnostic envelope probe returns 001D safe decision without import authorization', async () => {
   const gate = await loadGate();
   const { inspectDocxDiagnosticEnvelopeForTest } = instantiateMainFunctions(
-    ['inspectDocxDiagnosticEnvelopeForTest'],
+    ['buildDocxDiagnosticEnvelopeProbeError', 'inspectDocxDiagnosticEnvelopeForTest'],
     {
       loadDocxIntakeEnvelopeModule: async () => ({
         inspectDocxIntakeEnvelopeDecision: gate.inspectDocxIntakeEnvelopeDecision,
@@ -1075,7 +1075,7 @@ test('DOCX diagnostic envelope probe returns 001D safe decision without import a
     report.decisionStatus,
     gate.DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_GATE_CLEARED_NOT_IMPORT_AUTHORIZED,
   );
-  assert.equal(report.diagnosticProbeVersion, 'DOCX_DIAGNOSTIC_ENVELOPE_PROBE_001');
+  assert.equal(report.diagnosticProbeVersion, 'DOCX_DIAGNOSTIC_ENVELOPE_PROBE_002');
   assert.equal(report.diagnosticOnly, true);
   assert.equal(report.docxImportAuthorized, false);
   assert.equal(report.runtimeAction, 'NONE');
@@ -1084,7 +1084,7 @@ test('DOCX diagnostic envelope probe returns 001D safe decision without import a
 test('DOCX diagnostic envelope probe preserves blocked 001D outcomes without writes', async () => {
   const gate = await loadGate();
   const { inspectDocxDiagnosticEnvelopeForTest } = instantiateMainFunctions(
-    ['inspectDocxDiagnosticEnvelopeForTest'],
+    ['buildDocxDiagnosticEnvelopeProbeError', 'inspectDocxDiagnosticEnvelopeForTest'],
     {
       loadDocxIntakeEnvelopeModule: async () => ({
         inspectDocxIntakeEnvelopeDecision: gate.inspectDocxIntakeEnvelopeDecision,
@@ -1118,4 +1118,133 @@ test('DOCX diagnostic envelope probe preserves blocked 001D outcomes without wri
     assert.equal(report.docxImportAuthorized, false);
     assert.equal(report.runtimeAction, 'NONE');
   }
+});
+
+test('DOCX diagnostic envelope probe rejects non-byte inputs with stable private diagnostic errors', async () => {
+  const { inspectDocxDiagnosticEnvelopeForTest } = instantiateMainFunctions(
+    ['buildDocxDiagnosticEnvelopeProbeError', 'inspectDocxDiagnosticEnvelopeForTest'],
+    {
+      loadDocxIntakeEnvelopeModule: async () => ({
+        inspectDocxIntakeEnvelopeDecision: () => {
+          throw new Error('must not inspect rejected input');
+        },
+      }),
+    },
+  );
+  const rejectedInputs = [
+    'docx',
+    null,
+    [],
+    {},
+    123,
+    true,
+    false,
+    new DataView(new ArrayBuffer(2)),
+  ];
+
+  for (const input of rejectedInputs) {
+    const report = await inspectDocxDiagnosticEnvelopeForTest(input);
+
+    assert.deepEqual(Object.keys(report).sort(), [
+      'code',
+      'diagnosticOnly',
+      'diagnosticProbeVersion',
+      'docxImportAuthorized',
+      'message',
+      'ok',
+      'reason',
+      'runtimeAction',
+    ].sort());
+    assert.equal(report.ok, false);
+    assert.equal(report.code, 'E_DOCX_DIAGNOSTIC_INPUT_INVALID');
+    assert.equal(report.reason, 'INPUT_INVALID');
+    assert.equal(report.diagnosticProbeVersion, 'DOCX_DIAGNOSTIC_ENVELOPE_PROBE_002');
+    assert.equal(report.diagnosticOnly, true);
+    assert.equal(report.docxImportAuthorized, false);
+    assert.equal(report.runtimeAction, 'NONE');
+    assert.equal(report.message, 'DOCX diagnostic probe accepts only Buffer or Uint8Array input.');
+    assert.equal('stack' in report, false);
+    assert.equal('outPath' in report, false);
+    assert.equal('currentFilePath' in report, false);
+    assert.equal('projectPath' in report, false);
+  }
+});
+
+test('DOCX diagnostic envelope probe accepts Buffer and copies Uint8Array views before inspect', async () => {
+  const receivedBuffers = [];
+  const { inspectDocxDiagnosticEnvelopeForTest } = instantiateMainFunctions(
+    ['buildDocxDiagnosticEnvelopeProbeError', 'inspectDocxDiagnosticEnvelopeForTest'],
+    {
+      loadDocxIntakeEnvelopeModule: async () => ({
+        inspectDocxIntakeEnvelopeDecision: (buffer) => {
+          receivedBuffers.push(buffer);
+          return {
+            decisionStatus: 'STUB_SAFE',
+            docxImportAuthorized: true,
+            runtimeAction: 'IMPORT',
+          };
+        },
+      }),
+    },
+  );
+  const bufferInput = Buffer.from([1, 2, 3]);
+  const backing = new Uint8Array([8, 9, 10, 11, 12]);
+  const viewInput = backing.subarray(1, 4);
+
+  const bufferReport = await inspectDocxDiagnosticEnvelopeForTest(bufferInput);
+  const viewReport = await inspectDocxDiagnosticEnvelopeForTest(viewInput);
+  backing[1] = 99;
+
+  assert.equal(receivedBuffers[0], bufferInput);
+  assert.notEqual(receivedBuffers[1], viewInput);
+  assert.equal(Buffer.isBuffer(receivedBuffers[1]), true);
+  assert.deepEqual([...receivedBuffers[1]], [9, 10, 11]);
+  assert.equal(bufferReport.docxImportAuthorized, false);
+  assert.equal(bufferReport.runtimeAction, 'NONE');
+  assert.equal(viewReport.docxImportAuthorized, false);
+  assert.equal(viewReport.runtimeAction, 'NONE');
+});
+
+test('DOCX diagnostic envelope probe wraps module load and inspect failures as stable errors', async () => {
+  const loadFailureProbe = instantiateMainFunctions(
+    ['buildDocxDiagnosticEnvelopeProbeError', 'inspectDocxDiagnosticEnvelopeForTest'],
+    {
+      loadDocxIntakeEnvelopeModule: async () => {
+        throw new Error('/private/tmp/path should not escape');
+      },
+    },
+  ).inspectDocxDiagnosticEnvelopeForTest;
+  const inspectFailureProbe = instantiateMainFunctions(
+    ['buildDocxDiagnosticEnvelopeProbeError', 'inspectDocxDiagnosticEnvelopeForTest'],
+    {
+      loadDocxIntakeEnvelopeModule: async () => ({
+        inspectDocxIntakeEnvelopeDecision: () => {
+          throw new Error('dynamic inspect failure should not escape');
+        },
+      }),
+    },
+  ).inspectDocxDiagnosticEnvelopeForTest;
+  const loadFailure = await loadFailureProbe(Buffer.from('safe'));
+  const inspectFailure = await inspectFailureProbe(Buffer.from('safe'));
+
+  assert.deepEqual(JSON.parse(JSON.stringify(loadFailure)), {
+    ok: false,
+    code: 'E_DOCX_DIAGNOSTIC_MODULE_LOAD_FAILED',
+    reason: 'MODULE_LOAD_FAILED',
+    diagnosticProbeVersion: 'DOCX_DIAGNOSTIC_ENVELOPE_PROBE_002',
+    diagnosticOnly: true,
+    docxImportAuthorized: false,
+    runtimeAction: 'NONE',
+    message: 'DOCX diagnostic probe could not load the private intake envelope module.',
+  });
+  assert.deepEqual(JSON.parse(JSON.stringify(inspectFailure)), {
+    ok: false,
+    code: 'E_DOCX_DIAGNOSTIC_ENVELOPE_DECISION_FAILED',
+    reason: 'ENVELOPE_DECISION_FAILED',
+    diagnosticProbeVersion: 'DOCX_DIAGNOSTIC_ENVELOPE_PROBE_002',
+    diagnosticOnly: true,
+    docxImportAuthorized: false,
+    runtimeAction: 'NONE',
+    message: 'DOCX diagnostic probe intake envelope inspection failed.',
+  });
 });
