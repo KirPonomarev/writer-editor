@@ -2,6 +2,13 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "test/contracts/editor-sheet-6000-diagnostic-probe.contract.test.js",
+      "sha256": "b4a92e0ee9dc6a7979c8c92fad049d2a7afd5bfa2af7affd2202a773f28b4274",
+      "approvedBy": "ticket:CONTOUR_08_CHEAP_6000_DIAGNOSTIC_PROBE_ONLY",
+      "approvedAtUtc": "2026-04-30T13:25:00.000Z",
+      "rationale": "Approve bounded false-green contract coverage for the standalone 6000 diagnostic probe; diagnostic pass does not raise supported tier or claim 6000 readiness."
+    },
+    {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_5000_CLOSEOUT_SUMMARY.json",
       "sha256": "79efe249b7e780c081d4c1d8e5d3a7c19667164135a01a65ad2b71a4dd4fa27c",
       "approvedBy": "ticket:CONTOUR_06_5000_GATE_POST_CLOSEOUT",
