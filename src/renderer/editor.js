@@ -1006,6 +1006,27 @@ function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   renderCentralSheetStripShellPages(null);
 }
 
+function resetCentralSheetStripForIncomingPayload() {
+  if (!isTiptapMode || !(editor instanceof HTMLElement)) {
+    return;
+  }
+  if (centralSheetStripRefreshFrameId) {
+    window.cancelAnimationFrame(centralSheetStripRefreshFrameId);
+    centralSheetStripRefreshFrameId = null;
+  }
+  centralSheetStripRefreshMode = 'full';
+  const scrollContainer = editor.closest('.main-content--editor');
+  if (scrollContainer instanceof HTMLElement) {
+    scrollContainer.scrollTop = 0;
+  }
+  if (centralSheetStripScrollContainer instanceof HTMLElement) {
+    centralSheetStripScrollContainer.scrollTop = 0;
+  }
+  editor.scrollTop = 0;
+  clearCentralSheetStripProof();
+  centralSheetStripCacheDirty = true;
+}
+
 function syncCentralSheetStripOverflowMetadata({ pageCount, visiblePageCount, overflowReason } = {}) {
   if (!(editor instanceof HTMLElement)) {
     return;
@@ -1142,15 +1163,8 @@ function resolveCentralSheetViewportRuntimeWindow({
   let viewportHeightPx = 0;
   let viewportTopPx = 0;
   if (scrollContainer instanceof HTMLElement) {
-    const hostRect = editor.getBoundingClientRect();
-    const containerRect = scrollContainer.getBoundingClientRect();
-    const resolvedViewportTopPx = Math.max(0, containerRect.top - hostRect.top);
-    const resolvedViewportBottomPx = Math.min(
-      hostRect.height,
-      containerRect.bottom - hostRect.top,
-    );
-    viewportTopPx = Math.max(0, Math.round(resolvedViewportTopPx));
-    viewportHeightPx = Math.max(1, Math.round(resolvedViewportBottomPx - resolvedViewportTopPx));
+    viewportTopPx = Math.max(0, Math.round(Number(scrollContainer.scrollTop) || 0));
+    viewportHeightPx = Math.max(1, Math.round(Number(scrollContainer.clientHeight) || 0));
   }
   if (viewportHeightPx <= 0) {
     const hostRect = editor.getBoundingClientRect();
@@ -5277,6 +5291,7 @@ function showEditorPanelFor(title) {
         focusEditorSurface('current');
       }
       positionCaretForCurrentText();
+      scheduleCentralSheetStripProofRefresh();
     }
   });
 }
@@ -8709,10 +8724,12 @@ if (window.electronAPI) {
     currentCards = parsed.cards;
     plainTextBuffer = parsed.text || '';
     if (isTiptapMode) {
+      resetCentralSheetStripForIncomingPayload();
       setTiptapDocumentSnapshot({
         doc: parsed.doc,
         text: parsed.text || '',
       });
+      resetCentralSheetStripForIncomingPayload();
     } else {
       setPlainText(parsed.text || '');
     }
