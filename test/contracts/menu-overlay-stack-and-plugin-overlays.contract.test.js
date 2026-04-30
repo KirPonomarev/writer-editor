@@ -47,15 +47,17 @@ function uniqueOriginsInOrder(rows = []) {
 function buildBaseConfig() {
   return {
     version: 'v2',
-    fonts: [{ id: 'font-default', label: 'Serif', value: 'serif' }],
+    fonts: [{ id: 'font-default', label: 'Serif', labelKey: 'font.serif', value: 'serif' }],
     menus: [
       {
         id: 'file',
-        label: 'File',
+        label: 'Документ',
+        labelKey: 'menu.file',
         items: [
           {
             id: 'save',
-            label: 'Save',
+            label: 'Сохранить',
+            labelKey: 'menu.file.save',
             command: 'cmd.project.save',
             enabledWhen: { op: 'all', args: [] },
             mode: ['offline'],

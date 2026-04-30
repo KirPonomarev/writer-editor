@@ -2989,6 +2989,20 @@
       "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
       "approvedAtUtc": "2026-04-30T17:45:00.000Z",
       "rationale": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION owner-approved narrow macOS design phase promotion from 5000 supported tier to 10000 supported tier, preserving no production, cross-platform, export, storage, collaboration, comments, history, 25000, 40000, or 41750-plus claims."
+    },
+    {
+      "filePath": "scripts/ops/check-menu-overlay-stack.mjs",
+      "sha256": "455b1ebf9eb9e26430ec501ff616e3e82221f6c6f6529b79f5f70021a0659333",
+      "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
+      "approvedAtUtc": "2026-04-30T18:20:00.000Z",
+      "rationale": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION approves narrow promotion-lane hygiene fix for deterministic menu overlay guard fixtures after locale labelKey canon enforcement; no product runtime, UI, CSS, storage, export, dependency, 25000, 40000, or 41750-plus readiness change."
+    },
+    {
+      "filePath": "test/contracts/menu-overlay-stack-and-plugin-overlays.contract.test.js",
+      "sha256": "8da34d1a96112a64d94c1f03f141ad32a27839e2d2d204f2feccce6c553f203e",
+      "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
+      "approvedAtUtc": "2026-04-30T18:20:00.000Z",
+      "rationale": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION approves narrow promotion-lane hygiene fix for deterministic menu overlay guard fixtures after locale labelKey canon enforcement; no product runtime, UI, CSS, storage, export, dependency, 25000, 40000, or 41750-plus readiness change."
     }
   ]
 }
