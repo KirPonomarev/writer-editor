@@ -4051,6 +4051,7 @@ body.dark-theme .empty-state {
   mask-repeat: repeat-y;
   -webkit-mask-size: 100% var(--central-sheet-page-stride-px);
   mask-size: 100% var(--central-sheet-page-stride-px);
+  overflow: hidden;
 }
 
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof > .tiptap-page-wrap .ProseMirror {
