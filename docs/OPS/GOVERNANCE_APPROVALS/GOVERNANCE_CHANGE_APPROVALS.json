@@ -2999,10 +2999,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "3d6caab37f634be2b597179b81079dac778a7760fa412d32acd548bcbd40b324",
-      "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
-      "approvedAtUtc": "2026-04-30T18:00:00.000Z",
-      "rationale": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION owner-approved rebind of tracked 10000 stress proof to final contour HEAD after promotion release-candidate evidence commit; no runtime, UI, CSS, storage, export, dependency, 25000, 40000, 41750-plus, production, or cross-platform claim change."
+      "sha256": "47c2043bdb3059117fc9a44f9b784ada39182c882444f7960cb87af8e646dc38",
+      "approvedBy": "ticket:CONTOUR_011_POSTMERGE_10000_STRESS_PROOF_REBIND",
+      "approvedAtUtc": "2026-04-30T18:10:00.000Z",
+      "rationale": "Approve post-merge proof rebind for PR 906 merge topology so the 10000 macOS design phase stress lane remains self-verifying on main; no runtime, UI, CSS, storage, export, dependency, 25000, 40000, 41750-plus, production, or cross-platform claim is introduced."
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",

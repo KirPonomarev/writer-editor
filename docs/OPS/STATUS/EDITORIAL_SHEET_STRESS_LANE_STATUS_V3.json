@@ -46,7 +46,7 @@
     "GAP_CONTINUITY"
   ],
   "failedRowIds": [],
-  "generatedAtUtc": "2026-04-30T17:58:24.538Z",
+  "generatedAtUtc": "2026-04-30T18:08:37.730Z",
   "ok": true,
   "provisionalObservedCeiling": 10000,
   "readiness": {
@@ -57,11 +57,11 @@
     "tracked5000Pass": true
   },
   "repo": {
-    "branchName": "codex/editorial-sheet-10000-supported-tier-010",
+    "branchName": "codex/editorial-sheet-10000-postmerge-rebind-011",
     "detachedHead": false,
-    "headSha": "73ff82366e6f85ae2bb198322826fc99bee363bc",
+    "headSha": "8cfba16d26657e2dfd4f5477ddaf50f4c5b656e1",
     "originMainAncestorOfHead": true,
-    "originMainHeadSha": "f9e7edb6c5dc20201f73e8764bbd17be9dc015bb",
+    "originMainHeadSha": "8cfba16d26657e2dfd4f5477ddaf50f4c5b656e1",
     "repoRootBinding": "WORKTREE_LOCAL",
     "statusBasename": "EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
     "worktreeClean": true,
@@ -78,17 +78,17 @@
     {
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 14711,
+      "durationMs": 14064,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T17:56:37.175Z",
+      "finishedAtUtc": "2026-04-30T18:06:46.583Z",
       "id": "TRACKED_SCALE_2000",
       "observed": {
         "actualPageCount": 2300,
         "dialogCalls": 0,
         "domNodeCount": 789,
         "hiddenPageCount": 2296,
-        "loadMs": 5903,
+        "loadMs": 5810,
         "markerScrolls": [
           {
             "clientHeight": 679,
@@ -147,31 +147,31 @@
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 324,
+        "typingTypeMs": 300,
         "typingUndoRestoredHash": true
       },
       "pageCount": 2000,
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-04-30T17:56:22.464Z",
+      "startedAtUtc": "2026-04-30T18:06:32.519Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "488bb2b63602714891aef23f376639d8ed153f6eb34d82169d87c393a09ea2d3",
-      "stdoutTail": "ectCount\":2,\"firstRenderedPage\":1770,\"lastRenderedPage\":1773}],\"textHashStable\":true,\"typing\":{\"typeMs\":324,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (14663.808875ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 14672.20375\n"
+      "stdoutSummaryHash": "b07622ee58e33047e05a09eeef010612e36ac8056164326c5a18b8987bb20aa2",
+      "stdoutTail": "ctCount\":2,\"firstRenderedPage\":1770,\"lastRenderedPage\":1773}],\"textHashStable\":true,\"typing\":{\"typeMs\":300,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (14016.400583ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 14021.753583\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 14855,
+      "durationMs": 14114,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T17:56:52.372Z",
+      "finishedAtUtc": "2026-04-30T18:07:01.023Z",
       "id": "TRACKED_SCALE_3000",
       "observed": {
         "actualPageCount": 3448,
         "dialogCalls": 0,
         "domNodeCount": 789,
         "hiddenPageCount": 3444,
-        "loadMs": 6822,
+        "loadMs": 6853,
         "markerScrolls": [
           {
             "clientHeight": 679,
@@ -230,31 +230,31 @@
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 556,
+        "typingTypeMs": 548,
         "typingUndoRestoredHash": true
       },
       "pageCount": 3000,
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-04-30T17:56:37.517Z",
+      "startedAtUtc": "2026-04-30T18:06:46.909Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "eeeed47a28c7d97df69eadd6dd26fe05a02ce8008afdb5577352662c7a657cf6",
-      "stdoutTail": "ctCount\":2,\"firstRenderedPage\":2655,\"lastRenderedPage\":2659}],\"textHashStable\":true,\"typing\":{\"typeMs\":556,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (14726.969834ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 14734.785834\n"
+      "stdoutSummaryHash": "c0f0e3cf8cb697b4a7d11088999fbf2c7caaa432494b8d32ae99dd1811a686f4",
+      "stdoutTail": "ctCount\":2,\"firstRenderedPage\":2655,\"lastRenderedPage\":2659}],\"textHashStable\":true,\"typing\":{\"typeMs\":548,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (14054.332041ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 14060.018292\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 13103,
+      "durationMs": 12939,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T17:57:05.803Z",
+      "finishedAtUtc": "2026-04-30T18:07:14.295Z",
       "id": "TRACKED_SCALE_4000",
       "observed": {
         "actualPageCount": 4476,
         "dialogCalls": 0,
         "domNodeCount": 982,
         "hiddenPageCount": 4472,
-        "loadMs": 5783,
+        "loadMs": 5719,
         "markerScrolls": [
           {
             "clientHeight": 679,
@@ -313,31 +313,31 @@
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 368,
+        "typingTypeMs": 342,
         "typingUndoRestoredHash": true
       },
       "pageCount": 4000,
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-04-30T17:56:52.700Z",
+      "startedAtUtc": "2026-04-30T18:07:01.356Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "3385d7f4bd4d2afda9c433198e0e901e5cde74c8af6aebfbff8fcd6ef4c8e8d0",
-      "stdoutTail": "eRectCount\":2,\"firstRenderedPage\":3547,\"lastRenderedPage\":3551}],\"textHashStable\":true,\"typing\":{\"typeMs\":368,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (13046.24175ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 13052.2775\n"
+      "stdoutSummaryHash": "f7dd1c26d81770d8b148f22aebe9dc92471b33f4c0a590ed6ee0ba8e90d7865f",
+      "stdoutTail": "ctCount\":2,\"firstRenderedPage\":3547,\"lastRenderedPage\":3551}],\"textHashStable\":true,\"typing\":{\"typeMs\":342,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (12889.007417ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 12896.972042\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 13114,
+      "durationMs": 13110,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T17:57:19.222Z",
+      "finishedAtUtc": "2026-04-30T18:07:27.737Z",
       "id": "TRACKED_SCALE_5000",
       "observed": {
         "actualPageCount": 5596,
         "dialogCalls": 0,
         "domNodeCount": 1031,
         "hiddenPageCount": 5592,
-        "loadMs": 5889,
+        "loadMs": 5874,
         "markerScrolls": [
           {
             "clientHeight": 679,
@@ -396,31 +396,31 @@
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 426,
+        "typingTypeMs": 435,
         "typingUndoRestoredHash": true
       },
       "pageCount": 5000,
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-04-30T17:57:06.108Z",
+      "startedAtUtc": "2026-04-30T18:07:14.627Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "8a3669583751f025b3698d4ca8dc3f4de5e2afa9be3e82b72eb76a0fc1fe50fd",
-      "stdoutTail": "ctCount\":2,\"firstRenderedPage\":4434,\"lastRenderedPage\":4437}],\"textHashStable\":true,\"typing\":{\"typeMs\":426,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (13064.854958ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 13071.339458\n"
+      "stdoutSummaryHash": "2170c0ccedd86bfbe066ea66830b842b5acb0e9ac2cfabf34f9e15a7ffa66b88",
+      "stdoutTail": "ctCount\":2,\"firstRenderedPage\":4434,\"lastRenderedPage\":4437}],\"textHashStable\":true,\"typing\":{\"typeMs\":435,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (13058.022125ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 13063.473875\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 14529,
+      "durationMs": 14320,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T17:57:34.073Z",
+      "finishedAtUtc": "2026-04-30T18:07:42.379Z",
       "id": "TRACKED_SCALE_10000",
       "observed": {
         "actualPageCount": 11251,
         "dialogCalls": 0,
         "domNodeCount": 1276,
         "hiddenPageCount": 11247,
-        "loadMs": 7149,
+        "loadMs": 7018,
         "markerScrolls": [
           {
             "clientHeight": 679,
@@ -479,51 +479,51 @@
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 899,
+        "typingTypeMs": 852,
         "typingUndoRestoredHash": true
       },
       "pageCount": 10000,
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-04-30T17:57:19.544Z",
+      "startedAtUtc": "2026-04-30T18:07:28.059Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "57bb5d8277e925c1f0c111e0c36fe64db5a1e7ea1d3016f3d273ced640f6eb45",
-      "stdoutTail": "ectCount\":2,\"firstRenderedPage\":8870,\"lastRenderedPage\":8874}],\"textHashStable\":true,\"typing\":{\"typeMs\":899,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (14478.55375ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 14485.983583\n"
+      "stdoutSummaryHash": "0c88f39977c39d476377512f9a4bc9807dac724d088bb3cfbc4e124398e59a2e",
+      "stdoutTail": "ctCount\":2,\"firstRenderedPage\":8870,\"lastRenderedPage\":8874}],\"textHashStable\":true,\"typing\":{\"typeMs\":852,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (14270.413458ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 14276.821125\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/vertical-sheet-performance-window-smoke.mjs",
       "diagnosticOnly": true,
-      "durationMs": 21510,
+      "durationMs": 21752,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T17:57:55.902Z",
+      "finishedAtUtc": "2026-04-30T18:08:04.459Z",
       "id": "VIEWPORT_CONTINUITY",
       "observed": {
         "afterInputHiddenPageCount": 549,
         "afterInputVisibleSheetCount": 4,
         "domNotLinearWithSourcePages": true,
         "fullVisibleSheetRebuildAfterInput": false,
-        "insertMs100": 3658,
+        "insertMs100": 4088,
         "scrollRenderedWindowShift": 508,
-        "scrollViewportSheetCountImmediate": 3,
+        "scrollViewportSheetCountImmediate": 0,
         "scrollViewportSheetCountSettled": 3,
         "scrollViewportSheetCountSync": 3,
         "scrollViewportTextRectCountSettled": 44
       },
       "rowClass": "diagnostic-viewport",
-      "startedAtUtc": "2026-04-30T17:57:34.392Z",
+      "startedAtUtc": "2026-04-30T18:07:42.707Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "a49eacf452b17c5f180377ffccb8c3c0316c6ce85f4a8692ae36a8e15544b4f0",
-      "stdoutTail": "789,\"afterInputSourcePageCount\":553,\"afterInputVisibleSheetCount\":4,\"afterInputHiddenPageCount\":549,\"renderedSheetWindowMax\":15,\"domGrowth10to50\":0,\"domGrowth50to100\":0,\"domGrowth10to100\":0,\"domNotLinearWithSourcePages\":true}\n✔ test/unit/vertical-sheet-performance-window-smoke.mjs (21449.769083ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 21455.362042\n"
+      "stdoutSummaryHash": "96dc6bb03c180afd592899bb3c50a839cc77e27f0ff4f141296f3526928c333d",
+      "stdoutTail": "789,\"afterInputSourcePageCount\":553,\"afterInputVisibleSheetCount\":4,\"afterInputHiddenPageCount\":549,\"renderedSheetWindowMax\":15,\"domGrowth10to50\":0,\"domGrowth50to100\":0,\"domGrowth10to100\":0,\"domNotLinearWithSourcePages\":true}\n✔ test/unit/vertical-sheet-performance-window-smoke.mjs (21698.342375ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 21706.596541\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/vertical-sheet-input-stability-smoke.mjs",
       "diagnosticOnly": true,
-      "durationMs": 18001,
+      "durationMs": 21971,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T17:58:14.225Z",
+      "finishedAtUtc": "2026-04-30T18:08:26.754Z",
       "id": "INPUT_CONTINUITY",
       "observed": {
         "backspaceRedoTruncatedTargetAfter": 1,
@@ -539,19 +539,19 @@
         "visibleTextRectCount": 39
       },
       "rowClass": "diagnostic-input",
-      "startedAtUtc": "2026-04-30T17:57:56.224Z",
+      "startedAtUtc": "2026-04-30T18:08:04.783Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "8d1000159f6b7ccb8733edc0a08fa3f03519790b96a581c94b95c9e43178241d",
-      "stdoutTail": "leSheetCount\":2,\"visibleTextRectCount\":39,\"networkRequests\":0,\"dialogCalls\":0,\"screenshots\":[\"vertical-input-stability-before.png\",\"vertical-input-stability-after-paste.png\",\"vertical-input-stability-after-backspace-redo.png\"]}\\n✔ test/unit/vertical-sheet-input-stability-smoke.mjs (17941.869292ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 17948.463208\n"
+      "stdoutSummaryHash": "a1bc8ac4324373240c23d7dbbc36f27ee9d9a3473153be9d6adec8dcaeea13cc",
+      "stdoutTail": "isibleSheetCount\":2,\"visibleTextRectCount\":39,\"networkRequests\":0,\"dialogCalls\":0,\"screenshots\":[\"vertical-input-stability-before.png\",\"vertical-input-stability-after-paste.png\",\"vertical-input-stability-after-backspace-redo.png\"]}\\n✔ test/unit/vertical-sheet-input-stability-smoke.mjs (21912.84775ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 21920.246\n"
     },
     {
       "command": "/usr/local/bin/node --test test/unit/vertical-sheet-gap-smoke.mjs",
       "diagnosticOnly": true,
-      "durationMs": 9996,
+      "durationMs": 10667,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-04-30T17:58:24.536Z",
+      "finishedAtUtc": "2026-04-30T18:08:37.728Z",
       "id": "GAP_CONTINUITY",
       "observed": {
         "liveGapMaxPx": 32,
@@ -563,11 +563,11 @@
         "visibleTextGapIntersectionCount": 0
       },
       "rowClass": "diagnostic-gap",
-      "startedAtUtc": "2026-04-30T17:58:14.540Z",
+      "startedAtUtc": "2026-04-30T18:08:27.061Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "57b81aab042342f156b2ed8f004cb848e824283f5ed9c95a03e180050704875a",
-      "stdoutTail": "-gap-top.png\",\"/var/folders/qq/p9w353w13lqb3n8vdv_lf2f80000gn/T/vertical-sheet-gap-B8Rk7g/vertical-sheet-gap-middle-scroll.png\",\"/var/folders/qq/p9w353w13lqb3n8vdv_lf2f80000gn/T/vertical-sheet-gap-B8Rk7g/vertical-sheet-gap-after-scroll.png\"]}\n✔ test/unit/vertical-sheet-gap-smoke.mjs (9945.810042ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 9950.724542\n"
+      "stdoutSummaryHash": "2603712ba91d58fa511b844d995b36796124d5ca07f64c8e1ebb7d40309bb598",
+      "stdoutTail": "ap-top.png\",\"/var/folders/qq/p9w353w13lqb3n8vdv_lf2f80000gn/T/vertical-sheet-gap-VKMFsF/vertical-sheet-gap-middle-scroll.png\",\"/var/folders/qq/p9w353w13lqb3n8vdv_lf2f80000gn/T/vertical-sheet-gap-VKMFsF/vertical-sheet-gap-after-scroll.png\"]}\n✔ test/unit/vertical-sheet-gap-smoke.mjs (10531.697875ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 10540.686125\n"
     }
   ],
   "rules": {
