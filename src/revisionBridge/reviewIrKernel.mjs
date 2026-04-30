@@ -70,6 +70,16 @@ export const REASON_CODES = Object.freeze({
   STRUCTURAL_STORAGE_WRITE_BLOCKED: 'STRUCTURAL_STORAGE_WRITE_BLOCKED',
   RECEIPT_CAPABILITY_MISSING: 'RECEIPT_CAPABILITY_MISSING',
   PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR: 'PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR',
+  FIXTURE_ROOT_POLICY_REQUIRED: 'FIXTURE_ROOT_POLICY_REQUIRED',
+  FIXTURE_ROOT_NOT_ISOLATED: 'FIXTURE_ROOT_NOT_ISOLATED',
+  PRODUCT_ROOT_FORBIDDEN: 'PRODUCT_ROOT_FORBIDDEN',
+  PRODUCT_PATH_FORBIDDEN: 'PRODUCT_PATH_FORBIDDEN',
+  PATH_TRAVERSAL_FORBIDDEN: 'PATH_TRAVERSAL_FORBIDDEN',
+  ABSOLUTE_PATH_ESCAPE_FORBIDDEN: 'ABSOLUTE_PATH_ESCAPE_FORBIDDEN',
+  SYMLINK_POLICY_UNSAFE: 'SYMLINK_POLICY_UNSAFE',
+  CASE_COLLISION_POLICY_MISSING: 'CASE_COLLISION_POLICY_MISSING',
+  RESERVED_NAME_POLICY_MISSING: 'RESERVED_NAME_POLICY_MISSING',
+  LONG_PATH_POLICY_MISSING: 'LONG_PATH_POLICY_MISSING',
   NON_DETERMINISTIC_STORAGE_PORT: 'NON_DETERMINISTIC_STORAGE_PORT',
   FS_MUTATION_FORBIDDEN_IN_CONTOUR: 'FS_MUTATION_FORBIDDEN_IN_CONTOUR',
   VIEWMODE_MISMATCH: 'VIEWMODE_MISMATCH',
@@ -1465,6 +1475,194 @@ export function compileExactTextStorageAdmissionGate(input = {}) {
     storageImportsAdded: false,
     storagePrimitiveChanged: false,
     admissionDecisions,
+    blockedReasons: uniqueBlockedReasons,
+  };
+  return {
+    ...resultCore,
+    canonicalHash: canonicalHash(resultCore),
+  };
+}
+
+function looksAbsolutePath(value) {
+  const text = String(value ?? '');
+  return text.startsWith('/')
+    || text.startsWith('\\')
+    || /^[A-Za-z]:[\\/]/u.test(text)
+    || text.startsWith('\\\\');
+}
+
+function pathSegmentsFromPolicy(policy = {}) {
+  if (Array.isArray(policy.relativePathSegments)) {
+    return policy.relativePathSegments;
+  }
+  if (hasValue(policy.relativePath)) {
+    return String(policy.relativePath).split(/[\\/]+/u).filter(Boolean);
+  }
+  return [];
+}
+
+function fixtureRootPathPolicyReasons(policy = {}, input = {}) {
+  const reasons = [];
+  const segments = pathSegmentsFromPolicy(policy);
+  if (
+    !hasValue(policy.fixtureRootId)
+    || !hasValue(policy.relativePath)
+    || segments.length === 0
+    || policy.isolatedMarker !== 'EXACT_TEXT_FIXTURE_ROOT_ISOLATED'
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_ROOT_POLICY_REQUIRED);
+  }
+  if (policy.isolatedRoot !== true || policy.rootKind !== 'FIXTURE') {
+    reasons.push(REASON_CODES.FIXTURE_ROOT_NOT_ISOLATED);
+  }
+  if (
+    policy.rootKind === 'PRODUCT'
+    || policy.productRoot === true
+    || policy.fixtureRootId === policy.productRootId
+    || input?.productRootRequested === true
+  ) {
+    reasons.push(REASON_CODES.PRODUCT_ROOT_FORBIDDEN);
+  }
+  if (policy.productPath === true || input?.productPathRequested === true) {
+    reasons.push(REASON_CODES.PRODUCT_PATH_FORBIDDEN);
+  }
+  if (segments.some((segment) => segment === '..' || segment === '.')) {
+    reasons.push(REASON_CODES.PATH_TRAVERSAL_FORBIDDEN);
+  }
+  if (looksAbsolutePath(policy.relativePath) || looksAbsolutePath(policy.absolutePathProbe)) {
+    reasons.push(REASON_CODES.ABSOLUTE_PATH_ESCAPE_FORBIDDEN);
+  }
+  if (policy.symlinkPolicy !== 'BLOCK') {
+    reasons.push(REASON_CODES.SYMLINK_POLICY_UNSAFE);
+  }
+  if (policy.caseCollisionPolicy !== 'DETECT_AND_BLOCK') {
+    reasons.push(REASON_CODES.CASE_COLLISION_POLICY_MISSING);
+  }
+  if (policy.reservedNamePolicy !== 'DETECT_AND_BLOCK') {
+    reasons.push(REASON_CODES.RESERVED_NAME_POLICY_MISSING);
+  }
+  if (policy.longPathPolicy !== 'DECLARE_AND_BLOCK_UNSUPPORTED') {
+    reasons.push(REASON_CODES.LONG_PATH_POLICY_MISSING);
+  }
+  if (
+    !hasValue(policy.hashPolicy?.newlinePolicy)
+    || !hasValue(policy.hashPolicy?.unicodePolicy)
+    || !hasValue(policy.hashPolicy?.normalizationPolicy)
+  ) {
+    reasons.push(REASON_CODES.MISSING_PRECONDITION);
+  }
+  if (
+    input?.fsMutationRequested === true
+    || input?.tempDirRequested === true
+    || input?.tempFixtureWriteRequested === true
+    || input?.productWrite === true
+    || input?.runtimeWritable === true
+  ) {
+    reasons.push(REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (input?.publicSurfaceRequested === true) {
+    reasons.push(REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR);
+  }
+  return uniqueStrings(reasons);
+}
+
+function storageAdmissionBindingReasons(admissionResult = {}) {
+  const reasons = [];
+  const decisions = admissionResult.admissionDecisions || [];
+  if (
+    admissionResult.contractOnly !== true
+    || admissionResult.admissionGateOnly !== true
+    || admissionResult.runtimeStorageAdmitted !== true
+    || admissionResult.filesystemWritePerformed !== false
+    || admissionResult.productWritePerformed !== false
+    || decisions.length !== 1
+    || !hasValue(admissionResult.canonicalHash)
+    || !hasValue(decisions[0]?.canonicalHash)
+  ) {
+    reasons.push(REASON_CODES.STORAGE_ADMISSION_REQUIRED);
+  }
+  return uniqueStrings(reasons);
+}
+
+function createFixtureRootPathPolicyDecision(admissionResult, policy) {
+  const admissionDecision = admissionResult.admissionDecisions[0];
+  const decisionCore = {
+    fixtureRootPolicyDecisionKind: 'EXACT_TEXT_FIXTURE_ROOT_PATH_POLICY_DECISION',
+    decisionMode: 'PURE_PATH_POLICY_ONLY',
+    fixturePathPolicyAdmitted: true,
+    filesystemWritePerformed: false,
+    tempDirUsed: false,
+    tempFixtureWritePerformed: false,
+    productWritePerformed: false,
+    sourceStorageAdmissionResultHash: admissionResult.canonicalHash,
+    sourceStorageAdmissionDecisionHash: admissionDecision.canonicalHash,
+    sourceFixtureExecutionHash: admissionDecision.sourceFixtureExecutionHash,
+    sourceCallPlanHash: admissionDecision.sourceCallPlanHash,
+    sourceWritePlanHash: admissionDecision.sourceWritePlanHash,
+    sourceReceiptContractHash: admissionDecision.sourceReceiptContractHash,
+    fixtureRootPolicySnapshot: {
+      fixtureRootId: policy.fixtureRootId,
+      rootKind: policy.rootKind,
+      isolatedRoot: policy.isolatedRoot === true,
+      isolatedMarker: policy.isolatedMarker,
+      relativePath: policy.relativePath,
+      relativePathSegments: pathSegmentsFromPolicy(policy),
+      symlinkPolicy: policy.symlinkPolicy,
+      caseCollisionPolicy: policy.caseCollisionPolicy,
+      reservedNamePolicy: policy.reservedNamePolicy,
+      longPathPolicy: policy.longPathPolicy,
+      hashPolicy: policy.hashPolicy,
+    },
+  };
+  const decisionWithId = {
+    fixtureRootPolicyDecisionId: `fixture_root_policy_${canonicalHash(decisionCore).slice(0, 16)}`,
+    ...decisionCore,
+  };
+  return {
+    ...decisionWithId,
+    canonicalHash: canonicalHash(decisionWithId),
+  };
+}
+
+export function compileExactTextFixtureRootPathPolicy(input = {}) {
+  const admissionResult = input?.storageAdmissionGateResult || {};
+  const policy = input?.fixtureRootPolicy || {};
+  const blockedReasons = [
+    ...(admissionResult.blockedReasons || []),
+    ...storageAdmissionBindingReasons(admissionResult),
+    ...fixtureRootPathPolicyReasons(policy, input),
+  ];
+
+  const uniqueBlockedReasons = uniqueStrings(blockedReasons);
+  const fixtureRootPolicyDecisions = uniqueBlockedReasons.length === 0
+    ? [createFixtureRootPathPolicyDecision(admissionResult, policy)]
+    : [];
+  const resultCore = {
+    resultKind: 'EXACT_TEXT_FIXTURE_ROOT_PATH_POLICY_RESULT',
+    contractOnly: true,
+    pathPolicyOnly: true,
+    fixturePathPolicyAdmitted: fixtureRootPolicyDecisions.length === 1,
+    filesystemWritePerformed: false,
+    fsMutationPerformed: false,
+    tempDirUsed: false,
+    tempFixtureWritePerformed: false,
+    productWritePerformed: false,
+    productWriteClaimed: false,
+    fixtureBackupCreated: false,
+    fixtureAtomicWriteExecuted: false,
+    fixtureRecoverySnapshotCreated: false,
+    fixtureReceiptPersisted: false,
+    durableReceiptClaimed: false,
+    productStorageSafetyClaimed: false,
+    publicSurfaceClaimed: false,
+    docxImportClaimed: false,
+    uiChanged: false,
+    applyTxnClaimed: false,
+    crashRecoveryClaimed: false,
+    releaseClaimed: false,
+    storageImportsAdded: false,
+    storagePrimitiveChanged: false,
+    fixtureRootPolicyDecisions,
     blockedReasons: uniqueBlockedReasons,
   };
   return {

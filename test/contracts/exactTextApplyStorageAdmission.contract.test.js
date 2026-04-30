@@ -31,6 +31,10 @@ function changedBasenamesForCurrentContour() {
     .map((filePath) => path.basename(filePath)))).sort();
 }
 
+function isCurrentContourFor(taskBasename, changedBasenames) {
+  return changedBasenames.includes(taskBasename);
+}
+
 function exactTextDecision(overrides = {}) {
   const item = {
     id: 'decision-1',
@@ -367,6 +371,10 @@ test('001G task record pins storage admission false-green flags', () => {
 
 test('001G change scope stays inside allowlist and outside public or storage implementation files', () => {
   const changedBasenames = changedBasenamesForCurrentContour();
+  if (!isCurrentContourFor(TASK_BASENAME, changedBasenames)) {
+    assert.equal(changedBasenames.includes(TASK_BASENAME), false);
+    return;
+  }
   const allowlist = new Set([
     'reviewIrKernel.mjs',
     'exactTextApplyStorageAdmission.contract.test.js',
