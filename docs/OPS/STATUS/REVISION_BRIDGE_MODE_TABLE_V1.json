@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "REVISION_BRIDGE_MODE_TABLE_V1",
+  "status": "ADMISSION_GUARD",
+  "canonBoundary": "REFERENCE_TABLE_NOT_ACTIVE_EXECUTION_LAW",
+  "featureBranchBoundary": "OWNER_APPROVED_ISOLATED_REVISION_BRIDGE_FEATURE_BRANCH_ONLY",
+  "mainlineBoundary": "MAINLINE_DELIVERY_FORBIDDEN_WITHOUT_EXPLICIT_OWNER_APPROVAL",
+  "modes": [
+    {
+      "id": "REPORT_ONLY",
+      "activeProfileReference": "dev",
+      "labelType": "NONBINDING_ADMISSION_TAG",
+      "activeCanonProfile": false,
+      "commitRequired": false,
+      "wordLabsBlocking": false,
+      "googleLabsBlocking": false,
+      "networkBlocking": false,
+      "rule": "Report-only work requires no delivery chain unless it verifies a historical run."
+    },
+    {
+      "id": "PR_KERNEL",
+      "activeProfileReference": "pr",
+      "labelType": "NONBINDING_ADMISSION_TAG",
+      "activeCanonProfile": false,
+      "commitRequired": true,
+      "wordLabsBlocking": false,
+      "googleLabsBlocking": false,
+      "networkBlocking": false,
+      "rule": "Local contract-only kernel work cannot be blocked by external editor labs or network checks."
+    },
+    {
+      "id": "PR_TRANSPORT",
+      "activeProfileReference": "pr",
+      "labelType": "NONBINDING_ADMISSION_TAG",
+      "activeCanonProfile": false,
+      "commitRequired": true,
+      "wordLabsBlocking": false,
+      "googleLabsBlocking": false,
+      "networkBlocking": false,
+      "hostileFileGateBlockingWhenExternalParserTouched": true,
+      "rule": "Hostile file gate is blocking only when external file parsing is added or expanded."
+    },
+    {
+      "id": "RELEASE_CLAIM",
+      "activeProfileReference": "release",
+      "labelType": "NONBINDING_ADMISSION_TAG",
+      "activeCanonProfile": false,
+      "commitRequired": true,
+      "wordLabsBlocking": true,
+      "googleLabsBlocking": true,
+      "networkBlocking": false,
+      "rule": "Claimed editor support requires hashed artifact packets; unclaimed editors do not block."
+    },
+    {
+      "id": "POST_RELEASE_RESEARCH",
+      "activeProfileReference": "dev",
+      "labelType": "NONBINDING_ADMISSION_TAG",
+      "activeCanonProfile": false,
+      "commitRequired": false,
+      "wordLabsBlocking": false,
+      "googleLabsBlocking": false,
+      "networkBlocking": false,
+      "rule": "Research remains advisory unless the owner opens a new execution axis."
+    }
+  ],
+  "rules": {
+    "modeTableIsReferenceArtifactNotCanonSource": true,
+    "modeLabelsAreNonbindingAdmissionTags": true,
+    "modeLabelsDoNotCreateActiveExecutionProfiles": true,
+    "prKernelDoesNotRequireWordGoogleLabs": true,
+    "releaseClaimRequiresClaimedEditorArtifacts": true,
+    "hostileFileGateBlocksParserExpansionOnly": true,
+    "networkChecksAreNotProductHealthForLocalKernel": true,
+    "mainlineDeliveryForbiddenWithoutExplicitOwnerApproval": true
+  }
+}

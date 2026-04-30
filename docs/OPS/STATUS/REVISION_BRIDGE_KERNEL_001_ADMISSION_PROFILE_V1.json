@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "REVISION_BRIDGE_KERNEL_001_ADMISSION_PROFILE_V1",
+  "taskId": "REVISION_BRIDGE_V4_REVIEW_IR_KERNEL_001",
+  "status": "ADMITTED_AS_CONTRACT_ONLY_PROFILE",
+  "admissionTag": "PR_KERNEL",
+  "activeCanonProfile": false,
+  "canonBoundary": "REFERENCE_PROFILE_NOT_ACTIVE_EXECUTION_LAW",
+  "featureBranchBoundary": "OWNER_APPROVED_ISOLATED_REVISION_BRIDGE_FEATURE_BRANCH_ONLY",
+  "mainlineBoundary": "MAINLINE_DELIVERY_FORBIDDEN_WITHOUT_EXPLICIT_OWNER_APPROVAL",
+  "admissionTagBinding": "NONBINDING_ADMISSION_TAG_REFERENCE_ONLY",
+  "scopeIn": [
+    "REVIEWPATCHSET",
+    "REVIEWOPIR",
+    "SELECTORSTACK_SCHEMA_V1",
+    "SOURCE_VIEW_STATE",
+    "EVIDENCEREF",
+    "PROV_MIN",
+    "MINIMAL_REVIEWBOM",
+    "CANONICAL_HASH",
+    "STALE_BASELINE_ZERO_APPLYOPS",
+    "PLAINTEXT_SHADOW_PREVIEW",
+    "BLOCKED_APPLY_PLAN"
+  ],
+  "scopeOut": [
+    "WRITES",
+    "UI",
+    "DOCX_PARSER_EXPANSION",
+    "STORAGE_MIGRATION",
+    "NETWORK",
+    "WORD_GOOGLE_INTEGRATION",
+    "RUNTIME_APPLY",
+    "FULL_EVIDENCEGRAPH",
+    "FULL_TRUST_ROOT",
+    "FULL_CRDT_ENGINE"
+  ],
+  "requiredNegatives": [
+    "STALE_BASELINE_ZERO_APPLYOPS",
+    "DIRECT_IMPORT_CANNOT_WRITE_MANUSCRIPT",
+    "DUPLICATE_OR_AMBIGUOUS_TEXT_NOT_AUTO_ELIGIBLE",
+    "UNSUPPORTED_SURFACE_BECOMES_REVIEWBOM_ENTRY",
+    "OUTPUT_PURE_AND_MUTATION_FREE"
+  ],
+  "sourceBindingPolicy": {
+    "statusOnlyRuntimeClaimAllowed": false,
+    "docsOnlyRuntimeClaimAllowed": false,
+    "runtimeClaimRequiresCurrentCommitEvidence": true
+  },
+  "branchPolicy": {
+    "isolatedFeatureBranchRequired": true,
+    "mainlineTargetAllowed": false,
+    "bindingBaseShaRequiredFromFeatureBranch": true,
+    "featureTargetRequiredBeforeWrite": true,
+    "mainPrAllowed": false,
+    "mainMergeAllowed": false
+  },
+  "releaseClaimPolicy": {
+    "wordLabsBlockPrKernel": false,
+    "googleLabsBlockPrKernel": false,
+    "wordClaimRequiresArtifactPacket": true,
+    "googleClaimRequiresDocsSuggestionsAndDriveCommentsPackets": true,
+    "ownerBoundTrustRootBlocksKernelAdmission": false,
+    "ownerBoundTrustRootRequiredBeforeReleaseClaim": true
+  },
+  "changedBasenamePolicy": {
+    "runtimeFeatureBasenamesAllowed": false,
+    "uiBasenamesAllowed": false,
+    "dependencyBasenamesAllowed": false,
+    "changedBasenamesMustBeAllowlistSubset": true
+  },
+  "governancePolicy": {
+    "globalGovernanceRewriteAllowed": false,
+    "minimalCrossLinkChecksForKernelAdmissionOnly": true,
+    "admissionArtifactsAreCanonSources": false,
+    "outputTokenAdvisoryUntilFeatureBranchOwnerAccepts": true
+  }
+}

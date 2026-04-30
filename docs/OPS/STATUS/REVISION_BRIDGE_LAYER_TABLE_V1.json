@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "REVISION_BRIDGE_LAYER_TABLE_V1",
+  "status": "ADMISSION_GUARD",
+  "canonBoundary": "REFERENCE_TABLE_NOT_ACTIVE_EXECUTION_LAW",
+  "featureBranchBoundary": "OWNER_APPROVED_ISOLATED_REVISION_BRIDGE_FEATURE_BRANCH_ONLY",
+  "mainlineBoundary": "MAINLINE_DELIVERY_FORBIDDEN_WITHOUT_EXPLICIT_OWNER_APPROVAL",
+  "bindingMode": "NONBINDING_LAYER_TAGS_FOR_THIS_CONTOUR",
+  "layers": [
+    {
+      "id": "RUNTIME_CORE",
+      "blockingFor": ["PR_KERNEL"],
+      "rule": "Core runtime claims require runtime source or contract evidence bound to the current commit."
+    },
+    {
+      "id": "GOVERNANCE_CONTROL_PLANE",
+      "blockingFor": ["PR_KERNEL", "RELEASE_CLAIM"],
+      "rule": "Governance gates can admit or block contours but cannot prove product runtime behavior by status artifact alone."
+    },
+    {
+      "id": "RELEASE_CLAIM_GATE",
+      "blockingFor": ["RELEASE_CLAIM"],
+      "rule": "Editor support claims require hashed artifact evidence only when the editor is claimed."
+    },
+    {
+      "id": "TRANSPORT_ADAPTER",
+      "blockingFor": ["PR_TRANSPORT"],
+      "rule": "Transport adapters must preserve local truth, path safety, and declared loss boundaries."
+    },
+    {
+      "id": "PRESENTATION_UI",
+      "blockingFor": [],
+      "rule": "UI presents review state and cannot become source of truth."
+    },
+    {
+      "id": "FUTURE_ADAPTER",
+      "blockingFor": [],
+      "rule": "Future platform or collaboration adapters cannot create current release requirements by implication."
+    }
+  ],
+  "rules": {
+    "admissionTablesAreReferenceArtifactsNotCanonSources": true,
+    "layerLabelsAreNonbindingAdmissionTags": true,
+    "globalGovernanceRewriteOutOfScope": true,
+    "minimalCrossLinkChecksForKernelAdmissionOnly": true,
+    "releaseClaimGateCannotBlockPrKernel": true,
+    "presentationUiCannotBeSourceOfTruth": true,
+    "futureAdapterCannotCreateCurrentReleaseRequirement": true,
+    "externalStandardsAreDesignModelsNotDependencies": true
+  }
+}
