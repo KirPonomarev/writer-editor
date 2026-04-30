@@ -12,6 +12,8 @@ const BLOCKING_SELECTOR_KINDS = new Map([
 ]);
 
 const STRUCTURAL_KINDS = new Set(['MOVE', 'SPLIT', 'MERGE', 'STRUCTURAL']);
+const EXACT_TEXT_OP_KINDS = new Set(['TEXT_REPLACE', 'EXACT_TEXT_REPLACE']);
+const COMMENT_OP_KINDS = new Set(['COMMENT', 'COMMENT_CREATE', 'COMMENT_REPLY', 'COMMENT_RESOLVE']);
 
 export const AUTOMATION_POLICY = Object.freeze({
   AUTO_ELIGIBLE: 'AUTO_ELIGIBLE',
@@ -42,6 +44,14 @@ export const REASON_CODES = Object.freeze({
   ORDINAL_ONLY: 'ORDINAL_ONLY',
   UNSUPPORTED_SURFACE: 'UNSUPPORTED_SURFACE',
   STRUCTURAL_RISK: 'STRUCTURAL_RISK',
+  STRUCTURAL_MANUAL_ONLY: 'STRUCTURAL_MANUAL_ONLY',
+  CLOSED_SESSION: 'CLOSED_SESSION',
+  SCENE_MISMATCH: 'SCENE_MISMATCH',
+  BLOCK_VERSION_MISMATCH: 'BLOCK_VERSION_MISMATCH',
+  EXACT_TEXT_MISMATCH: 'EXACT_TEXT_MISMATCH',
+  COMMENT_APPLY_OUT_OF_SCOPE: 'COMMENT_APPLY_OUT_OF_SCOPE',
+  MISSING_PRECONDITION: 'MISSING_PRECONDITION',
+  UNSUPPORTED_OP_KIND: 'UNSUPPORTED_OP_KIND',
   VIEWMODE_MISMATCH: 'VIEWMODE_MISMATCH',
   REVISION_MISMATCH: 'REVISION_MISMATCH',
 });
@@ -160,6 +170,10 @@ function selectorReasonCodes(selectors) {
 
 function uniqueStrings(items) {
   return Array.from(new Set(items.filter(Boolean))).sort();
+}
+
+function hasValue(value) {
+  return value !== undefined && value !== null && value !== '';
 }
 
 function toNonNegativeInteger(value, fallback) {
@@ -321,9 +335,21 @@ export function createReviewOp(item, sourceViewState, context) {
       projectId: context.projectId,
       contextHash: context.contextHash,
       baselineHash: context.expectedBaselineHash || context.contextHash,
+      ...(hasValue(item.blockVersionHash) ? { blockVersionHash: item.blockVersionHash } : {}),
+      ...(hasValue(item.preconditions?.blockVersionHash)
+        ? { blockVersionHash: item.preconditions.blockVersionHash }
+        : {}),
     },
     reasonCodes,
     ...(matchProof ? { matchProof } : {}),
+    ...(hasValue(item.replacementText) || hasValue(item.newText) || hasValue(item.expectedText)
+      ? {
+        textPatch: {
+          expectedText: normalizeText(item.expectedText || item.evidenceRefs?.[0]?.exactText || item.evidence?.[0]?.exactText || ''),
+          replacementText: normalizeText(item.replacementText || item.newText || ''),
+        },
+      }
+      : {}),
   };
   const opId = `op_${canonicalHash({
     artifactHash: context.artifactHash,
@@ -410,5 +436,186 @@ export function previewApplyBlockers(patchSet, environment = {}) {
   return {
     applyOps: [],
     blockedReasons: uniqueStrings(blockedReasons),
+  };
+}
+
+function textFromEvidence(op) {
+  return normalizeText(
+    op?.textPatch?.expectedText
+      || op?.evidenceRefs?.[0]?.exactText
+      || op?.evidenceRefs?.[0]?.quotedSegment
+      || '',
+  );
+}
+
+function replacementTextFromOp(op) {
+  return normalizeText(op?.textPatch?.replacementText || '');
+}
+
+function currentTextForOp(op, environment) {
+  const blockId = op?.targetScope?.blockId;
+  if (blockId && environment.currentTextByBlock && hasValue(environment.currentTextByBlock[blockId])) {
+    return normalizeText(environment.currentTextByBlock[blockId]);
+  }
+  if (blockId && environment.exactTextByBlock && hasValue(environment.exactTextByBlock[blockId])) {
+    return normalizeText(environment.exactTextByBlock[blockId]);
+  }
+  if (hasValue(environment.currentExactText)) {
+    return normalizeText(environment.currentExactText);
+  }
+  if (hasValue(environment.currentText)) {
+    return normalizeText(environment.currentText);
+  }
+  if (hasValue(environment.selectedText)) {
+    return normalizeText(environment.selectedText);
+  }
+  return null;
+}
+
+function currentBlockVersionForOp(op, environment) {
+  const blockId = op?.targetScope?.blockId;
+  if (blockId && environment.currentBlockVersions && hasValue(environment.currentBlockVersions[blockId])) {
+    return environment.currentBlockVersions[blockId];
+  }
+  if (hasValue(environment.currentBlockVersionHash)) {
+    return environment.currentBlockVersionHash;
+  }
+  if (hasValue(environment.blockVersionHash)) {
+    return environment.blockVersionHash;
+  }
+  return null;
+}
+
+function reasonCodesForApplyOp(op) {
+  const reasons = [];
+  for (const reasonCode of op?.reasonCodes || []) {
+    reasons.push(
+      reasonCode === REASON_CODES.STRUCTURAL_RISK
+        ? REASON_CODES.STRUCTURAL_MANUAL_ONLY
+        : reasonCode,
+    );
+  }
+  if (STRUCTURAL_KINDS.has(op?.opKind)) {
+    reasons.push(REASON_CODES.STRUCTURAL_MANUAL_ONLY);
+  }
+  if (COMMENT_OP_KINDS.has(op?.opKind)) {
+    reasons.push(REASON_CODES.COMMENT_APPLY_OUT_OF_SCOPE);
+  }
+  if (!EXACT_TEXT_OP_KINDS.has(op?.opKind) && !STRUCTURAL_KINDS.has(op?.opKind) && !COMMENT_OP_KINDS.has(op?.opKind)) {
+    reasons.push(REASON_CODES.UNSUPPORTED_OP_KIND);
+  }
+  return uniqueStrings(reasons);
+}
+
+function validateExactTextApplyOp(op, patchSet, environment) {
+  const reasons = reasonCodesForApplyOp(op);
+  const expectedSceneId = op?.targetScope?.sceneId;
+  if (!hasValue(expectedSceneId) || !hasValue(environment.sceneId)) {
+    reasons.push(REASON_CODES.MISSING_PRECONDITION);
+  } else if (expectedSceneId !== environment.sceneId) {
+    reasons.push(REASON_CODES.SCENE_MISMATCH);
+  }
+  if (!hasValue(environment.sessionOpen) && !hasValue(environment.sessionStatus)) {
+    reasons.push(REASON_CODES.MISSING_PRECONDITION);
+  }
+
+  const expectedBlockVersion = op?.preconditions?.blockVersionHash || op?.targetScope?.blockVersionHash;
+  const currentBlockVersion = currentBlockVersionForOp(op, environment);
+  if (!hasValue(expectedBlockVersion) || !hasValue(currentBlockVersion)) {
+    reasons.push(REASON_CODES.MISSING_PRECONDITION);
+  } else if (expectedBlockVersion !== currentBlockVersion) {
+    reasons.push(REASON_CODES.BLOCK_VERSION_MISMATCH);
+  }
+
+  const expectedText = textFromEvidence(op);
+  const replacementText = replacementTextFromOp(op);
+  const currentText = currentTextForOp(op, environment);
+  if (!hasValue(expectedText) || !hasValue(replacementText) || currentText === null) {
+    reasons.push(REASON_CODES.MISSING_PRECONDITION);
+  } else if (currentText !== expectedText) {
+    reasons.push(REASON_CODES.EXACT_TEXT_MISMATCH);
+  }
+
+  if (!hasValue(patchSet?.projectId) || !hasValue(patchSet?.contextHash) || !hasValue(op?.opId)) {
+    reasons.push(REASON_CODES.MISSING_PRECONDITION);
+  }
+  return uniqueStrings(reasons);
+}
+
+function createContractOnlyApplyOp(op, patchSet) {
+  const target = {
+    sceneId: op.targetScope.sceneId,
+    blockId: op.targetScope.blockId,
+  };
+  const patch = {
+    expectedText: textFromEvidence(op),
+    replacementText: replacementTextFromOp(op),
+  };
+  const tests = {
+    projectIdEquals: patchSet.projectId,
+    sceneIdEquals: op.targetScope.sceneId,
+    baselineHashEquals: patchSet.contextHash,
+    blockVersionHashEquals: op.preconditions.blockVersionHash || op.targetScope.blockVersionHash,
+    exactTextEquals: textFromEvidence(op),
+    sessionStatusOpen: true,
+    selectorStatusExact: true,
+  };
+  const applyOpCore = {
+    opId: `apply_${canonicalHash({
+      sourceReviewOpId: op.opId,
+      sourceReviewOpHash: op.canonicalHash,
+      target,
+      tests,
+      patch,
+    }).slice(0, 16)}`,
+    opKind: 'EXACT_TEXT_REPLACE',
+    target,
+    tests,
+    patch,
+    riskClass: op.riskClass,
+    automationPolicy: op.automationPolicy,
+    evidenceRefs: op.evidenceRefs,
+    runtimeWritable: false,
+    reasonCodes: [],
+    contractOnly: true,
+    sourceReviewOpId: op.opId,
+    sourceReviewOpHash: op.canonicalHash,
+  };
+  return {
+    ...applyOpCore,
+    canonicalHash: canonicalHash(applyOpCore),
+  };
+}
+
+export function compileExactTextApplyOps(patchSet, environment = {}) {
+  const blockedReasons = [];
+  if (!hasValue(patchSet?.projectId) || !hasValue(environment.projectId)) {
+    blockedReasons.push(REASON_CODES.MISSING_PRECONDITION);
+  } else if (patchSet.projectId !== environment.projectId) {
+    blockedReasons.push(REASON_CODES.WRONG_PROJECT);
+  }
+  if (!hasValue(patchSet?.contextHash) || !hasValue(environment.currentBaselineHash)) {
+    blockedReasons.push(REASON_CODES.MISSING_PRECONDITION);
+  } else if (patchSet.contextHash !== environment.currentBaselineHash) {
+    blockedReasons.push(REASON_CODES.STALE_BASELINE);
+  }
+  if (environment.sessionOpen === false || environment.sessionStatus === 'CLOSED') {
+    blockedReasons.push(REASON_CODES.CLOSED_SESSION);
+  }
+  for (const observation of patchSet?.unsupportedObservations || []) {
+    blockedReasons.push(...observation.reasonCodes);
+  }
+  for (const op of patchSet?.reviewOps || []) {
+    blockedReasons.push(...validateExactTextApplyOp(op, patchSet, environment));
+  }
+
+  const uniqueBlockedReasons = uniqueStrings(blockedReasons);
+  return {
+    contractOnly: true,
+    runtimeWritable: false,
+    applyOps: uniqueBlockedReasons.length === 0
+      ? (patchSet?.reviewOps || []).map((op) => createContractOnlyApplyOp(op, patchSet))
+      : [],
+    blockedReasons: uniqueBlockedReasons,
   };
 }
