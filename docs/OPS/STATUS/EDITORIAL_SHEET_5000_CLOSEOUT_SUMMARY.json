@@ -4,8 +4,8 @@
   "status": "NON_AUTHORITATIVE_NAVIGATION_SUMMARY_SUPERSEDED_BY_10000_POLICY",
   "authorityClass": "ADVISORY_STATUS_POINTER_ONLY",
   "primaryRule": "ACTIVE_CANON_AND_EXECUTED_MACHINE_PROOFS_WIN",
-  "generatedAtUtc": "2026-04-30T17:20:35.514Z",
-  "closeoutBaseSha": "7e3dc69f5ca5d8696ca466e891c8bad6499ac95b",
+  "generatedAtUtc": "2026-04-30T17:29:24.681Z",
+  "closeoutBaseSha": "51b1752ef224caa1d867d18d5207a0c67e9e79e7",
   "summaryIsProof": false,
   "requiresExecutableProof": true,
   "finalGateReportBinding": {
@@ -16,8 +16,8 @@
   "committedMachineProofSource": {
     "artifact": "EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
     "taskId": "CONTOUR_04_WRITE_IMPL",
-    "artifactHeadSha": "7e3dc69f5ca5d8696ca466e891c8bad6499ac95b",
-    "artifactGeneratedAtUtc": "2026-04-30T17:20:35.514Z"
+    "artifactHeadSha": "51b1752ef224caa1d867d18d5207a0c67e9e79e7",
+    "artifactGeneratedAtUtc": "2026-04-30T17:29:24.681Z"
   },
   "claim": {
     "trackedScale5000MetricsPresent": true,
@@ -60,7 +60,7 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 375
+      "typingMs": 280
     },
     {
       "targetPageCount": 3000,
@@ -70,7 +70,7 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 659
+      "typingMs": 586
     },
     {
       "targetPageCount": 4000,
@@ -80,7 +80,7 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 331
+      "typingMs": 389
     },
     {
       "targetPageCount": 5000,
@@ -90,7 +90,7 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 415
+      "typingMs": 475
     },
     {
       "targetPageCount": 10000,
@@ -100,7 +100,7 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 870
+      "typingMs": 815
     }
   ],
   "strobeClassification": {
