@@ -2656,17 +2656,17 @@
     },
     {
       "filePath": "docs/OPS/LOCKS/CONFIG_HASH_LOCK.json",
-      "sha256": "b75056e9fdff16a665b8e258c26a6485ab678024b5aab54e59d4d1eb62989847",
-      "approvedBy": "ticket:YALKEN_DESIGN_OS_PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_001",
-      "approvedAtUtc": "2026-03-28T16:24:00.063Z",
-      "rationale": "PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_MINIMAL_DETERMINISTIC_CHAIN_REBIND"
+      "sha256": "e42f1b4f3425d027338f59a2fb487fe3bd681d762efc13aa8d82a0ce884272e9",
+      "approvedBy": "ticket:EDITORIAL_SHEET_STRESS_LANE_REBIND_004_GOVERNANCE_HYGIENE",
+      "approvedAtUtc": "2026-04-30T00:00:00.000Z",
+      "rationale": "EDITORIAL_SHEET_STRESS_LANE_REBIND_004_GOVERNANCE_HYGIENE approves the already-committed config hash lock refresh so strict governance validation no longer relies on a stale hash entry when contour 04 changes governed proof-lane files."
     },
     {
       "filePath": "docs/OPS/PROOFHOOKS/PROOFHOOK_INTEGRITY_LOCK.json",
-      "sha256": "d80b54a38495f41c9d637fcb1dfc4254c13a0b0283444274f7c673101a8f8d3c",
-      "approvedBy": "ticket:YALKEN_DESIGN_OS_PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_001",
-      "approvedAtUtc": "2026-03-28T16:24:00.063Z",
-      "rationale": "PHASE08_REQUIRED_SET_AND_GENERATOR_REBIND_MINIMAL_DETERMINISTIC_CHAIN_REBIND"
+      "sha256": "8acc036a0534ad67455101f03c7c7470e59709fe2a00d49366d1a90f20e70df8",
+      "approvedBy": "ticket:EDITORIAL_SHEET_STRESS_LANE_REBIND_004_GOVERNANCE_HYGIENE",
+      "approvedAtUtc": "2026-04-30T00:00:00.000Z",
+      "rationale": "EDITORIAL_SHEET_STRESS_LANE_REBIND_004_GOVERNANCE_HYGIENE approves the already-committed proofhook integrity lock refresh so strict governance validation uses the live lock hash set instead of a stale historical approval."
     },
     {
       "filePath": "scripts/ops/generate-required-token-set.mjs",
@@ -2691,10 +2691,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
-      "sha256": "620d7f1fa6c6094f88d93351538f26d1b5198de5846f22e66227734015ed8f3d",
-      "approvedBy": "ticket:MENU_I18N_001",
-      "approvedAtUtc": "2026-04-10T19:56:31.112Z",
-      "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
+      "sha256": "da4e8ec2243c0e28740909914d09c57edcd10fa791afeaef7da5ee995e44fd4c",
+      "approvedBy": "ticket:EDITORIAL_SHEET_STRESS_LANE_REBIND_004_GOVERNANCE_HYGIENE",
+      "approvedAtUtc": "2026-04-30T00:00:00.000Z",
+      "rationale": "EDITORIAL_SHEET_STRESS_LANE_REBIND_004_GOVERNANCE_HYGIENE approves the already-committed release candidate lock rebind so strict governance validation no longer depends on a stale lock hash entry."
     },
     {
       "filePath": "docs/OPS/STATUS/THIRD_PARTY_NOTICES_READINESS.json",
@@ -2919,6 +2919,27 @@
       "approvedBy": "ticket:BLOCK3_TAIL_AUDIT_CLOSEOUT_001",
       "approvedAtUtc": "2026-04-29T00:00:00.000Z",
       "rationale": "BLOCK3_TAIL_AUDIT_CLOSEOUT_001 approves the bounded Y6 proofhook rebind to the current commandEffectModel bridge-only executor; no command namespace, runtime behavior, UI, dependency, release gate, or token catalog expansion."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
+      "sha256": "c819dccb8790c49b20fbb45677493ba21ba9c2185503de63669c8d2158e7ffc7",
+      "approvedBy": "ticket:EDITORIAL_SHEET_STRESS_LANE_REBIND_004",
+      "approvedAtUtc": "2026-04-30T00:00:00.000Z",
+      "rationale": "EDITORIAL_SHEET_STRESS_LANE_REBIND_004 approves the bounded stress lane status artifact that records explicit 2000 3000 4000 5000 tracked rows and blocks default 2000 false-green scale claims."
+    },
+    {
+      "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
+      "sha256": "5f0e2c3a6e792abccd43e94a7ceb2c20051dbb173d08161fc1ce6c289cf94b41",
+      "approvedBy": "ticket:EDITORIAL_SHEET_STRESS_LANE_REBIND_004",
+      "approvedAtUtc": "2026-04-30T00:00:00.000Z",
+      "rationale": "EDITORIAL_SHEET_STRESS_LANE_REBIND_004 approves the narrow OPS state writer that derives a thin current-run summary over explicit editorial sheet stress rows without widening runtime, export, storage, or dependency scope."
+    },
+    {
+      "filePath": "test/contracts/editorial-sheet-stress-lane-status.contract.test.js",
+      "sha256": "866ac6f473a3347c99c6fd123f38550b42f61152cd9bbb01f5afed0530980cea",
+      "approvedBy": "ticket:EDITORIAL_SHEET_STRESS_LANE_REBIND_004",
+      "approvedAtUtc": "2026-04-30T00:00:00.000Z",
+      "rationale": "EDITORIAL_SHEET_STRESS_LANE_REBIND_004 approves the bounded contract that validates the stress-lane summary schema, row registration, and anti-false-green invariants for the 2000 3000 4000 5000 matrix."
     }
   ]
 }
