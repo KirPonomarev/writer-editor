@@ -57,6 +57,12 @@ export const SECURITY_REASON_CODES = Object.freeze({
   RELATIONSHIP_TARGET_BACKSLASH: 'RELATIONSHIP_TARGET_BACKSLASH',
   SELECTED_ENTRY_UNSUPPORTED_COMPRESSION: 'SELECTED_ENTRY_UNSUPPORTED_COMPRESSION',
   SELECTED_ENTRY_INFLATE_FAILED: 'SELECTED_ENTRY_INFLATE_FAILED',
+  XML_PREFLIGHT_BLOCKED: 'XML_PREFLIGHT_BLOCKED',
+  MACRO_SURFACE_PRESENT: 'MACRO_SURFACE_PRESENT',
+  OLE_SURFACE_PRESENT: 'OLE_SURFACE_PRESENT',
+  ACTIVE_CONTENT_SURFACE_PRESENT: 'ACTIVE_CONTENT_SURFACE_PRESENT',
+  SECURITY_SURFACE_POLICY_HIGH_RISK_SURFACE: 'SECURITY_SURFACE_POLICY_HIGH_RISK_SURFACE',
+  SECURITY_SURFACE_POLICY_PRIOR_GATE_BLOCKED: 'SECURITY_SURFACE_POLICY_PRIOR_GATE_BLOCKED',
 });
 
 export const PACKAGE_SHAPE_OBSERVATIONS = Object.freeze({
@@ -78,6 +84,27 @@ export const XML_PREFLIGHT_OBSERVATIONS = Object.freeze({
   RELATIONSHIP_TARGETS_PRESENT: 'RELATIONSHIP_TARGETS_PRESENT',
 });
 
+export const SECURITY_SURFACE_DECISION_STATUS = Object.freeze({
+  NO_HIGH_RISK_SURFACE_OBSERVED: 'NO_HIGH_RISK_SURFACE_OBSERVED',
+  HIGH_RISK_SURFACE_OBSERVED: 'HIGH_RISK_SURFACE_OBSERVED',
+  BLOCKED_PRIOR_GATE: 'BLOCKED_PRIOR_GATE',
+});
+
+export const SECURITY_RISK_CLASS = Object.freeze({
+  LOW: 'LOW',
+  HIGH: 'HIGH',
+});
+
+export const SECURITY_SURFACE_OBSERVATIONS = Object.freeze({
+  VBA_PROJECT_ENTRY_NAME: 'VBA_PROJECT_ENTRY_NAME',
+  MACRO_CONTENT_TYPE: 'MACRO_CONTENT_TYPE',
+  MACRO_RELATIONSHIP_TYPE: 'MACRO_RELATIONSHIP_TYPE',
+  EMBEDDING_ENTRY_NAME: 'EMBEDDING_ENTRY_NAME',
+  OLE_RELATIONSHIP_TYPE: 'OLE_RELATIONSHIP_TYPE',
+  ACTIVEX_ENTRY_NAME: 'ACTIVEX_ENTRY_NAME',
+  ACTIVE_CONTENT_RELATIONSHIP_TYPE: 'ACTIVE_CONTENT_RELATIONSHIP_TYPE',
+});
+
 export const DEFAULT_HOSTILE_PACKAGE_POLICY = Object.freeze({
   maxEntryCount: 256,
   maxTotalCompressedSize: 64 * 1024 * 1024,
@@ -95,6 +122,7 @@ export const DEFAULT_HOSTILE_PACKAGE_POLICY = Object.freeze({
   inspectRelationshipEntryNameSuffix: '.rels',
   relationshipExternalTargetPolicy: 'BLOCK',
   selectedEntryInflatePolicy: 'BOUNDED_SELECTED_XML_ONLY',
+  securitySurfacePolicyVersion: 'DOCX_HOSTILE_PACKAGE_GATE_001C',
 });
 
 function canonicalize(value, seen = new WeakSet()) {
@@ -773,6 +801,295 @@ export function inspectHostilePackageXmlPreflight(inputBuffer, inputPolicy = {})
       )),
       relationshipPolicyObservations: uniqueSorted(relationshipPolicyObservations),
     },
+  };
+  return {
+    ...reportCore,
+    gateHash: canonicalHash(reportCore),
+  };
+}
+
+function isContentTypesEntry(entry) {
+  return entry.normalizedName === '[Content_Types].xml';
+}
+
+function isSurfacePolicyTextEntry(entry, policy) {
+  return isContentTypesEntry(entry) || isRelationshipEntry(entry, policy);
+}
+
+function makeSurfaceEvidence(observationCode, sourceKind, sourceName, matchedText) {
+  const evidence = {
+    observationCode,
+    sourceKind,
+    sourceName,
+    matchedText,
+  };
+  return {
+    ...evidence,
+    observationHash: canonicalHash(evidence),
+  };
+}
+
+function inspectSurfaceEntryName(entryName) {
+  const lowerName = entryName.toLowerCase();
+  const evidence = [];
+  if (lowerName === 'vbaproject.bin' || lowerName.endsWith('/vbaproject.bin')) {
+    evidence.push(makeSurfaceEvidence(
+      SECURITY_SURFACE_OBSERVATIONS.VBA_PROJECT_ENTRY_NAME,
+      'entryName',
+      entryName,
+      'vbaProject.bin',
+    ));
+  }
+  if (lowerName.startsWith('embeddings/') || lowerName.includes('/embeddings/')) {
+    evidence.push(makeSurfaceEvidence(
+      SECURITY_SURFACE_OBSERVATIONS.EMBEDDING_ENTRY_NAME,
+      'entryName',
+      entryName,
+      'embeddings',
+    ));
+  }
+  if (lowerName.startsWith('activex/') || lowerName.includes('/activex/')) {
+    evidence.push(makeSurfaceEvidence(
+      SECURITY_SURFACE_OBSERVATIONS.ACTIVEX_ENTRY_NAME,
+      'entryName',
+      entryName,
+      'activeX',
+    ));
+  }
+  return evidence;
+}
+
+function inspectContentTypesSurface(text, entryName) {
+  const lowerText = text.toLowerCase();
+  const evidence = [];
+  const macroContentTypeMarkers = [
+    'application/vnd.ms-office.vbaproject',
+    'macroenabled',
+    'macroenabled.12',
+  ];
+  for (const marker of macroContentTypeMarkers) {
+    if (lowerText.includes(marker)) {
+      evidence.push(makeSurfaceEvidence(
+        SECURITY_SURFACE_OBSERVATIONS.MACRO_CONTENT_TYPE,
+        'contentTypesText',
+        entryName,
+        marker,
+      ));
+    }
+  }
+  return evidence;
+}
+
+function inspectRelationshipTypesSurface(text, entryName) {
+  const evidence = [];
+  const relationshipPattern = /<Relationship\b[^>]*>/gu;
+  for (const match of text.matchAll(relationshipPattern)) {
+    const attributes = parseRelationshipAttributes(match[0]);
+    const type = attributes.Type || '';
+    const lowerType = type.toLowerCase();
+    if (lowerType.endsWith('/vbaproject')) {
+      evidence.push(makeSurfaceEvidence(
+        SECURITY_SURFACE_OBSERVATIONS.MACRO_RELATIONSHIP_TYPE,
+        'relationshipText',
+        entryName,
+        type,
+      ));
+    }
+    if (lowerType.endsWith('/oleobject')) {
+      evidence.push(makeSurfaceEvidence(
+        SECURITY_SURFACE_OBSERVATIONS.OLE_RELATIONSHIP_TYPE,
+        'relationshipText',
+        entryName,
+        type,
+      ));
+    }
+    if (
+      lowerType.endsWith('/activexcontrol')
+      || lowerType.endsWith('/activex')
+      || lowerType.endsWith('/attachedtemplate')
+    ) {
+      evidence.push(makeSurfaceEvidence(
+        SECURITY_SURFACE_OBSERVATIONS.ACTIVE_CONTENT_RELATIONSHIP_TYPE,
+        'relationshipText',
+        entryName,
+        type,
+      ));
+    }
+  }
+  return evidence;
+}
+
+function sortSurfaceEvidence(evidence) {
+  return evidence.sort((left, right) => {
+    if (left.observationCode !== right.observationCode) {
+      return left.observationCode < right.observationCode ? -1 : 1;
+    }
+    if (left.sourceName !== right.sourceName) {
+      return left.sourceName < right.sourceName ? -1 : 1;
+    }
+    return left.matchedText < right.matchedText ? -1 : Number(left.matchedText > right.matchedText);
+  });
+}
+
+function makeSecuritySurfacePolicyDecision({
+  decisionStatus,
+  decisionReasonCodes = [],
+  securityRiskClass,
+  evidenceObservationHashes,
+  nextRequiredContour,
+}) {
+  return {
+    decisionStatus,
+    decisionReasonCodes: uniqueSorted(decisionReasonCodes),
+    securityRiskClass,
+    evidenceObservationHashes,
+    docxImportAuthorized: false,
+    runtimeAction: 'NONE',
+    nextRequiredContour,
+  };
+}
+
+function makePriorGateSecuritySurfaceReport({ packageReport, xmlPreflightReport, policy, priorGate }) {
+  const priorGateReasonCode = priorGate === 'DOCX_HOSTILE_PACKAGE_GATE_001B'
+    ? SECURITY_REASON_CODES.XML_PREFLIGHT_BLOCKED
+    : SECURITY_REASON_CODES.PACKAGE_GATE_BLOCKED;
+  const decision = makeSecuritySurfacePolicyDecision({
+    decisionStatus: SECURITY_SURFACE_DECISION_STATUS.BLOCKED_PRIOR_GATE,
+    decisionReasonCodes: [
+      SECURITY_REASON_CODES.SECURITY_SURFACE_POLICY_PRIOR_GATE_BLOCKED,
+      priorGateReasonCode,
+    ],
+    securityRiskClass: SECURITY_RISK_CLASS.HIGH,
+    evidenceObservationHashes: [],
+    nextRequiredContour: 'RESOLVE_PRIOR_HOSTILE_PACKAGE_GATE_BLOCKER',
+  });
+  const reportCore = {
+    gateVersion: 'DOCX_HOSTILE_PACKAGE_GATE_001C',
+    status: SECURITY_STATUS.BLOCKED,
+    securityStatus: SECURITY_STATUS.BLOCKED,
+    packageShapeStatus: packageReport.packageShapeStatus,
+    reasonCodes: decision.decisionReasonCodes,
+    observations: [],
+    policy,
+    packageReport,
+    xmlPreflightReport,
+    priorGate,
+    macroSurfaceReport: { surfaceCount: 0, observations: [] },
+    oleSurfaceReport: { surfaceCount: 0, observations: [] },
+    activeContentSurfaceReport: { surfaceCount: 0, observations: [] },
+    securitySurfaceEvidence: [],
+    securitySurfacePolicyDecision: decision,
+    docxImportAuthorized: false,
+    runtimeAction: 'NONE',
+    nextRequiredContour: decision.nextRequiredContour,
+  };
+  return {
+    ...reportCore,
+    gateHash: canonicalHash(reportCore),
+  };
+}
+
+function filterEvidenceByCodes(evidence, codes) {
+  const allowed = new Set(codes);
+  const observations = evidence.filter((item) => allowed.has(item.observationCode));
+  return {
+    surfaceCount: observations.length,
+    observations,
+  };
+}
+
+export function inspectHostilePackageSecuritySurfacePolicy(inputBuffer, inputPolicy = {}) {
+  const { buffer, policy, packageReport, entries } = parsePackageInventory(inputBuffer, inputPolicy);
+  if (packageReport.securityStatus === SECURITY_STATUS.BLOCKED) {
+    return makePriorGateSecuritySurfaceReport({
+      packageReport,
+      xmlPreflightReport: null,
+      policy,
+      priorGate: 'DOCX_HOSTILE_PACKAGE_GATE_001A',
+    });
+  }
+
+  const xmlPreflightReport = inspectHostilePackageXmlPreflight(buffer, policy);
+  if (xmlPreflightReport.securityStatus === SECURITY_STATUS.BLOCKED) {
+    return makePriorGateSecuritySurfaceReport({
+      packageReport,
+      xmlPreflightReport,
+      policy,
+      priorGate: 'DOCX_HOSTILE_PACKAGE_GATE_001B',
+    });
+  }
+
+  const securitySurfaceEvidence = [];
+  for (const entry of entries) {
+    securitySurfaceEvidence.push(...inspectSurfaceEntryName(entry.normalizedName));
+  }
+
+  const textEntries = entries.filter((entry) => isSurfacePolicyTextEntry(entry, policy));
+  for (const entry of textEntries) {
+    const readResult = readSelectedEntryText(buffer, entry, policy);
+    if (readResult.reasonCode) {
+      continue;
+    }
+    if (isContentTypesEntry(entry)) {
+      securitySurfaceEvidence.push(...inspectContentTypesSurface(readResult.text, entry.normalizedName));
+    }
+    if (isRelationshipEntry(entry, policy)) {
+      securitySurfaceEvidence.push(...inspectRelationshipTypesSurface(readResult.text, entry.normalizedName));
+    }
+  }
+
+  const sortedEvidence = sortSurfaceEvidence(securitySurfaceEvidence);
+  const evidenceObservationHashes = uniqueSorted(sortedEvidence.map((evidence) => evidence.observationHash));
+  const highRiskObserved = sortedEvidence.length > 0;
+  const macroSurfaceReport = filterEvidenceByCodes(sortedEvidence, [
+    SECURITY_SURFACE_OBSERVATIONS.VBA_PROJECT_ENTRY_NAME,
+    SECURITY_SURFACE_OBSERVATIONS.MACRO_CONTENT_TYPE,
+    SECURITY_SURFACE_OBSERVATIONS.MACRO_RELATIONSHIP_TYPE,
+  ]);
+  const oleSurfaceReport = filterEvidenceByCodes(sortedEvidence, [
+    SECURITY_SURFACE_OBSERVATIONS.EMBEDDING_ENTRY_NAME,
+    SECURITY_SURFACE_OBSERVATIONS.OLE_RELATIONSHIP_TYPE,
+  ]);
+  const activeContentSurfaceReport = filterEvidenceByCodes(sortedEvidence, [
+    SECURITY_SURFACE_OBSERVATIONS.ACTIVEX_ENTRY_NAME,
+    SECURITY_SURFACE_OBSERVATIONS.ACTIVE_CONTENT_RELATIONSHIP_TYPE,
+  ]);
+  const decisionReasonCodes = [
+    ...(macroSurfaceReport.surfaceCount > 0 ? [SECURITY_REASON_CODES.MACRO_SURFACE_PRESENT] : []),
+    ...(oleSurfaceReport.surfaceCount > 0 ? [SECURITY_REASON_CODES.OLE_SURFACE_PRESENT] : []),
+    ...(activeContentSurfaceReport.surfaceCount > 0 ? [SECURITY_REASON_CODES.ACTIVE_CONTENT_SURFACE_PRESENT] : []),
+    ...(highRiskObserved ? [SECURITY_REASON_CODES.SECURITY_SURFACE_POLICY_HIGH_RISK_SURFACE] : []),
+  ];
+  const decision = makeSecuritySurfacePolicyDecision({
+    decisionStatus: highRiskObserved
+      ? SECURITY_SURFACE_DECISION_STATUS.HIGH_RISK_SURFACE_OBSERVED
+      : SECURITY_SURFACE_DECISION_STATUS.NO_HIGH_RISK_SURFACE_OBSERVED,
+    decisionReasonCodes,
+    securityRiskClass: highRiskObserved ? SECURITY_RISK_CLASS.HIGH : SECURITY_RISK_CLASS.LOW,
+    evidenceObservationHashes,
+    nextRequiredContour: highRiskObserved
+      ? 'OWNER_SECURITY_REVIEW_REQUIRED_BEFORE_DOCX_IMPORT_CONTOUR'
+      : 'DOCX_HOSTILE_PACKAGE_GATE_001D_RUNTIME_IMPORT_ADAPTER_CONTRACT',
+  });
+  const reportCore = {
+    gateVersion: 'DOCX_HOSTILE_PACKAGE_GATE_001C',
+    status: highRiskObserved ? SECURITY_STATUS.BLOCKED : SECURITY_STATUS.ALLOWED,
+    securityStatus: highRiskObserved ? SECURITY_STATUS.BLOCKED : SECURITY_STATUS.ALLOWED,
+    packageShapeStatus: packageReport.packageShapeStatus,
+    reasonCodes: decision.decisionReasonCodes,
+    observations: uniqueSorted(sortedEvidence.map((evidence) => evidence.observationCode)),
+    policy,
+    packageReport,
+    xmlPreflightReport,
+    priorGate: null,
+    macroSurfaceReport,
+    oleSurfaceReport,
+    activeContentSurfaceReport,
+    securitySurfaceEvidence: sortedEvidence,
+    securitySurfacePolicyDecision: decision,
+    docxImportAuthorized: false,
+    runtimeAction: 'NONE',
+    nextRequiredContour: decision.nextRequiredContour,
   };
   return {
     ...reportCore,

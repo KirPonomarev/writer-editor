@@ -414,3 +414,289 @@ test('relationship target text preflight blocks external and hostile targets wit
     true,
   );
 });
+
+test('security surface policy reports safe package without authorizing DOCX import', async () => {
+  const {
+    inspectHostilePackageSecuritySurfacePolicy,
+    SECURITY_RISK_CLASS,
+    SECURITY_STATUS,
+    SECURITY_SURFACE_DECISION_STATUS,
+  } = await loadGate();
+  const report = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage());
+
+  assert.equal(report.docxImportAuthorized, false);
+  assert.equal(report.runtimeAction, 'NONE');
+  assert.equal(report.securityStatus, SECURITY_STATUS.ALLOWED);
+  assert.equal(
+    report.securitySurfacePolicyDecision.decisionStatus,
+    SECURITY_SURFACE_DECISION_STATUS.NO_HIGH_RISK_SURFACE_OBSERVED,
+  );
+  assert.equal(report.securitySurfacePolicyDecision.securityRiskClass, SECURITY_RISK_CLASS.LOW);
+  assert.equal(report.securitySurfacePolicyDecision.docxImportAuthorized, false);
+  assert.equal(report.securitySurfacePolicyDecision.runtimeAction, 'NONE');
+  assert.deepEqual(report.securitySurfacePolicyDecision.evidenceObservationHashes, []);
+});
+
+test('security surface policy short-circuits package and XML blockers before surface observation', async () => {
+  const {
+    inspectHostilePackageSecuritySurfacePolicy,
+    SECURITY_RISK_CLASS,
+    SECURITY_REASON_CODES,
+    SECURITY_STATUS,
+    SECURITY_SURFACE_DECISION_STATUS,
+  } = await loadGate();
+  const packageBlocked = inspectHostilePackageSecuritySurfacePolicy(Buffer.from('not a zip'));
+  const xmlBlocked = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+    { name: 'word/_rels/document.xml.rels', content: '<Relationships><Relationship TargetMode="External" /></Relationships>' },
+  ]));
+
+  assert.equal(packageBlocked.securityStatus, SECURITY_STATUS.BLOCKED);
+  assert.equal(packageBlocked.priorGate, 'DOCX_HOSTILE_PACKAGE_GATE_001A');
+  assert.equal(packageBlocked.reasonCodes.includes(SECURITY_REASON_CODES.PACKAGE_GATE_BLOCKED), true);
+  assert.equal(packageBlocked.docxImportAuthorized, false);
+  assert.equal(packageBlocked.runtimeAction, 'NONE');
+  assert.equal(
+    packageBlocked.securitySurfacePolicyDecision.decisionStatus,
+    SECURITY_SURFACE_DECISION_STATUS.BLOCKED_PRIOR_GATE,
+  );
+  assert.equal(packageBlocked.securitySurfaceEvidence.length, 0);
+  assert.equal(xmlBlocked.securityStatus, SECURITY_STATUS.BLOCKED);
+  assert.equal(xmlBlocked.priorGate, 'DOCX_HOSTILE_PACKAGE_GATE_001B');
+  assert.equal(xmlBlocked.reasonCodes.includes(SECURITY_REASON_CODES.XML_PREFLIGHT_BLOCKED), true);
+  assert.equal(xmlBlocked.docxImportAuthorized, false);
+  assert.equal(xmlBlocked.runtimeAction, 'NONE');
+  assert.equal(xmlBlocked.securitySurfacePolicyDecision.securityRiskClass, SECURITY_RISK_CLASS.HIGH);
+  assert.equal(xmlBlocked.securitySurfaceEvidence.length, 0);
+});
+
+test('security surface policy observes vbaProject entry name without binary parsing', async () => {
+  const {
+    inspectHostilePackageSecuritySurfacePolicy,
+    SECURITY_RISK_CLASS,
+    SECURITY_REASON_CODES,
+    SECURITY_STATUS,
+    SECURITY_SURFACE_DECISION_STATUS,
+    SECURITY_SURFACE_OBSERVATIONS,
+  } = await loadGate();
+  const report = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+    { name: 'word/vbaProject.bin', content: Buffer.from([0, 1, 2, 3]) },
+  ]));
+
+  assert.equal(
+    report.securitySurfacePolicyDecision.decisionStatus,
+    SECURITY_SURFACE_DECISION_STATUS.HIGH_RISK_SURFACE_OBSERVED,
+  );
+  assert.equal(report.securityStatus, SECURITY_STATUS.BLOCKED);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.MACRO_SURFACE_PRESENT), true);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.SECURITY_SURFACE_POLICY_HIGH_RISK_SURFACE), true);
+  assert.equal(report.securitySurfacePolicyDecision.securityRiskClass, SECURITY_RISK_CLASS.HIGH);
+  assert.equal(report.observations.includes(SECURITY_SURFACE_OBSERVATIONS.VBA_PROJECT_ENTRY_NAME), true);
+  assert.equal(report.macroSurfaceReport.surfaceCount, 1);
+});
+
+test('security surface policy observes macro content type from bounded Content_Types text', async () => {
+  const {
+    inspectHostilePackageSecuritySurfacePolicy,
+    SECURITY_REASON_CODES,
+    SECURITY_STATUS,
+    SECURITY_SURFACE_DECISION_STATUS,
+    SECURITY_SURFACE_OBSERVATIONS,
+  } = await loadGate();
+  const report = inspectHostilePackageSecuritySurfacePolicy(zipWithLocalFiles([
+    {
+      name: '[Content_Types].xml',
+      content: '<Types><Override ContentType="application/vnd.ms-office.vbaProject" /></Types>',
+    },
+    { name: '_rels/.rels', content: '<Relationships></Relationships>' },
+    { name: 'word/document.xml', content: '<document><body>safe</body></document>' },
+  ]));
+
+  assert.equal(
+    report.securitySurfacePolicyDecision.decisionStatus,
+    SECURITY_SURFACE_DECISION_STATUS.HIGH_RISK_SURFACE_OBSERVED,
+  );
+  assert.equal(report.securityStatus, SECURITY_STATUS.BLOCKED);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.MACRO_SURFACE_PRESENT), true);
+  assert.equal(report.observations.includes(SECURITY_SURFACE_OBSERVATIONS.MACRO_CONTENT_TYPE), true);
+  assert.equal(report.macroSurfaceReport.surfaceCount, 1);
+});
+
+test('security surface policy observes macro relationship type from bounded .rels text', async () => {
+  const {
+    inspectHostilePackageSecuritySurfacePolicy,
+    SECURITY_REASON_CODES,
+    SECURITY_STATUS,
+    SECURITY_SURFACE_DECISION_STATUS,
+    SECURITY_SURFACE_OBSERVATIONS,
+  } = await loadGate();
+  const report = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+    {
+      name: 'word/_rels/document.xml.rels',
+      content: [
+        '<Relationships>',
+        '<Relationship Type="http://schemas.microsoft.com/office/2006/relationships/vbaProject" Target="vbaProject.bin" />',
+        '</Relationships>',
+      ].join(''),
+    },
+  ]));
+
+  assert.equal(
+    report.securitySurfacePolicyDecision.decisionStatus,
+    SECURITY_SURFACE_DECISION_STATUS.HIGH_RISK_SURFACE_OBSERVED,
+  );
+  assert.equal(report.securityStatus, SECURITY_STATUS.BLOCKED);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.MACRO_SURFACE_PRESENT), true);
+  assert.equal(report.observations.includes(SECURITY_SURFACE_OBSERVATIONS.MACRO_RELATIONSHIP_TYPE), true);
+  assert.equal(report.macroSurfaceReport.surfaceCount, 1);
+});
+
+test('security surface policy observes embedding entry name without OLE binary parsing', async () => {
+  const {
+    inspectHostilePackageSecuritySurfacePolicy,
+    SECURITY_REASON_CODES,
+    SECURITY_STATUS,
+    SECURITY_SURFACE_OBSERVATIONS,
+  } = await loadGate();
+  const report = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+    { name: 'word/embeddings/oleObject1.bin', content: Buffer.from([208, 207, 17, 224]) },
+  ]));
+
+  assert.equal(report.securityStatus, SECURITY_STATUS.BLOCKED);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.OLE_SURFACE_PRESENT), true);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.SECURITY_SURFACE_POLICY_HIGH_RISK_SURFACE), true);
+  assert.equal(report.observations.includes(SECURITY_SURFACE_OBSERVATIONS.EMBEDDING_ENTRY_NAME), true);
+  assert.equal(report.oleSurfaceReport.surfaceCount, 1);
+  assert.equal(report.securitySurfacePolicyDecision.runtimeAction, 'NONE');
+});
+
+test('security surface policy observes OLE relationship type from bounded .rels text', async () => {
+  const {
+    inspectHostilePackageSecuritySurfacePolicy,
+    SECURITY_REASON_CODES,
+    SECURITY_STATUS,
+    SECURITY_SURFACE_OBSERVATIONS,
+  } = await loadGate();
+  const report = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+    {
+      name: 'word/_rels/document.xml.rels',
+      content: [
+        '<Relationships>',
+        '<Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject" Target="embeddings/oleObject1.bin" />',
+        '</Relationships>',
+      ].join(''),
+    },
+  ]));
+
+  assert.equal(report.securityStatus, SECURITY_STATUS.BLOCKED);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.OLE_SURFACE_PRESENT), true);
+  assert.equal(report.observations.includes(SECURITY_SURFACE_OBSERVATIONS.OLE_RELATIONSHIP_TYPE), true);
+  assert.equal(report.oleSurfaceReport.surfaceCount, 1);
+});
+
+test('security surface policy observes activeX entry name without active content semantics', async () => {
+  const {
+    inspectHostilePackageSecuritySurfacePolicy,
+    SECURITY_REASON_CODES,
+    SECURITY_STATUS,
+    SECURITY_SURFACE_OBSERVATIONS,
+  } = await loadGate();
+  const report = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+    { name: 'word/activeX/activeX1.bin', content: Buffer.from([1, 2, 3]) },
+  ]));
+
+  assert.equal(report.securityStatus, SECURITY_STATUS.BLOCKED);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.ACTIVE_CONTENT_SURFACE_PRESENT), true);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.SECURITY_SURFACE_POLICY_HIGH_RISK_SURFACE), true);
+  assert.equal(report.observations.includes(SECURITY_SURFACE_OBSERVATIONS.ACTIVEX_ENTRY_NAME), true);
+  assert.equal(report.activeContentSurfaceReport.surfaceCount, 1);
+});
+
+test('security surface policy observes active content relationship type from bounded .rels text', async () => {
+  const {
+    inspectHostilePackageSecuritySurfacePolicy,
+    SECURITY_REASON_CODES,
+    SECURITY_STATUS,
+    SECURITY_SURFACE_OBSERVATIONS,
+  } = await loadGate();
+  const report = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+    {
+      name: 'word/_rels/document.xml.rels',
+      content: [
+        '<Relationships>',
+        '<Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/activeXControl" Target="activeX/activeX1.xml" />',
+        '</Relationships>',
+      ].join(''),
+    },
+  ]));
+
+  assert.equal(report.securityStatus, SECURITY_STATUS.BLOCKED);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.ACTIVE_CONTENT_SURFACE_PRESENT), true);
+  assert.equal(report.observations.includes(SECURITY_SURFACE_OBSERVATIONS.ACTIVE_CONTENT_RELATIONSHIP_TYPE), true);
+  assert.equal(report.activeContentSurfaceReport.surfaceCount, 1);
+});
+
+test('security surface policy never authorizes runtime import for any 001C outcome', async () => {
+  const { inspectHostilePackageSecuritySurfacePolicy } = await loadGate();
+  const reports = [
+    inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage()),
+    inspectHostilePackageSecuritySurfacePolicy(Buffer.from('not a zip')),
+    inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+      { name: 'word/_rels/document.xml.rels', content: '<Relationships><Relationship TargetMode="External" /></Relationships>' },
+    ])),
+    inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+      { name: 'word/vbaProject.bin', content: 'opaque' },
+    ])),
+    inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+      { name: 'word/embeddings/oleObject1.bin', content: 'opaque' },
+    ])),
+    inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+      { name: 'word/activeX/activeX1.bin', content: 'opaque' },
+    ])),
+  ];
+
+  for (const report of reports) {
+    assert.equal(report.docxImportAuthorized, false);
+    assert.equal(report.runtimeAction, 'NONE');
+    assert.equal(report.securitySurfacePolicyDecision.docxImportAuthorized, false);
+    assert.equal(report.securitySurfacePolicyDecision.runtimeAction, 'NONE');
+  }
+});
+
+test('security surface policy hash is deterministic and changes when policy changes', async () => {
+  const { inspectHostilePackageSecuritySurfacePolicy } = await loadGate();
+  const first = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+    { name: 'word/vbaProject.bin', content: 'opaque' },
+  ]));
+  const second = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+    { name: 'word/vbaProject.bin', content: 'opaque' },
+  ]));
+  const changedPolicy = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+    { name: 'word/vbaProject.bin', content: 'opaque' },
+  ]), { securitySurfacePolicyVersion: 'DOCX_HOSTILE_PACKAGE_GATE_001C_CHANGED' });
+
+  assert.deepEqual(first, second);
+  assert.notEqual(first.gateHash, changedPolicy.gateHash);
+});
+
+test('security surface policy evidence observation hashes are deterministic and evidence-bound', async () => {
+  const { inspectHostilePackageSecuritySurfacePolicy } = await loadGate();
+  const first = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+    { name: 'word/vbaProject.bin', content: 'opaque' },
+  ]));
+  const renamed = inspectHostilePackageSecuritySurfacePolicy(safeXmlPackage([
+    { name: 'custom/vbaProject.bin', content: 'opaque' },
+  ]));
+  const hashes = first.securitySurfacePolicyDecision.evidenceObservationHashes;
+
+  assert.equal(hashes.length, 1);
+  assert.match(hashes[0], /^[a-f0-9]{64}$/u);
+  assert.deepEqual(hashes, first.securitySurfaceEvidence.map((evidence) => evidence.observationHash));
+  assert.notDeepEqual(hashes, renamed.securitySurfacePolicyDecision.evidenceObservationHashes);
+});
+
+test('security surface policy production exports do not expose runtime admission or quarantine terms', async () => {
+  const gate = await loadGate();
+  const productionExportNames = Object.keys(gate);
+
+  assert.equal(productionExportNames.some((name) => /admission|quarantine/iu.test(name)), false);
+});
