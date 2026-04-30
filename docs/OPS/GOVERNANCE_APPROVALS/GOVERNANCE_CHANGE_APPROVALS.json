@@ -2922,10 +2922,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "7e78a1cf0c381b2219e1387be4a20fe1476a26b49b133c0d0b168c4de3b3a783",
+      "sha256": "22d851b971a99d83218ec0354e15fd67dbf2bc14c84621e803f71330bc00345e",
       "approvedBy": "ticket:CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR",
       "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the bounded stress lane artifact refresh bound to the clean mainline execution base after truth-repair narrowed evaluation to reject stale or red artifacts."
+      "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the bounded post-merge stress lane artifact refresh re-bound to merged mainline after proof-lane truth repair closed stale-green and false-green paths."
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
