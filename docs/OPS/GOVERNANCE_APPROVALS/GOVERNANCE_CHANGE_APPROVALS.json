@@ -10,10 +10,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_5000_CLOSEOUT_SUMMARY.json",
-      "sha256": "79efe249b7e780c081d4c1d8e5d3a7c19667164135a01a65ad2b71a4dd4fa27c",
-      "approvedBy": "ticket:CONTOUR_06_5000_GATE_POST_CLOSEOUT",
-      "approvedAtUtc": "2026-04-30T13:05:00.000Z",
-      "rationale": "Approve non-authoritative editorial sheet 5000 post-closeout navigation summary bound to committed stress evidence; active canon and executed proof artifacts remain higher authority."
+      "sha256": "432851050739030e64df848e2e315d7698d3784105ee0f304309b5150ad3fe30",
+      "approvedBy": "ticket:CONTOUR_08_STRESS_LANE_POSTMERGE_REFRESH",
+      "approvedAtUtc": "2026-04-30T13:33:00.000Z",
+      "rationale": "Approve non-authoritative editorial sheet 5000 post-closeout navigation summary rebind to the refreshed committed stress artifact on the post-6000-diagnostic merge head; this does not promote 6000 readiness."
     },
     {
       "filePath": "docs/OPERATIONS/STATUS/CODEX_AUTOMATION_POLICY.json",
@@ -2936,10 +2936,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "9b184598260be7c025548173a40fd3695df1e77dc11137524c599a0e11bf3bab",
-      "approvedBy": "ticket:CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR",
+      "sha256": "07a887b0621b22956d3f0401739c00ceb47d5bea53fc504509624a58d29d2703",
+      "approvedBy": "ticket:CONTOUR_08_STRESS_LANE_POSTMERGE_REFRESH",
       "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the bounded detached-mainline stress lane artifact refresh after merge-topology freshness repair closed the remaining stale-proof recursion without widening runtime, storage, export, UI, or dependency scope."
+      "rationale": "CONTOUR_08_STRESS_LANE_POSTMERGE_REFRESH approves the bounded detached-mainline stress lane artifact refresh after the diagnostic 6000 probe merge changed mainline head; this preserves tracked 2000 to 5000 proof freshness without promoting 6000 readiness or widening runtime, storage, export, UI, or dependency scope."
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
