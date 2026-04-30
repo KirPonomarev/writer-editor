@@ -71,6 +71,9 @@ export const REASON_CODES = Object.freeze({
   RECEIPT_CAPABILITY_MISSING: 'RECEIPT_CAPABILITY_MISSING',
   PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR: 'PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR',
   FIXTURE_ROOT_POLICY_REQUIRED: 'FIXTURE_ROOT_POLICY_REQUIRED',
+  FIXTURE_ROOT_CREATION_POLICY_REQUIRED: 'FIXTURE_ROOT_CREATION_POLICY_REQUIRED',
+  FIXTURE_ROOT_CREATION_OWNER_MISSING: 'FIXTURE_ROOT_CREATION_OWNER_MISSING',
+  FIXTURE_ROOT_CREATION_SCOPE_UNSAFE: 'FIXTURE_ROOT_CREATION_SCOPE_UNSAFE',
   FIXTURE_ROOT_NOT_ISOLATED: 'FIXTURE_ROOT_NOT_ISOLATED',
   PRODUCT_ROOT_FORBIDDEN: 'PRODUCT_ROOT_FORBIDDEN',
   PRODUCT_PATH_FORBIDDEN: 'PRODUCT_PATH_FORBIDDEN',
@@ -1663,6 +1666,168 @@ export function compileExactTextFixtureRootPathPolicy(input = {}) {
     storageImportsAdded: false,
     storagePrimitiveChanged: false,
     fixtureRootPolicyDecisions,
+    blockedReasons: uniqueBlockedReasons,
+  };
+  return {
+    ...resultCore,
+    canonicalHash: canonicalHash(resultCore),
+  };
+}
+
+function fixtureRootPathPolicyBindingReasons(pathPolicyResult = {}) {
+  const reasons = [];
+  const decisions = pathPolicyResult.fixtureRootPolicyDecisions || [];
+  if (
+    pathPolicyResult.contractOnly !== true
+    || pathPolicyResult.pathPolicyOnly !== true
+    || pathPolicyResult.fixturePathPolicyAdmitted !== true
+    || pathPolicyResult.filesystemWritePerformed !== false
+    || pathPolicyResult.fsMutationPerformed !== false
+    || pathPolicyResult.tempFixtureWritePerformed !== false
+    || pathPolicyResult.productWritePerformed !== false
+    || pathPolicyResult.productWriteClaimed !== false
+    || pathPolicyResult.fixtureBackupCreated !== false
+    || pathPolicyResult.fixtureAtomicWriteExecuted !== false
+    || pathPolicyResult.fixtureRecoverySnapshotCreated !== false
+    || pathPolicyResult.fixtureReceiptPersisted !== false
+    || pathPolicyResult.durableReceiptClaimed !== false
+    || pathPolicyResult.productStorageSafetyClaimed !== false
+    || pathPolicyResult.publicSurfaceClaimed !== false
+    || pathPolicyResult.docxImportClaimed !== false
+    || pathPolicyResult.uiChanged !== false
+    || pathPolicyResult.applyTxnClaimed !== false
+    || pathPolicyResult.crashRecoveryClaimed !== false
+    || pathPolicyResult.releaseClaimed !== false
+    || pathPolicyResult.storageImportsAdded !== false
+    || pathPolicyResult.storagePrimitiveChanged !== false
+    || decisions.length !== 1
+    || !hasValue(pathPolicyResult.canonicalHash)
+    || !hasValue(decisions[0]?.canonicalHash)
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_ROOT_POLICY_REQUIRED);
+  }
+  return uniqueStrings(reasons);
+}
+
+function fixtureRootCreationPolicyReasons(policy = {}, input = {}) {
+  const reasons = [];
+  if (policy.ownerFixtureRootCreationApproved !== true) {
+    reasons.push(REASON_CODES.FIXTURE_ROOT_CREATION_OWNER_MISSING);
+  }
+  if (
+    policy.fixtureRootCreationRequested !== true
+    || policy.creationMode !== 'TEST_TEMP_ROOT_ONLY'
+    || policy.realIoScope !== 'DIRECTORY_ONLY'
+    || policy.baseLocationKind !== 'OS_TEMP'
+    || policy.cleanupRequired !== true
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_ROOT_CREATION_POLICY_REQUIRED);
+  }
+  if (
+    policy.repoRootAccess === true
+    || policy.productRootAccess === true
+    || policy.productPathAccess === true
+    || policy.rootInsideProject === true
+    || input?.repoRootAccessRequested === true
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_ROOT_CREATION_SCOPE_UNSAFE);
+  }
+  if (
+    input?.productRootRequested === true
+    || input?.productPathRequested === true
+    || input?.productWrite === true
+    || input?.runtimeWritable === true
+  ) {
+    reasons.push(REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (input?.publicSurfaceRequested === true) {
+    reasons.push(REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (input?.storagePrimitiveRequested === true) {
+    reasons.push(REASON_CODES.FS_MUTATION_FORBIDDEN_IN_CONTOUR);
+  }
+  return uniqueStrings(reasons);
+}
+
+function createRealFixtureRootCreationDecision(pathPolicyResult, policy) {
+  const pathPolicyDecision = pathPolicyResult.fixtureRootPolicyDecisions[0];
+  const decisionCore = {
+    fixtureRootCreationDecisionKind: 'EXACT_TEXT_REAL_FIXTURE_ROOT_CREATION_DECISION',
+    decisionMode: 'TEST_TEMP_ROOT_DIRECTORY_ONLY',
+    realFixtureRootCreationAdmitted: true,
+    filesystemWritePerformed: false,
+    productWritePerformed: false,
+    fixtureBackupCreated: false,
+    fixtureAtomicWriteExecuted: false,
+    fixtureRecoverySnapshotCreated: false,
+    fixtureReceiptPersisted: false,
+    sourceFixtureRootPolicyResultHash: pathPolicyResult.canonicalHash,
+    sourceFixtureRootPolicyDecisionHash: pathPolicyDecision.canonicalHash,
+    sourceStorageAdmissionResultHash: pathPolicyDecision.sourceStorageAdmissionResultHash,
+    sourceStorageAdmissionDecisionHash: pathPolicyDecision.sourceStorageAdmissionDecisionHash,
+    sourceWritePlanHash: pathPolicyDecision.sourceWritePlanHash,
+    sourceReceiptContractHash: pathPolicyDecision.sourceReceiptContractHash,
+    fixtureRootPolicySnapshot: pathPolicyDecision.fixtureRootPolicySnapshot,
+    creationPolicySnapshot: {
+      ownerFixtureRootCreationApproved: policy.ownerFixtureRootCreationApproved === true,
+      fixtureRootCreationRequested: policy.fixtureRootCreationRequested === true,
+      creationMode: policy.creationMode,
+      realIoScope: policy.realIoScope,
+      baseLocationKind: policy.baseLocationKind,
+      cleanupRequired: policy.cleanupRequired === true,
+      repoRootAccess: policy.repoRootAccess === true,
+      productRootAccess: policy.productRootAccess === true,
+      productPathAccess: policy.productPathAccess === true,
+    },
+  };
+  const decisionWithId = {
+    fixtureRootCreationDecisionId: `fixture_root_creation_${canonicalHash(decisionCore).slice(0, 16)}`,
+    ...decisionCore,
+  };
+  return {
+    ...decisionWithId,
+    canonicalHash: canonicalHash(decisionWithId),
+  };
+}
+
+export function compileExactTextRealFixtureRootCreationPlan(input = {}) {
+  const pathPolicyResult = input?.fixtureRootPathPolicyResult || {};
+  const policy = input?.fixtureRootCreationPolicy || {};
+  const blockedReasons = [
+    ...(pathPolicyResult.blockedReasons || []),
+    ...fixtureRootPathPolicyBindingReasons(pathPolicyResult),
+    ...fixtureRootCreationPolicyReasons(policy, input),
+  ];
+
+  const uniqueBlockedReasons = uniqueStrings(blockedReasons);
+  const fixtureRootCreationDecisions = uniqueBlockedReasons.length === 0
+    ? [createRealFixtureRootCreationDecision(pathPolicyResult, policy)]
+    : [];
+  const resultCore = {
+    resultKind: 'EXACT_TEXT_REAL_FIXTURE_ROOT_CREATION_PLAN_RESULT',
+    contractOnly: true,
+    fixtureRootCreationPlanOnly: true,
+    realFixtureRootCreationAdmitted: fixtureRootCreationDecisions.length === 1,
+    testFixtureDirectoryCreationOnly: fixtureRootCreationDecisions.length === 1,
+    filesystemWritePerformed: false,
+    fsMutationPerformed: false,
+    productWritePerformed: false,
+    productWriteClaimed: false,
+    fixtureBackupCreated: false,
+    fixtureAtomicWriteExecuted: false,
+    fixtureRecoverySnapshotCreated: false,
+    fixtureReceiptPersisted: false,
+    durableReceiptClaimed: false,
+    productStorageSafetyClaimed: false,
+    publicSurfaceClaimed: false,
+    docxImportClaimed: false,
+    uiChanged: false,
+    applyTxnClaimed: false,
+    crashRecoveryClaimed: false,
+    releaseClaimed: false,
+    storageImportsAdded: false,
+    storagePrimitiveChanged: false,
+    fixtureRootCreationDecisions,
     blockedReasons: uniqueBlockedReasons,
   };
   return {

@@ -2,11 +2,12 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
 const MODULE_BASENAME = 'reviewIrKernel.mjs';
-const TASK_BASENAME = 'EXACT_TEXT_APPLY_STORAGE_FIXTURE_ROOT_AND_PATH_POLICY_001H.md';
+const TASK_BASENAME = 'EXACT_TEXT_APPLY_REAL_FIXTURE_ROOT_CREATION_001I.md';
 
 async function loadKernel() {
   return import(pathToFileURL(path.join(process.cwd(), 'src', 'revisionBridge', MODULE_BASENAME)).href);
@@ -29,10 +30,6 @@ function changedBasenamesForCurrentContour() {
   }
   return Array.from(new Set(gitLines(['diff', '--name-only', 'HEAD~1', 'HEAD'])
     .map((filePath) => path.basename(filePath)))).sort();
-}
-
-function isCurrentContourFor(taskBasename, changedBasenames) {
-  return changedBasenames.includes(taskBasename);
 }
 
 function exactTextDecision(overrides = {}) {
@@ -137,7 +134,7 @@ function acceptedAdmissionCapabilities(overrides = {}) {
 
 function acceptedFixtureRootPolicy(overrides = {}) {
   return {
-    fixtureRootId: 'fixture-root-001H',
+    fixtureRootId: 'fixture-root-001I',
     productRootId: 'product-root',
     rootKind: 'FIXTURE',
     isolatedRoot: true,
@@ -157,7 +154,23 @@ function acceptedFixtureRootPolicy(overrides = {}) {
   };
 }
 
-async function acceptedStorageAdmissionGateResult(overrides = {}) {
+function acceptedFixtureRootCreationPolicy(overrides = {}) {
+  return {
+    ownerFixtureRootCreationApproved: true,
+    fixtureRootCreationRequested: true,
+    creationMode: 'TEST_TEMP_ROOT_ONLY',
+    realIoScope: 'DIRECTORY_ONLY',
+    baseLocationKind: 'OS_TEMP',
+    cleanupRequired: true,
+    repoRootAccess: false,
+    productRootAccess: false,
+    productPathAccess: false,
+    rootInsideProject: false,
+    ...overrides,
+  };
+}
+
+async function acceptedFixtureRootPathPolicyResult(overrides = {}) {
   const {
     buildReviewPatchSet,
     compileExactTextApplyOps,
@@ -166,6 +179,7 @@ async function acceptedStorageAdmissionGateResult(overrides = {}) {
     compileExactTextStorageAdapterCallPlan,
     compileExactTextInMemoryStoragePortFixture,
     compileExactTextStorageAdmissionGate,
+    compileExactTextFixtureRootPathPolicy,
   } = await loadKernel();
   const applyResult = compileExactTextApplyOps(
     buildReviewPatchSet(exactTextDecision(overrides.decision || {})),
@@ -181,33 +195,36 @@ async function acceptedStorageAdmissionGateResult(overrides = {}) {
     storageAdapterCallPlanResult,
     fixtureCapabilities: acceptedFixtureCapabilities(overrides.fixtureCapabilities || {}),
   });
-  return compileExactTextStorageAdmissionGate({
+  const storageAdmissionGateResult = compileExactTextStorageAdmissionGate({
     storagePortFixtureResult,
     storageAdmissionPolicy: acceptedAdmissionPolicy(overrides.storageAdmissionPolicy || {}),
     storageAdmissionCapabilities: acceptedAdmissionCapabilities(overrides.storageAdmissionCapabilities || {}),
   });
+  return compileExactTextFixtureRootPathPolicy({
+    storageAdmissionGateResult,
+    fixtureRootPolicy: acceptedFixtureRootPolicy(overrides.fixtureRootPolicy || {}),
+  });
 }
 
-test('accepted storage admission feeds deterministic fixture root path policy without filesystem write', async () => {
-  const { compileExactTextFixtureRootPathPolicy, canonicalHash } = await loadKernel();
-  const storageAdmissionGateResult = await acceptedStorageAdmissionGateResult();
-  const first = compileExactTextFixtureRootPathPolicy({
-    storageAdmissionGateResult,
-    fixtureRootPolicy: acceptedFixtureRootPolicy(),
+test('accepted plan admits real temp fixture root creation in test only and cleans it up', async () => {
+  const { compileExactTextRealFixtureRootCreationPlan, canonicalHash } = await loadKernel();
+  const fixtureRootPathPolicyResult = await acceptedFixtureRootPathPolicyResult();
+  const first = compileExactTextRealFixtureRootCreationPlan({
+    fixtureRootPathPolicyResult,
+    fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy(),
   });
-  const second = compileExactTextFixtureRootPathPolicy({
-    storageAdmissionGateResult,
-    fixtureRootPolicy: acceptedFixtureRootPolicy(),
+  const second = compileExactTextRealFixtureRootCreationPlan({
+    fixtureRootPathPolicyResult,
+    fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy(),
   });
 
   assert.deepEqual(first, second);
   assert.equal(first.contractOnly, true);
-  assert.equal(first.pathPolicyOnly, true);
-  assert.equal(first.fixturePathPolicyAdmitted, true);
+  assert.equal(first.fixtureRootCreationPlanOnly, true);
+  assert.equal(first.realFixtureRootCreationAdmitted, true);
+  assert.equal(first.testFixtureDirectoryCreationOnly, true);
   assert.equal(first.filesystemWritePerformed, false);
   assert.equal(first.fsMutationPerformed, false);
-  assert.equal(first.tempDirUsed, false);
-  assert.equal(first.tempFixtureWritePerformed, false);
   assert.equal(first.productWritePerformed, false);
   assert.equal(first.productWriteClaimed, false);
   assert.equal(first.fixtureBackupCreated, false);
@@ -225,30 +242,25 @@ test('accepted storage admission feeds deterministic fixture root path policy wi
   assert.equal(first.storageImportsAdded, false);
   assert.equal(first.storagePrimitiveChanged, false);
   assert.deepEqual(first.blockedReasons, []);
-  assert.equal(first.fixtureRootPolicyDecisions.length, 1);
+  assert.equal(first.fixtureRootCreationDecisions.length, 1);
 
-  const admissionDecision = storageAdmissionGateResult.admissionDecisions[0];
-  const decision = first.fixtureRootPolicyDecisions[0];
-  assert.equal(decision.fixtureRootPolicyDecisionKind, 'EXACT_TEXT_FIXTURE_ROOT_PATH_POLICY_DECISION');
-  assert.equal(decision.decisionMode, 'PURE_PATH_POLICY_ONLY');
-  assert.equal(decision.sourceStorageAdmissionResultHash, storageAdmissionGateResult.canonicalHash);
-  assert.equal(decision.sourceStorageAdmissionDecisionHash, admissionDecision.canonicalHash);
-  assert.equal(decision.sourceFixtureExecutionHash, admissionDecision.sourceFixtureExecutionHash);
-  assert.equal(decision.sourceCallPlanHash, admissionDecision.sourceCallPlanHash);
-  assert.equal(decision.sourceWritePlanHash, admissionDecision.sourceWritePlanHash);
-  assert.equal(decision.sourceReceiptContractHash, admissionDecision.sourceReceiptContractHash);
-  assert.equal(decision.fixtureRootPolicySnapshot.isolatedMarker, 'EXACT_TEXT_FIXTURE_ROOT_ISOLATED');
-  assert.equal(decision.fixtureRootPolicySnapshot.hashPolicy.newlinePolicy, 'LF');
-  assert.equal(decision.fixtureRootPolicySnapshot.hashPolicy.unicodePolicy, 'NFC');
+  const decision = first.fixtureRootCreationDecisions[0];
+  assert.equal(decision.fixtureRootCreationDecisionKind, 'EXACT_TEXT_REAL_FIXTURE_ROOT_CREATION_DECISION');
+  assert.equal(decision.decisionMode, 'TEST_TEMP_ROOT_DIRECTORY_ONLY');
+  assert.equal(decision.sourceFixtureRootPolicyResultHash, fixtureRootPathPolicyResult.canonicalHash);
+  assert.equal(decision.sourceFixtureRootPolicyDecisionHash, fixtureRootPathPolicyResult.fixtureRootPolicyDecisions[0].canonicalHash);
+  assert.equal(decision.creationPolicySnapshot.baseLocationKind, 'OS_TEMP');
+  assert.equal(decision.creationPolicySnapshot.repoRootAccess, false);
+  assert.equal(decision.creationPolicySnapshot.productRootAccess, false);
+  assert.equal(decision.creationPolicySnapshot.productPathAccess, false);
   assert.equal(first.canonicalHash, canonicalHash({
     resultKind: first.resultKind,
     contractOnly: first.contractOnly,
-    pathPolicyOnly: first.pathPolicyOnly,
-    fixturePathPolicyAdmitted: first.fixturePathPolicyAdmitted,
+    fixtureRootCreationPlanOnly: first.fixtureRootCreationPlanOnly,
+    realFixtureRootCreationAdmitted: first.realFixtureRootCreationAdmitted,
+    testFixtureDirectoryCreationOnly: first.testFixtureDirectoryCreationOnly,
     filesystemWritePerformed: first.filesystemWritePerformed,
     fsMutationPerformed: first.fsMutationPerformed,
-    tempDirUsed: first.tempDirUsed,
-    tempFixtureWritePerformed: first.tempFixtureWritePerformed,
     productWritePerformed: first.productWritePerformed,
     productWriteClaimed: first.productWriteClaimed,
     fixtureBackupCreated: first.fixtureBackupCreated,
@@ -265,135 +277,143 @@ test('accepted storage admission feeds deterministic fixture root path policy wi
     releaseClaimed: first.releaseClaimed,
     storageImportsAdded: first.storageImportsAdded,
     storagePrimitiveChanged: first.storagePrimitiveChanged,
-    fixtureRootPolicyDecisions: first.fixtureRootPolicyDecisions,
+    fixtureRootCreationDecisions: first.fixtureRootCreationDecisions,
     blockedReasons: first.blockedReasons,
   }));
-});
 
-test('fixture root path policy is blocked by default without explicit policy', async () => {
-  const { compileExactTextFixtureRootPathPolicy, REASON_CODES } = await loadKernel();
-  const storageAdmissionGateResult = await acceptedStorageAdmissionGateResult();
-  const result = compileExactTextFixtureRootPathPolicy({ storageAdmissionGateResult });
-
-  assert.equal(result.fixturePathPolicyAdmitted, false);
-  assert.deepEqual(result.fixtureRootPolicyDecisions, []);
-  assert.equal(result.filesystemWritePerformed, false);
-  assert.equal(result.tempDirUsed, false);
-  assert.equal(result.productWritePerformed, false);
-  assert.equal(result.blockedReasons.includes(REASON_CODES.FIXTURE_ROOT_POLICY_REQUIRED), true);
-  assert.equal(result.blockedReasons.includes(REASON_CODES.FIXTURE_ROOT_NOT_ISOLATED), true);
-  assert.equal(result.blockedReasons.includes(REASON_CODES.SYMLINK_POLICY_UNSAFE), true);
-});
-
-test('fixture root path policy hash changes with admission hash and path policy', async () => {
-  const { compileExactTextFixtureRootPathPolicy } = await loadKernel();
-  const storageAdmissionGateResult = await acceptedStorageAdmissionGateResult();
-  const base = compileExactTextFixtureRootPathPolicy({
-    storageAdmissionGateResult,
-    fixtureRootPolicy: acceptedFixtureRootPolicy(),
-  });
-  const changedAdmission = compileExactTextFixtureRootPathPolicy({
-    storageAdmissionGateResult: {
-      ...storageAdmissionGateResult,
-      canonicalHash: 'changed-admission-result-hash',
-    },
-    fixtureRootPolicy: acceptedFixtureRootPolicy(),
-  });
-  const changedPolicy = compileExactTextFixtureRootPathPolicy({
-    storageAdmissionGateResult,
-    fixtureRootPolicy: acceptedFixtureRootPolicy({ relativePath: 'scenes/scene-2.txt', relativePathSegments: ['scenes', 'scene-2.txt'] }),
-  });
-
-  assert.notEqual(base.canonicalHash, changedAdmission.canonicalHash);
-  assert.notEqual(base.canonicalHash, changedPolicy.canonicalHash);
-});
-
-test('product root product path traversal absolute path and unsafe symlink policies are blocked', async () => {
-  const { compileExactTextFixtureRootPathPolicy, REASON_CODES } = await loadKernel();
-  const storageAdmissionGateResult = await acceptedStorageAdmissionGateResult();
-  const cases = [
-    [REASON_CODES.PRODUCT_ROOT_FORBIDDEN, acceptedFixtureRootPolicy({ rootKind: 'PRODUCT' })],
-    [REASON_CODES.PRODUCT_ROOT_FORBIDDEN, acceptedFixtureRootPolicy({ fixtureRootId: 'product-root' })],
-    [REASON_CODES.PRODUCT_PATH_FORBIDDEN, acceptedFixtureRootPolicy({ productPath: true })],
-    [REASON_CODES.PATH_TRAVERSAL_FORBIDDEN, acceptedFixtureRootPolicy({ relativePath: '../scene.txt', relativePathSegments: ['..', 'scene.txt'] })],
-    [REASON_CODES.ABSOLUTE_PATH_ESCAPE_FORBIDDEN, acceptedFixtureRootPolicy({ relativePath: '/tmp/scene.txt' })],
-    [REASON_CODES.ABSOLUTE_PATH_ESCAPE_FORBIDDEN, acceptedFixtureRootPolicy({ relativePath: 'C:\\tmp\\scene.txt' })],
-    [REASON_CODES.SYMLINK_POLICY_UNSAFE, acceptedFixtureRootPolicy({ symlinkPolicy: 'ALLOW' })],
-  ];
-
-  for (const [reasonCode, fixtureRootPolicy] of cases) {
-    const result = compileExactTextFixtureRootPathPolicy({ storageAdmissionGateResult, fixtureRootPolicy });
-    assert.equal(result.fixturePathPolicyAdmitted, false, reasonCode);
-    assert.deepEqual(result.fixtureRootPolicyDecisions, [], reasonCode);
-    assert.equal(result.filesystemWritePerformed, false, reasonCode);
-    assert.equal(result.productWritePerformed, false, reasonCode);
-    assert.equal(result.blockedReasons.includes(reasonCode), true, reasonCode);
+  let tempRoot = '';
+  try {
+    tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'exact-text-001i-'));
+    const repoRoot = fs.realpathSync(process.cwd());
+    const realTempRoot = fs.realpathSync(tempRoot);
+    assert.equal(fs.statSync(realTempRoot).isDirectory(), true);
+    assert.equal(realTempRoot === repoRoot || realTempRoot.startsWith(`${repoRoot}${path.sep}`), false);
+  } finally {
+    if (tempRoot) {
+      fs.rmSync(tempRoot, { recursive: true, force: true });
+      assert.equal(fs.existsSync(tempRoot), false);
+    }
   }
 });
 
-test('xplat policy declarations and hash policy are required before any fixture root is admitted', async () => {
-  const { compileExactTextFixtureRootPathPolicy, REASON_CODES } = await loadKernel();
-  const storageAdmissionGateResult = await acceptedStorageAdmissionGateResult();
+test('real fixture root creation is blocked without owner policy or admitted 001H path policy', async () => {
+  const { compileExactTextRealFixtureRootCreationPlan, REASON_CODES } = await loadKernel();
+  const fixtureRootPathPolicyResult = await acceptedFixtureRootPathPolicyResult();
   const cases = [
-    [REASON_CODES.CASE_COLLISION_POLICY_MISSING, acceptedFixtureRootPolicy({ caseCollisionPolicy: '' })],
-    [REASON_CODES.RESERVED_NAME_POLICY_MISSING, acceptedFixtureRootPolicy({ reservedNamePolicy: '' })],
-    [REASON_CODES.LONG_PATH_POLICY_MISSING, acceptedFixtureRootPolicy({ longPathPolicy: '' })],
-    [REASON_CODES.FIXTURE_ROOT_POLICY_REQUIRED, acceptedFixtureRootPolicy({ isolatedMarker: '' })],
-    [REASON_CODES.MISSING_PRECONDITION, acceptedFixtureRootPolicy({ hashPolicy: { newlinePolicy: 'LF', unicodePolicy: 'NFC' } })],
-  ];
-
-  for (const [reasonCode, fixtureRootPolicy] of cases) {
-    const result = compileExactTextFixtureRootPathPolicy({ storageAdmissionGateResult, fixtureRootPolicy });
-    assert.equal(result.fixturePathPolicyAdmitted, false, reasonCode);
-    assert.equal(result.blockedReasons.includes(reasonCode), true, reasonCode);
-  }
-});
-
-test('storage admission blockers and write requests block fixture root path policy', async () => {
-  const { compileExactTextFixtureRootPathPolicy, REASON_CODES } = await loadKernel();
-  const blockedAdmission = await acceptedStorageAdmissionGateResult({
-    storageAdmissionPolicy: { ownerAdmissionApproved: false },
-  });
-  const acceptedAdmission = await acceptedStorageAdmissionGateResult();
-  const cases = [
-    [REASON_CODES.OWNER_ADMISSION_MISSING, { storageAdmissionGateResult: blockedAdmission }],
-    [REASON_CODES.STORAGE_ADMISSION_REQUIRED, { storageAdmissionGateResult: { ...acceptedAdmission, runtimeStorageAdmitted: false } }],
-    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { storageAdmissionGateResult: acceptedAdmission, productWrite: true }],
-    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { storageAdmissionGateResult: acceptedAdmission, fsMutationRequested: true }],
-    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { storageAdmissionGateResult: acceptedAdmission, tempDirRequested: true }],
-    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { storageAdmissionGateResult: acceptedAdmission, tempFixtureWriteRequested: true }],
-    [REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR, { storageAdmissionGateResult: acceptedAdmission, publicSurfaceRequested: true }],
+    [REASON_CODES.FIXTURE_ROOT_POLICY_REQUIRED, { fixtureRootPathPolicyResult: {} }],
+    [REASON_CODES.FIXTURE_ROOT_POLICY_REQUIRED, { fixtureRootPathPolicyResult: { ...fixtureRootPathPolicyResult, fixturePathPolicyAdmitted: false } }],
+    [REASON_CODES.FIXTURE_ROOT_CREATION_POLICY_REQUIRED, {
+      fixtureRootPathPolicyResult,
+      fixtureRootCreationPolicy: {},
+    }],
+    [REASON_CODES.FIXTURE_ROOT_CREATION_OWNER_MISSING, {
+      fixtureRootPathPolicyResult,
+      fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy({ ownerFixtureRootCreationApproved: false }),
+    }],
+    [REASON_CODES.FIXTURE_ROOT_CREATION_POLICY_REQUIRED, {
+      fixtureRootPathPolicyResult,
+      fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy({ creationMode: 'PRODUCT_ROOT' }),
+    }],
   ];
 
   for (const [reasonCode, input] of cases) {
-    const result = compileExactTextFixtureRootPathPolicy({
-      storageAdmissionGateResult: input.storageAdmissionGateResult,
-      fixtureRootPolicy: acceptedFixtureRootPolicy(),
-      productWrite: input.productWrite,
-      fsMutationRequested: input.fsMutationRequested,
-      tempDirRequested: input.tempDirRequested,
-      tempFixtureWriteRequested: input.tempFixtureWriteRequested,
-      publicSurfaceRequested: input.publicSurfaceRequested,
+    const result = compileExactTextRealFixtureRootCreationPlan({
+      fixtureRootPathPolicyResult: input.fixtureRootPathPolicyResult,
+      fixtureRootCreationPolicy: input.fixtureRootCreationPolicy || acceptedFixtureRootCreationPolicy(),
     });
-    assert.equal(result.fixturePathPolicyAdmitted, false, reasonCode);
-    assert.deepEqual(result.fixtureRootPolicyDecisions, [], reasonCode);
-    assert.equal(result.filesystemWritePerformed, false, reasonCode);
-    assert.equal(result.tempDirUsed, false, reasonCode);
+    assert.equal(result.realFixtureRootCreationAdmitted, false, reasonCode);
+    assert.equal(result.testFixtureDirectoryCreationOnly, false, reasonCode);
+    assert.deepEqual(result.fixtureRootCreationDecisions, [], reasonCode);
     assert.equal(result.productWritePerformed, false, reasonCode);
     assert.equal(result.blockedReasons.includes(reasonCode), true, reasonCode);
   }
 });
 
-test('001H task record pins path policy false-green flags', () => {
+test('product repo public and storage primitive requests block real fixture root creation', async () => {
+  const { compileExactTextRealFixtureRootCreationPlan, REASON_CODES } = await loadKernel();
+  const fixtureRootPathPolicyResult = await acceptedFixtureRootPathPolicyResult();
+  const cases = [
+    [REASON_CODES.FIXTURE_ROOT_CREATION_SCOPE_UNSAFE, {
+      fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy({ repoRootAccess: true }),
+    }],
+    [REASON_CODES.FIXTURE_ROOT_CREATION_SCOPE_UNSAFE, {
+      fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy({ productRootAccess: true }),
+    }],
+    [REASON_CODES.FIXTURE_ROOT_CREATION_SCOPE_UNSAFE, {
+      fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy({ rootInsideProject: true }),
+    }],
+    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { productRootRequested: true }],
+    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { productPathRequested: true }],
+    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { productWrite: true }],
+    [REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR, { publicSurfaceRequested: true }],
+    [REASON_CODES.FS_MUTATION_FORBIDDEN_IN_CONTOUR, { storagePrimitiveRequested: true }],
+  ];
+
+  for (const [reasonCode, input] of cases) {
+    const result = compileExactTextRealFixtureRootCreationPlan({
+      fixtureRootPathPolicyResult,
+      fixtureRootCreationPolicy: input.fixtureRootCreationPolicy || acceptedFixtureRootCreationPolicy(),
+      productRootRequested: input.productRootRequested,
+      productPathRequested: input.productPathRequested,
+      productWrite: input.productWrite,
+      publicSurfaceRequested: input.publicSurfaceRequested,
+      storagePrimitiveRequested: input.storagePrimitiveRequested,
+    });
+    assert.equal(result.realFixtureRootCreationAdmitted, false, reasonCode);
+    assert.deepEqual(result.fixtureRootCreationDecisions, [], reasonCode);
+    assert.equal(result.productWritePerformed, false, reasonCode);
+    assert.equal(result.publicSurfaceClaimed, false, reasonCode);
+    assert.equal(result.storagePrimitiveChanged, false, reasonCode);
+    assert.equal(result.blockedReasons.includes(reasonCode), true, reasonCode);
+  }
+});
+
+test('contaminated 001H upstream false flags block real fixture root creation', async () => {
+  const { compileExactTextRealFixtureRootCreationPlan, REASON_CODES } = await loadKernel();
+  const fixtureRootPathPolicyResult = await acceptedFixtureRootPathPolicyResult();
+  const contaminatedFlags = [
+    'fsMutationPerformed',
+    'tempFixtureWritePerformed',
+    'productWritePerformed',
+    'productWriteClaimed',
+    'fixtureBackupCreated',
+    'fixtureAtomicWriteExecuted',
+    'fixtureRecoverySnapshotCreated',
+    'fixtureReceiptPersisted',
+    'durableReceiptClaimed',
+    'productStorageSafetyClaimed',
+    'publicSurfaceClaimed',
+    'docxImportClaimed',
+    'uiChanged',
+    'applyTxnClaimed',
+    'crashRecoveryClaimed',
+    'releaseClaimed',
+    'storageImportsAdded',
+    'storagePrimitiveChanged',
+  ];
+
+  for (const flag of contaminatedFlags) {
+    const result = compileExactTextRealFixtureRootCreationPlan({
+      fixtureRootPathPolicyResult: {
+        ...fixtureRootPathPolicyResult,
+        [flag]: true,
+      },
+      fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy(),
+    });
+    assert.equal(result.realFixtureRootCreationAdmitted, false, flag);
+    assert.equal(result.testFixtureDirectoryCreationOnly, false, flag);
+    assert.deepEqual(result.fixtureRootCreationDecisions, [], flag);
+    assert.equal(result.productWritePerformed, false, flag);
+    assert.equal(result.blockedReasons.includes(REASON_CODES.FIXTURE_ROOT_POLICY_REQUIRED), true, flag);
+  }
+});
+
+test('001I task record pins real fixture root creation as test only and no product storage claim', () => {
   const taskText = fs.readFileSync(
     path.join(process.cwd(), 'docs', 'tasks', TASK_BASENAME),
     'utf8',
   );
   const requiredFalseFlags = [
-    'FILESYSTEM_WRITE_PERFORMED',
-    'FS_MUTATION_PERFORMED',
-    'TEMP_DIR_USED',
-    'TEMP_FIXTURE_WRITE_PERFORMED',
     'PRODUCT_WRITE_PERFORMED',
     'PRODUCT_WRITE_CLAIMED',
     'FIXTURE_BACKUP_CREATED',
@@ -412,26 +432,26 @@ test('001H task record pins path policy false-green flags', () => {
     'STORAGE_PRIMITIVE_CHANGED',
   ];
 
-  assert.match(taskText, /STATUS: IMPLEMENTED_VERIFIED_CONTRACT_ONLY_PATH_POLICY_NO_FS_WRITE/u);
-  assert.match(taskText, /CONTRACT_ONLY: true/u);
-  assert.match(taskText, /PATH_POLICY_ONLY: true/u);
+  assert.match(taskText, /STATUS: IMPLEMENTED_VERIFIED_REAL_FIXTURE_ROOT_CREATION_TEST_ONLY/u);
+  assert.match(taskText, /TEST_FIXTURE_ROOT_CREATED: true/u);
+  assert.match(taskText, /KERNEL_FILESYSTEM_WRITE_PERFORMED: false/u);
+  assert.match(taskText, /KERNEL_FS_MUTATION_PERFORMED: false/u);
+  assert.match(taskText, /TEST_MUTATING_IO_SCOPE: OS_TEMP_DIRECTORY_ONLY/u);
+  assert.match(taskText, /TEST_NON_MUTATING_IO_SCOPE: contract reads and git scope inspection allowed/u);
+  assert.match(taskText, /TEST_CLEANUP_REQUIRED: true/u);
   for (const flag of requiredFalseFlags) {
     assert.match(taskText, new RegExp(`${flag}: false`, 'u'), flag);
     assert.doesNotMatch(taskText, new RegExp(`${flag}: true`, 'u'), flag);
   }
-  assert.doesNotMatch(taskText, /created fixture root|wrote fixture|committed to disk|product saved|public API exposed|DOCX runtime enabled/iu);
+  assert.doesNotMatch(taskText, /product saved|public API exposed|DOCX runtime enabled|receipt persisted|backup executed|atomic write executed/iu);
 });
 
-test('001H change scope stays inside allowlist and outside storage runtime surfaces', () => {
+test('001I change scope stays inside allowlist and outside product runtime surfaces', () => {
   const changedBasenames = changedBasenamesForCurrentContour();
-  if (!isCurrentContourFor(TASK_BASENAME, changedBasenames)) {
-    assert.equal(changedBasenames.includes(TASK_BASENAME), false);
-    return;
-  }
   const allowlist = new Set([
     'reviewIrKernel.mjs',
     'exactTextApplyFixtureRootPolicy.contract.test.js',
-    'exactTextApplyStorageAdmission.contract.test.js',
+    'exactTextApplyRealFixtureRootCreation.contract.test.js',
     TASK_BASENAME,
   ]);
   const denylist = new Set([
@@ -450,14 +470,14 @@ test('001H change scope stays inside allowlist and outside storage runtime surfa
     'hostilePackageGate.mjs',
   ]);
 
-  assert.notDeepEqual(changedBasenames, [], '001H must have a detectable changed scope');
+  assert.notDeepEqual(changedBasenames, [], '001I must have a detectable changed scope');
   for (const basename of changedBasenames) {
-    assert.equal(allowlist.has(basename), true, `unexpected 001H changed basename: ${basename}`);
-    assert.equal(denylist.has(basename), false, `denylisted 001H changed basename: ${basename}`);
+    assert.equal(allowlist.has(basename), true, `unexpected 001I changed basename: ${basename}`);
+    assert.equal(denylist.has(basename), false, `denylisted 001I changed basename: ${basename}`);
   }
 });
 
-test('fixture root path policy adds no filesystem public surface UI DOCX dependency or nondeterminism', () => {
+test('real fixture root creation keeps production kernel pure and adds no file write helper', () => {
   const moduleText = fs.readFileSync(
     path.join(process.cwd(), 'src', 'revisionBridge', MODULE_BASENAME),
     'utf8',
@@ -472,6 +492,7 @@ test('fixture root path policy adds no filesystem public surface UI DOCX depende
     /from\s+['"]node:https['"]/u,
     /from\s+['"]node:net['"]/u,
     /from\s+['"]node:dns['"]/u,
+    /from\s+['"]node:os['"]/u,
     /from\s+['"]electron['"]/u,
     /from\s+['"][^'"]*(?:storage|main|preload|editor|command-catalog|projectCommands|fileManager|backupManager|atomicWrite)[^'"]*['"]/u,
     /\bFileSystemPort\b/u,
@@ -497,17 +518,17 @@ test('fixture root path policy adds no filesystem public surface UI DOCX depende
     /\bwriteFile(?:Atomic)?\s*\(/u,
     /\bappendFile\s*\(/u,
     /\bmkdir\s*\(/u,
-    /\bmkdtemp\s*\(/u,
     /\brename\s*\(/u,
     /\bunlink\s*\(/u,
-    /\brm\s*\(/u,
     /\bcreateWriteStream\s*\(/u,
   ];
 
   for (const pattern of forbiddenModulePatterns) {
-    assert.equal(pattern.test(moduleText), false, `forbidden fixture root policy module pattern: ${pattern.source}`);
+    assert.equal(pattern.test(moduleText), false, `forbidden real fixture root creation module pattern: ${pattern.source}`);
   }
   for (const pattern of forbiddenTestPatterns) {
-    assert.equal(pattern.test(testText), false, `forbidden fixture root policy test mutation helper: ${pattern.source}`);
+    assert.equal(pattern.test(testText), false, `forbidden real fixture root creation test write helper: ${pattern.source}`);
   }
+  assert.equal(/\bmkdtempSync\s*\(/u.test(testText), true);
+  assert.equal(/\brmSync\s*\(/u.test(testText), true);
 });
