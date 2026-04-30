@@ -6,9 +6,73 @@ const zlib = require('node:zlib');
 const { pathToFileURL } = require('node:url');
 
 const MODULE_BASENAME = 'hostilePackageGate.mjs';
+const REQUIRED_SECURITY_CORE_EXPORT_NAME = 'inspectDocxIntakeEnvelopeDecision';
+const FORBIDDEN_SECURITY_CORE_EXPORT_NAME_PATTERNS = Object.freeze([
+  /enable/iu,
+  /authori[sz]e/iu,
+  /authori[sz]ed/iu,
+  /admission/iu,
+  /quarantine/iu,
+  /semantic/iu,
+  /parse/iu,
+  /callback/iu,
+  /runtime/iu,
+  /import/iu,
+  /apply/iu,
+]);
+const FORBIDDEN_DOCX_INTAKE_RUNTIME_ACTIONS = Object.freeze(['IMPORT', 'PARSE', 'APPLY']);
 
 async function loadGate() {
   return import(pathToFileURL(path.join(process.cwd(), 'src', 'revisionBridge', MODULE_BASENAME)).href);
+}
+
+function inspectSecurityCoreExportSurface(exportNames) {
+  const normalizedExportNames = [...new Set(exportNames)].sort();
+  const forbiddenExportNames = normalizedExportNames.filter((name) => (
+    FORBIDDEN_SECURITY_CORE_EXPORT_NAME_PATTERNS.some((pattern) => pattern.test(name))
+  ));
+
+  return {
+    hasRequiredIntakeEnvelopeDecisionExport: normalizedExportNames.includes(REQUIRED_SECURITY_CORE_EXPORT_NAME),
+    forbiddenExportNames,
+    normalizedExportNames,
+  };
+}
+
+function assertSecurityCoreExportSurface(exportNames) {
+  const surface = inspectSecurityCoreExportSurface(exportNames);
+
+  assert.equal(surface.hasRequiredIntakeEnvelopeDecisionExport, true);
+  assert.deepEqual(surface.forbiddenExportNames, []);
+  return surface;
+}
+
+function inspectDocxIntakeEnvelopeResultShape(result) {
+  const forbiddenRuntimeAction = FORBIDDEN_DOCX_INTAKE_RUNTIME_ACTIONS.includes(result.runtimeAction);
+  const violations = [];
+
+  if (result.docxImportAuthorized === true) {
+    violations.push('DOCX_IMPORT_AUTHORIZED_TRUE');
+  }
+  if (forbiddenRuntimeAction) {
+    violations.push(`RUNTIME_ACTION_${result.runtimeAction}`);
+  }
+
+  return {
+    decisionStatus: result.decisionStatus,
+    docxImportAuthorized: result.docxImportAuthorized,
+    runtimeAction: result.runtimeAction,
+    violations,
+  };
+}
+
+function assertDocxIntakeEnvelopeResultShape(result) {
+  const shape = inspectDocxIntakeEnvelopeResultShape(result);
+
+  assert.notEqual(shape.docxImportAuthorized, true);
+  assert.equal(FORBIDDEN_DOCX_INTAKE_RUNTIME_ACTIONS.includes(shape.runtimeAction), false);
+  assert.deepEqual(shape.violations, []);
+  return shape;
 }
 
 function u32(value) {
@@ -844,4 +908,89 @@ test('DOCX intake envelope production API exposes no semantic parse callback or 
     productionExportNames.some((name) => /enable|admission|quarantine|semantic|parse|callback|authorized/iu.test(name)),
     false,
   );
+});
+
+test('security core export surface guard exposes intake envelope decision without import enablement names', async () => {
+  const gate = await loadGate();
+  const productionExportNames = Object.keys(gate);
+  const firstSurface = assertSecurityCoreExportSurface(productionExportNames);
+  const secondSurface = assertSecurityCoreExportSurface([...productionExportNames].reverse());
+
+  assert.equal(typeof gate.inspectDocxIntakeEnvelopeDecision, 'function');
+  assert.equal(gate.inspectDocxIntakeEnvelopeDecision.length, 1);
+  assert.equal(firstSurface.hasRequiredIntakeEnvelopeDecisionExport, true);
+  assert.deepEqual(firstSurface.forbiddenExportNames, []);
+  assert.deepEqual(firstSurface, secondSurface);
+});
+
+test('security core export surface guard rejects local forbidden export fixture', () => {
+  const forbiddenExportNames = [
+    REQUIRED_SECURITY_CORE_EXPORT_NAME,
+    'applyDocxToRuntime',
+    'authorizeDocxImport',
+    'docxImportAuthorized',
+    'enableDocxImport',
+    'parseDocxSemanticPayload',
+    'runtimeAdmissionCallback',
+  ];
+  const surface = inspectSecurityCoreExportSurface(forbiddenExportNames);
+
+  assert.deepEqual(surface.forbiddenExportNames, [
+    'applyDocxToRuntime',
+    'authorizeDocxImport',
+    'docxImportAuthorized',
+    'enableDocxImport',
+    'parseDocxSemanticPayload',
+    'runtimeAdmissionCallback',
+  ]);
+  assert.throws(() => assertSecurityCoreExportSurface(forbiddenExportNames), { name: 'AssertionError' });
+});
+
+test('DOCX intake envelope result-shape guard accepts current safe 001D result', async () => {
+  const {
+    inspectDocxIntakeEnvelopeDecision,
+    DOCX_INTAKE_ENVELOPE_DECISION_STATUS,
+  } = await loadGate();
+  const report = inspectDocxIntakeEnvelopeDecision(safeXmlPackage());
+  const firstShape = assertDocxIntakeEnvelopeResultShape(report);
+  const secondShape = assertDocxIntakeEnvelopeResultShape({ ...report });
+
+  assert.equal(firstShape.docxImportAuthorized, false);
+  assert.equal(firstShape.runtimeAction, 'NONE');
+  assert.equal(
+    firstShape.decisionStatus,
+    DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_GATE_CLEARED_NOT_IMPORT_AUTHORIZED,
+  );
+  assert.deepEqual(firstShape, secondShape);
+});
+
+test('DOCX intake envelope result-shape guard rejects import authorization and runtime actions', () => {
+  const safeShapeFixture = {
+    decisionStatus: 'ENVELOPE_GATE_CLEARED_NOT_IMPORT_AUTHORIZED',
+    docxImportAuthorized: false,
+    runtimeAction: 'NONE',
+  };
+  const authorizedFixture = {
+    ...safeShapeFixture,
+    docxImportAuthorized: true,
+  };
+
+  assert.deepEqual(
+    inspectDocxIntakeEnvelopeResultShape(authorizedFixture).violations,
+    ['DOCX_IMPORT_AUTHORIZED_TRUE'],
+  );
+  assert.throws(() => assertDocxIntakeEnvelopeResultShape(authorizedFixture), { name: 'AssertionError' });
+
+  for (const runtimeAction of FORBIDDEN_DOCX_INTAKE_RUNTIME_ACTIONS) {
+    const runtimeFixture = {
+      ...safeShapeFixture,
+      runtimeAction,
+    };
+
+    assert.deepEqual(
+      inspectDocxIntakeEnvelopeResultShape(runtimeFixture).violations,
+      [`RUNTIME_ACTION_${runtimeAction}`],
+    );
+    assert.throws(() => assertDocxIntakeEnvelopeResultShape(runtimeFixture), { name: 'AssertionError' });
+  }
 });
