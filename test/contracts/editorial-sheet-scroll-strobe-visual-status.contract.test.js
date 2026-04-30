@@ -99,12 +99,12 @@ test('editorial sheet scroll strobe visual status: false green cases are rejecte
   }
 });
 
-test('editorial sheet scroll strobe visual status: scale boundaries remain unchanged', () => {
+test('editorial sheet scroll strobe visual status: scale boundaries preserve 10000 supported tier', () => {
   const stressArtifact = readJson(STRESS_STATUS_PATH);
   const closeoutSummary = readJson(CLOSEOUT_SUMMARY_PATH);
 
-  assert.deepEqual(stressArtifact.trackedScalePageCounts, [2000, 3000, 4000, 5000]);
-  assert.equal(stressArtifact.provisionalObservedCeiling, 5000);
-  assert.equal(JSON.stringify(stressArtifact).includes('6000'), false);
-  assert.equal(closeoutSummary.claim.unsupportedAboveProvenTier, '6000_PLUS_NOT_PROMOTED_BY_THIS_GATE');
+  assert.deepEqual(stressArtifact.trackedScalePageCounts, [2000, 3000, 4000, 5000, 10000]);
+  assert.equal(stressArtifact.provisionalObservedCeiling, 10000);
+  assert.equal(JSON.stringify(stressArtifact).includes('40000'), false);
+  assert.equal(closeoutSummary.claim.unsupportedAboveProvenTier, 'ABOVE_10000_NOT_PROMOTED_BY_THIS_GATE');
 });
