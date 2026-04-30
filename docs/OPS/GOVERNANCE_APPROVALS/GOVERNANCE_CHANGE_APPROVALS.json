@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "test/contracts/editor-sheet-6000-diagnostic-probe.contract.test.js",
-      "sha256": "799655ee8d285ce0b8abbfb94f5b694dacf28f5417093c9b99cef5314501ee8a",
-      "approvedBy": "ticket:CONTOUR_09_6000_BOUNDARY_POLICY_AND_FALSE_GREEN_GUARD",
-      "approvedAtUtc": "2026-04-30T14:00:00.000Z",
-      "rationale": "Approve strengthened false-green boundary coverage for the standalone 6000 diagnostic probe, closeout summary wording, and simulated 6000 promotion rejection; this keeps 5000 as supported tier and does not promote 6000 readiness."
+      "sha256": "61c794263444cbaf296e77f19ff5b8eb05c362adf9e89863cdc43aa54a30a06c",
+      "approvedBy": "ticket:CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY",
+      "approvedAtUtc": "2026-04-30T16:20:00.000Z",
+      "rationale": "CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY approves boundary contract alignment after adding the 10000 candidate row while preserving 6000 non-promotion and the 5000 supported ceiling."
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_5000_CLOSEOUT_SUMMARY.json",
@@ -2957,24 +2957,31 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "b73141f8c0cce28d3fbed39e2a031ad63fcc29f9ae7eba041ee6bf467f868fac",
-      "approvedBy": "ticket:CONTOUR_10_SCROLL_STROBE_POSTMERGE_REFRESH",
-      "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "CONTOUR_10_SCROLL_STROBE_POSTMERGE_REFRESH approves the bounded detached-mainline stress lane artifact refresh after the scroll strobe proof merge changed mainline head; this preserves tracked 2000 to 5000 proof freshness without promoting 6000 readiness or widening runtime, storage, export, UI, or dependency scope."
+      "sha256": "d547ad377003ec8353d3d53b1edef2449b41d421b6f1699841493d73f3f67fce",
+      "approvedBy": "ticket:CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY",
+      "approvedAtUtc": "2026-04-30T16:20:00.000Z",
+      "rationale": "CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY approves the stress lane status artifact refresh with a passing 10000 tracked candidate row, supportedTier fixed at 5000, and 25000 retained as diagnostic boundary metadata only."
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
-      "sha256": "36de5372a4a972c14544c526bc9204e616cb521a230385bdb749477a2f39671c",
-      "approvedBy": "ticket:CONTOUR_09_6000_BOUNDARY_POLICY_AND_FALSE_GREEN_GUARD",
-      "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "CONTOUR_09_6000_BOUNDARY_POLICY_AND_FALSE_GREEN_GUARD approves the narrow OPS validator hardening that rejects trackedScalePageCounts promotion beyond the fixed 2000 to 5000 set without widening runtime, export, storage, UI, or dependency scope."
+      "sha256": "564b2ab1ee40c08ea43c115e1fba4368129333785cc8e517ec1d46f20bebdba8",
+      "approvedBy": "ticket:CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY",
+      "approvedAtUtc": "2026-04-30T16:20:00.000Z",
+      "rationale": "CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY approves the bounded stress lane schema, required observed metrics for tracked scale and candidate rows, and writer-authority extension that admits a clean codex contour branch while preserving 5000 as supported tier."
     },
     {
       "filePath": "test/contracts/editorial-sheet-stress-lane-status.contract.test.js",
-      "sha256": "6ad20021527c335bfc174f8cbc12ec26b7ef9f5405ccbb76eb48ca1cd21684b0",
-      "approvedBy": "ticket:CONTOUR_09_6000_BOUNDARY_POLICY_AND_FALSE_GREEN_GUARD",
-      "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "CONTOUR_09_6000_BOUNDARY_POLICY_AND_FALSE_GREEN_GUARD approves the bounded stress-lane false-green contract extension that rejects simulated 6000 tracked-scale promotion while preserving the current 5000 supported ceiling."
+      "sha256": "5957b02511d7f9631ced255b2c50b3a1dab8bd54abe61cf0590a171b0bcd6995",
+      "approvedBy": "ticket:CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY",
+      "approvedAtUtc": "2026-04-30T16:20:00.000Z",
+      "rationale": "CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY approves false-green coverage for the 10000 candidate boundary, required candidate observed metrics, fixed 5000 supported tier, clean codex contour write authority, and 25000 diagnostic-only boundary."
+    },
+    {
+      "filePath": "test/unit/editor-sheet-instrumented-stress-smoke.mjs",
+      "sha256": "b9f53b0db574b7702aabeecb6f6d9c6de4e3873246b3b28bd2f2bc0884dc8ffb",
+      "approvedBy": "ticket:CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY",
+      "approvedAtUtc": "2026-04-30T16:20:00.000Z",
+      "rationale": "CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY approves the bounded harness allowlist extension for the 10000 candidate target without admitting 6000 or 25000 as supported tracked stress rows."
     }
   ]
 }

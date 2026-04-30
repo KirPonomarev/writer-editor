@@ -11,7 +11,10 @@ const electronBinary = requireFromHere('electron');
 const targetPageCount = Number.parseInt(process.env.EDITOR_SHEET_STRESS_TARGET_PAGE_COUNT || '2000', 10);
 const rowTimeoutMs = Number.parseInt(process.env.EDITOR_SHEET_STRESS_TIMEOUT_MS || '420000', 10);
 const allowResourceStop = process.env.EDITOR_SHEET_STRESS_ALLOW_RESOURCE_STOP === 'true';
-assert.ok([2000, 3000, 4000, 5000].includes(targetPageCount), 'target page count must be 2000, 3000, 4000, or 5000');
+assert.ok(
+  [2000, 3000, 4000, 5000, 10000].includes(targetPageCount),
+  'target page count must be 2000, 3000, 4000, 5000, or 10000',
+);
 assert.ok(Number.isInteger(rowTimeoutMs) && rowTimeoutMs >= 30000, 'row timeout must be at least 30000 ms');
 const outputDir = process.env.EDITOR_SHEET_STRESS_OUT_DIR
   ? path.resolve(process.env.EDITOR_SHEET_STRESS_OUT_DIR)

@@ -1,5 +1,14 @@
 {
   "artifactId": "EDITORIAL_SHEET_STRESS_LANE_STATUS_V3",
+  "candidates": {
+    "rule": "10000_CANDIDATE_DOES_NOT_RAISE_SUPPORTED_TIER",
+    "supportedTierRaised": false,
+    "trackedCandidate10000Pass": true
+  },
+  "candidateObservedCeiling": 10000,
+  "diagnosticBoundaryPageCounts": [
+    25000
+  ],
   "diagnosticOnlyRowIds": [
     "VIEWPORT_CONTINUITY",
     "INPUT_CONTINUITY",
@@ -11,6 +20,7 @@
     "TRACKED_SCALE_3000",
     "TRACKED_SCALE_4000",
     "TRACKED_SCALE_5000",
+    "TRACKED_CANDIDATE_10000",
     "VIEWPORT_CONTINUITY",
     "INPUT_CONTINUITY",
     "GAP_CONTINUITY"
@@ -20,12 +30,13 @@
     "TRACKED_SCALE_3000",
     "TRACKED_SCALE_4000",
     "TRACKED_SCALE_5000",
+    "TRACKED_CANDIDATE_10000",
     "VIEWPORT_CONTINUITY",
     "INPUT_CONTINUITY",
     "GAP_CONTINUITY"
   ],
   "failedRowIds": [],
-  "generatedAtUtc": "2026-04-30T14:10:46.491Z",
+  "generatedAtUtc": "2026-04-30T15:49:15.000Z",
   "ok": true,
   "provisionalObservedCeiling": 5000,
   "readiness": {
@@ -34,9 +45,9 @@
     "tracked5000Pass": true
   },
   "repo": {
-    "detachedHead": true,
-    "headSha": "33d59226e533d8884279f2c2ccdc90805e5a4399",
-    "originMainHeadSha": "33d59226e533d8884279f2c2ccdc90805e5a4399",
+    "detachedHead": false,
+    "headSha": "7ceb4d15ba6f55d2e3997cd58ee19dd09ba04b74",
+    "originMainHeadSha": "7ceb4d15ba6f55d2e3997cd58ee19dd09ba04b74",
     "repoRootBinding": "WORKTREE_LOCAL",
     "statusBasename": "EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
     "worktreeClean": true,
@@ -46,6 +57,7 @@
     "DIAGNOSTIC_GAP": "diagnostic-gap",
     "DIAGNOSTIC_INPUT": "diagnostic-input",
     "DIAGNOSTIC_VIEWPORT": "diagnostic-viewport",
+    "TRACKED_CANDIDATE": "tracked-candidate",
     "TRACKED_SCALE": "tracked-scale"
   },
   "rows": [
@@ -174,6 +186,37 @@
       "stdoutTail": "ectCount\":2,\"firstRenderedPage\":4434,\"lastRenderedPage\":4437}],\"textHashStable\":true,\"typing\":{\"typeMs\":489,\"undoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n✔ test/unit/editor-sheet-instrumented-stress-smoke.mjs (13141.659458ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 13146.52325\n"
     },
     {
+      "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
+      "diagnosticOnly": false,
+      "durationMs": 23008,
+      "errorClass": "",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-04-30T15:49:15.000Z",
+      "id": "TRACKED_CANDIDATE_10000",
+      "observed": {
+        "actualPageCount": 11251,
+        "dialogCalls": 0,
+        "domNodeCount": 1276,
+        "hiddenPageCount": 11247,
+        "loadMs": 7064,
+        "networkRequests": 0,
+        "renderedSheetShellCount": 4,
+        "targetPageCount": 10000,
+        "textHashStable": true,
+        "typingCleanupRestoredHash": true,
+        "typingRedoRestoredTypedHash": true,
+        "typingTypeMs": 762,
+        "typingUndoRestoredHash": true
+      },
+      "pageCount": 10000,
+      "rowClass": "tracked-candidate",
+      "startedAtUtc": "2026-04-30T15:48:52.000Z",
+      "status": "PASS",
+      "stderrTail": "",
+      "stdoutSummaryHash": "bed30efd0fe0a0aca590624b280186f8bfc22820578d018e655a238f9c07e4ce",
+      "stdoutTail": "targetPageCount\":10000,\"actualPageCount\":11251,\"renderedSheetShellCount\":4,\"hiddenPageCount\":11247,\"domNodeCount\":1276,\"loadMs\":7064,\"networkRequests\":0,\"dialogCalls\":0,\"textHashStable\":true,\"typingTypeMs\":762,\"typingUndoRestoredHash\":true,\"typingRedoRestoredTypedHash\":true,\"typingCleanupRestoredHash\":true}"
+    },
+    {
       "command": "/usr/local/bin/node --test test/unit/vertical-sheet-performance-window-smoke.mjs",
       "diagnosticOnly": true,
       "durationMs": 19488,
@@ -255,14 +298,23 @@
   ],
   "rules": {
     "diagnosticRowsDoNotRaiseCeiling": true,
+    "diagnosticBoundary25000DoesNotRaiseCeiling": true,
     "explicitScaleRowsRequired": true,
     "readinessRequiresTracked5000Pass": true,
     "refreshAuthority": "CURRENT_CLEAN_DETACHED_MAINLINE_ONLY",
+    "trackedCandidatesDoNotRaiseSupportedTier": true,
     "writeExecutesExplicitRows": true
   },
   "schemaVersion": 3,
   "status": "PASS",
+  "supportedTier": 5000,
   "taskId": "CONTOUR_04_WRITE_IMPL",
+  "trackedCandidatePageCounts": [
+    10000
+  ],
+  "trackedCandidateRowIds": [
+    "TRACKED_CANDIDATE_10000"
+  ],
   "trackedScalePageCounts": [
     2000,
     3000,

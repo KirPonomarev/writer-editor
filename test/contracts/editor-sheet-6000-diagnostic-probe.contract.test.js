@@ -10,6 +10,8 @@ const STATUS_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'STATUS', 'EDITORIAL_SHE
 const CLOSEOUT_SUMMARY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'STATUS', 'EDITORIAL_SHEET_5000_CLOSEOUT_SUMMARY.json');
 const TRACKED_SCALE_CEILING = 5000;
 const TRACKED_SCALE_COUNTS = [2000, 3000, 4000, 5000];
+const TRACKED_CANDIDATE_COUNTS = [10000];
+const DIAGNOSTIC_BOUNDARY_COUNTS = [25000];
 
 function readText(targetPath) {
   return fs.readFileSync(targetPath, 'utf8');
@@ -29,6 +31,15 @@ function collectBoundaryPolicyIssues({ stressArtifact, closeoutSummary }) {
   }
   if (Number(stressArtifact?.provisionalObservedCeiling || 0) > TRACKED_SCALE_CEILING) {
     issues.push('SUPPORTED_CEILING_ABOVE_5000');
+  }
+  if (Number(stressArtifact?.supportedTier || TRACKED_SCALE_CEILING) > TRACKED_SCALE_CEILING) {
+    issues.push('SUPPORTED_TIER_ABOVE_5000');
+  }
+  if (JSON.stringify(stressArtifact?.trackedCandidatePageCounts || []) !== JSON.stringify(TRACKED_CANDIDATE_COUNTS)) {
+    issues.push('TRACKED_CANDIDATE_COUNTS_CHANGED');
+  }
+  if (JSON.stringify(stressArtifact?.diagnosticBoundaryPageCounts || []) !== JSON.stringify(DIAGNOSTIC_BOUNDARY_COUNTS)) {
+    issues.push('DIAGNOSTIC_BOUNDARY_COUNTS_CHANGED');
   }
   if (stressArtifact?.readiness?.editorialSheet6000Ready === true) {
     issues.push('READINESS_6000_CLAIMED');
@@ -62,8 +73,8 @@ test('editor sheet 6000 diagnostic probe: tracked stress row set stays capped at
   const trackedSource = readText(TRACKED_STRESS_PATH);
 
   assert.ok(
-    trackedSource.includes('[2000, 3000, 4000, 5000].includes(targetPageCount)'),
-    'tracked stress smoke must keep the exact 2000/3000/4000/5000 allowlist',
+    trackedSource.includes('[2000, 3000, 4000, 5000, 10000].includes(targetPageCount)'),
+    'tracked stress smoke must keep the exact 2000/3000/4000/5000 plus 10000 candidate allowlist',
   );
   assert.equal(
     trackedSource.includes('[2000, 3000, 4000, 5000, 6000].includes(targetPageCount)'),
@@ -101,8 +112,13 @@ test('editor sheet 6000 diagnostic probe: committed stress status keeps 5000 as 
   const artifact = JSON.parse(readText(STATUS_PATH));
 
   assert.deepEqual(artifact.trackedScalePageCounts, TRACKED_SCALE_COUNTS);
+  assert.deepEqual(artifact.trackedCandidatePageCounts, TRACKED_CANDIDATE_COUNTS);
+  assert.deepEqual(artifact.diagnosticBoundaryPageCounts, DIAGNOSTIC_BOUNDARY_COUNTS);
+  assert.equal(artifact.supportedTier, TRACKED_SCALE_CEILING);
   assert.equal(artifact.readiness.editorialSheet5000Ready, true);
   assert.equal(artifact.readiness.tracked5000Pass, true);
+  assert.equal(artifact.candidates.trackedCandidate10000Pass, true);
+  assert.equal(artifact.candidates.supportedTierRaised, false);
   assert.equal(JSON.stringify(artifact).includes('6000'), false);
 });
 
@@ -121,10 +137,15 @@ test('editor sheet 6000 diagnostic probe: boundary policy rejects simulated 6000
     ...artifact,
     trackedScalePageCounts: [...artifact.trackedScalePageCounts, 6000],
     provisionalObservedCeiling: 6000,
+    supportedTier: 6000,
     readiness: {
       ...artifact.readiness,
       editorialSheet6000Ready: true,
       tracked6000Pass: true,
+    },
+    candidates: {
+      ...artifact.candidates,
+      supportedTierRaised: true,
     },
   };
   const promotedSummary = {
@@ -144,6 +165,7 @@ test('editor sheet 6000 diagnostic probe: boundary policy rejects simulated 6000
   assert.ok(issues.includes('TRACKED_SCALE_COUNTS_PROMOTED_OR_CHANGED'));
   assert.ok(issues.includes('TRACKED_SCALE_ABOVE_5000'));
   assert.ok(issues.includes('SUPPORTED_CEILING_ABOVE_5000'));
+  assert.ok(issues.includes('SUPPORTED_TIER_ABOVE_5000'));
   assert.ok(issues.includes('READINESS_6000_CLAIMED'));
   assert.ok(issues.includes('TRACKED_6000_PASS_CLAIMED'));
   assert.ok(issues.includes('CLOSEOUT_6000_UNSUPPORTED_BOUNDARY_MISSING'));
