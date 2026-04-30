@@ -53,8 +53,10 @@ export const REASON_CODES = Object.freeze({
   MISSING_PRECONDITION: 'MISSING_PRECONDITION',
   UNSUPPORTED_OP_KIND: 'UNSUPPORTED_OP_KIND',
   EFFECT_PRECONDITION_MISSING: 'EFFECT_PRECONDITION_MISSING',
+  EFFECT_PREVIEW_MISMATCH: 'EFFECT_PREVIEW_MISMATCH',
   NON_CONTRACT_APPLYOP_FORBIDDEN: 'NON_CONTRACT_APPLYOP_FORBIDDEN',
   RUNTIME_WRITE_FORBIDDEN_IN_CONTOUR: 'RUNTIME_WRITE_FORBIDDEN_IN_CONTOUR',
+  PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR: 'PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR',
   VIEWMODE_MISMATCH: 'VIEWMODE_MISMATCH',
   REVISION_MISMATCH: 'REVISION_MISMATCH',
 });
@@ -724,5 +726,174 @@ export function compileExactTextApplyEffectPreviews(applyResult = {}) {
   return {
     ...planWithId,
     canonicalHash: canonicalHash(planWithId),
+  };
+}
+
+function validateWritePlanApplyOpInput(applyOp) {
+  const reasons = validateExactTextApplyEffectPreviewInput(applyOp);
+  if (!hasValue(applyOp?.tests?.sceneIdEquals) || !hasValue(applyOp?.tests?.exactTextEquals)) {
+    reasons.push(REASON_CODES.EFFECT_PRECONDITION_MISSING);
+  }
+  return uniqueStrings(reasons);
+}
+
+function validateWritePlanPreviewInput(effectPreview, applyOp) {
+  const reasons = [];
+  if (
+    !hasValue(effectPreview?.effectPreviewId)
+    || !hasValue(effectPreview?.canonicalHash)
+    || effectPreview?.effectPreviewKind !== 'EXACT_TEXT_REPLACE_EFFECT_PREVIEW'
+    || effectPreview?.runtimeWritable !== false
+  ) {
+    reasons.push(REASON_CODES.EFFECT_PRECONDITION_MISSING);
+  }
+  const expected = {
+    sourceApplyOpId: applyOp?.opId,
+    sourceApplyOpHash: applyOp?.canonicalHash,
+    projectId: applyOp?.tests?.projectIdEquals,
+    sceneId: applyOp?.tests?.sceneIdEquals || applyOp?.target?.sceneId,
+    baselineHash: applyOp?.tests?.baselineHashEquals,
+    blockVersionHash: applyOp?.tests?.blockVersionHashEquals,
+    exactTextBefore: normalizeText(applyOp?.patch?.expectedText || ''),
+    exactTextAfter: normalizeText(applyOp?.patch?.replacementText || ''),
+  };
+  for (const [key, value] of Object.entries(expected)) {
+    if (!hasValue(value) || effectPreview?.[key] !== value) {
+      reasons.push(REASON_CODES.EFFECT_PREVIEW_MISMATCH);
+    }
+  }
+  const expectedBeforeHash = canonicalHash({
+    effectPreviewTextKind: 'EXACT_TEXT_BEFORE',
+    text: expected.exactTextBefore,
+  });
+  const expectedAfterHash = canonicalHash({
+    effectPreviewTextKind: 'EXACT_TEXT_AFTER_PREVIEW',
+    text: expected.exactTextAfter,
+  });
+  if (effectPreview?.beforeHash !== expectedBeforeHash || effectPreview?.afterHashPreview !== expectedAfterHash) {
+    reasons.push(REASON_CODES.EFFECT_PREVIEW_MISMATCH);
+  }
+  return uniqueStrings(reasons);
+}
+
+function createExactTextWritePlanContract(applyOp, effectPreview) {
+  const planCore = {
+    writePlanKind: 'EXACT_TEXT_REPLACE_WRITE_PLAN_CONTRACT',
+    productWrite: false,
+    durableWrite: false,
+    runtimeWritable: false,
+    sourceApplyOpId: applyOp.opId,
+    sourceApplyOpHash: applyOp.canonicalHash,
+    effectPreviewId: effectPreview.effectPreviewId,
+    effectPreviewHash: effectPreview.canonicalHash,
+    projectId: applyOp.tests.projectIdEquals,
+    sceneId: applyOp.tests.sceneIdEquals,
+    baselineHash: applyOp.tests.baselineHashEquals,
+    blockVersionHash: applyOp.tests.blockVersionHashEquals,
+    exactTextBefore: normalizeText(applyOp.patch.expectedText),
+    exactTextAfter: normalizeText(applyOp.patch.replacementText),
+    beforeHash: effectPreview.beforeHash,
+    afterHashExpected: effectPreview.afterHashPreview,
+    requiresBackupBeforeWrite: true,
+    requiresAtomicSceneWrite: true,
+    requiresReadableRecoverySnapshot: true,
+  };
+  const planWithId = {
+    writePlanId: `write_plan_${canonicalHash(planCore).slice(0, 16)}`,
+    ...planCore,
+  };
+  return {
+    ...planWithId,
+    canonicalHash: canonicalHash(planWithId),
+  };
+}
+
+function createExactTextReceiptContract(writePlan, input = {}) {
+  const receiptCore = {
+    receiptKind: 'EXACT_TEXT_REPLACE_RECEIPT_CONTRACT',
+    productWrite: false,
+    durableReceipt: false,
+    runtimeWritable: false,
+    resultStatus: input.resultStatus || 'PLANNED_NOT_EXECUTED',
+    reasonCodes: uniqueStrings(input.reasonCodes || []),
+    writePlanId: writePlan.writePlanId,
+    writePlanHash: writePlan.canonicalHash,
+    projectId: writePlan.projectId,
+    sceneId: writePlan.sceneId,
+    sourceApplyOpId: writePlan.sourceApplyOpId,
+    sourceApplyOpHash: writePlan.sourceApplyOpHash,
+    effectPreviewId: writePlan.effectPreviewId,
+    effectPreviewHash: writePlan.effectPreviewHash,
+    beforeHash: writePlan.beforeHash,
+    afterHash: writePlan.afterHashExpected,
+    backupRequired: writePlan.requiresBackupBeforeWrite,
+    atomicSceneWriteRequired: writePlan.requiresAtomicSceneWrite,
+    readableRecoverySnapshotRequired: writePlan.requiresReadableRecoverySnapshot,
+  };
+  const receiptWithId = {
+    receiptContractId: `receipt_contract_${canonicalHash(receiptCore).slice(0, 16)}`,
+    ...receiptCore,
+  };
+  return {
+    ...receiptWithId,
+    canonicalHash: canonicalHash(receiptWithId),
+  };
+}
+
+export function compileExactTextWritePlanReceiptContract(input = {}) {
+  const applyOps = input?.applyResult?.applyOps || [];
+  const effectPreviews = input?.effectPreviewPlan?.effectPreviews || [];
+  const blockedReasons = [
+    ...(input?.applyResult?.blockedReasons || []),
+    ...(input?.effectPreviewPlan?.blockedReasons || []),
+  ];
+  if (input?.applyResult?.contractOnly !== true || input?.effectPreviewPlan?.contractOnly !== true) {
+    blockedReasons.push(REASON_CODES.NON_CONTRACT_APPLYOP_FORBIDDEN);
+  }
+  if (input?.applyResult?.runtimeWritable !== false || input?.effectPreviewPlan?.runtimeWritable !== false) {
+    blockedReasons.push(REASON_CODES.RUNTIME_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (input?.productWrite === true || input?.runtimeWritable === true) {
+    blockedReasons.push(REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (applyOps.length !== 1 || effectPreviews.length !== 1) {
+    blockedReasons.push(REASON_CODES.EFFECT_PRECONDITION_MISSING);
+  }
+
+  const applyOp = applyOps[0];
+  const effectPreview = effectPreviews[0];
+  if (applyOp) {
+    blockedReasons.push(...validateWritePlanApplyOpInput(applyOp));
+  }
+  if (applyOp && effectPreview) {
+    blockedReasons.push(...validateWritePlanPreviewInput(effectPreview, applyOp));
+  } else if (effectPreview) {
+    blockedReasons.push(REASON_CODES.EFFECT_PRECONDITION_MISSING);
+  }
+
+  const uniqueBlockedReasons = uniqueStrings(blockedReasons);
+  const writePlans = uniqueBlockedReasons.length === 0
+    ? [createExactTextWritePlanContract(applyOp, effectPreview)]
+    : [];
+  const receiptContracts = writePlans.map((writePlan) => createExactTextReceiptContract(writePlan));
+  const resultCore = {
+    resultKind: 'EXACT_TEXT_WRITE_PLAN_RECEIPT_CONTRACT_RESULT',
+    contractOnly: true,
+    productWrite: false,
+    durableReceipt: false,
+    storageSafetyClaimed: false,
+    crashRecoveryClaimed: false,
+    applyTxnClaimed: false,
+    publicSurfaceClaimed: false,
+    docxImportClaimed: false,
+    releaseClaimed: false,
+    runtimeWritable: false,
+    writePlans,
+    receiptContracts,
+    blockedReasons: uniqueBlockedReasons,
+  };
+  return {
+    ...resultCore,
+    canonicalHash: canonicalHash(resultCore),
   };
 }
