@@ -54,7 +54,7 @@ test('editorial sheet stress lane: committed artifact schema is valid and explic
   assert.equal(evaluation.ok, true, evaluation.issues.join('\n'));
   assert.equal(artifact.schemaVersion, SCHEMA_VERSION);
   assert.equal(artifact.artifactId, ARTIFACT_ID);
-  assert.equal(artifact.repo.headSha, evaluation.repoState.currentHeadSha);
+  assert.equal(artifact.repo.headSha, evaluation.repoState.originMainHeadSha);
   assert.deepEqual(artifact.explicitRowIds, EXPECTED_ROW_IDS);
   assert.deepEqual(artifact.executedRowIds, EXPECTED_ROW_IDS);
   assert.deepEqual(artifact.diagnosticOnlyRowIds, DIAGNOSTIC_ONLY_ROW_IDS);
@@ -176,37 +176,24 @@ test('editorial sheet stress lane: outer evaluation fails on FAIL status token z
   }
 });
 
-test('editorial sheet stress lane: write authority rejects non-mainline branch drift and unowned dirt', async () => {
+test('editorial sheet stress lane: write authority rejects dirty or non-mainline execution states', async () => {
   const { evaluateWriteAuthority, WRITE_AUTHORITY_RULE } = await loadModule();
 
-  const unownedDirtyState = evaluateWriteAuthority({
+  const dirtyState = evaluateWriteAuthority({
     currentHeadSha: 'a'.repeat(40),
     originMainHeadSha: 'a'.repeat(40),
     detachedHead: true,
-    changedPaths: ['src/renderer/editor.js'],
+    worktreeClean: false,
   });
-  assert.equal(unownedDirtyState.ok, false);
-  assert.equal(unownedDirtyState.rule, WRITE_AUTHORITY_RULE);
-  assert.ok(unownedDirtyState.issues.includes('UNOWNED_DIRTY_PATHS_PRESENT'));
-  assert.deepEqual(unownedDirtyState.unownedDirtyBasenames, ['editor.js']);
-
-  const ownedDirtyDetachedState = evaluateWriteAuthority({
-    currentHeadSha: 'a'.repeat(40),
-    originMainHeadSha: 'a'.repeat(40),
-    detachedHead: true,
-    changedPaths: [
-      'scripts/ops/editorial-sheet-stress-lane-state.mjs',
-      'test/contracts/editorial-sheet-stress-lane-status.contract.test.js',
-      'docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json',
-    ],
-  });
-  assert.equal(ownedDirtyDetachedState.ok, true);
+  assert.equal(dirtyState.ok, false);
+  assert.equal(dirtyState.rule, WRITE_AUTHORITY_RULE);
+  assert.ok(dirtyState.issues.includes('WORKTREE_NOT_CLEAN'));
 
   const branchState = evaluateWriteAuthority({
     currentHeadSha: 'a'.repeat(40),
     originMainHeadSha: 'a'.repeat(40),
     detachedHead: false,
-    changedPaths: [],
+    worktreeClean: true,
   });
   assert.equal(branchState.ok, false);
   assert.ok(branchState.issues.includes('HEAD_NOT_DETACHED'));
@@ -215,7 +202,7 @@ test('editorial sheet stress lane: write authority rejects non-mainline branch d
     currentHeadSha: 'a'.repeat(40),
     originMainHeadSha: 'b'.repeat(40),
     detachedHead: true,
-    changedPaths: [],
+    worktreeClean: true,
   });
   assert.equal(staleMainlineState.ok, false);
   assert.ok(staleMainlineState.issues.includes('HEAD_NOT_AT_ORIGIN_MAIN'));

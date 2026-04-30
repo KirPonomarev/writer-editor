@@ -15,12 +15,6 @@ export const TOKEN_NAME = 'EDITORIAL_SHEET_STRESS_LANE_STATUS_OK';
 export const DEFAULT_REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const WRITE_AUTHORITY_RULE = 'CURRENT_CLEAN_DETACHED_MAINLINE_ONLY';
 export const ROW_NODE_MODULES_ROOT_ENV = 'EDITORIAL_SHEET_NODE_MODULES_ROOT';
-export const OWNED_BASENAMES = Object.freeze([
-  'editorial-sheet-stress-lane-state.mjs',
-  'editorial-sheet-stress-lane-status.contract.test.js',
-  STATUS_BASENAME,
-  'GOVERNANCE_CHANGE_APPROVALS.json',
-]);
 
 const STATUS_VALUES = new Set(['PASS', 'FAIL', 'STOP_RESOURCE_LIMIT']);
 const SCALE_ROW_TIMEOUT_MS = 8 * 60 * 1000;
@@ -283,10 +277,8 @@ export function getRepoState(repoRoot = DEFAULT_REPO_ROOT) {
 
 export function evaluateWriteAuthority(repoState) {
   const issues = [];
-  const changedBasenames = (Array.isArray(repoState?.changedPaths) ? repoState.changedPaths : [])
-    .map((entry) => path.basename(entry));
-  const unownedDirtyBasenames = [...new Set(changedBasenames.filter((basename) => !OWNED_BASENAMES.includes(basename)))];
 
+  if (!repoState?.worktreeClean) issues.push('WORKTREE_NOT_CLEAN');
   if (!repoState?.detachedHead) issues.push('HEAD_NOT_DETACHED');
   if (!normalizeString(repoState?.currentHeadSha)) issues.push('CURRENT_HEAD_SHA_MISSING');
   if (!normalizeString(repoState?.originMainHeadSha)) issues.push('ORIGIN_MAIN_HEAD_SHA_MISSING');
@@ -297,14 +289,11 @@ export function evaluateWriteAuthority(repoState) {
   ) {
     issues.push('HEAD_NOT_AT_ORIGIN_MAIN');
   }
-  if (unownedDirtyBasenames.length > 0) issues.push('UNOWNED_DIRTY_PATHS_PRESENT');
 
   return {
     ok: issues.length === 0,
     rule: WRITE_AUTHORITY_RULE,
     issues,
-    changedBasenames,
-    unownedDirtyBasenames,
   };
 }
 
@@ -670,12 +659,13 @@ export function evaluateEditorialSheetStressLaneStatus(artifact, { repoRoot = DE
   const validation = validateEditorialSheetStressLaneStatus(artifact);
   const repoState = getRepoState(repoRoot);
   const issues = [...validation.issues];
+  const expectedExecutionHeadSha = normalizeString(repoState.originMainHeadSha || repoState.currentHeadSha);
 
   if (normalizeString(artifact?.status) !== 'PASS') issues.push('ARTIFACT_STATUS_NOT_PASS');
   if (artifact?.ok !== true) issues.push('ARTIFACT_OK_FALSE');
   if (Number(artifact?.[TOKEN_NAME] || 0) !== 1) issues.push('ARTIFACT_TOKEN_NOT_ONE');
   if (Array.isArray(artifact?.failedRowIds) && artifact.failedRowIds.length > 0) issues.push('ARTIFACT_FAILED_ROWS_PRESENT');
-  if (normalizeString(artifact?.repo?.headSha) !== normalizeString(repoState.currentHeadSha)) {
+  if (normalizeString(artifact?.repo?.headSha) !== expectedExecutionHeadSha) {
     issues.push('ARTIFACT_HEAD_SHA_MISMATCH');
   }
 
