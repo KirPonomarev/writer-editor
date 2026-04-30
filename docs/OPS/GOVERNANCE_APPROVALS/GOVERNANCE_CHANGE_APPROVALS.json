@@ -2,6 +2,13 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_5000_CLOSEOUT_SUMMARY.json",
+      "sha256": "feb94149b1fe0bca301f92bb5fb939df8404103e17ac6cd5b7402a60f5fa6aef",
+      "approvedBy": "ticket:CONTOUR_06_5000_GATE_POST_CLOSEOUT",
+      "approvedAtUtc": "2026-04-30T13:05:00.000Z",
+      "rationale": "Approve non-authoritative editorial sheet 5000 post-closeout navigation summary bound to committed stress evidence; active canon and executed proof artifacts remain higher authority."
+    },
+    {
       "filePath": "docs/OPERATIONS/STATUS/CODEX_AUTOMATION_POLICY.json",
       "sha256": "73774d9cfeb9b0b2a4656b8d2adddfcccc5765c8b618094a4db38be5e292bb91",
       "approvedBy": "ticket:TZ_EXEC_PKG_01_A03_2026_02_27",
