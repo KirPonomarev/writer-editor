@@ -43,6 +43,9 @@ test('editorial sheet stress lane: committed artifact schema is valid and explic
     EXPECTED_ROW_IDS,
     DIAGNOSTIC_ONLY_ROW_IDS,
     TRACKED_SCALE_PAGE_COUNTS,
+    TRACKED_CANDIDATE_PAGE_COUNTS,
+    DIAGNOSTIC_BOUNDARY_PAGE_COUNTS,
+    SUPPORTED_SCALE_CEILING,
     validateEditorialSheetStressLaneStatus,
     evaluateEditorialSheetStressLaneStatus,
   } = await loadModule();
@@ -60,6 +63,10 @@ test('editorial sheet stress lane: committed artifact schema is valid and explic
   assert.deepEqual(artifact.executedRowIds, EXPECTED_ROW_IDS);
   assert.deepEqual(artifact.diagnosticOnlyRowIds, DIAGNOSTIC_ONLY_ROW_IDS);
   assert.deepEqual(artifact.trackedScalePageCounts, TRACKED_SCALE_PAGE_COUNTS);
+  assert.deepEqual(artifact.trackedCandidatePageCounts, TRACKED_CANDIDATE_PAGE_COUNTS);
+  assert.equal(artifact.candidateObservedCeiling, 10000);
+  assert.deepEqual(artifact.diagnosticBoundaryPageCounts, DIAGNOSTIC_BOUNDARY_PAGE_COUNTS);
+  assert.equal(artifact.supportedTier, SUPPORTED_SCALE_CEILING);
 
   const rowMap = new Map(artifact.rows.map((row) => [row.id, row]));
   assert.equal(rowMap.size, EXPECTED_ROW_IDS.length);
@@ -70,6 +77,9 @@ test('editorial sheet stress lane: committed artifact schema is valid and explic
   assert.equal(rowMap.get('TRACKED_SCALE_3000').rowClass, 'tracked-scale');
   assert.equal(rowMap.get('TRACKED_SCALE_4000').rowClass, 'tracked-scale');
   assert.equal(rowMap.get('TRACKED_SCALE_5000').rowClass, 'tracked-scale');
+  assert.equal(rowMap.get('TRACKED_CANDIDATE_10000').rowClass, 'tracked-candidate');
+  assert.equal(rowMap.get('TRACKED_CANDIDATE_10000').diagnosticOnly, false);
+  assert.equal(rowMap.get('TRACKED_CANDIDATE_10000').status, 'PASS');
   assert.equal(rowMap.get('VIEWPORT_CONTINUITY').rowClass, 'diagnostic-viewport');
   assert.equal(rowMap.get('INPUT_CONTINUITY').rowClass, 'diagnostic-input');
   assert.equal(rowMap.get('GAP_CONTINUITY').rowClass, 'diagnostic-gap');
@@ -85,7 +95,9 @@ test('editorial sheet stress lane: anti-false-green fields derive only from trac
   } = await loadModule();
   const artifact = readArtifact();
   const trackedScaleRows = artifact.rows.filter((row) => row.rowClass === 'tracked-scale');
+  const trackedCandidateRows = artifact.rows.filter((row) => row.rowClass === 'tracked-candidate');
   const tracked5000Row = trackedScaleRows.find((row) => row.pageCount === 5000);
+  const trackedCandidate10000Row = trackedCandidateRows.find((row) => row.pageCount === 10000);
   const expectedCeiling = trackedScaleRows
     .filter((row) => row.status === 'PASS')
     .reduce((max, row) => Math.max(max, Number(row.pageCount || 0)), 0);
@@ -97,8 +109,12 @@ test('editorial sheet stress lane: anti-false-green fields derive only from trac
   assert.equal(artifact.provisionalObservedCeiling, expectedCeiling);
   assert.deepEqual(artifact.unsupportedAboveCurrentProof, expectedUnsupportedAboveCurrentProof);
   assert.deepEqual(artifact.failedRowIds, expectedFailedRowIds);
+  assert.equal(artifact.candidateObservedCeiling, trackedCandidate10000Row.status === 'PASS' ? 10000 : 0);
   assert.equal(artifact.readiness.rule, READINESS_RULE);
   assert.equal(artifact.readiness.tracked5000Pass, tracked5000Row.status === 'PASS');
+  assert.equal(artifact.candidates.trackedCandidate10000Pass, trackedCandidate10000Row.status === 'PASS');
+  assert.equal(artifact.candidates.supportedTierRaised, false);
+  assert.equal(artifact.supportedTier, 5000);
   assert.equal(artifact.readiness.editorialSheet5000Ready === true ? tracked5000Row.status === 'PASS' : true, true);
   if (tracked5000Row.status !== 'PASS') {
     assert.equal(artifact.readiness.editorialSheet5000Ready, false);
@@ -177,7 +193,7 @@ test('editorial sheet stress lane: outer evaluation fails on FAIL status token z
   }
 });
 
-test('editorial sheet stress lane: outer evaluation rejects 6000 tracked-scale promotion attempts', async () => {
+test('editorial sheet stress lane: outer evaluation rejects unsupported scale promotion attempts', async () => {
   const artifact = readArtifact();
   const trackedScale6000Row = {
     ...artifact.rows.find((row) => row.id === 'TRACKED_SCALE_5000'),
@@ -219,6 +235,61 @@ test('editorial sheet stress lane: outer evaluation rejects 6000 tracked-scale p
       },
       expectedIssue: 'ROW_SET_MISMATCH',
     },
+    {
+      name: 'candidate-raises-supported-tier',
+      mutate(source) {
+        return {
+          ...source,
+          supportedTier: 10000,
+          provisionalObservedCeiling: 10000,
+          candidates: {
+            ...source.candidates,
+            supportedTierRaised: true,
+          },
+          readiness: {
+            ...source.readiness,
+            editorialSheet10000Ready: true,
+          },
+        };
+      },
+      expectedIssue: 'PROVISIONAL_OBSERVED_CEILING_ABOVE_SUPPORTED_TIER',
+    },
+    {
+      name: 'promoted-25000-boundary',
+      mutate(source) {
+        return {
+          ...source,
+          trackedCandidatePageCounts: [...source.trackedCandidatePageCounts, 25000],
+          rows: [
+            ...source.rows,
+            {
+              ...source.rows.find((row) => row.id === 'TRACKED_CANDIDATE_10000'),
+              id: 'TRACKED_CANDIDATE_25000',
+              pageCount: 25000,
+              observed: {
+                ...source.rows.find((row) => row.id === 'TRACKED_CANDIDATE_10000').observed,
+                targetPageCount: 25000,
+              },
+            },
+          ],
+        };
+      },
+      expectedIssue: 'ROW_SET_MISMATCH',
+    },
+    {
+      name: 'candidate-missing-observed-metric',
+      mutate(source) {
+        return {
+          ...source,
+          rows: source.rows.map((row) => {
+            if (row.id !== 'TRACKED_CANDIDATE_10000') return row;
+            const { actualPageCount: _actualPageCount, ...observed } = row.observed;
+            return { ...row, observed };
+          }),
+        };
+      },
+      expectedIssue: 'ROW_OBSERVED_ACTUALPAGECOUNT_MISSING_TRACKED_CANDIDATE_10000',
+    },
   ];
 
   for (const testCase of cases) {
@@ -234,7 +305,37 @@ test('editorial sheet stress lane: outer evaluation rejects 6000 tracked-scale p
   }
 });
 
-test('editorial sheet stress lane: write authority rejects dirty or non-mainline execution states', async () => {
+test('editorial sheet stress lane: linear status artifact commit may bind to first parent', async () => {
+  const { evaluateEditorialSheetStressLaneStatus } = await loadModule();
+  const artifact = readArtifact();
+  const artifactHeadSha = 'a'.repeat(40);
+  const currentHeadSha = 'b'.repeat(40);
+  const statusPath = path.join('docs', 'OPS', 'STATUS', 'EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json');
+  const result = evaluateEditorialSheetStressLaneStatus(
+    {
+      ...artifact,
+      repo: {
+        ...artifact.repo,
+        headSha: artifactHeadSha,
+      },
+    },
+    {
+      repoStateOverride: {
+        currentHeadSha,
+        originMainHeadSha: 'c'.repeat(40),
+        currentHeadFirstParentSha: artifactHeadSha,
+        currentHeadSecondParentSha: '',
+        currentHeadChangedPathsFromFirstParent: [statusPath],
+      },
+    },
+  );
+
+  assert.equal(result.ok, true);
+  assert.ok(result.acceptedExecutionHeadShas.includes(artifactHeadSha));
+  assert.equal(result.matchedExecutionHeadSha, artifactHeadSha);
+});
+
+test('editorial sheet stress lane: write authority accepts clean mainline or codex contour branch only', async () => {
   const { evaluateWriteAuthority, WRITE_AUTHORITY_RULE } = await loadModule();
 
   const dirtyState = evaluateWriteAuthority({
@@ -242,25 +343,48 @@ test('editorial sheet stress lane: write authority rejects dirty or non-mainline
     originMainHeadSha: 'a'.repeat(40),
     detachedHead: true,
     worktreeClean: false,
+    originMainAncestorOfHead: true,
   });
   assert.equal(dirtyState.ok, false);
   assert.equal(dirtyState.rule, WRITE_AUTHORITY_RULE);
   assert.ok(dirtyState.issues.includes('WORKTREE_NOT_CLEAN'));
 
-  const branchState = evaluateWriteAuthority({
+  const cleanMainlineState = evaluateWriteAuthority({
     currentHeadSha: 'a'.repeat(40),
+    originMainHeadSha: 'a'.repeat(40),
+    detachedHead: true,
+    worktreeClean: true,
+    originMainAncestorOfHead: true,
+  });
+  assert.equal(cleanMainlineState.ok, true);
+
+  const cleanCodexBranchState = evaluateWriteAuthority({
+    currentHeadSha: 'b'.repeat(40),
     originMainHeadSha: 'a'.repeat(40),
     detachedHead: false,
     worktreeClean: true,
+    branchName: 'codex/editorial-sheet-10000-candidate-01',
+    originMainAncestorOfHead: true,
   });
-  assert.equal(branchState.ok, false);
-  assert.ok(branchState.issues.includes('HEAD_NOT_DETACHED'));
+  assert.equal(cleanCodexBranchState.ok, true);
+
+  const nonCodexBranchState = evaluateWriteAuthority({
+    currentHeadSha: 'b'.repeat(40),
+    originMainHeadSha: 'a'.repeat(40),
+    detachedHead: false,
+    worktreeClean: true,
+    branchName: 'feature/editorial-sheet-10000-candidate-01',
+    originMainAncestorOfHead: true,
+  });
+  assert.equal(nonCodexBranchState.ok, false);
+  assert.ok(nonCodexBranchState.issues.includes('BRANCH_NOT_CODEX_CONTOUR'));
 
   const staleMainlineState = evaluateWriteAuthority({
     currentHeadSha: 'a'.repeat(40),
     originMainHeadSha: 'b'.repeat(40),
     detachedHead: true,
     worktreeClean: true,
+    originMainAncestorOfHead: false,
   });
   assert.equal(staleMainlineState.ok, false);
   assert.ok(staleMainlineState.issues.includes('HEAD_NOT_AT_ORIGIN_MAIN'));

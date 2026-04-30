@@ -13,7 +13,7 @@ export const STATUS_BASENAME = 'EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json';
 export const STATUS_REL_PATH = path.join('docs', 'OPS', 'STATUS', STATUS_BASENAME);
 export const TOKEN_NAME = 'EDITORIAL_SHEET_STRESS_LANE_STATUS_OK';
 export const DEFAULT_REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-export const WRITE_AUTHORITY_RULE = 'CURRENT_CLEAN_DETACHED_MAINLINE_ONLY';
+export const WRITE_AUTHORITY_RULE = 'CURRENT_CLEAN_MAINLINE_OR_CODEX_CONTOUR_BRANCH';
 export const ROW_NODE_MODULES_ROOT_ENV = 'EDITORIAL_SHEET_NODE_MODULES_ROOT';
 
 const STATUS_VALUES = new Set(['PASS', 'FAIL', 'STOP_RESOURCE_LIMIT']);
@@ -21,6 +21,9 @@ const SCALE_ROW_TIMEOUT_MS = 8 * 60 * 1000;
 const DIAGNOSTIC_ROW_TIMEOUT_MS = 3 * 60 * 1000;
 const MAX_BUFFER_BYTES = 64 * 1024 * 1024;
 export const READINESS_RULE = '5000_READINESS_REQUIRES_TRACKED_5000_PASS';
+export const CANDIDATE_RULE = '10000_CANDIDATE_DOES_NOT_RAISE_SUPPORTED_TIER';
+export const SUPPORTED_SCALE_CEILING = 5000;
+export const DIAGNOSTIC_BOUNDARY_PAGE_COUNTS = Object.freeze([25000]);
 
 export const ROW_DEFINITIONS = Object.freeze([
   {
@@ -64,6 +67,17 @@ export const ROW_DEFINITIONS = Object.freeze([
     env: { EDITOR_SHEET_STRESS_TARGET_PAGE_COUNT: '5000' },
   },
   {
+    id: 'TRACKED_CANDIDATE_10000',
+    rowClass: 'tracked-candidate',
+    pageCount: 10000,
+    diagnosticOnly: false,
+    candidateOnly: true,
+    timeoutMs: SCALE_ROW_TIMEOUT_MS,
+    commandArgs: ['--test', 'test/unit/editor-sheet-instrumented-stress-smoke.mjs'],
+    summaryPrefix: 'EDITOR_SHEET_INSTRUMENTED_STRESS_SUMMARY:',
+    env: { EDITOR_SHEET_STRESS_TARGET_PAGE_COUNT: '10000' },
+  },
+  {
     id: 'VIEWPORT_CONTINUITY',
     rowClass: 'diagnostic-viewport',
     diagnosticOnly: true,
@@ -96,15 +110,27 @@ export const EXPECTED_ROW_IDS = Object.freeze(ROW_DEFINITIONS.map((row) => row.i
 export const TRACKED_SCALE_ROW_IDS = Object.freeze(
   ROW_DEFINITIONS.filter((row) => row.rowClass === 'tracked-scale').map((row) => row.id),
 );
+export const TRACKED_CANDIDATE_ROW_IDS = Object.freeze(
+  ROW_DEFINITIONS.filter((row) => row.rowClass === 'tracked-candidate').map((row) => row.id),
+);
 export const DIAGNOSTIC_ONLY_ROW_IDS = Object.freeze(
   ROW_DEFINITIONS.filter((row) => row.diagnosticOnly).map((row) => row.id),
 );
 export const TRACKED_SCALE_PAGE_COUNTS = Object.freeze(
   ROW_DEFINITIONS.filter((row) => row.rowClass === 'tracked-scale').map((row) => row.pageCount),
 );
+export const TRACKED_CANDIDATE_PAGE_COUNTS = Object.freeze(
+  ROW_DEFINITIONS.filter((row) => row.rowClass === 'tracked-candidate').map((row) => row.pageCount),
+);
 
 function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
+}
+
+function requireObservedMetric(issues, row, metricName) {
+  if (!row?.observed || !Object.prototype.hasOwnProperty.call(row.observed, metricName)) {
+    issues.push(`ROW_OBSERVED_${metricName.toUpperCase()}_MISSING_${row?.id || 'UNKNOWN'}`);
+  }
 }
 
 function stableSort(value) {
@@ -211,6 +237,15 @@ function getGitChangedPaths(repoRoot, fromRef, toRef) {
     .filter(Boolean);
 }
 
+function getGitIsAncestor(repoRoot, ancestorRef, descendantRef) {
+  if (!normalizeString(ancestorRef) || !normalizeString(descendantRef)) return false;
+  const result = spawnSync('git', ['merge-base', '--is-ancestor', ancestorRef, descendantRef], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+  return result.status === 0;
+}
+
 function getGitStatusPorcelain(repoRoot) {
   const result = spawnSync('git', ['status', '--porcelain', '--untracked-files=all'], {
     cwd: repoRoot,
@@ -274,6 +309,7 @@ export function getRepoState(repoRoot = DEFAULT_REPO_ROOT) {
   const currentHeadSecondParentSha = getGitRef(repoRoot, 'HEAD^2');
   const detachedState = getDetachedHeadState(repoRoot);
   const statusPorcelain = getGitStatusPorcelain(repoRoot);
+  const originMainAncestorOfHead = getGitIsAncestor(repoRoot, 'refs/remotes/origin/main', 'HEAD');
   const currentHeadChangedPathsFromFirstParent = currentHeadFirstParentSha
     ? getGitChangedPaths(repoRoot, 'HEAD^1', 'HEAD')
     : [];
@@ -287,6 +323,7 @@ export function getRepoState(repoRoot = DEFAULT_REPO_ROOT) {
     branchName: detachedState.branchName,
     worktreeClean: statusPorcelain.trim() === '',
     statusPorcelain,
+    originMainAncestorOfHead,
     currentHeadChangedPathsFromFirstParent,
     changedPaths: statusPorcelain
       .split(/\r?\n/u)
@@ -299,15 +336,25 @@ export function evaluateWriteAuthority(repoState) {
   const issues = [];
 
   if (!repoState?.worktreeClean) issues.push('WORKTREE_NOT_CLEAN');
-  if (!repoState?.detachedHead) issues.push('HEAD_NOT_DETACHED');
   if (!normalizeString(repoState?.currentHeadSha)) issues.push('CURRENT_HEAD_SHA_MISSING');
   if (!normalizeString(repoState?.originMainHeadSha)) issues.push('ORIGIN_MAIN_HEAD_SHA_MISSING');
-  if (
-    normalizeString(repoState?.currentHeadSha)
-    && normalizeString(repoState?.originMainHeadSha)
-    && normalizeString(repoState?.currentHeadSha) !== normalizeString(repoState?.originMainHeadSha)
-  ) {
-    issues.push('HEAD_NOT_AT_ORIGIN_MAIN');
+
+  const currentHeadSha = normalizeString(repoState?.currentHeadSha);
+  const originMainHeadSha = normalizeString(repoState?.originMainHeadSha);
+  const branchName = normalizeString(repoState?.branchName);
+  const atOriginMain = currentHeadSha && originMainHeadSha && currentHeadSha === originMainHeadSha;
+  const cleanDetachedMainline = repoState?.detachedHead === true && atOriginMain;
+  const cleanCodexContourBranch = (
+    repoState?.detachedHead === false
+    && branchName.startsWith('codex/')
+    && repoState?.originMainAncestorOfHead === true
+  );
+
+  if (!cleanDetachedMainline && !cleanCodexContourBranch) {
+    if (repoState?.detachedHead === true && !atOriginMain) issues.push('HEAD_NOT_AT_ORIGIN_MAIN');
+    if (repoState?.detachedHead === false && !branchName.startsWith('codex/')) issues.push('BRANCH_NOT_CODEX_CONTOUR');
+    if (!atOriginMain && repoState?.originMainAncestorOfHead !== true) issues.push('ORIGIN_MAIN_NOT_ANCESTOR');
+    if (repoState?.detachedHead !== true && repoState?.detachedHead !== false) issues.push('HEAD_MODE_UNKNOWN');
   }
 
   return {
@@ -436,7 +483,9 @@ function summarizeGapRow(summary) {
 }
 
 function buildObserved(rowDefinition, summary) {
-  if (rowDefinition.rowClass === 'tracked-scale') return summarizeScaleRow(summary);
+  if (rowDefinition.rowClass === 'tracked-scale' || rowDefinition.rowClass === 'tracked-candidate') {
+    return summarizeScaleRow(summary);
+  }
   if (rowDefinition.id === 'VIEWPORT_CONTINUITY') return summarizeViewportRow(summary);
   if (rowDefinition.id === 'INPUT_CONTINUITY') return summarizeInputRow(summary);
   if (rowDefinition.id === 'GAP_CONTINUITY') return summarizeGapRow(summary);
@@ -511,12 +560,17 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
   const executedRowIds = rows.map((row) => row.id);
   const failedRowIds = rows.filter((row) => row.status !== 'PASS').map((row) => row.id);
   const trackedScaleRows = rows.filter((row) => row.rowClass === 'tracked-scale');
+  const trackedCandidateRows = rows.filter((row) => row.rowClass === 'tracked-candidate');
   const provisionalObservedCeiling = trackedScaleRows
+    .filter((row) => row.status === 'PASS')
+    .reduce((max, row) => Math.max(max, Number(row.pageCount || 0)), 0);
+  const candidateObservedCeiling = trackedCandidateRows
     .filter((row) => row.status === 'PASS')
     .reduce((max, row) => Math.max(max, Number(row.pageCount || 0)), 0);
   const unsupportedAboveCurrentProof = TRACKED_SCALE_PAGE_COUNTS
     .filter((pageCount) => pageCount > provisionalObservedCeiling);
   const tracked5000Pass = trackedScaleRows.some((row) => row.pageCount === 5000 && row.status === 'PASS');
+  const trackedCandidate10000Pass = trackedCandidateRows.some((row) => row.pageCount === 10000 && row.status === 'PASS');
   const ok = failedRowIds.length === 0;
 
   return stableSort({
@@ -532,12 +586,15 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
       originMainHeadSha: repoState.originMainHeadSha,
       detachedHead: repoState.detachedHead,
       worktreeClean: repoState.worktreeClean,
+      branchName: repoState.branchName,
+      originMainAncestorOfHead: repoState.originMainAncestorOfHead,
       repoRootBinding: 'WORKTREE_LOCAL',
       statusBasename: STATUS_BASENAME,
       writerScriptBasename: path.basename(fileURLToPath(import.meta.url)),
     },
     rowClasses: {
       TRACKED_SCALE: 'tracked-scale',
+      TRACKED_CANDIDATE: 'tracked-candidate',
       DIAGNOSTIC_VIEWPORT: 'diagnostic-viewport',
       DIAGNOSTIC_INPUT: 'diagnostic-input',
       DIAGNOSTIC_GAP: 'diagnostic-gap',
@@ -549,6 +606,11 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
     diagnosticOnlyRowIds: [...DIAGNOSTIC_ONLY_ROW_IDS],
     trackedScaleRowIds: [...TRACKED_SCALE_ROW_IDS],
     trackedScalePageCounts: [...TRACKED_SCALE_PAGE_COUNTS],
+    trackedCandidateRowIds: [...TRACKED_CANDIDATE_ROW_IDS],
+    trackedCandidatePageCounts: [...TRACKED_CANDIDATE_PAGE_COUNTS],
+    candidateObservedCeiling,
+    diagnosticBoundaryPageCounts: [...DIAGNOSTIC_BOUNDARY_PAGE_COUNTS],
+    supportedTier: SUPPORTED_SCALE_CEILING,
     provisionalObservedCeiling,
     unsupportedAboveCurrentProof,
     readiness: {
@@ -556,10 +618,17 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
       tracked5000Pass,
       rule: READINESS_RULE,
     },
+    candidates: {
+      trackedCandidate10000Pass,
+      supportedTierRaised: false,
+      rule: CANDIDATE_RULE,
+    },
     rules: {
       writeExecutesExplicitRows: true,
       explicitScaleRowsRequired: true,
       diagnosticRowsDoNotRaiseCeiling: true,
+      trackedCandidatesDoNotRaiseSupportedTier: true,
+      diagnosticBoundary25000DoesNotRaiseCeiling: true,
       readinessRequiresTracked5000Pass: true,
       refreshAuthority: WRITE_AUTHORITY_RULE,
     },
@@ -579,7 +648,10 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
   if (!Array.isArray(artifact?.diagnosticOnlyRowIds)) issues.push('DIAGNOSTIC_ONLY_ROW_IDS_MISSING');
   if (!Array.isArray(artifact?.unsupportedAboveCurrentProof)) issues.push('UNSUPPORTED_ABOVE_CURRENT_PROOF_MISSING');
   if (!Array.isArray(artifact?.trackedScalePageCounts)) issues.push('TRACKED_SCALE_PAGE_COUNTS_MISSING');
+  if (!Array.isArray(artifact?.trackedCandidatePageCounts)) issues.push('TRACKED_CANDIDATE_PAGE_COUNTS_MISSING');
+  if (!Array.isArray(artifact?.diagnosticBoundaryPageCounts)) issues.push('DIAGNOSTIC_BOUNDARY_PAGE_COUNTS_MISSING');
   if (normalizeString(artifact?.readiness?.rule) !== READINESS_RULE) issues.push('READINESS_RULE_INVALID');
+  if (normalizeString(artifact?.candidates?.rule) !== CANDIDATE_RULE) issues.push('CANDIDATE_RULE_INVALID');
 
   const rowIds = rows.map((row) => normalizeString(row?.id));
   const expectedIdHash = sha256Text(EXPECTED_ROW_IDS.join('\n'));
@@ -596,8 +668,27 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
     if (normalizeString(row.rowClass) !== rowDefinition.rowClass) issues.push(`ROW_CLASS_INVALID_${rowDefinition.id}`);
     if (Boolean(row.diagnosticOnly) !== rowDefinition.diagnosticOnly) issues.push(`ROW_DIAGNOSTIC_FLAG_INVALID_${rowDefinition.id}`);
     if (!STATUS_VALUES.has(normalizeString(row.status))) issues.push(`ROW_STATUS_INVALID_${rowDefinition.id}`);
-    if (rowDefinition.rowClass === 'tracked-scale' && Number(row.pageCount || 0) !== rowDefinition.pageCount) {
-      issues.push(`ROW_PAGE_COUNT_INVALID_${rowDefinition.id}`);
+    if (rowDefinition.rowClass === 'tracked-scale' || rowDefinition.rowClass === 'tracked-candidate') {
+      if (Number(row.pageCount || 0) !== rowDefinition.pageCount) {
+        issues.push(`ROW_PAGE_COUNT_INVALID_${rowDefinition.id}`);
+      }
+      for (const metricName of [
+        'targetPageCount',
+        'actualPageCount',
+        'renderedSheetShellCount',
+        'hiddenPageCount',
+        'domNodeCount',
+        'loadMs',
+        'networkRequests',
+        'dialogCalls',
+        'textHashStable',
+        'typingTypeMs',
+        'typingUndoRestoredHash',
+        'typingRedoRestoredTypedHash',
+        'typingCleanupRestoredHash',
+      ]) {
+        requireObservedMetric(issues, row, metricName);
+      }
     }
   }
 
@@ -631,13 +722,43 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
   if (sha256Text(TRACKED_SCALE_PAGE_COUNTS.join('\n')) !== sha256Text(actualTrackedScalePageCounts.join('\n'))) {
     issues.push('TRACKED_SCALE_PAGE_COUNTS_DO_NOT_MATCH');
   }
+  if (actualTrackedScalePageCounts.some((pageCount) => pageCount > SUPPORTED_SCALE_CEILING)) {
+    issues.push('TRACKED_SCALE_PAGE_COUNTS_ABOVE_SUPPORTED_TIER');
+  }
+
+  const actualTrackedCandidatePageCounts = Array.isArray(artifact?.trackedCandidatePageCounts)
+    ? artifact.trackedCandidatePageCounts.map((pageCount) => Number(pageCount || 0))
+    : [];
+  if (sha256Text(TRACKED_CANDIDATE_PAGE_COUNTS.join('\n')) !== sha256Text(actualTrackedCandidatePageCounts.join('\n'))) {
+    issues.push('TRACKED_CANDIDATE_PAGE_COUNTS_DO_NOT_MATCH');
+  }
+
+  const actualDiagnosticBoundaryPageCounts = Array.isArray(artifact?.diagnosticBoundaryPageCounts)
+    ? artifact.diagnosticBoundaryPageCounts.map((pageCount) => Number(pageCount || 0))
+    : [];
+  if (sha256Text(DIAGNOSTIC_BOUNDARY_PAGE_COUNTS.join('\n')) !== sha256Text(actualDiagnosticBoundaryPageCounts.join('\n'))) {
+    issues.push('DIAGNOSTIC_BOUNDARY_PAGE_COUNTS_DO_NOT_MATCH');
+  }
 
   const trackedScaleRows = rows.filter((row) => normalizeString(row?.rowClass) === 'tracked-scale');
+  const trackedCandidateRows = rows.filter((row) => normalizeString(row?.rowClass) === 'tracked-candidate');
   const expectedCeiling = trackedScaleRows
     .filter((row) => normalizeString(row?.status) === 'PASS')
     .reduce((max, row) => Math.max(max, Number(row?.pageCount || 0)), 0);
   if (Number(artifact?.provisionalObservedCeiling || 0) !== expectedCeiling) {
     issues.push('PROVISIONAL_OBSERVED_CEILING_INVALID');
+  }
+  if (Number(artifact?.provisionalObservedCeiling || 0) > SUPPORTED_SCALE_CEILING) {
+    issues.push('PROVISIONAL_OBSERVED_CEILING_ABOVE_SUPPORTED_TIER');
+  }
+  if (Number(artifact?.supportedTier || 0) !== SUPPORTED_SCALE_CEILING) {
+    issues.push('SUPPORTED_TIER_INVALID');
+  }
+  const expectedCandidateCeiling = trackedCandidateRows
+    .filter((row) => normalizeString(row?.status) === 'PASS')
+    .reduce((max, row) => Math.max(max, Number(row?.pageCount || 0)), 0);
+  if (Number(artifact?.candidateObservedCeiling || 0) !== expectedCandidateCeiling) {
+    issues.push('CANDIDATE_OBSERVED_CEILING_INVALID');
   }
 
   const expectedUnsupportedAboveCurrentProof = TRACKED_SCALE_PAGE_COUNTS.filter((pageCount) => pageCount > expectedCeiling);
@@ -655,6 +776,24 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
   if (Boolean(artifact?.readiness?.tracked5000Pass) !== tracked5000Pass) issues.push('READINESS_TRACKED_5000_FLAG_INVALID');
   if (artifact?.readiness?.editorialSheet5000Ready === true && tracked5000Pass !== true) {
     issues.push('FALSE_GREEN_5000_READINESS_WITHOUT_TRACKED_5000_PASS');
+  }
+  for (const [key, value] of Object.entries(artifact?.readiness || {})) {
+    if (/(10000|25000)/u.test(key) && value === true) issues.push(`UNSUPPORTED_READINESS_CLAIM_${key}`);
+  }
+
+  const trackedCandidate10000Pass = trackedCandidateRows.some((row) => Number(row?.pageCount || 0) === 10000 && normalizeString(row?.status) === 'PASS');
+  if (Boolean(artifact?.candidates?.trackedCandidate10000Pass) !== trackedCandidate10000Pass) {
+    issues.push('CANDIDATE_TRACKED_10000_FLAG_INVALID');
+  }
+  if (artifact?.candidates?.supportedTierRaised === true) {
+    issues.push('CANDIDATE_SUPPORTED_TIER_RAISED');
+  }
+  if (
+    rows.some((row) => Number(row?.pageCount || 0) === 25000 && row?.diagnosticOnly !== true)
+    || actualTrackedScalePageCounts.includes(25000)
+    || actualTrackedCandidatePageCounts.includes(25000)
+  ) {
+    issues.push('DIAGNOSTIC_25000_PROMOTED');
   }
 
   const expectedOk = expectedFailedRowIds.length === 0;
@@ -683,25 +822,35 @@ async function writeJsonAtomic(targetPath, value) {
   await fsp.rename(tmpPath, targetPath);
 }
 
-export function evaluateEditorialSheetStressLaneStatus(artifact, { repoRoot = DEFAULT_REPO_ROOT } = {}) {
+export function evaluateEditorialSheetStressLaneStatus(
+  artifact,
+  { repoRoot = DEFAULT_REPO_ROOT, repoStateOverride = null } = {},
+) {
   const validation = validateEditorialSheetStressLaneStatus(artifact);
-  const repoState = getRepoState(repoRoot);
+  const repoState = repoStateOverride || getRepoState(repoRoot);
   const issues = [...validation.issues];
-  const expectedExecutionHeadSha = normalizeString(repoState.originMainHeadSha || repoState.currentHeadSha);
+  const expectedExecutionHeadSha = normalizeString(repoState.currentHeadSha || repoState.originMainHeadSha);
   const artifactHeadSha = normalizeString(artifact?.repo?.headSha);
-  const acceptedExecutionHeadShas = [expectedExecutionHeadSha];
+  const acceptedExecutionHeadShas = [
+    expectedExecutionHeadSha,
+    normalizeString(repoState.originMainHeadSha),
+  ].filter(Boolean);
   const statusRelPathPosix = STATUS_REL_PATH.split(path.sep).join(path.posix.sep);
   const statusRelPathNative = STATUS_REL_PATH.split(path.posix.sep).join(path.sep);
-  const mergeCommitRebindAllowed = (
-    normalizeString(repoState.currentHeadSecondParentSha)
-    && normalizeString(repoState.currentHeadFirstParentSha)
+  const statusChangedFromFirstParent = (
+    normalizeString(repoState.currentHeadFirstParentSha)
     && expectedExecutionHeadSha === normalizeString(repoState.currentHeadSha)
     && repoState.currentHeadChangedPathsFromFirstParent.some(
       (entry) => entry === statusRelPathNative || entry === statusRelPathPosix,
     )
   );
-  if (mergeCommitRebindAllowed) {
+  if (statusChangedFromFirstParent) {
     acceptedExecutionHeadShas.push(normalizeString(repoState.currentHeadFirstParentSha));
+  }
+  const mergeCommitRebindAllowed = statusChangedFromFirstParent
+    && normalizeString(repoState.currentHeadSecondParentSha);
+  if (mergeCommitRebindAllowed) {
+    acceptedExecutionHeadShas.push(normalizeString(repoState.currentHeadSecondParentSha));
   }
 
   if (normalizeString(artifact?.status) !== 'PASS') issues.push('ARTIFACT_STATUS_NOT_PASS');
