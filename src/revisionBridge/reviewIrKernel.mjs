@@ -78,6 +78,11 @@ export const REASON_CODES = Object.freeze({
   FIXTURE_TEXT_WRITE_OWNER_MISSING: 'FIXTURE_TEXT_WRITE_OWNER_MISSING',
   FIXTURE_TEXT_WRITE_SCOPE_UNSAFE: 'FIXTURE_TEXT_WRITE_SCOPE_UNSAFE',
   FIXTURE_ROOT_CREATION_PLAN_REQUIRED: 'FIXTURE_ROOT_CREATION_PLAN_REQUIRED',
+  FIXTURE_TEMP_RENAME_POLICY_REQUIRED: 'FIXTURE_TEMP_RENAME_POLICY_REQUIRED',
+  FIXTURE_TEMP_RENAME_OWNER_MISSING: 'FIXTURE_TEMP_RENAME_OWNER_MISSING',
+  FIXTURE_TEMP_RENAME_SCOPE_UNSAFE: 'FIXTURE_TEMP_RENAME_SCOPE_UNSAFE',
+  FIXTURE_TEXT_WRITE_PLAN_REQUIRED: 'FIXTURE_TEXT_WRITE_PLAN_REQUIRED',
+  TEMP_RENAME_OBSERVATION_MISMATCH: 'TEMP_RENAME_OBSERVATION_MISMATCH',
   HASH_OBSERVATION_MISMATCH: 'HASH_OBSERVATION_MISMATCH',
   FIXTURE_ROOT_NOT_ISOLATED: 'FIXTURE_ROOT_NOT_ISOLATED',
   PRODUCT_ROOT_FORBIDDEN: 'PRODUCT_ROOT_FORBIDDEN',
@@ -2056,6 +2061,233 @@ export function compileExactTextTestFixtureTextWritePlan(input = {}) {
     storageImportsAdded: false,
     storagePrimitiveChanged: false,
     fixtureTextWriteDecisions,
+    blockedReasons: uniqueBlockedReasons,
+  };
+  return {
+    ...resultCore,
+    canonicalHash: canonicalHash(resultCore),
+  };
+}
+
+function fixtureTextWritePlanBindingReasons(writePlanResult = {}) {
+  const reasons = [];
+  const decisions = writePlanResult.fixtureTextWriteDecisions || [];
+  if (
+    writePlanResult.contractOnly !== true
+    || writePlanResult.testFixtureTextWritePlanOnly !== true
+    || writePlanResult.testFixtureTextWriteAdmitted !== true
+    || writePlanResult.testFixtureFileWriteOnly !== true
+    || writePlanResult.hashObservationOnly !== true
+    || writePlanResult.filesystemWritePerformed !== false
+    || writePlanResult.fsMutationPerformed !== false
+    || writePlanResult.productWritePerformed !== false
+    || writePlanResult.productWriteClaimed !== false
+    || writePlanResult.fixtureBackupCreated !== false
+    || writePlanResult.fixtureAtomicWriteExecuted !== false
+    || writePlanResult.fixtureRecoverySnapshotCreated !== false
+    || writePlanResult.fixtureReceiptPersisted !== false
+    || writePlanResult.durableReceiptClaimed !== false
+    || writePlanResult.productStorageSafetyClaimed !== false
+    || writePlanResult.publicSurfaceClaimed !== false
+    || writePlanResult.docxImportClaimed !== false
+    || writePlanResult.uiChanged !== false
+    || writePlanResult.applyTxnClaimed !== false
+    || writePlanResult.crashRecoveryClaimed !== false
+    || writePlanResult.releaseClaimed !== false
+    || writePlanResult.storageImportsAdded !== false
+    || writePlanResult.storagePrimitiveChanged !== false
+    || decisions.length !== 1
+    || !hasValue(writePlanResult.canonicalHash)
+    || !hasValue(decisions[0]?.canonicalHash)
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_TEXT_WRITE_PLAN_REQUIRED);
+  }
+  return uniqueStrings(reasons);
+}
+
+function fixtureTempRenamePolicyReasons(policy = {}, input = {}) {
+  const reasons = [];
+  const tempSegments = pathSegmentsFromPolicy({ relativePath: policy.tempRelativePath, relativePathSegments: policy.tempRelativePathSegments });
+  const targetSegments = pathSegmentsFromPolicy({ relativePath: policy.targetRelativePath, relativePathSegments: policy.targetRelativePathSegments });
+  const tempPathText = String(policy.tempRelativePath ?? '');
+  const targetPathText = String(policy.targetRelativePath ?? '');
+  const afterObservation = createFixtureTextHashObservation(policy.afterText || '', policy.hashPolicy);
+  if (policy.ownerFixtureTempRenameApproved !== true) {
+    reasons.push(REASON_CODES.FIXTURE_TEMP_RENAME_OWNER_MISSING);
+  }
+  if (
+    policy.fixtureTempRenameRequested !== true
+    || policy.renameMode !== 'TEST_TEMP_RENAME_ONLY'
+    || policy.realIoScope !== 'TEMP_FILE_RENAME_ONLY'
+    || policy.baseLocationKind !== 'OS_TEMP'
+    || policy.sameRootRename !== true
+    || policy.hashObservationOnly !== true
+    || policy.cleanupRequired !== true
+    || !hasValue(policy.tempRelativePath)
+    || !hasValue(policy.targetRelativePath)
+    || tempSegments.length !== 1
+    || targetSegments.length !== 1
+    || tempPathText !== tempSegments[0]
+    || targetPathText !== targetSegments[0]
+    || tempPathText === targetPathText
+    || tempPathText.includes('/')
+    || tempPathText.includes('\\')
+    || targetPathText.includes('/')
+    || targetPathText.includes('\\')
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_TEMP_RENAME_POLICY_REQUIRED);
+  }
+  if (
+    policy.repoRootAccess === true
+    || policy.productRootAccess === true
+    || policy.productPathAccess === true
+    || policy.rootInsideProject === true
+    || input?.repoRootAccessRequested === true
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_TEMP_RENAME_SCOPE_UNSAFE);
+  }
+  if (
+    tempSegments.some((segment) => segment === '..' || segment === '.')
+    || targetSegments.some((segment) => segment === '..' || segment === '.')
+  ) {
+    reasons.push(REASON_CODES.PATH_TRAVERSAL_FORBIDDEN);
+  }
+  if (
+    looksAbsolutePath(policy.tempRelativePath)
+    || looksAbsolutePath(policy.targetRelativePath)
+    || looksAbsolutePath(policy.absolutePathProbe)
+  ) {
+    reasons.push(REASON_CODES.ABSOLUTE_PATH_ESCAPE_FORBIDDEN);
+  }
+  if (
+    hasValue(policy.expectedAfterHash)
+    && policy.expectedAfterHash !== afterObservation.textHash
+  ) {
+    reasons.push(REASON_CODES.HASH_OBSERVATION_MISMATCH);
+  }
+  if (input?.leftoverTempFileObserved === true || input?.renameObservationMismatch === true) {
+    reasons.push(REASON_CODES.TEMP_RENAME_OBSERVATION_MISMATCH);
+  }
+  if (
+    input?.productRootRequested === true
+    || input?.productPathRequested === true
+    || input?.productWrite === true
+    || input?.runtimeWritable === true
+    || input?.productAtomicityClaimed === true
+  ) {
+    reasons.push(REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (input?.publicSurfaceRequested === true) {
+    reasons.push(REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (input?.storagePrimitiveRequested === true) {
+    reasons.push(REASON_CODES.FS_MUTATION_FORBIDDEN_IN_CONTOUR);
+  }
+  return uniqueStrings(reasons);
+}
+
+function createTestFixtureTempRenameObservationDecision(writePlanResult, policy) {
+  const writeDecision = writePlanResult.fixtureTextWriteDecisions[0];
+  const afterObservation = createFixtureTextHashObservation(policy.afterText || '', policy.hashPolicy);
+  const decisionCore = {
+    fixtureTempRenameDecisionKind: 'EXACT_TEXT_TEST_FIXTURE_TEMP_RENAME_OBSERVATION_DECISION',
+    decisionMode: 'TEST_TEMP_RENAME_HASH_OBSERVATION_ONLY',
+    testFixtureTempRenameAdmitted: true,
+    testFixtureTempRenameObservationOnly: true,
+    hashObservationOnly: true,
+    cleanupRequired: true,
+    xplatAtomicityNotProven: true,
+    productAtomicWriteNotProven: true,
+    tempRenameNotRecovery: true,
+    filesystemWritePerformed: false,
+    productWritePerformed: false,
+    productAtomicityClaimed: false,
+    fixtureBackupCreated: false,
+    fixtureAtomicWriteExecuted: false,
+    fixtureRecoverySnapshotCreated: false,
+    fixtureReceiptPersisted: false,
+    sourceFixtureTextWriteResultHash: writePlanResult.canonicalHash,
+    sourceFixtureTextWriteDecisionHash: writeDecision.canonicalHash,
+    sourceFixtureRootCreationResultHash: writeDecision.sourceFixtureRootCreationResultHash,
+    sourceFixtureRootCreationDecisionHash: writeDecision.sourceFixtureRootCreationDecisionHash,
+    tempRelativePath: policy.tempRelativePath,
+    targetRelativePath: policy.targetRelativePath,
+    tempRelativePathSegments: pathSegmentsFromPolicy({
+      relativePath: policy.tempRelativePath,
+      relativePathSegments: policy.tempRelativePathSegments,
+    }),
+    targetRelativePathSegments: pathSegmentsFromPolicy({
+      relativePath: policy.targetRelativePath,
+      relativePathSegments: policy.targetRelativePathSegments,
+    }),
+    afterHashObservation: afterObservation,
+    renamePolicySnapshot: {
+      ownerFixtureTempRenameApproved: policy.ownerFixtureTempRenameApproved === true,
+      fixtureTempRenameRequested: policy.fixtureTempRenameRequested === true,
+      renameMode: policy.renameMode,
+      realIoScope: policy.realIoScope,
+      baseLocationKind: policy.baseLocationKind,
+      sameRootRename: policy.sameRootRename === true,
+      hashObservationOnly: policy.hashObservationOnly === true,
+      cleanupRequired: policy.cleanupRequired === true,
+      repoRootAccess: policy.repoRootAccess === true,
+      productRootAccess: policy.productRootAccess === true,
+      productPathAccess: policy.productPathAccess === true,
+    },
+  };
+  const decisionWithId = {
+    fixtureTempRenameDecisionId: `fixture_temp_rename_${canonicalHash(decisionCore).slice(0, 16)}`,
+    ...decisionCore,
+  };
+  return {
+    ...decisionWithId,
+    canonicalHash: canonicalHash(decisionWithId),
+  };
+}
+
+export function compileExactTextTestFixtureTempRenameObservationPlan(input = {}) {
+  const writePlanResult = input?.fixtureTextWritePlanResult || {};
+  const policy = input?.fixtureTempRenamePolicy || {};
+  const blockedReasons = [
+    ...(writePlanResult.blockedReasons || []),
+    ...fixtureTextWritePlanBindingReasons(writePlanResult),
+    ...fixtureTempRenamePolicyReasons(policy, input),
+  ];
+
+  const uniqueBlockedReasons = uniqueStrings(blockedReasons);
+  const fixtureTempRenameDecisions = uniqueBlockedReasons.length === 0
+    ? [createTestFixtureTempRenameObservationDecision(writePlanResult, policy)]
+    : [];
+  const resultCore = {
+    resultKind: 'EXACT_TEXT_TEST_FIXTURE_TEMP_RENAME_OBSERVATION_PLAN_RESULT',
+    contractOnly: true,
+    testFixtureTempRenameObservationPlanOnly: true,
+    testFixtureTempRenameAdmitted: fixtureTempRenameDecisions.length === 1,
+    testFixtureTempRenameObservationOnly: fixtureTempRenameDecisions.length === 1,
+    hashObservationOnly: true,
+    xplatAtomicityNotProven: true,
+    productAtomicWriteNotProven: true,
+    tempRenameNotRecovery: true,
+    filesystemWritePerformed: false,
+    fsMutationPerformed: false,
+    productWritePerformed: false,
+    productWriteClaimed: false,
+    productAtomicityClaimed: false,
+    fixtureBackupCreated: false,
+    fixtureAtomicWriteExecuted: false,
+    fixtureRecoverySnapshotCreated: false,
+    fixtureReceiptPersisted: false,
+    durableReceiptClaimed: false,
+    productStorageSafetyClaimed: false,
+    publicSurfaceClaimed: false,
+    docxImportClaimed: false,
+    uiChanged: false,
+    applyTxnClaimed: false,
+    crashRecoveryClaimed: false,
+    releaseClaimed: false,
+    storageImportsAdded: false,
+    storagePrimitiveChanged: false,
+    fixtureTempRenameDecisions,
     blockedReasons: uniqueBlockedReasons,
   };
   return {
