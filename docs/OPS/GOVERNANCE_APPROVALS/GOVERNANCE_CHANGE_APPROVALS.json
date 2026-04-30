@@ -3,7 +3,7 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_5000_CLOSEOUT_SUMMARY.json",
-      "sha256": "feb94149b1fe0bca301f92bb5fb939df8404103e17ac6cd5b7402a60f5fa6aef",
+      "sha256": "79efe249b7e780c081d4c1d8e5d3a7c19667164135a01a65ad2b71a4dd4fa27c",
       "approvedBy": "ticket:CONTOUR_06_5000_GATE_POST_CLOSEOUT",
       "approvedAtUtc": "2026-04-30T13:05:00.000Z",
       "rationale": "Approve non-authoritative editorial sheet 5000 post-closeout navigation summary bound to committed stress evidence; active canon and executed proof artifacts remain higher authority."
@@ -2929,7 +2929,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "951890425f41ed05ef7f9da059ec000fbd3df4d5d3aee59fbdc8b273fd2d88f4",
+      "sha256": "9b184598260be7c025548173a40fd3695df1e77dc11137524c599a0e11bf3bab",
       "approvedBy": "ticket:CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR",
       "approvedAtUtc": "2026-04-30T00:00:00.000Z",
       "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the bounded detached-mainline stress lane artifact refresh after merge-topology freshness repair closed the remaining stale-proof recursion without widening runtime, storage, export, UI, or dependency scope."

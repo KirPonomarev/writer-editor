@@ -4,8 +4,8 @@
   "status": "NON_AUTHORITATIVE_NAVIGATION_SUMMARY",
   "authorityClass": "ADVISORY_STATUS_POINTER_ONLY",
   "primaryRule": "ACTIVE_CANON_AND_EXECUTED_MACHINE_PROOFS_WIN",
-  "generatedAtUtc": "2026-04-30T13:05:00.000Z",
-  "closeoutBaseSha": "be160273e56c13c1cf9fe1663bf9cffd4f47d172",
+  "generatedAtUtc": "2026-04-30T13:06:24.303Z",
+  "closeoutBaseSha": "6f6a5f183c7f43cf6dbf28c6fc4951ae12d73aba",
   "summaryIsProof": false,
   "requiresExecutableProof": true,
   "finalGateReportBinding": {
@@ -16,8 +16,8 @@
   "committedMachineProofSource": {
     "artifact": "EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
     "taskId": "CONTOUR_04_WRITE_IMPL",
-    "artifactHeadSha": "4a90daac02f1d4fe88ec3cf991596f3b89c80795",
-    "artifactGeneratedAtUtc": "2026-04-30T12:26:49.248Z"
+    "artifactHeadSha": "6f6a5f183c7f43cf6dbf28c6fc4951ae12d73aba",
+    "artifactGeneratedAtUtc": "2026-04-30T13:06:24.303Z"
   },
   "claim": {
     "trackedScale5000MetricsPresent": true,
@@ -58,7 +58,7 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 334
+      "typingMs": 359
     },
     {
       "targetPageCount": 3000,
@@ -68,7 +68,7 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 785
+      "typingMs": 512
     },
     {
       "targetPageCount": 4000,
@@ -78,7 +78,7 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 322
+      "typingMs": 325
     },
     {
       "targetPageCount": 5000,
@@ -88,7 +88,7 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 462
+      "typingMs": 509
     }
   ],
   "strobeClassification": {
