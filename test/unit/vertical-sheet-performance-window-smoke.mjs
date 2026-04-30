@@ -139,8 +139,21 @@ async function collectState(win, label) {
     const visibleViewportTextRectCount = canvasRect
       ? textRects.filter((textRect) => textRect && intersects(textRect, canvasRect)).length
       : 0;
+    const proseStyle = prose ? window.getComputedStyle(prose) : null;
+    const parsedLineHeight = proseStyle ? Number.parseFloat(proseStyle.lineHeight) : 0;
+    const parsedFontSize = proseStyle ? Number.parseFloat(proseStyle.fontSize) : 0;
+    const lineBoxBoundaryTolerancePx = Number.isFinite(parsedLineHeight) && parsedLineHeight > 0
+      ? parsedLineHeight
+      : Math.max(0, Number.isFinite(parsedFontSize) ? parsedFontSize * 1.625 : 0);
     const textGapIntersectionCount = textRects.filter((textRect) => (
-      textRect && gapRects.some((gapRect) => gapRect.height > 0 && intersects(textRect, gapRect))
+      textRect && gapRects.some((gapRect) => {
+        const coreGapRect = {
+          ...gapRect,
+          top: gapRect.top + lineBoxBoundaryTolerancePx,
+          bottom: gapRect.bottom - lineBoxBoundaryTolerancePx,
+        };
+        return coreGapRect.bottom > coreGapRect.top && intersects(textRect, coreGapRect);
+      })
     )).length;
     const rightFlowSheetPairCount = pageRects.slice(1).filter((rect, index) => {
       const previous = pageRects[index];
@@ -313,7 +326,8 @@ async function focusEditorEnd(win) {
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('force-device-scale-factor', '1');
 app.commandLine.appendSwitch('high-dpi-support', '1');
-app.setPath('userData', path.join(outputDir, 'user-data'));
+app.setPath('appData', path.join(outputDir, 'app-data'));
+app.setPath('userData', path.join(outputDir, 'app-data', 'craftsman'));
 for (const method of ['showOpenDialog', 'showSaveDialog', 'showMessageBox']) {
   dialog[method] = async () => {
     dialogCalls += 1;
@@ -495,6 +509,11 @@ assert.equal(
   result.scrollTransition.afterScrollImmediate.visibleViewportTextRectCount > 0,
   true,
   `after scroll immediate viewport must show text, got ${result.scrollTransition.afterScrollImmediate.visibleViewportTextRectCount}`,
+);
+assert.equal(
+  result.scrollTransition.afterScrollImmediate.visibleViewportSheetCount > 0,
+  true,
+  `after scroll immediate viewport must show sheets, got ${result.scrollTransition.afterScrollImmediate.visibleViewportSheetCount}`,
 );
 assert.equal(
   result.scrollTransition.afterScrollSync.visibleViewportSheetCount > 0,

@@ -190,7 +190,8 @@ async function mutateViewportDomOutsideTextTruth(win) {
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('force-device-scale-factor', '1');
 app.commandLine.appendSwitch('high-dpi-support', '1');
-app.setPath('userData', path.join(outputDir, 'user-data'));
+app.setPath('appData', path.join(outputDir, 'app-data'));
+app.setPath('userData', path.join(outputDir, 'app-data', 'craftsman'));
 for (const method of ['showOpenDialog', 'showSaveDialog', 'showMessageBox']) {
   dialog[method] = async () => {
     dialogCalls += 1;
