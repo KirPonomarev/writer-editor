@@ -13,6 +13,14 @@ export const STATUS_BASENAME = 'EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json';
 export const STATUS_REL_PATH = path.join('docs', 'OPS', 'STATUS', STATUS_BASENAME);
 export const TOKEN_NAME = 'EDITORIAL_SHEET_STRESS_LANE_STATUS_OK';
 export const DEFAULT_REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+export const WRITE_AUTHORITY_RULE = 'CURRENT_CLEAN_DETACHED_MAINLINE_ONLY';
+export const ROW_NODE_MODULES_ROOT_ENV = 'EDITORIAL_SHEET_NODE_MODULES_ROOT';
+export const OWNED_BASENAMES = Object.freeze([
+  'editorial-sheet-stress-lane-state.mjs',
+  'editorial-sheet-stress-lane-status.contract.test.js',
+  STATUS_BASENAME,
+  'GOVERNANCE_CHANGE_APPROVALS.json',
+]);
 
 const STATUS_VALUES = new Set(['PASS', 'FAIL', 'STOP_RESOURCE_LIMIT']);
 const SCALE_ROW_TIMEOUT_MS = 8 * 60 * 1000;
@@ -189,6 +197,117 @@ function getGitHead(repoRoot) {
   return result.status === 0 ? normalizeString(result.stdout) : '';
 }
 
+function getGitRef(repoRoot, refName) {
+  const result = spawnSync('git', ['rev-parse', refName], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+  return result.status === 0 ? normalizeString(result.stdout) : '';
+}
+
+function getGitStatusPorcelain(repoRoot) {
+  const result = spawnSync('git', ['status', '--porcelain', '--untracked-files=all'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+  return result.status === 0 ? String(result.stdout || '') : '';
+}
+
+function hasElectronInstall(nodeModulesRoot) {
+  if (typeof nodeModulesRoot !== 'string' || !nodeModulesRoot) return false;
+  return fs.existsSync(path.join(nodeModulesRoot, 'electron', 'package.json'));
+}
+
+function collectWorktreeNodeModulesRoots(repoRoot) {
+  const roots = [];
+  const result = spawnSync('git', ['worktree', 'list', '--porcelain'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+  if (result.status !== 0) return roots;
+
+  for (const line of String(result.stdout || '').split('\n')) {
+    if (!line.startsWith('worktree ')) continue;
+    const worktreePath = normalizeString(line.slice('worktree '.length));
+    if (!worktreePath) continue;
+    roots.push(path.join(worktreePath, 'node_modules'));
+  }
+  return roots;
+}
+
+function resolveRowNodeModulesRoot(repoRoot) {
+  const candidates = [
+    normalizeString(process.env[ROW_NODE_MODULES_ROOT_ENV]),
+    path.join(repoRoot, 'node_modules'),
+    ...collectWorktreeNodeModulesRoots(repoRoot),
+  ];
+  const seen = new Set();
+  for (const candidate of candidates) {
+    if (!candidate || seen.has(candidate)) continue;
+    seen.add(candidate);
+    if (hasElectronInstall(candidate)) return candidate;
+  }
+  return '';
+}
+
+function getDetachedHeadState(repoRoot) {
+  const result = spawnSync('git', ['symbolic-ref', '-q', '--short', 'HEAD'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+  return {
+    detachedHead: result.status !== 0,
+    branchName: result.status === 0 ? normalizeString(result.stdout) : '',
+  };
+}
+
+export function getRepoState(repoRoot = DEFAULT_REPO_ROOT) {
+  const currentHeadSha = getGitHead(repoRoot);
+  const originMainHeadSha = getGitRef(repoRoot, 'refs/remotes/origin/main');
+  const detachedState = getDetachedHeadState(repoRoot);
+  const statusPorcelain = getGitStatusPorcelain(repoRoot);
+
+  return {
+    currentHeadSha,
+    originMainHeadSha,
+    detachedHead: detachedState.detachedHead,
+    branchName: detachedState.branchName,
+    worktreeClean: statusPorcelain.trim() === '',
+    statusPorcelain,
+    changedPaths: statusPorcelain
+      .split(/\r?\n/u)
+      .map((line) => line.slice(3).trim())
+      .filter(Boolean),
+  };
+}
+
+export function evaluateWriteAuthority(repoState) {
+  const issues = [];
+  const changedBasenames = (Array.isArray(repoState?.changedPaths) ? repoState.changedPaths : [])
+    .map((entry) => path.basename(entry));
+  const unownedDirtyBasenames = [...new Set(changedBasenames.filter((basename) => !OWNED_BASENAMES.includes(basename)))];
+
+  if (!repoState?.detachedHead) issues.push('HEAD_NOT_DETACHED');
+  if (!normalizeString(repoState?.currentHeadSha)) issues.push('CURRENT_HEAD_SHA_MISSING');
+  if (!normalizeString(repoState?.originMainHeadSha)) issues.push('ORIGIN_MAIN_HEAD_SHA_MISSING');
+  if (
+    normalizeString(repoState?.currentHeadSha)
+    && normalizeString(repoState?.originMainHeadSha)
+    && normalizeString(repoState?.currentHeadSha) !== normalizeString(repoState?.originMainHeadSha)
+  ) {
+    issues.push('HEAD_NOT_AT_ORIGIN_MAIN');
+  }
+  if (unownedDirtyBasenames.length > 0) issues.push('UNOWNED_DIRTY_PATHS_PRESENT');
+
+  return {
+    ok: issues.length === 0,
+    rule: WRITE_AUTHORITY_RULE,
+    issues,
+    changedBasenames,
+    unownedDirtyBasenames,
+  };
+}
+
 function findSummaryLine(stdout, prefix) {
   const source = String(stdout || '');
   const prefixIndex = source.indexOf(prefix);
@@ -332,6 +451,7 @@ function classifyRowResult(spawnResult, summary) {
 }
 
 function runRow(repoRoot, rowDefinition) {
+  const rowNodeModulesRoot = resolveRowNodeModulesRoot(repoRoot);
   const startedAt = new Date();
   const spawnResult = spawnSync(process.execPath, rowDefinition.commandArgs, {
     cwd: repoRoot,
@@ -341,6 +461,14 @@ function runRow(repoRoot, rowDefinition) {
     env: {
       ...process.env,
       ...rowDefinition.env,
+      ...(rowNodeModulesRoot
+        ? {
+            [ROW_NODE_MODULES_ROOT_ENV]: rowNodeModulesRoot,
+            NODE_PATH: [rowNodeModulesRoot, normalizeString(process.env.NODE_PATH)]
+              .filter(Boolean)
+              .join(path.delimiter),
+          }
+        : {}),
       ELECTRON_ENABLE_SECURITY_WARNINGS: 'false',
     },
   });
@@ -369,7 +497,7 @@ function runRow(repoRoot, rowDefinition) {
   };
 }
 
-function buildArtifact(repoRoot, rows) {
+function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
   const explicitRowIds = ROW_DEFINITIONS.map((row) => row.id);
   const executedRowIds = rows.map((row) => row.id);
   const failedRowIds = rows.filter((row) => row.status !== 'PASS').map((row) => row.id);
@@ -391,7 +519,10 @@ function buildArtifact(repoRoot, rows) {
     status: ok ? 'PASS' : 'FAIL',
     [TOKEN_NAME]: ok ? 1 : 0,
     repo: {
-      headSha: getGitHead(repoRoot),
+      headSha: repoState.currentHeadSha,
+      originMainHeadSha: repoState.originMainHeadSha,
+      detachedHead: repoState.detachedHead,
+      worktreeClean: repoState.worktreeClean,
       repoRootBinding: 'WORKTREE_LOCAL',
       statusBasename: STATUS_BASENAME,
       writerScriptBasename: path.basename(fileURLToPath(import.meta.url)),
@@ -421,6 +552,7 @@ function buildArtifact(repoRoot, rows) {
       explicitScaleRowsRequired: true,
       diagnosticRowsDoNotRaiseCeiling: true,
       readinessRequiresTracked5000Pass: true,
+      refreshAuthority: WRITE_AUTHORITY_RULE,
     },
   });
 }
@@ -534,21 +666,57 @@ async function writeJsonAtomic(targetPath, value) {
   await fsp.rename(tmpPath, targetPath);
 }
 
-export function evaluateEditorialSheetStressLaneStatus(artifact) {
+export function evaluateEditorialSheetStressLaneStatus(artifact, { repoRoot = DEFAULT_REPO_ROOT } = {}) {
   const validation = validateEditorialSheetStressLaneStatus(artifact);
+  const repoState = getRepoState(repoRoot);
+  const issues = [...validation.issues];
+
+  if (normalizeString(artifact?.status) !== 'PASS') issues.push('ARTIFACT_STATUS_NOT_PASS');
+  if (artifact?.ok !== true) issues.push('ARTIFACT_OK_FALSE');
+  if (Number(artifact?.[TOKEN_NAME] || 0) !== 1) issues.push('ARTIFACT_TOKEN_NOT_ONE');
+  if (Array.isArray(artifact?.failedRowIds) && artifact.failedRowIds.length > 0) issues.push('ARTIFACT_FAILED_ROWS_PRESENT');
+  if (normalizeString(artifact?.repo?.headSha) !== normalizeString(repoState.currentHeadSha)) {
+    issues.push('ARTIFACT_HEAD_SHA_MISMATCH');
+  }
+
+  const dedupedIssues = [...new Set(issues)];
   return {
-    ok: validation.ok,
-    status: validation.ok ? 'PASS' : 'FAIL',
-    issues: validation.issues,
-    [TOKEN_NAME]: validation.ok ? 1 : 0,
+    ok: dedupedIssues.length === 0,
+    status: dedupedIssues.length === 0 ? 'PASS' : 'FAIL',
+    issues: dedupedIssues,
+    [TOKEN_NAME]: dedupedIssues.length === 0 ? 1 : 0,
+    repoState,
   };
 }
 
 async function executeWriteMode(repoRoot, statusPath) {
+  const repoState = getRepoState(repoRoot);
+  const writeAuthority = evaluateWriteAuthority(repoState);
+  if (!writeAuthority.ok) {
+    return {
+      artifact: null,
+      evaluation: {
+        ok: false,
+        status: 'FAIL',
+        issues: [...writeAuthority.issues],
+        [TOKEN_NAME]: 0,
+        repoState,
+      },
+      writeAuthority,
+      wroteArtifact: false,
+    };
+  }
+
   const rows = ROW_DEFINITIONS.map((rowDefinition) => runRow(repoRoot, rowDefinition));
-  const artifact = buildArtifact(repoRoot, rows);
+  const artifact = buildArtifact(repoRoot, rows, repoState);
+  const evaluation = evaluateEditorialSheetStressLaneStatus(artifact, { repoRoot });
   await writeJsonAtomic(statusPath, artifact);
-  return artifact;
+  return {
+    artifact,
+    evaluation,
+    writeAuthority,
+    wroteArtifact: true,
+  };
 }
 
 async function main() {
@@ -557,31 +725,41 @@ async function main() {
   const statusPath = resolveStatusPath(repoRoot, args.statusPath);
 
   let artifact = null;
+  let evaluation = null;
+  let writeAuthority = null;
+  let wroteArtifact = false;
   if (args.write) {
-    artifact = await executeWriteMode(repoRoot, statusPath);
+    const writeResult = await executeWriteMode(repoRoot, statusPath);
+    artifact = writeResult.artifact;
+    evaluation = writeResult.evaluation;
+    writeAuthority = writeResult.writeAuthority;
+    wroteArtifact = writeResult.wroteArtifact;
   } else {
     artifact = readEditorialSheetStressLaneStatus(statusPath);
     if (!artifact) {
       throw new Error(`STATUS_ARTIFACT_NOT_FOUND:${statusPath}`);
     }
+    evaluation = evaluateEditorialSheetStressLaneStatus(artifact, { repoRoot });
   }
-
-  const evaluation = evaluateEditorialSheetStressLaneStatus(artifact);
 
   if (args.json) {
     process.stdout.write(stableJson({
       artifact,
       evaluation,
       statusPath,
+      writeAuthority,
+      wroteArtifact,
     }));
+    if (!evaluation.ok) process.exitCode = 1;
     return;
   }
 
-  process.stdout.write(`EDITORIAL_SHEET_STRESS_LANE_STATUS=${artifact.status}\n`);
-  process.stdout.write(`${TOKEN_NAME}=${Number(artifact[TOKEN_NAME] || 0)}\n`);
-  process.stdout.write(`PROVISIONAL_OBSERVED_CEILING=${Number(artifact.provisionalObservedCeiling || 0)}\n`);
-  process.stdout.write(`EDITORIAL_SHEET_5000_READY=${artifact.readiness?.editorialSheet5000Ready === true ? 1 : 0}\n`);
-  process.stdout.write(`FAILED_ROW_IDS=${JSON.stringify(artifact.failedRowIds || [])}\n`);
+  process.stdout.write(`EDITORIAL_SHEET_STRESS_LANE_STATUS=${artifact ? artifact.status : 'FAIL'}\n`);
+  process.stdout.write(`${TOKEN_NAME}=${artifact ? Number(artifact[TOKEN_NAME] || 0) : 0}\n`);
+  process.stdout.write(`PROVISIONAL_OBSERVED_CEILING=${Number(artifact?.provisionalObservedCeiling || 0)}\n`);
+  process.stdout.write(`EDITORIAL_SHEET_5000_READY=${artifact?.readiness?.editorialSheet5000Ready === true ? 1 : 0}\n`);
+  process.stdout.write(`FAILED_ROW_IDS=${JSON.stringify(artifact?.failedRowIds || [])}\n`);
+  process.stdout.write(`WROTE_ARTIFACT=${wroteArtifact ? 1 : 0}\n`);
   if (!evaluation.ok) {
     process.stdout.write(`VALIDATION_ISSUES=${JSON.stringify(evaluation.issues)}\n`);
     process.exitCode = 1;

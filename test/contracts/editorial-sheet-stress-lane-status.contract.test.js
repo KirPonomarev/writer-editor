@@ -21,6 +21,21 @@ function readArtifact() {
   return JSON.parse(fs.readFileSync(STATUS_PATH, 'utf8'));
 }
 
+function writeTempArtifact(artifact) {
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'editorial-sheet-stress-lane-status-'));
+  const targetPath = path.join(tmpDir, 'EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json');
+  fs.writeFileSync(targetPath, JSON.stringify(artifact, null, 2));
+  return { tmpDir, targetPath };
+}
+
+function runCli(args = []) {
+  return spawnSync(process.execPath, [MODULE_PATH, '--json', ...args], {
+    cwd: REPO_ROOT,
+    encoding: 'utf8',
+    maxBuffer: 8 * 1024 * 1024,
+  });
+}
+
 test('editorial sheet stress lane: committed artifact schema is valid and explicit row set is fixed', async () => {
   const {
     ARTIFACT_ID,
@@ -29,13 +44,17 @@ test('editorial sheet stress lane: committed artifact schema is valid and explic
     DIAGNOSTIC_ONLY_ROW_IDS,
     TRACKED_SCALE_PAGE_COUNTS,
     validateEditorialSheetStressLaneStatus,
+    evaluateEditorialSheetStressLaneStatus,
   } = await loadModule();
   const artifact = readArtifact();
   const validation = validateEditorialSheetStressLaneStatus(artifact);
+  const evaluation = evaluateEditorialSheetStressLaneStatus(artifact, { repoRoot: REPO_ROOT });
 
   assert.equal(validation.ok, true, validation.issues.join('\n'));
+  assert.equal(evaluation.ok, true, evaluation.issues.join('\n'));
   assert.equal(artifact.schemaVersion, SCHEMA_VERSION);
   assert.equal(artifact.artifactId, ARTIFACT_ID);
+  assert.equal(artifact.repo.headSha, evaluation.repoState.currentHeadSha);
   assert.deepEqual(artifact.explicitRowIds, EXPECTED_ROW_IDS);
   assert.deepEqual(artifact.executedRowIds, EXPECTED_ROW_IDS);
   assert.deepEqual(artifact.diagnosticOnlyRowIds, DIAGNOSTIC_ONLY_ROW_IDS);
@@ -97,4 +116,107 @@ test('editorial sheet stress lane: CLI read mode validates artifact outside repo
   assert.equal(payload.statusPath.endsWith(path.join('docs', 'OPS', 'STATUS', 'EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json')), true);
   assert.equal(payload.artifact.artifactId, 'EDITORIAL_SHEET_STRESS_LANE_STATUS_V3');
   assert.equal(payload.evaluation.ok, true, JSON.stringify(payload.evaluation, null, 2));
+});
+
+test('editorial sheet stress lane: outer evaluation fails on stale head mismatch', async () => {
+  const artifact = readArtifact();
+  const mutated = {
+    ...artifact,
+    repo: {
+      ...artifact.repo,
+      headSha: 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
+    },
+  };
+  const { tmpDir, targetPath } = writeTempArtifact(mutated);
+  const result = runCli(['--status-path', targetPath]);
+  fs.rmSync(tmpDir, { recursive: true, force: true });
+
+  assert.equal(result.status, 1, result.stdout + result.stderr);
+  const payload = JSON.parse(String(result.stdout || '{}'));
+  assert.equal(payload.evaluation.ok, false);
+  assert.ok(payload.evaluation.issues.includes('ARTIFACT_HEAD_SHA_MISMATCH'));
+});
+
+test('editorial sheet stress lane: outer evaluation fails on FAIL status token zero and failed rows', async () => {
+  const artifact = readArtifact();
+  const cases = [
+    {
+      name: 'fail-status',
+      mutate(source) {
+        return { ...source, status: 'FAIL', ok: false };
+      },
+      expectedIssue: 'ARTIFACT_STATUS_NOT_PASS',
+    },
+    {
+      name: 'token-zero',
+      mutate(source) {
+        return { ...source, EDITORIAL_SHEET_STRESS_LANE_STATUS_OK: 0 };
+      },
+      expectedIssue: 'ARTIFACT_TOKEN_NOT_ONE',
+    },
+    {
+      name: 'failed-rows-present',
+      mutate(source) {
+        return { ...source, failedRowIds: ['VIEWPORT_CONTINUITY'] };
+      },
+      expectedIssue: 'ARTIFACT_FAILED_ROWS_PRESENT',
+    },
+  ];
+
+  for (const testCase of cases) {
+    const mutated = testCase.mutate(artifact);
+    const { tmpDir, targetPath } = writeTempArtifact(mutated);
+    const result = runCli(['--status-path', targetPath]);
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+
+    assert.equal(result.status, 1, `${testCase.name}\n${result.stdout}\n${result.stderr}`);
+    const payload = JSON.parse(String(result.stdout || '{}'));
+    assert.equal(payload.evaluation.ok, false, testCase.name);
+    assert.ok(payload.evaluation.issues.includes(testCase.expectedIssue), testCase.name);
+  }
+});
+
+test('editorial sheet stress lane: write authority rejects non-mainline branch drift and unowned dirt', async () => {
+  const { evaluateWriteAuthority, WRITE_AUTHORITY_RULE } = await loadModule();
+
+  const unownedDirtyState = evaluateWriteAuthority({
+    currentHeadSha: 'a'.repeat(40),
+    originMainHeadSha: 'a'.repeat(40),
+    detachedHead: true,
+    changedPaths: ['src/renderer/editor.js'],
+  });
+  assert.equal(unownedDirtyState.ok, false);
+  assert.equal(unownedDirtyState.rule, WRITE_AUTHORITY_RULE);
+  assert.ok(unownedDirtyState.issues.includes('UNOWNED_DIRTY_PATHS_PRESENT'));
+  assert.deepEqual(unownedDirtyState.unownedDirtyBasenames, ['editor.js']);
+
+  const ownedDirtyDetachedState = evaluateWriteAuthority({
+    currentHeadSha: 'a'.repeat(40),
+    originMainHeadSha: 'a'.repeat(40),
+    detachedHead: true,
+    changedPaths: [
+      'scripts/ops/editorial-sheet-stress-lane-state.mjs',
+      'test/contracts/editorial-sheet-stress-lane-status.contract.test.js',
+      'docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json',
+    ],
+  });
+  assert.equal(ownedDirtyDetachedState.ok, true);
+
+  const branchState = evaluateWriteAuthority({
+    currentHeadSha: 'a'.repeat(40),
+    originMainHeadSha: 'a'.repeat(40),
+    detachedHead: false,
+    changedPaths: [],
+  });
+  assert.equal(branchState.ok, false);
+  assert.ok(branchState.issues.includes('HEAD_NOT_DETACHED'));
+
+  const staleMainlineState = evaluateWriteAuthority({
+    currentHeadSha: 'a'.repeat(40),
+    originMainHeadSha: 'b'.repeat(40),
+    detachedHead: true,
+    changedPaths: [],
+  });
+  assert.equal(staleMainlineState.ok, false);
+  assert.ok(staleMainlineState.issues.includes('HEAD_NOT_AT_ORIGIN_MAIN'));
 });
