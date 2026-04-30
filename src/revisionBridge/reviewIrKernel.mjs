@@ -82,6 +82,10 @@ export const REASON_CODES = Object.freeze({
   FIXTURE_TEMP_RENAME_OWNER_MISSING: 'FIXTURE_TEMP_RENAME_OWNER_MISSING',
   FIXTURE_TEMP_RENAME_SCOPE_UNSAFE: 'FIXTURE_TEMP_RENAME_SCOPE_UNSAFE',
   FIXTURE_TEXT_WRITE_PLAN_REQUIRED: 'FIXTURE_TEXT_WRITE_PLAN_REQUIRED',
+  FIXTURE_TEMP_RENAME_PLAN_REQUIRED: 'FIXTURE_TEMP_RENAME_PLAN_REQUIRED',
+  FIXTURE_RECEIPT_FILE_POLICY_REQUIRED: 'FIXTURE_RECEIPT_FILE_POLICY_REQUIRED',
+  FIXTURE_RECEIPT_FILE_OWNER_MISSING: 'FIXTURE_RECEIPT_FILE_OWNER_MISSING',
+  FIXTURE_RECEIPT_FILE_SCOPE_UNSAFE: 'FIXTURE_RECEIPT_FILE_SCOPE_UNSAFE',
   TEMP_RENAME_OBSERVATION_MISMATCH: 'TEMP_RENAME_OBSERVATION_MISMATCH',
   HASH_OBSERVATION_MISMATCH: 'HASH_OBSERVATION_MISMATCH',
   FIXTURE_ROOT_NOT_ISOLATED: 'FIXTURE_ROOT_NOT_ISOLATED',
@@ -2288,6 +2292,265 @@ export function compileExactTextTestFixtureTempRenameObservationPlan(input = {})
     storageImportsAdded: false,
     storagePrimitiveChanged: false,
     fixtureTempRenameDecisions,
+    blockedReasons: uniqueBlockedReasons,
+  };
+  return {
+    ...resultCore,
+    canonicalHash: canonicalHash(resultCore),
+  };
+}
+
+function fixtureTempRenamePlanBindingReasons(renamePlanResult = {}) {
+  const reasons = [];
+  const decisions = renamePlanResult.fixtureTempRenameDecisions || [];
+  const decision = decisions[0] || {};
+  if (
+    renamePlanResult.contractOnly !== true
+    || renamePlanResult.testFixtureTempRenameObservationPlanOnly !== true
+    || renamePlanResult.testFixtureTempRenameAdmitted !== true
+    || renamePlanResult.testFixtureTempRenameObservationOnly !== true
+    || renamePlanResult.hashObservationOnly !== true
+    || renamePlanResult.xplatAtomicityNotProven !== true
+    || renamePlanResult.productAtomicWriteNotProven !== true
+    || renamePlanResult.tempRenameNotRecovery !== true
+    || renamePlanResult.filesystemWritePerformed !== false
+    || renamePlanResult.fsMutationPerformed !== false
+    || renamePlanResult.productWritePerformed !== false
+    || renamePlanResult.productWriteClaimed !== false
+    || renamePlanResult.productAtomicityClaimed !== false
+    || renamePlanResult.fixtureBackupCreated !== false
+    || renamePlanResult.fixtureAtomicWriteExecuted !== false
+    || renamePlanResult.fixtureRecoverySnapshotCreated !== false
+    || renamePlanResult.fixtureReceiptPersisted !== false
+    || renamePlanResult.durableReceiptClaimed !== false
+    || renamePlanResult.productStorageSafetyClaimed !== false
+    || renamePlanResult.publicSurfaceClaimed !== false
+    || renamePlanResult.docxImportClaimed !== false
+    || renamePlanResult.uiChanged !== false
+    || renamePlanResult.applyTxnClaimed !== false
+    || renamePlanResult.crashRecoveryClaimed !== false
+    || renamePlanResult.releaseClaimed !== false
+    || renamePlanResult.storageImportsAdded !== false
+    || renamePlanResult.storagePrimitiveChanged !== false
+    || decisions.length !== 1
+    || !hasValue(renamePlanResult.canonicalHash)
+    || !hasValue(decision?.canonicalHash)
+    || decision.fixtureTempRenameDecisionKind !== 'EXACT_TEXT_TEST_FIXTURE_TEMP_RENAME_OBSERVATION_DECISION'
+    || decision.testFixtureTempRenameAdmitted !== true
+    || decision.testFixtureTempRenameObservationOnly !== true
+    || decision.hashObservationOnly !== true
+    || decision.cleanupRequired !== true
+    || decision.xplatAtomicityNotProven !== true
+    || decision.productAtomicWriteNotProven !== true
+    || decision.tempRenameNotRecovery !== true
+    || decision.filesystemWritePerformed !== false
+    || decision.productWritePerformed !== false
+    || decision.productAtomicityClaimed !== false
+    || decision.fixtureBackupCreated !== false
+    || decision.fixtureAtomicWriteExecuted !== false
+    || decision.fixtureRecoverySnapshotCreated !== false
+    || decision.fixtureReceiptPersisted !== false
+    || !hasValue(decision.sourceFixtureTextWriteResultHash)
+    || !hasValue(decision.sourceFixtureTextWriteDecisionHash)
+    || !hasValue(decision.sourceFixtureRootCreationResultHash)
+    || !hasValue(decision.sourceFixtureRootCreationDecisionHash)
+    || !hasValue(decision.afterHashObservation?.textHash)
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_TEMP_RENAME_PLAN_REQUIRED);
+  }
+  return uniqueStrings(reasons);
+}
+
+function fixtureReceiptFilePolicyReasons(policy = {}, input = {}) {
+  const reasons = [];
+  const receiptSegments = pathSegmentsFromPolicy({
+    relativePath: policy.receiptRelativePath,
+    relativePathSegments: policy.receiptRelativePathSegments,
+  });
+  const receiptPathText = String(policy.receiptRelativePath ?? '');
+  const receiptObservation = createFixtureTextHashObservation(policy.receiptText || '', policy.hashPolicy);
+  if (policy.ownerFixtureReceiptFileObservationApproved !== true) {
+    reasons.push(REASON_CODES.FIXTURE_RECEIPT_FILE_OWNER_MISSING);
+  }
+  if (
+    policy.fixtureReceiptFileObservationRequested !== true
+    || policy.observationMode !== 'TEST_TEMP_RECEIPT_FILE_ONLY'
+    || policy.realIoScope !== 'RECEIPT_FILE_WRITE_READBACK_ONLY'
+    || policy.baseLocationKind !== 'OS_TEMP'
+    || policy.receiptObservationOnly !== true
+    || policy.durableReceiptClaimed !== false
+    || policy.applyReceiptImplemented !== false
+    || policy.cleanupRequired !== true
+    || !hasValue(policy.receiptRelativePath)
+    || !hasValue(policy.receiptText)
+    || receiptSegments.length !== 1
+    || receiptPathText !== receiptSegments[0]
+    || receiptPathText.includes('/')
+    || receiptPathText.includes('\\')
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_RECEIPT_FILE_POLICY_REQUIRED);
+  }
+  if (
+    policy.repoRootAccess === true
+    || policy.productRootAccess === true
+    || policy.productPathAccess === true
+    || policy.rootInsideProject === true
+    || input?.repoRootAccessRequested === true
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_RECEIPT_FILE_SCOPE_UNSAFE);
+  }
+  if (receiptSegments.some((segment) => segment === '..' || segment === '.')) {
+    reasons.push(REASON_CODES.PATH_TRAVERSAL_FORBIDDEN);
+  }
+  if (looksAbsolutePath(policy.receiptRelativePath) || looksAbsolutePath(policy.absolutePathProbe)) {
+    reasons.push(REASON_CODES.ABSOLUTE_PATH_ESCAPE_FORBIDDEN);
+  }
+  if (
+    hasValue(policy.expectedReceiptHash)
+    && policy.expectedReceiptHash !== receiptObservation.textHash
+  ) {
+    reasons.push(REASON_CODES.HASH_OBSERVATION_MISMATCH);
+  }
+  if (
+    input?.receiptReadbackMismatch === true
+    || input?.receiptFileObservationMismatch === true
+    || input?.applyReceiptRequested === true
+    || input?.productApplyReceiptClaimed === true
+    || input?.durableReceiptClaimed === true
+    || input?.recoveryClaimed === true
+  ) {
+    reasons.push(REASON_CODES.RECEIPT_CONTRACT_MISMATCH);
+  }
+  if (
+    input?.productRootRequested === true
+    || input?.productPathRequested === true
+    || input?.productWrite === true
+    || input?.runtimeWritable === true
+  ) {
+    reasons.push(REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (input?.publicSurfaceRequested === true) {
+    reasons.push(REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (input?.storagePrimitiveRequested === true) {
+    reasons.push(REASON_CODES.FS_MUTATION_FORBIDDEN_IN_CONTOUR);
+  }
+  return uniqueStrings(reasons);
+}
+
+function createTestFixtureReceiptFileObservationDecision(renamePlanResult, policy) {
+  const renameDecision = renamePlanResult.fixtureTempRenameDecisions[0];
+  const receiptObservation = createFixtureTextHashObservation(policy.receiptText || '', policy.hashPolicy);
+  const decisionCore = {
+    fixtureReceiptFileObservationDecisionKind: 'EXACT_TEXT_TEST_FIXTURE_RECEIPT_FILE_OBSERVATION_DECISION',
+    decisionMode: 'TEST_TEMP_RECEIPT_FILE_WRITE_READBACK_OBSERVATION_ONLY',
+    testFixtureReceiptFileObservationAdmitted: true,
+    testFixtureReceiptFileObservationOnly: true,
+    receiptObservationOnly: true,
+    hashObservationOnly: true,
+    cleanupRequired: true,
+    productReceiptNotProven: true,
+    durableReceiptNotProven: true,
+    productApplyReceiptNotImplemented: true,
+    productDurableReceiptNotProven: true,
+    testReceiptFileNotRecovery: true,
+    fixtureReceiptFileObservationNotProductPersistence: true,
+    applyReceiptImplemented: false,
+    filesystemWritePerformed: false,
+    productWritePerformed: false,
+    fixtureBackupCreated: false,
+    fixtureAtomicWriteExecuted: false,
+    fixtureRecoverySnapshotCreated: false,
+    fixtureReceiptPersisted: false,
+    durableReceiptClaimed: false,
+    productApplyReceiptClaimed: false,
+    sourceFixtureTempRenameResultHash: renamePlanResult.canonicalHash,
+    sourceFixtureTempRenameDecisionHash: renameDecision.canonicalHash,
+    sourceFixtureTextWriteResultHash: renameDecision.sourceFixtureTextWriteResultHash,
+    sourceFixtureTextWriteDecisionHash: renameDecision.sourceFixtureTextWriteDecisionHash,
+    sourceFixtureRootCreationResultHash: renameDecision.sourceFixtureRootCreationResultHash,
+    sourceFixtureRootCreationDecisionHash: renameDecision.sourceFixtureRootCreationDecisionHash,
+    receiptRelativePath: policy.receiptRelativePath,
+    receiptRelativePathSegments: pathSegmentsFromPolicy({
+      relativePath: policy.receiptRelativePath,
+      relativePathSegments: policy.receiptRelativePathSegments,
+    }),
+    receiptText: policy.receiptText,
+    receiptHashObservation: receiptObservation,
+    receiptPolicySnapshot: {
+      ownerFixtureReceiptFileObservationApproved: policy.ownerFixtureReceiptFileObservationApproved === true,
+      fixtureReceiptFileObservationRequested: policy.fixtureReceiptFileObservationRequested === true,
+      observationMode: policy.observationMode,
+      realIoScope: policy.realIoScope,
+      baseLocationKind: policy.baseLocationKind,
+      receiptObservationOnly: policy.receiptObservationOnly === true,
+      durableReceiptClaimed: policy.durableReceiptClaimed === true,
+      applyReceiptImplemented: policy.applyReceiptImplemented === true,
+      cleanupRequired: policy.cleanupRequired === true,
+      repoRootAccess: policy.repoRootAccess === true,
+      productRootAccess: policy.productRootAccess === true,
+      productPathAccess: policy.productPathAccess === true,
+    },
+  };
+  const decisionWithId = {
+    fixtureReceiptFileObservationDecisionId: `fixture_receipt_file_${canonicalHash(decisionCore).slice(0, 16)}`,
+    ...decisionCore,
+  };
+  return {
+    ...decisionWithId,
+    canonicalHash: canonicalHash(decisionWithId),
+  };
+}
+
+export function compileExactTextTestFixtureReceiptFileObservationPlan(input = {}) {
+  const renamePlanResult = input?.fixtureTempRenamePlanResult || {};
+  const policy = input?.fixtureReceiptFilePolicy || {};
+  const blockedReasons = [
+    ...(renamePlanResult.blockedReasons || []),
+    ...fixtureTempRenamePlanBindingReasons(renamePlanResult),
+    ...fixtureReceiptFilePolicyReasons(policy, input),
+  ];
+
+  const uniqueBlockedReasons = uniqueStrings(blockedReasons);
+  const fixtureReceiptFileObservationDecisions = uniqueBlockedReasons.length === 0
+    ? [createTestFixtureReceiptFileObservationDecision(renamePlanResult, policy)]
+    : [];
+  const resultCore = {
+    resultKind: 'EXACT_TEXT_TEST_FIXTURE_RECEIPT_FILE_OBSERVATION_PLAN_RESULT',
+    contractOnly: true,
+    testFixtureReceiptFileObservationPlanOnly: true,
+    testFixtureReceiptFileObservationAdmitted: fixtureReceiptFileObservationDecisions.length === 1,
+    testFixtureReceiptFileObservationOnly: fixtureReceiptFileObservationDecisions.length === 1,
+    receiptObservationOnly: true,
+    hashObservationOnly: true,
+    productReceiptNotProven: true,
+    durableReceiptNotProven: true,
+    productApplyReceiptNotImplemented: true,
+    productDurableReceiptNotProven: true,
+    testReceiptFileNotRecovery: true,
+    fixtureReceiptFileObservationNotProductPersistence: true,
+    applyReceiptImplemented: false,
+    filesystemWritePerformed: false,
+    fsMutationPerformed: false,
+    productWritePerformed: false,
+    productWriteClaimed: false,
+    productAtomicityClaimed: false,
+    fixtureBackupCreated: false,
+    fixtureAtomicWriteExecuted: false,
+    fixtureRecoverySnapshotCreated: false,
+    fixtureReceiptPersisted: false,
+    durableReceiptClaimed: false,
+    productApplyReceiptClaimed: false,
+    productStorageSafetyClaimed: false,
+    publicSurfaceClaimed: false,
+    docxImportClaimed: false,
+    uiChanged: false,
+    applyTxnClaimed: false,
+    crashRecoveryClaimed: false,
+    releaseClaimed: false,
+    storageImportsAdded: false,
+    storagePrimitiveChanged: false,
+    fixtureReceiptFileObservationDecisions,
     blockedReasons: uniqueBlockedReasons,
   };
   return {
