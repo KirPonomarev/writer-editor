@@ -1536,6 +1536,21 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
   return true;
 }
 
+function syncCentralSheetStripWindowFromCachedRuntimeState() {
+  if (
+    !isTiptapMode
+    || !(editor instanceof HTMLElement)
+    || !centralSheetStripCachedRuntimeState
+    || centralSheetStripStructuralGuardActive
+  ) {
+    return false;
+  }
+  if (centralSheetStripCachedRuntimeState.shouldRender === false) {
+    return false;
+  }
+  return applyCentralSheetStripRuntimeState(centralSheetStripCachedRuntimeState);
+}
+
 function refreshCentralSheetStripProof({ reuseCachedDecision = false } = {}) {
   if (!isTiptapMode || !(editor instanceof HTMLElement)) {
     return;
@@ -1582,32 +1597,19 @@ function scheduleCentralSheetStripProofRefreshOnScroll() {
     refreshCentralSheetStripProof();
     return;
   }
-  const nextScrollTop = Math.max(0, Number(centralSheetStripScrollContainer.scrollTop) || 0);
-  const pageStridePx = Math.max(
-    1,
-    Math.round(
-      Number(centralSheetStripCachedRuntimeState.metrics?.pageHeightPx || 0)
-      + Number(centralSheetStripCachedRuntimeState.pageGapPx || 0),
-    ),
-  );
-  const scrollDeltaPx = Math.abs(nextScrollTop - centralSheetStripLastScrollTop);
-  if (
-    !centralSheetStripCacheDirty
-    && centralSheetStripCachedRuntimeState.estimatedLargePayload === true
-  ) {
-    refreshCentralSheetStripProof({ reuseCachedDecision: true });
+
+  const caughtUp = syncCentralSheetStripWindowFromCachedRuntimeState();
+  if (!caughtUp) {
+    refreshCentralSheetStripProof();
     return;
   }
-  if (!centralSheetStripCacheDirty) {
-    if (scrollDeltaPx >= Math.max(32, Math.round(pageStridePx / 2))) {
-      centralSheetStripCacheDirty = true;
-      refreshCentralSheetStripProof();
-      return;
-    }
-    refreshCentralSheetStripProof({ reuseCachedDecision: true });
+
+  if (centralSheetStripCacheDirty) {
+    refreshCentralSheetStripProof({
+      reuseCachedDecision: centralSheetStripCachedRuntimeState.estimatedLargePayload === true,
+    });
     return;
   }
-  refreshCentralSheetStripProof();
 }
 
 function scheduleCentralSheetStripProofRefresh({ scrollOnly = false } = {}) {
@@ -9280,8 +9282,6 @@ if (isTiptapMode) {
     if (needsPostStructuralRefresh) {
       scheduleCentralSheetStripProofRefresh();
       scheduleCentralSheetStripPostStructuralRefresh();
-    } else if (centralSheetStripCachedRuntimeState) {
-      scheduleCentralSheetStripProofRefresh({ scrollOnly: true });
     } else {
       scheduleCentralSheetStripProofRefresh();
     }
