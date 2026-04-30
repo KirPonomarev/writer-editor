@@ -60,6 +60,10 @@ export const REASON_CODES = Object.freeze({
   BACKUP_CAPABILITY_MISSING: 'BACKUP_CAPABILITY_MISSING',
   ATOMIC_WRITE_CAPABILITY_MISSING: 'ATOMIC_WRITE_CAPABILITY_MISSING',
   RECOVERY_SNAPSHOT_CAPABILITY_MISSING: 'RECOVERY_SNAPSHOT_CAPABILITY_MISSING',
+  HASH_REPORT_CAPABILITY_MISSING: 'HASH_REPORT_CAPABILITY_MISSING',
+  PORT_FIXTURE_CAPABILITY_MISSING: 'PORT_FIXTURE_CAPABILITY_MISSING',
+  RECEIPT_CONTRACT_MISMATCH: 'RECEIPT_CONTRACT_MISMATCH',
+  STORAGE_CALL_PLAN_MISMATCH: 'STORAGE_CALL_PLAN_MISMATCH',
   NON_DETERMINISTIC_STORAGE_PORT: 'NON_DETERMINISTIC_STORAGE_PORT',
   FS_MUTATION_FORBIDDEN_IN_CONTOUR: 'FS_MUTATION_FORBIDDEN_IN_CONTOUR',
   VIEWMODE_MISMATCH: 'VIEWMODE_MISMATCH',
@@ -914,6 +918,9 @@ function storagePortCapabilityReasons(capabilities = {}, input = {}) {
   if (capabilities.canCreateReadableRecoverySnapshot !== true) {
     reasons.push(REASON_CODES.RECOVERY_SNAPSHOT_CAPABILITY_MISSING);
   }
+  if (capabilities.canReportBeforeHash !== true || capabilities.canReportAfterHash !== true) {
+    reasons.push(REASON_CODES.HASH_REPORT_CAPABILITY_MISSING);
+  }
   if (capabilities.deterministicObservationIds !== true) {
     reasons.push(REASON_CODES.NON_DETERMINISTIC_STORAGE_PORT);
   }
@@ -923,6 +930,27 @@ function storagePortCapabilityReasons(capabilities = {}, input = {}) {
     || capabilities.productPathAccess === true
   ) {
     reasons.push(REASON_CODES.FS_MUTATION_FORBIDDEN_IN_CONTOUR);
+  }
+  return uniqueStrings(reasons);
+}
+
+function receiptContractMismatchReasons(writePlan, receiptContract) {
+  const reasons = [];
+  const expectedPairs = [
+    ['writePlanId', writePlan?.writePlanId],
+    ['writePlanHash', writePlan?.canonicalHash],
+    ['projectId', writePlan?.projectId],
+    ['sceneId', writePlan?.sceneId],
+    ['beforeHash', writePlan?.beforeHash],
+    ['afterHash', writePlan?.afterHashExpected],
+  ];
+  for (const [key, value] of expectedPairs) {
+    if (!hasValue(value) || receiptContract?.[key] !== value) {
+      reasons.push(REASON_CODES.RECEIPT_CONTRACT_MISMATCH);
+    }
+  }
+  if (receiptContract?.durableReceipt !== false || receiptContract?.runtimeWritable !== false) {
+    reasons.push(REASON_CODES.RECEIPT_CONTRACT_MISMATCH);
   }
   return uniqueStrings(reasons);
 }
@@ -1037,6 +1065,9 @@ export function compileExactTextStorageAdapterCallPlan(input = {}) {
   ) {
     blockedReasons.push(REASON_CODES.EFFECT_PRECONDITION_MISSING);
   }
+  if (writePlans[0] && receiptContracts[0]) {
+    blockedReasons.push(...receiptContractMismatchReasons(writePlans[0], receiptContracts[0]));
+  }
 
   const uniqueBlockedReasons = uniqueStrings(blockedReasons);
   const callPlans = uniqueBlockedReasons.length === 0
@@ -1058,6 +1089,214 @@ export function compileExactTextStorageAdapterCallPlan(input = {}) {
     releaseClaimed: false,
     storagePrimitiveChanged: false,
     callPlans,
+    blockedReasons: uniqueBlockedReasons,
+  };
+  return {
+    ...resultCore,
+    canonicalHash: canonicalHash(resultCore),
+  };
+}
+
+function portFixtureCapabilityReasons(capabilities = {}, input = {}) {
+  const reasons = [];
+  if (capabilities.canObserveBackup !== true) {
+    reasons.push(REASON_CODES.BACKUP_CAPABILITY_MISSING);
+  }
+  if (capabilities.canObserveAtomicWrite !== true) {
+    reasons.push(REASON_CODES.ATOMIC_WRITE_CAPABILITY_MISSING);
+  }
+  if (capabilities.canObserveRecoverySnapshot !== true) {
+    reasons.push(REASON_CODES.RECOVERY_SNAPSHOT_CAPABILITY_MISSING);
+  }
+  if (capabilities.canProduceFixtureReceiptContract !== true) {
+    reasons.push(REASON_CODES.PORT_FIXTURE_CAPABILITY_MISSING);
+  }
+  if (capabilities.deterministicObservationIds !== true) {
+    reasons.push(REASON_CODES.NON_DETERMINISTIC_STORAGE_PORT);
+  }
+  if (
+    input?.realIoRequested === true
+    || input?.fsMutationRequested === true
+    || input?.tempDirRequested === true
+    || input?.productWrite === true
+    || input?.runtimeWritable === true
+    || capabilities.realIoAvailable === true
+    || capabilities.productPathAccess === true
+  ) {
+    reasons.push(REASON_CODES.FS_MUTATION_FORBIDDEN_IN_CONTOUR);
+  }
+  return uniqueStrings(reasons);
+}
+
+function storageCallPlanMismatchReasons(callPlan) {
+  const reasons = [];
+  const requests = [
+    callPlan?.backupObservationRequest,
+    callPlan?.atomicWriteObservationRequest,
+    callPlan?.recoverySnapshotObservationRequest,
+  ];
+  for (const request of requests) {
+    if (
+      !request
+      || request.executedIo !== false
+      || request.sourceWritePlanId !== callPlan?.sourceWritePlanId
+      || request.sourceWritePlanHash !== callPlan?.sourceWritePlanHash
+      || request.sourceReceiptContractId !== callPlan?.sourceReceiptContractId
+      || request.sourceReceiptContractHash !== callPlan?.sourceReceiptContractHash
+    ) {
+      reasons.push(REASON_CODES.STORAGE_CALL_PLAN_MISMATCH);
+    }
+  }
+  if (callPlan?.contractOnly !== true || callPlan?.fsMutationPerformed !== false || callPlan?.productWriteClaimed !== false) {
+    reasons.push(REASON_CODES.STORAGE_CALL_PLAN_MISMATCH);
+  }
+  return uniqueStrings(reasons);
+}
+
+function createPortFixtureObservation(request, observationKind) {
+  const observationCore = {
+    observationKind,
+    observationMode: 'IN_MEMORY_PORT_FIXTURE_ONLY',
+    executedIo: false,
+    deterministic: true,
+    sourceRequestId: request.requestId,
+    sourceRequestHash: request.canonicalHash,
+    sourceWritePlanId: request.sourceWritePlanId,
+    sourceWritePlanHash: request.sourceWritePlanHash,
+    sourceReceiptContractId: request.sourceReceiptContractId,
+    sourceReceiptContractHash: request.sourceReceiptContractHash,
+    projectId: request.projectId,
+    sceneId: request.sceneId,
+    beforeHash: request.beforeHash,
+    afterHashExpected: request.afterHashExpected,
+  };
+  const observationWithId = {
+    observationId: `port_fixture_observation_${canonicalHash(observationCore).slice(0, 16)}`,
+    ...observationCore,
+  };
+  return {
+    ...observationWithId,
+    canonicalHash: canonicalHash(observationWithId),
+  };
+}
+
+function createPortFixtureReceiptContract(callPlan, observations) {
+  const receiptCore = {
+    fixtureReceiptKind: 'IN_MEMORY_STORAGE_PORT_FIXTURE_RECEIPT_CONTRACT',
+    durableReceipt: false,
+    executedIo: false,
+    resultStatus: 'IN_MEMORY_FIXTURE_EXECUTED',
+    sourceCallPlanId: callPlan.callPlanId,
+    sourceCallPlanHash: callPlan.canonicalHash,
+    sourceWritePlanId: callPlan.sourceWritePlanId,
+    sourceWritePlanHash: callPlan.sourceWritePlanHash,
+    sourceReceiptContractId: callPlan.sourceReceiptContractId,
+    sourceReceiptContractHash: callPlan.sourceReceiptContractHash,
+    backupObservationHash: observations.backupObservation.canonicalHash,
+    atomicWriteObservationHash: observations.atomicWriteObservation.canonicalHash,
+    recoverySnapshotObservationHash: observations.recoverySnapshotObservation.canonicalHash,
+  };
+  const receiptWithId = {
+    fixtureReceiptContractId: `port_fixture_receipt_${canonicalHash(receiptCore).slice(0, 16)}`,
+    ...receiptCore,
+  };
+  return {
+    ...receiptWithId,
+    canonicalHash: canonicalHash(receiptWithId),
+  };
+}
+
+function createPortFixtureExecution(callPlan) {
+  const observations = {
+    backupObservation: createPortFixtureObservation(
+      callPlan.backupObservationRequest,
+      'BACKUP_OBSERVATION_IN_MEMORY_FIXTURE',
+    ),
+    atomicWriteObservation: createPortFixtureObservation(
+      callPlan.atomicWriteObservationRequest,
+      'ATOMIC_WRITE_OBSERVATION_IN_MEMORY_FIXTURE',
+    ),
+    recoverySnapshotObservation: createPortFixtureObservation(
+      callPlan.recoverySnapshotObservationRequest,
+      'RECOVERY_SNAPSHOT_OBSERVATION_IN_MEMORY_FIXTURE',
+    ),
+  };
+  const fixtureReceiptContract = createPortFixtureReceiptContract(callPlan, observations);
+  const executionCore = {
+    fixtureExecutionKind: 'EXACT_TEXT_IN_MEMORY_STORAGE_PORT_FIXTURE_EXECUTION',
+    contractOnly: true,
+    inMemoryOnly: true,
+    filesystemWritePerformed: false,
+    tempFixtureWritePerformed: false,
+    productWritePerformed: false,
+    sourceCallPlanId: callPlan.callPlanId,
+    sourceCallPlanHash: callPlan.canonicalHash,
+    sourceWritePlanId: callPlan.sourceWritePlanId,
+    sourceWritePlanHash: callPlan.sourceWritePlanHash,
+    sourceReceiptContractId: callPlan.sourceReceiptContractId,
+    sourceReceiptContractHash: callPlan.sourceReceiptContractHash,
+    ...observations,
+    fixtureReceiptContract,
+  };
+  const executionWithId = {
+    fixtureExecutionId: `port_fixture_execution_${canonicalHash(executionCore).slice(0, 16)}`,
+    ...executionCore,
+  };
+  return {
+    ...executionWithId,
+    canonicalHash: canonicalHash(executionWithId),
+  };
+}
+
+export function compileExactTextInMemoryStoragePortFixture(input = {}) {
+  const callPlans = input?.storageAdapterCallPlanResult?.callPlans || [];
+  const capabilities = input?.fixtureCapabilities || {};
+  const blockedReasons = [
+    ...(input?.storageAdapterCallPlanResult?.blockedReasons || []),
+    ...portFixtureCapabilityReasons(capabilities, input),
+  ];
+  if (input?.storageAdapterCallPlanResult?.contractOnly !== true) {
+    blockedReasons.push(REASON_CODES.NON_CONTRACT_APPLYOP_FORBIDDEN);
+  }
+  if (input?.storageAdapterCallPlanResult?.runtimeWritable === true) {
+    blockedReasons.push(REASON_CODES.RUNTIME_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (
+    callPlans.length !== 1
+    || !hasValue(callPlans[0]?.canonicalHash)
+    || !hasValue(callPlans[0]?.sourceWritePlanHash)
+    || !hasValue(callPlans[0]?.sourceReceiptContractHash)
+  ) {
+    blockedReasons.push(REASON_CODES.EFFECT_PRECONDITION_MISSING);
+  }
+  if (callPlans[0]) {
+    blockedReasons.push(...storageCallPlanMismatchReasons(callPlans[0]));
+  }
+
+  const uniqueBlockedReasons = uniqueStrings(blockedReasons);
+  const fixtureExecutions = uniqueBlockedReasons.length === 0
+    ? [createPortFixtureExecution(callPlans[0])]
+    : [];
+  const resultCore = {
+    resultKind: 'EXACT_TEXT_IN_MEMORY_STORAGE_PORT_FIXTURE_RESULT',
+    contractOnly: true,
+    inMemoryOnly: true,
+    filesystemWritePerformed: false,
+    fsMutationPerformed: false,
+    tempDirUsed: false,
+    tempFixtureWritePerformed: false,
+    productWritePerformed: false,
+    productWriteClaimed: false,
+    productStorageSafetyClaimed: false,
+    durableReceiptClaimed: false,
+    crashRecoveryClaimed: false,
+    applyTxnClaimed: false,
+    publicSurfaceClaimed: false,
+    docxImportClaimed: false,
+    releaseClaimed: false,
+    storageImportsAdded: false,
+    storagePrimitiveChanged: false,
+    fixtureExecutions,
     blockedReasons: uniqueBlockedReasons,
   };
   return {

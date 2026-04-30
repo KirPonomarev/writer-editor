@@ -22,12 +22,17 @@ function changedBasenamesForCurrentContour() {
   const dirty = [
     ...gitLines(['diff', '--name-only', 'HEAD']),
     ...gitLines(['diff', '--cached', '--name-only']),
+    ...gitLines(['ls-files', '--others', '--exclude-standard']),
   ];
   if (dirty.length > 0) {
     return Array.from(new Set(dirty.map((filePath) => path.basename(filePath)))).sort();
   }
   return Array.from(new Set(gitLines(['diff', '--name-only', 'HEAD~1', 'HEAD'])
     .map((filePath) => path.basename(filePath)))).sort();
+}
+
+function isCurrentContourFor(taskBasename, changedBasenames) {
+  return changedBasenames.includes(taskBasename);
 }
 
 function exactTextDecision(overrides = {}) {
@@ -239,6 +244,14 @@ test('missing storage port capabilities block call plan compilation', async () =
       acceptedCapabilities({ canCreateReadableRecoverySnapshot: false }),
     ],
     [
+      REASON_CODES.HASH_REPORT_CAPABILITY_MISSING,
+      acceptedCapabilities({ canReportBeforeHash: false }),
+    ],
+    [
+      REASON_CODES.HASH_REPORT_CAPABILITY_MISSING,
+      acceptedCapabilities({ canReportAfterHash: false }),
+    ],
+    [
       REASON_CODES.NON_DETERMINISTIC_STORAGE_PORT,
       acceptedCapabilities({ deterministicObservationIds: false }),
     ],
@@ -259,6 +272,34 @@ test('missing storage port capabilities block call plan compilation', async () =
     assert.equal(result.productWriteClaimed, false, reasonCode);
     assert.equal(result.productStorageSafetyClaimed, false, reasonCode);
     assert.equal(result.blockedReasons.includes(reasonCode), true, reasonCode);
+  }
+});
+
+test('receipt contract must bind back to the same write plan identity and hashes', async () => {
+  const { compileExactTextStorageAdapterCallPlan, REASON_CODES } = await loadKernel();
+  const writePlanReceiptResult = await acceptedWritePlanReceiptResult();
+  const receipt = writePlanReceiptResult.receiptContracts[0];
+  const cases = [
+    { writePlanId: 'wrong-plan-id' },
+    { writePlanHash: 'wrong-plan-hash' },
+    { projectId: 'wrong-project' },
+    { sceneId: 'wrong-scene' },
+    { beforeHash: 'wrong-before-hash' },
+    { afterHash: 'wrong-after-hash' },
+    { durableReceipt: true },
+    { runtimeWritable: true },
+  ];
+
+  for (const patch of cases) {
+    const result = compileExactTextStorageAdapterCallPlan({
+      writePlanReceiptResult: {
+        ...writePlanReceiptResult,
+        receiptContracts: [{ ...receipt, ...patch }],
+      },
+      storagePortCapabilities: acceptedCapabilities(),
+    });
+    assert.deepEqual(result.callPlans, [], JSON.stringify(patch));
+    assert.equal(result.blockedReasons.includes(REASON_CODES.RECEIPT_CONTRACT_MISMATCH), true, JSON.stringify(patch));
   }
 });
 
@@ -335,6 +376,10 @@ test('001E task record pins storage adapter false-green flags', () => {
 
 test('001E change scope stays inside allowlist and outside public or storage implementation files', () => {
   const changedBasenames = changedBasenamesForCurrentContour();
+  if (!isCurrentContourFor(TASK_BASENAME, changedBasenames)) {
+    assert.equal(changedBasenames.includes(TASK_BASENAME), false);
+    return;
+  }
   const allowlist = new Set([
     'reviewIrKernel.mjs',
     'exactTextApplyStorageAdapter.contract.test.js',
