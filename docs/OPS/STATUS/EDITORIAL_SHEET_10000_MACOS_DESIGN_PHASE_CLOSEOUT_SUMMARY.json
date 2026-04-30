@@ -1,0 +1,49 @@
+{
+  "artifactId": "EDITORIAL_SHEET_10000_MACOS_DESIGN_PHASE_CLOSEOUT_SUMMARY",
+  "taskId": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
+  "status": "NON_AUTHORITATIVE_NAVIGATION_SUMMARY",
+  "authorityClass": "ADVISORY_STATUS_POINTER_ONLY",
+  "primaryRule": "ACTIVE_CANON_AND_EXECUTED_MACHINE_PROOFS_WIN",
+  "generatedAtUtc": "2026-04-30T17:20:35.514Z",
+  "summaryIsProof": false,
+  "requiresExecutableProof": true,
+  "committedMachineProofSource": {
+    "artifact": "EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
+    "taskId": "CONTOUR_04_WRITE_IMPL",
+    "artifactHeadSha": "7e3dc69f5ca5d8696ca466e891c8bad6499ac95b",
+    "artifactGeneratedAtUtc": "2026-04-30T17:20:35.514Z"
+  },
+  "supportedTier": 10000,
+  "scope": "MACOS_DESIGN_PHASE_ONLY",
+  "claim": {
+    "editorialSheet10000MacosDesignPhaseSupported": true,
+    "releaseClaim": false,
+    "productionReleaseClaim": false,
+    "crossPlatformClaim": false,
+    "manualDesignApprovalClaim": false,
+    "exportStorageCollabCommentsHistoryClaim": false,
+    "unsupportedAboveProvenTier": "ABOVE_10000_NOT_PROMOTED_BY_THIS_GATE"
+  },
+  "provenTrackedScaleTier": {
+    "targetPageCount": 10000,
+    "actualPageCount": 11251,
+    "renderedSheetShellCount": 4,
+    "hiddenPageCount": 11247,
+    "domNodeCount": 1276,
+    "networkRequests": 0,
+    "dialogCalls": 0,
+    "textHashStable": true,
+    "typingCleanupRestoredHash": true,
+    "typingUndoRestoredHash": true,
+    "typingRedoRestoredTypedHash": true
+  },
+  "notClaimed": [
+    "PRODUCTION_RELEASE_READY",
+    "CROSS_PLATFORM_READY",
+    "MANUAL_MACOS_DESIGN_APPROVED",
+    "EXPORT_STORAGE_COLLAB_COMMENTS_HISTORY_READY",
+    "25000_PLUS_READY",
+    "40000_READY",
+    "41750_PLUS_READY"
+  ]
+}

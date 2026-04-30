@@ -1,39 +1,41 @@
 {
   "artifactId": "EDITORIAL_SHEET_5000_CLOSEOUT_SUMMARY",
-  "taskId": "CONTOUR_06_5000_GATE_POST_CLOSEOUT",
-  "status": "NON_AUTHORITATIVE_NAVIGATION_SUMMARY",
+  "taskId": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
+  "status": "NON_AUTHORITATIVE_NAVIGATION_SUMMARY_SUPERSEDED_BY_10000_POLICY",
   "authorityClass": "ADVISORY_STATUS_POINTER_ONLY",
   "primaryRule": "ACTIVE_CANON_AND_EXECUTED_MACHINE_PROOFS_WIN",
-  "generatedAtUtc": "2026-04-30T14:10:46.491Z",
-  "closeoutBaseSha": "33d59226e533d8884279f2c2ccdc90805e5a4399",
+  "generatedAtUtc": "2026-04-30T17:20:35.514Z",
+  "closeoutBaseSha": "7e3dc69f5ca5d8696ca466e891c8bad6499ac95b",
   "summaryIsProof": false,
   "requiresExecutableProof": true,
   "finalGateReportBinding": {
-    "taskId": "CONTOUR_05_FINAL_NO_REGRESSION_GATE_RETRY_V4",
-    "committedArtifactInThisTree": false,
+    "taskId": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
+    "committedArtifactInThisTree": true,
     "usedAsExecutableProofByThisSummary": false
   },
   "committedMachineProofSource": {
     "artifact": "EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
     "taskId": "CONTOUR_04_WRITE_IMPL",
-    "artifactHeadSha": "33d59226e533d8884279f2c2ccdc90805e5a4399",
-    "artifactGeneratedAtUtc": "2026-04-30T14:10:46.491Z"
+    "artifactHeadSha": "7e3dc69f5ca5d8696ca466e891c8bad6499ac95b",
+    "artifactGeneratedAtUtc": "2026-04-30T17:20:35.514Z"
   },
   "claim": {
     "trackedScale5000MetricsPresent": true,
-    "editorialSheet5000MacosDesignPhaseRuntimeClaimRequiresFinalGateProof": true,
+    "trackedScale10000MetricsPresent": true,
+    "editorialSheet10000MacosDesignPhaseRuntimeClaimRequiresFinalGateProof": true,
     "releaseClaim": false,
     "productionReleaseClaim": false,
     "crossPlatformClaim": false,
     "manualDesignApprovalClaim": false,
-    "unsupportedAboveProvenTier": "6000_PLUS_NOT_PROMOTED_BY_THIS_GATE"
+    "exportStorageCollabCommentsHistoryClaim": false,
+    "unsupportedAboveProvenTier": "ABOVE_10000_NOT_PROMOTED_BY_THIS_GATE"
   },
   "provenTrackedScaleTier": {
-    "targetPageCount": 5000,
-    "actualPageCount": 5596,
+    "targetPageCount": 10000,
+    "actualPageCount": 11251,
     "renderedSheetShellCount": 4,
-    "hiddenPageCount": 5592,
-    "domNodeCount": 1031,
+    "hiddenPageCount": 11247,
+    "domNodeCount": 1276,
     "networkRequests": 0,
     "dialogCalls": 0,
     "textHashStable": true,
@@ -44,10 +46,10 @@
   "executedProofSummary": {
     "scope": "CURRENT_CLOSEOUT_CONTOUR_CHECKS_ONLY",
     "jsonParse": "PASS",
-    "governanceChangeDetection": "PASS",
-    "governanceApprovalState": "PASS",
-    "stressLaneStatusContract": "PASS_6_OF_6",
-    "testOps": "PASS"
+    "stressLaneStatusContract": "PENDING_IN_THIS_CONTOUR",
+    "diagnosticPromotionNegativeContract": "PENDING_IN_THIS_CONTOUR",
+    "scrollStrobeStatusContract": "PENDING_IN_THIS_CONTOUR",
+    "ossPolicy": "PENDING_IN_THIS_CONTOUR"
   },
   "scaleMatrix": [
     {
@@ -58,7 +60,7 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 319
+      "typingMs": 375
     },
     {
       "targetPageCount": 3000,
@@ -68,7 +70,7 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 505
+      "typingMs": 659
     },
     {
       "targetPageCount": 4000,
@@ -78,7 +80,7 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 323
+      "typingMs": 331
     },
     {
       "targetPageCount": 5000,
@@ -88,7 +90,17 @@
       "networkRequests": 0,
       "dialogCalls": 0,
       "textHashStable": true,
-      "typingMs": 489
+      "typingMs": 415
+    },
+    {
+      "targetPageCount": 10000,
+      "actualPageCount": 11251,
+      "renderedSheetShellCount": 4,
+      "domNodeCount": 1276,
+      "networkRequests": 0,
+      "dialogCalls": 0,
+      "textHashStable": true,
+      "typingMs": 870
     }
   ],
   "strobeClassification": {
@@ -98,20 +110,21 @@
     "supportEvidenceOnly": true
   },
   "notClaimed": [
-    "FINAL_GATE_COMMITTED_ARTIFACT_PRESENT",
     "PRODUCTION_RELEASE_READY",
     "CROSS_PLATFORM_READY",
     "MANUAL_MACOS_DESIGN_APPROVED",
-    "6000_PLUS_READY",
-    "10000_PLUS_READY"
+    "EXPORT_STORAGE_COLLAB_COMMENTS_HISTORY_READY",
+    "25000_PLUS_READY",
+    "40000_READY",
+    "41750_PLUS_READY"
   ],
   "guardrails": [
-    "DO_NOT_REOPEN_BOOK_PROFILE_AS_MISSING_ON_MAINLINE",
-    "DO_NOT_CLAIM_5000_PLUS_READY_WITHOUT_TRACKED_5000_PASS",
+    "DO_NOT_CLAIM_10000_READY_WITHOUT_TRACKED_10000_PASS",
     "DO_NOT_USE_DIRTY_LOCAL_CHECKOUT_AS_ACCEPTANCE_BASE",
     "DO_NOT_TREAT_CONVERSATION_ONLY_GATE_REPORT_AS_COMMITTED_PROOF",
     "DO_NOT_TREAT_THIS_SUMMARY_AS_EXECUTABLE_PROOF",
-    "DO_NOT_TREAT_6000_DIAGNOSTIC_PROBE_OK_AS_READINESS",
-    "DO_NOT_PROMOTE_6000_INTO_TRACKED_STRESS_ROWS_WITHOUT_NEW_EXPLICIT_CONTOUR"
+    "DO_NOT_TREAT_25000_DIAGNOSTIC_PROBE_OK_AS_READINESS",
+    "DO_NOT_PROMOTE_25000_OR_40000_INTO_TRACKED_STRESS_ROWS_WITHOUT_NEW_EXPLICIT_CONTOUR",
+    "DO_NOT_CLAIM_41750_PLUS_READY_WITHOUT_SCROLL_RANGE_REPAIR"
   ]
 }
