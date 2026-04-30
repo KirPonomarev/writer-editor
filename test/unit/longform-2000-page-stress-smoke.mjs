@@ -495,6 +495,8 @@ function assertScenario(scenario) {
   assert.equal(scenario.initialState.renderedSheetShellCount >= MIN_RENDERED_SHEET_WINDOW, true);
   assert.equal(scenario.initialState.renderedSheetShellCount <= MAX_RENDERED_SHEET_WINDOW, true);
   assert.equal(scenario.initialState.visibleSheetCount > 0, true);
+  assert.equal(scenario.initialState.scrollTop <= 1, true, `${scenario.label} must start at the top after payload replacement`);
+  assert.equal(scenario.initialState.centralSheetWindowFirstRenderedPage <= 2, true, `${scenario.label} must render the top sheet window after payload replacement`);
   assert.equal(scenario.initialState.proseMirrorCount, 1);
   assert.equal(scenario.initialState.tiptapEditorCount, 1);
   assert.equal(scenario.initialState.derivedSheetProseMirrorCount, 0);
