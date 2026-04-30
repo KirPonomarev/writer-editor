@@ -10,10 +10,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_5000_CLOSEOUT_SUMMARY.json",
-      "sha256": "fc3ce103afb0f8d4a2c2cb2b1260f3bf84089dd711aca9e2eaf93f3197f53833",
-      "approvedBy": "ticket:CONTOUR_09_6000_BOUNDARY_POLICY_AND_FALSE_GREEN_GUARD",
+      "sha256": "15b2ffbfc8dc0371e2ac4b0ba87d149f378957f7bf6131bdadc98ae9f75c865e",
+      "approvedBy": "ticket:CONTOUR_10_SCROLL_STROBE_POSTMERGE_REFRESH",
       "approvedAtUtc": "2026-04-30T14:00:00.000Z",
-      "rationale": "Approve non-authoritative closeout summary guardrails and post-merge stress artifact rebind to e45aa1f9 after the 6000 boundary guard merge; this does not promote 6000 readiness."
+      "rationale": "Approve non-authoritative closeout summary post-merge rebind to 33d59226 after the scroll strobe proof merge; this preserves 5000 supported tier and does not promote 6000 readiness."
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_SCROLL_STROBE_VISUAL_STATUS_V1.json",
@@ -2957,10 +2957,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "88cb765081abb8954eea6a143973f2fb82540c52ae249b59c77170baf8532407",
-      "approvedBy": "ticket:CONTOUR_09_STRESS_LANE_POSTMERGE_REFRESH",
+      "sha256": "b73141f8c0cce28d3fbed39e2a031ad63fcc29f9ae7eba041ee6bf467f868fac",
+      "approvedBy": "ticket:CONTOUR_10_SCROLL_STROBE_POSTMERGE_REFRESH",
       "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "CONTOUR_09_STRESS_LANE_POSTMERGE_REFRESH approves the bounded detached-mainline stress lane artifact refresh after the 6000 boundary guard merge changed mainline head; this preserves tracked 2000 to 5000 proof freshness without promoting 6000 readiness or widening runtime, storage, export, UI, or dependency scope."
+      "rationale": "CONTOUR_10_SCROLL_STROBE_POSTMERGE_REFRESH approves the bounded detached-mainline stress lane artifact refresh after the scroll strobe proof merge changed mainline head; this preserves tracked 2000 to 5000 proof freshness without promoting 6000 readiness or widening runtime, storage, export, UI, or dependency scope."
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
