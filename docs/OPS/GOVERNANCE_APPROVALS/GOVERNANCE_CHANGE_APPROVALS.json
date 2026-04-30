@@ -16,6 +16,27 @@
       "rationale": "Approve non-authoritative closeout summary guardrails and post-merge stress artifact rebind to e45aa1f9 after the 6000 boundary guard merge; this does not promote 6000 readiness."
     },
     {
+      "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_SCROLL_STROBE_VISUAL_STATUS_V1.json",
+      "sha256": "09430322218e880b71490c721265fdc0539d111bd2ff03b648895e97a437c44a",
+      "approvedBy": "ticket:CONTOUR_10_SCROLL_STROBE_VISUAL_PROOF_AND_FALSE_GREEN_GUARD",
+      "approvedAtUtc": "2026-04-30T14:04:00.000Z",
+      "rationale": "Approve compact scroll strobe visual proof status showing immediate zero as transient instrumentation with visible text and nonblank temporary screenshot evidence; screenshots remain support evidence only and are not tracked."
+    },
+    {
+      "filePath": "scripts/ops/editorial-sheet-scroll-strobe-visual-state.mjs",
+      "sha256": "9129e22213bcc7a65f6c9932632702642e3b05bb8e08510718967d1c5bbfd6c5",
+      "approvedBy": "ticket:CONTOUR_10_SCROLL_STROBE_VISUAL_PROOF_AND_FALSE_GREEN_GUARD",
+      "approvedAtUtc": "2026-04-30T14:04:00.000Z",
+      "rationale": "Approve proof-only scroll strobe visual status writer and validator that captures temporary screenshot hashes, DOM text metrics, zero network and dialogs, without modifying product runtime, UI, storage, export, or dependencies."
+    },
+    {
+      "filePath": "test/contracts/editorial-sheet-scroll-strobe-visual-status.contract.test.js",
+      "sha256": "9451a88fd74ccf6f3f023f2ff2d4c422a7dd838f614c936c57ec669f86d88dc3",
+      "approvedBy": "ticket:CONTOUR_10_SCROLL_STROBE_VISUAL_PROOF_AND_FALSE_GREEN_GUARD",
+      "approvedAtUtc": "2026-04-30T14:04:00.000Z",
+      "rationale": "Approve false-green contracts for exact scroll strobe visual status fields, screenshot support-only policy, blank immediate and settled negatives, and preserved 5000 supported plus 6000 diagnostic boundaries."
+    },
+    {
       "filePath": "docs/OPERATIONS/STATUS/CODEX_AUTOMATION_POLICY.json",
       "sha256": "73774d9cfeb9b0b2a4656b8d2adddfcccc5765c8b618094a4db38be5e292bb91",
       "approvedBy": "ticket:TZ_EXEC_PKG_01_A03_2026_02_27",

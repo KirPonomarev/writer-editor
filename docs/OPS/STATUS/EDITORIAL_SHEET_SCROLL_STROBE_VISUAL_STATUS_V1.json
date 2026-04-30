@@ -1,0 +1,33 @@
+{
+  "artifactId": "EDITORIAL_SHEET_SCROLL_STROBE_VISUAL_STATUS_V1",
+  "classification": "TRANSIENT_INSTRUMENTATION_ZERO",
+  "dialogCalls": 0,
+  "generatedAtUtc": "2026-04-30T14:03:53.699Z",
+  "immediateScreenshotBasename": "scroll-strobe-immediate.png",
+  "immediateScreenshotBlank": false,
+  "immediateScreenshotSha256": "68a402738c827673839e58efe51d8478ce50799d78c718a440e5c4bb15e391a9",
+  "immediateSheetCount": 0,
+  "immediateTextRectCount": 42,
+  "networkRequests": 0,
+  "notes": [
+    "screenshots are temporary support evidence only",
+    "status artifact records basenames and hashes, not image payloads",
+    "6000 remains diagnostic-only and is not promoted by this artifact"
+  ],
+  "ok": true,
+  "repoHeadSha": "d2eb8130d98289b4d6c04c6b4486c5ba245fa965",
+  "schemaVersion": 1,
+  "screenshotPrimaryProof": false,
+  "settledScreenshotBasename": "scroll-strobe-settled.png",
+  "settledScreenshotBlank": false,
+  "settledScreenshotSha256": "70ae804fc20d9d35c5169dc7a04e814fcc6c537cb6780ac8028606d358d310b3",
+  "settledSheetCount": 2,
+  "settledTextRectCount": 42,
+  "status": "PASS",
+  "strobeReproduced": false,
+  "targetScenario": "vertical-sheet-100-scroll-0.82",
+  "taskId": "CONTOUR_10_SCROLL_STROBE_VISUAL_PROOF_AND_FALSE_GREEN_GUARD",
+  "viewportHeight": 679,
+  "viewportWidth": 3260,
+  "visualNonblankProved": true
+}
