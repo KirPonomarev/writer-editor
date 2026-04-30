@@ -2922,24 +2922,24 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "c819dccb8790c49b20fbb45677493ba21ba9c2185503de63669c8d2158e7ffc7",
-      "approvedBy": "ticket:EDITORIAL_SHEET_STRESS_LANE_REBIND_004",
+      "sha256": "7e78a1cf0c381b2219e1387be4a20fe1476a26b49b133c0d0b168c4de3b3a783",
+      "approvedBy": "ticket:CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR",
       "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "EDITORIAL_SHEET_STRESS_LANE_REBIND_004 approves the bounded stress lane status artifact that records explicit 2000 3000 4000 5000 tracked rows and blocks default 2000 false-green scale claims."
+      "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the bounded stress lane artifact refresh bound to the clean mainline execution base after truth-repair narrowed evaluation to reject stale or red artifacts."
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
-      "sha256": "5f0e2c3a6e792abccd43e94a7ceb2c20051dbb173d08161fc1ce6c289cf94b41",
-      "approvedBy": "ticket:EDITORIAL_SHEET_STRESS_LANE_REBIND_004",
+      "sha256": "12d04f87aed7eb92e672cbcdc2ec0b51f7d7ad65998ef5ef93034cbbd4e91ed6",
+      "approvedBy": "ticket:CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR",
       "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "EDITORIAL_SHEET_STRESS_LANE_REBIND_004 approves the narrow OPS state writer that derives a thin current-run summary over explicit editorial sheet stress rows without widening runtime, export, storage, or dependency scope."
+      "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the narrow OPS state writer repair that rejects stale or red artifacts and resolves row execution from the installed worktree dependency root without widening runtime, export, storage, or dependency scope."
     },
     {
       "filePath": "test/contracts/editorial-sheet-stress-lane-status.contract.test.js",
-      "sha256": "866ac6f473a3347c99c6fd123f38550b42f61152cd9bbb01f5afed0530980cea",
-      "approvedBy": "ticket:EDITORIAL_SHEET_STRESS_LANE_REBIND_004",
+      "sha256": "3d5ab7ade26dfc9f0d237addc147578bdd3a13747f3adb06ec5bf07319f9afda",
+      "approvedBy": "ticket:CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR",
       "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "EDITORIAL_SHEET_STRESS_LANE_REBIND_004 approves the bounded contract that validates the stress-lane summary schema, row registration, and anti-false-green invariants for the 2000 3000 4000 5000 matrix."
+      "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the bounded contract extension that enforces stale-head rejection, red-artifact rejection, and write-authority proof without widening product runtime scope."
     }
   ]
 }
