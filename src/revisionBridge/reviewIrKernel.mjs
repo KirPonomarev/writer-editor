@@ -25,6 +25,12 @@ export const RISK_CLASS = Object.freeze({
   HIGH: 'HIGH',
 });
 
+export const MATCH_PROOF_STATUS = Object.freeze({
+  EXACT: 'EXACT',
+  AMBIGUOUS: 'AMBIGUOUS',
+  NO_MATCH: 'NO_MATCH',
+});
+
 export const REASON_CODES = Object.freeze({
   STALE_BASELINE: 'STALE_BASELINE',
   WRONG_PROJECT: 'WRONG_PROJECT',
@@ -156,11 +162,102 @@ function uniqueStrings(items) {
   return Array.from(new Set(items.filter(Boolean))).sort();
 }
 
-function deriveAutomation({ item, selectors, unsupported }) {
+function toNonNegativeInteger(value, fallback) {
+  const candidate = value ?? fallback;
+  if (!Number.isInteger(candidate) || candidate < 0) {
+    throw new TypeError('expected non-negative integer');
+  }
+  return candidate;
+}
+
+function expectedMatchStatusForCandidateCount(candidateCount) {
+  if (candidateCount === 0) {
+    return MATCH_PROOF_STATUS.NO_MATCH;
+  }
+  if (candidateCount === 1) {
+    return MATCH_PROOF_STATUS.EXACT;
+  }
+  return MATCH_PROOF_STATUS.AMBIGUOUS;
+}
+
+function deriveMatchStatus({ candidateCount, matchStatus }) {
+  const expectedMatchStatus = expectedMatchStatusForCandidateCount(candidateCount);
+  if (!matchStatus) {
+    return expectedMatchStatus;
+  }
+  if (!Object.values(MATCH_PROOF_STATUS).includes(matchStatus)) {
+    throw new TypeError('unknown match proof status');
+  }
+  if (matchStatus !== expectedMatchStatus) {
+    throw new TypeError('match proof status conflicts with candidate count');
+  }
+  return matchStatus;
+}
+
+export function createMatchProof(input = {}) {
+  const sourceViewState = createSourceViewState(input.sourceViewState || {});
+  const selectorStack = createSelectorStack(input.selectorStack || input.selectors || [], sourceViewState);
+  const evidenceRefs = (input.evidenceRefs || input.evidence || []).map(createEvidenceRef);
+  const candidateCount = toNonNegativeInteger(
+    input.candidateCount,
+    Array.isArray(input.candidates) ? input.candidates.length : 0,
+  );
+  const matchStatus = deriveMatchStatus({ candidateCount, matchStatus: input.matchStatus });
+  const proofCore = {
+    proofKind: input.proofKind || 'STATIC_MATCH_PROOF',
+    itemId: input.itemId || input.id || '',
+    targetScope: input.targetScope || { sceneId: input.sceneId || 'synthetic-scene' },
+    selectorStack,
+    evidenceRefs,
+    candidateCount,
+    matchStatus,
+    reasonCodes: uniqueStrings([
+      ...(input.reasonCodes || []),
+      ...(matchStatus === MATCH_PROOF_STATUS.NO_MATCH ? [REASON_CODES.LOW_SELECTOR_CONFIDENCE] : []),
+      ...(matchStatus === MATCH_PROOF_STATUS.AMBIGUOUS ? [REASON_CODES.MULTI_MATCH] : []),
+      ...(selectorReasonCodes(selectorStack)),
+    ]),
+    sourceViewState,
+  };
+  return {
+    ...proofCore,
+    proofHash: canonicalHash(proofCore),
+  };
+}
+
+export function createParsedSurfaceRecord(input = {}) {
+  const sourceViewState = createSourceViewState(input.sourceViewState || {});
+  const items = (input.items || []).map((item, index) => ({
+    itemId: item.itemId || item.id || `item-${index}`,
+    supported: item.supported !== false,
+    kind: item.kind || item.opKind || item.surfaceKind || 'TEXT_REPLACE',
+    targetScope: item.targetScope || { sceneId: item.sceneId || 'synthetic-scene' },
+    selectorStack: createSelectorStack(item.selectorStack || item.selectors || [], sourceViewState),
+    evidenceRefs: (item.evidenceRefs || item.evidence || []).map(createEvidenceRef),
+    order: index,
+  }));
+  const recordCore = {
+    recordKind: input.recordKind || 'STATIC_PARSED_SURFACE_RECORD',
+    projectId: input.projectId || '',
+    artifactHash: input.artifactHash || '',
+    contextHash: input.contextHash || '',
+    sourceViewState,
+    items,
+  };
+  return {
+    parsedSurfaceRecordId: `psr_${canonicalHash(recordCore).slice(0, 16)}`,
+    ...recordCore,
+    recordHash: canonicalHash(recordCore),
+  };
+}
+
+function deriveAutomation({ item, selectors, unsupported, matchProof }) {
   const reasons = [];
   if (unsupported) {
     reasons.push(REASON_CODES.UNSUPPORTED_SURFACE);
   }
+  reasons.push(...(item.reasonCodes || []));
+  reasons.push(...(matchProof?.reasonCodes || []));
   if (item.duplicateText === true || item.ambiguous === true) {
     reasons.push(REASON_CODES.MULTI_MATCH);
   }
@@ -197,12 +294,21 @@ export function createUnsupportedObservation(item, sourceViewState) {
 }
 
 export function createReviewOp(item, sourceViewState, context) {
-  const selectorStack = createSelectorStack(item.selectors || [], sourceViewState);
+  const selectorStack = createSelectorStack(item.selectors || item.selectorStack || [], sourceViewState);
   const evidenceRefs = (item.evidenceRefs || item.evidence || []).map(createEvidenceRef);
+  const matchProof = item.matchProof
+    ? createMatchProof({
+      ...item.matchProof,
+      itemId: item.matchProof.itemId || item.itemId || item.id || '',
+      targetScope: item.matchProof.targetScope || item.targetScope || { sceneId: item.sceneId || 'synthetic-scene' },
+      sourceViewState: item.matchProof.sourceViewState || sourceViewState,
+    })
+    : null;
   const { reasonCodes, riskClass, automationPolicy } = deriveAutomation({
     item,
     selectors: selectorStack,
     unsupported: false,
+    matchProof,
   });
   const opCore = {
     opKind: item.opKind || item.kind || 'TEXT_REPLACE',
@@ -217,6 +323,7 @@ export function createReviewOp(item, sourceViewState, context) {
       baselineHash: context.expectedBaselineHash || context.contextHash,
     },
     reasonCodes,
+    ...(matchProof ? { matchProof } : {}),
   };
   const opId = `op_${canonicalHash({
     artifactHash: context.artifactHash,
