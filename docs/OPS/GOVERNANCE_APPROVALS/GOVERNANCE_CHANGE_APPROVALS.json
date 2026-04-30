@@ -2999,10 +2999,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "6dabb5a538a95e610aeeacb77cff94ccf67155970068d305db28b95979953b00",
+      "sha256": "3d6caab37f634be2b597179b81079dac778a7760fa412d32acd548bcbd40b324",
       "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
-      "approvedAtUtc": "2026-04-30T17:45:00.000Z",
-      "rationale": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION owner-approved narrow macOS design phase promotion from 5000 supported tier to 10000 supported tier, preserving no production, cross-platform, export, storage, collaboration, comments, history, 25000, 40000, or 41750-plus claims."
+      "approvedAtUtc": "2026-04-30T18:00:00.000Z",
+      "rationale": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION owner-approved rebind of tracked 10000 stress proof to final contour HEAD after promotion release-candidate evidence commit; no runtime, UI, CSS, storage, export, dependency, 25000, 40000, 41750-plus, production, or cross-platform claim change."
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
