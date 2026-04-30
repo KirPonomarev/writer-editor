@@ -199,6 +199,18 @@ function getGitRef(repoRoot, refName) {
   return result.status === 0 ? normalizeString(result.stdout) : '';
 }
 
+function getGitChangedPaths(repoRoot, fromRef, toRef) {
+  const result = spawnSync('git', ['diff', '--name-only', `${fromRef}..${toRef}`], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+  if (result.status !== 0) return [];
+  return String(result.stdout || '')
+    .split(/\r?\n/u)
+    .map((line) => normalizeString(line))
+    .filter(Boolean);
+}
+
 function getGitStatusPorcelain(repoRoot) {
   const result = spawnSync('git', ['status', '--porcelain', '--untracked-files=all'], {
     cwd: repoRoot,
@@ -258,16 +270,24 @@ function getDetachedHeadState(repoRoot) {
 export function getRepoState(repoRoot = DEFAULT_REPO_ROOT) {
   const currentHeadSha = getGitHead(repoRoot);
   const originMainHeadSha = getGitRef(repoRoot, 'refs/remotes/origin/main');
+  const currentHeadFirstParentSha = getGitRef(repoRoot, 'HEAD^1');
+  const currentHeadSecondParentSha = getGitRef(repoRoot, 'HEAD^2');
   const detachedState = getDetachedHeadState(repoRoot);
   const statusPorcelain = getGitStatusPorcelain(repoRoot);
+  const currentHeadChangedPathsFromFirstParent = currentHeadFirstParentSha
+    ? getGitChangedPaths(repoRoot, 'HEAD^1', 'HEAD')
+    : [];
 
   return {
     currentHeadSha,
     originMainHeadSha,
+    currentHeadFirstParentSha,
+    currentHeadSecondParentSha,
     detachedHead: detachedState.detachedHead,
     branchName: detachedState.branchName,
     worktreeClean: statusPorcelain.trim() === '',
     statusPorcelain,
+    currentHeadChangedPathsFromFirstParent,
     changedPaths: statusPorcelain
       .split(/\r?\n/u)
       .map((line) => line.slice(3).trim())
@@ -660,12 +680,27 @@ export function evaluateEditorialSheetStressLaneStatus(artifact, { repoRoot = DE
   const repoState = getRepoState(repoRoot);
   const issues = [...validation.issues];
   const expectedExecutionHeadSha = normalizeString(repoState.originMainHeadSha || repoState.currentHeadSha);
+  const artifactHeadSha = normalizeString(artifact?.repo?.headSha);
+  const acceptedExecutionHeadShas = [expectedExecutionHeadSha];
+  const statusRelPathPosix = STATUS_REL_PATH.split(path.sep).join(path.posix.sep);
+  const statusRelPathNative = STATUS_REL_PATH.split(path.posix.sep).join(path.sep);
+  const mergeCommitRebindAllowed = (
+    normalizeString(repoState.currentHeadSecondParentSha)
+    && normalizeString(repoState.currentHeadFirstParentSha)
+    && expectedExecutionHeadSha === normalizeString(repoState.currentHeadSha)
+    && repoState.currentHeadChangedPathsFromFirstParent.some(
+      (entry) => entry === statusRelPathNative || entry === statusRelPathPosix,
+    )
+  );
+  if (mergeCommitRebindAllowed) {
+    acceptedExecutionHeadShas.push(normalizeString(repoState.currentHeadFirstParentSha));
+  }
 
   if (normalizeString(artifact?.status) !== 'PASS') issues.push('ARTIFACT_STATUS_NOT_PASS');
   if (artifact?.ok !== true) issues.push('ARTIFACT_OK_FALSE');
   if (Number(artifact?.[TOKEN_NAME] || 0) !== 1) issues.push('ARTIFACT_TOKEN_NOT_ONE');
   if (Array.isArray(artifact?.failedRowIds) && artifact.failedRowIds.length > 0) issues.push('ARTIFACT_FAILED_ROWS_PRESENT');
-  if (normalizeString(artifact?.repo?.headSha) !== expectedExecutionHeadSha) {
+  if (!acceptedExecutionHeadShas.includes(artifactHeadSha)) {
     issues.push('ARTIFACT_HEAD_SHA_MISMATCH');
   }
 
@@ -675,6 +710,8 @@ export function evaluateEditorialSheetStressLaneStatus(artifact, { repoRoot = DE
     status: dedupedIssues.length === 0 ? 'PASS' : 'FAIL',
     issues: dedupedIssues,
     [TOKEN_NAME]: dedupedIssues.length === 0 ? 1 : 0,
+    acceptedExecutionHeadShas,
+    matchedExecutionHeadSha: acceptedExecutionHeadShas.includes(artifactHeadSha) ? artifactHeadSha : '',
     repoState,
   };
 }

@@ -54,7 +54,8 @@ test('editorial sheet stress lane: committed artifact schema is valid and explic
   assert.equal(evaluation.ok, true, evaluation.issues.join('\n'));
   assert.equal(artifact.schemaVersion, SCHEMA_VERSION);
   assert.equal(artifact.artifactId, ARTIFACT_ID);
-  assert.equal(artifact.repo.headSha, evaluation.repoState.originMainHeadSha);
+  assert.ok(evaluation.acceptedExecutionHeadShas.includes(artifact.repo.headSha));
+  assert.equal(evaluation.matchedExecutionHeadSha, artifact.repo.headSha);
   assert.deepEqual(artifact.explicitRowIds, EXPECTED_ROW_IDS);
   assert.deepEqual(artifact.executedRowIds, EXPECTED_ROW_IDS);
   assert.deepEqual(artifact.diagnosticOnlyRowIds, DIAGNOSTIC_ONLY_ROW_IDS);
