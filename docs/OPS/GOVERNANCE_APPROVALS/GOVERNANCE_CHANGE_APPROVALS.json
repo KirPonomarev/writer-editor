@@ -2957,10 +2957,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "477069c892296ebbe776bc472b1635f07dff7d873e7448a365e3874db541857f",
-      "approvedBy": "ticket:CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY",
-      "approvedAtUtc": "2026-04-30T17:00:00.000Z",
-      "rationale": "CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY approves the refreshed authoritative stress lane artifact written from a clean codex contour branch with 10000 candidate observed metrics and 5000 supported tier preserved."
+      "sha256": "ebde086bd51f37353d3ba4bf6b46d514a3302cc463cc738f097db0c77102f48a",
+      "approvedBy": "ticket:CONTOUR_02_SCROLL_LIMIT_GUARD_AND_25000_DIAGNOSTIC_POLICY",
+      "approvedAtUtc": "2026-04-30T17:50:00.000Z",
+      "rationale": "CONTOUR_02_SCROLL_LIMIT_GUARD_AND_25000_DIAGNOSTIC_POLICY approves the refreshed stress lane artifact with harness-observed scroll range metrics, false-pass guard fields, 25000 destructive diagnostic policy fields, 5000 supported tier preserved, and 10000 candidate preserved."
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
