@@ -63,6 +63,8 @@ export const SECURITY_REASON_CODES = Object.freeze({
   ACTIVE_CONTENT_SURFACE_PRESENT: 'ACTIVE_CONTENT_SURFACE_PRESENT',
   SECURITY_SURFACE_POLICY_HIGH_RISK_SURFACE: 'SECURITY_SURFACE_POLICY_HIGH_RISK_SURFACE',
   SECURITY_SURFACE_POLICY_PRIOR_GATE_BLOCKED: 'SECURITY_SURFACE_POLICY_PRIOR_GATE_BLOCKED',
+  ENVELOPE_GATE_CLEARED: 'ENVELOPE_GATE_CLEARED',
+  DOCX_IMPORT_REQUIRES_SEPARATE_OWNER_APPROVED_CONTOUR: 'DOCX_IMPORT_REQUIRES_SEPARATE_OWNER_APPROVED_CONTOUR',
 });
 
 export const PACKAGE_SHAPE_OBSERVATIONS = Object.freeze({
@@ -88,6 +90,17 @@ export const SECURITY_SURFACE_DECISION_STATUS = Object.freeze({
   NO_HIGH_RISK_SURFACE_OBSERVED: 'NO_HIGH_RISK_SURFACE_OBSERVED',
   HIGH_RISK_SURFACE_OBSERVED: 'HIGH_RISK_SURFACE_OBSERVED',
   BLOCKED_PRIOR_GATE: 'BLOCKED_PRIOR_GATE',
+});
+
+export const DOCX_INTAKE_ENVELOPE_DECISION_STATUS = Object.freeze({
+  ENVELOPE_PACKAGE_GATE_BLOCKED: 'ENVELOPE_PACKAGE_GATE_BLOCKED',
+  ENVELOPE_XML_PREFLIGHT_BLOCKED: 'ENVELOPE_XML_PREFLIGHT_BLOCKED',
+  ENVELOPE_SECURITY_SURFACE_BLOCKED: 'ENVELOPE_SECURITY_SURFACE_BLOCKED',
+  ENVELOPE_GATE_CLEARED_NOT_IMPORT_AUTHORIZED: 'ENVELOPE_GATE_CLEARED_NOT_IMPORT_AUTHORIZED',
+});
+
+const DOCX_INTAKE_RUNTIME_ACTION = Object.freeze({
+  NONE: 'NONE',
 });
 
 export const SECURITY_RISK_CLASS = Object.freeze({
@@ -949,6 +962,52 @@ function makeSecuritySurfacePolicyDecision({
   };
 }
 
+function makeIntakeEnvelopeDecision({
+  decisionStatus,
+  packageReport,
+  xmlPreflightReport = null,
+  securitySurfacePolicyReport = null,
+  blockedGateVersion = null,
+  blockedGateHash = null,
+  reasonCodes = [],
+  nextRequiredContour,
+}) {
+  const gateHashes = {
+    packageGateHash: packageReport.gateHash,
+    ...(xmlPreflightReport ? { xmlPreflightGateHash: xmlPreflightReport.gateHash } : {}),
+    ...(securitySurfacePolicyReport ? { securitySurfacePolicyGateHash: securitySurfacePolicyReport.gateHash } : {}),
+    ...(blockedGateHash ? { blockedGateHash } : {}),
+  };
+  const completedGateVersions = [
+    packageReport.gateVersion,
+    ...(xmlPreflightReport ? [xmlPreflightReport.gateVersion] : []),
+    ...(securitySurfacePolicyReport ? [securitySurfacePolicyReport.gateVersion] : []),
+  ];
+  const reportCore = {
+    gateVersion: 'DOCX_HOSTILE_PACKAGE_GATE_001D',
+    decisionStatus,
+    status: decisionStatus,
+    securityStatus: blockedGateVersion ? SECURITY_STATUS.BLOCKED : SECURITY_STATUS.ALLOWED,
+    packageShapeStatus: packageReport.packageShapeStatus,
+    reasonCodes: uniqueSorted(reasonCodes),
+    gateHashes,
+    completedGateVersions,
+    blockedGateVersion,
+    packageReport,
+    xmlPreflightReport,
+    securitySurfacePolicyReport,
+    docxImportAuthorized: false,
+    runtimeAction: DOCX_INTAKE_RUNTIME_ACTION.NONE,
+    nextRequiredContour,
+  };
+  const envelopeDecisionHash = canonicalHash(reportCore);
+  return {
+    ...reportCore,
+    gateHash: envelopeDecisionHash,
+    envelopeDecisionHash,
+  };
+}
+
 function makePriorGateSecuritySurfaceReport({ packageReport, xmlPreflightReport, policy, priorGate }) {
   const priorGateReasonCode = priorGate === 'DOCX_HOSTILE_PACKAGE_GATE_001B'
     ? SECURITY_REASON_CODES.XML_PREFLIGHT_BLOCKED
@@ -1095,4 +1154,59 @@ export function inspectHostilePackageSecuritySurfacePolicy(inputBuffer, inputPol
     ...reportCore,
     gateHash: canonicalHash(reportCore),
   };
+}
+
+export function inspectDocxIntakeEnvelopeDecision(inputBuffer, inputPolicy = {}) {
+  const policy = normalizePolicy(inputPolicy);
+  const buffer = Buffer.isBuffer(inputBuffer) ? inputBuffer : Buffer.from(inputBuffer || []);
+  const packageReport = inspectHostilePackage(buffer, policy);
+  if (packageReport.securityStatus === SECURITY_STATUS.BLOCKED) {
+    return makeIntakeEnvelopeDecision({
+      decisionStatus: DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_PACKAGE_GATE_BLOCKED,
+      packageReport,
+      blockedGateVersion: packageReport.gateVersion,
+      blockedGateHash: packageReport.gateHash,
+      reasonCodes: packageReport.reasonCodes,
+      nextRequiredContour: 'RESOLVE_DOCX_HOSTILE_PACKAGE_GATE_001A_BLOCKER',
+    });
+  }
+
+  const xmlPreflightReport = inspectHostilePackageXmlPreflight(buffer, policy);
+  if (xmlPreflightReport.securityStatus === SECURITY_STATUS.BLOCKED) {
+    return makeIntakeEnvelopeDecision({
+      decisionStatus: DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_XML_PREFLIGHT_BLOCKED,
+      packageReport,
+      xmlPreflightReport,
+      blockedGateVersion: xmlPreflightReport.gateVersion,
+      blockedGateHash: xmlPreflightReport.gateHash,
+      reasonCodes: xmlPreflightReport.reasonCodes,
+      nextRequiredContour: 'RESOLVE_DOCX_HOSTILE_PACKAGE_GATE_001B_BLOCKER',
+    });
+  }
+
+  const securitySurfacePolicyReport = inspectHostilePackageSecuritySurfacePolicy(buffer, policy);
+  if (securitySurfacePolicyReport.securityStatus === SECURITY_STATUS.BLOCKED) {
+    return makeIntakeEnvelopeDecision({
+      decisionStatus: DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_SECURITY_SURFACE_BLOCKED,
+      packageReport,
+      xmlPreflightReport,
+      securitySurfacePolicyReport,
+      blockedGateVersion: securitySurfacePolicyReport.gateVersion,
+      blockedGateHash: securitySurfacePolicyReport.gateHash,
+      reasonCodes: securitySurfacePolicyReport.reasonCodes,
+      nextRequiredContour: securitySurfacePolicyReport.nextRequiredContour,
+    });
+  }
+
+  return makeIntakeEnvelopeDecision({
+    decisionStatus: DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_GATE_CLEARED_NOT_IMPORT_AUTHORIZED,
+    packageReport,
+    xmlPreflightReport,
+    securitySurfacePolicyReport,
+    reasonCodes: [
+      SECURITY_REASON_CODES.ENVELOPE_GATE_CLEARED,
+      SECURITY_REASON_CODES.DOCX_IMPORT_REQUIRES_SEPARATE_OWNER_APPROVED_CONTOUR,
+    ],
+    nextRequiredContour: 'OWNER_APPROVED_DOCX_IMPORT_CONTOUR_REQUIRED_AFTER_ENVELOPE_GATE',
+  });
 }

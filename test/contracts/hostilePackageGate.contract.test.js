@@ -700,3 +700,148 @@ test('security surface policy production exports do not expose runtime admission
 
   assert.equal(productionExportNames.some((name) => /admission|quarantine/iu.test(name)), false);
 });
+
+test('DOCX intake envelope clears safe package without authorizing import', async () => {
+  const {
+    inspectDocxIntakeEnvelopeDecision,
+    DOCX_INTAKE_ENVELOPE_DECISION_STATUS,
+    SECURITY_REASON_CODES,
+  } = await loadGate();
+  const report = inspectDocxIntakeEnvelopeDecision(safeXmlPackage());
+
+  assert.equal(
+    report.decisionStatus,
+    DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_GATE_CLEARED_NOT_IMPORT_AUTHORIZED,
+  );
+  assert.equal(report.docxImportAuthorized, false);
+  assert.equal(report.runtimeAction, 'NONE');
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.ENVELOPE_GATE_CLEARED), true);
+  assert.equal(
+    report.reasonCodes.includes(SECURITY_REASON_CODES.DOCX_IMPORT_REQUIRES_SEPARATE_OWNER_APPROVED_CONTOUR),
+    true,
+  );
+  assert.equal(report.completedGateVersions.includes('DOCX_HOSTILE_PACKAGE_GATE_001A'), true);
+  assert.equal(report.completedGateVersions.includes('DOCX_HOSTILE_PACKAGE_GATE_001B'), true);
+  assert.equal(report.completedGateVersions.includes('DOCX_HOSTILE_PACKAGE_GATE_001C'), true);
+  assert.match(report.envelopeDecisionHash, /^[a-f0-9]{64}$/u);
+  assert.equal(report.gateHash, report.envelopeDecisionHash);
+});
+
+test('DOCX intake envelope safe result includes all three subordinate gate hashes', async () => {
+  const { inspectDocxIntakeEnvelopeDecision } = await loadGate();
+  const report = inspectDocxIntakeEnvelopeDecision(safeXmlPackage());
+
+  assert.match(report.gateHashes.packageGateHash, /^[a-f0-9]{64}$/u);
+  assert.match(report.gateHashes.xmlPreflightGateHash, /^[a-f0-9]{64}$/u);
+  assert.match(report.gateHashes.securitySurfacePolicyGateHash, /^[a-f0-9]{64}$/u);
+  assert.equal(report.gateHashes.packageGateHash, report.packageReport.gateHash);
+  assert.equal(report.gateHashes.xmlPreflightGateHash, report.xmlPreflightReport.gateHash);
+  assert.equal(report.gateHashes.securitySurfacePolicyGateHash, report.securitySurfacePolicyReport.gateHash);
+});
+
+test('DOCX intake envelope short-circuits on blocked package gate', async () => {
+  const {
+    inspectDocxIntakeEnvelopeDecision,
+    DOCX_INTAKE_ENVELOPE_DECISION_STATUS,
+    SECURITY_REASON_CODES,
+  } = await loadGate();
+  const report = inspectDocxIntakeEnvelopeDecision(Buffer.from('not a zip'));
+
+  assert.equal(report.decisionStatus, DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_PACKAGE_GATE_BLOCKED);
+  assert.equal(report.blockedGateVersion, 'DOCX_HOSTILE_PACKAGE_GATE_001A');
+  assert.equal(report.gateHashes.blockedGateHash, report.packageReport.gateHash);
+  assert.equal(report.gateHashes.xmlPreflightGateHash, undefined);
+  assert.equal(report.gateHashes.securitySurfacePolicyGateHash, undefined);
+  assert.equal(report.xmlPreflightReport, null);
+  assert.equal(report.securitySurfacePolicyReport, null);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.ZIP_EOCD_MISSING), true);
+  assert.equal(report.docxImportAuthorized, false);
+  assert.equal(report.runtimeAction, 'NONE');
+});
+
+test('DOCX intake envelope short-circuits on blocked XML preflight gate', async () => {
+  const {
+    inspectDocxIntakeEnvelopeDecision,
+    DOCX_INTAKE_ENVELOPE_DECISION_STATUS,
+    SECURITY_REASON_CODES,
+  } = await loadGate();
+  const report = inspectDocxIntakeEnvelopeDecision(safeXmlPackage([
+    {
+      name: 'word/_rels/document.xml.rels',
+      content: '<Relationships><Relationship TargetMode="External" /></Relationships>',
+    },
+  ]));
+
+  assert.equal(report.decisionStatus, DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_XML_PREFLIGHT_BLOCKED);
+  assert.equal(report.blockedGateVersion, 'DOCX_HOSTILE_PACKAGE_GATE_001B');
+  assert.equal(report.gateHashes.packageGateHash, report.packageReport.gateHash);
+  assert.equal(report.gateHashes.blockedGateHash, report.xmlPreflightReport.gateHash);
+  assert.equal(report.gateHashes.securitySurfacePolicyGateHash, undefined);
+  assert.equal(report.securitySurfacePolicyReport, null);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.RELATIONSHIP_TARGETMODE_EXTERNAL), true);
+  assert.equal(report.docxImportAuthorized, false);
+  assert.equal(report.runtimeAction, 'NONE');
+});
+
+test('DOCX intake envelope blocks security surface policy only after package and XML gates pass', async () => {
+  const {
+    inspectDocxIntakeEnvelopeDecision,
+    DOCX_INTAKE_ENVELOPE_DECISION_STATUS,
+    SECURITY_REASON_CODES,
+  } = await loadGate();
+  const report = inspectDocxIntakeEnvelopeDecision(safeXmlPackage([
+    { name: 'word/vbaProject.bin', content: 'opaque' },
+  ]));
+
+  assert.equal(report.decisionStatus, DOCX_INTAKE_ENVELOPE_DECISION_STATUS.ENVELOPE_SECURITY_SURFACE_BLOCKED);
+  assert.equal(report.blockedGateVersion, 'DOCX_HOSTILE_PACKAGE_GATE_001C');
+  assert.equal(report.gateHashes.packageGateHash, report.packageReport.gateHash);
+  assert.equal(report.gateHashes.xmlPreflightGateHash, report.xmlPreflightReport.gateHash);
+  assert.equal(report.gateHashes.blockedGateHash, report.securitySurfacePolicyReport.gateHash);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.MACRO_SURFACE_PRESENT), true);
+  assert.equal(report.docxImportAuthorized, false);
+  assert.equal(report.runtimeAction, 'NONE');
+});
+
+test('DOCX intake envelope never authorizes runtime import for any aggregate outcome', async () => {
+  const { inspectDocxIntakeEnvelopeDecision } = await loadGate();
+  const reports = [
+    inspectDocxIntakeEnvelopeDecision(safeXmlPackage()),
+    inspectDocxIntakeEnvelopeDecision(Buffer.from('not a zip')),
+    inspectDocxIntakeEnvelopeDecision(safeXmlPackage([
+      { name: 'word/_rels/document.xml.rels', content: '<Relationships><Relationship TargetMode="External" /></Relationships>' },
+    ])),
+    inspectDocxIntakeEnvelopeDecision(safeXmlPackage([
+      { name: 'word/vbaProject.bin', content: 'opaque' },
+    ])),
+  ];
+
+  for (const report of reports) {
+    assert.equal(report.docxImportAuthorized, false);
+    assert.equal(report.runtimeAction, 'NONE');
+  }
+});
+
+test('DOCX intake envelope hash is deterministic and policy-bound', async () => {
+  const { inspectDocxIntakeEnvelopeDecision } = await loadGate();
+  const first = inspectDocxIntakeEnvelopeDecision(safeXmlPackage());
+  const second = inspectDocxIntakeEnvelopeDecision(safeXmlPackage());
+  const changedPolicy = inspectDocxIntakeEnvelopeDecision(safeXmlPackage(), { maxEntryCount: 10 });
+
+  assert.deepEqual(first, second);
+  assert.match(first.gateHash, /^[a-f0-9]{64}$/u);
+  assert.match(first.envelopeDecisionHash, /^[a-f0-9]{64}$/u);
+  assert.equal(first.gateHash, first.envelopeDecisionHash);
+  assert.notEqual(first.gateHash, changedPolicy.gateHash);
+});
+
+test('DOCX intake envelope production API exposes no semantic parse callback or enablement names', async () => {
+  const gate = await loadGate();
+  const productionExportNames = Object.keys(gate);
+
+  assert.equal(gate.inspectDocxIntakeEnvelopeDecision.length, 1);
+  assert.equal(
+    productionExportNames.some((name) => /enable|admission|quarantine|semantic|parse|callback|authorized/iu.test(name)),
+    false,
+  );
+});
