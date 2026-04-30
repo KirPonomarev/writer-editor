@@ -2,6 +2,55 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-f29bb1c2e298-08633278/token-required-set.json",
+      "sha256": "53845afe43620c1da737dba37aaf96a86d09e3a0cc5ee4b086b1912282956ac5",
+      "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION_RC_REBIND",
+      "approvedAtUtc": "2026-04-30T17:50:00.000Z",
+      "rationale": "Approve release candidate lock rebind and promotion evidence pack for the owner-approved 10000 supported tier macOS design phase contour; no runtime, UI, CSS, storage, export, dependency, 25000, 40000, 41750-plus, production, or cross-platform claim is introduced."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-f29bb1c2e298-08633278/promotion-summary.json",
+      "sha256": "b3bae9b6bcabd2c58c781e981e09725935c7f514d64f519342c4e9713d5e5fa3",
+      "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION_RC_REBIND",
+      "approvedAtUtc": "2026-04-30T17:50:00.000Z",
+      "rationale": "Approve release candidate lock rebind and promotion evidence pack for the owner-approved 10000 supported tier macOS design phase contour; no runtime, UI, CSS, storage, export, dependency, 25000, 40000, 41750-plus, production, or cross-platform claim is introduced."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-f29bb1c2e298-08633278/perfBaseline.json",
+      "sha256": "4c2ba9bc56ac34e0e1a6dbabb0bd4506d348699837ed287078e85325244977e3",
+      "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION_RC_REBIND",
+      "approvedAtUtc": "2026-04-30T17:50:00.000Z",
+      "rationale": "Approve release candidate lock rebind and promotion evidence pack for the owner-approved 10000 supported tier macOS design phase contour; no runtime, UI, CSS, storage, export, dependency, 25000, 40000, 41750-plus, production, or cross-platform claim is introduced."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-f29bb1c2e298-08633278/menuArtifactHash.txt",
+      "sha256": "221ecc7162cd89d88e96582cfb4b7f5a2fc79e5b5485aa790286f1302c364ba6",
+      "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION_RC_REBIND",
+      "approvedAtUtc": "2026-04-30T17:50:00.000Z",
+      "rationale": "Approve release candidate lock rebind and promotion evidence pack for the owner-approved 10000 supported tier macOS design phase contour; no runtime, UI, CSS, storage, export, dependency, 25000, 40000, 41750-plus, production, or cross-platform claim is introduced."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-f29bb1c2e298-08633278/heavy-lane-summary.json",
+      "sha256": "379732724f1fdbc63ccdde5539b2aa24bd02c9e64ad62ce2973970cdc716d4fb",
+      "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION_RC_REBIND",
+      "approvedAtUtc": "2026-04-30T17:50:00.000Z",
+      "rationale": "Approve release candidate lock rebind and promotion evidence pack for the owner-approved 10000 supported tier macOS design phase contour; no runtime, UI, CSS, storage, export, dependency, 25000, 40000, 41750-plus, production, or cross-platform claim is introduced."
+    },
+    {
+      "filePath": "docs/OPS/EVIDENCE/promotion/rc-f29bb1c2e298-08633278/failsignal-registry-snapshot.json",
+      "sha256": "480a720d5f877f5109ea1e0462950bd60500b7823221f0ab7417d98c90e98495",
+      "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION_RC_REBIND",
+      "approvedAtUtc": "2026-04-30T17:50:00.000Z",
+      "rationale": "Approve release candidate lock rebind and promotion evidence pack for the owner-approved 10000 supported tier macOS design phase contour; no runtime, UI, CSS, storage, export, dependency, 25000, 40000, 41750-plus, production, or cross-platform claim is introduced."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
+      "sha256": "2b096503798315747bc99bf85dec7aac2099a6661d0281380753583b7e61ca40",
+      "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION_RC_REBIND",
+      "approvedAtUtc": "2026-04-30T17:50:00.000Z",
+      "rationale": "Approve release candidate lock rebind and promotion evidence pack for the owner-approved 10000 supported tier macOS design phase contour; no runtime, UI, CSS, storage, export, dependency, 25000, 40000, 41750-plus, production, or cross-platform claim is introduced."
+    },
+    {
       "filePath": "test/contracts/editor-sheet-6000-diagnostic-probe.contract.test.js",
       "sha256": "95e8d0c66a98ca56f74deb68bf91d678774a8c4a9e902d25ad8146eedea88c94",
       "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
@@ -2723,13 +2772,6 @@
       "approvedBy": "ticket:RECOVERY_READABILITY_CENTRAL_BINDING_001",
       "approvedAtUtc": "2026-04-27T23:33:13.000Z",
       "rationale": "RECOVERY_READABILITY_CENTRAL_BINDING_001 approves the dedicated failsignal row for readable recovery proof failure and the bounded precedence rebind that keeps registry ordering valid."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
-      "sha256": "da4e8ec2243c0e28740909914d09c57edcd10fa791afeaef7da5ee995e44fd4c",
-      "approvedBy": "ticket:EDITORIAL_SHEET_STRESS_LANE_REBIND_004_GOVERNANCE_HYGIENE",
-      "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "EDITORIAL_SHEET_STRESS_LANE_REBIND_004_GOVERNANCE_HYGIENE approves the already-committed release candidate lock rebind so strict governance validation no longer depends on a stale lock hash entry."
     },
     {
       "filePath": "docs/OPS/STATUS/THIRD_PARTY_NOTICES_READINESS.json",
