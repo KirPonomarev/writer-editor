@@ -20,9 +20,9 @@ const STATUS_VALUES = new Set(['PASS', 'FAIL', 'STOP_RESOURCE_LIMIT']);
 const SCALE_ROW_TIMEOUT_MS = 8 * 60 * 1000;
 const DIAGNOSTIC_ROW_TIMEOUT_MS = 3 * 60 * 1000;
 const MAX_BUFFER_BYTES = 64 * 1024 * 1024;
-export const READINESS_RULE = '5000_READINESS_REQUIRES_TRACKED_5000_PASS';
-export const CANDIDATE_RULE = '10000_CANDIDATE_DOES_NOT_RAISE_SUPPORTED_TIER';
-export const SUPPORTED_SCALE_CEILING = 5000;
+export const READINESS_RULE = '10000_READINESS_REQUIRES_TRACKED_10000_PASS';
+export const CANDIDATE_RULE = 'NO_TRACKED_CANDIDATE_ROWS_AFTER_10000_PROMOTION';
+export const SUPPORTED_SCALE_CEILING = 10000;
 export const DIAGNOSTIC_BOUNDARY_PAGE_COUNTS = Object.freeze([25000]);
 export const SCROLL_RANGE_LIMIT_RULE = 'END_MARKER_HIDDEN_AT_MAX_SCROLL_TOP_IS_SCROLL_RANGE_CLAMP';
 
@@ -68,11 +68,10 @@ export const ROW_DEFINITIONS = Object.freeze([
     env: { EDITOR_SHEET_STRESS_TARGET_PAGE_COUNT: '5000' },
   },
   {
-    id: 'TRACKED_CANDIDATE_10000',
-    rowClass: 'tracked-candidate',
+    id: 'TRACKED_SCALE_10000',
+    rowClass: 'tracked-scale',
     pageCount: 10000,
     diagnosticOnly: false,
-    candidateOnly: true,
     timeoutMs: SCALE_ROW_TIMEOUT_MS,
     commandArgs: ['--test', 'test/unit/editor-sheet-instrumented-stress-smoke.mjs'],
     summaryPrefix: 'EDITOR_SHEET_INSTRUMENTED_STRESS_SUMMARY:',
@@ -595,7 +594,7 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
   const unsupportedAboveCurrentProof = TRACKED_SCALE_PAGE_COUNTS
     .filter((pageCount) => pageCount > provisionalObservedCeiling);
   const tracked5000Pass = trackedScaleRows.some((row) => row.pageCount === 5000 && row.status === 'PASS');
-  const trackedCandidate10000Pass = trackedCandidateRows.some((row) => row.pageCount === 10000 && row.status === 'PASS');
+  const tracked10000Pass = trackedScaleRows.some((row) => row.pageCount === 10000 && row.status === 'PASS');
   const scaleAndCandidateRows = rows.filter((row) => row.rowClass === 'tracked-scale' || row.rowClass === 'tracked-candidate');
   const endMarkerScrolls = scaleAndCandidateRows.map((row) => getEndMarkerScroll(row)).filter(Boolean);
   const scrollHeightLimitObserved = endMarkerScrolls.reduce(
@@ -650,11 +649,13 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
     unsupportedAboveCurrentProof,
     readiness: {
       editorialSheet5000Ready: ok && tracked5000Pass,
+      editorialSheet10000Ready: ok && tracked10000Pass,
       tracked5000Pass,
+      tracked10000Pass,
       rule: READINESS_RULE,
     },
     candidates: {
-      trackedCandidate10000Pass,
+      trackedCandidate10000Pass: false,
       supportedTierRaised: false,
       rule: CANDIDATE_RULE,
     },
@@ -682,7 +683,7 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
       trackedCandidatesDoNotRaiseSupportedTier: true,
       diagnosticBoundary25000DoesNotRaiseCeiling: true,
       scrollRangeClampCannotGreenlightAcceptance: true,
-      readinessRequiresTracked5000Pass: true,
+      readinessRequiresTracked10000Pass: true,
       refreshAuthority: WRITE_AUTHORITY_RULE,
     },
   });
@@ -864,13 +865,15 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
     issues.push('FALSE_GREEN_5000_READINESS_WITHOUT_TRACKED_5000_PASS');
   }
   for (const [key, value] of Object.entries(artifact?.readiness || {})) {
-    if (/(10000|25000)/u.test(key) && value === true) issues.push(`UNSUPPORTED_READINESS_CLAIM_${key}`);
+    if (/(25000|40000|41750)/u.test(key) && value === true) issues.push(`UNSUPPORTED_READINESS_CLAIM_${key}`);
   }
 
-  const trackedCandidate10000Pass = trackedCandidateRows.some((row) => Number(row?.pageCount || 0) === 10000 && normalizeString(row?.status) === 'PASS');
-  if (Boolean(artifact?.candidates?.trackedCandidate10000Pass) !== trackedCandidate10000Pass) {
-    issues.push('CANDIDATE_TRACKED_10000_FLAG_INVALID');
+  const tracked10000Pass = trackedScaleRows.some((row) => Number(row?.pageCount || 0) === 10000 && normalizeString(row?.status) === 'PASS');
+  if (Boolean(artifact?.readiness?.tracked10000Pass) !== tracked10000Pass) issues.push('READINESS_TRACKED_10000_FLAG_INVALID');
+  if (artifact?.readiness?.editorialSheet10000Ready === true && tracked10000Pass !== true) {
+    issues.push('FALSE_GREEN_10000_READINESS_WITHOUT_TRACKED_10000_PASS');
   }
+  if (Boolean(artifact?.candidates?.trackedCandidate10000Pass) !== false) issues.push('CANDIDATE_TRACKED_10000_FLAG_INVALID');
   if (artifact?.candidates?.supportedTierRaised === true) {
     issues.push('CANDIDATE_SUPPORTED_TIER_RAISED');
   }

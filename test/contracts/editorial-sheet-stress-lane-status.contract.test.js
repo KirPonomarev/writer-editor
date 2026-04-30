@@ -65,7 +65,7 @@ test('editorial sheet stress lane: committed artifact schema is valid and explic
   assert.deepEqual(artifact.diagnosticOnlyRowIds, DIAGNOSTIC_ONLY_ROW_IDS);
   assert.deepEqual(artifact.trackedScalePageCounts, TRACKED_SCALE_PAGE_COUNTS);
   assert.deepEqual(artifact.trackedCandidatePageCounts, TRACKED_CANDIDATE_PAGE_COUNTS);
-  assert.equal(artifact.candidateObservedCeiling, 10000);
+  assert.equal(artifact.candidateObservedCeiling, 0);
   assert.deepEqual(artifact.diagnosticBoundaryPageCounts, DIAGNOSTIC_BOUNDARY_PAGE_COUNTS);
   assert.equal(artifact.supportedTier, SUPPORTED_SCALE_CEILING);
   assert.equal(artifact.scrollRangeLimitGuard.rule, SCROLL_RANGE_LIMIT_RULE);
@@ -88,9 +88,9 @@ test('editorial sheet stress lane: committed artifact schema is valid and explic
   assert.equal(rowMap.get('TRACKED_SCALE_3000').rowClass, 'tracked-scale');
   assert.equal(rowMap.get('TRACKED_SCALE_4000').rowClass, 'tracked-scale');
   assert.equal(rowMap.get('TRACKED_SCALE_5000').rowClass, 'tracked-scale');
-  assert.equal(rowMap.get('TRACKED_CANDIDATE_10000').rowClass, 'tracked-candidate');
-  assert.equal(rowMap.get('TRACKED_CANDIDATE_10000').diagnosticOnly, false);
-  assert.equal(rowMap.get('TRACKED_CANDIDATE_10000').status, 'PASS');
+  assert.equal(rowMap.get('TRACKED_SCALE_10000').rowClass, 'tracked-scale');
+  assert.equal(rowMap.get('TRACKED_SCALE_10000').diagnosticOnly, false);
+  assert.equal(rowMap.get('TRACKED_SCALE_10000').status, 'PASS');
   assert.equal(rowMap.get('VIEWPORT_CONTINUITY').rowClass, 'diagnostic-viewport');
   assert.equal(rowMap.get('INPUT_CONTINUITY').rowClass, 'diagnostic-input');
   assert.equal(rowMap.get('GAP_CONTINUITY').rowClass, 'diagnostic-gap');
@@ -106,9 +106,8 @@ test('editorial sheet stress lane: anti-false-green fields derive only from trac
   } = await loadModule();
   const artifact = readArtifact();
   const trackedScaleRows = artifact.rows.filter((row) => row.rowClass === 'tracked-scale');
-  const trackedCandidateRows = artifact.rows.filter((row) => row.rowClass === 'tracked-candidate');
   const tracked5000Row = trackedScaleRows.find((row) => row.pageCount === 5000);
-  const trackedCandidate10000Row = trackedCandidateRows.find((row) => row.pageCount === 10000);
+  const tracked10000Row = trackedScaleRows.find((row) => row.pageCount === 10000);
   const expectedCeiling = trackedScaleRows
     .filter((row) => row.status === 'PASS')
     .reduce((max, row) => Math.max(max, Number(row.pageCount || 0)), 0);
@@ -120,12 +119,14 @@ test('editorial sheet stress lane: anti-false-green fields derive only from trac
   assert.equal(artifact.provisionalObservedCeiling, expectedCeiling);
   assert.deepEqual(artifact.unsupportedAboveCurrentProof, expectedUnsupportedAboveCurrentProof);
   assert.deepEqual(artifact.failedRowIds, expectedFailedRowIds);
-  assert.equal(artifact.candidateObservedCeiling, trackedCandidate10000Row.status === 'PASS' ? 10000 : 0);
+  assert.equal(artifact.candidateObservedCeiling, 0);
   assert.equal(artifact.readiness.rule, READINESS_RULE);
   assert.equal(artifact.readiness.tracked5000Pass, tracked5000Row.status === 'PASS');
-  assert.equal(artifact.candidates.trackedCandidate10000Pass, trackedCandidate10000Row.status === 'PASS');
+  assert.equal(artifact.readiness.tracked10000Pass, tracked10000Row.status === 'PASS');
+  assert.equal(artifact.readiness.editorialSheet10000Ready === true ? tracked10000Row.status === 'PASS' : true, true);
+  assert.equal(artifact.candidates.trackedCandidate10000Pass, false);
   assert.equal(artifact.candidates.supportedTierRaised, false);
-  assert.equal(artifact.supportedTier, 5000);
+  assert.equal(artifact.supportedTier, 10000);
   assert.equal(artifact.scrollRangeLimitGuard.scrollRangeClampDetected, false);
   assert.equal(artifact.readiness.editorialSheet5000Ready === true ? tracked5000Row.status === 'PASS' : true, true);
   if (tracked5000Row.status !== 'PASS') {
@@ -207,14 +208,14 @@ test('editorial sheet stress lane: outer evaluation fails on FAIL status token z
 
 test('editorial sheet stress lane: outer evaluation rejects unsupported scale promotion attempts', async () => {
   const artifact = readArtifact();
-  const trackedScale6000Row = {
-    ...artifact.rows.find((row) => row.id === 'TRACKED_SCALE_5000'),
-    id: 'TRACKED_SCALE_6000',
-    pageCount: 6000,
+  const trackedScale25000Row = {
+    ...artifact.rows.find((row) => row.id === 'TRACKED_SCALE_10000'),
+    id: 'TRACKED_SCALE_25000',
+    pageCount: 25000,
     observed: {
-      ...artifact.rows.find((row) => row.id === 'TRACKED_SCALE_5000').observed,
-      targetPageCount: 6000,
-      actualPageCount: 6720,
+      ...artifact.rows.find((row) => row.id === 'TRACKED_SCALE_10000').observed,
+      targetPageCount: 25000,
+      actualPageCount: 28164,
     },
   };
   const cases = [
@@ -223,7 +224,7 @@ test('editorial sheet stress lane: outer evaluation rejects unsupported scale pr
       mutate(source) {
         return {
           ...source,
-          trackedScalePageCounts: [...source.trackedScalePageCounts, 6000],
+          trackedScalePageCounts: [...source.trackedScalePageCounts, 25000],
         };
       },
       expectedIssue: 'TRACKED_SCALE_PAGE_COUNTS_DO_NOT_MATCH',
@@ -233,38 +234,32 @@ test('editorial sheet stress lane: outer evaluation rejects unsupported scale pr
       mutate(source) {
         return {
           ...source,
-          explicitRowIds: [...source.explicitRowIds, 'TRACKED_SCALE_6000'],
-          executedRowIds: [...source.executedRowIds, 'TRACKED_SCALE_6000'],
-          trackedScalePageCounts: [...source.trackedScalePageCounts, 6000],
-          provisionalObservedCeiling: 6000,
-          rows: [...source.rows, trackedScale6000Row],
+          explicitRowIds: [...source.explicitRowIds, 'TRACKED_SCALE_25000'],
+          executedRowIds: [...source.executedRowIds, 'TRACKED_SCALE_25000'],
+          trackedScalePageCounts: [...source.trackedScalePageCounts, 25000],
+          provisionalObservedCeiling: 25000,
+          rows: [...source.rows, trackedScale25000Row],
           readiness: {
             ...source.readiness,
-            editorialSheet6000Ready: true,
-            tracked6000Pass: true,
+            editorialSheet25000Ready: true,
+            tracked25000Pass: true,
           },
         };
       },
       expectedIssue: 'ROW_SET_MISMATCH',
     },
     {
-      name: 'candidate-raises-supported-tier',
+      name: 'unsupported-25000-readiness-claim',
       mutate(source) {
         return {
           ...source,
-          supportedTier: 10000,
-          provisionalObservedCeiling: 10000,
-          candidates: {
-            ...source.candidates,
-            supportedTierRaised: true,
-          },
           readiness: {
             ...source.readiness,
-            editorialSheet10000Ready: true,
+            editorialSheet25000Ready: true,
           },
         };
       },
-      expectedIssue: 'PROVISIONAL_OBSERVED_CEILING_ABOVE_SUPPORTED_TIER',
+      expectedIssue: 'UNSUPPORTED_READINESS_CLAIM_editorialSheet25000Ready',
     },
     {
       name: 'promoted-25000-boundary',
@@ -275,11 +270,11 @@ test('editorial sheet stress lane: outer evaluation rejects unsupported scale pr
           rows: [
             ...source.rows,
             {
-              ...source.rows.find((row) => row.id === 'TRACKED_CANDIDATE_10000'),
+              ...source.rows.find((row) => row.id === 'TRACKED_SCALE_10000'),
               id: 'TRACKED_CANDIDATE_25000',
               pageCount: 25000,
               observed: {
-                ...source.rows.find((row) => row.id === 'TRACKED_CANDIDATE_10000').observed,
+                ...source.rows.find((row) => row.id === 'TRACKED_SCALE_10000').observed,
                 targetPageCount: 25000,
               },
             },
@@ -289,18 +284,18 @@ test('editorial sheet stress lane: outer evaluation rejects unsupported scale pr
       expectedIssue: 'ROW_SET_MISMATCH',
     },
     {
-      name: 'candidate-missing-observed-metric',
+      name: 'supported-10000-missing-observed-metric',
       mutate(source) {
         return {
           ...source,
           rows: source.rows.map((row) => {
-            if (row.id !== 'TRACKED_CANDIDATE_10000') return row;
+            if (row.id !== 'TRACKED_SCALE_10000') return row;
             const { actualPageCount: _actualPageCount, ...observed } = row.observed;
             return { ...row, observed };
           }),
         };
       },
-      expectedIssue: 'ROW_OBSERVED_ACTUALPAGECOUNT_MISSING_TRACKED_CANDIDATE_10000',
+      expectedIssue: 'ROW_OBSERVED_ACTUALPAGECOUNT_MISSING_TRACKED_SCALE_10000',
     },
     {
       name: 'end-marker-hidden-at-scroll-range-clamp',
@@ -308,7 +303,7 @@ test('editorial sheet stress lane: outer evaluation rejects unsupported scale pr
         return {
           ...source,
           rows: source.rows.map((row) => {
-            if (row.id !== 'TRACKED_CANDIDATE_10000') return row;
+            if (row.id !== 'TRACKED_SCALE_10000') return row;
             return {
               ...row,
               observed: {
@@ -329,7 +324,7 @@ test('editorial sheet stress lane: outer evaluation rejects unsupported scale pr
           },
         };
       },
-      expectedIssue: 'SCROLL_RANGE_CLAMP_TRACKED_CANDIDATE_10000',
+      expectedIssue: 'SCROLL_RANGE_CLAMP_TRACKED_SCALE_10000',
     },
     {
       name: 'child-ok-parent-scroll-clamp-not-flagged',
@@ -337,7 +332,7 @@ test('editorial sheet stress lane: outer evaluation rejects unsupported scale pr
         return {
           ...source,
           rows: source.rows.map((row) => {
-            if (row.id !== 'TRACKED_CANDIDATE_10000') return row;
+            if (row.id !== 'TRACKED_SCALE_10000') return row;
             return {
               ...row,
               status: 'PASS',
