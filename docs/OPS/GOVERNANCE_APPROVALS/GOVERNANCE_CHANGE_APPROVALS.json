@@ -2964,10 +2964,10 @@
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
-      "sha256": "564b2ab1ee40c08ea43c115e1fba4368129333785cc8e517ec1d46f20bebdba8",
+      "sha256": "7f965da861e044d6f8d23e6137c670d417e691de40b6473891f7e1ac3dbf89ff",
       "approvedBy": "ticket:CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY",
-      "approvedAtUtc": "2026-04-30T16:20:00.000Z",
-      "rationale": "CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY approves the bounded stress lane schema, required observed metrics for tracked scale and candidate rows, and writer-authority extension that admits a clean codex contour branch while preserving 5000 as supported tier."
+      "approvedAtUtc": "2026-04-30T16:35:00.000Z",
+      "rationale": "CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY approves the bounded stress lane schema, required observed metrics for tracked scale and candidate rows, candidate metric extraction in writer output, and clean codex contour write authority while preserving 5000 as supported tier."
     },
     {
       "filePath": "test/contracts/editorial-sheet-stress-lane-status.contract.test.js",

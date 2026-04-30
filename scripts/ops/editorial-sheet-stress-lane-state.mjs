@@ -483,7 +483,9 @@ function summarizeGapRow(summary) {
 }
 
 function buildObserved(rowDefinition, summary) {
-  if (rowDefinition.rowClass === 'tracked-scale') return summarizeScaleRow(summary);
+  if (rowDefinition.rowClass === 'tracked-scale' || rowDefinition.rowClass === 'tracked-candidate') {
+    return summarizeScaleRow(summary);
+  }
   if (rowDefinition.id === 'VIEWPORT_CONTINUITY') return summarizeViewportRow(summary);
   if (rowDefinition.id === 'INPUT_CONTINUITY') return summarizeInputRow(summary);
   if (rowDefinition.id === 'GAP_CONTINUITY') return summarizeGapRow(summary);
