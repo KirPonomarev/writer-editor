@@ -7,7 +7,7 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
 const MODULE_BASENAME = 'reviewIrKernel.mjs';
-const TASK_BASENAME = 'EXACT_TEXT_APPLY_REAL_FIXTURE_ROOT_CREATION_001I.md';
+const TASK_BASENAME = 'EXACT_TEXT_APPLY_TEST_FIXTURE_TEXT_WRITE_001J.md';
 
 async function loadKernel() {
   return import(pathToFileURL(path.join(process.cwd(), 'src', 'revisionBridge', MODULE_BASENAME)).href);
@@ -30,10 +30,6 @@ function changedBasenamesForCurrentContour() {
   }
   return Array.from(new Set(gitLines(['diff', '--name-only', 'HEAD~1', 'HEAD'])
     .map((filePath) => path.basename(filePath)))).sort();
-}
-
-function isCurrentContourFor(taskBasename, changedBasenames) {
-  return changedBasenames.includes(taskBasename);
 }
 
 function exactTextDecision(overrides = {}) {
@@ -138,13 +134,13 @@ function acceptedAdmissionCapabilities(overrides = {}) {
 
 function acceptedFixtureRootPolicy(overrides = {}) {
   return {
-    fixtureRootId: 'fixture-root-001I',
+    fixtureRootId: 'fixture-root-001J',
     productRootId: 'product-root',
     rootKind: 'FIXTURE',
     isolatedRoot: true,
     isolatedMarker: 'EXACT_TEXT_FIXTURE_ROOT_ISOLATED',
-    relativePath: 'scenes/scene-1.txt',
-    relativePathSegments: ['scenes', 'scene-1.txt'],
+    relativePath: 'scene-1.txt',
+    relativePathSegments: ['scene-1.txt'],
     symlinkPolicy: 'BLOCK',
     caseCollisionPolicy: 'DETECT_AND_BLOCK',
     reservedNamePolicy: 'DETECT_AND_BLOCK',
@@ -174,7 +170,33 @@ function acceptedFixtureRootCreationPolicy(overrides = {}) {
   };
 }
 
-async function acceptedFixtureRootPathPolicyResult(overrides = {}) {
+function acceptedFixtureTextWritePolicy(overrides = {}) {
+  return {
+    ownerFixtureTextWriteApproved: true,
+    fixtureTextWriteRequested: true,
+    writeMode: 'TEST_TEMP_FILE_ONLY',
+    realIoScope: 'FILE_ONLY',
+    baseLocationKind: 'OS_TEMP',
+    hashObservationOnly: true,
+    cleanupRequired: true,
+    repoRootAccess: false,
+    productRootAccess: false,
+    productPathAccess: false,
+    rootInsideProject: false,
+    relativePath: 'scene-1.txt',
+    relativePathSegments: ['scene-1.txt'],
+    beforeText: 'old text',
+    afterText: 'new text',
+    hashPolicy: {
+      normalizationPolicy: 'TEXT_V1',
+      newlinePolicy: 'LF',
+      unicodePolicy: 'NFC',
+    },
+    ...overrides,
+  };
+}
+
+async function acceptedFixtureRootCreationPlanResult(overrides = {}) {
   const {
     buildReviewPatchSet,
     compileExactTextApplyOps,
@@ -184,6 +206,7 @@ async function acceptedFixtureRootPathPolicyResult(overrides = {}) {
     compileExactTextInMemoryStoragePortFixture,
     compileExactTextStorageAdmissionGate,
     compileExactTextFixtureRootPathPolicy,
+    compileExactTextRealFixtureRootCreationPlan,
   } = await loadKernel();
   const applyResult = compileExactTextApplyOps(
     buildReviewPatchSet(exactTextDecision(overrides.decision || {})),
@@ -204,29 +227,34 @@ async function acceptedFixtureRootPathPolicyResult(overrides = {}) {
     storageAdmissionPolicy: acceptedAdmissionPolicy(overrides.storageAdmissionPolicy || {}),
     storageAdmissionCapabilities: acceptedAdmissionCapabilities(overrides.storageAdmissionCapabilities || {}),
   });
-  return compileExactTextFixtureRootPathPolicy({
+  const fixtureRootPathPolicyResult = compileExactTextFixtureRootPathPolicy({
     storageAdmissionGateResult,
     fixtureRootPolicy: acceptedFixtureRootPolicy(overrides.fixtureRootPolicy || {}),
   });
+  return compileExactTextRealFixtureRootCreationPlan({
+    fixtureRootPathPolicyResult,
+    fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy(overrides.fixtureRootCreationPolicy || {}),
+  });
 }
 
-test('accepted plan admits real temp fixture root creation in test only and cleans it up', async () => {
-  const { compileExactTextRealFixtureRootCreationPlan, canonicalHash } = await loadKernel();
-  const fixtureRootPathPolicyResult = await acceptedFixtureRootPathPolicyResult();
-  const first = compileExactTextRealFixtureRootCreationPlan({
-    fixtureRootPathPolicyResult,
-    fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy(),
+test('accepted plan admits test fixture text write and observes before and after hashes only', async () => {
+  const { compileExactTextTestFixtureTextWritePlan, canonicalHash } = await loadKernel();
+  const fixtureRootCreationPlanResult = await acceptedFixtureRootCreationPlanResult();
+  const first = compileExactTextTestFixtureTextWritePlan({
+    fixtureRootCreationPlanResult,
+    fixtureTextWritePolicy: acceptedFixtureTextWritePolicy(),
   });
-  const second = compileExactTextRealFixtureRootCreationPlan({
-    fixtureRootPathPolicyResult,
-    fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy(),
+  const second = compileExactTextTestFixtureTextWritePlan({
+    fixtureRootCreationPlanResult,
+    fixtureTextWritePolicy: acceptedFixtureTextWritePolicy(),
   });
 
   assert.deepEqual(first, second);
   assert.equal(first.contractOnly, true);
-  assert.equal(first.fixtureRootCreationPlanOnly, true);
-  assert.equal(first.realFixtureRootCreationAdmitted, true);
-  assert.equal(first.testFixtureDirectoryCreationOnly, true);
+  assert.equal(first.testFixtureTextWritePlanOnly, true);
+  assert.equal(first.testFixtureTextWriteAdmitted, true);
+  assert.equal(first.testFixtureFileWriteOnly, true);
+  assert.equal(first.hashObservationOnly, true);
   assert.equal(first.filesystemWritePerformed, false);
   assert.equal(first.fsMutationPerformed, false);
   assert.equal(first.productWritePerformed, false);
@@ -246,23 +274,35 @@ test('accepted plan admits real temp fixture root creation in test only and clea
   assert.equal(first.storageImportsAdded, false);
   assert.equal(first.storagePrimitiveChanged, false);
   assert.deepEqual(first.blockedReasons, []);
-  assert.equal(first.fixtureRootCreationDecisions.length, 1);
+  assert.equal(first.fixtureTextWriteDecisions.length, 1);
 
-  const decision = first.fixtureRootCreationDecisions[0];
-  assert.equal(decision.fixtureRootCreationDecisionKind, 'EXACT_TEXT_REAL_FIXTURE_ROOT_CREATION_DECISION');
-  assert.equal(decision.decisionMode, 'TEST_TEMP_ROOT_DIRECTORY_ONLY');
-  assert.equal(decision.sourceFixtureRootPolicyResultHash, fixtureRootPathPolicyResult.canonicalHash);
-  assert.equal(decision.sourceFixtureRootPolicyDecisionHash, fixtureRootPathPolicyResult.fixtureRootPolicyDecisions[0].canonicalHash);
-  assert.equal(decision.creationPolicySnapshot.baseLocationKind, 'OS_TEMP');
-  assert.equal(decision.creationPolicySnapshot.repoRootAccess, false);
-  assert.equal(decision.creationPolicySnapshot.productRootAccess, false);
-  assert.equal(decision.creationPolicySnapshot.productPathAccess, false);
+  const decision = first.fixtureTextWriteDecisions[0];
+  assert.equal(decision.fixtureTextWriteDecisionKind, 'EXACT_TEXT_TEST_FIXTURE_TEXT_WRITE_DECISION');
+  assert.equal(decision.decisionMode, 'TEST_TEMP_FILE_HASH_OBSERVATION_ONLY');
+  assert.equal(decision.hashObservationOnly, true);
+  assert.equal(decision.relativePath, 'scene-1.txt');
+  assert.deepEqual(decision.relativePathSegments, ['scene-1.txt']);
+  assert.equal(decision.sourceFixtureRootCreationResultHash, fixtureRootCreationPlanResult.canonicalHash);
+  assert.equal(decision.sourceFixtureRootCreationDecisionHash, fixtureRootCreationPlanResult.fixtureRootCreationDecisions[0].canonicalHash);
+  assert.equal(decision.beforeHashObservation.textHash, canonicalHash({
+    text: 'old text',
+    normalizationPolicy: 'TEXT_V1',
+    newlinePolicy: 'LF',
+    unicodePolicy: 'NFC',
+  }));
+  assert.equal(decision.afterHashObservation.textHash, canonicalHash({
+    text: 'new text',
+    normalizationPolicy: 'TEXT_V1',
+    newlinePolicy: 'LF',
+    unicodePolicy: 'NFC',
+  }));
   assert.equal(first.canonicalHash, canonicalHash({
     resultKind: first.resultKind,
     contractOnly: first.contractOnly,
-    fixtureRootCreationPlanOnly: first.fixtureRootCreationPlanOnly,
-    realFixtureRootCreationAdmitted: first.realFixtureRootCreationAdmitted,
-    testFixtureDirectoryCreationOnly: first.testFixtureDirectoryCreationOnly,
+    testFixtureTextWritePlanOnly: first.testFixtureTextWritePlanOnly,
+    testFixtureTextWriteAdmitted: first.testFixtureTextWriteAdmitted,
+    testFixtureFileWriteOnly: first.testFixtureFileWriteOnly,
+    hashObservationOnly: first.hashObservationOnly,
     filesystemWritePerformed: first.filesystemWritePerformed,
     fsMutationPerformed: first.fsMutationPerformed,
     productWritePerformed: first.productWritePerformed,
@@ -281,17 +321,42 @@ test('accepted plan admits real temp fixture root creation in test only and clea
     releaseClaimed: first.releaseClaimed,
     storageImportsAdded: first.storageImportsAdded,
     storagePrimitiveChanged: first.storagePrimitiveChanged,
-    fixtureRootCreationDecisions: first.fixtureRootCreationDecisions,
+    fixtureTextWriteDecisions: first.fixtureTextWriteDecisions,
     blockedReasons: first.blockedReasons,
   }));
+});
 
+test('accepted test fixture text write performs one OS temp file write and cleanup in contract test only', async () => {
+  const { compileExactTextTestFixtureTextWritePlan, canonicalHash } = await loadKernel();
+  const result = compileExactTextTestFixtureTextWritePlan({
+    fixtureRootCreationPlanResult: await acceptedFixtureRootCreationPlanResult(),
+    fixtureTextWritePolicy: acceptedFixtureTextWritePolicy(),
+  });
+  const decision = result.fixtureTextWriteDecisions[0];
   let tempRoot = '';
   try {
-    tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'exact-text-001i-'));
+    tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'exact-text-001j-'));
     const repoRoot = fs.realpathSync(process.cwd());
     const realTempRoot = fs.realpathSync(tempRoot);
-    assert.equal(fs.statSync(realTempRoot).isDirectory(), true);
+    const targetPath = path.join(realTempRoot, decision.relativePath);
     assert.equal(realTempRoot === repoRoot || realTempRoot.startsWith(`${repoRoot}${path.sep}`), false);
+    assert.equal(path.dirname(targetPath), realTempRoot);
+    fs.writeFileSync(targetPath, acceptedFixtureTextWritePolicy().beforeText, 'utf8');
+    assert.equal(fs.readFileSync(targetPath, 'utf8'), 'old text');
+    assert.equal(canonicalHash({
+      text: fs.readFileSync(targetPath, 'utf8'),
+      normalizationPolicy: 'TEXT_V1',
+      newlinePolicy: 'LF',
+      unicodePolicy: 'NFC',
+    }), decision.beforeHashObservation.textHash);
+    fs.writeFileSync(targetPath, acceptedFixtureTextWritePolicy().afterText, 'utf8');
+    assert.equal(fs.readFileSync(targetPath, 'utf8'), 'new text');
+    assert.equal(canonicalHash({
+      text: fs.readFileSync(targetPath, 'utf8'),
+      normalizationPolicy: 'TEXT_V1',
+      newlinePolicy: 'LF',
+      unicodePolicy: 'NFC',
+    }), decision.afterHashObservation.textHash);
   } finally {
     if (tempRoot) {
       fs.rmSync(tempRoot, { recursive: true, force: true });
@@ -300,119 +365,98 @@ test('accepted plan admits real temp fixture root creation in test only and clea
   }
 });
 
-test('real fixture root creation is blocked without owner policy or admitted 001H path policy', async () => {
-  const { compileExactTextRealFixtureRootCreationPlan, REASON_CODES } = await loadKernel();
-  const fixtureRootPathPolicyResult = await acceptedFixtureRootPathPolicyResult();
+test('missing contaminated or unsafe upstream blocks test fixture text write', async () => {
+  const { compileExactTextTestFixtureTextWritePlan, REASON_CODES } = await loadKernel();
+  const fixtureRootCreationPlanResult = await acceptedFixtureRootCreationPlanResult();
   const cases = [
-    [REASON_CODES.FIXTURE_ROOT_POLICY_REQUIRED, { fixtureRootPathPolicyResult: {} }],
-    [REASON_CODES.FIXTURE_ROOT_POLICY_REQUIRED, { fixtureRootPathPolicyResult: { ...fixtureRootPathPolicyResult, fixturePathPolicyAdmitted: false } }],
-    [REASON_CODES.FIXTURE_ROOT_CREATION_POLICY_REQUIRED, {
-      fixtureRootPathPolicyResult,
-      fixtureRootCreationPolicy: {},
-    }],
-    [REASON_CODES.FIXTURE_ROOT_CREATION_OWNER_MISSING, {
-      fixtureRootPathPolicyResult,
-      fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy({ ownerFixtureRootCreationApproved: false }),
-    }],
-    [REASON_CODES.FIXTURE_ROOT_CREATION_POLICY_REQUIRED, {
-      fixtureRootPathPolicyResult,
-      fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy({ creationMode: 'PRODUCT_ROOT' }),
-    }],
+    [REASON_CODES.FIXTURE_ROOT_CREATION_PLAN_REQUIRED, {}],
+    [REASON_CODES.FIXTURE_ROOT_CREATION_PLAN_REQUIRED, { ...fixtureRootCreationPlanResult, realFixtureRootCreationAdmitted: false }],
+    [REASON_CODES.FIXTURE_ROOT_CREATION_PLAN_REQUIRED, { ...fixtureRootCreationPlanResult, productWriteClaimed: true }],
+    [REASON_CODES.FIXTURE_ROOT_CREATION_PLAN_REQUIRED, { ...fixtureRootCreationPlanResult, fixtureAtomicWriteExecuted: true }],
+    [REASON_CODES.FIXTURE_ROOT_CREATION_PLAN_REQUIRED, { ...fixtureRootCreationPlanResult, fixtureRecoverySnapshotCreated: true }],
+    [REASON_CODES.FIXTURE_ROOT_CREATION_PLAN_REQUIRED, { ...fixtureRootCreationPlanResult, fixtureReceiptPersisted: true }],
   ];
 
-  for (const [reasonCode, input] of cases) {
-    const result = compileExactTextRealFixtureRootCreationPlan({
-      fixtureRootPathPolicyResult: input.fixtureRootPathPolicyResult,
-      fixtureRootCreationPolicy: input.fixtureRootCreationPolicy || acceptedFixtureRootCreationPolicy(),
+  for (const [reasonCode, upstream] of cases) {
+    const result = compileExactTextTestFixtureTextWritePlan({
+      fixtureRootCreationPlanResult: upstream,
+      fixtureTextWritePolicy: acceptedFixtureTextWritePolicy(),
     });
-    assert.equal(result.realFixtureRootCreationAdmitted, false, reasonCode);
-    assert.equal(result.testFixtureDirectoryCreationOnly, false, reasonCode);
-    assert.deepEqual(result.fixtureRootCreationDecisions, [], reasonCode);
+    assert.equal(result.testFixtureTextWriteAdmitted, false, reasonCode);
+    assert.equal(result.testFixtureFileWriteOnly, false, reasonCode);
+    assert.deepEqual(result.fixtureTextWriteDecisions, [], reasonCode);
     assert.equal(result.productWritePerformed, false, reasonCode);
     assert.equal(result.blockedReasons.includes(reasonCode), true, reasonCode);
   }
 });
 
-test('product repo public and storage primitive requests block real fixture root creation', async () => {
-  const { compileExactTextRealFixtureRootCreationPlan, REASON_CODES } = await loadKernel();
-  const fixtureRootPathPolicyResult = await acceptedFixtureRootPathPolicyResult();
+test('product repo public path and storage primitive requests block test fixture text write', async () => {
+  const { compileExactTextTestFixtureTextWritePlan, REASON_CODES } = await loadKernel();
+  const fixtureRootCreationPlanResult = await acceptedFixtureRootCreationPlanResult();
   const cases = [
-    [REASON_CODES.FIXTURE_ROOT_CREATION_SCOPE_UNSAFE, {
-      fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy({ repoRootAccess: true }),
+    [REASON_CODES.FIXTURE_TEXT_WRITE_OWNER_MISSING, {
+      fixtureTextWritePolicy: acceptedFixtureTextWritePolicy({ ownerFixtureTextWriteApproved: false }),
     }],
-    [REASON_CODES.FIXTURE_ROOT_CREATION_SCOPE_UNSAFE, {
-      fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy({ productRootAccess: true }),
+    [REASON_CODES.FIXTURE_TEXT_WRITE_POLICY_REQUIRED, {
+      fixtureTextWritePolicy: acceptedFixtureTextWritePolicy({ hashObservationOnly: false }),
     }],
-    [REASON_CODES.FIXTURE_ROOT_CREATION_SCOPE_UNSAFE, {
-      fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy({ rootInsideProject: true }),
+    [REASON_CODES.FIXTURE_TEXT_WRITE_SCOPE_UNSAFE, {
+      fixtureTextWritePolicy: acceptedFixtureTextWritePolicy({ repoRootAccess: true }),
     }],
-    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { productRootRequested: true }],
-    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { productPathRequested: true }],
+    [REASON_CODES.FIXTURE_TEXT_WRITE_SCOPE_UNSAFE, {
+      fixtureTextWritePolicy: acceptedFixtureTextWritePolicy({ productRootAccess: true }),
+    }],
     [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { productWrite: true }],
+    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { productPathRequested: true }],
     [REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR, { publicSurfaceRequested: true }],
     [REASON_CODES.FS_MUTATION_FORBIDDEN_IN_CONTOUR, { storagePrimitiveRequested: true }],
+    [REASON_CODES.ABSOLUTE_PATH_ESCAPE_FORBIDDEN, {
+      fixtureTextWritePolicy: acceptedFixtureTextWritePolicy({ relativePath: '/tmp/scene-1.txt' }),
+    }],
+    [REASON_CODES.PATH_TRAVERSAL_FORBIDDEN, {
+      fixtureTextWritePolicy: acceptedFixtureTextWritePolicy({ relativePath: '../scene-1.txt', relativePathSegments: ['..', 'scene-1.txt'] }),
+    }],
+    [REASON_CODES.FIXTURE_TEXT_WRITE_POLICY_REQUIRED, {
+      fixtureTextWritePolicy: acceptedFixtureTextWritePolicy({ relativePath: 'nested/scene-1.txt', relativePathSegments: ['scene-1.txt'] }),
+    }],
   ];
 
   for (const [reasonCode, input] of cases) {
-    const result = compileExactTextRealFixtureRootCreationPlan({
-      fixtureRootPathPolicyResult,
-      fixtureRootCreationPolicy: input.fixtureRootCreationPolicy || acceptedFixtureRootCreationPolicy(),
-      productRootRequested: input.productRootRequested,
-      productPathRequested: input.productPathRequested,
+    const result = compileExactTextTestFixtureTextWritePlan({
+      fixtureRootCreationPlanResult,
+      fixtureTextWritePolicy: input.fixtureTextWritePolicy || acceptedFixtureTextWritePolicy(),
       productWrite: input.productWrite,
+      productPathRequested: input.productPathRequested,
       publicSurfaceRequested: input.publicSurfaceRequested,
       storagePrimitiveRequested: input.storagePrimitiveRequested,
     });
-    assert.equal(result.realFixtureRootCreationAdmitted, false, reasonCode);
-    assert.deepEqual(result.fixtureRootCreationDecisions, [], reasonCode);
+    assert.equal(result.testFixtureTextWriteAdmitted, false, reasonCode);
+    assert.deepEqual(result.fixtureTextWriteDecisions, [], reasonCode);
     assert.equal(result.productWritePerformed, false, reasonCode);
-    assert.equal(result.publicSurfaceClaimed, false, reasonCode);
-    assert.equal(result.storagePrimitiveChanged, false, reasonCode);
     assert.equal(result.blockedReasons.includes(reasonCode), true, reasonCode);
   }
 });
 
-test('contaminated 001H upstream false flags block real fixture root creation', async () => {
-  const { compileExactTextRealFixtureRootCreationPlan, REASON_CODES } = await loadKernel();
-  const fixtureRootPathPolicyResult = await acceptedFixtureRootPathPolicyResult();
-  const contaminatedFlags = [
-    'fsMutationPerformed',
-    'tempFixtureWritePerformed',
-    'productWritePerformed',
-    'productWriteClaimed',
-    'fixtureBackupCreated',
-    'fixtureAtomicWriteExecuted',
-    'fixtureRecoverySnapshotCreated',
-    'fixtureReceiptPersisted',
-    'durableReceiptClaimed',
-    'productStorageSafetyClaimed',
-    'publicSurfaceClaimed',
-    'docxImportClaimed',
-    'uiChanged',
-    'applyTxnClaimed',
-    'crashRecoveryClaimed',
-    'releaseClaimed',
-    'storageImportsAdded',
-    'storagePrimitiveChanged',
+test('hash mismatch blocks fixture text write plan before any observed success', async () => {
+  const { compileExactTextTestFixtureTextWritePlan, REASON_CODES } = await loadKernel();
+  const fixtureRootCreationPlanResult = await acceptedFixtureRootCreationPlanResult();
+  const cases = [
+    acceptedFixtureTextWritePolicy({ expectedBeforeHash: 'not-the-before-hash' }),
+    acceptedFixtureTextWritePolicy({ expectedAfterHash: 'not-the-after-hash' }),
   ];
 
-  for (const flag of contaminatedFlags) {
-    const result = compileExactTextRealFixtureRootCreationPlan({
-      fixtureRootPathPolicyResult: {
-        ...fixtureRootPathPolicyResult,
-        [flag]: true,
-      },
-      fixtureRootCreationPolicy: acceptedFixtureRootCreationPolicy(),
+  for (const fixtureTextWritePolicy of cases) {
+    const result = compileExactTextTestFixtureTextWritePlan({
+      fixtureRootCreationPlanResult,
+      fixtureTextWritePolicy,
     });
-    assert.equal(result.realFixtureRootCreationAdmitted, false, flag);
-    assert.equal(result.testFixtureDirectoryCreationOnly, false, flag);
-    assert.deepEqual(result.fixtureRootCreationDecisions, [], flag);
-    assert.equal(result.productWritePerformed, false, flag);
-    assert.equal(result.blockedReasons.includes(REASON_CODES.FIXTURE_ROOT_POLICY_REQUIRED), true, flag);
+    assert.equal(result.testFixtureTextWriteAdmitted, false);
+    assert.deepEqual(result.fixtureTextWriteDecisions, []);
+    assert.equal(result.blockedReasons.includes(REASON_CODES.HASH_OBSERVATION_MISMATCH), true);
   }
 });
 
-test('001I task record pins real fixture root creation as test only and no product storage claim', () => {
+test('001J task record pins test only fixture write and no product storage claim', () => {
   const taskText = fs.readFileSync(
     path.join(process.cwd(), 'docs', 'tasks', TASK_BASENAME),
     'utf8',
@@ -432,34 +476,30 @@ test('001I task record pins real fixture root creation as test only and no produ
     'APPLYTXN_CLAIMED',
     'CRASH_RECOVERY_CLAIMED',
     'RELEASE_CLAIMED',
-    'STORAGE_IMPORTS_ADDED',
     'STORAGE_PRIMITIVE_CHANGED',
   ];
 
-  assert.match(taskText, /STATUS: IMPLEMENTED_VERIFIED_REAL_FIXTURE_ROOT_CREATION_TEST_ONLY/u);
-  assert.match(taskText, /TEST_FIXTURE_ROOT_CREATED: true/u);
-  assert.match(taskText, /KERNEL_FILESYSTEM_WRITE_PERFORMED: false/u);
-  assert.match(taskText, /KERNEL_FS_MUTATION_PERFORMED: false/u);
-  assert.match(taskText, /TEST_MUTATING_IO_SCOPE: OS_TEMP_DIRECTORY_ONLY/u);
-  assert.match(taskText, /TEST_NON_MUTATING_IO_SCOPE: contract reads and git scope inspection allowed/u);
-  assert.match(taskText, /TEST_CLEANUP_REQUIRED: true/u);
+  assert.match(taskText, /STATUS: IMPLEMENTED_VERIFIED_TEST_FIXTURE_TEXT_WRITE_ONLY/u);
+  assert.match(taskText, /TEST_FIXTURE_TEXT_WRITTEN: true/u);
+  assert.match(taskText, /TEST_MUTATING_IO_SCOPE: OS_TEMP_FILE_ONLY/u);
+  assert.match(taskText, /HASH_OBSERVATION_NOT_RECEIPT: true/u);
+  assert.match(taskText, /TEST_CLEANUP_NOT_RECOVERY: true/u);
+  assert.match(taskText, /NO_PRODUCT_ATOMICITY_CLAIM: true/u);
+  assert.match(taskText, /NO_PRODUCT_STORAGE_ADAPTER_CLAIM: true/u);
+  assert.match(taskText, /NO_STORAGE_PRIMITIVE_IMPLEMENTATION: true/u);
   for (const flag of requiredFalseFlags) {
     assert.match(taskText, new RegExp(`${flag}: false`, 'u'), flag);
     assert.doesNotMatch(taskText, new RegExp(`${flag}: true`, 'u'), flag);
   }
-  assert.doesNotMatch(taskText, /product saved|public API exposed|DOCX runtime enabled|receipt persisted|backup executed|atomic write executed/iu);
+  assert.doesNotMatch(taskText, /product saved|public API exposed|DOCX runtime enabled|receipt persisted|backup executed|atomic write executed|crash recovery proven|crash recovery ready/iu);
 });
 
-test('001I change scope stays inside allowlist and outside product runtime surfaces', () => {
+test('001J change scope stays inside allowlist and outside product runtime surfaces', () => {
   const changedBasenames = changedBasenamesForCurrentContour();
-  if (!isCurrentContourFor(TASK_BASENAME, changedBasenames)) {
-    assert.equal(changedBasenames.includes(TASK_BASENAME), false);
-    return;
-  }
   const allowlist = new Set([
     'reviewIrKernel.mjs',
-    'exactTextApplyFixtureRootPolicy.contract.test.js',
     'exactTextApplyRealFixtureRootCreation.contract.test.js',
+    'exactTextApplyTestFixtureTextWrite.contract.test.js',
     TASK_BASENAME,
   ]);
   const denylist = new Set([
@@ -478,14 +518,14 @@ test('001I change scope stays inside allowlist and outside product runtime surfa
     'hostilePackageGate.mjs',
   ]);
 
-  assert.notDeepEqual(changedBasenames, [], '001I must have a detectable changed scope');
+  assert.notDeepEqual(changedBasenames, [], '001J must have a detectable changed scope');
   for (const basename of changedBasenames) {
-    assert.equal(allowlist.has(basename), true, `unexpected 001I changed basename: ${basename}`);
-    assert.equal(denylist.has(basename), false, `denylisted 001I changed basename: ${basename}`);
+    assert.equal(allowlist.has(basename), true, `unexpected 001J changed basename: ${basename}`);
+    assert.equal(denylist.has(basename), false, `denylisted 001J changed basename: ${basename}`);
   }
 });
 
-test('real fixture root creation keeps production kernel pure and adds no file write helper', () => {
+test('test fixture text write keeps production kernel pure and limits test mutation helpers', () => {
   const moduleText = fs.readFileSync(
     path.join(process.cwd(), 'src', 'revisionBridge', MODULE_BASENAME),
     'utf8',
@@ -532,11 +572,12 @@ test('real fixture root creation keeps production kernel pure and adds no file w
   ];
 
   for (const pattern of forbiddenModulePatterns) {
-    assert.equal(pattern.test(moduleText), false, `forbidden real fixture root creation module pattern: ${pattern.source}`);
+    assert.equal(pattern.test(moduleText), false, `forbidden test fixture text write module pattern: ${pattern.source}`);
   }
   for (const pattern of forbiddenTestPatterns) {
-    assert.equal(pattern.test(testText), false, `forbidden real fixture root creation test write helper: ${pattern.source}`);
+    assert.equal(pattern.test(testText), false, `forbidden test fixture text write helper: ${pattern.source}`);
   }
   assert.equal(/\bmkdtempSync\s*\(/u.test(testText), true);
+  assert.equal(/\bwriteFileSync\s*\(/u.test(testText), true);
   assert.equal(/\brmSync\s*\(/u.test(testText), true);
 });

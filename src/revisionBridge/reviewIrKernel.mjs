@@ -74,6 +74,11 @@ export const REASON_CODES = Object.freeze({
   FIXTURE_ROOT_CREATION_POLICY_REQUIRED: 'FIXTURE_ROOT_CREATION_POLICY_REQUIRED',
   FIXTURE_ROOT_CREATION_OWNER_MISSING: 'FIXTURE_ROOT_CREATION_OWNER_MISSING',
   FIXTURE_ROOT_CREATION_SCOPE_UNSAFE: 'FIXTURE_ROOT_CREATION_SCOPE_UNSAFE',
+  FIXTURE_TEXT_WRITE_POLICY_REQUIRED: 'FIXTURE_TEXT_WRITE_POLICY_REQUIRED',
+  FIXTURE_TEXT_WRITE_OWNER_MISSING: 'FIXTURE_TEXT_WRITE_OWNER_MISSING',
+  FIXTURE_TEXT_WRITE_SCOPE_UNSAFE: 'FIXTURE_TEXT_WRITE_SCOPE_UNSAFE',
+  FIXTURE_ROOT_CREATION_PLAN_REQUIRED: 'FIXTURE_ROOT_CREATION_PLAN_REQUIRED',
+  HASH_OBSERVATION_MISMATCH: 'HASH_OBSERVATION_MISMATCH',
   FIXTURE_ROOT_NOT_ISOLATED: 'FIXTURE_ROOT_NOT_ISOLATED',
   PRODUCT_ROOT_FORBIDDEN: 'PRODUCT_ROOT_FORBIDDEN',
   PRODUCT_PATH_FORBIDDEN: 'PRODUCT_PATH_FORBIDDEN',
@@ -1828,6 +1833,229 @@ export function compileExactTextRealFixtureRootCreationPlan(input = {}) {
     storageImportsAdded: false,
     storagePrimitiveChanged: false,
     fixtureRootCreationDecisions,
+    blockedReasons: uniqueBlockedReasons,
+  };
+  return {
+    ...resultCore,
+    canonicalHash: canonicalHash(resultCore),
+  };
+}
+
+function fixtureRootCreationPlanBindingReasons(creationPlanResult = {}) {
+  const reasons = [];
+  const decisions = creationPlanResult.fixtureRootCreationDecisions || [];
+  if (
+    creationPlanResult.contractOnly !== true
+    || creationPlanResult.fixtureRootCreationPlanOnly !== true
+    || creationPlanResult.realFixtureRootCreationAdmitted !== true
+    || creationPlanResult.testFixtureDirectoryCreationOnly !== true
+    || creationPlanResult.filesystemWritePerformed !== false
+    || creationPlanResult.fsMutationPerformed !== false
+    || creationPlanResult.productWritePerformed !== false
+    || creationPlanResult.productWriteClaimed !== false
+    || creationPlanResult.fixtureBackupCreated !== false
+    || creationPlanResult.fixtureAtomicWriteExecuted !== false
+    || creationPlanResult.fixtureRecoverySnapshotCreated !== false
+    || creationPlanResult.fixtureReceiptPersisted !== false
+    || creationPlanResult.durableReceiptClaimed !== false
+    || creationPlanResult.productStorageSafetyClaimed !== false
+    || creationPlanResult.publicSurfaceClaimed !== false
+    || creationPlanResult.docxImportClaimed !== false
+    || creationPlanResult.uiChanged !== false
+    || creationPlanResult.applyTxnClaimed !== false
+    || creationPlanResult.crashRecoveryClaimed !== false
+    || creationPlanResult.releaseClaimed !== false
+    || creationPlanResult.storageImportsAdded !== false
+    || creationPlanResult.storagePrimitiveChanged !== false
+    || decisions.length !== 1
+    || !hasValue(creationPlanResult.canonicalHash)
+    || !hasValue(decisions[0]?.canonicalHash)
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_ROOT_CREATION_PLAN_REQUIRED);
+  }
+  return uniqueStrings(reasons);
+}
+
+function createFixtureTextHashObservation(text, hashPolicy = {}) {
+  const policy = {
+    normalizationPolicy: hashPolicy.normalizationPolicy || 'TEXT_V1',
+    newlinePolicy: hashPolicy.newlinePolicy || DEFAULT_NORMALIZATION_POLICY.newlinePolicy,
+    unicodePolicy: hashPolicy.unicodePolicy || DEFAULT_NORMALIZATION_POLICY.unicodePolicy,
+  };
+  const normalizedText = normalizeText(text, policy);
+  const observationCore = {
+    observationKind: 'EXACT_TEXT_FIXTURE_HASH_OBSERVATION',
+    hashObservationOnly: true,
+    normalizationPolicy: policy.normalizationPolicy,
+    newlinePolicy: policy.newlinePolicy,
+    unicodePolicy: policy.unicodePolicy,
+    textHash: canonicalHash({
+      text: normalizedText,
+      normalizationPolicy: policy.normalizationPolicy,
+      newlinePolicy: policy.newlinePolicy,
+      unicodePolicy: policy.unicodePolicy,
+    }),
+  };
+  return {
+    ...observationCore,
+    canonicalHash: canonicalHash(observationCore),
+  };
+}
+
+function fixtureTextWritePolicyReasons(policy = {}, input = {}) {
+  const reasons = [];
+  const pathSegments = pathSegmentsFromPolicy(policy);
+  const relativePathText = String(policy.relativePath ?? '');
+  const beforeObservation = createFixtureTextHashObservation(policy.beforeText || '', policy.hashPolicy);
+  const afterObservation = createFixtureTextHashObservation(policy.afterText || '', policy.hashPolicy);
+  if (policy.ownerFixtureTextWriteApproved !== true) {
+    reasons.push(REASON_CODES.FIXTURE_TEXT_WRITE_OWNER_MISSING);
+  }
+  if (
+    policy.fixtureTextWriteRequested !== true
+    || policy.writeMode !== 'TEST_TEMP_FILE_ONLY'
+    || policy.realIoScope !== 'FILE_ONLY'
+    || policy.baseLocationKind !== 'OS_TEMP'
+    || policy.hashObservationOnly !== true
+    || policy.cleanupRequired !== true
+    || !hasValue(policy.relativePath)
+    || pathSegments.length !== 1
+    || relativePathText !== pathSegments[0]
+    || relativePathText.includes('/')
+    || relativePathText.includes('\\')
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_TEXT_WRITE_POLICY_REQUIRED);
+  }
+  if (
+    policy.repoRootAccess === true
+    || policy.productRootAccess === true
+    || policy.productPathAccess === true
+    || policy.rootInsideProject === true
+    || input?.repoRootAccessRequested === true
+  ) {
+    reasons.push(REASON_CODES.FIXTURE_TEXT_WRITE_SCOPE_UNSAFE);
+  }
+  if (pathSegments.some((segment) => segment === '..' || segment === '.')) {
+    reasons.push(REASON_CODES.PATH_TRAVERSAL_FORBIDDEN);
+  }
+  if (looksAbsolutePath(policy.relativePath) || looksAbsolutePath(policy.absolutePathProbe)) {
+    reasons.push(REASON_CODES.ABSOLUTE_PATH_ESCAPE_FORBIDDEN);
+  }
+  if (
+    hasValue(policy.expectedBeforeHash)
+    && policy.expectedBeforeHash !== beforeObservation.textHash
+  ) {
+    reasons.push(REASON_CODES.HASH_OBSERVATION_MISMATCH);
+  }
+  if (
+    hasValue(policy.expectedAfterHash)
+    && policy.expectedAfterHash !== afterObservation.textHash
+  ) {
+    reasons.push(REASON_CODES.HASH_OBSERVATION_MISMATCH);
+  }
+  if (
+    input?.productRootRequested === true
+    || input?.productPathRequested === true
+    || input?.productWrite === true
+    || input?.runtimeWritable === true
+  ) {
+    reasons.push(REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (input?.publicSurfaceRequested === true) {
+    reasons.push(REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (input?.storagePrimitiveRequested === true) {
+    reasons.push(REASON_CODES.FS_MUTATION_FORBIDDEN_IN_CONTOUR);
+  }
+  return uniqueStrings(reasons);
+}
+
+function createTestFixtureTextWriteDecision(creationPlanResult, policy) {
+  const creationDecision = creationPlanResult.fixtureRootCreationDecisions[0];
+  const beforeObservation = createFixtureTextHashObservation(policy.beforeText || '', policy.hashPolicy);
+  const afterObservation = createFixtureTextHashObservation(policy.afterText || '', policy.hashPolicy);
+  const decisionCore = {
+    fixtureTextWriteDecisionKind: 'EXACT_TEXT_TEST_FIXTURE_TEXT_WRITE_DECISION',
+    decisionMode: 'TEST_TEMP_FILE_HASH_OBSERVATION_ONLY',
+    testFixtureTextWriteAdmitted: true,
+    hashObservationOnly: true,
+    cleanupRequired: true,
+    filesystemWritePerformed: false,
+    productWritePerformed: false,
+    fixtureBackupCreated: false,
+    fixtureAtomicWriteExecuted: false,
+    fixtureRecoverySnapshotCreated: false,
+    fixtureReceiptPersisted: false,
+    sourceFixtureRootCreationResultHash: creationPlanResult.canonicalHash,
+    sourceFixtureRootCreationDecisionHash: creationDecision.canonicalHash,
+    sourceFixtureRootPolicyResultHash: creationDecision.sourceFixtureRootPolicyResultHash,
+    sourceFixtureRootPolicyDecisionHash: creationDecision.sourceFixtureRootPolicyDecisionHash,
+    relativePath: policy.relativePath,
+    relativePathSegments: pathSegmentsFromPolicy(policy),
+    beforeHashObservation: beforeObservation,
+    afterHashObservation: afterObservation,
+    writePolicySnapshot: {
+      ownerFixtureTextWriteApproved: policy.ownerFixtureTextWriteApproved === true,
+      fixtureTextWriteRequested: policy.fixtureTextWriteRequested === true,
+      writeMode: policy.writeMode,
+      realIoScope: policy.realIoScope,
+      baseLocationKind: policy.baseLocationKind,
+      hashObservationOnly: policy.hashObservationOnly === true,
+      cleanupRequired: policy.cleanupRequired === true,
+      repoRootAccess: policy.repoRootAccess === true,
+      productRootAccess: policy.productRootAccess === true,
+      productPathAccess: policy.productPathAccess === true,
+    },
+  };
+  const decisionWithId = {
+    fixtureTextWriteDecisionId: `fixture_text_write_${canonicalHash(decisionCore).slice(0, 16)}`,
+    ...decisionCore,
+  };
+  return {
+    ...decisionWithId,
+    canonicalHash: canonicalHash(decisionWithId),
+  };
+}
+
+export function compileExactTextTestFixtureTextWritePlan(input = {}) {
+  const creationPlanResult = input?.fixtureRootCreationPlanResult || {};
+  const policy = input?.fixtureTextWritePolicy || {};
+  const blockedReasons = [
+    ...(creationPlanResult.blockedReasons || []),
+    ...fixtureRootCreationPlanBindingReasons(creationPlanResult),
+    ...fixtureTextWritePolicyReasons(policy, input),
+  ];
+
+  const uniqueBlockedReasons = uniqueStrings(blockedReasons);
+  const fixtureTextWriteDecisions = uniqueBlockedReasons.length === 0
+    ? [createTestFixtureTextWriteDecision(creationPlanResult, policy)]
+    : [];
+  const resultCore = {
+    resultKind: 'EXACT_TEXT_TEST_FIXTURE_TEXT_WRITE_PLAN_RESULT',
+    contractOnly: true,
+    testFixtureTextWritePlanOnly: true,
+    testFixtureTextWriteAdmitted: fixtureTextWriteDecisions.length === 1,
+    testFixtureFileWriteOnly: fixtureTextWriteDecisions.length === 1,
+    hashObservationOnly: true,
+    filesystemWritePerformed: false,
+    fsMutationPerformed: false,
+    productWritePerformed: false,
+    productWriteClaimed: false,
+    fixtureBackupCreated: false,
+    fixtureAtomicWriteExecuted: false,
+    fixtureRecoverySnapshotCreated: false,
+    fixtureReceiptPersisted: false,
+    durableReceiptClaimed: false,
+    productStorageSafetyClaimed: false,
+    publicSurfaceClaimed: false,
+    docxImportClaimed: false,
+    uiChanged: false,
+    applyTxnClaimed: false,
+    crashRecoveryClaimed: false,
+    releaseClaimed: false,
+    storageImportsAdded: false,
+    storagePrimitiveChanged: false,
+    fixtureTextWriteDecisions,
     blockedReasons: uniqueBlockedReasons,
   };
   return {
