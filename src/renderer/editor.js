@@ -1424,6 +1424,10 @@ function buildCentralSheetStripRuntimeState({ proseMirror, reuseCachedDecision =
     shouldRender,
     overflowReason,
   } = centralSheetDecision;
+  const sourcePageCount = Math.max(decisionPageCount, structuralMinimumPageCount);
+  const scrollPageCount = structuralMinimumPageCount > 1
+    ? Math.min(sourcePageCount, structuralMinimumPageCount)
+    : sourcePageCount;
   return {
     metrics,
     contentWidthPx: widthPx,
@@ -1432,7 +1436,8 @@ function buildCentralSheetStripRuntimeState({ proseMirror, reuseCachedDecision =
     lineGuardPx,
     decisionPageCount,
     structuralMinimumPageCount,
-    pageCount: Math.max(decisionPageCount, structuralMinimumPageCount),
+    pageCount: sourcePageCount,
+    scrollPageCount,
     shouldRender,
     overflowReason,
     activeLayoutPreviewSnapshot,
@@ -1454,12 +1459,13 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
     decisionPageCount,
     structuralMinimumPageCount,
     pageCount,
+    scrollPageCount,
   } = runtimeState;
   editor.style.setProperty('--central-sheet-content-width-px', `${contentWidthPx}px`);
   editor.style.setProperty('--central-sheet-content-height-px', `${contentHeightPx}px`);
   editor.style.setProperty('--central-sheet-line-guard-px', `${lineGuardPx}px`);
   const pageWindow = resolveCentralSheetViewportRuntimeWindow({
-    totalPageCount: pageCount,
+    totalPageCount: Math.max(1, Number(scrollPageCount || pageCount) || 1),
     pageHeightPx: metrics.pageHeightPx,
     pageGapPx,
   });
@@ -1485,6 +1491,7 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
   editor.dataset.centralSheetFlow = 'vertical';
   editor.dataset.centralSheetRenderedPageCount = String(renderedPageCount);
   editor.dataset.centralSheetTotalPageCount = String(pageCount);
+  editor.dataset.centralSheetWindowTotalPageCount = String(pageWindow.totalPageCount);
   editor.dataset.centralSheetWindowFirstRenderedPage = String(pageWindow.firstRenderedPage);
   editor.dataset.centralSheetWindowLastRenderedPage = String(pageWindow.lastRenderedPage);
   editor.dataset.centralSheetWindowVisiblePageCount = String(pageWindow.visiblePageCount);
@@ -1511,6 +1518,7 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
     decisionPageCount,
     structuralMinimumPageCount,
     pageCount,
+    Number(scrollPageCount || 0),
     Number(pageWindow.firstRenderedPage || 0),
     Number(pageWindow.lastRenderedPage || 0),
     renderedPageCount,
@@ -1591,11 +1599,12 @@ function scheduleCentralSheetStripProofRefreshOnScroll() {
     return;
   }
   if (!centralSheetStripCacheDirty) {
-    refreshCentralSheetStripProof({ reuseCachedDecision: true });
     if (scrollDeltaPx >= Math.max(32, Math.round(pageStridePx / 2))) {
       centralSheetStripCacheDirty = true;
-      scheduleCentralSheetStripProofRefresh();
+      refreshCentralSheetStripProof();
+      return;
     }
+    refreshCentralSheetStripProof({ reuseCachedDecision: true });
     return;
   }
   refreshCentralSheetStripProof();
@@ -7211,6 +7220,7 @@ function applyFontWeight(weightPreset, persist = true) {
   }
   syncLiteralToolbarDisplays();
   renderStyledView(getPlainText());
+  scheduleCentralSheetStripProofRefresh();
 }
 
 function applyLineHeight(value, persist = true) {
@@ -7225,6 +7235,7 @@ function applyLineHeight(value, persist = true) {
   }
   syncLiteralToolbarDisplays();
   renderStyledView(getPlainText());
+  scheduleCentralSheetStripProofRefresh();
 }
 
 function applyWordWrap(enabled, persist = true) {
@@ -7632,6 +7643,7 @@ function updateThemeSwatches(theme) {
     editor.style.fontFamily = fontFamily;
     localStorage.setItem('editorFont', fontFamily);
     syncLiteralToolbarDisplays();
+    scheduleCentralSheetStripProofRefresh();
   }
 
 function syncLiteralToolbarDisplays() {
@@ -9018,6 +9030,7 @@ if (window.electronAPI) {
       editor.style.fontSize = `${px}px`;
       setCurrentFontSize(px);
       renderStyledView(getPlainText());
+      scheduleCentralSheetStripProofRefresh();
     }
   });
 

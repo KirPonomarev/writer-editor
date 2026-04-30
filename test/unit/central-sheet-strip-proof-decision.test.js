@@ -150,7 +150,9 @@ test('central sheet decision is a DOM-free helper consumed by editor runtime', (
   assert.match(editorSource, /const naturalHeight = measureCentralSheetNaturalHeight\(proseMirror\);/);
   assert.match(editorSource, /resolveCentralSheetStripProofDecision\(\{\s*naturalHeight,\s*contentHeightPx: heightPx,\s*activeLayoutPreviewSnapshot,\s*maxPageCount: CENTRAL_SHEET_RUNTIME_WINDOW_DOM_BUDGET,\s*\}\)/s);
   assert.match(editorSource, /const \{\s*pageCount:\s*decisionPageCount,\s*shouldRender,\s*overflowReason,\s*\} = centralSheetDecision;/s);
-  assert.match(editorSource, /pageCount: Math\.max\(decisionPageCount, structuralMinimumPageCount\),/);
+  assert.match(editorSource, /const sourcePageCount = Math\.max\(decisionPageCount, structuralMinimumPageCount\);/);
+  assert.match(editorSource, /pageCount: sourcePageCount,/);
+  assert.match(editorSource, /scrollPageCount,/);
   assert.match(editorSource, /shouldRender,\s*overflowReason,/s);
   assert.match(editorSource, /const pageWindow = resolveCentralSheetViewportRuntimeWindow\(\{/);
   assert.match(editorSource, /renderCentralSheetStripShellPages\(pageWindow\);/);
