@@ -46,6 +46,7 @@ test('editorial sheet stress lane: committed artifact schema is valid and explic
     TRACKED_CANDIDATE_PAGE_COUNTS,
     DIAGNOSTIC_BOUNDARY_PAGE_COUNTS,
     SUPPORTED_SCALE_CEILING,
+    SCROLL_RANGE_LIMIT_RULE,
     validateEditorialSheetStressLaneStatus,
     evaluateEditorialSheetStressLaneStatus,
   } = await loadModule();
@@ -67,6 +68,16 @@ test('editorial sheet stress lane: committed artifact schema is valid and explic
   assert.equal(artifact.candidateObservedCeiling, 10000);
   assert.deepEqual(artifact.diagnosticBoundaryPageCounts, DIAGNOSTIC_BOUNDARY_PAGE_COUNTS);
   assert.equal(artifact.supportedTier, SUPPORTED_SCALE_CEILING);
+  assert.equal(artifact.scrollRangeLimitGuard.rule, SCROLL_RANGE_LIMIT_RULE);
+  assert.equal(artifact.scrollRangeLimitGuard.endMarkerVisibleRequiredForAcceptanceRows, true);
+  assert.equal(artifact.scrollRangeLimitGuard.childOkParentFailCannotGreenlight, true);
+  assert.equal(artifact.scrollRangeLimitGuard.scrollRangeClampDetected, false);
+  assert.equal(artifact.diagnosticBoundaryPolicy.sourceClass, 'POLICY_ONLY_NO_HEAVY_RUN');
+  assert.deepEqual(artifact.diagnosticBoundaryPolicy.destructiveDiagnosticPageCounts, DIAGNOSTIC_BOUNDARY_PAGE_COUNTS);
+  assert.equal(artifact.diagnosticBoundaryPolicy.readinessClaim, false);
+  assert.equal(artifact.diagnosticBoundaryPolicy.supportedTierRaised, false);
+  assert.equal(artifact.diagnosticBoundaryPolicy.acceptancePromotion, false);
+  assert.equal(artifact.diagnosticBoundaryPolicy.heavyRunByDefault, false);
 
   const rowMap = new Map(artifact.rows.map((row) => [row.id, row]));
   assert.equal(rowMap.size, EXPECTED_ROW_IDS.length);
@@ -115,6 +126,7 @@ test('editorial sheet stress lane: anti-false-green fields derive only from trac
   assert.equal(artifact.candidates.trackedCandidate10000Pass, trackedCandidate10000Row.status === 'PASS');
   assert.equal(artifact.candidates.supportedTierRaised, false);
   assert.equal(artifact.supportedTier, 5000);
+  assert.equal(artifact.scrollRangeLimitGuard.scrollRangeClampDetected, false);
   assert.equal(artifact.readiness.editorialSheet5000Ready === true ? tracked5000Row.status === 'PASS' : true, true);
   if (tracked5000Row.status !== 'PASS') {
     assert.equal(artifact.readiness.editorialSheet5000Ready, false);
@@ -289,6 +301,79 @@ test('editorial sheet stress lane: outer evaluation rejects unsupported scale pr
         };
       },
       expectedIssue: 'ROW_OBSERVED_ACTUALPAGECOUNT_MISSING_TRACKED_CANDIDATE_10000',
+    },
+    {
+      name: 'end-marker-hidden-at-scroll-range-clamp',
+      mutate(source) {
+        return {
+          ...source,
+          rows: source.rows.map((row) => {
+            if (row.id !== 'TRACKED_CANDIDATE_10000') return row;
+            return {
+              ...row,
+              observed: {
+                ...row.observed,
+                markerScrolls: row.observed.markerScrolls.map((markerScroll) => (
+                  markerScroll.markerName === 'END'
+                    ? { ...markerScroll, visibleRectCount: 0, scrollTop: 16776537, maxScrollTop: 16776537 }
+                    : markerScroll
+                )),
+              },
+            };
+          }),
+          scrollRangeLimitGuard: {
+            ...source.scrollRangeLimitGuard,
+            scrollHeightLimitObserved: 16777216,
+            maxScrollTopObserved: 16776537,
+            scrollRangeClampDetected: true,
+          },
+        };
+      },
+      expectedIssue: 'SCROLL_RANGE_CLAMP_TRACKED_CANDIDATE_10000',
+    },
+    {
+      name: 'child-ok-parent-scroll-clamp-not-flagged',
+      mutate(source) {
+        return {
+          ...source,
+          rows: source.rows.map((row) => {
+            if (row.id !== 'TRACKED_CANDIDATE_10000') return row;
+            return {
+              ...row,
+              status: 'PASS',
+              observed: {
+                ...row.observed,
+                markerScrolls: row.observed.markerScrolls.map((markerScroll) => (
+                  markerScroll.markerName === 'END'
+                    ? { ...markerScroll, visibleRectCount: 0, scrollTop: 16776537, maxScrollTop: 16776537 }
+                    : markerScroll
+                )),
+              },
+            };
+          }),
+          scrollRangeLimitGuard: {
+            ...source.scrollRangeLimitGuard,
+            scrollRangeClampDetected: false,
+          },
+        };
+      },
+      expectedIssue: 'SCROLL_RANGE_CLAMP_FLAG_INVALID',
+    },
+    {
+      name: '25000-diagnostic-policy-promoted',
+      mutate(source) {
+        return {
+          ...source,
+          diagnosticBoundaryPolicy: {
+            ...source.diagnosticBoundaryPolicy,
+            readinessClaim: true,
+            supportedTierRaised: true,
+            acceptancePromotion: true,
+            heavyRunByDefault: true,
+          },
+        };
+      },
+      expectedIssue: 'DIAGNOSTIC_BOUNDARY_READINESS_CLAIMED',
     },
   ];
 

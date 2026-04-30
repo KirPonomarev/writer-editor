@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "test/contracts/editor-sheet-6000-diagnostic-probe.contract.test.js",
-      "sha256": "36b4b045550d9b3996d44ae50218c8e358e12b3a1ef9d105a84990b5febf4ad5",
-      "approvedBy": "ticket:CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY",
-      "approvedAtUtc": "2026-04-30T17:00:00.000Z",
-      "rationale": "CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY approves 6000 non-promotion assertions that ignore unrelated runtime metric values while preserving 5000 supported ceiling and 10000 candidate separation."
+      "sha256": "9a8c4586157924d02d7aee37928a4b3f72015e53ad438b2bb5774f3366df8c68",
+      "approvedBy": "ticket:CONTOUR_02_SCROLL_LIMIT_GUARD_AND_25000_DIAGNOSTIC_POLICY",
+      "approvedAtUtc": "2026-04-30T17:30:00.000Z",
+      "rationale": "CONTOUR_02_SCROLL_LIMIT_GUARD_AND_25000_DIAGNOSTIC_POLICY approves destructive diagnostic policy assertions that keep 25000 out of supported and acceptance tiers."
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_5000_CLOSEOUT_SUMMARY.json",
@@ -2964,24 +2964,24 @@
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
-      "sha256": "1347cc6ba36dff087b7558ce114a286ef278d7e5245521ff3a27e30e500c88a2",
-      "approvedBy": "ticket:CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY",
-      "approvedAtUtc": "2026-04-30T17:00:00.000Z",
-      "rationale": "CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY approves the bounded stress lane schema, required observed metrics for tracked scale and candidate rows, candidate metric extraction, clean codex contour write authority, and linear status artifact commit binding."
+      "sha256": "178762801eb2b8ae859b1a30fa12eab7ce8a82f82afea7d8494f3dd2501ca88f",
+      "approvedBy": "ticket:CONTOUR_02_SCROLL_LIMIT_GUARD_AND_25000_DIAGNOSTIC_POLICY",
+      "approvedAtUtc": "2026-04-30T17:30:00.000Z",
+      "rationale": "CONTOUR_02_SCROLL_LIMIT_GUARD_AND_25000_DIAGNOSTIC_POLICY approves harness-only scroll range false-pass guard schema, 25000 destructive diagnostic policy fields, and validator rejection of end-marker clamp without touching product runtime."
     },
     {
       "filePath": "test/contracts/editorial-sheet-stress-lane-status.contract.test.js",
-      "sha256": "182e6d6154cc9b65ede434b87fa05ecb26745efdf64043a4e09a7b71ab3d4ac9",
-      "approvedBy": "ticket:CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY",
-      "approvedAtUtc": "2026-04-30T17:00:00.000Z",
-      "rationale": "CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY approves false-green coverage for 10000 candidate metrics, fixed 5000 supported tier, clean codex contour write authority, 25000 diagnostic-only boundary, and linear status artifact commit binding."
+      "sha256": "1e5016d7e7c085bfda1855b2bd9de4cc991bae8504d6b57ffe1fa56fa3998383",
+      "approvedBy": "ticket:CONTOUR_02_SCROLL_LIMIT_GUARD_AND_25000_DIAGNOSTIC_POLICY",
+      "approvedAtUtc": "2026-04-30T17:30:00.000Z",
+      "rationale": "CONTOUR_02_SCROLL_LIMIT_GUARD_AND_25000_DIAGNOSTIC_POLICY approves fixture negatives for scroll range clamp, child-ok parent-fail false green, and 25000 policy promotion while preserving 5000 supported tier and 10000 candidate separation."
     },
     {
       "filePath": "test/unit/editor-sheet-instrumented-stress-smoke.mjs",
-      "sha256": "b9f53b0db574b7702aabeecb6f6d9c6de4e3873246b3b28bd2f2bc0884dc8ffb",
-      "approvedBy": "ticket:CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY",
-      "approvedAtUtc": "2026-04-30T16:20:00.000Z",
-      "rationale": "CONTOUR_01_10000_TRACKED_CANDIDATE_BOUNDARY approves the bounded harness allowlist extension for the 10000 candidate target without admitting 6000 or 25000 as supported tracked stress rows."
+      "sha256": "93d66eb3ce08404c15da8fb5ccfeb1b27bd63068518b7d1942f754928ae2e4d9",
+      "approvedBy": "ticket:CONTOUR_02_SCROLL_LIMIT_GUARD_AND_25000_DIAGNOSTIC_POLICY",
+      "approvedAtUtc": "2026-04-30T17:30:00.000Z",
+      "rationale": "CONTOUR_02_SCROLL_LIMIT_GUARD_AND_25000_DIAGNOSTIC_POLICY approves exposing existing harness scrollHeight clientHeight and maxScrollTop metrics in summary output for false-pass classification only."
     }
   ]
 }
