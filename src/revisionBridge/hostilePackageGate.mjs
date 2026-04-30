@@ -1,8 +1,11 @@
 import { createHash } from 'node:crypto';
+import { inflateRawSync } from 'node:zlib';
 
+const LOCAL_FILE_HEADER_SIGNATURE = 0x04034b50;
 const EOCD_SIGNATURE = 0x06054b50;
 const CENTRAL_DIRECTORY_SIGNATURE = 0x02014b50;
 const MIN_EOCD_SIZE = 22;
+const LOCAL_FILE_HEADER_SIZE = 30;
 const CENTRAL_DIRECTORY_HEADER_SIZE = 46;
 const ZIP64_LIMIT_16 = 0xffff;
 const ZIP64_LIMIT_32 = 0xffffffff;
@@ -37,6 +40,23 @@ export const SECURITY_REASON_CODES = Object.freeze({
   ENCRYPTED_ENTRY: 'ENCRYPTED_ENTRY',
   UNSUPPORTED_COMPRESSION_METHOD: 'UNSUPPORTED_COMPRESSION_METHOD',
   SYMLINK_ENTRY: 'SYMLINK_ENTRY',
+  PACKAGE_GATE_BLOCKED: 'PACKAGE_GATE_BLOCKED',
+  LOCAL_HEADER_INVALID: 'LOCAL_HEADER_INVALID',
+  SELECTED_XML_ENTRY_COUNT_LIMIT_EXCEEDED: 'SELECTED_XML_ENTRY_COUNT_LIMIT_EXCEEDED',
+  SELECTED_ENTRY_SIZE_LIMIT_EXCEEDED: 'SELECTED_ENTRY_SIZE_LIMIT_EXCEEDED',
+  TOTAL_XML_SIZE_LIMIT_EXCEEDED: 'TOTAL_XML_SIZE_LIMIT_EXCEEDED',
+  XML_TOKEN_LIMIT_EXCEEDED: 'XML_TOKEN_LIMIT_EXCEEDED',
+  XML_DTD_DECLARATION_PRESENT: 'XML_DTD_DECLARATION_PRESENT',
+  XML_DOCTYPE_DECLARATION_PRESENT: 'XML_DOCTYPE_DECLARATION_PRESENT',
+  XML_ENTITY_DECLARATION_PRESENT: 'XML_ENTITY_DECLARATION_PRESENT',
+  XML_EXTERNAL_ENTITY_PATTERN_PRESENT: 'XML_EXTERNAL_ENTITY_PATTERN_PRESENT',
+  RELATIONSHIP_TARGETMODE_EXTERNAL: 'RELATIONSHIP_TARGETMODE_EXTERNAL',
+  RELATIONSHIP_TARGET_ABSOLUTE_PATH: 'RELATIONSHIP_TARGET_ABSOLUTE_PATH',
+  RELATIONSHIP_TARGET_TRAVERSAL: 'RELATIONSHIP_TARGET_TRAVERSAL',
+  RELATIONSHIP_TARGET_DRIVE_LETTER: 'RELATIONSHIP_TARGET_DRIVE_LETTER',
+  RELATIONSHIP_TARGET_BACKSLASH: 'RELATIONSHIP_TARGET_BACKSLASH',
+  SELECTED_ENTRY_UNSUPPORTED_COMPRESSION: 'SELECTED_ENTRY_UNSUPPORTED_COMPRESSION',
+  SELECTED_ENTRY_INFLATE_FAILED: 'SELECTED_ENTRY_INFLATE_FAILED',
 });
 
 export const PACKAGE_SHAPE_OBSERVATIONS = Object.freeze({
@@ -48,6 +68,16 @@ export const PACKAGE_SHAPE_OBSERVATIONS = Object.freeze({
   WORD_DOCUMENT_PART_MISSING: 'WORD_DOCUMENT_PART_MISSING',
 });
 
+export const XML_PREFLIGHT_OBSERVATIONS = Object.freeze({
+  XML_ENTRY_INSPECTED: 'XML_ENTRY_INSPECTED',
+  RELATIONSHIP_ENTRY_INSPECTED: 'RELATIONSHIP_ENTRY_INSPECTED',
+  NO_RELATIONSHIP_ENTRIES_PRESENT: 'NO_RELATIONSHIP_ENTRIES_PRESENT',
+  NO_XML_ENTRIES_SELECTED: 'NO_XML_ENTRIES_SELECTED',
+  PACKAGE_GATE_ALLOWED_BEFORE_XML_PREFLIGHT: 'PACKAGE_GATE_ALLOWED_BEFORE_XML_PREFLIGHT',
+  PACKAGE_GATE_BLOCKED_BEFORE_XML_PREFLIGHT: 'PACKAGE_GATE_BLOCKED_BEFORE_XML_PREFLIGHT',
+  RELATIONSHIP_TARGETS_PRESENT: 'RELATIONSHIP_TARGETS_PRESENT',
+});
+
 export const DEFAULT_HOSTILE_PACKAGE_POLICY = Object.freeze({
   maxEntryCount: 256,
   maxTotalCompressedSize: 64 * 1024 * 1024,
@@ -57,6 +87,14 @@ export const DEFAULT_HOSTILE_PACKAGE_POLICY = Object.freeze({
   zip64Policy: 'BLOCK',
   symlinkPolicy: 'BLOCK_WHEN_DETECTABLE',
   requireOpcShapeObservation: true,
+  maxXmlEntryBytes: 1024 * 1024,
+  maxTotalXmlBytes: 8 * 1024 * 1024,
+  maxSelectedXmlEntryCount: 128,
+  maxXmlTokenLength: 256 * 1024,
+  inspectXmlEntryNameSuffixes: Object.freeze(['.xml', '.rels']),
+  inspectRelationshipEntryNameSuffix: '.rels',
+  relationshipExternalTargetPolicy: 'BLOCK',
+  selectedEntryInflatePolicy: 'BOUNDED_SELECTED_XML_ONLY',
 });
 
 function canonicalize(value, seen = new WeakSet()) {
@@ -132,6 +170,38 @@ function makeBlockedReport({
     normalizedEntryNames: [],
     rejectedEntries: [],
     packageShapeObservations: uniqueSorted(packageShapeObservations),
+  };
+  return {
+    ...reportCore,
+    gateHash: canonicalHash(reportCore),
+  };
+}
+
+function makeBlockedXmlReport({ packageReport, policy, reasonCodes, observations = [] }) {
+  const reportCore = {
+    gateVersion: 'DOCX_HOSTILE_PACKAGE_GATE_001B',
+    status: SECURITY_STATUS.BLOCKED,
+    securityStatus: SECURITY_STATUS.BLOCKED,
+    packageShapeStatus: packageReport.packageShapeStatus,
+    reasonCodes: uniqueSorted(reasonCodes),
+    observations: uniqueSorted(observations),
+    policy,
+    packageReport,
+    selectedEntries: [],
+    skippedEntries: [],
+    xmlPreflightReport: {
+      xmlEntryCount: 0,
+      totalXmlBytes: 0,
+      inspectedXmlEntries: [],
+      rejectedXmlEntries: [],
+      xmlPolicyObservations: [],
+    },
+    relationshipPolicyReport: {
+      relationshipEntryCount: 0,
+      inspectedRelationshipEntries: [],
+      rejectedRelationshipTargets: [],
+      relationshipPolicyObservations: [],
+    },
   };
   return {
     ...reportCore,
@@ -281,6 +351,7 @@ function readCentralDirectory(buffer, eocd, policy) {
       compressionMethod,
       compressedSize,
       uncompressedSize,
+      localHeaderOffset,
       versionMadeBy,
       externalAttributes,
       isEncrypted: (flags & 1) === 1,
@@ -426,6 +497,282 @@ export function inspectHostilePackage(inputBuffer, inputPolicy = {}) {
       left.normalizedName < right.normalizedName ? -1 : Number(left.normalizedName > right.normalizedName)
     )),
     packageShapeObservations: packageShape.packageShapeObservations,
+  };
+  return {
+    ...reportCore,
+    gateHash: canonicalHash(reportCore),
+  };
+}
+
+function parsePackageInventory(inputBuffer, inputPolicy = {}) {
+  const policy = normalizePolicy(inputPolicy);
+  const buffer = Buffer.isBuffer(inputBuffer) ? inputBuffer : Buffer.from(inputBuffer || []);
+  const packageReport = inspectHostilePackage(buffer, policy);
+  if (packageReport.securityStatus === SECURITY_STATUS.BLOCKED) {
+    return { buffer, policy, packageReport, entries: [] };
+  }
+  const eocdResult = readEocd(buffer, policy);
+  if (eocdResult.blocked) {
+    return { buffer, policy, packageReport: eocdResult.blocked, entries: [] };
+  }
+  const directoryResult = readCentralDirectory(buffer, eocdResult.eocd, policy);
+  return {
+    buffer,
+    policy,
+    packageReport,
+    entries: directoryResult.entries || [],
+  };
+}
+
+function shouldInspectXmlEntry(entry, policy) {
+  return policy.inspectXmlEntryNameSuffixes.some((suffix) => entry.normalizedName.endsWith(suffix));
+}
+
+function isRelationshipEntry(entry, policy) {
+  return entry.normalizedName.endsWith(policy.inspectRelationshipEntryNameSuffix);
+}
+
+function readSelectedEntryText(buffer, entry, policy) {
+  if (entry.uncompressedSize > policy.maxXmlEntryBytes) {
+    return { reasonCode: SECURITY_REASON_CODES.SELECTED_ENTRY_SIZE_LIMIT_EXCEEDED };
+  }
+  const headerOffset = entry.localHeaderOffset;
+  if (headerOffset + LOCAL_FILE_HEADER_SIZE > buffer.length) {
+    return { reasonCode: SECURITY_REASON_CODES.LOCAL_HEADER_INVALID };
+  }
+  if (buffer.readUInt32LE(headerOffset) !== LOCAL_FILE_HEADER_SIGNATURE) {
+    return { reasonCode: SECURITY_REASON_CODES.LOCAL_HEADER_INVALID };
+  }
+  const localNameLength = buffer.readUInt16LE(headerOffset + 26);
+  const localExtraLength = buffer.readUInt16LE(headerOffset + 28);
+  const contentOffset = headerOffset + LOCAL_FILE_HEADER_SIZE + localNameLength + localExtraLength;
+  const contentEnd = contentOffset + entry.compressedSize;
+  if (contentEnd > buffer.length) {
+    return { reasonCode: SECURITY_REASON_CODES.LOCAL_HEADER_INVALID };
+  }
+  const compressed = buffer.subarray(contentOffset, contentEnd);
+  if (entry.compressionMethod === 0) {
+    return { text: compressed.toString('utf8'), byteLength: compressed.length };
+  }
+  if (entry.compressionMethod === 8) {
+    try {
+      const inflated = inflateRawSync(compressed, { maxOutputLength: policy.maxXmlEntryBytes + 1 });
+      if (inflated.length > policy.maxXmlEntryBytes) {
+        return { reasonCode: SECURITY_REASON_CODES.SELECTED_ENTRY_SIZE_LIMIT_EXCEEDED };
+      }
+      return { text: inflated.toString('utf8'), byteLength: inflated.length };
+    } catch {
+      return { reasonCode: SECURITY_REASON_CODES.SELECTED_ENTRY_INFLATE_FAILED };
+    }
+  }
+  return { reasonCode: SECURITY_REASON_CODES.SELECTED_ENTRY_UNSUPPORTED_COMPRESSION };
+}
+
+function firstLargeTokenLength(text, maxTokenLength) {
+  let currentLength = 0;
+  for (const char of text) {
+    if (/\s/u.test(char) || char === '<' || char === '>' || char === '"' || char === "'") {
+      if (currentLength > maxTokenLength) {
+        return currentLength;
+      }
+      currentLength = 0;
+    } else {
+      currentLength += 1;
+    }
+  }
+  return currentLength > maxTokenLength ? currentLength : 0;
+}
+
+function inspectXmlText(text) {
+  const reasonCodes = [];
+  if (text.includes('<!DTD')) {
+    reasonCodes.push(SECURITY_REASON_CODES.XML_DTD_DECLARATION_PRESENT);
+  }
+  if (text.includes('<!DOCTYPE')) {
+    reasonCodes.push(SECURITY_REASON_CODES.XML_DOCTYPE_DECLARATION_PRESENT);
+  }
+  if (text.includes('<!ENTITY')) {
+    reasonCodes.push(SECURITY_REASON_CODES.XML_ENTITY_DECLARATION_PRESENT);
+  }
+  if (text.includes('SYSTEM "') || text.includes("SYSTEM '") || text.includes('PUBLIC "')) {
+    reasonCodes.push(SECURITY_REASON_CODES.XML_EXTERNAL_ENTITY_PATTERN_PRESENT);
+  }
+  return uniqueSorted(reasonCodes);
+}
+
+function parseRelationshipAttributes(tagText) {
+  const attributes = {};
+  const attributePattern = /\s([A-Za-z_:][A-Za-z0-9_.:-]*)\s*=\s*("([^"]*)"|'([^']*)')/gu;
+  for (const match of tagText.matchAll(attributePattern)) {
+    attributes[match[1]] = match[3] ?? match[4] ?? '';
+  }
+  return attributes;
+}
+
+function inspectRelationshipTargets(text) {
+  const rejectedTargets = [];
+  const observations = [];
+  const relationshipPattern = /<Relationship\b[^>]*>/gu;
+  for (const match of text.matchAll(relationshipPattern)) {
+    observations.push(XML_PREFLIGHT_OBSERVATIONS.RELATIONSHIP_TARGETS_PRESENT);
+    const attributes = parseRelationshipAttributes(match[0]);
+    const target = attributes.Target || '';
+    const targetMode = attributes.TargetMode || '';
+    const reasonCodes = [];
+    if (targetMode === 'External') {
+      reasonCodes.push(SECURITY_REASON_CODES.RELATIONSHIP_TARGETMODE_EXTERNAL);
+    }
+    if (target.startsWith('/')) {
+      reasonCodes.push(SECURITY_REASON_CODES.RELATIONSHIP_TARGET_ABSOLUTE_PATH);
+    }
+    if (/^[A-Za-z]:/u.test(target)) {
+      reasonCodes.push(SECURITY_REASON_CODES.RELATIONSHIP_TARGET_DRIVE_LETTER);
+    }
+    if (target.includes('\\')) {
+      reasonCodes.push(SECURITY_REASON_CODES.RELATIONSHIP_TARGET_BACKSLASH);
+    }
+    if (target.split('/').includes('..')) {
+      reasonCodes.push(SECURITY_REASON_CODES.RELATIONSHIP_TARGET_TRAVERSAL);
+    }
+    if (reasonCodes.length > 0) {
+      rejectedTargets.push({
+        target,
+        targetMode,
+        reasonCodes: uniqueSorted(reasonCodes),
+      });
+    }
+  }
+  return {
+    observations: uniqueSorted(observations),
+    rejectedTargets,
+  };
+}
+
+export function inspectHostilePackageXmlPreflight(inputBuffer, inputPolicy = {}) {
+  const { buffer, policy, packageReport, entries } = parsePackageInventory(inputBuffer, inputPolicy);
+  if (packageReport.securityStatus === SECURITY_STATUS.BLOCKED) {
+    return makeBlockedXmlReport({
+      packageReport,
+      policy,
+      reasonCodes: [SECURITY_REASON_CODES.PACKAGE_GATE_BLOCKED],
+      observations: [XML_PREFLIGHT_OBSERVATIONS.PACKAGE_GATE_BLOCKED_BEFORE_XML_PREFLIGHT],
+    });
+  }
+
+  const selectedEntries = [];
+  const skippedEntries = [];
+  const inspectedXmlEntries = [];
+  const rejectedXmlEntries = [];
+  const inspectedRelationshipEntries = [];
+  const rejectedRelationshipTargets = [];
+  const xmlPolicyObservations = [];
+  const relationshipPolicyObservations = [];
+  const reasonCodes = [];
+  let totalXmlBytes = 0;
+
+  for (const entry of entries) {
+    if (shouldInspectXmlEntry(entry, policy)) {
+      selectedEntries.push(entry.normalizedName);
+    } else {
+      skippedEntries.push(entry.normalizedName);
+    }
+  }
+
+  if (selectedEntries.length === 0) {
+    xmlPolicyObservations.push(XML_PREFLIGHT_OBSERVATIONS.NO_XML_ENTRIES_SELECTED);
+  }
+  if (selectedEntries.length > policy.maxSelectedXmlEntryCount) {
+    reasonCodes.push(SECURITY_REASON_CODES.SELECTED_XML_ENTRY_COUNT_LIMIT_EXCEEDED);
+  }
+
+  const selectedCountLimitExceeded = reasonCodes.includes(
+    SECURITY_REASON_CODES.SELECTED_XML_ENTRY_COUNT_LIMIT_EXCEEDED,
+  );
+  const entriesToInspect = selectedCountLimitExceeded
+    ? []
+    : entries.filter((candidate) => selectedEntries.includes(candidate.normalizedName));
+
+  for (const entry of entriesToInspect) {
+    const readResult = readSelectedEntryText(buffer, entry, policy);
+    if (readResult.reasonCode) {
+      reasonCodes.push(readResult.reasonCode);
+      rejectedXmlEntries.push({
+        entryName: entry.normalizedName,
+        reasonCodes: [readResult.reasonCode],
+      });
+      continue;
+    }
+    inspectedXmlEntries.push(entry.normalizedName);
+    xmlPolicyObservations.push(XML_PREFLIGHT_OBSERVATIONS.XML_ENTRY_INSPECTED);
+    totalXmlBytes += readResult.byteLength;
+    const entryReasonCodes = [];
+    if (readResult.byteLength > policy.maxXmlEntryBytes) {
+      entryReasonCodes.push(SECURITY_REASON_CODES.SELECTED_ENTRY_SIZE_LIMIT_EXCEEDED);
+    }
+    if (firstLargeTokenLength(readResult.text, policy.maxXmlTokenLength) > 0) {
+      entryReasonCodes.push(SECURITY_REASON_CODES.XML_TOKEN_LIMIT_EXCEEDED);
+    }
+    entryReasonCodes.push(...inspectXmlText(readResult.text));
+
+    if (isRelationshipEntry(entry, policy)) {
+      inspectedRelationshipEntries.push(entry.normalizedName);
+      relationshipPolicyObservations.push(XML_PREFLIGHT_OBSERVATIONS.RELATIONSHIP_ENTRY_INSPECTED);
+      const relationshipResult = inspectRelationshipTargets(readResult.text);
+      relationshipPolicyObservations.push(...relationshipResult.observations);
+      for (const rejectedTarget of relationshipResult.rejectedTargets) {
+        reasonCodes.push(...rejectedTarget.reasonCodes);
+        rejectedRelationshipTargets.push({
+          entryName: entry.normalizedName,
+          ...rejectedTarget,
+        });
+      }
+    }
+
+    if (entryReasonCodes.length > 0) {
+      reasonCodes.push(...entryReasonCodes);
+      rejectedXmlEntries.push({
+        entryName: entry.normalizedName,
+        reasonCodes: uniqueSorted(entryReasonCodes),
+      });
+    }
+  }
+
+  if (totalXmlBytes > policy.maxTotalXmlBytes) {
+    reasonCodes.push(SECURITY_REASON_CODES.TOTAL_XML_SIZE_LIMIT_EXCEEDED);
+  }
+  if (inspectedRelationshipEntries.length === 0) {
+    relationshipPolicyObservations.push(XML_PREFLIGHT_OBSERVATIONS.NO_RELATIONSHIP_ENTRIES_PRESENT);
+  }
+
+  const securityStatus = reasonCodes.length > 0 ? SECURITY_STATUS.BLOCKED : SECURITY_STATUS.ALLOWED;
+  const reportCore = {
+    gateVersion: 'DOCX_HOSTILE_PACKAGE_GATE_001B',
+    status: securityStatus,
+    securityStatus,
+    packageShapeStatus: packageReport.packageShapeStatus,
+    reasonCodes: uniqueSorted(reasonCodes),
+    observations: [XML_PREFLIGHT_OBSERVATIONS.PACKAGE_GATE_ALLOWED_BEFORE_XML_PREFLIGHT],
+    policy,
+    packageReport,
+    selectedEntries: selectedEntries.sort(),
+    skippedEntries: skippedEntries.sort(),
+    xmlPreflightReport: {
+      xmlEntryCount: selectedEntries.length,
+      totalXmlBytes,
+      inspectedXmlEntries: inspectedXmlEntries.sort(),
+      rejectedXmlEntries: rejectedXmlEntries.sort((left, right) => (
+        left.entryName < right.entryName ? -1 : Number(left.entryName > right.entryName)
+      )),
+      xmlPolicyObservations: uniqueSorted(xmlPolicyObservations),
+    },
+    relationshipPolicyReport: {
+      relationshipEntryCount: inspectedRelationshipEntries.length,
+      inspectedRelationshipEntries: inspectedRelationshipEntries.sort(),
+      rejectedRelationshipTargets: rejectedRelationshipTargets.sort((left, right) => (
+        left.entryName < right.entryName ? -1 : Number(left.entryName > right.entryName)
+      )),
+      relationshipPolicyObservations: uniqueSorted(relationshipPolicyObservations),
+    },
   };
   return {
     ...reportCore,

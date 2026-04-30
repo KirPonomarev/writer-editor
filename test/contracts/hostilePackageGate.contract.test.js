@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const zlib = require('node:zlib');
 const { pathToFileURL } = require('node:url');
 
 const MODULE_BASENAME = 'hostilePackageGate.mjs';
@@ -42,6 +43,27 @@ function centralDirectoryEntry(input = {}) {
   ]);
 }
 
+function localFileHeader(input = {}) {
+  const name = Buffer.from(input.name ?? '[Content_Types].xml', 'utf8');
+  const content = Buffer.isBuffer(input.content) ? input.content : Buffer.from(input.content ?? '', 'utf8');
+  const compressed = input.method === 8 ? zlib.deflateRawSync(content) : content;
+  const header = Buffer.alloc(30);
+  header.writeUInt32LE(0x04034b50, 0);
+  header.writeUInt16LE(20, 4);
+  header.writeUInt16LE(input.flags ?? 0x0800, 6);
+  header.writeUInt16LE(input.method ?? 0, 8);
+  header.writeUInt32LE(input.crc32 ?? 0, 14);
+  header.writeUInt32LE(input.compressedSize ?? compressed.length, 18);
+  header.writeUInt32LE(input.uncompressedSize ?? content.length, 22);
+  header.writeUInt16LE(name.length, 26);
+  header.writeUInt16LE(input.extraLength ?? 0, 28);
+  return {
+    buffer: Buffer.concat([header, name, Buffer.alloc(input.extraLength ?? 0), compressed]),
+    compressedSize: input.compressedSize ?? compressed.length,
+    uncompressedSize: input.uncompressedSize ?? content.length,
+  };
+}
+
 function eocd({ entryCount, cdSize, cdOffset, comment = Buffer.alloc(0), forceZip64 = false } = {}) {
   const header = Buffer.alloc(22);
   header.writeUInt32LE(0x06054b50, 0);
@@ -75,6 +97,43 @@ function minimalDocxLikeZip(extraEntries = [], options = {}) {
     { name: 'word/document.xml', compressedSize: 10, uncompressedSize: 10 },
     ...extraEntries,
   ], options);
+}
+
+function zipWithLocalFiles(fileEntries, options = {}) {
+  const localEntries = [];
+  let offset = 0;
+  for (const entry of fileEntries) {
+    const local = localFileHeader(entry);
+    localEntries.push({
+      ...entry,
+      localHeaderOffset: offset,
+      compressedSize: local.compressedSize,
+      uncompressedSize: local.uncompressedSize,
+      localBuffer: local.buffer,
+    });
+    offset += local.buffer.length;
+  }
+  const localBytes = Buffer.concat(localEntries.map((entry) => entry.localBuffer));
+  const centralDirectory = Buffer.concat(localEntries.map(centralDirectoryEntry));
+  return Buffer.concat([
+    localBytes,
+    centralDirectory,
+    eocd({
+      entryCount: localEntries.length,
+      cdSize: centralDirectory.length,
+      cdOffset: localBytes.length,
+      forceZip64: options.forceZip64,
+    }),
+  ]);
+}
+
+function safeXmlPackage(extraEntries = []) {
+  return zipWithLocalFiles([
+    { name: '[Content_Types].xml', content: '<Types></Types>' },
+    { name: '_rels/.rels', content: '<Relationships></Relationships>' },
+    { name: 'word/document.xml', content: '<document><body>safe</body></document>' },
+    ...extraEntries,
+  ]);
 }
 
 test('minimal docx-like package inventory is allowed and deterministic', async () => {
@@ -239,4 +298,119 @@ test('hostile package gate module remains pure and decoupled from parser and Rev
   for (const pattern of forbidden) {
     assert.equal(pattern.test(moduleText), false, `forbidden package gate pattern: ${pattern.source}`);
   }
+});
+
+test('XML preflight allows safe minimal XML package and reports selected entries', async () => {
+  const { inspectHostilePackageXmlPreflight, SECURITY_STATUS } = await loadGate();
+  const first = inspectHostilePackageXmlPreflight(safeXmlPackage());
+  const second = inspectHostilePackageXmlPreflight(safeXmlPackage());
+
+  assert.deepEqual(first, second);
+  assert.equal(first.securityStatus, SECURITY_STATUS.ALLOWED);
+  assert.equal(first.selectedEntries.includes('word/document.xml'), true);
+  assert.equal(first.xmlPreflightReport.inspectedXmlEntries.length, 3);
+  assert.equal(first.relationshipPolicyReport.relationshipEntryCount, 1);
+});
+
+test('XML preflight hash changes when policy changes', async () => {
+  const { inspectHostilePackageXmlPreflight } = await loadGate();
+  const base = inspectHostilePackageXmlPreflight(safeXmlPackage());
+  const changedPolicy = inspectHostilePackageXmlPreflight(safeXmlPackage(), { maxXmlTokenLength: 100 });
+
+  assert.notEqual(base.gateHash, changedPolicy.gateHash);
+});
+
+test('package gate blocked result short-circuits XML preflight', async () => {
+  const { inspectHostilePackageXmlPreflight, SECURITY_REASON_CODES, XML_PREFLIGHT_OBSERVATIONS } = await loadGate();
+  const report = inspectHostilePackageXmlPreflight(Buffer.from('not a zip'));
+
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.PACKAGE_GATE_BLOCKED), true);
+  assert.equal(report.selectedEntries.length, 0);
+  assert.equal(report.xmlPreflightReport.inspectedXmlEntries.length, 0);
+  assert.equal(report.observations.includes(XML_PREFLIGHT_OBSERVATIONS.PACKAGE_GATE_BLOCKED_BEFORE_XML_PREFLIGHT), true);
+});
+
+test('selected XML entry count and size budgets block XML preflight', async () => {
+  const { inspectHostilePackageXmlPreflight, SECURITY_REASON_CODES } = await loadGate();
+  const manyXml = safeXmlPackage([
+    { name: 'custom/a.xml', content: '<a></a>' },
+    { name: 'custom/b.xml', content: '<b></b>' },
+  ]);
+  const entrySize = safeXmlPackage([{ name: 'word/big.xml', content: '<x>123456789</x>' }]);
+  const totalSize = safeXmlPackage([{ name: 'word/total.xml', content: '<x>123456789</x>' }]);
+
+  assert.equal(
+    inspectHostilePackageXmlPreflight(manyXml, { maxSelectedXmlEntryCount: 2 }).reasonCodes
+      .includes(SECURITY_REASON_CODES.SELECTED_XML_ENTRY_COUNT_LIMIT_EXCEEDED),
+    true,
+  );
+  assert.equal(
+    inspectHostilePackageXmlPreflight(manyXml, { maxSelectedXmlEntryCount: 2 })
+      .xmlPreflightReport.inspectedXmlEntries.length,
+    0,
+  );
+  assert.equal(
+    inspectHostilePackageXmlPreflight(entrySize, { maxXmlEntryBytes: 8 }).reasonCodes
+      .includes(SECURITY_REASON_CODES.SELECTED_ENTRY_SIZE_LIMIT_EXCEEDED),
+    true,
+  );
+  assert.equal(
+    inspectHostilePackageXmlPreflight(totalSize, { maxTotalXmlBytes: 20 }).reasonCodes
+      .includes(SECURITY_REASON_CODES.TOTAL_XML_SIZE_LIMIT_EXCEEDED),
+    true,
+  );
+});
+
+test('bounded deflate selected entry output limit blocks oversized inflated XML', async () => {
+  const { inspectHostilePackageXmlPreflight, SECURITY_REASON_CODES } = await loadGate();
+  const report = inspectHostilePackageXmlPreflight(safeXmlPackage([
+    { name: 'word/deflated.xml', method: 8, content: '<x>expanded</x>' },
+  ]), { maxXmlEntryBytes: 8 });
+
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.SELECTED_ENTRY_SIZE_LIMIT_EXCEEDED), true);
+});
+
+test('large XML token and entity declarations block XML preflight', async () => {
+  const { inspectHostilePackageXmlPreflight, SECURITY_REASON_CODES } = await loadGate();
+  const report = inspectHostilePackageXmlPreflight(safeXmlPackage([
+    { name: 'word/token.xml', content: `<x>${'a'.repeat(20)}</x>` },
+    { name: 'word/dtd.xml', content: '<!DTD root []><root />' },
+    { name: 'word/doctype.xml', content: '<!DOCTYPE root><root />' },
+    { name: 'word/entity.xml', content: '<!ENTITY xxe SYSTEM "file:///etc/passwd"><root />' },
+  ]), { maxXmlTokenLength: 10 });
+
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.XML_TOKEN_LIMIT_EXCEEDED), true);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.XML_DTD_DECLARATION_PRESENT), true);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.XML_DOCTYPE_DECLARATION_PRESENT), true);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.XML_ENTITY_DECLARATION_PRESENT), true);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.XML_EXTERNAL_ENTITY_PATTERN_PRESENT), true);
+});
+
+test('relationship target text preflight blocks external and hostile targets without fetch', async () => {
+  const { inspectHostilePackageXmlPreflight, SECURITY_REASON_CODES, XML_PREFLIGHT_OBSERVATIONS } = await loadGate();
+  const report = inspectHostilePackageXmlPreflight(safeXmlPackage([
+    {
+      name: 'word/_rels/document.xml.rels',
+      content: [
+        '<Relationships>',
+        '<Relationship TargetMode="External" Target="https://example.test/a" />',
+        '<Relationship Target="/absolute/path" />',
+        '<Relationship Target="../escape.xml" />',
+        '<Relationship Target="C:/drive.xml" />',
+        '<Relationship Target="word\\bad.xml" />',
+        '</Relationships>',
+      ].join(''),
+    },
+  ]));
+
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.RELATIONSHIP_TARGETMODE_EXTERNAL), true);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.RELATIONSHIP_TARGET_ABSOLUTE_PATH), true);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.RELATIONSHIP_TARGET_TRAVERSAL), true);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.RELATIONSHIP_TARGET_DRIVE_LETTER), true);
+  assert.equal(report.reasonCodes.includes(SECURITY_REASON_CODES.RELATIONSHIP_TARGET_BACKSLASH), true);
+  assert.equal(
+    report.relationshipPolicyReport.relationshipPolicyObservations
+      .includes(XML_PREFLIGHT_OBSERVATIONS.RELATIONSHIP_TARGETS_PRESENT),
+    true,
+  );
 });
