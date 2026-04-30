@@ -2922,24 +2922,24 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "22d851b971a99d83218ec0354e15fd67dbf2bc14c84621e803f71330bc00345e",
+      "sha256": "951890425f41ed05ef7f9da059ec000fbd3df4d5d3aee59fbdc8b273fd2d88f4",
       "approvedBy": "ticket:CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR",
       "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the bounded post-merge stress lane artifact refresh re-bound to merged mainline after proof-lane truth repair closed stale-green and false-green paths."
+      "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the bounded detached-mainline stress lane artifact refresh after merge-topology freshness repair closed the remaining stale-proof recursion without widening runtime, storage, export, UI, or dependency scope."
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
-      "sha256": "12d04f87aed7eb92e672cbcdc2ec0b51f7d7ad65998ef5ef93034cbbd4e91ed6",
+      "sha256": "ba910129300ea22238baa9603cc05a02cfa02126d1b01136df5eac76fe915198",
       "approvedBy": "ticket:CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR",
       "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the narrow OPS state writer repair that rejects stale or red artifacts and resolves row execution from the installed worktree dependency root without widening runtime, export, storage, or dependency scope."
+      "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the narrow OPS state writer repair that rejects stale or red artifacts, resolves row execution from the installed worktree dependency root, and accepts the bounded merge-topology freshness relation for a refreshed tracked status artifact without widening runtime, export, storage, or dependency scope."
     },
     {
       "filePath": "test/contracts/editorial-sheet-stress-lane-status.contract.test.js",
-      "sha256": "3d5ab7ade26dfc9f0d237addc147578bdd3a13747f3adb06ec5bf07319f9afda",
+      "sha256": "fb63edc44e09d3443e38ea5dd7cde40641711c89a26125315750e05d34a605c9",
       "approvedBy": "ticket:CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR",
       "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the bounded contract extension that enforces stale-head rejection, red-artifact rejection, and write-authority proof without widening product runtime scope."
+      "rationale": "CONTOUR_05A_STRESS_LANE_TRUTH_REPAIR approves the bounded contract extension that enforces stale-head rejection, red-artifact rejection, merge-topology freshness acceptance for the refreshed tracked status artifact, and write-authority proof without widening product runtime scope."
     }
   ]
 }
