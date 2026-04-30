@@ -645,7 +645,7 @@ const CENTRAL_SHEET_STRIP_PROOF_CLASS = 'tiptap-host--central-sheet-strip-proof'
 const CENTRAL_SHEET_STRIP_MEASURING_CLASS = 'tiptap-host--central-sheet-strip-measuring';
 const CENTRAL_SHEET_RUNTIME_WINDOW_DOM_BUDGET = 15;
 const CENTRAL_SHEET_RUNTIME_WINDOW_OVERSCAN = 1;
-const CENTRAL_SHEET_LARGE_PAYLOAD_FAST_PATH_CHAR_THRESHOLD = 2500000;
+const CENTRAL_SHEET_LARGE_PAYLOAD_FAST_PATH_CHAR_THRESHOLD = 2200000;
 const CENTRAL_SHEET_LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE = 520;
 const CENTRAL_SHEET_LARGE_PAYLOAD_PRESENTATION_CHUNK_TARGET_CHARS = 12000;
 const CENTRAL_SHEET_LARGE_PAYLOAD_PRESENTATION_CHUNK_MIN_CHARS = 8000;
@@ -801,12 +801,18 @@ function clearCentralSheetLargePayloadFastPath() {
   centralSheetStripLargePayloadFastPathActive = false;
   centralSheetStripLargePayloadFastPathText = '';
   centralSheetStripLargePayloadFastPathDirty = false;
+  if (editor instanceof HTMLElement) {
+    delete editor.dataset.centralSheetLargePayloadFastPathActive;
+  }
 }
 
 function beginCentralSheetLargePayloadFastPath(text = '') {
   centralSheetStripLargePayloadFastPathActive = true;
   centralSheetStripLargePayloadFastPathText = normalizeLargePayloadFastPathText(text);
   centralSheetStripLargePayloadFastPathDirty = false;
+  if (editor instanceof HTMLElement) {
+    editor.dataset.centralSheetLargePayloadFastPathActive = 'true';
+  }
 }
 
 function markCentralSheetLargePayloadFastPathDirty() {
@@ -1579,12 +1585,17 @@ function scheduleCentralSheetStripProofRefreshOnScroll() {
   const scrollDeltaPx = Math.abs(nextScrollTop - centralSheetStripLastScrollTop);
   if (
     !centralSheetStripCacheDirty
-    && (
-      centralSheetStripCachedRuntimeState.estimatedLargePayload === true
-      || scrollDeltaPx < Math.max(32, Math.round(pageStridePx / 2))
-    )
+    && centralSheetStripCachedRuntimeState.estimatedLargePayload === true
   ) {
     refreshCentralSheetStripProof({ reuseCachedDecision: true });
+    return;
+  }
+  if (!centralSheetStripCacheDirty) {
+    refreshCentralSheetStripProof({ reuseCachedDecision: true });
+    if (scrollDeltaPx >= Math.max(32, Math.round(pageStridePx / 2))) {
+      centralSheetStripCacheDirty = true;
+      scheduleCentralSheetStripProofRefresh();
+    }
     return;
   }
   refreshCentralSheetStripProof();
@@ -4663,6 +4674,8 @@ let deferredPaginationTimerId = null;
 let deferredRenderIncludePagination = false;
 let deferredRenderPreserveSelection = true;
 let incrementalInputDomSyncScheduled = false;
+let deferredWordCountFrameId = null;
+let deferredWordCountText = null;
 let lastFullRenderAtMs = 0;
 let legacyCompositionActive = false;
 let legacyCompositionRenderPending = false;
@@ -5500,8 +5513,6 @@ function showEditorPanelFor(title) {
       editor.scrollTop = 0;
       if (!isTiptapMode) {
         focusEditorSurface('current');
-      }
-      if (!centralSheetStripLargePayloadFastPathActive) {
         positionCaretForCurrentText();
       }
       scheduleCentralSheetStripProofRefresh();
@@ -7043,15 +7054,28 @@ function installNetworkGuard() {
   }
 }
 
-function updateWordCount() {
+function updateWordCount(textOverride = null) {
   if (!editor || !wordCountElement) return;
-  const text = getPlainText();
+  const text = typeof textOverride === 'string' ? textOverride : getPlainText();
   const trimmed = text.trim();
   const count = trimmed ? trimmed.split(/\s+/).filter(Boolean).length : 0;
   wordCountElement.textContent = `${count} words`;
   if (count > 20000) {
     updatePerfHintText('large document');
   }
+}
+
+function scheduleWordCountRefresh(text = null) {
+  deferredWordCountText = typeof text === 'string' ? text : null;
+  if (deferredWordCountFrameId) {
+    return;
+  }
+  deferredWordCountFrameId = window.requestAnimationFrame(() => {
+    deferredWordCountFrameId = null;
+    const nextText = deferredWordCountText;
+    deferredWordCountText = null;
+    updateWordCount(nextText);
+  });
 }
 
 function updateZoomValue() {
@@ -9249,7 +9273,7 @@ if (isTiptapMode) {
       scheduleCentralSheetStripProofRefresh();
     }
     markAsModified();
-    updateWordCount();
+    scheduleWordCountRefresh(plainTextBuffer);
   });
 } else {
   editor.addEventListener('pointerdown', (event) => {

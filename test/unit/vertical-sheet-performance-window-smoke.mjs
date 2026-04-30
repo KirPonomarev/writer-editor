@@ -492,6 +492,11 @@ assert.equal(result.focus.proseMirrorCount, 1);
 assert.equal(result.focus.tiptapEditorCount, 1);
 assert.equal(result.scrollTransition.scrollResult.ok, true);
 assert.equal(
+  result.scrollTransition.afterScrollImmediate.visibleViewportTextRectCount > 0,
+  true,
+  `after scroll immediate viewport must show text, got ${result.scrollTransition.afterScrollImmediate.visibleViewportTextRectCount}`,
+);
+assert.equal(
   result.scrollTransition.afterScrollSync.visibleViewportSheetCount > 0,
   true,
   `after scroll sync viewport must never be blank, got ${result.scrollTransition.afterScrollSync.visibleViewportSheetCount}`,
