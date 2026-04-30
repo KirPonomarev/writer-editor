@@ -119,7 +119,11 @@ test('editor sheet 6000 diagnostic probe: committed stress status keeps 5000 as 
   assert.equal(artifact.readiness.tracked5000Pass, true);
   assert.equal(artifact.candidates.trackedCandidate10000Pass, true);
   assert.equal(artifact.candidates.supportedTierRaised, false);
-  assert.equal(JSON.stringify(artifact).includes('6000'), false);
+  assert.equal(artifact.trackedScalePageCounts.includes(6000), false);
+  assert.equal(artifact.trackedCandidatePageCounts.includes(6000), false);
+  assert.equal(artifact.rows.some((row) => Number(row.pageCount || 0) === 6000), false);
+  assert.equal(artifact.readiness.editorialSheet6000Ready, undefined);
+  assert.equal(artifact.readiness.tracked6000Pass, undefined);
 });
 
 test('editor sheet 6000 diagnostic probe: closeout summary preserves unsupported boundary wording', () => {

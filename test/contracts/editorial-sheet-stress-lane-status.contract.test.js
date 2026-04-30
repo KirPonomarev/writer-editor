@@ -305,6 +305,36 @@ test('editorial sheet stress lane: outer evaluation rejects unsupported scale pr
   }
 });
 
+test('editorial sheet stress lane: linear status artifact commit may bind to first parent', async () => {
+  const { evaluateEditorialSheetStressLaneStatus } = await loadModule();
+  const artifact = readArtifact();
+  const artifactHeadSha = 'a'.repeat(40);
+  const currentHeadSha = 'b'.repeat(40);
+  const statusPath = path.join('docs', 'OPS', 'STATUS', 'EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json');
+  const result = evaluateEditorialSheetStressLaneStatus(
+    {
+      ...artifact,
+      repo: {
+        ...artifact.repo,
+        headSha: artifactHeadSha,
+      },
+    },
+    {
+      repoStateOverride: {
+        currentHeadSha,
+        originMainHeadSha: 'c'.repeat(40),
+        currentHeadFirstParentSha: artifactHeadSha,
+        currentHeadSecondParentSha: '',
+        currentHeadChangedPathsFromFirstParent: [statusPath],
+      },
+    },
+  );
+
+  assert.equal(result.ok, true);
+  assert.ok(result.acceptedExecutionHeadShas.includes(artifactHeadSha));
+  assert.equal(result.matchedExecutionHeadSha, artifactHeadSha);
+});
+
 test('editorial sheet stress lane: write authority accepts clean mainline or codex contour branch only', async () => {
   const { evaluateWriteAuthority, WRITE_AUTHORITY_RULE } = await loadModule();
 

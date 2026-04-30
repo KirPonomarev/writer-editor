@@ -822,9 +822,12 @@ async function writeJsonAtomic(targetPath, value) {
   await fsp.rename(tmpPath, targetPath);
 }
 
-export function evaluateEditorialSheetStressLaneStatus(artifact, { repoRoot = DEFAULT_REPO_ROOT } = {}) {
+export function evaluateEditorialSheetStressLaneStatus(
+  artifact,
+  { repoRoot = DEFAULT_REPO_ROOT, repoStateOverride = null } = {},
+) {
   const validation = validateEditorialSheetStressLaneStatus(artifact);
-  const repoState = getRepoState(repoRoot);
+  const repoState = repoStateOverride || getRepoState(repoRoot);
   const issues = [...validation.issues];
   const expectedExecutionHeadSha = normalizeString(repoState.currentHeadSha || repoState.originMainHeadSha);
   const artifactHeadSha = normalizeString(artifact?.repo?.headSha);
@@ -834,16 +837,19 @@ export function evaluateEditorialSheetStressLaneStatus(artifact, { repoRoot = DE
   ].filter(Boolean);
   const statusRelPathPosix = STATUS_REL_PATH.split(path.sep).join(path.posix.sep);
   const statusRelPathNative = STATUS_REL_PATH.split(path.posix.sep).join(path.sep);
-  const mergeCommitRebindAllowed = (
-    normalizeString(repoState.currentHeadSecondParentSha)
-    && normalizeString(repoState.currentHeadFirstParentSha)
+  const statusChangedFromFirstParent = (
+    normalizeString(repoState.currentHeadFirstParentSha)
     && expectedExecutionHeadSha === normalizeString(repoState.currentHeadSha)
     && repoState.currentHeadChangedPathsFromFirstParent.some(
       (entry) => entry === statusRelPathNative || entry === statusRelPathPosix,
     )
   );
-  if (mergeCommitRebindAllowed) {
+  if (statusChangedFromFirstParent) {
     acceptedExecutionHeadShas.push(normalizeString(repoState.currentHeadFirstParentSha));
+  }
+  const mergeCommitRebindAllowed = statusChangedFromFirstParent
+    && normalizeString(repoState.currentHeadSecondParentSha);
+  if (mergeCommitRebindAllowed) {
     acceptedExecutionHeadShas.push(normalizeString(repoState.currentHeadSecondParentSha));
   }
 
