@@ -10,10 +10,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_5000_CLOSEOUT_SUMMARY.json",
-      "sha256": "33ee535e102d72592a038130b543e905fac730865bdaa38c14b2ddd925210c91",
+      "sha256": "fc3ce103afb0f8d4a2c2cb2b1260f3bf84089dd711aca9e2eaf93f3197f53833",
       "approvedBy": "ticket:CONTOUR_09_6000_BOUNDARY_POLICY_AND_FALSE_GREEN_GUARD",
       "approvedAtUtc": "2026-04-30T14:00:00.000Z",
-      "rationale": "Approve non-authoritative closeout summary guardrails that forbid treating the 6000 diagnostic probe ok signal as readiness or promoting 6000 into tracked rows without a new explicit contour."
+      "rationale": "Approve non-authoritative closeout summary guardrails and post-merge stress artifact rebind to e45aa1f9 after the 6000 boundary guard merge; this does not promote 6000 readiness."
     },
     {
       "filePath": "docs/OPERATIONS/STATUS/CODEX_AUTOMATION_POLICY.json",
@@ -2936,10 +2936,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "07a887b0621b22956d3f0401739c00ceb47d5bea53fc504509624a58d29d2703",
-      "approvedBy": "ticket:CONTOUR_08_STRESS_LANE_POSTMERGE_REFRESH",
+      "sha256": "88cb765081abb8954eea6a143973f2fb82540c52ae249b59c77170baf8532407",
+      "approvedBy": "ticket:CONTOUR_09_STRESS_LANE_POSTMERGE_REFRESH",
       "approvedAtUtc": "2026-04-30T00:00:00.000Z",
-      "rationale": "CONTOUR_08_STRESS_LANE_POSTMERGE_REFRESH approves the bounded detached-mainline stress lane artifact refresh after the diagnostic 6000 probe merge changed mainline head; this preserves tracked 2000 to 5000 proof freshness without promoting 6000 readiness or widening runtime, storage, export, UI, or dependency scope."
+      "rationale": "CONTOUR_09_STRESS_LANE_POSTMERGE_REFRESH approves the bounded detached-mainline stress lane artifact refresh after the 6000 boundary guard merge changed mainline head; this preserves tracked 2000 to 5000 proof freshness without promoting 6000 readiness or widening runtime, storage, export, UI, or dependency scope."
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
