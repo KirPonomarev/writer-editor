@@ -489,6 +489,7 @@ test('001N changed scope stays allowlisted and production kernel does not import
     'exactTextApplyWithReceiptAdmission.mjs',
     'exactTextApplyWithReceiptExecution.mjs',
     'exactTextApplyWithReceiptCloseout.mjs',
+    'exactTextApplyWithReceiptNextAdmission.mjs',
     'exactTextApplyTestOnlyStoragePrimitiveExecutionHarness.contract.test.js',
     'exactTextApplyInternalWritePrototype.contract.test.js',
     'exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
@@ -497,6 +498,7 @@ test('001N changed scope stays allowlisted and production kernel does not import
     'exactTextApplyWithReceiptAdmission.contract.test.js',
     'exactTextApplyWithReceiptExecution.contract.test.js',
     'exactTextApplyWithReceiptCloseout.contract.test.js',
+    'exactTextApplyWithReceiptNextAdmission.contract.test.js',
     'exactTextApplyTestOnlyProductShapedStorageDryRun.contract.test.js',
     'exactTextApplyProductApplyReadinessReview.contract.test.js',
     'exactTextApplyProductApplyAdmissionGate.contract.test.js',
@@ -513,6 +515,7 @@ test('001N changed scope stays allowlisted and production kernel does not import
     'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_ADMISSION_001V.md',
     'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_EXECUTION_001W.md',
     'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_CLOSEOUT_001X.md',
+    'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_001Y.md',
     TASK_BASENAME,
   ]);
   const denylist = new Set([

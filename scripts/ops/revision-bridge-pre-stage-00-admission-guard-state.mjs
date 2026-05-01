@@ -22,6 +22,7 @@ const ALLOWED_CHANGED_PATHS = new Set([
   'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_ADMISSION_001V.md',
   'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_EXECUTION_001W.md',
   'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_CLOSEOUT_001X.md',
+  'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_001Y.md',
   'src/revisionBridge/reviewIrKernel.mjs',
   'src/revisionBridge/exactTextApplyInternalWritePrototype.mjs',
   'src/revisionBridge/exactTextApplyFixtureDurableReceiptPrototype.mjs',
@@ -30,6 +31,7 @@ const ALLOWED_CHANGED_PATHS = new Set([
   'src/revisionBridge/exactTextApplyWithReceiptAdmission.mjs',
   'src/revisionBridge/exactTextApplyWithReceiptExecution.mjs',
   'src/revisionBridge/exactTextApplyWithReceiptCloseout.mjs',
+  'src/revisionBridge/exactTextApplyWithReceiptNextAdmission.mjs',
   ARTIFACT_PATHS.layerTable,
   ARTIFACT_PATHS.modeTable,
   ARTIFACT_PATHS.profile,
@@ -44,6 +46,7 @@ const ALLOWED_CHANGED_PATHS = new Set([
   'test/contracts/exactTextApplyWithReceiptAdmission.contract.test.js',
   'test/contracts/exactTextApplyWithReceiptExecution.contract.test.js',
   'test/contracts/exactTextApplyWithReceiptCloseout.contract.test.js',
+  'test/contracts/exactTextApplyWithReceiptNextAdmission.contract.test.js',
   'test/contracts/exactTextApplyProductApplyReadinessReview.contract.test.js',
   'test/contracts/exactTextApplyProductStoragePrimitiveEvidence.contract.test.js',
   'test/contracts/exactTextApplyTestFixtureReceiptFile.contract.test.js',
@@ -152,13 +155,15 @@ function evaluateChangedScope(repoRoot) {
     .filter(Boolean);
 
   const changedBasenames = changedPaths.map((filePath) => path.basename(filePath));
-  const outsideAllowlist = changedBasenames.filter((basename) => !ALLOWED_CHANGED_BASENAMES.has(basename));
+  const outsideAllowlist = changedPaths.filter((filePath) => !ALLOWED_CHANGED_PATHS.has(filePath));
+  const outsideBasenameAllowlist = changedBasenames.filter((basename) => !ALLOWED_CHANGED_BASENAMES.has(basename));
   return {
     ok: outsideAllowlist.length === 0,
-    failReason: outsideAllowlist.length === 0 ? '' : 'OUT_OF_SCOPE_CHANGED_BASENAME',
+    failReason: outsideAllowlist.length === 0 ? '' : 'OUT_OF_SCOPE_CHANGED_PATH',
     changedPaths,
     changedBasenames,
     outsideAllowlist,
+    outsideBasenameAllowlist,
   };
 }
 

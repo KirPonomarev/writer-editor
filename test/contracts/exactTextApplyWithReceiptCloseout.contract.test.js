@@ -386,8 +386,11 @@ test('001X changed scope stays allowlisted and closeout module stays pure', () =
   const changedBasenames = changedBasenamesForCurrentContour();
   const allowlist = new Set([
     MODULE_BASENAME,
+    'exactTextApplyWithReceiptNextAdmission.mjs',
     'exactTextApplyWithReceiptCloseout.contract.test.js',
+    'exactTextApplyWithReceiptNextAdmission.contract.test.js',
     TASK_BASENAME,
+    'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_001Y.md',
     'revision-bridge-pre-stage-00-admission-guard-state.mjs',
     'exactTextApplyWithReceiptExecution.contract.test.js',
     'exactTextApplyWithReceiptAdmission.contract.test.js',
