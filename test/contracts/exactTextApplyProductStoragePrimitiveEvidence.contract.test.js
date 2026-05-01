@@ -606,6 +606,7 @@ test('001M change scope stays inside ownership and denylist primitives are read 
     'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_002A.md',
     'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_002B.md',
     'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_ADMISSION_002C.md',
+    'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_IMPLEMENTATION_002D.md',
       'exactTextApplyInternalWritePrototype.mjs',
       'exactTextApplyFixtureDurableReceiptPrototype.mjs',
       'exactTextApplyPrivateProductApplyReceiptAdmission.mjs',
@@ -618,6 +619,7 @@ test('001M change scope stays inside ownership and denylist primitives are read 
     'exactTextApplyWithReceiptPrivateContractBrief.mjs',
     'exactTextApplyWithReceiptPrivateContractShape.mjs',
     'exactTextApplyWithReceiptPrivatePortAdmission.mjs',
+    'exactTextApplyWithReceiptPrivatePortImplementation.mjs',
       'exactTextApplyTestOnlyStoragePrimitiveExecutionHarness.contract.test.js',
       'exactTextApplyTestOnlyProductShapedStorageDryRun.contract.test.js',
       'exactTextApplyProductApplyReadinessReview.contract.test.js',
@@ -634,6 +636,7 @@ test('001M change scope stays inside ownership and denylist primitives are read 
     'exactTextApplyWithReceiptPrivateContractBrief.contract.test.js',
     'exactTextApplyWithReceiptPrivateContractShape.contract.test.js',
     'exactTextApplyWithReceiptPrivatePortAdmission.contract.test.js',
+    'exactTextApplyWithReceiptPrivatePortImplementation.contract.test.js',
     ]);
     assert.equal(
       changedBasenames.some((basename) => laterContourBasenames.has(basename)),
