@@ -697,10 +697,12 @@ test('002B changed scope stays exact-path allowlisted and module stays pure', ()
     'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_002B.md',
     'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_ADMISSION_002C.md',
     'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_IMPLEMENTATION_002D.md',
+    'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_CLOSEOUT_AND_NEXT_CONTOUR_PERMISSION_002E.md',
     'scripts/ops/revision-bridge-pre-stage-00-admission-guard-state.mjs',
     'src/revisionBridge/exactTextApplyWithReceiptPrivateContractShape.mjs',
     'src/revisionBridge/exactTextApplyWithReceiptPrivatePortAdmission.mjs',
     'src/revisionBridge/exactTextApplyWithReceiptPrivatePortImplementation.mjs',
+    'src/revisionBridge/exactTextApplyWithReceiptPrivatePortCloseoutNextContourPermission.mjs',
     'test/contracts/exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
     'test/contracts/exactTextApplyInternalWritePrototype.contract.test.js',
     'test/contracts/exactTextApplyPrivateProductApplyReceipt.contract.test.js',
@@ -720,11 +722,13 @@ test('002B changed scope stays exact-path allowlisted and module stays pure', ()
     'test/contracts/exactTextApplyWithReceiptPrivateContractShape.contract.test.js',
     'test/contracts/exactTextApplyWithReceiptPrivatePortAdmission.contract.test.js',
     'test/contracts/exactTextApplyWithReceiptPrivatePortImplementation.contract.test.js',
+    'test/contracts/exactTextApplyWithReceiptPrivatePortCloseoutNextContourPermission.contract.test.js',
   ]);
   const allowlist = new Set([
     MODULE_BASENAME,
     'exactTextApplyWithReceiptPrivatePortAdmission.mjs',
     'exactTextApplyWithReceiptPrivatePortImplementation.mjs',
+    'exactTextApplyWithReceiptPrivatePortCloseoutNextContourPermission.mjs',
     'exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
     'exactTextApplyInternalWritePrototype.contract.test.js',
     'exactTextApplyPrivateProductApplyReceipt.contract.test.js',
@@ -744,9 +748,11 @@ test('002B changed scope stays exact-path allowlisted and module stays pure', ()
     'exactTextApplyWithReceiptPrivateContractShape.contract.test.js',
     'exactTextApplyWithReceiptPrivatePortAdmission.contract.test.js',
     'exactTextApplyWithReceiptPrivatePortImplementation.contract.test.js',
+    'exactTextApplyWithReceiptPrivatePortCloseoutNextContourPermission.contract.test.js',
     TASK_BASENAME,
     'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_ADMISSION_002C.md',
     'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_IMPLEMENTATION_002D.md',
+    'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_CLOSEOUT_AND_NEXT_CONTOUR_PERMISSION_002E.md',
     'revision-bridge-pre-stage-00-admission-guard-state.mjs',
   ]);
   const denylist = new Set([
