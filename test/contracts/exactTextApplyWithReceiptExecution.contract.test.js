@@ -544,8 +544,11 @@ test('001W changed scope stays allowlisted and execution module stays private-po
   const changedBasenames = changedBasenamesForCurrentContour();
   const allowlist = new Set([
     MODULE_BASENAME,
+    'exactTextApplyWithReceiptCloseout.mjs',
     'exactTextApplyWithReceiptExecution.contract.test.js',
+    'exactTextApplyWithReceiptCloseout.contract.test.js',
     TASK_BASENAME,
+    'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_CLOSEOUT_001X.md',
     'revision-bridge-pre-stage-00-admission-guard-state.mjs',
     'exactTextApplyWithReceiptAdmission.contract.test.js',
     'exactTextApplyPrivateProductApplyReceipt.contract.test.js',
