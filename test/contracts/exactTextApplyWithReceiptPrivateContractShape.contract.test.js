@@ -695,8 +695,10 @@ test('002B changed scope stays exact-path allowlisted and module stays pure', ()
   const changedBasenames = changedBasenamesForCurrentContour();
   const allowedPaths = new Set([
     'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_002B.md',
+    'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_ADMISSION_002C.md',
     'scripts/ops/revision-bridge-pre-stage-00-admission-guard-state.mjs',
     'src/revisionBridge/exactTextApplyWithReceiptPrivateContractShape.mjs',
+    'src/revisionBridge/exactTextApplyWithReceiptPrivatePortAdmission.mjs',
     'test/contracts/exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
     'test/contracts/exactTextApplyInternalWritePrototype.contract.test.js',
     'test/contracts/exactTextApplyPrivateProductApplyReceipt.contract.test.js',
@@ -714,9 +716,11 @@ test('002B changed scope stays exact-path allowlisted and module stays pure', ()
     'test/contracts/exactTextApplyWithReceiptNextContourAdmission.contract.test.js',
     'test/contracts/exactTextApplyWithReceiptPrivateContractBrief.contract.test.js',
     'test/contracts/exactTextApplyWithReceiptPrivateContractShape.contract.test.js',
+    'test/contracts/exactTextApplyWithReceiptPrivatePortAdmission.contract.test.js',
   ]);
   const allowlist = new Set([
     MODULE_BASENAME,
+    'exactTextApplyWithReceiptPrivatePortAdmission.mjs',
     'exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
     'exactTextApplyInternalWritePrototype.contract.test.js',
     'exactTextApplyPrivateProductApplyReceipt.contract.test.js',
@@ -734,7 +738,9 @@ test('002B changed scope stays exact-path allowlisted and module stays pure', ()
     'exactTextApplyWithReceiptNextContourAdmission.contract.test.js',
     'exactTextApplyWithReceiptPrivateContractBrief.contract.test.js',
     'exactTextApplyWithReceiptPrivateContractShape.contract.test.js',
+    'exactTextApplyWithReceiptPrivatePortAdmission.contract.test.js',
     TASK_BASENAME,
+    'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_ADMISSION_002C.md',
     'revision-bridge-pre-stage-00-admission-guard-state.mjs',
   ]);
   const denylist = new Set([
