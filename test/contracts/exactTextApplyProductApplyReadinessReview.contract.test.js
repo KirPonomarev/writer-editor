@@ -473,10 +473,13 @@ test('001P changed scope stays allowlisted and production kernel does not import
   const changedBasenames = changedBasenamesForCurrentContour();
   const allowlist = new Set([
     'reviewIrKernel.mjs',
+    'exactTextApplyInternalWritePrototype.mjs',
     'exactTextApplyProductApplyReadinessReview.contract.test.js',
+    'exactTextApplyInternalWritePrototype.contract.test.js',
     'exactTextApplyProductApplyAdmissionGate.contract.test.js',
     'EXACT_TEXT_APPLY_PRODUCT_APPLY_READINESS_REVIEW_001P.md',
     'EXACT_TEXT_APPLY_PRODUCT_APPLY_ADMISSION_GATE_001Q.md',
+    'EXACT_TEXT_APPLY_INTERNAL_WRITE_PATH_PROTOTYPE_001R.md',
     'exactTextApplyTestOnlyProductShapedStorageDryRun.contract.test.js',
     'exactTextApplyTestOnlyStoragePrimitiveExecutionHarness.contract.test.js',
     'exactTextApplyProductStoragePrimitiveEvidence.contract.test.js',

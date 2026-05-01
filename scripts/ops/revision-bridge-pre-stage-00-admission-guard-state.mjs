@@ -15,7 +15,9 @@ const ARTIFACT_PATHS = {
 const ALLOWED_CHANGED_PATHS = new Set([
   'docs/tasks/REVISION_BRIDGE_PRE_STAGE_00_ADMISSION_GUARD_001.md',
   'docs/tasks/EXACT_TEXT_APPLY_PRODUCT_APPLY_ADMISSION_GATE_001Q.md',
+  'docs/tasks/EXACT_TEXT_APPLY_INTERNAL_WRITE_PATH_PROTOTYPE_001R.md',
   'src/revisionBridge/reviewIrKernel.mjs',
+  'src/revisionBridge/exactTextApplyInternalWritePrototype.mjs',
   ARTIFACT_PATHS.layerTable,
   ARTIFACT_PATHS.modeTable,
   ARTIFACT_PATHS.profile,
@@ -23,6 +25,7 @@ const ALLOWED_CHANGED_PATHS = new Set([
   'scripts/ops/revision-bridge-pre-stage-00-admission-guard-state.mjs',
   'test/contracts/revision-bridge-admission-guard.contract.test.js',
   'test/contracts/exactTextApplyProductApplyAdmissionGate.contract.test.js',
+  'test/contracts/exactTextApplyInternalWritePrototype.contract.test.js',
   'test/contracts/exactTextApplyProductApplyReadinessReview.contract.test.js',
   'test/contracts/exactTextApplyProductStoragePrimitiveEvidence.contract.test.js',
   'test/contracts/exactTextApplyTestFixtureReceiptFile.contract.test.js',
