@@ -5,16 +5,21 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const { pathToFileURL } = require('node:url');
 
-const MODULE_BASENAME = 'exactTextApplyWithReceiptPrivateContractBrief.mjs';
+const MODULE_BASENAME = 'exactTextApplyWithReceiptPrivateContractShape.mjs';
+const SOURCE_002A_MODULE_BASENAME = 'exactTextApplyWithReceiptPrivateContractBrief.mjs';
 const SOURCE_001Z_MODULE_BASENAME = 'exactTextApplyWithReceiptNextContourAdmission.mjs';
 const SOURCE_001Y_MODULE_BASENAME = 'exactTextApplyWithReceiptNextAdmission.mjs';
-const TASK_BASENAME = 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_002A.md';
-const SOURCE_001Z_TASK_BASENAME = 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_001Z.md';
+const TASK_BASENAME = 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_002B.md';
+const SOURCE_002A_TASK_BASENAME = 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_002A.md';
 const KERNEL_BASENAME = 'reviewIrKernel.mjs';
-const BINDING_HEAD_SHA = 'a85c234ae8d2991a8b387cb76a502032789c89cc';
+const BINDING_HEAD_SHA = 'eee8e4df010ba4f6c84fd9f471228f0c1720fc08';
 
 async function loadModule() {
   return import(pathToFileURL(path.join(process.cwd(), 'src', 'revisionBridge', MODULE_BASENAME)).href);
+}
+
+async function load002AModule() {
+  return import(pathToFileURL(path.join(process.cwd(), 'src', 'revisionBridge', SOURCE_002A_MODULE_BASENAME)).href);
 }
 
 async function load001ZModule() {
@@ -372,7 +377,7 @@ function ownerPacket002A(overrides = {}) {
   return {
     packetKind: 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_OWNER_PACKET_002A',
     targetContour: 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_002B',
-    bindingHeadSha: BINDING_HEAD_SHA,
+    bindingHeadSha: 'a85c234ae8d2991a8b387cb76a502032789c89cc',
     ownerApprovedContractBrief: true,
     ownerUnderstandsContractBriefOnly: true,
     ownerUnderstandsNoPortImplementation: true,
@@ -389,10 +394,34 @@ function ownerPacket002A(overrides = {}) {
   };
 }
 
+function ownerPacket002B(overrides = {}) {
+  return {
+    packetKind: 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_OWNER_PACKET_002B',
+    targetContour: 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_ADMISSION_002C',
+    bindingHeadSha: BINDING_HEAD_SHA,
+    ownerApprovedContractShape: true,
+    ownerUnderstandsSchemaContractOnly: true,
+    ownerUnderstandsOwnerPacketNecessaryButInsufficient: true,
+    ownerUnderstandsNoPortImplementation: true,
+    ownerUnderstandsNoStoragePort: true,
+    ownerUnderstandsNoWritePort: true,
+    ownerUnderstandsNoPublicAdapterImplementation: true,
+    ownerUnderstandsNoRuntimeWiring: true,
+    ownerUnderstandsNoApplyExecution: true,
+    ownerUnderstandsNoApplyTxn: true,
+    ownerUnderstandsNoRecovery: true,
+    ownerUnderstandsNoUserProjectPath: true,
+    ownerUnderstandsNoReleaseClaim: true,
+    ownerPacketAuthorizesOnlyContractShape: true,
+    ...overrides,
+  };
+}
+
 async function acceptedInput(patch = {}) {
   const { canonicalHash } = await loadKernel();
   const { runExactTextApplyWithReceiptNextAdmission } = await load001YModule();
   const { runExactTextApplyWithReceiptNextContourAdmission } = await load001ZModule();
+  const { runExactTextApplyWithReceiptPrivateContractBrief } = await load002AModule();
   const source001UResult = accepted001UResult(canonicalHash);
   const source001VResult = accepted001VResult(canonicalHash, source001UResult);
   const source001WResult = accepted001WResult(canonicalHash, source001VResult, source001UResult);
@@ -416,7 +445,7 @@ async function acceptedInput(patch = {}) {
     source001UResult,
     ownerAdmissionPacket001Z: ownerPacket001Z(),
   });
-  return {
+  const source002AResult = runExactTextApplyWithReceiptPrivateContractBrief({
     source001ZResult,
     source001ZResultHash: source001ZResult.canonicalHash,
     source001ZDecisionHash: source001ZResult.decisions[0].canonicalHash,
@@ -427,33 +456,68 @@ async function acceptedInput(patch = {}) {
     source001UResult,
     ownerAdmissionPacket001Z: ownerPacket001Z(),
     ownerBriefPacket002A: ownerPacket002A(),
+  });
+  return {
+    source002AResult,
+    source002AResultHash: source002AResult.canonicalHash,
+    source002ADecisionHash: source002AResult.decisions[0].canonicalHash,
+    source001ZResult,
+    source001YResult,
+    source001XResult,
+    source001WResult,
+    source001VResult,
+    source001UResult,
+    ownerAdmissionPacket001Z: ownerPacket001Z(),
+    ownerBriefPacket002A: ownerPacket002A(),
+    ownerShapePacket002B: ownerPacket002B(),
     ...patch,
   };
 }
 
-test('002A emits contract brief only after accepted 001Z proof and inherited chain revalidation', async () => {
-  const { runExactTextApplyWithReceiptPrivateContractBrief } = await loadModule();
+test('002B emits deterministic contract shape only after accepted 002A and inherited chain revalidation', async () => {
+  const { runExactTextApplyWithReceiptPrivateContractShape } = await loadModule();
   const { canonicalHash } = await loadKernel();
   const input = await acceptedInput();
-  const result = runExactTextApplyWithReceiptPrivateContractBrief(input);
+  const result = runExactTextApplyWithReceiptPrivateContractShape(input);
 
-  assert.equal(result.resultKind, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_RESULT_002A');
-  assert.equal(result.outputDecision, 'OWNER_MAY_OPEN_PRIVATE_CONTRACT_SHAPE_002B_NO_PUBLIC_RUNTIME_ADMITTED');
-  assert.equal(result.nextContourRecommendation, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_002B');
-  assert.equal(result.ownerMayOpen002B, true);
-  assert.equal(result.source001ZAccepted, true);
-  assert.equal(result.contractBrief.briefKind, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_CONTRACT_BRIEF_V1_002A');
-  assert.equal(result.contractBrief.noPortImplementation, true);
-  assert.equal(result.contractBrief.requiredProjectIdTest, true);
-  assert.equal(result.contractBrief.requiredExactTextGuard, true);
-  assert.equal(result.contractBrief.requiredReceiptSourceHashes, true);
-  assert.equal(result.contractBrief.receiptIsNotRecovery, true);
-  assert.equal(result.contractBrief.atomicSingleFileWriteIsNotApplyTxn, true);
-  assert.equal(result.failureContract.zeroWriteEffects, true);
-  assert.equal(result.failureContract.noReceiptOnBlockedPlan, true);
-  assert.equal(result.exitPacket.contractFieldsCount > 20, true);
-  assert.equal(result.exitPacket.inheritedChainVerified, true);
+  assert.equal(result.resultKind, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_RESULT_002B');
+  assert.equal(result.outputDecision, 'OWNER_MAY_OPEN_PRIVATE_PORT_ADMISSION_002C_NO_PUBLIC_RUNTIME_ADMITTED');
+  assert.equal(result.nextContourRecommendation, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_ADMISSION_002C');
+  assert.equal(result.ownerMayOpen002C, true);
+  assert.equal(result.ownerShapeAccepted, true);
+  assert.equal(result.source002AAccepted, true);
+  assert.equal(result.writeEffectsCount, 0);
   assert.equal(result.exitPacket.writeEffectsCount, 0);
+  assert.equal(result.exitPacket.inheritedChainVerified, true);
+  assert.equal(result.exitPacket.source002ARehashed, true);
+  assert.equal(result.contractShape.shapeKind, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_CONTRACT_SHAPE_V1_002B');
+  assert.equal(result.contractShape.ownerPacketNecessaryButInsufficient, true);
+  assert.equal(result.contractShape.writeEffectsCount, 0);
+  assert.equal(result.contractShape.requestSchema.projectIdRequired, true);
+  assert.equal(result.contractShape.requestSchema.sourceResultHashRequired, true);
+  assert.equal(result.contractShape.requestSchema.exactBeforeTextRequired, true);
+  assert.equal(result.contractShape.requestSchema.exactAfterTextRequired, true);
+  assert.equal(result.contractShape.requestSchema.receiptNonceRequired, true);
+  assert.equal(result.contractShape.requestSchema.userProjectPathAccepted, false);
+  assert.equal(result.contractShape.preconditionSchema.projectIdTestRequired, true);
+  assert.equal(result.contractShape.preconditionSchema.exactTextGuardRequired, true);
+  assert.equal(result.contractShape.preconditionSchema.noStructuralScopeTestRequired, true);
+  assert.equal(result.contractShape.preconditionSchema.inheritedChainRevalidationRequired, true);
+  assert.equal(result.contractShape.futurePortCapabilitySchema.capabilityDescriptorOnly, true);
+  assert.equal(result.contractShape.futurePortCapabilitySchema.canResolvePrivateRootRequired, true);
+  assert.equal(result.contractShape.futurePortCapabilitySchema.canAtomicWriteSceneRequired, true);
+  assert.equal(result.contractShape.futurePortCapabilitySchema.canReportFailureWithoutPartialSuccessRequired, true);
+  assert.equal(result.contractShape.futurePortCapabilitySchema.portImplementationAdmitted, false);
+  assert.equal(result.contractShape.futurePortCapabilitySchema.applyExactTextWithReceipt, 'FUTURE_CAPABILITY_DESCRIPTOR_ONLY');
+  assert.equal(result.contractShape.successReceiptSchema.receiptKindRequired, true);
+  assert.equal(result.contractShape.successReceiptSchema.source002BResultHashRequired, true);
+  assert.equal(result.contractShape.successReceiptSchema.atomicWriteObservationHashRequired, true);
+  assert.equal(result.contractShape.successReceiptSchema.receiptCanonicalHashRequired, true);
+  assert.equal(result.contractShape.failureResultSchema.noReceiptOnBlockedPlan, true);
+  assert.equal(result.contractShape.blockedReasonCodeSchema.sourceResultHashMismatchCodeRequired, true);
+  assert.equal(result.contractShape.blockedReasonCodeSchema.pathTraversalCodeRequired, true);
+  assert.equal(result.contractShape.blockedReasonCodeSchema.targetCollisionCodeRequired, true);
+  assert.equal(result.contractShape.blockedReasonCodeSchema.deterministicOrderingRequired, true);
   assert.equal(result.publicRuntimeAdmitted, false);
   assert.equal(result.publicAdapterImplementationAdmitted, false);
   assert.equal(result.runtimeWiringAdmitted, false);
@@ -462,132 +526,144 @@ test('002A emits contract brief only after accepted 001Z proof and inherited cha
   assert.equal(result.recoveryClaimed, false);
   assert.equal(result.userProjectMutated, false);
   assert.deepEqual(result.blockedReasons, []);
-  assert.equal(result.decisions[0].decisionKind, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_DECISION_002A');
-  assert.equal(result.decisions[0].noPortImplementation, true);
+  assert.equal(result.decisions[0].decisionKind, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_DECISION_002B');
   assert.equal(result.decisions[0].writeEffectsCount, 0);
+  assert.equal(result.contractShape.canonicalHash, canonicalHash(withoutHash(result.contractShape)));
   assert.equal(result.canonicalHash, canonicalHash(withoutHash(result)));
 });
 
-test('002A blocks missing blocked mismatched synthetic or contaminated 001Z proof', async () => {
-  const { runExactTextApplyWithReceiptPrivateContractBrief, EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_REASON_CODES } = await loadModule();
+test('002B blocks source hash mismatches and tampered 002A contract artifacts', async () => {
+  const { runExactTextApplyWithReceiptPrivateContractShape, EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_REASON_CODES } = await loadModule();
   const { canonicalHash } = await loadKernel();
   const base = await acceptedInput();
-  const blocked001Z = withCanonicalHash(canonicalHash, {
-    ...withoutHash(base.source001ZResult),
-    outputDecision: 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_001Z_BLOCKED',
+  const tamperedBrief = withCanonicalHash(canonicalHash, {
+    ...withoutHash(base.source002AResult.contractBrief),
+    requiredExactTextGuard: false,
+  });
+  const tamperedBriefResult = withCanonicalHash(canonicalHash, {
+    ...withoutHash(base.source002AResult),
+    contractBrief: tamperedBrief,
+    contractBriefHash: tamperedBrief.canonicalHash,
+  });
+  const tamperedFailure = withCanonicalHash(canonicalHash, {
+    ...withoutHash(base.source002AResult.failureContract),
+    noReceiptOnBlockedPlan: false,
+  });
+  const tamperedFailureResult = withCanonicalHash(canonicalHash, {
+    ...withoutHash(base.source002AResult),
+    failureContract: tamperedFailure,
+    failureContractHash: tamperedFailure.canonicalHash,
+  });
+  const cases = [
+    { patch: { source002AResult: null }, code: 'SOURCE_002A_RESULT_REQUIRED' },
+    { patch: { source002AResultHash: canonicalHash({ wrong: '002a-result' }) }, code: 'SOURCE_002A_RESULT_MISMATCH' },
+    { patch: { source002ADecisionHash: canonicalHash({ wrong: '002a-decision' }) }, code: 'SOURCE_002A_DECISION_MISMATCH' },
+    { patch: { source002AResult: tamperedBriefResult, source002AResultHash: tamperedBriefResult.canonicalHash }, code: 'INHERITED_CHAIN_REVALIDATION_FAILED' },
+    { patch: { source002AResult: tamperedFailureResult, source002AResultHash: tamperedFailureResult.canonicalHash }, code: 'INHERITED_CHAIN_REVALIDATION_FAILED' },
+  ];
+
+  for (const item of cases) {
+    const result = runExactTextApplyWithReceiptPrivateContractShape({ ...base, ...item.patch });
+    assert.equal(result.outputDecision, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_002B_BLOCKED');
+    assert.equal(result.ownerShapeAccepted, false);
+    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_REASON_CODES[item.code]), true, item.code);
+  }
+});
+
+test('002B blocks synthetic 002A and missing inherited chain despite owner packet', async () => {
+  const { runExactTextApplyWithReceiptPrivateContractShape, EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_REASON_CODES } = await loadModule();
+  const { canonicalHash } = await loadKernel();
+  const base = await acceptedInput();
+  const synthetic002A = withCanonicalHash(canonicalHash, {
+    ...withoutHash(base.source002AResult),
+    source001ZResultHash: canonicalHash({ synthetic: '001z-result' }),
+  });
+  const blocked002A = withCanonicalHash(canonicalHash, {
+    ...withoutHash(base.source002AResult),
+    outputDecision: 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_002A_BLOCKED',
+    ownerMayOpen002B: false,
     blockedReasons: ['BLOCKED'],
-    ownerMayOpen002A: false,
     decisions: [],
   });
-  const synthetic001Z = withCanonicalHash(canonicalHash, {
-    ...withoutHash(base.source001ZResult),
-    source001YResultHash: canonicalHash({ synthetic: '001y' }),
-  });
-  const contaminated001Z = withCanonicalHash(canonicalHash, {
-    ...withoutHash(base.source001ZResult),
-    publicAdapterImplementationAdmitted: true,
-  });
   const cases = [
-    { patch: { source001ZResult: null }, code: 'SOURCE_001Z_RESULT_REQUIRED' },
-    { patch: { source001ZResultHash: canonicalHash({ wrong: '001z-result' }) }, code: 'SOURCE_001Z_RESULT_MISMATCH' },
-    { patch: { source001ZDecisionHash: canonicalHash({ wrong: '001z-decision' }) }, code: 'SOURCE_001Z_DECISION_MISMATCH' },
-    { patch: { source001ZResult: blocked001Z, source001ZResultHash: blocked001Z.canonicalHash, source001ZDecisionHash: '' }, code: 'SOURCE_001Z_BLOCKED' },
-    { patch: { source001ZResult: contaminated001Z, source001ZResultHash: contaminated001Z.canonicalHash }, code: 'SOURCE_001Z_RUNTIME_FLAG_FORBIDDEN' },
-    { patch: { source001ZResult: synthetic001Z, source001ZResultHash: synthetic001Z.canonicalHash }, code: 'INHERITED_CHAIN_REVALIDATION_FAILED' },
+    { patch: { source002AResult: synthetic002A, source002AResultHash: synthetic002A.canonicalHash }, code: 'INHERITED_CHAIN_REVALIDATION_FAILED' },
+    { patch: { source001ZResult: null }, code: 'INHERITED_CHAIN_REVALIDATION_FAILED' },
     { patch: { source001YResult: null }, code: 'INHERITED_CHAIN_REVALIDATION_FAILED' },
+    { patch: { source002AResult: blocked002A, source002AResultHash: blocked002A.canonicalHash, source002ADecisionHash: '' }, code: 'SOURCE_002A_BLOCKED' },
   ];
 
   for (const item of cases) {
-    const result = runExactTextApplyWithReceiptPrivateContractBrief({ ...base, ...item.patch });
-    assert.equal(result.outputDecision, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_002A_BLOCKED');
-    assert.equal(result.ownerMayOpen002B, false);
-    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_REASON_CODES[item.code]), true, item.code);
+    const result = runExactTextApplyWithReceiptPrivateContractShape({ ...base, ...item.patch });
+    assert.equal(result.ownerShapeAccepted, false);
+    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_REASON_CODES[item.code]), true, item.code);
   }
 });
 
-test('002A owner packet is necessary but cannot authorize forbidden layers', async () => {
-  const { runExactTextApplyWithReceiptPrivateContractBrief, EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_REASON_CODES } = await loadModule();
+test('002B owner packet is necessary but cannot authorize forbidden overrides', async () => {
+  const { runExactTextApplyWithReceiptPrivateContractShape, EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_REASON_CODES } = await loadModule();
+  const { canonicalHash } = await loadKernel();
   const base = await acceptedInput();
   const cases = [
-    { packet: null, code: 'OWNER_PACKET_REQUIRED' },
-    { packet: ownerPacket002A({ packetKind: 'WRONG_PACKET' }), code: 'OWNER_PACKET_INVALID' },
-    { packet: ownerPacket002A({ targetContour: 'WRONG_TARGET' }), code: 'OWNER_PACKET_TARGET_MISMATCH' },
-    { packet: ownerPacket002A({ bindingHeadSha: 'wrong-sha' }), code: 'OWNER_PACKET_BINDING_MISMATCH' },
-    { packet: ownerPacket002A({ ownerApprovedContractBrief: false }), code: 'OWNER_CONTRACT_POLICY_MISSING' },
-    { packet: ownerPacket002A({ ownerUnderstandsNoPortImplementation: false }), code: 'OWNER_CONTRACT_POLICY_MISSING' },
-    { packet: ownerPacket002A({ portImplemented: true }), code: 'PORT_IMPLEMENTATION_FORBIDDEN' },
-    { packet: ownerPacket002A({ storagePortImplemented: true }), code: 'PORT_IMPLEMENTATION_FORBIDDEN' },
-    { packet: ownerPacket002A({ writePortImplemented: true }), code: 'PORT_IMPLEMENTATION_FORBIDDEN' },
-    { packet: ownerPacket002A({ publicRuntimeAdmitted: true }), code: 'PRODUCT_RUNTIME_FORBIDDEN' },
-    { packet: ownerPacket002A({ publicAdapterImplementationAdmitted: true }), code: 'PUBLIC_ADAPTER_IMPLEMENTATION_FORBIDDEN' },
-    { packet: ownerPacket002A({ runtimeWiringAdmitted: true }), code: 'RUNTIME_WIRING_FORBIDDEN' },
-    { packet: ownerPacket002A({ applyExecutionImplemented: true }), code: 'APPLY_EXECUTION_FORBIDDEN' },
-    { packet: ownerPacket002A({ commandSurfaceClaimed: true }), code: 'PUBLIC_COMMAND_SURFACE_FORBIDDEN' },
-    { packet: ownerPacket002A({ uiChanged: true }), code: 'UI_DOCX_NETWORK_DEPENDENCY_FORBIDDEN' },
-    { packet: ownerPacket002A({ docxImportClaimed: true }), code: 'UI_DOCX_NETWORK_DEPENDENCY_FORBIDDEN' },
-    { packet: ownerPacket002A({ networkUsed: true }), code: 'UI_DOCX_NETWORK_DEPENDENCY_FORBIDDEN' },
-    { packet: ownerPacket002A({ dependencyChanged: true }), code: 'UI_DOCX_NETWORK_DEPENDENCY_FORBIDDEN' },
-    { packet: ownerPacket002A({ applyTxnImplemented: true }), code: 'APPLYTXN_RECOVERY_RELEASE_FORBIDDEN' },
-    { packet: ownerPacket002A({ recoveryClaimed: true }), code: 'APPLYTXN_RECOVERY_RELEASE_FORBIDDEN' },
-    { packet: ownerPacket002A({ releaseClaimed: true }), code: 'APPLYTXN_RECOVERY_RELEASE_FORBIDDEN' },
-    { packet: ownerPacket002A({ userProjectMutated: true }), code: 'USER_PROJECT_MUTATION_FORBIDDEN' },
+    { patch: { ownerShapePacket002B: null }, code: 'OWNER_PACKET_REQUIRED' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ packetKind: 'WRONG_PACKET' }) }, code: 'OWNER_PACKET_INVALID' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ targetContour: 'WRONG_TARGET' }) }, code: 'OWNER_PACKET_TARGET_MISMATCH' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ bindingHeadSha: 'wrong-sha' }) }, code: 'OWNER_PACKET_BINDING_MISMATCH' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ ownerApprovedContractShape: false }) }, code: 'OWNER_SHAPE_POLICY_MISSING' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ lowerDeliveryRecordClosureClaimed: true }) }, code: 'OWNER_PACKET_UNKNOWN_FIELD_FORBIDDEN' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ noPortImplementation: false }) }, code: 'PORT_IMPLEMENTATION_FORBIDDEN' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ publicRuntimeAdmitted: true }) }, code: 'PRODUCT_RUNTIME_FORBIDDEN' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ publicAdapterImplementationAdmitted: true }) }, code: 'PUBLIC_ADAPTER_IMPLEMENTATION_FORBIDDEN' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ runtimeWiringAdmitted: true }) }, code: 'RUNTIME_WIRING_FORBIDDEN' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ applyExecutionImplemented: true }) }, code: 'APPLY_EXECUTION_FORBIDDEN' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ applyTxnImplemented: true }) }, code: 'APPLYTXN_RECOVERY_RELEASE_FORBIDDEN' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ userProjectMutated: true }) }, code: 'USER_PROJECT_MUTATION_FORBIDDEN' },
+    { patch: { source002AResultHash: canonicalHash({ wrong: 'owner-is-insufficient' }) }, code: 'SOURCE_002A_RESULT_MISMATCH' },
   ];
 
   for (const item of cases) {
-    const result = runExactTextApplyWithReceiptPrivateContractBrief({
-      ...base,
-      ownerBriefPacket002A: item.packet,
-    });
-    assert.equal(result.ownerMayOpen002B, false);
-    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_REASON_CODES[item.code]), true, item.code);
+    const result = runExactTextApplyWithReceiptPrivateContractShape({ ...base, ...item.patch });
+    assert.equal(result.ownerShapeAccepted, false);
+    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_REASON_CODES[item.code]), true, item.code);
   }
 });
 
-test('002A contract brief blocks missing guards receipt source gaps and port implementation claims', async () => {
-  const { runExactTextApplyWithReceiptPrivateContractBrief, EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_REASON_CODES } = await loadModule();
+test('002B blocks missing schema fields unknown overrides non-object overrides callables and user project paths', async () => {
+  const { runExactTextApplyWithReceiptPrivateContractShape, EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_REASON_CODES } = await loadModule();
   const base = await acceptedInput();
   const cases = [
-    { contractBriefOverrides: { requiredProjectIdTest: false }, code: 'CONTRACT_FIELD_MISSING' },
-    { contractBriefOverrides: { requiredSceneIdTest: false }, code: 'CONTRACT_FIELD_MISSING' },
-    { contractBriefOverrides: { requiredBaselineHashTest: false }, code: 'CONTRACT_FIELD_MISSING' },
-    { contractBriefOverrides: { requiredClosedSessionBlocker: false }, code: 'CONTRACT_FIELD_MISSING' },
-    { contractBriefOverrides: { requiredExactTextGuard: false }, code: 'CONTRACT_FIELD_MISSING' },
-    { contractBriefOverrides: { requiredBlockVersionHashTest: false }, code: 'CONTRACT_FIELD_MISSING' },
-    { contractBriefOverrides: { requiredSourceResultHash: false }, code: 'CONTRACT_FIELD_MISSING' },
-    { contractBriefOverrides: { requiredReceiptSourceHashes: false }, code: 'CONTRACT_FIELD_MISSING' },
-    { contractBriefOverrides: { receiptIsNotRecovery: false }, code: 'CONTRACT_FIELD_MISSING' },
-    { contractBriefOverrides: { atomicSingleFileWriteIsNotApplyTxn: false }, code: 'CONTRACT_FIELD_MISSING' },
-    { contractBriefOverrides: { noReceiptOnBlockedPlan: false }, code: 'CONTRACT_FIELD_MISSING' },
-    { contractBriefOverrides: { blockedReasonCodesRequired: false }, code: 'CONTRACT_FIELD_MISSING' },
-    { contractBriefOverrides: { noPortImplementation: false }, code: 'PORT_IMPLEMENTATION_FORBIDDEN' },
-    { contractBriefOverrides: { noStoragePort: false }, code: 'PORT_IMPLEMENTATION_FORBIDDEN' },
-    { contractBriefOverrides: { noWritePort: false }, code: 'PORT_IMPLEMENTATION_FORBIDDEN' },
-    { contractBriefOverrides: { lowerDeliveryRecordClosureClaimed: true }, code: 'CONTRACT_UNKNOWN_FIELD_FORBIDDEN' },
-    { contractBriefOverrides: { writeEvidenceClaimed: true }, code: 'CONTRACT_UNKNOWN_FIELD_FORBIDDEN' },
-    { contractBriefOverrides: ['lowerDeliveryRecordClosureClaimed'], code: 'CONTRACT_UNKNOWN_FIELD_FORBIDDEN' },
-    { contractBriefOverrides: 'writeEvidenceClaimed', code: 'CONTRACT_UNKNOWN_FIELD_FORBIDDEN' },
-    { failureContractOverrides: { blockedReasonCodes: [] }, code: 'FAILURE_CONTRACT_FIELD_MISSING' },
-    { failureContractOverrides: { zeroWriteEffects: false }, code: 'FAILURE_CONTRACT_FIELD_MISSING' },
-    { failureContractOverrides: { noReceiptOnBlockedPlan: false }, code: 'FAILURE_CONTRACT_FIELD_MISSING' },
-    { failureContractOverrides: { noUserProjectMutation: false }, code: 'FAILURE_CONTRACT_FIELD_MISSING' },
-    { failureContractOverrides: { recoveryClaimed: true }, code: 'FAILURE_CONTRACT_UNKNOWN_FIELD_FORBIDDEN' },
-    { failureContractOverrides: ['recoveryClaimed'], code: 'FAILURE_CONTRACT_UNKNOWN_FIELD_FORBIDDEN' },
-    { failureContractOverrides: 'recoveryClaimed', code: 'FAILURE_CONTRACT_UNKNOWN_FIELD_FORBIDDEN' },
+    { patch: { contractShapeOverrides: { noWritePort: false } }, code: 'PORT_IMPLEMENTATION_FORBIDDEN' },
+    { patch: { requestSchemaOverrides: { projectIdRequired: false } }, code: 'SHAPE_SCHEMA_FIELD_MISSING' },
+    { patch: { preconditionSchemaOverrides: { inheritedChainRevalidationRequired: false } }, code: 'SHAPE_SCHEMA_FIELD_MISSING' },
+    { patch: { futurePortCapabilitySchemaOverrides: { capabilityDescriptorOnly: false } }, code: 'SHAPE_SCHEMA_FIELD_MISSING' },
+    { patch: { successReceiptSchemaOverrides: { receiptCanonicalHashRequired: false } }, code: 'SHAPE_SCHEMA_FIELD_MISSING' },
+    { patch: { failureResultSchemaOverrides: { noReceiptOnBlockedPlan: false } }, code: 'SHAPE_SCHEMA_FIELD_MISSING' },
+    { patch: { blockedReasonCodeSchemaOverrides: { deterministicOrderingRequired: false } }, code: 'SHAPE_SCHEMA_FIELD_MISSING' },
+    { patch: { contractShapeOverrides: { lowerDeliveryRecordClosureClaimed: true } }, code: 'SHAPE_UNKNOWN_FIELD_FORBIDDEN' },
+    { patch: { requestSchemaOverrides: { lowerDeliveryRecordClosureClaimed: true } }, code: 'NESTED_SCHEMA_UNKNOWN_FIELD_FORBIDDEN' },
+    { patch: { futurePortCapabilitySchemaOverrides: { writeEvidenceClaimed: true } }, code: 'NESTED_SCHEMA_UNKNOWN_FIELD_FORBIDDEN' },
+    { patch: { contractShapeOverrides: 'shape-override' }, code: 'SHAPE_OVERRIDE_NON_OBJECT_FORBIDDEN' },
+    { patch: { requestSchemaOverrides: ['projectIdRequired'] }, code: 'SHAPE_OVERRIDE_NON_OBJECT_FORBIDDEN' },
+    { patch: { futurePortCapabilitySchemaOverrides: { applyExactTextWithReceipt: () => null } }, code: 'CALLABLE_FIELD_FORBIDDEN' },
+    { patch: { requestSchemaOverrides: { userProjectPath: '/tmp/user-project' } }, code: 'USER_PROJECT_PATH_FORBIDDEN' },
+    { patch: { ownerShapePacket002B: ownerPacket002B({ projectPath: '/tmp/user-project' }) }, code: 'USER_PROJECT_PATH_FORBIDDEN' },
   ];
 
   for (const item of cases) {
-    const result = runExactTextApplyWithReceiptPrivateContractBrief({ ...base, ...item });
-    assert.equal(result.ownerMayOpen002B, false);
-    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_REASON_CODES[item.code]), true, item.code);
+    const result = runExactTextApplyWithReceiptPrivateContractShape({ ...base, ...item.patch });
+    assert.equal(result.ownerShapeAccepted, false);
+    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_REASON_CODES[item.code]), true, item.code);
   }
 });
 
-test('002A task record preserves contract brief boundary and lower delivery caveat', () => {
+test('002B task record preserves private shape boundary and no-write policy', () => {
   const taskText = sourceText('docs', 'tasks', TASK_BASENAME);
-  assert.match(taskText, /TASK_ID: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_002A/u);
-  assert.match(taskText, /CONTOUR_TYPE: PRIVATE_CONTRACT_BRIEF_ONLY/u);
-  assert.match(taskText, /PREVIOUS_CONTOUR: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_001Z/u);
-  assert.match(taskText, /NEXT_CONTOUR_IF_PASS: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_002B/u);
+  assert.match(taskText, /TASK_ID: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_002B/u);
+  assert.match(taskText, /CONTOUR_TYPE: PRIVATE_CONTRACT_SHAPE_ONLY/u);
+  assert.match(taskText, /PREVIOUS_CONTOUR: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_002A/u);
+  assert.match(taskText, /NEXT_CONTOUR_IF_PASS: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_ADMISSION_002C/u);
+  assert.match(taskText, /OWNER_PACKET_TARGET: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_ADMISSION_002C/u);
+  assert.match(taskText, /SUCCESS_DECISION: OWNER_MAY_OPEN_PRIVATE_PORT_ADMISSION_002C_NO_PUBLIC_RUNTIME_ADMITTED/u);
+  assert.match(taskText, /MODULE_CONTRACT: PURE_SCHEMA_CONTRACT_ONLY/u);
   assert.match(taskText, /NO_PORT_IMPLEMENTATION: true/u);
   assert.match(taskText, /NO_STORAGE_PORT: true/u);
   assert.match(taskText, /NO_WRITE_PORT: true/u);
@@ -597,19 +673,19 @@ test('002A task record preserves contract brief boundary and lower delivery cave
   assert.match(taskText, /APPLY_EXECUTION_IMPLEMENTED: false/u);
   assert.match(taskText, /APPLYTXN_IMPLEMENTED: false/u);
   assert.match(taskText, /RECOVERY_CLAIMED: false/u);
-  assert.match(taskText, /LOWER_DELIVERY_RECORD_CLOSURE_CLAIMED: false/u);
-  assert.match(taskText, /STATUS: DONE/u);
-  assert.match(taskText, /COMMIT_SHA: 48caf85c31726e11b77790585ca0bac351665aea/u);
-  assert.match(taskText, /PUSH_RESULT: pushed/u);
+  assert.match(taskText, /USER_PROJECT_PATH_ACCEPTED: false/u);
+  assert.match(taskText, /DELIVERY_POLICY: COMMIT_REQUIRED_PUSH_REQUIRED/u);
+  assert.match(taskText, /COMMIT_SHA: pending/u);
+  assert.match(taskText, /PUSH_RESULT: pending/u);
   assert.doesNotMatch(taskText, /release green|public apply|DOCX runtime|ApplyTxn implemented|recovery proven/iu);
 
-  const sourceTaskText = sourceText('docs', 'tasks', SOURCE_001Z_TASK_BASENAME);
+  const sourceTaskText = sourceText('docs', 'tasks', SOURCE_002A_TASK_BASENAME);
   assert.match(sourceTaskText, /STATUS: DONE/u);
-  assert.match(sourceTaskText, /COMMIT_SHA: ee79139a8d987f7e2d179fbcea0ebf37b23c8872/u);
+  assert.match(sourceTaskText, /COMMIT_SHA: 48caf85c31726e11b77790585ca0bac351665aea/u);
   assert.match(sourceTaskText, /PUSH_RESULT: pushed/u);
 });
 
-test('002A changed scope stays exact-path allowlisted and module stays pure', () => {
+test('002B changed scope stays exact-path allowlisted and module stays pure', () => {
   const changedPaths = [
     ...gitLines(['diff', '--name-only', 'HEAD']),
     ...gitLines(['diff', '--cached', '--name-only']),
@@ -617,10 +693,8 @@ test('002A changed scope stays exact-path allowlisted and module stays pure', ()
   ].sort();
   const changedBasenames = changedBasenamesForCurrentContour();
   const allowedPaths = new Set([
-    'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_002A.md',
     'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_002B.md',
     'scripts/ops/revision-bridge-pre-stage-00-admission-guard-state.mjs',
-    'src/revisionBridge/exactTextApplyWithReceiptPrivateContractBrief.mjs',
     'src/revisionBridge/exactTextApplyWithReceiptPrivateContractShape.mjs',
     'test/contracts/exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
     'test/contracts/exactTextApplyInternalWritePrototype.contract.test.js',
@@ -642,12 +716,6 @@ test('002A changed scope stays exact-path allowlisted and module stays pure', ()
   ]);
   const allowlist = new Set([
     MODULE_BASENAME,
-    'exactTextApplyWithReceiptPrivateContractBrief.contract.test.js',
-    TASK_BASENAME,
-    'exactTextApplyWithReceiptPrivateContractShape.mjs',
-    'exactTextApplyWithReceiptPrivateContractShape.contract.test.js',
-    'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_SHAPE_002B.md',
-    'revision-bridge-pre-stage-00-admission-guard-state.mjs',
     'exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
     'exactTextApplyInternalWritePrototype.contract.test.js',
     'exactTextApplyPrivateProductApplyReceipt.contract.test.js',
@@ -663,6 +731,10 @@ test('002A changed scope stays exact-path allowlisted and module stays pure', ()
     'exactTextApplyWithReceiptExecution.contract.test.js',
     'exactTextApplyWithReceiptNextAdmission.contract.test.js',
     'exactTextApplyWithReceiptNextContourAdmission.contract.test.js',
+    'exactTextApplyWithReceiptPrivateContractBrief.contract.test.js',
+    'exactTextApplyWithReceiptPrivateContractShape.contract.test.js',
+    TASK_BASENAME,
+    'revision-bridge-pre-stage-00-admission-guard-state.mjs',
   ]);
   const denylist = new Set([
     'main.js',
@@ -678,16 +750,21 @@ test('002A changed scope stays exact-path allowlisted and module stays pure', ()
     'projectCommands.mjs',
     'hostilePackageGate.mjs',
   ]);
-  assert.notDeepEqual(changedBasenames, [], '002A must have detectable changed scope');
+  assert.notDeepEqual(changedBasenames, [], '002B must have detectable changed scope');
   for (const changedPath of changedPaths) {
-    assert.equal(allowedPaths.has(changedPath), true, `unexpected 002A changed path: ${changedPath}`);
+    assert.equal(allowedPaths.has(changedPath), true, `unexpected 002B changed path: ${changedPath}`);
   }
   for (const basename of changedBasenames) {
-    assert.equal(allowlist.has(basename), true, `unexpected 002A changed basename: ${basename}`);
-    assert.equal(denylist.has(basename), false, `denylisted 002A changed basename: ${basename}`);
+    assert.equal(allowlist.has(basename), true, `unexpected 002B changed basename: ${basename}`);
+    assert.equal(denylist.has(basename), false, `denylisted 002B changed basename: ${basename}`);
   }
 
   const moduleText = sourceText('src', 'revisionBridge', MODULE_BASENAME);
+  const importLines = moduleText.split(/\r?\n/u).filter((line) => line.startsWith('import '));
+  assert.deepEqual(importLines, [
+    "import { canonicalHash } from './reviewIrKernel.mjs';",
+    "import { runExactTextApplyWithReceiptPrivateContractBrief } from './exactTextApplyWithReceiptPrivateContractBrief.mjs';",
+  ]);
   const forbiddenPatterns = [
     /from\s+['"]node:fs/u,
     /from\s+['"]node:path/u,
@@ -701,6 +778,6 @@ test('002A changed scope stays exact-path allowlisted and module stays pure', ()
     /from\s+['"][^'"]*(?:main|preload|editor|command-catalog|projectCommands|runtimeBridge)[^'"]*['"]/u,
   ];
   for (const pattern of forbiddenPatterns) {
-    assert.equal(pattern.test(moduleText), false, `forbidden 002A import pattern: ${pattern.source}`);
+    assert.equal(pattern.test(moduleText), false, `forbidden 002B import pattern: ${pattern.source}`);
   }
 });
