@@ -500,10 +500,13 @@ test('001T changed scope stays allowlisted and admission module stays pure', () 
   const allowlist = new Set([
     MODULE_BASENAME,
     'exactTextApplyPrivateProductApplyReceipt.mjs',
+    'exactTextApplyWithReceiptAdmission.mjs',
     'exactTextApplyPrivateProductApplyReceiptAdmission.contract.test.js',
     'exactTextApplyPrivateProductApplyReceipt.contract.test.js',
+    'exactTextApplyWithReceiptAdmission.contract.test.js',
     TASK_BASENAME,
     'PRIVATE_PRODUCT_APPLY_RECEIPT_IMPLEMENTATION_001U.md',
+    'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_ADMISSION_001V.md',
     'revision-bridge-pre-stage-00-admission-guard-state.mjs',
     'exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
     'exactTextApplyInternalWritePrototype.contract.test.js',
