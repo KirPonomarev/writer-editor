@@ -442,8 +442,11 @@ test('001R changed scope stays allowlisted and storage imports stay out of pure 
   const changedBasenames = changedBasenamesForCurrentContour();
   const allowlist = new Set([
     MODULE_BASENAME,
+    'exactTextApplyFixtureDurableReceiptPrototype.mjs',
     KERNEL_BASENAME,
     'exactTextApplyInternalWritePrototype.contract.test.js',
+    'exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
+    'EXACT_TEXT_APPLY_FIXTURE_DURABLE_RECEIPT_AND_FAILURE_RECEIPT_001S.md',
     'exactTextApplyProductApplyAdmissionGate.contract.test.js',
     'exactTextApplyProductApplyReadinessReview.contract.test.js',
     'exactTextApplyProductStoragePrimitiveEvidence.contract.test.js',
