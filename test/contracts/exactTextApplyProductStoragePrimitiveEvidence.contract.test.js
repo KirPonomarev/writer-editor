@@ -596,14 +596,17 @@ test('001M change scope stays inside ownership and denylist primitives are read 
       'EXACT_TEXT_APPLY_PRODUCT_APPLY_ADMISSION_GATE_001Q.md',
       'EXACT_TEXT_APPLY_INTERNAL_WRITE_PATH_PROTOTYPE_001R.md',
       'EXACT_TEXT_APPLY_FIXTURE_DURABLE_RECEIPT_AND_FAILURE_RECEIPT_001S.md',
+      'PRIVATE_PRODUCT_APPLY_RECEIPT_ADMISSION_001T.md',
       'exactTextApplyInternalWritePrototype.mjs',
       'exactTextApplyFixtureDurableReceiptPrototype.mjs',
+      'exactTextApplyPrivateProductApplyReceiptAdmission.mjs',
       'exactTextApplyTestOnlyStoragePrimitiveExecutionHarness.contract.test.js',
       'exactTextApplyTestOnlyProductShapedStorageDryRun.contract.test.js',
       'exactTextApplyProductApplyReadinessReview.contract.test.js',
       'exactTextApplyProductApplyAdmissionGate.contract.test.js',
       'exactTextApplyInternalWritePrototype.contract.test.js',
       'exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
+      'exactTextApplyPrivateProductApplyReceiptAdmission.contract.test.js',
     ]);
     assert.equal(
       changedBasenames.some((basename) => laterContourBasenames.has(basename)),
