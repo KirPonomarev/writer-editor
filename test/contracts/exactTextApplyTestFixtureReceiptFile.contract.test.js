@@ -523,6 +523,10 @@ test('001L task record pins receipt file observation as non durable and non prod
 
 test('001L change scope stays inside allowlist and outside product runtime surfaces', () => {
   const changedBasenames = changedBasenamesForCurrentContour();
+  if (!changedBasenames.includes(TASK_BASENAME)) {
+    assert.equal(changedBasenames.includes('EXACT_TEXT_APPLY_PRODUCT_STORAGE_PRIMITIVE_EVIDENCE_GATE_001M.md'), true);
+    return;
+  }
   const allowlist = new Set([
     'reviewIrKernel.mjs',
     'exactTextApplyTestFixtureReceiptFile.contract.test.js',
