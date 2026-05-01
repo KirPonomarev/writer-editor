@@ -524,7 +524,17 @@ test('001L task record pins receipt file observation as non durable and non prod
 test('001L change scope stays inside allowlist and outside product runtime surfaces', () => {
   const changedBasenames = changedBasenamesForCurrentContour();
   if (!changedBasenames.includes(TASK_BASENAME)) {
-    assert.equal(changedBasenames.includes('EXACT_TEXT_APPLY_PRODUCT_STORAGE_PRIMITIVE_EVIDENCE_GATE_001M.md'), true);
+    const laterContourBasenames = new Set([
+      'EXACT_TEXT_APPLY_PRODUCT_STORAGE_PRIMITIVE_EVIDENCE_GATE_001M.md',
+      'EXACT_TEXT_APPLY_TEST_ONLY_STORAGE_PRIMITIVE_EXECUTION_HARNESS_001N.md',
+      'exactTextApplyProductStoragePrimitiveEvidence.contract.test.js',
+      'exactTextApplyTestOnlyStoragePrimitiveExecutionHarness.contract.test.js',
+    ]);
+    assert.equal(
+      changedBasenames.some((basename) => laterContourBasenames.has(basename)),
+      true,
+      '001L scope guard may defer only to a known later contour scope',
+    );
     return;
   }
   const allowlist = new Set([

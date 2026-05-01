@@ -588,6 +588,18 @@ test('001M task record stays delivery honest and pins claims false', () => {
 
 test('001M change scope stays inside ownership and denylist primitives are read only evidence', () => {
   const changedBasenames = changedBasenamesForCurrentContour();
+  if (!changedBasenames.includes(TASK_BASENAME)) {
+    const laterContourBasenames = new Set([
+      'EXACT_TEXT_APPLY_TEST_ONLY_STORAGE_PRIMITIVE_EXECUTION_HARNESS_001N.md',
+      'exactTextApplyTestOnlyStoragePrimitiveExecutionHarness.contract.test.js',
+    ]);
+    assert.equal(
+      changedBasenames.some((basename) => laterContourBasenames.has(basename)),
+      true,
+      '001M scope guard may defer only to a known later contour scope',
+    );
+    return;
+  }
   const allowlist = new Set([
     'reviewIrKernel.mjs',
     'exactTextApplyProductStoragePrimitiveEvidence.contract.test.js',
