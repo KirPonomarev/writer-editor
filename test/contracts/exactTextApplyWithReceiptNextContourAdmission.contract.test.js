@@ -621,7 +621,9 @@ test('001Z task records preserve admission only and delivered 001Y boundary', ()
   assert.match(taskText, /RUNTIME_WIRING_ADMITTED: false/u);
   assert.match(taskText, /APPLYTXN_IMPLEMENTED: false/u);
   assert.match(taskText, /RECOVERY_CLAIMED: false/u);
-  assert.match(taskText, /COMMIT_SHA: pending/u);
+  assert.match(taskText, /STATUS: DONE/u);
+  assert.match(taskText, /COMMIT_SHA: ee79139a8d987f7e2d179fbcea0ebf37b23c8872/u);
+  assert.match(taskText, /PUSH_RESULT: pushed/u);
   assert.doesNotMatch(taskText, /release green|public apply|DOCX runtime|ApplyTxn implemented|recovery proven/iu);
 
   const sourceTaskText = sourceText('docs', 'tasks', SOURCE_001Y_TASK_BASENAME);
