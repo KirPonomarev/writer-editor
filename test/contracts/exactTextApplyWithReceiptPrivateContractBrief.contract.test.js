@@ -598,7 +598,9 @@ test('002A task record preserves contract brief boundary and lower delivery cave
   assert.match(taskText, /APPLYTXN_IMPLEMENTED: false/u);
   assert.match(taskText, /RECOVERY_CLAIMED: false/u);
   assert.match(taskText, /LOWER_DELIVERY_RECORD_CLOSURE_CLAIMED: false/u);
-  assert.match(taskText, /COMMIT_SHA: pending/u);
+  assert.match(taskText, /STATUS: DONE/u);
+  assert.match(taskText, /COMMIT_SHA: 48caf85c31726e11b77790585ca0bac351665aea/u);
+  assert.match(taskText, /PUSH_RESULT: pushed/u);
   assert.doesNotMatch(taskText, /release green|public apply|DOCX runtime|ApplyTxn implemented|recovery proven/iu);
 
   const sourceTaskText = sourceText('docs', 'tasks', SOURCE_001Z_TASK_BASENAME);
