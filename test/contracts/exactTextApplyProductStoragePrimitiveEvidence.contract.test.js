@@ -591,7 +591,9 @@ test('001M change scope stays inside ownership and denylist primitives are read 
   if (!changedBasenames.includes(TASK_BASENAME)) {
     const laterContourBasenames = new Set([
       'EXACT_TEXT_APPLY_TEST_ONLY_STORAGE_PRIMITIVE_EXECUTION_HARNESS_001N.md',
+      'EXACT_TEXT_APPLY_TEST_ONLY_PRODUCT_SHAPED_STORAGE_DRY_RUN_001O.md',
       'exactTextApplyTestOnlyStoragePrimitiveExecutionHarness.contract.test.js',
+      'exactTextApplyTestOnlyProductShapedStorageDryRun.contract.test.js',
     ]);
     assert.equal(
       changedBasenames.some((basename) => laterContourBasenames.has(basename)),

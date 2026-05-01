@@ -110,6 +110,10 @@ export const REASON_CODES = Object.freeze({
   NETWORK_FORBIDDEN: 'NETWORK_FORBIDDEN',
   DEPENDENCY_FORBIDDEN: 'DEPENDENCY_FORBIDDEN',
   TEST_ONLY_STORAGE_PRIMITIVE_EXECUTION_EVIDENCE_MISSING: 'TEST_ONLY_STORAGE_PRIMITIVE_EXECUTION_EVIDENCE_MISSING',
+  TEST_ONLY_PRODUCT_SHAPED_DRY_RUN_EVIDENCE_MISSING: 'TEST_ONLY_PRODUCT_SHAPED_DRY_RUN_EVIDENCE_MISSING',
+  FIXTURE_MANIFEST_TRUTH_ESCALATION_FORBIDDEN: 'FIXTURE_MANIFEST_TRUTH_ESCALATION_FORBIDDEN',
+  DRY_RUN_RECEIPT_PATH_OUTSIDE_FIXTURE: 'DRY_RUN_RECEIPT_PATH_OUTSIDE_FIXTURE',
+  PRODUCT_APPLY_ADMISSION_FORBIDDEN: 'PRODUCT_APPLY_ADMISSION_FORBIDDEN',
   ELECTRON_STUB_REQUIRED: 'ELECTRON_STUB_REQUIRED',
   REAL_DOCUMENTS_PATH_FORBIDDEN: 'REAL_DOCUMENTS_PATH_FORBIDDEN',
   BACKUP_BASE_PATH_REQUIRED: 'BACKUP_BASE_PATH_REQUIRED',
@@ -3283,6 +3287,388 @@ export function compileExactTextTestOnlyStoragePrimitiveExecutionHarness(input =
     hostilePackageTestsRegressionOnly: true,
     admissionGuardScopeOnly: true,
     testOnlyStoragePrimitiveExecutionDecisions,
+    blockedReasons: uniqueBlockedReasons,
+  };
+  return {
+    ...resultCore,
+    canonicalHash: canonicalHash(resultCore),
+  };
+}
+
+function acceptedTestOnlyStoragePrimitiveExecutionReasons(result = {}) {
+  const reasons = [];
+  const decisions = Array.isArray(result.testOnlyStoragePrimitiveExecutionDecisions)
+    ? result.testOnlyStoragePrimitiveExecutionDecisions
+    : [];
+  const decision = decisions[0] || {};
+  if (
+    result.resultKind !== 'EXACT_TEXT_TEST_ONLY_STORAGE_PRIMITIVE_EXECUTION_HARNESS_RESULT'
+    || result.contractOnly !== true
+    || result.testOnly !== true
+    || result.evidenceLayerOnly !== true
+    || result.productAdmission !== false
+    || result.testOnlyStoragePrimitiveExecutionAdmitted !== true
+    || result.outputDecision !== 'TEST_ONLY_STORAGE_PRIMITIVE_EXECUTION_EVIDENCE_ADMITTED'
+    || result.nextDecisionAfterPass !== 'OWNER_MAY_PLAN_SEPARATE_PRODUCT_SHAPED_DRY_RUN_CONTOUR'
+    || result.productStorageDryRunAdmitted !== false
+    || result.productDryRunAdmittedByItself !== false
+    || result.productStorageDryRunAdmittedByThisContour !== false
+    || result.productWritePerformed !== false
+    || result.productWriteClaimed !== false
+    || result.productStorageSafetyClaimed !== false
+    || result.durableReceiptClaimed !== false
+    || result.applyReceiptImplemented !== false
+    || result.productApplyReceiptClaimed !== false
+    || result.recoveryClaimed !== false
+    || result.crashRecoveryClaimed !== false
+    || result.applyTxnClaimed !== false
+    || result.publicSurfaceClaimed !== false
+    || result.docxImportClaimed !== false
+    || result.uiChanged !== false
+    || result.networkUsed !== false
+    || result.dependencyChanged !== false
+    || result.storageImportsAdded !== false
+    || result.storagePrimitiveChanged !== false
+    || result.recoveryTestsRegressionOnly !== true
+    || result.hostilePackageTestsRegressionOnly !== true
+    || result.admissionGuardScopeOnly !== true
+    || !hasValue(result.canonicalHash)
+    || (result.blockedReasons || []).length !== 0
+    || decisions.length !== 1
+    || decision.testOnlyStoragePrimitiveExecutionDecisionKind !== 'EXACT_TEXT_TEST_ONLY_STORAGE_PRIMITIVE_EXECUTION_HARNESS_DECISION'
+    || decision.outputDecision !== 'TEST_ONLY_STORAGE_PRIMITIVE_EXECUTION_EVIDENCE_ADMITTED'
+    || decision.nextDecisionAfterPass !== 'OWNER_MAY_PLAN_SEPARATE_PRODUCT_SHAPED_DRY_RUN_CONTOUR'
+    || decision.acceptedBinding !== 'EXACT_TEXT_APPLY_PRODUCT_STORAGE_PRIMITIVE_EVIDENCE_GATE_001M'
+    || decision.testOnly !== true
+    || decision.evidenceLayerOnly !== true
+    || decision.productAdmission !== false
+    || decision.productStorageDryRunAdmitted !== false
+    || decision.productDryRunAdmittedByItself !== false
+    || decision.productStorageDryRunAdmittedByThisContour !== false
+    || decision.productWritePerformed !== false
+    || decision.productWriteClaimed !== false
+    || decision.productStorageSafetyClaimed !== false
+    || decision.durableReceiptClaimed !== false
+    || decision.applyReceiptImplemented !== false
+    || decision.productApplyReceiptClaimed !== false
+    || decision.recoveryClaimed !== false
+    || decision.crashRecoveryClaimed !== false
+    || decision.applyTxnClaimed !== false
+    || decision.publicSurfaceClaimed !== false
+    || decision.docxImportClaimed !== false
+    || decision.uiChanged !== false
+    || decision.networkUsed !== false
+    || decision.dependencyChanged !== false
+    || decision.storageImportsAdded !== false
+    || decision.storagePrimitiveChanged !== false
+    || !hasValue(decision.sourcePrimitiveEvidenceGateResultHash)
+    || !hasValue(decision.sourcePrimitiveEvidenceGateDecisionHash)
+    || !hasValue(decision.fixtureRootHash)
+    || !hasValue(decision.backupObservationHash)
+    || !hasValue(decision.atomicWriteObservationHash)
+    || !hasValue(decision.cleanupObservationHash)
+    || !hasValue(decision.backupManagerSourceHash)
+    || !hasValue(decision.fileManagerSourceHash)
+    || !hasValue(decision.canonicalHash)
+  ) {
+    reasons.push(REASON_CODES.TEST_ONLY_STORAGE_PRIMITIVE_EXECUTION_EVIDENCE_MISSING);
+  }
+  return uniqueStrings(reasons);
+}
+
+function testOnlyProductShapedDryRunClaimReasons(packet = {}, input = {}) {
+  const reasons = [];
+  if (
+    packet.productApplyAdmissionClaimed === true
+    || packet.productApplyAdmitted === true
+    || packet.productAdmission === true
+    || input.productApplyAdmissionClaimed === true
+    || input.productApplyAdmitted === true
+    || input.productAdmission === true
+  ) {
+    reasons.push(REASON_CODES.PRODUCT_APPLY_ADMISSION_FORBIDDEN);
+  }
+  if (
+    packet.productWritePerformed === true
+    || packet.productWriteClaimed === true
+    || packet.manuscriptMutationPerformed === true
+    || input.productWritePerformed === true
+    || input.productWriteClaimed === true
+    || input.manuscriptMutationPerformed === true
+    || input.runtimeWritable === true
+  ) {
+    reasons.push(REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (
+    packet.productStorageSafetyClaimed === true
+    || packet.productStorageIntegrated === true
+    || input.productStorageSafetyClaimed === true
+    || input.productStorageIntegrated === true
+  ) {
+    reasons.push(REASON_CODES.STORAGE_INTEGRATION_FORBIDDEN_IN_CONTOUR);
+  }
+  if (
+    packet.durableReceiptClaimed === true
+    || packet.applyReceiptImplemented === true
+    || packet.productApplyReceiptClaimed === true
+    || input.durableReceiptClaimed === true
+    || input.applyReceiptImplemented === true
+    || input.productApplyReceiptClaimed === true
+  ) {
+    reasons.push(REASON_CODES.RECEIPT_CONTRACT_MISMATCH);
+  }
+  if (
+    packet.recoveryClaimed === true
+    || packet.crashRecoveryClaimed === true
+    || input.recoveryClaimed === true
+    || input.crashRecoveryClaimed === true
+  ) {
+    reasons.push(REASON_CODES.RECOVERY_CLAIM_FORBIDDEN_IN_CONTOUR);
+  }
+  if (packet.applyTxnClaimed === true || input.applyTxnClaimed === true) {
+    reasons.push(REASON_CODES.STRUCTURAL_AUTO_APPLY_FORBIDDEN);
+  }
+  if (
+    packet.publicSurfaceClaimed === true
+    || packet.ipcSurfaceClaimed === true
+    || packet.commandSurfaceClaimed === true
+    || packet.preloadSurfaceClaimed === true
+    || input.publicSurfaceClaimed === true
+  ) {
+    reasons.push(REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (packet.docxImportClaimed === true || input.docxImportClaimed === true) {
+    reasons.push(REASON_CODES.SEMANTIC_PARSE_FORBIDDEN);
+  }
+  if (packet.uiChanged === true || input.uiChanged === true) {
+    reasons.push(REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR);
+  }
+  if (packet.networkUsed === true || input.networkUsed === true) {
+    reasons.push(REASON_CODES.NETWORK_FORBIDDEN);
+  }
+  if (packet.dependencyChanged === true || input.dependencyChanged === true) {
+    reasons.push(REASON_CODES.DEPENDENCY_FORBIDDEN);
+  }
+  if (
+    packet.storagePrimitiveChanged === true
+    || packet.storageImportsAdded === true
+    || packet.productionStorageImportAdded === true
+    || input.storagePrimitiveChanged === true
+    || input.storageImportsAdded === true
+    || input.productionStorageImportAdded === true
+  ) {
+    reasons.push(REASON_CODES.PRODUCTION_STORAGE_IMPORT_FORBIDDEN);
+  }
+  if (packet.commentApplyClaimed === true || input.commentApplyClaimed === true) {
+    reasons.push(REASON_CODES.COMMENT_APPLY_OUT_OF_SCOPE);
+  }
+  if (packet.structuralApplyClaimed === true || input.structuralApplyClaimed === true) {
+    reasons.push(REASON_CODES.STRUCTURAL_STORAGE_WRITE_BLOCKED);
+  }
+  if (packet.multiSceneApplyClaimed === true || input.multiSceneApplyClaimed === true) {
+    reasons.push(REASON_CODES.MULTI_SCOPE_STORAGE_WRITE_BLOCKED);
+  }
+  return uniqueStrings(reasons);
+}
+
+function testOnlyProductShapedDryRunRequirementReasons(packet = {}) {
+  const reasons = [];
+  if (
+    packet.packetKind !== 'EXACT_TEXT_TEST_ONLY_PRODUCT_SHAPED_STORAGE_DRY_RUN_PACKET_001O'
+    || packet.testOnly !== true
+    || packet.productShapedFixtureOnly !== true
+    || packet.productShapedStorageDryRunObserved !== true
+    || packet.osTempFixtureRootOnly !== true
+    || packet.fixtureProjectRootInsideTempRoot !== true
+    || packet.fixtureProjectRootIsProductRoot !== false
+    || packet.fixtureSceneFileOnly !== true
+    || packet.fixtureManifestStubProvided !== true
+    || packet.fixtureManifestStubInert !== true
+    || packet.projectIdTestPassed !== true
+    || packet.sceneIdTestPassed !== true
+    || packet.baselineHashTestPassed !== true
+    || packet.blockVersionHashTestPassed !== true
+    || packet.exactTextGuardPassed !== true
+    || packet.sessionOpenTestPassed !== true
+    || packet.fixtureBackupObserved !== true
+    || packet.fixtureAtomicWriteObserved !== true
+    || packet.testOnlyDryRunReceiptObservationEmitted !== true
+    || packet.dryRunReceiptPathInsideFixtureRoot !== true
+    || packet.allDryRunPathsInsideFixtureRoot !== true
+    || packet.afterWriteHashMatches !== true
+    || packet.cleanupObserved !== true
+    || packet.cleanupSucceeded !== true
+    || !hasValue(packet.fixtureProjectRootHash)
+    || !hasValue(packet.fixtureSceneFileHash)
+    || !hasValue(packet.fixtureManifestStubHash)
+    || !hasValue(packet.fixtureBackupObservationHash)
+    || !hasValue(packet.fixtureAtomicWriteObservationHash)
+    || !hasValue(packet.testOnlyDryRunReceiptObservationHash)
+    || !hasValue(packet.cleanupObservationHash)
+  ) {
+    reasons.push(REASON_CODES.TEST_ONLY_PRODUCT_SHAPED_DRY_RUN_EVIDENCE_MISSING);
+  }
+  if (packet.fixtureManifestStubPersisted === true || packet.fixtureManifestStubReusedAsProjectTruth === true) {
+    reasons.push(REASON_CODES.FIXTURE_MANIFEST_TRUTH_ESCALATION_FORBIDDEN);
+  }
+  if (packet.projectIdTestPassed === false) {
+    reasons.push(REASON_CODES.WRONG_PROJECT);
+  }
+  if (packet.sceneIdTestPassed === false) {
+    reasons.push(REASON_CODES.SCENE_MISMATCH);
+  }
+  if (packet.baselineHashTestPassed === false) {
+    reasons.push(REASON_CODES.STALE_BASELINE);
+  }
+  if (packet.blockVersionHashTestPassed === false) {
+    reasons.push(REASON_CODES.BLOCK_VERSION_MISMATCH);
+  }
+  if (packet.exactTextGuardPassed === false) {
+    reasons.push(REASON_CODES.EXACT_TEXT_MISMATCH);
+  }
+  if (packet.sessionOpenTestPassed === false) {
+    reasons.push(REASON_CODES.CLOSED_SESSION);
+  }
+  if (
+    packet.productRootAccess === true
+    || packet.productPathAccess === true
+    || packet.fixtureProjectRootIsProductRoot === true
+  ) {
+    reasons.push(REASON_CODES.PRODUCT_ROOT_FORBIDDEN);
+  }
+  if (packet.repoRootAccess === true) {
+    reasons.push(REASON_CODES.PRODUCT_PATH_FORBIDDEN);
+  }
+  if (packet.absolutePathEscape === true) {
+    reasons.push(REASON_CODES.ABSOLUTE_PATH_ESCAPE_FORBIDDEN);
+  }
+  if (packet.pathTraversal === true) {
+    reasons.push(REASON_CODES.PATH_TRAVERSAL_FORBIDDEN);
+  }
+  if (packet.dryRunReceiptPathOutsideFixture === true || packet.dryRunReceiptPathInsideFixtureRoot !== true) {
+    reasons.push(REASON_CODES.DRY_RUN_RECEIPT_PATH_OUTSIDE_FIXTURE);
+  }
+  if (packet.afterWriteHashMatches === false) {
+    reasons.push(REASON_CODES.HASH_OBSERVATION_MISMATCH);
+  }
+  if (packet.cleanupObserved !== true || packet.cleanupSucceeded !== true) {
+    reasons.push(REASON_CODES.FIXTURE_CLEANUP_REQUIRED);
+  }
+  return uniqueStrings(reasons);
+}
+
+function createTestOnlyProductShapedDryRunDecision(testOnlyStoragePrimitiveExecutionHarnessResult, packet) {
+  const sourceDecision = testOnlyStoragePrimitiveExecutionHarnessResult.testOnlyStoragePrimitiveExecutionDecisions[0];
+  const decisionCore = {
+    testOnlyProductShapedDryRunDecisionKind: 'EXACT_TEXT_TEST_ONLY_PRODUCT_SHAPED_STORAGE_DRY_RUN_DECISION',
+    outputDecision: 'TEST_ONLY_PRODUCT_SHAPED_DRY_RUN_EVIDENCE_ADMITTED',
+    nextDecisionAfterPass: 'OWNER_MAY_PLAN_PRODUCT_APPLY_READINESS_REVIEW_001P',
+    acceptedBinding: 'EXACT_TEXT_APPLY_TEST_ONLY_STORAGE_PRIMITIVE_EXECUTION_HARNESS_001N',
+    testOnly: true,
+    productShapedFixtureOnly: true,
+    productAdmission: false,
+    productApplyAdmissionClaimed: false,
+    productApplyAdmitted: false,
+    productStorageDryRunAdmitted: false,
+    productStorageDryRunAdmittedByThisContour: false,
+    productStorageSafetyClaimed: false,
+    productWritePerformed: false,
+    productWriteClaimed: false,
+    manuscriptMutationPerformed: false,
+    durableReceiptClaimed: false,
+    applyReceiptImplemented: false,
+    productApplyReceiptClaimed: false,
+    recoveryClaimed: false,
+    crashRecoveryClaimed: false,
+    applyTxnClaimed: false,
+    publicSurfaceClaimed: false,
+    docxImportClaimed: false,
+    uiChanged: false,
+    networkUsed: false,
+    dependencyChanged: false,
+    storageImportsAdded: false,
+    storagePrimitiveChanged: false,
+    commentApplyClaimed: false,
+    structuralApplyClaimed: false,
+    multiSceneApplyClaimed: false,
+    fixtureManifestStubInert: true,
+    fixtureManifestStubPersisted: false,
+    fixtureManifestStubReusedAsProjectTruth: false,
+    sourceTestOnlyStoragePrimitiveExecutionResultHash: testOnlyStoragePrimitiveExecutionHarnessResult.canonicalHash,
+    sourceTestOnlyStoragePrimitiveExecutionDecisionHash: sourceDecision.canonicalHash,
+    fixtureProjectRootHash: packet.fixtureProjectRootHash,
+    fixtureSceneFileHash: packet.fixtureSceneFileHash,
+    fixtureManifestStubHash: packet.fixtureManifestStubHash,
+    fixtureBackupObservationHash: packet.fixtureBackupObservationHash,
+    fixtureAtomicWriteObservationHash: packet.fixtureAtomicWriteObservationHash,
+    testOnlyDryRunReceiptObservationHash: packet.testOnlyDryRunReceiptObservationHash,
+    cleanupObservationHash: packet.cleanupObservationHash,
+  };
+  const decisionWithId = {
+    testOnlyProductShapedDryRunDecisionId: `test_only_product_shaped_dry_run_${canonicalHash(decisionCore).slice(0, 16)}`,
+    ...decisionCore,
+  };
+  return {
+    ...decisionWithId,
+    canonicalHash: canonicalHash(decisionWithId),
+  };
+}
+
+export function compileExactTextTestOnlyProductShapedStorageDryRun(input = {}) {
+  const testOnlyStoragePrimitiveExecutionHarnessResult = input?.testOnlyStoragePrimitiveExecutionHarnessResult || {};
+  const dryRunPacket = input?.dryRunPacket || {};
+  const blockedReasons = [
+    ...(testOnlyStoragePrimitiveExecutionHarnessResult.blockedReasons || []),
+    ...acceptedTestOnlyStoragePrimitiveExecutionReasons(testOnlyStoragePrimitiveExecutionHarnessResult),
+    ...testOnlyProductShapedDryRunRequirementReasons(dryRunPacket),
+    ...testOnlyProductShapedDryRunClaimReasons(dryRunPacket, input),
+  ];
+
+  const uniqueBlockedReasons = uniqueStrings(blockedReasons);
+  const testOnlyProductShapedDryRunDecisions = uniqueBlockedReasons.length === 0
+    ? [createTestOnlyProductShapedDryRunDecision(testOnlyStoragePrimitiveExecutionHarnessResult, dryRunPacket)]
+    : [];
+  const resultCore = {
+    resultKind: 'EXACT_TEXT_TEST_ONLY_PRODUCT_SHAPED_STORAGE_DRY_RUN_RESULT',
+    contractOnly: true,
+    testOnly: true,
+    productShapedFixtureOnly: true,
+    productAdmission: false,
+    testOnlyProductShapedDryRunEvidenceAdmitted: testOnlyProductShapedDryRunDecisions.length === 1,
+    outputDecision: testOnlyProductShapedDryRunDecisions.length === 1
+      ? 'TEST_ONLY_PRODUCT_SHAPED_DRY_RUN_EVIDENCE_ADMITTED'
+      : 'PRODUCT_APPLY_PATH_REMAINS_BLOCKED',
+    nextDecisionAfterPass: testOnlyProductShapedDryRunDecisions.length === 1
+      ? 'OWNER_MAY_PLAN_PRODUCT_APPLY_READINESS_REVIEW_001P'
+      : 'STOP_AND_FIX_TEST_ONLY_PRODUCT_SHAPED_DRY_RUN_GAP',
+    productApplyAdmissionClaimed: false,
+    productApplyAdmitted: false,
+    productStorageDryRunAdmitted: false,
+    productStorageDryRunAdmittedByThisContour: false,
+    productStorageSafetyClaimed: false,
+    productWritePerformed: false,
+    productWriteClaimed: false,
+    manuscriptMutationPerformed: false,
+    durableReceiptClaimed: false,
+    applyReceiptImplemented: false,
+    productApplyReceiptClaimed: false,
+    recoveryClaimed: false,
+    crashRecoveryClaimed: false,
+    applyTxnClaimed: false,
+    publicSurfaceClaimed: false,
+    docxImportClaimed: false,
+    uiChanged: false,
+    networkUsed: false,
+    dependencyChanged: false,
+    storageImportsAdded: false,
+    storagePrimitiveChanged: false,
+    commentApplyClaimed: false,
+    structuralApplyClaimed: false,
+    multiSceneApplyClaimed: false,
+    fixtureManifestStubInert: testOnlyProductShapedDryRunDecisions.length === 1,
+    fixtureManifestStubPersisted: false,
+    fixtureManifestStubReusedAsProjectTruth: false,
+    testOnlyProductShapedDryRunDecisions,
     blockedReasons: uniqueBlockedReasons,
   };
   return {
