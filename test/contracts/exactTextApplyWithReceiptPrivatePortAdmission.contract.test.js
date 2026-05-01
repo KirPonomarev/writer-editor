@@ -280,9 +280,9 @@ test('002C task record preserves private port admission boundary and no-write po
   assert.match(taskText, /APPLY_EXECUTION_IMPLEMENTED: false/u);
   assert.match(taskText, /USER_PROJECT_PATH_ACCEPTED: false/u);
   assert.match(taskText, /DELIVERY_POLICY: COMMIT_REQUIRED_PUSH_REQUIRED/u);
-  assert.match(taskText, /STATUS: IN_PROGRESS/u);
-  assert.match(taskText, /COMMIT_SHA: pending/u);
-  assert.match(taskText, /PUSH_RESULT: pending/u);
+  assert.match(taskText, /STATUS: DONE/u);
+  assert.match(taskText, /COMMIT_SHA: df1d079e98c0839799a0663a1766d5460217142e/u);
+  assert.match(taskText, /PUSH_RESULT: pushed/u);
   assert.doesNotMatch(taskText, /storage adapter implemented|write port implemented|public apply|DOCX runtime/iu);
 
   const sourceTaskText = sourceText('docs', 'tasks', SOURCE_002B_TASK_BASENAME);
