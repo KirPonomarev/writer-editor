@@ -5,13 +5,19 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const { pathToFileURL } = require('node:url');
 
-const MODULE_BASENAME = 'exactTextApplyWithReceiptNextAdmission.mjs';
-const TASK_BASENAME = 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_001Y.md';
+const MODULE_BASENAME = 'exactTextApplyWithReceiptNextContourAdmission.mjs';
+const SOURCE_001Y_MODULE_BASENAME = 'exactTextApplyWithReceiptNextAdmission.mjs';
+const TASK_BASENAME = 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_001Z.md';
+const SOURCE_001Y_TASK_BASENAME = 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_001Y.md';
 const KERNEL_BASENAME = 'reviewIrKernel.mjs';
-const BINDING_BASE_SHA = '199420a96ef6cf00a23f00bfc8d692ceb87d7bc0';
+const BINDING_HEAD_SHA = '02b4682271dc2272802a76144510b11e24154020';
 
 async function loadModule() {
   return import(pathToFileURL(path.join(process.cwd(), 'src', 'revisionBridge', MODULE_BASENAME)).href);
+}
+
+async function load001YModule() {
+  return import(pathToFileURL(path.join(process.cwd(), 'src', 'revisionBridge', SOURCE_001Y_MODULE_BASENAME)).href);
 }
 
 async function loadKernel() {
@@ -26,6 +32,10 @@ function gitLines(args) {
   return execFileSync('git', args, { cwd: process.cwd(), encoding: 'utf8' })
     .split(/\r?\n/u)
     .filter(Boolean);
+}
+
+function gitText(args) {
+  return execFileSync('git', args, { cwd: process.cwd(), encoding: 'utf8' });
 }
 
 function changedBasenamesForCurrentContour() {
@@ -334,11 +344,11 @@ function accepted001XResult(canonicalHash, source001WResult, resultOverrides = {
   });
 }
 
-function ownerPacket(overrides = {}) {
+function ownerPacket001Y(overrides = {}) {
   return {
     packetKind: 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_OWNER_PACKET_001Y',
     targetContour: 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_ADAPTER_ADMISSION_001Z',
-    bindingBaseSha: BINDING_BASE_SHA,
+    bindingBaseSha: '199420a96ef6cf00a23f00bfc8d692ceb87d7bc0',
     ownerApprovedOpenNextContour: true,
     ownerUnderstandsAdmissionOnly: true,
     ownerUnderstandsNoRuntime: true,
@@ -349,37 +359,65 @@ function ownerPacket(overrides = {}) {
   };
 }
 
+function ownerPacket001Z(overrides = {}) {
+  return {
+    packetKind: 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_OWNER_PACKET_001Z',
+    targetContour: 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_002A',
+    bindingHeadSha: BINDING_HEAD_SHA,
+    ownerApprovedOpenNextContour: true,
+    ownerUnderstandsAdmissionOnly: true,
+    ownerUnderstandsContractBriefOnly: true,
+    ownerUnderstandsNoPublicAdapterImplementation: true,
+    ownerUnderstandsNoRuntimeWiring: true,
+    ownerUnderstandsNoApplyExecution: true,
+    ownerUnderstandsNoReleaseClaim: true,
+    ownerPacketAuthorizesOnlyNextContourOpening: true,
+    ...overrides,
+  };
+}
+
 async function acceptedInput(patch = {}) {
   const { canonicalHash } = await loadKernel();
+  const { runExactTextApplyWithReceiptNextAdmission } = await load001YModule();
   const source001UResult = accepted001UResult(canonicalHash);
   const source001VResult = accepted001VResult(canonicalHash, source001UResult);
   const source001WResult = accepted001WResult(canonicalHash, source001VResult, source001UResult);
   const source001XResult = accepted001XResult(canonicalHash, source001WResult);
-  return {
+  const source001YResult = runExactTextApplyWithReceiptNextAdmission({
     source001XResult,
-    source001UResult,
-    source001VResult,
-    source001WResult,
     source001XResultHash: source001XResult.canonicalHash,
     source001XDecisionHash: source001XResult.decisions[0].canonicalHash,
-    ownerAdmissionPacket001Y: ownerPacket(),
+    source001WResult,
+    source001VResult,
+    source001UResult,
+    ownerAdmissionPacket001Y: ownerPacket001Y(),
+  });
+  return {
+    source001YResult,
+    source001YResultHash: source001YResult.canonicalHash,
+    source001YDecisionHash: source001YResult.decisions[0].canonicalHash,
+    source001XResult,
+    source001WResult,
+    source001VResult,
+    source001UResult,
+    ownerAdmissionPacket001Z: ownerPacket001Z(),
     ...patch,
   };
 }
 
-test('001Y admits only opening the next private adapter admission contour after 001X proof and owner packet', async () => {
-  const { runExactTextApplyWithReceiptNextAdmission } = await loadModule();
+test('001Z admits only opening the private contract brief after 001Y proof and owner packet', async () => {
+  const { runExactTextApplyWithReceiptNextContourAdmission } = await loadModule();
   const { canonicalHash } = await loadKernel();
   const input = await acceptedInput();
-  const result = runExactTextApplyWithReceiptNextAdmission(input);
+  const result = runExactTextApplyWithReceiptNextContourAdmission(input);
 
-  assert.equal(result.resultKind, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_RESULT_001Y');
-  assert.equal(result.outputDecision, 'OWNER_MAY_OPEN_NEXT_PRIVATE_ADAPTER_ADMISSION_CONTOUR_001Z_NO_PUBLIC_RUNTIME_ADMITTED');
-  assert.equal(result.nextContourRecommendation, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_ADAPTER_ADMISSION_001Z');
-  assert.equal(result.ownerMayOpen001Z, true);
+  assert.equal(result.resultKind, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_RESULT_001Z');
+  assert.equal(result.outputDecision, 'OWNER_MAY_OPEN_PRIVATE_CONTRACT_BRIEF_002A_NO_PUBLIC_RUNTIME_ADMITTED');
+  assert.equal(result.nextContourRecommendation, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_002A');
+  assert.equal(result.ownerMayOpen002A, true);
   assert.equal(result.admissionOnly, true);
-  assert.equal(result.ownerPacketAuthorizesOnlyNextContourOpening, true);
-  assert.equal(result.source001XAccepted, true);
+  assert.equal(result.contractBriefOnly, true);
+  assert.equal(result.source001YAccepted, true);
   assert.equal(result.publicRuntimeAdmitted, false);
   assert.equal(result.productApplyRuntimeAdmitted, false);
   assert.equal(result.publicAdapterImplementationAdmitted, false);
@@ -388,148 +426,157 @@ test('001Y admits only opening the next private adapter admission contour after 
   assert.equal(result.applyTxnImplemented, false);
   assert.equal(result.recoveryClaimed, false);
   assert.equal(result.userProjectMutated, false);
-  assert.equal(result.source001XResultHash, input.source001XResultHash);
-  assert.equal(result.source001XDecisionHash, input.source001XDecisionHash);
-  assert.equal(result.source001WResultHash, input.source001XResult.source001WResultHash);
-  assert.equal(result.source001UReceiptHash, input.source001XResult.source001UReceiptHash);
+  assert.equal(result.source001YResultHash, input.source001YResultHash);
+  assert.equal(result.source001YDecisionHash, input.source001YDecisionHash);
+  assert.equal(result.source001UReceiptHash, input.source001YResult.source001UReceiptHash);
   assert.deepEqual(result.blockedReasons, []);
-  assert.equal(result.decisions[0].decisionKind, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_DECISION_001Y');
-  assert.equal(result.decisions[0].ownerMayOpen001Z, true);
+  assert.equal(result.decisions[0].decisionKind, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_DECISION_001Z');
+  assert.equal(result.decisions[0].ownerMayOpen002A, true);
+  assert.equal(result.decisions[0].contractBriefOnly, true);
   assert.equal(result.decisions[0].publicAdapterImplementationAdmitted, false);
   assert.equal(result.decisions[0].runtimeWiringAdmitted, false);
   assert.equal(result.canonicalHash, canonicalHash(withoutHash(result)));
 });
 
-test('001Y blocks missing blocked mismatched or self-opening 001X source', async () => {
-  const { runExactTextApplyWithReceiptNextAdmission, EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_REASON_CODES } = await loadModule();
+test('001Z blocks missing blocked mismatched or contaminated 001Y proof', async () => {
+  const { runExactTextApplyWithReceiptNextContourAdmission, EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_REASON_CODES } = await loadModule();
   const { canonicalHash } = await loadKernel();
   const base = await acceptedInput();
+  const blocked001Y = withCanonicalHash(canonicalHash, {
+    ...withoutHash(base.source001YResult),
+    outputDecision: 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_001Y_BLOCKED',
+    blockedReasons: ['BLOCKED'],
+    ownerMayOpen001Z: false,
+    decisions: [],
+  });
+  const contaminated001Y = withCanonicalHash(canonicalHash, {
+    ...withoutHash(base.source001YResult),
+    publicAdapterImplementationAdmitted: true,
+  });
   const cases = [
-    { patch: { source001XResult: null }, code: 'SOURCE_001X_RESULT_REQUIRED' },
-    { patch: { source001XResultHash: canonicalHash({ wrong: 'result' }) }, code: 'SOURCE_001X_RESULT_MISMATCH' },
-    { patch: { source001XDecisionHash: canonicalHash({ wrong: 'decision' }) }, code: 'SOURCE_001X_DECISION_MISMATCH' },
-    { patch: { source001XResult: accepted001XResult(canonicalHash, undefined, { outputDecision: 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_001W_CLOSEOUT_BLOCKED', blockedReasons: ['BLOCKED'] }) }, code: 'SOURCE_001X_BLOCKED' },
-    { patch: { source001XResult: accepted001XResult(canonicalHash, undefined, { ownerMayOpen001Y: true }) }, code: 'SOURCE_001X_BLOCKED' },
-    { patch: { source001XResult: accepted001XResult(canonicalHash, undefined, { noAdmissionIn001X: false }) }, code: 'SOURCE_001X_BOUNDARY_MISSING' },
-    { patch: { source001XResult: accepted001XResult(canonicalHash, undefined, { publicRuntimeAdmitted: true }) }, code: 'SOURCE_001X_RUNTIME_FLAG_FORBIDDEN' },
+    { patch: { source001YResult: null }, code: 'SOURCE_001Y_RESULT_REQUIRED' },
+    { patch: { source001YResultHash: canonicalHash({ wrong: '001y-result' }) }, code: 'SOURCE_001Y_RESULT_MISMATCH' },
+    { patch: { source001YDecisionHash: canonicalHash({ wrong: '001y-decision' }) }, code: 'SOURCE_001Y_DECISION_MISMATCH' },
+    { patch: { source001YResult: blocked001Y, source001YResultHash: blocked001Y.canonicalHash, source001YDecisionHash: '' }, code: 'SOURCE_001Y_BLOCKED' },
+    { patch: { source001YResult: contaminated001Y, source001YResultHash: contaminated001Y.canonicalHash }, code: 'SOURCE_001Y_RUNTIME_FLAG_FORBIDDEN' },
+    { patch: { source001YResult: withCanonicalHash(canonicalHash, { ...withoutHash(base.source001YResult), ownerMayOpen001Z: false }) }, code: 'SOURCE_001Y_BLOCKED' },
   ];
 
   for (const item of cases) {
-    const result = runExactTextApplyWithReceiptNextAdmission({ ...base, ...item.patch });
-    assert.equal(result.outputDecision, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_001Y_BLOCKED');
-    assert.equal(result.ownerMayOpen001Z, false);
-    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_REASON_CODES[item.code]), true, item.code);
+    const result = runExactTextApplyWithReceiptNextContourAdmission({ ...base, ...item.patch });
+    assert.equal(result.outputDecision, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_001Z_BLOCKED');
+    assert.equal(result.ownerMayOpen002A, false);
+    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_REASON_CODES[item.code]), true, item.code);
   }
 });
 
-test('001Y blocks malformed source decision and missing inherited hash chain', async () => {
-  const { runExactTextApplyWithReceiptNextAdmission, EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_REASON_CODES } = await loadModule();
+test('001Z requires rehashed lower artifacts and blocks synthetic 001Y only chains', async () => {
+  const { runExactTextApplyWithReceiptNextContourAdmission, EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_REASON_CODES } = await loadModule();
   const { canonicalHash } = await loadKernel();
   const base = await acceptedInput();
-  const sourceWithTwoDecisions = accepted001XResult(canonicalHash);
-  sourceWithTwoDecisions.decisions = [sourceWithTwoDecisions.decisions[0], sourceWithTwoDecisions.decisions[0]];
-  sourceWithTwoDecisions.canonicalHash = canonicalHash(withoutHash(sourceWithTwoDecisions));
-  const cases = [
-    { source: accepted001XResult(canonicalHash, undefined, {}, { decisionKind: 'WRONG_DECISION' }), code: 'SOURCE_001X_DECISION_MALFORMED' },
-    { source: sourceWithTwoDecisions, code: 'SOURCE_001X_DECISION_MALFORMED' },
-    { source: accepted001XResult(canonicalHash, undefined, { source001WResultHash: '' }), code: 'SOURCE_CHAIN_MISSING' },
-    { source: accepted001XResult(canonicalHash, undefined, { source001WDecisionHash: '' }), code: 'SOURCE_CHAIN_MISSING' },
-    { source: accepted001XResult(canonicalHash, undefined, { source001WReceiptHash: '' }), code: 'SOURCE_CHAIN_MISSING' },
-    { source: accepted001XResult(canonicalHash, undefined, { source001VResultHash: '' }), code: 'SOURCE_CHAIN_MISSING' },
-    { source: accepted001XResult(canonicalHash, undefined, { source001UReceiptHash: '' }), code: 'SOURCE_CHAIN_MISSING' },
-  ];
-
-  for (const item of cases) {
-    const result = runExactTextApplyWithReceiptNextAdmission({
-      ...base,
-      source001XResult: item.source,
-      source001XResultHash: item.source.canonicalHash,
-      source001XDecisionHash: item.source.decisions[0].canonicalHash,
-    });
-    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_REASON_CODES[item.code]), true, item.code);
-  }
-});
-
-test('001Y requires rehashed 001V and 001U source artifacts, not only 001X and 001W hash strings', async () => {
-  const { runExactTextApplyWithReceiptNextAdmission, EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_REASON_CODES } = await loadModule();
-  const { canonicalHash } = await loadKernel();
-  const base = await acceptedInput();
-  const synthetic001W = accepted001WResult(canonicalHash);
-  const synthetic001X = accepted001XResult(canonicalHash, synthetic001W);
-  const mismatched001V = accepted001VResult(canonicalHash, base.source001UResult, {
+  const synthetic001Y = withCanonicalHash(canonicalHash, {
+    ...withoutHash(base.source001YResult),
+    source001XResultHash: canonicalHash({ arbitrary: '001x' }),
+    source001WResultHash: canonicalHash({ arbitrary: '001w' }),
+    source001WReceiptHash: canonicalHash({ arbitrary: '001w-receipt' }),
+    source001VResultHash: canonicalHash({ arbitrary: '001v' }),
+    source001UResultHash: canonicalHash({ arbitrary: '001u' }),
+  });
+  const mismatched001W = withCanonicalHash(canonicalHash, {
+    ...withoutHash(base.source001WResult),
+    receipt: withReceiptHash(canonicalHash, {
+      ...withoutHash(base.source001WResult.receipt, 'receiptCanonicalHash'),
+      source001UReceiptHash: canonicalHash({ mismatched: '001u-receipt' }),
+    }),
+  });
+  const mismatched001V = withCanonicalHash(canonicalHash, {
+    ...withoutHash(base.source001VResult),
     source001UResultHash: canonicalHash({ mismatched: '001u-result' }),
   });
-  const mismatched001U = accepted001UResult(canonicalHash, {}, {
-    receiptKind: 'PRIVATE_PRODUCT_APPLY_RECEIPT_V1_001U',
-    atomicWriteObservationHash: canonicalHash({ mismatched: '001u-receipt' }),
+  const mismatched001U = withCanonicalHash(canonicalHash, {
+    ...withoutHash(base.source001UResult),
+    receipt: withReceiptHash(canonicalHash, {
+      ...withoutHash(base.source001UResult.receipt, 'receiptCanonicalHash'),
+      atomicWriteObservationHash: canonicalHash({ mismatched: '001u-receipt' }),
+    }),
   });
   const cases = [
+    { patch: { source001XResult: null }, code: 'SOURCE_001X_RESULT_REQUIRED' },
+    { patch: { source001WResult: null }, code: 'SOURCE_001W_RESULT_REQUIRED' },
     { patch: { source001VResult: null }, code: 'SOURCE_001V_RESULT_REQUIRED' },
     { patch: { source001UResult: null }, code: 'SOURCE_001U_RESULT_REQUIRED' },
+    { patch: { source001XResult: withCanonicalHash(canonicalHash, { ...withoutHash(base.source001XResult), source001WResultHash: canonicalHash({ wrong: '001w' }) }) }, code: 'SOURCE_001X_RESULT_MISMATCH' },
+    { patch: { source001WResult: mismatched001W }, code: 'SOURCE_001W_RESULT_MISMATCH' },
     { patch: { source001VResult: mismatched001V }, code: 'SOURCE_001V_RESULT_MISMATCH' },
     { patch: { source001UResult: mismatched001U }, code: 'SOURCE_001U_RESULT_MISMATCH' },
     {
       patch: {
-        source001XResult: synthetic001X,
-        source001XResultHash: synthetic001X.canonicalHash,
-        source001XDecisionHash: synthetic001X.decisions[0].canonicalHash,
-        source001WResult: synthetic001W,
+        source001YResult: synthetic001Y,
+        source001YResultHash: synthetic001Y.canonicalHash,
+        source001YDecisionHash: synthetic001Y.decisions[0].canonicalHash,
+        source001XResult: null,
+        source001WResult: null,
         source001VResult: null,
         source001UResult: null,
       },
-      code: 'SOURCE_001V_RESULT_REQUIRED',
+      code: 'SOURCE_001X_RESULT_REQUIRED',
     },
   ];
 
   for (const item of cases) {
-    const result = runExactTextApplyWithReceiptNextAdmission({ ...base, ...item.patch });
-    assert.equal(result.ownerMayOpen001Z, false);
-    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_REASON_CODES[item.code]), true, item.code);
+    const result = runExactTextApplyWithReceiptNextContourAdmission({ ...base, ...item.patch });
+    assert.equal(result.ownerMayOpen002A, false);
+    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_REASON_CODES[item.code]), true, item.code);
   }
 });
 
-test('001Y requires strict owner packet and cannot be overridden by owner claims', async () => {
-  const { runExactTextApplyWithReceiptNextAdmission, EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_REASON_CODES } = await loadModule();
+test('001Z owner packet is necessary but cannot override bad proof or authorize forbidden layers', async () => {
+  const { runExactTextApplyWithReceiptNextContourAdmission, EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_REASON_CODES } = await loadModule();
   const base = await acceptedInput();
   const cases = [
     { packet: null, code: 'OWNER_PACKET_REQUIRED' },
-    { packet: ownerPacket({ packetKind: 'WRONG_PACKET' }), code: 'OWNER_PACKET_INVALID' },
-    { packet: ownerPacket({ targetContour: 'WRONG_TARGET' }), code: 'OWNER_PACKET_TARGET_MISMATCH' },
-    { packet: ownerPacket({ bindingBaseSha: 'wrong-sha' }), code: 'OWNER_PACKET_BINDING_MISMATCH' },
-    { packet: ownerPacket({ ownerApprovedOpenNextContour: false }), code: 'OWNER_NEXT_CONTOUR_POLICY_MISSING' },
-    { packet: ownerPacket({ ownerUnderstandsAdmissionOnly: false }), code: 'OWNER_NEXT_CONTOUR_POLICY_MISSING' },
-    { packet: ownerPacket({ ownerPacketAuthorizesOnlyNextContourOpening: false }), code: 'OWNER_NEXT_CONTOUR_POLICY_MISSING' },
-    { packet: ownerPacket({ publicRuntimeAdmitted: true }), code: 'PRODUCT_RUNTIME_FORBIDDEN' },
-    { packet: ownerPacket({ productApplyRuntimeAdmitted: true }), code: 'PRODUCT_RUNTIME_FORBIDDEN' },
-    { packet: ownerPacket({ publicAdapterImplementationAdmitted: true }), code: 'PUBLIC_ADAPTER_IMPLEMENTATION_FORBIDDEN' },
-    { packet: ownerPacket({ runtimeWiringAdmitted: true }), code: 'RUNTIME_WIRING_FORBIDDEN' },
-    { packet: ownerPacket({ applyExecutionRequested: true }), code: 'APPLY_EXECUTION_FORBIDDEN' },
-    { packet: ownerPacket({ applyExecutionImplemented: true }), code: 'APPLY_EXECUTION_FORBIDDEN' },
-    { packet: ownerPacket({ commandSurfaceClaimed: true }), code: 'PUBLIC_COMMAND_SURFACE_FORBIDDEN' },
-    { packet: ownerPacket({ uiChanged: true }), code: 'UI_DOCX_NETWORK_DEPENDENCY_FORBIDDEN' },
-    { packet: ownerPacket({ docxImportClaimed: true }), code: 'UI_DOCX_NETWORK_DEPENDENCY_FORBIDDEN' },
-    { packet: ownerPacket({ networkUsed: true }), code: 'UI_DOCX_NETWORK_DEPENDENCY_FORBIDDEN' },
-    { packet: ownerPacket({ dependencyChanged: true }), code: 'UI_DOCX_NETWORK_DEPENDENCY_FORBIDDEN' },
-    { packet: ownerPacket({ applyTxnImplemented: true }), code: 'APPLYTXN_RECOVERY_RELEASE_FORBIDDEN' },
-    { packet: ownerPacket({ recoveryClaimed: true }), code: 'APPLYTXN_RECOVERY_RELEASE_FORBIDDEN' },
-    { packet: ownerPacket({ startupRecoveryClaimed: true }), code: 'APPLYTXN_RECOVERY_RELEASE_FORBIDDEN' },
-    { packet: ownerPacket({ releaseClaimed: true }), code: 'APPLYTXN_RECOVERY_RELEASE_FORBIDDEN' },
-    { packet: ownerPacket({ userProjectMutated: true }), code: 'USER_PROJECT_MUTATION_FORBIDDEN' },
-    { packet: ownerPacket({ realUserProjectPathTouched: true }), code: 'USER_PROJECT_MUTATION_FORBIDDEN' },
+    { packet: ownerPacket001Z({ packetKind: 'WRONG_PACKET' }), code: 'OWNER_PACKET_INVALID' },
+    { packet: ownerPacket001Z({ targetContour: 'WRONG_TARGET' }), code: 'OWNER_PACKET_TARGET_MISMATCH' },
+    { packet: ownerPacket001Z({ bindingHeadSha: 'wrong-sha' }), code: 'OWNER_PACKET_BINDING_MISMATCH' },
+    { packet: ownerPacket001Z({ ownerApprovedOpenNextContour: false }), code: 'OWNER_NEXT_CONTOUR_POLICY_MISSING' },
+    { packet: ownerPacket001Z({ ownerUnderstandsContractBriefOnly: false }), code: 'OWNER_NEXT_CONTOUR_POLICY_MISSING' },
+    { packet: ownerPacket001Z({ ownerPacketAuthorizesOnlyNextContourOpening: false }), code: 'OWNER_NEXT_CONTOUR_POLICY_MISSING' },
+    { packet: ownerPacket001Z({ publicRuntimeAdmitted: true }), code: 'PRODUCT_RUNTIME_FORBIDDEN' },
+    { packet: ownerPacket001Z({ productApplyRuntimeAdmitted: true }), code: 'PRODUCT_RUNTIME_FORBIDDEN' },
+    { packet: ownerPacket001Z({ publicAdapterImplementationAdmitted: true }), code: 'PUBLIC_ADAPTER_IMPLEMENTATION_FORBIDDEN' },
+    { packet: ownerPacket001Z({ runtimeWiringAdmitted: true }), code: 'RUNTIME_WIRING_FORBIDDEN' },
+    { packet: ownerPacket001Z({ applyExecutionImplemented: true }), code: 'APPLY_EXECUTION_FORBIDDEN' },
+    { packet: ownerPacket001Z({ commandSurfaceClaimed: true }), code: 'PUBLIC_COMMAND_SURFACE_FORBIDDEN' },
+    { packet: ownerPacket001Z({ uiChanged: true }), code: 'UI_DOCX_NETWORK_DEPENDENCY_FORBIDDEN' },
+    { packet: ownerPacket001Z({ docxImportClaimed: true }), code: 'UI_DOCX_NETWORK_DEPENDENCY_FORBIDDEN' },
+    { packet: ownerPacket001Z({ networkUsed: true }), code: 'UI_DOCX_NETWORK_DEPENDENCY_FORBIDDEN' },
+    { packet: ownerPacket001Z({ dependencyChanged: true }), code: 'UI_DOCX_NETWORK_DEPENDENCY_FORBIDDEN' },
+    { packet: ownerPacket001Z({ applyTxnImplemented: true }), code: 'APPLYTXN_RECOVERY_RELEASE_FORBIDDEN' },
+    { packet: ownerPacket001Z({ recoveryClaimed: true }), code: 'APPLYTXN_RECOVERY_RELEASE_FORBIDDEN' },
+    { packet: ownerPacket001Z({ releaseClaimed: true }), code: 'APPLYTXN_RECOVERY_RELEASE_FORBIDDEN' },
+    { packet: ownerPacket001Z({ userProjectMutated: true }), code: 'USER_PROJECT_MUTATION_FORBIDDEN' },
   ];
 
   for (const item of cases) {
-    const result = runExactTextApplyWithReceiptNextAdmission({
+    const result = runExactTextApplyWithReceiptNextContourAdmission({
       ...base,
-      ownerAdmissionPacket001Y: item.packet,
+      ownerAdmissionPacket001Z: item.packet,
     });
-    assert.equal(result.ownerMayOpen001Z, false);
-    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_REASON_CODES[item.code]), true, item.code);
+    assert.equal(result.ownerMayOpen002A, false);
+    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_REASON_CODES[item.code]), true, item.code);
   }
+
+  const invalidProof = runExactTextApplyWithReceiptNextContourAdmission({
+    ...base,
+    source001YResultHash: 'wrong-hash',
+    ownerAdmissionPacket001Z: ownerPacket001Z(),
+  });
+  assert.equal(invalidProof.ownerMayOpen002A, false);
+  assert.equal(invalidProof.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_REASON_CODES.SOURCE_001Y_RESULT_MISMATCH), true);
 });
 
-test('001Y blocks direct runtime adapter execution UI DOCX ApplyTxn recovery release and mutation claims', async () => {
-  const { runExactTextApplyWithReceiptNextAdmission, EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_REASON_CODES } = await loadModule();
+test('001Z blocks direct runtime adapter execution UI DOCX ApplyTxn recovery release and mutation claims', async () => {
+  const { runExactTextApplyWithReceiptNextContourAdmission, EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_REASON_CODES } = await loadModule();
   const base = await acceptedInput();
   const cases = [
     { patch: { publicRuntimeAdmitted: true }, code: 'PRODUCT_RUNTIME_FORBIDDEN' },
@@ -557,46 +604,43 @@ test('001Y blocks direct runtime adapter execution UI DOCX ApplyTxn recovery rel
   ];
 
   for (const item of cases) {
-    const result = runExactTextApplyWithReceiptNextAdmission({ ...base, ...item.patch });
-    assert.equal(result.ownerMayOpen001Z, false);
-    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_REASON_CODES[item.code]), true, item.code);
+    const result = runExactTextApplyWithReceiptNextContourAdmission({ ...base, ...item.patch });
+    assert.equal(result.ownerMayOpen002A, false);
+    assert.equal(result.blockedReasons.includes(EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_REASON_CODES[item.code]), true, item.code);
   }
 });
 
-test('001Y cannot green next contour opening when source proof is invalid', async () => {
-  const { runExactTextApplyWithReceiptNextAdmission } = await loadModule();
-  const { canonicalHash } = await loadKernel();
-  const badSource = accepted001XResult(canonicalHash, undefined, { source001WReceiptHash: '' });
-  const result = runExactTextApplyWithReceiptNextAdmission({
-    source001XResult: badSource,
-    source001XResultHash: badSource.canonicalHash,
-    source001XDecisionHash: badSource.decisions[0].canonicalHash,
-    ownerAdmissionPacket001Y: ownerPacket(),
-  });
-
-  assert.equal(result.outputDecision, 'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_001Y_BLOCKED');
-  assert.equal(result.ownerMayOpen001Z, false);
-  assert.equal(result.nextContourRecommendation, null);
-});
-
-test('001Y task record preserves admission only boundary', () => {
+test('001Z task records preserve admission only and delivered 001Y boundary', () => {
   const taskText = sourceText('docs', 'tasks', TASK_BASENAME);
-  assert.match(taskText, /TASK_ID: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_001Y/u);
+  assert.match(taskText, /TASK_ID: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_001Z/u);
   assert.match(taskText, /CONTOUR_TYPE: ADMISSION_ONLY/u);
-  assert.match(taskText, /PREVIOUS_CONTOUR: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_CLOSEOUT_001X/u);
-  assert.match(taskText, /NEXT_CONTOUR_RECOMMENDATION_ONLY: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_ADAPTER_ADMISSION_001Z/u);
+  assert.match(taskText, /PREVIOUS_CONTOUR: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_001Y/u);
+  assert.match(taskText, /NEXT_CONTOUR_IF_PASS: PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTRACT_BRIEF_002A/u);
   assert.match(taskText, /PUBLIC_RUNTIME_ADMITTED: false/u);
   assert.match(taskText, /PUBLIC_ADAPTER_IMPLEMENTATION_ADMITTED: false/u);
   assert.match(taskText, /RUNTIME_WIRING_ADMITTED: false/u);
   assert.match(taskText, /APPLYTXN_IMPLEMENTED: false/u);
   assert.match(taskText, /RECOVERY_CLAIMED: false/u);
-  assert.match(taskText, /STATUS: DONE/u);
-  assert.match(taskText, /COMMIT_SHA: a5ae54945ce689029f71a21c7fd40120cc0eb187/u);
-  assert.match(taskText, /PUSH_RESULT: pushed/u);
+  assert.match(taskText, /COMMIT_SHA: pending/u);
   assert.doesNotMatch(taskText, /release green|public apply|DOCX runtime|ApplyTxn implemented|recovery proven/iu);
+
+  const sourceTaskText = sourceText('docs', 'tasks', SOURCE_001Y_TASK_BASENAME);
+  assert.match(sourceTaskText, /STATUS: DONE/u);
+  assert.match(sourceTaskText, /COMMIT_SHA: a5ae54945ce689029f71a21c7fd40120cc0eb187/u);
+  assert.match(sourceTaskText, /PUSH_RESULT: pushed/u);
+  assert.doesNotMatch(sourceTaskText, /COMMIT_SHA: pending|PUSH_RESULT: pending/u);
+
+  const boundSourceTaskText = gitText([
+    'show',
+    `${BINDING_HEAD_SHA}:docs/tasks/${SOURCE_001Y_TASK_BASENAME}`,
+  ]);
+  assert.match(boundSourceTaskText, /STATUS: DONE/u);
+  assert.match(boundSourceTaskText, /COMMIT_SHA: a5ae54945ce689029f71a21c7fd40120cc0eb187/u);
+  assert.match(boundSourceTaskText, /PUSH_RESULT: pushed/u);
+  assert.doesNotMatch(boundSourceTaskText, /COMMIT_SHA: pending|PUSH_RESULT: pending/u);
 });
 
-test('001Y changed scope stays allowlisted and next admission module stays pure', () => {
+test('001Z changed scope stays exact-path allowlisted and next contour module stays pure', () => {
   const changedPaths = [
     ...gitLines(['diff', '--name-only', 'HEAD']),
     ...gitLines(['diff', '--cached', '--name-only']),
@@ -604,11 +648,9 @@ test('001Y changed scope stays allowlisted and next admission module stays pure'
   ].sort();
   const changedBasenames = changedBasenamesForCurrentContour();
   const allowedPaths = new Set([
-    'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_CLOSEOUT_001X.md',
     'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_ADMISSION_001Y.md',
     'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_001Z.md',
     'scripts/ops/revision-bridge-pre-stage-00-admission-guard-state.mjs',
-    'src/revisionBridge/exactTextApplyWithReceiptNextAdmission.mjs',
     'src/revisionBridge/exactTextApplyWithReceiptNextContourAdmission.mjs',
     'test/contracts/exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
     'test/contracts/exactTextApplyInternalWritePrototype.contract.test.js',
@@ -628,13 +670,11 @@ test('001Y changed scope stays allowlisted and next admission module stays pure'
   ]);
   const allowlist = new Set([
     MODULE_BASENAME,
-    'exactTextApplyWithReceiptNextContourAdmission.mjs',
-    'exactTextApplyWithReceiptNextAdmission.contract.test.js',
     'exactTextApplyWithReceiptNextContourAdmission.contract.test.js',
     TASK_BASENAME,
-    'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_NEXT_CONTOUR_ADMISSION_001Z.md',
-    'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_CLOSEOUT_001X.md',
+    SOURCE_001Y_TASK_BASENAME,
     'revision-bridge-pre-stage-00-admission-guard-state.mjs',
+    'exactTextApplyWithReceiptNextAdmission.contract.test.js',
     'exactTextApplyWithReceiptCloseout.contract.test.js',
     'exactTextApplyWithReceiptExecution.contract.test.js',
     'exactTextApplyWithReceiptAdmission.contract.test.js',
@@ -663,13 +703,13 @@ test('001Y changed scope stays allowlisted and next admission module stays pure'
     'projectCommands.mjs',
     'hostilePackageGate.mjs',
   ]);
-  assert.notDeepEqual(changedBasenames, [], '001Y must have detectable changed scope');
+  assert.notDeepEqual(changedBasenames, [], '001Z must have detectable changed scope');
   for (const changedPath of changedPaths) {
-    assert.equal(allowedPaths.has(changedPath), true, `unexpected 001Y changed path: ${changedPath}`);
+    assert.equal(allowedPaths.has(changedPath), true, `unexpected 001Z changed path: ${changedPath}`);
   }
   for (const basename of changedBasenames) {
-    assert.equal(allowlist.has(basename), true, `unexpected 001Y changed basename: ${basename}`);
-    assert.equal(denylist.has(basename), false, `denylisted 001Y changed basename: ${basename}`);
+    assert.equal(allowlist.has(basename), true, `unexpected 001Z changed basename: ${basename}`);
+    assert.equal(denylist.has(basename), false, `denylisted 001Z changed basename: ${basename}`);
   }
 
   const moduleText = sourceText('src', 'revisionBridge', MODULE_BASENAME);
@@ -680,10 +720,12 @@ test('001Y changed scope stays allowlisted and next admission module stays pure'
     /from\s+['"][^'"]*backupManager[^'"]*['"]/u,
     /from\s+['"][^'"]*fileManager[^'"]*['"]/u,
     /from\s+['"]electron['"]/u,
+    /import\s*\(\s*['"]electron['"]\s*\)/u,
+    /import\s*\(\s*['"]node:fs['"]\s*\)/u,
     /require\s*\(\s*['"]electron['"]\s*\)/u,
-    /from\s+['"][^'"]*(?:main|preload|editor|command-catalog|projectCommands)[^'"]*['"]/u,
+    /from\s+['"][^'"]*(?:main|preload|editor|command-catalog|projectCommands|runtimeBridge)[^'"]*['"]/u,
   ];
   for (const pattern of forbiddenPatterns) {
-    assert.equal(pattern.test(moduleText), false, `forbidden 001Y import pattern: ${pattern.source}`);
+    assert.equal(pattern.test(moduleText), false, `forbidden 001Z import pattern: ${pattern.source}`);
   }
 });
