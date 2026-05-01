@@ -484,9 +484,11 @@ test('001N changed scope stays allowlisted and production kernel does not import
     'reviewIrKernel.mjs',
     'exactTextApplyTestOnlyStoragePrimitiveExecutionHarness.contract.test.js',
     'exactTextApplyTestOnlyProductShapedStorageDryRun.contract.test.js',
+    'exactTextApplyProductApplyReadinessReview.contract.test.js',
     'exactTextApplyProductStoragePrimitiveEvidence.contract.test.js',
     'exactTextApplyTestFixtureReceiptFile.contract.test.js',
     'EXACT_TEXT_APPLY_TEST_ONLY_PRODUCT_SHAPED_STORAGE_DRY_RUN_001O.md',
+    'EXACT_TEXT_APPLY_PRODUCT_APPLY_READINESS_REVIEW_001P.md',
     TASK_BASENAME,
   ]);
   const denylist = new Set([
