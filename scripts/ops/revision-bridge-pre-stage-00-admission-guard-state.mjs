@@ -14,12 +14,20 @@ const ARTIFACT_PATHS = {
 
 const ALLOWED_CHANGED_PATHS = new Set([
   'docs/tasks/REVISION_BRIDGE_PRE_STAGE_00_ADMISSION_GUARD_001.md',
+  'docs/tasks/EXACT_TEXT_APPLY_PRODUCT_APPLY_ADMISSION_GATE_001Q.md',
+  'src/revisionBridge/reviewIrKernel.mjs',
   ARTIFACT_PATHS.layerTable,
   ARTIFACT_PATHS.modeTable,
   ARTIFACT_PATHS.profile,
   ARTIFACT_PATHS.nextRecord,
   'scripts/ops/revision-bridge-pre-stage-00-admission-guard-state.mjs',
   'test/contracts/revision-bridge-admission-guard.contract.test.js',
+  'test/contracts/exactTextApplyProductApplyAdmissionGate.contract.test.js',
+  'test/contracts/exactTextApplyProductApplyReadinessReview.contract.test.js',
+  'test/contracts/exactTextApplyProductStoragePrimitiveEvidence.contract.test.js',
+  'test/contracts/exactTextApplyTestFixtureReceiptFile.contract.test.js',
+  'test/contracts/exactTextApplyTestOnlyProductShapedStorageDryRun.contract.test.js',
+  'test/contracts/exactTextApplyTestOnlyStoragePrimitiveExecutionHarness.contract.test.js',
 ]);
 
 const ALLOWED_CHANGED_BASENAMES = new Set(

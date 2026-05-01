@@ -6,7 +6,7 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
 const MODULE_BASENAME = 'reviewIrKernel.mjs';
-const TASK_BASENAME = 'EXACT_TEXT_APPLY_PRODUCT_APPLY_READINESS_REVIEW_001P.md';
+const TASK_BASENAME = 'EXACT_TEXT_APPLY_PRODUCT_APPLY_ADMISSION_GATE_001Q.md';
 
 async function loadKernel() {
   return import(pathToFileURL(path.join(process.cwd(), 'src', 'revisionBridge', MODULE_BASENAME)).href);
@@ -243,7 +243,7 @@ function acceptedRequirements(overrides = {}) {
   };
 }
 
-function acceptedOwnerDecisionPacket(overrides = {}) {
+function acceptedReadinessOwnerPacket(overrides = {}) {
   return {
     packetKind: 'EXACT_TEXT_PRODUCT_APPLY_READINESS_OWNER_DECISION_PACKET_001P',
     localContourOnly: true,
@@ -259,155 +259,234 @@ function acceptedOwnerDecisionPacket(overrides = {}) {
   };
 }
 
-async function acceptedReadinessBaseInput(overrides = {}) {
-  const { canonicalHash } = await loadKernel();
-  return {
+async function acceptedReadinessResult(overrides = {}) {
+  const {
+    canonicalHash,
+    compileExactTextProductApplyReadinessReview,
+  } = await loadKernel();
+  return compileExactTextProductApplyReadinessReview({
     testOnlyStoragePrimitiveExecutionHarnessResult: accepted001NResult(canonicalHash),
     testOnlyProductShapedDryRunResult: await accepted001OResult(),
     requirements: acceptedRequirements(),
-    ownerDecisionPacket: acceptedOwnerDecisionPacket(),
+    ownerDecisionPacket: acceptedReadinessOwnerPacket(),
     productStorageSurfaceRequirementsAreStaticOnly: true,
     receiptRequirementsAreDraftOnly: true,
+    ...overrides,
+  });
+}
+
+function acceptedOwnerAdmissionPacket(overrides = {}) {
+  return {
+    packetKind: 'EXACT_TEXT_PRODUCT_APPLY_ADMISSION_OWNER_PACKET_001Q',
+    ownerApprovedOpening001R: true,
+    ownerApprovedDirectProductWrite: false,
+    productWriteStillBlockedUntil001R: true,
+    publicSurfaceStillBlocked: true,
+    releaseClaimStillBlocked: true,
+    exactTextSingleSceneOnly: true,
+    commentStructuralMultiSceneRemainBlocked: true,
     ...overrides,
   };
 }
 
-test('001P accepts one pure readiness review decision without product apply admission', async () => {
-  const { compileExactTextProductApplyReadinessReview } = await loadKernel();
-  const baseInput = await acceptedReadinessBaseInput();
-  const first = compileExactTextProductApplyReadinessReview(baseInput);
-  const second = compileExactTextProductApplyReadinessReview(baseInput);
+function acceptedDeliveryTargetPacket(overrides = {}) {
+  return {
+    packetKind: 'EXACT_TEXT_PRODUCT_APPLY_DELIVERY_TARGET_PACKET_001Q',
+    targetBranch: 'OWNER_APPROVED_TARGET_REQUIRED',
+    baseSha: 'OWNER_APPROVED_BASE_SHA_REQUIRED',
+    prTargetPolicyExplicit: true,
+    mergeTargetPolicyExplicit: true,
+    isolatedBranchPolicyExplicit: true,
+    mainlineSeparateDevelopmentAcknowledged: true,
+    ...overrides,
+  };
+}
+
+async function acceptedAdmissionBaseInput(overrides = {}) {
+  const { canonicalHash } = await loadKernel();
+  return {
+    productApplyReadinessReviewResult: await acceptedReadinessResult(),
+    testOnlyProductShapedDryRunResult: await accepted001OResult(),
+    testOnlyStoragePrimitiveExecutionHarnessResult: accepted001NResult(canonicalHash),
+    ownerAdmissionPacket: acceptedOwnerAdmissionPacket(),
+    deliveryTargetPacket: acceptedDeliveryTargetPacket(),
+    ...overrides,
+  };
+}
+
+test('001Q admits opening 001R without product write or runtime apply', async () => {
+  const { compileExactTextProductApplyAdmissionGate } = await loadKernel();
+  const baseInput = await acceptedAdmissionBaseInput();
+  const first = compileExactTextProductApplyAdmissionGate(baseInput);
+  const second = compileExactTextProductApplyAdmissionGate(baseInput);
 
   assert.deepEqual(first, second);
-  assert.equal(first.resultKind, 'EXACT_TEXT_PRODUCT_APPLY_READINESS_REVIEW_RESULT');
+  assert.equal(first.resultKind, 'EXACT_TEXT_PRODUCT_APPLY_ADMISSION_GATE_RESULT');
   assert.equal(first.contractOnly, true);
-  assert.equal(first.readinessReviewOnly, true);
-  assert.equal(first.productApplyReadinessReviewCompleted, true);
-  assert.equal(first.outputDecision, 'OWNER_MAY_PLAN_PRODUCT_APPLY_ADMISSION_001Q');
-  assert.equal(first.productApplyAdmissionAllowed, false);
+  assert.equal(first.admissionGateOnly, true);
+  assert.equal(first.productApplyAdmissionPlanningGateCompleted, true);
+  assert.equal(first.outputDecision, 'OWNER_MAY_OPEN_EXACT_TEXT_PRODUCT_WRITE_IMPLEMENTATION_001R');
+  assert.equal(first.productApplyAdmissionToOpen001RAllowed, true);
+  assert.equal(first.productWriteImplementationAllowedIn001Q, false);
+  assert.equal(first.productWriteImplementationAllowedAfter001QOnlyIn001R, true);
+  assert.equal(first.productApplyRuntimeExecutionAllowed, false);
   assert.equal(first.productWriteExecutionAllowed, false);
-  assert.equal(first.productApplyAdmissionClaimed, false);
   assert.equal(first.productApplyAdmitted, false);
+  assert.equal(first.productApplyAdmissionClaimed, false);
   assert.equal(first.productWritePerformed, false);
+  assert.equal(first.productWriteClaimed, false);
   assert.equal(first.manuscriptMutationPerformed, false);
-  assert.equal(first.receiptRequirementsAreDraftOnly, true);
-  assert.equal(first.receiptRequirementsMarkedImplemented, false);
   assert.equal(first.applyReceiptImplemented, false);
   assert.equal(first.applyTxnClaimed, false);
-  assert.equal(first.productStorageSurfaceRequirementsAreStaticOnly, true);
-  assert.equal(first.runtimeStorageScanRequested, false);
-  assert.equal(first.storagePrimitiveImportOrCall, false);
-  assert.equal(first.productSavePathCall, false);
-  assert.equal(first.ownerDecisionPacketIsLocalContourOnly, true);
-  assert.equal(first.ownerDecisionPacketIsReleaseGate, false);
+  assert.equal(first.publicSurfaceClaimed, false);
+  assert.equal(first.docxImportClaimed, false);
   assert.deepEqual(first.blockedReasons, []);
-  assert.equal(first.productApplyReadinessReviewDecisions.length, 1);
+  assert.equal(first.productApplyAdmissionGateDecisions.length, 1);
 
-  const decision = first.productApplyReadinessReviewDecisions[0];
-  assert.equal(decision.outputDecision, 'OWNER_MAY_PLAN_PRODUCT_APPLY_ADMISSION_001Q');
-  assert.equal(decision.acceptedBinding, 'EXACT_TEXT_APPLY_TEST_ONLY_PRODUCT_SHAPED_STORAGE_DRY_RUN_001O');
-  assert.equal(decision.productApplyAdmissionAllowed, false);
-  assert.equal(decision.productWriteExecutionAllowed, false);
-  assert.equal(decision.receiptRequirementsAreDraftOnly, true);
-  assert.equal(decision.productStorageSurfaceRequirementsAreStaticOnly, true);
-  assert.equal(decision.sourceTestOnlyProductShapedDryRunResultHash, baseInput.testOnlyProductShapedDryRunResult.canonicalHash);
+  const decision = first.productApplyAdmissionGateDecisions[0];
+  assert.equal(decision.productApplyAdmissionGateDecisionKind, 'EXACT_TEXT_PRODUCT_APPLY_ADMISSION_GATE_DECISION');
+  assert.equal(decision.outputDecision, 'OWNER_MAY_OPEN_EXACT_TEXT_PRODUCT_WRITE_IMPLEMENTATION_001R');
+  assert.equal(decision.acceptedBinding, 'EXACT_TEXT_APPLY_PRODUCT_APPLY_READINESS_REVIEW_001P');
+  assert.equal(decision.nextContourAfterPass, 'EXACT_TEXT_APPLY_PRODUCT_WRITE_IMPLEMENTATION_001R');
+  assert.equal(decision.productWriteImplementationAllowedIn001Q, false);
+  assert.equal(decision.productApplyRuntimeExecutionAllowed, false);
+  assert.equal(decision.sourceProductApplyReadinessReviewResultHash, baseInput.productApplyReadinessReviewResult.canonicalHash);
+  assert.ok(decision.ownerAdmissionPacketHash);
+  assert.ok(decision.deliveryTargetPacketHash);
 });
 
-test('001P blocks missing weak or contaminated 001O binding', async () => {
-  const { compileExactTextProductApplyReadinessReview, canonicalHash, REASON_CODES } = await loadKernel();
-  const requirements = acceptedRequirements();
-  const ownerDecisionPacket = acceptedOwnerDecisionPacket();
-  const baseInput = {
-    testOnlyStoragePrimitiveExecutionHarnessResult: accepted001NResult(canonicalHash),
-    productStorageSurfaceRequirementsAreStaticOnly: true,
-    receiptRequirementsAreDraftOnly: true,
-    requirements,
-    ownerDecisionPacket,
-  };
-  const missing = compileExactTextProductApplyReadinessReview(baseInput);
-  assert.equal(missing.productApplyReadinessReviewCompleted, false);
-  assert.deepEqual(missing.productApplyReadinessReviewDecisions, []);
+test('001Q blocks missing weak or contaminated 001P binding', async () => {
+  const { compileExactTextProductApplyAdmissionGate, canonicalHash, REASON_CODES } = await loadKernel();
+  const baseInput = await acceptedAdmissionBaseInput();
+  const missing = compileExactTextProductApplyAdmissionGate({
+    ...baseInput,
+    productApplyReadinessReviewResult: undefined,
+  });
+  assert.equal(missing.productApplyAdmissionPlanningGateCompleted, false);
+  assert.deepEqual(missing.productApplyAdmissionGateDecisions, []);
   assert.equal(missing.blockedReasons.includes(REASON_CODES.PRODUCT_APPLY_READINESS_REVIEW_MISSING), true);
 
-  const contaminated = compileExactTextProductApplyReadinessReview({
+  const contaminated = compileExactTextProductApplyAdmissionGate({
     ...baseInput,
-    testOnlyProductShapedDryRunResult: {
-      ...(await accepted001OResult()),
+    productApplyReadinessReviewResult: {
+      ...baseInput.productApplyReadinessReviewResult,
+      productWritePerformed: true,
+    },
+  });
+  assert.equal(contaminated.productApplyAdmissionPlanningGateCompleted, false);
+  assert.deepEqual(contaminated.productApplyAdmissionGateDecisions, []);
+  assert.equal(contaminated.blockedReasons.includes(REASON_CODES.PRODUCT_APPLY_READINESS_REVIEW_MISSING), true);
+
+  const contaminatedAdmitted = compileExactTextProductApplyAdmissionGate({
+    ...baseInput,
+    productApplyReadinessReviewResult: {
+      ...baseInput.productApplyReadinessReviewResult,
       productApplyAdmitted: true,
     },
   });
-  assert.equal(contaminated.productApplyReadinessReviewCompleted, false);
-  assert.deepEqual(contaminated.productApplyReadinessReviewDecisions, []);
-  assert.equal(contaminated.blockedReasons.includes(REASON_CODES.PRODUCT_APPLY_READINESS_REVIEW_MISSING), true);
+  assert.equal(contaminatedAdmitted.productApplyAdmissionPlanningGateCompleted, false);
+  assert.deepEqual(contaminatedAdmitted.productApplyAdmissionGateDecisions, []);
+  assert.equal(contaminatedAdmitted.blockedReasons.includes(REASON_CODES.PRODUCT_APPLY_READINESS_REVIEW_MISSING), true);
 
-  const weak = await accepted001OResult();
-  delete weak.testOnlyProductShapedDryRunDecisions[0].fixtureManifestStubHash;
-  const weakResult = compileExactTextProductApplyReadinessReview({
+  const contaminatedClaimed = compileExactTextProductApplyAdmissionGate({
     ...baseInput,
-    testOnlyProductShapedDryRunResult: weak,
+    productApplyReadinessReviewResult: {
+      ...baseInput.productApplyReadinessReviewResult,
+      productWriteClaimed: true,
+    },
   });
-  assert.equal(weakResult.productApplyReadinessReviewCompleted, false);
-  assert.deepEqual(weakResult.productApplyReadinessReviewDecisions, []);
+  assert.equal(contaminatedClaimed.productApplyAdmissionPlanningGateCompleted, false);
+  assert.deepEqual(contaminatedClaimed.productApplyAdmissionGateDecisions, []);
+  assert.equal(contaminatedClaimed.blockedReasons.includes(REASON_CODES.PRODUCT_APPLY_READINESS_REVIEW_MISSING), true);
+
+  const malformedBlockedReasons = compileExactTextProductApplyAdmissionGate({
+    ...baseInput,
+    productApplyReadinessReviewResult: {
+      ...baseInput.productApplyReadinessReviewResult,
+      blockedReasons: true,
+    },
+  });
+  assert.equal(malformedBlockedReasons.productApplyAdmissionPlanningGateCompleted, false);
+  assert.deepEqual(malformedBlockedReasons.productApplyAdmissionGateDecisions, []);
+  assert.equal(malformedBlockedReasons.blockedReasons.includes(REASON_CODES.PRODUCT_APPLY_READINESS_REVIEW_MISSING), true);
+
+  const weak = await acceptedReadinessResult();
+  delete weak.productApplyReadinessReviewDecisions[0].sourceTestOnlyProductShapedDryRunResultHash;
+  const weakResult = compileExactTextProductApplyAdmissionGate({
+    ...baseInput,
+    productApplyReadinessReviewResult: weak,
+  });
+  assert.equal(weakResult.productApplyAdmissionPlanningGateCompleted, false);
+  assert.deepEqual(weakResult.productApplyAdmissionGateDecisions, []);
   assert.equal(weakResult.blockedReasons.includes(REASON_CODES.PRODUCT_APPLY_READINESS_REVIEW_MISSING), true);
 
-  const mismatchedSource = compileExactTextProductApplyReadinessReview({
+  const mismatched001N = compileExactTextProductApplyAdmissionGate({
     ...baseInput,
     testOnlyStoragePrimitiveExecutionHarnessResult: {
       ...accepted001NResult(canonicalHash),
       canonicalHash: 'wrong-001n-result-hash',
     },
-    testOnlyProductShapedDryRunResult: await accepted001OResult(),
   });
-  assert.equal(mismatchedSource.productApplyReadinessReviewCompleted, false);
-  assert.deepEqual(mismatchedSource.productApplyReadinessReviewDecisions, []);
-  assert.equal(mismatchedSource.blockedReasons.includes(REASON_CODES.PRODUCT_APPLY_READINESS_REVIEW_MISSING), true);
+  assert.equal(mismatched001N.productApplyAdmissionPlanningGateCompleted, false);
+  assert.deepEqual(mismatched001N.productApplyAdmissionGateDecisions, []);
+  assert.equal(mismatched001N.blockedReasons.includes(REASON_CODES.PRODUCT_APPLY_READINESS_REVIEW_MISSING), true);
+
+  const wrong001OLink = await acceptedReadinessResult();
+  wrong001OLink.productApplyReadinessReviewDecisions[0].sourceTestOnlyProductShapedDryRunResultHash = 'wrong-001o-result-hash';
+  const mismatched001O = compileExactTextProductApplyAdmissionGate({
+    ...baseInput,
+    productApplyReadinessReviewResult: wrong001OLink,
+  });
+  assert.equal(mismatched001O.productApplyAdmissionPlanningGateCompleted, false);
+  assert.deepEqual(mismatched001O.productApplyAdmissionGateDecisions, []);
+  assert.equal(mismatched001O.blockedReasons.includes(REASON_CODES.PRODUCT_APPLY_READINESS_REVIEW_MISSING), true);
 });
 
-test('001P blocks missing requirements and precondition blockers', async () => {
-  const { compileExactTextProductApplyReadinessReview, REASON_CODES } = await loadKernel();
-  const baseInput = await acceptedReadinessBaseInput();
+test('001Q blocks invalid owner admission and delivery target packets', async () => {
+  const { compileExactTextProductApplyAdmissionGate, REASON_CODES } = await loadKernel();
+  const baseInput = await acceptedAdmissionBaseInput();
   const cases = [
-    [REASON_CODES.REQUIREMENTS_MATRIX_MISSING, { requirementsKind: 'WRONG_KIND' }],
-    [REASON_CODES.REQUIREMENTS_MATRIX_MISSING, { preconditionRequirements: [] }],
-    [REASON_CODES.RECEIPT_CAPABILITY_MISSING, { receiptShapeRequirements: [] }],
-    [REASON_CODES.WRONG_PROJECT, { preconditionRequirements: acceptedRequirements().preconditionRequirements.filter((item) => item !== 'PROJECT_ID_TEST') }],
-    [REASON_CODES.SCENE_MISMATCH, { preconditionRequirements: acceptedRequirements().preconditionRequirements.filter((item) => item !== 'SCENE_ID_TEST') }],
-    [REASON_CODES.STALE_BASELINE, { preconditionRequirements: acceptedRequirements().preconditionRequirements.filter((item) => item !== 'BASELINE_HASH_TEST') }],
-    [REASON_CODES.BLOCK_VERSION_MISMATCH, { preconditionRequirements: acceptedRequirements().preconditionRequirements.filter((item) => item !== 'BLOCK_VERSION_HASH_TEST') }],
-    [REASON_CODES.EXACT_TEXT_MISMATCH, { preconditionRequirements: acceptedRequirements().preconditionRequirements.filter((item) => item !== 'EXACT_TEXT_GUARD') }],
-    [REASON_CODES.CLOSED_SESSION, { preconditionRequirements: acceptedRequirements().preconditionRequirements.filter((item) => item !== 'SESSION_OPEN_TEST') }],
-    [REASON_CODES.MISSING_PRECONDITION, { preconditionRequirements: acceptedRequirements().preconditionRequirements.filter((item) => item !== 'COMMENT_APPLY_BLOCKED') }],
+    [REASON_CODES.OWNER_DECISION_PACKET_INVALID, { ownerAdmissionPacket: undefined }],
+    [REASON_CODES.OWNER_DECISION_PACKET_INVALID, { ownerAdmissionPacket: acceptedOwnerAdmissionPacket({ ownerApprovedOpening001R: false }) }],
+    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { ownerAdmissionPacket: acceptedOwnerAdmissionPacket({ ownerApprovedDirectProductWrite: true }) }],
+    [REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR, { ownerAdmissionPacket: acceptedOwnerAdmissionPacket({ publicSurfaceStillBlocked: false }) }],
+    [REASON_CODES.GOVERNANCE_REWRITE_FORBIDDEN_IN_CONTOUR, { ownerAdmissionPacket: acceptedOwnerAdmissionPacket({ releaseClaimStillBlocked: false }) }],
+    [REASON_CODES.DELIVERY_TARGET_PACKET_INVALID, { deliveryTargetPacket: undefined }],
+    [REASON_CODES.DELIVERY_TARGET_PACKET_INVALID, { deliveryTargetPacket: acceptedDeliveryTargetPacket({ targetBranch: '' }) }],
+    [REASON_CODES.DELIVERY_TARGET_PACKET_INVALID, { deliveryTargetPacket: acceptedDeliveryTargetPacket({ baseSha: '' }) }],
+    [REASON_CODES.DELIVERY_TARGET_PACKET_INVALID, { deliveryTargetPacket: acceptedDeliveryTargetPacket({ isolatedBranchPolicyExplicit: false }) }],
   ];
 
-  for (const [reasonCode, requirementsOverride] of cases) {
-    const result = compileExactTextProductApplyReadinessReview({
+  for (const [reasonCode, override] of cases) {
+    const result = compileExactTextProductApplyAdmissionGate({
       ...baseInput,
-      requirements: acceptedRequirements(requirementsOverride),
+      ...override,
     });
-    assert.equal(result.productApplyReadinessReviewCompleted, false, reasonCode);
-    assert.deepEqual(result.productApplyReadinessReviewDecisions, [], reasonCode);
+    assert.equal(result.productApplyAdmissionPlanningGateCompleted, false, reasonCode);
+    assert.deepEqual(result.productApplyAdmissionGateDecisions, [], reasonCode);
     assert.equal(result.blockedReasons.includes(reasonCode), true, reasonCode);
   }
 });
 
-test('001P blocks forbidden claim escalation runtime storage and governance rewrites', async () => {
-  const { compileExactTextProductApplyReadinessReview, REASON_CODES } = await loadKernel();
-  const baseInput = await acceptedReadinessBaseInput();
+test('001Q blocks forbidden runtime write public surface transport and governance claims', async () => {
+  const { compileExactTextProductApplyAdmissionGate, REASON_CODES } = await loadKernel();
+  const baseInput = await acceptedAdmissionBaseInput();
   const cases = [
-    [REASON_CODES.PRODUCT_APPLY_ADMISSION_FORBIDDEN, { productApplyAdmissionAllowed: true }],
-    [REASON_CODES.PRODUCT_APPLY_ADMISSION_FORBIDDEN, { productWriteExecutionAllowed: true }],
+    [REASON_CODES.PRODUCT_APPLY_ADMISSION_FORBIDDEN, { productApplyRuntimeExecutionAllowed: true }],
+    [REASON_CODES.PRODUCT_APPLY_ADMISSION_FORBIDDEN, { productApplyAdmitted: true }],
+    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { productWriteExecutionAllowed: true }],
     [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { productWritePerformed: true }],
     [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { productWriteClaimed: true }],
-    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { manuscriptMutationPerformed: true }],
-    [REASON_CODES.RECEIPT_REQUIREMENTS_ESCALATED_TO_IMPLEMENTATION, { receiptRequirementsAreDraftOnly: false }],
-    [REASON_CODES.RECEIPT_REQUIREMENTS_ESCALATED_TO_IMPLEMENTATION, { receiptRequirementsMarkedImplemented: true }],
-    [REASON_CODES.RECEIPT_REQUIREMENTS_ESCALATED_TO_IMPLEMENTATION, { applyReceiptImplemented: true }],
-    [REASON_CODES.RUNTIME_STORAGE_SCAN_FORBIDDEN_IN_CONTOUR, { productStorageSurfaceRequirementsAreStaticOnly: false }],
-    [REASON_CODES.RUNTIME_STORAGE_SCAN_FORBIDDEN_IN_CONTOUR, { runtimeStorageScanRequested: true }],
+    [REASON_CODES.PRODUCT_WRITE_FORBIDDEN_IN_CONTOUR, { productSavePathCall: true }],
     [REASON_CODES.PRODUCTION_STORAGE_IMPORT_FORBIDDEN, { storagePrimitiveImportOrCall: true }],
-    [REASON_CODES.PRODUCTION_STORAGE_IMPORT_FORBIDDEN, { productSavePathCall: true }],
-    [REASON_CODES.RECOVERY_CLAIM_FORBIDDEN_IN_CONTOUR, { recoveryClaimed: true }],
+    [REASON_CODES.RECEIPT_REQUIREMENTS_ESCALATED_TO_IMPLEMENTATION, { applyReceiptImplemented: true }],
+    [REASON_CODES.RECEIPT_REQUIREMENTS_ESCALATED_TO_IMPLEMENTATION, { durableReceiptClaimed: true }],
+    [REASON_CODES.RECEIPT_REQUIREMENTS_ESCALATED_TO_IMPLEMENTATION, { productApplyReceiptClaimed: true }],
     [REASON_CODES.STRUCTURAL_AUTO_APPLY_FORBIDDEN, { applyTxnClaimed: true }],
+    [REASON_CODES.STRUCTURAL_AUTO_APPLY_FORBIDDEN, { applyTxnImplemented: true }],
+    [REASON_CODES.RECOVERY_CLAIM_FORBIDDEN_IN_CONTOUR, { recoveryClaimed: true }],
+    [REASON_CODES.RECOVERY_CLAIM_FORBIDDEN_IN_CONTOUR, { crashRecoveryClaimed: true }],
+    [REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR, { uiChanged: true }],
     [REASON_CODES.PUBLIC_SURFACE_FORBIDDEN_IN_CONTOUR, { publicSurfaceChanged: true }],
     [REASON_CODES.SEMANTIC_PARSE_FORBIDDEN, { docxImportClaimed: true }],
     [REASON_CODES.NETWORK_FORBIDDEN, { networkUsed: true }],
@@ -415,68 +494,47 @@ test('001P blocks forbidden claim escalation runtime storage and governance rewr
     [REASON_CODES.COMMENT_APPLY_OUT_OF_SCOPE, { commentApplyClaimed: true }],
     [REASON_CODES.STRUCTURAL_STORAGE_WRITE_BLOCKED, { structuralApplyClaimed: true }],
     [REASON_CODES.MULTI_SCOPE_STORAGE_WRITE_BLOCKED, { multiSceneApplyClaimed: true }],
-    [REASON_CODES.GOVERNANCE_REWRITE_FORBIDDEN_IN_CONTOUR, { preStage00GovernanceRewrite: true }],
     [REASON_CODES.GOVERNANCE_REWRITE_FORBIDDEN_IN_CONTOUR, { tokenCatalogRewrite: true }],
     [REASON_CODES.GOVERNANCE_REWRITE_FORBIDDEN_IN_CONTOUR, { claimGateRewrite: true }],
   ];
 
   for (const [reasonCode, override] of cases) {
-    const result = compileExactTextProductApplyReadinessReview({
+    const result = compileExactTextProductApplyAdmissionGate({
       ...baseInput,
       ...override,
     });
-    assert.equal(result.productApplyReadinessReviewCompleted, false, reasonCode);
-    assert.deepEqual(result.productApplyReadinessReviewDecisions, [], reasonCode);
+    assert.equal(result.productApplyAdmissionPlanningGateCompleted, false, reasonCode);
+    assert.deepEqual(result.productApplyAdmissionGateDecisions, [], reasonCode);
     assert.equal(result.blockedReasons.includes(reasonCode), true, reasonCode);
   }
 });
 
-test('001P blocks invalid owner decision packet and release gate escalation', async () => {
-  const { compileExactTextProductApplyReadinessReview, REASON_CODES } = await loadKernel();
-  const baseInput = await acceptedReadinessBaseInput();
-  const cases = [
-    [REASON_CODES.OWNER_DECISION_PACKET_INVALID, { mayPlan001Q: false }],
-    [REASON_CODES.OWNER_DECISION_PACKET_INVALID, { requiredOwnerApproval: false }],
-    [REASON_CODES.OWNER_DECISION_PACKET_INVALID, { ownerApproved001QWithoutTarget: true }],
-    [REASON_CODES.GOVERNANCE_REWRITE_FORBIDDEN_IN_CONTOUR, { releaseGate: true }],
-  ];
-
-  for (const [reasonCode, ownerDecisionPacketOverride] of cases) {
-    const result = compileExactTextProductApplyReadinessReview({
-      ...baseInput,
-      ownerDecisionPacket: acceptedOwnerDecisionPacket(ownerDecisionPacketOverride),
-    });
-    assert.equal(result.productApplyReadinessReviewCompleted, false, reasonCode);
-    assert.deepEqual(result.productApplyReadinessReviewDecisions, [], reasonCode);
-    assert.equal(result.blockedReasons.includes(reasonCode), true, reasonCode);
-  }
-});
-
-test('001P task record preserves readiness-only boundary', () => {
+test('001Q task record preserves admission gate only boundary', () => {
   const taskText = sourceText('docs', 'tasks', TASK_BASENAME);
-  assert.match(taskText, /STATUS: IMPLEMENTED_LOCALLY_PENDING_DELIVERY_VERIFICATION/u);
-  assert.match(taskText, /PRODUCT_APPLY_ADMISSION_ALLOWED: false/u);
-  assert.match(taskText, /PRODUCT_WRITE_EXECUTION_ALLOWED: false/u);
-  assert.match(taskText, /RECEIPT_REQUIREMENTS_ARE_DRAFT_ONLY: true/u);
-  assert.match(taskText, /PRODUCT_STORAGE_SURFACE_REQUIREMENTS_ARE_STATIC_ONLY: true/u);
-  assert.match(taskText, /OWNER_DECISION_PACKET_IS_LOCAL_CONTOUR_ONLY: true/u);
+  assert.match(taskText, /TASK_ID: EXACT_TEXT_APPLY_PRODUCT_APPLY_ADMISSION_GATE_001Q/u);
+  assert.match(taskText, /PRODUCT_WRITE_IMPLEMENTATION_ALLOWED_IN_001Q: false/u);
+  assert.match(taskText, /PRODUCT_APPLY_RUNTIME_EXECUTION_ALLOWED_IF_PASS: false/u);
+  assert.match(taskText, /MANUSCRIPT_MUTATION_ALLOWED_IF_PASS: false/u);
+  assert.match(taskText, /PUBLIC_SURFACE_ALLOWED_IF_PASS: false/u);
+  assert.match(taskText, /UI_ALLOWED_IF_PASS: false/u);
+  assert.match(taskText, /DOCX_IMPORT_ALLOWED_IF_PASS: false/u);
+  assert.match(taskText, /EXPECTED_DECISION_COUNT: 1/u);
+  assert.match(taskText, /PASS_DECISION: OWNER_MAY_OPEN_EXACT_TEXT_PRODUCT_WRITE_IMPLEMENTATION_001R/u);
   assert.match(taskText, /UI_SCREENSHOT_CHECK: NOT_APPLICABLE_NO_UI_CHANGE/u);
-  assert.match(taskText, /EXPECTED_DECISION: OWNER_MAY_PLAN_PRODUCT_APPLY_ADMISSION_001Q/u);
   assert.match(taskText, /COMMIT_SHA: pending/u);
   assert.match(taskText, /PUSH_RESULT: pending/u);
   assert.match(taskText, /PR_RESULT: pending/u);
   assert.match(taskText, /MERGE_RESULT: pending/u);
-  assert.doesNotMatch(taskText, /product apply admitted|product storage safety proven|ApplyReceipt implemented|ApplyTxn implemented|crash recovery proven|public API exposed|DOCX runtime enabled/iu);
+  assert.doesNotMatch(taskText, /product write ready|manuscript mutated|ApplyReceipt implemented|ApplyTxn implemented|DOCX import ready|release green/iu);
 });
 
-test('001P changed scope stays allowlisted and production kernel does not import storage primitives', () => {
+test('001Q changed scope stays allowlisted and production kernel does not import storage primitives', () => {
   const changedBasenames = changedBasenamesForCurrentContour();
   const allowlist = new Set([
     'reviewIrKernel.mjs',
-    'exactTextApplyProductApplyReadinessReview.contract.test.js',
     'exactTextApplyProductApplyAdmissionGate.contract.test.js',
-    'EXACT_TEXT_APPLY_PRODUCT_APPLY_READINESS_REVIEW_001P.md',
     'EXACT_TEXT_APPLY_PRODUCT_APPLY_ADMISSION_GATE_001Q.md',
+    'exactTextApplyProductApplyReadinessReview.contract.test.js',
     'exactTextApplyTestOnlyProductShapedStorageDryRun.contract.test.js',
     'exactTextApplyTestOnlyStoragePrimitiveExecutionHarness.contract.test.js',
     'exactTextApplyProductStoragePrimitiveEvidence.contract.test.js',
@@ -502,10 +560,10 @@ test('001P changed scope stays allowlisted and production kernel does not import
     'REQUIRED_TOKEN_SET.json',
     'FAILSIGNAL_REGISTRY.json',
   ]);
-  assert.notDeepEqual(changedBasenames, [], '001P must have detectable changed scope');
+  assert.notDeepEqual(changedBasenames, [], '001Q must have detectable changed scope');
   for (const basename of changedBasenames) {
-    assert.equal(allowlist.has(basename), true, `unexpected 001P changed basename: ${basename}`);
-    assert.equal(denylist.has(basename), false, `denylisted 001P changed basename: ${basename}`);
+    assert.equal(allowlist.has(basename), true, `unexpected 001Q changed basename: ${basename}`);
+    assert.equal(denylist.has(basename), false, `denylisted 001Q changed basename: ${basename}`);
   }
 
   const moduleText = sourceText('src', 'revisionBridge', MODULE_BASENAME);
