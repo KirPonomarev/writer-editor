@@ -675,8 +675,9 @@ test('002B task record preserves private shape boundary and no-write policy', ()
   assert.match(taskText, /RECOVERY_CLAIMED: false/u);
   assert.match(taskText, /USER_PROJECT_PATH_ACCEPTED: false/u);
   assert.match(taskText, /DELIVERY_POLICY: COMMIT_REQUIRED_PUSH_REQUIRED/u);
-  assert.match(taskText, /COMMIT_SHA: pending/u);
-  assert.match(taskText, /PUSH_RESULT: pending/u);
+  assert.match(taskText, /STATUS: DONE/u);
+  assert.match(taskText, /COMMIT_SHA: 9e2ca9f15f6774991f8d1ac2914edd6d8401dad3/u);
+  assert.match(taskText, /PUSH_RESULT: pushed/u);
   assert.doesNotMatch(taskText, /release green|public apply|DOCX runtime|ApplyTxn implemented|recovery proven/iu);
 
   const sourceTaskText = sourceText('docs', 'tasks', SOURCE_002A_TASK_BASENAME);
