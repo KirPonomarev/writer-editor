@@ -499,8 +499,11 @@ test('001T changed scope stays allowlisted and admission module stays pure', () 
   const changedBasenames = changedBasenamesForCurrentContour();
   const allowlist = new Set([
     MODULE_BASENAME,
+    'exactTextApplyPrivateProductApplyReceipt.mjs',
     'exactTextApplyPrivateProductApplyReceiptAdmission.contract.test.js',
+    'exactTextApplyPrivateProductApplyReceipt.contract.test.js',
     TASK_BASENAME,
+    'PRIVATE_PRODUCT_APPLY_RECEIPT_IMPLEMENTATION_001U.md',
     'revision-bridge-pre-stage-00-admission-guard-state.mjs',
     'exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
     'exactTextApplyInternalWritePrototype.contract.test.js',
