@@ -13,10 +13,10 @@ const ARTIFACT_PATHS = {
 };
 
 const ALLOWED_CHANGED_PATHS = new Set([
-  'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRODUCT_SHAPED_FIXTURE_IMPLEMENTATION_002G.md',
-  'src/revisionBridge/exactTextApplyWithReceiptProductShapedFixtureImplementation.mjs',
+  'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_CONTROLLED_STORAGE_FIXTURE_PORT_PROOF_ONLY_002J.md',
+  'src/revisionBridge/exactTextApplyWithReceiptPrivateControlledStorageFixturePortProof.mjs',
   'scripts/ops/revision-bridge-pre-stage-00-admission-guard-state.mjs',
-  'test/contracts/exactTextApplyWithReceiptProductShapedFixtureImplementation.contract.test.js',
+  'test/contracts/exactTextApplyWithReceiptPrivateControlledStorageFixturePortProof.contract.test.js',
 ]);
 
 const ALLOWED_CHANGED_BASENAMES = new Set(
