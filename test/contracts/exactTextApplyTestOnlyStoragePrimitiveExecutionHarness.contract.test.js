@@ -496,6 +496,7 @@ test('001N changed scope stays allowlisted and production kernel does not import
     'exactTextApplyWithReceiptPrivatePortAdmission.mjs',
     'exactTextApplyWithReceiptPrivatePortImplementation.mjs',
     'exactTextApplyWithReceiptPrivatePortCloseoutNextContourPermission.mjs',
+    'exactTextApplyWithReceiptProductPathImplementationOpeningAdmission.mjs',
     'exactTextApplyTestOnlyStoragePrimitiveExecutionHarness.contract.test.js',
     'exactTextApplyInternalWritePrototype.contract.test.js',
     'exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
@@ -511,6 +512,7 @@ test('001N changed scope stays allowlisted and production kernel does not import
     'exactTextApplyWithReceiptPrivatePortAdmission.contract.test.js',
     'exactTextApplyWithReceiptPrivatePortImplementation.contract.test.js',
     'exactTextApplyWithReceiptPrivatePortCloseoutNextContourPermission.contract.test.js',
+    'exactTextApplyWithReceiptProductPathImplementationOpeningAdmission.contract.test.js',
     'exactTextApplyTestOnlyProductShapedStorageDryRun.contract.test.js',
     'exactTextApplyProductApplyReadinessReview.contract.test.js',
     'exactTextApplyProductApplyAdmissionGate.contract.test.js',
@@ -534,6 +536,7 @@ test('001N changed scope stays allowlisted and production kernel does not import
     'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_ADMISSION_002C.md',
     'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_IMPLEMENTATION_002D.md',
     'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_CLOSEOUT_AND_NEXT_CONTOUR_PERMISSION_002E.md',
+    'PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRODUCT_PATH_IMPLEMENTATION_OPENING_ADMISSION_002F.md',
     TASK_BASENAME,
   ]);
   const denylist = new Set([

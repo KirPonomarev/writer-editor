@@ -324,8 +324,10 @@ test('002E changed scope stays allowlisted and new module has no direct storage 
   const changedBasenames = changedBasenamesForCurrentContour();
   const allowedPaths = new Set([
     'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRIVATE_PORT_CLOSEOUT_AND_NEXT_CONTOUR_PERMISSION_002E.md',
+    'docs/tasks/PRIVATE_EXACT_TEXT_APPLY_WITH_RECEIPT_PRODUCT_PATH_IMPLEMENTATION_OPENING_ADMISSION_002F.md',
     'scripts/ops/revision-bridge-pre-stage-00-admission-guard-state.mjs',
     'src/revisionBridge/exactTextApplyWithReceiptPrivatePortCloseoutNextContourPermission.mjs',
+    'src/revisionBridge/exactTextApplyWithReceiptProductPathImplementationOpeningAdmission.mjs',
     'test/contracts/exactTextApplyFixtureDurableReceiptPrototype.contract.test.js',
     'test/contracts/exactTextApplyInternalWritePrototype.contract.test.js',
     'test/contracts/exactTextApplyPrivateProductApplyReceipt.contract.test.js',
@@ -344,6 +346,7 @@ test('002E changed scope stays allowlisted and new module has no direct storage 
     'test/contracts/exactTextApplyWithReceiptPrivateContractBrief.contract.test.js',
     'test/contracts/exactTextApplyWithReceiptPrivateContractShape.contract.test.js',
     'test/contracts/exactTextApplyWithReceiptPrivatePortAdmission.contract.test.js',
+    'test/contracts/exactTextApplyWithReceiptProductPathImplementationOpeningAdmission.contract.test.js',
     'test/contracts/exactTextApplyWithReceiptPrivatePortCloseoutNextContourPermission.contract.test.js',
     'test/contracts/exactTextApplyWithReceiptPrivatePortImplementation.contract.test.js',
   ]);
