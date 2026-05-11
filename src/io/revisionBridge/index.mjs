@@ -1,5 +1,3 @@
-import { inflateRawSync } from 'node:zlib';
-
 const PACKET_VALID_CODE = 'REVISION_BRIDGE_PACKET_VALID';
 const PACKET_INVALID_CODE = 'E_REVISION_BRIDGE_PACKET_INVALID';
 const APPLY_BLOCKED_CODE = 'E_REVISION_BRIDGE_APPLY_BLOCKED';
@@ -1192,6 +1190,16 @@ function docxHostileFileGateBudgetsCopy() {
   };
 }
 
+function docxHostileFileGateInflateRawSync(rawBytes, maxOutputLength) {
+  const zlibModule = typeof process?.getBuiltinModule === 'function'
+    ? process.getBuiltinModule('node:zlib')
+    : null;
+  if (!zlibModule || typeof zlibModule.inflateRawSync !== 'function') {
+    throw new Error('DOCX_ZLIB_UNAVAILABLE');
+  }
+  return zlibModule.inflateRawSync(Buffer.from(rawBytes), { maxOutputLength });
+}
+
 function docxHostileFileGateDiagnostic(code, options = {}) {
   const diagnostic = {
     code,
@@ -1405,12 +1413,13 @@ function docxHostileFileGateInflatedDeclarationText(bytes, entry) {
   let contentBytes = rawBytes;
   if (entry.method === 8) {
     try {
-      contentBytes = inflateRawSync(Buffer.from(rawBytes), {
-        maxOutputLength: Math.min(
+      contentBytes = docxHostileFileGateInflateRawSync(
+        rawBytes,
+        Math.min(
           DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRY_UNCOMPRESSED_BYTES,
           Math.max(entry.byteSize, DOCX_HOSTILE_FILE_GATE_BUDGETS.maxDeclarationScanBytes),
         ),
-      });
+      );
     } catch {
       return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_INFLATE_FAILED') };
     }
