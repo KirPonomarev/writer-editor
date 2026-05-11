@@ -35,6 +35,20 @@ export const REVISION_BRIDGE_MINIMAL_REVIEWBOM_SCHEMA = 'revision-bridge.minimal
 export const REVISION_BRIDGE_SHADOW_PREVIEW_SCHEMA = 'revision-bridge.shadow-preview.v1';
 export const REVISION_BRIDGE_BLOCKED_APPLY_PLAN_SCHEMA = 'revision-bridge.blocked-apply-plan.v1';
 export const REVISION_BRIDGE_STAGE01_FIXED_CORE_PREVIEW_SCHEMA = 'revision-bridge.stage01-fixed-core-preview.v1';
+export const DOCX_HOSTILE_FILE_GATE_SCHEMA = 'revision-bridge.docx-hostile-file-gate.v1';
+export const DOCX_HOSTILE_FILE_GATE_REASON_CODES = Object.freeze({
+  PASS: 'STAGE02_GATE_PASS',
+  PACKAGE_MALFORMED: 'STAGE02_PACKAGE_MALFORMED',
+  PACKAGE_QUARANTINED: 'STAGE02_PACKAGE_QUARANTINED',
+  ENCRYPTED_ENTRY_PRESENT: 'STAGE02_ENCRYPTED_ENTRY_PRESENT',
+  PATH_TRAVERSAL_DETECTED: 'STAGE02_PATH_TRAVERSAL_DETECTED',
+  EXTERNAL_RELATIONSHIP_PRESENT: 'STAGE02_EXTERNAL_RELATIONSHIP_PRESENT',
+  DUPLICATE_ENTRY_NAME: 'STAGE02_DUPLICATE_ENTRY_NAME',
+  COMPRESSION_RATIO_EXCEEDED: 'STAGE02_COMPRESSION_RATIO_EXCEEDED',
+  XML_DTD_DECLARATION_PRESENT: 'STAGE02_XML_DTD_DECLARATION_PRESENT',
+  XML_ENTITY_DECLARATION_PRESENT: 'STAGE02_XML_ENTITY_DECLARATION_PRESENT',
+  DECLARATION_SCAN_UNAVAILABLE: 'STAGE02_DECLARATION_SCAN_UNAVAILABLE',
+});
 export const REVISION_BRIDGE_BLOCK_SCHEMA = 'revision-bridge.block.v1';
 export const REVISION_BRIDGE_BLOCK_LINEAGE_SCHEMA = 'revision-bridge.block-lineage.v1';
 export const REVISION_BRIDGE_BLOCK_KINDS = Object.freeze([
@@ -905,6 +919,7 @@ function docxZipReadAsciiName(bytes, cursor, size) {
 function docxZipInventoryNameInvalid(name) {
   if (!name) return true;
   if (name.startsWith('/') || name.startsWith('\\')) return true;
+  if (name.includes('\\')) return true;
   if (/^[A-Za-z]:/u.test(name)) return true;
   return name.split(/[\\/]/u).some((segment) => segment === '..');
 }
@@ -1136,6 +1151,478 @@ export function materializeDocxPackageInventoryFromZipBytes(input) {
   return docxZipInventorySuccess(centralResult.inventory);
 }
 // RB_06_DOCX_ZIP_INVENTORY_MATERIALIZER_END
+
+// RB_09_DOCX_HOSTILE_FILE_GATE_START
+const DOCX_HOSTILE_FILE_GATE_TYPE = 'docxHostileFileGate';
+
+const DOCX_HOSTILE_FILE_GATE_BUDGETS = Object.freeze({
+  maxCompressionRatio: 200,
+  maxDeclarationScanBytes: 4096,
+});
+
+const DOCX_HOSTILE_FILE_GATE_ZIP_QUARANTINE_CODES = new Set([
+  'DOCX_ZIP_BYTES_INPUT_TOO_LARGE',
+  'DOCX_ZIP_CENTRAL_DIRECTORY_TOO_LARGE',
+  'DOCX_ZIP_ENTRY_COUNT_EXCEEDED',
+  'DOCX_ZIP_ENTRY_UNCOMPRESSED_SIZE_EXCEEDED',
+  'DOCX_ZIP_TOTAL_UNCOMPRESSED_SIZE_EXCEEDED',
+]);
+
+const DOCX_HOSTILE_FILE_GATE_DIAGNOSTIC_MESSAGES = Object.freeze({
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.PASS]: 'container policy pass only; semantic parse not attempted',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_MALFORMED]: 'package metadata is malformed for Stage02 gate',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED]: 'package exceeds Stage02 quarantine limits',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.ENCRYPTED_ENTRY_PRESENT]: 'encrypted ZIP entry blocks Stage02 gate',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.PATH_TRAVERSAL_DETECTED]: 'path traversal entry name blocks Stage02 gate',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.EXTERNAL_RELATIONSHIP_PRESENT]: 'external relationship part blocks Stage02 gate',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.DUPLICATE_ENTRY_NAME]: 'duplicate ZIP entry name blocks Stage02 gate',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.COMPRESSION_RATIO_EXCEEDED]: 'compression ratio exceeds Stage02 budget',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.XML_DTD_DECLARATION_PRESENT]: 'DTD declaration blocks Stage02 gate',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.XML_ENTITY_DECLARATION_PRESENT]: 'ENTITY declaration blocks Stage02 gate',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.DECLARATION_SCAN_UNAVAILABLE]: 'declaration scan cannot proceed safely within Stage02 scope',
+});
+
+function docxHostileFileGateBudgetsCopy() {
+  return {
+    ...DOCX_ZIP_INVENTORY_BOUNDS,
+    ...DOCX_PACKAGE_BOUNDARY_BUDGETS,
+    ...DOCX_HOSTILE_FILE_GATE_BUDGETS,
+  };
+}
+
+function docxHostileFileGateInflateRawSync(rawBytes, maxOutputLength) {
+  const zlibModule = typeof process?.getBuiltinModule === 'function'
+    ? process.getBuiltinModule('node:zlib')
+    : null;
+  if (!zlibModule || typeof zlibModule.inflateRawSync !== 'function') {
+    throw new Error('DOCX_ZLIB_UNAVAILABLE');
+  }
+  return zlibModule.inflateRawSync(Buffer.from(rawBytes), { maxOutputLength });
+}
+
+function docxHostileFileGateDiagnostic(code, options = {}) {
+  const diagnostic = {
+    code,
+    severity: options.severity || (code === DOCX_HOSTILE_FILE_GATE_REASON_CODES.PASS ? 'info' : 'error'),
+    message: DOCX_HOSTILE_FILE_GATE_DIAGNOSTIC_MESSAGES[code] || code,
+  };
+  if (options.entryId !== undefined) diagnostic.entryId = options.entryId;
+  if (options.sourceCode !== undefined) diagnostic.sourceCode = options.sourceCode;
+  if (options.actual !== undefined) diagnostic.actual = options.actual;
+  if (options.limit !== undefined) diagnostic.limit = options.limit;
+  return diagnostic;
+}
+
+function docxHostileFileGateEvidence(kind, options = {}) {
+  const evidence = { kind };
+  for (const [key, value] of Object.entries(options)) {
+    if (value !== undefined) evidence[key] = value;
+  }
+  return evidence;
+}
+
+function docxHostileFileGateSortDiagnostics(diagnostics) {
+  return diagnostics.slice().sort((left, right) => (
+    String(left.code).localeCompare(String(right.code))
+    || String(left.entryId || '').localeCompare(String(right.entryId || ''))
+    || String(left.sourceCode || '').localeCompare(String(right.sourceCode || ''))
+  ));
+}
+
+function docxHostileFileGateSortEvidence(evidence) {
+  return evidence.slice().sort((left, right) => (
+    String(left.kind).localeCompare(String(right.kind))
+    || String(left.entryId || '').localeCompare(String(right.entryId || ''))
+    || String(left.code || '').localeCompare(String(right.code || ''))
+  ));
+}
+
+function docxHostileFileGateResult(decision, code, diagnostics = [], evidence = []) {
+  const sortedDiagnostics = docxHostileFileGateSortDiagnostics(diagnostics);
+  const sortedEvidence = docxHostileFileGateSortEvidence(evidence);
+  const accepted = decision === 'pass';
+  return {
+    ok: accepted,
+    schemaVersion: DOCX_HOSTILE_FILE_GATE_SCHEMA,
+    type: DOCX_HOSTILE_FILE_GATE_TYPE,
+    status: accepted ? 'accepted' : decision === 'quarantined' ? 'rejected' : 'blocked',
+    code,
+    reason: code,
+    decision,
+    diagnostics: sortedDiagnostics,
+    evidence: sortedEvidence,
+    budgets: docxHostileFileGateBudgetsCopy(),
+    parse: {
+      attempted: false,
+      semanticAllowed: accepted,
+    },
+  };
+}
+
+function docxHostileFileGateFailureFromMaterializer(result) {
+  const sourceCode = result?.code;
+  if (sourceCode === 'DOCX_ZIP_ENTRY_ENCRYPTED_UNSUPPORTED') {
+    return docxHostileFileGateResult(
+      'blocked',
+      DOCX_HOSTILE_FILE_GATE_REASON_CODES.ENCRYPTED_ENTRY_PRESENT,
+      [docxHostileFileGateDiagnostic(DOCX_HOSTILE_FILE_GATE_REASON_CODES.ENCRYPTED_ENTRY_PRESENT, { sourceCode })],
+      [docxHostileFileGateEvidence('materializerFailure', { sourceCode })],
+    );
+  }
+  if (sourceCode === 'DOCX_ZIP_ENTRY_NAME_INVALID') {
+    return docxHostileFileGateResult(
+      'blocked',
+      DOCX_HOSTILE_FILE_GATE_REASON_CODES.PATH_TRAVERSAL_DETECTED,
+      [docxHostileFileGateDiagnostic(DOCX_HOSTILE_FILE_GATE_REASON_CODES.PATH_TRAVERSAL_DETECTED, { sourceCode })],
+      [docxHostileFileGateEvidence('materializerFailure', { sourceCode })],
+    );
+  }
+
+  const quarantine = DOCX_HOSTILE_FILE_GATE_ZIP_QUARANTINE_CODES.has(sourceCode);
+  const code = quarantine
+    ? DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED
+    : DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_MALFORMED;
+  return docxHostileFileGateResult(
+    'quarantined',
+    code,
+    [docxHostileFileGateDiagnostic(code, { sourceCode })],
+    [docxHostileFileGateEvidence('materializerFailure', { sourceCode })],
+  );
+}
+
+function docxHostileFileGateCentralEntries(bytes) {
+  const endOffset = docxZipFindEndRecord(bytes);
+  const endResult = docxZipValidateEndRecord(bytes, endOffset);
+  if (endResult.failure) return { failure: endResult.failure };
+
+  const entries = [];
+  let cursor = endResult.record.centralOffset;
+  const centralEnd = endResult.record.centralOffset + endResult.record.centralSize;
+  for (let index = 0; index < endResult.record.entryCount; index += 1) {
+    if (cursor + DOCX_ZIP_CENTRAL_FILE_FIXED_BYTES > centralEnd) {
+      return { failure: docxZipInventoryFailure('DOCX_ZIP_CENTRAL_DIRECTORY_TRUNCATED') };
+    }
+    if (docxZipReadU32(bytes, cursor) !== DOCX_ZIP_CENTRAL_FILE_SIGNATURE) {
+      return { failure: docxZipInventoryFailure('DOCX_ZIP_CENTRAL_DIRECTORY_TRUNCATED') };
+    }
+    const method = docxZipReadU16(bytes, cursor + 10);
+    const flags = docxZipReadU16(bytes, cursor + 8);
+    const compressedSize = docxZipReadU32(bytes, cursor + 20);
+    const byteSize = docxZipReadU32(bytes, cursor + 24);
+    const nameSize = docxZipReadU16(bytes, cursor + 28);
+    const extraSize = docxZipReadU16(bytes, cursor + 30);
+    const commentSize = docxZipReadU16(bytes, cursor + 32);
+    const localOffset = docxZipReadU32(bytes, cursor + 42);
+    const recordSize = DOCX_ZIP_CENTRAL_FILE_FIXED_BYTES + nameSize + extraSize + commentSize;
+    if (cursor + recordSize > centralEnd) {
+      return { failure: docxZipInventoryFailure('DOCX_ZIP_CENTRAL_DIRECTORY_TRUNCATED') };
+    }
+    const name = docxZipReadAsciiName(bytes, cursor + DOCX_ZIP_CENTRAL_FILE_FIXED_BYTES, nameSize);
+    if (docxZipInventoryNameInvalid(name)) {
+      return { failure: docxZipInventoryFailure('DOCX_ZIP_ENTRY_NAME_INVALID') };
+    }
+    entries.push({
+      entryId: name,
+      flags,
+      method,
+      compressedSize,
+      byteSize,
+      localOffset,
+    });
+    cursor += recordSize;
+  }
+  if (cursor !== centralEnd) {
+    return { failure: docxZipInventoryFailure('DOCX_ZIP_CENTRAL_DIRECTORY_TRUNCATED') };
+  }
+  return { entries };
+}
+
+function docxHostileFileGateInvalidScanResult(entryId, sourceCode) {
+  return docxHostileFileGateResult(
+    'blocked',
+    DOCX_HOSTILE_FILE_GATE_REASON_CODES.DECLARATION_SCAN_UNAVAILABLE,
+    [docxHostileFileGateDiagnostic(DOCX_HOSTILE_FILE_GATE_REASON_CODES.DECLARATION_SCAN_UNAVAILABLE, {
+      entryId,
+      sourceCode,
+    })],
+    [docxHostileFileGateEvidence('declarationScan', {
+      entryId,
+      sourceCode,
+    })],
+  );
+}
+
+function docxHostileFileGateValidateLocalHeader(bytes, entry) {
+  const localOffset = entry.localOffset;
+  if (localOffset + 30 > bytes.byteLength) {
+    return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_ENTRY_OFFSET_INVALID') };
+  }
+  if (docxZipReadU32(bytes, localOffset) !== 0x04034b50) {
+    return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_LOCAL_HEADER_INVALID') };
+  }
+
+  const localFlags = docxZipReadU16(bytes, localOffset + 6);
+  const localMethod = docxZipReadU16(bytes, localOffset + 8);
+  const localCompressedSize = docxZipReadU32(bytes, localOffset + 18);
+  const localByteSize = docxZipReadU32(bytes, localOffset + 22);
+  const nameSize = docxZipReadU16(bytes, localOffset + 26);
+  const extraSize = docxZipReadU16(bytes, localOffset + 28);
+  const localName = docxZipReadAsciiName(bytes, localOffset + 30, nameSize);
+  if ((localFlags & DOCX_ZIP_FLAG_ENCRYPTED) || (entry.flags & DOCX_ZIP_FLAG_ENCRYPTED)) {
+    return {
+      failure: docxHostileFileGateResult(
+        'blocked',
+        DOCX_HOSTILE_FILE_GATE_REASON_CODES.ENCRYPTED_ENTRY_PRESENT,
+        [docxHostileFileGateDiagnostic(DOCX_HOSTILE_FILE_GATE_REASON_CODES.ENCRYPTED_ENTRY_PRESENT, {
+          entryId: entry.entryId,
+          sourceCode: 'DOCX_ZIP_LOCAL_ENCRYPTED_FLAG',
+        })],
+        [docxHostileFileGateEvidence('localHeader', {
+          entryId: entry.entryId,
+          sourceCode: 'DOCX_ZIP_LOCAL_ENCRYPTED_FLAG',
+        })],
+      ),
+    };
+  }
+  if (localFlags !== entry.flags || localFlags !== 0) {
+    return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_LOCAL_FLAG_MISMATCH') };
+  }
+  if (
+    localMethod !== entry.method
+    || localCompressedSize !== entry.compressedSize
+    || localByteSize !== entry.byteSize
+    || localName !== entry.entryId
+  ) {
+    return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_LOCAL_HEADER_MISMATCH') };
+  }
+  return {
+    dataOffset: localOffset + 30 + nameSize + extraSize,
+  };
+}
+
+function docxHostileFileGateInflatedDeclarationText(bytes, entry) {
+  const localHeader = docxHostileFileGateValidateLocalHeader(bytes, entry);
+  if (localHeader.failure) return localHeader;
+  const dataOffset = localHeader.dataOffset;
+  const dataEnd = dataOffset + entry.compressedSize;
+  if (dataOffset > bytes.byteLength || dataEnd > bytes.byteLength) {
+    return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_ENTRY_OFFSET_INVALID') };
+  }
+
+  const rawBytes = bytes.subarray(dataOffset, dataEnd);
+  let contentBytes = rawBytes;
+  if (entry.method === 8) {
+    try {
+      contentBytes = docxHostileFileGateInflateRawSync(
+        rawBytes,
+        Math.min(
+          DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRY_UNCOMPRESSED_BYTES,
+          Math.max(entry.byteSize, DOCX_HOSTILE_FILE_GATE_BUDGETS.maxDeclarationScanBytes),
+        ),
+      );
+    } catch {
+      return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_INFLATE_FAILED') };
+    }
+  } else if (entry.method !== 0) {
+    return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, `DOCX_ZIP_METHOD_${entry.method}`) };
+  }
+  if (contentBytes.length !== entry.byteSize) {
+    return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_INFLATED_SIZE_MISMATCH') };
+  }
+
+  return {
+    text: Buffer.from(contentBytes.subarray(0, DOCX_HOSTILE_FILE_GATE_BUDGETS.maxDeclarationScanBytes)).toString('utf8'),
+    truncated: contentBytes.length > DOCX_HOSTILE_FILE_GATE_BUDGETS.maxDeclarationScanBytes,
+  };
+}
+
+function docxHostileFileGateXmlCandidate(entryId) {
+  return /\.xml$/iu.test(entryId) || /\.rels$/iu.test(entryId);
+}
+
+function docxHostileFileGateCompressionRatioExceeded(entry) {
+  if (!isFiniteNonnegativeInteger(entry.byteSize) || !isFiniteNonnegativeInteger(entry.compressedSize)) {
+    return false;
+  }
+  if (entry.byteSize === 0) return false;
+  if (entry.compressedSize === 0) return true;
+  return (entry.byteSize / entry.compressedSize) > DOCX_HOSTILE_FILE_GATE_BUDGETS.maxCompressionRatio;
+}
+
+function docxHostileFileGateNormalizedEntryId(entryId) {
+  return String(entryId).replace(/\\/gu, '/').toLowerCase();
+}
+
+function docxHostileFileGateDeclarationRegionCode(scanResult) {
+  const text = scanResult.text;
+  let cursor = 0;
+  while (cursor < text.length) {
+    while (cursor < text.length && /\s/iu.test(text[cursor])) cursor += 1;
+    if (cursor >= text.length) {
+      return scanResult.truncated ? DOCX_HOSTILE_FILE_GATE_REASON_CODES.DECLARATION_SCAN_UNAVAILABLE : null;
+    }
+    if (text.startsWith('<?', cursor)) {
+      const end = text.indexOf('?>', cursor + 2);
+      if (end === -1) return DOCX_HOSTILE_FILE_GATE_REASON_CODES.DECLARATION_SCAN_UNAVAILABLE;
+      cursor = end + 2;
+      continue;
+    }
+    if (text.startsWith('<!--', cursor)) {
+      const end = text.indexOf('-->', cursor + 4);
+      if (end === -1) return DOCX_HOSTILE_FILE_GATE_REASON_CODES.DECLARATION_SCAN_UNAVAILABLE;
+      cursor = end + 3;
+      continue;
+    }
+    if (text.startsWith('<!ENTITY', cursor)) return DOCX_HOSTILE_FILE_GATE_REASON_CODES.XML_ENTITY_DECLARATION_PRESENT;
+    if (text.startsWith('<!DOCTYPE', cursor)) return DOCX_HOSTILE_FILE_GATE_REASON_CODES.XML_DTD_DECLARATION_PRESENT;
+    if (text.startsWith('<', cursor)) return null;
+    return DOCX_HOSTILE_FILE_GATE_REASON_CODES.DECLARATION_SCAN_UNAVAILABLE;
+  }
+  return scanResult.truncated ? DOCX_HOSTILE_FILE_GATE_REASON_CODES.DECLARATION_SCAN_UNAVAILABLE : null;
+}
+
+function docxHostileFileGateBlockedResult(code, entryId, options = {}) {
+  return docxHostileFileGateResult(
+    'blocked',
+    code,
+    [docxHostileFileGateDiagnostic(code, {
+      entryId,
+      sourceCode: options.sourceCode,
+      actual: options.actual,
+      limit: options.limit,
+    })],
+    [docxHostileFileGateEvidence(options.kind || 'entry', {
+      entryId,
+      sourceCode: options.sourceCode,
+      actual: options.actual,
+      limit: options.limit,
+    })],
+  );
+}
+
+export function inspectDocxHostileFileGateFromZipBytes(input) {
+  const bytes = docxZipInventoryInputToBytes(input);
+  if (bytes === null) {
+    return docxHostileFileGateResult(
+      'quarantined',
+      DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_MALFORMED,
+      [docxHostileFileGateDiagnostic(DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_MALFORMED, {
+        sourceCode: 'DOCX_ZIP_BYTES_INPUT_INVALID',
+      })],
+      [docxHostileFileGateEvidence('input', { sourceCode: 'DOCX_ZIP_BYTES_INPUT_INVALID' })],
+    );
+  }
+
+  const materialized = materializeDocxPackageInventoryFromZipBytes(bytes);
+  if (!materialized.ok) return docxHostileFileGateFailureFromMaterializer(materialized);
+  const inspection = inspectDocxPackageInventory(materialized.inventory);
+
+  const suspiciousRelationship = inspection.diagnostics.find((diagnostic) => (
+    diagnostic.code === DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.RELATIONSHIP_PART_PRESENT
+  ));
+  if (suspiciousRelationship) {
+    return docxHostileFileGateBlockedResult(
+      DOCX_HOSTILE_FILE_GATE_REASON_CODES.EXTERNAL_RELATIONSHIP_PRESENT,
+      suspiciousRelationship.entryId,
+      { kind: 'inspection', sourceCode: suspiciousRelationship.code },
+    );
+  }
+
+  const metadataResult = docxHostileFileGateCentralEntries(bytes);
+  if (metadataResult.failure) return docxHostileFileGateFailureFromMaterializer(metadataResult.failure);
+
+  const seenEntryIds = new Set();
+  for (const entry of metadataResult.entries) {
+    if (entry.method !== 0 && entry.method !== 8) {
+      return docxHostileFileGateInvalidScanResult(entry.entryId, `DOCX_ZIP_METHOD_${entry.method}`);
+    }
+    const localHeader = docxHostileFileGateValidateLocalHeader(bytes, entry);
+    if (localHeader.failure) return localHeader.failure;
+    const normalizedEntryId = docxHostileFileGateNormalizedEntryId(entry.entryId);
+    if (seenEntryIds.has(normalizedEntryId)) {
+      return docxHostileFileGateBlockedResult(
+        DOCX_HOSTILE_FILE_GATE_REASON_CODES.DUPLICATE_ENTRY_NAME,
+        entry.entryId,
+        { kind: 'duplicateEntry' },
+      );
+    }
+    seenEntryIds.add(normalizedEntryId);
+    if (docxHostileFileGateCompressionRatioExceeded(entry)) {
+      return docxHostileFileGateBlockedResult(
+        DOCX_HOSTILE_FILE_GATE_REASON_CODES.COMPRESSION_RATIO_EXCEEDED,
+        entry.entryId,
+        {
+          kind: 'compressionRatio',
+          actual: entry.compressedSize === 0 ? Number.POSITIVE_INFINITY : (entry.byteSize / entry.compressedSize),
+          limit: DOCX_HOSTILE_FILE_GATE_BUDGETS.maxCompressionRatio,
+        },
+      );
+    }
+  }
+  if (!metadataResult.entries.some((entry) => entry.entryId === 'word/document.xml')) {
+    return docxHostileFileGateResult(
+      'quarantined',
+      DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED,
+      [docxHostileFileGateDiagnostic(DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED, {
+        sourceCode: 'DOCX_MAIN_DOCUMENT_MISSING',
+      })],
+      [docxHostileFileGateEvidence('inventory', {
+        sourceCode: 'DOCX_MAIN_DOCUMENT_MISSING',
+      })],
+    );
+  }
+  if (inspection.classification !== 'clean') {
+    return docxHostileFileGateResult(
+      'quarantined',
+      DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED,
+      [docxHostileFileGateDiagnostic(DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED, {
+        sourceCode: inspection.code,
+      })],
+      [docxHostileFileGateEvidence('inspection', {
+        sourceCode: inspection.code,
+      })],
+    );
+  }
+
+  for (const entry of metadataResult.entries) {
+    if (!docxHostileFileGateXmlCandidate(entry.entryId)) continue;
+    const scanResult = docxHostileFileGateInflatedDeclarationText(bytes, entry);
+    if (scanResult.failure) return scanResult.failure;
+    const declarationCode = docxHostileFileGateDeclarationRegionCode(scanResult);
+    if (declarationCode === DOCX_HOSTILE_FILE_GATE_REASON_CODES.XML_ENTITY_DECLARATION_PRESENT) {
+      return docxHostileFileGateBlockedResult(
+        DOCX_HOSTILE_FILE_GATE_REASON_CODES.XML_ENTITY_DECLARATION_PRESENT,
+        entry.entryId,
+        { kind: 'declarationScan' },
+      );
+    }
+    if (declarationCode === DOCX_HOSTILE_FILE_GATE_REASON_CODES.XML_DTD_DECLARATION_PRESENT) {
+      return docxHostileFileGateBlockedResult(
+        DOCX_HOSTILE_FILE_GATE_REASON_CODES.XML_DTD_DECLARATION_PRESENT,
+        entry.entryId,
+        { kind: 'declarationScan' },
+      );
+    }
+    if (declarationCode === DOCX_HOSTILE_FILE_GATE_REASON_CODES.DECLARATION_SCAN_UNAVAILABLE) {
+      return docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_XML_DECLARATION_REGION_UNAVAILABLE');
+    }
+  }
+
+  return docxHostileFileGateResult(
+    'pass',
+    DOCX_HOSTILE_FILE_GATE_REASON_CODES.PASS,
+    [],
+    [
+      docxHostileFileGateEvidence('inspection', {
+        sourceCode: inspection.code,
+      }),
+      docxHostileFileGateEvidence('inventory', {
+        entryCount: materialized.inventory.entries.length,
+      }),
+    ],
+  );
+}
+// RB_09_DOCX_HOSTILE_FILE_GATE_END
 
 // RB_08_DOCX_PART_POLICY_CLASSIFIER_START
 const DOCX_PART_POLICY_TYPE = 'docxPartPolicyClassification';
