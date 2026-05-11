@@ -7,6 +7,14 @@ const REVIEW_PACKET_PREVIEW_READY_CODE = 'REVISION_BRIDGE_REVIEW_PACKET_PREVIEW_
 const REVIEW_PACKET_PREVIEW_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_REVIEW_PACKET_PREVIEW_DIAGNOSTICS';
 const PARSED_REVIEW_SURFACE_ADAPTER_READY_CODE = 'REVISION_BRIDGE_PARSED_REVIEW_SURFACE_ADAPTER_READY';
 const PARSED_REVIEW_SURFACE_ADAPTER_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_PARSED_REVIEW_SURFACE_ADAPTER_DIAGNOSTICS';
+const STAGE01_FIXED_CORE_PREVIEW_READY_CODE = 'REVISION_BRIDGE_STAGE01_FIXED_CORE_PREVIEW_READY';
+const STAGE01_FIXED_CORE_PREVIEW_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_STAGE01_FIXED_CORE_PREVIEW_DIAGNOSTICS';
+const STAGE01_PREVIEW_ONLY_REASON_CODE = 'REVISION_BRIDGE_STAGE01_PREVIEW_ONLY';
+const STAGE01_STALE_BASELINE_REASON_CODE = 'REVISION_BRIDGE_STAGE01_STALE_BASELINE';
+const STAGE01_AMBIGUOUS_TEXT_REASON_CODE = 'REVISION_BRIDGE_STAGE01_AMBIGUOUS_TEXT_MANUAL_ONLY';
+const STAGE01_DUPLICATE_TEXT_REASON_CODE = 'REVISION_BRIDGE_STAGE01_DUPLICATE_TEXT_MANUAL_ONLY';
+const STAGE01_STRUCTURAL_MANUAL_ONLY_REASON_CODE = 'REVISION_BRIDGE_STAGE01_STRUCTURAL_MANUAL_ONLY';
+const STAGE01_UNSUPPORTED_OBSERVATION_REASON_CODE = 'REVISION_BRIDGE_STAGE01_UNSUPPORTED_OBSERVATION';
 
 export const REVISION_BRIDGE_P0_PACKET_SCHEMA = 'revision-bridge-p0.packet.v1';
 export const REVISION_BRIDGE_REVISION_SESSION_SCHEMA = 'revision-bridge.revision-session.v1';
@@ -17,6 +25,16 @@ export const REVISION_BRIDGE_STRUCTURAL_CHANGE_SCHEMA = 'revision-bridge.structu
 export const REVISION_BRIDGE_DIAGNOSTIC_ITEM_SCHEMA = 'revision-bridge.diagnostic-item.v1';
 export const REVISION_BRIDGE_DECISION_STATE_SCHEMA = 'revision-bridge.decision-state.v1';
 export const REVISION_BRIDGE_REVIEW_PACKET_PREVIEW_SCHEMA = 'revision-bridge.review-packet-preview.v1';
+export const REVISION_BRIDGE_REVIEWPATCHSET_SCHEMA = 'revision-bridge.review-patchset.v1';
+export const REVISION_BRIDGE_REVIEWOPIR_SCHEMA = 'revision-bridge.review-op-ir.v1';
+export const REVISION_BRIDGE_SELECTORSTACK_SCHEMA_V1 = 'revision-bridge.selector-stack.v1';
+export const REVISION_BRIDGE_SOURCE_VIEW_STATE_SCHEMA = 'revision-bridge.source-view-state.v1';
+export const REVISION_BRIDGE_EVIDENCEREF_SCHEMA = 'revision-bridge.evidence-ref.v1';
+export const REVISION_BRIDGE_PROV_MIN_SCHEMA = 'revision-bridge.prov-min.v1';
+export const REVISION_BRIDGE_MINIMAL_REVIEWBOM_SCHEMA = 'revision-bridge.minimal-review-bom.v1';
+export const REVISION_BRIDGE_SHADOW_PREVIEW_SCHEMA = 'revision-bridge.shadow-preview.v1';
+export const REVISION_BRIDGE_BLOCKED_APPLY_PLAN_SCHEMA = 'revision-bridge.blocked-apply-plan.v1';
+export const REVISION_BRIDGE_STAGE01_FIXED_CORE_PREVIEW_SCHEMA = 'revision-bridge.stage01-fixed-core-preview.v1';
 export const REVISION_BRIDGE_BLOCK_SCHEMA = 'revision-bridge.block.v1';
 export const REVISION_BRIDGE_BLOCK_LINEAGE_SCHEMA = 'revision-bridge.block-lineage.v1';
 export const REVISION_BRIDGE_BLOCK_KINDS = Object.freeze([
@@ -180,6 +198,15 @@ const PARSED_REVIEW_SURFACE_ALIAS_KEYS = [
   'paragraphs',
   'revisions',
 ];
+
+const STAGE01_REVIEW_PACKET_COLLECTIONS = Object.freeze([
+  ['commentThreads', 'commentThread', 'threadId'],
+  ['commentPlacements', 'commentPlacement', 'placementId'],
+  ['textChanges', 'textChange', 'changeId'],
+  ['structuralChanges', 'structuralChange', 'structuralChangeId'],
+  ['diagnosticItems', 'diagnosticItem', 'diagnosticId'],
+  ['decisionStates', 'decisionState', 'decisionId'],
+]);
 
 export const DOCX_PACKAGE_BOUNDARY_BUDGETS = Object.freeze({
   maxEntries: 512,
@@ -4590,15 +4617,17 @@ function readUnsupportedItemDiagnostics(parsedSurface, reasons) {
   return diagnostics;
 }
 
-function buildParsedReviewSurfaceReviewPacket(input, reasons) {
+function buildParsedReviewSurfaceReviewPacket(input, reasons, options = {}) {
   const parsedSurface = isPlainObject(input) && isPlainObject(input.parsedSurface) ? input.parsedSurface : {};
   const reviewPacket = {};
   for (const collectionName of PARSED_REVIEW_SURFACE_COLLECTIONS) {
     reviewPacket[collectionName] = readParsedSurfaceCollection(parsedSurface, collectionName, reasons);
   }
-  reviewPacket.diagnosticItems = reviewPacket.diagnosticItems.concat(
-    readUnsupportedItemDiagnostics(parsedSurface, reasons),
-  );
+  if (options.includeUnsupportedDiagnostics !== false) {
+    reviewPacket.diagnosticItems = reviewPacket.diagnosticItems.concat(
+      readUnsupportedItemDiagnostics(parsedSurface, reasons),
+    );
+  }
   return reviewPacket;
 }
 
@@ -4618,7 +4647,9 @@ export function adaptParsedReviewSurfaceToReviewPacketPreviewInput(input = {}) {
   const reasons = collectParsedReviewSurfaceInputReasons(input);
   if (isPlainObject(input?.parsedSurface)) reasons.push(...collectParsedSurfaceKeyReasons(input.parsedSurface));
 
-  const reviewPacket = buildParsedReviewSurfaceReviewPacket(input, reasons);
+  const reviewPacket = buildParsedReviewSurfaceReviewPacket(input, reasons, {
+    includeUnsupportedDiagnostics: input?.includeUnsupportedDiagnostics !== false,
+  });
   const previewInput = buildParsedReviewSurfacePreviewInput(input, reviewPacket);
   const previewResult = buildRevisionPacketPreview(previewInput);
   const finalReasons = reasons.concat(previewResult.ok ? [] : previewResult.reasons);
@@ -4627,6 +4658,453 @@ export function adaptParsedReviewSurfaceToReviewPacketPreviewInput(input = {}) {
     return parsedReviewSurfaceAdapterDiagnostics(finalReasons, reviewPacket, previewInput, previewResult);
   }
   return parsedReviewSurfaceAdapterReady(reviewPacket, previewInput, previewResult);
+}
+
+function stage01FixedCorePreviewDiagnostics(reasons) {
+  return {
+    ok: false,
+    type: 'revisionBridge.stage01FixedCorePreview',
+    status: 'diagnostics',
+    code: STAGE01_FIXED_CORE_PREVIEW_DIAGNOSTICS_CODE,
+    reason: reasons[0]?.code || STAGE01_FIXED_CORE_PREVIEW_DIAGNOSTICS_CODE,
+    reasons,
+    preview: null,
+  };
+}
+
+function stage01FixedCorePreviewReady(preview) {
+  return {
+    ok: true,
+    type: 'revisionBridge.stage01FixedCorePreview',
+    status: 'preview',
+    code: STAGE01_FIXED_CORE_PREVIEW_READY_CODE,
+    reason: STAGE01_FIXED_CORE_PREVIEW_READY_CODE,
+    reasons: [],
+    preview,
+  };
+}
+
+function collectStage01FixedCorePreviewInputReasons(input) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(invalidField('stage01FixedCorePreview', 'stage01 fixed core preview input must be an object'));
+    return reasons;
+  }
+  if (!normalizeString(input.projectId)) reasons.push(missingField('projectId'));
+  if (!normalizeString(input.sessionId)) reasons.push(missingField('sessionId'));
+  if (!normalizeString(input.baselineHash)) reasons.push(missingField('baselineHash'));
+
+  const hasReviewPacket = isPlainObject(input.reviewPacket);
+  const hasParsedSurface = isPlainObject(input.parsedSurface);
+  if (!hasReviewPacket && !hasParsedSurface) {
+    reasons.push(missingField('reviewPacket|parsedSurface'));
+  } else if (hasReviewPacket && hasParsedSurface) {
+    reasons.push(invalidField('reviewPacket|parsedSurface', 'provide either reviewPacket or parsedSurface'));
+  }
+
+  if (hasOwnField(input, 'currentBaselineHash') && typeof input.currentBaselineHash !== 'string') {
+    reasons.push(invalidField('currentBaselineHash', 'currentBaselineHash must be a caller-supplied string'));
+  }
+  if (hasOwnField(input, 'sourceViewState') && !isPlainObject(input.sourceViewState)) {
+    reasons.push(invalidField('sourceViewState', 'sourceViewState must be an object'));
+  }
+  return reasons;
+}
+
+function stage01NormalizeSourceViewState(input, packetHash) {
+  const sourceViewState = isPlainObject(input) ? input : {};
+  return cloneJsonSafe({
+    schemaVersion: REVISION_BRIDGE_SOURCE_VIEW_STATE_SCHEMA,
+    revisionToken: normalizeString(sourceViewState.revisionToken),
+    viewMode: normalizeString(sourceViewState.viewMode),
+    normalizationPolicy: normalizeString(sourceViewState.normalizationPolicy),
+    newlinePolicy: normalizeString(sourceViewState.newlinePolicy),
+    unicodePolicy: normalizeString(sourceViewState.unicodePolicy),
+    packetHash: normalizeString(sourceViewState.packetHash) || packetHash,
+    artifactCompletenessClass: normalizeString(sourceViewState.artifactCompletenessClass),
+  });
+}
+
+function stage01SourcePartFromTargetScope(targetScope, fallback) {
+  const type = normalizeString(targetScope?.type);
+  const id = normalizeString(targetScope?.id);
+  if (type && id) return `${type}:${id}`;
+  if (type) return type;
+  return fallback;
+}
+
+function stage01CanonicalHash(value) {
+  return revisionBlockHash(value);
+}
+
+function stage01ExplicitEvidenceRef(value) {
+  const source = isPlainObject(value) ? value : {};
+  return cloneJsonSafe({
+    schemaVersion: REVISION_BRIDGE_EVIDENCEREF_SCHEMA,
+    exactText: normalizeString(source.exactText),
+    prefix: normalizeString(source.prefix),
+    suffix: normalizeString(source.suffix),
+    quotedSegment: normalizeString(source.quotedSegment),
+    sourcePart: normalizeString(source.sourcePart),
+  });
+}
+
+function stage01ExplicitProvMin(value) {
+  const source = isPlainObject(value) ? value : {};
+  return cloneJsonSafe({
+    schemaVersion: REVISION_BRIDGE_PROV_MIN_SCHEMA,
+    sourceKind: normalizeString(source.sourceKind),
+    sourceId: normalizeString(source.sourceId),
+    sourceHash: normalizeString(source.sourceHash),
+    captureMode: normalizeString(source.captureMode) || 'previewDerived',
+  });
+}
+
+function buildStage01EvidenceRef(itemKind, item) {
+  const normalizedItem = isPlainObject(item) ? item : {};
+  switch (itemKind) {
+    case 'commentPlacement': {
+      const quote = normalizeString(normalizedItem.quote);
+      return stage01ExplicitEvidenceRef({
+        exactText: quote,
+        prefix: normalizeString(normalizedItem.prefix),
+        suffix: normalizeString(normalizedItem.suffix),
+        quotedSegment: quote,
+        sourcePart: stage01SourcePartFromTargetScope(normalizedItem.targetScope, normalizeString(normalizedItem.anchor?.value)),
+      });
+    }
+    case 'textChange': {
+      const match = isPlainObject(normalizedItem.match) ? normalizedItem.match : {};
+      const quote = normalizeString(match.quote);
+      return stage01ExplicitEvidenceRef({
+        exactText: quote,
+        prefix: normalizeString(match.prefix),
+        suffix: normalizeString(match.suffix),
+        quotedSegment: quote,
+        sourcePart: stage01SourcePartFromTargetScope(normalizedItem.targetScope, 'textChange'),
+      });
+    }
+    case 'commentThread': {
+      const firstMessage = Array.isArray(normalizedItem.messages) && normalizedItem.messages.length > 0
+        ? normalizedItem.messages[0]
+        : {};
+      const quotedSegment = normalizeString(firstMessage.body);
+      return stage01ExplicitEvidenceRef({
+        exactText: quotedSegment,
+        prefix: '',
+        suffix: '',
+        quotedSegment,
+        sourcePart: `commentThread:${normalizeString(normalizedItem.threadId)}`,
+      });
+    }
+    case 'structuralChange': {
+      const quotedSegment = normalizeString(normalizedItem.summary);
+      return stage01ExplicitEvidenceRef({
+        exactText: quotedSegment,
+        prefix: '',
+        suffix: '',
+        quotedSegment,
+        sourcePart: stage01SourcePartFromTargetScope(normalizedItem.targetScope, normalizeString(normalizedItem.kind)),
+      });
+    }
+    case 'diagnosticItem': {
+      const quotedSegment = normalizeString(normalizedItem.message);
+      return stage01ExplicitEvidenceRef({
+        exactText: quotedSegment,
+        prefix: '',
+        suffix: '',
+        quotedSegment,
+        sourcePart: stage01SourcePartFromTargetScope(normalizedItem.targetScope, normalizeString(normalizedItem.relatedItemId)),
+      });
+    }
+    case 'decisionState': {
+      const quotedSegment = normalizeString(normalizedItem.reason);
+      return stage01ExplicitEvidenceRef({
+        exactText: quotedSegment,
+        prefix: '',
+        suffix: '',
+        quotedSegment,
+        sourcePart: normalizeString(normalizedItem.itemId) || normalizeString(normalizedItem.itemKind),
+      });
+    }
+    default:
+      return stage01ExplicitEvidenceRef({
+        exactText: '',
+        prefix: '',
+        suffix: '',
+        quotedSegment: '',
+        sourcePart: '',
+      });
+  }
+}
+
+function stage01TextSelectableItemKind(itemKind) {
+  return itemKind === 'commentPlacement' || itemKind === 'textChange';
+}
+
+function stage01ClassifyReviewItem(itemKind, evidenceRef, duplicateTextCounts) {
+  if (itemKind === 'structuralChange') {
+    return {
+      status: 'manualOnly',
+      reason: STAGE01_STRUCTURAL_MANUAL_ONLY_REASON_CODE,
+    };
+  }
+
+  if (stage01TextSelectableItemKind(itemKind)) {
+    const exactText = normalizeString(evidenceRef?.exactText);
+    if (!exactText) {
+      return {
+        status: 'manualOnly',
+        reason: STAGE01_AMBIGUOUS_TEXT_REASON_CODE,
+      };
+    }
+    if ((duplicateTextCounts.get(exactText) || 0) > 1) {
+      return {
+        status: 'manualOnly',
+        reason: STAGE01_DUPLICATE_TEXT_REASON_CODE,
+      };
+    }
+  }
+
+  return {
+    status: 'previewOnly',
+    reason: STAGE01_PREVIEW_ONLY_REASON_CODE,
+  };
+}
+
+function extractStage01ReviewPacketFromSession(session) {
+  const reviewGraph = isPlainObject(session?.reviewGraph) ? session.reviewGraph : {};
+  const reviewPacket = {};
+  STAGE01_REVIEW_PACKET_COLLECTIONS.forEach(([collectionName]) => {
+    reviewPacket[collectionName] = Array.isArray(reviewGraph[collectionName])
+      ? cloneJsonSafe(reviewGraph[collectionName])
+      : [];
+  });
+  return reviewPacket;
+}
+
+function buildStage01ReviewItemDescriptors(reviewPacket) {
+  const descriptors = [];
+  STAGE01_REVIEW_PACKET_COLLECTIONS.forEach(([collectionName, itemKind, idField]) => {
+    const collection = Array.isArray(reviewPacket?.[collectionName]) ? reviewPacket[collectionName] : [];
+    collection.forEach((item, index) => {
+      if (!isPlainObject(item)) return;
+      const itemId = normalizeString(item[idField]) || `${itemKind}-${index}`;
+      descriptors.push({
+        itemId,
+        itemKind,
+        sourceKind: collectionName,
+        sourceItem: cloneJsonSafe(item),
+        evidenceRef: buildStage01EvidenceRef(itemKind, item),
+      });
+    });
+  });
+  return descriptors;
+}
+
+function buildStage01UnsupportedObservations(parsedSurface) {
+  if (!isPlainObject(parsedSurface) || !Array.isArray(parsedSurface.unsupportedItems)) return [];
+  const observations = [];
+  parsedSurface.unsupportedItems.forEach((item, index) => {
+    if (!isPlainObject(item)) return;
+    observations.push(cloneJsonSafe({
+      itemId: normalizeString(item.unsupportedId) || `unsupportedObservation-${index}`,
+      itemKind: 'unsupportedObservation',
+      reason: STAGE01_UNSUPPORTED_OBSERVATION_REASON_CODE,
+      sourceKind: 'unsupportedItems',
+    }));
+  });
+  return observations;
+}
+
+function buildStage01PreviewCollections(reviewPacket, parsedSurface) {
+  const rawDescriptors = buildStage01ReviewItemDescriptors(reviewPacket);
+  const duplicateTextCounts = new Map();
+
+  rawDescriptors.forEach((descriptor) => {
+    if (!stage01TextSelectableItemKind(descriptor.itemKind)) return;
+    const exactText = normalizeString(descriptor.evidenceRef.exactText);
+    if (!exactText) return;
+    duplicateTextCounts.set(exactText, (duplicateTextCounts.get(exactText) || 0) + 1);
+  });
+
+  const reviewBomItems = rawDescriptors.map((descriptor) => {
+    const classification = stage01ClassifyReviewItem(
+      descriptor.itemKind,
+      descriptor.evidenceRef,
+      duplicateTextCounts,
+    );
+    const evidenceRef = stage01ExplicitEvidenceRef(descriptor.evidenceRef);
+    const provMin = stage01ExplicitProvMin({
+      sourceKind: descriptor.sourceKind,
+      sourceId: descriptor.itemId,
+      sourceHash: stage01CanonicalHash(descriptor.sourceItem),
+      captureMode: 'previewDerived',
+    });
+    return cloneJsonSafe({
+      itemId: descriptor.itemId,
+      itemKind: descriptor.itemKind,
+      status: classification.status,
+      reason: classification.reason,
+      evidenceRef,
+      provMin,
+    });
+  });
+
+  const reviewPatchset = cloneJsonSafe({
+    schemaVersion: REVISION_BRIDGE_REVIEWPATCHSET_SCHEMA,
+    items: reviewBomItems.map((item) => ({
+      itemId: item.itemId,
+      itemKind: item.itemKind,
+      status: item.status,
+      reason: item.reason,
+    })),
+    unsupportedObservations: buildStage01UnsupportedObservations(parsedSurface),
+  });
+
+  const reviewOpIr = cloneJsonSafe({
+    schemaVersion: REVISION_BRIDGE_REVIEWOPIR_SCHEMA,
+    ops: reviewBomItems.map((item) => ({
+      itemId: item.itemId,
+      itemKind: item.itemKind,
+      status: item.status,
+      reason: item.reason,
+    })),
+  });
+
+  const selectorStack = cloneJsonSafe({
+    schemaVersion: REVISION_BRIDGE_SELECTORSTACK_SCHEMA_V1,
+    selectors: reviewBomItems
+      .filter((item) => (
+        normalizeString(item.evidenceRef.exactText)
+        || normalizeString(item.evidenceRef.quotedSegment)
+        || normalizeString(item.evidenceRef.sourcePart)
+      ))
+      .map((item) => ({
+        itemId: item.itemId,
+        itemKind: item.itemKind,
+        evidenceRef: stage01ExplicitEvidenceRef(item.evidenceRef),
+      })),
+  });
+
+  const reviewBom = cloneJsonSafe({
+    schemaVersion: REVISION_BRIDGE_MINIMAL_REVIEWBOM_SCHEMA,
+    items: reviewBomItems,
+  });
+
+  const evidenceRefs = reviewBomItems.map((item) => stage01ExplicitEvidenceRef(item.evidenceRef));
+  const provMinEntries = reviewBomItems.map((item) => stage01ExplicitProvMin(item.provMin));
+
+  return {
+    reviewPatchset,
+    reviewOpIr,
+    selectorStack,
+    reviewBom,
+    evidenceRefs,
+    provMinEntries,
+  };
+}
+
+function buildStage01BlockedApplyPlan(baselineHash, currentBaselineHash) {
+  const reasons = [{
+    code: STAGE01_PREVIEW_ONLY_REASON_CODE,
+    message: 'Stage01 fixed core preview never authorizes apply.',
+  }];
+
+  const normalizedCurrentBaselineHash = normalizeString(currentBaselineHash);
+  if (normalizedCurrentBaselineHash && normalizedCurrentBaselineHash !== baselineHash) {
+    reasons.push({
+      code: STAGE01_STALE_BASELINE_REASON_CODE,
+      message: 'baselineHash differs from currentBaselineHash',
+      baselineHash,
+      currentBaselineHash: normalizedCurrentBaselineHash,
+    });
+  }
+
+  return cloneJsonSafe({
+    schemaVersion: REVISION_BRIDGE_BLOCKED_APPLY_PLAN_SCHEMA,
+    status: 'blocked',
+    canApply: false,
+    applyOps: [],
+    reasons,
+  });
+}
+
+function buildStage01ShadowPreview(previewResult) {
+  return cloneJsonSafe({
+    schemaVersion: REVISION_BRIDGE_SHADOW_PREVIEW_SCHEMA,
+    status: 'preview',
+    session: cloneJsonSafe(previewResult.session),
+  });
+}
+
+function buildStage01FixedCorePreviewPayload(input, reviewPacket, previewResult) {
+  const normalizedProjectId = normalizeString(input.projectId);
+  const normalizedSessionId = normalizeString(input.sessionId);
+  const normalizedBaselineHash = normalizeString(input.baselineHash);
+  const normalizedCurrentBaselineHash = normalizeString(input.currentBaselineHash);
+  const packetHash = stage01CanonicalHash(reviewPacket);
+  const sourceViewState = stage01NormalizeSourceViewState(input.sourceViewState, packetHash);
+  const previewCollections = buildStage01PreviewCollections(reviewPacket, input.parsedSurface);
+  const shadowPreview = buildStage01ShadowPreview(previewResult);
+  const blockedApplyPlan = buildStage01BlockedApplyPlan(normalizedBaselineHash, normalizedCurrentBaselineHash);
+
+  const preview = {
+    schemaVersion: REVISION_BRIDGE_STAGE01_FIXED_CORE_PREVIEW_SCHEMA,
+    projectId: normalizedProjectId,
+    sessionId: normalizedSessionId,
+    baselineHash: normalizedBaselineHash,
+    currentBaselineHash: normalizedCurrentBaselineHash,
+    reviewPatchset: previewCollections.reviewPatchset,
+    reviewOpIr: previewCollections.reviewOpIr,
+    selectorStack: previewCollections.selectorStack,
+    sourceViewState,
+    reviewBom: previewCollections.reviewBom,
+    evidenceRefs: previewCollections.evidenceRefs,
+    provMinEntries: previewCollections.provMinEntries,
+    shadowPreview,
+    blockedApplyPlan,
+  };
+
+  preview.canonicalHash = stage01CanonicalHash(preview);
+  return cloneJsonSafe(preview);
+}
+
+export function buildStage01FixedCorePreview(input = {}) {
+  const inputReasons = collectStage01FixedCorePreviewInputReasons(input);
+  if (inputReasons.length > 0) return stage01FixedCorePreviewDiagnostics(inputReasons);
+
+  const baseInput = {
+    projectId: input.projectId,
+    sessionId: input.sessionId,
+    baselineHash: input.baselineHash,
+  };
+
+  if (isPlainObject(input.reviewPacket)) {
+    const previewResult = buildRevisionPacketPreview({
+      ...baseInput,
+      reviewPacket: cloneJsonSafe(input.reviewPacket),
+    });
+    if (!previewResult.ok) return stage01FixedCorePreviewDiagnostics(previewResult.reasons);
+
+    const reviewPacket = extractStage01ReviewPacketFromSession(previewResult.session);
+    return stage01FixedCorePreviewReady(
+      buildStage01FixedCorePreviewPayload(input, reviewPacket, previewResult),
+    );
+  }
+
+  const adapterResult = adaptParsedReviewSurfaceToReviewPacketPreviewInput({
+    ...baseInput,
+    parsedSurface: cloneJsonSafe(input.parsedSurface),
+    includeUnsupportedDiagnostics: false,
+  });
+  if (!adapterResult.ok) return stage01FixedCorePreviewDiagnostics(adapterResult.reasons);
+
+  const previewResult = adapterResult.revisionBridgePreviewResult;
+  const reviewPacket = extractStage01ReviewPacketFromSession(previewResult.session);
+  return stage01FixedCorePreviewReady(
+    buildStage01FixedCorePreviewPayload(input, reviewPacket, previewResult),
+  );
 }
 
 function normalizeTargetScope(input) {
