@@ -281,6 +281,8 @@ const EXPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:export:markdownV1:v1';
 const FLOW_OPEN_V1_CHANNEL = 'm:cmd:project:flow:open:v1';
 const FLOW_SAVE_V1_CHANNEL = 'm:cmd:project:flow:save:v1';
 const MARKDOWN_RELIABILITY_LOG_PATH = path.join(os.tmpdir(), 'writer-editor-ops-state', 'markdown-io.log');
+const MARKDOWN_IMPORT_PREVIEW_SCHEMA = 'markdown-import-preview.v1';
+const MARKDOWN_IMPORT_PREVIEW_TYPE = 'markdown.import.preview';
 const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_OPEN: 'cmd.project.open',
   PROJECT_SAVE: 'cmd.project.save',
@@ -1734,6 +1736,7 @@ function normalizeMarkdownImportPayload(payload) {
       : (typeof payload.markdown === 'string' ? payload.markdown : ''),
     sourceName: typeof payload.sourceName === 'string' ? payload.sourceName : '',
     sourcePath: typeof payload.sourcePath === 'string' ? payload.sourcePath : '',
+    preview: payload.preview === true,
     limits: payload.limits && typeof payload.limits === 'object' && !Array.isArray(payload.limits)
       ? payload.limits
       : {},
@@ -1746,6 +1749,25 @@ function normalizeMarkdownImportPayload(payload) {
     };
   }
   return pathGuard.payload;
+}
+
+function buildMarkdownImportPreviewEnvelope(payload, scene, lossReport, ioRecovery = null) {
+  const previewResult = {
+    schemaVersion: MARKDOWN_IMPORT_PREVIEW_SCHEMA,
+    type: MARKDOWN_IMPORT_PREVIEW_TYPE,
+    status: 'preview',
+    writeEffects: false,
+    sourceName: payload && typeof payload.sourceName === 'string' ? payload.sourceName : '',
+    sourcePath: payload && typeof payload.sourcePath === 'string' ? payload.sourcePath : '',
+    scene,
+    lossReport: lossReport && typeof lossReport === 'object'
+      ? lossReport
+      : { count: 0, items: [] },
+  };
+  if (ioRecovery && typeof ioRecovery === 'object' && !Array.isArray(ioRecovery)) {
+    previewResult.recovery = ioRecovery;
+  }
+  return previewResult;
 }
 
 function normalizeMarkdownExportPayload(payload) {
@@ -1917,14 +1939,19 @@ async function handleImportMarkdownV1(payloadRaw) {
     }
 
     const scene = transform.parseMarkdownV1(markdownText, { limits: payload.limits });
+    const lossReport = scene && scene.lossReport && typeof scene.lossReport === 'object'
+      ? scene.lossReport
+      : { count: 0, items: [] };
     const out = {
       ok: 1,
       scene,
+      preview: payload.preview === true,
       sourceName: payload.sourceName,
-      lossReport: scene && scene.lossReport && typeof scene.lossReport === 'object'
-        ? scene.lossReport
-        : { count: 0, items: [] },
+      lossReport,
     };
+    if (payload.preview === true) {
+      out.previewResult = buildMarkdownImportPreviewEnvelope(payload, scene, lossReport, ioRecovery);
+    }
     if (ioRecovery) {
       out.recovery = ioRecovery;
     }
@@ -1932,19 +1959,21 @@ async function handleImportMarkdownV1(payloadRaw) {
   } catch (error) {
     let logRecord = null;
     let logPath = '';
-    try {
-      const markdownIo = await loadMarkdownIoModule();
-      const log = await appendMarkdownReliabilityLog(markdownIo, {
-        op: IMPORT_MARKDOWN_V1_CHANNEL,
-        code: error && typeof error.code === 'string' ? error.code : 'E_MD_IMPORT_FAILED',
-        reason: error && typeof error.reason === 'string' ? error.reason : 'import_failed',
-        sourcePath: payload.sourcePath,
-      });
-      logRecord = log.logRecord;
-      logPath = log.logPath;
-    } catch {
-      logRecord = null;
-      logPath = '';
+    if (payload.preview !== true) {
+      try {
+        const markdownIo = await loadMarkdownIoModule();
+        const log = await appendMarkdownReliabilityLog(markdownIo, {
+          op: IMPORT_MARKDOWN_V1_CHANNEL,
+          code: error && typeof error.code === 'string' ? error.code : 'E_MD_IMPORT_FAILED',
+          reason: error && typeof error.reason === 'string' ? error.reason : 'import_failed',
+          sourcePath: payload.sourcePath,
+        });
+        logRecord = log.logRecord;
+        logPath = log.logPath;
+      } catch {
+        logRecord = null;
+        logPath = '';
+      }
     }
     return makeTypedMarkdownError(
       IMPORT_MARKDOWN_V1_CHANNEL,

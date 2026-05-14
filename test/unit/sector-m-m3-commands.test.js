@@ -82,6 +82,68 @@ test('M3 commands: import/export markdown return deterministic success payloads'
   });
 });
 
+test('M3 commands: import preview forwards preview flag and preserves preview envelope', async () => {
+  const {
+    createCommandRegistry,
+    createCommandRunner,
+    registerProjectCommands,
+    COMMAND_IDS,
+  } = await loadCommandModules();
+
+  const sourceMarkdown = fixture('simple.md');
+  const previewEnvelope = {
+    schemaVersion: 'markdown-import-preview.v1',
+    type: 'markdown.import.preview',
+    status: 'preview',
+    writeEffects: false,
+    sourceName: 'fixture.md',
+    sourcePath: '/tmp/fixture.md',
+    scene: {
+      kind: 'scene.v1',
+      blocks: [],
+      nodeCount: 0,
+      lossReport: { count: 0, items: [] },
+    },
+    lossReport: { count: 0, items: [] },
+  };
+
+  const registry = createCommandRegistry();
+  registerProjectCommands(registry, {
+    electronAPI: {
+      importMarkdownV1: async (payload) => {
+        assert.equal(payload.preview, true);
+        assert.equal(payload.text, sourceMarkdown);
+        return {
+          ok: 1,
+          preview: true,
+          scene: previewEnvelope.scene,
+          lossReport: previewEnvelope.lossReport,
+          previewResult: previewEnvelope,
+        };
+      },
+    },
+  });
+  const runCommand = createCommandRunner(registry);
+
+  const imported = await runCommand(COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, {
+    text: sourceMarkdown,
+    sourceName: 'fixture.md',
+    sourcePath: '/tmp/fixture.md',
+    preview: true,
+  });
+
+  assert.deepEqual(imported, {
+    ok: true,
+    value: {
+      imported: true,
+      preview: true,
+      previewResult: previewEnvelope,
+      scene: previewEnvelope.scene,
+      lossReport: previewEnvelope.lossReport,
+    },
+  });
+});
+
 test('M3 commands: typed errors are stable and stack is not exposed', async () => {
   const {
     createCommandRegistry,
