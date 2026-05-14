@@ -12,7 +12,8 @@ const RB19_TEST_PATH = 'test/contracts/revision-bridge-exact-text-apply-plan-no-
 const C04_TEST_PATH = 'test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js';
 const C05_TEST_PATH = 'test/contracts/revision-bridge-comment-survival.contract.test.js';
 const P0_TEST_PATH = 'test/contracts/revision-bridge-p0-safety-kernel.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB10_TEST_PATH, RB19_TEST_PATH, C04_TEST_PATH, C05_TEST_PATH, P0_TEST_PATH];
+const C06_TEST_PATH = 'test/contracts/revision-bridge-minimal-block-id.contract.test.js';
+const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB10_TEST_PATH, RB19_TEST_PATH, C04_TEST_PATH, C05_TEST_PATH, P0_TEST_PATH, C06_TEST_PATH];
 
 async function loadBridge() {
   return import(pathToFileURL(path.join(process.cwd(), MODULE_PATH)).href);

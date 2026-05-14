@@ -72,6 +72,7 @@ export const DOCX_HOSTILE_FILE_GATE_REASON_CODES = Object.freeze({
 });
 export const REVISION_BRIDGE_BLOCK_SCHEMA = 'revision-bridge.block.v1';
 export const REVISION_BRIDGE_BLOCK_LINEAGE_SCHEMA = 'revision-bridge.block-lineage.v1';
+export const REVISION_BRIDGE_MINIMAL_BLOCK_ID_PREVIEW_SCHEMA = 'revision-bridge.minimal-block-id-preview.v1';
 export const REVISION_BRIDGE_BLOCK_KINDS = Object.freeze([
   'paragraph',
   'heading',
@@ -80,6 +81,19 @@ export const REVISION_BRIDGE_BLOCK_KINDS = Object.freeze([
   'separator',
   'tablePlaceholder',
   'unsupportedObjectPlaceholder',
+]);
+export const REVISION_BRIDGE_MINIMAL_BLOCK_ID_PREVIEW_REASON_CODES = Object.freeze([
+  'REVISION_BRIDGE_MINIMAL_BLOCK_ID_PREVIEW_READY',
+  'REVISION_BRIDGE_MINIMAL_BLOCK_ID_MANUAL_ONLY',
+  'REVISION_BRIDGE_MINIMAL_BLOCK_ID_INPUT_INVALID',
+  'REVISION_BRIDGE_MINIMAL_BLOCK_ID_MISSING_ID_MANUAL_ONLY',
+  'REVISION_BRIDGE_MINIMAL_BLOCK_ID_UNSTABLE_ID_MANUAL_ONLY',
+  'REVISION_BRIDGE_MINIMAL_BLOCK_ID_TEXT_DERIVED_ID_MANUAL_ONLY',
+  'REVISION_BRIDGE_MINIMAL_BLOCK_ID_DUPLICATE_TEXT_MANUAL_ONLY',
+  'REVISION_BRIDGE_MINIMAL_BLOCK_ID_HEADING_ONLY_MANUAL_ONLY',
+  'REVISION_BRIDGE_MINIMAL_BLOCK_ID_ORDINAL_ONLY_MANUAL_ONLY',
+  'REVISION_BRIDGE_MINIMAL_BLOCK_ID_VERSION_CHANGED_MANUAL_ONLY',
+  'REVISION_BRIDGE_MINIMAL_BLOCK_ID_STRUCTURAL_MANUAL_ONLY',
 ]);
 export const REVISION_BRIDGE_INLINE_RANGE_SCHEMA = 'revision-bridge.inline-range.v1';
 export const REVISION_BRIDGE_COMMENT_ANCHOR_PLACEMENT_SCHEMA = 'revision-bridge.comment-anchor-placement.v1';
@@ -2250,6 +2264,301 @@ export function deriveRevisionBlocksFromPlainSceneText(input = {}) {
     }));
 }
 // RB_09_BLOCK_LINEAGE_CONTRACTS_END
+
+// CONTOUR_06_MINIMAL_BLOCK_ID_R2_START
+const MINIMAL_BLOCK_ID_READY_CODE = 'REVISION_BRIDGE_MINIMAL_BLOCK_ID_PREVIEW_READY';
+const MINIMAL_BLOCK_ID_MANUAL_ONLY_CODE = 'REVISION_BRIDGE_MINIMAL_BLOCK_ID_MANUAL_ONLY';
+const MINIMAL_BLOCK_ID_INVALID_CODE = 'REVISION_BRIDGE_MINIMAL_BLOCK_ID_INPUT_INVALID';
+const MINIMAL_BLOCK_ID_MISSING_CODE = 'REVISION_BRIDGE_MINIMAL_BLOCK_ID_MISSING_ID_MANUAL_ONLY';
+const MINIMAL_BLOCK_ID_UNSTABLE_CODE = 'REVISION_BRIDGE_MINIMAL_BLOCK_ID_UNSTABLE_ID_MANUAL_ONLY';
+const MINIMAL_BLOCK_ID_TEXT_DERIVED_CODE = 'REVISION_BRIDGE_MINIMAL_BLOCK_ID_TEXT_DERIVED_ID_MANUAL_ONLY';
+const MINIMAL_BLOCK_ID_DUPLICATE_TEXT_CODE = 'REVISION_BRIDGE_MINIMAL_BLOCK_ID_DUPLICATE_TEXT_MANUAL_ONLY';
+const MINIMAL_BLOCK_ID_HEADING_ONLY_CODE = 'REVISION_BRIDGE_MINIMAL_BLOCK_ID_HEADING_ONLY_MANUAL_ONLY';
+const MINIMAL_BLOCK_ID_ORDINAL_ONLY_CODE = 'REVISION_BRIDGE_MINIMAL_BLOCK_ID_ORDINAL_ONLY_MANUAL_ONLY';
+const MINIMAL_BLOCK_ID_VERSION_CHANGED_CODE = 'REVISION_BRIDGE_MINIMAL_BLOCK_ID_VERSION_CHANGED_MANUAL_ONLY';
+const MINIMAL_BLOCK_ID_STRUCTURAL_CODE = 'REVISION_BRIDGE_MINIMAL_BLOCK_ID_STRUCTURAL_MANUAL_ONLY';
+const MINIMAL_BLOCK_ID_STRUCTURAL_KINDS = Object.freeze([
+  'move',
+  'moveBlock',
+  'moveScene',
+  'split',
+  'splitBlock',
+  'splitScene',
+  'merge',
+  'mergeBlock',
+  'mergeScene',
+  'copy',
+  'copyBlock',
+  'copyScene',
+]);
+
+function minimalBlockIdReason(code, field, message, details = {}) {
+  return cloneJsonSafe({
+    code,
+    field,
+    message,
+    ...details,
+  });
+}
+
+function minimalBlockIdBlocks(input) {
+  const source = isPlainObject(input) ? input : {};
+  if (Array.isArray(source.blocks)) return source.blocks;
+  if (Array.isArray(source.scene?.blocks)) return source.scene.blocks;
+  if (Array.isArray(source.projectSnapshot?.blocks)) return source.projectSnapshot.blocks;
+  if (Array.isArray(source.projectSnapshot?.scene?.blocks)) return source.projectSnapshot.scene.blocks;
+  return [];
+}
+
+function minimalBlockIdSceneId(input, block, index) {
+  const source = isPlainObject(input) ? input : {};
+  return normalizeString(
+    block.sceneId
+    || source.sceneId
+    || source.scene?.sceneId
+    || source.scene?.id
+    || source.projectSnapshot?.sceneId
+    || source.projectSnapshot?.scene?.sceneId,
+  ) || `scene-${index}`;
+}
+
+function minimalBlockIdStructuralChanges(input) {
+  const source = isPlainObject(input) ? input : {};
+  if (Array.isArray(source.structuralChanges)) return source.structuralChanges;
+  if (Array.isArray(source.reviewGraph?.structuralChanges)) return source.reviewGraph.structuralChanges;
+  if (Array.isArray(source.revisionSession?.reviewGraph?.structuralChanges)) {
+    return source.revisionSession.reviewGraph.structuralChanges;
+  }
+  return [];
+}
+
+function minimalBlockIdStructuralKind(change) {
+  if (!isPlainObject(change)) return '';
+  return normalizeString(change.kind || change.changeKind || change.type || change.operation);
+}
+
+function minimalBlockIdCompact(value) {
+  return normalizeRevisionBlockText(value).toLowerCase().replace(/[^a-z0-9]+/gu, '');
+}
+
+function minimalBlockIdIsTextDerived(existingBlockId, block) {
+  const id = minimalBlockIdCompact(existingBlockId);
+  const text = minimalBlockIdCompact(block.text);
+  if (!id || !text) return false;
+  if (id === text || id.includes(text)) return true;
+  return existingBlockId === createRevisionBlockVersionHash(block);
+}
+
+function minimalBlockIdIsUnstable(block) {
+  const marker = normalizeString(
+    block.blockIdStability
+    || block.idStability
+    || block.blockIdPolicy
+    || block.idPolicy
+    || block.source?.blockIdStability
+    || block.source?.idStability
+    || block.source?.blockIdPolicy
+    || block.source?.idPolicy,
+  );
+  const compactMarker = minimalBlockIdCompact(marker);
+  return ['unstable', 'transient', 'generatedfromtext', 'textderived', 'ordinalonly'].includes(compactMarker);
+}
+
+function minimalBlockIdIsOrdinalOnly(existingBlockId, block, index) {
+  const id = normalizeString(existingBlockId);
+  if (!id) return false;
+  const order = createRevisionBlockOrder(block.order);
+  const candidates = [
+    `${index}`,
+    `block-${index}`,
+    `paragraph-${index}`,
+  ];
+  if (order !== null) {
+    candidates.push(
+      `${order}`,
+      `block-${order}`,
+      `paragraph-${order}`,
+    );
+  }
+  return candidates.includes(id);
+}
+
+function minimalBlockIdPreviewHandle(sceneId, block, index) {
+  return `rbpbh_${revisionBlockHash({
+    schemaVersion: REVISION_BRIDGE_MINIMAL_BLOCK_ID_PREVIEW_SCHEMA,
+    sceneId,
+    index,
+    kind: isRevisionBlockKind(block.kind) ? block.kind : 'paragraph',
+    order: createRevisionBlockOrder(block.order),
+    text: normalizeRevisionBlockText(block.text),
+  })}`;
+}
+
+function minimalBlockIdPreviewBlock(input, block, index, duplicateTextKeys, reasons) {
+  const sceneId = minimalBlockIdSceneId(input, block, index);
+  const kind = isRevisionBlockKind(block.kind) ? block.kind : 'paragraph';
+  const order = createRevisionBlockOrder(block.order);
+  const sourceBlock = {
+    ...block,
+    sceneId,
+    kind,
+    order,
+  };
+  const previewBlock = createRevisionBlock({
+    ...sourceBlock,
+    versionHash: '',
+  });
+  const existingBlockId = normalizeString(block.blockId);
+  const textDerivedId = minimalBlockIdIsTextDerived(existingBlockId, sourceBlock);
+  const ordinalOnlyId = minimalBlockIdIsOrdinalOnly(existingBlockId, sourceBlock, index);
+  const hasLineage = Boolean(normalizeString(block.lineageId || block.lineageSeed));
+  const previousVersionHash = normalizeString(
+    block.previousVersionHash
+    || block.baselineVersionHash
+    || block.baseVersionHash
+    || block.expectedVersionHash,
+  );
+  const textKey = minimalBlockIdCompact(block.text);
+
+  if (!existingBlockId) {
+    reasons.push(minimalBlockIdReason(
+      MINIMAL_BLOCK_ID_MISSING_CODE,
+      `blocks.${index}.blockId`,
+      'block id is absent; preview handle is temporary',
+      { sceneId, previewBlockHandle: minimalBlockIdPreviewHandle(sceneId, sourceBlock, index) },
+    ));
+  }
+  if (existingBlockId && minimalBlockIdIsUnstable(block)) {
+    reasons.push(minimalBlockIdReason(
+      MINIMAL_BLOCK_ID_UNSTABLE_CODE,
+      `blocks.${index}.blockId`,
+      'block id is marked unstable',
+      { sceneId },
+    ));
+  }
+  if (existingBlockId && textDerivedId) {
+    reasons.push(minimalBlockIdReason(
+      MINIMAL_BLOCK_ID_TEXT_DERIVED_CODE,
+      `blocks.${index}.blockId`,
+      'block id appears derived from visible text',
+      { sceneId },
+    ));
+  }
+  if (textKey && duplicateTextKeys.includes(textKey)) {
+    reasons.push(minimalBlockIdReason(
+      MINIMAL_BLOCK_ID_DUPLICATE_TEXT_CODE,
+      `blocks.${index}.text`,
+      'duplicate block text needs manual review',
+      { sceneId },
+    ));
+  }
+  if (kind === 'heading') {
+    reasons.push(minimalBlockIdReason(
+      MINIMAL_BLOCK_ID_HEADING_ONLY_CODE,
+      `blocks.${index}.kind`,
+      'heading blocks cannot be matched by heading text alone',
+      { sceneId },
+    ));
+  }
+  if (ordinalOnlyId || (!existingBlockId && !hasLineage && order !== null)) {
+    reasons.push(minimalBlockIdReason(
+      MINIMAL_BLOCK_ID_ORDINAL_ONLY_CODE,
+      existingBlockId ? `blocks.${index}.blockId` : `blocks.${index}.order`,
+      'ordinal-only block position is advisory only',
+      { sceneId, order },
+    ));
+  }
+  if (previousVersionHash && previousVersionHash !== previewBlock.versionHash) {
+    reasons.push(minimalBlockIdReason(
+      MINIMAL_BLOCK_ID_VERSION_CHANGED_CODE,
+      `blocks.${index}.previousVersionHash`,
+      'block version hash changed and needs manual review',
+      {
+        sceneId,
+        previousVersionHash,
+        previewVersionHash: previewBlock.versionHash,
+      },
+    ));
+  }
+  return {
+    sceneId,
+    previewBlockHandle: minimalBlockIdPreviewHandle(sceneId, sourceBlock, index),
+    existingBlockIdAdvisory: textDerivedId ? '' : existingBlockId,
+    lineageIdAdvisory: normalizeString(block.lineageId),
+    previewVersionHash: previewBlock.versionHash,
+  };
+}
+
+export function buildMinimalBlockIdPreview(input = {}) {
+  if (!isPlainObject(input)) {
+    const reasons = [
+      minimalBlockIdReason(MINIMAL_BLOCK_ID_INVALID_CODE, 'minimalBlockIdPreview', 'input must be an object'),
+    ];
+    return {
+      ok: false,
+      type: 'revisionBridge.minimalBlockIdPreview',
+      status: 'manualOnly',
+      code: MINIMAL_BLOCK_ID_MANUAL_ONLY_CODE,
+      reason: reasons[0].code,
+      reasons,
+      schemaVersion: REVISION_BRIDGE_MINIMAL_BLOCK_ID_PREVIEW_SCHEMA,
+      previewOnly: true,
+      previewBlocks: [],
+      canAutoApply: false,
+      autoApplyCount: 0,
+      autoApplyCandidates: [],
+      automation: { candidateCount: 0, candidates: [] },
+    };
+  }
+
+  const blocks = minimalBlockIdBlocks(input);
+  const reasons = [];
+  const textCounts = {};
+  blocks.forEach((block) => {
+    if (!isPlainObject(block)) return;
+    const key = minimalBlockIdCompact(block.text);
+    if (!key) return;
+    textCounts[key] = (textCounts[key] || 0) + 1;
+  });
+  const duplicateTextKeys = Object.keys(textCounts).filter((key) => textCounts[key] > 1);
+
+  minimalBlockIdStructuralChanges(input).forEach((change, index) => {
+    const kind = minimalBlockIdStructuralKind(change);
+    if (!MINIMAL_BLOCK_ID_STRUCTURAL_KINDS.includes(kind)) return;
+    reasons.push(minimalBlockIdReason(
+      MINIMAL_BLOCK_ID_STRUCTURAL_CODE,
+      `structuralChanges.${index}`,
+      'structural block operation needs manual review',
+      { structuralKind: kind },
+    ));
+  });
+
+  const previewBlocks = blocks
+    .filter((block) => isPlainObject(block))
+    .map((block, index) => minimalBlockIdPreviewBlock(input, block, index, duplicateTextKeys, reasons));
+  const status = reasons.length > 0 ? 'manualOnly' : 'preview';
+  const code = status === 'manualOnly' ? MINIMAL_BLOCK_ID_MANUAL_ONLY_CODE : MINIMAL_BLOCK_ID_READY_CODE;
+
+  return cloneJsonSafe({
+    ok: true,
+    type: 'revisionBridge.minimalBlockIdPreview',
+    status,
+    code,
+    reason: reasons[0]?.code || MINIMAL_BLOCK_ID_READY_CODE,
+    reasons,
+    schemaVersion: REVISION_BRIDGE_MINIMAL_BLOCK_ID_PREVIEW_SCHEMA,
+    previewOnly: true,
+    previewBlocks,
+    canAutoApply: false,
+    autoApplyCount: 0,
+    autoApplyCandidates: [],
+    automation: {
+      candidateCount: 0,
+      candidates: [],
+    },
+  });
+}
+// CONTOUR_06_MINIMAL_BLOCK_ID_R2_END
 
 // RB_10_INLINE_RANGE_ANCHOR_CONTRACTS_START
 const INLINE_RANGE_VALID_CODE = 'REVISION_BRIDGE_INLINE_RANGE_VALID';
