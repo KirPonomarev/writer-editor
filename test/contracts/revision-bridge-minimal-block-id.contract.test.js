@@ -14,6 +14,7 @@ const RB19_TEST_PATH = 'test/contracts/revision-bridge-exact-text-apply-plan-no-
 const C04_MODULE_PATH = 'src/io/revisionBridge/exactTextMinSafeWrite.mjs';
 const C04_TEST_PATH = 'test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js';
 const C05_TEST_PATH = 'test/contracts/revision-bridge-comment-survival.contract.test.js';
+const C08_TEST_PATH = 'test/contracts/revision-bridge-structural-manual-review.contract.test.js';
 const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
 const ALLOWLIST = [
   MODULE_PATH,
@@ -25,6 +26,7 @@ const ALLOWLIST = [
   C04_MODULE_PATH,
   C04_TEST_PATH,
   C05_TEST_PATH,
+  C08_TEST_PATH,
   GOVERNANCE_APPROVALS_PATH,
 ];
 
