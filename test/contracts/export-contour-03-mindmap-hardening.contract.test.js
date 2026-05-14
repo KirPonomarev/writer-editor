@@ -31,11 +31,12 @@ const ALLOWLIST = [
   CONTRACT_PATH,
 ];
 
-function changedFilesFromGitStatus(statusText) {
-  return statusText
+function changedFilesFromMainDiff(diffText) {
+  return diffText
     .split('\n')
-    .filter((line) => line !== '')
-    .map((line) => line.slice(3).replace(/^"|"$/gu, ''))
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((filePath) => filePath.replace(/^"|"$/gu, ''))
     .map((filePath) => {
       const renameSeparator = ' -> ';
       return filePath.includes(renameSeparator)
@@ -106,9 +107,30 @@ test('EXPORT_CONTOUR_03 mindmap export is deterministic with explicit degrade re
   );
 });
 
+test('EXPORT_CONTOUR_03 mindmap export does not mutate source graph', async () => {
+  const {
+    serializeMindMapExportJsonV1WithLossReport,
+  } = await loadModule();
+
+  const graph = {
+    schemaVersion: 'derived.mindmap.graph.v1',
+    nodes: [
+      { id: 'project:demo', label: 'Demo', kind: 'project', depth: 0 },
+      { id: 'scene:1', label: 'Scene 1', kind: 'scene', depth: 1, parentId: 'project:demo' },
+    ],
+    edges: [
+      { from: 'project:demo', to: 'scene:1', kind: 'contains' },
+    ],
+  };
+  const before = JSON.parse(JSON.stringify(graph));
+  serializeMindMapExportJsonV1WithLossReport(graph);
+  assert.deepEqual(graph, before);
+});
+
 test('EXPORT_CONTOUR_03 scope allowlist, dependency manifests unchanged, and no network imports', () => {
-  const statusText = execFileSync('git', ['status', '--porcelain', '-uall'], { encoding: 'utf8' });
-  const changedFiles = changedFilesFromGitStatus(statusText);
+  const changedFiles = changedFilesFromMainDiff(
+    execFileSync('git', ['diff', '--name-only', 'origin/main...HEAD'], { encoding: 'utf8' }),
+  );
   const outsideAllowlist = changedFiles.filter((filePath) => !ALLOWLIST.includes(filePath));
   const packageManifestDiff = changedFiles.filter((filePath) => (
     filePath === 'package.json'
@@ -129,5 +151,44 @@ test('EXPORT_CONTOUR_03 scope allowlist, dependency manifests unchanged, and no 
   ];
   for (const pattern of forbiddenPatterns) {
     assert.equal(pattern.test(serializerSource), false, `forbidden export dependency: ${pattern.source}`);
+  }
+});
+
+test('EXPORT_CONTOUR_03 does not claim user-facing mindmap export command route', () => {
+  const projectCommandsPath = path.join(
+    process.cwd(),
+    'src',
+    'renderer',
+    'commands',
+    'projectCommands.mjs',
+  );
+  const commandNamespacePath = path.join(
+    process.cwd(),
+    'src',
+    'renderer',
+    'commands',
+    'commandNamespaceCanon.mjs',
+  );
+  const projectCommandsSource = fs.readFileSync(projectCommandsPath, 'utf8');
+  const commandNamespaceSource = fs.readFileSync(commandNamespacePath, 'utf8');
+
+  const forbiddenClaimPatterns = [
+    'cmd.project.exportMindmap',
+    'cmd.project.export.mindmap',
+    'cmd.project.export.mindmapV1',
+    'exportMindmap',
+  ];
+
+  for (const marker of forbiddenClaimPatterns) {
+    assert.equal(
+      projectCommandsSource.includes(marker),
+      false,
+      `unexpected user-facing command claim in project commands: ${marker}`,
+    );
+    assert.equal(
+      commandNamespaceSource.includes(marker),
+      false,
+      `unexpected user-facing command claim in command namespace: ${marker}`,
+    );
   }
 });
