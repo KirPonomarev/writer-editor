@@ -15,6 +15,9 @@ const STAGE01_AMBIGUOUS_TEXT_REASON_CODE = 'REVISION_BRIDGE_STAGE01_AMBIGUOUS_TE
 const STAGE01_DUPLICATE_TEXT_REASON_CODE = 'REVISION_BRIDGE_STAGE01_DUPLICATE_TEXT_MANUAL_ONLY';
 const STAGE01_STRUCTURAL_MANUAL_ONLY_REASON_CODE = 'REVISION_BRIDGE_STAGE01_STRUCTURAL_MANUAL_ONLY';
 const STAGE01_UNSUPPORTED_OBSERVATION_REASON_CODE = 'REVISION_BRIDGE_STAGE01_UNSUPPORTED_OBSERVATION';
+const EXACT_TEXT_APPLY_PLAN_NO_DISK_READY_CODE = 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_DISK_READY';
+const EXACT_TEXT_APPLY_PLAN_NO_DISK_BLOCKED_CODE = 'E_REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_DISK_BLOCKED';
+const EXACT_TEXT_APPLY_PLAN_NO_DISK_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_DISK_DIAGNOSTICS';
 
 export const REVISION_BRIDGE_P0_PACKET_SCHEMA = 'revision-bridge-p0.packet.v1';
 export const REVISION_BRIDGE_REVISION_SESSION_SCHEMA = 'revision-bridge.revision-session.v1';
@@ -35,6 +38,24 @@ export const REVISION_BRIDGE_MINIMAL_REVIEWBOM_SCHEMA = 'revision-bridge.minimal
 export const REVISION_BRIDGE_SHADOW_PREVIEW_SCHEMA = 'revision-bridge.shadow-preview.v1';
 export const REVISION_BRIDGE_BLOCKED_APPLY_PLAN_SCHEMA = 'revision-bridge.blocked-apply-plan.v1';
 export const REVISION_BRIDGE_STAGE01_FIXED_CORE_PREVIEW_SCHEMA = 'revision-bridge.stage01-fixed-core-preview.v1';
+export const REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_DISK_SCHEMA = 'revision-bridge.exact-text-apply-plan-no-disk.v1';
+export const REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_DISK_REASON_CODES = Object.freeze([
+  EXACT_TEXT_APPLY_PLAN_NO_DISK_READY_CODE,
+  EXACT_TEXT_APPLY_PLAN_NO_DISK_BLOCKED_CODE,
+  EXACT_TEXT_APPLY_PLAN_NO_DISK_DIAGNOSTICS_CODE,
+  'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_PROJECT_MISMATCH',
+  'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_STALE_BASELINE',
+  'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_SESSION_CLOSED',
+  'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_STRUCTURAL_CHANGE',
+  'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_COMMENT_ONLY',
+  'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_MULTI_TEXT_CHANGE',
+  'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_REVIEW_ITEM_SESSION_MISMATCH',
+  'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_UNSUPPORTED_SURFACE',
+  'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NOT_EXACT_MATCH',
+  'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_REPLACEMENT_REQUIRED',
+  'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH',
+  'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_DUPLICATE_MATCH',
+]);
 export const DOCX_HOSTILE_FILE_GATE_SCHEMA = 'revision-bridge.docx-hostile-file-gate.v1';
 export const DOCX_HOSTILE_FILE_GATE_REASON_CODES = Object.freeze({
   PASS: 'STAGE02_GATE_PASS',
@@ -5592,6 +5613,436 @@ export function buildStage01FixedCorePreview(input = {}) {
   return stage01FixedCorePreviewReady(
     buildStage01FixedCorePreviewPayload(input, reviewPacket, previewResult),
   );
+}
+
+function exactTextApplyPlanNoDiskDiagnosticResult(reasons) {
+  return {
+    ok: false,
+    type: 'revisionBridge.exactTextApplyPlanNoDiskPreview',
+    status: 'diagnostics',
+    code: EXACT_TEXT_APPLY_PLAN_NO_DISK_DIAGNOSTICS_CODE,
+    reason: reasons[0]?.code || EXACT_TEXT_APPLY_PLAN_NO_DISK_DIAGNOSTICS_CODE,
+    reasons: cloneJsonSafe(reasons),
+    plan: null,
+  };
+}
+
+function exactTextApplyPlanNoDiskReason(code, field, message, details = {}) {
+  return cloneJsonSafe({
+    code,
+    field,
+    message,
+    ...details,
+  });
+}
+
+function exactTextApplyPlanNoDiskSceneMap(input) {
+  const map = new Map();
+  const source = isPlainObject(input) ? input : {};
+
+  if (Array.isArray(source.scenes)) {
+    source.scenes.forEach((scene, index) => {
+      if (!isPlainObject(scene)) return;
+      const sceneId = normalizeString(scene.sceneId || scene.id) || `scene-${index}`;
+      const text = normalizeRevisionBlockText(scene.text);
+      map.set(sceneId, text);
+    });
+  } else if (isPlainObject(source.scenes)) {
+    Object.keys(source.scenes).forEach((key) => {
+      const sceneId = normalizeString(key);
+      if (!sceneId) return;
+      const scene = source.scenes[key];
+      if (typeof scene === 'string') {
+        map.set(sceneId, normalizeRevisionBlockText(scene));
+        return;
+      }
+      if (!isPlainObject(scene)) return;
+      map.set(sceneId, normalizeRevisionBlockText(scene.text));
+    });
+  } else if (isPlainObject(source.scene)) {
+    const sceneId = normalizeString(source.scene.sceneId || source.scene.id || source.sceneId || 'scene-0');
+    if (sceneId) {
+      map.set(sceneId, normalizeRevisionBlockText(source.scene.text));
+    }
+  } else if (typeof source.text === 'string') {
+    const sceneId = normalizeString(source.sceneId) || 'scene-0';
+    map.set(sceneId, normalizeRevisionBlockText(source.text));
+  }
+
+  return map;
+}
+
+function exactTextApplyPlanNoDiskSnapshot(input) {
+  const snapshot = isPlainObject(input) ? input : {};
+  return {
+    projectId: normalizeString(snapshot.projectId || snapshot.id),
+    baselineHash: normalizeString(snapshot.baselineHash || snapshot.currentBaselineHash),
+    scenes: exactTextApplyPlanNoDiskSceneMap(snapshot),
+  };
+}
+
+function exactTextApplyPlanNoDiskSession(input) {
+  const raw = isPlainObject(input) ? input : {};
+  const normalized = normalizeRevisionSession(raw);
+  return {
+    session: normalized,
+    status: normalizeString(raw.status || raw.sessionStatus),
+  };
+}
+
+function exactTextApplyPlanNoDiskReviewItem(input) {
+  if (!isPlainObject(input)) return null;
+  if (hasOwnField(input, 'match') || hasOwnField(input, 'replacementText') || hasOwnField(input, 'changeId')) {
+    return {
+      itemKind: 'textChange',
+      textChange: normalizeTextChange(input),
+    };
+  }
+  if (
+    hasOwnField(input, 'structuralChangeId')
+    || (normalizeString(input.itemKind) === 'structuralChange')
+    || (normalizeString(input.kind) && !hasOwnField(input, 'match') && !hasOwnField(input, 'replacementText'))
+  ) {
+    return {
+      itemKind: 'structuralChange',
+      structuralChange: normalizeStructuralChange(input),
+    };
+  }
+  return {
+    itemKind: 'commentOnly',
+    textChange: null,
+  };
+}
+
+function exactTextApplyPlanNoDiskFindMatchOffsets(text, quote) {
+  if (!text || !quote) return [];
+  const offsets = [];
+  let cursor = 0;
+  while (cursor <= text.length) {
+    const found = text.indexOf(quote, cursor);
+    if (found === -1) break;
+    offsets.push(found);
+    cursor = found + quote.length;
+  }
+  return offsets;
+}
+
+function exactTextApplyPlanNoDiskSelectTextChange(session, reviewItem) {
+  const textChanges = Array.isArray(session.reviewGraph?.textChanges) ? session.reviewGraph.textChanges : [];
+  if (textChanges.length === 1) return { textChange: textChanges[0], source: 'session' };
+  if (textChanges.length > 1) return { textChange: null, source: 'sessionMulti' };
+  if (reviewItem?.itemKind === 'textChange' && reviewItem.textChange) {
+    return { textChange: null, source: 'reviewItemWithoutSession' };
+  }
+  return { textChange: null, source: 'sessionEmpty' };
+}
+
+function exactTextApplyPlanNoDiskTextChangeKey(textChange) {
+  if (!isPlainObject(textChange)) return '';
+  return JSON.stringify({
+    changeId: normalizeString(textChange.changeId),
+    targetScope: {
+      type: normalizeString(textChange.targetScope?.type),
+      id: normalizeString(textChange.targetScope?.id),
+    },
+    match: {
+      kind: normalizeString(textChange.match?.kind),
+      quote: normalizeString(textChange.match?.quote),
+      prefix: normalizeString(textChange.match?.prefix),
+      suffix: normalizeString(textChange.match?.suffix),
+    },
+    replacementText: normalizeString(textChange.replacementText),
+  });
+}
+
+function exactTextApplyPlanNoDiskBuildPlan(base, blockedReasons, applyOps, preconditions) {
+  return cloneJsonSafe({
+    schemaVersion: REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_DISK_SCHEMA,
+    projectId: base.projectId,
+    sessionId: base.sessionId,
+    baselineHash: base.baselineHash,
+    sceneId: base.sceneId,
+    canApply: false,
+    noDisk: true,
+    safeWriteCandidate: false,
+    applyOps,
+    preconditions,
+    blockedReasons,
+  });
+}
+
+export function buildExactTextApplyPlanNoDiskPreview(input = {}) {
+  if (!isPlainObject(input)) {
+    return exactTextApplyPlanNoDiskDiagnosticResult([
+      invalidField('exactTextApplyPlanNoDisk', 'input must be an object'),
+    ]);
+  }
+
+  if (!isPlainObject(input.projectSnapshot)) {
+    return exactTextApplyPlanNoDiskDiagnosticResult([
+      missingField('projectSnapshot'),
+    ]);
+  }
+
+  const snapshot = exactTextApplyPlanNoDiskSnapshot(input.projectSnapshot);
+  const rawSession = isPlainObject(input.revisionSession)
+    ? input.revisionSession
+    : (isPlainObject(input.session) ? input.session : {});
+  const sessionState = exactTextApplyPlanNoDiskSession(rawSession);
+  const session = sessionState.session;
+  const reviewItem = exactTextApplyPlanNoDiskReviewItem(input.reviewItem);
+
+  const expectedProjectId = normalizeString(session.projectId || input.projectId);
+  const expectedBaselineHash = normalizeString(session.baselineHash || input.baselineHash);
+  const sessionStatus = sessionState.status;
+  const isClosedSession = ['closed', 'archived', 'completed', 'resolved'].includes(sessionStatus);
+  const hasStructuralChanges = Array.isArray(session.reviewGraph.structuralChanges)
+    && session.reviewGraph.structuralChanges.length > 0;
+  const hasCommentOnlySession = (
+    Array.isArray(session.reviewGraph.textChanges)
+    && session.reviewGraph.textChanges.length === 0
+    && (
+      (Array.isArray(session.reviewGraph.commentThreads) && session.reviewGraph.commentThreads.length > 0)
+      || (Array.isArray(session.reviewGraph.commentPlacements) && session.reviewGraph.commentPlacements.length > 0)
+    )
+  );
+  const sessionTextChangeCount = Array.isArray(session.reviewGraph.textChanges)
+    ? session.reviewGraph.textChanges.length
+    : 0;
+
+  const selected = exactTextApplyPlanNoDiskSelectTextChange(session, reviewItem);
+  const textChange = selected.textChange;
+  const sessionSingleTextChange = sessionTextChangeCount === 1 ? session.reviewGraph.textChanges[0] : null;
+  const reviewItemTextChange = reviewItem?.itemKind === 'textChange' ? reviewItem.textChange : null;
+  const targetScopeType = normalizeString(textChange?.targetScope?.type);
+  const sceneIdFromChange = normalizeString(textChange?.targetScope?.id);
+  const fallbackSceneIds = Array.from(snapshot.scenes.keys());
+  const selectedSceneId = sceneIdFromChange || (fallbackSceneIds.length === 1 ? fallbackSceneIds[0] : '');
+  const sceneText = selectedSceneId ? snapshot.scenes.get(selectedSceneId) || '' : '';
+  const matchQuote = normalizeString(textChange?.match?.quote);
+  const replacementText = normalizeString(textChange?.replacementText);
+  const matchOffsets = exactTextApplyPlanNoDiskFindMatchOffsets(sceneText, matchQuote);
+
+  const blockedReasons = [];
+  if (expectedProjectId && snapshot.projectId && expectedProjectId !== snapshot.projectId) {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_PROJECT_MISMATCH',
+      'projectId',
+      'projectSnapshot.projectId differs from revisionSession.projectId',
+      {
+        expectedProjectId,
+        observedProjectId: snapshot.projectId,
+      },
+    ));
+  }
+  if (expectedBaselineHash && snapshot.baselineHash && expectedBaselineHash !== snapshot.baselineHash) {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_STALE_BASELINE',
+      'baselineHash',
+      'projectSnapshot.baselineHash differs from revisionSession.baselineHash',
+      {
+        expectedBaselineHash,
+        observedBaselineHash: snapshot.baselineHash,
+      },
+    ));
+  }
+  if (isClosedSession) {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_SESSION_CLOSED',
+      'revisionSession.status',
+      'closed revision session cannot produce apply ops',
+      {
+        sessionStatus,
+      },
+    ));
+  }
+  if (hasStructuralChanges || reviewItem?.itemKind === 'structuralChange') {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_STRUCTURAL_CHANGE',
+      'reviewGraph.structuralChanges',
+      'structural changes are manual-only for exact text apply planning',
+    ));
+  }
+  if (hasCommentOnlySession || reviewItem?.itemKind === 'commentOnly') {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_COMMENT_ONLY',
+      'reviewItem|reviewGraph.textChanges',
+      'comment-only review data does not produce text replacement ops',
+    ));
+  }
+  if (selected.source === 'sessionMulti' || sessionTextChangeCount > 1) {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_MULTI_TEXT_CHANGE',
+      'reviewGraph.textChanges',
+      'exact text apply planner accepts exactly one text change',
+    ));
+  }
+  if (
+    reviewItemTextChange
+    && (
+      !sessionSingleTextChange
+      || exactTextApplyPlanNoDiskTextChangeKey(reviewItemTextChange)
+        !== exactTextApplyPlanNoDiskTextChangeKey(sessionSingleTextChange)
+    )
+  ) {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_REVIEW_ITEM_SESSION_MISMATCH',
+      'reviewItem',
+      'explicit reviewItem must match the single text change admitted by revisionSession',
+    ));
+  }
+  if (textChange && targetScopeType !== 'scene') {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_UNSUPPORTED_SURFACE',
+      'textChange.targetScope.type',
+      'exact text apply planner only supports scene target scope',
+      {
+        targetScopeType,
+      },
+    ));
+  }
+  if (textChange && textChange.match.kind !== 'exact') {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NOT_EXACT_MATCH',
+      'textChange.match.kind',
+      'only exact text changes are eligible for this planner',
+    ));
+  }
+  if (textChange && !replacementText) {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_REPLACEMENT_REQUIRED',
+      'textChange.replacementText',
+      'replacementText must be a non-empty string',
+    ));
+  }
+  if (textChange && !selectedSceneId) {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH',
+      'textChange.targetScope.id',
+      'target scene is not available in projectSnapshot',
+    ));
+  }
+  if (textChange && selectedSceneId && !snapshot.scenes.has(selectedSceneId)) {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH',
+      'projectSnapshot.scenes',
+      'target scene is not available in projectSnapshot',
+      {
+        sceneId: selectedSceneId,
+      },
+    ));
+  }
+  if (textChange && !matchQuote) {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH',
+      'textChange.match.quote',
+      'exact match quote is required',
+    ));
+  }
+  if (textChange && matchQuote && matchOffsets.length === 0) {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH',
+      'textChange.match.quote',
+      'exact quote is not present in the target scene text',
+      {
+        sceneId: selectedSceneId,
+      },
+    ));
+  }
+  if (textChange && matchQuote && matchOffsets.length > 1) {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_DUPLICATE_MATCH',
+      'textChange.match.quote',
+      'exact quote occurs multiple times in the target scene text',
+      {
+        sceneId: selectedSceneId,
+        matchCount: matchOffsets.length,
+      },
+    ));
+  }
+  if (!textChange && selected.source === 'sessionEmpty' && !hasCommentOnlySession) {
+    blockedReasons.push(exactTextApplyPlanNoDiskReason(
+      'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH',
+      'reviewGraph.textChanges',
+      'exact text apply planner requires one text change',
+    ));
+  }
+
+  const applyOps = [];
+  if (blockedReasons.length === 0 && textChange && matchOffsets.length === 1) {
+    const from = matchOffsets[0];
+    const to = from + matchQuote.length;
+    const changeId = normalizeString(textChange.changeId);
+    applyOps.push(cloneJsonSafe({
+      opId: `rbop_${revisionBlockHash({
+        sceneId: selectedSceneId,
+        from,
+        to,
+        changeId,
+        expectedText: matchQuote,
+        replacementText,
+      })}`,
+      kind: 'replaceExactText',
+      sceneId: selectedSceneId,
+      changeId,
+      from,
+      to,
+      expectedText: matchQuote,
+      replacementText,
+    }));
+  }
+
+  const preconditions = cloneJsonSafe([
+    {
+      code: 'PROJECT_MATCH',
+      satisfied: blockedReasons.every((reason) => reason.code !== 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_PROJECT_MISMATCH'),
+    },
+    {
+      code: 'BASELINE_MATCH',
+      satisfied: blockedReasons.every((reason) => reason.code !== 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_STALE_BASELINE'),
+    },
+    {
+      code: 'SESSION_OPEN',
+      satisfied: blockedReasons.every((reason) => reason.code !== 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_SESSION_CLOSED'),
+    },
+    {
+      code: 'NO_STRUCTURAL_CHANGE',
+      satisfied: blockedReasons.every((reason) => reason.code !== 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_STRUCTURAL_CHANGE'),
+    },
+    {
+      code: 'TEXT_CHANGE_EXACT',
+      satisfied: blockedReasons.every((reason) => reason.code !== 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NOT_EXACT_MATCH'),
+    },
+    {
+      code: 'SUPPORTED_SCENE_SCOPE',
+      satisfied: blockedReasons.every((reason) => reason.code !== 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_UNSUPPORTED_SURFACE'),
+    },
+    {
+      code: 'SINGLE_MATCH',
+      satisfied: blockedReasons.every((reason) => (
+        reason.code !== 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH'
+        && reason.code !== 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_DUPLICATE_MATCH'
+      )),
+    },
+  ]);
+
+  const plan = exactTextApplyPlanNoDiskBuildPlan({
+    projectId: snapshot.projectId || expectedProjectId,
+    sessionId: normalizeString(session.sessionId || input.sessionId),
+    baselineHash: snapshot.baselineHash || expectedBaselineHash,
+    sceneId: selectedSceneId,
+  }, blockedReasons, applyOps, preconditions);
+  const blocked = blockedReasons.length > 0;
+
+  return {
+    ok: true,
+    type: 'revisionBridge.exactTextApplyPlanNoDiskPreview',
+    status: blocked ? 'blocked' : 'ready',
+    code: blocked ? EXACT_TEXT_APPLY_PLAN_NO_DISK_BLOCKED_CODE : EXACT_TEXT_APPLY_PLAN_NO_DISK_READY_CODE,
+    reason: blocked ? blockedReasons[0].code : EXACT_TEXT_APPLY_PLAN_NO_DISK_READY_CODE,
+    reasons: cloneJsonSafe(blockedReasons),
+    plan,
+  };
 }
 
 function normalizeTargetScope(input) {
