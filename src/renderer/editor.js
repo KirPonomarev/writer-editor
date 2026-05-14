@@ -5222,6 +5222,10 @@ async function handleMarkdownImportUiPath() {
       updateStatusText(MARKDOWN_IMPORT_STATUS_MESSAGE);
       return;
     }
+    if (!safeCreateResult.ok) {
+      updateStatusText('Import Markdown safe create failed');
+      return;
+    }
   }
 
   const scene = resolveSceneFromImportResult(importResult);
