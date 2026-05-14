@@ -7,7 +7,12 @@ const { pathToFileURL } = require('node:url');
 
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-anchor-confidence-engine-contract.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH];
+const RB10_TEST_PATH = 'test/contracts/revision-bridge-inline-range-anchor-contract.contract.test.js';
+const RB19_TEST_PATH = 'test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js';
+const C04_TEST_PATH = 'test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js';
+const C05_TEST_PATH = 'test/contracts/revision-bridge-comment-survival.contract.test.js';
+const P0_TEST_PATH = 'test/contracts/revision-bridge-p0-safety-kernel.contract.test.js';
+const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB10_TEST_PATH, RB19_TEST_PATH, C04_TEST_PATH, C05_TEST_PATH, P0_TEST_PATH];
 
 async function loadBridge() {
   return import(pathToFileURL(path.join(process.cwd(), MODULE_PATH)).href);
