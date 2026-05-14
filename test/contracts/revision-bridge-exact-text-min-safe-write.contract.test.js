@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const { execFileSync } = require('node:child_process');
 const { pathToFileURL } = require('node:url');
 
@@ -15,6 +16,7 @@ const RB10_TEST_PATH = 'test/contracts/revision-bridge-inline-range-anchor-contr
 const RB11_TEST_PATH = 'test/contracts/revision-bridge-anchor-confidence-engine-contract.contract.test.js';
 const C05_TEST_PATH = 'test/contracts/revision-bridge-comment-survival.contract.test.js';
 const C06_TEST_PATH = 'test/contracts/revision-bridge-minimal-block-id.contract.test.js';
+const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
 const ALLOWLIST = [
   MODULE_PATH,
   C03_MODULE_PATH,
@@ -25,6 +27,7 @@ const ALLOWLIST = [
   RB11_TEST_PATH,
   C05_TEST_PATH,
   C06_TEST_PATH,
+  GOVERNANCE_APPROVALS_PATH,
 ];
 
 async function loadC04() {
@@ -44,6 +47,10 @@ function tmpScene(text) {
 
 function readText(scenePath) {
   return fs.readFileSync(scenePath, 'utf8');
+}
+
+function sha256Text(text) {
+  return crypto.createHash('sha256').update(Buffer.from(text, 'utf8')).digest('hex');
 }
 
 function validProjectSnapshot({
@@ -127,6 +134,27 @@ function changedFilesFromGitStatus(statusText) {
     .split('\n')
     .filter((line) => line !== '')
     .map((line) => line.slice(3).replace(/^"|"$/gu, ''));
+}
+
+function assertTruthfulRecoveryEvidence(recovery, expectedText, { readable = true } = {}) {
+  assert.equal(recovery.snapshotCreated, true);
+  assert.equal(typeof recovery.snapshotPath, 'string');
+  assert.equal(recovery.snapshotPath.length > 0, true);
+  assert.equal(recovery.recoveryAction, 'OPEN_SNAPSHOT_OR_ABORT');
+  assert.equal(recovery.snapshotReadable, readable);
+  assert.equal(recovery.snapshotHashMatchesInput, readable);
+  assert.equal(fs.existsSync(recovery.snapshotPath), readable);
+  if (readable) {
+    assert.equal(fs.readFileSync(recovery.snapshotPath, 'utf8'), expectedText);
+  }
+}
+
+function assertTruthfulReceipt(receipt, scenePath, expectedText, originalText = 'Alpha beta gamma.') {
+  assert.equal(receipt.reason, 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_APPLIED');
+  assert.equal(receipt.bytesWritten, Buffer.byteLength(expectedText, 'utf8'));
+  assert.equal(receipt.outputHash, sha256Text(expectedText));
+  assert.equal(readText(scenePath), expectedText);
+  assertTruthfulRecoveryEvidence(receipt.recovery, originalText);
 }
 
 test('C04 exact text min safe write applies one replacement and returns receipt with recovery evidence', async () => {
@@ -342,6 +370,129 @@ test('C04 failed beforeRename preserves target and returns no applied receipt wi
   assert.equal(readText(scenePath), 'Alpha beta gamma.');
   assert.equal(result.reasons[0].recovery.snapshotCreated, true);
   assert.equal(typeof result.reasons[0].recovery.snapshotPath, 'string');
+});
+
+test('C07 failure matrix keeps target, recovery, receipt, and second run truthful', async () => {
+  const c04 = await loadC04();
+  const beforeText = 'Alpha beta gamma.';
+  const afterText = 'Alpha delta gamma.';
+  const cases = [
+    {
+      label: 'BEFORE_WRITE',
+      options: {
+        now: () => 1700000003000,
+        beforeWrite: () => {
+          throw new Error('forced BEFORE_WRITE failure');
+        },
+      },
+      firstText: beforeText,
+      recoveryReadable: true,
+      second: 'applied',
+    },
+    {
+      label: 'BEFORE_RENAME',
+      options: {
+        now: () => 1700000004000,
+        beforeRename: () => {
+          throw new Error('forced BEFORE_RENAME failure');
+        },
+      },
+      firstText: beforeText,
+      recoveryReadable: true,
+      second: 'applied',
+    },
+    {
+      label: 'AFTER_RENAME_BEFORE_RECEIPT',
+      options: {
+        now: () => 1700000005000,
+        afterRenameBeforeReceipt: () => {
+          throw new Error('forced AFTER_RENAME_BEFORE_RECEIPT failure');
+        },
+      },
+      firstText: afterText,
+      recoveryReadable: true,
+      second: 'blocked',
+    },
+    {
+      label: 'BAD_RECEIPT',
+      options: {
+        now: () => 1700000006000,
+        afterReceipt: (receipt) => ({
+          ...receipt,
+          outputHash: '0'.repeat(64),
+        }),
+      },
+      firstText: afterText,
+      recoveryReadable: true,
+      second: 'blocked',
+      reason: 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECEIPT_INVALID',
+      receiptFailure: 'receipt outputHash does not match output',
+    },
+    {
+      label: 'BAD_RECOVERY',
+      options: {
+        now: () => 1700000007000,
+        afterRenameBeforeReceipt: ({ recovery }) => {
+          fs.unlinkSync(recovery.snapshotPath);
+        },
+      },
+      firstText: afterText,
+      recoveryReadable: false,
+      second: 'blocked',
+      reason: 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECOVERY_INVALID',
+      receiptFailure: 'receipt recovery snapshot is not readable',
+    },
+    {
+      label: 'BAD_RECOVERY_RECEIPT_PATH',
+      options: {
+        now: () => 1700000007100,
+        afterReceipt: (receipt) => ({
+          ...receipt,
+          recovery: {
+            ...receipt.recovery,
+            snapshotPath: `${receipt.recovery.snapshotPath}.missing`,
+          },
+        }),
+      },
+      firstText: afterText,
+      recoveryReadable: true,
+      second: 'blocked',
+      reason: 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECOVERY_INVALID',
+      receiptFailure: 'receipt recovery snapshot is not readable',
+    },
+  ];
+
+  for (const testCase of cases) {
+    const { scenePath } = tmpScene(beforeText);
+    const input = await readyInput({ scenePath });
+
+    const first = await c04.applyExactTextMinSafeWrite(input, testCase.options);
+
+    assert.equal(first.status, 'failed', testCase.label);
+    assert.equal(first.applied, false, testCase.label);
+    assert.equal(first.receipt, null, testCase.label);
+    assert.equal(first.reason, testCase.reason || 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_WRITE_FAILED', testCase.label);
+    assert.equal(readText(scenePath), testCase.firstText, testCase.label);
+    assertTruthfulRecoveryEvidence(first.reasons[0].recovery, beforeText, {
+      readable: testCase.recoveryReadable,
+    });
+    if (testCase.receiptFailure) {
+      assert.equal(first.reasons[0].receiptFailures.includes(testCase.receiptFailure), true, testCase.label);
+    }
+
+    const second = await c04.applyExactTextMinSafeWrite(input, { now: () => 1700000008000 });
+
+    if (testCase.second === 'applied') {
+      assert.equal(second.status, 'applied', `${testCase.label} SECOND_RUN_AFTER_FAILURE`);
+      assert.equal(second.applied, true, `${testCase.label} SECOND_RUN_AFTER_FAILURE`);
+      assertTruthfulReceipt(second.receipt, scenePath, afterText);
+    } else {
+      assert.equal(second.status, 'blocked', `${testCase.label} SECOND_RUN_AFTER_FAILURE`);
+      assert.equal(second.reason, 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_CURRENT_DRIFT', `${testCase.label} SECOND_RUN_AFTER_FAILURE`);
+      assert.equal(second.receipt, null, `${testCase.label} SECOND_RUN_AFTER_FAILURE`);
+      assert.equal(readText(scenePath), afterText, `${testCase.label} SECOND_RUN_AFTER_FAILURE`);
+    }
+  }
 });
 
 test('C04 has no UI, IPC, runtime, docx, package, or markdown wiring changes', () => {

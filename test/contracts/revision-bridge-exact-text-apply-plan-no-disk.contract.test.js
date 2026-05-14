@@ -14,6 +14,7 @@ const RB10_TEST_PATH = 'test/contracts/revision-bridge-inline-range-anchor-contr
 const RB11_TEST_PATH = 'test/contracts/revision-bridge-anchor-confidence-engine-contract.contract.test.js';
 const C05_TEST_PATH = 'test/contracts/revision-bridge-comment-survival.contract.test.js';
 const C06_TEST_PATH = 'test/contracts/revision-bridge-minimal-block-id.contract.test.js';
+const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
 const ALLOWLIST = [
   MODULE_PATH,
   TEST_PATH,
@@ -24,6 +25,7 @@ const ALLOWLIST = [
   RB11_TEST_PATH,
   C05_TEST_PATH,
   C06_TEST_PATH,
+  GOVERNANCE_APPROVALS_PATH,
 ];
 const WIRING_NEEDLES = [
   'buildExactTextApplyPlanNoDiskPreview',

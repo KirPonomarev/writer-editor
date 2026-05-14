@@ -13,6 +13,8 @@ export const REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECEIPT_SCHEMA =
 const READY_CODE = 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_APPLIED';
 const BLOCKED_CODE = 'E_REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_BLOCKED';
 const FAILED_CODE = 'E_REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_FAILED';
+const RECEIPT_INVALID_CODE = 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECEIPT_INVALID';
+const RECOVERY_INVALID_CODE = 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECOVERY_INVALID';
 
 function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -175,9 +177,80 @@ function buildSnapshotEvidence(writeResult, capturedRecoveryEvidence = null) {
   return {
     snapshotCreated: Boolean(writeResult?.snapshotCreated || capturedRecoveryEvidence?.snapshotCreated),
     snapshotPath: rawString(writeResult?.snapshotPath || capturedRecoveryEvidence?.snapshotPath),
+    snapshotReadable: Boolean(capturedRecoveryEvidence?.snapshotReadable),
+    snapshotHashMatchesInput: Boolean(capturedRecoveryEvidence?.snapshotHashMatchesInput),
     purgedSnapshots: Array.isArray(writeResult?.purgedSnapshots) ? writeResult.purgedSnapshots : [],
     recoveryAction: 'OPEN_SNAPSHOT_OR_ABORT',
   };
+}
+
+async function buildTruthfulRecoveryEvidence(writeResult, capturedRecoveryEvidence, expectedText) {
+  const evidence = buildSnapshotEvidence(writeResult, capturedRecoveryEvidence);
+  if (!evidence.snapshotCreated || !evidence.snapshotPath) return evidence;
+
+  try {
+    const snapshotText = await fs.readFile(evidence.snapshotPath, 'utf8');
+    evidence.snapshotReadable = true;
+    evidence.snapshotHashMatchesInput = sha256Text(snapshotText) === sha256Text(expectedText);
+  } catch {
+    evidence.snapshotReadable = false;
+    evidence.snapshotHashMatchesInput = false;
+  }
+
+  capturedRecoveryEvidence.snapshotReadable = evidence.snapshotReadable;
+  capturedRecoveryEvidence.snapshotHashMatchesInput = evidence.snapshotHashMatchesInput;
+  return evidence;
+}
+
+async function validateReceipt(receipt, expected = {}) {
+  const failures = [];
+  if (!isPlainObject(receipt)) failures.push('receipt must be an object');
+  if (receipt?.schemaVersion !== REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECEIPT_SCHEMA) {
+    failures.push('receipt schemaVersion is invalid');
+  }
+  if (receipt?.reason !== READY_CODE) failures.push('receipt reason is invalid');
+  if (!normalizeString(receipt?.transactionId)) failures.push('receipt transactionId is required');
+  if (receipt?.bytesWritten !== expected.bytesWritten) failures.push('receipt bytesWritten does not match output');
+  if (receipt?.bytesWritten !== expected.actualBytesWritten) {
+    failures.push('receipt bytesWritten does not match target bytes');
+  }
+  if (receipt?.inputHash !== expected.inputHash) failures.push('receipt inputHash does not match input');
+  if (receipt?.outputHash !== expected.outputHash) failures.push('receipt outputHash does not match output');
+  if (receipt?.outputHash !== expected.actualOutputHash) {
+    failures.push('receipt outputHash does not match target text');
+  }
+  if (expected.actualText !== expected.nextText) failures.push('target text does not match receipt output');
+  if (receipt?.projectId !== expected.projectId) failures.push('receipt projectId does not match plan');
+  if (receipt?.sessionId !== expected.sessionId) failures.push('receipt sessionId does not match plan');
+  if (receipt?.sceneId !== expected.sceneId) failures.push('receipt sceneId does not match op');
+  if (receipt?.changeId !== expected.changeId) failures.push('receipt changeId does not match op');
+  if (!isPlainObject(receipt?.recovery)) {
+    failures.push('receipt recovery is required');
+  } else {
+    if (stableJson(receipt.recovery) !== stableJson(expected.recovery)) {
+      failures.push('receipt recovery does not match verified recovery evidence');
+    }
+    if (receipt.recovery.snapshotCreated !== true) failures.push('receipt recovery snapshot is required');
+    if (!normalizeString(receipt.recovery.snapshotPath)) failures.push('receipt recovery snapshotPath is required');
+    if (receipt.recovery.recoveryAction !== 'OPEN_SNAPSHOT_OR_ABORT') {
+      failures.push('receipt recoveryAction is invalid');
+    }
+    if (receipt.recovery.snapshotReadable !== true) failures.push('receipt recovery snapshot is not readable');
+    if (receipt.recovery.snapshotHashMatchesInput !== true) {
+      failures.push('receipt recovery snapshot does not match input');
+    }
+    if (normalizeString(receipt.recovery.snapshotPath)) {
+      try {
+        const snapshotText = await fs.readFile(receipt.recovery.snapshotPath, 'utf8');
+        if (sha256Text(snapshotText) !== expected.recoveryInputHash) {
+          failures.push('receipt recovery snapshot does not match input');
+        }
+      } catch {
+        failures.push('receipt recovery snapshot is not readable');
+      }
+    }
+  }
+  return failures;
 }
 
 export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
@@ -345,6 +418,7 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
   const outputHash = sha256Text(nextText);
   const capturedRecoveryEvidence = {};
   const userAfterStage = typeof options.afterStage === 'function' ? options.afterStage : null;
+  const userBeforeWrite = typeof options.beforeWrite === 'function' ? options.beforeWrite : null;
 
   try {
     const writeResult = await writeMarkdownWithTransactionRecovery(scenePath, nextText, {
@@ -358,10 +432,22 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
           capturedRecoveryEvidence.snapshotCreated = Boolean(event.snapshotCreated);
           capturedRecoveryEvidence.snapshotPath = rawString(event.snapshotPath);
         }
+        if (event?.stage === 'SNAPSHOT_CREATED' && userBeforeWrite) {
+          await userBeforeWrite(event);
+        }
         if (userAfterStage) await userAfterStage(event);
       },
     });
 
+    if (typeof options.afterRenameBeforeReceipt === 'function') {
+      await options.afterRenameBeforeReceipt({
+        scenePath,
+        nextText,
+        recovery: buildSnapshotEvidence(writeResult, capturedRecoveryEvidence),
+      });
+    }
+
+    const recovery = await buildTruthfulRecoveryEvidence(writeResult, capturedRecoveryEvidence, currentText);
     const receipt = {
       schemaVersion: REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECEIPT_SCHEMA,
       projectId: rawString(providedPlan.projectId),
@@ -372,9 +458,41 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
       outputHash,
       bytesWritten: writeResult.bytesWritten,
       transactionId: rawString(writeResult.transactionId),
-      recovery: buildSnapshotEvidence(writeResult, capturedRecoveryEvidence),
+      recovery,
       reason: READY_CODE,
     };
+    const finalReceipt = typeof options.afterReceipt === 'function'
+      ? await options.afterReceipt(cloneJsonSafe(receipt))
+      : receipt;
+    const actualText = await fs.readFile(scenePath, 'utf8');
+    const receiptFailures = await validateReceipt(finalReceipt, {
+      bytesWritten: Buffer.byteLength(nextText, 'utf8'),
+      actualBytesWritten: Buffer.byteLength(actualText, 'utf8'),
+      inputHash,
+      recoveryInputHash: sha256Text(currentText),
+      outputHash,
+      actualOutputHash: sha256Text(actualText),
+      actualText,
+      nextText,
+      recovery,
+      projectId: rawString(providedPlan.projectId),
+      sessionId: rawString(providedPlan.sessionId),
+      sceneId: rawString(op.sceneId),
+      changeId: rawString(op.changeId),
+    });
+    if (receiptFailures.length > 0) {
+      return fail(buildReason(
+        receiptFailures.some((failure) => failure.includes('recovery'))
+          ? RECOVERY_INVALID_CODE
+          : RECEIPT_INVALID_CODE,
+        'receipt',
+        'receipt validation failed after write',
+        {
+          receiptFailures,
+          recovery,
+        },
+      ));
+    }
 
     return {
       ok: true,
@@ -384,7 +502,7 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
       reason: READY_CODE,
       reasons: [],
       applied: true,
-      receipt,
+      receipt: cloneJsonSafe(finalReceipt),
     };
   } catch (error) {
     return fail(buildReason(
@@ -394,7 +512,7 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
       {
         errorCode: rawString(error?.code),
         errorReason: rawString(error?.reason),
-        recovery: buildSnapshotEvidence(null, capturedRecoveryEvidence),
+        recovery: await buildTruthfulRecoveryEvidence(null, capturedRecoveryEvidence, currentText),
       },
     ));
   }
