@@ -3075,94 +3075,137 @@ body.dark-theme .toolbar__swatch::before {
   gap: 12px;
 }
 
-.right-rail-comments-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.right-rail-shell--comments {
+  gap: 20px;
 }
 
-.right-rail-comment-card {
-  border-radius: 14px;
+.right-rail-surface--review-header,
+.right-rail-surface--review-state {
+  gap: 10px;
+}
+
+.right-rail-review-actions {
+  width: auto;
+  display: inline-flex;
+  gap: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.right-rail-review-state {
+  padding: 12px 14px;
   border: 1px solid var(--sidebar-border);
   background: var(--card);
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.58),
-    var(--control-shadow);
-}
-
-.right-rail-comment-head {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: start;
-  gap: 12px;
-}
-
-.right-rail-comment-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  background: #e6dfd7;
   color: var(--text-secondary);
-  font-size: 11px;
-  line-height: 36px;
-  text-align: center;
-  font-weight: 600;
+  font-size: 12px;
+  line-height: 18px;
 }
 
-.right-rail-comment-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.right-rail-comment-author {
+.right-rail-review-state strong {
+  display: block;
   color: var(--foreground);
-  font-size: 13px;
+  font-size: 12px;
   line-height: 17px;
   font-weight: 500;
 }
 
-.right-rail-comment-text {
-  margin: 0;
-  color: var(--text-secondary);
-  font-size: 13px;
-  line-height: 18px;
-  font-weight: 400;
+.right-rail-review-state p {
+  margin: 4px 0 0;
 }
 
-.right-rail-comment-time {
-  margin-top: 1px;
-  color: var(--text-tertiary);
-  font-size: 12px;
-  line-height: 16px;
-  justify-self: end;
+.right-rail-review-state--blocked,
+.right-rail-review-state--error {
+  border-color: rgba(143, 89, 72, 0.24);
 }
 
-.right-rail-comment-actions {
-  margin-left: 48px;
+.right-rail-review-state--empty,
+.right-rail-review-state--info {
+  border-color: var(--sidebar-border);
+}
+
+.right-rail-review-code {
+  margin-top: 8px;
   color: var(--text-tertiary);
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 11px;
+  line-height: 15px;
+  word-break: break-word;
+}
+
+.right-rail-review-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--divider);
+}
+
+.right-rail-review-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0 11px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.right-rail-review-item-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.right-rail-review-item-title {
+  color: var(--foreground);
+  font-size: 12.5px;
+  line-height: 17px;
   font-weight: 500;
 }
 
-.right-rail-comment-input {
-  min-height: 46px;
-  border-radius: 14px;
-  border: 1px solid var(--sidebar-border);
-  background: var(--card);
-  color: var(--text-tertiary);
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
+.right-rail-review-item-body {
+  margin: 0;
+  color: var(--text-secondary);
   font-size: 12.5px;
   line-height: 18px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.right-rail-review-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  line-height: 15px;
+}
+
+.right-rail-review-pill {
+  flex: 0 0 auto;
+  min-height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--toolbar-control-border);
+  background: var(--selected-bg);
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10.5px;
+  line-height: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.right-rail-review-pill--preview {
+  color: #2c5b80;
+}
+
+.right-rail-review-pill--blocked,
+.right-rail-review-pill--manual {
+  color: #8a3b2e;
+}
+
+.right-rail-review-pill--readonly {
+  color: #655f57;
 }
 
 .right-rail-commands-host {

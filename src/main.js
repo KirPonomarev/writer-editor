@@ -29,6 +29,9 @@ const { createCommandSurfaceKernel } = require('./command/commandSurfaceKernel')
 const launchT0 = performance.now();
 let mainWindow;
 let currentFilePath = null; // Путь к текущему открытому файлу
+let currentReviewSurfacePayload = {};
+let currentReviewSurfacePayloadSource = 'none';
+let currentReviewSurfacePayloadContentHash = '';
 let isDirty = false;
 let isEditorPasteTargetFocused = false;
 let autoSaveInProgress = false;
@@ -708,9 +711,17 @@ function clampFontSize(size) {
   return Math.max(12, Math.min(28, size));
 }
 
+function cloneJsonSafe(value) {
+  if (value === undefined) return undefined;
+  return JSON.parse(JSON.stringify(value));
+}
+
 function sendEditorText(payload) {
   if (!mainWindow) return;
   if (typeof payload === 'string') {
+    currentReviewSurfacePayload = {};
+    currentReviewSurfacePayloadSource = 'none';
+    currentReviewSurfacePayloadContentHash = '';
     mainWindow.webContents.send('editor:set-text', { content: payload });
     return;
   }
@@ -724,9 +735,22 @@ function sendEditorText(payload) {
       projectId: typeof payload.projectId === 'string' ? payload.projectId : '',
       bookProfile: isPlainObjectValue(payload.bookProfile) ? payload.bookProfile : null,
     };
+    if (isPlainObjectValue(payload.reviewSurface)) {
+      safePayload.reviewSurface = cloneJsonSafe(payload.reviewSurface);
+      currentReviewSurfacePayload = cloneJsonSafe(payload.reviewSurface) || {};
+      currentReviewSurfacePayloadSource = 'direct';
+      currentReviewSurfacePayloadContentHash = computeHash(safePayload.content);
+    } else {
+      currentReviewSurfacePayload = {};
+      currentReviewSurfacePayloadSource = 'none';
+      currentReviewSurfacePayloadContentHash = '';
+    }
     mainWindow.webContents.send('editor:set-text', safePayload);
     return;
   }
+  currentReviewSurfacePayload = {};
+  currentReviewSurfacePayloadSource = 'none';
+  currentReviewSurfacePayloadContentHash = '';
   mainWindow.webContents.send('editor:set-text', { content: '' });
 }
 
@@ -740,6 +764,7 @@ async function attachProjectIdToEditorPayload(payload) {
     metaEnabled: Boolean(source.metaEnabled),
     projectId: '',
     bookProfile: null,
+    reviewSurface: isPlainObjectValue(source.reviewSurface) ? cloneJsonSafe(source.reviewSurface) : undefined,
   };
 
   if (!nextPayload.path) {
@@ -1555,6 +1580,18 @@ function loadStyleMapModule() {
     });
   }
   return styleMapModulePromise;
+}
+
+let revisionBridgeModulePromise = null;
+function loadRevisionBridgeModule() {
+  if (!revisionBridgeModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'index.mjs')).href;
+    revisionBridgeModulePromise = import(modulePath).catch((error) => {
+      revisionBridgeModulePromise = null;
+      throw error;
+    });
+  }
+  return revisionBridgeModulePromise;
 }
 
 function mapMarkdownErrorCode(inputCode, inputReason) {
@@ -3008,6 +3045,9 @@ ipcMain.handle('ui:workspace-query-bridge', async (_, request) => {
   if (queryId === 'query.collabScopeLocal') {
     return handleWorkspaceCollabScopeLocalQuery();
   }
+  if (queryId === 'query.reviewSurface') {
+    return handleWorkspaceReviewSurfaceQuery();
+  }
   return { ok: false, error: 'QUERY_ID_NOT_ALLOWED' };
 });
 
@@ -3112,6 +3152,173 @@ async function handleWorkspaceProjectTreeQuery(payload) {
 
 function handleWorkspaceCollabScopeLocalQuery() {
   return resolveCollabScopeLocalState();
+}
+
+const REVIEW_SURFACE_DIRECT_KEYS = Object.freeze([
+  'reviewSurface',
+  'revisionSession',
+  'session',
+  'exactTextPlanPreview',
+  'planPreview',
+  'structuralManualReviewPreview',
+  'commentSurvivalPreview',
+  'revisionBridgePreviewResult',
+  'previewInput',
+  'reviewPacket',
+  'shadowPreview',
+  'blockedApplyPlan',
+  'receipt',
+]);
+
+function looksLikeDirectReviewSurfacePayload(value) {
+  if (!isPlainObjectValue(value)) return false;
+  return REVIEW_SURFACE_DIRECT_KEYS.some((key) => Object.prototype.hasOwnProperty.call(value, key));
+}
+
+function hasReviewSurfacePayload(value) {
+  return isPlainObjectValue(value) && Object.keys(value).length > 0;
+}
+
+function parseReviewSurfaceJson(text) {
+  if (typeof text !== 'string' || !text.trim()) return null;
+  try {
+    const parsed = JSON.parse(text);
+    return isPlainObjectValue(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+async function readCurrentReviewSurfaceSourceText() {
+  try {
+    const snapshot = await requestEditorSnapshot(1200);
+    if (snapshot && typeof snapshot.content === 'string' && snapshot.content.trim()) {
+      return snapshot.content;
+    }
+  } catch (error) {
+    logDevError('query.reviewSurface:snapshot', error);
+  }
+
+  if (typeof currentFilePath === 'string' && currentFilePath.trim() && isAllowedFilePath(currentFilePath)) {
+    try {
+      const content = await fs.readFile(currentFilePath, 'utf8');
+      if (typeof content === 'string' && content.trim()) return content;
+    } catch (error) {
+      logDevError('query.reviewSurface:fileRead', error);
+    }
+  }
+
+  return '';
+}
+
+async function buildDerivedReviewSurfacePayload() {
+  const sourceText = await readCurrentReviewSurfaceSourceText();
+  const parsed = parseReviewSurfaceJson(sourceText);
+  if (!parsed) return {};
+
+  if (isPlainObjectValue(parsed.reviewSurface)) {
+    return cloneJsonSafe(parsed.reviewSurface) || {};
+  }
+
+  if (looksLikeDirectReviewSurfacePayload(parsed)) {
+    return cloneJsonSafe(parsed) || {};
+  }
+
+  if (parsed.type === 'revisionBridge.stage01FixedCorePreview' && isPlainObjectValue(parsed.preview)) {
+    return cloneJsonSafe(parsed.preview) || {};
+  }
+
+  if (parsed.type === 'revisionBridge.exactTextApplyPlanNoDiskPreview') {
+    return { exactTextPlanPreview: cloneJsonSafe(parsed) };
+  }
+
+  if (parsed.type === 'revisionBridge.structuralManualReviewPreview') {
+    return { structuralManualReviewPreview: cloneJsonSafe(parsed) };
+  }
+
+  if (parsed.type === 'revisionBridge.commentSurvival.preview') {
+    return { commentSurvivalPreview: cloneJsonSafe(parsed) };
+  }
+
+  if (parsed.type === 'revisionBridge.exactTextMinSafeWrite') {
+    return {
+      receipt: isPlainObjectValue(parsed.receipt) ? cloneJsonSafe(parsed.receipt) : null,
+    };
+  }
+
+  if (parsed.type === 'revisionBridge.parsedReviewSurfaceAdapter') {
+    return cloneJsonSafe(parsed) || {};
+  }
+
+  if (isPlainObjectValue(parsed.parsedSurface) || isPlainObjectValue(parsed.reviewPacket)) {
+    try {
+      const revisionBridge = await loadRevisionBridgeModule();
+      if (isPlainObjectValue(parsed.parsedSurface)) {
+        const adapted = revisionBridge.adaptParsedReviewSurfaceToReviewPacketPreviewInput({
+          projectId: typeof parsed.projectId === 'string' ? parsed.projectId : '',
+          sessionId: typeof parsed.sessionId === 'string' ? parsed.sessionId : '',
+          baselineHash: typeof parsed.baselineHash === 'string' ? parsed.baselineHash : '',
+          parsedSurface: cloneJsonSafe(parsed.parsedSurface),
+        });
+        return cloneJsonSafe(adapted) || {};
+      }
+      if (isPlainObjectValue(parsed.reviewPacket)) {
+        const preview = revisionBridge.buildRevisionPacketPreview({
+          projectId: typeof parsed.projectId === 'string' ? parsed.projectId : '',
+          sessionId: typeof parsed.sessionId === 'string' ? parsed.sessionId : '',
+          baselineHash: typeof parsed.baselineHash === 'string' ? parsed.baselineHash : '',
+          reviewPacket: cloneJsonSafe(parsed.reviewPacket),
+        });
+        return {
+          reviewPacket: cloneJsonSafe(parsed.reviewPacket),
+          revisionBridgePreviewResult: cloneJsonSafe(preview),
+        };
+      }
+    } catch (error) {
+      logDevError('query.reviewSurface:derive', error);
+    }
+  }
+
+  return {};
+}
+
+async function directReviewSurfacePayloadStillMatchesCurrentText() {
+  if (currentReviewSurfacePayloadSource !== 'direct') return false;
+  if (typeof currentReviewSurfacePayloadContentHash !== 'string' || !currentReviewSurfacePayloadContentHash) {
+    return false;
+  }
+  const sourceText = await readCurrentReviewSurfaceSourceText();
+  if (typeof sourceText !== 'string' || !sourceText.trim()) return false;
+  return computeHash(sourceText) === currentReviewSurfacePayloadContentHash;
+}
+
+async function handleWorkspaceReviewSurfaceQuery() {
+  const derivedPayload = await buildDerivedReviewSurfacePayload();
+  if (hasReviewSurfacePayload(derivedPayload)) {
+    currentReviewSurfacePayload = derivedPayload;
+    currentReviewSurfacePayloadSource = 'derived';
+    currentReviewSurfacePayloadContentHash = '';
+  } else if (currentReviewSurfacePayloadSource === 'derived') {
+    currentReviewSurfacePayload = {};
+    currentReviewSurfacePayloadSource = 'none';
+    currentReviewSurfacePayloadContentHash = '';
+  } else if (currentReviewSurfacePayloadSource === 'direct') {
+    const directPayloadMatches = await directReviewSurfacePayloadStillMatchesCurrentText();
+    if (!directPayloadMatches) {
+      currentReviewSurfacePayload = {};
+      currentReviewSurfacePayloadSource = 'none';
+      currentReviewSurfacePayloadContentHash = '';
+    }
+  } else if (!hasReviewSurfacePayload(currentReviewSurfacePayload)) {
+    currentReviewSurfacePayloadSource = 'none';
+    currentReviewSurfacePayloadContentHash = '';
+  }
+  return {
+    ok: true,
+    reviewSurface: isPlainObjectValue(currentReviewSurfacePayload)
+      ? cloneJsonSafe(currentReviewSurfacePayload) || {}
+      : {},
+  };
 }
 
 ipcMain.handle('ui:get-project-tree', async (_, payload) => {
@@ -4038,6 +4245,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
 const WORKSPACE_QUERY_BRIDGE_ALLOWED_QUERY_IDS = new Set([
   'query.projectTree',
   'query.collabScopeLocal',
+  'query.reviewSurface',
 ]);
 const SAVE_LIFECYCLE_SIGNAL_BRIDGE_ALLOWED_SIGNAL_IDS = new Set([
   'signal.localDirty.set',
