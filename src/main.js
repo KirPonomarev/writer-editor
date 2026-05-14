@@ -1759,7 +1759,31 @@ function normalizeMarkdownImportPayload(payload) {
   return pathGuard.payload;
 }
 
-function buildMarkdownImportPreviewEnvelope(payload, scene, lossReport, ioRecovery = null) {
+function buildMarkdownImportSafeCreatePlan(payload, markdownText) {
+  const sourceName = typeof payload?.sourceName === 'string' ? payload.sourceName : '';
+  const normalizedSource = sourceName
+    .replace(/\.md$/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const safeBaseName = sanitizeFilename(normalizedSource || 'Imported scene');
+  const content = normalizeFlowTextInput(markdownText);
+  const digest = computeHash(content).slice(0, 10);
+  const fileName = `${safeBaseName} ${digest}.txt`;
+  const romanRoot = getProjectSectionPath('roman');
+  const targetPath = joinPathSegmentsWithinRoot(romanRoot, ['Imported', fileName], { resolveSymlinks: false });
+  return {
+    mode: 'create-only',
+    entries: [
+      {
+        sceneId: `scene-${digest}`,
+        path: targetPath,
+        content,
+      },
+    ],
+  };
+}
+
+function buildMarkdownImportPreviewEnvelope(payload, scene, lossReport, markdownText, ioRecovery = null) {
   const previewResult = {
     schemaVersion: MARKDOWN_IMPORT_PREVIEW_SCHEMA,
     type: MARKDOWN_IMPORT_PREVIEW_TYPE,
@@ -1771,6 +1795,7 @@ function buildMarkdownImportPreviewEnvelope(payload, scene, lossReport, ioRecove
     lossReport: lossReport && typeof lossReport === 'object'
       ? lossReport
       : { count: 0, items: [] },
+    safeCreatePlan: buildMarkdownImportSafeCreatePlan(payload, markdownText),
   };
   if (ioRecovery && typeof ioRecovery === 'object' && !Array.isArray(ioRecovery)) {
     previewResult.recovery = ioRecovery;
@@ -2012,7 +2037,7 @@ async function handleImportMarkdownV1(payloadRaw) {
       lossReport,
     };
     if (payload.preview === true) {
-      out.previewResult = buildMarkdownImportPreviewEnvelope(payload, scene, lossReport, ioRecovery);
+      out.previewResult = buildMarkdownImportPreviewEnvelope(payload, scene, lossReport, markdownText, ioRecovery);
     }
     if (ioRecovery) {
       out.recovery = ioRecovery;
