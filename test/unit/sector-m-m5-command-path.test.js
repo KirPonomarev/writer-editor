@@ -4,11 +4,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
+const ROOT = path.resolve(__dirname, '..', '..');
+
 async function loadCommandModules() {
-  const root = process.cwd();
-  const registryModule = await import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'registry.mjs')).href);
-  const runnerModule = await import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'runCommand.mjs')).href);
-  const projectModule = await import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'projectCommands.mjs')).href);
+  const registryModule = await import(pathToFileURL(path.join(ROOT, 'src', 'renderer', 'commands', 'registry.mjs')).href);
+  const runnerModule = await import(pathToFileURL(path.join(ROOT, 'src', 'renderer', 'commands', 'runCommand.mjs')).href);
+  const projectModule = await import(pathToFileURL(path.join(ROOT, 'src', 'renderer', 'commands', 'projectCommands.mjs')).href);
   return { ...registryModule, ...runnerModule, ...projectModule };
 }
 
@@ -26,10 +27,22 @@ test('M5 command path passes sourcePath/outPath metadata through command layer',
       importMarkdownV1: async (payload) => {
         assert.equal(typeof payload.sourcePath, 'string');
         assert.equal(payload.sourcePath.endsWith('existing.md'), true);
+        assert.equal(payload.preview, true);
         return {
           ok: 1,
+          preview: true,
           scene: { kind: 'scene.v1', blocks: [], nodeCount: 0, lossReport: { count: 0, items: [] } },
           lossReport: { count: 0, items: [] },
+          previewResult: {
+            schemaVersion: 'markdown-import-preview.v1',
+            type: 'markdown.import.preview',
+            status: 'preview',
+            writeEffects: false,
+            sourceName: '',
+            sourcePath: payload.sourcePath,
+            scene: { kind: 'scene.v1', blocks: [], nodeCount: 0, lossReport: { count: 0, items: [] } },
+            lossReport: { count: 0, items: [] },
+          },
         };
       },
       exportMarkdownV1: async (payload) => {
@@ -50,13 +63,17 @@ test('M5 command path passes sourcePath/outPath metadata through command layer',
 
   const runCommand = createCommandRunner(registry);
   const imported = await runCommand(COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, {
-    sourcePath: path.join(process.cwd(), 'test', 'fixtures', 'sector-m', 'm5', 'existing.md'),
+    sourcePath: path.join(ROOT, 'test', 'fixtures', 'sector-m', 'm5', 'existing.md'),
+    preview: true,
   });
   assert.equal(imported.ok, true);
+  assert.equal(imported.value.preview, true);
+  assert.equal(imported.value.previewResult.schemaVersion, 'markdown-import-preview.v1');
+  assert.equal(imported.value.previewResult.writeEffects, false);
 
   const exported = await runCommand(COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, {
     scene: { kind: 'scene.v1', blocks: [] },
-    outPath: path.join(process.cwd(), 'test', 'fixtures', 'sector-m', 'm5', 'existing.md.out.md'),
+    outPath: path.join(ROOT, 'test', 'fixtures', 'sector-m', 'm5', 'existing.md.out.md'),
     snapshotLimit: 2,
   });
 
@@ -90,7 +107,7 @@ test('M5 typed IO errors remain stable through command layer', async () => {
 
   const runCommand = createCommandRunner(registry);
   const result = await runCommand(COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, {
-    sourcePath: path.join(process.cwd(), 'test', 'fixtures', 'sector-m', 'm5', 'big.md'),
+    sourcePath: path.join(ROOT, 'test', 'fixtures', 'sector-m', 'm5', 'big.md'),
   });
 
   assert.equal(result.ok, false);
@@ -100,11 +117,16 @@ test('M5 typed IO errors remain stable through command layer', async () => {
 });
 
 test('M5 main command handlers reference reliability primitives (static guard)', () => {
-  const mainPath = path.join(process.cwd(), 'src', 'main.js');
+  const mainPath = path.join(ROOT, 'src', 'main.js');
   const mainText = fs.readFileSync(mainPath, 'utf8');
   assert.match(mainText, /createCommandSurfaceKernel/);
   assert.match(mainText, /dispatchCommandSurfaceKernel/);
   assert.match(mainText, /writeMarkdownWithRecovery/);
   assert.match(mainText, /readMarkdownWithRecovery|readMarkdownWithLimits/);
   assert.match(mainText, /code\.startsWith\('E_IO_'/);
+  assert.match(mainText, /MARKDOWN_IMPORT_PREVIEW_SCHEMA/);
+  assert.match(mainText, /MARKDOWN_IMPORT_PREVIEW_TYPE/);
+  assert.match(mainText, /status:\s*'preview'/);
+  assert.match(mainText, /writeEffects:\s*false/);
+  assert.match(mainText, /payload\.preview !== true/);
 });

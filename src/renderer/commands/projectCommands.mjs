@@ -1352,6 +1352,7 @@ export function registerProjectCommands(registry, options = {}) {
         : (typeof input.markdown === 'string' ? input.markdown : ''),
       sourceName: typeof input.sourceName === 'string' ? input.sourceName : '',
       sourcePath: typeof input.sourcePath === 'string' ? input.sourcePath : '',
+      preview: input.preview === true,
       limits: input.limits && typeof input.limits === 'object' && !Array.isArray(input.limits)
         ? input.limits
         : {},
@@ -1371,13 +1372,20 @@ export function registerProjectCommands(registry, options = {}) {
     const bridged = unwrapBridgeResponseValue(response);
 
     if (bridged && bridged.ok === 1 && bridged.scene && typeof bridged.scene === 'object') {
-      return ok({
+      const result = {
         imported: true,
         scene: bridged.scene,
         lossReport: bridged.lossReport && typeof bridged.lossReport === 'object'
           ? bridged.lossReport
           : { count: 0, items: [] },
-      });
+      };
+      if (bridged.preview === true) {
+        result.preview = true;
+        result.previewResult = bridged.previewResult && typeof bridged.previewResult === 'object'
+          ? bridged.previewResult
+          : null;
+      }
+      return ok(result);
     }
 
     if (bridged && bridged.ok === 0 && bridged.error && typeof bridged.error === 'object') {

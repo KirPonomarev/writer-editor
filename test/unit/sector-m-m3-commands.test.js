@@ -4,16 +4,17 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
+const ROOT = path.resolve(__dirname, '..', '..');
+
 async function loadCommandModules() {
-  const root = process.cwd();
-  const registryModule = await import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'registry.mjs')).href);
-  const runnerModule = await import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'runCommand.mjs')).href);
-  const projectModule = await import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'projectCommands.mjs')).href);
+  const registryModule = await import(pathToFileURL(path.join(ROOT, 'src', 'renderer', 'commands', 'registry.mjs')).href);
+  const runnerModule = await import(pathToFileURL(path.join(ROOT, 'src', 'renderer', 'commands', 'runCommand.mjs')).href);
+  const projectModule = await import(pathToFileURL(path.join(ROOT, 'src', 'renderer', 'commands', 'projectCommands.mjs')).href);
   return { ...registryModule, ...runnerModule, ...projectModule };
 }
 
 function fixture(name) {
-  return fs.readFileSync(path.join(process.cwd(), 'test', 'fixtures', 'sector-m', 'm3', name), 'utf8');
+  return fs.readFileSync(path.join(ROOT, 'test', 'fixtures', 'sector-m', 'm3', name), 'utf8');
 }
 
 test('M3 commands: import/export markdown return deterministic success payloads', async () => {
@@ -78,6 +79,68 @@ test('M3 commands: import/export markdown return deterministic success payloads'
       exported: true,
       markdown: expectedExport.markdown,
       lossReport: { count: 0, items: [] },
+    },
+  });
+});
+
+test('M3 commands: import preview forwards preview flag and preserves preview envelope', async () => {
+  const {
+    createCommandRegistry,
+    createCommandRunner,
+    registerProjectCommands,
+    COMMAND_IDS,
+  } = await loadCommandModules();
+
+  const sourceMarkdown = fixture('simple.md');
+  const previewEnvelope = {
+    schemaVersion: 'markdown-import-preview.v1',
+    type: 'markdown.import.preview',
+    status: 'preview',
+    writeEffects: false,
+    sourceName: 'fixture.md',
+    sourcePath: '/tmp/fixture.md',
+    scene: {
+      kind: 'scene.v1',
+      blocks: [],
+      nodeCount: 0,
+      lossReport: { count: 0, items: [] },
+    },
+    lossReport: { count: 0, items: [] },
+  };
+
+  const registry = createCommandRegistry();
+  registerProjectCommands(registry, {
+    electronAPI: {
+      importMarkdownV1: async (payload) => {
+        assert.equal(payload.preview, true);
+        assert.equal(payload.text, sourceMarkdown);
+        return {
+          ok: 1,
+          preview: true,
+          scene: previewEnvelope.scene,
+          lossReport: previewEnvelope.lossReport,
+          previewResult: previewEnvelope,
+        };
+      },
+    },
+  });
+  const runCommand = createCommandRunner(registry);
+
+  const imported = await runCommand(COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, {
+    text: sourceMarkdown,
+    sourceName: 'fixture.md',
+    sourcePath: '/tmp/fixture.md',
+    preview: true,
+  });
+
+  assert.deepEqual(imported, {
+    ok: true,
+    value: {
+      imported: true,
+      preview: true,
+      previewResult: previewEnvelope,
+      scene: previewEnvelope.scene,
+      lossReport: previewEnvelope.lossReport,
     },
   });
 });
