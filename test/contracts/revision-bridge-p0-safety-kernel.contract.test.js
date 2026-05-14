@@ -9,7 +9,8 @@ const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-p0-safety-kernel.contract.test.js';
 const RB02_TEST_PATH = 'test/contracts/revision-bridge-reviewgraph-contract.contract.test.js';
 const RB03_TEST_PATH = 'test/contracts/revision-bridge-review-packet-preview-contract.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB02_TEST_PATH, RB03_TEST_PATH];
+const RB19_TEST_PATH = 'test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js';
+const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB02_TEST_PATH, RB03_TEST_PATH, RB19_TEST_PATH];
 const WIRING_NEEDLES = [
   'revisionBridge',
   'RevisionBridge',
