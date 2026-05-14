@@ -101,6 +101,12 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
       message: getErrorMessage(error),
     });
   }
+  if (!Buffer.isBuffer(documentBuffer) || documentBuffer.length === 0) {
+    return makeTypedExportError('E_EXPORT_BUILD_INVALID_OUTPUT', 'DOCX_BUILD_INVALID_OUTPUT', {
+      isBuffer: Buffer.isBuffer(documentBuffer),
+      bytes: Buffer.isBuffer(documentBuffer) ? documentBuffer.length : null,
+    });
+  }
 
   try {
     await queueDiskOperation(() => writeBufferAtomic(outPath, documentBuffer), 'export docx min');
