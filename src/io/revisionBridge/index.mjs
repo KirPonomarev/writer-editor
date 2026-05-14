@@ -73,6 +73,8 @@ export const DOCX_HOSTILE_FILE_GATE_REASON_CODES = Object.freeze({
 export const REVISION_BRIDGE_BLOCK_SCHEMA = 'revision-bridge.block.v1';
 export const REVISION_BRIDGE_BLOCK_LINEAGE_SCHEMA = 'revision-bridge.block-lineage.v1';
 export const REVISION_BRIDGE_MINIMAL_BLOCK_ID_PREVIEW_SCHEMA = 'revision-bridge.minimal-block-id-preview.v1';
+export const REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_PREVIEW_SCHEMA =
+  'revision-bridge.structural-manual-review-preview.v1';
 export const REVISION_BRIDGE_BLOCK_KINDS = Object.freeze([
   'paragraph',
   'heading',
@@ -94,6 +96,20 @@ export const REVISION_BRIDGE_MINIMAL_BLOCK_ID_PREVIEW_REASON_CODES = Object.free
   'REVISION_BRIDGE_MINIMAL_BLOCK_ID_ORDINAL_ONLY_MANUAL_ONLY',
   'REVISION_BRIDGE_MINIMAL_BLOCK_ID_VERSION_CHANGED_MANUAL_ONLY',
   'REVISION_BRIDGE_MINIMAL_BLOCK_ID_STRUCTURAL_MANUAL_ONLY',
+]);
+export const REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_REASON_CODES = Object.freeze([
+  'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_PREVIEW_READY',
+  'E_REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_PREVIEW_DIAGNOSTICS',
+  'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_MOVE_MANUAL_ONLY',
+  'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_SPLIT_MANUAL_ONLY',
+  'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_MERGE_MANUAL_ONLY',
+  'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_DUPLICATE_CANDIDATES',
+  'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_COMMENT_ANCHOR_RISK_SIGNAL',
+  'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_BLOCK_ID_INSUFFICIENT',
+  'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_EVIDENCE_TOO_WEAK',
+  'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_MIXED_TEXT_AND_STRUCTURE',
+  'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_PARTIAL_SCOPE_ONLY',
+  'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_UNSUPPORTED_KIND',
 ]);
 export const REVISION_BRIDGE_INLINE_RANGE_SCHEMA = 'revision-bridge.inline-range.v1';
 export const REVISION_BRIDGE_COMMENT_ANCHOR_PLACEMENT_SCHEMA = 'revision-bridge.comment-anchor-placement.v1';
@@ -2559,6 +2575,308 @@ export function buildMinimalBlockIdPreview(input = {}) {
   });
 }
 // CONTOUR_06_MINIMAL_BLOCK_ID_R2_END
+
+// CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1_START
+const STRUCTURAL_MANUAL_REVIEW_READY_CODE = 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_PREVIEW_READY';
+const STRUCTURAL_MANUAL_REVIEW_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_PREVIEW_DIAGNOSTICS';
+const STRUCTURAL_MANUAL_REVIEW_MOVE_CODE = 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_MOVE_MANUAL_ONLY';
+const STRUCTURAL_MANUAL_REVIEW_SPLIT_CODE = 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_SPLIT_MANUAL_ONLY';
+const STRUCTURAL_MANUAL_REVIEW_MERGE_CODE = 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_MERGE_MANUAL_ONLY';
+const STRUCTURAL_MANUAL_REVIEW_DUPLICATE_CODE = 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_DUPLICATE_CANDIDATES';
+const STRUCTURAL_MANUAL_REVIEW_COMMENT_RISK_CODE =
+  'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_COMMENT_ANCHOR_RISK_SIGNAL';
+const STRUCTURAL_MANUAL_REVIEW_BLOCK_ID_CODE = 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_BLOCK_ID_INSUFFICIENT';
+const STRUCTURAL_MANUAL_REVIEW_EVIDENCE_CODE = 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_EVIDENCE_TOO_WEAK';
+const STRUCTURAL_MANUAL_REVIEW_MIXED_CODE = 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_MIXED_TEXT_AND_STRUCTURE';
+const STRUCTURAL_MANUAL_REVIEW_PARTIAL_SCOPE_CODE = 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_PARTIAL_SCOPE_ONLY';
+const STRUCTURAL_MANUAL_REVIEW_UNSUPPORTED_CODE = 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_UNSUPPORTED_KIND';
+
+function structuralManualReviewReason(code, field, message, details = {}) {
+  return cloneJsonSafe({
+    code,
+    field,
+    message,
+    ...details,
+  });
+}
+
+function structuralManualReviewInput(input) {
+  return isPlainObject(input) ? input : {};
+}
+
+function structuralManualReviewGraph(input) {
+  const source = structuralManualReviewInput(input);
+  if (isPlainObject(source.revisionSession?.reviewGraph)) return source.revisionSession.reviewGraph;
+  if (isPlainObject(source.reviewGraph)) return source.reviewGraph;
+  return {};
+}
+
+function structuralManualReviewChanges(input) {
+  const source = structuralManualReviewInput(input);
+  if (Array.isArray(source.structuralChanges)) return source.structuralChanges;
+  const graph = structuralManualReviewGraph(source);
+  return Array.isArray(graph.structuralChanges) ? graph.structuralChanges : [];
+}
+
+function structuralManualReviewTextChanges(input) {
+  const graph = structuralManualReviewGraph(input);
+  return Array.isArray(graph.textChanges) ? graph.textChanges : [];
+}
+
+function structuralManualReviewKindGroup(kind) {
+  const compact = normalizeString(kind).toLowerCase().replace(/[^a-z0-9]+/gu, '');
+  if (!compact) return 'unsupported';
+  if (compact.startsWith('move')) return 'move';
+  if (compact.startsWith('split')) return 'split';
+  if (compact.startsWith('merge')) return 'merge';
+  return 'unsupported';
+}
+
+function structuralManualReviewItemCode(kindGroup) {
+  if (kindGroup === 'move') return STRUCTURAL_MANUAL_REVIEW_MOVE_CODE;
+  if (kindGroup === 'split') return STRUCTURAL_MANUAL_REVIEW_SPLIT_CODE;
+  if (kindGroup === 'merge') return STRUCTURAL_MANUAL_REVIEW_MERGE_CODE;
+  return STRUCTURAL_MANUAL_REVIEW_UNSUPPORTED_CODE;
+}
+
+function structuralManualReviewSummaryText(change) {
+  const normalized = normalizeStructuralChange(change);
+  return normalizeString(
+    normalized.summary
+    || change.label
+    || change.description
+    || change.title,
+  );
+}
+
+function structuralManualReviewCandidateCount(change) {
+  const source = isPlainObject(change) ? change : {};
+  if (Number.isSafeInteger(source.candidateCount) && source.candidateCount >= 0) return source.candidateCount;
+  if (Array.isArray(source.candidateBlockIds)) return source.candidateBlockIds.length;
+  if (Array.isArray(source.candidateIds)) return source.candidateIds.length;
+  if (Array.isArray(source.candidateScopes)) return source.candidateScopes.length;
+  if (Array.isArray(source.candidates)) return source.candidates.length;
+  return 0;
+}
+
+function structuralManualReviewCommentRisk(change) {
+  const source = isPlainObject(change) ? change : {};
+  return source.commentRisk === true
+    || source.commentAnchorRisk === true
+    || source.relatedCommentRisk === true
+    || source.commentRiskSignal === true;
+}
+
+function structuralManualReviewHasWeakBlockId(change) {
+  const source = isPlainObject(change) ? change : {};
+  return source.blockIdInsufficient === true
+    || source.missingBlockId === true
+    || source.weakBlockId === true
+    || source.blockIdentityRisk === true;
+}
+
+function structuralManualReviewWeakEvidence(change) {
+  const source = isPlainObject(change) ? change : {};
+  const marker = normalizeString(
+    source.evidenceStrength
+    || source.matchStrength
+    || source.confidence
+    || source.evidenceConfidence,
+  ).toLowerCase();
+  return source.evidenceTooWeak === true
+    || source.weakEvidence === true
+    || marker === 'weak'
+    || marker === 'low'
+    || marker === 'approximate'
+    || marker === 'unresolved';
+}
+
+function structuralManualReviewPartialScope(change) {
+  const targetScope = normalizeReviewGraphTargetScope(change?.targetScope);
+  return !targetScope.type || !targetScope.id || change?.partialScopeOnly === true;
+}
+
+function structuralManualReviewReasons(change, index, context) {
+  const normalized = normalizeStructuralChange(change);
+  const kindGroup = structuralManualReviewKindGroup(normalized.kind);
+  const reasons = [];
+  const baseField = `structuralChanges.${index}`;
+  reasons.push(structuralManualReviewReason(
+    structuralManualReviewItemCode(kindGroup),
+    `${baseField}.kind`,
+    `structural ${kindGroup === 'unsupported' ? 'change' : kindGroup} requires manual review`,
+    {
+      structuralKind: normalized.kind,
+      structuralKindGroup: kindGroup,
+    },
+  ));
+
+  if (context.hasMixedTextAndStructure) {
+    reasons.push(structuralManualReviewReason(
+      STRUCTURAL_MANUAL_REVIEW_MIXED_CODE,
+      'reviewGraph.textChanges',
+      'exact text path must not absorb structural change candidates',
+      { textChangeCount: context.textChangeCount },
+    ));
+  }
+  if (structuralManualReviewCandidateCount(change) > 1) {
+    reasons.push(structuralManualReviewReason(
+      STRUCTURAL_MANUAL_REVIEW_DUPLICATE_CODE,
+      `${baseField}.candidateCount`,
+      'multiple structural candidates require manual review',
+      { candidateCount: structuralManualReviewCandidateCount(change) },
+    ));
+  }
+  if (structuralManualReviewCommentRisk(change)) {
+    reasons.push(structuralManualReviewReason(
+      STRUCTURAL_MANUAL_REVIEW_COMMENT_RISK_CODE,
+      `${baseField}.commentRisk`,
+      'comment anchor risk keeps the structural candidate manual only',
+    ));
+  }
+  if (structuralManualReviewHasWeakBlockId(change)) {
+    reasons.push(structuralManualReviewReason(
+      STRUCTURAL_MANUAL_REVIEW_BLOCK_ID_CODE,
+      `${baseField}.blockId`,
+      'block identity evidence is insufficient for auto apply',
+    ));
+  }
+  if (structuralManualReviewWeakEvidence(change)) {
+    reasons.push(structuralManualReviewReason(
+      STRUCTURAL_MANUAL_REVIEW_EVIDENCE_CODE,
+      `${baseField}.evidence`,
+      'structural evidence is too weak for anything beyond manual review',
+    ));
+  }
+  if (structuralManualReviewPartialScope(change)) {
+    reasons.push(structuralManualReviewReason(
+      STRUCTURAL_MANUAL_REVIEW_PARTIAL_SCOPE_CODE,
+      `${baseField}.targetScope`,
+      'structural target scope is partial or incomplete',
+    ));
+  }
+  if (kindGroup === 'unsupported') {
+    reasons.push(structuralManualReviewReason(
+      STRUCTURAL_MANUAL_REVIEW_UNSUPPORTED_CODE,
+      `${baseField}.kind`,
+      'unsupported structural kind is preserved as observation only',
+    ));
+  }
+  return reasons;
+}
+
+function structuralManualReviewEvidenceTrace(change, index) {
+  const normalized = normalizeStructuralChange(change);
+  return cloneJsonSafe({
+    source: `revisionSession.reviewGraph.structuralChanges.${index}`,
+    structuralChangeId: normalizeString(normalized.structuralChangeId) || `structural-change-${index}`,
+    structuralKind: normalizeString(normalized.kind),
+    summary: structuralManualReviewSummaryText(change),
+    targetScope: normalizeReviewGraphTargetScope(normalized.targetScope),
+  });
+}
+
+function structuralManualReviewItem(change, index, context) {
+  const normalized = normalizeStructuralChange(change);
+  const kindGroup = structuralManualReviewKindGroup(normalized.kind);
+  const itemId = normalizeString(normalized.structuralChangeId) || `structural-change-${index}`;
+  const reasons = structuralManualReviewReasons(change, index, context);
+  return cloneJsonSafe({
+    itemId,
+    structuralChangeId: itemId,
+    structuralKind: normalizeString(normalized.kind),
+    structuralKindGroup: kindGroup,
+    classification: 'manualOnly',
+    targetScope: normalizeReviewGraphTargetScope(normalized.targetScope),
+    summary: structuralManualReviewSummaryText(change),
+    manualOnlyReason: reasons[0]?.code || STRUCTURAL_MANUAL_REVIEW_UNSUPPORTED_CODE,
+    reasonCodes: reasons.map((reason) => reason.code),
+    reasons,
+    evidenceTrace: structuralManualReviewEvidenceTrace(change, index),
+    relatedCommentRisk: structuralManualReviewCommentRisk(change),
+    canAutoApply: false,
+  });
+}
+
+export function buildStructuralManualReviewPreview(input = {}) {
+  if (!isPlainObject(input)) {
+    const reasons = [
+      structuralManualReviewReason(
+        STRUCTURAL_MANUAL_REVIEW_DIAGNOSTICS_CODE,
+        'structuralManualReviewPreview',
+        'input must be an object',
+      ),
+    ];
+    return {
+      ok: false,
+      type: 'revisionBridge.structuralManualReviewPreview',
+      status: 'diagnostics',
+      code: STRUCTURAL_MANUAL_REVIEW_DIAGNOSTICS_CODE,
+      reason: reasons[0].code,
+      reasons,
+      schemaVersion: REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_PREVIEW_SCHEMA,
+      previewOnly: true,
+      canAutoApply: false,
+      autoApplyCount: 0,
+      autoApplyCandidates: [],
+      items: [],
+      unsupportedObservations: [],
+      summary: {
+        totalStructuralChanges: 0,
+        manualOnlyCount: 0,
+        unsupportedCount: 0,
+      },
+    };
+  }
+
+  const structuralChanges = structuralManualReviewChanges(input)
+    .filter((change) => isPlainObject(change));
+  const textChanges = structuralManualReviewTextChanges(input)
+    .filter((change) => isPlainObject(change));
+  const context = {
+    hasMixedTextAndStructure: structuralChanges.length > 0 && textChanges.length > 0,
+    textChangeCount: textChanges.length,
+  };
+
+  const items = [];
+  const unsupportedObservations = [];
+  structuralChanges.forEach((change, index) => {
+    const item = structuralManualReviewItem(change, index, context);
+    if (item.structuralKindGroup === 'unsupported') {
+      unsupportedObservations.push(cloneJsonSafe({
+        itemId: item.itemId,
+        structuralChangeId: item.structuralChangeId,
+        structuralKind: item.structuralKind,
+        reason: STRUCTURAL_MANUAL_REVIEW_UNSUPPORTED_CODE,
+        evidenceTrace: item.evidenceTrace,
+      }));
+      return;
+    }
+    items.push(item);
+  });
+
+  return cloneJsonSafe({
+    ok: true,
+    type: 'revisionBridge.structuralManualReviewPreview',
+    status: 'preview',
+    code: STRUCTURAL_MANUAL_REVIEW_READY_CODE,
+    reason: STRUCTURAL_MANUAL_REVIEW_READY_CODE,
+    reasons: [],
+    schemaVersion: REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_PREVIEW_SCHEMA,
+    previewOnly: true,
+    canAutoApply: false,
+    autoApplyCount: 0,
+    autoApplyCandidates: [],
+    items,
+    unsupportedObservations,
+    summary: {
+      totalStructuralChanges: structuralChanges.length,
+      manualOnlyCount: items.length,
+      unsupportedCount: unsupportedObservations.length,
+    },
+  });
+}
+// CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1_END
 
 // RB_10_INLINE_RANGE_ANCHOR_CONTRACTS_START
 const INLINE_RANGE_VALID_CODE = 'REVISION_BRIDGE_INLINE_RANGE_VALID';

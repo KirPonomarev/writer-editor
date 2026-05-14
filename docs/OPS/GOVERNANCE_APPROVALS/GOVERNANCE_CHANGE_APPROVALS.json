@@ -2922,10 +2922,10 @@
     },
     {
       "filePath": "scripts/ops/sector-m-scope-map.json",
-      "sha256": "1266014acdf2a75923ee3fe3eefbe05e9daea7a3cceeeba6c744a5dc5c7449e6",
-      "approvedBy": "ticket:BASELINE_RED_HYGIENE_002",
+      "sha256": "b25b4d03614919f1766f07c62ddc8c34fca4fb02c20ee945a401e2dba4b136a2",
+      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1_SCOPE_REBIND",
       "approvedAtUtc": "2026-04-28T12:30:00.000Z",
-      "rationale": "BASELINE_RED_HYGIENE_002 approves the exact M7 scope-map rebind for sector-m-edit-menu-undo-redo-command-kernel.test.js so branch-level scope guards match the proven bounded hygiene delta."
+      "rationale": "Approve the exact sector-m DONE scope rebind for revision-bridge kernel contour 08 so machine scope guards reflect the owner-selected bounded revision-bridge delta without opening UI, IPC, network, dependency, or broader writer lanes."
     },
     {
       "filePath": "scripts/ops/recovery-io-state.mjs",
@@ -3048,24 +3048,24 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-anchor-confidence-engine-contract.contract.test.js",
-      "sha256": "259161ca6af79fad72c46bc6f3a7ba70cb4e9acc7aec70d0dbcda3b55c2707e0",
-      "approvedBy": "ticket:CONTOUR_07_MIN_SAFE_WRITE_HARDENING_FOR_EXACT_TEXT_ONLY_R2",
+      "sha256": "45cbfc1be19b030a996e2f0b3c8675565004d4e15b39ea016ce7258df266babb",
+      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
       "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C07 exact text min safe write allowlist-only guard update; no UI, IPC, runtime wiring, DOCX, markdown feature, mind map, collab, history, network, dependency, or broader apply claim is introduced."
+      "rationale": "Approve C08 structural manual review allowlist guard update for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-comment-survival.contract.test.js",
-      "sha256": "45d9aaa7e475a77546d7581da28f3770108a0517673567c89941f0e1a479fd0f",
-      "approvedBy": "ticket:CONTOUR_07_MIN_SAFE_WRITE_HARDENING_FOR_EXACT_TEXT_ONLY_R2",
+      "sha256": "d0b9aa24a902c8092717c00356df21cdc93f5dfe10a977b2288036efcaf714cb",
+      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
       "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C07 exact text min safe write allowlist-only guard update; no UI, IPC, runtime wiring, DOCX, markdown feature, mind map, collab, history, network, dependency, or broader apply claim is introduced."
+      "rationale": "Approve C08 structural manual review allowlist guard update for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js",
-      "sha256": "e86e42717e36ea0667853d7ab2c222d0c6372c0e1099a54b0af6c504b199c2d5",
-      "approvedBy": "ticket:CONTOUR_07_MIN_SAFE_WRITE_HARDENING_FOR_EXACT_TEXT_ONLY_R2",
+      "sha256": "5e20dd0f95c35885e063a70ea7c95f6caece56f6733e169c54339cd6ad208a8f",
+      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
       "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C07 exact text min safe write allowlist-only guard update; no UI, IPC, runtime wiring, DOCX, markdown feature, mind map, collab, history, network, dependency, or broader apply claim is introduced."
+      "rationale": "Approve C08 structural manual review allowlist guard update for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",
@@ -3076,24 +3076,31 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-inline-range-anchor-contract.contract.test.js",
-      "sha256": "cf8620c6bff60a25a93e26899db668b065b98f4f461654b848413dee5f0b000e",
-      "approvedBy": "ticket:CONTOUR_07_MIN_SAFE_WRITE_HARDENING_FOR_EXACT_TEXT_ONLY_R2",
+      "sha256": "de55f86e4097c345f8904a00108ee87c5a3b23bf1d99df121153759903dd859a",
+      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
       "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C07 exact text min safe write allowlist-only guard update; no UI, IPC, runtime wiring, DOCX, markdown feature, mind map, collab, history, network, dependency, or broader apply claim is introduced."
+      "rationale": "Approve C08 structural manual review allowlist guard update for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-minimal-block-id.contract.test.js",
-      "sha256": "f379fa083da7ebd5e773338083f40155063239f9aeefa452b32f9387b499d6b3",
-      "approvedBy": "ticket:CONTOUR_07_MIN_SAFE_WRITE_HARDENING_FOR_EXACT_TEXT_ONLY_R2",
+      "sha256": "26facc0e1afec41358214e5395f7ba35d7331a5a9fc77e1c3587ba267b04fcb5",
+      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
       "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C07 exact text min safe write allowlist-only guard update; no UI, IPC, runtime wiring, DOCX, markdown feature, mind map, collab, history, network, dependency, or broader apply claim is introduced."
+      "rationale": "Approve C08 structural manual review allowlist guard update for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-p0-safety-kernel.contract.test.js",
-      "sha256": "dd18e99b7663e330b4e94d1c8a18b9eebd3168b6e381f3aec6e0049d2be55bee",
-      "approvedBy": "ticket:CONTOUR_07_MIN_SAFE_WRITE_HARDENING_FOR_EXACT_TEXT_ONLY_R2",
+      "sha256": "acbb868ff3039cc5c2eb9d102ffb5b8a0ce775b8989e60ecb07fc074fac1b93c",
+      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
       "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C07 exact text min safe write allowlist-only guard update; no UI, IPC, runtime wiring, DOCX, markdown feature, mind map, collab, history, network, dependency, or broader apply claim is introduced."
+      "rationale": "Approve C08 structural manual review allowlist guard update for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-structural-manual-review.contract.test.js",
+      "sha256": "34402d41e52a3d095f5e1e8d132ae7012b58317203474cbf4cd00eef5ff54fef",
+      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
+      "approvedAtUtc": "2026-05-14T00:00:00.000Z",
+      "rationale": "Approve C08 structural manual review contract for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
     }
   ]
 }
