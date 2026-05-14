@@ -145,6 +145,83 @@ test('M3 commands: import preview forwards preview flag and preserves preview en
   });
 });
 
+test('M3 commands: safe create import forwards approved preview payload and preserves receipt', async () => {
+  const {
+    createCommandRegistry,
+    createCommandRunner,
+    registerProjectCommands,
+    COMMAND_IDS,
+  } = await loadCommandModules();
+
+  const approvedPreviewPayload = {
+    schemaVersion: 'markdown-import-preview.v1',
+    type: 'markdown.import.preview',
+    status: 'preview',
+    writeEffects: false,
+    safeCreatePlan: {
+      mode: 'create-only',
+      entries: [
+        {
+          sceneId: 'scene-a',
+          path: '/tmp/scene-a.txt',
+          content: 'Alpha\n',
+        },
+      ],
+    },
+  };
+  const receipt = {
+    schemaVersion: 'markdown-import-safe-create-receipt.v1',
+    type: 'markdown.import.safeCreate.receipt',
+    reason: 'MARKDOWN_IMPORT_SAFE_CREATE_APPLIED',
+    inputHash: 'a'.repeat(64),
+    outputHash: 'b'.repeat(64),
+    createdSceneIds: ['scene-a'],
+    createdScenes: [
+      {
+        sceneId: 'scene-a',
+        path: '/tmp/scene-a.txt',
+        kind: 'chapter-file',
+        bytesWritten: 6,
+        outputHash: 'c'.repeat(64),
+      },
+    ],
+  };
+
+  const registry = createCommandRegistry();
+  registerProjectCommands(registry, {
+    electronAPI: {
+      importMarkdownV1: async (payload) => {
+        assert.equal(payload.safeCreate, true);
+        assert.deepEqual(payload.previewPayload, approvedPreviewPayload);
+        return {
+          ok: 1,
+          safeCreate: true,
+          created: true,
+          createdSceneIds: ['scene-a'],
+          receipt,
+        };
+      },
+    },
+  });
+  const runCommand = createCommandRunner(registry);
+
+  const imported = await runCommand(COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, {
+    safeCreate: true,
+    previewPayload: approvedPreviewPayload,
+  });
+
+  assert.deepEqual(imported, {
+    ok: true,
+    value: {
+      imported: true,
+      safeCreate: true,
+      created: true,
+      createdSceneIds: ['scene-a'],
+      receipt,
+    },
+  });
+});
+
 test('M3 commands: typed errors are stable and stack is not exposed', async () => {
   const {
     createCommandRegistry,

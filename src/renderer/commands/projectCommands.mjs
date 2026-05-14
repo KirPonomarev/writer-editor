@@ -1353,6 +1353,10 @@ export function registerProjectCommands(registry, options = {}) {
       sourceName: typeof input.sourceName === 'string' ? input.sourceName : '',
       sourcePath: typeof input.sourcePath === 'string' ? input.sourcePath : '',
       preview: input.preview === true,
+      safeCreate: input.safeCreate === true,
+      previewPayload: input.previewPayload && typeof input.previewPayload === 'object' && !Array.isArray(input.previewPayload)
+        ? input.previewPayload
+        : null,
       limits: input.limits && typeof input.limits === 'object' && !Array.isArray(input.limits)
         ? input.limits
         : {},
@@ -1386,6 +1390,18 @@ export function registerProjectCommands(registry, options = {}) {
           : null;
       }
       return ok(result);
+    }
+
+    if (bridged && bridged.ok === 1 && bridged.safeCreate === true) {
+      return ok({
+        imported: true,
+        safeCreate: true,
+        created: bridged.created === true,
+        createdSceneIds: Array.isArray(bridged.createdSceneIds) ? bridged.createdSceneIds : [],
+        receipt: bridged.receipt && typeof bridged.receipt === 'object'
+          ? bridged.receipt
+          : null,
+      });
     }
 
     if (bridged && bridged.ok === 0 && bridged.error && typeof bridged.error === 'object') {

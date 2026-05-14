@@ -15,6 +15,9 @@ const {
   writeFlowSceneBatchAtomic,
 } = require('./utils/flowSceneBatchAtomic');
 const {
+  applyMarkdownImportSafeCreate,
+} = require('./utils/markdownImportSafeCreate');
+const {
   isPathInsideBoundary,
   joinPathSegmentsWithinRoot,
   resolveValidatedPath,
@@ -1599,6 +1602,7 @@ function loadRevisionBridgeModule() {
 function mapMarkdownErrorCode(inputCode, inputReason) {
   const code = typeof inputCode === 'string' ? inputCode : '';
   const reason = typeof inputReason === 'string' ? inputReason : '';
+  if (code.startsWith('MDV1_')) return code;
   if (code.startsWith('E_IO_')) return code;
   if (code === 'E_MD_LIMIT_SIZE') return 'MDV1_INPUT_TOO_LARGE';
   if (code === 'E_MD_LIMIT_DEPTH' || code === 'E_MD_LIMIT_NODES' || code === 'E_MD_LIMIT_TIMEOUT') {
@@ -1737,6 +1741,10 @@ function normalizeMarkdownImportPayload(payload) {
     sourceName: typeof payload.sourceName === 'string' ? payload.sourceName : '',
     sourcePath: typeof payload.sourcePath === 'string' ? payload.sourcePath : '',
     preview: payload.preview === true,
+    safeCreate: payload.safeCreate === true,
+    previewPayload: payload.previewPayload && typeof payload.previewPayload === 'object' && !Array.isArray(payload.previewPayload)
+      ? cloneJsonSafe(payload.previewPayload)
+      : null,
     limits: payload.limits && typeof payload.limits === 'object' && !Array.isArray(payload.limits)
       ? payload.limits
       : {},
@@ -1902,6 +1910,60 @@ async function handleImportMarkdownV1(payloadRaw) {
       'path_boundary_violation',
       buildPathBoundaryDetails(payload.pathBoundaryError),
     );
+  }
+
+  if (payload.safeCreate === true) {
+    try {
+      await ensureProjectStructure();
+      const projectBinding = await resolveProjectBindingForFile(getProjectSectionPath('roman'));
+      const safeCreateResult = await applyMarkdownImportSafeCreate(
+        {
+          previewPayload: payload.previewPayload,
+        },
+        {
+          projectRoot: getProjectRootPath(),
+          romanRoot: getProjectSectionPath('roman'),
+          projectId: projectBinding && typeof projectBinding.projectId === 'string'
+            ? projectBinding.projectId
+            : '',
+          previewSchemaVersion: MARKDOWN_IMPORT_PREVIEW_SCHEMA,
+          reservedTopLevelRomanNames: [...ROMAN_SECTION_FILENAME_SET],
+          queueDiskOperation,
+          operationLabel: 'safe create import scene batch',
+          writeBatchAtomic: writeFlowSceneBatchAtomic,
+        },
+      );
+      if (safeCreateResult.ok) {
+        return {
+          ok: 1,
+          safeCreate: true,
+          created: true,
+          createdSceneIds: Array.isArray(safeCreateResult.value.createdSceneIds)
+            ? safeCreateResult.value.createdSceneIds
+            : [],
+          receipt: safeCreateResult.value.receipt,
+        };
+      }
+      return makeTypedMarkdownError(
+        IMPORT_MARKDOWN_V1_CHANNEL,
+        safeCreateResult.error && typeof safeCreateResult.error.code === 'string'
+          ? safeCreateResult.error.code
+          : 'MDV1_SAFE_CREATE_WRITE_FAIL',
+        safeCreateResult.error && typeof safeCreateResult.error.reason === 'string'
+          ? safeCreateResult.error.reason
+          : 'import_safe_create_failed',
+        safeCreateResult.error && safeCreateResult.error.details && typeof safeCreateResult.error.details === 'object'
+          ? safeCreateResult.error.details
+          : {},
+      );
+    } catch (error) {
+      return makeTypedMarkdownError(
+        IMPORT_MARKDOWN_V1_CHANNEL,
+        'MDV1_SAFE_CREATE_WRITE_FAIL',
+        'import_safe_create_failed',
+        { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+      );
+    }
   }
 
   let transform;
