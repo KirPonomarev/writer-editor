@@ -10,7 +10,19 @@ const TEST_PATH = 'test/contracts/revision-bridge-exact-text-apply-plan-no-disk.
 const P0_TEST_PATH = 'test/contracts/revision-bridge-p0-safety-kernel.contract.test.js';
 const C04_MODULE_PATH = 'src/io/revisionBridge/exactTextMinSafeWrite.mjs';
 const C04_TEST_PATH = 'test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH, P0_TEST_PATH, C04_MODULE_PATH, C04_TEST_PATH];
+const RB10_TEST_PATH = 'test/contracts/revision-bridge-inline-range-anchor-contract.contract.test.js';
+const RB11_TEST_PATH = 'test/contracts/revision-bridge-anchor-confidence-engine-contract.contract.test.js';
+const C05_TEST_PATH = 'test/contracts/revision-bridge-comment-survival.contract.test.js';
+const ALLOWLIST = [
+  MODULE_PATH,
+  TEST_PATH,
+  P0_TEST_PATH,
+  C04_MODULE_PATH,
+  C04_TEST_PATH,
+  RB10_TEST_PATH,
+  RB11_TEST_PATH,
+  C05_TEST_PATH,
+];
 const WIRING_NEEDLES = [
   'buildExactTextApplyPlanNoDiskPreview',
   'revision-bridge.exact-text-apply-plan-no-disk.v1',
