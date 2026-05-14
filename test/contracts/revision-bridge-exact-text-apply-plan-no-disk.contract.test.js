@@ -13,6 +13,7 @@ const C04_TEST_PATH = 'test/contracts/revision-bridge-exact-text-min-safe-write.
 const RB10_TEST_PATH = 'test/contracts/revision-bridge-inline-range-anchor-contract.contract.test.js';
 const RB11_TEST_PATH = 'test/contracts/revision-bridge-anchor-confidence-engine-contract.contract.test.js';
 const C05_TEST_PATH = 'test/contracts/revision-bridge-comment-survival.contract.test.js';
+const C06_TEST_PATH = 'test/contracts/revision-bridge-minimal-block-id.contract.test.js';
 const ALLOWLIST = [
   MODULE_PATH,
   TEST_PATH,
@@ -22,6 +23,7 @@ const ALLOWLIST = [
   RB10_TEST_PATH,
   RB11_TEST_PATH,
   C05_TEST_PATH,
+  C06_TEST_PATH,
 ];
 const WIRING_NEEDLES = [
   'buildExactTextApplyPlanNoDiskPreview',
