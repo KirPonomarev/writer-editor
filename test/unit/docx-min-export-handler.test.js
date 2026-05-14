@@ -233,3 +233,51 @@ test('docx min export handler rejects bufferSource-only export when canonical so
   assert.equal(calls.buildDocxMinBuffer, 0);
   assert.equal(calls.writeBufferAtomic, 0);
 });
+
+test('docx min export handler returns typed error when builder output is not a non-empty Buffer', async () => {
+  const calls = {
+    writeBufferAtomic: 0,
+  };
+
+  const result = await runDocxMinExport({
+    requestId: 'req-invalid-buffer',
+    outPath: '/tmp/invalid-buffer.docx',
+    outDir: '',
+    bufferSource: 'unused',
+    options: {},
+  }, {
+    normalizeExportPayload(input) {
+      return input;
+    },
+    makeTypedExportError,
+    resolveDocxExportPath(input) {
+      return input.outPath;
+    },
+    async readCanonicalExportSnapshot() {
+      return {
+        content: 'Saved canonical text',
+        plainText: 'Saved canonical text',
+        bookProfile: null,
+      };
+    },
+    async buildDocxMinBuffer() {
+      return '';
+    },
+    async queueDiskOperation(operation) {
+      return operation();
+    },
+    async writeBufferAtomic() {
+      calls.writeBufferAtomic += 1;
+    },
+    updateStatus() {},
+  });
+
+  assert.equal(result.ok, 0);
+  assert.equal(result.error.code, 'E_EXPORT_BUILD_INVALID_OUTPUT');
+  assert.equal(result.error.reason, 'DOCX_BUILD_INVALID_OUTPUT');
+  assert.deepEqual(result.error.details, {
+    isBuffer: false,
+    bytes: null,
+  });
+  assert.equal(calls.writeBufferAtomic, 0);
+});
