@@ -10,7 +10,17 @@ const TEST_PATH = 'test/contracts/revision-bridge-p0-safety-kernel.contract.test
 const RB02_TEST_PATH = 'test/contracts/revision-bridge-reviewgraph-contract.contract.test.js';
 const RB03_TEST_PATH = 'test/contracts/revision-bridge-review-packet-preview-contract.contract.test.js';
 const RB19_TEST_PATH = 'test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB02_TEST_PATH, RB03_TEST_PATH, RB19_TEST_PATH];
+const C04_MODULE_PATH = 'src/io/revisionBridge/exactTextMinSafeWrite.mjs';
+const C04_TEST_PATH = 'test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js';
+const ALLOWLIST = [
+  MODULE_PATH,
+  TEST_PATH,
+  RB02_TEST_PATH,
+  RB03_TEST_PATH,
+  RB19_TEST_PATH,
+  C04_MODULE_PATH,
+  C04_TEST_PATH,
+];
 const WIRING_NEEDLES = [
   'revisionBridge',
   'RevisionBridge',

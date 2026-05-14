@@ -8,7 +8,9 @@ const { pathToFileURL } = require('node:url');
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js';
 const P0_TEST_PATH = 'test/contracts/revision-bridge-p0-safety-kernel.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH, P0_TEST_PATH];
+const C04_MODULE_PATH = 'src/io/revisionBridge/exactTextMinSafeWrite.mjs';
+const C04_TEST_PATH = 'test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js';
+const ALLOWLIST = [MODULE_PATH, TEST_PATH, P0_TEST_PATH, C04_MODULE_PATH, C04_TEST_PATH];
 const WIRING_NEEDLES = [
   'buildExactTextApplyPlanNoDiskPreview',
   'revision-bridge.exact-text-apply-plan-no-disk.v1',
@@ -157,6 +159,32 @@ test('RB-19 positive path yields one deterministic exact replacement op', async 
   });
   assert.equal(first.plan.preconditions.every((item) => item.satisfied === true), true);
   assert.deepEqual(first.plan.blockedReasons, []);
+});
+
+test('RB-19 preserves byte-exact replacement text for the later safe write contour', async () => {
+  const bridge = await loadBridge();
+  const input = validInput({
+    projectSnapshot: validProjectSnapshot({ sceneText: '  Alpha beta  \nOmega\n' }),
+    revisionSession: validRevisionSession({
+      textChanges: [
+        {
+          changeId: 'change-space',
+          targetScope: { type: 'scene', id: 'scene-1' },
+          match: { kind: 'exact', quote: 'beta', prefix: '', suffix: '' },
+          replacementText: ' ',
+          createdAt: '2026-05-14T08:00:00.000Z',
+        },
+      ],
+    }),
+  });
+
+  const result = bridge.buildExactTextApplyPlanNoDiskPreview(input);
+
+  assert.equal(result.status, 'ready');
+  assert.equal(result.plan.applyOps.length, 1);
+  assert.equal(result.plan.applyOps[0].from, 8);
+  assert.equal(result.plan.applyOps[0].to, 12);
+  assert.equal(result.plan.applyOps[0].replacementText, ' ');
 });
 
 test('RB-19 blocked matrix returns zero apply ops with required reason codes', async () => {

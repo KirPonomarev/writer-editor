@@ -450,6 +450,10 @@ function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function preserveString(value) {
+  return typeof value === 'string' ? value : '';
+}
+
 function cloneJsonSafe(value) {
   if (value === null) return null;
   const valueType = typeof value;
@@ -4578,11 +4582,11 @@ export function normalizeTextChange(input = {}) {
     targetScope: normalizeReviewGraphTargetScope(change.targetScope),
     match: {
       kind: normalizeStringEnum(change.matchKind || match.kind, ['exact', 'fuzzy', 'manual'], 'manual'),
-      quote: normalizeString(match.quote || change.quote),
-      prefix: normalizeString(match.prefix || change.prefix),
-      suffix: normalizeString(match.suffix || change.suffix),
+      quote: preserveString(hasOwnField(match, 'quote') ? match.quote : change.quote),
+      prefix: preserveString(hasOwnField(match, 'prefix') ? match.prefix : change.prefix),
+      suffix: preserveString(hasOwnField(match, 'suffix') ? match.suffix : change.suffix),
     },
-    replacementText: normalizeString(change.replacementText),
+    replacementText: preserveString(change.replacementText),
     createdAt: normalizeString(change.createdAt),
     apply: {
       mode: 'manual',
@@ -5644,7 +5648,7 @@ function exactTextApplyPlanNoDiskSceneMap(input) {
     source.scenes.forEach((scene, index) => {
       if (!isPlainObject(scene)) return;
       const sceneId = normalizeString(scene.sceneId || scene.id) || `scene-${index}`;
-      const text = normalizeRevisionBlockText(scene.text);
+      const text = preserveString(scene.text);
       map.set(sceneId, text);
     });
   } else if (isPlainObject(source.scenes)) {
@@ -5653,20 +5657,20 @@ function exactTextApplyPlanNoDiskSceneMap(input) {
       if (!sceneId) return;
       const scene = source.scenes[key];
       if (typeof scene === 'string') {
-        map.set(sceneId, normalizeRevisionBlockText(scene));
+        map.set(sceneId, preserveString(scene));
         return;
       }
       if (!isPlainObject(scene)) return;
-      map.set(sceneId, normalizeRevisionBlockText(scene.text));
+      map.set(sceneId, preserveString(scene.text));
     });
   } else if (isPlainObject(source.scene)) {
     const sceneId = normalizeString(source.scene.sceneId || source.scene.id || source.sceneId || 'scene-0');
     if (sceneId) {
-      map.set(sceneId, normalizeRevisionBlockText(source.scene.text));
+      map.set(sceneId, preserveString(source.scene.text));
     }
   } else if (typeof source.text === 'string') {
     const sceneId = normalizeString(source.sceneId) || 'scene-0';
-    map.set(sceneId, normalizeRevisionBlockText(source.text));
+    map.set(sceneId, preserveString(source.text));
   }
 
   return map;
@@ -5747,11 +5751,11 @@ function exactTextApplyPlanNoDiskTextChangeKey(textChange) {
     },
     match: {
       kind: normalizeString(textChange.match?.kind),
-      quote: normalizeString(textChange.match?.quote),
-      prefix: normalizeString(textChange.match?.prefix),
-      suffix: normalizeString(textChange.match?.suffix),
+      quote: preserveString(textChange.match?.quote),
+      prefix: preserveString(textChange.match?.prefix),
+      suffix: preserveString(textChange.match?.suffix),
     },
-    replacementText: normalizeString(textChange.replacementText),
+    replacementText: preserveString(textChange.replacementText),
   });
 }
 
@@ -5819,8 +5823,8 @@ export function buildExactTextApplyPlanNoDiskPreview(input = {}) {
   const fallbackSceneIds = Array.from(snapshot.scenes.keys());
   const selectedSceneId = sceneIdFromChange || (fallbackSceneIds.length === 1 ? fallbackSceneIds[0] : '');
   const sceneText = selectedSceneId ? snapshot.scenes.get(selectedSceneId) || '' : '';
-  const matchQuote = normalizeString(textChange?.match?.quote);
-  const replacementText = normalizeString(textChange?.replacementText);
+  const matchQuote = preserveString(textChange?.match?.quote);
+  const replacementText = preserveString(textChange?.replacementText);
   const matchOffsets = exactTextApplyPlanNoDiskFindMatchOffsets(sceneText, matchQuote);
 
   const blockedReasons = [];
