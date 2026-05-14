@@ -6945,6 +6945,353 @@ export function buildExactTextApplyPlanNoDiskPreview(input = {}) {
   };
 }
 
+// CONTOUR_10_WORD_EVIDENCE_CHECK_R2_START
+const WORD_EVIDENCE_CLAIM_ACCEPTED_CODE = 'REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_ACCEPTED';
+const WORD_EVIDENCE_CLAIM_BLOCKED_CODE = 'E_REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_BLOCKED';
+
+export const REVISION_BRIDGE_WORD_EVIDENCE_PACKET_SCHEMA = 'revision-bridge.word-evidence-packet.v1';
+export const REVISION_BRIDGE_WORD_SUPPORT_CLAIM_SCHEMA = 'revision-bridge.word-support-claim.v1';
+export const REVISION_BRIDGE_WORD_EVIDENCE_PACKET_CLASSES = Object.freeze([
+  'textExact',
+  'commentAnchor',
+  'structuralManual',
+]);
+export const REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_GATE_REASON_CODES = Object.freeze([
+  WORD_EVIDENCE_CLAIM_ACCEPTED_CODE,
+  WORD_EVIDENCE_CLAIM_BLOCKED_CODE,
+  'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_REQUIRED',
+  'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+  'REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_REQUIRED',
+  'REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_INVALID',
+  'REVISION_BRIDGE_WORD_EVIDENCE_HASH_MISMATCH',
+  'REVISION_BRIDGE_WORD_EVIDENCE_COVERAGE_EXCEEDED',
+]);
+
+function wordEvidenceReason(code, field, message, details = {}) {
+  return {
+    code,
+    field,
+    message,
+    ...cloneJsonSafe(details),
+  };
+}
+
+function wordEvidenceUniqueClasses(value) {
+  const unique = [];
+  normalizeStringArray(value).forEach((candidate) => {
+    if (
+      REVISION_BRIDGE_WORD_EVIDENCE_PACKET_CLASSES.includes(candidate)
+      && !unique.includes(candidate)
+    ) {
+      unique.push(candidate);
+    }
+  });
+  return unique;
+}
+
+function normalizeWordEvidenceEntry(input, index) {
+  const entry = isPlainObject(input) ? input : {};
+  return {
+    evidenceId: normalizeString(entry.evidenceId) || `evidence-${index}`,
+    supportClass: normalizeString(entry.supportClass),
+    digest: normalizeString(entry.digest),
+    locator: normalizeString(entry.locator),
+  };
+}
+
+function normalizeWordEvidencePacket(input = {}) {
+  const packet = isPlainObject(input) ? input : {};
+  return {
+    schemaVersion: normalizeString(packet.schemaVersion),
+    packetId: normalizeString(packet.packetId),
+    packetClass: normalizeString(packet.packetClass),
+    coverage: wordEvidenceUniqueClasses(packet.coverage),
+    evidence: Array.isArray(packet.evidence)
+      ? packet.evidence
+        .filter((entry) => isPlainObject(entry))
+        .map((entry, index) => normalizeWordEvidenceEntry(entry, index))
+      : [],
+  };
+}
+
+function normalizeWordSupportClaim(input = {}) {
+  const claim = isPlainObject(input) ? input : {};
+  return {
+    schemaVersion: normalizeString(claim.schemaVersion),
+    claimId: normalizeString(claim.claimId),
+    claimedCoverage: wordEvidenceUniqueClasses(claim.claimedCoverage),
+    evidenceHash: normalizeString(claim.evidenceHash),
+  };
+}
+
+function collectWordEvidencePacketReasons(input, packet) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_REQUIRED',
+      'evidencePacket',
+      'evidencePacket must be an object',
+    ));
+    return reasons;
+  }
+  if (packet.schemaVersion !== REVISION_BRIDGE_WORD_EVIDENCE_PACKET_SCHEMA) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+      'evidencePacket.schemaVersion',
+      'evidencePacket schemaVersion is not supported',
+    ));
+  }
+  if (!packet.packetId) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+      'evidencePacket.packetId',
+      'evidencePacket packetId is required',
+    ));
+  }
+  if (!REVISION_BRIDGE_WORD_EVIDENCE_PACKET_CLASSES.includes(packet.packetClass)) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+      'evidencePacket.packetClass',
+      'evidencePacket packetClass is not supported',
+    ));
+  }
+  if (!Array.isArray(input.coverage) || packet.coverage.length === 0) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_REQUIRED',
+      'evidencePacket.coverage',
+      'evidencePacket coverage must list at least one supported class',
+    ));
+  } else {
+    input.coverage.forEach((coverageClass, index) => {
+      if (!REVISION_BRIDGE_WORD_EVIDENCE_PACKET_CLASSES.includes(normalizeString(coverageClass))) {
+        reasons.push(wordEvidenceReason(
+          'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+          `evidencePacket.coverage.${index}`,
+          'evidencePacket coverage class is not supported',
+        ));
+      }
+    });
+  }
+  if (!Array.isArray(input.evidence) || input.evidence.length === 0) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_REQUIRED',
+      'evidencePacket.evidence',
+      'evidencePacket must include at least one evidence item',
+    ));
+    return reasons;
+  }
+
+  const evidenceCoverage = [];
+  input.evidence.forEach((entry, index) => {
+    if (!isPlainObject(entry)) {
+      reasons.push(wordEvidenceReason(
+        'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+        `evidencePacket.evidence.${index}`,
+        'evidence item must be an object',
+      ));
+      return;
+    }
+    const supportClass = normalizeString(entry.supportClass);
+    if (!normalizeString(entry.evidenceId)) {
+      reasons.push(wordEvidenceReason(
+        'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+        `evidencePacket.evidence.${index}.evidenceId`,
+        'evidence item evidenceId is required',
+      ));
+    }
+    if (!REVISION_BRIDGE_WORD_EVIDENCE_PACKET_CLASSES.includes(supportClass)) {
+      reasons.push(wordEvidenceReason(
+        'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+        `evidencePacket.evidence.${index}.supportClass`,
+        'evidence item supportClass is not supported',
+      ));
+    } else {
+      if (!evidenceCoverage.includes(supportClass)) evidenceCoverage.push(supportClass);
+      if (!packet.coverage.includes(supportClass)) {
+        reasons.push(wordEvidenceReason(
+          'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+          `evidencePacket.evidence.${index}.supportClass`,
+          'evidence item supportClass must be declared in packet coverage',
+        ));
+      }
+    }
+    if (!normalizeString(entry.digest)) {
+      reasons.push(wordEvidenceReason(
+        'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+        `evidencePacket.evidence.${index}.digest`,
+        'evidence item digest is required',
+      ));
+    }
+  });
+
+  packet.coverage.forEach((coverageClass) => {
+    if (!evidenceCoverage.includes(coverageClass)) {
+      reasons.push(wordEvidenceReason(
+        'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+        'evidencePacket.coverage',
+        `coverage class ${coverageClass} is not backed by evidence`,
+        { coverageClass },
+      ));
+    }
+  });
+  if (packet.packetClass && !packet.coverage.includes(packet.packetClass)) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+      'evidencePacket.packetClass',
+      'packetClass must be included in evidencePacket coverage',
+    ));
+  }
+  return reasons;
+}
+
+function collectWordSupportClaimReasons(input, claim) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_REQUIRED',
+      'claim',
+      'claim must be an object',
+    ));
+    return reasons;
+  }
+  if (claim.schemaVersion !== REVISION_BRIDGE_WORD_SUPPORT_CLAIM_SCHEMA) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_INVALID',
+      'claim.schemaVersion',
+      'claim schemaVersion is not supported',
+    ));
+  }
+  if (!claim.claimId) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_INVALID',
+      'claim.claimId',
+      'claim claimId is required',
+    ));
+  }
+  if (!Array.isArray(input.claimedCoverage) || claim.claimedCoverage.length === 0) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_REQUIRED',
+      'claim.claimedCoverage',
+      'claim must request at least one supported coverage class',
+    ));
+  } else {
+    input.claimedCoverage.forEach((coverageClass, index) => {
+      if (!REVISION_BRIDGE_WORD_EVIDENCE_PACKET_CLASSES.includes(normalizeString(coverageClass))) {
+        reasons.push(wordEvidenceReason(
+          'REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_INVALID',
+          `claim.claimedCoverage.${index}`,
+          'claim coverage class is not supported',
+        ));
+      }
+    });
+  }
+  if (!claim.evidenceHash) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_REQUIRED',
+      'claim.evidenceHash',
+      'claim evidenceHash is required',
+    ));
+  }
+  return reasons;
+}
+
+function wordEvidenceClaimGateBinding(claim, evidencePacket, evidenceHash) {
+  return {
+    evidenceHash: normalizeString(evidenceHash),
+    claimedCoverage: cloneJsonSafe(claim.claimedCoverage),
+    coveredCoverage: cloneJsonSafe(evidencePacket.coverage),
+  };
+}
+
+function wordEvidenceClaimGateResult(ok, code, reasons, claim, evidencePacket, evidenceHash) {
+  return {
+    ok,
+    type: 'revisionBridge.wordEvidenceClaimGate',
+    status: ok ? 'accepted' : 'blocked',
+    code,
+    reason: ok ? WORD_EVIDENCE_CLAIM_ACCEPTED_CODE : reasons[0]?.code || WORD_EVIDENCE_CLAIM_BLOCKED_CODE,
+    reasons: cloneJsonSafe(reasons),
+    claim: cloneJsonSafe(claim),
+    evidencePacket: cloneJsonSafe(evidencePacket),
+    binding: wordEvidenceClaimGateBinding(claim, evidencePacket, evidenceHash),
+  };
+}
+
+export function createWordEvidencePacketHash(input = {}) {
+  const packet = normalizeWordEvidencePacket(input);
+  return `rbwe_${revisionBlockHash({
+    schemaVersion: packet.schemaVersion,
+    packetId: packet.packetId,
+    packetClass: packet.packetClass,
+    coverage: packet.coverage,
+    evidence: packet.evidence.map((entry) => ({
+      evidenceId: entry.evidenceId,
+      supportClass: entry.supportClass,
+      digest: entry.digest,
+      locator: entry.locator,
+    })),
+  })}`;
+}
+
+export function evaluateWordEvidenceClaimGate(input = {}) {
+  const gateInput = isPlainObject(input) ? input : {};
+  const claim = normalizeWordSupportClaim(gateInput.claim);
+  const evidencePacket = normalizeWordEvidencePacket(gateInput.evidencePacket);
+  const reasons = [
+    ...collectWordEvidencePacketReasons(gateInput.evidencePacket, evidencePacket),
+    ...collectWordSupportClaimReasons(gateInput.claim, claim),
+  ];
+  const evidenceHash = reasons.length === 0
+    ? createWordEvidencePacketHash(evidencePacket)
+    : '';
+
+  if (reasons.length === 0 && claim.evidenceHash !== evidenceHash) {
+    reasons.push(wordEvidenceReason(
+      'REVISION_BRIDGE_WORD_EVIDENCE_HASH_MISMATCH',
+      'claim.evidenceHash',
+      'claim evidenceHash does not match the supplied evidencePacket hash',
+      {
+        expectedEvidenceHash: evidenceHash,
+        receivedEvidenceHash: claim.evidenceHash,
+      },
+    ));
+  }
+
+  if (reasons.length === 0) {
+    const unsupportedCoverage = claim.claimedCoverage.filter((coverageClass) => (
+      !evidencePacket.coverage.includes(coverageClass)
+    ));
+    if (unsupportedCoverage.length > 0) {
+      reasons.push(wordEvidenceReason(
+        'REVISION_BRIDGE_WORD_EVIDENCE_COVERAGE_EXCEEDED',
+        'claim.claimedCoverage',
+        'claim coverage exceeds the supplied evidencePacket coverage',
+        { unsupportedCoverage },
+      ));
+    }
+  }
+
+  if (reasons.length > 0) {
+    return wordEvidenceClaimGateResult(
+      false,
+      WORD_EVIDENCE_CLAIM_BLOCKED_CODE,
+      reasons,
+      claim,
+      evidencePacket,
+      evidenceHash,
+    );
+  }
+  return wordEvidenceClaimGateResult(
+    true,
+    WORD_EVIDENCE_CLAIM_ACCEPTED_CODE,
+    [],
+    claim,
+    evidencePacket,
+    evidenceHash,
+  );
+}
+// CONTOUR_10_WORD_EVIDENCE_CHECK_R2_END
+
 function normalizeTargetScope(input) {
   const scope = isPlainObject(input) ? input : {};
   return {
