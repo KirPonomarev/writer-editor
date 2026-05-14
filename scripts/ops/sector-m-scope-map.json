@@ -221,6 +221,9 @@
       "test/unit/sector-m-m9-next.test.js"
     ],
     "DONE": [
+      "src/export/mindmap/v1/index.mjs",
+      "src/export/mindmap/v1/lossReport.mjs",
+      "src/export/mindmap/v1/serializeMindMapV1.mjs",
       "src/io/revisionBridge/index.mjs"
     ]
   },
