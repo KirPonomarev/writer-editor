@@ -4,16 +4,17 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
+const ROOT = path.resolve(__dirname, '..', '..');
+
 async function loadCommandModules() {
-  const root = process.cwd();
-  const registryModule = await import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'registry.mjs')).href);
-  const runnerModule = await import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'runCommand.mjs')).href);
-  const projectModule = await import(pathToFileURL(path.join(root, 'src', 'renderer', 'commands', 'projectCommands.mjs')).href);
+  const registryModule = await import(pathToFileURL(path.join(ROOT, 'src', 'renderer', 'commands', 'registry.mjs')).href);
+  const runnerModule = await import(pathToFileURL(path.join(ROOT, 'src', 'renderer', 'commands', 'runCommand.mjs')).href);
+  const projectModule = await import(pathToFileURL(path.join(ROOT, 'src', 'renderer', 'commands', 'projectCommands.mjs')).href);
   return { ...registryModule, ...runnerModule, ...projectModule };
 }
 
 function fixture(name) {
-  return fs.readFileSync(path.join(process.cwd(), 'test', 'fixtures', 'sector-m', 'm3', name), 'utf8');
+  return fs.readFileSync(path.join(ROOT, 'test', 'fixtures', 'sector-m', 'm3', name), 'utf8');
 }
 
 test('M3 commands: import/export markdown return deterministic success payloads', async () => {
