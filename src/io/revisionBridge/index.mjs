@@ -7292,6 +7292,382 @@ export function evaluateWordEvidenceClaimGate(input = {}) {
 }
 // CONTOUR_10_WORD_EVIDENCE_CHECK_R2_END
 
+// CONTOUR_11_GOOGLE_DOCS_EVIDENCE_CHECK_START
+const GOOGLE_DOCS_EVIDENCE_CLAIM_ACCEPTED_CODE = 'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_ACCEPTED';
+const GOOGLE_DOCS_EVIDENCE_CLAIM_BLOCKED_CODE = 'E_REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BLOCKED';
+
+export const REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_SCHEMA = 'revision-bridge.google-docs-evidence-packet.v1';
+export const REVISION_BRIDGE_GOOGLE_DOCS_SUPPORT_CLAIM_SCHEMA = 'revision-bridge.google-docs-support-claim.v1';
+export const REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_CLASSES = Object.freeze([
+  'docsSuggestions',
+  'driveComments',
+  'structuralManual',
+]);
+const GOOGLE_DOCS_REQUIRED_EVIDENCE_CLASSES = Object.freeze([
+  'docsSuggestions',
+  'driveComments',
+]);
+export const REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_GATE_REASON_CODES = Object.freeze([
+  GOOGLE_DOCS_EVIDENCE_CLAIM_ACCEPTED_CODE,
+  GOOGLE_DOCS_EVIDENCE_CLAIM_BLOCKED_CODE,
+  'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_REQUIRED',
+  'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+  'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_REQUIRED',
+  'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_INVALID',
+  'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_HASH_MISMATCH',
+  'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_COVERAGE_EXCEEDED',
+  'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_REQUIRED_CLASSES_MISSING',
+]);
+
+function googleDocsEvidenceReason(code, field, message, details = {}) {
+  return {
+    code,
+    field,
+    message,
+    ...cloneJsonSafe(details),
+  };
+}
+
+function googleDocsEvidenceUniqueClasses(value) {
+  const unique = [];
+  normalizeStringArray(value).forEach((candidate) => {
+    if (
+      REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_CLASSES.includes(candidate)
+      && !unique.includes(candidate)
+    ) {
+      unique.push(candidate);
+    }
+  });
+  return unique;
+}
+
+function normalizeGoogleDocsEvidenceEntry(input, index) {
+  const entry = isPlainObject(input) ? input : {};
+  return {
+    evidenceId: normalizeString(entry.evidenceId) || `google-evidence-${index}`,
+    supportClass: normalizeString(entry.supportClass),
+    digest: normalizeString(entry.digest),
+    locator: normalizeString(entry.locator),
+  };
+}
+
+function normalizeGoogleDocsEvidencePacket(input = {}) {
+  const packet = isPlainObject(input) ? input : {};
+  return {
+    schemaVersion: normalizeString(packet.schemaVersion),
+    packetId: normalizeString(packet.packetId),
+    packetClass: normalizeString(packet.packetClass),
+    coverage: googleDocsEvidenceUniqueClasses(packet.coverage),
+    evidence: Array.isArray(packet.evidence)
+      ? packet.evidence
+        .filter((entry) => isPlainObject(entry))
+        .map((entry, index) => normalizeGoogleDocsEvidenceEntry(entry, index))
+      : [],
+  };
+}
+
+function normalizeGoogleDocsSupportClaim(input = {}) {
+  const claim = isPlainObject(input) ? input : {};
+  return {
+    schemaVersion: normalizeString(claim.schemaVersion),
+    claimId: normalizeString(claim.claimId),
+    claimedCoverage: googleDocsEvidenceUniqueClasses(claim.claimedCoverage),
+    evidenceHash: normalizeString(claim.evidenceHash),
+  };
+}
+
+function collectGoogleDocsEvidencePacketReasons(input, packet) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_REQUIRED',
+      'evidencePacket',
+      'evidencePacket must be an object',
+    ));
+    return reasons;
+  }
+  if (packet.schemaVersion !== REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_SCHEMA) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+      'evidencePacket.schemaVersion',
+      'evidencePacket schemaVersion is not supported',
+    ));
+  }
+  if (!packet.packetId) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+      'evidencePacket.packetId',
+      'evidencePacket packetId is required',
+    ));
+  }
+  if (!REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_CLASSES.includes(packet.packetClass)) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+      'evidencePacket.packetClass',
+      'evidencePacket packetClass is not supported',
+    ));
+  }
+  if (!Array.isArray(input.coverage) || packet.coverage.length === 0) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_REQUIRED',
+      'evidencePacket.coverage',
+      'evidencePacket coverage must list at least one supported class',
+    ));
+  } else {
+    input.coverage.forEach((coverageClass, index) => {
+      if (!REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_CLASSES.includes(normalizeString(coverageClass))) {
+        reasons.push(googleDocsEvidenceReason(
+          'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+          `evidencePacket.coverage.${index}`,
+          'evidencePacket coverage class is not supported',
+        ));
+      }
+    });
+  }
+  if (!Array.isArray(input.evidence) || input.evidence.length === 0) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_REQUIRED',
+      'evidencePacket.evidence',
+      'evidencePacket must include at least one evidence item',
+    ));
+    return reasons;
+  }
+
+  const evidenceCoverage = [];
+  input.evidence.forEach((entry, index) => {
+    if (!isPlainObject(entry)) {
+      reasons.push(googleDocsEvidenceReason(
+        'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+        `evidencePacket.evidence.${index}`,
+        'evidence item must be an object',
+      ));
+      return;
+    }
+    const supportClass = normalizeString(entry.supportClass);
+    if (!normalizeString(entry.evidenceId)) {
+      reasons.push(googleDocsEvidenceReason(
+        'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+        `evidencePacket.evidence.${index}.evidenceId`,
+        'evidence item evidenceId is required',
+      ));
+    }
+    if (!REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_CLASSES.includes(supportClass)) {
+      reasons.push(googleDocsEvidenceReason(
+        'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+        `evidencePacket.evidence.${index}.supportClass`,
+        'evidence item supportClass is not supported',
+      ));
+    } else {
+      if (!evidenceCoverage.includes(supportClass)) evidenceCoverage.push(supportClass);
+      if (!packet.coverage.includes(supportClass)) {
+        reasons.push(googleDocsEvidenceReason(
+          'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+          `evidencePacket.evidence.${index}.supportClass`,
+          'evidence item supportClass must be declared in packet coverage',
+        ));
+      }
+    }
+    if (!normalizeString(entry.digest)) {
+      reasons.push(googleDocsEvidenceReason(
+        'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+        `evidencePacket.evidence.${index}.digest`,
+        'evidence item digest is required',
+      ));
+    }
+  });
+
+  packet.coverage.forEach((coverageClass) => {
+    if (!evidenceCoverage.includes(coverageClass)) {
+      reasons.push(googleDocsEvidenceReason(
+        'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+        'evidencePacket.coverage',
+        `coverage class ${coverageClass} is not backed by evidence`,
+        { coverageClass },
+      ));
+    }
+  });
+  if (packet.packetClass && !packet.coverage.includes(packet.packetClass)) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+      'evidencePacket.packetClass',
+      'packetClass must be included in evidencePacket coverage',
+    ));
+  }
+  return reasons;
+}
+
+function collectGoogleDocsSupportClaimReasons(input, claim) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_REQUIRED',
+      'claim',
+      'claim must be an object',
+    ));
+    return reasons;
+  }
+  if (claim.schemaVersion !== REVISION_BRIDGE_GOOGLE_DOCS_SUPPORT_CLAIM_SCHEMA) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_INVALID',
+      'claim.schemaVersion',
+      'claim schemaVersion is not supported',
+    ));
+  }
+  if (!claim.claimId) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_INVALID',
+      'claim.claimId',
+      'claim claimId is required',
+    ));
+  }
+  if (!Array.isArray(input.claimedCoverage) || claim.claimedCoverage.length === 0) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_REQUIRED',
+      'claim.claimedCoverage',
+      'claim must request at least one supported coverage class',
+    ));
+  } else {
+    input.claimedCoverage.forEach((coverageClass, index) => {
+      if (!REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_CLASSES.includes(normalizeString(coverageClass))) {
+        reasons.push(googleDocsEvidenceReason(
+          'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_INVALID',
+          `claim.claimedCoverage.${index}`,
+          'claim coverage class is not supported',
+        ));
+      }
+    });
+  }
+  if (!claim.evidenceHash) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_REQUIRED',
+      'claim.evidenceHash',
+      'claim evidenceHash is required',
+    ));
+  }
+  return reasons;
+}
+
+function googleDocsEvidenceClaimGateBinding(claim, evidencePacket, evidenceHash) {
+  return {
+    evidenceHash: normalizeString(evidenceHash),
+    claimedCoverage: cloneJsonSafe(claim.claimedCoverage),
+    coveredCoverage: cloneJsonSafe(evidencePacket.coverage),
+    requiredCoverage: cloneJsonSafe(GOOGLE_DOCS_REQUIRED_EVIDENCE_CLASSES),
+  };
+}
+
+function googleDocsEvidenceClaimGateResult(ok, code, reasons, claim, evidencePacket, evidenceHash) {
+  return {
+    ok,
+    type: 'revisionBridge.googleDocsEvidenceClaimGate',
+    status: ok ? 'accepted' : 'blocked',
+    code,
+    reason: ok ? GOOGLE_DOCS_EVIDENCE_CLAIM_ACCEPTED_CODE : reasons[0]?.code || GOOGLE_DOCS_EVIDENCE_CLAIM_BLOCKED_CODE,
+    reasons: cloneJsonSafe(reasons),
+    claim: cloneJsonSafe(claim),
+    evidencePacket: cloneJsonSafe(evidencePacket),
+    binding: googleDocsEvidenceClaimGateBinding(claim, evidencePacket, evidenceHash),
+  };
+}
+
+function missingGoogleDocsRequiredCoverage(coverage) {
+  return GOOGLE_DOCS_REQUIRED_EVIDENCE_CLASSES.filter((requiredClass) => (
+    !coverage.includes(requiredClass)
+  ));
+}
+
+export function createGoogleDocsEvidencePacketHash(input = {}) {
+  const packet = normalizeGoogleDocsEvidencePacket(input);
+  return `rbgde_${revisionBlockHash({
+    schemaVersion: packet.schemaVersion,
+    packetId: packet.packetId,
+    packetClass: packet.packetClass,
+    coverage: packet.coverage,
+    evidence: packet.evidence.map((entry) => ({
+      evidenceId: entry.evidenceId,
+      supportClass: entry.supportClass,
+      digest: entry.digest,
+      locator: entry.locator,
+    })),
+  })}`;
+}
+
+export function evaluateGoogleDocsEvidenceClaimGate(input = {}) {
+  const gateInput = isPlainObject(input) ? input : {};
+  const claim = normalizeGoogleDocsSupportClaim(gateInput.claim);
+  const evidencePacket = normalizeGoogleDocsEvidencePacket(gateInput.evidencePacket);
+  const reasons = [
+    ...collectGoogleDocsEvidencePacketReasons(gateInput.evidencePacket, evidencePacket),
+    ...collectGoogleDocsSupportClaimReasons(gateInput.claim, claim),
+  ];
+  const evidenceHash = reasons.length === 0
+    ? createGoogleDocsEvidencePacketHash(evidencePacket)
+    : '';
+
+  if (reasons.length === 0 && claim.evidenceHash !== evidenceHash) {
+    reasons.push(googleDocsEvidenceReason(
+      'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_HASH_MISMATCH',
+      'claim.evidenceHash',
+      'claim evidenceHash does not match the supplied evidencePacket hash',
+      {
+        expectedEvidenceHash: evidenceHash,
+        receivedEvidenceHash: claim.evidenceHash,
+      },
+    ));
+  }
+
+  if (reasons.length === 0) {
+    const unsupportedCoverage = claim.claimedCoverage.filter((coverageClass) => (
+      !evidencePacket.coverage.includes(coverageClass)
+    ));
+    if (unsupportedCoverage.length > 0) {
+      reasons.push(googleDocsEvidenceReason(
+        'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_COVERAGE_EXCEEDED',
+        'claim.claimedCoverage',
+        'claim coverage exceeds the supplied evidencePacket coverage',
+        { unsupportedCoverage },
+      ));
+    }
+  }
+
+  if (reasons.length === 0) {
+    const missingPacketCoverage = missingGoogleDocsRequiredCoverage(evidencePacket.coverage);
+    const missingClaimCoverage = missingGoogleDocsRequiredCoverage(claim.claimedCoverage);
+    if (missingPacketCoverage.length > 0 || missingClaimCoverage.length > 0) {
+      reasons.push(googleDocsEvidenceReason(
+        'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_REQUIRED_CLASSES_MISSING',
+        'claim.claimedCoverage',
+        'google docs claim requires docsSuggestions and driveComments evidence classes',
+        {
+          requiredCoverage: GOOGLE_DOCS_REQUIRED_EVIDENCE_CLASSES,
+          missingPacketCoverage,
+          missingClaimCoverage,
+        },
+      ));
+    }
+  }
+
+  if (reasons.length > 0) {
+    return googleDocsEvidenceClaimGateResult(
+      false,
+      GOOGLE_DOCS_EVIDENCE_CLAIM_BLOCKED_CODE,
+      reasons,
+      claim,
+      evidencePacket,
+      evidenceHash,
+    );
+  }
+  return googleDocsEvidenceClaimGateResult(
+    true,
+    GOOGLE_DOCS_EVIDENCE_CLAIM_ACCEPTED_CODE,
+    [],
+    claim,
+    evidencePacket,
+    evidenceHash,
+  );
+}
+// CONTOUR_11_GOOGLE_DOCS_EVIDENCE_CHECK_END
+
 function normalizeTargetScope(input) {
   const scope = isPlainObject(input) ? input : {};
   return {
