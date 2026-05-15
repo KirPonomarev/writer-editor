@@ -128,5 +128,7 @@ test('M5 main command handlers reference reliability primitives (static guard)',
   assert.match(mainText, /MARKDOWN_IMPORT_PREVIEW_TYPE/);
   assert.match(mainText, /status:\s*'preview'/);
   assert.match(mainText, /writeEffects:\s*false/);
+  assert.match(mainText, /safeCreatePlan/);
+  assert.match(mainText, /payload\.safeCreate === true/);
   assert.match(mainText, /payload\.preview !== true/);
 });

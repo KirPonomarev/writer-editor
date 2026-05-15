@@ -7,7 +7,9 @@
     "(key === 'I' || key === 'i') && event.shiftKey",
     "(key === 'M' || key === 'm') && event.shiftKey",
     "Imported Markdown v1",
-    "Exported Markdown v1"
+    "Exported Markdown v1",
+    "safeCreate: true",
+    "Import Markdown safe create failed"
   ],
   "forbiddenMarkers": [
     "window.electronAPI.importMarkdownV1(",

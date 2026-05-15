@@ -5083,10 +5083,17 @@ function resolveSceneFromImportResult(importResult) {
   return scene;
 }
 
-async function runMarkdownImportCommand(markdownText, sourceName) {
+async function runMarkdownImportCommand(markdownText, sourceName, options = {}) {
+  const safeOptions = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
+  const previewPayload = safeOptions.previewPayload && typeof safeOptions.previewPayload === 'object' && !Array.isArray(safeOptions.previewPayload)
+    ? safeOptions.previewPayload
+    : null;
   return dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, {
     text: markdownText,
     sourceName,
+    preview: safeOptions.preview === true,
+    safeCreate: safeOptions.safeCreate === true,
+    previewPayload,
   });
 }
 
@@ -5197,8 +5204,29 @@ async function handleMarkdownImportUiPath() {
   const markdown = window.prompt(MARKDOWN_IMPORT_PROMPT_TITLE, currentText);
   if (markdown === null) return;
 
-  const importResult = await runMarkdownImportCommand(markdown, 'ui-import.md');
+  const importResult = await runMarkdownImportCommand(markdown, 'ui-import.md', { preview: true });
   if (!importResult.ok) return;
+
+  const previewPayload = importResult.value
+    && typeof importResult.value === 'object'
+    && importResult.value.previewResult
+    && typeof importResult.value.previewResult === 'object'
+    ? importResult.value.previewResult
+    : null;
+  if (previewPayload) {
+    const safeCreateResult = await runMarkdownImportCommand('', 'ui-import.md', {
+      safeCreate: true,
+      previewPayload,
+    });
+    if (safeCreateResult.ok && safeCreateResult.value && safeCreateResult.value.safeCreate === true) {
+      updateStatusText(MARKDOWN_IMPORT_STATUS_MESSAGE);
+      return;
+    }
+    if (!safeCreateResult.ok) {
+      updateStatusText('Import Markdown safe create failed');
+      return;
+    }
+  }
 
   const scene = resolveSceneFromImportResult(importResult);
   if (!scene) {
