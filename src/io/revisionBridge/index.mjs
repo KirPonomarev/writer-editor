@@ -7668,6 +7668,547 @@ export function evaluateGoogleDocsEvidenceClaimGate(input = {}) {
 }
 // CONTOUR_11_GOOGLE_DOCS_EVIDENCE_CHECK_END
 
+// CONTOUR_12_FORMAT_MATRIX_CLAIM_GATE_START
+const FORMAT_MATRIX_CLAIM_ACCEPTED_CODE = 'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_ACCEPTED';
+const FORMAT_MATRIX_CLAIM_BLOCKED_CODE = 'E_REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_BLOCKED';
+
+export const REVISION_BRIDGE_FORMAT_MATRIX_SCHEMA = 'revision-bridge.format-matrix.v1';
+export const REVISION_BRIDGE_GOLDEN_SET_SCHEMA = 'revision-bridge.golden-set.v1';
+export const REVISION_BRIDGE_FORMAT_MATRIX_SUPPORT_CLAIM_SCHEMA =
+  'revision-bridge.format-matrix-support-claim.v1';
+export const REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_GATE_REASON_CODES = Object.freeze([
+  FORMAT_MATRIX_CLAIM_ACCEPTED_CODE,
+  FORMAT_MATRIX_CLAIM_BLOCKED_CODE,
+  'REVISION_BRIDGE_FORMAT_MATRIX_REQUIRED',
+  'REVISION_BRIDGE_FORMAT_MATRIX_INVALID',
+  'REVISION_BRIDGE_FORMAT_MATRIX_ROW_MISSING',
+  'REVISION_BRIDGE_GOLDEN_SET_REQUIRED',
+  'REVISION_BRIDGE_GOLDEN_SET_INVALID',
+  'REVISION_BRIDGE_GOLDEN_SET_ID_MISMATCH',
+  'REVISION_BRIDGE_GOLDEN_SET_HASH_MISMATCH',
+  'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_REQUIRED',
+  'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_INVALID',
+  'REVISION_BRIDGE_FORMAT_MATRIX_REQUIRED_TESTS_MISSING',
+  'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_SCOPE_EXCEEDS_SURFACE',
+]);
+
+function formatMatrixClaimReason(code, field, message, details = {}) {
+  return {
+    code,
+    field,
+    message,
+    ...cloneJsonSafe(details),
+  };
+}
+
+function uniqueStableStrings(value) {
+  const unique = [];
+  normalizeStringArray(value).forEach((candidate) => {
+    if (!unique.includes(candidate)) unique.push(candidate);
+  });
+  return unique;
+}
+
+function sortedStableStrings(value) {
+  return [...uniqueStableStrings(value)].sort();
+}
+
+function normalizeFormatMatrixRow(input = {}) {
+  const row = isPlainObject(input) ? input : {};
+  return {
+    rowId: normalizeString(row.rowId),
+    formatId: normalizeString(row.formatId),
+    surface: uniqueStableStrings(row.surface),
+    requiredTests: uniqueStableStrings(row.requiredTests),
+    goldenSetId: normalizeString(row.goldenSetId),
+  };
+}
+
+function normalizeFormatMatrix(input = {}) {
+  const matrix = isPlainObject(input) ? input : {};
+  return {
+    schemaVersion: normalizeString(matrix.schemaVersion),
+    matrixId: normalizeString(matrix.matrixId),
+    rows: Array.isArray(matrix.rows)
+      ? matrix.rows
+        .filter((row) => isPlainObject(row))
+        .map((row) => normalizeFormatMatrixRow(row))
+      : [],
+  };
+}
+
+function normalizeGoldenSetFixture(input = {}) {
+  const fixture = isPlainObject(input) ? input : {};
+  return {
+    fixtureId: normalizeString(fixture.fixtureId),
+    digest: normalizeString(fixture.digest),
+  };
+}
+
+function normalizeGoldenSet(input = {}) {
+  const goldenSet = isPlainObject(input) ? input : {};
+  return {
+    schemaVersion: normalizeString(goldenSet.schemaVersion),
+    goldenSetId: normalizeString(goldenSet.goldenSetId),
+    formatId: normalizeString(goldenSet.formatId),
+    surface: uniqueStableStrings(goldenSet.surface),
+    requiredTests: uniqueStableStrings(goldenSet.requiredTests),
+    fixtures: Array.isArray(goldenSet.fixtures)
+      ? goldenSet.fixtures
+        .filter((fixture) => isPlainObject(fixture))
+        .map((fixture) => normalizeGoldenSetFixture(fixture))
+      : [],
+  };
+}
+
+function normalizeFormatMatrixSupportClaim(input = {}) {
+  const claim = isPlainObject(input) ? input : {};
+  return {
+    schemaVersion: normalizeString(claim.schemaVersion),
+    claimId: normalizeString(claim.claimId),
+    matrixRowId: normalizeString(claim.matrixRowId),
+    claimScope: uniqueStableStrings(claim.claimScope),
+    verifiedTests: uniqueStableStrings(claim.verifiedTests),
+    goldenSetHash: normalizeString(claim.goldenSetHash),
+  };
+}
+
+function collectFormatMatrixStringListReasons(rawValue, normalizedValue, fieldPath, codePrefix, label) {
+  const reasons = [];
+  if (!Array.isArray(rawValue) || normalizedValue.length === 0) {
+    reasons.push(formatMatrixClaimReason(
+      `${codePrefix}_REQUIRED`,
+      fieldPath,
+      `${label} must include at least one non-empty string`,
+    ));
+    return reasons;
+  }
+  rawValue.forEach((entry, index) => {
+    if (!normalizeString(entry)) {
+      reasons.push(formatMatrixClaimReason(
+        `${codePrefix}_INVALID`,
+        `${fieldPath}.${index}`,
+        `${label} entries must be non-empty strings`,
+      ));
+    }
+  });
+  return reasons;
+}
+
+function collectFormatMatrixReasons(input, matrix) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_FORMAT_MATRIX_REQUIRED',
+      'formatMatrix',
+      'formatMatrix must be an object',
+    ));
+    return reasons;
+  }
+  if (matrix.schemaVersion !== REVISION_BRIDGE_FORMAT_MATRIX_SCHEMA) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_FORMAT_MATRIX_INVALID',
+      'formatMatrix.schemaVersion',
+      'formatMatrix schemaVersion is not supported',
+    ));
+  }
+  if (!matrix.matrixId) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_FORMAT_MATRIX_INVALID',
+      'formatMatrix.matrixId',
+      'formatMatrix matrixId is required',
+    ));
+  }
+  if (!Array.isArray(input.rows) || matrix.rows.length === 0) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_FORMAT_MATRIX_REQUIRED',
+      'formatMatrix.rows',
+      'formatMatrix must include at least one row',
+    ));
+    return reasons;
+  }
+
+  const seenRowIds = [];
+  input.rows.forEach((rowInput, index) => {
+    if (!isPlainObject(rowInput)) {
+      reasons.push(formatMatrixClaimReason(
+        'REVISION_BRIDGE_FORMAT_MATRIX_INVALID',
+        `formatMatrix.rows.${index}`,
+        'format matrix row must be an object',
+      ));
+      return;
+    }
+    const row = normalizeFormatMatrixRow(rowInput);
+    if (!row.rowId) {
+      reasons.push(formatMatrixClaimReason(
+        'REVISION_BRIDGE_FORMAT_MATRIX_INVALID',
+        `formatMatrix.rows.${index}.rowId`,
+        'format matrix rowId is required',
+      ));
+    } else if (seenRowIds.includes(row.rowId)) {
+      reasons.push(formatMatrixClaimReason(
+        'REVISION_BRIDGE_FORMAT_MATRIX_INVALID',
+        `formatMatrix.rows.${index}.rowId`,
+        'format matrix rowId must be unique',
+        { rowId: row.rowId },
+      ));
+    } else {
+      seenRowIds.push(row.rowId);
+    }
+    if (!row.formatId) {
+      reasons.push(formatMatrixClaimReason(
+        'REVISION_BRIDGE_FORMAT_MATRIX_INVALID',
+        `formatMatrix.rows.${index}.formatId`,
+        'format matrix formatId is required',
+      ));
+    }
+    reasons.push(...collectFormatMatrixStringListReasons(
+      rowInput.surface,
+      row.surface,
+      `formatMatrix.rows.${index}.surface`,
+      'REVISION_BRIDGE_FORMAT_MATRIX_SURFACE',
+      'format matrix surface',
+    ).map((reason) => ({
+      ...reason,
+      code: reason.code.endsWith('_REQUIRED')
+        ? 'REVISION_BRIDGE_FORMAT_MATRIX_INVALID'
+        : 'REVISION_BRIDGE_FORMAT_MATRIX_INVALID',
+    })));
+    reasons.push(...collectFormatMatrixStringListReasons(
+      rowInput.requiredTests,
+      row.requiredTests,
+      `formatMatrix.rows.${index}.requiredTests`,
+      'REVISION_BRIDGE_FORMAT_MATRIX_REQUIRED_TESTS',
+      'format matrix requiredTests',
+    ).map((reason) => ({
+      ...reason,
+      code: reason.code.endsWith('_REQUIRED')
+        ? 'REVISION_BRIDGE_FORMAT_MATRIX_INVALID'
+        : 'REVISION_BRIDGE_FORMAT_MATRIX_INVALID',
+    })));
+    if (!row.goldenSetId) {
+      reasons.push(formatMatrixClaimReason(
+        'REVISION_BRIDGE_FORMAT_MATRIX_INVALID',
+        `formatMatrix.rows.${index}.goldenSetId`,
+        'format matrix goldenSetId is required',
+      ));
+    }
+  });
+  return reasons;
+}
+
+function collectGoldenSetReasons(input, goldenSet) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_GOLDEN_SET_REQUIRED',
+      'goldenSet',
+      'goldenSet must be an object',
+    ));
+    return reasons;
+  }
+  if (goldenSet.schemaVersion !== REVISION_BRIDGE_GOLDEN_SET_SCHEMA) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_GOLDEN_SET_INVALID',
+      'goldenSet.schemaVersion',
+      'goldenSet schemaVersion is not supported',
+    ));
+  }
+  if (!goldenSet.goldenSetId) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_GOLDEN_SET_INVALID',
+      'goldenSet.goldenSetId',
+      'goldenSet goldenSetId is required',
+    ));
+  }
+  if (!goldenSet.formatId) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_GOLDEN_SET_INVALID',
+      'goldenSet.formatId',
+      'goldenSet formatId is required',
+    ));
+  }
+  reasons.push(...collectFormatMatrixStringListReasons(
+    input.surface,
+    goldenSet.surface,
+    'goldenSet.surface',
+    'REVISION_BRIDGE_GOLDEN_SET_SURFACE',
+    'goldenSet surface',
+  ).map((reason) => ({
+    ...reason,
+    code: 'REVISION_BRIDGE_GOLDEN_SET_INVALID',
+  })));
+  reasons.push(...collectFormatMatrixStringListReasons(
+    input.requiredTests,
+    goldenSet.requiredTests,
+    'goldenSet.requiredTests',
+    'REVISION_BRIDGE_GOLDEN_SET_REQUIRED_TESTS',
+    'goldenSet requiredTests',
+  ).map((reason) => ({
+    ...reason,
+    code: 'REVISION_BRIDGE_GOLDEN_SET_INVALID',
+  })));
+  if (!Array.isArray(input.fixtures) || goldenSet.fixtures.length === 0) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_GOLDEN_SET_INVALID',
+      'goldenSet.fixtures',
+      'goldenSet must include at least one fixture',
+    ));
+    return reasons;
+  }
+  input.fixtures.forEach((fixtureInput, index) => {
+    if (!isPlainObject(fixtureInput)) {
+      reasons.push(formatMatrixClaimReason(
+        'REVISION_BRIDGE_GOLDEN_SET_INVALID',
+        `goldenSet.fixtures.${index}`,
+        'goldenSet fixture must be an object',
+      ));
+      return;
+    }
+    const fixture = normalizeGoldenSetFixture(fixtureInput);
+    if (!fixture.fixtureId) {
+      reasons.push(formatMatrixClaimReason(
+        'REVISION_BRIDGE_GOLDEN_SET_INVALID',
+        `goldenSet.fixtures.${index}.fixtureId`,
+        'goldenSet fixtureId is required',
+      ));
+    }
+    if (!fixture.digest) {
+      reasons.push(formatMatrixClaimReason(
+        'REVISION_BRIDGE_GOLDEN_SET_INVALID',
+        `goldenSet.fixtures.${index}.digest`,
+        'goldenSet fixture digest is required',
+      ));
+    }
+  });
+  return reasons;
+}
+
+function collectFormatMatrixSupportClaimReasons(input, claim) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_REQUIRED',
+      'claim',
+      'claim must be an object',
+    ));
+    return reasons;
+  }
+  if (claim.schemaVersion !== REVISION_BRIDGE_FORMAT_MATRIX_SUPPORT_CLAIM_SCHEMA) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_INVALID',
+      'claim.schemaVersion',
+      'claim schemaVersion is not supported',
+    ));
+  }
+  if (!claim.claimId) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_INVALID',
+      'claim.claimId',
+      'claim claimId is required',
+    ));
+  }
+  if (!claim.matrixRowId) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_INVALID',
+      'claim.matrixRowId',
+      'claim matrixRowId is required',
+    ));
+  }
+  reasons.push(...collectFormatMatrixStringListReasons(
+    input.claimScope,
+    claim.claimScope,
+    'claim.claimScope',
+    'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_SCOPE',
+    'claimScope',
+  ).map((reason) => ({
+    ...reason,
+    code: 'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_INVALID',
+  })));
+  reasons.push(...collectFormatMatrixStringListReasons(
+    input.verifiedTests,
+    claim.verifiedTests,
+    'claim.verifiedTests',
+    'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_TESTS',
+    'verifiedTests',
+  ).map((reason) => ({
+    ...reason,
+    code: 'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_INVALID',
+  })));
+  if (!claim.goldenSetHash) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_INVALID',
+      'claim.goldenSetHash',
+      'claim goldenSetHash is required',
+    ));
+  }
+  return reasons;
+}
+
+function buildFormatMatrixRequiredTests(row = {}, goldenSet = {}) {
+  return sortedStableStrings([
+    ...uniqueStableStrings(row?.requiredTests),
+    ...uniqueStableStrings(goldenSet?.requiredTests),
+  ]);
+}
+
+function formatMatrixClaimGateBinding(matrix, row, goldenSet, claim, goldenSetHash) {
+  return {
+    matrixId: normalizeString(matrix.matrixId),
+    matrixRowId: normalizeString(row?.rowId || claim.matrixRowId),
+    formatId: normalizeString(row?.formatId || goldenSet.formatId),
+    goldenSetId: normalizeString(goldenSet.goldenSetId),
+    goldenSetHash: normalizeString(goldenSetHash),
+    surface: cloneJsonSafe(row?.surface || []),
+    claimScope: cloneJsonSafe(claim.claimScope),
+    requiredTests: buildFormatMatrixRequiredTests(row, goldenSet),
+    verifiedTests: cloneJsonSafe(claim.verifiedTests),
+  };
+}
+
+function formatMatrixClaimGateResult(ok, reasons, matrix, row, goldenSet, claim, goldenSetHash) {
+  return {
+    ok,
+    type: 'revisionBridge.formatMatrixClaimGate',
+    status: ok ? 'accepted' : 'blocked',
+    code: ok ? FORMAT_MATRIX_CLAIM_ACCEPTED_CODE : FORMAT_MATRIX_CLAIM_BLOCKED_CODE,
+    reason: ok ? FORMAT_MATRIX_CLAIM_ACCEPTED_CODE : reasons[0]?.code || FORMAT_MATRIX_CLAIM_BLOCKED_CODE,
+    reasons: cloneJsonSafe(reasons),
+    claim: cloneJsonSafe(claim),
+    formatMatrix: cloneJsonSafe(matrix),
+    goldenSet: cloneJsonSafe(goldenSet),
+    binding: formatMatrixClaimGateBinding(matrix, row, goldenSet, claim, goldenSetHash),
+  };
+}
+
+export function createRevisionBridgeGoldenSetHash(input = {}) {
+  const goldenSet = normalizeGoldenSet(input);
+  return `rbgs_${revisionBlockHash({
+    schemaVersion: goldenSet.schemaVersion,
+    goldenSetId: goldenSet.goldenSetId,
+    formatId: goldenSet.formatId,
+    surface: sortedStableStrings(goldenSet.surface),
+    requiredTests: sortedStableStrings(goldenSet.requiredTests),
+    fixtures: [...goldenSet.fixtures]
+      .map((fixture) => ({
+        fixtureId: fixture.fixtureId,
+        digest: fixture.digest,
+      }))
+      .sort((left, right) => {
+        if (left.fixtureId < right.fixtureId) return -1;
+        if (left.fixtureId > right.fixtureId) return 1;
+        if (left.digest < right.digest) return -1;
+        if (left.digest > right.digest) return 1;
+        return 0;
+      }),
+  })}`;
+}
+
+export function evaluateRevisionBridgeFormatMatrixClaimGate(input = {}) {
+  const gateInput = isPlainObject(input) ? input : {};
+  const formatMatrix = normalizeFormatMatrix(gateInput.formatMatrix);
+  const goldenSet = normalizeGoldenSet(gateInput.goldenSet);
+  const claim = normalizeFormatMatrixSupportClaim(gateInput.claim);
+  const reasons = [
+    ...collectFormatMatrixReasons(gateInput.formatMatrix, formatMatrix),
+    ...collectGoldenSetReasons(gateInput.goldenSet, goldenSet),
+    ...collectFormatMatrixSupportClaimReasons(gateInput.claim, claim),
+  ];
+
+  const row = reasons.length === 0
+    ? formatMatrix.rows.find((candidate) => candidate.rowId === claim.matrixRowId) || null
+    : null;
+  const goldenSetHash = reasons.length === 0
+    ? createRevisionBridgeGoldenSetHash(goldenSet)
+    : '';
+
+  if (reasons.length === 0 && !row) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_FORMAT_MATRIX_ROW_MISSING',
+      'claim.matrixRowId',
+      'claim matrixRowId does not resolve to a declared format matrix row',
+      { matrixRowId: claim.matrixRowId },
+    ));
+  }
+
+  if (reasons.length === 0 && row.goldenSetId !== goldenSet.goldenSetId) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_GOLDEN_SET_ID_MISMATCH',
+      'goldenSet.goldenSetId',
+      'goldenSet goldenSetId does not match the selected matrix row',
+      {
+        expectedGoldenSetId: row.goldenSetId,
+        receivedGoldenSetId: goldenSet.goldenSetId,
+      },
+    ));
+  }
+
+  if (reasons.length === 0 && claim.goldenSetHash !== goldenSetHash) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_GOLDEN_SET_HASH_MISMATCH',
+      'claim.goldenSetHash',
+      'claim goldenSetHash does not match the supplied goldenSet hash',
+      {
+        expectedGoldenSetHash: goldenSetHash,
+        receivedGoldenSetHash: claim.goldenSetHash,
+      },
+    ));
+  }
+
+  if (reasons.length === 0) {
+    const requiredTests = buildFormatMatrixRequiredTests(row, goldenSet);
+    const missingTests = requiredTests.filter((testId) => !claim.verifiedTests.includes(testId));
+    if (missingTests.length > 0) {
+      reasons.push(formatMatrixClaimReason(
+        'REVISION_BRIDGE_FORMAT_MATRIX_REQUIRED_TESTS_MISSING',
+        'claim.verifiedTests',
+        'claim verifiedTests must include every required matrix and golden set test',
+        {
+          requiredTests,
+          missingTests,
+        },
+      ));
+    }
+  }
+
+  if (reasons.length === 0) {
+    const unsupportedScope = claim.claimScope.filter((scope) => !row.surface.includes(scope));
+    if (unsupportedScope.length > 0) {
+      reasons.push(formatMatrixClaimReason(
+        'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_SCOPE_EXCEEDS_SURFACE',
+        'claim.claimScope',
+        'claim scope exceeds the selected format matrix surface',
+        {
+          allowedSurface: cloneJsonSafe(row.surface),
+          unsupportedScope: cloneJsonSafe(unsupportedScope),
+        },
+      ));
+    }
+  }
+
+  if (reasons.length > 0) {
+    return formatMatrixClaimGateResult(
+      false,
+      reasons,
+      formatMatrix,
+      row,
+      goldenSet,
+      claim,
+      goldenSetHash,
+    );
+  }
+  return formatMatrixClaimGateResult(
+    true,
+    [],
+    formatMatrix,
+    row,
+    goldenSet,
+    claim,
+    goldenSetHash,
+  );
+}
+// CONTOUR_12_FORMAT_MATRIX_CLAIM_GATE_END
+
 function normalizeTargetScope(input) {
   const scope = isPlainObject(input) ? input : {};
   return {
