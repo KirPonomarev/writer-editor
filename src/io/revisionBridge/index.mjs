@@ -7685,6 +7685,8 @@ export const REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_GATE_REASON_CODES = Object.free
   'REVISION_BRIDGE_GOLDEN_SET_REQUIRED',
   'REVISION_BRIDGE_GOLDEN_SET_INVALID',
   'REVISION_BRIDGE_GOLDEN_SET_ID_MISMATCH',
+  'REVISION_BRIDGE_GOLDEN_SET_FORMAT_ID_MISMATCH',
+  'REVISION_BRIDGE_GOLDEN_SET_SURFACE_MISMATCH',
   'REVISION_BRIDGE_GOLDEN_SET_HASH_MISMATCH',
   'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_REQUIRED',
   'REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_INVALID',
@@ -7711,6 +7713,16 @@ function uniqueStableStrings(value) {
 
 function sortedStableStrings(value) {
   return [...uniqueStableStrings(value)].sort();
+}
+
+function stableStringSetEquals(left, right) {
+  const leftSorted = sortedStableStrings(left);
+  const rightSorted = sortedStableStrings(right);
+  if (leftSorted.length !== rightSorted.length) return false;
+  for (let index = 0; index < leftSorted.length; index += 1) {
+    if (leftSorted[index] !== rightSorted[index]) return false;
+  }
+  return true;
 }
 
 function normalizeFormatMatrixRow(input = {}) {
@@ -8139,6 +8151,30 @@ export function evaluateRevisionBridgeFormatMatrixClaimGate(input = {}) {
       {
         expectedGoldenSetId: row.goldenSetId,
         receivedGoldenSetId: goldenSet.goldenSetId,
+      },
+    ));
+  }
+
+  if (reasons.length === 0 && row.formatId !== goldenSet.formatId) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_GOLDEN_SET_FORMAT_ID_MISMATCH',
+      'goldenSet.formatId',
+      'goldenSet formatId does not match the selected matrix row',
+      {
+        expectedFormatId: row.formatId,
+        receivedFormatId: goldenSet.formatId,
+      },
+    ));
+  }
+
+  if (reasons.length === 0 && !stableStringSetEquals(row.surface, goldenSet.surface)) {
+    reasons.push(formatMatrixClaimReason(
+      'REVISION_BRIDGE_GOLDEN_SET_SURFACE_MISMATCH',
+      'goldenSet.surface',
+      'goldenSet surface does not match the selected matrix row surface',
+      {
+        expectedSurface: cloneJsonSafe(sortedStableStrings(row.surface)),
+        receivedSurface: cloneJsonSafe(sortedStableStrings(goldenSet.surface)),
       },
     ));
   }
