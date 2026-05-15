@@ -11182,6 +11182,412 @@ export function evaluateRevisionBridgeReleaseClaimPublicationGate(input = {}) {
 }
 // CONTOUR_12H_RELEASE_CLAIM_PUBLICATION_GATE_END
 
+// CONTOUR_12I_RELEASE_CLAIM_KERNEL_FENCE_START
+const RELEASE_CLAIM_KERNEL_FENCE_ACCEPTED_CODE =
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_ACCEPTED';
+const RELEASE_CLAIM_KERNEL_FENCE_BLOCKED_CODE =
+  'E_REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BLOCKED';
+const RELEASE_CLAIM_KERNEL_FENCE_DIAGNOSTICS_CODE =
+  'E_REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_DIAGNOSTICS';
+
+export const REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_SCHEMA =
+  'revision-bridge.release-claim-kernel-fence.v1';
+export const REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REASON_CODES = Object.freeze([
+  RELEASE_CLAIM_KERNEL_FENCE_ACCEPTED_CODE,
+  RELEASE_CLAIM_KERNEL_FENCE_BLOCKED_CODE,
+  RELEASE_CLAIM_KERNEL_FENCE_DIAGNOSTICS_CODE,
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_TYPE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_NOT_ACCEPTED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_PROVENANCE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_MODE_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_MODE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_MODE_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_CLAIM_SURFACE_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_CLAIM_SURFACE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_CLAIM_SURFACE_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PR_MODE_USER_FACING_BLOCKED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_RELEASE_CLASS_USER_FACING_BLOCKED',
+  ...REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REASON_CODES,
+]);
+
+function releaseClaimKernelFenceReason(code, field, details = {}) {
+  return {
+    code,
+    field,
+    ...cloneJsonSafe(details),
+  };
+}
+
+function normalizeReleaseClaimKernelFencePublicationResult(input = {}) {
+  const result = isPlainObject(input) ? input : {};
+  const binding = isPlainObject(result.binding) ? result.binding : {};
+  const summary = isPlainObject(result.summary) ? result.summary : {};
+
+  return {
+    ok: result.ok === true,
+    type: normalizeString(result.type),
+    status: normalizeString(result.status),
+    code: normalizeString(result.code),
+    reason: normalizeString(result.reason),
+    binding: {
+      mode: normalizeString(binding.mode),
+      claimId: normalizeString(binding.claimId),
+      dossierId: normalizeString(binding.dossierId),
+      matrixId: normalizeString(binding.matrixId),
+      releaseClass: normalizeString(binding.releaseClass),
+    },
+    summary: {
+      claimSurface: normalizeString(summary.claimSurface),
+      packetId: normalizeString(summary.packetId),
+      attestationId: normalizeString(summary.attestationId),
+    },
+  };
+}
+
+function collectReleaseClaimKernelFenceRequestReasons(requestedMode, requestedClaimSurface) {
+  const reasons = [];
+
+  if (!requestedMode) {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_MODE_REQUIRED',
+      'requestedMode',
+    ));
+  } else if (!REVISION_BRIDGE_RELEASE_CLAIM_MODE_VALUES.includes(requestedMode)) {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_MODE_INVALID',
+      'requestedMode',
+      {
+        receivedValue: requestedMode,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_MODE_VALUES),
+      },
+    ));
+  }
+
+  if (!requestedClaimSurface) {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_CLAIM_SURFACE_REQUIRED',
+      'requestedClaimSurface',
+    ));
+  } else if (!REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES.includes(requestedClaimSurface)) {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_CLAIM_SURFACE_INVALID',
+      'requestedClaimSurface',
+      {
+        receivedValue: requestedClaimSurface,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES),
+      },
+    ));
+  }
+
+  return reasons;
+}
+
+function collectReleaseClaimKernelFencePublicationReasons(publicationResult) {
+  const reasons = [];
+
+  if (publicationResult.type !== 'revisionBridge.releaseClaimPublicationGate') {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_TYPE_INVALID',
+      'publicationResult.type',
+      {
+        expectedValue: 'revisionBridge.releaseClaimPublicationGate',
+        receivedValue: publicationResult.type,
+      },
+    ));
+  }
+  if (publicationResult.ok !== true) {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_NOT_ACCEPTED',
+      'publicationResult.ok',
+      {
+        expectedValue: true,
+        receivedValue: publicationResult.ok,
+      },
+    ));
+  }
+  if (publicationResult.status !== 'accepted') {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_NOT_ACCEPTED',
+      'publicationResult.status',
+      {
+        expectedValue: 'accepted',
+        receivedValue: publicationResult.status,
+      },
+    ));
+  }
+  if (publicationResult.code !== RELEASE_CLAIM_PUBLICATION_ACCEPTED_CODE) {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_NOT_ACCEPTED',
+      'publicationResult.code',
+      {
+        expectedValue: RELEASE_CLAIM_PUBLICATION_ACCEPTED_CODE,
+        receivedValue: publicationResult.code,
+      },
+    ));
+  }
+  if (publicationResult.reason !== RELEASE_CLAIM_PUBLICATION_ACCEPTED_CODE) {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_NOT_ACCEPTED',
+      'publicationResult.reason',
+      {
+        expectedValue: RELEASE_CLAIM_PUBLICATION_ACCEPTED_CODE,
+        receivedValue: publicationResult.reason,
+      },
+    ));
+  }
+
+  const bindingPairs = [
+    { field: 'mode', value: publicationResult.binding.mode },
+    { field: 'claimId', value: publicationResult.binding.claimId },
+    { field: 'dossierId', value: publicationResult.binding.dossierId },
+    { field: 'matrixId', value: publicationResult.binding.matrixId },
+  ];
+  bindingPairs.forEach(({ field, value }) => {
+    if (!value) {
+      reasons.push(releaseClaimKernelFenceReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_PROVENANCE_INVALID',
+        `publicationResult.binding.${field}`,
+      ));
+    }
+  });
+
+  if (
+    !REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_RELEASE_CLASSES.includes(
+      publicationResult.binding.releaseClass,
+    )
+  ) {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_PROVENANCE_INVALID',
+      'publicationResult.binding.releaseClass',
+      {
+        receivedValue: publicationResult.binding.releaseClass,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_RELEASE_CLASSES),
+      },
+    ));
+  }
+
+  if (
+    !REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES.includes(
+      publicationResult.summary.claimSurface,
+    )
+  ) {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_PROVENANCE_INVALID',
+      'publicationResult.summary.claimSurface',
+      {
+        receivedValue: publicationResult.summary.claimSurface,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES),
+      },
+    ));
+  }
+  if (!publicationResult.summary.packetId) {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_PROVENANCE_INVALID',
+      'publicationResult.summary.packetId',
+    ));
+  }
+  if (!publicationResult.summary.attestationId) {
+    reasons.push(releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_PROVENANCE_INVALID',
+      'publicationResult.summary.attestationId',
+    ));
+  }
+
+  return reasons;
+}
+
+function deriveReleaseClaimKernelFenceAdmissionClass(publicationResult) {
+  if (
+    publicationResult?.binding?.releaseClass === 'USER_FACING_CLAIM_READY'
+    && publicationResult?.summary?.claimSurface === 'USER_FACING'
+  ) {
+    return 'USER_FACING';
+  }
+  return 'INTERNAL';
+}
+
+function releaseClaimKernelFenceBinding(publicationResult) {
+  return {
+    mode: normalizeString(publicationResult?.binding?.mode),
+    claimId: normalizeString(publicationResult?.binding?.claimId),
+    dossierId: normalizeString(publicationResult?.binding?.dossierId),
+    matrixId: normalizeString(publicationResult?.binding?.matrixId),
+    releaseClass: normalizeString(publicationResult?.binding?.releaseClass),
+  };
+}
+
+function releaseClaimKernelFenceSummary(publicationResult, requestedClaimSurface) {
+  return {
+    claimSurface: normalizeString(requestedClaimSurface),
+    packetId: normalizeString(publicationResult?.summary?.packetId),
+    attestationId: normalizeString(publicationResult?.summary?.attestationId),
+    admissionClass: deriveReleaseClaimKernelFenceAdmissionClass(publicationResult),
+  };
+}
+
+function releaseClaimKernelFenceResult(
+  ok,
+  status,
+  reasons,
+  publicationResult,
+  requestedClaimSurface,
+) {
+  const code = ok
+    ? RELEASE_CLAIM_KERNEL_FENCE_ACCEPTED_CODE
+    : (status === 'diagnostics'
+      ? RELEASE_CLAIM_KERNEL_FENCE_DIAGNOSTICS_CODE
+      : RELEASE_CLAIM_KERNEL_FENCE_BLOCKED_CODE);
+  return {
+    ok,
+    type: 'revisionBridge.releaseClaimKernelFence',
+    status,
+    code,
+    reason: ok ? RELEASE_CLAIM_KERNEL_FENCE_ACCEPTED_CODE : reasons[0]?.code || code,
+    reasons: cloneJsonSafe(reasons),
+    binding: releaseClaimKernelFenceBinding(publicationResult),
+    summary: releaseClaimKernelFenceSummary(publicationResult, requestedClaimSurface),
+  };
+}
+
+export function evaluateRevisionBridgeReleaseClaimKernelFence(input = {}) {
+  const fenceInput = isPlainObject(input) ? input : {};
+  const requestedMode = normalizeString(fenceInput.requestedMode);
+  const requestedClaimSurface = normalizeString(fenceInput.requestedClaimSurface);
+
+  const requestReasons = collectReleaseClaimKernelFenceRequestReasons(
+    requestedMode,
+    requestedClaimSurface,
+  );
+  if (requestReasons.length > 0) {
+    return releaseClaimKernelFenceResult(
+      false,
+      'diagnostics',
+      requestReasons,
+      normalizeReleaseClaimKernelFencePublicationResult(fenceInput.publicationResult),
+      requestedClaimSurface,
+    );
+  }
+
+  if (!isPlainObject(fenceInput.publicationResult)) {
+    return releaseClaimKernelFenceResult(
+      false,
+      'blocked',
+      [
+        releaseClaimKernelFenceReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISSING',
+          'publicationResult',
+        ),
+      ],
+      normalizeReleaseClaimKernelFencePublicationResult(fenceInput.publicationResult),
+      requestedClaimSurface,
+    );
+  }
+
+  const publicationResult = normalizeReleaseClaimKernelFencePublicationResult(
+    fenceInput.publicationResult,
+  );
+  const publicationReasons = collectReleaseClaimKernelFencePublicationReasons(publicationResult);
+  if (publicationReasons.length > 0) {
+    return releaseClaimKernelFenceResult(
+      false,
+      'blocked',
+      publicationReasons,
+      publicationResult,
+      requestedClaimSurface,
+    );
+  }
+
+  if (requestedMode !== publicationResult.binding.mode) {
+    return releaseClaimKernelFenceResult(
+      false,
+      'blocked',
+      [
+        releaseClaimKernelFenceReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_MODE_MISMATCH',
+          'requestedMode',
+          {
+            expectedValue: publicationResult.binding.mode,
+            receivedValue: requestedMode,
+          },
+        ),
+      ],
+      publicationResult,
+      requestedClaimSurface,
+    );
+  }
+
+  if (requestedClaimSurface !== publicationResult.summary.claimSurface) {
+    return releaseClaimKernelFenceResult(
+      false,
+      'blocked',
+      [
+        releaseClaimKernelFenceReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_CLAIM_SURFACE_MISMATCH',
+          'requestedClaimSurface',
+          {
+            expectedValue: publicationResult.summary.claimSurface,
+            receivedValue: requestedClaimSurface,
+          },
+        ),
+      ],
+      publicationResult,
+      requestedClaimSurface,
+    );
+  }
+
+  if (requestedMode === 'PR_MODE' && requestedClaimSurface === 'USER_FACING') {
+    return releaseClaimKernelFenceResult(
+      false,
+      'blocked',
+      [
+        releaseClaimKernelFenceReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PR_MODE_USER_FACING_BLOCKED',
+          'requestedClaimSurface',
+          {
+            mode: requestedMode,
+            claimSurface: requestedClaimSurface,
+          },
+        ),
+      ],
+      publicationResult,
+      requestedClaimSurface,
+    );
+  }
+
+  if (
+    requestedMode === 'RELEASE_MODE'
+    && requestedClaimSurface === 'USER_FACING'
+    && publicationResult.binding.releaseClass !== 'USER_FACING_CLAIM_READY'
+  ) {
+    return releaseClaimKernelFenceResult(
+      false,
+      'blocked',
+      [
+        releaseClaimKernelFenceReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_RELEASE_CLASS_USER_FACING_BLOCKED',
+          'publicationResult.binding.releaseClass',
+          {
+            expectedValue: 'USER_FACING_CLAIM_READY',
+            receivedValue: publicationResult.binding.releaseClass,
+          },
+        ),
+      ],
+      publicationResult,
+      requestedClaimSurface,
+    );
+  }
+
+  return releaseClaimKernelFenceResult(
+    true,
+    'accepted',
+    [],
+    publicationResult,
+    requestedClaimSurface,
+  );
+}
+// CONTOUR_12I_RELEASE_CLAIM_KERNEL_FENCE_END
+
 function normalizeTargetScope(input) {
   const scope = isPlainObject(input) ? input : {};
   return {
