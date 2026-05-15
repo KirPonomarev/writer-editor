@@ -8881,6 +8881,284 @@ export function evaluateRevisionBridgeReleaseClaimAdmissionGate(
 }
 // CONTOUR_12C_RELEASE_CLAIM_ADMISSION_GATE_END
 
+// CONTOUR_12D_RELEASE_CLAIM_MODE_DECISION_GATE_START
+const RELEASE_CLAIM_MODE_DECISION_ACCEPTED_CODE = 'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_ACCEPTED';
+const RELEASE_CLAIM_MODE_DECISION_BLOCKED_CODE = 'E_REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BLOCKED';
+const RELEASE_CLAIM_MODE_DECISION_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_DIAGNOSTICS';
+
+export const REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_SCHEMA =
+  'revision-bridge.release-claim-mode-decision.v1';
+export const REVISION_BRIDGE_RELEASE_CLAIM_MODE_VALUES = Object.freeze([
+  'PR_MODE',
+  'RELEASE_MODE',
+]);
+export const REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_RELEASE_REQUIRED_FIELDS = Object.freeze([
+  'releaseEvidenceId',
+  'releaseEvidenceHash',
+  'inputHash',
+  'outputHash',
+  'commandRunDigest',
+  'matrixId',
+  'dossierId',
+  'claimId',
+]);
+export const REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_REASON_CODES = Object.freeze([
+  RELEASE_CLAIM_MODE_DECISION_ACCEPTED_CODE,
+  RELEASE_CLAIM_MODE_DECISION_BLOCKED_CODE,
+  RELEASE_CLAIM_MODE_DECISION_DIAGNOSTICS_CODE,
+  'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_MODE_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_MODE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_DOSSIER_BLOCKED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_ADMISSION_BLOCKED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_RELEASE_FIELDS_MISSING',
+  ...REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_GATE_REASON_CODES,
+  ...REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_REASON_CODES,
+]);
+
+function releaseClaimModeDecisionReason(code, field, message, details = {}) {
+  return {
+    code,
+    field,
+    message,
+    ...cloneJsonSafe(details),
+  };
+}
+
+function normalizeReleaseClaimModeDecisionInput(input = {}) {
+  const decision = isPlainObject(input) ? input : {};
+  return {
+    schemaVersion: normalizeString(decision.schemaVersion),
+    mode: normalizeString(decision.mode),
+    formatMatrix: cloneJsonSafe(decision.formatMatrix),
+    dossier: cloneJsonSafe(decision.dossier),
+    admission: cloneJsonSafe(decision.admission),
+    claimClasses: sortedStableStrings(decision.claimClasses),
+    baselineDebtFlag: decision.baselineDebtFlag === true,
+    releaseEvidenceId: normalizeString(decision.releaseEvidenceId),
+    releaseEvidenceHash: normalizeString(decision.releaseEvidenceHash),
+    inputHash: normalizeString(decision.inputHash),
+    outputHash: normalizeString(decision.outputHash),
+    commandRunDigest: normalizeString(decision.commandRunDigest),
+    matrixId: normalizeString(decision.matrixId),
+    dossierId: normalizeString(decision.dossierId),
+    claimId: normalizeString(decision.claimId),
+  };
+}
+
+function collectReleaseClaimModeDecisionReasons(input, decision) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(releaseClaimModeDecisionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_REQUIRED',
+      'decision',
+      'decision payload must be an object',
+    ));
+    return reasons;
+  }
+  if (decision.schemaVersion !== REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_SCHEMA) {
+    reasons.push(releaseClaimModeDecisionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_INVALID',
+      'decision.schemaVersion',
+      'decision schemaVersion is not supported',
+    ));
+  }
+  if (!decision.mode) {
+    reasons.push(releaseClaimModeDecisionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_MODE_REQUIRED',
+      'decision.mode',
+      'decision mode is required',
+    ));
+  } else if (!REVISION_BRIDGE_RELEASE_CLAIM_MODE_VALUES.includes(decision.mode)) {
+    reasons.push(releaseClaimModeDecisionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_MODE_INVALID',
+      'decision.mode',
+      'decision mode must be one of PR_MODE or RELEASE_MODE',
+      { mode: decision.mode },
+    ));
+  }
+  return reasons;
+}
+
+function releaseClaimModeDecisionBinding(decision, dossierResult, admissionResult) {
+  return {
+    mode: decision.mode,
+    claimId: normalizeString(decision.claimId || admissionResult?.binding?.claimId),
+    dossierId: normalizeString(decision.dossierId || dossierResult?.binding?.dossierId),
+    matrixId: normalizeString(decision.matrixId || dossierResult?.binding?.matrixId),
+    dossierStatus: normalizeString(dossierResult?.status),
+    admissionStatus: normalizeString(admissionResult?.status),
+    baselineDebtFlag: decision.baselineDebtFlag === true,
+  };
+}
+
+function releaseClaimModeDecisionSummary(decision, dossierResult, admissionResult, missingReleaseFields = []) {
+  return {
+    mode: decision.mode,
+    releaseRequiredFields: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_RELEASE_REQUIRED_FIELDS),
+    missingReleaseFields: cloneJsonSafe(missingReleaseFields),
+    dossierGate: {
+      status: normalizeString(dossierResult?.status),
+      code: normalizeString(dossierResult?.code),
+      reason: normalizeString(dossierResult?.reason),
+    },
+    admissionGate: {
+      status: normalizeString(admissionResult?.status),
+      code: normalizeString(admissionResult?.code),
+      reason: normalizeString(admissionResult?.reason),
+    },
+  };
+}
+
+function releaseClaimModeDecisionResult(
+  ok,
+  status,
+  reasons,
+  decision,
+  dossierResult,
+  admissionResult,
+  missingReleaseFields = [],
+) {
+  const code = ok
+    ? RELEASE_CLAIM_MODE_DECISION_ACCEPTED_CODE
+    : (status === 'diagnostics'
+      ? RELEASE_CLAIM_MODE_DECISION_DIAGNOSTICS_CODE
+      : RELEASE_CLAIM_MODE_DECISION_BLOCKED_CODE);
+  return {
+    ok,
+    type: 'revisionBridge.releaseClaimModeDecisionGate',
+    status,
+    code,
+    reason: ok ? RELEASE_CLAIM_MODE_DECISION_ACCEPTED_CODE : reasons[0]?.code || code,
+    reasons: cloneJsonSafe(reasons),
+    decision: cloneJsonSafe(decision),
+    binding: releaseClaimModeDecisionBinding(decision, dossierResult, admissionResult),
+    summary: releaseClaimModeDecisionSummary(
+      decision,
+      dossierResult,
+      admissionResult,
+      missingReleaseFields,
+    ),
+    dossierResult: cloneJsonSafe(dossierResult),
+    admissionResult: cloneJsonSafe(admissionResult),
+  };
+}
+
+function collectReleaseModeMissingFields(decision) {
+  return REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_RELEASE_REQUIRED_FIELDS.filter(
+    (fieldName) => !normalizeString(decision[fieldName]),
+  );
+}
+
+export function evaluateRevisionBridgeReleaseClaimModeDecisionGate(input = {}) {
+  const decision = normalizeReleaseClaimModeDecisionInput(input);
+  const decisionReasons = collectReleaseClaimModeDecisionReasons(input, decision);
+
+  if (decisionReasons.length > 0) {
+    return releaseClaimModeDecisionResult(
+      false,
+      'diagnostics',
+      decisionReasons,
+      decision,
+      null,
+      null,
+    );
+  }
+
+  const dossierResult = evaluateRevisionBridgeReleaseClaimDossierGate({
+    formatMatrix: decision.formatMatrix,
+    dossier: decision.dossier,
+  });
+  const dossierStatus = normalizeString(dossierResult.status);
+  if (dossierStatus !== 'accepted') {
+    const status = dossierStatus === 'diagnostics' ? 'diagnostics' : 'blocked';
+    return releaseClaimModeDecisionResult(
+      false,
+      status,
+      [
+        releaseClaimModeDecisionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_DOSSIER_BLOCKED',
+          'dossier',
+          'release claim dossier gate must accept before mode decision can pass',
+          {
+            dossierStatus,
+            dossierCode: normalizeString(dossierResult.code),
+            dossierReason: normalizeString(dossierResult.reason),
+          },
+        ),
+      ],
+      decision,
+      dossierResult,
+      null,
+    );
+  }
+
+  const admissionResult = evaluateRevisionBridgeReleaseClaimAdmissionGate(
+    decision.admission,
+    {
+      dossierResult,
+      claimClasses: decision.claimClasses,
+      baselineDebtFlag: decision.baselineDebtFlag,
+    },
+  );
+  const admissionStatus = normalizeString(admissionResult.status);
+  if (admissionStatus !== 'accepted') {
+    const status = admissionStatus === 'diagnostics' ? 'diagnostics' : 'blocked';
+    return releaseClaimModeDecisionResult(
+      false,
+      status,
+      [
+        releaseClaimModeDecisionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_ADMISSION_BLOCKED',
+          'admission',
+          'release claim admission gate must accept before mode decision can pass',
+          {
+            admissionStatus,
+            admissionCode: normalizeString(admissionResult.code),
+            admissionReason: normalizeString(admissionResult.reason),
+          },
+        ),
+      ],
+      decision,
+      dossierResult,
+      admissionResult,
+    );
+  }
+
+  if (decision.mode === 'RELEASE_MODE') {
+    const missingReleaseFields = collectReleaseModeMissingFields(decision);
+    if (missingReleaseFields.length > 0) {
+      return releaseClaimModeDecisionResult(
+        false,
+        'blocked',
+        [
+          releaseClaimModeDecisionReason(
+            'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_RELEASE_FIELDS_MISSING',
+            'releaseEvidence',
+            'release mode requires non-empty release evidence fields',
+            { missingReleaseFields },
+          ),
+        ],
+        decision,
+        dossierResult,
+        admissionResult,
+        missingReleaseFields,
+      );
+    }
+  }
+
+  return releaseClaimModeDecisionResult(
+    true,
+    'accepted',
+    [],
+    decision,
+    dossierResult,
+    admissionResult,
+  );
+}
+// CONTOUR_12D_RELEASE_CLAIM_MODE_DECISION_GATE_END
+
 function normalizeTargetScope(input) {
   const scope = isPlainObject(input) ? input : {};
   return {
