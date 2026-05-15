@@ -9666,6 +9666,703 @@ export function evaluateRevisionBridgeReleaseClaimAttestationGate(input = {}) {
 }
 // CONTOUR_12E_RELEASE_CLAIM_ATTESTATION_GATE_END
 
+// CONTOUR_12F_RELEASE_CLAIM_PACKET_EMIT_START
+const RELEASE_CLAIM_PACKET_EMIT_ACCEPTED_CODE = 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_ACCEPTED';
+const RELEASE_CLAIM_PACKET_EMIT_BLOCKED_CODE = 'E_REVISION_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BLOCKED';
+const RELEASE_CLAIM_PACKET_EMIT_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_DIAGNOSTICS';
+const RELEASE_CLAIM_STRICT_REPORT_VALID_CODE = 'REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_VALID';
+const RELEASE_CLAIM_STRICT_REPORT_INVALID_CODE = 'E_REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_INVALID';
+
+export const REVISION_BRIDGE_RELEASE_CLAIM_PACKET_SCHEMA =
+  'revision-bridge.release-claim-packet.v1';
+export const REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_SCHEMA =
+  'revision-bridge.release-claim-report.v1';
+export const REVISION_BRIDGE_RELEASE_CLAIM_PACKET_META_FIELDS = Object.freeze([
+  'packetId',
+  'createdAtUtc',
+  'emitterId',
+]);
+export const REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_CLASS_BY_MODE = Object.freeze({
+  PR_MODE: 'INTERNAL_PROOF_ONLY',
+  RELEASE_MODE: 'USER_FACING_CLAIM_READY',
+});
+export const REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_KEYS = Object.freeze([
+  'schemaVersion',
+  'reportClass',
+  'packetSchemaVersion',
+  'packetId',
+  'packetHash',
+  'createdAtUtc',
+  'mode',
+  'modeClass',
+  'claimId',
+  'dossierId',
+  'matrixId',
+  'attestationId',
+  'decisionHash',
+  'evidenceHash',
+  'commandRunDigest',
+  'prerequisiteCodes',
+]);
+export const REVISION_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_REASON_CODES = Object.freeze([
+  RELEASE_CLAIM_PACKET_EMIT_ACCEPTED_CODE,
+  RELEASE_CLAIM_PACKET_EMIT_BLOCKED_CODE,
+  RELEASE_CLAIM_PACKET_EMIT_DIAGNOSTICS_CODE,
+  RELEASE_CLAIM_STRICT_REPORT_VALID_CODE,
+  RELEASE_CLAIM_STRICT_REPORT_INVALID_CODE,
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_META_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_MODE_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_CLAIM_ID_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_DOSSIER_ID_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_MATRIX_ID_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_STRICT_REPORT_MISSING_FIELDS',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_STRICT_REPORT_EXTRA_FIELDS',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_STRICT_REPORT_INVALID_VALUE',
+  ...REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_REASON_CODES,
+  ...REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_REASON_CODES,
+]);
+
+function releaseClaimPacketEmitReason(code, field, message, details = {}) {
+  return {
+    code,
+    field,
+    message,
+    ...cloneJsonSafe(details),
+  };
+}
+
+function normalizeReleaseClaimPacketModeDecisionResult(input = {}) {
+  return normalizeReleaseClaimAttestationModeDecisionResult(input);
+}
+
+function normalizeReleaseClaimPacketAttestationResult(input = {}) {
+  const result = isPlainObject(input) ? input : {};
+  const binding = isPlainObject(result.binding) ? result.binding : {};
+  const attestation = isPlainObject(result.attestation) ? result.attestation : {};
+  const modeDecisionResult = isPlainObject(result.modeDecisionResult)
+    ? normalizeReleaseClaimPacketModeDecisionResult(result.modeDecisionResult)
+    : {};
+  return {
+    ok: result.ok === true,
+    type: normalizeString(result.type),
+    status: normalizeString(result.status),
+    code: normalizeString(result.code),
+    reason: normalizeString(result.reason),
+    attestation: cloneJsonSafe(attestation),
+    modeDecisionResult,
+    binding: {
+      mode: normalizeString(binding.mode || attestation.mode || modeDecisionResult.binding?.mode),
+      claimId: normalizeString(
+        binding.claimId
+        || modeDecisionResult.binding?.claimId
+        || modeDecisionResult.decision?.claimId,
+      ),
+      dossierId: normalizeString(
+        binding.dossierId
+        || modeDecisionResult.binding?.dossierId
+        || modeDecisionResult.decision?.dossierId,
+      ),
+      matrixId: normalizeString(
+        binding.matrixId
+        || modeDecisionResult.binding?.matrixId
+        || modeDecisionResult.decision?.matrixId,
+      ),
+      attestationId: normalizeString(binding.attestationId || attestation.attestationId),
+    },
+    summary: cloneJsonSafe(result.summary),
+    reasons: Array.isArray(result.reasons) ? cloneJsonSafe(result.reasons) : [],
+  };
+}
+
+function normalizeReleaseClaimPacketMeta(input = {}) {
+  const packetMeta = isPlainObject(input) ? input : {};
+  return {
+    packetId: normalizeString(packetMeta.packetId),
+    createdAtUtc: normalizeString(packetMeta.createdAtUtc),
+    emitterId: normalizeString(packetMeta.emitterId),
+  };
+}
+
+function collectReleaseClaimPacketMetaReasons(input, packetMeta) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_META_INVALID',
+      'packetMeta',
+      'packetMeta must be an object',
+    ));
+    return reasons;
+  }
+
+  const extraFields = Object.keys(input)
+    .filter((field) => !REVISION_BRIDGE_RELEASE_CLAIM_PACKET_META_FIELDS.includes(field))
+    .sort();
+  const missingFields = REVISION_BRIDGE_RELEASE_CLAIM_PACKET_META_FIELDS.filter(
+    (field) => !packetMeta[field],
+  );
+
+  if (extraFields.length > 0 || missingFields.length > 0) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_META_INVALID',
+      'packetMeta',
+      'packetMeta must contain only required non-empty canonical fields',
+      {
+        extraFields,
+        missingFields,
+      },
+    ));
+  }
+
+  return reasons;
+}
+
+function collectReleaseClaimPacketModeDecisionAcceptanceReasons(modeDecisionResult) {
+  const reasons = [];
+  const binding = isPlainObject(modeDecisionResult?.binding) ? modeDecisionResult.binding : {};
+  const decision = isPlainObject(modeDecisionResult?.decision) ? modeDecisionResult.decision : {};
+
+  if (normalizeString(modeDecisionResult?.type) !== 'revisionBridge.releaseClaimModeDecisionGate') {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'modeDecisionResult.type',
+      'modeDecisionResult must prove releaseClaimModeDecisionGate provenance',
+    ));
+  }
+  if (modeDecisionResult?.ok !== true) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'modeDecisionResult.ok',
+      'modeDecisionResult ok must be true',
+    ));
+  }
+  if (normalizeString(modeDecisionResult?.status) !== 'accepted') {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'modeDecisionResult.status',
+      'modeDecisionResult status must be accepted',
+    ));
+  }
+  if (normalizeString(modeDecisionResult?.code) !== RELEASE_CLAIM_MODE_DECISION_ACCEPTED_CODE) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'modeDecisionResult.code',
+      'modeDecisionResult code must prove accepted mode decision provenance',
+    ));
+  }
+  if (normalizeString(modeDecisionResult?.reason) !== RELEASE_CLAIM_MODE_DECISION_ACCEPTED_CODE) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'modeDecisionResult.reason',
+      'modeDecisionResult reason must prove accepted mode decision provenance',
+    ));
+  }
+  if (!normalizeString(binding.mode || decision.mode)) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'modeDecisionResult.binding.mode',
+      'modeDecisionResult must bind mode',
+    ));
+  }
+  if (!normalizeString(binding.claimId || decision.claimId)) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'modeDecisionResult.binding.claimId',
+      'modeDecisionResult must bind claimId',
+    ));
+  }
+  if (!normalizeString(binding.dossierId || decision.dossierId)) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'modeDecisionResult.binding.dossierId',
+      'modeDecisionResult must bind dossierId',
+    ));
+  }
+  if (!normalizeString(binding.matrixId || decision.matrixId)) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'modeDecisionResult.binding.matrixId',
+      'modeDecisionResult must bind matrixId',
+    ));
+  }
+  if (normalizeString(binding.dossierStatus) !== 'accepted') {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'modeDecisionResult.binding.dossierStatus',
+      'modeDecisionResult must retain accepted dossier status',
+    ));
+  }
+  if (normalizeString(binding.admissionStatus) !== 'accepted') {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'modeDecisionResult.binding.admissionStatus',
+      'modeDecisionResult must retain accepted admission status',
+    ));
+  }
+
+  return reasons;
+}
+
+function collectReleaseClaimPacketAttestationAcceptanceReasons(attestationResult) {
+  const reasons = [];
+  const binding = isPlainObject(attestationResult?.binding) ? attestationResult.binding : {};
+  const attestation = isPlainObject(attestationResult?.attestation) ? attestationResult.attestation : {};
+
+  if (normalizeString(attestationResult?.type) !== 'revisionBridge.releaseClaimAttestationGate') {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+      'attestationResult.type',
+      'attestationResult must prove releaseClaimAttestationGate provenance',
+    ));
+  }
+  if (attestationResult?.ok !== true) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+      'attestationResult.ok',
+      'attestationResult ok must be true',
+    ));
+  }
+  if (normalizeString(attestationResult?.status) !== 'accepted') {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+      'attestationResult.status',
+      'attestationResult status must be accepted',
+    ));
+  }
+  if (normalizeString(attestationResult?.code) !== RELEASE_CLAIM_ATTESTATION_ACCEPTED_CODE) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+      'attestationResult.code',
+      'attestationResult code must prove accepted attestation provenance',
+    ));
+  }
+  if (normalizeString(attestationResult?.reason) !== RELEASE_CLAIM_ATTESTATION_ACCEPTED_CODE) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+      'attestationResult.reason',
+      'attestationResult reason must prove accepted attestation provenance',
+    ));
+  }
+  if (!normalizeString(binding.mode || attestation.mode)) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+      'attestationResult.binding.mode',
+      'attestationResult must bind mode',
+    ));
+  }
+  if (!normalizeString(binding.claimId)) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+      'attestationResult.binding.claimId',
+      'attestationResult must bind claimId',
+    ));
+  }
+  if (!normalizeString(binding.dossierId)) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+      'attestationResult.binding.dossierId',
+      'attestationResult must bind dossierId',
+    ));
+  }
+  if (!normalizeString(binding.matrixId)) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+      'attestationResult.binding.matrixId',
+      'attestationResult must bind matrixId',
+    ));
+  }
+  if (!normalizeString(binding.attestationId || attestation.attestationId)) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+      'attestationResult.binding.attestationId',
+      'attestationResult must bind attestationId',
+    ));
+  }
+
+  return reasons;
+}
+
+function releaseClaimPacketBindingField(binding, decision, field) {
+  return normalizeString(binding[field] || decision[field]);
+}
+
+function collectReleaseClaimPacketBindingMatchReasons(modeDecisionResult, attestationResult) {
+  const reasons = [];
+  const modeDecisionBinding = isPlainObject(modeDecisionResult?.binding) ? modeDecisionResult.binding : {};
+  const decision = isPlainObject(modeDecisionResult?.decision) ? modeDecisionResult.decision : {};
+  const attestationBinding = isPlainObject(attestationResult?.binding) ? attestationResult.binding : {};
+  const attestation = isPlainObject(attestationResult?.attestation) ? attestationResult.attestation : {};
+  const bindingPairs = [
+    {
+      field: 'mode',
+      code: 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_MODE_MISMATCH',
+      reasonField: 'binding.mode',
+      expectedValue: releaseClaimPacketBindingField(modeDecisionBinding, decision, 'mode'),
+      receivedValue: normalizeString(attestationBinding.mode || attestation.mode),
+    },
+    {
+      field: 'claimId',
+      code: 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_CLAIM_ID_MISMATCH',
+      reasonField: 'binding.claimId',
+      expectedValue: releaseClaimPacketBindingField(modeDecisionBinding, decision, 'claimId'),
+      receivedValue: normalizeString(attestationBinding.claimId),
+    },
+    {
+      field: 'dossierId',
+      code: 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_DOSSIER_ID_MISMATCH',
+      reasonField: 'binding.dossierId',
+      expectedValue: releaseClaimPacketBindingField(modeDecisionBinding, decision, 'dossierId'),
+      receivedValue: normalizeString(attestationBinding.dossierId),
+    },
+    {
+      field: 'matrixId',
+      code: 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_MATRIX_ID_MISMATCH',
+      reasonField: 'binding.matrixId',
+      expectedValue: releaseClaimPacketBindingField(modeDecisionBinding, decision, 'matrixId'),
+      receivedValue: normalizeString(attestationBinding.matrixId),
+    },
+  ];
+
+  bindingPairs.forEach((pair) => {
+    if (pair.expectedValue !== pair.receivedValue) {
+      reasons.push(releaseClaimPacketEmitReason(
+        pair.code,
+        pair.reasonField,
+        `${pair.field} must match across accepted 12D and 12E results`,
+        {
+          expectedValue: pair.expectedValue,
+          receivedValue: pair.receivedValue,
+        },
+      ));
+    }
+  });
+
+  return reasons;
+}
+
+function normalizeReleaseClaimPacketHashValue(value) {
+  if (value === null) return null;
+  if (typeof value === 'string') return normalizeString(value);
+  if (typeof value === 'number') return normalizeNumber(value);
+  if (typeof value === 'boolean') return normalizeBoolean(value);
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => normalizeReleaseClaimPacketHashValue(item))
+      .filter((item) => item !== undefined)
+      .sort((left, right) => {
+        const leftValue = revisionBlockCanonicalJson(left);
+        const rightValue = revisionBlockCanonicalJson(right);
+        if (leftValue === rightValue) return 0;
+        return leftValue < rightValue ? -1 : 1;
+      });
+  }
+  if (isPlainObject(value)) {
+    const normalized = {};
+    for (const key of Object.keys(value).sort()) {
+      const normalizedValue = normalizeReleaseClaimPacketHashValue(value[key]);
+      if (normalizedValue !== undefined) normalized[key] = normalizedValue;
+    }
+    return normalized;
+  }
+  return undefined;
+}
+
+function normalizeReleaseClaimStrictReport(input = {}) {
+  const report = isPlainObject(input) ? input : {};
+  return {
+    schemaVersion: normalizeString(report.schemaVersion),
+    reportClass: normalizeString(report.reportClass),
+    packetSchemaVersion: normalizeString(report.packetSchemaVersion),
+    packetId: normalizeString(report.packetId),
+    packetHash: normalizeString(report.packetHash),
+    createdAtUtc: normalizeString(report.createdAtUtc),
+    mode: normalizeString(report.mode),
+    modeClass: normalizeString(report.modeClass),
+    claimId: normalizeString(report.claimId),
+    dossierId: normalizeString(report.dossierId),
+    matrixId: normalizeString(report.matrixId),
+    attestationId: normalizeString(report.attestationId),
+    decisionHash: normalizeString(report.decisionHash),
+    evidenceHash: normalizeString(report.evidenceHash),
+    commandRunDigest: normalizeString(report.commandRunDigest),
+    prerequisiteCodes: sortedStableStrings(report.prerequisiteCodes),
+  };
+}
+
+function collectReleaseClaimStrictReportShapeReasons(input, report) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_STRICT_REPORT_INVALID_VALUE',
+      'report',
+      'strict report must be an object',
+    ));
+    return reasons;
+  }
+
+  const reportKeys = Object.keys(input).sort();
+  const missingFields = REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_KEYS.filter(
+    (field) => !reportKeys.includes(field),
+  );
+  const extraFields = reportKeys.filter(
+    (field) => !REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_KEYS.includes(field),
+  );
+
+  if (missingFields.length > 0) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_STRICT_REPORT_MISSING_FIELDS',
+      'report',
+      'strict report must contain all fixed fields',
+      { missingFields },
+    ));
+  }
+  if (extraFields.length > 0) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_STRICT_REPORT_EXTRA_FIELDS',
+      'report',
+      'strict report cannot contain extra fields',
+      { extraFields },
+    ));
+  }
+
+  REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_KEYS.forEach((field) => {
+    if (field === 'prerequisiteCodes') {
+      if (!Array.isArray(input.prerequisiteCodes) || report.prerequisiteCodes.length === 0) {
+        reasons.push(releaseClaimPacketEmitReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_STRICT_REPORT_INVALID_VALUE',
+          `report.${field}`,
+          'strict report prerequisiteCodes must be a non-empty array of codes',
+        ));
+      }
+      return;
+    }
+
+    if (!report[field]) {
+      reasons.push(releaseClaimPacketEmitReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_STRICT_REPORT_INVALID_VALUE',
+        `report.${field}`,
+        'strict report fields must be non-empty strings',
+      ));
+    }
+  });
+
+  return reasons;
+}
+
+function buildReleaseClaimPacketModeClass(mode) {
+  return REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_CLASS_BY_MODE[mode] || '';
+}
+
+function buildReleaseClaimPacket(modeDecisionResult, attestationResult, packetMeta) {
+  const modeDecisionBinding = isPlainObject(modeDecisionResult?.binding) ? modeDecisionResult.binding : {};
+  const decision = isPlainObject(modeDecisionResult?.decision) ? modeDecisionResult.decision : {};
+  const attestation = isPlainObject(attestationResult?.attestation) ? attestationResult.attestation : {};
+  const attestationBinding = isPlainObject(attestationResult?.binding) ? attestationResult.binding : {};
+  const mode = releaseClaimPacketBindingField(modeDecisionBinding, decision, 'mode');
+  const modeClass = buildReleaseClaimPacketModeClass(mode);
+  const packet = {
+    schemaVersion: REVISION_BRIDGE_RELEASE_CLAIM_PACKET_SCHEMA,
+    packetMeta: {
+      packetId: packetMeta.packetId,
+      createdAtUtc: packetMeta.createdAtUtc,
+      emitterId: packetMeta.emitterId,
+    },
+    releaseClaim: {
+      mode,
+      modeClass,
+      claimId: releaseClaimPacketBindingField(modeDecisionBinding, decision, 'claimId'),
+      dossierId: releaseClaimPacketBindingField(modeDecisionBinding, decision, 'dossierId'),
+      matrixId: releaseClaimPacketBindingField(modeDecisionBinding, decision, 'matrixId'),
+    },
+    attestation: {
+      attestationId: normalizeString(attestationBinding.attestationId || attestation.attestationId),
+      inputHash: normalizeString(attestation.inputHash),
+      outputHash: normalizeString(attestation.outputHash),
+      commandRunDigest: normalizeString(attestation.commandRunDigest),
+      decisionHash: normalizeString(attestation.decisionHash),
+      evidenceHash: normalizeString(attestation.evidenceHash),
+      releaseEvidenceId: normalizeString(attestation.releaseEvidenceId),
+      releaseEvidenceHash: normalizeString(attestation.releaseEvidenceHash),
+      executedCommands: normalizeReleaseClaimPacketHashValue(attestation.executedCommands || []),
+      artifactHashes: normalizeReleaseClaimPacketHashValue(attestation.artifactHashes || []),
+    },
+    prerequisiteCodes: sortedStableStrings([
+      normalizeString(modeDecisionResult?.code),
+      normalizeString(attestationResult?.code),
+    ]),
+  };
+
+  return cloneJsonSafe({
+    ...packet,
+    packetHash: createRevisionBridgeReleaseClaimPacketHash(packet),
+  });
+}
+
+function buildReleaseClaimStrictReport(packet) {
+  const report = {
+    schemaVersion: REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_SCHEMA,
+    reportClass: 'STRICT_RELEASE_CLAIM_REPORT',
+    packetSchemaVersion: REVISION_BRIDGE_RELEASE_CLAIM_PACKET_SCHEMA,
+    packetId: normalizeString(packet?.packetMeta?.packetId),
+    packetHash: normalizeString(packet?.packetHash),
+    createdAtUtc: normalizeString(packet?.packetMeta?.createdAtUtc),
+    mode: normalizeString(packet?.releaseClaim?.mode),
+    modeClass: normalizeString(packet?.releaseClaim?.modeClass),
+    claimId: normalizeString(packet?.releaseClaim?.claimId),
+    dossierId: normalizeString(packet?.releaseClaim?.dossierId),
+    matrixId: normalizeString(packet?.releaseClaim?.matrixId),
+    attestationId: normalizeString(packet?.attestation?.attestationId),
+    decisionHash: normalizeString(packet?.attestation?.decisionHash),
+    evidenceHash: normalizeString(packet?.attestation?.evidenceHash),
+    commandRunDigest: normalizeString(packet?.attestation?.commandRunDigest),
+    prerequisiteCodes: sortedStableStrings(packet?.prerequisiteCodes),
+  };
+
+  return cloneJsonSafe(report);
+}
+
+export function createRevisionBridgeReleaseClaimPacketHash(input = {}) {
+  const packet = isPlainObject(input) ? input : {};
+  const packetMeta = isPlainObject(packet.packetMeta) ? packet.packetMeta : {};
+  const packetBody = {
+    schemaVersion: normalizeString(packet.schemaVersion),
+    packetMeta: {
+      packetId: normalizeString(packetMeta.packetId),
+      emitterId: normalizeString(packetMeta.emitterId),
+    },
+    releaseClaim: normalizeReleaseClaimPacketHashValue(packet.releaseClaim),
+    attestation: normalizeReleaseClaimPacketHashValue(packet.attestation),
+    prerequisiteCodes: normalizeReleaseClaimPacketHashValue(packet.prerequisiteCodes),
+  };
+  return revisionBlockHash(normalizeReleaseClaimPacketHashValue(packetBody));
+}
+
+export function validateRevisionBridgeReleaseClaimStrictReportShape(input = {}) {
+  const report = normalizeReleaseClaimStrictReport(input);
+  const reasons = collectReleaseClaimStrictReportShapeReasons(input, report);
+  const ok = reasons.length === 0;
+  return {
+    ok,
+    type: 'revisionBridge.releaseClaimStrictReportValidation',
+    status: ok ? 'accepted' : 'blocked',
+    code: ok ? RELEASE_CLAIM_STRICT_REPORT_VALID_CODE : RELEASE_CLAIM_STRICT_REPORT_INVALID_CODE,
+    reason: ok ? RELEASE_CLAIM_STRICT_REPORT_VALID_CODE : reasons[0]?.code || RELEASE_CLAIM_STRICT_REPORT_INVALID_CODE,
+    reasons: cloneJsonSafe(reasons),
+    report,
+  };
+}
+
+function releaseClaimPacketEmitBinding(packet, report) {
+  return {
+    mode: normalizeString(packet?.releaseClaim?.mode),
+    modeClass: normalizeString(packet?.releaseClaim?.modeClass),
+    claimId: normalizeString(report?.claimId),
+    dossierId: normalizeString(report?.dossierId),
+    matrixId: normalizeString(report?.matrixId),
+    packetId: normalizeString(report?.packetId),
+    attestationId: normalizeString(report?.attestationId),
+  };
+}
+
+function releaseClaimPacketEmitSummary(packet, report) {
+  return {
+    packetSchemaVersion: normalizeString(packet?.schemaVersion),
+    strictReportSchemaVersion: normalizeString(report?.schemaVersion),
+    packetHash: normalizeString(packet?.packetHash),
+    prerequisiteCodes: sortedStableStrings(report?.prerequisiteCodes),
+  };
+}
+
+function releaseClaimPacketEmitResult(ok, status, reasons, packet = null, report = null) {
+  const code = ok
+    ? RELEASE_CLAIM_PACKET_EMIT_ACCEPTED_CODE
+    : (status === 'diagnostics'
+      ? RELEASE_CLAIM_PACKET_EMIT_DIAGNOSTICS_CODE
+      : RELEASE_CLAIM_PACKET_EMIT_BLOCKED_CODE);
+  return {
+    ok,
+    type: 'revisionBridge.releaseClaimPacketEmit',
+    status,
+    code,
+    reason: ok ? RELEASE_CLAIM_PACKET_EMIT_ACCEPTED_CODE : reasons[0]?.code || code,
+    reasons: cloneJsonSafe(reasons),
+    binding: releaseClaimPacketEmitBinding(packet, report),
+    summary: releaseClaimPacketEmitSummary(packet, report),
+    packet: cloneJsonSafe(packet),
+    report: cloneJsonSafe(report),
+  };
+}
+
+export function evaluateRevisionBridgeReleaseClaimPacketEmit(input = {}) {
+  const packetInput = isPlainObject(input) ? input : {};
+  const packetMeta = normalizeReleaseClaimPacketMeta(packetInput.packetMeta);
+  const packetMetaReasons = collectReleaseClaimPacketMetaReasons(packetInput.packetMeta, packetMeta);
+  if (packetMetaReasons.length > 0) {
+    return releaseClaimPacketEmitResult(false, 'diagnostics', packetMetaReasons);
+  }
+
+  if (!isPlainObject(packetInput.modeDecisionResult)) {
+    return releaseClaimPacketEmitResult(
+      false,
+      'blocked',
+      [
+        releaseClaimPacketEmitReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_MISSING',
+          'modeDecisionResult',
+          'release claim packet emit requires accepted modeDecisionResult',
+        ),
+      ],
+    );
+  }
+
+  if (!isPlainObject(packetInput.attestationResult)) {
+    return releaseClaimPacketEmitResult(
+      false,
+      'blocked',
+      [
+        releaseClaimPacketEmitReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_MISSING',
+          'attestationResult',
+          'release claim packet emit requires accepted attestationResult',
+        ),
+      ],
+    );
+  }
+
+  const modeDecisionResult = normalizeReleaseClaimPacketModeDecisionResult(packetInput.modeDecisionResult);
+  const modeDecisionReasons = collectReleaseClaimPacketModeDecisionAcceptanceReasons(modeDecisionResult);
+  if (modeDecisionReasons.length > 0) {
+    return releaseClaimPacketEmitResult(false, 'blocked', modeDecisionReasons);
+  }
+
+  const attestationResult = normalizeReleaseClaimPacketAttestationResult(packetInput.attestationResult);
+  const attestationReasons = collectReleaseClaimPacketAttestationAcceptanceReasons(attestationResult);
+  if (attestationReasons.length > 0) {
+    return releaseClaimPacketEmitResult(false, 'blocked', attestationReasons);
+  }
+
+  const bindingReasons = collectReleaseClaimPacketBindingMatchReasons(
+    modeDecisionResult,
+    attestationResult,
+  );
+  if (bindingReasons.length > 0) {
+    return releaseClaimPacketEmitResult(false, 'blocked', bindingReasons);
+  }
+
+  const packet = buildReleaseClaimPacket(modeDecisionResult, attestationResult, packetMeta);
+  const report = buildReleaseClaimStrictReport(packet);
+  const reportValidation = validateRevisionBridgeReleaseClaimStrictReportShape(report);
+  if (reportValidation.ok !== true) {
+    return releaseClaimPacketEmitResult(false, 'blocked', reportValidation.reasons, packet, report);
+  }
+
+  return releaseClaimPacketEmitResult(true, 'accepted', [], packet, report);
+}
+// CONTOUR_12F_RELEASE_CLAIM_PACKET_EMIT_END
+
 function normalizeTargetScope(input) {
   const scope = isPlainObject(input) ? input : {};
   return {
