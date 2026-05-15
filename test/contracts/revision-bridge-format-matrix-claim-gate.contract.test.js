@@ -34,7 +34,7 @@ function validFormatMatrix() {
   };
 }
 
-function validGoldenSet() {
+function validGoldenSet(overrides = {}) {
   return {
     schemaVersion: 'revision-bridge.golden-set.v1',
     goldenSetId: 'golden-word-v1',
@@ -51,6 +51,7 @@ function validGoldenSet() {
         digest: 'sha256:fixture-word-comment',
       },
     ],
+    ...overrides,
   };
 }
 
@@ -114,6 +115,14 @@ test('Contour 12A exports format matrix claim gate contracts', async () => {
     bridge.REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_GATE_REASON_CODES.includes('REVISION_BRIDGE_GOLDEN_SET_HASH_MISMATCH'),
     true,
   );
+  assert.equal(
+    bridge.REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_GATE_REASON_CODES.includes('REVISION_BRIDGE_GOLDEN_SET_FORMAT_ID_MISMATCH'),
+    true,
+  );
+  assert.equal(
+    bridge.REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_GATE_REASON_CODES.includes('REVISION_BRIDGE_GOLDEN_SET_SURFACE_MISMATCH'),
+    true,
+  );
 });
 
 test('Contour 12A blocks when matrix row is missing', async () => {
@@ -146,6 +155,50 @@ test('Contour 12A blocks when golden set hash does not match', async () => {
   assert.equal(result.reason, 'REVISION_BRIDGE_GOLDEN_SET_HASH_MISMATCH');
   assert.equal(result.reasons.some((reason) => reason.code === 'REVISION_BRIDGE_GOLDEN_SET_HASH_MISMATCH'), true);
   assert.equal(result.binding.goldenSetHash, bridge.createRevisionBridgeGoldenSetHash(goldenSet));
+});
+
+test('Contour 12A blocks when golden set formatId does not match selected matrix row', async () => {
+  const bridge = await loadBridge();
+  const goldenSet = validGoldenSet({
+    formatId: 'google-docs',
+  });
+  const result = bridge.evaluateRevisionBridgeFormatMatrixClaimGate(validGateInput(bridge, {
+    goldenSet,
+    claim: validClaim(bridge, goldenSet),
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_GOLDEN_SET_FORMAT_ID_MISMATCH');
+  assert.deepEqual(result.reasons[0], {
+    code: 'REVISION_BRIDGE_GOLDEN_SET_FORMAT_ID_MISMATCH',
+    expectedFormatId: 'word',
+    field: 'goldenSet.formatId',
+    message: 'goldenSet formatId does not match the selected matrix row',
+    receivedFormatId: 'google-docs',
+  });
+});
+
+test('Contour 12A blocks when golden set surface does not match selected matrix row surface', async () => {
+  const bridge = await loadBridge();
+  const goldenSet = validGoldenSet({
+    surface: ['textExact', 'structuralManual'],
+  });
+  const result = bridge.evaluateRevisionBridgeFormatMatrixClaimGate(validGateInput(bridge, {
+    goldenSet,
+    claim: validClaim(bridge, goldenSet),
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_GOLDEN_SET_SURFACE_MISMATCH');
+  assert.deepEqual(result.reasons[0], {
+    code: 'REVISION_BRIDGE_GOLDEN_SET_SURFACE_MISMATCH',
+    expectedSurface: ['commentAnchor', 'textExact'],
+    field: 'goldenSet.surface',
+    message: 'goldenSet surface does not match the selected matrix row surface',
+    receivedSurface: ['structuralManual', 'textExact'],
+  });
 });
 
 test('Contour 12A blocks when required tests are missing', async () => {
