@@ -10787,6 +10787,401 @@ export function evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate(input =
 }
 // CONTOUR_12G_RELEASE_CLAIM_USER_FACING_BOUNDARY_GATE_END
 
+// CONTOUR_12H_RELEASE_CLAIM_PUBLICATION_GATE_START
+const RELEASE_CLAIM_PUBLICATION_ACCEPTED_CODE =
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_ACCEPTED';
+const RELEASE_CLAIM_PUBLICATION_BLOCKED_CODE =
+  'E_REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BLOCKED';
+const RELEASE_CLAIM_PUBLICATION_DIAGNOSTICS_CODE =
+  'E_REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_DIAGNOSTICS';
+
+export const REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_SCHEMA =
+  'revision-bridge.release-claim-publication.v1';
+export const REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REASON_CODES = Object.freeze([
+  RELEASE_CLAIM_PUBLICATION_ACCEPTED_CODE,
+  RELEASE_CLAIM_PUBLICATION_BLOCKED_CODE,
+  RELEASE_CLAIM_PUBLICATION_DIAGNOSTICS_CODE,
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_TYPE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_NOT_ACCEPTED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_PROVENANCE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_MODE_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_MODE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_MODE_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_CLAIM_SURFACE_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_CLAIM_SURFACE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_CLAIM_SURFACE_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_PR_MODE_USER_FACING_BLOCKED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_RELEASE_CLASS_USER_FACING_BLOCKED',
+  ...REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_REASON_CODES,
+]);
+
+function releaseClaimPublicationReason(code, field, details = {}) {
+  return {
+    code,
+    field,
+    ...cloneJsonSafe(details),
+  };
+}
+
+function normalizeReleaseClaimPublicationBoundaryResult(input = {}) {
+  const result = isPlainObject(input) ? input : {};
+  const binding = isPlainObject(result.binding) ? result.binding : {};
+  const summary = isPlainObject(result.summary) ? result.summary : {};
+
+  return {
+    ok: result.ok === true,
+    type: normalizeString(result.type),
+    status: normalizeString(result.status),
+    code: normalizeString(result.code),
+    reason: normalizeString(result.reason),
+    binding: {
+      mode: normalizeString(binding.mode),
+      claimId: normalizeString(binding.claimId),
+      dossierId: normalizeString(binding.dossierId),
+      matrixId: normalizeString(binding.matrixId),
+      releaseClass: normalizeString(binding.releaseClass),
+    },
+    summary: {
+      claimSurface: normalizeString(summary.claimSurface),
+      packetId: normalizeString(summary.packetId),
+      attestationId: normalizeString(summary.attestationId),
+    },
+  };
+}
+
+function collectReleaseClaimPublicationRequestReasons(requestedMode, requestedClaimSurface) {
+  const reasons = [];
+
+  if (!requestedMode) {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_MODE_REQUIRED',
+      'requestedMode',
+    ));
+  } else if (!REVISION_BRIDGE_RELEASE_CLAIM_MODE_VALUES.includes(requestedMode)) {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_MODE_INVALID',
+      'requestedMode',
+      {
+        receivedValue: requestedMode,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_MODE_VALUES),
+      },
+    ));
+  }
+
+  if (!requestedClaimSurface) {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_CLAIM_SURFACE_REQUIRED',
+      'requestedClaimSurface',
+    ));
+  } else if (!REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES.includes(requestedClaimSurface)) {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_CLAIM_SURFACE_INVALID',
+      'requestedClaimSurface',
+      {
+        receivedValue: requestedClaimSurface,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES),
+      },
+    ));
+  }
+
+  return reasons;
+}
+
+function collectReleaseClaimPublicationBoundaryReasons(boundaryResult) {
+  const reasons = [];
+
+  if (boundaryResult.type !== 'revisionBridge.releaseClaimUserFacingBoundaryGate') {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_TYPE_INVALID',
+      'boundaryResult.type',
+      {
+        expectedValue: 'revisionBridge.releaseClaimUserFacingBoundaryGate',
+        receivedValue: boundaryResult.type,
+      },
+    ));
+  }
+  if (boundaryResult.ok !== true) {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_NOT_ACCEPTED',
+      'boundaryResult.ok',
+      {
+        expectedValue: true,
+        receivedValue: boundaryResult.ok,
+      },
+    ));
+  }
+  if (boundaryResult.status !== 'accepted') {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_NOT_ACCEPTED',
+      'boundaryResult.status',
+      {
+        expectedValue: 'accepted',
+        receivedValue: boundaryResult.status,
+      },
+    ));
+  }
+  if (boundaryResult.code !== RELEASE_CLAIM_USER_FACING_BOUNDARY_ACCEPTED_CODE) {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_NOT_ACCEPTED',
+      'boundaryResult.code',
+      {
+        expectedValue: RELEASE_CLAIM_USER_FACING_BOUNDARY_ACCEPTED_CODE,
+        receivedValue: boundaryResult.code,
+      },
+    ));
+  }
+  if (boundaryResult.reason !== RELEASE_CLAIM_USER_FACING_BOUNDARY_ACCEPTED_CODE) {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_NOT_ACCEPTED',
+      'boundaryResult.reason',
+      {
+        expectedValue: RELEASE_CLAIM_USER_FACING_BOUNDARY_ACCEPTED_CODE,
+        receivedValue: boundaryResult.reason,
+      },
+    ));
+  }
+
+  const bindingPairs = [
+    { field: 'mode', value: boundaryResult.binding.mode },
+    { field: 'claimId', value: boundaryResult.binding.claimId },
+    { field: 'dossierId', value: boundaryResult.binding.dossierId },
+    { field: 'matrixId', value: boundaryResult.binding.matrixId },
+  ];
+  bindingPairs.forEach(({ field, value }) => {
+    if (!value) {
+      reasons.push(releaseClaimPublicationReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_PROVENANCE_INVALID',
+        `boundaryResult.binding.${field}`,
+      ));
+    }
+  });
+
+  if (
+    !REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_RELEASE_CLASSES.includes(
+      boundaryResult.binding.releaseClass,
+    )
+  ) {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_PROVENANCE_INVALID',
+      'boundaryResult.binding.releaseClass',
+      {
+        receivedValue: boundaryResult.binding.releaseClass,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_RELEASE_CLASSES),
+      },
+    ));
+  }
+
+  if (
+    !REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES.includes(
+      boundaryResult.summary.claimSurface,
+    )
+  ) {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_PROVENANCE_INVALID',
+      'boundaryResult.summary.claimSurface',
+      {
+        receivedValue: boundaryResult.summary.claimSurface,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES),
+      },
+    ));
+  }
+  if (!boundaryResult.summary.packetId) {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_PROVENANCE_INVALID',
+      'boundaryResult.summary.packetId',
+    ));
+  }
+  if (!boundaryResult.summary.attestationId) {
+    reasons.push(releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_PROVENANCE_INVALID',
+      'boundaryResult.summary.attestationId',
+    ));
+  }
+
+  return reasons;
+}
+
+function releaseClaimPublicationBinding(boundaryResult) {
+  return {
+    mode: normalizeString(boundaryResult?.binding?.mode),
+    claimId: normalizeString(boundaryResult?.binding?.claimId),
+    dossierId: normalizeString(boundaryResult?.binding?.dossierId),
+    matrixId: normalizeString(boundaryResult?.binding?.matrixId),
+    releaseClass: normalizeString(boundaryResult?.binding?.releaseClass),
+  };
+}
+
+function releaseClaimPublicationSummary(boundaryResult, requestedClaimSurface) {
+  return {
+    claimSurface: normalizeString(requestedClaimSurface),
+    packetId: normalizeString(boundaryResult?.summary?.packetId),
+    attestationId: normalizeString(boundaryResult?.summary?.attestationId),
+  };
+}
+
+function releaseClaimPublicationResult(
+  ok,
+  status,
+  reasons,
+  boundaryResult,
+  requestedClaimSurface,
+) {
+  const code = ok
+    ? RELEASE_CLAIM_PUBLICATION_ACCEPTED_CODE
+    : (status === 'diagnostics'
+      ? RELEASE_CLAIM_PUBLICATION_DIAGNOSTICS_CODE
+      : RELEASE_CLAIM_PUBLICATION_BLOCKED_CODE);
+  return {
+    ok,
+    type: 'revisionBridge.releaseClaimPublicationGate',
+    status,
+    code,
+    reason: ok ? RELEASE_CLAIM_PUBLICATION_ACCEPTED_CODE : reasons[0]?.code || code,
+    reasons: cloneJsonSafe(reasons),
+    binding: releaseClaimPublicationBinding(boundaryResult),
+    summary: releaseClaimPublicationSummary(boundaryResult, requestedClaimSurface),
+  };
+}
+
+export function evaluateRevisionBridgeReleaseClaimPublicationGate(input = {}) {
+  const publicationInput = isPlainObject(input) ? input : {};
+  const requestedMode = normalizeString(publicationInput.requestedMode);
+  const requestedClaimSurface = normalizeString(publicationInput.requestedClaimSurface);
+
+  const requestReasons = collectReleaseClaimPublicationRequestReasons(
+    requestedMode,
+    requestedClaimSurface,
+  );
+  if (requestReasons.length > 0) {
+    return releaseClaimPublicationResult(
+      false,
+      'diagnostics',
+      requestReasons,
+      normalizeReleaseClaimPublicationBoundaryResult(publicationInput.boundaryResult),
+      requestedClaimSurface,
+    );
+  }
+
+  if (!isPlainObject(publicationInput.boundaryResult)) {
+    return releaseClaimPublicationResult(
+      false,
+      'blocked',
+      [
+        releaseClaimPublicationReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISSING',
+          'boundaryResult',
+        ),
+      ],
+      normalizeReleaseClaimPublicationBoundaryResult(publicationInput.boundaryResult),
+      requestedClaimSurface,
+    );
+  }
+
+  const boundaryResult = normalizeReleaseClaimPublicationBoundaryResult(
+    publicationInput.boundaryResult,
+  );
+  const boundaryReasons = collectReleaseClaimPublicationBoundaryReasons(boundaryResult);
+  if (boundaryReasons.length > 0) {
+    return releaseClaimPublicationResult(
+      false,
+      'blocked',
+      boundaryReasons,
+      boundaryResult,
+      requestedClaimSurface,
+    );
+  }
+
+  if (requestedMode !== boundaryResult.binding.mode) {
+    return releaseClaimPublicationResult(
+      false,
+      'blocked',
+      [
+        releaseClaimPublicationReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_MODE_MISMATCH',
+          'requestedMode',
+          {
+            expectedValue: boundaryResult.binding.mode,
+            receivedValue: requestedMode,
+          },
+        ),
+      ],
+      boundaryResult,
+      requestedClaimSurface,
+    );
+  }
+
+  if (requestedClaimSurface !== boundaryResult.summary.claimSurface) {
+    return releaseClaimPublicationResult(
+      false,
+      'blocked',
+      [
+        releaseClaimPublicationReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_CLAIM_SURFACE_MISMATCH',
+          'requestedClaimSurface',
+          {
+            expectedValue: boundaryResult.summary.claimSurface,
+            receivedValue: requestedClaimSurface,
+          },
+        ),
+      ],
+      boundaryResult,
+      requestedClaimSurface,
+    );
+  }
+
+  if (requestedMode === 'PR_MODE' && requestedClaimSurface === 'USER_FACING') {
+    return releaseClaimPublicationResult(
+      false,
+      'blocked',
+      [
+        releaseClaimPublicationReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_PR_MODE_USER_FACING_BLOCKED',
+          'requestedClaimSurface',
+          {
+            mode: requestedMode,
+            claimSurface: requestedClaimSurface,
+          },
+        ),
+      ],
+      boundaryResult,
+      requestedClaimSurface,
+    );
+  }
+
+  if (
+    requestedMode === 'RELEASE_MODE'
+    && requestedClaimSurface === 'USER_FACING'
+    && boundaryResult.binding.releaseClass !== 'USER_FACING_CLAIM_READY'
+  ) {
+    return releaseClaimPublicationResult(
+      false,
+      'blocked',
+      [
+        releaseClaimPublicationReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_RELEASE_CLASS_USER_FACING_BLOCKED',
+          'boundaryResult.binding.releaseClass',
+          {
+            expectedValue: 'USER_FACING_CLAIM_READY',
+            receivedValue: boundaryResult.binding.releaseClass,
+          },
+        ),
+      ],
+      boundaryResult,
+      requestedClaimSurface,
+    );
+  }
+
+  return releaseClaimPublicationResult(
+    true,
+    'accepted',
+    [],
+    boundaryResult,
+    requestedClaimSurface,
+  );
+}
+// CONTOUR_12H_RELEASE_CLAIM_PUBLICATION_GATE_END
+
 function normalizeTargetScope(input) {
   const scope = isPlainObject(input) ? input : {};
   return {
