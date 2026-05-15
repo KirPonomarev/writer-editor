@@ -9159,6 +9159,513 @@ export function evaluateRevisionBridgeReleaseClaimModeDecisionGate(input = {}) {
 }
 // CONTOUR_12D_RELEASE_CLAIM_MODE_DECISION_GATE_END
 
+// CONTOUR_12E_RELEASE_CLAIM_ATTESTATION_GATE_START
+const RELEASE_CLAIM_ATTESTATION_ACCEPTED_CODE = 'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_ACCEPTED';
+const RELEASE_CLAIM_ATTESTATION_BLOCKED_CODE = 'E_REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_BLOCKED';
+const RELEASE_CLAIM_ATTESTATION_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_DIAGNOSTICS';
+
+export const REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_SCHEMA =
+  'revision-bridge.release-claim-attestation.v1';
+export const REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MINIMUM_FIELDS = Object.freeze([
+  'attestationId',
+  'attestationSchema',
+  'inputHash',
+  'outputHash',
+  'commandRunDigest',
+  'decisionHash',
+  'evidenceHash',
+]);
+export const REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_RELEASE_REQUIRED_FIELDS = Object.freeze([
+  'executedCommands',
+  'artifactHashes',
+  'releaseEvidenceId',
+  'releaseEvidenceHash',
+]);
+export const REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_REASON_CODES = Object.freeze([
+  RELEASE_CLAIM_ATTESTATION_ACCEPTED_CODE,
+  RELEASE_CLAIM_ATTESTATION_BLOCKED_CODE,
+  RELEASE_CLAIM_ATTESTATION_DIAGNOSTICS_CODE,
+  'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MINIMUM_FIELDS_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_RELEASE_FIELDS_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_DECISION_HASH_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_COMMAND_RUN_DIGEST_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_EVIDENCE_HASH_MISMATCH',
+  ...REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_REASON_CODES,
+]);
+
+function releaseClaimAttestationReason(code, field, message, details = {}) {
+  return {
+    code,
+    field,
+    message,
+    ...cloneJsonSafe(details),
+  };
+}
+
+function normalizeReleaseClaimAttestationDigestValue(value) {
+  if (value === null) return null;
+  if (typeof value === 'string') return normalizeString(value);
+  if (typeof value === 'number') return normalizeNumber(value);
+  if (typeof value === 'boolean') return normalizeBoolean(value);
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => normalizeReleaseClaimAttestationDigestValue(item))
+      .filter((item) => item !== undefined);
+  }
+  if (isPlainObject(value)) {
+    const normalized = {};
+    for (const key of Object.keys(value).sort()) {
+      const normalizedValue = normalizeReleaseClaimAttestationDigestValue(value[key]);
+      if (normalizedValue !== undefined) normalized[key] = normalizedValue;
+    }
+    return normalized;
+  }
+  return undefined;
+}
+
+function normalizeReleaseClaimAttestationCollection(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((entry) => normalizeReleaseClaimAttestationDigestValue(entry))
+    .filter((entry) => {
+      if (entry === undefined || entry === null) return false;
+      if (typeof entry === 'string') return Boolean(entry);
+      return true;
+    });
+}
+
+function normalizeReleaseClaimAttestationModeDecisionResult(input = {}) {
+  const result = isPlainObject(input) ? input : {};
+  const binding = isPlainObject(result.binding) ? result.binding : {};
+  const decision = isPlainObject(result.decision) ? result.decision : {};
+  return {
+    ok: result.ok === true,
+    type: normalizeString(result.type),
+    status: normalizeString(result.status),
+    code: normalizeString(result.code),
+    reason: normalizeString(result.reason),
+    decision: cloneJsonSafe(decision),
+    binding: {
+      mode: normalizeString(binding.mode || decision.mode),
+      claimId: normalizeString(binding.claimId || decision.claimId),
+      dossierId: normalizeString(binding.dossierId || decision.dossierId),
+      matrixId: normalizeString(binding.matrixId || decision.matrixId),
+      dossierStatus: normalizeString(binding.dossierStatus),
+      admissionStatus: normalizeString(binding.admissionStatus),
+      baselineDebtFlag: binding.baselineDebtFlag === true,
+    },
+    summary: cloneJsonSafe(result.summary),
+    reasons: Array.isArray(result.reasons) ? cloneJsonSafe(result.reasons) : [],
+    dossierResult: isPlainObject(result.dossierResult) ? cloneJsonSafe(result.dossierResult) : {},
+    admissionResult: isPlainObject(result.admissionResult) ? cloneJsonSafe(result.admissionResult) : {},
+  };
+}
+
+export function createRevisionBridgeReleaseClaimModeDecisionHash(input = {}) {
+  return revisionBlockHash(normalizeReleaseClaimAttestationModeDecisionResult(input));
+}
+
+export function createRevisionBridgeReleaseClaimCommandRunDigest(input = []) {
+  return revisionBlockHash(normalizeReleaseClaimAttestationCollection(input));
+}
+
+export function createRevisionBridgeReleaseClaimEvidenceHash(input = []) {
+  return revisionBlockHash(normalizeReleaseClaimAttestationCollection(input));
+}
+
+function normalizeReleaseClaimAttestationInput(input = {}) {
+  const attestation = isPlainObject(input) ? input : {};
+  return {
+    schemaVersion: normalizeString(attestation.schemaVersion),
+    mode: normalizeString(attestation.mode),
+    attestationId: normalizeString(attestation.attestationId),
+    attestationSchema: normalizeString(attestation.attestationSchema),
+    inputHash: normalizeString(attestation.inputHash),
+    outputHash: normalizeString(attestation.outputHash),
+    commandRunDigest: normalizeString(attestation.commandRunDigest),
+    decisionHash: normalizeString(attestation.decisionHash),
+    evidenceHash: normalizeString(attestation.evidenceHash),
+    executedCommands: normalizeReleaseClaimAttestationCollection(attestation.executedCommands),
+    artifactHashes: normalizeReleaseClaimAttestationCollection(attestation.artifactHashes),
+    releaseEvidenceId: normalizeString(attestation.releaseEvidenceId),
+    releaseEvidenceHash: normalizeString(attestation.releaseEvidenceHash),
+    modeDecisionResult: normalizeReleaseClaimAttestationModeDecisionResult(attestation.modeDecisionResult),
+  };
+}
+
+function collectReleaseClaimAttestationReasons(input, attestation) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_REQUIRED',
+      'attestation',
+      'attestation payload must be an object',
+    ));
+    return reasons;
+  }
+  if (attestation.schemaVersion !== REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_SCHEMA) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_INVALID',
+      'attestation.schemaVersion',
+      'attestation schemaVersion is not supported',
+    ));
+  }
+  if (!attestation.mode) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_REQUIRED',
+      'attestation.mode',
+      'attestation mode is required',
+    ));
+  } else if (!REVISION_BRIDGE_RELEASE_CLAIM_MODE_VALUES.includes(attestation.mode)) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_INVALID',
+      'attestation.mode',
+      'attestation mode must be one of PR_MODE or RELEASE_MODE',
+      { mode: attestation.mode },
+    ));
+  }
+  return reasons;
+}
+
+function collectReleaseClaimAttestationModeDecisionProvenanceReasons(attestation, modeDecisionResult) {
+  const reasons = [];
+  const binding = isPlainObject(modeDecisionResult?.binding) ? modeDecisionResult.binding : {};
+  const decision = isPlainObject(modeDecisionResult?.decision) ? modeDecisionResult.decision : {};
+
+  if (normalizeString(modeDecisionResult?.type) !== 'revisionBridge.releaseClaimModeDecisionGate') {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.type',
+      'mode decision result type must prove releaseClaimModeDecisionGate provenance',
+    ));
+  }
+  if (modeDecisionResult?.ok !== true) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.ok',
+      'mode decision result ok must be true',
+    ));
+  }
+  if (normalizeString(modeDecisionResult?.status) !== 'accepted') {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.status',
+      'mode decision result status must be accepted',
+    ));
+  }
+  if (normalizeString(modeDecisionResult?.code) !== RELEASE_CLAIM_MODE_DECISION_ACCEPTED_CODE) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.code',
+      'mode decision result code must prove accepted mode decision provenance',
+    ));
+  }
+  if (normalizeString(modeDecisionResult?.reason) !== RELEASE_CLAIM_MODE_DECISION_ACCEPTED_CODE) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.reason',
+      'mode decision result reason must prove accepted mode decision provenance',
+    ));
+  }
+
+  const bindingMode = normalizeString(binding.mode || decision.mode);
+  if (!bindingMode) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.binding.mode',
+      'mode decision provenance must bind mode',
+    ));
+  } else if (bindingMode !== attestation.mode) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.binding.mode',
+      'mode decision binding mode must match attestation mode',
+      { expectedMode: attestation.mode, receivedMode: bindingMode },
+    ));
+  }
+
+  if (!normalizeString(binding.claimId || decision.claimId)) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.binding.claimId',
+      'mode decision provenance must bind claimId',
+    ));
+  }
+  if (!normalizeString(binding.dossierId || decision.dossierId)) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.binding.dossierId',
+      'mode decision provenance must bind dossierId',
+    ));
+  }
+  if (!normalizeString(binding.matrixId || decision.matrixId)) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.binding.matrixId',
+      'mode decision provenance must bind matrixId',
+    ));
+  }
+  if (normalizeString(binding.dossierStatus) !== 'accepted') {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.binding.dossierStatus',
+      'mode decision provenance must retain accepted dossier status',
+    ));
+  }
+  if (normalizeString(binding.admissionStatus) !== 'accepted') {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.binding.admissionStatus',
+      'mode decision provenance must retain accepted admission status',
+    ));
+  }
+
+  return reasons;
+}
+
+function collectReleaseClaimAttestationMinimumMissingFields(attestation) {
+  return REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MINIMUM_FIELDS.filter(
+    (fieldName) => !normalizeString(attestation[fieldName]),
+  );
+}
+
+function collectReleaseClaimAttestationReleaseMissingFields(attestation) {
+  const missingFields = [];
+  if (attestation.executedCommands.length === 0) missingFields.push('executedCommands');
+  if (attestation.artifactHashes.length === 0) missingFields.push('artifactHashes');
+  if (!attestation.releaseEvidenceId) missingFields.push('releaseEvidenceId');
+  if (!attestation.releaseEvidenceHash) missingFields.push('releaseEvidenceHash');
+  return missingFields;
+}
+
+function releaseClaimAttestationBinding(attestation, modeDecisionResult) {
+  const binding = isPlainObject(modeDecisionResult?.binding) ? modeDecisionResult.binding : {};
+  const decision = isPlainObject(modeDecisionResult?.decision) ? modeDecisionResult.decision : {};
+  return {
+    mode: attestation.mode || normalizeString(binding.mode || decision.mode),
+    claimId: normalizeString(binding.claimId || decision.claimId),
+    dossierId: normalizeString(binding.dossierId || decision.dossierId),
+    matrixId: normalizeString(binding.matrixId || decision.matrixId),
+    attestationId: attestation.attestationId,
+  };
+}
+
+function releaseClaimAttestationSummary(attestation, modeDecisionResult, minimumMissingFields = [], releaseMissingFields = []) {
+  return {
+    mode: attestation.mode,
+    minimumRequiredFields: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MINIMUM_FIELDS),
+    missingMinimumFields: cloneJsonSafe(minimumMissingFields),
+    releaseRequiredFields: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_RELEASE_REQUIRED_FIELDS),
+    missingReleaseFields: cloneJsonSafe(releaseMissingFields),
+    expectedDecisionHash: createRevisionBridgeReleaseClaimModeDecisionHash(modeDecisionResult),
+    expectedCommandRunDigest: createRevisionBridgeReleaseClaimCommandRunDigest(attestation.executedCommands),
+    expectedEvidenceHash: createRevisionBridgeReleaseClaimEvidenceHash(attestation.artifactHashes),
+    modeDecisionGate: {
+      status: normalizeString(modeDecisionResult?.status),
+      code: normalizeString(modeDecisionResult?.code),
+      reason: normalizeString(modeDecisionResult?.reason),
+    },
+  };
+}
+
+function releaseClaimAttestationResult(
+  ok,
+  status,
+  reasons,
+  attestation,
+  modeDecisionResult,
+  minimumMissingFields = [],
+  releaseMissingFields = [],
+) {
+  const code = ok
+    ? RELEASE_CLAIM_ATTESTATION_ACCEPTED_CODE
+    : (status === 'diagnostics'
+      ? RELEASE_CLAIM_ATTESTATION_DIAGNOSTICS_CODE
+      : RELEASE_CLAIM_ATTESTATION_BLOCKED_CODE);
+  return {
+    ok,
+    type: 'revisionBridge.releaseClaimAttestationGate',
+    status,
+    code,
+    reason: ok ? RELEASE_CLAIM_ATTESTATION_ACCEPTED_CODE : reasons[0]?.code || code,
+    reasons: cloneJsonSafe(reasons),
+    attestation: cloneJsonSafe(attestation),
+    modeDecisionResult: cloneJsonSafe(modeDecisionResult),
+    binding: releaseClaimAttestationBinding(attestation, modeDecisionResult),
+    summary: releaseClaimAttestationSummary(
+      attestation,
+      modeDecisionResult,
+      minimumMissingFields,
+      releaseMissingFields,
+    ),
+  };
+}
+
+export function evaluateRevisionBridgeReleaseClaimAttestationGate(input = {}) {
+  const attestation = normalizeReleaseClaimAttestationInput(input);
+  const attestationReasons = collectReleaseClaimAttestationReasons(input, attestation);
+
+  if (attestationReasons.length > 0) {
+    return releaseClaimAttestationResult(
+      false,
+      'diagnostics',
+      attestationReasons,
+      attestation,
+      attestation.modeDecisionResult,
+    );
+  }
+
+  if (!isPlainObject(input.modeDecisionResult)) {
+    return releaseClaimAttestationResult(
+      false,
+      'blocked',
+      [
+        releaseClaimAttestationReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_MISSING',
+          'modeDecisionResult',
+          'attestation payload must include modeDecisionResult',
+        ),
+      ],
+      attestation,
+      attestation.modeDecisionResult,
+    );
+  }
+
+  const modeDecisionResult = normalizeReleaseClaimAttestationModeDecisionResult(input.modeDecisionResult);
+  const provenanceReasons = collectReleaseClaimAttestationModeDecisionProvenanceReasons(
+    attestation,
+    modeDecisionResult,
+  );
+  if (provenanceReasons.length > 0) {
+    return releaseClaimAttestationResult(
+      false,
+      'blocked',
+      provenanceReasons,
+      attestation,
+      modeDecisionResult,
+    );
+  }
+
+  const minimumMissingFields = collectReleaseClaimAttestationMinimumMissingFields(attestation);
+  if (minimumMissingFields.length > 0) {
+    return releaseClaimAttestationResult(
+      false,
+      'blocked',
+      [
+        releaseClaimAttestationReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MINIMUM_FIELDS_MISSING',
+          'attestation',
+          'attestation envelope is missing minimum required fields',
+          { missingMinimumFields: minimumMissingFields },
+        ),
+      ],
+      attestation,
+      modeDecisionResult,
+      minimumMissingFields,
+    );
+  }
+
+  if (attestation.mode === 'RELEASE_MODE') {
+    const releaseMissingFields = collectReleaseClaimAttestationReleaseMissingFields(attestation);
+    if (releaseMissingFields.length > 0) {
+      return releaseClaimAttestationResult(
+        false,
+        'blocked',
+        [
+          releaseClaimAttestationReason(
+            'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_RELEASE_FIELDS_MISSING',
+            'attestation',
+            'release mode requires non-empty attestation release fields',
+            { missingReleaseFields: releaseMissingFields },
+          ),
+        ],
+        attestation,
+        modeDecisionResult,
+        [],
+        releaseMissingFields,
+      );
+    }
+  }
+
+  const expectedDecisionHash = createRevisionBridgeReleaseClaimModeDecisionHash(modeDecisionResult);
+  if (attestation.decisionHash !== expectedDecisionHash) {
+    return releaseClaimAttestationResult(
+      false,
+      'blocked',
+      [
+        releaseClaimAttestationReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_DECISION_HASH_MISMATCH',
+          'attestation.decisionHash',
+          'decisionHash must match normalized accepted mode decision result',
+          {
+            expectedDecisionHash,
+            receivedDecisionHash: attestation.decisionHash,
+          },
+        ),
+      ],
+      attestation,
+      modeDecisionResult,
+    );
+  }
+
+  const expectedCommandRunDigest = createRevisionBridgeReleaseClaimCommandRunDigest(attestation.executedCommands);
+  if (attestation.commandRunDigest !== expectedCommandRunDigest) {
+    return releaseClaimAttestationResult(
+      false,
+      'blocked',
+      [
+        releaseClaimAttestationReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_COMMAND_RUN_DIGEST_MISMATCH',
+          'attestation.commandRunDigest',
+          'commandRunDigest must match normalized executedCommands digest',
+          {
+            expectedCommandRunDigest,
+            receivedCommandRunDigest: attestation.commandRunDigest,
+          },
+        ),
+      ],
+      attestation,
+      modeDecisionResult,
+    );
+  }
+
+  const expectedEvidenceHash = createRevisionBridgeReleaseClaimEvidenceHash(attestation.artifactHashes);
+  if (attestation.evidenceHash !== expectedEvidenceHash) {
+    return releaseClaimAttestationResult(
+      false,
+      'blocked',
+      [
+        releaseClaimAttestationReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_EVIDENCE_HASH_MISMATCH',
+          'attestation.evidenceHash',
+          'evidenceHash must match normalized artifactHashes digest',
+          {
+            expectedEvidenceHash,
+            receivedEvidenceHash: attestation.evidenceHash,
+          },
+        ),
+      ],
+      attestation,
+      modeDecisionResult,
+    );
+  }
+
+  return releaseClaimAttestationResult(
+    true,
+    'accepted',
+    [],
+    attestation,
+    modeDecisionResult,
+  );
+}
+// CONTOUR_12E_RELEASE_CLAIM_ATTESTATION_GATE_END
+
 function normalizeTargetScope(input) {
   const scope = isPlainObject(input) ? input : {};
   return {
