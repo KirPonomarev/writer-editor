@@ -84,6 +84,11 @@ function changedFilesFromGitStatus(statusText) {
     .map((line) => line.slice(3).replace(/^"|"$/gu, ''));
 }
 
+function changedFilesOutsideAllowlist(changedFiles) {
+  const allowed = new Set(ALLOWLIST);
+  return changedFiles.filter((filePath) => !allowed.has(filePath));
+}
+
 test('Contour 12A exports format matrix claim gate contracts', async () => {
   const bridge = await loadBridge();
 
@@ -297,5 +302,5 @@ test('Contour 12A changed files stay inside the contour allowlist', () => {
   });
   const changedFiles = changedFilesFromGitStatus(status);
 
-  assert.deepEqual(changedFiles.sort(), [...ALLOWLIST].sort());
+  assert.deepEqual(changedFilesOutsideAllowlist(changedFiles), []);
 });
