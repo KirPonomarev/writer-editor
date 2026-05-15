@@ -11588,6 +11588,481 @@ export function evaluateRevisionBridgeReleaseClaimKernelFence(input = {}) {
 }
 // CONTOUR_12I_RELEASE_CLAIM_KERNEL_FENCE_END
 
+// CONTOUR_12J_RELEASE_CLAIM_COMMAND_ADMISSION_START
+const RELEASE_CLAIM_COMMAND_ADMISSION_ACCEPTED_CODE =
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_ACCEPTED';
+const RELEASE_CLAIM_COMMAND_ADMISSION_BLOCKED_CODE =
+  'E_REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BLOCKED';
+const RELEASE_CLAIM_COMMAND_ADMISSION_DIAGNOSTICS_CODE =
+  'E_REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_DIAGNOSTICS';
+
+export const REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_SCHEMA =
+  'revision-bridge.release-claim-command-admission.v1';
+export const REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REASON_CODES = Object.freeze([
+  RELEASE_CLAIM_COMMAND_ADMISSION_ACCEPTED_CODE,
+  RELEASE_CLAIM_COMMAND_ADMISSION_BLOCKED_CODE,
+  RELEASE_CLAIM_COMMAND_ADMISSION_DIAGNOSTICS_CODE,
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_COMMAND_ID_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_COMMAND_ID_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_TYPE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_NOT_ACCEPTED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_PROVENANCE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REQUESTED_MODE_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REQUESTED_MODE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REQUESTED_MODE_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REQUESTED_CLAIM_SURFACE_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REQUESTED_CLAIM_SURFACE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REQUESTED_CLAIM_SURFACE_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_PR_MODE_USER_FACING_BLOCKED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_RELEASE_CLASS_USER_FACING_BLOCKED',
+  ...REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REASON_CODES,
+]);
+
+function releaseClaimCommandAdmissionReason(code, field, details = {}) {
+  return {
+    code,
+    field,
+    ...cloneJsonSafe(details),
+  };
+}
+
+function normalizeReleaseClaimCommandAdmissionKernelFenceResult(input = {}) {
+  const result = isPlainObject(input) ? input : {};
+  const binding = isPlainObject(result.binding) ? result.binding : {};
+  const summary = isPlainObject(result.summary) ? result.summary : {};
+
+  return {
+    ok: result.ok === true,
+    type: normalizeString(result.type),
+    status: normalizeString(result.status),
+    code: normalizeString(result.code),
+    reason: normalizeString(result.reason),
+    binding: {
+      mode: normalizeString(binding.mode),
+      claimId: normalizeString(binding.claimId),
+      dossierId: normalizeString(binding.dossierId),
+      matrixId: normalizeString(binding.matrixId),
+      releaseClass: normalizeString(binding.releaseClass),
+    },
+    summary: {
+      claimSurface: normalizeString(summary.claimSurface),
+      packetId: normalizeString(summary.packetId),
+      attestationId: normalizeString(summary.attestationId),
+      admissionClass: normalizeString(summary.admissionClass),
+    },
+  };
+}
+
+function collectReleaseClaimCommandAdmissionRequestReasons(requestedMode, requestedClaimSurface) {
+  const reasons = [];
+
+  if (!requestedMode) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REQUESTED_MODE_REQUIRED',
+      'requestedMode',
+    ));
+  } else if (!REVISION_BRIDGE_RELEASE_CLAIM_MODE_VALUES.includes(requestedMode)) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REQUESTED_MODE_INVALID',
+      'requestedMode',
+      {
+        receivedValue: requestedMode,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_MODE_VALUES),
+      },
+    ));
+  }
+
+  if (!requestedClaimSurface) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REQUESTED_CLAIM_SURFACE_REQUIRED',
+      'requestedClaimSurface',
+    ));
+  } else if (!REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES.includes(requestedClaimSurface)) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REQUESTED_CLAIM_SURFACE_INVALID',
+      'requestedClaimSurface',
+      {
+        receivedValue: requestedClaimSurface,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES),
+      },
+    ));
+  }
+
+  return reasons;
+}
+
+function collectReleaseClaimCommandAdmissionCommandReasons(commandInput, commandId) {
+  if (!hasOwnField(commandInput, 'commandId')) {
+    return [
+      releaseClaimCommandAdmissionReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_COMMAND_ID_REQUIRED',
+        'commandId',
+      ),
+    ];
+  }
+
+  if (!commandId) {
+    return [
+      releaseClaimCommandAdmissionReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_COMMAND_ID_INVALID',
+        'commandId',
+        {
+          receivedValue: cloneJsonSafe(commandInput.commandId),
+        },
+      ),
+    ];
+  }
+
+  return [];
+}
+
+function deriveReleaseClaimCommandAdmissionClass(kernelFenceResult) {
+  return deriveReleaseClaimKernelFenceAdmissionClass(kernelFenceResult);
+}
+
+function collectReleaseClaimCommandAdmissionKernelFenceReasons(kernelFenceResult) {
+  const reasons = [];
+
+  if (kernelFenceResult.type !== 'revisionBridge.releaseClaimKernelFence') {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_TYPE_INVALID',
+      'kernelFenceResult.type',
+      {
+        expectedValue: 'revisionBridge.releaseClaimKernelFence',
+        receivedValue: kernelFenceResult.type,
+      },
+    ));
+  }
+  if (kernelFenceResult.ok !== true) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_NOT_ACCEPTED',
+      'kernelFenceResult.ok',
+      {
+        expectedValue: true,
+        receivedValue: kernelFenceResult.ok,
+      },
+    ));
+  }
+  if (kernelFenceResult.status !== 'accepted') {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_NOT_ACCEPTED',
+      'kernelFenceResult.status',
+      {
+        expectedValue: 'accepted',
+        receivedValue: kernelFenceResult.status,
+      },
+    ));
+  }
+  if (kernelFenceResult.code !== RELEASE_CLAIM_KERNEL_FENCE_ACCEPTED_CODE) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_NOT_ACCEPTED',
+      'kernelFenceResult.code',
+      {
+        expectedValue: RELEASE_CLAIM_KERNEL_FENCE_ACCEPTED_CODE,
+        receivedValue: kernelFenceResult.code,
+      },
+    ));
+  }
+  if (kernelFenceResult.reason !== RELEASE_CLAIM_KERNEL_FENCE_ACCEPTED_CODE) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_NOT_ACCEPTED',
+      'kernelFenceResult.reason',
+      {
+        expectedValue: RELEASE_CLAIM_KERNEL_FENCE_ACCEPTED_CODE,
+        receivedValue: kernelFenceResult.reason,
+      },
+    ));
+  }
+
+  const bindingPairs = [
+    { field: 'mode', value: kernelFenceResult.binding.mode },
+    { field: 'claimId', value: kernelFenceResult.binding.claimId },
+    { field: 'dossierId', value: kernelFenceResult.binding.dossierId },
+    { field: 'matrixId', value: kernelFenceResult.binding.matrixId },
+  ];
+  bindingPairs.forEach(({ field, value }) => {
+    if (!value) {
+      reasons.push(releaseClaimCommandAdmissionReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_PROVENANCE_INVALID',
+        `kernelFenceResult.binding.${field}`,
+      ));
+    }
+  });
+
+  if (
+    !REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_RELEASE_CLASSES.includes(
+      kernelFenceResult.binding.releaseClass,
+    )
+  ) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_PROVENANCE_INVALID',
+      'kernelFenceResult.binding.releaseClass',
+      {
+        receivedValue: kernelFenceResult.binding.releaseClass,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_RELEASE_CLASSES),
+      },
+    ));
+  }
+
+  if (
+    !REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES.includes(
+      kernelFenceResult.summary.claimSurface,
+    )
+  ) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_PROVENANCE_INVALID',
+      'kernelFenceResult.summary.claimSurface',
+      {
+        receivedValue: kernelFenceResult.summary.claimSurface,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES),
+      },
+    ));
+  }
+  if (!kernelFenceResult.summary.packetId) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_PROVENANCE_INVALID',
+      'kernelFenceResult.summary.packetId',
+    ));
+  }
+  if (!kernelFenceResult.summary.attestationId) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_PROVENANCE_INVALID',
+      'kernelFenceResult.summary.attestationId',
+    ));
+  }
+
+  const derivedAdmissionClass = deriveReleaseClaimCommandAdmissionClass(kernelFenceResult);
+  if (!kernelFenceResult.summary.admissionClass) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_PROVENANCE_INVALID',
+      'kernelFenceResult.summary.admissionClass',
+    ));
+  } else if (
+    !['INTERNAL', 'USER_FACING'].includes(kernelFenceResult.summary.admissionClass)
+    || kernelFenceResult.summary.admissionClass !== derivedAdmissionClass
+  ) {
+    reasons.push(releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_PROVENANCE_INVALID',
+      'kernelFenceResult.summary.admissionClass',
+      {
+        expectedValue: derivedAdmissionClass,
+        receivedValue: kernelFenceResult.summary.admissionClass,
+      },
+    ));
+  }
+
+  return reasons;
+}
+
+function releaseClaimCommandAdmissionBinding(kernelFenceResult) {
+  return {
+    mode: normalizeString(kernelFenceResult?.binding?.mode),
+    claimId: normalizeString(kernelFenceResult?.binding?.claimId),
+    dossierId: normalizeString(kernelFenceResult?.binding?.dossierId),
+    matrixId: normalizeString(kernelFenceResult?.binding?.matrixId),
+    releaseClass: normalizeString(kernelFenceResult?.binding?.releaseClass),
+  };
+}
+
+function releaseClaimCommandAdmissionSummary(kernelFenceResult, requestedClaimSurface, commandId) {
+  return {
+    claimSurface: normalizeString(requestedClaimSurface),
+    packetId: normalizeString(kernelFenceResult?.summary?.packetId),
+    attestationId: normalizeString(kernelFenceResult?.summary?.attestationId),
+    commandId: normalizeString(commandId),
+    admissionClass: deriveReleaseClaimCommandAdmissionClass(kernelFenceResult),
+  };
+}
+
+function releaseClaimCommandAdmissionResult(
+  ok,
+  status,
+  reasons,
+  kernelFenceResult,
+  requestedClaimSurface,
+  commandId,
+) {
+  const code = ok
+    ? RELEASE_CLAIM_COMMAND_ADMISSION_ACCEPTED_CODE
+    : (status === 'diagnostics'
+      ? RELEASE_CLAIM_COMMAND_ADMISSION_DIAGNOSTICS_CODE
+      : RELEASE_CLAIM_COMMAND_ADMISSION_BLOCKED_CODE);
+  return {
+    ok,
+    type: 'revisionBridge.releaseClaimCommandAdmission',
+    status,
+    code,
+    reason: ok ? RELEASE_CLAIM_COMMAND_ADMISSION_ACCEPTED_CODE : reasons[0]?.code || code,
+    reasons: cloneJsonSafe(reasons),
+    binding: releaseClaimCommandAdmissionBinding(kernelFenceResult),
+    summary: releaseClaimCommandAdmissionSummary(
+      kernelFenceResult,
+      requestedClaimSurface,
+      commandId,
+    ),
+  };
+}
+
+export function evaluateRevisionBridgeReleaseClaimCommandAdmission(input = {}) {
+  const commandInput = isPlainObject(input) ? input : {};
+  const requestedMode = normalizeString(commandInput.requestedMode);
+  const requestedClaimSurface = normalizeString(commandInput.requestedClaimSurface);
+
+  const requestReasons = collectReleaseClaimCommandAdmissionRequestReasons(
+    requestedMode,
+    requestedClaimSurface,
+  );
+  if (requestReasons.length > 0) {
+    return releaseClaimCommandAdmissionResult(
+      false,
+      'diagnostics',
+      requestReasons,
+      normalizeReleaseClaimCommandAdmissionKernelFenceResult(commandInput.kernelFenceResult),
+      requestedClaimSurface,
+      normalizeString(commandInput.commandId),
+    );
+  }
+
+  const commandId = normalizeString(commandInput.commandId);
+  const commandReasons = collectReleaseClaimCommandAdmissionCommandReasons(commandInput, commandId);
+  if (commandReasons.length > 0) {
+    return releaseClaimCommandAdmissionResult(
+      false,
+      'blocked',
+      commandReasons,
+      normalizeReleaseClaimCommandAdmissionKernelFenceResult(commandInput.kernelFenceResult),
+      requestedClaimSurface,
+      commandId,
+    );
+  }
+
+  if (!isPlainObject(commandInput.kernelFenceResult)) {
+    return releaseClaimCommandAdmissionResult(
+      false,
+      'blocked',
+      [
+        releaseClaimCommandAdmissionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISSING',
+          'kernelFenceResult',
+        ),
+      ],
+      normalizeReleaseClaimCommandAdmissionKernelFenceResult(commandInput.kernelFenceResult),
+      requestedClaimSurface,
+      commandId,
+    );
+  }
+
+  const kernelFenceResult = normalizeReleaseClaimCommandAdmissionKernelFenceResult(
+    commandInput.kernelFenceResult,
+  );
+  const kernelFenceReasons = collectReleaseClaimCommandAdmissionKernelFenceReasons(kernelFenceResult);
+  if (kernelFenceReasons.length > 0) {
+    return releaseClaimCommandAdmissionResult(
+      false,
+      'blocked',
+      kernelFenceReasons,
+      kernelFenceResult,
+      requestedClaimSurface,
+      commandId,
+    );
+  }
+
+  if (requestedMode !== kernelFenceResult.binding.mode) {
+    return releaseClaimCommandAdmissionResult(
+      false,
+      'blocked',
+      [
+        releaseClaimCommandAdmissionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REQUESTED_MODE_MISMATCH',
+          'requestedMode',
+          {
+            expectedValue: kernelFenceResult.binding.mode,
+            receivedValue: requestedMode,
+          },
+        ),
+      ],
+      kernelFenceResult,
+      requestedClaimSurface,
+      commandId,
+    );
+  }
+
+  if (requestedClaimSurface !== kernelFenceResult.summary.claimSurface) {
+    return releaseClaimCommandAdmissionResult(
+      false,
+      'blocked',
+      [
+        releaseClaimCommandAdmissionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REQUESTED_CLAIM_SURFACE_MISMATCH',
+          'requestedClaimSurface',
+          {
+            expectedValue: kernelFenceResult.summary.claimSurface,
+            receivedValue: requestedClaimSurface,
+          },
+        ),
+      ],
+      kernelFenceResult,
+      requestedClaimSurface,
+      commandId,
+    );
+  }
+
+  if (requestedMode === 'PR_MODE' && requestedClaimSurface === 'USER_FACING') {
+    return releaseClaimCommandAdmissionResult(
+      false,
+      'blocked',
+      [
+        releaseClaimCommandAdmissionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_PR_MODE_USER_FACING_BLOCKED',
+          'requestedClaimSurface',
+          {
+            mode: requestedMode,
+            claimSurface: requestedClaimSurface,
+          },
+        ),
+      ],
+      kernelFenceResult,
+      requestedClaimSurface,
+      commandId,
+    );
+  }
+
+  if (
+    requestedMode === 'RELEASE_MODE'
+    && requestedClaimSurface === 'USER_FACING'
+    && kernelFenceResult.binding.releaseClass !== 'USER_FACING_CLAIM_READY'
+  ) {
+    return releaseClaimCommandAdmissionResult(
+      false,
+      'blocked',
+      [
+        releaseClaimCommandAdmissionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_RELEASE_CLASS_USER_FACING_BLOCKED',
+          'kernelFenceResult.binding.releaseClass',
+          {
+            expectedValue: 'USER_FACING_CLAIM_READY',
+            receivedValue: kernelFenceResult.binding.releaseClass,
+          },
+        ),
+      ],
+      kernelFenceResult,
+      requestedClaimSurface,
+      commandId,
+    );
+  }
+
+  return releaseClaimCommandAdmissionResult(
+    true,
+    'accepted',
+    [],
+    kernelFenceResult,
+    requestedClaimSurface,
+    commandId,
+  );
+}
+// CONTOUR_12J_RELEASE_CLAIM_COMMAND_ADMISSION_END
+
 function normalizeTargetScope(input) {
   const scope = isPlainObject(input) ? input : {};
   return {
