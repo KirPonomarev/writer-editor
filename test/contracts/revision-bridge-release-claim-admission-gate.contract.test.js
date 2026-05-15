@@ -161,6 +161,12 @@ test('Contour 12C exports release claim admission schema and evaluator', async (
     ),
     true,
   );
+  assert.equal(
+    bridge.REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_REASON_CODES.includes(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+    ),
+    true,
+  );
 });
 
 test('Contour 12C blocks when dossier payload is missing', async () => {
@@ -197,6 +203,71 @@ test('Contour 12C blocks when dossier status is blocked', async () => {
   assert.equal(result.status, 'blocked');
   assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_BLOCKED');
   assert.equal(result.reasons[0].dossierStatus, 'blocked');
+});
+
+test('Contour 12C blocks synthetic accepted dossier payloads without 12B provenance', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimAdmissionGate(
+    validAdmission(),
+    validDossierPayload(bridge, {
+      dossierResult: {
+        status: 'accepted',
+        binding: {
+          dossierId: '',
+          itemIds: [],
+        },
+        itemEvaluations: [],
+      },
+    }),
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID');
+  assert.equal(
+    result.reasons.some((reason) => reason.field === 'dossierResult.type'),
+    true,
+  );
+  assert.equal(
+    result.reasons.some((reason) => reason.field === 'dossierResult.binding.itemIds'),
+    true,
+  );
+});
+
+test('Contour 12C blocks malformed dossier item evaluations even when dossier status says accepted', async () => {
+  const bridge = await loadBridge();
+  const dossierResult = acceptedDossierResult(bridge);
+  const malformedItemEvaluations = deepClone(dossierResult.itemEvaluations);
+  malformedItemEvaluations[0].ok = false;
+  malformedItemEvaluations[0].status = 'blocked';
+  malformedItemEvaluations[0].type = 'syntheticGate';
+  malformedItemEvaluations[0].code = 'SYNTHETIC_ACCEPTED';
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimAdmissionGate(
+    validAdmission(),
+    validDossierPayload(bridge, {
+      dossierResult: {
+        ...deepClone(dossierResult),
+        itemEvaluations: malformedItemEvaluations,
+      },
+    }),
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID');
+  assert.equal(
+    result.reasons.some((reason) => reason.field === 'dossierResult.itemEvaluations.0.ok'),
+    true,
+  );
+  assert.equal(
+    result.reasons.some((reason) => reason.field === 'dossierResult.itemEvaluations.0.type'),
+    true,
+  );
+  assert.equal(
+    result.reasons.some((reason) => reason.field === 'dossierResult.itemEvaluations.0.code'),
+    true,
+  );
 });
 
 test('Contour 12C blocks when claim scope is not covered by dossier scope', async () => {
