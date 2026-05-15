@@ -178,6 +178,12 @@ test('Contour 12B exports release claim dossier contracts and evaluator', async 
   );
   assert.equal(
     bridge.REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_GATE_REASON_CODES.includes(
+      'REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_ITEM_ID_DUPLICATE',
+    ),
+    true,
+  );
+  assert.equal(
+    bridge.REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_GATE_REASON_CODES.includes(
       'REVISION_BRIDGE_FORMAT_MATRIX_ROW_MISSING',
     ),
     true,
@@ -220,6 +226,28 @@ test('Contour 12B blocks when a dossier item references a missing matrix row', a
   assert.equal(result.code, 'E_REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_BLOCKED');
   assert.equal(result.reason, 'REVISION_BRIDGE_FORMAT_MATRIX_ROW_MISSING');
   assert.equal(result.reasons[0].field, 'dossier.items.0.claim.matrixRowId');
+});
+
+test('Contour 12B blocks when dossier itemId is duplicated', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimDossierGate(validGateInput(bridge, {
+    dossier: validDossier(bridge, {
+      items: [
+        validDossierItem(bridge),
+        validCommentOnlyDossierItem(bridge, {
+          itemId: 'dossier-item-1',
+        }),
+      ],
+    }),
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.code, 'E_REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_BLOCKED');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_ITEM_ID_DUPLICATE');
+  assert.equal(result.reasons[0].field, 'dossier.items.1.itemId');
+  assert.equal(result.reasons[0].itemId, 'dossier-item-1');
+  assert.deepEqual(result.itemEvaluations, []);
 });
 
 test('Contour 12B blocks when a dossier item golden set hash does not match', async () => {

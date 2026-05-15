@@ -8262,6 +8262,7 @@ export const REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_GATE_REASON_CODES = Object.fr
   'REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_INVALID',
   'REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_ITEMS_REQUIRED',
   'REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_ITEM_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_ITEM_ID_DUPLICATE',
   ...REVISION_BRIDGE_FORMAT_MATRIX_CLAIM_GATE_REASON_CODES,
 ]);
 
@@ -8369,6 +8370,26 @@ function collectReleaseClaimDossierReasons(input, dossier) {
   return reasons;
 }
 
+function collectReleaseClaimDossierBlockingReasons(dossier) {
+  const reasons = [];
+  const seenItemIds = [];
+
+  dossier.items.forEach((item, index) => {
+    if (!item.itemId) return;
+    if (seenItemIds.includes(item.itemId)) {
+      reasons.push(releaseClaimDossierReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_ITEM_ID_DUPLICATE',
+        `dossier.items.${index}.itemId`,
+        'dossier itemId must be unique',
+        { itemId: item.itemId },
+      ));
+      return;
+    }
+    seenItemIds.push(item.itemId);
+  });
+  return reasons;
+}
+
 function releaseClaimDossierBinding(formatMatrix, dossier, itemEvaluations) {
   return {
     matrixId: normalizeString(formatMatrix.matrixId),
@@ -8435,6 +8456,18 @@ export function evaluateRevisionBridgeReleaseClaimDossierGate(input = {}) {
       false,
       'diagnostics',
       dossierReasons,
+      formatMatrix,
+      dossier,
+      [],
+    );
+  }
+  const blockingReasons = collectReleaseClaimDossierBlockingReasons(dossier);
+
+  if (blockingReasons.length > 0) {
+    return releaseClaimDossierResult(
+      false,
+      'blocked',
+      blockingReasons,
       formatMatrix,
       dossier,
       [],
