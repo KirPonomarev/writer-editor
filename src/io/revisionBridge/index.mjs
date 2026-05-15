@@ -12063,6 +12063,492 @@ export function evaluateRevisionBridgeReleaseClaimCommandAdmission(input = {}) {
 }
 // CONTOUR_12J_RELEASE_CLAIM_COMMAND_ADMISSION_END
 
+// CONTOUR_12K_RELEASE_CLAIM_EXECUTION_GATE_START
+const RELEASE_CLAIM_EXECUTION_GATE_ACCEPTED_CODE =
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_ACCEPTED';
+const RELEASE_CLAIM_EXECUTION_GATE_BLOCKED_CODE =
+  'E_REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BLOCKED';
+const RELEASE_CLAIM_EXECUTION_GATE_DIAGNOSTICS_CODE =
+  'E_REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_DIAGNOSTICS';
+
+export const REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA =
+  'revision-bridge.release-claim-execution-gate.v1';
+const REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_ALLOWED_FIELDS = Object.freeze([
+  'schemaVersion',
+  'commandAdmissionResult',
+  'requestedMode',
+  'requestedClaimSurface',
+]);
+export const REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REASON_CODES = Object.freeze([
+  RELEASE_CLAIM_EXECUTION_GATE_ACCEPTED_CODE,
+  RELEASE_CLAIM_EXECUTION_GATE_BLOCKED_CODE,
+  RELEASE_CLAIM_EXECUTION_GATE_DIAGNOSTICS_CODE,
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA_VERSION_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA_VERSION_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_EXTRA_FIELDS',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_TYPE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_NOT_ACCEPTED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REQUESTED_MODE_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REQUESTED_MODE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REQUESTED_MODE_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REQUESTED_CLAIM_SURFACE_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REQUESTED_CLAIM_SURFACE_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REQUESTED_CLAIM_SURFACE_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_PR_MODE_USER_FACING_BLOCKED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_RELEASE_CLASS_USER_FACING_BLOCKED',
+  ...REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REASON_CODES,
+]);
+
+function releaseClaimExecutionGateReason(code, field, details = {}) {
+  return {
+    code,
+    field,
+    ...cloneJsonSafe(details),
+  };
+}
+
+function normalizeReleaseClaimExecutionGateCommandAdmissionResult(input = {}) {
+  const result = isPlainObject(input) ? input : {};
+  const binding = isPlainObject(result.binding) ? result.binding : {};
+  const summary = isPlainObject(result.summary) ? result.summary : {};
+
+  return {
+    ok: result.ok === true,
+    type: normalizeString(result.type),
+    status: normalizeString(result.status),
+    code: normalizeString(result.code),
+    reason: normalizeString(result.reason),
+    binding: {
+      mode: normalizeString(binding.mode),
+      claimId: normalizeString(binding.claimId),
+      dossierId: normalizeString(binding.dossierId),
+      matrixId: normalizeString(binding.matrixId),
+      releaseClass: normalizeString(binding.releaseClass),
+    },
+    summary: {
+      claimSurface: normalizeString(summary.claimSurface),
+      packetId: normalizeString(summary.packetId),
+      attestationId: normalizeString(summary.attestationId),
+      commandId: normalizeString(summary.commandId),
+      admissionClass: normalizeString(summary.admissionClass),
+    },
+  };
+}
+
+function collectReleaseClaimExecutionGateSchemaReasons(executionInput) {
+  const reasons = [];
+
+  if (!hasOwnField(executionInput, 'schemaVersion')) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA_VERSION_REQUIRED',
+      'schemaVersion',
+    ));
+  } else if (normalizeString(executionInput.schemaVersion) !== REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA_VERSION_INVALID',
+      'schemaVersion',
+      {
+        expectedValue: REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA,
+        receivedValue: cloneJsonSafe(executionInput.schemaVersion),
+      },
+    ));
+  }
+
+  const extraFields = Object.keys(executionInput)
+    .filter((field) => !REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_ALLOWED_FIELDS.includes(field))
+    .sort();
+  if (extraFields.length > 0) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_EXTRA_FIELDS',
+      'input',
+      {
+        extraFields: cloneJsonSafe(extraFields),
+      },
+    ));
+  }
+
+  return reasons;
+}
+
+function collectReleaseClaimExecutionGateRequestReasons(requestedMode, requestedClaimSurface) {
+  const reasons = [];
+
+  if (!requestedMode) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REQUESTED_MODE_REQUIRED',
+      'requestedMode',
+    ));
+  } else if (!REVISION_BRIDGE_RELEASE_CLAIM_MODE_VALUES.includes(requestedMode)) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REQUESTED_MODE_INVALID',
+      'requestedMode',
+      {
+        receivedValue: requestedMode,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_MODE_VALUES),
+      },
+    ));
+  }
+
+  if (!requestedClaimSurface) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REQUESTED_CLAIM_SURFACE_REQUIRED',
+      'requestedClaimSurface',
+    ));
+  } else if (!REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES.includes(requestedClaimSurface)) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REQUESTED_CLAIM_SURFACE_INVALID',
+      'requestedClaimSurface',
+      {
+        receivedValue: requestedClaimSurface,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES),
+      },
+    ));
+  }
+
+  return reasons;
+}
+
+function deriveReleaseClaimExecutionGateAdmissionClass(commandAdmissionResult) {
+  return deriveReleaseClaimCommandAdmissionClass(commandAdmissionResult);
+}
+
+function collectReleaseClaimExecutionGateCommandAdmissionReasons(commandAdmissionResult) {
+  const reasons = [];
+
+  if (commandAdmissionResult.type !== 'revisionBridge.releaseClaimCommandAdmission') {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_TYPE_INVALID',
+      'commandAdmissionResult.type',
+      {
+        expectedValue: 'revisionBridge.releaseClaimCommandAdmission',
+        receivedValue: commandAdmissionResult.type,
+      },
+    ));
+  }
+  if (commandAdmissionResult.ok !== true) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_NOT_ACCEPTED',
+      'commandAdmissionResult.ok',
+      {
+        expectedValue: true,
+        receivedValue: commandAdmissionResult.ok,
+      },
+    ));
+  }
+  if (commandAdmissionResult.status !== 'accepted') {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_NOT_ACCEPTED',
+      'commandAdmissionResult.status',
+      {
+        expectedValue: 'accepted',
+        receivedValue: commandAdmissionResult.status,
+      },
+    ));
+  }
+  if (commandAdmissionResult.code !== RELEASE_CLAIM_COMMAND_ADMISSION_ACCEPTED_CODE) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_NOT_ACCEPTED',
+      'commandAdmissionResult.code',
+      {
+        expectedValue: RELEASE_CLAIM_COMMAND_ADMISSION_ACCEPTED_CODE,
+        receivedValue: commandAdmissionResult.code,
+      },
+    ));
+  }
+  if (commandAdmissionResult.reason !== RELEASE_CLAIM_COMMAND_ADMISSION_ACCEPTED_CODE) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_NOT_ACCEPTED',
+      'commandAdmissionResult.reason',
+      {
+        expectedValue: RELEASE_CLAIM_COMMAND_ADMISSION_ACCEPTED_CODE,
+        receivedValue: commandAdmissionResult.reason,
+      },
+    ));
+  }
+
+  const bindingPairs = [
+    { field: 'mode', value: commandAdmissionResult.binding.mode },
+    { field: 'claimId', value: commandAdmissionResult.binding.claimId },
+    { field: 'dossierId', value: commandAdmissionResult.binding.dossierId },
+    { field: 'matrixId', value: commandAdmissionResult.binding.matrixId },
+  ];
+  bindingPairs.forEach(({ field, value }) => {
+    if (!value) {
+      reasons.push(releaseClaimExecutionGateReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
+        `commandAdmissionResult.binding.${field}`,
+      ));
+    }
+  });
+
+  if (
+    !REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_RELEASE_CLASSES.includes(
+      commandAdmissionResult.binding.releaseClass,
+    )
+  ) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
+      'commandAdmissionResult.binding.releaseClass',
+      {
+        receivedValue: commandAdmissionResult.binding.releaseClass,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_RELEASE_CLASSES),
+      },
+    ));
+  }
+
+  if (
+    !REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES.includes(
+      commandAdmissionResult.summary.claimSurface,
+    )
+  ) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
+      'commandAdmissionResult.summary.claimSurface',
+      {
+        receivedValue: commandAdmissionResult.summary.claimSurface,
+        allowedValues: cloneJsonSafe(REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_SURFACES),
+      },
+    ));
+  }
+  if (!commandAdmissionResult.summary.packetId) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
+      'commandAdmissionResult.summary.packetId',
+    ));
+  }
+  if (!commandAdmissionResult.summary.attestationId) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
+      'commandAdmissionResult.summary.attestationId',
+    ));
+  }
+  if (!commandAdmissionResult.summary.commandId) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
+      'commandAdmissionResult.summary.commandId',
+    ));
+  }
+
+  const derivedAdmissionClass = deriveReleaseClaimExecutionGateAdmissionClass(commandAdmissionResult);
+  if (!commandAdmissionResult.summary.admissionClass) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
+      'commandAdmissionResult.summary.admissionClass',
+    ));
+  } else if (
+    !['INTERNAL', 'USER_FACING'].includes(commandAdmissionResult.summary.admissionClass)
+    || commandAdmissionResult.summary.admissionClass !== derivedAdmissionClass
+  ) {
+    reasons.push(releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
+      'commandAdmissionResult.summary.admissionClass',
+      {
+        expectedValue: derivedAdmissionClass,
+        receivedValue: commandAdmissionResult.summary.admissionClass,
+      },
+    ));
+  }
+
+  return reasons;
+}
+
+function releaseClaimExecutionGateBinding(commandAdmissionResult) {
+  return {
+    mode: normalizeString(commandAdmissionResult?.binding?.mode),
+    claimId: normalizeString(commandAdmissionResult?.binding?.claimId),
+    dossierId: normalizeString(commandAdmissionResult?.binding?.dossierId),
+    matrixId: normalizeString(commandAdmissionResult?.binding?.matrixId),
+    releaseClass: normalizeString(commandAdmissionResult?.binding?.releaseClass),
+  };
+}
+
+function releaseClaimExecutionGateSummary(commandAdmissionResult, requestedClaimSurface) {
+  return {
+    claimSurface: normalizeString(requestedClaimSurface),
+    packetId: normalizeString(commandAdmissionResult?.summary?.packetId),
+    attestationId: normalizeString(commandAdmissionResult?.summary?.attestationId),
+    commandId: normalizeString(commandAdmissionResult?.summary?.commandId),
+    admissionClass: deriveReleaseClaimExecutionGateAdmissionClass(commandAdmissionResult),
+  };
+}
+
+function releaseClaimExecutionGateResult(
+  ok,
+  status,
+  reasons,
+  commandAdmissionResult,
+  requestedClaimSurface,
+) {
+  const code = ok
+    ? RELEASE_CLAIM_EXECUTION_GATE_ACCEPTED_CODE
+    : (status === 'diagnostics'
+      ? RELEASE_CLAIM_EXECUTION_GATE_DIAGNOSTICS_CODE
+      : RELEASE_CLAIM_EXECUTION_GATE_BLOCKED_CODE);
+  return {
+    ok,
+    type: 'revisionBridge.releaseClaimExecutionGate',
+    status,
+    code,
+    reason: ok ? RELEASE_CLAIM_EXECUTION_GATE_ACCEPTED_CODE : reasons[0]?.code || code,
+    reasons: cloneJsonSafe(reasons),
+    binding: releaseClaimExecutionGateBinding(commandAdmissionResult),
+    summary: releaseClaimExecutionGateSummary(commandAdmissionResult, requestedClaimSurface),
+  };
+}
+
+export function evaluateRevisionBridgeReleaseClaimExecutionGate(input = {}) {
+  const executionInput = isPlainObject(input) ? input : {};
+  const requestedMode = normalizeString(executionInput.requestedMode);
+  const requestedClaimSurface = normalizeString(executionInput.requestedClaimSurface);
+
+  const schemaReasons = collectReleaseClaimExecutionGateSchemaReasons(executionInput);
+  if (schemaReasons.length > 0) {
+    return releaseClaimExecutionGateResult(
+      false,
+      'diagnostics',
+      schemaReasons,
+      normalizeReleaseClaimExecutionGateCommandAdmissionResult(executionInput.commandAdmissionResult),
+      requestedClaimSurface,
+    );
+  }
+
+  const requestReasons = collectReleaseClaimExecutionGateRequestReasons(
+    requestedMode,
+    requestedClaimSurface,
+  );
+  if (requestReasons.length > 0) {
+    return releaseClaimExecutionGateResult(
+      false,
+      'diagnostics',
+      requestReasons,
+      normalizeReleaseClaimExecutionGateCommandAdmissionResult(executionInput.commandAdmissionResult),
+      requestedClaimSurface,
+    );
+  }
+
+  if (!isPlainObject(executionInput.commandAdmissionResult)) {
+    return releaseClaimExecutionGateResult(
+      false,
+      'blocked',
+      [
+        releaseClaimExecutionGateReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISSING',
+          'commandAdmissionResult',
+        ),
+      ],
+      normalizeReleaseClaimExecutionGateCommandAdmissionResult(executionInput.commandAdmissionResult),
+      requestedClaimSurface,
+    );
+  }
+
+  const commandAdmissionResult = normalizeReleaseClaimExecutionGateCommandAdmissionResult(
+    executionInput.commandAdmissionResult,
+  );
+  const commandAdmissionReasons = collectReleaseClaimExecutionGateCommandAdmissionReasons(
+    commandAdmissionResult,
+  );
+  if (commandAdmissionReasons.length > 0) {
+    return releaseClaimExecutionGateResult(
+      false,
+      'blocked',
+      commandAdmissionReasons,
+      commandAdmissionResult,
+      requestedClaimSurface,
+    );
+  }
+
+  if (requestedMode !== commandAdmissionResult.binding.mode) {
+    return releaseClaimExecutionGateResult(
+      false,
+      'blocked',
+      [
+        releaseClaimExecutionGateReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REQUESTED_MODE_MISMATCH',
+          'requestedMode',
+          {
+            expectedValue: commandAdmissionResult.binding.mode,
+            receivedValue: requestedMode,
+          },
+        ),
+      ],
+      commandAdmissionResult,
+      requestedClaimSurface,
+    );
+  }
+
+  if (requestedClaimSurface !== commandAdmissionResult.summary.claimSurface) {
+    return releaseClaimExecutionGateResult(
+      false,
+      'blocked',
+      [
+        releaseClaimExecutionGateReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REQUESTED_CLAIM_SURFACE_MISMATCH',
+          'requestedClaimSurface',
+          {
+            expectedValue: commandAdmissionResult.summary.claimSurface,
+            receivedValue: requestedClaimSurface,
+          },
+        ),
+      ],
+      commandAdmissionResult,
+      requestedClaimSurface,
+    );
+  }
+
+  if (requestedMode === 'PR_MODE' && requestedClaimSurface === 'USER_FACING') {
+    return releaseClaimExecutionGateResult(
+      false,
+      'blocked',
+      [
+        releaseClaimExecutionGateReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_PR_MODE_USER_FACING_BLOCKED',
+          'requestedClaimSurface',
+          {
+            mode: requestedMode,
+            claimSurface: requestedClaimSurface,
+          },
+        ),
+      ],
+      commandAdmissionResult,
+      requestedClaimSurface,
+    );
+  }
+
+  if (
+    requestedMode === 'RELEASE_MODE'
+    && requestedClaimSurface === 'USER_FACING'
+    && commandAdmissionResult.binding.releaseClass !== 'USER_FACING_CLAIM_READY'
+  ) {
+    return releaseClaimExecutionGateResult(
+      false,
+      'blocked',
+      [
+        releaseClaimExecutionGateReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_RELEASE_CLASS_USER_FACING_BLOCKED',
+          'commandAdmissionResult.binding.releaseClass',
+          {
+            expectedValue: 'USER_FACING_CLAIM_READY',
+            receivedValue: commandAdmissionResult.binding.releaseClass,
+          },
+        ),
+      ],
+      commandAdmissionResult,
+      requestedClaimSurface,
+    );
+  }
+
+  return releaseClaimExecutionGateResult(
+    true,
+    'accepted',
+    [],
+    commandAdmissionResult,
+    requestedClaimSurface,
+  );
+}
+// CONTOUR_12K_RELEASE_CLAIM_EXECUTION_GATE_END
+
 function normalizeTargetScope(input) {
   const scope = isPlainObject(input) ? input : {};
   return {
