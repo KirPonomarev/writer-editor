@@ -8512,6 +8512,264 @@ export function evaluateRevisionBridgeReleaseClaimDossierGate(input = {}) {
 }
 // CONTOUR_12B_RELEASE_CLAIM_DOSSIER_GATE_END
 
+// CONTOUR_12C_RELEASE_CLAIM_ADMISSION_GATE_START
+const RELEASE_CLAIM_ADMISSION_ACCEPTED_CODE = 'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_ACCEPTED';
+const RELEASE_CLAIM_ADMISSION_BLOCKED_CODE = 'E_REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_BLOCKED';
+const RELEASE_CLAIM_ADMISSION_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DIAGNOSTICS';
+
+export const REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_SCHEMA =
+  'revision-bridge.release-claim-admission.v1';
+export const REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_REASON_CODES = Object.freeze([
+  RELEASE_CLAIM_ADMISSION_ACCEPTED_CODE,
+  RELEASE_CLAIM_ADMISSION_BLOCKED_CODE,
+  RELEASE_CLAIM_ADMISSION_DIAGNOSTICS_CODE,
+  'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_REQUIRED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_BLOCKED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_SCOPE_NOT_COVERED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_REQUIRED_CLASSES_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_BASELINE_DEBT_BLOCKED',
+]);
+
+function releaseClaimAdmissionReason(code, field, message, details = {}) {
+  return {
+    code,
+    field,
+    message,
+    ...cloneJsonSafe(details),
+  };
+}
+
+function normalizeReleaseClaimAdmission(input = {}) {
+  const admission = isPlainObject(input) ? input : {};
+  return {
+    schemaVersion: normalizeString(admission.schemaVersion),
+    claimId: normalizeString(admission.claimId),
+    claimScope: uniqueStableStrings(admission.claimScope),
+    requiredClaimClasses: uniqueStableStrings(admission.requiredClaimClasses),
+  };
+}
+
+function collectOptionalStringListReasons(rawValue, normalizedValue, fieldPath, code, label) {
+  if (typeof rawValue === 'undefined') return [];
+  if (!Array.isArray(rawValue)) {
+    return [
+      releaseClaimAdmissionReason(
+        code,
+        fieldPath,
+        `${label} must be an array of non-empty strings`,
+      ),
+    ];
+  }
+  const reasons = [];
+  rawValue.forEach((entry, index) => {
+    if (!normalizeString(entry)) {
+      reasons.push(releaseClaimAdmissionReason(
+        code,
+        `${fieldPath}.${index}`,
+        `${label} entries must be non-empty strings`,
+      ));
+    }
+  });
+  if (rawValue.length > 0 && normalizedValue.length === 0) {
+    reasons.push(releaseClaimAdmissionReason(
+      code,
+      fieldPath,
+      `${label} must contain at least one non-empty string`,
+    ));
+  }
+  return reasons;
+}
+
+function collectReleaseClaimAdmissionReasons(input, admission) {
+  const reasons = [];
+  if (!isPlainObject(input)) {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_REQUIRED',
+      'admission',
+      'admission must be an object',
+    ));
+    return reasons;
+  }
+  if (admission.schemaVersion !== REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_SCHEMA) {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_INVALID',
+      'admission.schemaVersion',
+      'admission schemaVersion is not supported',
+    ));
+  }
+  if (!admission.claimId) {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_INVALID',
+      'admission.claimId',
+      'admission claimId is required',
+    ));
+  }
+  reasons.push(...collectFormatMatrixStringListReasons(
+    input.claimScope,
+    admission.claimScope,
+    'admission.claimScope',
+    'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_SCOPE',
+    'claimScope',
+  ).map((reason) => ({
+    ...reason,
+    code: 'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_INVALID',
+  })));
+  reasons.push(...collectOptionalStringListReasons(
+    input.requiredClaimClasses,
+    admission.requiredClaimClasses,
+    'admission.requiredClaimClasses',
+    'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_INVALID',
+    'requiredClaimClasses',
+  ));
+  return reasons;
+}
+
+function normalizeReleaseClaimAdmissionDossierPayload(input = {}) {
+  const payload = isPlainObject(input) ? input : {};
+  const dossierResult = isPlainObject(payload.dossierResult) ? cloneJsonSafe(payload.dossierResult) : {};
+  const derivedCoveredScope = Array.isArray(payload.coveredScope)
+    ? uniqueStableStrings(payload.coveredScope)
+    : uniqueStableStrings(dossierResult.itemEvaluations?.flatMap((item) => item?.binding?.claimScope || []));
+  return {
+    dossierResult,
+    coveredScope: sortedStableStrings(derivedCoveredScope),
+    claimClasses: sortedStableStrings(payload.claimClasses),
+    baselineDebtFlag: payload.baselineDebtFlag === true,
+  };
+}
+
+function releaseClaimAdmissionBinding(admission, dossierPayload) {
+  const dossierResult = isPlainObject(dossierPayload?.dossierResult) ? dossierPayload.dossierResult : {};
+  return {
+    claimId: normalizeString(admission.claimId),
+    dossierId: normalizeString(dossierResult?.binding?.dossierId || dossierResult?.dossier?.dossierId),
+    dossierStatus: normalizeString(dossierResult.status),
+    claimScope: cloneJsonSafe(admission.claimScope),
+    coveredScope: cloneJsonSafe(dossierPayload.coveredScope),
+    requiredClaimClasses: cloneJsonSafe(admission.requiredClaimClasses),
+    dossierClaimClasses: cloneJsonSafe(dossierPayload.claimClasses),
+    baselineDebtFlag: dossierPayload.baselineDebtFlag === true,
+  };
+}
+
+function releaseClaimAdmissionResult(ok, status, reasons, admission, dossierPayload) {
+  const code = ok
+    ? RELEASE_CLAIM_ADMISSION_ACCEPTED_CODE
+    : (status === 'diagnostics' ? RELEASE_CLAIM_ADMISSION_DIAGNOSTICS_CODE : RELEASE_CLAIM_ADMISSION_BLOCKED_CODE);
+  return {
+    ok,
+    type: 'revisionBridge.releaseClaimAdmissionGate',
+    status,
+    code,
+    reason: ok ? RELEASE_CLAIM_ADMISSION_ACCEPTED_CODE : reasons[0]?.code || code,
+    reasons: cloneJsonSafe(reasons),
+    admission: cloneJsonSafe(admission),
+    dossierPayload: cloneJsonSafe(dossierPayload),
+    binding: releaseClaimAdmissionBinding(admission, dossierPayload),
+  };
+}
+
+export function evaluateRevisionBridgeReleaseClaimAdmissionGate(
+  admissionInput = {},
+  dossierResultPayload = {},
+) {
+  const admission = normalizeReleaseClaimAdmission(admissionInput);
+  const admissionReasons = collectReleaseClaimAdmissionReasons(admissionInput, admission);
+
+  if (admissionReasons.length > 0) {
+    return releaseClaimAdmissionResult(
+      false,
+      'diagnostics',
+      admissionReasons,
+      admission,
+      normalizeReleaseClaimAdmissionDossierPayload(dossierResultPayload),
+    );
+  }
+
+  if (!isPlainObject(dossierResultPayload) || !isPlainObject(dossierResultPayload.dossierResult)) {
+    return releaseClaimAdmissionResult(
+      false,
+      'blocked',
+      [
+        releaseClaimAdmissionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_MISSING',
+          'dossierResult',
+          'dossier result payload must include dossierResult',
+        ),
+      ],
+      admission,
+      normalizeReleaseClaimAdmissionDossierPayload(dossierResultPayload),
+    );
+  }
+
+  const dossierPayload = normalizeReleaseClaimAdmissionDossierPayload(dossierResultPayload);
+  const dossierStatus = normalizeString(dossierPayload.dossierResult.status);
+
+  if (dossierStatus !== 'accepted') {
+    return releaseClaimAdmissionResult(
+      false,
+      'blocked',
+      [
+        releaseClaimAdmissionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_BLOCKED',
+          'dossierResult.status',
+          'dossier result must be accepted before release claim admission',
+          { dossierStatus },
+        ),
+      ],
+      admission,
+      dossierPayload,
+    );
+  }
+
+  const reasons = [];
+  const uncoveredScope = admission.claimScope.filter((scope) => !dossierPayload.coveredScope.includes(scope));
+  if (uncoveredScope.length > 0) {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_SCOPE_NOT_COVERED',
+      'admission.claimScope',
+      'admission claimScope must be fully covered by the dossier covered scope',
+      {
+        coveredScope: cloneJsonSafe(dossierPayload.coveredScope),
+        uncoveredScope: cloneJsonSafe(uncoveredScope),
+      },
+    ));
+  }
+
+  const missingClaimClasses = admission.requiredClaimClasses.filter((claimClass) => (
+    !dossierPayload.claimClasses.includes(claimClass)
+  ));
+  if (missingClaimClasses.length > 0) {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_REQUIRED_CLASSES_MISSING',
+      'admission.requiredClaimClasses',
+      'required claim classes must be present in the dossier result payload',
+      {
+        dossierClaimClasses: cloneJsonSafe(dossierPayload.claimClasses),
+        missingClaimClasses: cloneJsonSafe(missingClaimClasses),
+      },
+    ));
+  }
+
+  if (dossierPayload.baselineDebtFlag === true) {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_BASELINE_DEBT_BLOCKED',
+      'baselineDebtFlag',
+      'baseline debt must be cleared before release claim admission',
+      { baselineDebtFlag: true },
+    ));
+  }
+
+  if (reasons.length > 0) {
+    return releaseClaimAdmissionResult(false, 'blocked', reasons, admission, dossierPayload);
+  }
+
+  return releaseClaimAdmissionResult(true, 'accepted', [], admission, dossierPayload);
+}
+// CONTOUR_12C_RELEASE_CLAIM_ADMISSION_GATE_END
+
 function normalizeTargetScope(input) {
   const scope = isPlainObject(input) ? input : {};
   return {
