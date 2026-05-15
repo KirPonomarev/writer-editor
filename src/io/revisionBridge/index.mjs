@@ -8526,6 +8526,7 @@ export const REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_REASON_CODES = Object.freez
   'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_REQUIRED',
   'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_INVALID',
   'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
   'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_BLOCKED',
   'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_SCOPE_NOT_COVERED',
   'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_REQUIRED_CLASSES_MISSING',
@@ -8640,6 +8641,104 @@ function normalizeReleaseClaimAdmissionDossierPayload(input = {}) {
   };
 }
 
+function collectReleaseClaimAdmissionDossierProvenanceReasons(dossierResult) {
+  const reasons = [];
+  const binding = isPlainObject(dossierResult?.binding) ? dossierResult.binding : {};
+  const itemIds = Array.isArray(binding.itemIds) ? binding.itemIds.map((itemId) => normalizeString(itemId)) : [];
+  const normalizedItemIds = itemIds.filter(Boolean);
+  const itemEvaluations = Array.isArray(dossierResult?.itemEvaluations) ? dossierResult.itemEvaluations : [];
+
+  if (normalizeString(dossierResult?.type) !== 'revisionBridge.releaseClaimDossierGate') {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+      'dossierResult.type',
+      'dossier result type must prove releaseClaimDossierGate provenance',
+    ));
+  }
+  if (normalizeString(dossierResult?.code) !== RELEASE_CLAIM_DOSSIER_ACCEPTED_CODE) {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+      'dossierResult.code',
+      'dossier result code must prove accepted dossier provenance',
+    ));
+  }
+  if (normalizeString(dossierResult?.reason) !== RELEASE_CLAIM_DOSSIER_ACCEPTED_CODE) {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+      'dossierResult.reason',
+      'dossier result reason must prove accepted dossier provenance',
+    ));
+  }
+  if (!normalizeString(binding.dossierId)) {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+      'dossierResult.binding.dossierId',
+      'dossier provenance must include a non-empty binding dossierId',
+    ));
+  }
+  if (itemIds.length === 0 || normalizedItemIds.length !== itemIds.length) {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+      'dossierResult.binding.itemIds',
+      'dossier provenance must include a non-empty itemIds array of non-empty strings',
+    ));
+  } else if (new Set(normalizedItemIds).size !== normalizedItemIds.length) {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+      'dossierResult.binding.itemIds',
+      'dossier provenance itemIds must be unique',
+    ));
+  }
+  if (itemEvaluations.length === 0) {
+    reasons.push(releaseClaimAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+      'dossierResult.itemEvaluations',
+      'dossier provenance must include accepted item evaluations',
+    ));
+  } else {
+    itemEvaluations.forEach((item, index) => {
+      if (!isPlainObject(item)) {
+        reasons.push(releaseClaimAdmissionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+          `dossierResult.itemEvaluations.${index}`,
+          'dossier item evaluation must be an object',
+        ));
+        return;
+      }
+      if (item.ok !== true) {
+        reasons.push(releaseClaimAdmissionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+          `dossierResult.itemEvaluations.${index}.ok`,
+          'dossier item evaluation ok must be true',
+        ));
+      }
+      if (normalizeString(item.status) !== 'accepted') {
+        reasons.push(releaseClaimAdmissionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+          `dossierResult.itemEvaluations.${index}.status`,
+          'dossier item evaluation status must be accepted',
+        ));
+      }
+      if (normalizeString(item.type) !== 'revisionBridge.formatMatrixClaimGate') {
+        reasons.push(releaseClaimAdmissionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+          `dossierResult.itemEvaluations.${index}.type`,
+          'dossier item evaluation type must prove formatMatrixClaimGate provenance',
+        ));
+      }
+      if (normalizeString(item.code) !== FORMAT_MATRIX_CLAIM_ACCEPTED_CODE) {
+        reasons.push(releaseClaimAdmissionReason(
+          'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_DOSSIER_PROVENANCE_INVALID',
+          `dossierResult.itemEvaluations.${index}.code`,
+          'dossier item evaluation code must prove accepted formatMatrixClaimGate provenance',
+        ));
+      }
+    });
+  }
+
+  return reasons;
+}
+
 function releaseClaimAdmissionBinding(admission, dossierPayload) {
   const dossierResult = isPlainObject(dossierPayload?.dossierResult) ? dossierPayload.dossierResult : {};
   return {
@@ -8719,6 +8818,18 @@ export function evaluateRevisionBridgeReleaseClaimAdmissionGate(
           { dossierStatus },
         ),
       ],
+      admission,
+      dossierPayload,
+    );
+  }
+
+  const dossierProvenanceReasons = collectReleaseClaimAdmissionDossierProvenanceReasons(dossierPayload.dossierResult);
+
+  if (dossierProvenanceReasons.length > 0) {
+    return releaseClaimAdmissionResult(
+      false,
+      'blocked',
+      dossierProvenanceReasons,
       admission,
       dossierPayload,
     );
