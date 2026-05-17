@@ -8,7 +8,8 @@ const { pathToFileURL } = require('node:url');
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-google-docs-evidence-check.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH];
+const WORD_TEST_PATH = 'test/contracts/revision-bridge-word-evidence-check.contract.test.js';
+const ALLOWLIST = [MODULE_PATH, TEST_PATH, WORD_TEST_PATH];
 
 async function loadBridge() {
   return import(pathToFileURL(path.join(REPO_ROOT, MODULE_PATH)).href);
@@ -134,6 +135,41 @@ test('Contour 11 blocks when evidencePacket is missing required fields', async (
   assert.equal(result.code, 'E_REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BLOCKED');
   assert.equal(result.reason, 'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_REQUIRED');
   assert.equal(result.reasons.some((reason) => reason.field === 'evidencePacket.evidence'), true);
+});
+
+test('Contour 11 blocks when evidence locator is empty', async () => {
+  const bridge = await loadBridge();
+  const evidencePacket = validEvidencePacket({
+    evidence: [
+      {
+        evidenceId: 'google-evidence-1',
+        supportClass: 'docsSuggestions',
+        digest: 'sha256:docs-suggestions',
+        locator: '',
+      },
+      {
+        evidenceId: 'google-evidence-2',
+        supportClass: 'driveComments',
+        digest: 'sha256:drive-comments',
+        locator: '',
+      },
+    ],
+  });
+  const claim = validClaim(bridge, evidencePacket);
+
+  const result = bridge.evaluateGoogleDocsEvidenceClaimGate({ evidencePacket, claim });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.code, 'E_REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BLOCKED');
+  assert.equal(result.reasons.some((reason) => (
+    reason.code === 'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID'
+    && reason.field === 'evidencePacket.evidence.0.locator'
+  )), true);
+  assert.equal(result.reasons.some((reason) => (
+    reason.code === 'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID'
+    && reason.field === 'evidencePacket.evidence.1.locator'
+  )), true);
 });
 
 test('Contour 11 blocks when claim is missing', async () => {

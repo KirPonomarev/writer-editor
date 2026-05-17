@@ -9,7 +9,8 @@ const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-word-evidence-check.contract.test.js';
 const P0_TEST_PATH = 'test/contracts/revision-bridge-p0-safety-kernel.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH, P0_TEST_PATH];
+const GOOGLE_TEST_PATH = 'test/contracts/revision-bridge-google-docs-evidence-check.contract.test.js';
+const ALLOWLIST = [MODULE_PATH, TEST_PATH, P0_TEST_PATH, GOOGLE_TEST_PATH];
 
 async function loadBridge() {
   return import(pathToFileURL(path.join(REPO_ROOT, MODULE_PATH)).href);
@@ -163,6 +164,31 @@ test('Contour 10 blocks claims when evidence is missing or invalid', async () =>
   assert.equal(invalidEvidence.reasons.some((reason) => (
     reason.code === 'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID'
     && reason.field === 'evidencePacket.evidence.0.digest'
+  )), true);
+});
+
+test('Contour 10 blocks claims when evidence locator is empty', async () => {
+  const bridge = await loadBridge();
+  const evidencePacket = validEvidencePacket({
+    evidence: [
+      {
+        evidenceId: 'evidence-1',
+        supportClass: 'textExact',
+        digest: 'sha256:document-main',
+        locator: '',
+      },
+    ],
+  });
+  const claim = validClaim(bridge, evidencePacket);
+
+  const result = bridge.evaluateWordEvidenceClaimGate({ evidencePacket, claim });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.code, 'E_REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_BLOCKED');
+  assert.equal(result.reasons.some((reason) => (
+    reason.code === 'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID'
+    && reason.field === 'evidencePacket.evidence.0.locator'
   )), true);
 });
 
