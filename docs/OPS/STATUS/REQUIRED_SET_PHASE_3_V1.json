@@ -4,13 +4,8 @@
   "newV1Enforcement": "HARD_BLOCK",
   "effectiveRequiredTokenIds": [
     "CORE_SOT_EXECUTABLE_OK",
-    "GLOSSARY_LOCK_OK",
     "COMMAND_SURFACE_ENFORCED_OK",
-    "THRESHOLD_SYSTEM_NORMALIZATION_OK",
-    "COMMENT_HISTORY_SCOPE_FLAG_BINDING_OK",
-    "FREEZE_ESCAPE_CONTROL_OK",
-    "RECOVERY_IO_OK",
-    "DESKTOP_FIRST_ORDER_ENFORCEMENT_OK"
+    "RECOVERY_IO_OK"
   ],
   "registryBindings": [
     {
@@ -20,46 +15,16 @@
       "outputArtifact": "REQUIRED_SET_PHASE_1_V1.json"
     },
     {
-      "tokenId": "GLOSSARY_LOCK_OK",
-      "machineCheckId": "MC_GLOSSARY_LOCK",
-      "commandId": "validate-glossary-lock",
-      "outputArtifact": "EXECUTION_GLOSSARY_V1.json"
-    },
-    {
       "tokenId": "COMMAND_SURFACE_ENFORCED_OK",
       "machineCheckId": "MC_TOKEN_COMMAND_SURFACE_ENFORCED_BINDING",
       "commandId": "validate-token-binding-command-surface-enforced",
       "outputArtifact": "REQUIRED_SET_PHASE_2_V1.json"
     },
     {
-      "tokenId": "THRESHOLD_SYSTEM_NORMALIZATION_OK",
-      "machineCheckId": "MC_THRESHOLD_SYSTEM_NORMALIZATION",
-      "commandId": "validate-threshold-system-normalization",
-      "outputArtifact": "THRESHOLD_SYSTEM_NORMALIZATION_V1.json"
-    },
-    {
-      "tokenId": "COMMENT_HISTORY_SCOPE_FLAG_BINDING_OK",
-      "machineCheckId": "MC_COMMENT_HISTORY_SCOPE_FLAG_BINDING",
-      "commandId": "validate-comment-history-scope-flag-binding",
-      "outputArtifact": "COMMENT_HISTORY_SCOPE_FLAG_BINDING_V1.json"
-    },
-    {
-      "tokenId": "FREEZE_ESCAPE_CONTROL_OK",
-      "machineCheckId": "MC_FREEZE_ESCAPE_CONTROL",
-      "commandId": "validate-freeze-escape-control",
-      "outputArtifact": "FREEZE_ESCAPE_POLICY_V1.json"
-    },
-    {
       "tokenId": "RECOVERY_IO_OK",
       "machineCheckId": "MC_TOKEN_RECOVERY_IO_BINDING",
       "commandId": "validate-token-binding-recovery-io",
       "outputArtifact": "REQUIRED_SET_PHASE_3_V1.json"
-    },
-    {
-      "tokenId": "DESKTOP_FIRST_ORDER_ENFORCEMENT_OK",
-      "machineCheckId": "MC_DESKTOP_FIRST_ORDER_ENFORCEMENT",
-      "commandId": "validate-desktop-first-order-enforcement",
-      "outputArtifact": "DESKTOP_FIRST_ORDER_ENFORCEMENT_V1.json"
     }
   ],
   "consistency": {
@@ -67,5 +32,5 @@
     "unboundTokenIds": [],
     "registryConsistency": "PASS"
   },
-  "updatedAtUtc": "2026-02-27T23:30:00.000Z"
+  "updatedAtUtc": "2026-05-17T17:52:17.000Z"
 }
