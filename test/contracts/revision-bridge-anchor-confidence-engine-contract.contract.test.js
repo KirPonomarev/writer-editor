@@ -8,6 +8,7 @@ const { pathToFileURL } = require('node:url');
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-anchor-confidence-engine-contract.contract.test.js';
 const RB10_TEST_PATH = 'test/contracts/revision-bridge-inline-range-anchor-contract.contract.test.js';
+const RB12_TEST_PATH = 'test/contracts/revision-bridge-match-proof-contract.contract.test.js';
 const RB19_TEST_PATH = 'test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js';
 const C04_MODULE_PATH = 'src/io/revisionBridge/exactTextMinSafeWrite.mjs';
 const C04_TEST_PATH = 'test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js';
@@ -16,7 +17,9 @@ const P0_TEST_PATH = 'test/contracts/revision-bridge-p0-safety-kernel.contract.t
 const C06_TEST_PATH = 'test/contracts/revision-bridge-minimal-block-id.contract.test.js';
 const C08_TEST_PATH = 'test/contracts/revision-bridge-structural-manual-review.contract.test.js';
 const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB10_TEST_PATH, RB19_TEST_PATH, C04_MODULE_PATH, C04_TEST_PATH, C05_TEST_PATH, P0_TEST_PATH, C06_TEST_PATH, C08_TEST_PATH, GOVERNANCE_APPROVALS_PATH];
+const CORE_INLINE_MODULE_PATH = 'src/core/sceneInlineRangeAdmission.mjs';
+const CORE_INLINE_TEST_PATH = 'test/contracts/scene-inline-range-admission.contract.test.js';
+const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB10_TEST_PATH, RB12_TEST_PATH, RB19_TEST_PATH, C04_MODULE_PATH, C04_TEST_PATH, C05_TEST_PATH, P0_TEST_PATH, C06_TEST_PATH, C08_TEST_PATH, CORE_INLINE_MODULE_PATH, CORE_INLINE_TEST_PATH, GOVERNANCE_APPROVALS_PATH];
 
 async function loadBridge() {
   return import(pathToFileURL(path.join(process.cwd(), MODULE_PATH)).href);
@@ -167,6 +170,27 @@ test('RB-11 out-of-bounds range is hard failure or diagnostics only', async () =
   assert.equal(['hardFail', 'diagnosticsOnly'].includes(result.automationPolicy), true);
   assert.notEqual(result.automationPolicy, 'autoEligible');
   assert.equal(result.reasonCodes.includes('REVISION_BRIDGE_ANCHOR_CONFIDENCE_OUT_OF_BOUNDS'), true);
+});
+
+test('RB-11 preserves exact confidence for CRLF and LF variants when range and quote stay in the same raw text space', async () => {
+  const bridge = await loadBridge();
+  const crlf = bridge.evaluateInlineRangeAnchorConfidence(validInlineRange({
+    from: 0,
+    to: 9,
+    quote: '\r\nAlpha\r\n',
+  }), validContext('\r\nAlpha\r\n'));
+  const lf = bridge.evaluateInlineRangeAnchorConfidence(validInlineRange({
+    from: 0,
+    to: 7,
+    quote: '\nAlpha\n',
+  }), validContext('\nAlpha\n'));
+
+  assert.equal(crlf.status, 'evaluated');
+  assert.equal(lf.status, 'evaluated');
+  assert.equal(crlf.confidence, 'exact');
+  assert.equal(lf.confidence, 'exact');
+  assert.equal(crlf.reasonCodes.includes('REVISION_BRIDGE_ANCHOR_CONFIDENCE_EXACT_RANGE'), true);
+  assert.equal(lf.reasonCodes.includes('REVISION_BRIDGE_ANCHOR_CONFIDENCE_EXACT_RANGE'), true);
 });
 
 test('RB-11 orphan remains unresolved', async () => {

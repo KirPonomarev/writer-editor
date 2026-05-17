@@ -8,6 +8,7 @@ const { pathToFileURL } = require('node:url');
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-inline-range-anchor-contract.contract.test.js';
 const RB11_TEST_PATH = 'test/contracts/revision-bridge-anchor-confidence-engine-contract.contract.test.js';
+const RB12_TEST_PATH = 'test/contracts/revision-bridge-match-proof-contract.contract.test.js';
 const RB19_TEST_PATH = 'test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js';
 const C04_MODULE_PATH = 'src/io/revisionBridge/exactTextMinSafeWrite.mjs';
 const C04_TEST_PATH = 'test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js';
@@ -16,7 +17,9 @@ const P0_TEST_PATH = 'test/contracts/revision-bridge-p0-safety-kernel.contract.t
 const C06_TEST_PATH = 'test/contracts/revision-bridge-minimal-block-id.contract.test.js';
 const C08_TEST_PATH = 'test/contracts/revision-bridge-structural-manual-review.contract.test.js';
 const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB11_TEST_PATH, RB19_TEST_PATH, C04_MODULE_PATH, C04_TEST_PATH, C05_TEST_PATH, P0_TEST_PATH, C06_TEST_PATH, C08_TEST_PATH, GOVERNANCE_APPROVALS_PATH];
+const CORE_INLINE_MODULE_PATH = 'src/core/sceneInlineRangeAdmission.mjs';
+const CORE_INLINE_TEST_PATH = 'test/contracts/scene-inline-range-admission.contract.test.js';
+const ALLOWLIST = [MODULE_PATH, TEST_PATH, RB11_TEST_PATH, RB12_TEST_PATH, RB19_TEST_PATH, C04_MODULE_PATH, C04_TEST_PATH, C05_TEST_PATH, P0_TEST_PATH, C06_TEST_PATH, C08_TEST_PATH, CORE_INLINE_MODULE_PATH, CORE_INLINE_TEST_PATH, GOVERNANCE_APPROVALS_PATH];
 
 async function loadBridge() {
   return import(pathToFileURL(path.join(process.cwd(), MODULE_PATH)).href);
@@ -190,6 +193,58 @@ test('RB-10 out-of-bounds range is rejected when context block text is supplied'
 
   assert.equal(result.ok, false);
   assert.equal(reasonFields(result).includes('inlineRange.to'), true);
+});
+
+test('RB-10 preserves truthful CRLF and LF inline boundaries for the same logical target', async () => {
+  const bridge = await loadBridge();
+  const crlfContext = {
+    blocks: [
+      {
+        schemaVersion: 'revision-bridge.block.v1',
+        blockId: 'block-1',
+        lineageId: 'lineage-1',
+        versionHash: 'version-crlf',
+        kind: 'paragraph',
+        order: 0,
+        text: 'A\r\nB',
+        attrs: {},
+        source: {},
+      },
+    ],
+  };
+  const lfContext = {
+    blocks: [
+      {
+        schemaVersion: 'revision-bridge.block.v1',
+        blockId: 'block-1',
+        lineageId: 'lineage-1',
+        versionHash: 'version-lf',
+        kind: 'paragraph',
+        order: 0,
+        text: 'A\nB',
+        attrs: {},
+        source: {},
+      },
+    ],
+  };
+
+  const crlf = bridge.validateInlineRange(validInlineRange({
+    from: 3,
+    to: 4,
+    quote: 'B',
+  }), crlfContext);
+  const lf = bridge.validateInlineRange(validInlineRange({
+    from: 2,
+    to: 3,
+    quote: 'B',
+  }), lfContext);
+
+  assert.equal(crlf.ok, true);
+  assert.equal(lf.ok, true);
+  assert.equal(crlf.value.from, 3);
+  assert.equal(crlf.value.to, 4);
+  assert.equal(lf.value.from, 2);
+  assert.equal(lf.value.to, 3);
 });
 
 test('RB-10 deleted range preserves target and cannot be autoEligible', async () => {

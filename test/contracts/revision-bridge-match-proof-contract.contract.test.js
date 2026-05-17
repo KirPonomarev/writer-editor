@@ -7,7 +7,11 @@ const { pathToFileURL } = require('node:url');
 
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-match-proof-contract.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH];
+const CORE_INLINE_MODULE_PATH = 'src/core/sceneInlineRangeAdmission.mjs';
+const CORE_INLINE_TEST_PATH = 'test/contracts/scene-inline-range-admission.contract.test.js';
+const RB10_TEST_PATH = 'test/contracts/revision-bridge-inline-range-anchor-contract.contract.test.js';
+const RB11_TEST_PATH = 'test/contracts/revision-bridge-anchor-confidence-engine-contract.contract.test.js';
+const ALLOWLIST = [MODULE_PATH, TEST_PATH, CORE_INLINE_MODULE_PATH, CORE_INLINE_TEST_PATH, RB10_TEST_PATH, RB11_TEST_PATH];
 
 async function loadBridge() {
   return import(pathToFileURL(path.join(process.cwd(), MODULE_PATH)).href);
@@ -205,6 +209,27 @@ test('RB-12 out of bounds returns hardFail proof with out of bounds reason', asy
   assert.deepEqual(result.comparedRange, { from: 0, to: 999, inBounds: false });
   assert.equal(result.observedQuote, '');
   assert.equal(result.reasonCodes.includes('REVISION_BRIDGE_ANCHOR_CONFIDENCE_OUT_OF_BOUNDS'), true);
+});
+
+test('RB-12 preserves exact proof for CRLF and LF variants when range and quote stay in the same raw text space', async () => {
+  const bridge = await loadBridge();
+  const crlf = bridge.buildInlineRangeMatchProof(validInlineRange({
+    from: 0,
+    to: 9,
+    quote: '\r\nAlpha\r\n',
+  }), validContext('\r\nAlpha\r\n'));
+  const lf = bridge.buildInlineRangeMatchProof(validInlineRange({
+    from: 0,
+    to: 7,
+    quote: '\nAlpha\n',
+  }), validContext('\nAlpha\n'));
+
+  assert.equal(crlf.status, 'matched');
+  assert.equal(lf.status, 'matched');
+  assert.equal(crlf.reasonCodes.includes('REVISION_BRIDGE_ANCHOR_CONFIDENCE_EXACT_RANGE'), true);
+  assert.equal(lf.reasonCodes.includes('REVISION_BRIDGE_ANCHOR_CONFIDENCE_EXACT_RANGE'), true);
+  assert.deepEqual(crlf.comparedRange, { from: 0, to: 9, inBounds: true });
+  assert.deepEqual(lf.comparedRange, { from: 0, to: 7, inBounds: true });
 });
 
 test('RB-12 prefix and suffix mismatches produce deterministic proofs and diagnostics', async () => {
