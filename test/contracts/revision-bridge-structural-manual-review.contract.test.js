@@ -191,6 +191,35 @@ test('C08 exact-text-only sessions stay outside the structural preview path', as
   assert.equal(result.autoApplyCount, 0);
 });
 
+test('C08 top-level textChanges and structuralChanges still emit mixed text plus structure reason', async () => {
+  const bridge = await loadBridge();
+
+  const result = bridge.buildStructuralManualReviewPreview({
+    textChanges: [
+      {
+        changeId: 'text-top-level-1',
+        targetScope: { type: 'scene', id: 'scene-1' },
+        match: { kind: 'exact', quote: 'Alpha' },
+        replacementText: 'Beta',
+      },
+    ],
+    structuralChanges: [
+      structuralChange({
+        kind: 'moveScene',
+        targetScope: { type: 'scene', id: 'scene-1' },
+        summary: 'Move scene.',
+      }),
+    ],
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.items.length, 1);
+  assert.equal(
+    result.items[0].reasonCodes.includes('REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_MIXED_TEXT_AND_STRUCTURE'),
+    true,
+  );
+});
+
 test('C08 comment risk weak block identity and weak evidence remain manual only', async () => {
   const bridge = await loadBridge();
 
