@@ -137,6 +137,8 @@ function assertPreviewShape(result) {
     'totalPlacements',
     'preservedThreads',
     'placementResults',
+    'commentRecords',
+    'blockedRecords',
     'diagnostics',
     'diagnosticSummary',
   ]);
@@ -171,6 +173,7 @@ test('CONTOUR-05 exports comment survival preview schema function and reason cat
     'REVISION_BRIDGE_COMMENT_SURVIVAL_THREAD_INVALID',
     'REVISION_BRIDGE_COMMENT_SURVIVAL_THREAD_ID_MISSING',
     'REVISION_BRIDGE_COMMENT_SURVIVAL_THREAD_ID_DUPLICATE',
+    'REVISION_BRIDGE_COMMENT_SURVIVAL_COMMENT_ID_DUPLICATE',
     'REVISION_BRIDGE_COMMENT_SURVIVAL_THREAD_TEXT_EMPTY',
     'REVISION_BRIDGE_COMMENT_SURVIVAL_PLACEMENT_THREAD_MISSING',
     'REVISION_BRIDGE_COMMENT_SURVIVAL_PLACEMENT_NOT_EVALUATED',
@@ -201,6 +204,8 @@ test('CONTOUR-05 orphan preserves thread text and never creates auto apply', asy
   assertPreservedBody(result);
   assertZeroAutoApply(result);
   assert.equal(result.placementResults[0].status, 'unplaced');
+  assert.equal(result.commentRecords[0].placementStatus, 'orphan');
+  assert.equal(result.commentRecords[0].orphanReason, 'REVISION_BRIDGE_ANCHOR_CONFIDENCE_ORPHAN');
   assert.equal(
     result.placementResults[0].evaluation.reasonCodes.includes('REVISION_BRIDGE_ANCHOR_CONFIDENCE_ORPHAN'),
     true,
@@ -225,10 +230,42 @@ test('CONTOUR-05 deleted anchor preserves thread text', async () => {
 
   assertPreservedBody(result);
   assertZeroAutoApply(result);
+  assert.equal(result.commentRecords[0].placementStatus, 'deletedAnchor');
+  assert.equal(result.commentRecords[0].anchorKind, 'deleted');
   assert.equal(
     result.placementResults[0].evaluation.reasonCodes.includes('REVISION_BRIDGE_ANCHOR_CONFIDENCE_DELETED_TARGET'),
     true,
   );
+});
+
+test('CONTOUR-05 comment record keeps required fields and optional meta when present', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildCommentSurvivalPreview(buildInput({
+    commentThreads: [
+      validThread({
+        status: 'resolved',
+        messages: [{
+          messageId: 'message-1',
+          authorId: 'author-1',
+          body: 'Keep this comment text.',
+          createdAt: '2026-05-14T00:00:00.000Z',
+          replyParent: 'message-0',
+        }],
+      }),
+    ],
+  }));
+  const record = result.commentRecords[0];
+
+  assert.equal(record.commentId, 'message-1');
+  assert.equal(record.bodyText, 'Keep this comment text.');
+  assert.equal(record.placementStatus, 'exact');
+  assert.equal(record.orphanReason, '');
+  assert.equal(record.sourcePart, 'commentThread:thread-1');
+  assert.equal(record.authorHandle, 'author-1');
+  assert.equal(record.createdAtUtc, '2026-05-14T00:00:00.000Z');
+  assert.equal(record.replyParent, 'message-0');
+  assert.equal(record.resolvedDone, true);
+  assert.equal(record.anchorKind, 'span');
 });
 
 test('CONTOUR-05 ambiguous placement preserves thread text and zero auto apply', async () => {
@@ -278,6 +315,32 @@ test('CONTOUR-05 duplicate thread id is diagnostic without silent merge', async 
     true,
   );
   assertZeroAutoApply(result);
+});
+
+test('CONTOUR-05 duplicate comment id becomes blocked record without overwrite', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildCommentSurvivalPreview(buildInput({
+    commentThreads: [
+      validThread({
+        threadId: 'thread-1',
+        messages: [{ messageId: 'dup-message', body: 'First body.' }],
+      }),
+      validThread({
+        threadId: 'thread-2',
+        messages: [{ messageId: 'dup-message', body: 'Second body.' }],
+      }),
+    ],
+    commentAnchorPlacements: [],
+  }));
+
+  assert.equal(result.commentRecords.length, 2);
+  assert.deepEqual(result.commentRecords.map((record) => record.bodyText), ['First body.', 'Second body.']);
+  assert.equal(result.blockedRecords.length, 1);
+  assert.equal(result.blockedRecords[0].reasonCode, 'REVISION_BRIDGE_COMMENT_SURVIVAL_COMMENT_ID_DUPLICATE');
+  assert.equal(
+    result.diagnostics.some((diagnostic) => diagnostic.code === 'REVISION_BRIDGE_COMMENT_SURVIVAL_COMMENT_ID_DUPLICATE'),
+    true,
+  );
 });
 
 test('CONTOUR-05 duplicate comment content is allowed across different ids', async () => {
@@ -448,6 +511,7 @@ test('CONTOUR-05 exact autoEligible input remains non-auto-applicable in surviva
   assertPreservedBody(result);
   assertZeroAutoApply(result);
   assert.equal(result.placementResults[0].status, 'placed');
+  assert.equal(result.commentRecords[0].placementStatus, 'exact');
 });
 
 test('CONTOUR-05 placement does not duplicate comment text', async () => {
@@ -513,6 +577,21 @@ test('CONTOUR-05 result is deterministic and does not mutate input', async () =>
 
   assert.deepEqual(input, before);
   assert.deepEqual(first, second);
+});
+
+test('CONTOUR-05 unknown author does not drop body text', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildCommentSurvivalPreview(buildInput({
+    commentThreads: [
+      validThread({
+        messages: [{ messageId: 'message-1', authorId: '', body: 'Body survives.', createdAt: '' }],
+      }),
+    ],
+    commentAnchorPlacements: [],
+  }));
+
+  assert.equal(result.commentRecords[0].bodyText, 'Body survives.');
+  assert.equal(result.commentRecords[0].authorHandle, '');
 });
 
 test('CONTOUR-05 source section has no forbidden surface tokens', () => {
