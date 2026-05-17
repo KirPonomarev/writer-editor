@@ -7528,6 +7528,35 @@ function normalizeGoogleDocsEvidencePacket(input = {}) {
   };
 }
 
+function canonicalGoogleDocsEvidencePacketForHash(input = {}) {
+  const packet = normalizeGoogleDocsEvidencePacket(input);
+  const coverage = cloneJsonSafe(packet.coverage).sort((left, right) => (
+    normalizeString(left).localeCompare(normalizeString(right), 'en')
+  ));
+  const evidence = cloneJsonSafe(packet.evidence).sort((left, right) => {
+    const leftKey = [
+      normalizeString(left?.supportClass),
+      normalizeString(left?.evidenceId),
+      normalizeString(left?.digest),
+      normalizeString(left?.locator),
+    ].join('\u001f');
+    const rightKey = [
+      normalizeString(right?.supportClass),
+      normalizeString(right?.evidenceId),
+      normalizeString(right?.digest),
+      normalizeString(right?.locator),
+    ].join('\u001f');
+    return leftKey.localeCompare(rightKey, 'en');
+  });
+  return {
+    schemaVersion: packet.schemaVersion,
+    packetId: packet.packetId,
+    packetClass: packet.packetClass,
+    coverage,
+    evidence,
+  };
+}
+
 function normalizeGoogleDocsSupportClaim(input = {}) {
   const claim = isPlainObject(input) ? input : {};
   return {
@@ -7739,7 +7768,7 @@ function missingGoogleDocsRequiredCoverage(coverage) {
 }
 
 export function createGoogleDocsEvidencePacketHash(input = {}) {
-  const packet = normalizeGoogleDocsEvidencePacket(input);
+  const packet = canonicalGoogleDocsEvidencePacketForHash(input);
   return `rbgde_${revisionBlockHash({
     schemaVersion: packet.schemaVersion,
     packetId: packet.packetId,

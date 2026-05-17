@@ -223,6 +223,59 @@ test('Contour 11 requires docsSuggestions and driveComments classes for Google c
   assert.deepEqual(result.reasons[0].missingClaimCoverage, ['driveComments']);
 });
 
+test('Contour 11 packet hash stays canonical when semantically identical coverage and evidence order changes', async () => {
+  const bridge = await loadBridge();
+  const packetA = validEvidencePacket({
+    coverage: ['docsSuggestions', 'driveComments'],
+    evidence: [
+      {
+        evidenceId: 'google-evidence-1',
+        supportClass: 'docsSuggestions',
+        digest: 'sha256:docs-suggestions',
+        locator: 'docs/suggestions',
+      },
+      {
+        evidenceId: 'google-evidence-2',
+        supportClass: 'driveComments',
+        digest: 'sha256:drive-comments',
+        locator: 'drive/comments',
+      },
+    ],
+  });
+  const packetB = validEvidencePacket({
+    coverage: ['driveComments', 'docsSuggestions'],
+    evidence: [
+      {
+        evidenceId: 'google-evidence-2',
+        supportClass: 'driveComments',
+        digest: 'sha256:drive-comments',
+        locator: 'drive/comments',
+      },
+      {
+        evidenceId: 'google-evidence-1',
+        supportClass: 'docsSuggestions',
+        digest: 'sha256:docs-suggestions',
+        locator: 'docs/suggestions',
+      },
+    ],
+  });
+  const hashA = bridge.createGoogleDocsEvidencePacketHash(packetA);
+  const hashB = bridge.createGoogleDocsEvidencePacketHash(packetB);
+  const claim = validClaim(bridge, packetA, {
+    claimedCoverage: ['driveComments', 'docsSuggestions'],
+    evidenceHash: hashA,
+  });
+
+  const result = bridge.evaluateGoogleDocsEvidenceClaimGate({
+    evidencePacket: packetB,
+    claim,
+  });
+
+  assert.equal(hashA, hashB);
+  assert.equal(result.ok, true);
+  assert.equal(result.reason, 'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_ACCEPTED');
+});
+
 test('Contour 11 gate does not mutate Google claim or evidence inputs', async () => {
   const bridge = await loadBridge();
   const input = validGateInput(bridge);
