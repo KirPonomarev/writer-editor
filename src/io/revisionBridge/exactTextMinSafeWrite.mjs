@@ -46,6 +46,16 @@ function rawString(value) {
   return typeof value === 'string' ? value : '';
 }
 
+function resolveNowMs(nowFn = Date.now) {
+  const stamp = Number(typeof nowFn === 'function' ? nowFn() : Date.now());
+  if (Number.isFinite(stamp) && stamp >= 0) return Math.trunc(stamp);
+  return Date.now();
+}
+
+function toIsoStringFromNow(nowFn = Date.now) {
+  return new Date(resolveNowMs(nowFn)).toISOString();
+}
+
 function resolvePath(value) {
   const raw = rawString(value);
   return raw ? path.resolve(raw) : '';
@@ -184,6 +194,18 @@ function buildSnapshotEvidence(writeResult, capturedRecoveryEvidence = null) {
   };
 }
 
+function buildBackupId(snapshotPath) {
+  const match = path.basename(rawString(snapshotPath)).match(/\.bak\.(\d{13})$/u);
+  return match ? match[1] : '';
+}
+
+function isIsoUtcTimestamp(value) {
+  if (!normalizeString(value)) return false;
+  const parsed = Date.parse(value);
+  if (!Number.isFinite(parsed)) return false;
+  return new Date(parsed).toISOString() === value;
+}
+
 async function buildTruthfulRecoveryEvidence(writeResult, capturedRecoveryEvidence, expectedText) {
   const evidence = buildSnapshotEvidence(writeResult, capturedRecoveryEvidence);
   if (!evidence.snapshotCreated || !evidence.snapshotPath) return evidence;
@@ -224,6 +246,18 @@ async function validateReceipt(receipt, expected = {}) {
   if (receipt?.sessionId !== expected.sessionId) failures.push('receipt sessionId does not match plan');
   if (receipt?.sceneId !== expected.sceneId) failures.push('receipt sceneId does not match op');
   if (receipt?.changeId !== expected.changeId) failures.push('receipt changeId does not match op');
+  if (receipt?.baselineHashBefore !== expected.baselineHashBefore) {
+    failures.push('receipt baselineHashBefore does not match plan');
+  }
+  if (receipt?.operationKind !== expected.operationKind) failures.push('receipt operationKind is invalid');
+  if (receipt?.writeStatus !== expected.writeStatus) failures.push('receipt writeStatus is invalid');
+  if (!isIsoUtcTimestamp(receipt?.writtenAt)) failures.push('receipt writtenAt is invalid');
+  if (receipt?.writtenAt !== expected.writtenAt) {
+    failures.push('receipt writtenAt does not match write timestamp');
+  }
+  if (receipt?.backupId !== expected.backupId) {
+    failures.push('receipt backupId does not match recovery snapshot');
+  }
   if (!isPlainObject(receipt?.recovery)) {
     failures.push('receipt recovery is required');
   } else {
@@ -232,6 +266,9 @@ async function validateReceipt(receipt, expected = {}) {
     }
     if (receipt.recovery.snapshotCreated !== true) failures.push('receipt recovery snapshot is required');
     if (!normalizeString(receipt.recovery.snapshotPath)) failures.push('receipt recovery snapshotPath is required');
+    if (receipt.backupId !== buildBackupId(receipt.recovery.snapshotPath)) {
+      failures.push('receipt backupId does not match recovery snapshot path');
+    }
     if (receipt.recovery.recoveryAction !== 'OPEN_SNAPSHOT_OR_ABORT') {
       failures.push('receipt recoveryAction is invalid');
     }
@@ -416,6 +453,7 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
   const nextText = `${currentText.slice(0, from)}${replacementText}${currentText.slice(to)}`;
   const inputHash = buildInputHash(input, providedPlan);
   const outputHash = sha256Text(nextText);
+  const writtenAt = toIsoStringFromNow(options.now);
   const capturedRecoveryEvidence = {};
   const userAfterStage = typeof options.afterStage === 'function' ? options.afterStage : null;
   const userBeforeWrite = typeof options.beforeWrite === 'function' ? options.beforeWrite : null;
@@ -448,12 +486,18 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
     }
 
     const recovery = await buildTruthfulRecoveryEvidence(writeResult, capturedRecoveryEvidence, currentText);
+    const backupId = buildBackupId(recovery.snapshotPath);
     const receipt = {
       schemaVersion: REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECEIPT_SCHEMA,
       projectId: rawString(providedPlan.projectId),
       sessionId: rawString(providedPlan.sessionId),
       sceneId: rawString(op.sceneId),
       changeId: rawString(op.changeId),
+      baselineHashBefore: rawString(providedPlan.baselineHash),
+      operationKind: 'replaceExactText',
+      writeStatus: 'applied',
+      backupId,
+      writtenAt,
       inputHash,
       outputHash,
       bytesWritten: writeResult.bytesWritten,
@@ -479,6 +523,11 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
       sessionId: rawString(providedPlan.sessionId),
       sceneId: rawString(op.sceneId),
       changeId: rawString(op.changeId),
+      baselineHashBefore: rawString(providedPlan.baselineHash),
+      operationKind: 'replaceExactText',
+      writeStatus: 'applied',
+      backupId,
+      writtenAt,
     });
     if (receiptFailures.length > 0) {
       return fail(buildReason(
