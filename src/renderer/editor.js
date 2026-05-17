@@ -517,9 +517,27 @@ function reviewSurfacePresentStatus(value) {
       return 'привязан';
     case 'preview':
       return 'предпросмотр';
+    case 'applied':
+      return 'применено';
     default:
       return status;
   }
+}
+
+function reviewSurfaceIsIsoUtcTimestamp(value) {
+  const normalized = reviewSurfaceText(value);
+  if (!normalized) return false;
+  const parsed = Date.parse(normalized);
+  if (!Number.isFinite(parsed)) return false;
+  return new Date(parsed).toISOString() === normalized;
+}
+
+function reviewSurfaceBackupIdFromSnapshotPath(snapshotPath) {
+  const normalized = reviewSurfaceText(snapshotPath);
+  if (!normalized) return '';
+  const basename = normalized.split(/[\\/]/u).pop() || '';
+  const match = basename.match(/\.bak\.(\d{13})$/u);
+  return match ? match[1] : '';
 }
 
 function reviewSurfaceReasonCode(value, fallback = '') {
@@ -657,21 +675,38 @@ function reviewSurfaceNormalizeState(input = {}) {
   const commentSurvivalPreview = reviewSurfaceCanonicalCommentPreview(source, revisionSession);
   const rawReceipt = reviewSurfaceIsPlainObject(source.receipt) ? source.receipt : null;
   const recovery = reviewSurfaceIsPlainObject(rawReceipt?.recovery) ? rawReceipt.recovery : null;
+  const writtenAt = reviewSurfaceText(rawReceipt?.writtenAt);
+  const backupId = reviewSurfaceText(rawReceipt?.backupId);
+  const recoverySnapshotPath = reviewSurfaceText(recovery?.snapshotPath);
+  const backupIdMatchesRecovery = !recoverySnapshotPath
+    || !backupId
+    || reviewSurfaceBackupIdFromSnapshotPath(recoverySnapshotPath) === backupId;
   const receipt = rawReceipt?.schemaVersion === REVIEW_SURFACE_RECEIPT_SCHEMA
     && reviewSurfaceText(rawReceipt.projectId)
     && reviewSurfaceText(rawReceipt.sessionId)
     && reviewSurfaceText(rawReceipt.sceneId)
     && reviewSurfaceText(rawReceipt.changeId)
+    && reviewSurfaceText(rawReceipt.baselineHashBefore)
+    && reviewSurfaceText(rawReceipt.operationKind) === 'replaceExactText'
+    && reviewSurfaceText(rawReceipt.writeStatus) === 'applied'
+    && backupId
+    && reviewSurfaceIsIsoUtcTimestamp(writtenAt)
     && reviewSurfaceText(rawReceipt.transactionId)
     && reviewSurfaceText(rawReceipt.inputHash)
     && reviewSurfaceText(rawReceipt.outputHash)
     && reviewSurfaceIsPlainObject(recovery)
+    && backupIdMatchesRecovery
     ? {
         schemaVersion: rawReceipt.schemaVersion,
         projectId: reviewSurfaceText(rawReceipt.projectId),
         sessionId: reviewSurfaceText(rawReceipt.sessionId),
         sceneId: reviewSurfaceText(rawReceipt.sceneId),
         changeId: reviewSurfaceText(rawReceipt.changeId),
+        baselineHashBefore: reviewSurfaceText(rawReceipt.baselineHashBefore),
+        operationKind: reviewSurfaceText(rawReceipt.operationKind),
+        writeStatus: reviewSurfaceText(rawReceipt.writeStatus),
+        backupId,
+        writtenAt,
         transactionId: reviewSurfaceText(rawReceipt.transactionId),
         inputHash: reviewSurfaceText(rawReceipt.inputHash),
         outputHash: reviewSurfaceText(rawReceipt.outputHash),
@@ -992,6 +1027,11 @@ function renderReviewSurfaceMarkup(viewModel) {
           ['Сессия', viewModel.receipt.sessionId],
           ['Сцена', viewModel.receipt.sceneId],
           ['Изменение', viewModel.receipt.changeId],
+          ['Основа до записи', viewModel.receipt.baselineHashBefore],
+          ['Операция', viewModel.receipt.operationKind],
+          ['Статус записи', reviewSurfacePresentStatus(viewModel.receipt.writeStatus) || viewModel.receipt.writeStatus],
+          ['Backup ID', viewModel.receipt.backupId],
+          ['Записано', viewModel.receipt.writtenAt],
           ['Байты', String(viewModel.receipt.bytesWritten)],
           ['Транзакция', viewModel.receipt.transactionId],
           ['Входной хэш', viewModel.receipt.inputHash],
