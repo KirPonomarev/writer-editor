@@ -6047,6 +6047,16 @@ function parsedReviewSurfaceAdapterDiagnostics(reasons, reviewPacket, previewInp
   });
 }
 
+function parsedReviewSurfaceStructuralPreview(previewResult) {
+  if (!isPlainObject(previewResult) || previewResult.ok !== true || !isPlainObject(previewResult.session)) {
+    return null;
+  }
+  const structuralPreview = buildStructuralManualReviewPreview({
+    revisionSession: previewResult.session,
+  });
+  return isPlainObject(structuralPreview) ? cloneJsonSafe(structuralPreview) : null;
+}
+
 function parsedReviewSurfaceAdapterReady(reviewPacket, previewInput, previewResult) {
   return stripReviewPacketPreviewApplyFields({
     ok: true,
@@ -6057,6 +6067,7 @@ function parsedReviewSurfaceAdapterReady(reviewPacket, previewInput, previewResu
     reasons: [],
     reviewPacket,
     previewInput,
+    structuralManualReviewPreview: parsedReviewSurfaceStructuralPreview(previewResult),
     revisionBridgePreviewResult: previewResult,
   });
 }

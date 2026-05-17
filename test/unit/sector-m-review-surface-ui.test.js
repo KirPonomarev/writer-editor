@@ -194,6 +194,22 @@ function createCanonicalAdapterPayload() {
         reviewGraph: reviewPacket,
       },
     },
+    structuralManualReviewPreview: {
+      items: [
+        {
+          itemId: 'item-1',
+          structuralChangeId: 'structural-1',
+          structuralKind: 'moveBlock',
+          summary: 'Move block.',
+          manualOnlyReason: 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_MOVE_MANUAL_ONLY',
+          reasonCodes: ['REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_MOVE_MANUAL_ONLY'],
+        },
+      ],
+      unsupportedObservations: [],
+      summary: {
+        totalStructuralChanges: 1,
+      },
+    },
   };
 }
 
@@ -251,6 +267,32 @@ test('review surface ui: unsupported observations still render only from explici
   assert.ok(markup.includes('Только чтение'));
   assert.ok(markup.includes('Только показ'));
   assert.ok(markup.includes('Записи в проект мимо безопасного пути здесь нет.'));
+});
+
+test('review surface ui: canonical adapter payload preserves unsupported observations from explicit structural preview', () => {
+  const helpers = loadReviewSurfaceHelpers();
+  const state = createCanonicalAdapterPayload();
+  state.structuralManualReviewPreview = {
+    items: [],
+    unsupportedObservations: [
+      {
+        itemId: 'unsupported-1',
+        structuralKind: 'copyBlock',
+        reason: 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_UNSUPPORTED_KIND',
+      },
+    ],
+    summary: {
+      totalStructuralChanges: 1,
+    },
+  };
+
+  const viewModel = helpers.buildReviewSurfaceViewModel(state);
+  const markup = helpers.renderReviewSurfaceMarkup(viewModel);
+
+  assert.equal(viewModel.reviewItems.length > 0 && viewModel.reviewItems[0].title === 'Структура copyBlock', false);
+  assert.equal(viewModel.unsupportedObservations[0].reason, 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_UNSUPPORTED_KIND');
+  assert.ok(markup.includes('Только чтение'));
+  assert.ok(markup.includes('REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_UNSUPPORTED_KIND'));
 });
 
 test('review surface ui: exact-text preview and receipt render only when supported by existing schema', () => {
