@@ -202,10 +202,41 @@ test('RB-04 converts parsed review surface to reviewPacket, previewInput, and RB
     updatedAt: input.updatedAt,
     reviewPacket: result.reviewPacket,
   });
+  assert.deepEqual(
+    result.structuralManualReviewPreview,
+    bridge.buildStructuralManualReviewPreview({ revisionSession: directPreview.session }),
+  );
   assert.deepEqual(result.revisionBridgePreviewResult, directPreview);
   assert.equal(result.revisionBridgePreviewResult.session.reviewGraph.textChanges[0].schemaVersion, (
     bridge.REVISION_BRIDGE_TEXT_CHANGE_SCHEMA
   ));
+});
+
+test('RB-04 carries explicit structural preview so unsupported kinds do not rely on UI fallback classification', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.adaptParsedReviewSurfaceToReviewPacketPreviewInput({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-hash-1',
+    parsedSurface: {
+      structuralChanges: [
+        {
+          structuralChangeId: 'copy-1',
+          kind: 'copyBlock',
+          summary: 'Copy block.',
+        },
+      ],
+    },
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.structuralManualReviewPreview.status, 'preview');
+  assert.equal(result.structuralManualReviewPreview.items.length, 0);
+  assert.equal(result.structuralManualReviewPreview.unsupportedObservations.length, 1);
+  assert.equal(
+    result.structuralManualReviewPreview.unsupportedObservations[0].reason,
+    'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_UNSUPPORTED_KIND',
+  );
 });
 
 test('RB-04 converts unsupportedItems into exact diagnostic item candidates', async () => {
