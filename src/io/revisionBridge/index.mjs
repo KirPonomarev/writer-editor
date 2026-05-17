@@ -7147,6 +7147,35 @@ function normalizeWordEvidencePacket(input = {}) {
   };
 }
 
+function canonicalWordEvidencePacketForHash(input = {}) {
+  const packet = normalizeWordEvidencePacket(input);
+  const coverage = cloneJsonSafe(packet.coverage).sort((left, right) => (
+    normalizeString(left).localeCompare(normalizeString(right), 'en')
+  ));
+  const evidence = cloneJsonSafe(packet.evidence).sort((left, right) => {
+    const leftKey = [
+      normalizeString(left?.supportClass),
+      normalizeString(left?.evidenceId),
+      normalizeString(left?.digest),
+      normalizeString(left?.locator),
+    ].join('\u001f');
+    const rightKey = [
+      normalizeString(right?.supportClass),
+      normalizeString(right?.evidenceId),
+      normalizeString(right?.digest),
+      normalizeString(right?.locator),
+    ].join('\u001f');
+    return leftKey.localeCompare(rightKey, 'en');
+  });
+  return {
+    schemaVersion: packet.schemaVersion,
+    packetId: packet.packetId,
+    packetClass: packet.packetClass,
+    coverage,
+    evidence,
+  };
+}
+
 function normalizeWordSupportClaim(input = {}) {
   const claim = isPlainObject(input) ? input : {};
   return {
@@ -7351,7 +7380,7 @@ function wordEvidenceClaimGateResult(ok, code, reasons, claim, evidencePacket, e
 }
 
 export function createWordEvidencePacketHash(input = {}) {
-  const packet = normalizeWordEvidencePacket(input);
+  const packet = canonicalWordEvidencePacketForHash(input);
   return `rbwe_${revisionBlockHash({
     schemaVersion: packet.schemaVersion,
     packetId: packet.packetId,
