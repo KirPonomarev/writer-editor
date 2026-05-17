@@ -7284,6 +7284,13 @@ function collectWordEvidencePacketReasons(input, packet) {
         'evidence item digest is required',
       ));
     }
+    if (!normalizeString(entry.locator)) {
+      reasons.push(wordEvidenceReason(
+        'REVISION_BRIDGE_WORD_EVIDENCE_PACKET_INVALID',
+        `evidencePacket.evidence.${index}.locator`,
+        'evidence item locator is required',
+      ));
+    }
   });
 
   packet.coverage.forEach((coverageClass) => {
@@ -7663,6 +7670,13 @@ function collectGoogleDocsEvidencePacketReasons(input, packet) {
         'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
         `evidencePacket.evidence.${index}.digest`,
         'evidence item digest is required',
+      ));
+    }
+    if (!normalizeString(entry.locator)) {
+      reasons.push(googleDocsEvidenceReason(
+        'REVISION_BRIDGE_GOOGLE_DOCS_EVIDENCE_PACKET_INVALID',
+        `evidencePacket.evidence.${index}.locator`,
+        'evidence item locator is required',
       ));
     }
   });
