@@ -109,9 +109,7 @@ function collectGraphemeBoundaries(text = '') {
 }
 
 function normalizeBlockText(value) {
-  return typeof value === 'string'
-    ? value.replaceAll('\r\n', '\n').replaceAll('\r', '\n')
-    : '';
+  return typeof value === 'string' ? value : '';
 }
 
 export function buildSceneInlineRangeHashInput(source = {}) {

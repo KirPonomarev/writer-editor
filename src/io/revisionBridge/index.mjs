@@ -2969,12 +2969,12 @@ function inlineRangeBlockTextFromContext(blockId, context) {
   const blocks = context.blocks;
   if (Array.isArray(blocks)) {
     const block = blocks.find((candidate) => isPlainObject(candidate) && normalizeString(candidate.blockId) === blockId);
-    return block ? normalizeRevisionBlockText(block.text) : null;
+    return block ? preserveString(block.text) : null;
   }
   if (isPlainObject(blocks)) {
     const block = blocks[blockId];
-    if (typeof block === 'string') return normalizeRevisionBlockText(block);
-    if (isPlainObject(block)) return normalizeRevisionBlockText(block.text);
+    if (typeof block === 'string') return preserveString(block);
+    if (isPlainObject(block)) return preserveString(block.text);
   }
   return null;
 }
@@ -3015,9 +3015,9 @@ export function createInlineRange(input = {}) {
     lineageId: normalizeString(range.lineageId),
     from,
     to,
-    quote: normalizeString(range.quote),
-    prefix: normalizeString(range.prefix),
-    suffix: normalizeString(range.suffix),
+    quote: preserveString(range.quote),
+    prefix: preserveString(range.prefix),
+    suffix: preserveString(range.suffix),
     confidence,
     riskClass: isRevisionRiskClass(range.riskClass) ? range.riskClass : 'low',
     automationPolicy,
@@ -3173,8 +3173,8 @@ function anchorConfidenceAddDiagnostic(diagnostics, code, field, message) {
 }
 
 function anchorConfidenceTextFromEntry(entry) {
-  if (typeof entry === 'string') return normalizeRevisionBlockText(entry);
-  if (isPlainObject(entry)) return normalizeRevisionBlockText(entry.text);
+  if (typeof entry === 'string') return preserveString(entry);
+  if (isPlainObject(entry)) return preserveString(entry.text);
   return null;
 }
 
@@ -3433,8 +3433,8 @@ function matchProofAddDiagnostic(diagnostics, code, field, message) {
 }
 
 function matchProofTextFromEntry(entry) {
-  if (typeof entry === 'string') return normalizeRevisionBlockText(entry);
-  if (isPlainObject(entry)) return normalizeRevisionBlockText(entry.text);
+  if (typeof entry === 'string') return preserveString(entry);
+  if (isPlainObject(entry)) return preserveString(entry.text);
   return null;
 }
 

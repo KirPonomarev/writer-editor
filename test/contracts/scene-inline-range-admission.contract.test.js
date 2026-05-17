@@ -65,6 +65,38 @@ test('scene inline range admission: grapheme combining mark and emoji boundaries
   );
 });
 
+test('scene inline range admission: CRLF and LF variants keep truthful inline boundaries in the same declared offset model', async () => {
+  const admission = await loadInlineAdmission();
+
+  const crlf = admission.admitSceneInlineRange({
+    id: 'range-crlf',
+    blockId: 'block-1',
+    startOffset: 3,
+    endOffset: 4,
+    markType: 'bold',
+  }, {
+    blockId: 'block-1',
+    blockText: 'A\r\nB',
+  });
+  const lf = admission.admitSceneInlineRange({
+    id: 'range-lf',
+    blockId: 'block-1',
+    startOffset: 2,
+    endOffset: 3,
+    markType: 'bold',
+  }, {
+    blockId: 'block-1',
+    blockText: 'A\nB',
+  });
+
+  assert.equal(crlf.ok, true);
+  assert.equal(lf.ok, true);
+  assert.equal(crlf.range.startOffset, 3);
+  assert.equal(crlf.range.endOffset, 4);
+  assert.equal(lf.range.startOffset, 2);
+  assert.equal(lf.range.endOffset, 3);
+});
+
 test('scene inline range admission: reversed out-of-block grapheme-split and unknown-mark fixtures are rejected', async () => {
   const admission = await loadInlineAdmission();
   const expectations = new Map([
