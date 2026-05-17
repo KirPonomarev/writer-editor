@@ -2359,6 +2359,12 @@ function minimalBlockIdCompact(value) {
   return normalizeRevisionBlockText(value).toLowerCase().replace(/[^a-z0-9]+/gu, '');
 }
 
+function minimalBlockIdDuplicateTextKey(sceneId, text) {
+  const compactText = minimalBlockIdCompact(text);
+  if (!compactText) return '';
+  return `${normalizeString(sceneId)}::${compactText}`;
+}
+
 function minimalBlockIdIsTextDerived(existingBlockId, block) {
   const id = minimalBlockIdCompact(existingBlockId);
   const text = minimalBlockIdCompact(block.text);
@@ -2436,7 +2442,7 @@ function minimalBlockIdPreviewBlock(input, block, index, duplicateTextKeys, reas
     || block.baseVersionHash
     || block.expectedVersionHash,
   );
-  const textKey = minimalBlockIdCompact(block.text);
+  const textKey = minimalBlockIdDuplicateTextKey(sceneId, block.text);
 
   if (!existingBlockId) {
     reasons.push(minimalBlockIdReason(
@@ -2532,9 +2538,9 @@ export function buildMinimalBlockIdPreview(input = {}) {
   const blocks = minimalBlockIdBlocks(input);
   const reasons = [];
   const textCounts = {};
-  blocks.forEach((block) => {
+  blocks.forEach((block, index) => {
     if (!isPlainObject(block)) return;
-    const key = minimalBlockIdCompact(block.text);
+    const key = minimalBlockIdDuplicateTextKey(minimalBlockIdSceneId(input, block, index), block.text);
     if (!key) return;
     textCounts[key] = (textCounts[key] || 0) + 1;
   });

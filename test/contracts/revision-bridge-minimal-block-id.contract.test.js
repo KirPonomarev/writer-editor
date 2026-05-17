@@ -144,6 +144,24 @@ test('C06 identical paragraphs do not collapse', async () => {
   assert.equal(reasonCodes(result).includes('REVISION_BRIDGE_MINIMAL_BLOCK_ID_DUPLICATE_TEXT_MANUAL_ONLY'), true);
 });
 
+test('C06 identical paragraphs across scenes stay preview and do not emit duplicate text manual only', async () => {
+  const bridge = await loadBridge();
+
+  const result = bridge.buildMinimalBlockIdPreview({
+    projectId: 'project-1',
+    blocks: [
+      validBlock({ sceneId: 'scene-1', blockId: 'stable-a', lineageId: 'lineage-a', order: 0, text: 'Same paragraph.' }),
+      validBlock({ sceneId: 'scene-2', blockId: 'stable-b', lineageId: 'lineage-b', order: 0, text: 'Same paragraph.' }),
+    ],
+  });
+
+  assert.equal(result.status, 'preview');
+  assert.equal(result.autoApplyCount, 0);
+  assert.equal(reasonCodes(result).includes('REVISION_BRIDGE_MINIMAL_BLOCK_ID_DUPLICATE_TEXT_MANUAL_ONLY'), false);
+  assert.equal(result.previewBlocks.length, 2);
+  assert.equal(new Set(result.previewBlocks.map((entry) => entry.sceneId)).size, 2);
+});
+
 test('C06 identical headings do not auto apply', async () => {
   const bridge = await loadBridge();
 
