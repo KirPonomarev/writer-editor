@@ -337,6 +337,32 @@ test('TextChange exact match and StructuralChange do not authorize auto apply', 
   assert.equal(result.reasons.some((reason) => reason.field === 'structuralChange.autoApply'), true);
 });
 
+test('RB-02 preserves raw CRLF quote prefix suffix in CommentPlacement parity path', async () => {
+  const bridge = await loadBridge();
+  const placement = bridge.createCommentPlacement({
+    ...validPlacement(),
+    quote: '\r\nAlpha\r\n',
+    prefix: '\r\n',
+    suffix: '\r\n',
+  });
+  const textChange = bridge.createTextChange({
+    ...validTextChange(),
+    match: {
+      kind: 'exact',
+      quote: '\r\nAlpha\r\n',
+      prefix: '\r\n',
+      suffix: '\r\n',
+    },
+  });
+
+  assert.equal(placement.quote, '\r\nAlpha\r\n');
+  assert.equal(placement.prefix, '\r\n');
+  assert.equal(placement.suffix, '\r\n');
+  assert.equal(textChange.match.quote, '\r\nAlpha\r\n');
+  assert.equal(textChange.match.prefix, '\r\n');
+  assert.equal(textChange.match.suffix, '\r\n');
+});
+
 test('RB-01 apply safety remains blocked for exact resolved packets', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeApplySafety({
