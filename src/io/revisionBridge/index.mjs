@@ -182,6 +182,7 @@ const COMMENT_SURVIVAL_PREVIEW_DIAGNOSTICS_CODE = 'E_REVISION_BRIDGE_COMMENT_SUR
 const COMMENT_SURVIVAL_THREAD_INVALID_CODE = 'REVISION_BRIDGE_COMMENT_SURVIVAL_THREAD_INVALID';
 const COMMENT_SURVIVAL_THREAD_ID_MISSING_CODE = 'REVISION_BRIDGE_COMMENT_SURVIVAL_THREAD_ID_MISSING';
 const COMMENT_SURVIVAL_THREAD_ID_DUPLICATE_CODE = 'REVISION_BRIDGE_COMMENT_SURVIVAL_THREAD_ID_DUPLICATE';
+const COMMENT_SURVIVAL_COMMENT_ID_DUPLICATE_CODE = 'REVISION_BRIDGE_COMMENT_SURVIVAL_COMMENT_ID_DUPLICATE';
 const COMMENT_SURVIVAL_THREAD_TEXT_EMPTY_CODE = 'REVISION_BRIDGE_COMMENT_SURVIVAL_THREAD_TEXT_EMPTY';
 const COMMENT_SURVIVAL_PLACEMENT_THREAD_MISSING_CODE = 'REVISION_BRIDGE_COMMENT_SURVIVAL_PLACEMENT_THREAD_MISSING';
 const COMMENT_SURVIVAL_PLACEMENT_NOT_EVALUATED_CODE = 'REVISION_BRIDGE_COMMENT_SURVIVAL_PLACEMENT_NOT_EVALUATED';
@@ -198,6 +199,7 @@ export const REVISION_BRIDGE_COMMENT_SURVIVAL_PREVIEW_REASON_CODES = Object.free
   COMMENT_SURVIVAL_THREAD_INVALID_CODE,
   COMMENT_SURVIVAL_THREAD_ID_MISSING_CODE,
   COMMENT_SURVIVAL_THREAD_ID_DUPLICATE_CODE,
+  COMMENT_SURVIVAL_COMMENT_ID_DUPLICATE_CODE,
   COMMENT_SURVIVAL_THREAD_TEXT_EMPTY_CODE,
   COMMENT_SURVIVAL_PLACEMENT_THREAD_MISSING_CODE,
   COMMENT_SURVIVAL_PLACEMENT_NOT_EVALUATED_CODE,
@@ -4008,6 +4010,7 @@ function commentSurvivalPreviewMessages(thread, threadId) {
       authorId: normalizeString(source.authorId),
       body: commentSurvivalPreviewBody(source),
       createdAt: normalizeString(source.createdAt),
+      replyParent: normalizeString(source.replyParent || source.parentMessageId),
     };
   });
 }
@@ -4021,6 +4024,7 @@ function commentSurvivalPreviewThreadSnapshot(input, index) {
     threadId,
     authorId: normalizeString(thread.authorId),
     status: normalizeStringEnum(thread.status, ['open', 'resolved'], 'open'),
+    resolvedDone: normalizeStringEnum(thread.status, ['open', 'resolved'], 'open') === 'resolved',
     createdAt: normalizeString(thread.createdAt),
     updatedAt: normalizeString(thread.updatedAt),
     tags: normalizeStringArray(thread.tags),
@@ -4135,6 +4139,111 @@ function commentSurvivalPreviewPlacementDiagnostics(placementResult) {
   return diagnostics;
 }
 
+function commentSurvivalPreviewPlacementByThreadId(placementResults) {
+  const placementByThreadId = new Map();
+  placementResults.forEach((placementResult) => {
+    if (!placementResult?.threadId || placementByThreadId.has(placementResult.threadId)) return;
+    placementByThreadId.set(placementResult.threadId, placementResult);
+  });
+  return placementByThreadId;
+}
+
+function commentSurvivalPreviewPlacementStatus(placementResult) {
+  if (!isPlainObject(placementResult)) return 'orphan';
+  const reasonCodes = Array.isArray(placementResult.evaluation?.reasonCodes)
+    ? placementResult.evaluation.reasonCodes
+    : [];
+  if (reasonCodes.includes('REVISION_BRIDGE_ANCHOR_CONFIDENCE_DELETED_TARGET')) return 'deletedAnchor';
+  if (placementResult.status === 'placed') return 'exact';
+  return 'orphan';
+}
+
+function commentSurvivalPreviewPlacementAnchorKind(placementResult) {
+  const inlineRange = isPlainObject(placementResult?.evaluation?.placement?.inlineRange)
+    ? placementResult.evaluation.placement.inlineRange
+    : {};
+  return normalizeStringEnum(inlineRange.kind, ['span', 'point', 'deleted'], 'none');
+}
+
+function commentSurvivalPreviewOrphanReason(placementResult) {
+  if (!isPlainObject(placementResult)) return 'REVISION_BRIDGE_COMMENT_SURVIVAL_ORPHAN_MISSING_PLACEMENT';
+  const evaluationReasonCodes = Array.isArray(placementResult.evaluation?.reasonCodes)
+    ? placementResult.evaluation.reasonCodes
+    : [];
+  const confidenceReasonCodes = Array.isArray(placementResult.evaluation?.confidenceEvaluation?.reasonCodes)
+    ? placementResult.evaluation.confidenceEvaluation.reasonCodes
+    : [];
+  const reasonCodes = [...confidenceReasonCodes, ...evaluationReasonCodes]
+    .map((reason) => normalizeString(reason))
+    .filter(Boolean);
+  if (reasonCodes.length > 0) return normalizeString(reasonCodes[0]);
+  if (placementResult.status !== 'placed') return COMMENT_SURVIVAL_PLACEMENT_NOT_EVALUATED_CODE;
+  return '';
+}
+
+function commentSurvivalPreviewSourcePart(thread) {
+  const threadId = normalizeString(thread?.threadId);
+  return `commentThread:${threadId || `index:${thread?.index ?? 0}`}`;
+}
+
+function commentSurvivalPreviewCommentRecords(threads, placementResults) {
+  const placementByThreadId = commentSurvivalPreviewPlacementByThreadId(placementResults);
+  const records = [];
+  threads.forEach((thread) => {
+    const placementResult = placementByThreadId.get(thread.threadId) || null;
+    const placementStatus = commentSurvivalPreviewPlacementStatus(placementResult);
+    const orphanReason = placementStatus === 'exact' ? '' : commentSurvivalPreviewOrphanReason(placementResult);
+    const anchorKind = commentSurvivalPreviewPlacementAnchorKind(placementResult);
+    const sourcePart = commentSurvivalPreviewSourcePart(thread);
+    thread.messages.forEach((message, messageIndex) => {
+      records.push({
+        commentId: normalizeString(message.messageId) || `${thread.threadId || 'thread'}:${messageIndex}`,
+        threadId: normalizeString(thread.threadId),
+        bodyText: preserveString(message.body),
+        placementStatus,
+        orphanReason,
+        sourcePart,
+        authorHandle: normalizeString(message.authorId),
+        createdAtUtc: normalizeString(message.createdAt || thread.createdAt),
+        replyParent: normalizeString(message.replyParent),
+        resolvedDone: thread.resolvedDone === true,
+        anchorKind,
+      });
+    });
+  });
+  return records;
+}
+
+function commentSurvivalPreviewBlockedRecords(commentRecords) {
+  const blockedRecords = [];
+  const diagnostics = [];
+  const seenCommentIds = new Map();
+  commentRecords.forEach((record, index) => {
+    if (!record.commentId) return;
+    if (!seenCommentIds.has(record.commentId)) {
+      seenCommentIds.set(record.commentId, index);
+      return;
+    }
+    blockedRecords.push({
+      blockedRecordId: `blocked-comment:${record.commentId}:${index}`,
+      commentId: record.commentId,
+      threadId: record.threadId,
+      reasonCode: COMMENT_SURVIVAL_COMMENT_ID_DUPLICATE_CODE,
+      sourcePart: record.sourcePart,
+    });
+    diagnostics.push(commentSurvivalPreviewDiagnostic(
+      COMMENT_SURVIVAL_COMMENT_ID_DUPLICATE_CODE,
+      `commentRecords.${index}.commentId`,
+      'commentId must remain unique and duplicate records are retained as blocked records',
+      index,
+    ));
+  });
+  return {
+    blockedRecords,
+    diagnostics,
+  };
+}
+
 function commentSurvivalPreviewInputDiagnostics(input) {
   const diagnostics = [];
   if (isPlainObject(input) && Array.isArray(input.commentPlacements)) {
@@ -4192,6 +4301,9 @@ export function buildCommentSurvivalPreview(input = {}) {
   placementResults.forEach((placementResult) => {
     diagnostics.push(...commentSurvivalPreviewPlacementDiagnostics(placementResult));
   });
+  const commentRecords = commentSurvivalPreviewCommentRecords(preservedThreads, placementResults);
+  const blockedRecordResult = commentSurvivalPreviewBlockedRecords(commentRecords);
+  diagnostics.push(...blockedRecordResult.diagnostics);
 
   const status = diagnostics.length > 0 ? 'diagnostics' : 'ready';
   const code = status === 'ready'
@@ -4210,6 +4322,8 @@ export function buildCommentSurvivalPreview(input = {}) {
     totalPlacements: placementResults.length,
     preservedThreads,
     placementResults,
+    commentRecords,
+    blockedRecords: blockedRecordResult.blockedRecords,
     diagnostics: cloneJsonSafe(diagnostics),
     diagnosticSummary: commentSurvivalPreviewSummary(diagnostics),
   };
