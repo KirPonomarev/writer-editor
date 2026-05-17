@@ -262,6 +262,11 @@ test('review surface ui: exact-text preview and receipt render only when support
     sessionId: 'session-1',
     sceneId: 'scene-1',
     changeId: 'change-1',
+    baselineHashBefore: 'baseline-1',
+    operationKind: 'replaceExactText',
+    writeStatus: 'applied',
+    backupId: '1700000000000',
+    writtenAt: '2023-11-14T22:13:20.000Z',
     transactionId: 'tx_123',
     inputHash: 'a'.repeat(64),
     outputHash: 'b'.repeat(64),
@@ -271,14 +276,25 @@ test('review surface ui: exact-text preview and receipt render only when support
       snapshotCreated: true,
       snapshotReadable: true,
       snapshotHashMatchesInput: true,
-      snapshotPath: 'snapshot.json',
+      snapshotPath: 'scene-1.recovery.bak.1700000000000',
       recoveryAction: 'OPEN_SNAPSHOT_OR_ABORT',
     },
   };
 
-  const validMarkup = helpers.renderReviewSurfaceMarkup(helpers.buildReviewSurfaceViewModel(validState));
+  const validViewModel = helpers.buildReviewSurfaceViewModel(validState);
+  const validMarkup = helpers.renderReviewSurfaceMarkup(validViewModel);
+  assert.equal(validViewModel.receipt.baselineHashBefore, 'baseline-1');
+  assert.equal(validViewModel.receipt.operationKind, 'replaceExactText');
+  assert.equal(validViewModel.receipt.writeStatus, 'applied');
+  assert.equal(validViewModel.receipt.backupId, '1700000000000');
+  assert.equal(validViewModel.receipt.writtenAt, '2023-11-14T22:13:20.000Z');
   assert.ok(validMarkup.includes('Только просмотр'));
   assert.ok(validMarkup.includes('&quot;beta&quot; -&gt; &quot;delta&quot;'));
+  assert.ok(validMarkup.includes('baseline-1'));
+  assert.ok(validMarkup.includes('replaceExactText'));
+  assert.ok(validMarkup.includes('применено'));
+  assert.ok(validMarkup.includes('1700000000000'));
+  assert.ok(validMarkup.includes('2023-11-14T22:13:20.000Z'));
   assert.ok(validMarkup.includes('tx_123'));
 
   const blockedState = createReviewSurfaceState();
@@ -288,9 +304,26 @@ test('review surface ui: exact-text preview and receipt render only when support
     plan: { applyOps: [] },
   };
   blockedState.receipt = {
-    schemaVersion: 'revision-bridge.receipt.invalid',
+    schemaVersion: helpers.REVIEW_SURFACE_RECEIPT_SCHEMA,
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    sceneId: 'scene-1',
+    changeId: 'change-1',
+    baselineHashBefore: 'baseline-1',
+    operationKind: 'rewriteEverything',
+    writeStatus: 'applied',
+    backupId: 'not-a-real-backup-id',
+    writtenAt: 'not-iso',
     transactionId: 'tx_invalid',
-    recovery: {},
+    inputHash: 'a'.repeat(64),
+    outputHash: 'b'.repeat(64),
+    recovery: {
+      snapshotCreated: true,
+      snapshotReadable: true,
+      snapshotHashMatchesInput: true,
+      snapshotPath: 'scene-1.recovery.bak.1700000000001',
+      recoveryAction: 'OPEN_SNAPSHOT_OR_ABORT',
+    },
   };
   const blockedViewModel = helpers.buildReviewSurfaceViewModel(blockedState);
   const blockedMarkup = helpers.renderReviewSurfaceMarkup(blockedViewModel);
