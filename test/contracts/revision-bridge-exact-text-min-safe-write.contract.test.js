@@ -53,6 +53,11 @@ function sha256Text(text) {
   return crypto.createHash('sha256').update(Buffer.from(text, 'utf8')).digest('hex');
 }
 
+function backupIdFromSnapshotPath(snapshotPath) {
+  const match = path.basename(String(snapshotPath || '')).match(/\.bak\.(\d{13})$/u);
+  return match ? match[1] : '';
+}
+
 function validProjectSnapshot({
   projectId = 'project-1',
   baselineHash = 'baseline-1',
@@ -151,6 +156,11 @@ function assertTruthfulRecoveryEvidence(recovery, expectedText, { readable = tru
 
 function assertTruthfulReceipt(receipt, scenePath, expectedText, originalText = 'Alpha beta gamma.') {
   assert.equal(receipt.reason, 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_APPLIED');
+  assert.equal(receipt.baselineHashBefore, 'baseline-1');
+  assert.equal(receipt.operationKind, 'replaceExactText');
+  assert.equal(receipt.writeStatus, 'applied');
+  assert.equal(receipt.backupId, backupIdFromSnapshotPath(receipt.recovery.snapshotPath));
+  assert.match(receipt.writtenAt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u);
   assert.equal(receipt.bytesWritten, Buffer.byteLength(expectedText, 'utf8'));
   assert.equal(receipt.outputHash, sha256Text(expectedText));
   assert.equal(readText(scenePath), expectedText);
@@ -173,6 +183,11 @@ test('C04 exact text min safe write applies one replacement and returns receipt 
   assert.equal(result.receipt.sessionId, 'session-1');
   assert.equal(result.receipt.sceneId, 'scene-1');
   assert.equal(result.receipt.changeId, 'change-1');
+  assert.equal(result.receipt.baselineHashBefore, 'baseline-1');
+  assert.equal(result.receipt.operationKind, 'replaceExactText');
+  assert.equal(result.receipt.writeStatus, 'applied');
+  assert.equal(result.receipt.backupId, backupIdFromSnapshotPath(result.receipt.recovery.snapshotPath));
+  assert.equal(result.receipt.writtenAt, new Date(1700000000000).toISOString());
   assert.equal(result.receipt.bytesWritten, Buffer.byteLength('Alpha delta gamma.', 'utf8'));
   assert.equal(result.receipt.transactionId.startsWith('tx_'), true);
   assert.equal(result.receipt.recovery.snapshotCreated, true);
