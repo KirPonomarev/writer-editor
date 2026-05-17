@@ -12,6 +12,7 @@ test('donor port command surface kernel: allowlist is fixed to minimal non-ui co
     'cmd.project.saveAs',
     'cmd.project.importMarkdownV1',
     'cmd.project.exportMarkdownV1',
+    'cmd.project.releaseClaim.admit',
   ]);
 });
 
@@ -59,4 +60,6 @@ test('donor port command surface kernel: main routes minimal command family thro
   assert.match(mainText, /saveAs:\s*COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_SAVE_AS/);
   assert.match(mainText, /dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_IMPORT_MARKDOWN_V1/);
   assert.match(mainText, /dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_EXPORT_MARKDOWN_V1/);
+  assert.match(mainText, /'cmd\.project\.releaseClaim\.admit':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{\s*return dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_RELEASE_CLAIM_ADMIT,\s*payload\);/);
+  assert.match(mainText, /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS\s*=\s*new Set\(\[[\s\S]*'cmd\.project\.releaseClaim\.admit'/);
 });

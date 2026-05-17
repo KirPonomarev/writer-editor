@@ -292,8 +292,16 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
   PROJECT_IMPORT_MARKDOWN_V1: 'cmd.project.importMarkdownV1',
   PROJECT_EXPORT_MARKDOWN_V1: 'cmd.project.exportMarkdownV1',
+  PROJECT_RELEASE_CLAIM_ADMIT: 'cmd.project.releaseClaim.admit',
 });
 let internalCommandSurfaceKernel = null;
+
+// CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION_START
+async function handleRevisionBridgeReleaseClaimCommandSurfaceAdmission(payload = {}) {
+  const revisionBridge = await loadRevisionBridgeModule();
+  return revisionBridge.evaluateRevisionBridgeReleaseClaimExecutionGate(payload);
+}
+// CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION_END
 
 function getInternalCommandSurfaceKernel() {
   if (internalCommandSurfaceKernel) {
@@ -317,6 +325,9 @@ function getInternalCommandSurfaceKernel() {
     },
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1]: async (payload = {}) => {
       return handleExportMarkdownV1(payload);
+    },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RELEASE_CLAIM_ADMIT]: async (payload = {}) => {
+      return handleRevisionBridgeReleaseClaimCommandSurfaceAdmission(payload);
     },
   });
   return internalCommandSurfaceKernel;
@@ -4347,6 +4358,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.export.docxMin',
   'cmd.project.importMarkdownV1',
   'cmd.project.exportMarkdownV1',
+  'cmd.project.releaseClaim.admit',
   'cmd.project.flowOpenV1',
   'cmd.project.flowSaveV1',
   'cmd.project.document.open',
@@ -4455,6 +4467,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.exportMarkdownV1': async (payload = {}) => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, payload);
+  },
+  'cmd.project.releaseClaim.admit': async (payload = {}) => {
+    return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RELEASE_CLAIM_ADMIT, payload);
   },
   'cmd.project.flowOpenV1': async () => {
     return handleFlowOpenV1();
