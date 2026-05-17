@@ -200,6 +200,59 @@ test('Contour 10 blocks claims that exceed evidence packet coverage', async () =
   assert.deepEqual(result.reasons[0].unsupportedCoverage, ['commentAnchor']);
 });
 
+test('Contour 10 packet hash stays canonical when semantically identical coverage and evidence order changes', async () => {
+  const bridge = await loadBridge();
+  const packetA = validEvidencePacket({
+    coverage: ['textExact', 'commentAnchor'],
+    evidence: [
+      {
+        evidenceId: 'evidence-1',
+        supportClass: 'textExact',
+        digest: 'sha256:text',
+        locator: 'word/document.xml',
+      },
+      {
+        evidenceId: 'evidence-2',
+        supportClass: 'commentAnchor',
+        digest: 'sha256:comments',
+        locator: 'word/comments.xml',
+      },
+    ],
+  });
+  const packetB = validEvidencePacket({
+    coverage: ['commentAnchor', 'textExact'],
+    evidence: [
+      {
+        evidenceId: 'evidence-2',
+        supportClass: 'commentAnchor',
+        digest: 'sha256:comments',
+        locator: 'word/comments.xml',
+      },
+      {
+        evidenceId: 'evidence-1',
+        supportClass: 'textExact',
+        digest: 'sha256:text',
+        locator: 'word/document.xml',
+      },
+    ],
+  });
+  const hashA = bridge.createWordEvidencePacketHash(packetA);
+  const hashB = bridge.createWordEvidencePacketHash(packetB);
+  const claim = validClaim(bridge, packetA, {
+    claimedCoverage: ['commentAnchor', 'textExact'],
+    evidenceHash: hashA,
+  });
+
+  const result = bridge.evaluateWordEvidenceClaimGate({
+    evidencePacket: packetB,
+    claim,
+  });
+
+  assert.equal(hashA, hashB);
+  assert.equal(result.ok, true);
+  assert.equal(result.reason, 'REVISION_BRIDGE_WORD_EVIDENCE_CLAIM_ACCEPTED');
+});
+
 test('Contour 10 gate does not mutate claim or evidence inputs', async () => {
   const bridge = await loadBridge();
   const input = validGateInput(bridge, {
