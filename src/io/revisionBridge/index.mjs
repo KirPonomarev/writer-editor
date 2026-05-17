@@ -2627,7 +2627,9 @@ function structuralManualReviewChanges(input) {
 }
 
 function structuralManualReviewTextChanges(input) {
-  const graph = structuralManualReviewGraph(input);
+  const source = structuralManualReviewInput(input);
+  if (Array.isArray(source.textChanges)) return source.textChanges;
+  const graph = structuralManualReviewGraph(source);
   return Array.isArray(graph.textChanges) ? graph.textChanges : [];
 }
 
