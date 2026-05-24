@@ -35,6 +35,8 @@ let currentFilePath = null; // Путь к текущему открытому �
 let currentReviewSurfacePayload = {};
 let currentReviewSurfacePayloadSource = 'none';
 let currentReviewSurfacePayloadContentHash = '';
+let activeReviewSessionStore = null;
+let activeReviewSessionLifecycle = 'passive';
 let isDirty = false;
 let isEditorPasteTargetFocused = false;
 let autoSaveInProgress = false;
@@ -295,6 +297,144 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_RELEASE_CLAIM_ADMIT: 'cmd.project.releaseClaim.admit',
 });
 let internalCommandSurfaceKernel = null;
+
+// CONTOUR_01A_REVIEW_MUTATE_PORT_START
+function makeReviewMutateTypedError(commandId, code, reason, details = undefined) {
+  const error = {
+    code,
+    op: commandId,
+    reason,
+  };
+  if (isPlainObjectValue(details) && Object.keys(details).length > 0) {
+    error.details = cloneJsonSafe(details);
+  }
+  return { ok: false, error };
+}
+
+function resetActiveReviewSessionStore(nextLifecycle = 'passive') {
+  activeReviewSessionStore = null;
+  activeReviewSessionLifecycle = nextLifecycle === 'cleared' ? 'cleared' : 'passive';
+  currentReviewSurfacePayload = {};
+  currentReviewSurfacePayloadSource = 'none';
+  currentReviewSurfacePayloadContentHash = '';
+}
+
+function normalizeReviewSessionImportRecord(payload = {}, options = {}) {
+  const source = isPlainObjectValue(payload) ? payload : {};
+  const now = typeof options.now === 'function'
+    ? options.now
+    : () => new Date().toISOString();
+  const projectId = typeof source.projectId === 'string' ? source.projectId.trim() : '';
+  const sessionId = typeof source.sessionId === 'string' ? source.sessionId.trim() : '';
+  const baselineHash = typeof source.baselineHash === 'string' ? source.baselineHash.trim() : '';
+  const reviewSurface = isPlainObjectValue(source.reviewSurface)
+    ? cloneJsonSafe(source.reviewSurface)
+    : null;
+  const revisionSession = isPlainObjectValue(source.revisionSession)
+    ? cloneJsonSafe(source.revisionSession)
+    : {};
+
+  if (!hasReviewSurfacePayload(reviewSurface)) {
+    return {
+      ok: false,
+      code: 'E_REVIEW_SESSION_IMPORT_INVALID',
+      reason: 'REVIEW_SURFACE_REQUIRED',
+    };
+  }
+
+  if (!projectId || !sessionId || !baselineHash) {
+    return {
+      ok: false,
+      code: 'E_REVIEW_SESSION_IMPORT_INVALID',
+      reason: 'REVIEW_SESSION_METADATA_REQUIRED',
+    };
+  }
+
+  return {
+    ok: true,
+    value: {
+      projectId,
+      sessionId,
+      baselineHash,
+      reviewSurface: cloneJsonSafe(reviewSurface) || {},
+      revisionSession: isPlainObjectValue(revisionSession) ? revisionSession : {},
+      sourcePacketHash: typeof source.sourcePacketHash === 'string' && source.sourcePacketHash.trim()
+        ? source.sourcePacketHash.trim()
+        : computeHash(JSON.stringify({
+          projectId,
+          sessionId,
+          baselineHash,
+          reviewSurface,
+          revisionSession,
+        })),
+      createdAt: typeof source.createdAt === 'string' && source.createdAt.trim()
+        ? source.createdAt.trim()
+        : String(now()),
+    },
+  };
+}
+
+function cloneActiveReviewSessionStore() {
+  if (!isPlainObjectValue(activeReviewSessionStore)) {
+    return null;
+  }
+  return cloneJsonSafe(activeReviewSessionStore) || null;
+}
+
+function readActiveReviewSessionReviewSurface() {
+  if (activeReviewSessionLifecycle !== 'active' || !isPlainObjectValue(activeReviewSessionStore)) {
+    return {};
+  }
+  const reviewSurface = activeReviewSessionStore.reviewSurface;
+  return hasReviewSurfacePayload(reviewSurface)
+    ? cloneJsonSafe(reviewSurface) || {}
+    : {};
+}
+
+function handleReviewSurfaceImportPacketCommandSurface(payload = {}) {
+  const normalized = normalizeReviewSessionImportRecord(payload);
+  if (!normalized.ok) {
+    return makeReviewMutateTypedError(
+      'cmd.project.review.importPacket',
+      normalized.code,
+      normalized.reason,
+    );
+  }
+
+  activeReviewSessionStore = cloneJsonSafe(normalized.value) || {};
+  activeReviewSessionLifecycle = 'active';
+  currentReviewSurfacePayload = cloneJsonSafe(normalized.value.reviewSurface) || {};
+  currentReviewSurfacePayloadSource = 'session';
+  currentReviewSurfacePayloadContentHash = '';
+
+  return {
+    ok: true,
+    session: cloneActiveReviewSessionStore(),
+    reviewSurface: readActiveReviewSessionReviewSurface(),
+  };
+}
+
+function handleReviewSurfaceClearSessionCommandSurface() {
+  const hadActiveSession = activeReviewSessionLifecycle === 'active'
+    && isPlainObjectValue(activeReviewSessionStore)
+    && hasReviewSurfacePayload(activeReviewSessionStore.reviewSurface);
+  resetActiveReviewSessionStore('cleared');
+  return {
+    ok: true,
+    cleared: true,
+    hadActiveSession,
+  };
+}
+
+function handleReviewSurfaceApplyExactTextChangeCommandSurface() {
+  return makeReviewMutateTypedError(
+    'cmd.project.review.applyExactTextChange',
+    'E_REVIEW_EXACT_TEXT_CHANGE_NOT_ENABLED',
+    'REVIEW_EXACT_TEXT_CHANGE_NOT_ENABLED',
+    { status: 'RESERVED_UNTIL_CONTOUR_04' },
+  );
+}
+// CONTOUR_01A_REVIEW_MUTATE_PORT_END
 
 // CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION_START
 async function handleRevisionBridgeReleaseClaimCommandSurfaceAdmission(payload = {}) {
@@ -3420,31 +3560,9 @@ async function directReviewSurfacePayloadStillMatchesCurrentText() {
 }
 
 async function handleWorkspaceReviewSurfaceQuery() {
-  const derivedPayload = await buildDerivedReviewSurfacePayload();
-  if (hasReviewSurfacePayload(derivedPayload)) {
-    currentReviewSurfacePayload = derivedPayload;
-    currentReviewSurfacePayloadSource = 'derived';
-    currentReviewSurfacePayloadContentHash = '';
-  } else if (currentReviewSurfacePayloadSource === 'derived') {
-    currentReviewSurfacePayload = {};
-    currentReviewSurfacePayloadSource = 'none';
-    currentReviewSurfacePayloadContentHash = '';
-  } else if (currentReviewSurfacePayloadSource === 'direct') {
-    const directPayloadMatches = await directReviewSurfacePayloadStillMatchesCurrentText();
-    if (!directPayloadMatches) {
-      currentReviewSurfacePayload = {};
-      currentReviewSurfacePayloadSource = 'none';
-      currentReviewSurfacePayloadContentHash = '';
-    }
-  } else if (!hasReviewSurfacePayload(currentReviewSurfacePayload)) {
-    currentReviewSurfacePayloadSource = 'none';
-    currentReviewSurfacePayloadContentHash = '';
-  }
   return {
     ok: true,
-    reviewSurface: isPlainObjectValue(currentReviewSurfacePayload)
-      ? cloneJsonSafe(currentReviewSurfacePayload) || {}
-      : {},
+    reviewSurface: readActiveReviewSessionReviewSurface(),
   };
 }
 
@@ -4359,6 +4477,9 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.importMarkdownV1',
   'cmd.project.exportMarkdownV1',
   'cmd.project.releaseClaim.admit',
+  'cmd.project.review.importPacket',
+  'cmd.project.review.clearSession',
+  'cmd.project.review.applyExactTextChange',
   'cmd.project.flowOpenV1',
   'cmd.project.flowSaveV1',
   'cmd.project.document.open',
@@ -4470,6 +4591,15 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.releaseClaim.admit': async (payload = {}) => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RELEASE_CLAIM_ADMIT, payload);
+  },
+  'cmd.project.review.importPacket': async (payload = {}) => {
+    return handleReviewSurfaceImportPacketCommandSurface(payload);
+  },
+  'cmd.project.review.clearSession': async () => {
+    return handleReviewSurfaceClearSessionCommandSurface();
+  },
+  'cmd.project.review.applyExactTextChange': async (payload = {}) => {
+    return handleReviewSurfaceApplyExactTextChangeCommandSurface(payload);
   },
   'cmd.project.flowOpenV1': async () => {
     return handleFlowOpenV1();
