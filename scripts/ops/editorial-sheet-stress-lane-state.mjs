@@ -1079,6 +1079,9 @@ export function evaluateEditorialSheetStressLaneStatus(
   if (normalizeString(artifact?.status) !== 'PASS') issues.push('ARTIFACT_STATUS_NOT_PASS');
   if (artifact?.ok !== true) issues.push('ARTIFACT_OK_FALSE');
   if (Number(artifact?.[TOKEN_NAME] || 0) !== 1) issues.push('ARTIFACT_TOKEN_NOT_ONE');
+  if (Array.isArray(artifact?.failedRowIds) && artifact.failedRowIds.length > 0) {
+    issues.push('ARTIFACT_FAILED_ROWS_PRESENT');
+  }
   if (Array.isArray(artifact?.failedAcceptanceRowIds) && artifact.failedAcceptanceRowIds.length > 0) {
     issues.push('ARTIFACT_FAILED_ACCEPTANCE_ROWS_PRESENT');
   }

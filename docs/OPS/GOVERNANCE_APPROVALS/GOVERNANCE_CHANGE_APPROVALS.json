@@ -1914,10 +1914,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REQUIRED_SET_PHASE_3_V1.json",
-      "sha256": "5739981afabb28b0632afcc1e62a12a62ac7a4e87cf9a0c12d6622da50b8d0aa",
-      "approvedBy": "ticket:TZ_EXEC_PKG_02_A02_COMMIT_GATE_AND_PR_CREATE",
-      "approvedAtUtc": "2026-02-28T00:15:00Z",
-      "rationale": "EXECUTION_PACKAGE_02_COMMIT_GATE_REBIND"
+      "sha256": "e9b611a3265c8be2fd3306e10aa7d73892b963408083d826be159fb3bfe48a4d",
+      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
+      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
+      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
     },
     {
       "filePath": "docs/OPS/STATUS/ROLLBACK_REF_SCHEMA_ADOPTION_v3.json",
@@ -2922,10 +2922,10 @@
     },
     {
       "filePath": "scripts/ops/sector-m-scope-map.json",
-      "sha256": "b25b4d03614919f1766f07c62ddc8c34fca4fb02c20ee945a401e2dba4b136a2",
-      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1_SCOPE_REBIND",
-      "approvedAtUtc": "2026-04-28T12:30:00.000Z",
-      "rationale": "Approve the exact sector-m DONE scope rebind for revision-bridge kernel contour 08 so machine scope guards reflect the owner-selected bounded revision-bridge delta without opening UI, IPC, network, dependency, or broader writer lanes."
+      "sha256": "3afcd305b000a8fe044e8273ca32d13d337f0679ceb7c6ecf77dd1361a31f806",
+      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
+      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
+      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
     },
     {
       "filePath": "scripts/ops/recovery-io-state.mjs",
@@ -2999,17 +2999,17 @@
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_STRESS_LANE_STATUS_V3.json",
-      "sha256": "47c2043bdb3059117fc9a44f9b784ada39182c882444f7960cb87af8e646dc38",
-      "approvedBy": "ticket:CONTOUR_011_POSTMERGE_10000_STRESS_PROOF_REBIND",
-      "approvedAtUtc": "2026-04-30T18:10:00.000Z",
-      "rationale": "Approve post-merge proof rebind for PR 906 merge topology so the 10000 macOS design phase stress lane remains self-verifying on main; no runtime, UI, CSS, storage, export, dependency, 25000, 40000, 41750-plus, production, or cross-platform claim is introduced."
+      "sha256": "2f3fe47cde87917e808dfce03593916e505212f98b5e0d83ed8c1f73e1db021f",
+      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
+      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
+      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
     },
     {
       "filePath": "scripts/ops/editorial-sheet-stress-lane-state.mjs",
-      "sha256": "f4390a6bce74ce66fbf103605d124ab4da378259c64206c10a4387aeaf7f5d74",
-      "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION",
-      "approvedAtUtc": "2026-04-30T17:45:00.000Z",
-      "rationale": "CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION owner-approved narrow macOS design phase promotion from 5000 supported tier to 10000 supported tier, preserving no production, cross-platform, export, storage, collaboration, comments, history, 25000, 40000, or 41750-plus claims."
+      "sha256": "a18c4f7d7cdab2153a2faf5a3a463c7170be1720d4a67203d91fbf95869b682c",
+      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
+      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
+      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
     },
     {
       "filePath": "test/contracts/editorial-sheet-stress-lane-status.contract.test.js",
@@ -3020,10 +3020,10 @@
     },
     {
       "filePath": "test/unit/editor-sheet-instrumented-stress-smoke.mjs",
-      "sha256": "93d66eb3ce08404c15da8fb5ccfeb1b27bd63068518b7d1942f754928ae2e4d9",
-      "approvedBy": "ticket:CONTOUR_02_SCROLL_LIMIT_GUARD_AND_25000_DIAGNOSTIC_POLICY",
-      "approvedAtUtc": "2026-04-30T17:30:00.000Z",
-      "rationale": "CONTOUR_02_SCROLL_LIMIT_GUARD_AND_25000_DIAGNOSTIC_POLICY approves exposing existing harness scrollHeight clientHeight and maxScrollTop metrics in summary output for false-pass classification only."
+      "sha256": "269f72aeaac6daaee21379cd7339f140bacf2ac2b29aabd38867f2f072990d0e",
+      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
+      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
+      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
     },
     {
       "filePath": "docs/OPS/STATUS/EDITORIAL_SHEET_10000_MACOS_DESIGN_PHASE_CLOSEOUT_SUMMARY.json",
@@ -3048,17 +3048,17 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-anchor-confidence-engine-contract.contract.test.js",
-      "sha256": "45cbfc1be19b030a996e2f0b3c8675565004d4e15b39ea016ce7258df266babb",
-      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
-      "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C08 structural manual review allowlist guard update for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
+      "sha256": "0d72aec41154e3b50832f64edc81951e8f70a40e988369459e342afe09744852",
+      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
+      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
+      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-comment-survival.contract.test.js",
-      "sha256": "d0b9aa24a902c8092717c00356df21cdc93f5dfe10a977b2288036efcaf714cb",
-      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
-      "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C08 structural manual review allowlist guard update for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
+      "sha256": "d0532f3e066861891a183aaed8c816c1758e1cd01e038b06592db5ea4f3e5759",
+      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
+      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
+      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js",
@@ -3069,24 +3069,24 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",
-      "sha256": "40181594658f0662ea8b55366aebcb8588c923b54acbf9be82db94fe04a4bce6",
-      "approvedBy": "ticket:CONTOUR_07_MIN_SAFE_WRITE_HARDENING_FOR_EXACT_TEXT_ONLY_R2",
-      "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C07 exact text min safe write failure-matrix contract expansion for truthful receipt and recovery validation; no UI, IPC, runtime wiring, DOCX, markdown feature, mind map, collab, history, network, dependency, or broader apply claim is introduced."
+      "sha256": "bbc3ec22a34f6d62903bf8de2adfdb905c81864ee898afe03b9211c09a90662b",
+      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
+      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
+      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-inline-range-anchor-contract.contract.test.js",
-      "sha256": "de55f86e4097c345f8904a00108ee87c5a3b23bf1d99df121153759903dd859a",
-      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
-      "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C08 structural manual review allowlist guard update for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
+      "sha256": "33a12cc509245f915ffcb65659392424672bdec8f585b0aeee5c3e49a30b86b9",
+      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
+      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
+      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-minimal-block-id.contract.test.js",
-      "sha256": "26facc0e1afec41358214e5395f7ba35d7331a5a9fc77e1c3587ba267b04fcb5",
-      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
-      "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C08 structural manual review allowlist guard update for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
+      "sha256": "4a4ef1cbcc4713ba55e86fedfef383e5025f93e3aae74820de8cc14af6a90264",
+      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
+      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
+      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-p0-safety-kernel.contract.test.js",
@@ -3097,10 +3097,10 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-structural-manual-review.contract.test.js",
-      "sha256": "34402d41e52a3d095f5e1e8d132ae7012b58317203474cbf4cd00eef5ff54fef",
-      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
-      "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C08 structural manual review contract for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
+      "sha256": "dda162d8f50627331faac5c5f36b447e52a6e7b768615a0dac249314be7f2acb",
+      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
+      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
+      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
     }
   ]
 }
