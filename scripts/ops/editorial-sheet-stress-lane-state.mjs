@@ -605,6 +605,41 @@ function runRow(repoRoot, rowDefinition) {
   };
 }
 
+function summarizeRetryAttempt(row) {
+  return {
+    status: row.status,
+    errorClass: row.errorClass,
+    durationMs: row.durationMs,
+    exitCode: row.exitCode,
+    stdoutSummaryHash: row.stdoutSummaryHash,
+    stdoutTail: row.stdoutTail,
+    stderrTail: row.stderrTail,
+  };
+}
+
+function runRowWithAcceptanceRetry(repoRoot, rowDefinition) {
+  const firstAttempt = runRow(repoRoot, rowDefinition);
+  const shouldRetry = (
+    rowDefinition.diagnosticOnly !== true
+    && firstAttempt.status !== 'PASS'
+    && firstAttempt.errorClass === 'ROW_TIMEOUT'
+  );
+  if (!shouldRetry) {
+    return {
+      ...firstAttempt,
+      attempts: 1,
+      previousAttempts: [],
+    };
+  }
+
+  const secondAttempt = runRow(repoRoot, rowDefinition);
+  return {
+    ...secondAttempt,
+    attempts: 2,
+    previousAttempts: [summarizeRetryAttempt(firstAttempt)],
+  };
+}
+
 function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
   const explicitRowIds = ROW_DEFINITIONS.map((row) => row.id);
   const executedRowIds = rows.map((row) => row.id);
@@ -1081,7 +1116,7 @@ async function executeWriteMode(repoRoot, statusPath) {
     };
   }
 
-  const rows = ROW_DEFINITIONS.map((rowDefinition) => runRow(repoRoot, rowDefinition));
+  const rows = ROW_DEFINITIONS.map((rowDefinition) => runRowWithAcceptanceRetry(repoRoot, rowDefinition));
   const artifact = buildArtifact(repoRoot, rows, repoState);
   const evaluation = evaluateEditorialSheetStressLaneStatus(artifact, { repoRoot });
   await writeJsonAtomic(statusPath, artifact);
