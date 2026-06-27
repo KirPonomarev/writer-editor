@@ -3605,6 +3605,7 @@ body.dark-theme .sidebar__resize-handle:hover {
   align-items: flex-start;
   justify-content: center;
   overflow: auto;
+  overflow-anchor: none;
   padding: var(--canvas-padding-top) var(--canvas-padding-horizontal) var(--canvas-padding-bottom);
   background: var(--canvas-bg);
   border: none;
@@ -4086,15 +4087,15 @@ body.dark-theme .empty-state {
   -webkit-mask-image: repeating-linear-gradient(
     to bottom,
     #000 0,
-    #000 var(--central-sheet-content-height-px),
-    transparent var(--central-sheet-content-height-px),
+    #000 calc(var(--central-sheet-content-height-px) + var(--central-sheet-mask-bleed-px, 2px)),
+    transparent calc(var(--central-sheet-content-height-px) + var(--central-sheet-mask-bleed-px, 2px)),
     transparent var(--central-sheet-page-stride-px)
   );
   mask-image: repeating-linear-gradient(
     to bottom,
     #000 0,
-    #000 var(--central-sheet-content-height-px),
-    transparent var(--central-sheet-content-height-px),
+    #000 calc(var(--central-sheet-content-height-px) + var(--central-sheet-mask-bleed-px, 2px)),
+    transparent calc(var(--central-sheet-content-height-px) + var(--central-sheet-mask-bleed-px, 2px)),
     transparent var(--central-sheet-page-stride-px)
   );
   -webkit-mask-repeat: repeat-y;

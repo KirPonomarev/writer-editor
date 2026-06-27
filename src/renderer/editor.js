@@ -1257,6 +1257,7 @@ const CENTRAL_SHEET_STRIP_PROOF_CLASS = 'tiptap-host--central-sheet-strip-proof'
 const CENTRAL_SHEET_STRIP_MEASURING_CLASS = 'tiptap-host--central-sheet-strip-measuring';
 const CENTRAL_SHEET_RUNTIME_WINDOW_DOM_BUDGET = 15;
 const CENTRAL_SHEET_RUNTIME_WINDOW_OVERSCAN = 6;
+const CENTRAL_SHEET_TEXT_MASK_BLEED_PX = 2;
 const CENTRAL_SHEET_LARGE_PAYLOAD_FAST_PATH_CHAR_THRESHOLD = 2200000;
 const CENTRAL_SHEET_LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE = 520;
 const CENTRAL_SHEET_LARGE_PAYLOAD_PRESENTATION_CHUNK_TARGET_CHARS = 12000;
@@ -1731,10 +1732,14 @@ function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   delete editor.dataset.centralSheetBoundedOverflowHiddenPageCount;
   delete editor.dataset.centralSheetRenderedPageCount;
   delete editor.dataset.centralSheetTotalPageCount;
+  delete editor.dataset.centralSheetSourcePageCount;
+  delete editor.dataset.centralSheetDecisionPageCount;
+  delete editor.dataset.centralSheetStructuralRuntimePageCount;
   delete editor.dataset.centralSheetWindowFirstRenderedPage;
   delete editor.dataset.centralSheetWindowLastRenderedPage;
   delete editor.dataset.centralSheetWindowVisiblePageCount;
   delete editor.dataset.centralSheetWindowingEnabled;
+  delete editor.dataset.centralSheetBoundedOverflowRuntimePageCount;
   clearDerivedPageMapRuntimeBridgeDataset();
   if (overflowReason) {
     editor.dataset.centralSheetOverflowReason = overflowReason;
@@ -1750,6 +1755,7 @@ function clearCentralSheetStripProof({ overflowReason = '' } = {}) {
   editor.style.removeProperty('--central-sheet-page-stride-px');
   editor.style.removeProperty('--central-sheet-editor-height-px');
   editor.style.removeProperty('--central-sheet-line-guard-px');
+  editor.style.removeProperty('--central-sheet-mask-bleed-px');
   renderCentralSheetStripShellPages(null);
 }
 
@@ -1795,6 +1801,7 @@ function applyEstimatedCentralSheetStripRuntimeStateFromText(text = '') {
     pageGapPx,
     lineGuardPx: 0,
     decisionPageCount: estimatedPageCount,
+    sourcePageCount: estimatedPageCount,
     structuralMinimumPageCount: estimatedPageCount,
     pageCount: estimatedPageCount,
     shouldRender: true,
@@ -1812,24 +1819,38 @@ function applyEstimatedCentralSheetStripRuntimeStateFromText(text = '') {
   return true;
 }
 
-function syncCentralSheetStripOverflowMetadata({ pageCount, visiblePageCount, overflowReason } = {}) {
+function syncCentralSheetStripOverflowMetadata({
+  pageCount,
+  sourcePageCount,
+  visiblePageCount,
+  overflowReason,
+} = {}) {
   if (!(editor instanceof HTMLElement)) {
     return;
   }
-  const hasBoundedOverflow = overflowReason === 'max-page-count' && visiblePageCount > 0 && pageCount > visiblePageCount;
+  const resolvedPageCount = Math.max(0, Number(pageCount) || 0);
+  const resolvedSourcePageCount = Math.max(0, Number(sourcePageCount) || 0);
+  const resolvedVisiblePageCount = Math.max(0, Number(visiblePageCount) || 0);
+  const hasBoundedOverflow = (
+    overflowReason === 'max-page-count'
+    && resolvedVisiblePageCount > 0
+    && resolvedPageCount > resolvedVisiblePageCount
+  );
   if (!hasBoundedOverflow) {
     delete editor.dataset.centralSheetOverflowReason;
     delete editor.dataset.centralSheetBoundedOverflowReason;
     delete editor.dataset.centralSheetBoundedOverflowSourcePageCount;
+    delete editor.dataset.centralSheetBoundedOverflowRuntimePageCount;
     delete editor.dataset.centralSheetBoundedOverflowVisiblePageCount;
     delete editor.dataset.centralSheetBoundedOverflowHiddenPageCount;
     return;
   }
   delete editor.dataset.centralSheetOverflowReason;
   editor.dataset.centralSheetBoundedOverflowReason = overflowReason;
-  editor.dataset.centralSheetBoundedOverflowSourcePageCount = String(pageCount);
-  editor.dataset.centralSheetBoundedOverflowVisiblePageCount = String(visiblePageCount);
-  editor.dataset.centralSheetBoundedOverflowHiddenPageCount = String(pageCount - visiblePageCount);
+  editor.dataset.centralSheetBoundedOverflowSourcePageCount = String(resolvedSourcePageCount || resolvedPageCount);
+  editor.dataset.centralSheetBoundedOverflowRuntimePageCount = String(resolvedPageCount);
+  editor.dataset.centralSheetBoundedOverflowVisiblePageCount = String(resolvedVisiblePageCount);
+  editor.dataset.centralSheetBoundedOverflowHiddenPageCount = String(resolvedPageCount - resolvedVisiblePageCount);
 }
 
 function getRenderedWindowPageNumbers(pageWindow) {
@@ -2036,8 +2057,9 @@ function buildCentralSheetStripRuntimeState({ proseMirror, reuseCachedDecision =
     shouldRender,
     overflowReason,
   } = centralSheetDecision;
-  const sourcePageCount = Math.max(decisionPageCount, structuralMinimumPageCount);
-  const scrollPageCount = sourcePageCount;
+  const sourcePageCount = Math.max(1, decisionPageCount);
+  const runtimePageCount = Math.max(1, structuralMinimumPageCount);
+  const scrollPageCount = runtimePageCount;
   return {
     metrics,
     contentWidthPx: widthPx,
@@ -2045,8 +2067,9 @@ function buildCentralSheetStripRuntimeState({ proseMirror, reuseCachedDecision =
     pageGapPx,
     lineGuardPx,
     decisionPageCount,
+    sourcePageCount,
     structuralMinimumPageCount,
-    pageCount: sourcePageCount,
+    pageCount: runtimePageCount,
     scrollPageCount,
     shouldRender,
     overflowReason,
@@ -2067,6 +2090,7 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
     activeLayoutPreviewSnapshot,
     skipDerivedPageMapRuntimeBridge,
     decisionPageCount,
+    sourcePageCount,
     structuralMinimumPageCount,
     pageCount,
     scrollPageCount,
@@ -2074,6 +2098,7 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
   editor.style.setProperty('--central-sheet-content-width-px', `${contentWidthPx}px`);
   editor.style.setProperty('--central-sheet-content-height-px', `${contentHeightPx}px`);
   editor.style.setProperty('--central-sheet-line-guard-px', `${lineGuardPx}px`);
+  editor.style.setProperty('--central-sheet-mask-bleed-px', `${CENTRAL_SHEET_TEXT_MASK_BLEED_PX}px`);
   const pageWindow = resolveCentralSheetViewportRuntimeWindow({
     totalPageCount: Math.max(1, Number(scrollPageCount || pageCount) || 1),
     pageHeightPx: metrics.pageHeightPx,
@@ -2101,6 +2126,9 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
   editor.dataset.centralSheetFlow = 'vertical';
   editor.dataset.centralSheetRenderedPageCount = String(renderedPageCount);
   editor.dataset.centralSheetTotalPageCount = String(pageCount);
+  editor.dataset.centralSheetSourcePageCount = String(sourcePageCount || pageCount);
+  editor.dataset.centralSheetDecisionPageCount = String(decisionPageCount || sourcePageCount || pageCount);
+  editor.dataset.centralSheetStructuralRuntimePageCount = String(structuralMinimumPageCount || pageCount);
   editor.dataset.centralSheetWindowTotalPageCount = String(pageWindow.totalPageCount);
   editor.dataset.centralSheetWindowFirstRenderedPage = String(pageWindow.firstRenderedPage);
   editor.dataset.centralSheetWindowLastRenderedPage = String(pageWindow.lastRenderedPage);
@@ -2126,6 +2154,7 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
   }
   centralSheetStripLastAppliedSignature = [
     decisionPageCount,
+    sourcePageCount,
     structuralMinimumPageCount,
     pageCount,
     Number(scrollPageCount || 0),
@@ -2137,6 +2166,7 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
   ].join(':');
   syncCentralSheetStripOverflowMetadata({
     pageCount,
+    sourcePageCount,
     visiblePageCount: renderedPageCount,
     overflowReason: renderedPageCount < pageCount ? 'max-page-count' : '',
   });
@@ -2222,13 +2252,14 @@ function scheduleCentralSheetStripProofRefreshOnScroll() {
   }
 }
 
-function scheduleCentralSheetStripProofRefresh({ scrollOnly = false } = {}) {
+function scheduleCentralSheetStripProofRefresh({ scrollOnly = false, forceFull = false } = {}) {
   if (!isTiptapMode || !(editor instanceof HTMLElement)) {
     return;
   }
   bindCentralSheetStripScrollRefresh();
   const shouldKeepEstimatedLargePayloadState = (
-    centralSheetStripLargePayloadFastPathActive
+    forceFull !== true
+    && centralSheetStripLargePayloadFastPathActive
     && centralSheetStripCachedRuntimeState?.estimatedLargePayload === true
     && !centralSheetStripStructuralGuardActive
   );
@@ -9667,6 +9698,7 @@ if (window.electronAPI) {
       resetCentralSheetStripForIncomingPayload();
       if (useLargePayloadFastPath) {
         applyEstimatedCentralSheetStripRuntimeStateFromText(parsed.text || '');
+        scheduleCentralSheetStripProofRefresh({ forceFull: true });
       }
     } else {
       setPlainText(parsed.text || '');
