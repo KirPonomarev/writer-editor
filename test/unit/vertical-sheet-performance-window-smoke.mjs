@@ -165,8 +165,20 @@ async function collectState(win, label) {
         && rect.top > previous.top + 24
         && Math.abs(rect.left - previous.left) <= 2;
     }).length;
+    const totalPageCount = Number(
+      (host && host.dataset.centralSheetTotalPageCount)
+      || (host && host.dataset.centralSheetCount)
+      || pageWraps.length
+      || 0
+    );
+    const datasetSourcePageCount = Number(host ? host.dataset.centralSheetSourcePageCount || 0 : 0);
+    const decisionPageCount = Number(host ? host.dataset.centralSheetDecisionPageCount || 0 : 0);
+    const structuralRuntimePageCount = Number(host ? host.dataset.centralSheetStructuralRuntimePageCount || 0 : 0);
+    const boundedOverflowRuntimePageCount = Number(host ? host.dataset.centralSheetBoundedOverflowRuntimePageCount || 0 : 0);
+    const windowTotalPageCount = Number(host ? host.dataset.centralSheetWindowTotalPageCount || 0 : 0);
     const sourcePageCount = Number(
       (host && host.dataset.centralSheetBoundedOverflowSourcePageCount)
+      || datasetSourcePageCount
       || (host && host.dataset.centralSheetCount)
       || pageWraps.length
       || 0
@@ -190,6 +202,12 @@ async function collectState(win, label) {
       centralSheetBoundedOverflowReason: host ? host.dataset.centralSheetBoundedOverflowReason || null : null,
       firstRenderedPage: Number(host ? host.dataset.centralSheetWindowFirstRenderedPage || 0 : 0),
       lastRenderedPage: Number(host ? host.dataset.centralSheetWindowLastRenderedPage || 0 : 0),
+      totalPageCount,
+      datasetSourcePageCount,
+      decisionPageCount,
+      structuralRuntimePageCount,
+      boundedOverflowRuntimePageCount,
+      windowTotalPageCount,
       sourcePageCount,
       visiblePageCount,
       hiddenPageCount,
@@ -467,17 +485,24 @@ assert.equal(result.dialogCalls, 0);
     );
     assert.equal(state.hiddenPageCount > 0, true);
     assert.equal(state.centralSheetBoundedOverflowReason, 'max-page-count');
-  assert.equal(state.proseMirrorCount, 1);
-  assert.equal(state.tiptapEditorCount, 1);
-  assert.equal(state.sourceWrapperCount, 1);
-  assert.equal(state.sourceEditorWrapperCount, 1);
-  assert.equal(state.derivedSheetProseMirrorCount, 0);
-  assert.equal(state.derivedSheetEditorCount, 0);
-  assert.equal(state.prosePageTruthCount, 0);
-  assert.equal(state.textGapIntersectionCount, 0);
-  assert.equal(state.rightFlowSheetPairCount, 0);
-  assert.equal(state.verticallyStackedSheetPairCount, state.visibleSheetCount - 1);
-}
+    assert.equal(state.datasetSourcePageCount, state.sourcePageCount);
+    assert.equal(state.decisionPageCount, state.sourcePageCount);
+    assert.equal(state.structuralRuntimePageCount, state.totalPageCount);
+    assert.equal(state.boundedOverflowRuntimePageCount, state.totalPageCount);
+    assert.equal(state.windowTotalPageCount, state.totalPageCount);
+    assert.equal(state.sourcePageCount > 0, true);
+    assert.equal(state.totalPageCount > 0, true);
+    assert.equal(state.proseMirrorCount, 1);
+    assert.equal(state.tiptapEditorCount, 1);
+    assert.equal(state.sourceWrapperCount, 1);
+    assert.equal(state.sourceEditorWrapperCount, 1);
+    assert.equal(state.derivedSheetProseMirrorCount, 0);
+    assert.equal(state.derivedSheetEditorCount, 0);
+    assert.equal(state.prosePageTruthCount, 0);
+    assert.equal(state.textGapIntersectionCount, 0);
+    assert.equal(state.rightFlowSheetPairCount, 0);
+    assert.equal(state.verticallyStackedSheetPairCount, state.visibleSheetCount - 1);
+  }
 
 const scenario10 = result.scenarios.find((scenario) => scenario.targetPageCount === 10);
 const scenario50 = result.scenarios.find((scenario) => scenario.targetPageCount === 50);

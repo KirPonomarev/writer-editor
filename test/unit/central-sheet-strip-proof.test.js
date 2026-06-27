@@ -76,13 +76,34 @@ test('central sheet strip proof: source remains renderer-only and bounded', () =
   assert.equal(editorText.includes("editor.dataset.centralSheetFlow = 'horizontal';"), false);
   assert.ok(editorText.includes('renderedPageCount'));
   assert.ok(editorText.includes('centralSheetTotalPageCount'));
+  assert.ok(editorText.includes('centralSheetSourcePageCount'));
+  assert.ok(editorText.includes('centralSheetDecisionPageCount'));
+  assert.ok(editorText.includes('centralSheetStructuralRuntimePageCount'));
   assert.ok(editorText.includes('centralSheetBoundedOverflowReason'));
   assert.ok(editorText.includes('centralSheetBoundedOverflowSourcePageCount'));
+  assert.ok(editorText.includes('centralSheetBoundedOverflowRuntimePageCount'));
   assert.ok(editorText.includes('centralSheetBoundedOverflowVisiblePageCount'));
   assert.ok(editorText.includes('centralSheetBoundedOverflowHiddenPageCount'));
   assert.ok(editorText.includes('--central-sheet-strip-height-px'));
   assert.ok(editorText.includes('--central-sheet-page-stride-px'));
   assert.ok(editorText.includes('--central-sheet-editor-height-px'));
+  assert.ok(editorText.includes('const CENTRAL_SHEET_TEXT_MASK_BLEED_PX = 2;'));
+  assert.ok(editorText.includes('const CENTRAL_SHEET_LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE = 520;'));
+  assert.equal(editorText.includes('CENTRAL_SHEET_LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE = 246;'), false);
+  assert.ok(editorText.includes("editor.style.setProperty('--central-sheet-mask-bleed-px'"));
+  assert.ok(editorText.includes("editor.style.removeProperty('--central-sheet-mask-bleed-px');"));
+  assert.ok(editorText.includes('const sourcePageCount = Math.max(1, decisionPageCount);'));
+  assert.ok(editorText.includes('const runtimePageCount = Math.max(1, structuralMinimumPageCount);'));
+  assert.ok(editorText.includes('const scrollPageCount = runtimePageCount;'));
+  assert.ok(editorText.includes('sourcePageCount,'));
+  assert.ok(editorText.includes('pageCount: runtimePageCount,'));
+  assert.ok(editorText.includes("editor.dataset.centralSheetSourcePageCount = String(sourcePageCount || pageCount);"));
+  assert.ok(editorText.includes("editor.dataset.centralSheetStructuralRuntimePageCount = String(structuralMinimumPageCount || pageCount);"));
+  assert.ok(editorText.includes('scheduleCentralSheetStripProofRefresh({ forceFull: true });'));
+  assert.ok(editorText.includes('forceFull !== true'));
+  assert.equal(editorText.includes('const sourcePageCount = Math.max(decisionPageCount, structuralMinimumPageCount);'), false);
+  assert.equal(editorText.includes('pageCount: sourcePageCount,'), false);
+  assert.equal(editorText.includes('editor.dataset.centralSheetBoundedOverflowSourcePageCount = String(pageCount);'), false);
   assert.ok(editorText.includes('buildVirtualViewportWindowMathContract'));
   assert.match(
     editorText,
@@ -96,7 +117,9 @@ test('central sheet strip proof: source remains renderer-only and bounded', () =
   assert.ok(cssText.includes('.tiptap-sheet-strip > .tiptap-page-wrap'));
   assert.ok(cssText.includes('.tiptap-sheet-strip > .tiptap-sheet-strip__spacer'));
   assert.ok(cssText.includes('flex-direction: column;'));
+  assert.ok(cssText.includes('overflow-anchor: none;'));
   assert.ok(cssText.includes('shape-outside: repeating-linear-gradient('));
+  assert.ok(cssText.includes('var(--central-sheet-mask-bleed-px, 2px)'));
   assert.equal(cssText.includes('column-width: var(--central-sheet-content-width-px);'), false);
   assert.equal(cssText.includes('column-gap: calc(var(--page-gap-px) + var(--page-margin-left-px) + var(--page-margin-right-px));'), false);
   assert.equal(cssText.includes('column-fill: auto;'), false);
