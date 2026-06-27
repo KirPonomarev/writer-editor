@@ -609,6 +609,12 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
   const explicitRowIds = ROW_DEFINITIONS.map((row) => row.id);
   const executedRowIds = rows.map((row) => row.id);
   const failedRowIds = rows.filter((row) => row.status !== 'PASS').map((row) => row.id);
+  const failedAcceptanceRowIds = rows
+    .filter((row) => row.diagnosticOnly !== true && row.status !== 'PASS')
+    .map((row) => row.id);
+  const failedDiagnosticRowIds = rows
+    .filter((row) => row.diagnosticOnly === true && row.status !== 'PASS')
+    .map((row) => row.id);
   const trackedScaleRows = rows.filter((row) => row.rowClass === 'tracked-scale');
   const trackedCandidateRows = rows.filter((row) => row.rowClass === 'tracked-candidate');
   const provisionalObservedCeiling = trackedScaleRows
@@ -631,7 +637,7 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
     (max, entry) => Math.max(max, Number(entry.maxScrollTop || 0)),
     0,
   );
-  const ok = failedRowIds.length === 0;
+  const ok = failedAcceptanceRowIds.length === 0;
 
   return stableSort({
     schemaVersion: SCHEMA_VERSION,
@@ -663,6 +669,8 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
     explicitRowIds,
     executedRowIds,
     failedRowIds,
+    failedAcceptanceRowIds,
+    failedDiagnosticRowIds,
     diagnosticOnlyRowIds: [...DIAGNOSTIC_ONLY_ROW_IDS],
     trackedScaleRowIds: [...TRACKED_SCALE_ROW_IDS],
     trackedScalePageCounts: [...TRACKED_SCALE_PAGE_COUNTS],
@@ -706,6 +714,7 @@ function buildArtifact(repoRoot, rows, repoState = getRepoState(repoRoot)) {
       writeExecutesExplicitRows: true,
       explicitScaleRowsRequired: true,
       diagnosticRowsDoNotRaiseCeiling: true,
+      diagnosticRowsDoNotBlockAcceptance: true,
       trackedCandidatesDoNotRaiseSupportedTier: true,
       diagnosticBoundary25000DoesNotRaiseCeiling: true,
       scrollRangeClampCannotGreenlightAcceptance: true,
@@ -725,6 +734,8 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
   if (!Array.isArray(artifact?.explicitRowIds)) issues.push('EXPLICIT_ROW_IDS_MISSING');
   if (!Array.isArray(artifact?.executedRowIds)) issues.push('EXECUTED_ROW_IDS_MISSING');
   if (!Array.isArray(artifact?.failedRowIds)) issues.push('FAILED_ROW_IDS_MISSING');
+  if (!Array.isArray(artifact?.failedAcceptanceRowIds)) issues.push('FAILED_ACCEPTANCE_ROW_IDS_MISSING');
+  if (!Array.isArray(artifact?.failedDiagnosticRowIds)) issues.push('FAILED_DIAGNOSTIC_ROW_IDS_MISSING');
   if (!Array.isArray(artifact?.diagnosticOnlyRowIds)) issues.push('DIAGNOSTIC_ONLY_ROW_IDS_MISSING');
   if (!Array.isArray(artifact?.unsupportedAboveCurrentProof)) issues.push('UNSUPPORTED_ABOVE_CURRENT_PROOF_MISSING');
   if (!Array.isArray(artifact?.trackedScalePageCounts)) issues.push('TRACKED_SCALE_PAGE_COUNTS_MISSING');
@@ -822,11 +833,29 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
   const expectedFailedRowIds = rows
     .filter((row) => normalizeString(row?.status) !== 'PASS')
     .map((row) => normalizeString(row?.id));
+  const expectedFailedAcceptanceRowIds = rows
+    .filter((row) => row?.diagnosticOnly !== true && normalizeString(row?.status) !== 'PASS')
+    .map((row) => normalizeString(row?.id));
+  const expectedFailedDiagnosticRowIds = rows
+    .filter((row) => row?.diagnosticOnly === true && normalizeString(row?.status) !== 'PASS')
+    .map((row) => normalizeString(row?.id));
   const actualFailedRowIds = Array.isArray(artifact?.failedRowIds)
     ? artifact.failedRowIds.map((rowId) => normalizeString(rowId))
     : [];
+  const actualFailedAcceptanceRowIds = Array.isArray(artifact?.failedAcceptanceRowIds)
+    ? artifact.failedAcceptanceRowIds.map((rowId) => normalizeString(rowId))
+    : [];
+  const actualFailedDiagnosticRowIds = Array.isArray(artifact?.failedDiagnosticRowIds)
+    ? artifact.failedDiagnosticRowIds.map((rowId) => normalizeString(rowId))
+    : [];
   if (sha256Text(expectedFailedRowIds.join('\n')) !== sha256Text(actualFailedRowIds.join('\n'))) {
     issues.push('FAILED_ROW_IDS_DO_NOT_MATCH_ROWS');
+  }
+  if (sha256Text(expectedFailedAcceptanceRowIds.join('\n')) !== sha256Text(actualFailedAcceptanceRowIds.join('\n'))) {
+    issues.push('FAILED_ACCEPTANCE_ROW_IDS_DO_NOT_MATCH_ROWS');
+  }
+  if (sha256Text(expectedFailedDiagnosticRowIds.join('\n')) !== sha256Text(actualFailedDiagnosticRowIds.join('\n'))) {
+    issues.push('FAILED_DIAGNOSTIC_ROW_IDS_DO_NOT_MATCH_ROWS');
   }
 
   const actualExecutedRowIds = Array.isArray(artifact?.executedRowIds)
@@ -955,7 +984,7 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
     issues.push('DIAGNOSTIC_25000_PROMOTED');
   }
 
-  const expectedOk = expectedFailedRowIds.length === 0;
+  const expectedOk = expectedFailedAcceptanceRowIds.length === 0;
   if (Boolean(artifact?.ok) !== expectedOk) issues.push('OK_FLAG_INVALID');
   if (normalizeString(artifact?.status) !== (expectedOk ? 'PASS' : 'FAIL')) issues.push('STATUS_INVALID');
   if (Number(artifact?.[TOKEN_NAME] || 0) !== (expectedOk ? 1 : 0)) issues.push('TOKEN_INVALID');
@@ -1015,7 +1044,9 @@ export function evaluateEditorialSheetStressLaneStatus(
   if (normalizeString(artifact?.status) !== 'PASS') issues.push('ARTIFACT_STATUS_NOT_PASS');
   if (artifact?.ok !== true) issues.push('ARTIFACT_OK_FALSE');
   if (Number(artifact?.[TOKEN_NAME] || 0) !== 1) issues.push('ARTIFACT_TOKEN_NOT_ONE');
-  if (Array.isArray(artifact?.failedRowIds) && artifact.failedRowIds.length > 0) issues.push('ARTIFACT_FAILED_ROWS_PRESENT');
+  if (Array.isArray(artifact?.failedAcceptanceRowIds) && artifact.failedAcceptanceRowIds.length > 0) {
+    issues.push('ARTIFACT_FAILED_ACCEPTANCE_ROWS_PRESENT');
+  }
   if (!acceptedExecutionHeadShas.includes(artifactHeadSha)) {
     issues.push('ARTIFACT_HEAD_SHA_MISMATCH');
   }
