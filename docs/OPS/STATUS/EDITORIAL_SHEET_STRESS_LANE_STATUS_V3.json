@@ -52,7 +52,7 @@
   "failedRowIds": [
     "VIEWPORT_CONTINUITY"
   ],
-  "generatedAtUtc": "2026-06-27T19:38:14.658Z",
+  "generatedAtUtc": "2026-06-27T19:44:07.163Z",
   "ok": true,
   "provisionalObservedCeiling": 10000,
   "readiness": {
@@ -65,7 +65,7 @@
   "repo": {
     "branchName": "codex/editorial-sheet-10000-factual-rebind-main",
     "detachedHead": false,
-    "headSha": "8e25d49b4baecf9a2201a517f5b1df92b4aa99f1",
+    "headSha": "616b34a332d11dc6fbb639245ece8288191d71ae",
     "originMainAncestorOfHead": true,
     "originMainHeadSha": "9bf688c3c769c81e3e846e9ea702ac037fe56c4b",
     "repoRootBinding": "WORKTREE_LOCAL",
@@ -85,17 +85,17 @@
       "attempts": 1,
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 17347,
+      "durationMs": 18787,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-06-27T19:36:33.082Z",
+      "finishedAtUtc": "2026-06-27T19:42:25.472Z",
       "id": "TRACKED_SCALE_2000",
       "observed": {
         "actualPageCount": 2307,
         "dialogCalls": 0,
         "domNodeCount": 829,
         "hiddenPageCount": 2299,
-        "loadMs": 7370,
+        "loadMs": 7172,
         "markerScrolls": [
           {
             "clientHeight": 669,
@@ -176,33 +176,33 @@
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 117,
+        "typingTypeMs": 102,
         "typingUndoRestoredHash": true
       },
       "pageCount": 2000,
       "previousAttempts": [],
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-06-27T19:36:15.735Z",
+      "startedAtUtc": "2026-06-27T19:42:06.685Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "10bb86bd340a2a485f7bdffe020e7c8f7f1748d1b52af94a3ff419761b44fe9b",
-      "stdoutTail": "RestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n# Subtest: test/unit/editor-sheet-instrumented-stress-smoke.mjs\nok 1 - test/unit/editor-sheet-instrumented-stress-smoke.mjs\n  ---\n  duration_ms: 17301.603334\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 17306.851584\n"
+      "stdoutSummaryHash": "de5d9d1f79da647e5d7d760ee7d6f037a53c0329e82a45ee89238a16061c86ea",
+      "stdoutTail": "doRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n# Subtest: test/unit/editor-sheet-instrumented-stress-smoke.mjs\nok 1 - test/unit/editor-sheet-instrumented-stress-smoke.mjs\n  ---\n  duration_ms: 18723.7155\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 18731.845541\n"
     },
     {
       "attempts": 1,
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 16908,
+      "durationMs": 16439,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-06-27T19:36:50.225Z",
+      "finishedAtUtc": "2026-06-27T19:42:42.145Z",
       "id": "TRACKED_SCALE_3000",
       "observed": {
         "actualPageCount": 3458,
         "dialogCalls": 0,
         "domNodeCount": 829,
         "hiddenPageCount": 3450,
-        "loadMs": 7405,
+        "loadMs": 7324,
         "markerScrolls": [
           {
             "clientHeight": 669,
@@ -283,33 +283,33 @@
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 176,
+        "typingTypeMs": 135,
         "typingUndoRestoredHash": true
       },
       "pageCount": 3000,
       "previousAttempts": [],
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-06-27T19:36:33.317Z",
+      "startedAtUtc": "2026-06-27T19:42:25.706Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "7bc251fad2d7f4f3f8329e84e926c5d75d3a3b121c496d0c8b7386df13632f29",
-      "stdoutTail": "ndoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n# Subtest: test/unit/editor-sheet-instrumented-stress-smoke.mjs\nok 1 - test/unit/editor-sheet-instrumented-stress-smoke.mjs\n  ---\n  duration_ms: 16753.6215\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 16758.76475\n"
+      "stdoutSummaryHash": "336503565a0bef1243981febe188bd49dc30b7fa332cc4b5656da1e277615725",
+      "stdoutTail": "RestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n# Subtest: test/unit/editor-sheet-instrumented-stress-smoke.mjs\nok 1 - test/unit/editor-sheet-instrumented-stress-smoke.mjs\n  ---\n  duration_ms: 16288.871459\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 16295.442875\n"
     },
     {
       "attempts": 1,
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 16624,
+      "durationMs": 16514,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-06-27T19:37:07.075Z",
+      "finishedAtUtc": "2026-06-27T19:42:59.682Z",
       "id": "TRACKED_SCALE_4000",
       "observed": {
         "actualPageCount": 4609,
         "dialogCalls": 0,
         "domNodeCount": 829,
         "hiddenPageCount": 4601,
-        "loadMs": 7367,
+        "loadMs": 7330,
         "markerScrolls": [
           {
             "clientHeight": 669,
@@ -390,33 +390,33 @@
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 191,
+        "typingTypeMs": 187,
         "typingUndoRestoredHash": true
       },
       "pageCount": 4000,
       "previousAttempts": [],
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-06-27T19:36:50.451Z",
+      "startedAtUtc": "2026-06-27T19:42:43.168Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "59f8fa732d42553db43eeadde72c420396eda449731c9f92dd882a406ebc04f3",
-      "stdoutTail": "doRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n# Subtest: test/unit/editor-sheet-instrumented-stress-smoke.mjs\nok 1 - test/unit/editor-sheet-instrumented-stress-smoke.mjs\n  ---\n  duration_ms: 16583.7365\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 16588.389083\n"
+      "stdoutSummaryHash": "aeea429aa5a15f154872333c75553410bbfd387828bd9c65b7415e4ca12e1c61",
+      "stdoutTail": "RestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n# Subtest: test/unit/editor-sheet-instrumented-stress-smoke.mjs\nok 1 - test/unit/editor-sheet-instrumented-stress-smoke.mjs\n  ---\n  duration_ms: 16337.103916\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 16342.239459\n"
     },
     {
       "attempts": 1,
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 16431,
+      "durationMs": 16332,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-06-27T19:37:23.720Z",
+      "finishedAtUtc": "2026-06-27T19:43:16.233Z",
       "id": "TRACKED_SCALE_5000",
       "observed": {
         "actualPageCount": 5760,
         "dialogCalls": 0,
         "domNodeCount": 829,
         "hiddenPageCount": 5752,
-        "loadMs": 7484,
+        "loadMs": 7422,
         "markerScrolls": [
           {
             "clientHeight": 669,
@@ -497,33 +497,33 @@
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 223,
+        "typingTypeMs": 212,
         "typingUndoRestoredHash": true
       },
       "pageCount": 5000,
       "previousAttempts": [],
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-06-27T19:37:07.289Z",
+      "startedAtUtc": "2026-06-27T19:42:59.901Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "5006d1b15d180b433aeb0a718c80c6e22569f97dec5515d805984d5e395faae5",
-      "stdoutTail": "ndoRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n# Subtest: test/unit/editor-sheet-instrumented-stress-smoke.mjs\nok 1 - test/unit/editor-sheet-instrumented-stress-smoke.mjs\n  ---\n  duration_ms: 16391.584\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 16397.290458\n"
+      "stdoutSummaryHash": "affc4b55e5e484389ee2fd1e9384b5c0fbb79af13464781280ee930fda33fd7f",
+      "stdoutTail": "RestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n# Subtest: test/unit/editor-sheet-instrumented-stress-smoke.mjs\nok 1 - test/unit/editor-sheet-instrumented-stress-smoke.mjs\n  ---\n  duration_ms: 16292.751792\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 16297.118958\n"
     },
     {
       "attempts": 1,
       "command": "/usr/local/bin/node --test test/unit/editor-sheet-instrumented-stress-smoke.mjs",
       "diagnosticOnly": false,
-      "durationMs": 17814,
+      "durationMs": 17655,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-06-27T19:37:41.738Z",
+      "finishedAtUtc": "2026-06-27T19:43:34.120Z",
       "id": "TRACKED_SCALE_10000",
       "observed": {
         "actualPageCount": 11517,
         "dialogCalls": 0,
         "domNodeCount": 829,
         "hiddenPageCount": 11509,
-        "loadMs": 8699,
+        "loadMs": 8578,
         "markerScrolls": [
           {
             "clientHeight": 669,
@@ -604,44 +604,44 @@
         "textHashStable": true,
         "typingCleanupRestoredHash": true,
         "typingRedoRestoredTypedHash": true,
-        "typingTypeMs": 590,
+        "typingTypeMs": 577,
         "typingUndoRestoredHash": true
       },
       "pageCount": 10000,
       "previousAttempts": [],
       "rowClass": "tracked-scale",
-      "startedAtUtc": "2026-06-27T19:37:23.924Z",
+      "startedAtUtc": "2026-06-27T19:43:16.465Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "b874cf7326757404d01129df2bf4f29e674dfda02ef87157cf9418f3ffab17af",
-      "stdoutTail": "RestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n# Subtest: test/unit/editor-sheet-instrumented-stress-smoke.mjs\nok 1 - test/unit/editor-sheet-instrumented-stress-smoke.mjs\n  ---\n  duration_ms: 17771.071625\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 17777.170667\n"
+      "stdoutSummaryHash": "77a4e77c248a595415edd7aee69eaa0140cb6115e96ce723f0346a08bbd8155d",
+      "stdoutTail": "doRestoredHash\":true,\"redoRestoredTypedHash\":true,\"cleanupRestoredHash\":true}}],\"networkRequests\":0,\"dialogCalls\":0}\n# Subtest: test/unit/editor-sheet-instrumented-stress-smoke.mjs\nok 1 - test/unit/editor-sheet-instrumented-stress-smoke.mjs\n  ---\n  duration_ms: 17602.645041\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 17610.8235\n"
     },
     {
       "attempts": 1,
       "command": "/usr/local/bin/node --test test/unit/vertical-sheet-performance-window-smoke.mjs",
       "diagnosticOnly": true,
-      "durationMs": 8821,
+      "durationMs": 8664,
       "errorClass": "EXIT_1",
       "exitCode": 1,
-      "finishedAtUtc": "2026-06-27T19:37:50.875Z",
+      "finishedAtUtc": "2026-06-27T19:43:43.029Z",
       "id": "VIEWPORT_CONTINUITY",
       "observed": {},
       "previousAttempts": [],
       "rowClass": "diagnostic-viewport",
-      "startedAtUtc": "2026-06-27T19:37:42.054Z",
+      "startedAtUtc": "2026-06-27T19:43:34.365Z",
       "status": "FAIL",
       "stderrTail": "",
       "stdoutSummaryHash": "",
-      "stdoutTail": "formance-window-smoke.mjs\n  ---\n  duration_ms: 8668.601875\n  type: 'test'\n  location: '/Volumes/Work/writer-editor-codex/test/unit/vertical-sheet-performance-window-smoke.mjs:1:1'\n  failureType: 'testCodeFailure'\n  exitCode: 1\n  signal: ~\n  error: 'test failed'\n  code: 'ERR_TEST_FAILURE'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 8674.846209\n"
+      "stdoutTail": "formance-window-smoke.mjs\n  ---\n  duration_ms: 8584.386209\n  type: 'test'\n  location: '/Volumes/Work/writer-editor-codex/test/unit/vertical-sheet-performance-window-smoke.mjs:1:1'\n  failureType: 'testCodeFailure'\n  exitCode: 1\n  signal: ~\n  error: 'test failed'\n  code: 'ERR_TEST_FAILURE'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 0\n# fail 1\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 8591.143417\n"
     },
     {
       "attempts": 1,
       "command": "/usr/local/bin/node --test test/unit/vertical-sheet-input-stability-smoke.mjs",
       "diagnosticOnly": true,
-      "durationMs": 15639,
+      "durationMs": 15861,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-06-27T19:38:06.681Z",
+      "finishedAtUtc": "2026-06-27T19:43:59.103Z",
       "id": "INPUT_CONTINUITY",
       "observed": {
         "backspaceRedoTruncatedTargetAfter": 1,
@@ -658,20 +658,20 @@
       },
       "previousAttempts": [],
       "rowClass": "diagnostic-input",
-      "startedAtUtc": "2026-06-27T19:37:51.042Z",
+      "startedAtUtc": "2026-06-27T19:43:43.242Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "9395592687b0dac5364fc21260903cc86a2a7b993d8d58cb0c4af2f69335f433",
-      "stdoutTail": "bility-before.png\",\"vertical-input-stability-after-paste.png\",\"vertical-input-stability-after-backspace-redo.png\"]}\\\\n\n# Subtest: test/unit/vertical-sheet-input-stability-smoke.mjs\nok 1 - test/unit/vertical-sheet-input-stability-smoke.mjs\n  ---\n  duration_ms: 15597.370375\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 15601.830458\n"
+      "stdoutSummaryHash": "0049ce42b3a92927492d2858321459e26d7dba9de33c42af6584e94070060479",
+      "stdoutTail": "tability-before.png\",\"vertical-input-stability-after-paste.png\",\"vertical-input-stability-after-backspace-redo.png\"]}\\\\n\n# Subtest: test/unit/vertical-sheet-input-stability-smoke.mjs\nok 1 - test/unit/vertical-sheet-input-stability-smoke.mjs\n  ---\n  duration_ms: 15793.544333\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 15800.3025\n"
     },
     {
       "attempts": 1,
       "command": "/usr/local/bin/node --test test/unit/vertical-sheet-gap-smoke.mjs",
       "diagnosticOnly": true,
-      "durationMs": 7767,
+      "durationMs": 7835,
       "errorClass": "",
       "exitCode": 0,
-      "finishedAtUtc": "2026-06-27T19:38:14.657Z",
+      "finishedAtUtc": "2026-06-27T19:44:07.162Z",
       "id": "GAP_CONTINUITY",
       "observed": {
         "liveGapMaxPx": 32,
@@ -684,11 +684,11 @@
       },
       "previousAttempts": [],
       "rowClass": "diagnostic-gap",
-      "startedAtUtc": "2026-06-27T19:38:06.890Z",
+      "startedAtUtc": "2026-06-27T19:43:59.327Z",
       "status": "PASS",
       "stderrTail": "",
-      "stdoutSummaryHash": "d783435368bc9a30a33442f6acdf22de162fa4f6563033c5689d4c14eb66eb3f",
-      "stdoutTail": "l-sheet-gap-middle-scroll.png\",\"/var/folders/qq/p9w353w13lqb3n8vdv_lf2f80000gn/T/vertical-sheet-gap-OzfH8o/vertical-sheet-gap-after-scroll.png\"]}\n# Subtest: test/unit/vertical-sheet-gap-smoke.mjs\nok 1 - test/unit/vertical-sheet-gap-smoke.mjs\n  ---\n  duration_ms: 7719.87525\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 7725.319208\n"
+      "stdoutSummaryHash": "41b0e8d42dd776a3299c51261b4b3a53b33d2813e61de88311a134d8aeb04621",
+      "stdoutTail": "-sheet-gap-middle-scroll.png\",\"/var/folders/qq/p9w353w13lqb3n8vdv_lf2f80000gn/T/vertical-sheet-gap-9OQf2L/vertical-sheet-gap-after-scroll.png\"]}\n# Subtest: test/unit/vertical-sheet-gap-smoke.mjs\nok 1 - test/unit/vertical-sheet-gap-smoke.mjs\n  ---\n  duration_ms: 7790.305042\n  type: 'test'\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 7795.381458\n"
     }
   ],
   "rules": {
