@@ -681,7 +681,8 @@ function reviewSurfaceNormalizeState(input = {}) {
   const backupIdMatchesRecovery = !recoverySnapshotPath
     || !backupId
     || reviewSurfaceBackupIdFromSnapshotPath(recoverySnapshotPath) === backupId;
-  const receipt = rawReceipt?.schemaVersion === REVIEW_SURFACE_RECEIPT_SCHEMA
+  const receiptCandidateValid = Boolean(rawReceipt)
+    && rawReceipt.schemaVersion === REVIEW_SURFACE_RECEIPT_SCHEMA
     && reviewSurfaceText(rawReceipt.projectId)
     && reviewSurfaceText(rawReceipt.sessionId)
     && reviewSurfaceText(rawReceipt.sceneId)
@@ -695,7 +696,8 @@ function reviewSurfaceNormalizeState(input = {}) {
     && reviewSurfaceText(rawReceipt.inputHash)
     && reviewSurfaceText(rawReceipt.outputHash)
     && reviewSurfaceIsPlainObject(recovery)
-    && backupIdMatchesRecovery
+    && backupIdMatchesRecovery;
+  const receipt = receiptCandidateValid
     ? {
         schemaVersion: rawReceipt.schemaVersion,
         projectId: reviewSurfaceText(rawReceipt.projectId),
@@ -2035,9 +2037,7 @@ function buildCentralSheetStripRuntimeState({ proseMirror, reuseCachedDecision =
     overflowReason,
   } = centralSheetDecision;
   const sourcePageCount = Math.max(decisionPageCount, structuralMinimumPageCount);
-  const scrollPageCount = structuralMinimumPageCount > 1
-    ? Math.min(sourcePageCount, structuralMinimumPageCount)
-    : sourcePageCount;
+  const scrollPageCount = sourcePageCount;
   return {
     metrics,
     contentWidthPx: widthPx,
@@ -9645,7 +9645,7 @@ if (window.electronAPI) {
     } else {
       applyIncomingBookProfile(null);
     }
-    setReviewSurfaceState(resolveIncomingReviewSurfacePayload(payload));
+    setReviewSurfaceState(reviewSurfaceResolveIncomingPayload(payload));
 
     const parsed = parseDocumentContent(content);
     currentMeta = parsed.meta;

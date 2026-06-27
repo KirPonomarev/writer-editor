@@ -433,6 +433,17 @@ function summarizeScaleRow(summary) {
   const typing = highestScenario?.typing && typeof highestScenario.typing === 'object'
     ? highestScenario.typing
     : null;
+  const physicalBottomCheck = highestScenario?.physicalBottomCheck && typeof highestScenario.physicalBottomCheck === 'object'
+    ? highestScenario.physicalBottomCheck
+    : null;
+  const physicalLastRenderedPageNumber = Number(physicalBottomCheck?.physicalLastRenderedPageNumber || 0);
+  const physicalTotalPageCount = Number(physicalBottomCheck?.totalPageCount || 0);
+  const physicalPageCountMatched = (
+    physicalBottomCheck?.physicalPageWindowMatchesDataset === true
+    && physicalBottomCheck?.physicalTotalPagePresent === true
+    && physicalLastRenderedPageNumber > 0
+    && physicalLastRenderedPageNumber === physicalTotalPageCount
+  );
 
   return {
     targetPageCount: Number(summary?.targetPageCount || highestScenario?.targetPageCount || 0),
@@ -448,6 +459,21 @@ function summarizeScaleRow(summary) {
     typingUndoRestoredHash: typing?.undoRestoredHash === true,
     typingRedoRestoredTypedHash: typing?.redoRestoredTypedHash === true,
     typingCleanupRestoredHash: typing?.cleanupRestoredHash === true,
+    physicalPageCountMatched,
+    physicalBottomCheck: physicalBottomCheck ? {
+      totalPageCount: physicalTotalPageCount,
+      scrollTop: Number(physicalBottomCheck.scrollTop || 0),
+      maxScrollTop: Number(physicalBottomCheck.maxScrollTop || 0),
+      firstRenderedPage: Number(physicalBottomCheck.firstRenderedPage || 0),
+      lastRenderedPage: Number(physicalBottomCheck.lastRenderedPage || 0),
+      physicalFirstRenderedPageNumber: Number(physicalBottomCheck.physicalFirstRenderedPageNumber || 0),
+      physicalLastRenderedPageNumber,
+      physicalRenderedPageNumbers: Array.isArray(physicalBottomCheck.physicalRenderedPageNumbers)
+        ? physicalBottomCheck.physicalRenderedPageNumbers.map((value) => Number(value || 0)).filter((value) => Number.isFinite(value) && value > 0)
+        : [],
+      physicalPageWindowMatchesDataset: physicalBottomCheck.physicalPageWindowMatchesDataset === true,
+      physicalTotalPagePresent: physicalBottomCheck.physicalTotalPagePresent === true,
+    } : null,
     markerScrolls: Array.isArray(highestScenario?.markerScrolls)
       ? highestScenario.markerScrolls.map((item) => ({
           markerName: normalizeString(item?.markerName),
@@ -752,9 +778,32 @@ export function validateEditorialSheetStressLaneStatus(artifact) {
         'typingUndoRestoredHash',
         'typingRedoRestoredTypedHash',
         'typingCleanupRestoredHash',
+        'physicalPageCountMatched',
+        'physicalBottomCheck',
         'markerScrolls',
       ]) {
         requireObservedMetric(issues, row, metricName);
+      }
+      if (row?.observed?.physicalPageCountMatched !== true) {
+        issues.push(`ROW_PHYSICAL_PAGE_COUNT_NOT_MATCHED_${rowDefinition.id}`);
+      }
+      const physicalBottomCheck = row?.observed?.physicalBottomCheck;
+      if (!physicalBottomCheck || typeof physicalBottomCheck !== 'object') {
+        issues.push(`ROW_PHYSICAL_BOTTOM_CHECK_MISSING_${rowDefinition.id}`);
+      } else {
+        const actualPageCount = Number(row?.observed?.actualPageCount || 0);
+        if (Number(physicalBottomCheck.totalPageCount || 0) !== actualPageCount) {
+          issues.push(`ROW_PHYSICAL_TOTAL_PAGE_COUNT_MISMATCH_${rowDefinition.id}`);
+        }
+        if (Number(physicalBottomCheck.physicalLastRenderedPageNumber || 0) !== actualPageCount) {
+          issues.push(`ROW_PHYSICAL_LAST_PAGE_MISMATCH_${rowDefinition.id}`);
+        }
+        if (physicalBottomCheck.physicalPageWindowMatchesDataset !== true) {
+          issues.push(`ROW_PHYSICAL_WINDOW_DATASET_MISMATCH_${rowDefinition.id}`);
+        }
+        if (physicalBottomCheck.physicalTotalPagePresent !== true) {
+          issues.push(`ROW_PHYSICAL_TOTAL_PAGE_NOT_PRESENT_${rowDefinition.id}`);
+        }
       }
       const endMarkerScroll = getEndMarkerScroll(row);
       if (!endMarkerScroll) {
