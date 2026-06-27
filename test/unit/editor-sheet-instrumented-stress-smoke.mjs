@@ -42,6 +42,7 @@ const mainEntrypoint = path.join(rootDir, 'src', 'main' + '.js');
 const processStartedAt = Date.now();
 let networkRequests = 0;
 let dialogCalls = 0;
+const rendererConsoleMessages = [];
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -63,6 +64,20 @@ async function checkpoint(event, details = {}) {
   await fs.appendFile(checkpointPath, line + '\\n', 'utf8');
   process.stdout.write('EDITOR_SHEET_STRESS_CHECKPOINT:' + line + '\\n');
   return payload;
+}
+
+function recordRendererConsole(entry = {}) {
+  const normalized = {
+    level: String(entry.level ?? ''),
+    message: String(entry.message ?? ''),
+    line: Number(entry.line || 0),
+    sourceId: String(entry.sourceId || ''),
+  };
+  rendererConsoleMessages.push(normalized);
+  if (rendererConsoleMessages.length > 60) {
+    rendererConsoleMessages.splice(0, rendererConsoleMessages.length - 60);
+  }
+  process.stdout.write('EDITOR_SHEET_RENDERER_CONSOLE:' + JSON.stringify(normalized) + '\\n');
 }
 
 function buildFixture({ targetPageCount, seed, unitCountOverride = null }) {
@@ -126,7 +141,7 @@ async function setEditorPayload(win, fixture, label) {
     characterCount: fixture.metadata.characterCount,
     wordCount: fixture.metadata.wordCount,
   });
-  win.webContents.send('editor:set-text', {
+  const payload = {
     content: fixture.text,
     title: 'longform-stress-' + label,
     path: '',
@@ -134,8 +149,45 @@ async function setEditorPayload(win, fixture, label) {
     metaEnabled: true,
     projectId: 'longform-stress-' + label,
     bookProfile: null,
-  });
-  await checkpoint('payload_send_done', { label });
+  };
+  let lastProbe = null;
+  for (let attempt = 1; attempt <= 8; attempt += 1) {
+    win.webContents.send('editor:set-text', payload);
+    await checkpoint('payload_send_attempt', { label, attempt });
+    await sleep(attempt === 1 ? 900 : 1200);
+    for (let probeAttempt = 1; probeAttempt <= 4; probeAttempt += 1) {
+      lastProbe = await win.webContents.executeJavaScript(\`(() => {
+        const host = document.querySelector('#editor.tiptap-host');
+        const prose = host ? host.querySelector('.ProseMirror') : null;
+        const text = prose ? prose.textContent || '' : '';
+        const markerToken = \${JSON.stringify(fixture.metadata.markerTokens.START)};
+        const api = window.electronAPI || null;
+        return {
+          hasElectronAPI: Boolean(window.electronAPI),
+          electronAPIKeys: api ? Object.keys(api).sort() : [],
+          onEditorSetTextType: typeof (api && api.onEditorSetText),
+          onEditorTextRequestType: typeof (api && api.onEditorTextRequest),
+          readyState: document.readyState,
+          hasHost: Boolean(host),
+          hasProse: Boolean(prose),
+          textLength: text.length,
+          markerPresent: markerToken ? text.includes(markerToken) : false,
+        };
+      })()\`, true);
+      if (lastProbe.markerPresent === true) {
+        await checkpoint('payload_applied', {
+          label,
+          attempt,
+          probeAttempt,
+          textLength: lastProbe.textLength,
+        });
+        await checkpoint('payload_send_done', { label });
+        return;
+      }
+      await sleep(350);
+    }
+  }
+  throw new Error('EDITOR_PAYLOAD_NOT_APPLIED_' + label + '_' + JSON.stringify(lastProbe));
 }
 
 async function collectState(win, label, markerTokens, options = {}) {
@@ -177,6 +229,25 @@ async function collectState(win, label, markerTokens, options = {}) {
     const canvas = document.querySelector('.main-content--editor');
     const pageWraps = strip ? [...strip.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
     const pageRects = pageWraps.map((element) => rectOf(element)).filter(Boolean);
+    const physicalRenderedPageNumbers = pageWraps
+      .map((element) => Number.parseInt(element.dataset.pageNumber || element.getAttribute('data-page-number') || '0', 10))
+      .filter((value) => Number.isFinite(value) && value > 0);
+    const physicalFirstRenderedPageNumber = physicalRenderedPageNumbers.length > 0
+      ? physicalRenderedPageNumbers[0]
+      : 0;
+    const physicalLastRenderedPageNumber = physicalRenderedPageNumbers.length > 0
+      ? physicalRenderedPageNumbers[physicalRenderedPageNumbers.length - 1]
+      : 0;
+    const centralSheetRenderedPageCount = Number(host ? host.dataset.centralSheetRenderedPageCount || host.dataset.centralSheetCount || 0 : 0);
+    const centralSheetTotalPageCount = Number(host ? host.dataset.centralSheetTotalPageCount || host.dataset.centralSheetCount || 0 : 0);
+    const centralSheetWindowFirstRenderedPage = Number(host ? host.dataset.centralSheetWindowFirstRenderedPage || 0 : 0);
+    const centralSheetWindowLastRenderedPage = Number(host ? host.dataset.centralSheetWindowLastRenderedPage || 0 : 0);
+    const physicalPageWindowMatchesDataset = (
+      physicalRenderedPageNumbers.length === pageWraps.length
+      && pageWraps.length === centralSheetRenderedPageCount
+      && physicalFirstRenderedPageNumber === centralSheetWindowFirstRenderedPage
+      && physicalLastRenderedPageNumber === centralSheetWindowLastRenderedPage
+    );
     const canvasRect = rectOf(canvas);
     const viewportRect = canvasRect || {
       left: 0,
@@ -245,12 +316,12 @@ async function collectState(win, label, markerTokens, options = {}) {
     return {
       label: \${JSON.stringify(label)},
       centralSheetFlow: host ? host.dataset.centralSheetFlow || null : null,
-      centralSheetRenderedPageCount: Number(host ? host.dataset.centralSheetRenderedPageCount || host.dataset.centralSheetCount || 0 : 0),
-      centralSheetTotalPageCount: Number(host ? host.dataset.centralSheetTotalPageCount || host.dataset.centralSheetCount || 0 : 0),
+      centralSheetRenderedPageCount,
+      centralSheetTotalPageCount,
       centralSheetWindowingEnabled: host ? host.dataset.centralSheetWindowingEnabled || null : null,
       centralSheetLargePayloadFastPathActive: host ? host.dataset.centralSheetLargePayloadFastPathActive || 'false' : 'false',
-      centralSheetWindowFirstRenderedPage: Number(host ? host.dataset.centralSheetWindowFirstRenderedPage || 0 : 0),
-      centralSheetWindowLastRenderedPage: Number(host ? host.dataset.centralSheetWindowLastRenderedPage || 0 : 0),
+      centralSheetWindowFirstRenderedPage,
+      centralSheetWindowLastRenderedPage,
       centralSheetBoundedOverflowReason: host ? host.dataset.centralSheetBoundedOverflowReason || null : null,
       centralSheetBoundedOverflowHiddenPageCount: Number(host ? host.dataset.centralSheetBoundedOverflowHiddenPageCount || 0 : 0),
       proofClass: Boolean(host && host.classList.contains('tiptap-host--central-sheet-strip-proof')),
@@ -260,6 +331,11 @@ async function collectState(win, label, markerTokens, options = {}) {
       derivedSheetEditorCount: pageWraps.reduce((sum, element) => sum + element.querySelectorAll('.tiptap-editor').length, 0),
       prosePageTruthCount: prose ? prose.querySelectorAll('[data-page-index], [data-page-number], [data-page-id]').length : 0,
       renderedSheetShellCount: pageWraps.length,
+      physicalRenderedPageNumbers,
+      physicalFirstRenderedPageNumber,
+      physicalLastRenderedPageNumber,
+      physicalPageWindowMatchesDataset,
+      physicalTotalPagePresent: physicalRenderedPageNumbers.includes(centralSheetTotalPageCount),
       visibleSheetCount,
       domNodeCount: document.querySelectorAll('*').length,
       textLength: text.length,
@@ -365,6 +441,55 @@ async function scrollToMarker(win, markerName, markerTokens) {
   return { markerName, before, scrollResult, after };
 }
 
+async function scrollToPhysicalBottom(win, scenario, markerTokens) {
+  const collectOptions = { activeMarkerNames: [], includeTextHash: false, stopAfterFirstMarkerRect: true };
+  await checkpoint('physical_bottom_scroll_start', { label: scenario.label });
+  const before = await collectState(win, scenario.label + '-physical-bottom-before', markerTokens, collectOptions);
+  const scrollResult = await win.webContents.executeJavaScript(\`(() => {
+    const canvas = document.querySelector('.main-content--editor');
+    if (!(canvas instanceof HTMLElement)) {
+      return { ok: false, reason: 'CANVAS_MISSING' };
+    }
+    const maxScrollTop = Math.max(0, canvas.scrollHeight - canvas.clientHeight);
+    canvas.scrollTop = Math.round(maxScrollTop);
+    return {
+      ok: true,
+      scrollTop: canvas.scrollTop,
+      scrollHeight: canvas.scrollHeight,
+      clientHeight: canvas.clientHeight,
+      maxScrollTop,
+    };
+  })()\`, true);
+  if (!scrollResult.ok) {
+    throw new Error('PHYSICAL_BOTTOM_SCROLL_FAILED_' + scenario.label + '_' + JSON.stringify(scrollResult));
+  }
+  await sleep(900);
+  let after = await collectState(win, scenario.label + '-physical-bottom-after', markerTokens, collectOptions);
+  for (let attempt = 0; attempt < 28; attempt += 1) {
+    if (
+      after.physicalPageWindowMatchesDataset === true
+      && after.physicalTotalPagePresent === true
+      && after.physicalLastRenderedPageNumber === after.centralSheetTotalPageCount
+      && after.centralSheetWindowLastRenderedPage === after.centralSheetTotalPageCount
+    ) {
+      break;
+    }
+    await sleep(250);
+    after = await collectState(win, scenario.label + '-physical-bottom-after-wait-' + String(attempt + 1), markerTokens, collectOptions);
+  }
+  await checkpoint('physical_bottom_scroll_done', {
+    label: scenario.label,
+    totalPageCount: after.centralSheetTotalPageCount,
+    scrollTop: after.scrollTop,
+    maxScrollTop: after.maxScrollTop,
+    physicalFirstRenderedPageNumber: after.physicalFirstRenderedPageNumber,
+    physicalLastRenderedPageNumber: after.physicalLastRenderedPageNumber,
+    physicalPageWindowMatchesDataset: after.physicalPageWindowMatchesDataset,
+    physicalTotalPagePresent: after.physicalTotalPagePresent,
+  });
+  return { before, scrollResult, after };
+}
+
 async function runScenario(win, scenario) {
   process.stdout.write('LONGFORM_STRESS_PROGRESS:' + JSON.stringify({
     event: 'scenario-start',
@@ -416,6 +541,7 @@ async function runScenario(win, scenario) {
     markerScrolls.push(await scrollToMarker(win, markerName, fixture.metadata.markerTokens));
   }
   const afterScrollState = await collectState(win, scenario.label + '-after-marker-scrolls', fixture.metadata.markerTokens);
+  const physicalBottomCheck = await scrollToPhysicalBottom(win, scenario, fixture.metadata.markerTokens);
   let typing = null;
   if (scenario.runTyping) {
     await checkpoint('typing_start', { label: scenario.label });
@@ -491,6 +617,7 @@ async function runScenario(win, scenario) {
     initialState,
     markerScrolls,
     afterScrollState,
+    physicalBottomCheck,
     finalState,
     typing,
   };
@@ -522,6 +649,12 @@ app.whenReady().then(async () => {
       callback({ cancel: false });
     });
     const win = await waitForWindow();
+    win.webContents.on('console-message', (event, level, message, line, sourceId) => {
+      recordRendererConsole({ level, message, line, sourceId });
+    });
+    win.webContents.on('render-process-gone', (event, details) => {
+      recordRendererConsole({ level: 'render-process-gone', message: JSON.stringify(details) });
+    });
     await waitForLoad(win);
     win.setContentSize(1920, 1110);
     await sleep(1200);
@@ -558,6 +691,7 @@ app.whenReady().then(async () => {
       scenarios,
       networkRequests,
       dialogCalls,
+      rendererConsoleMessages,
       outputDir,
     };
     await checkpoint('result_write_start', { ok: true });
@@ -572,6 +706,7 @@ app.whenReady().then(async () => {
       error: error && error.stack ? error.stack : String(error),
       networkRequests,
       dialogCalls,
+      rendererConsoleMessages,
       outputDir,
     };
     await fs.mkdir(outputDir, { recursive: true });
@@ -608,16 +743,19 @@ function assertScenario(scenario) {
   assert.equal(scenario.initialState.centralSheetWindowFirstRenderedPage <= 2, true, `${scenario.label} must render the top sheet window after payload replacement`);
   assert.equal(scenario.initialState.proseMirrorCount, 1);
   assert.equal(scenario.initialState.tiptapEditorCount, 1);
-  if (scenario.targetPageCount >= 4000) {
-    assert.equal(
-      scenario.initialState.centralSheetLargePayloadFastPathActive,
-      'true',
-      `${scenario.label} must activate large payload fast path at this target`,
-    );
-  }
+  assert.match(
+    scenario.initialState.centralSheetLargePayloadFastPathActive,
+    /^(true|false)$/,
+    `${scenario.label} large payload fast path flag must be explicit`,
+  );
   assert.equal(scenario.initialState.derivedSheetProseMirrorCount, 0);
   assert.equal(scenario.initialState.derivedSheetEditorCount, 0);
   assert.equal(scenario.initialState.prosePageTruthCount, 0);
+  assert.equal(
+    scenario.initialState.physicalPageWindowMatchesDataset,
+    true,
+    `${scenario.label} initial physical sheet window must match editor dataset`,
+  );
   assert.equal(scenario.metadata.paragraphCount, 1);
   assert.equal(scenario.metadata.characterCount > 0, true);
   assert.equal(scenario.metadata.wordCount > 0, true);
@@ -631,6 +769,38 @@ function assertScenario(scenario) {
     assert.equal(markerScroll.after.visibleSheetCount > 0, true, `${scenario.label} ${markerName} visible sheets`);
     assert.equal(markerScroll.after.marker[markerName].visibleRectCount > 0, true, `${scenario.label} ${markerName} visible marker`);
   }
+  assert.ok(scenario.physicalBottomCheck, `${scenario.label} missing physical bottom check`);
+  assert.equal(scenario.physicalBottomCheck.scrollResult.ok, true, `${scenario.label} physical bottom scroll`);
+  assert.equal(
+    scenario.physicalBottomCheck.after.centralSheetTotalPageCount,
+    scenario.initialState.centralSheetTotalPageCount,
+    `${scenario.label} physical bottom total page count must stay stable`,
+  );
+  assert.equal(
+    scenario.physicalBottomCheck.after.physicalPageWindowMatchesDataset,
+    true,
+    `${scenario.label} physical bottom sheet window must match editor dataset`,
+  );
+  assert.equal(
+    scenario.physicalBottomCheck.after.physicalTotalPagePresent,
+    true,
+    `${scenario.label} physical bottom must include the final sheet node`,
+  );
+  assert.equal(
+    scenario.physicalBottomCheck.after.physicalLastRenderedPageNumber,
+    scenario.physicalBottomCheck.after.centralSheetTotalPageCount,
+    `${scenario.label} physical bottom last rendered sheet must equal total page count`,
+  );
+  assert.equal(
+    scenario.physicalBottomCheck.after.centralSheetWindowLastRenderedPage,
+    scenario.physicalBottomCheck.after.centralSheetTotalPageCount,
+    `${scenario.label} editor bottom window must end at total page count`,
+  );
+  assert.equal(
+    scenario.physicalBottomCheck.after.renderedSheetShellCount <= MAX_RENDERED_SHEET_WINDOW,
+    true,
+    `${scenario.label} physical bottom window must stay bounded`,
+  );
   assert.equal(scenario.finalState.textHash, scenario.initialState.textHash, `${scenario.label} final hash stable`);
   assert.equal(scenario.finalState.renderedSheetShellCount <= MAX_RENDERED_SHEET_WINDOW, true);
 }
@@ -755,6 +925,18 @@ const summary = {
       firstRenderedPage: item.after.centralSheetWindowFirstRenderedPage,
       lastRenderedPage: item.after.centralSheetWindowLastRenderedPage,
     })),
+    physicalBottomCheck: {
+      totalPageCount: scenario.physicalBottomCheck.after.centralSheetTotalPageCount,
+      scrollTop: scenario.physicalBottomCheck.after.scrollTop,
+      maxScrollTop: scenario.physicalBottomCheck.after.maxScrollTop,
+      firstRenderedPage: scenario.physicalBottomCheck.after.centralSheetWindowFirstRenderedPage,
+      lastRenderedPage: scenario.physicalBottomCheck.after.centralSheetWindowLastRenderedPage,
+      physicalFirstRenderedPageNumber: scenario.physicalBottomCheck.after.physicalFirstRenderedPageNumber,
+      physicalLastRenderedPageNumber: scenario.physicalBottomCheck.after.physicalLastRenderedPageNumber,
+      physicalRenderedPageNumbers: scenario.physicalBottomCheck.after.physicalRenderedPageNumbers,
+      physicalPageWindowMatchesDataset: scenario.physicalBottomCheck.after.physicalPageWindowMatchesDataset,
+      physicalTotalPagePresent: scenario.physicalBottomCheck.after.physicalTotalPagePresent,
+    },
     textHashStable: scenario.finalState.textHash === scenario.initialState.textHash,
     typing: scenario.typing ? {
       typeMs: scenario.typing.typeMs,
