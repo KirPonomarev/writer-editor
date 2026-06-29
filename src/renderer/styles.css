@@ -3987,20 +3987,7 @@ body.dark-theme .empty-state {
   height: var(--central-sheet-strip-height-px);
   min-height: var(--central-sheet-strip-height-px);
   overflow: hidden;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      var(--page-bg) 0,
-      var(--page-bg) var(--page-height-px),
-      transparent var(--page-height-px),
-      transparent var(--central-sheet-page-stride-px)
-    ),
-    linear-gradient(
-      180deg,
-      rgba(231, 223, 210, 0.52) 0%,
-      rgba(238, 231, 220, 0.18) 22%,
-      rgba(224, 214, 200, 0.34) 100%
-    );
+  background: transparent;
 }
 
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof .tiptap-sheet-strip {
@@ -4218,20 +4205,7 @@ body.dark-theme .empty-state {
 }
 
 body.dark-theme .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof {
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      var(--page-bg) 0,
-      var(--page-bg) var(--page-height-px),
-      transparent var(--page-height-px),
-      transparent var(--central-sheet-page-stride-px)
-    ),
-    linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.05) 0%,
-      rgba(33, 36, 49, 0.2) 24%,
-      rgba(8, 10, 16, 0.32) 100%
-    );
+  background: transparent;
 }
 
 body.dark-theme .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof .tiptap-sheet-strip > .tiptap-page-wrap .tiptap-page {

@@ -9,29 +9,37 @@ function readSource(relativePath) {
   return fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
 }
 
-test('editorial sheet shell continuity: runtime overscans and paints page bands behind virtual shell spacers', () => {
+function extractCssRule(source, selector) {
+  const start = source.indexOf(`${selector} {`);
+  assert.notEqual(start, -1, `Missing CSS rule for ${selector}`);
+  const bodyStart = source.indexOf('{', start) + 1;
+  const bodyEnd = source.indexOf('\n}', bodyStart);
+  assert.notEqual(bodyEnd, -1, `Missing CSS rule close for ${selector}`);
+  return source.slice(bodyStart, bodyEnd);
+}
+
+test('editorial sheet shell continuity: runtime overscans while paper stays on shell layer only', () => {
   const editorText = readSource('src/renderer/editor.js');
   const cssText = readSource('src/renderer/styles.css');
 
   assert.ok(editorText.includes('const CENTRAL_SHEET_RUNTIME_WINDOW_OVERSCAN = 6;'));
 
   const proofSelector = '.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof';
-  const proofStart = cssText.indexOf(`${proofSelector} {`);
-  assert.notEqual(proofStart, -1, 'central sheet proof selector must exist');
-  const proofEnd = cssText.indexOf('\n}', proofStart);
-  const proofBlock = cssText.slice(proofStart, proofEnd);
+  const proofBlock = extractCssRule(cssText, proofSelector);
+  const darkBlock = extractCssRule(cssText, `body.dark-theme ${proofSelector}`);
+  const shellBlock = extractCssRule(
+    cssText,
+    `${proofSelector} .tiptap-sheet-strip > .tiptap-page-wrap .tiptap-page`,
+  );
 
-  assert.match(proofBlock, /background:\s*repeating-linear-gradient\(/);
-  assert.ok(proofBlock.includes('var(--page-bg) var(--page-height-px)'));
-  assert.ok(proofBlock.includes('transparent var(--central-sheet-page-stride-px)'));
+  assert.match(proofBlock, /background:\s*transparent;/);
+  assert.doesNotMatch(proofBlock, /repeating-linear-gradient/);
+  assert.doesNotMatch(proofBlock, /var\(--page-bg\)/);
 
-  const darkSelector = `body.dark-theme ${proofSelector}`;
-  const darkStart = cssText.indexOf(`${darkSelector} {`);
-  assert.notEqual(darkStart, -1, 'dark central sheet proof selector must exist');
-  const darkEnd = cssText.indexOf('\n}', darkStart);
-  const darkBlock = cssText.slice(darkStart, darkEnd);
+  assert.match(darkBlock, /background:\s*transparent;/);
+  assert.doesNotMatch(darkBlock, /repeating-linear-gradient/);
+  assert.doesNotMatch(darkBlock, /var\(--page-bg\)/);
 
-  assert.match(darkBlock, /background:\s*repeating-linear-gradient\(/);
-  assert.ok(darkBlock.includes('var(--page-bg) var(--page-height-px)'));
-  assert.ok(darkBlock.includes('transparent var(--central-sheet-page-stride-px)'));
+  assert.match(shellBlock, /background:\s*var\(--page-bg\);/);
+  assert.match(shellBlock, /border-radius:\s*var\(--page-radius\);/);
 });

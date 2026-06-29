@@ -15,6 +15,15 @@ function readSource(relativePath) {
   return fs.readFileSync(path.join(REPO_ROOT, relativePath), 'utf8');
 }
 
+function extractCssRule(source, selector) {
+  const start = source.indexOf(`${selector} {`);
+  assert.notEqual(start, -1, `Missing CSS rule for ${selector}`);
+  const bodyStart = source.indexOf('{', start) + 1;
+  const bodyEnd = source.indexOf('\n}', bodyStart);
+  assert.notEqual(bodyEnd, -1, `Missing CSS rule close for ${selector}`);
+  return source.slice(bodyStart, bodyEnd);
+}
+
 test('central sheet decision keeps normal content renderable as a derived budget decision', () => {
   assert.deepEqual(
     resolveCentralSheetStripProofDecision({
@@ -175,4 +184,29 @@ test('central sheet decision is a DOM-free helper consumed by editor runtime', (
   assert.match(editorSource, /editor\.dataset\.centralSheetBoundedOverflowRuntimePageCount = String\(resolvedPageCount\);/);
   assert.match(editorSource, /editor\.dataset\.centralSheetBoundedOverflowVisiblePageCount = String\(resolvedVisiblePageCount\);/);
   assert.match(editorSource, /clearCentralSheetStripProof\(\{ overflowReason: runtimeState\.overflowReason \}\);/);
+});
+
+test('central sheet proof keeps page paper on shell layer only', () => {
+  const styles = readSource('src/renderer/styles.css');
+  const hostRule = extractCssRule(
+    styles,
+    '.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof',
+  );
+  const darkHostRule = extractCssRule(
+    styles,
+    'body.dark-theme .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof',
+  );
+  const shellRule = extractCssRule(
+    styles,
+    '.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof .tiptap-sheet-strip > .tiptap-page-wrap .tiptap-page',
+  );
+
+  assert.match(hostRule, /background:\s*transparent;/);
+  assert.doesNotMatch(hostRule, /repeating-linear-gradient/);
+  assert.doesNotMatch(hostRule, /var\(--page-bg\)/);
+  assert.match(darkHostRule, /background:\s*transparent;/);
+  assert.doesNotMatch(darkHostRule, /repeating-linear-gradient/);
+  assert.doesNotMatch(darkHostRule, /var\(--page-bg\)/);
+  assert.match(shellRule, /background:\s*var\(--page-bg\);/);
+  assert.match(shellRule, /border-radius:\s*var\(--page-radius\);/);
 });
