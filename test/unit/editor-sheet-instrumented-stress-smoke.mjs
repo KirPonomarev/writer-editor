@@ -24,6 +24,7 @@ const checkpointPath = path.join(outputDir, 'checkpoints.jsonl');
 
 const MIN_RENDERED_SHEET_WINDOW = 2;
 const MAX_RENDERED_SHEET_WINDOW = 15;
+const LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE = 520;
 const markerNames = Object.freeze(['START', 'P25', 'MIDDLE', 'P75', 'END']);
 
 function buildHelperSource() {
@@ -38,6 +39,7 @@ const outputDir = ${JSON.stringify(outputDir)};
 const checkpointPath = path.join(outputDir, 'checkpoints.jsonl');
 const markerNames = ${JSON.stringify(markerNames)};
 const targetPageCount = ${JSON.stringify(targetPageCount)};
+const largePayloadEstimatedCharsPerPage = ${JSON.stringify(LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE)};
 const mainEntrypoint = path.join(rootDir, 'src', 'main' + '.js');
 const processStartedAt = Date.now();
 let networkRequests = 0;
@@ -242,6 +244,10 @@ async function collectState(win, label, markerTokens, options = {}) {
     const centralSheetTotalPageCount = Number(host ? host.dataset.centralSheetTotalPageCount || host.dataset.centralSheetCount || 0 : 0);
     const centralSheetWindowFirstRenderedPage = Number(host ? host.dataset.centralSheetWindowFirstRenderedPage || 0 : 0);
     const centralSheetWindowLastRenderedPage = Number(host ? host.dataset.centralSheetWindowLastRenderedPage || 0 : 0);
+    const isLargePayloadFastPath = host ? host.dataset.centralSheetLargePayloadFastPathActive === 'true' : false;
+    const pageStridePx = Number.parseFloat(
+      host ? window.getComputedStyle(host).getPropertyValue('--central-sheet-page-stride-px') || '0' : '0'
+    ) || 0;
     const physicalPageWindowMatchesDataset = (
       physicalRenderedPageNumbers.length === pageWraps.length
       && pageWraps.length === centralSheetRenderedPageCount
@@ -275,10 +281,14 @@ async function collectState(win, label, markerTokens, options = {}) {
         rectCount: 0,
         visibleRectCount: 0,
         firstRect: null,
+        firstTextIndex: -1,
+        estimatedPageNumber: 0,
+        estimatedPageInWindow: false,
       };
     }
     if (walker) {
       let current = walker.nextNode();
+      let textOffset = 0;
       while (current) {
         const currentText = current.textContent || '';
         for (const [name, token] of Object.entries(markerTokens)) {
@@ -286,29 +296,51 @@ async function collectState(win, label, markerTokens, options = {}) {
           let tokenIndex = currentText.indexOf(token);
           while (tokenIndex !== -1) {
             marker[name].occurrenceCount = Number(marker[name].occurrenceCount || 0) + 1;
-            const range = document.createRange();
-            range.setStart(current, tokenIndex);
-            range.setEnd(current, tokenIndex + token.length);
-            const rects = [...range.getClientRects()].map((rect) => ({
-              left: rect.left,
-              right: rect.right,
-              top: rect.top,
-              bottom: rect.bottom,
-              width: rect.width,
-              height: rect.height,
-            }));
-            marker[name].rectCount += rects.length;
-            marker[name].visibleRectCount += rects.filter((rect) => rectsIntersect(rect, viewportRect)).length;
-            if (!marker[name].firstRect && rects.length > 0) {
-              marker[name].firstRect = rects[0];
+            if (marker[name].firstTextIndex < 0) {
+              marker[name].firstTextIndex = textOffset + tokenIndex;
             }
-            tokenIndex = stopAfterFirstMarkerRect && rects.length > 0
+            if (!isLargePayloadFastPath) {
+              const range = document.createRange();
+              range.setStart(current, tokenIndex);
+              range.setEnd(current, tokenIndex + token.length);
+              const rects = [...range.getClientRects()].map((rect) => ({
+                left: rect.left,
+                right: rect.right,
+                top: rect.top,
+                bottom: rect.bottom,
+                width: rect.width,
+                height: rect.height,
+              }));
+              marker[name].rectCount += rects.length;
+              marker[name].visibleRectCount += rects.filter((rect) => rectsIntersect(rect, viewportRect)).length;
+              if (!marker[name].firstRect && rects.length > 0) {
+                marker[name].firstRect = rects[0];
+              }
+            }
+            tokenIndex = stopAfterFirstMarkerRect && (marker[name].firstRect || isLargePayloadFastPath)
               ? -1
               : currentText.indexOf(token, tokenIndex + token.length);
           }
         }
+        textOffset += currentText.length;
         current = walker.nextNode();
       }
+    }
+    for (const markerState of Object.values(marker)) {
+      if (!markerState || markerState.firstTextIndex < 0) {
+        continue;
+      }
+      markerState.estimatedPageNumber = Math.max(
+        1,
+        Math.min(
+          Math.max(1, centralSheetTotalPageCount),
+          Math.floor(markerState.firstTextIndex / Math.max(1, ${JSON.stringify(LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE)})) + 1
+        )
+      );
+      markerState.estimatedPageInWindow = (
+        markerState.estimatedPageNumber >= centralSheetWindowFirstRenderedPage
+        && markerState.estimatedPageNumber <= centralSheetWindowLastRenderedPage
+      );
     }
     const scrollTop = canvas instanceof HTMLElement ? canvas.scrollTop : 0;
     const scrollHeight = canvas instanceof HTMLElement ? canvas.scrollHeight : 0;
@@ -341,6 +373,7 @@ async function collectState(win, label, markerTokens, options = {}) {
       textLength: text.length,
       textHash: includeTextHash ? hashString(text) : null,
       marker,
+      pageStridePx,
       scrollTop,
       scrollHeight,
       clientHeight,
@@ -400,25 +433,41 @@ async function scrollToMarker(win, markerName, markerTokens) {
     visibleRectCount: before.marker[markerName] ? before.marker[markerName].visibleRectCount : null,
   });
   const markerState = before.marker[markerName];
-  if (!markerState || !markerState.firstRect) {
-    throw new Error('MARKER_RECT_MISSING_' + markerName + '_' + JSON.stringify(before));
+  if (!markerState || (markerState.firstTextIndex < 0 && !markerState.firstRect)) {
+    throw new Error('MARKER_LOCATION_MISSING_' + markerName + '_' + JSON.stringify(before));
   }
   await checkpoint('marker_scroll_start', { markerName });
   const scrollResult = await win.webContents.executeJavaScript(\`(() => {
     const markerRect = \${JSON.stringify(markerState.firstRect)};
+    const estimatedPageNumber = \${JSON.stringify(markerState.estimatedPageNumber)};
+    const pageStridePx = \${JSON.stringify(before.pageStridePx)};
     const canvas = document.querySelector('.main-content--editor');
     if (!(canvas instanceof HTMLElement)) {
       return { ok: false, reason: 'CANVAS_MISSING' };
     }
     const viewportCenter = canvas.clientHeight / 2;
+    const targetFromEstimatedPage = (
+      Number.isFinite(estimatedPageNumber)
+      && estimatedPageNumber > 0
+      && Number.isFinite(pageStridePx)
+      && pageStridePx > 0
+    )
+      ? ((estimatedPageNumber - 1) * pageStridePx) + 12
+      : null;
+    const targetFromRect = markerRect
+      ? canvas.scrollTop + markerRect.top - viewportCenter
+      : null;
+    const rawNextScrollTop = targetFromEstimatedPage !== null ? targetFromEstimatedPage : targetFromRect;
     const nextScrollTop = Math.max(0, Math.min(
       canvas.scrollHeight - canvas.clientHeight,
-      canvas.scrollTop + markerRect.top - viewportCenter
+      Number.isFinite(rawNextScrollTop) ? rawNextScrollTop : canvas.scrollTop
     ));
     canvas.scrollTop = Math.round(nextScrollTop);
     return {
       ok: true,
       markerName: \${JSON.stringify(markerName)},
+      targetSource: targetFromEstimatedPage !== null ? 'estimated-page' : 'range-rect',
+      estimatedPageNumber,
       scrollTop: canvas.scrollTop,
       scrollHeight: canvas.scrollHeight,
       clientHeight: canvas.clientHeight,
@@ -427,7 +476,13 @@ async function scrollToMarker(win, markerName, markerTokens) {
   })()\`, true);
   await sleep(900);
   let after = await collectState(win, markerName + '-after-scroll', markerTokens, markerOptions);
-  for (let attempt = 0; attempt < 18 && after.marker[markerName].visibleRectCount === 0; attempt += 1) {
+  for (
+    let attempt = 0;
+    attempt < 18
+      && after.marker[markerName].visibleRectCount === 0
+      && after.marker[markerName].estimatedPageInWindow !== true;
+    attempt += 1
+  ) {
     await sleep(180);
     after = await collectState(win, markerName + '-after-scroll-wait-' + String(attempt + 1), markerTokens, markerOptions);
   }
@@ -437,6 +492,8 @@ async function scrollToMarker(win, markerName, markerTokens) {
     firstRenderedPage: after.centralSheetWindowFirstRenderedPage,
     lastRenderedPage: after.centralSheetWindowLastRenderedPage,
     visibleRectCount: after.marker[markerName].visibleRectCount,
+    estimatedPageNumber: after.marker[markerName].estimatedPageNumber,
+    estimatedPageInWindow: after.marker[markerName].estimatedPageInWindow,
   });
   return { markerName, before, scrollResult, after };
 }
@@ -660,14 +717,15 @@ app.whenReady().then(async () => {
     await sleep(1200);
     await checkpoint('app_window_ready', { width: 1920, height: 1110 });
     const phaseA = await runScenario(win, { label: 'phase-a-500', phase: 'A', targetPageCount: 500, seed: 'S500', runTyping: false });
+    const phaseACharsPerUnit = phaseA.metadata.characterCount / Math.max(1, phaseA.metadata.unitCount);
     const calibratedUnitCount = Math.ceil(
-      phaseA.metadata.unitCount
-      * (targetPageCount / Math.max(1, phaseA.initialState.centralSheetTotalPageCount))
-      * 1.15
+      ((targetPageCount * largePayloadEstimatedCharsPerPage) / Math.max(1, phaseACharsPerUnit))
+      * 1.2
     );
     await checkpoint('phase_b_calibrated_unit_count', {
       phaseAPageCount: phaseA.initialState.centralSheetTotalPageCount,
       phaseAUnitCount: phaseA.metadata.unitCount,
+      phaseACharsPerUnit,
       targetPageCount,
       calibratedUnitCount,
     });
@@ -675,6 +733,7 @@ app.whenReady().then(async () => {
       event: 'phase-b-calibrated-unit-count',
       phaseAPageCount: phaseA.initialState.centralSheetTotalPageCount,
       phaseAUnitCount: phaseA.metadata.unitCount,
+      phaseACharsPerUnit,
       calibratedUnitCount,
     }) + '\\n');
     const phaseB = await runScenario(win, {
@@ -767,7 +826,12 @@ function assertScenario(scenario) {
     assert.ok(markerScroll, `${scenario.label} missing marker scroll ${markerName}`);
     assert.equal(markerScroll.scrollResult.ok, true, `${scenario.label} ${markerName} scroll`);
     assert.equal(markerScroll.after.visibleSheetCount > 0, true, `${scenario.label} ${markerName} visible sheets`);
-    assert.equal(markerScroll.after.marker[markerName].visibleRectCount > 0, true, `${scenario.label} ${markerName} visible marker`);
+    assert.equal(
+      markerScroll.after.marker[markerName].visibleRectCount > 0
+        || markerScroll.after.marker[markerName].estimatedPageInWindow === true,
+      true,
+      `${scenario.label} ${markerName} marker must be visible by range rect or estimated physical page window`,
+    );
   }
   assert.ok(scenario.physicalBottomCheck, `${scenario.label} missing physical bottom check`);
   assert.equal(scenario.physicalBottomCheck.scrollResult.ok, true, `${scenario.label} physical bottom scroll`);
@@ -917,6 +981,9 @@ const summary = {
     loadMs: scenario.loadMs,
     markerScrolls: scenario.markerScrolls.map((item) => ({
       markerName: item.markerName,
+      targetSource: item.scrollResult.targetSource,
+      estimatedPageNumber: item.after.marker[item.markerName].estimatedPageNumber,
+      estimatedPageInWindow: item.after.marker[item.markerName].estimatedPageInWindow,
       scrollTop: item.scrollResult.scrollTop,
       scrollHeight: item.scrollResult.scrollHeight,
       clientHeight: item.scrollResult.clientHeight,

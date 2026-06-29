@@ -4139,6 +4139,16 @@ body.dark-theme .empty-state {
   caret-color: var(--editor-text);
 }
 
+.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof[data-central-sheet-large-payload-fast-path-active="true"] > .tiptap-page-wrap .tiptap-editor {
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof > .tiptap-page-wrap .ProseMirror {
   width: 100%;
   max-width: none;
@@ -4152,6 +4162,32 @@ body.dark-theme .empty-state {
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof[data-central-sheet-large-payload-fast-path-active="true"] > .tiptap-page-wrap .ProseMirror p {
   display: inline;
   margin: 0;
+}
+
+.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof[data-central-sheet-large-payload-fast-path-active="true"] > .tiptap-page-wrap .ProseMirror {
+  width: 1px;
+  min-width: 1px;
+  max-width: 1px;
+  height: 1px;
+  min-height: 1px;
+  max-height: 1px;
+  overflow: hidden;
+  white-space: pre;
+  font-size: 0;
+  line-height: 0;
+  caret-color: transparent;
+  contain: strict;
+}
+
+.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof[data-central-sheet-large-payload-fast-path-active="true"] > .tiptap-page-wrap .ProseMirror * {
+  font-size: 0;
+  line-height: 0;
+}
+
+.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof[data-central-sheet-large-payload-fast-path-active="true"] > .tiptap-page-wrap .ProseMirror::before {
+  display: none;
+  height: 0;
+  shape-outside: none;
 }
 
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof > .tiptap-page-wrap .ProseMirror::before {

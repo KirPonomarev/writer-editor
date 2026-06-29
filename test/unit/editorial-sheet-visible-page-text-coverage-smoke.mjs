@@ -14,6 +14,9 @@ const viewportHeight = Number.parseInt(process.env.EDITORIAL_SHEET_TEXT_COVERAGE
 const forcedEditorZoom = process.env.EDITORIAL_SHEET_TEXT_COVERAGE_ZOOM
   ? Number.parseFloat(process.env.EDITORIAL_SHEET_TEXT_COVERAGE_ZOOM)
   : 1;
+const maxScrollStepMs = Number.parseFloat(process.env.EDITORIAL_SHEET_TEXT_COVERAGE_MAX_SCROLL_STEP_MS || '900');
+const maxAverageScrollStepMs = Number.parseFloat(process.env.EDITORIAL_SHEET_TEXT_COVERAGE_MAX_AVG_SCROLL_STEP_MS || '350');
+const maxZoomStepMs = Number.parseFloat(process.env.EDITORIAL_SHEET_TEXT_COVERAGE_MAX_ZOOM_STEP_MS || '1800');
 assert.ok(
   [2000, 10000].includes(targetPageCount),
   'target page count must be 2000 or 10000',
@@ -21,6 +24,9 @@ assert.ok(
 assert.ok(Number.isInteger(viewportWidth) && viewportWidth >= 1000, 'viewport width must be at least 1000');
 assert.ok(Number.isInteger(viewportHeight) && viewportHeight >= 800, 'viewport height must be at least 800');
 assert.ok(Number.isFinite(forcedEditorZoom) && forcedEditorZoom >= 0.5 && forcedEditorZoom <= 2, 'zoom must be between 0.5 and 2');
+assert.ok(Number.isFinite(maxScrollStepMs) && maxScrollStepMs > 0, 'max scroll step threshold must be positive');
+assert.ok(Number.isFinite(maxAverageScrollStepMs) && maxAverageScrollStepMs > 0, 'max average scroll threshold must be positive');
+assert.ok(Number.isFinite(maxZoomStepMs) && maxZoomStepMs > 0, 'max zoom step threshold must be positive');
 const outputDir = process.env.EDITORIAL_SHEET_TEXT_COVERAGE_OUT_DIR
   ? path.resolve(process.env.EDITORIAL_SHEET_TEXT_COVERAGE_OUT_DIR)
   : await mkdtemp(path.join(os.tmpdir(), `editorial-sheet-${targetPageCount}-text-coverage-`));
@@ -37,6 +43,9 @@ const targetPageCount = ${JSON.stringify(targetPageCount)};
 const viewportWidth = ${JSON.stringify(viewportWidth)};
 const viewportHeight = ${JSON.stringify(viewportHeight)};
 const forcedEditorZoom = ${JSON.stringify(forcedEditorZoom)};
+const maxScrollStepMs = ${JSON.stringify(maxScrollStepMs)};
+const maxAverageScrollStepMs = ${JSON.stringify(maxAverageScrollStepMs)};
+const maxZoomStepMs = ${JSON.stringify(maxZoomStepMs)};
 const mainEntrypoint = path.join(rootDir, 'src', 'main' + '.js');
 let networkRequests = 0;
 let dialogCalls = 0;
@@ -562,6 +571,83 @@ async function waitForStableFixture(win) {
   throw new Error('VISIBLE_PAGE_TEXT_COVERAGE_FIXTURE_NOT_STABLE ' + JSON.stringify(lastState));
 }
 
+async function measureScrollZoomPerf(win) {
+  return win.webContents.executeJavaScript(\`(async () => {
+    const waitFrames = () => new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+    const summarize = (items) => {
+      const durations = items.map((item) => Number(item.durationMs) || 0);
+      const total = durations.reduce((sum, value) => sum + value, 0);
+      return {
+        maxMs: durations.length ? Math.max(...durations) : 0,
+        avgMs: durations.length ? total / durations.length : 0,
+      };
+    };
+    const canvas = document.querySelector('.main-content--editor');
+    const host = document.querySelector('#editor.tiptap-host');
+    if (!(canvas instanceof HTMLElement) || !(host instanceof HTMLElement)) {
+      return { ok: false, reason: 'CANVAS_OR_HOST_MISSING' };
+    }
+    const scrollSteps = [];
+    const ratios = [0, 0.08, 0.21, 0.5, 0.79, 0.92, 1, 0.37];
+    for (const ratio of ratios) {
+      const maxScrollTop = Math.max(0, canvas.scrollHeight - canvas.clientHeight);
+      const startedAt = performance.now();
+      canvas.scrollTop = Math.round(maxScrollTop * ratio);
+      host.getBoundingClientRect();
+      await waitFrames();
+      scrollSteps.push({
+        ratio,
+        durationMs: performance.now() - startedAt,
+        scrollTop: canvas.scrollTop,
+        firstRenderedPage: Number(host.dataset.centralSheetWindowFirstRenderedPage || 0),
+        lastRenderedPage: Number(host.dataset.centralSheetWindowLastRenderedPage || 0),
+        renderedPageCount: Number(host.dataset.centralSheetRenderedPageCount || 0),
+      });
+    }
+    const zoomSteps = [];
+    const zoomOut = document.querySelector('[data-action="zoom-out"]');
+    const zoomIn = document.querySelector('[data-action="zoom-in"]');
+    const zoomValue = document.querySelector('[data-zoom-value]');
+    for (const action of ['out', 'out', 'in', 'in']) {
+      const button = action === 'out' ? zoomOut : zoomIn;
+      if (!(button instanceof HTMLElement)) {
+        zoomSteps.push({ action, ok: false, reason: 'ZOOM_BUTTON_MISSING' });
+        continue;
+      }
+      const startedAt = performance.now();
+      button.click();
+      host.getBoundingClientRect();
+      await waitFrames();
+      zoomSteps.push({
+        action,
+        ok: true,
+        durationMs: performance.now() - startedAt,
+        zoomText: zoomValue ? zoomValue.textContent || '' : '',
+        totalPageCount: Number(host.dataset.centralSheetTotalPageCount || 0),
+        renderedPageCount: Number(host.dataset.centralSheetRenderedPageCount || 0),
+      });
+    }
+    const scrollSummary = summarize(scrollSteps);
+    const zoomSummary = summarize(zoomSteps.filter((step) => step.ok !== false));
+    return {
+      ok: true,
+      scrollSteps,
+      zoomSteps,
+      scrollMaxMs: scrollSummary.maxMs,
+      scrollAvgMs: scrollSummary.avgMs,
+      zoomMaxMs: zoomSummary.maxMs,
+      zoomAvgMs: zoomSummary.avgMs,
+      thresholds: {
+        maxScrollStepMs: \${JSON.stringify(maxScrollStepMs)},
+        maxAverageScrollStepMs: \${JSON.stringify(maxAverageScrollStepMs)},
+        maxZoomStepMs: \${JSON.stringify(maxZoomStepMs)},
+      },
+    };
+  })()\`, true);
+}
+
 function scrollToBoundarySource(boundaryPageOffset) {
   return \`
     {
@@ -612,6 +698,7 @@ app.whenReady().then(async () => {
     await sleep(350);
     await setEditorPayload(win);
     const stable = await waitForStableFixture(win);
+    const scrollZoomPerf = await measureScrollZoomPerf(win);
     const boundaryFrames = [];
     const scrollOffsets = [
       1,
@@ -635,6 +722,7 @@ app.whenReady().then(async () => {
       ok: true,
       zoomState,
       stable,
+      scrollZoomPerf,
       boundaryFrames,
       networkRequests,
       dialogCalls,
@@ -701,6 +789,24 @@ assert.equal(result.stable.zoomText, `${Math.round(forcedEditorZoom * 100)}%`);
 assert.equal(result.stable.proseMirrorCount, 1);
 assert.equal(result.stable.tiptapEditorCount, 1);
 assert.equal(result.stable.prosePageTruthCount, 0);
+assert.equal(result.scrollZoomPerf && result.scrollZoomPerf.ok, true);
+assert.equal(result.scrollZoomPerf.scrollSteps.length >= 6, true);
+assert.equal(result.scrollZoomPerf.zoomSteps.filter((step) => step.ok !== false).length >= 2, true);
+assert.equal(
+  result.scrollZoomPerf.scrollMaxMs <= maxScrollStepMs,
+  true,
+  `scroll step max ${result.scrollZoomPerf.scrollMaxMs} exceeded ${maxScrollStepMs}`,
+);
+assert.equal(
+  result.scrollZoomPerf.scrollAvgMs <= maxAverageScrollStepMs,
+  true,
+  `scroll step average ${result.scrollZoomPerf.scrollAvgMs} exceeded ${maxAverageScrollStepMs}`,
+);
+assert.equal(
+  result.scrollZoomPerf.zoomMaxMs <= maxZoomStepMs,
+  true,
+  `zoom step max ${result.scrollZoomPerf.zoomMaxMs} exceeded ${maxZoomStepMs}`,
+);
 
 for (const framePair of result.boundaryFrames) {
   for (const frame of [framePair.immediate, framePair.settled]) {
@@ -760,5 +866,9 @@ console.log('EDITORIAL_SHEET_VISIBLE_PAGE_TEXT_COVERAGE_SUMMARY:' + JSON.stringi
       item.settled.boundaryTextInkLeakCount,
     ]),
   ),
-  screenshots: result.screenshots.map((item) => path.basename(item)),
-}));
+  scrollMaxMs: result.scrollZoomPerf.scrollMaxMs,
+  scrollAvgMs: result.scrollZoomPerf.scrollAvgMs,
+  zoomMaxMs: result.scrollZoomPerf.zoomMaxMs,
+  zoomAvgMs: result.scrollZoomPerf.zoomAvgMs,
+	  screenshots: result.screenshots.map((item) => path.basename(item)),
+	}));

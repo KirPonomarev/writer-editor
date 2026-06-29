@@ -2263,6 +2263,12 @@ function refreshCentralSheetStripProof({ reuseCachedDecision = false } = {}) {
     clearCentralSheetStripProof();
     return false;
   }
+  if (
+    centralSheetStripLargePayloadFastPathActive
+    && !centralSheetStripStructuralGuardActive
+  ) {
+    return applyEstimatedCentralSheetStripRuntimeStateFromText(readCentralSheetLargePayloadFastPathText());
+  }
   const effectiveReuseCachedDecision = (
     reuseCachedDecision === true
     && !centralSheetStripStructuralGuardActive
@@ -9760,7 +9766,7 @@ if (window.electronAPI) {
       resetCentralSheetStripForIncomingPayload();
       if (useLargePayloadFastPath) {
         applyEstimatedCentralSheetStripRuntimeStateFromText(parsed.text || '');
-        scheduleCentralSheetStripProofRefresh({ forceFull: true });
+        scheduleCentralSheetStripProofRefresh({ scrollOnly: true });
       }
     } else {
       setPlainText(parsed.text || '');
