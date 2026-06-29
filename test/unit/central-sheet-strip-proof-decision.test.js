@@ -166,7 +166,7 @@ test('central sheet decision is a DOM-free helper consumed by editor runtime', (
   assert.match(editorSource, /editor\.style\.removeProperty\('--central-sheet-mask-bleed-px'\);/);
   assert.match(editorSource, /shouldRender,\s*overflowReason,/s);
   assert.match(editorSource, /const pageWindow = resolveCentralSheetViewportRuntimeWindow\(\{/);
-  assert.match(editorSource, /renderCentralSheetStripShellPages\(pageWindow\);/);
+  assert.match(editorSource, /renderCentralSheetStripShellPages\(pageWindow, runtimeState\);/);
   assert.match(editorSource, /delete editor\.dataset\.centralSheetOverflowReason;/);
   assert.match(editorSource, /editor\.dataset\.centralSheetBoundedOverflowReason = overflowReason;/);
   assert.match(editorSource, /editor\.dataset\.centralSheetSourcePageCount = String\(sourcePageCount \|\| pageCount\);/);
