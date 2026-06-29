@@ -68,6 +68,7 @@ import {
   createLayoutPreviewState,
   renderLayoutPreviewSnapshot,
 } from './layoutPreview.mjs';
+import { buildLargePayloadLineSafeRows } from './largePayloadLineWrap.mjs';
 import {
   createRepoGroundedDesignOsBrowserRuntime,
   buildLayoutPatchFromSpatialState,
@@ -1264,6 +1265,7 @@ const CENTRAL_SHEET_LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE = 520;
 const CENTRAL_SHEET_LARGE_PAYLOAD_PRESENTATION_CHUNK_TARGET_CHARS = 520;
 const CENTRAL_SHEET_LARGE_PAYLOAD_PRESENTATION_CHUNK_MIN_CHARS = 360;
 const CENTRAL_SHEET_LARGE_PAYLOAD_VISIBLE_PAGE_CHARS = 1600;
+const CENTRAL_SHEET_LARGE_PAYLOAD_LINE_WIDTH_SAFETY_PX = 12;
 const UI_ERROR_MAP_SCHEMA_VERSION = 'ui-error-map.v1';
 const UI_ERROR_FALLBACK_MESSAGE = 'Операция не выполнена';
 const UI_ERROR_FALLBACK_SEVERITY = 'ERROR';
@@ -1296,6 +1298,7 @@ let centralSheetStripLargePayloadFastPathActive = false;
 let centralSheetStripLargePayloadFastPathText = '';
 let centralSheetStripLargePayloadFastPathDirty = false;
 let centralSheetStripLargePayloadFastPathRevision = 0;
+let centralSheetStripTextMeasureCanvas = null;
 let derivedPageMapRuntimeBridgeRefreshSerial = 0;
 
 function resetCentralSheetStripStructuralSettleState() {
@@ -1396,6 +1399,21 @@ function getCentralSheetContentMetrics(metrics) {
     widthPx: Math.max(1, Math.round(metrics.pageWidthPx - metrics.marginLeftPx - metrics.marginRightPx)),
     heightPx: Math.max(1, Math.round(metrics.pageHeightPx - metrics.marginTopPx - metrics.marginBottomPx)),
   };
+}
+
+function resolveCentralSheetLineHeightPx(element) {
+  if (!(element instanceof HTMLElement)) {
+    return 32;
+  }
+  const styles = window.getComputedStyle(element);
+  const parsedLineHeight = Number.parseFloat(styles.lineHeight);
+  const parsedFontSize = Number.parseFloat(styles.fontSize);
+  const fallbackLineHeight = Number.isFinite(parsedFontSize) && parsedFontSize > 0
+    ? parsedFontSize * 1.625
+    : 32;
+  return Number.isFinite(parsedLineHeight) && parsedLineHeight > 0
+    ? parsedLineHeight
+    : fallbackLineHeight;
 }
 
 function normalizeLargePayloadFastPathText(value = '') {
@@ -1598,23 +1616,52 @@ function ensureCentralSheetStripPageWrapShell(existingWrap = null) {
   return wrap;
 }
 
-function getLargePayloadFastPathPageText(sourceText = '', pageNumber = 1) {
-  if (!centralSheetStripLargePayloadFastPathActive) {
-    return '';
+function getCentralSheetTextMeasureContext() {
+  if (!(centralSheetStripTextMeasureCanvas instanceof HTMLCanvasElement)) {
+    centralSheetStripTextMeasureCanvas = document.createElement('canvas');
   }
-  const resolvedPageNumber = Math.max(1, Math.round(Number(pageNumber) || 1));
-  const pageCharBudget = CENTRAL_SHEET_LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE;
-  const visibleCharBudget = Math.max(pageCharBudget, CENTRAL_SHEET_LARGE_PAYLOAD_VISIBLE_PAGE_CHARS);
-  const start = Math.max(0, (resolvedPageNumber - 1) * pageCharBudget);
-  const end = Math.min(sourceText.length, start + visibleCharBudget);
-  if (start >= sourceText.length) {
-    return '';
-  }
-  const raw = sourceText.slice(start, end);
-  return start > 0 ? raw.replace(/^\S*\s?/u, '') : raw;
+  return centralSheetStripTextMeasureCanvas.getContext('2d');
 }
 
-function syncCentralSheetStripPageWrapDerivedText(wrap, pageNumber, sourceText = '') {
+function resolveCentralSheetTextMeasureFont(element) {
+  const styles = element instanceof HTMLElement
+    ? window.getComputedStyle(element)
+    : null;
+  if (!styles) {
+    return 'normal 400 18px sans-serif';
+  }
+  return [
+    styles.fontStyle || 'normal',
+    styles.fontWeight || '400',
+    styles.fontSize || '18px',
+    styles.fontFamily || 'sans-serif',
+  ].join(' ');
+}
+
+function buildLargePayloadFastPathPageLines(sourceText = '', pageNumber = 1, layout = {}) {
+  if (!centralSheetStripLargePayloadFastPathActive) {
+    return [];
+  }
+  const context = getCentralSheetTextMeasureContext();
+  if (context) {
+    context.font = String(layout.font || 'normal 400 18px sans-serif');
+  }
+  return buildLargePayloadLineSafeRows({
+    sourceText,
+    pageNumber,
+    pageCharBudget: CENTRAL_SHEET_LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE,
+    visibleCharBudget: CENTRAL_SHEET_LARGE_PAYLOAD_VISIBLE_PAGE_CHARS,
+    contentWidthPx: layout.contentWidthPx,
+    contentHeightPx: layout.contentHeightPx,
+    lineHeightPx: layout.lineHeightPx,
+    topGuardPx: layout.topGuardPx,
+    bottomGuardPx: layout.bottomGuardPx,
+    lineWidthSafetyPx: CENTRAL_SHEET_LARGE_PAYLOAD_LINE_WIDTH_SAFETY_PX,
+    measureText: context ? (text) => context.measureText(String(text || '')).width : null,
+  });
+}
+
+function syncCentralSheetStripPageWrapDerivedText(wrap, pageNumber, sourceText = '', layout = {}) {
   if (!(wrap instanceof HTMLElement)) {
     return;
   }
@@ -1635,13 +1682,23 @@ function syncCentralSheetStripPageWrapDerivedText(wrap, pageNumber, sourceText =
     derivedText.setAttribute('aria-hidden', 'true');
     pageContent.replaceChildren(derivedText);
   }
-  const nextText = getLargePayloadFastPathPageText(sourceText, pageNumber);
-  if (derivedText.textContent !== nextText) {
-    derivedText.textContent = nextText;
+  const nextLines = buildLargePayloadFastPathPageLines(sourceText, pageNumber, layout);
+  const nextSignature = nextLines.join('\n');
+  derivedText.style.setProperty('--central-sheet-derived-line-height-px', `${Math.max(1, Number(layout.lineHeightPx) || 32)}px`);
+  derivedText.dataset.lineSafe = 'true';
+  if (derivedText.dataset.textSignature === nextSignature) {
+    return;
   }
+  derivedText.replaceChildren(...nextLines.map((line) => {
+    const lineNode = document.createElement('div');
+    lineNode.className = 'tiptap-sheet-derived-line';
+    lineNode.textContent = line;
+    return lineNode;
+  }));
+  derivedText.dataset.textSignature = nextSignature;
 }
 
-function renderCentralSheetStripShellPages(pageWindow) {
+function renderCentralSheetStripShellPages(pageWindow, runtimeState = null) {
   const strip = ensureCentralSheetStripShell();
   if (!(strip instanceof HTMLElement)) {
     return;
@@ -1673,6 +1730,16 @@ function renderCentralSheetStripShellPages(pageWindow) {
   const largePayloadText = centralSheetStripLargePayloadFastPathActive
     ? readCentralSheetLargePayloadFastPathText()
     : '';
+  const derivedTextLayout = runtimeState && typeof runtimeState === 'object'
+    ? {
+      contentWidthPx: runtimeState.contentWidthPx,
+      contentHeightPx: runtimeState.contentHeightPx,
+      lineHeightPx: resolveCentralSheetLineHeightPx(editor),
+      topGuardPx: Math.ceil(Math.max(0, Number(runtimeState.lineGuardPx) || 0) * 0.4),
+      bottomGuardPx: Math.ceil(Math.max(0, Number(runtimeState.lineGuardPx) || 0)),
+      font: resolveCentralSheetTextMeasureFont(editor),
+    }
+    : {};
   const existingTopSpacer = strip.querySelector(':scope > .tiptap-sheet-strip__spacer--top');
   const existingBottomSpacer = strip.querySelector(':scope > .tiptap-sheet-strip__spacer--bottom');
   const existingPageWraps = [...strip.querySelectorAll(':scope > .tiptap-page-wrap')]
@@ -1690,7 +1757,7 @@ function renderCentralSheetStripShellPages(pageWindow) {
     const wrap = ensureCentralSheetStripPageWrapShell(existingPageWraps[offset] || null);
     wrap.dataset.pageIndex = String(pageIndex);
     wrap.dataset.pageNumber = String(pageNumber);
-    syncCentralSheetStripPageWrapDerivedText(wrap, pageNumber, largePayloadText);
+    syncCentralSheetStripPageWrapDerivedText(wrap, pageNumber, largePayloadText, derivedTextLayout);
     fragment.appendChild(wrap);
   }
   appendCentralSheetStripSpacer({
@@ -1721,15 +1788,7 @@ function resolveCentralSheetLineGuardPx(proseMirror) {
   if (!(proseMirror instanceof HTMLElement)) {
     return 32;
   }
-  const styles = window.getComputedStyle(proseMirror);
-  const parsedLineHeight = Number.parseFloat(styles.lineHeight);
-  const parsedFontSize = Number.parseFloat(styles.fontSize);
-  const fallbackLineHeight = Number.isFinite(parsedFontSize) && parsedFontSize > 0
-    ? parsedFontSize * 1.625
-    : 32;
-  const lineHeight = Number.isFinite(parsedLineHeight) && parsedLineHeight > 0
-    ? parsedLineHeight
-    : fallbackLineHeight;
+  const lineHeight = resolveCentralSheetLineHeightPx(proseMirror);
   return Math.max(56, Math.min(128, Math.ceil((lineHeight * 2.25) + 2)));
 }
 
@@ -2232,7 +2291,7 @@ function applyCentralSheetStripRuntimeState(runtimeState) {
     visiblePageCount: renderedPageCount,
     overflowReason: renderedPageCount < pageCount ? 'max-page-count' : '',
   });
-  renderCentralSheetStripShellPages(pageWindow);
+  renderCentralSheetStripShellPages(pageWindow, runtimeState);
   editor.classList.add(CENTRAL_SHEET_STRIP_PROOF_CLASS);
   centralSheetStripLastScrollTop = Math.max(0, Number(pageWindow.scrollTop) || 0);
   return true;

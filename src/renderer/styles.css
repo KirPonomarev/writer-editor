@@ -4097,6 +4097,15 @@ body.dark-theme .empty-state {
   word-break: break-word;
 }
 
+.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof .tiptap-sheet-derived-line {
+  display: block;
+  height: var(--central-sheet-derived-line-height-px, 1.625em);
+  line-height: var(--central-sheet-derived-line-height-px, 1.625em);
+  max-width: 100%;
+  overflow: hidden;
+  white-space: pre;
+}
+
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof > .tiptap-page-wrap .tiptap-editor {
   position: absolute;
   top: var(--page-margin-top-px);

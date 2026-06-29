@@ -546,6 +546,10 @@ async function collectFrame(win, label, setupSource = '') {
   return state;
 }
 
+async function waitForVisualFrame(win) {
+  await win.webContents.executeJavaScript('new Promise((resolve) => { requestAnimationFrame(() => requestAnimationFrame(resolve)); })', true);
+}
+
 async function waitForStableFixture(win) {
   let lastState = null;
   for (let attempt = 0; attempt < 90; attempt += 1) {
@@ -709,11 +713,15 @@ app.whenReady().then(async () => {
       Math.max(6, Math.floor(stable.centralSheetTotalPageCount * 0.25)),
       Math.max(7, Math.floor(stable.centralSheetTotalPageCount * 0.5)),
       Math.max(8, Math.floor(stable.centralSheetTotalPageCount * 0.75)),
+      Math.max(9, stable.centralSheetTotalPageCount - 2),
     ].filter((value, index, array) => value > 0 && array.indexOf(value) === index);
     for (const offset of scrollOffsets) {
-      const immediateBase = await collectFrame(win, 'boundary-' + String(offset) + '-immediate', scrollToBoundarySource(offset));
+      await collectFrame(win, 'boundary-' + String(offset) + '-scroll', scrollToBoundarySource(offset));
+      await waitForVisualFrame(win);
+      const immediateBase = await collectFrame(win, 'boundary-' + String(offset) + '-immediate');
       const immediate = await captureFrameInk(win, immediateBase, 'visible-page-text-coverage-boundary-' + String(offset) + '-immediate.png');
       await sleep(120);
+      await waitForVisualFrame(win);
       const settledBase = await collectFrame(win, 'boundary-' + String(offset) + '-settled');
       const settled = await captureFrameInk(win, settledBase, 'visible-page-text-coverage-boundary-' + String(offset) + '-settled.png');
       boundaryFrames.push({ offset, immediate, settled });
@@ -826,6 +834,21 @@ for (const framePair of result.boundaryFrames) {
       frame.emptySignificantPageCount,
       0,
       `${frame.label} must not expose a significant visible non-final page with zero text coverage: ${JSON.stringify(frame.emptySignificantPages)}`,
+    );
+    assert.equal(
+      frame.contentBoundaryPageCount,
+      0,
+      `${frame.label} must not expose text line boxes crossing sheet content boundaries: ${JSON.stringify(frame.contentBoundaryPages)}`,
+    );
+    assert.equal(
+      frame.forbiddenMarginInkPageCount,
+      0,
+      `${frame.label} must not paint text ink into sheet margins or inter-page guard bands: ${JSON.stringify(frame.forbiddenMarginInkPages)}`,
+    );
+    assert.equal(
+      frame.boundaryTextInkLeakCount,
+      0,
+      `${frame.label} must not leak clipped text ink across sheet content boundaries: ${JSON.stringify(frame.boundaryTextInkLeaks)}`,
     );
   }
 }
