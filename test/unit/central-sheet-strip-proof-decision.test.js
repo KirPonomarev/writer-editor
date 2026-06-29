@@ -160,7 +160,8 @@ test('central sheet decision is a DOM-free helper consumed by editor runtime', (
   assert.doesNotMatch(editorSource, /pageCount: sourcePageCount,/);
   assert.match(editorSource, /const CENTRAL_SHEET_LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE = 520;/);
   assert.doesNotMatch(editorSource, /CENTRAL_SHEET_LARGE_PAYLOAD_ESTIMATED_CHARS_PER_PAGE = 246;/);
-  assert.match(editorSource, /scheduleCentralSheetStripProofRefresh\(\{ forceFull: true \}\);/);
+  assert.match(editorSource, /scheduleCentralSheetStripProofRefresh\(\{ scrollOnly: true \}\);/);
+  assert.match(editorSource, /return applyEstimatedCentralSheetStripRuntimeStateFromText\(readCentralSheetLargePayloadFastPathText\(\)\);/);
   assert.match(editorSource, /editor\.style\.setProperty\('--central-sheet-mask-bleed-px', `\$\{CENTRAL_SHEET_TEXT_MASK_BLEED_PX\}px`\);/);
   assert.match(editorSource, /editor\.style\.removeProperty\('--central-sheet-mask-bleed-px'\);/);
   assert.match(editorSource, /shouldRender,\s*overflowReason,/s);

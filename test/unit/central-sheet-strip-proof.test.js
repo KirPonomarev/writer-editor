@@ -99,7 +99,8 @@ test('central sheet strip proof: source remains renderer-only and bounded', () =
   assert.ok(editorText.includes('pageCount: runtimePageCount,'));
   assert.ok(editorText.includes("editor.dataset.centralSheetSourcePageCount = String(sourcePageCount || pageCount);"));
   assert.ok(editorText.includes("editor.dataset.centralSheetStructuralRuntimePageCount = String(structuralMinimumPageCount || pageCount);"));
-  assert.ok(editorText.includes('scheduleCentralSheetStripProofRefresh({ forceFull: true });'));
+  assert.ok(editorText.includes('scheduleCentralSheetStripProofRefresh({ scrollOnly: true });'));
+  assert.ok(editorText.includes('return applyEstimatedCentralSheetStripRuntimeStateFromText(readCentralSheetLargePayloadFastPathText());'));
   assert.ok(editorText.includes('forceFull !== true'));
   assert.equal(editorText.includes('const sourcePageCount = Math.max(decisionPageCount, structuralMinimumPageCount);'), false);
   assert.equal(editorText.includes('pageCount: sourcePageCount,'), false);
@@ -124,6 +125,9 @@ test('central sheet strip proof: source remains renderer-only and bounded', () =
   assert.ok(cssText.includes('.tiptap-sheet-derived-text'));
   assert.ok(cssText.includes('--central-sheet-derived-text-top-guard-px'));
   assert.ok(cssText.includes('data-central-sheet-large-payload-fast-path-active="true"'));
+  assert.ok(cssText.includes('contain: strict;'));
+  assert.ok(cssText.includes('mask-image: none;'));
+  assert.ok(cssText.includes('shape-outside: none;'));
   assert.equal(cssText.includes('column-width: var(--central-sheet-content-width-px);'), false);
   assert.equal(cssText.includes('column-gap: calc(var(--page-gap-px) + var(--page-margin-left-px) + var(--page-margin-right-px));'), false);
   assert.equal(cssText.includes('column-fill: auto;'), false);
