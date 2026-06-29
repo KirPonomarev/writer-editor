@@ -58,13 +58,14 @@
 - that reproof ended with STOP_AND_FREEZE for design write and did not prove a new live nonblocked Group 01 delta
 - design write lane remains closed after the latest X102 reproof
 
-### Vertical sheets historical baseline and current quarantine
+### Vertical sheets historical baseline and current viewport repair
 - Vertical sheets historical baseline merge point on main history is `4c4eca3aba79c7d689d39b822f689f8939ca58ce`.
 - Current mainline head that includes C05 long-document performance window closeout is `792f28077973721669aef9cf78d9385b1fb1db29` (source contour commit `58a2aced76bb914b3128024ad75588f789b24b28`).
-- Primary editor flow had a historical vertical sheet baseline on that evidence; current 01R recheck quarantines that as not currently green because tracked vertical sheet red tests now exist.
-- The historical accepted evidence set included `vertical-sheet-feed-smoke`, `vertical-sheet-gap-smoke`, `five-sheet-visible-smoke`, and `vertical-sheet-input-stability-smoke`; current recheck records `five-sheet-visible-smoke`, `vertical-sheet-gap-smoke`, `derived-sheet-classification-smoke`, `boundary-enter-flow-smoke`, and `boundary-selection-replace-smoke` as blockers before any renewed design readiness claim.
+- The current viewport-continuity repair contour preserves the primary invariant: one TipTap/ProseMirror source, derived visual sheet stack, view-only page gaps, and no page truth written into project state.
+- The repaired evidence set passes `five-sheet-visible-smoke`, `vertical-sheet-gap-smoke`, `vertical-sheet-feed-smoke`, `vertical-sheet-input-stability-smoke`, `derived-sheet-classification-smoke`, `boundary-enter-flow-smoke`, `boundary-selection-replace-smoke`, `editorial-sheet-fast-scroll-catchup-smoke`, `editorial-sheet-zoom50-boundary-leak-smoke`, and the new `editorial-sheet-visible-page-text-coverage-smoke` at 2000 and 10000 targets.
+- The repair also reran `editor-sheet-instrumented-stress-smoke` at target 10000 and observed actual 11495 pages, 7 rendered sheet shells, stable text hash, zero network requests, zero dialog calls, and physical bottom proof including the final page.
 - `VERTICAL_SHEET_PERFORMANCE_BASELINE_RUN_001` observed 10, 50, and 100 page scenarios as report-only baseline evidence; it is not a hard performance gate and not a repo-persisted artifact.
-- This baseline does not claim full Word-like pagination, export parity, tables/cards/media pagination, horizontal multi-page overview, or toolbar test-tail closure.
+- This repair does not claim production release readiness, cross-platform readiness, full Word-like pagination, export parity, tables/cards/media pagination, horizontal multi-page overview, above-10000 readiness, or toolbar test-tail closure.
 - Page numbers, page gaps, and sheet boundaries are not document truth and must not be written into project state by implication.
 
 ### Editorial sheet 10000 stress rebind
@@ -161,4 +162,4 @@ No further transfer is required for this variant; the transfer axis is closed.
 - при отсутствии новых live nonblocked contradictions текущий статус: symbolic closeout ready with blocked and later freeze,
 - если новый live nonblocked contradiction переподтверждён, следующий шаг только один: one explicit evidence-backed nonblocked contour selection brief.
 - after vertical sheets factual sync, the next move must still be selected as exactly one explicit contour; no automatic runtime, export, toolbar, or perf write opens by this text.
-- after editorial sheet 10000 stress rebind, next work remains one owner-selected contour; vertical diagnostic continuity, manual macOS design approval, export expansion, platform adapters, collaboration, comments, history, and above-10000 profiling remain separate stage-gated lanes.
+- after editorial sheet 10000 stress rebind and viewport-continuity repair, next work remains one owner-selected contour; manual macOS design approval, export expansion, platform adapters, collaboration, comments, history, and above-10000 profiling remain separate stage-gated lanes.

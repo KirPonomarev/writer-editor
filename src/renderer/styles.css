@@ -4007,7 +4007,7 @@ body.dark-theme .empty-state {
   display: flex;
   flex-direction: column;
   width: var(--page-width-px);
-  gap: var(--page-gap-px);
+  gap: 0;
   align-items: flex-start;
   justify-content: flex-start;
   position: relative;
@@ -4050,6 +4050,10 @@ body.dark-theme .empty-state {
   flex: 0 0 auto;
 }
 
+.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof .tiptap-sheet-strip > .tiptap-page-wrap + .tiptap-page-wrap {
+  margin-top: var(--page-gap-px);
+}
+
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof .tiptap-sheet-strip > .tiptap-sheet-strip__spacer {
   width: 100%;
   min-height: 0;
@@ -4072,7 +4076,25 @@ body.dark-theme .empty-state {
   width: 100%;
   height: 100%;
   padding: 0;
+  position: relative;
   overflow: hidden;
+}
+
+.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof .tiptap-sheet-derived-text {
+  box-sizing: border-box;
+  position: absolute;
+  top: calc(var(--page-margin-top-px) + var(--central-sheet-derived-text-top-guard-px));
+  left: var(--page-margin-left-px);
+  width: var(--central-sheet-content-width-px);
+  height: calc(var(--central-sheet-content-height-px) - var(--central-sheet-derived-text-top-guard-px) - var(--central-sheet-line-guard-px));
+  padding: 0;
+  overflow: hidden;
+  color: var(--editor-text);
+  font: inherit;
+  line-height: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof > .tiptap-page-wrap .tiptap-editor {
@@ -4086,23 +4108,35 @@ body.dark-theme .empty-state {
   pointer-events: auto;
   -webkit-mask-image: repeating-linear-gradient(
     to bottom,
-    #000 0,
-    #000 calc(var(--central-sheet-content-height-px) + var(--central-sheet-mask-bleed-px, 2px)),
-    transparent calc(var(--central-sheet-content-height-px) + var(--central-sheet-mask-bleed-px, 2px)),
+    transparent 0,
+    transparent var(--central-sheet-line-top-guard-px),
+    #fff var(--central-sheet-line-top-guard-px),
+    #fff calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px)),
+    transparent calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px)),
     transparent var(--central-sheet-page-stride-px)
   );
   mask-image: repeating-linear-gradient(
     to bottom,
-    #000 0,
-    #000 calc(var(--central-sheet-content-height-px) + var(--central-sheet-mask-bleed-px, 2px)),
-    transparent calc(var(--central-sheet-content-height-px) + var(--central-sheet-mask-bleed-px, 2px)),
+    transparent 0,
+    transparent var(--central-sheet-line-top-guard-px),
+    #fff var(--central-sheet-line-top-guard-px),
+    #fff calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px)),
+    transparent calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px)),
     transparent var(--central-sheet-page-stride-px)
   );
+  -webkit-mask-mode: alpha;
+  mask-mode: alpha;
   -webkit-mask-repeat: repeat-y;
   mask-repeat: repeat-y;
   -webkit-mask-size: 100% var(--central-sheet-page-stride-px);
   mask-size: 100% var(--central-sheet-page-stride-px);
   overflow: hidden;
+}
+
+.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof[data-central-sheet-large-payload-fast-path-active="true"] > .tiptap-page-wrap .tiptap-editor,
+.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof[data-central-sheet-large-payload-fast-path-active="true"] > .tiptap-page-wrap .ProseMirror {
+  color: transparent;
+  caret-color: var(--editor-text);
 }
 
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof > .tiptap-page-wrap .ProseMirror {
@@ -4115,6 +4149,11 @@ body.dark-theme .empty-state {
   overflow: visible;
 }
 
+.main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof[data-central-sheet-large-payload-fast-path-active="true"] > .tiptap-page-wrap .ProseMirror p {
+  display: inline;
+  margin: 0;
+}
+
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof > .tiptap-page-wrap .ProseMirror::before {
   content: '';
   float: left;
@@ -4124,7 +4163,9 @@ body.dark-theme .empty-state {
   pointer-events: none;
   shape-outside: repeating-linear-gradient(
     to bottom,
-    transparent 0,
+    #000 0,
+    #000 var(--central-sheet-line-top-guard-px),
+    transparent var(--central-sheet-line-top-guard-px),
     transparent calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px)),
     #000 calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px)),
     #000 var(--central-sheet-page-stride-px)

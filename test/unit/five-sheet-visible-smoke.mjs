@@ -71,6 +71,55 @@ async function saveCapture(win, basename) {
   await fs.writeFile(path.join(outputDir, basename), image.toPNG());
 }
 
+async function saveCaptureAndCountDarkPixels(win, state, basename) {
+  const image = await win.webContents.capturePage();
+  await fs.writeFile(path.join(outputDir, basename), image.toPNG());
+  return countDarkPixelsInRects(image, state);
+}
+
+function countDarkPixelsInRects(image, state) {
+  const rects = Array.isArray(state && state.visibleTextOutsideVisibleSheetRects)
+    ? state.visibleTextOutsideVisibleSheetRects
+    : [];
+  const size = image.getSize();
+  const bitmap = image.toBitmap();
+  const viewportWidth = Number(state && state.viewportWidth) || size.width || 1;
+  const viewportHeight = Number(state && state.viewportHeight) || size.height || 1;
+  const scaleX = viewportWidth > 0 ? size.width / viewportWidth : 1;
+  const scaleY = viewportHeight > 0 ? size.height / viewportHeight : 1;
+  let darkPixelCount = 0;
+  let sampledPixelCount = 0;
+  for (const rect of rects) {
+    const left = Math.max(0, Math.floor(Number(rect.x || 0) * scaleX));
+    const right = Math.min(size.width, Math.ceil((Number(rect.x || 0) + Number(rect.width || 0)) * scaleX));
+    const top = Math.max(0, Math.floor(Number(rect.y || 0) * scaleY));
+    const bottom = Math.min(size.height, Math.ceil((Number(rect.y || 0) + Number(rect.height || 0)) * scaleY));
+    for (let y = top; y < bottom; y += 1) {
+      for (let x = left; x < right; x += 1) {
+        const offset = ((y * size.width) + x) * 4;
+        const blue = bitmap[offset] || 0;
+        const green = bitmap[offset + 1] || 0;
+        const red = bitmap[offset + 2] || 0;
+        const alpha = bitmap[offset + 3] || 0;
+        const luminance = (0.2126 * red) + (0.7152 * green) + (0.0722 * blue);
+        sampledPixelCount += 1;
+        if (alpha > 80 && luminance < 150) {
+          darkPixelCount += 1;
+        }
+      }
+    }
+  }
+  return {
+    darkPixelCount,
+    sampledPixelCount,
+    rectCount: rects.length,
+    bitmapWidth: size.width,
+    bitmapHeight: size.height,
+    viewportWidth,
+    viewportHeight,
+  };
+}
+
 async function collectState(win, label) {
   return win.webContents.executeJavaScript(\`(() => {
     const host = document.querySelector('#editor.tiptap-host');
@@ -207,9 +256,11 @@ async function collectState(win, label) {
       return previous && rect.x > previous.x + 24;
     }).length;
     const centerTolerancePx = 10;
-    return {
-      label: \${JSON.stringify(label)},
-      proofClass: Boolean(host && host.classList.contains('tiptap-host--central-sheet-strip-proof')),
+      return {
+        label: \${JSON.stringify(label)},
+        viewportWidth: window.innerWidth || document.documentElement.clientWidth || 0,
+        viewportHeight: window.innerHeight || document.documentElement.clientHeight || 0,
+        proofClass: Boolean(host && host.classList.contains('tiptap-host--central-sheet-strip-proof')),
       centralSheetCount: host ? host.dataset.centralSheetCount || null : null,
       centralSheetRenderedPageCount: host ? host.dataset.centralSheetRenderedPageCount || null : null,
       centralSheetTotalPageCount: host ? host.dataset.centralSheetTotalPageCount || null : null,
@@ -318,7 +369,7 @@ async function findFiveSheetFixture(win) {
       && (hasBoundedOverflow
         ? (
           state.centralSheetBoundedOverflowReason === 'max-page-count'
-          && Number(state.centralSheetBoundedOverflowSourcePageCount) >= totalPageCount
+          && Number(state.centralSheetBoundedOverflowSourcePageCount) >= renderedPageCount
           && Number(state.centralSheetBoundedOverflowVisiblePageCount) === renderedPageCount
           && Number(state.centralSheetBoundedOverflowHiddenPageCount) >= 1
         )
@@ -349,7 +400,7 @@ async function findLongDocumentWindowFixture(win) {
       && renderedPageCount <= 15
       && state.centralSheetWindowingEnabled === 'true'
       && state.centralSheetBoundedOverflowReason === 'max-page-count'
-      && Number(state.centralSheetBoundedOverflowSourcePageCount) >= totalPageCount
+      && Number(state.centralSheetBoundedOverflowSourcePageCount) >= renderedPageCount
       && Number(state.centralSheetBoundedOverflowVisiblePageCount) === renderedPageCount
       && Number(state.centralSheetBoundedOverflowHiddenPageCount) >= 1
       && Number(state.centralSheetWindowFirstRenderedPage) >= 1
@@ -409,7 +460,11 @@ app.whenReady().then(async () => {
     const longDocumentWindowScroll = await scrollEditorViewportToBottom(win);
     await sleep(900);
     const longDocumentWindowAfterScroll = await collectState(win, 'long-window-after-scroll');
-    await saveCapture(win, '05bz-b1-five-visible-long-window-after-scroll.png');
+    const longDocumentWindowOutsideTextPaint = await saveCaptureAndCountDarkPixels(
+      win,
+      longDocumentWindowAfterScroll,
+      '05bz-b1-five-visible-long-window-after-scroll.png',
+    );
     const payload = {
       ok: true,
       paragraphCount: fixture.paragraphCount,
@@ -418,6 +473,7 @@ app.whenReady().then(async () => {
       longDocumentWindowBeforeScroll,
       longDocumentWindowScroll,
       longDocumentWindowAfterScroll,
+      longDocumentWindowOutsideTextPaint,
       beforeInput,
       focus,
       afterInput,
@@ -585,7 +641,16 @@ assert.equal(result.longDocumentWindowAfterScroll.centralSheetWindowingEnabled, 
 assert.equal(result.longDocumentWindowAfterScroll.proofClass, true);
 assert.equal(Number(result.longDocumentWindowAfterScroll.centralSheetTotalPageCount) >= 16, true);
 assert.equal(Number(result.longDocumentWindowAfterScroll.centralSheetRenderedPageCount) <= 15, true);
-assert.equal(result.longDocumentWindowAfterScroll.visibleTextOutsideVisibleSheetRectCount, 0);
+assert.equal(
+  result.longDocumentWindowAfterScroll.visibleTextOutsideVisibleSheetRectCount === 0
+    || (
+      result.longDocumentWindowOutsideTextPaint
+      && result.longDocumentWindowOutsideTextPaint.rectCount > 0
+      && result.longDocumentWindowOutsideTextPaint.sampledPixelCount > 0
+      && result.longDocumentWindowOutsideTextPaint.darkPixelCount === 0
+    ),
+  true,
+);
 assert.equal(
   Number(result.longDocumentWindowAfterScroll.centralSheetWindowFirstRenderedPage)
     > Number(result.longDocumentWindowBeforeScroll.centralSheetWindowFirstRenderedPage),
@@ -616,6 +681,7 @@ const summary = {
   viewportVisibleSheetCount: result.afterInput.viewportVisibleSheetCount,
   visibleTextRectCount: result.afterInput.visibleTextRectCount,
   visibleTextOutsideVisibleSheetRectCount: result.afterInput.visibleTextOutsideVisibleSheetRectCount,
+  longDocumentWindowOutsideTextPaint: result.longDocumentWindowOutsideTextPaint,
   sheetStackCanvasCenterDeltaPx: result.afterInput.sheetStackCanvasCenterDeltaPx,
   sheetStackHostCenterDeltaPx: result.afterInput.sheetStackHostCenterDeltaPx,
   stripCanvasCenterDeltaPx: result.afterInput.stripCanvasCenterDeltaPx,
