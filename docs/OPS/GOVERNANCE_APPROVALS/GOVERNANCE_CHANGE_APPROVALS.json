@@ -2,6 +2,13 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
+      "sha256": "e4874934343fbadbb93193dc38f76dec40c75f8338dff1fe27d3f9bac984cab1",
+      "approvedBy": "ticket:DOCX_IMPORT_E2E_COMMAND_CHAIN_001",
+      "approvedAtUtc": "2026-06-30T17:34:55.000Z",
+      "rationale": "Approve bounded DOCX import E2E command-chain contract proof for existing command surfaces only; no production runtime, UI, renderer, preload, CSS, export, dependency, cloud, network, or DOCX full-fidelity claim is introduced."
+    },
+    {
       "filePath": "docs/OPS/EVIDENCE/promotion/rc-f29bb1c2e298-08633278/token-required-set.json",
       "sha256": "53845afe43620c1da737dba37aaf96a86d09e3a0cc5ee4b086b1912282956ac5",
       "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION_RC_REBIND",
