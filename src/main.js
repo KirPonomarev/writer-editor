@@ -319,6 +319,206 @@ function resetActiveReviewSessionStore(nextLifecycle = 'passive') {
   currentReviewSurfacePayloadContentHash = '';
 }
 
+function buildReviewSurfaceStructuralPreviewFromStage01(preview = {}) {
+  const session = isPlainObjectValue(preview.shadowPreview?.session) ? preview.shadowPreview.session : {};
+  const reviewGraph = isPlainObjectValue(session.reviewGraph) ? session.reviewGraph : {};
+  const structuralChanges = Array.isArray(reviewGraph.structuralChanges)
+    ? reviewGraph.structuralChanges
+    : [];
+  const patchItems = Array.isArray(preview.reviewPatchset?.items)
+    ? preview.reviewPatchset.items
+    : [];
+  const patchItemsById = new Map();
+  patchItems.forEach((item) => {
+    if (!isPlainObjectValue(item)) return;
+    const itemId = typeof item.itemId === 'string' ? item.itemId : '';
+    if (itemId) patchItemsById.set(itemId, item);
+  });
+
+  const items = structuralChanges
+    .filter((change) => isPlainObjectValue(change))
+    .map((change, index) => {
+      const structuralChangeId = typeof change.structuralChangeId === 'string' && change.structuralChangeId
+        ? change.structuralChangeId
+        : `structural-change-${index}`;
+      const patchItem = patchItemsById.get(structuralChangeId) || {};
+      const reason = typeof patchItem.reason === 'string' && patchItem.reason
+        ? patchItem.reason
+        : 'REVISION_BRIDGE_STAGE01_STRUCTURAL_MANUAL_ONLY';
+      return {
+        itemId: structuralChangeId,
+        structuralChangeId,
+        structuralKind: typeof change.kind === 'string' ? change.kind : '',
+        summary: typeof change.summary === 'string' ? change.summary : 'Structural item requires manual review.',
+        manualOnlyReason: reason,
+        reasonCodes: [reason],
+      };
+    });
+
+  const unsupportedObservations = Array.isArray(preview.reviewPatchset?.unsupportedObservations)
+    ? preview.reviewPatchset.unsupportedObservations
+      .filter((observation) => isPlainObjectValue(observation))
+      .map((observation, index) => ({
+        itemId: typeof observation.itemId === 'string' && observation.itemId
+          ? observation.itemId
+          : `unsupported-${index}`,
+        structuralKind: typeof observation.itemKind === 'string' ? observation.itemKind : '',
+        reason: typeof observation.reason === 'string' && observation.reason
+          ? observation.reason
+          : 'REVISION_BRIDGE_STAGE01_UNSUPPORTED_OBSERVATION',
+      }))
+    : [];
+
+  return {
+    ok: true,
+    type: 'revisionBridge.structuralManualReviewPreview',
+    status: 'preview',
+    code: 'REVISION_BRIDGE_STAGE01_STRUCTURAL_PREVIEW_DERIVED',
+    reason: 'REVISION_BRIDGE_STAGE01_STRUCTURAL_PREVIEW_DERIVED',
+    reasons: [],
+    previewOnly: true,
+    canAutoApply: false,
+    autoApplyCount: 0,
+    autoApplyCandidates: [],
+    items,
+    unsupportedObservations,
+    summary: {
+      totalStructuralChanges: structuralChanges.length,
+      manualOnlyCount: items.length,
+      unsupportedCount: unsupportedObservations.length,
+    },
+  };
+}
+
+function buildReviewSurfaceFromStage01PreviewResult(previewResult = {}) {
+  const preview = isPlainObjectValue(previewResult.preview) ? cloneJsonSafe(previewResult.preview) : {};
+  const shadowPreview = isPlainObjectValue(preview.shadowPreview) ? cloneJsonSafe(preview.shadowPreview) : {};
+  const revisionSession = isPlainObjectValue(shadowPreview.session) ? cloneJsonSafe(shadowPreview.session) : {};
+  return {
+    revisionSession,
+    shadowPreview,
+    blockedApplyPlan: isPlainObjectValue(preview.blockedApplyPlan)
+      ? cloneJsonSafe(preview.blockedApplyPlan)
+      : {},
+    structuralManualReviewPreview: buildReviewSurfaceStructuralPreviewFromStage01(preview),
+    stage01Preview: preview,
+  };
+}
+
+function normalizeReviewSessionImportReadyValue(source, projectId, sessionId, baselineHash, reviewSurface, revisionSession, now) {
+  const currentBaselineHash = typeof source.currentBaselineHash === 'string' && source.currentBaselineHash.trim()
+    ? source.currentBaselineHash.trim()
+    : '';
+  const sourcePacketHash = typeof source.sourcePacketHash === 'string' && source.sourcePacketHash.trim()
+    ? source.sourcePacketHash.trim()
+    : computeHash(JSON.stringify({
+      projectId,
+      sessionId,
+      baselineHash,
+      currentBaselineHash,
+      reviewSurface,
+      revisionSession,
+      reviewPacket: isPlainObjectValue(source.reviewPacket) ? source.reviewPacket : undefined,
+      parsedSurface: isPlainObjectValue(source.parsedSurface) ? source.parsedSurface : undefined,
+      sourceViewState: isPlainObjectValue(source.sourceViewState) ? source.sourceViewState : undefined,
+    }));
+
+  return {
+    ok: true,
+    value: {
+      projectId,
+      sessionId,
+      baselineHash,
+      reviewSurface: cloneJsonSafe(reviewSurface) || {},
+      revisionSession: isPlainObjectValue(revisionSession) ? cloneJsonSafe(revisionSession) || {} : {},
+      sourcePacketHash,
+      createdAt: typeof source.createdAt === 'string' && source.createdAt.trim()
+        ? source.createdAt.trim()
+        : String(now()),
+    },
+  };
+}
+
+async function buildReviewSessionImportRecordFromStage01(source, metadata, now, options = {}) {
+  const loadBridge = typeof options.loadRevisionBridgeModule === 'function'
+    ? options.loadRevisionBridgeModule
+    : loadRevisionBridgeModule;
+  let revisionBridge = null;
+  try {
+    revisionBridge = await loadBridge();
+  } catch (error) {
+    return {
+      ok: false,
+      code: 'E_REVIEW_SESSION_IMPORT_INVALID',
+      reason: 'REVIEW_STAGE01_PREVIEW_BUILDER_UNAVAILABLE',
+      details: {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    };
+  }
+  if (!revisionBridge || typeof revisionBridge.buildStage01FixedCorePreview !== 'function') {
+    return {
+      ok: false,
+      code: 'E_REVIEW_SESSION_IMPORT_INVALID',
+      reason: 'REVIEW_STAGE01_PREVIEW_BUILDER_UNAVAILABLE',
+    };
+  }
+
+  const previewInput = {
+    projectId: metadata.projectId,
+    sessionId: metadata.sessionId,
+    baselineHash: metadata.baselineHash,
+  };
+  if (typeof source.currentBaselineHash === 'string' && source.currentBaselineHash.trim()) {
+    previewInput.currentBaselineHash = source.currentBaselineHash.trim();
+  }
+  if (isPlainObjectValue(source.sourceViewState)) {
+    previewInput.sourceViewState = cloneJsonSafe(source.sourceViewState);
+  }
+  if (isPlainObjectValue(source.reviewPacket)) {
+    previewInput.reviewPacket = cloneJsonSafe(source.reviewPacket);
+  } else {
+    previewInput.parsedSurface = cloneJsonSafe(source.parsedSurface);
+  }
+
+  let previewResult = null;
+  try {
+    previewResult = revisionBridge.buildStage01FixedCorePreview(previewInput);
+  } catch (error) {
+    return {
+      ok: false,
+      code: 'E_REVIEW_SESSION_IMPORT_INVALID',
+      reason: 'REVIEW_STAGE01_PREVIEW_BUILD_FAILED',
+      details: {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    };
+  }
+
+  if (!isPlainObjectValue(previewResult) || previewResult.ok !== true || !isPlainObjectValue(previewResult.preview)) {
+    return {
+      ok: false,
+      code: 'E_REVIEW_SESSION_IMPORT_INVALID',
+      reason: 'REVIEW_STAGE01_PREVIEW_DIAGNOSTICS',
+      details: {
+        stage01Reason: typeof previewResult?.reason === 'string' ? previewResult.reason : '',
+        reasons: Array.isArray(previewResult?.reasons) ? cloneJsonSafe(previewResult.reasons) : [],
+      },
+    };
+  }
+
+  const reviewSurface = buildReviewSurfaceFromStage01PreviewResult(previewResult);
+  return normalizeReviewSessionImportReadyValue(
+    source,
+    metadata.projectId,
+    metadata.sessionId,
+    metadata.baselineHash,
+    reviewSurface,
+    reviewSurface.revisionSession,
+    now,
+  );
+}
+
 function normalizeReviewSessionImportRecord(payload = {}, options = {}) {
   const source = isPlainObjectValue(payload) ? payload : {};
   const now = typeof options.now === 'function'
@@ -333,8 +533,10 @@ function normalizeReviewSessionImportRecord(payload = {}, options = {}) {
   const revisionSession = isPlainObjectValue(source.revisionSession)
     ? cloneJsonSafe(source.revisionSession)
     : {};
+  const hasStage01Input = isPlainObjectValue(source.reviewPacket) || isPlainObjectValue(source.parsedSurface);
+  const hasReviewSurfaceInput = hasReviewSurfacePayload(reviewSurface);
 
-  if (!hasReviewSurfacePayload(reviewSurface)) {
+  if (!hasReviewSurfaceInput && !hasStage01Input) {
     return {
       ok: false,
       code: 'E_REVIEW_SESSION_IMPORT_INVALID',
@@ -350,28 +552,24 @@ function normalizeReviewSessionImportRecord(payload = {}, options = {}) {
     };
   }
 
-  return {
-    ok: true,
-    value: {
+  if (hasReviewSurfaceInput) {
+    return normalizeReviewSessionImportReadyValue(
+      source,
       projectId,
       sessionId,
       baselineHash,
-      reviewSurface: cloneJsonSafe(reviewSurface) || {},
-      revisionSession: isPlainObjectValue(revisionSession) ? revisionSession : {},
-      sourcePacketHash: typeof source.sourcePacketHash === 'string' && source.sourcePacketHash.trim()
-        ? source.sourcePacketHash.trim()
-        : computeHash(JSON.stringify({
-          projectId,
-          sessionId,
-          baselineHash,
-          reviewSurface,
-          revisionSession,
-        })),
-      createdAt: typeof source.createdAt === 'string' && source.createdAt.trim()
-        ? source.createdAt.trim()
-        : String(now()),
-    },
-  };
+      reviewSurface,
+      revisionSession,
+      now,
+    );
+  }
+
+  return buildReviewSessionImportRecordFromStage01(
+    source,
+    { projectId, sessionId, baselineHash },
+    now,
+    options,
+  );
 }
 
 function cloneActiveReviewSessionStore() {
@@ -392,26 +590,28 @@ function readActiveReviewSessionReviewSurface() {
 }
 
 function handleReviewSurfaceImportPacketCommandSurface(payload = {}) {
-  const normalized = normalizeReviewSessionImportRecord(payload);
-  if (!normalized.ok) {
-    return makeReviewMutateTypedError(
-      'cmd.project.review.importPacket',
-      normalized.code,
-      normalized.reason,
-    );
-  }
+  return Promise.resolve(normalizeReviewSessionImportRecord(payload)).then((normalized) => {
+    if (!normalized.ok) {
+      return makeReviewMutateTypedError(
+        'cmd.project.review.importPacket',
+        normalized.code,
+        normalized.reason,
+        normalized.details,
+      );
+    }
 
-  activeReviewSessionStore = cloneJsonSafe(normalized.value) || {};
-  activeReviewSessionLifecycle = 'active';
-  currentReviewSurfacePayload = cloneJsonSafe(normalized.value.reviewSurface) || {};
-  currentReviewSurfacePayloadSource = 'session';
-  currentReviewSurfacePayloadContentHash = '';
+    activeReviewSessionStore = cloneJsonSafe(normalized.value) || {};
+    activeReviewSessionLifecycle = 'active';
+    currentReviewSurfacePayload = cloneJsonSafe(normalized.value.reviewSurface) || {};
+    currentReviewSurfacePayloadSource = 'session';
+    currentReviewSurfacePayloadContentHash = '';
 
-  return {
-    ok: true,
-    session: cloneActiveReviewSessionStore(),
-    reviewSurface: readActiveReviewSessionReviewSurface(),
-  };
+    return {
+      ok: true,
+      session: cloneActiveReviewSessionStore(),
+      reviewSurface: readActiveReviewSessionReviewSurface(),
+    };
+  });
 }
 
 function handleReviewSurfaceClearSessionCommandSurface() {
