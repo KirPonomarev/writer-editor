@@ -845,6 +845,235 @@ async function handleDocxIntakeGateCommandSurface(payload = {}) {
 }
 // DOCX_INTAKE_GATE_COMMAND_SURFACE_END
 
+// DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_START
+const DOCX_CONTENT_PREVIEW_COMMAND_ID = 'cmd.project.docx.previewContent';
+const DOCX_CONTENT_PREVIEW_MAX_BYTES = 10 * 1024 * 1024;
+const DOCX_CONTENT_PREVIEW_MAX_BASE64_CHARS = Math.ceil(DOCX_CONTENT_PREVIEW_MAX_BYTES / 3) * 4;
+const DOCX_CONTENT_PREVIEW_ALLOWED_PAYLOAD_KEYS = new Set(['requestId', 'bufferSource']);
+const DOCX_CONTENT_PREVIEW_FORBIDDEN_RESULT_KEYS = new Set([
+  ['review', 'Packet'].join(''),
+  ['review', 'Surface'].join(''),
+  ['parsed', 'Review', 'Surface'].join(''),
+  ['active', 'Review', 'Session'].join(''),
+  ['preview', 'Input'].join(''),
+  ['apply', 'Ops'].join(''),
+  ['apply', 'Plan'].join(''),
+  ['can', 'Apply'].join(''),
+  ['can', 'Create', 'Review', 'Packet'].join(''),
+  ['can', 'Preview', 'Apply'].join(''),
+  ['can', 'Import', 'Mutate'].join(''),
+  ['can', 'Write', 'Storage'].join(''),
+  ['write', 'Receipt'].join(''),
+  ['import', 'Receipt'].join(''),
+  ['export', 'Receipt'].join(''),
+  ['raw', 'Bytes'].join(''),
+  ['buffer', 'Source'].join(''),
+  ['file', 'Path'].join(''),
+  'bytes',
+  'path',
+  'inventory',
+  'entries',
+]);
+
+function makeDocxContentPreviewTypedError(code, reason, details = undefined) {
+  const error = {
+    code,
+    op: DOCX_CONTENT_PREVIEW_COMMAND_ID,
+    reason,
+  };
+  if (isPlainObjectValue(details) && Object.keys(details).length > 0) {
+    error.details = cloneJsonSafe(details);
+  }
+  return { ok: false, error };
+}
+
+function normalizeDocxContentPreviewRequestId(value) {
+  return typeof value === 'string' && value.trim()
+    ? value.trim()
+    : 'docx-content-preview-request';
+}
+
+function decodeDocxContentPreviewBufferSource(payload = {}) {
+  if (!isPlainObjectValue(payload)) {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_CONTENT_PREVIEW_PAYLOAD_REQUIRED',
+    );
+  }
+
+  const unsupportedKeys = Object.keys(payload)
+    .filter((key) => !DOCX_CONTENT_PREVIEW_ALLOWED_PAYLOAD_KEYS.has(key))
+    .sort();
+  if (unsupportedKeys.length > 0) {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_CONTENT_PREVIEW_PAYLOAD_UNSUPPORTED_FIELDS',
+      {
+        fields: unsupportedKeys,
+      },
+    );
+  }
+
+  const bufferSource = typeof payload.bufferSource === 'string'
+    ? payload.bufferSource.trim()
+    : '';
+  if (!bufferSource) {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_CONTENT_PREVIEW_BUFFER_SOURCE_REQUIRED',
+    );
+  }
+  if (bufferSource.length > DOCX_CONTENT_PREVIEW_MAX_BASE64_CHARS) {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_PAYLOAD_TOO_LARGE',
+      'DOCX_CONTENT_PREVIEW_BUFFER_SOURCE_TOO_LARGE',
+      {
+        maxBytes: DOCX_CONTENT_PREVIEW_MAX_BYTES,
+      },
+    );
+  }
+  if (bufferSource.length % 4 !== 0 || !/^[A-Za-z0-9+/]+={0,2}$/u.test(bufferSource)) {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_CONTENT_PREVIEW_BUFFER_SOURCE_BASE64_INVALID',
+    );
+  }
+
+  const bytes = Buffer.from(bufferSource, 'base64');
+  if (bytes.length === 0) {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_CONTENT_PREVIEW_BUFFER_SOURCE_EMPTY',
+    );
+  }
+  if (bytes.length > DOCX_CONTENT_PREVIEW_MAX_BYTES) {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_PAYLOAD_TOO_LARGE',
+      'DOCX_CONTENT_PREVIEW_BUFFER_SOURCE_TOO_LARGE',
+      {
+        maxBytes: DOCX_CONTENT_PREVIEW_MAX_BYTES,
+        byteLength: bytes.length,
+      },
+    );
+  }
+  if (bytes.toString('base64') !== bufferSource) {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_CONTENT_PREVIEW_BUFFER_SOURCE_BASE64_INVALID',
+    );
+  }
+
+  return {
+    ok: true,
+    bytes,
+  };
+}
+
+function findDocxContentPreviewForbiddenResultKey(value, pathParts = []) {
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const nested = findDocxContentPreviewForbiddenResultKey(
+        value[index],
+        pathParts.concat(String(index)),
+      );
+      if (nested) return nested;
+    }
+    return '';
+  }
+  if (!isPlainObjectValue(value)) return '';
+
+  for (const key of Object.keys(value)) {
+    const keyPath = pathParts.concat(key).join('.');
+    if (DOCX_CONTENT_PREVIEW_FORBIDDEN_RESULT_KEYS.has(key)) {
+      return keyPath;
+    }
+    const nested = findDocxContentPreviewForbiddenResultKey(value[key], pathParts.concat(key));
+    if (nested) return nested;
+  }
+  return '';
+}
+
+function buildDocxContentPreviewCommandResult(payload, previewResult) {
+  const previewReport = cloneJsonSafe(previewResult);
+  const previewOk = previewReport.ok === true;
+  return {
+    ok: true,
+    requestId: normalizeDocxContentPreviewRequestId(payload?.requestId),
+    commandId: DOCX_CONTENT_PREVIEW_COMMAND_ID,
+    previewOk,
+    previewStatus: typeof previewReport.status === 'string'
+      ? previewReport.status
+      : previewOk
+        ? 'preview'
+        : 'blocked',
+    previewCode: typeof previewReport.code === 'string'
+      ? previewReport.code
+      : 'E_DOCX_CONTENT_PREVIEW_UNKNOWN',
+    previewReason: typeof previewReport.reason === 'string'
+      ? previewReport.reason
+      : 'E_DOCX_CONTENT_PREVIEW_UNKNOWN',
+    docxContentPreviewReport: previewReport,
+  };
+}
+
+async function handleDocxContentPreviewCommandSurface(payload = {}) {
+  const decoded = decodeDocxContentPreviewBufferSource(payload);
+  if (!decoded.ok) return decoded;
+
+  let revisionBridge = null;
+  try {
+    revisionBridge = await loadRevisionBridgeModule();
+  } catch (error) {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_UNAVAILABLE',
+      'DOCX_CONTENT_PREVIEW_BRIDGE_UNAVAILABLE',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+  if (!revisionBridge || typeof revisionBridge.buildDocxContentPreviewFromZipBytes !== 'function') {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_UNAVAILABLE',
+      'DOCX_CONTENT_PREVIEW_HELPER_UNAVAILABLE',
+    );
+  }
+
+  let previewResult = null;
+  try {
+    previewResult = revisionBridge.buildDocxContentPreviewFromZipBytes(decoded.bytes);
+  } catch (error) {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_FAILED',
+      'DOCX_CONTENT_PREVIEW_EXECUTION_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+
+  if (!isPlainObjectValue(previewResult)) {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_INVALID_RESULT',
+      'DOCX_CONTENT_PREVIEW_INVALID_RESULT',
+    );
+  }
+
+  const forbiddenKey = findDocxContentPreviewForbiddenResultKey(previewResult);
+  if (forbiddenKey) {
+    return makeDocxContentPreviewTypedError(
+      'E_DOCX_CONTENT_PREVIEW_FORBIDDEN_RESULT',
+      'DOCX_CONTENT_PREVIEW_FORBIDDEN_RESULT',
+      {
+        key: forbiddenKey,
+      },
+    );
+  }
+
+  return buildDocxContentPreviewCommandResult(payload, previewResult);
+}
+// DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_END
+
 // CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION_START
 async function handleRevisionBridgeReleaseClaimCommandSurfaceAdmission(payload = {}) {
   const revisionBridge = await loadRevisionBridgeModule();
@@ -4883,6 +5112,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.save',
   'cmd.project.saveAs',
   'cmd.project.export.docxMin',
+  'cmd.project.docx.previewContent',
   'cmd.project.importMarkdownV1',
   'cmd.project.exportMarkdownV1',
   'cmd.project.releaseClaim.admit',
@@ -4992,6 +5222,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
         : {},
     });
     return { ok: Boolean(response && response.ok === 1) };
+  },
+  'cmd.project.docx.previewContent': async (payload = {}) => {
+    return handleDocxContentPreviewCommandSurface(payload);
   },
   'cmd.project.importMarkdownV1': async (payload = {}) => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);
