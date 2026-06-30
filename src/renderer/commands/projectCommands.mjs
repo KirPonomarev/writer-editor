@@ -69,6 +69,7 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   REVIEW_OPEN_COMMENTS: 'cmd.project.review.openComments',
   PLAN_FLOW_SAVE: 'cmd.project.plan.flowSave',
   REVIEW_EXPORT_MARKDOWN: 'cmd.project.review.exportMarkdown',
+  PROJECT_DOCX_PREVIEW_LOCAL_FILE: 'cmd.project.docx.previewLocalFile',
 });
 
 export const UI_COMMAND_IDS = Object.freeze({
@@ -1234,6 +1235,65 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: 'Cmd/Ctrl+Shift+M',
     },
     async () => runUiAction(uiActions, 'reviewExportMarkdown', EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
+      label: 'Preview Local DOCX Import',
+      group: 'file',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI !== 'object') {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
+          'ELECTRON_API_UNAVAILABLE',
+        );
+      }
+
+      let response;
+      try {
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
+          input && typeof input === 'object' && !Array.isArray(input) ? input : {},
+        );
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
+          'DOCX_IMPORT_LOCAL_FILE_PREVIEW_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      const bridged = unwrapBridgeResponseValue(response);
+      if (bridged && bridged.ok === true) {
+        return ok({
+          preview: true,
+          localFilePreview: bridged,
+        });
+      }
+      if (bridged && bridged.ok === false && bridged.error && typeof bridged.error === 'object') {
+        const error = bridged.error;
+        return fail(
+          typeof error.code === 'string' ? error.code : 'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
+          typeof error.op === 'string' ? error.op : EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
+          typeof error.reason === 'string' ? error.reason : 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
+          error.details && typeof error.details === 'object' && !Array.isArray(error.details) ? error.details : undefined,
+        );
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
+        bridged && typeof bridged.reason === 'string'
+          ? bridged.reason
+          : 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_INVALID_RESPONSE',
+      );
+    },
   );
 
   registry.registerCommand(
