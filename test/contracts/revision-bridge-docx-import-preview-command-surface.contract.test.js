@@ -4,6 +4,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 const { pathToFileURL } = require('node:url');
+const {
+  rememberDocxImportPreviewPlanAdmission,
+} = require('../../src/utils/docxImportSafeCreate');
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const MAIN_PATH = path.join(REPO_ROOT, 'src', 'main.js');
@@ -40,18 +43,29 @@ async function loadBridge() {
 function instantiateDocxImportPreviewPort(options = {}) {
   const mainSource = readMainSource();
   const section = extractMarkedSection(mainSource, SECTION_START, SECTION_END);
+  const calls = {
+    rememberAdmission: [],
+  };
   const sandbox = {
+    calls,
     cloneJsonSafe,
     isPlainObjectValue,
     loadRevisionBridgeModule: typeof options.loadRevisionBridgeModule === 'function'
       ? options.loadRevisionBridgeModule
       : loadBridge,
+    rememberDocxImportPreviewPlanAdmission: typeof options.rememberDocxImportPreviewPlanAdmission === 'function'
+      ? options.rememberDocxImportPreviewPlanAdmission
+      : (plan) => {
+          calls.rememberAdmission.push(cloneJsonSafe(plan));
+          return rememberDocxImportPreviewPlanAdmission(plan);
+        },
     module: { exports: {} },
     exports: {},
   };
   vm.runInNewContext(
     `${section}
 module.exports = {
+  calls,
   DOCX_IMPORT_PREVIEW_COMMAND_ID,
   DOCX_IMPORT_PREVIEW_MAX_PAYLOAD_CHARS,
   DOCX_IMPORT_PREVIEW_MAX_OBJECT_DEPTH,
@@ -236,6 +250,8 @@ test('DOCX import preview command surface: clean content report returns wrapped 
   assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entryCount, 1);
   assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo');
   assert.equal(result.docxImportPreviewPlan.lossReport.mode, 'plain-text-only');
+  assert.equal(port.calls.rememberAdmission.length, 1);
+  assert.equal(port.calls.rememberAdmission[0].previewHash, result.docxImportPreviewPlan.previewHash);
   assertNoForbiddenCommandFields(result);
 });
 
@@ -259,6 +275,7 @@ test('DOCX import preview command surface: blocked source report remains transpo
   assert.equal(result.docxImportPreviewPlan.ok, false);
   assert.equal(result.docxImportPreviewPlan.candidateCreatePlan, null);
   assert.equal(result.docxImportPreviewPlan.lossReport, null);
+  assert.equal(port.calls.rememberAdmission.length, 0);
   assertNoForbiddenCommandFields(result);
 });
 

@@ -3139,10 +3139,17 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js",
-      "sha256": "d4373e1a0101525b18d1e77fe98b51e42234b2cfbac43d2c24b20dd7b4de97f5",
-      "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_001",
-      "approvedAtUtc": "2026-06-30T13:18:00.000Z",
-      "rationale": "DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_001 approves the bounded main-only DOCX import preview command-surface contract for requestId plus admitted docxContentPreviewReport validation, canonical source-report stripping before helper hashing, wrapped command ok semantics, blocked source reports as inner import-preview failures, helper fail-closed behavior, forbidden intake review apply storage export result guards, and no renderer, preload, UI, storage write, import mutation, safe create apply, review packet, export rewrite, network, dependency, or release claim."
+      "sha256": "3bb806a9101ca5a9e8c28d0ef21ea2ef80a4f4de88f3245efc4c0fc07d95faf9",
+      "approvedBy": "ticket:DOCX_IMPORT_SAFE_CREATE_ADMISSION_001",
+      "approvedAtUtc": "2026-06-30T16:58:00.000Z",
+      "rationale": "DOCX_IMPORT_SAFE_CREATE_ADMISSION_001 approves the bounded main-only DOCX import preview command-surface contract update to register only validated ready preview plans into the DOCX safe-create admission registry while preserving requestId validation, canonical source-report stripping, wrapped command ok semantics, blocked source reports as inner import-preview failures, helper fail-closed behavior, forbidden intake review apply storage export result guards, and no renderer, preload, UI, storage write, import mutation, DOCX reparse, export rewrite, network, dependency, or release claim."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js",
+      "sha256": "53431d775c465273259926cb95045a3e0179df3506e7bccedc8ad679cc684efc",
+      "approvedBy": "ticket:DOCX_IMPORT_SAFE_CREATE_ADMISSION_001",
+      "approvedAtUtc": "2026-06-30T16:58:00.000Z",
+      "rationale": "DOCX_IMPORT_SAFE_CREATE_ADMISSION_001 approves the bounded main-only DOCX import safe-create command-surface contract for requestId plus previously admitted docxImportPreviewPlan gating, trusted main-state project context, create-only atomic scene write delegation, pathless receipt guard, helper fail-closed behavior, helper-error detail scrubbing including messageCode path rejection, forbidden authority payload and result guards, and no renderer, preload, UI, DOCX reparse, export rewrite, Markdown rewrite, review packet, network, dependency, broad import, or release claim."
     }
   ]
 }
