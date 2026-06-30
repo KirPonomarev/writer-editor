@@ -3122,6 +3122,13 @@
       "approvedBy": "ticket:DOCX_SEMANTIC_MIN_PARSE_TO_CONTENT_PREVIEW_001",
       "approvedAtUtc": "2026-06-30T11:53:00.000Z",
       "rationale": "DOCX_SEMANTIC_MIN_PARSE_TO_CONTENT_PREVIEW_001 approves the bounded DOCX content preview contract for accepted preflight only, minimal paragraph text extraction, tabs, breaks, XML entity decoding, unsupported structure diagnostics, malformed XML rejection, single-root enforcement, trailing XML garbage rejection, paragraph budget enforcement, unsupported encoding and prefix fail-closed behavior, deterministic output, and no UI, storage write, import mutation, review packet, apply operation, export rewrite, network, dependency, or release claim."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-content-preview-command-surface.contract.test.js",
+      "sha256": "02b97d606faff6967d17f8192484b5647a2015b7abbb9a5e23bf1e5800b02935",
+      "approvedBy": "ticket:DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_001",
+      "approvedAtUtc": "2026-06-30T12:25:52.000Z",
+      "rationale": "DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_001 approves the bounded main-only DOCX content preview command-surface contract for requestId plus base64 bufferSource validation, helper availability and throw fail-closed behavior, wrapped command ok semantics, blocked or malformed DOCX as inner preview report failure, forbidden review import apply storage export field guards, and no renderer, preload, UI, storage write, import mutation, review packet, apply operation, export rewrite, network, dependency, or release claim."
     }
   ]
 }

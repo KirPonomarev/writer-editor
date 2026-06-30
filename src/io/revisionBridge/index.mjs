@@ -2522,7 +2522,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   let unsupportedDepth = 0;
   let textDepth = 0;
   let totalTextChars = 0;
-  const tokenPattern = /<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<[^>]+>|[^<]+/gu;
+  const tokenPattern = new RegExp('<!--[\\s\\S]*?-->|<!\\[CDATA\\[[\\s\\S]*?\\]\\]>|<[^>]+>|[^<]+', 'gu');
   let match;
   let cursor = 0;
 
