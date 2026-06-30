@@ -2,6 +2,13 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
+      "sha256": "d56748d3e6b141b750bc107a021cd9a148921bbb096b4132c4491ea9f839fcb2",
+      "approvedBy": "ticket:DOCX_IMPORT_LOCAL_FILE_PREVIEW_ADAPTER_001",
+      "approvedAtUtc": "2026-06-30T18:16:30.000Z",
+      "rationale": "Approve bounded adapter-only DOCX local file preview contract proof; no live user flow, command route, UI, renderer, preload, menu, safe-create, storage mutation, export rewrite, dependency, network, cloud, release, or DOCX full-fidelity claim is introduced."
+    },
+    {
       "filePath": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
       "sha256": "e4874934343fbadbb93193dc38f76dec40c75f8338dff1fe27d3f9bac984cab1",
       "approvedBy": "ticket:DOCX_IMPORT_E2E_COMMAND_CHAIN_001",
