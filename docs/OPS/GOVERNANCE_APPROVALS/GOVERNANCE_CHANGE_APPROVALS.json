@@ -3020,7 +3020,7 @@
     },
     {
       "filePath": "test/unit/editor-sheet-instrumented-stress-smoke.mjs",
-      "sha256": "269f72aeaac6daaee21379cd7339f140bacf2ac2b29aabd38867f2f072990d0e",
+      "sha256": "4c05163983f86007287463a7185e0580220833898e6b76200ae8f00dc44d2211",
       "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
       "approvedAtUtc": "2026-06-27T21:30:00.000Z",
       "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
@@ -3101,6 +3101,20 @@
       "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
       "approvedAtUtc": "2026-06-27T21:30:00.000Z",
       "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-intake-gate-command-surface.contract.test.js",
+      "sha256": "2f61f795066f7a36395113fefd023fe46fca92c036ab9ba85929999992adff7e",
+      "approvedBy": "ticket:DOCX_INTAKE_PREFLIGHT_CLASSIFICATION_002",
+      "approvedAtUtc": "2026-06-30T11:24:50.000Z",
+      "rationale": "DOCX_INTAKE_PREFLIGHT_CLASSIFICATION_002 approves the bounded DOCX intake preflight command-surface contract update for hostile gate plus package and part-policy classification; no UI, storage write, import mutation, semantic parser execution, export rewrite, network, dependency, or release claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
+      "sha256": "eda92d3e9bf9eef1cf216e59aac1d7b1496ad18478b432ae47ec5e7da99d404d",
+      "approvedBy": "ticket:DOCX_INTAKE_PREFLIGHT_CLASSIFICATION_002",
+      "approvedAtUtc": "2026-06-30T11:24:50.000Z",
+      "rationale": "DOCX_INTAKE_PREFLIGHT_CLASSIFICATION_002 approves the bounded DOCX intake preflight report contract for clean, degraded, hostile, malformed, deterministic, and no-surface-leak cases; no UI, storage write, import mutation, semantic parser execution, export rewrite, network, dependency, or release claim is introduced."
     }
   ]
 }

@@ -1960,6 +1960,212 @@ export function classifyDocxPartPolicy(input = {}) {
 }
 // RB_08_DOCX_PART_POLICY_CLASSIFIER_END
 
+// RB_10_DOCX_INTAKE_PREFLIGHT_REPORT_START
+export const DOCX_INTAKE_PREFLIGHT_REPORT_SCHEMA = 'revision-bridge.docx-intake-preflight-report.v1';
+const DOCX_INTAKE_PREFLIGHT_REPORT_TYPE = 'docxIntakePreflightReport';
+
+function docxIntakePreflightCloneOrNull(value) {
+  return isPlainObject(value) ? cloneJsonSafe(value) || {} : null;
+}
+
+function docxIntakePreflightTaggedDiagnostics(source, diagnostics) {
+  return Array.isArray(diagnostics)
+    ? diagnostics.map((diagnostic) => ({
+      source,
+      ...(cloneJsonSafe(diagnostic) || {}),
+    }))
+    : [];
+}
+
+function docxIntakePreflightTaggedEvidence(source, evidence) {
+  return Array.isArray(evidence)
+    ? evidence.map((item) => ({
+      source,
+      ...(cloneJsonSafe(item) || {}),
+    }))
+    : [];
+}
+
+function docxIntakePreflightSortRecords(records) {
+  return records.slice().sort((left, right) => (
+    String(left.source || '').localeCompare(String(right.source || ''))
+    || String(left.code || '').localeCompare(String(right.code || ''))
+    || String(left.category || '').localeCompare(String(right.category || ''))
+    || String(left.entryId || '').localeCompare(String(right.entryId || ''))
+    || String(left.kind || '').localeCompare(String(right.kind || ''))
+  ));
+}
+
+function docxIntakePreflightInventorySummary(inventory) {
+  const entries = Array.isArray(inventory?.entries) ? inventory.entries : [];
+  const categoryCounts = {
+    directoryPart: 0,
+    knownSupportPart: 0,
+    mainDocumentPart: 0,
+    mediaPart: 0,
+    relationshipPart: 0,
+    unknownPart: 0,
+    unsupportedStoryPart: 0,
+  };
+  let totalByteSize = 0;
+  let totalCompressedSize = 0;
+
+  entries.forEach((entry, index) => {
+    if (isFiniteNonnegativeInteger(entry?.byteSize)) totalByteSize += entry.byteSize;
+    if (isFiniteNonnegativeInteger(entry?.compressedSize)) totalCompressedSize += entry.compressedSize;
+    for (const category of docxPartPolicyEntryCategories(entry)) {
+      categoryCounts[category] += 1;
+    }
+  });
+
+  return {
+    entryCount: entries.length,
+    totalByteSize,
+    totalCompressedSize,
+    categoryCounts,
+  };
+}
+
+function docxIntakePreflightEmptyInventorySummary() {
+  return {
+    entryCount: 0,
+    totalByteSize: 0,
+    totalCompressedSize: 0,
+    categoryCounts: {
+      directoryPart: 0,
+      knownSupportPart: 0,
+      mainDocumentPart: 0,
+      mediaPart: 0,
+      relationshipPart: 0,
+      unknownPart: 0,
+      unsupportedStoryPart: 0,
+    },
+  };
+}
+
+function docxIntakePreflightEligibility(gate, packageInspection, partPolicy) {
+  const gatePass = gate?.ok === true && gate?.decision === 'pass';
+  const packageClean = packageInspection?.classification === 'clean';
+  const partEligibility = isPlainObject(partPolicy?.eligibility) ? partPolicy.eligibility : {};
+  const parserCandidateOnly = gatePass
+    && packageClean
+    && partEligibility.parserCandidateOnly === true;
+  return {
+    safe: gatePass && packageClean && partEligibility.safe === true,
+    parserCandidateOnly,
+    canCreateReviewPacket: false,
+    canPreviewApply: false,
+    canImportMutate: false,
+    canWriteStorage: false,
+  };
+}
+
+function docxIntakePreflightStatus(gate, partPolicy) {
+  const gatePass = gate?.ok === true && gate?.decision === 'pass';
+  if (!gatePass) return gate?.status === 'blocked' ? 'blocked' : 'rejected';
+  if (partPolicy?.decision === DOCX_PART_POLICY_DECISIONS.DEGRADED) return 'degraded';
+  if (partPolicy?.decision === DOCX_PART_POLICY_DECISIONS.ACCEPTED) return 'accepted';
+  return 'rejected';
+}
+
+function docxIntakePreflightDecision(gate, partPolicy) {
+  const gatePass = gate?.ok === true && gate?.decision === 'pass';
+  if (!gatePass) return typeof gate?.decision === 'string' ? gate.decision : 'quarantined';
+  return typeof partPolicy?.decision === 'string' ? partPolicy.decision : 'rejected';
+}
+
+function docxIntakePreflightPrimaryCode(gate, partPolicy) {
+  const gatePass = gate?.ok === true && gate?.decision === 'pass';
+  if (!gatePass) return typeof gate?.code === 'string' ? gate.code : 'DOCX_INTAKE_PREFLIGHT_GATE_NOT_PASSED';
+  return typeof partPolicy?.code === 'string' ? partPolicy.code : 'DOCX_INTAKE_PREFLIGHT_ACCEPTED';
+}
+
+function docxIntakePreflightSummary(
+  gate,
+  packageInspection,
+  partPolicy,
+  inventorySummary,
+  materializationCode,
+) {
+  const status = docxIntakePreflightStatus(gate, partPolicy);
+  const decision = docxIntakePreflightDecision(gate, partPolicy);
+  const code = docxIntakePreflightPrimaryCode(gate, partPolicy);
+  return {
+    status,
+    decision,
+    code,
+    reason: code,
+    gatePass: gate?.ok === true && gate?.decision === 'pass',
+    packageClassification: typeof packageInspection?.classification === 'string'
+      ? packageInspection.classification
+      : 'unavailable',
+    packageStatus: typeof packageInspection?.status === 'string'
+      ? packageInspection.status
+      : 'unavailable',
+    partPolicyDecision: typeof partPolicy?.decision === 'string'
+      ? partPolicy.decision
+      : 'unavailable',
+    materializationCode: materializationCode || 'DOCX_ZIP_INVENTORY_MATERIALIZED',
+    semanticParseNotRun: gate?.parse?.attempted !== true,
+    inventory: inventorySummary,
+    eligibility: docxIntakePreflightEligibility(gate, packageInspection, partPolicy),
+  };
+}
+
+export function buildDocxIntakePreflightReportFromZipBytes(input) {
+  const materialized = materializeDocxPackageInventoryFromZipBytes(input);
+  const gate = inspectDocxHostileFileGateFromZipBytes(input);
+  const packageInspection = materialized.ok === true
+    ? inspectDocxPackageInventory(materialized.inventory)
+    : null;
+  const partPolicy = materialized.ok === true
+    ? classifyDocxPartPolicy({ inventory: materialized.inventory, inspection: packageInspection })
+    : null;
+  const inventorySummary = materialized.ok === true
+    ? docxIntakePreflightInventorySummary(materialized.inventory)
+    : docxIntakePreflightEmptyInventorySummary();
+  const summary = docxIntakePreflightSummary(
+    gate,
+    packageInspection,
+    partPolicy,
+    inventorySummary,
+    materialized.code,
+  );
+  const diagnostics = docxIntakePreflightSortRecords([
+    ...docxIntakePreflightTaggedDiagnostics('gate', gate.diagnostics),
+    ...docxIntakePreflightTaggedDiagnostics('packageInspection', packageInspection?.diagnostics),
+    ...docxIntakePreflightTaggedDiagnostics('partPolicy', partPolicy?.diagnostics),
+  ]);
+  const evidence = docxIntakePreflightSortRecords([
+    ...docxIntakePreflightTaggedEvidence('gate', gate.evidence),
+    ...docxIntakePreflightTaggedEvidence('partPolicy', partPolicy?.evidence),
+  ]);
+
+  return {
+    ok: summary.status === 'accepted',
+    schemaVersion: DOCX_INTAKE_PREFLIGHT_REPORT_SCHEMA,
+    type: DOCX_INTAKE_PREFLIGHT_REPORT_TYPE,
+    status: summary.status,
+    code: summary.code,
+    reason: summary.reason,
+    decision: summary.decision,
+    gatePass: summary.gatePass,
+    diagnostics,
+    evidence,
+    budgets: isPlainObject(gate.budgets) ? cloneJsonSafe(gate.budgets) || {} : {},
+    preflightSummary: summary,
+    packageInspection: docxIntakePreflightCloneOrNull(packageInspection),
+    partPolicy: docxIntakePreflightCloneOrNull(partPolicy),
+    semanticParseNotRun: summary.semanticParseNotRun,
+    parse: {
+      attempted: false,
+      semanticAllowed: false,
+    },
+    gate: cloneJsonSafe(gate) || {},
+  };
+}
+// RB_10_DOCX_INTAKE_PREFLIGHT_REPORT_END
+
 function missingField(field) {
   return {
     code: 'REVISION_BRIDGE_FIELD_REQUIRED',
