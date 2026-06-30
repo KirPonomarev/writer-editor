@@ -1074,6 +1074,551 @@ async function handleDocxContentPreviewCommandSurface(payload = {}) {
 }
 // DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_END
 
+// DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_START
+const DOCX_IMPORT_PREVIEW_COMMAND_ID = 'cmd.project.docx.previewImportPlan';
+const DOCX_IMPORT_PREVIEW_MAX_PAYLOAD_CHARS = 4 * 1024 * 1024;
+const DOCX_IMPORT_PREVIEW_MAX_OBJECT_DEPTH = 32;
+const DOCX_IMPORT_PREVIEW_MAX_REQUEST_ID_CHARS = 120;
+const DOCX_IMPORT_PREVIEW_ALLOWED_PAYLOAD_KEYS = new Set(['requestId', 'docxContentPreviewReport']);
+const DOCX_IMPORT_PREVIEW_SOURCE_REPORT_ALLOWED_KEYS = new Set([
+  'ok',
+  'schemaVersion',
+  'type',
+  'status',
+  'code',
+  'reason',
+  'decision',
+  'diagnostics',
+  'evidence',
+  'budgets',
+  'preflightSummary',
+  'contentPreview',
+  'parse',
+]);
+const DOCX_IMPORT_PREVIEW_FORBIDDEN_PAYLOAD_KEYS = new Set([
+  ['review', 'Packet'].join(''),
+  ['review', 'Surface'].join(''),
+  ['parsed', 'Review', 'Surface'].join(''),
+  ['active', 'Review', 'Session'].join(''),
+  ['preview', 'Input'].join(''),
+  ['apply', 'Ops'].join(''),
+  ['apply', 'Plan'].join(''),
+  ['can', 'Apply'].join(''),
+  ['can', 'Create', 'Review', 'Packet'].join(''),
+  ['can', 'Preview', 'Apply'].join(''),
+  ['can', 'Import', 'Mutate'].join(''),
+  ['can', 'Write', 'Storage'].join(''),
+  ['write', 'Effects'].join(''),
+  ['write', 'Receipt'].join(''),
+  ['import', 'Receipt'].join(''),
+  ['export', 'Receipt'].join(''),
+  ['safe', 'Create', 'Plan'].join(''),
+  ['raw', 'Bytes'].join(''),
+  ['buffer', 'Source'].join(''),
+  ['file', 'Path'].join(''),
+  ['project', 'Root'].join(''),
+  ['package', 'Inspection'].join(''),
+  ['part', 'Policy'].join(''),
+  ['intake', 'Preflight', 'Report'].join(''),
+  ['docx', 'Intake', 'Preflight', 'Report'].join(''),
+  ['docx', 'Import', 'Preview', 'Plan'].join(''),
+  ['out', 'Path'].join(''),
+  ['out', 'Dir'].join(''),
+  ['stor', 'age'].join(''),
+  ['render', 'er'].join(''),
+  ['pre', 'load'].join(''),
+  ['pa', 'th'].join(''),
+  'gate',
+  'inventory',
+  'entries',
+  'bytes',
+  'zip',
+]);
+const DOCX_IMPORT_PREVIEW_FORBIDDEN_RESULT_KEYS = new Set([
+  ['review', 'Packet'].join(''),
+  ['review', 'Surface'].join(''),
+  ['parsed', 'Review', 'Surface'].join(''),
+  ['active', 'Review', 'Session'].join(''),
+  ['preview', 'Input'].join(''),
+  ['apply', 'Ops'].join(''),
+  ['apply', 'Plan'].join(''),
+  ['can', 'Apply'].join(''),
+  ['can', 'Create', 'Review', 'Packet'].join(''),
+  ['can', 'Preview', 'Apply'].join(''),
+  ['can', 'Import', 'Mutate'].join(''),
+  ['can', 'Write', 'Storage'].join(''),
+  ['write', 'Receipt'].join(''),
+  ['import', 'Receipt'].join(''),
+  ['export', 'Receipt'].join(''),
+  ['safe', 'Create', 'Plan'].join(''),
+  ['raw', 'Bytes'].join(''),
+  ['buffer', 'Source'].join(''),
+  ['file', 'Path'].join(''),
+  ['project', 'Root'].join(''),
+  ['package', 'Inspection'].join(''),
+  ['part', 'Policy'].join(''),
+  ['intake', 'Preflight', 'Report'].join(''),
+  ['docx', 'Intake', 'Preflight', 'Report'].join(''),
+  ['out', 'Path'].join(''),
+  ['out', 'Dir'].join(''),
+  ['stor', 'age'].join(''),
+  ['render', 'er'].join(''),
+  ['pre', 'load'].join(''),
+  ['pa', 'th'].join(''),
+]);
+
+function makeDocxImportPreviewTypedError(code, reason, details = undefined) {
+  const error = {
+    code,
+    op: DOCX_IMPORT_PREVIEW_COMMAND_ID,
+    reason,
+  };
+  if (isPlainObjectValue(details) && Object.keys(details).length > 0) {
+    error.details = cloneJsonSafe(details);
+  }
+  return { ok: false, error };
+}
+
+function normalizeDocxImportPreviewRequestId(value) {
+  return typeof value === 'string' && value.trim()
+    ? value.trim()
+    : 'docx-import-preview-request';
+}
+
+function inspectDocxImportPreviewPayloadDepth(value, pathParts = [], seen = new WeakSet()) {
+  if (!value || typeof value !== 'object') {
+    return { ok: true };
+  }
+  if (pathParts.length > DOCX_IMPORT_PREVIEW_MAX_OBJECT_DEPTH) {
+    return {
+      ok: false,
+      reason: 'DOCX_IMPORT_PREVIEW_PAYLOAD_DEPTH_EXCEEDED',
+      details: {
+        key: pathParts.join('.'),
+        maxDepth: DOCX_IMPORT_PREVIEW_MAX_OBJECT_DEPTH,
+      },
+    };
+  }
+  if (seen.has(value)) {
+    return {
+      ok: false,
+      reason: 'DOCX_IMPORT_PREVIEW_PAYLOAD_CIRCULAR',
+      details: {
+        key: pathParts.join('.'),
+      },
+    };
+  }
+  seen.add(value);
+
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const nested = inspectDocxImportPreviewPayloadDepth(
+        value[index],
+        pathParts.concat(String(index)),
+        seen,
+      );
+      if (!nested.ok) return nested;
+    }
+    seen.delete(value);
+    return { ok: true };
+  }
+
+  if (!isPlainObjectValue(value)) {
+    seen.delete(value);
+    return { ok: true };
+  }
+
+  for (const key of Object.keys(value)) {
+    const nested = inspectDocxImportPreviewPayloadDepth(value[key], pathParts.concat(key), seen);
+    if (!nested.ok) return nested;
+  }
+  seen.delete(value);
+  return { ok: true };
+}
+
+function measureDocxImportPreviewPayloadChars(payload) {
+  try {
+    return JSON.stringify(payload).length;
+  } catch {
+    return -1;
+  }
+}
+
+function findDocxImportPreviewForbiddenKey(value, forbiddenKeys, pathParts = []) {
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const nested = findDocxImportPreviewForbiddenKey(
+        value[index],
+        forbiddenKeys,
+        pathParts.concat(String(index)),
+      );
+      if (nested) return nested;
+    }
+    return '';
+  }
+  if (!isPlainObjectValue(value)) return '';
+
+  for (const key of Object.keys(value)) {
+    const keyPath = pathParts.concat(key).join('.');
+    if (forbiddenKeys.has(key)) {
+      return keyPath;
+    }
+    const nested = findDocxImportPreviewForbiddenKey(
+      value[key],
+      forbiddenKeys,
+      pathParts.concat(key),
+    );
+    if (nested) return nested;
+  }
+  return '';
+}
+
+function copyDocxImportPreviewAllowedFields(source, allowedKeys) {
+  if (!isPlainObjectValue(source)) return source;
+  const result = {};
+  for (const key of allowedKeys) {
+    if (source[key] !== undefined) {
+      result[key] = cloneJsonSafe(source[key]);
+    }
+  }
+  return result;
+}
+
+function canonicalizeDocxImportPreviewDiagnostic(diagnostic) {
+  return copyDocxImportPreviewAllowedFields(diagnostic, [
+    'code',
+    'severity',
+    'message',
+    'sourcePart',
+    'sourceCode',
+    'tagName',
+    'actual',
+    'limit',
+  ]);
+}
+
+function canonicalizeDocxImportPreviewEvidence(evidence) {
+  return copyDocxImportPreviewAllowedFields(evidence, [
+    'kind',
+    'sourceCode',
+    'sourcePart',
+    'byteSize',
+    'compressedSize',
+    'paragraphCount',
+    'textLength',
+    'textHash',
+  ]);
+}
+
+function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
+  const contentPreview = isPlainObjectValue(sourceReport.contentPreview)
+    ? {
+        sourcePart: sourceReport.contentPreview.sourcePart,
+        paragraphCount: sourceReport.contentPreview.paragraphCount,
+        textLength: sourceReport.contentPreview.textLength,
+        textHash: sourceReport.contentPreview.textHash,
+        paragraphs: Array.isArray(sourceReport.contentPreview.paragraphs)
+          ? sourceReport.contentPreview.paragraphs.map((paragraph) => (
+              copyDocxImportPreviewAllowedFields(paragraph, [
+                'order',
+                'sourcePart',
+                'text',
+                'textHash',
+                'charCount',
+              ])
+            ))
+          : sourceReport.contentPreview.paragraphs,
+      }
+    : sourceReport.contentPreview;
+
+  return {
+    ok: sourceReport.ok,
+    schemaVersion: sourceReport.schemaVersion,
+    type: sourceReport.type,
+    status: sourceReport.status,
+    code: sourceReport.code,
+    reason: sourceReport.reason,
+    decision: sourceReport.decision,
+    diagnostics: Array.isArray(sourceReport.diagnostics)
+      ? sourceReport.diagnostics.map(canonicalizeDocxImportPreviewDiagnostic).filter(isPlainObjectValue)
+      : sourceReport.diagnostics,
+    evidence: Array.isArray(sourceReport.evidence)
+      ? sourceReport.evidence.map(canonicalizeDocxImportPreviewEvidence).filter(isPlainObjectValue)
+      : sourceReport.evidence,
+    budgets: isPlainObjectValue(sourceReport.budgets)
+      ? copyDocxImportPreviewAllowedFields(sourceReport.budgets, [
+          'maxParagraphs',
+          'maxTextChars',
+          'maxDiagnostics',
+        ])
+      : sourceReport.budgets,
+    preflightSummary: isPlainObjectValue(sourceReport.preflightSummary)
+      ? copyDocxImportPreviewAllowedFields(sourceReport.preflightSummary, [
+          'status',
+          'decision',
+          'code',
+          'reason',
+          'gatePass',
+          'packageClassification',
+          'partPolicyDecision',
+          'parserCandidateOnly',
+        ])
+      : sourceReport.preflightSummary,
+    contentPreview,
+    parse: isPlainObjectValue(sourceReport.parse)
+      ? copyDocxImportPreviewAllowedFields(sourceReport.parse, [
+          'attempted',
+          'completed',
+        ])
+      : sourceReport.parse,
+  };
+}
+
+function validateDocxImportPreviewPayload(payload = {}) {
+  if (!isPlainObjectValue(payload)) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_IMPORT_PREVIEW_PAYLOAD_REQUIRED',
+    );
+  }
+
+  const unsupportedKeys = Object.keys(payload)
+    .filter((key) => !DOCX_IMPORT_PREVIEW_ALLOWED_PAYLOAD_KEYS.has(key))
+    .sort();
+  if (unsupportedKeys.length > 0) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_IMPORT_PREVIEW_PAYLOAD_UNSUPPORTED_FIELDS',
+      {
+        fields: unsupportedKeys,
+      },
+    );
+  }
+
+  if (
+    payload.requestId !== undefined
+    && typeof payload.requestId !== 'string'
+  ) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_IMPORT_PREVIEW_REQUEST_ID_INVALID',
+    );
+  }
+  if (
+    typeof payload.requestId === 'string'
+    && payload.requestId.trim().length > DOCX_IMPORT_PREVIEW_MAX_REQUEST_ID_CHARS
+  ) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_PAYLOAD_TOO_LARGE',
+      'DOCX_IMPORT_PREVIEW_REQUEST_ID_TOO_LARGE',
+      {
+        maxChars: DOCX_IMPORT_PREVIEW_MAX_REQUEST_ID_CHARS,
+      },
+    );
+  }
+
+  if (!isPlainObjectValue(payload.docxContentPreviewReport)) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_IMPORT_PREVIEW_SOURCE_REPORT_REQUIRED',
+    );
+  }
+  if (payload.docxContentPreviewReport.schemaVersion !== 'revision-bridge.docx-content-preview.v1') {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_IMPORT_PREVIEW_SOURCE_REPORT_SCHEMA_INVALID',
+    );
+  }
+  if (payload.docxContentPreviewReport.type !== 'docxContentPreviewReport') {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_IMPORT_PREVIEW_SOURCE_REPORT_TYPE_INVALID',
+    );
+  }
+
+  const depthState = inspectDocxImportPreviewPayloadDepth(payload);
+  if (!depthState.ok) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
+      depthState.reason,
+      depthState.details,
+    );
+  }
+
+  const payloadChars = measureDocxImportPreviewPayloadChars(payload);
+  if (payloadChars < 0) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_IMPORT_PREVIEW_PAYLOAD_NOT_SERIALIZABLE',
+    );
+  }
+  if (payloadChars > DOCX_IMPORT_PREVIEW_MAX_PAYLOAD_CHARS) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_PAYLOAD_TOO_LARGE',
+      'DOCX_IMPORT_PREVIEW_PAYLOAD_TOO_LARGE',
+      {
+        maxChars: DOCX_IMPORT_PREVIEW_MAX_PAYLOAD_CHARS,
+        payloadChars,
+      },
+    );
+  }
+
+  const forbiddenKey = findDocxImportPreviewForbiddenKey(
+    payload,
+    DOCX_IMPORT_PREVIEW_FORBIDDEN_PAYLOAD_KEYS,
+  );
+  if (forbiddenKey) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_IMPORT_PREVIEW_PAYLOAD_FORBIDDEN_FIELD',
+      {
+        key: forbiddenKey,
+      },
+    );
+  }
+
+  const unsupportedReportKeys = Object.keys(payload.docxContentPreviewReport)
+    .filter((key) => !DOCX_IMPORT_PREVIEW_SOURCE_REPORT_ALLOWED_KEYS.has(key))
+    .sort();
+  if (unsupportedReportKeys.length > 0) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
+      'DOCX_IMPORT_PREVIEW_SOURCE_REPORT_UNSUPPORTED_FIELDS',
+      {
+        fields: unsupportedReportKeys,
+      },
+    );
+  }
+
+  return {
+    ok: true,
+    docxContentPreviewReport: canonicalizeDocxImportPreviewSourceReport(
+      payload.docxContentPreviewReport,
+    ),
+  };
+}
+
+function validateDocxImportPreviewCommandResultShape(importPreviewResult) {
+  if (!isPlainObjectValue(importPreviewResult)) {
+    return {
+      ok: false,
+      reason: 'DOCX_IMPORT_PREVIEW_INVALID_RESULT',
+    };
+  }
+  if (importPreviewResult.writeEffects !== false) {
+    return {
+      ok: false,
+      reason: 'DOCX_IMPORT_PREVIEW_WRITE_EFFECTS_INVALID',
+    };
+  }
+  if (
+    importPreviewResult.candidateCreatePlan !== null
+    && importPreviewResult.candidateCreatePlan !== undefined
+  ) {
+    if (!isPlainObjectValue(importPreviewResult.candidateCreatePlan)) {
+      return {
+        ok: false,
+        reason: 'DOCX_IMPORT_PREVIEW_CANDIDATE_PLAN_INVALID',
+      };
+    }
+    if (importPreviewResult.candidateCreatePlan.mode !== 'create-only') {
+      return {
+        ok: false,
+        reason: 'DOCX_IMPORT_PREVIEW_CANDIDATE_PLAN_MODE_INVALID',
+      };
+    }
+  }
+  return { ok: true };
+}
+
+function buildDocxImportPreviewCommandResult(payload, importPreviewResult) {
+  const docxImportPreviewPlan = cloneJsonSafe(importPreviewResult);
+  const importPreviewOk = docxImportPreviewPlan.ok === true;
+  return {
+    ok: true,
+    requestId: normalizeDocxImportPreviewRequestId(payload?.requestId),
+    commandId: DOCX_IMPORT_PREVIEW_COMMAND_ID,
+    commandOk: true,
+    importPreviewOk,
+    importPreviewStatus: typeof docxImportPreviewPlan.status === 'string'
+      ? docxImportPreviewPlan.status
+      : importPreviewOk
+        ? 'preview'
+        : 'blocked',
+    importPreviewCode: typeof docxImportPreviewPlan.code === 'string'
+      ? docxImportPreviewPlan.code
+      : 'E_DOCX_IMPORT_PREVIEW_UNKNOWN',
+    importPreviewReason: typeof docxImportPreviewPlan.reason === 'string'
+      ? docxImportPreviewPlan.reason
+      : 'E_DOCX_IMPORT_PREVIEW_UNKNOWN',
+    docxImportPreviewPlan,
+  };
+}
+
+async function handleDocxImportPreviewCommandSurface(payload = {}) {
+  const validated = validateDocxImportPreviewPayload(payload);
+  if (!validated.ok) return validated;
+
+  let revisionBridge = null;
+  try {
+    revisionBridge = await loadRevisionBridgeModule();
+  } catch (error) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_UNAVAILABLE',
+      'DOCX_IMPORT_PREVIEW_BRIDGE_UNAVAILABLE',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+  if (!revisionBridge || typeof revisionBridge.buildDocxImportPreviewPlanFromContentPreview !== 'function') {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_UNAVAILABLE',
+      'DOCX_IMPORT_PREVIEW_HELPER_UNAVAILABLE',
+    );
+  }
+
+  let importPreviewResult = null;
+  try {
+    importPreviewResult = revisionBridge.buildDocxImportPreviewPlanFromContentPreview(
+      validated.docxContentPreviewReport,
+    );
+  } catch (error) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_FAILED',
+      'DOCX_IMPORT_PREVIEW_EXECUTION_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+
+  const resultShape = validateDocxImportPreviewCommandResultShape(importPreviewResult);
+  if (!resultShape.ok) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_INVALID_RESULT',
+      resultShape.reason,
+    );
+  }
+
+  const forbiddenKey = findDocxImportPreviewForbiddenKey(
+    importPreviewResult,
+    DOCX_IMPORT_PREVIEW_FORBIDDEN_RESULT_KEYS,
+  );
+  if (forbiddenKey) {
+    return makeDocxImportPreviewTypedError(
+      'E_DOCX_IMPORT_PREVIEW_FORBIDDEN_RESULT',
+      'DOCX_IMPORT_PREVIEW_FORBIDDEN_RESULT',
+      {
+        key: forbiddenKey,
+      },
+    );
+  }
+
+  return buildDocxImportPreviewCommandResult(payload, importPreviewResult);
+}
+// DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_END
+
 // CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION_START
 async function handleRevisionBridgeReleaseClaimCommandSurfaceAdmission(payload = {}) {
   const revisionBridge = await loadRevisionBridgeModule();
@@ -5113,6 +5658,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.saveAs',
   'cmd.project.export.docxMin',
   'cmd.project.docx.previewContent',
+  'cmd.project.docx.previewImportPlan',
   'cmd.project.importMarkdownV1',
   'cmd.project.exportMarkdownV1',
   'cmd.project.releaseClaim.admit',
@@ -5225,6 +5771,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.docx.previewContent': async (payload = {}) => {
     return handleDocxContentPreviewCommandSurface(payload);
+  },
+  'cmd.project.docx.previewImportPlan': async (payload = {}) => {
+    return handleDocxImportPreviewCommandSurface(payload);
   },
   'cmd.project.importMarkdownV1': async (payload = {}) => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);
