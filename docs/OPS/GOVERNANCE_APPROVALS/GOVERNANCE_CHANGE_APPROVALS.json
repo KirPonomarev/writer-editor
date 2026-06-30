@@ -2,6 +2,13 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
+      "sha256": "824c933b65559c2f4e25ffbb77af47bb19b7f711b4341bf37de0e568338ea5fc",
+      "approvedBy": "ticket:DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_001",
+      "approvedAtUtc": "2026-06-30T19:03:30.000Z",
+      "rationale": "Approve bounded DOCX local file preview command-surface contract proof; renderer reachability is explicit through node-only capability binding, with no visible UI, legacy preload API, safe-create apply, storage mutation, export rewrite, dependency, network, cloud, release, or DOCX full-fidelity claim introduced."
+    },
+    {
       "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
       "sha256": "d56748d3e6b141b750bc107a021cd9a148921bbb096b4132c4491ea9f839fcb2",
       "approvedBy": "ticket:DOCX_IMPORT_LOCAL_FILE_PREVIEW_ADAPTER_001",
@@ -2887,10 +2894,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
-      "sha256": "97705f0fbbf21a9d4153d7eb728e0e23fa23dd2c1fa6995efe3feaef59183097",
-      "approvedBy": "ticket:CONTOUR_02_LIVE_COMMAND_WIRING_AND_BEHAVIOR_TESTS",
-      "approvedAtUtc": "2026-04-23T12:00:00.000Z",
-      "rationale": "CONTOUR_02_LIVE_COMMAND_WIRING approves bounded view-command capability bindings for right rail format, preview, and frame controls without storage, export, or page-map authority."
+      "sha256": "4259594103a092984084f28f5ac0331f24331c644ff680dac8a52a7b585afcc0",
+      "approvedBy": "ticket:DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_001",
+      "approvedAtUtc": "2026-06-30T19:09:30.000Z",
+      "rationale": "Approve explicit command-to-capability binding for cmd.project.docx.previewLocalFile as desktop-node local DOCX preview authority only, plus matching docs/runtime rebind for existing preview orientation capability ids; web and mobile-wrapper remain disabled and no visible UI surface is introduced."
     },
     {
       "filePath": "scripts/ops/phase03-safe-reset-last-stable-artifact-state.mjs",
