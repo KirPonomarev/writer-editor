@@ -2834,6 +2834,529 @@ export function buildDocxContentPreviewFromZipBytes(input) {
 }
 // RB_11_DOCX_CONTENT_PREVIEW_END
 
+// RB_12_DOCX_IMPORT_PREVIEW_PLAN_START
+export const DOCX_IMPORT_PREVIEW_SCHEMA = 'revision-bridge.docx-import-preview.v1';
+const DOCX_IMPORT_PREVIEW_TYPE = 'docx.import.preview';
+const DOCX_IMPORT_PREVIEW_LOSS_REPORT_SCHEMA = 'revision-bridge.docx-import-preview.loss-report.v1';
+const DOCX_IMPORT_PREVIEW_SOURCE_TYPE = DOCX_CONTENT_PREVIEW_TYPE;
+const DOCX_IMPORT_PREVIEW_CODES = Object.freeze({
+  READY: 'DOCX_IMPORT_PREVIEW_READY',
+  INPUT_INVALID: 'DOCX_IMPORT_PREVIEW_INPUT_INVALID',
+  SOURCE_BLOCKED: 'DOCX_IMPORT_PREVIEW_SOURCE_BLOCKED',
+  CONTENT_UNAVAILABLE: 'DOCX_IMPORT_PREVIEW_CONTENT_UNAVAILABLE',
+  CONTENT_INVALID: 'DOCX_IMPORT_PREVIEW_CONTENT_INVALID',
+  INPUT_LAYER_LEAK: 'DOCX_IMPORT_PREVIEW_INPUT_LAYER_LEAK',
+  BUDGET_EXCEEDED: 'DOCX_IMPORT_PREVIEW_BUDGET_EXCEEDED',
+});
+const DOCX_IMPORT_PREVIEW_BOUNDS = Object.freeze({
+  maxCandidateScenes: 1,
+  maxParagraphs: DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs,
+  maxTextChars: DOCX_CONTENT_PREVIEW_BOUNDS.maxTextChars,
+  maxDiagnostics: DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics,
+  maxLossItems: DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics,
+});
+const DOCX_IMPORT_PREVIEW_FORBIDDEN_SOURCE_KEYS = Object.freeze([
+  'reviewPacket',
+  'reviewSurface',
+  'parsedReviewSurface',
+  'activeReviewSession',
+  'applyOps',
+  'applyPlan',
+  'canApply',
+  'canCreateReviewPacket',
+  'canPreviewApply',
+  'canImportMutate',
+  'canWriteStorage',
+  'writeEffects',
+  'writeReceipt',
+  'importReceipt',
+  'exportReceipt',
+  'safeCreatePlan',
+  'path',
+  'filePath',
+  'projectRoot',
+  'storage',
+  'renderer',
+  'preload',
+]);
+
+function docxImportPreviewCanonicalJson(value) {
+  if (value === null) return 'null';
+  const valueType = typeof value;
+  if (valueType === 'string') return JSON.stringify(value);
+  if (valueType === 'number') return Number.isFinite(value) ? JSON.stringify(value) : 'null';
+  if (valueType === 'boolean') return value ? 'true' : 'false';
+  if (Array.isArray(value)) return `[${value.map((item) => docxImportPreviewCanonicalJson(item)).join(',')}]`;
+  if (isPlainObject(value)) {
+    return `{${Object.keys(value).sort().map((key) => (
+      `${JSON.stringify(key)}:${docxImportPreviewCanonicalJson(value[key])}`
+    )).join(',')}}`;
+  }
+  return 'null';
+}
+
+function docxImportPreviewStableHash(value) {
+  return docxContentPreviewStableHash(docxImportPreviewCanonicalJson(value));
+}
+
+function docxImportPreviewNormalizeText(value) {
+  return String(value ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+}
+
+function docxImportPreviewDiagnostic(code, options = {}) {
+  const diagnostic = {
+    code,
+    severity: options.severity || 'error',
+    message: options.message || code,
+  };
+  if (options.field !== undefined) diagnostic.field = options.field;
+  if (options.sourceCode !== undefined) diagnostic.sourceCode = options.sourceCode;
+  if (options.sourcePart !== undefined) diagnostic.sourcePart = options.sourcePart;
+  if (options.tagName !== undefined) diagnostic.tagName = options.tagName;
+  if (options.actual !== undefined) diagnostic.actual = options.actual;
+  if (options.limit !== undefined) diagnostic.limit = options.limit;
+  return diagnostic;
+}
+
+function docxImportPreviewEvidence(kind, options = {}) {
+  const evidence = { kind };
+  for (const [key, value] of Object.entries(options)) {
+    if (value !== undefined) evidence[key] = value;
+  }
+  return evidence;
+}
+
+function docxImportPreviewLossItem(code, options = {}) {
+  const item = {
+    code,
+    severity: options.severity || 'info',
+    category: options.category || 'plainTextOnly',
+    message: options.message || code,
+  };
+  if (options.sourceCode !== undefined) item.sourceCode = options.sourceCode;
+  if (options.sourcePart !== undefined) item.sourcePart = options.sourcePart;
+  if (options.tagName !== undefined) item.tagName = options.tagName;
+  return item;
+}
+
+function docxImportPreviewSortRecords(records) {
+  return records.slice().sort((left, right) => (
+    String(left.code || '').localeCompare(String(right.code || ''))
+    || String(left.kind || '').localeCompare(String(right.kind || ''))
+    || String(left.category || '').localeCompare(String(right.category || ''))
+    || String(left.sourceCode || '').localeCompare(String(right.sourceCode || ''))
+    || String(left.sourcePart || '').localeCompare(String(right.sourcePart || ''))
+    || String(left.tagName || '').localeCompare(String(right.tagName || ''))
+    || String(left.field || '').localeCompare(String(right.field || ''))
+  ));
+}
+
+function docxImportPreviewBudgetsCopy() {
+  return { ...DOCX_IMPORT_PREVIEW_BOUNDS };
+}
+
+function docxImportPreviewResult(options = {}) {
+  const body = {
+    ok: options.ok === true,
+    schemaVersion: DOCX_IMPORT_PREVIEW_SCHEMA,
+    type: DOCX_IMPORT_PREVIEW_TYPE,
+    status: options.status || 'blocked',
+    code: options.code || DOCX_IMPORT_PREVIEW_CODES.INPUT_INVALID,
+    reason: options.reason || options.code || DOCX_IMPORT_PREVIEW_CODES.INPUT_INVALID,
+    decision: options.decision || 'blocked',
+    writeEffects: false,
+    diagnostics: docxImportPreviewSortRecords(options.diagnostics || []),
+    evidence: docxImportPreviewSortRecords(options.evidence || []),
+    budgets: docxImportPreviewBudgetsCopy(),
+    source: options.source || null,
+    candidateCreatePlan: options.candidateCreatePlan || null,
+    lossReport: options.lossReport || null,
+  };
+  return {
+    ...body,
+    previewHash: docxImportPreviewStableHash(body),
+  };
+}
+
+function docxImportPreviewBlocked(code, options = {}) {
+  return docxImportPreviewResult({
+    ok: false,
+    status: 'blocked',
+    code,
+    reason: options.reason || code,
+    decision: 'blocked',
+    source: options.source || null,
+    diagnostics: [
+      docxImportPreviewDiagnostic(code, {
+        field: options.field,
+        sourceCode: options.sourceCode,
+        sourcePart: options.sourcePart,
+        tagName: options.tagName,
+        actual: options.actual,
+        limit: options.limit,
+        message: options.message || code,
+      }),
+    ],
+    evidence: options.evidence || [],
+  });
+}
+
+function docxImportPreviewFindForbiddenSourceKey(value, pathParts = []) {
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const nested = docxImportPreviewFindForbiddenSourceKey(value[index], pathParts.concat(String(index)));
+      if (nested) return nested;
+    }
+    return '';
+  }
+  if (!isPlainObject(value)) return '';
+  for (const key of Object.keys(value)) {
+    const nextPath = pathParts.concat(key);
+    if (DOCX_IMPORT_PREVIEW_FORBIDDEN_SOURCE_KEYS.includes(key)) return nextPath.join('.');
+    const nested = docxImportPreviewFindForbiddenSourceKey(value[key], nextPath);
+    if (nested) return nested;
+  }
+  return '';
+}
+
+function docxImportPreviewValidateSourceReport(input) {
+  if (!isPlainObject(input)) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.INPUT_INVALID,
+      field: 'input',
+    };
+  }
+  const forbiddenPath = docxImportPreviewFindForbiddenSourceKey(input);
+  if (forbiddenPath) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.INPUT_LAYER_LEAK,
+      field: forbiddenPath,
+    };
+  }
+  if (input.schemaVersion !== DOCX_CONTENT_PREVIEW_SCHEMA) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.INPUT_INVALID,
+      field: 'schemaVersion',
+    };
+  }
+  if (input.type !== DOCX_IMPORT_PREVIEW_SOURCE_TYPE) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.INPUT_INVALID,
+      field: 'type',
+    };
+  }
+  if (input.ok !== true || input.status !== 'preview' || input.decision !== 'preview') {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.SOURCE_BLOCKED,
+      sourceCode: typeof input.code === 'string' ? input.code : '',
+    };
+  }
+  if (input.code !== DOCX_CONTENT_PREVIEW_CODES.READY) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.SOURCE_BLOCKED,
+      sourceCode: typeof input.code === 'string' ? input.code : '',
+    };
+  }
+  if (!isPlainObject(input.contentPreview)) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.CONTENT_UNAVAILABLE,
+      field: 'contentPreview',
+    };
+  }
+  const preflightSummary = isPlainObject(input.preflightSummary) ? input.preflightSummary : {};
+  if (
+    preflightSummary.status !== 'accepted'
+    || preflightSummary.gatePass !== true
+    || preflightSummary.parserCandidateOnly !== true
+  ) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.SOURCE_BLOCKED,
+      field: 'preflightSummary',
+      sourceCode: typeof input.code === 'string' ? input.code : '',
+    };
+  }
+  if (
+    !isPlainObject(input.parse)
+    || input.parse.attempted !== true
+    || input.parse.completed !== true
+  ) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.SOURCE_BLOCKED,
+      field: 'parse',
+      sourceCode: typeof input.code === 'string' ? input.code : '',
+    };
+  }
+  return { ok: true, value: input.contentPreview };
+}
+
+function docxImportPreviewValidateParagraphs(contentPreview) {
+  if (contentPreview.sourcePart !== DOCX_CONTENT_PREVIEW_SOURCE_PART) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID,
+      field: 'contentPreview.sourcePart',
+    };
+  }
+  if (!Array.isArray(contentPreview.paragraphs)) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID,
+      field: 'contentPreview.paragraphs',
+    };
+  }
+  if (contentPreview.paragraphs.length > DOCX_IMPORT_PREVIEW_BOUNDS.maxParagraphs) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.BUDGET_EXCEEDED,
+      field: 'contentPreview.paragraphs',
+      actual: contentPreview.paragraphs.length,
+      limit: DOCX_IMPORT_PREVIEW_BOUNDS.maxParagraphs,
+    };
+  }
+  if (contentPreview.paragraphCount !== contentPreview.paragraphs.length) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID,
+      field: 'contentPreview.paragraphCount',
+    };
+  }
+
+  const texts = [];
+  for (let index = 0; index < contentPreview.paragraphs.length; index += 1) {
+    const paragraph = contentPreview.paragraphs[index];
+    if (!isPlainObject(paragraph)) {
+      return {
+        ok: false,
+        code: DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID,
+        field: `contentPreview.paragraphs.${index}`,
+      };
+    }
+    if (paragraph.order !== index) {
+      return {
+        ok: false,
+        code: DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID,
+        field: `contentPreview.paragraphs.${index}.order`,
+      };
+    }
+    if (typeof paragraph.text !== 'string') {
+      return {
+        ok: false,
+        code: DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID,
+        field: `contentPreview.paragraphs.${index}.text`,
+      };
+    }
+    const text = docxImportPreviewNormalizeText(paragraph.text);
+    if (paragraph.textHash !== docxContentPreviewStableHash(text)) {
+      return {
+        ok: false,
+        code: DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID,
+        field: `contentPreview.paragraphs.${index}.textHash`,
+      };
+    }
+    if (paragraph.charCount !== text.length) {
+      return {
+        ok: false,
+        code: DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID,
+        field: `contentPreview.paragraphs.${index}.charCount`,
+      };
+    }
+    texts.push(text);
+  }
+
+  const joinedPreviewText = texts.join('\n');
+  if (joinedPreviewText.length > DOCX_IMPORT_PREVIEW_BOUNDS.maxTextChars) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.BUDGET_EXCEEDED,
+      field: 'contentPreview.textLength',
+      actual: joinedPreviewText.length,
+      limit: DOCX_IMPORT_PREVIEW_BOUNDS.maxTextChars,
+    };
+  }
+  if (contentPreview.textLength !== joinedPreviewText.length) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID,
+      field: 'contentPreview.textLength',
+    };
+  }
+  if (contentPreview.textHash !== docxContentPreviewStableHash(joinedPreviewText)) {
+    return {
+      ok: false,
+      code: DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID,
+      field: 'contentPreview.textHash',
+    };
+  }
+  return { ok: true, texts, joinedPreviewText };
+}
+
+function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
+  const tagName = typeof diagnostic.tagName === 'string' ? diagnostic.tagName : '';
+  if (tagName === 'w:tbl') return { code: 'DOCX_IMPORT_PREVIEW_TABLE_NOT_IMPORTED', category: 'table' };
+  if (tagName === 'w:drawing' || tagName === 'w:pict' || tagName === 'w:object') {
+    return { code: 'DOCX_IMPORT_PREVIEW_MEDIA_NOT_IMPORTED', category: 'media' };
+  }
+  if (tagName === 'w:commentRangeStart' || tagName === 'w:commentRangeEnd' || tagName === 'w:commentReference') {
+    return { code: 'DOCX_IMPORT_PREVIEW_COMMENTS_NOT_IMPORTED', category: 'comments' };
+  }
+  if (tagName === 'w:ins' || tagName === 'w:del' || tagName === 'w:moveFrom' || tagName === 'w:moveTo') {
+    return { code: 'DOCX_IMPORT_PREVIEW_REVISIONS_NOT_IMPORTED', category: 'revisions' };
+  }
+  if (tagName === 'w:footnoteReference' || tagName === 'w:endnoteReference') {
+    return { code: 'DOCX_IMPORT_PREVIEW_NOTES_NOT_IMPORTED', category: 'notes' };
+  }
+  if (tagName === 'w:hyperlink') return { code: 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED', category: 'link' };
+  return { code: 'DOCX_IMPORT_PREVIEW_STRUCTURE_NOT_IMPORTED', category: 'structure' };
+}
+
+function docxImportPreviewBuildLossReport(sourceReport, contentPreview, importedText) {
+  const items = [
+    docxImportPreviewLossItem('DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY', {
+      category: 'formatting',
+      message: 'DOCX import preview candidate is limited to plain text scene content',
+    }),
+  ];
+  if (importedText.length === 0) {
+    items.push(docxImportPreviewLossItem('DOCX_IMPORT_PREVIEW_EMPTY_CONTENT_DIAGNOSTIC', {
+      category: 'content',
+      severity: 'warning',
+      message: 'DOCX content preview contains no importable text',
+    }));
+  }
+  const diagnostics = Array.isArray(sourceReport.diagnostics) ? sourceReport.diagnostics : [];
+  for (const diagnostic of diagnostics) {
+    if (!isPlainObject(diagnostic)) continue;
+    if (diagnostic.code !== 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC') continue;
+    if (items.length >= DOCX_IMPORT_PREVIEW_BOUNDS.maxLossItems) break;
+    const mapped = docxImportPreviewLossCategoryForDiagnostic(diagnostic);
+    items.push(docxImportPreviewLossItem(mapped.code, {
+      category: mapped.category,
+      severity: 'warning',
+      sourceCode: diagnostic.code,
+      sourcePart: diagnostic.sourcePart || contentPreview.sourcePart,
+      tagName: diagnostic.tagName,
+      message: 'unsupported DOCX structure is not represented in the plain text import candidate',
+    }));
+  }
+  const sortedItems = docxImportPreviewSortRecords(items);
+  return {
+    schemaVersion: DOCX_IMPORT_PREVIEW_LOSS_REPORT_SCHEMA,
+    mode: 'plain-text-only',
+    itemCount: sortedItems.length,
+    items: sortedItems,
+  };
+}
+
+function docxImportPreviewBuildCandidateCreatePlan(sourceReport, contentPreview, importedText) {
+  const contentTextHash = docxContentPreviewStableHash(importedText);
+  const sourceTextHash = typeof contentPreview.textHash === 'string' ? contentPreview.textHash : '';
+  return {
+    mode: 'create-only',
+    sceneStrategy: 'single-scene',
+    entryCount: 1,
+    entries: [
+      {
+        sceneId: `docx-import-scene-${docxImportPreviewStableHash({
+          sourceTextHash,
+          contentTextHash,
+          paragraphCount: contentPreview.paragraphCount,
+        })}`,
+        kind: 'scene',
+        title: 'Imported DOCX preview',
+        content: importedText,
+        contentTextHash,
+        source: {
+          schemaVersion: sourceReport.schemaVersion,
+          type: sourceReport.type,
+          sourcePart: contentPreview.sourcePart,
+          paragraphRange: {
+            start: contentPreview.paragraphCount > 0 ? 0 : -1,
+            end: contentPreview.paragraphCount > 0 ? contentPreview.paragraphCount - 1 : -1,
+          },
+          paragraphCount: contentPreview.paragraphCount,
+          textHash: sourceTextHash,
+        },
+      },
+    ],
+  };
+}
+
+export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
+  const sourceValidation = docxImportPreviewValidateSourceReport(input);
+  if (!sourceValidation.ok) {
+    return docxImportPreviewBlocked(sourceValidation.code, {
+      field: sourceValidation.field,
+      sourceCode: sourceValidation.sourceCode,
+    });
+  }
+  const contentPreview = sourceValidation.value;
+  const paragraphValidation = docxImportPreviewValidateParagraphs(contentPreview);
+  if (!paragraphValidation.ok) {
+    return docxImportPreviewBlocked(paragraphValidation.code, {
+      field: paragraphValidation.field,
+      actual: paragraphValidation.actual,
+      limit: paragraphValidation.limit,
+      sourcePart: contentPreview.sourcePart,
+    });
+  }
+
+  const importedText = paragraphValidation.texts.join('\n\n');
+  const sourceHash = docxImportPreviewStableHash(input);
+  const candidateCreatePlan = docxImportPreviewBuildCandidateCreatePlan(input, contentPreview, importedText);
+  const lossReport = docxImportPreviewBuildLossReport(input, contentPreview, importedText);
+  const source = {
+    schemaVersion: input.schemaVersion,
+    type: input.type,
+    code: input.code,
+    contentPreviewHash: sourceHash,
+    sourcePart: contentPreview.sourcePart,
+    paragraphCount: contentPreview.paragraphCount,
+    textLength: contentPreview.textLength,
+    textHash: contentPreview.textHash,
+  };
+
+  return docxImportPreviewResult({
+    ok: true,
+    status: 'preview',
+    code: DOCX_IMPORT_PREVIEW_CODES.READY,
+    reason: DOCX_IMPORT_PREVIEW_CODES.READY,
+    decision: 'preview',
+    source,
+    diagnostics: Array.isArray(input.diagnostics)
+      ? input.diagnostics.map((diagnostic) => cloneJsonSafe(diagnostic)).filter(isPlainObject)
+      : [],
+    evidence: [
+      docxImportPreviewEvidence('contentPreview', {
+        contentPreviewHash: sourceHash,
+        paragraphCount: contentPreview.paragraphCount,
+        textLength: contentPreview.textLength,
+        textHash: contentPreview.textHash,
+      }),
+      docxImportPreviewEvidence('candidateCreatePlan', {
+        mode: candidateCreatePlan.mode,
+        sceneStrategy: candidateCreatePlan.sceneStrategy,
+        entryCount: candidateCreatePlan.entryCount,
+        contentTextHash: candidateCreatePlan.entries[0].contentTextHash,
+      }),
+      docxImportPreviewEvidence('lossReport', {
+        itemCount: lossReport.itemCount,
+      }),
+    ],
+    candidateCreatePlan,
+    lossReport,
+  });
+}
+// RB_12_DOCX_IMPORT_PREVIEW_PLAN_END
+
 function missingField(field) {
   return {
     code: 'REVISION_BRIDGE_FIELD_REQUIRED',
