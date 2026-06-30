@@ -3115,6 +3115,13 @@
       "approvedBy": "ticket:DOCX_INTAKE_PREFLIGHT_CLASSIFICATION_002",
       "approvedAtUtc": "2026-06-30T11:24:50.000Z",
       "rationale": "DOCX_INTAKE_PREFLIGHT_CLASSIFICATION_002 approves the bounded DOCX intake preflight report contract for clean, degraded, hostile, malformed, deterministic, and no-surface-leak cases; no UI, storage write, import mutation, semantic parser execution, export rewrite, network, dependency, or release claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "sha256": "a5e3cc265283d3d96276364f8b824920b3ecc15e283db0132392b97cd2a378eb",
+      "approvedBy": "ticket:DOCX_SEMANTIC_MIN_PARSE_TO_CONTENT_PREVIEW_001",
+      "approvedAtUtc": "2026-06-30T11:53:00.000Z",
+      "rationale": "DOCX_SEMANTIC_MIN_PARSE_TO_CONTENT_PREVIEW_001 approves the bounded DOCX content preview contract for accepted preflight only, minimal paragraph text extraction, tabs, breaks, XML entity decoding, unsupported structure diagnostics, malformed XML rejection, single-root enforcement, trailing XML garbage rejection, paragraph budget enforcement, unsupported encoding and prefix fail-closed behavior, deterministic output, and no UI, storage write, import mutation, review packet, apply operation, export rewrite, network, dependency, or release claim."
     }
   ]
 }
