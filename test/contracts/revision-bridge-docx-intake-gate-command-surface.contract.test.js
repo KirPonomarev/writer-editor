@@ -189,6 +189,9 @@ function assertInspectionOnlyResult(result) {
   assert.equal(result.semanticParseNotRun, true);
   assert.equal(result.parse.attempted, false);
   assert.equal(result.gate.parse.attempted, false);
+  assert.equal(Object.prototype.hasOwnProperty.call(result, 'preflightSummary'), true);
+  assert.equal(Object.prototype.hasOwnProperty.call(result, 'packageInspection'), true);
+  assert.equal(Object.prototype.hasOwnProperty.call(result, 'partPolicy'), true);
   assert.equal(Object.prototype.hasOwnProperty.call(result, 'reviewSurface'), false);
   assert.equal(Object.prototype.hasOwnProperty.call(result, 'reviewPacket'), false);
   assert.equal(Object.prototype.hasOwnProperty.call(result, 'applyOps'), false);
@@ -215,8 +218,13 @@ test('DOCX intake gate command surface: clean container returns gate pass withou
   assertInspectionOnlyResult(result);
   assert.equal(result.requestId, 'request-1');
   assert.equal(result.gatePass, true);
-  assert.equal(result.decision, 'pass');
-  assert.equal(result.code, 'STAGE02_GATE_PASS');
+  assert.equal(result.decision, 'accepted');
+  assert.equal(result.code, 'DOCX_PART_POLICY_ACCEPTED');
+  assert.equal(result.preflightSummary.status, 'accepted');
+  assert.equal(result.preflightSummary.eligibility.parserCandidateOnly, true);
+  assert.equal(result.packageInspection.classification, 'clean');
+  assert.equal(result.partPolicy.decision, 'accepted');
+  assert.equal(result.gate.code, 'STAGE02_GATE_PASS');
   assert.equal(result.gate.ok, true);
   assert.equal(result.gate.parse.semanticAllowed, true);
   assert.deepEqual(cloneJsonSafe(port.getState()), {
@@ -349,6 +357,68 @@ test('DOCX intake gate command surface: bridge failure and parse-attempt regress
   });
   const parseAttempted = instantiateDocxIntakeGatePort({
     loadRevisionBridgeModule: async () => ({
+      buildDocxIntakePreflightReportFromZipBytes: () => ({
+        ok: true,
+        decision: 'accepted',
+        code: 'DOCX_PART_POLICY_ACCEPTED',
+        reason: 'DOCX_PART_POLICY_ACCEPTED',
+        diagnostics: [],
+        evidence: [],
+        budgets: {},
+        preflightSummary: {},
+        packageInspection: {},
+        partPolicy: {},
+        parse: {
+          attempted: true,
+          semanticAllowed: true,
+        },
+        gate: {
+          ok: true,
+          decision: 'pass',
+          code: 'STAGE02_GATE_PASS',
+          reason: 'STAGE02_GATE_PASS',
+          diagnostics: [],
+          evidence: [],
+          budgets: {},
+          parse: {
+            attempted: false,
+            semanticAllowed: true,
+          },
+        },
+      }),
+    }),
+  });
+  const gateParseAttempted = instantiateDocxIntakeGatePort({
+    loadRevisionBridgeModule: async () => ({
+      buildDocxIntakePreflightReportFromZipBytes: () => ({
+        ok: true,
+        decision: 'accepted',
+        code: 'DOCX_PART_POLICY_ACCEPTED',
+        reason: 'DOCX_PART_POLICY_ACCEPTED',
+        diagnostics: [],
+        evidence: [],
+        budgets: {},
+        preflightSummary: {},
+        packageInspection: {},
+        partPolicy: {},
+        gate: {
+          ok: true,
+          decision: 'pass',
+          code: 'STAGE02_GATE_PASS',
+          reason: 'STAGE02_GATE_PASS',
+          diagnostics: [],
+          evidence: [],
+          budgets: {},
+          parse: {
+            attempted: true,
+            semanticAllowed: true,
+          },
+        },
+      }),
+    }),
+  });
+  const helperUnavailable = instantiateDocxIntakeGatePort({
+    loadRevisionBridgeModule: async () => ({
       inspectDocxHostileFileGateFromZipBytes: () => ({
         ok: true,
         decision: 'pass',
@@ -367,6 +437,8 @@ test('DOCX intake gate command surface: bridge failure and parse-attempt regress
 
   const unavailableResult = await unavailable.handleDocxIntakeGateCommandSurface(toPayload(cleanDocxZip()));
   const parseAttemptedResult = await parseAttempted.handleDocxIntakeGateCommandSurface(toPayload(cleanDocxZip()));
+  const gateParseAttemptedResult = await gateParseAttempted.handleDocxIntakeGateCommandSurface(toPayload(cleanDocxZip()));
+  const helperUnavailableResult = await helperUnavailable.handleDocxIntakeGateCommandSurface(toPayload(cleanDocxZip()));
 
   assert.equal(unavailableResult.ok, false);
   assert.equal(unavailableResult.error.code, 'E_DOCX_INTAKE_GATE_UNAVAILABLE');
@@ -374,6 +446,11 @@ test('DOCX intake gate command surface: bridge failure and parse-attempt regress
   assert.equal(parseAttemptedResult.ok, false);
   assert.equal(parseAttemptedResult.error.code, 'E_DOCX_INTAKE_GATE_PARSE_ATTEMPTED');
   assert.equal(parseAttemptedResult.error.reason, 'DOCX_INTAKE_GATE_PARSE_ATTEMPTED');
+  assert.equal(gateParseAttemptedResult.ok, false);
+  assert.equal(gateParseAttemptedResult.error.code, 'E_DOCX_INTAKE_GATE_PARSE_ATTEMPTED');
+  assert.equal(helperUnavailableResult.ok, false);
+  assert.equal(helperUnavailableResult.error.code, 'E_DOCX_INTAKE_GATE_UNAVAILABLE');
+  assert.equal(helperUnavailableResult.error.reason, 'DOCX_INTAKE_GATE_INSPECTOR_UNAVAILABLE');
 });
 
 test('DOCX intake gate command surface: contour section stays free of storage export parser and apply layers', () => {
@@ -396,6 +473,7 @@ test('DOCX intake gate command surface: contour section stays free of storage ex
     'fs.',
     'readFile',
     'writeFile',
+    'readFileSync',
   ];
 
   for (const marker of forbiddenRuntimeMarkers) {

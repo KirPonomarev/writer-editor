@@ -736,25 +736,61 @@ function decodeDocxIntakeGateBufferSource(payload = {}) {
   };
 }
 
-function buildDocxIntakeGateCommandResult(payload, gateResult) {
-  const gate = isPlainObjectValue(gateResult) ? cloneJsonSafe(gateResult) : {};
-  const parse = isPlainObjectValue(gate.parse)
-    ? cloneJsonSafe(gate.parse)
+function buildDocxIntakeGateCommandResult(payload, preflightResult) {
+  const preflight = isPlainObjectValue(preflightResult) ? cloneJsonSafe(preflightResult) : {};
+  const gate = isPlainObjectValue(preflight.gate) ? cloneJsonSafe(preflight.gate) : {};
+  const parseSource = isPlainObjectValue(preflight.parse) ? preflight.parse : gate.parse;
+  const parse = isPlainObjectValue(parseSource)
+    ? cloneJsonSafe(parseSource)
     : {
       attempted: false,
       semanticAllowed: false,
     };
   const parseAttempted = parse.attempted === true;
+  const preflightSummary = isPlainObjectValue(preflight.preflightSummary)
+    ? cloneJsonSafe(preflight.preflightSummary)
+    : {};
   return {
     ok: true,
     requestId: normalizeDocxIntakeGateRequestId(payload?.requestId),
     gatePass: gate.ok === true && gate.decision === 'pass',
-    decision: typeof gate.decision === 'string' ? gate.decision : 'blocked',
-    code: typeof gate.code === 'string' ? gate.code : 'E_DOCX_INTAKE_GATE_UNKNOWN',
-    reason: typeof gate.reason === 'string' ? gate.reason : 'E_DOCX_INTAKE_GATE_UNKNOWN',
-    diagnostics: Array.isArray(gate.diagnostics) ? cloneJsonSafe(gate.diagnostics) : [],
-    evidence: Array.isArray(gate.evidence) ? cloneJsonSafe(gate.evidence) : [],
-    budgets: isPlainObjectValue(gate.budgets) ? cloneJsonSafe(gate.budgets) : {},
+    decision: typeof preflight.decision === 'string'
+      ? preflight.decision
+      : typeof gate.decision === 'string'
+        ? gate.decision
+        : 'blocked',
+    code: typeof preflight.code === 'string'
+      ? preflight.code
+      : typeof gate.code === 'string'
+        ? gate.code
+        : 'E_DOCX_INTAKE_GATE_UNKNOWN',
+    reason: typeof preflight.reason === 'string'
+      ? preflight.reason
+      : typeof gate.reason === 'string'
+        ? gate.reason
+        : 'E_DOCX_INTAKE_GATE_UNKNOWN',
+    diagnostics: Array.isArray(preflight.diagnostics)
+      ? cloneJsonSafe(preflight.diagnostics)
+      : Array.isArray(gate.diagnostics)
+        ? cloneJsonSafe(gate.diagnostics)
+        : [],
+    evidence: Array.isArray(preflight.evidence)
+      ? cloneJsonSafe(preflight.evidence)
+      : Array.isArray(gate.evidence)
+        ? cloneJsonSafe(gate.evidence)
+        : [],
+    budgets: isPlainObjectValue(preflight.budgets)
+      ? cloneJsonSafe(preflight.budgets)
+      : isPlainObjectValue(gate.budgets)
+        ? cloneJsonSafe(gate.budgets)
+        : {},
+    preflightSummary,
+    packageInspection: isPlainObjectValue(preflight.packageInspection)
+      ? cloneJsonSafe(preflight.packageInspection)
+      : null,
+    partPolicy: isPlainObjectValue(preflight.partPolicy)
+      ? cloneJsonSafe(preflight.partPolicy)
+      : null,
     parse,
     semanticParseNotRun: parseAttempted === false,
     gate,
@@ -777,16 +813,16 @@ async function handleDocxIntakeGateCommandSurface(payload = {}) {
       },
     );
   }
-  if (!revisionBridge || typeof revisionBridge.inspectDocxHostileFileGateFromZipBytes !== 'function') {
+  if (!revisionBridge || typeof revisionBridge.buildDocxIntakePreflightReportFromZipBytes !== 'function') {
     return makeDocxIntakeGateTypedError(
       'E_DOCX_INTAKE_GATE_UNAVAILABLE',
       'DOCX_INTAKE_GATE_INSPECTOR_UNAVAILABLE',
     );
   }
 
-  let gateResult = null;
+  let preflightResult = null;
   try {
-    gateResult = revisionBridge.inspectDocxHostileFileGateFromZipBytes(decoded.bytes);
+    preflightResult = revisionBridge.buildDocxIntakePreflightReportFromZipBytes(decoded.bytes);
   } catch (error) {
     return makeDocxIntakeGateTypedError(
       'E_DOCX_INTAKE_GATE_FAILED',
@@ -797,8 +833,9 @@ async function handleDocxIntakeGateCommandSurface(payload = {}) {
     );
   }
 
-  const result = buildDocxIntakeGateCommandResult(payload, gateResult);
-  if (result.parse.attempted === true || result.semanticParseNotRun !== true) {
+  const result = buildDocxIntakeGateCommandResult(payload, preflightResult);
+  const gateParseAttempted = result.gate?.parse?.attempted === true;
+  if (result.parse.attempted === true || gateParseAttempted || result.semanticParseNotRun !== true) {
     return makeDocxIntakeGateTypedError(
       'E_DOCX_INTAKE_GATE_PARSE_ATTEMPTED',
       'DOCX_INTAKE_GATE_PARSE_ATTEMPTED',
