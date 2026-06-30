@@ -18,6 +18,11 @@ const {
   applyMarkdownImportSafeCreate,
 } = require('./utils/markdownImportSafeCreate');
 const {
+  applyDocxImportSafeCreate,
+  isDocxImportPreviewPlanAdmitted,
+  rememberDocxImportPreviewPlanAdmission,
+} = require('./utils/docxImportSafeCreate');
+const {
   isPathInsideBoundary,
   joinPathSegmentsWithinRoot,
   resolveValidatedPath,
@@ -1615,9 +1620,459 @@ async function handleDocxImportPreviewCommandSurface(payload = {}) {
     );
   }
 
+  if (importPreviewResult.ok === true && typeof rememberDocxImportPreviewPlanAdmission === 'function') {
+    rememberDocxImportPreviewPlanAdmission(importPreviewResult);
+  }
   return buildDocxImportPreviewCommandResult(payload, importPreviewResult);
 }
 // DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_END
+
+// DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE_START
+const DOCX_IMPORT_SAFE_CREATE_COMMAND_ID = 'cmd.project.docx.importSafeCreate';
+const DOCX_IMPORT_SAFE_CREATE_MAX_PAYLOAD_CHARS = 4 * 1024 * 1024;
+const DOCX_IMPORT_SAFE_CREATE_MAX_OBJECT_DEPTH = 32;
+const DOCX_IMPORT_SAFE_CREATE_MAX_REQUEST_ID_CHARS = 120;
+const DOCX_IMPORT_SAFE_CREATE_MESSAGE_CODE_RE = /^(DOCX|FLOW)_[A-Z0-9_]{1,95}$/u;
+const DOCX_IMPORT_SAFE_CREATE_ALLOWED_PAYLOAD_KEYS = new Set(['requestId', 'docxImportPreviewPlan']);
+const DOCX_IMPORT_SAFE_CREATE_FORBIDDEN_PAYLOAD_KEYS = new Set([
+  ['review', 'Packet'].join(''),
+  ['review', 'Surface'].join(''),
+  ['parsed', 'Review', 'Surface'].join(''),
+  ['active', 'Review', 'Session'].join(''),
+  ['preview', 'Input'].join(''),
+  ['apply', 'Ops'].join(''),
+  ['apply', 'Plan'].join(''),
+  ['can', 'Apply'].join(''),
+  ['can', 'Create', 'Review', 'Packet'].join(''),
+  ['can', 'Preview', 'Apply'].join(''),
+  ['can', 'Import', 'Mutate'].join(''),
+  ['can', 'Write', 'Storage'].join(''),
+  ['write', 'Receipt'].join(''),
+  ['import', 'Receipt'].join(''),
+  ['export', 'Receipt'].join(''),
+  ['safe', 'Create', 'Plan'].join(''),
+  ['raw', 'Bytes'].join(''),
+  ['buffer', 'Source'].join(''),
+  ['file', 'Path'].join(''),
+  ['project', 'Root'].join(''),
+  ['package', 'Inspection'].join(''),
+  ['part', 'Policy'].join(''),
+  ['intake', 'Preflight', 'Report'].join(''),
+  ['docx', 'Intake', 'Preflight', 'Report'].join(''),
+  ['out', 'Path'].join(''),
+  ['out', 'Dir'].join(''),
+  ['stor', 'age'].join(''),
+  ['render', 'er'].join(''),
+  ['pre', 'load'].join(''),
+  ['pa', 'th'].join(''),
+  'gate',
+  'inventory',
+  'bytes',
+  'zip',
+]);
+const DOCX_IMPORT_SAFE_CREATE_FORBIDDEN_RESULT_KEYS = new Set([
+  ['review', 'Packet'].join(''),
+  ['review', 'Surface'].join(''),
+  ['parsed', 'Review', 'Surface'].join(''),
+  ['active', 'Review', 'Session'].join(''),
+  ['preview', 'Input'].join(''),
+  ['apply', 'Ops'].join(''),
+  ['apply', 'Plan'].join(''),
+  ['can', 'Apply'].join(''),
+  ['can', 'Create', 'Review', 'Packet'].join(''),
+  ['can', 'Preview', 'Apply'].join(''),
+  ['can', 'Import', 'Mutate'].join(''),
+  ['can', 'Write', 'Storage'].join(''),
+  ['write', 'Receipt'].join(''),
+  ['import', 'Receipt'].join(''),
+  ['export', 'Receipt'].join(''),
+  ['safe', 'Create', 'Plan'].join(''),
+  ['raw', 'Bytes'].join(''),
+  ['buffer', 'Source'].join(''),
+  ['file', 'Path'].join(''),
+  ['project', 'Root'].join(''),
+  ['package', 'Inspection'].join(''),
+  ['part', 'Policy'].join(''),
+  ['intake', 'Preflight', 'Report'].join(''),
+  ['docx', 'Intake', 'Preflight', 'Report'].join(''),
+  ['out', 'Path'].join(''),
+  ['out', 'Dir'].join(''),
+  ['stor', 'age'].join(''),
+  ['render', 'er'].join(''),
+  ['pre', 'load'].join(''),
+  ['pa', 'th'].join(''),
+]);
+
+function makeDocxImportSafeCreateTypedError(code, reason, details = undefined) {
+  const error = {
+    code,
+    op: DOCX_IMPORT_SAFE_CREATE_COMMAND_ID,
+    reason,
+  };
+  const safeDetails = sanitizeDocxImportSafeCreateErrorDetails(details);
+  if (Object.keys(safeDetails).length > 0) {
+    error.details = safeDetails;
+  }
+  return { ok: false, error };
+}
+
+function sanitizeDocxImportSafeCreateErrorDetails(details) {
+  if (!isPlainObjectValue(details)) return {};
+  const result = {};
+  if (typeof details.field === 'string') result.field = details.field;
+  if (Array.isArray(details.fields)) {
+    result.fields = details.fields.filter((item) => typeof item === 'string');
+  }
+  if (typeof details.key === 'string') result.key = details.key;
+  if (Number.isInteger(details.index)) result.index = details.index;
+  if (typeof details.sceneId === 'string') result.sceneId = details.sceneId;
+  if (Number.isInteger(details.maxChars)) result.maxChars = details.maxChars;
+  if (Number.isInteger(details.payloadChars)) result.payloadChars = details.payloadChars;
+  if (typeof details.expected === 'string' && /^[a-f0-9]{8,64}$/u.test(details.expected)) {
+    result.expected = details.expected;
+  }
+  if (typeof details.failReason === 'string') result.failReason = details.failReason;
+  if (typeof details.batchId === 'string') result.batchId = details.batchId;
+  if (Array.isArray(details.staleMarkers)) {
+    result.staleMarkerCount = details.staleMarkers.length;
+  }
+  if (
+    typeof details.messageCode === 'string'
+    && (
+      details.messageCode === 'WRITE_EXCEPTION'
+      || details.messageCode === 'UNKNOWN'
+      || DOCX_IMPORT_SAFE_CREATE_MESSAGE_CODE_RE.test(details.messageCode)
+    )
+  ) {
+    result.messageCode = details.messageCode;
+  }
+  return result;
+}
+
+function normalizeDocxImportSafeCreateRequestId(value) {
+  return typeof value === 'string' && value.trim()
+    ? value.trim()
+    : 'docx-import-safe-create-request';
+}
+
+function inspectDocxImportSafeCreatePayloadDepth(value, pathParts = [], seen = new WeakSet()) {
+  if (!value || typeof value !== 'object') {
+    return { ok: true };
+  }
+  if (pathParts.length > DOCX_IMPORT_SAFE_CREATE_MAX_OBJECT_DEPTH) {
+    return {
+      ok: false,
+      reason: 'DOCX_IMPORT_SAFE_CREATE_PAYLOAD_DEPTH_EXCEEDED',
+      details: {
+        key: pathParts.join('.'),
+        maxDepth: DOCX_IMPORT_SAFE_CREATE_MAX_OBJECT_DEPTH,
+      },
+    };
+  }
+  if (seen.has(value)) {
+    return {
+      ok: false,
+      reason: 'DOCX_IMPORT_SAFE_CREATE_PAYLOAD_CIRCULAR',
+      details: {
+        key: pathParts.join('.'),
+      },
+    };
+  }
+  seen.add(value);
+
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const nested = inspectDocxImportSafeCreatePayloadDepth(
+        value[index],
+        pathParts.concat(String(index)),
+        seen,
+      );
+      if (!nested.ok) return nested;
+    }
+    seen.delete(value);
+    return { ok: true };
+  }
+
+  if (!isPlainObjectValue(value)) {
+    seen.delete(value);
+    return { ok: true };
+  }
+
+  for (const key of Object.keys(value)) {
+    const nested = inspectDocxImportSafeCreatePayloadDepth(value[key], pathParts.concat(key), seen);
+    if (!nested.ok) return nested;
+  }
+  seen.delete(value);
+  return { ok: true };
+}
+
+function measureDocxImportSafeCreatePayloadChars(payload) {
+  try {
+    return JSON.stringify(payload).length;
+  } catch {
+    return -1;
+  }
+}
+
+function findDocxImportSafeCreateForbiddenKey(value, forbiddenKeys, pathParts = []) {
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const nested = findDocxImportSafeCreateForbiddenKey(
+        value[index],
+        forbiddenKeys,
+        pathParts.concat(String(index)),
+      );
+      if (nested) return nested;
+    }
+    return '';
+  }
+  if (!isPlainObjectValue(value)) return '';
+
+  for (const key of Object.keys(value)) {
+    const keyPath = pathParts.concat(key).join('.');
+    const allowedPlanWriteEffects = pathParts.length === 1
+      && pathParts[0] === 'docxImportPreviewPlan'
+      && key === 'writeEffects';
+    if (!allowedPlanWriteEffects && forbiddenKeys.has(key)) {
+      return keyPath;
+    }
+    const nested = findDocxImportSafeCreateForbiddenKey(
+      value[key],
+      forbiddenKeys,
+      pathParts.concat(key),
+    );
+    if (nested) return nested;
+  }
+  return '';
+}
+
+function validateDocxImportSafeCreatePayload(payload = {}) {
+  if (!isPlainObjectValue(payload)) {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID',
+      'DOCX_IMPORT_SAFE_CREATE_PAYLOAD_REQUIRED',
+    );
+  }
+
+  const unsupportedKeys = Object.keys(payload)
+    .filter((key) => !DOCX_IMPORT_SAFE_CREATE_ALLOWED_PAYLOAD_KEYS.has(key))
+    .sort();
+  if (unsupportedKeys.length > 0) {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID',
+      'DOCX_IMPORT_SAFE_CREATE_PAYLOAD_UNSUPPORTED_FIELDS',
+      {
+        fields: unsupportedKeys,
+      },
+    );
+  }
+
+  if (
+    payload.requestId !== undefined
+    && typeof payload.requestId !== 'string'
+  ) {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID',
+      'DOCX_IMPORT_SAFE_CREATE_REQUEST_ID_INVALID',
+    );
+  }
+  if (
+    typeof payload.requestId === 'string'
+    && payload.requestId.trim().length > DOCX_IMPORT_SAFE_CREATE_MAX_REQUEST_ID_CHARS
+  ) {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_TOO_LARGE',
+      'DOCX_IMPORT_SAFE_CREATE_REQUEST_ID_TOO_LARGE',
+      {
+        maxChars: DOCX_IMPORT_SAFE_CREATE_MAX_REQUEST_ID_CHARS,
+      },
+    );
+  }
+
+  if (!isPlainObjectValue(payload.docxImportPreviewPlan)) {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID',
+      'DOCX_IMPORT_SAFE_CREATE_PREVIEW_PLAN_REQUIRED',
+    );
+  }
+  if (payload.docxImportPreviewPlan.schemaVersion !== 'revision-bridge.docx-import-preview.v1') {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID',
+      'DOCX_IMPORT_SAFE_CREATE_PREVIEW_PLAN_SCHEMA_INVALID',
+    );
+  }
+  if (payload.docxImportPreviewPlan.type !== 'docx.import.preview') {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID',
+      'DOCX_IMPORT_SAFE_CREATE_PREVIEW_PLAN_TYPE_INVALID',
+    );
+  }
+
+  const depthState = inspectDocxImportSafeCreatePayloadDepth(payload);
+  if (!depthState.ok) {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID',
+      depthState.reason,
+      depthState.details,
+    );
+  }
+
+  const payloadChars = measureDocxImportSafeCreatePayloadChars(payload);
+  if (payloadChars < 0) {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID',
+      'DOCX_IMPORT_SAFE_CREATE_PAYLOAD_NOT_SERIALIZABLE',
+    );
+  }
+  if (payloadChars > DOCX_IMPORT_SAFE_CREATE_MAX_PAYLOAD_CHARS) {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_TOO_LARGE',
+      'DOCX_IMPORT_SAFE_CREATE_PAYLOAD_TOO_LARGE',
+      {
+        maxChars: DOCX_IMPORT_SAFE_CREATE_MAX_PAYLOAD_CHARS,
+        payloadChars,
+      },
+    );
+  }
+
+  const forbiddenKey = findDocxImportSafeCreateForbiddenKey(
+    payload,
+    DOCX_IMPORT_SAFE_CREATE_FORBIDDEN_PAYLOAD_KEYS,
+  );
+  if (forbiddenKey) {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID',
+      'DOCX_IMPORT_SAFE_CREATE_PAYLOAD_FORBIDDEN_FIELD',
+      {
+        key: forbiddenKey,
+      },
+    );
+  }
+  if (
+    typeof isDocxImportPreviewPlanAdmitted !== 'function'
+    || !isDocxImportPreviewPlanAdmitted(payload.docxImportPreviewPlan)
+  ) {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_PREVIEW_NOT_ADMITTED',
+      'DOCX_IMPORT_SAFE_CREATE_PREVIEW_NOT_ADMITTED',
+    );
+  }
+
+  return {
+    ok: true,
+    docxImportPreviewPlan: cloneJsonSafe(payload.docxImportPreviewPlan),
+  };
+}
+
+function buildDocxImportSafeCreateCommandResult(payload, safeCreateResult) {
+  const receipt = cloneJsonSafe(safeCreateResult.value.receipt);
+  return {
+    ok: true,
+    requestId: normalizeDocxImportSafeCreateRequestId(payload?.requestId),
+    commandId: DOCX_IMPORT_SAFE_CREATE_COMMAND_ID,
+    commandOk: true,
+    safeCreateOk: true,
+    created: true,
+    createdSceneIds: Array.isArray(safeCreateResult.value.createdSceneIds)
+      ? cloneJsonSafe(safeCreateResult.value.createdSceneIds)
+      : [],
+    receipt,
+  };
+}
+
+function validateDocxImportSafeCreateCommandResult(result) {
+  if (!isPlainObjectValue(result)) {
+    return {
+      ok: false,
+      reason: 'DOCX_IMPORT_SAFE_CREATE_INVALID_RESULT',
+    };
+  }
+  if (result.ok !== true || result.created !== true || !Array.isArray(result.createdSceneIds)) {
+    return {
+      ok: false,
+      reason: 'DOCX_IMPORT_SAFE_CREATE_RESULT_SHAPE_INVALID',
+    };
+  }
+  const forbiddenKey = findDocxImportSafeCreateForbiddenKey(
+    result,
+    DOCX_IMPORT_SAFE_CREATE_FORBIDDEN_RESULT_KEYS,
+  );
+  if (forbiddenKey) {
+    return {
+      ok: false,
+      reason: 'DOCX_IMPORT_SAFE_CREATE_FORBIDDEN_RESULT',
+      key: forbiddenKey,
+    };
+  }
+  return { ok: true };
+}
+
+async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
+  const validated = validateDocxImportSafeCreatePayload(payload);
+  if (!validated.ok) return validated;
+  if (typeof applyDocxImportSafeCreate !== 'function') {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_UNAVAILABLE',
+      'DOCX_IMPORT_SAFE_CREATE_HELPER_UNAVAILABLE',
+    );
+  }
+
+  let safeCreateResult = null;
+  try {
+    await ensureProjectStructure();
+    const romanRoot = getProjectSectionPath('roman');
+    const projectBinding = await resolveProjectBindingForFile(romanRoot);
+    safeCreateResult = await applyDocxImportSafeCreate(
+      {
+        docxImportPreviewPlan: validated.docxImportPreviewPlan,
+      },
+      {
+        projectRoot: getProjectRootPath(),
+        romanRoot,
+        projectId: projectBinding && typeof projectBinding.projectId === 'string'
+          ? projectBinding.projectId
+          : '',
+        queueDiskOperation,
+        operationLabel: 'safe create DOCX import scene batch',
+        writeBatchAtomic: writeFlowSceneBatchAtomic,
+      },
+    );
+  } catch (error) {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_FAILED',
+      'DOCX_IMPORT_SAFE_CREATE_EXECUTION_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+
+  if (!safeCreateResult || safeCreateResult.ok !== true) {
+    return makeDocxImportSafeCreateTypedError(
+      safeCreateResult && safeCreateResult.error && typeof safeCreateResult.error.code === 'string'
+        ? safeCreateResult.error.code
+        : 'E_DOCX_IMPORT_SAFE_CREATE_FAILED',
+      safeCreateResult && safeCreateResult.error && typeof safeCreateResult.error.reason === 'string'
+        ? safeCreateResult.error.reason
+        : 'DOCX_IMPORT_SAFE_CREATE_FAILED',
+      safeCreateResult && safeCreateResult.error && isPlainObjectValue(safeCreateResult.error.details)
+        ? safeCreateResult.error.details
+        : {},
+    );
+  }
+
+  const commandResult = buildDocxImportSafeCreateCommandResult(payload, safeCreateResult);
+  const resultShape = validateDocxImportSafeCreateCommandResult(commandResult);
+  if (!resultShape.ok) {
+    return makeDocxImportSafeCreateTypedError(
+      'E_DOCX_IMPORT_SAFE_CREATE_INVALID_RESULT',
+      resultShape.reason,
+      resultShape.key ? { key: resultShape.key } : {},
+    );
+  }
+  return commandResult;
+}
+// DOCX_IMPORT_SAFE_CREATE_COMMAND_SURFACE_END
 
 // CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION_START
 async function handleRevisionBridgeReleaseClaimCommandSurfaceAdmission(payload = {}) {
@@ -5659,6 +6114,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.export.docxMin',
   'cmd.project.docx.previewContent',
   'cmd.project.docx.previewImportPlan',
+  'cmd.project.docx.importSafeCreate',
   'cmd.project.importMarkdownV1',
   'cmd.project.exportMarkdownV1',
   'cmd.project.releaseClaim.admit',
@@ -5774,6 +6230,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.docx.previewImportPlan': async (payload = {}) => {
     return handleDocxImportPreviewCommandSurface(payload);
+  },
+  'cmd.project.docx.importSafeCreate': async (payload = {}) => {
+    return handleDocxImportSafeCreateCommandSurface(payload);
   },
   'cmd.project.importMarkdownV1': async (payload = {}) => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);
