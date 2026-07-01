@@ -1774,6 +1774,8 @@ export function registerProjectCommands(registry, options = {}) {
     const payload = {
       scene: input.scene,
       outPath: typeof input.outPath === 'string' ? input.outPath : '',
+      saveAs: input.saveAs === true,
+      defaultName: typeof input.defaultName === 'string' ? input.defaultName : '',
       snapshotLimit: Number.isInteger(input.snapshotLimit) && input.snapshotLimit >= 1
         ? input.snapshotLimit
         : 3,
@@ -1795,6 +1797,18 @@ export function registerProjectCommands(registry, options = {}) {
       );
     }
     const bridged = unwrapBridgeResponseValue(response);
+
+    if (bridged && bridged.ok === 1 && bridged.canceled === true) {
+      return ok({
+        exported: false,
+        canceled: true,
+        outPath: '',
+        bytesWritten: 0,
+        lossReport: bridged.lossReport && typeof bridged.lossReport === 'object'
+          ? bridged.lossReport
+          : { count: 0, items: [] },
+      });
+    }
 
     if (bridged && bridged.ok === 1 && typeof bridged.markdown === 'string') {
       const output = {

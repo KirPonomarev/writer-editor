@@ -5144,8 +5144,9 @@ const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { 
 window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;
 const MARKDOWN_IMPORT_STATUS_MESSAGE = 'Imported Markdown v1';
 const MARKDOWN_EXPORT_STATUS_MESSAGE = 'Exported Markdown v1';
+const MARKDOWN_EXPORT_CANCELLED_STATUS_MESSAGE = 'Export Markdown cancelled';
+const MARKDOWN_EXPORT_SAVE_FAILED_STATUS_MESSAGE = 'Export Markdown save failed';
 const MARKDOWN_IMPORT_PROMPT_TITLE = 'Import Markdown v1';
-const MARKDOWN_EXPORT_PROMPT_COPY_HINT = 'Export Markdown v1 (copy text below)';
 const LINK_PROMPT_TITLE = 'Insert link';
 const FLOW_OPEN_ERROR_MESSAGE = 'Flow mode unavailable';
 const FLOW_SAVE_ERROR_MESSAGE = 'Flow mode save failed';
@@ -5420,8 +5421,18 @@ async function runMarkdownImportCommand(markdownText, sourceName, options = {}) 
   });
 }
 
-async function runMarkdownExportCommand(scene) {
-  return dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, { scene });
+async function runMarkdownExportCommand(scene, options = {}) {
+  const safeOptions = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
+  return dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, {
+    scene,
+    saveAs: safeOptions.saveAs === true,
+    outPath: typeof safeOptions.outPath === 'string' ? safeOptions.outPath : '',
+    defaultName: typeof safeOptions.defaultName === 'string' ? safeOptions.defaultName : '',
+    snapshotLimit: Number.isInteger(safeOptions.snapshotLimit) && safeOptions.snapshotLimit >= 1
+      ? safeOptions.snapshotLimit
+      : 3,
+    safetyMode: typeof safeOptions.safetyMode === 'string' ? safeOptions.safetyMode : 'strict',
+  });
 }
 
 async function runFlowOpenCommand() {
@@ -5575,18 +5586,30 @@ async function handleMarkdownExportUiPath() {
     return;
   }
 
-  const exportResult = await runMarkdownExportCommand(scene);
-  if (!exportResult.ok || !exportResult.value || typeof exportResult.value.markdown !== 'string') {
+  const exportResult = await runMarkdownExportCommand(scene, {
+    saveAs: true,
+    defaultName: 'editor-buffer.md',
+  });
+  if (!exportResult.ok || !exportResult.value || typeof exportResult.value !== 'object') {
     return;
   }
 
-  const markdown = exportResult.value.markdown;
-  if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-    navigator.clipboard.writeText(markdown).catch(() => {});
+  if (exportResult.value.canceled === true) {
+    updateStatusText(MARKDOWN_EXPORT_CANCELLED_STATUS_MESSAGE);
+    return;
   }
-  if (typeof window.prompt === 'function') {
-    window.prompt(MARKDOWN_EXPORT_PROMPT_COPY_HINT, markdown);
+
+  if (
+    exportResult.value.exported !== true
+    || typeof exportResult.value.outPath !== 'string'
+    || exportResult.value.outPath.length === 0
+    || !Number.isInteger(exportResult.value.bytesWritten)
+    || exportResult.value.bytesWritten <= 0
+  ) {
+    updateStatusText(MARKDOWN_EXPORT_SAVE_FAILED_STATUS_MESSAGE);
+    return;
   }
+
   updateStatusText(MARKDOWN_EXPORT_STATUS_MESSAGE);
 }
 

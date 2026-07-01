@@ -3923,6 +3923,8 @@ function normalizeMarkdownExportPayload(payload) {
   const normalized = {
     scene: payload.scene,
     outPath: typeof payload.outPath === 'string' ? payload.outPath.trim() : '',
+    saveAs: payload.saveAs === true,
+    defaultName: typeof payload.defaultName === 'string' ? payload.defaultName.trim() : '',
     snapshotLimit: Number.isInteger(payload.snapshotLimit) && payload.snapshotLimit >= 1
       ? payload.snapshotLimit
       : 3,
@@ -3986,6 +3988,68 @@ function normalizeDocxExportPath(filePath) {
   if (typeof filePath !== 'string' || filePath.trim().length === 0) return '';
   const raw = filePath.trim();
   return raw.toLowerCase().endsWith('.docx') ? raw : `${raw}.docx`;
+}
+
+function normalizeMarkdownExportPath(filePath) {
+  if (typeof filePath !== 'string' || filePath.trim().length === 0) return '';
+  const raw = filePath.trim();
+  return /\.(md|markdown)$/i.test(raw) ? raw : `${raw}.md`;
+}
+
+function buildMarkdownExportDefaultPath(payload) {
+  const safeDefaultName = sanitizeFilename(
+    typeof payload.defaultName === 'string' && payload.defaultName.trim()
+      ? payload.defaultName.trim()
+      : 'export',
+  );
+  const defaultBase = currentFilePath
+    ? currentFilePath.replace(/\.[^/.]+$/i, '')
+    : path.join(fileManager.getDocumentsPath(), safeDefaultName);
+  return normalizeMarkdownExportPath(defaultBase);
+}
+
+async function resolveMarkdownExportPath(payload) {
+  const fromPayload = normalizeMarkdownExportPath(payload.outPath);
+  if (fromPayload) return { canceled: false, outPath: fromPayload };
+  if (payload.saveAs !== true) return { canceled: false, outPath: '' };
+  if (!mainWindow) {
+    return {
+      canceled: false,
+      error: {
+        code: 'E_MD_EXPORT_SAVE_DIALOG_UNAVAILABLE',
+        reason: 'save_dialog_unavailable',
+      },
+    };
+  }
+
+  const result = await dialog.showSaveDialog(mainWindow, {
+    title: 'Экспорт Markdown v1',
+    defaultPath: buildMarkdownExportDefaultPath(payload),
+    filters: [
+      { name: 'Markdown', extensions: ['md'] },
+      { name: 'Все файлы', extensions: ['*'] },
+    ],
+  });
+  if (result.canceled) return { canceled: true, outPath: '' };
+
+  const outPath = normalizeMarkdownExportPath(result.filePath);
+  if (!outPath) {
+    return {
+      canceled: false,
+      error: {
+        code: 'E_MD_EXPORT_PATH_REQUIRED',
+        reason: 'export_path_required',
+      },
+    };
+  }
+  const pathGuard = sanitizePathFields({ outPath }, ['outPath'], { mode: 'any' });
+  if (!pathGuard.ok) {
+    return {
+      canceled: false,
+      pathBoundaryError: pathGuard,
+    };
+  }
+  return { canceled: false, outPath: pathGuard.payload.outPath };
 }
 
 async function resolveDocxExportPath(payload) {
@@ -4205,6 +4269,46 @@ async function handleExportMarkdownV1(payloadRaw) {
     );
   }
 
+  let resolvedPath;
+  try {
+    resolvedPath = await resolveMarkdownExportPath(payload);
+  } catch (error) {
+    return makeTypedMarkdownError(
+      EXPORT_MARKDOWN_V1_CHANNEL,
+      'E_MD_EXPORT_SAVE_DIALOG_FAILED',
+      'save_dialog_failed',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+  if (resolvedPath && resolvedPath.canceled === true) {
+    return {
+      ok: 1,
+      canceled: true,
+      outPath: '',
+      bytesWritten: 0,
+      snapshotCreated: false,
+      lossReport: { count: 0, items: [] },
+    };
+  }
+  if (resolvedPath && resolvedPath.error) {
+    return makeTypedMarkdownError(
+      EXPORT_MARKDOWN_V1_CHANNEL,
+      resolvedPath.error.code,
+      resolvedPath.error.reason,
+    );
+  }
+  if (resolvedPath && resolvedPath.pathBoundaryError) {
+    return makeTypedMarkdownError(
+      EXPORT_MARKDOWN_V1_CHANNEL,
+      'E_PATH_BOUNDARY_VIOLATION',
+      'path_boundary_violation',
+      buildPathBoundaryDetails(resolvedPath.pathBoundaryError),
+    );
+  }
+  const outPath = resolvedPath && typeof resolvedPath.outPath === 'string'
+    ? resolvedPath.outPath
+    : '';
+
   let transform;
   try {
     transform = await loadMarkdownTransformModule();
@@ -4222,10 +4326,10 @@ async function handleExportMarkdownV1(payloadRaw) {
     const parsed = transform.parseMarkdownV1(markdown, { limits: payload.limits });
 
     let writeResult = null;
-    if (payload.outPath) {
+    if (outPath) {
       const markdownIo = await loadMarkdownIoModule();
       writeResult = await queueDiskOperation(
-        () => markdownIo.writeMarkdownWithRecovery(payload.outPath, markdown, {
+        () => markdownIo.writeMarkdownWithRecovery(outPath, markdown, {
           maxSnapshots: payload.snapshotLimit,
           safetyMode: payload.safetyMode,
         }),
@@ -4259,7 +4363,7 @@ async function handleExportMarkdownV1(payloadRaw) {
         code: mappedCode,
         reason: mappedReason,
         safetyMode: payload.safetyMode,
-        targetPath: payload.outPath,
+        targetPath: outPath,
         snapshotPath: error && error.details && typeof error.details === 'object'
           ? error.details.snapshotPath
           : '',
