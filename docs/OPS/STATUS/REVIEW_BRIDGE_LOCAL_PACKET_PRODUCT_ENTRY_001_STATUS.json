@@ -1,9 +1,33 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_LOCAL_PACKET_PRODUCT_ENTRY_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "baseSha": "5acc7612f109153820e71ed3f474f211be213601",
   "branch": "codex/review-bridge-local-packet-entry-001",
+  "delivery": {
+    "featureCommitSha": "b3b10509efb3693f063e36c1917b3c34cfe79f31",
+    "featurePullRequest": 1009,
+    "featureMergeSha": "8f167269d2bb583f365351a8e4624ac2a0bd8974",
+    "featureMergedAtUtc": "2026-07-01T19:52:10Z",
+    "githubChecks": [
+      {
+        "name": "oss-policy",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "x1-runtime-parity (ubuntu-latest)",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "x1-runtime-parity (windows-latest)",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "ops_vector_close",
+        "result": "SUCCESS"
+      }
+    ]
+  },
   "scope": {
     "featureExpansion": false,
     "productEntry": true,
@@ -102,11 +126,30 @@
       {
         "command": "git diff --check",
         "result": "PASS"
+      },
+      {
+        "command": "node --test test/contracts/revision-bridge-review-packet-preview-contract.contract.test.js test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js",
+        "result": "PASS",
+        "tests": 28,
+        "phase": "postCommitCleanTree"
+      },
+      {
+        "command": "node --test test/contracts/revision-bridge-review-mutate-port.contract.test.js test/unit/sector-m-preload-ui-command-bridge.test.js test/unit/sector-m-command-kernel-shell-action-adoption.test.js test/contracts/menu-config-v2.contract.test.js test/unit/sector-m-runtime-command-id-canonicalization.test.js",
+        "result": "PASS",
+        "tests": 49,
+        "phase": "postMerge"
+      },
+      {
+        "command": "npm run -s build:renderer",
+        "result": "PASS",
+        "phase": "postMerge"
+      },
+      {
+        "command": "npm run -s oss:policy",
+        "result": "PASS",
+        "phase": "postMerge"
       }
-    ],
-    "knownDiagnostic": [
-      "Exact-apply changed-file allowlist tests were executed while this contour was still dirty and failed only on dirty-diff scope checks; their functional subtests passed. Rerun after delivery clean tree is required for final delivery report."
     ]
   },
-  "nextStep": "Complete delivery chain, rerun dirty-diff-sensitive checks on clean tree, then keep the next product contour explicit and owner-selected."
+  "nextStep": "Keep the next product contour explicit and owner-selected."
 }
