@@ -1,6 +1,6 @@
 # HANDOFF (Yalken Writer)
 
-_Generated: 2026-06-27_
+_Generated: 2026-07-01_
 
 ## Start Here
 - Active execution canon resolver: `docs/OPS/STATUS/CANON_STATUS.json`
@@ -32,7 +32,7 @@ _Generated: 2026-06-27_
 - Active axis: `Writer v1`
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
-- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, historical vertical sheets baseline, C05 long-document closeout, current 01R quarantine for tracked vertical sheet reds, editorial sheet 10000 committed stress evidence, and import/export MVP-scope closeout.
+- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, historical vertical sheets baseline, C05 long-document closeout, current 01R quarantine for tracked vertical sheet reds, editorial sheet 10000 committed stress evidence, import/export MVP-scope closeout, and review bridge exact-apply lane closeout.
 
 ## Local Machine State
 - This file describes a snapshot-bound mainline reality, not the forever-current state of the local machine.
@@ -49,6 +49,11 @@ _Generated: 2026-06-27_
 - Import/export MVP-scope closeout status is `FEATURE_CLOSED_FOR_MVP_SCOPE` for exactly DOCX export, DOCX import preview accept open-scene, Markdown import, and Markdown export Save As.
 - Mindmap remains derived runtime/status only; no user-facing Mindmap export command is claimed.
 - Import/export closeout does not claim release readiness, full npm test green, production picker coverage for Markdown export or DOCX import, full Word layout parity, broad format fidelity, PDF/EPUB/HTML export, cloud, sync, accounts, new dependencies, or user-facing Mindmap export.
+- Review bridge controlled multi exact apply is merged on current mainline via PR `1007` at merge SHA `b12ef9178a2e86a3ee758815758bc05dde70f8cc`.
+- Review bridge exact-apply lane closeout is bound by `REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001_STATUS.json`.
+- Review bridge exact-apply lane is closed for current MVP scope only: single exact text apply, duplicate/stale/dirty guards, and controlled same-scene batch exact apply.
+- Batch exact apply is all-or-none within one scene file and stays behind command bus, main-owned context, safe writer, recovery evidence, and intent-only renderer payload containing only `requestId` and `changeIds`.
+- Review bridge exact-apply lane closeout does not claim cross-scene batch atomicity, multi-file transaction truth, structural auto-apply, comment auto-apply, full review import automation, full import/export completion beyond the existing MVP closeout, full Word layout parity, PDF/EPUB/HTML export, user-facing Mindmap export command, release readiness, or Y9 admission.
 - Tiptap path is the primary editor path.
 - Phase 03 blocker is closed on main through the merged repair wave.
 - True Phase 04 design-layer baseline is closed on main through the merged repair wave.
