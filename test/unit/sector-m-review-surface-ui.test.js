@@ -240,6 +240,33 @@ function createReadyExactOnlyReviewSurfaceState() {
   return state;
 }
 
+function createValidReviewSurfaceReceipt(schemaVersion) {
+  return {
+    schemaVersion,
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    sceneId: 'scene-1',
+    changeId: 'change-1',
+    baselineHashBefore: 'baseline-1',
+    operationKind: 'replaceExactText',
+    writeStatus: 'applied',
+    backupId: '1700000000000',
+    writtenAt: '2023-11-14T22:13:20.000Z',
+    transactionId: 'tx_123',
+    inputHash: 'a'.repeat(64),
+    outputHash: 'b'.repeat(64),
+    bytesWritten: 18,
+    reason: 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_APPLIED',
+    recovery: {
+      snapshotCreated: true,
+      snapshotReadable: true,
+      snapshotHashMatchesInput: true,
+      snapshotPath: 'scene-1.recovery.bak.1700000000000',
+      recoveryAction: 'OPEN_SNAPSHOT_OR_ABORT',
+    },
+  };
+}
+
 function createCanonicalAdapterPayload() {
   const reviewPacket = {
     textChanges: [
@@ -400,30 +427,7 @@ test('review surface ui: canonical adapter payload preserves unsupported observa
 test('review surface ui: exact-text preview and receipt render only when supported by existing schema', () => {
   const helpers = loadReviewSurfaceHelpers();
   const validState = createReviewSurfaceState();
-  validState.receipt = {
-    schemaVersion: helpers.REVIEW_SURFACE_RECEIPT_SCHEMA,
-    projectId: 'project-1',
-    sessionId: 'session-1',
-    sceneId: 'scene-1',
-    changeId: 'change-1',
-    baselineHashBefore: 'baseline-1',
-    operationKind: 'replaceExactText',
-    writeStatus: 'applied',
-    backupId: '1700000000000',
-    writtenAt: '2023-11-14T22:13:20.000Z',
-    transactionId: 'tx_123',
-    inputHash: 'a'.repeat(64),
-    outputHash: 'b'.repeat(64),
-    bytesWritten: 18,
-    reason: 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_APPLIED',
-    recovery: {
-      snapshotCreated: true,
-      snapshotReadable: true,
-      snapshotHashMatchesInput: true,
-      snapshotPath: 'scene-1.recovery.bak.1700000000000',
-      recoveryAction: 'OPEN_SNAPSHOT_OR_ABORT',
-    },
-  };
+  validState.receipt = createValidReviewSurfaceReceipt(helpers.REVIEW_SURFACE_RECEIPT_SCHEMA);
 
   const validViewModel = helpers.buildReviewSurfaceViewModel(validState);
   const validMarkup = helpers.renderReviewSurfaceMarkup(validViewModel);
@@ -505,6 +509,22 @@ test('review surface ui: ready exact-text preview exposes one visible apply acti
     JSON.stringify(helpers.reviewSurfaceBuildExactTextApplyPayload('', 'change-1')),
     JSON.stringify({ changeId: 'change-1' }),
   );
+});
+
+test('review surface ui: applied exact-text preview disables repeat apply from main receipt evidence', () => {
+  const helpers = loadReviewSurfaceHelpers();
+  const state = createReadyExactOnlyReviewSurfaceState();
+  state.receipt = createValidReviewSurfaceReceipt(helpers.REVIEW_SURFACE_RECEIPT_SCHEMA);
+
+  const viewModel = helpers.buildReviewSurfaceViewModel(state);
+  const markup = helpers.renderReviewSurfaceMarkup(viewModel);
+
+  assert.equal(viewModel.exactTextPreview.ops.length, 1);
+  assert.equal(viewModel.exactTextPreview.ops[0].applyState, 'applied');
+  assert.equal(viewModel.exactTextPreview.ops[0].applyLabel, 'применено');
+  assert.equal(viewModel.exactTextPreview.ops[0].applyDisabled, true);
+  assert.ok(markup.includes('>применено</button>'));
+  assert.ok(markup.includes('disabled aria-disabled="true"'));
 });
 
 test('review surface ui: non-single exact preview never renders an enabled apply action', () => {
@@ -590,6 +610,25 @@ test('review surface ui: exact apply click sends intent-only payload and adopts 
   assert.equal(harness.stateCalls[0].nextState.receipt.writeStatus, 'applied');
 });
 
+test('review surface ui: disabled applied button does not send repeat apply command', async () => {
+  const harness = loadReviewSurfaceClickHarness({
+    ok: false,
+    value: {
+      ok: false,
+      error: {
+        reason: 'REVIEW_EXACT_TEXT_APPLY_ALREADY_APPLIED',
+      },
+    },
+  });
+  harness.fakeButton.disabled = true;
+
+  await harness.click();
+
+  assert.equal(harness.bridgeCalls.length, 0);
+  assert.equal(harness.stateCalls.length, 0);
+  assert.equal(harness.getTransientState(), null);
+});
+
 test('review surface ui: exact apply click failure stays local and does not invent receipt truth', async () => {
   const harness = loadReviewSurfaceClickHarness({
     ok: false,
@@ -610,6 +649,44 @@ test('review surface ui: exact apply click failure stays local and does not inve
   assert.equal(harness.getTransientState().changeId, 'change-1');
   assert.equal(harness.getTransientState().reason, 'REVIEW_EXACT_TEXT_APPLY_DIRTY_EDITOR_BLOCKED');
   assert.equal(harness.getRenderCount() >= 2, true);
+});
+
+test('review surface ui: stale no-match exact apply response is blocked instead of transient failed', async () => {
+  const harness = loadReviewSurfaceClickHarness({
+    ok: false,
+    value: {
+      ok: false,
+      error: {
+        reason: 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH',
+      },
+    },
+  });
+
+  await harness.click();
+
+  assert.equal(harness.bridgeCalls.length, 1);
+  assert.equal(harness.stateCalls.length, 0);
+  assert.equal(harness.getTransientState().state, 'blocked');
+  assert.equal(harness.getTransientState().reason, 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH');
+});
+
+test('review surface ui: transient exact apply failure remains failed instead of blocked', async () => {
+  const harness = loadReviewSurfaceClickHarness({
+    ok: false,
+    value: {
+      ok: false,
+      error: {
+        reason: 'REVIEW_SURFACE_TRANSPORT_TIMEOUT',
+      },
+    },
+  });
+
+  await harness.click();
+
+  assert.equal(harness.bridgeCalls.length, 1);
+  assert.equal(harness.stateCalls.length, 0);
+  assert.equal(harness.getTransientState().state, 'failed');
+  assert.equal(harness.getTransientState().reason, 'REVIEW_SURFACE_TRANSPORT_TIMEOUT');
 });
 
 test('review surface ui: empty and error states stay deterministic', () => {
