@@ -64,7 +64,7 @@
 - This closeout does not claim cross-scene batch atomicity, multi-file transaction truth, structural auto-apply, comment auto-apply, full review import automation, full import/export completion beyond the existing MVP closeout, full Word layout parity, PDF/EPUB/HTML export, user-facing Mindmap export command, release readiness, or Y9 admission.
 - The DOCX review preflight command itself still does not claim review packet activation or automatic Review session opening; activation is owned by the separate preview-session contour.
 - The DOCX review preview session activation contour does not claim full DOCX review import, tracked-change apply, exact apply, structural apply, comment auto-apply, receipt or recovery creation, Word layout parity, or broad DOCX fidelity.
-- Word evidence claim binding contour is implemented and locally verified pending delivery; it is tracked by `REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001_STATUS.json`.
+- Word evidence claim binding contour is delivered and merged; it is tracked by `REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001_STATUS.json`.
 - The Word evidence claim binding product-binds the existing `CONTOUR_10_WORD_EVIDENCE_CHECK_R2` gate: a claim can be accepted only when a valid Word evidence packet exists, the evidence hash matches, and requested coverage does not exceed packet coverage.
 - This Word evidence claim binding is not Word support: no Word support, Word import, Word roundtrip, Word layout parity, full DOCX fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, or import/export MVP widening is claimed.
 

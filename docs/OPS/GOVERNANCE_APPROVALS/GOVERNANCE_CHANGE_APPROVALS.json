@@ -3,7 +3,7 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001_STATUS.json",
-      "sha256": "715a5bcab302dc97656b6a7af85c0998b4150739079898411a080a8a437b9a3c",
+      "sha256": "5ef412eba6949015dfe946bade152e71c765768405cb45038e02e69895e8dd69",
       "approvedBy": "ticket:REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
       "rationale": "Approve bounded Word evidence claim binding status; it product-binds the existing Word evidence claim gate while preserving no Word support, no Word import, no Word roundtrip, no Word layout parity, no full DOCX fidelity, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no release readiness, no dependency, and no Y9 claim."
