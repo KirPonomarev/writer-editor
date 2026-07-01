@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 const vm = require('node:vm');
 const crypto = require('node:crypto');
@@ -9,6 +10,7 @@ const { pathToFileURL } = require('node:url');
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const MAIN_PATH = path.join(REPO_ROOT, 'src', 'main.js');
 const BRIDGE_MODULE_PATH = path.join(REPO_ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
+const EXACT_SAFE_WRITE_MODULE_PATH = path.join(REPO_ROOT, 'src', 'io', 'revisionBridge', 'exactTextMinSafeWrite.mjs');
 const SECTION_START = '// CONTOUR_01A_REVIEW_MUTATE_PORT_START';
 const SECTION_END = '// CONTOUR_01A_REVIEW_MUTATE_PORT_END';
 
@@ -44,6 +46,21 @@ function computeHash(text) {
 
 async function loadBridge() {
   return import(pathToFileURL(BRIDGE_MODULE_PATH).href);
+}
+
+async function loadExactSafeWrite() {
+  return import(pathToFileURL(EXACT_SAFE_WRITE_MODULE_PATH).href);
+}
+
+function tmpScene(text) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'rb-review-mutate-port-'));
+  const scenePath = path.join(dir, 'scene.txt');
+  fs.writeFileSync(scenePath, text, 'utf8');
+  return { dir, scenePath };
+}
+
+function readText(filePath) {
+  return fs.readFileSync(filePath, 'utf8');
 }
 
 function validThread(body = 'Tighten this sentence.') {
@@ -137,6 +154,84 @@ function validDiagnosticItem() {
     },
     relatedItemId: 'structural-change-1',
     createdAt: '2026-04-24T08:04:00.000Z',
+  };
+}
+
+function validExactApplyRevisionSession({
+  projectId = 'project-1',
+  sessionId = 'session-1',
+  baselineHash = 'baseline-1',
+  sceneId = 'scene-1',
+  quote = 'beta',
+  replacementText = 'delta',
+  textChanges,
+  structuralChanges = [],
+  commentThreads = [],
+  commentPlacements = [],
+  status = 'open',
+} = {}) {
+  return {
+    projectId,
+    sessionId,
+    baselineHash,
+    status,
+    reviewGraph: {
+      commentThreads,
+      commentPlacements,
+      textChanges: textChanges || [
+        {
+          changeId: 'text-change-1',
+          targetScope: {
+            type: 'scene',
+            id: sceneId,
+          },
+          match: {
+            kind: 'exact',
+            quote,
+            prefix: '',
+            suffix: '',
+          },
+          replacementText,
+          createdAt: '2026-04-24T08:02:00.000Z',
+        },
+      ],
+      structuralChanges,
+      diagnosticItems: [],
+      decisionStates: [],
+    },
+  };
+}
+
+async function buildReadyExactApplyInput({ scenePath, sceneText, revisionSession }) {
+  const bridge = await loadBridge();
+  const sceneId = revisionSession.reviewGraph.textChanges[0].targetScope.id;
+  const projectSnapshot = {
+    projectId: revisionSession.projectId,
+    baselineHash: revisionSession.baselineHash,
+    scenes: [
+      {
+        sceneId,
+        text: sceneText,
+      },
+    ],
+  };
+  const reviewItem = revisionSession.reviewGraph.textChanges[0];
+  const planPreview = bridge.buildExactTextApplyPlanNoDiskPreview({
+    projectSnapshot,
+    revisionSession,
+    reviewItem,
+  });
+  assert.equal(planPreview.status, 'ready');
+  return {
+    projectRoot: path.dirname(scenePath),
+    projectSnapshot,
+    revisionSession,
+    reviewItem,
+    planPreview,
+    scenePath,
+    scenePathBySceneId: {
+      [sceneId]: scenePath,
+    },
   };
 }
 
@@ -351,6 +446,7 @@ test('review mutate port contract: import builds Stage01 preview surface from re
     'authorization',
   ]), []);
   assert.equal(state.activeReviewSessionLifecycle, 'active');
+  assert.equal(state.activeReviewSessionStore.currentBaselineHash, 'baseline-b');
   assert.deepEqual(normalizeVmValue(state.currentReviewSurfacePayload), reviewSurface);
   assert.equal(state.currentReviewSurfacePayloadSource, 'session');
   assert.equal(state.currentReviewSurfacePayloadContentHash, '');
@@ -425,13 +521,13 @@ test('review mutate port contract: missing Stage01 builder fails closed as typed
   assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
 });
 
-test('review mutate port contract: preview import section stays storage-free', () => {
+test('review mutate port contract: preview import path stays storage-free while apply delegates through safe writer', () => {
   const section = extractMarkedSection(readMainSource(), SECTION_START, SECTION_END);
+  const previewOnlySection = section.slice(0, section.indexOf('const REVIEW_EXACT_TEXT_APPLY_COMMAND_ID'));
   const forbiddenRuntimeCalls = [
     'writeFileAtomic',
     'writeFlowSceneBatchAtomic',
     'writeBufferAtomic',
-    'exactTextMinSafeWrite',
     'ensureProjectManifest',
     'resolveProjectBindingForFile',
     'docxMin',
@@ -445,8 +541,53 @@ test('review mutate port contract: preview import section stays storage-free', (
   ];
 
   for (const forbidden of forbiddenRuntimeCalls) {
-    assert.equal(section.includes(forbidden), false, `${forbidden} must stay out of review packet preview import`);
+    assert.equal(previewOnlySection.includes(forbidden), false, `${forbidden} must stay out of review packet preview import`);
   }
+
+  const forbiddenDirectWriteCalls = [
+    'writeFileAtomic',
+    'writeFlowSceneBatchAtomic',
+    'writeBufferAtomic',
+    'fileManager.writeFileAtomic',
+    'fs.',
+    'readFile',
+    'writeFile',
+  ];
+  for (const forbidden of forbiddenDirectWriteCalls) {
+    assert.equal(section.includes(forbidden), false, `${forbidden} must stay out of review mutate port section`);
+  }
+
+  for (const forbiddenPayloadAccess of [
+    /payload\s*\.\s*scenePath/u,
+    /payload\s*\.\s*projectRoot/u,
+    /payload\s*\.\s*scenePathBySceneId/u,
+    /payload\s*\.\s*projectSnapshot/u,
+    /payload\s*\.\s*planPreview/u,
+    /payload\s*\.\s*plan/u,
+    /payload\s*\.\s*applyOps/u,
+    /payload\s*\.\s*receipt/u,
+  ]) {
+    assert.equal(forbiddenPayloadAccess.test(section), false, `${forbiddenPayloadAccess} must not be renderer authority`);
+  }
+});
+
+test('review mutate port contract: main apply context is main-owned and never renderer snapshot-owned', () => {
+  const source = readMainSource();
+  const start = source.indexOf('async function buildReviewExactTextApplyInputFromMainState');
+  const end = source.indexOf('function mapMarkdownErrorCode', start);
+  assert.ok(start > -1 && end > start, 'main-owned apply context builder must exist');
+  const snippet = source.slice(start, end);
+
+  assert.equal(snippet.includes('requestEditorSnapshot'), false);
+  assert.equal(snippet.includes('readCurrentReviewSurfaceSourceText'), false);
+  assert.equal(snippet.includes('buildDerivedReviewSurfacePayload'), false);
+  assert.equal(snippet.includes('payload.scenePath'), false);
+  assert.equal(snippet.includes('payload.projectRoot'), false);
+  assert.equal(snippet.includes('payload.projectSnapshot'), false);
+  assert.equal(snippet.includes('fs.readFile(currentFilePath, \'utf8\')'), true);
+  assert.equal(snippet.includes('isDirty || autoSaveInProgress'), true);
+  assert.equal(snippet.includes('buildExactTextApplyPlanNoDiskPreview'), true);
+  assert.equal(snippet.includes('scenePathBySceneId'), true);
 });
 
 test('review mutate port contract: import rejects payload without required metadata', async () => {
@@ -496,22 +637,187 @@ test('review mutate port contract: clear closes active session and read returns 
   assert.deepEqual(normalizeVmValue(port.readActiveReviewSessionReviewSurface()), {});
 });
 
-test('review mutate port contract: reserved apply stays typed disabled until contour 04', () => {
+test('review mutate port contract: apply exact text requires active session and rejects renderer authority fields', async () => {
   const port = instantiateReviewMutatePort();
 
-  const result = port.handleReviewSurfaceApplyExactTextChangeCommandSurface({
+  const noSession = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({
     projectId: 'project-1',
   });
 
-  assert.deepEqual(normalizeVmValue(result), {
+  assert.deepEqual(normalizeVmValue(noSession), {
     ok: false,
     error: {
-      code: 'E_REVIEW_EXACT_TEXT_CHANGE_NOT_ENABLED',
+      code: 'E_REVIEW_EXACT_TEXT_APPLY_PAYLOAD_INVALID',
       op: 'cmd.project.review.applyExactTextChange',
-      reason: 'REVIEW_EXACT_TEXT_CHANGE_NOT_ENABLED',
+      reason: 'REVIEW_EXACT_TEXT_APPLY_PAYLOAD_UNSUPPORTED_FIELDS',
       details: {
-        status: 'RESERVED_UNTIL_CONTOUR_04',
+        fields: ['projectId'],
       },
     },
   });
+
+  const rendererAuthority = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({
+    scenePath: '/tmp/renderer-owned.txt',
+    projectId: 'project-1',
+  });
+
+  assert.deepEqual(normalizeVmValue(rendererAuthority), {
+    ok: false,
+    error: {
+      code: 'E_REVIEW_EXACT_TEXT_APPLY_PAYLOAD_INVALID',
+      op: 'cmd.project.review.applyExactTextChange',
+      reason: 'REVIEW_EXACT_TEXT_APPLY_RENDERER_AUTHORITY_DENIED',
+      details: {
+        fields: ['scenePath'],
+      },
+    },
+  });
+
+  const emptyPayload = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({});
+  assert.equal(emptyPayload.ok, false);
+  assert.equal(emptyPayload.error.code, 'E_REVIEW_EXACT_TEXT_APPLY_NO_ACTIVE_SESSION');
+  assert.equal(emptyPayload.error.reason, 'REVIEW_EXACT_TEXT_APPLY_NO_ACTIVE_SESSION');
+});
+
+test('review mutate port contract: apply exact text writes through safe core and exposes receipt on review surface', async () => {
+  const port = instantiateReviewMutatePort();
+  const { scenePath } = tmpScene('Alpha beta gamma.');
+  const revisionSession = validExactApplyRevisionSession({ sceneId: scenePath });
+  const applyInput = await buildReadyExactApplyInput({
+    scenePath,
+    sceneText: 'Alpha beta gamma.',
+    revisionSession,
+  });
+
+  const importResult = await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-1',
+    reviewSurface: {
+      revisionSession,
+      summary: { total: 1 },
+    },
+    revisionSession,
+    sourcePacketHash: 'packet-hash-apply-1',
+    createdAt: '2026-05-24T12:00:00.000Z',
+  });
+  assert.equal(importResult.ok, true);
+
+  const result = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface(
+    { changeId: 'text-change-1' },
+    {
+      buildReviewExactTextApplyInput: async () => ({ ok: true, input: applyInput }),
+      loadExactTextMinSafeWriteModule: loadExactSafeWrite,
+      safeWriteOptions: { now: () => 1700000000000 },
+    },
+  );
+
+  const value = normalizeVmValue(result);
+  const state = normalizeVmValue(port.getState());
+
+  assert.equal(value.ok, true);
+  assert.equal(value.applied, true);
+  assert.equal(readText(scenePath), 'Alpha delta gamma.');
+  assert.equal(value.receipt.projectId, 'project-1');
+  assert.equal(value.receipt.sessionId, 'session-1');
+  assert.equal(value.receipt.sceneId, scenePath);
+  assert.equal(value.receipt.changeId, 'text-change-1');
+  assert.equal(value.receipt.writeStatus, 'applied');
+  assert.equal(value.reviewSurface.receipt.transactionId, value.receipt.transactionId);
+  assert.equal(value.reviewSurface.exactTextApplyResult.applied, true);
+  assert.equal(value.reviewSurface.exactTextApplyResult.status, 'applied');
+  assert.equal(state.currentReviewSurfacePayloadSource, 'session');
+  assert.equal(state.currentReviewSurfacePayload.receipt.transactionId, value.receipt.transactionId);
+  assert.equal(normalizeVmValue(port.readActiveReviewSessionReviewSurface()).receipt.transactionId, value.receipt.transactionId);
+});
+
+test('review mutate port contract: apply exact text blocks structural and multi-change sessions before write context', async () => {
+  const port = instantiateReviewMutatePort();
+  const buildContext = async () => {
+    throw new Error('context builder must not be called');
+  };
+
+  await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-1',
+    reviewSurface: { summary: { total: 1 } },
+    revisionSession: validExactApplyRevisionSession({
+      structuralChanges: [{ structuralChangeId: 'structural-1', kind: 'split-scene' }],
+    }),
+  });
+  const structural = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({}, {
+    buildReviewExactTextApplyInput: buildContext,
+    loadExactTextMinSafeWriteModule: loadExactSafeWrite,
+  });
+  assert.equal(structural.ok, false);
+  assert.equal(structural.error.reason, 'REVIEW_EXACT_TEXT_APPLY_STRUCTURAL_CHANGE_BLOCKED');
+
+  await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-2',
+    baselineHash: 'baseline-1',
+    reviewSurface: { summary: { total: 2 } },
+    revisionSession: validExactApplyRevisionSession({
+      textChanges: [
+        validTextChange(),
+        {
+          ...validTextChange(),
+          changeId: 'text-change-2',
+          match: { kind: 'exact', quote: 'another', prefix: '', suffix: '' },
+          replacementText: 'other',
+        },
+      ],
+    }),
+  });
+  const multi = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({}, {
+    buildReviewExactTextApplyInput: buildContext,
+    loadExactTextMinSafeWriteModule: loadExactSafeWrite,
+  });
+  assert.equal(multi.ok, false);
+  assert.equal(multi.error.reason, 'REVIEW_EXACT_TEXT_APPLY_SINGLE_TEXT_CHANGE_REQUIRED');
+});
+
+test('review mutate port contract: blocked safe-write result does not attach receipt', async () => {
+  const port = instantiateReviewMutatePort();
+
+  await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-1',
+    reviewSurface: {
+      summary: { total: 1 },
+    },
+    revisionSession: validExactApplyRevisionSession(),
+  });
+
+  const result = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({}, {
+    buildReviewExactTextApplyInput: async () => ({ ok: true, input: { fake: true } }),
+    loadExactTextMinSafeWriteModule: async () => ({
+      applyExactTextMinSafeWrite: async () => ({
+        ok: false,
+        status: 'blocked',
+        code: 'E_FAKE_BLOCKED',
+        reason: 'FAKE_BLOCKED_REASON',
+        applied: false,
+        reasons: [
+          {
+            code: 'FAKE_BLOCKED_REASON',
+            field: 'scenePath',
+            message: 'blocked in test',
+          },
+        ],
+      }),
+    }),
+  });
+  const state = normalizeVmValue(port.getState());
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_FAKE_BLOCKED');
+  assert.equal(result.error.reason, 'FAKE_BLOCKED_REASON');
+  assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'receipt'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(
+    normalizeVmValue(port.readActiveReviewSessionReviewSurface()),
+    'receipt',
+  ), false);
 });
