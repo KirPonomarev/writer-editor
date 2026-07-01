@@ -8,7 +8,26 @@ const { pathToFileURL } = require('node:url');
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-format-matrix-claim-gate.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH];
+const WORD_EVIDENCE_TEST_PATH = 'test/contracts/revision-bridge-word-evidence-check.contract.test.js';
+const GOOGLE_DOCS_EVIDENCE_TEST_PATH = 'test/contracts/revision-bridge-google-docs-evidence-check.contract.test.js';
+const CLAIM_BINDING_TEST_PATH = 'test/contracts/review-bridge-format-matrix-claim-binding.contract.test.js';
+const CLAIM_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001_STATUS.json';
+const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
+const CONTEXT_PATH = 'docs/CONTEXT.md';
+const HANDOFF_PATH = 'docs/HANDOFF.md';
+const WORKLOG_PATH = 'docs/WORKLOG.md';
+const ALLOWLIST = [
+  MODULE_PATH,
+  TEST_PATH,
+  WORD_EVIDENCE_TEST_PATH,
+  GOOGLE_DOCS_EVIDENCE_TEST_PATH,
+  CLAIM_BINDING_TEST_PATH,
+  CLAIM_BINDING_STATUS_PATH,
+  GOVERNANCE_APPROVALS_PATH,
+  CONTEXT_PATH,
+  HANDOFF_PATH,
+  WORKLOG_PATH,
+];
 
 async function loadBridge() {
   return import(pathToFileURL(path.join(REPO_ROOT, MODULE_PATH)).href);

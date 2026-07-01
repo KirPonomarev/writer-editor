@@ -1,6 +1,6 @@
 # HANDOFF (Yalken Writer)
 
-_Generated: 2026-07-01_
+_Generated: 2026-07-02_
 
 ## Start Here
 - Active execution canon resolver: `docs/OPS/STATUS/CANON_STATUS.json`
@@ -83,6 +83,9 @@ _Generated: 2026-07-01_
 - Google Docs evidence claim binding contour is delivered and merged; it is tracked by `REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001_STATUS.json`.
 - The contour product-binds the existing `CONTOUR_11_GOOGLE_DOCS_EVIDENCE_CHECK` gate: a Google Docs evidence claim can pass only with a valid packet, matching evidence hash, coverage not wider than packet coverage, and both docsSuggestions and driveComments coverage.
 - This is not Google Docs support: no Google Docs support, Google Docs import, Google Docs sync, Google Docs roundtrip, Google Docs layout parity, full Google Docs fidelity, Google API integration, network access, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, or import/export MVP widening is claimed.
+- Format matrix claim binding contour is implemented and locally verified pending delivery; it is tracked by `REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001_STATUS.json`.
+- The contour product-binds the existing `CONTOUR_12_FORMAT_MATRIX_CLAIM_GATE`: a format matrix claim can pass only with a valid matrix, valid golden set, matching row, matching formatId and surface, matching golden set hash, complete requiredTests, and claimScope within the selected row surface.
+- This is not format support: no new user-facing format support, import support, export support, roundtrip, layout parity, full fidelity, release claim dossier acceptance, release readiness, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, or import/export MVP widening is claimed.
 - Tiptap path is the primary editor path.
 - Phase 03 blocker is closed on main through the merged repair wave.
 - True Phase 04 design-layer baseline is closed on main through the merged repair wave.
