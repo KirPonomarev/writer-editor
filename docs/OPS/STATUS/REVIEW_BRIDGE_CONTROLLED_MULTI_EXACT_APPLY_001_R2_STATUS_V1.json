@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_CONTROLLED_MULTI_EXACT_APPLY_001_R2",
+  "status": "implemented_verified_pending_delivery",
+  "contour": "controlled_multi_exact_apply",
+  "scope": {
+    "enabledCommand": "cmd.project.review.applyExactTextChangesBatch",
+    "singleApplyCommandPreserved": true,
+    "singleSceneOnly": true,
+    "crossSceneBatchAtomicity": false,
+    "allOrNoneWithinOneSceneFile": true,
+    "partialSuccessAllowed": false,
+    "rendererWriteAuthority": false,
+    "structuralApply": false,
+    "commentApply": false,
+    "newDependencies": false,
+    "receiptIsProjectTruth": false
+  },
+  "canonBinding": {
+    "primaryTruth": "project file text plus main-owned revision session",
+    "uiTruth": "review surface render state only",
+    "writeBoundary": "one scene file, one transactional markdown write, one recovery snapshot",
+    "blockedScope": "cross-scene batch apply remains closed until canon admits multi-file transaction truth"
+  },
+  "implementation": {
+    "mainOwnedContext": true,
+    "intentOnlyRendererPayload": true,
+    "batchPayloadKeys": [
+      "requestId",
+      "changeIds"
+    ],
+    "dirtyEditorBlocked": true,
+    "dirtyStateRecheckedInsideDiskQueue": true,
+    "safeWriteSerializedThroughDiskQueue": true,
+    "currentFileReadFromDisk": true,
+    "singleSceneGuardBeforeSafeWriter": true,
+    "batchSafeWriterUsed": true,
+    "recoverySnapshotRequiredBeforeWrite": true,
+    "appliedEvidenceStoredAsBatchResult": true,
+    "singularReceiptNotInventedForBatch": true
+  },
+  "acceptance": {
+    "sameSceneMultipleExactChangesApply": "pass",
+    "staleMemberBlocksWholeBatch": "pass",
+    "crossSceneRequestFailsClosed": "pass",
+    "rendererAuthorityFieldsRejected": "pass",
+    "uiBatchActionIntentOnly": "pass",
+    "legacySingleApplyStillCovered": "pass"
+  },
+  "machineChecks": [
+    {
+      "command": "npm run -s build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "node --check src/main.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --check src/io/revisionBridge/exactTextMinSafeWrite.mjs",
+      "status": "pass"
+    },
+    {
+      "command": "node --test test/unit/sector-m-review-surface-ui.test.js test/unit/sector-m-preload-ui-command-bridge.test.js",
+      "status": "pass",
+      "tests": 25
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-review-mutate-port.contract.test.js",
+      "status": "pass",
+      "tests": 22
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",
+      "status": "pass",
+      "tests": 13
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js",
+      "status": "pass",
+      "tests": 7
+    },
+    {
+      "command": "node --test test/unit/sector-m-preload-workspace-query-bridge.test.js test/contracts/command-surface-bus-only.contract.test.js",
+      "status": "pass",
+      "tests": 18
+    },
+    {
+      "command": "node --test docx command-surface smoke set",
+      "status": "pass",
+      "tests": 26
+    },
+    {
+      "command": "node --test markdown import export smoke set",
+      "status": "pass",
+      "tests": 24
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "readOnlyAgents": [
+    {
+      "role": "skeptic",
+      "verdict": "pass_no_blockers"
+    }
+  ],
+  "nextStep": "run_targeted_contracts_policy_checks_commit_push_pr_merge"
+}

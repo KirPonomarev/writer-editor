@@ -22,6 +22,12 @@ const MAIN_PATH = 'src/main.js';
 const MARKDOWN_EXPORT_GUARD_TEST_PATH = 'test/contracts/export-contour-02-markdown-text-hardening.contract.test.js';
 const REVIEW_MUTATE_PORT_TEST_PATH = 'test/contracts/revision-bridge-review-mutate-port.contract.test.js';
 const WORKSPACE_QUERY_BRIDGE_TEST_PATH = 'test/unit/sector-m-preload-workspace-query-bridge.test.js';
+const REVIEW_SURFACE_UI_TEST_PATH = 'test/unit/sector-m-review-surface-ui.test.js';
+const PRELOAD_UI_COMMAND_BRIDGE_TEST_PATH = 'test/unit/sector-m-preload-ui-command-bridge.test.js';
+const RENDERER_EDITOR_PATH = 'src/renderer/editor.js';
+const RENDERER_EDITOR_BUNDLE_PATH = 'src/renderer/editor.bundle.js';
+const CONTROLLED_MULTI_STATUS_PACKET_PATH =
+  'docs/OPS/STATUS/REVIEW_BRIDGE_CONTROLLED_MULTI_EXACT_APPLY_001_R2_STATUS_V1.json';
 const ALLOWLIST = [
   MODULE_PATH,
   MAIN_PATH,
@@ -38,6 +44,11 @@ const ALLOWLIST = [
   MARKDOWN_EXPORT_GUARD_TEST_PATH,
   REVIEW_MUTATE_PORT_TEST_PATH,
   WORKSPACE_QUERY_BRIDGE_TEST_PATH,
+  REVIEW_SURFACE_UI_TEST_PATH,
+  PRELOAD_UI_COMMAND_BRIDGE_TEST_PATH,
+  RENDERER_EDITOR_PATH,
+  RENDERER_EDITOR_BUNDLE_PATH,
+  CONTROLLED_MULTI_STATUS_PACKET_PATH,
 ];
 
 async function loadC04() {
@@ -144,6 +155,38 @@ async function readyInput({ sceneText = 'Alpha beta gamma.', revisionSession, pr
   };
 }
 
+function readyBatchInput({ sceneText = 'Alpha beta gamma omega.', revisionSession, projectSnapshot, scenePath } = {}) {
+  const sceneId = 'scene-1';
+  const textChanges = [
+    {
+      changeId: 'change-1',
+      targetScope: { type: 'scene', id: sceneId },
+      match: { kind: 'exact', quote: 'beta', prefix: '', suffix: '' },
+      replacementText: 'delta',
+      createdAt: '2026-05-14T08:00:00.000Z',
+    },
+    {
+      changeId: 'change-2',
+      targetScope: { type: 'scene', id: sceneId },
+      match: { kind: 'exact', quote: 'omega', prefix: '', suffix: '' },
+      replacementText: 'sigma',
+      createdAt: '2026-05-14T08:01:00.000Z',
+    },
+  ];
+  const session = revisionSession || validRevisionSession({ textChanges });
+  const snapshot = projectSnapshot || validProjectSnapshot({ sceneId, sceneText });
+  return {
+    projectRoot: path.dirname(scenePath),
+    projectSnapshot: snapshot,
+    revisionSession: session,
+    reviewItems: session.reviewGraph.textChanges,
+    scenePath,
+    scenePathBySceneId: {
+      [sceneId]: scenePath,
+    },
+  };
+}
+
 function changedFilesFromGitStatus(statusText) {
   return statusText
     .split('\n')
@@ -169,6 +212,20 @@ function assertTruthfulReceipt(receipt, scenePath, expectedText, originalText = 
   assert.equal(receipt.baselineHashBefore, 'baseline-1');
   assert.equal(receipt.operationKind, 'replaceExactText');
   assert.equal(receipt.writeStatus, 'applied');
+  assert.equal(receipt.backupId, backupIdFromSnapshotPath(receipt.recovery.snapshotPath));
+  assert.match(receipt.writtenAt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u);
+  assert.equal(receipt.bytesWritten, Buffer.byteLength(expectedText, 'utf8'));
+  assert.equal(receipt.outputHash, sha256Text(expectedText));
+  assert.equal(readText(scenePath), expectedText);
+  assertTruthfulRecoveryEvidence(receipt.recovery, originalText);
+}
+
+function assertTruthfulBatchReceipt(receipt, scenePath, expectedText, originalText = 'Alpha beta gamma omega.') {
+  assert.equal(receipt.reason, 'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_APPLIED');
+  assert.equal(receipt.baselineHashBefore, 'baseline-1');
+  assert.equal(receipt.operationKind, 'replaceExactTextBatch');
+  assert.equal(receipt.writeStatus, 'applied');
+  assert.deepEqual(receipt.changeIds, ['change-1', 'change-2']);
   assert.equal(receipt.backupId, backupIdFromSnapshotPath(receipt.recovery.snapshotPath));
   assert.match(receipt.writtenAt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u);
   assert.equal(receipt.bytesWritten, Buffer.byteLength(expectedText, 'utf8'));
@@ -206,6 +263,58 @@ test('C04 exact text min safe write applies one replacement and returns receipt 
   assert.equal(result.receipt.reason, 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_APPLIED');
   assert.match(result.receipt.inputHash, /^[a-f0-9]{64}$/u);
   assert.match(result.receipt.outputHash, /^[a-f0-9]{64}$/u);
+});
+
+test('C04 batch exact text min safe write applies same-scene replacements all-or-none', async () => {
+  const c04 = await loadC04();
+  const { scenePath } = tmpScene('Alpha beta gamma omega.');
+  const input = readyBatchInput({ scenePath });
+
+  const result = await c04.applyExactTextBatchMinSafeWrite(input, { now: () => 1700000010000 });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.type, 'revisionBridge.exactTextBatchMinSafeWrite');
+  assert.equal(result.status, 'applied');
+  assert.equal(result.applied, true);
+  assert.equal(result.receipt.schemaVersion, c04.REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_RECEIPT_SCHEMA);
+  assert.equal(result.receipt.projectId, 'project-1');
+  assert.equal(result.receipt.sessionId, 'session-1');
+  assert.equal(result.receipt.sceneId, 'scene-1');
+  assert.deepEqual(result.receipt.changeIds, ['change-1', 'change-2']);
+  assert.deepEqual(result.changes.map((change) => change.status), ['applied', 'applied']);
+  assert.deepEqual(result.operations.map((operation) => operation.changeId), ['change-1', 'change-2']);
+  assertTruthfulBatchReceipt(result.receipt, scenePath, 'Alpha delta gamma sigma.');
+});
+
+test('C04 batch exact text min safe write blocks stale member with zero writes', async () => {
+  const c04 = await loadC04();
+  const { scenePath } = tmpScene('Alpha beta gamma omega.');
+  const input = readyBatchInput({ scenePath });
+  input.reviewItems[1].match.quote = 'missing';
+
+  const result = await c04.applyExactTextBatchMinSafeWrite(input, { now: () => 1700000011000 });
+
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.applied, false);
+  assert.equal(result.receipt, null);
+  assert.equal(result.reason, 'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_CURRENT_NO_MATCH');
+  assert.equal(result.reasons[0].changeId, 'change-2');
+  assert.equal(readText(scenePath), 'Alpha beta gamma omega.');
+});
+
+test('C04 batch exact text min safe write blocks cross-scene requests with zero writes', async () => {
+  const c04 = await loadC04();
+  const { scenePath } = tmpScene('Alpha beta gamma omega.');
+  const input = readyBatchInput({ scenePath });
+  input.reviewItems[1].targetScope = { type: 'scene', id: 'scene-2' };
+
+  const result = await c04.applyExactTextBatchMinSafeWrite(input);
+
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.applied, false);
+  assert.equal(result.receipt, null);
+  assert.equal(result.reason, 'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_SINGLE_SCENE_REQUIRED');
+  assert.equal(readText(scenePath), 'Alpha beta gamma omega.');
 });
 
 test('C04 inherited C03 block matrix performs zero writes', async () => {

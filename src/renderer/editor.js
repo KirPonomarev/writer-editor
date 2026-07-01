@@ -489,6 +489,8 @@ function isPlainObject(value) {
 const REVIEW_SURFACE_RECEIPT_SCHEMA = 'revision-bridge.exact-text-min-safe-write.receipt.v1';
 const REVIEW_SURFACE_QUERY_ID = 'query.reviewSurface';
 const REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID = 'cmd.project.review.applyExactTextChange';
+const REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID = 'cmd.project.review.applyExactTextChangesBatch';
+const REVIEW_SURFACE_EXACT_APPLY_BATCH_MAX_CHANGE_IDS = 10;
 const REVIEW_SURFACE_EXACT_APPLY_TRANSIENT_STATES = Object.freeze(['ready', 'applying', 'applied', 'blocked', 'failed']);
 const REVIEW_SURFACE_EXACT_APPLY_BLOCKED_REASON = 'REVIEW_SURFACE_SINGLE_EXACT_CHANGE_REQUIRED';
 const REVIEW_SURFACE_EXACT_APPLY_CHANGE_ID_REQUIRED_REASON = 'REVIEW_SURFACE_EXACT_CHANGE_ID_REQUIRED';
@@ -607,6 +609,17 @@ function reviewSurfaceBuildExactTextApplyPayload(requestId, changeId) {
   const normalizedChangeId = reviewSurfaceText(changeId);
   if (normalizedRequestId) payload.requestId = normalizedRequestId;
   if (normalizedChangeId) payload.changeId = normalizedChangeId;
+  return payload;
+}
+
+function reviewSurfaceBuildExactTextApplyBatchPayload(requestId, changeIds) {
+  const payload = {};
+  const normalizedRequestId = reviewSurfaceText(requestId);
+  const normalizedChangeIds = reviewSurfaceArray(changeIds)
+    .map((changeId) => reviewSurfaceText(changeId))
+    .filter(Boolean);
+  if (normalizedRequestId) payload.requestId = normalizedRequestId;
+  payload.changeIds = normalizedChangeIds;
   return payload;
 }
 
@@ -765,22 +778,16 @@ function reviewSurfaceCanonicalCommentPreview(source, session) {
   return reviewSurfaceGenericCommentPreview(session);
 }
 
-function reviewSurfaceNormalizeState(input = {}) {
-  const source = reviewSurfaceResolveIncomingPayload(input);
-  const revisionSession = reviewSurfaceCanonicalSession(source);
-  const exactTextPlanPreview = reviewSurfaceCanonicalExactTextPreview(source);
-  const structuralManualReviewPreview = reviewSurfaceCanonicalStructuralPreview(source, revisionSession);
-  const commentSurvivalPreview = reviewSurfaceCanonicalCommentPreview(source, revisionSession);
-  const rawReceipt = reviewSurfaceIsPlainObject(source.receipt) ? source.receipt : null;
-  const recovery = reviewSurfaceIsPlainObject(rawReceipt?.recovery) ? rawReceipt.recovery : null;
-  const writtenAt = reviewSurfaceText(rawReceipt?.writtenAt);
-  const backupId = reviewSurfaceText(rawReceipt?.backupId);
+function reviewSurfaceNormalizeReceipt(rawReceipt) {
+  if (!reviewSurfaceIsPlainObject(rawReceipt)) return null;
+  const recovery = reviewSurfaceIsPlainObject(rawReceipt.recovery) ? rawReceipt.recovery : null;
+  const writtenAt = reviewSurfaceText(rawReceipt.writtenAt);
+  const backupId = reviewSurfaceText(rawReceipt.backupId);
   const recoverySnapshotPath = reviewSurfaceText(recovery?.snapshotPath);
   const backupIdMatchesRecovery = !recoverySnapshotPath
     || !backupId
     || reviewSurfaceBackupIdFromSnapshotPath(recoverySnapshotPath) === backupId;
-  const receiptCandidateValid = Boolean(rawReceipt)
-    && rawReceipt.schemaVersion === REVIEW_SURFACE_RECEIPT_SCHEMA
+  const receiptCandidateValid = rawReceipt.schemaVersion === REVIEW_SURFACE_RECEIPT_SCHEMA
     && reviewSurfaceText(rawReceipt.projectId)
     && reviewSurfaceText(rawReceipt.sessionId)
     && reviewSurfaceText(rawReceipt.sceneId)
@@ -795,32 +802,82 @@ function reviewSurfaceNormalizeState(input = {}) {
     && reviewSurfaceText(rawReceipt.outputHash)
     && reviewSurfaceIsPlainObject(recovery)
     && backupIdMatchesRecovery;
-  const receipt = receiptCandidateValid
-    ? {
-        schemaVersion: rawReceipt.schemaVersion,
-        projectId: reviewSurfaceText(rawReceipt.projectId),
-        sessionId: reviewSurfaceText(rawReceipt.sessionId),
-        sceneId: reviewSurfaceText(rawReceipt.sceneId),
-        changeId: reviewSurfaceText(rawReceipt.changeId),
-        baselineHashBefore: reviewSurfaceText(rawReceipt.baselineHashBefore),
-        operationKind: reviewSurfaceText(rawReceipt.operationKind),
-        writeStatus: reviewSurfaceText(rawReceipt.writeStatus),
-        backupId,
-        writtenAt,
-        transactionId: reviewSurfaceText(rawReceipt.transactionId),
-        inputHash: reviewSurfaceText(rawReceipt.inputHash),
-        outputHash: reviewSurfaceText(rawReceipt.outputHash),
-        bytesWritten: Number.isFinite(rawReceipt.bytesWritten) ? rawReceipt.bytesWritten : 0,
-        reason: reviewSurfaceText(rawReceipt.reason),
-        recovery: {
-          snapshotCreated: recovery.snapshotCreated === true,
-          snapshotReadable: recovery.snapshotReadable === true,
-          snapshotHashMatchesInput: recovery.snapshotHashMatchesInput === true,
-          snapshotPath: reviewSurfaceText(recovery.snapshotPath),
-          recoveryAction: reviewSurfaceText(recovery.recoveryAction),
-        },
-      }
-    : null;
+  if (!receiptCandidateValid) return null;
+  return {
+    schemaVersion: rawReceipt.schemaVersion,
+    projectId: reviewSurfaceText(rawReceipt.projectId),
+    sessionId: reviewSurfaceText(rawReceipt.sessionId),
+    sceneId: reviewSurfaceText(rawReceipt.sceneId),
+    changeId: reviewSurfaceText(rawReceipt.changeId),
+    baselineHashBefore: reviewSurfaceText(rawReceipt.baselineHashBefore),
+    operationKind: reviewSurfaceText(rawReceipt.operationKind),
+    writeStatus: reviewSurfaceText(rawReceipt.writeStatus),
+    backupId,
+    writtenAt,
+    transactionId: reviewSurfaceText(rawReceipt.transactionId),
+    inputHash: reviewSurfaceText(rawReceipt.inputHash),
+    outputHash: reviewSurfaceText(rawReceipt.outputHash),
+    bytesWritten: Number.isFinite(rawReceipt.bytesWritten) ? rawReceipt.bytesWritten : 0,
+    reason: reviewSurfaceText(rawReceipt.reason),
+    recovery: {
+      snapshotCreated: recovery.snapshotCreated === true,
+      snapshotReadable: recovery.snapshotReadable === true,
+      snapshotHashMatchesInput: recovery.snapshotHashMatchesInput === true,
+      snapshotPath: reviewSurfaceText(recovery.snapshotPath),
+      recoveryAction: reviewSurfaceText(recovery.recoveryAction),
+    },
+  };
+}
+
+function reviewSurfaceNormalizeExactTextBatchApplyResult(rawResult) {
+  if (!reviewSurfaceIsPlainObject(rawResult)) return null;
+  const changes = reviewSurfaceArray(rawResult.changes)
+    .filter((change) => reviewSurfaceIsPlainObject(change))
+    .map((change) => ({
+      changeId: reviewSurfaceText(change.changeId),
+      status: reviewSurfaceText(change.status),
+      reason: reviewSurfaceText(change.reason),
+    }))
+    .filter((change) => change.changeId);
+  const status = reviewSurfaceText(rawResult.status);
+  const reason = reviewSurfaceText(rawResult.reason);
+  if (!status && !reason && changes.length === 0) return null;
+  return {
+    status,
+    reason,
+    applied: rawResult.applied === true,
+    changes,
+    totals: reviewSurfaceIsPlainObject(rawResult.totals)
+      ? {
+          requested: Number.isFinite(rawResult.totals.requested) ? rawResult.totals.requested : 0,
+          applied: Number.isFinite(rawResult.totals.applied) ? rawResult.totals.applied : 0,
+          blocked: Number.isFinite(rawResult.totals.blocked) ? rawResult.totals.blocked : 0,
+          failed: Number.isFinite(rawResult.totals.failed) ? rawResult.totals.failed : 0,
+          skipped: Number.isFinite(rawResult.totals.skipped) ? rawResult.totals.skipped : 0,
+        }
+      : null,
+  };
+}
+
+function reviewSurfaceNormalizeState(input = {}) {
+  const source = reviewSurfaceResolveIncomingPayload(input);
+  const revisionSession = reviewSurfaceCanonicalSession(source);
+  const exactTextPlanPreview = reviewSurfaceCanonicalExactTextPreview(source);
+  const structuralManualReviewPreview = reviewSurfaceCanonicalStructuralPreview(source, revisionSession);
+  const commentSurvivalPreview = reviewSurfaceCanonicalCommentPreview(source, revisionSession);
+  const receipt = reviewSurfaceNormalizeReceipt(source.receipt);
+  const receipts = reviewSurfaceArray(source.exactTextApplyReceipts)
+    .map((rawReceipt) => reviewSurfaceNormalizeReceipt(rawReceipt))
+    .filter(Boolean);
+  if (receipt && !receipts.some((candidate) => candidate.changeId === receipt.changeId)) {
+    receipts.push(receipt);
+  }
+  const exactTextAppliedChangeIds = reviewSurfaceArray(source.exactTextAppliedChangeIds)
+    .map((changeId) => reviewSurfaceText(changeId))
+    .filter(Boolean);
+  const exactTextBatchApplyResult = reviewSurfaceNormalizeExactTextBatchApplyResult(
+    source.exactTextBatchApplyResult || source.lastExactTextApplyBatchResult,
+  );
   const error = reviewSurfaceIsPlainObject(source.error)
     ? {
         code: reviewSurfaceText(source.error.code),
@@ -834,7 +891,16 @@ function reviewSurfaceNormalizeState(input = {}) {
           }
         : null
     );
-  const hasReviewData = Boolean(revisionSession || exactTextPlanPreview || structuralManualReviewPreview || commentSurvivalPreview || receipt);
+  const hasReviewData = Boolean(
+    revisionSession
+    || exactTextPlanPreview
+    || structuralManualReviewPreview
+    || commentSurvivalPreview
+    || receipt
+    || receipts.length > 0
+    || exactTextAppliedChangeIds.length > 0
+    || exactTextBatchApplyResult,
+  );
   const status = error
     ? 'error'
     : (hasReviewData ? 'ready' : 'empty');
@@ -847,6 +913,9 @@ function reviewSurfaceNormalizeState(input = {}) {
     structuralManualReviewPreview,
     commentSurvivalPreview,
     receipt,
+    receipts,
+    exactTextAppliedChangeIds,
+    exactTextBatchApplyResult,
     error,
     exactTextApply,
   };
@@ -983,15 +1052,61 @@ function reviewSurfaceBuildUnsupportedObservations(state) {
 function reviewSurfaceBuildExactTextPreview(state) {
   const exactPreview = reviewSurfaceIsPlainObject(state.exactTextPlanPreview) ? state.exactTextPlanPreview : {};
   const structuralPreview = reviewSurfaceIsPlainObject(state.structuralManualReviewPreview) ? state.structuralManualReviewPreview : {};
+  const commentPreview = reviewSurfaceIsPlainObject(state.commentSurvivalPreview) ? state.commentSurvivalPreview : {};
   const applyOpsRaw = reviewSurfaceArray(exactPreview.plan?.applyOps);
   const transient = reviewSurfaceNormalizeExactTextApplyState(state.exactTextApply);
-  const receiptChangeId = state.receipt?.writeStatus === 'applied'
-    ? reviewSurfaceText(state.receipt.changeId)
-    : '';
+  const appliedChangeIds = new Set([
+    ...reviewSurfaceArray(state.receipts)
+      .filter((receipt) => receipt?.writeStatus === 'applied')
+      .map((receipt) => reviewSurfaceText(receipt.changeId))
+      .filter(Boolean),
+    ...reviewSurfaceArray(state.exactTextAppliedChangeIds)
+      .map((changeId) => reviewSurfaceText(changeId))
+      .filter(Boolean),
+    ...reviewSurfaceArray(state.exactTextBatchApplyResult?.changes)
+      .filter((change) => change?.status === 'applied')
+      .map((change) => reviewSurfaceText(change.changeId))
+      .filter(Boolean),
+  ]);
   const structuralItems = reviewSurfaceArray(structuralPreview.items);
   const unsupportedStructuralItems = reviewSurfaceArray(structuralPreview.unsupportedObservations);
   const structuralBlocked = structuralItems.length > 0 || unsupportedStructuralItems.length > 0;
+  const commentBlocked = Number(commentPreview.totalThreads) > 0
+    || Number(commentPreview.totalPlacements) > 0
+    || reviewSurfaceArray(commentPreview.preservedThreads).length > 0
+    || reviewSurfaceArray(commentPreview.placementResults).length > 0;
   const singleReadyOp = exactPreview.status === 'ready' && applyOpsRaw.length === 1 && !structuralBlocked;
+  const batchChangeIds = applyOpsRaw.map((op) => reviewSurfaceText(op?.changeId)).filter(Boolean);
+  const batchUniqueChangeIds = [...new Set(batchChangeIds)];
+  const batchSceneIds = [...new Set(applyOpsRaw.map((op) => reviewSurfaceText(op?.sceneId)).filter(Boolean))];
+  const batchCandidate = exactPreview.status === 'ready' && applyOpsRaw.length > 1;
+  const batchAllApplied = batchCandidate
+    && batchChangeIds.length === applyOpsRaw.length
+    && batchChangeIds.every((changeId) => appliedChangeIds.has(changeId));
+  let batchApplyState = 'blocked';
+  let batchApplyReason = '';
+  if (batchCandidate) {
+    if (batchAllApplied) {
+      batchApplyState = 'applied';
+    } else if (transient && !transient.changeId) {
+      batchApplyState = transient.state;
+      batchApplyReason = transient.reason;
+    } else if (structuralBlocked) {
+      batchApplyReason = 'REVIEW_SURFACE_STRUCTURAL_REVIEW_BLOCKS_EXACT_BATCH_APPLY';
+    } else if (commentBlocked) {
+      batchApplyReason = 'REVIEW_SURFACE_COMMENT_REVIEW_BLOCKS_EXACT_BATCH_APPLY';
+    } else if (batchChangeIds.length !== applyOpsRaw.length) {
+      batchApplyReason = REVIEW_SURFACE_EXACT_APPLY_CHANGE_ID_REQUIRED_REASON;
+    } else if (batchUniqueChangeIds.length !== batchChangeIds.length) {
+      batchApplyReason = 'REVIEW_SURFACE_EXACT_BATCH_DUPLICATE_CHANGE_ID';
+    } else if (batchSceneIds.length !== 1) {
+      batchApplyReason = 'REVIEW_SURFACE_EXACT_BATCH_SINGLE_SCENE_REQUIRED';
+    } else if (batchChangeIds.length > REVIEW_SURFACE_EXACT_APPLY_BATCH_MAX_CHANGE_IDS) {
+      batchApplyReason = 'REVIEW_SURFACE_EXACT_BATCH_LIMIT_EXCEEDED';
+    } else {
+      batchApplyState = 'ready';
+    }
+  }
   const applyOps = applyOpsRaw.map((op) => {
     const changeId = reviewSurfaceText(op?.changeId);
     const opCanApply = singleReadyOp && Boolean(changeId);
@@ -1003,7 +1118,7 @@ function reviewSurfaceBuildExactTextPreview(state) {
           ? 'REVIEW_SURFACE_STRUCTURAL_REVIEW_BLOCKS_EXACT_APPLY'
           : (singleReadyOp ? REVIEW_SURFACE_EXACT_APPLY_CHANGE_ID_REQUIRED_REASON : REVIEW_SURFACE_EXACT_APPLY_BLOCKED_REASON)
       );
-    if (receiptChangeId && receiptChangeId === changeId) {
+    if (changeId && appliedChangeIds.has(changeId)) {
       applyState = 'applied';
       applyReason = '';
     } else if (transient && (!transient.changeId || transient.changeId === changeId)) {
@@ -1029,6 +1144,15 @@ function reviewSurfaceBuildExactTextPreview(state) {
     return {
       state: 'ready',
       ops: applyOps,
+      batchAction: batchCandidate
+        ? {
+            changeIds: batchUniqueChangeIds,
+            applyState: batchApplyState,
+            applyLabel: batchApplyState === 'ready' ? 'Применить все' : reviewSurfacePresentExactApplyState(batchApplyState),
+            applyDisabled: batchApplyState !== 'ready',
+            applyReason: batchApplyReason,
+          }
+        : null,
       blockedReasons: [],
     };
   }
@@ -1136,29 +1260,45 @@ function renderReviewSurfaceMarkup(viewModel) {
   `, 'Нет неподдержанных наблюдений.');
   const exactPreview = viewModel.exactTextPreview;
   const exactPreviewMarkup = exactPreview.state === 'ready'
-    ? reviewSurfaceRenderList(exactPreview.ops, (op) => `
-      <article class="right-rail-review-item right-rail-review-item--preview">
-        <div class="right-rail-review-item-head">
-          <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(op.changeId || op.itemId)}</div>
-          <span class="right-rail-review-pill right-rail-review-pill--${reviewSurfaceEscapeHtml(op.applyState)}">${reviewSurfaceEscapeHtml(op.applyLabel)}</span>
-        </div>
-        <p class="right-rail-review-item-body">"${reviewSurfaceEscapeHtml(op.expectedText)}" -> "${reviewSurfaceEscapeHtml(op.replacementText)}"</p>
-        <div class="right-rail-review-item-meta">
-          <span>${reviewSurfaceEscapeHtml(op.sceneId || 'сцена')}</span>
-          <span>${reviewSurfaceEscapeHtml(`${op.from ?? '—'}:${op.to ?? '—'}`)}</span>
-        </div>
-        <div class="right-rail-review-actions">
-          <button
-            type="button"
-            class="right-rail-review-apply-button"
-            data-review-apply-exact-change
-            data-change-id="${reviewSurfaceEscapeHtml(op.changeId)}"
-            ${op.applyDisabled ? 'disabled aria-disabled="true"' : ''}
-          >${reviewSurfaceEscapeHtml(op.applyLabel)}</button>
-        </div>
-        ${op.applyReason ? `<div class="right-rail-review-code">${reviewSurfaceEscapeHtml(op.applyReason)}</div>` : ''}
-      </article>
-    `, 'Нет точного текстового предпросмотра.')
+    ? `
+      ${exactPreview.batchAction
+        ? `
+          <div class="right-rail-review-actions right-rail-review-actions--batch">
+            <button
+              type="button"
+              class="right-rail-review-apply-button"
+              data-review-apply-exact-batch
+              data-change-ids="${reviewSurfaceEscapeHtml(exactPreview.batchAction.changeIds.join(','))}"
+              ${exactPreview.batchAction.applyDisabled ? 'disabled aria-disabled="true"' : ''}
+            >${reviewSurfaceEscapeHtml(exactPreview.batchAction.applyLabel)}</button>
+          </div>
+          ${exactPreview.batchAction.applyReason ? `<div class="right-rail-review-code">${reviewSurfaceEscapeHtml(exactPreview.batchAction.applyReason)}</div>` : ''}
+        `
+        : ''}
+      ${reviewSurfaceRenderList(exactPreview.ops, (op) => `
+        <article class="right-rail-review-item right-rail-review-item--preview">
+          <div class="right-rail-review-item-head">
+            <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(op.changeId || op.itemId)}</div>
+            <span class="right-rail-review-pill right-rail-review-pill--${reviewSurfaceEscapeHtml(op.applyState)}">${reviewSurfaceEscapeHtml(op.applyLabel)}</span>
+          </div>
+          <p class="right-rail-review-item-body">"${reviewSurfaceEscapeHtml(op.expectedText)}" -> "${reviewSurfaceEscapeHtml(op.replacementText)}"</p>
+          <div class="right-rail-review-item-meta">
+            <span>${reviewSurfaceEscapeHtml(op.sceneId || 'сцена')}</span>
+            <span>${reviewSurfaceEscapeHtml(`${op.from ?? '—'}:${op.to ?? '—'}`)}</span>
+          </div>
+          <div class="right-rail-review-actions">
+            <button
+              type="button"
+              class="right-rail-review-apply-button"
+              data-review-apply-exact-change
+              data-change-id="${reviewSurfaceEscapeHtml(op.changeId)}"
+              ${op.applyDisabled ? 'disabled aria-disabled="true"' : ''}
+            >${reviewSurfaceEscapeHtml(op.applyLabel)}</button>
+          </div>
+          ${op.applyReason ? `<div class="right-rail-review-code">${reviewSurfaceEscapeHtml(op.applyReason)}</div>` : ''}
+        </article>
+      `, 'Нет точного текстового предпросмотра.')}
+    `
     : (
       exactPreview.state === 'blocked'
         ? `<div class="right-rail-review-state right-rail-review-state--blocked"><strong>Предпросмотр заблокирован</strong><p>${reviewSurfaceEscapeHtml(exactPreview.blockedReasons[0] || 'Нужна ручная проверка, прежде чем показать точный текстовый шаг.')}</p></div>`
@@ -7759,9 +7899,72 @@ function reviewSurfaceCreateExactTextApplyRequestId(changeId) {
   return `review-exact-apply-${normalizedChangeId}-${Date.now()}`;
 }
 
+function reviewSurfaceCreateExactTextApplyBatchRequestId(changeIds) {
+  const normalizedChangeIds = reviewSurfaceArray(changeIds)
+    .map((changeId) => reviewSurfaceText(changeId))
+    .filter(Boolean);
+  const suffix = normalizedChangeIds.length > 0 ? normalizedChangeIds.join('-') : 'batch';
+  return `review-exact-batch-apply-${suffix}-${Date.now()}`;
+}
+
 async function handleReviewSurfaceExactTextApplyClick(event) {
   const target = event?.target;
   if (!(target instanceof Element) || !(reviewSurfaceHost instanceof HTMLElement)) return;
+  const batchButton = target.closest('[data-review-apply-exact-batch]');
+  if (batchButton instanceof HTMLButtonElement && reviewSurfaceHost.contains(batchButton)) {
+    if (batchButton.disabled) return;
+    const changeIds = reviewSurfaceText(batchButton.dataset.changeIds)
+      .split(',')
+      .map((changeId) => changeId.trim())
+      .filter(Boolean);
+    const requestId = reviewSurfaceCreateExactTextApplyBatchRequestId(changeIds);
+    setReviewSurfaceExactTextApplyTransientState({
+      state: 'applying',
+      requestId,
+      changeId: '',
+    });
+
+    const payload = reviewSurfaceBuildExactTextApplyBatchPayload(requestId, changeIds);
+    let bridgeResult = null;
+    try {
+      bridgeResult = await invokePreloadUiCommandBridge(REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID, payload);
+    } catch (error) {
+      setReviewSurfaceExactTextApplyTransientState({
+        state: 'failed',
+        requestId,
+        changeId: '',
+        reason: error && typeof error.message === 'string' ? error.message : 'REVIEW_SURFACE_BATCH_APPLY_THROW',
+      });
+      return;
+    }
+
+    const commandResult = reviewSurfaceUnwrapCommandResult(bridgeResult);
+    if (bridgeResult?.ok === true && commandResult?.ok === true && commandResult.applied === true) {
+      reviewSurfaceExactTextApplyTransientState = null;
+      if (reviewSurfaceIsPlainObject(commandResult.reviewSurface)) {
+        setReviewSurfaceState(commandResult.reviewSurface);
+        return;
+      }
+      await loadReviewSurfaceFromQuery();
+      return;
+    }
+
+    const reason = reviewSurfaceExtractCommandFailureReason(bridgeResult);
+    const blocked = reviewSurfaceIsExactApplyBlockedReason(reason);
+    reviewSurfaceExactTextApplyTransientState = {
+      state: blocked ? 'blocked' : 'failed',
+      requestId,
+      changeId: '',
+      reason,
+    };
+    if (reviewSurfaceIsPlainObject(commandResult?.reviewSurface)) {
+      setReviewSurfaceState(commandResult.reviewSurface, { preserveExactApplyState: true });
+    } else {
+      renderReviewSurface();
+    }
+    return;
+  }
+
   const button = target.closest('[data-review-apply-exact-change]');
   if (!(button instanceof HTMLButtonElement) || !reviewSurfaceHost.contains(button) || button.disabled) {
     return;
