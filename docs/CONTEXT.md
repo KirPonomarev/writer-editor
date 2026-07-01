@@ -34,6 +34,14 @@
 - The closeout binding contour records the feature status as `FEATURE_CLOSED_FOR_MVP_SCOPE` for the named flows only.
 - This closeout does not claim full release readiness, packaged release readiness, cross-platform readiness, full npm test green, production picker coverage for Markdown export or DOCX import, perfect Word layout parity, broad DOCX/Markdown fidelity, PDF/EPUB/HTML export, cloud, sync, accounts, new dependencies, or user-facing Mindmap export.
 
+### Review bridge exact-apply lane closeout
+- Review bridge controlled multi exact apply is merged on current mainline via PR `1007` at merge SHA `b12ef9178a2e86a3ee758815758bc05dde70f8cc`.
+- The delivered implementation artifact is `REVIEW_BRIDGE_CONTROLLED_MULTI_EXACT_APPLY_001_R2_STATUS_V1.json` with status `delivered_merged_verified`.
+- Active product closeout artifact for this lane is `REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001_STATUS.json`.
+- The exact-apply lane is closed for current MVP scope only: single exact text apply, duplicate/stale/dirty guards, and controlled same-scene batch exact apply.
+- Batch exact apply is all-or-none within one scene file through command bus, main-owned context, safe writer, recovery evidence, and intent-only renderer payload containing only `requestId` and `changeIds`.
+- This closeout does not claim cross-scene batch atomicity, multi-file transaction truth, structural auto-apply, comment auto-apply, full review import automation, full import/export completion beyond the existing MVP closeout, full Word layout parity, PDF/EPUB/HTML export, user-facing Mindmap export command, release readiness, or Y9 admission.
+
 ### Phase status
 - Phase 00: PASS
 - Phase 01: PASS

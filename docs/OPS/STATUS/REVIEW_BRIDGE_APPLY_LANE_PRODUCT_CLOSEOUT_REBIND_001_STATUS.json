@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "product_factual_closeout_rebind",
+  "featureExpansion": false,
+  "binding": {
+    "sourceTaskId": "REVIEW_BRIDGE_CONTROLLED_MULTI_EXACT_APPLY_001_R2",
+    "sourceArtifact": "REVIEW_BRIDGE_CONTROLLED_MULTI_EXACT_APPLY_001_R2_STATUS_V1.json",
+    "sourcePullRequest": 1007,
+    "sourceCommitSha": "1627e63ae1653cb67d9f0aaba9cfe139a6488530",
+    "sourceMergeSha": "b12ef9178a2e86a3ee758815758bc05dde70f8cc",
+    "sourceStatus": "delivered_merged_verified"
+  },
+  "closedMvpScope": [
+    "single exact text apply",
+    "duplicate exact apply guard",
+    "stale exact apply guard",
+    "dirty editor apply guard",
+    "controlled same-scene batch exact apply",
+    "all-or-none batch write within one scene file",
+    "intent-only renderer payload for apply commands",
+    "main-owned apply context",
+    "safe writer recovery evidence for exact apply"
+  ],
+  "productClaim": {
+    "reviewBridgeExactApplyLaneClosedForCurrentMvpScope": true,
+    "fullReviewImportAutomationClaimed": false,
+    "importExportMvpCloseoutExpanded": false,
+    "releaseReadinessClaimed": false
+  },
+  "runtimeTruth": {
+    "singleApplyCommand": "cmd.project.review.applyExactTextChange",
+    "batchApplyCommand": "cmd.project.review.applyExactTextChangesBatch",
+    "commandBusOnly": true,
+    "rendererWriteAuthority": false,
+    "batchPayloadKeys": [
+      "requestId",
+      "changeIds"
+    ],
+    "singleSceneBatchOnly": true,
+    "crossSceneBatchAtomicity": false,
+    "partialBatchSuccessAllowed": false,
+    "batchCreatesSingularReceipt": false,
+    "recoveryRequired": true
+  },
+  "explicitNonClaims": [
+    "cross-scene batch atomicity",
+    "multi-file transaction truth",
+    "structural auto-apply",
+    "comment auto-apply",
+    "full review import automation",
+    "full import/export completion beyond existing MVP closeout",
+    "full Word layout parity",
+    "PDF export",
+    "EPUB export",
+    "HTML export",
+    "user-facing Mindmap export command",
+    "release readiness",
+    "Y9 admission"
+  ],
+  "canonGuards": {
+    "boundedContour": true,
+    "noSplitBrainDocs": true,
+    "noFalseGreen": true,
+    "noStaleGreen": true,
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "atomicWriteAndRecoveryPreserved": true,
+    "docxFirstExportBaselinePreserved": true,
+    "newDependenciesAdded": false,
+    "uiChanged": false,
+    "runtimeChangedInThisRebind": false
+  },
+  "docsBinding": {
+    "contextUpdated": true,
+    "handoffUpdated": true,
+    "bibleUpdated": false,
+    "canonUpdated": false,
+    "reason": "This contour records current mainline factual truth after PR 1007 without changing product map or execution law."
+  },
+  "claimAudit": {
+    "forbiddenClaimsChecked": [
+      "full review import",
+      "full review apply",
+      "structural apply",
+      "comment apply",
+      "cross-scene batch",
+      "multi-file transaction",
+      "release ready",
+      "full import/export complete",
+      "full Word parity",
+      "PDF EPUB HTML ready",
+      "Mindmap user-facing export ready"
+    ],
+    "status": "pass"
+  },
+  "machineChecks": [
+    {
+      "command": "node claim-audit inline json/doc invariant check",
+      "status": "pass"
+    },
+    {
+      "command": "node --test review bridge targeted clean-worktree set",
+      "status": "pass",
+      "tests": 78
+    },
+    {
+      "command": "node --test import export smoke clean-worktree set",
+      "status": "pass",
+      "tests": 9
+    },
+    {
+      "command": "npm run -s oss:policy && npm run -s ops:mvp-boundary && npm audit --omit=dev --audit-level=high && git diff --check",
+      "status": "pass"
+    }
+  ],
+  "readOnlyAgents": [
+    {
+      "role": "independent_origin_main_claim_auditor",
+      "agentId": "019f1f18-77d2-74a3-ac8f-867215565058",
+      "verdict": "block_on_origin_main_until_rebind_docs_updated",
+      "localResolution": "addressed_by_this_closeout_rebind"
+    }
+  ],
+  "decision": "REVIEW_BRIDGE_EXACT_APPLY_LANE_CLOSED_FOR_CURRENT_MVP_SCOPE",
+  "nextStep": "push_pr_merge_then_owner_selected_next_contour"
+}

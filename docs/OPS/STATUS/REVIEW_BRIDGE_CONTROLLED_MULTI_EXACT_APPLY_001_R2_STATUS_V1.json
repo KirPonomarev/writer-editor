@@ -1,8 +1,32 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_CONTROLLED_MULTI_EXACT_APPLY_001_R2",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "contour": "controlled_multi_exact_apply",
+  "delivery": {
+    "commitSha": "1627e63ae1653cb67d9f0aaba9cfe139a6488530",
+    "pullRequest": 1007,
+    "mergeSha": "b12ef9178a2e86a3ee758815758bc05dde70f8cc",
+    "mergedAtUtc": "2026-07-01T19:07:53Z",
+    "postMergeChecks": [
+      {
+        "name": "oss-policy",
+        "status": "pass"
+      },
+      {
+        "name": "x1-runtime-parity ubuntu-latest",
+        "status": "pass"
+      },
+      {
+        "name": "x1-runtime-parity windows-latest",
+        "status": "pass"
+      },
+      {
+        "name": "ops_vector_close",
+        "status": "pass"
+      }
+    ]
+  },
   "scope": {
     "enabledCommand": "cmd.project.review.applyExactTextChangesBatch",
     "singleApplyCommandPreserved": true,
@@ -16,6 +40,20 @@
     "newDependencies": false,
     "receiptIsProjectTruth": false
   },
+  "explicitNonClaims": [
+    "full review import and apply",
+    "structural auto-apply",
+    "comment auto-apply",
+    "cross-scene batch atomicity",
+    "multi-file transaction truth",
+    "full import/export completion",
+    "full Word layout parity",
+    "PDF export",
+    "EPUB export",
+    "HTML export",
+    "user-facing Mindmap export command",
+    "release readiness"
+  ],
   "canonBinding": {
     "primaryTruth": "project file text plus main-owned revision session",
     "uiTruth": "review surface render state only",
@@ -118,5 +156,5 @@
       "verdict": "pass_no_blockers"
     }
   ],
-  "nextStep": "run_targeted_contracts_policy_checks_commit_push_pr_merge"
+  "nextStep": "REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001"
 }
