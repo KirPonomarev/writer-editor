@@ -238,7 +238,7 @@ test('DOCX review preview session candidate: comments become review packet witho
   assertNoStorageOrApplyAuthority(result);
 });
 
-test('DOCX review preview session candidate: tracked changes stay diagnostic-only', async () => {
+test('DOCX review preview session candidate: tracked changes build diagnostic-only evidence packet', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(cleanDocxZip([
     paragraphXml('Before'),
@@ -253,8 +253,15 @@ test('DOCX review preview session candidate: tracked changes stay diagnostic-onl
   assert.equal(result.status, 'diagnostics');
   assert.equal(result.code, 'DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_NO_REVIEW_COMMENTS');
   assert.equal(result.canOpenReviewSession, false);
-  assert.equal(result.reviewPacket, null);
+  assert.equal(result.canCreateReviewPacket, false);
+  assert.equal(result.reviewPacket.commentThreads.length, 0);
+  assert.equal(result.reviewPacket.commentPlacements.length, 0);
+  assert.deepEqual(result.reviewPacket.textChanges, []);
+  assert.deepEqual(result.reviewPacket.structuralChanges, []);
+  assert.equal(result.reviewPacket.diagnosticItems.length, 2);
+  assert.equal(result.sourceViewState.viewMode, 'docx-review-diagnostic-evidence');
   assert.equal(result.summary.trackedChangesDiagnosticOnly, true);
+  assert.equal(result.summary.diagnosticItemCount, 2);
   assert.ok(result.diagnostics.some((item) => (
     item.diagnosticId === 'docx-review-tracked-insertCount'
     && item.message.includes('diagnostic-only')
@@ -292,6 +299,7 @@ test('DOCX review preview session candidate: clean and malformed inputs do not c
   assert.equal(clean.ok, true);
   assert.equal(clean.status, 'diagnostics');
   assert.equal(clean.reviewPacket, null);
+  assert.equal(clean.summary.diagnosticItemCount, 0);
   assert.equal(clean.canOpenReviewSession, false);
   assert.equal(malformed.ok, false);
   assert.equal(malformed.status, 'blocked');

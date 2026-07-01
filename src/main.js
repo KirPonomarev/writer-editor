@@ -2470,7 +2470,16 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     );
   }
 
-  if (!isPlainObjectValue(candidate) || candidate.status !== 'ready' || !isPlainObjectValue(candidate.reviewPacket)) {
+  const isReadyPreviewCandidate = isPlainObjectValue(candidate)
+    && candidate.status === 'ready'
+    && isPlainObjectValue(candidate.reviewPacket);
+  const isDiagnosticEvidenceCandidate = isPlainObjectValue(candidate)
+    && candidate.status === 'diagnostics'
+    && isPlainObjectValue(candidate.reviewPacket)
+    && Array.isArray(candidate.reviewPacket.diagnosticItems)
+    && candidate.reviewPacket.diagnosticItems.length > 0;
+
+  if (!isReadyPreviewCandidate && !isDiagnosticEvidenceCandidate) {
     return makeDocxReviewPreviewSessionTypedError(
       'E_DOCX_REVIEW_PREVIEW_SESSION_NO_CANDIDATE',
       docxReviewPreviewSessionDetailString(candidate?.reason) || 'DOCX_REVIEW_PREVIEW_SESSION_NO_CANDIDATE',
@@ -2479,12 +2488,12 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       },
     );
   }
-  if (
-    candidate.canOpenReviewSession !== true
-    || candidate.canAutoApply !== false
+  const hasForbiddenAuthority = candidate.canAutoApply !== false
     || candidate.canImportMutate !== false
     || candidate.canWriteStorage !== false
-  ) {
+    || (isReadyPreviewCandidate && candidate.canOpenReviewSession !== true)
+    || (isDiagnosticEvidenceCandidate && candidate.canOpenReviewSession !== false);
+  if (hasForbiddenAuthority) {
     return makeDocxReviewPreviewSessionTypedError(
       'E_DOCX_REVIEW_PREVIEW_SESSION_FORBIDDEN_AUTHORITY',
       'DOCX_REVIEW_PREVIEW_SESSION_FORBIDDEN_AUTHORITY',
@@ -2508,12 +2517,13 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     commandId: DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID,
     requestId,
     activated: true,
+    diagnosticOnly: isDiagnosticEvidenceCandidate,
     session: importResult.session,
     reviewSurface: importResult.reviewSurface,
     candidateSummary: summarizeDocxReviewPreviewSessionCandidate(candidate),
     sourcePacketHash: importPayload.sourcePacketHash,
-    canOpenReviewSession: true,
-    canCreateReviewPacket: true,
+    canOpenReviewSession: candidate.canOpenReviewSession === true,
+    canCreateReviewPacket: candidate.canCreateReviewPacket === true,
     canAutoApply: false,
     canImportMutate: false,
     canWriteStorage: false,

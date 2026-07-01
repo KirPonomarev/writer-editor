@@ -405,6 +405,45 @@ test('review surface ui: canonical adapter payload populates review surface from
   assert.ok(markup.includes('Нет точного текстового предпросмотра.'));
 });
 
+test('review surface ui: diagnostic items render as read-only review evidence', () => {
+  const helpers = loadReviewSurfaceHelpers();
+  const state = {
+    revisionSession: {
+      projectId: 'project-1',
+      sessionId: 'docx-diagnostic-session-1',
+      baselineHash: 'baseline-1',
+      reviewGraph: {
+        textChanges: [],
+        structuralChanges: [],
+        commentThreads: [],
+        commentPlacements: [],
+        diagnosticItems: [
+          {
+            diagnosticId: 'docx-review-tracked-insertCount',
+            severity: 'warning',
+            message: 'DOCX tracked-change insertions detected (1) and kept diagnostic-only.',
+            targetScope: { type: 'docx', id: 'word/document.xml' },
+          },
+        ],
+        decisionStates: [],
+      },
+    },
+  };
+  const viewModel = helpers.buildReviewSurfaceViewModel(state);
+  const markup = helpers.renderReviewSurfaceMarkup(viewModel);
+
+  assert.equal(viewModel.status, 'ready');
+  assert.equal(viewModel.importSummary.diagnosticCount, 1);
+  assert.equal(viewModel.importSummary.textChangeCount, 0);
+  assert.equal(viewModel.reviewItems.length, 1);
+  assert.equal(viewModel.reviewItems[0].title, 'Диагностика docx-review-tracked-insertCount');
+  assert.equal(viewModel.reviewItems[0].tone, 'readonly');
+  assert.equal(viewModel.exactTextPreview.state, 'empty');
+  assert.ok(markup.includes('DOCX tracked-change insertions detected (1) and kept diagnostic-only.'));
+  assert.ok(markup.includes('Только чтение'));
+  assert.equal(markup.includes('data-review-apply-exact-change'), false);
+});
+
 test('review surface ui: unsupported observations still render only from explicit preview payload', () => {
   const helpers = loadReviewSurfaceHelpers();
   const viewModel = helpers.buildReviewSurfaceViewModel(createReviewSurfaceState());

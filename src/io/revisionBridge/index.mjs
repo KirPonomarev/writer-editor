@@ -3108,20 +3108,47 @@ export function buildDocxReviewPreviewSessionCandidateFromZipBytes(input, option
   ].slice(0, DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxDiagnostics);
 
   if (commentsResult.comments.length === 0) {
+    const diagnosticOnlyReviewPacket = diagnostics.length > 0
+      ? docxReviewPreviewSessionEmptyReviewPacket()
+      : null;
+    if (diagnosticOnlyReviewPacket) {
+      diagnosticOnlyReviewPacket.diagnosticItems = diagnostics;
+    }
+    const diagnosticSourceHash = diagnosticOnlyReviewPacket
+      ? revisionBlockHash({
+        schemaVersion: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_SCHEMA,
+        reviewPacket: diagnosticOnlyReviewPacket,
+        preflightCode: preflightReport.code,
+        targetScope,
+        diagnosticOnly: true,
+      })
+      : '';
     return docxReviewPreviewSessionResult({
       ok: true,
       status: 'diagnostics',
       code: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_CODES.NO_CANDIDATE,
       reason: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_CODES.NO_CANDIDATE,
       decision: 'diagnostics-only',
+      reviewPacket: diagnosticOnlyReviewPacket,
       diagnostics,
       unsupportedItems,
       preflightReport,
+      sourceViewState: diagnosticOnlyReviewPacket ? {
+        revisionToken: `docx-review-diagnostic:${diagnosticSourceHash}`,
+        viewMode: 'docx-review-diagnostic-evidence',
+        normalizationPolicy: 'bounded-docx-review-evidence-scan',
+        newlinePolicy: 'preserve-extracted-text',
+        unicodePolicy: 'xml-entity-decode-only',
+        packetHash: diagnosticSourceHash,
+        artifactCompletenessClass: 'diagnostic-only-review-evidence',
+      } : null,
       summary: {
         targetScope,
         commentThreadCount: 0,
         commentPlacementCount: 0,
         textChangeCount: 0,
+        structuralChangeCount: 0,
+        diagnosticItemCount: diagnosticOnlyReviewPacket ? diagnosticOnlyReviewPacket.diagnosticItems.length : 0,
         trackedChangesDiagnosticOnly: preflightReport.trackedChangesEvidence?.present === true,
       },
     });

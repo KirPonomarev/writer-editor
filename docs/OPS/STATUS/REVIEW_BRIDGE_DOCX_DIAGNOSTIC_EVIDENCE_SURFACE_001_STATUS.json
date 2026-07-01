@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_docx_diagnostic_evidence_surface",
+  "featureExpansion": "bounded_review_bridge_evidence_visibility",
+  "baseSha": "b9164424866048014e0e0e9e26b0e16eba35d62a",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": true,
+    "rendererSurfaceChanged": true,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false,
+    "autoApply": false
+  },
+  "binding": {
+    "firstUsefulReleaseGateTaskId": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001",
+    "firstUsefulReleaseGateStatus": "delivered_merged_verified",
+    "firstUsefulReleaseGateMergeSha": "d76485d152c1bfa1cb00bf9eda0c242596785352",
+    "firstUsefulReleaseGateRebindMergeSha": "b9164424866048014e0e0e9e26b0e16eba35d62a"
+  },
+  "positiveClaims": [
+    "A DOCX with tracked-change markers and no review comments can produce a diagnostic-only Review evidence surface.",
+    "The diagnostic-only evidence surface reaches the existing in-memory Review surface through the delivered DOCX review preview-session path.",
+    "Diagnostic items render as read-only Review items in the Comments/Review panel.",
+    "Clean DOCX with no review comments and no diagnostics remains no-candidate and passive.",
+    "DOCX comments still use the existing comments-only preview path.",
+    "DOCX tracked changes remain diagnosticItems only and do not become textChanges.",
+    "The local-file entry still uses main-owned picker/stat/read/restat and requestId-only renderer/menu payload authority."
+  ],
+  "nonClaims": [
+    "No full DOCX review import is claimed.",
+    "No DOCX tracked-change apply is claimed.",
+    "No exact apply from DOCX is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed by DOCX diagnostic evidence preview.",
+    "No project truth write is performed by DOCX diagnostic evidence preview.",
+    "No receipt or recovery evidence is created by DOCX diagnostic evidence preview.",
+    "No DOCX import safe-create behavior is changed.",
+    "No DOCX export behavior is changed.",
+    "No import/export MVP closeout is widened.",
+    "No release readiness is claimed.",
+    "No Word layout parity or full DOCX fidelity is claimed.",
+    "No PDF, EPUB, HTML, Mindmap, cloud, sync, accounts, cross-platform readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Preflight remains diagnostic-only and does not itself create a Review session.",
+    "Preview-session activation owns visible Review surface activation.",
+    "Diagnostic-only Review visibility is not project truth.",
+    "Tracked changes are evidence, not mutation instructions.",
+    "Diagnostic-only candidate has canOpenReviewSession false and canCreateReviewPacket false even when it carries a bounded internal visibility packet.",
+    "Apply lane remains separate and keeps receipt and recovery ownership."
+  ],
+  "implementation": {
+    "changedProductionRuntime": true,
+    "changedUi": true,
+    "changedBasenames": [
+      "index.mjs",
+      "main.js",
+      "editor.js",
+      "editor.bundle.js",
+      "review-bridge-docx-diagnostic-evidence-surface.contract.test.js",
+      "revision-bridge-docx-review-preview-session.contract.test.js",
+      "revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
+      "revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
+      "sector-m-review-surface-ui.test.js",
+      "REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001_STATUS.json",
+      "GOVERNANCE_CHANGE_APPROVALS.json",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "WORKLOG.md"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --test targeted DOCX diagnostic evidence surface contracts and Review UI unit tests",
+      "status": "pass",
+      "tests": 47
+    },
+    {
+      "command": "npm run -s build:renderer",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "trackedOnlyDocxDiagnosticSurface": true,
+    "cleanDocxNoCandidatePassive": true,
+    "diagnosticItemsReachReviewSurface": true,
+    "diagnosticItemsRenderReadOnly": true,
+    "textChangesFromDocxTrackedChanges": false,
+    "applyOpsCreated": false,
+    "receiptCreated": false,
+    "recoveryCreated": false,
+    "projectTruthMutated": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false
+  },
+  "agentAudits": [
+    {
+      "agentId": "019f1fd1-901a-7581-92d8-428f54bbea34",
+      "role": "read_only_docx_review_inspector",
+      "verdict": "diagnostic-only surface for tracked-only DOCX was the factual gap; no textChanges, applyOps, receipt, recovery, or writes should be introduced",
+      "localResolution": "addressed by diagnostic-only visibility packet, main authority guard, renderer read-only item, and targeted contracts"
+    },
+    {
+      "agentId": "019f1fd1-aeb7-71a0-b5ba-4819f85d09f3",
+      "role": "independent_skeptic_auditor",
+      "verdict": "conditional pass only if the contour stays diagnostic evidence visibility and blocks import, apply, storage, receipt, recovery, and release claims",
+      "localResolution": "accepted; implementation keeps diagnostic evidence out of project truth and apply authority"
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": "",
+    "featureMergedAtUtc": ""
+  },
+  "decision": "DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_BOUND_FOR_CURRENT_SCOPE",
+  "nextStep": "complete delivery chain, then continue to the next Review Bridge product contour"
+}
