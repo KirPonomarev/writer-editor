@@ -15,6 +15,7 @@ export const COMMAND_IDS = Object.freeze({
   PROJECT_SAVE: COMMAND_KEY_TO_ID.PROJECT_SAVE,
   PROJECT_EXPORT_DOCX_MIN: COMMAND_KEY_TO_ID.PROJECT_EXPORT_DOCX_MIN,
   PROJECT_IMPORT_MARKDOWN_V1: COMMAND_KEY_TO_ID.PROJECT_IMPORT_MARKDOWN_V1,
+  PROJECT_IMPORT_DOCX_V1: COMMAND_KEY_TO_ID.PROJECT_IMPORT_DOCX_V1,
   PROJECT_EXPORT_MARKDOWN_V1: COMMAND_KEY_TO_ID.PROJECT_EXPORT_MARKDOWN_V1,
   PROJECT_FLOW_OPEN_V1: COMMAND_KEY_TO_ID.PROJECT_FLOW_OPEN_V1,
   PROJECT_FLOW_SAVE_V1: COMMAND_KEY_TO_ID.PROJECT_FLOW_SAVE_V1,
@@ -70,6 +71,8 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   PLAN_FLOW_SAVE: 'cmd.project.plan.flowSave',
   REVIEW_EXPORT_MARKDOWN: 'cmd.project.review.exportMarkdown',
   PROJECT_DOCX_PREVIEW_LOCAL_FILE: 'cmd.project.docx.previewLocalFile',
+  PROJECT_DOCX_PREVIEW_IMPORT_PLAN: 'cmd.project.docx.previewImportPlan',
+  PROJECT_DOCX_IMPORT_SAFE_CREATE: 'cmd.project.docx.importSafeCreate',
 });
 
 export const UI_COMMAND_IDS = Object.freeze({
@@ -120,6 +123,7 @@ export const LEGACY_ACTION_TO_COMMAND = Object.freeze({
   'flow-save-v1': 'cmd.project.plan.flowSave',
   'export-markdown-v1': 'cmd.project.review.exportMarkdown',
   'export-docx-min': 'cmd.project.export.docxMin',
+  'import-docx-v1': 'cmd.project.importDocxV1',
   exportDocxMin: 'cmd.project.export.docxMin',
 });
 
@@ -133,6 +137,7 @@ const IMPORT_MARKDOWN_V1_OP = 'm:cmd:project:import:markdownV1:v1';
 const EXPORT_MARKDOWN_V1_OP = 'm:cmd:project:export:markdownV1:v1';
 const FLOW_OPEN_V1_OP = 'm:cmd:project:flow:open:v1';
 const FLOW_SAVE_V1_OP = 'm:cmd:project:flow:save:v1';
+const DOCX_IMPORT_V1_DEFAULT_REQUEST_ID = 'docx-import-v1-request';
 const COMMAND_BRIDGE_ROUTE = 'command.bus';
 
 function fail(code, op, reason, details) {
@@ -288,6 +293,248 @@ async function invokeBridgeOnlyCommand(electronAPI, commandId, payload = {}) {
     throw new Error('ELECTRON_API_UNAVAILABLE');
   }
   return persistCommandOperationPlan(planResult.value, { electronAPI });
+}
+
+function getObjectOrNull(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : null;
+}
+
+function normalizeDocxImportRequestId(input, fallback = DOCX_IMPORT_V1_DEFAULT_REQUEST_ID) {
+  return typeof input?.requestId === 'string' && input.requestId.trim()
+    ? input.requestId.trim()
+    : fallback;
+}
+
+function getDocxImportLossReport(docxImportPreviewPlan, receipt = null) {
+  const plan = getObjectOrNull(docxImportPreviewPlan);
+  if (plan && getObjectOrNull(plan.lossReport)) return plan.lossReport;
+  const safeReceipt = getObjectOrNull(receipt);
+  if (safeReceipt && getObjectOrNull(safeReceipt.lossReportSummary)) {
+    return safeReceipt.lossReportSummary;
+  }
+  return null;
+}
+
+function isReadyDocxImportPreviewPlan(docxImportPreviewPlan) {
+  const plan = getObjectOrNull(docxImportPreviewPlan);
+  return Boolean(
+    plan
+    && plan.ok === true
+    && plan.schemaVersion === 'revision-bridge.docx-import-preview.v1'
+    && plan.type === 'docx.import.preview'
+    && plan.writeEffects === false,
+  );
+}
+
+function buildDocxImportPreviewValue(localFilePreview, fallbackPlan = null) {
+  const preview = getObjectOrNull(localFilePreview);
+  const plan = getObjectOrNull(preview?.docxImportPreviewPlan) || getObjectOrNull(fallbackPlan);
+  return {
+    imported: false,
+    preview: true,
+    accepted: false,
+    writeEffects: false,
+    contentPreviewOk: preview ? preview.contentPreviewOk === true : false,
+    importPreviewOk: preview ? preview.importPreviewOk === true : isReadyDocxImportPreviewPlan(plan),
+    localFilePreview: preview,
+    docxContentPreviewReport: getObjectOrNull(preview?.docxContentPreviewReport),
+    docxImportPreviewPlan: plan,
+    lossReport: getDocxImportLossReport(plan),
+  };
+}
+
+function buildDocxImportAcceptedValue(safeCreateResult, options = {}) {
+  const safeCreate = getObjectOrNull(safeCreateResult);
+  const createdSceneIds = Array.isArray(safeCreate?.createdSceneIds)
+    ? safeCreate.createdSceneIds.filter((sceneId) => typeof sceneId === 'string' && sceneId.length > 0)
+    : [];
+  const receipt = getObjectOrNull(safeCreate?.receipt);
+  return {
+    imported: true,
+    preview: Boolean(options.localFilePreview),
+    accepted: true,
+    safeCreate: true,
+    created: safeCreate?.created === true,
+    createdSceneIds,
+    userVisible: createdSceneIds.length > 0,
+    visibleCreatedSceneIds: createdSceneIds,
+    receipt,
+    lossReport: getDocxImportLossReport(options.docxImportPreviewPlan, receipt),
+  };
+}
+
+async function runDocxImportLocalFilePreviewBridge(electronAPI, input = {}) {
+  if (!electronAPI || typeof electronAPI !== 'object') {
+    return fail(
+      'E_COMMAND_FAILED',
+      EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
+      'ELECTRON_API_UNAVAILABLE',
+    );
+  }
+
+  let response;
+  try {
+    response = await invokeBridgeOnlyCommand(
+      electronAPI,
+      EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
+      input && typeof input === 'object' && !Array.isArray(input) ? input : {},
+    );
+  } catch (error) {
+    return fail(
+      'E_COMMAND_FAILED',
+      EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
+      'DOCX_IMPORT_LOCAL_FILE_PREVIEW_IPC_FAILED',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+
+  const bridged = unwrapBridgeResponseValue(response);
+  if (bridged && bridged.ok === true) {
+    return ok({
+      preview: true,
+      localFilePreview: bridged,
+    });
+  }
+  if (bridged && bridged.ok === false && bridged.error && typeof bridged.error === 'object') {
+    const error = bridged.error;
+    return fail(
+      typeof error.code === 'string' ? error.code : 'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
+      typeof error.op === 'string' ? error.op : EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
+      typeof error.reason === 'string' ? error.reason : 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
+      error.details && typeof error.details === 'object' && !Array.isArray(error.details) ? error.details : undefined,
+    );
+  }
+  return fail(
+    'E_COMMAND_FAILED',
+    EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
+    bridged && typeof bridged.reason === 'string'
+      ? bridged.reason
+      : 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_INVALID_RESPONSE',
+  );
+}
+
+async function runDocxImportSafeCreateBridge(electronAPI, input = {}) {
+  if (!electronAPI || typeof electronAPI !== 'object') {
+    return fail(
+      'E_DOCX_IMPORT_SAFE_CREATE_BACKEND_NOT_WIRED',
+      EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE,
+      'DOCX_IMPORT_SAFE_CREATE_BACKEND_NOT_WIRED',
+    );
+  }
+
+  const docxImportPreviewPlan = getObjectOrNull(input.docxImportPreviewPlan);
+  if (!docxImportPreviewPlan) {
+    return fail(
+      'E_DOCX_IMPORT_SAFE_CREATE_PREVIEW_PLAN_REQUIRED',
+      EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE,
+      'DOCX_IMPORT_SAFE_CREATE_PREVIEW_PLAN_REQUIRED',
+    );
+  }
+
+  const payload = {
+    requestId: normalizeDocxImportRequestId(input, 'docx-import-safe-create-request'),
+    docxImportPreviewPlan,
+  };
+
+  let response;
+  try {
+    response = await invokeBridgeOnlyCommand(
+      electronAPI,
+      EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE,
+      payload,
+    );
+  } catch (error) {
+    return fail(
+      'E_DOCX_IMPORT_SAFE_CREATE_IPC_FAILED',
+      EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE,
+      'DOCX_IMPORT_SAFE_CREATE_IPC_FAILED',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+
+  const bridged = unwrapBridgeResponseValue(response);
+  if (bridged && bridged.ok === true && bridged.safeCreateOk === true) {
+    return ok(buildDocxImportAcceptedValue(bridged, {
+      docxImportPreviewPlan,
+      localFilePreview: input.localFilePreview,
+    }));
+  }
+  if (bridged && bridged.ok === false && bridged.error && typeof bridged.error === 'object') {
+    const error = bridged.error;
+    return fail(
+      typeof error.code === 'string' ? error.code : 'E_DOCX_IMPORT_SAFE_CREATE_FAILED',
+      typeof error.op === 'string' ? error.op : EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE,
+      typeof error.reason === 'string' ? error.reason : 'DOCX_IMPORT_SAFE_CREATE_FAILED',
+      error.details && typeof error.details === 'object' && !Array.isArray(error.details) ? error.details : undefined,
+    );
+  }
+  return fail(
+    'E_DOCX_IMPORT_SAFE_CREATE_INVALID_RESPONSE',
+    EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE,
+    'DOCX_IMPORT_SAFE_CREATE_INVALID_RESPONSE',
+  );
+}
+
+async function runDocxImportPreviewPlanBridge(electronAPI, input = {}) {
+  if (!electronAPI || typeof electronAPI !== 'object') {
+    return fail(
+      'E_DOCX_IMPORT_PREVIEW_BACKEND_NOT_WIRED',
+      EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_IMPORT_PLAN,
+      'DOCX_IMPORT_PREVIEW_BACKEND_NOT_WIRED',
+    );
+  }
+
+  const docxContentPreviewReport = getObjectOrNull(input.docxContentPreviewReport);
+  if (!docxContentPreviewReport) {
+    return fail(
+      'E_DOCX_IMPORT_CONTENT_PREVIEW_REQUIRED',
+      EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_IMPORT_PLAN,
+      'DOCX_IMPORT_CONTENT_PREVIEW_REQUIRED',
+    );
+  }
+
+  let response;
+  try {
+    response = await invokeBridgeOnlyCommand(
+      electronAPI,
+      EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_IMPORT_PLAN,
+      {
+        requestId: normalizeDocxImportRequestId(input, 'docx-import-preview-plan-request'),
+        docxContentPreviewReport,
+      },
+    );
+  } catch (error) {
+    return fail(
+      'E_DOCX_IMPORT_PREVIEW_IPC_FAILED',
+      EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_IMPORT_PLAN,
+      'DOCX_IMPORT_PREVIEW_IPC_FAILED',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+
+  const bridged = unwrapBridgeResponseValue(response);
+  if (bridged && bridged.ok === true) {
+    return ok({
+      preview: bridged,
+      docxImportPreviewPlan: getObjectOrNull(bridged.docxImportPreviewPlan),
+    });
+  }
+  if (bridged && bridged.ok === false && bridged.error && typeof bridged.error === 'object') {
+    const error = bridged.error;
+    return fail(
+      typeof error.code === 'string' ? error.code : 'E_DOCX_IMPORT_PREVIEW_FAILED',
+      typeof error.op === 'string' ? error.op : EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_IMPORT_PLAN,
+      typeof error.reason === 'string' ? error.reason : 'DOCX_IMPORT_PREVIEW_FAILED',
+      error.details && typeof error.details === 'object' && !Array.isArray(error.details) ? error.details : undefined,
+    );
+  }
+  return fail(
+    'E_DOCX_IMPORT_PREVIEW_INVALID_RESPONSE',
+    EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_IMPORT_PLAN,
+    bridged && typeof bridged.reason === 'string'
+      ? bridged.reason
+      : 'DOCX_IMPORT_PREVIEW_INVALID_RESPONSE',
+  );
 }
 
 export function resolveLegacyActionToCommand(actionId, context = {}) {
@@ -1246,54 +1493,30 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => {
-      if (!electronAPI || typeof electronAPI !== 'object') {
-        return fail(
-          'E_COMMAND_FAILED',
-          EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
-          'ELECTRON_API_UNAVAILABLE',
-        );
-      }
-
-      let response;
-      try {
-        response = await invokeBridgeOnlyCommand(
-          electronAPI,
-          EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
-          input && typeof input === 'object' && !Array.isArray(input) ? input : {},
-        );
-      } catch (error) {
-        return fail(
-          'E_COMMAND_FAILED',
-          EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
-          'DOCX_IMPORT_LOCAL_FILE_PREVIEW_IPC_FAILED',
-          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
-        );
-      }
-
-      const bridged = unwrapBridgeResponseValue(response);
-      if (bridged && bridged.ok === true) {
-        return ok({
-          preview: true,
-          localFilePreview: bridged,
-        });
-      }
-      if (bridged && bridged.ok === false && bridged.error && typeof bridged.error === 'object') {
-        const error = bridged.error;
-        return fail(
-          typeof error.code === 'string' ? error.code : 'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
-          typeof error.op === 'string' ? error.op : EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
-          typeof error.reason === 'string' ? error.reason : 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
-          error.details && typeof error.details === 'object' && !Array.isArray(error.details) ? error.details : undefined,
-        );
-      }
-      return fail(
-        'E_COMMAND_FAILED',
-        EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_LOCAL_FILE,
-        bridged && typeof bridged.reason === 'string'
-          ? bridged.reason
-          : 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_INVALID_RESPONSE',
-      );
+      return runDocxImportLocalFilePreviewBridge(electronAPI, input);
     },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PROJECT_DOCX_PREVIEW_IMPORT_PLAN,
+      label: 'Prepare DOCX Import Plan',
+      group: 'file',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => runDocxImportPreviewPlanBridge(electronAPI, input),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PROJECT_DOCX_IMPORT_SAFE_CREATE,
+      label: 'Accept DOCX Import',
+      group: 'file',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => runDocxImportSafeCreateBridge(electronAPI, input),
   );
 
   registry.registerCommand(
@@ -1479,6 +1702,57 @@ export function registerProjectCommands(registry, options = {}) {
       COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1,
       'IMPORT_MARKDOWN_INVALID_RESPONSE',
     );
+  });
+
+  registerCatalogCommand(registry, COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, async (input = {}) => {
+    if (!electronAPI || typeof electronAPI !== 'object') {
+      return fail(
+        'E_DOCX_IMPORT_BACKEND_NOT_WIRED',
+        COMMAND_IDS.PROJECT_IMPORT_DOCX_V1,
+        'DOCX_IMPORT_BACKEND_NOT_WIRED',
+      );
+    }
+
+    const acceptRequested = input && typeof input === 'object' && input.accept === true;
+    let localFilePreview = getObjectOrNull(input?.localFilePreview);
+    let docxImportPreviewPlan = getObjectOrNull(input?.docxImportPreviewPlan);
+    let docxContentPreviewReport = getObjectOrNull(input?.docxContentPreviewReport)
+      || getObjectOrNull(localFilePreview?.docxContentPreviewReport);
+
+    if (!docxImportPreviewPlan) {
+      const previewResult = await runDocxImportLocalFilePreviewBridge(electronAPI, {
+        requestId: normalizeDocxImportRequestId(input),
+      });
+      if (!previewResult.ok) return previewResult;
+      localFilePreview = previewResult.value.localFilePreview;
+      docxImportPreviewPlan = getObjectOrNull(localFilePreview?.docxImportPreviewPlan);
+      docxContentPreviewReport = getObjectOrNull(localFilePreview?.docxContentPreviewReport);
+    }
+
+    if (!acceptRequested) {
+      return ok(buildDocxImportPreviewValue(localFilePreview, docxImportPreviewPlan));
+    }
+
+    const importPreviewResult = await runDocxImportPreviewPlanBridge(electronAPI, {
+      requestId: normalizeDocxImportRequestId(input, 'docx-import-accept-preview'),
+      docxContentPreviewReport,
+    });
+    if (!importPreviewResult.ok) return importPreviewResult;
+    docxImportPreviewPlan = getObjectOrNull(importPreviewResult.value.docxImportPreviewPlan);
+
+    if (!isReadyDocxImportPreviewPlan(docxImportPreviewPlan)) {
+      return fail(
+        'E_DOCX_IMPORT_PREVIEW_NOT_ACCEPTABLE',
+        COMMAND_IDS.PROJECT_IMPORT_DOCX_V1,
+        'DOCX_IMPORT_PREVIEW_NOT_ACCEPTABLE',
+      );
+    }
+
+    return runDocxImportSafeCreateBridge(electronAPI, {
+      requestId: normalizeDocxImportRequestId(input),
+      docxImportPreviewPlan,
+      localFilePreview,
+    });
   });
 
   registerCatalogCommand(registry, COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, async (input = {}) => {

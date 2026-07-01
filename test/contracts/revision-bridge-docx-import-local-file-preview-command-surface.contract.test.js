@@ -54,6 +54,7 @@ function instantiateDocxImportLocalFilePreviewCommandPort(options = {}) {
     showOpenDialog: [],
     stat: [],
     readFile: [],
+    rememberAdmission: [],
   };
   const sandbox = {
     Buffer,
@@ -96,6 +97,15 @@ function instantiateDocxImportLocalFilePreviewCommandPort(options = {}) {
       },
     },
     isPlainObjectValue,
+    rememberDocxImportPreviewPlanAdmission: typeof options.rememberAdmission === 'function'
+      ? (plan) => {
+          calls.rememberAdmission.push(cloneJsonSafe(plan));
+          return options.rememberAdmission(plan);
+        }
+      : (plan) => {
+          calls.rememberAdmission.push(cloneJsonSafe(plan));
+          return 'admitted-preview-plan';
+        },
     mainWindow: options.mainWindow || {},
     module: { exports: {} },
     exports: {},
@@ -435,6 +445,7 @@ test('DOCX local file preview command surface: clean selected DOCX returns pathl
   ]);
   assert.equal(result.docxImportPreviewPlan.code, 'DOCX_IMPORT_PREVIEW_READY');
   assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo');
+  assert.equal(port.calls.rememberAdmission.length, 0);
   assert.equal(port.calls.showOpenDialog.length, 1);
   assert.equal(port.calls.readFile.length, 1);
   assertNoForbiddenPublicFields(result);
