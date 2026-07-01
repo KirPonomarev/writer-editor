@@ -26,6 +26,14 @@
 - IME composition для closure gate подтверждён.
 - Existing DOCX baseline связан с machine-carried evidence.
 
+### Import/export MVP scope closeout
+- Import/export product acceptance gate is merged on current mainline via PR `1002` at merge SHA `7deeaa8f3cbbabe912df4862b2fb88d472cb11d3`.
+- Active acceptance artifact is `IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json` with status `PASS_TO_CLOSEOUT`.
+- MVP-scope product flows accepted by that gate are exactly: DOCX export, DOCX import preview accept open-scene, Markdown import, and Markdown export Save As.
+- Mindmap is accepted only as derived runtime/status binding; no user-facing Mindmap export command is claimed.
+- The closeout binding contour records the feature status as `FEATURE_CLOSED_FOR_MVP_SCOPE` for the named flows only.
+- This closeout does not claim full release readiness, packaged release readiness, cross-platform readiness, full npm test green, production picker coverage for Markdown export or DOCX import, perfect Word layout parity, broad DOCX/Markdown fidelity, PDF/EPUB/HTML export, cloud, sync, accounts, new dependencies, or user-facing Mindmap export.
+
 ### Phase status
 - Phase 00: PASS
 - Phase 01: PASS
@@ -166,4 +174,4 @@ No further transfer is required for this variant; the transfer axis is closed.
 - при отсутствии новых live nonblocked contradictions текущий статус: symbolic closeout ready with blocked and later freeze,
 - если новый live nonblocked contradiction переподтверждён, следующий шаг только один: one explicit evidence-backed nonblocked contour selection brief.
 - after vertical sheets factual sync, the next move must still be selected as exactly one explicit contour; no automatic runtime, export, toolbar, or perf write opens by this text.
-- after editorial sheet 10000 stress rebind and viewport-continuity repair, next work remains one owner-selected contour; manual macOS design approval, export expansion, platform adapters, collaboration, comments, history, and above-10000 profiling remain separate stage-gated lanes.
+- after editorial sheet 10000 stress rebind, viewport-continuity repair, and import/export MVP closeout, next work remains one owner-selected contour; manual macOS design approval, post-MVP export expansion, platform adapters, collaboration, comments, history, and above-10000 profiling remain separate stage-gated lanes.

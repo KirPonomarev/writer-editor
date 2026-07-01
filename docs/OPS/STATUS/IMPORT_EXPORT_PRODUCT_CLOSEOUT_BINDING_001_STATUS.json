@@ -1,0 +1,80 @@
+{
+  "taskId": "IMPORT_EXPORT_PRODUCT_CLOSEOUT_BINDING_001",
+  "schemaVersion": 1,
+  "status": "FEATURE_CLOSED_FOR_MVP_SCOPE",
+  "type": "closeout_binding",
+  "featureExpansion": false,
+  "binding": {
+    "sourceAcceptanceTaskId": "IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001",
+    "sourceAcceptanceArtifact": "IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json",
+    "sourceAcceptanceStatus": "PASS_TO_CLOSEOUT",
+    "sourcePullRequest": 1002,
+    "sourceMergeSha": "7deeaa8f3cbbabe912df4862b2fb88d472cb11d3"
+  },
+  "closedMvpProductFlows": [
+    "DOCX export",
+    "DOCX import preview accept open-scene",
+    "Markdown import",
+    "Markdown export Save As"
+  ],
+  "derivedOnlyBindings": [
+    "Mindmap derived runtime/status"
+  ],
+  "positiveClaims": {
+    "docxExport": "Targeted accepted minimal DOCX export through cmd.project.export.docxMin, canonical saved source, atomic buffer write, content order validation, and minimal mark validation.",
+    "docxImport": "Targeted accepted DOCX import preview accept open-scene flow using admitted preview plan, safe-create, tree refresh, and open created scene.",
+    "markdownImport": "Targeted accepted Markdown import through preview plus safe-create into an isolated scene with tree refresh and open-scene product parity checks.",
+    "markdownExport": "Targeted accepted Markdown export Save As primary path with saved-file proof, cancel as non-write, and fail-closed behavior without outPath and bytesWritten.",
+    "mindmap": "Mindmap remains derived runtime/status only and is not a user-facing export command or document truth."
+  },
+  "explicitNonClaims": [
+    "release readiness",
+    "packaged release readiness",
+    "cross-platform release readiness",
+    "full npm test green",
+    "production picker coverage for Markdown export",
+    "production picker coverage for DOCX import",
+    "perfect Word layout parity",
+    "full DOCX fidelity",
+    "full Markdown dialect completeness",
+    "PDF export",
+    "EPUB export",
+    "HTML export",
+    "cloud",
+    "accounts",
+    "sync",
+    "collaboration",
+    "new dependencies",
+    "user-facing Mindmap export command"
+  ],
+  "canonGuards": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "noNetworkRequired": true,
+    "docxFirstExportBaseline": true,
+    "previewDoesNotWriteProjectTruth": true,
+    "safeCreateDoesNotOverwrite": true,
+    "exportWritesChosenFileOnly": true,
+    "atomicWriteAndRecoveryPreserved": true,
+    "mindmapDerivedOnly": true,
+    "newDependenciesAdded": false,
+    "uiChanged": false
+  },
+  "docsBinding": {
+    "contextUpdated": true,
+    "handoffUpdated": true,
+    "bibleUpdated": false,
+    "canonUpdated": false,
+    "reason": "CONTEXT and HANDOFF carry current factual anchors; BIBLE and CANON remain product map and binding invariants without stale MVP import/export claims."
+  },
+  "sanityRecheck": {
+    "jsonValidity": "PASS",
+    "ossPolicy": "PASS",
+    "docxMinRuntimeSmoke": "PASS",
+    "docxLandscapeRuntimeSmoke": "PASS",
+    "compactDocxMarkdownUnitSet": "PASS",
+    "gitDiffCheck": "PASS"
+  },
+  "decision": "FEATURE_CLOSED_FOR_MVP_SCOPE",
+  "nextContour": "OWNER_SELECTED_ONLY"
+}
