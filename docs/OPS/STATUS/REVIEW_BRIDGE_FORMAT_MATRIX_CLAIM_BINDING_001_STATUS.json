@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_format_matrix_claim_binding",
   "featureExpansion": "bounded_review_bridge_claim_binding",
   "baseSha": "b5b2f9d943ac2199dbe92e00309eed6894af74ff",
@@ -180,12 +180,12 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending_delivery",
-    "featureCommitSha": "",
-    "featurePullRequest": null,
-    "featureMergeSha": "",
-    "featureMergedAtUtc": ""
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "0acf54f98f4c9fba340db6d9b2621ffda49d663a",
+    "featurePullRequest": 1026,
+    "featureMergeSha": "47a14974811eaa58f56de80f61268f5371aefd45",
+    "featureMergedAtUtc": "2026-07-01T23:57:07Z"
   },
   "decision": "FORMAT_MATRIX_CLAIM_BINDING_BOUND_FOR_CURRENT_SCOPE",
-  "nextStep": "complete delivery chain, then continue to release claim dossier binding unless the owner selects another Review Bridge contour"
+  "nextStep": "continue with the next owner-selected Review Bridge claim boundary"
 }
