@@ -21,6 +21,8 @@ function loadReviewSurfaceHelpers() {
   const snippet = `${source.slice(start, end + endMarker.length)}
 this.__reviewSurfaceExports = {
   REVIEW_SURFACE_RECEIPT_SCHEMA,
+  REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID,
+  reviewSurfaceBuildExactTextApplyPayload,
   reviewSurfaceNormalizeState,
   buildReviewSurfaceViewModel,
   renderReviewSurfaceMarkup,
@@ -31,6 +33,93 @@ this.__reviewSurfaceExports = {
     filename: 'review-surface-ui.editor-snippet.js',
   });
   return sandbox.__reviewSurfaceExports;
+}
+
+function loadReviewSurfaceClickHarness(bridgeResult) {
+  const source = read(['src', 'renderer', 'editor.js']);
+  const presentationStart = source.indexOf('// REVIEW_SURFACE_PRESENTATION_START');
+  const presentationEnd = source.indexOf('// REVIEW_SURFACE_PRESENTATION_END');
+  const runtimeStart = source.indexOf('function setReviewSurfaceExactTextApplyTransientState');
+  const runtimeEnd = source.indexOf('function initializeReviewSurface()', runtimeStart);
+  assert.notEqual(presentationStart, -1, 'review surface presentation start marker must exist');
+  assert.notEqual(presentationEnd, -1, 'review surface presentation end marker must exist');
+  assert.ok(presentationEnd > presentationStart, 'review surface presentation markers must be ordered');
+  assert.notEqual(runtimeStart, -1, 'review surface apply runtime start must exist');
+  assert.ok(runtimeEnd > runtimeStart, 'review surface apply runtime block must be bounded');
+
+  const snippet = `${source.slice(presentationStart, presentationEnd)}
+let reviewSurfaceExactTextApplyTransientState = null;
+let renderCount = 0;
+const bridgeCalls = [];
+const stateCalls = [];
+
+class FakeElement extends Element {
+  closest() {
+    return null;
+  }
+}
+class FakeHTMLElement extends HTMLElement {}
+class FakeButton extends HTMLButtonElement {
+  constructor(changeId) {
+    super();
+    this.dataset = { changeId };
+    this.disabled = false;
+  }
+  closest(selector) {
+    return selector === '[data-review-apply-exact-change]' ? this : null;
+  }
+}
+
+const fakeButton = new FakeButton('change-1');
+const reviewSurfaceHost = new FakeHTMLElement();
+reviewSurfaceHost.contains = (node) => node === fakeButton;
+reviewSurfaceHost.addEventListener = () => {};
+
+function renderReviewSurface() {
+  renderCount += 1;
+}
+function setReviewSurfaceState(nextState = {}, options = {}) {
+  stateCalls.push({ nextState, options });
+  return nextState;
+}
+async function loadReviewSurfaceFromQuery() {
+  stateCalls.push({ query: true });
+  return {};
+}
+async function invokePreloadUiCommandBridge(commandId, payload) {
+  bridgeCalls.push({ commandId, payload });
+  return __bridgeResult;
+}
+
+${source.slice(runtimeStart, runtimeEnd)}
+
+this.__reviewSurfaceClickHarness = {
+  fakeButton,
+  bridgeCalls,
+  stateCalls,
+  getTransientState: () => reviewSurfaceExactTextApplyTransientState,
+  getRenderCount: () => renderCount,
+  click: () => handleReviewSurfaceExactTextApplyClick({ target: fakeButton }),
+};
+`;
+  const sandbox = {
+    __bridgeResult: bridgeResult,
+    Element: null,
+    HTMLElement: null,
+    HTMLButtonElement: null,
+  };
+  vm.runInNewContext(
+    `class Element {}
+class HTMLElement extends Element {}
+class HTMLButtonElement extends HTMLElement {}
+this.Element = Element;
+this.HTMLElement = HTMLElement;
+this.HTMLButtonElement = HTMLButtonElement;
+${snippet}`,
+    sandbox,
+    { filename: 'review-surface-click-harness.editor-snippet.js' },
+  );
+  return sandbox.__reviewSurfaceClickHarness;
 }
 
 function createReviewSurfaceState() {
@@ -136,6 +225,19 @@ function createReviewSurfaceState() {
       diagnostics: [],
     },
   };
+}
+
+function createReadyExactOnlyReviewSurfaceState() {
+  const state = createReviewSurfaceState();
+  state.revisionSession.reviewGraph.structuralChanges = [];
+  state.structuralManualReviewPreview = {
+    items: [],
+    unsupportedObservations: [],
+    summary: {
+      totalStructuralChanges: 0,
+    },
+  };
+  return state;
 }
 
 function createCanonicalAdapterPayload() {
@@ -265,8 +367,8 @@ test('review surface ui: unsupported observations still render only from explici
 
   assert.equal(viewModel.unsupportedObservations[0].reason, 'REVISION_BRIDGE_STRUCTURAL_MANUAL_REVIEW_UNSUPPORTED_KIND');
   assert.ok(markup.includes('Только чтение'));
-  assert.ok(markup.includes('Только показ'));
-  assert.ok(markup.includes('Записи в проект мимо безопасного пути здесь нет.'));
+  assert.ok(markup.includes('Безопасная проверка'));
+  assert.ok(markup.includes('Запись в проект идет только через подтвержденный путь.'));
 });
 
 test('review surface ui: canonical adapter payload preserves unsupported observations from explicit structural preview', () => {
@@ -330,7 +432,9 @@ test('review surface ui: exact-text preview and receipt render only when support
   assert.equal(validViewModel.receipt.writeStatus, 'applied');
   assert.equal(validViewModel.receipt.backupId, '1700000000000');
   assert.equal(validViewModel.receipt.writtenAt, '2023-11-14T22:13:20.000Z');
-  assert.ok(validMarkup.includes('Только просмотр'));
+  assert.equal(validViewModel.exactTextPreview.ops[0].applyState, 'applied');
+  assert.ok(validMarkup.includes('data-review-apply-exact-change'));
+  assert.ok(validMarkup.includes('disabled aria-disabled="true"'));
   assert.ok(validMarkup.includes('&quot;beta&quot; -&gt; &quot;delta&quot;'));
   assert.ok(validMarkup.includes('baseline-1'));
   assert.ok(validMarkup.includes('replaceExactText'));
@@ -371,9 +475,141 @@ test('review surface ui: exact-text preview and receipt render only when support
   const blockedMarkup = helpers.renderReviewSurfaceMarkup(blockedViewModel);
   assert.equal(blockedViewModel.receipt, null);
   assert.ok(blockedMarkup.includes('Предпросмотр заблокирован'));
-  assert.equal(blockedMarkup.includes('Только просмотр'), false);
+  assert.equal(blockedMarkup.includes('data-review-apply-exact-change'), false);
   assert.ok(blockedMarkup.includes('REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_DUPLICATE_MATCH'));
   assert.equal(blockedMarkup.includes('tx_invalid'), false);
+});
+
+test('review surface ui: ready exact-text preview exposes one visible apply action without authority payload', () => {
+  const helpers = loadReviewSurfaceHelpers();
+  const state = createReadyExactOnlyReviewSurfaceState();
+  const viewModel = helpers.buildReviewSurfaceViewModel(state);
+  const markup = helpers.renderReviewSurfaceMarkup(viewModel);
+
+  assert.equal(helpers.REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID, 'cmd.project.review.applyExactTextChange');
+  assert.equal(viewModel.exactTextPreview.state, 'ready');
+  assert.equal(viewModel.exactTextPreview.ops.length, 1);
+  assert.equal(viewModel.exactTextPreview.ops[0].applyState, 'ready');
+  assert.equal(viewModel.exactTextPreview.ops[0].applyLabel, 'Применить');
+  assert.equal(viewModel.exactTextPreview.ops[0].applyDisabled, false);
+  assert.ok(markup.includes('data-review-apply-exact-change'));
+  assert.ok(markup.includes('data-change-id="change-1"'));
+  assert.ok(markup.includes('>Применить</button>'));
+  assert.equal(markup.includes('disabled aria-disabled="true"'), false);
+
+  assert.equal(
+    JSON.stringify(helpers.reviewSurfaceBuildExactTextApplyPayload('request-1', 'change-1')),
+    JSON.stringify({ requestId: 'request-1', changeId: 'change-1' }),
+  );
+  assert.equal(
+    JSON.stringify(helpers.reviewSurfaceBuildExactTextApplyPayload('', 'change-1')),
+    JSON.stringify({ changeId: 'change-1' }),
+  );
+});
+
+test('review surface ui: non-single exact preview never renders an enabled apply action', () => {
+  const helpers = loadReviewSurfaceHelpers();
+  const state = createReadyExactOnlyReviewSurfaceState();
+  state.exactTextPlanPreview.plan.applyOps.push({
+    opId: 'rbop-2',
+    sceneId: 'scene-1',
+    changeId: 'change-2',
+    from: 11,
+    to: 15,
+    expectedText: 'more',
+    replacementText: 'less',
+  });
+
+  const viewModel = helpers.buildReviewSurfaceViewModel(state);
+  const markup = helpers.renderReviewSurfaceMarkup(viewModel);
+
+  assert.equal(viewModel.exactTextPreview.ops.length, 2);
+  assert.equal(viewModel.exactTextPreview.ops.every((op) => op.applyState === 'blocked'), true);
+  assert.ok(markup.includes('REVIEW_SURFACE_SINGLE_EXACT_CHANGE_REQUIRED'));
+  assert.equal((markup.match(/data-review-apply-exact-change/g) || []).length, 2);
+  assert.equal((markup.match(/disabled aria-disabled="true"/g) || []).length, 2);
+});
+
+test('review surface ui: exact apply requires a named change id before enabling action', () => {
+  const helpers = loadReviewSurfaceHelpers();
+  const state = createReadyExactOnlyReviewSurfaceState();
+  state.exactTextPlanPreview.plan.applyOps[0].changeId = '';
+
+  const viewModel = helpers.buildReviewSurfaceViewModel(state);
+  const markup = helpers.renderReviewSurfaceMarkup(viewModel);
+
+  assert.equal(viewModel.exactTextPreview.ops.length, 1);
+  assert.equal(viewModel.exactTextPreview.ops[0].applyState, 'blocked');
+  assert.equal(viewModel.exactTextPreview.ops[0].applyDisabled, true);
+  assert.ok(markup.includes('REVIEW_SURFACE_EXACT_CHANGE_ID_REQUIRED'));
+  assert.ok(markup.includes('disabled aria-disabled="true"'));
+});
+
+test('review surface ui: mixed structural review blocks visible exact apply before main write path', () => {
+  const helpers = loadReviewSurfaceHelpers();
+  const state = createReviewSurfaceState();
+
+  const viewModel = helpers.buildReviewSurfaceViewModel(state);
+  const markup = helpers.renderReviewSurfaceMarkup(viewModel);
+
+  assert.equal(viewModel.exactTextPreview.ops.length, 1);
+  assert.equal(viewModel.exactTextPreview.ops[0].applyState, 'blocked');
+  assert.equal(viewModel.exactTextPreview.ops[0].applyDisabled, true);
+  assert.ok(markup.includes('REVIEW_SURFACE_STRUCTURAL_REVIEW_BLOCKS_EXACT_APPLY'));
+  assert.ok(markup.includes('disabled aria-disabled="true"'));
+});
+
+test('review surface ui: exact apply click sends intent-only payload and adopts main review surface', async () => {
+  const harness = loadReviewSurfaceClickHarness({
+    ok: true,
+    value: {
+      ok: true,
+      applied: true,
+      reviewSurface: {
+        receipt: {
+          changeId: 'change-1',
+          writeStatus: 'applied',
+        },
+      },
+    },
+  });
+
+  await harness.click();
+
+  assert.equal(harness.bridgeCalls.length, 1);
+  assert.equal(harness.bridgeCalls[0].commandId, 'cmd.project.review.applyExactTextChange');
+  assert.equal(
+    JSON.stringify(Object.keys(harness.bridgeCalls[0].payload).sort()),
+    JSON.stringify(['changeId', 'requestId']),
+  );
+  assert.equal(harness.bridgeCalls[0].payload.changeId, 'change-1');
+  assert.equal(harness.bridgeCalls[0].payload.requestId.startsWith('review-exact-apply-change-1-'), true);
+  assert.equal(harness.getTransientState(), null);
+  assert.equal(harness.stateCalls.length, 1);
+  assert.equal(harness.stateCalls[0].nextState.receipt.changeId, 'change-1');
+  assert.equal(harness.stateCalls[0].nextState.receipt.writeStatus, 'applied');
+});
+
+test('review surface ui: exact apply click failure stays local and does not invent receipt truth', async () => {
+  const harness = loadReviewSurfaceClickHarness({
+    ok: false,
+    reason: 'COMMAND_EXECUTION_FAILED',
+    value: {
+      ok: false,
+      error: {
+        reason: 'REVIEW_EXACT_TEXT_APPLY_DIRTY_EDITOR_BLOCKED',
+      },
+    },
+  });
+
+  await harness.click();
+
+  assert.equal(harness.bridgeCalls.length, 1);
+  assert.equal(harness.stateCalls.length, 0);
+  assert.equal(harness.getTransientState().state, 'blocked');
+  assert.equal(harness.getTransientState().changeId, 'change-1');
+  assert.equal(harness.getTransientState().reason, 'REVIEW_EXACT_TEXT_APPLY_DIRTY_EDITOR_BLOCKED');
+  assert.equal(harness.getRenderCount() >= 2, true);
 });
 
 test('review surface ui: empty and error states stay deterministic', () => {

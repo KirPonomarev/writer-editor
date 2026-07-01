@@ -46,6 +46,44 @@ test('preload ui command bridge: editor cmd.ui handlers use bridge and no longer
   assert.equal(source.includes('window.electronAPI.setFontSizePx(px);'), false)
 })
 
+test('preload ui command bridge: review exact apply uses bridge with intent-only payload', () => {
+  const source = read('src/renderer/editor.js')
+  const handlerStart = source.indexOf('async function handleReviewSurfaceExactTextApplyClick(event)')
+  const handlerEnd = source.indexOf('function bindReviewSurfaceApplyActions()', handlerStart)
+  const handler = source.slice(handlerStart, handlerEnd)
+  const payloadStart = source.indexOf('function reviewSurfaceBuildExactTextApplyPayload(requestId, changeId)')
+  const payloadEnd = source.indexOf('function reviewSurfaceUnwrapCommandResult(result)', payloadStart)
+  const payloadHelper = source.slice(payloadStart, payloadEnd)
+
+  assert.ok(handlerStart > -1)
+  assert.ok(handlerEnd > handlerStart)
+  assert.ok(payloadStart > -1)
+  assert.ok(payloadEnd > payloadStart)
+  assert.ok(source.includes("const REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID = 'cmd.project.review.applyExactTextChange';"))
+  assert.ok(handler.includes('invokePreloadUiCommandBridge(REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID, payload)'))
+  assert.ok(handler.includes('reviewSurfaceBuildExactTextApplyPayload(requestId, changeId)'))
+  assert.equal(handler.includes('dispatchUiCommand('), false)
+
+  for (const allowed of ['requestId', 'changeId']) {
+    assert.ok(payloadHelper.includes(allowed), allowed)
+  }
+  for (const forbidden of [
+    'scenePath',
+    'projectSnapshot',
+    'projectRoot',
+    'planPreview',
+    'applyOps',
+    'revisionSession',
+    'reviewItem',
+    'receipt',
+    'inputHash',
+    'outputHash',
+  ]) {
+    assert.equal(payloadHelper.includes(forbidden), false, forbidden)
+    assert.equal(handler.includes(forbidden), false, forbidden)
+  }
+})
+
 test('preload ui command bridge: legacy internal non-command paths remain present', () => {
   const preloadSource = read('src/preload.js')
   const editorSource = read('src/renderer/editor.js')

@@ -3087,7 +3087,7 @@ body.dark-theme .toolbar__swatch::before {
 .right-rail-review-actions {
   width: auto;
   display: inline-flex;
-  gap: 0;
+  gap: 8px;
   padding: 0;
   border: none;
   background: transparent;
@@ -3199,13 +3199,40 @@ body.dark-theme .toolbar__swatch::before {
   color: #2c5b80;
 }
 
+.right-rail-review-pill--ready,
+.right-rail-review-pill--applying,
+.right-rail-review-pill--applied {
+  color: #2f6644;
+}
+
 .right-rail-review-pill--blocked,
-.right-rail-review-pill--manual {
+.right-rail-review-pill--manual,
+.right-rail-review-pill--failed {
   color: #8a3b2e;
 }
 
 .right-rail-review-pill--readonly {
   color: #655f57;
+}
+
+.right-rail-review-apply-button {
+  min-height: 28px;
+  padding: 0 11px;
+  border: 1px solid var(--toolbar-control-border);
+  background: var(--foreground);
+  color: var(--card);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 12px;
+  line-height: 16px;
+  cursor: pointer;
+}
+
+.right-rail-review-apply-button:disabled {
+  cursor: default;
+  opacity: 0.56;
 }
 
 .right-rail-commands-host {
