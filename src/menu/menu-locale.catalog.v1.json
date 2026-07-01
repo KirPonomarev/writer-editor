@@ -162,10 +162,20 @@
       "ru": "Ревью",
       "en": "Review"
     },
+    "menu.review.importLocalPacket": {
+      "base": "Import Review Packet",
+      "ru": "Импортировать review packet",
+      "en": "Import Review Packet"
+    },
     "menu.review.openMode": {
       "base": "Open Review Mode",
       "ru": "Открыть режим ревью",
       "en": "Open Review Mode"
+    },
+    "menu.review.clearSession": {
+      "base": "Clear Review Session",
+      "ru": "Очистить review session",
+      "en": "Clear Review Session"
     },
     "menu.review.recovery": {
       "base": "Recovery",

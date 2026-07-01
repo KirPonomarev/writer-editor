@@ -128,6 +128,9 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
   if (commandId === 'cmd.project.review.openRecovery') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.openRecovery, commandId) }
   }
+  if (commandId === 'cmd.project.review.openComments') {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.reviewOpenComments, commandId) }
+  }
   if (commandId === 'cmd.project.insert.addCard') {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.insertAddCard, commandId) }
   }

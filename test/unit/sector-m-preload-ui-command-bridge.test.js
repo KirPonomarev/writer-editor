@@ -88,6 +88,38 @@ test('preload ui command bridge: review exact apply uses bridge with intent-only
   }
 })
 
+test('preload ui command bridge: review local packet import uses bridge with intent-only payload', () => {
+  const source = read('src/renderer/editor.js')
+  const handlerStart = source.indexOf('async function handleReviewImportLocalPacket()')
+  const handlerEnd = source.indexOf('async function handleReviewClearSession()', handlerStart)
+  const handler = source.slice(handlerStart, handlerEnd)
+
+  assert.ok(handlerStart > -1)
+  assert.ok(handlerEnd > handlerStart)
+  assert.ok(source.includes("const REVIEW_SURFACE_IMPORT_LOCAL_PACKET_COMMAND_ID = 'cmd.project.review.importLocalPacket';"))
+  assert.ok(handler.includes('invokePreloadUiCommandBridge(REVIEW_SURFACE_IMPORT_LOCAL_PACKET_COMMAND_ID, { requestId })'))
+  assert.ok(handler.includes('createReviewImportLocalPacketRequestId()'))
+  assert.ok(handler.includes('setReviewSurfaceState(commandResult.reviewSurface)'))
+  assert.equal(handler.includes('dispatchUiCommand('), false)
+
+  for (const allowed of ['requestId']) {
+    assert.ok(handler.includes(allowed), allowed)
+  }
+  for (const forbidden of [
+    'filePath',
+    'path:',
+    'rawJson',
+    'jsonText',
+    'projectRoot',
+    'scenePath',
+    'applyOps',
+    'receipt',
+    'revisionSession:',
+  ]) {
+    assert.equal(handler.includes(forbidden), false, forbidden)
+  }
+})
+
 test('preload ui command bridge: legacy internal non-command paths remain present', () => {
   const preloadSource = read('src/preload.js')
   const editorSource = read('src/renderer/editor.js')

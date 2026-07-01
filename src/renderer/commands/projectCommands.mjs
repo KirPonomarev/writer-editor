@@ -67,7 +67,9 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   LIST_TOGGLE_ORDERED: 'cmd.project.list.toggleOrdered',
   LIST_CLEAR: 'cmd.project.list.clear',
   INSERT_LINK_PROMPT: 'cmd.project.insert.linkPrompt',
+  REVIEW_IMPORT_LOCAL_PACKET: 'cmd.project.review.importLocalPacket',
   REVIEW_OPEN_COMMENTS: 'cmd.project.review.openComments',
+  REVIEW_CLEAR_SESSION: 'cmd.project.review.clearSession',
   PLAN_FLOW_SAVE: 'cmd.project.plan.flowSave',
   REVIEW_EXPORT_MARKDOWN: 'cmd.project.review.exportMarkdown',
   PROJECT_DOCX_PREVIEW_LOCAL_FILE: 'cmd.project.docx.previewLocalFile',
@@ -1460,6 +1462,28 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => runUiAction(uiActions, 'reviewOpenComments', EXTRA_COMMAND_IDS.REVIEW_OPEN_COMMENTS, input),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.REVIEW_IMPORT_LOCAL_PACKET,
+      label: 'Import Review Packet',
+      group: 'review',
+      surface: ['menu', 'palette'],
+      hotkey: '',
+    },
+    async (input = {}) => runUiAction(uiActions, 'reviewImportLocalPacket', EXTRA_COMMAND_IDS.REVIEW_IMPORT_LOCAL_PACKET, input),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.REVIEW_CLEAR_SESSION,
+      label: 'Clear Review Session',
+      group: 'review',
+      surface: ['menu', 'palette'],
+      hotkey: '',
+    },
+    async (input = {}) => runUiAction(uiActions, 'reviewClearSession', EXTRA_COMMAND_IDS.REVIEW_CLEAR_SESSION, input),
   );
 
   registry.registerCommand(

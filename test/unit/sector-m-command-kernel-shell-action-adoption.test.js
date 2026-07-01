@@ -96,6 +96,37 @@ test('command kernel shell action adoption: runtime and docs capability bindings
   }
 })
 
+test('command kernel shell action adoption: review local packet product entry is node-only and ui-action backed', async () => {
+  const source = read('src/renderer/commands/projectCommands.mjs')
+  const editorSource = read('src/renderer/editor.js')
+  const projectCommands = await loadProjectCommands()
+  const capabilityPolicy = await loadCapabilityPolicy()
+  const bindingDoc = readBindingDoc()
+  const bindingMap = new Map(bindingDoc.items.map((item) => [item.commandId, item.capabilityId]))
+
+  const expected = new Map([
+    [projectCommands.EXTRA_COMMAND_IDS.REVIEW_IMPORT_LOCAL_PACKET, 'cap.project.review.importLocalPacket'],
+    [projectCommands.EXTRA_COMMAND_IDS.REVIEW_CLEAR_SESSION, 'cap.project.review.clearSession'],
+  ])
+
+  assert.equal(projectCommands.EXTRA_COMMAND_IDS.REVIEW_IMPORT_LOCAL_PACKET, 'cmd.project.review.importLocalPacket')
+  assert.equal(projectCommands.EXTRA_COMMAND_IDS.REVIEW_CLEAR_SESSION, 'cmd.project.review.clearSession')
+  assert.ok(source.includes('id: EXTRA_COMMAND_IDS.REVIEW_IMPORT_LOCAL_PACKET,'))
+  assert.ok(source.includes("'reviewImportLocalPacket', EXTRA_COMMAND_IDS.REVIEW_IMPORT_LOCAL_PACKET"))
+  assert.ok(source.includes('id: EXTRA_COMMAND_IDS.REVIEW_CLEAR_SESSION,'))
+  assert.ok(source.includes("'reviewClearSession', EXTRA_COMMAND_IDS.REVIEW_CLEAR_SESSION"))
+  assert.ok(editorSource.includes('reviewImportLocalPacket: () => handleReviewImportLocalPacket(),'))
+  assert.ok(editorSource.includes('reviewClearSession: () => handleReviewClearSession(),'))
+
+  for (const [commandId, capabilityId] of expected.entries()) {
+    assert.equal(capabilityPolicy.CAPABILITY_BINDING[commandId], capabilityId)
+    assert.equal(bindingMap.get(commandId), capabilityId)
+    assert.equal(capabilityPolicy.CAPABILITY_MATRIX.node[capabilityId], true)
+    assert.equal(capabilityPolicy.CAPABILITY_MATRIX.web[capabilityId], false)
+    assert.equal(capabilityPolicy.CAPABILITY_MATRIX['mobile-wrapper'][capabilityId], false)
+  }
+})
+
 test('command kernel shell action adoption: out-of-scope surfaces remain unchanged by intent', () => {
   const mainSource = read('src/main.js')
   const preloadSource = read('src/preload.js')

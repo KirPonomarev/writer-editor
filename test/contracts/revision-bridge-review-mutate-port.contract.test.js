@@ -13,6 +13,8 @@ const BRIDGE_MODULE_PATH = path.join(REPO_ROOT, 'src', 'io', 'revisionBridge', '
 const EXACT_SAFE_WRITE_MODULE_PATH = path.join(REPO_ROOT, 'src', 'io', 'revisionBridge', 'exactTextMinSafeWrite.mjs');
 const SECTION_START = '// CONTOUR_01A_REVIEW_MUTATE_PORT_START';
 const SECTION_END = '// CONTOUR_01A_REVIEW_MUTATE_PORT_END';
+const LOCAL_PACKET_SECTION_START = '// REVIEW_LOCAL_PACKET_COMMAND_SURFACE_START';
+const LOCAL_PACKET_SECTION_END = '// REVIEW_LOCAL_PACKET_COMMAND_SURFACE_END';
 
 function readMainSource() {
   return fs.readFileSync(MAIN_PATH, 'utf8');
@@ -316,14 +318,17 @@ function findForbiddenKeys(value, forbiddenKeys, pathSegments = []) {
 function instantiateReviewMutatePort(options = {}) {
   const mainSource = readMainSource();
   const section = extractMarkedSection(mainSource, SECTION_START, SECTION_END);
+  const localPacketSection = extractMarkedSection(mainSource, LOCAL_PACKET_SECTION_START, LOCAL_PACKET_SECTION_END);
   const sandbox = {
     activeReviewSessionStore: null,
     activeReviewSessionLifecycle: 'passive',
     currentReviewSurfacePayload: {},
     currentReviewSurfacePayloadSource: 'none',
     currentReviewSurfacePayloadContentHash: '',
+    Buffer,
     cloneJsonSafe,
     computeHash,
+    fs: options.fs || fs.promises,
     hasReviewSurfacePayload,
     isPlainObjectValue,
     loadRevisionBridgeModule: typeof options.loadRevisionBridgeModule === 'function'
@@ -333,14 +338,17 @@ function instantiateReviewMutatePort(options = {}) {
       },
     module: { exports: {} },
     exports: {},
+    path,
   };
   vm.runInNewContext(
     `${section}
+${localPacketSection}
 module.exports = {
   resetActiveReviewSessionStore,
   normalizeReviewSessionImportRecord,
   cloneActiveReviewSessionStore,
   readActiveReviewSessionReviewSurface,
+  handleReviewSurfaceImportLocalPacketCommandSurface,
   handleReviewSurfaceImportPacketCommandSurface,
   handleReviewSurfaceClearSessionCommandSurface,
   handleReviewSurfaceApplyExactTextChangeCommandSurface,
@@ -370,7 +378,11 @@ test('review mutate port contract: review commands are exposed through ui comman
 
   assert.match(
     source,
-    /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS\s*=\s*new Set\(\[[\s\S]*'cmd\.project\.review\.importPacket'[\s\S]*'cmd\.project\.review\.clearSession'[\s\S]*'cmd\.project\.review\.applyExactTextChange'[\s\S]*'cmd\.project\.review\.applyExactTextChangesBatch'/,
+    /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS\s*=\s*new Set\(\[[\s\S]*'cmd\.project\.review\.importLocalPacket'[\s\S]*'cmd\.project\.review\.importPacket'[\s\S]*'cmd\.project\.review\.clearSession'[\s\S]*'cmd\.project\.review\.applyExactTextChange'[\s\S]*'cmd\.project\.review\.applyExactTextChangesBatch'/,
+  );
+  assert.match(
+    source,
+    /'cmd\.project\.review\.importLocalPacket':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{[\s\S]*handleReviewSurfaceImportLocalPacketCommandSurface\(payload\)/,
   );
   assert.match(
     source,
@@ -378,7 +390,7 @@ test('review mutate port contract: review commands are exposed through ui comman
   );
   assert.match(
     source,
-    /'cmd\.project\.review\.clearSession':\s*async\s*\(\)\s*=>\s*\{\s*return handleReviewSurfaceClearSessionCommandSurface\(\);/,
+    /'cmd\.project\.review\.clearSession':\s*async\s*\(\)\s*=>\s*\{[\s\S]*handleReviewSurfaceClearSessionCommandSurface\(\)/,
   );
   assert.match(
     source,
@@ -428,6 +440,263 @@ test('review mutate port contract: import stores canonical in-memory session sha
   assert.equal(state.currentReviewSurfacePayloadSource, 'session');
   assert.equal(state.currentReviewSurfacePayloadContentHash, '');
   assert.deepEqual(normalizeVmValue(port.readActiveReviewSessionReviewSurface()), payload.reviewSurface);
+});
+
+test('review mutate port contract: local packet import reads main-owned json and activates review session', async () => {
+  const port = instantiateReviewMutatePort();
+  const payload = {
+    projectId: 'project-1',
+    sessionId: 'session-local-1',
+    baselineHash: 'baseline-local-1',
+    reviewSurface: {
+      summary: { total: 1 },
+      changes: [{ changeId: 'change-local-1' }],
+    },
+    revisionSession: {
+      status: 'preview',
+    },
+  };
+  const text = JSON.stringify(payload);
+  const calls = [];
+
+  const result = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+    { requestId: 'local-request-1' },
+    {
+      pickLocalFile: async (input) => {
+        calls.push({ pick: input });
+        return {
+          path: path.join(os.tmpdir(), 'review-packet.json'),
+          name: 'review-packet.json',
+          size: Buffer.byteLength(text, 'utf8'),
+        };
+      },
+      readLocalFileText: async (selection) => {
+        calls.push({ read: selection });
+        return text;
+      },
+    },
+  );
+
+  assert.equal(result.ok, true);
+  assert.equal(result.commandId, 'cmd.project.review.importLocalPacket');
+  assert.equal(result.requestId, 'local-request-1');
+  assert.equal(result.imported, true);
+  assert.equal(result.fileName, 'review-packet.json');
+  assert.equal(result.path, undefined);
+  assert.equal(result.filePath, undefined);
+  assert.deepEqual(normalizeVmValue(result.reviewSurface), payload.reviewSurface);
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'active');
+  assert.deepEqual(normalizeVmValue(port.readActiveReviewSessionReviewSurface()), payload.reviewSurface);
+  assert.deepEqual(normalizeVmValue(calls), [
+    { pick: { requestId: 'local-request-1' } },
+    {
+      read: {
+        path: path.join(os.tmpdir(), 'review-packet.json'),
+        name: 'review-packet.json',
+        size: Buffer.byteLength(text, 'utf8'),
+        requestId: 'local-request-1',
+      },
+    },
+  ]);
+});
+
+test('review mutate port contract: local packet import cancel is a no-op and does not activate session', async () => {
+  const port = instantiateReviewMutatePort();
+  let readCalled = false;
+
+  const result = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+    { requestId: 'local-request-cancel' },
+    {
+      pickLocalFile: async () => ({ canceled: true }),
+      readLocalFileText: async () => {
+        readCalled = true;
+        return '{}';
+      },
+    },
+  );
+
+  assert.deepEqual(normalizeVmValue(result), {
+    ok: true,
+    commandId: 'cmd.project.review.importLocalPacket',
+    requestId: 'local-request-cancel',
+    imported: false,
+    cancelled: true,
+  });
+  assert.equal(readCalled, false);
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
+});
+
+test('review mutate port contract: local packet import rejects renderer authority before file picker', async () => {
+  const port = instantiateReviewMutatePort();
+  let pickCalled = false;
+
+  const result = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+    {
+      requestId: 'local-request-denied',
+      filePath: '/tmp/renderer-owned.json',
+    },
+    {
+      pickLocalFile: async () => {
+        pickCalled = true;
+        return { canceled: true };
+      },
+    },
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error.op, 'cmd.project.review.importLocalPacket');
+  assert.equal(result.error.reason, 'REVIEW_IMPORT_LOCAL_PACKET_PAYLOAD_UNSUPPORTED_FIELDS');
+  assert.deepEqual(normalizeVmValue(result.error.details.fields), ['filePath']);
+  assert.equal(pickCalled, false);
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
+});
+
+test('review mutate port contract: local packet import rejects non-json and oversize selections before read', async () => {
+  const port = instantiateReviewMutatePort();
+  let readCalled = false;
+
+  const nonJson = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+    { requestId: 'local-request-non-json' },
+    {
+      pickLocalFile: async () => ({
+        path: path.join(os.tmpdir(), 'review-packet.txt'),
+        name: 'review-packet.txt',
+        size: 12,
+      }),
+      readLocalFileText: async () => {
+        readCalled = true;
+        return '{}';
+      },
+    },
+  );
+
+  assert.equal(nonJson.ok, false);
+  assert.equal(nonJson.error.reason, 'REVIEW_IMPORT_LOCAL_PACKET_JSON_REQUIRED');
+  assert.equal(readCalled, false);
+
+  const tooLarge = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+    { requestId: 'local-request-too-large' },
+    {
+      pickLocalFile: async () => ({
+        path: path.join(os.tmpdir(), 'review-packet.json'),
+        name: 'review-packet.json',
+        size: 2 * 1024 * 1024 + 1,
+      }),
+      readLocalFileText: async () => {
+        readCalled = true;
+        return '{}';
+      },
+    },
+  );
+
+  assert.equal(tooLarge.ok, false);
+  assert.equal(tooLarge.error.reason, 'REVIEW_IMPORT_LOCAL_PACKET_TOO_LARGE');
+  assert.equal(readCalled, false);
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
+});
+
+test('review mutate port contract: local packet import malformed json stays typed and inactive', async () => {
+  const port = instantiateReviewMutatePort();
+
+  const result = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+    { requestId: 'local-request-malformed' },
+    {
+      pickLocalFile: async () => ({
+        path: path.join(os.tmpdir(), 'review-packet.json'),
+        name: 'review-packet.json',
+        size: 1,
+      }),
+      readLocalFileText: async () => '{',
+    },
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error.op, 'cmd.project.review.importLocalPacket');
+  assert.equal(result.error.reason, 'REVIEW_IMPORT_LOCAL_PACKET_JSON_INVALID');
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
+  assert.deepEqual(normalizeVmValue(port.readActiveReviewSessionReviewSurface()), {});
+});
+
+test('review mutate port contract: local packet import denies external write receipt evidence', async () => {
+  const port = instantiateReviewMutatePort();
+  const payload = {
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-1',
+    reviewSurface: {
+      summary: { total: 1 },
+      receipt: {
+        schemaVersion: 'revision-bridge.exact-text-min-safe-write.receipt.v1',
+        projectId: 'project-1',
+        sessionId: 'session-1',
+        changeId: 'text-change-1',
+        operationKind: 'replaceExactText',
+        writeStatus: 'applied',
+      },
+      exactTextApplyReceipts: [],
+      exactTextAppliedChangeIds: ['text-change-1'],
+    },
+  };
+  const text = JSON.stringify(payload);
+
+  const result = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+    { requestId: 'local-request-receipt-denied' },
+    {
+      pickLocalFile: async () => ({
+        path: path.join(os.tmpdir(), 'review-packet.json'),
+        name: 'review-packet.json',
+        size: Buffer.byteLength(text, 'utf8'),
+      }),
+      readLocalFileText: async () => text,
+    },
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error.op, 'cmd.project.review.importLocalPacket');
+  assert.equal(result.error.reason, 'REVIEW_IMPORT_LOCAL_PACKET_WRITE_EVIDENCE_DENIED');
+  assert.deepEqual(
+    normalizeVmValue(result.error.details.fields),
+    [
+      'reviewSurface.receipt',
+      'reviewSurface.exactTextApplyReceipts',
+      'reviewSurface.exactTextAppliedChangeIds',
+    ],
+  );
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
+  assert.deepEqual(normalizeVmValue(port.readActiveReviewSessionReviewSurface()), {});
+});
+
+test('review mutate port contract: local packet import restats before read and rejects oversized replacement', async () => {
+  let readCalled = false;
+  const port = instantiateReviewMutatePort({
+    fs: {
+      stat: async () => ({
+        isFile: () => true,
+        size: 2 * 1024 * 1024 + 5,
+      }),
+      readFile: async () => {
+        readCalled = true;
+        return '{}';
+      },
+    },
+  });
+
+  const result = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+    { requestId: 'local-request-restat-too-large' },
+    {
+      pickLocalFile: async () => ({
+        path: path.join(os.tmpdir(), 'review-packet.json'),
+        name: 'review-packet.json',
+        size: 10,
+      }),
+    },
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error.op, 'cmd.project.review.importLocalPacket');
+  assert.equal(result.error.reason, 'REVIEW_IMPORT_LOCAL_PACKET_TOO_LARGE');
+  assert.equal(readCalled, false);
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
 });
 
 test('review mutate port contract: import builds Stage01 preview surface from reviewPacket without authorizing apply', async () => {

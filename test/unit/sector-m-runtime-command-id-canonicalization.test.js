@@ -28,6 +28,7 @@ test('runtime command id canonicalization: main emits canonical commandId envelo
   assert.ok(source.includes("'cmd.project.view.restoreLastStable'"))
   assert.ok(source.includes("'cmd.project.tools.openDiagnostics'"))
   assert.ok(source.includes("'cmd.project.review.openRecovery'"))
+  assert.ok(source.includes("'cmd.project.review.openComments'"))
   assert.ok(source.includes("'cmd.project.insert.addCard'"))
   assert.ok(source.includes("'cmd.project.format.alignLeft'"))
   assert.ok(source.includes("'cmd.project.plan.switchMode'"))
@@ -55,6 +56,7 @@ test('runtime command id canonicalization: editor non-tiptap runtime consumer ha
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.VIEW_RESTORE_LAST_STABLE) {'))
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS) {'))
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.REVIEW_OPEN_RECOVERY) {'))
+  assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.REVIEW_OPEN_COMMENTS) {'))
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.INSERT_ADD_CARD) {'))
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.FORMAT_ALIGN_LEFT) {'))
   assert.ok(source.includes('if (commandId === EXTRA_COMMAND_IDS.PLAN_SWITCH_MODE) {'))
@@ -75,6 +77,7 @@ test('runtime command id canonicalization: tiptap runtime bridge handles payload
   let restoreCalls = 0
   let diagnosticsCalls = 0
   let recoveryCalls = 0
+  let openCommentsCalls = 0
   let addCardCalls = 0
   let alignLeftCalls = 0
   const switchModes = []
@@ -86,6 +89,7 @@ test('runtime command id canonicalization: tiptap runtime bridge handles payload
       restoreLastStableShell() { restoreCalls += 1 },
       openDiagnostics() { diagnosticsCalls += 1 },
       openRecovery() { recoveryCalls += 1 },
+      reviewOpenComments() { openCommentsCalls += 1 },
       insertAddCard() { addCardCalls += 1 },
       formatAlignLeft() { alignLeftCalls += 1 },
       switchMode(mode) { switchModes.push(mode) },
@@ -98,6 +102,7 @@ test('runtime command id canonicalization: tiptap runtime bridge handles payload
     'cmd.project.view.restoreLastStable',
     'cmd.project.tools.openDiagnostics',
     'cmd.project.review.openRecovery',
+    'cmd.project.review.openComments',
     'cmd.project.insert.addCard',
     'cmd.project.format.alignLeft',
     'cmd.project.plan.switchMode',
@@ -116,6 +121,7 @@ test('runtime command id canonicalization: tiptap runtime bridge handles payload
   assert.equal(restoreCalls, 1)
   assert.equal(diagnosticsCalls, 1)
   assert.equal(recoveryCalls, 1)
+  assert.equal(openCommentsCalls, 1)
   assert.equal(addCardCalls, 1)
   assert.equal(alignLeftCalls, 1)
   assert.deepEqual(switchModes, ['plan', 'review', 'write'])

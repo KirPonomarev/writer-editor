@@ -37,6 +37,26 @@ test('menu-config v2 contract: example file validates and resolves as v2', () =>
   assert.equal(state.errors.length, 0);
 });
 
+test('menu-config v2 contract: review menu exposes local packet import and clear session product entries', () => {
+  const config = readV2Config();
+  const reviewMenu = config.menus.find((menu) => menu.id === 'review');
+  assert.ok(reviewMenu, 'expected review menu');
+  const items = new Map(reviewMenu.items.map((item) => [item.id, item]));
+
+  assert.deepEqual(items.get('review-import-local-packet'), {
+    id: 'review-import-local-packet',
+    label: 'Import Review Packet',
+    labelKey: 'menu.review.importLocalPacket',
+    command: 'cmd.project.review.importLocalPacket',
+  });
+  assert.deepEqual(items.get('review-clear-session'), {
+    id: 'review-clear-session',
+    label: 'Clear Review Session',
+    labelKey: 'menu.review.clearSession',
+    command: 'cmd.project.review.clearSession',
+  });
+});
+
 test('menu-config v2 contract: invalid stage value fails schema enum validation', () => {
   const state = runWithTempV2((config) => {
     config.menus[0].items[0].stage = ['X9'];
