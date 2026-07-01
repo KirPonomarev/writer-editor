@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001",
+  "status": "implemented_local_verified_pending_delivery",
+  "type": "review_bridge_docx_review_local_file_entry",
+  "featureExpansion": true,
+  "baseSha": "c608541f93688150ddc3d0dee08b33dfaab01e5f",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "menuEntryAdded": true,
+    "newDependenciesAdded": false,
+    "projectTruthWrites": false,
+    "reviewSessionActivation": true,
+    "autoApply": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false
+  },
+  "positiveClaims": [
+    "Review menu exposes a distinct DOCX review entry: cmd.project.review.openDocxReviewPreviewSession.",
+    "The local-file entry owns dialog selection, extension validation, size validation, stat/read/restat checks, and DOCX byte loading in main.",
+    "Renderer or menu payload authority is limited to requestId.",
+    "Selected DOCX comments are passed to the delivered activation path and can open an in-memory Stage01 preview Review session.",
+    "Successful local-file activation opens Review/Comments through the existing canonical runtime command path.",
+    "Clean DOCX and no-candidate DOCX leave the Review session passive.",
+    "Renderer path injection, bufferSource injection, reviewPacket injection, receipt injection, and projectRoot injection are rejected before picker/read.",
+    "The implementation keeps DOCX review local entry separate from DOCX import preview and DOCX safe-create flows."
+  ],
+  "nonClaims": [
+    "No full DOCX review import is claimed.",
+    "No DOCX tracked-change apply is claimed.",
+    "No exact apply is authorized by this contour.",
+    "No structural apply is authorized by this contour.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed.",
+    "No project truth write is performed.",
+    "No receipt or recovery evidence is created by local-file activation.",
+    "No DOCX import safe-create flow is changed or widened.",
+    "No import/export MVP closeout is widened.",
+    "No renderer redesign, toolbar redesign, editor layout change, or Design OS phase change is claimed.",
+    "No Word layout parity or full DOCX fidelity is claimed.",
+    "No PDF, EPUB, HTML, Mindmap, release readiness, cross-platform readiness, cloud, sync, accounts, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "DOCX remains external evidence transport, not project truth.",
+    "Local-file authority is main-owned; renderer does not send file path or bufferSource for this entry.",
+    "The local-file entry is a user-facing Review command, not a DOCX import command.",
+    "The activation path remains the only layer that builds the DOCX review preview candidate.",
+    "Main owns current project, current file, targetScope, baselineHash, currentBaselineHash, sessionId, and Review session activation.",
+    "Tracked changes remain diagnostic-only through the delivered activation contour.",
+    "Comment placements remain manual anchors, not exact-text apply authorization."
+  ],
+  "implementation": {
+    "changedProductionRuntime": true,
+    "changedUi": true,
+    "changedMenu": true,
+    "changedTests": [
+      "menu-config-v2.contract.test.js",
+      "revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js"
+    ],
+    "changedRuntimeFiles": [
+      "main.js",
+      "menu-config.v2.json",
+      "menu-locale.catalog.v1.json"
+    ],
+    "changedStatusArtifacts": [
+      "REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001_STATUS.json"
+    ],
+    "newStatusArtifacts": [
+      "REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001_STATUS.json"
+    ],
+    "newCommandIds": [
+      "cmd.project.review.openDocxReviewPreviewSession"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --check src/main.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --test targeted DOCX review local-file entry, activation command, and candidate contracts",
+      "status": "pass",
+      "tests": 21
+    },
+    {
+      "command": "node --test targeted Review mutate, DOCX import local preview, and DOCX import e2e command-chain regression contracts",
+      "status": "pass",
+      "tests": 46
+    },
+    {
+      "command": "node --test targeted menu config, menu locale, and menu normalization contracts",
+      "status": "pass",
+      "tests": 20
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "agentAudits": [
+    {
+      "agentId": "019f1f8b-5f15-7120-96d0-1d98d74d1828",
+      "role": "codebase_inspector",
+      "mode": "read_only",
+      "verdict": "reuse main bridge and menu handler wiring; keep DOCX review local entry out of commandSurfaceKernel and out of safe-create import semantics",
+      "localResolution": "addressed by separate main-owned cmd.project.review.openDocxReviewPreviewSession, Review menu entry, and pathless contract tests"
+    },
+    {
+      "agentId": "019f1f8b-8061-7e12-a798-99b2cd9d1609",
+      "role": "independent_skeptic_auditor",
+      "mode": "read_only",
+      "verdict": "engine exists but user-facing local DOCX chooser entry is missing; do not repurpose import preview into review activation",
+      "localResolution": "addressed by adding a distinct local-file Review command that picks DOCX in main and calls the delivered activation path directly"
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": ""
+  },
+  "decision": "DOCX_REVIEW_LOCAL_FILE_ENTRY_OPENED_FOR_COMMENTS_ONLY_MANUAL_PREVIEW",
+  "nextStep": "complete delivery chain, then select the next explicit owner-approved contour"
+}

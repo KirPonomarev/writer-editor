@@ -167,6 +167,11 @@
       "ru": "Импортировать review packet",
       "en": "Import Review Packet"
     },
+    "menu.review.openDocxReviewPreviewSession": {
+      "base": "Open DOCX Review",
+      "ru": "Открыть DOCX review",
+      "en": "Open DOCX Review"
+    },
     "menu.review.openMode": {
       "base": "Open Review Mode",
       "ru": "Открыть режим ревью",

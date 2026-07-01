@@ -2521,6 +2521,377 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
 }
 // DOCX_REVIEW_PREVIEW_SESSION_COMMAND_SURFACE_END
 
+// DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_SURFACE_START
+const DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_ID = 'cmd.project.review.openDocxReviewPreviewSession';
+const DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_ALLOWED_PAYLOAD_KEYS = new Set(['requestId']);
+const DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_ALLOWED_SELECTION_KEYS = new Set([
+  'path',
+  'filePath',
+  'name',
+  'size',
+  'requestId',
+  'canceled',
+]);
+
+function sanitizeDocxReviewPreviewSessionLocalFileDetails(details) {
+  if (!isPlainObjectValue(details)) return {};
+  const result = {};
+  if (Array.isArray(details.fields)) {
+    result.fieldCount = details.fields.filter((item) => typeof item === 'string').length;
+  }
+  if (Number.isInteger(details.maxBytes)) result.maxBytes = details.maxBytes;
+  if (Number.isInteger(details.actualBytes)) result.actualBytes = details.actualBytes;
+  if (Number.isInteger(details.byteLength)) result.byteLength = details.byteLength;
+  if (Number.isInteger(details.expectedBytes)) result.expectedBytes = details.expectedBytes;
+  if (Number.isInteger(details.beforeBytes)) result.beforeBytes = details.beforeBytes;
+  if (Number.isInteger(details.afterBytes)) result.afterBytes = details.afterBytes;
+  if (typeof details.nestedCode === 'string' && details.nestedCode.trim()) {
+    result.nestedCode = details.nestedCode.trim();
+  }
+  if (typeof details.nestedReason === 'string' && details.nestedReason.trim()) {
+    result.nestedReason = details.nestedReason.trim();
+  }
+  if (isPlainObjectValue(details.candidateSummary)) {
+    result.candidateSummary = cloneJsonSafe(details.candidateSummary);
+  }
+  return result;
+}
+
+function makeDocxReviewPreviewSessionLocalFileTypedError(code, reason, details = undefined) {
+  const error = {
+    code,
+    op: DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_ID,
+    reason,
+  };
+  const safeDetails = sanitizeDocxReviewPreviewSessionLocalFileDetails(details);
+  if (Object.keys(safeDetails).length > 0) {
+    error.details = safeDetails;
+  }
+  return { ok: false, error };
+}
+
+function normalizeDocxReviewPreviewSessionLocalFileRequestId(value) {
+  return typeof value === 'string' && value.trim()
+    ? value.trim()
+    : 'docx-review-preview-session-local-file-request';
+}
+
+async function pickDocxReviewPreviewSessionLocalFile(options = {}) {
+  const dialogResult = await dialog.showOpenDialog(mainWindow, {
+    title: 'Open DOCX Review',
+    defaultPath: fileManager.getDocumentsPath(),
+    filters: [{ name: 'DOCX', extensions: ['docx'] }],
+    properties: ['openFile'],
+  });
+
+  if (!dialogResult || dialogResult.canceled === true) {
+    return { canceled: true };
+  }
+
+  const filePath = Array.isArray(dialogResult.filePaths) && typeof dialogResult.filePaths[0] === 'string'
+    ? dialogResult.filePaths[0].trim()
+    : '';
+  if (!filePath) {
+    return {};
+  }
+
+  let size = null;
+  try {
+    const stat = await fs.stat(filePath);
+    if (stat && typeof stat.isFile === 'function' && stat.isFile()) {
+      size = Number.isFinite(stat.size) && stat.size >= 0 ? Math.floor(stat.size) : null;
+    }
+  } catch {}
+
+  return {
+    path: filePath,
+    name: path.basename(filePath),
+    size,
+    requestId: normalizeDocxReviewPreviewSessionLocalFileRequestId(options.requestId),
+  };
+}
+
+function validateDocxReviewPreviewSessionLocalFileSelection(selection, requestId) {
+  if (!isPlainObjectValue(selection)) {
+    return makeDocxReviewPreviewSessionLocalFileTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_INVALID',
+      'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_INVALID',
+    );
+  }
+
+  const unsupportedKeys = Object.keys(selection)
+    .filter((key) => !DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_ALLOWED_SELECTION_KEYS.has(key))
+    .sort();
+  if (unsupportedKeys.length > 0) {
+    return makeDocxReviewPreviewSessionLocalFileTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_INVALID',
+      'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_UNSUPPORTED_FIELDS',
+      { fields: unsupportedKeys },
+    );
+  }
+
+  const filePath = typeof selection.path === 'string' && selection.path.trim()
+    ? selection.path.trim()
+    : typeof selection.filePath === 'string' && selection.filePath.trim()
+      ? selection.filePath.trim()
+      : '';
+  if (!filePath) {
+    return makeDocxReviewPreviewSessionLocalFileTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_INVALID',
+      'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_FILE_REQUIRED',
+    );
+  }
+  if (path.extname(filePath).toLowerCase() !== '.docx') {
+    return makeDocxReviewPreviewSessionLocalFileTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_INVALID',
+      'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_DOCX_REQUIRED',
+    );
+  }
+
+  const size = Number.isFinite(selection.size) && selection.size >= 0
+    ? Math.floor(selection.size)
+    : null;
+  if (size === null) {
+    return makeDocxReviewPreviewSessionLocalFileTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_INVALID',
+      'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SIZE_REQUIRED',
+    );
+  }
+  if (size > DOCX_INTAKE_GATE_MAX_BYTES) {
+    return makeDocxReviewPreviewSessionLocalFileTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE',
+      'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE',
+      {
+        maxBytes: DOCX_INTAKE_GATE_MAX_BYTES,
+        actualBytes: size,
+      },
+    );
+  }
+
+  return {
+    ok: true,
+    value: {
+      path: filePath,
+      name: typeof selection.name === 'string' && selection.name.trim()
+        ? path.basename(selection.name.trim())
+        : path.basename(filePath),
+      size,
+      requestId,
+    },
+  };
+}
+
+async function statDocxReviewPreviewSessionLocalFile(filePath) {
+  const stat = await fs.stat(filePath);
+  if (!stat || typeof stat.isFile !== 'function' || !stat.isFile()) {
+    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_FILE_REQUIRED');
+    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_INVALID';
+    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_FILE_REQUIRED';
+    throw error;
+  }
+  const size = Number.isFinite(stat.size) && stat.size >= 0
+    ? Math.floor(stat.size)
+    : null;
+  if (size === null) {
+    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SIZE_REQUIRED');
+    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_INVALID';
+    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SIZE_REQUIRED';
+    throw error;
+  }
+  return size;
+}
+
+async function readDocxReviewPreviewSessionLocalFileBytes(selection) {
+  if (!isPlainObjectValue(selection) || typeof selection.path !== 'string' || !selection.path.trim()) {
+    throw new TypeError('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_INVALID');
+  }
+  const filePath = selection.path.trim();
+  let beforeBytes;
+  try {
+    beforeBytes = await statDocxReviewPreviewSessionLocalFile(filePath);
+  } catch (error) {
+    error.code = typeof error?.code === 'string'
+      ? error.code
+      : 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_READ_FAILED';
+    error.reason = typeof error?.reason === 'string'
+      ? error.reason
+      : 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_STAT_FAILED';
+    throw error;
+  }
+
+  if (Number.isInteger(selection.size) && selection.size !== beforeBytes) {
+    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ');
+    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ';
+    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ';
+    error.details = {
+      expectedBytes: selection.size,
+      actualBytes: beforeBytes,
+    };
+    throw error;
+  }
+  if (beforeBytes > DOCX_INTAKE_GATE_MAX_BYTES) {
+    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE');
+    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE';
+    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE';
+    error.details = {
+      maxBytes: DOCX_INTAKE_GATE_MAX_BYTES,
+      actualBytes: beforeBytes,
+    };
+    throw error;
+  }
+
+  let bytes;
+  try {
+    bytes = await fs.readFile(filePath);
+  } catch (error) {
+    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_READ_FAILED';
+    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_READ_FAILED';
+    throw error;
+  }
+
+  const buffer = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes || []);
+  const afterBytes = await statDocxReviewPreviewSessionLocalFile(filePath);
+  if (afterBytes !== beforeBytes || buffer.length !== afterBytes) {
+    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ');
+    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ';
+    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ';
+    error.details = {
+      beforeBytes,
+      afterBytes,
+      byteLength: buffer.length,
+    };
+    throw error;
+  }
+  if (buffer.length === 0) {
+    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_BYTES_INVALID');
+    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_BYTES_INVALID';
+    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_BYTES_EMPTY';
+    throw error;
+  }
+  if (buffer.length > DOCX_INTAKE_GATE_MAX_BYTES) {
+    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE');
+    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE';
+    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE';
+    error.details = {
+      maxBytes: DOCX_INTAKE_GATE_MAX_BYTES,
+      actualBytes: buffer.length,
+    };
+    throw error;
+  }
+  return buffer;
+}
+
+async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {}, options = {}) {
+  const safePayload = isPlainObjectValue(payload) ? payload : {};
+  const unsupportedPayloadKeys = Object.keys(safePayload)
+    .filter((key) => !DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_ALLOWED_PAYLOAD_KEYS.has(key))
+    .sort();
+  if (unsupportedPayloadKeys.length > 0) {
+    return makeDocxReviewPreviewSessionLocalFileTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_PAYLOAD_INVALID',
+      'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_PAYLOAD_UNSUPPORTED_FIELDS',
+      { fields: unsupportedPayloadKeys },
+    );
+  }
+
+  const requestId = normalizeDocxReviewPreviewSessionLocalFileRequestId(safePayload.requestId);
+  const pickLocalFile = typeof options.pickLocalFile === 'function'
+    ? options.pickLocalFile
+    : pickDocxReviewPreviewSessionLocalFile;
+  const readLocalFileBytes = typeof options.readLocalFileBytes === 'function'
+    ? options.readLocalFileBytes
+    : readDocxReviewPreviewSessionLocalFileBytes;
+
+  let selectedFile;
+  try {
+    selectedFile = await pickLocalFile({ requestId });
+  } catch {
+    return makeDocxReviewPreviewSessionLocalFileTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_PICK_FAILED',
+      'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_PICK_FAILED',
+    );
+  }
+
+  if (selectedFile && selectedFile.canceled === true) {
+    return {
+      ok: true,
+      commandId: DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_ID,
+      requestId,
+      activated: false,
+      cancelled: true,
+    };
+  }
+
+  const selection = validateDocxReviewPreviewSessionLocalFileSelection(selectedFile, requestId);
+  if (!selection.ok) {
+    return selection;
+  }
+
+  let bytes;
+  try {
+    bytes = await readLocalFileBytes(selection.value);
+  } catch (error) {
+    return makeDocxReviewPreviewSessionLocalFileTypedError(
+      typeof error?.code === 'string' && error.code
+        ? error.code
+        : 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_READ_FAILED',
+      typeof error?.reason === 'string' && error.reason
+        ? error.reason
+        : 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_READ_FAILED',
+      isPlainObjectValue(error?.details) ? error.details : undefined,
+    );
+  }
+
+  const buffer = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes || []);
+  if (buffer.length === 0) {
+    return makeDocxReviewPreviewSessionLocalFileTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_BYTES_INVALID',
+      'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_BYTES_EMPTY',
+    );
+  }
+  if (buffer.length > DOCX_INTAKE_GATE_MAX_BYTES) {
+    return makeDocxReviewPreviewSessionLocalFileTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE',
+      'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE',
+      {
+        maxBytes: DOCX_INTAKE_GATE_MAX_BYTES,
+        actualBytes: buffer.length,
+      },
+    );
+  }
+
+  const activationResult = await handleDocxReviewPreviewSessionActivationCommandSurface({
+    requestId,
+    bufferSource: buffer.toString('base64'),
+  }, options);
+  if (!activationResult || activationResult.ok !== true) {
+    const nestedError = isPlainObjectValue(activationResult?.error) ? activationResult.error : {};
+    const nestedDetails = isPlainObjectValue(nestedError.details) ? nestedError.details : {};
+    return makeDocxReviewPreviewSessionLocalFileTypedError(
+      docxReviewPreviewSessionDetailString(nestedError.code)
+        || 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_ACTIVATION_FAILED',
+      docxReviewPreviewSessionDetailString(nestedError.reason)
+        || 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_ACTIVATION_FAILED',
+      {
+        nestedCode: docxReviewPreviewSessionDetailString(nestedError.code),
+        nestedReason: docxReviewPreviewSessionDetailString(nestedError.reason),
+        candidateSummary: isPlainObjectValue(nestedDetails.candidateSummary)
+          ? nestedDetails.candidateSummary
+          : undefined,
+      },
+    );
+  }
+
+  return {
+    ...activationResult,
+    commandId: DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_ID,
+    requestId,
+    fileName: selection.value.name,
+    byteLength: buffer.length,
+  };
+}
+// DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_SURFACE_END
+
 // DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_START
 const DOCX_CONTENT_PREVIEW_COMMAND_ID = 'cmd.project.docx.previewContent';
 const DOCX_CONTENT_PREVIEW_MAX_BYTES = 10 * 1024 * 1024;
@@ -8674,6 +9045,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.review.inspectDocxIntakeGate',
   'cmd.project.review.inspectDocxReviewPreflight',
   'cmd.project.review.activateDocxReviewPreviewSession',
+  'cmd.project.review.openDocxReviewPreviewSession',
   'cmd.project.flowOpenV1',
   'cmd.project.flowSaveV1',
   'cmd.project.document.open',
@@ -8841,6 +9213,17 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
       sendCanonicalRuntimeCommand(
         'cmd.project.review.openComments',
         { source: 'review-docx-preview-session', requestId: result.requestId },
+        'review-comment',
+      );
+    }
+    return result;
+  },
+  'cmd.project.review.openDocxReviewPreviewSession': async (payload = {}) => {
+    const result = await handleDocxReviewPreviewSessionLocalFileCommandSurface(payload);
+    if (result && result.ok === true && result.activated === true) {
+      sendCanonicalRuntimeCommand(
+        'cmd.project.review.openComments',
+        { source: 'review-docx-local-file-preview-session', requestId: result.requestId },
         'review-comment',
       );
     }

@@ -49,6 +49,12 @@ test('menu-config v2 contract: review menu exposes local packet import and clear
     labelKey: 'menu.review.importLocalPacket',
     command: 'cmd.project.review.importLocalPacket',
   });
+  assert.deepEqual(items.get('review-open-docx-review-preview-session'), {
+    id: 'review-open-docx-review-preview-session',
+    label: 'Open DOCX Review',
+    labelKey: 'menu.review.openDocxReviewPreviewSession',
+    command: 'cmd.project.review.openDocxReviewPreviewSession',
+  });
   assert.deepEqual(items.get('review-clear-session'), {
     id: 'review-clear-session',
     label: 'Clear Review Session',
