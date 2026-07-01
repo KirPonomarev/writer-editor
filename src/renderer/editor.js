@@ -402,6 +402,8 @@ let flowModeState = {
   dirty: false,
 };
 let reviewSurfaceState = reviewSurfaceNormalizeState();
+let reviewSurfaceExactTextApplyTransientState = null;
+let reviewSurfaceApplyActionListenerBound = false;
 let metaEnabled = false;
 let currentCards = [];
 let treeRoot = null;
@@ -486,6 +488,10 @@ function isPlainObject(value) {
 // REVIEW_SURFACE_PRESENTATION_START
 const REVIEW_SURFACE_RECEIPT_SCHEMA = 'revision-bridge.exact-text-min-safe-write.receipt.v1';
 const REVIEW_SURFACE_QUERY_ID = 'query.reviewSurface';
+const REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID = 'cmd.project.review.applyExactTextChange';
+const REVIEW_SURFACE_EXACT_APPLY_TRANSIENT_STATES = Object.freeze(['ready', 'applying', 'applied', 'blocked', 'failed']);
+const REVIEW_SURFACE_EXACT_APPLY_BLOCKED_REASON = 'REVIEW_SURFACE_SINGLE_EXACT_CHANGE_REQUIRED';
+const REVIEW_SURFACE_EXACT_APPLY_CHANGE_ID_REQUIRED_REASON = 'REVIEW_SURFACE_EXACT_CHANGE_ID_REQUIRED';
 
 function reviewSurfaceIsPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -573,11 +579,81 @@ function reviewSurfaceResolveIncomingPayload(input = {}) {
     || reviewSurfaceIsPlainObject(source.shadowPreview)
     || reviewSurfaceIsPlainObject(source.blockedApplyPlan)
     || reviewSurfaceIsPlainObject(source.receipt)
+    || reviewSurfaceIsPlainObject(source.exactTextApply)
     || source.ok === false
   ) {
     return source;
   }
   return {};
+}
+
+function reviewSurfaceNormalizeExactTextApplyState(value = {}) {
+  const source = reviewSurfaceIsPlainObject(value) ? value : {};
+  const state = reviewSurfaceText(source.state);
+  if (!REVIEW_SURFACE_EXACT_APPLY_TRANSIENT_STATES.includes(state)) {
+    return null;
+  }
+  return {
+    state,
+    requestId: reviewSurfaceText(source.requestId),
+    changeId: reviewSurfaceText(source.changeId),
+    reason: reviewSurfaceText(source.reason),
+  };
+}
+
+function reviewSurfaceBuildExactTextApplyPayload(requestId, changeId) {
+  const payload = {};
+  const normalizedRequestId = reviewSurfaceText(requestId);
+  const normalizedChangeId = reviewSurfaceText(changeId);
+  if (normalizedRequestId) payload.requestId = normalizedRequestId;
+  if (normalizedChangeId) payload.changeId = normalizedChangeId;
+  return payload;
+}
+
+function reviewSurfaceUnwrapCommandResult(result) {
+  if (!result || typeof result !== 'object' || Array.isArray(result)) return result;
+  if (reviewSurfaceIsPlainObject(result.value)) {
+    return result.value;
+  }
+  return result;
+}
+
+function reviewSurfaceExtractCommandFailureReason(result = {}) {
+  const source = reviewSurfaceUnwrapCommandResult(result);
+  if (!source || typeof source !== 'object' || Array.isArray(source)) {
+    return 'REVIEW_SURFACE_APPLY_FAILED';
+  }
+  if (typeof source.reason === 'string' && source.reason) {
+    return source.reason;
+  }
+  if (source.error && typeof source.error === 'object' && !Array.isArray(source.error)) {
+    if (typeof source.error.reason === 'string' && source.error.reason) {
+      return source.error.reason;
+    }
+    if (typeof source.error.code === 'string' && source.error.code) {
+      return source.error.code;
+    }
+  }
+  if (typeof source.code === 'string' && source.code) {
+    return source.code;
+  }
+  return 'REVIEW_SURFACE_APPLY_FAILED';
+}
+
+function reviewSurfacePresentExactApplyState(state) {
+  switch (reviewSurfaceText(state)) {
+    case 'applying':
+      return 'применяется';
+    case 'applied':
+      return 'применено';
+    case 'blocked':
+      return 'заблокировано';
+    case 'failed':
+      return 'ошибка';
+    case 'ready':
+    default:
+      return 'готово';
+  }
 }
 
 function reviewSurfaceCanonicalSession(source) {
@@ -748,6 +824,7 @@ function reviewSurfaceNormalizeState(input = {}) {
   const status = error
     ? 'error'
     : (hasReviewData ? 'ready' : 'empty');
+  const exactTextApply = reviewSurfaceNormalizeExactTextApplyState(source.exactTextApply);
 
   return {
     status,
@@ -757,6 +834,7 @@ function reviewSurfaceNormalizeState(input = {}) {
     commentSurvivalPreview,
     receipt,
     error,
+    exactTextApply,
   };
 }
 
@@ -890,15 +968,48 @@ function reviewSurfaceBuildUnsupportedObservations(state) {
 
 function reviewSurfaceBuildExactTextPreview(state) {
   const exactPreview = reviewSurfaceIsPlainObject(state.exactTextPlanPreview) ? state.exactTextPlanPreview : {};
-  const applyOps = reviewSurfaceArray(exactPreview.plan?.applyOps).map((op) => ({
-    itemId: reviewSurfaceText(op?.opId),
-    sceneId: reviewSurfaceText(op?.sceneId),
-    changeId: reviewSurfaceText(op?.changeId),
-    from: Number.isFinite(op?.from) ? op.from : null,
-    to: Number.isFinite(op?.to) ? op.to : null,
-    expectedText: reviewSurfaceText(op?.expectedText),
-    replacementText: reviewSurfaceText(op?.replacementText),
-  }));
+  const structuralPreview = reviewSurfaceIsPlainObject(state.structuralManualReviewPreview) ? state.structuralManualReviewPreview : {};
+  const applyOpsRaw = reviewSurfaceArray(exactPreview.plan?.applyOps);
+  const transient = reviewSurfaceNormalizeExactTextApplyState(state.exactTextApply);
+  const receiptChangeId = state.receipt?.writeStatus === 'applied'
+    ? reviewSurfaceText(state.receipt.changeId)
+    : '';
+  const structuralItems = reviewSurfaceArray(structuralPreview.items);
+  const unsupportedStructuralItems = reviewSurfaceArray(structuralPreview.unsupportedObservations);
+  const structuralBlocked = structuralItems.length > 0 || unsupportedStructuralItems.length > 0;
+  const singleReadyOp = exactPreview.status === 'ready' && applyOpsRaw.length === 1 && !structuralBlocked;
+  const applyOps = applyOpsRaw.map((op) => {
+    const changeId = reviewSurfaceText(op?.changeId);
+    const opCanApply = singleReadyOp && Boolean(changeId);
+    let applyState = opCanApply ? 'ready' : 'blocked';
+    let applyReason = opCanApply
+      ? ''
+      : (
+        structuralBlocked
+          ? 'REVIEW_SURFACE_STRUCTURAL_REVIEW_BLOCKS_EXACT_APPLY'
+          : (singleReadyOp ? REVIEW_SURFACE_EXACT_APPLY_CHANGE_ID_REQUIRED_REASON : REVIEW_SURFACE_EXACT_APPLY_BLOCKED_REASON)
+      );
+    if (receiptChangeId && receiptChangeId === changeId) {
+      applyState = 'applied';
+      applyReason = '';
+    } else if (transient && (!transient.changeId || transient.changeId === changeId)) {
+      applyState = transient.state;
+      applyReason = transient.reason;
+    }
+    return {
+      itemId: reviewSurfaceText(op?.opId),
+      sceneId: reviewSurfaceText(op?.sceneId),
+      changeId,
+      from: Number.isFinite(op?.from) ? op.from : null,
+      to: Number.isFinite(op?.to) ? op.to : null,
+      expectedText: reviewSurfaceText(op?.expectedText),
+      replacementText: reviewSurfaceText(op?.replacementText),
+      applyState,
+      applyLabel: applyState === 'ready' ? 'Применить' : reviewSurfacePresentExactApplyState(applyState),
+      applyDisabled: applyState !== 'ready',
+      applyReason,
+    };
+  });
 
   if (exactPreview.status === 'ready' && applyOps.length > 0) {
     return {
@@ -1015,13 +1126,23 @@ function renderReviewSurfaceMarkup(viewModel) {
       <article class="right-rail-review-item right-rail-review-item--preview">
         <div class="right-rail-review-item-head">
           <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(op.changeId || op.itemId)}</div>
-          <span class="right-rail-review-pill right-rail-review-pill--preview">Только просмотр</span>
+          <span class="right-rail-review-pill right-rail-review-pill--${reviewSurfaceEscapeHtml(op.applyState)}">${reviewSurfaceEscapeHtml(op.applyLabel)}</span>
         </div>
         <p class="right-rail-review-item-body">"${reviewSurfaceEscapeHtml(op.expectedText)}" -> "${reviewSurfaceEscapeHtml(op.replacementText)}"</p>
         <div class="right-rail-review-item-meta">
           <span>${reviewSurfaceEscapeHtml(op.sceneId || 'сцена')}</span>
           <span>${reviewSurfaceEscapeHtml(`${op.from ?? '—'}:${op.to ?? '—'}`)}</span>
         </div>
+        <div class="right-rail-review-actions">
+          <button
+            type="button"
+            class="right-rail-review-apply-button"
+            data-review-apply-exact-change
+            data-change-id="${reviewSurfaceEscapeHtml(op.changeId)}"
+            ${op.applyDisabled ? 'disabled aria-disabled="true"' : ''}
+          >${reviewSurfaceEscapeHtml(op.applyLabel)}</button>
+        </div>
+        ${op.applyReason ? `<div class="right-rail-review-code">${reviewSurfaceEscapeHtml(op.applyReason)}</div>` : ''}
       </article>
     `, 'Нет точного текстового предпросмотра.')
     : (
@@ -1057,8 +1178,8 @@ function renderReviewSurfaceMarkup(viewModel) {
     <section class="right-rail-surface right-rail-surface--review-header">
       <div class="right-rail-section__label">Проверка правок</div>
       <div class="right-rail-review-state ${viewModel.status === 'empty' ? 'right-rail-review-state--empty' : 'right-rail-review-state--info'}">
-        <strong>Только показ</strong>
-        <p>Этот экран только показывает результат ядра. Записи в проект мимо безопасного пути здесь нет.</p>
+        <strong>Безопасная проверка</strong>
+        <p>Запись в проект идет только через подтвержденный путь.</p>
       </div>
     </section>
     <section class="right-rail-surface">
@@ -7589,13 +7710,19 @@ function renderReviewSurface() {
   if (!(reviewSurfaceHost instanceof HTMLElement)) {
     return;
   }
-  const viewModel = buildReviewSurfaceViewModel(reviewSurfaceState);
+  const viewModel = buildReviewSurfaceViewModel({
+    ...reviewSurfaceState,
+    exactTextApply: reviewSurfaceExactTextApplyTransientState,
+  });
   reviewSurfaceHost.dataset.reviewSurfaceStatus = viewModel.status;
   reviewSurfaceHost.innerHTML = renderReviewSurfaceMarkup(viewModel);
 }
 
-function setReviewSurfaceState(nextState = {}) {
+function setReviewSurfaceState(nextState = {}, options = {}) {
   reviewSurfaceState = reviewSurfaceNormalizeState(nextState);
+  if (options.preserveExactApplyState !== true) {
+    reviewSurfaceExactTextApplyTransientState = null;
+  }
   renderReviewSurface();
   return reviewSurfaceState;
 }
@@ -7608,7 +7735,82 @@ async function loadReviewSurfaceFromQuery() {
   return setReviewSurfaceState(result.reviewSurface);
 }
 
+function setReviewSurfaceExactTextApplyTransientState(nextState = null) {
+  reviewSurfaceExactTextApplyTransientState = reviewSurfaceNormalizeExactTextApplyState(nextState);
+  renderReviewSurface();
+}
+
+function reviewSurfaceCreateExactTextApplyRequestId(changeId) {
+  const normalizedChangeId = reviewSurfaceText(changeId) || 'change';
+  return `review-exact-apply-${normalizedChangeId}-${Date.now()}`;
+}
+
+async function handleReviewSurfaceExactTextApplyClick(event) {
+  const target = event?.target;
+  if (!(target instanceof Element) || !(reviewSurfaceHost instanceof HTMLElement)) return;
+  const button = target.closest('[data-review-apply-exact-change]');
+  if (!(button instanceof HTMLButtonElement) || !reviewSurfaceHost.contains(button) || button.disabled) {
+    return;
+  }
+
+  const changeId = reviewSurfaceText(button.dataset.changeId);
+  const requestId = reviewSurfaceCreateExactTextApplyRequestId(changeId);
+  setReviewSurfaceExactTextApplyTransientState({
+    state: 'applying',
+    requestId,
+    changeId,
+  });
+
+  const payload = reviewSurfaceBuildExactTextApplyPayload(requestId, changeId);
+  let bridgeResult = null;
+  try {
+    bridgeResult = await invokePreloadUiCommandBridge(REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID, payload);
+  } catch (error) {
+    setReviewSurfaceExactTextApplyTransientState({
+      state: 'failed',
+      requestId,
+      changeId,
+      reason: error && typeof error.message === 'string' ? error.message : 'REVIEW_SURFACE_APPLY_THROW',
+    });
+    return;
+  }
+
+  const commandResult = reviewSurfaceUnwrapCommandResult(bridgeResult);
+  if (bridgeResult?.ok === true && commandResult?.ok === true && commandResult.applied === true) {
+    reviewSurfaceExactTextApplyTransientState = null;
+    if (reviewSurfaceIsPlainObject(commandResult.reviewSurface)) {
+      setReviewSurfaceState(commandResult.reviewSurface);
+      return;
+    }
+    await loadReviewSurfaceFromQuery();
+    return;
+  }
+
+  const reason = reviewSurfaceExtractCommandFailureReason(bridgeResult);
+  const blocked = reason.includes('BLOCK') || reason.includes('DIRTY') || reason.includes('MISMATCH');
+  reviewSurfaceExactTextApplyTransientState = {
+    state: blocked ? 'blocked' : 'failed',
+    requestId,
+    changeId,
+    reason,
+  };
+  if (reviewSurfaceIsPlainObject(commandResult?.reviewSurface)) {
+    setReviewSurfaceState(commandResult.reviewSurface, { preserveExactApplyState: true });
+  } else {
+    renderReviewSurface();
+  }
+}
+
+function bindReviewSurfaceApplyActions() {
+  if (!(reviewSurfaceHost instanceof HTMLElement) || reviewSurfaceApplyActionListenerBound) {
+    return;
+  }
+  reviewSurfaceHost.addEventListener('click', handleReviewSurfaceExactTextApplyClick);
+  reviewSurfaceApplyActionListenerBound = true;
+}
+
 function initializeReviewSurface() {
+  bindReviewSurfaceApplyActions();
   setReviewSurfaceState({});
 }
 
