@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001",
-  "status": "implemented_local_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_docx_comment_only_product_proof",
   "featureExpansion": false,
   "baseSha": "824d96b739bdbd8b7a45b1bf1664b003a2a65fd2",
@@ -149,10 +149,29 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending_delivery",
-    "featureCommitSha": "",
-    "featurePullRequest": null,
-    "featureMergeSha": ""
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "bac05e48e02702498dc32eb145bf5af0deea548f",
+    "featurePullRequest": 1016,
+    "featureMergeSha": "80706d1205049d071b1737634dc41cd9125e26d8",
+    "featureMergedAtUtc": "2026-07-01T22:00:46Z",
+    "githubChecks": [
+      {
+        "name": "oss-policy",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "x1-runtime-parity (ubuntu-latest)",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "x1-runtime-parity (windows-latest)",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "ops_vector_close",
+        "result": "SUCCESS"
+      }
+    ]
   },
   "decision": "DOCX_COMMENTS_ONLY_REVIEW_PREVIEW_PRODUCT_PROOF_BOUND_FOR_CURRENT_SCOPE",
   "nextStep": "after delivery, continue to Review Bridge first useful release gate"
