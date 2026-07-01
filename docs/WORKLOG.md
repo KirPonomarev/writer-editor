@@ -4,7 +4,7 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-02
-- Review Bridge: opened `REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001` as a bounded DOCX diagnostic evidence surface contour.
+- Review Bridge: delivered `REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001` via PR `1020` at merge SHA `02754b5f6ac6bd231b6d47659453ab92ddd6d979` as a bounded DOCX diagnostic evidence surface contour.
 - DOCX diagnostic evidence surface: tracked-changes-only DOCX can open a visible read-only diagnosticItems surface; clean no-evidence DOCX remains no-candidate/passive.
 - Scope truth: diagnostic evidence stays out of DOCX import safe-create, textChanges, applyOps, manuscript/project truth writes, receipt, recovery, release readiness, and import/export MVP widening.
 - Review Bridge: delivered `REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001` via PR `1018` merge SHA `d76485d152c1bfa1cb00bf9eda0c242596785352` as a bounded first useful feature gate.
