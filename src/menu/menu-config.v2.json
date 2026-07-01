@@ -249,6 +249,12 @@
           "command": "cmd.project.review.importLocalPacket"
         },
         {
+          "id": "review-open-docx-review-preview-session",
+          "label": "Open DOCX Review",
+          "labelKey": "menu.review.openDocxReviewPreviewSession",
+          "command": "cmd.project.review.openDocxReviewPreviewSession"
+        },
+        {
           "id": "review-mode",
           "label": "Open Review Mode",
           "labelKey": "menu.review.openMode",

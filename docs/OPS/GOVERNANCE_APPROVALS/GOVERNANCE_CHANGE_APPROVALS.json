@@ -2,18 +2,39 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001_STATUS.json",
+      "sha256": "ebb67a95f3dac8d56fd2ac2374267a446d232291faf2df6f1f0873d65072cc48",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve factual delivery rebind for REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001 after PR 1014 merge; scope remains DOCX-comments-to-in-memory-Review-session activation with tracked changes diagnostic-only and no exact apply, structural apply, receipt, recovery, manuscript write, project truth write, import-export MVP expansion, dependency, network, UI redesign, release, Word parity, or full DOCX review import claim."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001_STATUS.json",
+      "sha256": "dd150553866ef838a4a3d74441a75817f70addcc8bcc06694216654242aa7951",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded factual status artifact for DOCX review local-file entry; Review menu may pick a DOCX in main and open the delivered in-memory comments Review session activation path, while renderer authority stays requestId-only and no safe-create import, exact apply, structural apply, receipt, recovery, manuscript write, project truth write, import-export MVP expansion, dependency, network, UI redesign, release, Word parity, or full DOCX review import claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/menu-config-v2.contract.test.js",
+      "sha256": "50977a41ac132180c1a351ae82d39bae90233ce533f0ff0e60a5b27930262974",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded menu contract update proving the Review menu exposes the separate DOCX review local-file command next to Review Packet import; no renderer redesign, toolbar redesign, safe-create import widening, dependency, network, release, or full DOCX review import claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
+      "sha256": "7c72b0dd9a799483d7c25083eff52756a1f48ae245d801e2783cc2100b76fb46",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded command-surface contract proof for DOCX review local-file entry; main owns picker, stat, read, restat, DOCX bytes, and Review activation handoff, renderer authority is requestId-only, no-candidate inputs stay passive, and no exact apply, structural apply, receipt, recovery, project truth write, import-export MVP expansion, dependency, network, UI redesign, release, Word parity, or full DOCX review import claim is introduced."
+    },
+    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json",
       "sha256": "5c2736d4dc31ae57034204eca38173c9f3d51052bf413547f3ab6a2c74cdba23",
       "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREFLIGHT_001",
       "approvedAtUtc": "2026-07-01T21:04:43.000Z",
       "rationale": "Approve factual delivery rebind for REVIEW_BRIDGE_DOCX_PREFLIGHT_001 after PR 1013 merge; scope remains diagnostic-only DOCX review preflight with no review session, apply, receipt, recovery, project write, import-export MVP expansion, dependency, network, UI, release, Word parity, or full DOCX review import claim."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001_STATUS.json",
-      "sha256": "acb0a1f8c2d402c42f6ad9f52faee816f7c46e3d41303554cdf0a23eceb92823",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001",
-      "approvedAtUtc": "2026-07-01T21:04:43.000Z",
-      "rationale": "Approve bounded factual status artifact for DOCX review preview session activation; DOCX comments may open an in-memory Stage01 preview Review session, while tracked changes remain diagnostic-only and no exact apply, structural apply, receipt, recovery, manuscript write, project truth write, import-export MVP expansion, dependency, network, UI, release, Word parity, or full DOCX review import claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",

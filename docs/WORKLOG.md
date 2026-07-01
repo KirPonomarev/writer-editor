@@ -4,6 +4,11 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-01
+- Review Bridge: opened `REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001` as the user-facing DOCX chooser entry for in-memory comments review.
+- DOCX review local-file entry: added `cmd.project.review.openDocxReviewPreviewSession` in the Review menu; main owns DOCX picker/stat/read/restat and calls the delivered preview-session activation path.
+- Scope truth: local DOCX review entry is separate from DOCX import preview and safe-create; no exact apply, structural apply, receipt, recovery, manuscript write, project truth write, dependency, editor UI redesign, or import/export MVP expansion is claimed.
+- Tests: targeted DOCX review local-file entry and menu config/locale contracts passed locally with 16 tests.
+- Review Bridge: rebound `REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001` delivery truth to PR `1014` merge SHA `c608541f93688150ddc3d0dee08b33dfaab01e5f`.
 - Review Bridge: delivered preflight status was rebound after PR `1013` merge at `34895b960a723b816ccb7f50f171854675a43969`.
 - Review Bridge: opened `REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001` as a separate DOCX-comments-to-in-memory-review-session contour.
 - DOCX review preview session activation: added `cmd.project.review.activateDocxReviewPreviewSession` and `buildDocxReviewPreviewSessionCandidateFromZipBytes`.

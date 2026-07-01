@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001",
-  "status": "implemented_local_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_docx_preview_session_activation",
   "featureExpansion": true,
   "baseSha": "34895b960a723b816ccb7f50f171854675a43969",
@@ -144,11 +144,11 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending_delivery",
-    "featureCommitSha": "",
-    "featurePullRequest": null,
-    "featureMergeSha": ""
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "14b532b29bb8dfa7ba1d0125847efb00e724979c",
+    "featurePullRequest": 1014,
+    "featureMergeSha": "c608541f93688150ddc3d0dee08b33dfaab01e5f"
   },
   "decision": "DOCX_REVIEW_PREVIEW_SESSION_ACTIVATION_OPENED_FOR_COMMENTS_ONLY_MANUAL_PREVIEW",
-  "nextStep": "complete delivery chain, then select the next explicit owner-approved contour"
+  "nextStep": "continue with the separate owner-approved DOCX review local-file entry contour"
 }
