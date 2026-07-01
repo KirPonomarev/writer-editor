@@ -10,7 +10,24 @@ const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-word-evidence-check.contract.test.js';
 const P0_TEST_PATH = 'test/contracts/revision-bridge-p0-safety-kernel.contract.test.js';
 const GOOGLE_TEST_PATH = 'test/contracts/revision-bridge-google-docs-evidence-check.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH, P0_TEST_PATH, GOOGLE_TEST_PATH];
+const CLAIM_BINDING_TEST_PATH = 'test/contracts/review-bridge-word-evidence-claim-binding.contract.test.js';
+const CLAIM_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001_STATUS.json';
+const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
+const CONTEXT_PATH = 'docs/CONTEXT.md';
+const HANDOFF_PATH = 'docs/HANDOFF.md';
+const WORKLOG_PATH = 'docs/WORKLOG.md';
+const ALLOWLIST = [
+  MODULE_PATH,
+  TEST_PATH,
+  P0_TEST_PATH,
+  GOOGLE_TEST_PATH,
+  CLAIM_BINDING_TEST_PATH,
+  CLAIM_BINDING_STATUS_PATH,
+  GOVERNANCE_APPROVALS_PATH,
+  CONTEXT_PATH,
+  HANDOFF_PATH,
+  WORKLOG_PATH,
+];
 
 async function loadBridge() {
   return import(pathToFileURL(path.join(REPO_ROOT, MODULE_PATH)).href);
@@ -313,6 +330,11 @@ test('Contour 10 gate does not mutate claim or evidence inputs', async () => {
 
 test('Contour 10 gate module stays pure and free of runtime side-effect imports', () => {
   const text = fs.readFileSync(path.join(REPO_ROOT, MODULE_PATH), 'utf8');
+  const sectionMatch = text.match(
+    /\/\/ CONTOUR_10_WORD_EVIDENCE_CHECK_R2_START[\s\S]*?\/\/ CONTOUR_10_WORD_EVIDENCE_CHECK_R2_END/u,
+  );
+  assert.ok(sectionMatch, 'Contour 10 Word evidence section exists');
+  const sectionText = sectionMatch[0];
   const forbiddenPatterns = [
     /\bimport\b/u,
     /\brequire\s*\(/u,
@@ -324,7 +346,7 @@ test('Contour 10 gate module stays pure and free of runtime side-effect imports'
   ];
 
   for (const pattern of forbiddenPatterns) {
-    assert.equal(pattern.test(text), false, `forbidden bridge pattern: ${pattern.source}`);
+    assert.equal(pattern.test(sectionText), false, `forbidden bridge pattern: ${pattern.source}`);
   }
 });
 

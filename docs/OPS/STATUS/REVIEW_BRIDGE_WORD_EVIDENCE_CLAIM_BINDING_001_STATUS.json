@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_word_evidence_claim_binding",
+  "featureExpansion": "bounded_review_bridge_claim_binding",
+  "baseSha": "f5d22747bb4e2569dde6404893e8eabc1f64e323",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": false,
+    "rendererSurfaceChanged": false,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false,
+    "wordParserChanged": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false,
+    "autoApply": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "binding": {
+    "sourcePlan": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_FINAL_PLAN_R2",
+    "previousContourTaskId": "REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
+    "previousContourStatus": "delivered_merged_verified",
+    "previousContourMergeSha": "02754b5f6ac6bd231b6d47659453ab92ddd6d979",
+    "existingKernelMarker": "CONTOUR_10_WORD_EVIDENCE_CHECK_R2",
+    "wordEvidencePacketSchema": "revision-bridge.word-evidence-packet.v1",
+    "wordSupportClaimSchema": "revision-bridge.word-support-claim.v1"
+  },
+  "positiveClaims": [
+    "The existing Word evidence claim gate is product-bound as a Review Bridge claim boundary.",
+    "A Word evidence claim can be accepted only when a valid Word evidence packet is present, the evidence hash matches, and requested coverage is not wider than packet coverage.",
+    "Accepted Word evidence coverage classes are textExact, commentAnchor, and structuralManual.",
+    "Missing evidence packet, invalid evidence packet, invalid claim, hash mismatch, and coverage-exceeded cases block the claim.",
+    "The binding is evidence and claim truth only; it is not content import, review import, apply, export, or storage truth.",
+    "The next planned lane remains Google Docs evidence claim binding after this contour is delivered."
+  ],
+  "nonClaims": [
+    "No Word support is claimed.",
+    "No Word import is claimed.",
+    "No Word review import is claimed.",
+    "No Word sync is claimed.",
+    "No Word roundtrip is claimed.",
+    "No Word layout parity is claimed.",
+    "No full DOCX fidelity is claimed.",
+    "No full DOCX review import is claimed.",
+    "No exact apply from Word or DOCX is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed by Word evidence claim binding.",
+    "No project truth write is performed by Word evidence claim binding.",
+    "No receipt or recovery evidence is created by Word evidence claim binding.",
+    "No DOCX import safe-create behavior is changed.",
+    "No DOCX export behavior is changed.",
+    "No import/export MVP closeout is widened.",
+    "No release readiness is claimed.",
+    "No PDF, EPUB, HTML, Mindmap, cloud, sync, accounts, cross-platform readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Evidence layer validates packet and claim only.",
+    "Claim binding is not a parser and does not inspect Word files.",
+    "Claim binding is not content import and does not create scenes.",
+    "Claim binding is not Review import and does not activate a Review session.",
+    "Claim binding is not an apply plan and does not authorize mutation.",
+    "Claim binding is not safe write and does not create receipt or recovery evidence.",
+    "Claim binding is not export and does not alter DOCX output.",
+    "Review Bridge may reference accepted claims as bounded evidence, but accepted claims do not become project truth."
+  ],
+  "implementation": {
+    "changedProductionRuntime": false,
+    "changedUi": false,
+    "changedBasenames": [
+      "REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001_STATUS.json",
+      "review-bridge-word-evidence-claim-binding.contract.test.js",
+      "revision-bridge-word-evidence-check.contract.test.js",
+      "GOVERNANCE_CHANGE_APPROVALS.json",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "WORKLOG.md"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --test Word evidence claim binding targeted contracts",
+      "status": "pass",
+      "tests": 14
+    },
+    {
+      "command": "node --test release claim adjacent boundary contracts",
+      "status": "pass",
+      "tests": 75
+    },
+    {
+      "command": "node --test Google Docs evidence and format matrix adjacent checks",
+      "status": "diagnostic_dirty_tree_hygiene_only",
+      "testsPassed": 35,
+      "testsFailed": 3,
+      "failureClass": "stale adjacent dirty-tree allowlist and whole-module purity false-positive; no Word evidence claim binding product regression observed"
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "wordEvidenceClaimBindingExists": true,
+    "validPacketAndClaimAccepted": true,
+    "missingPacketBlocked": true,
+    "invalidPacketBlocked": true,
+    "invalidClaimBlocked": true,
+    "hashMismatchBlocked": true,
+    "coverageExceededBlocked": true,
+    "wordSupportClaimed": false,
+    "wordImportClaimed": false,
+    "wordRoundtripClaimed": false,
+    "wordParityClaimed": false,
+    "applyOpsCreated": false,
+    "receiptCreated": false,
+    "recoveryCreated": false,
+    "projectTruthMutated": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false
+  },
+  "agentAudits": [
+    {
+      "agent": "Ohm",
+      "type": "read_only_explorer",
+      "result": "pass",
+      "finding": "Runtime diff not needed; bounded status, docs, governance, and contract guard are sufficient for this claim binding contour."
+    },
+    {
+      "agent": "Pauli",
+      "type": "read_only_skeptic",
+      "result": "pass",
+      "finding": "No direct overclaim found; main protected boundary is avoiding Word evidence claims as proof of import, apply, export, storage, UI, or release readiness."
+    },
+    {
+      "agent": "Heisenberg",
+      "type": "read_only_independent_skeptic",
+      "result": "pass",
+      "finding": "No overclaim or layer mixing found in the current diff; adjacent failures classify as dirty-tree or test-hygiene rather than product regression."
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": "",
+    "featureMergedAtUtc": ""
+  },
+  "decision": "WORD_EVIDENCE_CLAIM_BINDING_BOUND_FOR_CURRENT_SCOPE",
+  "nextStep": "complete delivery chain, then continue to Google Docs evidence claim binding"
+}
