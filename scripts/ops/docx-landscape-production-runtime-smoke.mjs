@@ -28,18 +28,89 @@ function readStoredZipEntry(buffer, entryName) {
   return '';
 }
 
+const LANDSCAPE_PROOF_TEXT = 'Tiny landscape runtime DOCX proof text.';
+
 function createLandscapeExportProbeSource(outPath) {
-  return `(() => window.electronAPI.exportDocxMin({
-    requestId: '05af-landscape-runtime-smoke',
-    outPath: ${JSON.stringify(outPath)},
-    outDir: '',
-    bufferSource: 'Tiny landscape runtime DOCX proof text.',
-    options: { bookProfile: { formatId: 'A4', orientation: 'landscape' } }
-  }).then((value) => ({ ok: 1, value }))
-    .catch((error) => ({
-      ok: 0,
-      message: error && error.message ? error.message : String(error)
-    })))()`;
+  return `(async () => {
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const command = (commandId, payload = {}) => window.electronAPI.invokeUiCommandBridge({
+      route: 'command.bus',
+      commandId,
+      payload,
+    });
+    const findCanonicalDocumentNode = (node) => {
+      if (!node || typeof node !== 'object') return null;
+      if (
+        typeof node.path === 'string'
+        && node.path.endsWith('.txt')
+        && (node.name === 'черновик' || node.label === 'черновик')
+      ) return node;
+      const children = Array.isArray(node.children) ? node.children : [];
+      for (const child of children) {
+        const found = findCanonicalDocumentNode(child);
+        if (found) return found;
+      }
+      return null;
+    };
+    const setEditorText = (text) => {
+      const prose = document.querySelector('.ProseMirror');
+      if (!prose) return { ok: false, reason: 'PROSEMIRROR_MISSING' };
+      prose.focus();
+      document.execCommand('selectAll', false, null);
+      const inserted = document.execCommand('insertText', false, text);
+      return {
+        ok: inserted === true,
+        textLength: (prose.textContent || '').length,
+        containsProofText: (prose.textContent || '').includes(${JSON.stringify(LANDSCAPE_PROOF_TEXT)}),
+      };
+    };
+
+    const treeResult = await window.electronAPI.invokeWorkspaceQueryBridge({
+      queryId: 'query.projectTree',
+      payload: { tab: 'roman' },
+    });
+    if (!treeResult || treeResult.ok === false) {
+      return { ok: 0, stage: 'projectTree', treeResult };
+    }
+    const documentNode = findCanonicalDocumentNode(treeResult.root);
+    if (!documentNode) {
+      return { ok: 0, stage: 'findCanonicalDocumentNode', treeResult };
+    }
+    const openResult = await command('cmd.project.document.open', {
+      path: documentNode.path,
+      title: documentNode.label || documentNode.name || 'landscape-runtime-docx',
+      kind: documentNode.kind,
+    });
+    if (!openResult || openResult.ok !== true) {
+      return { ok: 0, stage: 'openDocument', openResult };
+    }
+    await sleep(300);
+    const editResult = setEditorText(${JSON.stringify(LANDSCAPE_PROOF_TEXT)});
+    if (!editResult.ok || !editResult.containsProofText) {
+      return { ok: 0, stage: 'setEditorText', editResult };
+    }
+    await window.electronAPI.invokeSaveLifecycleSignalBridge({
+      signalId: 'signal.localDirty.set',
+      payload: { state: true },
+    });
+    await sleep(100);
+    const saveResult = await command('cmd.project.save', {});
+    if (!saveResult || saveResult.ok !== true) {
+      return { ok: 0, stage: 'saveDocument', saveResult, editResult };
+    }
+    const exportValue = await window.electronAPI.exportDocxMin({
+      requestId: '05af-landscape-runtime-smoke',
+      outPath: ${JSON.stringify(outPath)},
+      outDir: '',
+      bufferSource: 'stale buffer source must not be exported',
+      options: { bookProfile: { formatId: 'A4', orientation: 'landscape' } }
+    });
+    return { ok: 1, value: exportValue, editResult, saveResult };
+  })().catch((error) => ({
+    ok: 0,
+    stage: 'exception',
+    message: error && error.message ? error.message : String(error)
+  }))`;
 }
 
 async function validateLandscapeDocx(outPath) {
@@ -51,6 +122,8 @@ async function validateLandscapeDocx(outPath) {
     size: buffer.length,
     zipMagic: buffer.length >= 4 && buffer[0] === 0x50 && buffer[1] === 0x4b,
     documentXmlFound: documentXml.length > 0,
+    proofTextPresent: documentXml.includes('Tiny landscape runtime DOCX proof text.'),
+    staleBufferAbsent: !documentXml.includes('stale buffer source'),
     landscapeOrient: Boolean(pageSize),
     widthGreaterThanHeight: Boolean(pageSize && Number(pageSize[1]) > Number(pageSize[2])),
   };
@@ -84,14 +157,16 @@ try {
   assert.equal(payload.loadComplete, true);
   assert.equal(payload.networkRequests, 0);
   assert.equal(payload.dialogCalls, 0);
-  assert.equal(exportProbe.ok, 1);
-  assert.equal(exportValue.ok, 1);
+  assert.equal(exportProbe.ok, 1, JSON.stringify(exportProbe, null, 2));
+  assert.equal(exportValue.ok, 1, JSON.stringify(exportProbe, null, 2));
   assert.equal(exportValue.outPath, outPath);
   assert.equal(Number.isInteger(exportValue.bytesWritten), true);
   assert.equal(exportValue.bytesWritten > 0, true);
   assert.equal(validation.size > 0, true);
   assert.equal(validation.zipMagic, true);
   assert.equal(validation.documentXmlFound, true);
+  assert.equal(validation.proofTextPresent, true);
+  assert.equal(validation.staleBufferAbsent, true);
   assert.equal(validation.landscapeOrient, true);
   assert.equal(validation.widthGreaterThanHeight, true);
 

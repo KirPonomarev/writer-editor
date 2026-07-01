@@ -1,0 +1,121 @@
+{
+  "taskId": "IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001",
+  "schemaVersion": 1,
+  "status": "PASS_TO_CLOSEOUT",
+  "scope": {
+    "type": "acceptance_gate",
+    "featureExpansion": false,
+    "productFlows": [
+      "DOCX export",
+      "DOCX import preview accept open scene",
+      "Markdown import",
+      "Markdown export Save As"
+    ],
+    "derivedStatusChecks": [
+      "Mindmap derived runtime/status only"
+    ],
+    "outOfScope": [
+      "PDF",
+      "EPUB",
+      "HTML export",
+      "cloud",
+      "accounts",
+      "sync",
+      "collaboration",
+      "perfect Word layout parity",
+      "full release packaging",
+      "UI redesign",
+      "new dependencies",
+      "user-facing Mindmap export command"
+    ]
+  },
+  "canonGuards": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "noNetworkRequired": true,
+    "docxFirstExportBaseline": true,
+    "previewDoesNotWriteProjectTruth": true,
+    "safeCreateDoesNotOverwrite": true,
+    "exportWritesChosenFileOnly": true,
+    "atomicWriteAndRecoveryPreserved": true,
+    "mindmapDerivedOnly": true,
+    "newDependenciesAdded": false
+  },
+  "runtimePathFindings": {
+    "docxExport": "cmd.project.export.docxMin reaches handleExportDocxMin and runDocxMinExport through canonical runtime and direct compatibility paths.",
+    "docxImport": "cmd.project.importDocxV1 coordinates previewLocalFile, previewImportPlan, importSafeCreate, then renderer opens the created scene.",
+    "markdownImport": "cmd.project.importMarkdownV1 uses preview plus safe-create and opens the created scene from the refreshed tree.",
+    "markdownExport": "cmd.project.exportMarkdownV1 Save As forwards saveAs/defaultName to the backend and requires saved-file proof.",
+    "mindmap": "Derived modules and bridge/status artifacts are present; no user-facing Mindmap export command is claimed."
+  },
+  "tests": [
+    {
+      "command": "node --test targeted DOCX Markdown command UI unit group",
+      "result": "PASS",
+      "tests": 61,
+      "failures": 0
+    },
+    {
+      "command": "node --test targeted DOCX Markdown Mindmap contract group",
+      "result": "PASS_AFTER_ENV_RETRY",
+      "tests": 162,
+      "failures": 0,
+      "note": "Initial run had one environment failure because node_modules was absent and electron was not installed; npm ci restored declared dependencies and b3c07 passed."
+    },
+    {
+      "command": "node --test atomic recovery command-path group",
+      "result": "PASS",
+      "tests": 20,
+      "failures": 0
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "result": "PASS"
+    },
+    {
+      "command": "node scripts ops docx min export production runtime smoke",
+      "result": "PASS"
+    },
+    {
+      "command": "node scripts ops docx landscape production runtime smoke",
+      "result": "PASS_AFTER_HARNESS_REPAIR",
+      "note": "Harness was updated to use saved canonical source instead of forbidden bufferSource-only export."
+    },
+    {
+      "command": "npm run -s test:electron",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "repairApplied": {
+    "type": "test_harness_only",
+    "productRuntimeChanged": false,
+    "summary": "The landscape DOCX production smoke now opens and saves the canonical document before exporting with landscape bookProfile options, matching the current export canon."
+  },
+  "acceptance": {
+    "productDocxExport": true,
+    "productDocxImportPreviewAcceptOpenScene": true,
+    "productMarkdownImport": true,
+    "productMarkdownExportSaveAs": true,
+    "crossFlowCoveredByTargetedSlices": true,
+    "mindmapDerivedOnly": true,
+    "noNetwork": true,
+    "hostileInputsFailClosed": true,
+    "atomicWrite": true,
+    "recoveryCompatibility": true,
+    "ossPolicy": true,
+    "finalGitStatusExpectedCleanAfterDelivery": true
+  },
+  "limitations": {
+    "fullNpmTestRun": false,
+    "markdownProductionElectronPickerSmoke": false,
+    "docxImportProductionElectronPickerSmoke": false,
+    "mindmapUserFacingExportReady": false,
+    "releaseReadinessClaimed": false
+  },
+  "decision": "PASS_TO_CLOSEOUT",
+  "nextContour": "IMPORT_EXPORT_PRODUCT_CLOSEOUT_BINDING_001"
+}
