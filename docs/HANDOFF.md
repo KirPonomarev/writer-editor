@@ -32,7 +32,7 @@ _Generated: 2026-06-27_
 - Active axis: `Writer v1`
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
-- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, historical vertical sheets baseline, C05 long-document closeout, current 01R quarantine for tracked vertical sheet reds, and editorial sheet 10000 committed stress evidence.
+- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, historical vertical sheets baseline, C05 long-document closeout, current 01R quarantine for tracked vertical sheet reds, editorial sheet 10000 committed stress evidence, and import/export MVP-scope closeout.
 
 ## Local Machine State
 - This file describes a snapshot-bound mainline reality, not the forever-current state of the local machine.
@@ -45,6 +45,10 @@ _Generated: 2026-06-27_
 - No input loss suite is green.
 - IME composition closure evidence is bound.
 - DOCX closure evidence is bound.
+- Import/export MVP-scope acceptance is bound by `IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json` from PR `1002`, merged at `7deeaa8f3cbbabe912df4862b2fb88d472cb11d3`.
+- Import/export MVP-scope closeout status is `FEATURE_CLOSED_FOR_MVP_SCOPE` for exactly DOCX export, DOCX import preview accept open-scene, Markdown import, and Markdown export Save As.
+- Mindmap remains derived runtime/status only; no user-facing Mindmap export command is claimed.
+- Import/export closeout does not claim release readiness, full npm test green, production picker coverage for Markdown export or DOCX import, full Word layout parity, broad format fidelity, PDF/EPUB/HTML export, cloud, sync, accounts, new dependencies, or user-facing Mindmap export.
 - Tiptap path is the primary editor path.
 - Phase 03 blocker is closed on main through the merged repair wave.
 - True Phase 04 design-layer baseline is closed on main through the merged repair wave.
@@ -113,7 +117,7 @@ _Generated: 2026-06-27_
 4. current no-contradiction state should remain symbolic closeout ready with blocked or later freeze
 5. if a new live nonblocked contradiction is reproved, open one explicit evidence-backed contour selection brief only
 6. after vertical sheets factual sync, select exactly one next contour; do not open automatic runtime, export, toolbar, perf, or docs work by implication
-7. after editorial sheet 10000 stress rebind and viewport-continuity repair, select exactly one next contour; eligible future lanes include above-10000 resource profiling, manual macOS design gate, text export expansion, Markdown export, platform adapters, collaboration, comments, or history, but none opens by implication.
+7. after editorial sheet 10000 stress rebind, viewport-continuity repair, and import/export MVP-scope closeout, select exactly one next contour; eligible future lanes include above-10000 resource profiling, manual macOS design gate, post-MVP export expansion, platform adapters, collaboration, comments, or history, but none opens by implication.
 
 ## Working Agreement
 - Bounded contours only
