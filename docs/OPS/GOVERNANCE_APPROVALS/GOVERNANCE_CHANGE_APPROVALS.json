@@ -3,7 +3,7 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001_STATUS.json",
-      "sha256": "56a52784eef02264cfd489ef9ef8f490cea4963036f8877580b46205793dc405",
+      "sha256": "0afd161f9a66604e22a1bd722e099034324cfc0dfd04d9458b8b226325c1bc97",
       "approvedBy": "ticket:REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
       "rationale": "Approve bounded Google Docs evidence claim binding status; it product-binds the existing Google Docs evidence claim gate while preserving no Google Docs support, no Google Docs import, no Google Docs sync, no Google Docs roundtrip, no Google Docs layout parity, no full Google Docs fidelity, no Google API or Google Drive integration, no network, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no release readiness, no dependency, and no Y9 claim."
