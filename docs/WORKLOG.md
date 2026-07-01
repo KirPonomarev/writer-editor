@@ -4,7 +4,7 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-02
-- Review Bridge: opened `REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001` as a bounded first useful feature gate.
+- Review Bridge: delivered `REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001` via PR `1018` merge SHA `d76485d152c1bfa1cb00bf9eda0c242596785352` as a bounded first useful feature gate.
 - First useful gate scope: local JSON review packet import to Review surface plus one exact text safe apply with receipt and recovery evidence; DOCX comments-only remains separate preview/manual-only evidence.
 - First useful gate truth sync: rebound `REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001_STATUS.json` from stale pending-delivery wording to delivered PR `1008` merge SHA `5acc7612f109153820e71ed3f474f211be213601`.
 - Scope truth: no release readiness, packaged readiness, cross-platform readiness, full review import, full DOCX review import, exact apply from DOCX, structural apply, comment auto-apply, cross-scene atomicity, multi-file transaction truth, or import/export MVP widening is claimed.
