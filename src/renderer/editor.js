@@ -640,6 +640,20 @@ function reviewSurfaceExtractCommandFailureReason(result = {}) {
   return 'REVIEW_SURFACE_APPLY_FAILED';
 }
 
+function reviewSurfaceIsExactApplyBlockedReason(reason) {
+  const normalized = reviewSurfaceText(reason).toUpperCase();
+  return [
+    'ALREADY_APPLIED',
+    'BLOCK',
+    'DIRTY',
+    'DUPLICATE',
+    'MISMATCH',
+    'NO_MATCH',
+    'STALE',
+    'UNSUPPORTED',
+  ].some((token) => normalized.includes(token));
+}
+
 function reviewSurfacePresentExactApplyState(state) {
   switch (reviewSurfaceText(state)) {
     case 'applying':
@@ -7787,7 +7801,7 @@ async function handleReviewSurfaceExactTextApplyClick(event) {
   }
 
   const reason = reviewSurfaceExtractCommandFailureReason(bridgeResult);
-  const blocked = reason.includes('BLOCK') || reason.includes('DIRTY') || reason.includes('MISMATCH');
+  const blocked = reviewSurfaceIsExactApplyBlockedReason(reason);
   reviewSurfaceExactTextApplyTransientState = {
     state: blocked ? 'blocked' : 'failed',
     requestId,

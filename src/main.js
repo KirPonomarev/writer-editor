@@ -803,6 +803,58 @@ function summarizeReviewExactTextSafeWriteResult(result) {
   return summary;
 }
 
+function readReviewExactTextAppliedReceiptForChange(sessionStore, revisionSession, changeId) {
+  const normalizedChangeId = typeof changeId === 'string' ? changeId.trim() : '';
+  if (!normalizedChangeId || !isPlainObjectValue(sessionStore)) return null;
+
+  const expectedProjectId = typeof revisionSession?.projectId === 'string' ? revisionSession.projectId.trim() : '';
+  const expectedSessionId = typeof revisionSession?.sessionId === 'string' ? revisionSession.sessionId.trim() : '';
+  const candidates = [
+    sessionStore.lastExactTextApplyReceipt,
+    sessionStore.reviewSurface?.receipt,
+  ];
+
+  for (const receipt of candidates) {
+    if (!isPlainObjectValue(receipt)) continue;
+    const receiptChangeId = typeof receipt.changeId === 'string' ? receipt.changeId.trim() : '';
+    const receiptProjectId = typeof receipt.projectId === 'string' ? receipt.projectId.trim() : '';
+    const receiptSessionId = typeof receipt.sessionId === 'string' ? receipt.sessionId.trim() : '';
+    const receiptOperationKind = typeof receipt.operationKind === 'string' ? receipt.operationKind.trim() : '';
+    const receiptWriteStatus = typeof receipt.writeStatus === 'string' ? receipt.writeStatus.trim() : '';
+
+    if (
+      receiptChangeId === normalizedChangeId
+      && receiptWriteStatus === 'applied'
+      && receiptOperationKind === 'replaceExactText'
+      && (!expectedProjectId || receiptProjectId === expectedProjectId)
+      && (!expectedSessionId || receiptSessionId === expectedSessionId)
+    ) {
+      return cloneJsonSafe(receipt) || null;
+    }
+  }
+
+  return null;
+}
+
+function makeReviewExactTextAlreadyAppliedError(appliedReceipt, liveDetails = {}) {
+  return makeReviewMutateTypedError(
+    REVIEW_EXACT_TEXT_APPLY_COMMAND_ID,
+    'E_REVIEW_EXACT_TEXT_APPLY_BLOCKED',
+    'REVIEW_EXACT_TEXT_APPLY_ALREADY_APPLIED',
+    {
+      changeId: typeof appliedReceipt?.changeId === 'string' ? appliedReceipt.changeId : '',
+      sessionId: typeof appliedReceipt?.sessionId === 'string' ? appliedReceipt.sessionId : '',
+      transactionId: typeof appliedReceipt?.transactionId === 'string' ? appliedReceipt.transactionId : '',
+      writtenAt: typeof appliedReceipt?.writtenAt === 'string' ? appliedReceipt.writtenAt : '',
+      ...(
+        isPlainObjectValue(liveDetails)
+          ? cloneJsonSafe(liveDetails)
+          : {}
+      ),
+    },
+  );
+}
+
 function attachReviewExactTextApplyReceipt(receipt, safeWriteResult) {
   if (
     activeReviewSessionLifecycle !== 'active'
@@ -866,6 +918,12 @@ async function handleReviewSurfaceApplyExactTextChangeCommandSurface(payload = {
     );
   }
 
+  const appliedReceipt = readReviewExactTextAppliedReceiptForChange(
+    activeSession,
+    revisionSession,
+    selected.value.textChange.changeId,
+  );
+
   const loadSafeWrite = typeof options.loadExactTextMinSafeWriteModule === 'function'
     ? options.loadExactTextMinSafeWriteModule
     : (typeof loadExactTextMinSafeWriteModule === 'function' ? loadExactTextMinSafeWriteModule : null);
@@ -916,12 +974,29 @@ async function handleReviewSurfaceApplyExactTextChangeCommandSurface(payload = {
   }
 
   if (!isPlainObjectValue(applyContext) || applyContext.ok !== true || !isPlainObjectValue(applyContext.input)) {
+    if (appliedReceipt && applyContext?.reason === 'REVIEW_EXACT_TEXT_APPLY_PLAN_BLOCKED') {
+      return makeReviewExactTextAlreadyAppliedError(appliedReceipt, {
+        livePlanStatus: 'blocked',
+        livePlanReason: typeof applyContext?.details?.planReason === 'string'
+          ? applyContext.details.planReason
+          : '',
+        livePlanCode: typeof applyContext?.details?.planCode === 'string'
+          ? applyContext.details.planCode
+          : '',
+      });
+    }
     return makeReviewMutateTypedError(
       REVIEW_EXACT_TEXT_APPLY_COMMAND_ID,
       typeof applyContext?.code === 'string' ? applyContext.code : 'E_REVIEW_EXACT_TEXT_APPLY_CONTEXT_BLOCKED',
       typeof applyContext?.reason === 'string' ? applyContext.reason : 'REVIEW_EXACT_TEXT_APPLY_CONTEXT_BLOCKED',
       isPlainObjectValue(applyContext?.details) ? applyContext.details : undefined,
     );
+  }
+
+  if (appliedReceipt) {
+    return makeReviewExactTextAlreadyAppliedError(appliedReceipt, {
+      livePlanStatus: 'ready',
+    });
   }
 
   let safeWriteModule = null;

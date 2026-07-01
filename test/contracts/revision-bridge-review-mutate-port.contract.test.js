@@ -727,8 +727,109 @@ test('review mutate port contract: apply exact text writes through safe core and
   assert.equal(value.reviewSurface.exactTextApplyResult.applied, true);
   assert.equal(value.reviewSurface.exactTextApplyResult.status, 'applied');
   assert.equal(state.currentReviewSurfacePayloadSource, 'session');
+  assert.equal(state.activeReviewSessionStore.lastExactTextApplyReceipt.transactionId, value.receipt.transactionId);
   assert.equal(state.currentReviewSurfacePayload.receipt.transactionId, value.receipt.transactionId);
   assert.equal(normalizeVmValue(port.readActiveReviewSessionReviewSurface()).receipt.transactionId, value.receipt.transactionId);
+
+  let duplicateBuildCalled = false;
+  let duplicateSafeWriteLoaded = false;
+  const duplicate = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface(
+    { changeId: 'text-change-1' },
+    {
+      buildReviewExactTextApplyInput: async () => {
+        duplicateBuildCalled = true;
+        return {
+          ok: false,
+          code: 'E_REVIEW_EXACT_TEXT_APPLY_CONTEXT_BLOCKED',
+          reason: 'REVIEW_EXACT_TEXT_APPLY_PLAN_BLOCKED',
+          details: {
+            planReason: 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH',
+          },
+        };
+      },
+      loadExactTextMinSafeWriteModule: async () => {
+        duplicateSafeWriteLoaded = true;
+        return loadExactSafeWrite();
+      },
+    },
+  );
+  const duplicateState = normalizeVmValue(port.getState());
+
+  assert.equal(duplicate.ok, false);
+  assert.equal(duplicate.error.code, 'E_REVIEW_EXACT_TEXT_APPLY_BLOCKED');
+  assert.equal(duplicate.error.reason, 'REVIEW_EXACT_TEXT_APPLY_ALREADY_APPLIED');
+  assert.equal(duplicate.error.details.changeId, 'text-change-1');
+  assert.equal(duplicate.error.details.transactionId, value.receipt.transactionId);
+  assert.equal(duplicate.error.details.livePlanStatus, 'blocked');
+  assert.equal(duplicate.error.details.livePlanReason, 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH');
+  assert.equal(duplicateBuildCalled, true);
+  assert.equal(duplicateSafeWriteLoaded, false);
+  assert.equal(readText(scenePath), 'Alpha delta gamma.');
+  assert.equal(duplicateState.currentReviewSurfacePayload.receipt.transactionId, value.receipt.transactionId);
+});
+
+test('review mutate port contract: duplicate apply after external revert revalidates live context but does not write', async () => {
+  const port = instantiateReviewMutatePort();
+  const { scenePath } = tmpScene('Alpha beta gamma.');
+  const revisionSession = validExactApplyRevisionSession({ sceneId: scenePath });
+  const applyInput = await buildReadyExactApplyInput({
+    scenePath,
+    sceneText: 'Alpha beta gamma.',
+    revisionSession,
+  });
+
+  const importResult = await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-1',
+    reviewSurface: {
+      revisionSession,
+      summary: { total: 1 },
+    },
+    revisionSession,
+    sourcePacketHash: 'packet-hash-apply-external-revert',
+    createdAt: '2026-05-24T12:00:00.000Z',
+  });
+  assert.equal(importResult.ok, true);
+
+  const first = normalizeVmValue(await port.handleReviewSurfaceApplyExactTextChangeCommandSurface(
+    { changeId: 'text-change-1' },
+    {
+      buildReviewExactTextApplyInput: async () => ({ ok: true, input: applyInput }),
+      loadExactTextMinSafeWriteModule: loadExactSafeWrite,
+      safeWriteOptions: { now: () => 1700000000000 },
+    },
+  ));
+  assert.equal(first.ok, true);
+  assert.equal(readText(scenePath), 'Alpha delta gamma.');
+
+  fs.writeFileSync(scenePath, 'Alpha beta gamma.', 'utf8');
+  let liveContextReadRevertedBytes = false;
+  let duplicateSafeWriteLoaded = false;
+  const duplicate = normalizeVmValue(await port.handleReviewSurfaceApplyExactTextChangeCommandSurface(
+    { changeId: 'text-change-1' },
+    {
+      buildReviewExactTextApplyInput: async () => {
+        liveContextReadRevertedBytes = readText(scenePath) === 'Alpha beta gamma.';
+        return { ok: true, input: applyInput };
+      },
+      loadExactTextMinSafeWriteModule: async () => {
+        duplicateSafeWriteLoaded = true;
+        return loadExactSafeWrite();
+      },
+    },
+  ));
+
+  assert.equal(liveContextReadRevertedBytes, true);
+  assert.equal(duplicate.ok, false);
+  assert.equal(duplicate.error.reason, 'REVIEW_EXACT_TEXT_APPLY_ALREADY_APPLIED');
+  assert.equal(duplicate.error.details.livePlanStatus, 'ready');
+  assert.equal(duplicateSafeWriteLoaded, false);
+  assert.equal(readText(scenePath), 'Alpha beta gamma.');
+  assert.equal(
+    normalizeVmValue(port.readActiveReviewSessionReviewSurface()).receipt.transactionId,
+    first.receipt.transactionId,
+  );
 });
 
 test('review mutate port contract: apply exact text blocks structural and multi-change sessions before write context', async () => {
@@ -820,4 +921,97 @@ test('review mutate port contract: blocked safe-write result does not attach rec
     normalizeVmValue(port.readActiveReviewSessionReviewSurface()),
     'receipt',
   ), false);
+});
+
+test('review mutate port contract: stale no-match exact apply stays blocked without receipt invention', async () => {
+  const port = instantiateReviewMutatePort();
+
+  await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-1',
+    reviewSurface: {
+      summary: { total: 1 },
+    },
+    revisionSession: validExactApplyRevisionSession(),
+  });
+
+  const result = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({}, {
+    buildReviewExactTextApplyInput: async () => ({ ok: true, input: { fake: true } }),
+    loadExactTextMinSafeWriteModule: async () => ({
+      applyExactTextMinSafeWrite: async () => ({
+        ok: false,
+        status: 'blocked',
+        code: 'E_REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_BLOCKED',
+        reason: 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH',
+        applied: false,
+        reasons: [
+          {
+            code: 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH',
+            field: 'reviewItem.match.quote',
+            message: 'Exact quote no longer matches current scene text.',
+          },
+        ],
+      }),
+    }),
+  });
+  const state = normalizeVmValue(port.getState());
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_BLOCKED');
+  assert.equal(result.error.reason, 'REVISION_BRIDGE_EXACT_TEXT_APPLY_PLAN_NO_MATCH');
+  assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'receipt'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'exactTextApplyResult'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(
+    normalizeVmValue(port.readActiveReviewSessionReviewSurface()),
+    'receipt',
+  ), false);
+});
+
+test('review mutate port contract: queue-time dirty block stays non-mutating and receipt-free', async () => {
+  const port = instantiateReviewMutatePort();
+
+  await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-1',
+    reviewSurface: {
+      summary: { total: 1 },
+    },
+    revisionSession: validExactApplyRevisionSession(),
+  });
+
+  let safeWriteAsked = false;
+  const result = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({}, {
+    buildReviewExactTextApplyInput: async () => ({ ok: true, input: { fake: true } }),
+    loadExactTextMinSafeWriteModule: async () => ({
+      applyExactTextMinSafeWrite: async () => {
+        throw new Error('safe writer must be wrapped by queue guard');
+      },
+    }),
+    runReviewExactTextSafeWrite: async () => {
+      safeWriteAsked = true;
+      return {
+        ok: false,
+        status: 'blocked',
+        code: 'E_REVIEW_EXACT_TEXT_APPLY_BLOCKED',
+        reason: 'REVIEW_EXACT_TEXT_APPLY_DIRTY_EDITOR_BLOCKED',
+        applied: false,
+        reasons: [
+          {
+            code: 'REVIEW_EXACT_TEXT_APPLY_DIRTY_EDITOR_BLOCKED',
+            field: 'editor',
+            message: 'Editor became dirty before queued write.',
+          },
+        ],
+      };
+    },
+  });
+  const state = normalizeVmValue(port.getState());
+
+  assert.equal(safeWriteAsked, true);
+  assert.equal(result.ok, false);
+  assert.equal(result.error.reason, 'REVIEW_EXACT_TEXT_APPLY_DIRTY_EDITOR_BLOCKED');
+  assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'receipt'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'exactTextApplyResult'), false);
 });
