@@ -10,10 +10,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001_STATUS.json",
-      "sha256": "267e33af7197853683c4546e458d8736226ef0cbc2e218a0a551166903a6985a",
+      "sha256": "d5909dc8f6f597098d4eb10280513fc67f003a02f3086ed853ea83869ddb1788",
       "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded Review Bridge first useful feature gate status: local JSON review packet to Review surface plus one exact text safe apply with receipt and recovery evidence, while DOCX comments-only remains a separate preview/manual-only surface and no full review import, DOCX apply, structural apply, comment auto-apply, import/export MVP widening, release readiness, or user-facing release claim is introduced."
+      "rationale": "Approve delivery-rebound bounded Review Bridge first useful feature gate status after PR 1018 merge: local JSON review packet to Review surface plus one exact text safe apply with receipt and recovery evidence, while DOCX comments-only remains a separate preview/manual-only surface and no full review import, DOCX apply, structural apply, comment auto-apply, import/export MVP widening, release readiness, or user-facing release claim is introduced."
     },
     {
       "filePath": "test/contracts/review-bridge-first-useful-release-gate.contract.test.js",

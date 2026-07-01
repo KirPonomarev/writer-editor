@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001",
-  "status": "implemented_local_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_first_useful_release_gate",
   "featureExpansion": false,
   "baseSha": "2c8e1c715f86a700ea1d382c20153b7691973aa2",
@@ -205,8 +205,30 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending_delivery"
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "4ec7fb5917ef8e2a34b406d8f6adca4a95a2da3c",
+    "featurePullRequest": 1018,
+    "featureMergeSha": "d76485d152c1bfa1cb00bf9eda0c242596785352",
+    "featureMergedAtUtc": "2026-07-01T22:25:03Z",
+    "githubChecks": [
+      {
+        "name": "oss-policy",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "x1-runtime-parity (ubuntu-latest)",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "x1-runtime-parity (windows-latest)",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "ops_vector_close",
+        "result": "SUCCESS"
+      }
+    ]
   },
   "decision": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_BOUND_FOR_CURRENT_SCOPE",
-  "nextStep": "push_pr_merge_then_delivery_rebind"
+  "nextStep": "owner_selected_next_contour"
 }
