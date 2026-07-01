@@ -2132,6 +2132,100 @@ async function handleDocxIntakeGateCommandSurface(payload = {}) {
 }
 // DOCX_INTAKE_GATE_COMMAND_SURFACE_END
 
+// DOCX_REVIEW_PREFLIGHT_COMMAND_SURFACE_START
+const DOCX_REVIEW_PREFLIGHT_COMMAND_ID = 'cmd.project.review.inspectDocxReviewPreflight';
+
+function makeDocxReviewPreflightTypedError(code, reason, details = undefined) {
+  const error = {
+    code,
+    op: DOCX_REVIEW_PREFLIGHT_COMMAND_ID,
+    reason,
+  };
+  if (isPlainObjectValue(details) && Object.keys(details).length > 0) {
+    error.details = cloneJsonSafe(details);
+  }
+  return { ok: false, error };
+}
+
+function buildDocxReviewPreflightCommandResult(payload, reviewPreflightResult) {
+  const report = isPlainObjectValue(reviewPreflightResult) ? cloneJsonSafe(reviewPreflightResult) : {};
+  return {
+    ...report,
+    requestId: normalizeDocxIntakeGateRequestId(payload?.requestId),
+    commandId: DOCX_REVIEW_PREFLIGHT_COMMAND_ID,
+    canOpenReviewSession: false,
+    canAutoApply: false,
+    canCreateReviewPacket: false,
+    canImportMutate: false,
+    canWriteStorage: false,
+  };
+}
+
+async function handleDocxReviewPreflightCommandSurface(payload = {}) {
+  const decoded = decodeDocxIntakeGateBufferSource(payload);
+  if (!decoded.ok) {
+    return makeDocxReviewPreflightTypedError(
+      decoded.error?.code || 'E_DOCX_REVIEW_PREFLIGHT_PAYLOAD_INVALID',
+      decoded.error?.reason || 'DOCX_REVIEW_PREFLIGHT_PAYLOAD_INVALID',
+      decoded.error?.details,
+    );
+  }
+
+  let revisionBridge = null;
+  try {
+    revisionBridge = await loadRevisionBridgeModule();
+  } catch (error) {
+    return makeDocxReviewPreflightTypedError(
+      'E_DOCX_REVIEW_PREFLIGHT_UNAVAILABLE',
+      'DOCX_REVIEW_PREFLIGHT_BRIDGE_UNAVAILABLE',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+  if (!revisionBridge || typeof revisionBridge.buildDocxReviewPreflightReportFromZipBytes !== 'function') {
+    return makeDocxReviewPreflightTypedError(
+      'E_DOCX_REVIEW_PREFLIGHT_UNAVAILABLE',
+      'DOCX_REVIEW_PREFLIGHT_INSPECTOR_UNAVAILABLE',
+    );
+  }
+
+  let report = null;
+  try {
+    report = revisionBridge.buildDocxReviewPreflightReportFromZipBytes(decoded.bytes);
+  } catch (error) {
+    return makeDocxReviewPreflightTypedError(
+      'E_DOCX_REVIEW_PREFLIGHT_FAILED',
+      'DOCX_REVIEW_PREFLIGHT_INSPECTION_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+
+  const result = buildDocxReviewPreflightCommandResult(payload, report);
+  if (
+    result.canOpenReviewSession !== false
+    || result.canAutoApply !== false
+    || result.canCreateReviewPacket !== false
+    || result.canImportMutate !== false
+    || result.canWriteStorage !== false
+    || isPlainObjectValue(result.reviewSurface)
+    || isPlainObjectValue(result.reviewPacket)
+    || isPlainObjectValue(result.activeReviewSession)
+    || Array.isArray(result.applyOps)
+    || isPlainObjectValue(result.receipt)
+    || isPlainObjectValue(result.recovery)
+  ) {
+    return makeDocxReviewPreflightTypedError(
+      'E_DOCX_REVIEW_PREFLIGHT_FORBIDDEN_OUTPUT',
+      'DOCX_REVIEW_PREFLIGHT_FORBIDDEN_OUTPUT',
+    );
+  }
+  return result;
+}
+// DOCX_REVIEW_PREFLIGHT_COMMAND_SURFACE_END
+
 // DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_START
 const DOCX_CONTENT_PREVIEW_COMMAND_ID = 'cmd.project.docx.previewContent';
 const DOCX_CONTENT_PREVIEW_MAX_BYTES = 10 * 1024 * 1024;
@@ -8283,6 +8377,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.review.applyExactTextChange',
   'cmd.project.review.applyExactTextChangesBatch',
   'cmd.project.review.inspectDocxIntakeGate',
+  'cmd.project.review.inspectDocxReviewPreflight',
   'cmd.project.flowOpenV1',
   'cmd.project.flowSaveV1',
   'cmd.project.document.open',
@@ -8440,6 +8535,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.review.inspectDocxIntakeGate': async (payload = {}) => {
     return handleDocxIntakeGateCommandSurface(payload);
+  },
+  'cmd.project.review.inspectDocxReviewPreflight': async (payload = {}) => {
+    return handleDocxReviewPreflightCommandSurface(payload);
   },
   'cmd.project.flowOpenV1': async () => {
     return handleFlowOpenV1();

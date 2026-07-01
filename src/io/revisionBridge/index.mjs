@@ -2166,6 +2166,477 @@ export function buildDocxIntakePreflightReportFromZipBytes(input) {
 }
 // RB_10_DOCX_INTAKE_PREFLIGHT_REPORT_END
 
+// RB_10A_DOCX_REVIEW_PREFLIGHT_REPORT_START
+export const DOCX_REVIEW_PREFLIGHT_REPORT_SCHEMA = 'revision-bridge.docx-review-preflight-report.v1';
+const DOCX_REVIEW_PREFLIGHT_REPORT_TYPE = 'docxReviewPreflightReport';
+const DOCX_REVIEW_PREFLIGHT_LOSS_REPORT_SCHEMA = 'revision-bridge.docx-review-preflight-loss-report.v1';
+
+const DOCX_REVIEW_PREFLIGHT_CODES = Object.freeze({
+  READY_EMPTY: 'DOCX_REVIEW_PREFLIGHT_NO_REVIEW_EVIDENCE',
+  READY_WITH_EVIDENCE: 'DOCX_REVIEW_PREFLIGHT_REVIEW_EVIDENCE_FOUND',
+  BLOCKED: 'DOCX_REVIEW_PREFLIGHT_BLOCKED',
+  TARGET_UNAVAILABLE: 'DOCX_REVIEW_PREFLIGHT_TARGET_UNAVAILABLE',
+  UNSAFE_DECLARATION_PRESENT: 'DOCX_REVIEW_PREFLIGHT_UNSAFE_DECLARATION_PRESENT',
+  XML_SCAN_LIMIT_EXCEEDED: 'DOCX_REVIEW_PREFLIGHT_XML_SCAN_LIMIT_EXCEEDED',
+});
+
+const DOCX_REVIEW_PREFLIGHT_TARGET_PARTS = Object.freeze([
+  'word/document.xml',
+  'word/comments.xml',
+]);
+
+const DOCX_REVIEW_PREFLIGHT_HARD_GATE_CODES = new Set([
+  DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_MALFORMED,
+  DOCX_HOSTILE_FILE_GATE_REASON_CODES.ENCRYPTED_ENTRY_PRESENT,
+  DOCX_HOSTILE_FILE_GATE_REASON_CODES.PATH_TRAVERSAL_DETECTED,
+  DOCX_HOSTILE_FILE_GATE_REASON_CODES.DUPLICATE_ENTRY_NAME,
+  DOCX_HOSTILE_FILE_GATE_REASON_CODES.COMPRESSION_RATIO_EXCEEDED,
+  DOCX_HOSTILE_FILE_GATE_REASON_CODES.XML_DTD_DECLARATION_PRESENT,
+  DOCX_HOSTILE_FILE_GATE_REASON_CODES.XML_ENTITY_DECLARATION_PRESENT,
+  DOCX_HOSTILE_FILE_GATE_REASON_CODES.DECLARATION_SCAN_UNAVAILABLE,
+]);
+
+const DOCX_REVIEW_PREFLIGHT_BOUNDS = Object.freeze({
+  maxTargetPartBytes: DOCX_ZIP_INVENTORY_BOUNDS.MAX_ENTRY_UNCOMPRESSED_BYTES,
+  maxXmlScanChars: 2_000_000,
+  maxDiagnostics: 200,
+  maxUnsupportedItems: 200,
+});
+
+function docxReviewPreflightDiagnostic(code, options = {}) {
+  const diagnostic = {
+    code,
+    severity: options.severity || 'error',
+    message: options.message || code,
+  };
+  if (options.sourcePart !== undefined) diagnostic.sourcePart = options.sourcePart;
+  if (options.sourceCode !== undefined) diagnostic.sourceCode = options.sourceCode;
+  if (options.tagName !== undefined) diagnostic.tagName = options.tagName;
+  if (options.actual !== undefined) diagnostic.actual = options.actual;
+  if (options.limit !== undefined) diagnostic.limit = options.limit;
+  return diagnostic;
+}
+
+function docxReviewPreflightUnsupportedItem(code, options = {}) {
+  const item = {
+    code,
+    severity: options.severity || 'warning',
+    category: options.category || 'review',
+    message: options.message || code,
+  };
+  if (options.sourcePart !== undefined) item.sourcePart = options.sourcePart;
+  if (options.sourceCode !== undefined) item.sourceCode = options.sourceCode;
+  if (options.tagName !== undefined) item.tagName = options.tagName;
+  return item;
+}
+
+function docxReviewPreflightLossReport(items) {
+  const normalizedItems = Array.isArray(items)
+    ? items.slice(0, DOCX_REVIEW_PREFLIGHT_BOUNDS.maxUnsupportedItems)
+    : [];
+  return {
+    schemaVersion: DOCX_REVIEW_PREFLIGHT_LOSS_REPORT_SCHEMA,
+    mode: 'diagnostic-only',
+    itemCount: normalizedItems.length,
+    items: normalizedItems,
+  };
+}
+
+function docxReviewPreflightEmptyEvidence() {
+  return {
+    present: false,
+    sourceParts: [],
+  };
+}
+
+function docxReviewPreflightCountMatches(xmlText, pattern) {
+  const matches = String(xmlText || '').match(pattern);
+  return Array.isArray(matches) ? matches.length : 0;
+}
+
+function docxReviewPreflightBuildCommentsEvidence(documentXml, commentsXml) {
+  const commentPartPresent = typeof commentsXml === 'string';
+  const commentCount = commentPartPresent
+    ? docxReviewPreflightCountMatches(commentsXml, /<\s*w:comment\b/giu)
+    : 0;
+  const rangeStartCount = docxReviewPreflightCountMatches(documentXml, /<\s*w:commentRangeStart\b/giu);
+  const rangeEndCount = docxReviewPreflightCountMatches(documentXml, /<\s*w:commentRangeEnd\b/giu);
+  const referenceCount = docxReviewPreflightCountMatches(documentXml, /<\s*w:commentReference\b/giu);
+  const present = commentPartPresent || rangeStartCount > 0 || rangeEndCount > 0 || referenceCount > 0;
+  if (!present) return docxReviewPreflightEmptyEvidence();
+  return {
+    present: true,
+    commentPartPresent,
+    commentCount,
+    rangeStartCount,
+    rangeEndCount,
+    referenceCount,
+    sourceParts: [
+      ...(commentPartPresent ? ['word/comments.xml'] : []),
+      ...(rangeStartCount > 0 || rangeEndCount > 0 || referenceCount > 0 ? ['word/document.xml'] : []),
+    ],
+  };
+}
+
+function docxReviewPreflightBuildTrackedChangesEvidence(documentXml) {
+  const insertCount = docxReviewPreflightCountMatches(documentXml, /<\s*w:ins\b/giu);
+  const deleteCount = docxReviewPreflightCountMatches(documentXml, /<\s*w:del\b/giu);
+  const moveFromCount = docxReviewPreflightCountMatches(documentXml, /<\s*w:moveFrom\b/giu);
+  const moveToCount = docxReviewPreflightCountMatches(documentXml, /<\s*w:moveTo\b/giu);
+  const present = insertCount > 0 || deleteCount > 0 || moveFromCount > 0 || moveToCount > 0;
+  if (!present) return docxReviewPreflightEmptyEvidence();
+  return {
+    present: true,
+    insertCount,
+    deleteCount,
+    moveFromCount,
+    moveToCount,
+    sourceParts: ['word/document.xml'],
+  };
+}
+
+function docxReviewPreflightExtractTargetXml(bytes, entries, sourcePart) {
+  const entry = entries.find((candidate) => candidate.entryId === sourcePart);
+  if (!entry) return { missing: true };
+  if (entry.byteSize > DOCX_REVIEW_PREFLIGHT_BOUNDS.maxTargetPartBytes) {
+    return {
+      failure: docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.TARGET_UNAVAILABLE, {
+        sourcePart,
+        sourceCode: 'DOCX_REVIEW_PREFLIGHT_TARGET_BYTES_EXCEEDED',
+        actual: entry.byteSize,
+        limit: DOCX_REVIEW_PREFLIGHT_BOUNDS.maxTargetPartBytes,
+      }),
+    };
+  }
+
+  const localHeader = docxHostileFileGateValidateLocalHeader(bytes, entry);
+  if (localHeader.failure) {
+    return {
+      failure: docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.TARGET_UNAVAILABLE, {
+        sourcePart,
+        sourceCode: localHeader.failure.code,
+      }),
+    };
+  }
+  const dataOffset = localHeader.dataOffset;
+  const dataEnd = dataOffset + entry.compressedSize;
+  if (dataOffset > bytes.byteLength || dataEnd > bytes.byteLength) {
+    return {
+      failure: docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.TARGET_UNAVAILABLE, {
+        sourcePart,
+        sourceCode: 'DOCX_ZIP_ENTRY_OFFSET_INVALID',
+      }),
+    };
+  }
+
+  const rawBytes = bytes.subarray(dataOffset, dataEnd);
+  let contentBytes = rawBytes;
+  if (entry.method === 8) {
+    try {
+      contentBytes = docxHostileFileGateInflateRawSync(
+        rawBytes,
+        DOCX_REVIEW_PREFLIGHT_BOUNDS.maxTargetPartBytes,
+      );
+    } catch {
+      return {
+        failure: docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.TARGET_UNAVAILABLE, {
+          sourcePart,
+          sourceCode: 'DOCX_ZIP_INFLATE_FAILED',
+        }),
+      };
+    }
+  } else if (entry.method !== 0) {
+    return {
+      failure: docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.TARGET_UNAVAILABLE, {
+        sourcePart,
+        sourceCode: `DOCX_ZIP_METHOD_${entry.method}`,
+      }),
+    };
+  }
+  if (contentBytes.length !== entry.byteSize) {
+    return {
+      failure: docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.TARGET_UNAVAILABLE, {
+        sourcePart,
+        sourceCode: 'DOCX_ZIP_INFLATED_SIZE_MISMATCH',
+        actual: contentBytes.length,
+        limit: entry.byteSize,
+      }),
+    };
+  }
+
+  const xmlText = Buffer.from(contentBytes).toString('utf8');
+  if (xmlText.length > DOCX_REVIEW_PREFLIGHT_BOUNDS.maxXmlScanChars) {
+    return {
+      failure: docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.XML_SCAN_LIMIT_EXCEEDED, {
+        sourcePart,
+        actual: xmlText.length,
+        limit: DOCX_REVIEW_PREFLIGHT_BOUNDS.maxXmlScanChars,
+      }),
+    };
+  }
+  if (/<!\s*(DOCTYPE|ENTITY)\b/iu.test(xmlText)) {
+    return {
+      failure: docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.UNSAFE_DECLARATION_PRESENT, {
+        sourcePart,
+        sourceCode: 'DOCX_REVIEW_PREFLIGHT_UNSAFE_XML_DECLARATION',
+        message: 'review evidence target XML contains an unsafe declaration',
+      }),
+    };
+  }
+  return {
+    xmlText,
+    entry: {
+      sourcePart,
+      byteSize: entry.byteSize,
+      compressedSize: entry.compressedSize,
+      method: entry.method,
+    },
+  };
+}
+
+function docxReviewPreflightRelationshipUnsupportedItems(inventory) {
+  const entries = Array.isArray(inventory?.entries) ? inventory.entries : [];
+  return entries
+    .filter((entry) => entry?.kind === 'relationshipPart' || (Array.isArray(entry?.markers) && entry.markers.includes('relationship')))
+    .slice(0, DOCX_REVIEW_PREFLIGHT_BOUNDS.maxUnsupportedItems)
+    .map((entry) => docxReviewPreflightUnsupportedItem(
+      'DOCX_REVIEW_PREFLIGHT_RELATIONSHIP_DIAGNOSTIC_ONLY',
+      {
+        category: 'relationship',
+        sourcePart: entry.id,
+        message: 'relationship parts are not interpreted by review preflight and remain diagnostic-only',
+      },
+    ));
+}
+
+function docxReviewPreflightUnsupportedConsistencyItems(commentsEvidence, trackedChangesEvidence) {
+  const items = [];
+  if (commentsEvidence.present && commentsEvidence.commentPartPresent !== true) {
+    items.push(docxReviewPreflightUnsupportedItem(
+      'DOCX_REVIEW_PREFLIGHT_COMMENT_ANCHOR_WITHOUT_COMMENT_PART',
+      {
+        category: 'comments',
+        sourcePart: 'word/document.xml',
+        tagName: 'w:commentReference',
+      },
+    ));
+  }
+  if (commentsEvidence.commentPartPresent === true && commentsEvidence.referenceCount === 0) {
+    items.push(docxReviewPreflightUnsupportedItem(
+      'DOCX_REVIEW_PREFLIGHT_COMMENT_PART_WITHOUT_DOCUMENT_ANCHOR',
+      {
+        category: 'comments',
+        sourcePart: 'word/comments.xml',
+        tagName: 'w:comment',
+      },
+    ));
+  }
+  if (trackedChangesEvidence.moveFromCount > 0 || trackedChangesEvidence.moveToCount > 0) {
+    items.push(docxReviewPreflightUnsupportedItem(
+      'DOCX_REVIEW_PREFLIGHT_TRACKED_MOVE_DIAGNOSTIC_ONLY',
+      {
+        category: 'revisions',
+        sourcePart: 'word/document.xml',
+        tagName: 'w:moveFrom',
+      },
+    ));
+  }
+  return items;
+}
+
+function docxReviewPreflightResult({
+  ok,
+  status,
+  code,
+  reason,
+  decision,
+  diagnostics = [],
+  evidence = [],
+  preflightSummary,
+  commentsEvidence = docxReviewPreflightEmptyEvidence(),
+  trackedChangesEvidence = docxReviewPreflightEmptyEvidence(),
+  unsupportedItems = [],
+  parseAttempted = false,
+  parseCompleted = false,
+}) {
+  const hasReviewEvidence = commentsEvidence.present === true || trackedChangesEvidence.present === true;
+  const limitedUnsupportedItems = unsupportedItems.slice(0, DOCX_REVIEW_PREFLIGHT_BOUNDS.maxUnsupportedItems);
+  return {
+    ok: ok === true,
+    schemaVersion: DOCX_REVIEW_PREFLIGHT_REPORT_SCHEMA,
+    type: DOCX_REVIEW_PREFLIGHT_REPORT_TYPE,
+    status,
+    code,
+    reason,
+    decision,
+    hasReviewEvidence,
+    commentsEvidence,
+    trackedChangesEvidence,
+    unsupportedItems: limitedUnsupportedItems,
+    lossReport: docxReviewPreflightLossReport(limitedUnsupportedItems),
+    diagnosticCandidate: null,
+    canOpenReviewSession: false,
+    canAutoApply: false,
+    canCreateReviewPacket: false,
+    canImportMutate: false,
+    canWriteStorage: false,
+    diagnostics: diagnostics.slice(0, DOCX_REVIEW_PREFLIGHT_BOUNDS.maxDiagnostics),
+    evidence,
+    budgets: { ...DOCX_REVIEW_PREFLIGHT_BOUNDS },
+    preflightSummary,
+    parse: {
+      attempted: parseAttempted,
+      completed: parseCompleted,
+      semanticAllowed: false,
+    },
+  };
+}
+
+export function buildDocxReviewPreflightReportFromZipBytes(input) {
+  const bytes = docxZipInventoryInputToBytes(input);
+  const intakePreflight = buildDocxIntakePreflightReportFromZipBytes(input);
+  const preflightSummary = {
+    intakeStatus: typeof intakePreflight.status === 'string' ? intakePreflight.status : 'unavailable',
+    intakeCode: typeof intakePreflight.code === 'string' ? intakePreflight.code : 'DOCX_INTAKE_PREFLIGHT_UNAVAILABLE',
+    gatePass: intakePreflight.gatePass === true,
+    reviewPreflightOnly: true,
+    canOpenReviewSession: false,
+    canAutoApply: false,
+    canCreateReviewPacket: false,
+    canImportMutate: false,
+    canWriteStorage: false,
+  };
+
+  if (bytes === null) {
+    return docxReviewPreflightResult({
+      ok: false,
+      status: 'blocked',
+      code: DOCX_REVIEW_PREFLIGHT_CODES.BLOCKED,
+      reason: 'DOCX_ZIP_BYTES_INPUT_INVALID',
+      decision: 'blocked',
+      diagnostics: [docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.BLOCKED, {
+        sourceCode: 'DOCX_ZIP_BYTES_INPUT_INVALID',
+      })],
+      preflightSummary,
+    });
+  }
+
+  const materialized = materializeDocxPackageInventoryFromZipBytes(bytes);
+  if (!materialized.ok) {
+    return docxReviewPreflightResult({
+      ok: false,
+      status: 'blocked',
+      code: DOCX_REVIEW_PREFLIGHT_CODES.BLOCKED,
+      reason: materialized.code,
+      decision: 'blocked',
+      diagnostics: [docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.BLOCKED, {
+        sourceCode: materialized.code,
+      })],
+      evidence: [{ kind: 'materializerFailure', sourceCode: materialized.code }],
+      preflightSummary,
+    });
+  }
+
+  const gate = inspectDocxHostileFileGateFromZipBytes(bytes);
+  if (DOCX_REVIEW_PREFLIGHT_HARD_GATE_CODES.has(gate.code)) {
+    return docxReviewPreflightResult({
+      ok: false,
+      status: 'blocked',
+      code: DOCX_REVIEW_PREFLIGHT_CODES.BLOCKED,
+      reason: gate.code,
+      decision: 'blocked',
+      diagnostics: docxIntakePreflightTaggedDiagnostics('gate', gate.diagnostics),
+      evidence: docxIntakePreflightTaggedEvidence('gate', gate.evidence),
+      preflightSummary,
+    });
+  }
+
+  const metadataResult = docxHostileFileGateCentralEntries(bytes);
+  if (metadataResult.failure) {
+    return docxReviewPreflightResult({
+      ok: false,
+      status: 'blocked',
+      code: DOCX_REVIEW_PREFLIGHT_CODES.BLOCKED,
+      reason: metadataResult.failure.code,
+      decision: 'blocked',
+      diagnostics: [docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.BLOCKED, {
+        sourceCode: metadataResult.failure.code,
+      })],
+      preflightSummary,
+    });
+  }
+
+  const extractedTargets = new Map();
+  const diagnostics = [];
+  const evidence = [
+    {
+      kind: 'inventory',
+      entryCount: materialized.inventory.entries.length,
+    },
+  ];
+  for (const sourcePart of DOCX_REVIEW_PREFLIGHT_TARGET_PARTS) {
+    const extraction = docxReviewPreflightExtractTargetXml(bytes, metadataResult.entries, sourcePart);
+    if (extraction.failure) {
+      return docxReviewPreflightResult({
+        ok: false,
+        status: 'blocked',
+        code: extraction.failure.code,
+        reason: extraction.failure.sourceCode || extraction.failure.code,
+        decision: 'blocked',
+        diagnostics: [extraction.failure],
+        evidence,
+        preflightSummary,
+        parseAttempted: true,
+      });
+    }
+    if (extraction.missing) continue;
+    extractedTargets.set(sourcePart, extraction.xmlText);
+    evidence.push({
+      kind: 'reviewEvidenceTarget',
+      sourcePart,
+      byteSize: extraction.entry.byteSize,
+      compressedSize: extraction.entry.compressedSize,
+      textHash: docxContentPreviewStableHash(extraction.xmlText),
+    });
+  }
+
+  const documentXml = extractedTargets.get('word/document.xml') || '';
+  const commentsXml = extractedTargets.has('word/comments.xml')
+    ? extractedTargets.get('word/comments.xml')
+    : null;
+  const commentsEvidence = docxReviewPreflightBuildCommentsEvidence(documentXml, commentsXml);
+  const trackedChangesEvidence = docxReviewPreflightBuildTrackedChangesEvidence(documentXml);
+  const unsupportedItems = [
+    ...docxReviewPreflightRelationshipUnsupportedItems(materialized.inventory),
+    ...docxReviewPreflightUnsupportedConsistencyItems(commentsEvidence, trackedChangesEvidence),
+  ];
+  const hasReviewEvidence = commentsEvidence.present === true || trackedChangesEvidence.present === true;
+  const code = hasReviewEvidence
+    ? DOCX_REVIEW_PREFLIGHT_CODES.READY_WITH_EVIDENCE
+    : DOCX_REVIEW_PREFLIGHT_CODES.READY_EMPTY;
+
+  return docxReviewPreflightResult({
+    ok: true,
+    status: 'diagnostic-only',
+    code,
+    reason: code,
+    decision: 'diagnostic-only',
+    diagnostics,
+    evidence,
+    preflightSummary: {
+      ...preflightSummary,
+      targetPartsScanned: [...extractedTargets.keys()].sort(),
+      diagnosticOnly: true,
+    },
+    commentsEvidence,
+    trackedChangesEvidence,
+    unsupportedItems,
+    parseAttempted: true,
+    parseCompleted: true,
+  });
+}
+// RB_10A_DOCX_REVIEW_PREFLIGHT_REPORT_END
+
 // RB_11_DOCX_CONTENT_PREVIEW_START
 export const DOCX_CONTENT_PREVIEW_SCHEMA = 'revision-bridge.docx-content-preview.v1';
 const DOCX_CONTENT_PREVIEW_TYPE = 'docxContentPreviewReport';

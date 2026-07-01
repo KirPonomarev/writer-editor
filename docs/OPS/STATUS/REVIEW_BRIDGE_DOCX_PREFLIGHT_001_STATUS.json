@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_DOCX_PREFLIGHT_001",
+  "status": "implemented_local_verified_pending_delivery",
+  "type": "review_bridge_docx_preflight",
+  "featureExpansion": true,
+  "baseSha": "c0fb33d6c6bf7a213014434ff60638372bde159c",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "projectTruthWrites": false,
+    "reviewSessionActivation": false,
+    "autoApply": false
+  },
+  "positiveClaims": [
+    "DOCX review preflight is exposed as a separate review-bridge command surface: cmd.project.review.inspectDocxReviewPreflight.",
+    "The command accepts pathless bufferSource input and returns a typed diagnostic-only DOCX review preflight report.",
+    "Clean DOCX input reports hasReviewEvidence=false without creating review authority.",
+    "DOCX comment evidence is detected from word/comments.xml plus document comment anchor markers.",
+    "DOCX tracked change evidence is detected from bounded word/document.xml scan for insert, delete, moveFrom, and moveTo markers.",
+    "Malformed input and unsafe target XML declarations fail closed without session, apply, receipt, recovery, or project mutation.",
+    "The implementation uses existing bounded ZIP and XML-scan primitives and adds no dependency."
+  ],
+  "nonClaims": [
+    "No full DOCX review import is claimed.",
+    "No DOCX review packet activation is claimed.",
+    "No Review session is opened by this contour.",
+    "No exact apply or structural apply is authorized by this contour.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed.",
+    "No receipt or recovery evidence is created by preflight.",
+    "No Word layout parity or full DOCX fidelity is claimed.",
+    "No PDF, EPUB, HTML, Mindmap, release readiness, cross-platform readiness, cloud, sync, accounts, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "DOCX is treated as external evidence transport, not project truth.",
+    "The report is diagnostic-only and does not become a review session.",
+    "diagnosticCandidate remains null in this contour.",
+    "canOpenReviewSession, canAutoApply, canCreateReviewPacket, canImportMutate, and canWriteStorage remain false.",
+    "Existing import-export MVP flow remains unchanged and is not broadened by this contour."
+  ],
+  "implementation": {
+    "changedProductionRuntime": true,
+    "changedUi": false,
+    "changedTests": [
+      "revision-bridge-docx-review-preflight.contract.test.js",
+      "revision-bridge-docx-review-preflight-command-surface.contract.test.js"
+    ],
+    "changedRuntimeFiles": [
+      "index.mjs",
+      "main.js"
+    ],
+    "newStatusArtifacts": [
+      "REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json"
+    ],
+    "newExports": [
+      "DOCX_REVIEW_PREFLIGHT_REPORT_SCHEMA",
+      "buildDocxReviewPreflightReportFromZipBytes"
+    ],
+    "newCommandIds": [
+      "cmd.project.review.inspectDocxReviewPreflight"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --check src/main.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-docx-review-preflight.contract.test.js test/contracts/revision-bridge-docx-review-preflight-command-surface.contract.test.js test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js test/contracts/revision-bridge-docx-intake-gate-command-surface.contract.test.js test/contracts/revision-bridge-docx-content-preview.contract.test.js test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js test/contracts/revision-bridge-review-mutate-port.contract.test.js",
+      "status": "pass",
+      "tests": 72
+    },
+    {
+      "command": "npm run -s build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "agentAudits": [
+    {
+      "agentId": "019f1f58-8cbd-70f2-9f23-89ef53c0f255",
+      "role": "independent_skeptic_auditor",
+      "mode": "read_only",
+      "verdict": "preflight must remain pathless preview envelope with no write authority and no session handoff",
+      "localResolution": "addressed by separate DOCX review preflight command, false authority flags, no session activation, and command-surface tests"
+    },
+    {
+      "agentId": "019f1f58-769f-7811-acfa-523184f9c1ac",
+      "role": "codebase_inspector",
+      "mode": "read_only",
+      "verdict": "add near existing DOCX intake gate and do not route through import-export flow",
+      "localResolution": "addressed by adding review-namespaced command beside DOCX intake gate without changing project importDocxV1 flow"
+    },
+    {
+      "agentId": "019f1f61-c3fd-7cd3-843f-b76718ab59c7",
+      "role": "independent_skeptic_auditor",
+      "mode": "read_only",
+      "verdict": "PASS: review preflight stays diagnostic-only with no review session, apply, receipt, recovery, project write, dependency, network, or UI change",
+      "localResolution": "addressed by preserving diagnostic-only flags and tightening the machine-check command labels to exact executed commands"
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": ""
+  },
+  "decision": "DOCX_REVIEW_PREFLIGHT_OPENED_AS_DIAGNOSTIC_ONLY_REVIEW_BRIDGE_CONTOUR",
+  "nextStep": "complete delivery chain, then consider Review Bridge DOCX Candidate Activation as a separate contour"
+}

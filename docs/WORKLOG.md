@@ -3,6 +3,12 @@
 Короткая хронология изменений и решений. Это не полный лог чата, а сжатые записи “что сделали / зачем / что дальше”.
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
+## 2026-07-01
+- Review Bridge: opened `REVIEW_BRIDGE_DOCX_PREFLIGHT_001` as a diagnostic-only DOCX review evidence contour, separate from the closed import/export MVP flow.
+- DOCX review preflight: added `cmd.project.review.inspectDocxReviewPreflight` and `buildDocxReviewPreflightReportFromZipBytes` to detect comments and tracked-change markers without Review session activation, apply, receipt, recovery, or project writes.
+- Tests: targeted DOCX review preflight, DOCX intake/content/import preview, and review mutate contracts passed locally with 72 tests.
+- Scope truth: no UI change, no dependency change, no Word parity claim, no full DOCX review import claim.
+
 ## 2026-04-26
 - Vertical closeout chain: main head `792f28077973721669aef9cf78d9385b1fb1db29` contains C05 long-document performance contour from source commit `58a2aced76bb914b3128024ad75588f789b24b28`.
 - Scope truth: C05 changed only `editor.js`, `editor.bundle.js`, and `vertical-sheet-performance-window-smoke.mjs`; no storage or export files were touched.
