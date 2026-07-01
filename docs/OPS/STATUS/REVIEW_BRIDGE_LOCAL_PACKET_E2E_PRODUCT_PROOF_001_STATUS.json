@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_LOCAL_PACKET_E2E_PRODUCT_PROOF_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "product_e2e_proof",
   "featureExpansion": false,
   "baseSha": "83e955394d4b7d0d85e492d7b52397e33d3b112b",
@@ -101,8 +101,56 @@
       "status": "pass"
     }
   ],
-  "knownCheckNotes": [
-    "The RB-03 clean-worktree allowlist check was not counted before commit because it intentionally fails while this contour has an uncommitted diff. It must be rerun after commit."
+  "postCommitCleanTreeChecks": [
+    {
+      "command": "node --test review bridge clean-tree targeted set",
+      "status": "pass",
+      "tests": 61
+    },
+    {
+      "command": "node --test command, UI, capability, and bus clean-tree targeted set",
+      "status": "pass",
+      "tests": 54
+    },
+    {
+      "command": "npm run -s build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "postMergeChecks": [
+    {
+      "command": "node --test test/contracts/revision-bridge-review-mutate-port.contract.test.js",
+      "status": "pass",
+      "tests": 33
+    },
+    {
+      "command": "npm run -s build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
   ],
   "agentAudits": [
     {
@@ -125,8 +173,26 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending"
+    "status": "merged",
+    "featureCommitSha": "79400f28060e40d35c9b640027a1616af469929d",
+    "featurePullRequest": 1011,
+    "featureMergeSha": "a8ea40692afb3c2ef9c30f8152315f13375d3f48",
+    "featureMergedAtUtc": "2026-07-01T20:12:46Z",
+    "githubChecks": [
+      {
+        "name": "oss-policy",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "x1-runtime-parity (ubuntu-latest)",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "x1-runtime-parity (windows-latest)",
+        "result": "SUCCESS"
+      }
+    ]
   },
-  "decision": "LOCAL_JSON_REVIEW_PACKET_E2E_PRODUCT_PROOF_READY_FOR_DELIVERY",
-  "nextStep": "commit_push_pr_merge_then_post_commit_clean_tree_recheck"
+  "decision": "LOCAL_JSON_REVIEW_PACKET_E2E_PRODUCT_PROOF_CLOSED_FOR_CURRENT_SCOPE",
+  "nextStep": "owner_selected_next_contour"
 }
