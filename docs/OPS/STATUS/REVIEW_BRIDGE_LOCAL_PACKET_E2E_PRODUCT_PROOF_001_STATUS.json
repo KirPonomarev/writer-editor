@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_LOCAL_PACKET_E2E_PRODUCT_PROOF_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "product_e2e_proof",
+  "featureExpansion": false,
+  "baseSha": "83e955394d4b7d0d85e492d7b52397e33d3b112b",
+  "scope": {
+    "localJsonReviewPacketOnly": true,
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "uiRedesign": false,
+    "runtimeProductionCodeChanged": false,
+    "newDependenciesAdded": false
+  },
+  "positiveClaims": [
+    "Local JSON review packet product entry is covered through MENU_COMMAND_HANDLERS with default main-owned dialog selection, fs stat, fs read, JSON parse, session activation, and Review/Comments runtime opening.",
+    "Local JSON review packet import remains preview/session only and does not mutate manuscript scene text.",
+    "A separate exact text apply action after local packet import writes through the existing safe writer and exposes a receipt only after apply.",
+    "The exact text apply receipt carries recovery evidence with readable snapshot proof matching the pre-apply scene text.",
+    "Same-scene batch exact apply after local packet import remains controlled and does not invent a singular receipt on the Review surface.",
+    "Mixed local packets with structural review data remain preview/manual-only and do not build write context.",
+    "Clear Review Session returns the Review surface to an empty state without reverting manuscript text."
+  ],
+  "nonClaims": [
+    "No DOCX review import is claimed.",
+    "No structural auto-apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No cross-scene batch atomicity is claimed.",
+    "No multi-file transaction truth is claimed.",
+    "No manuscript write is performed by local packet import.",
+    "No full review import automation is claimed.",
+    "No full import/export completion beyond the existing MVP closeout is claimed.",
+    "No release readiness, packaged readiness, cross-platform readiness, full npm green, full Word layout parity, PDF export, EPUB export, HTML export, cloud, sync, accounts, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Import layer validates and activates a review session only.",
+    "Apply layer remains separate and writes only through existing exact apply commands.",
+    "Review surface remains UI/session visibility, not project truth.",
+    "Receipt and recovery are verified only after apply, never after import.",
+    "Local JSON packet proof remains separate from DOCX review import."
+  ],
+  "implementation": {
+    "changedProductionRuntime": false,
+    "changedTests": [
+      "revision-bridge-review-mutate-port.contract.test.js"
+    ],
+    "newStatusArtifacts": [
+      "REVIEW_BRIDGE_LOCAL_PACKET_E2E_PRODUCT_PROOF_001_STATUS.json"
+    ],
+    "newTestHelpers": [
+      "extractMenuCommandHandlersSection",
+      "tmpLocalPacket",
+      "importLocalPacketFromPath"
+    ],
+    "newOrExpandedTestCases": [
+      "review mutate port contract: local packet menu command uses default main file intake and opens comments",
+      "review mutate port contract: local packet e2e exact apply writes only after local import",
+      "review mutate port contract: local packet e2e batch exact apply stays same-scene and receipt-free on surface",
+      "review mutate port contract: local mixed packet remains preview and manual-only for structural changes"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --check src/main.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-review-mutate-port.contract.test.js",
+      "status": "pass",
+      "tests": 33
+    },
+    {
+      "command": "node --test sector-m command and review surface targeted set",
+      "status": "pass",
+      "tests": 40
+    },
+    {
+      "command": "node --test capability and command bus targeted set",
+      "status": "pass",
+      "tests": 14
+    },
+    {
+      "command": "npm run -s build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "knownCheckNotes": [
+    "The RB-03 clean-worktree allowlist check was not counted before commit because it intentionally fails while this contour has an uncommitted diff. It must be rerun after commit."
+  ],
+  "agentAudits": [
+    {
+      "agentId": "019f1f45-ceda-7a53-b776-279a97f17cbf",
+      "role": "independent_skeptic_auditor",
+      "mode": "read_only",
+      "verdict": "conditional_only",
+      "localResolution": "addressed by adding local packet E2E exact apply, batch apply, manual-only mixed packet, and command handler default intake coverage"
+    },
+    {
+      "agentId": "019f1f45-ba22-7d13-abcb-5dc63aac67c5",
+      "role": "codebase_inspector",
+      "mode": "read_only",
+      "verdict": "identified command handler gap",
+      "localResolution": "addressed by executing MENU_COMMAND_HANDLERS importLocalPacket with default dialog/stat/read path and openComments side-effect assertion"
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending"
+  },
+  "decision": "LOCAL_JSON_REVIEW_PACKET_E2E_PRODUCT_PROOF_READY_FOR_DELIVERY",
+  "nextStep": "commit_push_pr_merge_then_post_commit_clean_tree_recheck"
+}
