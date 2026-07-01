@@ -5288,6 +5288,124 @@ function resolveSceneFromImportResult(importResult) {
   return scene;
 }
 
+function normalizeMarkdownImportCreatedSceneIds(value) {
+  return (Array.isArray(value) ? value : [])
+    .filter((item) => typeof item === 'string' && item.trim().length > 0)
+    .map((item) => item.trim());
+}
+
+function sanitizeMarkdownImportSceneLabelPart(value) {
+  const safe = String(value || '')
+    .trim()
+    .replace(/[\\/<>:"|?*\u0000-\u001F]/g, '_')
+    .replace(/\s+/g, ' ')
+    .replace(/\.+$/g, '');
+
+  return safe.slice(0, 80) || 'Imported scene';
+}
+
+function sanitizeMarkdownImportExpectedSceneLabel(value) {
+  return String(value || '')
+    .trim()
+    .replace(/[\\/<>:"|?*\u0000-\u001F]/g, '_')
+    .replace(/\s+/g, ' ')
+    .replace(/\.+$/g, '')
+    .slice(0, 96);
+}
+
+function getMarkdownImportSceneLocatorsFromPreview(previewPayload, createdSceneIds) {
+  const createdIds = normalizeMarkdownImportCreatedSceneIds(createdSceneIds);
+  if (createdIds.length === 0) return [];
+  const createdSet = new Set(createdIds);
+  const payload = previewPayload && typeof previewPayload === 'object' && !Array.isArray(previewPayload)
+    ? previewPayload
+    : {};
+  const entries = Array.isArray(payload?.safeCreatePlan?.entries)
+    ? payload.safeCreatePlan.entries
+    : [];
+  const sourceTitle = typeof payload.sourceName === 'string'
+    ? payload.sourceName.replace(/\.md$/i, '').replace(/\s+/g, ' ').trim()
+    : '';
+
+  return entries
+    .map((entry) => {
+      if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return null;
+      const sceneId = typeof entry.sceneId === 'string' ? entry.sceneId.trim() : '';
+      if (!sceneId || !createdSet.has(sceneId)) return null;
+      const hashFromSceneId = /^scene-([a-f0-9]{10})$/u.exec(sceneId);
+      const explicitLabel = sanitizeMarkdownImportExpectedSceneLabel(entry.expectedLabel);
+      if (explicitLabel) {
+        return {
+          sceneId,
+          expectedLabel: explicitLabel,
+        };
+      }
+      const contentTextHash = typeof entry.contentTextHash === 'string' && entry.contentTextHash.trim()
+        ? entry.contentTextHash.trim()
+        : (hashFromSceneId ? hashFromSceneId[1] : '');
+      if (!/^[a-f0-9]{10}$/u.test(contentTextHash)) return null;
+      const title = typeof entry.title === 'string' && entry.title.trim()
+        ? entry.title.trim()
+        : (sourceTitle || 'Imported scene');
+      return {
+        sceneId,
+        expectedLabel: `${sanitizeMarkdownImportSceneLabelPart(title)} ${contentTextHash}`,
+      };
+    })
+    .filter(Boolean);
+}
+
+function findMarkdownImportSceneNode(root, locators) {
+  if (!root || !Array.isArray(locators) || locators.length === 0) return null;
+  const matches = [];
+  const seenPaths = new Set();
+
+  const visit = (node) => {
+    if (!node || typeof node !== 'object' || Array.isArray(node)) return;
+    const kind = getEffectiveDocumentKind(node);
+    if (kind === 'scene') {
+      const sceneId = typeof node.sceneId === 'string' ? node.sceneId.trim() : '';
+      const label = typeof node.label === 'string'
+        ? node.label.trim()
+        : (typeof node.name === 'string' ? node.name.trim() : '');
+      const nodePath = getEffectiveDocumentPath(node);
+      const matched = locators.some((locator) => {
+        if (!locator || typeof locator !== 'object' || Array.isArray(locator)) return false;
+        const expectedLabel = typeof locator.expectedLabel === 'string' ? locator.expectedLabel.trim() : '';
+        if (expectedLabel) return label === expectedLabel;
+        return sceneId && typeof locator.sceneId === 'string' && sceneId === locator.sceneId;
+      });
+      if (matched && nodePath && !seenPaths.has(nodePath)) {
+        seenPaths.add(nodePath);
+        matches.push(node);
+      }
+    }
+    if (Array.isArray(node.children)) {
+      node.children.forEach(visit);
+    }
+  };
+
+  visit(root);
+  return matches.length === 1 ? matches[0] : null;
+}
+
+async function openImportedMarkdownSceneAfterSafeCreate(previewPayload, createdSceneIds) {
+  const locators = getMarkdownImportSceneLocatorsFromPreview(previewPayload, createdSceneIds);
+  if (locators.length === 0) {
+    return { opened: false, reason: 'no-created-markdown-scene-locator' };
+  }
+  const node = findMarkdownImportSceneNode(treeRoot, locators);
+  if (!node) {
+    return { opened: false, reason: 'imported-markdown-scene-not-found' };
+  }
+  const opened = await openDocumentNode(node);
+  if (opened) {
+    renderTree();
+    return { opened: true, reason: 'opened-imported-markdown-scene' };
+  }
+  return { opened: false, reason: 'imported-markdown-scene-open-failed' };
+}
+
 async function runMarkdownImportCommand(markdownText, sourceName, options = {}) {
   const safeOptions = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
   const previewPayload = safeOptions.previewPayload && typeof safeOptions.previewPayload === 'object' && !Array.isArray(safeOptions.previewPayload)
@@ -5424,7 +5542,18 @@ async function handleMarkdownImportUiPath() {
       previewPayload,
     });
     if (safeCreateResult.ok && safeCreateResult.value && safeCreateResult.value.safeCreate === true) {
-      updateStatusText(MARKDOWN_IMPORT_STATUS_MESSAGE);
+      const safeCreateValue = safeCreateResult.value && typeof safeCreateResult.value === 'object' && !Array.isArray(safeCreateResult.value)
+        ? safeCreateResult.value
+        : {};
+      const createdSceneIds = Array.isArray(safeCreateValue.createdSceneIds)
+        ? safeCreateValue.createdSceneIds
+        : [];
+      await loadTree();
+      const openResult = await openImportedMarkdownSceneAfterSafeCreate(previewPayload, createdSceneIds);
+      const openSuffix = openResult.opened
+        ? '; opened imported scene'
+        : (createdSceneIds.length > 0 ? `; ${openResult.reason}` : '');
+      updateStatusText(`Imported Markdown scenes: ${createdSceneIds.length}${openSuffix}`);
       return;
     }
     if (!safeCreateResult.ok) {
@@ -5432,22 +5561,7 @@ async function handleMarkdownImportUiPath() {
       return;
     }
   }
-
-  const scene = resolveSceneFromImportResult(importResult);
-  if (!scene) {
-    updateStatusText('Imported Markdown v1 scene missing');
-    return;
-  }
-
-  const exportResult = await runMarkdownExportCommand(scene);
-  if (exportResult.ok && exportResult.value && typeof exportResult.value.markdown === 'string') {
-    setPlainText(exportResult.value.markdown);
-  } else {
-    setPlainText(markdown);
-  }
-  updateWordCount();
-  markAsModified();
-  updateStatusText(MARKDOWN_IMPORT_STATUS_MESSAGE);
+  updateStatusText('Import Markdown preview unavailable');
 }
 
 async function handleMarkdownExportUiPath() {

@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "scripts/ops/sector-m-scope-map.json",
-      "sha256": "a378c7a26dc06a96fa678dbfb35ef00a6404177d2dd91829ded7e803c1007b6a",
-      "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
-      "approvedAtUtc": "2026-07-01T12:40:00.000Z",
-      "rationale": "Approve bounded Sector-M DONE scope-map admission for the DOCX import preview accept flow product tail: shipped renderer bundle, modal host markup, and focused DOCX import unit tests are explicitly allowed without widening M8 or M9 exact phase scopes, adding dependencies, network, cloud, storage schema changes, or DOCX full-fidelity claims."
+      "sha256": "7d570cb42b6ab7eed15e4db48d12901995211698da15c40d6a24155088a16b66",
+      "approvedBy": "ticket:MARKDOWN_IMPORT_PRODUCT_PARITY_001",
+      "approvedAtUtc": "2026-07-01T14:00:00.000Z",
+      "rationale": "Approve bounded Sector-M DONE scope-map admission preserving the prior DOCX import preview accept flow product tail and adding focused Markdown import product parity UI test coverage without widening M8 or M9 exact phase scopes, adding dependencies, network, cloud, storage schema changes, Markdown dialect expansion, mindmap user export claims, export save-as claims, or DOCX full-fidelity claims."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
