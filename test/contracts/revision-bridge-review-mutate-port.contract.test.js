@@ -235,6 +235,29 @@ async function buildReadyExactApplyInput({ scenePath, sceneText, revisionSession
   };
 }
 
+function buildBatchExactApplyInput({ scenePath, sceneText, revisionSession }) {
+  const sceneId = revisionSession.reviewGraph.textChanges[0].targetScope.id;
+  return {
+    projectRoot: path.dirname(scenePath),
+    projectSnapshot: {
+      projectId: revisionSession.projectId,
+      baselineHash: revisionSession.baselineHash,
+      scenes: [
+        {
+          sceneId,
+          text: sceneText,
+        },
+      ],
+    },
+    revisionSession,
+    reviewItems: cloneJsonSafe(revisionSession.reviewGraph.textChanges),
+    scenePath,
+    scenePathBySceneId: {
+      [sceneId]: scenePath,
+    },
+  };
+}
+
 function validDecisionState() {
   return {
     decisionId: 'decision-1',
@@ -321,6 +344,7 @@ module.exports = {
   handleReviewSurfaceImportPacketCommandSurface,
   handleReviewSurfaceClearSessionCommandSurface,
   handleReviewSurfaceApplyExactTextChangeCommandSurface,
+  handleReviewSurfaceApplyExactTextChangesBatchCommandSurface,
   getState() {
     return {
       activeReviewSessionStore,
@@ -346,7 +370,7 @@ test('review mutate port contract: review commands are exposed through ui comman
 
   assert.match(
     source,
-    /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS\s*=\s*new Set\(\[[\s\S]*'cmd\.project\.review\.importPacket'[\s\S]*'cmd\.project\.review\.clearSession'[\s\S]*'cmd\.project\.review\.applyExactTextChange'/,
+    /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS\s*=\s*new Set\(\[[\s\S]*'cmd\.project\.review\.importPacket'[\s\S]*'cmd\.project\.review\.clearSession'[\s\S]*'cmd\.project\.review\.applyExactTextChange'[\s\S]*'cmd\.project\.review\.applyExactTextChangesBatch'/,
   );
   assert.match(
     source,
@@ -359,6 +383,10 @@ test('review mutate port contract: review commands are exposed through ui comman
   assert.match(
     source,
     /'cmd\.project\.review\.applyExactTextChange':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{\s*return handleReviewSurfaceApplyExactTextChangeCommandSurface\(payload\);/,
+  );
+  assert.match(
+    source,
+    /'cmd\.project\.review\.applyExactTextChangesBatch':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{\s*return handleReviewSurfaceApplyExactTextChangesBatchCommandSurface\(payload\);/,
   );
 });
 
@@ -679,6 +707,33 @@ test('review mutate port contract: apply exact text requires active session and 
   assert.equal(emptyPayload.error.reason, 'REVIEW_EXACT_TEXT_APPLY_NO_ACTIVE_SESSION');
 });
 
+test('review mutate port contract: batch exact apply rejects renderer authority fields', async () => {
+  const port = instantiateReviewMutatePort();
+
+  const rendererAuthority = await port.handleReviewSurfaceApplyExactTextChangesBatchCommandSurface({
+    changeIds: ['text-change-1', 'text-change-2'],
+    scenePath: '/tmp/renderer-owned.txt',
+  });
+
+  assert.deepEqual(normalizeVmValue(rendererAuthority), {
+    ok: false,
+    error: {
+      code: 'E_REVIEW_EXACT_TEXT_APPLY_BATCH_PAYLOAD_INVALID',
+      op: 'cmd.project.review.applyExactTextChangesBatch',
+      reason: 'REVIEW_EXACT_TEXT_APPLY_BATCH_RENDERER_AUTHORITY_DENIED',
+      details: {
+        fields: ['scenePath'],
+      },
+    },
+  });
+
+  const duplicate = await port.handleReviewSurfaceApplyExactTextChangesBatchCommandSurface({
+    changeIds: ['text-change-1', 'text-change-1'],
+  });
+  assert.equal(duplicate.ok, false);
+  assert.equal(duplicate.error.reason, 'REVIEW_EXACT_TEXT_APPLY_BATCH_DUPLICATE_CHANGE_ID');
+});
+
 test('review mutate port contract: apply exact text writes through safe core and exposes receipt on review surface', async () => {
   const port = instantiateReviewMutatePort();
   const { scenePath } = tmpScene('Alpha beta gamma.');
@@ -766,6 +821,80 @@ test('review mutate port contract: apply exact text writes through safe core and
   assert.equal(duplicateSafeWriteLoaded, false);
   assert.equal(readText(scenePath), 'Alpha delta gamma.');
   assert.equal(duplicateState.currentReviewSurfacePayload.receipt.transactionId, value.receipt.transactionId);
+});
+
+test('review mutate port contract: batch exact apply writes same-scene changes through one safe writer result', async () => {
+  const port = instantiateReviewMutatePort();
+  const { scenePath } = tmpScene('Alpha beta gamma omega.');
+  const revisionSession = validExactApplyRevisionSession({
+    sceneId: scenePath,
+    textChanges: [
+      {
+        ...validTextChange(),
+        changeId: 'text-change-1',
+        targetScope: { type: 'scene', id: scenePath },
+        match: { kind: 'exact', quote: 'beta', prefix: '', suffix: '' },
+        replacementText: 'delta',
+      },
+      {
+        ...validTextChange(),
+        changeId: 'text-change-2',
+        targetScope: { type: 'scene', id: scenePath },
+        match: { kind: 'exact', quote: 'omega', prefix: '', suffix: '' },
+        replacementText: 'sigma',
+      },
+    ],
+  });
+  const applyInput = buildBatchExactApplyInput({
+    scenePath,
+    sceneText: 'Alpha beta gamma omega.',
+    revisionSession,
+  });
+
+  const importResult = await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-1',
+    reviewSurface: {
+      revisionSession,
+      summary: { total: 2 },
+    },
+    revisionSession,
+    sourcePacketHash: 'packet-hash-batch-apply-1',
+    createdAt: '2026-05-24T12:00:00.000Z',
+  });
+  assert.equal(importResult.ok, true);
+
+  const result = await port.handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(
+    { changeIds: ['text-change-1', 'text-change-2'] },
+    {
+      buildReviewExactTextApplyBatchInput: async (request) => {
+        assert.deepEqual(
+          normalizeVmValue(request.textChanges.map((change) => change.changeId)),
+          ['text-change-1', 'text-change-2'],
+        );
+        return { ok: true, input: applyInput };
+      },
+      loadExactTextMinSafeWriteModule: loadExactSafeWrite,
+      safeWriteOptions: { now: () => 1700000010000 },
+    },
+  );
+
+  const value = normalizeVmValue(result);
+  const state = normalizeVmValue(port.getState());
+
+  assert.equal(value.ok, true);
+  assert.equal(value.batch, true);
+  assert.equal(value.applied, true);
+  assert.equal(value.status, 'applied');
+  assert.deepEqual(value.changes.map((change) => change.changeId), ['text-change-1', 'text-change-2']);
+  assert.equal(readText(scenePath), 'Alpha delta gamma sigma.');
+  assert.deepEqual(value.reviewSurface.exactTextAppliedChangeIds, ['text-change-1', 'text-change-2']);
+  assert.equal(value.reviewSurface.exactTextBatchApplyResult.applied, true);
+  assert.equal(value.reviewSurface.exactTextBatchApplyResult.status, 'applied');
+  assert.equal(Object.prototype.hasOwnProperty.call(value.reviewSurface, 'receipt'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'receipt'), false);
+  assert.equal(state.activeReviewSessionStore.lastExactTextApplyBatchResult.applied, true);
 });
 
 test('review mutate port contract: duplicate apply after external revert revalidates live context but does not write', async () => {
@@ -968,6 +1097,110 @@ test('review mutate port contract: stale no-match exact apply stays blocked with
   ), false);
 });
 
+test('review mutate port contract: stale no-match batch apply stays blocked without applied evidence', async () => {
+  const port = instantiateReviewMutatePort();
+
+  await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-1',
+    reviewSurface: {
+      summary: { total: 2 },
+    },
+    revisionSession: validExactApplyRevisionSession({
+      textChanges: [
+        validTextChange(),
+        {
+          ...validTextChange(),
+          changeId: 'text-change-2',
+          match: { kind: 'exact', quote: 'omega', prefix: '', suffix: '' },
+          replacementText: 'sigma',
+        },
+      ],
+    }),
+  });
+
+  const result = await port.handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(
+    { changeIds: ['text-change-1', 'text-change-2'] },
+    {
+      buildReviewExactTextApplyBatchInput: async () => ({ ok: true, input: { fake: true } }),
+      loadExactTextMinSafeWriteModule: async () => ({
+        applyExactTextBatchMinSafeWrite: async () => ({
+          ok: false,
+          status: 'blocked',
+          code: 'E_REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_BLOCKED',
+          reason: 'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_CURRENT_NO_MATCH',
+          applied: false,
+          reasons: [
+            {
+              code: 'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_CURRENT_NO_MATCH',
+              field: 'reviewItems.match.quote',
+              message: 'expectedText is not present in current batch text',
+              changeId: 'text-change-2',
+            },
+          ],
+        }),
+      }),
+    },
+  );
+  const state = normalizeVmValue(port.getState());
+
+  assert.equal(result.ok, true);
+  assert.equal(result.batch, true);
+  assert.equal(result.applied, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_CURRENT_NO_MATCH');
+  assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'receipt'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'exactTextAppliedChangeIds'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'exactTextBatchApplyResult'), false);
+});
+
+test('review mutate port contract: batch exact apply blocks cross-scene requests before safe writer load', async () => {
+  const port = instantiateReviewMutatePort();
+
+  await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-1',
+    reviewSurface: {
+      summary: { total: 2 },
+    },
+    revisionSession: validExactApplyRevisionSession({
+      textChanges: [
+        validTextChange(),
+        {
+          ...validTextChange(),
+          changeId: 'text-change-2',
+          targetScope: { type: 'scene', id: 'scene-2' },
+          match: { kind: 'exact', quote: 'omega', prefix: '', suffix: '' },
+          replacementText: 'sigma',
+        },
+      ],
+    }),
+  });
+
+  let buildCalled = false;
+  let safeWriterLoaded = false;
+  const result = await port.handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(
+    { changeIds: ['text-change-1', 'text-change-2'] },
+    {
+      buildReviewExactTextApplyBatchInput: async () => {
+        buildCalled = true;
+        throw new Error('cross-scene batch must not build write context');
+      },
+      loadExactTextMinSafeWriteModule: async () => {
+        safeWriterLoaded = true;
+        return loadExactSafeWrite();
+      },
+    },
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error.reason, 'REVIEW_EXACT_TEXT_APPLY_BATCH_SINGLE_SCENE_REQUIRED');
+  assert.equal(buildCalled, false);
+  assert.equal(safeWriterLoaded, false);
+});
+
 test('review mutate port contract: queue-time dirty block stays non-mutating and receipt-free', async () => {
   const port = instantiateReviewMutatePort();
 
@@ -1014,4 +1247,67 @@ test('review mutate port contract: queue-time dirty block stays non-mutating and
   assert.equal(result.error.reason, 'REVIEW_EXACT_TEXT_APPLY_DIRTY_EDITOR_BLOCKED');
   assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'receipt'), false);
   assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'exactTextApplyResult'), false);
+});
+
+test('review mutate port contract: queue-time dirty batch block stays non-mutating and evidence-free', async () => {
+  const port = instantiateReviewMutatePort();
+
+  await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-1',
+    reviewSurface: {
+      summary: { total: 2 },
+    },
+    revisionSession: validExactApplyRevisionSession({
+      textChanges: [
+        validTextChange(),
+        {
+          ...validTextChange(),
+          changeId: 'text-change-2',
+          match: { kind: 'exact', quote: 'omega', prefix: '', suffix: '' },
+          replacementText: 'sigma',
+        },
+      ],
+    }),
+  });
+
+  let safeWriteAsked = false;
+  const result = await port.handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(
+    { changeIds: ['text-change-1', 'text-change-2'] },
+    {
+      buildReviewExactTextApplyBatchInput: async () => ({ ok: true, input: { fake: true } }),
+      loadExactTextMinSafeWriteModule: async () => ({
+        applyExactTextBatchMinSafeWrite: async () => {
+          throw new Error('batch safe writer must be wrapped by queue guard');
+        },
+      }),
+      runReviewExactTextBatchSafeWrite: async () => {
+        safeWriteAsked = true;
+        return {
+          ok: false,
+          status: 'blocked',
+          code: 'E_REVIEW_EXACT_TEXT_APPLY_BLOCKED',
+          reason: 'REVIEW_EXACT_TEXT_APPLY_DIRTY_EDITOR_BLOCKED',
+          applied: false,
+          reasons: [
+            {
+              code: 'REVIEW_EXACT_TEXT_APPLY_DIRTY_EDITOR_BLOCKED',
+              field: 'editor',
+              message: 'Editor became dirty before queued batch write.',
+            },
+          ],
+        };
+      },
+    },
+  );
+  const state = normalizeVmValue(port.getState());
+
+  assert.equal(safeWriteAsked, true);
+  assert.equal(result.ok, true);
+  assert.equal(result.applied, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVIEW_EXACT_TEXT_APPLY_DIRTY_EDITOR_BLOCKED');
+  assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'receipt'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'exactTextBatchApplyResult'), false);
 });

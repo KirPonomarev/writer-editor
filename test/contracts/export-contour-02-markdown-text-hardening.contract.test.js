@@ -16,6 +16,9 @@ const TRANSFORM_INDEX = path.join(
 const CONTRACT_PATH = 'test/contracts/export-contour-02-markdown-text-hardening.contract.test.js';
 const ALLOWLIST = [
   'src/main.js',
+  'src/io/revisionBridge/exactTextMinSafeWrite.mjs',
+  'src/renderer/editor.js',
+  'src/renderer/editor.bundle.js',
   'src/export/markdown/v1/serializeMarkdownV1.mjs',
   'src/export/markdown/v1/lossReport.mjs',
   'src/export/markdown/v1/index.mjs',
@@ -23,7 +26,10 @@ const ALLOWLIST = [
   'test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js',
   'test/contracts/revision-bridge-review-mutate-port.contract.test.js',
   'test/unit/sector-m-preload-workspace-query-bridge.test.js',
+  'test/unit/sector-m-preload-ui-command-bridge.test.js',
+  'test/unit/sector-m-review-surface-ui.test.js',
   'docs/OPS/STATUS/REVIEW_BRIDGE_SINGLE_EXACT_TEXT_SAFE_APPLY_ENABLEMENT_001_R2_STATUS_V1.json',
+  'docs/OPS/STATUS/REVIEW_BRIDGE_CONTROLLED_MULTI_EXACT_APPLY_001_R2_STATUS_V1.json',
   'test/unit/sector-m-m2-roundtrip.test.js',
   CONTRACT_PATH,
 ];

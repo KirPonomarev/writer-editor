@@ -21,6 +21,12 @@ const MAIN_PATH = 'src/main.js';
 const MARKDOWN_EXPORT_GUARD_TEST_PATH = 'test/contracts/export-contour-02-markdown-text-hardening.contract.test.js';
 const REVIEW_MUTATE_PORT_TEST_PATH = 'test/contracts/revision-bridge-review-mutate-port.contract.test.js';
 const WORKSPACE_QUERY_BRIDGE_TEST_PATH = 'test/unit/sector-m-preload-workspace-query-bridge.test.js';
+const REVIEW_SURFACE_UI_TEST_PATH = 'test/unit/sector-m-review-surface-ui.test.js';
+const PRELOAD_UI_COMMAND_BRIDGE_TEST_PATH = 'test/unit/sector-m-preload-ui-command-bridge.test.js';
+const RENDERER_EDITOR_PATH = 'src/renderer/editor.js';
+const RENDERER_EDITOR_BUNDLE_PATH = 'src/renderer/editor.bundle.js';
+const CONTROLLED_MULTI_STATUS_PACKET_PATH =
+  'docs/OPS/STATUS/REVIEW_BRIDGE_CONTROLLED_MULTI_EXACT_APPLY_001_R2_STATUS_V1.json';
 const ALLOWLIST = [
   MODULE_PATH,
   MAIN_PATH,
@@ -38,6 +44,11 @@ const ALLOWLIST = [
   MARKDOWN_EXPORT_GUARD_TEST_PATH,
   REVIEW_MUTATE_PORT_TEST_PATH,
   WORKSPACE_QUERY_BRIDGE_TEST_PATH,
+  REVIEW_SURFACE_UI_TEST_PATH,
+  PRELOAD_UI_COMMAND_BRIDGE_TEST_PATH,
+  RENDERER_EDITOR_PATH,
+  RENDERER_EDITOR_BUNDLE_PATH,
+  CONTROLLED_MULTI_STATUS_PACKET_PATH,
 ];
 const WIRING_NEEDLES = [
   'buildExactTextApplyPlanNoDiskPreview',

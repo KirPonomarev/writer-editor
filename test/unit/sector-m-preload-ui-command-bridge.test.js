@@ -60,13 +60,17 @@ test('preload ui command bridge: review exact apply uses bridge with intent-only
   assert.ok(payloadStart > -1)
   assert.ok(payloadEnd > payloadStart)
   assert.ok(source.includes("const REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID = 'cmd.project.review.applyExactTextChange';"))
+  assert.ok(source.includes("const REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID = 'cmd.project.review.applyExactTextChangesBatch';"))
   assert.ok(handler.includes('invokePreloadUiCommandBridge(REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID, payload)'))
+  assert.ok(handler.includes('invokePreloadUiCommandBridge(REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID, payload)'))
   assert.ok(handler.includes('reviewSurfaceBuildExactTextApplyPayload(requestId, changeId)'))
+  assert.ok(handler.includes('reviewSurfaceBuildExactTextApplyBatchPayload(requestId, changeIds)'))
   assert.equal(handler.includes('dispatchUiCommand('), false)
 
   for (const allowed of ['requestId', 'changeId']) {
     assert.ok(payloadHelper.includes(allowed), allowed)
   }
+  assert.ok(payloadHelper.includes('changeIds'))
   for (const forbidden of [
     'scenePath',
     'projectSnapshot',

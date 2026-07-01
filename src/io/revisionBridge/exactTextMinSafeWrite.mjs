@@ -9,8 +9,13 @@ export const REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_SCHEMA =
   'revision-bridge.exact-text-min-safe-write.v1';
 export const REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECEIPT_SCHEMA =
   'revision-bridge.exact-text-min-safe-write.receipt.v1';
+export const REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_SCHEMA =
+  'revision-bridge.exact-text-batch-min-safe-write.v1';
+export const REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_RECEIPT_SCHEMA =
+  'revision-bridge.exact-text-batch-min-safe-write.receipt.v1';
 
 const READY_CODE = 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_APPLIED';
+const BATCH_READY_CODE = 'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_APPLIED';
 const BLOCKED_CODE = 'E_REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_BLOCKED';
 const FAILED_CODE = 'E_REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_FAILED';
 const RECEIPT_INVALID_CODE = 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECEIPT_INVALID';
@@ -288,6 +293,290 @@ async function validateReceipt(receipt, expected = {}) {
     }
   }
   return failures;
+}
+
+function extractBatchReviewItems(input) {
+  if (Array.isArray(input.reviewItems)) return input.reviewItems.filter((item) => isPlainObject(item));
+  if (Array.isArray(input.textChanges)) return input.textChanges.filter((item) => isPlainObject(item));
+  return [];
+}
+
+function buildBatchInputHash(input, operations) {
+  return sha256Text(stableJson({
+    projectSnapshot: input.projectSnapshot || null,
+    revisionSession: input.revisionSession || null,
+    reviewItems: extractBatchReviewItems(input),
+    scenePath: input.scenePath || '',
+    operations,
+  }));
+}
+
+function normalizeBatchTextChange(item) {
+  return isPlainObject(item?.textChange) ? item.textChange : item;
+}
+
+export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) {
+  if (!isPlainObject(input)) {
+    return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_INPUT_INVALID',
+      'input',
+      'input must be an object',
+    ));
+  }
+
+  const scenePath = rawString(input.scenePath);
+  if (!scenePath) {
+    return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_SCENE_PATH_REQUIRED',
+      'scenePath',
+      'scenePath is required',
+    ));
+  }
+
+  const projectRoot = rawString(input.projectRoot);
+  if (!projectRoot) {
+    return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_PROJECT_ROOT_REQUIRED',
+      'projectRoot',
+      'projectRoot is required for scene path binding',
+    ));
+  }
+
+  if (!isPathInside(projectRoot, scenePath)) {
+    return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_SCENE_PATH_OUTSIDE_PROJECT',
+      'scenePath',
+      'scenePath must be inside projectRoot',
+    ));
+  }
+
+  const reviewItems = extractBatchReviewItems(input).map((item) => normalizeBatchTextChange(item));
+  if (reviewItems.length === 0) {
+    return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_REVIEW_ITEMS_REQUIRED',
+      'reviewItems',
+      'batch reviewItems are required',
+    ));
+  }
+
+  const sceneIds = [...new Set(reviewItems
+    .map((item) => normalizeString(item?.targetScope?.id))
+    .filter(Boolean))];
+  const targetScopeTypes = [...new Set(reviewItems
+    .map((item) => normalizeString(item?.targetScope?.type))
+    .filter(Boolean))];
+  if (sceneIds.length !== 1 || targetScopeTypes.length !== 1 || targetScopeTypes[0] !== 'scene') {
+    return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_SINGLE_SCENE_REQUIRED',
+      'reviewItems.targetScope',
+      'batch exact apply is limited to one scene file',
+      {
+        sceneIds,
+        targetScopeTypes,
+      },
+    ));
+  }
+
+  const sceneId = sceneIds[0];
+  const scenePathBySceneId = isPlainObject(input.scenePathBySceneId) ? input.scenePathBySceneId : {};
+  const boundScenePath = resolvePath(scenePathBySceneId[sceneId]);
+  if (!boundScenePath || boundScenePath !== resolvePath(scenePath)) {
+    return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_SCENE_PATH_BINDING_MISMATCH',
+      'scenePathBySceneId',
+      'scenePath must match the canonical scene path binding for the target scene',
+    ));
+  }
+
+  const sceneText = findSceneText(input.projectSnapshot, sceneId);
+  let currentText = '';
+  try {
+    currentText = await fs.readFile(scenePath, 'utf8');
+  } catch (error) {
+    return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_READ_FAILED',
+      'scenePath',
+      'current scene file could not be read',
+      {
+        errorCode: rawString(error?.code),
+      },
+    ));
+  }
+
+  if (currentText !== sceneText) {
+    return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_CURRENT_DRIFT',
+      'scenePath',
+      'current scene file differs from projectSnapshot scene text',
+      {
+        currentHash: sha256Text(currentText),
+        snapshotHash: sha256Text(sceneText),
+      },
+    ));
+  }
+
+  let nextText = currentText;
+  const operations = [];
+  for (const item of reviewItems) {
+    const changeId = normalizeString(item?.changeId);
+    const matchKind = normalizeString(item?.match?.kind);
+    const expectedText = rawString(item?.match?.quote);
+    const replacementText = rawString(item?.replacementText);
+
+    if (!changeId) {
+      return block(buildReason(
+        'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_CHANGE_ID_REQUIRED',
+        'reviewItems.changeId',
+        'each batch text change requires a changeId',
+      ));
+    }
+    if (matchKind !== 'exact') {
+      return block(buildReason(
+        'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_EXACT_MATCH_REQUIRED',
+        'reviewItems.match.kind',
+        'each batch text change must use exact match',
+        { changeId },
+      ));
+    }
+    if (!expectedText) {
+      return block(buildReason(
+        'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_EXPECTED_TEXT_REQUIRED',
+        'reviewItems.match.quote',
+        'each batch text change requires exact quote text',
+        { changeId },
+      ));
+    }
+    if (!replacementText) {
+      return block(buildReason(
+        'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_REPLACEMENT_REQUIRED',
+        'reviewItems.replacementText',
+        'each batch text change requires replacementText',
+        { changeId },
+      ));
+    }
+
+    const occurrenceCount = countOccurrences(nextText, expectedText);
+    if (occurrenceCount === 0) {
+      return block(buildReason(
+        'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_CURRENT_NO_MATCH',
+        'reviewItems.match.quote',
+        'expectedText is not present in current batch text',
+        { changeId },
+      ));
+    }
+    if (occurrenceCount > 1) {
+      return block(buildReason(
+        'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_CURRENT_DUPLICATE_MATCH',
+        'reviewItems.match.quote',
+        'expectedText occurs multiple times in current batch text',
+        {
+          changeId,
+          matchCount: occurrenceCount,
+        },
+      ));
+    }
+
+    const from = nextText.indexOf(expectedText);
+    const to = from + expectedText.length;
+    operations.push({
+      kind: 'replaceExactText',
+      sceneId,
+      changeId,
+      from,
+      to,
+      expectedText,
+      replacementText,
+    });
+    nextText = `${nextText.slice(0, from)}${replacementText}${nextText.slice(to)}`;
+  }
+
+  const inputHash = buildBatchInputHash(input, operations);
+  const outputHash = sha256Text(nextText);
+  const writtenAt = toIsoStringFromNow(options.now);
+  const capturedRecoveryEvidence = {};
+  const userAfterStage = typeof options.afterStage === 'function' ? options.afterStage : null;
+  const userBeforeWrite = typeof options.beforeWrite === 'function' ? options.beforeWrite : null;
+
+  try {
+    const writeResult = await writeMarkdownWithTransactionRecovery(scenePath, nextText, {
+      safetyMode: options.safetyMode,
+      maxSnapshots: options.maxSnapshots,
+      now: options.now,
+      beforeRename: options.beforeRename,
+      afterTempWrite: options.afterTempWrite,
+      afterStage: async (event) => {
+        if (event?.stage === 'SNAPSHOT_CREATED') {
+          capturedRecoveryEvidence.snapshotCreated = Boolean(event.snapshotCreated);
+          capturedRecoveryEvidence.snapshotPath = rawString(event.snapshotPath);
+        }
+        if (event?.stage === 'SNAPSHOT_CREATED' && userBeforeWrite) {
+          await userBeforeWrite(event);
+        }
+        if (userAfterStage) await userAfterStage(event);
+      },
+    });
+
+    const recovery = await buildTruthfulRecoveryEvidence(writeResult, capturedRecoveryEvidence, currentText);
+    const backupId = buildBackupId(recovery.snapshotPath);
+    const actualText = await fs.readFile(scenePath, 'utf8');
+    if (actualText !== nextText || recovery.snapshotReadable !== true || recovery.snapshotHashMatchesInput !== true) {
+      return fail(buildReason(
+        actualText !== nextText ? RECEIPT_INVALID_CODE : RECOVERY_INVALID_CODE,
+        'receipt',
+        'batch receipt validation failed after write',
+        {
+          recovery,
+        },
+      ));
+    }
+
+    const receipt = {
+      schemaVersion: REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_RECEIPT_SCHEMA,
+      projectId: rawString(input.projectSnapshot?.projectId || input.revisionSession?.projectId),
+      sessionId: rawString(input.revisionSession?.sessionId),
+      sceneId,
+      changeIds: operations.map((operation) => operation.changeId),
+      baselineHashBefore: rawString(input.projectSnapshot?.baselineHash || input.revisionSession?.baselineHash),
+      operationKind: 'replaceExactTextBatch',
+      writeStatus: 'applied',
+      backupId,
+      writtenAt,
+      inputHash,
+      outputHash,
+      bytesWritten: writeResult.bytesWritten,
+      transactionId: rawString(writeResult.transactionId),
+      recovery,
+      reason: BATCH_READY_CODE,
+    };
+
+    return {
+      ok: true,
+      type: 'revisionBridge.exactTextBatchMinSafeWrite',
+      status: 'applied',
+      code: BATCH_READY_CODE,
+      reason: BATCH_READY_CODE,
+      reasons: [],
+      applied: true,
+      receipt: cloneJsonSafe(receipt),
+      operations: cloneJsonSafe(operations),
+      changes: operations.map((operation) => ({
+        changeId: operation.changeId,
+        status: 'applied',
+        reason: BATCH_READY_CODE,
+      })),
+    };
+  } catch (error) {
+    return fail(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_WRITE_FAILED',
+      'scenePath',
+      'transactional markdown batch write failed',
+      {
+        errorCode: rawString(error?.code),
+        errorReason: rawString(error?.reason),
+        recovery: await buildTruthfulRecoveryEvidence(null, capturedRecoveryEvidence, currentText),
+      },
+    ));
+  }
 }
 
 export async function applyExactTextMinSafeWrite(input = {}, options = {}) {

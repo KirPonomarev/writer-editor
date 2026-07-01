@@ -22,7 +22,9 @@ function loadReviewSurfaceHelpers() {
 this.__reviewSurfaceExports = {
   REVIEW_SURFACE_RECEIPT_SCHEMA,
   REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID,
+  REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID,
   reviewSurfaceBuildExactTextApplyPayload,
+  reviewSurfaceBuildExactTextApplyBatchPayload,
   reviewSurfaceNormalizeState,
   buildReviewSurfaceViewModel,
   renderReviewSurfaceMarkup,
@@ -60,19 +62,24 @@ class FakeElement extends Element {
 }
 class FakeHTMLElement extends HTMLElement {}
 class FakeButton extends HTMLButtonElement {
-  constructor(changeId) {
+  constructor(dataset, closestSelector) {
     super();
-    this.dataset = { changeId };
+    this.dataset = dataset;
+    this.closestSelector = closestSelector;
     this.disabled = false;
   }
   closest(selector) {
-    return selector === '[data-review-apply-exact-change]' ? this : null;
+    return selector === this.closestSelector ? this : null;
   }
 }
 
-const fakeButton = new FakeButton('change-1');
+const fakeButton = new FakeButton({ changeId: 'change-1' }, '[data-review-apply-exact-change]');
+const fakeBatchButton = new FakeButton(
+  { changeIds: 'change-1,change-2' },
+  '[data-review-apply-exact-batch]',
+);
 const reviewSurfaceHost = new FakeHTMLElement();
-reviewSurfaceHost.contains = (node) => node === fakeButton;
+reviewSurfaceHost.contains = (node) => node === fakeButton || node === fakeBatchButton;
 reviewSurfaceHost.addEventListener = () => {};
 
 function renderReviewSurface() {
@@ -95,11 +102,13 @@ ${source.slice(runtimeStart, runtimeEnd)}
 
 this.__reviewSurfaceClickHarness = {
   fakeButton,
+  fakeBatchButton,
   bridgeCalls,
   stateCalls,
   getTransientState: () => reviewSurfaceExactTextApplyTransientState,
   getRenderCount: () => renderCount,
   click: () => handleReviewSurfaceExactTextApplyClick({ target: fakeButton }),
+  clickBatch: () => handleReviewSurfaceExactTextApplyClick({ target: fakeBatchButton }),
 };
 `;
   const sandbox = {
@@ -230,12 +239,21 @@ function createReviewSurfaceState() {
 function createReadyExactOnlyReviewSurfaceState() {
   const state = createReviewSurfaceState();
   state.revisionSession.reviewGraph.structuralChanges = [];
+  state.revisionSession.reviewGraph.commentThreads = [];
+  state.revisionSession.reviewGraph.commentPlacements = [];
   state.structuralManualReviewPreview = {
     items: [],
     unsupportedObservations: [],
     summary: {
       totalStructuralChanges: 0,
     },
+  };
+  state.commentSurvivalPreview = {
+    totalThreads: 0,
+    totalPlacements: 0,
+    preservedThreads: [],
+    placementResults: [],
+    diagnostics: [],
   };
   return state;
 }
@@ -527,7 +545,38 @@ test('review surface ui: applied exact-text preview disables repeat apply from m
   assert.ok(markup.includes('disabled aria-disabled="true"'));
 });
 
-test('review surface ui: non-single exact preview never renders an enabled apply action', () => {
+test('review surface ui: batch applied evidence disables all matching exact ops', () => {
+  const helpers = loadReviewSurfaceHelpers();
+  const state = createReadyExactOnlyReviewSurfaceState();
+  state.exactTextPlanPreview.plan.applyOps.push({
+    opId: 'rbop-2',
+    sceneId: 'scene-1',
+    changeId: 'change-2',
+    from: 11,
+    to: 15,
+    expectedText: 'more',
+    replacementText: 'less',
+  });
+  state.exactTextBatchApplyResult = {
+    status: 'applied',
+    applied: true,
+    changes: [
+      { changeId: 'change-1', status: 'applied' },
+      { changeId: 'change-2', status: 'applied' },
+    ],
+  };
+
+  const viewModel = helpers.buildReviewSurfaceViewModel(state);
+  const markup = helpers.renderReviewSurfaceMarkup(viewModel);
+
+  assert.equal(viewModel.exactTextPreview.ops.length, 2);
+  assert.equal(viewModel.exactTextPreview.ops.every((op) => op.applyState === 'applied'), true);
+  assert.equal(viewModel.exactTextPreview.batchAction.applyState, 'applied');
+  assert.equal(viewModel.exactTextPreview.batchAction.applyDisabled, true);
+  assert.equal((markup.match(/>применено<\/button>/g) || []).length, 3);
+});
+
+test('review surface ui: non-single exact preview renders controlled batch action without per-op enablement', () => {
   const helpers = loadReviewSurfaceHelpers();
   const state = createReadyExactOnlyReviewSurfaceState();
   state.exactTextPlanPreview.plan.applyOps.push({
@@ -543,11 +592,25 @@ test('review surface ui: non-single exact preview never renders an enabled apply
   const viewModel = helpers.buildReviewSurfaceViewModel(state);
   const markup = helpers.renderReviewSurfaceMarkup(viewModel);
 
+  assert.equal(helpers.REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID, 'cmd.project.review.applyExactTextChangesBatch');
   assert.equal(viewModel.exactTextPreview.ops.length, 2);
   assert.equal(viewModel.exactTextPreview.ops.every((op) => op.applyState === 'blocked'), true);
+  assert.equal(viewModel.exactTextPreview.batchAction.applyState, 'ready');
+  assert.equal(viewModel.exactTextPreview.batchAction.applyDisabled, false);
+  assert.equal(
+    JSON.stringify(viewModel.exactTextPreview.batchAction.changeIds),
+    JSON.stringify(['change-1', 'change-2']),
+  );
   assert.ok(markup.includes('REVIEW_SURFACE_SINGLE_EXACT_CHANGE_REQUIRED'));
+  assert.ok(markup.includes('data-review-apply-exact-batch'));
+  assert.ok(markup.includes('data-change-ids="change-1,change-2"'));
+  assert.ok(markup.includes('>Применить все</button>'));
   assert.equal((markup.match(/data-review-apply-exact-change/g) || []).length, 2);
   assert.equal((markup.match(/disabled aria-disabled="true"/g) || []).length, 2);
+  assert.equal(
+    JSON.stringify(helpers.reviewSurfaceBuildExactTextApplyBatchPayload('request-1', ['change-1', 'change-2'])),
+    JSON.stringify({ requestId: 'request-1', changeIds: ['change-1', 'change-2'] }),
+  );
 });
 
 test('review surface ui: exact apply requires a named change id before enabling action', () => {
@@ -579,6 +642,51 @@ test('review surface ui: mixed structural review blocks visible exact apply befo
   assert.ok(markup.includes('disabled aria-disabled="true"'));
 });
 
+test('review surface ui: mixed comment review blocks controlled batch action before main write path', () => {
+  const helpers = loadReviewSurfaceHelpers();
+  const state = createReadyExactOnlyReviewSurfaceState();
+  state.revisionSession.reviewGraph.commentThreads = [
+    {
+      threadId: 'thread-1',
+      messages: [{ body: 'Keep comment visible.' }],
+    },
+  ];
+  state.commentSurvivalPreview = {
+    totalThreads: 1,
+    totalPlacements: 0,
+    preservedThreads: [
+      {
+        threadId: 'thread-1',
+        messages: [{ body: 'Keep comment visible.' }],
+      },
+    ],
+    placementResults: [],
+    diagnostics: [],
+  };
+  state.exactTextPlanPreview.plan.applyOps.push({
+    opId: 'rbop-2',
+    sceneId: 'scene-1',
+    changeId: 'change-2',
+    from: 11,
+    to: 15,
+    expectedText: 'more',
+    replacementText: 'less',
+  });
+
+  const viewModel = helpers.buildReviewSurfaceViewModel(state);
+  const markup = helpers.renderReviewSurfaceMarkup(viewModel);
+
+  assert.equal(viewModel.exactTextPreview.batchAction.applyState, 'blocked');
+  assert.equal(viewModel.exactTextPreview.batchAction.applyDisabled, true);
+  assert.equal(
+    viewModel.exactTextPreview.batchAction.applyReason,
+    'REVIEW_SURFACE_COMMENT_REVIEW_BLOCKS_EXACT_BATCH_APPLY',
+  );
+  assert.ok(markup.includes('data-review-apply-exact-batch'));
+  assert.ok(markup.includes('REVIEW_SURFACE_COMMENT_REVIEW_BLOCKS_EXACT_BATCH_APPLY'));
+  assert.equal((markup.match(/disabled aria-disabled="true"/g) || []).length, 3);
+});
+
 test('review surface ui: exact apply click sends intent-only payload and adopts main review surface', async () => {
   const harness = loadReviewSurfaceClickHarness({
     ok: true,
@@ -608,6 +716,46 @@ test('review surface ui: exact apply click sends intent-only payload and adopts 
   assert.equal(harness.stateCalls.length, 1);
   assert.equal(harness.stateCalls[0].nextState.receipt.changeId, 'change-1');
   assert.equal(harness.stateCalls[0].nextState.receipt.writeStatus, 'applied');
+});
+
+test('review surface ui: batch exact apply click sends intent-only ids and adopts main review surface', async () => {
+  const harness = loadReviewSurfaceClickHarness({
+    ok: true,
+    value: {
+      ok: true,
+      batch: true,
+      applied: true,
+      reviewSurface: {
+        exactTextAppliedChangeIds: ['change-1', 'change-2'],
+        exactTextBatchApplyResult: {
+          status: 'applied',
+          applied: true,
+          changes: [
+            { changeId: 'change-1', status: 'applied' },
+            { changeId: 'change-2', status: 'applied' },
+          ],
+        },
+      },
+    },
+  });
+
+  await harness.clickBatch();
+
+  assert.equal(harness.bridgeCalls.length, 1);
+  assert.equal(harness.bridgeCalls[0].commandId, 'cmd.project.review.applyExactTextChangesBatch');
+  assert.equal(
+    JSON.stringify(Object.keys(harness.bridgeCalls[0].payload).sort()),
+    JSON.stringify(['changeIds', 'requestId']),
+  );
+  assert.equal(
+    JSON.stringify(harness.bridgeCalls[0].payload.changeIds),
+    JSON.stringify(['change-1', 'change-2']),
+  );
+  assert.equal(harness.bridgeCalls[0].payload.requestId.startsWith('review-exact-batch-apply-change-1-change-2-'), true);
+  assert.equal(harness.getTransientState(), null);
+  assert.equal(harness.stateCalls.length, 1);
+  assert.deepEqual(harness.stateCalls[0].nextState.exactTextAppliedChangeIds, ['change-1', 'change-2']);
+  assert.equal(harness.stateCalls[0].nextState.exactTextBatchApplyResult.applied, true);
 });
 
 test('review surface ui: disabled applied button does not send repeat apply command', async () => {
