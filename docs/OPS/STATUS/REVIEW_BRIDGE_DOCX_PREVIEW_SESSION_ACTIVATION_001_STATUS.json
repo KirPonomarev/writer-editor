@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001",
+  "status": "implemented_local_verified_pending_delivery",
+  "type": "review_bridge_docx_preview_session_activation",
+  "featureExpansion": true,
+  "baseSha": "34895b960a723b816ccb7f50f171854675a43969",
+  "createdAtUtc": "2026-07-01T21:04:43.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "projectTruthWrites": false,
+    "reviewSessionActivation": true,
+    "autoApply": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false
+  },
+  "positiveClaims": [
+    "DOCX review preview session activation is exposed as a separate review-bridge command surface: cmd.project.review.activateDocxReviewPreviewSession.",
+    "The command accepts only pathless requestId and bufferSource input from the renderer.",
+    "DOCX comments from word/comments.xml become bounded Review Packet commentThreads.",
+    "Unambiguous document commentRangeStart/commentRangeEnd anchors become manual commentPlacements with policy manual.",
+    "The command activates an in-memory Review session through the existing Stage01 review preview path.",
+    "Successful activation opens Review/Comments through the existing canonical runtime command path.",
+    "Tracked changes are kept diagnostic-only and never become textChanges or apply operations.",
+    "Clean DOCX, malformed input, unsafe input, and tracked-changes-only DOCX do not activate a session.",
+    "The implementation uses existing bounded ZIP, XML-scan, Stage01, and Review mutate-port primitives and adds no dependency."
+  ],
+  "nonClaims": [
+    "No full DOCX review import is claimed.",
+    "No DOCX tracked-change apply is claimed.",
+    "No exact apply is authorized by this contour.",
+    "No structural apply is authorized by this contour.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed.",
+    "No project truth write is performed.",
+    "No receipt or recovery evidence is created by activation.",
+    "No DOCX import safe-create flow is changed or widened.",
+    "No import/export MVP closeout is widened.",
+    "No Word layout parity or full DOCX fidelity is claimed.",
+    "No PDF, EPUB, HTML, Mindmap, release readiness, cross-platform readiness, cloud, sync, accounts, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "DOCX remains external evidence transport, not project truth.",
+    "Preflight remains diagnostic-only and is not promoted by mutation.",
+    "Activation is a separate command and builder layer after preflight.",
+    "Renderer authority remains limited to requestId and bufferSource.",
+    "Main owns current project, current file, targetScope, baselineHash, currentBaselineHash, sessionId, and Review session activation.",
+    "Review Packet activation goes through existing Stage01 preview surface and keeps blockedApplyPlan.canApply=false with applyOps=[].",
+    "Tracked changes are diagnosticItems only and do not enter reviewPacket.textChanges.",
+    "Comment placements are manual anchors, not exact-text apply authorization."
+  ],
+  "implementation": {
+    "changedProductionRuntime": true,
+    "changedUi": false,
+    "changedTests": [
+      "revision-bridge-docx-review-preview-session.contract.test.js",
+      "revision-bridge-docx-review-preview-session-command-surface.contract.test.js"
+    ],
+    "changedRuntimeFiles": [
+      "index.mjs",
+      "main.js"
+    ],
+    "changedStatusArtifacts": [
+      "REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json"
+    ],
+    "newStatusArtifacts": [
+      "REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001_STATUS.json"
+    ],
+    "newExports": [
+      "DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_SCHEMA",
+      "buildDocxReviewPreviewSessionCandidateFromZipBytes"
+    ],
+    "newCommandIds": [
+      "cmd.project.review.activateDocxReviewPreviewSession"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --check src/main.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --check src/io/revisionBridge/index.mjs",
+      "status": "pass"
+    },
+    {
+      "command": "node --test targeted DOCX review preview session builder and command contracts",
+      "status": "pass",
+      "tests": 14
+    },
+    {
+      "command": "node --test targeted DOCX review/import preview and review mutate regression pack",
+      "status": "pass",
+      "tests": 104
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "agentAudits": [
+    {
+      "agentId": "019f1f71-e994-7ab1-b585-1d30573f1320",
+      "role": "codebase_inspector",
+      "mode": "read_only",
+      "verdict": "reuse Stage01, review mutate port, and preflight primitives; keep tracked DOCX changes structural diagnostic only",
+      "localResolution": "addressed by separate DOCX review preview session candidate builder and command activation through handleReviewSurfaceImportPacketCommandSurface"
+    },
+    {
+      "agentId": "019f1f72-0c16-7482-9dad-f3c1efaccbfe",
+      "role": "independent_skeptic_auditor",
+      "mode": "read_only",
+      "verdict": "preflight must remain diagnostic-only; activation must not accept renderer reviewPacket, parsedSurface, applyOps, receipt, recovery, file path, or project context authority",
+      "localResolution": "addressed by renderer payload allowlist, main-owned context, no-candidate fail closed tests, and forbidden payload tests"
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": ""
+  },
+  "decision": "DOCX_REVIEW_PREVIEW_SESSION_ACTIVATION_OPENED_FOR_COMMENTS_ONLY_MANUAL_PREVIEW",
+  "nextStep": "complete delivery chain, then select the next explicit owner-approved contour"
+}

@@ -3,10 +3,31 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json",
-      "sha256": "df4a05a5e500d8b16a1685e0cf1c7223d3a8c56486f195d99ade72793ed331d5",
+      "sha256": "5c2736d4dc31ae57034204eca38173c9f3d51052bf413547f3ab6a2c74cdba23",
       "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREFLIGHT_001",
-      "approvedAtUtc": "2026-07-01T20:35:39.000Z",
-      "rationale": "Approve bounded factual status artifact for REVIEW_BRIDGE_DOCX_PREFLIGHT_001 recording diagnostic-only DOCX review preflight; no review session, apply, receipt, recovery, project write, import-export MVP expansion, dependency, network, UI, release, Word parity, or full DOCX review import claim is introduced."
+      "approvedAtUtc": "2026-07-01T21:04:43.000Z",
+      "rationale": "Approve factual delivery rebind for REVIEW_BRIDGE_DOCX_PREFLIGHT_001 after PR 1013 merge; scope remains diagnostic-only DOCX review preflight with no review session, apply, receipt, recovery, project write, import-export MVP expansion, dependency, network, UI, release, Word parity, or full DOCX review import claim."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001_STATUS.json",
+      "sha256": "acb0a1f8c2d402c42f6ad9f52faee816f7c46e3d41303554cdf0a23eceb92823",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001",
+      "approvedAtUtc": "2026-07-01T21:04:43.000Z",
+      "rationale": "Approve bounded factual status artifact for DOCX review preview session activation; DOCX comments may open an in-memory Stage01 preview Review session, while tracked changes remain diagnostic-only and no exact apply, structural apply, receipt, recovery, manuscript write, project truth write, import-export MVP expansion, dependency, network, UI, release, Word parity, or full DOCX review import claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",
+      "sha256": "0c28b05b07a9c01482aa2cec45175cb8a3bc6e8241fb9e702da764ed54f33b75",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001",
+      "approvedAtUtc": "2026-07-01T21:04:43.000Z",
+      "rationale": "Approve bounded pure-builder contract proof for DOCX review preview session candidate; comments become bounded Review Packet comment threads, tracked changes stay diagnostic-only, Stage01 remains preview-only with blocked apply, and no disk, command, export, receipt, recovery, dependency, network, UI, or full DOCX review import claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
+      "sha256": "9a90f99c61c8104f9b40273fa6b6e87714b8d7dfdc261ef850316d50bb24c8ad",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001",
+      "approvedAtUtc": "2026-07-01T21:04:43.000Z",
+      "rationale": "Approve bounded command-surface contract proof for DOCX review preview session activation; renderer authority stays requestId and bufferSource only, main owns project/file/baseline context, successful activation opens Review/Comments, no-candidate inputs stay passive, and no exact apply, structural apply, receipt, recovery, project truth write, import-export MVP expansion, dependency, network, UI, or full DOCX review import claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-review-preflight.contract.test.js",

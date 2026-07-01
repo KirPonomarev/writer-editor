@@ -32,7 +32,7 @@ _Generated: 2026-07-01_
 - Active axis: `Writer v1`
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
-- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, historical vertical sheets baseline, C05 long-document closeout, current 01R quarantine for tracked vertical sheet reds, editorial sheet 10000 committed stress evidence, import/export MVP-scope closeout, and review bridge exact-apply lane closeout.
+- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, historical vertical sheets baseline, C05 long-document closeout, current 01R quarantine for tracked vertical sheet reds, editorial sheet 10000 committed stress evidence, import/export MVP-scope closeout, review bridge exact-apply lane closeout, delivered DOCX review preflight, and local DOCX review preview session activation work.
 
 ## Local Machine State
 - This file describes a snapshot-bound mainline reality, not the forever-current state of the local machine.
@@ -58,10 +58,14 @@ _Generated: 2026-07-01_
 - This local packet entry is session/preview wiring only; it does not write manuscript truth and does not authorize apply.
 - Local JSON review packet E2E proof is bound by `REVIEW_BRIDGE_LOCAL_PACKET_E2E_PRODUCT_PROOF_001_STATUS.json`, merged via PR `1011` at merge SHA `a8ea40692afb3c2ef9c30f8152315f13375d3f48`: it proves default main-owned local file intake through the menu command handler, Review/Comments opening, exact single apply after import with receipt and recovery evidence, same-scene batch exact apply after import, mixed structural packet manual-only behavior, and clear-session empty surface.
 - This E2E proof changed tests and status docs only; it did not change production runtime code and did not expand import/export MVP scope.
-- DOCX review preflight is implemented locally and tracked by `REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json`: `cmd.project.review.inspectDocxReviewPreflight` produces a pathless diagnostic-only report for DOCX comments and tracked-change markers without creating a Review session, apply operation, receipt, recovery, or project write.
+- DOCX review preflight is delivered and merged via PR `1013` at merge SHA `34895b960a723b816ccb7f50f171854675a43969`; it is tracked by `REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json`.
+- `cmd.project.review.inspectDocxReviewPreflight` produces a pathless diagnostic-only report for DOCX comments and tracked-change markers without creating a Review session, apply operation, receipt, recovery, or project write.
 - DOCX review preflight is Review Bridge work, not an expansion of the closed import/export MVP scope; it does not route through `cmd.project.importDocxV1` or safe-create.
+- DOCX review preview session activation is local verified work tracked by `REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001_STATUS.json`: `cmd.project.review.activateDocxReviewPreviewSession` accepts pathless DOCX bytes, converts DOCX comments into bounded Review Packet comment threads, activates an in-memory Stage01 preview Review session, and opens Review/Comments on success.
+- DOCX review preview session activation keeps tracked changes diagnostic-only, keeps comment placements manual, uses main-owned project/file/baseline context, and does not write manuscript truth, project truth, receipt, or recovery evidence.
 - Review bridge exact-apply lane closeout does not claim cross-scene batch atomicity, multi-file transaction truth, structural auto-apply, comment auto-apply, full review import automation, full import/export completion beyond the existing MVP closeout, full Word layout parity, PDF/EPUB/HTML export, user-facing Mindmap export command, release readiness, or Y9 admission.
-- DOCX review preflight does not claim full DOCX review import, review packet activation, automatic Review session opening, exact apply, structural apply, comment auto-apply, receipt or recovery creation, Word layout parity, or broad DOCX fidelity.
+- DOCX review preflight command itself does not claim review packet activation or automatic Review session opening; activation is owned by the separate preview-session contour.
+- DOCX review preview session activation does not claim full DOCX review import, tracked-change apply, exact apply, structural apply, comment auto-apply, receipt or recovery creation, Word layout parity, or broad DOCX fidelity.
 - Tiptap path is the primary editor path.
 - Phase 03 blocker is closed on main through the merged repair wave.
 - True Phase 04 design-layer baseline is closed on main through the merged repair wave.

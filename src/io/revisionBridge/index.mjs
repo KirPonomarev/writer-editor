@@ -2637,6 +2637,538 @@ export function buildDocxReviewPreflightReportFromZipBytes(input) {
 }
 // RB_10A_DOCX_REVIEW_PREFLIGHT_REPORT_END
 
+// RB_10B_DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_START
+export const DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_SCHEMA = 'revision-bridge.docx-review-preview-session-candidate.v1';
+const DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_TYPE = 'docxReviewPreviewSessionCandidate';
+
+const DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_CODES = Object.freeze({
+  READY: 'DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_READY',
+  NO_CANDIDATE: 'DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_NO_REVIEW_COMMENTS',
+  BLOCKED: 'DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BLOCKED',
+  TARGET_UNAVAILABLE: 'DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_TARGET_UNAVAILABLE',
+});
+
+const DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS = Object.freeze({
+  maxComments: 100,
+  maxCommentBodyChars: 2000,
+  maxAnchors: 100,
+  maxDiagnostics: 200,
+  maxUnsupportedItems: 200,
+  maxTargetPartBytes: DOCX_REVIEW_PREFLIGHT_BOUNDS.maxTargetPartBytes,
+  maxXmlScanChars: DOCX_REVIEW_PREFLIGHT_BOUNDS.maxXmlScanChars,
+});
+
+function docxReviewPreviewSessionDiagnostic(code, options = {}) {
+  const diagnostic = {
+    diagnosticId: normalizeString(options.diagnosticId) || `docx-review-diagnostic-${code}`,
+    severity: normalizeStringEnum(options.severity, ['info', 'warning', 'error'], 'warning'),
+    message: normalizeString(options.message) || code,
+    targetScope: docxReviewPreviewSessionTargetScope(options.targetScope),
+    relatedItemId: normalizeString(options.relatedItemId),
+    createdAt: normalizeString(options.createdAt),
+  };
+  return diagnostic;
+}
+
+function docxReviewPreviewSessionTargetScope(value) {
+  const source = isPlainObject(value) ? value : {};
+  const type = normalizeString(source.type) || 'docx';
+  const id = normalizeString(source.id) || 'word/document.xml';
+  return { type, id };
+}
+
+function docxReviewPreviewSessionEmptyReviewPacket() {
+  return {
+    commentThreads: [],
+    commentPlacements: [],
+    textChanges: [],
+    structuralChanges: [],
+    diagnosticItems: [],
+    decisionStates: [],
+  };
+}
+
+function docxReviewPreviewSessionResult({
+  ok,
+  status,
+  code,
+  reason,
+  decision,
+  reviewPacket = null,
+  diagnostics = [],
+  unsupportedItems = [],
+  preflightReport = null,
+  sourceViewState = null,
+  summary = {},
+}) {
+  const safeReviewPacket = isPlainObject(reviewPacket) ? cloneJsonSafe(reviewPacket) : null;
+  const safeDiagnostics = Array.isArray(diagnostics)
+    ? diagnostics.slice(0, DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxDiagnostics)
+    : [];
+  const safeUnsupportedItems = Array.isArray(unsupportedItems)
+    ? unsupportedItems.slice(0, DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxUnsupportedItems)
+    : [];
+  const canOpenReviewSession = ok === true && status === 'ready' && isPlainObject(safeReviewPacket);
+  return {
+    ok: ok === true,
+    schemaVersion: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_SCHEMA,
+    type: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_TYPE,
+    status,
+    code,
+    reason,
+    decision,
+    canOpenReviewSession,
+    canAutoApply: false,
+    canCreateReviewPacket: canOpenReviewSession,
+    canImportMutate: false,
+    canWriteStorage: false,
+    reviewPacket: safeReviewPacket,
+    sourceViewState: isPlainObject(sourceViewState) ? cloneJsonSafe(sourceViewState) : null,
+    diagnostics: safeDiagnostics,
+    unsupportedItems: safeUnsupportedItems,
+    preflightReport: isPlainObject(preflightReport) ? cloneJsonSafe(preflightReport) : null,
+    budgets: { ...DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS },
+    summary: cloneJsonSafe(summary) || {},
+  };
+}
+
+function docxReviewPreviewSessionReadXmlAttr(tag, attrName) {
+  const attr = String(attrName || '').replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const pattern = new RegExp(`(?:^|\\s)(?:[A-Za-z_][\\w.-]*:)?${attr}\\s*=\\s*("([^"]*)"|'([^']*)')`, 'iu');
+  const match = pattern.exec(String(tag || ''));
+  return docxContentPreviewDecodeText(match ? (match[2] ?? match[3] ?? '') : '');
+}
+
+function docxReviewPreviewSessionSafeId(value, fallback) {
+  const normalized = normalizeString(value)
+    .replace(/[^A-Za-z0-9_.:-]+/gu, '-')
+    .replace(/^-+|-+$/gu, '');
+  return normalized || fallback;
+}
+
+function docxReviewPreviewSessionTextFromXml(xmlText, maxChars) {
+  const parts = [];
+  let total = 0;
+  const textPattern = /<\s*(?:[A-Za-z_][\w.-]*:)?t\b[^>]*>([\s\S]*?)<\s*\/\s*(?:[A-Za-z_][\w.-]*:)?t\s*>/giu;
+  let match;
+  while ((match = textPattern.exec(String(xmlText || ''))) !== null) {
+    const decoded = docxContentPreviewDecodeText(match[1] || '');
+    if (!decoded) continue;
+    parts.push(decoded);
+    total += decoded.length;
+    if (total > maxChars) {
+      return {
+        text: parts.join('').slice(0, maxChars),
+        truncated: true,
+      };
+    }
+  }
+  return {
+    text: parts.join(''),
+    truncated: false,
+  };
+}
+
+function docxReviewPreviewSessionParseCommentsXml(commentsXml, options = {}) {
+  const comments = [];
+  const diagnostics = [];
+  const createdAt = normalizeString(options.createdAt);
+  const commentPattern = /<\s*(?:[A-Za-z_][\w.-]*:)?comment\b([^>]*)>([\s\S]*?)<\s*\/\s*(?:[A-Za-z_][\w.-]*:)?comment\s*>/giu;
+  let match;
+  let index = 0;
+  while ((match = commentPattern.exec(String(commentsXml || ''))) !== null) {
+    if (comments.length >= DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxComments) {
+      diagnostics.push(docxReviewPreviewSessionDiagnostic(
+        'DOCX_REVIEW_PREVIEW_SESSION_COMMENT_LIMIT_EXCEEDED',
+        {
+          diagnosticId: 'docx-review-comment-limit',
+          message: 'DOCX comment count exceeds review preview budget.',
+          severity: 'warning',
+          createdAt,
+        },
+      ));
+      break;
+    }
+    const rawId = docxReviewPreviewSessionReadXmlAttr(match[1], 'id') || String(index);
+    const id = docxReviewPreviewSessionSafeId(rawId, `comment-${index}`);
+    const body = docxReviewPreviewSessionTextFromXml(
+      match[2],
+      DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxCommentBodyChars,
+    );
+    const messageBody = normalizeString(body.text);
+    if (!messageBody) {
+      diagnostics.push(docxReviewPreviewSessionDiagnostic(
+        'DOCX_REVIEW_PREVIEW_SESSION_EMPTY_COMMENT_BODY',
+        {
+          diagnosticId: `docx-review-empty-comment-${id}`,
+          message: 'DOCX comment has no extractable text body and remains diagnostic-only.',
+          relatedItemId: `docx-comment-${id}`,
+          severity: 'warning',
+          createdAt,
+        },
+      ));
+      index += 1;
+      continue;
+    }
+    if (body.truncated) {
+      diagnostics.push(docxReviewPreviewSessionDiagnostic(
+        'DOCX_REVIEW_PREVIEW_SESSION_COMMENT_BODY_TRUNCATED',
+        {
+          diagnosticId: `docx-review-comment-truncated-${id}`,
+          message: 'DOCX comment body was truncated to the review preview budget.',
+          relatedItemId: `docx-comment-${id}`,
+          severity: 'warning',
+          createdAt,
+        },
+      ));
+    }
+    const author = normalizeString(docxReviewPreviewSessionReadXmlAttr(match[1], 'author')) || 'docx-review';
+    const date = normalizeString(docxReviewPreviewSessionReadXmlAttr(match[1], 'date')) || createdAt;
+    comments.push({
+      rawId,
+      safeId: id,
+      thread: {
+        threadId: `docx-comment-${id}`,
+        authorId: author,
+        status: 'open',
+        createdAt: date,
+        updatedAt: date,
+        tags: ['docx-review'],
+        messages: [
+          {
+            messageId: `docx-comment-${id}-message-1`,
+            authorId: author,
+            body: messageBody,
+            createdAt: date,
+          },
+        ],
+      },
+    });
+    index += 1;
+  }
+  return { comments, diagnostics };
+}
+
+function docxReviewPreviewSessionTagsByLocalName(xmlText, localName) {
+  const escaped = String(localName || '').replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
+  const pattern = new RegExp(`<\\s*(?:[A-Za-z_][\\w.-]*:)?${escaped}\\b[^>]*>`, 'giu');
+  const matches = [];
+  let match;
+  while ((match = pattern.exec(String(xmlText || ''))) !== null) {
+    matches.push({
+      tag: match[0],
+      index: match.index,
+      endIndex: pattern.lastIndex,
+      id: docxReviewPreviewSessionReadXmlAttr(match[0], 'id'),
+    });
+  }
+  return matches;
+}
+
+function docxReviewPreviewSessionRangeForComment(documentXml, rawCommentId) {
+  const starts = docxReviewPreviewSessionTagsByLocalName(documentXml, 'commentRangeStart')
+    .filter((tag) => tag.id === rawCommentId);
+  const ends = docxReviewPreviewSessionTagsByLocalName(documentXml, 'commentRangeEnd')
+    .filter((tag) => tag.id === rawCommentId);
+  const references = docxReviewPreviewSessionTagsByLocalName(documentXml, 'commentReference')
+    .filter((tag) => tag.id === rawCommentId);
+  if (starts.length !== 1 || ends.length !== 1 || starts[0].endIndex >= ends[0].index) {
+    return {
+      ok: false,
+      starts,
+      ends,
+      references,
+      reason: 'DOCX_REVIEW_PREVIEW_SESSION_AMBIGUOUS_COMMENT_ANCHOR',
+    };
+  }
+  const rangeXml = String(documentXml || '').slice(starts[0].endIndex, ends[0].index);
+  const quote = normalizeString(docxReviewPreviewSessionTextFromXml(
+    rangeXml,
+    DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxCommentBodyChars,
+  ).text);
+  if (!quote) {
+    return {
+      ok: false,
+      starts,
+      ends,
+      references,
+      reason: 'DOCX_REVIEW_PREVIEW_SESSION_EMPTY_COMMENT_ANCHOR',
+    };
+  }
+  return {
+    ok: true,
+    starts,
+    ends,
+    references,
+    quote,
+  };
+}
+
+function docxReviewPreviewSessionBuildPlacements(documentXml, comments, options = {}) {
+  const targetScope = docxReviewPreviewSessionTargetScope(options.targetScope);
+  const createdAt = normalizeString(options.createdAt);
+  const placements = [];
+  const diagnostics = [];
+  for (const comment of comments) {
+    if (placements.length >= DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxAnchors) {
+      diagnostics.push(docxReviewPreviewSessionDiagnostic(
+        'DOCX_REVIEW_PREVIEW_SESSION_ANCHOR_LIMIT_EXCEEDED',
+        {
+          diagnosticId: 'docx-review-anchor-limit',
+          message: 'DOCX comment anchors exceed review preview budget.',
+          targetScope,
+          severity: 'warning',
+          createdAt,
+        },
+      ));
+      break;
+    }
+    const range = docxReviewPreviewSessionRangeForComment(documentXml, comment.rawId);
+    if (!range.ok) {
+      diagnostics.push(docxReviewPreviewSessionDiagnostic(range.reason, {
+        diagnosticId: `docx-review-anchor-${comment.safeId}`,
+        message: 'DOCX comment anchor is missing, empty, or ambiguous and remains manual-only.',
+        targetScope,
+        relatedItemId: comment.thread.threadId,
+        severity: 'warning',
+        createdAt,
+      }));
+      continue;
+    }
+    placements.push({
+      placementId: `docx-comment-placement-${comment.safeId}`,
+      threadId: comment.thread.threadId,
+      targetScope,
+      anchor: {
+        kind: 'docx-comment-range',
+        value: `w:comment:${comment.rawId}`,
+      },
+      range: {
+        from: 0,
+        to: range.quote.length,
+      },
+      quote: range.quote,
+      prefix: '',
+      suffix: '',
+      confidence: 0.5,
+      policy: 'manual',
+      selector: {
+        type: 'docx-comment-range',
+        id: comment.rawId,
+      },
+      createdAt,
+    });
+  }
+  return { placements, diagnostics };
+}
+
+function docxReviewPreviewSessionTrackedChangeDiagnostics(trackedChangesEvidence, options = {}) {
+  if (!isPlainObject(trackedChangesEvidence) || trackedChangesEvidence.present !== true) return [];
+  const targetScope = docxReviewPreviewSessionTargetScope(options.targetScope);
+  const createdAt = normalizeString(options.createdAt);
+  const diagnostics = [];
+  for (const [key, label] of [
+    ['insertCount', 'insertions'],
+    ['deleteCount', 'deletions'],
+    ['moveFromCount', 'move-from markers'],
+    ['moveToCount', 'move-to markers'],
+  ]) {
+    const count = Number.isFinite(trackedChangesEvidence[key]) ? trackedChangesEvidence[key] : 0;
+    if (count <= 0) continue;
+    diagnostics.push(docxReviewPreviewSessionDiagnostic(
+      'DOCX_REVIEW_PREVIEW_SESSION_TRACKED_CHANGE_DIAGNOSTIC_ONLY',
+      {
+        diagnosticId: `docx-review-tracked-${key}`,
+        message: `DOCX tracked-change ${label} detected (${count}) and kept diagnostic-only.`,
+        targetScope,
+        severity: 'warning',
+        createdAt,
+      },
+    ));
+  }
+  return diagnostics;
+}
+
+function docxReviewPreviewSessionUnsupportedDiagnostics(unsupportedItems, options = {}) {
+  if (!Array.isArray(unsupportedItems)) return [];
+  const targetScope = docxReviewPreviewSessionTargetScope(options.targetScope);
+  const createdAt = normalizeString(options.createdAt);
+  return unsupportedItems
+    .filter((item) => isPlainObject(item))
+    .slice(0, DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxUnsupportedItems)
+    .map((item, index) => docxReviewPreviewSessionDiagnostic(
+      normalizeString(item.code) || 'DOCX_REVIEW_PREVIEW_SESSION_UNSUPPORTED_ITEM',
+      {
+        diagnosticId: `docx-review-unsupported-${index}`,
+        message: normalizeString(item.message) || normalizeString(item.code) || 'DOCX review evidence remains diagnostic-only.',
+        targetScope,
+        severity: normalizeStringEnum(item.severity, ['info', 'warning', 'error'], 'warning'),
+        createdAt,
+      },
+    ));
+}
+
+function docxReviewPreviewSessionExtractTargets(bytes) {
+  const materialized = materializeDocxPackageInventoryFromZipBytes(bytes);
+  if (!materialized.ok) {
+    return {
+      ok: false,
+      reason: materialized.code,
+      diagnostics: [docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.BLOCKED, {
+        sourceCode: materialized.code,
+      })],
+    };
+  }
+  const metadataResult = docxHostileFileGateCentralEntries(bytes);
+  if (metadataResult.failure) {
+    return {
+      ok: false,
+      reason: metadataResult.failure.code,
+      diagnostics: [docxReviewPreflightDiagnostic(DOCX_REVIEW_PREFLIGHT_CODES.BLOCKED, {
+        sourceCode: metadataResult.failure.code,
+      })],
+    };
+  }
+  const extractedTargets = new Map();
+  for (const sourcePart of DOCX_REVIEW_PREFLIGHT_TARGET_PARTS) {
+    const extraction = docxReviewPreflightExtractTargetXml(bytes, metadataResult.entries, sourcePart);
+    if (extraction.failure) {
+      return {
+        ok: false,
+        reason: extraction.failure.sourceCode || extraction.failure.code,
+        diagnostics: [extraction.failure],
+      };
+    }
+    if (!extraction.missing) extractedTargets.set(sourcePart, extraction.xmlText);
+  }
+  return {
+    ok: true,
+    inventory: materialized.inventory,
+    extractedTargets,
+  };
+}
+
+export function buildDocxReviewPreviewSessionCandidateFromZipBytes(input, options = {}) {
+  const bytes = docxZipInventoryInputToBytes(input);
+  const createdAt = normalizeString(options.createdAt);
+  const targetScope = docxReviewPreviewSessionTargetScope(options.targetScope);
+  const preflightReport = buildDocxReviewPreflightReportFromZipBytes(input);
+  if (bytes === null || !isPlainObject(preflightReport) || preflightReport.ok !== true) {
+    return docxReviewPreviewSessionResult({
+      ok: false,
+      status: 'blocked',
+      code: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_CODES.BLOCKED,
+      reason: normalizeString(preflightReport?.reason) || 'DOCX_REVIEW_PREVIEW_SESSION_INPUT_BLOCKED',
+      decision: 'blocked',
+      diagnostics: Array.isArray(preflightReport?.diagnostics) ? preflightReport.diagnostics : [],
+      preflightReport,
+      summary: {
+        targetScope,
+      },
+    });
+  }
+
+  const targets = docxReviewPreviewSessionExtractTargets(bytes);
+  if (!targets.ok) {
+    return docxReviewPreviewSessionResult({
+      ok: false,
+      status: 'blocked',
+      code: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_CODES.TARGET_UNAVAILABLE,
+      reason: targets.reason,
+      decision: 'blocked',
+      diagnostics: targets.diagnostics,
+      preflightReport,
+      summary: {
+        targetScope,
+      },
+    });
+  }
+
+  const documentXml = targets.extractedTargets.get('word/document.xml') || '';
+  const commentsXml = targets.extractedTargets.has('word/comments.xml')
+    ? targets.extractedTargets.get('word/comments.xml')
+    : '';
+  const commentsResult = docxReviewPreviewSessionParseCommentsXml(commentsXml, { createdAt, targetScope });
+  const placementsResult = docxReviewPreviewSessionBuildPlacements(documentXml, commentsResult.comments, {
+    createdAt,
+    targetScope,
+  });
+  const unsupportedItems = Array.isArray(preflightReport.unsupportedItems) ? preflightReport.unsupportedItems : [];
+  const diagnostics = [
+    ...commentsResult.diagnostics,
+    ...placementsResult.diagnostics,
+    ...docxReviewPreviewSessionTrackedChangeDiagnostics(preflightReport.trackedChangesEvidence, {
+      createdAt,
+      targetScope,
+    }),
+    ...docxReviewPreviewSessionUnsupportedDiagnostics(unsupportedItems, {
+      createdAt,
+      targetScope,
+    }),
+  ].slice(0, DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxDiagnostics);
+
+  if (commentsResult.comments.length === 0) {
+    return docxReviewPreviewSessionResult({
+      ok: true,
+      status: 'diagnostics',
+      code: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_CODES.NO_CANDIDATE,
+      reason: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_CODES.NO_CANDIDATE,
+      decision: 'diagnostics-only',
+      diagnostics,
+      unsupportedItems,
+      preflightReport,
+      summary: {
+        targetScope,
+        commentThreadCount: 0,
+        commentPlacementCount: 0,
+        textChangeCount: 0,
+        trackedChangesDiagnosticOnly: preflightReport.trackedChangesEvidence?.present === true,
+      },
+    });
+  }
+
+  const reviewPacket = docxReviewPreviewSessionEmptyReviewPacket();
+  reviewPacket.commentThreads = commentsResult.comments.map((comment) => comment.thread);
+  reviewPacket.commentPlacements = placementsResult.placements;
+  reviewPacket.diagnosticItems = diagnostics;
+  const sourceHash = revisionBlockHash({
+    schemaVersion: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_SCHEMA,
+    reviewPacket,
+    preflightCode: preflightReport.code,
+    targetScope,
+  });
+  return docxReviewPreviewSessionResult({
+    ok: true,
+    status: 'ready',
+    code: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_CODES.READY,
+    reason: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_CODES.READY,
+    decision: 'preview-session-candidate',
+    reviewPacket,
+    diagnostics,
+    unsupportedItems,
+    preflightReport,
+    sourceViewState: {
+      revisionToken: `docx-review-preview:${sourceHash}`,
+      viewMode: 'docx-review-preview',
+      normalizationPolicy: 'bounded-docx-review-evidence-scan',
+      newlinePolicy: 'preserve-extracted-text',
+      unicodePolicy: 'xml-entity-decode-only',
+      packetHash: sourceHash,
+      artifactCompletenessClass: 'partial-review-evidence',
+    },
+    summary: {
+      targetScope,
+      commentThreadCount: reviewPacket.commentThreads.length,
+      commentPlacementCount: reviewPacket.commentPlacements.length,
+      textChangeCount: reviewPacket.textChanges.length,
+      structuralChangeCount: reviewPacket.structuralChanges.length,
+      diagnosticItemCount: reviewPacket.diagnosticItems.length,
+      trackedChangesDiagnosticOnly: preflightReport.trackedChangesEvidence?.present === true,
+    },
+  });
+}
+// RB_10B_DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_END
+
 // RB_11_DOCX_CONTENT_PREVIEW_START
 export const DOCX_CONTENT_PREVIEW_SCHEMA = 'revision-bridge.docx-content-preview.v1';
 const DOCX_CONTENT_PREVIEW_TYPE = 'docxContentPreviewReport';

@@ -2226,6 +2226,301 @@ async function handleDocxReviewPreflightCommandSurface(payload = {}) {
 }
 // DOCX_REVIEW_PREFLIGHT_COMMAND_SURFACE_END
 
+// DOCX_REVIEW_PREVIEW_SESSION_COMMAND_SURFACE_START
+const DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID = 'cmd.project.review.activateDocxReviewPreviewSession';
+const DOCX_REVIEW_PREVIEW_SESSION_ALLOWED_CONTEXT_KINDS = new Set(['scene', 'chapter-file']);
+
+function makeDocxReviewPreviewSessionTypedError(code, reason, details = undefined) {
+  const error = {
+    code,
+    op: DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID,
+    reason,
+  };
+  if (isPlainObjectValue(details) && Object.keys(details).length > 0) {
+    error.details = cloneJsonSafe(details);
+  }
+  return { ok: false, error };
+}
+
+function docxReviewPreviewSessionDetailString(value) {
+  return typeof value === 'string' && value.trim() ? value.trim() : '';
+}
+
+async function buildDocxReviewPreviewSessionMainContext(options = {}) {
+  if (typeof options.buildMainReviewContext === 'function') {
+    const result = await options.buildMainReviewContext();
+    return isPlainObjectValue(result)
+      ? result
+      : {
+        ok: false,
+        code: 'E_DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_BLOCKED',
+        reason: 'DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_INVALID',
+      };
+  }
+
+  if (isDirty || autoSaveInProgress) {
+    return {
+      ok: false,
+      code: 'E_DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_BLOCKED',
+      reason: 'DOCX_REVIEW_PREVIEW_SESSION_DIRTY_EDITOR_BLOCKED',
+      details: {
+        isDirty: Boolean(isDirty),
+        autoSaveInProgress: Boolean(autoSaveInProgress),
+      },
+    };
+  }
+
+  if (typeof currentFilePath !== 'string' || !currentFilePath.trim()) {
+    return {
+      ok: false,
+      code: 'E_DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_BLOCKED',
+      reason: 'DOCX_REVIEW_PREVIEW_SESSION_CURRENT_FILE_REQUIRED',
+    };
+  }
+  if (!isAllowedFilePath(currentFilePath)) {
+    return {
+      ok: false,
+      code: 'E_DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_BLOCKED',
+      reason: 'DOCX_REVIEW_PREVIEW_SESSION_CURRENT_FILE_NOT_ALLOWED',
+    };
+  }
+
+  const documentContext = getDocumentContextFromPath(currentFilePath);
+  if (!DOCX_REVIEW_PREVIEW_SESSION_ALLOWED_CONTEXT_KINDS.has(documentContext.kind)) {
+    return {
+      ok: false,
+      code: 'E_DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_BLOCKED',
+      reason: 'DOCX_REVIEW_PREVIEW_SESSION_CURRENT_FILE_NOT_REVIEW_TARGET',
+      details: {
+        kind: docxReviewPreviewSessionDetailString(documentContext.kind),
+      },
+    };
+  }
+
+  const binding = await readReviewExactTextApplyProjectBinding(currentFilePath);
+  if (!binding.ok) {
+    return {
+      ok: false,
+      code: binding.code || 'E_DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_BLOCKED',
+      reason: binding.reason || 'DOCX_REVIEW_PREVIEW_SESSION_PROJECT_BINDING_UNAVAILABLE',
+      details: isPlainObjectValue(binding.details) ? binding.details : undefined,
+    };
+  }
+
+  let content = '';
+  try {
+    content = await fs.readFile(currentFilePath, 'utf8');
+  } catch (error) {
+    return {
+      ok: false,
+      code: 'E_DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_BLOCKED',
+      reason: 'DOCX_REVIEW_PREVIEW_SESSION_CURRENT_FILE_READ_FAILED',
+      details: {
+        errorCode: docxReviewPreviewSessionDetailString(error?.code),
+      },
+    };
+  }
+
+  const projectId = docxReviewPreviewSessionDetailString(binding.projectId);
+  if (!projectId) {
+    return {
+      ok: false,
+      code: 'E_DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_BLOCKED',
+      reason: 'DOCX_REVIEW_PREVIEW_SESSION_PROJECT_ID_REQUIRED',
+    };
+  }
+
+  const sceneId = getProjectRelativeFilePath(currentFilePath, binding.manifestPath)
+    .replace(/\\/g, '/');
+  if (!sceneId) {
+    return {
+      ok: false,
+      code: 'E_DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_BLOCKED',
+      reason: 'DOCX_REVIEW_PREVIEW_SESSION_TARGET_SCOPE_UNAVAILABLE',
+    };
+  }
+
+  const baselineHash = computeHash(content);
+  return {
+    ok: true,
+    projectId,
+    baselineHash,
+    currentBaselineHash: baselineHash,
+    targetScope: {
+      type: 'scene',
+      id: sceneId,
+    },
+    createdAt: new Date().toISOString(),
+  };
+}
+
+function buildDocxReviewPreviewSessionImportPayload(context, candidate, requestId) {
+  const sourceViewState = isPlainObjectValue(candidate.sourceViewState)
+    ? cloneJsonSafe(candidate.sourceViewState)
+    : {};
+  const packetHash = docxReviewPreviewSessionDetailString(sourceViewState.packetHash)
+    || computeHash(JSON.stringify(candidate.reviewPacket || {}));
+  const sessionId = `docx-review-preview-${packetHash.slice(0, 16)}`;
+  return {
+    projectId: docxReviewPreviewSessionDetailString(context.projectId),
+    sessionId,
+    baselineHash: docxReviewPreviewSessionDetailString(context.baselineHash),
+    currentBaselineHash: docxReviewPreviewSessionDetailString(context.currentBaselineHash),
+    createdAt: docxReviewPreviewSessionDetailString(context.createdAt) || new Date().toISOString(),
+    requestId,
+    reviewPacket: cloneJsonSafe(candidate.reviewPacket) || {},
+    sourceViewState: {
+      ...sourceViewState,
+      mode: docxReviewPreviewSessionDetailString(sourceViewState.mode) || 'docx-review-preview',
+    },
+    sourcePacketHash: packetHash,
+  };
+}
+
+function summarizeDocxReviewPreviewSessionCandidate(candidate = {}) {
+  const summary = isPlainObjectValue(candidate.summary) ? candidate.summary : {};
+  const diagnosticFallbackCount = Array.isArray(candidate.diagnostics) ? candidate.diagnostics.length : 0;
+  return {
+    schemaVersion: docxReviewPreviewSessionDetailString(candidate.schemaVersion),
+    status: docxReviewPreviewSessionDetailString(candidate.status),
+    code: docxReviewPreviewSessionDetailString(candidate.code),
+    reason: docxReviewPreviewSessionDetailString(candidate.reason),
+    commentThreadCount: Number.isFinite(summary.commentThreadCount) ? summary.commentThreadCount : 0,
+    commentPlacementCount: Number.isFinite(summary.commentPlacementCount) ? summary.commentPlacementCount : 0,
+    diagnosticItemCount: Number.isFinite(summary.diagnosticItemCount)
+      ? summary.diagnosticItemCount
+      : diagnosticFallbackCount,
+    canOpenReviewSession: candidate.canOpenReviewSession === true,
+    canAutoApply: candidate.canAutoApply === true,
+    canImportMutate: candidate.canImportMutate === true,
+    canWriteStorage: candidate.canWriteStorage === true,
+  };
+}
+
+function assertDocxReviewPreviewSessionActivationResult(result = {}) {
+  if (
+    Array.isArray(result.applyOps)
+    || isPlainObjectValue(result.receipt)
+    || isPlainObjectValue(result.recovery)
+    || isPlainObjectValue(result.writeReceipt)
+    || isPlainObjectValue(result.importReceipt)
+    || result.canAutoApply !== false
+    || result.canImportMutate !== false
+    || result.canWriteStorage !== false
+  ) {
+    return makeDocxReviewPreviewSessionTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_FORBIDDEN_OUTPUT',
+      'DOCX_REVIEW_PREVIEW_SESSION_FORBIDDEN_OUTPUT',
+    );
+  }
+  return result;
+}
+
+async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = {}, options = {}) {
+  const decoded = decodeDocxIntakeGateBufferSource(payload);
+  if (!decoded.ok) {
+    return makeDocxReviewPreviewSessionTypedError(
+      decoded.error?.code || 'E_DOCX_REVIEW_PREVIEW_SESSION_PAYLOAD_INVALID',
+      decoded.error?.reason || 'DOCX_REVIEW_PREVIEW_SESSION_PAYLOAD_INVALID',
+      decoded.error?.details,
+    );
+  }
+
+  const context = await buildDocxReviewPreviewSessionMainContext(options);
+  if (!context.ok) {
+    return makeDocxReviewPreviewSessionTypedError(
+      context.code || 'E_DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_BLOCKED',
+      context.reason || 'DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_BLOCKED',
+      context.details,
+    );
+  }
+
+  let revisionBridge = null;
+  try {
+    revisionBridge = await loadRevisionBridgeModule();
+  } catch (error) {
+    return makeDocxReviewPreviewSessionTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_UNAVAILABLE',
+      'DOCX_REVIEW_PREVIEW_SESSION_BRIDGE_UNAVAILABLE',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+  if (!revisionBridge || typeof revisionBridge.buildDocxReviewPreviewSessionCandidateFromZipBytes !== 'function') {
+    return makeDocxReviewPreviewSessionTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_UNAVAILABLE',
+      'DOCX_REVIEW_PREVIEW_SESSION_BUILDER_UNAVAILABLE',
+    );
+  }
+
+  let candidate = null;
+  try {
+    candidate = revisionBridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(decoded.bytes, {
+      targetScope: context.targetScope,
+      createdAt: context.createdAt,
+    });
+  } catch (error) {
+    return makeDocxReviewPreviewSessionTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_BUILD_FAILED',
+      'DOCX_REVIEW_PREVIEW_SESSION_BUILD_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+
+  if (!isPlainObjectValue(candidate) || candidate.status !== 'ready' || !isPlainObjectValue(candidate.reviewPacket)) {
+    return makeDocxReviewPreviewSessionTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_NO_CANDIDATE',
+      docxReviewPreviewSessionDetailString(candidate?.reason) || 'DOCX_REVIEW_PREVIEW_SESSION_NO_CANDIDATE',
+      {
+        candidateSummary: summarizeDocxReviewPreviewSessionCandidate(candidate),
+      },
+    );
+  }
+  if (
+    candidate.canOpenReviewSession !== true
+    || candidate.canAutoApply !== false
+    || candidate.canImportMutate !== false
+    || candidate.canWriteStorage !== false
+  ) {
+    return makeDocxReviewPreviewSessionTypedError(
+      'E_DOCX_REVIEW_PREVIEW_SESSION_FORBIDDEN_AUTHORITY',
+      'DOCX_REVIEW_PREVIEW_SESSION_FORBIDDEN_AUTHORITY',
+    );
+  }
+
+  const requestId = normalizeDocxIntakeGateRequestId(payload?.requestId);
+  const importPayload = buildDocxReviewPreviewSessionImportPayload(context, candidate, requestId);
+  const importResult = await handleReviewSurfaceImportPacketCommandSurface(importPayload);
+  if (!importResult || importResult.ok !== true) {
+    const nestedError = isPlainObjectValue(importResult?.error) ? importResult.error : {};
+    return makeDocxReviewPreviewSessionTypedError(
+      docxReviewPreviewSessionDetailString(nestedError.code) || 'E_DOCX_REVIEW_PREVIEW_SESSION_IMPORT_FAILED',
+      docxReviewPreviewSessionDetailString(nestedError.reason) || 'DOCX_REVIEW_PREVIEW_SESSION_IMPORT_FAILED',
+      isPlainObjectValue(nestedError.details) ? nestedError.details : undefined,
+    );
+  }
+
+  return assertDocxReviewPreviewSessionActivationResult({
+    ok: true,
+    commandId: DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID,
+    requestId,
+    activated: true,
+    session: importResult.session,
+    reviewSurface: importResult.reviewSurface,
+    candidateSummary: summarizeDocxReviewPreviewSessionCandidate(candidate),
+    sourcePacketHash: importPayload.sourcePacketHash,
+    canOpenReviewSession: true,
+    canCreateReviewPacket: true,
+    canAutoApply: false,
+    canImportMutate: false,
+    canWriteStorage: false,
+  });
+}
+// DOCX_REVIEW_PREVIEW_SESSION_COMMAND_SURFACE_END
+
 // DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_START
 const DOCX_CONTENT_PREVIEW_COMMAND_ID = 'cmd.project.docx.previewContent';
 const DOCX_CONTENT_PREVIEW_MAX_BYTES = 10 * 1024 * 1024;
@@ -8378,6 +8673,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.review.applyExactTextChangesBatch',
   'cmd.project.review.inspectDocxIntakeGate',
   'cmd.project.review.inspectDocxReviewPreflight',
+  'cmd.project.review.activateDocxReviewPreviewSession',
   'cmd.project.flowOpenV1',
   'cmd.project.flowSaveV1',
   'cmd.project.document.open',
@@ -8538,6 +8834,17 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.review.inspectDocxReviewPreflight': async (payload = {}) => {
     return handleDocxReviewPreflightCommandSurface(payload);
+  },
+  'cmd.project.review.activateDocxReviewPreviewSession': async (payload = {}) => {
+    const result = await handleDocxReviewPreviewSessionActivationCommandSurface(payload);
+    if (result && result.ok === true && result.activated === true) {
+      sendCanonicalRuntimeCommand(
+        'cmd.project.review.openComments',
+        { source: 'review-docx-preview-session', requestId: result.requestId },
+        'review-comment',
+      );
+    }
+    return result;
   },
   'cmd.project.flowOpenV1': async () => {
     return handleFlowOpenV1();

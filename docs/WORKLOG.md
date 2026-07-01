@@ -4,6 +4,11 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-01
+- Review Bridge: delivered preflight status was rebound after PR `1013` merge at `34895b960a723b816ccb7f50f171854675a43969`.
+- Review Bridge: opened `REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001` as a separate DOCX-comments-to-in-memory-review-session contour.
+- DOCX review preview session activation: added `cmd.project.review.activateDocxReviewPreviewSession` and `buildDocxReviewPreviewSessionCandidateFromZipBytes`.
+- Scope truth: DOCX comments can open a manual Stage01 preview Review session; tracked changes stay diagnostic-only; no exact apply, structural apply, receipt, recovery, manuscript write, project truth write, dependency, UI, or import/export MVP expansion is claimed.
+- Tests: targeted DOCX review preview session builder and command contracts passed locally with 14 tests; targeted DOCX review/import preview plus review mutate regression pack passed locally with 104 tests.
 - Review Bridge: opened `REVIEW_BRIDGE_DOCX_PREFLIGHT_001` as a diagnostic-only DOCX review evidence contour, separate from the closed import/export MVP flow.
 - DOCX review preflight: added `cmd.project.review.inspectDocxReviewPreflight` and `buildDocxReviewPreflightReportFromZipBytes` to detect comments and tracked-change markers without Review session activation, apply, receipt, recovery, or project writes.
 - Tests: targeted DOCX review preflight, DOCX intake/content/import preview, and review mutate contracts passed locally with 72 tests.
