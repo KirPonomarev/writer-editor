@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_DOCX_PREFLIGHT_001",
-  "status": "implemented_local_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_docx_preflight",
   "featureExpansion": true,
   "baseSha": "c0fb33d6c6bf7a213014434ff60638372bde159c",
@@ -124,10 +124,10 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending_delivery",
-    "featureCommitSha": "",
-    "featurePullRequest": null,
-    "featureMergeSha": ""
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "4e952260e8de9d41276a16e0f8cd37f9948c42ef",
+    "featurePullRequest": 1013,
+    "featureMergeSha": "34895b960a723b816ccb7f50f171854675a43969"
   },
   "decision": "DOCX_REVIEW_PREFLIGHT_OPENED_AS_DIAGNOSTIC_ONLY_REVIEW_BRIDGE_CONTOUR",
   "nextStep": "complete delivery chain, then consider Review Bridge DOCX Candidate Activation as a separate contour"
