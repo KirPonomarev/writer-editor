@@ -228,7 +228,8 @@
       "src/renderer/editor.bundle.js",
       "src/renderer/index.html",
       "test/unit/docx-import-preview-ui-flow.test.js",
-      "test/unit/docx-import-product-flow-command.test.js"
+      "test/unit/docx-import-product-flow-command.test.js",
+      "test/unit/markdown-import-product-parity-ui-flow.test.js"
     ]
   },
   "allowPrefixByPhase": {

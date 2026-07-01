@@ -3877,14 +3877,19 @@ function buildMarkdownImportSafeCreatePlan(payload, markdownText) {
   const safeBaseName = sanitizeFilename(normalizedSource || 'Imported scene');
   const content = normalizeFlowTextInput(markdownText);
   const digest = computeHash(content).slice(0, 10);
-  const fileName = `${safeBaseName} ${digest}.txt`;
+  const sceneDigest = computeHash(`${safeBaseName}\n${content}`).slice(0, 10);
+  const sceneLabel = `${safeBaseName} ${digest}`;
+  const fileName = `${sceneLabel}.txt`;
   const romanRoot = getProjectSectionPath('roman');
   const targetPath = joinPathSegmentsWithinRoot(romanRoot, ['Imported', fileName], { resolveSymlinks: false });
   return {
     mode: 'create-only',
     entries: [
       {
-        sceneId: `scene-${digest}`,
+        sceneId: `scene-${sceneDigest}`,
+        title: safeBaseName,
+        contentTextHash: digest,
+        expectedLabel: sceneLabel,
         path: targetPath,
         content,
       },
