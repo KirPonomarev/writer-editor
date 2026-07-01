@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_SINGLE_EXACT_TEXT_SAFE_APPLY_ENABLEMENT_001_R2",
+  "status": "implemented_verified_pending_delivery",
+  "headShaBefore": "8a6a181c92159f59affcd70f6f674f24f8297b29",
+  "contour": "single_exact_text_safe_apply_enablement",
+  "scope": {
+    "enabledCommand": "cmd.project.review.applyExactTextChange",
+    "newUiControls": false,
+    "newDependencies": false,
+    "rendererWriteAuthority": false,
+    "structuralApply": false,
+    "massApply": false,
+    "receiptIsProjectTruth": false
+  },
+  "implementation": {
+    "mainOwnedContext": true,
+    "dirtyEditorBlocked": true,
+    "activeReviewSessionRequired": true,
+    "currentFileRequired": true,
+    "currentFileReadFromDisk": true,
+    "c03NoDiskPlanRebuilt": true,
+    "c04ExactTextMinSafeWriteUsed": true,
+    "recoveryReceiptAttachedToReviewSurfaceOnly": true,
+    "currentBaselineHashPreservedWhenProvided": true,
+    "safeWriteSerializedThroughDiskQueue": true,
+    "dirtyStateRecheckedInsideDiskQueue": true,
+    "activeEditorSyncedAfterApply": true
+  },
+  "machineChecks": [
+    {
+      "command": "node --check src/main.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-review-mutate-port.contract.test.js",
+      "status": "pass",
+      "tests": 14
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js",
+      "status": "pass",
+      "tests": 7
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",
+      "status": "pass",
+      "tests": 10
+    },
+    {
+      "command": "node --test test/unit/sector-m-review-surface-ui.test.js test/unit/sector-m-preload-workspace-query-bridge.test.js",
+      "status": "pass",
+      "tests": 12
+    },
+    {
+      "command": "node --test test/unit/sector-m-preload-ui-command-bridge.test.js test/contracts/command-surface-bus-only.contract.test.js",
+      "status": "pass",
+      "tests": 17
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js",
+      "status": "pass",
+      "tests": 18
+    },
+    {
+      "command": "node --test test/contracts/export-contour-02-markdown-text-hardening.contract.test.js test/unit/markdown-import-safe-create.test.js test/unit/markdown-export-save-as-ui-flow.test.js test/unit/markdown-import-product-parity-ui-flow.test.js",
+      "status": "pass",
+      "tests": 17
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "node --check src/main.js && git diff --check",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --audit-level=high",
+      "status": "fail_existing_dependency_advisories",
+      "notes": [
+        "No package manifests changed in this contour.",
+        "Full audit reports existing high advisories in dev/build dependency chain."
+      ]
+    }
+  ],
+  "readOnlyAgents": [
+    {
+      "role": "inspector",
+      "verdict": "proceed_with_main_owned_apply_context_and_scene_binding_guard"
+    },
+    {
+      "role": "skeptic",
+      "verdict": "conditional_pass_only_with_machine_checks"
+    }
+  ],
+  "nextStep": "run_policy_checks_then_commit_push_pr_merge"
+}

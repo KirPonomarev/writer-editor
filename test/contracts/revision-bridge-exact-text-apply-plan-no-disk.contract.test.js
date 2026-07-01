@@ -16,8 +16,14 @@ const C05_TEST_PATH = 'test/contracts/revision-bridge-comment-survival.contract.
 const C06_TEST_PATH = 'test/contracts/revision-bridge-minimal-block-id.contract.test.js';
 const C08_TEST_PATH = 'test/contracts/revision-bridge-structural-manual-review.contract.test.js';
 const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
+const STATUS_PACKET_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_SINGLE_EXACT_TEXT_SAFE_APPLY_ENABLEMENT_001_R2_STATUS_V1.json';
+const MAIN_PATH = 'src/main.js';
+const MARKDOWN_EXPORT_GUARD_TEST_PATH = 'test/contracts/export-contour-02-markdown-text-hardening.contract.test.js';
+const REVIEW_MUTATE_PORT_TEST_PATH = 'test/contracts/revision-bridge-review-mutate-port.contract.test.js';
+const WORKSPACE_QUERY_BRIDGE_TEST_PATH = 'test/unit/sector-m-preload-workspace-query-bridge.test.js';
 const ALLOWLIST = [
   MODULE_PATH,
+  MAIN_PATH,
   TEST_PATH,
   P0_TEST_PATH,
   C04_MODULE_PATH,
@@ -28,6 +34,10 @@ const ALLOWLIST = [
   C06_TEST_PATH,
   C08_TEST_PATH,
   GOVERNANCE_APPROVALS_PATH,
+  STATUS_PACKET_PATH,
+  MARKDOWN_EXPORT_GUARD_TEST_PATH,
+  REVIEW_MUTATE_PORT_TEST_PATH,
+  WORKSPACE_QUERY_BRIDGE_TEST_PATH,
 ];
 const WIRING_NEEDLES = [
   'buildExactTextApplyPlanNoDiskPreview',
@@ -400,9 +410,8 @@ test('RB-19 diagnostics fail closed for malformed input', async () => {
   assert.equal(nonObject.plan, null);
 });
 
-test('RB-19 exact-text planner has no runtime, storage, or UI wiring', () => {
+test('RB-19 exact-text planner has no renderer, storage, or broad UI wiring beyond the approved main apply context', () => {
   const files = [
-    'src/main.js',
     'src/preload.js',
     ...readFilesUnder(path.join(process.cwd(), 'src', 'renderer'), (filePath) => /\.(js|mjs|html|css)$/u.test(filePath)),
     ...readFilesUnder(path.join(process.cwd(), 'src', 'menu'), (filePath) => /\.(js|mjs|json)$/u.test(filePath)),
@@ -416,6 +425,21 @@ test('RB-19 exact-text planner has no runtime, storage, or UI wiring', () => {
       assert.equal(text.includes(needle), false, `${needle} must not be wired in ${filePath}`);
     }
   }
+
+  const mainText = fs.readFileSync(MAIN_PATH, 'utf8');
+  const allowedStart = mainText.indexOf('async function buildReviewExactTextApplyInputFromMainState');
+  const allowedEnd = mainText.indexOf('function mapMarkdownErrorCode', allowedStart);
+  assert.ok(allowedStart > -1 && allowedEnd > allowedStart, 'approved main exact apply context must be bounded');
+  const mainOutsideAllowedContext = `${mainText.slice(0, allowedStart)}${mainText.slice(allowedEnd)}`;
+  for (const needle of WIRING_NEEDLES) {
+    assert.equal(
+      mainOutsideAllowedContext.includes(needle),
+      false,
+      `${needle} must only be wired inside approved main exact apply context`,
+    );
+  }
+  const allowedContext = mainText.slice(allowedStart, allowedEnd);
+  assert.equal(allowedContext.includes('buildExactTextApplyPlanNoDiskPreview'), true);
 });
 
 test('RB-19 changed files stay inside the exact task allowlist', () => {

@@ -17,8 +17,14 @@ const RB11_TEST_PATH = 'test/contracts/revision-bridge-anchor-confidence-engine-
 const C05_TEST_PATH = 'test/contracts/revision-bridge-comment-survival.contract.test.js';
 const C06_TEST_PATH = 'test/contracts/revision-bridge-minimal-block-id.contract.test.js';
 const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
+const STATUS_PACKET_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_SINGLE_EXACT_TEXT_SAFE_APPLY_ENABLEMENT_001_R2_STATUS_V1.json';
+const MAIN_PATH = 'src/main.js';
+const MARKDOWN_EXPORT_GUARD_TEST_PATH = 'test/contracts/export-contour-02-markdown-text-hardening.contract.test.js';
+const REVIEW_MUTATE_PORT_TEST_PATH = 'test/contracts/revision-bridge-review-mutate-port.contract.test.js';
+const WORKSPACE_QUERY_BRIDGE_TEST_PATH = 'test/unit/sector-m-preload-workspace-query-bridge.test.js';
 const ALLOWLIST = [
   MODULE_PATH,
+  MAIN_PATH,
   C03_MODULE_PATH,
   C03_TEST_PATH,
   TEST_PATH,
@@ -28,6 +34,10 @@ const ALLOWLIST = [
   C05_TEST_PATH,
   C06_TEST_PATH,
   GOVERNANCE_APPROVALS_PATH,
+  STATUS_PACKET_PATH,
+  MARKDOWN_EXPORT_GUARD_TEST_PATH,
+  REVIEW_MUTATE_PORT_TEST_PATH,
+  WORKSPACE_QUERY_BRIDGE_TEST_PATH,
 ];
 
 async function loadC04() {
@@ -510,9 +520,8 @@ test('C07 failure matrix keeps target, recovery, receipt, and second run truthfu
   }
 });
 
-test('C04 has no UI, IPC, runtime, docx, package, or markdown wiring changes', () => {
+test('C04 core stays isolated while the approved review apply command may call it from main', () => {
   const forbiddenChanged = [
-    'src/main.js',
     'src/preload.js',
     'package.json',
     'package-lock.json',
@@ -529,6 +538,19 @@ test('C04 has no UI, IPC, runtime, docx, package, or markdown wiring changes', (
   assert.equal(moduleText.includes('docx'), false);
   assert.equal(moduleText.includes('ipcMain'), false);
   assert.equal(moduleText.includes('ipcRenderer'), false);
+
+  const mainText = fs.readFileSync(MAIN_PATH, 'utf8');
+  assert.equal(mainText.includes('loadExactTextMinSafeWriteModule'), true);
+  assert.equal(mainText.includes('cmd.project.review.applyExactTextChange'), true);
+  assert.equal(mainText.includes('applyExactTextMinSafeWrite'), true);
+  assert.equal(mainText.includes('requestEditorSnapshot'), true);
+  const applyContextStart = mainText.indexOf('async function buildReviewExactTextApplyInputFromMainState');
+  const applyContextEnd = mainText.indexOf('function mapMarkdownErrorCode', applyContextStart);
+  assert.ok(applyContextStart > -1 && applyContextEnd > applyContextStart, 'approved main apply context must be bounded');
+  const applyContext = mainText.slice(applyContextStart, applyContextEnd);
+  assert.equal(applyContext.includes('requestEditorSnapshot'), false);
+  assert.equal(applyContext.includes('buildDerivedReviewSurfacePayload'), false);
+  assert.equal(applyContext.includes('fs.readFile(currentFilePath, \'utf8\')'), true);
 });
 
 test('C04 changed files stay inside the task allowlist', () => {
