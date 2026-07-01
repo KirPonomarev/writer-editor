@@ -2,11 +2,18 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "scripts/ops/sector-m-scope-map.json",
+      "sha256": "a378c7a26dc06a96fa678dbfb35ef00a6404177d2dd91829ded7e803c1007b6a",
+      "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
+      "approvedAtUtc": "2026-07-01T12:40:00.000Z",
+      "rationale": "Approve bounded Sector-M DONE scope-map admission for the DOCX import preview accept flow product tail: shipped renderer bundle, modal host markup, and focused DOCX import unit tests are explicitly allowed without widening M8 or M9 exact phase scopes, adding dependencies, network, cloud, storage schema changes, or DOCX full-fidelity claims."
+    },
+    {
       "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
-      "sha256": "824c933b65559c2f4e25ffbb77af47bb19b7f711b4341bf37de0e568338ea5fc",
-      "approvedBy": "ticket:DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_001",
-      "approvedAtUtc": "2026-06-30T19:03:30.000Z",
-      "rationale": "Approve bounded DOCX local file preview command-surface contract proof; renderer reachability is explicit through node-only capability binding, with no visible UI, legacy preload API, safe-create apply, storage mutation, export rewrite, dependency, network, cloud, release, or DOCX full-fidelity claim introduced."
+      "sha256": "ebd5d42ff4a9f29d3013116df80ff5587647f977df53129b7ad6b26c847952e5",
+      "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
+      "approvedAtUtc": "2026-07-01T12:22:27.000Z",
+      "rationale": "Approve bounded DOCX local file preview command-surface contract update proving previewLocalFile remains pathless, disk-write-free, and admission-free; explicit accept admission is handled by the separate previewImportPlan path, and no export rewrite, dependency, network, cloud, release, or DOCX full-fidelity claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
@@ -2894,10 +2901,31 @@
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
-      "sha256": "4259594103a092984084f28f5ac0331f24331c644ff680dac8a52a7b585afcc0",
-      "approvedBy": "ticket:DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_001",
-      "approvedAtUtc": "2026-06-30T19:09:30.000Z",
-      "rationale": "Approve explicit command-to-capability binding for cmd.project.docx.previewLocalFile as desktop-node local DOCX preview authority only, plus matching docs/runtime rebind for existing preview orientation capability ids; web and mobile-wrapper remain disabled and no visible UI surface is introduced."
+      "sha256": "05a9484b39a7fa96c186ebbc947211563fbefd58ee9f0eae9022a892555e9ac8",
+      "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
+      "approvedAtUtc": "2026-07-01T12:22:27.000Z",
+      "rationale": "Approve explicit command-to-capability binding for cmd.project.docx.previewLocalFile, cmd.project.docx.previewImportPlan, cmd.project.docx.importSafeCreate, and cmd.project.importDocxV1 as desktop-node DOCX preview plus accept authorities; web and mobile-wrapper remain disabled and no dependency, network, cloud, release, or DOCX full-fidelity claim is introduced."
+    },
+    {
+      "filePath": "docs/OPS/CAPABILITIES_MATRIX.json",
+      "sha256": "4f99dde613051eaa90a5a91353a3d2a206bedf6e4e4908409abd02825130b4db",
+      "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
+      "approvedAtUtc": "2026-07-01T12:22:27.000Z",
+      "rationale": "Approve bounded capability matrix extension for desktop-node DOCX local preview, import-plan admission, safe-create accept, and product import command while keeping web and mobile-wrapper disabled; no storage truth expansion, dependency, network, cloud, release, or DOCX full-fidelity claim is introduced."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/COMMAND_NAMESPACE_CANON.json",
+      "sha256": "1603e6a6728fcc259cdef384be532f983d27fad00632926401f1cdca5778309d",
+      "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
+      "approvedAtUtc": "2026-07-01T12:22:27.000Z",
+      "rationale": "Approve bounded command namespace alias for file import DOCX v1 to the canonical project command id; no new command namespace authority, dependency, network, cloud, release, or DOCX full-fidelity claim is introduced."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/COMMAND_VISIBILITY_MATRIX.json",
+      "sha256": "580ce540303760dd87b49ea21ae202ad70f472805f55e7f1c56cb7f7bbf40ac5",
+      "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
+      "approvedAtUtc": "2026-07-01T12:22:27.000Z",
+      "rationale": "Approve bounded command visibility matrix update for cmd.project.importDocxV1 minimal-profile hiding; the product command remains palette-scoped and does not introduce web, mobile, network, cloud, dependency, release, or DOCX full-fidelity claims."
     },
     {
       "filePath": "scripts/ops/phase03-safe-reset-last-stable-artifact-state.mjs",
@@ -2940,13 +2968,6 @@
       "approvedBy": "ticket:TEXT_NO_LOSS_FORMAL_PROMOTION_001",
       "approvedAtUtc": "2026-04-28T00:00:00.000Z",
       "rationale": "TEXT_NO_LOSS_FORMAL_PROMOTION_001 approves the bounded formal kernel contract rebind so TEXT_NO_LOSS is accepted only through the repaired green rollup detector path."
-    },
-    {
-      "filePath": "scripts/ops/sector-m-scope-map.json",
-      "sha256": "3afcd305b000a8fe044e8273ca32d13d337f0679ceb7c6ecf77dd1361a31f806",
-      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
-      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
-      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
     },
     {
       "filePath": "scripts/ops/recovery-io-state.mjs",

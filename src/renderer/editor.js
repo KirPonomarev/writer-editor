@@ -262,6 +262,11 @@ const exportPreviewModal = document.querySelector('[data-export-preview-modal]')
 const exportPreviewMessage = document.querySelector('[data-export-preview-message]');
 const exportPreviewConfirmButtons = Array.from(document.querySelectorAll('[data-export-preview-confirm]'));
 const exportPreviewCancelButtons = Array.from(document.querySelectorAll('[data-export-preview-cancel]'));
+const docxImportPreviewModal = document.querySelector('[data-docx-import-preview-modal]');
+const docxImportPreviewMessage = document.querySelector('[data-docx-import-preview-message]');
+const docxImportPreviewLoss = document.querySelector('[data-docx-import-preview-loss]');
+const docxImportPreviewConfirmButtons = Array.from(document.querySelectorAll('[data-docx-import-preview-confirm]'));
+const docxImportPreviewCancelButtons = Array.from(document.querySelectorAll('[data-docx-import-preview-cancel]'));
 const diagnosticsModal = document.querySelector('[data-diagnostics-modal]');
 const diagnosticsText = document.querySelector('[data-diagnostics-text]');
 const diagnosticsCloseButtons = Array.from(document.querySelectorAll('[data-diagnostics-close]'));
@@ -366,6 +371,8 @@ let collabScopeLocal = false;
 let currentMode = 'write';
 let currentLeftTab = 'project';
 let currentRightTab = 'inspector';
+let pendingDocxImportPreviewValue = null;
+let pendingDocxImportPreviewPlan = null;
 let toolbarColorPickerState = {
   open: false,
   mode: 'text',
@@ -7641,6 +7648,7 @@ function performSafeResetShell() {
   closeSimpleModal(settingsModal);
   closeSimpleModal(recoveryModal);
   closeSimpleModal(exportPreviewModal);
+  closeDocxImportPreviewModal();
   closeSimpleModal(diagnosticsModal);
 
   applyMode('write');
@@ -7708,6 +7716,7 @@ function performRestoreLastStableShell() {
   closeSimpleModal(settingsModal);
   closeSimpleModal(recoveryModal);
   closeSimpleModal(exportPreviewModal);
+  closeDocxImportPreviewModal();
   closeSimpleModal(diagnosticsModal);
 
   updateWordCount();
@@ -7807,6 +7816,11 @@ function openCommandPaletteModal() {
 function runCommandPaletteAction(commandId) {
   if (typeof commandId !== 'string' || commandId.trim().length === 0) return;
   closeSimpleModal(commandPaletteModal);
+  const normalizedCommandId = commandId.trim();
+  const importDocxCommandId = 'cmd.project.importDocxV1';
+  if (normalizedCommandId === importDocxCommandId) {
+    return openDocxImportPreviewFlow();
+  }
   return dispatchUiCommand(commandId.trim());
 }
 
@@ -7857,6 +7871,100 @@ async function confirmExportPreviewAndRun() {
   await dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);
   updatePerfHintText('normal');
   updateWarningStateText('none');
+}
+
+function getDocxImportPreviewPlanFromValue(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const direct = value.docxImportPreviewPlan;
+  if (direct && typeof direct === 'object' && !Array.isArray(direct)) return direct;
+  const localPreview = value.localFilePreview;
+  if (!localPreview || typeof localPreview !== 'object' || Array.isArray(localPreview)) return null;
+  const nested = localPreview.docxImportPreviewPlan;
+  return nested && typeof nested === 'object' && !Array.isArray(nested) ? nested : null;
+}
+
+function summarizeDocxImportPreview(value) {
+  const plan = getDocxImportPreviewPlanFromValue(value);
+  const entryCount = Number.isInteger(plan?.candidateCreatePlan?.entryCount)
+    ? plan.candidateCreatePlan.entryCount
+    : (Array.isArray(plan?.candidateCreatePlan?.entries) ? plan.candidateCreatePlan.entries.length : 0);
+  const firstEntry = Array.isArray(plan?.candidateCreatePlan?.entries)
+    ? plan.candidateCreatePlan.entries[0]
+    : null;
+  const textLength = typeof firstEntry?.content === 'string' ? firstEntry.content.length : 0;
+  if (!plan || plan.ok !== true) {
+    return 'DOCX preview is not importable.';
+  }
+  return `Ready to create ${entryCount || 1} scene from DOCX preview. Text chars: ${textLength}.`;
+}
+
+function summarizeDocxImportLoss(value) {
+  const lossReport = value && typeof value === 'object' && !Array.isArray(value)
+    ? value.lossReport
+    : null;
+  const itemCount = Number.isInteger(lossReport?.itemCount)
+    ? lossReport.itemCount
+    : (Number.isInteger(lossReport?.count) ? lossReport.count : 0);
+  const mode = typeof lossReport?.mode === 'string' && lossReport.mode
+    ? lossReport.mode
+    : 'plain-text-only';
+  return `Loss report: ${mode}; items: ${itemCount}.`;
+}
+
+function closeDocxImportPreviewModal() {
+  pendingDocxImportPreviewValue = null;
+  pendingDocxImportPreviewPlan = null;
+  closeSimpleModal(docxImportPreviewModal);
+}
+
+function openDocxImportPreviewModal(value) {
+  const plan = getDocxImportPreviewPlanFromValue(value);
+  pendingDocxImportPreviewValue = value && typeof value === 'object' && !Array.isArray(value) ? value : null;
+  pendingDocxImportPreviewPlan = plan;
+  if (docxImportPreviewMessage) {
+    docxImportPreviewMessage.textContent = summarizeDocxImportPreview(value);
+  }
+  if (docxImportPreviewLoss) {
+    docxImportPreviewLoss.textContent = summarizeDocxImportLoss(value);
+  }
+  docxImportPreviewConfirmButtons.forEach((button) => {
+    button.disabled = !(plan && plan.ok === true);
+  });
+  openSimpleModal(docxImportPreviewModal);
+}
+
+async function openDocxImportPreviewFlow() {
+  updateStatusText('Preparing DOCX import preview');
+  const result = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1);
+  if (!result || result.ok !== true) return;
+  openDocxImportPreviewModal(result.value);
+  updateStatusText('DOCX import preview ready');
+}
+
+async function confirmDocxImportPreviewAndRun() {
+  const plan = pendingDocxImportPreviewPlan;
+  const previewValue = pendingDocxImportPreviewValue;
+  if (!plan || typeof plan !== 'object' || Array.isArray(plan)) {
+    updateStatusText('DOCX import preview unavailable');
+    closeDocxImportPreviewModal();
+    return;
+  }
+  closeSimpleModal(docxImportPreviewModal);
+  updateStatusText('Importing DOCX');
+  const result = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_DOCX_V1, {
+    accept: true,
+    localFilePreview: previewValue?.localFilePreview || null,
+    docxContentPreviewReport: previewValue?.docxContentPreviewReport
+      || previewValue?.localFilePreview?.docxContentPreviewReport
+      || null,
+    docxImportPreviewPlan: plan,
+  });
+  pendingDocxImportPreviewValue = null;
+  pendingDocxImportPreviewPlan = null;
+  if (!result || result.ok !== true) return;
+  const createdSceneIds = Array.isArray(result.value?.createdSceneIds) ? result.value.createdSceneIds : [];
+  await loadTree();
+  updateStatusText(`Imported DOCX scenes: ${createdSceneIds.length}`);
 }
 
 function applyCollabGate() {
@@ -9637,6 +9745,14 @@ exportPreviewCancelButtons.forEach((button) => {
 exportPreviewConfirmButtons.forEach((button) => {
   button.addEventListener('click', () => {
     void confirmExportPreviewAndRun();
+  });
+});
+docxImportPreviewCancelButtons.forEach((button) => {
+  button.addEventListener('click', () => closeDocxImportPreviewModal());
+});
+docxImportPreviewConfirmButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    void confirmDocxImportPreviewAndRun();
   });
 });
 diagnosticsCloseButtons.forEach((button) => {
