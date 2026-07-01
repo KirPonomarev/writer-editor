@@ -43,6 +43,8 @@
 - Local JSON review packet product entry is now bound by `REVIEW_BRIDGE_LOCAL_PACKET_PRODUCT_ENTRY_001_STATUS.json`: Review menu exposes Import Review Packet and Clear Review Session, `cmd.project.review.importLocalPacket` owns dialog/read/parse in main, renderer sends only `requestId`, and successful import opens Review/Comments through canonical runtime command handling.
 - Local packet intake rejects imported write-evidence fields such as receipts/applied result fields and restats the selected file before read.
 - This local packet entry is session/preview wiring only; it does not write manuscript truth and does not authorize apply.
+- Local JSON review packet E2E proof is bound by `REVIEW_BRIDGE_LOCAL_PACKET_E2E_PRODUCT_PROOF_001_STATUS.json`, merged via PR `1011` at merge SHA `a8ea40692afb3c2ef9c30f8152315f13375d3f48`: the proof covers default main-owned local file intake through the menu command handler, Review/Comments opening, exact single apply after import with receipt and recovery evidence, same-scene batch exact apply after import, mixed structural packet manual-only behavior, and clear-session empty surface.
+- This E2E proof changed tests and status docs only; it did not change production runtime code and did not expand import/export MVP scope.
 - This closeout does not claim cross-scene batch atomicity, multi-file transaction truth, structural auto-apply, comment auto-apply, full review import automation, full import/export completion beyond the existing MVP closeout, full Word layout parity, PDF/EPUB/HTML export, user-facing Mindmap export command, release readiness, or Y9 admission.
 
 ### Phase status
