@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001_STATUS.json",
-      "sha256": "6ea05d83f28ff88fd2fdcb9e6bd501878eb301235a72f03d710706cb0587324d",
+      "sha256": "b0ad95df71dd5070d1bff2f41a19dc3143792bbfb73b0a046d476ac09083e2aa",
       "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded DOCX diagnostic evidence surface status; tracked-changes-only DOCX may become visible read-only diagnosticItems in Review, while no DOCX import safe-create, DOCX export, textChanges, applyOps, manuscript write, project truth write, receipt, recovery, dependency, network, release readiness, Word parity, or full DOCX review import claim is introduced."
+      "rationale": "Approve bounded DOCX diagnostic evidence surface status and delivery rebind; tracked-changes-only DOCX may become visible read-only diagnosticItems in Review, while no DOCX import safe-create, DOCX export, textChanges, applyOps, manuscript write, project truth write, receipt, recovery, dependency, network, release readiness, Word parity, or full DOCX review import claim is introduced."
     },
     {
       "filePath": "test/contracts/review-bridge-docx-diagnostic-evidence-surface.contract.test.js",
