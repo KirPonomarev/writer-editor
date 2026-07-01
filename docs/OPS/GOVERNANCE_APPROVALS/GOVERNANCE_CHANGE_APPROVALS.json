@@ -2,6 +2,27 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001_STATUS.json",
+      "sha256": "715a5bcab302dc97656b6a7af85c0998b4150739079898411a080a8a437b9a3c",
+      "approvedBy": "ticket:REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded Word evidence claim binding status; it product-binds the existing Word evidence claim gate while preserving no Word support, no Word import, no Word roundtrip, no Word layout parity, no full DOCX fidelity, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no release readiness, no dependency, and no Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-word-evidence-claim-binding.contract.test.js",
+      "sha256": "f26c04afb4aebdab68aff5016e7b835ea4c7452c3b9fff55ec8133ca6b7c64f7",
+      "approvedBy": "ticket:REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve contract guard for bounded Word evidence claim binding; it binds status scope, existing Word evidence kernel markers, current docs, and overclaim negatives without introducing runtime import, apply, export, storage, UI, dependency, release, Word parity, or full Word support authority."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-word-evidence-check.contract.test.js",
+      "sha256": "e5b5f021fc4777f10053ac5259f2952af15fe6c792d89147cb99c592785a0fd8",
+      "approvedBy": "ticket:REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded Word evidence contract update to include this claim-binding contour allowlist and to scope the side-effect purity scan to the existing Word evidence section; no runtime code, import, apply, export, storage, dependency, UI, release, Word parity, or full Word support claim is introduced."
+    },
+    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001_STATUS.json",
       "sha256": "b0ad95df71dd5070d1bff2f41a19dc3143792bbfb73b0a046d476ac09083e2aa",
       "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
