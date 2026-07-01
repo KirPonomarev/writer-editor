@@ -2,6 +2,27 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json",
+      "sha256": "df4a05a5e500d8b16a1685e0cf1c7223d3a8c56486f195d99ade72793ed331d5",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREFLIGHT_001",
+      "approvedAtUtc": "2026-07-01T20:35:39.000Z",
+      "rationale": "Approve bounded factual status artifact for REVIEW_BRIDGE_DOCX_PREFLIGHT_001 recording diagnostic-only DOCX review preflight; no review session, apply, receipt, recovery, project write, import-export MVP expansion, dependency, network, UI, release, Word parity, or full DOCX review import claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-preflight.contract.test.js",
+      "sha256": "9d5a2588d9d7251b4140cc9ac6ea0fe86df823b8c0083563cf664cad5c20b47a",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREFLIGHT_001",
+      "approvedAtUtc": "2026-07-01T20:35:39.000Z",
+      "rationale": "Approve bounded contract proof for DOCX review preflight diagnostic-only report preserving no review session, apply, receipt, recovery, project truth write, importDocxV1 routing, dependency, network, UI, release, Word parity, or full DOCX review import claim."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-preflight-command-surface.contract.test.js",
+      "sha256": "161fd059ce57d03bc7f001b386028705c9f255aca86622c4df29ef096ce93b34",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREFLIGHT_001",
+      "approvedAtUtc": "2026-07-01T20:35:39.000Z",
+      "rationale": "Approve bounded command-surface contract proof for DOCX review preflight preserving pathless bufferSource input, no review session, apply, receipt, recovery, project truth write, importDocxV1 routing, dependency, network, UI, release, Word parity, or full DOCX review import claim."
+    },
+    {
       "filePath": "scripts/ops/sector-m-scope-map.json",
       "sha256": "7d570cb42b6ab7eed15e4db48d12901995211698da15c40d6a24155088a16b66",
       "approvedBy": "ticket:MARKDOWN_IMPORT_PRODUCT_PARITY_001",
@@ -2901,7 +2922,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
-      "sha256": "05a9484b39a7fa96c186ebbc947211563fbefd58ee9f0eae9022a892555e9ac8",
+      "sha256": "6daec676dbd1812b47f683ce9837a3d9b9802e464e57005b23abae21f3aed0cc",
       "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
       "approvedAtUtc": "2026-07-01T12:22:27.000Z",
       "rationale": "Approve explicit command-to-capability binding for cmd.project.docx.previewLocalFile, cmd.project.docx.previewImportPlan, cmd.project.docx.importSafeCreate, and cmd.project.importDocxV1 as desktop-node DOCX preview plus accept authorities; web and mobile-wrapper remain disabled and no dependency, network, cloud, release, or DOCX full-fidelity claim is introduced."
@@ -3104,14 +3125,14 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js",
-      "sha256": "5e20dd0f95c35885e063a70ea7c95f6caece56f6733e169c54339cd6ad208a8f",
+      "sha256": "8802b0511c51515b9f40bc3bb28ea3f1fde5a2f0c0714906147d54bc6f199234",
       "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
       "approvedAtUtc": "2026-05-14T00:00:00.000Z",
       "rationale": "Approve C08 structural manual review allowlist guard update for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",
-      "sha256": "bbc3ec22a34f6d62903bf8de2adfdb905c81864ee898afe03b9211c09a90662b",
+      "sha256": "12560cdb34373cb4daebe3dc229d2aa29bcaa6051dd2d6ab333376e0cc83a9ee",
       "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
       "approvedAtUtc": "2026-06-27T21:30:00.000Z",
       "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
