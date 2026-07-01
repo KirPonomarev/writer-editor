@@ -17,7 +17,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001_STATUS.json",
-      "sha256": "941010f93ae59ea83706d4a9a2f02b4d3478a22a10041edee72b136faf019f62",
+      "sha256": "dd44230da16601b50423583b0d6bb71972d275836604210524d29cc304fed49d",
       "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
       "rationale": "Approve bounded product proof status for DOCX comments-only Review preview; the proof binds Review menu local DOCX selection to in-memory commentThreads and manual commentPlacements on the Review surface, while preserving no tracked-change apply, no textChanges from DOCX tracked changes, no applyOps, no receipt, no recovery, no manuscript write, no project truth write, no import-export MVP expansion, no release readiness, no Word parity, and no full DOCX review import claim."

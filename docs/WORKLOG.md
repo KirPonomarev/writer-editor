@@ -6,6 +6,7 @@
 ## 2026-07-02
 - Review Bridge: opened `REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001` as product proof for the already delivered DOCX comments-only Review path.
 - DOCX comments-only proof: rebound `REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001` to PR `1015` merge SHA `824d96b739bdbd8b7a45b1bf1664b003a2a65fd2`.
+- DOCX comments-only proof: delivered via PR `1016` merge SHA `80706d1205049d071b1737634dc41cd9125e26d8`; repo status is rebound to `delivered_merged_verified`.
 - Scope truth: DOCX comments can reach the in-memory Review surface as commentThreads plus manual commentPlacements and open Review/Comments; no tracked-change apply, exact apply from DOCX, structural apply, comment auto-apply, receipt, recovery, project write, import/export MVP widening, release readiness, or Word parity is claimed.
 
 ## 2026-07-01
