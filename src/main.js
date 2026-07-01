@@ -4608,8 +4608,9 @@ async function readDirectoryEntries(folderPath) {
     });
 }
 
-function buildNode({ name, label, kind, nodePath, children = [] }) {
+function buildNode({ name, label, kind, nodePath, children = [], ...metadata }) {
   return {
+    ...metadata,
     id: nodePath,
     name,
     label,
@@ -4617,6 +4618,39 @@ function buildNode({ name, label, kind, nodePath, children = [] }) {
     path: nodePath,
     children
   };
+}
+
+async function buildImportedRomanTree(romanPath) {
+  const importedPath = joinPathSegmentsWithinRoot(romanPath, ['Imported'], {
+    resolveSymlinks: false,
+  });
+  if (!(await fileExists(importedPath))) {
+    return null;
+  }
+
+  const entries = await readDirectoryEntries(importedPath);
+  const children = entries
+    .filter((entry) => entry.isFile && entry.name.toLowerCase().endsWith('.txt'))
+    .map((entry) => buildNode({
+      name: entry.baseName,
+      label: entry.baseName,
+      kind: 'scene',
+      nodePath: entry.path,
+      children: [],
+    }));
+
+  if (children.length === 0) {
+    return null;
+  }
+
+  return buildNode({
+    name: 'Imported',
+    label: 'Imported',
+    kind: 'chapter-folder',
+    nodePath: importedPath,
+    children,
+    imported: true,
+  });
 }
 
 async function buildRomanTree(projectName = DEFAULT_PROJECT_NAME) {
@@ -4632,6 +4666,10 @@ async function buildRomanTree(projectName = DEFAULT_PROJECT_NAME) {
       children: []
     })
   );
+  const importedNode = await buildImportedRomanTree(romanPath);
+  if (importedNode) {
+    childNodes.push(importedNode);
+  }
 
   return buildNode({
     name: 'Роман',
@@ -4798,6 +4836,13 @@ function getDocumentContextFromPath(filePath) {
           return { title: baseTitle, kind: 'roman-section', metaEnabled: false };
         }
         return { title: baseTitle, kind: 'chapter-file', metaEnabled: true };
+      }
+      if (
+        parts.length === 3
+        && parts[1].toLowerCase() === 'imported'
+        && parts[2].toLowerCase().endsWith('.txt')
+      ) {
+        return { title: baseTitle, kind: 'scene', metaEnabled: true };
       }
       if (parts.length === 3 && parts[2].toLowerCase().endsWith('.txt')) {
         return { title: baseTitle, kind: 'chapter-file', metaEnabled: true };

@@ -2,11 +2,29 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 
 function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
+}
+
+function loadDocxImportResolverHelpers() {
+  const editor = read('src/renderer/editor.js');
+  const start = editor.indexOf('function normalizeDocxImportCreatedSceneIds(value)');
+  const end = editor.indexOf('function summarizeDocxImportPreview(value)', start);
+  assert.notEqual(start, -1);
+  assert.notEqual(end, -1);
+  const section = editor.slice(start, end);
+  return vm.runInNewContext(`${section}
+({
+  getDocxImportSceneLocatorsFromPlan,
+  findDocxImportSceneNode,
+})`, {
+    getEffectiveDocumentKind: (node) => node?.effectiveKind || node?.kind || '',
+    getEffectiveDocumentPath: (node) => node?.effectivePath || node?.path || '',
+  });
 }
 
 test('DOCX import preview UI flow: existing modal surface exposes preview and accept hooks', () => {
@@ -34,6 +52,7 @@ test('DOCX import preview UI flow: existing modal surface exposes preview and ac
   assert.ok(editor.includes('docxContentPreviewReport: previewValue?.docxContentPreviewReport'));
   assert.ok(editor.includes('docxImportPreviewPlan: plan,'));
   assert.ok(editor.includes('await loadTree();'));
+  assert.ok(editor.includes('await openImportedDocxSceneAfterAccept(plan, createdSceneIds);'));
 });
 
 test('DOCX import preview UI flow: no editor-surface mutation is introduced by import accept', () => {
@@ -51,6 +70,103 @@ test('DOCX import preview UI flow: no editor-surface mutation is introduced by i
     'currentDocumentPath =',
   ]) {
     assert.equal(section.includes(forbidden), false, forbidden);
+  }
+});
+
+test('DOCX import preview UI flow: accepted import opens only a plan-matched scene node', () => {
+  const editor = read('src/renderer/editor.js');
+
+  for (const marker of [
+    'function getDocxImportSceneLocatorsFromPlan(plan, createdSceneIds)',
+    'function findDocxImportSceneNode(root, locators)',
+    'async function openImportedDocxSceneAfterAccept(plan, createdSceneIds)',
+    'const createdSet = new Set(createdIds);',
+    'expectedLabel: `${sanitizeDocxImportSceneLabelPart(title)} ${contentTextHash}`',
+    "return { opened: false, reason: 'imported-scene-not-found' };",
+    'const opened = await openDocumentNode(node);',
+    'renderTree();',
+  ]) {
+    assert.ok(editor.includes(marker), marker);
+  }
+
+  const helperStart = editor.indexOf('async function openImportedDocxSceneAfterAccept(plan, createdSceneIds)');
+  const helperEnd = editor.indexOf('function summarizeDocxImportPreview(value)', helperStart);
+  assert.notEqual(helperStart, -1);
+  assert.notEqual(helperEnd, -1);
+  const helperSection = editor.slice(helperStart, helperEnd);
+  assert.equal(helperSection.includes('currentDocumentPath ='), false);
+  assert.equal(helperSection.includes('window.electronAPI.invokeUiCommandBridge'), false);
+});
+
+test('DOCX import preview UI flow: scene resolver executes exact match and fail-closed ambiguity', () => {
+  const {
+    getDocxImportSceneLocatorsFromPlan,
+    findDocxImportSceneNode,
+  } = loadDocxImportResolverHelpers();
+  const plan = {
+    candidateCreatePlan: {
+      entries: [
+        {
+          sceneId: 'docx-import-scene-abcd1234',
+          title: 'Imported DOCX',
+          contentTextHash: '11111111',
+        },
+        {
+          sceneId: 'docx-import-scene-deadbeef',
+          title: 'Ignored',
+          contentTextHash: '22222222',
+        },
+      ],
+    },
+  };
+
+  const locators = getDocxImportSceneLocatorsFromPlan(plan, [' docx-import-scene-abcd1234 ']);
+  assert.deepEqual(JSON.parse(JSON.stringify(locators)), [
+    {
+      sceneId: 'docx-import-scene-abcd1234',
+      expectedLabel: 'Imported DOCX 11111111',
+    },
+  ]);
+
+  const exactNode = {
+    kind: 'scene',
+    label: 'Imported DOCX 11111111',
+    path: 'roman/Imported/Imported DOCX 11111111.txt',
+  };
+  assert.equal(findDocxImportSceneNode({ children: [exactNode] }, locators), exactNode);
+  assert.equal(
+    findDocxImportSceneNode({
+      children: [
+        { ...exactNode, path: 'roman/Imported/a.txt' },
+        { ...exactNode, path: 'roman/Imported/b.txt' },
+      ],
+    }, locators),
+    null,
+  );
+  assert.equal(
+    findDocxImportSceneNode({
+      children: [{ ...exactNode, kind: 'chapter-file' }],
+    }, locators),
+    null,
+  );
+});
+
+test('DOCX import preview UI flow: project tree exposes Imported txt files as scene nodes', () => {
+  const main = read('src/main.js');
+
+  for (const marker of [
+    'async function buildImportedRomanTree(romanPath)',
+    "joinPathSegmentsWithinRoot(romanPath, ['Imported'],",
+    "entry.isFile && entry.name.toLowerCase().endsWith('.txt')",
+    "kind: 'scene',",
+    "kind: 'chapter-folder',",
+    'const importedNode = await buildImportedRomanTree(romanPath);',
+    'childNodes.push(importedNode);',
+    '...metadata,',
+    "parts[1].toLowerCase() === 'imported'",
+    "return { title: baseTitle, kind: 'scene', metaEnabled: true };",
+  ]) {
+    assert.ok(main.includes(marker), marker);
   }
 });
 
@@ -74,6 +190,9 @@ test('DOCX import preview UI flow: generated bundle carries the shipped DOCX acc
     'cmd.project.importDocxV1',
     'docxContentPreviewReport',
     'localFilePreview',
+    'opened imported scene',
+    'imported-scene-not-found',
+    'no-created-scene-locator',
   ]) {
     assert.ok(bundle.includes(marker), marker);
   }

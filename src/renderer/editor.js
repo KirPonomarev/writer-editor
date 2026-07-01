@@ -7883,6 +7883,103 @@ function getDocxImportPreviewPlanFromValue(value) {
   return nested && typeof nested === 'object' && !Array.isArray(nested) ? nested : null;
 }
 
+function normalizeDocxImportCreatedSceneIds(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item) => typeof item === 'string' && item.trim())
+    .map((item) => item.trim());
+}
+
+function sanitizeDocxImportSceneLabelPart(value) {
+  const safe = String(value || '')
+    .trim()
+    .replace(/[\\/<>:"|?*\u0000-\u001F]/g, '_')
+    .replace(/\s+/g, ' ')
+    .replace(/\.+$/g, '');
+
+  return safe.slice(0, 80) || 'Untitled';
+}
+
+function getDocxImportSceneLocatorsFromPlan(plan, createdSceneIds) {
+  const createdIds = normalizeDocxImportCreatedSceneIds(createdSceneIds);
+  if (createdIds.length === 0) return [];
+  const createdSet = new Set(createdIds);
+  const entries = Array.isArray(plan?.candidateCreatePlan?.entries)
+    ? plan.candidateCreatePlan.entries
+    : [];
+
+  return entries
+    .map((entry) => {
+      if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return null;
+      const sceneId = typeof entry.sceneId === 'string' ? entry.sceneId.trim() : '';
+      const contentTextHash = typeof entry.contentTextHash === 'string'
+        ? entry.contentTextHash.trim()
+        : '';
+      if (!sceneId || !createdSet.has(sceneId) || !/^[a-f0-9]{8}$/u.test(contentTextHash)) {
+        return null;
+      }
+      const title = typeof entry.title === 'string' && entry.title.trim()
+        ? entry.title.trim()
+        : 'Imported DOCX preview';
+      return {
+        sceneId,
+        expectedLabel: `${sanitizeDocxImportSceneLabelPart(title)} ${contentTextHash}`,
+      };
+    })
+    .filter(Boolean);
+}
+
+function findDocxImportSceneNode(root, locators) {
+  if (!root || !Array.isArray(locators) || locators.length === 0) return null;
+  const sceneIds = new Set(locators.map((item) => item.sceneId).filter(Boolean));
+  const expectedLabels = new Set(locators.map((item) => item.expectedLabel).filter(Boolean));
+  const matches = [];
+  const seenPaths = new Set();
+
+  const visit = (node) => {
+    if (!node || typeof node !== 'object' || Array.isArray(node)) return;
+    const kind = getEffectiveDocumentKind(node);
+    if (kind === 'scene') {
+      const sceneId = typeof node.sceneId === 'string' ? node.sceneId.trim() : '';
+      const label = typeof node.label === 'string'
+        ? node.label.trim()
+        : (typeof node.name === 'string' ? node.name.trim() : '');
+      const nodePath = getEffectiveDocumentPath(node);
+      if (
+        ((sceneId && sceneIds.has(sceneId)) || (label && expectedLabels.has(label)))
+        && nodePath
+        && !seenPaths.has(nodePath)
+      ) {
+        seenPaths.add(nodePath);
+        matches.push(node);
+      }
+    }
+    if (Array.isArray(node.children)) {
+      node.children.forEach(visit);
+    }
+  };
+
+  visit(root);
+  return matches.length === 1 ? matches[0] : null;
+}
+
+async function openImportedDocxSceneAfterAccept(plan, createdSceneIds) {
+  const locators = getDocxImportSceneLocatorsFromPlan(plan, createdSceneIds);
+  if (locators.length === 0) {
+    return { opened: false, reason: 'no-created-scene-locator' };
+  }
+  const node = findDocxImportSceneNode(treeRoot, locators);
+  if (!node) {
+    return { opened: false, reason: 'imported-scene-not-found' };
+  }
+  const opened = await openDocumentNode(node);
+  if (opened) {
+    renderTree();
+    return { opened: true, reason: 'opened-imported-scene' };
+  }
+  return { opened: false, reason: 'imported-scene-open-failed' };
+}
+
 function summarizeDocxImportPreview(value) {
   const plan = getDocxImportPreviewPlanFromValue(value);
   const entryCount = Number.isInteger(plan?.candidateCreatePlan?.entryCount)
@@ -7962,9 +8059,18 @@ async function confirmDocxImportPreviewAndRun() {
   pendingDocxImportPreviewValue = null;
   pendingDocxImportPreviewPlan = null;
   if (!result || result.ok !== true) return;
-  const createdSceneIds = Array.isArray(result.value?.createdSceneIds) ? result.value.createdSceneIds : [];
+  const resultValue = result.value && typeof result.value === 'object' && !Array.isArray(result.value)
+    ? result.value
+    : {};
+  const createdSceneIds = Array.isArray(resultValue.visibleCreatedSceneIds)
+    ? resultValue.visibleCreatedSceneIds
+    : (Array.isArray(resultValue.createdSceneIds) ? resultValue.createdSceneIds : []);
   await loadTree();
-  updateStatusText(`Imported DOCX scenes: ${createdSceneIds.length}`);
+  const openResult = await openImportedDocxSceneAfterAccept(plan, createdSceneIds);
+  const openSuffix = openResult.opened
+    ? '; opened imported scene'
+    : (createdSceneIds.length > 0 ? `; ${openResult.reason}` : '');
+  updateStatusText(`Imported DOCX scenes: ${createdSceneIds.length}${openSuffix}`);
 }
 
 function applyCollabGate() {
