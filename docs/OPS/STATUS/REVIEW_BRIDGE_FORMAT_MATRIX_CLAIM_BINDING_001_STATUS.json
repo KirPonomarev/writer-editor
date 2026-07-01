@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_format_matrix_claim_binding",
+  "featureExpansion": "bounded_review_bridge_claim_binding",
+  "baseSha": "b5b2f9d943ac2199dbe92e00309eed6894af74ff",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": false,
+    "rendererSurfaceChanged": false,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false,
+    "formatMatrixRuntimeChanged": false,
+    "goldenSetRuntimeChanged": false,
+    "releaseClaimDossierAccepted": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false,
+    "autoApply": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "binding": {
+    "sourcePlan": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_FINAL_PLAN_R2",
+    "previousContourTaskId": "REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001",
+    "previousContourStatus": "delivered_merged_verified",
+    "previousContourMergeSha": "b5b2f9d943ac2199dbe92e00309eed6894af74ff",
+    "existingKernelMarker": "CONTOUR_12_FORMAT_MATRIX_CLAIM_GATE",
+    "formatMatrixSchema": "revision-bridge.format-matrix.v1",
+    "goldenSetSchema": "revision-bridge.golden-set.v1",
+    "formatMatrixSupportClaimSchema": "revision-bridge.format-matrix-support-claim.v1"
+  },
+  "positiveClaims": [
+    "The existing format matrix claim gate is product-bound as a Review Bridge claim boundary.",
+    "A format matrix claim can be accepted only when a valid format matrix, valid golden set, selected matrix row, matching golden set id, matching formatId, matching surface, matching golden set hash, complete requiredTests, and claimScope does not exceed the selected row surface.",
+    "Missing format matrix, invalid format matrix, missing matrix row, invalid golden set, golden set id mismatch, formatId mismatch, surface mismatch, golden set hash mismatch, missing required tests, and claimScope exceeding surface block the claim.",
+    "The binding is matrix, golden set, and claim truth only; it is not content import, review import, apply, export, storage truth, release claim dossier truth, or release readiness truth."
+  ],
+  "nonClaims": [
+    "No new user-facing format support is claimed.",
+    "No Word support is claimed.",
+    "No Google Docs support is claimed.",
+    "No DOCX support expansion is claimed.",
+    "No import support is claimed.",
+    "No export support is claimed.",
+    "No review import is claimed.",
+    "No roundtrip is claimed.",
+    "No layout parity is claimed.",
+    "No full fidelity is claimed.",
+    "No automatic apply is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No release claim dossier acceptance is claimed.",
+    "No release readiness is claimed.",
+    "No manuscript write is performed by format matrix claim binding.",
+    "No project truth write is performed by format matrix claim binding.",
+    "No receipt or recovery evidence is created by format matrix claim binding.",
+    "No DOCX import safe-create behavior is changed.",
+    "No DOCX export behavior is changed.",
+    "No import/export MVP closeout is widened.",
+    "No PDF, EPUB, HTML, Mindmap, cloud sync, cross-platform readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Claim boundary validates matrix, golden set, and claim only.",
+    "Format matrix acceptance does not become project truth by itself.",
+    "Golden set hash proves the bounded claim packet only and does not prove full fidelity, layout parity, roundtrip, import correctness, or export correctness.",
+    "This contour is not a release claim dossier and does not admit release claim dossier items.",
+    "Claim binding is not a parser and does not inspect external documents.",
+    "Claim binding is not content import and does not create scenes.",
+    "Claim binding is not Review import and does not activate a Review session.",
+    "Claim binding is not an apply plan and does not authorize mutation.",
+    "Claim binding is not safe write and does not create receipt or recovery evidence.",
+    "Claim binding is not export and does not alter DOCX output.",
+    "Review Bridge may reference accepted format matrix claims as bounded evidence, but accepted claims do not become project truth."
+  ],
+  "implementation": {
+    "changedProductionRuntime": false,
+    "changedUi": false,
+    "changedBasenames": [
+      "REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001_STATUS.json",
+      "review-bridge-format-matrix-claim-binding.contract.test.js",
+      "revision-bridge-format-matrix-claim-gate.contract.test.js",
+      "revision-bridge-google-docs-evidence-check.contract.test.js",
+      "revision-bridge-word-evidence-check.contract.test.js",
+      "GOVERNANCE_CHANGE_APPROVALS.json",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "WORKLOG.md"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --test format matrix, Word evidence, Google Docs evidence, and claim-binding contracts",
+      "status": "pass",
+      "tests": 46
+    },
+    {
+      "command": "node --test release claim dossier, admission, execution, boundary, and publication contracts",
+      "status": "pass",
+      "tests": 75
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass",
+      "token": "GOVERNANCE_CHANGE_OK"
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass",
+      "token": "STRICT_LIE_CLASSES_OK"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass",
+      "token": "SSOT_BOUNDARY_ENFORCED"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass",
+      "result": "found 0 vulnerabilities"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "formatMatrixClaimBindingExists": true,
+    "validMatrixGoldenSetAndClaimAccepted": true,
+    "missingRowBlocked": true,
+    "goldenSetIdMismatchBlocked": true,
+    "formatIdMismatchBlocked": true,
+    "surfaceMismatchBlocked": true,
+    "hashMismatchBlocked": true,
+    "requiredTestsMissingBlocked": true,
+    "claimScopeExceededBlocked": true,
+    "newUserFacingFormatSupportClaimed": false,
+    "importSupportClaimed": false,
+    "exportSupportClaimed": false,
+    "roundtripClaimed": false,
+    "layoutParityClaimed": false,
+    "fullFidelityClaimed": false,
+    "releaseClaimDossierAccepted": false,
+    "releaseReadinessClaimed": false,
+    "applyOpsCreated": false,
+    "receiptCreated": false,
+    "recoveryCreated": false,
+    "projectTruthMutated": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false
+  },
+  "agentAudits": [
+    {
+      "agent": "Confucius",
+      "type": "read_only_canon_auditor",
+      "result": "pass",
+      "finding": "Confirmed format matrix claim binding is canonical as a bounded claim-only gate and must not imply support, import, apply, project truth, UI, network, release readiness, or Y9."
+    },
+    {
+      "agent": "Kuhn",
+      "type": "read_only_kernel_auditor",
+      "result": "resolved_after_diff",
+      "finding": "Confirmed the existing format matrix kernel already exports schemas, reason codes, hash, and gate; runtime gap is absent and the missing work is product-binding artifact plus docs and allowlist hygiene."
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": "",
+    "featureMergedAtUtc": ""
+  },
+  "decision": "FORMAT_MATRIX_CLAIM_BINDING_BOUND_FOR_CURRENT_SCOPE",
+  "nextStep": "complete delivery chain, then continue to release claim dossier binding unless the owner selects another Review Bridge contour"
+}

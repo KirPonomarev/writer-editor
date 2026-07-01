@@ -2,6 +2,27 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001_STATUS.json",
+      "sha256": "a3750977f1c3cfc99b7d73372477062644cc1384afe586b3729dfd620602d061",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded format matrix claim binding status; it product-binds the existing format matrix claim gate while preserving no new user-facing format support, no import support, no export support, no roundtrip, no layout parity, no full fidelity, no release claim dossier acceptance, no release readiness, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no dependency, and no Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-format-matrix-claim-binding.contract.test.js",
+      "sha256": "eaaaf93803524b91184cd5fb8126248329ef1c4af8320c55253d6ab818d21790",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve contract guard for bounded format matrix claim binding; it binds status scope, existing format matrix kernel markers, current docs, matrix row, golden set, hash, required tests, and claimScope boundaries without introducing runtime import, parser, apply, export, storage, UI, dependency, release dossier acceptance, release readiness, full fidelity, layout parity, or format support authority."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-format-matrix-claim-gate.contract.test.js",
+      "sha256": "31292024d87f72afdcaa8b51e5366f52d7534e0bd787daa4cefe5f9be83f4acc",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded format matrix contract allowlist sync for this claim-binding contour; the existing kernel proof remains unchanged and no runtime code, import, export, apply, storage, dependency, UI, release dossier acceptance, release readiness, full fidelity, or format support claim is introduced."
+    },
+    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001_STATUS.json",
       "sha256": "0afd161f9a66604e22a1bd722e099034324cfc0dfd04d9458b8b226325c1bc97",
       "approvedBy": "ticket:REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001",
@@ -17,10 +38,10 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-google-docs-evidence-check.contract.test.js",
-      "sha256": "9f505d70598bfd384dea2a7ebdfe4ec07aa7f3d20996c6b94949da54f111d9db",
-      "approvedBy": "ticket:REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001",
+      "sha256": "a3d9637af7517f17d5461288f0543c34307f7a8d5c504ce54a2a4960a4eb6507",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded Google Docs evidence contract update to include this claim-binding contour allowlist and to scope the side-effect purity scan to the existing Google Docs evidence section; no runtime code, Google API integration, network access, import, apply, export, storage, dependency, UI, release, Google Docs parity, or full Google Docs support claim is introduced."
+      "rationale": "Approve bounded Google Docs evidence contract allowlist sync for the adjacent format matrix claim-binding contour; no Google Docs runtime code, Google API integration, network access, import, apply, export, storage, dependency, UI, release, Google Docs parity, full Google Docs support, release dossier acceptance, full fidelity, or format support claim is introduced."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001_STATUS.json",
@@ -38,10 +59,10 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-word-evidence-check.contract.test.js",
-      "sha256": "f851ed32b198eaa62c7ef2d7995dd7739879234d18416fdc364070c971b79fce",
-      "approvedBy": "ticket:REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001",
+      "sha256": "5f626bce549e38604933479998ebfeadce63d8424a15842f5348eb3a5e3bffc9",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded Word evidence contract allowlist sync for the adjacent Google Docs evidence claim-binding contour; no Word runtime code, import, apply, export, storage, dependency, UI, release, Word parity, full Word support, Google Docs support, Google API integration, or network claim is introduced."
+      "rationale": "Approve bounded Word evidence contract allowlist sync for the adjacent format matrix claim-binding contour; no Word runtime code, import, apply, export, storage, dependency, UI, release, Word parity, full Word support, release dossier acceptance, full fidelity, or format support claim is introduced."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001_STATUS.json",

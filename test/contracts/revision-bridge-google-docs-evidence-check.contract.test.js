@@ -11,6 +11,9 @@ const TEST_PATH = 'test/contracts/revision-bridge-google-docs-evidence-check.con
 const WORD_TEST_PATH = 'test/contracts/revision-bridge-word-evidence-check.contract.test.js';
 const CLAIM_BINDING_TEST_PATH = 'test/contracts/review-bridge-google-docs-evidence-claim-binding.contract.test.js';
 const CLAIM_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001_STATUS.json';
+const FORMAT_MATRIX_TEST_PATH = 'test/contracts/revision-bridge-format-matrix-claim-gate.contract.test.js';
+const FORMAT_MATRIX_CLAIM_BINDING_TEST_PATH = 'test/contracts/review-bridge-format-matrix-claim-binding.contract.test.js';
+const FORMAT_MATRIX_CLAIM_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001_STATUS.json';
 const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
 const CONTEXT_PATH = 'docs/CONTEXT.md';
 const HANDOFF_PATH = 'docs/HANDOFF.md';
@@ -21,6 +24,9 @@ const ALLOWLIST = [
   WORD_TEST_PATH,
   CLAIM_BINDING_TEST_PATH,
   CLAIM_BINDING_STATUS_PATH,
+  FORMAT_MATRIX_TEST_PATH,
+  FORMAT_MATRIX_CLAIM_BINDING_TEST_PATH,
+  FORMAT_MATRIX_CLAIM_BINDING_STATUS_PATH,
   GOVERNANCE_APPROVALS_PATH,
   CONTEXT_PATH,
   HANDOFF_PATH,
