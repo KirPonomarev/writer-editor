@@ -80,7 +80,7 @@ _Generated: 2026-07-01_
 - Word evidence claim binding contour is delivered and merged; it is tracked by `REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001_STATUS.json`.
 - The contour product-binds the existing `CONTOUR_10_WORD_EVIDENCE_CHECK_R2` gate: a Word evidence claim can pass only with a valid packet, matching evidence hash, and coverage not wider than packet coverage.
 - This is not Word support: no Word support, Word import, Word roundtrip, Word layout parity, full DOCX fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, or import/export MVP widening is claimed.
-- Google Docs evidence claim binding contour is implemented and locally verified pending delivery; it is tracked by `REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001_STATUS.json`.
+- Google Docs evidence claim binding contour is delivered and merged; it is tracked by `REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001_STATUS.json`.
 - The contour product-binds the existing `CONTOUR_11_GOOGLE_DOCS_EVIDENCE_CHECK` gate: a Google Docs evidence claim can pass only with a valid packet, matching evidence hash, coverage not wider than packet coverage, and both docsSuggestions and driveComments coverage.
 - This is not Google Docs support: no Google Docs support, Google Docs import, Google Docs sync, Google Docs roundtrip, Google Docs layout parity, full Google Docs fidelity, Google API integration, network access, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, or import/export MVP widening is claimed.
 - Tiptap path is the primary editor path.

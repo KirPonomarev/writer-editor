@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_google_docs_evidence_claim_binding",
   "featureExpansion": "bounded_review_bridge_claim_binding",
   "baseSha": "d961b29189d60fd10aedc21dbb14d855b49124ae",
@@ -127,6 +127,15 @@
     {
       "command": "git diff --check",
       "status": "pass"
+    },
+    {
+      "command": "GitHub CI for PR 1024",
+      "status": "pass",
+      "checks": [
+        "oss-policy",
+        "x1-runtime-parity ubuntu-latest",
+        "x1-runtime-parity windows-latest"
+      ]
     }
   ],
   "proofPoints": {
@@ -171,12 +180,12 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending_delivery",
-    "featureCommitSha": "",
-    "featurePullRequest": null,
-    "featureMergeSha": "",
-    "featureMergedAtUtc": ""
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "315b9c8d7987f2acceed2c5be00b0a1e565695d0",
+    "featurePullRequest": 1024,
+    "featureMergeSha": "37c0dfee965a1f4d8c74400079ba0e9df77f6021",
+    "featureMergedAtUtc": "2026-07-01T23:31:25Z"
   },
   "decision": "GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_BOUND_FOR_CURRENT_SCOPE",
-  "nextStep": "complete delivery chain, then continue with the next owner-selected Review Bridge claim boundary"
+  "nextStep": "continue with the next owner-selected Review Bridge claim boundary"
 }
