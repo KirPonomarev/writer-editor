@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001",
+  "status": "implemented_local_verified_pending_delivery",
+  "type": "review_bridge_first_useful_release_gate",
+  "featureExpansion": false,
+  "baseSha": "2c8e1c715f86a700ea1d382c20153b7691973aa2",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "runtimeProductionCodeChanged": false,
+    "newDependenciesAdded": false,
+    "projectTruthWritesAdded": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "mainClaim": "Local JSON review packet can be imported into the Review surface and one exact text change can be applied through the existing safe writer with receipt and recovery evidence.",
+  "additionalProvenSurfaces": [
+    "DOCX comments-only review preview is available through the Review menu as a preview/manual-only surface with no apply authority."
+  ],
+  "referencedArtifacts": [
+    {
+      "taskId": "IMPORT_EXPORT_PRODUCT_CLOSEOUT_BINDING_001",
+      "artifact": "IMPORT_EXPORT_PRODUCT_CLOSEOUT_BINDING_001_STATUS.json",
+      "status": "FEATURE_CLOSED_FOR_MVP_SCOPE",
+      "pullRequest": 1002,
+      "mergeSha": "7deeaa8f3cbbabe912df4862b2fb88d472cb11d3"
+    },
+    {
+      "taskId": "REVIEW_BRIDGE_CONTROLLED_MULTI_EXACT_APPLY_001_R2",
+      "artifact": "REVIEW_BRIDGE_CONTROLLED_MULTI_EXACT_APPLY_001_R2_STATUS_V1.json",
+      "status": "delivered_merged_verified",
+      "pullRequest": 1007,
+      "mergeSha": "b12ef9178a2e86a3ee758815758bc05dde70f8cc"
+    },
+    {
+      "taskId": "REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001",
+      "artifact": "REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001_STATUS.json",
+      "status": "delivered_merged_verified",
+      "pullRequest": 1008,
+      "mergeSha": "5acc7612f109153820e71ed3f474f211be213601"
+    },
+    {
+      "taskId": "REVIEW_BRIDGE_LOCAL_PACKET_PRODUCT_ENTRY_001",
+      "artifact": "REVIEW_BRIDGE_LOCAL_PACKET_PRODUCT_ENTRY_001_STATUS.json",
+      "status": "delivered_merged_verified",
+      "pullRequest": 1009,
+      "mergeSha": "8f167269d2bb583f365351a8e4624ac2a0bd8974"
+    },
+    {
+      "taskId": "REVIEW_BRIDGE_LOCAL_PACKET_E2E_PRODUCT_PROOF_001",
+      "artifact": "REVIEW_BRIDGE_LOCAL_PACKET_E2E_PRODUCT_PROOF_001_STATUS.json",
+      "status": "delivered_merged_verified",
+      "pullRequest": 1011,
+      "mergeSha": "a8ea40692afb3c2ef9c30f8152315f13375d3f48"
+    },
+    {
+      "taskId": "REVIEW_BRIDGE_DOCX_PREFLIGHT_001",
+      "artifact": "REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json",
+      "status": "delivered_merged_verified",
+      "pullRequest": 1013,
+      "mergeSha": "34895b960a723b816ccb7f50f171854675a43969"
+    },
+    {
+      "taskId": "REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001",
+      "artifact": "REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001_STATUS.json",
+      "status": "delivered_merged_verified",
+      "pullRequest": 1014,
+      "mergeSha": "c608541f93688150ddc3d0dee08b33dfaab01e5f"
+    },
+    {
+      "taskId": "REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001",
+      "artifact": "REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001_STATUS.json",
+      "status": "delivered_merged_verified",
+      "pullRequest": 1015,
+      "mergeSha": "824d96b739bdbd8b7a45b1bf1664b003a2a65fd2"
+    },
+    {
+      "taskId": "REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001",
+      "artifact": "REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001_STATUS.json",
+      "status": "delivered_merged_verified",
+      "pullRequest": 1016,
+      "mergeSha": "80706d1205049d071b1737634dc41cd9125e26d8"
+    }
+  ],
+  "supersededPendingArtifacts": [
+    {
+      "taskId": "REVIEW_BRIDGE_SINGLE_EXACT_TEXT_SAFE_APPLY_ENABLEMENT_001_R2",
+      "artifact": "REVIEW_BRIDGE_SINGLE_EXACT_TEXT_SAFE_APPLY_ENABLEMENT_001_R2_STATUS_V1.json",
+      "status": "implemented_verified_pending_delivery",
+      "supersededBy": "REVIEW_BRIDGE_CONTROLLED_MULTI_EXACT_APPLY_001_R2_STATUS_V1.json",
+      "reason": "The single exact apply work is not used as active gate truth because the later controlled multi exact apply artifact is delivered_merged_verified and covers the active exact-apply lane."
+    }
+  ],
+  "positiveClaims": [
+    "A local JSON review packet can be selected through the Review menu and opened in Review/Comments using main-owned local file intake.",
+    "Local JSON packet import is preview/session activation only and does not write manuscript truth.",
+    "A separate exact text apply action after local JSON packet import writes through the existing safe writer.",
+    "The exact text apply action creates receipt and recovery evidence after apply, not after import.",
+    "Controlled same-scene batch exact apply remains bound to the already closed exact-apply lane.",
+    "DOCX comments-only review preview can expose commentThreads plus manual commentPlacements on the in-memory Review surface.",
+    "The DOCX comments-only path is an additional preview surface and does not create textChanges, applyOps, receipt, or recovery."
+  ],
+  "nonClaims": [
+    "No full review import automation is claimed.",
+    "No full DOCX review import is claimed.",
+    "No DOCX tracked-change apply is claimed.",
+    "No exact apply from DOCX is claimed.",
+    "No structural auto-apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No cross-scene batch atomicity is claimed.",
+    "No multi-file transaction truth is claimed.",
+    "No project truth write is performed by local packet import or DOCX comments-only preview.",
+    "No import/export MVP scope expansion is claimed.",
+    "No Word layout parity or full DOCX fidelity is claimed.",
+    "No PDF, EPUB, HTML, user-facing Mindmap export, cloud, sync, accounts, packaged readiness, cross-platform readiness, full npm green, release readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Import layer can activate a Review session but cannot mutate manuscript truth.",
+    "Apply layer remains separate and uses only the existing exact text safe writer path.",
+    "Receipt and recovery belong to apply, not import or preview.",
+    "Review surface is UI/session visibility only and does not become project truth.",
+    "DOCX remains external review evidence transport and does not become content import truth in this gate.",
+    "Import/export MVP closeout remains closed for its prior flows and is not widened by Review Bridge proof."
+  ],
+  "productSmokeProof": {
+    "sourceTest": "revision-bridge-review-mutate-port.contract.test.js",
+    "primaryTestName": "review mutate port contract: local packet e2e exact apply writes only after local import",
+    "assertsImportReceiptAbsent": true,
+    "assertsApplyReceiptPresent": true,
+    "assertsRecoveryEvidenceReadable": true,
+    "assertsRecoverySnapshotHashMatchesInput": true,
+    "assertsManuscriptMutationAfterApplyOnly": true
+  },
+  "docxBoundaryProof": {
+    "statusArtifact": "REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001_STATUS.json",
+    "commentsOnlyPreview": true,
+    "manualCommentPlacements": true,
+    "textChangesFromDocxTrackedChanges": false,
+    "applyOpsCreated": false,
+    "receiptCreated": false,
+    "recoveryCreated": false,
+    "projectTruthMutated": false
+  },
+  "machineChecks": [
+    {
+      "command": "node --test test/contracts/review-bridge-first-useful-release-gate.contract.test.js",
+      "status": "pass",
+      "tests": 4
+    },
+    {
+      "command": "node --test targeted Review Bridge proof set",
+      "status": "pass",
+      "tests": 66
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "agentAudits": [
+    {
+      "agentId": "019f1fbe-29ed-73d2-ac03-7fd4ae17b040",
+      "role": "read_only_product_proof_inspector",
+      "verdict": "runtime_smoke_substance_present_delivery_truth_gap_found",
+      "localResolution": "addressed_by_rebinding_REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001_STATUS_to_delivered_mainline_truth_and_binding_the_gate_to_delivered_artifacts_only"
+    },
+    {
+      "agentId": "019f1fbe-7250-73e3-85d3-d13e7a45d93c",
+      "role": "independent_skeptic_claim_auditor",
+      "verdict": "block_until_active_closeout_truth_is_delivered_not_runtime_missing",
+      "localResolution": "accepted_and_addressed_by_this_gate_precondition_rebind"
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery"
+  },
+  "decision": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_BOUND_FOR_CURRENT_SCOPE",
+  "nextStep": "push_pr_merge_then_delivery_rebind"
+}
