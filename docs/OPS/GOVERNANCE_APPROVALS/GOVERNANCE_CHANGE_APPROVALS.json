@@ -2,6 +2,27 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001_STATUS.json",
+      "sha256": "6400907bc4dd30c3decd54cf4cdaee884abc913272c405c66fe44a0c769b42c7",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve factual delivery truth rebind for the Review Bridge exact-apply lane closeout after PR 1008 merge; scope remains existing exact text safe apply and controlled same-scene batch apply only, with no runtime code change, no import/export MVP widening, no DOCX apply, no structural apply, no comment auto-apply, no release readiness, no Word parity, and no Y9 claim."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001_STATUS.json",
+      "sha256": "267e33af7197853683c4546e458d8736226ef0cbc2e218a0a551166903a6985a",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded Review Bridge first useful feature gate status: local JSON review packet to Review surface plus one exact text safe apply with receipt and recovery evidence, while DOCX comments-only remains a separate preview/manual-only surface and no full review import, DOCX apply, structural apply, comment auto-apply, import/export MVP widening, release readiness, or user-facing release claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-first-useful-release-gate.contract.test.js",
+      "sha256": "a378d2ca4c7a8b5acb4892a7cf61ac56b17cb0da02dfa09453e63837dea0726f",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve contract guard for the bounded Review Bridge first useful feature gate; it verifies active artifacts are delivered, pending single-apply history is superseded rather than active truth, local JSON packet exact apply receipt and recovery proof remain bound, DOCX comments-only stays preview-only, and release-readiness or full-import overclaims are blocked."
+    },
+    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001_STATUS.json",
       "sha256": "ebb67a95f3dac8d56fd2ac2374267a446d232291faf2df6f1f0873d65072cc48",
       "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001",

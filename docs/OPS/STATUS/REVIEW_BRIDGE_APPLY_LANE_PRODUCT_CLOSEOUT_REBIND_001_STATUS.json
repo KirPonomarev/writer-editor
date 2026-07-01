@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "product_factual_closeout_rebind",
   "featureExpansion": false,
   "binding": {
@@ -123,6 +123,35 @@
       "localResolution": "addressed_by_this_closeout_rebind"
     }
   ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "eb4eff8b22886a70cc39793b4f355383a4e090c3",
+    "featurePullRequest": 1008,
+    "featureMergeSha": "5acc7612f109153820e71ed3f474f211be213601",
+    "featureMergedAtUtc": "2026-07-01T19:20:28Z",
+    "githubChecks": [
+      {
+        "name": "oss-policy",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "x1-runtime-parity (ubuntu-latest)",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "x1-runtime-parity (windows-latest)",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "ops_vector_close",
+        "result": "SUCCESS"
+      }
+    ]
+  },
   "decision": "REVIEW_BRIDGE_EXACT_APPLY_LANE_CLOSED_FOR_CURRENT_MVP_SCOPE",
-  "nextStep": "push_pr_merge_then_owner_selected_next_contour"
+  "nextStep": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001"
 }
