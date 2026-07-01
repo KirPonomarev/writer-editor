@@ -400,15 +400,27 @@ test('DOCX review local-file entry: selected DOCX comments activate an in-memory
   assert.equal(result.canAutoApply, false);
   assert.equal(result.canImportMutate, false);
   assert.equal(result.canWriteStorage, false);
-  assert.equal(result.reviewSurface.revisionSession.reviewGraph.commentThreads.length, 1);
+  const reviewGraph = result.reviewSurface.revisionSession.reviewGraph;
+  assert.equal(reviewGraph.commentThreads.length, 1);
   assert.equal(
-    result.reviewSurface.revisionSession.reviewGraph.commentThreads[0].messages[0].body,
+    reviewGraph.commentThreads[0].messages[0].body,
     'Resolve this comment.',
   );
+  assert.equal(reviewGraph.commentPlacements.length, 1);
+  assert.equal(reviewGraph.commentPlacements[0].policy, 'manual');
+  assert.equal(reviewGraph.commentPlacements[0].quote, 'Anchored text');
+  assert.deepEqual(reviewGraph.textChanges, []);
+  assert.deepEqual(reviewGraph.structuralChanges, []);
+  assert.equal(result.reviewSurface.blockedApplyPlan.canApply, false);
+  assert.deepEqual(result.reviewSurface.blockedApplyPlan.applyOps, []);
   assert.equal(port.calls.showOpenDialog.length, 1);
   assert.equal(port.calls.stat.length, 3);
   assert.equal(port.calls.readFile.length, 2);
   assert.equal(port.getState().activeReviewSessionLifecycle, 'active');
+  assert.equal(
+    port.getState().currentReviewSurfacePayload.revisionSession.reviewGraph.commentThreads[0].messages[0].body,
+    'Resolve this comment.',
+  );
   assertNoPrivateLocalFileFields(result);
 });
 

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001",
-  "status": "implemented_local_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_docx_review_local_file_entry",
   "featureExpansion": true,
   "baseSha": "c608541f93688150ddc3d0dee08b33dfaab01e5f",
@@ -143,11 +143,30 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending_delivery",
-    "featureCommitSha": "",
-    "featurePullRequest": null,
-    "featureMergeSha": ""
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "f3834df855dc8ed04e105c432055e489113956fd",
+    "featurePullRequest": 1015,
+    "featureMergeSha": "824d96b739bdbd8b7a45b1bf1664b003a2a65fd2",
+    "featureMergedAtUtc": "2026-07-01T21:42:16Z",
+    "githubChecks": [
+      {
+        "name": "oss-policy",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "x1-runtime-parity (ubuntu-latest)",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "x1-runtime-parity (windows-latest)",
+        "result": "SUCCESS"
+      },
+      {
+        "name": "ops_vector_close",
+        "result": "SUCCESS"
+      }
+    ]
   },
   "decision": "DOCX_REVIEW_LOCAL_FILE_ENTRY_OPENED_FOR_COMMENTS_ONLY_MANUAL_PREVIEW",
-  "nextStep": "complete delivery chain, then select the next explicit owner-approved contour"
+  "nextStep": "continue with REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001 as a separate product proof closeout contour"
 }

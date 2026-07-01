@@ -3,6 +3,11 @@
 Короткая хронология изменений и решений. Это не полный лог чата, а сжатые записи “что сделали / зачем / что дальше”.
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
+## 2026-07-02
+- Review Bridge: opened `REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001` as product proof for the already delivered DOCX comments-only Review path.
+- DOCX comments-only proof: rebound `REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001` to PR `1015` merge SHA `824d96b739bdbd8b7a45b1bf1664b003a2a65fd2`.
+- Scope truth: DOCX comments can reach the in-memory Review surface as commentThreads plus manual commentPlacements and open Review/Comments; no tracked-change apply, exact apply from DOCX, structural apply, comment auto-apply, receipt, recovery, project write, import/export MVP widening, release readiness, or Word parity is claimed.
+
 ## 2026-07-01
 - Review Bridge: opened `REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001` as the user-facing DOCX chooser entry for in-memory comments review.
 - DOCX review local-file entry: added `cmd.project.review.openDocxReviewPreviewSession` in the Review menu; main owns DOCX picker/stat/read/restat and calls the delivered preview-session activation path.

@@ -32,7 +32,7 @@ _Generated: 2026-07-01_
 - Active axis: `Writer v1`
 - Primary editor path: closed and primary
 - Legacy editor truth: no longer primary
-- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, historical vertical sheets baseline, C05 long-document closeout, current 01R quarantine for tracked vertical sheet reds, editorial sheet 10000 committed stress evidence, import/export MVP-scope closeout, review bridge exact-apply lane closeout, delivered DOCX review preflight, and local DOCX review preview session activation work.
+- Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, historical vertical sheets baseline, C05 long-document closeout, current 01R quarantine for tracked vertical sheet reds, editorial sheet 10000 committed stress evidence, import/export MVP-scope closeout, review bridge exact-apply lane closeout, delivered DOCX review preflight, delivered DOCX review local-file entry, and DOCX comments-only product proof work.
 
 ## Local Machine State
 - This file describes a snapshot-bound mainline reality, not the forever-current state of the local machine.
@@ -64,8 +64,9 @@ _Generated: 2026-07-01_
 - DOCX review preview session activation is delivered and merged via PR `1014` at merge SHA `c608541f93688150ddc3d0dee08b33dfaab01e5f`; it is tracked by `REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001_STATUS.json`.
 - `cmd.project.review.activateDocxReviewPreviewSession` accepts pathless DOCX bytes, converts DOCX comments into bounded Review Packet comment threads, activates an in-memory Stage01 preview Review session, and opens Review/Comments on success.
 - DOCX review preview session activation keeps tracked changes diagnostic-only, keeps comment placements manual, uses main-owned project/file/baseline context, and does not write manuscript truth, project truth, receipt, or recovery evidence.
-- DOCX review local-file entry is current work tracked by `REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001_STATUS.json`: Review menu exposes `cmd.project.review.openDocxReviewPreviewSession`, main owns DOCX picker/stat/read/restat, and the selected file opens the delivered in-memory comments review activation path.
-- DOCX review local-file entry is separate from DOCX import preview and safe-create; it does not write manuscript truth, project truth, receipt, or recovery evidence.
+- DOCX review local-file entry is delivered and merged via PR `1015` at merge SHA `824d96b739bdbd8b7a45b1bf1664b003a2a65fd2`; it is tracked by `REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001_STATUS.json`.
+- `REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001_STATUS.json` product-proofs the current DOCX comments-only review preview path: Review menu exposes `cmd.project.review.openDocxReviewPreviewSession`, main owns DOCX picker/stat/read/restat, selected DOCX comments reach the in-memory Review surface as commentThreads plus manual commentPlacements, and successful activation opens Review/Comments through the canonical runtime command path.
+- DOCX comments-only review preview is separate from DOCX import preview and safe-create; it does not create textChanges from tracked changes, applyOps, manuscript truth writes, project truth writes, receipt, or recovery evidence.
 - Review bridge exact-apply lane closeout does not claim cross-scene batch atomicity, multi-file transaction truth, structural auto-apply, comment auto-apply, full review import automation, full import/export completion beyond the existing MVP closeout, full Word layout parity, PDF/EPUB/HTML export, user-facing Mindmap export command, release readiness, or Y9 admission.
 - DOCX review preflight command itself does not claim review packet activation or automatic Review session opening; activation is owned by the separate preview-session contour.
 - DOCX review preview session activation does not claim full DOCX review import, tracked-change apply, exact apply, structural apply, comment auto-apply, receipt or recovery creation, Word layout parity, or broad DOCX fidelity.
