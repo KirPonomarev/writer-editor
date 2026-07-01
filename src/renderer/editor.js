@@ -987,6 +987,19 @@ function reviewSurfaceBuildReviewItems(state) {
     });
   }
 
+  for (const item of reviewSurfaceArray(reviewGraph.diagnosticItems)) {
+    const diagnosticId = reviewSurfaceText(item?.diagnosticId) || `diagnostic-${items.length}`;
+    const severity = reviewSurfaceText(item?.severity) || 'info';
+    const scopeId = reviewSurfaceText(item?.targetScope?.id);
+    items.push({
+      itemId: `diagnostic:${diagnosticId}`,
+      title: `Диагностика ${diagnosticId}`,
+      body: reviewSurfaceText(item?.message) || 'Диагностическое наблюдение доступно только для чтения.',
+      meta: [severity, 'Только чтение', scopeId ? `Источник ${scopeId}` : 'DOCX evidence'].filter(Boolean),
+      tone: 'readonly',
+    });
+  }
+
   return items;
 }
 

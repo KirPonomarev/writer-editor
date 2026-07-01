@@ -539,6 +539,49 @@ test('DOCX review local-file entry: clean DOCX leaves session passive with no ca
   assertNoPrivateLocalFileFields(result);
 });
 
+test('DOCX review local-file entry: tracked changes open diagnostic-only evidence surface', async () => {
+  const bytes = cleanDocxZip([
+    paragraphXml('Before'),
+    '<w:ins><w:p><w:r><w:t>Inserted</w:t></w:r></w:p></w:ins>',
+  ].join(''));
+  const port = instantiateDocxReviewLocalFileEntryPort({ bytes });
+  const result = await port.MENU_COMMAND_HANDLERS['cmd.project.review.openDocxReviewPreviewSession']({
+    requestId: 'tracked-local-docx-review',
+  });
+
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.equal(result.commandId, 'cmd.project.review.openDocxReviewPreviewSession');
+  assert.equal(result.requestId, 'tracked-local-docx-review');
+  assert.equal(result.activated, true);
+  assert.equal(result.diagnosticOnly, true);
+  assert.equal(result.canOpenReviewSession, false);
+  assert.equal(result.canCreateReviewPacket, false);
+  assert.equal(result.canAutoApply, false);
+  assert.equal(result.canImportMutate, false);
+  assert.equal(result.canWriteStorage, false);
+  const reviewGraph = result.reviewSurface.revisionSession.reviewGraph;
+  assert.deepEqual(reviewGraph.commentThreads, []);
+  assert.deepEqual(reviewGraph.commentPlacements, []);
+  assert.deepEqual(reviewGraph.textChanges, []);
+  assert.deepEqual(reviewGraph.structuralChanges, []);
+  assert.equal(reviewGraph.diagnosticItems.length, 1);
+  assert.equal(reviewGraph.diagnosticItems[0].diagnosticId, 'docx-review-tracked-insertCount');
+  assert.equal(result.reviewSurface.blockedApplyPlan.canApply, false);
+  assert.deepEqual(result.reviewSurface.blockedApplyPlan.applyOps, []);
+  assert.deepEqual(cloneJsonSafe(port.runtimeCommands), [
+    {
+      commandId: 'cmd.project.review.openComments',
+      payload: {
+        source: 'review-docx-local-file-preview-session',
+        requestId: 'tracked-local-docx-review',
+      },
+      legacyCommand: 'review-comment',
+    },
+  ]);
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'active');
+  assertNoPrivateLocalFileFields(result);
+});
+
 test('DOCX review local-file entry: source stays separate from import safe-create and disk writes', () => {
   const source = extractMarkedSection(readSource(MAIN_PATH), LOCAL_ENTRY_SECTION_START, LOCAL_ENTRY_SECTION_END);
   for (const forbidden of [

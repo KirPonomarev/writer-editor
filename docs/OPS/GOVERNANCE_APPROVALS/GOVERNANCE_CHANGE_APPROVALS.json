@@ -2,6 +2,41 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001_STATUS.json",
+      "sha256": "6ea05d83f28ff88fd2fdcb9e6bd501878eb301235a72f03d710706cb0587324d",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded DOCX diagnostic evidence surface status; tracked-changes-only DOCX may become visible read-only diagnosticItems in Review, while no DOCX import safe-create, DOCX export, textChanges, applyOps, manuscript write, project truth write, receipt, recovery, dependency, network, release readiness, Word parity, or full DOCX review import claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-docx-diagnostic-evidence-surface.contract.test.js",
+      "sha256": "8af4d9e06ff175d3b0d7aa54fb42a8c5a0ae92fbfe99b7fc321731900bfbe8de",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve contract guard for the bounded DOCX diagnostic evidence surface; it binds status, no-import and no-apply claims, code markers, targeted tests, and current docs without introducing storage, export, safe-create, dependency, network, release, Word parity, or full DOCX review import authority."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
+      "sha256": "8e8c952929b4e16e3d40378d4329294ab73fb182c438b9106cadf7383dddfa21",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve local-file command-surface contract update proving tracked-changes-only DOCX opens read-only diagnosticItems through the existing main-owned DOCX review local-file path while keeping requestId-only renderer authority, no textChanges, no applyOps, no receipt, no recovery, no project truth write, no safe-create import, no export, no release, and no full DOCX review import claim."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
+      "sha256": "1f8b8ed516babf20c0602ba4c72d12bda011b9249f50ce6871dd7b8da3b7d708",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve preview-session command-surface contract update proving tracked-changes-only DOCX opens diagnostic-only Review visibility with canOpenReviewSession false, canCreateReviewPacket false, no textChanges, no structuralChanges, empty blocked applyOps, no receipt, no recovery, no storage, no import mutation, and no release or full DOCX review import claim."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",
+      "sha256": "3af2a26a274607e4416c89cc51f8e849a5ea70174b72f2679bc5f67ce78e2a40",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve pure-builder contract update proving tracked changes build only a bounded diagnostic-only visibility packet with diagnosticItems and no textChanges, structuralChanges, applyOps, receipt, recovery, disk authority, command authority, export authority, safe-create import, release, Word parity, or full DOCX review import claim."
+    },
+    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001_STATUS.json",
       "sha256": "6400907bc4dd30c3decd54cf4cdaee884abc913272c405c66fe44a0c769b42c7",
       "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001",
@@ -51,32 +86,11 @@
       "rationale": "Approve bounded menu contract update proving the Review menu exposes the separate DOCX review local-file command next to Review Packet import; no renderer redesign, toolbar redesign, safe-create import widening, dependency, network, release, or full DOCX review import claim is introduced."
     },
     {
-      "filePath": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
-      "sha256": "593b7b5bff0db136709dea060373e858565a1ea1c0fbb2b123ec694f1b46b62a",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve strengthened command-surface contract proof for DOCX comments-only Review preview; the user-facing local-file path now asserts commentThreads, manual commentPlacements, zero textChanges, zero structuralChanges, blockedApplyPlan canApply false, empty applyOps, requestId-only renderer authority, and no safe-create import, receipt, recovery, project truth write, import-export MVP expansion, release readiness, Word parity, or full DOCX review import claim."
-    },
-    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json",
       "sha256": "5c2736d4dc31ae57034204eca38173c9f3d51052bf413547f3ab6a2c74cdba23",
       "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREFLIGHT_001",
       "approvedAtUtc": "2026-07-01T21:04:43.000Z",
       "rationale": "Approve factual delivery rebind for REVIEW_BRIDGE_DOCX_PREFLIGHT_001 after PR 1013 merge; scope remains diagnostic-only DOCX review preflight with no review session, apply, receipt, recovery, project write, import-export MVP expansion, dependency, network, UI, release, Word parity, or full DOCX review import claim."
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",
-      "sha256": "0c28b05b07a9c01482aa2cec45175cb8a3bc6e8241fb9e702da764ed54f33b75",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001",
-      "approvedAtUtc": "2026-07-01T21:04:43.000Z",
-      "rationale": "Approve bounded pure-builder contract proof for DOCX review preview session candidate; comments become bounded Review Packet comment threads, tracked changes stay diagnostic-only, Stage01 remains preview-only with blocked apply, and no disk, command, export, receipt, recovery, dependency, network, UI, or full DOCX review import claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
-      "sha256": "9a90f99c61c8104f9b40273fa6b6e87714b8d7dfdc261ef850316d50bb24c8ad",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001",
-      "approvedAtUtc": "2026-07-01T21:04:43.000Z",
-      "rationale": "Approve bounded command-surface contract proof for DOCX review preview session activation; renderer authority stays requestId and bufferSource only, main owns project/file/baseline context, successful activation opens Review/Comments, no-candidate inputs stay passive, and no exact apply, structural apply, receipt, recovery, project truth write, import-export MVP expansion, dependency, network, UI, or full DOCX review import claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-review-preflight.contract.test.js",

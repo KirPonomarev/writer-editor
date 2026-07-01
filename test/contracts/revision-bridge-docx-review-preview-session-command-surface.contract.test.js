@@ -419,7 +419,7 @@ test('DOCX review preview session command: forbidden renderer fields are rejecte
   assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
 });
 
-test('DOCX review preview session command: tracked changes alone do not activate session', async () => {
+test('DOCX review preview session command: tracked changes open diagnostic-only evidence surface', async () => {
   const port = instantiateDocxReviewPreviewSessionPort();
   const result = await port.handleDocxReviewPreviewSessionActivationCommandSurface(
     toPayload(cleanDocxZip([
@@ -431,10 +431,25 @@ test('DOCX review preview session command: tracked changes alone do not activate
     },
   );
 
-  assert.equal(result.ok, false);
-  assert.equal(result.error.code, 'E_DOCX_REVIEW_PREVIEW_SESSION_NO_CANDIDATE');
-  assert.equal(result.error.details.candidateSummary.diagnosticItemCount, 1);
-  assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.equal(result.activated, true);
+  assert.equal(result.diagnosticOnly, true);
+  assert.equal(result.canOpenReviewSession, false);
+  assert.equal(result.canCreateReviewPacket, false);
+  assert.equal(result.canAutoApply, false);
+  assert.equal(result.canImportMutate, false);
+  assert.equal(result.canWriteStorage, false);
+  assert.equal(result.candidateSummary.status, 'diagnostics');
+  assert.equal(result.candidateSummary.diagnosticItemCount, 1);
+  const reviewGraph = result.reviewSurface.revisionSession.reviewGraph;
+  assert.equal(reviewGraph.diagnosticItems.length, 1);
+  assert.equal(reviewGraph.diagnosticItems[0].diagnosticId, 'docx-review-tracked-insertCount');
+  assert.deepEqual(reviewGraph.textChanges, []);
+  assert.deepEqual(reviewGraph.structuralChanges, []);
+  assert.equal(result.reviewSurface.blockedApplyPlan.canApply, false);
+  assert.deepEqual(result.reviewSurface.blockedApplyPlan.applyOps, []);
+  assertNoWriteReceiptsOrApplyAuthority(result);
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'active');
 });
 
 test('DOCX review preview session command: source section has no storage write authority', () => {
