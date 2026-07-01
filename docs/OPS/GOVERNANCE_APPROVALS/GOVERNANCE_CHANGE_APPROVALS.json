@@ -10,10 +10,17 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001_STATUS.json",
-      "sha256": "dd150553866ef838a4a3d74441a75817f70addcc8bcc06694216654242aa7951",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001",
+      "sha256": "b8378b0186b174141d20baf50f66754fe919a985cd1ea3f9a0b7695e1ac3906c",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded factual status artifact for DOCX review local-file entry; Review menu may pick a DOCX in main and open the delivered in-memory comments Review session activation path, while renderer authority stays requestId-only and no safe-create import, exact apply, structural apply, receipt, recovery, manuscript write, project truth write, import-export MVP expansion, dependency, network, UI redesign, release, Word parity, or full DOCX review import claim is introduced."
+      "rationale": "Approve factual delivery rebind for REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001 after PR 1015 merge; scope remains a main-owned DOCX local-file Review entry that opens the delivered comments-only in-memory Review session path, with no safe-create import, exact apply from DOCX, structural apply, receipt, recovery, manuscript write, project truth write, import-export MVP expansion, dependency, network, release readiness, Word parity, or full DOCX review import claim."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001_STATUS.json",
+      "sha256": "941010f93ae59ea83706d4a9a2f02b4d3478a22a10041edee72b136faf019f62",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded product proof status for DOCX comments-only Review preview; the proof binds Review menu local DOCX selection to in-memory commentThreads and manual commentPlacements on the Review surface, while preserving no tracked-change apply, no textChanges from DOCX tracked changes, no applyOps, no receipt, no recovery, no manuscript write, no project truth write, no import-export MVP expansion, no release readiness, no Word parity, and no full DOCX review import claim."
     },
     {
       "filePath": "test/contracts/menu-config-v2.contract.test.js",
@@ -24,10 +31,10 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
-      "sha256": "7c72b0dd9a799483d7c25083eff52756a1f48ae245d801e2783cc2100b76fb46",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001",
+      "sha256": "593b7b5bff0db136709dea060373e858565a1ea1c0fbb2b123ec694f1b46b62a",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded command-surface contract proof for DOCX review local-file entry; main owns picker, stat, read, restat, DOCX bytes, and Review activation handoff, renderer authority is requestId-only, no-candidate inputs stay passive, and no exact apply, structural apply, receipt, recovery, project truth write, import-export MVP expansion, dependency, network, UI redesign, release, Word parity, or full DOCX review import claim is introduced."
+      "rationale": "Approve strengthened command-surface contract proof for DOCX comments-only Review preview; the user-facing local-file path now asserts commentThreads, manual commentPlacements, zero textChanges, zero structuralChanges, blockedApplyPlan canApply false, empty applyOps, requestId-only renderer authority, and no safe-create import, receipt, recovery, project truth write, import-export MVP expansion, release readiness, Word parity, or full DOCX review import claim."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json",

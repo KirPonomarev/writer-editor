@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001",
+  "status": "implemented_local_verified_pending_delivery",
+  "type": "review_bridge_docx_comment_only_product_proof",
+  "featureExpansion": false,
+  "baseSha": "824d96b739bdbd8b7a45b1bf1664b003a2a65fd2",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": false,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "reviewSessionActivation": true,
+    "autoApply": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false
+  },
+  "binding": {
+    "localFileEntryTaskId": "REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001",
+    "localFileEntryPullRequest": 1015,
+    "localFileEntryCommitSha": "f3834df855dc8ed04e105c432055e489113956fd",
+    "localFileEntryMergeSha": "824d96b739bdbd8b7a45b1bf1664b003a2a65fd2",
+    "localFileEntryStatus": "delivered_merged_verified"
+  },
+  "positiveClaims": [
+    "DOCX comments-only review preview is product-proofed through the Review menu local-file entry.",
+    "A selected DOCX with anchored comments opens an in-memory Review session through the delivered preview-session activation path.",
+    "The opened Review surface contains DOCX commentThreads and manual commentPlacements.",
+    "The Comments panel opens through the existing canonical runtime command path after successful local-file activation.",
+    "Renderer and menu payload authority remains requestId-only for the local-file entry.",
+    "Clean DOCX, tracked-changes-only DOCX, unsafe or invalid DOCX input, cancel, oversized file, changed file, read failure, and renderer authority injection remain fail-closed or passive.",
+    "The product proof keeps DOCX review local-file entry separate from DOCX import preview and DOCX safe-create flows."
+  ],
+  "nonClaims": [
+    "No full DOCX review import is claimed.",
+    "No DOCX tracked-change apply is claimed.",
+    "No exact apply from DOCX is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed by DOCX comments-only review preview.",
+    "No project truth write is performed by DOCX comments-only review preview.",
+    "No receipt or recovery evidence is created by DOCX comments-only review preview.",
+    "No import/export MVP closeout is widened.",
+    "No release readiness is claimed.",
+    "No Word layout parity or full DOCX fidelity is claimed.",
+    "No PDF, EPUB, HTML, Mindmap, cloud, sync, accounts, cross-platform readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "DOCX remains external evidence transport and never becomes project truth.",
+    "DOCX comments-only review preview is a Review Bridge product proof, not a content import flow.",
+    "CommentThread content and CommentPlacement targeting stay separate.",
+    "CommentPlacements produced from DOCX anchors remain manual and do not authorize text mutation.",
+    "Tracked changes remain diagnostic-only and do not become textChanges or applyOps.",
+    "The Review surface is UI/session visibility only and does not become a source of truth.",
+    "Delivery rebind for PR 1015 is a precondition truth sync, not a new product capability."
+  ],
+  "implementation": {
+    "changedProductionRuntime": false,
+    "changedUi": false,
+    "changedTests": [
+      "revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js"
+    ],
+    "changedStatusArtifacts": [
+      "REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001_STATUS.json"
+    ],
+    "newStatusArtifacts": [
+      "REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001_STATUS.json"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --check src/main.js and node --check src/io/revisionBridge/index.mjs",
+      "status": "pass"
+    },
+    {
+      "command": "node --test targeted DOCX review local-file, preview-session, and preflight contracts",
+      "status": "pass",
+      "tests": 29
+    },
+    {
+      "command": "node --test targeted Review mutate, DOCX import boundary, menu, and release claim boundary contracts",
+      "status": "pass",
+      "tests": 92
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "menuEntry": "review-open-docx-review-preview-session",
+    "commandId": "cmd.project.review.openDocxReviewPreviewSession",
+    "commentsPanelOpenCommand": "cmd.project.review.openComments",
+    "commentsPanelOpenSource": "review-docx-local-file-preview-session",
+    "commentThreadsReachReviewSurface": true,
+    "manualCommentPlacementsReachReviewSurface": true,
+    "textChangesFromDocxTrackedChanges": false,
+    "applyOpsCreated": false,
+    "receiptCreated": false,
+    "recoveryCreated": false,
+    "projectTruthMutated": false
+  },
+  "agentAudits": [
+    {
+      "agentId": "019f1fa8-5f1e-7740-a48c-59f16607d1b9",
+      "role": "read_only_runtime_test_inspector",
+      "verdict": "runtime path already narrow and honest; missing gap is proof and status-layer closeout rather than product behavior",
+      "localResolution": "addressed by delivery rebind, product proof status, strengthened local-file command contract assertions, and factual docs sync"
+    },
+    {
+      "agentId": "019f1fa8-818a-7291-a702-9e807c054633",
+      "role": "independent_skeptic_auditor",
+      "verdict": "block until proof artifact, test expansion, factual docs, commit, push, PR, and merge are delivered into repo truth",
+      "localResolution": "accepted; this contour remains pending_delivery until the delivery chain is complete"
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": ""
+  },
+  "decision": "DOCX_COMMENTS_ONLY_REVIEW_PREVIEW_PRODUCT_PROOF_BOUND_FOR_CURRENT_SCOPE",
+  "nextStep": "after delivery, continue to Review Bridge first useful release gate"
+}
