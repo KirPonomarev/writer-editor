@@ -1546,6 +1546,383 @@ async function handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(paylo
 }
 // CONTOUR_01A_REVIEW_MUTATE_PORT_END
 
+// REVIEW_LOCAL_PACKET_COMMAND_SURFACE_START
+const REVIEW_IMPORT_LOCAL_PACKET_COMMAND_ID = 'cmd.project.review.importLocalPacket';
+const REVIEW_IMPORT_LOCAL_PACKET_MAX_BYTES = 2 * 1024 * 1024;
+const REVIEW_IMPORT_LOCAL_PACKET_ALLOWED_PAYLOAD_KEYS = new Set(['requestId']);
+const REVIEW_IMPORT_LOCAL_PACKET_ALLOWED_SELECTION_KEYS = new Set(['path', 'filePath', 'name', 'size', 'requestId', 'canceled']);
+const REVIEW_IMPORT_LOCAL_PACKET_FORBIDDEN_WRITE_EVIDENCE_KEYS = new Set([
+  'receipt',
+  'exactTextApplyReceipts',
+  'lastExactTextApplyReceipt',
+  'lastExactTextApplyReceipts',
+  'exactTextApplyResult',
+  'lastExactTextApplyResult',
+  'exactTextAppliedChangeIds',
+  'exactTextBatchApplyResult',
+  'lastExactTextApplyBatchResult',
+]);
+
+function makeReviewImportLocalPacketTypedError(code, reason, details = undefined) {
+  return makeReviewMutateTypedError(REVIEW_IMPORT_LOCAL_PACKET_COMMAND_ID, code, reason, details);
+}
+
+function normalizeReviewImportLocalPacketRequestId(value) {
+  return typeof value === 'string' && value.trim()
+    ? value.trim()
+    : 'review-import-local-packet-request';
+}
+
+function getReviewImportLocalPacketByteLength(text) {
+  if (typeof Buffer !== 'undefined' && Buffer && typeof Buffer.byteLength === 'function') {
+    return Buffer.byteLength(String(text || ''), 'utf8');
+  }
+  return String(text || '').length;
+}
+
+function makeReviewImportLocalPacketReadError(code, reason, details = undefined) {
+  const error = new Error(reason);
+  error.code = code;
+  error.reason = reason;
+  if (isPlainObjectValue(details)) {
+    error.details = details;
+  }
+  return error;
+}
+
+function findReviewImportLocalPacketForbiddenWriteEvidence(value, pathParts = []) {
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) => (
+      findReviewImportLocalPacketForbiddenWriteEvidence(item, pathParts.concat(String(index)))
+    ));
+  }
+  if (!isPlainObjectValue(value)) {
+    return [];
+  }
+
+  return Object.keys(value).flatMap((key) => {
+    const keyPath = pathParts.concat(key);
+    const nested = findReviewImportLocalPacketForbiddenWriteEvidence(value[key], keyPath);
+    return REVIEW_IMPORT_LOCAL_PACKET_FORBIDDEN_WRITE_EVIDENCE_KEYS.has(key)
+      ? [keyPath.join('.'), ...nested]
+      : nested;
+  });
+}
+
+async function pickReviewImportLocalPacketFile(options = {}) {
+  const dialogResult = await dialog.showOpenDialog(mainWindow, {
+    title: 'Import Review Packet',
+    defaultPath: fileManager.getDocumentsPath(),
+    filters: [{ name: 'Review Packet JSON', extensions: ['json'] }],
+    properties: ['openFile'],
+  });
+
+  if (!dialogResult || dialogResult.canceled === true) {
+    return { canceled: true };
+  }
+
+  const filePath = Array.isArray(dialogResult.filePaths) && typeof dialogResult.filePaths[0] === 'string'
+    ? dialogResult.filePaths[0].trim()
+    : '';
+  if (!filePath) {
+    return {};
+  }
+
+  let size = null;
+  try {
+    const stat = await fs.stat(filePath);
+    if (stat && typeof stat.isFile === 'function' && stat.isFile()) {
+      size = Number.isFinite(stat.size) && stat.size >= 0 ? Math.floor(stat.size) : null;
+    }
+  } catch {}
+
+  return {
+    path: filePath,
+    name: path.basename(filePath),
+    size,
+    requestId: normalizeReviewImportLocalPacketRequestId(options.requestId),
+  };
+}
+
+function validateReviewImportLocalPacketSelection(selection, requestId) {
+  if (!isPlainObjectValue(selection)) {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_SELECTION_INVALID',
+      'REVIEW_IMPORT_LOCAL_PACKET_SELECTION_INVALID',
+    );
+  }
+
+  const unsupportedKeys = Object.keys(selection)
+    .filter((key) => !REVIEW_IMPORT_LOCAL_PACKET_ALLOWED_SELECTION_KEYS.has(key))
+    .sort();
+  if (unsupportedKeys.length > 0) {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_SELECTION_INVALID',
+      'REVIEW_IMPORT_LOCAL_PACKET_SELECTION_UNSUPPORTED_FIELDS',
+      { fields: unsupportedKeys },
+    );
+  }
+
+  const filePath = typeof selection.path === 'string' && selection.path.trim()
+    ? selection.path.trim()
+    : typeof selection.filePath === 'string' && selection.filePath.trim()
+      ? selection.filePath.trim()
+      : '';
+  if (!filePath) {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_SELECTION_INVALID',
+      'REVIEW_IMPORT_LOCAL_PACKET_FILE_REQUIRED',
+    );
+  }
+
+  if (path.extname(filePath).toLowerCase() !== '.json') {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_SELECTION_INVALID',
+      'REVIEW_IMPORT_LOCAL_PACKET_JSON_REQUIRED',
+    );
+  }
+
+  const size = Number.isFinite(selection.size) && selection.size >= 0
+    ? Math.floor(selection.size)
+    : null;
+  if (size === null) {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_SELECTION_INVALID',
+      'REVIEW_IMPORT_LOCAL_PACKET_SIZE_REQUIRED',
+    );
+  }
+  if (size !== null && size > REVIEW_IMPORT_LOCAL_PACKET_MAX_BYTES) {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_TOO_LARGE',
+      'REVIEW_IMPORT_LOCAL_PACKET_TOO_LARGE',
+      {
+        maxBytes: REVIEW_IMPORT_LOCAL_PACKET_MAX_BYTES,
+        actualBytes: size,
+      },
+    );
+  }
+
+  return {
+    ok: true,
+    value: {
+      path: filePath,
+      name: typeof selection.name === 'string' && selection.name.trim()
+        ? path.basename(selection.name.trim())
+        : path.basename(filePath),
+      size,
+      requestId,
+    },
+  };
+}
+
+async function readReviewImportLocalPacketText(selection) {
+  if (!isPlainObjectValue(selection) || typeof selection.path !== 'string' || !selection.path.trim()) {
+    throw new TypeError('REVIEW_IMPORT_LOCAL_PACKET_SELECTION_INVALID');
+  }
+  const filePath = selection.path.trim();
+  let stat;
+  try {
+    stat = await fs.stat(filePath);
+  } catch (error) {
+    throw makeReviewImportLocalPacketReadError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_READ_FAILED',
+      'REVIEW_IMPORT_LOCAL_PACKET_STAT_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+  if (!stat || typeof stat.isFile !== 'function' || !stat.isFile()) {
+    throw makeReviewImportLocalPacketReadError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_SELECTION_INVALID',
+      'REVIEW_IMPORT_LOCAL_PACKET_FILE_REQUIRED',
+    );
+  }
+  const actualBytes = Number.isFinite(stat.size) && stat.size >= 0
+    ? Math.floor(stat.size)
+    : null;
+  if (actualBytes === null) {
+    throw makeReviewImportLocalPacketReadError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_SELECTION_INVALID',
+      'REVIEW_IMPORT_LOCAL_PACKET_SIZE_REQUIRED',
+    );
+  }
+  if (actualBytes > REVIEW_IMPORT_LOCAL_PACKET_MAX_BYTES) {
+    throw makeReviewImportLocalPacketReadError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_TOO_LARGE',
+      'REVIEW_IMPORT_LOCAL_PACKET_TOO_LARGE',
+      {
+        maxBytes: REVIEW_IMPORT_LOCAL_PACKET_MAX_BYTES,
+        actualBytes,
+      },
+    );
+  }
+  return fs.readFile(filePath, 'utf8');
+}
+
+function parseReviewImportLocalPacketJson(text) {
+  if (typeof text !== 'string') {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_READ_INVALID',
+      'REVIEW_IMPORT_LOCAL_PACKET_TEXT_REQUIRED',
+    );
+  }
+
+  const actualBytes = getReviewImportLocalPacketByteLength(text);
+  if (actualBytes > REVIEW_IMPORT_LOCAL_PACKET_MAX_BYTES) {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_TOO_LARGE',
+      'REVIEW_IMPORT_LOCAL_PACKET_TOO_LARGE',
+      {
+        maxBytes: REVIEW_IMPORT_LOCAL_PACKET_MAX_BYTES,
+        actualBytes,
+      },
+    );
+  }
+
+  if (!text.trim()) {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_JSON_INVALID',
+      'REVIEW_IMPORT_LOCAL_PACKET_EMPTY',
+    );
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (error) {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_JSON_INVALID',
+      'REVIEW_IMPORT_LOCAL_PACKET_JSON_INVALID',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+
+  if (!isPlainObjectValue(parsed)) {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_JSON_INVALID',
+      'REVIEW_IMPORT_LOCAL_PACKET_ROOT_OBJECT_REQUIRED',
+    );
+  }
+
+  return { ok: true, value: parsed };
+}
+
+async function handleReviewSurfaceImportLocalPacketCommandSurface(payload = {}, options = {}) {
+  const safePayload = isPlainObjectValue(payload) ? payload : {};
+  const unsupportedPayloadKeys = Object.keys(safePayload)
+    .filter((key) => !REVIEW_IMPORT_LOCAL_PACKET_ALLOWED_PAYLOAD_KEYS.has(key))
+    .sort();
+  if (unsupportedPayloadKeys.length > 0) {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_PAYLOAD_INVALID',
+      'REVIEW_IMPORT_LOCAL_PACKET_PAYLOAD_UNSUPPORTED_FIELDS',
+      { fields: unsupportedPayloadKeys },
+    );
+  }
+
+  const requestId = normalizeReviewImportLocalPacketRequestId(safePayload.requestId);
+  const pickLocalFile = typeof options.pickLocalFile === 'function'
+    ? options.pickLocalFile
+    : pickReviewImportLocalPacketFile;
+  const readLocalFileText = typeof options.readLocalFileText === 'function'
+    ? options.readLocalFileText
+    : readReviewImportLocalPacketText;
+
+  let selectedFile;
+  try {
+    selectedFile = await pickLocalFile({ requestId });
+  } catch (error) {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_PICK_FAILED',
+      'REVIEW_IMPORT_LOCAL_PACKET_PICK_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+
+  if (selectedFile && selectedFile.canceled === true) {
+    return {
+      ok: true,
+      commandId: REVIEW_IMPORT_LOCAL_PACKET_COMMAND_ID,
+      requestId,
+      imported: false,
+      cancelled: true,
+    };
+  }
+
+  const selection = validateReviewImportLocalPacketSelection(selectedFile, requestId);
+  if (!selection.ok) {
+    return selection;
+  }
+
+  let text;
+  try {
+    text = await readLocalFileText(selection.value);
+  } catch (error) {
+    const code = typeof error?.code === 'string' && error.code.startsWith('E_REVIEW_IMPORT_LOCAL_PACKET')
+      ? error.code
+      : 'E_REVIEW_IMPORT_LOCAL_PACKET_READ_FAILED';
+    const reason = typeof error?.reason === 'string' && error.reason
+      ? error.reason
+      : 'REVIEW_IMPORT_LOCAL_PACKET_READ_FAILED';
+    const details = isPlainObjectValue(error?.details)
+      ? error.details
+      : {
+          message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+        };
+    return makeReviewImportLocalPacketTypedError(
+      code,
+      reason,
+      details,
+    );
+  }
+
+  const parsed = parseReviewImportLocalPacketJson(text);
+  if (!parsed.ok) {
+    return parsed;
+  }
+
+  const forbiddenWriteEvidence = findReviewImportLocalPacketForbiddenWriteEvidence(parsed.value);
+  if (forbiddenWriteEvidence.length > 0) {
+    return makeReviewImportLocalPacketTypedError(
+      'E_REVIEW_IMPORT_LOCAL_PACKET_WRITE_EVIDENCE_DENIED',
+      'REVIEW_IMPORT_LOCAL_PACKET_WRITE_EVIDENCE_DENIED',
+      {
+        fields: forbiddenWriteEvidence.slice(0, 25),
+      },
+    );
+  }
+
+  const importResult = await handleReviewSurfaceImportPacketCommandSurface(parsed.value);
+  if (!importResult || importResult.ok !== true) {
+    const nestedError = isPlainObjectValue(importResult?.error) ? importResult.error : {};
+    return makeReviewImportLocalPacketTypedError(
+      typeof nestedError.code === 'string' && nestedError.code
+        ? nestedError.code
+        : 'E_REVIEW_IMPORT_LOCAL_PACKET_IMPORT_FAILED',
+      typeof nestedError.reason === 'string' && nestedError.reason
+        ? nestedError.reason
+        : 'REVIEW_IMPORT_LOCAL_PACKET_IMPORT_FAILED',
+      isPlainObjectValue(nestedError.details) ? nestedError.details : undefined,
+    );
+  }
+
+  return {
+    ok: true,
+    commandId: REVIEW_IMPORT_LOCAL_PACKET_COMMAND_ID,
+    requestId,
+    imported: true,
+    fileName: selection.value.name,
+    session: importResult.session,
+    reviewSurface: importResult.reviewSurface,
+  };
+}
+// REVIEW_LOCAL_PACKET_COMMAND_SURFACE_END
+
 // DOCX_INTAKE_GATE_COMMAND_SURFACE_START
 const DOCX_INTAKE_GATE_COMMAND_ID = 'cmd.project.review.inspectDocxIntakeGate';
 const DOCX_INTAKE_GATE_MAX_BYTES = 10 * 1024 * 1024;
@@ -7900,6 +8277,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.importMarkdownV1',
   'cmd.project.exportMarkdownV1',
   'cmd.project.releaseClaim.admit',
+  'cmd.project.review.importLocalPacket',
   'cmd.project.review.importPacket',
   'cmd.project.review.clearSession',
   'cmd.project.review.applyExactTextChange',
@@ -8029,11 +8407,30 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.releaseClaim.admit': async (payload = {}) => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RELEASE_CLAIM_ADMIT, payload);
   },
+  'cmd.project.review.importLocalPacket': async (payload = {}) => {
+    const result = await handleReviewSurfaceImportLocalPacketCommandSurface(payload);
+    if (result && result.ok === true && result.imported === true) {
+      sendCanonicalRuntimeCommand(
+        'cmd.project.review.openComments',
+        { source: 'review-import-local-packet', requestId: result.requestId },
+        'review-comment',
+      );
+    }
+    return result;
+  },
   'cmd.project.review.importPacket': async (payload = {}) => {
     return handleReviewSurfaceImportPacketCommandSurface(payload);
   },
   'cmd.project.review.clearSession': async () => {
-    return handleReviewSurfaceClearSessionCommandSurface();
+    const result = handleReviewSurfaceClearSessionCommandSurface();
+    if (result && result.ok === true) {
+      sendCanonicalRuntimeCommand(
+        'cmd.project.review.openComments',
+        { source: 'review-clear-session' },
+        'review-comment',
+      );
+    }
+    return result;
   },
   'cmd.project.review.applyExactTextChange': async (payload = {}) => {
     return handleReviewSurfaceApplyExactTextChangeCommandSurface(payload);

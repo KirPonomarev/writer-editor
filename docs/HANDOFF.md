@@ -53,6 +53,9 @@ _Generated: 2026-07-01_
 - Review bridge exact-apply lane closeout is bound by `REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001_STATUS.json`.
 - Review bridge exact-apply lane is closed for current MVP scope only: single exact text apply, duplicate/stale/dirty guards, and controlled same-scene batch exact apply.
 - Batch exact apply is all-or-none within one scene file and stays behind command bus, main-owned context, safe writer, recovery evidence, and intent-only renderer payload containing only `requestId` and `changeIds`.
+- Local JSON review packet product entry is bound by `REVIEW_BRIDGE_LOCAL_PACKET_PRODUCT_ENTRY_001_STATUS.json`: Review menu exposes Import Review Packet and Clear Review Session, `cmd.project.review.importLocalPacket` owns dialog/read/parse in main, renderer sends only `requestId`, and successful import opens Review/Comments through canonical runtime command handling.
+- Local packet intake rejects imported write-evidence fields such as receipts/applied result fields and restats the selected file before read.
+- This local packet entry is session/preview wiring only; it does not write manuscript truth and does not authorize apply.
 - Review bridge exact-apply lane closeout does not claim cross-scene batch atomicity, multi-file transaction truth, structural auto-apply, comment auto-apply, full review import automation, full import/export completion beyond the existing MVP closeout, full Word layout parity, PDF/EPUB/HTML export, user-facing Mindmap export command, release readiness, or Y9 admission.
 - Tiptap path is the primary editor path.
 - Phase 03 blocker is closed on main through the merged repair wave.

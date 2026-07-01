@@ -243,10 +243,22 @@
       "labelKey": "menu.review",
       "items": [
         {
+          "id": "review-import-local-packet",
+          "label": "Import Review Packet",
+          "labelKey": "menu.review.importLocalPacket",
+          "command": "cmd.project.review.importLocalPacket"
+        },
+        {
           "id": "review-mode",
           "label": "Open Review Mode",
           "labelKey": "menu.review.openMode",
           "command": "cmd.project.review.switchMode"
+        },
+        {
+          "id": "review-clear-session",
+          "label": "Clear Review Session",
+          "labelKey": "menu.review.clearSession",
+          "command": "cmd.project.review.clearSession"
         },
         {
           "id": "review-recovery",

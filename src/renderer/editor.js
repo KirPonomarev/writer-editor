@@ -488,6 +488,8 @@ function isPlainObject(value) {
 // REVIEW_SURFACE_PRESENTATION_START
 const REVIEW_SURFACE_RECEIPT_SCHEMA = 'revision-bridge.exact-text-min-safe-write.receipt.v1';
 const REVIEW_SURFACE_QUERY_ID = 'query.reviewSurface';
+const REVIEW_SURFACE_IMPORT_LOCAL_PACKET_COMMAND_ID = 'cmd.project.review.importLocalPacket';
+const REVIEW_SURFACE_CLEAR_SESSION_COMMAND_ID = 'cmd.project.review.clearSession';
 const REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID = 'cmd.project.review.applyExactTextChange';
 const REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID = 'cmd.project.review.applyExactTextChangesBatch';
 const REVIEW_SURFACE_EXACT_APPLY_BATCH_MAX_CHANGE_IDS = 10;
@@ -5398,7 +5400,9 @@ registerProjectCommands(commandRegistry, {
     listToggleOrdered: () => handleTiptapFormatCommand('toggleOrderedList'),
     listClear: () => handleTiptapFormatCommand('clearList'),
     insertLinkPrompt: (payload = {}) => handleInsertLinkPrompt(payload),
+    reviewImportLocalPacket: () => handleReviewImportLocalPacket(),
     reviewOpenComments: () => handleReviewOpenComments(),
+    reviewClearSession: () => handleReviewClearSession(),
     planFlowSave: () => handlePlanFlowSave(),
     reviewExportMarkdown: () => handleReviewExportMarkdown(),
     setTheme: (payload) => handleUiSetThemeCommand(payload),
@@ -9905,6 +9909,78 @@ async function handleReviewOpenComments() {
   return { performed: true, action: 'reviewOpenComments', reason: null };
 }
 
+function createReviewImportLocalPacketRequestId() {
+  return `review-import-local-packet-${Date.now()}`;
+}
+
+async function handleReviewImportLocalPacket() {
+  setToolbarColorPickerOpen(false);
+  setToolbarStylesMenuOpen(false);
+  const requestId = createReviewImportLocalPacketRequestId();
+
+  let bridgeResult = null;
+  try {
+    bridgeResult = await invokePreloadUiCommandBridge(REVIEW_SURFACE_IMPORT_LOCAL_PACKET_COMMAND_ID, { requestId });
+  } catch (error) {
+    const reason = error && typeof error.message === 'string'
+      ? error.message
+      : 'REVIEW_IMPORT_LOCAL_PACKET_THROW';
+    updateStatusText('Review packet import failed');
+    return { performed: false, action: 'reviewImportLocalPacket', reason };
+  }
+
+  const commandResult = reviewSurfaceUnwrapCommandResult(bridgeResult);
+  if (bridgeResult?.ok === true && commandResult?.ok === true) {
+    if (commandResult.cancelled === true) {
+      updateStatusText('Review packet import cancelled');
+      return { performed: false, action: 'reviewImportLocalPacket', reason: 'USER_CANCELLED' };
+    }
+    applyMode('review');
+    applyRightTab('comments');
+    if (reviewSurfaceIsPlainObject(commandResult.reviewSurface)) {
+      setReviewSurfaceState(commandResult.reviewSurface);
+    } else {
+      await loadReviewSurfaceFromQuery();
+    }
+    syncToolbarShellState();
+    updateStatusText('Review packet imported');
+    return { performed: true, action: 'reviewImportLocalPacket', reason: null };
+  }
+
+  const reason = reviewSurfaceExtractCommandFailureReason(bridgeResult);
+  updateStatusText('Review packet import failed');
+  return { performed: false, action: 'reviewImportLocalPacket', reason };
+}
+
+async function handleReviewClearSession() {
+  let bridgeResult = null;
+  try {
+    bridgeResult = await invokePreloadUiCommandBridge(REVIEW_SURFACE_CLEAR_SESSION_COMMAND_ID, {
+      requestId: `review-clear-session-${Date.now()}`,
+    });
+  } catch (error) {
+    const reason = error && typeof error.message === 'string'
+      ? error.message
+      : 'REVIEW_CLEAR_SESSION_THROW';
+    updateStatusText('Review session clear failed');
+    return { performed: false, action: 'reviewClearSession', reason };
+  }
+
+  const commandResult = reviewSurfaceUnwrapCommandResult(bridgeResult);
+  if (bridgeResult?.ok === true && commandResult?.ok === true && commandResult.cleared === true) {
+    applyMode('review');
+    applyRightTab('comments');
+    setReviewSurfaceState({});
+    syncToolbarShellState();
+    updateStatusText('Review session cleared');
+    return { performed: true, action: 'reviewClearSession', reason: null };
+  }
+
+  const reason = reviewSurfaceExtractCommandFailureReason(bridgeResult);
+  updateStatusText('Review session clear failed');
+  return { performed: false, action: 'reviewClearSession', reason };
+}
+
 function handleTiptapFormatCommand(commandName, payload = {}) {
   if (!isTiptapMode) {
     return { performed: false, action: commandName, reason: 'EDITOR_MODE_UNSUPPORTED' };
@@ -10687,6 +10763,10 @@ if (window.electronAPI) {
       openRecoveryModal('Recovery modal opened from menu');
       return true;
     }
+    if (commandId === EXTRA_COMMAND_IDS.REVIEW_OPEN_COMMENTS) {
+      void handleReviewOpenComments();
+      return true;
+    }
     if (commandId === EXTRA_COMMAND_IDS.INSERT_ADD_CARD) {
       handleInsertAddCard();
       return true;
@@ -10770,7 +10850,9 @@ if (window.electronAPI) {
       listClear: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.LIST_CLEAR);
       },
+      reviewImportLocalPacket: () => handleReviewImportLocalPacket(),
       reviewOpenComments: () => handleReviewOpenComments(),
+      reviewClearSession: () => handleReviewClearSession(),
       switchMode: (mode) => applyMode(mode),
     });
   } else if (typeof window.electronAPI.onRuntimeCommand === 'function') {

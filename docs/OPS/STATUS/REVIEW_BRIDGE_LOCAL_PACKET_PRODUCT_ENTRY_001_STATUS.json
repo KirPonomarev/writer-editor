@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_LOCAL_PACKET_PRODUCT_ENTRY_001",
+  "status": "implemented_verified_pending_delivery",
+  "baseSha": "5acc7612f109153820e71ed3f474f211be213601",
+  "branch": "codex/review-bridge-local-packet-entry-001",
+  "scope": {
+    "featureExpansion": false,
+    "productEntry": true,
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "localJsonReviewPacketOnly": true
+  },
+  "positiveClaims": [
+    "Review menu exposes Import Review Packet and Clear Review Session product entries.",
+    "cmd.project.review.importLocalPacket is bridge-allowlisted and registered in the renderer command kernel.",
+    "Local JSON review packet intake is main-owned: dialog selection, extension gate, size gate, read, and JSON parse all run in main.",
+    "Local JSON review packet intake restats the selected file before read and rejects oversized replacement files before fs.readFile.",
+    "Local JSON review packet intake rejects imported write-evidence fields such as receipt, exactTextApplyReceipts, and exactTextAppliedChangeIds before session activation.",
+    "Renderer sends intent-only requestId for local packet import and never sends filePath, raw JSON, projectRoot, scenePath, applyOps, or receipt authority.",
+    "Successful local packet intake delegates to the existing review packet import session path and opens Review/Comments through canonical runtime command handling.",
+    "Clear Review Session clears active review session state and opens Review/Comments with an empty surface.",
+    "Capability binding allows local packet import and clear session only on node; web and mobile wrapper remain disabled."
+  ],
+  "nonClaims": [
+    "No full review import automation is claimed.",
+    "No structural auto-apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No DOCX review import is claimed by this contour.",
+    "No manuscript write is performed by local packet intake.",
+    "No cross-scene atomicity or multi-file transaction truth is claimed.",
+    "No release readiness, packaged readiness, cross-platform readiness, full npm green, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "importLocalPacket is separate from importPacket so local file intake semantics do not blur with in-memory packet import.",
+    "File authority remains in main; renderer command payload remains intent-only.",
+    "Review surface state is UI/session preview truth only; project truth remains scene files and manifest binding.",
+    "Exact apply and batch exact apply remain behind the existing main-owned safe writer guards."
+  ],
+  "evidence": {
+    "newCommandIds": [
+      "cmd.project.review.importLocalPacket",
+      "cmd.project.review.clearSession"
+    ],
+    "newCapabilityIds": [
+      "cap.project.review.importLocalPacket",
+      "cap.project.review.clearSession"
+    ],
+    "menuEntryIds": [
+      "review-import-local-packet",
+      "review-clear-session"
+    ],
+    "testsRun": [
+      {
+        "command": "node --check src/main.js",
+        "result": "PASS"
+      },
+      {
+        "command": "node --input-type=module --check < src/renderer/editor.js",
+        "result": "PASS"
+      },
+      {
+        "command": "node --input-type=module --check < src/renderer/tiptap/runtimeBridge.js",
+        "result": "PASS"
+      },
+      {
+        "command": "node --test test/contracts/revision-bridge-review-mutate-port.contract.test.js",
+        "result": "PASS",
+        "tests": 29
+      },
+      {
+        "command": "node --test test/unit/sector-m-preload-ui-command-bridge.test.js test/unit/sector-m-command-kernel-shell-action-adoption.test.js test/contracts/menu-config-v2.contract.test.js test/unit/sector-m-runtime-command-id-canonicalization.test.js",
+        "result": "PASS",
+        "tests": 20
+      },
+      {
+        "command": "npm run -s build:renderer",
+        "result": "PASS"
+      },
+      {
+        "command": "node --test test/contracts/capability-command-coverage.contract.test.js test/contracts/command-surface-bus-only.contract.test.js test/unit/sector-m-review-surface-ui.test.js",
+        "result": "PASS",
+        "tests": 34
+      },
+      {
+        "command": "node --test test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
+        "result": "PASS",
+        "tests": 23
+      },
+      {
+        "command": "npm run -s oss:policy",
+        "result": "PASS"
+      },
+      {
+        "command": "npm run -s ops:mvp-boundary",
+        "result": "PASS"
+      },
+      {
+        "command": "npm audit --omit=dev --audit-level=high",
+        "result": "PASS"
+      },
+      {
+        "command": "git diff --check",
+        "result": "PASS"
+      }
+    ],
+    "knownDiagnostic": [
+      "Exact-apply changed-file allowlist tests were executed while this contour was still dirty and failed only on dirty-diff scope checks; their functional subtests passed. Rerun after delivery clean tree is required for final delivery report."
+    ]
+  },
+  "nextStep": "Complete delivery chain, rerun dirty-diff-sensitive checks on clean tree, then keep the next product contour explicit and owner-selected."
+}
