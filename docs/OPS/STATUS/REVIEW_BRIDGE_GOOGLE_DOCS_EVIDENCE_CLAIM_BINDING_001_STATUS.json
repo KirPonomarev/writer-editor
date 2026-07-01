@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_google_docs_evidence_claim_binding",
+  "featureExpansion": "bounded_review_bridge_claim_binding",
+  "baseSha": "d961b29189d60fd10aedc21dbb14d855b49124ae",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": false,
+    "rendererSurfaceChanged": false,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false,
+    "googleDocsParserChanged": false,
+    "googleApiUsed": false,
+    "networkAccessAdded": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false,
+    "autoApply": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "binding": {
+    "sourcePlan": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_FINAL_PLAN_R2",
+    "previousContourTaskId": "REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001",
+    "previousContourStatus": "delivered_merged_verified",
+    "previousContourMergeSha": "d961b29189d60fd10aedc21dbb14d855b49124ae",
+    "existingKernelMarker": "CONTOUR_11_GOOGLE_DOCS_EVIDENCE_CHECK",
+    "googleDocsEvidencePacketSchema": "revision-bridge.google-docs-evidence-packet.v1",
+    "googleDocsSupportClaimSchema": "revision-bridge.google-docs-support-claim.v1"
+  },
+  "positiveClaims": [
+    "The existing Google Docs evidence claim gate is product-bound as a Review Bridge claim boundary.",
+    "A Google Docs evidence claim can be accepted only when a valid Google Docs evidence packet is present, the evidence hash matches, requested coverage is not wider than packet coverage, and required docsSuggestions and driveComments evidence classes are covered.",
+    "Accepted Google Docs evidence packet classes are docsSuggestions, driveComments, and structuralManual.",
+    "Accepted Google Docs evidence claims require docsSuggestions and driveComments coverage; structuralManual alone is not sufficient for claim acceptance.",
+    "Missing evidence packet, invalid evidence packet, invalid claim, hash mismatch, coverage-exceeded cases, and missing required docsSuggestions or driveComments classes block the claim.",
+    "The binding is evidence and claim truth only; it is not content import, review import, apply, export, storage truth, Google API integration, or Google Drive integration."
+  ],
+  "nonClaims": [
+    "No Google Docs support is claimed.",
+    "No Google Docs import is claimed.",
+    "No Google Docs review import is claimed.",
+    "No Google Docs sync is claimed.",
+    "No Google Docs roundtrip is claimed.",
+    "No Google Docs layout parity is claimed.",
+    "No full Google Docs fidelity is claimed.",
+    "No full Google Docs review import is claimed.",
+    "No Google API or Google Drive integration is claimed.",
+    "No network, OAuth, account, cloud, or live Google service access is claimed.",
+    "No exact apply from Google Docs is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed by Google Docs evidence claim binding.",
+    "No project truth write is performed by Google Docs evidence claim binding.",
+    "No receipt or recovery evidence is created by Google Docs evidence claim binding.",
+    "No DOCX import safe-create behavior is changed.",
+    "No DOCX export behavior is changed.",
+    "No import/export MVP closeout is widened.",
+    "No release readiness is claimed.",
+    "No PDF, EPUB, HTML, Mindmap, cloud sync, cross-platform readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Evidence layer validates packet and claim only.",
+    "Claim binding is not a parser and does not inspect Google Docs files.",
+    "Claim binding is not content import and does not create scenes.",
+    "Claim binding is not Review import and does not activate a Review session.",
+    "Claim binding is not an apply plan and does not authorize mutation.",
+    "Claim binding is not safe write and does not create receipt or recovery evidence.",
+    "Claim binding is not export and does not alter DOCX output.",
+    "Claim binding is not a Google API integration and does not perform network access.",
+    "Review Bridge may reference accepted claims as bounded evidence, but accepted claims do not become project truth."
+  ],
+  "implementation": {
+    "changedProductionRuntime": false,
+    "changedUi": false,
+    "changedBasenames": [
+      "REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001_STATUS.json",
+      "review-bridge-google-docs-evidence-claim-binding.contract.test.js",
+      "revision-bridge-google-docs-evidence-check.contract.test.js",
+      "revision-bridge-word-evidence-check.contract.test.js",
+      "GOVERNANCE_CHANGE_APPROVALS.json",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "WORKLOG.md"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --test Google Docs and Word evidence claim binding targeted contracts",
+      "status": "pass",
+      "tests": 30
+    },
+    {
+      "command": "node --test release claim adjacent boundary contracts",
+      "status": "pass",
+      "tests": 75
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "googleDocsEvidenceClaimBindingExists": true,
+    "validPacketAndClaimAccepted": true,
+    "missingPacketBlocked": true,
+    "invalidPacketBlocked": true,
+    "invalidClaimBlocked": true,
+    "hashMismatchBlocked": true,
+    "coverageExceededBlocked": true,
+    "requiredDocsSuggestionsAndDriveCommentsEnforced": true,
+    "googleDocsSupportClaimed": false,
+    "googleDocsImportClaimed": false,
+    "googleDocsSyncClaimed": false,
+    "googleDocsRoundtripClaimed": false,
+    "googleDocsParityClaimed": false,
+    "googleApiIntegrationClaimed": false,
+    "networkAccessAdded": false,
+    "applyOpsCreated": false,
+    "receiptCreated": false,
+    "recoveryCreated": false,
+    "projectTruthMutated": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false
+  },
+  "agentAudits": [
+    {
+      "agent": "Lovelace",
+      "type": "read_only_canon_auditor",
+      "result": "resolved_after_diff",
+      "finding": "Confirmed the next contour is Google Docs evidence claim binding; flagged missing status artifact and forbidden broad support or import claims before this diff created the status and nonclaim fence."
+    },
+    {
+      "agent": "Avicenna",
+      "type": "read_only_kernel_auditor",
+      "result": "resolved_after_diff",
+      "finding": "Confirmed the existing Google Docs evidence kernel already exports schemas, packet classes, reason codes, hash, and claim gate; runtime gap is bookkeeping only, with hygiene scoped to the Google Docs evidence contract."
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": "",
+    "featureMergedAtUtc": ""
+  },
+  "decision": "GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_BOUND_FOR_CURRENT_SCOPE",
+  "nextStep": "complete delivery chain, then continue with the next owner-selected Review Bridge claim boundary"
+}

@@ -2,6 +2,27 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001_STATUS.json",
+      "sha256": "56a52784eef02264cfd489ef9ef8f490cea4963036f8877580b46205793dc405",
+      "approvedBy": "ticket:REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded Google Docs evidence claim binding status; it product-binds the existing Google Docs evidence claim gate while preserving no Google Docs support, no Google Docs import, no Google Docs sync, no Google Docs roundtrip, no Google Docs layout parity, no full Google Docs fidelity, no Google API or Google Drive integration, no network, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no release readiness, no dependency, and no Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-google-docs-evidence-claim-binding.contract.test.js",
+      "sha256": "8664e8444d7ca0c8b562806fbed2062739e9c15c6a7a22fc8e295e615226e5f8",
+      "approvedBy": "ticket:REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve contract guard for bounded Google Docs evidence claim binding; it binds status scope, existing Google Docs evidence kernel markers, current docs, required docsSuggestions and driveComments coverage, and overclaim negatives without introducing runtime import, Google API integration, network, apply, export, storage, UI, dependency, release, Google Docs parity, or full Google Docs support authority."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-google-docs-evidence-check.contract.test.js",
+      "sha256": "9f505d70598bfd384dea2a7ebdfe4ec07aa7f3d20996c6b94949da54f111d9db",
+      "approvedBy": "ticket:REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded Google Docs evidence contract update to include this claim-binding contour allowlist and to scope the side-effect purity scan to the existing Google Docs evidence section; no runtime code, Google API integration, network access, import, apply, export, storage, dependency, UI, release, Google Docs parity, or full Google Docs support claim is introduced."
+    },
+    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001_STATUS.json",
       "sha256": "5ef412eba6949015dfe946bade152e71c765768405cb45038e02e69895e8dd69",
       "approvedBy": "ticket:REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001",
@@ -17,10 +38,10 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-word-evidence-check.contract.test.js",
-      "sha256": "e5b5f021fc4777f10053ac5259f2952af15fe6c792d89147cb99c592785a0fd8",
-      "approvedBy": "ticket:REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001",
+      "sha256": "f851ed32b198eaa62c7ef2d7995dd7739879234d18416fdc364070c971b79fce",
+      "approvedBy": "ticket:REVIEW_BRIDGE_GOOGLE_DOCS_EVIDENCE_CLAIM_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded Word evidence contract update to include this claim-binding contour allowlist and to scope the side-effect purity scan to the existing Word evidence section; no runtime code, import, apply, export, storage, dependency, UI, release, Word parity, or full Word support claim is introduced."
+      "rationale": "Approve bounded Word evidence contract allowlist sync for the adjacent Google Docs evidence claim-binding contour; no Word runtime code, import, apply, export, storage, dependency, UI, release, Word parity, full Word support, Google Docs support, Google API integration, or network claim is introduced."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001_STATUS.json",
