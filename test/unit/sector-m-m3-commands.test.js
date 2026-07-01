@@ -83,6 +83,54 @@ test('M3 commands: import/export markdown return deterministic success payloads'
   });
 });
 
+test('M3 commands: export markdown forwards save-as intent and handles cancel as non-write', async () => {
+  const {
+    createCommandRegistry,
+    createCommandRunner,
+    registerProjectCommands,
+    COMMAND_IDS,
+  } = await loadCommandModules();
+
+  const seenPayloads = [];
+  const registry = createCommandRegistry();
+  registerProjectCommands(registry, {
+    electronAPI: {
+      exportMarkdownV1: async (payload) => {
+        seenPayloads.push(payload);
+        return {
+          ok: 1,
+          canceled: true,
+          outPath: '',
+          bytesWritten: 0,
+          lossReport: { count: 0, items: [] },
+        };
+      },
+    },
+  });
+
+  const runCommand = createCommandRunner(registry);
+  const result = await runCommand(COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, {
+    scene: { kind: 'scene.v1', blocks: [] },
+    saveAs: true,
+    defaultName: 'editor-buffer.md',
+  });
+
+  assert.equal(seenPayloads.length, 1);
+  assert.equal(seenPayloads[0].saveAs, true);
+  assert.equal(seenPayloads[0].defaultName, 'editor-buffer.md');
+  assert.equal(seenPayloads[0].outPath, '');
+  assert.deepEqual(result, {
+    ok: true,
+    value: {
+      exported: false,
+      canceled: true,
+      outPath: '',
+      bytesWritten: 0,
+      lossReport: { count: 0, items: [] },
+    },
+  });
+});
+
 test('M3 commands: import preview forwards preview flag and preserves preview envelope', async () => {
   const {
     createCommandRegistry,

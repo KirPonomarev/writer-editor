@@ -123,6 +123,12 @@ test('M5 main command handlers reference reliability primitives (static guard)',
   assert.match(mainText, /dispatchCommandSurfaceKernel/);
   assert.match(mainText, /writeMarkdownWithRecovery/);
   assert.match(mainText, /readMarkdownWithRecovery|readMarkdownWithLimits/);
+  assert.match(mainText, /function normalizeMarkdownExportPath/);
+  assert.match(mainText, /async function resolveMarkdownExportPath/);
+  assert.match(mainText, /payload\.saveAs === true/);
+  assert.match(mainText, /dialog\.showSaveDialog\(mainWindow, \{/);
+  assert.match(mainText, /title:\s*'Экспорт Markdown v1'/);
+  assert.match(mainText, /resolvedPath && resolvedPath\.canceled === true/);
   assert.match(mainText, /code\.startsWith\('E_IO_'/);
   assert.match(mainText, /MARKDOWN_IMPORT_PREVIEW_SCHEMA/);
   assert.match(mainText, /MARKDOWN_IMPORT_PREVIEW_TYPE/);
