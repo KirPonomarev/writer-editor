@@ -161,7 +161,7 @@ _Generated: 2026-07-02_
 5. if a new live nonblocked contradiction is reproved, open one explicit evidence-backed contour selection brief only
 6. after vertical sheets factual sync, select exactly one next contour; do not open automatic runtime, export, toolbar, perf, or docs work by implication
 7. after editorial sheet 10000 stress rebind, viewport-continuity repair, and import/export MVP-scope closeout, select exactly one next contour; eligible future lanes include above-10000 resource profiling, manual macOS design gate, post-MVP export expansion, platform adapters, collaboration, comments, or history, but none opens by implication.
-8. Review Bridge contour `REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001` is the current bounded active contour until its delivery chain is complete.
+8. Review Bridge contour `REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001` is delivered, merged, and verified via PR `1032`, merge SHA `a48039cd7c79f9bc00e37b427436999ab9f47b78`.
 9. The active contour is a release claim mode decision binding contour, not a release readiness contour.
 10. This contour product-binds `CONTOUR_12D_RELEASE_CLAIM_MODE_DECISION_GATE`: accepted 12D requires accepted 12B dossier provenance and accepted 12C admission provenance, and derives claimId, dossierId, and matrixId from accepted upstream provenance.
 11. Immediate downstream 12E and 12F were hardened only to reject forged accepted 12D or 12E envelopes by re-evaluating raw upstream payloads.
