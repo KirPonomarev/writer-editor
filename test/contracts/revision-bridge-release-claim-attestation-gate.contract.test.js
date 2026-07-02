@@ -369,6 +369,35 @@ test('Contour 12E blocks RELEASE_MODE when extra attestation fields are missing'
   );
 });
 
+test('Contour 12E blocks RELEASE_MODE when release evidence does not match accepted 12D', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimAttestationGate(validAttestationInput(bridge, {
+    mode: 'RELEASE_MODE',
+    releaseEvidenceId: 'release-evidence-2',
+    releaseEvidenceHash: 'sha256:release-evidence-2',
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_RELEASE_EVIDENCE_MISMATCH');
+  assert.equal(
+    result.reasons.some((reason) => (
+      reason.field === 'attestation.releaseEvidenceId'
+      && reason.expectedValue === 'release-evidence-1'
+      && reason.receivedValue === 'release-evidence-2'
+    )),
+    true,
+  );
+  assert.equal(
+    result.reasons.some((reason) => (
+      reason.field === 'attestation.releaseEvidenceHash'
+      && reason.expectedValue === 'sha256:release-evidence-1'
+      && reason.receivedValue === 'sha256:release-evidence-2'
+    )),
+    true,
+  );
+});
+
 test('Contour 12E accepts PR_MODE with valid minimum attestation and accepted 12D provenance', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimAttestationGate(validAttestationInput(bridge, {
