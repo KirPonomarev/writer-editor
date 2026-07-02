@@ -12,20 +12,17 @@ const STATUS_PATH = path.join(
   'docs',
   'OPS',
   'STATUS',
-  'REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001_STATUS.json',
+  'REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001_STATUS.json',
 );
-const CONTRACT_PATH = 'test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js';
+const CONTRACT_PATH = 'test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js';
+const PACKET_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-packet-emit.contract.test.js';
+const ATTESTATION_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-attestation-gate.contract.test.js';
+const STATUS_PATH_REL = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001_STATUS.json';
+const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
 const DOSSIER_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-dossier-binding.contract.test.js';
 const ADMISSION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-admission-binding.contract.test.js';
-const DECISION_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-decision-gate.contract.test.js';
-const ATTESTATION_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-attestation-gate.contract.test.js';
+const MODE_DECISION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js';
 const ATTESTATION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-attestation-binding.contract.test.js';
-const ATTESTATION_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_ATTESTATION_BINDING_001_STATUS.json';
-const PACKET_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-packet-emit.contract.test.js';
-const PACKET_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js';
-const PACKET_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001_STATUS.json';
-const STATUS_PATH_REL = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001_STATUS.json';
-const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
 const CONTEXT_PATH = 'docs/CONTEXT.md';
 const HANDOFF_PATH = 'docs/HANDOFF.md';
 const WORKLOG_PATH = 'docs/WORKLOG.md';
@@ -34,13 +31,10 @@ const ALLOWLIST = [
   CONTRACT_PATH,
   DOSSIER_BINDING_TEST_PATH,
   ADMISSION_BINDING_TEST_PATH,
-  DECISION_KERNEL_TEST_PATH,
-  ATTESTATION_KERNEL_TEST_PATH,
+  MODE_DECISION_BINDING_TEST_PATH,
   ATTESTATION_BINDING_TEST_PATH,
-  ATTESTATION_BINDING_STATUS_PATH,
+  ATTESTATION_KERNEL_TEST_PATH,
   PACKET_KERNEL_TEST_PATH,
-  PACKET_BINDING_TEST_PATH,
-  PACKET_BINDING_STATUS_PATH,
   STATUS_PATH_REL,
   GOVERNANCE_APPROVALS_PATH,
   CONTEXT_PATH,
@@ -75,15 +69,15 @@ function changedFilesFromGitStatus(statusText) {
     .map((line) => line.slice(3).replace(/^"|"$/gu, ''));
 }
 
-function assertNoModeDecisionOverclaims(text, label) {
+function assertNoPacketEmitOverclaims(text, label) {
   const forbidden = [
-    /\brelease claim mode decision is (?:release-ready|published|user-facing|executed)\b/iu,
-    /\bmode decision accepted means release readiness\b/iu,
-    /\bmode decision accepted proves release readiness\b/iu,
+    /\bpacket emitted means release readiness\b/iu,
+    /\bpacket emit proves release readiness\b/iu,
+    /\bpacket emit completes user-facing release\b/iu,
+    /\bUSER_FACING_CLAIM_READY means release readiness\b/iu,
+    /\bUSER_FACING_CLAIM_READY means user-facing release\b/iu,
     /\brelease readiness is (?:available|supported|ready|complete|proven)\b/iu,
     /\buser-facing release is (?:available|supported|ready|complete|proven)\b/iu,
-    /\brelease attestation is (?:available|supported|ready|complete|proven)\b/iu,
-    /\bpacket emit is (?:available|supported|ready|complete|proven)\b/iu,
     /\brelease execution is (?:available|supported|ready|complete|proven)\b/iu,
     /\brelease publication is (?:available|supported|ready|complete|proven)\b/iu,
     /\bWord support is (?:available|supported|ready|complete|proven)\b/iu,
@@ -179,7 +173,7 @@ function validAdmission(overrides = {}) {
 
 function validDecisionInput(bridge, overrides = {}) {
   return {
-    schemaVersion: 'revision-bridge.release-claim-mode-decision.v1',
+    schemaVersion: bridge.REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_SCHEMA,
     mode: 'PR_MODE',
     formatMatrix: validFormatMatrix(),
     dossier: validDossier(bridge),
@@ -209,13 +203,21 @@ function defaultReleaseCommands() {
   return [
     {
       commandId: 'node',
-      argv: ['--test', 'test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js'],
+      argv: ['--test', 'test/contracts/revision-bridge-release-claim-attestation-gate.contract.test.js'],
+    },
+    {
+      commandId: 'node',
+      argv: ['--test', 'test/contracts/revision-bridge-release-claim-packet-emit.contract.test.js'],
     },
   ];
 }
 
 function defaultArtifactHashes() {
   return [
+    {
+      artifactId: 'release-report',
+      digest: 'sha256:release-report-1',
+    },
     {
       artifactId: 'release-packet',
       digest: 'sha256:release-packet-1',
@@ -225,10 +227,7 @@ function defaultArtifactHashes() {
 
 function validAttestationInput(bridge, overrides = {}) {
   const mode = overrides.mode || 'PR_MODE';
-  const decisionMode = mode === 'RELEASE_MODE' ? 'RELEASE_MODE' : 'PR_MODE';
-  const modeDecisionResult = overrides.modeDecisionResult || acceptedModeDecisionResult(bridge, {
-    mode: decisionMode,
-  });
+  const modeDecisionResult = overrides.modeDecisionResult || acceptedModeDecisionResult(bridge, { mode });
   const executedCommands = hasOwn(overrides, 'executedCommands')
     ? overrides.executedCommands
     : (mode === 'RELEASE_MODE' ? defaultReleaseCommands() : undefined);
@@ -271,24 +270,37 @@ function acceptedAttestationResult(bridge, overrides = {}) {
   return result;
 }
 
-function validPacketEmitInput(bridge, overrides = {}) {
+function validPacketMeta(overrides = {}) {
   return {
-    modeDecisionResult: overrides.modeDecisionResult || acceptedModeDecisionResult(bridge),
-    attestationResult: overrides.attestationResult || acceptedAttestationResult(bridge),
-    packetMeta: {
-      packetId: 'packet-1',
-      createdAtUtc: '2026-07-02T00:00:00.000Z',
-      emitterId: 'release-claim-packet-emitter',
-    },
+    packetId: 'release-claim-packet-1',
+    createdAtUtc: '2026-07-02T00:00:00.000Z',
+    emitterId: 'codex-contour-12f',
     ...overrides,
   };
 }
 
-test('Review Bridge release claim mode decision binding status keeps scope narrow', () => {
+function validPacketEmitInput(bridge, overrides = {}) {
+  const mode = overrides.mode || 'PR_MODE';
+  const modeDecisionResult = hasOwn(overrides, 'modeDecisionResult')
+    ? overrides.modeDecisionResult
+    : acceptedModeDecisionResult(bridge, { mode });
+  const attestationResult = hasOwn(overrides, 'attestationResult')
+    ? overrides.attestationResult
+    : acceptedAttestationResult(bridge, { mode, modeDecisionResult });
+
+  return {
+    packetMeta: validPacketMeta(),
+    modeDecisionResult,
+    attestationResult,
+    ...overrides,
+  };
+}
+
+test('Review Bridge release claim packet emit binding status keeps scope narrow', () => {
   const status = readJson(STATUS_PATH);
 
-  assert.equal(status.taskId, 'REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001');
-  assert.equal(status.type, 'review_bridge_release_claim_mode_decision_binding');
+  assert.equal(status.taskId, 'REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001');
+  assert.equal(status.type, 'review_bridge_release_claim_packet_emit_binding');
   assert.ok(
     ['implemented_verified_pending_delivery', 'delivered_merged_verified'].includes(status.status),
     `unexpected status ${status.status}`,
@@ -305,12 +317,11 @@ test('Review Bridge release claim mode decision binding status keeps scope narro
   assert.equal(status.scope.manuscriptWrites, false);
   assert.equal(status.scope.storageWrite, false);
   assert.equal(status.scope.receiptOrRecoveryCreated, false);
-  assert.equal(status.scope.releaseClaimModeDecisionRuntimeChanged, true);
-  assert.equal(status.scope.releaseClaimAttestationRuntimeHardened, true);
-  assert.equal(status.scope.releaseClaimPacketEmitRuntimeHardened, true);
-  assert.equal(status.scope.releaseClaimModeDecisionBound, true);
-  assert.equal(status.scope.releaseAttestationAccepted, false);
-  assert.equal(status.scope.packetEmitAccepted, false);
+  assert.equal(status.scope.releaseClaimPacketEmitRuntimeChanged, true);
+  assert.equal(status.scope.releaseClaimPacketEmitBound, true);
+  assert.equal(status.scope.releaseClaimPacketStrictReportBound, true);
+  assert.equal(status.scope.releaseClaimPacketHashBound, true);
+  assert.equal(status.scope.releaseClaimPacketInternalUserFacingClassOnly, true);
   assert.equal(status.scope.releaseExecutionAccepted, false);
   assert.equal(status.scope.releasePublicationAccepted, false);
   assert.equal(status.scope.userFacingReleaseClaimed, false);
@@ -319,45 +330,116 @@ test('Review Bridge release claim mode decision binding status keeps scope narro
   assert.equal(status.scope.autoApply, false);
   assert.equal(status.scope.releaseReadinessClaimed, false);
   assert.equal(status.scope.y9Opened, false);
+  assert.equal(status.implementation.changedProductionRuntime, true);
+  assert.equal(status.implementation.changedUi, false);
 });
 
-test('Review Bridge release claim mode decision binding proves bounded mode decision truth', async () => {
+test('Review Bridge release claim packet emit binding proves bounded packet truth', async () => {
   const bridge = await loadBridge();
   const status = readJson(STATUS_PATH);
-  const prResult = acceptedModeDecisionResult(bridge, { mode: 'PR_MODE' });
-  const releaseResult = acceptedModeDecisionResult(bridge, { mode: 'RELEASE_MODE' });
+  const prResult = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    mode: 'PR_MODE',
+  }));
+  const releaseModeDecisionResult = acceptedModeDecisionResult(bridge, { mode: 'RELEASE_MODE' });
+  const releaseAttestationResult = acceptedAttestationResult(bridge, {
+    mode: 'RELEASE_MODE',
+    modeDecisionResult: releaseModeDecisionResult,
+  });
+  const releaseResult = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    modeDecisionResult: releaseModeDecisionResult,
+    attestationResult: releaseAttestationResult,
+    packetMeta: validPacketMeta(),
+  }));
   const positiveText = status.positiveClaims.join('\n');
   const nonClaimText = status.nonClaims.join('\n');
   const layerText = status.layerDecisions.join('\n');
 
-  assert.equal(prResult.type, 'revisionBridge.releaseClaimModeDecisionGate');
-  assert.equal(prResult.code, 'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_ACCEPTED');
-  assert.equal(prResult.binding.mode, 'PR_MODE');
-  assert.equal(prResult.binding.claimId, 'release-claim-1');
-  assert.equal(prResult.binding.dossierId, 'release-claim-dossier-1');
-  assert.equal(prResult.binding.matrixId, 'format-matrix-1');
-  assert.equal(prResult.binding.dossierStatus, 'accepted');
-  assert.equal(prResult.binding.admissionStatus, 'accepted');
+  assert.equal(prResult.ok, true);
+  assert.equal(prResult.type, 'revisionBridge.releaseClaimPacketEmit');
+  assert.equal(prResult.code, 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_ACCEPTED');
+  assert.equal(prResult.packet.schemaVersion, bridge.REVISION_BRIDGE_RELEASE_CLAIM_PACKET_SCHEMA);
+  assert.equal(prResult.report.schemaVersion, bridge.REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_SCHEMA);
+  assert.equal(prResult.packet.releaseClaim.mode, 'PR_MODE');
+  assert.equal(prResult.packet.releaseClaim.modeClass, 'INTERNAL_PROOF_ONLY');
+  assert.equal(prResult.report.modeClass, 'INTERNAL_PROOF_ONLY');
 
   assert.equal(releaseResult.ok, true);
-  assert.equal(releaseResult.binding.mode, 'RELEASE_MODE');
-  assert.equal(releaseResult.decision.releaseEvidenceId, 'release-evidence-1');
-  assert.equal(releaseResult.decision.outputHash, 'sha256:output-1');
+  assert.equal(releaseResult.packet.releaseClaim.mode, 'RELEASE_MODE');
+  assert.equal(releaseResult.packet.releaseClaim.modeClass, 'USER_FACING_CLAIM_READY');
+  assert.equal(releaseResult.report.modeClass, 'USER_FACING_CLAIM_READY');
+  assert.equal(releaseResult.packet.attestation.releaseEvidenceId, 'release-evidence-1');
+  assert.equal(releaseResult.packet.attestation.releaseEvidenceHash, 'sha256:release-evidence-1');
+  assert.deepEqual(
+    Object.keys(releaseResult.report).sort(),
+    [...bridge.REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_KEYS].sort(),
+  );
+  assert.equal(bridge.validateRevisionBridgeReleaseClaimStrictReportShape(releaseResult.report).ok, true);
 
-  assert.match(positiveText, /release claim mode decision gate/u);
-  assert.match(positiveText, /bounded Review Bridge mode decision boundary/u);
-  assert.match(positiveText, /accepted 12B release claim dossier provenance/u);
-  assert.match(positiveText, /accepted 12C release claim admission provenance/u);
-  assert.match(positiveText, /derives claimId, dossierId, and matrixId from accepted upstream provenance/u);
-  assert.match(positiveText, /PR_MODE remains internal proof only/u);
-  assert.match(positiveText, /RELEASE_MODE is accepted only/u);
-  assert.match(positiveText, /12E attestation and 12F packet emit gates re-evaluate/u);
+  const invalidPacketMeta = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    packetMeta: validPacketMeta({ emitterId: '', notes: 'not canonical' }),
+  }));
+  assert.equal(invalidPacketMeta.ok, false);
+  assert.equal(invalidPacketMeta.status, 'diagnostics');
+  assert.equal(invalidPacketMeta.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_META_INVALID');
+
+  const secondRelease = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    modeDecisionResult: releaseModeDecisionResult,
+    attestationResult: releaseAttestationResult,
+    packetMeta: validPacketMeta({
+      createdAtUtc: '2030-01-01T00:00:00.000Z',
+    }),
+  }));
+  assert.equal(secondRelease.ok, true);
+  assert.equal(releaseResult.packet.packetHash, secondRelease.packet.packetHash);
+  assert.notEqual(releaseResult.packet.packetMeta.createdAtUtc, secondRelease.packet.packetMeta.createdAtUtc);
+
+  const topModeDecisionResult = acceptedModeDecisionResult(bridge, {
+    mode: 'PR_MODE',
+    inputHash: 'sha256:top-pr-input',
+  });
+  const otherModeDecisionResult = acceptedModeDecisionResult(bridge, {
+    mode: 'PR_MODE',
+    inputHash: 'sha256:embedded-pr-input',
+  });
+  const mixedAttestation = acceptedAttestationResult(bridge, {
+    mode: 'PR_MODE',
+    modeDecisionResult: otherModeDecisionResult,
+  });
+  const mixedPacket = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    modeDecisionResult: topModeDecisionResult,
+    attestationResult: mixedAttestation,
+  }));
+
+  assert.equal(mixedPacket.ok, false);
+  assert.equal(mixedPacket.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_DECISION_HASH_MISMATCH');
+
+  const inheritedPacketMeta = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    packetMeta: Object.create(validPacketMeta()),
+  }));
+  const inheritedRelease = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    modeDecisionResult: Object.create(releaseModeDecisionResult),
+    attestationResult: Object.create(releaseAttestationResult),
+  }));
+
+  assert.equal(inheritedPacketMeta.ok, false);
+  assert.equal(inheritedPacketMeta.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_META_INVALID');
+  assert.equal(inheritedRelease.ok, false);
+  assert.equal(inheritedRelease.packet, null);
+  assert.equal(inheritedRelease.report, null);
+
+  assert.match(positiveText, /release claim packet emit gate/u);
+  assert.match(positiveText, /bounded internal Review Bridge 12F packet boundary/u);
+  assert.match(positiveText, /requires canonical packetMeta/u);
+  assert.match(positiveText, /re-evaluates raw 12D decision input/u);
+  assert.match(positiveText, /re-evaluates raw 12E attestation input/u);
+  assert.match(positiveText, /decisionHash bindings to match/u);
+  assert.match(positiveText, /deterministic release claim packet and strict report/u);
+  assert.match(positiveText, /strips inherited prototype fields/u);
+  assert.match(positiveText, /USER_FACING_CLAIM_READY only as an internal packet\/report class/u);
 
   for (const phrase of [
     'No release readiness is claimed.',
     'No user-facing release is claimed.',
-    'No release attestation completion is claimed.',
-    'No packet emit completion is claimed.',
     'No release execution completion is claimed.',
     'No release publication completion is claimed.',
     'No Word support is claimed.',
@@ -368,133 +450,54 @@ test('Review Bridge release claim mode decision binding proves bounded mode deci
     'No roundtrip is claimed.',
     'No layout parity is claimed.',
     'No full fidelity is claimed.',
-    'No project truth write is performed by release claim mode decision binding.',
-    'No receipt or recovery evidence is created by release claim mode decision binding.',
+    'No project truth write is performed by release claim packet emit binding.',
+    'No receipt or recovery evidence is created by release claim packet emit binding.',
     'No import/export MVP closeout is widened.',
   ]) {
     assert.match(nonClaimText, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'));
   }
 
-  assert.match(layerText, /mode decision truth only/u);
+  assert.match(layerText, /internal release-claim packet truth only/u);
   assert.match(layerText, /does not become project truth/u);
-  assert.match(layerText, /does not create a release packet/u);
-  assert.match(layerText, /does not admit execution or publication/u);
-  assert.match(layerText, /not an attestation completion contour/u);
-  assert.match(layerText, /not a packet emit completion contour/u);
+  assert.match(layerText, /does not write manuscript truth or project truth/u);
+  assert.match(layerText, /does not admit release execution or release publication/u);
+  assert.match(layerText, /not a user-facing UI or publication state/u);
   assert.match(layerText, /not content import/u);
   assert.match(layerText, /not export/u);
   assert.match(layerText, /not an apply plan/u);
 });
 
-test('Review Bridge release claim mode decision binding blocks poisoned provenance ids', async () => {
-  const bridge = await loadBridge();
-  const result = bridge.evaluateRevisionBridgeReleaseClaimModeDecisionGate(validDecisionInput(bridge, {
-    mode: 'RELEASE_MODE',
-    matrixId: 'evil-format-matrix',
-    dossierId: 'evil-dossier',
-    claimId: 'evil-claim',
-  }));
-
-  assert.equal(result.ok, false);
-  assert.equal(result.status, 'blocked');
-  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_MISMATCH');
-  assert.equal(
-    result.reasons.some((reason) => (
-      reason.field === 'decision.claimId'
-      && reason.expectedValue === 'release-claim-1'
-      && reason.receivedValue === 'evil-claim'
-    )),
-    true,
-  );
-  assert.equal(
-    result.reasons.some((reason) => (
-      reason.field === 'decision.dossierId'
-      && reason.expectedValue === 'release-claim-dossier-1'
-      && reason.receivedValue === 'evil-dossier'
-    )),
-    true,
-  );
-  assert.equal(
-    result.reasons.some((reason) => (
-      reason.field === 'decision.matrixId'
-      && reason.expectedValue === 'format-matrix-1'
-      && reason.receivedValue === 'evil-format-matrix'
-    )),
-    true,
-  );
-});
-
-test('Review Bridge release claim mode decision binding blocks forged downstream envelopes', async () => {
-  const bridge = await loadBridge();
-  const acceptedModeDecision = acceptedModeDecisionResult(bridge);
-  const forgedModeDecision = deepClone(acceptedModeDecision);
-  forgedModeDecision.decision.claimId = 'evil-claim';
-  forgedModeDecision.binding.claimId = 'evil-claim';
-
-  const attestationBlocked = bridge.evaluateRevisionBridgeReleaseClaimAttestationGate(validAttestationInput(bridge, {
-    modeDecisionResult: forgedModeDecision,
-  }));
-  assert.equal(attestationBlocked.ok, false);
-  assert.equal(attestationBlocked.status, 'blocked');
-  assert.equal(
-    attestationBlocked.reasons.some(
-      (reason) => reason.code === 'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
-    ),
-    true,
-  );
-
-  const acceptedAttestation = acceptedAttestationResult(bridge);
-  const forgedAttestation = deepClone(acceptedAttestation);
-  forgedAttestation.modeDecisionResult = forgedModeDecision;
-  forgedAttestation.attestation.modeDecisionResult = forgedModeDecision;
-  forgedAttestation.attestation.decisionHash = bridge.createRevisionBridgeReleaseClaimModeDecisionHash(
-    forgedModeDecision,
-  );
-  forgedAttestation.binding.claimId = 'evil-claim';
-
-  const packetBlocked = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
-    modeDecisionResult: forgedModeDecision,
-    attestationResult: forgedAttestation,
-  }));
-  assert.equal(packetBlocked.ok, false);
-  assert.equal(packetBlocked.status, 'blocked');
-  assert.equal(
-    packetBlocked.reasons.some((reason) => [
-      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
-      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
-    ].includes(reason.code)),
-    true,
-  );
-});
-
-test('Review Bridge release claim mode decision binding is bound to existing kernel and adjacent guards', () => {
+test('Review Bridge release claim packet emit binding is bound to existing kernel', () => {
   const status = readJson(STATUS_PATH);
   const bridgeSource = readText(['src', 'io', 'revisionBridge', 'index.mjs']);
-  const admissionBindingTest = readText(['test', 'contracts', 'review-bridge-release-claim-admission-binding.contract.test.js']);
-  const decisionKernelTest = readText(['test', 'contracts', 'revision-bridge-release-claim-decision-gate.contract.test.js']);
-  const attestationKernelTest = readText(['test', 'contracts', 'revision-bridge-release-claim-attestation-gate.contract.test.js']);
   const packetKernelTest = readText(['test', 'contracts', 'revision-bridge-release-claim-packet-emit.contract.test.js']);
 
-  assert.equal(status.binding.existingKernelMarker, 'CONTOUR_12D_RELEASE_CLAIM_MODE_DECISION_GATE');
-  assert.equal(status.binding.releaseClaimDossierGateMarker, 'CONTOUR_12B_RELEASE_CLAIM_DOSSIER_GATE');
-  assert.equal(status.binding.releaseClaimAdmissionGateMarker, 'CONTOUR_12C_RELEASE_CLAIM_ADMISSION_GATE');
-  assert.equal(status.binding.downstreamAttestationGateMarker, 'CONTOUR_12E_RELEASE_CLAIM_ATTESTATION_GATE');
-  assert.equal(status.binding.downstreamPacketEmitMarker, 'CONTOUR_12F_RELEASE_CLAIM_PACKET_EMIT');
-  assert.match(bridgeSource, /CONTOUR_12D_RELEASE_CLAIM_MODE_DECISION_GATE_START/u);
-  assert.match(bridgeSource, /REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_SCHEMA/u);
-  assert.match(bridgeSource, /evaluateRevisionBridgeReleaseClaimModeDecisionGate/u);
-  assert.match(bridgeSource, /REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_MISMATCH/u);
-  assert.match(bridgeSource, /collectReleaseClaimModeDecisionBindingMismatchReasons/u);
+  assert.equal(status.binding.existingKernelMarker, 'CONTOUR_12F_RELEASE_CLAIM_PACKET_EMIT');
+  assert.equal(status.binding.releaseClaimPacketSchema, 'revision-bridge.release-claim-packet.v1');
+  assert.equal(status.binding.releaseClaimStrictReportSchema, 'revision-bridge.release-claim-report.v1');
+  assert.equal(status.binding.upstreamModeDecisionGateMarker, 'CONTOUR_12D_RELEASE_CLAIM_MODE_DECISION_GATE');
+  assert.equal(status.binding.upstreamAttestationGateMarker, 'CONTOUR_12E_RELEASE_CLAIM_ATTESTATION_GATE');
+  assert.match(bridgeSource, /CONTOUR_12F_RELEASE_CLAIM_PACKET_EMIT_START/u);
+  assert.match(bridgeSource, /REVISION_BRIDGE_RELEASE_CLAIM_PACKET_SCHEMA/u);
+  assert.match(bridgeSource, /REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_SCHEMA/u);
+  assert.match(bridgeSource, /evaluateRevisionBridgeReleaseClaimPacketEmit/u);
+  assert.match(bridgeSource, /validateRevisionBridgeReleaseClaimStrictReportShape/u);
+  assert.match(bridgeSource, /createRevisionBridgeReleaseClaimPacketHash/u);
   assert.match(bridgeSource, /must re-evaluate to accepted 12D from raw decision input/u);
   assert.match(bridgeSource, /must re-evaluate to accepted 12E from raw attestation input/u);
+  assert.match(bridgeSource, /REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_DECISION_HASH_MISMATCH/u);
 
-  assert.match(admissionBindingTest, /REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001/u);
-  assert.match(decisionKernelTest, /blocks caller-supplied ids that do not match accepted provenance/u);
-  assert.match(attestationKernelTest, /blocks forged accepted 12D results with poisoned ids/u);
-  assert.match(packetKernelTest, /blocks forged accepted 12D plus forged accepted 12E pair/u);
+  assert.match(packetKernelTest, /returns diagnostics when packetMeta fields are invalid/u);
+  assert.match(packetKernelTest, /strict report validator rejects extra fields/u);
+  assert.match(packetKernelTest, /rejects packetMeta fields inherited from prototype/u);
+  assert.match(packetKernelTest, /rejects accepted 12D and 12E envelopes inherited from prototype/u);
+  assert.match(packetKernelTest, /rejects RELEASE_MODE USER_FACING_CLAIM_READY through inherited envelopes/u);
+  assert.match(packetKernelTest, /packet emit is deterministic/u);
+  assert.match(packetKernelTest, /packet hash is stable and excludes createdAtUtc/u);
+  assert.match(packetKernelTest, /blocks RELEASE_MODE when 12E attests a different accepted 12D/u);
 });
 
-test('Review Bridge release claim mode decision binding keeps docs honest', () => {
+test('Review Bridge release claim packet emit binding keeps docs honest', () => {
   const status = readJson(STATUS_PATH);
   const context = readText(['docs', 'CONTEXT.md']);
   const handoff = readText(['docs', 'HANDOFF.md']);
@@ -503,20 +506,21 @@ test('Review Bridge release claim mode decision binding keeps docs honest', () =
   const statusText = JSON.stringify(status, null, 2);
 
   for (const text of [context, handoff, worklog]) {
-    assert.match(text, /REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001/u);
-    assert.match(text, /release claim mode decision binding/iu);
+    assert.match(text, /REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001/u);
+    assert.match(text, /release claim packet emit binding/iu);
+    assert.match(text, /USER_FACING_CLAIM_READY/iu);
     assert.match(text, /not release readiness/iu);
   }
 
-  assertNoModeDecisionOverclaims(statusText, 'status');
-  assertNoModeDecisionOverclaims(docsText, 'docs');
+  assertNoPacketEmitOverclaims(statusText, 'status');
+  assertNoPacketEmitOverclaims(docsText, 'docs');
   assert.match(
     docsText,
-    /no release readiness, user-facing release, attestation completion, packet emit completion, release execution completion, release publication completion/iu,
+    /no release readiness, user-facing release, release execution completion, release publication completion/iu,
   );
 });
 
-test('Review Bridge release claim mode decision binding changed files stay inside allowlist', () => {
+test('Review Bridge release claim packet emit binding changed files stay inside allowlist', () => {
   const status = execFileSync('git', ['status', '--porcelain', '-uall'], {
     cwd: REPO_ROOT,
     encoding: 'utf8',
@@ -526,4 +530,11 @@ test('Review Bridge release claim mode decision binding changed files stay insid
   for (const filePath of changedFiles) {
     assert.equal(ALLOWLIST.includes(filePath), true, `changed file outside allowlist: ${filePath}`);
   }
+
+  const packageManifestDiff = changedFiles.filter((filePath) => (
+    filePath === 'package.json'
+    || filePath === 'package-lock.json'
+    || filePath === 'npm-shrinkwrap.json'
+  ));
+  assert.deepEqual(packageManifestDiff, []);
 });

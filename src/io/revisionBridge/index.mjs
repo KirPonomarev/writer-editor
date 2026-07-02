@@ -12529,11 +12529,12 @@ function releaseClaimPacketEmitReason(code, field, message, details = {}) {
 }
 
 function normalizeReleaseClaimPacketModeDecisionResult(input = {}) {
-  return normalizeReleaseClaimAttestationModeDecisionResult(input);
+  const ownInput = isPlainObject(input) ? cloneJsonSafe(input) : {};
+  return normalizeReleaseClaimAttestationModeDecisionResult(ownInput);
 }
 
 function normalizeReleaseClaimPacketAttestationResult(input = {}) {
-  const result = isPlainObject(input) ? input : {};
+  const result = isPlainObject(input) ? cloneJsonSafe(input) : {};
   const binding = isPlainObject(result.binding) ? result.binding : {};
   const attestation = isPlainObject(result.attestation) ? result.attestation : {};
   const modeDecisionResult = isPlainObject(result.modeDecisionResult)
@@ -12572,7 +12573,7 @@ function normalizeReleaseClaimPacketAttestationResult(input = {}) {
 }
 
 function normalizeReleaseClaimPacketMeta(input = {}) {
-  const packetMeta = isPlainObject(input) ? input : {};
+  const packetMeta = isPlainObject(input) ? cloneJsonSafe(input) : {};
   return {
     packetId: normalizeString(packetMeta.packetId),
     createdAtUtc: normalizeString(packetMeta.createdAtUtc),
