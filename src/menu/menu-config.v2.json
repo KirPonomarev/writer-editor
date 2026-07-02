@@ -65,6 +65,19 @@
             "op": "flag",
             "name": "hasDocument"
           }
+        },
+        {
+          "id": "file-export-current-scene-txt",
+          "label": "Экспорт TXT текущей сцены",
+          "labelKey": "menu.file.exportCurrentSceneTxt",
+          "command": "cmd.project.exportCurrentSceneTxtV1",
+          "mode": ["offline"],
+          "profile": ["pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "flag",
+            "name": "hasDocument"
+          }
         }
       ]
     },

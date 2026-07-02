@@ -22,6 +22,11 @@
       "ru": "Экспорт DOCX",
       "en": "Export DOCX"
     },
+    "menu.file.exportCurrentSceneTxt": {
+      "base": "Экспорт TXT текущей сцены",
+      "ru": "Экспорт TXT текущей сцены",
+      "en": "Export Current Scene TXT"
+    },
     "menu.edit": {
       "base": "Редактирование",
       "ru": "Редактирование",

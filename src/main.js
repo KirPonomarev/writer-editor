@@ -290,6 +290,8 @@ const PRINT_SECTION_LABELS = ['макет'];
 const ROMAN_META_KINDS = new Set(['chapter-file', 'scene']);
 const EXPORT_DOCX_MIN_CHANNEL = 'u:cmd:project:export:docxMin:v1';
 const EXPORT_DOCX_DEFAULT_REQUEST_ID = 'u3-export-docxmin-request';
+const EXPORT_CURRENT_SCENE_TXT_COMMAND_ID = 'cmd.project.exportCurrentSceneTxtV1';
+const EXPORT_CURRENT_SCENE_TXT_DEFAULT_REQUEST_ID = 'u3-export-current-scene-txt-request';
 const IMPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:import:markdownV1:v1';
 const EXPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:export:markdownV1:v1';
 const FLOW_OPEN_V1_CHANNEL = 'm:cmd:project:flow:open:v1';
@@ -301,6 +303,7 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_OPEN: 'cmd.project.open',
   PROJECT_SAVE: 'cmd.project.save',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
+  PROJECT_EXPORT_CURRENT_SCENE_TXT_V1: EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
   PROJECT_IMPORT_MARKDOWN_V1: 'cmd.project.importMarkdownV1',
   PROJECT_EXPORT_MARKDOWN_V1: 'cmd.project.exportMarkdownV1',
   PROJECT_RELEASE_CLAIM_ADMIT: 'cmd.project.releaseClaim.admit',
@@ -5216,6 +5219,9 @@ function getInternalCommandSurfaceKernel() {
       const savedAs = await handleSaveAs();
       return { ok: savedAs === true };
     },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_CURRENT_SCENE_TXT_V1]: async (payload = {}) => {
+      return handleExportCurrentSceneTxt(payload);
+    },
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1]: async (payload = {}) => {
       return handleImportMarkdownV1(payload);
     },
@@ -6437,6 +6443,18 @@ function buildPathBoundaryDetails(pathBoundaryError) {
   };
 }
 
+function makeTypedCurrentSceneTxtExportError(code, reason, details) {
+  const error = {
+    code: typeof code === 'string' && code.length > 0 ? code : 'E_EXPORT_CURRENT_SCENE_TXT_FAILED',
+    op: EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
+    reason: typeof reason === 'string' && reason.length > 0 ? reason : 'EXPORT_CURRENT_SCENE_TXT_FAILED',
+  };
+  if (details && typeof details === 'object' && !Array.isArray(details)) {
+    error.details = details;
+  }
+  return { ok: false, error };
+}
+
 let markdownTransformModulePromise = null;
 function loadMarkdownTransformModule() {
   if (!markdownTransformModulePromise) {
@@ -6447,6 +6465,18 @@ function loadMarkdownTransformModule() {
     });
   }
   return markdownTransformModulePromise;
+}
+
+let documentContentEnvelopeModulePromise = null;
+function loadDocumentContentEnvelopeModule() {
+  if (!documentContentEnvelopeModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'renderer', 'documentContentEnvelope.mjs')).href;
+    documentContentEnvelopeModulePromise = import(modulePath).catch((error) => {
+      documentContentEnvelopeModulePromise = null;
+      throw error;
+    });
+  }
+  return documentContentEnvelopeModulePromise;
 }
 
 let markdownIoModulePromise = null;
@@ -7197,10 +7227,77 @@ function normalizeDocxExportPath(filePath) {
   return raw.toLowerCase().endsWith('.docx') ? raw : `${raw}.docx`;
 }
 
+const CURRENT_SCENE_TXT_EXPORT_ALLOWED_PAYLOAD_KEYS = Object.freeze([
+  'requestId',
+  'outPath',
+]);
+const CURRENT_SCENE_TXT_EXPORT_FORBIDDEN_AUTHORITY_KEYS = Object.freeze([
+  'bookProfile',
+  'bufferSource',
+  'content',
+  'doc',
+  'editorSnapshot',
+  'plainText',
+  'rendererState',
+  'scene',
+  'text',
+  'viewportDomText',
+  'visibleWindowText',
+]);
+
+function normalizeCurrentSceneTxtExportPath(filePath) {
+  if (typeof filePath !== 'string' || filePath.trim().length === 0) return '';
+  const raw = filePath.trim();
+  return raw.toLowerCase().endsWith('.txt') ? raw : `${raw}.txt`;
+}
+
 function normalizeMarkdownExportPath(filePath) {
   if (typeof filePath !== 'string' || filePath.trim().length === 0) return '';
   const raw = filePath.trim();
   return /\.(md|markdown)$/i.test(raw) ? raw : `${raw}.md`;
+}
+
+function normalizeCurrentSceneTxtExportPayload(payload = {}) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return null;
+  }
+
+  const keys = Object.keys(payload);
+  const forbiddenAuthorityKeys = keys
+    .filter((key) => CURRENT_SCENE_TXT_EXPORT_FORBIDDEN_AUTHORITY_KEYS.includes(key))
+    .sort();
+  const unsupportedKeys = keys
+    .filter((key) => !CURRENT_SCENE_TXT_EXPORT_ALLOWED_PAYLOAD_KEYS.includes(key))
+    .sort();
+  if (forbiddenAuthorityKeys.length > 0 || unsupportedKeys.length > 0) {
+    return {
+      ok: false,
+      code: 'E_EXPORT_CURRENT_SCENE_TXT_PAYLOAD_INVALID',
+      reason: forbiddenAuthorityKeys.length > 0
+        ? 'EXPORT_CURRENT_SCENE_TXT_RENDERER_AUTHORITY_DENIED'
+        : 'EXPORT_CURRENT_SCENE_TXT_PAYLOAD_UNSUPPORTED_FIELDS',
+      details: {
+        fields: forbiddenAuthorityKeys.length > 0 ? forbiddenAuthorityKeys : unsupportedKeys,
+      },
+    };
+  }
+
+  const requestId = typeof payload.requestId === 'string' && payload.requestId.trim().length > 0
+    ? payload.requestId.trim()
+    : EXPORT_CURRENT_SCENE_TXT_DEFAULT_REQUEST_ID;
+  const outPath = typeof payload.outPath === 'string' ? payload.outPath.trim() : '';
+  const normalized = {
+    requestId,
+    outPath,
+  };
+  const pathGuard = sanitizePathFields(normalized, ['outPath'], { mode: 'any' });
+  if (!pathGuard.ok) {
+    return {
+      ...normalized,
+      pathBoundaryError: pathGuard,
+    };
+  }
+  return pathGuard.payload;
 }
 
 function buildMarkdownExportDefaultPath(payload) {
@@ -7213,6 +7310,60 @@ function buildMarkdownExportDefaultPath(payload) {
     ? currentFilePath.replace(/\.[^/.]+$/i, '')
     : path.join(fileManager.getDocumentsPath(), safeDefaultName);
   return normalizeMarkdownExportPath(defaultBase);
+}
+
+function buildCurrentSceneTxtExportDefaultPath() {
+  const defaultBaseName = typeof currentFilePath === 'string' && currentFilePath.trim()
+    ? path.basename(currentFilePath)
+    : 'scene.txt';
+  return normalizeCurrentSceneTxtExportPath(path.join(fileManager.getDocumentsPath(), defaultBaseName));
+}
+
+async function resolveCurrentSceneTxtExportPath(payload) {
+  const fromPayload = normalizeCurrentSceneTxtExportPath(payload.outPath);
+  if (fromPayload) {
+    return { canceled: false, outPath: fromPayload };
+  }
+  if (!mainWindow) {
+    return {
+      canceled: false,
+      error: {
+        code: 'E_EXPORT_CURRENT_SCENE_TXT_SAVE_DIALOG_UNAVAILABLE',
+        reason: 'save_dialog_unavailable',
+      },
+    };
+  }
+
+  const result = await dialog.showSaveDialog(mainWindow, {
+    title: 'Экспорт TXT текущей сцены',
+    defaultPath: buildCurrentSceneTxtExportDefaultPath(),
+    filters: [
+      { name: 'Plain Text', extensions: ['txt'] },
+      { name: 'Все файлы', extensions: ['*'] },
+    ],
+  });
+  if (result.canceled) {
+    return { canceled: true, outPath: '' };
+  }
+
+  const outPath = normalizeCurrentSceneTxtExportPath(result.filePath);
+  if (!outPath) {
+    return {
+      canceled: false,
+      error: {
+        code: 'E_EXPORT_CURRENT_SCENE_TXT_PATH_REQUIRED',
+        reason: 'export_path_required',
+      },
+    };
+  }
+  const pathGuard = sanitizePathFields({ outPath }, ['outPath'], { mode: 'any' });
+  if (!pathGuard.ok) {
+    return {
+      canceled: false,
+      pathBoundaryError: pathGuard,
+    };
+  }
+  return { canceled: false, outPath: pathGuard.payload.outPath };
 }
 
 async function resolveMarkdownExportPath(payload) {
@@ -7292,6 +7443,167 @@ async function buildDocxMinBuffer(editorSnapshot) {
     semanticMappingModule,
     styleMapModule,
   });
+}
+
+async function readCurrentSceneTxtExportSource() {
+  if (isDirty || autoSaveInProgress) {
+    throw new Error('Unsaved current scene state cannot be used as TXT export source');
+  }
+  if (typeof currentFilePath !== 'string' || !currentFilePath.trim()) {
+    throw new Error('No saved current scene is open');
+  }
+  if (!isAllowedFilePath(currentFilePath)) {
+    throw new Error('Current scene path is not allowed');
+  }
+
+  const documentContext = getDocumentContextFromPath(currentFilePath);
+  if (!documentContext || documentContext.kind !== 'scene') {
+    throw new Error('Current file is not a saved scene');
+  }
+
+  const editorSnapshot = await readCanonicalExportSnapshot({});
+  const envelopeModule = await loadDocumentContentEnvelopeModule();
+  const parsed = envelopeModule.parseObservablePayload(editorSnapshot.content || '');
+  if (!parsed || typeof parsed.text !== 'string') {
+    throw new Error('Current scene envelope could not be parsed');
+  }
+  if (parsed.issue && typeof parsed.issue === 'object') {
+    throw new Error(
+      typeof parsed.issue.userMessage === 'string' && parsed.issue.userMessage
+        ? parsed.issue.userMessage
+        : 'Current scene envelope is invalid',
+    );
+  }
+
+  return {
+    currentFilePath,
+    projectRoot: getProjectRootPath(),
+    content: parsed.text,
+  };
+}
+
+function validateCurrentSceneTxtExportOutPath(outPath, source) {
+  if (typeof outPath !== 'string' || !outPath.trim()) {
+    return {
+      ok: false,
+      code: 'E_EXPORT_CURRENT_SCENE_TXT_PATH_REQUIRED',
+      reason: 'export_path_required',
+    };
+  }
+  if (outPath === source.currentFilePath) {
+    return {
+      ok: false,
+      code: 'E_EXPORT_CURRENT_SCENE_TXT_TARGET_FORBIDDEN',
+      reason: 'export_target_matches_current_scene',
+    };
+  }
+  if (
+    typeof source.projectRoot === 'string'
+    && source.projectRoot
+    && (outPath === source.projectRoot || isPathInside(source.projectRoot, outPath))
+  ) {
+    return {
+      ok: false,
+      code: 'E_EXPORT_CURRENT_SCENE_TXT_TARGET_FORBIDDEN',
+      reason: 'export_target_inside_project_root',
+    };
+  }
+  return { ok: true };
+}
+
+async function handleExportCurrentSceneTxt(payloadRaw = {}) {
+  const payload = normalizeCurrentSceneTxtExportPayload(payloadRaw);
+  if (!payload) {
+    return makeTypedCurrentSceneTxtExportError(
+      'E_EXPORT_CURRENT_SCENE_TXT_PAYLOAD_INVALID',
+      'export_payload_invalid',
+    );
+  }
+  if (payload.ok === false) {
+    return makeTypedCurrentSceneTxtExportError(payload.code, payload.reason, payload.details);
+  }
+  if (payload.pathBoundaryError) {
+    return makeTypedCurrentSceneTxtExportError(
+      'E_PATH_BOUNDARY_VIOLATION',
+      'path_boundary_violation',
+      buildPathBoundaryDetails(payload.pathBoundaryError),
+    );
+  }
+
+  let source;
+  try {
+    source = await readCurrentSceneTxtExportSource();
+  } catch (error) {
+    return makeTypedCurrentSceneTxtExportError(
+      'E_EXPORT_CURRENT_SCENE_TXT_SOURCE_UNAVAILABLE',
+      'canonical_source_unavailable',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+
+  let resolvedPath;
+  try {
+    resolvedPath = await resolveCurrentSceneTxtExportPath(payload);
+  } catch (error) {
+    return makeTypedCurrentSceneTxtExportError(
+      'E_EXPORT_CURRENT_SCENE_TXT_DIALOG_FAILED',
+      'save_dialog_failed',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+  if (resolvedPath && resolvedPath.canceled === true) {
+    return {
+      ok: true,
+      exported: false,
+      canceled: true,
+      outPath: '',
+      bytesWritten: 0,
+    };
+  }
+  if (resolvedPath && resolvedPath.error) {
+    return makeTypedCurrentSceneTxtExportError(
+      resolvedPath.error.code,
+      resolvedPath.error.reason,
+    );
+  }
+  if (resolvedPath && resolvedPath.pathBoundaryError) {
+    return makeTypedCurrentSceneTxtExportError(
+      'E_PATH_BOUNDARY_VIOLATION',
+      'path_boundary_violation',
+      buildPathBoundaryDetails(resolvedPath.pathBoundaryError),
+    );
+  }
+
+  const outPath = resolvedPath && typeof resolvedPath.outPath === 'string'
+    ? resolvedPath.outPath
+    : '';
+  const targetState = validateCurrentSceneTxtExportOutPath(outPath, source);
+  if (!targetState.ok) {
+    return makeTypedCurrentSceneTxtExportError(targetState.code, targetState.reason);
+  }
+
+  try {
+    await queueDiskOperation(
+      () => fileManager.writeFileAtomic(outPath, source.content),
+      'export current scene txt',
+    );
+    updateStatus('TXT текущей сцены экспортирован');
+    return {
+      ok: true,
+      exported: true,
+      outPath,
+      bytesWritten: Buffer.byteLength(source.content, 'utf8'),
+    };
+  } catch (error) {
+    return makeTypedCurrentSceneTxtExportError(
+      'E_EXPORT_CURRENT_SCENE_TXT_WRITE_FAILED',
+      'txt_write_failed',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+        outPath,
+      },
+    );
+  }
 }
 
 async function handleExportDocxMin(payloadRaw) {
@@ -9792,6 +10104,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.open',
   'cmd.project.save',
   'cmd.project.saveAs',
+  EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
   'cmd.project.export.docxMin',
   'cmd.project.docx.previewContent',
   'cmd.project.docx.previewImportPlan',
@@ -9857,6 +10170,13 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.saveAs': async () => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE_AS, {});
+  },
+  [EXPORT_CURRENT_SCENE_TXT_COMMAND_ID]: async (payload = {}) => {
+    const result = await dispatchCommandSurfaceKernel(
+      COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_CURRENT_SCENE_TXT_V1,
+      payload,
+    );
+    return normalizeUiBridgeMenuResult(result);
   },
   'cmd.project.edit.undo': () => {
     const delivered = sendCanonicalRuntimeCommand(
