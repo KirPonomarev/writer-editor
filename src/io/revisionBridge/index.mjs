@@ -14201,7 +14201,9 @@ export const REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REASON_CODES = Object.fr
   RELEASE_CLAIM_KERNEL_FENCE_ACCEPTED_CODE,
   RELEASE_CLAIM_KERNEL_FENCE_BLOCKED_CODE,
   RELEASE_CLAIM_KERNEL_FENCE_DIAGNOSTICS_CODE,
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_INPUT_MISSING',
   'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISMATCH',
   'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_TYPE_INVALID',
   'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_NOT_ACCEPTED',
   'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_PROVENANCE_INVALID',
@@ -14225,9 +14227,9 @@ function releaseClaimKernelFenceReason(code, field, details = {}) {
 }
 
 function normalizeReleaseClaimKernelFencePublicationResult(input = {}) {
-  const result = isPlainObject(input) ? input : {};
-  const binding = isPlainObject(result.binding) ? result.binding : {};
-  const summary = isPlainObject(result.summary) ? result.summary : {};
+  const result = isPlainObject(input) ? cloneJsonSafe(input) : {};
+  const binding = isPlainObject(result.binding) ? cloneJsonSafe(result.binding) : {};
+  const summary = isPlainObject(result.summary) ? cloneJsonSafe(result.summary) : {};
 
   return {
     ok: result.ok === true,
@@ -14248,6 +14250,37 @@ function normalizeReleaseClaimKernelFencePublicationResult(input = {}) {
       attestationId: normalizeString(summary.attestationId),
     },
   };
+}
+
+function releaseClaimKernelFencePublicationResultMismatchReasons(expectedResult, receivedResult) {
+  if (!isPlainObject(receivedResult)) {
+    if (receivedResult === undefined) return [];
+    return [
+      releaseClaimKernelFenceReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISMATCH',
+        'publicationResult',
+        {
+          expectedValue: normalizeReleaseClaimKernelFencePublicationResult(expectedResult),
+          receivedValue: receivedResult,
+        },
+      ),
+    ];
+  }
+
+  const expectedPublicationResult = normalizeReleaseClaimKernelFencePublicationResult(expectedResult);
+  const receivedPublicationResult = normalizeReleaseClaimKernelFencePublicationResult(receivedResult);
+  if (JSON.stringify(expectedPublicationResult) === JSON.stringify(receivedPublicationResult)) return [];
+
+  return [
+    releaseClaimKernelFenceReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISMATCH',
+      'publicationResult',
+      {
+        expectedValue: expectedPublicationResult,
+        receivedValue: receivedPublicationResult,
+      },
+    ),
+  ];
 }
 
 function collectReleaseClaimKernelFenceRequestReasons(requestedMode, requestedClaimSurface) {
@@ -14456,7 +14489,7 @@ function releaseClaimKernelFenceResult(
 }
 
 export function evaluateRevisionBridgeReleaseClaimKernelFence(input = {}) {
-  const fenceInput = isPlainObject(input) ? input : {};
+  const fenceInput = isPlainObject(input) ? cloneJsonSafe(input) : {};
   const requestedMode = normalizeString(fenceInput.requestedMode);
   const requestedClaimSurface = normalizeString(fenceInput.requestedClaimSurface);
 
@@ -14474,14 +14507,14 @@ export function evaluateRevisionBridgeReleaseClaimKernelFence(input = {}) {
     );
   }
 
-  if (!isPlainObject(fenceInput.publicationResult)) {
+  if (!isPlainObject(fenceInput.publicationInput)) {
     return releaseClaimKernelFenceResult(
       false,
       'blocked',
       [
         releaseClaimKernelFenceReason(
-          'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISSING',
-          'publicationResult',
+          'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_INPUT_MISSING',
+          'publicationInput',
         ),
       ],
       normalizeReleaseClaimKernelFencePublicationResult(fenceInput.publicationResult),
@@ -14489,15 +14522,30 @@ export function evaluateRevisionBridgeReleaseClaimKernelFence(input = {}) {
     );
   }
 
-  const publicationResult = normalizeReleaseClaimKernelFencePublicationResult(
-    fenceInput.publicationResult,
+  const evaluatedPublicationResult = evaluateRevisionBridgeReleaseClaimPublicationGate(
+    fenceInput.publicationInput,
   );
+  const publicationResult = normalizeReleaseClaimKernelFencePublicationResult(evaluatedPublicationResult);
   const publicationReasons = collectReleaseClaimKernelFencePublicationReasons(publicationResult);
   if (publicationReasons.length > 0) {
     return releaseClaimKernelFenceResult(
       false,
       'blocked',
       publicationReasons,
+      publicationResult,
+      requestedClaimSurface,
+    );
+  }
+
+  const publicationMismatchReasons = releaseClaimKernelFencePublicationResultMismatchReasons(
+    publicationResult,
+    fenceInput.publicationResult,
+  );
+  if (publicationMismatchReasons.length > 0) {
+    return releaseClaimKernelFenceResult(
+      false,
+      'blocked',
+      publicationMismatchReasons,
       publicationResult,
       requestedClaimSurface,
     );
