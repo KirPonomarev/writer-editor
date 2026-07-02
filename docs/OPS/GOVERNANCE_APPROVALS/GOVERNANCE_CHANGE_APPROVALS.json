@@ -3566,10 +3566,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_BINDING_001_STATUS.json",
-      "sha256": "0d968192e139ee68055775dc00368d57047f4c1c70e093469cf3c64dda5eee5b",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded release claim command surface admission binding status after final machine-check sync; it records targeted, binding, release-claim, governance, ops, OSS, audit, and diff-check passes while preserving admission-only 12L scope and no command availability, command execution, release execution completion, product publication, release readiness, user-facing release, import/export widening, apply, storage, receipt, recovery, dependency, or Y9 claim."
+      "sha256": "f64bdc0f944e8c6e5f2fc3e278a307d6ad7908cc140c9590610972dd81c894d8",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_BINDING_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-02T12:30:09.000Z",
+      "rationale": "Approve delivery rebind for bounded release claim command surface admission binding after PR 1048 merge; status is rebound to delivered_merged_verified with feature commit, PR, merge SHA, merged time, and CI pass facts while preserving admission-only 12L scope, cmd.project.releaseClaim.admit, command.bus, already-delivered 12K evidence, top-level payload guard, no command availability, no command execution, no release execution completion, no product publication, no release readiness, no user-facing release, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-command-surface-admission-binding.contract.test.js",

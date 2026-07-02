@@ -311,7 +311,7 @@ No further transfer is required for this variant; the transfer axis is closed.
 - scope truth: this is internal execution-gate evidence only; no command availability, command execution, release execution completion, product publication, release readiness, user-facing release, release publication completion, publication authority, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
 
 ## Review Bridge Release Claim Command Surface Admission Binding
-- `REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_BINDING_001` is implemented and verified pending delivery as the bounded next contour after delivered release claim execution gate binding.
+- `REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_BINDING_001` is delivered, merged, and verified via PR `1048`, merge SHA `6b69b422acb2b6a78bcee76ced740bf78882b443`, and feature commit `4061af3f55de1215ba1bc38af8f106612614f194` as the bounded next contour after delivered release claim execution gate binding.
 - release claim command surface admission binding product-binds the existing `CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION`.
 - accepted 12L requires `cmd.project.releaseClaim.admit` to remain on the command surface kernel allowlist and to flow through `command.bus`; direct route bypass and non-allowlisted command ids stay blocked.
 - accepted 12L calls the already-bound 12K execution gate and returns its result as admission-only evidence.
