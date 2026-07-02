@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "taskId": "POST_MVP_CURRENT_SCENE_TXT_EXPORT_FACTUAL_REBIND_001",
+  "status": "delivered_merged_verified",
+  "type": "product_factual_rebind_of_delivered_feature",
+  "featureExpansion": false,
+  "baseSha": "cc0f226f68341c649423ba8761b91939cd2dbade",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "binding": {
+    "sourceTaskId": null,
+    "sourceArtifact": null,
+    "sourceFeatureSubject": "Add current scene TXT export command",
+    "sourcePullRequest": 1060,
+    "sourceCommitSha": "853edd88c8171dbc1c5cce9ec120a2f6b59d2f4c",
+    "sourceMergeSha": "c79cb107d3e346df6253b50e9407811449acdd0d",
+    "sourceStatus": "delivered_merged_verified"
+  },
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "postMvpContour": true,
+    "importExportMvpScopeExpanded": false,
+    "runtimeChangedInThisRebind": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "projectTruthWritesAdded": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "productClaim": {
+    "currentSceneTxtExportDelivered": true,
+    "currentSceneOnly": true,
+    "mainOwnedSourceRead": true,
+    "externalTxtWriteOnly": true,
+    "importExportMvpCloseoutExpanded": false,
+    "releaseReadinessClaimed": false
+  },
+  "runtimeTruth": {
+    "menuEntryId": "file-export-current-scene-txt",
+    "menuLabelKey": "menu.file.exportCurrentSceneTxt",
+    "menuProfile": [
+      "pro",
+      "guru"
+    ],
+    "commandId": "cmd.project.exportCurrentSceneTxtV1",
+    "commandSurfaceKernelOnly": true,
+    "paletteCommand": false,
+    "sourcePath": "saved current scene only",
+    "sourceAuthority": "main owned canonical envelope parse from disk",
+    "dirtySceneAllowed": false,
+    "unsavedSceneAllowed": false,
+    "nonSceneSourceAllowed": false,
+    "targetInsideProjectRootAllowed": false,
+    "targetMatchingCurrentSceneAllowed": false,
+    "writeSurface": "one external txt file through atomic write"
+  },
+  "positiveClaims": [
+    "Current scene TXT export is available as a bounded File menu command through cmd.project.exportCurrentSceneTxtV1.",
+    "The export source is the saved current scene only and is derived from canonical envelope content parsed from disk.",
+    "Dirty or unsaved current scene state fails closed before export source is used.",
+    "The export target cannot equal the current scene path and cannot be inside the current project root.",
+    "Successful export writes exactly one external TXT file through the existing atomic writer."
+  ],
+  "explicitNonClaims": [
+    "full manuscript TXT export",
+    "project package export",
+    "broader text export lane",
+    "DOCX export change",
+    "Markdown export change",
+    "Markdown import change",
+    "DOCX import change",
+    "import/export MVP widening",
+    "PDF export",
+    "EPUB export",
+    "HTML export",
+    "user-facing Mindmap export command",
+    "release readiness",
+    "cross-platform readiness",
+    "Y9 admission"
+  ],
+  "canonGuards": {
+    "boundedContour": true,
+    "noSplitBrainDocs": true,
+    "noFalseGreen": true,
+    "noStaleGreen": true,
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "atomicWritePreserved": true,
+    "docxFirstExportBaselinePreserved": true,
+    "newDependenciesAdded": false,
+    "uiChanged": false
+  },
+  "docsBinding": {
+    "contextUpdated": true,
+    "handoffUpdated": true,
+    "worklogUpdated": true,
+    "bibleUpdated": false,
+    "canonUpdated": false,
+    "reason": "CONTEXT and HANDOFF carry the active factual reality; WORKLOG records the delivered surface; BIBLE and CANON do not need broader export wording for this narrow rebind."
+  },
+  "claimAudit": {
+    "forbiddenClaimsChecked": [
+      "full manuscript TXT export",
+      "project package export",
+      "broader text export",
+      "Markdown export change",
+      "DOCX export change",
+      "MVP widening",
+      "PDF EPUB HTML export",
+      "Mindmap user-facing export",
+      "release readiness"
+    ],
+    "status": "pass"
+  },
+  "machineChecks": [
+    {
+      "command": "node --test test/contracts/post-mvp-current-scene-txt-export.contract.test.js",
+      "status": "pass",
+      "tests": 4
+    },
+    {
+      "command": "node --test test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "status": "pass",
+      "tests": 7
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "readOnlyAgents": [
+    {
+      "role": "existing_status_packet_investigator",
+      "agentId": "019f2494-f4a1-7ee2-8e4c-0bc3006f889d",
+      "verdict": "no_existing_packet_or_task_truth_found",
+      "localResolution": "addressed_by_adding_narrow_task_brief_status_artifact_and_factual_doc_sync_only"
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "source_feature_delivered_merged_verified",
+    "featureCommitSha": "853edd88c8171dbc1c5cce9ec120a2f6b59d2f4c",
+    "featurePullRequest": 1060,
+    "featureMergeSha": "c79cb107d3e346df6253b50e9407811449acdd0d"
+  },
+  "decision": "CURRENT_SCENE_TXT_EXPORT_DELIVERED_POST_MVP_AND_FACTUALLY_REBOUND",
+  "nextStep": "OWNER_SELECTED_ONLY"
+}
