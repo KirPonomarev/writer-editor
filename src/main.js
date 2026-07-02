@@ -4935,6 +4935,270 @@ async function handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect(p
 }
 // CONTOUR_12O_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_END
 
+// CONTOUR_12P_RELEASE_CLAIM_PUBLICATION_EFFECT_START
+const releaseClaimPublicationEffectRegistry = new Map();
+
+function isReleaseClaimPublicationEffectPlainPayload(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype === null || prototype === Object.prototype) return true;
+  const parentPrototype = Object.getPrototypeOf(prototype);
+  return parentPrototype === null
+    && Object.prototype.hasOwnProperty.call(prototype, 'constructor')
+    && prototype.constructor
+    && prototype.constructor.name === 'Object';
+}
+
+function cloneReleaseClaimPublicationEffectValue(value) {
+  if (value === undefined) return undefined;
+  return JSON.parse(JSON.stringify(value));
+}
+
+function makeReleaseClaimPublicationEffectError(code, reason, details = undefined) {
+  const error = {
+    code,
+    op: 'cmd.project.releaseClaim.execute',
+    reason,
+  };
+  if (details && typeof details === 'object' && !Array.isArray(details)) {
+    error.details = { ...details };
+  }
+  return { ok: false, error };
+}
+
+function buildReleaseClaimPublicationEffectReason(code, field, details = undefined) {
+  const reason = { code, field };
+  if (details && typeof details === 'object' && !Array.isArray(details)) {
+    reason.details = cloneReleaseClaimPublicationEffectValue(details) || {};
+  }
+  return reason;
+}
+
+function buildReleaseClaimPublicationEffectResult(executionEffectResult) {
+  const source = executionEffectResult
+    && typeof executionEffectResult === 'object'
+    && !Array.isArray(executionEffectResult)
+    ? executionEffectResult
+    : {};
+  const binding = source.binding && typeof source.binding === 'object' && !Array.isArray(source.binding)
+    ? cloneReleaseClaimPublicationEffectValue(source.binding) || {}
+    : {};
+  const executionSummary = source.summary && typeof source.summary === 'object' && !Array.isArray(source.summary)
+    ? source.summary
+    : {};
+  const accepted = source.ok === true && source.status === 'accepted';
+  const diagnostics = source.status === 'diagnostics';
+  const status = accepted ? 'accepted' : (diagnostics ? 'diagnostics' : 'blocked');
+  const code = accepted
+    ? 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_ACCEPTED'
+    : (diagnostics
+      ? 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_DIAGNOSTICS'
+      : 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BLOCKED');
+  const reason = accepted
+    ? 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_ACCEPTED'
+    : (typeof source.reason === 'string' && source.reason.length > 0
+      ? source.reason
+      : code);
+
+  return {
+    ok: accepted,
+    type: 'revisionBridge.releaseClaimPublicationEffect',
+    status,
+    code,
+    reason,
+    reasons: Array.isArray(source.reasons)
+      ? cloneReleaseClaimPublicationEffectValue(source.reasons) || []
+      : [],
+    binding,
+    summary: {
+      claimSurface: typeof executionSummary.claimSurface === 'string' ? executionSummary.claimSurface : '',
+      packetId: typeof executionSummary.packetId === 'string' ? executionSummary.packetId : '',
+      attestationId: typeof executionSummary.attestationId === 'string' ? executionSummary.attestationId : '',
+      commandId: 'cmd.project.releaseClaim.execute',
+      admissionClass: typeof executionSummary.admissionClass === 'string' ? executionSummary.admissionClass : '',
+      publicationEffectOnly: true,
+    },
+  };
+}
+
+function buildReleaseClaimPublicationEffectRecord(publicationEffectResult) {
+  const summary = publicationEffectResult
+    && typeof publicationEffectResult.summary === 'object'
+    && !Array.isArray(publicationEffectResult.summary)
+    ? publicationEffectResult.summary
+    : {};
+  const packetId = typeof summary.packetId === 'string' ? summary.packetId : '';
+  if (packetId.length === 0) {
+    return null;
+  }
+
+  return {
+    type: 'revisionBridge.releaseClaimPublicationEffectRecord',
+    packetId,
+    attestationId: typeof summary.attestationId === 'string' ? summary.attestationId : '',
+    claimSurface: typeof summary.claimSurface === 'string' ? summary.claimSurface : '',
+    commandId: 'cmd.project.releaseClaim.execute',
+    admissionClass: typeof summary.admissionClass === 'string' ? summary.admissionClass : '',
+    publicationEffectOnly: true,
+  };
+}
+
+function clearReleaseClaimPublicationEffectRegistry() {
+  releaseClaimPublicationEffectRegistry.clear();
+}
+
+function readReleaseClaimPublicationEffectRegistry() {
+  return [...releaseClaimPublicationEffectRegistry.values()]
+    .map((record) => cloneReleaseClaimPublicationEffectValue(record));
+}
+
+function buildReleaseClaimPublicationEffectBlockedResult(
+  code,
+  publicationEffectResult,
+  field,
+  details = undefined,
+) {
+  const source = publicationEffectResult
+    && typeof publicationEffectResult === 'object'
+    && !Array.isArray(publicationEffectResult)
+    ? publicationEffectResult
+    : {};
+  const binding = source.binding && typeof source.binding === 'object' && !Array.isArray(source.binding)
+    ? cloneReleaseClaimPublicationEffectValue(source.binding) || {}
+    : {};
+  const summary = source.summary && typeof source.summary === 'object' && !Array.isArray(source.summary)
+    ? cloneReleaseClaimPublicationEffectValue(source.summary) || {}
+    : {};
+
+  return {
+    ok: false,
+    type: 'revisionBridge.releaseClaimPublicationEffect',
+    status: 'blocked',
+    code,
+    reason: code,
+    reasons: [
+      buildReleaseClaimPublicationEffectReason(code, field, details),
+    ],
+    binding,
+    summary: {
+      claimSurface: typeof summary.claimSurface === 'string' ? summary.claimSurface : '',
+      packetId: typeof summary.packetId === 'string' ? summary.packetId : '',
+      attestationId: typeof summary.attestationId === 'string' ? summary.attestationId : '',
+      commandId: 'cmd.project.releaseClaim.execute',
+      admissionClass: typeof summary.admissionClass === 'string' ? summary.admissionClass : '',
+      publicationEffectOnly: true,
+    },
+  };
+}
+
+function registerReleaseClaimPublicationEffect(publicationEffectResult) {
+  if (!publicationEffectResult || typeof publicationEffectResult !== 'object' || Array.isArray(publicationEffectResult)) {
+    return { action: 'skipped' };
+  }
+  if (publicationEffectResult.ok !== true || publicationEffectResult.status !== 'accepted') {
+    return { action: 'skipped' };
+  }
+
+  const record = buildReleaseClaimPublicationEffectRecord(publicationEffectResult);
+  if (!record) {
+    return { action: 'missingPacketId' };
+  }
+
+  const existingRecord = releaseClaimPublicationEffectRegistry.get(record.packetId);
+  if (existingRecord) {
+    return {
+      action: 'duplicate',
+      record: cloneReleaseClaimPublicationEffectValue(existingRecord),
+    };
+  }
+
+  releaseClaimPublicationEffectRegistry.set(record.packetId, record);
+  return {
+    action: 'recorded',
+    record: cloneReleaseClaimPublicationEffectValue(record),
+  };
+}
+
+async function handleRevisionBridgeReleaseClaimPublicationEffect(payload = {}) {
+  if (!isReleaseClaimPublicationEffectPlainPayload(payload)) {
+    return makeReleaseClaimPublicationEffectError(
+      'E_RELEASE_CLAIM_PUBLICATION_EFFECT_PAYLOAD_INVALID',
+      'PAYLOAD_PLAIN_OBJECT_REQUIRED',
+      {
+        receivedType: Array.isArray(payload) ? 'array' : typeof payload,
+      },
+    );
+  }
+
+  const executionEffectResult = await handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect(payload);
+  const publicationEffectResult = buildReleaseClaimPublicationEffectResult(executionEffectResult);
+
+  if (executionEffectResult && typeof executionEffectResult === 'object' && !Array.isArray(executionEffectResult)) {
+    if (
+      executionEffectResult.code
+        === 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_EFFECT_PACKET_ID_REQUIRED'
+    ) {
+      return buildReleaseClaimPublicationEffectBlockedResult(
+        'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_PACKET_ID_REQUIRED',
+        publicationEffectResult,
+        'summary.packetId',
+        {
+          commandId: 'cmd.project.releaseClaim.execute',
+        },
+      );
+    }
+
+    if (
+      executionEffectResult.code
+        === 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_EFFECT_DUPLICATE_PACKET_BLOCKED'
+    ) {
+      return buildReleaseClaimPublicationEffectBlockedResult(
+        'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_DUPLICATE_PACKET_BLOCKED',
+        publicationEffectResult,
+        'summary.packetId',
+        {
+          packetId: publicationEffectResult.summary
+            && typeof publicationEffectResult.summary.packetId === 'string'
+            ? publicationEffectResult.summary.packetId
+            : '',
+          commandId: 'cmd.project.releaseClaim.execute',
+        },
+      );
+    }
+  }
+
+  const publicationEffectOutcome = registerReleaseClaimPublicationEffect(publicationEffectResult);
+
+  if (publicationEffectOutcome.action === 'missingPacketId') {
+    return buildReleaseClaimPublicationEffectBlockedResult(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_PACKET_ID_REQUIRED',
+      publicationEffectResult,
+      'summary.packetId',
+      {
+        commandId: 'cmd.project.releaseClaim.execute',
+      },
+    );
+  }
+
+  if (publicationEffectOutcome.action === 'duplicate') {
+    return buildReleaseClaimPublicationEffectBlockedResult(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_DUPLICATE_PACKET_BLOCKED',
+      publicationEffectResult,
+      'summary.packetId',
+      {
+        packetId: publicationEffectOutcome.record
+          && typeof publicationEffectOutcome.record.packetId === 'string'
+          ? publicationEffectOutcome.record.packetId
+          : '',
+        commandId: 'cmd.project.releaseClaim.execute',
+      },
+    );
+  }
+
+  return publicationEffectResult;
+}
+// CONTOUR_12P_RELEASE_CLAIM_PUBLICATION_EFFECT_END
+
 function getInternalCommandSurfaceKernel() {
   if (internalCommandSurfaceKernel) {
     return internalCommandSurfaceKernel;
@@ -4962,7 +5226,7 @@ function getInternalCommandSurfaceKernel() {
       return handleRevisionBridgeReleaseClaimCommandSurfaceAdmission(payload);
     },
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RELEASE_CLAIM_EXECUTE]: async (payload = {}) => {
-      return handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect(payload);
+      return handleRevisionBridgeReleaseClaimPublicationEffect(payload);
     },
   });
   return internalCommandSurfaceKernel;

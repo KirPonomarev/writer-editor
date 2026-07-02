@@ -4,6 +4,11 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-02
+- Review Bridge: opened `REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001` as a bounded publication effect contour after delivered real execution ephemeral effect binding.
+- Release claim publication effect binding: product-binds the new `CONTOUR_12P_RELEASE_CLAIM_PUBLICATION_EFFECT` over delivered `CONTOUR_12O_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT`.
+- Publication effect binding: accepted 12P keeps `cmd.project.releaseClaim.execute` on the command surface kernel allowlist, keeps `command.bus` dispatch, re-evaluates the delivered 12O sublayer from raw input, emits typed `revisionBridge.releaseClaimPublicationEffect` output with `summary.publicationEffectOnly: true`, and records one bounded in-memory publication effect record keyed by `packetId`.
+- Publication effect binding: duplicate `packetId` values now block with a deterministic publication-effect duplicate outcome; missing `packetId` blocks before any publication effect record is written; blocked or diagnostics 12O output writes no publication effect record.
+- Scope truth: this is not product publication, not publication authority, not release publication completion, not release readiness, not user-facing release, not runtime queue semantics, not storage truth, not project truth, not manuscript truth, not receipt, not recovery, and not import/export MVP widening.
 - Review Bridge: opened `REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001` as a bounded Word evidence claim binding contour after DOCX diagnostic evidence surface.
 - Review Bridge: delivered `REVIEW_BRIDGE_WORD_EVIDENCE_CLAIM_BINDING_001` via PR `1022` merge SHA `d2a5fc07649aaa994730bcefb7943f24a66e6179`; repo status is rebound to `delivered_merged_verified`.
 - Word evidence claim binding: product-binds the existing `CONTOUR_10_WORD_EVIDENCE_CHECK_R2` gate; accepted claims require valid packet, matching evidence hash, and non-exceeded coverage.

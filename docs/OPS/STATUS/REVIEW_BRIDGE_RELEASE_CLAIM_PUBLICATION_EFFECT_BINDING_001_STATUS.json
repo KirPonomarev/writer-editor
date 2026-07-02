@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_release_claim_publication_effect_binding",
+  "featureExpansion": "bounded_review_bridge_claim_binding",
+  "headShaBefore": "f2ddf16217fdc99b937492aa8386c5f3bd6125e7",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": true,
+    "rendererSurfaceChanged": false,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false,
+    "releaseClaimPublicationEffectRuntimeChanged": true,
+    "releaseClaimPublicationEffectBound": true,
+    "releaseClaimRealExecutionEphemeralEffectDeliveredPreviously": true,
+    "publicationEffectInMemoryOnly": true,
+    "commandAvailabilityClaimed": false,
+    "commandExecutionAccepted": false,
+    "releaseExecutionAccepted": false,
+    "productPublicationClaimed": false,
+    "publicationAuthorityClaimed": false,
+    "releasePublicationCompletionClaimed": false,
+    "releaseReadinessClaimed": false,
+    "userFacingReleaseClaimed": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false,
+    "autoApply": false,
+    "y9Opened": false
+  },
+  "binding": {
+    "sourcePlan": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_FINAL_PLAN_R2",
+    "previousContourTaskId": "REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001",
+    "previousContourStatus": "delivered_merged_verified",
+    "previousContourMergeSha": "0e5a01e8ed8752520a053331e0d68fc4d4185d23",
+    "previousContourDeliveryRebindMergeSha": "f2ddf16217fdc99b937492aa8386c5f3bd6125e7",
+    "activePublicationEffectMarker": "CONTOUR_12P_RELEASE_CLAIM_PUBLICATION_EFFECT",
+    "upstreamRealExecutionEffectMarker": "CONTOUR_12O_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT",
+    "upstreamCommandSurfaceTriggerWitnessMarker": "CONTOUR_12N_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS",
+    "upstreamExecutionGateMarker": "CONTOUR_12K_RELEASE_CLAIM_EXECUTION_GATE",
+    "commandSurfaceCommandId": "cmd.project.releaseClaim.execute",
+    "commandSurfaceRoute": "command.bus",
+    "publicationEffectRegistryType": "ephemeral_in_memory_packet_id_registry",
+    "publicationEffectLifetime": "main_process_lifetime_only",
+    "publicationEffectSelectorMode": "fixed_execute_command_to_publication_effect_mapping",
+    "executionGateSchema": "revision-bridge.release-claim-execution-gate.v1"
+  },
+  "positiveClaims": [
+    "The explicit owner-selected release claim publication effect path is product-bound as one bounded main-only publication effect contour after delivered 12O.",
+    "Accepted 12P requires the command id cmd.project.releaseClaim.execute to remain on the command surface kernel allowlist.",
+    "Accepted 12P requires bus-route command surface dispatch; direct route bypass remains blocked.",
+    "Accepted 12P evaluates the delivered 12O real execution effect sublayer directly from raw command input before any publication effect write.",
+    "Accepted 12P emits a typed publication effect result with summary.publicationEffectOnly true and with no summary.witnessOnly or summary.ephemeralEffectOnly field.",
+    "Accepted 12P writes exactly one deterministic in-memory publication effect record keyed by packetId only when the bounded 12O result is accepted.",
+    "Accepted 12P keeps publication effect registry lifetime bounded to the current main-process lifetime only.",
+    "Accepted 12P blocks missing packetId before any publication effect record is written.",
+    "Accepted 12P blocks a second publication effect write for an already-recorded packetId with a deterministic duplicate-packet blocked publication-effect outcome.",
+    "Diagnostics or blocked 12O output writes no publication effect record.",
+    "At the real ui:command-bridge boundary, accepted 12P preserves the existing outer ok true value path while blocked or diagnostics publication effect output remains nested under the outer failure value field.",
+    "This contour proves one real bounded publication effect only; it does not prove product publication completion, publication authority, or release readiness."
+  ],
+  "nonClaims": [
+    "No command availability is claimed.",
+    "No broad command execution completion is claimed.",
+    "No release execution completion is claimed.",
+    "No runtime queue semantics are claimed.",
+    "No retry, drop, abandon, or single-writer queue policy is claimed.",
+    "No product publication is claimed.",
+    "No publication authority is claimed.",
+    "No release publication completion is claimed.",
+    "No release readiness is claimed.",
+    "No user-facing release is claimed.",
+    "No renderer runtime trigger is introduced.",
+    "No UI state is changed.",
+    "No Word support is claimed.",
+    "No Google Docs support is claimed.",
+    "No DOCX support expansion is claimed.",
+    "No import support is claimed.",
+    "No export support is claimed.",
+    "No review import completion is claimed.",
+    "No roundtrip is claimed.",
+    "No layout parity is claimed.",
+    "No full fidelity is claimed.",
+    "No automatic apply is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed by release claim publication effect binding.",
+    "No project truth write is performed by release claim publication effect binding.",
+    "No storage write is performed by release claim publication effect binding.",
+    "No receipt or recovery evidence is created by release claim publication effect binding.",
+    "No DOCX import safe-create behavior is changed.",
+    "No DOCX export behavior is changed.",
+    "No import/export MVP closeout is widened.",
+    "No PDF, EPUB, HTML, Mindmap, cloud sync, cross-platform readiness, packaged readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Publication effect binding is main-only in-memory effect evidence.",
+    "Publication effect record is ephemeral in-memory state only and does not become project truth.",
+    "Publication effect registry lifetime is the current main-process lifetime only and is not replayed from storage.",
+    "Publication effect binding does not write manuscript truth or project truth.",
+    "Publication effect binding does not write storage truth and does not create receipt or recovery evidence.",
+    "Publication effect binding does not open runtime queue semantics.",
+    "Publication effect binding does not prove product publication completion.",
+    "Publication effect binding does not grant publication authority.",
+    "Publication effect binding uses a fixed execute-command-to-publication-effect mapping and does not trust inner free-form command ids as effect authority.",
+    "12O real execution ephemeral effect remains a delivered historical sublayer and is not rewritten by this contour.",
+    "12N command surface trigger witness remains upstream historical evidence and is not rewritten by this contour.",
+    "12K execution gate remains upstream proof-only evidence and is not mutated semantically by this contour.",
+    "USER_FACING_CLAIM_READY remains an internal chain class only, not a release readiness state.",
+    "USER_FACING is a chain surface in this contour, not a user-facing UI state.",
+    "This contour is not a product publication contour."
+  ],
+  "implementation": {
+    "changedProductionRuntime": true,
+    "changedUi": false,
+    "changedBasenames": [
+      "REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001_STATUS.json",
+      "review-bridge-release-claim-publication-effect-binding.contract.test.js",
+      "revision-bridge-release-claim-publication-effect-wiring.contract.test.js",
+      "revision-bridge-release-claim-command-execution-effect-wiring.contract.test.js",
+      "donor-port-command-surface-kernel.contract.test.js",
+      "main.js",
+      "GOVERNANCE_CHANGE_APPROVALS.json",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "WORKLOG.md"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --test test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "status": "pass",
+      "tests": 7
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-release-claim-command-execution-effect-wiring.contract.test.js",
+      "status": "pass",
+      "tests": 12
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-release-claim-publication-effect-wiring.contract.test.js",
+      "status": "pass",
+      "tests": 12
+    },
+    {
+      "command": "node --test test/contracts/review-bridge-release-claim-publication-effect-binding.contract.test.js",
+      "status": "pass",
+      "tests": 5
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-release-claim-publication-effect-wiring.contract.test.js test/contracts/revision-bridge-release-claim-command-execution-effect-wiring.contract.test.js test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "status": "pass",
+      "tests": 31
+    },
+    {
+      "command": "node scripts/ops/governance-approval-state.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "node --check src/main.js",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "commandIdAllowlisted": true,
+    "busRouteRequired": true,
+    "directRouteBypassRejected": true,
+    "executionEffectSublayerCalled": true,
+    "accepted12ORequired": true,
+    "nonPlainPayloadRejectedBeforeExecutionEffectSublayer": true,
+    "realPublicationEffectRecordStoredOnAccepted": true,
+    "duplicatePacketBlocked": true,
+    "diagnosticsOrBlockedStoreNoPublicationEffectRecord": true,
+    "missingPacketIdBlockedBeforePublicationEffectRecord": true,
+    "outputCannotMeanCommandAvailability": true,
+    "outputCannotMeanProductPublicationCompletion": true,
+    "outputCannotMeanPublicationAuthority": true,
+    "runtimeQueueOpened": false,
+    "projectTruthMutated": false,
+    "storageWritePerformed": false,
+    "receiptCreated": false,
+    "recoveryCreated": false
+  },
+  "agentAudits": [
+    {
+      "agent": "Hubble",
+      "type": "read_only_canon_skeptic",
+      "result": "narrow_publication_effect_only",
+      "finding": "Confirmed the narrowest honest opening after delivered 12O is one new downstream main-only publication-effect contour in main.js only, with a new status artifact and new binding contract, while keeping real product publication, publication authority, persistence, storage truth, manuscript truth, renderer authority, UI state, runtime queue semantics, import-export widening, and Y9 explicitly false."
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending"
+  },
+  "decision": "RELEASE_CLAIM_PUBLICATION_EFFECT_IMPLEMENTED_VERIFIED_PENDING_DELIVERY",
+  "nextStep": "run publication-effect binding contract and governance checks, then complete delivery chain; real product publication, publication authority, and post-MVP import-export expansion do not open by implication"
+}
