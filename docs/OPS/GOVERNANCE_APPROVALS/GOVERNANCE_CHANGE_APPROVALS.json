@@ -3580,10 +3580,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001_STATUS.json",
-      "sha256": "eb1396cafa52e183ec5a8f7cbb41a6486c1e0d5afc7086008a76d1e4c68afd40",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001",
-      "approvedAtUtc": "2026-07-02T13:51:44.000Z",
-      "rationale": "Approve bounded 12M command execution witness binding status for the explicit owner-selected next contour after 12L; it records cmd.project.releaseClaim.execute, command.bus routing, 12K execution-gate witness wrapping, typed witness envelope preservation, top-level payload guard, and preserves no command availability, no command execution, no release execution completion, no product publication, no release readiness, no user-facing release, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
+      "sha256": "bbdf497ca9a6c91721a5a36214ac9c3ccb9d739269cc1ee0dcc425a83e9c07f7",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-02T14:02:08.000Z",
+      "rationale": "Approve delivery rebind for bounded 12M command execution witness binding after PR 1050 merge; status is rebound to delivered_merged_verified with feature commit, PR, merge SHA, merged time, GitHub Actions pass facts, bounded admit-plus-execute typed witness passthrough, nested outer failure envelope behavior, and corrected full release-claim machine-check count while preserving no command availability, no command execution, no release execution completion, no product publication, no release readiness, no user-facing release, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
     },
     {
       "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
