@@ -271,7 +271,7 @@ function validExecutionGateInput(bridge, overrides = {}) {
   };
 }
 
-function instantiateWitnessHandler(loadRevisionBridgeModule) {
+function instantiateWitnessHarness(loadRevisionBridgeModule) {
   const mainSource = readMainSource();
   const section = extractMarkedSection(mainSource, SECTION_START, SECTION_END);
   const context = {
@@ -280,11 +280,19 @@ function instantiateWitnessHandler(loadRevisionBridgeModule) {
     exports: {},
   };
   vm.runInNewContext(
-    `${section}\nmodule.exports = { handleRevisionBridgeReleaseClaimCommandExecutionWitness };`,
+    `${section}\nmodule.exports = {
+      handleRevisionBridgeReleaseClaimCommandExecutionWitness,
+      clearReleaseClaimCommandSurfaceTriggerWitnessRegistry,
+      readReleaseClaimCommandSurfaceTriggerWitnessRegistry,
+    };`,
     context,
     { filename: MAIN_PATH },
   );
-  return context.module.exports.handleRevisionBridgeReleaseClaimCommandExecutionWitness;
+  return context.module.exports;
+}
+
+function instantiateWitnessHandler(loadRevisionBridgeModule) {
+  return instantiateWitnessHarness(loadRevisionBridgeModule).handleRevisionBridgeReleaseClaimCommandExecutionWitness;
 }
 
 test('Contour 12M command execution witness wiring exports the release-claim command id through kernel allowlist', () => {
@@ -442,6 +450,32 @@ test('Contour 12M accepted 12K result returns witness-only result', async () => 
   assert.deepEqual(deepClone(result.reasons), []);
 });
 
+test('Contour 12N accepted witness path records one in-memory trigger witness record', async () => {
+  const bridge = await loadBridge();
+  const harness = instantiateWitnessHarness(async () => bridge);
+  harness.clearReleaseClaimCommandSurfaceTriggerWitnessRegistry();
+  const payload = validExecutionGateInput(bridge, {
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  });
+
+  const result = await harness.handleRevisionBridgeReleaseClaimCommandExecutionWitness(payload);
+  const registry = deepClone(harness.readReleaseClaimCommandSurfaceTriggerWitnessRegistry());
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(registry, [
+    {
+      type: 'revisionBridge.releaseClaimCommandSurfaceTriggerWitness',
+      packetId: result.summary.packetId,
+      attestationId: result.summary.attestationId,
+      claimSurface: result.summary.claimSurface,
+      commandId: RELEASE_CLAIM_COMMAND_ID,
+      admissionClass: result.summary.admissionClass,
+      witnessOnly: true,
+    },
+  ]);
+});
+
 test('Contour 12M blocked 12K result returns blocked witness result', async () => {
   const bridge = await loadBridge();
   const handler = instantiateWitnessHandler(async () => bridge);
@@ -497,6 +531,63 @@ test('Contour 12M diagnostics 12K result returns diagnostics witness result', as
   assert.equal(result.summary.witnessOnly, true);
 });
 
+test('Contour 12N duplicate accepted packetId returns deterministic blocked trigger witness result', async () => {
+  const bridge = await loadBridge();
+  const harness = instantiateWitnessHarness(async () => bridge);
+  harness.clearReleaseClaimCommandSurfaceTriggerWitnessRegistry();
+  const payload = validExecutionGateInput(bridge, {
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  });
+
+  const first = await harness.handleRevisionBridgeReleaseClaimCommandExecutionWitness(payload);
+  const duplicateA = await harness.handleRevisionBridgeReleaseClaimCommandExecutionWitness(payload);
+  const duplicateB = await harness.handleRevisionBridgeReleaseClaimCommandExecutionWitness(payload);
+  const registry = deepClone(harness.readReleaseClaimCommandSurfaceTriggerWitnessRegistry());
+
+  assert.equal(first.ok, true);
+  assert.equal(duplicateA.ok, false);
+  assert.equal(duplicateA.status, 'blocked');
+  assert.equal(
+    duplicateA.code,
+    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_DUPLICATE_PACKET_BLOCKED',
+  );
+  assert.equal(
+    duplicateA.reason,
+    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_DUPLICATE_PACKET_BLOCKED',
+  );
+  assert.deepEqual(duplicateA, duplicateB);
+  assert.equal(duplicateA.summary.packetId, first.summary.packetId);
+  assert.equal(Array.isArray(duplicateA.reasons), true);
+  assert.equal(duplicateA.reasons[0].field, 'summary.packetId');
+  assert.equal(duplicateA.reasons[0].details.packetId, first.summary.packetId);
+  assert.equal(registry.length, 1);
+});
+
+test('Contour 12N blocked or diagnostics witness output creates no trigger witness record', async () => {
+  const bridge = await loadBridge();
+  const harness = instantiateWitnessHarness(async () => bridge);
+
+  harness.clearReleaseClaimCommandSurfaceTriggerWitnessRegistry();
+  const diagnosticsPayload = {
+    schemaVersion: bridge.REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA,
+    requestedMode: 'BROKEN_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  };
+  const diagnostics = await harness.handleRevisionBridgeReleaseClaimCommandExecutionWitness(diagnosticsPayload);
+  assert.equal(diagnostics.status, 'diagnostics');
+  assert.deepEqual(deepClone(harness.readReleaseClaimCommandSurfaceTriggerWitnessRegistry()), []);
+
+  const blockedPayload = validExecutionGateInput(bridge, {
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'INTERNAL',
+    commandAdmissionInput: validCommandAdmissionInput(bridge, 'PR_MODE', 'INTERNAL'),
+  });
+  const blocked = await harness.handleRevisionBridgeReleaseClaimCommandExecutionWitness(blockedPayload);
+  assert.equal(blocked.status, 'blocked');
+  assert.deepEqual(deepClone(harness.readReleaseClaimCommandSurfaceTriggerWitnessRegistry()), []);
+});
+
 test('Contour 12M direct non-bus route is blocked', () => {
   const mainSource = readMainSource();
 
@@ -530,18 +621,24 @@ test('Contour 12M command id not on allowlist is blocked', async () => {
   assert.equal(result.error.reason, 'COMMAND_ID_NOT_ALLOWED');
 });
 
-test('Contour 12M witness result is deterministic', async () => {
+test('Contour 12M witness result is deterministic across accepted and duplicate outcomes under cleared trigger witness state', async () => {
   const bridge = await loadBridge();
-  const handler = instantiateWitnessHandler(async () => bridge);
+  const harness = instantiateWitnessHarness(async () => bridge);
   const payload = validExecutionGateInput(bridge, {
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'USER_FACING',
   });
 
-  const first = await handler(payload);
-  const second = await handler(payload);
+  harness.clearReleaseClaimCommandSurfaceTriggerWitnessRegistry();
+  const firstAccepted = await harness.handleRevisionBridgeReleaseClaimCommandExecutionWitness(payload);
+  const firstDuplicate = await harness.handleRevisionBridgeReleaseClaimCommandExecutionWitness(payload);
 
-  assert.deepEqual(first, second);
+  harness.clearReleaseClaimCommandSurfaceTriggerWitnessRegistry();
+  const secondAccepted = await harness.handleRevisionBridgeReleaseClaimCommandExecutionWitness(payload);
+  const secondDuplicate = await harness.handleRevisionBridgeReleaseClaimCommandExecutionWitness(payload);
+
+  assert.deepEqual(firstAccepted, secondAccepted);
+  assert.deepEqual(firstDuplicate, secondDuplicate);
 });
 
 test('Contour 12M witness path is non-mutating', async () => {
@@ -611,6 +708,8 @@ test('Contour 12M source section stays command-surface only and free of UI expan
   assert.match(section, /\bevaluateRevisionBridgeReleaseClaimExecutionGate\s*\(/u);
   assert.match(section, /\bPAYLOAD_PLAIN_OBJECT_REQUIRED\b/u);
   assert.match(section, /\bwitnessOnly:\s*true/u);
+  assert.match(section, /\bCONTOUR_12N_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_START\b/u);
+  assert.match(section, /\breleaseClaimCommandSurfaceTriggerWitnessRegistry\b/u);
   for (const pattern of forbiddenPatterns) {
     assert.equal(pattern.test(section), false, `forbidden contour token: ${pattern.source}`);
   }
