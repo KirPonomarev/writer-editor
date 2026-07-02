@@ -232,10 +232,10 @@ No further transfer is required for this variant; the transfer axis is closed.
 - scope truth: this is not release readiness; no release readiness, user-facing release, attestation completion, packet emit completion, release execution completion, release publication completion, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
 
 ## Review Bridge Release Claim Attestation Binding
-- `REVIEW_BRIDGE_RELEASE_CLAIM_ATTESTATION_BINDING_001` is implemented and verified pending delivery as the bounded next contour after delivered release claim mode decision binding.
+- `REVIEW_BRIDGE_RELEASE_CLAIM_ATTESTATION_BINDING_001` is delivered, merged, and verified as the bounded next contour after delivered release claim mode decision binding.
 - release claim attestation binding product-binds the existing `CONTOUR_12E_RELEASE_CLAIM_ATTESTATION_GATE`.
 - accepted 12E attestation requires accepted 12D release claim mode decision provenance, raw 12D re-evaluation, matching recomputed 12D envelope, matching `decisionHash`, matching `commandRunDigest`, and matching `evidenceHash`.
 - `RELEASE_MODE` 12E requires non-empty `executedCommands`, `artifactHashes`, `releaseEvidenceId`, and `releaseEvidenceHash`; release evidence id and hash must match accepted 12D release evidence.
 - immediate 12F packet emit guard is minimally hardened as a direct downstream consumer: 12F now blocks mixed accepted 12D and 12E pairs when 12E's `decisionHash` does not match the top-level accepted 12D result.
-- delivery truth is pending; no PR or merge SHA is claimed yet for this contour.
+- delivery truth is rebound to PR `1034`, merge SHA `4d8e0a1b2eb065913bdc018304106c1f7e0973f1`, and feature commit `dc0a7a0ab00a9fd805efa829f3a54aeb5698e90f`.
 - scope truth: this is not release readiness; no release readiness, user-facing release, packet emit completion, release execution completion, release publication completion, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.

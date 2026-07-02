@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_ATTESTATION_BINDING_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_release_claim_attestation_binding",
   "featureExpansion": "bounded_review_bridge_claim_binding",
   "baseSha": "618d9d7ff08e103624c0f0198e674072519e2281",
@@ -217,12 +217,12 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending_delivery",
-    "featureCommitSha": "",
-    "featurePullRequest": null,
-    "featureMergeSha": "",
-    "featureMergedAtUtc": ""
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "dc0a7a0ab00a9fd805efa829f3a54aeb5698e90f",
+    "featurePullRequest": 1034,
+    "featureMergeSha": "4d8e0a1b2eb065913bdc018304106c1f7e0973f1",
+    "featureMergedAtUtc": "2026-07-02T01:56:29Z"
   },
-  "decision": "RELEASE_CLAIM_ATTESTATION_BINDING_MINIMAL_HARDENING_READY_FOR_DELIVERY",
+  "decision": "RELEASE_CLAIM_ATTESTATION_BINDING_BOUND_FOR_CURRENT_SCOPE",
   "nextStep": "after delivery, continue with the next owner-selected Review Bridge boundary; the logical next boundary is CONTOUR_12F_RELEASE_CLAIM_PACKET_EMIT"
 }

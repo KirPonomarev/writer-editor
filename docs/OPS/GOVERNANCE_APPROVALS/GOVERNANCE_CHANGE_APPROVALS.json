@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_ATTESTATION_BINDING_001_STATUS.json",
-      "sha256": "5ad7e03e1bbd4e8222b1a24503ea028f7f7b9d634297ad662fe384faec595dd5",
+      "sha256": "bc01e2fa12e3c1656ba95cdb5e7a385dd8987704cb8e97c1080a099cca566339",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_ATTESTATION_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded release claim attestation binding status before delivery; it product-binds and minimally hardens the existing 12E release claim attestation gate by requiring accepted 12D provenance, matching decisionHash, commandRunDigest, evidenceHash, RELEASE_MODE release evidence matching accepted 12D, and direct 12F exact decisionHash guard while preserving no release readiness, no user-facing release, no packet emit completion, no execution completion, no publication completion, no Word support, no Google Docs support, no DOCX support expansion, no import support, no export support, no roundtrip, no layout parity, no full fidelity, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no dependency, and no Y9 claim."
+      "rationale": "Approve bounded release claim attestation binding status and delivery rebind after PR 1034 merge; it product-binds and minimally hardens the existing 12E release claim attestation gate by requiring accepted 12D provenance, matching decisionHash, commandRunDigest, evidenceHash, RELEASE_MODE release evidence matching accepted 12D, and direct 12F exact decisionHash guard while preserving no release readiness, no user-facing release, no packet emit completion, no execution completion, no publication completion, no Word support, no Google Docs support, no DOCX support expansion, no import support, no export support, no roundtrip, no layout parity, no full fidelity, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no dependency, and no Y9 claim."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-attestation-binding.contract.test.js",
