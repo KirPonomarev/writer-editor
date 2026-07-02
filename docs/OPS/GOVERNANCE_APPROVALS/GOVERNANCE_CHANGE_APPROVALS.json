@@ -3586,13 +3586,6 @@
       "rationale": "Approve delivery rebind for bounded 12M command execution witness binding after PR 1050 merge; status is rebound to delivered_merged_verified with feature commit, PR, merge SHA, merged time, GitHub Actions pass facts, bounded admit-plus-execute typed witness passthrough, nested outer failure envelope behavior, and corrected full release-claim machine-check count while preserving no command availability, no command execution, no release execution completion, no product publication, no release readiness, no user-facing release, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
     },
     {
-      "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
-      "sha256": "b456d8ce7ac1e4e8bda1551e88ca98bdbb81e71c1a55a9432944f23a38898ecb",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001",
-      "approvedAtUtc": "2026-07-02T17:30:00.000Z",
-      "rationale": "Approve bounded command-surface kernel typed-result sample update for 12O so cmd.project.releaseClaim.execute can preserve the new real execution effect envelope with summary.ephemeralEffectOnly true while leaving the allowlist, payload validation, typed passthrough scope, renderer scope, UI scope, dependencies, publication, readiness, storage, receipt, recovery, and Y9 boundaries unchanged."
-    },
-    {
       "filePath": "test/contracts/review-bridge-release-claim-command-execution-witness-binding.contract.test.js",
       "sha256": "296e6a35d819a4d8d90d3b77cf929bd22462c67dd0b7ccd8252c1eb809022db4",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001",
@@ -3628,13 +3621,6 @@
       "rationale": "Approve bounded 12N trigger witness wiring guard proving the contour stays main-only, queue-free, and storage-free while accepted witness results record exactly one in-memory packetId-keyed trigger witness record, duplicate packetIds block deterministically, missing packetIds block before record creation, and blocked or diagnostics witness outputs create no trigger witness record."
     },
     {
-      "filePath": "test/contracts/revision-bridge-release-claim-command-execution-effect-wiring.contract.test.js",
-      "sha256": "501123e7d6d1295e0523f86c9caf8cb08ab00c4f6fb14cabb8c6c76390c7f74c",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001",
-      "approvedAtUtc": "2026-07-02T17:30:00.000Z",
-      "rationale": "Approve bounded 12O real execution effect wiring guard proving main-only command.bus execution effect behavior over the already-bound 12K gate, deterministic packetId-keyed ephemeral record creation, duplicate and missing-packet negatives, blocked and diagnostics zero-effect behavior, and strict nonclaims against publication, readiness, queue semantics, storage, manuscript truth, project truth, renderer authority, dependency widening, and Y9."
-    },
-    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001_STATUS.json",
       "sha256": "4f3e5d66e7346dc7c98fe993bf539a22e6f10b227c6643366a1aa7656449d3a7",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001",
@@ -3647,6 +3633,41 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001",
       "approvedAtUtc": "2026-07-02T17:30:00.000Z",
       "rationale": "Approve contract guard for bounded 12O real execution ephemeral effect binding; it checks status scope, 12O marker, 12N and 12K linkage, command.bus route, packetId-keyed in-memory execution effect semantics, duplicate and missing-packet negatives, docs honesty, changed-file allowlist scope, and overclaim negatives without introducing command availability, release execution completion, queue semantics, storage, publication, readiness, renderer runtime trigger, import/export widening, receipt, recovery, dependency, or Y9 claim."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001_STATUS.json",
+      "sha256": "fd17457cc1fd7294746e0c51d9fc05c728133a22fbc8f215766d8b28bda45b2b",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded release claim publication effect binding status for the new 12P downstream contour; it binds one main-only in-memory publication effect over delivered 12O while preserving no command availability, no broad command execution completion, no product publication, no publication authority, no release publication completion, no release readiness, no user-facing release, no storage, no receipt, no recovery, no import-export widening, and no Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "sha256": "3b737ba36e90d92e57702c28cbe90be9149c691972bce92851ebe62baf1e9fae",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded donor kernel expectation refresh for the active 12P typed result sample; no allowlist widening, no new command ids, no publication authority, no readiness, no persistence, no storage, no receipt, no recovery, and no import-export widening claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-publication-effect-binding.contract.test.js",
+      "sha256": "02aab0ed8609904fec41d4156571f3f55fd81b0712e6297f4fcc44ae21732a64",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded 12P binding contract proving narrow status scope, docs honesty, upstream 12O and 12K lineage, and changed-file allowlist discipline without introducing product publication, publication authority, release readiness, persistence, storage, receipt, recovery, import-export widening, or Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-command-execution-effect-wiring.contract.test.js",
+      "sha256": "68635256c12ebce7b4263907b96ebc4e273014cb5962de4ebac4d469313cf7a3",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve historical 12O wiring test rebinding so the delivered execution-effect sublayer remains verifiable as a downstream preserved layer while the active route moves to 12P; this does not widen command availability, release execution completion, product publication, publication authority, readiness, storage, receipt, recovery, or import-export scope."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-publication-effect-wiring.contract.test.js",
+      "sha256": "0c8af49d82626e2a13debead7c06df91a47aed1d0b4df9c833ba599f6395b857",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded 12P wiring proof that the active execute route stays on command.bus, re-evaluates the delivered 12O sublayer from raw input, records one in-memory publication effect record, blocks duplicate and missing packetId, and keeps publication authority, persistence, storage, receipt, recovery, readiness, and import-export widening false."
     }
   ]
 }

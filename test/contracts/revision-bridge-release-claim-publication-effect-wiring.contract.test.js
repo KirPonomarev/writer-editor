@@ -7,8 +7,8 @@ const { pathToFileURL } = require('node:url');
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const MAIN_PATH = 'src/main.js';
-const SECTION_START = '// CONTOUR_12O_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_START';
-const SECTION_END = '// CONTOUR_12O_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_END';
+const SUBLAYER_START = '// CONTOUR_12O_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_START';
+const SECTION_END = '// CONTOUR_12P_RELEASE_CLAIM_PUBLICATION_EFFECT_END';
 const RELEASE_CLAIM_COMMAND_ID = 'cmd.project.releaseClaim.execute';
 
 const { ALLOWED_COMMAND_IDS, createCommandSurfaceKernel } = require('../../src/command/commandSurfaceKernel.js');
@@ -185,7 +185,7 @@ function acceptedPacketEmitResult(bridge, mode) {
     packetMeta: {
       packetId: 'release-claim-packet-1',
       createdAtUtc: '2026-05-15T12:00:00Z',
-      emitterId: 'codex-contour-12o',
+      emitterId: 'codex-contour-12p',
     },
     modeDecisionResult,
     attestationResult,
@@ -238,9 +238,9 @@ function validExecutionGateInput(bridge, overrides = {}) {
   };
 }
 
-function instantiateEffectHarness(loadRevisionBridgeModule) {
+function instantiatePublicationHarness(loadRevisionBridgeModule) {
   const mainSource = readMainSource();
-  const section = extractMarkedSection(mainSource, SECTION_START, SECTION_END);
+  const section = extractMarkedSection(mainSource, SUBLAYER_START, SECTION_END);
   const context = {
     loadRevisionBridgeModule,
     module: { exports: {} },
@@ -248,7 +248,9 @@ function instantiateEffectHarness(loadRevisionBridgeModule) {
   };
   vm.runInNewContext(
     `${section}\nmodule.exports = {
-      handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect,
+      handleRevisionBridgeReleaseClaimPublicationEffect,
+      clearReleaseClaimPublicationEffectRegistry,
+      readReleaseClaimPublicationEffectRegistry,
       clearReleaseClaimCommandExecutionEffectRegistry,
       readReleaseClaimCommandExecutionEffectRegistry,
     };`,
@@ -258,11 +260,11 @@ function instantiateEffectHarness(loadRevisionBridgeModule) {
   return context.module.exports;
 }
 
-function instantiateEffectHandler(loadRevisionBridgeModule) {
-  return instantiateEffectHarness(loadRevisionBridgeModule).handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect;
+function instantiatePublicationHandler(loadRevisionBridgeModule) {
+  return instantiatePublicationHarness(loadRevisionBridgeModule).handleRevisionBridgeReleaseClaimPublicationEffect;
 }
 
-test('Contour 12O command execution effect wiring exports the release-claim command id through kernel allowlist', () => {
+test('Contour 12P command publication effect wiring keeps the execute command in the kernel allowlist', () => {
   assert.equal(ALLOWED_COMMAND_IDS.includes(RELEASE_CLAIM_COMMAND_ID), true);
 
   const kernel = createCommandSurfaceKernel({
@@ -272,16 +274,18 @@ test('Contour 12O command execution effect wiring exports the release-claim comm
   assert.equal(kernel.listAllowedCommandIds().includes(RELEASE_CLAIM_COMMAND_ID), true);
 });
 
-test('Contour 12O historical effect layer remains available as a downstream sublayer', () => {
+test('Contour 12P active execute path routes through the publication effect handler', () => {
   const mainSource = readMainSource();
 
-  assert.match(mainSource, /CONTOUR_12O_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_START/u);
-  assert.match(mainSource, /handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect/u);
-  assert.match(mainSource, /buildReleaseClaimCommandExecutionEffectResult/u);
-  assert.match(mainSource, /registerReleaseClaimCommandExecutionEffect/u);
+  assert.match(mainSource, /CONTOUR_12P_RELEASE_CLAIM_PUBLICATION_EFFECT_START/u);
+  assert.match(mainSource, /handleRevisionBridgeReleaseClaimPublicationEffect/u);
+  assert.match(
+    mainSource,
+    /\[COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_RELEASE_CLAIM_EXECUTE\]: async \(payload = \{\}\) => \{\s*return handleRevisionBridgeReleaseClaimPublicationEffect\(payload\);/u,
+  );
 });
 
-test('Contour 12O effect path calls 12K execution gate and wraps accepted output', async () => {
+test('Contour 12P publication effect path calls the 12O sublayer and wraps accepted output', async () => {
   const calls = [];
   let loadCount = 0;
   const expectedExecutionGateResult = {
@@ -299,7 +303,7 @@ test('Contour 12O effect path calls 12K execution gate and wraps accepted output
       admissionClass: 'USER_FACING_CLAIM_READY',
     },
   };
-  const handler = instantiateEffectHandler(async () => {
+  const handler = instantiatePublicationHandler(async () => {
     loadCount += 1;
     return {
       evaluateRevisionBridgeReleaseClaimExecutionGate(payload) {
@@ -321,10 +325,10 @@ test('Contour 12O effect path calls 12K execution gate and wraps accepted output
   assert.deepEqual(calls, [payload]);
   assert.deepEqual(deepClone(result), {
     ok: true,
-    type: 'revisionBridge.releaseClaimCommandExecutionEffect',
+    type: 'revisionBridge.releaseClaimPublicationEffect',
     status: 'accepted',
-    code: 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_EFFECT_ACCEPTED',
-    reason: 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_EFFECT_ACCEPTED',
+    code: 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_ACCEPTED',
+    reason: 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_ACCEPTED',
     reasons: [],
     binding: {
       mode: 'RELEASE_MODE',
@@ -336,12 +340,12 @@ test('Contour 12O effect path calls 12K execution gate and wraps accepted output
       attestationId: 'attestation-1',
       commandId: 'cmd.project.releaseClaim.execute',
       admissionClass: 'USER_FACING_CLAIM_READY',
-      ephemeralEffectOnly: true,
+      publicationEffectOnly: true,
     },
   });
 });
 
-test('Contour 12O blocks non-plain top-level payload before 12K execution gate', async () => {
+test('Contour 12P blocks non-plain top-level payload before the 12O sublayer', async () => {
   const calls = [];
   let loadCount = 0;
   class ReleaseClaimPayload {
@@ -352,7 +356,7 @@ test('Contour 12O blocks non-plain top-level payload before 12K execution gate',
       this.requestedClaimSurface = 'INTERNAL';
     }
   }
-  const handler = instantiateEffectHandler(async () => {
+  const handler = instantiatePublicationHandler(async () => {
     loadCount += 1;
     return {
       evaluateRevisionBridgeReleaseClaimExecutionGate(payload) {
@@ -367,52 +371,49 @@ test('Contour 12O blocks non-plain top-level payload before 12K execution gate',
   assert.equal(loadCount, 0);
   assert.deepEqual(calls, []);
   assert.equal(result.ok, false);
-  assert.equal(result.error.code, 'E_RELEASE_CLAIM_COMMAND_EXECUTION_EFFECT_PAYLOAD_INVALID');
+  assert.equal(result.error.code, 'E_RELEASE_CLAIM_PUBLICATION_EFFECT_PAYLOAD_INVALID');
   assert.equal(result.error.op, RELEASE_CLAIM_COMMAND_ID);
   assert.equal(result.error.reason, 'PAYLOAD_PLAIN_OBJECT_REQUIRED');
 });
 
-test('Contour 12O accepted 12K result returns real execution effect result without witnessOnly', async () => {
+test('Contour 12P accepted path returns a publication-only typed result with no witness or execution-only flag', async () => {
   const bridge = await loadBridge();
-  const handler = instantiateEffectHandler(async () => bridge);
+  const handler = instantiatePublicationHandler(async () => bridge);
   const payload = validExecutionGateInput(bridge, {
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'USER_FACING',
   });
 
   const result = await handler(payload);
-  const expected = bridge.evaluateRevisionBridgeReleaseClaimExecutionGate(payload);
 
   assert.equal(result.ok, true);
-  assert.equal(result.type, 'revisionBridge.releaseClaimCommandExecutionEffect');
+  assert.equal(result.type, 'revisionBridge.releaseClaimPublicationEffect');
   assert.equal(result.status, 'accepted');
-  assert.equal(result.code, 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_EFFECT_ACCEPTED');
-  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_EFFECT_ACCEPTED');
-  assert.deepEqual(deepClone(result.binding), deepClone(expected.binding));
-  assert.equal(result.summary.claimSurface, expected.summary.claimSurface);
-  assert.equal(result.summary.packetId, expected.summary.packetId);
-  assert.equal(result.summary.attestationId, expected.summary.attestationId);
+  assert.equal(result.code, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_ACCEPTED');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_ACCEPTED');
   assert.equal(result.summary.commandId, RELEASE_CLAIM_COMMAND_ID);
-  assert.equal(result.summary.admissionClass, expected.summary.admissionClass);
-  assert.equal(result.summary.ephemeralEffectOnly, true);
+  assert.equal(result.summary.publicationEffectOnly, true);
   assert.equal(Object.prototype.hasOwnProperty.call(result.summary, 'witnessOnly'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(result.summary, 'ephemeralEffectOnly'), false);
   assert.deepEqual(deepClone(result.reasons), []);
 });
 
-test('Contour 12O accepted effect path records one in-memory execution effect record', async () => {
+test('Contour 12P accepted path records one execution effect record and one publication effect record', async () => {
   const bridge = await loadBridge();
-  const harness = instantiateEffectHarness(async () => bridge);
+  const harness = instantiatePublicationHarness(async () => bridge);
   harness.clearReleaseClaimCommandExecutionEffectRegistry();
+  harness.clearReleaseClaimPublicationEffectRegistry();
   const payload = validExecutionGateInput(bridge, {
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'USER_FACING',
   });
 
-  const result = await harness.handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect(payload);
-  const registry = deepClone(harness.readReleaseClaimCommandExecutionEffectRegistry());
+  const result = await harness.handleRevisionBridgeReleaseClaimPublicationEffect(payload);
+  const executionRegistry = deepClone(harness.readReleaseClaimCommandExecutionEffectRegistry());
+  const publicationRegistry = deepClone(harness.readReleaseClaimPublicationEffectRegistry());
 
   assert.equal(result.ok, true);
-  assert.deepEqual(registry, [
+  assert.deepEqual(executionRegistry, [
     {
       type: 'revisionBridge.releaseClaimCommandExecutionEffectRecord',
       packetId: result.summary.packetId,
@@ -423,67 +424,84 @@ test('Contour 12O accepted effect path records one in-memory execution effect re
       ephemeralEffectOnly: true,
     },
   ]);
+  assert.deepEqual(publicationRegistry, [
+    {
+      type: 'revisionBridge.releaseClaimPublicationEffectRecord',
+      packetId: result.summary.packetId,
+      attestationId: result.summary.attestationId,
+      claimSurface: result.summary.claimSurface,
+      commandId: RELEASE_CLAIM_COMMAND_ID,
+      admissionClass: result.summary.admissionClass,
+      publicationEffectOnly: true,
+    },
+  ]);
 });
 
-test('Contour 12O blocked and diagnostics gate results create no execution effect record', async () => {
+test('Contour 12P blocked and diagnostics upstream results create no publication effect record', async () => {
   const bridge = await loadBridge();
-  const harness = instantiateEffectHarness(async () => bridge);
+  const harness = instantiatePublicationHarness(async () => bridge);
 
   harness.clearReleaseClaimCommandExecutionEffectRegistry();
+  harness.clearReleaseClaimPublicationEffectRegistry();
   const diagnosticsPayload = {
     schemaVersion: bridge.REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA,
     requestedMode: 'BROKEN_MODE',
     requestedClaimSurface: 'USER_FACING',
   };
-  const diagnostics = await harness.handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect(diagnosticsPayload);
+  const diagnostics = await harness.handleRevisionBridgeReleaseClaimPublicationEffect(diagnosticsPayload);
   assert.equal(diagnostics.status, 'diagnostics');
   assert.deepEqual(deepClone(harness.readReleaseClaimCommandExecutionEffectRegistry()), []);
+  assert.deepEqual(deepClone(harness.readReleaseClaimPublicationEffectRegistry()), []);
 
   const blockedPayload = validExecutionGateInput(bridge, {
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'INTERNAL',
     commandAdmissionInput: validCommandAdmissionInput(bridge, 'PR_MODE', 'INTERNAL'),
   });
-  const blocked = await harness.handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect(blockedPayload);
+  const blocked = await harness.handleRevisionBridgeReleaseClaimPublicationEffect(blockedPayload);
   assert.equal(blocked.status, 'blocked');
   assert.deepEqual(deepClone(harness.readReleaseClaimCommandExecutionEffectRegistry()), []);
+  assert.deepEqual(deepClone(harness.readReleaseClaimPublicationEffectRegistry()), []);
 });
 
-test('Contour 12O duplicate accepted packetId returns deterministic blocked real execution effect result', async () => {
+test('Contour 12P duplicate accepted packetId returns deterministic blocked publication effect result', async () => {
   const bridge = await loadBridge();
-  const harness = instantiateEffectHarness(async () => bridge);
+  const harness = instantiatePublicationHarness(async () => bridge);
   harness.clearReleaseClaimCommandExecutionEffectRegistry();
+  harness.clearReleaseClaimPublicationEffectRegistry();
   const payload = validExecutionGateInput(bridge, {
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'USER_FACING',
   });
 
-  const first = await harness.handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect(payload);
-  const duplicateA = await harness.handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect(payload);
-  const duplicateB = await harness.handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect(payload);
-  const registry = deepClone(harness.readReleaseClaimCommandExecutionEffectRegistry());
+  const first = await harness.handleRevisionBridgeReleaseClaimPublicationEffect(payload);
+  const duplicateA = await harness.handleRevisionBridgeReleaseClaimPublicationEffect(payload);
+  const duplicateB = await harness.handleRevisionBridgeReleaseClaimPublicationEffect(payload);
+  const executionRegistry = deepClone(harness.readReleaseClaimCommandExecutionEffectRegistry());
+  const publicationRegistry = deepClone(harness.readReleaseClaimPublicationEffectRegistry());
 
   assert.equal(first.ok, true);
   assert.equal(duplicateA.ok, false);
   assert.equal(duplicateA.status, 'blocked');
   assert.equal(
     duplicateA.code,
-    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_EFFECT_DUPLICATE_PACKET_BLOCKED',
+    'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_DUPLICATE_PACKET_BLOCKED',
   );
   assert.equal(
     duplicateA.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_EFFECT_DUPLICATE_PACKET_BLOCKED',
+    'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_DUPLICATE_PACKET_BLOCKED',
   );
   assert.deepEqual(duplicateA, duplicateB);
   assert.equal(duplicateA.summary.packetId, first.summary.packetId);
   assert.equal(Array.isArray(duplicateA.reasons), true);
   assert.equal(duplicateA.reasons[0].field, 'summary.packetId');
   assert.equal(duplicateA.reasons[0].details.packetId, first.summary.packetId);
-  assert.equal(registry.length, 1);
+  assert.equal(executionRegistry.length, 1);
+  assert.equal(publicationRegistry.length, 1);
 });
 
-test('Contour 12O accepted effect without packetId blocks before execution effect record is stored', async () => {
-  const harness = instantiateEffectHarness(async () => ({
+test('Contour 12P accepted upstream result without packetId blocks before publication effect record is stored', async () => {
+  const harness = instantiatePublicationHarness(async () => ({
     evaluateRevisionBridgeReleaseClaimExecutionGate() {
       return {
         ok: true,
@@ -503,8 +521,9 @@ test('Contour 12O accepted effect without packetId blocks before execution effec
     },
   }));
   harness.clearReleaseClaimCommandExecutionEffectRegistry();
+  harness.clearReleaseClaimPublicationEffectRegistry();
 
-  const result = await harness.handleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect({
+  const result = await harness.handleRevisionBridgeReleaseClaimPublicationEffect({
     schemaVersion: 'revision-bridge.release-claim-execution-gate.v1',
     commandAdmissionInput: { commandId: 'cmd.release.claim.publish' },
     requestedMode: 'RELEASE_MODE',
@@ -514,12 +533,13 @@ test('Contour 12O accepted effect without packetId blocks before execution effec
   assert.equal(result.ok, false);
   assert.equal(
     result.code,
-    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_EFFECT_PACKET_ID_REQUIRED',
+    'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_PACKET_ID_REQUIRED',
   );
   assert.deepEqual(deepClone(harness.readReleaseClaimCommandExecutionEffectRegistry()), []);
+  assert.deepEqual(deepClone(harness.readReleaseClaimPublicationEffectRegistry()), []);
 });
 
-test('Contour 12O direct non-bus route is blocked', () => {
+test('Contour 12P direct non-bus route is still blocked', () => {
   const mainSource = readMainSource();
 
   assert.match(
@@ -532,7 +552,7 @@ test('Contour 12O direct non-bus route is blocked', () => {
   );
 });
 
-test('Contour 12O real ui command bridge nests blocked or diagnostics effect result under outer failure envelope', () => {
+test('Contour 12P real ui command bridge keeps blocked or diagnostics publication effect results under outer failure envelope', () => {
   const mainSource = readMainSource();
 
   assert.match(
@@ -541,8 +561,8 @@ test('Contour 12O real ui command bridge nests blocked or diagnostics effect res
   );
 });
 
-test('Contour 12O source section stays effect-layer only and free of witness-only wording', () => {
-  const section = extractMarkedSection(readMainSource(), SECTION_START, SECTION_END);
+test('Contour 12P source section stays publication-effect only and free of persistence or authority drift', () => {
+  const section = extractMarkedSection(readMainSource(), '// CONTOUR_12P_RELEASE_CLAIM_PUBLICATION_EFFECT_START', SECTION_END);
   const forbiddenPatterns = [
     /\bwitnessOnly\b/u,
     /\bBrowserWindow\b/u,
@@ -555,20 +575,24 @@ test('Contour 12O source section stays effect-layer only and free of witness-onl
     /\bipcMain\b/u,
     /\bdialog\b/u,
     /\bwriteFile\b/u,
+    /\bpublicationAuthority\b/u,
+    /\breleaseReadiness\b/u,
+    /\buserFacingRelease\b/u,
+    /\breceipt\b/u,
+    /\brecovery\b/u,
+    /\bstorage\b/u,
     /\bfetch\s*\(/u,
     /\bXMLHttpRequest\b/u,
     /\bWebSocket\b/u,
     /\bhttp\b/u,
     /\bhttps\b/u,
-    /\bpublication\b/u,
   ];
 
-  assert.match(section, /\bisReleaseClaimCommandExecutionEffectPlainPayload\s*\(/u);
-  assert.match(section, /\bcloneReleaseClaimCommandExecutionEffectValue\s*\(/u);
-  assert.match(section, /\bevaluateRevisionBridgeReleaseClaimExecutionGate\s*\(/u);
-  assert.match(section, /\bPAYLOAD_PLAIN_OBJECT_REQUIRED\b/u);
-  assert.match(section, /\bephemeralEffectOnly:\s*true/u);
-  assert.match(section, /\breleaseClaimCommandExecutionEffectRegistry\b/u);
+  assert.match(section, /\bisReleaseClaimPublicationEffectPlainPayload\s*\(/u);
+  assert.match(section, /\bhandleRevisionBridgeReleaseClaimCommandExecutionEphemeralEffect\s*\(/u);
+  assert.match(section, /\bregisterReleaseClaimPublicationEffect\s*\(/u);
+  assert.match(section, /\bpublicationEffectOnly:\s*true/u);
+  assert.match(section, /\breleaseClaimPublicationEffectRegistry\b/u);
   for (const pattern of forbiddenPatterns) {
     assert.equal(pattern.test(section), false, `forbidden contour token: ${pattern.source}`);
   }
