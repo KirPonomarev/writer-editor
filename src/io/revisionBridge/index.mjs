@@ -11262,9 +11262,9 @@ function collectReleaseClaimAdmissionReasons(input, admission) {
 function normalizeReleaseClaimAdmissionDossierPayload(input = {}) {
   const payload = isPlainObject(input) ? input : {};
   const dossierResult = isPlainObject(payload.dossierResult) ? cloneJsonSafe(payload.dossierResult) : {};
-  const derivedCoveredScope = Array.isArray(payload.coveredScope)
-    ? uniqueStableStrings(payload.coveredScope)
-    : uniqueStableStrings(dossierResult.itemEvaluations?.flatMap((item) => item?.binding?.claimScope || []));
+  const derivedCoveredScope = uniqueStableStrings(
+    dossierResult.itemEvaluations?.flatMap((item) => item?.binding?.claimScope || []),
+  );
   return {
     dossierResult,
     coveredScope: sortedStableStrings(derivedCoveredScope),

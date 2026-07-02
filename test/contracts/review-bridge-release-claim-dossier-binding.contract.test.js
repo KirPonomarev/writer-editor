@@ -22,14 +22,21 @@ const FORMAT_MATRIX_TEST_PATH = 'test/contracts/revision-bridge-format-matrix-cl
 const FORMAT_MATRIX_BINDING_TEST_PATH = 'test/contracts/review-bridge-format-matrix-claim-binding.contract.test.js';
 const STATUS_PATH_REL = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_DOSSIER_BINDING_001_STATUS.json';
 const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
+const ADMISSION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-admission-binding.contract.test.js';
+const ADMISSION_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001_STATUS.json';
+const ADMISSION_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-admission-gate.contract.test.js';
 const CONTEXT_PATH = 'docs/CONTEXT.md';
 const HANDOFF_PATH = 'docs/HANDOFF.md';
 const WORKLOG_PATH = 'docs/WORKLOG.md';
 const ALLOWLIST = [
+  MODULE_PATH,
   CONTRACT_PATH,
   WORD_EVIDENCE_TEST_PATH,
   GOOGLE_DOCS_EVIDENCE_TEST_PATH,
   FORMAT_MATRIX_TEST_PATH,
+  ADMISSION_BINDING_TEST_PATH,
+  ADMISSION_BINDING_STATUS_PATH,
+  ADMISSION_KERNEL_TEST_PATH,
   STATUS_PATH_REL,
   GOVERNANCE_APPROVALS_PATH,
   CONTEXT_PATH,

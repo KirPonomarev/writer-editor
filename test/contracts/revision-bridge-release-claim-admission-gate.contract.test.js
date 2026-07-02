@@ -286,6 +286,25 @@ test('Contour 12C blocks when claim scope is not covered by dossier scope', asyn
   assert.deepEqual(result.reasons[0].uncoveredScope, ['structuralManual']);
 });
 
+test('Contour 12C ignores caller-supplied coveredScope and derives coverage from 12B item evaluations', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimAdmissionGate(
+    validAdmission({
+      claimScope: ['textExact', 'structuralManual'],
+    }),
+    validDossierPayload(bridge, {
+      coveredScope: ['textExact', 'commentAnchor', 'structuralManual'],
+    }),
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_SCOPE_NOT_COVERED');
+  assert.deepEqual(result.binding.coveredScope, ['commentAnchor', 'textExact']);
+  assert.deepEqual(result.reasons[0].coveredScope, ['commentAnchor', 'textExact']);
+  assert.deepEqual(result.reasons[0].uncoveredScope, ['structuralManual']);
+});
+
 test('Contour 12C blocks when required claim classes are missing', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimAdmissionGate(
