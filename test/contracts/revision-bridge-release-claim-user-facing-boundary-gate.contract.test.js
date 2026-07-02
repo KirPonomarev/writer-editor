@@ -364,8 +364,12 @@ test('Contour 12G blocks RELEASE_MODE USER_FACING boundary when release class is
   const packetEmitResult = deepClone(acceptedPacketEmitResult(bridge, {
     mode: 'RELEASE_MODE',
   }));
+  packetEmitResult.binding.modeClass = 'INTERNAL_PROOF_ONLY';
   packetEmitResult.packet.releaseClaim.modeClass = 'INTERNAL_PROOF_ONLY';
   packetEmitResult.report.modeClass = 'INTERNAL_PROOF_ONLY';
+  packetEmitResult.packet.packetHash = bridge.createRevisionBridgeReleaseClaimPacketHash(packetEmitResult.packet);
+  packetEmitResult.report.packetHash = packetEmitResult.packet.packetHash;
+  packetEmitResult.summary.packetHash = packetEmitResult.packet.packetHash;
 
   const result = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate(validBoundaryInput(bridge, {
     packetEmitResult,
@@ -412,6 +416,160 @@ test('Contour 12G blocks synthetic accepted packet without provenance', async ()
   assert.equal(result.ok, false);
   assert.equal(result.status, 'blocked');
   assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID');
+});
+
+test('Contour 12G rejects boundary input fields inherited from prototype', async () => {
+  const bridge = await loadBridge();
+  const inheritedInput = Object.create(validBoundaryInput(bridge, {
+    packetMode: 'RELEASE_MODE',
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate(inheritedInput);
+
+  assert.equal(Object.keys(inheritedInput).length, 0);
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'diagnostics');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_REQUESTED_MODE_REQUIRED');
+});
+
+test('Contour 12G rejects packetEmitResult fields inherited from prototype', async () => {
+  const bridge = await loadBridge();
+  const inheritedPacketEmitResult = Object.create(acceptedPacketEmitResult(bridge, {
+    mode: 'RELEASE_MODE',
+  }));
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate(validBoundaryInput(bridge, {
+    packetEmitResult: inheritedPacketEmitResult,
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  assert.equal(Object.keys(inheritedPacketEmitResult).length, 0);
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_TYPE_INVALID');
+});
+
+test('Contour 12G rejects nested packetEmitResult provenance inherited from prototype', async () => {
+  const bridge = await loadBridge();
+  const accepted = acceptedPacketEmitResult(bridge, {
+    mode: 'RELEASE_MODE',
+  });
+  const packetEmitResult = {
+    ...deepClone(accepted),
+    binding: Object.create(accepted.binding),
+    packet: Object.create(accepted.packet),
+    report: Object.create(accepted.report),
+  };
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate(validBoundaryInput(bridge, {
+    packetEmitResult,
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  assert.equal(Object.keys(packetEmitResult.binding).length, 0);
+  assert.equal(Object.keys(packetEmitResult.packet).length, 0);
+  assert.equal(Object.keys(packetEmitResult.report).length, 0);
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID');
+});
+
+test('Contour 12G blocks coherent synthetic accepted packet with forged packet report linkage', async () => {
+  const bridge = await loadBridge();
+  const packetEmitResult = deepClone(acceptedPacketEmitResult(bridge, {
+    mode: 'RELEASE_MODE',
+  }));
+  packetEmitResult.packet.packetHash = 'sha256:forged-packet';
+  packetEmitResult.report.packetHash = 'sha256:forged-report';
+  packetEmitResult.summary.packetHash = 'sha256:forged-summary';
+  packetEmitResult.report.packetId = 'forged-packet-id';
+  packetEmitResult.report.attestationId = 'forged-attestation-id';
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate(validBoundaryInput(bridge, {
+    packetEmitResult,
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID');
+  assert.equal(
+    result.reasons.some((reason) => reason.field === 'packetEmitResult.packet.packetHash'),
+    true,
+  );
+  assert.equal(
+    result.reasons.some((reason) => reason.field === 'packetEmitResult.report.packetId'),
+    true,
+  );
+  assert.equal(
+    result.reasons.some((reason) => reason.field === 'packetEmitResult.report.attestationId'),
+    true,
+  );
+});
+
+test('Contour 12G blocks coherent accepted packet when raw binding is empty', async () => {
+  const bridge = await loadBridge();
+  const packetEmitResult = deepClone(acceptedPacketEmitResult(bridge, {
+    mode: 'RELEASE_MODE',
+  }));
+  packetEmitResult.binding = {};
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate(validBoundaryInput(bridge, {
+    packetEmitResult,
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID');
+  for (const field of [
+    'packetEmitResult.binding.mode',
+    'packetEmitResult.binding.claimId',
+    'packetEmitResult.binding.dossierId',
+    'packetEmitResult.binding.matrixId',
+    'packetEmitResult.binding.releaseClass',
+    'packetEmitResult.binding.packetId',
+    'packetEmitResult.binding.attestationId',
+  ]) {
+    assert.equal(
+      result.reasons.some((reason) => reason.field === field),
+      true,
+      `${field} should be required from raw binding`,
+    );
+  }
+});
+
+test('Contour 12G blocks coherent accepted packet when binding ids are missing', async () => {
+  const bridge = await loadBridge();
+  const packetEmitResult = deepClone(acceptedPacketEmitResult(bridge, {
+    mode: 'RELEASE_MODE',
+  }));
+  delete packetEmitResult.binding.packetId;
+  delete packetEmitResult.binding.attestationId;
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate(validBoundaryInput(bridge, {
+    packetEmitResult,
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID');
+  assert.equal(
+    result.reasons.some((reason) => reason.field === 'packetEmitResult.binding.packetId'),
+    true,
+  );
+  assert.equal(
+    result.reasons.some((reason) => reason.field === 'packetEmitResult.binding.attestationId'),
+    true,
+  );
 });
 
 test('Contour 12G boundary gate is deterministic', async () => {

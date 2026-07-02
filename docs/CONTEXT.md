@@ -250,3 +250,15 @@ No further transfer is required for this variant; the transfer axis is closed.
 - `RELEASE_MODE` modeClass `USER_FACING_CLAIM_READY` is an internal packet/report class only, not release readiness and not a user-facing release or publication state.
 - delivery truth is bound to PR `1036`, merge SHA `9d10189e78fe516a6d33a53714bcb85ede987b28`, and feature commit `be182145ee2c100fc7f336e7d860eaed07daa9de`.
 - scope truth: this is not release readiness; no release readiness, user-facing release, release execution completion, release publication completion, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
+
+## Review Bridge Release Claim User-Facing Boundary Binding
+- `REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001` is implemented and verified pending delivery as the bounded next contour after delivered release claim packet emit binding.
+- release claim user-facing boundary binding product-binds the existing `CONTOUR_12G_RELEASE_CLAIM_USER_FACING_BOUNDARY_GATE`.
+- accepted 12G user-facing boundary requires accepted 12F packet emit provenance and matching packet/report/binding fields for mode, claimId, dossierId, matrixId, and releaseClass.
+- accepted 12G requires raw packet emit binding fields for mode, claimId, dossierId, matrixId, releaseClass, packetId, and attestationId; binding fields are not derived from packet or report fallbacks.
+- accepted 12G also requires packet/report/summary packetHash linkage to match a recomputed release claim packet hash, plus packetId and attestationId linkage across packet emit binding, packet, and strict report.
+- `PR_MODE` with `USER_FACING` boundary surface is blocked.
+- `RELEASE_MODE` with `USER_FACING` boundary surface is accepted only as boundary admission when the accepted 12F packet class is `USER_FACING_CLAIM_READY`.
+- 12G now strips inherited prototype fields before boundary input and packetEmitResult acceptance checks; inherited boundary input, inherited accepted packet emit results, and inherited nested packet provenance are blocked.
+- `USER_FACING` is a boundary surface in this contour only; it is not release readiness, not a user-facing release, not a user-facing UI state, not release execution, and not release publication.
+- scope truth: this is not release readiness; no release readiness, user-facing release, release execution completion, release publication completion, publication authority, command admission, kernel fence, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
