@@ -8,7 +8,13 @@ const { pathToFileURL } = require('node:url');
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-release-claim-execution-gate.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH];
+const BINDING_TEST_PATH =
+  'test/contracts/review-bridge-release-claim-execution-gate-binding.contract.test.js';
+const STATUS_PATH =
+  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001_STATUS.json';
+const COMMAND_SURFACE_TEST_PATH =
+  'test/contracts/revision-bridge-release-claim-command-surface-admission-wiring.contract.test.js';
+const ALLOWLIST = [MODULE_PATH, TEST_PATH, BINDING_TEST_PATH, STATUS_PATH, COMMAND_SURFACE_TEST_PATH];
 const GUARDED_PATHS = [
   ...ALLOWLIST,
   'package.json',
@@ -431,16 +437,23 @@ function validExecutionGateInput(bridge, overrides = {}) {
     || (requestedClaimSurface === 'INTERNAL' || requestedClaimSurface === 'USER_FACING'
       ? requestedClaimSurface
       : 'INTERNAL');
-  const commandAdmissionResult = hasOwn(overrides, 'commandAdmissionResult')
-    ? overrides.commandAdmissionResult
-    : acceptedCommandAdmissionResult(bridge, {
+  const commandAdmissionInput = hasOwn(overrides, 'commandAdmissionInput')
+    ? overrides.commandAdmissionInput
+    : validCommandAdmissionInput(bridge, {
       kernelFenceMode: commandAdmissionMode,
       requestedMode: commandAdmissionMode,
       requestedClaimSurface: commandAdmissionSurface,
+      commandId: commandAdmissionSurface === 'USER_FACING'
+        ? 'cmd.release.claim.publish'
+        : 'cmd.release.claim.internalProof',
     });
+  const commandAdmissionResult = hasOwn(overrides, 'commandAdmissionResult')
+    ? overrides.commandAdmissionResult
+    : undefined;
 
   return {
     schemaVersion: bridge.REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA,
+    ...(commandAdmissionInput === undefined ? {} : { commandAdmissionInput }),
     ...(commandAdmissionResult === undefined ? {} : { commandAdmissionResult }),
     requestedMode: requestedMode === undefined ? commandAdmissionMode : requestedMode,
     requestedClaimSurface: requestedClaimSurface === undefined
@@ -475,7 +488,13 @@ test('Contour 12K exports execution gate contracts and evaluator', async () => {
   assert.equal(typeof bridge.evaluateRevisionBridgeReleaseClaimExecutionGate, 'function');
   assert.equal(
     bridge.REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REASON_CODES.includes(
-      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_INPUT_MISSING',
+    ),
+    true,
+  );
+  assert.equal(
+    bridge.REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REASON_CODES.includes(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISMATCH',
     ),
     true,
   );
@@ -487,10 +506,10 @@ test('Contour 12K exports execution gate contracts and evaluator', async () => {
   );
 });
 
-test('Contour 12K blocks when 12J commandAdmissionResult is missing', async () => {
+test('Contour 12K blocks when raw 12J commandAdmissionInput is missing', async () => {
   const bridge = await loadBridge();
   const input = validExecutionGateInput(bridge);
-  delete input.commandAdmissionResult;
+  delete input.commandAdmissionInput;
 
   const result = bridge.evaluateRevisionBridgeReleaseClaimExecutionGate(input);
 
@@ -498,20 +517,18 @@ test('Contour 12K blocks when 12J commandAdmissionResult is missing', async () =
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISSING',
+    'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_INPUT_MISSING',
   );
 });
 
-test('Contour 12K blocks when 12J commandAdmissionResult is not accepted', async () => {
+test('Contour 12K blocks when raw 12J commandAdmissionInput re-evaluates as not accepted', async () => {
   const bridge = await loadBridge();
-  const commandAdmissionResult = deepClone(acceptedCommandAdmissionResult(bridge));
-  commandAdmissionResult.ok = false;
-  commandAdmissionResult.status = 'blocked';
-  commandAdmissionResult.code = 'E_SYNTHETIC_BLOCKED';
-  commandAdmissionResult.reason = 'E_SYNTHETIC_BLOCKED';
-
   const result = bridge.evaluateRevisionBridgeReleaseClaimExecutionGate(
-    validExecutionGateInput(bridge, { commandAdmissionResult }),
+    validExecutionGateInput(bridge, {
+      commandAdmissionInput: validCommandAdmissionInput(bridge, {
+        commandId: '',
+      }),
+    }),
   );
 
   assert.equal(result.ok, false);
@@ -522,24 +539,33 @@ test('Contour 12K blocks when 12J commandAdmissionResult is not accepted', async
   );
 });
 
-test('Contour 12K blocks when 12J commandAdmissionResult provenance is invalid', async () => {
+test('Contour 12K blocks stale supplied 12J commandAdmissionResult witness', async () => {
   const bridge = await loadBridge();
-  const commandAdmissionResult = deepClone(acceptedCommandAdmissionResult(bridge));
-  commandAdmissionResult.summary.commandId = '';
+  const commandAdmissionResult = acceptedCommandAdmissionResult(bridge, {
+    kernelFenceMode: 'PR_MODE',
+    requestedMode: 'PR_MODE',
+    requestedClaimSurface: 'INTERNAL',
+    commandId: 'cmd.release.claim.internalProof',
+  });
 
   const result = bridge.evaluateRevisionBridgeReleaseClaimExecutionGate(
-    validExecutionGateInput(bridge, { commandAdmissionResult }),
+    validExecutionGateInput(bridge, {
+      commandAdmissionMode: 'RELEASE_MODE',
+      requestedMode: 'RELEASE_MODE',
+      requestedClaimSurface: 'USER_FACING',
+      commandAdmissionResult,
+    }),
   );
 
   assert.equal(result.ok, false);
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
+    'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISMATCH',
   );
 });
 
-test('Contour 12K blocks when requestedMode does not match accepted 12J binding mode', async () => {
+test('Contour 12K blocks when requestedMode does not match re-evaluated raw 12J binding mode', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimExecutionGate(validExecutionGateInput(bridge, {
     commandAdmissionMode: 'PR_MODE',
@@ -555,19 +581,11 @@ test('Contour 12K blocks when requestedMode does not match accepted 12J binding 
   );
 });
 
-test('Contour 12K blocks when requestedClaimSurface does not match accepted 12J summary claimSurface', async () => {
+test('Contour 12K blocks when requestedClaimSurface does not match re-evaluated raw 12J summary claimSurface', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimExecutionGate(validExecutionGateInput(bridge, {
-    commandAdmissionResult: syntheticAcceptedCommandAdmissionResult({
-      binding: {
-        mode: 'RELEASE_MODE',
-        releaseClass: 'USER_FACING_CLAIM_READY',
-      },
-      summary: {
-        claimSurface: 'USER_FACING',
-        admissionClass: 'USER_FACING',
-      },
-    }),
+    commandAdmissionMode: 'RELEASE_MODE',
+    commandAdmissionSurface: 'USER_FACING',
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'INTERNAL',
   }));
@@ -580,9 +598,10 @@ test('Contour 12K blocks when requestedClaimSurface does not match accepted 12J 
   );
 });
 
-test('Contour 12K blocks synthetic accepted 12J result without required provenance', async () => {
+test('Contour 12K blocks synthetic accepted 12J result without raw commandAdmissionInput', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimExecutionGate(validExecutionGateInput(bridge, {
+    commandAdmissionInput: undefined,
     commandAdmissionResult: {
       ok: true,
       type: 'revisionBridge.releaseClaimCommandAdmission',
@@ -604,7 +623,57 @@ test('Contour 12K blocks synthetic accepted 12J result without required provenan
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
+    'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_INPUT_MISSING',
+  );
+});
+
+test('Contour 12K blocks fabricated accepted 12J witness with valid raw input', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimExecutionGate(validExecutionGateInput(bridge, {
+    commandAdmissionMode: 'RELEASE_MODE',
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+    commandAdmissionResult: syntheticAcceptedCommandAdmissionResult({
+      binding: {
+        claimId: 'fabricated-claim',
+      },
+    }),
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(
+    result.reason,
+    'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISMATCH',
+  );
+});
+
+test('Contour 12K blocks non-plain supplied 12J witness', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimExecutionGate(validExecutionGateInput(bridge, {
+    commandAdmissionResult: 'accepted',
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(
+    result.reason,
+    'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISMATCH',
+  );
+});
+
+test('Contour 12K blocks inherited supplied 12J witness', async () => {
+  const bridge = await loadBridge();
+  const inheritedCommandAdmissionResult = Object.create(acceptedCommandAdmissionResult(bridge));
+  const result = bridge.evaluateRevisionBridgeReleaseClaimExecutionGate(validExecutionGateInput(bridge, {
+    commandAdmissionResult: inheritedCommandAdmissionResult,
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(
+    result.reason,
+    'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISMATCH',
   );
 });
 
@@ -636,7 +705,7 @@ test('Contour 12K accepts PR_MODE INTERNAL execution gate when 12J is valid', as
   assert.equal(result.status, 'accepted');
   assert.equal(result.code, 'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_ACCEPTED');
   assert.equal(result.summary.claimSurface, 'INTERNAL');
-  assert.equal(result.summary.commandId, 'cmd.release.claim.publish');
+  assert.equal(result.summary.commandId, 'cmd.release.claim.internalProof');
   assert.equal(result.summary.admissionClass, 'INTERNAL');
   assert.equal(result.binding.releaseClass, 'INTERNAL_PROOF_ONLY');
 });

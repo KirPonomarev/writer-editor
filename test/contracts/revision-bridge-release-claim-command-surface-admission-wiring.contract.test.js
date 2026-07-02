@@ -57,31 +57,196 @@ function changedFilesOutsideAllowlist(changedFiles) {
   return changedFiles.filter((filePath) => !allowed.has(filePath));
 }
 
-function syntheticAcceptedCommandAdmissionResult(overrides = {}) {
-  const bindingOverrides = overrides.binding || {};
-  const summaryOverrides = overrides.summary || {};
+function hasOwn(value, key) {
+  return Boolean(value) && Object.prototype.hasOwnProperty.call(value, key);
+}
+
+function validFormatMatrix() {
   return {
-    ok: true,
-    type: 'revisionBridge.releaseClaimCommandAdmission',
-    status: 'accepted',
-    code: 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_ACCEPTED',
-    reason: 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_ACCEPTED',
-    ...overrides,
-    binding: {
-      mode: 'RELEASE_MODE',
-      claimId: 'release-claim-1',
-      dossierId: 'release-claim-dossier-1',
-      matrixId: 'format-matrix-1',
-      releaseClass: 'USER_FACING_CLAIM_READY',
-      ...bindingOverrides,
+    schemaVersion: 'revision-bridge.format-matrix.v1',
+    matrixId: 'format-matrix-1',
+    rows: [
+      {
+        rowId: 'word-text-exact',
+        formatId: 'word',
+        surface: ['textExact', 'commentAnchor'],
+        requiredTests: ['rb12-word-text', 'rb12-word-comment'],
+        goldenSetId: 'golden-word-v1',
+      },
+    ],
+  };
+}
+
+function validGoldenSet() {
+  return {
+    schemaVersion: 'revision-bridge.golden-set.v1',
+    goldenSetId: 'golden-word-v1',
+    formatId: 'word',
+    surface: ['textExact', 'commentAnchor'],
+    requiredTests: ['rb12-golden-hash'],
+    fixtures: [
+      {
+        fixtureId: 'fixture-word-main',
+        digest: 'sha256:fixture-word-main',
+      },
+    ],
+  };
+}
+
+function validClaim(bridge, goldenSet) {
+  return {
+    schemaVersion: 'revision-bridge.format-matrix-support-claim.v1',
+    claimId: 'claim-1',
+    matrixRowId: 'word-text-exact',
+    claimScope: ['textExact', 'commentAnchor'],
+    verifiedTests: ['rb12-word-text', 'rb12-word-comment', 'rb12-golden-hash'],
+    goldenSetHash: bridge.createRevisionBridgeGoldenSetHash(goldenSet),
+  };
+}
+
+function validDossier(bridge) {
+  const goldenSet = validGoldenSet();
+  return {
+    schemaVersion: 'revision-bridge.release-claim-dossier.v1',
+    dossierId: 'release-claim-dossier-1',
+    items: [
+      {
+        schemaVersion: 'revision-bridge.release-claim-dossier-item.v1',
+        itemId: 'dossier-item-1',
+        goldenSet,
+        claim: validClaim(bridge, goldenSet),
+      },
+    ],
+  };
+}
+
+function validAdmission() {
+  return {
+    schemaVersion: 'revision-bridge.release-claim-admission.v1',
+    claimId: 'release-claim-1',
+    claimScope: ['textExact'],
+    requiredClaimClasses: ['textual'],
+  };
+}
+
+function validDecisionInput(bridge, mode) {
+  return {
+    schemaVersion: bridge.REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_SCHEMA,
+    mode,
+    formatMatrix: validFormatMatrix(),
+    dossier: validDossier(bridge),
+    admission: validAdmission(),
+    claimClasses: ['textual', 'commentary'],
+    baselineDebtFlag: false,
+    releaseEvidenceId: 'release-evidence-1',
+    releaseEvidenceHash: 'sha256:release-evidence-1',
+    inputHash: 'sha256:input-1',
+    outputHash: 'sha256:output-1',
+    commandRunDigest: 'sha256:run-1',
+    matrixId: 'format-matrix-1',
+    dossierId: 'release-claim-dossier-1',
+    claimId: 'release-claim-1',
+  };
+}
+
+function acceptedModeDecisionResult(bridge, mode) {
+  const result = bridge.evaluateRevisionBridgeReleaseClaimModeDecisionGate(validDecisionInput(bridge, mode));
+  assert.equal(result.ok, true);
+  return result;
+}
+
+function defaultReleaseCommands() {
+  return [
+    {
+      commandId: 'node',
+      argv: ['--test', 'test/contracts/revision-bridge-release-claim-attestation-gate.contract.test.js'],
     },
-    summary: {
-      claimSurface: 'USER_FACING',
+    {
+      commandId: 'node',
+      argv: ['--test', 'test/contracts/revision-bridge-release-claim-decision-gate.contract.test.js'],
+    },
+  ];
+}
+
+function defaultArtifactHashes() {
+  return [
+    {
+      artifactId: 'release-report',
+      digest: 'sha256:release-report-1',
+    },
+    {
+      artifactId: 'release-packet',
+      digest: 'sha256:release-packet-1',
+    },
+  ];
+}
+
+function validAttestationInput(bridge, mode, modeDecisionResult) {
+  const executedCommands = mode === 'RELEASE_MODE' ? defaultReleaseCommands() : undefined;
+  const artifactHashes = mode === 'RELEASE_MODE' ? defaultArtifactHashes() : undefined;
+
+  return {
+    schemaVersion: bridge.REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_SCHEMA,
+    mode,
+    modeDecisionResult,
+    attestationId: 'attestation-1',
+    attestationSchema: bridge.REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_SCHEMA,
+    inputHash: 'sha256:input-1',
+    outputHash: 'sha256:output-1',
+    commandRunDigest: bridge.createRevisionBridgeReleaseClaimCommandRunDigest(executedCommands || []),
+    decisionHash: bridge.createRevisionBridgeReleaseClaimModeDecisionHash(modeDecisionResult),
+    evidenceHash: bridge.createRevisionBridgeReleaseClaimEvidenceHash(artifactHashes || []),
+    ...(executedCommands === undefined ? {} : { executedCommands }),
+    ...(artifactHashes === undefined ? {} : { artifactHashes }),
+    releaseEvidenceId: mode === 'RELEASE_MODE' ? 'release-evidence-1' : '',
+    releaseEvidenceHash: mode === 'RELEASE_MODE' ? 'sha256:release-evidence-1' : '',
+  };
+}
+
+function acceptedAttestationResult(bridge, mode, modeDecisionResult) {
+  const result = bridge.evaluateRevisionBridgeReleaseClaimAttestationGate(
+    validAttestationInput(bridge, mode, modeDecisionResult),
+  );
+  assert.equal(result.ok, true);
+  return result;
+}
+
+function acceptedPacketEmitResult(bridge, mode) {
+  const modeDecisionResult = acceptedModeDecisionResult(bridge, mode);
+  const attestationResult = acceptedAttestationResult(bridge, mode, modeDecisionResult);
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit({
+    packetMeta: {
       packetId: 'release-claim-packet-1',
-      attestationId: 'attestation-1',
-      commandId: 'cmd.release.claim.publish',
-      admissionClass: 'USER_FACING',
-      ...summaryOverrides,
+      createdAtUtc: '2026-05-15T12:00:00Z',
+      emitterId: 'codex-contour-12l',
+    },
+    modeDecisionResult,
+    attestationResult,
+  });
+  assert.equal(result.ok, true);
+  return result;
+}
+
+function validCommandAdmissionInput(bridge, mode, claimSurface) {
+  const packetEmitResult = acceptedPacketEmitResult(bridge, mode);
+  return {
+    commandId: claimSurface === 'USER_FACING'
+      ? 'cmd.release.claim.publish'
+      : 'cmd.release.claim.internalProof',
+    requestedMode: mode,
+    requestedClaimSurface: claimSurface,
+    kernelFenceInput: {
+      requestedMode: mode,
+      requestedClaimSurface: claimSurface,
+      publicationInput: {
+        requestedMode: mode,
+        requestedClaimSurface: claimSurface,
+        boundaryInput: {
+          requestedMode: mode,
+          requestedClaimSurface: claimSurface,
+          packetEmitResult,
+        },
+      },
     },
   };
 }
@@ -89,30 +254,20 @@ function syntheticAcceptedCommandAdmissionResult(overrides = {}) {
 function validExecutionGateInput(bridge, overrides = {}) {
   const requestedMode = overrides.requestedMode || 'RELEASE_MODE';
   const requestedClaimSurface = overrides.requestedClaimSurface || 'USER_FACING';
-  const commandAdmissionResult = overrides.commandAdmissionResult
-    || syntheticAcceptedCommandAdmissionResult({
-      binding: {
-        mode: requestedMode,
-        releaseClass: requestedClaimSurface === 'USER_FACING'
-          ? 'USER_FACING_CLAIM_READY'
-          : 'INTERNAL_PROOF_ONLY',
-      },
-      summary: {
-        claimSurface: requestedClaimSurface,
-        commandId: requestedClaimSurface === 'USER_FACING'
-          ? 'cmd.release.claim.publish'
-          : 'cmd.release.claim.internalProof',
-        admissionClass: requestedClaimSurface === 'USER_FACING'
-          ? 'USER_FACING'
-          : 'INTERNAL',
-      },
-    });
+  const commandAdmissionInput = hasOwn(overrides, 'commandAdmissionInput')
+    ? overrides.commandAdmissionInput
+    : validCommandAdmissionInput(bridge, requestedMode, requestedClaimSurface);
+  const commandAdmissionResult = hasOwn(overrides, 'commandAdmissionResult')
+    ? overrides.commandAdmissionResult
+    : undefined;
 
   return {
     schemaVersion: bridge.REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA,
-    commandAdmissionResult,
+    ...(commandAdmissionInput === undefined ? {} : { commandAdmissionInput }),
+    ...(commandAdmissionResult === undefined ? {} : { commandAdmissionResult }),
     requestedMode,
     requestedClaimSurface,
+    ...overrides.extraFields,
   };
 }
 
@@ -157,7 +312,7 @@ test('Contour 12L command surface admission wiring path calls 12K execution gate
   });
   const payload = {
     schemaVersion: 'revision-bridge.release-claim-execution-gate.v1',
-    commandAdmissionResult: { ok: true },
+    commandAdmissionInput: { commandId: 'cmd.release.claim.internalProof' },
     requestedMode: 'PR_MODE',
     requestedClaimSurface: 'INTERNAL',
   };
@@ -190,17 +345,8 @@ test('Contour 12L blocked 12K result stops path', async () => {
   const handler = instantiateAdmissionHandler(async () => bridge);
   const payload = validExecutionGateInput(bridge, {
     requestedMode: 'RELEASE_MODE',
-    requestedClaimSurface: 'USER_FACING',
-    commandAdmissionResult: syntheticAcceptedCommandAdmissionResult({
-      binding: {
-        mode: 'PR_MODE',
-        releaseClass: 'USER_FACING_CLAIM_READY',
-      },
-      summary: {
-        claimSurface: 'USER_FACING',
-        admissionClass: 'USER_FACING',
-      },
-    }),
+    requestedClaimSurface: 'INTERNAL',
+    commandAdmissionInput: validCommandAdmissionInput(bridge, 'PR_MODE', 'INTERNAL'),
   });
 
   const result = await handler(payload);

@@ -41,6 +41,12 @@ const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHAN
 const CONTEXT_PATH = 'docs/CONTEXT.md';
 const HANDOFF_PATH = 'docs/HANDOFF.md';
 const WORKLOG_PATH = 'docs/WORKLOG.md';
+const EXECUTION_GATE_BINDING_STATUS_PATH =
+  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001_STATUS.json';
+const EXECUTION_GATE_BINDING_TEST_PATH =
+  'test/contracts/review-bridge-release-claim-execution-gate-binding.contract.test.js';
+const COMMAND_SURFACE_WIRING_TEST_PATH =
+  'test/contracts/revision-bridge-release-claim-command-surface-admission-wiring.contract.test.js';
 const ALLOWLIST = [
   MODULE_PATH,
   CONTRACT_PATH,
@@ -63,6 +69,9 @@ const ALLOWLIST = [
   CONTEXT_PATH,
   HANDOFF_PATH,
   WORKLOG_PATH,
+  EXECUTION_GATE_BINDING_STATUS_PATH,
+  EXECUTION_GATE_BINDING_TEST_PATH,
+  COMMAND_SURFACE_WIRING_TEST_PATH,
 ];
 
 function readText(parts) {
