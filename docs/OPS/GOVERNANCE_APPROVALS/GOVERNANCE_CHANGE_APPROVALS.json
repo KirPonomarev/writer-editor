@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001_STATUS.json",
-      "sha256": "bf7aba0f1336a58ffea89e26d33f02334d2190e0a8aeea25c1cb5129437a8999",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001",
+      "sha256": "64a2986054186b0d29788cef3954881a70de4bf8bb8a1773eee11254cda8ab1f",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded release claim user-facing boundary binding status; it product-binds the existing 12G boundary gate after delivered 12F packet emit, requires accepted packet provenance, raw binding fields, packet hash and packet/report linkage, blocks inherited, empty-binding, partial-binding, and forged synthetic packet paths, and preserves no release readiness, no user-facing release, no user-facing UI state, no execution, no publication, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
+      "rationale": "Approve delivery rebind for bounded release claim user-facing boundary binding after PR 1038 merge; status is rebound to delivered_merged_verified with feature commit, PR, merge SHA, and merged time while preserving raw binding requirements, no release readiness, no user-facing release, no user-facing UI state, no execution, no publication, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-user-facing-boundary-binding.contract.test.js",
