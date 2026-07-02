@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_release_claim_kernel_fence_binding",
   "featureExpansion": "bounded_review_bridge_claim_binding",
   "baseSha": "52d7f05b82e24d56def705f4e49c43ac06292f9a",
@@ -274,12 +274,12 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending",
-    "featureCommitSha": "",
-    "featurePullRequest": null,
-    "featureMergeSha": "",
-    "featureMergedAtUtc": ""
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "b99e8946d204163077b105d7e948931bdcb1d271",
+    "featurePullRequest": 1042,
+    "featureMergeSha": "cc9402f2023e7019bbc0b82e66144f732d565e50",
+    "featureMergedAtUtc": "2026-07-02T09:58:38.000Z"
   },
-  "decision": "RELEASE_CLAIM_KERNEL_FENCE_BINDING_IMPLEMENTED_VERIFIED_PENDING_DELIVERY",
-  "nextStep": "complete commit, push, pull request, merge, and delivery rebind before opening any next write contour"
+  "decision": "RELEASE_CLAIM_KERNEL_FENCE_BINDING_DELIVERED_MERGED_VERIFIED",
+  "nextStep": "select the next owner-approved boundary explicitly; command admission, release execution, real product publication, and post-MVP import/export expansion do not open by implication"
 }

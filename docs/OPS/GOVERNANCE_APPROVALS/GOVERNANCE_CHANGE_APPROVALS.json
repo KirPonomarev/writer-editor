@@ -3,7 +3,7 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001_STATUS.json",
-      "sha256": "47acb269dfbc4326fe2190469e83fad4bcd88b8152240e7f6f65145dd8325f0e",
+      "sha256": "1f7b5f51dd6d21fc72175457edc6241adaa21ecbbffead45702563cd4dc53575",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
       "rationale": "Approve bounded release claim kernel fence binding status; it binds 12I to raw 12H publication input and internal 12H re-evaluation while preserving no command availability, no command admission, no command execution, no product publication, no release readiness, no user-facing release, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."

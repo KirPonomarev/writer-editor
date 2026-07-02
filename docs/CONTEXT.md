@@ -276,7 +276,7 @@ No further transfer is required for this variant; the transfer axis is closed.
 - scope truth: this is not product publication; no product publication, release readiness, user-facing release, release execution completion, release publication completion, publication authority, command admission, kernel fence, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
 
 ## Review Bridge Release Claim Kernel Fence Binding
-- `REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001` is implemented and verified pending delivery as the bounded next contour after delivered release claim publication gate binding.
+- `REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001` is delivered, merged, and verified via PR `1042`, merge SHA `cc9402f2023e7019bbc0b82e66144f732d565e50`, and feature commit `b99e8946d204163077b105d7e948931bdcb1d271` as the bounded next contour after delivered release claim publication gate binding.
 - release claim kernel fence binding product-binds the existing `CONTOUR_12I_RELEASE_CLAIM_KERNEL_FENCE`.
 - accepted 12I requires raw 12H publication input and re-evaluates 12H internally before accepting kernel fence evidence.
 - accepted 12I requires the internally evaluated 12H result to be accepted and to carry mode, claimId, dossierId, matrixId, releaseClass, claimSurface, packetId, and attestationId.
