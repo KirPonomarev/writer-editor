@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_DOSSIER_BINDING_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_release_claim_dossier_binding",
+  "featureExpansion": "bounded_review_bridge_claim_binding",
+  "baseSha": "c64c0e227eaf1c286d0e4828817b37f7c01e09ae",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": false,
+    "rendererSurfaceChanged": false,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false,
+    "releaseClaimDossierRuntimeChanged": false,
+    "releaseAdmissionAccepted": false,
+    "releaseExecutionAccepted": false,
+    "releasePublicationAccepted": false,
+    "userFacingReleaseClaimed": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false,
+    "autoApply": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "binding": {
+    "sourcePlan": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_FINAL_PLAN_R2",
+    "previousContourTaskId": "REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001",
+    "previousContourStatus": "delivered_merged_verified",
+    "previousContourMergeSha": "c64c0e227eaf1c286d0e4828817b37f7c01e09ae",
+    "existingKernelMarker": "CONTOUR_12B_RELEASE_CLAIM_DOSSIER_GATE",
+    "releaseClaimDossierSchema": "revision-bridge.release-claim-dossier.v1",
+    "releaseClaimDossierItemSchema": "revision-bridge.release-claim-dossier-item.v1",
+    "formatMatrixClaimGateMarker": "CONTOUR_12_FORMAT_MATRIX_CLAIM_GATE"
+  },
+  "positiveClaims": [
+    "The existing release claim dossier gate is product-bound as a Review Bridge evidence aggregation boundary.",
+    "Dossier gate acceptance requires a valid dossier schema, non-empty items, unique itemId values, a valid format matrix, valid golden sets, existing matrix rows, matching formatId and surface, matching golden set hashes, complete requiredTests, and claimScope within the selected row surface.",
+    "Missing dossier data, malformed dossier data, empty items, duplicate itemId, missing matrix row, invalid golden set, golden set id mismatch, formatId mismatch, surface mismatch, golden set hash mismatch, missing required tests, and claimScope exceeding surface block or diagnose the dossier gate.",
+    "The binding is dossier, matrix, golden set, and claim truth only; it is not release admission, release execution, release publication, content import, review import automation, apply, export, storage truth, or release readiness truth."
+  ],
+  "nonClaims": [
+    "No release readiness is claimed.",
+    "No user-facing release is claimed.",
+    "No release admission completion is claimed.",
+    "No release execution completion is claimed.",
+    "No release publication completion is claimed.",
+    "No Word support is claimed.",
+    "No Google Docs support is claimed.",
+    "No DOCX support expansion is claimed.",
+    "No import support is claimed.",
+    "No export support is claimed.",
+    "No review import completion is claimed.",
+    "No roundtrip is claimed.",
+    "No layout parity is claimed.",
+    "No full fidelity is claimed.",
+    "No automatic apply is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed by release claim dossier binding.",
+    "No project truth write is performed by release claim dossier binding.",
+    "No receipt or recovery evidence is created by release claim dossier binding.",
+    "No DOCX import safe-create behavior is changed.",
+    "No DOCX export behavior is changed.",
+    "No import/export MVP closeout is widened.",
+    "No PDF, EPUB, HTML, Mindmap, cloud sync, cross-platform readiness, packaged readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Dossier binding aggregates already bounded claim items only.",
+    "Dossier gate acceptance does not become project truth by itself.",
+    "Dossier gate acceptance does not admit release claims for execution or publication.",
+    "Dossier gate acceptance does not prove full fidelity, layout parity, roundtrip, import correctness, or export correctness.",
+    "This contour is not a release admission contour.",
+    "This contour is not a release execution contour.",
+    "This contour is not a release publication contour.",
+    "Dossier binding is not a parser and does not inspect external documents.",
+    "Dossier binding is not content import and does not create scenes.",
+    "Dossier binding is not Review import automation and does not activate a Review session.",
+    "Dossier binding is not an apply plan and does not authorize mutation.",
+    "Dossier binding is not safe write and does not create receipt or recovery evidence.",
+    "Dossier binding is not export and does not alter DOCX output.",
+    "Review Bridge may reference accepted dossier gate output as bounded evidence, but accepted dossier gate output does not become project truth."
+  ],
+  "implementation": {
+    "changedProductionRuntime": false,
+    "changedUi": false,
+    "changedBasenames": [
+      "REVIEW_BRIDGE_RELEASE_CLAIM_DOSSIER_BINDING_001_STATUS.json",
+      "review-bridge-release-claim-dossier-binding.contract.test.js",
+      "revision-bridge-format-matrix-claim-gate.contract.test.js",
+      "revision-bridge-google-docs-evidence-check.contract.test.js",
+      "revision-bridge-word-evidence-check.contract.test.js",
+      "GOVERNANCE_CHANGE_APPROVALS.json",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "WORKLOG.md"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --test release claim dossier binding targeted contracts",
+      "status": "pass",
+      "tests": 56
+    },
+    {
+      "command": "node --test release claim dossier, admission, execution, boundary, and publication contracts",
+      "status": "pass",
+      "tests": 89
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass",
+      "result": "found 0 vulnerabilities"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "releaseClaimDossierBindingExists": true,
+    "validDossierGateAccepted": true,
+    "missingDossierBlockedOrDiagnosed": true,
+    "malformedDossierBlockedOrDiagnosed": true,
+    "emptyItemsDiagnosed": true,
+    "duplicateItemIdBlocked": true,
+    "missingMatrixRowBlocked": true,
+    "goldenSetIdMismatchBlocked": true,
+    "formatIdMismatchBlocked": true,
+    "surfaceMismatchBlocked": true,
+    "hashMismatchBlocked": true,
+    "requiredTestsMissingBlocked": true,
+    "claimScopeExceededBlocked": true,
+    "releaseAdmissionAccepted": false,
+    "releaseExecutionAccepted": false,
+    "releasePublicationAccepted": false,
+    "userFacingReleaseClaimed": false,
+    "releaseReadinessClaimed": false,
+    "importSupportClaimed": false,
+    "exportSupportClaimed": false,
+    "roundtripClaimed": false,
+    "layoutParityClaimed": false,
+    "fullFidelityClaimed": false,
+    "applyOpsCreated": false,
+    "receiptCreated": false,
+    "recoveryCreated": false,
+    "projectTruthMutated": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false
+  },
+  "agentAudits": [
+    {
+      "agent": "Hegel",
+      "type": "read_only_canon_scope_auditor",
+      "result": "resolved_after_diff",
+      "finding": "Confirmed the candidate shape is canonical as an owner-opened bounded product-binding over the existing CONTOUR_12B_RELEASE_CLAIM_DOSSIER_GATE; intermediate fail was expected before tracking, docs rebind, checks, governance, and delivery."
+    },
+    {
+      "agent": "Godel",
+      "type": "read_only_kernel_write_set_auditor",
+      "result": "resolved_after_diff",
+      "finding": "Confirmed runtime source changes are not needed; existing 12B, 12C, and mode-decision kernels already exist, and the missing work is status, binding contract, docs, governance, and upstream allowlist sync."
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": "",
+    "featureMergedAtUtc": ""
+  },
+  "decision": "RELEASE_CLAIM_DOSSIER_BINDING_BOUND_FOR_CURRENT_SCOPE",
+  "nextStep": "complete delivery chain, then continue with the next owner-selected Review Bridge boundary"
+}

@@ -12,6 +12,8 @@ const WORD_EVIDENCE_TEST_PATH = 'test/contracts/revision-bridge-word-evidence-ch
 const GOOGLE_DOCS_EVIDENCE_TEST_PATH = 'test/contracts/revision-bridge-google-docs-evidence-check.contract.test.js';
 const CLAIM_BINDING_TEST_PATH = 'test/contracts/review-bridge-format-matrix-claim-binding.contract.test.js';
 const CLAIM_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001_STATUS.json';
+const RELEASE_CLAIM_DOSSIER_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-dossier-binding.contract.test.js';
+const RELEASE_CLAIM_DOSSIER_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_DOSSIER_BINDING_001_STATUS.json';
 const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
 const CONTEXT_PATH = 'docs/CONTEXT.md';
 const HANDOFF_PATH = 'docs/HANDOFF.md';
@@ -23,6 +25,8 @@ const ALLOWLIST = [
   GOOGLE_DOCS_EVIDENCE_TEST_PATH,
   CLAIM_BINDING_TEST_PATH,
   CLAIM_BINDING_STATUS_PATH,
+  RELEASE_CLAIM_DOSSIER_BINDING_TEST_PATH,
+  RELEASE_CLAIM_DOSSIER_BINDING_STATUS_PATH,
   GOVERNANCE_APPROVALS_PATH,
   CONTEXT_PATH,
   HANDOFF_PATH,

@@ -73,6 +73,9 @@
 - Format matrix claim binding contour is delivered and merged; it is tracked by `REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001_STATUS.json`.
 - The format matrix claim binding product-binds the existing `CONTOUR_12_FORMAT_MATRIX_CLAIM_GATE`: a claim can pass only with a valid format matrix, valid golden set, matching row, matching formatId and surface, matching golden set hash, complete requiredTests, and claimScope within the selected row surface.
 - This format matrix claim binding is not format support: no new user-facing format support, import support, export support, roundtrip, layout parity, full fidelity, release claim dossier acceptance, release readiness, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, or import/export MVP widening is claimed.
+- Release claim dossier binding contour is implemented and locally verified pending delivery; it is tracked by `REVIEW_BRIDGE_RELEASE_CLAIM_DOSSIER_BINDING_001_STATUS.json`.
+- The release claim dossier binding product-binds the existing `CONTOUR_12B_RELEASE_CLAIM_DOSSIER_GATE`: dossier gate acceptance requires valid schema, non-empty items, unique itemId values, valid matrix/golden-set/claim rows, matching hashes, complete requiredTests, and claimScope within row surface.
+- This release claim dossier binding is not release readiness: no release readiness, user-facing release, release admission completion, release execution completion, release publication completion, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, or import/export MVP widening is claimed.
 
 ### Phase status
 - Phase 00: PASS
