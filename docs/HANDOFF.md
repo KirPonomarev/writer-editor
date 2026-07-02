@@ -166,7 +166,7 @@ _Generated: 2026-07-02_
 10. This contour product-binds `CONTOUR_12D_RELEASE_CLAIM_MODE_DECISION_GATE`: accepted 12D requires accepted 12B dossier provenance and accepted 12C admission provenance, and derives claimId, dossierId, and matrixId from accepted upstream provenance.
 11. Immediate downstream 12E and 12F were hardened only to reject forged accepted 12D or 12E envelopes by re-evaluating raw upstream payloads.
 12. Scope truth for this contour: not release readiness; no release readiness, user-facing release, attestation completion, packet emit completion, release execution completion, release publication completion, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
-13. Review Bridge contour `REVIEW_BRIDGE_RELEASE_CLAIM_ATTESTATION_BINDING_001` is implemented and verified pending delivery.
+13. Review Bridge contour `REVIEW_BRIDGE_RELEASE_CLAIM_ATTESTATION_BINDING_001` is delivered, merged, and verified via PR `1034`, merge SHA `4d8e0a1b2eb065913bdc018304106c1f7e0973f1`.
 14. The active contour is a release claim attestation binding contour, not a release readiness contour.
 15. This contour product-binds `CONTOUR_12E_RELEASE_CLAIM_ATTESTATION_GATE`: accepted 12E requires accepted 12D provenance, raw 12D re-evaluation, matching recomputed 12D envelope, matching decisionHash, matching commandRunDigest, matching evidenceHash, and RELEASE_MODE release evidence fields.
 16. RELEASE_MODE 12E releaseEvidenceId and releaseEvidenceHash now must match accepted 12D release evidence.
