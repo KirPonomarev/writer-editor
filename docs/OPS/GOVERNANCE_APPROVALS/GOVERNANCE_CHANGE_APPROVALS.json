@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001_STATUS.json",
-      "sha256": "617dfd9f011d75ca647d0b98f2d5b828a92d74793c857a6047c6a5824b03158d",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001",
+      "sha256": "cacb99ae0ce215a08d209a3b8a01d34de7b8595942c140015a58f2c9bc4c0769",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded release claim packet emit binding status; it product-binds and hardens the existing 12F packet emit gate by requiring canonical packetMeta, accepted 12D provenance, accepted 12E provenance, raw upstream re-evaluation, matching bindings, strict packet/report shape, stable packet hash, inherited-property bypass rejection, and independent skeptic re-audit closure while preserving no release readiness, no user-facing release, no execution completion, no publication completion, no Word support, no Google Docs support, no DOCX support expansion, no import support, no export support, no roundtrip, no layout parity, no full fidelity, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no dependency, and no Y9 claim."
+      "rationale": "Approve delivery rebind for bounded release claim packet emit binding after PR 1036 merge; status is rebound to delivered_merged_verified with feature commit, PR, merge SHA, and merged time while preserving no release readiness, no user-facing release, no execution completion, no publication completion, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js",

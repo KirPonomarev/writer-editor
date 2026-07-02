@@ -241,11 +241,12 @@ No further transfer is required for this variant; the transfer axis is closed.
 - scope truth: this is not release readiness; no release readiness, user-facing release, packet emit completion, release execution completion, release publication completion, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
 
 ## Review Bridge Release Claim Packet Emit Binding
-- `REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001` is implemented and verified pending delivery as the bounded next contour after delivered release claim attestation binding.
+- `REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001` is delivered, merged, and verified as the bounded next contour after delivered release claim attestation binding.
 - release claim packet emit binding product-binds the existing `CONTOUR_12F_RELEASE_CLAIM_PACKET_EMIT`.
 - accepted 12F packet emit requires canonical own packetMeta, accepted 12D release claim mode decision provenance, accepted 12E release claim attestation provenance, raw 12D and raw 12E re-evaluation, and matching mode, claimId, dossierId, matrixId, and decisionHash bindings.
 - 12F now strips inherited prototype fields before packetMeta, 12D, and 12E envelope acceptance checks; inherited packetMeta, inherited accepted 12D envelopes, inherited accepted 12E envelopes, and inherited RELEASE_MODE `USER_FACING_CLAIM_READY` paths are blocked.
 - accepted 12F emits a deterministic release claim packet and strict report with fixed schemas; packet hash remains stable and excludes `createdAtUtc` from the hash body.
 - `PR_MODE` modeClass remains `INTERNAL_PROOF_ONLY`.
 - `RELEASE_MODE` modeClass `USER_FACING_CLAIM_READY` is an internal packet/report class only, not release readiness and not a user-facing release or publication state.
+- delivery truth is bound to PR `1036`, merge SHA `9d10189e78fe516a6d33a53714bcb85ede987b28`, and feature commit `be182145ee2c100fc7f336e7d860eaed07daa9de`.
 - scope truth: this is not release readiness; no release readiness, user-facing release, release execution completion, release publication completion, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
