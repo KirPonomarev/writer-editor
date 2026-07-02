@@ -345,15 +345,19 @@ function validKernelFenceInput(bridge, overrides = {}) {
     || (requestedClaimSurface === 'INTERNAL' || requestedClaimSurface === 'USER_FACING'
       ? requestedClaimSurface
       : 'INTERNAL');
-  const publicationResult = hasOwn(overrides, 'publicationResult')
-    ? overrides.publicationResult
-    : acceptedPublicationResult(bridge, {
+  const publicationInput = hasOwn(overrides, 'publicationInput')
+    ? overrides.publicationInput
+    : validPublicationInput(bridge, {
       boundaryMode: publicationMode,
       requestedMode: publicationMode,
       requestedClaimSurface: publicationSurface,
     });
+  const publicationResult = hasOwn(overrides, 'publicationResult')
+    ? overrides.publicationResult
+    : undefined;
 
   return {
+    ...(publicationInput === undefined ? {} : { publicationInput }),
     ...(publicationResult === undefined ? {} : { publicationResult }),
     requestedMode: requestedMode === undefined ? publicationMode : requestedMode,
     requestedClaimSurface: requestedClaimSurface === undefined
@@ -385,13 +389,13 @@ test('Contour 12I exports kernel fence contracts and evaluator', async () => {
   assert.equal(typeof bridge.evaluateRevisionBridgeReleaseClaimKernelFence, 'function');
   assert.equal(
     bridge.REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REASON_CODES.includes(
-      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_PROVENANCE_INVALID',
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_INPUT_MISSING',
     ),
     true,
   );
   assert.equal(
     bridge.REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REASON_CODES.includes(
-      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_REQUESTED_CLAIM_SURFACE_MISMATCH',
+      'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISMATCH',
     ),
     true,
   );
@@ -422,19 +426,43 @@ test('Contour 12I returns diagnostics when requestedClaimSurface is invalid', as
   );
 });
 
-test('Contour 12I blocks when publicationResult is missing', async () => {
+test('Contour 12I blocks when publicationInput is missing', async () => {
   const bridge = await loadBridge();
   const input = validKernelFenceInput(bridge);
-  delete input.publicationResult;
+  delete input.publicationInput;
 
   const result = bridge.evaluateRevisionBridgeReleaseClaimKernelFence(input);
 
   assert.equal(result.ok, false);
   assert.equal(result.status, 'blocked');
-  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISSING');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_INPUT_MISSING');
 });
 
-test('Contour 12I blocks when publicationResult type is invalid', async () => {
+test('Contour 12I blocks synthetic accepted publicationResult without publicationInput provenance', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimKernelFence({
+    publicationResult: syntheticAcceptedPublicationResult(),
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_INPUT_MISSING');
+});
+
+test('Contour 12I blocks non-plain supplied publicationResult even when publicationInput is valid', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimKernelFence(validKernelFenceInput(bridge, {
+    publicationResult: 'accepted',
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISMATCH');
+});
+
+test('Contour 12I blocks when optional publicationResult type does not match evaluated 12H', async () => {
   const bridge = await loadBridge();
   const publicationResult = deepClone(acceptedPublicationResult(bridge));
   publicationResult.type = 'revisionBridge.syntheticPublicationGate';
@@ -447,11 +475,11 @@ test('Contour 12I blocks when publicationResult type is invalid', async () => {
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_TYPE_INVALID',
+    'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISMATCH',
   );
 });
 
-test('Contour 12I blocks when publicationResult is not accepted', async () => {
+test('Contour 12I blocks when optional publicationResult acceptance does not match evaluated 12H', async () => {
   const bridge = await loadBridge();
   const publicationResult = deepClone(acceptedPublicationResult(bridge));
   publicationResult.ok = false;
@@ -467,8 +495,58 @@ test('Contour 12I blocks when publicationResult is not accepted', async () => {
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_NOT_ACCEPTED',
+    'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISMATCH',
   );
+});
+
+test('Contour 12I rejects fence input fields inherited from prototype', async () => {
+  const bridge = await loadBridge();
+  const input = Object.create({
+    publicationInput: validPublicationInput(bridge),
+  });
+  input.requestedMode = 'PR_MODE';
+  input.requestedClaimSurface = 'INTERNAL';
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimKernelFence(input);
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_INPUT_MISSING');
+});
+
+test('Contour 12I rejects optional publicationResult fields inherited from prototype', async () => {
+  const bridge = await loadBridge();
+  const publicationResult = Object.create(acceptedPublicationResult(bridge));
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimKernelFence(validKernelFenceInput(bridge, {
+    publicationResult,
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISMATCH');
+});
+
+test('Contour 12I rejects optional nested publicationResult provenance inherited from prototype', async () => {
+  const bridge = await loadBridge();
+  const acceptedResult = acceptedPublicationResult(bridge);
+  const publicationResult = {
+    ok: true,
+    type: 'revisionBridge.releaseClaimPublicationGate',
+    status: 'accepted',
+    code: 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_ACCEPTED',
+    reason: 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_ACCEPTED',
+    binding: Object.create(acceptedResult.binding),
+    summary: Object.create(acceptedResult.summary),
+  };
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimKernelFence(validKernelFenceInput(bridge, {
+    publicationResult,
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_MISMATCH');
 });
 
 test('Contour 12I blocks when requestedMode does not match publication binding mode', async () => {
@@ -487,17 +565,14 @@ test('Contour 12I blocks when requestedMode does not match publication binding m
 test('Contour 12I blocks when requestedClaimSurface does not match publication summary claimSurface', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimKernelFence(validKernelFenceInput(bridge, {
-    publicationResult: syntheticAcceptedPublicationResult({
-      binding: {
-        mode: 'RELEASE_MODE',
-        releaseClass: 'USER_FACING_CLAIM_READY',
-      },
-      summary: {
-        claimSurface: 'USER_FACING',
-      },
-    }),
+    publicationMode: 'RELEASE_MODE',
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'INTERNAL',
+    publicationInput: validPublicationInput(bridge, {
+      boundaryMode: 'RELEASE_MODE',
+      requestedMode: 'RELEASE_MODE',
+      requestedClaimSurface: 'USER_FACING',
+    }),
   }));
 
   assert.equal(result.ok, false);
@@ -508,17 +583,13 @@ test('Contour 12I blocks when requestedClaimSurface does not match publication s
   );
 });
 
-test('Contour 12I blocks PR_MODE requests for USER_FACING claims', async () => {
+test('Contour 12I blocks PR_MODE requests for USER_FACING claims through evaluated 12H', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimKernelFence(validKernelFenceInput(bridge, {
-    publicationResult: syntheticAcceptedPublicationResult({
-      binding: {
-        mode: 'PR_MODE',
-        releaseClass: 'USER_FACING_CLAIM_READY',
-      },
-      summary: {
-        claimSurface: 'USER_FACING',
-      },
+    publicationInput: validPublicationInput(bridge, {
+      boundaryMode: 'PR_MODE',
+      requestedMode: 'PR_MODE',
+      requestedClaimSurface: 'USER_FACING',
     }),
     requestedMode: 'PR_MODE',
     requestedClaimSurface: 'USER_FACING',
@@ -526,20 +597,20 @@ test('Contour 12I blocks PR_MODE requests for USER_FACING claims', async () => {
 
   assert.equal(result.ok, false);
   assert.equal(result.status, 'blocked');
-  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PR_MODE_USER_FACING_BLOCKED');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_NOT_ACCEPTED');
 });
 
-test('Contour 12I blocks RELEASE_MODE USER_FACING when release class is not ready', async () => {
+test('Contour 12I blocks RELEASE_MODE USER_FACING when evaluated 12H release class is not ready', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimKernelFence(validKernelFenceInput(bridge, {
-    publicationResult: syntheticAcceptedPublicationResult({
-      binding: {
-        mode: 'RELEASE_MODE',
-        releaseClass: 'INTERNAL_PROOF_ONLY',
-      },
-      summary: {
-        claimSurface: 'USER_FACING',
-      },
+    publicationInput: validPublicationInput(bridge, {
+      boundaryInput: validBoundaryInput(bridge, {
+        packetMode: 'PR_MODE',
+        requestedMode: 'PR_MODE',
+        requestedClaimSurface: 'INTERNAL',
+      }),
+      requestedMode: 'RELEASE_MODE',
+      requestedClaimSurface: 'USER_FACING',
     }),
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'USER_FACING',
@@ -549,25 +620,33 @@ test('Contour 12I blocks RELEASE_MODE USER_FACING when release class is not read
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_RELEASE_CLASS_USER_FACING_BLOCKED',
+    'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_NOT_ACCEPTED',
   );
 });
 
-test('Contour 12I blocks synthetic accepted publication without required provenance', async () => {
+test('Contour 12I blocks evaluated publication with invalid 12H provenance', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimKernelFence(validKernelFenceInput(bridge, {
-    publicationResult: {
-      ok: true,
-      type: 'revisionBridge.releaseClaimPublicationGate',
-      status: 'accepted',
-      code: 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_ACCEPTED',
-      reason: 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_ACCEPTED',
-      binding: {
-        mode: 'RELEASE_MODE',
+    publicationInput: {
+      boundaryInput: {
+        packetEmitResult: {
+          ok: true,
+          type: 'revisionBridge.releaseClaimPacketEmit',
+          status: 'accepted',
+          code: 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ACCEPTED',
+          reason: 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ACCEPTED',
+          binding: {
+            mode: 'RELEASE_MODE',
+          },
+          packet: {},
+          report: {},
+          summary: {},
+        },
+        requestedMode: 'RELEASE_MODE',
+        requestedClaimSurface: 'USER_FACING',
       },
-      summary: {
-        claimSurface: 'USER_FACING',
-      },
+      requestedMode: 'RELEASE_MODE',
+      requestedClaimSurface: 'USER_FACING',
     },
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'USER_FACING',
@@ -577,7 +656,7 @@ test('Contour 12I blocks synthetic accepted publication without required provena
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_PROVENANCE_INVALID',
+    'REVISION_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_PUBLICATION_RESULT_NOT_ACCEPTED',
   );
 });
 

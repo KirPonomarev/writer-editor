@@ -264,7 +264,7 @@ No further transfer is required for this variant; the transfer axis is closed.
 - scope truth: this is not release readiness; no release readiness, user-facing release, release execution completion, release publication completion, publication authority, command admission, kernel fence, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
 
 ## Review Bridge Release Claim Publication Gate Binding
-- `REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001` is implemented and verified pending delivery as the bounded next contour after delivered release claim user-facing boundary binding.
+- `REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001` is delivered, merged, and verified via PR `1040`, merge SHA `7ea974a6d1a75de2900440b5a3a48cd29866fab9`, feature commit `29a86ff1697ae6c9f837d2ba821db837bc32cf24`, and delivery rebind PR `1041` at merge SHA `52d7f05b82e24d56def705f4e49c43ac06292f9a` as the bounded next contour after delivered release claim user-facing boundary binding.
 - release claim publication gate binding product-binds the existing `CONTOUR_12H_RELEASE_CLAIM_PUBLICATION_GATE`.
 - accepted 12H requires raw 12G boundary input and re-evaluates 12G internally before accepting publication gate admission.
 - accepted 12H requires the internally evaluated 12G result to be accepted and to carry mode, claimId, dossierId, matrixId, releaseClass, claimSurface, packetId, and attestationId.
@@ -274,3 +274,15 @@ No further transfer is required for this variant; the transfer axis is closed.
 - `RELEASE_MODE` with `USER_FACING` publication gate admission is accepted only as internal gate admission when the accepted 12G boundary releaseClass is `USER_FACING_CLAIM_READY`.
 - `USER_FACING_CLAIM_READY` and `USER_FACING` remain internal chain evidence only; this is not product publication, not release readiness, not a user-facing release, not a user-facing UI state, not release execution, not command admission, and not kernel fence.
 - scope truth: this is not product publication; no product publication, release readiness, user-facing release, release execution completion, release publication completion, publication authority, command admission, kernel fence, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
+
+## Review Bridge Release Claim Kernel Fence Binding
+- `REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001` is implemented and verified pending delivery as the bounded next contour after delivered release claim publication gate binding.
+- release claim kernel fence binding product-binds the existing `CONTOUR_12I_RELEASE_CLAIM_KERNEL_FENCE`.
+- accepted 12I requires raw 12H publication input and re-evaluates 12H internally before accepting kernel fence evidence.
+- accepted 12I requires the internally evaluated 12H result to be accepted and to carry mode, claimId, dossierId, matrixId, releaseClass, claimSurface, packetId, and attestationId.
+- optional publicationResult is treated only as consistency evidence; stale, fabricated, inherited, or non-plain publicationResult values are blocked unless they match the internally re-evaluated 12H result.
+- requestedMode and requestedClaimSurface must match the internally accepted 12H publication mode and claimSurface.
+- `PR_MODE` with `USER_FACING` kernel fence requests is blocked through the 12H publication gate chain.
+- `RELEASE_MODE` with `USER_FACING` kernel fence evidence is accepted only as internal chain evidence when the accepted 12H publication releaseClass is `USER_FACING_CLAIM_READY`.
+- `USER_FACING_CLAIM_READY` and `USER_FACING` remain internal chain evidence only; this is not command availability, not command admission, not command execution, not product publication, not release readiness, not a user-facing release, not a user-facing UI state, and not release execution.
+- scope truth: this is not command availability; no command availability, command admission, command execution, product publication, release readiness, user-facing release, release execution completion, release publication completion, publication authority, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.

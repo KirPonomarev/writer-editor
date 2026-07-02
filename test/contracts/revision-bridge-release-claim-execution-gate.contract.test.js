@@ -309,15 +309,19 @@ function validKernelFenceInput(bridge, overrides = {}) {
     || (requestedClaimSurface === 'INTERNAL' || requestedClaimSurface === 'USER_FACING'
       ? requestedClaimSurface
       : 'INTERNAL');
-  const publicationResult = hasOwn(overrides, 'publicationResult')
-    ? overrides.publicationResult
-    : acceptedPublicationResult(bridge, {
+  const publicationInput = hasOwn(overrides, 'publicationInput')
+    ? overrides.publicationInput
+    : validPublicationInput(bridge, {
       boundaryMode: publicationMode,
       requestedMode: publicationMode,
       requestedClaimSurface: publicationSurface,
     });
+  const publicationResult = hasOwn(overrides, 'publicationResult')
+    ? overrides.publicationResult
+    : undefined;
 
   return {
+    ...(publicationInput === undefined ? {} : { publicationInput }),
     ...(publicationResult === undefined ? {} : { publicationResult }),
     requestedMode: requestedMode === undefined ? publicationMode : requestedMode,
     requestedClaimSurface: requestedClaimSurface === undefined
