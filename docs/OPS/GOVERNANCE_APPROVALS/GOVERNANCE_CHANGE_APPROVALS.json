@@ -3587,10 +3587,10 @@
     },
     {
       "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
-      "sha256": "3433aba8ff0d23d32599cb4c737304fce04492f307efae68d937ac26c74fbe24",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001",
-      "approvedAtUtc": "2026-07-02T13:51:44.000Z",
-      "rationale": "Approve bounded command-surface kernel guard extension for 12M; it adds a narrowly scoped proof that typed accepted witness envelopes with code and reason are preserved instead of being error-normalized, without widening unknown command ids, payload validation, renderer scope, UI scope, dependencies, command availability, command execution, publication, readiness, import/export support, storage, receipt, recovery, dependency, or Y9 claim."
+      "sha256": "b456d8ce7ac1e4e8bda1551e88ca98bdbb81e71c1a55a9432944f23a38898ecb",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001",
+      "approvedAtUtc": "2026-07-02T17:30:00.000Z",
+      "rationale": "Approve bounded command-surface kernel typed-result sample update for 12O so cmd.project.releaseClaim.execute can preserve the new real execution effect envelope with summary.ephemeralEffectOnly true while leaving the allowlist, payload validation, typed passthrough scope, renderer scope, UI scope, dependencies, publication, readiness, storage, receipt, recovery, and Y9 boundaries unchanged."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-command-execution-witness-binding.contract.test.js",
@@ -3626,6 +3626,27 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_001",
       "approvedAtUtc": "2026-07-02T15:10:00.000Z",
       "rationale": "Approve bounded 12N trigger witness wiring guard proving the contour stays main-only, queue-free, and storage-free while accepted witness results record exactly one in-memory packetId-keyed trigger witness record, duplicate packetIds block deterministically, missing packetIds block before record creation, and blocked or diagnostics witness outputs create no trigger witness record."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-command-execution-effect-wiring.contract.test.js",
+      "sha256": "501123e7d6d1295e0523f86c9caf8cb08ab00c4f6fb14cabb8c6c76390c7f74c",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001",
+      "approvedAtUtc": "2026-07-02T17:30:00.000Z",
+      "rationale": "Approve bounded 12O real execution effect wiring guard proving main-only command.bus execution effect behavior over the already-bound 12K gate, deterministic packetId-keyed ephemeral record creation, duplicate and missing-packet negatives, blocked and diagnostics zero-effect behavior, and strict nonclaims against publication, readiness, queue semantics, storage, manuscript truth, project truth, renderer authority, dependency widening, and Y9."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001_STATUS.json",
+      "sha256": "eef67feb0902de07227471b38e69ca8f24dda491694f26f5c4aa67ee97e0247e",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001",
+      "approvedAtUtc": "2026-07-02T17:30:00.000Z",
+      "rationale": "Approve bounded 12O real execution ephemeral effect status artifact for one explicit owner-approved contour after delivered 12N; it records main-only packetId-keyed in-memory execution effect evidence with current-process lifetime only, fixed execute-command-to-effect mapping, duplicate-packet blocking, missing-packet blocking, no effect record for blocked or diagnostics, and explicit nonclaims against command availability, release execution completion, runtime queue semantics, storage, publication, readiness, renderer runtime trigger, import/export widening, receipt, recovery, dependency, and Y9."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-real-execution-ephemeral-effect-binding.contract.test.js",
+      "sha256": "244c89116da9892c9fc856576134d30ad5ea623294a9774f3b499171afae9cb9",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001",
+      "approvedAtUtc": "2026-07-02T17:30:00.000Z",
+      "rationale": "Approve contract guard for bounded 12O real execution ephemeral effect binding; it checks status scope, 12O marker, 12N and 12K linkage, command.bus route, packetId-keyed in-memory execution effect semantics, duplicate and missing-packet negatives, docs honesty, changed-file allowlist scope, and overclaim negatives without introducing command availability, release execution completion, queue semantics, storage, publication, readiness, renderer runtime trigger, import/export widening, receipt, recovery, dependency, or Y9 claim."
     }
   ]
 }

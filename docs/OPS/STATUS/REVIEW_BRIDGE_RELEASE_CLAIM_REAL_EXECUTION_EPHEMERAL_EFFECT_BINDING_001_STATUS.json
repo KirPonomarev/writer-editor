@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_release_claim_real_execution_ephemeral_effect_binding",
+  "featureExpansion": "bounded_review_bridge_claim_binding",
+  "headShaBefore": "1334e936bf9bbb6bd80a8e2e5d53a17af6ca742b",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": true,
+    "rendererSurfaceChanged": false,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false,
+    "releaseClaimCommandExecutionEffectRuntimeChanged": true,
+    "releaseClaimCommandExecutionEffectBound": true,
+    "releaseClaimCommandSurfaceTriggerWitnessDeliveredPreviously": true,
+    "releaseClaimCommandExecutionWitnessDeliveredPreviously": true,
+    "realExecutionEffectAccepted": true,
+    "commandAvailabilityClaimed": false,
+    "commandExecutionAccepted": false,
+    "releaseExecutionAccepted": false,
+    "releasePublicationCompletionClaimed": false,
+    "productPublicationClaimed": false,
+    "publicationAuthorityClaimed": false,
+    "userFacingReleaseClaimed": false,
+    "releaseReadinessClaimed": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false,
+    "autoApply": false,
+    "y9Opened": false
+  },
+  "binding": {
+    "sourcePlan": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_FINAL_PLAN_R2",
+    "previousContourTaskId": "REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_001",
+    "previousContourStatus": "delivered_merged_verified",
+    "previousContourMergeSha": "bbba243c353297afb2926759688582e4591c78f0",
+    "previousContourDeliveryRebindMergeSha": "1334e936bf9bbb6bd80a8e2e5d53a17af6ca742b",
+    "activeRealExecutionEffectMarker": "CONTOUR_12O_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT",
+    "upstreamCommandSurfaceTriggerWitnessMarker": "CONTOUR_12N_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS",
+    "upstreamCommandExecutionWitnessMarker": "CONTOUR_12M_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS",
+    "upstreamExecutionGateMarker": "CONTOUR_12K_RELEASE_CLAIM_EXECUTION_GATE",
+    "commandSurfaceCommandId": "cmd.project.releaseClaim.execute",
+    "commandSurfaceRoute": "command.bus",
+    "effectRegistryType": "ephemeral_in_memory_packet_id_registry",
+    "effectRegistryLifetime": "main_process_lifetime_only",
+    "effectSelectorMode": "fixed_execute_command_to_single_effect_mapping",
+    "executionGateSchema": "revision-bridge.release-claim-execution-gate.v1"
+  },
+  "positiveClaims": [
+    "The explicit owner-selected release claim real execution ephemeral effect path is product-bound as one bounded main-only execution effect contour after delivered 12N.",
+    "Accepted 12O requires the command id cmd.project.releaseClaim.execute to remain on the command surface kernel allowlist.",
+    "Accepted 12O requires bus-route command surface dispatch; direct route bypass remains blocked.",
+    "Accepted 12O re-evaluates the already-bound 12K execution gate directly from raw command input before any effect write.",
+    "Accepted 12O emits a typed real execution effect result with summary.ephemeralEffectOnly true and no summary.witnessOnly field.",
+    "Accepted 12O writes exactly one deterministic in-memory execution effect record keyed by packetId only when the bounded 12K result is accepted.",
+    "Accepted 12O keeps execution effect registry lifetime bounded to the current main-process lifetime only.",
+    "Accepted 12O blocks missing packetId before any execution effect record is written.",
+    "Accepted 12O blocks a second execution effect write for an already-recorded packetId with a deterministic duplicate-packet blocked effect outcome.",
+    "Diagnostics or blocked 12K output writes no execution effect record.",
+    "At the real ui:command-bridge boundary, accepted 12O preserves the existing outer ok true value path while blocked or diagnostics effect output remains nested under the outer failure value field.",
+    "This contour proves one real bounded execution effect only; it does not prove release execution completion, product publication, or release readiness."
+  ],
+  "nonClaims": [
+    "No command availability is claimed.",
+    "No broad command execution completion is claimed.",
+    "No release execution completion is claimed.",
+    "No runtime queue semantics are claimed.",
+    "No retry, drop, abandon, or single-writer queue policy is claimed.",
+    "No product publication is claimed.",
+    "No release readiness is claimed.",
+    "No user-facing release is claimed.",
+    "No release publication completion is claimed.",
+    "No publication authority is claimed.",
+    "No renderer runtime trigger is introduced.",
+    "No UI state is changed.",
+    "No Word support is claimed.",
+    "No Google Docs support is claimed.",
+    "No DOCX support expansion is claimed.",
+    "No import support is claimed.",
+    "No export support is claimed.",
+    "No review import completion is claimed.",
+    "No roundtrip is claimed.",
+    "No layout parity is claimed.",
+    "No full fidelity is claimed.",
+    "No automatic apply is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed by release claim real execution ephemeral effect binding.",
+    "No project truth write is performed by release claim real execution ephemeral effect binding.",
+    "No storage write is performed by release claim real execution ephemeral effect binding.",
+    "No receipt or recovery evidence is created by release claim real execution ephemeral effect binding.",
+    "No DOCX import safe-create behavior is changed.",
+    "No DOCX export behavior is changed.",
+    "No import/export MVP closeout is widened.",
+    "No PDF, EPUB, HTML, Mindmap, cloud sync, cross-platform readiness, packaged readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Real execution effect binding is main-only ephemeral effect evidence.",
+    "Execution effect record is ephemeral in-memory state only and does not become project truth.",
+    "Execution effect registry lifetime is the current main-process lifetime only and is not replayed from storage.",
+    "Real execution effect binding does not write manuscript truth or project truth.",
+    "Real execution effect binding does not open runtime queue semantics.",
+    "Real execution effect binding does not publish anything.",
+    "Real execution effect binding does not prove release execution completion.",
+    "Real execution effect binding uses a fixed execute-command-to-effect mapping and does not trust inner free-form command ids as effect authority.",
+    "12N command surface trigger witness remains delivered historical evidence and is not rewritten by this contour.",
+    "12M command execution witness remains delivered historical evidence and is not rewritten by this contour.",
+    "12K execution gate remains upstream proof-only evidence and is not mutated semantically by this contour.",
+    "USER_FACING_CLAIM_READY remains an internal chain class only, not a release readiness state.",
+    "USER_FACING is a chain surface in this contour, not a user-facing UI state.",
+    "This contour is not a product publication contour."
+  ],
+  "implementation": {
+    "changedProductionRuntime": true,
+    "changedUi": false,
+    "changedBasenames": [
+      "REVIEW_BRIDGE_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_BINDING_001_STATUS.json",
+      "revision-bridge-release-claim-command-execution-effect-wiring.contract.test.js",
+      "review-bridge-release-claim-real-execution-ephemeral-effect-binding.contract.test.js",
+      "donor-port-command-surface-kernel.contract.test.js",
+      "main.js",
+      "GOVERNANCE_CHANGE_APPROVALS.json",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "WORKLOG.md"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --test test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "status": "pass",
+      "tests": 7
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-release-claim-command-execution-effect-wiring.contract.test.js",
+      "status": "pass",
+      "tests": 12
+    },
+    {
+      "command": "node --test test/contracts/review-bridge-release-claim-real-execution-ephemeral-effect-binding.contract.test.js",
+      "status": "pass",
+      "tests": 5
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-release-claim-command-execution-effect-wiring.contract.test.js test/contracts/donor-port-command-surface-kernel.contract.test.js test/contracts/revision-bridge-release-claim-command-execution-witness-wiring.contract.test.js test/contracts/revision-bridge-release-claim-command-surface-trigger-witness-wiring.contract.test.js",
+      "status": "pass",
+      "tests": 42
+    },
+    {
+      "command": "node --test test/contracts/review-bridge-release-claim-real-execution-ephemeral-effect-binding.contract.test.js test/contracts/revision-bridge-release-claim-command-execution-effect-wiring.contract.test.js test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "status": "pass",
+      "tests": 24
+    },
+    {
+      "command": "node scripts/ops/governance-approval-state.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "node --check src/main.js",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "commandIdAllowlisted": true,
+    "busRouteRequired": true,
+    "directRouteBypassRejected": true,
+    "executionGateCalled": true,
+    "accepted12KRequired": true,
+    "nonPlainPayloadRejectedBeforeExecutionGate": true,
+    "realExecutionEffectRecordStoredOnAccepted": true,
+    "duplicatePacketBlocked": true,
+    "diagnosticsOrBlockedStoreNoExecutionEffectRecord": true,
+    "missingPacketIdBlockedBeforeExecutionEffectRecord": true,
+    "outputCannotMeanCommandAvailability": true,
+    "outputCannotMeanReleaseExecutionCompletion": true,
+    "outputCannotMeanProductPublication": true,
+    "runtimeQueueOpened": false,
+    "projectTruthMutated": false,
+    "storageWritePerformed": false,
+    "receiptCreated": false,
+    "recoveryCreated": false
+  },
+  "agentAudits": [
+    {
+      "agent": "Plato",
+      "type": "read_only_canon_skeptic",
+      "result": "downstream_ephemeral_effect_only",
+      "finding": "Confirmed the canonical opening after delivered 12N is one new downstream main-only ephemeral effect contour that preserves 12K proof semantics, preserves 12M and 12N as historical witness layers, and keeps publication, readiness, storage truth, manuscript truth, queue semantics, and renderer authority false."
+    },
+    {
+      "agent": "Banach",
+      "type": "read_only_impact_mapper",
+      "result": "new_status_and_new_contract_family_preferred",
+      "finding": "Confirmed main.js is the only certain runtime basename, donor-port kernel test must change for the active typed result sample, and new contour proof should be carried by a new status artifact plus a new binding contract instead of rewriting delivered 12M and 12N status history."
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "implemented_verified_pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": "",
+    "featureMergedAtUtc": ""
+  },
+  "decision": "RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT_IMPLEMENTED_VERIFIED_PENDING_DELIVERY",
+  "nextStep": "commit_push_pr_merge_then_rebind_delivery_truth_after_merge"
+}
