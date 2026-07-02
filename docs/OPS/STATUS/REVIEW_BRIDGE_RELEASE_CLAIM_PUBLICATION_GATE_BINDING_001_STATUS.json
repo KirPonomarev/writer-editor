@@ -1,0 +1,281 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_release_claim_publication_gate_binding",
+  "featureExpansion": "bounded_review_bridge_claim_binding",
+  "baseSha": "cb643b1f5681e5ec45432ada60f4853cedd8a270",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": true,
+    "rendererSurfaceChanged": false,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false,
+    "releaseClaimPublicationGateRuntimeChanged": true,
+    "releaseClaimPublicationGateBound": true,
+    "releaseClaimUserFacingBoundaryBoundPreviously": true,
+    "releaseExecutionAccepted": false,
+    "releasePublicationCompletionClaimed": false,
+    "productPublicationClaimed": false,
+    "publicationAuthorityClaimed": false,
+    "userFacingReleaseClaimed": false,
+    "commandAdmissionAccepted": false,
+    "kernelFenceAccepted": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false,
+    "autoApply": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "binding": {
+    "sourcePlan": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_FINAL_PLAN_R2",
+    "previousContourTaskId": "REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001",
+    "previousContourStatus": "delivered_merged_verified",
+    "previousContourMergeSha": "a94d19671aede4a12ed4b38310bfb4de5368efaf",
+    "previousContourDeliveryRebindMergeSha": "cb643b1f5681e5ec45432ada60f4853cedd8a270",
+    "existingKernelMarker": "CONTOUR_12H_RELEASE_CLAIM_PUBLICATION_GATE",
+    "upstreamUserFacingBoundaryGateMarker": "CONTOUR_12G_RELEASE_CLAIM_USER_FACING_BOUNDARY_GATE",
+    "upstreamUserFacingBoundaryTaskId": "REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001",
+    "upstreamUserFacingBoundaryStatus": "delivered_merged_verified",
+    "publicationSchema": "revision-bridge.release-claim-publication.v1",
+    "upstreamUserFacingBoundarySchema": "revision-bridge.release-claim-user-facing-boundary.v1",
+    "surfaces": [
+      "INTERNAL",
+      "USER_FACING"
+    ],
+    "releaseClasses": [
+      "INTERNAL_PROOF_ONLY",
+      "USER_FACING_CLAIM_READY"
+    ]
+  },
+  "positiveClaims": [
+    "The existing release claim publication gate is product-bound as bounded internal Review Bridge 12H publication gate admission.",
+    "Accepted 12H requires raw 12G boundary input and re-evaluates the 12G user-facing boundary gate internally before accepting publication gate admission.",
+    "Accepted 12H requires the internally evaluated 12G user-facing boundary result to have accepted boundary type, status, code, and reason.",
+    "Accepted 12H requires the internally evaluated 12G boundary binding fields for mode, claimId, dossierId, matrixId, and releaseClass.",
+    "Accepted 12H requires the internally evaluated 12G boundary summary fields for claimSurface, packetId, and attestationId.",
+    "Accepted 12H requires requestedMode to match the accepted 12G boundary mode.",
+    "Accepted 12H requires requestedClaimSurface to match the accepted 12G boundary claimSurface.",
+    "Stale or fabricated boundaryResult input is not accepted as provenance; when boundaryResult is supplied, it must match the internally re-evaluated 12G result.",
+    "PR_MODE USER_FACING publication gate requests are blocked through the 12G boundary gate chain.",
+    "RELEASE_MODE USER_FACING publication gate admission is accepted only when the accepted 12G boundary releaseClass is USER_FACING_CLAIM_READY.",
+    "Accepted 12H emits a deterministic non-mutating publication gate result with fixed top-level, binding, and summary keys.",
+    "The 12H publication runtime now strips inherited prototype fields before publication input and boundaryResult acceptance checks.",
+    "This contour is release claim publication gate truth only; it is not product publication, release readiness, release execution, command admission, kernel fence, import, export, apply, storage truth, or project truth."
+  ],
+  "nonClaims": [
+    "No product publication is claimed.",
+    "No release readiness is claimed.",
+    "No user-facing release is claimed.",
+    "No release execution completion is claimed.",
+    "No release publication completion is claimed.",
+    "No publication authority is claimed.",
+    "No release-wide publication authority is claimed.",
+    "No command admission is claimed.",
+    "No kernel fence is claimed.",
+    "No Word support is claimed.",
+    "No Google Docs support is claimed.",
+    "No DOCX support expansion is claimed.",
+    "No import support is claimed.",
+    "No export support is claimed.",
+    "No review import completion is claimed.",
+    "No roundtrip is claimed.",
+    "No layout parity is claimed.",
+    "No full fidelity is claimed.",
+    "No automatic apply is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed by release claim publication gate binding.",
+    "No project truth write is performed by release claim publication gate binding.",
+    "No receipt or recovery evidence is created by release claim publication gate binding.",
+    "No DOCX import safe-create behavior is changed.",
+    "No DOCX export behavior is changed.",
+    "No import/export MVP closeout is widened.",
+    "No PDF, EPUB, HTML, Mindmap, cloud sync, cross-platform readiness, packaged readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Publication gate binding is gate admission only.",
+    "Publication gate binding does not publish anything.",
+    "Publication gate binding does not become project truth by itself.",
+    "Publication gate binding does not write manuscript truth or project truth.",
+    "Publication gate binding does not execute release commands.",
+    "Publication gate binding does not admit command execution.",
+    "Publication gate binding does not admit kernel fence.",
+    "USER_FACING_CLAIM_READY remains an internal packet, boundary, and publication-gate class only, not a release readiness state.",
+    "USER_FACING is a boundary and publication gate surface in this contour, not a user-facing UI state.",
+    "This contour is not a release execution contour.",
+    "This contour is not a product publication contour.",
+    "This contour is not content import and does not create scenes.",
+    "This contour is not Review import automation and does not activate a Review session.",
+    "This contour is not an apply plan and does not authorize mutation.",
+    "This contour is not safe write and does not create receipt or recovery evidence.",
+    "This contour is not export and does not alter DOCX output.",
+    "Review Bridge may reference accepted 12H output as bounded internal chain evidence, but accepted 12H output does not become project truth."
+  ],
+  "implementation": {
+    "changedProductionRuntime": true,
+    "changedUi": false,
+    "changedBasenames": [
+      "REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001_STATUS.json",
+      "review-bridge-release-claim-publication-gate-binding.contract.test.js",
+      "revision-bridge-release-claim-publication-gate.contract.test.js",
+      "revision-bridge-release-claim-kernel-fence.contract.test.js",
+      "revision-bridge-release-claim-command-admission.contract.test.js",
+      "revision-bridge-release-claim-execution-gate.contract.test.js",
+      "index.mjs",
+      "review-bridge-release-claim-dossier-binding.contract.test.js",
+      "review-bridge-release-claim-admission-binding.contract.test.js",
+      "review-bridge-release-claim-mode-decision-binding.contract.test.js",
+      "review-bridge-release-claim-attestation-binding.contract.test.js",
+      "review-bridge-release-claim-packet-emit-binding.contract.test.js",
+      "review-bridge-release-claim-user-facing-boundary-binding.contract.test.js",
+      "GOVERNANCE_CHANGE_APPROVALS.json",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "WORKLOG.md"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --test release claim publication gate kernel contracts",
+      "status": "pass",
+      "tests": 24
+    },
+    {
+      "command": "node --test release claim publication gate binding contracts",
+      "status": "pass",
+      "tests": 5
+    },
+    {
+      "command": "node --test release claim publication gate kernel plus binding contracts",
+      "status": "pass",
+      "tests": 29
+    },
+    {
+      "command": "node --test release claim publication gate binding plus adjacent 12B through 12H contracts",
+      "status": "pass",
+      "tests": 38
+    },
+    {
+      "command": "node --test release claim downstream 12I through 12K contracts",
+      "status": "pass",
+      "tests": 53
+    },
+    {
+      "command": "node --test release claim full contract pack",
+      "status": "pass",
+      "tests": 233
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass",
+      "vulnerabilities": 0
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "releaseClaimPublicationGateBindingExists": true,
+    "rawBoundaryInputRequired": true,
+    "userFacingBoundaryReevaluatedInternally": true,
+    "staleBoundaryResultRejected": true,
+    "fabricatedBoundaryResultWithoutBoundaryInputRejected": true,
+    "acceptedUserFacingBoundaryRequired": true,
+    "acceptedUserFacingBoundaryTypeRequired": true,
+    "acceptedUserFacingBoundaryStatusRequired": true,
+    "acceptedUserFacingBoundaryCodeRequired": true,
+    "acceptedUserFacingBoundaryReasonRequired": true,
+    "boundaryBindingModeRequired": true,
+    "boundaryBindingClaimIdRequired": true,
+    "boundaryBindingDossierIdRequired": true,
+    "boundaryBindingMatrixIdRequired": true,
+    "boundaryBindingReleaseClassRequired": true,
+    "boundarySummaryClaimSurfaceRequired": true,
+    "boundarySummaryPacketIdRequired": true,
+    "boundarySummaryAttestationIdRequired": true,
+    "requestedModeMustMatchBoundaryMode": true,
+    "requestedClaimSurfaceMustMatchBoundaryClaimSurface": true,
+    "prModeUserFacingBlocked": true,
+    "releaseModeUserFacingRequiresUserFacingClaimReady": true,
+    "inheritedPublicationInputRejected": true,
+    "inheritedBoundaryResultRejected": true,
+    "inheritedNestedBoundaryProvenanceRejected": true,
+    "nonPlainSuppliedBoundaryResultRejected": true,
+    "emptyBoundaryBindingRejected": true,
+    "emptyBoundarySummaryRejected": true,
+    "releaseExecutionAccepted": false,
+    "releasePublicationCompletionClaimed": false,
+    "productPublicationClaimed": false,
+    "publicationAuthorityClaimed": false,
+    "commandAdmissionAccepted": false,
+    "kernelFenceAccepted": false,
+    "userFacingReleaseClaimed": false,
+    "releaseReadinessClaimed": false,
+    "importSupportClaimed": false,
+    "exportSupportClaimed": false,
+    "roundtripClaimed": false,
+    "layoutParityClaimed": false,
+    "fullFidelityClaimed": false,
+    "applyOpsCreated": false,
+    "receiptCreated": false,
+    "recoveryCreated": false,
+    "projectTruthMutated": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false
+  },
+  "agentAudits": [
+    {
+      "agent": "Sartre",
+      "type": "read_only_false_green_code_auditor",
+      "result": "initial_fail_resolved_after_raw_boundary_input_rebind",
+      "finding": "Found that a fabricated accepted-looking boundaryResult could previously drive 12H accepted without real 12G provenance. Resolved by requiring raw boundaryInput, internally re-evaluating 12G, adding boundaryResult mismatch blocking, and adding synthetic/stale/prototype negative contracts."
+    },
+    {
+      "agent": "Hume",
+      "type": "read_only_docs_status_binding_auditor",
+      "result": "pass_with_required_status_and_governance_work",
+      "finding": "Confirmed 12H kernel existed without dedicated binding status, governance approval, or docs sync. Required status, nonclaims, layer decisions, docs updates, and release-readiness overclaim guards were added for publication gate admission only."
+    },
+    {
+      "agent": "Ohm",
+      "type": "independent_skeptic_auditor",
+      "result": "initial_fail_resolved_after_non_plain_boundary_result_hardening",
+      "finding": "Confirmed fabricated plain and stale boundaryResult inputs no longer bypass raw 12G re-evaluation, then found supplied non-plain boundaryResult values were ignored despite the written consistency claim. Resolved by blocking any supplied non-plain boundaryResult as BOUNDARY_RESULT_MISMATCH and adding a targeted contract."
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending"
+  },
+  "decision": "RELEASE_CLAIM_PUBLICATION_GATE_BINDING_IMPLEMENTED_VERIFIED_PENDING_DELIVERY",
+  "nextStep": "complete delivery chain, then select the next owner-approved boundary explicitly; command admission, kernel fence, real publication, and post-MVP import/export expansion do not open by implication"
+}

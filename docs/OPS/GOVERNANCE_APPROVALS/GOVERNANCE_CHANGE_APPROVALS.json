@@ -2,18 +2,95 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001_STATUS.json",
+      "sha256": "a8999009598aa5975c84c755e1471c13fc954241fbb6594f537704aba8947992",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded release claim publication gate binding status; it product-binds 12H as internal publication gate admission requiring raw 12G boundary input and 12G re-evaluation while preserving no product publication, no release readiness, no user-facing release, no execution, no command admission, no kernel fence, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-publication-gate-binding.contract.test.js",
+      "sha256": "76ab72ddd66be5e8b3c25d904afee780ed0dd649622d836a3c418f7cb9df7f23",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve contract guard for bounded release claim publication gate binding; it binds status scope, existing 12H kernel marker, raw 12G re-evaluation, stale and fabricated boundaryResult rejection, docs honesty, and changed-file allowlist without introducing product publication, release readiness, user-facing release, execution, command admission, kernel fence, import/export support, apply, storage, receipt, recovery, dependency, or Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-publication-gate.contract.test.js",
+      "sha256": "59dd1c22ccb1a4291bd87150d4e365efca3e2e9f70aed28afd30fc7143903c13",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded 12H publication gate hardening proving raw boundaryInput is required, 12G is re-evaluated internally, stale or fabricated boundaryResult values are rejected, non-plain supplied boundaryResult values are rejected, requested mode and surface must match evaluated 12G, and no product publication, release readiness, user-facing release, execution, command admission, kernel fence, import/export support, apply, storage, receipt, recovery, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-kernel-fence.contract.test.js",
+      "sha256": "1751e6f9073949e3e474f4e4cf281973c9e458a815f4457e2310f4d3a5a1eed1",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded 12I fixture sync to construct accepted 12H through raw boundaryInput after 12H publication gate hardening; no new 12I semantics, product publication, release readiness, user-facing release, execution, command admission, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-command-admission.contract.test.js",
+      "sha256": "90b038dde85d5f64f47db98dfc62cc345598d1f276766597779227d790cc6390",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded 12J fixture sync to construct accepted 12H through raw boundaryInput after 12H publication gate hardening; no new 12J semantics, product publication, release readiness, user-facing release, execution, command admission authority, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-execution-gate.contract.test.js",
+      "sha256": "9a42d26ca757fd8fcdda177b52146aa3d64bcf5a887c85892f1e86ef05573b55",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded 12K fixture sync to construct accepted 12H through raw boundaryInput after 12H publication gate hardening; no new 12K semantics, product publication, release readiness, user-facing release, execution authority, command admission authority, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-dossier-binding.contract.test.js",
+      "sha256": "2950b1cdf179fbb133d9b2bf4c4f3a8e84408a436d7fe291b66b8f2b8ffd1d45",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded dossier binding contract allowlist sync for adjacent 12H publication gate binding and downstream fixture hardening; no new 12B semantics, product publication, release readiness, user-facing release, execution, command admission, kernel fence, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-admission-binding.contract.test.js",
+      "sha256": "bdb5301e53bf95f07f02da8e018a1f26d400b7b3f1c6f79901121ebe998ed613",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded admission binding contract allowlist and adjacent proof sync for 12H publication gate binding; no new 12C semantics, product publication, release readiness, user-facing release, execution, command admission, kernel fence, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js",
+      "sha256": "05bfdbedd625613f62a68f4ac6c728fe34224c192ea237972b9ce12035429c2f",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded mode decision binding contract allowlist sync for adjacent 12H publication gate binding; no new 12D semantics, product publication, release readiness, user-facing release, execution, command admission, kernel fence, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-attestation-binding.contract.test.js",
+      "sha256": "936d9ae0efc11f9c5460ad6d2e0c0f3760fdff5ca6b1428c0c24afa730737f12",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded attestation binding contract allowlist sync for adjacent 12H publication gate binding; no new 12E semantics, product publication, release readiness, user-facing release, execution, command admission, kernel fence, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js",
+      "sha256": "90e03a359f4a1973f0ac4591221a4643754d18faf7f17020f034976e64a42f71",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded packet emit binding contract allowlist sync for adjacent 12H publication gate binding; no new 12F semantics, product publication, release readiness, user-facing release, execution, command admission, kernel fence, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-user-facing-boundary-binding.contract.test.js",
+      "sha256": "ebabdcf0dcb6a70be9599b23dd22829b7d809167cab54132f2c985e341c16c92",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded user-facing boundary binding contract allowlist sync for adjacent 12H publication gate binding; no new 12G semantics, product publication, release readiness, user-facing release, execution, command admission, kernel fence, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001_STATUS.json",
       "sha256": "64a2986054186b0d29788cef3954881a70de4bf8bb8a1773eee11254cda8ab1f",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
       "rationale": "Approve delivery rebind for bounded release claim user-facing boundary binding after PR 1038 merge; status is rebound to delivered_merged_verified with feature commit, PR, merge SHA, and merged time while preserving raw binding requirements, no release readiness, no user-facing release, no user-facing UI state, no execution, no publication, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-release-claim-user-facing-boundary-binding.contract.test.js",
-      "sha256": "bc2d47ed2d1591439defc96485dad4f9bec1af1a12e437012ce75a582c1552f1",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve contract guard for bounded release claim user-facing boundary binding; it binds status scope, existing 12G kernel marker, raw binding requirements, packet/report/hash linkage, inherited and empty-binding packet rejection, docs honesty, and changed-file allowlist without introducing UI, storage, dependency, import/export support, apply authority, release readiness, execution, publication, or user-facing release authority."
     },
     {
       "filePath": "test/contracts/revision-bridge-release-claim-user-facing-boundary-gate.contract.test.js",
@@ -30,46 +107,11 @@
       "rationale": "Approve delivery rebind for bounded release claim packet emit binding after PR 1036 merge; status is rebound to delivered_merged_verified with feature commit, PR, merge SHA, and merged time while preserving no release readiness, no user-facing release, no execution completion, no publication completion, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
     },
     {
-      "filePath": "test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js",
-      "sha256": "76cec01da87dfda25f2bb093d6fe3a3debf12d4cc6cf0ebc0270b9ecb12f7740",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded packet emit binding contract allowlist sync for the adjacent 12G user-facing boundary binding and packet linkage hardening contour; no new 12F semantics, UI, storage, dependency, import/export support, apply, release readiness, execution, publication, or user-facing release claim is introduced."
-    },
-    {
       "filePath": "test/contracts/revision-bridge-release-claim-packet-emit.contract.test.js",
       "sha256": "904444e1b9f6d91d894307433ba3c2d684568bbef3ef6e4d66368153c0295302",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
       "rationale": "Approve bounded 12F packet emit contract hardening proving inherited packetMeta, inherited accepted 12D envelopes, inherited accepted 12E envelopes, and inherited RELEASE_MODE USER_FACING_CLAIM_READY packet paths are rejected; this introduces no UI, storage, dependency, import/export support, apply, release readiness, execution, publication, or user-facing release claim."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-release-claim-dossier-binding.contract.test.js",
-      "sha256": "af8f74981c597d9af37ef1fbec53c3eab209a163d33201ad72f120f1e9df5ae6",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded dossier binding contract allowlist sync for the adjacent 12G user-facing boundary binding and packet linkage hardening contour; no new 12B semantics, UI, storage, dependency, import/export support, apply, release readiness, execution, publication, or user-facing release claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-release-claim-admission-binding.contract.test.js",
-      "sha256": "578b35714b49dfecfddf0c84d2dcc99c6935a5ab66ee986282730c893e2e249e",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded admission binding contract allowlist sync for the adjacent 12G user-facing boundary binding and packet linkage hardening contour; no new 12C semantics, UI, storage, dependency, import/export support, apply, release readiness, execution, publication, or user-facing release claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js",
-      "sha256": "c561b14f28d9eeac6a55624cec402e5bcae6579dd17258270b32feac7167a78d",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded mode decision binding contract allowlist sync for the adjacent 12G user-facing boundary binding and packet linkage hardening contour; no new 12D semantics, UI, storage, dependency, import/export support, apply, release readiness, execution, publication, or user-facing release claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-release-claim-attestation-binding.contract.test.js",
-      "sha256": "299e98823dc1a612fad24b21e74f75aaf94665a148216f8eee23ad91a1238dbc",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded attestation binding contract allowlist sync for the adjacent 12G user-facing boundary binding and packet linkage hardening contour; no new 12E semantics, UI, storage, dependency, import/export support, apply, release readiness, execution, publication, or user-facing release claim is introduced."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_ATTESTATION_BINDING_001_STATUS.json",

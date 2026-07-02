@@ -269,15 +269,19 @@ function validPublicationInput(bridge, overrides = {}) {
     || (requestedClaimSurface === 'INTERNAL' || requestedClaimSurface === 'USER_FACING'
       ? requestedClaimSurface
       : 'INTERNAL');
-  const boundaryResult = hasOwn(overrides, 'boundaryResult')
-    ? overrides.boundaryResult
-    : acceptedBoundaryResult(bridge, {
+  const boundaryInput = hasOwn(overrides, 'boundaryInput')
+    ? overrides.boundaryInput
+    : validBoundaryInput(bridge, {
       packetMode: boundaryMode,
       requestedMode: boundaryMode,
       requestedClaimSurface: boundarySurface,
     });
+  const boundaryResult = hasOwn(overrides, 'boundaryResult')
+    ? overrides.boundaryResult
+    : undefined;
 
   return {
+    ...(boundaryInput === undefined ? {} : { boundaryInput }),
     ...(boundaryResult === undefined ? {} : { boundaryResult }),
     requestedMode: requestedMode === undefined ? boundaryMode : requestedMode,
     requestedClaimSurface: requestedClaimSurface === undefined
