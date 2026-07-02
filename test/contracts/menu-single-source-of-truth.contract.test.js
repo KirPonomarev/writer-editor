@@ -104,11 +104,11 @@ test('menu single-source truth: adopted menu file commands reuse command surface
   );
   assert.match(
     mainText,
-    /'cmd\.project\.importMarkdownV1': async \(payload = \{\}\) => \{\s*return dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_IMPORT_MARKDOWN_V1, payload\);/m,
+    /'cmd\.project\.importMarkdownV1': async \(payload = \{\}\) => \{\s*const result = await dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_IMPORT_MARKDOWN_V1, payload\);\s*return normalizeUiBridgeMenuResult\(result\);/m,
   );
   assert.match(
     mainText,
-    /'cmd\.project\.exportMarkdownV1': async \(payload = \{\}\) => \{\s*return dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_EXPORT_MARKDOWN_V1, payload\);/m,
+    /'cmd\.project\.exportMarkdownV1': async \(payload = \{\}\) => \{\s*const result = await dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_EXPORT_MARKDOWN_V1, payload\);\s*return normalizeUiBridgeMenuResult\(result\);/m,
   );
   assert.ok(mainText.includes("const previewRequested = sendCanonicalRuntimeCommand("));
   assert.ok(mainText.includes("'cmd.project.export.docxMin'"));

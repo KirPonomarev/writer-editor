@@ -1682,7 +1682,7 @@ export function registerProjectCommands(registry, options = {}) {
     }
     const bridged = unwrapBridgeResponseValue(response);
 
-    if (bridged && bridged.ok === 1 && bridged.scene && typeof bridged.scene === 'object') {
+    if (bridged && (bridged.ok === true || bridged.ok === 1) && bridged.scene && typeof bridged.scene === 'object') {
       const result = {
         imported: true,
         scene: bridged.scene,
@@ -1699,7 +1699,7 @@ export function registerProjectCommands(registry, options = {}) {
       return ok(result);
     }
 
-    if (bridged && bridged.ok === 1 && bridged.safeCreate === true) {
+    if (bridged && (bridged.ok === true || bridged.ok === 1) && bridged.safeCreate === true) {
       return ok({
         imported: true,
         safeCreate: true,
@@ -1822,7 +1822,7 @@ export function registerProjectCommands(registry, options = {}) {
     }
     const bridged = unwrapBridgeResponseValue(response);
 
-    if (bridged && bridged.ok === 1 && bridged.canceled === true) {
+    if (bridged && (bridged.ok === true || bridged.ok === 1) && bridged.canceled === true) {
       return ok({
         exported: false,
         canceled: true,
@@ -1834,7 +1834,7 @@ export function registerProjectCommands(registry, options = {}) {
       });
     }
 
-    if (bridged && bridged.ok === 1 && typeof bridged.markdown === 'string') {
+    if (bridged && (bridged.ok === true || bridged.ok === 1) && typeof bridged.markdown === 'string') {
       const output = {
         exported: true,
         markdown: bridged.markdown,
@@ -1901,7 +1901,7 @@ export function registerProjectCommands(registry, options = {}) {
     }
     const bridged = unwrapBridgeResponseValue(response);
 
-    if (bridged && bridged.ok === 1 && Array.isArray(bridged.scenes)) {
+    if (bridged && (bridged.ok === true || bridged.ok === 1) && Array.isArray(bridged.scenes)) {
       return ok({
         opened: true,
         scenes: bridged.scenes,
@@ -1959,7 +1959,7 @@ export function registerProjectCommands(registry, options = {}) {
     }
     const bridged = unwrapBridgeResponseValue(response);
 
-    if (bridged && bridged.ok === 1) {
+    if (bridged && (bridged.ok === true || bridged.ok === 1)) {
       return ok({
         saved: true,
         savedCount: Number.isInteger(bridged.savedCount) ? bridged.savedCount : input.scenes.length,

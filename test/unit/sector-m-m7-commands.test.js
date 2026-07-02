@@ -93,7 +93,7 @@ test('M7 commands keep typed errors stable and do not expose stack', async () =>
   assert.equal(Object.prototype.hasOwnProperty.call(saveFail.error, 'stack'), false);
 });
 
-test('M7 commands unwrap bridge value when outer command bridge status is false but inner flow result is ok', async () => {
+test('M7 commands accept boolean bridge success envelope for flow open and save', async () => {
   const {
     createCommandRegistry,
     createCommandRunner,
@@ -107,20 +107,18 @@ test('M7 commands unwrap bridge value when outer command bridge status is false 
       invokeUiCommandBridge: async (request) => {
         if (request.commandId === COMMAND_IDS.PROJECT_FLOW_OPEN_V1) {
           return {
-            ok: false,
-            reason: 'COMMAND_EXECUTION_FAILED',
+            ok: true,
             value: {
-              ok: 1,
+              ok: true,
               scenes: [{ path: '/tmp/a.txt', title: 'One', kind: 'scene', content: 'Alpha' }],
             },
           };
         }
         if (request.commandId === COMMAND_IDS.PROJECT_FLOW_SAVE_V1) {
           return {
-            ok: false,
-            reason: 'COMMAND_EXECUTION_FAILED',
+            ok: true,
             value: {
-              ok: 1,
+              ok: true,
               savedCount: 1,
             },
           };

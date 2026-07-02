@@ -83,6 +83,84 @@ test('M3 commands: import/export markdown return deterministic success payloads'
   });
 });
 
+test('M3 commands: bridge success envelope stays boolean while markdown payload truth remains compatible', async () => {
+  const {
+    createCommandRegistry,
+    createCommandRunner,
+    registerProjectCommands,
+    COMMAND_IDS,
+  } = await loadCommandModules();
+
+  const sourceMarkdown = fixture('simple.md');
+  const expectedImport = JSON.parse(fixture('expected-import.json'));
+  const expectedExport = JSON.parse(fixture('expected-export.json'));
+  const requests = [];
+
+  const registry = createCommandRegistry();
+  registerProjectCommands(registry, {
+    electronAPI: {
+      invokeUiCommandBridge: async (request) => {
+        requests.push(request);
+        if (request.commandId === COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1) {
+          return {
+            ok: true,
+            value: {
+              ok: true,
+              scene: {
+                kind: expectedImport.kind,
+                blocks: [],
+                nodeCount: 0,
+                lossReport: { count: expectedImport.lossCount, items: [] },
+              },
+              lossReport: { count: expectedImport.lossCount, items: [] },
+            },
+          };
+        }
+        if (request.commandId === COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1) {
+          return {
+            ok: true,
+            value: {
+              ok: true,
+              markdown: expectedExport.markdown,
+              lossReport: { count: 0, items: [] },
+            },
+          };
+        }
+        return { ok: false, reason: 'UNEXPECTED_COMMAND' };
+      },
+    },
+  });
+  const runCommand = createCommandRunner(registry);
+
+  const imported = await runCommand(COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, { text: sourceMarkdown });
+  const exported = await runCommand(COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, { scene: expectedExport.scene });
+
+  assert.equal(requests.length, 2);
+  assert.equal(requests[0].commandId, COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1);
+  assert.equal(requests[1].commandId, COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1);
+  assert.deepEqual(imported, {
+    ok: true,
+    value: {
+      imported: true,
+      scene: {
+        kind: expectedImport.kind,
+        blocks: [],
+        nodeCount: 0,
+        lossReport: { count: expectedImport.lossCount, items: [] },
+      },
+      lossReport: { count: expectedImport.lossCount, items: [] },
+    },
+  });
+  assert.deepEqual(exported, {
+    ok: true,
+    value: {
+      exported: true,
+      markdown: expectedExport.markdown,
+      lossReport: { count: 0, items: [] },
+    },
+  });
+});
+
 test('M3 commands: export markdown forwards save-as intent and handles cancel as non-write', async () => {
   const {
     createCommandRegistry,
