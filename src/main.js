@@ -4443,7 +4443,40 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
 // DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_END
 
 // CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION_START
+function isReleaseClaimCommandSurfacePlainPayload(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype === null || prototype === Object.prototype) return true;
+  const parentPrototype = Object.getPrototypeOf(prototype);
+  return parentPrototype === null
+    && Object.prototype.hasOwnProperty.call(prototype, 'constructor')
+    && prototype.constructor
+    && prototype.constructor.name === 'Object';
+}
+
+function makeReleaseClaimCommandSurfaceAdmissionError(code, reason, details = undefined) {
+  const error = {
+    code,
+    op: 'cmd.project.releaseClaim.admit',
+    reason,
+  };
+  if (details && typeof details === 'object' && !Array.isArray(details)) {
+    error.details = { ...details };
+  }
+  return { ok: false, error };
+}
+
 async function handleRevisionBridgeReleaseClaimCommandSurfaceAdmission(payload = {}) {
+  if (!isReleaseClaimCommandSurfacePlainPayload(payload)) {
+    return makeReleaseClaimCommandSurfaceAdmissionError(
+      'E_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_PAYLOAD_INVALID',
+      'PAYLOAD_PLAIN_OBJECT_REQUIRED',
+      {
+        receivedType: Array.isArray(payload) ? 'array' : typeof payload,
+      },
+    );
+  }
+
   const revisionBridge = await loadRevisionBridgeModule();
   return revisionBridge.evaluateRevisionBridgeReleaseClaimExecutionGate(payload);
 }

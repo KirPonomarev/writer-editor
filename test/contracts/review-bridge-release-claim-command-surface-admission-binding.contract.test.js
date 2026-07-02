@@ -5,31 +5,37 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
-const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
+const MAIN_PATH = 'src/main.js';
+const KERNEL_PATH = 'src/command/commandSurfaceKernel.js';
 const STATUS_PATH = path.join(
   REPO_ROOT,
   'docs',
   'OPS',
   'STATUS',
-  'REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001_STATUS.json',
+  'REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_BINDING_001_STATUS.json',
 );
 const STATUS_PATH_REL =
-  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001_STATUS.json';
+  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_BINDING_001_STATUS.json';
 const CONTRACT_PATH =
-  'test/contracts/review-bridge-release-claim-execution-gate-binding.contract.test.js';
-const EXECUTION_TEST_PATH = 'test/contracts/revision-bridge-release-claim-execution-gate.contract.test.js';
+  'test/contracts/review-bridge-release-claim-command-surface-admission-binding.contract.test.js';
 const COMMAND_SURFACE_WIRING_TEST_PATH =
   'test/contracts/revision-bridge-release-claim-command-surface-admission-wiring.contract.test.js';
+const EXECUTION_GATE_STATUS_PATH =
+  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001_STATUS.json';
+const EXECUTION_GATE_BINDING_TEST_PATH =
+  'test/contracts/review-bridge-release-claim-execution-gate-binding.contract.test.js';
 const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
 const CONTEXT_PATH = 'docs/CONTEXT.md';
 const HANDOFF_PATH = 'docs/HANDOFF.md';
 const WORKLOG_PATH = 'docs/WORKLOG.md';
 const ALLOWLIST = [
-  MODULE_PATH,
+  MAIN_PATH,
+  KERNEL_PATH,
   STATUS_PATH_REL,
   CONTRACT_PATH,
-  EXECUTION_TEST_PATH,
   COMMAND_SURFACE_WIRING_TEST_PATH,
+  EXECUTION_GATE_STATUS_PATH,
+  EXECUTION_GATE_BINDING_TEST_PATH,
   'test/contracts/review-bridge-release-claim-admission-binding.contract.test.js',
   'test/contracts/review-bridge-release-claim-attestation-binding.contract.test.js',
   'test/contracts/review-bridge-release-claim-command-admission-binding.contract.test.js',
@@ -39,9 +45,6 @@ const ALLOWLIST = [
   'test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js',
   'test/contracts/review-bridge-release-claim-publication-gate-binding.contract.test.js',
   'test/contracts/review-bridge-release-claim-user-facing-boundary-binding.contract.test.js',
-  'src/main.js',
-  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_BINDING_001_STATUS.json',
-  'test/contracts/review-bridge-release-claim-command-surface-admission-binding.contract.test.js',
   GOVERNANCE_APPROVALS_PATH,
   CONTEXT_PATH,
   HANDOFF_PATH,
@@ -63,13 +66,15 @@ function changedFilesFromGitStatus(statusText) {
     .map((line) => line.slice(3).replace(/^"|"$/gu, ''));
 }
 
-function assertNoExecutionGateOverclaims(text, label) {
+function assertNoCommandSurfaceAdmissionOverclaims(text, label) {
   const forbidden = [
-    /\bexecution gate accepted means command execution\b/iu,
-    /\bexecution gate accepted means release execution\b/iu,
-    /\bexecution gate accepted means product publication\b/iu,
-    /\bexecution gate accepted means release readiness\b/iu,
-    /\bexecution gate accepted means user-facing release\b/iu,
+    /\bcommand surface admission accepted means command availability\b/iu,
+    /\bcommand surface admission accepted means command execution\b/iu,
+    /\bcommand surface admission accepted means release execution\b/iu,
+    /\bcommand surface admission accepted means product publication\b/iu,
+    /\bcommand surface admission accepted means release readiness\b/iu,
+    /\bcommand surface admission accepted means user-facing release\b/iu,
+    /\bcommand availability is (?:available|supported|ready|complete|proven)\b/iu,
     /\bcommand execution is (?:available|supported|ready|complete|proven)\b/iu,
     /\brelease execution is (?:available|supported|ready|complete|proven)\b/iu,
     /\bproduct publication is (?:available|supported|ready|complete|proven)\b/iu,
@@ -86,11 +91,11 @@ function assertNoExecutionGateOverclaims(text, label) {
   }
 }
 
-test('Review Bridge release claim execution gate binding status keeps scope narrow', () => {
+test('Review Bridge release claim command surface admission binding status keeps scope narrow', () => {
   const status = readJson(STATUS_PATH);
 
-  assert.equal(status.taskId, 'REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001');
-  assert.equal(status.type, 'review_bridge_release_claim_execution_gate_binding');
+  assert.equal(status.taskId, 'REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_BINDING_001');
+  assert.equal(status.type, 'review_bridge_release_claim_command_surface_admission_binding');
   assert.ok(
     ['implemented_verified_pending_delivery', 'delivered_merged_verified'].includes(status.status),
     `unexpected status ${status.status}`,
@@ -102,67 +107,82 @@ test('Review Bridge release claim execution gate binding status keeps scope narr
   assert.equal(status.scope.uiRedesign, false);
   assert.equal(status.scope.newDependenciesAdded, false);
   assert.equal(status.scope.runtimeProductionCodeChanged, true);
-  assert.equal(status.scope.releaseClaimExecutionGateRuntimeChanged, true);
-  assert.equal(status.scope.releaseClaimExecutionGateBound, true);
-  assert.equal(status.scope.releaseClaimCommandAdmissionDeliveredPreviously, true);
-  assert.equal(status.scope.executionGateEvidenceClaimed, true);
+  assert.equal(status.scope.rendererSurfaceChanged, false);
+  assert.equal(status.scope.projectTruthWrites, false);
+  assert.equal(status.scope.manuscriptWrites, false);
+  assert.equal(status.scope.storageWrite, false);
+  assert.equal(status.scope.receiptOrRecoveryCreated, false);
+  assert.equal(status.scope.releaseClaimCommandSurfaceAdmissionRuntimeChanged, true);
+  assert.equal(status.scope.releaseClaimCommandSurfaceAdmissionBound, true);
+  assert.equal(status.scope.releaseClaimExecutionGateBoundPreviously, true);
+  assert.equal(status.scope.releaseClaimExecutionGateDeliveredPreviously, true);
+  assert.equal(status.scope.commandSurfaceAdmissionEvidenceClaimed, true);
   assert.equal(status.scope.commandAvailabilityClaimed, false);
   assert.equal(status.scope.commandExecutionAccepted, false);
   assert.equal(status.scope.releaseExecutionAccepted, false);
+  assert.equal(status.scope.releasePublicationCompletionClaimed, false);
   assert.equal(status.scope.productPublicationClaimed, false);
-  assert.equal(status.scope.releaseReadinessClaimed, false);
+  assert.equal(status.scope.publicationAuthorityClaimed, false);
   assert.equal(status.scope.userFacingReleaseClaimed, false);
+  assert.equal(status.scope.releaseReadinessClaimed, false);
+  assert.equal(status.scope.docxImportSafeCreateChanged, false);
+  assert.equal(status.scope.docxExportChanged, false);
+  assert.equal(status.scope.autoApply, false);
+  assert.equal(status.scope.y9Opened, false);
 });
 
-test('Review Bridge release claim execution gate binding is bound to existing 12K runtime', () => {
+test('Review Bridge release claim command surface admission binding is bound to 12L runtime', () => {
   const status = readJson(STATUS_PATH);
-  const bridgeSource = readText(['src', 'io', 'revisionBridge', 'index.mjs']);
-  const executionTest = readText([
-    'test',
-    'contracts',
-    'revision-bridge-release-claim-execution-gate.contract.test.js',
-  ]);
-  const commandSurfaceTest = readText([
+  const upstreamStatus = readJson(path.join(REPO_ROOT, EXECUTION_GATE_STATUS_PATH));
+  const mainSource = readText(['src', 'main.js']);
+  const kernelSource = readText(['src', 'command', 'commandSurfaceKernel.js']);
+  const wiringTest = readText([
     'test',
     'contracts',
     'revision-bridge-release-claim-command-surface-admission-wiring.contract.test.js',
   ]);
-  const sectionStart = bridgeSource.indexOf('// CONTOUR_12K_RELEASE_CLAIM_EXECUTION_GATE_START');
-  const sectionEnd = bridgeSource.indexOf('// CONTOUR_12K_RELEASE_CLAIM_EXECUTION_GATE_END');
+  const sectionStart = mainSource.indexOf('// CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION_START');
+  const sectionEnd = mainSource.indexOf('// CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION_END');
 
-  assert.equal(status.binding.existingExecutionGateMarker, 'CONTOUR_12K_RELEASE_CLAIM_EXECUTION_GATE');
-  assert.equal(status.binding.previousContourTaskId, 'REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001');
+  assert.equal(status.binding.existingCommandSurfaceMarker, 'CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION');
+  assert.equal(status.binding.previousContourTaskId, 'REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001');
   assert.equal(status.binding.previousContourStatus, 'delivered_merged_verified');
-  assert.equal(status.binding.upstreamCommandAdmissionMarker, 'CONTOUR_12J_RELEASE_CLAIM_COMMAND_ADMISSION');
+  assert.equal(upstreamStatus.status, 'delivered_merged_verified');
+  assert.equal(status.binding.upstreamExecutionGateMarker, 'CONTOUR_12K_RELEASE_CLAIM_EXECUTION_GATE');
+  assert.equal(status.binding.commandSurfaceCommandId, 'cmd.project.releaseClaim.admit');
+  assert.equal(status.binding.commandSurfaceRoute, 'command.bus');
   assert.equal(status.binding.executionGateSchema, 'revision-bridge.release-claim-execution-gate.v1');
   assert.notEqual(sectionStart, -1);
   assert.notEqual(sectionEnd, -1);
 
-  const executionSection = bridgeSource.slice(sectionStart, sectionEnd);
-  assert.match(executionSection, /evaluateRevisionBridgeReleaseClaimExecutionGate/u);
-  assert.match(executionSection, /evaluateRevisionBridgeReleaseClaimCommandAdmission/u);
-  assert.match(executionSection, /cloneJsonSafe\(input\)/u);
-  assert.match(executionSection, /commandAdmissionInput/u);
-  assert.match(executionSection, /REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_INPUT_MISSING/u);
-  assert.match(executionSection, /REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISMATCH/u);
-  assert.match(executionTest, /blocks synthetic accepted 12J result without raw commandAdmissionInput/u);
-  assert.match(executionTest, /blocks fabricated accepted 12J witness with valid raw input/u);
-  assert.match(executionTest, /blocks non-plain supplied 12J witness/u);
-  assert.match(executionTest, /blocks inherited supplied 12J witness/u);
-  assert.match(commandSurfaceTest, /validCommandAdmissionInput/u);
-  assert.match(commandSurfaceTest, /admission-only path is non-mutating/u);
+  const section = mainSource.slice(sectionStart, sectionEnd);
+  assert.match(section, /handleRevisionBridgeReleaseClaimCommandSurfaceAdmission/u);
+  assert.match(section, /evaluateRevisionBridgeReleaseClaimExecutionGate/u);
+  assert.match(section, /PAYLOAD_PLAIN_OBJECT_REQUIRED/u);
+  assert.match(section, /E_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_PAYLOAD_INVALID/u);
+  assert.match(kernelSource, /'cmd\.project\.releaseClaim\.admit'/u);
+  assert.match(mainSource, /PROJECT_RELEASE_CLAIM_ADMIT: 'cmd\.project\.releaseClaim\.admit'/u);
+  assert.match(mainSource, /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set\(\[[\s\S]*'cmd\.project\.releaseClaim\.admit'/u);
+  assert.match(mainSource, /'cmd\.project\.releaseClaim\.admit': async \(payload = \{\}\) => \{[\s\S]*PROJECT_RELEASE_CLAIM_ADMIT/u);
+  assert.match(wiringTest, /blocks non-plain top-level payload before 12K execution gate/u);
+  assert.match(wiringTest, /blocks inherited top-level payload fields before 12K execution gate/u);
+  assert.match(wiringTest, /direct non-bus route is blocked/u);
+  assert.match(wiringTest, /command id not on allowlist is blocked/u);
+  assert.match(wiringTest, /admission-only result is deterministic/u);
+  assert.match(wiringTest, /admission-only path is non-mutating/u);
 });
 
-test('Review Bridge release claim execution gate binding proves bounded execution-gate truth', () => {
+test('Review Bridge release claim command surface admission binding proves admission-only truth', () => {
   const status = readJson(STATUS_PATH);
   const positiveText = status.positiveClaims.join('\n');
   const nonClaimText = status.nonClaims.join('\n');
   const layerText = status.layerDecisions.join('\n');
 
-  assert.match(positiveText, /bounded internal Review Bridge 12K execution-gate evidence/u);
-  assert.match(positiveText, /requires raw 12J command admission input/u);
-  assert.match(positiveText, /re-evaluates the 12J command admission/u);
-  assert.match(positiveText, /stale, fabricated, inherited, or non-plain supplied values/iu);
+  assert.match(positiveText, /admission-only evidence/u);
+  assert.match(positiveText, /command surface kernel allowlist/u);
+  assert.match(positiveText, /bus-route command surface dispatch/u);
+  assert.match(positiveText, /already-bound 12K execution gate/u);
+  assert.match(positiveText, /rejects non-plain or inherited top-level payload/u);
 
   for (const phrase of [
     'No command availability is claimed.',
@@ -174,27 +194,27 @@ test('Review Bridge release claim execution gate binding proves bounded executio
     'No publication authority is claimed.',
     'No import support is claimed.',
     'No export support is claimed.',
-    'No project truth write is performed by release claim execution gate binding.',
-    'No receipt or recovery evidence is created by release claim execution gate binding.',
+    'No project truth write is performed by release claim command surface admission binding.',
+    'No receipt or recovery evidence is created by release claim command surface admission binding.',
     'No import/export MVP closeout is widened.',
   ]) {
     assert.match(nonClaimText, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'));
   }
 
-  assert.match(layerText, /internal chain evidence only/u);
+  assert.match(layerText, /admission-only chain evidence/u);
   assert.match(layerText, /does not execute release commands/u);
   assert.match(layerText, /does not prove command execution/u);
-  assert.match(layerText, /does not admit release execution completion/u);
   assert.match(layerText, /does not admit command availability/u);
+  assert.match(layerText, /does not admit release execution completion/u);
   assert.match(layerText, /does not publish anything/u);
   assert.match(layerText, /does not become project truth/u);
-  assert.match(layerText, /12L command surface admission wiring remains a downstream regression surface/u);
+  assert.match(layerText, /Real command execution remains a separate future owner-approved contour/u);
   assert.equal(status.proofPoints.outputCannotMeanCommandAvailability, true);
   assert.equal(status.proofPoints.outputCannotMeanCommandExecution, true);
   assert.equal(status.proofPoints.outputCannotMeanReleaseExecutionCompletion, true);
 });
 
-test('Review Bridge release claim execution gate binding keeps docs honest', () => {
+test('Review Bridge release claim command surface admission binding keeps docs honest', () => {
   const status = readJson(STATUS_PATH);
   const context = readText(['docs', 'CONTEXT.md']);
   const handoff = readText(['docs', 'HANDOFF.md']);
@@ -203,10 +223,12 @@ test('Review Bridge release claim execution gate binding keeps docs honest', () 
   const statusText = JSON.stringify(status, null, 2);
 
   for (const text of [context, handoff, worklog]) {
-    assert.match(text, /REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001/u);
-    assert.match(text, /execution gate binding/iu);
-    assert.match(text, /raw 12J command admission input/iu);
-    assert.match(text, /re-evaluates 12J/iu);
+    assert.match(text, /REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_BINDING_001/u);
+    assert.match(text, /command surface admission binding/iu);
+    assert.match(text, /admission-only/iu);
+    assert.match(text, /cmd\.project\.releaseClaim\.admit/u);
+    assert.match(text, /command\.bus/u);
+    assert.match(text, /12K execution gate/iu);
     assert.match(text, /not command availability/iu);
     assert.match(text, /not command execution/iu);
     assert.match(text, /not release execution completion/iu);
@@ -216,15 +238,17 @@ test('Review Bridge release claim execution gate binding keeps docs honest', () 
     assert.match(text, /not a user-facing UI state/iu);
   }
 
-  assertNoExecutionGateOverclaims(statusText, 'status');
-  assertNoExecutionGateOverclaims(docsText, 'docs');
+  assert.match(context, /REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001` is delivered, merged, and verified/u);
+  assert.match(handoff, /REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001` is delivered, merged, and verified/u);
+  assertNoCommandSurfaceAdmissionOverclaims(statusText, 'status');
+  assertNoCommandSurfaceAdmissionOverclaims(docsText, 'docs');
   assert.match(
     docsText,
     /no command availability, command execution, release execution completion, product publication, release readiness, user-facing release/iu,
   );
 });
 
-test('Review Bridge release claim execution gate binding changed files stay inside allowlist', () => {
+test('Review Bridge release claim command surface admission binding changed files stay inside allowlist', () => {
   const status = execFileSync('git', ['status', '--porcelain', '-uall'], {
     cwd: REPO_ROOT,
     encoding: 'utf8',

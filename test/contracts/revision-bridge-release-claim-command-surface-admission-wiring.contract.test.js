@@ -324,6 +324,65 @@ test('Contour 12L command surface admission wiring path calls 12K execution gate
   assert.deepEqual(result, expected);
 });
 
+test('Contour 12L blocks non-plain top-level payload before 12K execution gate', async () => {
+  const calls = [];
+  let loadCount = 0;
+  class ReleaseClaimPayload {
+    constructor() {
+      this.schemaVersion = 'revision-bridge.release-claim-execution-gate.v1';
+      this.commandAdmissionInput = { commandId: 'cmd.release.claim.internalProof' };
+      this.requestedMode = 'PR_MODE';
+      this.requestedClaimSurface = 'INTERNAL';
+    }
+  }
+  const handler = instantiateAdmissionHandler(async () => {
+    loadCount += 1;
+    return {
+      evaluateRevisionBridgeReleaseClaimExecutionGate(payload) {
+        calls.push(payload);
+        return { ok: true };
+      },
+    };
+  });
+
+  const result = await handler(new ReleaseClaimPayload());
+
+  assert.equal(loadCount, 0);
+  assert.deepEqual(calls, []);
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_PAYLOAD_INVALID');
+  assert.equal(result.error.op, RELEASE_CLAIM_COMMAND_ID);
+  assert.equal(result.error.reason, 'PAYLOAD_PLAIN_OBJECT_REQUIRED');
+});
+
+test('Contour 12L blocks inherited top-level payload fields before 12K execution gate', async () => {
+  const calls = [];
+  let loadCount = 0;
+  const inheritedPayload = Object.create({
+    schemaVersion: 'revision-bridge.release-claim-execution-gate.v1',
+    commandAdmissionInput: { commandId: 'cmd.release.claim.internalProof' },
+    requestedMode: 'PR_MODE',
+    requestedClaimSurface: 'INTERNAL',
+  });
+  const handler = instantiateAdmissionHandler(async () => {
+    loadCount += 1;
+    return {
+      evaluateRevisionBridgeReleaseClaimExecutionGate(payload) {
+        calls.push(payload);
+        return { ok: true };
+      },
+    };
+  });
+
+  const result = await handler(inheritedPayload);
+
+  assert.equal(loadCount, 0);
+  assert.deepEqual(calls, []);
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_PAYLOAD_INVALID');
+  assert.equal(result.error.reason, 'PAYLOAD_PLAIN_OBJECT_REQUIRED');
+});
+
 test('Contour 12L accepted 12K result returns admission-only result', async () => {
   const bridge = await loadBridge();
   const handler = instantiateAdmissionHandler(async () => bridge);
@@ -460,6 +519,7 @@ test('Contour 12L source section stays command-surface only and free of UI expan
   ];
 
   assert.match(section, /\bevaluateRevisionBridgeReleaseClaimExecutionGate\s*\(/u);
+  assert.match(section, /\bPAYLOAD_PLAIN_OBJECT_REQUIRED\b/u);
   for (const pattern of forbiddenPatterns) {
     assert.equal(pattern.test(section), false, `forbidden contour token: ${pattern.source}`);
   }
