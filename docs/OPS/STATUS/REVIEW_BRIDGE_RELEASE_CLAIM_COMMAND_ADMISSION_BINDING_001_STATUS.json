@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_release_claim_command_admission_binding",
+  "featureExpansion": "bounded_review_bridge_claim_binding",
+  "baseSha": "126d9aea21e919b31ec749fd835820218aa40327",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": true,
+    "rendererSurfaceChanged": false,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false,
+    "releaseClaimCommandAdmissionRuntimeChanged": true,
+    "releaseClaimCommandAdmissionBound": true,
+    "releaseClaimKernelFenceBoundPreviously": true,
+    "releaseClaimKernelFenceDeliveredPreviously": true,
+    "commandAdmissionEvidenceClaimed": true,
+    "commandAvailabilityClaimed": false,
+    "commandExecutionAccepted": false,
+    "releaseExecutionAccepted": false,
+    "releasePublicationCompletionClaimed": false,
+    "productPublicationClaimed": false,
+    "publicationAuthorityClaimed": false,
+    "userFacingReleaseClaimed": false,
+    "releaseReadinessClaimed": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false,
+    "autoApply": false,
+    "y9Opened": false
+  },
+  "binding": {
+    "sourcePlan": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_FINAL_PLAN_R2",
+    "previousContourTaskId": "REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
+    "previousContourStatus": "delivered_merged_verified",
+    "previousContourMergeSha": "cc9402f2023e7019bbc0b82e66144f732d565e50",
+    "previousContourDeliveryRebindMergeSha": "126d9aea21e919b31ec749fd835820218aa40327",
+    "existingCommandAdmissionMarker": "CONTOUR_12J_RELEASE_CLAIM_COMMAND_ADMISSION",
+    "upstreamKernelFenceMarker": "CONTOUR_12I_RELEASE_CLAIM_KERNEL_FENCE",
+    "upstreamKernelFenceTaskId": "REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
+    "upstreamKernelFenceStatus": "delivered_merged_verified",
+    "commandAdmissionSchema": "revision-bridge.release-claim-command-admission.v1",
+    "upstreamKernelFenceSchema": "revision-bridge.release-claim-kernel-fence.v1",
+    "surfaces": [
+      "INTERNAL",
+      "USER_FACING"
+    ],
+    "releaseClasses": [
+      "INTERNAL_PROOF_ONLY",
+      "USER_FACING_CLAIM_READY"
+    ]
+  },
+  "positiveClaims": [
+    "The existing release claim command admission gate is product-bound as bounded internal Review Bridge 12J command admission evidence.",
+    "Accepted 12J requires raw 12I kernel fence input and re-evaluates the 12I kernel fence internally before accepting command admission evidence.",
+    "Accepted 12J requires the internally evaluated 12I kernel fence result to have accepted kernel fence type, status, code, and reason.",
+    "Accepted 12J requires the internally evaluated 12I kernel fence binding fields for mode, claimId, dossierId, matrixId, and releaseClass.",
+    "Accepted 12J requires the internally evaluated 12I kernel fence summary fields for claimSurface, packetId, attestationId, and admissionClass.",
+    "Accepted 12J requires requestedMode to match the accepted 12I kernel fence mode.",
+    "Accepted 12J requires requestedClaimSurface to match the accepted 12I kernel fence claimSurface.",
+    "Accepted 12J requires commandId as command admission evidence identity only.",
+    "Optional kernelFenceResult input is consistency evidence only; stale, fabricated, inherited, or non-plain supplied values are blocked unless they match the internally re-evaluated 12I result.",
+    "PR_MODE USER_FACING command admission requests are blocked through the 12I kernel fence chain.",
+    "RELEASE_MODE USER_FACING command admission evidence is accepted only when the accepted 12I kernel fence releaseClass is USER_FACING_CLAIM_READY.",
+    "Accepted 12J emits a deterministic non-mutating command admission result with fixed top-level, binding, and summary keys.",
+    "The 12J command admission runtime now strips inherited prototype fields before command input and kernelFenceResult consistency checks.",
+    "This contour is release claim command admission evidence only; it is not command availability, command execution, product publication, release readiness, import, export, apply, storage truth, or project truth."
+  ],
+  "nonClaims": [
+    "No command availability is claimed.",
+    "No command execution is claimed.",
+    "No release execution completion is claimed.",
+    "No product publication is claimed.",
+    "No release readiness is claimed.",
+    "No user-facing release is claimed.",
+    "No release publication completion is claimed.",
+    "No publication authority is claimed.",
+    "No release-wide publication authority is claimed.",
+    "No Word support is claimed.",
+    "No Google Docs support is claimed.",
+    "No DOCX support expansion is claimed.",
+    "No import support is claimed.",
+    "No export support is claimed.",
+    "No review import completion is claimed.",
+    "No roundtrip is claimed.",
+    "No layout parity is claimed.",
+    "No full fidelity is claimed.",
+    "No automatic apply is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed by release claim command admission binding.",
+    "No project truth write is performed by release claim command admission binding.",
+    "No receipt or recovery evidence is created by release claim command admission binding.",
+    "No DOCX import safe-create behavior is changed.",
+    "No DOCX export behavior is changed.",
+    "No import/export MVP closeout is widened.",
+    "No PDF, EPUB, HTML, Mindmap, cloud sync, cross-platform readiness, packaged readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Command admission binding is internal chain evidence only.",
+    "Command admission binding does not execute release commands.",
+    "Command admission binding does not admit release execution.",
+    "Command admission binding does not admit command availability.",
+    "Command admission binding does not publish anything.",
+    "Command admission binding does not become project truth by itself.",
+    "Command admission binding does not write manuscript truth or project truth.",
+    "12K release claim execution gate remains a separate downstream contour and is not product-bound by this contour.",
+    "USER_FACING_CLAIM_READY remains an internal packet, boundary, publication-gate, kernel-fence, and command-admission class only, not a release readiness state.",
+    "USER_FACING is a boundary, publication gate, kernel fence, and command admission surface in this contour, not a user-facing UI state.",
+    "This contour is not a release execution contour.",
+    "This contour is not a product publication contour.",
+    "This contour is not content import and does not create scenes.",
+    "This contour is not Review import automation and does not activate a Review session.",
+    "This contour is not an apply plan and does not authorize mutation.",
+    "This contour is not safe write and does not create receipt or recovery evidence.",
+    "This contour is not export and does not alter DOCX output.",
+    "Review Bridge may reference accepted 12J output as bounded internal chain evidence, but accepted 12J output does not become project truth."
+  ],
+  "implementation": {
+    "changedProductionRuntime": true,
+    "changedUi": false,
+    "changedBasenames": [
+      "REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001_STATUS.json",
+      "review-bridge-release-claim-command-admission-binding.contract.test.js",
+      "revision-bridge-release-claim-command-admission.contract.test.js",
+      "revision-bridge-release-claim-execution-gate.contract.test.js",
+      "index.mjs",
+      "review-bridge-release-claim-dossier-binding.contract.test.js",
+      "review-bridge-release-claim-admission-binding.contract.test.js",
+      "review-bridge-release-claim-mode-decision-binding.contract.test.js",
+      "review-bridge-release-claim-attestation-binding.contract.test.js",
+      "review-bridge-release-claim-packet-emit-binding.contract.test.js",
+      "review-bridge-release-claim-user-facing-boundary-binding.contract.test.js",
+      "review-bridge-release-claim-publication-gate-binding.contract.test.js",
+      "review-bridge-release-claim-kernel-fence-binding.contract.test.js",
+      "GOVERNANCE_CHANGE_APPROVALS.json",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "WORKLOG.md"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --test release claim command admission contracts",
+      "status": "pass",
+      "tests": 22
+    },
+    {
+      "command": "node --test downstream release claim execution gate contracts",
+      "status": "pass",
+      "tests": 16
+    },
+    {
+      "command": "node --test release claim 12I 12J 12K and command surface contracts",
+      "status": "pass",
+      "tests": 72
+    },
+    {
+      "command": "node --test release claim binding contracts",
+      "status": "pass",
+      "tests": 48
+    },
+    {
+      "command": "node --test release claim full contract pack",
+      "status": "pass",
+      "tests": 251
+    },
+    {
+      "command": "node scripts/ops/governance-approval-state.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass",
+      "vulnerabilities": 0
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "releaseClaimCommandAdmissionBindingExists": true,
+    "rawKernelFenceInputRequired": true,
+    "kernelFenceReevaluatedInternally": true,
+    "staleKernelFenceResultRejected": true,
+    "fabricatedKernelFenceResultWithoutKernelFenceInputRejected": true,
+    "fabricatedKernelFenceResultWithRawInputRejected": true,
+    "nonPlainSuppliedKernelFenceResultRejected": true,
+    "inheritedSuppliedKernelFenceResultRejected": true,
+    "acceptedKernelFenceRequired": true,
+    "acceptedKernelFenceTypeRequired": true,
+    "acceptedKernelFenceStatusRequired": true,
+    "acceptedKernelFenceCodeRequired": true,
+    "acceptedKernelFenceReasonRequired": true,
+    "kernelFenceBindingModeRequired": true,
+    "kernelFenceBindingClaimIdRequired": true,
+    "kernelFenceBindingDossierIdRequired": true,
+    "kernelFenceBindingMatrixIdRequired": true,
+    "kernelFenceBindingReleaseClassRequired": true,
+    "kernelFenceSummaryClaimSurfaceRequired": true,
+    "kernelFenceSummaryPacketIdRequired": true,
+    "kernelFenceSummaryAttestationIdRequired": true,
+    "kernelFenceSummaryAdmissionClassRequired": true,
+    "requestedModeMustMatchKernelFenceMode": true,
+    "requestedClaimSurfaceMustMatchKernelFenceClaimSurface": true,
+    "commandIdRequired": true,
+    "prModeUserFacingBlockedThroughKernelFence": true,
+    "releaseModeUserFacingRequiresUserFacingClaimReady": true,
+    "outputCannotMeanCommandAvailability": true,
+    "outputCannotMeanCommandExecution": true,
+    "releaseExecutionAccepted": false,
+    "releasePublicationCompletionClaimed": false,
+    "productPublicationClaimed": false,
+    "publicationAuthorityClaimed": false,
+    "userFacingReleaseClaimed": false,
+    "releaseReadinessClaimed": false,
+    "importSupportClaimed": false,
+    "exportSupportClaimed": false,
+    "roundtripClaimed": false,
+    "layoutParityClaimed": false,
+    "fullFidelityClaimed": false,
+    "applyOpsCreated": false,
+    "receiptCreated": false,
+    "recoveryCreated": false,
+    "projectTruthMutated": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false
+  },
+  "agentAudits": [
+    {
+      "agent": "Fermat",
+      "type": "read_only_false_green_runtime_auditor",
+      "result": "12j_false_green_confirmed_and_bounded_fix_selected",
+      "finding": "Confirmed 12J accepted fully populated synthetic, stale, inherited, and class-instance kernelFenceResult envelopes because 12J trusted caller-supplied 12I result instead of raw upstream input. Recommended mirroring the 12I pattern for 12J and leaving 12K re-evaluation as a separate contour."
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": "",
+    "featureMergedAtUtc": ""
+  },
+  "decision": "RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_IMPLEMENTED_VERIFIED_PENDING_DELIVERY",
+  "nextStep": "complete delivery chain for this bounded 12J command admission binding; 12K release execution binding does not open by implication"
+}

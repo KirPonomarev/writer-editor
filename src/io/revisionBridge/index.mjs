@@ -14657,7 +14657,9 @@ export const REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REASON_CODES = Obje
   RELEASE_CLAIM_COMMAND_ADMISSION_DIAGNOSTICS_CODE,
   'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_COMMAND_ID_REQUIRED',
   'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_COMMAND_ID_INVALID',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_INPUT_MISSING',
   'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISMATCH',
   'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_TYPE_INVALID',
   'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_NOT_ACCEPTED',
   'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_PROVENANCE_INVALID',
@@ -14681,9 +14683,9 @@ function releaseClaimCommandAdmissionReason(code, field, details = {}) {
 }
 
 function normalizeReleaseClaimCommandAdmissionKernelFenceResult(input = {}) {
-  const result = isPlainObject(input) ? input : {};
-  const binding = isPlainObject(result.binding) ? result.binding : {};
-  const summary = isPlainObject(result.summary) ? result.summary : {};
+  const result = isPlainObject(input) ? cloneJsonSafe(input) : {};
+  const binding = isPlainObject(result.binding) ? cloneJsonSafe(result.binding) : {};
+  const summary = isPlainObject(result.summary) ? cloneJsonSafe(result.summary) : {};
 
   return {
     ok: result.ok === true,
@@ -14705,6 +14707,37 @@ function normalizeReleaseClaimCommandAdmissionKernelFenceResult(input = {}) {
       admissionClass: normalizeString(summary.admissionClass),
     },
   };
+}
+
+function releaseClaimCommandAdmissionKernelFenceResultMismatchReasons(expectedResult, receivedResult) {
+  if (!isPlainObject(receivedResult)) {
+    if (receivedResult === undefined) return [];
+    return [
+      releaseClaimCommandAdmissionReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISMATCH',
+        'kernelFenceResult',
+        {
+          expectedValue: normalizeReleaseClaimCommandAdmissionKernelFenceResult(expectedResult),
+          receivedValue: receivedResult,
+        },
+      ),
+    ];
+  }
+
+  const expectedKernelFenceResult = normalizeReleaseClaimCommandAdmissionKernelFenceResult(expectedResult);
+  const receivedKernelFenceResult = normalizeReleaseClaimCommandAdmissionKernelFenceResult(receivedResult);
+  if (JSON.stringify(expectedKernelFenceResult) === JSON.stringify(receivedKernelFenceResult)) return [];
+
+  return [
+    releaseClaimCommandAdmissionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISMATCH',
+      'kernelFenceResult',
+      {
+        expectedValue: expectedKernelFenceResult,
+        receivedValue: receivedKernelFenceResult,
+      },
+    ),
+  ];
 }
 
 function collectReleaseClaimCommandAdmissionRequestReasons(requestedMode, requestedClaimSurface) {
@@ -14958,7 +14991,7 @@ function releaseClaimCommandAdmissionResult(
 }
 
 export function evaluateRevisionBridgeReleaseClaimCommandAdmission(input = {}) {
-  const commandInput = isPlainObject(input) ? input : {};
+  const commandInput = isPlainObject(input) ? cloneJsonSafe(input) : {};
   const requestedMode = normalizeString(commandInput.requestedMode);
   const requestedClaimSurface = normalizeString(commandInput.requestedClaimSurface);
 
@@ -14990,14 +15023,14 @@ export function evaluateRevisionBridgeReleaseClaimCommandAdmission(input = {}) {
     );
   }
 
-  if (!isPlainObject(commandInput.kernelFenceResult)) {
+  if (!isPlainObject(commandInput.kernelFenceInput)) {
     return releaseClaimCommandAdmissionResult(
       false,
       'blocked',
       [
         releaseClaimCommandAdmissionReason(
-          'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISSING',
-          'kernelFenceResult',
+          'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_INPUT_MISSING',
+          'kernelFenceInput',
         ),
       ],
       normalizeReleaseClaimCommandAdmissionKernelFenceResult(commandInput.kernelFenceResult),
@@ -15006,8 +15039,11 @@ export function evaluateRevisionBridgeReleaseClaimCommandAdmission(input = {}) {
     );
   }
 
+  const evaluatedKernelFenceResult = evaluateRevisionBridgeReleaseClaimKernelFence(
+    commandInput.kernelFenceInput,
+  );
   const kernelFenceResult = normalizeReleaseClaimCommandAdmissionKernelFenceResult(
-    commandInput.kernelFenceResult,
+    evaluatedKernelFenceResult,
   );
   const kernelFenceReasons = collectReleaseClaimCommandAdmissionKernelFenceReasons(kernelFenceResult);
   if (kernelFenceReasons.length > 0) {
@@ -15015,6 +15051,21 @@ export function evaluateRevisionBridgeReleaseClaimCommandAdmission(input = {}) {
       false,
       'blocked',
       kernelFenceReasons,
+      kernelFenceResult,
+      requestedClaimSurface,
+      commandId,
+    );
+  }
+
+  const kernelFenceMismatchReasons = releaseClaimCommandAdmissionKernelFenceResultMismatchReasons(
+    kernelFenceResult,
+    commandInput.kernelFenceResult,
+  );
+  if (kernelFenceMismatchReasons.length > 0) {
+    return releaseClaimCommandAdmissionResult(
+      false,
+      'blocked',
+      kernelFenceMismatchReasons,
       kernelFenceResult,
       requestedClaimSurface,
       commandId,

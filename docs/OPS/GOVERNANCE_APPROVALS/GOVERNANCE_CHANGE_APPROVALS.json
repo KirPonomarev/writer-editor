@@ -2,6 +2,90 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001_STATUS.json",
+      "sha256": "6d012c65127bf6c5cf6fd64d0a9248568874ef8597a71fee3b492ad3a90a202c",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded release claim command admission binding status; it binds 12J to raw 12I kernel fence input and internal 12I re-evaluation while preserving no command availability, no command execution, no product publication, no release readiness, no user-facing release, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-command-admission-binding.contract.test.js",
+      "sha256": "2acb31c9422b64783f2d3d59fab142b2a48e2068fb034ea0d34e94bf9ae76605",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve contract guard for bounded release claim command admission binding; it binds status scope, existing 12J marker, raw 12I re-evaluation, stale and fabricated kernelFenceResult rejection, docs honesty, and changed-file allowlist without introducing command availability, command execution, product publication, release readiness, user-facing release, import/export support, apply, storage, receipt, recovery, dependency, or Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-command-admission.contract.test.js",
+      "sha256": "199387e0fd17219623a0fb4b3be2b169bff9760e908564b8952af911affd7faa",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded 12J command admission hardening proving raw kernelFenceInput is required, 12I is re-evaluated internally, stale or fabricated kernelFenceResult values are rejected, non-plain and inherited supplied kernelFenceResult values are rejected, requested mode and surface must match evaluated 12I, and no command availability, command execution, product publication, release readiness, import/export support, apply, storage, receipt, recovery, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-execution-gate.contract.test.js",
+      "sha256": "2c1ec1e30e4a264eedbf951a2ffba31c8f361591b946bc658dbe29cae6f4fc1c",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded 12K fixture sync to construct accepted 12J through raw 12I kernel fence input after 12J command admission hardening; no new 12K semantics, execution authority, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-dossier-binding.contract.test.js",
+      "sha256": "02122893da86fb53aec67dcfa1446f505c6bf2cf283bc8f98df4c4c7fb9c7a95",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded dossier binding contract allowlist sync for adjacent 12J command admission binding and downstream fixture hardening; no new 12B semantics, command availability, command execution, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-admission-binding.contract.test.js",
+      "sha256": "2b76fe55477b9c28e6e25055ea1d4bc812c6c1b742e930c495f2a9c393e69a97",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded admission binding contract allowlist sync for adjacent 12J command admission binding and downstream fixture hardening; no new 12C semantics, command availability, command execution, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js",
+      "sha256": "aee7bc5dbe8e4325fb72fa7d7e10a39bb712d44fa87d93ced59950fb7c645518",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded mode decision binding contract allowlist sync for adjacent 12J command admission binding and downstream fixture hardening; no new 12D semantics, command availability, command execution, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-attestation-binding.contract.test.js",
+      "sha256": "e54a5aeec390a18cf96b4ea6be6718cb3e0d15c2dfdcd1b13d03b8ec54653e5d",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded attestation binding contract allowlist sync for adjacent 12J command admission binding and downstream fixture hardening; no new 12E semantics, command availability, command execution, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js",
+      "sha256": "e0adcb873c93aeeca267c5c101ae3f8c3387bde59858274f00c759335b613650",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded packet emit binding contract allowlist sync for adjacent 12J command admission binding and downstream fixture hardening; no new 12F semantics, command availability, command execution, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-user-facing-boundary-binding.contract.test.js",
+      "sha256": "40429bc00bb405ad835dfcd52897639097742789efe963e68d447f969431bced",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded user-facing boundary binding contract allowlist sync for adjacent 12J command admission binding and downstream fixture hardening; no new 12G semantics, command availability, command execution, product publication, release readiness, user-facing release, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-publication-gate-binding.contract.test.js",
+      "sha256": "696a136928ae3d5f410f4da3486ff22c4741bd4a8cd6d51ff4bfe6dd998de88e",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded publication gate binding contract allowlist sync for adjacent 12J command admission binding and downstream fixture hardening; no new 12H semantics, command availability, command execution, product publication, release readiness, user-facing release, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-kernel-fence-binding.contract.test.js",
+      "sha256": "fd8c715aa4fe11bcbcb1c4582112ee5c04e034d09d9115e73d25ca887976c871",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded kernel fence binding contract allowlist sync for adjacent 12J command admission binding and downstream fixture hardening; no new 12I semantics, command availability, command execution, product publication, release readiness, user-facing release, import/export support, apply, storage, dependency, or Y9 claim is introduced."
+    },
+    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001_STATUS.json",
       "sha256": "1f7b5f51dd6d21fc72175457edc6241adaa21ecbbffead45702563cd4dc53575",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
@@ -9,81 +93,11 @@
       "rationale": "Approve bounded release claim kernel fence binding status; it binds 12I to raw 12H publication input and internal 12H re-evaluation while preserving no command availability, no command admission, no command execution, no product publication, no release readiness, no user-facing release, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
     },
     {
-      "filePath": "test/contracts/review-bridge-release-claim-kernel-fence-binding.contract.test.js",
-      "sha256": "851259dfc6aac3d26192d731f4b1175875d314903c37eaf46fc837e1fc12c2ba",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve contract guard for bounded release claim kernel fence binding; it binds status scope, existing 12I kernel marker, raw 12H re-evaluation, stale and fabricated publicationResult rejection, docs honesty, and changed-file allowlist without introducing command availability, command admission, command execution, product publication, release readiness, user-facing release, import/export support, apply, storage, receipt, recovery, dependency, or Y9 claim."
-    },
-    {
       "filePath": "test/contracts/revision-bridge-release-claim-kernel-fence.contract.test.js",
       "sha256": "560ddf6a62cb8354e8caed7d4e2695f2cc817232507905506f30c609ca0d3fee",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
       "rationale": "Approve bounded 12I kernel fence hardening proving raw publicationInput is required, 12H is re-evaluated internally, stale or fabricated publicationResult values are rejected, non-plain supplied publicationResult values are rejected, requested mode and surface must match evaluated 12H, and no command availability, command admission, command execution, product publication, release readiness, import/export support, apply, storage, receipt, recovery, dependency, or Y9 claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-release-claim-command-admission.contract.test.js",
-      "sha256": "111d11da03d9b6cc5c716a3eeef0d9e8db72c28fa8aa2cf215ce289b2cf88b7b",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded 12J fixture sync to construct accepted 12I through raw 12H publication input after 12I kernel fence hardening; no new 12J semantics, command admission authority, command execution, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-release-claim-execution-gate.contract.test.js",
-      "sha256": "49ddc027f35798407e89da0948765d82c5a61a3a8ce97cc95fa613788db2a810",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded 12K fixture sync to construct accepted 12I through raw 12H publication input after 12I kernel fence hardening; no new 12K semantics, execution authority, command admission authority, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-release-claim-dossier-binding.contract.test.js",
-      "sha256": "37d30d10255a718853e0b9324b19adb4593adecdd431f2a03c4eb5215695ba84",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded dossier binding contract allowlist sync for adjacent 12I kernel fence binding and downstream fixture hardening; no new 12B semantics, command availability, command admission, command execution, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-release-claim-admission-binding.contract.test.js",
-      "sha256": "57ab76ed589960ee9cccb53f1782d8d1a6b62cc0aedc8c3950faf9573417bc58",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded admission binding contract allowlist sync for adjacent 12I kernel fence binding and downstream fixture hardening; no new 12C semantics, command availability, command admission, command execution, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js",
-      "sha256": "96acf9e65cbe0a58d4a8f2edfdc46a74f2fe3717dbd5c7081363937310c417d0",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded mode decision binding contract allowlist sync for adjacent 12I kernel fence binding and downstream fixture hardening; no new 12D semantics, command availability, command admission, command execution, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-release-claim-attestation-binding.contract.test.js",
-      "sha256": "ef4d5d03fcc208f667aef0b8bf82535db212e399b0433be6b8782e88639e3bf0",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded attestation binding contract allowlist sync for adjacent 12I kernel fence binding and downstream fixture hardening; no new 12E semantics, command availability, command admission, command execution, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js",
-      "sha256": "e2fc360e15df102bf6ffe2bd590c5ae01503aec3cb5b36895d417175ac76f668",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded packet emit binding contract allowlist sync for adjacent 12I kernel fence binding and downstream fixture hardening; no new 12F semantics, command availability, command admission, command execution, product publication, release readiness, import/export support, apply, storage, dependency, or Y9 claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-release-claim-user-facing-boundary-binding.contract.test.js",
-      "sha256": "faabefa1e41fd496623eee43700aa587116a5fe7ced5c51cc941facbacc4ce9a",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded user-facing boundary binding contract allowlist sync for adjacent 12I kernel fence binding and downstream fixture hardening; no new 12G semantics, command availability, command admission, command execution, product publication, release readiness, user-facing release, import/export support, apply, storage, dependency, or Y9 claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-release-claim-publication-gate-binding.contract.test.js",
-      "sha256": "b7ab8f41d4205269099aa9be1fcc811abf2a1bce2c6cb93c9e3152736804ea01",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded publication gate binding contract allowlist sync for adjacent 12I kernel fence binding and downstream fixture hardening; no new 12H semantics, command availability, command admission, command execution, product publication, release readiness, user-facing release, import/export support, apply, storage, dependency, or Y9 claim is introduced."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001_STATUS.json",
