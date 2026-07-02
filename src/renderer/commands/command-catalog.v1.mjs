@@ -28,8 +28,8 @@ const COMMAND_CATALOG_ROWS = [
     id: 'cmd.project.importMarkdownV1',
     label: 'Import Markdown v1',
     group: 'import',
-    surface: ['palette', 'shortcut', 'toolbar'],
-    hotkey: 'Cmd/Ctrl+Shift+I',
+    surface: ['internal'],
+    hotkey: '',
   },
   {
     key: 'PROJECT_IMPORT_DOCX_V1',
@@ -44,8 +44,8 @@ const COMMAND_CATALOG_ROWS = [
     id: 'cmd.project.exportMarkdownV1',
     label: 'Export Markdown v1',
     group: 'export',
-    surface: ['palette', 'shortcut', 'toolbar'],
-    hotkey: 'Cmd/Ctrl+Shift+M',
+    surface: ['internal'],
+    hotkey: '',
   },
   {
     key: 'PROJECT_FLOW_OPEN_V1',

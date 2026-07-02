@@ -116,6 +116,9 @@ test('layout preview command binding: preview controls are routed through comman
   assert.ok(handleUiActionSnippet.includes('dispatchUiCommand(PREVIEW_ORIENTATION_COMMAND_IDS.PORTRAIT)'));
   assert.ok(handleUiActionSnippet.includes("case 'switch-preview-orientation-landscape':"));
   assert.ok(handleUiActionSnippet.includes('dispatchUiCommand(PREVIEW_ORIENTATION_COMMAND_IDS.LANDSCAPE)'));
+  assert.ok(handleUiActionSnippet.includes("case 'export-docx-min':"));
+  assert.ok(handleUiActionSnippet.includes('void dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);'));
+  assert.equal(handleUiActionSnippet.includes('openExportPreviewModal();'), false);
 
   const exportPreviewSnippet = sliceBetween(
     editor,
@@ -123,7 +126,8 @@ test('layout preview command binding: preview controls are routed through comman
     'function applyCollabGate() {',
   );
   assert.ok(exportPreviewSnippet.includes("exportPreviewMessage.textContent = 'DOCX baseline export. Confirm to continue.';"));
-  assert.ok(exportPreviewSnippet.includes('await dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);'));
+  assert.ok(exportPreviewSnippet.includes('await dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN, {'));
+  assert.ok(exportPreviewSnippet.includes('confirmed: true,'));
 
   const exportPreviewListenerSnippet = sliceBetween(
     editor,
@@ -138,6 +142,7 @@ test('layout preview command binding: preview controls are routed through comman
     'window.electronAPI.onRuntimeCommand((payload) => {',
     '});',
   );
+  assert.ok(runtimeCommandSnippet.includes('if (handleCanonicalRuntimeCommandId(commandId, commandPayload)) {'));
   assert.ok(runtimeCommandSnippet.includes("command === 'open-export-preview'"));
   assert.ok(runtimeCommandSnippet.includes("command === 'switch-preview-format-a4'"));
   assert.ok(runtimeCommandSnippet.includes('dispatchUiCommand(PREVIEW_FORMAT_COMMAND_IDS.A4)'));

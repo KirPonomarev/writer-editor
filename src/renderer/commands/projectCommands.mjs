@@ -1605,6 +1605,12 @@ export function registerProjectCommands(registry, options = {}) {
         ? input.options
         : {},
     };
+    if (input.preview === true) {
+      payload.preview = true;
+    }
+    if (input.confirmed === true) {
+      payload.confirmed = true;
+    }
 
     let response;
     try {
@@ -1620,6 +1626,12 @@ export function registerProjectCommands(registry, options = {}) {
     const bridged = unwrapBridgeResponseValue(response);
 
     if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
+      if (bridged.preview === true) {
+        return ok({
+          exported: false,
+          preview: true,
+        });
+      }
       return ok({
         exported: true,
         outPath: typeof bridged.outPath === 'string' ? bridged.outPath : '',
