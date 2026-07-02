@@ -172,6 +172,12 @@ _Generated: 2026-07-02_
 16. RELEASE_MODE 12E releaseEvidenceId and releaseEvidenceHash now must match accepted 12D release evidence.
 17. Immediate downstream 12F was hardened only as a direct guard: it blocks mixed accepted 12D and 12E pairs when 12E decisionHash does not match the top-level accepted 12D result.
 18. Scope truth for this contour: not release readiness; no release readiness, user-facing release, packet emit completion, release execution completion, release publication completion, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
+19. Review Bridge contour `REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001` is implemented and verified pending delivery.
+20. The active contour is a release claim packet emit binding contour, not a release readiness contour.
+21. This contour product-binds `CONTOUR_12F_RELEASE_CLAIM_PACKET_EMIT`: accepted 12F requires own canonical packetMeta, accepted 12D provenance, accepted 12E provenance, raw 12D and raw 12E re-evaluation, and matching mode, claimId, dossierId, matrixId, and decisionHash bindings.
+22. 12F now strips inherited prototype fields before acceptance checks, blocking inherited packetMeta, inherited accepted 12D envelopes, inherited accepted 12E envelopes, and inherited RELEASE_MODE `USER_FACING_CLAIM_READY` packet paths.
+23. `USER_FACING_CLAIM_READY` remains an internal packet/report modeClass only; it is not release readiness, not user-facing release, not release execution, and not release publication.
+24. Scope truth for this contour: not release readiness; no release readiness, user-facing release, release execution completion, release publication completion, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
 
 ## Working Agreement
 - Bounded contours only

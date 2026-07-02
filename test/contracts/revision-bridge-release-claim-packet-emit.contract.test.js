@@ -473,6 +473,69 @@ test('Contour 12F returns diagnostics when packetMeta fields are invalid', async
   assert.deepEqual(result.reasons[0].missingFields, ['emitterId']);
 });
 
+test('Contour 12F rejects packetMeta fields inherited from prototype', async () => {
+  const bridge = await loadBridge();
+  const inheritedPacketMeta = Object.create(validPacketMeta());
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    packetMeta: inheritedPacketMeta,
+  }));
+
+  assert.equal(Object.keys(inheritedPacketMeta).length, 0);
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'diagnostics');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_META_INVALID');
+  assert.deepEqual(result.reasons[0].missingFields, [
+    'packetId',
+    'createdAtUtc',
+    'emitterId',
+  ]);
+});
+
+test('Contour 12F rejects accepted 12D and 12E envelopes inherited from prototype', async () => {
+  const bridge = await loadBridge();
+  const inheritedModeDecisionResult = Object.create(acceptedModeDecisionResult(bridge));
+  const inheritedAttestationResult = Object.create(acceptedAttestationResult(bridge));
+
+  const modeDecisionResult = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    modeDecisionResult: inheritedModeDecisionResult,
+    attestationResult: acceptedAttestationResult(bridge),
+  }));
+  const attestationResult = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    modeDecisionResult: acceptedModeDecisionResult(bridge),
+    attestationResult: inheritedAttestationResult,
+  }));
+
+  assert.equal(Object.keys(inheritedModeDecisionResult).length, 0);
+  assert.equal(Object.keys(inheritedAttestationResult).length, 0);
+  assert.equal(modeDecisionResult.ok, false);
+  assert.equal(modeDecisionResult.status, 'blocked');
+  assert.equal(modeDecisionResult.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED');
+  assert.equal(attestationResult.ok, false);
+  assert.equal(attestationResult.status, 'blocked');
+  assert.equal(attestationResult.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED');
+});
+
+test('Contour 12F rejects RELEASE_MODE USER_FACING_CLAIM_READY through inherited envelopes', async () => {
+  const bridge = await loadBridge();
+  const releaseModeDecisionResult = acceptedModeDecisionResult(bridge, {
+    mode: 'RELEASE_MODE',
+  });
+  const releaseAttestationResult = acceptedAttestationResult(bridge, {
+    mode: 'RELEASE_MODE',
+    modeDecisionResult: releaseModeDecisionResult,
+  });
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    modeDecisionResult: Object.create(releaseModeDecisionResult),
+    attestationResult: Object.create(releaseAttestationResult),
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.packet, null);
+  assert.equal(result.report, null);
+});
+
 test('Contour 12F strict report validator rejects extra fields', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {

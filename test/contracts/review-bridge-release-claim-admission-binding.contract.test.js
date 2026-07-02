@@ -25,6 +25,8 @@ const ATTESTATION_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-cla
 const ATTESTATION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-attestation-binding.contract.test.js';
 const ATTESTATION_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_ATTESTATION_BINDING_001_STATUS.json';
 const PACKET_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-packet-emit.contract.test.js';
+const PACKET_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js';
+const PACKET_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001_STATUS.json';
 const USER_FACING_BOUNDARY_TEST_PATH = 'test/contracts/revision-bridge-release-claim-user-facing-boundary-gate.contract.test.js';
 const PUBLICATION_TEST_PATH = 'test/contracts/revision-bridge-release-claim-publication-gate.contract.test.js';
 const EXECUTION_TEST_PATH = 'test/contracts/revision-bridge-release-claim-execution-gate.contract.test.js';
@@ -45,6 +47,8 @@ const ALLOWLIST = [
   ATTESTATION_BINDING_TEST_PATH,
   ATTESTATION_BINDING_STATUS_PATH,
   PACKET_KERNEL_TEST_PATH,
+  PACKET_BINDING_TEST_PATH,
+  PACKET_BINDING_STATUS_PATH,
   STATUS_PATH_REL,
   GOVERNANCE_APPROVALS_PATH,
   CONTEXT_PATH,

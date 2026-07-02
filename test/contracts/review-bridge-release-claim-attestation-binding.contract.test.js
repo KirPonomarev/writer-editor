@@ -22,6 +22,8 @@ const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHAN
 const DOSSIER_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-dossier-binding.contract.test.js';
 const ADMISSION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-admission-binding.contract.test.js';
 const MODE_DECISION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js';
+const PACKET_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js';
+const PACKET_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001_STATUS.json';
 const CONTEXT_PATH = 'docs/CONTEXT.md';
 const HANDOFF_PATH = 'docs/HANDOFF.md';
 const WORKLOG_PATH = 'docs/WORKLOG.md';
@@ -31,6 +33,8 @@ const ALLOWLIST = [
   DOSSIER_BINDING_TEST_PATH,
   ADMISSION_BINDING_TEST_PATH,
   MODE_DECISION_BINDING_TEST_PATH,
+  PACKET_BINDING_TEST_PATH,
+  PACKET_BINDING_STATUS_PATH,
   ATTESTATION_KERNEL_TEST_PATH,
   PACKET_KERNEL_TEST_PATH,
   STATUS_PATH_REL,
