@@ -8561,11 +8561,11 @@ ipcMain.handle(EXPORT_MARKDOWN_V1_CHANNEL, async (_, payload) => {
 });
 
 ipcMain.handle(FLOW_OPEN_V1_CHANNEL, async () => {
-  return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_FLOW_OPEN_V1, {});
+  return handleFlowOpenV1();
 });
 
 ipcMain.handle(FLOW_SAVE_V1_CHANNEL, async (_, payload) => {
-  return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_FLOW_SAVE_V1, payload);
+  return handleFlowSaveV1(payload);
 });
 
 ipcMain.handle('ui:request-autosave', async () => {
@@ -9926,10 +9926,12 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return handleDocxImportLocalFilePreviewCommandSurface(payload);
   },
   'cmd.project.importMarkdownV1': async (payload = {}) => {
-    return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);
+    const result = await dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);
+    return normalizeUiBridgeMenuResult(result);
   },
   'cmd.project.exportMarkdownV1': async (payload = {}) => {
-    return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, payload);
+    const result = await dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, payload);
+    return normalizeUiBridgeMenuResult(result);
   },
   'cmd.project.releaseClaim.admit': async (payload = {}) => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RELEASE_CLAIM_ADMIT, payload);
@@ -9997,10 +9999,12 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return result;
   },
   'cmd.project.flowOpenV1': async () => {
-    return handleFlowOpenV1();
+    const result = await handleFlowOpenV1();
+    return normalizeUiBridgeMenuResult(result);
   },
   'cmd.project.flowSaveV1': async (payload = {}) => {
-    return handleFlowSaveV1(payload);
+    const result = await handleFlowSaveV1(payload);
+    return normalizeUiBridgeMenuResult(result);
   },
   'cmd.app.quit': () => {
     app.quit();
@@ -10514,6 +10518,16 @@ function buildCommandClickHandler(commandId, payload = {}) {
     } catch (error) {
       logDevError(`menu-command:${commandId}`, error);
     }
+  };
+}
+
+function normalizeUiBridgeMenuResult(result) {
+  if (!isPlainObjectValue(result) || result.ok !== 1) {
+    return result;
+  }
+  return {
+    ...result,
+    ok: true,
   };
 }
 

@@ -109,6 +109,7 @@ const M3_SECURITY_TEST_PATH = 'test/unit/sector-m-m3-security.test.js';
 const M4_EDITOR_PATH = 'src/renderer/editor.js';
 const M4_COMMANDS_PATH = 'src/renderer/commands/projectCommands.mjs';
 const M4_UI_TEST_PATH = 'test/unit/sector-m-m4-ui-path.test.js';
+const M4_UI_MARKERS_FIXTURE_PATH = 'test/fixtures/sector-m/m4/ui-path-markers.json';
 const M5_IO_INDEX_PATH = 'src/io/markdown/index.mjs';
 const M5_IO_ATOMIC_PATH = 'src/io/markdown/atomicWriteFile.mjs';
 const M5_IO_SNAPSHOT_PATH = 'src/io/markdown/snapshotFile.mjs';
@@ -3292,12 +3293,18 @@ function evaluateM3CommandWiringTokens(sectorMStatus) {
   if (commandsExists) {
     try {
       const commandsText = fs.readFileSync(M3_COMMANDS_PATH, 'utf8');
-      result.importCmdOk = commandsText.includes('cmd.project.importMarkdownV1')
-        && commandsText.includes('importMarkdownV1')
+      result.importCmdOk = commandsText.includes('registerCatalogCommand(registry, COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1')
+        && commandsText.includes('response = await invokeTransferAndFlowCommandBridge(electronAPI, COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);')
+        && commandsText.includes("if (bridged && (bridged.ok === true || bridged.ok === 1) && bridged.scene && typeof bridged.scene === 'object') {")
+        && commandsText.includes('if (bridged && (bridged.ok === true || bridged.ok === 1) && bridged.safeCreate === true) {')
+        && !commandsText.includes('electronAPI.importMarkdownV1(')
         ? 1
         : 0;
-      result.exportCmdOk = commandsText.includes('cmd.project.exportMarkdownV1')
-        && commandsText.includes('exportMarkdownV1')
+      result.exportCmdOk = commandsText.includes('registerCatalogCommand(registry, COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1')
+        && commandsText.includes('response = await invokeTransferAndFlowCommandBridge(electronAPI, COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, payload);')
+        && commandsText.includes("if (bridged && (bridged.ok === true || bridged.ok === 1) && bridged.canceled === true) {")
+        && commandsText.includes("if (bridged && (bridged.ok === true || bridged.ok === 1) && typeof bridged.markdown === 'string') {")
+        && !commandsText.includes('electronAPI.exportMarkdownV1(')
         ? 1
         : 0;
     } catch {
@@ -3331,6 +3338,8 @@ function evaluateM3CommandWiringTokens(sectorMStatus) {
         && preloadText.includes('m:cmd:project:export:markdownV1:v1')
         && preloadText.includes('importMarkdownV1')
         && preloadText.includes('exportMarkdownV1')
+        && preloadText.includes("const UI_COMMAND_BRIDGE_CHANNEL = 'ui:command-bridge';")
+        && preloadText.includes('invokeUiCommandBridge: (request) => {')
         ? 1
         : 0;
     } catch {
@@ -3342,6 +3351,13 @@ function evaluateM3CommandWiringTokens(sectorMStatus) {
       const mainText = fs.readFileSync(M3_MAIN_PATH, 'utf8');
       mainWired = mainText.includes('ipcMain.handle(IMPORT_MARKDOWN_V1_CHANNEL')
         && mainText.includes('ipcMain.handle(EXPORT_MARKDOWN_V1_CHANNEL')
+        && mainText.includes("ipcMain.handle('ui:command-bridge', async (_, request) => {")
+        && mainText.includes("'cmd.project.importMarkdownV1'")
+        && mainText.includes("'cmd.project.exportMarkdownV1'")
+        && mainText.includes('function normalizeUiBridgeMenuResult(result) {')
+        && mainText.includes('const result = await dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);')
+        && mainText.includes('const result = await dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, payload);')
+        && mainText.includes('return normalizeUiBridgeMenuResult(result);')
         ? 1
         : 0;
     } catch {
@@ -3390,60 +3406,51 @@ function evaluateM4UiPathTokens(sectorMStatus) {
   const editorExists = fs.existsSync(M4_EDITOR_PATH);
   const commandsExists = fs.existsSync(M4_COMMANDS_PATH);
   const testsExist = fs.existsSync(M4_UI_TEST_PATH);
+  const markerFixture = readJsonObjectOptional(M4_UI_MARKERS_FIXTURE_PATH);
+  const requiredMarkers = Array.isArray(markerFixture && markerFixture.requiredMarkers)
+    ? markerFixture.requiredMarkers.filter((marker) => typeof marker === 'string' && marker.length > 0)
+    : [];
+  const forbiddenMarkers = Array.isArray(markerFixture && markerFixture.forbiddenMarkers)
+    ? markerFixture.forbiddenMarkers.filter((marker) => typeof marker === 'string' && marker.length > 0)
+    : [];
 
   let importCmdRegistered = 0;
   let exportCmdRegistered = 0;
   if (commandsExists) {
     try {
       const commandsText = fs.readFileSync(M4_COMMANDS_PATH, 'utf8');
-      importCmdRegistered = commandsText.includes('cmd.project.importMarkdownV1') ? 1 : 0;
-      exportCmdRegistered = commandsText.includes('cmd.project.exportMarkdownV1') ? 1 : 0;
+      importCmdRegistered = commandsText.includes('registerCatalogCommand(registry, COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1')
+        ? 1
+        : 0;
+      exportCmdRegistered = commandsText.includes('registerCatalogCommand(registry, COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1')
+        ? 1
+        : 0;
     } catch {
       importCmdRegistered = 0;
       exportCmdRegistered = 0;
     }
   }
 
-  let dispatchWired = 0;
-  let actionWired = 0;
-  let shortcutWired = 0;
-  let noDirectMarkdownIpcBypass = 0;
+  let markerTruthOk = 0;
   if (editorExists) {
     try {
       const editorText = fs.readFileSync(M4_EDITOR_PATH, 'utf8');
-      dispatchWired = editorText.includes('dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1')
-        && editorText.includes('dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1')
-        ? 1
-        : 0;
-      actionWired = editorText.includes("case 'import-markdown-v1'")
-        && editorText.includes("case 'export-markdown-v1'")
-        ? 1
-        : 0;
-      shortcutWired = editorText.includes("(key === 'I' || key === 'i') && event.shiftKey")
-        && editorText.includes("(key === 'M' || key === 'm') && event.shiftKey")
-        ? 1
-        : 0;
-      noDirectMarkdownIpcBypass = !editorText.includes('window.electronAPI.importMarkdownV1(')
-        && !editorText.includes('window.electronAPI.exportMarkdownV1(')
-        ? 1
-        : 0;
+      const requiredOk = requiredMarkers.length > 0
+        && requiredMarkers.every((marker) => editorText.includes(marker));
+      const forbiddenOk = forbiddenMarkers.every((marker) => !editorText.includes(marker));
+      markerTruthOk = requiredOk && forbiddenOk ? 1 : 0;
     } catch {
-      dispatchWired = 0;
-      actionWired = 0;
-      shortcutWired = 0;
-      noDirectMarkdownIpcBypass = 0;
+      markerTruthOk = 0;
     }
   }
 
   result.uiPathOk = editorExists
     && commandsExists
     && testsExist
+    && requiredMarkers.length > 0
     && importCmdRegistered === 1
     && exportCmdRegistered === 1
-    && dispatchWired === 1
-    && actionWired === 1
-    && shortcutWired === 1
-    && noDirectMarkdownIpcBypass === 1
+    && markerTruthOk === 1
     && result.goTagRuleOk === 1 ? 1 : 0;
 
   result.level = atLeastM4 && result.uiPathOk !== 1 ? 'warn' : 'ok';
@@ -3743,10 +3750,12 @@ function evaluateM7PhaseTokens(sectorMStatus, m6Reliability) {
         && flowText.includes('sceneMarker(')
         && commandsText.includes('PROJECT_FLOW_OPEN_V1')
         && commandsText.includes('openFlowModeV1')
+        && commandsText.includes("if (bridged && (bridged.ok === true || bridged.ok === 1) && Array.isArray(bridged.scenes)) {")
         && preloadText.includes('FLOW_OPEN_V1_CHANNEL')
         && preloadText.includes('openFlowModeV1')
         && mainText.includes('handleFlowOpenV1')
         && mainText.includes('FLOW_OPEN_V1_CHANNEL')
+        && mainText.includes('const result = await handleFlowOpenV1();')
         && editorText.includes('handleFlowModeOpenUiPath')
         && editorText.includes('composeFlowDocument')
         ? 1
@@ -3757,10 +3766,12 @@ function evaluateM7PhaseTokens(sectorMStatus, m6Reliability) {
         && flowText.includes('previousSceneCaretAtBoundary')
         && commandsText.includes('PROJECT_FLOW_SAVE_V1')
         && commandsText.includes('saveFlowModeV1')
+        && commandsText.includes('if (bridged && (bridged.ok === true || bridged.ok === 1)) {')
         && preloadText.includes('FLOW_SAVE_V1_CHANNEL')
         && preloadText.includes('saveFlowModeV1')
         && mainText.includes('handleFlowSaveV1')
         && mainText.includes('writeFlowSceneBatchAtomic')
+        && mainText.includes('const result = await handleFlowSaveV1(payload);')
         && editorText.includes('handleFlowModeSaveUiPath')
         && editorText.includes('nextSceneCaretAtBoundary')
         && editorText.includes('previousSceneCaretAtBoundary')
@@ -4909,7 +4920,10 @@ function evaluateU3ExportWiringTokens(sectorUStatus) {
     const commandsText = fs.readFileSync(U3_COMMANDS_PATH, 'utf8');
     const mainHasChannel = mainText.includes(U3_EXPORT_IPC_CHANNEL) && mainText.includes('ipcMain.handle(EXPORT_DOCX_MIN_CHANNEL');
     const preloadHasChannel = preloadText.includes(U3_EXPORT_IPC_CHANNEL) && preloadText.includes('exportDocxMin:');
-    const commandsHasWiring = commandsText.includes('electronAPI.exportDocxMin') && commandsText.includes('EXPORT_DOCXMIN_BACKEND_NOT_WIRED');
+    const commandsHasWiring = commandsText.includes("const hasBridgeHook = typeof electronAPI.invokeUiCommandBridge === 'function';")
+      && commandsText.includes("const hasLegacyHook = typeof electronAPI.exportDocxMin === 'function';")
+      && commandsText.includes('response = await invokeTransferAndFlowCommandBridge(electronAPI, COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN, payload);')
+      && commandsText.includes('EXPORT_DOCXMIN_BACKEND_NOT_WIRED');
     result.wiringExists = mainHasChannel && preloadHasChannel && commandsHasWiring ? 1 : 0;
   }
 

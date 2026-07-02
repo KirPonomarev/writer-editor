@@ -56,7 +56,7 @@ test('u8 command effect model: persist executes ui action and bridge only in per
   const electronAPI = {
     invokeUiCommandBridge(request) {
       bridgeCalls += 1;
-      return { ok: 1, value: request };
+      return { ok: true, value: request };
     },
   };
 

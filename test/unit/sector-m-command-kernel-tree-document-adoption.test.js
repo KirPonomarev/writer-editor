@@ -89,7 +89,7 @@ test('command kernel tree-document adoption: tree document commands execute exac
   const electronAPI = {
     invokeUiCommandBridge(request) {
       calls.push(request)
-      return { ok: 1 }
+      return { ok: true }
     },
   }
   const { registry, handlers } = createCaptureRegistry()
