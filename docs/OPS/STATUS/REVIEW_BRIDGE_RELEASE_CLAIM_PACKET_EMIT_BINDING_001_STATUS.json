@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_release_claim_packet_emit_binding",
   "featureExpansion": "bounded_review_bridge_claim_binding",
   "baseSha": "fdf6469aabf257912d87890f2919a4bab63501d2",
@@ -237,11 +237,11 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending_delivery",
-    "featureCommitSha": "",
-    "featurePullRequest": null,
-    "featureMergeSha": "",
-    "featureMergedAtUtc": ""
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "be182145ee2c100fc7f336e7d860eaed07daa9de",
+    "featurePullRequest": 1036,
+    "featureMergeSha": "9d10189e78fe516a6d33a53714bcb85ede987b28",
+    "featureMergedAtUtc": "2026-07-02T02:26:26Z"
   },
   "decision": "RELEASE_CLAIM_PACKET_EMIT_BINDING_BOUND_FOR_CURRENT_SCOPE",
   "nextStep": "after delivery, select the next owner-approved boundary explicitly; release execution, release publication, and post-MVP import/export expansion do not open by implication"
