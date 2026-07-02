@@ -253,6 +253,44 @@ test('Contour 12D blocks RELEASE_MODE when required release fields are missing',
   );
 });
 
+test('Contour 12D blocks caller-supplied ids that do not match accepted provenance', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimModeDecisionGate(validDecisionInput(bridge, {
+    mode: 'RELEASE_MODE',
+    matrixId: 'evil-format-matrix',
+    dossierId: 'evil-dossier',
+    claimId: 'evil-claim',
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_MISMATCH');
+  assert.equal(
+    result.reasons.some((reason) => (
+      reason.field === 'decision.claimId'
+      && reason.expectedValue === 'release-claim-1'
+      && reason.receivedValue === 'evil-claim'
+    )),
+    true,
+  );
+  assert.equal(
+    result.reasons.some((reason) => (
+      reason.field === 'decision.dossierId'
+      && reason.expectedValue === 'release-claim-dossier-1'
+      && reason.receivedValue === 'evil-dossier'
+    )),
+    true,
+  );
+  assert.equal(
+    result.reasons.some((reason) => (
+      reason.field === 'decision.matrixId'
+      && reason.expectedValue === 'format-matrix-1'
+      && reason.receivedValue === 'evil-format-matrix'
+    )),
+    true,
+  );
+});
+
 test('Contour 12D blocks when baseline debt is true', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimModeDecisionGate(validDecisionInput(bridge, {

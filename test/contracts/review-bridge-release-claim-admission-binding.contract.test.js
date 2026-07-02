@@ -19,6 +19,10 @@ const DOSSIER_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-do
 const ADMISSION_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-admission-gate.contract.test.js';
 const DOSSIER_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-dossier-binding.contract.test.js';
 const MODE_DECISION_TEST_PATH = 'test/contracts/revision-bridge-release-claim-decision-gate.contract.test.js';
+const MODE_DECISION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js';
+const MODE_DECISION_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001_STATUS.json';
+const ATTESTATION_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-attestation-gate.contract.test.js';
+const PACKET_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-packet-emit.contract.test.js';
 const USER_FACING_BOUNDARY_TEST_PATH = 'test/contracts/revision-bridge-release-claim-user-facing-boundary-gate.contract.test.js';
 const PUBLICATION_TEST_PATH = 'test/contracts/revision-bridge-release-claim-publication-gate.contract.test.js';
 const EXECUTION_TEST_PATH = 'test/contracts/revision-bridge-release-claim-execution-gate.contract.test.js';
@@ -32,6 +36,11 @@ const ALLOWLIST = [
   CONTRACT_PATH,
   DOSSIER_BINDING_TEST_PATH,
   ADMISSION_KERNEL_TEST_PATH,
+  MODE_DECISION_BINDING_TEST_PATH,
+  MODE_DECISION_BINDING_STATUS_PATH,
+  MODE_DECISION_TEST_PATH,
+  ATTESTATION_KERNEL_TEST_PATH,
+  PACKET_KERNEL_TEST_PATH,
   STATUS_PATH_REL,
   GOVERNANCE_APPROVALS_PATH,
   CONTEXT_PATH,

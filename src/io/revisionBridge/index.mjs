@@ -11544,6 +11544,7 @@ export const REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_REASON_CODES = Object.f
   'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_MODE_INVALID',
   'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_DOSSIER_BLOCKED',
   'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_ADMISSION_BLOCKED',
+  'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_MISMATCH',
   'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_RELEASE_FIELDS_MISSING',
   ...REVISION_BRIDGE_RELEASE_CLAIM_DOSSIER_GATE_REASON_CODES,
   ...REVISION_BRIDGE_RELEASE_CLAIM_ADMISSION_REASON_CODES,
@@ -11614,11 +11615,13 @@ function collectReleaseClaimModeDecisionReasons(input, decision) {
 }
 
 function releaseClaimModeDecisionBinding(decision, dossierResult, admissionResult) {
+  const dossierBinding = isPlainObject(dossierResult?.binding) ? dossierResult.binding : {};
+  const admissionBinding = isPlainObject(admissionResult?.binding) ? admissionResult.binding : {};
   return {
     mode: decision.mode,
-    claimId: normalizeString(decision.claimId || admissionResult?.binding?.claimId),
-    dossierId: normalizeString(decision.dossierId || dossierResult?.binding?.dossierId),
-    matrixId: normalizeString(decision.matrixId || dossierResult?.binding?.matrixId),
+    claimId: normalizeString(admissionBinding.claimId || decision.claimId),
+    dossierId: normalizeString(dossierBinding.dossierId || admissionBinding.dossierId || decision.dossierId),
+    matrixId: normalizeString(dossierBinding.matrixId || decision.matrixId),
     dossierStatus: normalizeString(dossierResult?.status),
     admissionStatus: normalizeString(admissionResult?.status),
     baselineDebtFlag: decision.baselineDebtFlag === true,
@@ -11681,6 +11684,72 @@ function collectReleaseModeMissingFields(decision) {
   return REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_RELEASE_REQUIRED_FIELDS.filter(
     (fieldName) => !normalizeString(decision[fieldName]),
   );
+}
+
+function collectReleaseClaimModeDecisionBindingMismatchReasons(decision, dossierResult, admissionResult) {
+  const reasons = [];
+  const dossierBinding = isPlainObject(dossierResult?.binding) ? dossierResult.binding : {};
+  const admissionBinding = isPlainObject(admissionResult?.binding) ? admissionResult.binding : {};
+  const expectedBindingPairs = [
+    {
+      field: 'claimId',
+      sourceField: 'admissionResult.binding.claimId',
+      suppliedValue: normalizeString(decision.claimId),
+      expectedValue: normalizeString(admissionBinding.claimId),
+    },
+    {
+      field: 'dossierId',
+      sourceField: 'dossierResult.binding.dossierId',
+      suppliedValue: normalizeString(decision.dossierId),
+      expectedValue: normalizeString(dossierBinding.dossierId),
+    },
+    {
+      field: 'matrixId',
+      sourceField: 'dossierResult.binding.matrixId',
+      suppliedValue: normalizeString(decision.matrixId),
+      expectedValue: normalizeString(dossierBinding.matrixId),
+    },
+  ];
+
+  expectedBindingPairs.forEach((pair) => {
+    if (!pair.expectedValue) {
+      reasons.push(releaseClaimModeDecisionReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_MISMATCH',
+        pair.sourceField,
+        `${pair.field} must be bound by accepted upstream provenance`,
+        { bindingField: pair.field },
+      ));
+      return;
+    }
+    if (pair.suppliedValue && pair.suppliedValue !== pair.expectedValue) {
+      reasons.push(releaseClaimModeDecisionReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_MISMATCH',
+        `decision.${pair.field}`,
+        `${pair.field} must match accepted upstream provenance`,
+        {
+          bindingField: pair.field,
+          expectedValue: pair.expectedValue,
+          receivedValue: pair.suppliedValue,
+        },
+      ));
+    }
+  });
+
+  const admissionDossierId = normalizeString(admissionBinding.dossierId);
+  const dossierId = normalizeString(dossierBinding.dossierId);
+  if (admissionDossierId && dossierId && admissionDossierId !== dossierId) {
+    reasons.push(releaseClaimModeDecisionReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_MISMATCH',
+      'admissionResult.binding.dossierId',
+      'admission dossierId must match accepted dossier provenance',
+      {
+        expectedValue: dossierId,
+        receivedValue: admissionDossierId,
+      },
+    ));
+  }
+
+  return reasons;
 }
 
 export function evaluateRevisionBridgeReleaseClaimModeDecisionGate(input = {}) {
@@ -11752,6 +11821,22 @@ export function evaluateRevisionBridgeReleaseClaimModeDecisionGate(input = {}) {
           },
         ),
       ],
+      decision,
+      dossierResult,
+      admissionResult,
+    );
+  }
+
+  const bindingMismatchReasons = collectReleaseClaimModeDecisionBindingMismatchReasons(
+    decision,
+    dossierResult,
+    admissionResult,
+  );
+  if (bindingMismatchReasons.length > 0) {
+    return releaseClaimModeDecisionResult(
+      false,
+      'blocked',
+      bindingMismatchReasons,
       decision,
       dossierResult,
       admissionResult,
@@ -11969,6 +12054,7 @@ function collectReleaseClaimAttestationModeDecisionProvenanceReasons(attestation
   const reasons = [];
   const binding = isPlainObject(modeDecisionResult?.binding) ? modeDecisionResult.binding : {};
   const decision = isPlainObject(modeDecisionResult?.decision) ? modeDecisionResult.decision : {};
+  const recomputedModeDecisionResult = evaluateRevisionBridgeReleaseClaimModeDecisionGate(decision);
 
   if (normalizeString(modeDecisionResult?.type) !== 'revisionBridge.releaseClaimModeDecisionGate') {
     reasons.push(releaseClaimAttestationReason(
@@ -12056,6 +12142,35 @@ function collectReleaseClaimAttestationModeDecisionProvenanceReasons(attestation
       'modeDecisionResult.binding.admissionStatus',
       'mode decision provenance must retain accepted admission status',
     ));
+  }
+  if (
+    recomputedModeDecisionResult.ok !== true
+    || normalizeString(recomputedModeDecisionResult.status) !== 'accepted'
+    || normalizeString(recomputedModeDecisionResult.code) !== RELEASE_CLAIM_MODE_DECISION_ACCEPTED_CODE
+  ) {
+    reasons.push(releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+      'modeDecisionResult.decision',
+      'mode decision provenance must re-evaluate to accepted 12D from raw decision input',
+      {
+        recomputedStatus: normalizeString(recomputedModeDecisionResult.status),
+        recomputedReason: normalizeString(recomputedModeDecisionResult.reason),
+      },
+    ));
+  } else {
+    const receivedModeDecisionHash = createRevisionBridgeReleaseClaimModeDecisionHash(modeDecisionResult);
+    const recomputedModeDecisionHash = createRevisionBridgeReleaseClaimModeDecisionHash(recomputedModeDecisionResult);
+    if (receivedModeDecisionHash !== recomputedModeDecisionHash) {
+      reasons.push(releaseClaimAttestationReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
+        'modeDecisionResult',
+        'mode decision provenance must match recomputed accepted 12D result',
+        {
+          expectedModeDecisionHash: recomputedModeDecisionHash,
+          receivedModeDecisionHash,
+        },
+      ));
+    }
   }
 
   return reasons;
@@ -12456,6 +12571,7 @@ function collectReleaseClaimPacketModeDecisionAcceptanceReasons(modeDecisionResu
   const reasons = [];
   const binding = isPlainObject(modeDecisionResult?.binding) ? modeDecisionResult.binding : {};
   const decision = isPlainObject(modeDecisionResult?.decision) ? modeDecisionResult.decision : {};
+  const recomputedModeDecisionResult = evaluateRevisionBridgeReleaseClaimModeDecisionGate(decision);
 
   if (normalizeString(modeDecisionResult?.type) !== 'revisionBridge.releaseClaimModeDecisionGate') {
     reasons.push(releaseClaimPacketEmitReason(
@@ -12533,6 +12649,35 @@ function collectReleaseClaimPacketModeDecisionAcceptanceReasons(modeDecisionResu
       'modeDecisionResult.binding.admissionStatus',
       'modeDecisionResult must retain accepted admission status',
     ));
+  }
+  if (
+    recomputedModeDecisionResult.ok !== true
+    || normalizeString(recomputedModeDecisionResult.status) !== 'accepted'
+    || normalizeString(recomputedModeDecisionResult.code) !== RELEASE_CLAIM_MODE_DECISION_ACCEPTED_CODE
+  ) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'modeDecisionResult.decision',
+      'modeDecisionResult must re-evaluate to accepted 12D from raw decision input',
+      {
+        recomputedStatus: normalizeString(recomputedModeDecisionResult.status),
+        recomputedReason: normalizeString(recomputedModeDecisionResult.reason),
+      },
+    ));
+  } else {
+    const receivedModeDecisionHash = createRevisionBridgeReleaseClaimModeDecisionHash(modeDecisionResult);
+    const recomputedModeDecisionHash = createRevisionBridgeReleaseClaimModeDecisionHash(recomputedModeDecisionResult);
+    if (receivedModeDecisionHash !== recomputedModeDecisionHash) {
+      reasons.push(releaseClaimPacketEmitReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+        'modeDecisionResult',
+        'modeDecisionResult must match recomputed accepted 12D result',
+        {
+          expectedModeDecisionHash: recomputedModeDecisionHash,
+          receivedModeDecisionHash,
+        },
+      ));
+    }
   }
 
   return reasons;
@@ -12612,6 +12757,48 @@ function collectReleaseClaimPacketAttestationAcceptanceReasons(attestationResult
       'attestationResult.binding.attestationId',
       'attestationResult must bind attestationId',
     ));
+  }
+
+  return reasons;
+}
+
+function collectReleaseClaimPacketAttestationProvenanceReasons(attestationResult) {
+  const reasons = [];
+  const attestation = isPlainObject(attestationResult?.attestation) ? attestationResult.attestation : {};
+  const recomputedAttestationResult = evaluateRevisionBridgeReleaseClaimAttestationGate(attestation);
+
+  if (
+    recomputedAttestationResult.ok !== true
+    || normalizeString(recomputedAttestationResult.status) !== 'accepted'
+    || normalizeString(recomputedAttestationResult.code) !== RELEASE_CLAIM_ATTESTATION_ACCEPTED_CODE
+  ) {
+    reasons.push(releaseClaimPacketEmitReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+      'attestationResult.attestation',
+      'attestationResult must re-evaluate to accepted 12E from raw attestation input',
+      {
+        recomputedStatus: normalizeString(recomputedAttestationResult.status),
+        recomputedReason: normalizeString(recomputedAttestationResult.reason),
+      },
+    ));
+  } else {
+    const receivedAttestationHash = revisionBlockHash(
+      normalizeReleaseClaimPacketAttestationResult(attestationResult),
+    );
+    const recomputedAttestationHash = revisionBlockHash(
+      normalizeReleaseClaimPacketAttestationResult(recomputedAttestationResult),
+    );
+    if (receivedAttestationHash !== recomputedAttestationHash) {
+      reasons.push(releaseClaimPacketEmitReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+        'attestationResult',
+        'attestationResult must match recomputed accepted 12E result',
+        {
+          expectedAttestationHash: recomputedAttestationHash,
+          receivedAttestationHash,
+        },
+      ));
+    }
   }
 
   return reasons;
@@ -12982,6 +13169,13 @@ export function evaluateRevisionBridgeReleaseClaimPacketEmit(input = {}) {
   );
   if (bindingReasons.length > 0) {
     return releaseClaimPacketEmitResult(false, 'blocked', bindingReasons);
+  }
+
+  const attestationProvenanceReasons = collectReleaseClaimPacketAttestationProvenanceReasons(
+    attestationResult,
+  );
+  if (attestationProvenanceReasons.length > 0) {
+    return releaseClaimPacketEmitResult(false, 'blocked', attestationProvenanceReasons);
   }
 
   const packet = buildReleaseClaimPacket(modeDecisionResult, attestationResult, packetMeta);
