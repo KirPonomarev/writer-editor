@@ -78,6 +78,19 @@
             "op": "flag",
             "name": "hasDocument"
           }
+        },
+        {
+          "id": "file-export-selected-scenes-txt",
+          "label": "Экспорт TXT выбранных сцен",
+          "labelKey": "menu.file.exportSelectedScenesTxt",
+          "command": "cmd.project.exportSelectedScenesTxtV1",
+          "mode": ["offline"],
+          "profile": ["pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "flag",
+            "name": "hasDocument"
+          }
         }
       ]
     },

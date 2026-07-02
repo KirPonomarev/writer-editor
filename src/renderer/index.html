@@ -830,6 +830,18 @@
       </div>
     </div>
   </div>
+  <div class="modal" data-selected-scenes-txt-export-modal hidden>
+    <div class="modal__backdrop" data-selected-scenes-txt-export-cancel></div>
+    <div class="modal__content" role="dialog" aria-modal="true" aria-label="Selected Scenes TXT Export">
+      <h3 class="modal__title">Selected Scenes TXT Export</h3>
+      <div class="tree__empty" data-selected-scenes-txt-export-summary>Выберите сцены для экспорта в один TXT файл.</div>
+      <div class="modal__checkbox-list" data-selected-scenes-txt-export-list></div>
+      <div class="modal__actions">
+        <button type="button" class="modal__button" data-selected-scenes-txt-export-cancel>Cancel</button>
+        <button type="button" class="modal__button modal__button--primary" data-selected-scenes-txt-export-confirm disabled>Export TXT</button>
+      </div>
+    </div>
+  </div>
   <div class="modal" data-docx-import-preview-modal hidden>
     <div class="modal__backdrop" data-docx-import-preview-cancel></div>
     <div class="modal__content" role="dialog" aria-modal="true" aria-label="DOCX Import Preview">
