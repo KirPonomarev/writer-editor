@@ -9891,19 +9891,24 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return { ok: delivered };
   },
   'cmd.project.export.docxMin': async (payload = {}) => {
-    const previewRequested = sendCanonicalRuntimeCommand(
-      'cmd.project.export.docxMin',
-      {
-        source: 'menu',
-        preview: true,
-      },
-      'open-export-preview',
-    );
-    if (previewRequested) {
-      return { ok: true, preview: true };
+    const confirmed = payload && payload.confirmed === true;
+    if (!confirmed) {
+      const previewRequested = sendCanonicalRuntimeCommand(
+        'cmd.project.export.docxMin',
+        {
+          source: 'menu',
+          preview: true,
+        },
+        'open-export-preview',
+      );
+      if (previewRequested) {
+        return { ok: true, preview: true };
+      }
     }
     const response = await handleExportDocxMin({
-      requestId: 'menu-export-docx-min',
+      requestId: typeof payload.requestId === 'string' && payload.requestId.length > 0
+        ? payload.requestId
+        : 'menu-export-docx-min',
       outPath: typeof payload.outPath === 'string' ? payload.outPath : '',
       outDir: typeof payload.outDir === 'string' ? payload.outDir : '',
       bufferSource: typeof payload.bufferSource === 'string' ? payload.bufferSource : '',
@@ -9911,7 +9916,7 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
         ? payload.options
         : {},
     });
-    return { ok: Boolean(response && response.ok === 1) };
+    return response;
   },
   'cmd.project.docx.previewContent': async (payload = {}) => {
     return handleDocxContentPreviewCommandSurface(payload);

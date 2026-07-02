@@ -8441,7 +8441,9 @@ function openExportPreviewModal() {
 async function confirmExportPreviewAndRun() {
   closeSimpleModal(exportPreviewModal);
   updatePerfHintText('export');
-  await dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);
+  await dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN, {
+    confirmed: true,
+  });
   updatePerfHintText('normal');
   updateWarningStateText('none');
 }
