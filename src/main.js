@@ -304,6 +304,7 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_IMPORT_MARKDOWN_V1: 'cmd.project.importMarkdownV1',
   PROJECT_EXPORT_MARKDOWN_V1: 'cmd.project.exportMarkdownV1',
   PROJECT_RELEASE_CLAIM_ADMIT: 'cmd.project.releaseClaim.admit',
+  PROJECT_RELEASE_CLAIM_EXECUTE: 'cmd.project.releaseClaim.execute',
 });
 let internalCommandSurfaceKernel = null;
 
@@ -4482,6 +4483,97 @@ async function handleRevisionBridgeReleaseClaimCommandSurfaceAdmission(payload =
 }
 // CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION_END
 
+// CONTOUR_12M_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_START
+function isReleaseClaimCommandExecutionWitnessPlainPayload(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  if (prototype === null || prototype === Object.prototype) return true;
+  const parentPrototype = Object.getPrototypeOf(prototype);
+  return parentPrototype === null
+    && Object.prototype.hasOwnProperty.call(prototype, 'constructor')
+    && prototype.constructor
+    && prototype.constructor.name === 'Object';
+}
+
+function cloneReleaseClaimCommandExecutionWitnessValue(value) {
+  if (value === undefined) return undefined;
+  return JSON.parse(JSON.stringify(value));
+}
+
+function makeReleaseClaimCommandExecutionWitnessError(code, reason, details = undefined) {
+  const error = {
+    code,
+    op: 'cmd.project.releaseClaim.execute',
+    reason,
+  };
+  if (details && typeof details === 'object' && !Array.isArray(details)) {
+    error.details = { ...details };
+  }
+  return { ok: false, error };
+}
+
+function buildReleaseClaimCommandExecutionWitnessResult(executionGateResult) {
+  const source = executionGateResult && typeof executionGateResult === 'object' && !Array.isArray(executionGateResult)
+    ? executionGateResult
+    : {};
+  const binding = source.binding && typeof source.binding === 'object' && !Array.isArray(source.binding)
+    ? cloneReleaseClaimCommandExecutionWitnessValue(source.binding) || {}
+    : {};
+  const executionSummary = source.summary && typeof source.summary === 'object' && !Array.isArray(source.summary)
+    ? source.summary
+    : {};
+  const accepted = source.ok === true && source.status === 'accepted';
+  const diagnostics = source.status === 'diagnostics';
+  const status = accepted ? 'accepted' : (diagnostics ? 'diagnostics' : 'blocked');
+  const code = accepted
+    ? 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_ACCEPTED'
+    : (diagnostics
+      ? 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_DIAGNOSTICS'
+      : 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BLOCKED');
+  const reason = accepted
+    ? 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_ACCEPTED'
+    : (typeof source.reason === 'string' && source.reason.length > 0
+      ? source.reason
+      : code);
+
+  return {
+    ok: accepted,
+    type: 'revisionBridge.releaseClaimCommandExecutionWitness',
+    status,
+    code,
+    reason,
+    reasons: Array.isArray(source.reasons)
+      ? cloneReleaseClaimCommandExecutionWitnessValue(source.reasons) || []
+      : [],
+    binding,
+    summary: {
+      claimSurface: typeof executionSummary.claimSurface === 'string' ? executionSummary.claimSurface : '',
+      packetId: typeof executionSummary.packetId === 'string' ? executionSummary.packetId : '',
+      attestationId: typeof executionSummary.attestationId === 'string' ? executionSummary.attestationId : '',
+      commandId: 'cmd.project.releaseClaim.execute',
+      admissionClass: typeof executionSummary.admissionClass === 'string' ? executionSummary.admissionClass : '',
+      witnessOnly: true,
+    },
+  };
+}
+
+async function handleRevisionBridgeReleaseClaimCommandExecutionWitness(payload = {}) {
+  if (!isReleaseClaimCommandExecutionWitnessPlainPayload(payload)) {
+    return makeReleaseClaimCommandExecutionWitnessError(
+      'E_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_PAYLOAD_INVALID',
+      'PAYLOAD_PLAIN_OBJECT_REQUIRED',
+      {
+        receivedType: Array.isArray(payload) ? 'array' : typeof payload,
+      },
+    );
+  }
+
+  const revisionBridge = await loadRevisionBridgeModule();
+  const executionGateResult = revisionBridge.evaluateRevisionBridgeReleaseClaimExecutionGate(payload);
+  return buildReleaseClaimCommandExecutionWitnessResult(executionGateResult);
+}
+// CONTOUR_12M_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_END
+
 function getInternalCommandSurfaceKernel() {
   if (internalCommandSurfaceKernel) {
     return internalCommandSurfaceKernel;
@@ -4507,6 +4599,9 @@ function getInternalCommandSurfaceKernel() {
     },
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RELEASE_CLAIM_ADMIT]: async (payload = {}) => {
       return handleRevisionBridgeReleaseClaimCommandSurfaceAdmission(payload);
+    },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RELEASE_CLAIM_EXECUTE]: async (payload = {}) => {
+      return handleRevisionBridgeReleaseClaimCommandExecutionWitness(payload);
     },
   });
   return internalCommandSurfaceKernel;
@@ -9080,6 +9175,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.importMarkdownV1',
   'cmd.project.exportMarkdownV1',
   'cmd.project.releaseClaim.admit',
+  'cmd.project.releaseClaim.execute',
   'cmd.project.review.importLocalPacket',
   'cmd.project.review.importPacket',
   'cmd.project.review.clearSession',
@@ -9212,6 +9308,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.releaseClaim.admit': async (payload = {}) => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RELEASE_CLAIM_ADMIT, payload);
+  },
+  'cmd.project.releaseClaim.execute': async (payload = {}) => {
+    return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RELEASE_CLAIM_EXECUTE, payload);
   },
   'cmd.project.review.importLocalPacket': async (payload = {}) => {
     const result = await handleReviewSurfaceImportLocalPacketCommandSurface(payload);

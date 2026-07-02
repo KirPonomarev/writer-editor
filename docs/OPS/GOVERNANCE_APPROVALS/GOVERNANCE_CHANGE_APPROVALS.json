@@ -3577,6 +3577,34 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_ADMISSION_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
       "rationale": "Approve contract guard for bounded 12L command surface admission binding; it checks status scope, existing 12L marker, cmd.project.releaseClaim.admit allowlist, command.bus boundary, 12K execution-gate call, top-level payload guard, docs honesty, and changed-file allowlist without introducing command availability, command execution, release execution completion, product publication, release readiness, user-facing release, import/export support, apply, storage, receipt, recovery, dependency, or Y9 claim."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001_STATUS.json",
+      "sha256": "eb1396cafa52e183ec5a8f7cbb41a6486c1e0d5afc7086008a76d1e4c68afd40",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001",
+      "approvedAtUtc": "2026-07-02T13:51:44.000Z",
+      "rationale": "Approve bounded 12M command execution witness binding status for the explicit owner-selected next contour after 12L; it records cmd.project.releaseClaim.execute, command.bus routing, 12K execution-gate witness wrapping, typed witness envelope preservation, top-level payload guard, and preserves no command availability, no command execution, no release execution completion, no product publication, no release readiness, no user-facing release, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "sha256": "3433aba8ff0d23d32599cb4c737304fce04492f307efae68d937ac26c74fbe24",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001",
+      "approvedAtUtc": "2026-07-02T13:51:44.000Z",
+      "rationale": "Approve bounded command-surface kernel guard extension for 12M; it adds a narrowly scoped proof that typed accepted witness envelopes with code and reason are preserved instead of being error-normalized, without widening unknown command ids, payload validation, renderer scope, UI scope, dependencies, command availability, command execution, publication, readiness, import/export support, storage, receipt, recovery, dependency, or Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-command-execution-witness-binding.contract.test.js",
+      "sha256": "296e6a35d819a4d8d90d3b77cf929bd22462c67dd0b7ccd8252c1eb809022db4",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001",
+      "approvedAtUtc": "2026-07-02T13:51:44.000Z",
+      "rationale": "Approve contract guard for bounded 12M command execution witness binding; it checks status scope, existing 12M marker, cmd.project.releaseClaim.execute allowlist, command.bus boundary, upstream 12L and 12K linkage, witness-only docs honesty, governance allowlist scope, and overclaim negatives without introducing command availability, command execution, release execution completion, product publication, release readiness, user-facing release, import/export support, apply, storage, receipt, recovery, dependency, or Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-command-execution-witness-wiring.contract.test.js",
+      "sha256": "1152c0bb41c430e917325b8aeda09e54178fa140a03e4f424e676ac73d60aa06",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001",
+      "approvedAtUtc": "2026-07-02T13:51:44.000Z",
+      "rationale": "Approve bounded 12M wiring guard proving cmd.project.releaseClaim.execute stays on the command-surface allowlist, wraps 12K into a typed witness-only envelope, rejects non-plain and inherited top-level payloads before 12K, preserves determinism and non-mutation, and keeps the contour free of UI, storage, network, dependency, command availability, command execution, product publication, release readiness, import/export widening, receipt, recovery, or Y9 claim."
     }
   ]
 }

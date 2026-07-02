@@ -13,6 +13,7 @@ test('donor port command surface kernel: allowlist is fixed to minimal non-ui co
     'cmd.project.importMarkdownV1',
     'cmd.project.exportMarkdownV1',
     'cmd.project.releaseClaim.admit',
+    'cmd.project.releaseClaim.execute',
   ]);
 });
 
@@ -32,6 +33,47 @@ test('donor port command surface kernel: rejects non-object payloads with typed 
   assert.equal(result.ok, false);
   assert.equal(result.error.code, 'E_PAYLOAD_CONTRACT_VALIDATION_MISSING');
   assert.equal(result.error.reason, 'ARGS_OBJECT_REQUIRED');
+});
+
+test('donor port command surface kernel: preserves typed accepted results with code and reason', async () => {
+  const expected = {
+    ok: true,
+    type: 'revisionBridge.releaseClaimCommandExecutionWitness',
+    status: 'accepted',
+    code: 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_ACCEPTED',
+    reason: 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_ACCEPTED',
+    reasons: [],
+    binding: { mode: 'RELEASE_MODE' },
+    summary: {
+      claimSurface: 'USER_FACING',
+      packetId: 'packet-1',
+      attestationId: 'attestation-1',
+      commandId: 'cmd.project.releaseClaim.execute',
+      admissionClass: 'USER_FACING_CLAIM_READY',
+      witnessOnly: true,
+    },
+  };
+  const kernel = createCommandSurfaceKernel({
+    'cmd.project.releaseClaim.execute': async () => expected,
+  });
+  const result = await kernel.dispatch('cmd.project.releaseClaim.execute', {});
+  assert.deepEqual(result, expected);
+});
+
+test('donor port command surface kernel: typed passthrough stays limited to bounded release-claim command ids', async () => {
+  const kernel = createCommandSurfaceKernel({
+    'cmd.project.open': async () => ({
+      ok: false,
+      type: 'runtime.openResult',
+      status: 'blocked',
+      code: 'E_OPEN_BLOCKED',
+      reason: 'OPEN_BLOCKED',
+    }),
+  });
+  const result = await kernel.dispatch('cmd.project.open', {});
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_OPEN_BLOCKED');
+  assert.equal(result.error.reason, 'OPEN_BLOCKED');
 });
 
 test('donor port command surface kernel: normalizes thrown handler errors', async () => {
@@ -61,5 +103,7 @@ test('donor port command surface kernel: main routes minimal command family thro
   assert.match(mainText, /dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_IMPORT_MARKDOWN_V1/);
   assert.match(mainText, /dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_EXPORT_MARKDOWN_V1/);
   assert.match(mainText, /'cmd\.project\.releaseClaim\.admit':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{\s*return dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_RELEASE_CLAIM_ADMIT,\s*payload\);/);
+  assert.match(mainText, /'cmd\.project\.releaseClaim\.execute':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{\s*return dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_RELEASE_CLAIM_EXECUTE,\s*payload\);/);
   assert.match(mainText, /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS\s*=\s*new Set\(\[[\s\S]*'cmd\.project\.releaseClaim\.admit'/);
+  assert.match(mainText, /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS\s*=\s*new Set\(\[[\s\S]*'cmd\.project\.releaseClaim\.execute'/);
 });
