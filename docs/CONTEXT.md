@@ -252,7 +252,7 @@ No further transfer is required for this variant; the transfer axis is closed.
 - scope truth: this is not release readiness; no release readiness, user-facing release, release execution completion, release publication completion, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
 
 ## Review Bridge Release Claim User-Facing Boundary Binding
-- `REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001` is implemented and verified pending delivery as the bounded next contour after delivered release claim packet emit binding.
+- `REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001` is delivered, merged, and verified via PR `1038`, merge SHA `a94d19671aede4a12ed4b38310bfb4de5368efaf`, and feature commit `1974f0ad6a35537e1355e8b423b30745ce4d31f9` as the bounded next contour after delivered release claim packet emit binding.
 - release claim user-facing boundary binding product-binds the existing `CONTOUR_12G_RELEASE_CLAIM_USER_FACING_BOUNDARY_GATE`.
 - accepted 12G user-facing boundary requires accepted 12F packet emit provenance and matching packet/report/binding fields for mode, claimId, dossierId, matrixId, and releaseClass.
 - accepted 12G requires raw packet emit binding fields for mode, claimId, dossierId, matrixId, releaseClass, packetId, and attestationId; binding fields are not derived from packet or report fallbacks.
