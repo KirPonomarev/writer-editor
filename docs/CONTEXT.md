@@ -33,6 +33,10 @@
 - Mindmap is accepted only as derived runtime/status binding; no user-facing Mindmap export command is claimed.
 - The closeout binding contour records the feature status as `FEATURE_CLOSED_FOR_MVP_SCOPE` for the named flows only.
 - This closeout does not claim full release readiness, packaged release readiness, cross-platform readiness, full npm test green, production picker coverage for Markdown export or DOCX import, perfect Word layout parity, broad DOCX/Markdown fidelity, PDF/EPUB/HTML export, cloud, sync, accounts, new dependencies, or user-facing Mindmap export.
+- Current post-MVP TXT import lane is separate from that closed MVP gate and does not widen `IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json`.
+- `cmd.project.importTxtV1` is a bounded user-facing palette and runtime TXT chooser entry; `cmd.project.txt.previewLocalFile` and `cmd.project.txt.importSafeCreate` remain bridge-only helpers, main owns picker stat read and restat, and renderer sends only intent plus the accepted preview plan.
+- TXT preview stays pathless and write-free; accept creates exactly one new scene under `roman/Imported` and opens that created scene on success.
+- Accepted TXT encodings are UTF-8 and UTF-8 BOM only; non-UTF8 bytes fail closed, and this contour does not change DOCX export, DOCX import, Markdown import, Markdown export, or Mindmap scope truth.
 
 ### Review bridge exact-apply lane closeout
 - Review bridge controlled multi exact apply is merged on current mainline via PR `1007` at merge SHA `b12ef9178a2e86a3ee758815758bc05dde70f8cc`.

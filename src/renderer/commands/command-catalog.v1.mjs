@@ -40,6 +40,14 @@ const COMMAND_CATALOG_ROWS = [
     hotkey: '',
   },
   {
+    key: 'PROJECT_IMPORT_TXT_V1',
+    id: 'cmd.project.importTxtV1',
+    label: 'Import TXT v1',
+    group: 'import',
+    surface: ['palette'],
+    hotkey: '',
+  },
+  {
     key: 'PROJECT_EXPORT_MARKDOWN_V1',
     id: 'cmd.project.exportMarkdownV1',
     label: 'Export Markdown v1',

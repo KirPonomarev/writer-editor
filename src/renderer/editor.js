@@ -8391,8 +8391,12 @@ function runCommandPaletteAction(commandId) {
   closeSimpleModal(commandPaletteModal);
   const normalizedCommandId = commandId.trim();
   const importDocxCommandId = 'cmd.project.importDocxV1';
+  const importTxtCommandId = 'cmd.project.importTxtV1';
   if (normalizedCommandId === importDocxCommandId) {
     return openDocxImportPreviewFlow();
+  }
+  if (normalizedCommandId === importTxtCommandId) {
+    return openTxtImportPreviewFlow();
   }
   return dispatchUiCommand(commandId.trim());
 }
@@ -8555,6 +8559,113 @@ async function openImportedDocxSceneAfterAccept(plan, createdSceneIds) {
   return { opened: false, reason: 'imported-scene-open-failed' };
 }
 
+function getTxtImportPreviewPlanFromValue(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const direct = value.txtImportPreviewPlan;
+  if (direct && typeof direct === 'object' && !Array.isArray(direct)) return direct;
+  const localPreview = value.localFilePreview;
+  if (!localPreview || typeof localPreview !== 'object' || Array.isArray(localPreview)) return null;
+  const nested = localPreview.txtImportPreviewPlan;
+  return nested && typeof nested === 'object' && !Array.isArray(nested) ? nested : null;
+}
+
+function normalizeTxtImportCreatedSceneIds(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item) => typeof item === 'string' && item.trim())
+    .map((item) => item.trim());
+}
+
+function sanitizeTxtImportSceneLabelPart(value) {
+  const safe = String(value || '')
+    .trim()
+    .replace(/[\\/<>:"|?*\u0000-\u001F]/g, '_')
+    .replace(/\s+/g, ' ')
+    .replace(/\.+$/g, '');
+
+  return safe.slice(0, 80) || 'Imported TXT';
+}
+
+function getTxtImportSceneLocatorsFromPlan(plan, createdSceneIds) {
+  const createdIds = normalizeTxtImportCreatedSceneIds(createdSceneIds);
+  if (createdIds.length === 0) return [];
+  const createdSet = new Set(createdIds);
+  const entries = Array.isArray(plan?.candidateCreatePlan?.entries)
+    ? plan.candidateCreatePlan.entries
+    : [];
+
+  return entries
+    .map((entry) => {
+      if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return null;
+      const sceneId = typeof entry.sceneId === 'string' ? entry.sceneId.trim() : '';
+      const contentTextHash = typeof entry.contentTextHash === 'string'
+        ? entry.contentTextHash.trim()
+        : '';
+      if (!sceneId || !createdSet.has(sceneId) || !/^[a-f0-9]{10}$/u.test(contentTextHash)) {
+        return null;
+      }
+      const title = typeof entry.title === 'string' && entry.title.trim()
+        ? entry.title.trim()
+        : 'Imported TXT';
+      return {
+        sceneId,
+        expectedLabel: `${sanitizeTxtImportSceneLabelPart(title)} ${contentTextHash}`,
+      };
+    })
+    .filter(Boolean);
+}
+
+function findTxtImportSceneNode(root, locators) {
+  if (!root || !Array.isArray(locators) || locators.length === 0) return null;
+  const sceneIds = new Set(locators.map((item) => item.sceneId).filter(Boolean));
+  const expectedLabels = new Set(locators.map((item) => item.expectedLabel).filter(Boolean));
+  const matches = [];
+  const seenPaths = new Set();
+
+  const visit = (node) => {
+    if (!node || typeof node !== 'object' || Array.isArray(node)) return;
+    const kind = getEffectiveDocumentKind(node);
+    if (kind === 'scene') {
+      const sceneId = typeof node.sceneId === 'string' ? node.sceneId.trim() : '';
+      const label = typeof node.label === 'string'
+        ? node.label.trim()
+        : (typeof node.name === 'string' ? node.name.trim() : '');
+      const nodePath = getEffectiveDocumentPath(node);
+      if (
+        ((sceneId && sceneIds.has(sceneId)) || (label && expectedLabels.has(label)))
+        && nodePath
+        && !seenPaths.has(nodePath)
+      ) {
+        seenPaths.add(nodePath);
+        matches.push(node);
+      }
+    }
+    if (Array.isArray(node.children)) {
+      node.children.forEach(visit);
+    }
+  };
+
+  visit(root);
+  return matches.length === 1 ? matches[0] : null;
+}
+
+async function openImportedTxtSceneAfterAccept(plan, createdSceneIds) {
+  const locators = getTxtImportSceneLocatorsFromPlan(plan, createdSceneIds);
+  if (locators.length === 0) {
+    return { opened: false, reason: 'no-created-txt-scene-locator' };
+  }
+  const node = findTxtImportSceneNode(treeRoot, locators);
+  if (!node) {
+    return { opened: false, reason: 'imported-txt-scene-not-found' };
+  }
+  const opened = await openDocumentNode(node);
+  if (opened) {
+    renderTree();
+    return { opened: true, reason: 'opened-imported-txt-scene' };
+  }
+  return { opened: false, reason: 'imported-txt-scene-open-failed' };
+}
+
 function summarizeDocxImportPreview(value) {
   const plan = getDocxImportPreviewPlanFromValue(value);
   const entryCount = Number.isInteger(plan?.candidateCreatePlan?.entryCount)
@@ -8646,6 +8757,80 @@ async function confirmDocxImportPreviewAndRun() {
     ? '; opened imported scene'
     : (createdSceneIds.length > 0 ? `; ${openResult.reason}` : '');
   updateStatusText(`Imported DOCX scenes: ${createdSceneIds.length}${openSuffix}`);
+}
+
+function summarizeTxtImportPreview(value) {
+  const plan = getTxtImportPreviewPlanFromValue(value);
+  const entry = Array.isArray(plan?.candidateCreatePlan?.entries)
+    ? plan.candidateCreatePlan.entries[0]
+    : null;
+  const source = value?.sourceSummary && typeof value.sourceSummary === 'object'
+    ? value.sourceSummary
+    : (value?.localFilePreview?.sourceSummary && typeof value.localFilePreview.sourceSummary === 'object'
+      ? value.localFilePreview.sourceSummary
+      : null);
+  if (!plan || plan.ok !== true || !entry || typeof entry.content !== 'string') {
+    return 'TXT preview is not importable.';
+  }
+  const lineCount = Number.isInteger(source?.lineCount) ? source.lineCount : entry.content.split('\n').length;
+  const sourceName = typeof source?.sourceName === 'string' && source.sourceName.trim()
+    ? source.sourceName.trim()
+    : 'import.txt';
+  return `Ready to create 1 scene from ${sourceName}. Text chars: ${entry.content.length}. Lines: ${lineCount}.`;
+}
+
+async function openTxtImportPreviewFlow() {
+  updateStatusText('Preparing TXT import preview');
+  const result = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_TXT_V1);
+  if (!result || result.ok !== true) return;
+  const previewValue = result.value && typeof result.value === 'object' && !Array.isArray(result.value)
+    ? result.value
+    : {};
+  const localFilePreview = previewValue.localFilePreview && typeof previewValue.localFilePreview === 'object'
+    ? previewValue.localFilePreview
+    : null;
+  if (localFilePreview && localFilePreview.status === 'cancelled') {
+    updateStatusText('TXT import cancelled');
+    return;
+  }
+  const plan = getTxtImportPreviewPlanFromValue(previewValue);
+  if (!plan || plan.ok !== true) {
+    updateStatusText('TXT import preview unavailable');
+    return;
+  }
+
+  const previewSummary = summarizeTxtImportPreview(previewValue);
+  const confirmed = typeof window.confirm === 'function'
+    ? window.confirm(`${previewSummary}\n\nCreate imported TXT scene?`)
+    : true;
+  if (!confirmed) {
+    updateStatusText('TXT import preview ready');
+    return;
+  }
+
+  updateStatusText('Importing TXT');
+  const acceptResult = await dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_TXT_V1, {
+    accept: true,
+    localFilePreview,
+    sourceSummary: previewValue.sourceSummary
+      || localFilePreview?.sourceSummary
+      || null,
+    txtImportPreviewPlan: plan,
+  });
+  if (!acceptResult || acceptResult.ok !== true) return;
+
+  const resultValue = acceptResult.value && typeof acceptResult.value === 'object' && !Array.isArray(acceptResult.value)
+    ? acceptResult.value
+    : {};
+  const createdSceneIds = Array.isArray(resultValue.visibleCreatedSceneIds)
+    ? resultValue.visibleCreatedSceneIds
+    : (Array.isArray(resultValue.createdSceneIds) ? resultValue.createdSceneIds : []);
+  await loadTree();
+  const openResult = await openImportedTxtSceneAfterAccept(plan, createdSceneIds);
+  const openSuffix = openResult.opened
+    ? '; opened imported TXT scene'
+    : (createdSceneIds.length > 0 ? `; ${openResult.reason}` : '');
+  updateStatusText(`Imported TXT scenes: ${createdSceneIds.length}${openSuffix}`);
 }
 
 function applyCollabGate() {
@@ -10816,6 +11001,10 @@ if (window.electronAPI) {
     }
     if (commandId === EXTRA_COMMAND_IDS.WINDOW_SWITCH_MODE_WRITE) {
       applyMode('write');
+      return true;
+    }
+    if (commandId === COMMAND_IDS.PROJECT_IMPORT_TXT_V1) {
+      void openTxtImportPreviewFlow();
       return true;
     }
     if (commandId === COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN && payload.preview === true) {
