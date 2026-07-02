@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_release_claim_command_surface_trigger_witness_binding",
+  "featureExpansion": "bounded_review_bridge_claim_binding",
+  "headShaBefore": "418c78003ab502cc77873b704422d11ae7e09ecd",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": true,
+    "rendererSurfaceChanged": false,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false,
+    "releaseClaimCommandSurfaceTriggerWitnessRuntimeChanged": true,
+    "releaseClaimCommandSurfaceTriggerWitnessBound": true,
+    "releaseClaimCommandExecutionWitnessBoundPreviously": true,
+    "releaseClaimCommandExecutionWitnessDeliveredPreviously": true,
+    "commandSurfaceTriggerWitnessClaimed": true,
+    "commandAvailabilityClaimed": false,
+    "commandExecutionAccepted": false,
+    "releaseExecutionAccepted": false,
+    "releasePublicationCompletionClaimed": false,
+    "productPublicationClaimed": false,
+    "publicationAuthorityClaimed": false,
+    "userFacingReleaseClaimed": false,
+    "releaseReadinessClaimed": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false,
+    "autoApply": false,
+    "y9Opened": false
+  },
+  "binding": {
+    "sourcePlan": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_FINAL_PLAN_R2",
+    "previousContourTaskId": "REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001",
+    "previousContourStatus": "delivered_merged_verified",
+    "previousContourMergeSha": "38472c3641ebd5f4ae0f5548a6077f94c18925b5",
+    "previousContourDeliveryRebindMergeSha": "418c78003ab502cc77873b704422d11ae7e09ecd",
+    "existingCommandSurfaceTriggerMarker": "CONTOUR_12N_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS",
+    "upstreamCommandExecutionWitnessMarker": "CONTOUR_12M_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS",
+    "upstreamCommandExecutionWitnessTaskId": "REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001",
+    "upstreamCommandExecutionWitnessStatus": "delivered_merged_verified",
+    "upstreamExecutionGateMarker": "CONTOUR_12K_RELEASE_CLAIM_EXECUTION_GATE",
+    "upstreamExecutionGateTaskId": "REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001",
+    "upstreamExecutionGateStatus": "delivered_merged_verified",
+    "commandSurfaceCommandId": "cmd.project.releaseClaim.execute",
+    "commandSurfaceRoute": "command.bus",
+    "triggerRegistryType": "ephemeral_in_memory_packet_id_registry",
+    "triggerRegistryLifetime": "main_process_lifetime_only",
+    "executionGateSchema": "revision-bridge.release-claim-execution-gate.v1"
+  },
+  "positiveClaims": [
+    "The explicit owner-selected release claim command surface trigger witness path is product-bound as bounded internal Review Bridge 12N command surface trigger witness-only evidence.",
+    "Accepted 12N requires the command id cmd.project.releaseClaim.execute to remain on the command surface kernel allowlist.",
+    "Accepted 12N requires bus-route command surface dispatch; direct route bypass remains blocked.",
+    "Accepted 12N calls the already-bound 12M witness path and keeps summary.witnessOnly true.",
+    "Accepted 12N writes exactly one deterministic in-memory trigger witness record keyed by packetId only when the bounded 12M witness result is accepted.",
+    "Accepted 12N keeps trigger witness registry lifetime bounded to the current main-process lifetime only.",
+    "Accepted 12N blocks a second trigger witness write for an already-recorded packetId with a deterministic duplicate-packet blocked witness outcome.",
+    "Diagnostics or blocked 12M witness output writes no trigger witness record.",
+    "Accepted 12N blocks missing packetId before any trigger witness record is written.",
+    "At the real ui:command-bridge boundary, accepted 12N preserves the existing outer ok true value path while blocked or diagnostics witness output remains nested under the outer failure value field.",
+    "This contour is command surface trigger witness-only evidence; it is not command availability, command execution, release execution completion, product publication, release readiness, import, export, apply, queue admission, storage truth, or project truth."
+  ],
+  "nonClaims": [
+    "No command availability is claimed.",
+    "No command execution is claimed.",
+    "No release execution completion is claimed.",
+    "No runtime queue semantics are claimed.",
+    "No retry, drop, abandon, or single-writer queue policy is claimed.",
+    "No product publication is claimed.",
+    "No release readiness is claimed.",
+    "No user-facing release is claimed.",
+    "No release publication completion is claimed.",
+    "No publication authority is claimed.",
+    "No release-wide publication authority is claimed.",
+    "No renderer runtime trigger is introduced.",
+    "No UI state is changed.",
+    "No Word support is claimed.",
+    "No Google Docs support is claimed.",
+    "No DOCX support expansion is claimed.",
+    "No import support is claimed.",
+    "No export support is claimed.",
+    "No review import completion is claimed.",
+    "No roundtrip is claimed.",
+    "No layout parity is claimed.",
+    "No full fidelity is claimed.",
+    "No automatic apply is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed by release claim command surface trigger witness binding.",
+    "No project truth write is performed by release claim command surface trigger witness binding.",
+    "No receipt or recovery evidence is created by release claim command surface trigger witness binding.",
+    "No DOCX import safe-create behavior is changed.",
+    "No DOCX export behavior is changed.",
+    "No import/export MVP closeout is widened.",
+    "No PDF, EPUB, HTML, Mindmap, cloud sync, cross-platform readiness, packaged readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Command surface trigger witness binding is main-only witness evidence.",
+    "Trigger witness record is ephemeral in-memory state only and does not become project truth.",
+    "Trigger witness registry lifetime is the current main-process lifetime only and is not replayed from storage.",
+    "Command surface trigger witness binding does not execute release commands.",
+    "Command surface trigger witness binding does not prove command execution.",
+    "Command surface trigger witness binding does not admit command availability.",
+    "Command surface trigger witness binding does not admit release execution completion.",
+    "Command surface trigger witness binding does not open runtime queue semantics.",
+    "Command surface trigger witness binding does not write manuscript truth or project truth.",
+    "Command surface trigger witness binding does not publish anything.",
+    "12M command execution witness remains upstream evidence and is not reopened semantically by this contour.",
+    "12K execution gate remains upstream evidence and is not reopened semantically by this contour.",
+    "USER_FACING_CLAIM_READY remains an internal chain class only, not a release readiness state.",
+    "USER_FACING is a chain surface in this contour, not a user-facing UI state.",
+    "This contour is not a real release execution contour.",
+    "This contour is not a product publication contour."
+  ],
+  "implementation": {
+    "changedProductionRuntime": true,
+    "changedUi": false,
+    "changedBasenames": [
+      "REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_001_STATUS.json",
+      "review-bridge-release-claim-command-surface-trigger-witness-binding.contract.test.js",
+      "revision-bridge-release-claim-command-surface-trigger-witness-wiring.contract.test.js",
+      "revision-bridge-release-claim-command-execution-witness-wiring.contract.test.js",
+      "main.js",
+      "GOVERNANCE_CHANGE_APPROVALS.json",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "WORKLOG.md"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --test test/contracts/revision-bridge-release-claim-command-execution-witness-wiring.contract.test.js",
+      "status": "pass",
+      "tests": 18
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-release-claim-command-surface-trigger-witness-wiring.contract.test.js",
+      "status": "pass",
+      "tests": 5
+    },
+    {
+      "command": "node --test test/contracts/review-bridge-release-claim-command-surface-trigger-witness-binding.contract.test.js",
+      "status": "pass",
+      "tests": 5
+    },
+    {
+      "command": "node scripts/ops/governance-approval-state.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "node --check src/main.js",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "commandIdAllowlisted": true,
+    "busRouteRequired": true,
+    "directRouteBypassRejected": true,
+    "executionGateCalled": true,
+    "accepted12MRequired": true,
+    "nonPlainPayloadRejectedBeforeExecutionGate": true,
+    "inheritedPayloadRejectedBeforeExecutionGate": true,
+    "triggerWitnessRecordStoredOnAccepted": true,
+    "duplicatePacketBlocked": true,
+    "diagnosticsOrBlockedStoreNoTriggerWitnessRecord": true,
+    "missingPacketIdBlockedBeforeTriggerRecord": true,
+    "outputCannotMeanCommandAvailability": true,
+    "outputCannotMeanCommandExecution": true,
+    "outputCannotMeanReleaseExecutionCompletion": true,
+    "runtimeQueueOpened": false,
+    "projectTruthMutated": false,
+    "receiptCreated": false,
+    "recoveryCreated": false
+  },
+  "agentAudits": [
+    {
+      "agent": "Galileo",
+      "type": "read_only_canon_skeptic",
+      "result": "trigger_name_is_safe_only_as_witness_evidence",
+      "finding": "Confirmed 12N must stay witness-only, non-mutating, queue-free, storage-free, publication-free, and readiness-free even if the contour name contains trigger language."
+    },
+    {
+      "agent": "Popper",
+      "type": "read_only_runtime_insertion_explorer",
+      "result": "packet_id_effect_layer_guard_is_sufficient",
+      "finding": "Confirmed summary.packetId is the narrow accepted identifier already surfaced by 12M and that one module-local Set or Map in main.js is enough for effect-layer idempotency without reopening broad queue semantics."
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending"
+  },
+  "decision": "RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_IMPLEMENTED_VERIFIED_PENDING_DELIVERY",
+  "nextStep": "run policy checks, update governance approvals, commit, push, open PR, and merge; delivery rebind stays separate after merge"
+}

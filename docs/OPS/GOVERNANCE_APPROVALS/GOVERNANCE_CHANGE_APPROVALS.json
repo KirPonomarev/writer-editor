@@ -3601,10 +3601,31 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-release-claim-command-execution-witness-wiring.contract.test.js",
-      "sha256": "1152c0bb41c430e917325b8aeda09e54178fa140a03e4f424e676ac73d60aa06",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_BINDING_001",
-      "approvedAtUtc": "2026-07-02T13:51:44.000Z",
-      "rationale": "Approve bounded 12M wiring guard proving cmd.project.releaseClaim.execute stays on the command-surface allowlist, wraps 12K into a typed witness-only envelope, rejects non-plain and inherited top-level payloads before 12K, preserves determinism and non-mutation, and keeps the contour free of UI, storage, network, dependency, command availability, command execution, product publication, release readiness, import/export widening, receipt, recovery, or Y9 claim."
+      "sha256": "174a46e5ab02904a2e8e53a9a1bd74efe0d8b493191b47da674814cd017845e6",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_001",
+      "approvedAtUtc": "2026-07-02T15:10:00.000Z",
+      "rationale": "Approve 12M wiring guard extension under bounded 12N so the existing witness path now exposes test-only trigger witness registry helpers, keeps accepted witness semantics stable on first pass, adds deterministic duplicate outcome checks under cleared state, and stays free of UI, queue, storage, network, dependency, command availability, command execution, publication, readiness, import/export widening, receipt, recovery, or Y9 claim."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_001_STATUS.json",
+      "sha256": "a8edacd99328224f43514fcca245b1c5462402e49a4d4d320e6acbff0f3845c3",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_001",
+      "approvedAtUtc": "2026-07-02T15:10:00.000Z",
+      "rationale": "Approve bounded 12N command surface trigger witness status artifact for one explicit owner-approved contour over delivered 12M; it records main-only packetId-keyed in-memory trigger witness evidence with main-process lifetime only, duplicate-packet blocking, missing-packet blocking, no trigger record for blocked or diagnostics, completed machine-check ledger rows, and explicit nonclaims against command availability, command execution, release execution completion, runtime queue semantics, storage, publication, readiness, renderer runtime trigger, import/export widening, receipt, recovery, dependency, and Y9."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-command-surface-trigger-witness-binding.contract.test.js",
+      "sha256": "c0ff8fe9663384f64e61432ad8748bec399c30a91f6a5f94f2a327ccdaca6913",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_001",
+      "approvedAtUtc": "2026-07-02T15:10:00.000Z",
+      "rationale": "Approve contract guard for bounded 12N command surface trigger witness binding; it checks status scope, 12N marker, 12M and 12K linkage, command.bus route, packetId-keyed in-memory trigger witness semantics, duplicate and missing-packet negatives, docs honesty, and overclaim negatives without introducing command availability, command execution, release execution completion, runtime queue semantics, storage, publication, readiness, renderer runtime trigger, import/export widening, receipt, recovery, dependency, or Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-command-surface-trigger-witness-wiring.contract.test.js",
+      "sha256": "c8a1c456a71cb61e6b04beff110e1b7501eb45dc9696aef4a11c0bc3d2bd8b7a",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_001",
+      "approvedAtUtc": "2026-07-02T15:10:00.000Z",
+      "rationale": "Approve bounded 12N trigger witness wiring guard proving the contour stays main-only, queue-free, and storage-free while accepted witness results record exactly one in-memory packetId-keyed trigger witness record, duplicate packetIds block deterministically, missing packetIds block before record creation, and blocked or diagnostics witness outputs create no trigger witness record."
     }
   ]
 }

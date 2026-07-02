@@ -4557,6 +4557,116 @@ function buildReleaseClaimCommandExecutionWitnessResult(executionGateResult) {
   };
 }
 
+// CONTOUR_12N_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_START
+const releaseClaimCommandSurfaceTriggerWitnessRegistry = new Map();
+
+function cloneReleaseClaimCommandSurfaceTriggerWitnessValue(value) {
+  return cloneReleaseClaimCommandExecutionWitnessValue(value);
+}
+
+function buildReleaseClaimCommandSurfaceTriggerWitnessReason(code, field, details = undefined) {
+  const reason = { code, field };
+  if (details && typeof details === 'object' && !Array.isArray(details)) {
+    reason.details = cloneReleaseClaimCommandSurfaceTriggerWitnessValue(details) || {};
+  }
+  return reason;
+}
+
+function buildReleaseClaimCommandSurfaceTriggerWitnessRecord(witnessResult) {
+  const summary = witnessResult && typeof witnessResult.summary === 'object' && !Array.isArray(witnessResult.summary)
+    ? witnessResult.summary
+    : {};
+  const packetId = typeof summary.packetId === 'string' ? summary.packetId : '';
+  if (packetId.length === 0) {
+    return null;
+  }
+
+  return {
+    type: 'revisionBridge.releaseClaimCommandSurfaceTriggerWitness',
+    packetId,
+    attestationId: typeof summary.attestationId === 'string' ? summary.attestationId : '',
+    claimSurface: typeof summary.claimSurface === 'string' ? summary.claimSurface : '',
+    commandId: 'cmd.project.releaseClaim.execute',
+    admissionClass: typeof summary.admissionClass === 'string' ? summary.admissionClass : '',
+    witnessOnly: true,
+  };
+}
+
+function clearReleaseClaimCommandSurfaceTriggerWitnessRegistry() {
+  releaseClaimCommandSurfaceTriggerWitnessRegistry.clear();
+}
+
+function readReleaseClaimCommandSurfaceTriggerWitnessRegistry() {
+  return [...releaseClaimCommandSurfaceTriggerWitnessRegistry.values()]
+    .map((record) => cloneReleaseClaimCommandSurfaceTriggerWitnessValue(record));
+}
+
+function buildReleaseClaimCommandSurfaceTriggerWitnessBlockedResult(
+  code,
+  witnessResult,
+  field,
+  details = undefined,
+) {
+  const source = witnessResult && typeof witnessResult === 'object' && !Array.isArray(witnessResult)
+    ? witnessResult
+    : {};
+  const binding = source.binding && typeof source.binding === 'object' && !Array.isArray(source.binding)
+    ? cloneReleaseClaimCommandSurfaceTriggerWitnessValue(source.binding) || {}
+    : {};
+  const summary = source.summary && typeof source.summary === 'object' && !Array.isArray(source.summary)
+    ? cloneReleaseClaimCommandSurfaceTriggerWitnessValue(source.summary) || {}
+    : {};
+
+  return {
+    ok: false,
+    type: 'revisionBridge.releaseClaimCommandExecutionWitness',
+    status: 'blocked',
+    code,
+    reason: code,
+    reasons: [
+      buildReleaseClaimCommandSurfaceTriggerWitnessReason(code, field, details),
+    ],
+    binding,
+    summary: {
+      claimSurface: typeof summary.claimSurface === 'string' ? summary.claimSurface : '',
+      packetId: typeof summary.packetId === 'string' ? summary.packetId : '',
+      attestationId: typeof summary.attestationId === 'string' ? summary.attestationId : '',
+      commandId: 'cmd.project.releaseClaim.execute',
+      admissionClass: typeof summary.admissionClass === 'string' ? summary.admissionClass : '',
+      witnessOnly: true,
+    },
+  };
+}
+
+function registerReleaseClaimCommandSurfaceTriggerWitness(witnessResult) {
+  if (!witnessResult || typeof witnessResult !== 'object' || Array.isArray(witnessResult)) {
+    return { action: 'skipped' };
+  }
+  if (witnessResult.ok !== true || witnessResult.status !== 'accepted') {
+    return { action: 'skipped' };
+  }
+
+  const record = buildReleaseClaimCommandSurfaceTriggerWitnessRecord(witnessResult);
+  if (!record) {
+    return { action: 'missingPacketId' };
+  }
+
+  const existingRecord = releaseClaimCommandSurfaceTriggerWitnessRegistry.get(record.packetId);
+  if (existingRecord) {
+    return {
+      action: 'duplicate',
+      record: cloneReleaseClaimCommandSurfaceTriggerWitnessValue(existingRecord),
+    };
+  }
+
+  releaseClaimCommandSurfaceTriggerWitnessRegistry.set(record.packetId, record);
+  return {
+    action: 'recorded',
+    record: cloneReleaseClaimCommandSurfaceTriggerWitnessValue(record),
+  };
+}
+// CONTOUR_12N_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_END
+
 async function handleRevisionBridgeReleaseClaimCommandExecutionWitness(payload = {}) {
   if (!isReleaseClaimCommandExecutionWitnessPlainPayload(payload)) {
     return makeReleaseClaimCommandExecutionWitnessError(
@@ -4570,7 +4680,35 @@ async function handleRevisionBridgeReleaseClaimCommandExecutionWitness(payload =
 
   const revisionBridge = await loadRevisionBridgeModule();
   const executionGateResult = revisionBridge.evaluateRevisionBridgeReleaseClaimExecutionGate(payload);
-  return buildReleaseClaimCommandExecutionWitnessResult(executionGateResult);
+  const witnessResult = buildReleaseClaimCommandExecutionWitnessResult(executionGateResult);
+  const triggerWitnessOutcome = registerReleaseClaimCommandSurfaceTriggerWitness(witnessResult);
+
+  if (triggerWitnessOutcome.action === 'missingPacketId') {
+    return buildReleaseClaimCommandSurfaceTriggerWitnessBlockedResult(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_PACKET_ID_REQUIRED',
+      witnessResult,
+      'summary.packetId',
+      {
+        commandId: 'cmd.project.releaseClaim.execute',
+      },
+    );
+  }
+
+  if (triggerWitnessOutcome.action === 'duplicate') {
+    return buildReleaseClaimCommandSurfaceTriggerWitnessBlockedResult(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_DUPLICATE_PACKET_BLOCKED',
+      witnessResult,
+      'summary.packetId',
+      {
+        packetId: triggerWitnessOutcome.record && typeof triggerWitnessOutcome.record.packetId === 'string'
+          ? triggerWitnessOutcome.record.packetId
+          : '',
+        commandId: 'cmd.project.releaseClaim.execute',
+      },
+    );
+  }
+
+  return witnessResult;
 }
 // CONTOUR_12M_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_END
 
