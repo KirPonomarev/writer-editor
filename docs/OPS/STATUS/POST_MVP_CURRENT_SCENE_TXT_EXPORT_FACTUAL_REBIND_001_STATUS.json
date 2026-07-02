@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "POST_MVP_CURRENT_SCENE_TXT_EXPORT_FACTUAL_REBIND_001",
-  "status": "delivered_merged_verified",
+  "status": "factual_rebind_complete",
   "type": "product_factual_rebind_of_delivered_feature",
   "featureExpansion": false,
   "baseSha": "cc0f226f68341c649423ba8761b91939cd2dbade",
@@ -112,7 +112,7 @@
     ],
     "status": "pass"
   },
-  "machineChecks": [
+  "verification": [
     {
       "command": "node --test test/contracts/post-mvp-current-scene-txt-export.contract.test.js",
       "status": "pass",
@@ -132,24 +132,6 @@
       "status": "pass"
     }
   ],
-  "readOnlyAgents": [
-    {
-      "role": "existing_status_packet_investigator",
-      "agentId": "019f2494-f4a1-7ee2-8e4c-0bc3006f889d",
-      "verdict": "no_existing_packet_or_task_truth_found",
-      "localResolution": "addressed_by_adding_narrow_task_brief_status_artifact_and_factual_doc_sync_only"
-    }
-  ],
-  "delivery": {
-    "commitRequired": true,
-    "pushRequired": true,
-    "pullRequestRequired": true,
-    "mergeRequired": true,
-    "status": "source_feature_delivered_merged_verified",
-    "featureCommitSha": "853edd88c8171dbc1c5cce9ec120a2f6b59d2f4c",
-    "featurePullRequest": 1060,
-    "featureMergeSha": "c79cb107d3e346df6253b50e9407811449acdd0d"
-  },
   "decision": "CURRENT_SCENE_TXT_EXPORT_DELIVERED_POST_MVP_AND_FACTUALLY_REBOUND",
   "nextStep": "OWNER_SELECTED_ONLY"
 }

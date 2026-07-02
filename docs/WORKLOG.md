@@ -4,9 +4,7 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-02
-- Post-MVP current scene TXT export: source feature was delivered on main via PR `1060` merge SHA `c79cb107d3e346df6253b50e9407811449acdd0d` after feature commit `853edd88c8171dbc1c5cce9ec120a2f6b59d2f4c`.
-- Current scene TXT export product surface: `cmd.project.exportCurrentSceneTxtV1` is a bounded File menu command for the saved current scene only; main owns canonical envelope read from disk, save dialog resolution, target validation, and atomic external TXT write.
-- Current scene TXT export scope truth: dirty or unsaved current scene fails closed, non-scene sources fail closed, target path equal current scene or inside project root is blocked, and this contour does not widen the closed import/export MVP gate or claim full manuscript TXT export.
+- Factual rebind: active docs now record the already merged post-MVP current scene TXT export from PR `1060` as a current-scene-only external TXT path, separate from the closed import/export MVP gate and from TXT import.
 - Post-MVP TXT import: opened and implemented `POST_MVP_TXT_IMPORT_SAFE_CREATE_001` as a bounded TXT chooser preview accept contour separate from the closed import/export MVP gate.
 - TXT import product surface: added user-facing `cmd.project.importTxtV1` plus bridge-only `cmd.project.txt.previewLocalFile` and `cmd.project.txt.importSafeCreate`; main owns picker stat read and restat, renderer owns intent plus accepted preview only, preview stays pathless and write-free, and accept creates exactly one new imported scene.
 - TXT import scope truth: accepted encodings are UTF-8 and UTF-8 BOM only; non-UTF8 bytes fail closed; this contour does not widen `IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json` and does not change DOCX export, DOCX import, Markdown import, Markdown export, or Mindmap scope truth.
