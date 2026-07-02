@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_release_claim_admission_binding",
+  "featureExpansion": "bounded_review_bridge_claim_binding",
+  "baseSha": "0a57ed2070a5f1697d0c4d0b7451984966f56721",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": true,
+    "rendererSurfaceChanged": false,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false,
+    "releaseClaimAdmissionRuntimeChanged": true,
+    "releaseModeDecisionAccepted": false,
+    "releaseExecutionAccepted": false,
+    "releasePublicationAccepted": false,
+    "userFacingReleaseClaimed": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false,
+    "autoApply": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "binding": {
+    "sourcePlan": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_FINAL_PLAN_R2",
+    "previousContourTaskId": "REVIEW_BRIDGE_RELEASE_CLAIM_DOSSIER_BINDING_001",
+    "previousContourStatus": "delivered_merged_verified",
+    "previousContourMergeSha": "06ca9d07c03fc095dda683e2a0f2c79e068c7f91",
+    "existingKernelMarker": "CONTOUR_12C_RELEASE_CLAIM_ADMISSION_GATE",
+    "releaseClaimAdmissionSchema": "revision-bridge.release-claim-admission.v1",
+    "releaseClaimDossierGateMarker": "CONTOUR_12B_RELEASE_CLAIM_DOSSIER_GATE"
+  },
+  "positiveClaims": [
+    "The existing release claim admission gate is product-bound as a bounded Review Bridge admission boundary.",
+    "Admission gate acceptance requires an accepted 12B release claim dossier result with valid 12B provenance.",
+    "Admission gate acceptance requires admission claimScope to be covered by coveredScope derived from accepted 12B dossier item evaluations, requiredClaimClasses to be present in dossier claimClasses, and baselineDebtFlag to be false.",
+    "Caller-supplied coveredScope cannot widen admission coverage beyond accepted 12B dossier item evaluations.",
+    "Missing dossier result, blocked dossier result, synthetic accepted dossier result without 12B provenance, malformed dossier item evaluations, uncovered claimScope, forged coveredScope, missing required claim classes, and baseline debt block or diagnose the admission gate.",
+    "The binding is admission candidate truth only; it is not mode decision, release execution, release publication, user-facing release, import, export, apply, storage truth, or release readiness truth."
+  ],
+  "nonClaims": [
+    "No release readiness is claimed.",
+    "No user-facing release is claimed.",
+    "No release mode decision completion is claimed.",
+    "No release execution completion is claimed.",
+    "No release publication completion is claimed.",
+    "No packet emit completion is claimed.",
+    "No attestation completion is claimed.",
+    "No Word support is claimed.",
+    "No Google Docs support is claimed.",
+    "No DOCX support expansion is claimed.",
+    "No import support is claimed.",
+    "No export support is claimed.",
+    "No review import completion is claimed.",
+    "No roundtrip is claimed.",
+    "No layout parity is claimed.",
+    "No full fidelity is claimed.",
+    "No automatic apply is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed by release claim admission binding.",
+    "No project truth write is performed by release claim admission binding.",
+    "No receipt or recovery evidence is created by release claim admission binding.",
+    "No DOCX import safe-create behavior is changed.",
+    "No DOCX export behavior is changed.",
+    "No import/export MVP closeout is widened.",
+    "No PDF, EPUB, HTML, Mindmap, cloud sync, cross-platform readiness, packaged readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Admission binding is admission candidate truth only and accepts only a bounded internal release-claim candidate.",
+    "Admission gate acceptance does not become project truth by itself.",
+    "Admission gate acceptance does not decide release mode.",
+    "Admission gate acceptance does not admit execution or publication.",
+    "Admission gate acceptance does not prove full fidelity, layout parity, roundtrip, import correctness, or export correctness.",
+    "This contour is not a mode decision contour.",
+    "This contour is not a packet emit contour.",
+    "This contour is not an attestation contour.",
+    "This contour is not a user-facing boundary contour.",
+    "This contour is not a release execution contour.",
+    "This contour is not a release publication contour.",
+    "Admission binding is not a parser and does not inspect external documents.",
+    "Admission binding is not content import and does not create scenes.",
+    "Admission binding is not Review import automation and does not activate a Review session.",
+    "Admission binding is not an apply plan and does not authorize mutation.",
+    "Admission binding is not safe write and does not create receipt or recovery evidence.",
+    "Admission binding is not export and does not alter DOCX output.",
+    "Review Bridge may reference accepted admission gate output as bounded internal chain evidence, but accepted admission gate output does not become project truth."
+  ],
+  "implementation": {
+    "changedProductionRuntime": true,
+    "changedUi": false,
+    "changedBasenames": [
+      "REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001_STATUS.json",
+      "review-bridge-release-claim-admission-binding.contract.test.js",
+      "review-bridge-release-claim-dossier-binding.contract.test.js",
+      "index.mjs",
+      "revision-bridge-release-claim-admission-gate.contract.test.js",
+      "GOVERNANCE_CHANGE_APPROVALS.json",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "WORKLOG.md"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --test release claim admission binding targeted contracts",
+      "status": "pass",
+      "tests": 38
+    },
+    {
+      "command": "node --test release claim dossier, admission, mode, boundary, publication, and execution contracts",
+      "status": "pass",
+      "tests": 183
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass",
+      "result": "found 0 vulnerabilities"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "releaseClaimAdmissionBindingExists": true,
+    "acceptedDossierAdmissionAccepted": true,
+    "missingDossierBlocked": true,
+    "blockedDossierBlocked": true,
+    "syntheticDossierBlocked": true,
+    "malformedDossierItemEvaluationBlocked": true,
+    "uncoveredScopeBlocked": true,
+    "forgedCoveredScopeBlocked": true,
+    "requiredClaimClassesMissingBlocked": true,
+    "baselineDebtBlocked": true,
+    "malformedAdmissionDiagnosed": true,
+    "releaseModeDecisionAccepted": false,
+    "releaseExecutionAccepted": false,
+    "releasePublicationAccepted": false,
+    "userFacingReleaseClaimed": false,
+    "releaseReadinessClaimed": false,
+    "importSupportClaimed": false,
+    "exportSupportClaimed": false,
+    "roundtripClaimed": false,
+    "layoutParityClaimed": false,
+    "fullFidelityClaimed": false,
+    "applyOpsCreated": false,
+    "receiptCreated": false,
+    "recoveryCreated": false,
+    "projectTruthMutated": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false
+  },
+  "agentAudits": [
+    {
+      "agent": "Lorentz",
+      "type": "read_only_canon_scope_auditor",
+      "result": "pass",
+      "finding": "Confirmed the contour is canonical as a bounded product-binding over the existing CONTOUR_12C_RELEASE_CLAIM_ADMISSION_GATE after delivered 12B dossier binding, with mandatory nonclaims against release readiness, user-facing release, execution, publication, import/export, apply, receipt, recovery, project truth, storage truth, safe-create change, export change, MVP widening, and Y9."
+    },
+    {
+      "agent": "Darwin",
+      "type": "read_only_kernel_downstream_auditor",
+      "result": "resolved_after_runtime_hardening",
+      "finding": "Confirmed 12C kernel and downstream guards exist; identified caller-supplied coveredScope as a false-green risk, resolved in this contour by deriving coveredScope only from accepted 12B item evaluations and adding forged coverage tests."
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": "",
+    "featureMergedAtUtc": ""
+  },
+  "decision": "RELEASE_CLAIM_ADMISSION_BINDING_BOUND_FOR_CURRENT_SCOPE",
+  "nextStep": "complete delivery chain, then continue with the next owner-selected Review Bridge boundary"
+}

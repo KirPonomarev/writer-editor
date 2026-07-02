@@ -2,6 +2,27 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001_STATUS.json",
+      "sha256": "27fce00254a68c31b484d37aafc78c48d0a174e15e6d8c38722d5fa0e649ae9d",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded release claim admission binding status; it product-binds and minimally hardens the existing 12C release claim admission gate by deriving coveredScope from accepted 12B item evaluations while preserving no release readiness, no user-facing release, no mode decision completion, no execution completion, no publication completion, no Word support, no Google Docs support, no DOCX support expansion, no import support, no export support, no roundtrip, no layout parity, no full fidelity, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no dependency, and no Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-admission-binding.contract.test.js",
+      "sha256": "a14342f1072ded54d82417e0081eda8aef1b0c6c8cbc67cddd826cbf07a690ac",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve contract guard for bounded release claim admission binding; it binds status scope, existing 12C admission gate markers, accepted 12B dossier provenance, derived coveredScope hardening, required claim classes, baseline debt blocking, docs honesty, and downstream guard references without introducing UI, storage, dependency, import/export support, apply authority, release readiness, execution, publication, or user-facing release authority."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-admission-gate.contract.test.js",
+      "sha256": "ba739f8791e4e381a858b763b7f862a12c09d357f98ada5f23ccf066f25059a4",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded 12C admission gate contract hardening proving caller-supplied coveredScope cannot widen admission coverage beyond accepted 12B item evaluations; no UI, storage, dependency, import/export support, apply, release readiness, execution, publication, or user-facing release claim is introduced."
+    },
+    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_DOSSIER_BINDING_001_STATUS.json",
       "sha256": "a0382109870afd63ed77049541bb55ec4c99db5d371d039683d062010d96d0f3",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_DOSSIER_BINDING_001",
@@ -10,10 +31,10 @@
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-dossier-binding.contract.test.js",
-      "sha256": "ee992a52cbaf217634f69c0005a8efdc5be2097951e3ba8cceec7d8488848bbe",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_DOSSIER_BINDING_001",
+      "sha256": "33e740bb58f6580715a2a26cfcd12a7e321b95971eb679490f4c9cd693f02ab4",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve contract guard for bounded release claim dossier binding; it binds status scope, existing 12B release claim dossier gate markers, 12A format matrix and golden-set truth, current docs, downstream nonclaims, and dirty-tree allowlist without introducing runtime import, parser, apply, export, storage, UI, dependency, release readiness, full fidelity, layout parity, or user-facing release authority."
+      "rationale": "Approve bounded release claim dossier binding contract allowlist sync for the adjacent 12C admission binding and hardening contour; no new dossier semantics, UI, storage, dependency, import/export support, apply, release readiness, execution, publication, or user-facing release claim is introduced."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001_STATUS.json",
