@@ -7,9 +7,14 @@ const ALLOWED_COMMAND_IDS = Object.freeze([
   'cmd.project.importMarkdownV1',
   'cmd.project.exportMarkdownV1',
   'cmd.project.releaseClaim.admit',
+  'cmd.project.releaseClaim.execute',
 ]);
 
 const ALLOWED_COMMAND_ID_SET = new Set(ALLOWED_COMMAND_IDS);
+const TYPED_RESULT_COMMAND_IDS = new Set([
+  'cmd.project.releaseClaim.admit',
+  'cmd.project.releaseClaim.execute',
+]);
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -50,6 +55,16 @@ function normalizeCommandError(input, commandId) {
   };
 }
 
+function isTypedCommandSurfaceResult(input, commandId) {
+  return isPlainObject(input)
+    && TYPED_RESULT_COMMAND_IDS.has(commandId)
+    && typeof input.type === 'string'
+    && input.type.length > 0
+    && typeof input.status === 'string'
+    && input.status.length > 0
+    && !isPlainObject(input.error);
+}
+
 function createCommandSurfaceKernel(handlerMap = {}) {
   const handlers = isPlainObject(handlerMap) ? { ...handlerMap } : {};
 
@@ -81,6 +96,9 @@ function createCommandSurfaceKernel(handlerMap = {}) {
     try {
       const result = await handler(payloadRaw);
       if (isPlainObject(result)) {
+        if (isTypedCommandSurfaceResult(result, commandId)) {
+          return result;
+        }
         if (result.ok === false || result.ok === 0 || isPlainObject(result.error)) {
           const normalized = normalizeCommandError(result, commandId);
           return makeTypedError(normalized.code, normalized.op, normalized.reason, normalized.details);
