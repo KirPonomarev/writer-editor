@@ -13288,20 +13288,14 @@ function releaseClaimUserFacingBoundaryReason(code, field, details = {}) {
 }
 
 function normalizeReleaseClaimUserFacingBoundaryPacketEmitResult(input = {}) {
-  const result = isPlainObject(input) ? input : {};
+  const result = isPlainObject(input) ? cloneJsonSafe(input) : {};
   const binding = isPlainObject(result.binding) ? result.binding : {};
   const packet = isPlainObject(result.packet) ? result.packet : {};
   const releaseClaim = isPlainObject(packet.releaseClaim) ? packet.releaseClaim : {};
   const packetMeta = isPlainObject(packet.packetMeta) ? packet.packetMeta : {};
   const attestation = isPlainObject(packet.attestation) ? packet.attestation : {};
   const report = isPlainObject(result.report) ? result.report : {};
-  const releaseClass = normalizeString(
-    report.releaseClass
-    || report.modeClass
-    || releaseClaim.releaseClass
-    || releaseClaim.modeClass,
-  );
-
+  const summary = isPlainObject(result.summary) ? result.summary : {};
   return {
     ok: result.ok === true,
     type: normalizeString(result.type),
@@ -13309,14 +13303,17 @@ function normalizeReleaseClaimUserFacingBoundaryPacketEmitResult(input = {}) {
     code: normalizeString(result.code),
     reason: normalizeString(result.reason),
     binding: {
-      mode: normalizeString(binding.mode || releaseClaim.mode || report.mode),
-      claimId: normalizeString(binding.claimId || releaseClaim.claimId || report.claimId),
-      dossierId: normalizeString(binding.dossierId || releaseClaim.dossierId || report.dossierId),
-      matrixId: normalizeString(binding.matrixId || releaseClaim.matrixId || report.matrixId),
-      releaseClass,
+      mode: normalizeString(binding.mode),
+      claimId: normalizeString(binding.claimId),
+      dossierId: normalizeString(binding.dossierId),
+      matrixId: normalizeString(binding.matrixId),
+      releaseClass: normalizeString(binding.releaseClass || binding.modeClass),
+      packetId: normalizeString(binding.packetId),
+      attestationId: normalizeString(binding.attestationId),
     },
     packet: {
       schemaVersion: normalizeString(packet.schemaVersion),
+      packetHash: normalizeString(packet.packetHash),
       packetId: normalizeString(packetMeta.packetId),
       attestationId: normalizeString(attestation.attestationId),
       mode: normalizeString(releaseClaim.mode),
@@ -13324,15 +13321,26 @@ function normalizeReleaseClaimUserFacingBoundaryPacketEmitResult(input = {}) {
       dossierId: normalizeString(releaseClaim.dossierId),
       matrixId: normalizeString(releaseClaim.matrixId),
       releaseClass: normalizeString(releaseClaim.releaseClass || releaseClaim.modeClass),
+      raw: cloneJsonSafe(packet) || {},
     },
     report: {
       schemaVersion: normalizeString(report.schemaVersion),
       reportClass: normalizeString(report.reportClass),
+      packetSchemaVersion: normalizeString(report.packetSchemaVersion),
+      packetHash: normalizeString(report.packetHash),
+      packetId: normalizeString(report.packetId),
+      attestationId: normalizeString(report.attestationId),
       mode: normalizeString(report.mode),
       claimId: normalizeString(report.claimId),
       dossierId: normalizeString(report.dossierId),
       matrixId: normalizeString(report.matrixId),
       releaseClass: normalizeString(report.releaseClass || report.modeClass),
+    },
+    summary: {
+      packetSchemaVersion: normalizeString(summary.packetSchemaVersion),
+      strictReportSchemaVersion: normalizeString(summary.strictReportSchemaVersion),
+      packetHash: normalizeString(summary.packetHash),
+      prerequisiteCodes: sortedStableStrings(summary.prerequisiteCodes),
     },
   };
 }
@@ -13396,6 +13404,7 @@ function collectReleaseClaimUserFacingBoundaryPacketReasons(packetEmitResult) {
     { field: 'claimId', expectedValue: packetEmitResult.binding.claimId },
     { field: 'dossierId', expectedValue: packetEmitResult.binding.dossierId },
     { field: 'matrixId', expectedValue: packetEmitResult.binding.matrixId },
+    { field: 'releaseClass', expectedValue: packetEmitResult.binding.releaseClass },
   ];
 
   bindingPairs.forEach(({ field, expectedValue }) => {
@@ -13422,38 +13431,6 @@ function collectReleaseClaimUserFacingBoundaryPacketReasons(packetEmitResult) {
     }
   });
 
-  if (!packetEmitResult.binding.releaseClass) {
-    reasons.push(releaseClaimUserFacingBoundaryReason(
-      'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID',
-      'packetEmitResult.report.releaseClass',
-    ));
-  }
-  if (
-    packetEmitResult.packet.releaseClass
-    && packetEmitResult.packet.releaseClass !== packetEmitResult.binding.releaseClass
-  ) {
-    reasons.push(releaseClaimUserFacingBoundaryReason(
-      'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID',
-      'packetEmitResult.packet.releaseClass',
-      {
-        expectedValue: packetEmitResult.binding.releaseClass,
-        receivedValue: packetEmitResult.packet.releaseClass,
-      },
-    ));
-  }
-  if (
-    packetEmitResult.report.releaseClass
-    && packetEmitResult.report.releaseClass !== packetEmitResult.binding.releaseClass
-  ) {
-    reasons.push(releaseClaimUserFacingBoundaryReason(
-      'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID',
-      'packetEmitResult.report.releaseClass',
-      {
-        expectedValue: packetEmitResult.binding.releaseClass,
-        receivedValue: packetEmitResult.report.releaseClass,
-      },
-    ));
-  }
   if (packetEmitResult.report.reportClass !== 'STRICT_RELEASE_CLAIM_REPORT') {
     reasons.push(releaseClaimUserFacingBoundaryReason(
       'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID',
@@ -13461,6 +13438,106 @@ function collectReleaseClaimUserFacingBoundaryPacketReasons(packetEmitResult) {
       {
         expectedValue: 'STRICT_RELEASE_CLAIM_REPORT',
         receivedValue: packetEmitResult.report.reportClass,
+      },
+    ));
+  }
+
+  if (packetEmitResult.packet.schemaVersion !== REVISION_BRIDGE_RELEASE_CLAIM_PACKET_SCHEMA) {
+    reasons.push(releaseClaimUserFacingBoundaryReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID',
+      'packetEmitResult.packet.schemaVersion',
+      {
+        expectedValue: REVISION_BRIDGE_RELEASE_CLAIM_PACKET_SCHEMA,
+        receivedValue: packetEmitResult.packet.schemaVersion,
+      },
+    ));
+  }
+  if (packetEmitResult.report.schemaVersion !== REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_SCHEMA) {
+    reasons.push(releaseClaimUserFacingBoundaryReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID',
+      'packetEmitResult.report.schemaVersion',
+      {
+        expectedValue: REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_SCHEMA,
+        receivedValue: packetEmitResult.report.schemaVersion,
+      },
+    ));
+  }
+  if (packetEmitResult.report.packetSchemaVersion !== REVISION_BRIDGE_RELEASE_CLAIM_PACKET_SCHEMA) {
+    reasons.push(releaseClaimUserFacingBoundaryReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID',
+      'packetEmitResult.report.packetSchemaVersion',
+      {
+        expectedValue: REVISION_BRIDGE_RELEASE_CLAIM_PACKET_SCHEMA,
+        receivedValue: packetEmitResult.report.packetSchemaVersion,
+      },
+    ));
+  }
+
+  const packetReportPairs = [
+    { field: 'packetId', expectedValue: packetEmitResult.binding.packetId },
+    {
+      field: 'attestationId',
+      expectedValue: packetEmitResult.binding.attestationId,
+    },
+  ];
+  packetReportPairs.forEach(({ field, expectedValue }) => {
+    const packetValue = packetEmitResult.packet[field];
+    const reportValue = packetEmitResult.report[field];
+    if (!expectedValue) {
+      reasons.push(releaseClaimUserFacingBoundaryReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID',
+        `packetEmitResult.binding.${field}`,
+        {
+          packetValue,
+          reportValue,
+        },
+      ));
+      return;
+    }
+
+    if (packetValue !== expectedValue || reportValue !== expectedValue) {
+      reasons.push(releaseClaimUserFacingBoundaryReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID',
+        `packetEmitResult.report.${field}`,
+        {
+          expectedValue,
+          packetValue,
+          reportValue,
+        },
+      ));
+    }
+  });
+
+  const recomputedPacketHash = createRevisionBridgeReleaseClaimPacketHash(packetEmitResult.packet.raw);
+  if (
+    !packetEmitResult.packet.packetHash
+    || packetEmitResult.packet.packetHash !== recomputedPacketHash
+    || packetEmitResult.report.packetHash !== recomputedPacketHash
+    || packetEmitResult.summary.packetHash !== recomputedPacketHash
+  ) {
+    reasons.push(releaseClaimUserFacingBoundaryReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID',
+      'packetEmitResult.packet.packetHash',
+      {
+        expectedValue: recomputedPacketHash,
+        packetValue: packetEmitResult.packet.packetHash,
+        reportValue: packetEmitResult.report.packetHash,
+        summaryValue: packetEmitResult.summary.packetHash,
+      },
+    ));
+  }
+  if (
+    packetEmitResult.summary.packetSchemaVersion !== REVISION_BRIDGE_RELEASE_CLAIM_PACKET_SCHEMA
+    || packetEmitResult.summary.strictReportSchemaVersion !== REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_SCHEMA
+  ) {
+    reasons.push(releaseClaimUserFacingBoundaryReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID',
+      'packetEmitResult.summary',
+      {
+        expectedPacketSchemaVersion: REVISION_BRIDGE_RELEASE_CLAIM_PACKET_SCHEMA,
+        receivedPacketSchemaVersion: packetEmitResult.summary.packetSchemaVersion,
+        expectedStrictReportSchemaVersion: REVISION_BRIDGE_RELEASE_CLAIM_STRICT_REPORT_SCHEMA,
+        receivedStrictReportSchemaVersion: packetEmitResult.summary.strictReportSchemaVersion,
       },
     ));
   }
@@ -13549,7 +13626,7 @@ function releaseClaimUserFacingBoundaryResult(
 }
 
 export function evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate(input = {}) {
-  const boundaryInput = isPlainObject(input) ? input : {};
+  const boundaryInput = isPlainObject(input) ? cloneJsonSafe(input) : {};
   const requestedMode = normalizeString(boundaryInput.requestedMode);
   const requestedClaimSurface = normalizeString(boundaryInput.requestedClaimSurface);
 

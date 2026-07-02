@@ -24,6 +24,12 @@ const ADMISSION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-
 const MODE_DECISION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js';
 const PACKET_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js';
 const PACKET_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001_STATUS.json';
+const USER_FACING_BOUNDARY_KERNEL_TEST_PATH =
+  'test/contracts/revision-bridge-release-claim-user-facing-boundary-gate.contract.test.js';
+const USER_FACING_BOUNDARY_BINDING_TEST_PATH =
+  'test/contracts/review-bridge-release-claim-user-facing-boundary-binding.contract.test.js';
+const USER_FACING_BOUNDARY_BINDING_STATUS_PATH =
+  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001_STATUS.json';
 const CONTEXT_PATH = 'docs/CONTEXT.md';
 const HANDOFF_PATH = 'docs/HANDOFF.md';
 const WORKLOG_PATH = 'docs/WORKLOG.md';
@@ -35,6 +41,9 @@ const ALLOWLIST = [
   MODE_DECISION_BINDING_TEST_PATH,
   PACKET_BINDING_TEST_PATH,
   PACKET_BINDING_STATUS_PATH,
+  USER_FACING_BOUNDARY_KERNEL_TEST_PATH,
+  USER_FACING_BOUNDARY_BINDING_TEST_PATH,
+  USER_FACING_BOUNDARY_BINDING_STATUS_PATH,
   ATTESTATION_KERNEL_TEST_PATH,
   PACKET_KERNEL_TEST_PATH,
   STATUS_PATH_REL,
