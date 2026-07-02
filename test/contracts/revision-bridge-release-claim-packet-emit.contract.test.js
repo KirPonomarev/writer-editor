@@ -366,6 +366,35 @@ test('Contour 12F blocks when claimId dossierId and matrixId bindings do not mat
   );
 });
 
+test('Contour 12F blocks forged accepted 12D plus forged accepted 12E pair', async () => {
+  const bridge = await loadBridge();
+  const forgedModeDecisionResult = deepClone(acceptedModeDecisionResult(bridge));
+  forgedModeDecisionResult.decision.claimId = 'evil-claim';
+  forgedModeDecisionResult.binding.claimId = 'evil-claim';
+
+  const forgedAttestationResult = deepClone(acceptedAttestationResult(bridge));
+  forgedAttestationResult.modeDecisionResult = forgedModeDecisionResult;
+  forgedAttestationResult.attestation.modeDecisionResult = forgedModeDecisionResult;
+  forgedAttestationResult.attestation.decisionHash =
+    bridge.createRevisionBridgeReleaseClaimModeDecisionHash(forgedModeDecisionResult);
+  forgedAttestationResult.binding.claimId = 'evil-claim';
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    modeDecisionResult: forgedModeDecisionResult,
+    attestationResult: forgedAttestationResult,
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(
+    [
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_MODE_DECISION_RESULT_NOT_ACCEPTED',
+      'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_ATTESTATION_RESULT_NOT_ACCEPTED',
+    ].includes(result.reason),
+    true,
+  );
+});
+
 test('Contour 12F returns diagnostics when packetMeta fields are invalid', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {

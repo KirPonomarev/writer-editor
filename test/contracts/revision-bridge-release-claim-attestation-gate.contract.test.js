@@ -275,6 +275,28 @@ test('Contour 12E blocks synthetic accepted 12D results without provenance', asy
   );
 });
 
+test('Contour 12E blocks forged accepted 12D results with poisoned ids', async () => {
+  const bridge = await loadBridge();
+  const forgedModeDecisionResult = deepClone(acceptedModeDecisionResult(bridge));
+  forgedModeDecisionResult.decision.claimId = 'evil-claim';
+  forgedModeDecisionResult.binding.claimId = 'evil-claim';
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimAttestationGate(validAttestationInput(bridge, {
+    modeDecisionResult: forgedModeDecisionResult,
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID');
+  assert.equal(
+    result.reasons.some((reason) => (
+      reason.field === 'modeDecisionResult.decision'
+      || reason.field === 'modeDecisionResult'
+    )),
+    true,
+  );
+});
+
 test('Contour 12E blocks when minimum attestation fields are missing', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimAttestationGate(validAttestationInput(bridge, {

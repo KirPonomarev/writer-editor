@@ -25,6 +25,11 @@ const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHAN
 const ADMISSION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-admission-binding.contract.test.js';
 const ADMISSION_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001_STATUS.json';
 const ADMISSION_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-admission-gate.contract.test.js';
+const MODE_DECISION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js';
+const MODE_DECISION_BINDING_STATUS_PATH = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001_STATUS.json';
+const MODE_DECISION_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-decision-gate.contract.test.js';
+const ATTESTATION_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-attestation-gate.contract.test.js';
+const PACKET_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-packet-emit.contract.test.js';
 const CONTEXT_PATH = 'docs/CONTEXT.md';
 const HANDOFF_PATH = 'docs/HANDOFF.md';
 const WORKLOG_PATH = 'docs/WORKLOG.md';
@@ -37,6 +42,11 @@ const ALLOWLIST = [
   ADMISSION_BINDING_TEST_PATH,
   ADMISSION_BINDING_STATUS_PATH,
   ADMISSION_KERNEL_TEST_PATH,
+  MODE_DECISION_BINDING_TEST_PATH,
+  MODE_DECISION_BINDING_STATUS_PATH,
+  MODE_DECISION_KERNEL_TEST_PATH,
+  ATTESTATION_KERNEL_TEST_PATH,
+  PACKET_KERNEL_TEST_PATH,
   STATUS_PATH_REL,
   GOVERNANCE_APPROVALS_PATH,
   CONTEXT_PATH,

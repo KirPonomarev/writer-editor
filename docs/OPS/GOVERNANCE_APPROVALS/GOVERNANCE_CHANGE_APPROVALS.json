@@ -2,6 +2,41 @@
   "version": "v1.0",
   "approvals": [
     {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001_STATUS.json",
+      "sha256": "50b814e73719879cdc2931e792f3242fefc45990bcebacab064ae3a5e8b219c9",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded release claim mode decision binding status; it product-binds and minimally hardens the existing 12D release claim mode decision gate by deriving claimId, dossierId, and matrixId from accepted 12B and 12C provenance while preserving no release readiness, no user-facing release, no attestation completion, no packet emit completion, no execution completion, no publication completion, no Word support, no Google Docs support, no DOCX support expansion, no import support, no export support, no roundtrip, no layout parity, no full fidelity, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no dependency, and no Y9 claim."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js",
+      "sha256": "4b6ca601a87cc39eaa352187cd552295bbb0db450f2e703ec9b4da15303bbf94",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve contract guard for bounded release claim mode decision binding; it binds status scope, existing 12D mode decision gate markers, accepted 12B dossier provenance, accepted 12C admission provenance, caller id mismatch blocking, downstream 12E and 12F forged-envelope blocking, docs honesty, and changed-file allowlist without introducing UI, storage, dependency, import/export support, apply authority, release readiness, execution, publication, packet emit completion, attestation completion, or user-facing release authority."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-decision-gate.contract.test.js",
+      "sha256": "1541281f64dcd4012941677b1f915ab381f6561cfc714586daf9c728b8e6d9ab",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded 12D mode decision contract hardening proving caller-supplied claimId, dossierId, and matrixId cannot poison accepted upstream release claim provenance; no UI, storage, dependency, import/export support, apply, release readiness, execution, publication, packet emit completion, attestation completion, or user-facing release claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-attestation-gate.contract.test.js",
+      "sha256": "6bd1ad192652cfaa019c4d74e18ea2fb5d5cade5da3ff88d957595471c9c3497",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded 12E attestation guard hardening proving forged accepted 12D mode decision envelopes cannot satisfy attestation provenance; this is immediate downstream false-green closure only and introduces no UI, storage, dependency, import/export support, apply, release readiness, execution, publication, packet emit completion, attestation completion claim, or user-facing release claim."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-release-claim-packet-emit.contract.test.js",
+      "sha256": "23da701f73b274362a4bd2ee2a7927651f55fb956d27a6aa4deb5b62aae287f6",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001",
+      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
+      "rationale": "Approve bounded 12F packet emit guard hardening proving forged accepted 12D plus forged accepted 12E envelope pairs cannot satisfy packet provenance; this is immediate downstream false-green closure only and introduces no UI, storage, dependency, import/export support, apply, release readiness, execution, publication, packet emit completion claim, attestation completion claim, or user-facing release claim."
+    },
+    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001_STATUS.json",
       "sha256": "df5a623941ca6304040c73056aef72585cdda341f054ff19643ca9ded36493ab",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001",
@@ -10,10 +45,10 @@
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-admission-binding.contract.test.js",
-      "sha256": "a14342f1072ded54d82417e0081eda8aef1b0c6c8cbc67cddd826cbf07a690ac",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001",
+      "sha256": "454ad2bdbba846127ac0a8a4205a00d14fef3334e66704e05a47c5163fc6d5ee",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve contract guard for bounded release claim admission binding; it binds status scope, existing 12C admission gate markers, accepted 12B dossier provenance, derived coveredScope hardening, required claim classes, baseline debt blocking, docs honesty, and downstream guard references without introducing UI, storage, dependency, import/export support, apply authority, release readiness, execution, publication, or user-facing release authority."
+      "rationale": "Approve bounded admission binding contract allowlist sync for the adjacent 12D mode decision binding and downstream guard-hardening contour; no new 12C semantics, UI, storage, dependency, import/export support, apply, release readiness, execution, publication, packet emit completion, attestation completion, or user-facing release claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-release-claim-admission-gate.contract.test.js",
@@ -31,10 +66,10 @@
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-dossier-binding.contract.test.js",
-      "sha256": "33e740bb58f6580715a2a26cfcd12a7e321b95971eb679490f4c9cd693f02ab4",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001",
+      "sha256": "0781ba93019adce7ea9baa09fd82c06739ecdf5fcb02f3ff20ad92685e979bd9",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded release claim dossier binding contract allowlist sync for the adjacent 12C admission binding and hardening contour; no new dossier semantics, UI, storage, dependency, import/export support, apply, release readiness, execution, publication, or user-facing release claim is introduced."
+      "rationale": "Approve bounded dossier binding contract allowlist sync for the adjacent 12D mode decision binding and downstream guard-hardening contour; no new 12B semantics, UI, storage, dependency, import/export support, apply, release readiness, execution, publication, packet emit completion, attestation completion, or user-facing release claim is introduced."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001_STATUS.json",
