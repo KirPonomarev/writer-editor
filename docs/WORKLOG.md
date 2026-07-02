@@ -5,6 +5,7 @@
 
 ## 2026-07-02
 - Review Bridge: opened `REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001` as a bounded publication effect contour after delivered real execution ephemeral effect binding.
+- Review Bridge: delivered `REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001` via PR `1056` merge SHA `52e824840b802ec275e7784e33ef84df76f1a219`; repo status is rebound to `delivered_merged_verified`.
 - Release claim publication effect binding: product-binds the new `CONTOUR_12P_RELEASE_CLAIM_PUBLICATION_EFFECT` over delivered `CONTOUR_12O_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT`.
 - Publication effect binding: accepted 12P keeps `cmd.project.releaseClaim.execute` on the command surface kernel allowlist, keeps `command.bus` dispatch, re-evaluates the delivered 12O sublayer from raw input, emits typed `revisionBridge.releaseClaimPublicationEffect` output with `summary.publicationEffectOnly: true`, and records one bounded in-memory publication effect record keyed by `packetId`.
 - Publication effect binding: duplicate `packetId` values now block with a deterministic publication-effect duplicate outcome; missing `packetId` blocks before any publication effect record is written; blocked or diagnostics 12O output writes no publication effect record.
