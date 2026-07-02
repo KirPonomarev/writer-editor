@@ -4,6 +4,10 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-02
+- Post-MVP TXT import: opened and implemented `POST_MVP_TXT_IMPORT_SAFE_CREATE_001` as a bounded TXT chooser preview accept contour separate from the closed import/export MVP gate.
+- TXT import product surface: added user-facing `cmd.project.importTxtV1` plus bridge-only `cmd.project.txt.previewLocalFile` and `cmd.project.txt.importSafeCreate`; main owns picker stat read and restat, renderer owns intent plus accepted preview only, preview stays pathless and write-free, and accept creates exactly one new imported scene.
+- TXT import scope truth: accepted encodings are UTF-8 and UTF-8 BOM only; non-UTF8 bytes fail closed; this contour does not widen `IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json` and does not change DOCX export, DOCX import, Markdown import, Markdown export, or Mindmap scope truth.
+- Tests: targeted TXT import runtime UI and safe-create pack plus adjacent DOCX regression pack passed locally with 35 tests after renderer rebuild.
 - Review Bridge: opened `REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001` as a bounded publication effect contour after delivered real execution ephemeral effect binding.
 - Review Bridge: delivered `REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001` via PR `1056` merge SHA `52e824840b802ec275e7784e33ef84df76f1a219`; repo status is rebound to `delivered_merged_verified`.
 - Release claim publication effect binding: product-binds the new `CONTOUR_12P_RELEASE_CLAIM_PUBLICATION_EFFECT` over delivered `CONTOUR_12O_RELEASE_CLAIM_REAL_EXECUTION_EPHEMERAL_EFFECT`.

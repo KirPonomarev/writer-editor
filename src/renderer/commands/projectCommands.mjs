@@ -16,6 +16,7 @@ export const COMMAND_IDS = Object.freeze({
   PROJECT_EXPORT_DOCX_MIN: COMMAND_KEY_TO_ID.PROJECT_EXPORT_DOCX_MIN,
   PROJECT_IMPORT_MARKDOWN_V1: COMMAND_KEY_TO_ID.PROJECT_IMPORT_MARKDOWN_V1,
   PROJECT_IMPORT_DOCX_V1: COMMAND_KEY_TO_ID.PROJECT_IMPORT_DOCX_V1,
+  PROJECT_IMPORT_TXT_V1: COMMAND_KEY_TO_ID.PROJECT_IMPORT_TXT_V1,
   PROJECT_EXPORT_MARKDOWN_V1: COMMAND_KEY_TO_ID.PROJECT_EXPORT_MARKDOWN_V1,
   PROJECT_FLOW_OPEN_V1: COMMAND_KEY_TO_ID.PROJECT_FLOW_OPEN_V1,
   PROJECT_FLOW_SAVE_V1: COMMAND_KEY_TO_ID.PROJECT_FLOW_SAVE_V1,
@@ -75,6 +76,8 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   PROJECT_DOCX_PREVIEW_LOCAL_FILE: 'cmd.project.docx.previewLocalFile',
   PROJECT_DOCX_PREVIEW_IMPORT_PLAN: 'cmd.project.docx.previewImportPlan',
   PROJECT_DOCX_IMPORT_SAFE_CREATE: 'cmd.project.docx.importSafeCreate',
+  PROJECT_TXT_PREVIEW_LOCAL_FILE: 'cmd.project.txt.previewLocalFile',
+  PROJECT_TXT_IMPORT_SAFE_CREATE: 'cmd.project.txt.importSafeCreate',
 });
 
 export const UI_COMMAND_IDS = Object.freeze({
@@ -140,6 +143,7 @@ const EXPORT_MARKDOWN_V1_OP = 'm:cmd:project:export:markdownV1:v1';
 const FLOW_OPEN_V1_OP = 'm:cmd:project:flow:open:v1';
 const FLOW_SAVE_V1_OP = 'm:cmd:project:flow:save:v1';
 const DOCX_IMPORT_V1_DEFAULT_REQUEST_ID = 'docx-import-v1-request';
+const TXT_IMPORT_V1_DEFAULT_REQUEST_ID = 'txt-import-v1-request';
 const COMMAND_BRIDGE_ROUTE = 'command.bus';
 
 function fail(code, op, reason, details) {
@@ -536,6 +540,168 @@ async function runDocxImportPreviewPlanBridge(electronAPI, input = {}) {
     bridged && typeof bridged.reason === 'string'
       ? bridged.reason
       : 'DOCX_IMPORT_PREVIEW_INVALID_RESPONSE',
+  );
+}
+
+function normalizeTxtImportRequestId(input, fallback = TXT_IMPORT_V1_DEFAULT_REQUEST_ID) {
+  return typeof input?.requestId === 'string' && input.requestId.trim()
+    ? input.requestId.trim()
+    : fallback;
+}
+
+function isReadyTxtImportPreviewPlan(txtImportPreviewPlan) {
+  const plan = getObjectOrNull(txtImportPreviewPlan);
+  return Boolean(
+    plan
+    && plan.ok === true
+    && plan.schemaVersion === 'txt-import-preview.v1'
+    && plan.type === 'txt.import.preview'
+    && plan.writeEffects === false,
+  );
+}
+
+function buildTxtImportPreviewValue(localFilePreview, fallbackPlan = null) {
+  const preview = getObjectOrNull(localFilePreview);
+  const plan = getObjectOrNull(preview?.txtImportPreviewPlan) || getObjectOrNull(fallbackPlan);
+  return {
+    imported: false,
+    preview: true,
+    accepted: false,
+    writeEffects: false,
+    importPreviewOk: preview ? preview.importPreviewOk === true : isReadyTxtImportPreviewPlan(plan),
+    localFilePreview: preview,
+    sourceSummary: getObjectOrNull(preview?.sourceSummary),
+    txtImportPreviewPlan: plan,
+  };
+}
+
+function buildTxtImportAcceptedValue(safeCreateResult, options = {}) {
+  const safeCreate = getObjectOrNull(safeCreateResult);
+  const createdSceneIds = Array.isArray(safeCreate?.createdSceneIds)
+    ? safeCreate.createdSceneIds.filter((sceneId) => typeof sceneId === 'string' && sceneId.length > 0)
+    : [];
+  const receipt = getObjectOrNull(safeCreate?.receipt);
+  return {
+    imported: true,
+    preview: Boolean(options.localFilePreview),
+    accepted: true,
+    safeCreate: true,
+    created: safeCreate?.created === true,
+    createdSceneIds,
+    userVisible: createdSceneIds.length > 0,
+    visibleCreatedSceneIds: createdSceneIds,
+    receipt,
+    sourceSummary: getObjectOrNull(options.sourceSummary),
+  };
+}
+
+async function runTxtImportLocalFilePreviewBridge(electronAPI, input = {}) {
+  if (!electronAPI || typeof electronAPI !== 'object') {
+    return fail(
+      'E_COMMAND_FAILED',
+      EXTRA_COMMAND_IDS.PROJECT_TXT_PREVIEW_LOCAL_FILE,
+      'ELECTRON_API_UNAVAILABLE',
+    );
+  }
+
+  let response;
+  try {
+    response = await invokeBridgeOnlyCommand(
+      electronAPI,
+      EXTRA_COMMAND_IDS.PROJECT_TXT_PREVIEW_LOCAL_FILE,
+      input && typeof input === 'object' && !Array.isArray(input) ? input : {},
+    );
+  } catch (error) {
+    return fail(
+      'E_COMMAND_FAILED',
+      EXTRA_COMMAND_IDS.PROJECT_TXT_PREVIEW_LOCAL_FILE,
+      'TXT_IMPORT_LOCAL_FILE_PREVIEW_IPC_FAILED',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+
+  const bridged = unwrapBridgeResponseValue(response);
+  if (bridged && bridged.ok === true) {
+    return ok({
+      preview: true,
+      localFilePreview: bridged,
+    });
+  }
+  if (bridged && bridged.ok === false && bridged.error && typeof bridged.error === 'object') {
+    const error = bridged.error;
+    return fail(
+      typeof error.code === 'string' ? error.code : 'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
+      typeof error.op === 'string' ? error.op : EXTRA_COMMAND_IDS.PROJECT_TXT_PREVIEW_LOCAL_FILE,
+      typeof error.reason === 'string' ? error.reason : 'TXT_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
+      error.details && typeof error.details === 'object' && !Array.isArray(error.details) ? error.details : undefined,
+    );
+  }
+  return fail(
+    'E_COMMAND_FAILED',
+    EXTRA_COMMAND_IDS.PROJECT_TXT_PREVIEW_LOCAL_FILE,
+    bridged && typeof bridged.reason === 'string'
+      ? bridged.reason
+      : 'TXT_IMPORT_LOCAL_FILE_PREVIEW_INVALID_RESPONSE',
+  );
+}
+
+async function runTxtImportSafeCreateBridge(electronAPI, input = {}) {
+  if (!electronAPI || typeof electronAPI !== 'object') {
+    return fail(
+      'E_TXT_IMPORT_SAFE_CREATE_BACKEND_NOT_WIRED',
+      EXTRA_COMMAND_IDS.PROJECT_TXT_IMPORT_SAFE_CREATE,
+      'TXT_IMPORT_SAFE_CREATE_BACKEND_NOT_WIRED',
+    );
+  }
+
+  const txtImportPreviewPlan = getObjectOrNull(input.txtImportPreviewPlan);
+  if (!txtImportPreviewPlan) {
+    return fail(
+      'E_TXT_IMPORT_SAFE_CREATE_PREVIEW_REQUIRED',
+      EXTRA_COMMAND_IDS.PROJECT_TXT_IMPORT_SAFE_CREATE,
+      'TXT_IMPORT_SAFE_CREATE_PREVIEW_REQUIRED',
+    );
+  }
+
+  let response;
+  try {
+    response = await invokeBridgeOnlyCommand(
+      electronAPI,
+      EXTRA_COMMAND_IDS.PROJECT_TXT_IMPORT_SAFE_CREATE,
+      {
+        requestId: normalizeTxtImportRequestId(input, 'txt-import-safe-create-request'),
+        txtImportPreviewPlan,
+      },
+    );
+  } catch (error) {
+    return fail(
+      'E_TXT_IMPORT_SAFE_CREATE_IPC_FAILED',
+      EXTRA_COMMAND_IDS.PROJECT_TXT_IMPORT_SAFE_CREATE,
+      'TXT_IMPORT_SAFE_CREATE_IPC_FAILED',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+
+  const bridged = unwrapBridgeResponseValue(response);
+  if (bridged && bridged.ok === true && bridged.safeCreateOk === true) {
+    return ok(buildTxtImportAcceptedValue(bridged, {
+      sourceSummary: input.sourceSummary,
+      localFilePreview: input.localFilePreview,
+    }));
+  }
+  if (bridged && bridged.ok === false && bridged.error && typeof bridged.error === 'object') {
+    const error = bridged.error;
+    return fail(
+      typeof error.code === 'string' ? error.code : 'E_TXT_IMPORT_SAFE_CREATE_FAILED',
+      typeof error.op === 'string' ? error.op : EXTRA_COMMAND_IDS.PROJECT_TXT_IMPORT_SAFE_CREATE,
+      typeof error.reason === 'string' ? error.reason : 'TXT_IMPORT_SAFE_CREATE_FAILED',
+      error.details && typeof error.details === 'object' && !Array.isArray(error.details) ? error.details : undefined,
+    );
+  }
+  return fail(
+    'E_TXT_IMPORT_SAFE_CREATE_INVALID_RESPONSE',
+    EXTRA_COMMAND_IDS.PROJECT_TXT_IMPORT_SAFE_CREATE,
+    'TXT_IMPORT_SAFE_CREATE_INVALID_RESPONSE',
   );
 }
 
@@ -1545,6 +1711,28 @@ export function registerProjectCommands(registry, options = {}) {
 
   registry.registerCommand(
     {
+      id: EXTRA_COMMAND_IDS.PROJECT_TXT_PREVIEW_LOCAL_FILE,
+      label: 'Preview Local TXT Import',
+      group: 'file',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => runTxtImportLocalFilePreviewBridge(electronAPI, input),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PROJECT_TXT_IMPORT_SAFE_CREATE,
+      label: 'Accept TXT Import',
+      group: 'file',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => runTxtImportSafeCreateBridge(electronAPI, input),
+  );
+
+  registry.registerCommand(
+    {
       id: UI_COMMAND_IDS.THEME_SET,
       label: 'Set Theme',
       group: 'view',
@@ -1788,6 +1976,52 @@ export function registerProjectCommands(registry, options = {}) {
       requestId: normalizeDocxImportRequestId(input),
       docxImportPreviewPlan,
       localFilePreview,
+    });
+  });
+
+  registerCatalogCommand(registry, COMMAND_IDS.PROJECT_IMPORT_TXT_V1, async (input = {}) => {
+    if (!electronAPI || typeof electronAPI !== 'object') {
+      return fail(
+        'E_TXT_IMPORT_BACKEND_NOT_WIRED',
+        COMMAND_IDS.PROJECT_IMPORT_TXT_V1,
+        'TXT_IMPORT_BACKEND_NOT_WIRED',
+      );
+    }
+
+    const acceptRequested = input && typeof input === 'object' && input.accept === true;
+    let localFilePreview = getObjectOrNull(input?.localFilePreview);
+    let txtImportPreviewPlan = getObjectOrNull(input?.txtImportPreviewPlan)
+      || getObjectOrNull(localFilePreview?.txtImportPreviewPlan);
+    let sourceSummary = getObjectOrNull(input?.sourceSummary)
+      || getObjectOrNull(localFilePreview?.sourceSummary);
+
+    if (!txtImportPreviewPlan) {
+      const previewResult = await runTxtImportLocalFilePreviewBridge(electronAPI, {
+        requestId: normalizeTxtImportRequestId(input),
+      });
+      if (!previewResult.ok) return previewResult;
+      localFilePreview = previewResult.value.localFilePreview;
+      txtImportPreviewPlan = getObjectOrNull(localFilePreview?.txtImportPreviewPlan);
+      sourceSummary = getObjectOrNull(localFilePreview?.sourceSummary);
+    }
+
+    if (!acceptRequested) {
+      return ok(buildTxtImportPreviewValue(localFilePreview, txtImportPreviewPlan));
+    }
+
+    if (!isReadyTxtImportPreviewPlan(txtImportPreviewPlan)) {
+      return fail(
+        'E_TXT_IMPORT_PREVIEW_NOT_ACCEPTABLE',
+        COMMAND_IDS.PROJECT_IMPORT_TXT_V1,
+        'TXT_IMPORT_PREVIEW_NOT_ACCEPTABLE',
+      );
+    }
+
+    return runTxtImportSafeCreateBridge(electronAPI, {
+      requestId: normalizeTxtImportRequestId(input),
+      txtImportPreviewPlan,
+      localFilePreview,
+      sourceSummary,
     });
   });
 

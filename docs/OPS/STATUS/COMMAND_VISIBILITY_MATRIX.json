@@ -12,6 +12,7 @@
   "minimalProfileHiddenAllowlist": [
     "cmd.project.importMarkdownV1",
     "cmd.project.importDocxV1",
+    "cmd.project.importTxtV1",
     "cmd.project.exportMarkdownV1",
     "cmd.project.flowOpenV1",
     "cmd.project.flowSaveV1"

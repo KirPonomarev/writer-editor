@@ -27,6 +27,13 @@ const {
   createDocxImportLocalFilePreview,
 } = require('./utils/docxImportLocalFilePreview');
 const {
+  TXT_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
+  createTxtImportLocalFilePreview,
+} = require('./utils/txtImportLocalFilePreview');
+const {
+  applyTxtImportSafeCreate,
+} = require('./utils/txtImportSafeCreate');
+const {
   isPathInsideBoundary,
   joinPathSegmentsWithinRoot,
   resolveValidatedPath,
@@ -4445,6 +4452,466 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
   return buildDocxImportLocalFilePreviewCommandResult(previewResult);
 }
 // DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_END
+
+// TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_START
+const TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID = 'cmd.project.txt.previewLocalFile';
+const TXT_IMPORT_SAFE_CREATE_COMMAND_ID = 'cmd.project.txt.importSafeCreate';
+const TXT_IMPORT_LOCAL_FILE_PREVIEW_FORBIDDEN_RESULT_KEYS = new Set([
+  'reviewPacket',
+  'reviewSurface',
+  'parsedReviewSurface',
+  'activeReviewSession',
+  'previewInput',
+  'applyOps',
+  'applyPlan',
+  'canApply',
+  'canCreateReviewPacket',
+  'canPreviewApply',
+  'canImportMutate',
+  'canWriteStorage',
+  'writeReceipt',
+  'importReceipt',
+  'exportReceipt',
+  'safeCreatePlan',
+  'rawBytes',
+  'bufferSource',
+  'filePath',
+  'projectRoot',
+  'packageInspection',
+  'partPolicy',
+  'intakePreflightReport',
+  'docxIntakePreflightReport',
+  'outPath',
+  'outDir',
+  'storage',
+  'renderer',
+  'preload',
+  'path',
+  'bytes',
+  'zip',
+  'receipt',
+]);
+const TXT_IMPORT_LOCAL_FILE_PREVIEW_ALLOWED_RESULT_KEYS = new Set([
+  'ok',
+  'requestId',
+  'schemaVersion',
+  'type',
+  'status',
+  'code',
+  'reason',
+  'decision',
+  'writeEffects',
+  'importPreviewOk',
+  'sourceSummary',
+  'txtImportPreviewPlan',
+]);
+
+function makeTxtImportLocalFilePreviewTypedError(code, reason, details = undefined) {
+  const error = {
+    code,
+    op: TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+    reason,
+  };
+  if (isPlainObjectValue(details) && Object.keys(details).length > 0) {
+    error.details = cloneJsonSafe(details);
+  }
+  return { ok: false, error };
+}
+
+function findTxtImportLocalFilePreviewForbiddenKey(value, pathParts = []) {
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const nested = findTxtImportLocalFilePreviewForbiddenKey(
+        value[index],
+        pathParts.concat(String(index)),
+      );
+      if (nested) return nested;
+    }
+    return '';
+  }
+  if (!isPlainObjectValue(value)) return '';
+
+  for (const key of Object.keys(value)) {
+    const keyPath = pathParts.concat(key).join('.');
+    if (TXT_IMPORT_LOCAL_FILE_PREVIEW_FORBIDDEN_RESULT_KEYS.has(key)) {
+      return keyPath;
+    }
+    const nested = findTxtImportLocalFilePreviewForbiddenKey(
+      value[key],
+      pathParts.concat(key),
+    );
+    if (nested) return nested;
+  }
+  return '';
+}
+
+async function pickTxtImportLocalFilePreviewFile(options = {}) {
+  const dialogResult = await dialog.showOpenDialog(mainWindow, {
+    title: 'Импорт TXT',
+    defaultPath: fileManager.getDocumentsPath(),
+    filters: [{ name: 'Plain Text', extensions: ['txt'] }],
+    properties: ['openFile'],
+  });
+
+  if (!dialogResult || dialogResult.canceled === true) {
+    return { canceled: true };
+  }
+
+  const filePath = Array.isArray(dialogResult.filePaths) && typeof dialogResult.filePaths[0] === 'string'
+    ? dialogResult.filePaths[0].trim()
+    : '';
+  if (!filePath) return {};
+
+  let size = null;
+  try {
+    const stat = await fs.stat(filePath);
+    if (stat && typeof stat.isFile === 'function' && stat.isFile()) {
+      size = Number.isFinite(stat.size) && stat.size >= 0 ? Math.floor(stat.size) : null;
+    }
+  } catch {}
+
+  return {
+    path: filePath,
+    name: path.basename(filePath),
+    size,
+    requestId: typeof options.requestId === 'string' && options.requestId.trim()
+      ? options.requestId.trim()
+      : 'txt-import-local-file-preview-request',
+  };
+}
+
+async function readTxtImportLocalFilePreviewBytes(selection) {
+  if (!isPlainObjectValue(selection)) {
+    throw new TypeError('TXT_IMPORT_LOCAL_FILE_PREVIEW_SELECTION_INVALID');
+  }
+
+  const filePath = typeof selection.path === 'string' && selection.path.trim()
+    ? selection.path.trim()
+    : typeof selection.filePath === 'string' && selection.filePath.trim()
+      ? selection.filePath.trim()
+      : '';
+  if (!filePath) {
+    throw new TypeError('TXT_IMPORT_LOCAL_FILE_PREVIEW_SELECTION_INVALID');
+  }
+
+  let beforeBytes = null;
+  try {
+    const stat = await fs.stat(filePath);
+    if (stat && typeof stat.isFile === 'function' && stat.isFile()) {
+      beforeBytes = Number.isFinite(stat.size) && stat.size >= 0 ? Math.floor(stat.size) : null;
+    }
+  } catch (error) {
+    error.code = 'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_READ_FAILED';
+    error.reason = 'TXT_IMPORT_LOCAL_FILE_PREVIEW_STAT_FAILED';
+    throw error;
+  }
+
+  if (!Number.isInteger(beforeBytes) || beforeBytes <= 0) {
+    const error = new Error('TXT_IMPORT_LOCAL_FILE_PREVIEW_SELECTION_INVALID');
+    error.code = 'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_SELECTION_INVALID';
+    error.reason = 'TXT_IMPORT_LOCAL_FILE_PREVIEW_SELECTION_INVALID';
+    throw error;
+  }
+  if (beforeBytes > TXT_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES) {
+    const error = new Error('TXT_IMPORT_LOCAL_FILE_PREVIEW_FILE_TOO_LARGE');
+    error.code = 'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_FILE_TOO_LARGE';
+    error.reason = 'TXT_IMPORT_LOCAL_FILE_PREVIEW_FILE_TOO_LARGE';
+    error.details = { maxBytes: TXT_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES };
+    throw error;
+  }
+
+  let bytes;
+  try {
+    bytes = await fs.readFile(filePath);
+  } catch (error) {
+    error.code = 'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_READ_FAILED';
+    error.reason = 'TXT_IMPORT_LOCAL_FILE_PREVIEW_READ_FAILED';
+    throw error;
+  }
+
+  let afterBytes = null;
+  try {
+    const stat = await fs.stat(filePath);
+    if (stat && typeof stat.isFile === 'function' && stat.isFile()) {
+      afterBytes = Number.isFinite(stat.size) && stat.size >= 0 ? Math.floor(stat.size) : null;
+    }
+  } catch {
+    afterBytes = null;
+  }
+
+  const buffer = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes || []);
+  if (beforeBytes !== afterBytes || buffer.length !== beforeBytes) {
+    const error = new Error('TXT_IMPORT_LOCAL_FILE_PREVIEW_FILE_CHANGED_DURING_READ');
+    error.code = 'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_READ_FAILED';
+    error.reason = 'TXT_IMPORT_LOCAL_FILE_PREVIEW_FILE_CHANGED_DURING_READ';
+    error.details = {
+      beforeBytes,
+      afterBytes,
+      byteLength: buffer.length,
+    };
+    throw error;
+  }
+
+  return buffer;
+}
+
+function validateTxtImportLocalFilePreviewSuccessResult(previewResult) {
+  if (!isPlainObjectValue(previewResult)) {
+    return {
+      ok: false,
+      reason: 'TXT_IMPORT_LOCAL_FILE_PREVIEW_INVALID_RESULT',
+    };
+  }
+
+  const unsupportedKeys = Object.keys(previewResult)
+    .filter((key) => !TXT_IMPORT_LOCAL_FILE_PREVIEW_ALLOWED_RESULT_KEYS.has(key))
+    .sort();
+  if (unsupportedKeys.length > 0) {
+    return {
+      ok: false,
+      reason: 'TXT_IMPORT_LOCAL_FILE_PREVIEW_RESULT_UNSUPPORTED_FIELDS',
+      details: { fields: unsupportedKeys },
+    };
+  }
+
+  if (
+    previewResult.schemaVersion !== 'txt-import-local-file-preview.v1'
+    || previewResult.type !== 'txt.import.localFilePreview'
+    || previewResult.writeEffects !== false
+  ) {
+    return {
+      ok: false,
+      reason: 'TXT_IMPORT_LOCAL_FILE_PREVIEW_RESULT_INVALID',
+    };
+  }
+
+  const forbiddenKey = findTxtImportLocalFilePreviewForbiddenKey(previewResult);
+  if (forbiddenKey) {
+    return {
+      ok: false,
+      reason: 'TXT_IMPORT_LOCAL_FILE_PREVIEW_RESULT_FORBIDDEN_FIELD',
+      details: { key: forbiddenKey },
+    };
+  }
+
+  return { ok: true };
+}
+
+function buildTxtImportLocalFilePreviewCommandResult(previewResult) {
+  const localPreview = cloneJsonSafe(previewResult);
+  return {
+    ok: true,
+    requestId: typeof localPreview.requestId === 'string' && localPreview.requestId.trim()
+      ? localPreview.requestId.trim()
+      : 'txt-import-local-file-preview-request',
+    commandId: TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+    commandOk: true,
+    schemaVersion: localPreview.schemaVersion,
+    type: localPreview.type,
+    status: localPreview.status,
+    code: localPreview.code,
+    reason: localPreview.reason,
+    decision: localPreview.decision,
+    writeEffects: localPreview.writeEffects,
+    importPreviewOk: localPreview.importPreviewOk === true,
+    sourceSummary: isPlainObjectValue(localPreview.sourceSummary)
+      ? localPreview.sourceSummary
+      : null,
+    txtImportPreviewPlan: isPlainObjectValue(localPreview.txtImportPreviewPlan)
+      ? localPreview.txtImportPreviewPlan
+      : null,
+  };
+}
+
+async function handleTxtImportLocalFilePreviewCommandSurface(payload = {}) {
+  if (typeof createTxtImportLocalFilePreview !== 'function') {
+    return makeTxtImportLocalFilePreviewTypedError(
+      'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_UNAVAILABLE',
+      'TXT_IMPORT_LOCAL_FILE_PREVIEW_HELPER_UNAVAILABLE',
+    );
+  }
+
+  let previewResult = null;
+  try {
+    previewResult = await createTxtImportLocalFilePreview(payload, {
+      pickLocalFile: pickTxtImportLocalFilePreviewFile,
+      readLocalFileBytes: readTxtImportLocalFilePreviewBytes,
+      maxBytes: TXT_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
+    });
+  } catch (error) {
+    return makeTxtImportLocalFilePreviewTypedError(
+      'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
+      'TXT_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+
+  if (previewResult && previewResult.ok !== true) {
+    const previewError = isPlainObjectValue(previewResult.error) ? previewResult.error : {};
+    return makeTxtImportLocalFilePreviewTypedError(
+      typeof previewError.code === 'string'
+        ? `E_${previewError.code}`
+        : 'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
+      typeof previewError.reason === 'string'
+        ? previewError.reason
+        : 'TXT_IMPORT_LOCAL_FILE_PREVIEW_FAILED',
+      isPlainObjectValue(previewError.details) ? previewError.details : undefined,
+    );
+  }
+
+  const shape = validateTxtImportLocalFilePreviewSuccessResult(previewResult);
+  if (!shape.ok) {
+    return makeTxtImportLocalFilePreviewTypedError(
+      'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_INVALID_RESULT',
+      shape.reason,
+      isPlainObjectValue(shape.details) ? shape.details : undefined,
+    );
+  }
+
+  return buildTxtImportLocalFilePreviewCommandResult(previewResult);
+}
+
+function makeTxtImportSafeCreateTypedError(code, reason, details = undefined) {
+  const error = {
+    code,
+    op: TXT_IMPORT_SAFE_CREATE_COMMAND_ID,
+    reason,
+  };
+  if (isPlainObjectValue(details) && Object.keys(details).length > 0) {
+    error.details = cloneJsonSafe(details);
+  }
+  return { ok: false, error };
+}
+
+function validateTxtImportSafeCreateCommandResult(commandResult) {
+  if (!isPlainObjectValue(commandResult)) {
+    return {
+      ok: false,
+      reason: 'TXT_IMPORT_SAFE_CREATE_INVALID_RESULT',
+    };
+  }
+  if (commandResult.commandId !== TXT_IMPORT_SAFE_CREATE_COMMAND_ID) {
+    return {
+      ok: false,
+      reason: 'TXT_IMPORT_SAFE_CREATE_COMMAND_ID_INVALID',
+    };
+  }
+  if (commandResult.safeCreateOk !== true || commandResult.created !== true) {
+    return {
+      ok: false,
+      reason: 'TXT_IMPORT_SAFE_CREATE_FLAGS_INVALID',
+    };
+  }
+  if (!Array.isArray(commandResult.createdSceneIds) || commandResult.createdSceneIds.length !== 1) {
+    return {
+      ok: false,
+      reason: 'TXT_IMPORT_SAFE_CREATE_CREATED_IDS_INVALID',
+    };
+  }
+  const forbiddenKey = findTxtImportLocalFilePreviewForbiddenKey(commandResult);
+  if (forbiddenKey) {
+    return {
+      ok: false,
+      reason: 'TXT_IMPORT_SAFE_CREATE_FORBIDDEN_RESULT',
+      details: { key: forbiddenKey },
+    };
+  }
+  return { ok: true };
+}
+
+async function handleTxtImportSafeCreateCommandSurface(payload = {}) {
+  const safePayload = isPlainObjectValue(payload) ? payload : {};
+  const previewPlan = isPlainObjectValue(safePayload.txtImportPreviewPlan)
+    ? cloneJsonSafe(safePayload.txtImportPreviewPlan)
+    : null;
+  if (!previewPlan) {
+    return makeTxtImportSafeCreateTypedError(
+      'E_TXT_IMPORT_SAFE_CREATE_PREVIEW_REQUIRED',
+      'TXT_IMPORT_SAFE_CREATE_PREVIEW_REQUIRED',
+    );
+  }
+
+  let projectBinding = null;
+  try {
+    await ensureProjectStructure();
+    projectBinding = await resolveProjectBindingForFile(getProjectSectionPath('roman'));
+  } catch (error) {
+    return makeTxtImportSafeCreateTypedError(
+      'E_TXT_IMPORT_SAFE_CREATE_PROJECT_BINDING_FAILED',
+      'TXT_IMPORT_SAFE_CREATE_PROJECT_BINDING_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+
+  let safeCreateResult = null;
+  try {
+    safeCreateResult = await applyTxtImportSafeCreate(
+      {
+        txtImportPreviewPlan: previewPlan,
+      },
+      {
+        projectRoot: getProjectRootPath(),
+        romanRoot: getProjectSectionPath('roman'),
+        projectId: projectBinding && typeof projectBinding.projectId === 'string'
+          ? projectBinding.projectId
+          : '',
+        queueDiskOperation,
+        operationLabel: 'safe create TXT import scene batch',
+        writeBatchAtomic: writeFlowSceneBatchAtomic,
+      },
+    );
+  } catch (error) {
+    return makeTxtImportSafeCreateTypedError(
+      'E_TXT_IMPORT_SAFE_CREATE_FAILED',
+      'TXT_IMPORT_SAFE_CREATE_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+
+  if (!safeCreateResult || safeCreateResult.ok !== true) {
+    const safeCreateError = isPlainObjectValue(safeCreateResult?.error) ? safeCreateResult.error : {};
+    return makeTxtImportSafeCreateTypedError(
+      typeof safeCreateError.code === 'string'
+        ? `E_${safeCreateError.code}`
+        : 'E_TXT_IMPORT_SAFE_CREATE_FAILED',
+      typeof safeCreateError.reason === 'string'
+        ? safeCreateError.reason
+        : 'TXT_IMPORT_SAFE_CREATE_FAILED',
+      isPlainObjectValue(safeCreateError.details) ? safeCreateError.details : undefined,
+    );
+  }
+
+  const commandResult = {
+    ok: true,
+    requestId: typeof safePayload.requestId === 'string' && safePayload.requestId.trim()
+      ? safePayload.requestId.trim()
+      : 'txt-import-safe-create-request',
+    commandId: TXT_IMPORT_SAFE_CREATE_COMMAND_ID,
+    commandOk: true,
+    safeCreateOk: true,
+    created: true,
+    createdSceneIds: Array.isArray(safeCreateResult.value.createdSceneIds)
+      ? cloneJsonSafe(safeCreateResult.value.createdSceneIds)
+      : [],
+    receipt: cloneJsonSafe(safeCreateResult.value.receipt),
+  };
+  const resultShape = validateTxtImportSafeCreateCommandResult(commandResult);
+  if (!resultShape.ok) {
+    return makeTxtImportSafeCreateTypedError(
+      'E_TXT_IMPORT_SAFE_CREATE_INVALID_RESULT',
+      resultShape.reason,
+      isPlainObjectValue(resultShape.details) ? resultShape.details : undefined,
+    );
+  }
+  return commandResult;
+}
+// TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_END
 
 // CONTOUR_12L_COMMAND_SURFACE_RELEASE_CLAIM_ADMISSION_START
 function isReleaseClaimCommandSurfacePlainPayload(value) {
@@ -10110,6 +10577,8 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.docx.previewImportPlan',
   'cmd.project.docx.importSafeCreate',
   'cmd.project.docx.previewLocalFile',
+  TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+  TXT_IMPORT_SAFE_CREATE_COMMAND_ID,
   'cmd.project.importMarkdownV1',
   'cmd.project.exportMarkdownV1',
   'cmd.project.releaseClaim.admit',
@@ -10249,6 +10718,20 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.docx.previewLocalFile': async (payload = {}) => {
     return handleDocxImportLocalFilePreviewCommandSurface(payload);
+  },
+  'cmd.project.importTxtV1': async () => {
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.importTxtV1',
+      { source: 'menu' },
+      'open-import-txt-preview',
+    );
+    return { ok: delivered, preview: delivered };
+  },
+  [TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID]: async (payload = {}) => {
+    return handleTxtImportLocalFilePreviewCommandSurface(payload);
+  },
+  [TXT_IMPORT_SAFE_CREATE_COMMAND_ID]: async (payload = {}) => {
+    return handleTxtImportSafeCreateCommandSurface(payload);
   },
   'cmd.project.importMarkdownV1': async (payload = {}) => {
     const result = await dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);
