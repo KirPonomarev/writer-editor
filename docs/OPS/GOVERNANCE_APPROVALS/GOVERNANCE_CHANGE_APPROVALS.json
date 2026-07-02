@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_DOSSIER_BINDING_001_STATUS.json",
-      "sha256": "978b863ed472059e4d76100fa27843afe1f6e5f9cbaaef7fe7d902edbe1af1c3",
+      "sha256": "a0382109870afd63ed77049541bb55ec4c99db5d371d039683d062010d96d0f3",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_DOSSIER_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded release claim dossier binding status; it product-binds the existing release claim dossier gate as an evidence aggregation boundary while preserving no release readiness, no user-facing release, no release admission completion, no release execution completion, no release publication completion, no Word support, no Google Docs support, no DOCX support expansion, no import support, no export support, no roundtrip, no layout parity, no full fidelity, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no dependency, and no Y9 claim."
+      "rationale": "Approve bounded release claim dossier binding status and delivery rebind after PR 1028 merge; it product-binds the existing release claim dossier gate as an evidence aggregation boundary while preserving no release readiness, no user-facing release, no release admission completion, no release execution completion, no release publication completion, no Word support, no Google Docs support, no DOCX support expansion, no import support, no export support, no roundtrip, no layout parity, no full fidelity, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no dependency, and no Y9 claim."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-dossier-binding.contract.test.js",
