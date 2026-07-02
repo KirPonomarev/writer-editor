@@ -300,7 +300,7 @@ No further transfer is required for this variant; the transfer axis is closed.
 - scope truth: this is internal command admission evidence only; no command availability, command execution, product publication, release readiness, user-facing release, release execution completion, release publication completion, publication authority, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
 
 ## Review Bridge Release Claim Execution Gate Binding
-- `REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001` is implemented and verified pending delivery as the bounded next contour after delivered release claim command admission binding.
+- `REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001` is delivered, merged, and verified via PR `1046`, merge SHA `e9841136c52fad206c22296f55e598a915ebfd31`, and feature commit `55dcbf3cc07563dbb5d3accf9f8e0d19284246d2` as the bounded next contour after delivered release claim command admission binding.
 - release claim execution gate binding product-binds the existing `CONTOUR_12K_RELEASE_CLAIM_EXECUTION_GATE`.
 - accepted 12K requires raw 12J command admission input and re-evaluates 12J internally before accepting execution-gate evidence.
 - accepted 12K requires the internally evaluated 12J result to be accepted and to carry mode, claimId, dossierId, matrixId, releaseClass, claimSurface, packetId, attestationId, commandId, and admissionClass.

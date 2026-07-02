@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001_STATUS.json",
-      "sha256": "a3424d9e9f749a06eceee30ffcf4a003fd02f4e0393c64417ee7011d9f2b1081",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded release claim execution gate binding status; it product-binds 12K to raw 12J command admission input and internal 12J re-evaluation while preserving no command availability, no command execution, no release execution completion, no product publication, no release readiness, no user-facing release, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
+      "sha256": "536840150f813275ca13cdb1a8e5d2c01d3add158fff692f9404bc3a419c0b13",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_BINDING_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-02T12:07:25.000Z",
+      "rationale": "Approve delivery rebind for bounded release claim execution gate binding after PR 1046 merge; status is rebound to delivered_merged_verified with feature commit, PR, merge SHA, and merged time while preserving raw 12J command admission input, internal 12J re-evaluation, no command availability, no command execution, no release execution completion, no product publication, no release readiness, no user-facing release, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-execution-gate-binding.contract.test.js",
