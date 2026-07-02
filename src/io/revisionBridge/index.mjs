@@ -11910,6 +11910,7 @@ export const REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_REASON_CODES = Object.fre
   'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MODE_DECISION_PROVENANCE_INVALID',
   'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_MINIMUM_FIELDS_MISSING',
   'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_RELEASE_FIELDS_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_RELEASE_EVIDENCE_MISMATCH',
   'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_DECISION_HASH_MISMATCH',
   'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_COMMAND_RUN_DIGEST_MISMATCH',
   'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_EVIDENCE_HASH_MISMATCH',
@@ -12191,6 +12192,36 @@ function collectReleaseClaimAttestationReleaseMissingFields(attestation) {
   return missingFields;
 }
 
+function collectReleaseClaimAttestationReleaseEvidenceMismatchReasons(attestation, modeDecisionResult) {
+  if (attestation.mode !== 'RELEASE_MODE') return [];
+
+  const decision = isPlainObject(modeDecisionResult?.decision) ? modeDecisionResult.decision : {};
+  const bindingPairs = [
+    {
+      field: 'releaseEvidenceId',
+      expectedValue: normalizeString(decision.releaseEvidenceId),
+      receivedValue: normalizeString(attestation.releaseEvidenceId),
+    },
+    {
+      field: 'releaseEvidenceHash',
+      expectedValue: normalizeString(decision.releaseEvidenceHash),
+      receivedValue: normalizeString(attestation.releaseEvidenceHash),
+    },
+  ];
+
+  return bindingPairs
+    .filter((pair) => pair.expectedValue !== pair.receivedValue)
+    .map((pair) => releaseClaimAttestationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_ATTESTATION_RELEASE_EVIDENCE_MISMATCH',
+      `attestation.${pair.field}`,
+      `${pair.field} must match accepted 12D release evidence`,
+      {
+        expectedValue: pair.expectedValue,
+        receivedValue: pair.receivedValue,
+      },
+    ));
+}
+
 function releaseClaimAttestationBinding(attestation, modeDecisionResult) {
   const binding = isPlainObject(modeDecisionResult?.binding) ? modeDecisionResult.binding : {};
   const decision = isPlainObject(modeDecisionResult?.decision) ? modeDecisionResult.decision : {};
@@ -12338,6 +12369,20 @@ export function evaluateRevisionBridgeReleaseClaimAttestationGate(input = {}) {
         releaseMissingFields,
       );
     }
+
+    const releaseEvidenceMismatchReasons = collectReleaseClaimAttestationReleaseEvidenceMismatchReasons(
+      attestation,
+      modeDecisionResult,
+    );
+    if (releaseEvidenceMismatchReasons.length > 0) {
+      return releaseClaimAttestationResult(
+        false,
+        'blocked',
+        releaseEvidenceMismatchReasons,
+        attestation,
+        modeDecisionResult,
+      );
+    }
   }
 
   const expectedDecisionHash = createRevisionBridgeReleaseClaimModeDecisionHash(modeDecisionResult);
@@ -12466,6 +12511,7 @@ export const REVISION_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_REASON_CODES = Object.fre
   'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_CLAIM_ID_MISMATCH',
   'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_DOSSIER_ID_MISMATCH',
   'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_MATRIX_ID_MISMATCH',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_DECISION_HASH_MISMATCH',
   'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_STRICT_REPORT_MISSING_FIELDS',
   'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_STRICT_REPORT_EXTRA_FIELDS',
   'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_STRICT_REPORT_INVALID_VALUE',
@@ -12842,6 +12888,13 @@ function collectReleaseClaimPacketBindingMatchReasons(modeDecisionResult, attest
       reasonField: 'binding.matrixId',
       expectedValue: releaseClaimPacketBindingField(modeDecisionBinding, decision, 'matrixId'),
       receivedValue: normalizeString(attestationBinding.matrixId),
+    },
+    {
+      field: 'decisionHash',
+      code: 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_DECISION_HASH_MISMATCH',
+      reasonField: 'binding.decisionHash',
+      expectedValue: createRevisionBridgeReleaseClaimModeDecisionHash(modeDecisionResult),
+      receivedValue: normalizeString(attestation.decisionHash),
     },
   ];
 

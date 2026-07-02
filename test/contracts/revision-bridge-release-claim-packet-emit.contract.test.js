@@ -395,6 +395,68 @@ test('Contour 12F blocks forged accepted 12D plus forged accepted 12E pair', asy
   );
 });
 
+test('Contour 12F blocks PR_MODE when 12E attests a different accepted 12D', async () => {
+  const bridge = await loadBridge();
+  const modeDecisionResult = acceptedModeDecisionResult(bridge, {
+    mode: 'PR_MODE',
+    inputHash: 'sha256:top-level-pr-input',
+  });
+  const otherModeDecisionResult = acceptedModeDecisionResult(bridge, {
+    mode: 'PR_MODE',
+    inputHash: 'sha256:embedded-pr-input',
+  });
+  const attestationResult = acceptedAttestationResult(bridge, {
+    mode: 'PR_MODE',
+    modeDecisionResult: otherModeDecisionResult,
+  });
+
+  assert.notEqual(
+    bridge.createRevisionBridgeReleaseClaimModeDecisionHash(modeDecisionResult),
+    bridge.createRevisionBridgeReleaseClaimModeDecisionHash(otherModeDecisionResult),
+  );
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    modeDecisionResult,
+    attestationResult,
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_DECISION_HASH_MISMATCH');
+});
+
+test('Contour 12F blocks RELEASE_MODE when 12E attests a different accepted 12D', async () => {
+  const bridge = await loadBridge();
+  const modeDecisionResult = acceptedModeDecisionResult(bridge, {
+    mode: 'RELEASE_MODE',
+    outputHash: 'sha256:top-level-release-output',
+  });
+  const otherModeDecisionResult = acceptedModeDecisionResult(bridge, {
+    mode: 'RELEASE_MODE',
+    outputHash: 'sha256:embedded-release-output',
+  });
+  const attestationResult = acceptedAttestationResult(bridge, {
+    mode: 'RELEASE_MODE',
+    modeDecisionResult: otherModeDecisionResult,
+  });
+
+  assert.notEqual(
+    bridge.createRevisionBridgeReleaseClaimModeDecisionHash(modeDecisionResult),
+    bridge.createRevisionBridgeReleaseClaimModeDecisionHash(otherModeDecisionResult),
+  );
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {
+    modeDecisionResult,
+    attestationResult,
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PACKET_BINDING_DECISION_HASH_MISMATCH');
+  assert.equal(result.packet, null);
+  assert.equal(result.report, null);
+});
+
 test('Contour 12F returns diagnostics when packetMeta fields are invalid', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimPacketEmit(validPacketEmitInput(bridge, {

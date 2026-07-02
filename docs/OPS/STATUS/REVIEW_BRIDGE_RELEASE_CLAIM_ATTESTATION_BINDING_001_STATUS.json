@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_ATTESTATION_BINDING_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_release_claim_attestation_binding",
+  "featureExpansion": "bounded_review_bridge_claim_binding",
+  "baseSha": "618d9d7ff08e103624c0f0198e674072519e2281",
+  "createdAtUtc": "2026-07-02T00:00:00.000Z",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "runtimeProductionCodeChanged": true,
+    "rendererSurfaceChanged": false,
+    "projectTruthWrites": false,
+    "manuscriptWrites": false,
+    "storageWrite": false,
+    "receiptOrRecoveryCreated": false,
+    "releaseClaimModeDecisionRuntimeChanged": false,
+    "releaseClaimAttestationRuntimeHardened": true,
+    "releaseClaimPacketEmitRuntimeHardened": true,
+    "releaseClaimAttestationBound": true,
+    "releaseClaimPacketExactDecisionHashBound": true,
+    "releaseModeReleaseEvidenceBound": true,
+    "releaseClaimModeDecisionBoundPreviously": true,
+    "packetEmitCompletionClaimed": false,
+    "releaseExecutionAccepted": false,
+    "releasePublicationAccepted": false,
+    "userFacingReleaseClaimed": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false,
+    "autoApply": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "binding": {
+    "sourcePlan": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_FINAL_PLAN_R2",
+    "previousContourTaskId": "REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001",
+    "previousContourStatus": "delivered_merged_verified",
+    "previousContourMergeSha": "a48039cd7c79f9bc00e37b427436999ab9f47b78",
+    "existingKernelMarker": "CONTOUR_12E_RELEASE_CLAIM_ATTESTATION_GATE",
+    "releaseClaimAttestationSchema": "revision-bridge.release-claim-attestation.v1",
+    "upstreamModeDecisionGateMarker": "CONTOUR_12D_RELEASE_CLAIM_MODE_DECISION_GATE",
+    "upstreamModeDecisionSchema": "revision-bridge.release-claim-mode-decision.v1",
+    "downstreamPacketEmitMarker": "CONTOUR_12F_RELEASE_CLAIM_PACKET_EMIT"
+  },
+  "positiveClaims": [
+    "The existing release claim attestation gate is product-bound as a bounded Review Bridge 12E attestation boundary.",
+    "Accepted 12E requires accepted 12D release claim mode decision provenance and re-evaluates raw 12D decision input before accepting.",
+    "Accepted 12E requires the supplied 12D result to match the recomputed accepted 12D result.",
+    "Accepted 12E requires attestationId, attestationSchema, inputHash, outputHash, commandRunDigest, decisionHash, and evidenceHash.",
+    "Accepted 12E requires decisionHash to match the normalized accepted 12D result.",
+    "Accepted 12E requires commandRunDigest to match normalized executedCommands.",
+    "Accepted 12E requires evidenceHash to match normalized artifactHashes.",
+    "RELEASE_MODE 12E requires non-empty executedCommands, artifactHashes, releaseEvidenceId, and releaseEvidenceHash.",
+    "RELEASE_MODE 12E now requires releaseEvidenceId and releaseEvidenceHash to match accepted 12D release evidence.",
+    "The immediate downstream 12F packet emit guard now requires 12E decisionHash to match the top-level accepted 12D result, blocking mixed accepted 12D and 12E pairs.",
+    "This contour is attestation binding truth only; it is not packet emit completion, release execution, release publication, user-facing release, import, export, apply, storage truth, or release readiness truth."
+  ],
+  "nonClaims": [
+    "No release readiness is claimed.",
+    "No user-facing release is claimed.",
+    "No packet emit completion is claimed.",
+    "No release execution completion is claimed.",
+    "No release publication completion is claimed.",
+    "No release-wide attestation authority beyond bounded 12E gate binding is claimed.",
+    "No Word support is claimed.",
+    "No Google Docs support is claimed.",
+    "No DOCX support expansion is claimed.",
+    "No import support is claimed.",
+    "No export support is claimed.",
+    "No review import completion is claimed.",
+    "No roundtrip is claimed.",
+    "No layout parity is claimed.",
+    "No full fidelity is claimed.",
+    "No automatic apply is claimed.",
+    "No structural apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No manuscript write is performed by release claim attestation binding.",
+    "No project truth write is performed by release claim attestation binding.",
+    "No receipt or recovery evidence is created by release claim attestation binding.",
+    "No DOCX import safe-create behavior is changed.",
+    "No DOCX export behavior is changed.",
+    "No import/export MVP closeout is widened.",
+    "No PDF, EPUB, HTML, Mindmap, cloud sync, cross-platform readiness, packaged readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Attestation binding is release-claim attestation truth only and accepts only bounded internal release-claim candidate evidence.",
+    "Attestation gate acceptance does not become project truth by itself.",
+    "Attestation gate acceptance does not create a release packet by itself.",
+    "Attestation gate acceptance does not admit execution or publication.",
+    "Attestation gate acceptance does not prove full fidelity, layout parity, roundtrip, import correctness, or export correctness.",
+    "This contour is not a packet emit completion contour.",
+    "This contour is not a user-facing boundary contour.",
+    "This contour is not a release execution contour.",
+    "This contour is not a release publication contour.",
+    "Attestation binding is not a parser and does not inspect external documents.",
+    "Attestation binding is not content import and does not create scenes.",
+    "Attestation binding is not Review import automation and does not activate a Review session.",
+    "Attestation binding is not an apply plan and does not authorize mutation.",
+    "Attestation binding is not safe write and does not create receipt or recovery evidence.",
+    "Attestation binding is not export and does not alter DOCX output.",
+    "Review Bridge may reference accepted 12E output as bounded internal chain evidence, but accepted 12E output does not become project truth."
+  ],
+  "implementation": {
+    "changedProductionRuntime": true,
+    "changedUi": false,
+    "changedBasenames": [
+      "REVIEW_BRIDGE_RELEASE_CLAIM_ATTESTATION_BINDING_001_STATUS.json",
+      "review-bridge-release-claim-attestation-binding.contract.test.js",
+      "review-bridge-release-claim-dossier-binding.contract.test.js",
+      "review-bridge-release-claim-admission-binding.contract.test.js",
+      "review-bridge-release-claim-mode-decision-binding.contract.test.js",
+      "index.mjs",
+      "revision-bridge-release-claim-attestation-gate.contract.test.js",
+      "revision-bridge-release-claim-packet-emit.contract.test.js",
+      "GOVERNANCE_CHANGE_APPROVALS.json",
+      "CONTEXT.md",
+      "HANDOFF.md",
+      "WORKLOG.md"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --test release claim mode decision, attestation, and packet emit baseline contracts",
+      "status": "pass",
+      "tests": 43
+    },
+    {
+      "command": "node --test release claim attestation and packet emit hardened contracts",
+      "status": "pass",
+      "tests": 39
+    },
+    {
+      "command": "node --test release claim attestation binding plus adjacent 12E and 12F contracts",
+      "status": "pass",
+      "tests": 44
+    },
+    {
+      "command": "node --test release claim full contract pack",
+      "status": "pass",
+      "tests": 201
+    },
+    {
+      "command": "node scripts/ops/governance-change-detection.mjs --json",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass",
+      "result": "found 0 vulnerabilities"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "proofPoints": {
+    "releaseClaimAttestationBindingExists": true,
+    "acceptedModeDecisionRequired": true,
+    "rawModeDecisionReevaluationRequired": true,
+    "modeDecisionEnvelopeMustMatchRecomputed12D": true,
+    "decisionHashMatchesAccepted12D": true,
+    "commandRunDigestMatchesExecutedCommands": true,
+    "evidenceHashMatchesArtifactHashes": true,
+    "releaseModeRequiredFieldsEnforced": true,
+    "releaseModeReleaseEvidenceMatches12D": true,
+    "mixedAccepted12DAnd12EPacketPairBlocked": true,
+    "packetEmitCompletionClaimed": false,
+    "releaseExecutionAccepted": false,
+    "releasePublicationAccepted": false,
+    "userFacingReleaseClaimed": false,
+    "releaseReadinessClaimed": false,
+    "importSupportClaimed": false,
+    "exportSupportClaimed": false,
+    "roundtripClaimed": false,
+    "layoutParityClaimed": false,
+    "fullFidelityClaimed": false,
+    "applyOpsCreated": false,
+    "receiptCreated": false,
+    "recoveryCreated": false,
+    "projectTruthMutated": false,
+    "docxImportSafeCreateChanged": false,
+    "docxExportChanged": false
+  },
+  "agentAudits": [
+    {
+      "agent": "Poincare",
+      "type": "read_only_docs_status_auditor",
+      "result": "pass",
+      "finding": "Confirmed 12D is the last delivered contour, 12E is the next bounded Review Bridge boundary, and the status/docs must not claim release readiness, packet emit completion, execution, publication, import/export support, apply, receipt, recovery, storage truth, or Y9."
+    },
+    {
+      "agent": "Harvey",
+      "type": "read_only_false_green_code_auditor",
+      "result": "resolved_after_minimal_hardening",
+      "finding": "Identified a false-green risk where 12F could accept top-level accepted 12D plus accepted 12E built from a different accepted 12D when mode, claimId, dossierId, and matrixId matched; resolved by binding 12F to exact 12E decisionHash and binding RELEASE_MODE 12E release evidence to accepted 12D release evidence."
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "featureCommitSha": "",
+    "featurePullRequest": null,
+    "featureMergeSha": "",
+    "featureMergedAtUtc": ""
+  },
+  "decision": "RELEASE_CLAIM_ATTESTATION_BINDING_MINIMAL_HARDENING_READY_FOR_DELIVERY",
+  "nextStep": "after delivery, continue with the next owner-selected Review Bridge boundary; the logical next boundary is CONTOUR_12F_RELEASE_CLAIM_PACKET_EMIT"
+}
