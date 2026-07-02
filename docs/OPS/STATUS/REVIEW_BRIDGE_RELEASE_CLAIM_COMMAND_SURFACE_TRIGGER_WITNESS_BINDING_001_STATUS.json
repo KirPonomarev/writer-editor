@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_release_claim_command_surface_trigger_witness_binding",
   "featureExpansion": "bounded_review_bridge_claim_binding",
   "headShaBefore": "418c78003ab502cc77873b704422d11ae7e09ecd",
@@ -179,6 +179,23 @@
     {
       "command": "npm audit --omit=dev --audit-level=high",
       "status": "pass"
+    },
+    {
+      "command": "node --test review bridge release claim binding clean-tree suite",
+      "status": "pass",
+      "tests": 57
+    },
+    {
+      "command": "GitHub Actions PR 1052 oss-policy",
+      "status": "pass"
+    },
+    {
+      "command": "GitHub Actions PR 1052 x1-runtime-parity ubuntu",
+      "status": "pass"
+    },
+    {
+      "command": "GitHub Actions PR 1052 x1-runtime-parity windows",
+      "status": "pass"
     }
   ],
   "proofPoints": {
@@ -220,8 +237,12 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending"
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "b63ff2e8a61f7f1e0148c95aef04c5bea1567b77",
+    "featurePullRequest": 1052,
+    "featureMergeSha": "bbba243c353297afb2926759688582e4591c78f0",
+    "featureMergedAtUtc": "2026-07-02T14:50:47.000Z"
   },
-  "decision": "RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_IMPLEMENTED_VERIFIED_PENDING_DELIVERY",
-  "nextStep": "run policy checks, update governance approvals, commit, push, open PR, and merge; delivery rebind stays separate after merge"
+  "decision": "RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_DELIVERED_MERGED_VERIFIED",
+  "nextStep": "select the next owner-approved boundary explicitly; real command execution, real product publication, and post-MVP import/export expansion do not open by implication"
 }

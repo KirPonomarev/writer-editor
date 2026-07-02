@@ -3608,10 +3608,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_001_STATUS.json",
-      "sha256": "a8edacd99328224f43514fcca245b1c5462402e49a4d4d320e6acbff0f3845c3",
+      "sha256": "b3dc4a12e88d44c8c3218e07ae542436ccbc31ac2b294193d43d339262919e9a",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_SURFACE_TRIGGER_WITNESS_BINDING_001",
       "approvedAtUtc": "2026-07-02T15:10:00.000Z",
-      "rationale": "Approve bounded 12N command surface trigger witness status artifact for one explicit owner-approved contour over delivered 12M; it records main-only packetId-keyed in-memory trigger witness evidence with main-process lifetime only, duplicate-packet blocking, missing-packet blocking, no trigger record for blocked or diagnostics, completed machine-check ledger rows, and explicit nonclaims against command availability, command execution, release execution completion, runtime queue semantics, storage, publication, readiness, renderer runtime trigger, import/export widening, receipt, recovery, dependency, and Y9."
+      "rationale": "Approve bounded 12N command surface trigger witness status artifact for one explicit owner-approved contour over delivered 12M; it records main-only packetId-keyed in-memory trigger witness evidence with main-process lifetime only, duplicate-packet blocking, missing-packet blocking, no trigger record for blocked or diagnostics, clean-tree release-claim binding sweep plus GitHub Actions delivery proofs, and explicit nonclaims against command availability, command execution, release execution completion, runtime queue semantics, storage, publication, readiness, renderer runtime trigger, import/export widening, receipt, recovery, dependency, and Y9."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-command-surface-trigger-witness-binding.contract.test.js",
