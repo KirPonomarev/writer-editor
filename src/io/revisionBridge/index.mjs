@@ -15179,6 +15179,7 @@ export const REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA =
   'revision-bridge.release-claim-execution-gate.v1';
 const REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_ALLOWED_FIELDS = Object.freeze([
   'schemaVersion',
+  'commandAdmissionInput',
   'commandAdmissionResult',
   'requestedMode',
   'requestedClaimSurface',
@@ -15190,7 +15191,9 @@ export const REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_REASON_CODES = Object.
   'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA_VERSION_REQUIRED',
   'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_SCHEMA_VERSION_INVALID',
   'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_EXTRA_FIELDS',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_INPUT_MISSING',
   'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISMATCH',
   'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_TYPE_INVALID',
   'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_NOT_ACCEPTED',
   'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_PROVENANCE_INVALID',
@@ -15214,9 +15217,9 @@ function releaseClaimExecutionGateReason(code, field, details = {}) {
 }
 
 function normalizeReleaseClaimExecutionGateCommandAdmissionResult(input = {}) {
-  const result = isPlainObject(input) ? input : {};
-  const binding = isPlainObject(result.binding) ? result.binding : {};
-  const summary = isPlainObject(result.summary) ? result.summary : {};
+  const result = isPlainObject(input) ? cloneJsonSafe(input) : {};
+  const binding = isPlainObject(result.binding) ? cloneJsonSafe(result.binding) : {};
+  const summary = isPlainObject(result.summary) ? cloneJsonSafe(result.summary) : {};
 
   return {
     ok: result.ok === true,
@@ -15239,6 +15242,37 @@ function normalizeReleaseClaimExecutionGateCommandAdmissionResult(input = {}) {
       admissionClass: normalizeString(summary.admissionClass),
     },
   };
+}
+
+function releaseClaimExecutionGateCommandAdmissionResultMismatchReasons(expectedResult, receivedResult) {
+  if (!isPlainObject(receivedResult)) {
+    if (receivedResult === undefined) return [];
+    return [
+      releaseClaimExecutionGateReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISMATCH',
+        'commandAdmissionResult',
+        {
+          expectedValue: normalizeReleaseClaimExecutionGateCommandAdmissionResult(expectedResult),
+          receivedValue: receivedResult,
+        },
+      ),
+    ];
+  }
+
+  const expectedCommandAdmissionResult = normalizeReleaseClaimExecutionGateCommandAdmissionResult(expectedResult);
+  const receivedCommandAdmissionResult = normalizeReleaseClaimExecutionGateCommandAdmissionResult(receivedResult);
+  if (JSON.stringify(expectedCommandAdmissionResult) === JSON.stringify(receivedCommandAdmissionResult)) return [];
+
+  return [
+    releaseClaimExecutionGateReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISMATCH',
+      'commandAdmissionResult',
+      {
+        expectedValue: expectedCommandAdmissionResult,
+        receivedValue: receivedCommandAdmissionResult,
+      },
+    ),
+  ];
 }
 
 function collectReleaseClaimExecutionGateSchemaReasons(executionInput) {
@@ -15503,7 +15537,7 @@ function releaseClaimExecutionGateResult(
 }
 
 export function evaluateRevisionBridgeReleaseClaimExecutionGate(input = {}) {
-  const executionInput = isPlainObject(input) ? input : {};
+  const executionInput = isPlainObject(input) ? cloneJsonSafe(input) : {};
   const requestedMode = normalizeString(executionInput.requestedMode);
   const requestedClaimSurface = normalizeString(executionInput.requestedClaimSurface);
 
@@ -15533,13 +15567,34 @@ export function evaluateRevisionBridgeReleaseClaimExecutionGate(input = {}) {
   }
 
   if (!isPlainObject(executionInput.commandAdmissionResult)) {
+    if (hasOwnField(executionInput, 'commandAdmissionResult')) {
+      return releaseClaimExecutionGateResult(
+        false,
+        'blocked',
+        [
+          releaseClaimExecutionGateReason(
+            'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISMATCH',
+            'commandAdmissionResult',
+            {
+              expectedValue: normalizeReleaseClaimExecutionGateCommandAdmissionResult({}),
+              receivedValue: executionInput.commandAdmissionResult,
+            },
+          ),
+        ],
+        normalizeReleaseClaimExecutionGateCommandAdmissionResult(executionInput.commandAdmissionResult),
+        requestedClaimSurface,
+      );
+    }
+  }
+
+  if (!isPlainObject(executionInput.commandAdmissionInput)) {
     return releaseClaimExecutionGateResult(
       false,
       'blocked',
       [
         releaseClaimExecutionGateReason(
-          'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_RESULT_MISSING',
-          'commandAdmissionResult',
+          'REVISION_BRIDGE_RELEASE_CLAIM_EXECUTION_GATE_COMMAND_ADMISSION_INPUT_MISSING',
+          'commandAdmissionInput',
         ),
       ],
       normalizeReleaseClaimExecutionGateCommandAdmissionResult(executionInput.commandAdmissionResult),
@@ -15547,8 +15602,11 @@ export function evaluateRevisionBridgeReleaseClaimExecutionGate(input = {}) {
     );
   }
 
+  const evaluatedCommandAdmissionResult = evaluateRevisionBridgeReleaseClaimCommandAdmission(
+    executionInput.commandAdmissionInput,
+  );
   const commandAdmissionResult = normalizeReleaseClaimExecutionGateCommandAdmissionResult(
-    executionInput.commandAdmissionResult,
+    evaluatedCommandAdmissionResult,
   );
   const commandAdmissionReasons = collectReleaseClaimExecutionGateCommandAdmissionReasons(
     commandAdmissionResult,
@@ -15558,6 +15616,20 @@ export function evaluateRevisionBridgeReleaseClaimExecutionGate(input = {}) {
       false,
       'blocked',
       commandAdmissionReasons,
+      commandAdmissionResult,
+      requestedClaimSurface,
+    );
+  }
+
+  const commandAdmissionMismatchReasons = releaseClaimExecutionGateCommandAdmissionResultMismatchReasons(
+    commandAdmissionResult,
+    executionInput.commandAdmissionResult,
+  );
+  if (commandAdmissionMismatchReasons.length > 0) {
+    return releaseClaimExecutionGateResult(
+      false,
+      'blocked',
+      commandAdmissionMismatchReasons,
       commandAdmissionResult,
       requestedClaimSurface,
     );
