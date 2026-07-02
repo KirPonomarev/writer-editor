@@ -3,7 +3,7 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001_STATUS.json",
-      "sha256": "a3750977f1c3cfc99b7d73372477062644cc1384afe586b3729dfd620602d061",
+      "sha256": "63e92f3b6f72e6ea9b5fbdf0e460751ac311954850528a3fdac9161712710640",
       "approvedBy": "ticket:REVIEW_BRIDGE_FORMAT_MATRIX_CLAIM_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
       "rationale": "Approve bounded format matrix claim binding status; it product-binds the existing format matrix claim gate while preserving no new user-facing format support, no import support, no export support, no roundtrip, no layout parity, no full fidelity, no release claim dossier acceptance, no release readiness, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no dependency, and no Y9 claim."
