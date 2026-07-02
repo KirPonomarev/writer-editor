@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001_STATUS.json",
-      "sha256": "6d012c65127bf6c5cf6fd64d0a9248568874ef8597a71fee3b492ad3a90a202c",
+      "sha256": "7c7e64d103c02fa4495299f416e9400bdbeeb60e2e2b9d8581b122f8ee39dc7a",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded release claim command admission binding status; it binds 12J to raw 12I kernel fence input and internal 12I re-evaluation while preserving no command availability, no command execution, no product publication, no release readiness, no user-facing release, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
+      "approvedAtUtc": "2026-07-02T10:30:00.000Z",
+      "rationale": "Approve bounded release claim command admission binding status delivery rebind to PR 1044 and merge SHA ac4bfffd1570046250215446ea753c431c8c15ec; it preserves the 12J raw 12I kernel fence input and internal 12I re-evaluation claim while preserving no command availability, no command execution, no product publication, no release readiness, no user-facing release, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-command-admission-binding.contract.test.js",
