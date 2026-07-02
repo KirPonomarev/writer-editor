@@ -38,10 +38,10 @@ test('donor port command surface kernel: rejects non-object payloads with typed 
 test('donor port command surface kernel: preserves typed accepted results with code and reason', async () => {
   const expected = {
     ok: true,
-    type: 'revisionBridge.releaseClaimCommandExecutionWitness',
+    type: 'revisionBridge.releaseClaimCommandExecutionEffect',
     status: 'accepted',
-    code: 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_ACCEPTED',
-    reason: 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_WITNESS_ACCEPTED',
+    code: 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_EFFECT_ACCEPTED',
+    reason: 'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_EXECUTION_EFFECT_ACCEPTED',
     reasons: [],
     binding: { mode: 'RELEASE_MODE' },
     summary: {
@@ -50,7 +50,7 @@ test('donor port command surface kernel: preserves typed accepted results with c
       attestationId: 'attestation-1',
       commandId: 'cmd.project.releaseClaim.execute',
       admissionClass: 'USER_FACING_CLAIM_READY',
-      witnessOnly: true,
+      ephemeralEffectOnly: true,
     },
   };
   const kernel = createCommandSurfaceKernel({
