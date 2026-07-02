@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001_STATUS.json",
-      "sha256": "a8999009598aa5975c84c755e1471c13fc954241fbb6594f537704aba8947992",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
+      "sha256": "31a44406b1bc127bde154de3b8a4ef79bc1f80dada0a15b3387db0b1d2bac822",
+      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded release claim publication gate binding status; it product-binds 12H as internal publication gate admission requiring raw 12G boundary input and 12G re-evaluation while preserving no product publication, no release readiness, no user-facing release, no execution, no command admission, no kernel fence, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
+      "rationale": "Approve delivery rebind for bounded release claim publication gate binding after PR 1040 merge; status is rebound to delivered_merged_verified with feature commit, PR, merge SHA, and merged time while preserving raw 12G boundary input, 12G re-evaluation, no product publication, no release readiness, no user-facing release, no execution, no command admission, no kernel fence, no import/export widening, no apply, no storage, no receipt, no recovery, no dependency, and no Y9 claim."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-publication-gate-binding.contract.test.js",

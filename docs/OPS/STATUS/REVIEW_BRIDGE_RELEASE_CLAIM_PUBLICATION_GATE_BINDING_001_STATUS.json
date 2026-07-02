@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_release_claim_publication_gate_binding",
   "featureExpansion": "bounded_review_bridge_claim_binding",
   "baseSha": "cb643b1f5681e5ec45432ada60f4853cedd8a270",
@@ -274,8 +274,12 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending"
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "29a86ff1697ae6c9f837d2ba821db837bc32cf24",
+    "featurePullRequest": 1040,
+    "featureMergeSha": "7ea974a6d1a75de2900440b5a3a48cd29866fab9",
+    "featureMergedAtUtc": "2026-07-02T09:30:36.000Z"
   },
-  "decision": "RELEASE_CLAIM_PUBLICATION_GATE_BINDING_IMPLEMENTED_VERIFIED_PENDING_DELIVERY",
-  "nextStep": "complete delivery chain, then select the next owner-approved boundary explicitly; command admission, kernel fence, real publication, and post-MVP import/export expansion do not open by implication"
+  "decision": "RELEASE_CLAIM_PUBLICATION_GATE_BINDING_DELIVERED_MERGED_VERIFIED",
+  "nextStep": "select the next owner-approved boundary explicitly; command admission, kernel fence, real publication, and post-MVP import/export expansion do not open by implication"
 }
