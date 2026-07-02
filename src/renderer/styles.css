@@ -4612,6 +4612,36 @@ body.dark-theme .status-bar {
   border-color: transparent;
 }
 
+.modal__button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.modal__checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.modal__checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.modal__checkbox {
+  margin-top: 2px;
+}
+
+.modal__checkbox-copy {
+  line-height: 1.4;
+  word-break: break-word;
+}
+
 [data-command-palette-modal] .modal__content {
   width: min(420px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);

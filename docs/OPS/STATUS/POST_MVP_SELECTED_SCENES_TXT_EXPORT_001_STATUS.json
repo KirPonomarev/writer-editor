@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "taskId": "POST_MVP_SELECTED_SCENES_TXT_EXPORT_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "post_mvp_bounded_export_contour",
+  "featureExpansion": true,
+  "baseSha": "7837b69cbc5b444902d3d966da9895c1a62b4311",
+  "createdAtUtc": "2026-07-03T00:00:00.000Z",
+  "binding": {
+    "previousContour": "POST_MVP_CURRENT_SCENE_TXT_EXPORT_FACTUAL_REBIND_001",
+    "previousContourStatus": "factual_rebind_complete",
+    "importExportGateArtifact": "IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json",
+    "importExportGateWidened": false,
+    "sourcePullRequest": null,
+    "sourceCommitSha": null,
+    "sourceMergeSha": null
+  },
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "postMvpContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "transientUiAdded": true,
+    "persistentTreeSelectionChanged": false,
+    "paletteCommandAdded": false,
+    "newDependenciesAdded": false,
+    "projectTruthWritesAdded": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "productClaim": {
+    "selectedScenesTxtExportDelivered": false,
+    "selectedScenesTxtExportImplemented": true,
+    "selectedScenesUserFacingFileMenuOnly": true,
+    "mainOwnedScopeAndSourceRead": true,
+    "rendererOwnsTransientPickerOnly": true,
+    "treeSelectionTruthUsed": false,
+    "externalTxtWriteOnly": true,
+    "currentSceneTxtExportStillSeparate": true,
+    "importExportMvpCloseoutExpanded": false,
+    "releaseReadinessClaimed": false
+  },
+  "runtimeTruth": {
+    "menuEntryId": "file-export-selected-scenes-txt",
+    "menuLabelKey": "menu.file.exportSelectedScenesTxt",
+    "menuProfile": [
+      "pro",
+      "guru"
+    ],
+    "commandId": "cmd.project.exportSelectedScenesTxtV1",
+    "paletteCommand": false,
+    "rendererScopeQueryId": "query.selectedScenesTxtExportScope",
+    "rendererPayloadShape": [
+      "confirmed",
+      "requestId",
+      "outPath",
+      "selectedSceneIds"
+    ],
+    "rendererPathTruthAllowed": false,
+    "rendererTextTruthAllowed": false,
+    "scopeQueryLeaksPaths": false,
+    "scopeQueryLeaksProjectRoot": false,
+    "dirtySelectedCurrentSceneAllowed": false,
+    "nonSceneSourceAllowed": false,
+    "targetInsideProjectRootAllowed": false,
+    "targetMatchingSelectedSceneAllowed": false,
+    "writeSurface": "one external txt file through atomic write",
+    "contentJoinRule": "selected scene texts joined by one blank line in canonical scope order"
+  },
+  "positiveClaims": [
+    "The current implementation provides a bounded File menu command through cmd.project.exportSelectedScenesTxtV1.",
+    "Renderer owns only a transient checkbox picker and sends only confirmed sceneIds plus request metadata.",
+    "Main rebuilds the canonical selected-scene scope, validates each selected item as kind scene, and owns all source reads plus save dialog resolution.",
+    "The export target cannot equal any selected scene source path and cannot live inside the current project root.",
+    "Successful local verification writes exactly one external TXT file through the existing atomic writer without widening the closed import/export MVP gate."
+  ],
+  "explicitNonClaims": [
+    "full manuscript TXT export",
+    "project package export",
+    "broader text export lane",
+    "persistent tree multi-select",
+    "tree truth rewrite",
+    "palette command",
+    "DOCX export change",
+    "DOCX import change",
+    "Markdown import change",
+    "Markdown export change",
+    "Mindmap export change",
+    "PDF export",
+    "EPUB export",
+    "HTML export",
+    "release readiness",
+    "cross-platform readiness",
+    "Y9 admission"
+  ],
+  "canonGuards": {
+    "boundedContour": true,
+    "noSplitBrainDocs": true,
+    "noFalseGreen": true,
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "atomicWritePreserved": true,
+    "treeTruthPreserved": true,
+    "mainAuthorityPreserved": true,
+    "newDependenciesAdded": false,
+    "uiRedesign": false
+  },
+  "docsBinding": {
+    "taskDocAdded": true,
+    "statusArtifactAdded": true,
+    "contextUpdated": false,
+    "handoffUpdated": false,
+    "worklogUpdated": true,
+    "bibleUpdated": false,
+    "canonUpdated": false,
+    "reason": "This contour is a bounded post-MVP export lane; active mainline factual-doc sync is deferred until the delivery chain is complete."
+  },
+  "verification": [
+    {
+      "command": "npm run build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "node --test test/contracts/post-mvp-selected-scenes-txt-export.contract.test.js",
+      "status": "pass",
+      "tests": 6
+    },
+    {
+      "command": "node --test test/unit/selected-scenes-txt-export-ui-flow.test.js",
+      "status": "pass",
+      "tests": 3
+    },
+    {
+      "command": "node --test test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "status": "pass",
+      "tests": 7
+    },
+    {
+      "command": "node --test test/contracts/post-mvp-current-scene-txt-export.contract.test.js",
+      "status": "pass",
+      "tests": 4
+    },
+    {
+      "command": "node --test test/contracts/command-namespace-static-no-legacy-prefix.contract.test.js",
+      "status": "pass",
+      "tests": 6
+    },
+    {
+      "command": "node --test test/contracts/command-namespace-canon-and-alias-bridge.contract.test.js",
+      "status": "pass",
+      "tests": 8
+    },
+    {
+      "command": "node scripts/check-packaged-renderer-bundle.mjs",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "implemented_verified_pending_delivery",
+    "featureCommitSha": null,
+    "featurePullRequest": null,
+    "featureMergeSha": null
+  },
+  "decision": "SELECTED_SCENES_TXT_EXPORT_IMPLEMENTED_VERIFIED_PENDING_DELIVERY_WITH_TRANSIENT_PICKER_AND_MAIN_OWNED_TRUTH",
+  "nextStep": "complete_delivery_chain_then_rebind_active_factual_docs"
+}

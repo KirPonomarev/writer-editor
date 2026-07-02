@@ -11,6 +11,7 @@ test('donor port command surface kernel: allowlist is fixed to minimal non-ui co
     'cmd.project.save',
     'cmd.project.saveAs',
     'cmd.project.exportCurrentSceneTxtV1',
+    'cmd.project.exportSelectedScenesTxtV1',
     'cmd.project.importMarkdownV1',
     'cmd.project.exportMarkdownV1',
     'cmd.project.releaseClaim.admit',
@@ -105,11 +106,16 @@ test('donor port command surface kernel: main routes minimal command family thro
     mainText,
     /\[EXPORT_CURRENT_SCENE_TXT_COMMAND_ID\]: async \(payload = \{\}\) => \{\s*const result = await dispatchCommandSurfaceKernel\(\s*COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_EXPORT_CURRENT_SCENE_TXT_V1,\s*payload,\s*\);\s*return normalizeUiBridgeMenuResult\(result\);/m,
   );
+  assert.match(
+    mainText,
+    /\[EXPORT_SELECTED_SCENES_TXT_COMMAND_ID\]: async \(payload = \{\}\) => \{\s*const confirmed = payload && payload\.confirmed === true;[\s\S]*sendCanonicalRuntimeCommand\(\s*EXPORT_SELECTED_SCENES_TXT_COMMAND_ID,[\s\S]*COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_EXPORT_SELECTED_SCENES_TXT_V1[\s\S]*return normalizeUiBridgeMenuResult\(result\);/m,
+  );
   assert.match(mainText, /dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_IMPORT_MARKDOWN_V1/);
   assert.match(mainText, /dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_EXPORT_MARKDOWN_V1/);
   assert.match(mainText, /'cmd\.project\.releaseClaim\.admit':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{\s*return dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_RELEASE_CLAIM_ADMIT,\s*payload\);/);
   assert.match(mainText, /'cmd\.project\.releaseClaim\.execute':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{\s*return dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_RELEASE_CLAIM_EXECUTE,\s*payload\);/);
   assert.match(mainText, /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS\s*=\s*new Set\(\[[\s\S]*EXPORT_CURRENT_SCENE_TXT_COMMAND_ID/);
+  assert.match(mainText, /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS\s*=\s*new Set\(\[[\s\S]*EXPORT_SELECTED_SCENES_TXT_COMMAND_ID/);
   assert.match(mainText, /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS\s*=\s*new Set\(\[[\s\S]*'cmd\.project\.releaseClaim\.admit'/);
   assert.match(mainText, /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS\s*=\s*new Set\(\[[\s\S]*'cmd\.project\.releaseClaim\.execute'/);
 });

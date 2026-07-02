@@ -5,6 +5,7 @@ const ALLOWED_COMMAND_IDS = Object.freeze([
   'cmd.project.save',
   'cmd.project.saveAs',
   'cmd.project.exportCurrentSceneTxtV1',
+  'cmd.project.exportSelectedScenesTxtV1',
   'cmd.project.importMarkdownV1',
   'cmd.project.exportMarkdownV1',
   'cmd.project.releaseClaim.admit',

@@ -27,6 +27,11 @@
       "ru": "Экспорт TXT текущей сцены",
       "en": "Export Current Scene TXT"
     },
+    "menu.file.exportSelectedScenesTxt": {
+      "base": "Экспорт TXT выбранных сцен",
+      "ru": "Экспорт TXT выбранных сцен",
+      "en": "Export Selected Scenes TXT"
+    },
     "menu.edit": {
       "base": "Редактирование",
       "ru": "Редактирование",

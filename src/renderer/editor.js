@@ -262,6 +262,11 @@ const exportPreviewModal = document.querySelector('[data-export-preview-modal]')
 const exportPreviewMessage = document.querySelector('[data-export-preview-message]');
 const exportPreviewConfirmButtons = Array.from(document.querySelectorAll('[data-export-preview-confirm]'));
 const exportPreviewCancelButtons = Array.from(document.querySelectorAll('[data-export-preview-cancel]'));
+const selectedScenesTxtExportModal = document.querySelector('[data-selected-scenes-txt-export-modal]');
+const selectedScenesTxtExportSummary = document.querySelector('[data-selected-scenes-txt-export-summary]');
+const selectedScenesTxtExportList = document.querySelector('[data-selected-scenes-txt-export-list]');
+const selectedScenesTxtExportConfirmButtons = Array.from(document.querySelectorAll('[data-selected-scenes-txt-export-confirm]'));
+const selectedScenesTxtExportCancelButtons = Array.from(document.querySelectorAll('[data-selected-scenes-txt-export-cancel]'));
 const docxImportPreviewModal = document.querySelector('[data-docx-import-preview-modal]');
 const docxImportPreviewMessage = document.querySelector('[data-docx-import-preview-message]');
 const docxImportPreviewLoss = document.querySelector('[data-docx-import-preview-loss]');
@@ -5439,6 +5444,7 @@ const MARKDOWN_EXPORT_STATUS_MESSAGE = 'Exported Markdown v1';
 const MARKDOWN_EXPORT_CANCELLED_STATUS_MESSAGE = 'Export Markdown cancelled';
 const MARKDOWN_EXPORT_SAVE_FAILED_STATUS_MESSAGE = 'Export Markdown save failed';
 const MARKDOWN_IMPORT_PROMPT_TITLE = 'Import Markdown v1';
+const SELECTED_SCENES_TXT_EXPORT_SCOPE_QUERY_ID = 'query.selectedScenesTxtExportScope';
 const LINK_PROMPT_TITLE = 'Insert link';
 const FLOW_OPEN_ERROR_MESSAGE = 'Flow mode unavailable';
 const FLOW_SAVE_ERROR_MESSAGE = 'Flow mode save failed';
@@ -5551,6 +5557,7 @@ async function invokePreloadUiCommandBridge(commandId, payload = {}) {
 async function invokeWorkspaceQueryBridge(queryId, payload = {}) {
   if (
     queryId !== 'query.projectTree'
+    && queryId !== SELECTED_SCENES_TXT_EXPORT_SCOPE_QUERY_ID
     && queryId !== 'query.collabScopeLocal'
     && queryId !== REVIEW_SURFACE_QUERY_ID
   ) {
@@ -8221,6 +8228,7 @@ function performSafeResetShell() {
   closeSimpleModal(settingsModal);
   closeSimpleModal(recoveryModal);
   closeSimpleModal(exportPreviewModal);
+  closeSimpleModal(selectedScenesTxtExportModal);
   closeDocxImportPreviewModal();
   closeSimpleModal(diagnosticsModal);
 
@@ -8289,6 +8297,7 @@ function performRestoreLastStableShell() {
   closeSimpleModal(settingsModal);
   closeSimpleModal(recoveryModal);
   closeSimpleModal(exportPreviewModal);
+  closeSimpleModal(selectedScenesTxtExportModal);
   closeDocxImportPreviewModal();
   closeSimpleModal(diagnosticsModal);
 
@@ -8450,6 +8459,154 @@ async function confirmExportPreviewAndRun() {
   });
   updatePerfHintText('normal');
   updateWarningStateText('none');
+}
+
+function normalizeSelectedScenesTxtExportScope(scope) {
+  if (!scope || typeof scope !== 'object' || Array.isArray(scope)) return null;
+  const sceneCandidates = Array.isArray(scope.sceneCandidates)
+    ? scope.sceneCandidates
+        .filter((candidate) => candidate && typeof candidate === 'object' && !Array.isArray(candidate))
+        .map((candidate) => ({
+          sceneId: typeof candidate.sceneId === 'string' ? candidate.sceneId.trim() : '',
+          label: typeof candidate.label === 'string' && candidate.label.trim()
+            ? candidate.label.trim()
+            : (typeof candidate.title === 'string' ? candidate.title.trim() : ''),
+          title: typeof candidate.title === 'string' ? candidate.title.trim() : '',
+        }))
+        .filter((candidate) => candidate.sceneId && candidate.label)
+    : [];
+  const defaultSceneIds = Array.isArray(scope.defaultSceneIds)
+    ? scope.defaultSceneIds
+        .filter((sceneId) => typeof sceneId === 'string' && sceneId.trim())
+        .map((sceneId) => sceneId.trim())
+    : [];
+  if (sceneCandidates.length === 0) return null;
+  return {
+    defaultSceneIds,
+    sceneCandidates,
+  };
+}
+
+function getSelectedScenesTxtExportCheckedSceneIds() {
+  if (!(selectedScenesTxtExportList instanceof HTMLElement)) return [];
+  return Array.from(selectedScenesTxtExportList.querySelectorAll('[data-selected-scenes-txt-export-checkbox]:checked'))
+    .map((input) => (input instanceof HTMLInputElement ? input.value.trim() : ''))
+    .filter(Boolean);
+}
+
+function updateSelectedScenesTxtExportModalState() {
+  const selectedCount = getSelectedScenesTxtExportCheckedSceneIds().length;
+  if (selectedScenesTxtExportSummary) {
+    selectedScenesTxtExportSummary.textContent = selectedCount > 0
+      ? `Выбрано сцен: ${selectedCount}`
+      : 'Выберите сцены для экспорта в один TXT файл.';
+  }
+  selectedScenesTxtExportConfirmButtons.forEach((button) => {
+    button.disabled = selectedCount === 0;
+    button.textContent = selectedCount > 0 ? `Экспорт TXT (${selectedCount})` : 'Экспорт TXT';
+  });
+}
+
+function closeSelectedScenesTxtExportModal() {
+  closeSimpleModal(selectedScenesTxtExportModal);
+}
+
+function renderSelectedScenesTxtExportCandidateList(scope) {
+  if (!(selectedScenesTxtExportList instanceof HTMLElement)) return;
+  selectedScenesTxtExportList.innerHTML = '';
+  const defaultSceneIdSet = new Set(Array.isArray(scope?.defaultSceneIds) ? scope.defaultSceneIds : []);
+
+  scope.sceneCandidates.forEach((candidate, index) => {
+    const row = document.createElement('label');
+    row.className = 'modal__checkbox-row';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'modal__checkbox';
+    checkbox.value = candidate.sceneId;
+    checkbox.dataset.selectedScenesTxtExportCheckbox = 'true';
+    checkbox.checked = defaultSceneIdSet.has(candidate.sceneId);
+    checkbox.addEventListener('change', () => {
+      updateSelectedScenesTxtExportModalState();
+    });
+
+    const copy = document.createElement('span');
+    copy.className = 'modal__checkbox-copy';
+    copy.textContent = candidate.label || candidate.title || `Scene ${index + 1}`;
+
+    row.appendChild(checkbox);
+    row.appendChild(copy);
+    selectedScenesTxtExportList.appendChild(row);
+  });
+}
+
+function openSelectedScenesTxtExportModal(scope) {
+  const normalizedScope = normalizeSelectedScenesTxtExportScope(scope);
+  if (!normalizedScope) {
+    updateStatusText('Selected scenes TXT export unavailable');
+    return;
+  }
+  renderSelectedScenesTxtExportCandidateList(normalizedScope);
+  updateSelectedScenesTxtExportModalState();
+  openSimpleModal(selectedScenesTxtExportModal);
+}
+
+async function confirmSelectedScenesTxtExportAndRun() {
+  const selectedSceneIds = getSelectedScenesTxtExportCheckedSceneIds();
+  if (selectedSceneIds.length === 0) {
+    updateSelectedScenesTxtExportModalState();
+    return;
+  }
+
+  closeSelectedScenesTxtExportModal();
+  updateStatusText('Exporting selected scenes TXT');
+  const result = await invokePreloadUiCommandBridge('cmd.project.exportSelectedScenesTxtV1', {
+    confirmed: true,
+    requestId: `selected-scenes-txt-export-${Date.now()}`,
+    selectedSceneIds,
+  });
+  if (!result || result.ok !== true) {
+    updateStatusText('Selected scenes TXT export failed');
+    return;
+  }
+
+  const value = result.value && typeof result.value === 'object' && !Array.isArray(result.value)
+    ? result.value
+    : {};
+  if (value.canceled === true) {
+    updateStatusText('Selected scenes TXT export cancelled');
+    return;
+  }
+  if (value.exported === true) {
+    const sceneCount = Number.isInteger(value.sceneCount) ? value.sceneCount : selectedSceneIds.length;
+    updateStatusText(`Selected scenes TXT exported: ${sceneCount}`);
+    return;
+  }
+  updateStatusText('Selected scenes TXT export unavailable');
+}
+
+async function openSelectedScenesTxtExportFlow() {
+  updateStatusText('Preparing selected scenes TXT export');
+  let result = null;
+  try {
+    result = await invokeWorkspaceQueryBridge(SELECTED_SCENES_TXT_EXPORT_SCOPE_QUERY_ID, {});
+  } catch {
+    updateStatusText('Selected scenes TXT export unavailable');
+    return;
+  }
+  if (!result || result.ok !== true) {
+    updateStatusText('Selected scenes TXT export unavailable');
+    return;
+  }
+
+  const scope = normalizeSelectedScenesTxtExportScope(result.scope);
+  if (!scope) {
+    updateStatusText('No exportable scenes available');
+    return;
+  }
+
+  openSelectedScenesTxtExportModal(scope);
+  updateStatusText('Selected scenes TXT export ready');
 }
 
 function getDocxImportPreviewPlanFromValue(value) {
@@ -10685,6 +10842,14 @@ exportPreviewConfirmButtons.forEach((button) => {
     void confirmExportPreviewAndRun();
   });
 });
+selectedScenesTxtExportCancelButtons.forEach((button) => {
+  button.addEventListener('click', () => closeSelectedScenesTxtExportModal());
+});
+selectedScenesTxtExportConfirmButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    void confirmSelectedScenesTxtExportAndRun();
+  });
+});
 docxImportPreviewCancelButtons.forEach((button) => {
   button.addEventListener('click', () => closeDocxImportPreviewModal());
 });
@@ -11005,6 +11170,10 @@ if (window.electronAPI) {
     }
     if (commandId === COMMAND_IDS.PROJECT_IMPORT_TXT_V1) {
       void openTxtImportPreviewFlow();
+      return true;
+    }
+    if (commandId === 'cmd.project.exportSelectedScenesTxtV1') {
+      void openSelectedScenesTxtExportFlow();
       return true;
     }
     if (commandId === COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN && payload.preview === true) {

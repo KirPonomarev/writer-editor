@@ -67,7 +67,9 @@ test('post-mvp current scene txt export: main command path stays main-owned, sce
   assert.doesNotMatch(readSource, /requestEditorSnapshot|requestEditorText/u);
 
   assert.match(handlerSource, /resolveCurrentSceneTxtExportPath\(payload\)/u);
+  assert.match(handlerSource, /validateTxtExportPhysicalTargetPath\(outPath/u);
   assert.match(handlerSource, /fileManager\.writeFileAtomic\(outPath, source\.content\)/u);
+  assert.match(handlerSource, /!writeResult\s*\|\|\s*writeResult\.success !== true/u);
   assert.match(handlerSource, /Buffer\.byteLength\(source\.content, 'utf8'\)/u);
   assert.match(handlerSource, /exported:\s*false,\s*canceled:\s*true/u);
   assert.doesNotMatch(handlerSource, /payload\.text|payload\.scene|payload\.rendererState|payload\.bufferSource|payload\.viewportDomText|payload\.visibleWindowText/u);
@@ -85,6 +87,19 @@ test('post-mvp current scene txt export: target path validation blocks project-t
   assert.match(validateSource, /isPathInside\(source\.projectRoot, outPath\)/u);
   assert.match(validateSource, /reason:\s*'export_target_matches_current_scene'/u);
   assert.match(validateSource, /reason:\s*'export_target_inside_project_root'/u);
+});
+
+test('post-mvp current scene txt export: physical directory comparison does not reuse file extension normalization', () => {
+  const source = readText(MAIN_PATH);
+  const directoryResolveSource = sliceBetween(
+    source,
+    'async function resolveComparableTxtExportDirectoryPath(directoryPath) {',
+    'async function validateTxtExportPhysicalTargetPath(outPath, options = {}) {',
+  );
+
+  assert.doesNotMatch(directoryResolveSource, /normalizeCurrentSceneTxtExportPath\(directoryPath\)/u);
+  assert.match(directoryResolveSource, /typeof directoryPath !== 'string' \|\| !directoryPath\.trim\(\)/u);
+  assert.match(directoryResolveSource, /const normalizedPath = directoryPath\.trim\(\);/u);
 });
 
 test('post-mvp current scene txt export: ui bridge and command surface allowlist include only the canonical command id', () => {
