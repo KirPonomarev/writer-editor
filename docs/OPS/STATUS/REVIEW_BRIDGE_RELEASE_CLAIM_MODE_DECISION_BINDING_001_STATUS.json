@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_release_claim_mode_decision_binding",
   "featureExpansion": "bounded_review_bridge_claim_binding",
   "baseSha": "fecc6b59c2291d8f74abd405de56f4371cebdcc2",
@@ -208,12 +208,12 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending_delivery",
-    "featureCommitSha": "",
-    "featurePullRequest": null,
-    "featureMergeSha": "",
-    "featureMergedAtUtc": ""
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "1d630871bf1904e3879d4606e4b614eb33c3c2b8",
+    "featurePullRequest": 1032,
+    "featureMergeSha": "a48039cd7c79f9bc00e37b427436999ab9f47b78",
+    "featureMergedAtUtc": "2026-07-02T01:23:34Z"
   },
   "decision": "RELEASE_CLAIM_MODE_DECISION_BINDING_BOUND_FOR_CURRENT_SCOPE",
-  "nextStep": "finish delivery chain, then continue with the next owner-selected Review Bridge boundary"
+  "nextStep": "continue with the next owner-selected Review Bridge boundary"
 }

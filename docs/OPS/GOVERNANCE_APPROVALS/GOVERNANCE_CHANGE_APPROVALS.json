@@ -3,10 +3,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001_STATUS.json",
-      "sha256": "50b814e73719879cdc2931e792f3242fefc45990bcebacab064ae3a5e8b219c9",
+      "sha256": "1e31e89aeb8e9d97c198cb2d6d22abdaaa93fd866926192ac057852cec5827b4",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded release claim mode decision binding status; it product-binds and minimally hardens the existing 12D release claim mode decision gate by deriving claimId, dossierId, and matrixId from accepted 12B and 12C provenance while preserving no release readiness, no user-facing release, no attestation completion, no packet emit completion, no execution completion, no publication completion, no Word support, no Google Docs support, no DOCX support expansion, no import support, no export support, no roundtrip, no layout parity, no full fidelity, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no dependency, and no Y9 claim."
+      "rationale": "Approve bounded release claim mode decision binding status and delivery rebind after PR 1032 merge; it product-binds and minimally hardens the existing 12D release claim mode decision gate by deriving claimId, dossierId, and matrixId from accepted 12B and 12C provenance while preserving no release readiness, no user-facing release, no attestation completion, no packet emit completion, no execution completion, no publication completion, no Word support, no Google Docs support, no DOCX support expansion, no import support, no export support, no roundtrip, no layout parity, no full fidelity, no apply, no manuscript or project truth write, no receipt, no recovery, no DOCX safe-create change, no DOCX export change, no import-export MVP widening, no dependency, and no Y9 claim."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js",

@@ -223,10 +223,10 @@ No further transfer is required for this variant; the transfer axis is closed.
 - after editorial sheet 10000 stress rebind, viewport-continuity repair, and import/export MVP closeout, next work remains one owner-selected contour; manual macOS design approval, post-MVP export expansion, platform adapters, collaboration, comments, history, and above-10000 profiling remain separate stage-gated lanes.
 
 ## Review Bridge Release Claim Mode Decision Binding
-- `REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001` is opened as the bounded next contour after delivered release claim admission binding.
+- `REVIEW_BRIDGE_RELEASE_CLAIM_MODE_DECISION_BINDING_001` is delivered, merged, and verified as the bounded next contour after delivered release claim admission binding.
 - release claim mode decision binding product-binds the existing `CONTOUR_12D_RELEASE_CLAIM_MODE_DECISION_GATE`.
 - accepted 12D mode decision requires accepted 12B release claim dossier provenance and accepted 12C release claim admission provenance.
 - 12D binding now derives `claimId`, `dossierId`, and `matrixId` from accepted upstream provenance; caller-supplied decision ids cannot widen or poison the binding.
 - 12E attestation and 12F packet emit are minimally hardened as immediate downstream consumers: they re-evaluate raw 12D or 12E payloads before accepting supplied envelopes.
-- current status is implementation verified pending delivery until commit, push, PR, merge, and delivered rebind are complete.
+- delivery truth is rebound to PR `1032`, merge SHA `a48039cd7c79f9bc00e37b427436999ab9f47b78`, and feature commit `1d630871bf1904e3879d4606e4b614eb33c3c2b8`.
 - scope truth: this is not release readiness; no release readiness, user-facing release, attestation completion, packet emit completion, release execution completion, release publication completion, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
