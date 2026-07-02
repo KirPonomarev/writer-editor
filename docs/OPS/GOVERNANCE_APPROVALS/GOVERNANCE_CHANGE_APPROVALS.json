@@ -3636,7 +3636,7 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001_STATUS.json",
-      "sha256": "fd17457cc1fd7294746e0c51d9fc05c728133a22fbc8f215766d8b28bda45b2b",
+      "sha256": "aa76c62d78e63dccdaf092d27ed25eb8b45a7b6311005901b2999f20e1a84c02",
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
       "rationale": "Approve bounded release claim publication effect binding status for the new 12P downstream contour; it binds one main-only in-memory publication effect over delivered 12O while preserving no command availability, no broad command execution completion, no product publication, no publication authority, no release publication completion, no release readiness, no user-facing release, no storage, no receipt, no recovery, no import-export widening, and no Y9 claim."
