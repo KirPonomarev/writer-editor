@@ -286,3 +286,15 @@ No further transfer is required for this variant; the transfer axis is closed.
 - `RELEASE_MODE` with `USER_FACING` kernel fence evidence is accepted only as internal chain evidence when the accepted 12H publication releaseClass is `USER_FACING_CLAIM_READY`.
 - `USER_FACING_CLAIM_READY` and `USER_FACING` remain internal chain evidence only; this is not command availability, not command admission, not command execution, not product publication, not release readiness, not a user-facing release, not a user-facing UI state, and not release execution.
 - scope truth: this is not command availability; no command availability, command admission, command execution, product publication, release readiness, user-facing release, release execution completion, release publication completion, publication authority, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
+
+## Review Bridge Release Claim Command Admission Binding
+- `REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001` is implemented and verified pending delivery as the bounded next contour after delivered release claim kernel fence binding.
+- release claim command admission binding product-binds the existing `CONTOUR_12J_RELEASE_CLAIM_COMMAND_ADMISSION`.
+- accepted 12J requires raw 12I kernel fence input and re-evaluates 12I internally before accepting command admission evidence.
+- accepted 12J requires the internally evaluated 12I result to be accepted and to carry mode, claimId, dossierId, matrixId, releaseClass, claimSurface, packetId, attestationId, and admissionClass.
+- optional kernelFenceResult is treated only as consistency evidence; stale, fabricated, inherited, or non-plain kernelFenceResult values are blocked unless they match the internally re-evaluated 12I result.
+- commandId is command admission evidence identity only, not command execution.
+- `PR_MODE` with `USER_FACING` command admission requests are blocked through the 12I kernel fence chain.
+- `RELEASE_MODE` with `USER_FACING` command admission evidence is accepted only as internal chain evidence when the accepted 12I kernel fence releaseClass is `USER_FACING_CLAIM_READY`.
+- `USER_FACING_CLAIM_READY` and `USER_FACING` remain internal chain evidence only; this is not command availability, not command execution, not product publication, not release readiness, not a user-facing release, not a user-facing UI state, and not release execution.
+- scope truth: this is internal command admission evidence only; no command availability, command execution, product publication, release readiness, user-facing release, release execution completion, release publication completion, publication authority, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.

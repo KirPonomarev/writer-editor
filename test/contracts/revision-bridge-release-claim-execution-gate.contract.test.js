@@ -349,16 +349,20 @@ function validCommandAdmissionInput(bridge, overrides = {}) {
     || (requestedClaimSurface === 'INTERNAL' || requestedClaimSurface === 'USER_FACING'
       ? requestedClaimSurface
       : 'INTERNAL');
-  const kernelFenceResult = hasOwn(overrides, 'kernelFenceResult')
-    ? overrides.kernelFenceResult
-    : acceptedKernelFenceResult(bridge, {
+  const kernelFenceInput = hasOwn(overrides, 'kernelFenceInput')
+    ? overrides.kernelFenceInput
+    : validKernelFenceInput(bridge, {
       publicationMode: kernelFenceMode,
       requestedMode: kernelFenceMode,
       requestedClaimSurface: kernelFenceSurface,
     });
+  const kernelFenceResult = hasOwn(overrides, 'kernelFenceResult')
+    ? overrides.kernelFenceResult
+    : undefined;
 
   return {
     commandId: hasOwn(overrides, 'commandId') ? overrides.commandId : 'cmd.release.claim.publish',
+    ...(kernelFenceInput === undefined ? {} : { kernelFenceInput }),
     ...(kernelFenceResult === undefined ? {} : { kernelFenceResult }),
     requestedMode: requestedMode === undefined ? kernelFenceMode : requestedMode,
     requestedClaimSurface: requestedClaimSurface === undefined

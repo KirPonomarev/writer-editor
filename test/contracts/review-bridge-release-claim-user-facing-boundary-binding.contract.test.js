@@ -33,6 +33,10 @@ const KERNEL_FENCE_BINDING_STATUS_PATH =
   'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_KERNEL_FENCE_BINDING_001_STATUS.json';
 const COMMAND_ADMISSION_TEST_PATH =
   'test/contracts/revision-bridge-release-claim-command-admission.contract.test.js';
+const COMMAND_ADMISSION_BINDING_TEST_PATH =
+  'test/contracts/review-bridge-release-claim-command-admission-binding.contract.test.js';
+const COMMAND_ADMISSION_BINDING_STATUS_PATH =
+  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_BINDING_001_STATUS.json';
 const EXECUTION_TEST_PATH = 'test/contracts/revision-bridge-release-claim-execution-gate.contract.test.js';
 const DOSSIER_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-dossier-binding.contract.test.js';
 const ADMISSION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-admission-binding.contract.test.js';
@@ -55,6 +59,8 @@ const ALLOWLIST = [
   KERNEL_FENCE_BINDING_TEST_PATH,
   KERNEL_FENCE_BINDING_STATUS_PATH,
   COMMAND_ADMISSION_TEST_PATH,
+  COMMAND_ADMISSION_BINDING_TEST_PATH,
+  COMMAND_ADMISSION_BINDING_STATUS_PATH,
   EXECUTION_TEST_PATH,
   PACKET_KERNEL_TEST_PATH,
   PACKET_BINDING_TEST_PATH,

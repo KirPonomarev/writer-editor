@@ -387,16 +387,20 @@ function validCommandAdmissionInput(bridge, overrides = {}) {
     || (requestedClaimSurface === 'INTERNAL' || requestedClaimSurface === 'USER_FACING'
       ? requestedClaimSurface
       : 'INTERNAL');
-  const kernelFenceResult = hasOwn(overrides, 'kernelFenceResult')
-    ? overrides.kernelFenceResult
-    : acceptedKernelFenceResult(bridge, {
+  const kernelFenceInput = hasOwn(overrides, 'kernelFenceInput')
+    ? overrides.kernelFenceInput
+    : validKernelFenceInput(bridge, {
       publicationMode: kernelFenceMode,
       requestedMode: kernelFenceMode,
       requestedClaimSurface: kernelFenceSurface,
     });
+  const kernelFenceResult = hasOwn(overrides, 'kernelFenceResult')
+    ? overrides.kernelFenceResult
+    : undefined;
 
   return {
     commandId: hasOwn(overrides, 'commandId') ? overrides.commandId : 'cmd.release.claim.publish',
+    ...(kernelFenceInput === undefined ? {} : { kernelFenceInput }),
     ...(kernelFenceResult === undefined ? {} : { kernelFenceResult }),
     requestedMode: requestedMode === undefined ? kernelFenceMode : requestedMode,
     requestedClaimSurface: requestedClaimSurface === undefined
@@ -437,7 +441,13 @@ test('Contour 12J exports command admission contracts and evaluator', async () =
   );
   assert.equal(
     bridge.REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REASON_CODES.includes(
-      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_PROVENANCE_INVALID',
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_INPUT_MISSING',
+    ),
+    true,
+  );
+  assert.equal(
+    bridge.REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_REASON_CODES.includes(
+      'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISMATCH',
     ),
     true,
   );
@@ -486,10 +496,10 @@ test('Contour 12J blocks when commandId is missing', async () => {
   );
 });
 
-test('Contour 12J blocks when kernelFenceResult is missing', async () => {
+test('Contour 12J blocks when kernelFenceInput is missing', async () => {
   const bridge = await loadBridge();
   const input = validCommandAdmissionInput(bridge);
-  delete input.kernelFenceResult;
+  delete input.kernelFenceInput;
 
   const result = bridge.evaluateRevisionBridgeReleaseClaimCommandAdmission(input);
 
@@ -497,28 +507,30 @@ test('Contour 12J blocks when kernelFenceResult is missing', async () => {
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISSING',
+    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_INPUT_MISSING',
   );
 });
 
-test('Contour 12J blocks when kernelFenceResult type is invalid', async () => {
+test('Contour 12J blocks when internally evaluated kernel fence is not accepted', async () => {
   const bridge = await loadBridge();
-  const kernelFenceResult = deepClone(acceptedKernelFenceResult(bridge));
-  kernelFenceResult.type = 'revisionBridge.syntheticKernelFence';
-
   const result = bridge.evaluateRevisionBridgeReleaseClaimCommandAdmission(
-    validCommandAdmissionInput(bridge, { kernelFenceResult }),
+    validCommandAdmissionInput(bridge, {
+      kernelFenceInput: validKernelFenceInput(bridge, {
+        requestedMode: 'PR_MODE',
+        requestedClaimSurface: 'EXTERNAL',
+      }),
+    }),
   );
 
   assert.equal(result.ok, false);
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_TYPE_INVALID',
+    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_NOT_ACCEPTED',
   );
 });
 
-test('Contour 12J blocks when kernelFenceResult is not accepted', async () => {
+test('Contour 12J blocks stale supplied kernelFenceResult witness', async () => {
   const bridge = await loadBridge();
   const kernelFenceResult = deepClone(acceptedKernelFenceResult(bridge));
   kernelFenceResult.ok = false;
@@ -534,7 +546,7 @@ test('Contour 12J blocks when kernelFenceResult is not accepted', async () => {
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_NOT_ACCEPTED',
+    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISMATCH',
   );
 });
 
@@ -557,15 +569,10 @@ test('Contour 12J blocks when requestedMode does not match kernel fence binding 
 test('Contour 12J blocks when requestedClaimSurface does not match kernel fence summary claimSurface', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimCommandAdmission(validCommandAdmissionInput(bridge, {
-    kernelFenceResult: syntheticAcceptedKernelFenceResult({
-      binding: {
-        mode: 'RELEASE_MODE',
-        releaseClass: 'USER_FACING_CLAIM_READY',
-      },
-      summary: {
-        claimSurface: 'USER_FACING',
-        admissionClass: 'USER_FACING',
-      },
+    kernelFenceInput: validKernelFenceInput(bridge, {
+      publicationMode: 'RELEASE_MODE',
+      requestedMode: 'RELEASE_MODE',
+      requestedClaimSurface: 'USER_FACING',
     }),
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'INTERNAL',
@@ -582,15 +589,10 @@ test('Contour 12J blocks when requestedClaimSurface does not match kernel fence 
 test('Contour 12J blocks PR_MODE requests for USER_FACING command admission', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimCommandAdmission(validCommandAdmissionInput(bridge, {
-    kernelFenceResult: syntheticAcceptedKernelFenceResult({
-      binding: {
-        mode: 'PR_MODE',
-        releaseClass: 'USER_FACING_CLAIM_READY',
-      },
-      summary: {
-        claimSurface: 'USER_FACING',
-        admissionClass: 'USER_FACING',
-      },
+    kernelFenceInput: validKernelFenceInput(bridge, {
+      publicationMode: 'PR_MODE',
+      requestedMode: 'PR_MODE',
+      requestedClaimSurface: 'USER_FACING',
     }),
     requestedMode: 'PR_MODE',
     requestedClaimSurface: 'USER_FACING',
@@ -600,22 +602,21 @@ test('Contour 12J blocks PR_MODE requests for USER_FACING command admission', as
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_PR_MODE_USER_FACING_BLOCKED',
+    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_NOT_ACCEPTED',
   );
 });
 
 test('Contour 12J blocks RELEASE_MODE USER_FACING command admission when release class is not ready', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimCommandAdmission(validCommandAdmissionInput(bridge, {
-    kernelFenceResult: syntheticAcceptedKernelFenceResult({
-      binding: {
-        mode: 'RELEASE_MODE',
-        releaseClass: 'INTERNAL_PROOF_ONLY',
-      },
-      summary: {
-        claimSurface: 'USER_FACING',
-        admissionClass: 'INTERNAL',
-      },
+    kernelFenceInput: validKernelFenceInput(bridge, {
+      publicationMode: 'RELEASE_MODE',
+      requestedMode: 'RELEASE_MODE',
+      requestedClaimSurface: 'USER_FACING',
+      publicationResult: acceptedPublicationResult(bridge, {
+        requestedMode: 'RELEASE_MODE',
+        requestedClaimSurface: 'INTERNAL',
+      }),
     }),
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'USER_FACING',
@@ -625,13 +626,14 @@ test('Contour 12J blocks RELEASE_MODE USER_FACING command admission when release
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_RELEASE_CLASS_USER_FACING_BLOCKED',
+    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_NOT_ACCEPTED',
   );
 });
 
-test('Contour 12J blocks synthetic accepted kernel fence without required provenance', async () => {
+test('Contour 12J blocks synthetic accepted kernel fence without raw input', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimCommandAdmission(validCommandAdmissionInput(bridge, {
+    kernelFenceInput: undefined,
     kernelFenceResult: {
       ok: true,
       type: 'revisionBridge.releaseClaimKernelFence',
@@ -653,7 +655,57 @@ test('Contour 12J blocks synthetic accepted kernel fence without required proven
   assert.equal(result.status, 'blocked');
   assert.equal(
     result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_PROVENANCE_INVALID',
+    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_INPUT_MISSING',
+  );
+});
+
+test('Contour 12J blocks fabricated accepted kernel fence witness with valid raw input', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimCommandAdmission(validCommandAdmissionInput(bridge, {
+    kernelFenceMode: 'RELEASE_MODE',
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+    kernelFenceResult: syntheticAcceptedKernelFenceResult({
+      binding: {
+        claimId: 'fabricated-claim',
+      },
+    }),
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(
+    result.reason,
+    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISMATCH',
+  );
+});
+
+test('Contour 12J blocks non-plain supplied kernelFenceResult witness', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimCommandAdmission(validCommandAdmissionInput(bridge, {
+    kernelFenceResult: 'accepted',
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(
+    result.reason,
+    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISMATCH',
+  );
+});
+
+test('Contour 12J blocks inherited supplied kernelFenceResult witness', async () => {
+  const bridge = await loadBridge();
+  const inheritedKernelFenceResult = Object.create(acceptedKernelFenceResult(bridge));
+  const result = bridge.evaluateRevisionBridgeReleaseClaimCommandAdmission(validCommandAdmissionInput(bridge, {
+    kernelFenceResult: inheritedKernelFenceResult,
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(
+    result.reason,
+    'REVISION_BRIDGE_RELEASE_CLAIM_COMMAND_ADMISSION_KERNEL_FENCE_RESULT_MISMATCH',
   );
 });
 
