@@ -13758,7 +13758,9 @@ export const REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REASON_CODES = Object.fre
   RELEASE_CLAIM_PUBLICATION_ACCEPTED_CODE,
   RELEASE_CLAIM_PUBLICATION_BLOCKED_CODE,
   RELEASE_CLAIM_PUBLICATION_DIAGNOSTICS_CODE,
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_INPUT_MISSING',
   'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISSING',
+  'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH',
   'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_TYPE_INVALID',
   'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_NOT_ACCEPTED',
   'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_PROVENANCE_INVALID',
@@ -13782,9 +13784,9 @@ function releaseClaimPublicationReason(code, field, details = {}) {
 }
 
 function normalizeReleaseClaimPublicationBoundaryResult(input = {}) {
-  const result = isPlainObject(input) ? input : {};
-  const binding = isPlainObject(result.binding) ? result.binding : {};
-  const summary = isPlainObject(result.summary) ? result.summary : {};
+  const result = isPlainObject(input) ? cloneJsonSafe(input) : {};
+  const binding = isPlainObject(result.binding) ? cloneJsonSafe(result.binding) : {};
+  const summary = isPlainObject(result.summary) ? cloneJsonSafe(result.summary) : {};
 
   return {
     ok: result.ok === true,
@@ -13959,6 +13961,37 @@ function collectReleaseClaimPublicationBoundaryReasons(boundaryResult) {
   return reasons;
 }
 
+function releaseClaimPublicationBoundaryResultMismatchReasons(expectedResult, receivedResult) {
+  if (!isPlainObject(receivedResult)) {
+    if (receivedResult === undefined) return [];
+    return [
+      releaseClaimPublicationReason(
+        'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH',
+        'boundaryResult',
+        {
+          expectedValue: normalizeReleaseClaimPublicationBoundaryResult(expectedResult),
+          receivedValue: receivedResult,
+        },
+      ),
+    ];
+  }
+
+  const expectedBoundaryResult = normalizeReleaseClaimPublicationBoundaryResult(expectedResult);
+  const receivedBoundaryResult = normalizeReleaseClaimPublicationBoundaryResult(receivedResult);
+  if (JSON.stringify(expectedBoundaryResult) === JSON.stringify(receivedBoundaryResult)) return [];
+
+  return [
+    releaseClaimPublicationReason(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH',
+      'boundaryResult',
+      {
+        expectedValue: expectedBoundaryResult,
+        receivedValue: receivedBoundaryResult,
+      },
+    ),
+  ];
+}
+
 function releaseClaimPublicationBinding(boundaryResult) {
   return {
     mode: normalizeString(boundaryResult?.binding?.mode),
@@ -14002,7 +14035,7 @@ function releaseClaimPublicationResult(
 }
 
 export function evaluateRevisionBridgeReleaseClaimPublicationGate(input = {}) {
-  const publicationInput = isPlainObject(input) ? input : {};
+  const publicationInput = isPlainObject(input) ? cloneJsonSafe(input) : {};
   const requestedMode = normalizeString(publicationInput.requestedMode);
   const requestedClaimSurface = normalizeString(publicationInput.requestedClaimSurface);
 
@@ -14020,14 +14053,14 @@ export function evaluateRevisionBridgeReleaseClaimPublicationGate(input = {}) {
     );
   }
 
-  if (!isPlainObject(publicationInput.boundaryResult)) {
+  if (!isPlainObject(publicationInput.boundaryInput)) {
     return releaseClaimPublicationResult(
       false,
       'blocked',
       [
         releaseClaimPublicationReason(
-          'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISSING',
-          'boundaryResult',
+          'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_INPUT_MISSING',
+          'boundaryInput',
         ),
       ],
       normalizeReleaseClaimPublicationBoundaryResult(publicationInput.boundaryResult),
@@ -14035,15 +14068,30 @@ export function evaluateRevisionBridgeReleaseClaimPublicationGate(input = {}) {
     );
   }
 
-  const boundaryResult = normalizeReleaseClaimPublicationBoundaryResult(
-    publicationInput.boundaryResult,
+  const evaluatedBoundaryResult = evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate(
+    publicationInput.boundaryInput,
   );
+  const boundaryResult = normalizeReleaseClaimPublicationBoundaryResult(evaluatedBoundaryResult);
   const boundaryReasons = collectReleaseClaimPublicationBoundaryReasons(boundaryResult);
   if (boundaryReasons.length > 0) {
     return releaseClaimPublicationResult(
       false,
       'blocked',
       boundaryReasons,
+      boundaryResult,
+      requestedClaimSurface,
+    );
+  }
+
+  const boundaryMismatchReasons = releaseClaimPublicationBoundaryResultMismatchReasons(
+    boundaryResult,
+    publicationInput.boundaryResult,
+  );
+  if (boundaryMismatchReasons.length > 0) {
+    return releaseClaimPublicationResult(
+      false,
+      'blocked',
+      boundaryMismatchReasons,
       boundaryResult,
       requestedClaimSurface,
     );

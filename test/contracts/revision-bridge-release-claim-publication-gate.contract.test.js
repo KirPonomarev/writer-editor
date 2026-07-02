@@ -305,15 +305,19 @@ function validPublicationInput(bridge, overrides = {}) {
     || (requestedClaimSurface === 'INTERNAL' || requestedClaimSurface === 'USER_FACING'
       ? requestedClaimSurface
       : 'INTERNAL');
-  const boundaryResult = hasOwn(overrides, 'boundaryResult')
-    ? overrides.boundaryResult
-    : acceptedBoundaryResult(bridge, {
+  const boundaryInput = hasOwn(overrides, 'boundaryInput')
+    ? overrides.boundaryInput
+    : validBoundaryInput(bridge, {
       packetMode: boundaryMode,
       requestedMode: boundaryMode,
       requestedClaimSurface: boundarySurface,
     });
+  const boundaryResult = hasOwn(overrides, 'boundaryResult')
+    ? overrides.boundaryResult
+    : undefined;
 
   return {
+    ...(boundaryInput === undefined ? {} : { boundaryInput }),
     ...(boundaryResult === undefined ? {} : { boundaryResult }),
     requestedMode: requestedMode === undefined ? boundaryMode : requestedMode,
     requestedClaimSurface: requestedClaimSurface === undefined
@@ -345,7 +349,13 @@ test('Contour 12H exports publication gate contracts and evaluator', async () =>
   assert.equal(typeof bridge.evaluateRevisionBridgeReleaseClaimPublicationGate, 'function');
   assert.equal(
     bridge.REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REASON_CODES.includes(
-      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISSING',
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_INPUT_MISSING',
+    ),
+    true,
+  );
+  assert.equal(
+    bridge.REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REASON_CODES.includes(
+      'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH',
     ),
     true,
   );
@@ -368,19 +378,50 @@ test('Contour 12H returns diagnostics when requestedMode is invalid', async () =
   assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_MODE_INVALID');
 });
 
-test('Contour 12H blocks when boundaryResult is missing', async () => {
+test('Contour 12H blocks when boundaryInput is missing', async () => {
   const bridge = await loadBridge();
   const input = validPublicationInput(bridge);
-  delete input.boundaryResult;
+  delete input.boundaryInput;
 
   const result = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(input);
 
   assert.equal(result.ok, false);
   assert.equal(result.status, 'blocked');
-  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISSING');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_INPUT_MISSING');
 });
 
-test('Contour 12H blocks when boundaryResult type is invalid', async () => {
+test('Contour 12H blocks synthetic accepted boundaryResult without boundaryInput provenance', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate({
+    boundaryResult: syntheticAcceptedBoundaryResult(),
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_INPUT_MISSING');
+});
+
+test('Contour 12H blocks non-plain supplied boundaryResult even when boundaryInput is valid', async () => {
+  const bridge = await loadBridge();
+
+  for (const boundaryResult of ['accepted', null, [], 42]) {
+    const result = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(validPublicationInput(bridge, {
+      boundaryResult,
+      boundaryMode: 'RELEASE_MODE',
+      requestedMode: 'RELEASE_MODE',
+      requestedClaimSurface: 'USER_FACING',
+    }));
+
+    assert.equal(result.ok, false);
+    assert.equal(result.status, 'blocked');
+    assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH');
+    assert.equal(result.reasons[0].field, 'boundaryResult');
+  }
+});
+
+test('Contour 12H blocks when optional boundaryResult type does not match evaluated 12G', async () => {
   const bridge = await loadBridge();
   const boundaryResult = deepClone(acceptedBoundaryResult(bridge));
   boundaryResult.type = 'revisionBridge.syntheticBoundaryGate';
@@ -391,10 +432,10 @@ test('Contour 12H blocks when boundaryResult type is invalid', async () => {
 
   assert.equal(result.ok, false);
   assert.equal(result.status, 'blocked');
-  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_TYPE_INVALID');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH');
 });
 
-test('Contour 12H blocks when boundaryResult is not accepted', async () => {
+test('Contour 12H blocks when optional boundaryResult acceptance does not match evaluated 12G', async () => {
   const bridge = await loadBridge();
   const boundaryResult = deepClone(acceptedBoundaryResult(bridge));
   boundaryResult.ok = false;
@@ -408,7 +449,116 @@ test('Contour 12H blocks when boundaryResult is not accepted', async () => {
 
   assert.equal(result.ok, false);
   assert.equal(result.status, 'blocked');
-  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_NOT_ACCEPTED');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH');
+});
+
+test('Contour 12H rejects publication input fields inherited from prototype', async () => {
+  const bridge = await loadBridge();
+  const inheritedInput = Object.create(validPublicationInput(bridge, {
+    boundaryMode: 'RELEASE_MODE',
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(inheritedInput);
+
+  assert.equal(Object.keys(inheritedInput).length, 0);
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'diagnostics');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_MODE_REQUIRED');
+  assert.equal(
+    result.reasons.some((reason) => (
+      reason.code === 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_CLAIM_SURFACE_REQUIRED'
+    )),
+    true,
+  );
+});
+
+test('Contour 12H rejects optional boundaryResult fields inherited from prototype', async () => {
+  const bridge = await loadBridge();
+  const inheritedBoundaryResult = Object.create(acceptedBoundaryResult(bridge, {
+    packetMode: 'RELEASE_MODE',
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(validPublicationInput(bridge, {
+    boundaryResult: inheritedBoundaryResult,
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  assert.equal(Object.keys(inheritedBoundaryResult).length, 0);
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH');
+});
+
+test('Contour 12H rejects optional nested boundaryResult provenance inherited from prototype', async () => {
+  const bridge = await loadBridge();
+  const accepted = acceptedBoundaryResult(bridge, {
+    packetMode: 'RELEASE_MODE',
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  });
+  const boundaryResult = deepClone(accepted);
+  boundaryResult.binding = Object.create(accepted.binding);
+  boundaryResult.summary = Object.create(accepted.summary);
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(validPublicationInput(bridge, {
+    boundaryResult,
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  assert.equal(Object.keys(boundaryResult.binding).length, 0);
+  assert.equal(Object.keys(boundaryResult.summary).length, 0);
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH');
+  assert.equal(result.reasons[0].field, 'boundaryResult');
+});
+
+test('Contour 12H blocks optional accepted-looking boundaryResult when binding is empty', async () => {
+  const bridge = await loadBridge();
+  const boundaryResult = deepClone(acceptedBoundaryResult(bridge, {
+    packetMode: 'RELEASE_MODE',
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+  boundaryResult.binding = {};
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(validPublicationInput(bridge, {
+    boundaryResult,
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH');
+  assert.equal(result.reasons[0].field, 'boundaryResult');
+});
+
+test('Contour 12H blocks optional accepted-looking boundaryResult when summary is empty', async () => {
+  const bridge = await loadBridge();
+  const boundaryResult = deepClone(acceptedBoundaryResult(bridge, {
+    packetMode: 'RELEASE_MODE',
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+  boundaryResult.summary = {};
+
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(validPublicationInput(bridge, {
+    boundaryResult,
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH');
+  assert.equal(result.reasons[0].field, 'boundaryResult');
 });
 
 test('Contour 12H blocks when requestedMode does not match accepted boundary mode', async () => {
@@ -422,6 +572,20 @@ test('Contour 12H blocks when requestedMode does not match accepted boundary mod
   assert.equal(result.ok, false);
   assert.equal(result.status, 'blocked');
   assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_MODE_MISMATCH');
+});
+
+test('Contour 12H blocks when requestedClaimSurface does not match accepted boundary summary', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(validPublicationInput(bridge, {
+    boundaryMode: 'RELEASE_MODE',
+    boundarySurface: 'INTERNAL',
+    requestedMode: 'RELEASE_MODE',
+    requestedClaimSurface: 'USER_FACING',
+  }));
+
+  assert.equal(result.ok, false);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_REQUESTED_CLAIM_SURFACE_MISMATCH');
 });
 
 test('Contour 12H returns diagnostics when requestedClaimSurface is invalid', async () => {
@@ -438,34 +602,28 @@ test('Contour 12H returns diagnostics when requestedClaimSurface is invalid', as
   );
 });
 
-test('Contour 12H blocks PR_MODE requests for USER_FACING publication', async () => {
+test('Contour 12H blocks PR_MODE requests for USER_FACING publication through 12G boundary', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(validPublicationInput(bridge, {
-    boundaryResult: syntheticAcceptedBoundaryResult({
-      binding: {
-        mode: 'PR_MODE',
-        releaseClass: 'USER_FACING_CLAIM_READY',
-      },
-      summary: {
-        claimSurface: 'USER_FACING',
-      },
-    }),
+    boundaryMode: 'PR_MODE',
     requestedMode: 'PR_MODE',
     requestedClaimSurface: 'USER_FACING',
   }));
 
   assert.equal(result.ok, false);
   assert.equal(result.status, 'blocked');
-  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_PR_MODE_USER_FACING_BLOCKED');
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_NOT_ACCEPTED');
 });
 
-test('Contour 12H blocks RELEASE_MODE USER_FACING publication when releaseClass is not ready', async () => {
+test('Contour 12H blocks stale USER_FACING boundaryResult when evaluated boundary is INTERNAL only', async () => {
   const bridge = await loadBridge();
   const result = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(validPublicationInput(bridge, {
+    boundaryMode: 'RELEASE_MODE',
+    boundarySurface: 'INTERNAL',
     boundaryResult: syntheticAcceptedBoundaryResult({
       binding: {
         mode: 'RELEASE_MODE',
-        releaseClass: 'INTERNAL_PROOF_ONLY',
+        releaseClass: 'USER_FACING_CLAIM_READY',
       },
       summary: {
         claimSurface: 'USER_FACING',
@@ -477,10 +635,7 @@ test('Contour 12H blocks RELEASE_MODE USER_FACING publication when releaseClass 
 
   assert.equal(result.ok, false);
   assert.equal(result.status, 'blocked');
-  assert.equal(
-    result.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_RELEASE_CLASS_USER_FACING_BLOCKED',
-  );
+  assert.equal(result.reason, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH');
 });
 
 test('Contour 12H accepts INTERNAL publication in PR_MODE', async () => {

@@ -33,6 +33,13 @@ const USER_FACING_BOUNDARY_BINDING_TEST_PATH =
 const USER_FACING_BOUNDARY_BINDING_STATUS_PATH =
   'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001_STATUS.json';
 const PUBLICATION_TEST_PATH = 'test/contracts/revision-bridge-release-claim-publication-gate.contract.test.js';
+const PUBLICATION_BINDING_TEST_PATH =
+  'test/contracts/review-bridge-release-claim-publication-gate-binding.contract.test.js';
+const PUBLICATION_BINDING_STATUS_PATH =
+  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001_STATUS.json';
+const KERNEL_FENCE_TEST_PATH = 'test/contracts/revision-bridge-release-claim-kernel-fence.contract.test.js';
+const COMMAND_ADMISSION_TEST_PATH =
+  'test/contracts/revision-bridge-release-claim-command-admission.contract.test.js';
 const EXECUTION_TEST_PATH = 'test/contracts/revision-bridge-release-claim-execution-gate.contract.test.js';
 const STATUS_PATH_REL = 'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_ADMISSION_BINDING_001_STATUS.json';
 const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
@@ -56,6 +63,12 @@ const ALLOWLIST = [
   USER_FACING_BOUNDARY_TEST_PATH,
   USER_FACING_BOUNDARY_BINDING_TEST_PATH,
   USER_FACING_BOUNDARY_BINDING_STATUS_PATH,
+  PUBLICATION_TEST_PATH,
+  PUBLICATION_BINDING_TEST_PATH,
+  PUBLICATION_BINDING_STATUS_PATH,
+  KERNEL_FENCE_TEST_PATH,
+  COMMAND_ADMISSION_TEST_PATH,
+  EXECUTION_TEST_PATH,
   STATUS_PATH_REL,
   GOVERNANCE_APPROVALS_PATH,
   CONTEXT_PATH,
@@ -463,7 +476,8 @@ test('Review Bridge release claim admission binding is bound to existing kernel 
   assert.match(dossierKernelTest, /accepts a dossier only when all items pass the reused 12A gate/u);
   assert.match(modeDecisionTest, /propagates blocked admission gate state/u);
   assert.match(userFacingBoundaryTest, /blocks PR_MODE requests for USER_FACING boundary/u);
-  assert.match(publicationTest, /blocks RELEASE_MODE USER_FACING publication when releaseClass is not ready/u);
+  assert.match(publicationTest, /blocks synthetic accepted boundaryResult without boundaryInput provenance/u);
+  assert.match(publicationTest, /blocks stale USER_FACING boundaryResult when evaluated boundary is INTERNAL only/u);
   assert.match(executionTest, /accepts RELEASE_MODE USER_FACING execution gate only with ready class/u);
 });
 

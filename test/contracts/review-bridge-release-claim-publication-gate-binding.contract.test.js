@@ -12,51 +12,46 @@ const STATUS_PATH = path.join(
   'docs',
   'OPS',
   'STATUS',
-  'REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001_STATUS.json',
+  'REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001_STATUS.json',
 );
-const CONTRACT_PATH = 'test/contracts/review-bridge-release-claim-user-facing-boundary-binding.contract.test.js';
+const CONTRACT_PATH = 'test/contracts/review-bridge-release-claim-publication-gate-binding.contract.test.js';
+const PUBLICATION_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-publication-gate.contract.test.js';
 const USER_FACING_BOUNDARY_KERNEL_TEST_PATH =
   'test/contracts/revision-bridge-release-claim-user-facing-boundary-gate.contract.test.js';
-const PACKET_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js';
-const PACKET_BINDING_STATUS_PATH =
-  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001_STATUS.json';
-const PACKET_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-packet-emit.contract.test.js';
-const PUBLICATION_KERNEL_TEST_PATH = 'test/contracts/revision-bridge-release-claim-publication-gate.contract.test.js';
-const PUBLICATION_BINDING_TEST_PATH =
-  'test/contracts/review-bridge-release-claim-publication-gate-binding.contract.test.js';
-const PUBLICATION_BINDING_STATUS_PATH =
-  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001_STATUS.json';
+const USER_FACING_BOUNDARY_BINDING_TEST_PATH =
+  'test/contracts/review-bridge-release-claim-user-facing-boundary-binding.contract.test.js';
+const USER_FACING_BOUNDARY_BINDING_STATUS_PATH =
+  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001_STATUS.json';
 const KERNEL_FENCE_TEST_PATH = 'test/contracts/revision-bridge-release-claim-kernel-fence.contract.test.js';
 const COMMAND_ADMISSION_TEST_PATH =
   'test/contracts/revision-bridge-release-claim-command-admission.contract.test.js';
 const EXECUTION_TEST_PATH = 'test/contracts/revision-bridge-release-claim-execution-gate.contract.test.js';
+const STATUS_PATH_REL =
+  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001_STATUS.json';
+const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
 const DOSSIER_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-dossier-binding.contract.test.js';
 const ADMISSION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-admission-binding.contract.test.js';
 const MODE_DECISION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-mode-decision-binding.contract.test.js';
 const ATTESTATION_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-attestation-binding.contract.test.js';
-const STATUS_PATH_REL =
-  'docs/OPS/STATUS/REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001_STATUS.json';
-const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
+const PACKET_BINDING_TEST_PATH = 'test/contracts/review-bridge-release-claim-packet-emit-binding.contract.test.js';
 const CONTEXT_PATH = 'docs/CONTEXT.md';
 const HANDOFF_PATH = 'docs/HANDOFF.md';
 const WORKLOG_PATH = 'docs/WORKLOG.md';
 const ALLOWLIST = [
   MODULE_PATH,
   CONTRACT_PATH,
-  USER_FACING_BOUNDARY_KERNEL_TEST_PATH,
   PUBLICATION_KERNEL_TEST_PATH,
-  PUBLICATION_BINDING_TEST_PATH,
-  PUBLICATION_BINDING_STATUS_PATH,
+  USER_FACING_BOUNDARY_KERNEL_TEST_PATH,
+  USER_FACING_BOUNDARY_BINDING_TEST_PATH,
+  USER_FACING_BOUNDARY_BINDING_STATUS_PATH,
   KERNEL_FENCE_TEST_PATH,
   COMMAND_ADMISSION_TEST_PATH,
   EXECUTION_TEST_PATH,
-  PACKET_KERNEL_TEST_PATH,
-  PACKET_BINDING_TEST_PATH,
-  PACKET_BINDING_STATUS_PATH,
   DOSSIER_BINDING_TEST_PATH,
   ADMISSION_BINDING_TEST_PATH,
   MODE_DECISION_BINDING_TEST_PATH,
   ATTESTATION_BINDING_TEST_PATH,
+  PACKET_BINDING_TEST_PATH,
   STATUS_PATH_REL,
   GOVERNANCE_APPROVALS_PATH,
   CONTEXT_PATH,
@@ -167,17 +162,61 @@ function acceptedPacketEmitResultFixture(bridge, mode = 'PR_MODE') {
   };
 }
 
-function assertNoBoundaryOverclaims(text, label) {
+function boundaryInputFixture(bridge, mode = 'PR_MODE', surface = 'INTERNAL') {
+  return {
+    packetEmitResult: acceptedPacketEmitResultFixture(bridge, mode),
+    requestedMode: mode,
+    requestedClaimSurface: surface,
+  };
+}
+
+function publicationInputFixture(bridge, mode = 'PR_MODE', surface = 'INTERNAL', overrides = {}) {
+  return {
+    boundaryInput: boundaryInputFixture(bridge, mode, surface),
+    requestedMode: mode,
+    requestedClaimSurface: surface,
+    ...overrides,
+  };
+}
+
+function syntheticAcceptedBoundaryResult(overrides = {}) {
+  return {
+    ok: true,
+    type: 'revisionBridge.releaseClaimUserFacingBoundaryGate',
+    status: 'accepted',
+    code: 'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_ACCEPTED',
+    reason: 'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_ACCEPTED',
+    binding: {
+      mode: 'RELEASE_MODE',
+      claimId: 'release-claim-1',
+      dossierId: 'release-claim-dossier-1',
+      matrixId: 'format-matrix-1',
+      releaseClass: 'USER_FACING_CLAIM_READY',
+      ...(overrides.binding || {}),
+    },
+    summary: {
+      claimSurface: 'USER_FACING',
+      packetId: 'release-claim-packet-1',
+      attestationId: 'attestation-1',
+      ...(overrides.summary || {}),
+    },
+  };
+}
+
+function assertNoPublicationOverclaims(text, label) {
   const forbidden = [
-    /\bboundary accepted means release readiness\b/iu,
-    /\buser-facing boundary means user-facing release\b/iu,
+    /\bpublication gate accepted means product publication\b/iu,
+    /\bpublication gate accepted means release readiness\b/iu,
+    /\bpublication gate accepted means user-facing release\b/iu,
     /\bUSER_FACING_CLAIM_READY means release readiness\b/iu,
     /\bUSER_FACING_CLAIM_READY means user-facing release\b/iu,
+    /\bproduct publication is (?:available|supported|ready|complete|proven)\b/iu,
     /\brelease readiness is (?:available|supported|ready|complete|proven)\b/iu,
     /\buser-facing release is (?:available|supported|ready|complete|proven)\b/iu,
-    /\brelease publication is (?:available|supported|ready|complete|proven)\b/iu,
     /\brelease execution is (?:available|supported|ready|complete|proven)\b/iu,
     /\bpublication authority is (?:available|supported|ready|complete|proven)\b/iu,
+    /\bcommand admission is (?:available|supported|ready|complete|proven)\b/iu,
+    /\bkernel fence is (?:available|supported|ready|complete|proven)\b/iu,
     /\bimport support is (?:available|supported|ready|complete|proven)\b/iu,
     /\bexport support is (?:available|supported|ready|complete|proven)\b/iu,
     /\bproject truth write is (?:available|supported|ready|complete|proven)\b/iu,
@@ -188,11 +227,11 @@ function assertNoBoundaryOverclaims(text, label) {
   }
 }
 
-test('Review Bridge release claim user-facing boundary binding status keeps scope narrow', () => {
+test('Review Bridge release claim publication gate binding status keeps scope narrow', () => {
   const status = readJson(STATUS_PATH);
 
-  assert.equal(status.taskId, 'REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001');
-  assert.equal(status.type, 'review_bridge_release_claim_user_facing_boundary_binding');
+  assert.equal(status.taskId, 'REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001');
+  assert.equal(status.type, 'review_bridge_release_claim_publication_gate_binding');
   assert.ok(
     ['implemented_verified_pending_delivery', 'delivered_merged_verified'].includes(status.status),
     `unexpected status ${status.status}`,
@@ -209,13 +248,16 @@ test('Review Bridge release claim user-facing boundary binding status keeps scop
   assert.equal(status.scope.manuscriptWrites, false);
   assert.equal(status.scope.storageWrite, false);
   assert.equal(status.scope.receiptOrRecoveryCreated, false);
-  assert.equal(status.scope.releaseClaimUserFacingBoundaryRuntimeChanged, true);
-  assert.equal(status.scope.releaseClaimUserFacingBoundaryBound, true);
-  assert.equal(status.scope.releaseClaimPacketEmitBoundPreviously, true);
+  assert.equal(status.scope.releaseClaimPublicationGateRuntimeChanged, true);
+  assert.equal(status.scope.releaseClaimPublicationGateBound, true);
+  assert.equal(status.scope.releaseClaimUserFacingBoundaryBoundPreviously, true);
   assert.equal(status.scope.releaseExecutionAccepted, false);
-  assert.equal(status.scope.releasePublicationAccepted, false);
+  assert.equal(status.scope.releasePublicationCompletionClaimed, false);
+  assert.equal(status.scope.productPublicationClaimed, false);
   assert.equal(status.scope.publicationAuthorityClaimed, false);
   assert.equal(status.scope.userFacingReleaseClaimed, false);
+  assert.equal(status.scope.commandAdmissionAccepted, false);
+  assert.equal(status.scope.kernelFenceAccepted, false);
   assert.equal(status.scope.docxImportSafeCreateChanged, false);
   assert.equal(status.scope.docxExportChanged, false);
   assert.equal(status.scope.autoApply, false);
@@ -225,48 +267,35 @@ test('Review Bridge release claim user-facing boundary binding status keeps scop
   assert.equal(status.implementation.changedUi, false);
 });
 
-test('Review Bridge release claim user-facing boundary binding proves bounded boundary truth', async () => {
+test('Review Bridge release claim publication gate binding proves bounded publication truth', async () => {
   const bridge = await loadBridge();
   const status = readJson(STATUS_PATH);
-  const internal = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate({
-    packetEmitResult: acceptedPacketEmitResultFixture(bridge, 'PR_MODE'),
-    requestedMode: 'PR_MODE',
-    requestedClaimSurface: 'INTERNAL',
-  });
-  const userFacing = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate({
-    packetEmitResult: acceptedPacketEmitResultFixture(bridge, 'RELEASE_MODE'),
+  const internal = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(
+    publicationInputFixture(bridge, 'PR_MODE', 'INTERNAL'),
+  );
+  const userFacing = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(
+    publicationInputFixture(bridge, 'RELEASE_MODE', 'USER_FACING'),
+  );
+  const syntheticOnly = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate({
+    boundaryResult: syntheticAcceptedBoundaryResult(),
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'USER_FACING',
   });
-  const blockedPrUserFacing = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate({
-    packetEmitResult: acceptedPacketEmitResultFixture(bridge, 'PR_MODE'),
-    requestedMode: 'PR_MODE',
-    requestedClaimSurface: 'USER_FACING',
-  });
-  const inheritedPacket = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate({
-    packetEmitResult: Object.create(acceptedPacketEmitResultFixture(bridge, 'RELEASE_MODE')),
-    requestedMode: 'RELEASE_MODE',
-    requestedClaimSurface: 'USER_FACING',
-  });
-  const emptyBindingPacket = acceptedPacketEmitResultFixture(bridge, 'RELEASE_MODE');
-  emptyBindingPacket.binding = {};
-  const emptyBinding = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate({
-    packetEmitResult: emptyBindingPacket,
-    requestedMode: 'RELEASE_MODE',
-    requestedClaimSurface: 'USER_FACING',
-  });
-  const missingBindingIdsPacket = acceptedPacketEmitResultFixture(bridge, 'RELEASE_MODE');
-  delete missingBindingIdsPacket.binding.packetId;
-  delete missingBindingIdsPacket.binding.attestationId;
-  const missingBindingIds = bridge.evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate({
-    packetEmitResult: missingBindingIdsPacket,
+  const staleBoundary = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate(
+    publicationInputFixture(bridge, 'RELEASE_MODE', 'INTERNAL', {
+      boundaryResult: syntheticAcceptedBoundaryResult(),
+      requestedClaimSurface: 'USER_FACING',
+    }),
+  );
+  const inheritedBoundaryInput = bridge.evaluateRevisionBridgeReleaseClaimPublicationGate({
+    boundaryInput: Object.create(boundaryInputFixture(bridge, 'RELEASE_MODE', 'USER_FACING')),
     requestedMode: 'RELEASE_MODE',
     requestedClaimSurface: 'USER_FACING',
   });
 
   assert.equal(internal.ok, true);
-  assert.equal(internal.type, 'revisionBridge.releaseClaimUserFacingBoundaryGate');
-  assert.equal(internal.code, 'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_ACCEPTED');
+  assert.equal(internal.type, 'revisionBridge.releaseClaimPublicationGate');
+  assert.equal(internal.code, 'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_ACCEPTED');
   assert.equal(internal.summary.claimSurface, 'INTERNAL');
   assert.equal(internal.binding.releaseClass, 'INTERNAL_PROOF_ONLY');
 
@@ -275,95 +304,91 @@ test('Review Bridge release claim user-facing boundary binding proves bounded bo
   assert.equal(userFacing.binding.mode, 'RELEASE_MODE');
   assert.equal(userFacing.binding.releaseClass, 'USER_FACING_CLAIM_READY');
 
-  assert.equal(blockedPrUserFacing.ok, false);
+  assert.equal(syntheticOnly.ok, false);
   assert.equal(
-    blockedPrUserFacing.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PR_MODE_USER_FACING_BLOCKED',
+    syntheticOnly.reason,
+    'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_INPUT_MISSING',
   );
-
-  assert.equal(inheritedPacket.ok, false);
+  assert.equal(staleBoundary.ok, false);
   assert.equal(
-    inheritedPacket.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_TYPE_INVALID',
+    staleBoundary.reason,
+    'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH',
   );
-  assert.equal(emptyBinding.ok, false);
+  assert.equal(inheritedBoundaryInput.ok, false);
   assert.equal(
-    emptyBinding.reason,
-    'REVISION_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_PACKET_RESULT_PROVENANCE_INVALID',
-  );
-  assert.equal(
-    emptyBinding.reasons.some((reason) => reason.field === 'packetEmitResult.binding.mode'),
-    true,
-  );
-  assert.equal(missingBindingIds.ok, false);
-  assert.equal(
-    missingBindingIds.reasons.some((reason) => reason.field === 'packetEmitResult.binding.packetId'),
-    true,
-  );
-  assert.equal(
-    missingBindingIds.reasons.some((reason) => reason.field === 'packetEmitResult.binding.attestationId'),
-    true,
+    inheritedBoundaryInput.reason,
+    'REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_NOT_ACCEPTED',
   );
 
   const positiveText = status.positiveClaims.join('\n');
   const nonClaimText = status.nonClaims.join('\n');
   const layerText = status.layerDecisions.join('\n');
 
-  assert.match(positiveText, /user-facing boundary gate/u);
-  assert.match(positiveText, /bounded internal Review Bridge 12G boundary admission/u);
-  assert.match(positiveText, /requires accepted 12F packet emit provenance/u);
-  assert.match(positiveText, /PR_MODE USER_FACING requests are blocked/u);
+  assert.match(positiveText, /publication gate/u);
+  assert.match(positiveText, /bounded internal Review Bridge 12H publication gate admission/u);
+  assert.match(positiveText, /requires raw 12G boundary input/u);
+  assert.match(positiveText, /re-evaluates the 12G user-facing boundary gate/u);
   assert.match(positiveText, /strips inherited prototype fields/u);
+  assert.match(positiveText, /stale or fabricated boundaryResult/iu);
 
   for (const phrase of [
+    'No product publication is claimed.',
     'No release readiness is claimed.',
     'No user-facing release is claimed.',
     'No release execution completion is claimed.',
     'No release publication completion is claimed.',
     'No publication authority is claimed.',
+    'No command admission is claimed.',
+    'No kernel fence is claimed.',
     'No import support is claimed.',
     'No export support is claimed.',
-    'No project truth write is performed by release claim user-facing boundary binding.',
-    'No receipt or recovery evidence is created by release claim user-facing boundary binding.',
+    'No project truth write is performed by release claim publication gate binding.',
+    'No receipt or recovery evidence is created by release claim publication gate binding.',
     'No import/export MVP closeout is widened.',
   ]) {
     assert.match(nonClaimText, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&'), 'u'));
   }
 
-  assert.match(layerText, /boundary admission only/u);
+  assert.match(layerText, /gate admission only/u);
   assert.match(layerText, /does not execute release commands/u);
   assert.match(layerText, /does not publish anything/u);
   assert.match(layerText, /does not become project truth/u);
   assert.match(layerText, /not a user-facing UI state/u);
 });
 
-test('Review Bridge release claim user-facing boundary binding is bound to existing kernel', () => {
+test('Review Bridge release claim publication gate binding is bound to existing kernel', () => {
   const status = readJson(STATUS_PATH);
+  const previousStatus = readJson(path.join(REPO_ROOT, USER_FACING_BOUNDARY_BINDING_STATUS_PATH));
   const bridgeSource = readText(['src', 'io', 'revisionBridge', 'index.mjs']);
   const kernelTest = readText([
     'test',
     'contracts',
-    'revision-bridge-release-claim-user-facing-boundary-gate.contract.test.js',
+    'revision-bridge-release-claim-publication-gate.contract.test.js',
   ]);
 
-  assert.equal(status.binding.existingKernelMarker, 'CONTOUR_12G_RELEASE_CLAIM_USER_FACING_BOUNDARY_GATE');
-  assert.equal(status.binding.previousContourTaskId, 'REVIEW_BRIDGE_RELEASE_CLAIM_PACKET_EMIT_BINDING_001');
+  assert.equal(status.binding.existingKernelMarker, 'CONTOUR_12H_RELEASE_CLAIM_PUBLICATION_GATE');
+  assert.equal(status.binding.previousContourTaskId, 'REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001');
   assert.equal(status.binding.previousContourStatus, 'delivered_merged_verified');
-  assert.equal(status.binding.upstreamPacketEmitGateMarker, 'CONTOUR_12F_RELEASE_CLAIM_PACKET_EMIT');
-  assert.equal(status.binding.userFacingBoundarySchema, 'revision-bridge.release-claim-user-facing-boundary.v1');
-  assert.match(bridgeSource, /CONTOUR_12G_RELEASE_CLAIM_USER_FACING_BOUNDARY_GATE_START/u);
+  assert.equal(previousStatus.status, 'delivered_merged_verified');
+  assert.equal(status.binding.upstreamUserFacingBoundaryGateMarker, 'CONTOUR_12G_RELEASE_CLAIM_USER_FACING_BOUNDARY_GATE');
+  assert.equal(status.binding.publicationSchema, 'revision-bridge.release-claim-publication.v1');
+  assert.equal(
+    status.binding.upstreamUserFacingBoundarySchema,
+    'revision-bridge.release-claim-user-facing-boundary.v1',
+  );
+  assert.match(bridgeSource, /CONTOUR_12H_RELEASE_CLAIM_PUBLICATION_GATE_START/u);
+  assert.match(bridgeSource, /evaluateRevisionBridgeReleaseClaimPublicationGate/u);
   assert.match(bridgeSource, /evaluateRevisionBridgeReleaseClaimUserFacingBoundaryGate/u);
   assert.match(bridgeSource, /cloneJsonSafe\(input\)/u);
-  assert.match(kernelTest, /rejects boundary input fields inherited from prototype/u);
-  assert.match(kernelTest, /rejects packetEmitResult fields inherited from prototype/u);
-  assert.match(kernelTest, /rejects nested packetEmitResult provenance inherited from prototype/u);
-  assert.match(kernelTest, /blocks coherent accepted packet when raw binding is empty/u);
-  assert.match(kernelTest, /blocks coherent accepted packet when binding ids are missing/u);
-  assert.match(kernelTest, /blocks PR_MODE requests for USER_FACING boundary/u);
-  assert.match(kernelTest, /accepts USER_FACING boundary for RELEASE_MODE only/u);
+  assert.match(bridgeSource, /REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_INPUT_MISSING/u);
+  assert.match(bridgeSource, /REVISION_BRIDGE_RELEASE_CLAIM_PUBLICATION_BOUNDARY_RESULT_MISMATCH/u);
+  assert.match(kernelTest, /blocks synthetic accepted boundaryResult without boundaryInput provenance/u);
+  assert.match(kernelTest, /blocks when requestedClaimSurface does not match accepted boundary summary/u);
+  assert.match(kernelTest, /blocks stale USER_FACING boundaryResult/u);
+  assert.match(kernelTest, /blocks when boundaryInput is missing/u);
 });
 
-test('Review Bridge release claim user-facing boundary binding keeps docs honest', () => {
+test('Review Bridge release claim publication gate binding keeps docs honest', () => {
   const status = readJson(STATUS_PATH);
   const context = readText(['docs', 'CONTEXT.md']);
   const handoff = readText(['docs', 'HANDOFF.md']);
@@ -372,24 +397,25 @@ test('Review Bridge release claim user-facing boundary binding keeps docs honest
   const statusText = JSON.stringify(status, null, 2);
 
   for (const text of [context, handoff, worklog]) {
-    assert.match(text, /REVIEW_BRIDGE_RELEASE_CLAIM_USER_FACING_BOUNDARY_BINDING_001/u);
-    assert.match(text, /user-facing boundary binding/iu);
-    assert.match(text, /boundary admission/iu);
-    assert.match(text, /raw packet emit binding fields/iu);
+    assert.match(text, /REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001/u);
+    assert.match(text, /publication gate binding/iu);
+    assert.match(text, /raw 12G boundary input/iu);
+    assert.match(text, /re-evaluates 12G/iu);
+    assert.match(text, /not product publication/iu);
     assert.match(text, /not release readiness/iu);
     assert.match(text, /not a user-facing release/iu);
     assert.match(text, /not a user-facing UI state/iu);
   }
 
-  assertNoBoundaryOverclaims(statusText, 'status');
-  assertNoBoundaryOverclaims(docsText, 'docs');
+  assertNoPublicationOverclaims(statusText, 'status');
+  assertNoPublicationOverclaims(docsText, 'docs');
   assert.match(
     docsText,
-    /no release readiness, user-facing release, release execution completion, release publication completion/iu,
+    /no product publication, release readiness, user-facing release, release execution completion, release publication completion/iu,
   );
 });
 
-test('Review Bridge release claim user-facing boundary binding changed files stay inside allowlist', () => {
+test('Review Bridge release claim publication gate binding changed files stay inside allowlist', () => {
   const status = execFileSync('git', ['status', '--porcelain', '-uall'], {
     cwd: REPO_ROOT,
     encoding: 'utf8',

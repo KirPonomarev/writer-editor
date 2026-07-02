@@ -185,6 +185,12 @@ _Generated: 2026-07-02_
 29. 12G now strips inherited prototype fields before boundary input and packetEmitResult acceptance checks, blocking inherited boundary input, inherited accepted packet emit results, and inherited nested packet provenance.
 30. `USER_FACING` is a boundary surface in this contour only; it is not release readiness, not a user-facing release, not a user-facing UI state, not release execution, and not release publication.
 31. Scope truth for this contour: not release readiness; no release readiness, user-facing release, release execution completion, release publication completion, publication authority, command admission, kernel fence, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
+32. Review Bridge contour `REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001` is implemented and verified pending delivery as the bounded next contour after delivered release claim user-facing boundary binding.
+33. The active contour is a release claim publication gate binding contour, not product publication, not release readiness, and not a user-facing release contour.
+34. This contour product-binds `CONTOUR_12H_RELEASE_CLAIM_PUBLICATION_GATE`: accepted 12H requires raw 12G boundary input, re-evaluates 12G internally, and requires the internally accepted 12G result to carry mode, claimId, dossierId, matrixId, releaseClass, claimSurface, packetId, and attestationId.
+35. Optional boundaryResult is consistency evidence only; stale or fabricated boundaryResult values are blocked unless they match the internally re-evaluated 12G result.
+36. `PR_MODE` plus `USER_FACING` publication gate requests are blocked through the 12G boundary gate chain; `RELEASE_MODE` plus `USER_FACING` is accepted only as internal publication gate admission when the accepted 12G boundary releaseClass is `USER_FACING_CLAIM_READY`.
+37. Scope truth for this contour: not product publication; no product publication, release readiness, user-facing release, release execution completion, release publication completion, publication authority, command admission, kernel fence, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
 
 ## Working Agreement
 - Bounded contours only

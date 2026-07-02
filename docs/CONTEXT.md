@@ -262,3 +262,15 @@ No further transfer is required for this variant; the transfer axis is closed.
 - 12G now strips inherited prototype fields before boundary input and packetEmitResult acceptance checks; inherited boundary input, inherited accepted packet emit results, and inherited nested packet provenance are blocked.
 - `USER_FACING` is a boundary surface in this contour only; it is not release readiness, not a user-facing release, not a user-facing UI state, not release execution, and not release publication.
 - scope truth: this is not release readiness; no release readiness, user-facing release, release execution completion, release publication completion, publication authority, command admission, kernel fence, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
+
+## Review Bridge Release Claim Publication Gate Binding
+- `REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_GATE_BINDING_001` is implemented and verified pending delivery as the bounded next contour after delivered release claim user-facing boundary binding.
+- release claim publication gate binding product-binds the existing `CONTOUR_12H_RELEASE_CLAIM_PUBLICATION_GATE`.
+- accepted 12H requires raw 12G boundary input and re-evaluates 12G internally before accepting publication gate admission.
+- accepted 12H requires the internally evaluated 12G result to be accepted and to carry mode, claimId, dossierId, matrixId, releaseClass, claimSurface, packetId, and attestationId.
+- optional boundaryResult is treated only as a consistency check; stale or fabricated boundaryResult values are blocked unless they match the internally re-evaluated 12G result.
+- requestedMode and requestedClaimSurface must match the internally accepted 12G boundary mode and claimSurface.
+- `PR_MODE` with `USER_FACING` publication gate requests is blocked through the 12G boundary gate chain.
+- `RELEASE_MODE` with `USER_FACING` publication gate admission is accepted only as internal gate admission when the accepted 12G boundary releaseClass is `USER_FACING_CLAIM_READY`.
+- `USER_FACING_CLAIM_READY` and `USER_FACING` remain internal chain evidence only; this is not product publication, not release readiness, not a user-facing release, not a user-facing UI state, not release execution, not command admission, and not kernel fence.
+- scope truth: this is not product publication; no product publication, release readiness, user-facing release, release execution completion, release publication completion, publication authority, command admission, kernel fence, Word support, Google Docs support, import support, export support, roundtrip, layout parity, full fidelity, apply, project truth write, receipt, recovery, DOCX safe-create change, DOCX export change, import/export MVP widening, or Y9 is claimed.
