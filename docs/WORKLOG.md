@@ -4,6 +4,7 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-02
+- Factual rebind: active docs now record the already merged post-MVP current scene TXT export from PR `1060` as a current-scene-only external TXT path, separate from the closed import/export MVP gate and from TXT import.
 - Post-MVP TXT import: opened and implemented `POST_MVP_TXT_IMPORT_SAFE_CREATE_001` as a bounded TXT chooser preview accept contour separate from the closed import/export MVP gate.
 - TXT import product surface: added user-facing `cmd.project.importTxtV1` plus bridge-only `cmd.project.txt.previewLocalFile` and `cmd.project.txt.importSafeCreate`; main owns picker stat read and restat, renderer owns intent plus accepted preview only, preview stays pathless and write-free, and accept creates exactly one new imported scene.
 - TXT import scope truth: accepted encodings are UTF-8 and UTF-8 BOM only; non-UTF8 bytes fail closed; this contour does not widen `IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json` and does not change DOCX export, DOCX import, Markdown import, Markdown export, or Mindmap scope truth.

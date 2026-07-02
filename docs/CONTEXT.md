@@ -33,6 +33,10 @@
 - Mindmap is accepted only as derived runtime/status binding; no user-facing Mindmap export command is claimed.
 - The closeout binding contour records the feature status as `FEATURE_CLOSED_FOR_MVP_SCOPE` for the named flows only.
 - This closeout does not claim full release readiness, packaged release readiness, cross-platform readiness, full npm test green, production picker coverage for Markdown export or DOCX import, perfect Word layout parity, broad DOCX/Markdown fidelity, PDF/EPUB/HTML export, cloud, sync, accounts, new dependencies, or user-facing Mindmap export.
+- Current scene TXT export is delivered on current mainline via PR `1060` at merge SHA `c79cb107d3e346df6253b50e9407811449acdd0d`; it remains a separate post-MVP contour and does not widen `IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json`.
+- `cmd.project.exportCurrentSceneTxtV1` is a bounded user-facing File menu export path for the saved current scene only; main owns canonical source read, save dialog resolution, target validation, and atomic external TXT write.
+- TXT export source is envelope-parsed canonical current scene content from disk; dirty or unsaved current scene fails closed, non-scene sources fail closed, and the export target cannot equal the current scene path or live inside the project root.
+- This current scene TXT export contour does not claim full manuscript TXT export, broader text export, package export, DOCX export change, Markdown export change, Markdown import change, PDF/EPUB/HTML export, release readiness, cross-platform readiness, or Mindmap scope change.
 - Current post-MVP TXT import lane is separate from that closed MVP gate and does not widen `IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json`.
 - `cmd.project.importTxtV1` is a bounded user-facing palette and runtime TXT chooser entry; `cmd.project.txt.previewLocalFile` and `cmd.project.txt.importSafeCreate` remain bridge-only helpers, main owns picker stat read and restat, and renderer sends only intent plus the accepted preview plan.
 - TXT preview stays pathless and write-free; accept creates exactly one new scene under `roman/Imported` and opens that created scene on success.
