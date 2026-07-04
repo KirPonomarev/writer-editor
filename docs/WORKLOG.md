@@ -7,6 +7,9 @@
 - Factual rebind: active docs now record the already merged post-MVP selected scenes TXT export from PR `1063` as a File-menu-only external TXT path, separate from the closed import/export MVP gate, from current-scene TXT export, and from TXT import.
 - Selected scenes TXT export factual truth: renderer owns only a transient checkbox picker and confirmed sceneIds, while main owns canonical scope rebuild, source reads, save dialog resolution, target validation, and atomic external TXT write.
 - Selected scenes TXT export scope truth: the scope query is pathless and project-root-free, tree row selection is not export truth, persistent multi-select is not introduced, and the export target cannot equal any selected source path or live inside the project root.
+- Factual rebind: active docs now record the already merged post-MVP TXT import contour from PR `1061` as a bounded local TXT preview plus safe-create path, separate from the closed import/export MVP gate and from both post-MVP TXT export contours.
+- TXT import factual truth: `cmd.project.importTxtV1` remains the bounded user-facing chooser path, `cmd.project.txt.previewLocalFile` and `cmd.project.txt.importSafeCreate` remain bridge-only helpers, main owns picker stat read and restat, and renderer owns only intent plus accepted preview.
+- TXT import scope truth: preview stays pathless and write-free, accept creates exactly one new scene under `roman/Imported`, accepted encodings remain UTF-8 and UTF-8 BOM only, and no DOCX, Markdown, or Mindmap scope truth changes follow from this lane.
 
 ## 2026-07-03
 - Post-MVP selected scenes TXT export: opened and implemented `POST_MVP_SELECTED_SCENES_TXT_EXPORT_001` as a bounded File-menu-only contour separate from the closed import/export MVP gate; local verification was green before the later merge and factual rebind.
@@ -16,7 +19,7 @@
 
 ## 2026-07-02
 - Factual rebind: active docs now record the already merged post-MVP current scene TXT export from PR `1060` as a current-scene-only external TXT path, separate from the closed import/export MVP gate and from TXT import.
-- Post-MVP TXT import: opened and implemented `POST_MVP_TXT_IMPORT_SAFE_CREATE_001` as a bounded TXT chooser preview accept contour separate from the closed import/export MVP gate.
+- Post-MVP TXT import: opened and implemented `POST_MVP_TXT_IMPORT_SAFE_CREATE_001` as a bounded TXT chooser preview accept contour separate from the closed import/export MVP gate; local verification was green before the later merge and factual rebind.
 - TXT import product surface: added user-facing `cmd.project.importTxtV1` plus bridge-only `cmd.project.txt.previewLocalFile` and `cmd.project.txt.importSafeCreate`; main owns picker stat read and restat, renderer owns intent plus accepted preview only, preview stays pathless and write-free, and accept creates exactly one new imported scene.
 - TXT import scope truth: accepted encodings are UTF-8 and UTF-8 BOM only; non-UTF8 bytes fail closed; this contour does not widen `IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json` and does not change DOCX export, DOCX import, Markdown import, Markdown export, or Mindmap scope truth.
 - Tests: targeted TXT import runtime UI and safe-create pack plus adjacent DOCX regression pack passed locally with 35 tests after renderer rebuild.

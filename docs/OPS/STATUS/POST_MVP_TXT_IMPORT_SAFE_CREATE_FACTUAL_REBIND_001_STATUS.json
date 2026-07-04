@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "taskId": "POST_MVP_TXT_IMPORT_SAFE_CREATE_FACTUAL_REBIND_001",
+  "status": "factual_rebind_complete",
+  "type": "product_factual_rebind_of_delivered_feature",
+  "featureExpansion": false,
+  "baseSha": "cc0f226f68341c649423ba8761b91939cd2dbade",
+  "createdAtUtc": "2026-07-04T00:00:00.000Z",
+  "binding": {
+    "sourceTaskId": "POST_MVP_TXT_IMPORT_SAFE_CREATE_001",
+    "sourceArtifact": null,
+    "sourceFeatureSubject": "Add bounded post-MVP TXT import flow",
+    "sourcePullRequest": 1061,
+    "sourceCommitSha": "8d0404d010030c17cde1996b9f23cf326255fc7c",
+    "sourceMergeSha": "cc0f226f68341c649423ba8761b91939cd2dbade",
+    "sourceStatus": "delivered_merged_verified"
+  },
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "postMvpContour": true,
+    "importExportMvpScopeExpanded": false,
+    "runtimeChangedInThisRebind": false,
+    "uiRedesign": false,
+    "newDependenciesAdded": false,
+    "projectTruthWritesAdded": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "productClaim": {
+    "txtImportDelivered": true,
+    "txtImportUserFacingCommand": true,
+    "mainOwnedPickerStatReadRestat": true,
+    "rendererOwnsIntentAndAcceptedPreviewOnly": true,
+    "previewPathlessAndWriteFree": true,
+    "acceptCreatesExactlyOneImportedScene": true,
+    "utf8AndUtf8BomOnly": true,
+    "importExportMvpCloseoutExpanded": false,
+    "releaseReadinessClaimed": false
+  },
+  "runtimeTruth": {
+    "commandId": "cmd.project.importTxtV1",
+    "previewHelperCommandId": "cmd.project.txt.previewLocalFile",
+    "safeCreateHelperCommandId": "cmd.project.txt.importSafeCreate",
+    "userFacingSurfaces": [
+      "palette",
+      "runtime command handling"
+    ],
+    "mainOwnsPicker": true,
+    "mainOwnsStatReadRestat": true,
+    "rendererReceivesPathTruth": false,
+    "rendererReceivesPreviewPlanOnly": true,
+    "previewWritesProjectTruth": false,
+    "acceptCreatesOnlyNewScene": true,
+    "importTargetFolder": "roman/Imported",
+    "acceptedEncodings": [
+      "UTF-8",
+      "UTF-8 BOM"
+    ]
+  },
+  "positiveClaims": [
+    "TXT import is available as a bounded user-facing command through cmd.project.importTxtV1.",
+    "Main owns local file picker, stat read, read, and restat while renderer owns only intent plus the accepted preview plan.",
+    "TXT preview stays pathless and write-free before accept.",
+    "Accept creates exactly one new imported scene under roman/Imported and opens that created scene on success.",
+    "Accepted TXT encodings are UTF-8 and UTF-8 BOM only, and this contour does not widen the closed import/export MVP gate."
+  ],
+  "explicitNonClaims": [
+    "broader text import",
+    "raw Markdown truth reopen",
+    "DOCX import change",
+    "DOCX export change",
+    "Markdown import change",
+    "Markdown export change",
+    "full manuscript import",
+    "package import",
+    "PDF import",
+    "HTML import",
+    "release readiness",
+    "cross-platform readiness",
+    "Y9 admission"
+  ],
+  "canonGuards": {
+    "boundedContour": true,
+    "noSplitBrainDocs": true,
+    "noFalseGreen": true,
+    "noStaleGreen": true,
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "mainAuthorityPreserved": true,
+    "previewDoesNotWriteProjectTruth": true,
+    "safeCreateOnly": true,
+    "newDependenciesAdded": false,
+    "uiChanged": false
+  },
+  "docsBinding": {
+    "contextUpdated": true,
+    "handoffUpdated": true,
+    "worklogUpdated": true,
+    "bibleUpdated": false,
+    "canonUpdated": false,
+    "reason": "CONTEXT and HANDOFF carry the active factual reality and sourcebinding; WORKLOG records the delivered TXT import surface and demotes stale implementation-stage wording to historical context."
+  },
+  "claimAudit": {
+    "forbiddenClaimsChecked": [
+      "broader text import",
+      "raw Markdown truth reopen",
+      "DOCX import change",
+      "DOCX export change",
+      "Markdown import change",
+      "Markdown export change",
+      "full manuscript import",
+      "package import",
+      "PDF import",
+      "HTML import",
+      "release readiness"
+    ],
+    "status": "pass"
+  },
+  "verification": [
+    {
+      "command": "node --test test/contracts/post-mvp-txt-import-command-surface.contract.test.js",
+      "status": "pass",
+      "tests": 2
+    },
+    {
+      "command": "node --test test/unit/txt-import-local-file-preview.test.js",
+      "status": "pass",
+      "tests": 4
+    },
+    {
+      "command": "node --test test/unit/txt-import-safe-create.test.js",
+      "status": "pass",
+      "tests": 4
+    },
+    {
+      "command": "node --test test/unit/txt-import-product-flow-command.test.js",
+      "status": "pass",
+      "tests": 3
+    },
+    {
+      "command": "node --test test/unit/txt-import-preview-ui-flow.test.js",
+      "status": "pass",
+      "tests": 5
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "decision": "TXT_IMPORT_DELIVERED_POST_MVP_AND_FACTUALLY_REBOUND",
+  "nextStep": "OWNER_SELECTED_ONLY"
+}
