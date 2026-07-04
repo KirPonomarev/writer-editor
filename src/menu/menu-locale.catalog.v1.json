@@ -32,6 +32,11 @@
       "ru": "Экспорт TXT выбранных сцен",
       "en": "Export Selected Scenes TXT"
     },
+    "menu.file.exportAllScenesTxt": {
+      "base": "Экспорт TXT всех сцен",
+      "ru": "Экспорт TXT всех сцен",
+      "en": "Export All Scenes TXT"
+    },
     "menu.edit": {
       "base": "Редактирование",
       "ru": "Редактирование",
