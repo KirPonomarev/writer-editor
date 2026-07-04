@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "taskId": "POST_MVP_PROJECT_TXT_EXPORT_001",
+  "status": "delivered_merged_verified",
+  "type": "post_mvp_bounded_export_contour",
+  "featureExpansion": true,
+  "baseSha": "a27bd9757dc94bcb166e349302dbebdab1ce3c07",
+  "createdAtUtc": "2026-07-04T00:00:00.000Z",
+  "binding": {
+    "previousContour": "POST_MVP_SELECTED_SCENES_TXT_EXPORT_001",
+    "previousContourStatus": "delivered_merged_verified",
+    "importExportGateArtifact": "IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json",
+    "importExportGateWidened": false,
+    "sourcePullRequest": 1068,
+    "sourceCommitSha": "e4037c47fee3e658101d1aef3e6ef11410abbb2a",
+    "sourceMergeSha": "a27bd9757dc94bcb166e349302dbebdab1ce3c07"
+  },
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "postMvpContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "transientUiAdded": false,
+    "paletteCommandAdded": false,
+    "newDependenciesAdded": false,
+    "projectTruthWritesAdded": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "productClaim": {
+    "allScenesTxtExportDelivered": true,
+    "allScenesTxtExportImplemented": true,
+    "allScenesUserFacingFileMenuOnly": true,
+    "mainOwnedScopeAndSourceRead": true,
+    "canonicalSceneOnlyScope": true,
+    "rendererSourceAuthorityDenied": true,
+    "externalTxtWriteOnly": true,
+    "currentSceneTxtExportStillSeparate": true,
+    "selectedScenesTxtExportStillSeparate": true,
+    "importExportMvpCloseoutExpanded": false,
+    "releaseReadinessClaimed": false
+  },
+  "runtimeTruth": {
+    "menuEntryId": "file-export-all-scenes-txt",
+    "menuLabelKey": "menu.file.exportAllScenesTxt",
+    "menuProfile": [
+      "pro",
+      "guru"
+    ],
+    "commandId": "cmd.project.exportAllScenesTxtV1",
+    "paletteCommand": false,
+    "rendererPayloadShape": [
+      "requestId",
+      "outPath"
+    ],
+    "rendererScopeTruthAllowed": false,
+    "rendererSourceTextTruthAllowed": false,
+    "rendererSourcePathTruthAllowed": false,
+    "canonicalScopeBuilder": "buildSelectedScenesTxtExportScope",
+    "scopeIncludesOnlySceneDocuments": true,
+    "chapterFileAllowed": false,
+    "romanSectionAllowed": false,
+    "materialsAllowed": false,
+    "referenceAllowed": false,
+    "mindmapAllowed": false,
+    "printAllowed": false,
+    "dirtyCurrentScopedSceneAllowed": false,
+    "targetInsideProjectRootAllowed": false,
+    "targetMatchingSourceSceneAllowed": false,
+    "writeSurface": "one external txt file through atomic write",
+    "contentJoinRule": "all scoped scene texts joined by one blank line in canonical scene traversal order"
+  },
+  "positiveClaims": [
+    "The current implementation provides a bounded File menu command through cmd.project.exportAllScenesTxtV1.",
+    "Main reuses the canonical scene-only traversal from the selected-scenes export scope and keeps chapter files, roman-section documents, materials, reference, mindmap, and print documents out of scope.",
+    "Renderer sends only request metadata plus an optional outPath while main owns canonical scope rebuild, source reads, save dialog resolution, target validation, and atomic external TXT write.",
+    "If the currently open scoped scene is dirty or autosave is in progress, the export fails closed before that scene can become source truth.",
+    "Successful export writes exactly one external TXT file whose content is the canonical scoped scene texts joined by one blank line in traversal order, without widening the closed import/export MVP gate."
+  ],
+  "explicitNonClaims": [
+    "full manuscript TXT export",
+    "project package export",
+    "broader text export lane",
+    "chapter assembly export",
+    "book profile assembly export",
+    "current scene TXT export change",
+    "selected scenes TXT export change",
+    "palette command",
+    "DOCX export change",
+    "DOCX import change",
+    "Markdown import change",
+    "Markdown export change",
+    "Mindmap export change",
+    "PDF export",
+    "EPUB export",
+    "HTML export",
+    "release readiness",
+    "cross-platform readiness",
+    "Y9 admission"
+  ],
+  "canonGuards": {
+    "boundedContour": true,
+    "noSplitBrainDocs": true,
+    "noFalseGreen": true,
+    "noStaleGreen": true,
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "atomicWritePreserved": true,
+    "sceneTruthPreserved": true,
+    "mainAuthorityPreserved": true,
+    "newDependenciesAdded": false,
+    "uiRedesign": false
+  },
+  "docsBinding": {
+    "taskDocAdded": true,
+    "factualRebindTaskDocAdded": true,
+    "statusArtifactAdded": true,
+    "contextUpdated": true,
+    "handoffUpdated": true,
+    "worklogUpdated": true,
+    "bibleUpdated": false,
+    "canonUpdated": false,
+    "reason": "The runtime delivery chain is already complete on mainline; this source status artifact and the active factual docs are now rebound to the delivered all-scenes TXT export surface."
+  },
+  "verification": [
+    {
+      "command": "node --test test/contracts/post-mvp-project-txt-export.contract.test.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --test test/contracts/donor-port-command-surface-kernel.contract.test.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --test test/contracts/post-mvp-current-scene-txt-export.contract.test.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --test test/contracts/post-mvp-selected-scenes-txt-export.contract.test.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-review-mutate-port.contract.test.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "e4037c47fee3e658101d1aef3e6ef11410abbb2a",
+    "featurePullRequest": 1068,
+    "featureMergeSha": "a27bd9757dc94bcb166e349302dbebdab1ce3c07"
+  },
+  "decision": "ALL_SCENES_TXT_EXPORT_DELIVERED_MERGED_VERIFIED_WITH_CANONICAL_SCENE_ONLY_SCOPE_AND_MAIN_OWNED_TRUTH",
+  "nextStep": "OWNER_SELECTED_ONLY"
+}
