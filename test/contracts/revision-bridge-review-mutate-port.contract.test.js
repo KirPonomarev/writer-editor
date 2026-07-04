@@ -40,6 +40,24 @@ function extractMenuCommandHandlersSection(text) {
   return text.slice(start, end);
 }
 
+function extractUiCommandBridgeAllowedCommandIdsSection(text) {
+  const startMarker = 'const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([';
+  const endMarker = 'const WORKSPACE_QUERY_BRIDGE_ALLOWED_QUERY_IDS = new Set([';
+  const start = text.indexOf(startMarker);
+  const end = text.indexOf(endMarker, start);
+  assert.notEqual(start, -1, `missing marker: ${startMarker}`);
+  assert.notEqual(end, -1, `missing marker: ${endMarker}`);
+  assert.ok(end > start, 'ui command bridge markers must be ordered');
+  return text.slice(start, end);
+}
+
+const MENU_HANDLER_COMPUTED_KEY_GLOBALS = Object.freeze({
+  EXPORT_CURRENT_SCENE_TXT_COMMAND_ID: 'cmd.project.exportCurrentSceneTxtV1',
+  EXPORT_SELECTED_SCENES_TXT_COMMAND_ID: 'cmd.project.exportSelectedScenesTxtV1',
+  TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID: 'cmd.project.txt.previewLocalFile',
+  TXT_IMPORT_SAFE_CREATE_COMMAND_ID: 'cmd.project.txt.importSafeCreate',
+});
+
 function cloneJsonSafe(value) {
   if (value === undefined) return undefined;
   return JSON.parse(JSON.stringify(value));
@@ -364,6 +382,7 @@ function instantiateReviewMutatePort(options = {}) {
     currentReviewSurfacePayloadSource: 'none',
     currentReviewSurfacePayloadContentHash: '',
     Buffer,
+    ...MENU_HANDLER_COMPUTED_KEY_GLOBALS,
     cloneJsonSafe,
     computeHash,
     dialog: options.dialog || { showOpenDialog: async () => ({ canceled: true }) },
@@ -431,39 +450,39 @@ function normalizeVmValue(value) {
   return cloneJsonSafe(value);
 }
 
-test('review mutate port contract: review commands are exposed through ui command bridge and menu handlers', () => {
+test('review mutate port contract: only public review bridge routes are exposed through ui command bridge and menu handlers', () => {
   const source = readMainSource();
+  const uiCommandBridgeSection = extractUiCommandBridgeAllowedCommandIdsSection(source);
+  const menuCommandHandlersSection = extractMenuCommandHandlersSection(source);
 
+  assert.equal(uiCommandBridgeSection.includes("'cmd.project.review.importLocalPacket'"), true);
+  assert.equal(uiCommandBridgeSection.includes("'cmd.project.review.clearSession'"), true);
+  assert.equal(uiCommandBridgeSection.includes("'cmd.project.review.applyExactTextChange'"), true);
+  assert.equal(uiCommandBridgeSection.includes("'cmd.project.review.applyExactTextChangesBatch'"), true);
+  assert.equal(uiCommandBridgeSection.includes("'cmd.project.review.importPacket'"), false);
   assert.match(
-    source,
-    /UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS\s*=\s*new Set\(\[[\s\S]*'cmd\.project\.review\.importLocalPacket'[\s\S]*'cmd\.project\.review\.importPacket'[\s\S]*'cmd\.project\.review\.clearSession'[\s\S]*'cmd\.project\.review\.applyExactTextChange'[\s\S]*'cmd\.project\.review\.applyExactTextChangesBatch'/,
-  );
-  assert.match(
-    source,
+    menuCommandHandlersSection,
     /'cmd\.project\.review\.importLocalPacket':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{[\s\S]*handleReviewSurfaceImportLocalPacketCommandSurface\(payload\)/,
   );
   assert.match(
-    source,
+    menuCommandHandlersSection,
     /'cmd\.project\.review\.importLocalPacket':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{[\s\S]*sendCanonicalRuntimeCommand\(\s*'cmd\.project\.review\.openComments',\s*\{\s*source:\s*'review-import-local-packet',\s*requestId:\s*result\.requestId\s*\}/,
   );
+  assert.equal(menuCommandHandlersSection.includes("'cmd.project.review.importPacket':"), false);
   assert.match(
-    source,
-    /'cmd\.project\.review\.importPacket':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{\s*return handleReviewSurfaceImportPacketCommandSurface\(payload\);/,
-  );
-  assert.match(
-    source,
+    menuCommandHandlersSection,
     /'cmd\.project\.review\.clearSession':\s*async\s*\(\)\s*=>\s*\{[\s\S]*handleReviewSurfaceClearSessionCommandSurface\(\)/,
   );
   assert.match(
-    source,
+    menuCommandHandlersSection,
     /'cmd\.project\.review\.clearSession':\s*async\s*\(\)\s*=>\s*\{[\s\S]*sendCanonicalRuntimeCommand\(\s*'cmd\.project\.review\.openComments',\s*\{\s*source:\s*'review-clear-session'\s*\}/,
   );
   assert.match(
-    source,
+    menuCommandHandlersSection,
     /'cmd\.project\.review\.applyExactTextChange':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{\s*return handleReviewSurfaceApplyExactTextChangeCommandSurface\(payload\);/,
   );
   assert.match(
-    source,
+    menuCommandHandlersSection,
     /'cmd\.project\.review\.applyExactTextChangesBatch':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{\s*return handleReviewSurfaceApplyExactTextChangesBatchCommandSurface\(payload\);/,
   );
 });

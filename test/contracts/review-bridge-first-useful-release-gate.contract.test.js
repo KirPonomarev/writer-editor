@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -11,6 +12,18 @@ const REVIEW_MUTATE_CONTRACT_PATH = path.join(
   'test',
   'contracts',
   'revision-bridge-review-mutate-port.contract.test.js',
+);
+const DOCX_REVIEW_PREVIEW_CONTRACT_PATH = path.join(
+  REPO_ROOT,
+  'test',
+  'contracts',
+  'revision-bridge-docx-review-preview-session-command-surface.contract.test.js',
+);
+const DOCX_REVIEW_LOCAL_FILE_CONTRACT_PATH = path.join(
+  REPO_ROOT,
+  'test',
+  'contracts',
+  'revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js',
 );
 
 function readJson(filePath) {
@@ -33,6 +46,14 @@ function assertNoPendingActiveArtifact(gate) {
       `${artifact.artifact} must not be active gate truth while pending delivery`,
     );
   }
+}
+
+function tailOutput(text, lineCount = 40) {
+  return String(text || '')
+    .trim()
+    .split('\n')
+    .slice(-lineCount)
+    .join('\n');
 }
 
 test('Review Bridge first useful release gate binds only delivered active proof artifacts', () => {
@@ -150,6 +171,34 @@ test('Review Bridge first useful release gate binds the local JSON packet produc
   assert.match(source, /value\.receipt\.recovery\.snapshotReadable, true/u);
   assert.match(source, /value\.receipt\.recovery\.snapshotHashMatchesInput, true/u);
   assert.match(source, /fs\.readFileSync\(value\.receipt\.recovery\.snapshotPath, 'utf8'\), 'Alpha beta gamma\.'/u);
+});
+
+test('Review Bridge first useful release gate fails closed when live review-bridge smoke contracts are red', () => {
+  const result = spawnSync(
+    process.execPath,
+    [
+      '--test',
+      REVIEW_MUTATE_CONTRACT_PATH,
+      DOCX_REVIEW_PREVIEW_CONTRACT_PATH,
+      DOCX_REVIEW_LOCAL_FILE_CONTRACT_PATH,
+    ],
+    {
+      cwd: REPO_ROOT,
+      encoding: 'utf8',
+    },
+  );
+
+  assert.equal(result.error, undefined);
+  assert.equal(result.signal, null);
+  assert.equal(
+    result.status,
+    0,
+    [
+      `live smoke exit status: ${result.status}`,
+      tailOutput(result.stdout),
+      tailOutput(result.stderr),
+    ].filter(Boolean).join('\n'),
+  );
 });
 
 test('Review Bridge first useful release gate keeps DOCX comments-only as preview boundary', () => {

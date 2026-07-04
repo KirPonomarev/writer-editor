@@ -41,6 +41,13 @@ function extractMenuCommandHandlersSection(text) {
   return text.slice(start, end);
 }
 
+const MENU_HANDLER_COMPUTED_KEY_GLOBALS = Object.freeze({
+  EXPORT_CURRENT_SCENE_TXT_COMMAND_ID: 'cmd.project.exportCurrentSceneTxtV1',
+  EXPORT_SELECTED_SCENES_TXT_COMMAND_ID: 'cmd.project.exportSelectedScenesTxtV1',
+  TXT_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID: 'cmd.project.txt.previewLocalFile',
+  TXT_IMPORT_SAFE_CREATE_COMMAND_ID: 'cmd.project.txt.importSafeCreate',
+});
+
 function cloneJsonSafe(value) {
   if (value === undefined) return undefined;
   return JSON.parse(JSON.stringify(value));
@@ -79,6 +86,7 @@ function instantiateDocxReviewPreviewSessionPort(options = {}) {
     currentReviewSurfacePayloadContentHash: '',
     isDirty: false,
     Buffer,
+    ...MENU_HANDLER_COMPUTED_KEY_GLOBALS,
     cloneJsonSafe,
     computeHash,
     fs: options.fs || { readFile: async () => 'Anchored text' },
