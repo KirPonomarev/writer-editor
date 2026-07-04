@@ -91,6 +91,19 @@
             "op": "flag",
             "name": "hasDocument"
           }
+        },
+        {
+          "id": "file-export-all-scenes-txt",
+          "label": "Экспорт TXT всех сцен",
+          "labelKey": "menu.file.exportAllScenesTxt",
+          "command": "cmd.project.exportAllScenesTxtV1",
+          "mode": ["offline"],
+          "profile": ["pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "flag",
+            "name": "hasDocument"
+          }
         }
       ]
     },

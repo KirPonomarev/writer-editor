@@ -301,6 +301,8 @@ const EXPORT_CURRENT_SCENE_TXT_COMMAND_ID = 'cmd.project.exportCurrentSceneTxtV1
 const EXPORT_CURRENT_SCENE_TXT_DEFAULT_REQUEST_ID = 'u3-export-current-scene-txt-request';
 const EXPORT_SELECTED_SCENES_TXT_COMMAND_ID = 'cmd.project.exportSelectedScenesTxtV1';
 const EXPORT_SELECTED_SCENES_TXT_DEFAULT_REQUEST_ID = 'u3-export-selected-scenes-txt-request';
+const EXPORT_ALL_SCENES_TXT_COMMAND_ID = 'cmd.project.exportAllScenesTxtV1';
+const EXPORT_ALL_SCENES_TXT_DEFAULT_REQUEST_ID = 'u3-export-all-scenes-txt-request';
 const IMPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:import:markdownV1:v1';
 const EXPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:export:markdownV1:v1';
 const FLOW_OPEN_V1_CHANNEL = 'm:cmd:project:flow:open:v1';
@@ -314,6 +316,7 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
   PROJECT_EXPORT_CURRENT_SCENE_TXT_V1: EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
   PROJECT_EXPORT_SELECTED_SCENES_TXT_V1: EXPORT_SELECTED_SCENES_TXT_COMMAND_ID,
+  PROJECT_EXPORT_ALL_SCENES_TXT_V1: EXPORT_ALL_SCENES_TXT_COMMAND_ID,
   PROJECT_IMPORT_MARKDOWN_V1: 'cmd.project.importMarkdownV1',
   PROJECT_EXPORT_MARKDOWN_V1: 'cmd.project.exportMarkdownV1',
   PROJECT_RELEASE_CLAIM_ADMIT: 'cmd.project.releaseClaim.admit',
@@ -5695,6 +5698,9 @@ function getInternalCommandSurfaceKernel() {
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT_V1]: async (payload = {}) => {
       return handleExportSelectedScenesTxt(payload);
     },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT_V1]: async (payload = {}) => {
+      return handleExportAllScenesTxt(payload);
+    },
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1]: async (payload = {}) => {
       return handleImportMarkdownV1(payload);
     },
@@ -6940,6 +6946,18 @@ function makeTypedSelectedScenesTxtExportError(code, reason, details) {
   return { ok: false, error };
 }
 
+function makeTypedAllScenesTxtExportError(code, reason, details) {
+  const error = {
+    code: typeof code === 'string' && code.length > 0 ? code : 'E_EXPORT_ALL_SCENES_TXT_FAILED',
+    op: EXPORT_ALL_SCENES_TXT_COMMAND_ID,
+    reason: typeof reason === 'string' && reason.length > 0 ? reason : 'EXPORT_ALL_SCENES_TXT_FAILED',
+  };
+  if (details && typeof details === 'object' && !Array.isArray(details)) {
+    error.details = details;
+  }
+  return { ok: false, error };
+}
+
 let markdownTransformModulePromise = null;
 function loadMarkdownTransformModule() {
   if (!markdownTransformModulePromise) {
@@ -7750,6 +7768,30 @@ const SELECTED_SCENES_TXT_EXPORT_FORBIDDEN_AUTHORITY_KEYS = Object.freeze([
   'viewportDomText',
   'visibleWindowText',
 ]);
+const ALL_SCENES_TXT_EXPORT_ALLOWED_PAYLOAD_KEYS = Object.freeze([
+  'outPath',
+  'requestId',
+]);
+const ALL_SCENES_TXT_EXPORT_FORBIDDEN_AUTHORITY_KEYS = Object.freeze([
+  'bookProfile',
+  'bufferSource',
+  'content',
+  'doc',
+  'editorSnapshot',
+  'plainText',
+  'project',
+  'projectRoot',
+  'rendererState',
+  'scene',
+  'sceneId',
+  'sceneIds',
+  'scenePath',
+  'scenePaths',
+  'selectedSceneIds',
+  'text',
+  'viewportDomText',
+  'visibleWindowText',
+]);
 
 function normalizeCurrentSceneTxtExportPath(filePath) {
   if (typeof filePath !== 'string' || filePath.trim().length === 0) return '';
@@ -7869,6 +7911,49 @@ function normalizeSelectedScenesTxtExportPayload(payload = {}) {
   return pathGuard.payload;
 }
 
+function normalizeAllScenesTxtExportPayload(payload = {}) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return null;
+  }
+
+  const keys = Object.keys(payload);
+  const forbiddenAuthorityKeys = keys
+    .filter((key) => ALL_SCENES_TXT_EXPORT_FORBIDDEN_AUTHORITY_KEYS.includes(key))
+    .sort();
+  const unsupportedKeys = keys
+    .filter((key) => !ALL_SCENES_TXT_EXPORT_ALLOWED_PAYLOAD_KEYS.includes(key))
+    .sort();
+  if (forbiddenAuthorityKeys.length > 0 || unsupportedKeys.length > 0) {
+    return {
+      ok: false,
+      code: 'E_EXPORT_ALL_SCENES_TXT_PAYLOAD_INVALID',
+      reason: forbiddenAuthorityKeys.length > 0
+        ? 'EXPORT_ALL_SCENES_TXT_RENDERER_AUTHORITY_DENIED'
+        : 'EXPORT_ALL_SCENES_TXT_PAYLOAD_UNSUPPORTED_FIELDS',
+      details: {
+        fields: forbiddenAuthorityKeys.length > 0 ? forbiddenAuthorityKeys : unsupportedKeys,
+      },
+    };
+  }
+
+  const requestId = typeof payload.requestId === 'string' && payload.requestId.trim().length > 0
+    ? payload.requestId.trim()
+    : EXPORT_ALL_SCENES_TXT_DEFAULT_REQUEST_ID;
+  const outPath = typeof payload.outPath === 'string' ? payload.outPath.trim() : '';
+  const normalized = {
+    requestId,
+    outPath,
+  };
+  const pathGuard = sanitizePathFields(normalized, ['outPath'], { mode: 'any' });
+  if (!pathGuard.ok) {
+    return {
+      ...normalized,
+      pathBoundaryError: pathGuard,
+    };
+  }
+  return pathGuard.payload;
+}
+
 function buildMarkdownExportDefaultPath(payload) {
   const safeDefaultName = sanitizeFilename(
     typeof payload.defaultName === 'string' && payload.defaultName.trim()
@@ -7897,6 +7982,18 @@ function buildSelectedScenesTxtExportDefaultPath() {
   ) || 'selected-scenes';
   return normalizeCurrentSceneTxtExportPath(
     path.join(fileManager.getDocumentsPath(), `${projectBaseName}-selected-scenes.txt`),
+  );
+}
+
+function buildAllScenesTxtExportDefaultPath() {
+  const projectRoot = getProjectRootPath();
+  const projectBaseName = sanitizeFilename(
+    typeof projectRoot === 'string' && projectRoot.trim()
+      ? path.basename(projectRoot.trim())
+      : 'all-scenes',
+  ) || 'all-scenes';
+  return normalizeCurrentSceneTxtExportPath(
+    path.join(fileManager.getDocumentsPath(), `${projectBaseName}-all-scenes.txt`),
   );
 }
 
@@ -7980,6 +8077,53 @@ async function resolveSelectedScenesTxtExportPath(payload) {
       canceled: false,
       error: {
         code: 'E_EXPORT_SELECTED_SCENES_TXT_PATH_REQUIRED',
+        reason: 'export_path_required',
+      },
+    };
+  }
+  const pathGuard = sanitizePathFields({ outPath }, ['outPath'], { mode: 'any' });
+  if (!pathGuard.ok) {
+    return {
+      canceled: false,
+      pathBoundaryError: pathGuard,
+    };
+  }
+  return { canceled: false, outPath: pathGuard.payload.outPath };
+}
+
+async function resolveAllScenesTxtExportPath(payload) {
+  const fromPayload = normalizeCurrentSceneTxtExportPath(payload.outPath);
+  if (fromPayload) {
+    return { canceled: false, outPath: fromPayload };
+  }
+  if (!mainWindow) {
+    return {
+      canceled: false,
+      error: {
+        code: 'E_EXPORT_ALL_SCENES_TXT_SAVE_DIALOG_UNAVAILABLE',
+        reason: 'save_dialog_unavailable',
+      },
+    };
+  }
+
+  const result = await dialog.showSaveDialog(mainWindow, {
+    title: 'Экспорт TXT всех сцен',
+    defaultPath: buildAllScenesTxtExportDefaultPath(),
+    filters: [
+      { name: 'Plain Text', extensions: ['txt'] },
+      { name: 'Все файлы', extensions: ['*'] },
+    ],
+  });
+  if (result.canceled) {
+    return { canceled: true, outPath: '' };
+  }
+
+  const outPath = normalizeCurrentSceneTxtExportPath(result.filePath);
+  if (!outPath) {
+    return {
+      canceled: false,
+      error: {
+        code: 'E_EXPORT_ALL_SCENES_TXT_PATH_REQUIRED',
         reason: 'export_path_required',
       },
     };
@@ -8091,6 +8235,36 @@ function validateSelectedScenesTxtExportOutPath(outPath, scope, selectedCandidat
     return {
       ok: false,
       code: 'E_EXPORT_SELECTED_SCENES_TXT_TARGET_FORBIDDEN',
+      reason: 'export_target_inside_project_root',
+    };
+  }
+  return { ok: true };
+}
+
+function validateAllScenesTxtExportOutPath(outPath, scope, sceneCandidates) {
+  if (typeof outPath !== 'string' || !outPath.trim()) {
+    return {
+      ok: false,
+      code: 'E_EXPORT_ALL_SCENES_TXT_PATH_REQUIRED',
+      reason: 'export_path_required',
+    };
+  }
+  if (Array.isArray(sceneCandidates) && sceneCandidates.some((candidate) => candidate && candidate.path === outPath)) {
+    return {
+      ok: false,
+      code: 'E_EXPORT_ALL_SCENES_TXT_TARGET_FORBIDDEN',
+      reason: 'export_target_matches_all_scenes_source',
+    };
+  }
+  if (
+    scope
+    && typeof scope.projectRoot === 'string'
+    && scope.projectRoot
+    && (outPath === scope.projectRoot || isPathInside(scope.projectRoot, outPath))
+  ) {
+    return {
+      ok: false,
+      code: 'E_EXPORT_ALL_SCENES_TXT_TARGET_FORBIDDEN',
       reason: 'export_target_inside_project_root',
     };
   }
@@ -8681,6 +8855,158 @@ async function handleExportSelectedScenesTxt(payloadRaw = {}) {
   } catch (error) {
     return makeTypedSelectedScenesTxtExportError(
       'E_EXPORT_SELECTED_SCENES_TXT_WRITE_FAILED',
+      'txt_write_failed',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+        outPath,
+      },
+    );
+  }
+}
+
+async function handleExportAllScenesTxt(payloadRaw = {}) {
+  const payload = normalizeAllScenesTxtExportPayload(payloadRaw);
+  if (!payload) {
+    return makeTypedAllScenesTxtExportError(
+      'E_EXPORT_ALL_SCENES_TXT_PAYLOAD_INVALID',
+      'export_payload_invalid',
+    );
+  }
+  if (payload.ok === false) {
+    return makeTypedAllScenesTxtExportError(payload.code, payload.reason, payload.details);
+  }
+  if (payload.pathBoundaryError) {
+    return makeTypedAllScenesTxtExportError(
+      'E_PATH_BOUNDARY_VIOLATION',
+      'path_boundary_violation',
+      buildPathBoundaryDetails(payload.pathBoundaryError),
+    );
+  }
+
+  let scope;
+  try {
+    scope = await buildSelectedScenesTxtExportScope();
+  } catch (error) {
+    return makeTypedAllScenesTxtExportError(
+      'E_EXPORT_ALL_SCENES_TXT_SCOPE_UNAVAILABLE',
+      'all_scenes_scope_unavailable',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+
+  const sceneCandidates = Array.isArray(scope?.sceneCandidates) ? scope.sceneCandidates : [];
+  if (sceneCandidates.length === 0) {
+    return makeTypedAllScenesTxtExportError(
+      'E_EXPORT_ALL_SCENES_TXT_SCOPE_EMPTY',
+      'all_scenes_scope_empty',
+    );
+  }
+
+  let resolvedPath;
+  try {
+    resolvedPath = await resolveAllScenesTxtExportPath(payload);
+  } catch (error) {
+    return makeTypedAllScenesTxtExportError(
+      'E_EXPORT_ALL_SCENES_TXT_DIALOG_FAILED',
+      'save_dialog_failed',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+  if (resolvedPath && resolvedPath.canceled === true) {
+    return {
+      ok: true,
+      exported: false,
+      canceled: true,
+      outPath: '',
+      bytesWritten: 0,
+      sceneCount: 0,
+    };
+  }
+  if (resolvedPath && resolvedPath.error) {
+    return makeTypedAllScenesTxtExportError(
+      resolvedPath.error.code,
+      resolvedPath.error.reason,
+    );
+  }
+  if (resolvedPath && resolvedPath.pathBoundaryError) {
+    return makeTypedAllScenesTxtExportError(
+      'E_PATH_BOUNDARY_VIOLATION',
+      'path_boundary_violation',
+      buildPathBoundaryDetails(resolvedPath.pathBoundaryError),
+    );
+  }
+
+  const outPath = resolvedPath && typeof resolvedPath.outPath === 'string'
+    ? resolvedPath.outPath
+    : '';
+  const targetState = validateAllScenesTxtExportOutPath(outPath, scope, sceneCandidates);
+  if (!targetState.ok) {
+    return makeTypedAllScenesTxtExportError(targetState.code, targetState.reason);
+  }
+  let physicalTargetState;
+  try {
+    physicalTargetState = await validateTxtExportPhysicalTargetPath(outPath, {
+      pathRequiredCode: 'E_EXPORT_ALL_SCENES_TXT_PATH_REQUIRED',
+      targetForbiddenCode: 'E_EXPORT_ALL_SCENES_TXT_TARGET_FORBIDDEN',
+      targetMatchesSourceReason: 'export_target_matches_all_scenes_source',
+      targetInsideProjectRootReason: 'export_target_inside_project_root',
+      projectRoot: scope && typeof scope.projectRoot === 'string' ? scope.projectRoot : '',
+      sourcePaths: sceneCandidates
+        .map((candidate) => (candidate && typeof candidate.path === 'string' ? candidate.path : ''))
+        .filter(Boolean),
+    });
+  } catch (error) {
+    return makeTypedAllScenesTxtExportError(
+      'E_EXPORT_ALL_SCENES_TXT_TARGET_VALIDATE_FAILED',
+      'export_target_validate_failed',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+  if (!physicalTargetState.ok) {
+    return makeTypedAllScenesTxtExportError(physicalTargetState.code, physicalTargetState.reason);
+  }
+
+  let content = '';
+  try {
+    const sceneTexts = [];
+    for (const candidate of sceneCandidates) {
+      sceneTexts.push(await readSelectedScenesTxtExportSceneContent(candidate));
+    }
+    content = sceneTexts.join('\n\n');
+  } catch (error) {
+    return makeTypedAllScenesTxtExportError(
+      'E_EXPORT_ALL_SCENES_TXT_SOURCE_UNAVAILABLE',
+      'canonical_source_unavailable',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+
+  try {
+    const writeResult = await queueDiskOperation(
+      () => fileManager.writeFileAtomic(outPath, content),
+      'export all scenes txt',
+    );
+    if (!writeResult || writeResult.success !== true) {
+      return makeTypedAllScenesTxtExportError(
+        'E_EXPORT_ALL_SCENES_TXT_WRITE_FAILED',
+        'txt_write_failed',
+        {
+          message: writeResult && typeof writeResult.error === 'string' ? writeResult.error : 'UNKNOWN',
+          outPath,
+        },
+      );
+    }
+    updateStatus('TXT всех сцен экспортирован');
+    return {
+      ok: true,
+      exported: true,
+      outPath,
+      bytesWritten: Buffer.byteLength(content, 'utf8'),
+      sceneCount: sceneCandidates.length,
+    };
+  } catch (error) {
+    return makeTypedAllScenesTxtExportError(
+      'E_EXPORT_ALL_SCENES_TXT_WRITE_FAILED',
       'txt_write_failed',
       {
         message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
@@ -11211,6 +11537,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.saveAs',
   EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
   EXPORT_SELECTED_SCENES_TXT_COMMAND_ID,
+  EXPORT_ALL_SCENES_TXT_COMMAND_ID,
   'cmd.project.export.docxMin',
   'cmd.project.docx.previewContent',
   'cmd.project.docx.previewImportPlan',
@@ -11302,6 +11629,13 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     }
     const result = await dispatchCommandSurfaceKernel(
       COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT_V1,
+      payload,
+    );
+    return normalizeUiBridgeMenuResult(result);
+  },
+  [EXPORT_ALL_SCENES_TXT_COMMAND_ID]: async (payload = {}) => {
+    const result = await dispatchCommandSurfaceKernel(
+      COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT_V1,
       payload,
     );
     return normalizeUiBridgeMenuResult(result);
