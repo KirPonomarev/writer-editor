@@ -3,8 +3,13 @@
 Короткая хронология изменений и решений. Это не полный лог чата, а сжатые записи “что сделали / зачем / что дальше”.
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
+## 2026-07-04
+- Factual rebind: active docs now record the already merged post-MVP selected scenes TXT export from PR `1063` as a File-menu-only external TXT path, separate from the closed import/export MVP gate, from current-scene TXT export, and from TXT import.
+- Selected scenes TXT export factual truth: renderer owns only a transient checkbox picker and confirmed sceneIds, while main owns canonical scope rebuild, source reads, save dialog resolution, target validation, and atomic external TXT write.
+- Selected scenes TXT export scope truth: the scope query is pathless and project-root-free, tree row selection is not export truth, persistent multi-select is not introduced, and the export target cannot equal any selected source path or live inside the project root.
+
 ## 2026-07-03
-- Post-MVP selected scenes TXT export: opened and implemented `POST_MVP_SELECTED_SCENES_TXT_EXPORT_001` as a bounded File-menu-only contour separate from the closed import/export MVP gate; local verification is green and delivery chain is pending.
+- Post-MVP selected scenes TXT export: opened and implemented `POST_MVP_SELECTED_SCENES_TXT_EXPORT_001` as a bounded File-menu-only contour separate from the closed import/export MVP gate; local verification was green before the later merge and factual rebind.
 - Selected scenes TXT export product surface: added user-facing `cmd.project.exportSelectedScenesTxtV1`; renderer owns only a transient checkbox picker and confirmed sceneIds, while main owns canonical scene scope rebuild, save dialog resolution, source reads, target validation, and atomic external TXT write.
 - Selected scenes TXT export scope truth: the renderer scope query is pathless and project-root-free, tree row selection is not export truth, persistent multi-select is not introduced, and the export target cannot equal any selected source path or live inside the project root.
 - Tests: selected-scenes TXT export contracts, renderer flow proof, current-scene TXT export regression, command namespace guards, packaged renderer bundle proof, oss policy, and diff check all passed locally after renderer rebuild.

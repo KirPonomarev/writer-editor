@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "POST_MVP_SELECTED_SCENES_TXT_EXPORT_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "post_mvp_bounded_export_contour",
   "featureExpansion": true,
   "baseSha": "7837b69cbc5b444902d3d966da9895c1a62b4311",
@@ -11,9 +11,9 @@
     "previousContourStatus": "factual_rebind_complete",
     "importExportGateArtifact": "IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json",
     "importExportGateWidened": false,
-    "sourcePullRequest": null,
-    "sourceCommitSha": null,
-    "sourceMergeSha": null
+    "sourcePullRequest": 1063,
+    "sourceCommitSha": "a7826d1e5045961125737bc14de5881bd80832b2",
+    "sourceMergeSha": "fd95fba386b31add3373c6179fcef97c2b89afcf"
   },
   "scope": {
     "desktopFirst": true,
@@ -30,7 +30,7 @@
     "y9Opened": false
   },
   "productClaim": {
-    "selectedScenesTxtExportDelivered": false,
+    "selectedScenesTxtExportDelivered": true,
     "selectedScenesTxtExportImplemented": true,
     "selectedScenesUserFacingFileMenuOnly": true,
     "mainOwnedScopeAndSourceRead": true,
@@ -109,12 +109,12 @@
   "docsBinding": {
     "taskDocAdded": true,
     "statusArtifactAdded": true,
-    "contextUpdated": false,
-    "handoffUpdated": false,
+    "contextUpdated": true,
+    "handoffUpdated": true,
     "worklogUpdated": true,
     "bibleUpdated": false,
     "canonUpdated": false,
-    "reason": "This contour is a bounded post-MVP export lane; active mainline factual-doc sync is deferred until the delivery chain is complete."
+    "reason": "Delivery chain is complete on mainline and active factual docs are rebound to the delivered selected-scenes TXT export surface."
   },
   "verification": [
     {
@@ -169,11 +169,11 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "implemented_verified_pending_delivery",
-    "featureCommitSha": null,
-    "featurePullRequest": null,
-    "featureMergeSha": null
+    "status": "delivered_merged_verified",
+    "featureCommitSha": "a7826d1e5045961125737bc14de5881bd80832b2",
+    "featurePullRequest": 1063,
+    "featureMergeSha": "fd95fba386b31add3373c6179fcef97c2b89afcf"
   },
-  "decision": "SELECTED_SCENES_TXT_EXPORT_IMPLEMENTED_VERIFIED_PENDING_DELIVERY_WITH_TRANSIENT_PICKER_AND_MAIN_OWNED_TRUTH",
-  "nextStep": "complete_delivery_chain_then_rebind_active_factual_docs"
+  "decision": "SELECTED_SCENES_TXT_EXPORT_DELIVERED_MERGED_VERIFIED_WITH_TRANSIENT_PICKER_AND_MAIN_OWNED_TRUTH",
+  "nextStep": "OWNER_SELECTED_ONLY"
 }

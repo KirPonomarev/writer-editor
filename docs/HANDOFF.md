@@ -1,6 +1,6 @@
 # HANDOFF (Yalken Writer)
 
-_Generated: 2026-07-02_
+_Generated: 2026-07-04_
 
 ## Start Here
 - Active execution canon resolver: `docs/OPS/STATUS/CANON_STATUS.json`
@@ -53,6 +53,10 @@ _Generated: 2026-07-02_
 - `cmd.project.exportCurrentSceneTxtV1` is the bounded user-facing File menu path for exporting the saved current scene only; main owns canonical source read, save dialog resolution, target validation, and atomic external TXT write.
 - TXT export source is envelope-parsed canonical current scene content from disk; dirty or unsaved current scene fails closed, non-scene sources fail closed, and the export target cannot equal the current scene path or live inside the project root.
 - This current scene TXT export contour does not claim full manuscript TXT export, broader text export, package export, DOCX export change, Markdown export change, Markdown import change, PDF/EPUB/HTML export, release readiness, cross-platform readiness, or Mindmap scope change.
+- Selected scenes TXT export is delivered on current mainline via PR `1063` at merge SHA `fd95fba386b31add3373c6179fcef97c2b89afcf`; it remains a separate post-MVP contour and does not widen `IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json`.
+- `cmd.project.exportSelectedScenesTxtV1` is the bounded user-facing File menu path for exporting canonically selected scenes only; renderer owns only a transient checkbox picker and confirmed sceneIds, while main owns canonical scope rebuild, source reads, save dialog resolution, target validation, and atomic external TXT write.
+- The selected-scenes scope query is pathless and project-root-free; tree row selection does not become export truth, persistent multi-select is not introduced, non-scene sources fail closed, and the export target cannot equal any selected scene path or live inside the project root.
+- This selected-scenes TXT export contour does not claim full manuscript TXT export, broader text export, package export, persistent tree multi-select, palette command, DOCX export change, Markdown export change, Markdown import change, PDF/EPUB/HTML export, release readiness, cross-platform readiness, or Mindmap scope change.
 - Current post-MVP TXT import lane stays outside that closed MVP gate: it does not widen `IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json` and does not reopen the accepted MVP artifact set.
 - `cmd.project.importTxtV1` is the bounded user-facing TXT chooser path on palette and canonical runtime command handling; main owns picker stat read and restat, while `cmd.project.txt.previewLocalFile` and `cmd.project.txt.importSafeCreate` remain bridge-only helpers.
 - TXT preview is pathless and write-free; accepted import creates exactly one new scene under `roman/Imported` and opens that created scene on success.
