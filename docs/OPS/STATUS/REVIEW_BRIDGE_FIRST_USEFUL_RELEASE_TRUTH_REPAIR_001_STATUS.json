@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "review_bridge_first_useful_release_truth_repair",
   "featureExpansion": false,
   "baseSha": "c57814ff7b22d7bea45b646df7110ddef37ef2a2",
@@ -71,7 +71,7 @@
     "contextUpdated": true,
     "handoffUpdated": true,
     "worklogUpdated": true,
-    "reason": "CONTEXT and HANDOFF carry active branch truth for this bounded repair contour; WORKLOG records the truth-repair step without widening Review Bridge scope."
+    "reason": "CONTEXT and HANDOFF now carry delivered mainline truth for this bounded repair contour; WORKLOG records the merged closeout without widening Review Bridge scope."
   },
   "verification": [
     {
@@ -118,9 +118,13 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "implemented_verified_pending_delivery",
-    "branch": "codex/review-bridge-first-useful-release-truth-repair-001"
+    "status": "delivered_merged_verified",
+    "branch": "codex/review-bridge-first-useful-release-truth-repair-001",
+    "featureCommitSha": "12a3859cb66ace94003777ce8aa1e4109afd5fb5",
+    "featurePullRequest": 1066,
+    "featureMergeSha": "d24e4bd1cda4e051c06df614964552c3c634afc7",
+    "featureMergedAtUtc": "2026-07-04T16:10:59Z"
   },
-  "decision": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_PUBLIC_BOUNDARY_AND_LIVE_SMOKE_TRUTH_REPAIRED_PENDING_DELIVERY",
-  "nextStep": "complete_commit_push_pr_merge_for_the_bounded_truth_repair_contour"
+  "decision": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_PUBLIC_BOUNDARY_AND_LIVE_SMOKE_TRUTH_REPAIR_DELIVERED_MERGED_VERIFIED",
+  "nextStep": "select_the_next_owner_approved_contour_explicitly_no_review_bridge_or_import_export_scope_opens_by_implication"
 }

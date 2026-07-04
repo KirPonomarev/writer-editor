@@ -3671,10 +3671,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001_STATUS.json",
-      "sha256": "050c85d6a5fda4e21025700562ccac280a6e5e5f6ad1587a52fe16849ef3059a",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
-      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
-      "rationale": "Approve bounded Review Bridge truth-repair status for the delivered first useful release gate public boundary hardening: public importPacket is removed while public importLocalPacket remains, live smoke truth is rebound, and no new review import automation, apply authority, DOCX apply, safe-create change, import-export widening, release readiness, or Y9 claim is introduced."
+      "sha256": "8bee0e94fbeca4e91fb20d64103d059b6342601f67a4ee137d360c31f50e53cb",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REBIND_002",
+      "approvedAtUtc": "2026-07-04T16:10:59.000Z",
+      "rationale": "Approve delivery truth rebind for the bounded Review Bridge first useful release public-boundary and live-smoke repair after PR 1066 merge; the status is rebound to delivered_merged_verified with feature commit, PR, merge SHA, and merged time while preserving no new review import automation, no new apply authority, no DOCX apply, no safe-create change, no import-export widening, no release readiness, and no Y9 claim."
     },
     {
       "filePath": "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
