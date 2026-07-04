@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "review_bridge_first_useful_release_truth_repair",
+  "featureExpansion": false,
+  "baseSha": "c57814ff7b22d7bea45b646df7110ddef37ef2a2",
+  "createdAtUtc": "2026-07-04T00:00:00.000Z",
+  "binding": {
+    "sourceTaskId": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001",
+    "sourceArtifact": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001_STATUS.json",
+    "sourceStatus": "delivered_merged_verified",
+    "sourceFeatureSubject": "Review Bridge first useful release public boundary and live smoke truth repair"
+  },
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "reviewBridgeContour": true,
+    "importExportMvpScopeExpanded": false,
+    "uiRedesign": false,
+    "runtimeProductionCodeChanged": true,
+    "newDependenciesAdded": false,
+    "projectTruthWritesAdded": false,
+    "releaseReadinessClaimed": false,
+    "y9Opened": false
+  },
+  "runtimeTruth": {
+    "publicBridgeCommandIds": [
+      "cmd.project.review.importLocalPacket",
+      "cmd.project.review.clearSession",
+      "cmd.project.review.applyExactTextChange",
+      "cmd.project.review.applyExactTextChangesBatch"
+    ],
+    "publicMenuHandlerCommandIds": [
+      "cmd.project.review.importLocalPacket",
+      "cmd.project.review.clearSession",
+      "cmd.project.review.applyExactTextChange",
+      "cmd.project.review.applyExactTextChangesBatch"
+    ],
+    "internalOnlyCommandIds": [
+      "cmd.project.review.importPacket"
+    ],
+    "internalReusePaths": [
+      "main-owned local JSON packet intake delegates normalized session state into the internal importPacket helper",
+      "DOCX review preview activation delegates normalized session state into the internal importPacket helper"
+    ],
+    "gateRunsLiveSmoke": true,
+    "computedMenuKeyHarnessesExplicit": true
+  },
+  "positiveClaims": [
+    "The public Review Bridge command surface no longer exposes cmd.project.review.importPacket through the UI command bridge or public menu handlers.",
+    "cmd.project.review.importLocalPacket remains the only public local JSON review packet intake path.",
+    "The internal handleReviewSurfaceImportPacketCommandSurface helper remains reusable only behind main-owned session normalization flows.",
+    "The first useful release gate contract now fails closed by rerunning live Review Bridge smoke contracts for local packet import and DOCX review preview surfaces.",
+    "VM harnesses for the affected command-surface contracts now inject computed menu command ids explicitly so full MENU_COMMAND_HANDLERS extraction no longer false-reds on unrelated computed keys."
+  ],
+  "nonClaims": [
+    "No new public review import command is introduced.",
+    "No new exact apply authority is introduced.",
+    "No DOCX tracked-change apply is introduced.",
+    "No DOCX safe-create or import preview behavior is widened.",
+    "No import/export MVP scope expansion is introduced.",
+    "No release readiness, packaged readiness, cross-platform readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Public boundary truth is narrowed without changing the internal session-normalization helper contract.",
+    "Main remains the only owner of local file authority for local JSON packet intake and DOCX review local-file activation.",
+    "Gate truth is carried by live smoke execution instead of regex-only or status-only green."
+  ],
+  "docsBinding": {
+    "contextUpdated": true,
+    "handoffUpdated": true,
+    "worklogUpdated": true,
+    "reason": "CONTEXT and HANDOFF carry active branch truth for this bounded repair contour; WORKLOG records the truth-repair step without widening Review Bridge scope."
+  },
+  "verification": [
+    {
+      "command": "node --test test/contracts/revision-bridge-review-mutate-port.contract.test.js test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js test/contracts/review-bridge-first-useful-release-gate.contract.test.js",
+      "status": "pass",
+      "tests": 53
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js test/contracts/review-bridge-docx-diagnostic-evidence-surface.contract.test.js",
+      "status": "pass",
+      "tests": 24
+    },
+    {
+      "command": "node --check src/main.js",
+      "status": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "agentAudits": [
+    {
+      "agentId": "019f2dc4-ce81-7413-bbf2-04311be40cd0",
+      "role": "caller_inventory_explorer",
+      "verdict": "no_honest_public_caller_for_importPacket_found_importLocalPacket_is_the_real_public_entry",
+      "localResolution": "addressed_by_depublicizing_public_importPacket_surface_and_preserving_internal_helper_reuse"
+    },
+    {
+      "agentId": "019f2dc4-ef04-7030-8646-6aa10a0c3e96",
+      "role": "proof_harness_auditor",
+      "verdict": "gate_stale_and_vm_harness_false_red_confirmed",
+      "localResolution": "addressed_by_live_smoke_gate_and_explicit_computed_key_injection"
+    },
+    {
+      "agentId": "019f2dd6-89e1-7ba0-b002-512ea5c5941e",
+      "role": "independent_skeptic",
+      "verdict": "public_boundary_narrowing_confirmed_truth_chain_required_doc_sync",
+      "localResolution": "addressed_by_this_status_artifact_and_current_docs_sync"
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "implemented_verified_pending_delivery",
+    "branch": "codex/review-bridge-first-useful-release-truth-repair-001"
+  },
+  "decision": "REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_PUBLIC_BOUNDARY_AND_LIVE_SMOKE_TRUTH_REPAIRED_PENDING_DELIVERY",
+  "nextStep": "complete_commit_push_pr_merge_for_the_bounded_truth_repair_contour"
+}

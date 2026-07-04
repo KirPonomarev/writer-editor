@@ -11223,7 +11223,6 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.releaseClaim.admit',
   'cmd.project.releaseClaim.execute',
   'cmd.project.review.importLocalPacket',
-  'cmd.project.review.importPacket',
   'cmd.project.review.clearSession',
   'cmd.project.review.applyExactTextChange',
   'cmd.project.review.applyExactTextChangesBatch',
@@ -11417,9 +11416,6 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
       );
     }
     return result;
-  },
-  'cmd.project.review.importPacket': async (payload = {}) => {
-    return handleReviewSurfaceImportPacketCommandSurface(payload);
   },
   'cmd.project.review.clearSession': async () => {
     const result = handleReviewSurfaceClearSessionCommandSurface();

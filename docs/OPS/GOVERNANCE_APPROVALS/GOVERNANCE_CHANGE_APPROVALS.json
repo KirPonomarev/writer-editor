@@ -283,17 +283,17 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
-      "sha256": "8e8c952929b4e16e3d40378d4329294ab73fb182c438b9106cadf7383dddfa21",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve local-file command-surface contract update proving tracked-changes-only DOCX opens read-only diagnosticItems through the existing main-owned DOCX review local-file path while keeping requestId-only renderer authority, no textChanges, no applyOps, no receipt, no recovery, no project truth write, no safe-create import, no export, no release, and no full DOCX review import claim."
+      "sha256": "2601a754b484426e2f93b470c4882dcf71046a09139512004043bee555aa37cf",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
+      "rationale": "Approve bounded local-file command-surface harness repair that injects computed menu command ids explicitly so full MENU_COMMAND_HANDLERS extraction remains truthful; no DOCX import widening, apply authority, storage write, receipt, recovery, readiness, or Y9 claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
-      "sha256": "1f8b8ed516babf20c0602ba4c72d12bda011b9249f50ce6871dd7b8da3b7d708",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve preview-session command-surface contract update proving tracked-changes-only DOCX opens diagnostic-only Review visibility with canOpenReviewSession false, canCreateReviewPacket false, no textChanges, no structuralChanges, empty blocked applyOps, no receipt, no recovery, no storage, no import mutation, and no release or full DOCX review import claim."
+      "sha256": "ba6b43e9b69d10adf8987d871f94652d2b149c94fd2e8fb819cb541cc18afc65",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
+      "rationale": "Approve bounded preview-session command-surface harness repair that injects computed menu command ids explicitly so full MENU_COMMAND_HANDLERS extraction no longer false-reds on unrelated computed keys; no DOCX apply, storage write, receipt, recovery, readiness, or import-export widening is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",
@@ -318,10 +318,10 @@
     },
     {
       "filePath": "test/contracts/review-bridge-first-useful-release-gate.contract.test.js",
-      "sha256": "a378d2ca4c7a8b5acb4892a7cf61ac56b17cb0da02dfa09453e63837dea0726f",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve contract guard for the bounded Review Bridge first useful feature gate; it verifies active artifacts are delivered, pending single-apply history is superseded rather than active truth, local JSON packet exact apply receipt and recovery proof remain bound, DOCX comments-only stays preview-only, and release-readiness or full-import overclaims are blocked."
+      "sha256": "e0e08619918eccc7fdb59ce5cb66a17117f3d0a66e3d69ef55aecc55d2ead45b",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
+      "rationale": "Approve bounded gate contract hardening that reruns the live Review Bridge smoke contracts and fails closed when the public boundary or DOCX preview command-surface truth goes red, without widening feature scope, import authority, apply authority, import-export scope, readiness, or Y9."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREVIEW_SESSION_ACTIVATION_001_STATUS.json",
@@ -2446,10 +2446,10 @@
     },
     {
       "filePath": "scripts/doctor.mjs",
-      "sha256": "141d353eaa9827b048f3338cbb4a0cb2c17271bdae56bdce712ea91f1327215d",
-      "approvedBy": "ticket:BLOCK3_TAIL_AUDIT_CLOSEOUT_001",
-      "approvedAtUtc": "2026-04-29T00:00:00.000Z",
-      "rationale": "BLOCK3_TAIL_AUDIT_CLOSEOUT_001 approves the bounded Sector M doctor marker rebind from direct scene write detection to the current atomic batch save helper; no governance semantics, token catalog, release gate, UI, dependency, or runtime path expansion."
+      "sha256": "3660cc4c42e2ede689cc6e4ecfb06070768278f3dea00e8a3b9477a56da29b70",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
+      "rationale": "Approve bounded governance registry SHA rebind for scripts doctor current bytes discovered while closing Review Bridge truth repair; no doctor scope expansion, governance semantic change, release gate widening, runtime path widening, dependency, or UI claim is introduced."
     },
     {
       "filePath": "scripts/ops/attestation-trust-lock-state.mjs",
@@ -3272,17 +3272,17 @@
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
-      "sha256": "6daec676dbd1812b47f683ce9837a3d9b9802e464e57005b23abae21f3aed0cc",
-      "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
-      "approvedAtUtc": "2026-07-01T12:22:27.000Z",
-      "rationale": "Approve explicit command-to-capability binding for cmd.project.docx.previewLocalFile, cmd.project.docx.previewImportPlan, cmd.project.docx.importSafeCreate, and cmd.project.importDocxV1 as desktop-node DOCX preview plus accept authorities; web and mobile-wrapper remain disabled and no dependency, network, cloud, release, or DOCX full-fidelity claim is introduced."
+      "sha256": "af899cfaf440bbf3bc8d7258eac755d3f96310f2adcc5d2fe9d029c881704472",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
+      "rationale": "Approve bounded governance registry SHA rebind for current command-capability binding bytes discovered while closing Review Bridge truth repair; this is a byte-truth rebind only and does not widen command authority, capability scope, runtime behavior, dependency, network, release, or Y9."
     },
     {
       "filePath": "docs/OPS/CAPABILITIES_MATRIX.json",
-      "sha256": "4f99dde613051eaa90a5a91353a3d2a206bedf6e4e4908409abd02825130b4db",
-      "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
-      "approvedAtUtc": "2026-07-01T12:22:27.000Z",
-      "rationale": "Approve bounded capability matrix extension for desktop-node DOCX local preview, import-plan admission, safe-create accept, and product import command while keeping web and mobile-wrapper disabled; no storage truth expansion, dependency, network, cloud, release, or DOCX full-fidelity claim is introduced."
+      "sha256": "3fbb48eef1616d7cea1b5d589a7ccfe140693e6123fec2ef877fd8b7216e3c3b",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
+      "rationale": "Approve bounded governance registry SHA rebind for current capabilities matrix bytes discovered while closing Review Bridge truth repair; this is a byte-truth rebind only and does not widen capability semantics, runtime behavior, dependency, network, release, or Y9."
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_NAMESPACE_CANON.json",
@@ -3293,10 +3293,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_VISIBILITY_MATRIX.json",
-      "sha256": "580ce540303760dd87b49ea21ae202ad70f472805f55e7f1c56cb7f7bbf40ac5",
-      "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
-      "approvedAtUtc": "2026-07-01T12:22:27.000Z",
-      "rationale": "Approve bounded command visibility matrix update for cmd.project.importDocxV1 minimal-profile hiding; the product command remains palette-scoped and does not introduce web, mobile, network, cloud, dependency, release, or DOCX full-fidelity claims."
+      "sha256": "40c501be4db05c374b85a7460d345a1fdad40fe6d3d9543a13cf5c9549e3a4ce",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
+      "rationale": "Approve bounded governance registry SHA rebind for current command visibility matrix bytes discovered while closing Review Bridge truth repair; this is a byte-truth rebind only and does not widen visibility policy, runtime behavior, dependency, network, release, or Y9."
     },
     {
       "filePath": "scripts/ops/phase03-safe-reset-last-stable-artifact-state.mjs",
@@ -3475,17 +3475,17 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js",
-      "sha256": "8802b0511c51515b9f40bc3bb28ea3f1fde5a2f0c0714906147d54bc6f199234",
-      "approvedBy": "ticket:CONTOUR_08_STRUCTURAL_MANUAL_REVIEW_R1",
-      "approvedAtUtc": "2026-05-14T00:00:00.000Z",
-      "rationale": "Approve C08 structural manual review allowlist guard update for kernel-only structural preview classification; no UI, IPC, disk write, DOCX claim expansion, comment model redesign, block ID redesign, collab, history, network, dependency, or auto-apply claim is introduced."
+      "sha256": "274b5b6e59593f35c9eb800a87f7c8981ef78f665e674a50950fdea583398c76",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
+      "rationale": "Approve bounded allowlist-tolerance update for adjacent Review Bridge truth-repair proofs and docs so the exact-text planner contract stays strict on unexpected drift while not false-reding on the named neighboring contour; no planner semantics, apply ops, storage, receipt, recovery, readiness, or scope widening is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",
-      "sha256": "12560cdb34373cb4daebe3dc229d2aa29bcaa6051dd2d6ab333376e0cc83a9ee",
-      "approvedBy": "ticket:EDITORIAL_STRESS_ARTIFACT_REBIND_001",
-      "approvedAtUtc": "2026-06-27T21:30:00.000Z",
-      "rationale": "EDITORIAL_STRESS_ARTIFACT_REBIND_001 approves bounded governance approval registry SHA rebind to current repo file bytes discovered while closing the editorial sheet 10000 stress artifact tail; no runtime UI storage export dependency production cross-platform above-10000 readiness or release claim is introduced."
+      "sha256": "fb6c0968d254425f3a7faa1b767faada741be725a7b20f0c84e1120eec458b67",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
+      "rationale": "Approve bounded allowlist-tolerance update for adjacent Review Bridge truth-repair proofs and docs so the exact-text safe-write contract stays strict on unexpected drift while not false-reding on the named neighboring contour; no safe-write semantics, storage authority, receipt, recovery, readiness, or scope widening is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-inline-range-anchor-contract.contract.test.js",
@@ -3643,10 +3643,10 @@
     },
     {
       "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
-      "sha256": "3b737ba36e90d92e57702c28cbe90be9149c691972bce92851ebe62baf1e9fae",
-      "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded donor kernel expectation refresh for the active 12P typed result sample; no allowlist widening, no new command ids, no publication authority, no readiness, no persistence, no storage, no receipt, no recovery, and no import-export widening claim is introduced."
+      "sha256": "f3884276ef5ba73ac4bb52139a7e3409046cd443d56b047ccbb5ddeb9f7a5884",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
+      "rationale": "Approve bounded governance registry SHA rebind for the current donor command-surface kernel contract bytes discovered while closing Review Bridge truth repair; this is a byte-truth rebind only and does not widen donor kernel expectations, command scope, publication authority, readiness, persistence, storage, receipt, recovery, or import-export scope."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-publication-effect-binding.contract.test.js",
@@ -3668,6 +3668,20 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_RELEASE_CLAIM_PUBLICATION_EFFECT_BINDING_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
       "rationale": "Approve bounded 12P wiring proof that the active execute route stays on command.bus, re-evaluates the delivered 12O sublayer from raw input, records one in-memory publication effect record, blocks duplicate and missing packetId, and keeps publication authority, persistence, storage, receipt, recovery, readiness, and import-export widening false."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001_STATUS.json",
+      "sha256": "050c85d6a5fda4e21025700562ccac280a6e5e5f6ad1587a52fe16849ef3059a",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
+      "rationale": "Approve bounded Review Bridge truth-repair status for the delivered first useful release gate public boundary hardening: public importPacket is removed while public importLocalPacket remains, live smoke truth is rebound, and no new review import automation, apply authority, DOCX apply, safe-create change, import-export widening, release readiness, or Y9 claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
+      "sha256": "d18a7b81fabf7535c4c6d57530e8de302f1dd39af91a27701ddb2710b48f0c80",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
+      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
+      "rationale": "Approve bounded public-boundary review mutate contract update proving importLocalPacket remains public while importPacket is no longer public on either the UI command bridge or public menu handlers; no new import authority, apply authority, DOCX apply, readiness, or import-export widening is introduced."
     }
   ]
 }

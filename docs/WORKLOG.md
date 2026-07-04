@@ -4,6 +4,11 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-04
+- Review Bridge: opened `REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001` as a bounded truth-repair contour over the delivered first useful release gate.
+- Truth repair scope: public `cmd.project.review.importPacket` was removed from the UI command bridge and public menu handlers; `cmd.project.review.importLocalPacket` remains the only public local JSON packet intake path.
+- Gate hardening: `review-bridge-first-useful-release-gate.contract.test.js` now reruns the live Review Bridge smoke contracts so stale harness or command-surface drift fails closed.
+- Harness repair: targeted Review Bridge command-surface VM harnesses now inject computed menu command ids explicitly; exact-task neighbor tolerance was narrowed to the current three adjacent Review Bridge proof-test basenames only.
+- Scope truth: no new review import automation, no new apply authority, no DOCX apply, no safe-create change, no import-export MVP widening, no release readiness, and no Y9 claim were introduced.
 - Factual rebind: active docs now record the already merged post-MVP selected scenes TXT export from PR `1063` as a File-menu-only external TXT path, separate from the closed import/export MVP gate, from current-scene TXT export, and from TXT import.
 - Selected scenes TXT export factual truth: renderer owns only a transient checkbox picker and confirmed sceneIds, while main owns canonical scope rebuild, source reads, save dialog resolution, target validation, and atomic external TXT write.
 - Selected scenes TXT export scope truth: the scope query is pathless and project-root-free, tree row selection is not export truth, persistent multi-select is not introduced, and the export target cannot equal any selected source path or live inside the project root.
