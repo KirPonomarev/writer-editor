@@ -5,6 +5,7 @@
 
 ## 2026-07-04
 - Review Bridge: opened `REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001` as a bounded truth-repair contour over the delivered first useful release gate.
+- Review Bridge: delivered `REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001` via PR `1066` merge SHA `d24e4bd1cda4e051c06df614964552c3c634afc7`; repo truth is rebound to `delivered_merged_verified`.
 - Truth repair scope: public `cmd.project.review.importPacket` was removed from the UI command bridge and public menu handlers; `cmd.project.review.importLocalPacket` remains the only public local JSON packet intake path.
 - Gate hardening: `review-bridge-first-useful-release-gate.contract.test.js` now reruns the live Review Bridge smoke contracts so stale harness or command-surface drift fails closed.
 - Harness repair: targeted Review Bridge command-surface VM harnesses now inject computed menu command ids explicitly; exact-task neighbor tolerance was narrowed to the current three adjacent Review Bridge proof-test basenames only.
