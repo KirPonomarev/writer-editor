@@ -13,5 +13,10 @@ docs/OPS/CACHE/
 docs/OPS/CACHE/**
 docs/OPS/CACHE/codex-run/
 
+# Agent router lite generated artifacts are ephemeral.
+.tmp/agent-router-lite/
+reports/agent_cost_ledger/
+reports/stage_task_packets/
+
 # M1: allow pinning renderer bundle checksum
 !dist/renderer/editor.bundle.sha256
