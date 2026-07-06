@@ -288,6 +288,12 @@
           "command": "cmd.project.review.importLocalPacket"
         },
         {
+          "id": "review-export-local-packet",
+          "label": "Export Review Packet",
+          "labelKey": "menu.review.exportLocalPacket",
+          "command": "cmd.project.review.exportLocalPacket"
+        },
+        {
           "id": "review-open-docx-review-preview-session",
           "label": "Open DOCX Review",
           "labelKey": "menu.review.openDocxReviewPreviewSession",

@@ -406,7 +406,7 @@ let flowModeState = {
   scenes: [],
   dirty: false,
 };
-let reviewSurfaceState = reviewSurfaceNormalizeState();
+let reviewSurfaceState = null;
 let reviewSurfaceExactTextApplyTransientState = null;
 let reviewSurfaceApplyActionListenerBound = false;
 let metaEnabled = false;
@@ -927,6 +927,8 @@ function reviewSurfaceNormalizeState(input = {}) {
     exactTextApply,
   };
 }
+
+reviewSurfaceState = reviewSurfaceNormalizeState();
 
 function reviewSurfaceBuildImportSummary(state) {
   const session = reviewSurfaceIsPlainObject(state.revisionSession) ? state.revisionSession : {};

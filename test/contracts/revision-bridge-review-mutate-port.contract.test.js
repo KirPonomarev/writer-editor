@@ -386,8 +386,20 @@ function instantiateReviewMutatePort(options = {}) {
     ...MENU_HANDLER_COMPUTED_KEY_GLOBALS,
     cloneJsonSafe,
     computeHash,
-    dialog: options.dialog || { showOpenDialog: async () => ({ canceled: true }) },
-    fileManager: options.fileManager || { getDocumentsPath: () => os.tmpdir() },
+    dialog: options.dialog || {
+      showOpenDialog: async () => ({ canceled: true }),
+      showSaveDialog: async () => ({ canceled: true }),
+    },
+    fileManager: options.fileManager || {
+      getDocumentsPath: () => os.tmpdir(),
+      writeFileAtomic: async (filePath, content) => {
+        fs.writeFileSync(filePath, content, 'utf8');
+        return {
+          success: true,
+          bytesWritten: Buffer.byteLength(content, 'utf8'),
+        };
+      },
+    },
     fs: options.fs || fs.promises,
     hasReviewSurfacePayload,
     isPlainObjectValue,
@@ -400,6 +412,9 @@ function instantiateReviewMutatePort(options = {}) {
     module: { exports: {} },
     exports: {},
     path,
+    queueDiskOperation: typeof options.queueDiskOperation === 'function'
+      ? options.queueDiskOperation
+      : async (operation) => operation(),
   };
   vm.runInNewContext(
     `${section}
@@ -427,6 +442,7 @@ module.exports = {
   cloneActiveReviewSessionStore,
   readActiveReviewSessionReviewSurface,
   handleReviewSurfaceImportLocalPacketCommandSurface,
+  handleReviewSurfaceExportLocalPacketCommandSurface,
   handleReviewSurfaceImportPacketCommandSurface,
   handleReviewSurfaceClearSessionCommandSurface,
   handleReviewSurfaceApplyExactTextChangeCommandSurface,
@@ -457,6 +473,7 @@ test('review mutate port contract: only public review bridge routes are exposed 
   const menuCommandHandlersSection = extractMenuCommandHandlersSection(source);
 
   assert.equal(uiCommandBridgeSection.includes("'cmd.project.review.importLocalPacket'"), true);
+  assert.equal(uiCommandBridgeSection.includes("'cmd.project.review.exportLocalPacket'"), true);
   assert.equal(uiCommandBridgeSection.includes("'cmd.project.review.clearSession'"), true);
   assert.equal(uiCommandBridgeSection.includes("'cmd.project.review.applyExactTextChange'"), true);
   assert.equal(uiCommandBridgeSection.includes("'cmd.project.review.applyExactTextChangesBatch'"), true);
@@ -468,6 +485,10 @@ test('review mutate port contract: only public review bridge routes are exposed 
   assert.match(
     menuCommandHandlersSection,
     /'cmd\.project\.review\.importLocalPacket':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{[\s\S]*sendCanonicalRuntimeCommand\(\s*'cmd\.project\.review\.openComments',\s*\{\s*source:\s*'review-import-local-packet',\s*requestId:\s*result\.requestId\s*\}/,
+  );
+  assert.match(
+    menuCommandHandlersSection,
+    /'cmd\.project\.review\.exportLocalPacket':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{\s*return handleReviewSurfaceExportLocalPacketCommandSurface\(payload\);/,
   );
   assert.equal(menuCommandHandlersSection.includes("'cmd.project.review.importPacket':"), false);
   assert.match(
@@ -652,6 +673,170 @@ test('review mutate port contract: local packet menu command uses default main f
     },
     legacyCommand: 'review-comment',
   });
+});
+
+test('review mutate port contract: local packet export fails closed before file selection when no active session exists', async () => {
+  const port = instantiateReviewMutatePort({ loadRevisionBridgeModule: loadBridge });
+  let pickCalled = false;
+
+  const result = await port.handleReviewSurfaceExportLocalPacketCommandSurface(
+    { requestId: 'export-no-session' },
+    {
+      pickLocalFile: async () => {
+        pickCalled = true;
+        return { path: path.join(os.tmpdir(), 'review-export.json') };
+      },
+    },
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error.op, 'cmd.project.review.exportLocalPacket');
+  assert.equal(result.error.reason, 'REVIEW_EXPORT_LOCAL_PACKET_NO_ACTIVE_SESSION');
+  assert.equal(pickCalled, false);
+});
+
+test('review mutate port contract: local packet export writes one normalized json file and roundtrips back through local import', async () => {
+  const exportDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rb-review-export-local-packet-'));
+  const exportPath = path.join(exportDir, 'exported-review-packet.json');
+  const revisionSession = {
+    projectId: 'project-1',
+    sessionId: 'session-export-local-1',
+    baselineHash: 'baseline-export-local-1',
+    status: 'open',
+    reviewGraph: validReviewPacket(),
+  };
+  const dialogCalls = [];
+  const port = instantiateReviewMutatePort({
+    loadRevisionBridgeModule: loadBridge,
+    dialog: {
+      showSaveDialog: async (windowRef, options) => {
+        dialogCalls.push({ kind: 'save', windowRef, options });
+        return {
+          canceled: false,
+          filePath: exportPath,
+        };
+      },
+      showOpenDialog: async (windowRef, options) => {
+        dialogCalls.push({ kind: 'open', windowRef, options });
+        return {
+          canceled: false,
+          filePaths: [exportPath],
+        };
+      },
+    },
+  });
+
+  const importResult = await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-export-local-1',
+    baselineHash: 'baseline-export-local-1',
+    createdAt: '2026-05-24T12:00:00.000Z',
+    reviewSurface: {
+      revisionSession,
+      receipt: {
+        transactionId: 'ignored-receipt-1',
+      },
+      exactTextApplyReceipts: [{ transactionId: 'ignored-receipt-1' }],
+      exactTextAppliedChangeIds: ['text-change-1'],
+      stage01Preview: {
+        sourceViewState: {
+          packetHash: 'ignored-packet-hash',
+        },
+      },
+    },
+    revisionSession,
+  });
+  assert.equal(importResult.ok, true);
+
+  const exportResult = await port.MENU_COMMAND_HANDLERS['cmd.project.review.exportLocalPacket']({
+    requestId: 'export-local-request-1',
+  });
+  assert.equal(exportResult.ok, true);
+  assert.equal(exportResult.commandId, 'cmd.project.review.exportLocalPacket');
+  assert.equal(exportResult.requestId, 'export-local-request-1');
+  assert.equal(exportResult.exported, true);
+  assert.equal(exportResult.outPath, exportPath);
+  assert.equal(exportResult.bytesWritten > 0, true);
+  assert.deepEqual(normalizeVmValue(exportResult.counts), {
+    commentThreads: 1,
+    commentPlacements: 1,
+    textChanges: 1,
+    structuralChanges: 1,
+    diagnosticItems: 1,
+    decisionStates: 1,
+  });
+
+  const exportedPacket = JSON.parse(fs.readFileSync(exportPath, 'utf8'));
+  assert.deepEqual(
+    Object.keys(exportedPacket).sort(),
+    ['baselineHash', 'createdAt', 'projectId', 'reviewPacket', 'sessionId'],
+  );
+  assert.deepEqual(
+    Object.keys(exportedPacket.reviewPacket).sort(),
+    [
+      'commentPlacements',
+      'commentThreads',
+      'decisionStates',
+      'diagnosticItems',
+      'structuralChanges',
+      'textChanges',
+    ],
+  );
+  assert.equal(exportedPacket.projectId, 'project-1');
+  assert.equal(exportedPacket.sessionId, 'session-export-local-1');
+  assert.equal(exportedPacket.baselineHash, 'baseline-export-local-1');
+  assert.equal(exportedPacket.reviewPacket.textChanges[0].changeId, 'text-change-1');
+  assert.deepEqual(
+    findForbiddenKeys(exportedPacket, [
+      'filePath',
+      'rawBytes',
+      'projectRoot',
+      'scenePath',
+      'scenePaths',
+      'applyOps',
+      'receipt',
+      'recovery',
+      'exactTextApplyReceipts',
+      'exactTextAppliedChangeIds',
+      'writeEffects',
+      'publicationEffect',
+      'rendererPacket',
+      'rendererSession',
+      'docxBytes',
+      'sourceViewState',
+    ]),
+    [],
+  );
+
+  const clearResult = port.handleReviewSurfaceClearSessionCommandSurface();
+  assert.equal(clearResult.ok, true);
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'cleared');
+
+  const reopenResult = await port.MENU_COMMAND_HANDLERS['cmd.project.review.importLocalPacket']({
+    requestId: 'reimport-export-local-request-1',
+  });
+  const reopenedSurface = normalizeVmValue(port.readActiveReviewSessionReviewSurface());
+
+  assert.equal(reopenResult.ok, true);
+  assert.equal(reopenResult.commandId, 'cmd.project.review.importLocalPacket');
+  assert.equal(reopenResult.imported, true);
+  assert.equal(reopenedSurface.revisionSession.sessionId, 'session-export-local-1');
+  assert.equal(reopenedSurface.revisionSession.reviewGraph.textChanges[0].changeId, 'text-change-1');
+  assert.equal(reopenedSurface.shadowPreview.status, 'preview');
+  assert.equal(reopenedSurface.blockedApplyPlan.status, 'blocked');
+  assert.deepEqual(normalizeVmValue(port.runtimeCommands), [
+    {
+      commandId: 'cmd.project.review.openComments',
+      payload: {
+        source: 'review-import-local-packet',
+        requestId: 'reimport-export-local-request-1',
+      },
+      legacyCommand: 'review-comment',
+    },
+  ]);
+  assert.equal(dialogCalls.length, 2);
+  assert.equal(dialogCalls[0].kind, 'save');
+  assert.equal(dialogCalls[1].kind, 'open');
 });
 
 test('review mutate port contract: local packet import cancel is a no-op and does not activate session', async () => {

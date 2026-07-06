@@ -96,7 +96,7 @@ test('command kernel shell action adoption: runtime and docs capability bindings
   }
 })
 
-test('command kernel shell action adoption: review local packet product entry is node-only and ui-action backed', async () => {
+test('command kernel shell action adoption: review local packet import clear and export commands stay node-only with bounded bridge wiring', async () => {
   const source = read('src/renderer/commands/projectCommands.mjs')
   const editorSource = read('src/renderer/editor.js')
   const projectCommands = await loadProjectCommands()
@@ -106,13 +106,17 @@ test('command kernel shell action adoption: review local packet product entry is
 
   const expected = new Map([
     [projectCommands.EXTRA_COMMAND_IDS.REVIEW_IMPORT_LOCAL_PACKET, 'cap.project.review.importLocalPacket'],
+    [projectCommands.EXTRA_COMMAND_IDS.REVIEW_EXPORT_LOCAL_PACKET, 'cap.project.review.exportLocalPacket'],
     [projectCommands.EXTRA_COMMAND_IDS.REVIEW_CLEAR_SESSION, 'cap.project.review.clearSession'],
   ])
 
   assert.equal(projectCommands.EXTRA_COMMAND_IDS.REVIEW_IMPORT_LOCAL_PACKET, 'cmd.project.review.importLocalPacket')
+  assert.equal(projectCommands.EXTRA_COMMAND_IDS.REVIEW_EXPORT_LOCAL_PACKET, 'cmd.project.review.exportLocalPacket')
   assert.equal(projectCommands.EXTRA_COMMAND_IDS.REVIEW_CLEAR_SESSION, 'cmd.project.review.clearSession')
   assert.ok(source.includes('id: EXTRA_COMMAND_IDS.REVIEW_IMPORT_LOCAL_PACKET,'))
   assert.ok(source.includes("'reviewImportLocalPacket', EXTRA_COMMAND_IDS.REVIEW_IMPORT_LOCAL_PACKET"))
+  assert.ok(source.includes('id: EXTRA_COMMAND_IDS.REVIEW_EXPORT_LOCAL_PACKET,'))
+  assert.ok(source.includes('runReviewExportLocalPacketBridge(electronAPI, input)'))
   assert.ok(source.includes('id: EXTRA_COMMAND_IDS.REVIEW_CLEAR_SESSION,'))
   assert.ok(source.includes("'reviewClearSession', EXTRA_COMMAND_IDS.REVIEW_CLEAR_SESSION"))
   assert.ok(editorSource.includes('reviewImportLocalPacket: () => handleReviewImportLocalPacket(),'))

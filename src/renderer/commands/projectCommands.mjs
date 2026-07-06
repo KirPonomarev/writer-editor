@@ -69,6 +69,7 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   LIST_CLEAR: 'cmd.project.list.clear',
   INSERT_LINK_PROMPT: 'cmd.project.insert.linkPrompt',
   REVIEW_IMPORT_LOCAL_PACKET: 'cmd.project.review.importLocalPacket',
+  REVIEW_EXPORT_LOCAL_PACKET: 'cmd.project.review.exportLocalPacket',
   REVIEW_OPEN_COMMENTS: 'cmd.project.review.openComments',
   REVIEW_CLEAR_SESSION: 'cmd.project.review.clearSession',
   PLAN_FLOW_SAVE: 'cmd.project.plan.flowSave',
@@ -702,6 +703,64 @@ async function runTxtImportSafeCreateBridge(electronAPI, input = {}) {
     'E_TXT_IMPORT_SAFE_CREATE_INVALID_RESPONSE',
     EXTRA_COMMAND_IDS.PROJECT_TXT_IMPORT_SAFE_CREATE,
     'TXT_IMPORT_SAFE_CREATE_INVALID_RESPONSE',
+  );
+}
+
+async function runReviewExportLocalPacketBridge(electronAPI, input = {}) {
+  if (!electronAPI || typeof electronAPI !== 'object') {
+    return fail(
+      'E_COMMAND_FAILED',
+      EXTRA_COMMAND_IDS.REVIEW_EXPORT_LOCAL_PACKET,
+      'ELECTRON_API_UNAVAILABLE',
+    );
+  }
+
+  const payload = {};
+  if (typeof input?.requestId === 'string' && input.requestId.trim()) {
+    payload.requestId = input.requestId.trim();
+  }
+
+  let response;
+  try {
+    response = await invokeBridgeOnlyCommand(
+      electronAPI,
+      EXTRA_COMMAND_IDS.REVIEW_EXPORT_LOCAL_PACKET,
+      payload,
+    );
+  } catch (error) {
+    return fail(
+      'E_COMMAND_FAILED',
+      EXTRA_COMMAND_IDS.REVIEW_EXPORT_LOCAL_PACKET,
+      'REVIEW_EXPORT_LOCAL_PACKET_IPC_FAILED',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+
+  const bridged = unwrapBridgeResponseValue(response);
+  if (bridged && bridged.ok === true) {
+    return ok({
+      exported: bridged.exported === true,
+      canceled: bridged.canceled === true || bridged.cancelled === true,
+      outPath: typeof bridged.outPath === 'string' ? bridged.outPath : '',
+      bytesWritten: Number.isInteger(bridged.bytesWritten) ? bridged.bytesWritten : 0,
+      counts: getObjectOrNull(bridged.counts),
+    });
+  }
+  if (bridged && bridged.ok === false && bridged.error && typeof bridged.error === 'object') {
+    const error = bridged.error;
+    return fail(
+      typeof error.code === 'string' ? error.code : 'E_REVIEW_EXPORT_LOCAL_PACKET_FAILED',
+      typeof error.op === 'string' ? error.op : EXTRA_COMMAND_IDS.REVIEW_EXPORT_LOCAL_PACKET,
+      typeof error.reason === 'string' ? error.reason : 'REVIEW_EXPORT_LOCAL_PACKET_FAILED',
+      error.details && typeof error.details === 'object' && !Array.isArray(error.details) ? error.details : undefined,
+    );
+  }
+  return fail(
+    'E_COMMAND_FAILED',
+    EXTRA_COMMAND_IDS.REVIEW_EXPORT_LOCAL_PACKET,
+    bridged && typeof bridged.reason === 'string'
+      ? bridged.reason
+      : 'REVIEW_EXPORT_LOCAL_PACKET_INVALID_RESPONSE',
   );
 }
 
@@ -1639,6 +1698,17 @@ export function registerProjectCommands(registry, options = {}) {
       hotkey: '',
     },
     async (input = {}) => runUiAction(uiActions, 'reviewImportLocalPacket', EXTRA_COMMAND_IDS.REVIEW_IMPORT_LOCAL_PACKET, input),
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.REVIEW_EXPORT_LOCAL_PACKET,
+      label: 'Export Review Packet',
+      group: 'review',
+      surface: ['menu'],
+      hotkey: '',
+    },
+    async (input = {}) => runReviewExportLocalPacketBridge(electronAPI, input),
   );
 
   registry.registerCommand(

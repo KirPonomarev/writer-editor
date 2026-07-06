@@ -4,6 +4,8 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-04
+- Review Bridge: implemented local pending-delivery contour `REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001` as a bounded Review menu export path for the active review session only.
+- Review packet export scope truth: `cmd.project.review.exportLocalPacket` is main-owned, reads only active `revisionSession.reviewGraph`, revalidates through `buildRevisionPacketPreview`, writes exactly one external JSON review packet through `writeFileAtomic`, keeps renderer payload intent-only, and leaves `sourceViewState` excluded by default because the existing import path can rebuild Stage01 preview state from `reviewPacket` alone.
 - Review Bridge: opened `REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001` as a bounded truth-repair contour over the delivered first useful release gate.
 - Review Bridge: delivered `REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001` via PR `1066` merge SHA `d24e4bd1cda4e051c06df614964552c3c634afc7`; repo truth is rebound to `delivered_merged_verified`.
 - Truth repair scope: public `cmd.project.review.importPacket` was removed from the UI command bridge and public menu handlers; `cmd.project.review.importLocalPacket` remains the only public local JSON packet intake path.

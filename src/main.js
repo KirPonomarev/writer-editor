@@ -1565,6 +1565,7 @@ async function handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(paylo
 
 // REVIEW_LOCAL_PACKET_COMMAND_SURFACE_START
 const REVIEW_IMPORT_LOCAL_PACKET_COMMAND_ID = 'cmd.project.review.importLocalPacket';
+const REVIEW_EXPORT_LOCAL_PACKET_COMMAND_ID = 'cmd.project.review.exportLocalPacket';
 const REVIEW_IMPORT_LOCAL_PACKET_MAX_BYTES = 2 * 1024 * 1024;
 const REVIEW_IMPORT_LOCAL_PACKET_ALLOWED_PAYLOAD_KEYS = new Set(['requestId']);
 const REVIEW_IMPORT_LOCAL_PACKET_ALLOWED_SELECTION_KEYS = new Set(['path', 'filePath', 'name', 'size', 'requestId', 'canceled']);
@@ -1936,6 +1937,444 @@ async function handleReviewSurfaceImportLocalPacketCommandSurface(payload = {}, 
     fileName: selection.value.name,
     session: importResult.session,
     reviewSurface: importResult.reviewSurface,
+  };
+}
+
+const REVIEW_EXPORT_LOCAL_PACKET_ALLOWED_PAYLOAD_KEYS = new Set(['requestId']);
+const REVIEW_EXPORT_LOCAL_PACKET_ALLOWED_SELECTION_KEYS = new Set([
+  'path',
+  'filePath',
+  'outPath',
+  'requestId',
+  'canceled',
+  'cancelled',
+]);
+const REVIEW_EXPORT_LOCAL_PACKET_ALLOWED_TOP_LEVEL_KEYS = new Set([
+  'projectId',
+  'sessionId',
+  'baselineHash',
+  'reviewPacket',
+  'createdAt',
+  'updatedAt',
+]);
+const REVIEW_EXPORT_LOCAL_PACKET_COLLECTION_NAMES = Object.freeze([
+  'commentThreads',
+  'commentPlacements',
+  'textChanges',
+  'structuralChanges',
+  'diagnosticItems',
+  'decisionStates',
+]);
+const REVIEW_EXPORT_LOCAL_PACKET_FORBIDDEN_KEYS = new Set([
+  'filePath',
+  'rawBytes',
+  'projectRoot',
+  'scenePath',
+  'scenePaths',
+  'applyOps',
+  'receipt',
+  'recovery',
+  'exactTextApplyReceipts',
+  'exactTextAppliedChangeIds',
+  'writeEffects',
+  'publicationEffect',
+  'rendererPacket',
+  'rendererSession',
+  'docxBytes',
+  'sourceViewState',
+]);
+
+function makeReviewExportLocalPacketTypedError(code, reason, details = undefined) {
+  return makeReviewMutateTypedError(REVIEW_EXPORT_LOCAL_PACKET_COMMAND_ID, code, reason, details);
+}
+
+function normalizeReviewExportLocalPacketRequestId(value) {
+  return typeof value === 'string' && value.trim()
+    ? value.trim()
+    : 'review-export-local-packet-request';
+}
+
+function normalizeReviewExportLocalPacketPath(value) {
+  if (typeof value !== 'string' || !value.trim()) return '';
+  const raw = value.trim();
+  return raw.toLowerCase().endsWith('.json') ? raw : `${raw}.json`;
+}
+
+function normalizeReviewExportLocalPacketString(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function readReviewExportLocalPacketBaselineHash(activeSession, revisionSession) {
+  return normalizeReviewExportLocalPacketString(activeSession?.baselineHash)
+    || normalizeReviewExportLocalPacketString(revisionSession?.baselineHash);
+}
+
+function sanitizeReviewExportLocalPacketNamePart(value, fallback) {
+  const normalized = String(value || '')
+    .trim()
+    .replace(/[\\/<>:"|?*\u0000-\u001F]/g, '_')
+    .replace(/\s+/g, ' ')
+    .replace(/\.+$/g, '')
+    .slice(0, 48);
+  return normalized || fallback;
+}
+
+function buildReviewExportLocalPacketDefaultPath(reviewSessionRecord = {}) {
+  const projectId = sanitizeReviewExportLocalPacketNamePart(reviewSessionRecord.projectId, 'project');
+  const sessionId = sanitizeReviewExportLocalPacketNamePart(reviewSessionRecord.sessionId, 'review-session');
+  return path.join(fileManager.getDocumentsPath(), `${projectId}-${sessionId}-review-packet.json`);
+}
+
+function readReviewExportLocalPacketUpdatedAt(activeSession, revisionSession) {
+  const candidates = [
+    activeSession?.updatedAt,
+    activeSession?.reviewSurface?.updatedAt,
+    revisionSession?.updatedAt,
+  ];
+  for (const candidate of candidates) {
+    if (typeof candidate === 'string' && candidate.trim()) {
+      return candidate.trim();
+    }
+  }
+  return '';
+}
+
+function buildReviewExportLocalPacketFromReviewGraph(reviewGraph) {
+  const reviewPacket = {};
+  REVIEW_EXPORT_LOCAL_PACKET_COLLECTION_NAMES.forEach((collectionName) => {
+    reviewPacket[collectionName] = Array.isArray(reviewGraph?.[collectionName])
+      ? cloneJsonSafe(reviewGraph[collectionName])
+      : [];
+  });
+  return reviewPacket;
+}
+
+function countReviewExportLocalPacketCollections(reviewPacket = {}) {
+  return REVIEW_EXPORT_LOCAL_PACKET_COLLECTION_NAMES.reduce((counts, collectionName) => {
+    counts[collectionName] = Array.isArray(reviewPacket?.[collectionName]) ? reviewPacket[collectionName].length : 0;
+    return counts;
+  }, {});
+}
+
+function findReviewExportLocalPacketForbiddenFields(value, pathParts = []) {
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) => (
+      findReviewExportLocalPacketForbiddenFields(item, pathParts.concat(String(index)))
+    ));
+  }
+  if (!isPlainObjectValue(value)) {
+    return [];
+  }
+
+  return Object.keys(value).flatMap((key) => {
+    const keyPath = pathParts.concat(key);
+    const nested = findReviewExportLocalPacketForbiddenFields(value[key], keyPath);
+    return REVIEW_EXPORT_LOCAL_PACKET_FORBIDDEN_KEYS.has(key)
+      ? [keyPath.join('.'), ...nested]
+      : nested;
+  });
+}
+
+async function pickReviewExportLocalPacketFile(options = {}) {
+  const dialogResult = await dialog.showSaveDialog(mainWindow, {
+    title: 'Export Review Packet',
+    defaultPath: buildReviewExportLocalPacketDefaultPath(options.reviewSessionRecord),
+    filters: [{ name: 'Review Packet JSON', extensions: ['json'] }],
+  });
+
+  if (!dialogResult || dialogResult.canceled === true) {
+    return { canceled: true };
+  }
+
+  return {
+    path: typeof dialogResult.filePath === 'string' ? dialogResult.filePath.trim() : '',
+    requestId: normalizeReviewExportLocalPacketRequestId(options.requestId),
+  };
+}
+
+function validateReviewExportLocalPacketSelection(selection, requestId) {
+  if (!isPlainObjectValue(selection)) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_SELECTION_INVALID',
+      'REVIEW_EXPORT_LOCAL_PACKET_SELECTION_INVALID',
+    );
+  }
+
+  if (selection.canceled === true || selection.cancelled === true) {
+    return {
+      ok: true,
+      canceled: true,
+      requestId,
+    };
+  }
+
+  const unsupportedKeys = Object.keys(selection)
+    .filter((key) => !REVIEW_EXPORT_LOCAL_PACKET_ALLOWED_SELECTION_KEYS.has(key))
+    .sort();
+  if (unsupportedKeys.length > 0) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_SELECTION_INVALID',
+      'REVIEW_EXPORT_LOCAL_PACKET_SELECTION_UNSUPPORTED_FIELDS',
+      { fields: unsupportedKeys },
+    );
+  }
+
+  const outPath = normalizeReviewExportLocalPacketPath(
+    typeof selection.path === 'string' && selection.path.trim()
+      ? selection.path
+      : typeof selection.filePath === 'string' && selection.filePath.trim()
+        ? selection.filePath
+        : typeof selection.outPath === 'string' && selection.outPath.trim()
+          ? selection.outPath
+          : '',
+  );
+  if (!outPath) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_PATH_REQUIRED',
+      'REVIEW_EXPORT_LOCAL_PACKET_PATH_REQUIRED',
+    );
+  }
+
+  return {
+    ok: true,
+    value: {
+      outPath,
+      requestId,
+    },
+  };
+}
+
+async function buildReviewExportLocalPacketCandidateFromActiveSession(options = {}) {
+  if (activeReviewSessionLifecycle !== 'active' || !isPlainObjectValue(activeReviewSessionStore)) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_NO_ACTIVE_SESSION',
+      'REVIEW_EXPORT_LOCAL_PACKET_NO_ACTIVE_SESSION',
+    );
+  }
+
+  const activeSession = cloneActiveReviewSessionStore();
+  const revisionSession = readReviewExactTextRevisionSession(activeSession);
+  if (!isPlainObjectValue(revisionSession) || Object.keys(revisionSession).length === 0) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_BLOCKED',
+      'REVIEW_EXPORT_LOCAL_PACKET_SESSION_REQUIRED',
+    );
+  }
+
+  const projectId = normalizeReviewExportLocalPacketString(activeSession?.projectId)
+    || normalizeReviewExportLocalPacketString(revisionSession?.projectId);
+  const sessionId = normalizeReviewExportLocalPacketString(activeSession?.sessionId)
+    || normalizeReviewExportLocalPacketString(revisionSession?.sessionId);
+  const baselineHash = readReviewExportLocalPacketBaselineHash(activeSession, revisionSession);
+  if (!projectId || !sessionId || !baselineHash) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_BLOCKED',
+      'REVIEW_EXPORT_LOCAL_PACKET_METADATA_REQUIRED',
+    );
+  }
+
+  const reviewPacketInput = buildReviewExportLocalPacketFromReviewGraph(
+    readReviewExactTextReviewGraph(revisionSession),
+  );
+  const createdAt = typeof activeSession?.createdAt === 'string' && activeSession.createdAt.trim()
+    ? activeSession.createdAt.trim()
+    : '';
+  const updatedAt = readReviewExportLocalPacketUpdatedAt(activeSession, revisionSession);
+  const loadBridge = typeof options.loadRevisionBridgeModule === 'function'
+    ? options.loadRevisionBridgeModule
+    : loadRevisionBridgeModule;
+
+  let revisionBridge = null;
+  try {
+    revisionBridge = await loadBridge();
+  } catch (error) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_UNAVAILABLE',
+      'REVIEW_EXPORT_LOCAL_PACKET_PREVIEW_BUILDER_UNAVAILABLE',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+  if (!revisionBridge || typeof revisionBridge.buildRevisionPacketPreview !== 'function') {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_UNAVAILABLE',
+      'REVIEW_EXPORT_LOCAL_PACKET_PREVIEW_BUILDER_UNAVAILABLE',
+    );
+  }
+
+  let previewResult = null;
+  try {
+    previewResult = revisionBridge.buildRevisionPacketPreview({
+      projectId,
+      sessionId,
+      baselineHash,
+      ...(createdAt ? { createdAt } : {}),
+      ...(updatedAt ? { updatedAt } : {}),
+      reviewPacket: reviewPacketInput,
+    });
+  } catch (error) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_INVALID',
+      'REVIEW_EXPORT_LOCAL_PACKET_PREVIEW_BUILD_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+
+  if (!isPlainObjectValue(previewResult) || previewResult.ok !== true || !isPlainObjectValue(previewResult.session)) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_INVALID',
+      'REVIEW_EXPORT_LOCAL_PACKET_PREVIEW_DIAGNOSTICS',
+      {
+        stage01Reason: typeof previewResult?.reason === 'string' ? previewResult.reason : '',
+        reasons: Array.isArray(previewResult?.reasons) ? cloneJsonSafe(previewResult.reasons) : [],
+      },
+    );
+  }
+
+  const normalizedReviewPacket = buildReviewExportLocalPacketFromReviewGraph(
+    readReviewExactTextReviewGraph(previewResult.session),
+  );
+  const exportPacket = {
+    projectId,
+    sessionId,
+    baselineHash,
+    reviewPacket: normalizedReviewPacket,
+    ...(createdAt ? { createdAt } : {}),
+    ...(updatedAt ? { updatedAt } : {}),
+  };
+
+  const unsupportedTopLevelKeys = Object.keys(exportPacket)
+    .filter((key) => !REVIEW_EXPORT_LOCAL_PACKET_ALLOWED_TOP_LEVEL_KEYS.has(key))
+    .sort();
+  if (unsupportedTopLevelKeys.length > 0) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_INVALID',
+      'REVIEW_EXPORT_LOCAL_PACKET_TOP_LEVEL_FIELDS_INVALID',
+      { fields: unsupportedTopLevelKeys },
+    );
+  }
+
+  const forbiddenFields = findReviewExportLocalPacketForbiddenFields(exportPacket);
+  if (forbiddenFields.length > 0) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_INVALID',
+      'REVIEW_EXPORT_LOCAL_PACKET_FORBIDDEN_FIELDS_DENIED',
+      { fields: forbiddenFields.slice(0, 25) },
+    );
+  }
+
+  return {
+    ok: true,
+    value: {
+      exportPacket,
+      counts: countReviewExportLocalPacketCollections(normalizedReviewPacket),
+    },
+  };
+}
+
+async function handleReviewSurfaceExportLocalPacketCommandSurface(payload = {}, options = {}) {
+  const safePayload = isPlainObjectValue(payload) ? payload : {};
+  const unsupportedPayloadKeys = Object.keys(safePayload)
+    .filter((key) => !REVIEW_EXPORT_LOCAL_PACKET_ALLOWED_PAYLOAD_KEYS.has(key))
+    .sort();
+  if (unsupportedPayloadKeys.length > 0) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_PAYLOAD_INVALID',
+      'REVIEW_EXPORT_LOCAL_PACKET_PAYLOAD_UNSUPPORTED_FIELDS',
+      { fields: unsupportedPayloadKeys },
+    );
+  }
+
+  const requestId = normalizeReviewExportLocalPacketRequestId(safePayload.requestId);
+  const candidate = await buildReviewExportLocalPacketCandidateFromActiveSession(options);
+  if (!candidate || candidate.ok !== true || !isPlainObjectValue(candidate.value?.exportPacket)) {
+    return candidate;
+  }
+
+  const pickLocalFile = typeof options.pickLocalFile === 'function'
+    ? options.pickLocalFile
+    : pickReviewExportLocalPacketFile;
+  let selectedFile;
+  try {
+    selectedFile = await pickLocalFile({
+      requestId,
+      reviewSessionRecord: candidate.value.exportPacket,
+    });
+  } catch (error) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_DIALOG_FAILED',
+      'REVIEW_EXPORT_LOCAL_PACKET_DIALOG_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      },
+    );
+  }
+
+  const selection = validateReviewExportLocalPacketSelection(selectedFile, requestId);
+  if (!selection.ok) {
+    return selection;
+  }
+  if (selection.canceled === true) {
+    return {
+      ok: true,
+      commandId: REVIEW_EXPORT_LOCAL_PACKET_COMMAND_ID,
+      requestId,
+      exported: false,
+      canceled: true,
+      outPath: '',
+      bytesWritten: 0,
+    };
+  }
+
+  const text = `${JSON.stringify(candidate.value.exportPacket, null, 2)}\n`;
+  const writeFileAtomic = typeof options.writeFileAtomic === 'function'
+    ? options.writeFileAtomic
+    : (outPath, content) => fileManager.writeFileAtomic(outPath, content);
+  const runDiskWrite = typeof options.queueDiskOperation === 'function'
+    ? options.queueDiskOperation
+    : queueDiskOperation;
+
+  let writeResult = null;
+  try {
+    writeResult = await runDiskWrite(
+      () => writeFileAtomic(selection.value.outPath, text),
+      'export review local packet',
+    );
+  } catch (error) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_WRITE_FAILED',
+      'REVIEW_EXPORT_LOCAL_PACKET_WRITE_FAILED',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+        outPath: selection.value.outPath,
+      },
+    );
+  }
+
+  if (!writeResult || writeResult.success !== true) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_WRITE_FAILED',
+      'REVIEW_EXPORT_LOCAL_PACKET_WRITE_FAILED',
+      {
+        message: writeResult && typeof writeResult.error === 'string' ? writeResult.error : 'UNKNOWN',
+        outPath: selection.value.outPath,
+      },
+    );
+  }
+
+  return {
+    ok: true,
+    commandId: REVIEW_EXPORT_LOCAL_PACKET_COMMAND_ID,
+    requestId,
+    exported: true,
+    outPath: selection.value.outPath,
+    bytesWritten: Number.isInteger(writeResult.bytesWritten)
+      ? writeResult.bytesWritten
+      : Buffer.byteLength(text, 'utf8'),
+    counts: candidate.value.counts,
   };
 }
 // REVIEW_LOCAL_PACKET_COMMAND_SURFACE_END
@@ -11550,6 +11989,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.releaseClaim.admit',
   'cmd.project.releaseClaim.execute',
   'cmd.project.review.importLocalPacket',
+  'cmd.project.review.exportLocalPacket',
   'cmd.project.review.clearSession',
   'cmd.project.review.applyExactTextChange',
   'cmd.project.review.applyExactTextChangesBatch',
@@ -11750,6 +12190,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
       );
     }
     return result;
+  },
+  'cmd.project.review.exportLocalPacket': async (payload = {}) => {
+    return handleReviewSurfaceExportLocalPacketCommandSurface(payload);
   },
   'cmd.project.review.clearSession': async () => {
     const result = handleReviewSurfaceClearSessionCommandSurface();

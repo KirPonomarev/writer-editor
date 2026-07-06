@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001",
+  "status": "implemented_verified_pending_delivery",
+  "headShaBefore": "8dcac6cfe7979f8941afab0ea4bbc3e41a0f7864",
+  "contour": "review_bridge_local_packet_export",
+  "scope": {
+    "reviewMenuCommand": "cmd.project.review.exportLocalPacket",
+    "menuEntryAdded": true,
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "localJsonReviewPacketOnly": true,
+    "rendererPacketTruth": false,
+    "rendererFileAuthority": false,
+    "projectTruthWrite": false,
+    "exactApplyScopeChanged": false,
+    "sourceViewStateExported": false
+  },
+  "positiveClaims": [
+    "Review menu now exposes a distinct Export Review Packet entry with command id cmd.project.review.exportLocalPacket.",
+    "Export source truth is the active review session revisionSession.reviewGraph in main only; currentReviewSurfacePayload and other renderer-facing review payload mirrors are not read as packet truth.",
+    "Renderer payload authority is intent-only requestId; renderer cannot inject reviewPacket content, source truth, file path truth, or write evidence.",
+    "Main owns extraction, revision-bridge validation, normalization, save dialog resolution, and one atomic external JSON write through writeFileAtomic.",
+    "Exported JSON top-level fields are bounded to projectId, sessionId, baselineHash, reviewPacket, and optional createdAt or updatedAt.",
+    "Exported reviewPacket collections are bounded to commentThreads, commentPlacements, textChanges, structuralChanges, diagnosticItems, and decisionStates.",
+    "Exported packet omits sourceViewState by default and excludes write-evidence or transport-only fields such as receipt, exactTextApplyReceipts, exactTextAppliedChangeIds, filePath, projectRoot, applyOps, recovery, writeEffects, publicationEffect, rendererPacket, rendererSession, and docxBytes.",
+    "Exported packet can roundtrip back through the existing local packet import path and reopen Review Comments as a Stage01 preview session."
+  ],
+  "nonClaims": [
+    "No manuscript truth write is performed.",
+    "No project truth write is performed.",
+    "No exact apply authority change is claimed.",
+    "No structural auto-apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No DOCX review import scope change is claimed.",
+    "No import export MVP closeout widening, release readiness, packaged readiness, cross platform readiness, or Y9 admission is claimed."
+  ],
+  "layerDecisions": [
+    "Review packet export remains separate from importLocalPacket so external file emission does not blur with local intake semantics.",
+    "Review packet content is revalidated through the existing buildRevisionPacketPreview family before write.",
+    "sourceViewState stays excluded because the existing import path can rebuild a bounded Stage01 preview from reviewPacket alone."
+  ],
+  "implementation": {
+    "changedProductionRuntime": true,
+    "changedMenu": true,
+    "changedUi": false,
+    "changedTests": [
+      "revision-bridge-review-mutate-port.contract.test.js",
+      "sector-m-command-kernel-shell-action-adoption.test.js",
+      "menu-config-v2.contract.test.js"
+    ],
+    "changedRuntimeFiles": [
+      "main.js",
+      "projectCommands.mjs",
+      "capabilityPolicy.mjs",
+      "menu-config.v2.json",
+      "menu-locale.catalog.v1.json"
+    ],
+    "changedStatusArtifacts": [
+      "COMMAND_CAPABILITY_BINDING.json"
+    ],
+    "newStatusArtifacts": [
+      "REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001_STATUS.json"
+    ]
+  },
+  "machineChecks": [
+    {
+      "command": "node --check src/main.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --input-type=module --check < src/renderer/commands/projectCommands.mjs",
+      "status": "pass"
+    },
+    {
+      "command": "node --input-type=module --check < src/renderer/commands/capabilityPolicy.mjs",
+      "status": "pass"
+    },
+    {
+      "command": "node --test test/contracts/revision-bridge-review-mutate-port.contract.test.js",
+      "status": "pass",
+      "tests": 35
+    },
+    {
+      "command": "node --test test/unit/sector-m-command-kernel-shell-action-adoption.test.js test/contracts/menu-config-v2.contract.test.js test/contracts/capability-command-coverage.contract.test.js",
+      "status": "pass",
+      "tests": 11
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending_delivery",
+    "notes": [
+      "This run stopped after local implementation and tests by explicit user instruction.",
+      "No commit, push, pull request, or merge was performed in this contour."
+    ]
+  },
+  "nextStep": "owner decides whether to start the commit push pull request merge chain for REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001"
+}

@@ -37,7 +37,7 @@ test('menu-config v2 contract: example file validates and resolves as v2', () =>
   assert.equal(state.errors.length, 0);
 });
 
-test('menu-config v2 contract: review menu exposes local packet import and clear session product entries', () => {
+test('menu-config v2 contract: review menu exposes local packet import export and clear session product entries', () => {
   const config = readV2Config();
   const reviewMenu = config.menus.find((menu) => menu.id === 'review');
   assert.ok(reviewMenu, 'expected review menu');
@@ -48,6 +48,12 @@ test('menu-config v2 contract: review menu exposes local packet import and clear
     label: 'Import Review Packet',
     labelKey: 'menu.review.importLocalPacket',
     command: 'cmd.project.review.importLocalPacket',
+  });
+  assert.deepEqual(items.get('review-export-local-packet'), {
+    id: 'review-export-local-packet',
+    label: 'Export Review Packet',
+    labelKey: 'menu.review.exportLocalPacket',
+    command: 'cmd.project.review.exportLocalPacket',
   });
   assert.deepEqual(items.get('review-open-docx-review-preview-session'), {
     id: 'review-open-docx-review-preview-session',
