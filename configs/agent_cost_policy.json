@@ -1,0 +1,193 @@
+{
+  "schema_version": "yalken.agent_cost_policy.v1",
+  "status": "phase0_policy_and_dry_run_only",
+  "claim_boundary": [
+    "observed_only",
+    "dev_tooling_only",
+    "no_app_runtime_network",
+    "no_secrets_in_repo",
+    "no_final_canon_verdict",
+    "no_release_decision",
+    "no_commit_push_pr_merge_by_worker"
+  ],
+  "objective": "Conserve expensive Codex/GPT context by using deterministic tools and bounded DeepSeek task packets for routine scout, draft, and audit work.",
+  "provider_secret_lookup": {
+    "deepseek": {
+      "env_first": "DEEPSEEK_API_KEY",
+      "keychain_fallback": {
+        "service": "yalken-writer.deepseek",
+        "account": "DEEPSEEK_API_KEY"
+      },
+      "secret_value_in_repo": "forbidden"
+    }
+  },
+  "provider_pricing": {
+    "deepseek": {
+      "models": {
+        "deepseek-v4-flash": {
+          "input_usd_per_1m_tokens": 0.14,
+          "output_usd_per_1m_tokens": 0.28
+        },
+        "deepseek-v4-pro": {
+          "input_usd_per_1m_tokens": 0.435,
+          "output_usd_per_1m_tokens": 0.87
+        }
+      }
+    }
+  },
+  "runtime_limits": {
+    "default_gpt_subagents_per_stage": 0,
+    "max_gpt_subagents_per_stage": 1,
+    "nested_delegation": "forbidden",
+    "full_history_delegation": "forbidden",
+    "scoped_task_packet_min_tokens": 3000,
+    "scoped_task_packet_max_tokens": 8000,
+    "scope_in_max_files_or_snippets": 5
+  },
+  "tiers": {
+    "tier0_deterministic": {
+      "cost_usd": 0,
+      "default_first": true,
+      "tools": [
+        "rg",
+        "git_diff",
+        "node_check",
+        "node_test",
+        "npm_scripts",
+        "exact_claim_checks"
+      ]
+    },
+    "tier1_deepseek_flash": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "allowed_task_types": [
+        "scout_summary",
+        "report_summary",
+        "json_log_digest",
+        "test_draft",
+        "code_draft",
+        "simple_audit",
+        "diff_sanity_review"
+      ]
+    },
+    "tier2_deepseek_pro": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "allowed_task_types": [
+        "adversarial_review",
+        "contradiction_review",
+        "high_risk_diff_review"
+      ]
+    },
+    "tier3_codex_orchestrator": {
+      "provider": "orchestrator",
+      "allowed_task_types": [
+        "architecture_decision",
+        "canon_verdict",
+        "final_repo_judgment",
+        "hard_conflict_resolution"
+      ]
+    }
+  },
+  "task_budgets_usd": {
+    "scout_summary": { "tier": "tier1_deepseek_flash", "max_usd": 0.02 },
+    "report_summary": { "tier": "tier1_deepseek_flash", "max_usd": 0.02 },
+    "json_log_digest": { "tier": "tier1_deepseek_flash", "max_usd": 0.02 },
+    "test_draft": { "tier": "tier1_deepseek_flash", "max_usd": 0.03 },
+    "code_draft": { "tier": "tier1_deepseek_flash", "max_usd": 0.05 },
+    "simple_audit": { "tier": "tier1_deepseek_flash", "max_usd": 0.03 },
+    "diff_sanity_review": { "tier": "tier1_deepseek_flash", "max_usd": 0.03 },
+    "adversarial_review": { "tier": "tier2_deepseek_pro", "max_usd": 0.1 },
+    "contradiction_review": { "tier": "tier2_deepseek_pro", "max_usd": 0.1 },
+    "high_risk_diff_review": { "tier": "tier2_deepseek_pro", "max_usd": 0.1 },
+    "full_stage": { "tier": "mixed", "max_usd": 1 },
+    "architecture_or_canon": { "tier": "tier3_codex_orchestrator", "max_usd": 0 }
+  },
+  "task_packet_contract": {
+    "required_fields": [
+      "task_id",
+      "task_type",
+      "objective",
+      "scope_in",
+      "scope_out",
+      "budget_usd",
+      "required_output"
+    ],
+    "scope_in_policy": {
+      "max_files_or_snippets_default": 5,
+      "prefer_snippets_over_whole_files": true,
+      "whole_repo_context": "forbidden"
+    },
+    "scope_out_required": [
+      "no_app_runtime_network",
+      "no_secrets",
+      "no_final_canon_verdict",
+      "no_release_decision",
+      "no_authoritative_ledger_write",
+      "no_worker_git_delivery",
+      "no_operator_approval"
+    ],
+    "required_output": {
+      "claims": "list",
+      "files_read": "list",
+      "lines": "list",
+      "patch_summary": "string",
+      "draft_files": "list",
+      "apply_notes": "list",
+      "tests_to_run": "list",
+      "uncertainty": "string",
+      "red_flags": "list"
+    }
+  },
+  "quality_gate": {
+    "accept_deepseek_output_only_after": [
+      "json_contract_validation",
+      "git_diff_review",
+      "node_check_when_applicable",
+      "node_test_when_applicable",
+      "claim_boundary_check",
+      "exact_claim_line_verification",
+      "one_negative_test_for_main_risk_when_applicable"
+    ]
+  },
+  "kill_switch": {
+    "disable_deepseek_lane_for_task_type_if": [
+      "output_breaks_json_contract",
+      "budget_exceeded",
+      "more_than_two_red_flags",
+      "asks_for_broad_repo_context",
+      "touches_forbidden_scope",
+      "repeated_hallucinated_claims"
+    ]
+  },
+  "dirty_diff_rule": {
+    "if_diff_touches_more_than_files": 5,
+    "or_touches_protected_configs_or_status": true,
+    "deepseek_allowed_only": ["audit_summary"],
+    "deepseek_forbidden": ["code_draft"]
+  },
+  "rollout_phases": {
+    "phase0": {
+      "name": "policy_and_dry_run_only",
+      "status": "active",
+      "forbidden": ["api_calls", "deepseek_execution", "mcp_gateway", "litellm_gateway"]
+    },
+    "phase1": {
+      "name": "dry_run_packet_builder_and_repo_map",
+      "status": "active",
+      "forbidden": ["deepseek_execution"]
+    },
+    "phase2": {
+      "name": "deepseek_read_only_scout",
+      "status": "future"
+    },
+    "phase3": {
+      "name": "deepseek_test_code_draft",
+      "status": "future"
+    },
+    "phase4": {
+      "name": "deepseek_pro_adversarial_review",
+      "status": "future"
+    }
+  }
+}
