@@ -52,6 +52,7 @@
     { "commandId": "cmd.project.list.clear", "capabilityId": "cap.project.list.clear" },
     { "commandId": "cmd.project.insert.linkPrompt", "capabilityId": "cap.project.insert.linkPrompt" },
     { "commandId": "cmd.project.review.importLocalPacket", "capabilityId": "cap.project.review.importLocalPacket" },
+    { "commandId": "cmd.project.review.exportLocalPacket", "capabilityId": "cap.project.review.exportLocalPacket" },
     { "commandId": "cmd.project.review.openComments", "capabilityId": "cap.project.review.openComments" },
     { "commandId": "cmd.project.review.clearSession", "capabilityId": "cap.project.review.clearSession" },
     { "commandId": "cmd.project.plan.flowSave", "capabilityId": "cap.project.plan.flowSave" },

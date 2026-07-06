@@ -182,6 +182,11 @@
       "ru": "Импортировать review packet",
       "en": "Import Review Packet"
     },
+    "menu.review.exportLocalPacket": {
+      "base": "Export Review Packet",
+      "ru": "Экспортировать review packet",
+      "en": "Export Review Packet"
+    },
     "menu.review.openDocxReviewPreviewSession": {
       "base": "Open DOCX Review",
       "ru": "Открыть DOCX review",
