@@ -2,7 +2,7 @@
   "taskId": "REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
   "schemaVersion": 1,
   "baseSha": "5456f7f3dd689559d63bb10181e8998464540f72",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "scope": {
     "phase": 6,
     "newDependenciesAdded": false,
@@ -39,12 +39,23 @@
   },
   "outcomes": ["Gate A implemented and verified", "Gate B previously delivered and re-verified", "Capability Matrix published with bounded rows", "golden artifacts are deterministic"],
   "nonClaims": ["Gate C", "Gate D", "DOCX tracked-change candidates", "Word or Google support", "cross-scene apply", "packaged release readiness"],
-  "knownLimitations": ["feature commit, push, PR, merge, and factual rebind remain pending", "historical task-local changed-file allowlist tests pass only from a clean committed tree"],
+  "knownLimitations": ["DOCX Review tracked changes remain diagnostic-only", "Gates C and D remain separate post-V1 contours"],
   "delivery": {
-    "commitSha": null,
-    "pullRequest": null,
-    "mergeSha": null,
-    "status": "pending"
+    "commitSha": "01b2a5f28fff9c2f3f9451edc1827c0aebf002e7",
+    "pullRequest": 1083,
+    "mergeSha": "3f71a6fa3b10cecf0973c80a1865552b57e0c180",
+    "mergedAtUtc": "2026-07-12T22:48:18Z",
+    "status": "delivered_merged_verified",
+    "checks": {
+      "ossPolicy": "pass",
+      "ubuntuRuntimeParity": "pass",
+      "windowsRuntimeParity": "pass",
+      "fullNpmTest": {
+        "pass": 550,
+        "skip": 64,
+        "fail": 0
+      }
+    }
   },
-  "nextStep": "commit, push, merge, then factual rebind FEATURE_COMPLETE_V1"
+  "nextStep": "FEATURE_COMPLETE_V1 is closed; Gate C or Gate D requires a separate owner-approved contour"
 }

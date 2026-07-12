@@ -4,6 +4,8 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-12
+- Review Bridge Phase 06 delivery: PR `1083` merged feature commit `01b2a5f28fff9c2f3f9451edc1827c0aebf002e7` at merge SHA `3f71a6fa3b10cecf0973c80a1865552b57e0c180`; OSS, Ubuntu parity, Windows parity, full suite, governance, production audit, and bounded SAST evidence are green.
+- Phase 06 factual rebind closes `FEATURE_COMPLETE_V1` for Gates A and B only; Gates C and D, DOCX tracked-change candidates, editor-specific compatibility claims, and cross-scene transactions remain separate owner-approved contours.
 - Review Bridge Phase 06 implementation: published one bounded Capability Matrix, a deterministic five-file golden set with SHA-256 evidence, and separate Gate A and Gate B acceptance artifacts; delivery and factual rebind remain pending.
 - Phase 06 DOCX audit repaired two real interoperability defects: canonical `doc-v2` content is parsed before export so raw envelopes cannot leak into DOCX, and Heading 1, Heading 2, page break, and page setup semantics are preserved by the minimal builder.
 - Phase 06 DOCX intake now distinguishes internal OOXML relationships from actual external targets; bounded known parts can reach content-only preview with explicit losses, while external relationships, hostile XML, unknown parts, traversal, duplicate entries, and container bombs remain fail-closed.

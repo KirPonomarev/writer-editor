@@ -55,10 +55,10 @@ test('Phase 06 evidence artifacts publish one bounded claim authority with all m
   const historical = readStatus('IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json');
 
   assert.equal(matrix.baseSha, BASE_SHA);
-  assert.equal(matrix.status, 'implemented_verified_pending_delivery');
-  assert.equal(matrix.releaseClaim.label, 'FEATURE_COMPLETE_V1_PENDING_DELIVERY');
-  assert.equal(matrix.releaseClaim.gates.A_CONTENT_IMPORT_EXPORT_V1, 'pass_pending_delivery');
-  assert.equal(matrix.releaseClaim.gates.B_LOCAL_REVIEW_BRIDGE_V1, 'pass_pending_delivery');
+  assert.equal(matrix.status, 'delivered_merged_verified');
+  assert.equal(matrix.releaseClaim.label, 'FEATURE_COMPLETE_V1');
+  assert.equal(matrix.releaseClaim.gates.A_CONTENT_IMPORT_EXPORT_V1, 'pass');
+  assert.equal(matrix.releaseClaim.gates.B_LOCAL_REVIEW_BRIDGE_V1, 'pass');
   assert.equal(matrix.releaseClaim.gates.C_DOCX_REVIEW_V1, 'post_v1_not_claimed');
   assert.equal(matrix.releaseClaim.gates.D_EDITOR_SPECIFIC_CLAIMS, 'post_v1_not_claimed');
   assert.deepEqual(matrix.rows.map((row) => row.rowId), [
@@ -75,9 +75,15 @@ test('Phase 06 evidence artifacts publish one bounded claim authority with all m
   assert.deepEqual(Object.fromEntries(manifest.artifacts.map((item) => [item.fileName, item.sha256])), EXPECTED_HASHES);
   assert.equal(review.baseSha, BASE_SHA);
   assert.equal(review.gate, 'B_LOCAL_REVIEW_BRIDGE_V1');
+  assert.equal(review.status, 'delivered_merged_verified');
   assert.equal(importExport.baseSha, BASE_SHA);
   assert.equal(importExport.gate, 'A_CONTENT_IMPORT_EXPORT_V1');
+  assert.equal(importExport.status, 'delivered_merged_verified');
   assert.equal(status.baseSha, BASE_SHA);
+  assert.equal(status.status, 'delivered_merged_verified');
+  assert.equal(status.delivery.commitSha, '01b2a5f28fff9c2f3f9451edc1827c0aebf002e7');
+  assert.equal(status.delivery.pullRequest, 1083);
+  assert.equal(status.delivery.mergeSha, '3f71a6fa3b10cecf0973c80a1865552b57e0c180');
   assert.equal(status.implementation.realArtifacts, 5);
   assert.equal(status.implementation.capabilityRows, 6);
   assert.equal(historical.lifecycleStatus, 'superseded_historical');
