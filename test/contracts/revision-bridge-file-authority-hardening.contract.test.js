@@ -277,11 +277,11 @@ test('Phase 03 shared authority port is wired across all supported external file
   assert.match(docxExportSource, /queueDiskOperation\(async \(\) => \{[\s\S]*validateDocxExportTarget\(outPath, payload\)/u);
 });
 
-test('Phase 03 status stays implementation-bound without claiming Markdown product completion', () => {
+test('Phase 03 status is rebound to merged truth without claiming Markdown product completion', () => {
   const status = JSON.parse(fsSync.readFileSync(STATUS_PATH, 'utf8'));
 
   assert.equal(status.taskId, 'REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001');
-  assert.equal(status.status, 'implemented_verified_pending_delivery');
+  assert.equal(status.status, 'delivered_merged_verified');
   assert.equal(status.baseSha, 'f0b8a11c345298b9a4c0080fbffdde8d8cb8fa13');
   assert.equal(status.scope.sharedExternalFileAuthority, true);
   assert.equal(status.scope.newDependenciesAdded, false);
@@ -290,6 +290,10 @@ test('Phase 03 status stays implementation-bound without claiming Markdown produ
   assert.equal(status.writeAuthority.validationRepeatedInsideDiskQueue, true);
   assert.equal(status.markdownAuthorityPort.visibleProductBinding, false);
   assert.equal(status.markdownAuthorityPort.canonicalSavedSceneSerialization, false);
-  assert.equal(status.delivery.status, 'pending');
+  assert.equal(status.delivery.status, 'delivered_merged_verified');
+  assert.equal(status.delivery.commitSha, '498c19ca53756280e6ebd70918096c10fc8fe6ee');
+  assert.equal(status.delivery.pullRequest, 1077);
+  assert.equal(status.delivery.mergeSha, '3b5a2f3107f4daf3f9d49ecdbd90488e780e2a4f');
+  assert.equal(status.delivery.mergedAtUtc, '2026-07-12T20:33:09Z');
   assert.equal(status.nonClaims.some((claim) => claim.includes('Phase 04')), true);
 });

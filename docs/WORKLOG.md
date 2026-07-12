@@ -4,7 +4,8 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-12
-- Review Bridge Phase 03 implementation: one shared external-file authority port now owns bounded identity-checked reads and physical target validation for DOCX, Markdown, TXT, and Review Packet contours; oversized input, project-internal input, source symlinks, same-size replacement, protected targets, and queue-time target swaps fail closed.
+- Review Bridge Phase 03 delivery: PR `1077` merged feature commit `498c19ca53756280e6ebd70918096c10fc8fe6ee` at merge SHA `3b5a2f3107f4daf3f9d49ecdbd90488e780e2a4f`; the status is rebound to `delivered_merged_verified` and Phase 04 Markdown product completion is next.
+- Phase 03 runtime: one shared external-file authority port owns bounded identity-checked reads and physical target validation for DOCX, Markdown, TXT, and Review Packet contours; oversized input, project-internal input, source symlinks, same-size replacement, protected targets, and queue-time target swaps fail closed.
 - Phase 03 Markdown authority: new main-owned picker, opaque one-use preview acceptance, and main-owned Save As command routes accept only request metadata from renderer and return no target, recovery, or created-scene paths; visible product binding and canonical semantic export remain Phase 04.
 - Phase 03 scope truth: existing atomic writers and Markdown recovery remain in place; no renderer, CSS, HTML structure, dependency, network, DOCX fidelity, tracked-change apply, structural apply, cross-scene transaction, or release-readiness claim is introduced.
 - Review Bridge Phase 02 delivery: PR `1075` merged feature commit `561640947f2488d0c3248d587e925aa7e59d6205` at merge SHA `314d550199858d055255fa55fc4a457f09c8f495`; the status is rebound to `delivered_merged_verified` and Phase 03 file-authority hardening is next.
