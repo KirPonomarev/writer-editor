@@ -97,7 +97,7 @@ test('command-visibility-matrix: minimal profile can hide non-core commands but 
     {
       id: 'flow-open',
       label: 'Flow Open',
-      command: 'cmd.project.importMarkdownV1',
+      command: 'cmd.project.flowOpenV1',
       mode: ['offline'],
       profile: ['minimal', 'pro', 'guru'],
       stage: ['X1', 'X2', 'X3', 'X4'],
@@ -132,6 +132,29 @@ test('command-visibility-matrix: minimal profile can hide non-core commands but 
     },
   );
   assert.equal(coreResult.visible, true);
+
+  const productFileResult = evaluateMenuItemEnabled(
+    {
+      id: 'file-import-docx-content',
+      label: 'Import DOCX Content (Content only)...',
+      command: 'cmd.project.importDocxV1',
+      mode: ['offline'],
+      profile: ['minimal', 'pro', 'guru'],
+      stage: ['X1', 'X2', 'X3', 'X4'],
+      enabledWhen: { op: 'flag', name: 'hasDocument' },
+    },
+    {
+      mode: 'offline',
+      profile: 'minimal',
+      stage: 'X1',
+      hasDocument: true,
+    },
+  );
+  assert.deepEqual(productFileResult, {
+    enabled: true,
+    visible: true,
+    reason: '',
+  });
 });
 
 test('command-visibility-matrix: advisory token stays outside required sets', () => {

@@ -339,10 +339,10 @@
     },
     {
       "filePath": "test/contracts/menu-config-v2.contract.test.js",
-      "sha256": "847b3536dc256e7ff574e3ea531df558e7572085d73493ff4e312cc446290392",
-      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_GOVERNANCE_BYTE_TRUTH_REPAIR",
-      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
-      "rationale": "Rebind the pre-existing menu V2 contract approval to its current mainline bytes discovered by the Phase 01 governance audit; the contract itself is unchanged in this contour and no authored menu command, renderer redesign, dependency, network, apply authority, or release claim is introduced."
+      "sha256": "f607c3af6a93cb9c3bbc75ee60e1f632d7a610fc50aa9f59e3892d5cf1a21fa1",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
+      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
+      "rationale": "Approve updating the canonical menu V2 contract to bind the exact Review Packet Apply and DOCX Review Evidence labels while preserving command IDs, menu ownership, clear-session behavior, and existing schema and gate assertions."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json",
@@ -3181,17 +3181,17 @@
     },
     {
       "filePath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-      "sha256": "764a8710adf44e9ed585455b2a8fdac2677cfe652805a07e179e044bd2ac7324",
-      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
-      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
-      "rationale": "Approve regenerated canonical runtime menu artifact after the real Electron Review Packet flow proved the previous checked-in artifact omitted already-authored Review commands; this rebind adds no menu source command, dependency, UI framework, cloud, structural apply, DOCX apply, cross-scene transaction, or release-readiness claim."
+      "sha256": "8e0026e6097dac524498a92815473f995d595559f1f18653c0217f6363ab6fdd",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
+      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
+      "rationale": "Approve the regenerated canonical minimal-profile menu artifact exposing bounded DOCX, TXT, Markdown, Review Packet, and DOCX Review Evidence product entries through existing flows, with honest labels, no HTML or CSS change, no dependency, no path or write-authority widening, and no DOCX Apply or release-readiness claim."
     },
     {
       "filePath": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
-      "sha256": "6c4d41954c372fea0331cb76ec4f3d19dea8f140797c96c801aebd5d31080fd8",
-      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
-      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
-      "rationale": "Approve the artifact lock rebind for the regenerated current canonical menu artifact used by the native Electron Review Packet acceptance path; no menu source expansion, dependency, remote code, write-authority widening, structural apply, DOCX apply, or release-readiness claim is introduced."
+      "sha256": "5f525aa6677c9349c8162fc4e8e97b8a4ff5416356e9f8ebce51f7360f53cc1b",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
+      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
+      "rationale": "Approve the artifact lock rebind for the Phase 05 canonical menu artifact and exact byte hash; source remains the existing menu system and no dependency, network, remote code, storage, Apply authority, or fidelity claim is expanded."
     },
     {
       "filePath": "docs/OPS/STATUS/MENU_CONFIG_NORMALIZATION_SPEC_v1.json",
@@ -3202,10 +3202,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
-      "sha256": "035a61b5a9d47bd7acaa86411b720700c6bd900fcdf25ad240f851177edac6cc",
-      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
-      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
-      "rationale": "Approve the frozen default menu snapshot hash rebind to current canonical menu source after native runtime artifact drift was detected by Electron acceptance; no authored command, visual structure, dependency, apply scope, or release claim is widened."
+      "sha256": "5ffdf6ff7c30d465c384d15f497bd16c516382d5250cc03930d450788409e3fb",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
+      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
+      "rationale": "Approve the default minimal menu snapshot rebind to the Phase 05 authored discoverability and label truth; the snapshot records existing command flows only and does not change visual structure, storage, dependencies, or Apply scope."
     },
     {
       "filePath": "scripts/ops/menu-config-normalize.mjs",
@@ -3279,10 +3279,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_VISIBILITY_MATRIX.json",
-      "sha256": "40c501be4db05c374b85a7460d345a1fdad40fe6d3d9543a13cf5c9549e3a4ce",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
-      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
-      "rationale": "Approve bounded governance registry SHA rebind for current command visibility matrix bytes discovered while closing Review Bridge truth repair; this is a byte-truth rebind only and does not widen visibility policy, runtime behavior, dependency, network, release, or Y9."
+      "sha256": "6c3593c2eb948f90197c895d0a4e2dcdbcf50abbbf5ed6da11ae736770b82c15",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
+      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
+      "rationale": "Approve moving delivered DOCX, TXT, and Markdown file commands from the minimal-profile hidden allowlist into the visible core product set while keeping Flow commands hidden, stage gates intact, offline-only operation, and no new command or authority."
     },
     {
       "filePath": "scripts/ops/phase03-safe-reset-last-stable-artifact-state.mjs",
@@ -3748,10 +3748,10 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
-      "sha256": "ac9b4f72feaf8b226da447e66f8bfae71c1acecfcf150b7eec8a80404825e858",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
-      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
-      "rationale": "Approve the DOCX Review local-file harness binding to shared bounded identity checks and shared typed empty or replacement failures while preserving evidence-only comments, diagnostic-only tracked changes, and zero manuscript writes."
+      "sha256": "ae230e6048946eb5d4c19d654f2786d199ecdb842b7c4e66f4173d95b69f30ac",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
+      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
+      "rationale": "Approve the DOCX Review local-file contract label rebind to explicit Evidence, Comments preview, and Tracked changes diagnostic wording while retaining bounded reads, in-memory evidence-only sessions, no text candidates from tracked changes, and zero manuscript writes."
     },
     {
       "filePath": "test/contracts/revision-bridge-file-authority-hardening.contract.test.js",
@@ -3794,6 +3794,34 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-12T21:36:00.000Z",
       "rationale": "Approve the Phase 04 product contract delivery rebind to exact PR 1079 feature and merge evidence while retaining canonical doc-v2 import, saved-scene export, dirty refusal, semantic goldens, 72 inline vectors, authoritative losses, and all bounded nonclaims."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001_STATUS.json",
+      "sha256": "908f424fafac29b1821e5f3a94eba502545ff0780359059639961e4f24896ede",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
+      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
+      "rationale": "Approve the bounded Phase 05 pending-delivery status for minimal-profile File and Review discoverability, canonical visible Markdown commands, existing preview and accept routing, explicit Minimal, Content only, Comments preview, Tracked changes diagnostic, and Exact Apply labels, with no HTML, CSS, dependency, storage, network, DOCX Apply, or release-readiness claim."
+    },
+    {
+      "filePath": "test/contracts/command-visibility-matrix.contract.test.js",
+      "sha256": "280a103278b812b4d318a1903370d450b659f6506e59a9813b1eff88ace6c4d3",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
+      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
+      "rationale": "Approve contract coverage proving delivered file commands remain visible and enabled in minimal profile while unrelated Flow commands retain the existing hidden-profile policy and core safety visibility remains intact."
+    },
+    {
+      "filePath": "test/contracts/menu-single-source-of-truth.contract.test.js",
+      "sha256": "d6756fc2a0dd0406726588c66632b5790f0e25d5fe35d421b7898eab4184dca7",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
+      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
+      "rationale": "Approve menu single-source contract coverage for native menu intents opening existing product UI flows while preserving structured Markdown payload dispatch through the command surface kernel and existing DOCX export preview routing."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
+      "sha256": "5883cec4cb457aedd093384bde1adb76b44e4f0e252594efe3fad82f412f6286",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
+      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
+      "rationale": "Approve the Phase 05 product contract for complete File and Review menu coverage, exact bounded labels, canonical palette-only Markdown visibility, native-to-existing-flow routing, normalized artifact truth, pending-delivery status, and explicit no-authority and no-release nonclaims."
     }
   ]
 }

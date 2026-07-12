@@ -87,7 +87,7 @@ test('menu single-source truth: x101 file alias map stays synchronized with main
   assert.ok(mainText.includes("saveDocument: 'cmd.project.save'"));
 });
 
-test('menu single-source truth: adopted menu file commands reuse command surface kernel where available', () => {
+test('menu single-source truth: file menu commands open product UI and retain payload kernel paths', () => {
   const mainText = fs.readFileSync(MAIN_PATH, 'utf8');
 
   assert.match(
@@ -102,14 +102,12 @@ test('menu single-source truth: adopted menu file commands reuse command surface
     mainText,
     /'cmd\.project\.saveAs': async \(\) => \{\s*return dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_SAVE_AS, \{\}\);/m,
   );
-  assert.match(
-    mainText,
-    /'cmd\.project\.importMarkdownV1': async \(payload = \{\}\) => \{\s*const result = await dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_IMPORT_MARKDOWN_V1, payload\);\s*return normalizeUiBridgeMenuResult\(result\);/m,
-  );
-  assert.match(
-    mainText,
-    /'cmd\.project\.exportMarkdownV1': async \(payload = \{\}\) => \{\s*const result = await dispatchCommandSurfaceKernel\(COMMAND_SURFACE_KERNEL_COMMAND_IDS\.PROJECT_EXPORT_MARKDOWN_V1, payload\);\s*return normalizeUiBridgeMenuResult\(result\);/m,
-  );
+  assert.ok(mainText.includes("'cmd.project.importDocxV1': async () => {"));
+  assert.ok(mainText.includes("'open-import-docx-preview'"));
+  assert.ok(mainText.includes("'open-import-markdown-preview'"));
+  assert.ok(mainText.includes("'open-export-markdown'"));
+  assert.ok(mainText.includes('COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload'));
+  assert.ok(mainText.includes('COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, payload'));
   assert.ok(mainText.includes("const previewRequested = sendCanonicalRuntimeCommand("));
   assert.ok(mainText.includes("'cmd.project.export.docxMin'"));
 });

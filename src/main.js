@@ -13281,6 +13281,14 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.docx.previewLocalFile': async (payload = {}) => {
     return handleDocxImportLocalFilePreviewCommandSurface(payload);
   },
+  'cmd.project.importDocxV1': async () => {
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.importDocxV1',
+      { source: 'menu' },
+      'open-import-docx-preview',
+    );
+    return { ok: delivered, preview: delivered };
+  },
   'cmd.project.importTxtV1': async () => {
     const delivered = sendCanonicalRuntimeCommand(
       'cmd.project.importTxtV1',
@@ -13296,10 +13304,26 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return handleTxtImportSafeCreateCommandSurface(payload);
   },
   'cmd.project.importMarkdownV1': async (payload = {}) => {
+    if (Object.keys(payload).length === 0) {
+      const delivered = sendCanonicalRuntimeCommand(
+        'cmd.project.importMarkdownV1',
+        { source: 'menu' },
+        'open-import-markdown-preview',
+      );
+      return { ok: delivered, preview: delivered };
+    }
     const result = await dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);
     return normalizeUiBridgeMenuResult(result);
   },
   'cmd.project.exportMarkdownV1': async (payload = {}) => {
+    if (Object.keys(payload).length === 0) {
+      const delivered = sendCanonicalRuntimeCommand(
+        'cmd.project.exportMarkdownV1',
+        { source: 'menu' },
+        'open-export-markdown',
+      );
+      return { ok: delivered, preview: delivered };
+    }
     const result = await dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, payload);
     return normalizeUiBridgeMenuResult(result);
   },
