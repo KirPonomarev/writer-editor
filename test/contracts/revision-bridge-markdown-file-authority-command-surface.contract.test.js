@@ -43,11 +43,14 @@ function instantiateMarkdownLocalFilePort(options = {}) {
   const source = fs.readFileSync(MAIN_PATH, 'utf8');
   const section = extractMarkedSection(source);
   const calls = {
+    canonicalReads: 0,
+    confirmations: 0,
     imports: [],
     exports: [],
     picks: 0,
     reads: 0,
     snapshots: 0,
+    writes: 0,
   };
   const sandbox = {
     Buffer,
@@ -61,6 +64,10 @@ function instantiateMarkdownLocalFilePort(options = {}) {
     cloneJsonSafe,
     crypto,
     currentFilePath: '/project/roman/scene.txt',
+    confirmMarkdownExportLosses: async () => {
+      calls.confirmations += 1;
+      return true;
+    },
     dialog: {
       showOpenDialog: async () => ({ canceled: true }),
     },
@@ -89,6 +96,7 @@ function instantiateMarkdownLocalFilePort(options = {}) {
         return options.handleImportMarkdownV1(payload);
       }
       if (payload.safeCreate === true) {
+        calls.writes += 1;
         return {
           ok: 1,
           safeCreate: true,
@@ -146,6 +154,20 @@ function instantiateMarkdownLocalFilePort(options = {}) {
     exports: {},
     path,
     pendingMarkdownLocalFilePreview: null,
+    readCanonicalMarkdownExportSource: async () => {
+      calls.canonicalReads += 1;
+      return {
+        scene: {
+          schemaVersion: 'markdown-scene.v1',
+          blocks: [{ type: 'paragraph', text: '# Literal' }],
+        },
+        artifact: {
+          markdown: '\\# Literal\n',
+          lossReport: { count: 0, items: [] },
+        },
+        defaultName: 'scene.md',
+      };
+    },
     readExternalFileBounded: async () => {
       calls.reads += 1;
       return { bytes: Buffer.from('# Literal', 'utf8'), byteLength: 9 };
@@ -190,6 +212,10 @@ test('Phase 03 Markdown preview keeps file authority in main and returns a pathl
   assert.match(result.previewId, /^mdp_[a-f0-9]{24}$/u);
   assert.equal(port.calls.picks, 1);
   assert.equal(port.calls.reads, 1);
+  assert.equal(port.calls.writes, 0);
+  assert.equal(port.calls.imports.length, 1);
+  assert.equal(port.calls.imports[0].preview, true);
+  assert.notEqual(port.calls.imports[0].safeCreate, true);
   assert.equal(result.previewResult.sourcePath, undefined);
   assert.equal(result.previewResult.recovery, undefined);
   assert.equal(result.previewResult.safeCreatePlan.entries[0].path, undefined);
@@ -202,6 +228,7 @@ test('Phase 03 Markdown preview keeps file authority in main and returns a pathl
   });
   assert.equal(accepted.ok, 1, JSON.stringify(accepted, null, 2));
   assert.equal(accepted.commandId, 'cmd.project.markdown.acceptLocalPreview');
+  assert.equal(port.calls.writes, 1);
   assert.equal(port.calls.imports[1].previewPayload.safeCreatePlan.entries[0].path, '/project/roman/Imported/secret.txt');
   assert.equal(accepted.receipt.createdScenes[0].path, undefined);
   assert.equal(JSON.stringify(accepted).includes('/project/'), false);
@@ -242,7 +269,7 @@ test('Phase 03 Markdown intent routes reject renderer paths and content before a
   assert.equal(port.calls.exports.length, 0);
 });
 
-test('Phase 03 Markdown Save As sends only intent input and hides target and recovery paths', async () => {
+test('Phase 04 Markdown Save As uses the canonical saved scene and hides target and recovery paths', async () => {
   const port = instantiateMarkdownLocalFilePort();
   const result = await port.handleMarkdownExportLocalFileCommandSurface({
     requestId: 'markdown-export-1',
@@ -254,11 +281,45 @@ test('Phase 03 Markdown Save As sends only intent input and hides target and rec
   assert.equal(result.outPath, undefined);
   assert.equal(result.snapshotPath, undefined);
   assert.equal(JSON.stringify(result).includes('/external/'), false);
-  assert.equal(port.calls.snapshots, 1);
+  assert.equal(port.calls.canonicalReads, 1);
+  assert.equal(port.calls.snapshots, 0);
   assert.equal(port.calls.exports.length, 1);
   assert.equal(port.calls.exports[0].outPath, undefined);
   assert.equal(port.calls.exports[0].saveAs, true);
-  assert.equal(port.calls.exports[0].scene.source, '# Literal');
+  assert.equal(port.calls.exports[0].scene.schemaVersion, 'markdown-scene.v1');
+  assert.equal(port.calls.exports[0].scene.blocks[0].text, '# Literal');
+  assert.equal(result.canonicalSavedSceneSource, true);
+});
+
+test('Phase 04 Markdown lossy export needs main-owned confirmation before any write', async () => {
+  const port = instantiateMarkdownLocalFilePort();
+  const result = await port.handleMarkdownExportLocalFileCommandSurface(
+    { requestId: 'markdown-export-loss-cancel' },
+    {
+      readCanonicalSource: async () => ({
+        scene: {
+          schemaVersion: 'markdown-scene.v1',
+          blocks: [{ type: 'paragraph', text: 'Visible text' }],
+        },
+        artifact: {
+          markdown: 'Visible text\n',
+          lossReport: {
+            count: 1,
+            items: [{ code: 'UNSUPPORTED_BLOCK_DOWNGRADED', severity: 'WARN' }],
+          },
+        },
+        defaultName: 'scene.md',
+      }),
+      confirmLosses: async () => false,
+    },
+  );
+
+  assert.equal(result.ok, 1, JSON.stringify(result, null, 2));
+  assert.equal(result.canceled, true);
+  assert.equal(result.exported, false);
+  assert.equal(result.canonicalSavedSceneSource, true);
+  assert.equal(result.lossReport.count, 1);
+  assert.equal(port.calls.exports.length, 0);
 });
 
 test('Phase 03 Markdown low-level errors are remapped without private path details', async () => {

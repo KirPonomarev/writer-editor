@@ -5569,7 +5569,9 @@ const MARKDOWN_IMPORT_STATUS_MESSAGE = 'Imported Markdown v1';
 const MARKDOWN_EXPORT_STATUS_MESSAGE = 'Exported Markdown v1';
 const MARKDOWN_EXPORT_CANCELLED_STATUS_MESSAGE = 'Export Markdown cancelled';
 const MARKDOWN_EXPORT_SAVE_FAILED_STATUS_MESSAGE = 'Export Markdown save failed';
-const MARKDOWN_IMPORT_PROMPT_TITLE = 'Import Markdown v1';
+const MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID = 'cmd.project.markdown.previewLocalFile';
+const MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID = 'cmd.project.markdown.acceptLocalPreview';
+const MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID = 'cmd.project.markdown.exportLocalFile';
 const SELECTED_SCENES_TXT_EXPORT_SCOPE_QUERY_ID = 'query.selectedScenesTxtExportScope';
 const LINK_PROMPT_TITLE = 'Insert link';
 const FLOW_OPEN_ERROR_MESSAGE = 'Flow mode unavailable';
@@ -5954,88 +5956,168 @@ async function handleFlowModeSaveUiPath() {
   updateStatusText(buildFlowModeM9KickoffStatus('save', payload.scenes.length, { m8Kickoff: true, m9Kickoff: true }));
 }
 
+function resolveMarkdownLocalFileBridgeValue(result) {
+  if (!result || result.ok !== true) return null;
+  const value = result.value;
+  if (!value || typeof value !== 'object' || Array.isArray(value) || value.ok !== true) return null;
+  return value;
+}
+
+function getMarkdownLossReport(value) {
+  const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const previewResult = source.previewResult
+    && typeof source.previewResult === 'object'
+    && !Array.isArray(source.previewResult)
+    ? source.previewResult
+    : {};
+  const lossReport = source.lossReport
+    && typeof source.lossReport === 'object'
+    && !Array.isArray(source.lossReport)
+    ? source.lossReport
+    : previewResult.lossReport;
+  return lossReport && typeof lossReport === 'object' && !Array.isArray(lossReport)
+    ? lossReport
+    : { count: 0, items: [] };
+}
+
+function getMarkdownLossCount(value) {
+  const lossReport = getMarkdownLossReport(value);
+  return Number.isInteger(lossReport.count)
+    ? Math.max(0, lossReport.count)
+    : (Array.isArray(lossReport.items) ? lossReport.items.length : 0);
+}
+
+function getMarkdownLossCodes(value) {
+  const lossReport = getMarkdownLossReport(value);
+  const items = Array.isArray(lossReport.items) ? lossReport.items : [];
+  return [...new Set(items
+    .map((item) => (item && typeof item === 'object' && typeof item.code === 'string' ? item.code.trim() : ''))
+    .filter(Boolean))]
+    .slice(0, 5);
+}
+
+function summarizeMarkdownLocalFilePreview(value) {
+  const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const previewResult = source.previewResult
+    && typeof source.previewResult === 'object'
+    && !Array.isArray(source.previewResult)
+    ? source.previewResult
+    : {};
+  const entries = Array.isArray(previewResult?.safeCreatePlan?.entries)
+    ? previewResult.safeCreatePlan.entries
+    : [];
+  const sourceName = typeof source.sourceName === 'string' && source.sourceName.trim()
+    ? source.sourceName.trim()
+    : 'import.md';
+  const byteLength = Number.isInteger(source.byteLength) && source.byteLength >= 0
+    ? source.byteLength
+    : 0;
+  const lossCount = getMarkdownLossCount(source);
+  const lossCodes = getMarkdownLossCodes(source);
+  const lossCodeSuffix = lossCodes.length > 0 ? ` (${lossCodes.join(', ')})` : '';
+  return `Markdown: ${sourceName}. Bytes: ${byteLength}. Scenes ready: ${entries.length}. Losses: ${lossCount}${lossCodeSuffix}.`;
+}
+
+function buildMarkdownPreviewReadyStatus(value) {
+  const lossCount = getMarkdownLossCount(value);
+  return lossCount > 0
+    ? `Markdown import preview ready; losses: ${lossCount}`
+    : 'Markdown import preview ready';
+}
+
 async function handleMarkdownImportUiPath() {
-  if (typeof window.prompt !== 'function') {
-    updateStatusText('Import Markdown unavailable');
+  updateStatusText('Preparing Markdown import preview');
+  const previewBridgeResult = await invokePreloadUiCommandBridge(
+    MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+    { requestId: `markdown-local-preview-${Date.now()}` },
+  );
+  const previewValue = resolveMarkdownLocalFileBridgeValue(previewBridgeResult);
+  if (!previewValue) {
+    updateStatusText('Import Markdown preview unavailable');
     return;
   }
-  const currentText = getPlainText();
-  const markdown = window.prompt(MARKDOWN_IMPORT_PROMPT_TITLE, currentText);
-  if (markdown === null) return;
-
-  const importResult = await runMarkdownImportCommand(markdown, 'ui-import.md', { preview: true });
-  if (!importResult.ok) return;
-
-  const previewPayload = importResult.value
-    && typeof importResult.value === 'object'
-    && importResult.value.previewResult
-    && typeof importResult.value.previewResult === 'object'
-    ? importResult.value.previewResult
-    : null;
-  if (previewPayload) {
-    const safeCreateResult = await runMarkdownImportCommand('', 'ui-import.md', {
-      safeCreate: true,
-      previewPayload,
-    });
-    if (safeCreateResult.ok && safeCreateResult.value && safeCreateResult.value.safeCreate === true) {
-      const safeCreateValue = safeCreateResult.value && typeof safeCreateResult.value === 'object' && !Array.isArray(safeCreateResult.value)
-        ? safeCreateResult.value
-        : {};
-      const createdSceneIds = Array.isArray(safeCreateValue.createdSceneIds)
-        ? safeCreateValue.createdSceneIds
-        : [];
-      await loadTree();
-      const openResult = await openImportedMarkdownSceneAfterSafeCreate(previewPayload, createdSceneIds);
-      const openSuffix = openResult.opened
-        ? '; opened imported scene'
-        : (createdSceneIds.length > 0 ? `; ${openResult.reason}` : '');
-      updateStatusText(`Imported Markdown scenes: ${createdSceneIds.length}${openSuffix}`);
-      return;
-    }
-    if (!safeCreateResult.ok) {
-      updateStatusText('Import Markdown safe create failed');
-      return;
-    }
+  if (previewValue.canceled === true) {
+    updateStatusText('Import Markdown cancelled');
+    return;
   }
-  updateStatusText('Import Markdown preview unavailable');
+
+  const previewPayload = previewValue.previewResult
+    && typeof previewValue.previewResult === 'object'
+    && !Array.isArray(previewValue.previewResult)
+    ? previewValue.previewResult
+    : null;
+  const previewId = typeof previewValue.previewId === 'string' ? previewValue.previewId.trim() : '';
+  if (!previewPayload || !/^mdp_[a-f0-9]{24}$/u.test(previewId)) {
+    updateStatusText('Import Markdown preview unavailable');
+    return;
+  }
+
+  const previewSummary = summarizeMarkdownLocalFilePreview(previewValue);
+  const confirmed = typeof window.confirm === 'function'
+    ? window.confirm(`${previewSummary}\n\nCreate imported Markdown scene?`)
+    : false;
+  if (!confirmed) {
+    updateStatusText(buildMarkdownPreviewReadyStatus(previewValue));
+    return;
+  }
+
+  updateStatusText('Importing Markdown');
+  const acceptBridgeResult = await invokePreloadUiCommandBridge(
+    MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID,
+    {
+      requestId: `markdown-local-accept-${Date.now()}`,
+      previewId,
+    },
+  );
+  const safeCreateValue = resolveMarkdownLocalFileBridgeValue(acceptBridgeResult);
+  if (!safeCreateValue || safeCreateValue.safeCreate !== true) {
+    updateStatusText('Import Markdown safe create failed');
+    return;
+  }
+
+  const createdSceneIds = Array.isArray(safeCreateValue.createdSceneIds)
+    ? safeCreateValue.createdSceneIds
+    : [];
+  await loadTree();
+  const openResult = await openImportedMarkdownSceneAfterSafeCreate(previewPayload, createdSceneIds);
+  const openSuffix = openResult.opened
+    ? '; opened imported scene'
+    : (createdSceneIds.length > 0 ? `; ${openResult.reason}` : '');
+  const lossCount = getMarkdownLossCount(previewValue);
+  const lossSuffix = lossCount > 0 ? `; losses: ${lossCount}` : '';
+  updateStatusText(`Imported Markdown scenes: ${createdSceneIds.length}${openSuffix}${lossSuffix}`);
 }
 
 async function handleMarkdownExportUiPath() {
-  const sourceText = getPlainText();
-  const importResult = await runMarkdownImportCommand(sourceText, 'editor-buffer.md');
-  if (!importResult.ok) return;
-
-  const scene = resolveSceneFromImportResult(importResult);
-  if (!scene) {
-    updateStatusText('Export Markdown unavailable');
+  const exportBridgeResult = await invokePreloadUiCommandBridge(
+    MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
+    { requestId: `markdown-local-export-${Date.now()}` },
+  );
+  const exportValue = resolveMarkdownLocalFileBridgeValue(exportBridgeResult);
+  if (!exportValue) {
+    updateStatusText(MARKDOWN_EXPORT_SAVE_FAILED_STATUS_MESSAGE);
     return;
   }
 
-  const exportResult = await runMarkdownExportCommand(scene, {
-    saveAs: true,
-    defaultName: 'editor-buffer.md',
-  });
-  if (!exportResult.ok || !exportResult.value || typeof exportResult.value !== 'object') {
-    return;
-  }
-
-  if (exportResult.value.canceled === true) {
+  if (exportValue.canceled === true) {
     updateStatusText(MARKDOWN_EXPORT_CANCELLED_STATUS_MESSAGE);
     return;
   }
 
   if (
-    exportResult.value.exported !== true
-    || typeof exportResult.value.outPath !== 'string'
-    || exportResult.value.outPath.length === 0
-    || !Number.isInteger(exportResult.value.bytesWritten)
-    || exportResult.value.bytesWritten <= 0
+    exportValue.exported !== true
+    || exportValue.canonicalSavedSceneSource !== true
+    || !Number.isInteger(exportValue.bytesWritten)
+    || exportValue.bytesWritten <= 0
   ) {
     updateStatusText(MARKDOWN_EXPORT_SAVE_FAILED_STATUS_MESSAGE);
     return;
   }
 
-  updateStatusText(MARKDOWN_EXPORT_STATUS_MESSAGE);
+  const lossCount = getMarkdownLossCount(exportValue);
+  updateStatusText(lossCount > 0
+    ? `${MARKDOWN_EXPORT_STATUS_MESSAGE}; losses: ${lossCount}`
+    : MARKDOWN_EXPORT_STATUS_MESSAGE);
 }
 
 function getPlainText() {
@@ -8567,11 +8649,19 @@ function runCommandPaletteAction(commandId) {
   const normalizedCommandId = commandId.trim();
   const importDocxCommandId = 'cmd.project.importDocxV1';
   const importTxtCommandId = 'cmd.project.importTxtV1';
+  const importMarkdownCommandId = 'cmd.project.importMarkdownV1';
+  const exportMarkdownCommandId = 'cmd.project.exportMarkdownV1';
   if (normalizedCommandId === importDocxCommandId) {
     return openDocxImportPreviewFlow();
   }
   if (normalizedCommandId === importTxtCommandId) {
     return openTxtImportPreviewFlow();
+  }
+  if (normalizedCommandId === importMarkdownCommandId) {
+    return handleMarkdownImportUiPath();
+  }
+  if (normalizedCommandId === exportMarkdownCommandId) {
+    return handleMarkdownExportUiPath();
   }
   return dispatchUiCommand(commandId.trim());
 }

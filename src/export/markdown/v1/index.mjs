@@ -17,4 +17,11 @@ export {
   createLossReport,
   appendLoss,
   finalizeLossReport,
+  mergeLossReports,
 } from './lossReport.mjs';
+export {
+  MARKDOWN_DOCUMENT_IR_LOSS_REASON_CODES,
+  documentToMarkdownSceneV1,
+  legacyTextToMarkdownSceneV1,
+  markdownSceneV1ToDocument,
+} from './documentIr.mjs';

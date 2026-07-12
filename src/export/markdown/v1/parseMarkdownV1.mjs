@@ -65,11 +65,33 @@ function normalizeFenceLanguage(raw) {
 }
 
 function normalizeListLine(line) {
-  const unordered = /^(\s*)[-*+]\s+(.+)$/.exec(line);
-  if (unordered) return { ordered: false, indent: unordered[1].length, text: unordered[2] };
-  const ordered = /^(\s*)\d+\.\s+(.+)$/.exec(line);
-  if (ordered) return { ordered: true, indent: ordered[1].length, text: ordered[2] };
+  const unordered = /^(\s*)[-*+](?:\s+(.*))?$/u.exec(line);
+  if (unordered) return { ordered: false, indent: unordered[1].length, text: unordered[2] || '' };
+  const ordered = /^(\s*)\d+\.(?:\s+(.*))?$/u.exec(line);
+  if (ordered) return { ordered: true, indent: ordered[1].length, text: ordered[2] || '' };
   return null;
+}
+
+function joinParagraphLines(lines) {
+  let out = '';
+  let previousHardBreak = false;
+  for (let index = 0; index < lines.length; index += 1) {
+    const rawLine = String(lines[index] ?? '');
+    const hardBreak = / {2,}$/u.test(rawLine);
+    const text = rawLine.trim();
+    if (index > 0) out += previousHardBreak ? '\n' : ' ';
+    out += text;
+    previousHardBreak = hardBreak;
+  }
+  return out;
+}
+
+function decodeEscapedParagraphBlockMarker(line) {
+  const value = String(line ?? '');
+  if (/^\\(?:#{1,6}\s|[-+*]\s|>\s?|`{3,}|(?:-{3,}|\*{3,}|_{3,})\s*$)/u.test(value)) {
+    return value.slice(1);
+  }
+  return value.replace(/^(\d+)\\\.(\s)/u, '$1.$2');
 }
 
 function parseBlocks(lines, limits, lossReport, startMs) {
@@ -118,16 +140,29 @@ function parseBlocks(lines, limits, lossReport, startMs) {
       continue;
     }
 
-    const fenceOpen = /^```(.*)$/.exec(trimmed);
+    const fenceOpen = /^(`{3,})(.*)$/u.exec(trimmed);
     if (fenceOpen) {
-      const language = normalizeFenceLanguage(fenceOpen[1]);
+      const fence = fenceOpen[1];
+      const rawLanguage = normalizeFenceLanguage(fenceOpen[2]);
+      const language = /^[a-z0-9][a-z0-9_+.-]{0,63}$/u.test(rawLanguage)
+        ? rawLanguage
+        : '';
+      if (rawLanguage && !language) {
+        appendLoss(lossReport, {
+          kind: 'CODE_FENCE_INFO_UNSUPPORTED',
+          reasonCode: 'MDV1_CODE_FENCE_INFO_UNSUPPORTED',
+          path: `line:${i + 1}`,
+          note: 'Unsupported code-fence info string was omitted.',
+          evidence: rawLanguage,
+        });
+      }
       const codeLines = [];
       i += 1;
-      while (i < lines.length && !/^```$/.test(lines[i].trim())) {
+      while (i < lines.length && lines[i].trim() !== fence) {
         codeLines.push(lines[i]);
         i += 1;
       }
-      if (i < lines.length && /^```$/.test(lines[i].trim())) i += 1;
+      if (i < lines.length && lines[i].trim() === fence) i += 1;
       pushBlock({ type: 'codeFence', language, code: codeLines.join('\n') });
       continue;
     }
@@ -206,14 +241,15 @@ function parseBlocks(lines, limits, lossReport, startMs) {
       if (currentTrim.length === 0) break;
       if (/^#{1,6}\s+/.test(currentTrim)) break;
       if (/^(-{3,}|\*{3,}|_{3,})$/.test(currentTrim)) break;
-      if (/^```/.test(currentTrim)) break;
+      if (/^`{3,}/u.test(currentTrim)) break;
       if (currentTrim.startsWith('>')) break;
       if (normalizeListLine(current)) break;
-      scanTextSecurity(currentTrim);
-      paragraphLines.push(currentTrim);
+      const paragraphLine = decodeEscapedParagraphBlockMarker(current.trimStart());
+      scanTextSecurity(paragraphLine.trim());
+      paragraphLines.push(paragraphLine);
       i += 1;
     }
-    pushBlock({ type: 'paragraph', text: paragraphLines.join(' ') });
+    pushBlock({ type: 'paragraph', text: joinParagraphLines(paragraphLines) });
   }
 
   return { blocks, nodes };

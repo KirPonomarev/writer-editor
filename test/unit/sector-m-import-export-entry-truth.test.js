@@ -17,16 +17,16 @@ async function loadModules() {
   return { ...registry, ...project, ...palette };
 }
 
-test('import export entry truth: raw markdown commands are not user-facing in command catalog', () => {
+test('import export entry truth: canonical markdown file commands are available in the palette', () => {
   const source = read('src/renderer/commands/command-catalog.v1.mjs');
 
   assert.match(
     source,
-    /id:\s*'cmd\.project\.importMarkdownV1'[\s\S]*?surface:\s*\['internal'\][\s\S]*?hotkey:\s*''/,
+    /id:\s*'cmd\.project\.importMarkdownV1'[\s\S]*?surface:\s*\['palette'\][\s\S]*?hotkey:\s*''/,
   );
   assert.match(
     source,
-    /id:\s*'cmd\.project\.exportMarkdownV1'[\s\S]*?surface:\s*\['internal'\][\s\S]*?hotkey:\s*''/,
+    /id:\s*'cmd\.project\.exportMarkdownV1'[\s\S]*?surface:\s*\['palette'\][\s\S]*?hotkey:\s*''/,
   );
 });
 
@@ -39,7 +39,7 @@ test('import export entry truth: menu normalization aliases markdown actions to 
   assert.equal(source.includes("exportMarkdownV1: 'cmd.project.exportMarkdownV1'"), false);
 });
 
-test('import export entry truth: palette keeps canonical markdown entries and hides raw backend ids', async () => {
+test('import export entry truth: palette exposes canonical file commands during alias transition', async () => {
   const {
     createCommandRegistry,
     registerProjectCommands,
@@ -52,8 +52,22 @@ test('import export entry truth: palette keeps canonical markdown entries and hi
   const paletteEntries = listBySurface(registry, 'palette');
   const paletteIds = new Set(paletteEntries.map((entry) => entry.id));
 
-  assert.equal(paletteIds.has('cmd.project.importMarkdownV1'), false);
-  assert.equal(paletteIds.has('cmd.project.exportMarkdownV1'), false);
+  assert.equal(paletteIds.has('cmd.project.importMarkdownV1'), true);
+  assert.equal(paletteIds.has('cmd.project.exportMarkdownV1'), true);
   assert.equal(paletteIds.has('cmd.project.insert.markdownPrompt'), true);
   assert.equal(paletteIds.has('cmd.project.review.exportMarkdown'), true);
+});
+
+test('import export entry truth: palette canonical ids route to main-owned local-file flows', () => {
+  const source = read('src/renderer/editor.js');
+  const start = source.indexOf('function runCommandPaletteAction(commandId)');
+  const end = source.indexOf('function openSettingsModal()', start);
+  assert.notEqual(start, -1);
+  assert.notEqual(end, -1);
+  const section = source.slice(start, end);
+
+  assert.ok(section.includes("const importMarkdownCommandId = 'cmd.project.importMarkdownV1';"));
+  assert.ok(section.includes("const exportMarkdownCommandId = 'cmd.project.exportMarkdownV1';"));
+  assert.ok(section.includes('return handleMarkdownImportUiPath();'));
+  assert.ok(section.includes('return handleMarkdownExportUiPath();'));
 });

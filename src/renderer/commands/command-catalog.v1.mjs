@@ -28,7 +28,7 @@ const COMMAND_CATALOG_ROWS = [
     id: 'cmd.project.importMarkdownV1',
     label: 'Import Markdown v1',
     group: 'import',
-    surface: ['internal'],
+    surface: ['palette'],
     hotkey: '',
   },
   {
@@ -52,7 +52,7 @@ const COMMAND_CATALOG_ROWS = [
     id: 'cmd.project.exportMarkdownV1',
     label: 'Export Markdown v1',
     group: 'export',
-    surface: ['internal'],
+    surface: ['palette'],
     hotkey: '',
   },
   {
