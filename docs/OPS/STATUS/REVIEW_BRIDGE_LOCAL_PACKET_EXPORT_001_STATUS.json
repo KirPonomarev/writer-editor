@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "headShaBefore": "8dcac6cfe7979f8941afab0ea4bbc3e41a0f7864",
   "contour": "review_bridge_local_packet_export",
   "scope": {
@@ -96,11 +96,14 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending_delivery",
+    "status": "delivered_merged_verified",
+    "commitSha": "e8140e856551802e87b21f45772ffef8140c3782",
+    "pullRequest": 1070,
+    "mergeSha": "a4583bb79e72e5c03b4acd1e1340c80af31a85ca",
     "notes": [
-      "This run stopped after local implementation and tests by explicit user instruction.",
-      "No commit, push, pull request, or merge was performed in this contour."
+      "The implementation commit was pushed and merged through pull request 1070.",
+      "The source feature is present on the audited mainline base cb8fb26e346d2acec0669153ba29cbac3072cf40."
     ]
   },
-  "nextStep": "owner decides whether to start the commit push pull request merge chain for REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001"
+  "nextStep": "canonical review packet import to real Review UI exact apply remains a separate unbound product contour"
 }

@@ -3,6 +3,11 @@
 Короткая хронология изменений и решений. Это не полный лог чата, а сжатые записи “что сделали / зачем / что дальше”.
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
+## 2026-07-12
+- Review Bridge current-truth rebind: corrected the already merged local Review Packet export from stale pending-delivery wording to PR `1070`, feature commit `e8140e856551802e87b21f45772ffef8140c3782`, merge SHA `a4583bb79e72e5c03b4acd1e1340c80af31a85ca`, and `delivered_merged_verified`.
+- Closure classification: content import/export and packet transport are delivered where stated; canonical packet import to real Review UI exact apply remains implemented but unbound; DOCX Review remains evidence only; the local Markdown file product flow remains partial; Word and Google claims, Mindmap export, and project-level cross-scene apply remain deferred.
+- Scope truth: factual docs, status truth, and a stale-claim contract changed; no runtime, UI, dependency, storage, apply-authority, or release-scope change was introduced.
+
 ## 2026-07-04
 - Review Bridge: implemented local pending-delivery contour `REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001` as a bounded Review menu export path for the active review session only.
 - Review packet export scope truth: `cmd.project.review.exportLocalPacket` is main-owned, reads only active `revisionSession.reviewGraph`, revalidates through `buildRevisionPacketPreview`, writes exactly one external JSON review packet through `writeFileAtomic`, keeps renderer payload intent-only, and leaves `sourceViewState` excluded by default because the existing import path can rebuild Stage01 preview state from `reviewPacket` alone.
