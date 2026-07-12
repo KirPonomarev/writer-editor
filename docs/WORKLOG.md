@@ -4,7 +4,8 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-12
-- Review Bridge Phase 05 is implemented and locally verified pending delivery: the minimal-profile File menu now exposes DOCX, TXT, and Markdown content imports plus DOCX Minimal, Markdown, and current/selected/all TXT exports through existing product flows.
+- Review Bridge Phase 05 delivery: PR `1081` merged feature commit `c8c80775f469c38be40a917955f667348b491767` at merge SHA `bcfde6816bd340a60a95c6a0c6cd8e738bdca15c`; status is rebound to `delivered_merged_verified`, and Phase 06 bounded fidelity and golden acceptance are next.
+- Review Bridge Phase 05 implementation: the minimal-profile File menu exposes DOCX, TXT, and Markdown content imports plus DOCX Minimal, Markdown, and current/selected/all TXT exports through existing product flows.
 - Phase 05 Review labels separate `Import Review Packet for Exact Apply` from `DOCX Review Evidence`; the latter states `Comments preview` and `Tracked changes diagnostic` without implying DOCX Apply.
 - Phase 05 visible command cleanup leaves only canonical Markdown file commands in the palette; legacy prompt and review-export aliases are internal, and no HTML, CSS, dependency, storage, network, or authority change is introduced.
 - Review Bridge Phase 04 delivery: PR `1079` merged feature commit `d73c4b943774e0735e7d32835eb82849d1806583` at merge SHA `ff3ff47757e86c116f8f739804e3ffd2665535f0`; status is rebound to `delivered_merged_verified`, and Phase 05 discoverability and honest labels are next.

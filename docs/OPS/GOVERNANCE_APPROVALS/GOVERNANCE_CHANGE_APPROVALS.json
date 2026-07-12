@@ -3699,10 +3699,10 @@
     },
     {
       "filePath": "test/contracts/review-bridge-current-truth-rebind.contract.test.js",
-      "sha256": "719251a727ebd34f3e6b58e25215303f3e52cb36b1326cc71c33a8d599c4f209",
-      "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001_DELIVERY_REBIND",
-      "approvedAtUtc": "2026-07-12T21:36:00.000Z",
-      "rationale": "Approve active factual-doc contract rebind to delivered PR 1079 Markdown local-file import/export truth and delivered crash reconciliation while preserving DOCX Review evidence-only, Phase 05 and Phase 06 open work, cross-scene deferral, no dependency, no cloud, and no release-readiness claim."
+      "sha256": "6b1e8ea2d50d8e246506324c67a92ec0010a97ad91fceb5734a0ebd6dab54211",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T22:08:00.000Z",
+      "rationale": "Approve active factual-doc contract rebind to delivered PR 1081 product discoverability truth while preserving DOCX Review evidence-only, Phase 06 capability evidence as the sole open V1 closure phase, cross-scene deferral, no dependency, no cloud, and no editor-specific claim."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001_STATUS.json",
@@ -3797,10 +3797,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001_STATUS.json",
-      "sha256": "908f424fafac29b1821e5f3a94eba502545ff0780359059639961e4f24896ede",
-      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
-      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
-      "rationale": "Approve the bounded Phase 05 pending-delivery status for minimal-profile File and Review discoverability, canonical visible Markdown commands, existing preview and accept routing, explicit Minimal, Content only, Comments preview, Tracked changes diagnostic, and Exact Apply labels, with no HTML, CSS, dependency, storage, network, DOCX Apply, or release-readiness claim."
+      "sha256": "bd8790b49263a87a2505de35a0d45ba4be8c318901f31c90abfe5f068f95019e",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T22:08:00.000Z",
+      "rationale": "Approve the Phase 05 delivery rebind to PR 1081, feature commit c8c80775f469c38be40a917955f667348b491767, merge SHA bcfde6816bd340a60a95c6a0c6cd8e738bdca15c, merged checks, and delivered_merged_verified while preserving all bounded menu, alias, authority, fidelity, and release nonclaims."
     },
     {
       "filePath": "test/contracts/command-visibility-matrix.contract.test.js",
@@ -3818,10 +3818,10 @@
     },
     {
       "filePath": "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
-      "sha256": "5883cec4cb457aedd093384bde1adb76b44e4f0e252594efe3fad82f412f6286",
-      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
-      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
-      "rationale": "Approve the Phase 05 product contract for complete File and Review menu coverage, exact bounded labels, canonical palette-only Markdown visibility, native-to-existing-flow routing, normalized artifact truth, pending-delivery status, and explicit no-authority and no-release nonclaims."
+      "sha256": "bd42761b127bdc4d2c5b002b4a3555d94ad5b2c3470858f43625ded80a7f6c11",
+      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T22:08:00.000Z",
+      "rationale": "Approve the Phase 05 product contract delivery rebind to exact PR 1081 feature and merge evidence while retaining complete File and Review menu coverage, bounded labels, canonical palette-only Markdown visibility, existing-flow routing, artifact truth, and no-authority nonclaims."
     }
   ]
 }

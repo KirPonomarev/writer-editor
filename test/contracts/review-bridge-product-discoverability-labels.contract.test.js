@@ -100,7 +100,7 @@ test('Phase 05 native menu intents open the existing renderer preview flows', ()
   assert.match(renderer, /commandId === COMMAND_IDS\.PROJECT_EXPORT_MARKDOWN_V1[\s\S]*handleMarkdownExportUiPath\(\)/u);
 });
 
-test('Phase 05 normalized artifact and status preserve bounded product truth', () => {
+test('Phase 05 normalized artifact and status preserve exact merged product truth', () => {
   const artifact = readJson('docs/OPS/ARTIFACTS/menu/menu.normalized.json');
   const status = readJson('docs/OPS/STATUS/REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001_STATUS.json');
   const fileMenu = artifact.menus.find((menu) => menu.id === 'file');
@@ -115,11 +115,15 @@ test('Phase 05 normalized artifact and status preserve bounded product truth', (
   ));
   assert.ok(reviewMenu.items.some((item) => item.id === 'review-open-docx-review-preview-session'));
   assert.equal(status.taskId, 'REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001');
-  assert.equal(status.status, 'implemented_verified_pending_delivery');
+  assert.equal(status.status, 'delivered_merged_verified');
   assert.equal(status.baseSha, 'b6c2b8fba9c303ce95055e9168d72cb0390c167e');
   assert.equal(status.scope.indexHtmlChanged, false);
   assert.equal(status.scope.cssChanged, false);
   assert.equal(status.scope.dependencyChanged, false);
   assert.ok(status.nonClaims.some((claim) => claim.includes('DOCX Review remains evidence only')));
-  assert.equal(status.delivery.status, 'pending');
+  assert.equal(status.delivery.status, 'delivered_merged_verified');
+  assert.equal(status.delivery.commitSha, 'c8c80775f469c38be40a917955f667348b491767');
+  assert.equal(status.delivery.pullRequest, 1081);
+  assert.equal(status.delivery.mergeSha, 'bcfde6816bd340a60a95c6a0c6cd8e738bdca15c');
+  assert.equal(status.delivery.mergedAtUtc, '2026-07-12T22:06:58Z');
 });
