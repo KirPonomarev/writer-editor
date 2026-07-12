@@ -22,7 +22,10 @@ test('toolbar export docx preview command kernel: editor handleUiAction routes e
 
   assert.ok(source.includes('function openExportPreviewModal() {'))
   assert.ok(source.includes('async function confirmExportPreviewAndRun() {'))
-  assert.ok(source.includes('await dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);'))
+  assert.match(
+    source,
+    /await dispatchUiCommand\(COMMAND_IDS\.PROJECT_EXPORT_DOCX_MIN,\s*\{\s*confirmed:\s*true,?\s*\}\);/u,
+  )
 })
 
 test('toolbar export docx preview command kernel: x101 toolbar action map records direct command kernel path', () => {
@@ -46,7 +49,7 @@ test('toolbar export docx preview command kernel: out-of-scope command kernel an
   const preloadSource = read('src/preload.js')
 
   assert.ok(mainSource.includes("'cmd.project.export.docxMin': async (payload = {}) => {"))
-  assert.ok(mainSource.includes("sendCanonicalRuntimeCommand(\n      'cmd.project.export.docxMin'"))
+  assert.match(mainSource, /sendCanonicalRuntimeCommand\(\s*'cmd\.project\.export\.docxMin'/u)
   assert.ok(mainSource.includes("'open-export-preview'"))
 
   assert.ok(projectCommandsSource.includes("PROJECT_EXPORT_DOCX_MIN: COMMAND_KEY_TO_ID.PROJECT_EXPORT_DOCX_MIN"))

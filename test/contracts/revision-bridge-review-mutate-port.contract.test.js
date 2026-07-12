@@ -104,10 +104,11 @@ function tmpLocalPacket(payload) {
   };
 }
 
-async function importLocalPacketFromPath(port, packet, requestId = 'local-packet-e2e-request') {
+async function importLocalPacketFromPath(port, packet, requestId = 'local-packet-e2e-request', options = {}) {
   return port.handleReviewSurfaceImportLocalPacketCommandSurface(
     { requestId },
     {
+      ...options,
       pickLocalFile: async () => ({
         path: packet.packetPath,
         name: packet.name,
@@ -550,18 +551,19 @@ test('review mutate port contract: import stores canonical in-memory session sha
 });
 
 test('review mutate port contract: local packet import reads main-owned json and activates review session', async () => {
-  const port = instantiateReviewMutatePort();
+  const port = instantiateReviewMutatePort({ loadRevisionBridgeModule: loadBridge });
   const payload = {
+    packetVersion: 'review-packet.v1',
     projectId: 'project-1',
     sessionId: 'session-local-1',
     baselineHash: 'baseline-local-1',
-    reviewSurface: {
-      summary: { total: 1 },
-      changes: [{ changeId: 'change-local-1' }],
-    },
-    revisionSession: {
-      status: 'preview',
-    },
+    reviewPacket: validReviewPacket({
+      commentThreads: [],
+      commentPlacements: [],
+      structuralChanges: [],
+      diagnosticItems: [],
+      decisionStates: [],
+    }),
   };
   const text = JSON.stringify(payload);
   const calls = [];
@@ -588,12 +590,23 @@ test('review mutate port contract: local packet import reads main-owned json and
   assert.equal(result.commandId, 'cmd.project.review.importLocalPacket');
   assert.equal(result.requestId, 'local-request-1');
   assert.equal(result.imported, true);
+  assert.equal(result.packetVersion, 'review-packet.v1');
+  assert.equal(result.legacyNormalized, false);
   assert.equal(result.fileName, 'review-packet.json');
   assert.equal(result.path, undefined);
   assert.equal(result.filePath, undefined);
-  assert.deepEqual(normalizeVmValue(result.reviewSurface), payload.reviewSurface);
+  assert.equal(result.reviewSurface.revisionSession.sessionId, 'session-local-1');
+  assert.equal(result.reviewSurface.revisionSession.reviewGraph.textChanges[0].changeId, 'text-change-1');
+  assert.equal(result.reviewSurface.exactTextPlanPreview.status, 'blocked');
+  assert.equal(
+    result.reviewSurface.exactTextPlanPreview.reason,
+    'REVIEW_EXACT_TEXT_APPLY_CONTEXT_UNAVAILABLE',
+  );
   assert.equal(port.getState().activeReviewSessionLifecycle, 'active');
-  assert.deepEqual(normalizeVmValue(port.readActiveReviewSessionReviewSurface()), payload.reviewSurface);
+  assert.deepEqual(
+    normalizeVmValue(port.readActiveReviewSessionReviewSurface()),
+    normalizeVmValue(result.reviewSurface),
+  );
   assert.deepEqual(normalizeVmValue(calls), [
     { pick: { requestId: 'local-request-1' } },
     {
@@ -607,22 +620,88 @@ test('review mutate port contract: local packet import reads main-owned json and
   ]);
 });
 
+test('review mutate port contract: stale asynchronous plan refresh cannot overwrite a newer imported session', async () => {
+  const port = instantiateReviewMutatePort({ loadRevisionBridgeModule: loadBridge });
+  const reviewGraph = validReviewPacket({
+    commentThreads: [],
+    commentPlacements: [],
+    structuralChanges: [],
+    diagnosticItems: [],
+    decisionStates: [],
+  });
+  const firstPacket = tmpLocalPacket({
+    packetVersion: 'review-packet.v1',
+    projectId: 'project-1',
+    sessionId: 'session-race-first',
+    baselineHash: 'baseline-race-first',
+    reviewPacket: reviewGraph,
+  });
+  const secondPacket = tmpLocalPacket({
+    packetVersion: 'review-packet.v1',
+    projectId: 'project-1',
+    sessionId: 'session-race-second',
+    baselineHash: 'baseline-race-second',
+    reviewPacket: reviewGraph,
+  });
+
+  let releaseFirstRefresh;
+  let markFirstRefreshStarted;
+  const firstRefreshStarted = new Promise((resolve) => { markFirstRefreshStarted = resolve; });
+  const firstRefreshGate = new Promise((resolve) => { releaseFirstRefresh = resolve; });
+  const firstImport = importLocalPacketFromPath(
+    port,
+    firstPacket,
+    'local-request-race-first',
+    {
+      buildReviewExactTextApplyInput: async () => {
+        markFirstRefreshStarted();
+        await firstRefreshGate;
+        return { ok: false, reason: 'FIRST_SESSION_BLOCK' };
+      },
+    },
+  );
+  await firstRefreshStarted;
+
+  const secondImport = await importLocalPacketFromPath(
+    port,
+    secondPacket,
+    'local-request-race-second',
+    {
+      buildReviewExactTextApplyInput: async () => ({
+        ok: false,
+        reason: 'SECOND_SESSION_BLOCK',
+      }),
+    },
+  );
+  releaseFirstRefresh();
+  await firstImport;
+
+  const activeSurface = normalizeVmValue(port.readActiveReviewSessionReviewSurface());
+  assert.equal(secondImport.ok, true);
+  assert.equal(port.getState().activeReviewSessionStore.sessionId, 'session-race-second');
+  assert.equal(activeSurface.revisionSession.sessionId, 'session-race-second');
+  assert.equal(activeSurface.exactTextPlanPreview.status, 'blocked');
+  assert.equal(activeSurface.exactTextPlanPreview.reason, 'SECOND_SESSION_BLOCK');
+});
+
 test('review mutate port contract: local packet menu command uses default main file intake and opens comments', async () => {
   const payload = {
+    packetVersion: 'review-packet.v1',
     projectId: 'project-1',
     sessionId: 'session-menu-local-1',
     baselineHash: 'baseline-menu-local-1',
-    reviewSurface: {
-      summary: { total: 1 },
-      changes: [{ changeId: 'change-menu-local-1' }],
-    },
-    revisionSession: {
-      status: 'preview',
-    },
+    reviewPacket: validReviewPacket({
+      commentThreads: [],
+      commentPlacements: [],
+      structuralChanges: [],
+      diagnosticItems: [],
+      decisionStates: [],
+    }),
   };
   const packet = tmpLocalPacket(payload);
   const dialogCalls = [];
   const port = instantiateReviewMutatePort({
+    loadRevisionBridgeModule: loadBridge,
     dialog: {
       showOpenDialog: async (windowRef, options) => {
         dialogCalls.push({ windowRef, options });
@@ -650,7 +729,10 @@ test('review mutate port contract: local packet menu command uses default main f
     normalizeVmValue(dialogCalls[0].options.filters),
     [{ name: 'Review Packet JSON', extensions: ['json'] }],
   );
-  assert.deepEqual(normalizeVmValue(port.readActiveReviewSessionReviewSurface()), payload.reviewSurface);
+  const reviewSurface = normalizeVmValue(port.readActiveReviewSessionReviewSurface());
+  assert.equal(reviewSurface.revisionSession.sessionId, 'session-menu-local-1');
+  assert.equal(reviewSurface.revisionSession.reviewGraph.textChanges[0].changeId, 'text-change-1');
+  assert.equal(reviewSurface.exactTextPlanPreview.status, 'blocked');
   assert.deepEqual(normalizeVmValue(port.runtimeCommands), [
     {
       commandId: 'cmd.project.review.openComments',
@@ -769,7 +851,7 @@ test('review mutate port contract: local packet export writes one normalized jso
   const exportedPacket = JSON.parse(fs.readFileSync(exportPath, 'utf8'));
   assert.deepEqual(
     Object.keys(exportedPacket).sort(),
-    ['baselineHash', 'createdAt', 'projectId', 'reviewPacket', 'sessionId'],
+    ['baselineHash', 'createdAt', 'packetVersion', 'projectId', 'reviewPacket', 'sessionId'],
   );
   assert.deepEqual(
     Object.keys(exportedPacket.reviewPacket).sort(),
@@ -783,6 +865,7 @@ test('review mutate port contract: local packet export writes one normalized jso
     ],
   );
   assert.equal(exportedPacket.projectId, 'project-1');
+  assert.equal(exportedPacket.packetVersion, 'review-packet.v1');
   assert.equal(exportedPacket.sessionId, 'session-export-local-1');
   assert.equal(exportedPacket.baselineHash, 'baseline-export-local-1');
   assert.equal(exportedPacket.reviewPacket.textChanges[0].changeId, 'text-change-1');
@@ -820,6 +903,8 @@ test('review mutate port contract: local packet export writes one normalized jso
   assert.equal(reopenResult.ok, true);
   assert.equal(reopenResult.commandId, 'cmd.project.review.importLocalPacket');
   assert.equal(reopenResult.imported, true);
+  assert.equal(reopenResult.packetVersion, 'review-packet.v1');
+  assert.equal(reopenResult.legacyNormalized, false);
   assert.equal(reopenedSurface.revisionSession.sessionId, 'session-export-local-1');
   assert.equal(reopenedSurface.revisionSession.reviewGraph.textChanges[0].changeId, 'text-change-1');
   assert.equal(reopenedSurface.shadowPreview.status, 'preview');
@@ -956,14 +1041,179 @@ test('review mutate port contract: local packet import malformed json stays type
   assert.deepEqual(normalizeVmValue(port.readActiveReviewSessionReviewSurface()), {});
 });
 
+test('review mutate port contract: canonical packet version is enforced and unversioned canonical transport is normalized', async () => {
+  const canonicalPayload = {
+    projectId: 'project-1',
+    sessionId: 'session-version-1',
+    baselineHash: 'baseline-version-1',
+    reviewPacket: validReviewPacket({
+      commentThreads: [],
+      commentPlacements: [],
+      structuralChanges: [],
+      diagnosticItems: [],
+      decisionStates: [],
+    }),
+  };
+  const port = instantiateReviewMutatePort({ loadRevisionBridgeModule: loadBridge });
+  const legacyText = JSON.stringify(canonicalPayload);
+
+  const normalized = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+    { requestId: 'local-request-version-normalized' },
+    {
+      pickLocalFile: async () => ({
+        path: path.join(os.tmpdir(), 'review-packet.json'),
+        name: 'review-packet.json',
+        size: Buffer.byteLength(legacyText, 'utf8'),
+      }),
+      readLocalFileText: async () => legacyText,
+    },
+  );
+
+  assert.equal(normalized.ok, true);
+  assert.equal(normalized.packetVersion, 'review-packet.v1');
+  assert.equal(normalized.legacyNormalized, true);
+  port.handleReviewSurfaceClearSessionCommandSurface();
+
+  const unsupportedText = JSON.stringify({
+    ...canonicalPayload,
+    packetVersion: 'review-packet.v2',
+  });
+  const unsupported = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+    { requestId: 'local-request-version-unsupported' },
+    {
+      pickLocalFile: async () => ({
+        path: path.join(os.tmpdir(), 'review-packet.json'),
+        name: 'review-packet.json',
+        size: Buffer.byteLength(unsupportedText, 'utf8'),
+      }),
+      readLocalFileText: async () => unsupportedText,
+    },
+  );
+
+  assert.equal(unsupported.ok, false);
+  assert.equal(unsupported.error.code, 'E_REVIEW_IMPORT_LOCAL_PACKET_VERSION_UNSUPPORTED');
+  assert.equal(unsupported.error.reason, 'REVIEW_IMPORT_LOCAL_PACKET_VERSION_UNSUPPORTED');
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'cleared');
+
+  const invalidVersionText = JSON.stringify({
+    ...canonicalPayload,
+    packetVersion: 1,
+    createdAt: 123,
+  });
+  const invalidVersion = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+    { requestId: 'local-request-version-invalid-type' },
+    {
+      pickLocalFile: async () => ({
+        path: path.join(os.tmpdir(), 'review-packet.json'),
+        name: 'review-packet.json',
+        size: Buffer.byteLength(invalidVersionText, 'utf8'),
+      }),
+      readLocalFileText: async () => invalidVersionText,
+    },
+  );
+
+  assert.equal(invalidVersion.ok, false);
+  assert.equal(invalidVersion.error.code, 'E_REVIEW_IMPORT_LOCAL_PACKET_SCHEMA_INVALID');
+  assert.equal(invalidVersion.error.reason, 'REVIEW_IMPORT_LOCAL_PACKET_TOP_LEVEL_VALUES_INVALID');
+  assert.deepEqual(normalizeVmValue(invalidVersion.error.details.fields), ['createdAt', 'packetVersion']);
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'cleared');
+});
+
+test('review mutate port contract: canonical packet rejects missing or unknown ReviewGraph collections', async () => {
+  const basePayload = {
+    packetVersion: 'review-packet.v1',
+    projectId: 'project-1',
+    sessionId: 'session-schema-1',
+    baselineHash: 'baseline-schema-1',
+    reviewPacket: validReviewPacket(),
+  };
+  const port = instantiateReviewMutatePort({ loadRevisionBridgeModule: loadBridge });
+
+  for (const [requestId, mutate, expectedDetails] of [
+    [
+      'local-request-schema-missing',
+      (payload) => { delete payload.reviewPacket.diagnosticItems; },
+      { missingFields: ['diagnosticItems'], unsupportedFields: [] },
+    ],
+    [
+      'local-request-schema-unknown',
+      (payload) => { payload.reviewPacket.unknownCollection = []; },
+      { missingFields: [], unsupportedFields: ['unknownCollection'] },
+    ],
+  ]) {
+    const payload = cloneJsonSafe(basePayload);
+    mutate(payload);
+    const text = JSON.stringify(payload);
+    const result = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+      { requestId },
+      {
+        pickLocalFile: async () => ({
+          path: path.join(os.tmpdir(), 'review-packet.json'),
+          name: 'review-packet.json',
+          size: Buffer.byteLength(text, 'utf8'),
+        }),
+        readLocalFileText: async () => text,
+      },
+    );
+
+    assert.equal(result.ok, false);
+    assert.equal(result.error.code, 'E_REVIEW_IMPORT_LOCAL_PACKET_SCHEMA_INVALID');
+    assert.equal(result.error.reason, 'REVIEW_IMPORT_LOCAL_PACKET_REVIEW_PACKET_FIELDS_INVALID');
+    assert.deepEqual(normalizeVmValue(result.error.details), expectedDetails);
+    assert.notEqual(port.getState().activeReviewSessionLifecycle, 'active');
+  }
+});
+
+test('review mutate port contract: legacy reviewSurface transport cannot activate direct apply state', async () => {
+  const port = instantiateReviewMutatePort();
+  const text = JSON.stringify({
+    projectId: 'project-1',
+    sessionId: 'session-legacy-surface-1',
+    baselineHash: 'baseline-legacy-surface-1',
+    reviewSurface: {
+      exactTextPlanPreview: {
+        status: 'ready',
+        plan: {
+          applyOps: [{ changeId: 'external-change' }],
+        },
+      },
+    },
+  });
+
+  const result = await port.handleReviewSurfaceImportLocalPacketCommandSurface(
+    { requestId: 'local-request-legacy-surface' },
+    {
+      pickLocalFile: async () => ({
+        path: path.join(os.tmpdir(), 'review-packet.json'),
+        name: 'review-packet.json',
+        size: Buffer.byteLength(text, 'utf8'),
+      }),
+      readLocalFileText: async () => text,
+    },
+  );
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error.reason, 'REVIEW_IMPORT_LOCAL_PACKET_WRITE_EVIDENCE_DENIED');
+  assert.deepEqual(
+    normalizeVmValue(result.error.details.fields),
+    [
+      'reviewSurface',
+      'reviewSurface.exactTextPlanPreview.plan',
+      'reviewSurface.exactTextPlanPreview.plan.applyOps',
+    ],
+  );
+  assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
+});
+
 test('review mutate port contract: local packet import denies external write receipt evidence', async () => {
   const port = instantiateReviewMutatePort();
   const payload = {
+    packetVersion: 'review-packet.v1',
     projectId: 'project-1',
     sessionId: 'session-1',
     baselineHash: 'baseline-1',
-    reviewSurface: {
-      summary: { total: 1 },
+    reviewPacket: {
+      ...validReviewPacket(),
       receipt: {
         schemaVersion: 'revision-bridge.exact-text-min-safe-write.receipt.v1',
         projectId: 'project-1',
@@ -996,9 +1246,9 @@ test('review mutate port contract: local packet import denies external write rec
   assert.deepEqual(
     normalizeVmValue(result.error.details.fields),
     [
-      'reviewSurface.receipt',
-      'reviewSurface.exactTextApplyReceipts',
-      'reviewSurface.exactTextAppliedChangeIds',
+      'reviewPacket.receipt',
+      'reviewPacket.exactTextApplyReceipts',
+      'reviewPacket.exactTextAppliedChangeIds',
     ],
   );
   assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
@@ -1039,7 +1289,7 @@ test('review mutate port contract: local packet import restats before read and r
 });
 
 test('review mutate port contract: local packet e2e exact apply writes only after local import', async () => {
-  const port = instantiateReviewMutatePort();
+  const port = instantiateReviewMutatePort({ loadRevisionBridgeModule: loadBridge });
   const { scenePath } = tmpScene('Alpha beta gamma.');
   const revisionSession = validExactApplyRevisionSession({
     sceneId: scenePath,
@@ -1047,19 +1297,31 @@ test('review mutate port contract: local packet e2e exact apply writes only afte
     baselineHash: 'baseline-local-e2e-1',
   });
   const packet = tmpLocalPacket({
+    packetVersion: 'review-packet.v1',
     projectId: 'project-1',
     sessionId: 'session-local-e2e-1',
     baselineHash: 'baseline-local-e2e-1',
-    reviewSurface: {
-      revisionSession,
-      summary: { total: 1 },
-    },
-    revisionSession,
-    sourcePacketHash: 'packet-hash-local-e2e-1',
+    reviewPacket: revisionSession.reviewGraph,
     createdAt: '2026-05-24T12:00:00.000Z',
   });
 
-  const importResult = await importLocalPacketFromPath(port, packet, 'local-request-e2e-single');
+  const applyInput = await buildReadyExactApplyInput({
+    scenePath,
+    sceneText: 'Alpha beta gamma.',
+    revisionSession,
+  });
+  let prepareRequest = null;
+  const importResult = await importLocalPacketFromPath(
+    port,
+    packet,
+    'local-request-e2e-single',
+    {
+      buildReviewExactTextApplyInput: async (request) => {
+        prepareRequest = normalizeVmValue(request);
+        return { ok: true, input: applyInput };
+      },
+    },
+  );
   const importedSurface = normalizeVmValue(port.readActiveReviewSessionReviewSurface());
 
   assert.equal(importResult.ok, true);
@@ -1069,18 +1331,17 @@ test('review mutate port contract: local packet e2e exact apply writes only afte
   assert.equal(importResult.fileName, 'review-packet.json');
   assert.equal(importResult.path, undefined);
   assert.equal(importResult.filePath, undefined);
+  assert.equal(prepareRequest.payload.changeId, 'text-change-1');
   assert.equal(readText(scenePath), 'Alpha beta gamma.');
   assert.equal(port.getState().activeReviewSessionLifecycle, 'active');
   assert.equal(importedSurface.revisionSession.sessionId, 'session-local-e2e-1');
   assert.equal(importedSurface.revisionSession.reviewGraph.textChanges[0].changeId, 'text-change-1');
+  assert.equal(importedSurface.exactTextPlanPreview.status, 'ready');
+  assert.equal(importedSurface.exactTextPlanPreview.plan.applyOps.length, 1);
+  assert.equal(importedSurface.exactTextPlanPreview.plan.applyOps[0].changeId, 'text-change-1');
   assert.equal(Object.prototype.hasOwnProperty.call(importedSurface, 'receipt'), false);
   assert.equal(Object.prototype.hasOwnProperty.call(importedSurface, 'exactTextApplyResult'), false);
 
-  const applyInput = await buildReadyExactApplyInput({
-    scenePath,
-    sceneText: 'Alpha beta gamma.',
-    revisionSession,
-  });
   let applyRequest = null;
   const applyResult = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface(
     { changeId: 'text-change-1' },
@@ -1121,7 +1382,7 @@ test('review mutate port contract: local packet e2e exact apply writes only afte
 });
 
 test('review mutate port contract: local packet e2e batch exact apply stays same-scene and receipt-free on surface', async () => {
-  const port = instantiateReviewMutatePort();
+  const port = instantiateReviewMutatePort({ loadRevisionBridgeModule: loadBridge });
   const { scenePath } = tmpScene('Alpha beta gamma omega.');
   const revisionSession = validExactApplyRevisionSession({
     sceneId: scenePath,
@@ -1145,21 +1406,36 @@ test('review mutate port contract: local packet e2e batch exact apply stays same
     ],
   });
   const packet = tmpLocalPacket({
+    packetVersion: 'review-packet.v1',
     projectId: 'project-1',
     sessionId: 'session-local-e2e-batch',
     baselineHash: 'baseline-local-e2e-batch',
-    reviewSurface: {
-      revisionSession,
-      summary: { total: 2 },
-    },
-    revisionSession,
-    sourcePacketHash: 'packet-hash-local-e2e-batch',
+    reviewPacket: revisionSession.reviewGraph,
     createdAt: '2026-05-24T12:00:00.000Z',
   });
 
-  const importResult = await importLocalPacketFromPath(port, packet, 'local-request-e2e-batch');
+  const importResult = await importLocalPacketFromPath(
+    port,
+    packet,
+    'local-request-e2e-batch',
+    {
+      buildReviewExactTextApplyInput: async (request) => ({
+        ok: true,
+        input: await buildReadyExactApplyInput({
+          scenePath,
+          sceneText: 'Alpha beta gamma omega.',
+          revisionSession: request.revisionSession,
+        }),
+      }),
+    },
+  );
   assert.equal(importResult.ok, true);
   assert.equal(readText(scenePath), 'Alpha beta gamma omega.');
+  assert.equal(importResult.reviewSurface.exactTextPlanPreview.status, 'ready');
+  assert.deepEqual(
+    normalizeVmValue(importResult.reviewSurface.exactTextPlanPreview.plan.applyOps.map((op) => op.changeId)),
+    ['text-change-1', 'text-change-2'],
+  );
   assert.equal(Object.prototype.hasOwnProperty.call(
     normalizeVmValue(port.readActiveReviewSessionReviewSurface()),
     'exactTextAppliedChangeIds',
@@ -1205,10 +1481,10 @@ test('review mutate port contract: local packet e2e batch exact apply stays same
 test('review mutate port contract: local mixed packet remains preview and manual-only for structural changes', async () => {
   const port = instantiateReviewMutatePort({ loadRevisionBridgeModule: loadBridge });
   const packet = tmpLocalPacket({
+    packetVersion: 'review-packet.v1',
     projectId: 'project-1',
     sessionId: 'session-local-mixed-preview',
     baselineHash: 'baseline-a',
-    currentBaselineHash: 'baseline-b',
     reviewPacket: validReviewPacket(),
     createdAt: '2026-05-24T12:00:00.000Z',
   });
@@ -1436,6 +1712,7 @@ test('review mutate port contract: main apply context is main-owned and never re
   assert.equal(snippet.includes('fs.readFile(currentFilePath, \'utf8\')'), true);
   assert.equal(snippet.includes('isDirty || autoSaveInProgress'), true);
   assert.equal(snippet.includes('buildExactTextApplyPlanNoDiskPreview'), true);
+  assert.equal((snippet.match(/baselineHash: computeHash\(sceneText\)/gu) || []).length, 2);
   assert.equal(snippet.includes('scenePathBySceneId'), true);
 });
 
