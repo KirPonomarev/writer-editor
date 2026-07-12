@@ -26,10 +26,13 @@ test('active factual docs carry one non-stale closure classification', () => {
     const content = readRepoFile(relativePath);
 
     assert.match(content, /PR `1070` at merge SHA `a4583bb79e72e5c03b4acd1e1340c80af31a85ca`/u);
-    assert.match(content, /canonical Review Packet import to real Review UI exact apply is implemented but unbound/u);
+    assert.match(content, /PR `1073` at merge SHA `980557a3f52772b2cc3bd1650e45165023659fed`/u);
+    assert.match(content, /canonical same-document exact apply through the real Review UI are delivered/u);
     assert.match(content, /DOCX Review is evidence only/u);
     assert.match(content, /local Markdown file product flow is partial product flow/u);
+    assert.match(content, /crash reconciliation remains the next P0/u);
     assert.match(content, /project-level cross-scene apply are deferred/u);
+    assert.doesNotMatch(content, /canonical Review Packet import to real Review UI exact apply is implemented but unbound/u);
     assert.doesNotMatch(content, /Local branch pending-delivery contour `REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001`/u);
     assert.doesNotMatch(content, /Current branch local pending-delivery contour `REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001`/u);
   }

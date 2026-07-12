@@ -4,6 +4,8 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-12
+- Review Bridge Phase 01 delivery: PR `1073` merged feature commit `5beb4ff48eb974b028254ce3283a59a649aff4a0` at merge SHA `980557a3f52772b2cc3bd1650e45165023659fed`; OSS, Ubuntu runtime parity, Windows runtime parity, and post-merge ops-vector checks passed.
+- Phase 01 factual rebind: canonical Review Packet V1 native export, re-import, real Review UI exact apply, receipt, and recovery are now `delivered_merged_verified`; crash reconciliation remains the next separate P0 contour.
 - Review Bridge Phase 01: opened `REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001` from owner-approved mainline base `54ef43faae8c41be17765c6b0a0fa8688ebb4f95` as the canonical Review Packet V1 to real Review UI Apply contour.
 - Phase 01 runtime: canonical local packet import now validates `review-packet.v1`, rejects external write authority, rebuilds exact-text readiness from current saved project truth in main, and exposes ready or blocked state through the existing Review surface.
 - Phase 01 product proof: a real Electron run uses native Review menu export, main-owned Save As, atomic canonical packet write, clear-session, native re-import through the main-owned picker, visible Apply, canonical disk verification, editor reload, receipt, readable recovery snapshot, and zero network requests; eight negative branches remain zero-write.
@@ -12,7 +14,7 @@
 - Phase 01 governance audit: repaired five pre-existing stale approval hashes to current mainline byte truth; post-commit broad Review Bridge/menu/command-bus sweep reached 884 passes with only five historical branch-allowlist assertions and two superseded no-runtime-wiring assertions remaining outside active acceptance.
 - Phase 01 scope truth: no UI redesign, dependency, structural apply, comment auto-apply, DOCX tracked-change apply, cross-scene transaction, cloud, Word sync, Google sync, or release-readiness claim is opened; crash reconciliation remains the next separate contour.
 - Review Bridge current-truth rebind: corrected the already merged local Review Packet export from stale pending-delivery wording to PR `1070`, feature commit `e8140e856551802e87b21f45772ffef8140c3782`, merge SHA `a4583bb79e72e5c03b4acd1e1340c80af31a85ca`, and `delivered_merged_verified`.
-- Closure classification: content import/export and packet transport are delivered where stated; canonical packet import to real Review UI exact apply remains implemented but unbound; DOCX Review remains evidence only; the local Markdown file product flow remains partial; Word and Google claims, Mindmap export, and project-level cross-scene apply remain deferred.
+- Closure classification: content import/export and packet transport are delivered where stated; canonical packet import to real Review UI exact apply is delivered; DOCX Review remains evidence only; the local Markdown file product flow remains partial; crash reconciliation remains next; Word and Google claims, Mindmap export, and project-level cross-scene apply remain deferred.
 - Scope truth: factual docs, status truth, and a stale-claim contract changed; no runtime, UI, dependency, storage, apply-authority, or release-scope change was introduced.
 
 ## 2026-07-04
