@@ -41,6 +41,7 @@ const ALLOWLIST = [
   'test/unit/sector-m-m2-roundtrip.test.js',
   'test/contracts/revision-bridge-markdown-file-authority-command-surface.contract.test.js',
   'test/contracts/revision-bridge-markdown-product-completion.contract.test.js',
+  'test/contracts/review-bridge-current-truth-rebind.contract.test.js',
   'test/fixtures/markdown/phase04/canonical-document-goldens.json',
   'test/fixtures/sector-m/m4/ui-path-markers.json',
   'test/unit/markdown-export-save-as-ui-flow.test.js',

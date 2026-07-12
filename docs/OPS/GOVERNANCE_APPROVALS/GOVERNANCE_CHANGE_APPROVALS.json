@@ -3699,10 +3699,10 @@
     },
     {
       "filePath": "test/contracts/review-bridge-current-truth-rebind.contract.test.js",
-      "sha256": "5d8c64939c3d11c09b750d0a35f08f0b3df6d887753b779c840df1d5dba45e82",
-      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_DELIVERY_REBIND",
-      "approvedAtUtc": "2026-07-12T18:12:39.000Z",
-      "rationale": "Approve active factual-doc contract rebind from implemented-but-unbound wording to delivered PR 1073 truth while preserving DOCX Review evidence-only, Markdown partial-flow, crash reconciliation P0, cross-scene deferred, no dependency, and no release-readiness claims."
+      "sha256": "719251a727ebd34f3e6b58e25215303f3e52cb36b1326cc71c33a8d599c4f209",
+      "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T21:36:00.000Z",
+      "rationale": "Approve active factual-doc contract rebind to delivered PR 1079 Markdown local-file import/export truth and delivered crash reconciliation while preserving DOCX Review evidence-only, Phase 05 and Phase 06 open work, cross-scene deferral, no dependency, no cloud, and no release-readiness claim."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001_STATUS.json",
@@ -3776,24 +3776,24 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001_STATUS.json",
-      "sha256": "50276284d174e2d358b75bea9fb191417ad71df40afaef5c3d395f313a4da50e",
-      "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001",
-      "approvedAtUtc": "2026-07-12T21:20:00.000Z",
-      "rationale": "Approve the bounded Phase 04 pending-delivery status for visible local Markdown preview and safe-create, canonical saved-scene document-IR export, authoritative serializer loss warnings, deterministic semantic goldens, unchanged atomic recovery and file authority, no dependency or HTML/CSS change, and explicit nonclaims against full CommonMark/GFM, final menu cleanup, broader format fidelity, cloud, structural apply, and release readiness."
+      "sha256": "cda388f04fcbd202c5f6dd919e3b8209724595da792b2347a950d00d84e17fbf",
+      "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T21:36:00.000Z",
+      "rationale": "Approve the Phase 04 delivery rebind to PR 1079, feature commit d73c4b943774e0735e7d32835eb82849d1806583, merge SHA ff3ff47757e86c116f8f739804e3ffd2665535f0, merged checks, and delivered_merged_verified while preserving all bounded Markdown v1, dependency, UI, cloud, fidelity, structural apply, cross-scene, and release-readiness nonclaims."
     },
     {
       "filePath": "test/contracts/export-contour-02-markdown-text-hardening.contract.test.js",
-      "sha256": "3c888b107b6955d3555da75cbc09ee7af1aef53f620b6ef7ab62781e01edca78",
-      "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001",
-      "approvedAtUtc": "2026-07-12T21:20:00.000Z",
-      "rationale": "Approve the cumulative Markdown contour allowlist extension for the Phase 04 runtime, renderer binding, semantic golden, status, and documentation files while keeping dependency manifests unchanged and retaining deterministic downgrade assertions."
+      "sha256": "4b8809bc0c1df2d94b5dbecd3b69dba8c089a824f3f46bc844e317d11ba492e9",
+      "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T21:36:00.000Z",
+      "rationale": "Approve the cumulative Markdown contour allowlist extension for the Phase 04 factual current-truth rebind while keeping the delivery diff documentation-only, dependency manifests unchanged, runtime unchanged, and deterministic downgrade assertions intact."
     },
     {
       "filePath": "test/contracts/revision-bridge-markdown-product-completion.contract.test.js",
-      "sha256": "0ead26b2f6cf3be8f02ac91bcd4dc00e1622bc1a9aeaa04532a8a7330ac77344",
-      "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001",
-      "approvedAtUtc": "2026-07-12T21:20:00.000Z",
-      "rationale": "Approve the Phase 04 product contract covering canonical doc-v2 import, saved-scene disk source, dirty-state refusal, literal marker structure, Unicode and CRLF normalization, lists, code-fence width and blank lines, combined marks, safe links, inline backtick delimiters, authoritative losses, and bounded pending-delivery documentation truth."
+      "sha256": "8134c59e61b84df878429faec878d0c342584901ab5d5c092ade32ce8e69fecf",
+      "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T21:36:00.000Z",
+      "rationale": "Approve the Phase 04 product contract delivery rebind to exact PR 1079 feature and merge evidence while retaining canonical doc-v2 import, saved-scene export, dirty refusal, semantic goldens, 72 inline vectors, authoritative losses, and all bounded nonclaims."
     }
   ]
 }
