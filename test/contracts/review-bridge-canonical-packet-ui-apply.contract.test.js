@@ -52,21 +52,23 @@ test('canonical Review Packet V1 schema keeps transport authority bounded', () =
   }
 });
 
-test('canonical Review Packet UI Apply status stays pending-delivery and claim-bounded', () => {
+test('canonical Review Packet UI Apply status is rebound to merged delivery and stays claim-bounded', () => {
   const status = JSON.parse(readRepoFile(statusPath));
 
   assert.equal(status.taskId, 'REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001');
-  assert.equal(status.status, 'implemented_verified_pending_delivery');
+  assert.equal(status.status, 'delivered_merged_verified');
   assert.equal(status.baseSha, '54ef43faae8c41be17765c6b0a0fa8688ebb4f95');
   assert.equal(status.scope.packetVersion, 'review-packet.v1');
   assert.equal(status.scope.rendererIntentOnly, true);
   assert.equal(status.scope.uiRedesign, false);
   assert.equal(status.scope.newDependenciesAdded, false);
   assert.equal(status.implementation.staleAsyncPlanSessionTokenGuard, true);
-  assert.equal(status.delivery.status, 'pending');
-  assert.equal(status.delivery.commitSha, null);
-  assert.equal(status.delivery.pullRequest, null);
-  assert.equal(status.delivery.mergeSha, null);
+  assert.equal(status.delivery.status, 'delivered_merged_verified');
+  assert.equal(status.delivery.commitSha, '5beb4ff48eb974b028254ce3283a59a649aff4a0');
+  assert.equal(status.delivery.pullRequest, 1073);
+  assert.equal(status.delivery.mergeSha, '980557a3f52772b2cc3bd1650e45165023659fed');
+  assert.equal(status.delivery.mergedAtUtc, '2026-07-12T18:10:25Z');
+  assert.equal(status.delivery.postMergeChecks.every((check) => check.status === 'pass'), true);
   assert.equal(status.negativeAcceptance.length, 9);
   assert.equal(status.nonClaims.some((claim) => /Crash reconciliation is not claimed/u.test(claim)), true);
   assert.equal(status.nonClaims.some((claim) => /No structural auto-apply/u.test(claim)), true);

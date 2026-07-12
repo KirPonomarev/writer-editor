@@ -3685,10 +3685,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_STATUS.json",
-      "sha256": "e0e14461192762edb4b2b8dae0c9cf538686ec889c8081367f30c9cf6f277dfb",
-      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
-      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
-      "rationale": "Approve the pending-delivery Phase 01 status artifact for canonical Review Packet V1 to real Review UI exact apply, with native Electron positive and negative evidence, explicit crash-reconciliation deferral, and no structural apply, DOCX tracked-change apply, cross-scene transaction, cloud, dependency, or release-readiness claim."
+      "sha256": "3fa1d3aabe6c741bbcc274e05a4c30f064adeea3720935d1748dcbe4e7b9535b",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T18:12:39.000Z",
+      "rationale": "Approve delivery truth rebind for canonical Review Packet V1 to real Review UI exact apply after PR 1073 merge; status records feature commit, merge SHA, merged time, four green checks, and unchanged nonclaims against crash reconciliation, structural apply, DOCX tracked-change apply, cross-scene transaction, cloud, dependency, and release readiness."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_PACKET_V1.schema.json",
@@ -3699,10 +3699,17 @@
     },
     {
       "filePath": "test/contracts/review-bridge-canonical-packet-ui-apply.contract.test.js",
-      "sha256": "c9003aff0d65eb52fdad4137495ea39f50599f0ccd14f729b7c4c3b7902e739a",
-      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
-      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
-      "rationale": "Approve the bounded schema, pending-delivery status, main-owned disk-plan derivation, stale-session token guard, and identifier-only visible Apply contract; no renderer write authority, UI redesign, new dependency, structural apply, DOCX apply, cross-scene transaction, or release-readiness claim is introduced."
+      "sha256": "96aaa111fc90a601af46c248a8c83a016b3f594d5838ec7102cb39f4c293ab06",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T18:12:39.000Z",
+      "rationale": "Approve the delivery-bound contract update verifying PR 1073 feature commit, merge SHA, merged time, green checks, bounded schema, main-owned disk-plan derivation, stale-session token guard, and identifier-only visible Apply without renderer write authority, UI redesign, dependency, structural apply, DOCX apply, cross-scene transaction, or release-readiness widening."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-current-truth-rebind.contract.test.js",
+      "sha256": "5d8c64939c3d11c09b750d0a35f08f0b3df6d887753b779c840df1d5dba45e82",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T18:12:39.000Z",
+      "rationale": "Approve active factual-doc contract rebind from implemented-but-unbound wording to delivered PR 1073 truth while preserving DOCX Review evidence-only, Markdown partial-flow, crash reconciliation P0, cross-scene deferred, no dependency, and no release-readiness claims."
     }
   ]
 }
