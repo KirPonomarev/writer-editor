@@ -2,18 +2,18 @@
   "schemaVersion": "revision-bridge.capability-matrix.v1",
   "matrixId": "revision-bridge-local-v1-2026-07-12",
   "baseSha": "5456f7f3dd689559d63bb10181e8998464540f72",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "releaseClaim": {
-    "label": "FEATURE_COMPLETE_V1_PENDING_DELIVERY",
+    "label": "FEATURE_COMPLETE_V1",
     "definition": "Gates A and B plus safety hardening and bounded evidence only",
     "publicClaimCeiling": "Offline-first local import, export, and canonical Review Packet exact apply within the rows below",
     "gates": {
-      "A_CONTENT_IMPORT_EXPORT_V1": "pass_pending_delivery",
-      "B_LOCAL_REVIEW_BRIDGE_V1": "pass_pending_delivery",
+      "A_CONTENT_IMPORT_EXPORT_V1": "pass",
+      "B_LOCAL_REVIEW_BRIDGE_V1": "pass",
       "C_DOCX_REVIEW_V1": "post_v1_not_claimed",
       "D_EDITOR_SPECIFIC_CLAIMS": "post_v1_not_claimed"
     },
-    "safetyHardening": "pass_pending_delivery"
+    "safetyHardening": "pass"
   },
   "rows": [
     {
@@ -114,5 +114,12 @@
   ],
   "outcomes": ["deterministic artifacts", "bounded claims", "zero network required", "no new dependency"],
   "nonClaims": ["Gates C and D", "release packaging", "cross-platform packaged smoke", "Word support", "Google Docs support", "cloud sync", "Mindmap export", "project-level cross-scene apply"],
-  "knownLimitations": ["DOCX Review tracked changes remain diagnostic-only", "DOCX content import is plain-text-oriented", "Markdown is a bounded V1 subset", "feature delivery is pending merge and factual rebind"]
+  "knownLimitations": ["DOCX Review tracked changes remain diagnostic-only", "DOCX content import is plain-text-oriented", "Markdown is a bounded V1 subset"],
+  "delivery": {
+    "featureCommit": "01b2a5f28fff9c2f3f9451edc1827c0aebf002e7",
+    "pullRequest": 1083,
+    "mergeSha": "3f71a6fa3b10cecf0973c80a1865552b57e0c180",
+    "mergedAtUtc": "2026-07-12T22:48:18Z",
+    "checks": ["oss-policy", "x1-runtime-parity ubuntu", "x1-runtime-parity windows"]
+  }
 }

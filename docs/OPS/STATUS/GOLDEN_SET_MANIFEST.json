@@ -2,7 +2,7 @@
   "schemaVersion": "revision-bridge.golden-set-manifest.v1",
   "goldenSetId": "revision-bridge-local-v1-2026-07-12",
   "baseSha": "5456f7f3dd689559d63bb10181e8998464540f72",
-  "status": "verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "generator": "review-bridge-golden-set.mjs",
   "artifacts": [
     {
@@ -57,5 +57,11 @@
   },
   "outcomes": ["all fixture bytes match deterministic generator output", "all hashes match manifest"],
   "nonClaims": ["external editor provenance", "packaged release compatibility"],
-  "knownLimitations": ["fixtures are bounded product artifacts, not a general format corpus", "Word and Google artifact labs remain separate post-V1 gates"]
+  "knownLimitations": ["fixtures are bounded product artifacts, not a general format corpus", "Word and Google artifact labs remain separate post-V1 gates"],
+  "delivery": {
+    "featureCommit": "01b2a5f28fff9c2f3f9451edc1827c0aebf002e7",
+    "pullRequest": 1083,
+    "mergeSha": "3f71a6fa3b10cecf0973c80a1865552b57e0c180",
+    "mergedAtUtc": "2026-07-12T22:48:18Z"
+  }
 }

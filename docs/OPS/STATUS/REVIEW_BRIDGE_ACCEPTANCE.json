@@ -2,7 +2,7 @@
   "schemaVersion": "revision-bridge.review-acceptance.v1",
   "acceptanceId": "LOCAL_REVIEW_BRIDGE_V1_2026_07_12",
   "baseSha": "5456f7f3dd689559d63bb10181e8998464540f72",
-  "status": "pass_pending_delivery",
+  "status": "delivered_merged_verified",
   "gate": "B_LOCAL_REVIEW_BRIDGE_V1",
   "outcomes": {
     "canonicalPacketPreview": "pass",
@@ -31,5 +31,11 @@
     "crashReconciliationMergeSha": "314d550199858d055255fa55fc4a457f09c8f495"
   },
   "nonClaims": ["DOCX Apply", "structural auto-apply", "comment auto-apply", "cross-scene transaction", "Word sync", "Google Docs sync"],
-  "knownLimitations": ["exact apply is same-scene and unique-match only", "same-scene batch is capped", "DOCX tracked changes remain diagnostics", "delivery merge and factual rebind are pending"]
+  "knownLimitations": ["exact apply is same-scene and unique-match only", "same-scene batch is capped", "DOCX tracked changes remain diagnostics"],
+  "delivery": {
+    "featureCommit": "01b2a5f28fff9c2f3f9451edc1827c0aebf002e7",
+    "pullRequest": 1083,
+    "mergeSha": "3f71a6fa3b10cecf0973c80a1865552b57e0c180",
+    "mergedAtUtc": "2026-07-12T22:48:18Z"
+  }
 }

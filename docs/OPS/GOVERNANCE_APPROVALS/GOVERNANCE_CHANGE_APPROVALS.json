@@ -3825,24 +3825,24 @@
     },
     {
       "filePath": "docs/OPS/STATUS/CAPABILITY_MATRIX.json",
-      "sha256": "fdc08d246462756b51c454af53fb9deab6c71eabdd88f5605ce7292c9b917acd",
-      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "sha256": "0330f9663475d4ff1832488f973bb5ee8a4bb726ed466676de15a960c72522c0",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-12T23:00:00.000Z",
-      "rationale": "Approve the Phase 06 bounded Capability Matrix for Gates A and B with explicit losses, evidence-only DOCX Review, and Gates C and D plus all broad fidelity, editor-specific, cloud, and cross-scene claims excluded."
+      "rationale": "Approve the Phase 06 Capability Matrix delivery rebind to feature commit 01b2a5f2, PR 1083, merge SHA 3f71a6fa, FEATURE_COMPLETE_V1 for Gates A and B, and unchanged Gates C and D plus broad fidelity, editor-specific, cloud, and cross-scene nonclaims."
     },
     {
       "filePath": "docs/OPS/STATUS/GOLDEN_SET_MANIFEST.json",
-      "sha256": "5a5da98f939a3507fbbec800e8de9999a2ba073b7f9972a72c045cee3ff77e5a",
-      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "sha256": "3b69463c18342c584c0a84301eb338a3d12c5222ef9fa3086957692ee385951a",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-12T23:00:00.000Z",
-      "rationale": "Approve the deterministic five-file DOCX, JSON, TXT, and Markdown golden manifest with exact byte sizes, SHA-256 hashes, bounded proofs, and explicit nonproofs."
+      "rationale": "Approve the deterministic five-file golden manifest delivery rebind to feature commit 01b2a5f2, PR 1083, merge SHA 3f71a6fa, exact unchanged artifact hashes, bounded proofs, and explicit nonproofs."
     },
     {
       "filePath": "docs/OPS/STATUS/IMPORT_EXPORT_ACCEPTANCE.json",
-      "sha256": "b78ffe211931ac339f3ad58a3af3c753734779f745cf616385276549bef12354",
-      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "sha256": "433dac9b8fdedeea3c4d759daaebbde7b43495b12a3da70bf613bf4441d486b6",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-12T23:00:00.000Z",
-      "rationale": "Approve Gate A bounded local import and export acceptance for DOCX Minimal, content-only DOCX safe create, TXT flows, Markdown file flows, file authority, discoverability, and explicit format limitations."
+      "rationale": "Approve Gate A bounded import-export delivery rebind to feature commit 01b2a5f2, PR 1083, merge SHA 3f71a6fa, and delivered_merged_verified while retaining all explicit format limitations and nonclaims."
     },
     {
       "filePath": "docs/OPS/STATUS/IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json",
@@ -3853,17 +3853,17 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_ACCEPTANCE.json",
-      "sha256": "b44e383651319ebcbe197b78a7cbb8c17bf7c42f15076da2aad7ef6cfa7424aa",
-      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "sha256": "aed93229fac62a05cf8688d7195d64ca06f57d6dbd43de60d2afdd8b06f9430e",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-12T23:00:00.000Z",
-      "rationale": "Approve Gate B acceptance binding canonical Review Packet exact Apply, recovery, receipt, crash reconciliation, bounded DOCX comment preview, and diagnostic-only tracked changes with no new apply authority."
+      "rationale": "Approve Gate B delivery rebind to feature commit 01b2a5f2, PR 1083, merge SHA 3f71a6fa, and delivered_merged_verified while retaining exact Apply, recovery, receipt, crash reconciliation, and diagnostic-only DOCX tracked-change boundaries."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_STATUS.json",
-      "sha256": "ab64b4ff9692803d89687c1e96d4e6b2ce0632b583288819f303c79a341722e4",
-      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "sha256": "345278c9010cf369cee8a594adfcb4400cd3b2c8fffd4c0b400d265a0c9a0bf3",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-12T23:00:00.000Z",
-      "rationale": "Approve the Phase 06 pending-delivery status for the DOCX export and intake repairs, deterministic evidence, bounded claim rows, and explicit post-V1 nonclaims."
+      "rationale": "Approve the Phase 06 status delivery rebind to feature commit 01b2a5f2, PR 1083, merge SHA 3f71a6fa, exact CI checks, full suite counts, and delivered_merged_verified with Gates C and D unchanged."
     },
     {
       "filePath": "scripts/ops/review-bridge-golden-set.mjs",
@@ -3874,10 +3874,10 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-bounded-fidelity-golden-acceptance.contract.test.js",
-      "sha256": "ad2fb97db8e47a54b4ace92dae8cf42dbedca57461cbcc6e6358b891694616b6",
-      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "sha256": "0fa810e309e79255f1cff65b62dc354e96b40254a1db48fb9c4a9b837013db18",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-12T23:00:00.000Z",
-      "rationale": "Approve the Phase 06 real-file acceptance contract covering exact hashes, DOCX semantic export and content intake, DOCX Review evidence, canonical packet planning, TXT, Markdown, and bounded claim truth."
+      "rationale": "Approve the Phase 06 real-file acceptance contract delivery assertions for exact feature, PR, merge, FEATURE_COMPLETE_V1, unchanged artifact hashes, bounded runtime behavior, and explicit post-V1 nonclaims."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
