@@ -17,6 +17,10 @@ function makeTypedExportError(code, reason, details = {}) {
   };
 }
 
+async function validateDocxExportTarget() {
+  return { ok: true };
+}
+
 test('docx min export handler uses canonical export snapshot and injected write port', async () => {
   const calls = {
     readCanonicalExportSnapshot: 0,
@@ -48,6 +52,7 @@ test('docx min export handler uses canonical export snapshot and injected write 
       calls.resolvedPayload = input;
       return input.outPath;
     },
+    validateDocxExportTarget,
     async readCanonicalExportSnapshot(input) {
       calls.readCanonicalExportSnapshot += 1;
       calls.canonicalPayload = input;
@@ -106,6 +111,7 @@ test('docx min export handler returns canceled without builder or write port cal
     resolveDocxExportPath() {
       return '';
     },
+    validateDocxExportTarget,
     async readCanonicalExportSnapshot() {
       throw new Error('should not read canonical snapshot');
     },
@@ -153,6 +159,7 @@ test('docx min export handler can write through a temp-only injected filesystem 
       resolveDocxExportPath(input) {
         return input.outPath;
       },
+      validateDocxExportTarget,
       async readCanonicalExportSnapshot() {
         return {
           content: 'Saved canonical temp export text',
@@ -210,6 +217,7 @@ test('docx min export handler rejects bufferSource-only export when canonical so
     resolveDocxExportPath(input) {
       return input.outPath;
     },
+    validateDocxExportTarget,
     async readCanonicalExportSnapshot() {
       throw new Error('no saved canonical source');
     },
@@ -253,6 +261,7 @@ test('docx min export handler returns typed error when builder output is not a n
     resolveDocxExportPath(input) {
       return input.outPath;
     },
+    validateDocxExportTarget,
     async readCanonicalExportSnapshot() {
       return {
         content: 'Saved canonical text',
@@ -280,4 +289,47 @@ test('docx min export handler returns typed error when builder output is not a n
     bytes: null,
   });
   assert.equal(calls.writeBufferAtomic, 0);
+});
+
+test('docx min export handler revalidates the external target inside the disk queue', async () => {
+  let validationCount = 0;
+  let writeCount = 0;
+  const result = await runDocxMinExport({
+    requestId: 'req-target-swap',
+    outPath: '/tmp/target-swap.docx',
+    options: {},
+  }, {
+    normalizeExportPayload(input) {
+      return input;
+    },
+    makeTypedExportError,
+    resolveDocxExportPath(input) {
+      return input.outPath;
+    },
+    async validateDocxExportTarget() {
+      validationCount += 1;
+      return validationCount === 1
+        ? { ok: true }
+        : { ok: false, reason: 'EXTERNAL_TARGET_INSIDE_PROJECT_DENIED' };
+    },
+    async readCanonicalExportSnapshot() {
+      return { content: 'Canonical', plainText: 'Canonical', bookProfile: null };
+    },
+    async buildDocxMinBuffer() {
+      return Buffer.from('docx');
+    },
+    async queueDiskOperation(operation) {
+      return operation();
+    },
+    async writeBufferAtomic() {
+      writeCount += 1;
+    },
+    updateStatus() {},
+  });
+
+  assert.equal(validationCount, 2);
+  assert.equal(writeCount, 0);
+  assert.equal(result.ok, 0);
+  assert.equal(result.error.code, 'E_EXPORT_TARGET_FORBIDDEN');
+  assert.equal(result.error.reason, 'EXTERNAL_TARGET_INSIDE_PROJECT_DENIED');
 });

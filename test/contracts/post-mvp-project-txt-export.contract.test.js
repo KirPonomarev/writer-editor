@@ -103,7 +103,7 @@ test('post-mvp project TXT export: target validation blocks project-root writes 
   const validateSource = sliceBetween(
     source,
     'function validateAllScenesTxtExportOutPath(outPath, scope, sceneCandidates) {',
-    'async function resolveComparableTxtExportPath(filePath) {',
+    'async function validateTxtExportPhysicalTargetPath(outPath, options = {}) {',
   );
 
   assert.match(validateSource, /sceneCandidates\.some\(\(candidate\) => candidate && candidate\.path === outPath\)/u);

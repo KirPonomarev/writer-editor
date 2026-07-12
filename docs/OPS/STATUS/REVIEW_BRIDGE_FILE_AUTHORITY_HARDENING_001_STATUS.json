@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "runtime_security_acceptance",
+  "baseSha": "f0b8a11c345298b9a4c0080fbffdde8d8cb8fa13",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "sharedExternalFileAuthority": true,
+    "docxContentReadHardened": true,
+    "docxReviewReadHardened": true,
+    "txtReadHardened": true,
+    "reviewPacketReadHardened": true,
+    "markdownMainOwnedPickerPortAdded": true,
+    "markdownMainOwnedSaveAsPortAdded": true,
+    "docxTargetValidatorBound": true,
+    "markdownTargetValidatorBound": true,
+    "txtTargetValidatorBound": true,
+    "reviewPacketTargetValidatorBound": true,
+    "indexHtmlStructureChanged": false,
+    "cssChanged": false,
+    "rendererChanged": false,
+    "newDependenciesAdded": false
+  },
+  "readAuthority": {
+    "logicalPathValidated": true,
+    "lstatBeforeOpen": true,
+    "symlinkLeafDenied": true,
+    "regularFileRequired": true,
+    "physicalPathResolved": true,
+    "projectLogicalAndPhysicalPathsDenied": true,
+    "boundedAllocation": true,
+    "noFollowOpenOnSupportedUnix": true,
+    "openHandleIdentityChecked": true,
+    "handleRestatAfterRead": true,
+    "pathRestatAfterRead": true,
+    "replacementDetectionFields": [
+      "realPath",
+      "dev",
+      "ino",
+      "mode",
+      "size",
+      "mtimeNs",
+      "ctimeNs"
+    ]
+  },
+  "writeAuthority": {
+    "mainOwnedSaveAs": true,
+    "allowedExtensionsRequired": true,
+    "existingSymlinkLeafDenied": true,
+    "nearestExistingAncestorResolved": true,
+    "logicalProjectTargetsDenied": true,
+    "physicalProjectTargetsDenied": true,
+    "protectedSourceTargetsDenied": true,
+    "validationRepeatedInsideDiskQueue": true,
+    "atomicWritersPreserved": true,
+    "markdownRecoveryPreserved": true
+  },
+  "markdownAuthorityPort": {
+    "previewCommand": "cmd.project.markdown.previewLocalFile",
+    "acceptCommand": "cmd.project.markdown.acceptLocalPreview",
+    "exportCommand": "cmd.project.markdown.exportLocalFile",
+    "rendererPreviewInputKeys": [
+      "requestId"
+    ],
+    "rendererAcceptInputKeys": [
+      "requestId",
+      "previewId"
+    ],
+    "rendererExportInputKeys": [
+      "requestId"
+    ],
+    "previewIsWriteFree": true,
+    "previewTokenOpaque": true,
+    "previewTokenSingleUse": true,
+    "previewTokenProjectBound": true,
+    "previewTokenTtlMinutes": 15,
+    "publicPreviewPathsRemoved": true,
+    "publicReceiptPathsRemoved": true,
+    "publicExportTargetPathRemoved": true,
+    "visibleProductBinding": false,
+    "canonicalSavedSceneSerialization": false
+  },
+  "acceptance": [
+    "A stable external file is read through one bounded buffer and returns its verified identity.",
+    "An oversized external file is rejected before parser execution.",
+    "A same-size file replacement during read is detected through file identity, not size alone.",
+    "A source symlink and any source located logically or physically inside the project are rejected.",
+    "Project JSON cannot be imported through the Review Packet external-file route.",
+    "Save As targets inside the project, matching protected sources, or using a symlink leaf are rejected.",
+    "DOCX, Markdown, TXT, and Review Packet exports revalidate their target inside the disk queue before atomic write.",
+    "Queue-time replacement of an approved target by a symlink produces zero writes and leaves canonical project bytes unchanged.",
+    "Markdown local-file commands reject renderer paths, source text, scene snapshots, apply operations, and recovery references.",
+    "Markdown preview and safe-create receipts exposed through the new authority commands contain no filesystem path authority."
+  ],
+  "machineChecks": [
+    {
+      "command": "node --test Phase 03 focused file-authority and adjacent format set",
+      "status": "pass",
+      "tests": 109,
+      "passed": 109,
+      "skipped": 0
+    },
+    {
+      "command": "npm run dev:fast",
+      "status": "pass",
+      "checks": 28,
+      "passed": 28
+    },
+    {
+      "command": "npm run test:sector-m",
+      "status": "pass",
+      "tests": 344,
+      "passed": 289,
+      "skipped": 55
+    },
+    {
+      "command": "npm run test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm test on feature ref",
+      "status": "expected_branch_scope_guard",
+      "tests": 611,
+      "passed": 545,
+      "failed": 2,
+      "skipped": 64,
+      "expectedFailures": [
+        "sector-m diff does not leak outside cumulative phase allowlist",
+        "sector-m runner writes fast artifact schema"
+      ],
+      "reason": "Sector M intentionally rejects non-Sector-M feature diffs against origin main."
+    },
+    {
+      "command": "npm test in isolated post-merge-equivalent ref",
+      "status": "pass",
+      "tests": 611,
+      "passed": 547,
+      "failed": 0,
+      "skipped": 64,
+      "postTestGuards": "pass",
+      "releaseCandidateCheck": "pre_existing_non_blocking_warn"
+    },
+    {
+      "command": "npm run build:renderer",
+      "status": "pass",
+      "trackedOutputChanged": false
+    },
+    {
+      "command": "npm run oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass",
+      "vulnerabilities": 0
+    },
+    {
+      "command": "npm audit --audit-level=low",
+      "status": "known_dev_tooling_findings_unchanged",
+      "vulnerabilities": {
+        "low": 1,
+        "moderate": 8,
+        "high": 3,
+        "total": 12
+      },
+      "dependencyManifestsChanged": false
+    },
+    {
+      "command": "npm run ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm run security:audit:generic-sast",
+      "status": "pass",
+      "findings": 0,
+      "scannerTimeouts": 3
+    },
+    {
+      "command": "EFFECTIVE_MODE=STRICT node scripts/ops/governance-change-detection.mjs",
+      "status": "pass"
+    },
+    {
+      "command": "EFFECTIVE_MODE=STRICT node scripts/doctor.mjs",
+      "status": "pass",
+      "coreBoundary": "pass",
+      "coreDeterminism": "pass"
+    }
+  ],
+  "nonClaims": [
+    "The Markdown local-file authority commands are not yet bound to the visible renderer product flow.",
+    "Markdown export still requires Phase 04 canonical saved-scene or document-IR serialization and semantic golden acceptance.",
+    "No Markdown product-flow completion or release gate is claimed by this status.",
+    "No DOCX fidelity, tracked-change apply, structural apply, or comment auto-apply is introduced.",
+    "No cross-scene or project-wide transaction is introduced.",
+    "No cloud, account, authorization, synchronization, or network integration is introduced.",
+    "No dependency, UI framework, renderer redesign, CSS change, or HTML structure change is introduced.",
+    "Release readiness is not claimed; Markdown completion, discoverability, and capability evidence remain separate phases."
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending",
+    "commitSha": "",
+    "pullRequest": 0,
+    "mergeSha": "",
+    "mergedAtUtc": ""
+  },
+  "nextStep": "finish verification, deliver Phase 03, rebind merged truth, then open Phase 04 Markdown product completion"
+}

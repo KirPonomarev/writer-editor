@@ -116,13 +116,13 @@ test('M5 typed IO errors remain stable through command layer', async () => {
   assert.equal(Object.prototype.hasOwnProperty.call(result.error, 'stack'), false);
 });
 
-test('M5 main command handlers reference reliability primitives (static guard)', () => {
+test('M5 main command handlers reference recovery and bounded file-authority primitives', () => {
   const mainPath = path.join(ROOT, 'src', 'main.js');
   const mainText = fs.readFileSync(mainPath, 'utf8');
   assert.match(mainText, /createCommandSurfaceKernel/);
   assert.match(mainText, /dispatchCommandSurfaceKernel/);
   assert.match(mainText, /writeMarkdownWithRecovery/);
-  assert.match(mainText, /readMarkdownWithRecovery|readMarkdownWithLimits/);
+  assert.match(mainText, /readExternalFileBounded/);
   assert.match(mainText, /function normalizeMarkdownExportPath/);
   assert.match(mainText, /async function resolveMarkdownExportPath/);
   assert.match(mainText, /payload\.saveAs === true/);

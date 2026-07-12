@@ -139,6 +139,7 @@ function instantiateDocxReviewLocalFileEntryPort(options = {}) {
         return bytes;
       },
     },
+    getProjectRootPath: () => '/project',
     getDocumentContextFromPath: options.getDocumentContextFromPath || (() => ({ kind: 'scene' })),
     getProjectRelativeFilePath: options.getProjectRelativeFilePath || (() => 'roman/imported/scene-1.txt'),
     hasReviewSurfacePayload,
@@ -151,6 +152,44 @@ function instantiateDocxReviewLocalFileEntryPort(options = {}) {
     module: { exports: {} },
     exports: {},
     path,
+    readExternalFileBounded: async (filePath, readOptions = {}) => {
+      const before = await sandbox.fs.stat(filePath);
+      const beforeSize = Number(before?.size);
+      if (!before || typeof before.isFile !== 'function' || !before.isFile()) {
+        const error = new Error('EXTERNAL_SOURCE_FILE_REQUIRED');
+        error.code = 'E_EXTERNAL_FILE_AUTHORITY';
+        error.reason = 'EXTERNAL_SOURCE_FILE_REQUIRED';
+        throw error;
+      }
+      if (Number.isInteger(readOptions.maxBytes) && beforeSize > readOptions.maxBytes) {
+        const error = new Error('EXTERNAL_SOURCE_TOO_LARGE');
+        error.code = 'E_EXTERNAL_FILE_AUTHORITY';
+        error.reason = 'EXTERNAL_SOURCE_TOO_LARGE';
+        throw error;
+      }
+      if (beforeSize === 0) {
+        const error = new Error('EXTERNAL_SOURCE_EMPTY');
+        error.code = 'E_EXTERNAL_FILE_AUTHORITY';
+        error.reason = 'EXTERNAL_SOURCE_EMPTY';
+        throw error;
+      }
+      if (Number.isInteger(readOptions.expectedBytes) && beforeSize !== readOptions.expectedBytes) {
+        const error = new Error('EXTERNAL_SOURCE_CHANGED_DURING_READ');
+        error.code = 'E_EXTERNAL_FILE_AUTHORITY';
+        error.reason = 'EXTERNAL_SOURCE_CHANGED_DURING_READ';
+        throw error;
+      }
+      const loaded = await sandbox.fs.readFile(filePath);
+      const bytesRead = Buffer.isBuffer(loaded) ? loaded.length : Buffer.byteLength(String(loaded || ''));
+      const after = await sandbox.fs.stat(filePath);
+      if (Number(after?.size) !== beforeSize || bytesRead !== beforeSize) {
+        const error = new Error('EXTERNAL_SOURCE_CHANGED_DURING_READ');
+        error.code = 'E_EXTERNAL_FILE_AUTHORITY';
+        error.reason = 'EXTERNAL_SOURCE_CHANGED_DURING_READ';
+        throw error;
+      }
+      return { bytes: Buffer.from(loaded), byteLength: bytesRead };
+    },
     readReviewExactTextApplyProjectBinding: options.readReviewExactTextApplyProjectBinding || (async () => ({
       ok: true,
       projectId: 'project-1',
@@ -515,7 +554,7 @@ test('DOCX review local-file entry: extension, size, read, empty, and changed-fi
   });
   const emptyResult = await empty.handleDocxReviewPreviewSessionLocalFileCommandSurface({});
   assert.equal(emptyResult.ok, false);
-  assert.equal(emptyResult.error.reason, 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_BYTES_EMPTY');
+  assert.equal(emptyResult.error.reason, 'EXTERNAL_SOURCE_EMPTY');
 
   const changedBytes = docxWithAnchoredComment();
   const changed = instantiateDocxReviewLocalFileEntryPort({
@@ -524,7 +563,7 @@ test('DOCX review local-file entry: extension, size, read, empty, and changed-fi
   });
   const changedResult = await changed.handleDocxReviewPreviewSessionLocalFileCommandSurface({});
   assert.equal(changedResult.ok, false);
-  assert.equal(changedResult.error.reason, 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ');
+  assert.equal(changedResult.error.reason, 'EXTERNAL_SOURCE_CHANGED_DURING_READ');
   assert.equal(changed.getState().activeReviewSessionLifecycle, 'passive');
 
   for (const result of [unsupportedResult, oversizedHintResult, readFailureResult, emptyResult, changedResult]) {

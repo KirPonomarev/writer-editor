@@ -46,6 +46,7 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
   const normalizeExportPayload = requireDependency(deps, 'normalizeExportPayload');
   const makeTypedExportError = requireDependency(deps, 'makeTypedExportError');
   const resolveDocxExportPath = requireDependency(deps, 'resolveDocxExportPath');
+  const validateDocxExportTarget = requireDependency(deps, 'validateDocxExportTarget');
   const readCanonicalExportSnapshot = requireDependency(deps, 'readCanonicalExportSnapshot');
   const buildDocxMinBuffer = requireDependency(deps, 'buildDocxMinBuffer');
   const queueDiskOperation = requireDependency(deps, 'queueDiskOperation');
@@ -80,6 +81,24 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
       requestId: payload.requestId,
     });
   }
+  try {
+    const targetState = await validateDocxExportTarget(outPath, payload);
+    if (!targetState || targetState.ok !== true) {
+      return makeTypedExportError(
+        'E_EXPORT_TARGET_FORBIDDEN',
+        typeof targetState?.reason === 'string' && targetState.reason
+          ? targetState.reason
+          : 'EXPORT_TARGET_FORBIDDEN',
+      );
+    }
+  } catch (error) {
+    return makeTypedExportError(
+      'E_EXPORT_TARGET_FORBIDDEN',
+      typeof error?.reason === 'string' && error.reason
+        ? error.reason
+        : 'EXPORT_TARGET_FORBIDDEN',
+    );
+  }
 
   let editorSnapshot;
   try {
@@ -109,7 +128,17 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
   }
 
   try {
-    await queueDiskOperation(() => writeBufferAtomic(outPath, documentBuffer), 'export docx min');
+    await queueDiskOperation(async () => {
+      const targetState = await validateDocxExportTarget(outPath, payload);
+      if (!targetState || targetState.ok !== true) {
+        const error = new Error('EXPORT_TARGET_FORBIDDEN');
+        error.reason = typeof targetState?.reason === 'string' && targetState.reason
+          ? targetState.reason
+          : 'EXPORT_TARGET_FORBIDDEN';
+        throw error;
+      }
+      return writeBufferAtomic(outPath, documentBuffer);
+    }, 'export docx min');
     updateStatus('DOCX MIN экспортирован');
     return {
       ok: 1,
@@ -117,6 +146,9 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
       bytesWritten: documentBuffer.length,
     };
   } catch (error) {
+    if (typeof error?.reason === 'string' && error.reason.startsWith('EXTERNAL_TARGET_')) {
+      return makeTypedExportError('E_EXPORT_TARGET_FORBIDDEN', error.reason);
+    }
     return makeTypedExportError('E_EXPORT_WRITE_FAILED', 'DOCX_WRITE_FAILED', {
       message: getErrorMessage(error),
       outPath,

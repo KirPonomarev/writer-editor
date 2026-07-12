@@ -40,6 +40,10 @@ const {
   sanitizePathFields,
   sanitizePathFieldsWithinRoot,
 } = require('./core/io/path-boundary');
+const {
+  readExternalFileBounded,
+  validateExternalWriteTarget,
+} = require('./utils/externalFileAuthority');
 const { buildDocxMinBuffer: buildDocxMinBufferCore } = require('./export/docx/docxMinBuilder');
 const { runDocxMinExport } = require('./export/docx/docxMinExportHandler');
 const { writeBufferAtomic } = require('./export/docx/atomicWriteBuffer');
@@ -54,6 +58,7 @@ let currentReviewSurfacePayloadContentHash = '';
 let activeReviewSessionStore = null;
 let activeReviewSessionLifecycle = 'passive';
 let reviewExactTextApplyReconciliationState = { userRelevant: [], errors: [] };
+let pendingMarkdownLocalFilePreview = null;
 let appInitializationPromise = Promise.resolve();
 let editorStartupReadyPromise = Promise.resolve();
 let isDirty = false;
@@ -308,6 +313,12 @@ const EXPORT_ALL_SCENES_TXT_COMMAND_ID = 'cmd.project.exportAllScenesTxtV1';
 const EXPORT_ALL_SCENES_TXT_DEFAULT_REQUEST_ID = 'u3-export-all-scenes-txt-request';
 const IMPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:import:markdownV1:v1';
 const EXPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:export:markdownV1:v1';
+const MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID = 'cmd.project.markdown.previewLocalFile';
+const MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID = 'cmd.project.markdown.acceptLocalPreview';
+const MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID = 'cmd.project.markdown.exportLocalFile';
+const MARKDOWN_LOCAL_FILE_MAX_BYTES = 1024 * 1024;
+const MARKDOWN_LOCAL_FILE_PREVIEW_TTL_MS = 15 * 60 * 1000;
+const MARKDOWN_LOCAL_FILE_MAX_REQUEST_ID_CHARS = 120;
 const FLOW_OPEN_V1_CHANNEL = 'm:cmd:project:flow:open:v1';
 const FLOW_SAVE_V1_CHANNEL = 'm:cmd:project:flow:save:v1';
 const MARKDOWN_RELIABILITY_LOG_PATH = path.join(os.tmpdir(), 'writer-editor-ops-state', 'markdown-io.log');
@@ -1812,16 +1823,6 @@ function getReviewImportLocalPacketByteLength(text) {
   return String(text || '').length;
 }
 
-function makeReviewImportLocalPacketReadError(code, reason, details = undefined) {
-  const error = new Error(reason);
-  error.code = code;
-  error.reason = reason;
-  if (isPlainObjectValue(details)) {
-    error.details = details;
-  }
-  return error;
-}
-
 function findReviewImportLocalPacketForbiddenWriteEvidence(value, pathParts = []) {
   if (Array.isArray(value)) {
     return value.flatMap((item, index) => (
@@ -1951,45 +1952,13 @@ async function readReviewImportLocalPacketText(selection) {
   if (!isPlainObjectValue(selection) || typeof selection.path !== 'string' || !selection.path.trim()) {
     throw new TypeError('REVIEW_IMPORT_LOCAL_PACKET_SELECTION_INVALID');
   }
-  const filePath = selection.path.trim();
-  let stat;
-  try {
-    stat = await fs.stat(filePath);
-  } catch (error) {
-    throw makeReviewImportLocalPacketReadError(
-      'E_REVIEW_IMPORT_LOCAL_PACKET_READ_FAILED',
-      'REVIEW_IMPORT_LOCAL_PACKET_STAT_FAILED',
-      {
-        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
-      },
-    );
-  }
-  if (!stat || typeof stat.isFile !== 'function' || !stat.isFile()) {
-    throw makeReviewImportLocalPacketReadError(
-      'E_REVIEW_IMPORT_LOCAL_PACKET_SELECTION_INVALID',
-      'REVIEW_IMPORT_LOCAL_PACKET_FILE_REQUIRED',
-    );
-  }
-  const actualBytes = Number.isFinite(stat.size) && stat.size >= 0
-    ? Math.floor(stat.size)
-    : null;
-  if (actualBytes === null) {
-    throw makeReviewImportLocalPacketReadError(
-      'E_REVIEW_IMPORT_LOCAL_PACKET_SELECTION_INVALID',
-      'REVIEW_IMPORT_LOCAL_PACKET_SIZE_REQUIRED',
-    );
-  }
-  if (actualBytes > REVIEW_IMPORT_LOCAL_PACKET_MAX_BYTES) {
-    throw makeReviewImportLocalPacketReadError(
-      'E_REVIEW_IMPORT_LOCAL_PACKET_TOO_LARGE',
-      'REVIEW_IMPORT_LOCAL_PACKET_TOO_LARGE',
-      {
-        maxBytes: REVIEW_IMPORT_LOCAL_PACKET_MAX_BYTES,
-        actualBytes,
-      },
-    );
-  }
-  return fs.readFile(filePath, 'utf8');
+  const loaded = await readExternalFileBounded(selection.path.trim(), {
+    projectRoot: getProjectRootPath(),
+    allowedExtensions: ['.json'],
+    maxBytes: REVIEW_IMPORT_LOCAL_PACKET_MAX_BYTES,
+    expectedBytes: Number.isInteger(selection.size) ? selection.size : undefined,
+  });
+  return loaded.bytes.toString('utf8');
 }
 
 function parseReviewImportLocalPacketJson(text) {
@@ -2919,6 +2888,24 @@ async function handleReviewSurfaceExportLocalPacketCommandSurface(payload = {}, 
     };
   }
 
+  const validateTarget = typeof options.validateExternalWriteTarget === 'function'
+    ? options.validateExternalWriteTarget
+    : validateExternalWriteTarget;
+  try {
+    await validateTarget(selection.value.outPath, {
+      projectRoot: getProjectRootPath(),
+      sourcePaths: typeof currentFilePath === 'string' && currentFilePath ? [currentFilePath] : [],
+      allowedExtensions: ['.json'],
+    });
+  } catch (error) {
+    return makeReviewExportLocalPacketTypedError(
+      'E_REVIEW_EXPORT_LOCAL_PACKET_TARGET_FORBIDDEN',
+      typeof error?.reason === 'string' && error.reason
+        ? error.reason
+        : 'REVIEW_EXPORT_LOCAL_PACKET_TARGET_FORBIDDEN',
+    );
+  }
+
   const text = `${JSON.stringify(candidate.value.exportPacket, null, 2)}\n`;
   const writeFileAtomic = typeof options.writeFileAtomic === 'function'
     ? options.writeFileAtomic
@@ -2930,10 +2917,23 @@ async function handleReviewSurfaceExportLocalPacketCommandSurface(payload = {}, 
   let writeResult = null;
   try {
     writeResult = await runDiskWrite(
-      () => writeFileAtomic(selection.value.outPath, text),
+      async () => {
+        await validateTarget(selection.value.outPath, {
+          projectRoot: getProjectRootPath(),
+          sourcePaths: typeof currentFilePath === 'string' && currentFilePath ? [currentFilePath] : [],
+          allowedExtensions: ['.json'],
+        });
+        return writeFileAtomic(selection.value.outPath, text);
+      },
       'export review local packet',
     );
   } catch (error) {
+    if (typeof error?.reason === 'string' && error.reason.startsWith('EXTERNAL_TARGET_')) {
+      return makeReviewExportLocalPacketTypedError(
+        'E_REVIEW_EXPORT_LOCAL_PACKET_TARGET_FORBIDDEN',
+        error.reason,
+      );
+    }
     return makeReviewExportLocalPacketTypedError(
       'E_REVIEW_EXPORT_LOCAL_PACKET_WRITE_FAILED',
       'REVIEW_EXPORT_LOCAL_PACKET_WRITE_FAILED',
@@ -3737,104 +3737,17 @@ function validateDocxReviewPreviewSessionLocalFileSelection(selection, requestId
   };
 }
 
-async function statDocxReviewPreviewSessionLocalFile(filePath) {
-  const stat = await fs.stat(filePath);
-  if (!stat || typeof stat.isFile !== 'function' || !stat.isFile()) {
-    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_FILE_REQUIRED');
-    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_INVALID';
-    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_FILE_REQUIRED';
-    throw error;
-  }
-  const size = Number.isFinite(stat.size) && stat.size >= 0
-    ? Math.floor(stat.size)
-    : null;
-  if (size === null) {
-    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SIZE_REQUIRED');
-    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_INVALID';
-    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SIZE_REQUIRED';
-    throw error;
-  }
-  return size;
-}
-
 async function readDocxReviewPreviewSessionLocalFileBytes(selection) {
   if (!isPlainObjectValue(selection) || typeof selection.path !== 'string' || !selection.path.trim()) {
     throw new TypeError('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_SELECTION_INVALID');
   }
-  const filePath = selection.path.trim();
-  let beforeBytes;
-  try {
-    beforeBytes = await statDocxReviewPreviewSessionLocalFile(filePath);
-  } catch (error) {
-    error.code = typeof error?.code === 'string'
-      ? error.code
-      : 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_READ_FAILED';
-    error.reason = typeof error?.reason === 'string'
-      ? error.reason
-      : 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_STAT_FAILED';
-    throw error;
-  }
-
-  if (Number.isInteger(selection.size) && selection.size !== beforeBytes) {
-    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ');
-    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ';
-    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ';
-    error.details = {
-      expectedBytes: selection.size,
-      actualBytes: beforeBytes,
-    };
-    throw error;
-  }
-  if (beforeBytes > DOCX_INTAKE_GATE_MAX_BYTES) {
-    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE');
-    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE';
-    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE';
-    error.details = {
-      maxBytes: DOCX_INTAKE_GATE_MAX_BYTES,
-      actualBytes: beforeBytes,
-    };
-    throw error;
-  }
-
-  let bytes;
-  try {
-    bytes = await fs.readFile(filePath);
-  } catch (error) {
-    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_READ_FAILED';
-    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_READ_FAILED';
-    throw error;
-  }
-
-  const buffer = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes || []);
-  const afterBytes = await statDocxReviewPreviewSessionLocalFile(filePath);
-  if (afterBytes !== beforeBytes || buffer.length !== afterBytes) {
-    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ');
-    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ';
-    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_CHANGED_DURING_READ';
-    error.details = {
-      beforeBytes,
-      afterBytes,
-      byteLength: buffer.length,
-    };
-    throw error;
-  }
-  if (buffer.length === 0) {
-    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_BYTES_INVALID');
-    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_BYTES_INVALID';
-    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_BYTES_EMPTY';
-    throw error;
-  }
-  if (buffer.length > DOCX_INTAKE_GATE_MAX_BYTES) {
-    const error = new Error('DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE');
-    error.code = 'E_DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE';
-    error.reason = 'DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_TOO_LARGE';
-    error.details = {
-      maxBytes: DOCX_INTAKE_GATE_MAX_BYTES,
-      actualBytes: buffer.length,
-    };
-    throw error;
-  }
-  return buffer;
+  const loaded = await readExternalFileBounded(selection.path.trim(), {
+    projectRoot: getProjectRootPath(),
+    allowedExtensions: ['.docx'],
+    maxBytes: DOCX_INTAKE_GATE_MAX_BYTES,
+    expectedBytes: Number.isInteger(selection.size) ? selection.size : undefined,
+  });
+  return loaded.bytes;
 }
 
 async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {}, options = {}) {
@@ -5341,7 +5254,13 @@ async function readDocxImportLocalFilePreviewBytes(selection) {
     throw new TypeError('DOCX_IMPORT_LOCAL_FILE_PREVIEW_SELECTION_INVALID');
   }
 
-  return fs.readFile(filePath);
+  const loaded = await readExternalFileBounded(filePath, {
+    projectRoot: getProjectRootPath(),
+    allowedExtensions: ['.docx'],
+    maxBytes: DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
+    expectedBytes: Number.isInteger(selection.size) ? selection.size : undefined,
+  });
+  return loaded.bytes;
 }
 
 function validateDocxImportLocalFilePreviewSuccessResult(previewResult) {
@@ -5629,65 +5548,15 @@ async function readTxtImportLocalFilePreviewBytes(selection) {
     throw new TypeError('TXT_IMPORT_LOCAL_FILE_PREVIEW_SELECTION_INVALID');
   }
 
-  let beforeBytes = null;
-  try {
-    const stat = await fs.stat(filePath);
-    if (stat && typeof stat.isFile === 'function' && stat.isFile()) {
-      beforeBytes = Number.isFinite(stat.size) && stat.size >= 0 ? Math.floor(stat.size) : null;
-    }
-  } catch (error) {
-    error.code = 'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_READ_FAILED';
-    error.reason = 'TXT_IMPORT_LOCAL_FILE_PREVIEW_STAT_FAILED';
-    throw error;
-  }
-
-  if (!Number.isInteger(beforeBytes) || beforeBytes <= 0) {
-    const error = new Error('TXT_IMPORT_LOCAL_FILE_PREVIEW_SELECTION_INVALID');
-    error.code = 'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_SELECTION_INVALID';
-    error.reason = 'TXT_IMPORT_LOCAL_FILE_PREVIEW_SELECTION_INVALID';
-    throw error;
-  }
-  if (beforeBytes > TXT_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES) {
-    const error = new Error('TXT_IMPORT_LOCAL_FILE_PREVIEW_FILE_TOO_LARGE');
-    error.code = 'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_FILE_TOO_LARGE';
-    error.reason = 'TXT_IMPORT_LOCAL_FILE_PREVIEW_FILE_TOO_LARGE';
-    error.details = { maxBytes: TXT_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES };
-    throw error;
-  }
-
-  let bytes;
-  try {
-    bytes = await fs.readFile(filePath);
-  } catch (error) {
-    error.code = 'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_READ_FAILED';
-    error.reason = 'TXT_IMPORT_LOCAL_FILE_PREVIEW_READ_FAILED';
-    throw error;
-  }
-
-  let afterBytes = null;
-  try {
-    const stat = await fs.stat(filePath);
-    if (stat && typeof stat.isFile === 'function' && stat.isFile()) {
-      afterBytes = Number.isFinite(stat.size) && stat.size >= 0 ? Math.floor(stat.size) : null;
-    }
-  } catch {
-    afterBytes = null;
-  }
-
-  const buffer = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes || []);
-  if (beforeBytes !== afterBytes || buffer.length !== beforeBytes) {
-    const error = new Error('TXT_IMPORT_LOCAL_FILE_PREVIEW_FILE_CHANGED_DURING_READ');
-    error.code = 'E_TXT_IMPORT_LOCAL_FILE_PREVIEW_READ_FAILED';
-    error.reason = 'TXT_IMPORT_LOCAL_FILE_PREVIEW_FILE_CHANGED_DURING_READ';
-    error.details = {
-      beforeBytes,
-      afterBytes,
-      byteLength: buffer.length,
-    };
-    throw error;
-  }
-
-  return buffer;
+  const loaded = await readExternalFileBounded(filePath, {
+    projectRoot: getProjectRootPath(),
+    allowedExtensions: ['.txt'],
+    maxBytes: TXT_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
+    expectedBytes: Number.isInteger(selection.sizeHint)
+      ? selection.sizeHint
+      : (Number.isInteger(selection.size) ? selection.size : undefined),
+  });
+  return loaded.bytes;
 }
 
 function validateTxtImportLocalFilePreviewSuccessResult(previewResult) {
@@ -8758,6 +8627,12 @@ function normalizeMarkdownImportPayload(payload) {
       ? payload.limits
       : {},
   };
+  if (normalized.sourcePath) {
+    return {
+      ...normalized,
+      externalPathAuthorityDenied: true,
+    };
+  }
   const pathGuard = sanitizePathFields(normalized, ['sourcePath'], { mode: 'any' });
   if (!pathGuard.ok) {
     return {
@@ -8833,6 +8708,12 @@ function normalizeMarkdownExportPayload(payload) {
       ? payload.limits
       : {},
   };
+  if (normalized.outPath) {
+    return {
+      ...normalized,
+      externalPathAuthorityDenied: true,
+    };
+  }
   const pathGuard = sanitizePathFields(normalized, ['outPath'], { mode: 'any' });
   if (!pathGuard.ok) {
     return {
@@ -9431,39 +9312,6 @@ function validateAllScenesTxtExportOutPath(outPath, scope, sceneCandidates) {
   return { ok: true };
 }
 
-async function resolveComparableTxtExportPath(filePath) {
-  const normalizedPath = normalizeCurrentSceneTxtExportPath(filePath);
-  if (!normalizedPath) {
-    return '';
-  }
-
-  const baseName = path.basename(normalizedPath);
-  const directoryPath = path.dirname(normalizedPath);
-  let comparableDirectoryPath = path.resolve(directoryPath);
-  try {
-    comparableDirectoryPath = await fs.realpath(directoryPath);
-  } catch {}
-
-  let comparablePath = path.resolve(comparableDirectoryPath, baseName);
-  try {
-    comparablePath = await fs.realpath(normalizedPath);
-  } catch {}
-
-  return path.resolve(comparablePath);
-}
-
-async function resolveComparableTxtExportDirectoryPath(directoryPath) {
-  if (typeof directoryPath !== 'string' || !directoryPath.trim()) {
-    return '';
-  }
-  const normalizedPath = directoryPath.trim();
-  try {
-    return path.resolve(await fs.realpath(normalizedPath));
-  } catch {
-    return path.resolve(normalizedPath);
-  }
-}
-
 async function validateTxtExportPhysicalTargetPath(outPath, options = {}) {
   if (typeof outPath !== 'string' || !outPath.trim()) {
     return {
@@ -9475,56 +9323,35 @@ async function validateTxtExportPhysicalTargetPath(outPath, options = {}) {
     };
   }
 
-  const comparableOutPath = await resolveComparableTxtExportPath(outPath);
-  if (!comparableOutPath) {
-    return {
-      ok: false,
-      code: typeof options.pathRequiredCode === 'string' && options.pathRequiredCode
-        ? options.pathRequiredCode
-        : 'E_EXPORT_TXT_PATH_REQUIRED',
-      reason: 'export_path_required',
-    };
-  }
-
-  const projectRoot = typeof options.projectRoot === 'string' ? options.projectRoot : '';
-  const comparableProjectRoot = projectRoot
-    ? await resolveComparableTxtExportDirectoryPath(projectRoot)
-    : '';
-  if (
-    comparableProjectRoot
-    && (
-      comparableOutPath === comparableProjectRoot
-      || isPathInsideBoundary(comparableProjectRoot, comparableOutPath, { resolveSymlinks: false })
-    )
-  ) {
-    return {
-      ok: false,
-      code: typeof options.targetForbiddenCode === 'string' && options.targetForbiddenCode
-        ? options.targetForbiddenCode
-        : 'E_EXPORT_TXT_TARGET_FORBIDDEN',
-      reason: typeof options.targetInsideProjectRootReason === 'string' && options.targetInsideProjectRootReason
+  try {
+    const validated = await validateExternalWriteTarget(outPath, {
+      projectRoot: typeof options.projectRoot === 'string' ? options.projectRoot : '',
+      sourcePaths: Array.isArray(options.sourcePaths) ? options.sourcePaths : [],
+      allowedExtensions: ['.txt'],
+    });
+    return { ok: true, outPath: validated.targetPath };
+  } catch (error) {
+    const targetForbiddenCode = typeof options.targetForbiddenCode === 'string' && options.targetForbiddenCode
+      ? options.targetForbiddenCode
+      : 'E_EXPORT_TXT_TARGET_FORBIDDEN';
+    let reason = typeof error?.reason === 'string' && error.reason
+      ? error.reason
+      : 'external_target_authority_denied';
+    if (reason === 'EXTERNAL_TARGET_INSIDE_PROJECT_DENIED') {
+      reason = typeof options.targetInsideProjectRootReason === 'string' && options.targetInsideProjectRootReason
         ? options.targetInsideProjectRootReason
-        : 'export_target_inside_project_root',
+        : 'export_target_inside_project_root';
+    } else if (reason === 'EXTERNAL_TARGET_MATCHES_PROTECTED_SOURCE') {
+      reason = typeof options.targetMatchesSourceReason === 'string' && options.targetMatchesSourceReason
+        ? options.targetMatchesSourceReason
+        : 'export_target_matches_source';
+    }
+    return {
+      ok: false,
+      code: targetForbiddenCode,
+      reason,
     };
   }
-
-  const sourcePaths = Array.isArray(options.sourcePaths) ? options.sourcePaths : [];
-  for (const sourcePath of sourcePaths) {
-    const comparableSourcePath = await resolveComparableTxtExportPath(sourcePath);
-    if (comparableSourcePath && comparableOutPath === comparableSourcePath) {
-      return {
-        ok: false,
-        code: typeof options.targetForbiddenCode === 'string' && options.targetForbiddenCode
-          ? options.targetForbiddenCode
-          : 'E_EXPORT_TXT_TARGET_FORBIDDEN',
-        reason: typeof options.targetMatchesSourceReason === 'string' && options.targetMatchesSourceReason
-          ? options.targetMatchesSourceReason
-          : 'export_target_matches_source',
-      };
-    }
-  }
-
-  return { ok: true };
 }
 
 async function readSelectedScenesTxtExportSceneContent(sceneCandidate) {
@@ -9631,6 +9458,14 @@ async function resolveDocxExportPath(payload) {
   });
   if (result.canceled) return '';
   return normalizeDocxExportPath(result.filePath);
+}
+
+async function validateDocxExportTarget(outPath) {
+  return validateExternalWriteTarget(outPath, {
+    projectRoot: getProjectRootPath(),
+    sourcePaths: typeof currentFilePath === 'string' && currentFilePath ? [currentFilePath] : [],
+    allowedExtensions: ['.docx'],
+  });
 }
 
 async function buildDocxMinBuffer(editorSnapshot) {
@@ -9811,7 +9646,24 @@ async function handleExportCurrentSceneTxt(payloadRaw = {}) {
 
   try {
     const writeResult = await queueDiskOperation(
-      () => fileManager.writeFileAtomic(outPath, source.content),
+      async () => {
+        const target = await validateTxtExportPhysicalTargetPath(outPath, {
+          pathRequiredCode: 'E_EXPORT_CURRENT_SCENE_TXT_PATH_REQUIRED',
+          targetForbiddenCode: 'E_EXPORT_CURRENT_SCENE_TXT_TARGET_FORBIDDEN',
+          targetMatchesSourceReason: 'export_target_matches_current_scene',
+          targetInsideProjectRootReason: 'export_target_inside_project_root',
+          projectRoot: typeof source.projectRoot === 'string' ? source.projectRoot : '',
+          sourcePaths: typeof source.currentFilePath === 'string' && source.currentFilePath
+            ? [source.currentFilePath]
+            : [],
+        });
+        if (!target.ok) {
+          const error = new Error(target.reason);
+          error.reason = target.reason;
+          throw error;
+        }
+        return fileManager.writeFileAtomic(outPath, source.content);
+      },
       'export current scene txt',
     );
     if (!writeResult || writeResult.success !== true) {
@@ -9832,6 +9684,12 @@ async function handleExportCurrentSceneTxt(payloadRaw = {}) {
       bytesWritten: Buffer.byteLength(source.content, 'utf8'),
     };
   } catch (error) {
+    if (typeof error?.reason === 'string') {
+      return makeTypedCurrentSceneTxtExportError(
+        'E_EXPORT_CURRENT_SCENE_TXT_TARGET_FORBIDDEN',
+        error.reason,
+      );
+    }
     return makeTypedCurrentSceneTxtExportError(
       'E_EXPORT_CURRENT_SCENE_TXT_WRITE_FAILED',
       'txt_write_failed',
@@ -9991,7 +9849,24 @@ async function handleExportSelectedScenesTxt(payloadRaw = {}) {
 
   try {
     const writeResult = await queueDiskOperation(
-      () => fileManager.writeFileAtomic(outPath, content),
+      async () => {
+        const target = await validateTxtExportPhysicalTargetPath(outPath, {
+          pathRequiredCode: 'E_EXPORT_SELECTED_SCENES_TXT_PATH_REQUIRED',
+          targetForbiddenCode: 'E_EXPORT_SELECTED_SCENES_TXT_TARGET_FORBIDDEN',
+          targetMatchesSourceReason: 'export_target_matches_selected_scene',
+          targetInsideProjectRootReason: 'export_target_inside_project_root',
+          projectRoot: scope && typeof scope.projectRoot === 'string' ? scope.projectRoot : '',
+          sourcePaths: selectedCandidates
+            .map((candidate) => (candidate && typeof candidate.path === 'string' ? candidate.path : ''))
+            .filter(Boolean),
+        });
+        if (!target.ok) {
+          const error = new Error(target.reason);
+          error.reason = target.reason;
+          throw error;
+        }
+        return fileManager.writeFileAtomic(outPath, content);
+      },
       'export selected scenes txt',
     );
     if (!writeResult || writeResult.success !== true) {
@@ -10013,6 +9888,12 @@ async function handleExportSelectedScenesTxt(payloadRaw = {}) {
       sceneCount: selectedCandidates.length,
     };
   } catch (error) {
+    if (typeof error?.reason === 'string') {
+      return makeTypedSelectedScenesTxtExportError(
+        'E_EXPORT_SELECTED_SCENES_TXT_TARGET_FORBIDDEN',
+        error.reason,
+      );
+    }
     return makeTypedSelectedScenesTxtExportError(
       'E_EXPORT_SELECTED_SCENES_TXT_WRITE_FAILED',
       'txt_write_failed',
@@ -10143,7 +10024,24 @@ async function handleExportAllScenesTxt(payloadRaw = {}) {
 
   try {
     const writeResult = await queueDiskOperation(
-      () => fileManager.writeFileAtomic(outPath, content),
+      async () => {
+        const target = await validateTxtExportPhysicalTargetPath(outPath, {
+          pathRequiredCode: 'E_EXPORT_ALL_SCENES_TXT_PATH_REQUIRED',
+          targetForbiddenCode: 'E_EXPORT_ALL_SCENES_TXT_TARGET_FORBIDDEN',
+          targetMatchesSourceReason: 'export_target_matches_all_scenes_source',
+          targetInsideProjectRootReason: 'export_target_inside_project_root',
+          projectRoot: scope && typeof scope.projectRoot === 'string' ? scope.projectRoot : '',
+          sourcePaths: sceneCandidates
+            .map((candidate) => (candidate && typeof candidate.path === 'string' ? candidate.path : ''))
+            .filter(Boolean),
+        });
+        if (!target.ok) {
+          const error = new Error(target.reason);
+          error.reason = target.reason;
+          throw error;
+        }
+        return fileManager.writeFileAtomic(outPath, content);
+      },
       'export all scenes txt',
     );
     if (!writeResult || writeResult.success !== true) {
@@ -10165,6 +10063,12 @@ async function handleExportAllScenesTxt(payloadRaw = {}) {
       sceneCount: sceneCandidates.length,
     };
   } catch (error) {
+    if (typeof error?.reason === 'string') {
+      return makeTypedAllScenesTxtExportError(
+        'E_EXPORT_ALL_SCENES_TXT_TARGET_FORBIDDEN',
+        error.reason,
+      );
+    }
     return makeTypedAllScenesTxtExportError(
       'E_EXPORT_ALL_SCENES_TXT_WRITE_FAILED',
       'txt_write_failed',
@@ -10182,6 +10086,7 @@ async function handleExportDocxMin(payloadRaw) {
     makeTypedExportError,
     buildPathBoundaryDetails,
     resolveDocxExportPath,
+    validateDocxExportTarget,
     readCanonicalExportSnapshot,
     buildDocxMinBuffer,
     queueDiskOperation,
@@ -10201,6 +10106,13 @@ async function handleImportMarkdownV1(payloadRaw) {
       'E_PATH_BOUNDARY_VIOLATION',
       'path_boundary_violation',
       buildPathBoundaryDetails(payload.pathBoundaryError),
+    );
+  }
+  if (payload.externalPathAuthorityDenied) {
+    return makeTypedMarkdownError(
+      IMPORT_MARKDOWN_V1_CHANNEL,
+      'E_MD_RENDERER_AUTHORITY_DENIED',
+      'renderer_source_path_authority_denied',
     );
   }
 
@@ -10271,26 +10183,8 @@ async function handleImportMarkdownV1(payloadRaw) {
   }
 
   try {
-    let markdownText = payload.text;
-    let ioRecovery = null;
-    if (!markdownText && payload.sourcePath) {
-      const markdownIo = await loadMarkdownIoModule();
-      const limits = typeof transform.normalizeLimits === 'function'
-        ? transform.normalizeLimits(payload.limits)
-        : { maxInputBytes: 1024 * 1024 };
-      const loaded = await markdownIo.readMarkdownWithRecovery(payload.sourcePath, {
-        maxInputBytes: limits.maxInputBytes,
-      });
-      markdownText = loaded.text;
-      if (loaded && loaded.recoveredFromSnapshot === true) {
-        ioRecovery = {
-          sourceKind: loaded.sourceKind,
-          snapshotPath: loaded.snapshotPath,
-          recoveryAction: loaded.recoveryAction,
-          primaryError: loaded.primaryError,
-        };
-      }
-    }
+    const markdownText = payload.text;
+    const ioRecovery = null;
 
     const scene = transform.parseMarkdownV1(markdownText, { limits: payload.limits });
     const lossReport = scene && scene.lossReport && typeof scene.lossReport === 'object'
@@ -10344,6 +10238,366 @@ async function handleImportMarkdownV1(payloadRaw) {
   }
 }
 
+// MARKDOWN_LOCAL_FILE_AUTHORITY_COMMAND_SURFACE_START
+function normalizeMarkdownLocalFileRequestId(value, fallback) {
+  return typeof value === 'string' && value.trim() ? value.trim() : fallback;
+}
+
+function validateMarkdownLocalFileIntentPayload(payload, allowedKeys, commandId) {
+  if (!isPlainObjectValue(payload)) {
+    return makeTypedMarkdownError(commandId, 'E_MD_PAYLOAD_INVALID', 'intent_payload_invalid');
+  }
+  const unsupportedKeys = Object.keys(payload)
+    .filter((key) => !allowedKeys.has(key))
+    .sort();
+  if (unsupportedKeys.length > 0) {
+    return makeTypedMarkdownError(
+      commandId,
+      'E_MD_PAYLOAD_INVALID',
+      'renderer_authority_denied',
+      { fieldCount: unsupportedKeys.length },
+    );
+  }
+  if (
+    payload.requestId !== undefined
+    && (
+      typeof payload.requestId !== 'string'
+      || payload.requestId.trim().length > MARKDOWN_LOCAL_FILE_MAX_REQUEST_ID_CHARS
+    )
+  ) {
+    return makeTypedMarkdownError(
+      commandId,
+      'E_MD_PAYLOAD_INVALID',
+      'request_id_invalid',
+    );
+  }
+  return { ok: 1 };
+}
+
+async function pickMarkdownLocalFile() {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'Импорт Markdown',
+    defaultPath: fileManager.getDocumentsPath(),
+    filters: [
+      { name: 'Markdown', extensions: ['md', 'markdown'] },
+    ],
+    properties: ['openFile'],
+  });
+  if (!result || result.canceled === true) return { canceled: true };
+  const filePath = Array.isArray(result.filePaths) && typeof result.filePaths[0] === 'string'
+    ? result.filePaths[0].trim()
+    : '';
+  return filePath ? { filePath, sourceName: path.basename(filePath) } : {};
+}
+
+function sanitizeMarkdownLocalFilePreviewForRenderer(previewResult) {
+  if (!isPlainObjectValue(previewResult)) return {};
+  const plan = isPlainObjectValue(previewResult.safeCreatePlan)
+    ? previewResult.safeCreatePlan
+    : {};
+  return {
+    schemaVersion: typeof previewResult.schemaVersion === 'string' ? previewResult.schemaVersion : '',
+    type: typeof previewResult.type === 'string' ? previewResult.type : '',
+    status: typeof previewResult.status === 'string' ? previewResult.status : '',
+    writeEffects: previewResult.writeEffects === false ? false : null,
+    sourceName: typeof previewResult.sourceName === 'string' ? previewResult.sourceName : '',
+    scene: cloneJsonSafe(previewResult.scene),
+    lossReport: isPlainObjectValue(previewResult.lossReport)
+      ? cloneJsonSafe(previewResult.lossReport)
+      : { count: 0, items: [] },
+    safeCreatePlan: {
+      mode: typeof plan.mode === 'string' ? plan.mode : '',
+      entries: Array.isArray(plan.entries)
+        ? plan.entries
+          .filter(isPlainObjectValue)
+          .map((entry) => ({
+            sceneId: typeof entry.sceneId === 'string' ? entry.sceneId : '',
+            title: typeof entry.title === 'string' ? entry.title : '',
+            contentTextHash: typeof entry.contentTextHash === 'string' ? entry.contentTextHash : '',
+            expectedLabel: typeof entry.expectedLabel === 'string' ? entry.expectedLabel : '',
+            content: typeof entry.content === 'string' ? entry.content : '',
+          }))
+        : [],
+    },
+  };
+}
+
+function sanitizeMarkdownLocalFileReceiptForRenderer(receipt) {
+  if (!isPlainObjectValue(receipt)) return null;
+  return {
+    schemaVersion: typeof receipt.schemaVersion === 'string' ? receipt.schemaVersion : '',
+    type: typeof receipt.type === 'string' ? receipt.type : '',
+    reason: typeof receipt.reason === 'string' ? receipt.reason : '',
+    projectId: typeof receipt.projectId === 'string' ? receipt.projectId : '',
+    batchId: typeof receipt.batchId === 'string' ? receipt.batchId : '',
+    inputHash: typeof receipt.inputHash === 'string' ? receipt.inputHash : '',
+    outputHash: typeof receipt.outputHash === 'string' ? receipt.outputHash : '',
+    createdSceneIds: Array.isArray(receipt.createdSceneIds)
+      ? receipt.createdSceneIds.filter((sceneId) => typeof sceneId === 'string')
+      : [],
+    createdScenes: Array.isArray(receipt.createdScenes)
+      ? receipt.createdScenes
+        .filter(isPlainObjectValue)
+        .map((scene) => ({
+          sceneId: typeof scene.sceneId === 'string' ? scene.sceneId : '',
+          kind: typeof scene.kind === 'string' ? scene.kind : '',
+          bytesWritten: Number.isInteger(scene.bytesWritten) ? scene.bytesWritten : 0,
+          outputHash: typeof scene.outputHash === 'string' ? scene.outputHash : '',
+        }))
+      : [],
+  };
+}
+
+function remapMarkdownLocalFileError(commandId, result, fallbackCode, fallbackReason) {
+  const error = isPlainObjectValue(result?.error) ? result.error : {};
+  return makeTypedMarkdownError(
+    commandId,
+    typeof error.code === 'string' && error.code ? error.code : fallbackCode,
+    typeof error.reason === 'string' && error.reason ? error.reason : fallbackReason,
+  );
+}
+
+async function handleMarkdownImportLocalFilePreviewCommandSurface(payload = {}, options = {}) {
+  const payloadState = validateMarkdownLocalFileIntentPayload(
+    payload,
+    new Set(['requestId']),
+    MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+  );
+  if (payloadState.ok !== 1) return payloadState;
+  const requestId = normalizeMarkdownLocalFileRequestId(
+    payload.requestId,
+    'markdown-local-file-preview-request',
+  );
+  const pickLocalFile = typeof options.pickLocalFile === 'function'
+    ? options.pickLocalFile
+    : pickMarkdownLocalFile;
+  let selected;
+  try {
+    selected = await pickLocalFile({ requestId });
+  } catch {
+    return makeTypedMarkdownError(
+      MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+      'E_MD_IMPORT_PICK_FAILED',
+      'local_file_picker_failed',
+    );
+  }
+  if (selected?.canceled === true) {
+    return {
+      ok: 1,
+      commandId: MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+      requestId,
+      canceled: true,
+      preview: false,
+    };
+  }
+  const filePath = typeof selected?.filePath === 'string' && selected.filePath.trim()
+    ? selected.filePath.trim()
+    : typeof selected?.path === 'string' && selected.path.trim()
+      ? selected.path.trim()
+      : '';
+  if (!filePath) {
+    return makeTypedMarkdownError(
+      MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+      'E_MD_IMPORT_SOURCE_REQUIRED',
+      'local_file_required',
+    );
+  }
+
+  const readLocalFile = typeof options.readLocalFile === 'function'
+    ? options.readLocalFile
+    : readExternalFileBounded;
+  let loaded;
+  try {
+    loaded = await readLocalFile(filePath, {
+      projectRoot: getProjectRootPath(),
+      allowedExtensions: ['.md', '.markdown'],
+      maxBytes: MARKDOWN_LOCAL_FILE_MAX_BYTES,
+    });
+  } catch (error) {
+    return makeTypedMarkdownError(
+      MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+      'E_MD_IMPORT_SOURCE_DENIED',
+      typeof error?.reason === 'string' && error.reason
+        ? error.reason
+        : 'local_file_read_failed',
+    );
+  }
+  if (!loaded || !Buffer.isBuffer(loaded.bytes) || loaded.bytes.length === 0) {
+    return makeTypedMarkdownError(
+      MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+      'E_MD_IMPORT_SOURCE_INVALID',
+      'local_file_bytes_invalid',
+    );
+  }
+
+  const sourceName = typeof selected?.sourceName === 'string' && selected.sourceName.trim()
+    ? path.basename(selected.sourceName.trim())
+    : path.basename(filePath);
+  const preview = await handleImportMarkdownV1({
+    text: loaded.bytes.toString('utf8'),
+    sourceName,
+    preview: true,
+  });
+  if (!preview || preview.ok !== 1 || !isPlainObjectValue(preview.previewResult)) {
+    return remapMarkdownLocalFileError(
+      MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+      preview,
+      'E_MD_IMPORT_PREVIEW_FAILED',
+      'local_file_preview_failed',
+    );
+  }
+
+  const previewId = `mdp_${crypto.randomBytes(12).toString('hex')}`;
+  pendingMarkdownLocalFilePreview = {
+    previewId,
+    projectRoot: path.resolve(getProjectRootPath()),
+    createdAtMs: Date.now(),
+    previewPayload: cloneJsonSafe(preview.previewResult),
+  };
+  return {
+    ok: 1,
+    commandId: MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID,
+    requestId,
+    canceled: false,
+    preview: true,
+    previewId,
+    sourceName,
+    byteLength: loaded.bytes.length,
+    scene: cloneJsonSafe(preview.scene),
+    lossReport: cloneJsonSafe(preview.lossReport),
+    previewResult: sanitizeMarkdownLocalFilePreviewForRenderer(preview.previewResult),
+  };
+}
+
+async function handleMarkdownImportLocalFileAcceptCommandSurface(payload = {}) {
+  const payloadState = validateMarkdownLocalFileIntentPayload(
+    payload,
+    new Set(['requestId', 'previewId']),
+    MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID,
+  );
+  if (payloadState.ok !== 1) return payloadState;
+  const requestId = normalizeMarkdownLocalFileRequestId(
+    payload.requestId,
+    'markdown-local-file-accept-request',
+  );
+  const previewId = typeof payload.previewId === 'string' ? payload.previewId.trim() : '';
+  const pending = pendingMarkdownLocalFilePreview;
+  const previewAgeMs = isPlainObjectValue(pending) ? Date.now() - pending.createdAtMs : -1;
+  if (
+    !/^mdp_[a-f0-9]{24}$/u.test(previewId)
+    || !isPlainObjectValue(pending)
+    || pending.previewId !== previewId
+    || path.resolve(getProjectRootPath()) !== pending.projectRoot
+    || !Number.isFinite(previewAgeMs)
+    || previewAgeMs < 0
+    || previewAgeMs > MARKDOWN_LOCAL_FILE_PREVIEW_TTL_MS
+  ) {
+    return makeTypedMarkdownError(
+      MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID,
+      'E_MD_IMPORT_PREVIEW_STALE',
+      'local_file_preview_stale',
+    );
+  }
+
+  pendingMarkdownLocalFilePreview = null;
+  const result = await handleImportMarkdownV1({
+    safeCreate: true,
+    previewPayload: pending.previewPayload,
+  });
+  if (!result || result.ok !== 1) {
+    return remapMarkdownLocalFileError(
+      MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID,
+      result,
+      'E_MD_IMPORT_SAFE_CREATE_FAILED',
+      'local_file_safe_create_failed',
+    );
+  }
+  return {
+    ok: 1,
+    commandId: MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID,
+    requestId,
+    previewId,
+    safeCreate: result.safeCreate === true,
+    created: result.created === true,
+    createdSceneIds: Array.isArray(result.createdSceneIds)
+      ? result.createdSceneIds.filter((sceneId) => typeof sceneId === 'string')
+      : [],
+    receipt: sanitizeMarkdownLocalFileReceiptForRenderer(result.receipt),
+  };
+}
+
+async function handleMarkdownExportLocalFileCommandSurface(payload = {}) {
+  const payloadState = validateMarkdownLocalFileIntentPayload(
+    payload,
+    new Set(['requestId']),
+    MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
+  );
+  if (payloadState.ok !== 1) return payloadState;
+  const requestId = normalizeMarkdownLocalFileRequestId(
+    payload.requestId,
+    'markdown-local-file-export-request',
+  );
+
+  let snapshot;
+  let transform;
+  try {
+    snapshot = await requestEditorSnapshot();
+    transform = await loadMarkdownTransformModule();
+  } catch (error) {
+    return makeTypedMarkdownError(
+      MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
+      'E_MD_EXPORT_SOURCE_UNAVAILABLE',
+      'main_owned_editor_source_unavailable',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+  let scene;
+  try {
+    scene = transform.parseMarkdownV1(
+      typeof snapshot?.plainText === 'string' ? snapshot.plainText : '',
+    );
+  } catch (error) {
+    return makeTypedMarkdownError(
+      MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
+      typeof error?.code === 'string' && error.code ? error.code : 'E_MD_EXPORT_SOURCE_INVALID',
+      typeof error?.reason === 'string' && error.reason
+        ? error.reason
+        : 'main_owned_editor_source_invalid',
+    );
+  }
+  const defaultName = typeof currentFilePath === 'string' && currentFilePath
+    ? `${path.basename(currentFilePath, path.extname(currentFilePath))}.md`
+    : 'export.md';
+  const result = await handleExportMarkdownV1({
+    scene,
+    saveAs: true,
+    defaultName,
+    safetyMode: 'strict',
+    snapshotLimit: 3,
+  });
+  if (!result || result.ok !== 1) {
+    return remapMarkdownLocalFileError(
+      MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
+      result,
+      'E_MD_EXPORT_FAILED',
+      'local_file_export_failed',
+    );
+  }
+  return {
+    ok: 1,
+    commandId: MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
+    requestId,
+    canceled: result.canceled === true,
+    exported: result.canceled !== true && Boolean(result.outPath),
+    bytesWritten: Number.isInteger(result.bytesWritten) ? result.bytesWritten : 0,
+    snapshotCreated: result.snapshotCreated === true,
+    lossReport: isPlainObjectValue(result.lossReport)
+      ? cloneJsonSafe(result.lossReport)
+      : { count: 0, items: [] },
+  };
+}
+// MARKDOWN_LOCAL_FILE_AUTHORITY_COMMAND_SURFACE_END
+
 async function handleExportMarkdownV1(payloadRaw) {
   const payload = normalizeMarkdownExportPayload(payloadRaw);
   if (!payload) {
@@ -10355,6 +10609,13 @@ async function handleExportMarkdownV1(payloadRaw) {
       'E_PATH_BOUNDARY_VIOLATION',
       'path_boundary_violation',
       buildPathBoundaryDetails(payload.pathBoundaryError),
+    );
+  }
+  if (payload.externalPathAuthorityDenied) {
+    return makeTypedMarkdownError(
+      EXPORT_MARKDOWN_V1_CHANNEL,
+      'E_MD_RENDERER_AUTHORITY_DENIED',
+      'renderer_target_path_authority_denied',
     );
   }
 
@@ -10397,6 +10658,23 @@ async function handleExportMarkdownV1(payloadRaw) {
   const outPath = resolvedPath && typeof resolvedPath.outPath === 'string'
     ? resolvedPath.outPath
     : '';
+  if (outPath) {
+    try {
+      await validateExternalWriteTarget(outPath, {
+        projectRoot: getProjectRootPath(),
+        sourcePaths: typeof currentFilePath === 'string' && currentFilePath ? [currentFilePath] : [],
+        allowedExtensions: ['.md', '.markdown'],
+      });
+    } catch (error) {
+      return makeTypedMarkdownError(
+        EXPORT_MARKDOWN_V1_CHANNEL,
+        'E_MD_EXPORT_TARGET_FORBIDDEN',
+        typeof error?.reason === 'string' && error.reason
+          ? error.reason
+          : 'export_target_forbidden',
+      );
+    }
+  }
 
   let transform;
   try {
@@ -10418,10 +10696,17 @@ async function handleExportMarkdownV1(payloadRaw) {
     if (outPath) {
       const markdownIo = await loadMarkdownIoModule();
       writeResult = await queueDiskOperation(
-        () => markdownIo.writeMarkdownWithRecovery(outPath, markdown, {
-          maxSnapshots: payload.snapshotLimit,
-          safetyMode: payload.safetyMode,
-        }),
+        async () => {
+          await validateExternalWriteTarget(outPath, {
+            projectRoot: getProjectRootPath(),
+            sourcePaths: typeof currentFilePath === 'string' && currentFilePath ? [currentFilePath] : [],
+            allowedExtensions: ['.md', '.markdown'],
+          });
+          return markdownIo.writeMarkdownWithRecovery(outPath, markdown, {
+            maxSnapshots: payload.snapshotLimit,
+            safetyMode: payload.safetyMode,
+          });
+        },
         'export markdown v1',
       );
     }
@@ -10442,8 +10727,12 @@ async function handleExportMarkdownV1(payloadRaw) {
   } catch (error) {
     let logRecord = null;
     let logPath = '';
-    const mappedCode = error && typeof error.code === 'string' ? error.code : 'E_MD_EXPORT_FAILED';
     const mappedReason = error && typeof error.reason === 'string' ? error.reason : 'export_failed';
+    const mappedCode = mappedReason.startsWith('EXTERNAL_TARGET_')
+      ? 'E_MD_EXPORT_TARGET_FORBIDDEN'
+      : error && typeof error.code === 'string'
+        ? error.code
+        : 'E_MD_EXPORT_FAILED';
     const recovery = getMarkdownRecoveryGuidance(mapMarkdownErrorCode(mappedCode, mappedReason));
     try {
       const markdownIo = await loadMarkdownIoModule();
@@ -12711,6 +13000,9 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   TXT_IMPORT_SAFE_CREATE_COMMAND_ID,
   'cmd.project.importMarkdownV1',
   'cmd.project.exportMarkdownV1',
+  'cmd.project.markdown.previewLocalFile',
+  'cmd.project.markdown.acceptLocalPreview',
+  'cmd.project.markdown.exportLocalFile',
   'cmd.project.releaseClaim.admit',
   'cmd.project.releaseClaim.execute',
   'cmd.project.review.importLocalPacket',
@@ -12899,6 +13191,15 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.exportMarkdownV1': async (payload = {}) => {
     const result = await dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1, payload);
     return normalizeUiBridgeMenuResult(result);
+  },
+  'cmd.project.markdown.previewLocalFile': async (payload = {}) => {
+    return handleMarkdownImportLocalFilePreviewCommandSurface(payload);
+  },
+  'cmd.project.markdown.acceptLocalPreview': async (payload = {}) => {
+    return handleMarkdownImportLocalFileAcceptCommandSurface(payload);
+  },
+  'cmd.project.markdown.exportLocalFile': async (payload = {}) => {
+    return handleMarkdownExportLocalFileCommandSurface(payload);
   },
   'cmd.project.releaseClaim.admit': async (payload = {}) => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RELEASE_CLAIM_ADMIT, payload);

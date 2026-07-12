@@ -89,17 +89,18 @@ test('post-mvp current scene txt export: target path validation blocks project-t
   assert.match(validateSource, /reason:\s*'export_target_inside_project_root'/u);
 });
 
-test('post-mvp current scene txt export: physical directory comparison does not reuse file extension normalization', () => {
+test('post-mvp current scene txt export: physical target validation uses the shared external authority port', () => {
   const source = readText(MAIN_PATH);
-  const directoryResolveSource = sliceBetween(
+  const physicalValidatorSource = sliceBetween(
     source,
-    'async function resolveComparableTxtExportDirectoryPath(directoryPath) {',
     'async function validateTxtExportPhysicalTargetPath(outPath, options = {}) {',
+    'async function readSelectedScenesTxtExportSceneContent(sceneCandidate) {',
   );
 
-  assert.doesNotMatch(directoryResolveSource, /normalizeCurrentSceneTxtExportPath\(directoryPath\)/u);
-  assert.match(directoryResolveSource, /typeof directoryPath !== 'string' \|\| !directoryPath\.trim\(\)/u);
-  assert.match(directoryResolveSource, /const normalizedPath = directoryPath\.trim\(\);/u);
+  assert.match(physicalValidatorSource, /validateExternalWriteTarget\(outPath/u);
+  assert.match(physicalValidatorSource, /projectRoot:/u);
+  assert.match(physicalValidatorSource, /sourcePaths:/u);
+  assert.match(physicalValidatorSource, /allowedExtensions:\s*\['\.txt'\]/u);
 });
 
 test('post-mvp current scene txt export: ui bridge and command surface allowlist include only the canonical command id', () => {
