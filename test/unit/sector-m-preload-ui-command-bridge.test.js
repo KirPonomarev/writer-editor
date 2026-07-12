@@ -88,6 +88,24 @@ test('preload ui command bridge: review exact apply uses bridge with intent-only
   }
 })
 
+test('preload ui command bridge: crash reconciliation reload carries operationId without path authority', () => {
+  const source = read('src/renderer/editor.js')
+  const handlerStart = source.indexOf('async function handleReviewSurfaceExactTextApplyClick(event)')
+  const handlerEnd = source.indexOf('function bindReviewSurfaceApplyActions()', handlerStart)
+  const handler = source.slice(handlerStart, handlerEnd)
+  const reloadStart = handler.indexOf("const reloadButton = target.closest('[data-review-reload-reconciled-scene]')")
+  const reloadEnd = handler.indexOf("const batchButton = target.closest('[data-review-apply-exact-batch]')", reloadStart)
+  const reloadBranch = handler.slice(reloadStart, reloadEnd)
+
+  assert.ok(source.includes("const REVIEW_SURFACE_RELOAD_RECONCILED_SCENE_COMMAND_ID = 'cmd.project.review.reloadReconciledScene';"))
+  assert.ok(reloadBranch.includes('REVIEW_SURFACE_RELOAD_RECONCILED_SCENE_COMMAND_ID'))
+  assert.ok(reloadBranch.includes('{ requestId, operationId }'))
+  assert.equal(reloadBranch.includes('scenePath'), false)
+  assert.equal(reloadBranch.includes('snapshotPath'), false)
+  assert.equal(reloadBranch.includes('projectRoot'), false)
+  assert.equal(reloadBranch.includes('receipt'), false)
+})
+
 test('preload ui command bridge: review local packet import uses bridge with intent-only payload', () => {
   const source = read('src/renderer/editor.js')
   const handlerStart = source.indexOf('async function handleReviewImportLocalPacket()')

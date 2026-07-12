@@ -411,6 +411,7 @@ export async function writeMarkdownWithTransactionRecovery(targetPath, markdown,
     safetyMode,
     beforeRename: options.beforeRename,
     afterTempWrite: options.afterTempWrite,
+    afterRename: options.afterRename,
   });
 
   const committedIntent = {
@@ -452,6 +453,7 @@ export async function writeMarkdownWithRecovery(targetPath, markdown, options = 
     safetyMode,
     beforeRename: options.beforeRename,
     afterTempWrite: options.afterTempWrite,
+    afterRename: options.afterRename,
   });
 
   return {

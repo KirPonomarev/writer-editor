@@ -3,6 +3,13 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { writeMarkdownWithTransactionRecovery } from '../markdown/index.mjs';
+import {
+  prepareExactTextApplyJournal,
+  reconcileExactTextApplyJournal,
+  recordExactTextApplyJournalApplied,
+  recordExactTextApplyJournalReceipt,
+  recordExactTextApplyJournalSnapshot,
+} from './exactTextApplyJournal.mjs';
 import { buildExactTextApplyPlanNoDiskPreview } from './index.mjs';
 
 export const REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_SCHEMA =
@@ -20,6 +27,9 @@ const BLOCKED_CODE = 'E_REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_BLOCKED';
 const FAILED_CODE = 'E_REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_FAILED';
 const RECEIPT_INVALID_CODE = 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECEIPT_INVALID';
 const RECOVERY_INVALID_CODE = 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECOVERY_INVALID';
+const AMBIGUOUS_CODE = 'E_REVISION_BRIDGE_EXACT_TEXT_APPLY_OUTCOME_AMBIGUOUS';
+const APPLIED_RECEIPT_MISSING_CODE = 'REVISION_BRIDGE_EXACT_TEXT_APPLY_APPLIED_RECEIPT_MISSING';
+const RECONCILIATION_CONFLICT_CODE = 'REVISION_BRIDGE_EXACT_TEXT_APPLY_RECONCILIATION_CONFLICT';
 
 function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -108,6 +118,80 @@ function fail(reason, details = {}) {
     reasons: [reason],
     receipt: null,
     applied: false,
+    ...details,
+  };
+}
+
+function ambiguous(reason, reconciliation, details = {}) {
+  return {
+    ok: false,
+    type: 'revisionBridge.exactTextMinSafeWrite',
+    status: 'ambiguous',
+    code: AMBIGUOUS_CODE,
+    reason: reconciliation?.outcome === 'applied_receipt_missing'
+      ? APPLIED_RECEIPT_MISSING_CODE
+      : RECONCILIATION_CONFLICT_CODE,
+    reasons: [reason],
+    receipt: null,
+    applied: false,
+    reconciliation: cloneJsonSafe(reconciliation),
+    ...details,
+  };
+}
+
+async function reconcileJournalAfterFailure(projectRoot, journalRef, options = {}) {
+  const operationId = rawString(journalRef?.entry?.operationId);
+  if (!operationId) return null;
+  try {
+    return await reconcileExactTextApplyJournal(projectRoot, operationId, { now: options.now });
+  } catch {
+    return null;
+  }
+}
+
+function mapFailureWithReconciliation(reason, reconciliation, details = {}) {
+  if (
+    reconciliation?.outcome === 'applied_receipt_missing'
+    || reconciliation?.outcome === 'conflict'
+  ) {
+    return ambiguous(reason, reconciliation, details);
+  }
+  return fail(reason, {
+    ...(reconciliation ? { reconciliation: cloneJsonSafe(reconciliation) } : {}),
+    ...details,
+  });
+}
+
+function buildBatchAppliedResult(receipt, operations, details = {}) {
+  return {
+    ok: true,
+    type: 'revisionBridge.exactTextBatchMinSafeWrite',
+    status: 'applied',
+    code: BATCH_READY_CODE,
+    reason: BATCH_READY_CODE,
+    reasons: [],
+    applied: true,
+    receipt: cloneJsonSafe(receipt),
+    operations: cloneJsonSafe(operations),
+    changes: operations.map((operation) => ({
+      changeId: operation.changeId,
+      status: 'applied',
+      reason: BATCH_READY_CODE,
+    })),
+    ...details,
+  };
+}
+
+function buildSingleAppliedResult(receipt, details = {}) {
+  return {
+    ok: true,
+    type: 'revisionBridge.exactTextMinSafeWrite',
+    status: 'applied',
+    code: READY_CODE,
+    reason: READY_CODE,
+    reasons: [],
+    applied: true,
+    receipt: cloneJsonSafe(receipt),
     ...details,
   };
 }
@@ -236,6 +320,7 @@ async function validateReceipt(receipt, expected = {}) {
     failures.push('receipt schemaVersion is invalid');
   }
   if (receipt?.reason !== READY_CODE) failures.push('receipt reason is invalid');
+  if (receipt?.operationId !== expected.operationId) failures.push('receipt operationId does not match journal');
   if (!normalizeString(receipt?.transactionId)) failures.push('receipt transactionId is required');
   if (receipt?.bytesWritten !== expected.bytesWritten) failures.push('receipt bytesWritten does not match output');
   if (receipt?.bytesWritten !== expected.actualBytesWritten) {
@@ -490,24 +575,73 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
     nextText = `${nextText.slice(0, from)}${replacementText}${nextText.slice(to)}`;
   }
 
+  if (nextText === currentText) {
+    return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_NO_OP',
+      'reviewItems.replacementText',
+      'batch replacement must change the scene text',
+    ));
+  }
+
   const inputHash = buildBatchInputHash(input, operations);
   const outputHash = sha256Text(nextText);
   const writtenAt = toIsoStringFromNow(options.now);
   const capturedRecoveryEvidence = {};
   const userAfterStage = typeof options.afterStage === 'function' ? options.afterStage : null;
   const userBeforeWrite = typeof options.beforeWrite === 'function' ? options.beforeWrite : null;
+  const userAfterRenameBeforeReceipt = typeof options.afterRenameBeforeReceipt === 'function'
+    ? options.afterRenameBeforeReceipt
+    : null;
+  let journalRef = null;
+  let transactionId = '';
 
   try {
+    journalRef = await prepareExactTextApplyJournal({
+      projectRoot,
+      scenePath,
+      beforeHash: sha256Text(currentText),
+      afterHash: outputHash,
+      inputHash,
+      operationKind: 'replaceExactTextBatch',
+      projectId: rawString(input.projectSnapshot?.projectId || input.revisionSession?.projectId),
+      sessionId: rawString(input.revisionSession?.sessionId),
+      sceneId,
+      changeIds: operations.map((operation) => operation.changeId),
+    }, {
+      now: options.now,
+      operationId: options.operationId,
+    });
+
     const writeResult = await writeMarkdownWithTransactionRecovery(scenePath, nextText, {
       safetyMode: options.safetyMode,
       maxSnapshots: options.maxSnapshots,
       now: options.now,
       beforeRename: options.beforeRename,
       afterTempWrite: options.afterTempWrite,
+      afterRename: async () => {
+        await recordExactTextApplyJournalApplied(projectRoot, journalRef.entry.operationId, {
+          transactionId,
+        }, { now: options.now });
+        if (userAfterRenameBeforeReceipt) {
+          await userAfterRenameBeforeReceipt({
+            scenePath,
+            nextText,
+            recovery: buildSnapshotEvidence(null, capturedRecoveryEvidence),
+          });
+        }
+      },
       afterStage: async (event) => {
+        if (event?.stage === 'INTENT_CREATED') {
+          transactionId = rawString(event.transactionId);
+        }
         if (event?.stage === 'SNAPSHOT_CREATED') {
           capturedRecoveryEvidence.snapshotCreated = Boolean(event.snapshotCreated);
           capturedRecoveryEvidence.snapshotPath = rawString(event.snapshotPath);
+          transactionId = rawString(event.transactionId) || transactionId;
+          await recordExactTextApplyJournalSnapshot(projectRoot, journalRef.entry.operationId, {
+            snapshotPath: event.snapshotPath,
+            transactionId,
+          }, { now: options.now });
         }
         if (event?.stage === 'SNAPSHOT_CREATED' && userBeforeWrite) {
           await userBeforeWrite(event);
@@ -516,22 +650,33 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       },
     });
 
+    if (typeof options.beforeReceipt === 'function') {
+      await options.beforeReceipt({
+        scenePath,
+        nextText,
+        recovery: buildSnapshotEvidence(writeResult, capturedRecoveryEvidence),
+      });
+    }
+
     const recovery = await buildTruthfulRecoveryEvidence(writeResult, capturedRecoveryEvidence, currentText);
     const backupId = buildBackupId(recovery.snapshotPath);
     const actualText = await fs.readFile(scenePath, 'utf8');
     if (actualText !== nextText || recovery.snapshotReadable !== true || recovery.snapshotHashMatchesInput !== true) {
-      return fail(buildReason(
+      const failureReason = buildReason(
         actualText !== nextText ? RECEIPT_INVALID_CODE : RECOVERY_INVALID_CODE,
         'receipt',
         'batch receipt validation failed after write',
         {
           recovery,
         },
-      ));
+      );
+      const reconciliation = await reconcileJournalAfterFailure(projectRoot, journalRef, options);
+      return mapFailureWithReconciliation(failureReason, reconciliation);
     }
 
     const receipt = {
       schemaVersion: REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_RECEIPT_SCHEMA,
+      operationId: journalRef.entry.operationId,
       projectId: rawString(input.projectSnapshot?.projectId || input.revisionSession?.projectId),
       sessionId: rawString(input.revisionSession?.sessionId),
       sceneId,
@@ -548,25 +693,23 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       recovery,
       reason: BATCH_READY_CODE,
     };
-
-    return {
-      ok: true,
-      type: 'revisionBridge.exactTextBatchMinSafeWrite',
-      status: 'applied',
-      code: BATCH_READY_CODE,
-      reason: BATCH_READY_CODE,
-      reasons: [],
-      applied: true,
-      receipt: cloneJsonSafe(receipt),
-      operations: cloneJsonSafe(operations),
-      changes: operations.map((operation) => ({
-        changeId: operation.changeId,
-        status: 'applied',
-        reason: BATCH_READY_CODE,
-      })),
-    };
+    await recordExactTextApplyJournalReceipt(projectRoot, journalRef.entry.operationId, receipt, {
+      now: options.now,
+    });
+    if (typeof options.afterReceiptWritten === 'function') {
+      await options.afterReceiptWritten(cloneJsonSafe(receipt));
+    }
+    const reconciliation = await reconcileExactTextApplyJournal(
+      projectRoot,
+      journalRef.entry.operationId,
+      { now: options.now },
+    );
+    if (reconciliation.outcome !== 'applied_receipt_present') {
+      throw new Error('exact text batch receipt reconciliation did not confirm apply');
+    }
+    return buildBatchAppliedResult(receipt, operations, { reconciliation });
   } catch (error) {
-    return fail(buildReason(
+    const failureReason = buildReason(
       'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_WRITE_FAILED',
       'scenePath',
       'transactional markdown batch write failed',
@@ -575,7 +718,15 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
         errorReason: rawString(error?.reason),
         recovery: await buildTruthfulRecoveryEvidence(null, capturedRecoveryEvidence, currentText),
       },
-    ));
+    );
+    const reconciliation = await reconcileJournalAfterFailure(projectRoot, journalRef, options);
+    if (reconciliation?.outcome === 'applied_receipt_present' && isPlainObject(reconciliation.receipt)) {
+      return buildBatchAppliedResult(reconciliation.receipt, operations, {
+        reconciledAfterReceiptWrite: true,
+        reconciliation,
+      });
+    }
+    return mapFailureWithReconciliation(failureReason, reconciliation);
   }
 }
 
@@ -740,24 +891,72 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
     ));
   }
   const nextText = `${currentText.slice(0, from)}${replacementText}${currentText.slice(to)}`;
+  if (nextText === currentText) {
+    return block(buildReason(
+      'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_NO_OP',
+      'replacementText',
+      'replacement must change the scene text',
+    ));
+  }
   const inputHash = buildInputHash(input, providedPlan);
   const outputHash = sha256Text(nextText);
   const writtenAt = toIsoStringFromNow(options.now);
   const capturedRecoveryEvidence = {};
   const userAfterStage = typeof options.afterStage === 'function' ? options.afterStage : null;
   const userBeforeWrite = typeof options.beforeWrite === 'function' ? options.beforeWrite : null;
+  const userAfterRenameBeforeReceipt = typeof options.afterRenameBeforeReceipt === 'function'
+    ? options.afterRenameBeforeReceipt
+    : null;
+  let journalRef = null;
+  let transactionId = '';
 
   try {
+    journalRef = await prepareExactTextApplyJournal({
+      projectRoot,
+      scenePath,
+      beforeHash: sha256Text(currentText),
+      afterHash: outputHash,
+      inputHash,
+      operationKind: 'replaceExactText',
+      projectId: rawString(providedPlan.projectId),
+      sessionId: rawString(providedPlan.sessionId),
+      sceneId: rawString(op.sceneId),
+      changeIds: [rawString(op.changeId)],
+    }, {
+      now: options.now,
+      operationId: options.operationId,
+    });
+
     const writeResult = await writeMarkdownWithTransactionRecovery(scenePath, nextText, {
       safetyMode: options.safetyMode,
       maxSnapshots: options.maxSnapshots,
       now: options.now,
       beforeRename: options.beforeRename,
       afterTempWrite: options.afterTempWrite,
+      afterRename: async () => {
+        await recordExactTextApplyJournalApplied(projectRoot, journalRef.entry.operationId, {
+          transactionId,
+        }, { now: options.now });
+        if (userAfterRenameBeforeReceipt) {
+          await userAfterRenameBeforeReceipt({
+            scenePath,
+            nextText,
+            recovery: buildSnapshotEvidence(null, capturedRecoveryEvidence),
+          });
+        }
+      },
       afterStage: async (event) => {
+        if (event?.stage === 'INTENT_CREATED') {
+          transactionId = rawString(event.transactionId);
+        }
         if (event?.stage === 'SNAPSHOT_CREATED') {
           capturedRecoveryEvidence.snapshotCreated = Boolean(event.snapshotCreated);
           capturedRecoveryEvidence.snapshotPath = rawString(event.snapshotPath);
+          transactionId = rawString(event.transactionId) || transactionId;
+          await recordExactTextApplyJournalSnapshot(projectRoot, journalRef.entry.operationId, {
+            snapshotPath: event.snapshotPath,
+            transactionId,
+          }, { now: options.now });
         }
         if (event?.stage === 'SNAPSHOT_CREATED' && userBeforeWrite) {
           await userBeforeWrite(event);
@@ -766,8 +965,8 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
       },
     });
 
-    if (typeof options.afterRenameBeforeReceipt === 'function') {
-      await options.afterRenameBeforeReceipt({
+    if (typeof options.beforeReceipt === 'function') {
+      await options.beforeReceipt({
         scenePath,
         nextText,
         recovery: buildSnapshotEvidence(writeResult, capturedRecoveryEvidence),
@@ -778,6 +977,7 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
     const backupId = buildBackupId(recovery.snapshotPath);
     const receipt = {
       schemaVersion: REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECEIPT_SCHEMA,
+      operationId: journalRef.entry.operationId,
       projectId: rawString(providedPlan.projectId),
       sessionId: rawString(providedPlan.sessionId),
       sceneId: rawString(op.sceneId),
@@ -815,11 +1015,12 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
       baselineHashBefore: rawString(providedPlan.baselineHash),
       operationKind: 'replaceExactText',
       writeStatus: 'applied',
+      operationId: journalRef.entry.operationId,
       backupId,
       writtenAt,
     });
     if (receiptFailures.length > 0) {
-      return fail(buildReason(
+      const failureReason = buildReason(
         receiptFailures.some((failure) => failure.includes('recovery'))
           ? RECOVERY_INVALID_CODE
           : RECEIPT_INVALID_CODE,
@@ -829,21 +1030,28 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
           receiptFailures,
           recovery,
         },
-      ));
+      );
+      const reconciliation = await reconcileJournalAfterFailure(projectRoot, journalRef, options);
+      return mapFailureWithReconciliation(failureReason, reconciliation);
     }
 
-    return {
-      ok: true,
-      type: 'revisionBridge.exactTextMinSafeWrite',
-      status: 'applied',
-      code: READY_CODE,
-      reason: READY_CODE,
-      reasons: [],
-      applied: true,
-      receipt: cloneJsonSafe(finalReceipt),
-    };
+    await recordExactTextApplyJournalReceipt(projectRoot, journalRef.entry.operationId, finalReceipt, {
+      now: options.now,
+    });
+    if (typeof options.afterReceiptWritten === 'function') {
+      await options.afterReceiptWritten(cloneJsonSafe(finalReceipt));
+    }
+    const reconciliation = await reconcileExactTextApplyJournal(
+      projectRoot,
+      journalRef.entry.operationId,
+      { now: options.now },
+    );
+    if (reconciliation.outcome !== 'applied_receipt_present') {
+      throw new Error('exact text receipt reconciliation did not confirm apply');
+    }
+    return buildSingleAppliedResult(finalReceipt, { reconciliation });
   } catch (error) {
-    return fail(buildReason(
+    const failureReason = buildReason(
       'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_WRITE_FAILED',
       'scenePath',
       'transactional markdown write failed',
@@ -852,6 +1060,14 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
         errorReason: rawString(error?.reason),
         recovery: await buildTruthfulRecoveryEvidence(null, capturedRecoveryEvidence, currentText),
       },
-    ));
+    );
+    const reconciliation = await reconcileJournalAfterFailure(projectRoot, journalRef, options);
+    if (reconciliation?.outcome === 'applied_receipt_present' && isPlainObject(reconciliation.receipt)) {
+      return buildSingleAppliedResult(reconciliation.receipt, {
+        reconciledAfterReceiptWrite: true,
+        reconciliation,
+      });
+    }
+    return mapFailureWithReconciliation(failureReason, reconciliation);
   }
 }

@@ -47,6 +47,9 @@ export async function atomicWriteFile(targetPathRaw, contentRaw, options = {}) {
     }
 
     await fs.rename(tempPath, targetPath);
+    if (typeof options.afterRename === 'function') {
+      await options.afterRename({ targetPath, tempPath, bytesWritten: content.byteLength });
+    }
     return {
       ok: 1,
       targetPath,

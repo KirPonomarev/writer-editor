@@ -23,6 +23,7 @@ this.__reviewSurfaceExports = {
   REVIEW_SURFACE_RECEIPT_SCHEMA,
   REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID,
   REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID,
+  REVIEW_SURFACE_RELOAD_RECONCILED_SCENE_COMMAND_ID,
   reviewSurfaceBuildExactTextApplyPayload,
   reviewSurfaceBuildExactTextApplyBatchPayload,
   reviewSurfaceNormalizeState,
@@ -78,8 +79,14 @@ const fakeBatchButton = new FakeButton(
   { changeIds: 'change-1,change-2' },
   '[data-review-apply-exact-batch]',
 );
+const fakeReloadButton = new FakeButton(
+  { operationId: 'op_reconcile_1' },
+  '[data-review-reload-reconciled-scene]',
+);
 const reviewSurfaceHost = new FakeHTMLElement();
-reviewSurfaceHost.contains = (node) => node === fakeButton || node === fakeBatchButton;
+reviewSurfaceHost.contains = (node) => (
+  node === fakeButton || node === fakeBatchButton || node === fakeReloadButton
+);
 reviewSurfaceHost.addEventListener = () => {};
 
 function renderReviewSurface() {
@@ -103,12 +110,14 @@ ${source.slice(runtimeStart, runtimeEnd)}
 this.__reviewSurfaceClickHarness = {
   fakeButton,
   fakeBatchButton,
+  fakeReloadButton,
   bridgeCalls,
   stateCalls,
   getTransientState: () => reviewSurfaceExactTextApplyTransientState,
   getRenderCount: () => renderCount,
   click: () => handleReviewSurfaceExactTextApplyClick({ target: fakeButton }),
   clickBatch: () => handleReviewSurfaceExactTextApplyClick({ target: fakeBatchButton }),
+  clickReload: () => handleReviewSurfaceExactTextApplyClick({ target: fakeReloadButton }),
 };
 `;
   const sandbox = {
@@ -874,6 +883,86 @@ test('review surface ui: transient exact apply failure remains failed instead of
   assert.equal(harness.stateCalls.length, 0);
   assert.equal(harness.getTransientState().state, 'failed');
   assert.equal(harness.getTransientState().reason, 'REVIEW_SURFACE_TRANSPORT_TIMEOUT');
+});
+
+test('review surface ui: reconciled crash outcome renders one operationId-only safe reload action', () => {
+  const helpers = loadReviewSurfaceHelpers();
+  const viewModel = helpers.buildReviewSurfaceViewModel({
+    exactTextApplyReconciliation: {
+      schemaVersion: 'revision-bridge.exact-text-apply-reconciliation-set.v1',
+      items: [{
+        operationId: 'op_reconcile_1',
+        outcome: 'applied_receipt_missing',
+        ambiguous: true,
+        sceneId: 'scene-1',
+        sceneRelativePath: 'roman/scene.md',
+        recoveryVerified: true,
+        snapshotAvailable: true,
+        safeActions: ['RELOAD_CANONICAL', 'DELETE_SCENE'],
+        reconciledAt: '2026-07-12T12:00:00.000Z',
+      }],
+      errors: [],
+    },
+  });
+  const markup = helpers.renderReviewSurfaceMarkup(viewModel);
+
+  assert.equal(viewModel.status, 'ready');
+  assert.equal(viewModel.reconciliation.items.length, 1);
+  assert.deepEqual(viewModel.reconciliation.items[0].safeActions, ['RELOAD_CANONICAL']);
+  assert.ok(markup.includes('Восстановление Apply'));
+  assert.ok(markup.includes('Запись применена без отчета'));
+  assert.ok(markup.includes('data-review-reload-reconciled-scene'));
+  assert.ok(markup.includes('data-operation-id="op_reconcile_1"'));
+  assert.equal(markup.includes('DELETE_SCENE'), false);
+});
+
+test('review surface ui: reconciliation reload sends only requestId and operationId', async () => {
+  const harness = loadReviewSurfaceClickHarness({
+    ok: true,
+    value: {
+      ok: true,
+      reloaded: true,
+      reviewSurface: {},
+    },
+  });
+
+  await harness.clickReload();
+
+  assert.equal(harness.bridgeCalls.length, 1);
+  assert.equal(harness.bridgeCalls[0].commandId, 'cmd.project.review.reloadReconciledScene');
+  assert.equal(
+    JSON.stringify(Object.keys(harness.bridgeCalls[0].payload).sort()),
+    JSON.stringify(['operationId', 'requestId']),
+  );
+  assert.equal(harness.bridgeCalls[0].payload.operationId, 'op_reconcile_1');
+  assert.equal(harness.stateCalls.length, 1);
+  assert.equal(harness.getTransientState(), null);
+});
+
+test('review surface ui: applied-without-receipt response remains ambiguous instead of failed', async () => {
+  const harness = loadReviewSurfaceClickHarness({
+    ok: false,
+    value: {
+      ok: false,
+      error: {
+        reason: 'REVISION_BRIDGE_EXACT_TEXT_APPLY_APPLIED_RECEIPT_MISSING',
+      },
+      reviewSurface: {
+        exactTextApplyReconciliation: {
+          items: [{
+            operationId: 'op_reconcile_1',
+            outcome: 'applied_receipt_missing',
+          }],
+        },
+      },
+    },
+  });
+
+  await harness.click();
+
+  assert.equal(harness.getTransientState().state, 'ambiguous');
+  assert.equal(harness.stateCalls.length, 1);
+  assert.equal(harness.stateCalls[0].options.preserveExactApplyState, true);
 });
 
 test('review surface ui: empty and error states stay deterministic', () => {
