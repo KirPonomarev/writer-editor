@@ -282,13 +282,6 @@
       "rationale": "Approve contract guard for the bounded DOCX diagnostic evidence surface; it binds status, no-import and no-apply claims, code markers, targeted tests, and current docs without introducing storage, export, safe-create, dependency, network, release, Word parity, or full DOCX review import authority."
     },
     {
-      "filePath": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
-      "sha256": "19ce9f7193f88a051b25ec89ec58f659a1ee40d5c0591b0eed12e5a12f619b70",
-      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_GOVERNANCE_BYTE_TRUTH_REPAIR",
-      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
-      "rationale": "Rebind the pre-existing DOCX review local-file command-surface contract approval to its current mainline bytes discovered by the Phase 01 governance audit; the contract itself is unchanged in this contour and no DOCX import, apply, storage, receipt, recovery, readiness, or scope widening is introduced."
-    },
-    {
       "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
       "sha256": "a80b2cf9035df7f3ef7212814015872dbf764a4718213d31a6363dd24025c969",
       "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_GOVERNANCE_BYTE_TRUTH_REPAIR",
@@ -378,13 +371,6 @@
       "approvedBy": "ticket:MARKDOWN_IMPORT_PRODUCT_PARITY_001",
       "approvedAtUtc": "2026-07-01T14:00:00.000Z",
       "rationale": "Approve bounded Sector-M DONE scope-map admission preserving the prior DOCX import preview accept flow product tail and adding focused Markdown import product parity UI test coverage without widening M8 or M9 exact phase scopes, adding dependencies, network, cloud, storage schema changes, Markdown dialect expansion, mindmap user export claims, export save-as claims, or DOCX full-fidelity claims."
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
-      "sha256": "ebd5d42ff4a9f29d3013116df80ff5587647f977df53129b7ad6b26c847952e5",
-      "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
-      "approvedAtUtc": "2026-07-01T12:22:27.000Z",
-      "rationale": "Approve bounded DOCX local file preview command-surface contract update proving previewLocalFile remains pathless, disk-write-free, and admission-free; explicit accept admission is handled by the separate previewImportPlan path, and no export rewrite, dependency, network, cloud, release, or DOCX full-fidelity claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
@@ -3677,13 +3663,6 @@
       "rationale": "Approve delivery truth rebind for the bounded Review Bridge first useful release public-boundary and live-smoke repair after PR 1066 merge; the status is rebound to delivered_merged_verified with feature commit, PR, merge SHA, and merged time while preserving no new review import automation, no new apply authority, no DOCX apply, no safe-create change, no import-export widening, no release readiness, and no Y9 claim."
     },
     {
-      "filePath": "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
-      "sha256": "90cd0f1af1bb8df4dd65c87e50070f120e8652fdfe06b066ab2e9eaab7683151",
-      "approvedBy": "ticket:REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001",
-      "approvedAtUtc": "2026-07-12T18:45:38.000Z",
-      "rationale": "Approve bounded main-owned reconciliation command coverage proving applied-without-receipt is surfaced instead of falsely failed, batch success forces canonical editor reload, and recovery reload accepts requestId plus operationId only while rejecting renderer path authority; no external write authority, cross-scene write, structural apply, DOCX apply, dependency, cloud, or release-readiness claim is introduced."
-    },
-    {
       "filePath": "test/contracts/revision-bridge-exact-text-apply-crash-reconciliation.contract.test.js",
       "sha256": "c923881109c07e3de0c0c267fe48d3553f3878f8d8408fdcd04c14a5e452bb6e",
       "approvedBy": "ticket:REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001",
@@ -3724,6 +3703,76 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-12T18:12:39.000Z",
       "rationale": "Approve active factual-doc contract rebind from implemented-but-unbound wording to delivered PR 1073 truth while preserving DOCX Review evidence-only, Markdown partial-flow, crash reconciliation P0, cross-scene deferred, no dependency, and no release-readiness claims."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001_STATUS.json",
+      "sha256": "8272ddb0c50984944b335734e6104ed0182abd8ca7b3a201fde2afc73a676366",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
+      "approvedAtUtc": "2026-07-12T20:29:26.000Z",
+      "rationale": "Approve the bounded Phase 03 implementation-pending-delivery status and its completed verification record for shared external-file reads and target validation across DOCX, Markdown, TXT, and Review Packet contours, including the explicit feature-ref Sector M guard outcome and isolated post-merge-equivalent full-suite pass, while preserving nonclaims against visible Markdown product completion, canonical semantic Markdown export, UI change, dependencies, cloud, fidelity widening, structural apply, cross-scene transactions, and release readiness."
+    },
+    {
+      "filePath": "test/contracts/b3c07-canonical-docx-export-acceptance.contract.test.js",
+      "sha256": "03733023a28a1bd1e154663fd3b69a4f457cb42f530fe47bc0a60d11e9e2e538",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
+      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
+      "rationale": "Approve the canonical DOCX export acceptance harness update that supplies the newly required target-validation dependency while preserving canonical source, deterministic DOCX output, offline behavior, and all existing format nonclaims."
+    },
+    {
+      "filePath": "test/contracts/export-contour-01-docx-simple-hardening.contract.test.js",
+      "sha256": "a6b63643a2129c1c1d85b3c2549155ec4dced6aa6943fc2b5fde755359da1bcd",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
+      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
+      "rationale": "Approve the existing deterministic DOCX export contour harness update for the mandatory external-target validation port; no DOCX content, fidelity, dependency, renderer authority, or release claim is widened."
+    },
+    {
+      "filePath": "test/contracts/post-mvp-current-scene-txt-export.contract.test.js",
+      "sha256": "112f0d3cea5f8d03b97fe7efe89286fbf6c300f3fc3b971bc4e87e2d4326df06",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
+      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
+      "rationale": "Approve the current-scene TXT contract rebind from removed bespoke realpath helpers to the shared external target authority, preserving scene-only canonical source, atomic external write, project-root denial, and source-overwrite denial."
+    },
+    {
+      "filePath": "test/contracts/post-mvp-project-txt-export.contract.test.js",
+      "sha256": "4cebd8edbbd2e15b6eb62405ecdbf68e25104e2003e7686d783ebc0dd48db146",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
+      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
+      "rationale": "Approve the all-scenes TXT contract marker rebind after replacement of bespoke physical-path helpers by the shared validator; canonical scene traversal, source scope, atomic write, and product claims remain unchanged."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
+      "sha256": "fb55713b88b3d3c1bf9d7f1367f2e4435783a68b28751dd5e86b64ca399ff024",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
+      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
+      "rationale": "Approve the DOCX content local-file VM harness binding to the shared bounded-reader contract and typed oversized or replacement errors while preserving pathless preview, zero-write intake, hostile DOCX gates, and renderer authority denial."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
+      "sha256": "ac9b4f72feaf8b226da447e66f8bfae71c1acecfcf150b7eec8a80404825e858",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
+      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
+      "rationale": "Approve the DOCX Review local-file harness binding to shared bounded identity checks and shared typed empty or replacement failures while preserving evidence-only comments, diagnostic-only tracked changes, and zero manuscript writes."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-file-authority-hardening.contract.test.js",
+      "sha256": "85092a3f463dbf7dceb191ab32be54fd74a85d39588eb7234404262c661bb564",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
+      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
+      "rationale": "Approve focused Phase 03 read and write authority coverage for bounded allocation, identity replacement detection, project-internal source denial, source and target symlink denial, protected-source denial, queue-time target replacement with zero writes, cross-format wiring, and honest pending-delivery status scope."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-markdown-file-authority-command-surface.contract.test.js",
+      "sha256": "d8ed5ec53df1fbdfcacc17554560c39ba091058d271b4e40f03023b117732fad",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
+      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
+      "rationale": "Approve the new Markdown main-owned authority command contract proving request-only picker and Save As intent, opaque project-bound one-use preview acceptance, pathless public preview and receipt envelopes, private target suppression, replay denial, and no visible-product-completion claim."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
+      "sha256": "8e8f2ed631a0b32eb86efb08f59882d235a698bac59befaa550de794fb2b0598",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
+      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
+      "rationale": "Approve the existing Review mutate contract update binding local packet intake to the shared bounded reader and proving export target revalidation before write, while preserving canonical packet validation, exact apply authority, recovery, receipt, structural manual-only behavior, and all prior crash-reconciliation coverage."
     }
   ]
 }

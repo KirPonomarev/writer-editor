@@ -7,6 +7,11 @@ const vm = require('node:vm');
 const crypto = require('node:crypto');
 const { pathToFileURL } = require('node:url');
 
+const {
+  readExternalFileBounded: readExternalFileBoundedActual,
+  validateExternalWriteTarget,
+} = require('../../src/utils/externalFileAuthority');
+
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const MAIN_PATH = path.join(REPO_ROOT, 'src', 'main.js');
 const BRIDGE_MODULE_PATH = path.join(REPO_ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
@@ -404,6 +409,11 @@ function instantiateReviewMutatePort(options = {}) {
       },
     },
     fs: options.fs || fs.promises,
+    getProjectRootPath: () => (
+      typeof options.projectRoot === 'string'
+        ? options.projectRoot
+        : path.join(os.tmpdir(), 'rb-review-mutate-project-root')
+    ),
     hasReviewSurfacePayload,
     isPlainObjectValue,
     loadRevisionBridgeModule: typeof options.loadRevisionBridgeModule === 'function'
@@ -418,6 +428,32 @@ function instantiateReviewMutatePort(options = {}) {
     queueDiskOperation: typeof options.queueDiskOperation === 'function'
       ? options.queueDiskOperation
       : async (operation) => operation(),
+    readExternalFileBounded: typeof options.readExternalFileBounded === 'function'
+      ? options.readExternalFileBounded
+      : options.fs
+        ? async (filePath, readOptions = {}) => {
+            const stat = await options.fs.stat(filePath);
+            const size = Number(stat?.size);
+            if (!stat || typeof stat.isFile !== 'function' || !stat.isFile()) {
+              const error = new Error('EXTERNAL_SOURCE_FILE_REQUIRED');
+              error.code = 'E_EXTERNAL_FILE_AUTHORITY';
+              error.reason = 'EXTERNAL_SOURCE_FILE_REQUIRED';
+              throw error;
+            }
+            if (Number.isInteger(readOptions.maxBytes) && size > readOptions.maxBytes) {
+              const error = new Error('EXTERNAL_SOURCE_TOO_LARGE');
+              error.code = 'E_EXTERNAL_FILE_AUTHORITY';
+              error.reason = 'EXTERNAL_SOURCE_TOO_LARGE';
+              error.details = { maxBytes: readOptions.maxBytes, actualBytes: size };
+              throw error;
+            }
+            const bytes = await options.fs.readFile(filePath);
+            return {
+              bytes: Buffer.isBuffer(bytes) ? Buffer.from(bytes) : Buffer.from(String(bytes || '')),
+            };
+          }
+        : readExternalFileBoundedActual,
+    validateExternalWriteTarget,
   };
   vm.runInNewContext(
     `${section}
@@ -778,6 +814,55 @@ test('review mutate port contract: local packet export fails closed before file 
   assert.equal(result.error.op, 'cmd.project.review.exportLocalPacket');
   assert.equal(result.error.reason, 'REVIEW_EXPORT_LOCAL_PACKET_NO_ACTIVE_SESSION');
   assert.equal(pickCalled, false);
+});
+
+test('review mutate port contract: local packet export revalidates target before write', async () => {
+  const port = instantiateReviewMutatePort({ loadRevisionBridgeModule: loadBridge });
+  const revisionSession = {
+    projectId: 'project-1',
+    sessionId: 'session-export-revalidate',
+    baselineHash: 'baseline-export-revalidate',
+    status: 'open',
+    reviewGraph: validReviewPacket(),
+  };
+  const importResult = await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: revisionSession.projectId,
+    sessionId: revisionSession.sessionId,
+    baselineHash: revisionSession.baselineHash,
+    reviewSurface: { revisionSession },
+    revisionSession,
+  });
+  assert.equal(importResult.ok, true);
+
+  let validationCount = 0;
+  let writeCount = 0;
+  const result = await port.handleReviewSurfaceExportLocalPacketCommandSurface(
+    { requestId: 'export-revalidate' },
+    {
+      pickLocalFile: async () => ({
+        path: path.join(os.tmpdir(), 'review-export-revalidate.json'),
+      }),
+      validateExternalWriteTarget: async () => {
+        validationCount += 1;
+        if (validationCount === 2) {
+          const error = new Error('EXTERNAL_TARGET_SYMLINK_DENIED');
+          error.reason = 'EXTERNAL_TARGET_SYMLINK_DENIED';
+          throw error;
+        }
+        return { ok: true };
+      },
+      writeFileAtomic: async () => {
+        writeCount += 1;
+        return { success: true };
+      },
+    },
+  );
+
+  assert.equal(validationCount, 2);
+  assert.equal(writeCount, 0);
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_REVIEW_EXPORT_LOCAL_PACKET_TARGET_FORBIDDEN');
+  assert.equal(result.error.reason, 'EXTERNAL_TARGET_SYMLINK_DENIED');
 });
 
 test('review mutate port contract: local packet export writes one normalized json file and roundtrips back through local import', async () => {
@@ -1286,7 +1371,7 @@ test('review mutate port contract: local packet import restats before read and r
 
   assert.equal(result.ok, false);
   assert.equal(result.error.op, 'cmd.project.review.importLocalPacket');
-  assert.equal(result.error.reason, 'REVIEW_IMPORT_LOCAL_PACKET_TOO_LARGE');
+  assert.equal(result.error.reason, 'EXTERNAL_SOURCE_TOO_LARGE');
   assert.equal(readCalled, false);
   assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
 });

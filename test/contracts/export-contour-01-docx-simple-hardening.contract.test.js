@@ -89,6 +89,9 @@ test('EXPORT_CONTOUR_01_DOCX_SIMPLE_EXPORT_HARDENING reproducible structural cla
     resolveDocxExportPath(input) {
       return input.outPath;
     },
+    async validateDocxExportTarget() {
+      return { ok: true };
+    },
     async readCanonicalExportSnapshot() {
       return canonicalSnapshot;
     },

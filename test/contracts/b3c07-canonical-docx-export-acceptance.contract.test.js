@@ -250,6 +250,9 @@ test('b3c07 canonical DOCX export acceptance: save reopen export reads canonical
         resolveDocxExportPath(input) {
           return input.outPath;
         },
+        async validateDocxExportTarget() {
+          return { ok: true };
+        },
         async readCanonicalExportSnapshot(input) {
           calls.canonicalReads += 1;
           assert.equal(String(input.bufferSource).includes(FALSE_VIEWPORT_MARKER), true);

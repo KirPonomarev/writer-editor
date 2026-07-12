@@ -86,7 +86,11 @@ function instantiateDocxImportLocalFilePreviewCommandPort(options = {}) {
         calls.stat.push(filePath);
         if (typeof options.stat === 'function') return options.stat(filePath);
         return {
-          size: Number.isInteger(options.size) ? options.size : 0,
+          size: Number.isInteger(options.size)
+            ? options.size
+            : Buffer.isBuffer(options.bytes)
+              ? options.bytes.length
+              : Buffer.byteLength(String(options.bytes || '')),
           isFile: () => options.isFile !== false,
         };
       },
@@ -96,7 +100,30 @@ function instantiateDocxImportLocalFilePreviewCommandPort(options = {}) {
         return Buffer.from(options.bytes || '');
       },
     },
+    getProjectRootPath: () => (
+      typeof options.projectRoot === 'string'
+        ? options.projectRoot
+        : path.join(os.tmpdir(), 'docx-local-command-project-root')
+    ),
     isPlainObjectValue,
+    readExternalFileBounded: async (filePath, readOptions = {}) => {
+      const bytes = await sandbox.fs.readFile(filePath);
+      const byteLength = Buffer.isBuffer(bytes) ? bytes.length : Buffer.byteLength(String(bytes || ''));
+      if (Number.isInteger(readOptions.maxBytes) && byteLength > readOptions.maxBytes) {
+        const error = new Error('EXTERNAL_SOURCE_TOO_LARGE');
+        error.code = 'E_EXTERNAL_FILE_AUTHORITY';
+        error.reason = 'EXTERNAL_SOURCE_TOO_LARGE';
+        error.details = { maxBytes: readOptions.maxBytes, actualBytes: byteLength };
+        throw error;
+      }
+      if (Number.isInteger(readOptions.expectedBytes) && readOptions.expectedBytes !== byteLength) {
+        const error = new Error('EXTERNAL_SOURCE_CHANGED_DURING_READ');
+        error.code = 'E_EXTERNAL_FILE_AUTHORITY';
+        error.reason = 'EXTERNAL_SOURCE_CHANGED_DURING_READ';
+        throw error;
+      }
+      return { bytes: Buffer.from(bytes), byteLength };
+    },
     rememberDocxImportPreviewPlanAdmission: typeof options.rememberAdmission === 'function'
       ? (plan) => {
           calls.rememberAdmission.push(cloneJsonSafe(plan));
@@ -502,7 +529,7 @@ test('DOCX local file preview command surface: extension and size gates fail bef
   });
   const oversizedActualResult = await oversizedActual.handleDocxImportLocalFilePreviewCommandSurface({});
   assert.equal(oversizedActualResult.ok, false);
-  assert.equal(oversizedActualResult.error.reason, DOCX_IMPORT_LOCAL_FILE_PREVIEW_CODES.FILE_TOO_LARGE);
+  assert.equal(oversizedActualResult.error.reason, 'EXTERNAL_SOURCE_TOO_LARGE');
   assert.equal(oversizedActual.calls.readFile.length, 1);
   assertNoForbiddenPublicFields(oversizedActualResult);
 });

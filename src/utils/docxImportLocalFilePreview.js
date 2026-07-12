@@ -505,10 +505,15 @@ async function createDocxImportLocalFilePreview(input = {}, options = {}) {
       requestId: normalizeRequestId(input.requestId),
       maxBytes: DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
     });
-  } catch {
+  } catch (error) {
     return buildError(
-      'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_READ_FAILED',
-      DOCX_IMPORT_LOCAL_FILE_PREVIEW_CODES.READ_FAILED,
+      typeof error?.code === 'string' && error.code
+        ? error.code
+        : 'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_READ_FAILED',
+      typeof error?.reason === 'string' && error.reason
+        ? error.reason
+        : DOCX_IMPORT_LOCAL_FILE_PREVIEW_CODES.READ_FAILED,
+      isPlainObject(error?.details) ? error.details : undefined,
     );
   }
 
