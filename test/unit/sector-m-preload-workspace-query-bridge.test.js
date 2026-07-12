@@ -30,7 +30,7 @@ test('preload workspace query bridge: main has one query bridge handler with str
   assert.ok(source.includes("if (queryId === 'query.reviewSurface') {"))
   assert.ok(source.includes('return handleWorkspaceReviewSurfaceQuery();'))
   assert.ok(source.includes('function handleWorkspaceReviewSurfaceQuery() {'))
-  assert.ok(source.includes('reviewSurface: readActiveReviewSessionReviewSurface(),'))
+  assert.ok(source.includes('reviewSurface: attachReviewExactTextApplyReconciliationState('))
 })
 
 test('preload workspace query bridge: editor tree collab and review surface reads use query bridge only', () => {
@@ -75,7 +75,7 @@ test('preload workspace query bridge: existing query semantics and out-of-scope 
   assert.ok(editorSource.includes("void invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: true });"))
 })
 
-test('preload workspace query bridge: review surface query reads only the active in-memory review session', () => {
+test('preload workspace query bridge: review surface query reads active session plus main-owned crash reconciliation', () => {
   const source = read('src/main.js')
 
   assert.ok(source.includes('let activeReviewSessionStore = null;'))
@@ -91,6 +91,9 @@ test('preload workspace query bridge: review surface query reads only the active
   assert.ok(source.includes("activeReviewSessionLifecycle = 'active';"))
   assert.ok(source.includes("resetActiveReviewSessionStore('cleared');"))
   assert.ok(source.includes("currentReviewSurfacePayloadSource = 'session';"))
-  assert.ok(source.includes('reviewSurface: readActiveReviewSessionReviewSurface(),'))
+  assert.ok(source.includes('function attachReviewExactTextApplyReconciliationState(reviewSurface = {}, filePath = currentFilePath) {'))
+  assert.ok(source.includes('readReviewExactTextApplyReconciliationsForFile(filePath)'))
+  assert.ok(source.includes('reviewSurface: attachReviewExactTextApplyReconciliationState('))
+  assert.ok(source.includes('readActiveReviewSessionReviewSurface(),'))
   assert.equal(source.includes('const derivedPayload = await buildDerivedReviewSurfacePayload();'), false)
 })

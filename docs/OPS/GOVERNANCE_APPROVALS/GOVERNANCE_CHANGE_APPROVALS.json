@@ -3482,10 +3482,10 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js",
-      "sha256": "fb6c0968d254425f3a7faa1b767faada741be725a7b20f0c84e1120eec458b67",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
-      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
-      "rationale": "Approve bounded allowlist-tolerance update for adjacent Review Bridge truth-repair proofs and docs so the exact-text safe-write contract stays strict on unexpected drift while not false-reding on the named neighboring contour; no safe-write semantics, storage authority, receipt, recovery, readiness, or scope widening is introduced."
+      "sha256": "b7de42bbb2ad0aec81eaf763c15d1fe46c7238517de09b19a6cc6bc5ab818ebd",
+      "approvedBy": "ticket:REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001",
+      "approvedAtUtc": "2026-07-12T19:09:34.000Z",
+      "rationale": "Approve bounded exact safe-write crash-reconciliation coverage for atomic per-operation journal transitions, operationId-bound receipts, truthful ambiguous outcomes after rename, immediate reconciliation after normal receipt completion, same-scene batch parity, verified recovery snapshots, no-double-apply behavior, and the named Phase 02 artifact allowlist; no cross-scene transaction, structural apply, DOCX apply, dependency, cloud, or release-readiness claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-inline-range-anchor-contract.contract.test.js",
@@ -3678,10 +3678,24 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
-      "sha256": "cf6704b3f929f9fcaa449f27fc2bd5b9e9852c6db5e040ab7fbf551455762af2",
-      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
-      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
-      "rationale": "Approve bounded Review Packet V1 import, export-roundtrip, main-owned plan preparation, stale-session race, authority-denial, exact apply, batch apply, recovery, receipt, dirty, stale, duplicate, and no-match contract coverage; renderer authority remains identifier-only and no DOCX apply, structural apply, cross-scene write, dependency, cloud, or release-readiness claim is introduced."
+      "sha256": "90cd0f1af1bb8df4dd65c87e50070f120e8652fdfe06b066ab2e9eaab7683151",
+      "approvedBy": "ticket:REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001",
+      "approvedAtUtc": "2026-07-12T18:45:38.000Z",
+      "rationale": "Approve bounded main-owned reconciliation command coverage proving applied-without-receipt is surfaced instead of falsely failed, batch success forces canonical editor reload, and recovery reload accepts requestId plus operationId only while rejecting renderer path authority; no external write authority, cross-scene write, structural apply, DOCX apply, dependency, cloud, or release-readiness claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-exact-text-apply-crash-reconciliation.contract.test.js",
+      "sha256": "c923881109c07e3de0c0c267fe48d3553f3878f8d8408fdcd04c14a5e452bb6e",
+      "approvedBy": "ticket:REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001",
+      "approvedAtUtc": "2026-07-12T18:45:38.000Z",
+      "rationale": "Approve focused Phase 02 process-killpoint and journal reconciliation contract coverage for crashes before rename, after rename, before receipt, and after durable receipt; it verifies canonical hash classification, recovery preservation, conflict fail-closed behavior, stored path-traversal denial, immediate normal completion, and no double apply without widening beyond one canonical scene file per operation."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001_STATUS.json",
+      "sha256": "f5e42f48f8aa185363967e21ffbb5cc2264c36b799b8536d9b0996d627e0d94c",
+      "approvedBy": "ticket:REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001",
+      "approvedAtUtc": "2026-07-12T19:09:34.000Z",
+      "rationale": "Approve the bounded Phase 02 implementation-pending-delivery status truth for one-scene exact Apply crash journaling, startup reconciliation, operationId-only canonical reload, real process killpoints, repeated Electron evidence, editor bootstrap ordering, and sticky dirty-at-import blocking while preserving explicit nonclaims against cross-scene transactions, structural or DOCX apply, Markdown authority expansion, dependencies, cloud, and release readiness."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_STATUS.json",

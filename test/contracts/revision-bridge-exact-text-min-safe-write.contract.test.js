@@ -8,6 +8,19 @@ const { execFileSync } = require('node:child_process');
 const { pathToFileURL } = require('node:url');
 
 const MODULE_PATH = 'src/io/revisionBridge/exactTextMinSafeWrite.mjs';
+const JOURNAL_MODULE_PATH = 'src/io/revisionBridge/exactTextApplyJournal.mjs';
+const MARKDOWN_INDEX_PATH = 'src/io/markdown/index.mjs';
+const MARKDOWN_ATOMIC_WRITE_PATH = 'src/io/markdown/atomicWriteFile.mjs';
+const CRASH_RECONCILIATION_TEST_PATH =
+  'test/contracts/revision-bridge-exact-text-apply-crash-reconciliation.contract.test.js';
+const CRASH_RECONCILIATION_FIXTURE_PATH =
+  'test/fixtures/revision-bridge-exact-text-apply-crash-child.mjs';
+const CRASH_RECONCILIATION_UI_E2E_TEST_PATH =
+  'test/unit/sector-m-review-bridge-crash-reconciliation-ui-e2e-smoke.mjs';
+const CANONICAL_REVIEW_UI_E2E_TEST_PATH =
+  'test/unit/sector-m-review-bridge-canonical-ui-e2e-smoke.mjs';
+const CRASH_RECONCILIATION_STATUS_PATH =
+  'docs/OPS/STATUS/REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001_STATUS.json';
 const C03_MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const C03_TEST_PATH = 'test/contracts/revision-bridge-exact-text-apply-plan-no-disk.contract.test.js';
 const TEST_PATH = 'test/contracts/revision-bridge-exact-text-min-safe-write.contract.test.js';
@@ -30,6 +43,14 @@ const CONTROLLED_MULTI_STATUS_PACKET_PATH =
   'docs/OPS/STATUS/REVIEW_BRIDGE_CONTROLLED_MULTI_EXACT_APPLY_001_R2_STATUS_V1.json';
 const ALLOWLIST = [
   MODULE_PATH,
+  JOURNAL_MODULE_PATH,
+  MARKDOWN_INDEX_PATH,
+  MARKDOWN_ATOMIC_WRITE_PATH,
+  CRASH_RECONCILIATION_TEST_PATH,
+  CRASH_RECONCILIATION_FIXTURE_PATH,
+  CRASH_RECONCILIATION_UI_E2E_TEST_PATH,
+  CANONICAL_REVIEW_UI_E2E_TEST_PATH,
+  CRASH_RECONCILIATION_STATUS_PATH,
   MAIN_PATH,
   C03_MODULE_PATH,
   C03_TEST_PATH,
@@ -306,6 +327,38 @@ test('C04 batch exact text min safe write applies same-scene replacements all-or
   assertTruthfulBatchReceipt(result.receipt, scenePath, 'Alpha delta gamma sigma.');
 });
 
+test('R8 batch crash windows distinguish applied-without-receipt from durable receipt completion', async () => {
+  const c04 = await loadC04();
+  const firstScene = tmpScene('Alpha beta gamma omega.');
+  const ambiguousResult = await c04.applyExactTextBatchMinSafeWrite(
+    readyBatchInput({ scenePath: firstScene.scenePath }),
+    {
+      operationId: 'op_batch_after_rename',
+      afterRenameBeforeReceipt: () => {
+        throw new Error('forced batch crash after rename');
+      },
+    },
+  );
+  assert.equal(ambiguousResult.status, 'ambiguous');
+  assert.equal(ambiguousResult.reconciliation.outcome, 'applied_receipt_missing');
+  assert.equal(readText(firstScene.scenePath), 'Alpha delta gamma sigma.');
+
+  const secondScene = tmpScene('Alpha beta gamma omega.');
+  const receiptResult = await c04.applyExactTextBatchMinSafeWrite(
+    readyBatchInput({ scenePath: secondScene.scenePath }),
+    {
+      operationId: 'op_batch_after_receipt',
+      afterReceiptWritten: () => {
+        throw new Error('forced batch crash after durable receipt');
+      },
+    },
+  );
+  assert.equal(receiptResult.status, 'applied');
+  assert.equal(receiptResult.reconciledAfterReceiptWrite, true);
+  assert.equal(receiptResult.reconciliation.outcome, 'applied_receipt_present');
+  assert.equal(readText(secondScene.scenePath), 'Alpha delta gamma sigma.');
+});
+
 test('C04 batch exact text min safe write blocks stale member with zero writes', async () => {
   const c04 = await loadC04();
   const { scenePath } = tmpScene('Alpha beta gamma omega.');
@@ -542,6 +595,9 @@ test('C07 failure matrix keeps target, recovery, receipt, and second run truthfu
       firstText: beforeText,
       recoveryReadable: true,
       second: 'applied',
+      firstStatus: 'failed',
+      publicReason: 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_WRITE_FAILED',
+      reconciliationOutcome: 'not_applied',
     },
     {
       label: 'BEFORE_RENAME',
@@ -554,6 +610,9 @@ test('C07 failure matrix keeps target, recovery, receipt, and second run truthfu
       firstText: beforeText,
       recoveryReadable: true,
       second: 'applied',
+      firstStatus: 'failed',
+      publicReason: 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_WRITE_FAILED',
+      reconciliationOutcome: 'not_applied',
     },
     {
       label: 'AFTER_RENAME_BEFORE_RECEIPT',
@@ -566,6 +625,9 @@ test('C07 failure matrix keeps target, recovery, receipt, and second run truthfu
       firstText: afterText,
       recoveryReadable: true,
       second: 'blocked',
+      firstStatus: 'ambiguous',
+      publicReason: 'REVISION_BRIDGE_EXACT_TEXT_APPLY_APPLIED_RECEIPT_MISSING',
+      reconciliationOutcome: 'applied_receipt_missing',
     },
     {
       label: 'BAD_RECEIPT',
@@ -579,7 +641,9 @@ test('C07 failure matrix keeps target, recovery, receipt, and second run truthfu
       firstText: afterText,
       recoveryReadable: true,
       second: 'blocked',
-      reason: 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECEIPT_INVALID',
+      firstStatus: 'ambiguous',
+      publicReason: 'REVISION_BRIDGE_EXACT_TEXT_APPLY_APPLIED_RECEIPT_MISSING',
+      reconciliationOutcome: 'applied_receipt_missing',
       receiptFailure: 'receipt outputHash does not match output',
     },
     {
@@ -593,7 +657,9 @@ test('C07 failure matrix keeps target, recovery, receipt, and second run truthfu
       firstText: afterText,
       recoveryReadable: false,
       second: 'blocked',
-      reason: 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECOVERY_INVALID',
+      firstStatus: 'ambiguous',
+      publicReason: 'REVISION_BRIDGE_EXACT_TEXT_APPLY_RECONCILIATION_CONFLICT',
+      reconciliationOutcome: 'conflict',
       receiptFailure: 'receipt recovery snapshot is not readable',
     },
     {
@@ -611,7 +677,9 @@ test('C07 failure matrix keeps target, recovery, receipt, and second run truthfu
       firstText: afterText,
       recoveryReadable: true,
       second: 'blocked',
-      reason: 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_RECOVERY_INVALID',
+      firstStatus: 'ambiguous',
+      publicReason: 'REVISION_BRIDGE_EXACT_TEXT_APPLY_APPLIED_RECEIPT_MISSING',
+      reconciliationOutcome: 'applied_receipt_missing',
       receiptFailure: 'receipt recovery snapshot is not readable',
     },
   ];
@@ -622,10 +690,11 @@ test('C07 failure matrix keeps target, recovery, receipt, and second run truthfu
 
     const first = await c04.applyExactTextMinSafeWrite(input, testCase.options);
 
-    assert.equal(first.status, 'failed', testCase.label);
+    assert.equal(first.status, testCase.firstStatus, testCase.label);
     assert.equal(first.applied, false, testCase.label);
     assert.equal(first.receipt, null, testCase.label);
-    assert.equal(first.reason, testCase.reason || 'REVISION_BRIDGE_EXACT_TEXT_MIN_SAFE_WRITE_WRITE_FAILED', testCase.label);
+    assert.equal(first.reason, testCase.publicReason, testCase.label);
+    assert.equal(first.reconciliation.outcome, testCase.reconciliationOutcome, testCase.label);
     assert.equal(readText(scenePath), testCase.firstText, testCase.label);
     assertTruthfulRecoveryEvidence(first.reasons[0].recovery, beforeText, {
       readable: testCase.recoveryReadable,

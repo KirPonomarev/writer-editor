@@ -53,6 +53,9 @@ let currentReviewSurfacePayloadSource = 'none';
 let currentReviewSurfacePayloadContentHash = '';
 let activeReviewSessionStore = null;
 let activeReviewSessionLifecycle = 'passive';
+let reviewExactTextApplyReconciliationState = { userRelevant: [], errors: [] };
+let appInitializationPromise = Promise.resolve();
+let editorStartupReadyPromise = Promise.resolve();
 let isDirty = false;
 let isEditorPasteTargetFocused = false;
 let autoSaveInProgress = false;
@@ -325,6 +328,13 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
 let internalCommandSurfaceKernel = null;
 
 // CONTOUR_01A_REVIEW_MUTATE_PORT_START
+let activeReviewSessionDirtyImportBlocked = false;
+
+function isReviewSessionEditorContextDirty() {
+  return (typeof isDirty === 'boolean' && isDirty)
+    || (typeof autoSaveInProgress === 'boolean' && autoSaveInProgress);
+}
+
 function makeReviewMutateTypedError(commandId, code, reason, details = undefined) {
   const error = {
     code,
@@ -340,6 +350,7 @@ function makeReviewMutateTypedError(commandId, code, reason, details = undefined
 function resetActiveReviewSessionStore(nextLifecycle = 'passive') {
   activeReviewSessionStore = null;
   activeReviewSessionLifecycle = nextLifecycle === 'cleared' ? 'cleared' : 'passive';
+  activeReviewSessionDirtyImportBlocked = false;
   currentReviewSurfacePayload = {};
   currentReviewSurfacePayloadSource = 'none';
   currentReviewSurfacePayloadContentHash = '';
@@ -617,6 +628,7 @@ function readActiveReviewSessionReviewSurface() {
 }
 
 function handleReviewSurfaceImportPacketCommandSurface(payload = {}) {
+  const dirtyAtImportStart = isReviewSessionEditorContextDirty();
   return Promise.resolve(normalizeReviewSessionImportRecord(payload)).then((normalized) => {
     if (!normalized.ok) {
       return makeReviewMutateTypedError(
@@ -629,6 +641,7 @@ function handleReviewSurfaceImportPacketCommandSurface(payload = {}) {
 
     activeReviewSessionStore = cloneJsonSafe(normalized.value) || {};
     activeReviewSessionLifecycle = 'active';
+    activeReviewSessionDirtyImportBlocked = dirtyAtImportStart;
     currentReviewSurfacePayload = cloneJsonSafe(normalized.value.reviewSurface) || {};
     currentReviewSurfacePayloadSource = 'session';
     currentReviewSurfacePayloadContentHash = '';
@@ -655,6 +668,7 @@ function handleReviewSurfaceClearSessionCommandSurface() {
 
 const REVIEW_EXACT_TEXT_APPLY_COMMAND_ID = 'cmd.project.review.applyExactTextChange';
 const REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID = 'cmd.project.review.applyExactTextChangesBatch';
+const REVIEW_EXACT_TEXT_RELOAD_RECONCILED_COMMAND_ID = 'cmd.project.review.reloadReconciledScene';
 const REVIEW_EXACT_TEXT_APPLY_BATCH_MAX_CHANGE_IDS = 10;
 const REVIEW_EXACT_TEXT_APPLY_ALLOWED_DOCUMENT_KINDS = new Set([
   'scene',
@@ -1015,6 +1029,12 @@ function summarizeReviewExactTextSafeWriteResult(result) {
           : [],
       }));
   }
+  if (
+    isPlainObjectValue(result.reconciliation)
+    && result.reconciliation.outcome !== 'applied_receipt_present'
+  ) {
+    summary.reconciliation = cloneJsonSafe(result.reconciliation);
+  }
   return summary;
 }
 
@@ -1117,6 +1137,37 @@ function attachReviewExactTextApplyReceipt(receipt, safeWriteResult) {
   currentReviewSurfacePayloadSource = 'session';
   currentReviewSurfacePayloadContentHash = '';
   return readActiveReviewSessionReviewSurface();
+}
+
+function attachReviewExactTextApplyReconciliation(reconciliation, safeWriteResult) {
+  const normalized = rememberReviewExactTextApplyReconciliation(reconciliation);
+  if (!normalized) return attachReviewExactTextApplyReconciliationState(readActiveReviewSessionReviewSurface());
+  if (activeReviewSessionLifecycle !== 'active' || !isPlainObjectValue(activeReviewSessionStore)) {
+    return attachReviewExactTextApplyReconciliationState({});
+  }
+
+  const nextSessionStore = cloneJsonSafe(activeReviewSessionStore) || {};
+  const nextReviewSurface = isPlainObjectValue(nextSessionStore.reviewSurface)
+    ? cloneJsonSafe(nextSessionStore.reviewSurface) || {}
+    : {};
+  const existingItems = Array.isArray(nextReviewSurface.exactTextApplyReconciliation?.items)
+    ? nextReviewSurface.exactTextApplyReconciliation.items
+    : [];
+  nextReviewSurface.exactTextApplyReconciliation = {
+    schemaVersion: 'revision-bridge.exact-text-apply-reconciliation-set.v1',
+    items: [
+      normalized,
+      ...existingItems.filter((item) => item?.operationId !== normalized.operationId),
+    ],
+    errors: [],
+  };
+  nextReviewSurface.exactTextApplyResult = summarizeReviewExactTextSafeWriteResult(safeWriteResult);
+  nextSessionStore.reviewSurface = nextReviewSurface;
+  activeReviewSessionStore = nextSessionStore;
+  currentReviewSurfacePayload = cloneJsonSafe(nextReviewSurface) || {};
+  currentReviewSurfacePayloadSource = 'session';
+  currentReviewSurfacePayloadContentHash = '';
+  return attachReviewExactTextApplyReconciliationState(nextReviewSurface);
 }
 
 async function handleReviewSurfaceApplyExactTextChangeCommandSurface(payload = {}, options = {}) {
@@ -1306,12 +1357,19 @@ async function runReviewSurfaceApplyExactTextChangeInternal({
   }
 
   if (!isPlainObjectValue(safeWriteResult) || safeWriteResult.ok !== true || !isPlainObjectValue(safeWriteResult.receipt)) {
-    return makeReviewMutateTypedError(
+    const failure = makeReviewMutateTypedError(
       commandId,
       typeof safeWriteResult?.code === 'string' ? safeWriteResult.code : 'E_REVIEW_EXACT_TEXT_APPLY_BLOCKED',
       typeof safeWriteResult?.reason === 'string' ? safeWriteResult.reason : 'REVIEW_EXACT_TEXT_APPLY_BLOCKED',
       summarizeReviewExactTextSafeWriteResult(safeWriteResult),
     );
+    if (isPlainObjectValue(safeWriteResult?.reconciliation)) {
+      failure.reviewSurface = attachReviewExactTextApplyReconciliation(
+        safeWriteResult.reconciliation,
+        safeWriteResult,
+      );
+    }
+    return failure;
   }
 
   const reviewSurface = attachReviewExactTextApplyReceipt(safeWriteResult.receipt, safeWriteResult);
@@ -1482,6 +1540,11 @@ async function handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(paylo
       : async (applyExactTextBatchMinSafeWrite, input, safeWriteOptions) => (
         applyExactTextBatchMinSafeWrite(input, safeWriteOptions)
       ));
+  const syncEditorAfterApply = typeof options.syncReviewExactTextApplyEditor === 'function'
+    ? options.syncReviewExactTextApplyEditor
+    : (typeof syncReviewExactTextApplyEditorFromMainState === 'function'
+      ? syncReviewExactTextApplyEditorFromMainState
+      : null);
   if (!buildBatchInput || !loadSafeWrite) {
     return makeReviewMutateTypedError(
       REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID,
@@ -1557,14 +1620,120 @@ async function handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(paylo
   }
 
   if (!isPlainObjectValue(safeWriteResult) || safeWriteResult.ok !== true || safeWriteResult.applied !== true) {
-    return makeReviewExactTextApplyBatchResponseFromSafeWrite(safeWriteResult);
+    const response = makeReviewExactTextApplyBatchResponseFromSafeWrite(safeWriteResult);
+    if (isPlainObjectValue(safeWriteResult?.reconciliation)) {
+      response.reviewSurface = attachReviewExactTextApplyReconciliation(
+        safeWriteResult.reconciliation,
+        safeWriteResult,
+      );
+    }
+    return response;
   }
 
   const reviewSurface = attachReviewExactTextApplyBatchResult(safeWriteResult);
+  let editorSync = { ok: false, skipped: true };
+  if (syncEditorAfterApply) {
+    try {
+      const syncResult = await syncEditorAfterApply({
+        applyInput: applyContext.input,
+        reviewSurface,
+        receipt: safeWriteResult.receipt,
+      });
+      editorSync = isPlainObjectValue(syncResult) ? cloneJsonSafe(syncResult) : editorSync;
+    } catch (error) {
+      editorSync = {
+        ok: false,
+        skipped: false,
+        reason: 'REVIEW_EXACT_TEXT_APPLY_EDITOR_SYNC_FAILED',
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      };
+    }
+  }
   return {
     ...makeReviewExactTextApplyBatchResponseFromSafeWrite(safeWriteResult),
     reviewSurface,
+    editorSync,
   };
+}
+
+function normalizeReviewExactTextReloadReconciledPayload(payload = {}) {
+  if (!isPlainObjectValue(payload)) {
+    return { ok: false, reason: 'REVIEW_EXACT_TEXT_RECONCILIATION_PAYLOAD_INVALID' };
+  }
+  const allowedKeys = new Set(['requestId', 'operationId']);
+  if (Object.keys(payload).some((key) => !allowedKeys.has(key))) {
+    return { ok: false, reason: 'REVIEW_EXACT_TEXT_RECONCILIATION_WRITE_AUTHORITY_DENIED' };
+  }
+  const operationId = normalizeReviewExactTextApplyString(payload.operationId);
+  if (!/^op_[a-z0-9][a-z0-9_-]{0,95}$/iu.test(operationId)) {
+    return { ok: false, reason: 'REVIEW_EXACT_TEXT_RECONCILIATION_OPERATION_ID_INVALID' };
+  }
+  return {
+    ok: true,
+    value: {
+      requestId: normalizeReviewExactTextApplyString(payload.requestId),
+      operationId,
+    },
+  };
+}
+
+async function handleReviewExactTextReloadReconciledSceneCommandSurface(payload = {}) {
+  const normalized = normalizeReviewExactTextReloadReconciledPayload(payload);
+  if (!normalized.ok) {
+    return makeReviewMutateTypedError(
+      REVIEW_EXACT_TEXT_RELOAD_RECONCILED_COMMAND_ID,
+      'E_REVIEW_EXACT_TEXT_RECONCILIATION_BLOCKED',
+      normalized.reason,
+    );
+  }
+
+  return queueDiskOperation(async () => {
+    if (isDirty || autoSaveInProgress) {
+      return makeReviewMutateTypedError(
+        REVIEW_EXACT_TEXT_RELOAD_RECONCILED_COMMAND_ID,
+        'E_REVIEW_EXACT_TEXT_RECONCILIATION_BLOCKED',
+        'REVIEW_EXACT_TEXT_RECONCILIATION_DIRTY_EDITOR_BLOCKED',
+      );
+    }
+    const journalModule = await loadExactTextApplyJournalModule();
+    const canonical = await journalModule.readCanonicalSceneForExactTextApplyReconciliation(
+      getProjectRootPath(),
+      normalized.value.operationId,
+    );
+    if (!currentFilePath || path.resolve(canonical.scenePath) !== path.resolve(currentFilePath)) {
+      return makeReviewMutateTypedError(
+        REVIEW_EXACT_TEXT_RELOAD_RECONCILED_COMMAND_ID,
+        'E_REVIEW_EXACT_TEXT_RECONCILIATION_BLOCKED',
+        'REVIEW_EXACT_TEXT_RECONCILIATION_CURRENT_SCENE_MISMATCH',
+      );
+    }
+
+    await journalModule.acknowledgeExactTextApplyReconciliation(
+      getProjectRootPath(),
+      normalized.value.operationId,
+      'RELOAD_CANONICAL',
+    );
+    forgetReviewExactTextApplyReconciliation(normalized.value.operationId);
+    await refreshActiveReviewExactTextUiPlan();
+    const reviewSurface = attachReviewExactTextApplyReconciliationState(
+      readActiveReviewSessionReviewSurface(),
+      currentFilePath,
+    );
+    const editorSync = await syncReviewExactTextApplyEditorFromMainState({
+      applyInput: { scenePath: currentFilePath },
+      reviewSurface,
+    });
+    updateStatus('Перечитано');
+    return {
+      ok: true,
+      reloaded: editorSync?.ok === true,
+      requestId: normalized.value.requestId,
+      operationId: normalized.value.operationId,
+      contentHash: canonical.contentHash,
+      editorSync,
+      reviewSurface,
+    };
+  }, 'review exact text reconciliation reload');
 }
 // CONTOUR_01A_REVIEW_MUTATE_PORT_END
 
@@ -2229,6 +2398,7 @@ async function refreshActiveReviewExactTextUiPlan(options = {}) {
 }
 
 async function handleReviewSurfaceImportLocalPacketCommandSurface(payload = {}, options = {}) {
+  const dirtyAtCommandStart = isReviewSessionEditorContextDirty();
   const safePayload = isPlainObjectValue(payload) ? payload : {};
   const unsupportedPayloadKeys = Object.keys(safePayload)
     .filter((key) => !REVIEW_IMPORT_LOCAL_PACKET_ALLOWED_PAYLOAD_KEYS.has(key))
@@ -2333,6 +2503,7 @@ async function handleReviewSurfaceImportLocalPacketCommandSurface(payload = {}, 
       isPlainObjectValue(nestedError.details) ? nestedError.details : undefined,
     );
   }
+  activeReviewSessionDirtyImportBlocked = activeReviewSessionDirtyImportBlocked || dirtyAtCommandStart;
 
   const prepared = await refreshActiveReviewExactTextUiPlan({
     requestId,
@@ -7037,6 +7208,16 @@ async function attachProjectIdToEditorPayload(payload) {
     nextPayload.bookProfile = projectBinding.manifest.bookProfile;
   }
 
+  const reconciliationSurface = attachReviewExactTextApplyReconciliationState(
+    isPlainObjectValue(nextPayload.reviewSurface)
+      ? nextPayload.reviewSurface
+      : readActiveReviewSessionReviewSurface(),
+    nextPayload.path,
+  );
+  nextPayload.reviewSurface = hasReviewSurfacePayload(reconciliationSurface)
+    ? reconciliationSurface
+    : undefined;
+
   return nextPayload;
 }
 
@@ -7912,8 +8093,136 @@ function loadExactTextMinSafeWriteModule() {
   return exactTextMinSafeWriteModulePromise;
 }
 
+let exactTextApplyJournalModulePromise = null;
+function loadExactTextApplyJournalModule() {
+  if (!exactTextApplyJournalModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'exactTextApplyJournal.mjs')).href;
+    exactTextApplyJournalModulePromise = import(modulePath).catch((error) => {
+      exactTextApplyJournalModulePromise = null;
+      throw error;
+    });
+  }
+  return exactTextApplyJournalModulePromise;
+}
+
 function normalizeReviewExactTextApplyString(value) {
   return typeof value === 'string' ? value.trim() : '';
+}
+
+function normalizeReviewExactTextApplyReconciliation(value) {
+  if (!isPlainObjectValue(value)) return null;
+  const operationId = normalizeReviewExactTextApplyString(value.operationId);
+  const outcome = normalizeReviewExactTextApplyString(value.outcome);
+  if (!operationId || !outcome) return null;
+  return cloneJsonSafe(value) || null;
+}
+
+function rememberReviewExactTextApplyReconciliation(value) {
+  const reconciliation = normalizeReviewExactTextApplyReconciliation(value);
+  if (!reconciliation || reconciliation.outcome === 'applied_receipt_present') return null;
+  const current = Array.isArray(reviewExactTextApplyReconciliationState.userRelevant)
+    ? reviewExactTextApplyReconciliationState.userRelevant
+    : [];
+  reviewExactTextApplyReconciliationState.userRelevant = [
+    reconciliation,
+    ...current.filter((item) => item?.operationId !== reconciliation.operationId),
+  ];
+  return reconciliation;
+}
+
+function reviewExactTextApplyRelativeScenePath(filePath) {
+  const projectRoot = getProjectRootPath();
+  if (!filePath || !isPathInside(projectRoot, filePath)) return '';
+  const relative = path.relative(projectRoot, path.resolve(filePath));
+  if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) return '';
+  return relative.split(path.sep).join('/');
+}
+
+function readReviewExactTextApplyReconciliationsForFile(filePath = currentFilePath) {
+  const relativePath = reviewExactTextApplyRelativeScenePath(filePath);
+  const items = Array.isArray(reviewExactTextApplyReconciliationState.userRelevant)
+    ? reviewExactTextApplyReconciliationState.userRelevant
+    : [];
+  return items
+    .filter((item) => !relativePath || item?.sceneRelativePath === relativePath)
+    .map((item) => cloneJsonSafe(item))
+    .filter((item) => isPlainObjectValue(item));
+}
+
+function attachReviewExactTextApplyReconciliationState(reviewSurface = {}, filePath = currentFilePath) {
+  const surface = isPlainObjectValue(reviewSurface) ? cloneJsonSafe(reviewSurface) || {} : {};
+  const stateItems = readReviewExactTextApplyReconciliationsForFile(filePath);
+  const surfaceItems = Array.isArray(surface.exactTextApplyReconciliation?.items)
+    ? surface.exactTextApplyReconciliation.items
+      .map((item) => normalizeReviewExactTextApplyReconciliation(item))
+      .filter(Boolean)
+    : [];
+  const itemsByOperationId = new Map();
+  for (const item of [...stateItems, ...surfaceItems]) {
+    itemsByOperationId.set(item.operationId, item);
+  }
+  const items = [...itemsByOperationId.values()];
+  const errors = Array.isArray(reviewExactTextApplyReconciliationState.errors)
+    ? cloneJsonSafe(reviewExactTextApplyReconciliationState.errors) || []
+    : [];
+  if (items.length > 0 || errors.length > 0) {
+    surface.exactTextApplyReconciliation = {
+      schemaVersion: 'revision-bridge.exact-text-apply-reconciliation-set.v1',
+      items,
+      errors,
+    };
+  } else {
+    delete surface.exactTextApplyReconciliation;
+  }
+  return surface;
+}
+
+function forgetReviewExactTextApplyReconciliation(operationIdRaw) {
+  const operationId = normalizeReviewExactTextApplyString(operationIdRaw);
+  if (!operationId) return;
+  const current = Array.isArray(reviewExactTextApplyReconciliationState.userRelevant)
+    ? reviewExactTextApplyReconciliationState.userRelevant
+    : [];
+  reviewExactTextApplyReconciliationState.userRelevant = current
+    .filter((item) => item?.operationId !== operationId);
+  if (isPlainObjectValue(activeReviewSessionStore?.reviewSurface?.exactTextApplyReconciliation)) {
+    const nextSessionStore = cloneJsonSafe(activeReviewSessionStore) || {};
+    const nextSurface = cloneJsonSafe(nextSessionStore.reviewSurface) || {};
+    const nextItems = Array.isArray(nextSurface.exactTextApplyReconciliation.items)
+      ? nextSurface.exactTextApplyReconciliation.items
+        .filter((item) => item?.operationId !== operationId)
+      : [];
+    if (nextItems.length > 0) {
+      nextSurface.exactTextApplyReconciliation.items = nextItems;
+    } else {
+      delete nextSurface.exactTextApplyReconciliation;
+    }
+    nextSessionStore.reviewSurface = nextSurface;
+    activeReviewSessionStore = nextSessionStore;
+  }
+}
+
+async function reconcileReviewExactTextApplyJournalsAtStartup() {
+  try {
+    const journalModule = await loadExactTextApplyJournalModule();
+    const result = await journalModule.reconcilePendingExactTextApplyJournals(getProjectRootPath());
+    reviewExactTextApplyReconciliationState = {
+      userRelevant: Array.isArray(result?.userRelevant) ? cloneJsonSafe(result.userRelevant) || [] : [],
+      errors: Array.isArray(result?.errors) ? cloneJsonSafe(result.errors) || [] : [],
+    };
+    return result;
+  } catch (error) {
+    reviewExactTextApplyReconciliationState = {
+      userRelevant: [],
+      errors: [{
+        operationId: '',
+        code: normalizeReviewExactTextApplyString(error?.code)
+          || 'E_REVISION_BRIDGE_APPLY_JOURNAL_STARTUP_RECONCILE_FAILED',
+      }],
+    };
+    logDevError('review exact text apply startup reconciliation', error);
+    return { ok: false, userRelevant: [], errors: reviewExactTextApplyReconciliationState.errors };
+  }
 }
 
 function makeReviewExactTextApplyContextBlock(reason, details = undefined) {
@@ -7990,8 +8299,9 @@ async function buildReviewExactTextApplyInputFromMainState(request = {}) {
     return makeReviewExactTextApplyContextBlock('REVIEW_EXACT_TEXT_APPLY_SCENE_SCOPE_REQUIRED');
   }
 
-  if (isDirty || autoSaveInProgress) {
+  if (activeReviewSessionDirtyImportBlocked || isDirty || autoSaveInProgress) {
     return makeReviewExactTextApplyContextBlock('REVIEW_EXACT_TEXT_APPLY_DIRTY_EDITOR_BLOCKED', {
+      dirtyAtImportStart: Boolean(activeReviewSessionDirtyImportBlocked),
       isDirty: Boolean(isDirty),
       autoSaveInProgress: Boolean(autoSaveInProgress),
     });
@@ -11475,7 +11785,10 @@ async function handleWorkspaceReviewSurfaceQuery() {
   await refreshActiveReviewExactTextUiPlan();
   return {
     ok: true,
-    reviewSurface: readActiveReviewSessionReviewSurface(),
+    reviewSurface: attachReviewExactTextApplyReconciliationState(
+      readActiveReviewSessionReviewSurface(),
+      currentFilePath,
+    ),
   };
 }
 
@@ -11484,6 +11797,7 @@ ipcMain.handle('ui:get-project-tree', async (_, payload) => {
 });
 
 async function handleUiOpenDocumentCommand(payload) {
+  await editorStartupReadyPromise;
   if (!mainWindow) {
     return { ok: false, error: 'No active window' };
   }
@@ -11894,8 +12208,21 @@ function createWindow() {
 
   const useLegacyEditor = process.env.USE_LEGACY_EDITOR === '1';
   const useTiptap = !useLegacyEditor;
-  mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'), {
+  editorStartupReadyPromise = mainWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'), {
     query: { USE_TIPTAP: (useTiptap ? '1' : '0') },
+  }).then(async () => {
+    mainWindow.webContents.setZoomFactor(1);
+    logPerfStage('did-finish-load');
+    await loadSavedFontSize();
+    const restored = await restoreAutosaveIfExists();
+    if (!restored) {
+      const openResult = await openLastFile();
+      if (openResult !== 'loaded' && openResult !== 'error') {
+        updateStatus('Готово');
+      }
+    }
+  }).catch((error) => {
+    logDevError('editor startup bootstrap', error);
   });
 
   mainWindow.webContents.on('before-input-event', (event, input) => {
@@ -11909,20 +12236,6 @@ function createWindow() {
   });
   mainWindow.on('blur', () => {
     isEditorPasteTargetFocused = false;
-  });
-
-  // Открыть последний файл и применить настройки после загрузки
-  mainWindow.webContents.once('did-finish-load', async () => {
-    mainWindow.webContents.setZoomFactor(1);
-    logPerfStage('did-finish-load');
-    await loadSavedFontSize();
-    const restored = await restoreAutosaveIfExists();
-    if (!restored) {
-      const openResult = await openLastFile();
-      if (openResult !== 'loaded' && openResult !== 'error') {
-        updateStatus('Готово');
-      }
-    }
   });
 
   // Сохранение размеров и позиции окна + запрос при несохранённых изменениях
@@ -12405,6 +12718,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.review.clearSession',
   'cmd.project.review.applyExactTextChange',
   'cmd.project.review.applyExactTextChangesBatch',
+  'cmd.project.review.reloadReconciledScene',
   'cmd.project.review.inspectDocxIntakeGate',
   'cmd.project.review.inspectDocxReviewPreflight',
   'cmd.project.review.activateDocxReviewPreviewSession',
@@ -12622,6 +12936,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.review.applyExactTextChangesBatch': async (payload = {}) => {
     return handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(payload);
+  },
+  'cmd.project.review.reloadReconciledScene': async (payload = {}) => {
+    return handleReviewExactTextReloadReconciledSceneCommandSurface(payload);
   },
   'cmd.project.review.inspectDocxIntakeGate': async (payload = {}) => {
     return handleDocxIntakeGateCommandSurface(payload);
@@ -13716,6 +14033,7 @@ async function initializeApp() {
   await fileManager.ensureDocumentsFolder();
   await ensureAutosaveDirectory();
   await ensureProjectStructure();
+  await reconcileReviewExactTextApplyJournalsAtStartup();
 }
 
 app.whenReady().then(async () => {
@@ -13730,7 +14048,7 @@ app.whenReady().then(async () => {
   const menuPresentationModePromise = loadMenuPresentationModeFromSettings();
   const menuLocalePromise = loadMenuLocaleFromSettings();
   const menuCustomizationPromise = loadMenuCustomizationFromSettings();
-  const initPromise = initializeApp()
+  appInitializationPromise = initializeApp()
     .then(() => {
       logPerfStage('init-complete');
     })
@@ -13742,6 +14060,7 @@ app.whenReady().then(async () => {
   await menuPresentationModePromise;
   await menuLocalePromise;
   await menuCustomizationPromise;
+  await appInitializationPromise;
   logPerfStage('window-state-loaded');
   createWindow();
   try {
@@ -13777,9 +14096,6 @@ app.whenReady().then(async () => {
       createWindow();
     }
   });
-
-  // Позволяем фоновым инициализациям завершиться без блокировки UI
-  initPromise.catch(() => {});
 });
 
 app.on('before-quit', (event) => {

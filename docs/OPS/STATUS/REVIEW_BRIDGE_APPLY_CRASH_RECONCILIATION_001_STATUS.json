@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001",
+  "status": "implementation_verified_pending_delivery",
+  "type": "runtime_product_acceptance",
+  "baseSha": "495f349a971300708c92881def887eec2a7b85b6",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "singleCanonicalScenePerOperation": true,
+    "sameSceneBatchSupported": true,
+    "crossSceneTransaction": false,
+    "existingReviewRailReused": true,
+    "indexHtmlStructureChanged": false,
+    "cssChanged": false,
+    "newDependenciesAdded": false
+  },
+  "journal": {
+    "schemaVersion": "revision-bridge.exact-text-apply-journal.v1",
+    "storage": "project backups revision-bridge-apply-journal directory",
+    "oneFilePerOperation": true,
+    "atomicWrites": true,
+    "boundedScan": 512,
+    "retainedReconciledEntries": 64,
+    "states": [
+      "prepared",
+      "applied",
+      "receipt_written",
+      "reconciled"
+    ],
+    "operationIdRequiredInReceipt": true,
+    "scenePathStoredProjectRelative": true,
+    "storedTraversalRejected": true,
+    "symlinkJournalDirectoryRejected": true
+  },
+  "reconciliation": {
+    "startupRunsBeforeWindowCreation": true,
+    "comparesBeforeHash": true,
+    "comparesAfterHash": true,
+    "verifiesRecoverySnapshotHash": true,
+    "inspectsMarkdownTransactionIntent": true,
+    "outcomes": [
+      "not_applied",
+      "applied_receipt_missing",
+      "conflict"
+    ],
+    "completedReceiptOutcome": "applied_receipt_present",
+    "normalSuccessReconciledImmediately": true,
+    "ambiguousOperationNeverAutoReapplied": true,
+    "resolvedLowLevelIntentCleared": true
+  },
+  "ui": {
+    "ambiguousOutcomeVisible": true,
+    "safeAction": "RELOAD_CANONICAL",
+    "rendererPayloadKeys": [
+      "requestId",
+      "operationId"
+    ],
+    "rendererPathAuthority": false,
+    "rendererSnapshotAuthority": false,
+    "canonicalSceneReloadedAfterSingleApply": true,
+    "canonicalSceneReloadedAfterBatchApply": true,
+    "dirtyEditorBlocksRecoveryReload": true,
+    "documentOpenWaitsForEditorBootstrap": true,
+    "dirtyAtImportStartBlocksSessionUntilClearOrReimport": true
+  },
+  "acceptance": [
+    "A process exit before rename leaves canonical text unchanged and startup reports not_applied.",
+    "A process exit immediately after rename leaves canonical text changed, preserves the pre-apply snapshot, and startup reports applied_receipt_missing.",
+    "A process exit after the low-level transaction completes but before receipt leaves canonical text changed and startup reports applied_receipt_missing.",
+    "A process exit after durable receipt storage is recovered as applied_receipt_present without a false failure.",
+    "A canonical hash matching neither beforeHash nor afterHash reports conflict and never overwrites the external edit.",
+    "A second Apply after an applied crash window is blocked by current-disk drift and cannot double-apply the change.",
+    "The real Electron restart path renders one operationId-only reload action, reloads canonical scene bytes, acknowledges the journal, and performs no network request.",
+    "A later normal edit to a scene does not turn an already completed operation into a startup conflict.",
+    "Renderer document-open commands cannot overtake startup autosave recovery or last-file bootstrap.",
+    "A packet import started while the editor is dirty or autosave is active remains Apply-blocked for that session even if autosave clears the global dirty bit during file intake."
+  ],
+  "machineChecks": [
+    {
+      "command": "node --test exact safe-write and crash-reconciliation contract set",
+      "status": "pass"
+    },
+    {
+      "command": "node --test review mutate port, Review surface UI, preload bridge, and workspace query set",
+      "status": "pass"
+    },
+    {
+      "command": "node --test canonical Review Packet Electron UI E2E",
+      "status": "pass",
+      "notes": "Passed four sequential repetitions and one concurrent run with the crash-restart Electron E2E."
+    },
+    {
+      "command": "node --test crash reconciliation Electron restart E2E",
+      "status": "pass"
+    },
+    {
+      "command": "npm run build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "npm run dev:fast",
+      "status": "pass",
+      "tests": 28
+    },
+    {
+      "command": "npm run test:sector-m",
+      "status": "pass",
+      "tests": 344,
+      "passed": 289,
+      "skipped": 55
+    },
+    {
+      "command": "npm run test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm test",
+      "status": "pass",
+      "primaryNodeSuiteTests": 610,
+      "primaryNodeSuitePassed": 546,
+      "primaryNodeSuiteSkipped": 64,
+      "notes": "Repository guards, performance baseline, command namespace, menu artifact, path canon, and execution sequence checks also passed; release candidate drift remained a nonblocking pre-existing warning."
+    },
+    {
+      "command": "npm run oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass",
+      "vulnerabilities": 0
+    },
+    {
+      "command": "npm audit --audit-level=high",
+      "status": "fail_existing_dev_build_advisories",
+      "vulnerabilities": 12,
+      "high": 3,
+      "moderate": 8,
+      "low": 1,
+      "notes": "Package manifests are unchanged; production dependency audit is clean."
+    },
+    {
+      "command": "npm run ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm run security:audit:generic-sast",
+      "status": "pass"
+    },
+    {
+      "command": "EFFECTIVE_MODE=STRICT node scripts/ops/governance-change-detection.mjs",
+      "status": "pass",
+      "missingApprovals": 0
+    }
+  ],
+  "nonClaims": [
+    "No cross-scene or project-wide transaction is introduced.",
+    "No structural or comment auto-apply is introduced.",
+    "No DOCX tracked-change apply is introduced.",
+    "No Markdown file-authority expansion is introduced.",
+    "No cloud, account, authorization, synchronization, or network integration is introduced.",
+    "No dependency or UI framework is added.",
+    "Release readiness is not claimed; file authority, Markdown completion, capability evidence, and bounded compatibility remain separate phases."
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending",
+    "commitSha": "",
+    "pullRequest": 0,
+    "mergeSha": "",
+    "mergedAtUtc": ""
+  },
+  "nextStep": "deliver Phase 02, rebind merged truth, then open Phase 03 file authority and path-boundary hardening"
+}

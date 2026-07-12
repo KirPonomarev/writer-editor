@@ -406,6 +406,13 @@ app.whenReady().then(async () => {
       'SCENE_NOT_APPLIED',
       10000,
     );
+    await waitUntil(async () => {
+      const editorText = await win.webContents.executeJavaScript(
+        \`document.querySelector('.ProseMirror')?.innerText || ''\`,
+        true,
+      );
+      return editorText.includes(afterText) ? editorText : null;
+    }, 'EDITOR_NOT_RELOADED_AFTER_APPLY', 10000);
     const query = await win.webContents.executeJavaScript(\`window.electronAPI.invokeWorkspaceQueryBridge({
       queryId: 'query.reviewSurface',
       payload: {},

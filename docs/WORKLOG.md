@@ -4,6 +4,13 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-12
+- Review Bridge Phase 02: implemented `REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001` from mainline base `495f349a971300708c92881def887eec2a7b85b6`; delivery is pending commit, push, PR, merge, and factual rebind.
+- Phase 02 runtime: exact single and same-scene batch Apply now create atomic per-operation journals with prepared, applied, receipt-written, and reconciled states; normal receipt completion reconciles immediately so later legitimate scene edits cannot create stale conflicts.
+- Phase 02 startup: canonical before/after hashes, recovery snapshot hash, and any low-level Markdown transaction intent classify not-applied, applied-without-receipt, completed receipt, or conflict without auto-reapplying.
+- Phase 02 UI and authority: the existing Review rail shows user-relevant reconciliation outcomes and one operationId-only canonical reload action; renderer path, snapshot, receipt, project-root, and write authority remain denied.
+- Phase 02 race audit: editor document-open commands now wait for startup recovery/last-file bootstrap, and a Review Packet import started while dirty or autosave-active remains Apply-blocked until that session is cleared or re-imported.
+- Phase 02 proof: real process killpoints cover before rename, immediately after rename, before receipt, and after durable receipt; a real Electron restart renders and executes the safe reload with canonical disk/editor equality, acknowledged journal evidence, and zero network requests.
+- Phase 02 scope truth: no dependency, CSS, HTML structure, cross-scene transaction, structural apply, comment apply, DOCX apply, Markdown authority expansion, cloud, account, Word sync, Google sync, or release-readiness claim is introduced.
 - Review Bridge Phase 01 delivery: PR `1073` merged feature commit `5beb4ff48eb974b028254ce3283a59a649aff4a0` at merge SHA `980557a3f52772b2cc3bd1650e45165023659fed`; OSS, Ubuntu runtime parity, Windows runtime parity, and post-merge ops-vector checks passed.
 - Phase 01 factual rebind: canonical Review Packet V1 native export, re-import, real Review UI exact apply, receipt, and recovery are now `delivered_merged_verified`; crash reconciliation remains the next separate P0 contour.
 - Review Bridge Phase 01: opened `REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001` from owner-approved mainline base `54ef43faae8c41be17765c6b0a0fa8688ebb4f95` as the canonical Review Packet V1 to real Review UI Apply contour.

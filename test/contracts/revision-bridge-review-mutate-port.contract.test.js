@@ -383,6 +383,8 @@ function instantiateReviewMutatePort(options = {}) {
     currentReviewSurfacePayload: {},
     currentReviewSurfacePayloadSource: 'none',
     currentReviewSurfacePayloadContentHash: '',
+    rememberReviewExactTextApplyReconciliation: (value) => cloneJsonSafe(value),
+    attachReviewExactTextApplyReconciliationState: (value) => cloneJsonSafe(value || {}),
     Buffer,
     ...MENU_HANDLER_COMPUTED_KEY_GLOBALS,
     cloneJsonSafe,
@@ -448,6 +450,7 @@ module.exports = {
   handleReviewSurfaceClearSessionCommandSurface,
   handleReviewSurfaceApplyExactTextChangeCommandSurface,
   handleReviewSurfaceApplyExactTextChangesBatchCommandSurface,
+  handleReviewExactTextReloadReconciledSceneCommandSurface,
   getState() {
     return {
       activeReviewSessionStore,
@@ -1832,6 +1835,18 @@ test('review mutate port contract: batch exact apply rejects renderer authority 
   assert.equal(duplicate.error.reason, 'REVIEW_EXACT_TEXT_APPLY_BATCH_DUPLICATE_CHANGE_ID');
 });
 
+test('review mutate port contract: reconciliation reload accepts operationId intent only', async () => {
+  const port = instantiateReviewMutatePort();
+  const result = await port.handleReviewExactTextReloadReconciledSceneCommandSurface({
+    operationId: 'op_reconcile_1',
+    scenePath: '/tmp/renderer-owned.md',
+  });
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_REVIEW_EXACT_TEXT_RECONCILIATION_BLOCKED');
+  assert.equal(result.error.reason, 'REVIEW_EXACT_TEXT_RECONCILIATION_WRITE_AUTHORITY_DENIED');
+});
+
 test('review mutate port contract: apply exact text writes through safe core and exposes receipt on review surface', async () => {
   const port = instantiateReviewMutatePort();
   const { scenePath } = tmpScene('Alpha beta gamma.');
@@ -1963,6 +1978,7 @@ test('review mutate port contract: batch exact apply writes same-scene changes t
   });
   assert.equal(importResult.ok, true);
 
+  let canonicalReload = null;
   const result = await port.handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(
     { changeIds: ['text-change-1', 'text-change-2'] },
     {
@@ -1975,6 +1991,10 @@ test('review mutate port contract: batch exact apply writes same-scene changes t
       },
       loadExactTextMinSafeWriteModule: loadExactSafeWrite,
       safeWriteOptions: { now: () => 1700000010000 },
+      syncReviewExactTextApplyEditor: async (request) => {
+        canonicalReload = cloneJsonSafe(request);
+        return { ok: true, skipped: false, contentHash: 'canonical-after-batch' };
+      },
     },
   );
 
@@ -1990,6 +2010,10 @@ test('review mutate port contract: batch exact apply writes same-scene changes t
   assert.deepEqual(value.reviewSurface.exactTextAppliedChangeIds, ['text-change-1', 'text-change-2']);
   assert.equal(value.reviewSurface.exactTextBatchApplyResult.applied, true);
   assert.equal(value.reviewSurface.exactTextBatchApplyResult.status, 'applied');
+  assert.equal(value.editorSync.ok, true);
+  assert.equal(value.editorSync.contentHash, 'canonical-after-batch');
+  assert.equal(canonicalReload.applyInput.scenePath, scenePath);
+  assert.equal(canonicalReload.receipt.operationKind, 'replaceExactTextBatch');
   assert.equal(Object.prototype.hasOwnProperty.call(value.reviewSurface, 'receipt'), false);
   assert.equal(Object.prototype.hasOwnProperty.call(state.currentReviewSurfacePayload, 'receipt'), false);
   assert.equal(state.activeReviewSessionStore.lastExactTextApplyBatchResult.applied, true);
@@ -2148,6 +2172,57 @@ test('review mutate port contract: blocked safe-write result does not attach rec
     normalizeVmValue(port.readActiveReviewSessionReviewSurface()),
     'receipt',
   ), false);
+});
+
+test('review mutate port contract: applied-without-receipt is surfaced as reconciliation, never false failed', async () => {
+  const port = instantiateReviewMutatePort();
+  await port.handleReviewSurfaceImportPacketCommandSurface({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    baselineHash: 'baseline-1',
+    reviewSurface: { summary: { total: 1 } },
+    revisionSession: validExactApplyRevisionSession(),
+  });
+  const reconciliation = {
+    schemaVersion: 'revision-bridge.exact-text-apply-reconciliation.v1',
+    operationId: 'op_ambiguous_1',
+    status: 'reconciled',
+    previousStatus: 'applied',
+    outcome: 'applied_receipt_missing',
+    ambiguous: true,
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    sceneId: 'scene-1',
+    changeIds: ['text-change-1'],
+    sceneRelativePath: 'roman/scene.md',
+    recoveryVerified: true,
+    snapshotAvailable: true,
+    safeActions: ['RELOAD_CANONICAL'],
+  };
+
+  const result = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({}, {
+    buildReviewExactTextApplyInput: async () => ({ ok: true, input: { fake: true } }),
+    loadExactTextMinSafeWriteModule: async () => ({
+      applyExactTextMinSafeWrite: async () => ({
+        ok: false,
+        status: 'ambiguous',
+        code: 'E_REVISION_BRIDGE_EXACT_TEXT_APPLY_OUTCOME_AMBIGUOUS',
+        reason: 'REVISION_BRIDGE_EXACT_TEXT_APPLY_APPLIED_RECEIPT_MISSING',
+        applied: false,
+        receipt: null,
+        reasons: [],
+        reconciliation,
+      }),
+    }),
+  });
+  const surface = normalizeVmValue(port.readActiveReviewSessionReviewSurface());
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'E_REVISION_BRIDGE_EXACT_TEXT_APPLY_OUTCOME_AMBIGUOUS');
+  assert.equal(result.error.reason, 'REVISION_BRIDGE_EXACT_TEXT_APPLY_APPLIED_RECEIPT_MISSING');
+  assert.equal(result.reviewSurface.exactTextApplyReconciliation.items[0].operationId, 'op_ambiguous_1');
+  assert.equal(surface.exactTextApplyReconciliation.items[0].outcome, 'applied_receipt_missing');
+  assert.equal(Object.prototype.hasOwnProperty.call(surface, 'receipt'), false);
 });
 
 test('review mutate port contract: stale no-match exact apply stays blocked without receipt invention', async () => {

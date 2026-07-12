@@ -497,8 +497,16 @@ const REVIEW_SURFACE_IMPORT_LOCAL_PACKET_COMMAND_ID = 'cmd.project.review.import
 const REVIEW_SURFACE_CLEAR_SESSION_COMMAND_ID = 'cmd.project.review.clearSession';
 const REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID = 'cmd.project.review.applyExactTextChange';
 const REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID = 'cmd.project.review.applyExactTextChangesBatch';
+const REVIEW_SURFACE_RELOAD_RECONCILED_SCENE_COMMAND_ID = 'cmd.project.review.reloadReconciledScene';
 const REVIEW_SURFACE_EXACT_APPLY_BATCH_MAX_CHANGE_IDS = 10;
-const REVIEW_SURFACE_EXACT_APPLY_TRANSIENT_STATES = Object.freeze(['ready', 'applying', 'applied', 'blocked', 'failed']);
+const REVIEW_SURFACE_EXACT_APPLY_TRANSIENT_STATES = Object.freeze([
+  'ready',
+  'applying',
+  'applied',
+  'ambiguous',
+  'blocked',
+  'failed',
+]);
 const REVIEW_SURFACE_EXACT_APPLY_BLOCKED_REASON = 'REVIEW_SURFACE_SINGLE_EXACT_CHANGE_REQUIRED';
 const REVIEW_SURFACE_EXACT_APPLY_CHANGE_ID_REQUIRED_REASON = 'REVIEW_SURFACE_EXACT_CHANGE_ID_REQUIRED';
 
@@ -589,6 +597,7 @@ function reviewSurfaceResolveIncomingPayload(input = {}) {
     || reviewSurfaceIsPlainObject(source.blockedApplyPlan)
     || reviewSurfaceIsPlainObject(source.receipt)
     || reviewSurfaceIsPlainObject(source.exactTextApply)
+    || reviewSurfaceIsPlainObject(source.exactTextApplyReconciliation)
     || source.ok === false
   ) {
     return source;
@@ -674,6 +683,13 @@ function reviewSurfaceIsExactApplyBlockedReason(reason) {
   ].some((token) => normalized.includes(token));
 }
 
+function reviewSurfaceIsExactApplyAmbiguousReason(reason) {
+  const normalized = reviewSurfaceText(reason).toUpperCase();
+  return normalized.includes('AMBIGUOUS')
+    || normalized.includes('RECONCILIATION_CONFLICT')
+    || normalized.includes('APPLIED_RECEIPT_MISSING');
+}
+
 function reviewSurfacePresentExactApplyState(state) {
   switch (reviewSurfaceText(state)) {
     case 'applying':
@@ -684,6 +700,8 @@ function reviewSurfacePresentExactApplyState(state) {
       return 'заблокировано';
     case 'failed':
       return 'ошибка';
+    case 'ambiguous':
+      return 'нужна проверка';
     case 'ready':
     default:
       return 'готово';
@@ -812,6 +830,7 @@ function reviewSurfaceNormalizeReceipt(rawReceipt) {
   if (!receiptCandidateValid) return null;
   return {
     schemaVersion: rawReceipt.schemaVersion,
+    operationId: reviewSurfaceText(rawReceipt.operationId),
     projectId: reviewSurfaceText(rawReceipt.projectId),
     sessionId: reviewSurfaceText(rawReceipt.sessionId),
     sceneId: reviewSurfaceText(rawReceipt.sceneId),
@@ -866,6 +885,42 @@ function reviewSurfaceNormalizeExactTextBatchApplyResult(rawResult) {
   };
 }
 
+function reviewSurfaceNormalizeExactTextApplyReconciliation(rawState) {
+  if (!reviewSurfaceIsPlainObject(rawState)) return null;
+  const allowedOutcomes = new Set([
+    'not_applied',
+    'applied_receipt_missing',
+    'applied_receipt_present',
+    'conflict',
+  ]);
+  const items = reviewSurfaceArray(rawState.items)
+    .filter((item) => reviewSurfaceIsPlainObject(item))
+    .map((item) => ({
+      operationId: reviewSurfaceText(item.operationId),
+      outcome: reviewSurfaceText(item.outcome),
+      ambiguous: item.ambiguous === true,
+      sceneId: reviewSurfaceText(item.sceneId),
+      sceneRelativePath: reviewSurfaceText(item.sceneRelativePath),
+      observedHash: reviewSurfaceText(item.observedHash),
+      recoveryVerified: item.recoveryVerified === true,
+      snapshotAvailable: item.snapshotAvailable === true,
+      safeActions: reviewSurfaceArray(item.safeActions)
+        .map((action) => reviewSurfaceText(action))
+        .filter((action) => action === 'RELOAD_CANONICAL'),
+      reconciledAt: reviewSurfaceText(item.reconciledAt),
+    }))
+    .filter((item) => item.operationId && allowedOutcomes.has(item.outcome));
+  const errors = reviewSurfaceArray(rawState.errors)
+    .filter((item) => reviewSurfaceIsPlainObject(item))
+    .map((item) => ({
+      operationId: reviewSurfaceText(item.operationId),
+      code: reviewSurfaceText(item.code),
+    }))
+    .filter((item) => item.code);
+  if (items.length === 0 && errors.length === 0) return null;
+  return { items, errors };
+}
+
 function reviewSurfaceNormalizeState(input = {}) {
   const source = reviewSurfaceResolveIncomingPayload(input);
   const revisionSession = reviewSurfaceCanonicalSession(source);
@@ -884,6 +939,9 @@ function reviewSurfaceNormalizeState(input = {}) {
     .filter(Boolean);
   const exactTextBatchApplyResult = reviewSurfaceNormalizeExactTextBatchApplyResult(
     source.exactTextBatchApplyResult || source.lastExactTextApplyBatchResult,
+  );
+  const exactTextApplyReconciliation = reviewSurfaceNormalizeExactTextApplyReconciliation(
+    source.exactTextApplyReconciliation,
   );
   const error = reviewSurfaceIsPlainObject(source.error)
     ? {
@@ -906,7 +964,8 @@ function reviewSurfaceNormalizeState(input = {}) {
     || receipt
     || receipts.length > 0
     || exactTextAppliedChangeIds.length > 0
-    || exactTextBatchApplyResult,
+    || exactTextBatchApplyResult
+    || exactTextApplyReconciliation,
   );
   const status = error
     ? 'error'
@@ -923,6 +982,7 @@ function reviewSurfaceNormalizeState(input = {}) {
     receipts,
     exactTextAppliedChangeIds,
     exactTextBatchApplyResult,
+    exactTextApplyReconciliation,
     error,
     exactTextApply,
   };
@@ -1198,6 +1258,7 @@ function buildReviewSurfaceViewModel(input = {}) {
     unsupportedObservations: reviewSurfaceBuildUnsupportedObservations(state),
     exactTextPreview: reviewSurfaceBuildExactTextPreview(state),
     receipt: state.receipt,
+    reconciliation: state.exactTextApplyReconciliation,
   };
 }
 
@@ -1218,6 +1279,67 @@ function reviewSurfaceRenderList(items, renderItem, emptyLabel) {
 }
 
 function renderReviewSurfaceMarkup(viewModel) {
+  const reconciliationItems = reviewSurfaceArray(viewModel.reconciliation?.items);
+  const reconciliationErrors = reviewSurfaceArray(viewModel.reconciliation?.errors);
+  const reconciliationMarkup = reconciliationItems.length > 0 || reconciliationErrors.length > 0
+    ? `
+      <section class="right-rail-surface right-rail-surface--review-state">
+        <div class="right-rail-section__label">Восстановление Apply</div>
+        ${reviewSurfaceRenderList(reconciliationItems, (item) => {
+          const presentation = item.outcome === 'not_applied'
+            ? {
+                title: 'Изменение не записано',
+                body: 'Canonical файл остался в состоянии до Apply.',
+                tone: 'blocked',
+              }
+            : (item.outcome === 'applied_receipt_missing'
+              ? {
+                  title: 'Запись применена без отчета',
+                  body: 'Хэш файла совпал с результатом Apply, recovery snapshot сохранен.',
+                  tone: 'manual',
+                }
+              : {
+                  title: 'Состояние записи требует проверки',
+                  body: 'Файл, journal и recovery evidence не дают единственного подтвержденного исхода.',
+                  tone: 'blocked',
+                });
+          const canReload = item.safeActions.includes('RELOAD_CANONICAL');
+          return `
+            <article class="right-rail-review-item right-rail-review-item--${presentation.tone}">
+              <div class="right-rail-review-item-head">
+                <div class="right-rail-review-item-title">${reviewSurfaceEscapeHtml(presentation.title)}</div>
+                <span class="right-rail-review-pill right-rail-review-pill--${presentation.tone}">${reviewSurfaceEscapeHtml(item.outcome)}</span>
+              </div>
+              <p class="right-rail-review-item-body">${reviewSurfaceEscapeHtml(presentation.body)}</p>
+              <div class="right-rail-review-item-meta">
+                <span>${reviewSurfaceEscapeHtml(item.sceneId || item.sceneRelativePath || 'сцена')}</span>
+                <span>${item.recoveryVerified ? 'recovery подтвержден' : 'recovery не подтвержден'}</span>
+              </div>
+              ${canReload
+                ? `
+                  <div class="right-rail-review-actions">
+                    <button
+                      type="button"
+                      class="right-rail-review-apply-button"
+                      data-review-reload-reconciled-scene
+                      data-operation-id="${reviewSurfaceEscapeHtml(item.operationId)}"
+                    >Перечитать файл</button>
+                  </div>
+                `
+                : ''}
+              <div class="right-rail-review-code">${reviewSurfaceEscapeHtml(item.operationId)}</div>
+            </article>
+          `;
+        }, 'Нет операций для восстановления.')}
+        ${reconciliationErrors.map((item) => `
+          <div class="right-rail-review-state right-rail-review-state--error">
+            <strong>Journal требует ручной проверки</strong>
+            <div class="right-rail-review-code">${reviewSurfaceEscapeHtml(item.code)}</div>
+          </div>
+        `).join('')}
+      </section>
+    `
+    : '';
   const errorMarkup = viewModel.status === 'error'
     ? `
       <section class="right-rail-surface right-rail-surface--review-state">
@@ -1331,6 +1453,7 @@ function renderReviewSurfaceMarkup(viewModel) {
       <div class="right-rail-form-grid">
         ${reviewSurfaceRenderKeyValueRows([
           ['Проект', viewModel.receipt.projectId],
+          ['Operation ID', viewModel.receipt.operationId],
           ['Сессия', viewModel.receipt.sessionId],
           ['Сцена', viewModel.receipt.sceneId],
           ['Изменение', viewModel.receipt.changeId],
@@ -1351,6 +1474,7 @@ function renderReviewSurfaceMarkup(viewModel) {
 
   return `
     ${errorMarkup}
+    ${reconciliationMarkup}
     <section class="right-rail-surface right-rail-surface--review-header">
       <div class="right-rail-section__label">Проверка правок</div>
       <div class="right-rail-review-state ${viewModel.status === 'empty' ? 'right-rail-review-state--empty' : 'right-rail-review-state--info'}">
@@ -7936,6 +8060,46 @@ function reviewSurfaceCreateExactTextApplyBatchRequestId(changeIds) {
 async function handleReviewSurfaceExactTextApplyClick(event) {
   const target = event?.target;
   if (!(target instanceof Element) || !(reviewSurfaceHost instanceof HTMLElement)) return;
+  const reloadButton = target.closest('[data-review-reload-reconciled-scene]');
+  if (reloadButton instanceof HTMLButtonElement && reviewSurfaceHost.contains(reloadButton)) {
+    if (reloadButton.disabled) return;
+    const operationId = reviewSurfaceText(reloadButton.dataset.operationId);
+    reloadButton.disabled = true;
+    const requestId = `review-reconciliation-reload-${Date.now()}`;
+    let bridgeResult = null;
+    try {
+      bridgeResult = await invokePreloadUiCommandBridge(
+        REVIEW_SURFACE_RELOAD_RECONCILED_SCENE_COMMAND_ID,
+        { requestId, operationId },
+      );
+    } catch (error) {
+      setReviewSurfaceExactTextApplyTransientState({
+        state: 'failed',
+        requestId,
+        changeId: '',
+        reason: error && typeof error.message === 'string'
+          ? error.message
+          : 'REVIEW_RECONCILIATION_RELOAD_THROW',
+      });
+      return;
+    }
+    const commandResult = reviewSurfaceUnwrapCommandResult(bridgeResult);
+    if (bridgeResult?.ok === true && commandResult?.ok === true && commandResult.reloaded === true) {
+      reviewSurfaceExactTextApplyTransientState = null;
+      setReviewSurfaceState(
+        reviewSurfaceIsPlainObject(commandResult.reviewSurface) ? commandResult.reviewSurface : {},
+      );
+      return;
+    }
+    const reason = reviewSurfaceExtractCommandFailureReason(bridgeResult);
+    setReviewSurfaceExactTextApplyTransientState({
+      state: reviewSurfaceIsExactApplyAmbiguousReason(reason) ? 'ambiguous' : 'failed',
+      requestId,
+      changeId: '',
+      reason,
+    });
+    return;
+  }
   const batchButton = target.closest('[data-review-apply-exact-batch]');
   if (batchButton instanceof HTMLButtonElement && reviewSurfaceHost.contains(batchButton)) {
     if (batchButton.disabled) return;
@@ -7978,7 +8142,7 @@ async function handleReviewSurfaceExactTextApplyClick(event) {
     const reason = reviewSurfaceExtractCommandFailureReason(bridgeResult);
     const blocked = reviewSurfaceIsExactApplyBlockedReason(reason);
     reviewSurfaceExactTextApplyTransientState = {
-      state: blocked ? 'blocked' : 'failed',
+      state: reviewSurfaceIsExactApplyAmbiguousReason(reason) ? 'ambiguous' : (blocked ? 'blocked' : 'failed'),
       requestId,
       changeId: '',
       reason,
@@ -8032,7 +8196,7 @@ async function handleReviewSurfaceExactTextApplyClick(event) {
   const reason = reviewSurfaceExtractCommandFailureReason(bridgeResult);
   const blocked = reviewSurfaceIsExactApplyBlockedReason(reason);
   reviewSurfaceExactTextApplyTransientState = {
-    state: blocked ? 'blocked' : 'failed',
+    state: reviewSurfaceIsExactApplyAmbiguousReason(reason) ? 'ambiguous' : (blocked ? 'blocked' : 'failed'),
     requestId,
     changeId,
     reason,
