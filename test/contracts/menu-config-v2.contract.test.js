@@ -45,19 +45,19 @@ test('menu-config v2 contract: review menu exposes local packet import export an
 
   assert.deepEqual(items.get('review-import-local-packet'), {
     id: 'review-import-local-packet',
-    label: 'Import Review Packet',
+    label: 'Import Review Packet for Exact Apply...',
     labelKey: 'menu.review.importLocalPacket',
     command: 'cmd.project.review.importLocalPacket',
   });
   assert.deepEqual(items.get('review-export-local-packet'), {
     id: 'review-export-local-packet',
-    label: 'Export Review Packet',
+    label: 'Export Review Packet...',
     labelKey: 'menu.review.exportLocalPacket',
     command: 'cmd.project.review.exportLocalPacket',
   });
   assert.deepEqual(items.get('review-open-docx-review-preview-session'), {
     id: 'review-open-docx-review-preview-session',
-    label: 'Open DOCX Review',
+    label: 'Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...',
     labelKey: 'menu.review.openDocxReviewPreviewSession',
     command: 'cmd.project.review.openDocxReviewPreviewSession',
   });

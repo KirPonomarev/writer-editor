@@ -17,10 +17,30 @@
       "ru": "Сохранить",
       "en": "Save"
     },
+    "menu.file.importDocxContent": {
+      "base": "Import DOCX Content (Content only)...",
+      "ru": "Импорт содержимого DOCX (только содержимое)...",
+      "en": "Import DOCX Content (Content only)..."
+    },
+    "menu.file.importTxtContent": {
+      "base": "Import TXT Content...",
+      "ru": "Импорт содержимого TXT...",
+      "en": "Import TXT Content..."
+    },
+    "menu.file.importMarkdownContent": {
+      "base": "Import Markdown Content...",
+      "ru": "Импорт содержимого Markdown...",
+      "en": "Import Markdown Content..."
+    },
     "menu.file.exportDocx": {
-      "base": "Экспорт DOCX",
-      "ru": "Экспорт DOCX",
-      "en": "Export DOCX"
+      "base": "Export DOCX (Minimal)...",
+      "ru": "Экспорт DOCX (минимальный)...",
+      "en": "Export DOCX (Minimal)..."
+    },
+    "menu.file.exportMarkdown": {
+      "base": "Export Markdown...",
+      "ru": "Экспорт Markdown...",
+      "en": "Export Markdown..."
     },
     "menu.file.exportCurrentSceneTxt": {
       "base": "Экспорт TXT текущей сцены",
@@ -178,19 +198,19 @@
       "en": "Review"
     },
     "menu.review.importLocalPacket": {
-      "base": "Import Review Packet",
-      "ru": "Импортировать review packet",
-      "en": "Import Review Packet"
+      "base": "Import Review Packet for Exact Apply...",
+      "ru": "Импортировать Review Packet для точного применения...",
+      "en": "Import Review Packet for Exact Apply..."
     },
     "menu.review.exportLocalPacket": {
-      "base": "Export Review Packet",
-      "ru": "Экспортировать review packet",
-      "en": "Export Review Packet"
+      "base": "Export Review Packet...",
+      "ru": "Экспортировать Review Packet...",
+      "en": "Export Review Packet..."
     },
     "menu.review.openDocxReviewPreviewSession": {
-      "base": "Open DOCX Review",
-      "ru": "Открыть DOCX review",
-      "en": "Open DOCX Review"
+      "base": "Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...",
+      "ru": "Открыть доказательства DOCX Review (предпросмотр комментариев; диагностика исправлений)...",
+      "en": "Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)..."
     },
     "menu.review.openMode": {
       "base": "Open Review Mode",

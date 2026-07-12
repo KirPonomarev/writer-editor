@@ -1505,9 +1505,9 @@ export function registerProjectCommands(registry, options = {}) {
   registry.registerCommand(
     {
       id: EXTRA_COMMAND_IDS.INSERT_MARKDOWN_PROMPT,
-      label: 'Insert Markdown v1',
+      label: 'Legacy Markdown Prompt',
       group: 'insert',
-      surface: ['menu', 'palette', 'toolbar'],
+      surface: ['internal'],
       hotkey: 'Cmd/Ctrl+Shift+I',
     },
     async () => runUiAction(uiActions, 'insertMarkdownPrompt', EXTRA_COMMAND_IDS.INSERT_MARKDOWN_PROMPT),
@@ -1692,7 +1692,7 @@ export function registerProjectCommands(registry, options = {}) {
   registry.registerCommand(
     {
       id: EXTRA_COMMAND_IDS.REVIEW_IMPORT_LOCAL_PACKET,
-      label: 'Import Review Packet',
+      label: 'Import Review Packet for Exact Apply',
       group: 'review',
       surface: ['menu', 'palette'],
       hotkey: '',
@@ -1736,9 +1736,9 @@ export function registerProjectCommands(registry, options = {}) {
   registry.registerCommand(
     {
       id: EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN,
-      label: 'Review Export Markdown',
+      label: 'Legacy Markdown Export Shortcut',
       group: 'review',
-      surface: ['menu', 'palette', 'toolbar'],
+      surface: ['internal'],
       hotkey: 'Cmd/Ctrl+Shift+M',
     },
     async () => runUiAction(uiActions, 'reviewExportMarkdown', EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN),

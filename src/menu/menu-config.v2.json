@@ -54,12 +54,64 @@
           }
         },
         {
+          "id": "file-import-docx-content",
+          "label": "Import DOCX Content (Content only)...",
+          "labelKey": "menu.file.importDocxContent",
+          "command": "cmd.project.importDocxV1",
+          "mode": ["offline"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "flag",
+            "name": "hasDocument"
+          }
+        },
+        {
+          "id": "file-import-txt-content",
+          "label": "Import TXT Content...",
+          "labelKey": "menu.file.importTxtContent",
+          "command": "cmd.project.importTxtV1",
+          "mode": ["offline"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "flag",
+            "name": "hasDocument"
+          }
+        },
+        {
+          "id": "file-import-markdown-content",
+          "label": "Import Markdown Content...",
+          "labelKey": "menu.file.importMarkdownContent",
+          "command": "cmd.project.importMarkdownV1",
+          "mode": ["offline"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "flag",
+            "name": "hasDocument"
+          }
+        },
+        {
           "id": "file-export-docx",
-          "label": "Экспорт DOCX",
+          "label": "Export DOCX (Minimal)...",
           "labelKey": "menu.file.exportDocx",
           "actionId": "exportDocxMin",
           "mode": ["offline"],
-          "profile": ["pro", "guru"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "flag",
+            "name": "hasDocument"
+          }
+        },
+        {
+          "id": "file-export-markdown",
+          "label": "Export Markdown...",
+          "labelKey": "menu.file.exportMarkdown",
+          "command": "cmd.project.exportMarkdownV1",
+          "mode": ["offline"],
+          "profile": ["minimal", "pro", "guru"],
           "stage": ["X1", "X2", "X3", "X4"],
           "enabledWhen": {
             "op": "flag",
@@ -72,7 +124,7 @@
           "labelKey": "menu.file.exportCurrentSceneTxt",
           "command": "cmd.project.exportCurrentSceneTxtV1",
           "mode": ["offline"],
-          "profile": ["pro", "guru"],
+          "profile": ["minimal", "pro", "guru"],
           "stage": ["X1", "X2", "X3", "X4"],
           "enabledWhen": {
             "op": "flag",
@@ -85,7 +137,7 @@
           "labelKey": "menu.file.exportSelectedScenesTxt",
           "command": "cmd.project.exportSelectedScenesTxtV1",
           "mode": ["offline"],
-          "profile": ["pro", "guru"],
+          "profile": ["minimal", "pro", "guru"],
           "stage": ["X1", "X2", "X3", "X4"],
           "enabledWhen": {
             "op": "flag",
@@ -98,7 +150,7 @@
           "labelKey": "menu.file.exportAllScenesTxt",
           "command": "cmd.project.exportAllScenesTxtV1",
           "mode": ["offline"],
-          "profile": ["pro", "guru"],
+          "profile": ["minimal", "pro", "guru"],
           "stage": ["X1", "X2", "X3", "X4"],
           "enabledWhen": {
             "op": "flag",
@@ -283,19 +335,19 @@
       "items": [
         {
           "id": "review-import-local-packet",
-          "label": "Import Review Packet",
+          "label": "Import Review Packet for Exact Apply...",
           "labelKey": "menu.review.importLocalPacket",
           "command": "cmd.project.review.importLocalPacket"
         },
         {
           "id": "review-export-local-packet",
-          "label": "Export Review Packet",
+          "label": "Export Review Packet...",
           "labelKey": "menu.review.exportLocalPacket",
           "command": "cmd.project.review.exportLocalPacket"
         },
         {
           "id": "review-open-docx-review-preview-session",
-          "label": "Open DOCX Review",
+          "label": "Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...",
           "labelKey": "menu.review.openDocxReviewPreviewSession",
           "command": "cmd.project.review.openDocxReviewPreviewSession"
         },

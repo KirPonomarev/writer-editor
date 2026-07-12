@@ -11424,8 +11424,20 @@ if (window.electronAPI) {
       applyMode('write');
       return true;
     }
+    if (commandId === COMMAND_IDS.PROJECT_IMPORT_DOCX_V1) {
+      void openDocxImportPreviewFlow();
+      return true;
+    }
     if (commandId === COMMAND_IDS.PROJECT_IMPORT_TXT_V1) {
       void openTxtImportPreviewFlow();
+      return true;
+    }
+    if (commandId === COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1) {
+      void handleMarkdownImportUiPath();
+      return true;
+    }
+    if (commandId === COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1) {
+      void handleMarkdownExportUiPath();
       return true;
     }
     if (commandId === 'cmd.project.exportSelectedScenesTxtV1') {

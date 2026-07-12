@@ -18,7 +18,7 @@ const COMMAND_CATALOG_ROWS = [
   {
     key: 'PROJECT_EXPORT_DOCX_MIN',
     id: 'cmd.project.export.docxMin',
-    label: 'Export DOCX (Min)',
+    label: 'Export DOCX (Minimal)',
     group: 'export',
     surface: ['palette', 'shortcut', 'toolbar'],
     hotkey: 'Cmd/Ctrl+Shift+E',
@@ -26,7 +26,7 @@ const COMMAND_CATALOG_ROWS = [
   {
     key: 'PROJECT_IMPORT_MARKDOWN_V1',
     id: 'cmd.project.importMarkdownV1',
-    label: 'Import Markdown v1',
+    label: 'Import Markdown Content',
     group: 'import',
     surface: ['palette'],
     hotkey: '',
@@ -34,7 +34,7 @@ const COMMAND_CATALOG_ROWS = [
   {
     key: 'PROJECT_IMPORT_DOCX_V1',
     id: 'cmd.project.importDocxV1',
-    label: 'Import DOCX v1',
+    label: 'Import DOCX Content (Content only)',
     group: 'import',
     surface: ['palette'],
     hotkey: '',
@@ -42,7 +42,7 @@ const COMMAND_CATALOG_ROWS = [
   {
     key: 'PROJECT_IMPORT_TXT_V1',
     id: 'cmd.project.importTxtV1',
-    label: 'Import TXT v1',
+    label: 'Import TXT Content',
     group: 'import',
     surface: ['palette'],
     hotkey: '',
@@ -50,7 +50,7 @@ const COMMAND_CATALOG_ROWS = [
   {
     key: 'PROJECT_EXPORT_MARKDOWN_V1',
     id: 'cmd.project.exportMarkdownV1',
-    label: 'Export Markdown v1',
+    label: 'Export Markdown',
     group: 'export',
     surface: ['palette'],
     hotkey: '',

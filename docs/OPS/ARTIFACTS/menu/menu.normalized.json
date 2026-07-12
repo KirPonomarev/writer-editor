@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "snapshotId": "menu-default-desktop-minimal",
-  "normalizedHashSha256": "81fe1666c4a60d739bf304043f5c19036633b836f943971c5d630f62471e861f",
-  "generatedAt": "2026-07-12T17:34:36.110Z",
-  "generatedFromCommit": "54ef43faae8c41be17765c6b0a0fa8688ebb4f95",
+  "normalizedHashSha256": "6fa119570e880f3746def67cdc6d649c42e0dc893a0cfb57bff7ed45951b3750",
+  "generatedAt": "2026-07-12T21:52:15.891Z",
+  "generatedFromCommit": "b6c2b8fba9c303ce95055e9168d72cb0390c167e",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
@@ -31,14 +31,34 @@
         "ru": "Экспорт TXT текущей сцены"
       },
       "menu.file.exportDocx": {
-        "base": "Экспорт DOCX",
-        "en": "Export DOCX",
-        "ru": "Экспорт DOCX"
+        "base": "Export DOCX (Minimal)...",
+        "en": "Export DOCX (Minimal)...",
+        "ru": "Экспорт DOCX (минимальный)..."
+      },
+      "menu.file.exportMarkdown": {
+        "base": "Export Markdown...",
+        "en": "Export Markdown...",
+        "ru": "Экспорт Markdown..."
       },
       "menu.file.exportSelectedScenesTxt": {
         "base": "Экспорт TXT выбранных сцен",
         "en": "Export Selected Scenes TXT",
         "ru": "Экспорт TXT выбранных сцен"
+      },
+      "menu.file.importDocxContent": {
+        "base": "Import DOCX Content (Content only)...",
+        "en": "Import DOCX Content (Content only)...",
+        "ru": "Импорт содержимого DOCX (только содержимое)..."
+      },
+      "menu.file.importMarkdownContent": {
+        "base": "Import Markdown Content...",
+        "en": "Import Markdown Content...",
+        "ru": "Импорт содержимого Markdown..."
+      },
+      "menu.file.importTxtContent": {
+        "base": "Import TXT Content...",
+        "en": "Import TXT Content...",
+        "ru": "Импорт содержимого TXT..."
       },
       "menu.file.open": {
         "base": "Открыть проект...",
@@ -101,19 +121,19 @@
         "ru": "Очистить review session"
       },
       "menu.review.exportLocalPacket": {
-        "base": "Export Review Packet",
-        "en": "Export Review Packet",
-        "ru": "Экспортировать review packet"
+        "base": "Export Review Packet...",
+        "en": "Export Review Packet...",
+        "ru": "Экспортировать Review Packet..."
       },
       "menu.review.importLocalPacket": {
-        "base": "Import Review Packet",
-        "en": "Import Review Packet",
-        "ru": "Импортировать review packet"
+        "base": "Import Review Packet for Exact Apply...",
+        "en": "Import Review Packet for Exact Apply...",
+        "ru": "Импортировать Review Packet для точного применения..."
       },
       "menu.review.openDocxReviewPreviewSession": {
-        "base": "Open DOCX Review",
-        "en": "Open DOCX Review",
-        "ru": "Открыть DOCX review"
+        "base": "Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...",
+        "en": "Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...",
+        "ru": "Открыть доказательства DOCX Review (предпросмотр комментариев; диагностика исправлений)..."
       },
       "menu.review.openMode": {
         "base": "Open Review Mode",
@@ -261,8 +281,12 @@
     "cmd.project.export.docxMin",
     "cmd.project.exportAllScenesTxtV1",
     "cmd.project.exportCurrentSceneTxtV1",
+    "cmd.project.exportMarkdownV1",
     "cmd.project.exportSelectedScenesTxtV1",
     "cmd.project.format.alignLeft",
+    "cmd.project.importDocxV1",
+    "cmd.project.importMarkdownV1",
+    "cmd.project.importTxtV1",
     "cmd.project.insert.addCard",
     "cmd.project.open",
     "cmd.project.plan.switchMode",
@@ -358,20 +382,21 @@
           "visibilityPolicy": "visible_enabled"
         },
         {
-          "canonicalCmdId": "cmd.project.export.docxMin",
-          "disabledReasonCode": "PROFILE_GATED",
+          "canonicalCmdId": "cmd.project.importDocxV1",
+          "disabledReasonCode": null,
           "enabledWhenAst": {
             "name": "hasDocument",
             "op": "flag"
           },
-          "id": "file-export-docx",
-          "label": "Экспорт DOCX",
-          "labelKey": "menu.file.exportDocx",
+          "id": "file-import-docx-content",
+          "label": "Import DOCX Content (Content only)...",
+          "labelKey": "menu.file.importDocxContent",
           "mode": [
             "offline"
           ],
           "origin": "base",
           "profile": [
+            "minimal",
             "pro",
             "guru"
           ],
@@ -384,11 +409,131 @@
             "X3",
             "X4"
           ],
-          "visibilityPolicy": "visible_disabled"
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.importTxtV1",
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "name": "hasDocument",
+            "op": "flag"
+          },
+          "id": "file-import-txt-content",
+          "label": "Import TXT Content...",
+          "labelKey": "menu.file.importTxtContent",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.importMarkdownV1",
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "name": "hasDocument",
+            "op": "flag"
+          },
+          "id": "file-import-markdown-content",
+          "label": "Import Markdown Content...",
+          "labelKey": "menu.file.importMarkdownContent",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.export.docxMin",
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "name": "hasDocument",
+            "op": "flag"
+          },
+          "id": "file-export-docx",
+          "label": "Export DOCX (Minimal)...",
+          "labelKey": "menu.file.exportDocx",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.exportMarkdownV1",
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "name": "hasDocument",
+            "op": "flag"
+          },
+          "id": "file-export-markdown",
+          "label": "Export Markdown...",
+          "labelKey": "menu.file.exportMarkdown",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
         },
         {
           "canonicalCmdId": "cmd.project.exportCurrentSceneTxtV1",
-          "disabledReasonCode": "PROFILE_GATED",
+          "disabledReasonCode": null,
           "enabledWhenAst": {
             "name": "hasDocument",
             "op": "flag"
@@ -401,6 +546,7 @@
           ],
           "origin": "base",
           "profile": [
+            "minimal",
             "pro",
             "guru"
           ],
@@ -413,11 +559,11 @@
             "X3",
             "X4"
           ],
-          "visibilityPolicy": "visible_disabled"
+          "visibilityPolicy": "visible_enabled"
         },
         {
           "canonicalCmdId": "cmd.project.exportSelectedScenesTxtV1",
-          "disabledReasonCode": "PROFILE_GATED",
+          "disabledReasonCode": null,
           "enabledWhenAst": {
             "name": "hasDocument",
             "op": "flag"
@@ -430,6 +576,7 @@
           ],
           "origin": "base",
           "profile": [
+            "minimal",
             "pro",
             "guru"
           ],
@@ -442,11 +589,11 @@
             "X3",
             "X4"
           ],
-          "visibilityPolicy": "visible_disabled"
+          "visibilityPolicy": "visible_enabled"
         },
         {
           "canonicalCmdId": "cmd.project.exportAllScenesTxtV1",
-          "disabledReasonCode": "PROFILE_GATED",
+          "disabledReasonCode": null,
           "enabledWhenAst": {
             "name": "hasDocument",
             "op": "flag"
@@ -459,6 +606,7 @@
           ],
           "origin": "base",
           "profile": [
+            "minimal",
             "pro",
             "guru"
           ],
@@ -471,7 +619,7 @@
             "X3",
             "X4"
           ],
-          "visibilityPolicy": "visible_disabled"
+          "visibilityPolicy": "visible_enabled"
         }
       ],
       "label": "Документ",
@@ -1303,7 +1451,7 @@
             "op": "all"
           },
           "id": "review-import-local-packet",
-          "label": "Import Review Packet",
+          "label": "Import Review Packet for Exact Apply...",
           "labelKey": "menu.review.importLocalPacket",
           "mode": [
             "offline"
@@ -1334,7 +1482,7 @@
             "op": "all"
           },
           "id": "review-export-local-packet",
-          "label": "Export Review Packet",
+          "label": "Export Review Packet...",
           "labelKey": "menu.review.exportLocalPacket",
           "mode": [
             "offline"
@@ -1365,7 +1513,7 @@
             "op": "all"
           },
           "id": "review-open-docx-review-preview-session",
-          "label": "Open DOCX Review",
+          "label": "Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...",
           "labelKey": "menu.review.openDocxReviewPreviewSession",
           "mode": [
             "offline"

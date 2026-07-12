@@ -39,7 +39,7 @@ test('import export entry truth: menu normalization aliases markdown actions to 
   assert.equal(source.includes("exportMarkdownV1: 'cmd.project.exportMarkdownV1'"), false);
 });
 
-test('import export entry truth: palette exposes canonical file commands during alias transition', async () => {
+test('import export entry truth: palette exposes only canonical Markdown file commands', async () => {
   const {
     createCommandRegistry,
     registerProjectCommands,
@@ -54,8 +54,8 @@ test('import export entry truth: palette exposes canonical file commands during 
 
   assert.equal(paletteIds.has('cmd.project.importMarkdownV1'), true);
   assert.equal(paletteIds.has('cmd.project.exportMarkdownV1'), true);
-  assert.equal(paletteIds.has('cmd.project.insert.markdownPrompt'), true);
-  assert.equal(paletteIds.has('cmd.project.review.exportMarkdown'), true);
+  assert.equal(paletteIds.has('cmd.project.insert.markdownPrompt'), false);
+  assert.equal(paletteIds.has('cmd.project.review.exportMarkdown'), false);
 });
 
 test('import export entry truth: palette canonical ids route to main-owned local-file flows', () => {

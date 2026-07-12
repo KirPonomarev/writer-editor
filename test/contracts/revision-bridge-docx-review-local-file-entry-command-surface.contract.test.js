@@ -423,12 +423,15 @@ test('DOCX review local-file entry: command is bridge-allowlisted and menu-owned
     reviewMenu.items.find((item) => item.id === 'review-open-docx-review-preview-session'),
     {
       id: 'review-open-docx-review-preview-session',
-      label: 'Open DOCX Review',
+      label: 'Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...',
       labelKey: 'menu.review.openDocxReviewPreviewSession',
       command: 'cmd.project.review.openDocxReviewPreviewSession',
     },
   );
-  assert.equal(menuLocale.entries['menu.review.openDocxReviewPreviewSession'].en, 'Open DOCX Review');
+  assert.equal(
+    menuLocale.entries['menu.review.openDocxReviewPreviewSession'].en,
+    'Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...',
+  );
 });
 
 test('DOCX review local-file entry: selected DOCX comments activate an in-memory Review session', async () => {

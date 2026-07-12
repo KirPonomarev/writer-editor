@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "runtime_product_acceptance",
+  "baseSha": "b6c2b8fba9c303ce95055e9168d72cb0390c167e",
+  "scope": {
+    "fileMenuDiscoverability": true,
+    "reviewMenuDiscoverability": true,
+    "minimalProfileDiscoverability": true,
+    "canonicalPaletteCommandsOnly": true,
+    "nativeMenuUsesExistingProductFlows": true,
+    "indexHtmlChanged": false,
+    "cssChanged": false,
+    "dependencyChanged": false,
+    "storageChanged": false,
+    "networkChanged": false
+  },
+  "fileMenu": [
+    {
+      "commandId": "cmd.project.importDocxV1",
+      "label": "Import DOCX Content (Content only)...",
+      "flow": "main-owned picker -> write-free preview -> explicit accept -> safe create"
+    },
+    {
+      "commandId": "cmd.project.importTxtV1",
+      "label": "Import TXT Content...",
+      "flow": "main-owned picker -> write-free preview -> explicit accept -> safe create"
+    },
+    {
+      "commandId": "cmd.project.importMarkdownV1",
+      "label": "Import Markdown Content...",
+      "flow": "main-owned picker -> write-free preview -> explicit accept -> safe create"
+    },
+    {
+      "commandId": "cmd.project.export.docxMin",
+      "label": "Export DOCX (Minimal)...",
+      "flow": "existing export preview -> explicit confirm -> main-owned write"
+    },
+    {
+      "commandId": "cmd.project.exportMarkdownV1",
+      "label": "Export Markdown...",
+      "flow": "canonical saved scene -> serializer loss warning -> main-owned Save As"
+    },
+    {
+      "commandId": "cmd.project.exportCurrentSceneTxtV1",
+      "label": "Export current scene TXT",
+      "flow": "existing current-scene TXT export"
+    },
+    {
+      "commandId": "cmd.project.exportSelectedScenesTxtV1",
+      "label": "Export selected scenes TXT",
+      "flow": "existing selected-scenes TXT export"
+    },
+    {
+      "commandId": "cmd.project.exportAllScenesTxtV1",
+      "label": "Export all scenes TXT",
+      "flow": "existing all-scenes TXT export"
+    }
+  ],
+  "reviewMenu": [
+    {
+      "commandId": "cmd.project.review.importLocalPacket",
+      "label": "Import Review Packet for Exact Apply...",
+      "authority": "canonical packet preview and main-derived exact apply only"
+    },
+    {
+      "commandId": "cmd.project.review.exportLocalPacket",
+      "label": "Export Review Packet...",
+      "authority": "local evidence transport only"
+    },
+    {
+      "commandId": "cmd.project.review.openDocxReviewPreviewSession",
+      "label": "Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...",
+      "authority": "comments preview and tracked changes diagnostic; no DOCX apply"
+    }
+  ],
+  "aliasPolicy": {
+    "canonicalMarkdownImport": "cmd.project.importMarkdownV1",
+    "canonicalMarkdownExport": "cmd.project.exportMarkdownV1",
+    "legacyMarkdownPrompt": "internal_only",
+    "legacyMarkdownExportShortcut": "internal_only",
+    "duplicatePaletteEntries": 0
+  },
+  "routing": {
+    "nativeMenuToRendererRuntimeIntent": true,
+    "rendererOpensExistingPreviewFlows": true,
+    "markdownStructuredPayloadKernelRetained": true,
+    "rendererReceivesPathAuthority": false,
+    "newWriteAuthority": false
+  },
+  "designEvidence": {
+    "source": "Lazyweb quick search",
+    "references": [
+      "Butterdocs command navigation",
+      "Notion import and export grouping",
+      "Craft document menu grouping",
+      "Slite command discoverability"
+    ],
+    "appliedPrinciples": [
+      "put file transport under one File menu",
+      "keep review evidence and apply intent under Review",
+      "use capability-bounded labels instead of broad format claims",
+      "remove duplicate visible aliases"
+    ],
+    "reportLimit": "FREE_REPORT_DAILY_LIMIT reached; no retry and no fabricated report"
+  },
+  "validation": [
+    {
+      "command": "focused menu, locale, visibility, routing, and Phase 05 contracts",
+      "status": "pass"
+    },
+    {
+      "command": "menu snapshot create, artifact export, and promotion lock verification",
+      "status": "pass",
+      "normalizedHashSha256": "6fa119570e880f3746def67cdc6d649c42e0dc893a0cfb57bff7ed45951b3750",
+      "artifactBytesSha256": "8e0026e6097dac524498a92815473f995d595559f1f18653c0217f6363ab6fdd"
+    },
+    {
+      "command": "npm run build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "npm run dev:fast",
+      "status": "pass",
+      "tests": {
+        "total": 28,
+        "passed": 28,
+        "failed": 0
+      }
+    },
+    {
+      "command": "npm test",
+      "status": "pass",
+      "tests": {
+        "total": 614,
+        "passed": 550,
+        "skipped": 64,
+        "failed": 0
+      },
+      "performanceBaseline": "pass"
+    },
+    {
+      "command": "real Electron native-menu accessibility inspection on macOS",
+      "status": "pass",
+      "fileMenuItemCount": 10,
+      "reviewMenuItemCount": 6,
+      "canonicalImportExportItemsPresent": true,
+      "boundedReviewLabelsPresent": true,
+      "screenshot": "not collected because display capture was unavailable; semantic native-menu inspection succeeded"
+    },
+    {
+      "command": "OSS policy, MVP boundary, generic SAST, and production dependency audit",
+      "status": "pass",
+      "productionVulnerabilities": 0,
+      "knownDevBuildAudit": "12 pre-existing findings: 1 low, 8 moderate, 3 high"
+    }
+  ],
+  "nonClaims": [
+    "No DOCX fidelity expansion is introduced.",
+    "DOCX Review remains evidence only; comments are previewed and tracked changes remain diagnostic.",
+    "Review Packet import does not auto-apply and remains explicit exact-text Apply only.",
+    "No HTML, CSS, visual-system, storage, IPC authority, dependency, cloud, network, Word, or Google support change is introduced.",
+    "This contour does not by itself publish the unified Capability Matrix or claim FEATURE_COMPLETE_V1."
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending",
+    "commitSha": "",
+    "pullRequest": 0,
+    "mergeSha": "",
+    "mergedAtUtc": ""
+  },
+  "nextStep": "deliver and rebind Phase 05, then open Phase 06 bounded fidelity and golden acceptance from the exact merged SHA"
+}

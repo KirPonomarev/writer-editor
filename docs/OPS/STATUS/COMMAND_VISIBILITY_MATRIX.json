@@ -10,10 +10,6 @@
     "minimalProfileCanHideNonCore": true
   },
   "minimalProfileHiddenAllowlist": [
-    "cmd.project.importMarkdownV1",
-    "cmd.project.importDocxV1",
-    "cmd.project.importTxtV1",
-    "cmd.project.exportMarkdownV1",
     "cmd.project.flowOpenV1",
     "cmd.project.flowSaveV1"
   ],
@@ -27,6 +23,10 @@
     "cmd.project.edit.redo",
     "cmd.project.edit.find",
     "cmd.project.edit.replace",
+    "cmd.project.importMarkdownV1",
+    "cmd.project.importDocxV1",
+    "cmd.project.importTxtV1",
+    "cmd.project.exportMarkdownV1",
     "cmd.project.view.zoomOut",
     "cmd.project.view.zoomIn",
     "cmd.project.view.toggleWrap",
