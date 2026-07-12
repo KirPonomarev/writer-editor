@@ -8643,14 +8643,14 @@ function normalizeMarkdownImportPayload(payload) {
   return pathGuard.payload;
 }
 
-function buildMarkdownImportSafeCreatePlan(payload, markdownText) {
+function buildMarkdownImportSafeCreatePlan(payload, canonicalContent) {
   const sourceName = typeof payload?.sourceName === 'string' ? payload.sourceName : '';
   const normalizedSource = sourceName
     .replace(/\.md$/i, '')
     .replace(/\s+/g, ' ')
     .trim();
   const safeBaseName = sanitizeFilename(normalizedSource || 'Imported scene');
-  const content = normalizeFlowTextInput(markdownText);
+  const content = normalizeFlowTextInput(canonicalContent);
   const digest = computeHash(content).slice(0, 10);
   const sceneDigest = computeHash(`${safeBaseName}\n${content}`).slice(0, 10);
   const sceneLabel = `${safeBaseName} ${digest}`;
@@ -8672,7 +8672,7 @@ function buildMarkdownImportSafeCreatePlan(payload, markdownText) {
   };
 }
 
-function buildMarkdownImportPreviewEnvelope(payload, scene, lossReport, markdownText, ioRecovery = null) {
+function buildMarkdownImportPreviewEnvelope(payload, scene, lossReport, canonicalContent, ioRecovery = null) {
   const previewResult = {
     schemaVersion: MARKDOWN_IMPORT_PREVIEW_SCHEMA,
     type: MARKDOWN_IMPORT_PREVIEW_TYPE,
@@ -8684,7 +8684,7 @@ function buildMarkdownImportPreviewEnvelope(payload, scene, lossReport, markdown
     lossReport: lossReport && typeof lossReport === 'object'
       ? lossReport
       : { count: 0, items: [] },
-    safeCreatePlan: buildMarkdownImportSafeCreatePlan(payload, markdownText),
+    safeCreatePlan: buildMarkdownImportSafeCreatePlan(payload, canonicalContent),
   };
   if (ioRecovery && typeof ioRecovery === 'object' && !Array.isArray(ioRecovery)) {
     previewResult.recovery = ioRecovery;
@@ -10186,10 +10186,18 @@ async function handleImportMarkdownV1(payloadRaw) {
     const markdownText = payload.text;
     const ioRecovery = null;
 
-    const scene = transform.parseMarkdownV1(markdownText, { limits: payload.limits });
-    const lossReport = scene && scene.lossReport && typeof scene.lossReport === 'object'
-      ? scene.lossReport
-      : { count: 0, items: [] };
+    const parsedScene = transform.parseMarkdownV1(markdownText, { limits: payload.limits });
+    const converted = transform.markdownSceneV1ToDocument(parsedScene);
+    const envelopeModule = await loadDocumentContentEnvelopeModule();
+    const canonicalContent = envelopeModule.composeObservablePayload({ doc: converted.doc });
+    const lossReport = transform.mergeLossReports(
+      parsedScene && parsedScene.lossReport,
+      converted && converted.lossReport,
+    );
+    const scene = {
+      ...parsedScene,
+      lossReport,
+    };
     const out = {
       ok: 1,
       scene,
@@ -10198,7 +10206,13 @@ async function handleImportMarkdownV1(payloadRaw) {
       lossReport,
     };
     if (payload.preview === true) {
-      out.previewResult = buildMarkdownImportPreviewEnvelope(payload, scene, lossReport, markdownText, ioRecovery);
+      out.previewResult = buildMarkdownImportPreviewEnvelope(
+        payload,
+        scene,
+        lossReport,
+        canonicalContent,
+        ioRecovery,
+      );
     }
     if (ioRecovery) {
       out.recovery = ioRecovery;
@@ -10236,6 +10250,82 @@ async function handleImportMarkdownV1(payloadRaw) {
       },
     );
   }
+}
+
+async function readCanonicalMarkdownExportSource() {
+  if (isDirty || autoSaveInProgress) {
+    throw new Error('Unsaved current scene state cannot be used as Markdown export source');
+  }
+  if (typeof currentFilePath !== 'string' || !currentFilePath.trim()) {
+    throw new Error('No saved current scene is open');
+  }
+  if (!isAllowedFilePath(currentFilePath)) {
+    throw new Error('Current scene path is not allowed');
+  }
+  const documentContext = getDocumentContextFromPath(currentFilePath);
+  if (!documentContext || documentContext.kind !== 'scene') {
+    throw new Error('Current file is not a saved scene');
+  }
+
+  const observableContent = await fs.readFile(currentFilePath, 'utf8');
+  const envelopeModule = await loadDocumentContentEnvelopeModule();
+  const parsed = envelopeModule.parseObservablePayload(observableContent || '');
+  if (!parsed || typeof parsed.text !== 'string') {
+    throw new Error('Current scene envelope could not be parsed');
+  }
+  if (parsed.issue && typeof parsed.issue === 'object') {
+    throw new Error(
+      typeof parsed.issue.userMessage === 'string' && parsed.issue.userMessage
+        ? parsed.issue.userMessage
+        : 'Current scene envelope is invalid',
+    );
+  }
+
+  const transform = await loadMarkdownTransformModule();
+  const scene = parsed.doc
+    ? transform.documentToMarkdownSceneV1(parsed.doc)
+    : transform.legacyTextToMarkdownSceneV1(parsed.text);
+  const artifact = transform.serializeMarkdownV1WithLossReport(scene);
+  return {
+    scene,
+    artifact,
+    defaultName: `${path.basename(currentFilePath, path.extname(currentFilePath))}.md`,
+  };
+}
+
+function summarizeMarkdownLossReport(lossReport) {
+  const items = Array.isArray(lossReport?.items) ? lossReport.items : [];
+  return items.slice(0, 6).map((item) => {
+    const code = typeof item?.code === 'string' && item.code
+      ? item.code
+      : typeof item?.reasonCode === 'string' && item.reasonCode
+        ? item.reasonCode
+        : 'MDV1_DOWNGRADE';
+    const message = typeof item?.message === 'string' && item.message
+      ? item.message
+      : typeof item?.note === 'string'
+        ? item.note
+        : 'Content will be downgraded.';
+    return `${code}: ${message}`;
+  }).join('\n');
+}
+
+async function confirmMarkdownExportLosses(lossReport) {
+  const count = Number.isInteger(lossReport?.count) ? lossReport.count : 0;
+  if (count <= 0) return true;
+  if (!mainWindow) return false;
+  const detail = summarizeMarkdownLossReport(lossReport);
+  const result = await dialog.showMessageBox(mainWindow, {
+    type: 'warning',
+    title: 'Markdown export warnings',
+    message: `Markdown export has ${count} conversion warning${count === 1 ? '' : 's'}.`,
+    detail: detail || 'Some document semantics will be downgraded.',
+    buttons: ['Export anyway', 'Cancel'],
+    defaultId: 1,
+    cancelId: 1,
+    noLink: true,
+  });
+  return result && result.response === 0;
 }
 
 // MARKDOWN_LOCAL_FILE_AUTHORITY_COMMAND_SURFACE_START
@@ -10526,7 +10616,7 @@ async function handleMarkdownImportLocalFileAcceptCommandSurface(payload = {}) {
   };
 }
 
-async function handleMarkdownExportLocalFileCommandSurface(payload = {}) {
+async function handleMarkdownExportLocalFileCommandSurface(payload = {}, options = {}) {
   const payloadState = validateMarkdownLocalFileIntentPayload(
     payload,
     new Set(['requestId']),
@@ -10538,11 +10628,12 @@ async function handleMarkdownExportLocalFileCommandSurface(payload = {}) {
     'markdown-local-file-export-request',
   );
 
-  let snapshot;
-  let transform;
+  const readCanonicalSource = typeof options.readCanonicalSource === 'function'
+    ? options.readCanonicalSource
+    : readCanonicalMarkdownExportSource;
+  let source;
   try {
-    snapshot = await requestEditorSnapshot();
-    transform = await loadMarkdownTransformModule();
+    source = await readCanonicalSource();
   } catch (error) {
     return makeTypedMarkdownError(
       MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
@@ -10551,27 +10642,46 @@ async function handleMarkdownExportLocalFileCommandSurface(payload = {}) {
       { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
     );
   }
-  let scene;
-  try {
-    scene = transform.parseMarkdownV1(
-      typeof snapshot?.plainText === 'string' ? snapshot.plainText : '',
-    );
-  } catch (error) {
+  if (!isPlainObjectValue(source?.scene) || !isPlainObjectValue(source?.artifact)) {
     return makeTypedMarkdownError(
       MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
-      typeof error?.code === 'string' && error.code ? error.code : 'E_MD_EXPORT_SOURCE_INVALID',
-      typeof error?.reason === 'string' && error.reason
-        ? error.reason
-        : 'main_owned_editor_source_invalid',
+      'E_MD_EXPORT_SOURCE_INVALID',
+      'canonical_saved_scene_source_invalid',
     );
   }
-  const defaultName = typeof currentFilePath === 'string' && currentFilePath
-    ? `${path.basename(currentFilePath, path.extname(currentFilePath))}.md`
-    : 'export.md';
+  const sourceLossReport = isPlainObjectValue(source.artifact.lossReport)
+    ? source.artifact.lossReport
+    : { count: 0, items: [] };
+  const confirmLosses = typeof options.confirmLosses === 'function'
+    ? options.confirmLosses
+    : confirmMarkdownExportLosses;
+  if (Number.isInteger(sourceLossReport.count) && sourceLossReport.count > 0) {
+    let confirmed = false;
+    try {
+      confirmed = await confirmLosses(sourceLossReport);
+    } catch {
+      confirmed = false;
+    }
+    if (!confirmed) {
+      return {
+        ok: 1,
+        commandId: MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID,
+        requestId,
+        canceled: true,
+        exported: false,
+        bytesWritten: 0,
+        snapshotCreated: false,
+        canonicalSavedSceneSource: true,
+        lossReport: cloneJsonSafe(sourceLossReport),
+      };
+    }
+  }
   const result = await handleExportMarkdownV1({
-    scene,
+    scene: source.scene,
     saveAs: true,
-    defaultName,
+    defaultName: typeof source.defaultName === 'string' && source.defaultName
+      ? source.defaultName
+      : 'export.md',
     safetyMode: 'strict',
     snapshotLimit: 3,
   });
@@ -10591,6 +10701,7 @@ async function handleMarkdownExportLocalFileCommandSurface(payload = {}) {
     exported: result.canceled !== true && Boolean(result.outPath),
     bytesWritten: Number.isInteger(result.bytesWritten) ? result.bytesWritten : 0,
     snapshotCreated: result.snapshotCreated === true,
+    canonicalSavedSceneSource: true,
     lossReport: isPlainObjectValue(result.lossReport)
       ? cloneJsonSafe(result.lossReport)
       : { count: 0, items: [] },
@@ -10689,8 +10800,8 @@ async function handleExportMarkdownV1(payloadRaw) {
   }
 
   try {
-    const markdown = transform.serializeMarkdownV1(payload.scene);
-    const parsed = transform.parseMarkdownV1(markdown, { limits: payload.limits });
+    const serialized = transform.serializeMarkdownV1WithLossReport(payload.scene);
+    const markdown = serialized.markdown;
 
     let writeResult = null;
     if (outPath) {
@@ -10720,8 +10831,8 @@ async function handleExportMarkdownV1(payloadRaw) {
       snapshotCreated: writeResult ? Boolean(writeResult.snapshotCreated) : false,
       snapshotPath: writeResult && typeof writeResult.snapshotPath === 'string' ? writeResult.snapshotPath : '',
       purgedSnapshots: writeResult && Array.isArray(writeResult.purgedSnapshots) ? writeResult.purgedSnapshots : [],
-      lossReport: parsed && parsed.lossReport && typeof parsed.lossReport === 'object'
-        ? parsed.lossReport
+      lossReport: serialized && serialized.lossReport && typeof serialized.lossReport === 'object'
+        ? serialized.lossReport
         : { count: 0, items: [] },
     };
   } catch (error) {
@@ -13193,13 +13304,19 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     return normalizeUiBridgeMenuResult(result);
   },
   'cmd.project.markdown.previewLocalFile': async (payload = {}) => {
-    return handleMarkdownImportLocalFilePreviewCommandSurface(payload);
+    return normalizeUiBridgeMenuResult(
+      await handleMarkdownImportLocalFilePreviewCommandSurface(payload),
+    );
   },
   'cmd.project.markdown.acceptLocalPreview': async (payload = {}) => {
-    return handleMarkdownImportLocalFileAcceptCommandSurface(payload);
+    return normalizeUiBridgeMenuResult(
+      await handleMarkdownImportLocalFileAcceptCommandSurface(payload),
+    );
   },
   'cmd.project.markdown.exportLocalFile': async (payload = {}) => {
-    return handleMarkdownExportLocalFileCommandSurface(payload);
+    return normalizeUiBridgeMenuResult(
+      await handleMarkdownExportLocalFileCommandSurface(payload),
+    );
   },
   'cmd.project.releaseClaim.admit': async (payload = {}) => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_RELEASE_CLAIM_ADMIT, payload);

@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "runtime_product_acceptance",
+  "baseSha": "a02bb8c10b38aeffe5fbb0f9601272fe2a00ffe2",
+  "scope": {
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "visiblePaletteImport": true,
+    "visiblePaletteExport": true,
+    "mainOwnedImportPicker": true,
+    "mainOwnedExportSaveAs": true,
+    "canonicalSavedSceneExport": true,
+    "canonicalDocV2SafeCreate": true,
+    "serializerLossReportVisible": true,
+    "atomicExternalWritePreserved": true,
+    "markdownRecoveryPreserved": true,
+    "indexHtmlStructureChanged": false,
+    "cssChanged": false,
+    "newDependenciesAdded": false
+  },
+  "importFlow": {
+    "paletteCommand": "cmd.project.importMarkdownV1",
+    "previewCommand": "cmd.project.markdown.previewLocalFile",
+    "acceptCommand": "cmd.project.markdown.acceptLocalPreview",
+    "rendererPreviewInputKeys": [
+      "requestId"
+    ],
+    "rendererAcceptInputKeys": [
+      "requestId",
+      "previewId"
+    ],
+    "mainOwnedBoundedRead": true,
+    "previewWriteEffects": false,
+    "explicitUserAcceptRequired": true,
+    "previewTokenOpaqueSingleUse": true,
+    "safeCreateOnly": true,
+    "canonicalEnvelope": "doc-v2",
+    "createdSceneOpenAttempted": true,
+    "rendererMutationBeforeAccept": false
+  },
+  "exportFlow": {
+    "paletteCommand": "cmd.project.exportMarkdownV1",
+    "authorityCommand": "cmd.project.markdown.exportLocalFile",
+    "rendererInputKeys": [
+      "requestId"
+    ],
+    "source": "canonical_saved_scene_from_disk",
+    "dirtySceneBlocked": true,
+    "autosaveInProgressBlocked": true,
+    "unsavedSceneBlocked": true,
+    "nonSceneBlocked": true,
+    "documentIrSerializer": true,
+    "plainEditorTextReparse": false,
+    "lossConfirmationOwnedByMain": true,
+    "saveAsTargetOwnedByMain": true,
+    "publicTargetPathReturned": false,
+    "publicRecoveryPathReturned": false
+  },
+  "supportedMarkdownV1": {
+    "blocks": [
+      "paragraph",
+      "heading_1_to_6",
+      "horizontal_rule",
+      "blockquote",
+      "flat_bullet_list",
+      "flat_ordered_list",
+      "fenced_code_block"
+    ],
+    "inline": [
+      "bold",
+      "italic",
+      "bold_italic",
+      "inline_code",
+      "safe_link",
+      "hard_break_in_paragraph"
+    ],
+    "normalization": [
+      "CRLF_to_LF",
+      "language_tag_to_lowercase",
+      "deterministic_terminal_newline"
+    ]
+  },
+  "lossPolicy": {
+    "serializerReportIsAuthoritative": true,
+    "reparseOfOutputUsedAsLossReport": false,
+    "warningBeforeLossyWrite": true,
+    "warningDefaultAction": "cancel",
+    "unsupportedBlocksPreserveVisibleText": true,
+    "unsupportedMarksPreserveVisibleText": true,
+    "unsafeLinksLoseLinkAuthority": true,
+    "nestedListsAreFlattenedWithWarning": true,
+    "multiBlockListItemsAreFlattenedWithWarning": true,
+    "hardBreaksOutsideParagraphAreFlattenedWithWarning": true,
+    "unsafeFenceLanguageIsOmittedWithWarning": true,
+    "emptyDistinctBlocksAreOmittedWithWarning": true
+  },
+  "goldenCases": [
+    "literal-block-markers",
+    "fenced-code-widening",
+    "ordered-and-unordered-lists",
+    "unicode-crlf-and-blank-lines",
+    "inline-marks",
+    "combined-marks-and-parenthesized-link",
+    "fenced-code-blank-lines",
+    "inline-code-delimiter-run",
+    "bounded-hard-break-and-language-downgrade",
+    "unsupported-block-visible-downgrade"
+  ],
+  "acceptance": [
+    "The visible Markdown import action opens a main-owned local file picker and returns a pathless, write-free preview.",
+    "Declining or failing preview acceptance performs zero safe-create writes.",
+    "Accept sends only requestId and one-use previewId, creates a new canonical doc-v2 scene, refreshes the tree, and attempts to open the created scene.",
+    "The visible Markdown export action sends request metadata only and serializes the saved canonical scene from disk.",
+    "Dirty, autosaving, unsaved, or non-scene state cannot be exported as if it were canonical saved truth.",
+    "Literal block markers remain paragraph text across export and re-import.",
+    "Code fence width, code blank lines, Unicode, CRLF normalization, lists, safe links, combined marks, and inline backtick runs have deterministic golden coverage.",
+    "Every bounded downgrade is carried by the serializer loss report and requires a main-owned warning confirmation before Save As writes.",
+    "External target validation, queued revalidation, atomic write, recovery snapshots, path suppression, and offline operation remain intact.",
+    "The existing command palette renders all Markdown entries inside its panel without horizontal overflow; no HTML or CSS redesign is introduced."
+  ],
+  "machineChecks": [
+    {
+      "command": "node --test focused Markdown product, transform, authority, safety, recovery, and UI set",
+      "status": "pass",
+      "tests": 73,
+      "passed": 73,
+      "skipped": 0
+    },
+    {
+      "command": "npm run test:sector-m",
+      "status": "pass",
+      "tests": 345,
+      "passed": 290,
+      "skipped": 55
+    },
+    {
+      "command": "npm run dev:fast",
+      "status": "pass",
+      "tests": 28,
+      "passed": 28
+    },
+    {
+      "command": "npm run test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm test",
+      "status": "pass",
+      "tests": 614,
+      "passed": 550,
+      "skipped": 64,
+      "failed": 0,
+      "perfBaseline": "pass",
+      "releaseCandidateCheck": "pre_existing_non_blocking_warn"
+    },
+    {
+      "command": "npm run build:renderer",
+      "status": "pass",
+      "trackedOutputChanged": true
+    },
+    {
+      "command": "Electron command palette runtime smoke at 1440px",
+      "status": "pass",
+      "markdownEntries": 4,
+      "requiredCanonicalEntries": 2,
+      "horizontalOverflow": false,
+      "outsidePanel": false
+    },
+    {
+      "command": "npm run oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass",
+      "vulnerabilities": 0
+    },
+    {
+      "command": "npm audit --audit-level=low",
+      "status": "known_dev_tooling_findings_unchanged",
+      "vulnerabilities": {
+        "low": 1,
+        "moderate": 8,
+        "high": 3,
+        "total": 12
+      },
+      "dependencyManifestsChanged": false
+    },
+    {
+      "command": "npm run ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "npm run security:audit:generic-sast",
+      "status": "pass"
+    },
+    {
+      "command": "EFFECTIVE_MODE=STRICT node scripts/ops/governance-change-detection.mjs",
+      "status": "pass"
+    },
+    {
+      "command": "EFFECTIVE_MODE=STRICT node scripts/doctor.mjs",
+      "status": "pass",
+      "coreBoundary": "pass",
+      "coreDeterminism": "pass"
+    }
+  ],
+  "designEvidence": {
+    "lazywebQuickSearch": "completed",
+    "referenceFamilies": [
+      "Butterdocs",
+      "Notion",
+      "Craft",
+      "Slite"
+    ],
+    "lazywebReport": "not_generated_free_daily_limit_reached",
+    "fallbackReportFabricated": false,
+    "visualSystemChanged": false
+  },
+  "nonClaims": [
+    "This is a bounded Markdown v1 file flow, not full CommonMark or GFM compatibility.",
+    "Tables, task-list state, footnotes, raw HTML, nested lists, and arbitrary document extensions are not claimed as lossless.",
+    "No Markdown paste workflow is claimed; the former prompt alias temporarily routes to the same local-file flow until Phase 05 cleanup.",
+    "The transition palette still contains legacy Markdown aliases; Phase 05 owns final discoverability, label, menu, and duplicate-surface cleanup.",
+    "No DOCX fidelity, tracked-change apply, structural apply, comment auto-apply, cross-scene transaction, Word support, or Google Docs support is introduced.",
+    "No cloud, account, authorization, synchronization, network integration, UI framework, or dependency is introduced.",
+    "Release readiness and the final unified capability evidence remain Phase 06 work."
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending",
+    "commitSha": "",
+    "pullRequest": 0,
+    "mergeSha": "",
+    "mergedAtUtc": ""
+  },
+  "nextStep": "finish Phase 04 verification, deliver and rebind merged truth, then open Phase 05 product discoverability and honest labels"
+}

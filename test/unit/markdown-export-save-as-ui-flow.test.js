@@ -10,143 +10,133 @@ function read(relativePath) {
   return fs.readFileSync(path.join(ROOT, relativePath), 'utf8');
 }
 
-function loadMarkdownExportHandler() {
+function loadMarkdownExportHandler(context = {}) {
   const editor = read('src/renderer/editor.js');
-  const start = editor.indexOf('async function handleMarkdownExportUiPath()');
+  const start = editor.indexOf('function resolveMarkdownLocalFileBridgeValue(result)');
   const end = editor.indexOf('function getPlainText()', start);
   assert.notEqual(start, -1);
   assert.notEqual(end, -1);
   const source = editor.slice(start, end);
   return {
     source,
-    handle: (context) => vm.runInNewContext(`${source}
+    handle: vm.runInNewContext(`${source}
 handleMarkdownExportUiPath`, context),
   };
 }
 
-test('Markdown export save-as UI path uses save dialog intent as primary path', async () => {
-  const { handle } = loadMarkdownExportHandler();
-  const scene = { kind: 'scene.v1', blocks: [] };
-  const calls = [];
-  const handleMarkdownExportUiPath = handle({
+function makeContext(invokePreloadUiCommandBridge, calls) {
+  return {
+    MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID: 'cmd.project.markdown.exportLocalFile',
     MARKDOWN_EXPORT_STATUS_MESSAGE: 'Exported Markdown v1',
     MARKDOWN_EXPORT_CANCELLED_STATUS_MESSAGE: 'Export Markdown cancelled',
     MARKDOWN_EXPORT_SAVE_FAILED_STATUS_MESSAGE: 'Export Markdown save failed',
-    getPlainText: () => 'current buffer',
-    runMarkdownImportCommand: async (text, sourceName) => {
-      calls.push(['import', text, sourceName]);
-      return { ok: true, value: { scene } };
-    },
-    resolveSceneFromImportResult: (result) => result.value.scene,
-    runMarkdownExportCommand: async (inputScene, options) => {
-      calls.push(['export', inputScene, options]);
-      return {
-        ok: true,
-        value: {
-          exported: true,
-          outPath: path.join(ROOT, 'tmp', 'editor-buffer.md'),
-          bytesWritten: 16,
-          lossReport: { count: 0, items: [] },
-        },
-      };
-    },
-    updateStatusText: (message) => {
-      calls.push(['status', message]);
-    },
-    window: {
-      prompt: () => {
-        throw new Error('export prompt must not be primary path');
-      },
-    },
-    navigator: {
-      clipboard: {
-        writeText: () => {
-          throw new Error('clipboard must not be primary path');
-        },
-      },
-    },
-  });
+    invokePreloadUiCommandBridge,
+    updateStatusText: (message) => calls.push(['status', message]),
+  };
+}
 
-  await handleMarkdownExportUiPath();
-
-  assert.deepEqual(JSON.parse(JSON.stringify(calls)), [
-    ['import', 'current buffer', 'editor-buffer.md'],
-    ['export', scene, { saveAs: true, defaultName: 'editor-buffer.md' }],
-    ['status', 'Exported Markdown v1'],
-  ]);
-});
-
-test('Markdown export save-as UI path treats cancel as non-write status', async () => {
-  const { handle } = loadMarkdownExportHandler();
-  const scene = { kind: 'scene.v1', blocks: [] };
+test('Markdown export UI sends intent only and accepts pathless canonical-save proof', async () => {
   const calls = [];
-  const handleMarkdownExportUiPath = handle({
-    MARKDOWN_EXPORT_STATUS_MESSAGE: 'Exported Markdown v1',
-    MARKDOWN_EXPORT_CANCELLED_STATUS_MESSAGE: 'Export Markdown cancelled',
-    MARKDOWN_EXPORT_SAVE_FAILED_STATUS_MESSAGE: 'Export Markdown save failed',
-    getPlainText: () => 'current buffer',
-    runMarkdownImportCommand: async () => ({ ok: true, value: { scene } }),
-    resolveSceneFromImportResult: (result) => result.value.scene,
-    runMarkdownExportCommand: async (_inputScene, options) => {
-      calls.push(['export', options]);
-      return {
-        ok: true,
-        value: {
-          exported: false,
-          canceled: true,
-          outPath: '',
-          bytesWritten: 0,
-          lossReport: { count: 0, items: [] },
-        },
-      };
-    },
-    updateStatusText: (message) => {
-      calls.push(['status', message]);
-    },
-  });
-
-  await handleMarkdownExportUiPath();
-
-  assert.deepEqual(JSON.parse(JSON.stringify(calls)), [
-    ['export', { saveAs: true, defaultName: 'editor-buffer.md' }],
-    ['status', 'Export Markdown cancelled'],
-  ]);
-});
-
-test('Markdown export save-as UI path fails closed without saved file proof', async () => {
-  const { handle } = loadMarkdownExportHandler();
-  const scene = { kind: 'scene.v1', blocks: [] };
-  const calls = [];
-  const handleMarkdownExportUiPath = handle({
-    MARKDOWN_EXPORT_STATUS_MESSAGE: 'Exported Markdown v1',
-    MARKDOWN_EXPORT_CANCELLED_STATUS_MESSAGE: 'Export Markdown cancelled',
-    MARKDOWN_EXPORT_SAVE_FAILED_STATUS_MESSAGE: 'Export Markdown save failed',
-    getPlainText: () => 'current buffer',
-    runMarkdownImportCommand: async () => ({ ok: true, value: { scene } }),
-    resolveSceneFromImportResult: (result) => result.value.scene,
-    runMarkdownExportCommand: async () => ({
+  const context = makeContext(async (commandId, payload) => {
+    calls.push(['bridge', commandId, payload]);
+    return {
       ok: true,
       value: {
+        ok: true,
+        commandId,
         exported: true,
-        markdown: '# old prompt-only response\n',
-        outPath: '',
-        bytesWritten: 0,
+        bytesWritten: 16,
+        canonicalSavedSceneSource: true,
         lossReport: { count: 0, items: [] },
       },
-    }),
-    updateStatusText: (message) => {
-      calls.push(['status', message]);
-    },
-  });
+    };
+  }, calls);
+  const { handle } = loadMarkdownExportHandler(context);
 
-  await handleMarkdownExportUiPath();
+  await handle();
+
+  assert.equal(calls[0][0], 'bridge');
+  assert.equal(calls[0][1], 'cmd.project.markdown.exportLocalFile');
+  assert.deepEqual(Object.keys(calls[0][2]), ['requestId']);
+  assert.match(calls[0][2].requestId, /^markdown-local-export-\d+$/u);
+  assert.deepEqual(calls[1], ['status', 'Exported Markdown v1']);
+});
+
+test('Markdown export UI keeps serializer losses visible after confirmed write', async () => {
+  const calls = [];
+  const context = makeContext(async () => ({
+    ok: true,
+    value: {
+      ok: true,
+      exported: true,
+      bytesWritten: 20,
+      canonicalSavedSceneSource: true,
+      lossReport: {
+        count: 2,
+        items: [
+          { code: 'UNSUPPORTED_BLOCK_DOWNGRADED' },
+          { code: 'UNSUPPORTED_MARK_DROPPED' },
+        ],
+      },
+    },
+  }), calls);
+  const { handle } = loadMarkdownExportHandler(context);
+
+  await handle();
+
+  assert.deepEqual(calls, [['status', 'Exported Markdown v1; losses: 2']]);
+});
+
+test('Markdown export UI treats main-owned cancellation as a non-write status', async () => {
+  const calls = [];
+  const context = makeContext(async () => ({
+    ok: true,
+    value: {
+      ok: true,
+      exported: false,
+      canceled: true,
+      bytesWritten: 0,
+      canonicalSavedSceneSource: true,
+      lossReport: { count: 1, items: [{ code: 'UNSUPPORTED_BLOCK_DOWNGRADED' }] },
+    },
+  }), calls);
+  const { handle } = loadMarkdownExportHandler(context);
+
+  await handle();
+
+  assert.deepEqual(calls, [['status', 'Export Markdown cancelled']]);
+});
+
+test('Markdown export UI fails closed without canonical saved-scene proof', async () => {
+  const calls = [];
+  const context = makeContext(async () => ({
+    ok: true,
+    value: {
+      ok: true,
+      exported: true,
+      bytesWritten: 20,
+      canonicalSavedSceneSource: false,
+      lossReport: { count: 0, items: [] },
+    },
+  }), calls);
+  const { handle } = loadMarkdownExportHandler(context);
+
+  await handle();
 
   assert.deepEqual(calls, [['status', 'Export Markdown save failed']]);
 });
 
-test('Markdown export save-as UI path no longer uses clipboard or prompt as primary export', () => {
-  const { source } = loadMarkdownExportHandler();
-  assert.equal(source.includes('navigator.clipboard'), false);
-  assert.equal(source.includes('window.prompt'), false);
-  assert.equal(source.includes('MARKDOWN_EXPORT_PROMPT_COPY_HINT'), false);
+test('Markdown export product path never reparses editor text or exposes a renderer path', () => {
+  const { source } = loadMarkdownExportHandler({});
+  for (const forbidden of [
+    'getPlainText(',
+    'runMarkdownImportCommand(',
+    'runMarkdownExportCommand(',
+    'navigator.clipboard',
+    'window.prompt',
+    'outPath',
+    'scene:',
+  ]) {
+    assert.equal(source.includes(forbidden), false, forbidden);
+  }
 });

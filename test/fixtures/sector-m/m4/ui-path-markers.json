@@ -2,17 +2,21 @@
   "requiredMarkers": [
     "case 'import-markdown-v1'",
     "case 'export-markdown-v1'",
-    "dispatchUiCommand(COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1",
-    "dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1",
+    "MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID",
+    "MARKDOWN_IMPORT_LOCAL_FILE_ACCEPT_COMMAND_ID",
+    "MARKDOWN_EXPORT_LOCAL_FILE_COMMAND_ID",
+    "invokePreloadUiCommandBridge(",
     "(key === 'I' || key === 'i') && event.shiftKey",
     "(key === 'M' || key === 'm') && event.shiftKey",
     "Imported Markdown v1",
     "Exported Markdown v1",
-    "safeCreate: true",
+    "previewId,",
     "Import Markdown safe create failed"
   ],
   "forbiddenMarkers": [
     "window.electronAPI.importMarkdownV1(",
-    "window.electronAPI.exportMarkdownV1("
+    "window.electronAPI.exportMarkdownV1(",
+    "MARKDOWN_IMPORT_PROMPT_TITLE",
+    "safeCreate: true"
   ]
 }

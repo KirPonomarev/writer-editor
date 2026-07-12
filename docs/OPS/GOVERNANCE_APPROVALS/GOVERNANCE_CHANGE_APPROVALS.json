@@ -3762,10 +3762,10 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-markdown-file-authority-command-surface.contract.test.js",
-      "sha256": "d8ed5ec53df1fbdfcacc17554560c39ba091058d271b4e40f03023b117732fad",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
-      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
-      "rationale": "Approve the new Markdown main-owned authority command contract proving request-only picker and Save As intent, opaque project-bound one-use preview acceptance, pathless public preview and receipt envelopes, private target suppression, replay denial, and no visible-product-completion claim."
+      "sha256": "2a8d8a6a03a312d1fb9af86bd5cf9f109d576a986b13f698cd370d3f95a282b5",
+      "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001",
+      "approvedAtUtc": "2026-07-12T21:20:00.000Z",
+      "rationale": "Approve the Phase 04 authority harness rebind proving canonical saved-scene export with zero renderer snapshot reads, cancel-before-write loss confirmation, pathless receipts, token-only accept, preview zero writes, and unchanged rejection of renderer paths and content authority."
     },
     {
       "filePath": "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
@@ -3773,6 +3773,27 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
       "approvedAtUtc": "2026-07-12T20:06:32.000Z",
       "rationale": "Approve the existing Review mutate contract update binding local packet intake to the shared bounded reader and proving export target revalidation before write, while preserving canonical packet validation, exact apply authority, recovery, receipt, structural manual-only behavior, and all prior crash-reconciliation coverage."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001_STATUS.json",
+      "sha256": "50276284d174e2d358b75bea9fb191417ad71df40afaef5c3d395f313a4da50e",
+      "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001",
+      "approvedAtUtc": "2026-07-12T21:20:00.000Z",
+      "rationale": "Approve the bounded Phase 04 pending-delivery status for visible local Markdown preview and safe-create, canonical saved-scene document-IR export, authoritative serializer loss warnings, deterministic semantic goldens, unchanged atomic recovery and file authority, no dependency or HTML/CSS change, and explicit nonclaims against full CommonMark/GFM, final menu cleanup, broader format fidelity, cloud, structural apply, and release readiness."
+    },
+    {
+      "filePath": "test/contracts/export-contour-02-markdown-text-hardening.contract.test.js",
+      "sha256": "3c888b107b6955d3555da75cbc09ee7af1aef53f620b6ef7ab62781e01edca78",
+      "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001",
+      "approvedAtUtc": "2026-07-12T21:20:00.000Z",
+      "rationale": "Approve the cumulative Markdown contour allowlist extension for the Phase 04 runtime, renderer binding, semantic golden, status, and documentation files while keeping dependency manifests unchanged and retaining deterministic downgrade assertions."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-markdown-product-completion.contract.test.js",
+      "sha256": "0ead26b2f6cf3be8f02ac91bcd4dc00e1622bc1a9aeaa04532a8a7330ac77344",
+      "approvedBy": "ticket:REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001",
+      "approvedAtUtc": "2026-07-12T21:20:00.000Z",
+      "rationale": "Approve the Phase 04 product contract covering canonical doc-v2 import, saved-scene disk source, dirty-state refusal, literal marker structure, Unicode and CRLF normalization, lists, code-fence width and blank lines, combined marks, safe links, inline backtick delimiters, authoritative losses, and bounded pending-delivery documentation truth."
     }
   ]
 }

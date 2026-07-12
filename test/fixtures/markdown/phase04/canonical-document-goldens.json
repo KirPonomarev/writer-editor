@@ -1,0 +1,211 @@
+{
+  "schemaVersion": "markdown-phase04-goldens.v1",
+  "cases": [
+    {
+      "id": "literal-block-markers",
+      "sourceKind": "document",
+      "source": {
+        "type": "doc",
+        "content": [
+          { "type": "paragraph", "content": [{ "type": "text", "text": "# literal hash" }] },
+          { "type": "paragraph", "content": [{ "type": "text", "text": "- literal dash" }] },
+          { "type": "paragraph", "content": [{ "type": "text", "text": "1. literal number" }] },
+          { "type": "paragraph", "content": [{ "type": "text", "text": "> literal quote" }] },
+          { "type": "paragraph", "content": [{ "type": "text", "text": "---" }] },
+          { "type": "paragraph", "content": [{ "type": "text", "text": "```literal fence" }] }
+        ]
+      },
+      "expectedMarkdown": "\\# literal hash\n\n\\- literal dash\n\n1\\. literal number\n\n\\> literal quote\n\n\\---\n\n\\`\\`\\`literal fence\n",
+      "expectedVisibleText": "# literal hash\n- literal dash\n1. literal number\n> literal quote\n---\n```literal fence",
+      "expectedRoundTripBlockTypes": ["paragraph", "paragraph", "paragraph", "paragraph", "paragraph", "paragraph"],
+      "expectedLossCodes": []
+    },
+    {
+      "id": "fenced-code-widening",
+      "sourceKind": "document",
+      "source": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "codeBlock",
+            "attrs": { "language": "JavaScript" },
+            "content": [{ "type": "text", "text": "const fence = '```';" }]
+          }
+        ]
+      },
+      "expectedMarkdown": "````javascript\nconst fence = '```';\n````\n",
+      "expectedVisibleText": "const fence = '```';",
+      "expectedRoundTripBlockTypes": ["codeBlock"],
+      "expectedLossCodes": []
+    },
+    {
+      "id": "ordered-and-unordered-lists",
+      "sourceKind": "document",
+      "source": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "bulletList",
+            "content": [
+              { "type": "listItem", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Альфа" }] }] },
+              { "type": "listItem", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Beta" }] }] }
+            ]
+          },
+          {
+            "type": "orderedList",
+            "content": [
+              { "type": "listItem", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "One" }] }] },
+              { "type": "listItem", "content": [{ "type": "paragraph", "content": [{ "type": "text", "text": "Two" }] }] }
+            ]
+          }
+        ]
+      },
+      "expectedMarkdown": "- Альфа\n- Beta\n\n1. One\n2. Two\n",
+      "expectedVisibleText": "Альфа\nBeta\nOne\nTwo",
+      "expectedRoundTripBlockTypes": ["bulletList", "orderedList"],
+      "expectedLossCodes": []
+    },
+    {
+      "id": "unicode-crlf-and-blank-lines",
+      "sourceKind": "legacyText",
+      "source": "Первая строка\r\n第二行\r\n\r\nEmoji: ✨ café\r\nfin",
+      "expectedMarkdown": "Первая строка  \n第二行\n\nEmoji: ✨ café  \nfin\n",
+      "expectedVisibleText": "Первая строка\n第二行\nEmoji: ✨ café\nfin",
+      "expectedRoundTripBlockTypes": ["paragraph", "paragraph"],
+      "expectedLossCodes": []
+    },
+    {
+      "id": "inline-marks",
+      "sourceKind": "document",
+      "source": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              { "type": "text", "text": "bold", "marks": [{ "type": "bold" }] },
+              { "type": "text", "text": " and " },
+              { "type": "text", "text": "italic", "marks": [{ "type": "italic" }] },
+              { "type": "text", "text": " and " },
+              { "type": "text", "text": "code", "marks": [{ "type": "code" }] },
+              { "type": "text", "text": " and " },
+              { "type": "text", "text": "link", "marks": [{ "type": "link", "attrs": { "href": "https://example.test" } }] }
+            ]
+          }
+        ]
+      },
+      "expectedMarkdown": "**bold** and *italic* and `code` and [link](https://example.test)\n",
+      "expectedVisibleText": "bold and italic and code and link",
+      "expectedRoundTripBlockTypes": ["paragraph"],
+      "expectedLossCodes": []
+    },
+    {
+      "id": "combined-marks-and-parenthesized-link",
+      "sourceKind": "document",
+      "source": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              { "type": "text", "text": "both", "marks": [{ "type": "bold" }, { "type": "italic" }] },
+              { "type": "text", "text": " and " },
+              { "type": "text", "text": "bold link", "marks": [{ "type": "bold" }, { "type": "link", "attrs": { "href": "https://example.test/a(b)c" } }] }
+            ]
+          }
+        ]
+      },
+      "expectedMarkdown": "***both*** and [**bold link**](https://example.test/a(b\\)c)\n",
+      "expectedVisibleText": "both and bold link",
+      "expectedRoundTripBlockTypes": ["paragraph"],
+      "expectedInlineRuns": [
+        { "text": "both", "marks": ["bold", "italic"] },
+        { "text": " and ", "marks": [] },
+        { "text": "bold link", "marks": ["bold", "link"], "href": "https://example.test/a(b)c" }
+      ],
+      "expectedLossCodes": []
+    },
+    {
+      "id": "fenced-code-blank-lines",
+      "sourceKind": "document",
+      "source": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "codeBlock",
+            "content": [{ "type": "text", "text": "alpha\n\n\nomega" }]
+          }
+        ]
+      },
+      "expectedMarkdown": "```\nalpha\n\n\nomega\n```\n",
+      "expectedVisibleText": "alpha\n\nomega",
+      "expectedRoundTripCode": "alpha\n\n\nomega",
+      "expectedRoundTripBlockTypes": ["codeBlock"],
+      "expectedLossCodes": []
+    },
+    {
+      "id": "inline-code-delimiter-run",
+      "sourceKind": "document",
+      "source": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [{ "type": "text", "text": "``", "marks": [{ "type": "code" }] }]
+          }
+        ]
+      },
+      "expectedMarkdown": "\\``` `` ```\n",
+      "expectedVisibleText": "``",
+      "expectedRoundTripBlockTypes": ["paragraph"],
+      "expectedInlineRuns": [{ "text": "``", "marks": ["code"] }],
+      "expectedLossCodes": []
+    },
+    {
+      "id": "bounded-hard-break-and-language-downgrade",
+      "sourceKind": "document",
+      "source": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "heading",
+            "attrs": { "level": 1 },
+            "content": [
+              { "type": "text", "text": "alpha" },
+              { "type": "hardBreak" },
+              { "type": "text", "text": "beta" }
+            ]
+          },
+          {
+            "type": "codeBlock",
+            "attrs": { "language": "js\n---" },
+            "content": [{ "type": "text", "text": "safe" }]
+          }
+        ]
+      },
+      "expectedMarkdown": "# alpha beta\n\n```\nsafe\n```\n",
+      "expectedVisibleText": "alpha beta\nsafe",
+      "expectedRoundTripBlockTypes": ["heading", "codeBlock"],
+      "expectedLossCodes": ["MDV1_DOCUMENT_INLINE_HARD_BREAK_DOWNGRADED", "MDV1_CODE_LANGUAGE_NORMALIZED"]
+    },
+    {
+      "id": "unsupported-block-visible-downgrade",
+      "sourceKind": "document",
+      "source": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "table",
+            "content": [
+              { "type": "paragraph", "content": [{ "type": "text", "text": "Cell text survives" }] }
+            ]
+          }
+        ]
+      },
+      "expectedMarkdown": "Cell text survives\n",
+      "expectedVisibleText": "Cell text survives",
+      "expectedRoundTripBlockTypes": ["paragraph"],
+      "expectedLossCodes": ["MDV1_DOCUMENT_UNKNOWN_BLOCK_DOWNGRADED"]
+    }
+  ]
+}
