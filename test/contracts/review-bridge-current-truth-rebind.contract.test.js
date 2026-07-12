@@ -32,13 +32,15 @@ test('active factual docs carry one non-stale closure classification', () => {
     assert.match(content, /PR `1079`/u);
     assert.match(content, /bounded Markdown V1 local-file import\/export/u);
     assert.match(content, /Apply crash reconciliation/u);
-    assert.match(content, /Phase 05 discoverability and Phase 06 capability evidence remain open/u);
+    assert.match(content, /PR `1081`/u);
+    assert.match(content, /Phase 06 capability evidence remains open/u);
     assert.match(content, /project-level cross-scene apply are deferred/u);
     assert.doesNotMatch(content, /canonical Review Packet import to real Review UI exact apply is implemented but unbound/u);
     assert.doesNotMatch(content, /Local branch pending-delivery contour `REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001`/u);
     assert.doesNotMatch(content, /Current branch local pending-delivery contour `REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001`/u);
     assert.doesNotMatch(content, /local Markdown file product flow is partial product flow/u);
     assert.doesNotMatch(content, /crash reconciliation remains the next P0/u);
+    assert.doesNotMatch(content, /Phase 05 discoverability is implemented pending delivery/u);
   }
 
   assert.match(readRepoFile('docs/HANDOFF.md'), /_Generated: 2026-07-12_/u);

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "runtime_product_acceptance",
   "baseSha": "b6c2b8fba9c303ce95055e9168d72cb0390c167e",
   "scope": {
@@ -154,6 +154,15 @@
       "status": "pass",
       "productionVulnerabilities": 0,
       "knownDevBuildAudit": "12 pre-existing findings: 1 low, 8 moderate, 3 high"
+    },
+    {
+      "command": "GitHub Actions for PR 1081",
+      "status": "pass",
+      "checks": [
+        "oss-policy",
+        "x1-runtime-parity (ubuntu-latest)",
+        "x1-runtime-parity (windows-latest)"
+      ]
     }
   ],
   "nonClaims": [
@@ -168,11 +177,11 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending",
-    "commitSha": "",
-    "pullRequest": 0,
-    "mergeSha": "",
-    "mergedAtUtc": ""
+    "status": "delivered_merged_verified",
+    "commitSha": "c8c80775f469c38be40a917955f667348b491767",
+    "pullRequest": 1081,
+    "mergeSha": "bcfde6816bd340a60a95c6a0c6cd8e738bdca15c",
+    "mergedAtUtc": "2026-07-12T22:06:58Z"
   },
-  "nextStep": "deliver and rebind Phase 05, then open Phase 06 bounded fidelity and golden acceptance from the exact merged SHA"
+  "nextStep": "open Phase 06 bounded fidelity and golden acceptance from merge SHA bcfde6816bd340a60a95c6a0c6cd8e738bdca15c"
 }
