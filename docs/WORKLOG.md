@@ -4,7 +4,7 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-12
-- Review Bridge Phase 02: implemented `REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001` from mainline base `495f349a971300708c92881def887eec2a7b85b6`; delivery is pending commit, push, PR, merge, and factual rebind.
+- Review Bridge Phase 02 delivery: PR `1075` merged feature commit `561640947f2488d0c3248d587e925aa7e59d6205` at merge SHA `314d550199858d055255fa55fc4a457f09c8f495`; the status is rebound to `delivered_merged_verified` and Phase 03 file-authority hardening is next.
 - Phase 02 runtime: exact single and same-scene batch Apply now create atomic per-operation journals with prepared, applied, receipt-written, and reconciled states; normal receipt completion reconciles immediately so later legitimate scene edits cannot create stale conflicts.
 - Phase 02 startup: canonical before/after hashes, recovery snapshot hash, and any low-level Markdown transaction intent classify not-applied, applied-without-receipt, completed receipt, or conflict without auto-reapplying.
 - Phase 02 UI and authority: the existing Review rail shows user-relevant reconciliation outcomes and one operationId-only canonical reload action; renderer path, snapshot, receipt, project-root, and write authority remain denied.

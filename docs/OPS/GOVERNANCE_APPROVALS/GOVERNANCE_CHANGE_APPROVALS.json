@@ -3692,10 +3692,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001_STATUS.json",
-      "sha256": "f5e42f48f8aa185363967e21ffbb5cc2264c36b799b8536d9b0996d627e0d94c",
-      "approvedBy": "ticket:REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001",
-      "approvedAtUtc": "2026-07-12T19:09:34.000Z",
-      "rationale": "Approve the bounded Phase 02 implementation-pending-delivery status truth for one-scene exact Apply crash journaling, startup reconciliation, operationId-only canonical reload, real process killpoints, repeated Electron evidence, editor bootstrap ordering, and sticky dirty-at-import blocking while preserving explicit nonclaims against cross-scene transactions, structural or DOCX apply, Markdown authority expansion, dependencies, cloud, and release readiness."
+      "sha256": "19630733d63e099ce210312f4d4e4cc2d390dd98cb2a63f6b2d650c78d737268",
+      "approvedBy": "ticket:REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T19:21:03.000Z",
+      "rationale": "Approve the factual Phase 02 delivery rebind to PR 1075, feature commit 561640947f2488d0c3248d587e925aa7e59d6205, merge SHA 314d550199858d055255fa55fc4a457f09c8f495, and delivered_merged_verified status; no runtime, authority, dependency, UI, compatibility, cloud, or release-readiness scope is changed."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_STATUS.json",

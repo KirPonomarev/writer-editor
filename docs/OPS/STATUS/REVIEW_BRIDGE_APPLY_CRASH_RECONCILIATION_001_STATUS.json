@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_APPLY_CRASH_RECONCILIATION_001",
-  "status": "implementation_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "type": "runtime_product_acceptance",
   "baseSha": "495f349a971300708c92881def887eec2a7b85b6",
   "scope": {
@@ -168,11 +168,11 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending",
-    "commitSha": "",
-    "pullRequest": 0,
-    "mergeSha": "",
-    "mergedAtUtc": ""
+    "status": "delivered_merged_verified",
+    "commitSha": "561640947f2488d0c3248d587e925aa7e59d6205",
+    "pullRequest": 1075,
+    "mergeSha": "314d550199858d055255fa55fc4a457f09c8f495",
+    "mergedAtUtc": "2026-07-12T19:19:50Z"
   },
-  "nextStep": "deliver Phase 02, rebind merged truth, then open Phase 03 file authority and path-boundary hardening"
+  "nextStep": "open Phase 03 file authority and path-boundary hardening from merge SHA 314d550199858d055255fa55fc4a457f09c8f495"
 }
