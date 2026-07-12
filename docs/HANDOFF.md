@@ -1,6 +1,6 @@
 # HANDOFF (Yalken Writer)
 
-_Generated: 2026-07-04_
+_Generated: 2026-07-12_
 
 ## Start Here
 - Active execution canon resolver: `docs/OPS/STATUS/CANON_STATUS.json`
@@ -72,7 +72,9 @@ _Generated: 2026-07-04_
 - Local JSON review packet product entry is bound by `REVIEW_BRIDGE_LOCAL_PACKET_PRODUCT_ENTRY_001_STATUS.json`: Review menu exposes Import Review Packet and Clear Review Session, `cmd.project.review.importLocalPacket` owns dialog/read/parse in main, renderer sends only `requestId`, and successful import opens Review/Comments through canonical runtime command handling.
 - Local packet intake rejects imported write-evidence fields such as receipts/applied result fields and restats the selected file before read.
 - This local packet entry is session/preview wiring only; it does not write manuscript truth and does not authorize apply.
-- Current branch local pending-delivery contour `REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001` adds `cmd.project.review.exportLocalPacket` as a bounded Review menu export path: main reads active `revisionSession.reviewGraph` only, revalidates via `buildRevisionPacketPreview`, resolves the save path in main, writes one external JSON review packet through `writeFileAtomic`, keeps renderer payload authority at requestId only, and leaves `sourceViewState` excluded by default.
+- Local Review Packet export is delivered on current mainline via PR `1070` at merge SHA `a4583bb79e72e5c03b4acd1e1340c80af31a85ca`; `REVIEW_BRIDGE_LOCAL_PACKET_EXPORT_001_STATUS.json` is rebound to `delivered_merged_verified`.
+- `cmd.project.review.exportLocalPacket` is a bounded Review menu export path: main reads active `revisionSession.reviewGraph` only, revalidates via `buildRevisionPacketPreview`, resolves the save path in main, writes one external JSON review packet through `writeFileAtomic`, keeps renderer payload authority at requestId only, and leaves `sourceViewState` excluded by default.
+- Current closure classification: DOCX minimal export, DOCX content-only safe-create import, TXT flows, Review Packet import, Review Packet export, and the exact-apply core are delivered; canonical Review Packet import to real Review UI exact apply is implemented but unbound; DOCX Review is evidence only; the local Markdown file product flow is partial product flow; Word and Google artifact claims, Mindmap export, and project-level cross-scene apply are deferred.
 - Local JSON review packet E2E proof is bound by `REVIEW_BRIDGE_LOCAL_PACKET_E2E_PRODUCT_PROOF_001_STATUS.json`, merged via PR `1011` at merge SHA `a8ea40692afb3c2ef9c30f8152315f13375d3f48`: it proves default main-owned local file intake through the menu command handler, Review/Comments opening, exact single apply after import with receipt and recovery evidence, same-scene batch exact apply after import, mixed structural packet manual-only behavior, and clear-session empty surface.
 - This E2E proof changed tests and status docs only; it did not change production runtime code and did not expand import/export MVP scope.
 - DOCX review preflight is delivered and merged via PR `1013` at merge SHA `34895b960a723b816ccb7f50f171854675a43969`; it is tracked by `REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json`.
