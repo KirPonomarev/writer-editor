@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "artifactPath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-  "normalizedHashSha256": "4529a33718cf15d5df963cc73dc690a3c387b75793c2cd1d7317ac5b0375040f",
-  "artifactBytesSha256": "08633278d53e1a121fe51e064b1c391a92ff801da7a64cd661b6c9bb4895424f",
+  "normalizedHashSha256": "81fe1666c4a60d739bf304043f5c19036633b836f943971c5d630f62471e861f",
+  "artifactBytesSha256": "764a8710adf44e9ed585455b2a8fdac2677cfe652805a07e179e044bd2ac7324",
   "snapshotId": "menu-default-desktop-minimal",
   "hashMethod": "sha256(raw-file-bytes)",
-  "lockedAt": "2026-04-10T21:04:03.823Z",
-  "lockedFromCommit": "7a765176c3ef341cb57dd3658a19c236e66e16d8"
+  "lockedAt": "2026-07-12T17:34:36.114Z",
+  "lockedFromCommit": "54ef43faae8c41be17765c6b0a0fa8688ebb4f95"
 }

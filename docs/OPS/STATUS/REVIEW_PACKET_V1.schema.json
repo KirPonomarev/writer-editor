@@ -1,0 +1,307 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:yalken:review-packet:v1",
+  "title": "Yalken Review Packet V1",
+  "description": "Canonical offline transport for ReviewGraph data. The local project remains the only write authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "packetVersion",
+    "projectId",
+    "sessionId",
+    "baselineHash",
+    "reviewPacket"
+  ],
+  "properties": {
+    "packetVersion": {
+      "const": "review-packet.v1"
+    },
+    "projectId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sessionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "baselineHash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "updatedAt": {
+      "type": "string"
+    },
+    "reviewPacket": {
+      "$ref": "#/$defs/reviewPacket"
+    }
+  },
+  "$defs": {
+    "reviewPacket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commentThreads",
+        "commentPlacements",
+        "textChanges",
+        "structuralChanges",
+        "diagnosticItems",
+        "decisionStates"
+      ],
+      "properties": {
+        "commentThreads": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/commentThread"
+          }
+        },
+        "commentPlacements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/commentPlacement"
+          }
+        },
+        "textChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/textChange"
+          }
+        },
+        "structuralChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/structuralChange"
+          }
+        },
+        "diagnosticItems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/diagnosticItem"
+          }
+        },
+        "decisionStates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/decisionState"
+          }
+        }
+      }
+    },
+    "targetScope": {
+      "type": "object",
+      "required": [
+        "type",
+        "id"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "commentThread": {
+      "type": "object",
+      "required": [
+        "threadId",
+        "messages"
+      ],
+      "properties": {
+        "threadId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "messageId",
+              "body"
+            ],
+            "properties": {
+              "messageId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "body": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "commentPlacement": {
+      "type": "object",
+      "required": [
+        "placementId",
+        "threadId",
+        "targetScope"
+      ],
+      "properties": {
+        "placementId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "threadId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "targetScope": {
+          "$ref": "#/$defs/targetScope"
+        }
+      },
+      "additionalProperties": true
+    },
+    "textChange": {
+      "type": "object",
+      "required": [
+        "changeId",
+        "targetScope",
+        "match",
+        "replacementText"
+      ],
+      "properties": {
+        "changeId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "targetScope": {
+          "$ref": "#/$defs/targetScope"
+        },
+        "match": {
+          "type": "object",
+          "required": [
+            "kind",
+            "quote"
+          ],
+          "properties": {
+            "kind": {
+              "const": "exact"
+            },
+            "quote": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": true
+        },
+        "replacementText": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "structuralChange": {
+      "type": "object",
+      "required": [
+        "structuralChangeId",
+        "kind",
+        "targetScope"
+      ],
+      "properties": {
+        "structuralChangeId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "targetScope": {
+          "$ref": "#/$defs/targetScope"
+        }
+      },
+      "additionalProperties": true
+    },
+    "diagnosticItem": {
+      "type": "object",
+      "required": [
+        "diagnosticId",
+        "severity",
+        "message"
+      ],
+      "properties": {
+        "diagnosticId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "decisionState": {
+      "type": "object",
+      "required": [
+        "decisionId",
+        "itemKind",
+        "itemId",
+        "status"
+      ],
+      "properties": {
+        "decisionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "itemKind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "itemId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "x-runtimeValidator": "validateRevisionSession",
+  "x-authority": {
+    "transportOnly": true,
+    "rendererWriteAuthority": false,
+    "projectWriteAuthority": false,
+    "forbiddenExternalFields": [
+      "applyOps",
+      "contour03Plan",
+      "filePath",
+      "lastExactTextApplyResult",
+      "outPath",
+      "path",
+      "plan",
+      "planPreview",
+      "projectRoot",
+      "projectSnapshot",
+      "receipt",
+      "receipts",
+      "recovery",
+      "recoveryPath",
+      "recoveryReference",
+      "revisionSession",
+      "reviewSurface",
+      "scenePath",
+      "scenePathBySceneId",
+      "sourcePath",
+      "writeEffects"
+    ]
+  }
+}

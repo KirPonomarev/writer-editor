@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "snapshotId": "menu-default-desktop-minimal",
-  "normalizedHashSha256": "4529a33718cf15d5df963cc73dc690a3c387b75793c2cd1d7317ac5b0375040f",
-  "generatedAt": "2026-04-10T21:04:03.816Z",
-  "generatedFromCommit": "7a765176c3ef341cb57dd3658a19c236e66e16d8",
+  "normalizedHashSha256": "81fe1666c4a60d739bf304043f5c19036633b836f943971c5d630f62471e861f",
+  "generatedAt": "2026-07-12T17:34:36.110Z",
+  "generatedFromCommit": "54ef43faae8c41be17765c6b0a0fa8688ebb4f95",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
@@ -20,10 +20,25 @@
         "en": "Document",
         "ru": "Документ"
       },
+      "menu.file.exportAllScenesTxt": {
+        "base": "Экспорт TXT всех сцен",
+        "en": "Export All Scenes TXT",
+        "ru": "Экспорт TXT всех сцен"
+      },
+      "menu.file.exportCurrentSceneTxt": {
+        "base": "Экспорт TXT текущей сцены",
+        "en": "Export Current Scene TXT",
+        "ru": "Экспорт TXT текущей сцены"
+      },
       "menu.file.exportDocx": {
         "base": "Экспорт DOCX",
         "en": "Export DOCX",
         "ru": "Экспорт DOCX"
+      },
+      "menu.file.exportSelectedScenesTxt": {
+        "base": "Экспорт TXT выбранных сцен",
+        "en": "Export Selected Scenes TXT",
+        "ru": "Экспорт TXT выбранных сцен"
       },
       "menu.file.open": {
         "base": "Открыть проект...",
@@ -79,6 +94,26 @@
         "base": "Review",
         "en": "Review",
         "ru": "Ревью"
+      },
+      "menu.review.clearSession": {
+        "base": "Clear Review Session",
+        "en": "Clear Review Session",
+        "ru": "Очистить review session"
+      },
+      "menu.review.exportLocalPacket": {
+        "base": "Export Review Packet",
+        "en": "Export Review Packet",
+        "ru": "Экспортировать review packet"
+      },
+      "menu.review.importLocalPacket": {
+        "base": "Import Review Packet",
+        "en": "Import Review Packet",
+        "ru": "Импортировать review packet"
+      },
+      "menu.review.openDocxReviewPreviewSession": {
+        "base": "Open DOCX Review",
+        "en": "Open DOCX Review",
+        "ru": "Открыть DOCX review"
       },
       "menu.review.openMode": {
         "base": "Open Review Mode",
@@ -224,10 +259,17 @@
   ],
   "commands": [
     "cmd.project.export.docxMin",
+    "cmd.project.exportAllScenesTxtV1",
+    "cmd.project.exportCurrentSceneTxtV1",
+    "cmd.project.exportSelectedScenesTxtV1",
     "cmd.project.format.alignLeft",
     "cmd.project.insert.addCard",
     "cmd.project.open",
     "cmd.project.plan.switchMode",
+    "cmd.project.review.clearSession",
+    "cmd.project.review.exportLocalPacket",
+    "cmd.project.review.importLocalPacket",
+    "cmd.project.review.openDocxReviewPreviewSession",
     "cmd.project.review.openRecovery",
     "cmd.project.review.switchMode",
     "cmd.project.save",
@@ -325,6 +367,93 @@
           "id": "file-export-docx",
           "label": "Экспорт DOCX",
           "labelKey": "menu.file.exportDocx",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_disabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.exportCurrentSceneTxtV1",
+          "disabledReasonCode": "PROFILE_GATED",
+          "enabledWhenAst": {
+            "name": "hasDocument",
+            "op": "flag"
+          },
+          "id": "file-export-current-scene-txt",
+          "label": "Экспорт TXT текущей сцены",
+          "labelKey": "menu.file.exportCurrentSceneTxt",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_disabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.exportSelectedScenesTxtV1",
+          "disabledReasonCode": "PROFILE_GATED",
+          "enabledWhenAst": {
+            "name": "hasDocument",
+            "op": "flag"
+          },
+          "id": "file-export-selected-scenes-txt",
+          "label": "Экспорт TXT выбранных сцен",
+          "labelKey": "menu.file.exportSelectedScenesTxt",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_disabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.exportAllScenesTxtV1",
+          "disabledReasonCode": "PROFILE_GATED",
+          "enabledWhenAst": {
+            "name": "hasDocument",
+            "op": "flag"
+          },
+          "id": "file-export-all-scenes-txt",
+          "label": "Экспорт TXT всех сцен",
+          "labelKey": "menu.file.exportAllScenesTxt",
           "mode": [
             "offline"
           ],
@@ -1167,6 +1296,99 @@
       "id": "review",
       "items": [
         {
+          "canonicalCmdId": "cmd.project.review.importLocalPacket",
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "args": [],
+            "op": "all"
+          },
+          "id": "review-import-local-packet",
+          "label": "Import Review Packet",
+          "labelKey": "menu.review.importLocalPacket",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X0",
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.review.exportLocalPacket",
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "args": [],
+            "op": "all"
+          },
+          "id": "review-export-local-packet",
+          "label": "Export Review Packet",
+          "labelKey": "menu.review.exportLocalPacket",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X0",
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.review.openDocxReviewPreviewSession",
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "args": [],
+            "op": "all"
+          },
+          "id": "review-open-docx-review-preview-session",
+          "label": "Open DOCX Review",
+          "labelKey": "menu.review.openDocxReviewPreviewSession",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X0",
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
           "canonicalCmdId": "cmd.project.review.switchMode",
           "disabledReasonCode": null,
           "enabledWhenAst": {
@@ -1176,6 +1398,37 @@
           "id": "review-mode",
           "label": "Open Review Mode",
           "labelKey": "menu.review.openMode",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X0",
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.review.clearSession",
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "args": [],
+            "op": "all"
+          },
+          "id": "review-clear-session",
+          "label": "Clear Review Session",
+          "labelKey": "menu.review.clearSession",
           "mode": [
             "offline"
           ],

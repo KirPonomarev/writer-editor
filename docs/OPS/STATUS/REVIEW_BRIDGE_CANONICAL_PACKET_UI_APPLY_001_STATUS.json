@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "taskId": "REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
+  "status": "implemented_verified_pending_delivery",
+  "type": "runtime_product_acceptance",
+  "baseSha": "54ef43faae8c41be17765c6b0a0fa8688ebb4f95",
+  "scope": {
+    "packetVersion": "review-packet.v1",
+    "localJsonReviewPacketOnly": true,
+    "desktopFirst": true,
+    "offlineFirst": true,
+    "mainOwnedApplyPlan": true,
+    "rendererIntentOnly": true,
+    "singleSceneExactTextOnly": true,
+    "sameSceneBatchLimit": 10,
+    "uiRedesign": false,
+    "newDependenciesAdded": false
+  },
+  "implementation": {
+    "canonicalSchemaArtifact": "REVIEW_PACKET_V1.schema.json",
+    "strictPacketVersion": true,
+    "unversionedCanonicalPacketNormalized": true,
+    "legacyReviewSurfaceReadyPlanRejected": true,
+    "unknownReviewGraphCollectionsRejected": true,
+    "externalWriteAuthorityRejectedRecursively": true,
+    "currentSavedDocumentReadInMain": true,
+    "currentBaselineHashComputedFromDisk": true,
+    "planRefreshedOnImportAndReviewQuery": true,
+    "staleAsyncPlanSessionTokenGuard": true,
+    "blockedReasonVisibleInExistingReviewSurface": true,
+    "safeWriterReused": true,
+    "atomicWriteReused": true,
+    "recoverySnapshotRequired": true,
+    "receiptVisibleAfterApply": true,
+    "editorReloadedAfterApply": true,
+    "nativeMenuArtifactRegenerated": true,
+    "nativeMenuUndefinedActionArgOmitted": true
+  },
+  "positiveAcceptance": [
+    "An active canonical Review session is exported through the native Review menu, main-owned Save As dialog, canonical V1 serializer, and atomic external write.",
+    "The exported canonical Review Packet V1 is selected again through the native Review menu and main-owned local picker.",
+    "Import opens the existing Review surface without mutating the manuscript.",
+    "Main rebuilds one ready exact-text plan from the active project, current saved document, and imported change identifier.",
+    "The visible Apply button sends only requestId and changeId through the production command bridge.",
+    "Apply changes the canonical scene through the existing safe writer, reloads the editor, exposes a receipt, and leaves a readable recovery snapshot containing the pre-apply text.",
+    "The Electron acceptance run observes zero HTTP, HTTPS, WS, or WSS requests."
+  ],
+  "negativeAcceptance": [
+    "Wrong project blocks with zero enabled Apply actions and zero disk mutation.",
+    "Wrong scene blocks with zero enabled Apply actions and zero disk mutation.",
+    "Stale baseline blocks with zero enabled Apply actions and zero disk mutation.",
+    "No match blocks with zero enabled Apply actions and zero disk mutation.",
+    "Duplicate match blocks with zero enabled Apply actions and zero disk mutation.",
+    "Malformed JSON does not activate a Review session and does not mutate disk.",
+    "Closed Review session rejects Apply and does not mutate disk.",
+    "Dirty editor blocks Apply while preserving unsaved editor text and canonical disk text.",
+    "A delayed plan refresh from an older imported session cannot overwrite a newer active session."
+  ],
+  "authorityBoundary": {
+    "rendererAllowedSingleApplyPayloadKeys": [
+      "requestId",
+      "changeId"
+    ],
+    "rendererAllowedBatchApplyPayloadKeys": [
+      "requestId",
+      "changeIds"
+    ],
+    "externalPacketForbiddenAuthorityExamples": [
+      "applyOps",
+      "path",
+      "plan",
+      "projectRoot",
+      "projectSnapshot",
+      "receipt",
+      "recovery",
+      "revisionSession",
+      "reviewSurface",
+      "scenePath",
+      "writeEffects"
+    ],
+    "projectTruth": "canonical local project files",
+    "reviewSurfaceTruth": "in-memory preview and receipt visibility only"
+  },
+  "auditFindingsResolved": [
+    {
+      "finding": "The checked-in native menu artifact was stale and omitted delivered Review commands.",
+      "resolution": "The canonical menu snapshot, normalized runtime artifact, and artifact lock were regenerated from the current menu source."
+    },
+    {
+      "finding": "Menu items without actionArg sent an own undefined field into strict command payload validation.",
+      "resolution": "Configured menu payload construction now omits actionArg unless a non-empty string exists."
+    },
+    {
+      "finding": "Concurrent asynchronous plan refreshes could attach an older session plan to a newer session.",
+      "resolution": "Plan attachment now requires the active sessionId and sourcePacketHash to match the captured refresh token."
+    },
+    {
+      "finding": "The default editable roman section kind was excluded from otherwise bounded current-document exact apply.",
+      "resolution": "Single and same-file batch exact apply accept scene, chapter-file, and roman-section while materials, reference, mindmap, print, external, and cross-scene targets remain blocked."
+    },
+    {
+      "finding": "Two Sector M DOCX toolbar assertions still expected a pre-confirmation command shape and exact whitespace from an older mainline.",
+      "resolution": "The test-only assertions now verify the current confirmed intent payload and semantic runtime command call without changing DOCX production behavior."
+    }
+  ],
+  "machineChecks": [
+    {
+      "command": "node --check src/main.js",
+      "status": "pass"
+    },
+    {
+      "command": "node --test canonical packet, review mutate port, and Review surface UI targeted set",
+      "status": "pass",
+      "tests": 64
+    },
+    {
+      "command": "node test/unit/sector-m-review-bridge-canonical-ui-e2e-smoke.mjs",
+      "status": "pass",
+      "positiveCases": 1,
+      "negativeCases": 8,
+      "nativeExportImportRoundtrip": true
+    },
+    {
+      "command": "node test/unit/sector-m-review-bridge-canonical-ui-e2e-smoke.mjs repeated ten times",
+      "status": "pass",
+      "runs": 10
+    },
+    {
+      "command": "node --test active Review Bridge, hostile DOCX, menu, command bus, preload, and Review UI regression set",
+      "status": "pass",
+      "tests": 119
+    },
+    {
+      "command": "npm run -s build:renderer",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s dev:fast",
+      "status": "pass",
+      "tests": 28
+    },
+    {
+      "command": "npm run -s test:sector-m",
+      "status": "pass",
+      "tests": 340,
+      "passed": 285,
+      "skipped": 55
+    },
+    {
+      "command": "npm run -s test:ops",
+      "status": "pass"
+    },
+    {
+      "command": "npm run -s oss:policy",
+      "status": "pass"
+    },
+    {
+      "command": "npm audit --omit=dev --audit-level=high",
+      "status": "pass",
+      "vulnerabilities": 0
+    },
+    {
+      "command": "npm audit --audit-level=high",
+      "status": "fail_existing_dev_build_advisories",
+      "vulnerabilities": 12,
+      "high": 3,
+      "moderate": 8,
+      "low": 1,
+      "notes": "Package manifests are unchanged; production dependency audit is clean."
+    },
+    {
+      "command": "npm run -s ops:mvp-boundary",
+      "status": "pass"
+    },
+    {
+      "command": "EFFECTIVE_MODE=STRICT node scripts/ops/governance-change-detection.mjs",
+      "status": "pass",
+      "missingApprovals": 0
+    },
+    {
+      "command": "node scripts/ops/check-menu-artifact-lock.mjs --mode=release",
+      "status": "pass",
+      "normalizedHash": "81fe1666c4a60d739bf304043f5c19036633b836f943971c5d630f62471e861f",
+      "artifactBytesSha256": "764a8710adf44e9ed585455b2a8fdac2677cfe652805a07e179e044bd2ac7324"
+    },
+    {
+      "command": "node --test broad Review Bridge, menu, and command bus audit set",
+      "status": "audit_complete_with_expected_historical_failures",
+      "tests": 891,
+      "behavioralPass": 884,
+      "historicalMetadataOrSupersededContractFailures": 7,
+      "worktree": "clean_after_feature_commit"
+    },
+    {
+      "command": "node --test exact planner, exact safe writer, DOCX review local-file, preview-session, and preflight post-commit set",
+      "status": "pass",
+      "tests": 38,
+      "worktree": "clean_after_feature_commit"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "historicalTestExclusions": {
+    "count": 7,
+    "classification": "not active behavioral regressions",
+    "reasons": [
+      "Five historical contour allowlist tests inspect the current branch diff against their own older binding base and reject every later contour by design.",
+      "The superseded P0 safety-kernel test still asserts that Review Bridge has no runtime wiring, which contradicts later delivered contours and current mainline truth."
+    ]
+  },
+  "nonClaims": [
+    "No DOCX tracked-change apply is claimed.",
+    "No structural auto-apply is claimed.",
+    "No comment auto-apply is claimed.",
+    "No cross-scene or multi-file transaction is claimed.",
+    "No Word or Google synchronization is claimed.",
+    "No cloud, account, authorization, or network integration is introduced.",
+    "Crash reconciliation is not claimed by this contour and remains Phase 02.",
+    "Release readiness is not claimed before delivery, crash reconciliation, file authority hardening, Markdown completion, and bounded golden acceptance."
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true,
+    "status": "pending",
+    "commitSha": null,
+    "pullRequest": null,
+    "mergeSha": null
+  },
+  "nextStep": "finish policy checks, commit, push, open PR, merge after green checks, then immediately rebind delivery truth before Phase 02"
+}

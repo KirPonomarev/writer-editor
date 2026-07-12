@@ -283,17 +283,17 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
-      "sha256": "2601a754b484426e2f93b470c4882dcf71046a09139512004043bee555aa37cf",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
-      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
-      "rationale": "Approve bounded local-file command-surface harness repair that injects computed menu command ids explicitly so full MENU_COMMAND_HANDLERS extraction remains truthful; no DOCX import widening, apply authority, storage write, receipt, recovery, readiness, or Y9 claim is introduced."
+      "sha256": "19ce9f7193f88a051b25ec89ec58f659a1ee40d5c0591b0eed12e5a12f619b70",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_GOVERNANCE_BYTE_TRUTH_REPAIR",
+      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
+      "rationale": "Rebind the pre-existing DOCX review local-file command-surface contract approval to its current mainline bytes discovered by the Phase 01 governance audit; the contract itself is unchanged in this contour and no DOCX import, apply, storage, receipt, recovery, readiness, or scope widening is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
-      "sha256": "ba6b43e9b69d10adf8987d871f94652d2b149c94fd2e8fb819cb541cc18afc65",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
-      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
-      "rationale": "Approve bounded preview-session command-surface harness repair that injects computed menu command ids explicitly so full MENU_COMMAND_HANDLERS extraction no longer false-reds on unrelated computed keys; no DOCX apply, storage write, receipt, recovery, readiness, or import-export widening is introduced."
+      "sha256": "a80b2cf9035df7f3ef7212814015872dbf764a4718213d31a6363dd24025c969",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_GOVERNANCE_BYTE_TRUTH_REPAIR",
+      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
+      "rationale": "Rebind the pre-existing DOCX review preview-session command-surface contract approval to its current mainline bytes discovered by the Phase 01 governance audit; the contract itself is unchanged in this contour and no DOCX apply, storage, receipt, recovery, readiness, or import-export widening is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",
@@ -346,10 +346,10 @@
     },
     {
       "filePath": "test/contracts/menu-config-v2.contract.test.js",
-      "sha256": "50977a41ac132180c1a351ae82d39bae90233ce533f0ff0e60a5b27930262974",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_LOCAL_FILE_ENTRY_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded menu contract update proving the Review menu exposes the separate DOCX review local-file command next to Review Packet import; no renderer redesign, toolbar redesign, safe-create import widening, dependency, network, release, or full DOCX review import claim is introduced."
+      "sha256": "847b3536dc256e7ff574e3ea531df558e7572085d73493ff4e312cc446290392",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_GOVERNANCE_BYTE_TRUTH_REPAIR",
+      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
+      "rationale": "Rebind the pre-existing menu V2 contract approval to its current mainline bytes discovered by the Phase 01 governance audit; the contract itself is unchanged in this contour and no authored menu command, renderer redesign, dependency, network, apply authority, or release claim is introduced."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json",
@@ -3195,17 +3195,17 @@
     },
     {
       "filePath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-      "sha256": "08633278d53e1a121fe51e064b1c391a92ff801da7a64cd661b6c9bb4895424f",
-      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
-      "approvedAtUtc": "2026-04-10T21:16:30.000Z",
-      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind for regenerated menu artifact."
+      "sha256": "764a8710adf44e9ed585455b2a8fdac2677cfe652805a07e179e044bd2ac7324",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
+      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
+      "rationale": "Approve regenerated canonical runtime menu artifact after the real Electron Review Packet flow proved the previous checked-in artifact omitted already-authored Review commands; this rebind adds no menu source command, dependency, UI framework, cloud, structural apply, DOCX apply, cross-scene transaction, or release-readiness claim."
     },
     {
       "filePath": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
-      "sha256": "d1e067b19a37a317273aa56ee979b8f51ed732222366dabe80527336e810117f",
-      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
-      "approvedAtUtc": "2026-04-10T21:16:30.000Z",
-      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind for regenerated menu artifact lock."
+      "sha256": "6c4d41954c372fea0331cb76ec4f3d19dea8f140797c96c801aebd5d31080fd8",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
+      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
+      "rationale": "Approve the artifact lock rebind for the regenerated current canonical menu artifact used by the native Electron Review Packet acceptance path; no menu source expansion, dependency, remote code, write-authority widening, structural apply, DOCX apply, or release-readiness claim is introduced."
     },
     {
       "filePath": "docs/OPS/STATUS/MENU_CONFIG_NORMALIZATION_SPEC_v1.json",
@@ -3216,10 +3216,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
-      "sha256": "9a0a370dadb15bbf60af8b956475fc0f59b7a1cdfd90de43ce1347b2a2fda47c",
-      "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
-      "approvedAtUtc": "2026-04-10T21:16:30.000Z",
-      "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind for regenerated snapshot registry."
+      "sha256": "035a61b5a9d47bd7acaa86411b720700c6bd900fcdf25ad240f851177edac6cc",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
+      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
+      "rationale": "Approve the frozen default menu snapshot hash rebind to current canonical menu source after native runtime artifact drift was detected by Electron acceptance; no authored command, visual structure, dependency, apply scope, or release claim is widened."
     },
     {
       "filePath": "scripts/ops/menu-config-normalize.mjs",
@@ -3272,10 +3272,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
-      "sha256": "af899cfaf440bbf3bc8d7258eac755d3f96310f2adcc5d2fe9d029c881704472",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
-      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
-      "rationale": "Approve bounded governance registry SHA rebind for current command-capability binding bytes discovered while closing Review Bridge truth repair; this is a byte-truth rebind only and does not widen command authority, capability scope, runtime behavior, dependency, network, release, or Y9."
+      "sha256": "4dec5d393d267455b87c747dfe4fee72e19996854c9cbe8e206b90a8489bfedd",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_GOVERNANCE_BYTE_TRUTH_REPAIR",
+      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
+      "rationale": "Rebind the pre-existing command-capability status approval to its current mainline bytes discovered by the Phase 01 governance audit; the status itself is unchanged in this contour and no command authority, capability scope, runtime behavior, dependency, network, release, or Y9 claim is widened."
     },
     {
       "filePath": "docs/OPS/CAPABILITIES_MATRIX.json",
@@ -3643,10 +3643,10 @@
     },
     {
       "filePath": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
-      "sha256": "f3884276ef5ba73ac4bb52139a7e3409046cd443d56b047ccbb5ddeb9f7a5884",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
-      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
-      "rationale": "Approve bounded governance registry SHA rebind for the current donor command-surface kernel contract bytes discovered while closing Review Bridge truth repair; this is a byte-truth rebind only and does not widen donor kernel expectations, command scope, publication authority, readiness, persistence, storage, receipt, recovery, or import-export scope."
+      "sha256": "d8729d5d29c78da37058b5a6993ae8c512526421ce96ed3b234aafab929c28de",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_GOVERNANCE_BYTE_TRUTH_REPAIR",
+      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
+      "rationale": "Rebind the pre-existing donor command-surface kernel contract approval to its current mainline bytes discovered by the Phase 01 governance audit; the contract itself is unchanged in this contour and no donor kernel expectation, command scope, publication authority, readiness, persistence, storage, receipt, recovery, or import-export scope is widened."
     },
     {
       "filePath": "test/contracts/review-bridge-release-claim-publication-effect-binding.contract.test.js",
@@ -3678,10 +3678,31 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-review-mutate-port.contract.test.js",
-      "sha256": "d18a7b81fabf7535c4c6d57530e8de302f1dd39af91a27701ddb2710b48f0c80",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
-      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
-      "rationale": "Approve bounded public-boundary review mutate contract update proving importLocalPacket remains public while importPacket is no longer public on either the UI command bridge or public menu handlers; no new import authority, apply authority, DOCX apply, readiness, or import-export widening is introduced."
+      "sha256": "cf6704b3f929f9fcaa449f27fc2bd5b9e9852c6db5e040ab7fbf551455762af2",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
+      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
+      "rationale": "Approve bounded Review Packet V1 import, export-roundtrip, main-owned plan preparation, stale-session race, authority-denial, exact apply, batch apply, recovery, receipt, dirty, stale, duplicate, and no-match contract coverage; renderer authority remains identifier-only and no DOCX apply, structural apply, cross-scene write, dependency, cloud, or release-readiness claim is introduced."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_STATUS.json",
+      "sha256": "e0e14461192762edb4b2b8dae0c9cf538686ec889c8081367f30c9cf6f277dfb",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
+      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
+      "rationale": "Approve the pending-delivery Phase 01 status artifact for canonical Review Packet V1 to real Review UI exact apply, with native Electron positive and negative evidence, explicit crash-reconciliation deferral, and no structural apply, DOCX tracked-change apply, cross-scene transaction, cloud, dependency, or release-readiness claim."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_PACKET_V1.schema.json",
+      "sha256": "61565c0746b5c6a3e67b35a9b3724ce5ff014a510fcf513ee3e066597c038e8b",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
+      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
+      "rationale": "Approve the canonical offline Review Packet V1 transport schema with strict top-level and ReviewGraph collection bounds plus explicit external write-authority denial; the schema grants no renderer write authority, project write authority, DOCX apply, structural apply, cloud, or release authority."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-canonical-packet-ui-apply.contract.test.js",
+      "sha256": "c9003aff0d65eb52fdad4137495ea39f50599f0ccd14f729b7c4c3b7902e739a",
+      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001",
+      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
+      "rationale": "Approve the bounded schema, pending-delivery status, main-owned disk-plan derivation, stale-session token guard, and identifier-only visible Apply contract; no renderer write authority, UI redesign, new dependency, structural apply, DOCX apply, cross-scene transaction, or release-readiness claim is introduced."
     }
   ]
 }
