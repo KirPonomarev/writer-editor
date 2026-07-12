@@ -289,14 +289,14 @@ test('Phase 04 export reader refuses dirty editor state before touching disk', a
   await assert.rejects(reader, /Unsaved current scene state/u);
 });
 
-test('Phase 04 status and active docs state bounded pending-delivery truth', () => {
+test('Phase 04 status and active docs state exact merged-delivery truth', () => {
   const status = JSON.parse(fs.readFileSync(STATUS_PATH, 'utf8'));
   const context = fs.readFileSync(path.join(ROOT, 'docs', 'CONTEXT.md'), 'utf8');
   const handoff = fs.readFileSync(path.join(ROOT, 'docs', 'HANDOFF.md'), 'utf8');
   const worklog = fs.readFileSync(path.join(ROOT, 'docs', 'WORKLOG.md'), 'utf8');
 
   assert.equal(status.taskId, 'REVIEW_BRIDGE_MARKDOWN_PRODUCT_COMPLETION_001');
-  assert.equal(status.status, 'implemented_verified_pending_delivery');
+  assert.equal(status.status, 'delivered_merged_verified');
   assert.equal(status.baseSha, 'a02bb8c10b38aeffe5fbb0f9601272fe2a00ffe2');
   assert.equal(status.scope.canonicalSavedSceneExport, true);
   assert.equal(status.scope.canonicalDocV2SafeCreate, true);
@@ -305,13 +305,18 @@ test('Phase 04 status and active docs state bounded pending-delivery truth', () 
   assert.equal(status.lossPolicy.serializerReportIsAuthoritative, true);
   assert.equal(status.lossPolicy.warningDefaultAction, 'cancel');
   assert.equal(status.goldenCases.length, 10);
-  assert.equal(status.delivery.status, 'pending');
-  assert.equal(status.delivery.commitSha, '');
-  assert.equal(status.delivery.pullRequest, 0);
+  assert.equal(status.delivery.status, 'delivered_merged_verified');
+  assert.equal(status.delivery.commitSha, 'd73c4b943774e0735e7d32835eb82849d1806583');
+  assert.equal(status.delivery.pullRequest, 1079);
+  assert.equal(status.delivery.mergeSha, 'ff3ff47757e86c116f8f739804e3ffd2665535f0');
+  assert.equal(status.delivery.mergedAtUtc, '2026-07-12T21:34:49Z');
   assert.ok(status.nonClaims.some((claim) => claim.includes('not full CommonMark or GFM')));
 
   for (const source of [context, handoff, worklog]) {
     assert.ok(source.includes('Phase 04 Markdown product completion'));
-    assert.ok(source.includes('pending delivery'));
+    assert.ok(source.includes('PR `1079`'));
+    assert.ok(source.includes('ff3ff47757e86c116f8f739804e3ffd2665535f0'));
   }
+  assert.equal(context.includes('Phase 04 Markdown product completion is implemented pending delivery'), false);
+  assert.equal(handoff.includes('Phase 04 Markdown completion is implemented pending delivery'), false);
 });

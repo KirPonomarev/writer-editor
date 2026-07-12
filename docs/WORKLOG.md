@@ -4,7 +4,8 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-12
-- Review Bridge Phase 04 implementation is locally verified pending delivery: visible palette commands now bind the main-owned Markdown local-file preview, one-use-token accept, and Save As authority routes; renderer sends request metadata only and performs no editor mutation before safe-create acceptance.
+- Review Bridge Phase 04 delivery: PR `1079` merged feature commit `d73c4b943774e0735e7d32835eb82849d1806583` at merge SHA `ff3ff47757e86c116f8f739804e3ffd2665535f0`; status is rebound to `delivered_merged_verified`, and Phase 05 discoverability and honest labels are next.
+- Review Bridge Phase 04 implementation: visible palette commands bind the main-owned Markdown local-file preview, one-use-token accept, and Save As authority routes; renderer sends request metadata only and performs no editor mutation before safe-create acceptance.
 - Phase 04 canonical truth: import compiles Markdown into canonical `doc-v2` scene content, while export reads the saved canonical scene from disk and serializes document IR instead of reparsing plain editor text; dirty, autosaving, unsaved, and non-scene export sources fail closed.
 - Phase 04 fidelity proof: ten deterministic goldens cover literal block markers, widened and blank-line-preserving code fences, flat lists, Unicode, CRLF, combined marks, safe parenthesized links, inline backtick runs, and visible bounded downgrades; serializer loss evidence drives a cancel-default main warning before lossy writes.
 - Phase 04 scope truth: HTML and CSS remain unchanged, no dependency or network path is added, and full CommonMark/GFM, final menu labels and alias cleanup, unified capability evidence, DOCX apply, structural apply, cross-scene transactions, Word/Google support, and release readiness are not claimed.
