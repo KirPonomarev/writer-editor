@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "revision-bridge.import-export-acceptance.v1",
+  "acceptanceId": "CONTENT_IMPORT_EXPORT_V1_2026_07_12",
+  "baseSha": "5456f7f3dd689559d63bb10181e8998464540f72",
+  "status": "pass_pending_delivery",
+  "gate": "A_CONTENT_IMPORT_EXPORT_V1",
+  "outcomes": {
+    "docxMinimalExport": "bounded_pass",
+    "docxSelfExportContentPreview": "bounded_pass",
+    "docxContentSafeCreate": "pass",
+    "txtImportSafeCreate": "pass",
+    "txtCurrentSelectedAllExport": "pass",
+    "markdownLocalFileImport": "pass",
+    "markdownCanonicalExport": "bounded_pass",
+    "mainOwnedFileAuthority": "pass",
+    "visibleProductCommands": "pass"
+  },
+  "hashes": {
+    "docx-minimal-export-v1.docx": "2897ba060f74e1878344aec35f121f8f77e41dc6104a7abb8c4898b0e487d03a",
+    "txt-content-v1.txt": "1e8d973edeb9871226e4b495a1fc1bef02f8c5e7102e341cfb9d8d0003e25919",
+    "markdown-content-v1.md": "7e69a45fc5b374733b745a2e6f3f1ed48af0e8d5124bb37de277186bca2fe66d"
+  },
+  "actualCommands": [
+    "node scripts/ops/review-bridge-golden-set.mjs",
+    "node --test test/contracts/revision-bridge-bounded-fidelity-golden-acceptance.contract.test.js",
+    "node --test test/unit/docx-min-builder.test.js test/unit/txt-import-local-file-preview.test.js test/contracts/revision-bridge-markdown-product-completion.contract.test.js",
+    "npm test"
+  ],
+  "security": ["bounded reads", "restat replacement detection", "project-internal target denial", "symlink denial", "atomic external writes", "no network"],
+  "nonClaims": ["perfect DOCX fidelity", "full CommonMark or GFM", "PDF", "EPUB", "HTML export", "cloud", "accounts", "sync", "release packaging"],
+  "knownLimitations": ["DOCX content import is plain-text-oriented", "DOCX known unsupported parts produce losses", "TXT is UTF-8 only", "Markdown unsupported nodes require explicit downgrade consent", "delivery merge and factual rebind are pending"]
+}

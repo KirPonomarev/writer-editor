@@ -327,7 +327,7 @@ export const DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES = Object.freeze({
   UNSUPPORTED_STORY_COUNT_EXCEEDED: 'DOCX_UNSUPPORTED_STORY_COUNT_BUDGET_EXCEEDED',
   UNKNOWN_PART_PRESENT: 'DOCX_UNKNOWN_PART_PRESENT',
   DIRECTORY_ENTRY_PRESENT: 'DOCX_DIRECTORY_ENTRY_PRESENT',
-  RELATIONSHIP_PART_PRESENT: 'DOCX_EXTERNAL_RELATIONSHIP_PRESENT',
+  RELATIONSHIP_PART_PRESENT: 'DOCX_RELATIONSHIP_PART_PRESENT',
   UNSUPPORTED_STORY_PRESENT: 'DOCX_UNSUPPORTED_STORY_MARKER_PRESENT',
   CLEAN_INVENTORY: 'DOCX_PACKAGE_CLEAN',
 });
@@ -345,6 +345,7 @@ export const DOCX_PART_POLICY_DIAGNOSTIC_CODES = Object.freeze({
   PACKAGE_REJECTED: 'DOCX_PART_POLICY_PACKAGE_REJECTED',
   MAIN_DOCUMENT_MISSING: 'DOCX_PART_POLICY_MAIN_DOCUMENT_MISSING',
   MAIN_DOCUMENT_DUPLICATE: 'DOCX_PART_POLICY_MAIN_DOCUMENT_DUPLICATE',
+  RELATIONSHIP_DIAGNOSTICS_ONLY: 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY',
   RELATIONSHIP_REQUIRES_FUTURE_PARSER: 'DOCX_PART_POLICY_RELATIONSHIP_REQUIRES_FUTURE_PARSER',
   UNSUPPORTED_STORY_DIAGNOSTICS_ONLY: 'DOCX_PART_POLICY_UNSUPPORTED_STORY_DIAGNOSTICS_ONLY',
   UNKNOWN_PART_DIAGNOSTICS_ONLY: 'DOCX_PART_POLICY_UNKNOWN_PART_DIAGNOSTICS_ONLY',
@@ -377,7 +378,7 @@ const DOCX_PART_POLICY_KNOWN_SUPPORT_PARTS = [
 
 const DOCX_PART_POLICY_DEGRADED_CATEGORY_CODES = Object.freeze({
   mediaPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY,
-  relationshipPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_REQUIRES_FUTURE_PARSER,
+  relationshipPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY,
   unsupportedStoryPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY,
   unknownPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNKNOWN_PART_DIAGNOSTICS_ONLY,
   directoryPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY,
@@ -1512,11 +1513,20 @@ function docxHostileFileGateInflatedDeclarationText(bytes, entry) {
   return {
     text: Buffer.from(contentBytes.subarray(0, DOCX_HOSTILE_FILE_GATE_BUDGETS.maxDeclarationScanBytes)).toString('utf8'),
     truncated: contentBytes.length > DOCX_HOSTILE_FILE_GATE_BUDGETS.maxDeclarationScanBytes,
+    contentBytes,
   };
 }
 
 function docxHostileFileGateXmlCandidate(entryId) {
   return /\.xml$/iu.test(entryId) || /\.rels$/iu.test(entryId);
+}
+
+function docxHostileFileGateRelationshipTargetModeBlocked(xmlText) {
+  const assignments = xmlText.match(/\bTargetMode\s*=/giu) || [];
+  if (assignments.length === 0) return false;
+  const values = Array.from(xmlText.matchAll(/\bTargetMode\s*=\s*(["'])([^"']*)\1/giu));
+  if (values.length !== assignments.length) return true;
+  return values.some((match) => match[2].trim().toLowerCase() !== 'internal');
 }
 
 function docxHostileFileGateCompressionRatioExceeded(entry) {
@@ -1596,17 +1606,6 @@ export function inspectDocxHostileFileGateFromZipBytes(input) {
   if (!materialized.ok) return docxHostileFileGateFailureFromMaterializer(materialized);
   const inspection = inspectDocxPackageInventory(materialized.inventory);
 
-  const suspiciousRelationship = inspection.diagnostics.find((diagnostic) => (
-    diagnostic.code === DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.RELATIONSHIP_PART_PRESENT
-  ));
-  if (suspiciousRelationship) {
-    return docxHostileFileGateBlockedResult(
-      DOCX_HOSTILE_FILE_GATE_REASON_CODES.EXTERNAL_RELATIONSHIP_PRESENT,
-      suspiciousRelationship.entryId,
-      { kind: 'inspection', sourceCode: suspiciousRelationship.code },
-    );
-  }
-
   const metadataResult = docxHostileFileGateCentralEntries(bytes);
   if (metadataResult.failure) return docxHostileFileGateFailureFromMaterializer(metadataResult.failure);
 
@@ -1650,15 +1649,23 @@ export function inspectDocxHostileFileGateFromZipBytes(input) {
       })],
     );
   }
-  if (inspection.classification !== 'clean') {
+  const contentPreviewSafePackageCodes = new Set([
+    DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.DIRECTORY_ENTRY_PRESENT,
+    DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.RELATIONSHIP_PART_PRESENT,
+    DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_PRESENT,
+  ]);
+  const blockingPackageDiagnostic = inspection.diagnostics.find((diagnostic) => (
+    !contentPreviewSafePackageCodes.has(diagnostic.code)
+  ));
+  if (inspection.classification !== 'clean' && blockingPackageDiagnostic) {
     return docxHostileFileGateResult(
       'quarantined',
       DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED,
       [docxHostileFileGateDiagnostic(DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED, {
-        sourceCode: inspection.code,
+        sourceCode: blockingPackageDiagnostic.code,
       })],
       [docxHostileFileGateEvidence('inspection', {
-        sourceCode: inspection.code,
+        sourceCode: blockingPackageDiagnostic.code,
       })],
     );
   }
@@ -1667,6 +1674,16 @@ export function inspectDocxHostileFileGateFromZipBytes(input) {
     if (!docxHostileFileGateXmlCandidate(entry.entryId)) continue;
     const scanResult = docxHostileFileGateInflatedDeclarationText(bytes, entry);
     if (scanResult.failure) return scanResult.failure;
+    if (
+      /\.rels$/iu.test(entry.entryId)
+      && docxHostileFileGateRelationshipTargetModeBlocked(Buffer.from(scanResult.contentBytes).toString('utf8'))
+    ) {
+      return docxHostileFileGateBlockedResult(
+        DOCX_HOSTILE_FILE_GATE_REASON_CODES.EXTERNAL_RELATIONSHIP_PRESENT,
+        entry.entryId,
+        { kind: 'relationshipScan' },
+      );
+    }
     const declarationCode = docxHostileFileGateDeclarationRegionCode(scanResult);
     if (declarationCode === DOCX_HOSTILE_FILE_GATE_REASON_CODES.XML_ENTITY_DECLARATION_PRESENT) {
       return docxHostileFileGateBlockedResult(
@@ -1721,7 +1738,7 @@ const DOCX_PART_POLICY_DIAGNOSTIC_MESSAGES = Object.freeze({
   [DOCX_PART_POLICY_DIAGNOSTIC_CODES.PACKAGE_REJECTED]: 'package boundary inspection rejected the inventory',
   [DOCX_PART_POLICY_DIAGNOSTIC_CODES.MAIN_DOCUMENT_MISSING]: 'main document part is missing',
   [DOCX_PART_POLICY_DIAGNOSTIC_CODES.MAIN_DOCUMENT_DUPLICATE]: 'main document part is duplicated',
-  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_REQUIRES_FUTURE_PARSER]: 'relationship part requires a future parser',
+  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY]: 'relationship part is diagnostics-only for plain text content preview',
   [DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY]: 'unsupported story part is diagnostics-only',
   [DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNKNOWN_PART_DIAGNOSTICS_ONLY]: 'unknown part is diagnostics-only',
   [DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY]: 'directory part is diagnostics-only',
@@ -1750,16 +1767,19 @@ function docxPartPolicyDiagnostic(code, options = {}) {
 }
 
 function docxPartPolicyEligibility(decision, diagnostics) {
-  const parserRequired = diagnostics.some((diagnostic) => (
-    diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_REQUIRES_FUTURE_PARSER
-    || diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY
-    || diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNKNOWN_PART_DIAGNOSTICS_ONLY
-    || diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY
-    || diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY
-  ));
+  const contentPreviewSafeCodes = new Set([
+    DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY,
+    DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY,
+    DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY,
+    DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY,
+  ]);
+  const contentPreviewSafe = diagnostics.every((diagnostic) => contentPreviewSafeCodes.has(diagnostic.code));
   return {
     safe: true,
-    parserCandidateOnly: decision === DOCX_PART_POLICY_DECISIONS.ACCEPTED && !parserRequired,
+    parserCandidateOnly: (
+      decision === DOCX_PART_POLICY_DECISIONS.ACCEPTED
+      || decision === DOCX_PART_POLICY_DECISIONS.DEGRADED
+    ) && contentPreviewSafe,
     canCreateReviewPacket: false,
     canPreviewApply: false,
     canImportMutate: false,
@@ -1924,7 +1944,7 @@ export function classifyDocxPartPolicy(input = {}) {
   }
 
   const degradedCategories = [
-    ['relationshipPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_REQUIRES_FUTURE_PARSER],
+    ['relationshipPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY],
     ['unsupportedStoryPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY],
     ['unknownPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNKNOWN_PART_DIAGNOSTICS_ONLY],
     ['directoryPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY],
@@ -2045,13 +2065,22 @@ function docxIntakePreflightEmptyInventorySummary() {
 
 function docxIntakePreflightEligibility(gate, packageInspection, partPolicy) {
   const gatePass = gate?.ok === true && gate?.decision === 'pass';
-  const packageClean = packageInspection?.classification === 'clean';
+  const contentPreviewSafePackageCodes = new Set([
+    DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.DIRECTORY_ENTRY_PRESENT,
+    DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.RELATIONSHIP_PART_PRESENT,
+    DOCX_PACKAGE_BOUNDARY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_PRESENT,
+  ]);
+  const packageDiagnostics = Array.isArray(packageInspection?.diagnostics)
+    ? packageInspection.diagnostics
+    : [];
+  const packageSafe = packageInspection?.classification === 'clean'
+    || packageDiagnostics.every((diagnostic) => contentPreviewSafePackageCodes.has(diagnostic.code));
   const partEligibility = isPlainObject(partPolicy?.eligibility) ? partPolicy.eligibility : {};
   const parserCandidateOnly = gatePass
-    && packageClean
+    && packageSafe
     && partEligibility.parserCandidateOnly === true;
   return {
-    safe: gatePass && packageClean && partEligibility.safe === true,
+    safe: gatePass && packageSafe && partEligibility.safe === true,
     parserCandidateOnly,
     canCreateReviewPacket: false,
     canPreviewApply: false,
@@ -2142,7 +2171,7 @@ export function buildDocxIntakePreflightReportFromZipBytes(input) {
   ]);
 
   return {
-    ok: summary.status === 'accepted',
+    ok: summary.eligibility.parserCandidateOnly === true,
     schemaVersion: DOCX_INTAKE_PREFLIGHT_REPORT_SCHEMA,
     type: DOCX_INTAKE_PREFLIGHT_REPORT_TYPE,
     status: summary.status,
@@ -3710,7 +3739,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
   const preflightSummary = docxContentPreviewPreflightSummary(preflight);
   if (
     preflight?.ok !== true
-    || preflightSummary.status !== 'accepted'
+    || !['accepted', 'degraded'].includes(preflightSummary.status)
     || preflightSummary.gatePass !== true
     || preflightSummary.parserCandidateOnly !== true
   ) {
@@ -3846,7 +3875,13 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     preflightSummary,
     parseAttempted: true,
     parseCompleted: true,
-    diagnostics: parsed.diagnostics,
+    diagnostics: [
+      ...parsed.diagnostics,
+      ...preflight.diagnostics.map((diagnostic) => ({
+        ...diagnostic,
+        message: diagnostic.message || 'DOCX package part is ignored by plain text content preview',
+      })),
+    ],
     evidence: [
       docxContentPreviewEvidence('mainDocument', {
         sourcePart: extraction.entry.entryId,
@@ -4102,7 +4137,7 @@ function docxImportPreviewValidateSourceReport(input) {
   }
   const preflightSummary = isPlainObject(input.preflightSummary) ? input.preflightSummary : {};
   if (
-    preflightSummary.status !== 'accepted'
+    !['accepted', 'degraded'].includes(preflightSummary.status)
     || preflightSummary.gatePass !== true
     || preflightSummary.parserCandidateOnly !== true
   ) {
@@ -4230,6 +4265,19 @@ function docxImportPreviewValidateParagraphs(contentPreview) {
 }
 
 function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
+  const sourceCode = typeof diagnostic.code === 'string' ? diagnostic.code : '';
+  if (sourceCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY) {
+    return { code: 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED', category: 'relationship' };
+  }
+  if (sourceCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY) {
+    return { code: 'DOCX_IMPORT_PREVIEW_STORY_NOT_IMPORTED', category: 'story' };
+  }
+  if (sourceCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY) {
+    return { code: 'DOCX_IMPORT_PREVIEW_MEDIA_NOT_IMPORTED', category: 'media' };
+  }
+  if (sourceCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY) {
+    return { code: 'DOCX_IMPORT_PREVIEW_PACKAGE_DIRECTORY_IGNORED', category: 'package' };
+  }
   const tagName = typeof diagnostic.tagName === 'string' ? diagnostic.tagName : '';
   if (tagName === 'w:tbl') return { code: 'DOCX_IMPORT_PREVIEW_TABLE_NOT_IMPORTED', category: 'table' };
   if (tagName === 'w:drawing' || tagName === 'w:pict' || tagName === 'w:object') {
@@ -4265,16 +4313,24 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
   const diagnostics = Array.isArray(sourceReport.diagnostics) ? sourceReport.diagnostics : [];
   for (const diagnostic of diagnostics) {
     if (!isPlainObject(diagnostic)) continue;
-    if (diagnostic.code !== 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC') continue;
+    const knownIgnoredPart = [
+      DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY,
+      DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY,
+      DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY,
+      DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY,
+    ].includes(diagnostic.code);
+    if (diagnostic.code !== 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC' && !knownIgnoredPart) continue;
     if (items.length >= DOCX_IMPORT_PREVIEW_BOUNDS.maxLossItems) break;
     const mapped = docxImportPreviewLossCategoryForDiagnostic(diagnostic);
     items.push(docxImportPreviewLossItem(mapped.code, {
       category: mapped.category,
       severity: 'warning',
       sourceCode: diagnostic.code,
-      sourcePart: diagnostic.sourcePart || contentPreview.sourcePart,
+      sourcePart: diagnostic.sourcePart || diagnostic.entryId || contentPreview.sourcePart,
       tagName: diagnostic.tagName,
-      message: 'unsupported DOCX structure is not represented in the plain text import candidate',
+      message: knownIgnoredPart
+        ? 'known DOCX package part is ignored by the plain text import candidate'
+        : 'unsupported DOCX structure is not represented in the plain text import candidate',
     }));
   }
   const sortedItems = docxImportPreviewSortRecords(items);

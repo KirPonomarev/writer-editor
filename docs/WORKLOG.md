@@ -4,6 +4,10 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-12
+- Review Bridge Phase 06 implementation: published one bounded Capability Matrix, a deterministic five-file golden set with SHA-256 evidence, and separate Gate A and Gate B acceptance artifacts; delivery and factual rebind remain pending.
+- Phase 06 DOCX audit repaired two real interoperability defects: canonical `doc-v2` content is parsed before export so raw envelopes cannot leak into DOCX, and Heading 1, Heading 2, page break, and page setup semantics are preserved by the minimal builder.
+- Phase 06 DOCX intake now distinguishes internal OOXML relationships from actual external targets; bounded known parts can reach content-only preview with explicit losses, while external relationships, hostile XML, unknown parts, traversal, duplicate entries, and container bombs remain fail-closed.
+- Phase 06 claim truth is `FEATURE_COMPLETE_V1_PENDING_DELIVERY`: only Gates A and B are in scope; DOCX tracked-change candidates, Word and Google claims, cross-scene apply, release packaging, cloud, sync, and broad format fidelity remain explicit nonclaims.
 - Review Bridge Phase 05 delivery: PR `1081` merged feature commit `c8c80775f469c38be40a917955f667348b491767` at merge SHA `bcfde6816bd340a60a95c6a0c6cd8e738bdca15c`; status is rebound to `delivered_merged_verified`, and Phase 06 bounded fidelity and golden acceptance are next.
 - Review Bridge Phase 05 implementation: the minimal-profile File menu exposes DOCX, TXT, and Markdown content imports plus DOCX Minimal, Markdown, and current/selected/all TXT exports through existing product flows.
 - Phase 05 Review labels separate `Import Review Packet for Exact Apply` from `DOCX Review Evidence`; the latter states `Comments preview` and `Tracked changes diagnostic` without implying DOCX Apply.
@@ -34,7 +38,7 @@
 - Phase 01 governance audit: repaired five pre-existing stale approval hashes to current mainline byte truth; post-commit broad Review Bridge/menu/command-bus sweep reached 884 passes with only five historical branch-allowlist assertions and two superseded no-runtime-wiring assertions remaining outside active acceptance.
 - Phase 01 scope truth: no UI redesign, dependency, structural apply, comment auto-apply, DOCX tracked-change apply, cross-scene transaction, cloud, Word sync, Google sync, or release-readiness claim is opened; crash reconciliation remains the next separate contour.
 - Review Bridge current-truth rebind: corrected the already merged local Review Packet export from stale pending-delivery wording to PR `1070`, feature commit `e8140e856551802e87b21f45772ffef8140c3782`, merge SHA `a4583bb79e72e5c03b4acd1e1340c80af31a85ca`, and `delivered_merged_verified`.
-- Closure classification: content import/export and packet transport are delivered where stated; canonical packet import to real Review UI exact apply is delivered; DOCX Review remains evidence only; the local Markdown file product flow remains partial; crash reconciliation remains next; Word and Google claims, Mindmap export, and project-level cross-scene apply remain deferred.
+- Historical Phase 00 classification at that point: content import/export and packet transport were delivered where stated, canonical packet import to real Review UI exact apply was delivered, DOCX Review was evidence only, Markdown local-file completion and crash reconciliation were still next, and later Phase 02 through Phase 06 work supersedes those pending statements.
 - Scope truth: factual docs, status truth, and a stale-claim contract changed; no runtime, UI, dependency, storage, apply-authority, or release-scope change was introduced.
 
 ## 2026-07-04

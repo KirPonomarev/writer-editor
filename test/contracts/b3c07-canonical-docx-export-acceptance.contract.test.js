@@ -160,6 +160,11 @@ async function assertMainProductionExportWiring() {
   assert.match(readBody, /typeof currentFilePath !== 'string'/u);
   assert.match(readBody, /isDirty/u);
   assert.match(readBody, /await fs\.readFile\(currentFilePath, 'utf8'\)/u);
+  assert.match(readBody, /loadDocumentContentEnvelopeModule\(\)/u);
+  assert.match(readBody, /parseObservablePayload\(content\)/u);
+  assert.match(readBody, /plainText: parsed\.text/u);
+  assert.match(readBody, /doc: parsed\.doc/u);
+  assert.doesNotMatch(readBody, /plainText: content/u);
   assert.doesNotMatch(readBody, /bufferSource/u);
   assert.doesNotMatch(readBody, /viewportDomText/u);
   assert.doesNotMatch(readBody, /visibleWindowText/u);

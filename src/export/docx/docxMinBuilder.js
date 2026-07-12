@@ -19,6 +19,7 @@ function normalizeEditorSnapshotPayload(payload) {
     return {
       content: payload,
       plainText: payload,
+      doc: null,
       bookProfile: null,
     };
   }
@@ -32,6 +33,7 @@ function normalizeEditorSnapshotPayload(payload) {
   return {
     content,
     plainText: typeof source.plainText === 'string' ? source.plainText : content,
+    doc: isPlainObjectValue(source.doc) ? source.doc : null,
     bookProfile: isPlainObjectValue(source.bookProfile) ? source.bookProfile : null,
   };
 }
@@ -124,6 +126,41 @@ function normalizeSemanticKind(value) {
   return kind;
 }
 
+function readDocumentNodeText(node) {
+  if (!isPlainObjectValue(node)) return '';
+  if (node.type === 'text') return typeof node.text === 'string' ? node.text : '';
+  if (node.type === 'hardBreak') return '\n';
+  const content = Array.isArray(node.content) ? node.content : [];
+  return content.map((child) => readDocumentNodeText(child)).join('');
+}
+
+function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
+  if (!isPlainObjectValue(doc) || doc.type !== 'doc' || !Array.isArray(doc.content)) return null;
+  const blocks = [];
+
+  for (const node of doc.content) {
+    if (!isPlainObjectValue(node)) continue;
+    const text = readDocumentNodeText(node);
+    if (node.type === 'pageBreak' || (node.type === 'paragraph' && text.trim() === pageBreakToken)) {
+      blocks.push({ kind: 'pageBreak', text: pageBreakToken });
+      continue;
+    }
+    if (node.type === 'heading' && Number(node.attrs?.level) === 1) {
+      blocks.push({ kind: 'heading', text });
+      continue;
+    }
+    if (node.type === 'heading' && Number(node.attrs?.level) === 2) {
+      blocks.push({ kind: 'sceneHeading', text });
+      continue;
+    }
+    if (text || node.type === 'paragraph') {
+      blocks.push({ kind: 'paragraph', text });
+    }
+  }
+
+  return blocks;
+}
+
 function resolveDocxParagraphStyleId(styleDescriptor, semanticKind) {
   const role = typeof styleDescriptor?.role === 'string' ? styleDescriptor.role.trim().toLowerCase() : '';
   if (role === 'heading' || semanticKind === 'heading') return 'Heading1';
@@ -150,12 +187,14 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const deps = assertDocxBuilderDependencies(dependencies);
   const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
   const plainText = String(snapshot.plainText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  const semanticMap = deps.semanticMappingModule.mapSemanticEntries({
-    sourceId: 'docx-export',
-    text: plainText,
-  });
-  const styleMap = deps.styleMapModule.createStyleMap();
   const pageBreakToken = deps.semanticMappingModule.PAGE_BREAK_TOKEN_V1;
+  const semanticBlocks = buildSemanticBlocksFromDocument(snapshot.doc, pageBreakToken);
+  const semanticMap = deps.semanticMappingModule.mapSemanticEntries(
+    semanticBlocks
+      ? { sourceId: 'docx-export', blocks: semanticBlocks }
+      : { sourceId: 'docx-export', text: plainText },
+  );
+  const styleMap = deps.styleMapModule.createStyleMap();
   const sectionPropertiesXml = deps.docxPageSetupBindModule.buildDocxSectionPropertiesXml(snapshot.bookProfile);
   const entries = Array.isArray(semanticMap.entries) ? semanticMap.entries : [];
   const paragraphs = entries.length > 0

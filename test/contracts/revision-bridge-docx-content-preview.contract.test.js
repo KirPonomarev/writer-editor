@@ -233,7 +233,7 @@ test('DOCX content preview: tabs, breaks, empty paragraphs, and XML entities are
   assert.equal(result.diagnostics.length, 0);
 });
 
-test('DOCX content preview: hostile, malformed, and degraded packages stop before semantic parse', async () => {
+test('DOCX content preview: hostile and malformed packages stop while known degraded parts are ignored', async () => {
   const bridge = await loadBridge();
   const duplicate = bridge.buildDocxContentPreviewFromZipBytes(zipFixture([
     { name: 'word/document.xml', body: documentXml(paragraphXml('A')) },
@@ -250,7 +250,7 @@ test('DOCX content preview: hostile, malformed, and degraded packages stop befor
   ]));
   const malformed = bridge.buildDocxContentPreviewFromZipBytes('review.docx');
 
-  for (const result of [duplicate, dtd, degraded, malformed]) {
+  for (const result of [duplicate, dtd, malformed]) {
     assertContentPreviewShell(result);
     assert.equal(result.ok, false);
     assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_PREFLIGHT_BLOCKED');
@@ -261,8 +261,14 @@ test('DOCX content preview: hostile, malformed, and degraded packages stop befor
   }
   assert.equal(duplicate.reason, 'STAGE02_DUPLICATE_ENTRY_NAME');
   assert.equal(dtd.reason, 'STAGE02_XML_DTD_DECLARATION_PRESENT');
-  assert.equal(degraded.reason, 'DOCX_PART_POLICY_MEDIA_DIAGNOSTICS_ONLY');
   assert.equal(malformed.reason, 'STAGE02_PACKAGE_MALFORMED');
+  assert.equal(degraded.ok, true);
+  assert.equal(degraded.status, 'preview');
+  assert.equal(degraded.parse.attempted, true);
+  assert.equal(degraded.contentPreview.paragraphs[0].text, 'Media');
+  assert.equal(degraded.diagnostics.some((item) => (
+    item.code === 'DOCX_PART_POLICY_MEDIA_DIAGNOSTICS_ONLY'
+  )), true);
 });
 
 test('DOCX content preview: unsupported structures are diagnostics and do not become review or import data', async () => {

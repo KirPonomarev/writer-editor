@@ -122,6 +122,10 @@ test('RB-08 exports DOCX part policy API and exact output shape', async () => {
     REJECTED: 'rejected',
   });
   assert.equal(
+    bridge.DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY,
+    'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY',
+  );
+  assert.equal(
     bridge.DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_REQUIRES_FUTURE_PARSER,
     'DOCX_PART_POLICY_RELATIONSHIP_REQUIRES_FUTURE_PARSER',
   );
@@ -192,7 +196,7 @@ test('RB-08 degrades duplicate main documents', async () => {
   ]);
 });
 
-test('RB-08 relationship parts require a future parser and never authorize import', async () => {
+test('RB-08 relationship parts stay diagnostic-only content parser candidates without write authority', async () => {
   const bridge = await loadBridge();
   const result = bridge.classifyDocxPartPolicy(inventory([
     entry(),
@@ -205,9 +209,9 @@ test('RB-08 relationship parts require a future parser and never authorize impor
   ]));
 
   assert.equal(result.decision, 'degraded');
-  assert.equal(result.code, 'DOCX_PART_POLICY_RELATIONSHIP_REQUIRES_FUTURE_PARSER');
-  assert.deepEqual(diagnosticCodes(result), ['DOCX_PART_POLICY_RELATIONSHIP_REQUIRES_FUTURE_PARSER']);
-  assertNoWriteEligibility(result, false);
+  assert.equal(result.code, 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY');
+  assert.deepEqual(diagnosticCodes(result), ['DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY']);
+  assertNoWriteEligibility(result, true);
 });
 
 test('RB-08 unsupported story, unknown, directory, and media are diagnostics-only degraded categories', async () => {
@@ -241,7 +245,7 @@ test('RB-08 unsupported story, unknown, directory, and media are diagnostics-onl
     assert.equal(result.code, code);
     assert.equal(result.categories[category].count, 1);
     assert.deepEqual(diagnosticCodes(result), [code]);
-    assertNoWriteEligibility(result, false);
+    assertNoWriteEligibility(result, category !== 'unknownPart');
   }
 });
 

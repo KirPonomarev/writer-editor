@@ -367,10 +367,10 @@
     },
     {
       "filePath": "scripts/ops/sector-m-scope-map.json",
-      "sha256": "7d570cb42b6ab7eed15e4db48d12901995211698da15c40d6a24155088a16b66",
-      "approvedBy": "ticket:MARKDOWN_IMPORT_PRODUCT_PARITY_001",
-      "approvedAtUtc": "2026-07-01T14:00:00.000Z",
-      "rationale": "Approve bounded Sector-M DONE scope-map admission preserving the prior DOCX import preview accept flow product tail and adding focused Markdown import product parity UI test coverage without widening M8 or M9 exact phase scopes, adding dependencies, network, cloud, storage schema changes, Markdown dialect expansion, mindmap user export claims, export save-as claims, or DOCX full-fidelity claims."
+      "sha256": "74c40c34ccda43510b8a4d75eaba4ae0b2117843a5142dc9dff11aa9b08c3255",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:20:00.000Z",
+      "rationale": "Approve nine exact Phase 06 DONE-scope paths for active docs, the DOCX minimal builder, and five deterministic golden fixtures; no wildcard, prefix, M8 or M9 scope widening, runtime authority, dependency, network, or broad fidelity claim is introduced."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
@@ -3510,17 +3510,17 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
-      "sha256": "eda92d3e9bf9eef1cf216e59aac1d7b1496ad18478b432ae47ec5e7da99d404d",
-      "approvedBy": "ticket:DOCX_INTAKE_PREFLIGHT_CLASSIFICATION_002",
-      "approvedAtUtc": "2026-06-30T11:24:50.000Z",
-      "rationale": "DOCX_INTAKE_PREFLIGHT_CLASSIFICATION_002 approves the bounded DOCX intake preflight report contract for clean, degraded, hostile, malformed, deterministic, and no-surface-leak cases; no UI, storage write, import mutation, semantic parser execution, export rewrite, network, dependency, or release claim is introduced."
+      "sha256": "fa4261c9e050a0cfc202e6579035972c99ce511516cc18b6fd16eb69f18a4782",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve intake preflight coverage for parser-candidate known degraded parts, blocked external relationships, unknown parts, missing main documents, and zero write authority."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "a5e3cc265283d3d96276364f8b824920b3ecc15e283db0132392b97cd2a378eb",
-      "approvedBy": "ticket:DOCX_SEMANTIC_MIN_PARSE_TO_CONTENT_PREVIEW_001",
-      "approvedAtUtc": "2026-06-30T11:53:00.000Z",
-      "rationale": "DOCX_SEMANTIC_MIN_PARSE_TO_CONTENT_PREVIEW_001 approves the bounded DOCX content preview contract for accepted preflight only, minimal paragraph text extraction, tabs, breaks, XML entity decoding, unsupported structure diagnostics, malformed XML rejection, single-root enforcement, trailing XML garbage rejection, paragraph budget enforcement, unsupported encoding and prefix fail-closed behavior, deterministic output, and no UI, storage write, import mutation, review packet, apply operation, export rewrite, network, dependency, or release claim."
+      "sha256": "00397ea39ee68d102fabae9b403a8ba94f0d8acce27da9bd77297a175ae4a152",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve bounded content preview coverage allowing known ignored DOCX parts while retaining hostile and malformed package rejection and explicit diagnostics."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-content-preview-command-surface.contract.test.js",
@@ -3713,10 +3713,10 @@
     },
     {
       "filePath": "test/contracts/b3c07-canonical-docx-export-acceptance.contract.test.js",
-      "sha256": "03733023a28a1bd1e154663fd3b69a4f457cb42f530fe47bc0a60d11e9e2e538",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
-      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
-      "rationale": "Approve the canonical DOCX export acceptance harness update that supplies the newly required target-validation dependency while preserving canonical source, deterministic DOCX output, offline behavior, and all existing format nonclaims."
+      "sha256": "ad300410ecfbd97c7a6eb12dea5388933239597872ef7b17825bd679fbe65be5",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve canonical DOCX export assertions proving saved document envelopes are parsed into visible text and document structure before export."
     },
     {
       "filePath": "test/contracts/export-contour-01-docx-simple-hardening.contract.test.js",
@@ -3822,6 +3822,90 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-12T22:08:00.000Z",
       "rationale": "Approve the Phase 05 product contract delivery rebind to exact PR 1081 feature and merge evidence while retaining complete File and Review menu coverage, bounded labels, canonical palette-only Markdown visibility, existing-flow routing, artifact truth, and no-authority nonclaims."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/CAPABILITY_MATRIX.json",
+      "sha256": "fdc08d246462756b51c454af53fb9deab6c71eabdd88f5605ce7292c9b917acd",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve the Phase 06 bounded Capability Matrix for Gates A and B with explicit losses, evidence-only DOCX Review, and Gates C and D plus all broad fidelity, editor-specific, cloud, and cross-scene claims excluded."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/GOLDEN_SET_MANIFEST.json",
+      "sha256": "5a5da98f939a3507fbbec800e8de9999a2ba073b7f9972a72c045cee3ff77e5a",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve the deterministic five-file DOCX, JSON, TXT, and Markdown golden manifest with exact byte sizes, SHA-256 hashes, bounded proofs, and explicit nonproofs."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/IMPORT_EXPORT_ACCEPTANCE.json",
+      "sha256": "b78ffe211931ac339f3ad58a3af3c753734779f745cf616385276549bef12354",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve Gate A bounded local import and export acceptance for DOCX Minimal, content-only DOCX safe create, TXT flows, Markdown file flows, file authority, discoverability, and explicit format limitations."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json",
+      "sha256": "f07530455d3e06ae81a600aebf6ef2eb5ff74ecbac7b3b93ea7c5f1722ae029b",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve marking the prior import-export MVP gate historical and superseded without rewriting its historical command results or widening its original claims."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_ACCEPTANCE.json",
+      "sha256": "b44e383651319ebcbe197b78a7cbb8c17bf7c42f15076da2aad7ef6cfa7424aa",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve Gate B acceptance binding canonical Review Packet exact Apply, recovery, receipt, crash reconciliation, bounded DOCX comment preview, and diagnostic-only tracked changes with no new apply authority."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_STATUS.json",
+      "sha256": "ab64b4ff9692803d89687c1e96d4e6b2ce0632b583288819f303c79a341722e4",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve the Phase 06 pending-delivery status for the DOCX export and intake repairs, deterministic evidence, bounded claim rows, and explicit post-V1 nonclaims."
+    },
+    {
+      "filePath": "scripts/ops/review-bridge-golden-set.mjs",
+      "sha256": "990a97e9460193c4ecfe8382bdede9a7f5a4295c23425949a45d49ec6fd55d86",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve the deterministic offline generator and checker for bounded review bridge golden files; it changes test artifacts only and grants no runtime or release authority."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-bounded-fidelity-golden-acceptance.contract.test.js",
+      "sha256": "ad2fb97db8e47a54b4ace92dae8cf42dbedca57461cbcc6e6358b891694616b6",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve the Phase 06 real-file acceptance contract covering exact hashes, DOCX semantic export and content intake, DOCX Review evidence, canonical packet planning, TXT, Markdown, and bounded claim truth."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
+      "sha256": "4e9af1ff2062c4ac7ebf243c9912209702e349da8b27fba35792c4591d1317e5",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve hostile gate coverage distinguishing internal OOXML relationships from literal, encoded, and malformed external TargetMode values while preserving all ZIP and XML defenses."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-package-boundary.contract.test.js",
+      "sha256": "f05d33978099dd5e07c9f2adf0d8513e3d901865ce0c01aea97353228bf58fc2",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve the honest relationship-part diagnostic rename at the metadata boundary without changing package budgets or parser authority."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-part-policy.contract.test.js",
+      "sha256": "729c7c181aefbf5767446d984dba8f53216796d093e1e3ca739ceb7b198152d1",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve part-policy coverage for diagnostics-only relationship, story, directory, and media categories as text parser candidates while retaining zero mutation authority and unknown-part rejection."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js",
+      "sha256": "64e25d7fdfac87bad422dad07edc49b91cb2308fe766093d86679ab646d10d3d",
+      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
+      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
+      "rationale": "Approve materializer contract alignment with the honest relationship-part diagnostic code while preserving all binary bounds and rejection behavior."
     }
   ]
 }
