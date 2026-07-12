@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "revision-bridge.golden-set-manifest.v1",
+  "goldenSetId": "revision-bridge-local-v1-2026-07-12",
+  "baseSha": "5456f7f3dd689559d63bb10181e8998464540f72",
+  "status": "verified_pending_delivery",
+  "generator": "review-bridge-golden-set.mjs",
+  "artifacts": [
+    {
+      "fileName": "docx-minimal-export-v1.docx",
+      "mediaType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "byteSize": 1868,
+      "sha256": "2897ba060f74e1878344aec35f121f8f77e41dc6104a7abb8c4898b0e487d03a",
+      "proves": ["real ZIP DOCX", "Heading 1", "Heading 2", "page break", "A4 page setup", "self-export content preview"],
+      "doesNotProve": ["Word layout parity", "rich DOCX fidelity"]
+    },
+    {
+      "fileName": "docx-review-evidence-v1.docx",
+      "mediaType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "byteSize": 2587,
+      "sha256": "fa1ed83a1b400a7670151c00a7ee4f39a7272bccb2e9b69310cf206bd6477b7e",
+      "proves": ["comment text extraction", "manual comment placement", "tracked insertion diagnostic", "tracked deletion diagnostic"],
+      "doesNotProve": ["DOCX text candidate apply", "Word roundtrip"]
+    },
+    {
+      "fileName": "review-packet-v1.json",
+      "mediaType": "application/json",
+      "byteSize": 2227,
+      "sha256": "f45c084b8ec8493b1f5621f2a416c1eba9c25ee2c4d56dbcd314f28dc94bfb97",
+      "proves": ["canonical packet preview", "one exact unique apply operation", "transport has no write authority"],
+      "doesNotProve": ["structural auto-apply", "cross-scene apply"]
+    },
+    {
+      "fileName": "txt-content-v1.txt",
+      "mediaType": "text/plain; charset=utf-8",
+      "byteSize": 84,
+      "sha256": "1e8d973edeb9871226e4b495a1fc1bef02f8c5e7102e341cfb9d8d0003e25919",
+      "proves": ["UTF-8 local preview", "Unicode preservation", "create-only candidate"],
+      "doesNotProve": ["non-UTF-8 support", "formatting"]
+    },
+    {
+      "fileName": "markdown-content-v1.md",
+      "mediaType": "text/markdown; charset=utf-8",
+      "byteSize": 122,
+      "sha256": "7e69a45fc5b374733b745a2e6f3f1ed48af0e8d5124bb37de277186bca2fe66d",
+      "proves": ["literal markers", "list", "fenced code", "inline backtick", "bounded zero-loss parse and serialize"],
+      "doesNotProve": ["full CommonMark", "full GFM"]
+    }
+  ],
+  "actualCommands": [
+    "node scripts/ops/review-bridge-golden-set.mjs --write",
+    "node scripts/ops/review-bridge-golden-set.mjs",
+    "shasum -a 256 test/fixtures/revision-bridge/v1/*"
+  ],
+  "hashes": {
+    "algorithm": "sha256",
+    "count": 5
+  },
+  "outcomes": ["all fixture bytes match deterministic generator output", "all hashes match manifest"],
+  "nonClaims": ["external editor provenance", "packaged release compatibility"],
+  "knownLimitations": ["fixtures are bounded product artifacts, not a general format corpus", "Word and Google artifact labs remain separate post-V1 gates"]
+}

@@ -224,7 +224,7 @@ test('Stage02 hostile file gate blocks declaration-level ENTITY marker', async (
   assert.equal(result.parse.semanticAllowed, false);
 });
 
-test('Stage02 hostile file gate quarantines suspicious non-clean containers that are not relationship parts', async () => {
+test('Stage02 hostile file gate allows bounded ignored parts and quarantines unknown parts', async () => {
   const bridge = await loadBridge();
   const unknownPart = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
     { name: 'word/document.xml', body: '<root/>' },
@@ -239,10 +239,58 @@ test('Stage02 hostile file gate quarantines suspicious non-clean containers that
     { name: 'word/comments.xml', body: '<comments/>' },
   ]));
 
-  for (const result of [unknownPart, directoryPart, unsupportedStory]) {
+  assert.equal(unknownPart.ok, false);
+  assert.equal(unknownPart.decision, 'quarantined');
+  assert.equal(unknownPart.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED);
+  for (const result of [directoryPart, unsupportedStory]) {
+    assert.equal(result.ok, true);
+    assert.equal(result.decision, 'pass');
+    assert.equal(result.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.PASS);
+    assert.equal(result.parse.attempted, false);
+    assert.equal(result.parse.semanticAllowed, true);
+  }
+});
+
+test('Stage02 hostile file gate distinguishes internal and external relationship targets', async () => {
+  const bridge = await loadBridge();
+  const internal = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    { name: 'word/document.xml', body: '<root/>' },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Target="styles.xml"/></Relationships>',
+    },
+  ]));
+  const external = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    { name: 'word/document.xml', body: '<root/>' },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Target="https://example.invalid" TargetMode="External"/></Relationships>',
+    },
+  ]));
+  const encodedExternal = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    { name: 'word/document.xml', body: '<root/>' },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Target="https://example.invalid" TargetMode="&#69;xternal"/></Relationships>',
+    },
+  ]));
+  const malformedTargetMode = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    { name: 'word/document.xml', body: '<root/>' },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Target="https://example.invalid" TargetMode=External/></Relationships>',
+    },
+  ]));
+
+  assert.equal(internal.ok, true);
+  assert.equal(internal.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.PASS);
+  assert.equal(external.ok, false);
+  assert.equal(external.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.EXTERNAL_RELATIONSHIP_PRESENT);
+  assert.equal(external.parse.attempted, false);
+  assert.equal(external.parse.semanticAllowed, false);
+  for (const result of [encodedExternal, malformedTargetMode]) {
     assert.equal(result.ok, false);
-    assert.equal(result.decision, 'quarantined');
-    assert.equal(result.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED);
+    assert.equal(result.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.EXTERNAL_RELATIONSHIP_PRESENT);
     assert.equal(result.parse.attempted, false);
     assert.equal(result.parse.semanticAllowed, false);
   }

@@ -1,6 +1,9 @@
 {
   "taskId": "IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001",
   "schemaVersion": 1,
+  "lifecycleStatus": "superseded_historical",
+  "supersededBy": "IMPORT_EXPORT_ACCEPTANCE.json",
+  "currentClaimAuthority": "CAPABILITY_MATRIX.json",
   "status": "PASS_TO_CLOSEOUT",
   "scope": {
     "type": "acceptance_gate",

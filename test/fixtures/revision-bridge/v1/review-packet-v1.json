@@ -1,0 +1,88 @@
+{
+  "packetVersion": "review-packet.v1",
+  "projectId": "golden-project-v1",
+  "sessionId": "golden-review-session-v1",
+  "baselineHash": "f4f08b8ce5f18ad760cb9b3e2865581585ad37cbb6ca092acb5b7567319e05b7",
+  "createdAt": "2026-07-12T00:00:00.000Z",
+  "updatedAt": "2026-07-12T00:00:00.000Z",
+  "reviewPacket": {
+    "commentThreads": [
+      {
+        "threadId": "thread-1",
+        "authorId": "reviewer-1",
+        "status": "open",
+        "createdAt": "2026-07-12T00:00:00.000Z",
+        "updatedAt": "2026-07-12T00:00:00.000Z",
+        "messages": [
+          {
+            "messageId": "message-1",
+            "authorId": "reviewer-1",
+            "body": "Keep this review comment.",
+            "createdAt": "2026-07-12T00:00:00.000Z"
+          }
+        ]
+      }
+    ],
+    "commentPlacements": [
+      {
+        "placementId": "placement-1",
+        "threadId": "thread-1",
+        "targetScope": {
+          "type": "scene",
+          "id": "scene-1"
+        },
+        "anchor": {
+          "kind": "text",
+          "value": "old words"
+        },
+        "range": {
+          "from": 7,
+          "to": 16
+        },
+        "quote": "old words",
+        "prefix": "Before ",
+        "suffix": " after.",
+        "confidence": 1,
+        "policy": "exact",
+        "selector": {
+          "type": "text-position",
+          "start": 7,
+          "end": 16
+        },
+        "createdAt": "2026-07-12T00:00:00.000Z"
+      }
+    ],
+    "textChanges": [
+      {
+        "changeId": "change-1",
+        "targetScope": {
+          "type": "scene",
+          "id": "scene-1"
+        },
+        "match": {
+          "kind": "exact",
+          "quote": "old words"
+        },
+        "replacementText": "new words",
+        "createdAt": "2026-07-12T00:00:00.000Z"
+      }
+    ],
+    "structuralChanges": [],
+    "diagnosticItems": [
+      {
+        "diagnosticId": "diagnostic-1",
+        "severity": "info",
+        "message": "Tracked changes remain diagnostic evidence.",
+        "createdAt": "2026-07-12T00:00:00.000Z"
+      }
+    ],
+    "decisionStates": [
+      {
+        "decisionId": "decision-1",
+        "itemKind": "textChange",
+        "itemId": "change-1",
+        "status": "pending"
+      }
+    ]
+  }
+}

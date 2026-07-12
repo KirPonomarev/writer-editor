@@ -198,7 +198,7 @@ test('RB-06 classifies relationship, unknown, directory, media, and unsupported 
     { id: 'folder/', kind: 'directory', story: undefined, markers: undefined },
   ]);
   assert.equal(result.inspection.classification, 'suspicious');
-  assert.equal(diagnosticCodes(result.inspection).includes('DOCX_EXTERNAL_RELATIONSHIP_PRESENT'), true);
+  assert.equal(diagnosticCodes(result.inspection).includes('DOCX_RELATIONSHIP_PART_PRESENT'), true);
   assert.equal(diagnosticCodes(result.inspection).includes('DOCX_UNKNOWN_PART_PRESENT'), true);
   assert.equal(diagnosticCodes(result.inspection).includes('DOCX_DIRECTORY_ENTRY_PRESENT'), true);
   assert.equal(diagnosticCodes(result.inspection).includes('DOCX_UNSUPPORTED_STORY_MARKER_PRESENT'), true);

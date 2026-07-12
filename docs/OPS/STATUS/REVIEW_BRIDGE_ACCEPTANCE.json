@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "revision-bridge.review-acceptance.v1",
+  "acceptanceId": "LOCAL_REVIEW_BRIDGE_V1_2026_07_12",
+  "baseSha": "5456f7f3dd689559d63bb10181e8998464540f72",
+  "status": "pass_pending_delivery",
+  "gate": "B_LOCAL_REVIEW_BRIDGE_V1",
+  "outcomes": {
+    "canonicalPacketPreview": "pass",
+    "authoritySanitization": "pass",
+    "realReviewUiApply": "pass",
+    "atomicWriteRecoveryReceipt": "pass",
+    "crashReconciliation": "pass",
+    "negativeApplyBranchesZeroWrite": "pass",
+    "docxCommentPreview": "bounded_pass",
+    "docxTrackedChanges": "diagnostic_only"
+  },
+  "hashes": {
+    "review-packet-v1.json": "f45c084b8ec8493b1f5621f2a416c1eba9c25ee2c4d56dbcd314f28dc94bfb97",
+    "docx-review-evidence-v1.docx": "fa1ed83a1b400a7670151c00a7ee4f39a7272bccb2e9b69310cf206bd6477b7e"
+  },
+  "actualCommands": [
+    "node --test test/contracts/review-bridge-canonical-packet-ui-apply.contract.test.js",
+    "node --test test/contracts/revision-bridge-exact-text-apply-crash-reconciliation.contract.test.js",
+    "node --test test/contracts/revision-bridge-bounded-fidelity-golden-acceptance.contract.test.js",
+    "npm test"
+  ],
+  "evidence": {
+    "canonicalUiFeatureCommit": "5beb4ff48eb974b028254ce3283a59a649aff4a0",
+    "canonicalUiMergeSha": "980557a3f52772b2cc3bd1650e45165023659fed",
+    "crashReconciliationFeatureCommit": "561640947f2488d0c3248d587e925aa7e59d6205",
+    "crashReconciliationMergeSha": "314d550199858d055255fa55fc4a457f09c8f495"
+  },
+  "nonClaims": ["DOCX Apply", "structural auto-apply", "comment auto-apply", "cross-scene transaction", "Word sync", "Google Docs sync"],
+  "knownLimitations": ["exact apply is same-scene and unique-match only", "same-scene batch is capped", "DOCX tracked changes remain diagnostics", "delivery merge and factual rebind are pending"]
+}

@@ -7101,6 +7101,7 @@ function normalizeEditorSnapshotPayload(payload) {
     return {
       content: payload,
       plainText: payload,
+      doc: null,
       bookProfile: null,
     };
   }
@@ -7114,6 +7115,7 @@ function normalizeEditorSnapshotPayload(payload) {
   return {
     content,
     plainText: typeof source.plainText === 'string' ? source.plainText : content,
+    doc: isPlainObjectValue(source.doc) ? source.doc : null,
     bookProfile: isPlainObjectValue(source.bookProfile) ? source.bookProfile : null,
   };
 }
@@ -7197,9 +7199,20 @@ async function readCanonicalExportSnapshot(payload = {}) {
     }
   }
 
+  const envelopeModule = await loadDocumentContentEnvelopeModule();
+  const parsed = envelopeModule.parseObservablePayload(content);
+  if (!parsed || typeof parsed.text !== 'string' || parsed.issue) {
+    throw new Error(
+      typeof parsed?.issue?.userMessage === 'string' && parsed.issue.userMessage
+        ? parsed.issue.userMessage
+        : 'Canonical document envelope is invalid',
+    );
+  }
+
   return normalizeEditorSnapshotPayload({
     content,
-    plainText: content,
+    plainText: parsed.text,
+    doc: parsed.doc,
     bookProfile,
   });
 }

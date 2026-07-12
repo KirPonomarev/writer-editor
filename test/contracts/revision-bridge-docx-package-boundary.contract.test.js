@@ -133,8 +133,8 @@ test('RB-05 classifies suspicious inventory without parser eligibility', async (
   const cases = [
     [cleanEntry({ id: 'unknown', kind: 'unknownPart' }), 'DOCX_UNKNOWN_PART_PRESENT'],
     [cleanEntry({ id: 'dir', kind: 'directory' }), 'DOCX_DIRECTORY_ENTRY_PRESENT'],
-    [cleanEntry({ id: 'rels', kind: 'relationshipPart' }), 'DOCX_EXTERNAL_RELATIONSHIP_PRESENT'],
-    [cleanEntry({ id: 'rels-marker', markers: ['relationship'] }), 'DOCX_EXTERNAL_RELATIONSHIP_PRESENT'],
+    [cleanEntry({ id: 'rels', kind: 'relationshipPart' }), 'DOCX_RELATIONSHIP_PART_PRESENT'],
+    [cleanEntry({ id: 'rels-marker', markers: ['relationship'] }), 'DOCX_RELATIONSHIP_PART_PRESENT'],
     [cleanEntry({ id: 'unsupported-story', story: 'unsupported' }), 'DOCX_UNSUPPORTED_STORY_MARKER_PRESENT'],
     [cleanEntry({ id: 'unsupported-marker', markers: ['unsupportedStory'] }), 'DOCX_UNSUPPORTED_STORY_MARKER_PRESENT'],
   ];

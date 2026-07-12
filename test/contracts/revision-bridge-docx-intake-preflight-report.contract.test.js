@@ -175,19 +175,19 @@ test('DOCX intake preflight report: media stays degraded diagnostics only', asyn
   ]));
 
   assertPreParseReport(result);
-  assert.equal(result.ok, false);
+  assert.equal(result.ok, true);
   assert.equal(result.gatePass, true);
   assert.equal(result.status, 'degraded');
   assert.equal(result.decision, 'degraded');
   assert.equal(result.code, 'DOCX_PART_POLICY_MEDIA_DIAGNOSTICS_ONLY');
-  assert.equal(result.partPolicy.eligibility.parserCandidateOnly, false);
-  assert.equal(result.preflightSummary.eligibility.parserCandidateOnly, false);
+  assert.equal(result.partPolicy.eligibility.parserCandidateOnly, true);
+  assert.equal(result.preflightSummary.eligibility.parserCandidateOnly, true);
   assert.equal(result.diagnostics.some((item) => (
     item.source === 'partPolicy' && item.code === 'DOCX_PART_POLICY_MEDIA_DIAGNOSTICS_ONLY'
   )), true);
 });
 
-test('DOCX intake preflight report: degraded package classes never become import candidates', async () => {
+test('DOCX intake preflight report: bounded degraded parts become content-only candidates', async () => {
   const bridge = await loadBridge();
   const relationship = bridge.buildDocxIntakePreflightReportFromZipBytes(cleanDocxZip([
     { name: 'word/_rels/document.xml.rels', body: '<Relationships/>' },
@@ -198,11 +198,26 @@ test('DOCX intake preflight report: degraded package classes never become import
   const unsupportedStory = bridge.buildDocxIntakePreflightReportFromZipBytes(cleanDocxZip([
     { name: 'word/header1.xml', body: '<w:hdr/>' },
   ]));
+  const externalRelationship = bridge.buildDocxIntakePreflightReportFromZipBytes(cleanDocxZip([
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Target="https://example.invalid" TargetMode="External"/></Relationships>',
+    },
+  ]));
   const missingMainDocument = bridge.buildDocxIntakePreflightReportFromZipBytes(zipFixture([
     { name: 'word/styles.xml', body: '<w:styles/>' },
   ]));
 
-  for (const result of [relationship, unknown, unsupportedStory, missingMainDocument]) {
+  for (const result of [relationship, unsupportedStory]) {
+    assertPreParseReport(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.gatePass, true);
+    assert.equal(result.status, 'degraded');
+    assert.equal(result.preflightSummary.eligibility.parserCandidateOnly, true);
+    assert.equal(result.preflightSummary.eligibility.canImportMutate, false);
+    assert.equal(result.preflightSummary.eligibility.canWriteStorage, false);
+  }
+  for (const result of [externalRelationship, unknown, missingMainDocument]) {
     assertPreParseReport(result);
     assert.equal(result.ok, false);
     assert.equal(result.gatePass, false);
@@ -210,9 +225,10 @@ test('DOCX intake preflight report: degraded package classes never become import
     assert.equal(result.preflightSummary.eligibility.canImportMutate, false);
     assert.equal(result.preflightSummary.eligibility.canWriteStorage, false);
   }
-  assert.equal(relationship.code, 'STAGE02_EXTERNAL_RELATIONSHIP_PRESENT');
+  assert.equal(relationship.code, 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY');
+  assert.equal(externalRelationship.code, 'STAGE02_EXTERNAL_RELATIONSHIP_PRESENT');
   assert.equal(unknown.code, 'STAGE02_PACKAGE_QUARANTINED');
-  assert.equal(unsupportedStory.code, 'STAGE02_PACKAGE_QUARANTINED');
+  assert.equal(unsupportedStory.code, 'DOCX_PART_POLICY_UNSUPPORTED_STORY_DIAGNOSTICS_ONLY');
   assert.equal(missingMainDocument.code, 'STAGE02_PACKAGE_QUARANTINED');
 });
 
