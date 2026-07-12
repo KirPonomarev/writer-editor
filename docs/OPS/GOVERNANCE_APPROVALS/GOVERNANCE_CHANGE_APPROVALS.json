@@ -3706,10 +3706,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001_STATUS.json",
-      "sha256": "8272ddb0c50984944b335734e6104ed0182abd8ca7b3a201fde2afc73a676366",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
-      "approvedAtUtc": "2026-07-12T20:29:26.000Z",
-      "rationale": "Approve the bounded Phase 03 implementation-pending-delivery status and its completed verification record for shared external-file reads and target validation across DOCX, Markdown, TXT, and Review Packet contours, including the explicit feature-ref Sector M guard outcome and isolated post-merge-equivalent full-suite pass, while preserving nonclaims against visible Markdown product completion, canonical semantic Markdown export, UI change, dependencies, cloud, fidelity widening, structural apply, cross-scene transactions, and release readiness."
+      "sha256": "063b430a8829d3344e5d49e61e5558f5a4d45082efa804475d5742be6c1d1a04",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T20:34:51.000Z",
+      "rationale": "Approve the delivery rebind of the bounded Phase 03 status to PR 1077, feature commit 498c19ca53756280e6ebd70918096c10fc8fe6ee, merge SHA 3b5a2f3107f4daf3f9d49ecdbd90488e780e2a4f, and delivered_merged_verified while preserving the completed verification record and all nonclaims against visible Markdown product completion, canonical semantic Markdown export, UI change, dependencies, cloud, fidelity widening, structural apply, cross-scene transactions, and release readiness."
     },
     {
       "filePath": "test/contracts/b3c07-canonical-docx-export-acceptance.contract.test.js",
@@ -3755,10 +3755,10 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-file-authority-hardening.contract.test.js",
-      "sha256": "85092a3f463dbf7dceb191ab32be54fd74a85d39588eb7234404262c661bb564",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
-      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
-      "rationale": "Approve focused Phase 03 read and write authority coverage for bounded allocation, identity replacement detection, project-internal source denial, source and target symlink denial, protected-source denial, queue-time target replacement with zero writes, cross-format wiring, and honest pending-delivery status scope."
+      "sha256": "05ad25723cf5c7c6ffb805c31a36fff4ec0119f15d96038a65cb51123ff73f1c",
+      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001_DELIVERY_REBIND",
+      "approvedAtUtc": "2026-07-12T20:34:51.000Z",
+      "rationale": "Approve the Phase 03 contract rebind from pending delivery to exact merged truth for PR 1077 and its feature and merge SHAs while retaining focused read and write authority coverage and the explicit denial of visible Markdown product completion."
     },
     {
       "filePath": "test/contracts/revision-bridge-markdown-file-authority-command-surface.contract.test.js",
