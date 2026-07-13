@@ -2,7 +2,7 @@
   "schemaVersion": "revision-bridge.capability-matrix.v1",
   "matrixId": "revision-bridge-local-v1-gate-c-2026-07-13",
   "baseSha": "c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "releaseClaim": {
     "label": "FEATURE_COMPLETE_V1_PLUS_GATE_C",
     "definition": "Gates A, B, and C plus safety hardening and bounded evidence only",
@@ -118,8 +118,19 @@
   "nonClaims": ["Gate D editor-specific claims", "release packaging", "cross-platform packaged smoke", "Word support", "Google Docs support", "cloud sync", "Mindmap export", "project-level cross-scene apply"],
   "knownLimitations": ["DOCX Review tracked text candidates remain manual-only and zero-write", "DOCX content import is plain-text-oriented", "Markdown is a bounded V1 subset"],
   "delivery": {
-    "status": "implemented_verified_pending_delivery",
+    "status": "delivered_merged_verified",
     "bindingBaseSha": "c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886",
+    "featureCommit": "af7b1897bfe8be726f520680e83437f9a3c2f191",
+    "pullRequest": 1085,
+    "mergeSha": "72ee480b0fcc53239c162d5302b41a1c87e82dc4",
+    "mergedAtUtc": "2026-07-13T00:12:11Z",
+    "checks": {
+      "ossPolicy": "pass",
+      "ubuntuRuntimeParity": "pass",
+      "windowsRuntimeParity": "pass",
+      "strictFast": "28_pass_0_fail",
+      "fullNpmTest": "550_pass_64_skip_0_fail"
+    },
     "commitRequired": true,
     "pushRequired": true,
     "pullRequestRequired": true,

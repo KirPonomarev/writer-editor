@@ -4,7 +4,7 @@
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
 ## 2026-07-13
-- Review Bridge Gate C: opened owner-approved `REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001` from binding base `c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886`; delivery is pending.
+- Review Bridge Gate C: delivered and merged via PR `1085`, feature commit `af7b1897bfe8be726f520680e83437f9a3c2f191`, and merge SHA `72ee480b0fcc53239c162d5302b41a1c87e82dc4` from owner-approved binding base `c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886`.
 - Bounded tracked text: adjacent DOCX deletion plus insertion becomes one manual TextChange candidate, standalone insertions and deletions remain separate manual candidates, and none of them creates Apply authority.
 - Structural safety: moves, tables, nested revisions, and malformed tracked-change XML stay manual-only or fail closed; comments remain separate from placements and no preview writes manuscript or project truth.
 - Product UI repair: the default `roman-section` draft can now open DOCX Review preview with its real target type, while exact Apply remains blocked; the Review menu label now states that tracked text candidates are manual-only.

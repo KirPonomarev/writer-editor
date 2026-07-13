@@ -2,7 +2,7 @@
   "schemaVersion": "revision-bridge.review-acceptance.v1",
   "acceptanceId": "LOCAL_REVIEW_BRIDGE_V1_GATE_C_2026_07_13",
   "baseSha": "c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "gate": "B_LOCAL_REVIEW_BRIDGE_V1_AND_C_DOCX_REVIEW_V1",
   "outcomes": {
     "canonicalPacketPreview": "pass",
@@ -31,12 +31,18 @@
     "canonicalUiFeatureCommit": "5beb4ff48eb974b028254ce3283a59a649aff4a0",
     "canonicalUiMergeSha": "980557a3f52772b2cc3bd1650e45165023659fed",
     "crashReconciliationFeatureCommit": "561640947f2488d0c3248d587e925aa7e59d6205",
-    "crashReconciliationMergeSha": "314d550199858d055255fa55fc4a457f09c8f495"
+    "crashReconciliationMergeSha": "314d550199858d055255fa55fc4a457f09c8f495",
+    "docxReviewGateCFeatureCommit": "af7b1897bfe8be726f520680e83437f9a3c2f191",
+    "docxReviewGateCMergeSha": "72ee480b0fcc53239c162d5302b41a1c87e82dc4"
   },
   "nonClaims": ["DOCX Apply authority", "structural auto-apply", "comment auto-apply", "cross-scene transaction", "Word sync", "Google Docs sync"],
   "knownLimitations": ["exact apply is same-scene and unique-match only", "same-scene batch is capped", "DOCX tracked text candidates are manual-only and never create apply operations", "Word and Google claims require separate real artifact packets"],
   "delivery": {
-    "status": "implemented_verified_pending_delivery",
-    "bindingBaseSha": "c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886"
+    "status": "delivered_merged_verified",
+    "bindingBaseSha": "c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886",
+    "featureCommit": "af7b1897bfe8be726f520680e83437f9a3c2f191",
+    "pullRequest": 1085,
+    "mergeSha": "72ee480b0fcc53239c162d5302b41a1c87e82dc4",
+    "mergedAtUtc": "2026-07-13T00:12:11Z"
   }
 }

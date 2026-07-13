@@ -109,6 +109,12 @@ test('Gate C evidence artifacts publish one bounded claim authority with all man
   assert.equal(gateC.gateD.status, 'post_v1_not_claimed');
   assert.equal(gateC.gateD.wordEvidence, 'blocked_without_real_word_artifact');
   assert.equal(gateC.gateD.googleDocsEvidence, 'blocked_without_real_google_docs_artifact');
+  assert.equal(gateC.delivery.commitSha, 'af7b1897bfe8be726f520680e83437f9a3c2f191');
+  assert.equal(gateC.delivery.pullRequest, 1085);
+  assert.equal(gateC.delivery.mergeSha, '72ee480b0fcc53239c162d5302b41a1c87e82dc4');
+  assert.equal(matrix.delivery.featureCommit, gateC.delivery.commitSha);
+  assert.equal(manifest.delivery.mergeSha, gateC.delivery.mergeSha);
+  assert.equal(review.delivery.pullRequest, gateC.delivery.pullRequest);
   assert.equal(historical.lifecycleStatus, 'superseded_historical');
   assert.equal(historical.supersededBy, 'IMPORT_EXPORT_ACCEPTANCE.json');
 
