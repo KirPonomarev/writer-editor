@@ -72,7 +72,9 @@ import { buildLargePayloadLineSafeRows } from './largePayloadLineWrap.mjs';
 import {
   createRepoGroundedDesignOsBrowserRuntime,
   buildLayoutPatchFromSpatialState,
+  buildSidebarLayoutModel,
   buildSpatialStateFromLayoutSnapshot,
+  deriveSidebarViewportMode,
 } from './design-os/index.mjs';
 import {
   getToolbarFunctionCatalogEntryById,
@@ -300,12 +302,6 @@ const LEFT_FLOATING_TOOLBAR_STORAGE_KEY = 'yalkenLeftToolbarState';
 const LEFT_TOOLBAR_BUTTON_OFFSETS_STORAGE_KEY = 'yalkenLeftToolbarButtonOffsets';
 const SPATIAL_LAYOUT_STORAGE_KEY_PREFIX = 'yalkenSpatialLayout';
 const SPATIAL_LAYOUT_VERSION = 1;
-const SPATIAL_LAYOUT_MOBILE_BREAKPOINT = 900;
-const SPATIAL_LAYOUT_COMPACT_BREAKPOINT = 1280;
-const SPATIAL_LAYOUT_LEFT_MIN_WIDTH = 200;
-const SPATIAL_LAYOUT_LEFT_MAX_WIDTH = 420;
-const SPATIAL_LAYOUT_RIGHT_MIN_WIDTH = 200;
-const SPATIAL_LAYOUT_RIGHT_MAX_WIDTH = 420;
 const SPATIAL_LAYOUT_DESKTOP_LEFT_BASELINE_WIDTH = 290;
 const SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH = 290;
 const SPATIAL_LAYOUT_COMPACT_LEFT_BASELINE_WIDTH = 260;
@@ -3611,7 +3607,13 @@ function getSnappedFloatingToolbarPosition(shellRect = toolbarShell?.getBounding
   const shellWidth = shellRect?.width || 0;
   const shellHeight = shellRect?.height || 0;
   const baseY = topBarRect ? topBarRect.top + ((topBarRect.height - shellHeight) / 2) : 92;
-  const baseX = topBarRect ? topBarRect.left + ((topBarRect.width - shellWidth) / 2) : (window.innerWidth - shellWidth) / 2;
+  const centeredX = topBarRect ? topBarRect.left + ((topBarRect.width - shellWidth) / 2) : (window.innerWidth - shellWidth) / 2;
+  const leftShellRect = leftToolbarShell?.getBoundingClientRect();
+  const leftReservation = leftShellRect && leftShellRect.width > 0
+    ? leftShellRect.right + 16
+    : topBarRect?.left || 0;
+  const maximumX = topBarRect ? topBarRect.right - shellWidth - 16 : window.innerWidth - shellWidth;
+  const baseX = Math.min(Math.max(centeredX, leftReservation), maximumX);
   return clampFloatingToolbarPosition({
     x: baseX,
     y: baseY,
@@ -3728,6 +3730,15 @@ function applyFloatingToolbarState(partialState, persist = true) {
 function restoreFloatingToolbarPosition() {
   if (!toolbarShell) return;
   const saved = readFloatingToolbarState();
+  if (saved && !saved.isDetached) {
+    const snapped = getSnappedFloatingToolbarPosition();
+    applyFloatingToolbarState({
+      ...saved,
+      x: snapped.x,
+      y: snapped.y,
+    }, true);
+    return;
+  }
   applyFloatingToolbarState(saved || getDefaultFloatingToolbarState(), Boolean(saved));
 }
 
@@ -6747,13 +6758,7 @@ function getSpatialLayoutViewportWidth() {
 }
 
 function getSpatialLayoutMode(viewportWidth = getSpatialLayoutViewportWidth()) {
-  if (viewportWidth < SPATIAL_LAYOUT_MOBILE_BREAKPOINT) {
-    return 'mobile';
-  }
-  if (viewportWidth < SPATIAL_LAYOUT_COMPACT_BREAKPOINT) {
-    return 'compact';
-  }
-  return 'desktop';
+  return deriveSidebarViewportMode(viewportWidth);
 }
 
 function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutViewportWidth()) {
@@ -6796,33 +6801,15 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
 
 function getSpatialLayoutConstraintsForViewport(viewportWidth = getSpatialLayoutViewportWidth()) {
   const mode = getSpatialLayoutMode(viewportWidth);
-  if (mode === 'mobile') {
-    return {
-      mode,
-      leftMin: SPATIAL_LAYOUT_LEFT_MIN_WIDTH,
-      leftMax: SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH,
-      rightMin: SPATIAL_LAYOUT_LEFT_MIN_WIDTH,
-      rightMax: SPATIAL_LAYOUT_MOBILE_RIGHT_BASELINE_WIDTH,
-      rightVisible: false,
-    };
-  }
-  if (mode === 'compact') {
-    return {
-      mode,
-      leftMin: 250,
-      leftMax: 320,
-      rightMin: 250,
-      rightMax: 320,
-      rightVisible: true,
-    };
-  }
+  const model = buildSidebarLayoutModel(
+    spatialLayoutState || getSpatialLayoutBaselineForViewport(viewportWidth),
+    { viewportWidth, viewportMode: mode },
+  );
   return {
-    mode,
-    leftMin: 280,
-    leftMax: SPATIAL_LAYOUT_LEFT_MAX_WIDTH,
-    rightMin: 280,
-    rightMax: SPATIAL_LAYOUT_RIGHT_MAX_WIDTH,
-    rightVisible: true,
+    mode: model.viewportMode,
+    ...model.constraints,
+    layoutVariant: model.layoutVariant,
+    rightVisible: model.rightVisible,
   };
 }
 
@@ -6851,6 +6838,7 @@ function normalizeSpatialLayoutState(rawState, viewportWidth = getSpatialLayoutV
     },
     {
       viewportMode: constraints.mode,
+      viewportWidth,
       rightVisible: constraints.rightVisible,
     }
   );
@@ -6907,12 +6895,14 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
     viewportWidth,
     viewportHeight: Math.max(0, Math.floor(window.innerHeight || document.documentElement.clientHeight || 0)),
     shellMode: constraints.mode === 'compact' ? 'COMPACT_DOCKED' : 'CALM_DOCKED',
+    viewportMode: constraints.mode,
     rightVisible,
   });
 
   if (appLayout) {
     appLayout.style.setProperty('--app-left-sidebar-width', `${layoutPatch.left_width}px`);
     appLayout.style.setProperty('--app-right-sidebar-width', `${layoutPatch.right_width}px`);
+    appLayout.dataset.sidebarLayout = constraints.layoutVariant;
   }
 
   if (rightSidebar) {
@@ -7699,12 +7689,15 @@ function startSpatialResize(side, event) {
     rightVisible: getSpatialLayoutConstraintsForViewport().rightVisible,
     pointerId,
     pointerTarget,
+    activeHandle: pointerTarget,
     captureBound: false,
     mouseFallbackBound: false,
     pointerFallbackBound: false,
   };
   document.body.style.cursor = 'col-resize';
   document.body.style.userSelect = 'none';
+  pointerTarget?.classList.add('is-resizing');
+  appLayout?.classList.add('is-sidebar-resizing');
   if (bindCapturedSpatialResizeStream(pointerTarget, pointerId)) {
     spatialResizeDragState.captureBound = true;
   }
@@ -7749,6 +7742,7 @@ function stopSpatialResize() {
   const {
     pointerId,
     pointerTarget,
+    activeHandle,
     captureBound,
     mouseFallbackBound,
     pointerFallbackBound,
@@ -7756,6 +7750,8 @@ function stopSpatialResize() {
   spatialResizeDragState = null;
   document.body.style.cursor = '';
   document.body.style.userSelect = '';
+  activeHandle?.classList.remove('is-resizing');
+  appLayout?.classList.remove('is-sidebar-resizing');
   if (captureBound) {
     unbindCapturedSpatialResizeStream(pointerTarget, pointerId);
   }

@@ -26,6 +26,9 @@ const RAIL_WIDTH_CONFIG_BY_MODE = Object.freeze({
     rightMin: 280,
     rightMax: 420,
     rightBaseline: 290,
+    editorMin: 640,
+    shellChrome: 52,
+    dualRailMinViewportWidth: 1252,
   }),
   compact: Object.freeze({
     leftMin: 250,
@@ -34,6 +37,9 @@ const RAIL_WIDTH_CONFIG_BY_MODE = Object.freeze({
     rightMin: 250,
     rightMax: 320,
     rightBaseline: 260,
+    editorMin: 480,
+    shellChrome: 40,
+    dualRailMinViewportWidth: 1020,
   }),
   mobile: Object.freeze({
     leftMin: 200,
@@ -42,9 +48,16 @@ const RAIL_WIDTH_CONFIG_BY_MODE = Object.freeze({
     rightMin: 200,
     rightMax: 240,
     rightBaseline: 240,
+    editorMin: 0,
+    shellChrome: 20,
+    dualRailMinViewportWidth: Number.POSITIVE_INFINITY,
     rightVisible: false,
   }),
 });
+
+const GLOBAL_RIGHT_RAIL_MIN = RAIL_WIDTH_CONFIG_BY_MODE.mobile.rightMin;
+const GLOBAL_RIGHT_RAIL_MAX = RAIL_WIDTH_CONFIG_BY_MODE.desktop.rightMax;
+const GLOBAL_RIGHT_RAIL_BASELINE = RAIL_WIDTH_CONFIG_BY_MODE.desktop.rightBaseline;
 
 function clampInt(value, min, max, fallback) {
   const numeric = Number.isFinite(value) ? Math.trunc(value) : Math.trunc(fallback);
@@ -64,6 +77,13 @@ function getRailWidthConfig(mode) {
   return RAIL_WIDTH_CONFIG_BY_MODE.desktop;
 }
 
+export function deriveSidebarViewportMode(viewportWidth) {
+  const width = clampInt(viewportWidth, 320, 4096, 1440);
+  if (width < 900) return 'mobile';
+  if (width < 1280) return 'compact';
+  return 'desktop';
+}
+
 function resolveRailWidthCandidate(source, keys, min, max, baseline) {
   const candidates = Array.isArray(keys)
     ? keys.map((key) => source?.[key])
@@ -76,6 +96,93 @@ function resolveRailWidthCandidate(source, keys, min, max, baseline) {
   }
 
   return baseline;
+}
+
+function fitDualRailWidthsToViewport(leftWidth, rightWidth, config, viewportWidth) {
+  const minimumCombined = config.leftMin + config.rightMin;
+  const maximumCombined = config.leftMax + config.rightMax;
+  const viewportBudget = viewportWidth - config.editorMin - config.shellChrome;
+  const combinedBudget = Math.max(minimumCombined, Math.min(maximumCombined, viewportBudget));
+  const desiredCombined = leftWidth + rightWidth;
+  if (desiredCombined <= combinedBudget) return { leftWidth, rightWidth };
+
+  const leftExtra = Math.max(0, leftWidth - config.leftMin);
+  const rightExtra = Math.max(0, rightWidth - config.rightMin);
+  const desiredExtra = leftExtra + rightExtra;
+  const extraBudget = Math.max(0, combinedBudget - minimumCombined);
+  if (desiredExtra === 0 || extraBudget === 0) {
+    return { leftWidth: config.leftMin, rightWidth: config.rightMin };
+  }
+
+  const fittedLeftExtra = Math.min(leftExtra, Math.round(extraBudget * (leftExtra / desiredExtra)));
+  const fittedRightExtra = Math.min(rightExtra, extraBudget - fittedLeftExtra);
+  return {
+    leftWidth: config.leftMin + fittedLeftExtra,
+    rightWidth: config.rightMin + fittedRightExtra,
+  };
+}
+
+export function buildSidebarLayoutModel(source = {}, options = {}) {
+  const viewportWidth = clampInt(
+    options.viewportWidth ?? source.viewportWidth ?? source.viewport_width,
+    320,
+    4096,
+    1440,
+  );
+  const viewportMode = ['desktop', 'compact', 'mobile'].includes(options.viewportMode)
+    ? options.viewportMode
+    : deriveSidebarViewportMode(viewportWidth);
+  const config = getRailWidthConfig(viewportMode);
+  const rightVisible = options.rightVisible !== false
+    && config.rightVisible !== false
+    && viewportWidth >= config.dualRailMinViewportWidth;
+  let leftWidth = resolveRailWidthCandidate(
+    source,
+    ['leftSidebarWidth', 'left_width'],
+    config.leftMin,
+    config.leftMax,
+    config.leftBaseline,
+  );
+  const storedRightWidth = resolveRailWidthCandidate(
+    source,
+    ['rightSidebarWidth', 'right_width'],
+    GLOBAL_RIGHT_RAIL_MIN,
+    GLOBAL_RIGHT_RAIL_MAX,
+    GLOBAL_RIGHT_RAIL_BASELINE,
+  );
+  let rightWidth = rightVisible
+    ? resolveRailWidthCandidate(
+      source,
+      ['rightSidebarWidth', 'right_width'],
+      config.rightMin,
+      config.rightMax,
+      config.rightBaseline,
+    )
+    : storedRightWidth;
+
+  if (rightVisible) {
+    ({ leftWidth, rightWidth } = fitDualRailWidthsToViewport(
+      leftWidth,
+      rightWidth,
+      config,
+      viewportWidth,
+    ));
+  }
+
+  return {
+    viewportWidth,
+    viewportMode,
+    layoutVariant: rightVisible ? 'dual' : 'single',
+    rightVisible,
+    leftSidebarWidth: leftWidth,
+    rightSidebarWidth: rightWidth,
+    constraints: {
+      leftMin: config.leftMin,
+      leftMax: config.leftMax,
+      rightMin: config.rightMin,
+      rightMax: config.rightMax,
+    },
+  };
 }
 
 export function deriveRuntimePlatformId() {
@@ -109,25 +216,19 @@ export function buildLayoutPatchFromSpatialState(state, options = {}) {
   const shellMode = typeof options.shellMode === 'string' && options.shellMode.trim()
     ? options.shellMode.trim()
     : 'CALM_DOCKED';
-  const config = getRailWidthConfig(shellMode === 'COMPACT_DOCKED' ? 'compact' : 'desktop');
-  const rightVisible = options.rightVisible !== false && config.rightVisible !== false;
-  const leftWidth = resolveRailWidthCandidate(
-    source,
-    ['leftSidebarWidth', 'left_width'],
-    config.leftMin,
-    config.leftMax,
-    config.leftBaseline
-  );
-  const rightWidth = resolveRailWidthCandidate(
-    source,
-    ['rightSidebarWidth', 'right_width'],
-    config.rightMin,
-    config.rightMax,
-    config.rightBaseline
-  );
+  const viewportMode = ['desktop', 'compact', 'mobile'].includes(options.viewportMode)
+    ? options.viewportMode
+    : shellMode === 'COMPACT_DOCKED'
+      ? 'compact'
+      : deriveSidebarViewportMode(viewportWidth);
+  const model = buildSidebarLayoutModel(source, {
+    viewportWidth,
+    viewportMode,
+    rightVisible: options.rightVisible,
+  });
   return {
-    left_width: leftWidth,
-    right_width: rightVisible ? rightWidth : config.rightBaseline,
+    left_width: model.leftSidebarWidth,
+    right_width: model.rightSidebarWidth,
     bottom_height: 96,
     editor_root: 'docked',
     viewport_width: viewportWidth,
@@ -140,28 +241,17 @@ export function buildSpatialStateFromLayoutSnapshot(layout, options = {}) {
   const viewportWidth = clampInt(layout?.viewport_width, 320, 4096, options.viewportWidth || 1440);
   const viewportMode = typeof options.viewportMode === 'string' && options.viewportMode.trim()
     ? options.viewportMode.trim()
-    : viewportWidth <= 900 ? 'mobile' : viewportWidth <= 1280 ? 'compact' : 'desktop';
-  const config = getRailWidthConfig(viewportMode);
-  const rightVisible = options.rightVisible !== false && config.rightVisible !== false;
-  const leftWidth = resolveRailWidthCandidate(
-    layout,
-    ['leftSidebarWidth', 'left_width'],
-    config.leftMin,
-    config.leftMax,
-    config.leftBaseline
-  );
-  const rightWidth = resolveRailWidthCandidate(
-    layout,
-    ['rightSidebarWidth', 'right_width'],
-    config.rightMin,
-    config.rightMax,
-    config.rightBaseline
-  );
-  return {
-    leftSidebarWidth: leftWidth,
-    rightSidebarWidth: rightVisible ? rightWidth : config.rightBaseline,
+    : deriveSidebarViewportMode(viewportWidth);
+  const model = buildSidebarLayoutModel(layout, {
     viewportWidth,
     viewportMode,
+    rightVisible: options.rightVisible,
+  });
+  return {
+    leftSidebarWidth: model.leftSidebarWidth,
+    rightSidebarWidth: model.rightSidebarWidth,
+    viewportWidth,
+    viewportMode: model.viewportMode,
     source: 'design-os-runtime',
   };
 }
