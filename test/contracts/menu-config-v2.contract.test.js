@@ -57,7 +57,7 @@ test('menu-config v2 contract: review menu exposes local packet import export an
   });
   assert.deepEqual(items.get('review-open-docx-review-preview-session'), {
     id: 'review-open-docx-review-preview-session',
-    label: 'Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...',
+    label: 'Open DOCX Review (Comments; tracked text candidates are manual-only)...',
     labelKey: 'menu.review.openDocxReviewPreviewSession',
     command: 'cmd.project.review.openDocxReviewPreviewSession',
   });

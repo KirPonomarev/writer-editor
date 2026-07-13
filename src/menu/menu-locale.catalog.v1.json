@@ -208,9 +208,9 @@
       "en": "Export Review Packet..."
     },
     "menu.review.openDocxReviewPreviewSession": {
-      "base": "Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...",
-      "ru": "Открыть доказательства DOCX Review (предпросмотр комментариев; диагностика исправлений)...",
-      "en": "Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)..."
+      "base": "Open DOCX Review (Comments; tracked text candidates are manual-only)...",
+      "ru": "Открыть DOCX Review (комментарии; кандидаты правок только вручную)...",
+      "en": "Open DOCX Review (Comments; tracked text candidates are manual-only)..."
     },
     "menu.review.openMode": {
       "base": "Open Review Mode",

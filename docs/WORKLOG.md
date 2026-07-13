@@ -3,6 +3,15 @@
 Короткая хронология изменений и решений. Это не полный лог чата, а сжатые записи “что сделали / зачем / что дальше”.
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
+## 2026-07-13
+- Review Bridge Gate C: opened owner-approved `REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001` from binding base `c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886`; delivery is pending.
+- Bounded tracked text: adjacent DOCX deletion plus insertion becomes one manual TextChange candidate, standalone insertions and deletions remain separate manual candidates, and none of them creates Apply authority.
+- Structural safety: moves, tables, nested revisions, and malformed tracked-change XML stay manual-only or fail closed; comments remain separate from placements and no preview writes manuscript or project truth.
+- Product UI repair: the default `roman-section` draft can now open DOCX Review preview with its real target type, while exact Apply remains blocked; the Review menu label now states that tracked text candidates are manual-only.
+- Practical evidence: real Electron DOCX Review UI shows comments and one tracked replacement candidate with zero enabled Apply buttons, no receipt, no recovery, unchanged scene bytes, zero network requests, and a nonblank screenshot.
+- External consumer smoke: LibreOffice opens both deterministic DOCX goldens and preserves the bounded text order; this is not Microsoft Word or Google Docs evidence.
+- Gate D remains unclaimed because no real Word artifact or Google Docs artifact was supplied or created; synthetic evidence packets are not accepted as editor-specific proof.
+
 ## 2026-07-12
 - Review Bridge Phase 06 delivery: PR `1083` merged feature commit `01b2a5f28fff9c2f3f9451edc1827c0aebf002e7` at merge SHA `3f71a6fa3b10cecf0973c80a1865552b57e0c180`; OSS, Ubuntu parity, Windows parity, full suite, governance, production audit, and bounded SAST evidence are green.
 - Phase 06 factual rebind closes `FEATURE_COMPLETE_V1` for Gates A and B only; Gates C and D, DOCX tracked-change candidates, editor-specific compatibility claims, and cross-scene transactions remain separate owner-approved contours.

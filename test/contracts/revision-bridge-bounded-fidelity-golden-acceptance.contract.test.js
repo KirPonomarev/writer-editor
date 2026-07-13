@@ -9,10 +9,11 @@ const { pathToFileURL } = require('node:url');
 const ROOT = path.resolve(__dirname, '..', '..');
 const FIXTURE_ROOT = path.join(ROOT, 'test', 'fixtures', 'revision-bridge', 'v1');
 const STATUS_ROOT = path.join(ROOT, 'docs', 'OPS', 'STATUS');
-const BASE_SHA = '5456f7f3dd689559d63bb10181e8998464540f72';
+const BASE_SHA = 'c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886';
+const PHASE_06_BASE_SHA = '5456f7f3dd689559d63bb10181e8998464540f72';
 const EXPECTED_HASHES = Object.freeze({
   'docx-minimal-export-v1.docx': '2897ba060f74e1878344aec35f121f8f77e41dc6104a7abb8c4898b0e487d03a',
-  'docx-review-evidence-v1.docx': 'fa1ed83a1b400a7670151c00a7ee4f39a7272bccb2e9b69310cf206bd6477b7e',
+  'docx-review-evidence-v1.docx': 'bbf25574580222241794fe3decea4c6cf6c034c9c07da2bd76463603cd8acc6e',
   'review-packet-v1.json': 'f45c084b8ec8493b1f5621f2a416c1eba9c25ee2c4d56dbcd314f28dc94bfb97',
   'txt-content-v1.txt': '1e8d973edeb9871226e4b495a1fc1bef02f8c5e7102e341cfb9d8d0003e25919',
   'markdown-content-v1.md': '7e69a45fc5b374733b745a2e6f3f1ed48af0e8d5124bb37de277186bca2fe66d',
@@ -46,20 +47,21 @@ async function loadBridge() {
   return import(pathToFileURL(path.join(ROOT, 'src', 'io', 'revisionBridge', 'index.mjs')).href);
 }
 
-test('Phase 06 evidence artifacts publish one bounded claim authority with all mandatory fields', () => {
+test('Gate C evidence artifacts publish one bounded claim authority with all mandatory fields', () => {
   const matrix = readStatus('CAPABILITY_MATRIX.json');
   const manifest = readStatus('GOLDEN_SET_MANIFEST.json');
   const review = readStatus('REVIEW_BRIDGE_ACCEPTANCE.json');
   const importExport = readStatus('IMPORT_EXPORT_ACCEPTANCE.json');
   const status = readStatus('REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_STATUS.json');
+  const gateC = readStatus('REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001_STATUS.json');
   const historical = readStatus('IMPORT_EXPORT_PRODUCT_ACCEPTANCE_GATE_001_STATUS.json');
 
   assert.equal(matrix.baseSha, BASE_SHA);
-  assert.equal(matrix.status, 'delivered_merged_verified');
-  assert.equal(matrix.releaseClaim.label, 'FEATURE_COMPLETE_V1');
+  assert.ok(['implemented_verified_pending_delivery', 'delivered_merged_verified'].includes(matrix.status));
+  assert.equal(matrix.releaseClaim.label, 'FEATURE_COMPLETE_V1_PLUS_GATE_C');
   assert.equal(matrix.releaseClaim.gates.A_CONTENT_IMPORT_EXPORT_V1, 'pass');
   assert.equal(matrix.releaseClaim.gates.B_LOCAL_REVIEW_BRIDGE_V1, 'pass');
-  assert.equal(matrix.releaseClaim.gates.C_DOCX_REVIEW_V1, 'post_v1_not_claimed');
+  assert.equal(matrix.releaseClaim.gates.C_DOCX_REVIEW_V1, 'pass');
   assert.equal(matrix.releaseClaim.gates.D_EDITOR_SPECIFIC_CLAIMS, 'post_v1_not_claimed');
   assert.deepEqual(matrix.rows.map((row) => row.rowId), [
     'docx-minimal-export-v1',
@@ -69,27 +71,48 @@ test('Phase 06 evidence artifacts publish one bounded claim authority with all m
     'review-packet-v1-exact-apply',
     'docx-review-evidence-v1',
   ]);
-  assert.equal(matrix.rows.find((row) => row.rowId === 'docx-review-evidence-v1').apply, 'not_supported');
+  const docxReviewRow = matrix.rows.find((row) => row.rowId === 'docx-review-evidence-v1');
+  assert.equal(docxReviewRow.status, 'bounded_supported');
+  assert.equal(docxReviewRow.apply, 'not_supported');
+  assert.equal(docxReviewRow.reviewImport.some((item) => item.includes('manual TextChange candidate')), true);
   assert.equal(manifest.baseSha, BASE_SHA);
   assert.equal(manifest.artifacts.length, 5);
   assert.deepEqual(Object.fromEntries(manifest.artifacts.map((item) => [item.fileName, item.sha256])), EXPECTED_HASHES);
   assert.equal(review.baseSha, BASE_SHA);
-  assert.equal(review.gate, 'B_LOCAL_REVIEW_BRIDGE_V1');
-  assert.equal(review.status, 'delivered_merged_verified');
-  assert.equal(importExport.baseSha, BASE_SHA);
+  assert.equal(review.gate, 'B_LOCAL_REVIEW_BRIDGE_V1_AND_C_DOCX_REVIEW_V1');
+  assert.ok(['implemented_verified_pending_delivery', 'delivered_merged_verified'].includes(review.status));
+  assert.equal(importExport.baseSha, PHASE_06_BASE_SHA);
   assert.equal(importExport.gate, 'A_CONTENT_IMPORT_EXPORT_V1');
   assert.equal(importExport.status, 'delivered_merged_verified');
-  assert.equal(status.baseSha, BASE_SHA);
+  assert.equal(status.baseSha, PHASE_06_BASE_SHA);
   assert.equal(status.status, 'delivered_merged_verified');
   assert.equal(status.delivery.commitSha, '01b2a5f28fff9c2f3f9451edc1827c0aebf002e7');
   assert.equal(status.delivery.pullRequest, 1083);
   assert.equal(status.delivery.mergeSha, '3f71a6fa3b10cecf0973c80a1865552b57e0c180');
   assert.equal(status.implementation.realArtifacts, 5);
   assert.equal(status.implementation.capabilityRows, 6);
+  assert.equal(gateC.baseSha, BASE_SHA);
+  assert.ok(['implemented_verified_pending_delivery', 'delivered_merged_verified'].includes(gateC.status));
+  assert.equal(gateC.ownerApproval.approved, true);
+  assert.equal(gateC.ownerApproval.selectedGate, 'C_DOCX_REVIEW_V1');
+  assert.equal(gateC.scope.zeroWritePreview, true);
+  assert.equal(gateC.scope.docxTrackedTextCandidates, true);
+  assert.equal(gateC.scope.docxApplyAuthority, false);
+  assert.equal(gateC.scope.structuralAutoApply, false);
+  assert.equal(gateC.acceptance.sceneBytesUnchanged, 'pass');
+  assert.equal(gateC.acceptance.projectFilesUnchanged, 'pass');
+  assert.equal(gateC.acceptance.receiptAbsent, 'pass');
+  assert.equal(gateC.acceptance.recoveryAbsent, 'pass');
+  assert.equal(gateC.audit.officialSuite, '614_total_550_pass_64_skip_0_fail');
+  assert.equal(gateC.audit.productionDependencyAudit, '0_vulnerabilities');
+  assert.match(gateC.audit.semgrep, /^0_new_findings/u);
+  assert.equal(gateC.gateD.status, 'post_v1_not_claimed');
+  assert.equal(gateC.gateD.wordEvidence, 'blocked_without_real_word_artifact');
+  assert.equal(gateC.gateD.googleDocsEvidence, 'blocked_without_real_google_docs_artifact');
   assert.equal(historical.lifecycleStatus, 'superseded_historical');
   assert.equal(historical.supersededBy, 'IMPORT_EXPORT_ACCEPTANCE.json');
 
-  for (const artifact of [matrix, manifest, review, importExport, status]) {
+  for (const artifact of [matrix, manifest, review, importExport, status, gateC]) {
     assert.equal(Array.isArray(artifact.actualCommands) && artifact.actualCommands.length > 0, true);
     assert.equal(Object.keys(artifact.hashes).length > 0, true);
     assert.equal(Array.isArray(artifact.outcomes) || (artifact.outcomes && typeof artifact.outcomes === 'object'), true);
@@ -155,7 +178,7 @@ test('Phase 06 real minimal DOCX preserves semantic export and reaches content i
   )), true);
 });
 
-test('Phase 06 real DOCX Review file keeps comments and tracked changes evidence-only', async () => {
+test('Gate C real DOCX Review file keeps comments and emits manual tracked text candidates', async () => {
   const bridge = await loadBridge();
   const bytes = readFixture('docx-review-evidence-v1.docx');
   const report = bridge.buildDocxReviewPreflightReportFromZipBytes(bytes);
@@ -173,8 +196,13 @@ test('Phase 06 real DOCX Review file keeps comments and tracked changes evidence
   assert.equal(candidate.status, 'ready');
   assert.equal(candidate.reviewPacket.commentThreads[0].messages[0].body, 'Keep this comment text.');
   assert.equal(candidate.reviewPacket.commentPlacements.length, 1);
-  assert.equal(candidate.reviewPacket.textChanges.length, 0);
-  assert.equal(candidate.summary.trackedChangesDiagnosticOnly, true);
+  assert.equal(candidate.reviewPacket.textChanges.length, 1);
+  assert.equal(candidate.reviewPacket.textChanges[0].match.kind, 'manual');
+  assert.equal(candidate.reviewPacket.textChanges[0].match.quote, 'beta');
+  assert.equal(candidate.reviewPacket.textChanges[0].replacementText, 'delta');
+  assert.equal(candidate.reviewPacket.structuralChanges.length, 0);
+  assert.equal(candidate.summary.trackedChangesDiagnosticOnly, false);
+  assert.equal(candidate.summary.trackedTextCandidateCount, 1);
   assert.equal(candidate.canAutoApply, false);
   assert.equal(candidate.canImportMutate, false);
   assert.equal(candidate.canWriteStorage, false);

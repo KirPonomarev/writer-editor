@@ -49,7 +49,7 @@ test('Phase 05 Review menu separates packet Apply from bounded DOCX evidence', (
   assert.equal(items.get('review-export-local-packet').label, 'Export Review Packet...');
   assert.equal(
     items.get('review-open-docx-review-preview-session').label,
-    'Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...',
+    'Open DOCX Review (Comments; tracked text candidates are manual-only)...',
   );
 });
 
@@ -100,13 +100,13 @@ test('Phase 05 native menu intents open the existing renderer preview flows', ()
   assert.match(renderer, /commandId === COMMAND_IDS\.PROJECT_EXPORT_MARKDOWN_V1[\s\S]*handleMarkdownExportUiPath\(\)/u);
 });
 
-test('Phase 05 normalized artifact and status preserve exact merged product truth', () => {
+test('current normalized artifact and historical Phase 05 status remain explicitly separated', () => {
   const artifact = readJson('docs/OPS/ARTIFACTS/menu/menu.normalized.json');
   const status = readJson('docs/OPS/STATUS/REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001_STATUS.json');
   const fileMenu = artifact.menus.find((menu) => menu.id === 'file');
   const reviewMenu = artifact.menus.find((menu) => menu.id === 'review');
 
-  assert.equal(artifact.normalizedHashSha256, '6fa119570e880f3746def67cdc6d649c42e0dc893a0cfb57bff7ed45951b3750');
+  assert.equal(artifact.normalizedHashSha256, 'e442a34f5e27d8d7fb9ac2b1eea92153a1bc187e214d6776d317ed249b2c476c');
   assert.ok(fileMenu.items.some(
     (item) => item.id === 'file-import-docx-content' && item.visibilityPolicy === 'visible_enabled',
   ));
@@ -116,6 +116,8 @@ test('Phase 05 normalized artifact and status preserve exact merged product trut
   assert.ok(reviewMenu.items.some((item) => item.id === 'review-open-docx-review-preview-session'));
   assert.equal(status.taskId, 'REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001');
   assert.equal(status.status, 'delivered_merged_verified');
+  assert.equal(status.lifecycleStatus, 'superseded_historical');
+  assert.equal(status.supersededBy, 'REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001_STATUS.json');
   assert.equal(status.baseSha, 'b6c2b8fba9c303ce95055e9168d72cb0390c167e');
   assert.equal(status.scope.indexHtmlChanged, false);
   assert.equal(status.scope.cssChanged, false);

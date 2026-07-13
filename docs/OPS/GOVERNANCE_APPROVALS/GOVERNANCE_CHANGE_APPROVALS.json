@@ -268,34 +268,6 @@
       "rationale": "Approve bounded Word evidence contract allowlist sync for the release claim dossier binding contour; no Word runtime code, import, apply, export, storage, dependency, UI, release readiness, Word parity, full Word support, user-facing release, full fidelity, layout parity, or format support claim is introduced."
     },
     {
-      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001_STATUS.json",
-      "sha256": "b0ad95df71dd5070d1bff2f41a19dc3143792bbfb73b0a046d476ac09083e2aa",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve bounded DOCX diagnostic evidence surface status and delivery rebind; tracked-changes-only DOCX may become visible read-only diagnosticItems in Review, while no DOCX import safe-create, DOCX export, textChanges, applyOps, manuscript write, project truth write, receipt, recovery, dependency, network, release readiness, Word parity, or full DOCX review import claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-docx-diagnostic-evidence-surface.contract.test.js",
-      "sha256": "8af4d9e06ff175d3b0d7aa54fb42a8c5a0ae92fbfe99b7fc321731900bfbe8de",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve contract guard for the bounded DOCX diagnostic evidence surface; it binds status, no-import and no-apply claims, code markers, targeted tests, and current docs without introducing storage, export, safe-create, dependency, network, release, Word parity, or full DOCX review import authority."
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
-      "sha256": "a80b2cf9035df7f3ef7212814015872dbf764a4718213d31a6363dd24025c969",
-      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_GOVERNANCE_BYTE_TRUTH_REPAIR",
-      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
-      "rationale": "Rebind the pre-existing DOCX review preview-session command-surface contract approval to its current mainline bytes discovered by the Phase 01 governance audit; the contract itself is unchanged in this contour and no DOCX apply, storage, receipt, recovery, readiness, or import-export widening is introduced."
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",
-      "sha256": "3af2a26a274607e4416c89cc51f8e849a5ea70174b72f2679bc5f67ce78e2a40",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001",
-      "approvedAtUtc": "2026-07-02T00:00:00.000Z",
-      "rationale": "Approve pure-builder contract update proving tracked changes build only a bounded diagnostic-only visibility packet with diagnosticItems and no textChanges, structuralChanges, applyOps, receipt, recovery, disk authority, command authority, export authority, safe-create import, release, Word parity, or full DOCX review import claim."
-    },
-    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_APPLY_LANE_PRODUCT_CLOSEOUT_REBIND_001_STATUS.json",
       "sha256": "6400907bc4dd30c3decd54cf4cdaee884abc913272c405c66fe44a0c769b42c7",
       "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_GATE_001",
@@ -336,13 +308,6 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_COMMENT_ONLY_PRODUCT_PROOF_001",
       "approvedAtUtc": "2026-07-02T00:00:00.000Z",
       "rationale": "Approve bounded product proof status for DOCX comments-only Review preview; the proof binds Review menu local DOCX selection to in-memory commentThreads and manual commentPlacements on the Review surface, while preserving no tracked-change apply, no textChanges from DOCX tracked changes, no applyOps, no receipt, no recovery, no manuscript write, no project truth write, no import-export MVP expansion, no release readiness, no Word parity, and no full DOCX review import claim."
-    },
-    {
-      "filePath": "test/contracts/menu-config-v2.contract.test.js",
-      "sha256": "f607c3af6a93cb9c3bbc75ee60e1f632d7a610fc50aa9f59e3892d5cf1a21fa1",
-      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
-      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
-      "rationale": "Approve updating the canonical menu V2 contract to bind the exact Review Packet Apply and DOCX Review Evidence labels while preserving command IDs, menu ownership, clear-session behavior, and existing schema and gate assertions."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_PREFLIGHT_001_STATUS.json",
@@ -3180,32 +3145,11 @@
       "rationale": "MENU_I18N_001 governance rebind and approvals for strict doctor alignment."
     },
     {
-      "filePath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-      "sha256": "8e0026e6097dac524498a92815473f995d595559f1f18653c0217f6363ab6fdd",
-      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
-      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
-      "rationale": "Approve the regenerated canonical minimal-profile menu artifact exposing bounded DOCX, TXT, Markdown, Review Packet, and DOCX Review Evidence product entries through existing flows, with honest labels, no HTML or CSS change, no dependency, no path or write-authority widening, and no DOCX Apply or release-readiness claim."
-    },
-    {
-      "filePath": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
-      "sha256": "5f525aa6677c9349c8162fc4e8e97b8a4ff5416356e9f8ebce51f7360f53cc1b",
-      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
-      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
-      "rationale": "Approve the artifact lock rebind for the Phase 05 canonical menu artifact and exact byte hash; source remains the existing menu system and no dependency, network, remote code, storage, Apply authority, or fidelity claim is expanded."
-    },
-    {
       "filePath": "docs/OPS/STATUS/MENU_CONFIG_NORMALIZATION_SPEC_v1.json",
       "sha256": "51e5510093e5c4b4daf0a83828ebeefe7d0481b2270800ce8812aefc4d4994d4",
       "approvedBy": "ticket:MENU_HIDE_SHOW_REORDER_001",
       "approvedAtUtc": "2026-04-10T21:16:30.000Z",
       "rationale": "MENU_HIDE_SHOW_REORDER_001 governance rebind for normalization spec shape update."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
-      "sha256": "5ffdf6ff7c30d465c384d15f497bd16c516382d5250cc03930d450788409e3fb",
-      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
-      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
-      "rationale": "Approve the default minimal menu snapshot rebind to the Phase 05 authored discoverability and label truth; the snapshot records existing command flows only and does not change visual structure, storage, dependencies, or Apply scope."
     },
     {
       "filePath": "scripts/ops/menu-config-normalize.mjs",
@@ -3747,13 +3691,6 @@
       "rationale": "Approve the DOCX content local-file VM harness binding to the shared bounded-reader contract and typed oversized or replacement errors while preserving pathless preview, zero-write intake, hostile DOCX gates, and renderer authority denial."
     },
     {
-      "filePath": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
-      "sha256": "ae230e6048946eb5d4c19d654f2786d199ecdb842b7c4e66f4173d95b69f30ac",
-      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
-      "approvedAtUtc": "2026-07-12T21:56:00.000Z",
-      "rationale": "Approve the DOCX Review local-file contract label rebind to explicit Evidence, Comments preview, and Tracked changes diagnostic wording while retaining bounded reads, in-memory evidence-only sessions, no text candidates from tracked changes, and zero manuscript writes."
-    },
-    {
       "filePath": "test/contracts/revision-bridge-file-authority-hardening.contract.test.js",
       "sha256": "05ad25723cf5c7c6ffb805c31a36fff4ec0119f15d96038a65cb51123ff73f1c",
       "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001_DELIVERY_REBIND",
@@ -3796,13 +3733,6 @@
       "rationale": "Approve the Phase 04 product contract delivery rebind to exact PR 1079 feature and merge evidence while retaining canonical doc-v2 import, saved-scene export, dirty refusal, semantic goldens, 72 inline vectors, authoritative losses, and all bounded nonclaims."
     },
     {
-      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001_STATUS.json",
-      "sha256": "bd8790b49263a87a2505de35a0d45ba4be8c318901f31c90abfe5f068f95019e",
-      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001_DELIVERY_REBIND",
-      "approvedAtUtc": "2026-07-12T22:08:00.000Z",
-      "rationale": "Approve the Phase 05 delivery rebind to PR 1081, feature commit c8c80775f469c38be40a917955f667348b491767, merge SHA bcfde6816bd340a60a95c6a0c6cd8e738bdca15c, merged checks, and delivered_merged_verified while preserving all bounded menu, alias, authority, fidelity, and release nonclaims."
-    },
-    {
       "filePath": "test/contracts/command-visibility-matrix.contract.test.js",
       "sha256": "280a103278b812b4d318a1903370d450b659f6506e59a9813b1eff88ace6c4d3",
       "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
@@ -3815,27 +3745,6 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
       "approvedAtUtc": "2026-07-12T21:56:00.000Z",
       "rationale": "Approve menu single-source contract coverage for native menu intents opening existing product UI flows while preserving structured Markdown payload dispatch through the command surface kernel and existing DOCX export preview routing."
-    },
-    {
-      "filePath": "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
-      "sha256": "bd42761b127bdc4d2c5b002b4a3555d94ad5b2c3470858f43625ded80a7f6c11",
-      "approvedBy": "ticket:REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001_DELIVERY_REBIND",
-      "approvedAtUtc": "2026-07-12T22:08:00.000Z",
-      "rationale": "Approve the Phase 05 product contract delivery rebind to exact PR 1081 feature and merge evidence while retaining complete File and Review menu coverage, bounded labels, canonical palette-only Markdown visibility, existing-flow routing, artifact truth, and no-authority nonclaims."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/CAPABILITY_MATRIX.json",
-      "sha256": "0330f9663475d4ff1832488f973bb5ee8a4bb726ed466676de15a960c72522c0",
-      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_DELIVERY_REBIND",
-      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
-      "rationale": "Approve the Phase 06 Capability Matrix delivery rebind to feature commit 01b2a5f2, PR 1083, merge SHA 3f71a6fa, FEATURE_COMPLETE_V1 for Gates A and B, and unchanged Gates C and D plus broad fidelity, editor-specific, cloud, and cross-scene nonclaims."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/GOLDEN_SET_MANIFEST.json",
-      "sha256": "3b69463c18342c584c0a84301eb338a3d12c5222ef9fa3086957692ee385951a",
-      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_DELIVERY_REBIND",
-      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
-      "rationale": "Approve the deterministic five-file golden manifest delivery rebind to feature commit 01b2a5f2, PR 1083, merge SHA 3f71a6fa, exact unchanged artifact hashes, bounded proofs, and explicit nonproofs."
     },
     {
       "filePath": "docs/OPS/STATUS/IMPORT_EXPORT_ACCEPTANCE.json",
@@ -3852,32 +3761,11 @@
       "rationale": "Approve marking the prior import-export MVP gate historical and superseded without rewriting its historical command results or widening its original claims."
     },
     {
-      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_ACCEPTANCE.json",
-      "sha256": "aed93229fac62a05cf8688d7195d64ca06f57d6dbd43de60d2afdd8b06f9430e",
-      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_DELIVERY_REBIND",
-      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
-      "rationale": "Approve Gate B delivery rebind to feature commit 01b2a5f2, PR 1083, merge SHA 3f71a6fa, and delivered_merged_verified while retaining exact Apply, recovery, receipt, crash reconciliation, and diagnostic-only DOCX tracked-change boundaries."
-    },
-    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_STATUS.json",
       "sha256": "345278c9010cf369cee8a594adfcb4400cd3b2c8fffd4c0b400d265a0c9a0bf3",
       "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_DELIVERY_REBIND",
       "approvedAtUtc": "2026-07-12T23:00:00.000Z",
       "rationale": "Approve the Phase 06 status delivery rebind to feature commit 01b2a5f2, PR 1083, merge SHA 3f71a6fa, exact CI checks, full suite counts, and delivered_merged_verified with Gates C and D unchanged."
-    },
-    {
-      "filePath": "scripts/ops/review-bridge-golden-set.mjs",
-      "sha256": "990a97e9460193c4ecfe8382bdede9a7f5a4295c23425949a45d49ec6fd55d86",
-      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
-      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
-      "rationale": "Approve the deterministic offline generator and checker for bounded review bridge golden files; it changes test artifacts only and grants no runtime or release authority."
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-bounded-fidelity-golden-acceptance.contract.test.js",
-      "sha256": "0fa810e309e79255f1cff65b62dc354e96b40254a1db48fb9c4a9b837013db18",
-      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001_DELIVERY_REBIND",
-      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
-      "rationale": "Approve the Phase 06 real-file acceptance contract delivery assertions for exact feature, PR, merge, FEATURE_COMPLETE_V1, unchanged artifact hashes, bounded runtime behavior, and explicit post-V1 nonclaims."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
@@ -3906,6 +3794,125 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
       "approvedAtUtc": "2026-07-12T23:00:00.000Z",
       "rationale": "Approve materializer contract alignment with the honest relationship-part diagnostic code while preserving all binary bounds and rejection behavior."
+    },
+    {
+      "filePath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
+      "sha256": "2e88ae8e419549955e03c8e09f1d420f36ac0c9df1771aaccf8c203a0c3d2e49",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve the normalized menu artifact with the honest manual-only DOCX tracked text candidate label."
+    },
+    {
+      "filePath": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
+      "sha256": "958965fbe6e1a4a9932dfd70edfc5cfc749e06b6b89eb2b2e8ae2cc25e359b6b",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve the menu artifact lock regenerated from the owner-approved Gate C label change."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/CAPABILITY_MATRIX.json",
+      "sha256": "2d3ffa408135a7ce4acf36498db7eee2c1316351c2e014fd96ebf68ac4c66111",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve Gate C as bounded zero-write DOCX Review while Gate D and editor-specific support remain explicit nonclaims."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/GOLDEN_SET_MANIFEST.json",
+      "sha256": "a9ef993f4e335c2ab81119d77c11d9d966b8b46ced34deb7a2d51b88aa874b08",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve the updated deterministic DOCX Review golden and its bounded external-consumer evidence."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
+      "sha256": "fb72ca6102f8332aca5308eb9226bd4b3ebda63ac60718361d1f6956fe06811f",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve the minimal desktop menu snapshot refreshed for the Gate C label."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_ACCEPTANCE.json",
+      "sha256": "2dc4bbddecf694fb6d25ae5eb055cc1349d943ebb8a3d2b813ae5c97e7d7a872",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve the combined Gate B and Gate C acceptance truth with DOCX candidates kept manual-only."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001_STATUS.json",
+      "sha256": "47ecdd6aa83ae08c5f93f812a51595a304bfa585cd96ab2492a6566d4912adfa",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve marking the prior diagnostic-only DOCX Review surface historical and superseded without rewriting its delivery history."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001_STATUS.json",
+      "sha256": "b9e4bb17e37a1afa6c59d8f6071f10283fffc6a276a7022a761989d7d5ec27ec",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve marking the prior diagnostic-only product label status historical after the Gate C label supersedes it."
+    },
+    {
+      "filePath": "test/contracts/menu-config-v2.contract.test.js",
+      "sha256": "ce706e1dd193462b5e6f36739cdcfa77eb0a25a823c98da2901129d43e1e18bc",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve the menu contract assertion for the bounded manual-only DOCX Review label."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-docx-diagnostic-evidence-surface.contract.test.js",
+      "sha256": "c8076eafeba866cc2e4b55faa30a3461db888aa301023e2c90f0b36b5c40792e",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve historical diagnostic-surface assertions and explicit Gate C supersession."
+    },
+    {
+      "filePath": "test/contracts/review-bridge-product-discoverability-labels.contract.test.js",
+      "sha256": "7570eb5a79c0af65ff2a5dc4a18ffd5925f2a5d12c705ce0bb8b4abad3798afc",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve current menu truth separated from the historical Phase 05 delivery record."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
+      "sha256": "3c0e4bb9ca7382361b6a6ffc48bbd637cd6c73038e8937ed074f5b8b1f3ad1e2",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve local-file DOCX Review coverage for manual structural fallback and zero write authority."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
+      "sha256": "d0be567db82623b44061c2c2286ac0ad29d2e4010dc8400787c60231737c948a",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
+      "rationale": "Approve command-surface coverage for manual text candidates, real target types, and blocked Apply."
+    },
+    {
+      "filePath": "scripts/ops/review-bridge-golden-set.mjs",
+      "sha256": "4779a87e708aeeaea6aa7da030035f50f6a3758d5f077bcdd2e4e65a32712a45",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-13T00:18:00.000Z",
+      "rationale": "Approve deterministic generation of the bounded tracked replacement DOCX with preserved OOXML spaces."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",
+      "sha256": "b54a9b5feb12ab3942b32017bf39868db54b86925f7fbce56456b4a5b2103398",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-13T00:31:00.000Z",
+      "rationale": "Approve bounded tracked text parsing, structural fallback, malformed XML, and zero-authority contracts."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001_STATUS.json",
+      "sha256": "bd17dd3c64666578b0ec974940065b885151a55014aeb58fc1977fad498484d0",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-13T00:43:00.000Z",
+      "rationale": "Approve the owner-selected Gate C scope, zero-write acceptance, honest limitations, and mandatory delivery policy."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-bounded-fidelity-golden-acceptance.contract.test.js",
+      "sha256": "29b7d55ef4864ae4b00669d4ec4329f33b35f08ca57dc12692ba4ee0de64ab70",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
+      "approvedAtUtc": "2026-07-13T00:43:00.000Z",
+      "rationale": "Approve real-file Gate C candidate, hash, capability, and nonclaim acceptance assertions."
     }
   ]
 }

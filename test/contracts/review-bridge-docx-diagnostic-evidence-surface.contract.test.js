@@ -25,6 +25,8 @@ test('Review Bridge DOCX diagnostic evidence surface status keeps scope narrow',
 
   assert.equal(status.taskId, 'REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001');
   assert.equal(status.type, 'review_bridge_docx_diagnostic_evidence_surface');
+  assert.equal(status.lifecycleStatus, 'superseded_historical');
+  assert.equal(status.supersededBy, 'REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001_STATUS.json');
   assert.ok(
     ['implemented_verified_pending_delivery', 'delivered_merged_verified'].includes(status.status),
     `unexpected status ${status.status}`,
@@ -115,9 +117,9 @@ test('Review Bridge DOCX diagnostic evidence surface is bound to code and tests'
   assert.match(rendererSource, /Диагностика \$\{diagnosticId\}/u);
   assert.match(rendererSource, /Только чтение/u);
 
-  assert.match(candidateTest, /tracked changes build diagnostic-only evidence packet/u);
-  assert.match(commandTest, /tracked changes open diagnostic-only evidence surface/u);
-  assert.match(localFileTest, /tracked changes open diagnostic-only evidence surface/u);
+  assert.match(candidateTest, /structurally complex tracked changes stay manual-only/u);
+  assert.match(commandTest, /complex tracked changes open manual structural review/u);
+  assert.match(localFileTest, /complex tracked changes open manual structural review/u);
   assert.match(uiTest, /diagnostic items render as read-only review evidence/u);
 });
 

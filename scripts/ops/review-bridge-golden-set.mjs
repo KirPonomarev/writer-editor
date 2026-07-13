@@ -23,12 +23,14 @@ function stableJson(value) {
 }
 
 function xmlEscape(value) {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&apos;');
+  const entities = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&apos;',
+  };
+  return String(value).replace(/[&<>"']/gu, (character) => entities[character]);
 }
 
 async function buildMinimalDocxFixture() {
@@ -82,7 +84,7 @@ function buildReviewEvidenceDocxFixture() {
 <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
   <w:body>
     <w:p><w:commentRangeStart w:id="0"/><w:r><w:t>Anchored evidence</w:t></w:r><w:commentRangeEnd w:id="0"/><w:r><w:commentReference w:id="0"/></w:r></w:p>
-    <w:p><w:ins w:id="1" w:author="reviewer"><w:r><w:t>Inserted diagnostic</w:t></w:r></w:ins><w:del w:id="2" w:author="reviewer"><w:r><w:delText>Deleted diagnostic</w:delText></w:r></w:del></w:p>
+    <w:p><w:r><w:t xml:space="preserve">Alpha </w:t></w:r><w:del w:id="1" w:author="reviewer" w:date="2026-07-12T00:00:00.000Z"><w:r><w:delText>beta</w:delText></w:r></w:del><w:ins w:id="2" w:author="reviewer" w:date="2026-07-12T00:00:00.000Z"><w:r><w:t>delta</w:t></w:r></w:ins><w:r><w:t xml:space="preserve"> gamma.</w:t></w:r></w:p>
   </w:body>
 </w:document>`;
   const commentsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

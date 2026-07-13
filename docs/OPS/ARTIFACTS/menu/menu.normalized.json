@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "snapshotId": "menu-default-desktop-minimal",
-  "normalizedHashSha256": "6fa119570e880f3746def67cdc6d649c42e0dc893a0cfb57bff7ed45951b3750",
-  "generatedAt": "2026-07-12T21:52:15.891Z",
-  "generatedFromCommit": "b6c2b8fba9c303ce95055e9168d72cb0390c167e",
+  "normalizedHashSha256": "e442a34f5e27d8d7fb9ac2b1eea92153a1bc187e214d6776d317ed249b2c476c",
+  "generatedAt": "2026-07-12T23:32:30.918Z",
+  "generatedFromCommit": "c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
@@ -131,9 +131,9 @@
         "ru": "Импортировать Review Packet для точного применения..."
       },
       "menu.review.openDocxReviewPreviewSession": {
-        "base": "Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...",
-        "en": "Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...",
-        "ru": "Открыть доказательства DOCX Review (предпросмотр комментариев; диагностика исправлений)..."
+        "base": "Open DOCX Review (Comments; tracked text candidates are manual-only)...",
+        "en": "Open DOCX Review (Comments; tracked text candidates are manual-only)...",
+        "ru": "Открыть DOCX Review (комментарии; кандидаты правок только вручную)..."
       },
       "menu.review.openMode": {
         "base": "Open Review Mode",
@@ -1513,7 +1513,7 @@
             "op": "all"
           },
           "id": "review-open-docx-review-preview-session",
-          "label": "Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...",
+          "label": "Open DOCX Review (Comments; tracked text candidates are manual-only)...",
           "labelKey": "menu.review.openDocxReviewPreviewSession",
           "mode": [
             "offline"

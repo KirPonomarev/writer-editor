@@ -1,16 +1,16 @@
 {
   "schemaVersion": "revision-bridge.capability-matrix.v1",
-  "matrixId": "revision-bridge-local-v1-2026-07-12",
-  "baseSha": "5456f7f3dd689559d63bb10181e8998464540f72",
-  "status": "delivered_merged_verified",
+  "matrixId": "revision-bridge-local-v1-gate-c-2026-07-13",
+  "baseSha": "c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886",
+  "status": "implemented_verified_pending_delivery",
   "releaseClaim": {
-    "label": "FEATURE_COMPLETE_V1",
-    "definition": "Gates A and B plus safety hardening and bounded evidence only",
-    "publicClaimCeiling": "Offline-first local import, export, and canonical Review Packet exact apply within the rows below",
+    "label": "FEATURE_COMPLETE_V1_PLUS_GATE_C",
+    "definition": "Gates A, B, and C plus safety hardening and bounded evidence only",
+    "publicClaimCeiling": "Offline-first local import, export, canonical Review Packet exact apply, and zero-write DOCX Review comments plus manual tracked text candidates within the rows below",
     "gates": {
       "A_CONTENT_IMPORT_EXPORT_V1": "pass",
       "B_LOCAL_REVIEW_BRIDGE_V1": "pass",
-      "C_DOCX_REVIEW_V1": "post_v1_not_claimed",
+      "C_DOCX_REVIEW_V1": "pass",
       "D_EDITOR_SPECIFIC_CLAIMS": "post_v1_not_claimed"
     },
     "safetyHardening": "pass"
@@ -85,19 +85,19 @@
       "rowId": "docx-review-evidence-v1",
       "format": "DOCX",
       "surface": "review_import",
-      "status": "evidence_only",
+      "status": "bounded_supported",
       "export": "not_applicable",
       "contentImport": "separate content-only row",
-      "reviewImport": ["comment text preview", "manual comment placement", "tracked insertion diagnostic", "tracked deletion diagnostic"],
+      "reviewImport": ["comment text preview", "manual comment placement", "adjacent tracked deletion plus insertion as one manual TextChange candidate", "standalone tracked insertion and deletion as manual TextChange candidates", "complex tracked changes as manual structural review"],
       "apply": "not_supported",
-      "losses": ["tracked changes do not become TextChange candidates", "relationship parts diagnostic-only"],
+      "losses": ["tracked text candidates never authorize apply", "moves, tables, nested revisions, and ambiguous structure remain manual-only", "relationship parts diagnostic-only"],
       "evidenceFiles": ["docx-review-evidence-v1.docx"],
-      "nonClaims": ["DOCX Apply", "Word tracked-change roundtrip", "automatic comment placement"]
+      "nonClaims": ["DOCX Apply authority", "Word tracked-change roundtrip", "automatic comment placement"]
     }
   ],
   "hashes": {
     "docx-minimal-export-v1.docx": "2897ba060f74e1878344aec35f121f8f77e41dc6104a7abb8c4898b0e487d03a",
-    "docx-review-evidence-v1.docx": "fa1ed83a1b400a7670151c00a7ee4f39a7272bccb2e9b69310cf206bd6477b7e",
+    "docx-review-evidence-v1.docx": "bbf25574580222241794fe3decea4c6cf6c034c9c07da2bd76463603cd8acc6e",
     "review-packet-v1.json": "f45c084b8ec8493b1f5621f2a416c1eba9c25ee2c4d56dbcd314f28dc94bfb97",
     "txt-content-v1.txt": "1e8d973edeb9871226e4b495a1fc1bef02f8c5e7102e341cfb9d8d0003e25919",
     "markdown-content-v1.md": "7e69a45fc5b374733b745a2e6f3f1ed48af0e8d5124bb37de277186bca2fe66d"
@@ -105,6 +105,8 @@
   "actualCommands": [
     "node scripts/ops/review-bridge-golden-set.mjs",
     "node --test test/contracts/revision-bridge-bounded-fidelity-golden-acceptance.contract.test.js",
+    "node test/unit/revision-bridge-docx-review-gate-c-ui-e2e-smoke.mjs",
+    "soffice --headless --convert-to txt:Text docx-minimal-export-v1.docx",
     "npm run -s dev:fast",
     "npm test",
     "npm run -s oss:policy",
@@ -113,13 +115,14 @@
     "npm audit --omit=dev"
   ],
   "outcomes": ["deterministic artifacts", "bounded claims", "zero network required", "no new dependency"],
-  "nonClaims": ["Gates C and D", "release packaging", "cross-platform packaged smoke", "Word support", "Google Docs support", "cloud sync", "Mindmap export", "project-level cross-scene apply"],
-  "knownLimitations": ["DOCX Review tracked changes remain diagnostic-only", "DOCX content import is plain-text-oriented", "Markdown is a bounded V1 subset"],
+  "nonClaims": ["Gate D editor-specific claims", "release packaging", "cross-platform packaged smoke", "Word support", "Google Docs support", "cloud sync", "Mindmap export", "project-level cross-scene apply"],
+  "knownLimitations": ["DOCX Review tracked text candidates remain manual-only and zero-write", "DOCX content import is plain-text-oriented", "Markdown is a bounded V1 subset"],
   "delivery": {
-    "featureCommit": "01b2a5f28fff9c2f3f9451edc1827c0aebf002e7",
-    "pullRequest": 1083,
-    "mergeSha": "3f71a6fa3b10cecf0973c80a1865552b57e0c180",
-    "mergedAtUtc": "2026-07-12T22:48:18Z",
-    "checks": ["oss-policy", "x1-runtime-parity ubuntu", "x1-runtime-parity windows"]
+    "status": "implemented_verified_pending_delivery",
+    "bindingBaseSha": "c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886",
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true
   }
 }
