@@ -444,14 +444,6 @@
           <input type="text" class="modal__input" data-left-search-input placeholder="Поиск по проекту">
         </div>
         <div class="sidebar__tree" data-tree></div>
-        <div class="left-lower-zones" data-left-lower-zones>
-          <div class="left-quick-note" data-left-quick-note>
-            <div class="left-quick-note__label">Быстрая заметка</div>
-            <div class="left-quick-note__card">
-              Сохраняй начало минималистичным. Переход после сцены 02. Перенести заметку в карточку главы.
-            </div>
-          </div>
-        </div>
         <div class="sidebar__tree" data-outline-list hidden></div>
         <div class="sidebar__tree" data-search-results hidden></div>
         <div class="sidebar__resize-handle" data-sidebar-resizer aria-hidden="true"></div>
@@ -553,7 +545,6 @@
           <div class="toolbar__cluster x101-tabs-group">
             <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button is-active" data-right-tab="inspector" aria-pressed="true">Инспектор</button>
             <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="comments" aria-pressed="false">Комментарии</button>
-            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-right-tab="history" aria-pressed="false">История</button>
           </div>
         </div>
         <div class="sidebar__tree" data-right-panel-inspector>
@@ -563,19 +554,19 @@
               <div class="right-rail-form-grid">
                 <div class="right-rail-form-row">
                   <span class="right-rail-form-key">Гарнитура</span>
-                  <span class="right-rail-form-value">EB Garamond</span>
+                  <span class="right-rail-form-value" data-inspector-font>Roboto Ms</span>
                 </div>
                 <div class="right-rail-form-row">
                   <span class="right-rail-form-key">Начертание</span>
-                  <span class="right-rail-form-value">Обычное</span>
+                  <span class="right-rail-form-value" data-inspector-weight>Light</span>
                 </div>
                 <div class="right-rail-form-row">
                   <span class="right-rail-form-key">Кегль</span>
-                  <span class="right-rail-form-value">28</span>
+                  <span class="right-rail-form-value" data-inspector-font-size>12</span>
                 </div>
                 <div class="right-rail-form-row">
                   <span class="right-rail-form-key">Интерлиньяж</span>
-                  <span class="right-rail-form-value">1.35</span>
+                  <span class="right-rail-form-value" data-inspector-line-height>1.0</span>
                 </div>
               </div>
             </section>
@@ -653,11 +644,7 @@
                 </div>
                 <div class="right-rail-form-row">
                   <span class="right-rail-form-key">Поля</span>
-                  <span class="right-rail-form-value">Широкие</span>
-                </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Сетка</span>
-                  <span class="right-rail-form-value">Базовая</span>
+                  <span class="right-rail-form-value" data-inspector-margins>25,4 мм</span>
                 </div>
               </div>
             </section>
@@ -699,59 +686,6 @@
         </div>
         <div class="sidebar__tree" data-right-panel-comments hidden>
           <div class="right-rail-shell right-rail-shell--comments" data-review-surface-host></div>
-        </div>
-        <div class="sidebar__tree" data-right-panel-history hidden>
-          <div class="right-rail-shell right-rail-shell--runtime">
-            <section class="right-rail-surface right-rail-surface--history">
-              <div class="right-rail-section__label">История</div>
-              <div class="right-rail-history-list" data-history-placeholder>
-                <article class="right-rail-history-item">
-                  <span class="right-rail-history-dot" aria-hidden="true"></span>
-                  <div class="right-rail-history-copy">
-                    <div class="right-rail-history-head">
-                      <span class="right-rail-history-title">Автосохранение</span>
-                      <span class="right-rail-history-time">12:08</span>
-                    </div>
-                    <p class="right-rail-history-text">Черновик синхронизирован.</p>
-                  </div>
-                </article>
-                <article class="right-rail-history-item">
-                  <span class="right-rail-history-dot" aria-hidden="true"></span>
-                  <div class="right-rail-history-copy">
-                    <div class="right-rail-history-head">
-                      <span class="right-rail-history-title">Версия</span>
-                      <span class="right-rail-history-time">11:52</span>
-                    </div>
-                    <p class="right-rail-history-text">Блок главы обновлен.</p>
-                  </div>
-                </article>
-                <article class="right-rail-history-item">
-                  <span class="right-rail-history-dot" aria-hidden="true"></span>
-                  <div class="right-rail-history-copy">
-                    <div class="right-rail-history-head">
-                      <span class="right-rail-history-title">Автосохранение</span>
-                      <span class="right-rail-history-time">11:36</span>
-                    </div>
-                    <p class="right-rail-history-text">Настройки панели зафиксированы.</p>
-                  </div>
-                </article>
-                <article class="right-rail-history-item">
-                  <span class="right-rail-history-dot" aria-hidden="true"></span>
-                  <div class="right-rail-history-copy">
-                    <div class="right-rail-history-head">
-                      <span class="right-rail-history-title">Открытие</span>
-                      <span class="right-rail-history-time">11:14</span>
-                    </div>
-                    <p class="right-rail-history-text">Документ восстановлен.</p>
-                  </div>
-                </article>
-              </div>
-              <article class="right-rail-history-card">
-                <div class="right-rail-history-card-title">Снимок</div>
-                <p class="right-rail-history-card-text">Ручные версии можно держать в той же карточной логике, что и комментарии.</p>
-              </article>
-            </section>
-          </div>
         </div>
         <div class="sidebar__resize-handle sidebar__resize-handle--right" data-right-sidebar-resizer aria-hidden="true"></div>
       </aside>

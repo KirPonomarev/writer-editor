@@ -183,7 +183,14 @@ async function dragRail(win, side, delta) {
 
 async function exerciseInspectorControls(win) {
   const before = await win.webContents.executeJavaScript(
-    "(() => { const commentsAction = document.querySelector('[data-inspector-comments-action]'); const autosaveStatus = document.querySelector('[data-inspector-autosave-status]'); const focusStatus = document.querySelector('[data-inspector-focus-status]'); return { commentsTag: commentsAction?.tagName || '', commentsAction: commentsAction?.dataset.action || '', autosaveTag: autosaveStatus?.tagName || '', autosaveText: autosaveStatus?.textContent?.trim() || '', focusTag: focusStatus?.tagName || '', focusText: focusStatus?.textContent?.trim() || '', focusState: focusStatus?.dataset.state || '' }; })()",
+    "(() => { const text = (selector) => document.querySelector(selector)?.textContent?.trim() || ''; const commentsAction = document.querySelector('[data-inspector-comments-action]'); const autosaveStatus = document.querySelector('[data-inspector-autosave-status]'); const focusStatus = document.querySelector('[data-inspector-focus-status]'); return { commentsTag: commentsAction?.tagName || '', commentsAction: commentsAction?.dataset.action || '', autosaveTag: autosaveStatus?.tagName || '', autosaveText: autosaveStatus?.textContent?.trim() || '', focusTag: focusStatus?.tagName || '', focusText: focusStatus?.textContent?.trim() || '', focusState: focusStatus?.dataset.state || '', fontMatches: text('[data-font-display]') === text('[data-inspector-font]'), weightMatches: text('[data-weight-display]') === text('[data-inspector-weight]'), sizeMatches: text('[data-size-display]') === text('[data-inspector-font-size]'), lineHeightMatches: text('[data-line-height-display]') === text('[data-inspector-line-height]'), marginsText: text('[data-inspector-margins]'), marginsTitle: document.querySelector('[data-inspector-margins]')?.title || '', historyTabPresent: Boolean(document.querySelector('[data-right-tab=history]')), quickNotePresent: Boolean(document.querySelector('[data-left-quick-note]')) }; })()",
+    true
+  );
+
+  await win.webContents.executeJavaScript("(() => { const change = (selector, value) => { const select = document.querySelector(selector); if (!select) return; select.value = value; select.dispatchEvent(new Event('change', { bubbles: true })); }; change('[data-font-select]', 'Georgia, serif'); change('[data-weight-select]', 'regular'); change('[data-size-select]', '16'); change('[data-line-height-select]', '1.4'); })()", true);
+  await sleep(500);
+  const typographyChanged = await win.webContents.executeJavaScript(
+    "(() => { const text = (selector) => document.querySelector(selector)?.textContent?.trim() || ''; return { font: text('[data-inspector-font]'), weight: text('[data-inspector-weight]'), size: text('[data-inspector-font-size]'), lineHeight: text('[data-inspector-line-height]') }; })()",
     true
   );
 
@@ -212,7 +219,7 @@ async function exerciseInspectorControls(win) {
     await win.webContents.executeJavaScript("(() => { const panel = document.querySelector('[data-right-panel-inspector]'); if (panel) panel.scrollTop = 0; })()", true);
   }
 
-  return { before, commentsOpened, inspectorRestored };
+  return { before, typographyChanged, commentsOpened, inspectorRestored };
 }
 
 app.whenReady().then(async () => {
@@ -345,6 +352,20 @@ try {
     focusTag: 'SPAN',
     focusText: 'Выкл',
     focusState: 'off',
+    fontMatches: true,
+    weightMatches: true,
+    sizeMatches: true,
+    lineHeightMatches: true,
+    marginsText: '25,4 мм',
+    marginsTitle: 'Верх 25,4 мм, справа 25,4 мм, низ 25,4 мм, слева 25,4 мм',
+    historyTabPresent: false,
+    quickNotePresent: false,
+  });
+  assert.deepEqual(result.inspectorControls.typographyChanged, {
+    font: 'Georgia',
+    weight: 'Regular',
+    size: '16',
+    lineHeight: '1.4',
   });
   assert.deepEqual(result.inspectorControls.commentsOpened, {
     mode: 'review',
