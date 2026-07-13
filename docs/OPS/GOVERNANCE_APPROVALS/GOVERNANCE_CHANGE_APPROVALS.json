@@ -3810,32 +3810,11 @@
       "rationale": "Approve the menu artifact lock regenerated from the owner-approved Gate C label change."
     },
     {
-      "filePath": "docs/OPS/STATUS/CAPABILITY_MATRIX.json",
-      "sha256": "2d3ffa408135a7ce4acf36498db7eee2c1316351c2e014fd96ebf68ac4c66111",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
-      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
-      "rationale": "Approve Gate C as bounded zero-write DOCX Review while Gate D and editor-specific support remain explicit nonclaims."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/GOLDEN_SET_MANIFEST.json",
-      "sha256": "a9ef993f4e335c2ab81119d77c11d9d966b8b46ced34deb7a2d51b88aa874b08",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
-      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
-      "rationale": "Approve the updated deterministic DOCX Review golden and its bounded external-consumer evidence."
-    },
-    {
       "filePath": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
       "sha256": "fb72ca6102f8332aca5308eb9226bd4b3ebda63ac60718361d1f6956fe06811f",
       "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
       "approvedAtUtc": "2026-07-12T23:44:36.000Z",
       "rationale": "Approve the minimal desktop menu snapshot refreshed for the Gate C label."
-    },
-    {
-      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_ACCEPTANCE.json",
-      "sha256": "2dc4bbddecf694fb6d25ae5eb055cc1349d943ebb8a3d2b813ae5c97e7d7a872",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
-      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
-      "rationale": "Approve the combined Gate B and Gate C acceptance truth with DOCX candidates kept manual-only."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001_STATUS.json",
@@ -3901,18 +3880,39 @@
       "rationale": "Approve bounded tracked text parsing, structural fallback, malformed XML, and zero-authority contracts."
     },
     {
+      "filePath": "docs/OPS/STATUS/CAPABILITY_MATRIX.json",
+      "sha256": "619f12b54f20221b3ce51708c23ab23ecb0b327a361fb9034267740561dd7d15",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001_FACTUAL_REBIND",
+      "approvedAtUtc": "2026-07-13T00:16:00.000Z",
+      "rationale": "Rebind the Gate C capability matrix to the merged feature delivery and successful required checks without widening Gate D or release claims."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/GOLDEN_SET_MANIFEST.json",
+      "sha256": "9273414fbfb057ab7af0f4f22d361b556f98826dade71e284859a8e1517f0c85",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001_FACTUAL_REBIND",
+      "approvedAtUtc": "2026-07-13T00:16:00.000Z",
+      "rationale": "Rebind unchanged deterministic golden hashes to the merged Gate C delivery without adding editor-specific provenance claims."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_ACCEPTANCE.json",
+      "sha256": "d4c0115d904a87fb501a61f2e020d8b15c9c019ebbb473b2348c08577170ab7c",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001_FACTUAL_REBIND",
+      "approvedAtUtc": "2026-07-13T00:16:00.000Z",
+      "rationale": "Rebind combined Review Bridge acceptance to the merged Gate C feature while preserving zero-write DOCX candidates and exact packet Apply boundaries."
+    },
+    {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001_STATUS.json",
-      "sha256": "bd17dd3c64666578b0ec974940065b885151a55014aeb58fc1977fad498484d0",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
-      "approvedAtUtc": "2026-07-13T00:43:00.000Z",
-      "rationale": "Approve the owner-selected Gate C scope, zero-write acceptance, honest limitations, and mandatory delivery policy."
+      "sha256": "30441f21e85c041bc3ed5147255158362b66563247e722f7120e9602c7341241",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001_FACTUAL_REBIND",
+      "approvedAtUtc": "2026-07-13T00:16:00.000Z",
+      "rationale": "Record the factual Gate C feature commit, pull request, merge SHA, and required check outcomes after successful delivery."
     },
     {
       "filePath": "test/contracts/revision-bridge-bounded-fidelity-golden-acceptance.contract.test.js",
-      "sha256": "29b7d55ef4864ae4b00669d4ec4329f33b35f08ca57dc12692ba4ee0de64ab70",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
-      "approvedAtUtc": "2026-07-13T00:43:00.000Z",
-      "rationale": "Approve real-file Gate C candidate, hash, capability, and nonclaim acceptance assertions."
+      "sha256": "932bc8dd64539cd8b5e8ec2959609eb0d65e47235255814ce28fec57bc9fda19",
+      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001_FACTUAL_REBIND",
+      "approvedAtUtc": "2026-07-13T00:16:00.000Z",
+      "rationale": "Bind the Gate C status artifacts to the exact delivered feature commit, pull request, and merge SHA."
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "revision-bridge.docx-review-gate-c-status.v1",
   "taskId": "REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
-  "status": "implemented_verified_pending_delivery",
+  "status": "delivered_merged_verified",
   "baseSha": "c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886",
   "ownerApproval": {
     "approved": true,
@@ -116,7 +116,25 @@
     "pushRequired": true,
     "pullRequestRequired": true,
     "mergeRequired": true,
-    "status": "pending"
+    "status": "delivered_merged_verified",
+    "commitSha": "af7b1897bfe8be726f520680e83437f9a3c2f191",
+    "pullRequest": 1085,
+    "mergeSha": "72ee480b0fcc53239c162d5302b41a1c87e82dc4",
+    "mergedAtUtc": "2026-07-13T00:12:11Z",
+    "postMergeChecks": [
+      {
+        "name": "oss-policy",
+        "status": "pass"
+      },
+      {
+        "name": "x1-runtime-parity ubuntu-latest",
+        "status": "pass"
+      },
+      {
+        "name": "x1-runtime-parity windows-latest",
+        "status": "pass"
+      }
+    ]
   },
-  "nextStep": "complete audit, commit, push, pull request, merge, and factual rebind"
+  "nextStep": "Gate C is closed; Gate D requires a separate owner-approved contour with real Word and Google artifacts"
 }
