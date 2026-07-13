@@ -39,9 +39,11 @@ export {
   applyCssVariables,
   buildDesignOsStatusText,
   buildLayoutPatchFromSpatialState,
+  buildSidebarLayoutModel,
   buildSpatialStateFromLayoutSnapshot,
   deriveAccessibilityId,
   deriveRuntimePlatformId,
+  deriveSidebarViewportMode,
   extractCssVariablesFromTokens,
   mapEditorModeToWorkspace,
 } from './designOsShellController.mjs';

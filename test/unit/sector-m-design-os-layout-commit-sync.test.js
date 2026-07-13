@@ -129,12 +129,84 @@ test('layout commit sync: shell controller preserves dual width model with symme
   assert.equal(restored.rightSidebarWidth, 287);
 });
 
+test('layout commit sync: responsive model protects the editor and preserves hidden rail width', async () => {
+  const modulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'design-os', 'designOsShellController.mjs')).href;
+  const {
+    buildSidebarLayoutModel,
+    deriveSidebarViewportMode,
+  } = await import(modulePath);
+
+  assert.equal(deriveSidebarViewportMode(899), 'mobile');
+  assert.equal(deriveSidebarViewportMode(900), 'compact');
+  assert.equal(deriveSidebarViewportMode(1280), 'desktop');
+
+  const constrainedCompact = buildSidebarLayoutModel(
+    { leftSidebarWidth: 306, rightSidebarWidth: 352 },
+    { viewportWidth: 1000 }
+  );
+  assert.equal(constrainedCompact.layoutVariant, 'single');
+  assert.equal(constrainedCompact.rightVisible, false);
+  assert.equal(constrainedCompact.leftSidebarWidth, 306);
+  assert.equal(constrainedCompact.rightSidebarWidth, 352, 'hidden width must survive responsive projection');
+
+  const compactThreshold = buildSidebarLayoutModel(
+    { leftSidebarWidth: 320, rightSidebarWidth: 320 },
+    { viewportWidth: 1020 }
+  );
+  assert.equal(compactThreshold.layoutVariant, 'dual');
+  assert.deepEqual(
+    [compactThreshold.leftSidebarWidth, compactThreshold.rightSidebarWidth],
+    [250, 250],
+    'minimum editor width must win at the dual-rail threshold'
+  );
+
+  const constrainedDesktop = buildSidebarLayoutModel(
+    { leftSidebarWidth: 420, rightSidebarWidth: 420 },
+    { viewportWidth: 1280 }
+  );
+  assert.deepEqual(
+    [constrainedDesktop.leftSidebarWidth, constrainedDesktop.rightSidebarWidth],
+    [294, 294],
+    'wide saved rails must shrink symmetrically before consuming the editor minimum'
+  );
+
+  const wideDesktop = buildSidebarLayoutModel(
+    { leftSidebarWidth: 420, rightSidebarWidth: 420 },
+    { viewportWidth: 2048 }
+  );
+  assert.deepEqual([wideDesktop.leftSidebarWidth, wideDesktop.rightSidebarWidth], [420, 420]);
+});
+
 test('layout commit sync: default stylesheet baseline is symmetric for desktop and compact visible-right modes', () => {
   const styles = readStylesSource();
   assert.ok(styles.includes('--app-left-sidebar-width: 290px;'));
   assert.ok(styles.includes('--app-right-sidebar-width: 290px;'));
   assert.ok(styles.includes('--app-left-sidebar-width: 260px;'));
   assert.ok(styles.includes('--app-right-sidebar-width: 260px;'));
+});
+
+test('layout commit sync: stylesheet projects single-rail mode without overflow or fixed-width overrides', () => {
+  const styles = readStylesSource();
+  const editor = readEditorSource();
+
+  assert.ok(styles.includes('.app-layout[data-sidebar-layout="single"]'));
+  assert.ok(styles.includes('grid-template-columns: minmax(200px, var(--app-left-sidebar-width)) minmax(0, 1fr);'));
+  assert.ok(styles.includes('.sidebar--right[hidden],'));
+  assert.ok(styles.includes('.sidebar__resize-handle[hidden]'));
+  assert.ok(styles.includes('@media (max-width: 899px)'));
+  assert.equal(styles.includes('width: 240px;\n  }\n\n  .main-content'), false);
+
+  assert.ok(styles.includes('flex: 1 1 auto;\n  min-height: 160px;\n  max-height: none;'));
+  assert.ok(styles.includes('.sidebar__resize-handle.is-resizing::after'));
+  assert.ok(styles.includes('touch-action: none;'));
+  assert.ok(styles.includes('width: calc(140px * var(--floating-toolbar-width-scale));'));
+  assert.ok(styles.includes('width: calc(120px * var(--floating-toolbar-width-scale));'));
+
+  assert.ok(editor.includes('appLayout.dataset.sidebarLayout = constraints.layoutVariant;'));
+  assert.ok(editor.includes("pointerTarget?.classList.add('is-resizing');"));
+  assert.ok(editor.includes("activeHandle?.classList.remove('is-resizing');"));
+  assert.ok(editor.includes('leftShellRect.right + 16'));
+  assert.ok(editor.includes('if (saved && !saved.isDetached) {'));
 });
 
 test('layout commit sync: runtime and design-os compat defaults are symmetric to avoid split-brain baselines', () => {
