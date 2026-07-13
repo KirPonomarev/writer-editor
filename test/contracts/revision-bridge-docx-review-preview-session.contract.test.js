@@ -238,7 +238,7 @@ test('DOCX review preview session candidate: comments become review packet witho
   assertNoStorageOrApplyAuthority(result);
 });
 
-test('DOCX review preview session candidate: tracked changes build diagnostic-only evidence packet', async () => {
+test('DOCX review preview session candidate: structurally complex tracked changes stay manual-only', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(cleanDocxZip([
     paragraphXml('Before'),
@@ -250,26 +250,156 @@ test('DOCX review preview session candidate: tracked changes build diagnostic-on
   });
 
   assert.equal(result.ok, true);
-  assert.equal(result.status, 'diagnostics');
-  assert.equal(result.code, 'DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_NO_REVIEW_COMMENTS');
-  assert.equal(result.canOpenReviewSession, false);
-  assert.equal(result.canCreateReviewPacket, false);
+  assert.equal(result.status, 'ready');
+  assert.equal(result.code, 'DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_READY');
+  assert.equal(result.canOpenReviewSession, true);
+  assert.equal(result.canCreateReviewPacket, true);
   assert.equal(result.reviewPacket.commentThreads.length, 0);
   assert.equal(result.reviewPacket.commentPlacements.length, 0);
   assert.deepEqual(result.reviewPacket.textChanges, []);
-  assert.deepEqual(result.reviewPacket.structuralChanges, []);
-  assert.equal(result.reviewPacket.diagnosticItems.length, 2);
-  assert.equal(result.sourceViewState.viewMode, 'docx-review-diagnostic-evidence');
+  assert.equal(result.reviewPacket.structuralChanges.length, 2);
+  assert.equal(result.reviewPacket.structuralChanges.every((item) => item.kind.includes('complex')), true);
+  assert.equal(result.reviewPacket.diagnosticItems.length, 4);
+  assert.equal(result.sourceViewState.viewMode, 'docx-review-preview');
   assert.equal(result.summary.trackedChangesDiagnosticOnly, true);
-  assert.equal(result.summary.diagnosticItemCount, 2);
+  assert.equal(result.summary.trackedTextCandidateCount, 0);
+  assert.equal(result.summary.structuralChangeCount, 2);
+  assert.equal(result.summary.diagnosticItemCount, 4);
   assert.ok(result.diagnostics.some((item) => (
     item.diagnosticId === 'docx-review-tracked-insertCount'
-    && item.message.includes('diagnostic-only')
+    && item.message.includes('manual-only candidates')
   )));
   assertNoStorageOrApplyAuthority(result);
 });
 
-test('DOCX review preview session candidate: comments plus tracked changes keep tracked changes out of textChanges', async () => {
+test('DOCX review preview session candidate: adjacent delete and insert become one zero-write text candidate', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(cleanDocxZip([
+    '<w:p>',
+    '<w:r><w:t>Alpha </w:t></w:r>',
+    '<w:del w:id="1" w:author="reviewer"><w:r><w:delText>beta</w:delText></w:r></w:del>',
+    '<w:ins w:id="2" w:author="reviewer"><w:r><w:t>delta</w:t></w:r></w:ins>',
+    '<w:r><w:t> gamma.</w:t></w:r>',
+    '</w:p>',
+  ].join('')), {
+    targetScope: TARGET_SCOPE,
+    createdAt: '2026-04-24T08:00:00.000Z',
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.status, 'ready');
+  assert.equal(result.canOpenReviewSession, true);
+  assert.equal(result.canAutoApply, false);
+  assert.equal(result.canImportMutate, false);
+  assert.equal(result.canWriteStorage, false);
+  assert.equal(result.reviewPacket.textChanges.length, 1);
+  assert.equal(result.reviewPacket.textChanges[0].targetScope.id, TARGET_SCOPE.id);
+  assert.equal(result.reviewPacket.textChanges[0].match.kind, 'manual');
+  assert.equal(result.reviewPacket.textChanges[0].match.quote, 'beta');
+  assert.equal(result.reviewPacket.textChanges[0].replacementText, 'delta');
+  assert.deepEqual(result.reviewPacket.structuralChanges, []);
+  assert.equal(result.summary.trackedChangesDiagnosticOnly, false);
+  assert.equal(result.summary.trackedTextCandidateCount, 1);
+  assertNoStorageOrApplyAuthority(result);
+});
+
+test('DOCX review preview session candidate: standalone insert and delete remain distinct manual candidates', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(cleanDocxZip([
+    '<w:p><w:ins w:id="3"><w:r><w:t>Inserted</w:t></w:r></w:ins></w:p>',
+    '<w:p><w:del w:id="4"><w:r><w:delText>Deleted</w:delText></w:r></w:del></w:p>',
+  ].join('')), {
+    targetScope: TARGET_SCOPE,
+  });
+
+  assert.equal(result.status, 'ready');
+  assert.equal(result.reviewPacket.textChanges.length, 2);
+  assert.deepEqual(
+    result.reviewPacket.textChanges.map((change) => ({
+      matchKind: change.match.kind,
+      quote: change.match.quote,
+      replacementText: change.replacementText,
+    })),
+    [
+      { matchKind: 'manual', quote: '', replacementText: 'Inserted' },
+      { matchKind: 'manual', quote: 'Deleted', replacementText: '' },
+    ],
+  );
+  assert.equal(result.canAutoApply, false);
+  assertNoStorageOrApplyAuthority(result);
+});
+
+test('DOCX review preview session candidate: separated delete and insert do not collapse into replacement', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(cleanDocxZip([
+    '<w:p>',
+    '<w:del w:id="5"><w:r><w:delText>Old</w:delText></w:r></w:del>',
+    '<w:r><w:t> bridge </w:t></w:r>',
+    '<w:ins w:id="6"><w:r><w:t>New</w:t></w:r></w:ins>',
+    '</w:p>',
+  ].join('')), {
+    targetScope: TARGET_SCOPE,
+  });
+
+  assert.equal(result.status, 'ready');
+  assert.equal(result.reviewPacket.textChanges.length, 2);
+  assert.equal(result.reviewPacket.textChanges[0].match.quote, 'Old');
+  assert.equal(result.reviewPacket.textChanges[0].replacementText, '');
+  assert.equal(result.reviewPacket.textChanges[1].match.quote, '');
+  assert.equal(result.reviewPacket.textChanges[1].replacementText, 'New');
+  assertNoStorageOrApplyAuthority(result);
+});
+
+test('DOCX review preview session candidate: table revisions stay structural and malformed XML blocks', async () => {
+  const bridge = await loadBridge();
+  const table = bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(cleanDocxZip([
+    '<w:tbl><w:tr><w:tc><w:p>',
+    '<w:ins w:id="table-1"><w:r><w:t>Table insertion</w:t></w:r></w:ins>',
+    '</w:p></w:tc></w:tr></w:tbl>',
+  ].join('')), {
+    targetScope: TARGET_SCOPE,
+  });
+  const malformed = bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(cleanDocxZip(
+    '<w:p><w:ins w:id="broken"><w:r><w:t>Broken</w:del></w:r></w:ins></w:p>',
+  ), {
+    targetScope: TARGET_SCOPE,
+  });
+
+  assert.equal(table.status, 'ready');
+  assert.deepEqual(table.reviewPacket.textChanges, []);
+  assert.equal(table.reviewPacket.structuralChanges.length, 1);
+  assert.match(table.reviewPacket.structuralChanges[0].kind, /complex/u);
+  assert.equal(table.summary.trackedTextCandidateCount, 0);
+  assertNoStorageOrApplyAuthority(table);
+
+  assert.equal(malformed.ok, false);
+  assert.equal(malformed.status, 'blocked');
+  assert.equal(malformed.reason, 'DOCX_REVIEW_TRACKED_CHANGE_XML_MALFORMED');
+  assert.equal(malformed.reviewPacket, null);
+  assert.equal(malformed.canOpenReviewSession, false);
+  assertNoStorageOrApplyAuthority(malformed);
+});
+
+test('DOCX review preview session candidate: structural candidates are bounded and uniquely identified', async () => {
+  const bridge = await loadBridge();
+  const complexRevisions = Array.from({ length: 105 }, (_, index) => (
+    `<w:ins><w:p><w:r><w:t>Complex ${index}</w:t></w:r></w:p></w:ins>`
+  )).join('');
+  const result = bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(cleanDocxZip(complexRevisions), {
+    targetScope: TARGET_SCOPE,
+  });
+
+  assert.equal(result.status, 'ready');
+  assert.equal(result.reviewPacket.structuralChanges.length, 100);
+  assert.equal(new Set(result.reviewPacket.structuralChanges.map((item) => item.structuralChangeId)).size, 100);
+  assert.equal(result.budgets.maxTrackedStructuralCandidates, 100);
+  assert.ok(result.reviewPacket.diagnosticItems.some((item) => (
+    item.message.includes('structural candidates exceed the bounded review budget')
+  )));
+  assertNoStorageOrApplyAuthority(result);
+});
+
+test('DOCX review preview session candidate: comments plus complex revisions stay out of textChanges', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(docxWithAnchoredComment(
     '<w:ins><w:p><w:r><w:t>Inserted</w:t></w:r></w:p></w:ins>',
@@ -282,6 +412,7 @@ test('DOCX review preview session candidate: comments plus tracked changes keep 
   assert.equal(result.status, 'ready');
   assert.equal(result.reviewPacket.commentThreads.length, 1);
   assert.deepEqual(result.reviewPacket.textChanges, []);
+  assert.equal(result.reviewPacket.structuralChanges.length, 1);
   assert.ok(result.reviewPacket.diagnosticItems.some((item) => (
     item.diagnosticId === 'docx-review-tracked-insertCount'
   )));

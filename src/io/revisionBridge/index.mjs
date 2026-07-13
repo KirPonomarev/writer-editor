@@ -2681,6 +2681,9 @@ const DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS = Object.freeze({
   maxComments: 100,
   maxCommentBodyChars: 2000,
   maxAnchors: 100,
+  maxTrackedTextCandidates: 100,
+  maxTrackedStructuralCandidates: 100,
+  maxTrackedTextChars: 2000,
   maxDiagnostics: 200,
   maxUnsupportedItems: 200,
   maxTargetPartBytes: DOCX_REVIEW_PREFLIGHT_BOUNDS.maxTargetPartBytes,
@@ -2762,10 +2765,15 @@ function docxReviewPreviewSessionResult({
 }
 
 function docxReviewPreviewSessionReadXmlAttr(tag, attrName) {
-  const attr = String(attrName || '').replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
-  const pattern = new RegExp(`(?:^|\\s)(?:[A-Za-z_][\\w.-]*:)?${attr}\\s*=\\s*("([^"]*)"|'([^']*)')`, 'iu');
-  const match = pattern.exec(String(tag || ''));
-  return docxContentPreviewDecodeText(match ? (match[2] ?? match[3] ?? '') : '');
+  const expectedLocalName = String(attrName || '').trim().toLowerCase();
+  if (!/^[a-z_][\w.-]*$/u.test(expectedLocalName)) return '';
+  const pattern = /(?:^|\s)(?:[A-Za-z_][\w.-]*:)?([A-Za-z_][\w.-]*)\s*=\s*("([^"]*)"|'([^']*)')/giu;
+  let match;
+  while ((match = pattern.exec(String(tag || ''))) !== null) {
+    if (String(match[1] || '').toLowerCase() !== expectedLocalName) continue;
+    return docxContentPreviewDecodeText(match[3] ?? match[4] ?? '');
+  }
+  return '';
 }
 
 function docxReviewPreviewSessionSafeId(value, fallback) {
@@ -2879,11 +2887,13 @@ function docxReviewPreviewSessionParseCommentsXml(commentsXml, options = {}) {
 }
 
 function docxReviewPreviewSessionTagsByLocalName(xmlText, localName) {
-  const escaped = String(localName || '').replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
-  const pattern = new RegExp(`<\\s*(?:[A-Za-z_][\\w.-]*:)?${escaped}\\b[^>]*>`, 'giu');
+  const expectedLocalName = String(localName || '').trim().toLowerCase();
+  if (!/^[a-z_][\w.-]*$/u.test(expectedLocalName)) return [];
+  const pattern = /<\s*(?:[A-Za-z_][\w.-]*:)?([A-Za-z_][\w.-]*)\b[^>]*>/giu;
   const matches = [];
   let match;
   while ((match = pattern.exec(String(xmlText || ''))) !== null) {
+    if (String(match[1] || '').toLowerCase() !== expectedLocalName) continue;
     matches.push({
       tag: match[0],
       index: match.index,
@@ -2991,6 +3001,313 @@ function docxReviewPreviewSessionBuildPlacements(documentXml, comments, options 
   return { placements, diagnostics };
 }
 
+function docxReviewPreviewSessionTrackedTextChange(kind, revisions, options = {}) {
+  const targetScope = docxReviewPreviewSessionTargetScope(options.targetScope);
+  const createdAt = revisions
+    .map((revision) => normalizeString(revision.createdAt))
+    .find(Boolean) || normalizeString(options.createdAt);
+  const deletedText = revisions
+    .filter((revision) => revision.kind === 'delete')
+    .map((revision) => revision.text)
+    .join('');
+  const insertedText = revisions
+    .filter((revision) => revision.kind === 'insert')
+    .map((revision) => revision.text)
+    .join('');
+  const changeHash = revisionBlockHash({
+    kind,
+    paragraphIndex: revisions[0]?.paragraphIndex,
+    revisionIds: revisions.map((revision) => revision.revisionId),
+    deletedText,
+    insertedText,
+    targetScope,
+  });
+  return {
+    changeId: `docx-tracked-${kind}-${changeHash.slice(0, 16)}`,
+    targetScope,
+    match: {
+      kind: 'manual',
+      quote: deletedText,
+      prefix: '',
+      suffix: '',
+    },
+    replacementText: insertedText,
+    createdAt,
+  };
+}
+
+function docxReviewPreviewSessionTrackedStructuralChange(kind, summary, options = {}) {
+  const targetScope = docxReviewPreviewSessionTargetScope(options.targetScope);
+  const structuralHash = revisionBlockHash({
+    kind,
+    summary,
+    targetScope,
+    evidenceId: normalizeString(options.evidenceId),
+  });
+  return {
+    structuralChangeId: `docx-structural-${structuralHash.slice(0, 16)}`,
+    kind,
+    targetScope,
+    summary,
+    createdAt: normalizeString(options.createdAt),
+  };
+}
+
+function docxReviewPreviewSessionTrackedTextCandidates(documentXml, options = {}) {
+  const targetScope = docxReviewPreviewSessionTargetScope(options.targetScope);
+  const createdAt = normalizeString(options.createdAt);
+  const diagnostics = [];
+  const structuralChanges = [];
+  const revisions = [];
+  const elementStack = [];
+  let revisionSequence = 0;
+  let paragraphIndex = -1;
+  let paragraphDepth = 0;
+  let activeRevision = null;
+  let activeTextDepth = 0;
+  let visibleTextDepth = 0;
+  let plainBoundaryVersion = 0;
+  let cursor = 0;
+  let malformed = false;
+  const tokenPattern = /<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<[^>]+>|[^<]+/gu;
+  let match;
+
+  const addDiagnostic = (code, message, severity = 'warning', relatedItemId = '') => {
+    if (diagnostics.length >= DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxDiagnostics) return;
+    diagnostics.push(docxReviewPreviewSessionDiagnostic(code, {
+      diagnosticId: `${code.toLowerCase().replace(/[^a-z0-9]+/gu, '-')}-${diagnostics.length}`,
+      message,
+      targetScope,
+      relatedItemId,
+      severity,
+      createdAt,
+    }));
+  };
+
+  const addStructuralChange = (change, relatedItemId = '') => {
+    if (structuralChanges.length >= DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxTrackedStructuralCandidates) {
+      addDiagnostic(
+        'DOCX_REVIEW_TRACKED_STRUCTURE_LIMIT_EXCEEDED',
+        'DOCX tracked structural candidates exceed the bounded review budget.',
+        'warning',
+        relatedItemId,
+      );
+      return;
+    }
+    structuralChanges.push(change);
+  };
+
+  const finishRevision = () => {
+    if (!activeRevision) return;
+    const text = activeRevision.text.slice(0, DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxTrackedTextChars);
+    const relatedItemId = `docx-revision-${activeRevision.revisionId}`;
+    if (activeRevision.complex) {
+      const summary = `DOCX tracked ${activeRevision.kind} is structurally complex and remains manual-only.`;
+      addStructuralChange(docxReviewPreviewSessionTrackedStructuralChange(
+        `docx-tracked-${activeRevision.kind}-complex`,
+        summary,
+        {
+          targetScope,
+          createdAt: activeRevision.createdAt || createdAt,
+          evidenceId: relatedItemId,
+        },
+      ), relatedItemId);
+      addDiagnostic(
+        'DOCX_REVIEW_TRACKED_CHANGE_COMPLEX_MANUAL_ONLY',
+        summary,
+        'warning',
+        relatedItemId,
+      );
+    } else if (!text) {
+      addDiagnostic(
+        'DOCX_REVIEW_TRACKED_CHANGE_EMPTY_MANUAL_ONLY',
+        'DOCX tracked change has no bounded text payload and remains diagnostic-only.',
+        'warning',
+        relatedItemId,
+      );
+    } else if (revisions.length >= DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxTrackedTextCandidates) {
+      addDiagnostic(
+        'DOCX_REVIEW_TRACKED_CHANGE_LIMIT_EXCEEDED',
+        'DOCX tracked text candidates exceed the bounded review budget.',
+        'warning',
+        relatedItemId,
+      );
+    } else {
+      revisions.push({ ...activeRevision, text });
+    }
+    activeRevision = null;
+    activeTextDepth = 0;
+  };
+
+  while ((match = tokenPattern.exec(String(documentXml || ''))) !== null) {
+    if (match.index !== cursor) {
+      malformed = true;
+      break;
+    }
+    cursor = tokenPattern.lastIndex;
+    const token = match[0];
+    if (!token.startsWith('<')) {
+      if (activeRevision && activeTextDepth > 0) {
+        const decoded = docxContentPreviewDecodeText(token);
+        const remaining = DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxTrackedTextChars
+          - activeRevision.text.length;
+        if (remaining > 0) activeRevision.text += decoded.slice(0, remaining);
+        if (decoded.length > remaining && !activeRevision.truncated) {
+          activeRevision.truncated = true;
+          addDiagnostic(
+            'DOCX_REVIEW_TRACKED_CHANGE_TEXT_TRUNCATED',
+            'DOCX tracked change text was truncated to the bounded review budget.',
+            'warning',
+            `docx-revision-${activeRevision.revisionId}`,
+          );
+        }
+      } else if (paragraphDepth > 0 && visibleTextDepth > 0) {
+        const decoded = docxContentPreviewDecodeText(token);
+        if (decoded.length > 0) plainBoundaryVersion += 1;
+      }
+      continue;
+    }
+    if (token.startsWith('<!--') || token.startsWith('<?') || token.startsWith('<!')) continue;
+
+    const tagName = docxContentPreviewTagName(token);
+    if (!tagName) {
+      malformed = true;
+      break;
+    }
+    const closing = /^<\//u.test(token);
+    const selfClosing = /\/>\s*$/u.test(token);
+
+    if (closing) {
+      const expected = elementStack.pop();
+      if (expected !== tagName) {
+        malformed = true;
+        break;
+      }
+      if (activeRevision && (tagName === 'w:t' || tagName === 'w:delText')) {
+        activeTextDepth = Math.max(0, activeTextDepth - 1);
+      }
+      if (tagName === 'w:t' || tagName === 'w:delText') {
+        visibleTextDepth = Math.max(0, visibleTextDepth - 1);
+      }
+      if (
+        activeRevision
+        && tagName === `w:${activeRevision.kind === 'insert' ? 'ins' : 'del'}`
+        && elementStack.length === activeRevision.startDepth - 1
+      ) {
+        finishRevision();
+      }
+      if (tagName === 'w:p') paragraphDepth = Math.max(0, paragraphDepth - 1);
+      continue;
+    }
+
+    if (!selfClosing) elementStack.push(tagName);
+    if (tagName === 'w:p') {
+      if (paragraphDepth > 0 && activeRevision) activeRevision.complex = true;
+      paragraphDepth += selfClosing ? 0 : 1;
+      paragraphIndex += 1;
+    }
+
+    const revisionKind = tagName === 'w:ins' ? 'insert' : (tagName === 'w:del' ? 'delete' : '');
+    if (revisionKind) {
+      if (activeRevision) activeRevision.complex = true;
+      if (!activeRevision) {
+        const rawId = docxReviewPreviewSessionReadXmlAttr(token, 'id');
+        const parentTag = elementStack[elementStack.length - 2] || '';
+        const hasComplexAncestor = elementStack
+          .slice(0, -1)
+          .some((ancestor) => ['w:tbl', 'w:tr', 'w:tc', 'w:txbxContent'].includes(ancestor));
+        const sequence = revisionSequence;
+        revisionSequence += 1;
+        activeRevision = {
+          kind: revisionKind,
+          revisionId: docxReviewPreviewSessionSafeId(rawId, `${revisionKind}-${sequence}`),
+          author: normalizeString(docxReviewPreviewSessionReadXmlAttr(token, 'author')),
+          createdAt: normalizeString(docxReviewPreviewSessionReadXmlAttr(token, 'date')) || createdAt,
+          paragraphIndex,
+          boundaryVersion: plainBoundaryVersion,
+          startDepth: elementStack.length,
+          text: '',
+          complex: paragraphDepth !== 1 || parentTag !== 'w:p' || hasComplexAncestor,
+          truncated: false,
+        };
+      }
+    } else if (activeRevision) {
+      if (tagName === 'w:t' || tagName === 'w:delText') {
+        if (!selfClosing) {
+          activeTextDepth += 1;
+          visibleTextDepth += 1;
+        }
+      } else if (!closing && (tagName === 'w:tab' || tagName === 'w:br' || tagName === 'w:cr')) {
+        activeRevision.text += tagName === 'w:tab' ? '\t' : '\n';
+      } else if (['w:p', 'w:tbl', 'w:tr', 'w:tc', 'w:moveFrom', 'w:moveTo'].includes(tagName)) {
+        activeRevision.complex = true;
+      }
+    } else if (!selfClosing && (tagName === 'w:t' || tagName === 'w:delText')) {
+      visibleTextDepth += 1;
+    } else if (paragraphDepth > 0 && (tagName === 'w:tab' || tagName === 'w:br' || tagName === 'w:cr')) {
+      plainBoundaryVersion += 1;
+    }
+
+    if (selfClosing && activeRevision && tagName === `w:${activeRevision.kind === 'insert' ? 'ins' : 'del'}`) {
+      finishRevision();
+    }
+  }
+
+  if (cursor !== String(documentXml || '').length || elementStack.length > 0 || activeRevision) malformed = true;
+  if (malformed) {
+    addDiagnostic(
+      'DOCX_REVIEW_TRACKED_CHANGE_XML_MALFORMED',
+      'DOCX tracked-change XML is not well formed and produced no text candidates.',
+      'error',
+    );
+    return { textChanges: [], structuralChanges: [], diagnostics, malformed: true };
+  }
+
+  const textChanges = [];
+  for (let index = 0; index < revisions.length; index += 1) {
+    const current = revisions[index];
+    const next = revisions[index + 1];
+    if (
+      current.kind === 'delete'
+      && next?.kind === 'insert'
+      && current.paragraphIndex === next.paragraphIndex
+      && current.boundaryVersion === next.boundaryVersion
+    ) {
+      textChanges.push(docxReviewPreviewSessionTrackedTextChange('replace', [current, next], {
+        targetScope,
+        createdAt,
+      }));
+      index += 1;
+      continue;
+    }
+    textChanges.push(docxReviewPreviewSessionTrackedTextChange(current.kind, [current], {
+      targetScope,
+      createdAt,
+    }));
+  }
+
+  const moveFromCount = docxReviewPreflightCountMatches(documentXml, /<\s*w:moveFrom\b/giu);
+  const moveToCount = docxReviewPreflightCountMatches(documentXml, /<\s*w:moveTo\b/giu);
+  if (moveFromCount > 0 || moveToCount > 0) {
+    const summary = `DOCX tracked moves remain manual-only (${moveFromCount} move-from, ${moveToCount} move-to).`;
+    addStructuralChange(docxReviewPreviewSessionTrackedStructuralChange(
+      'docx-tracked-move',
+      summary,
+      { targetScope, createdAt },
+    ), 'docx-tracked-move');
+  }
+
+  for (const textChange of textChanges) {
+    addDiagnostic(
+      'DOCX_REVIEW_TRACKED_TEXT_CANDIDATE_MANUAL_ONLY',
+      'DOCX tracked text was converted into a zero-write manual ReviewGraph candidate.',
+      'info',
+      textChange.changeId,
+    );
+  }
+  return { textChanges, structuralChanges, diagnostics, malformed: false };
+}
+
 function docxReviewPreviewSessionTrackedChangeDiagnostics(trackedChangesEvidence, options = {}) {
   if (!isPlainObject(trackedChangesEvidence) || trackedChangesEvidence.present !== true) return [];
   const targetScope = docxReviewPreviewSessionTargetScope(options.targetScope);
@@ -3008,7 +3325,7 @@ function docxReviewPreviewSessionTrackedChangeDiagnostics(trackedChangesEvidence
       'DOCX_REVIEW_PREVIEW_SESSION_TRACKED_CHANGE_DIAGNOSTIC_ONLY',
       {
         diagnosticId: `docx-review-tracked-${key}`,
-        message: `DOCX tracked-change ${label} detected (${count}) and kept diagnostic-only.`,
+        message: `DOCX tracked-change ${label} detected (${count}); bounded text may become manual-only candidates.`,
         targetScope,
         severity: 'warning',
         createdAt,
@@ -3122,6 +3439,25 @@ export function buildDocxReviewPreviewSessionCandidateFromZipBytes(input, option
     createdAt,
     targetScope,
   });
+  const trackedTextResult = docxReviewPreviewSessionTrackedTextCandidates(documentXml, {
+    createdAt,
+    targetScope,
+  });
+  if (trackedTextResult.malformed) {
+    return docxReviewPreviewSessionResult({
+      ok: false,
+      status: 'blocked',
+      code: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_CODES.BLOCKED,
+      reason: 'DOCX_REVIEW_TRACKED_CHANGE_XML_MALFORMED',
+      decision: 'blocked',
+      diagnostics: trackedTextResult.diagnostics,
+      preflightReport,
+      summary: {
+        targetScope,
+        trackedTextCandidateCount: 0,
+      },
+    });
+  }
   const unsupportedItems = Array.isArray(preflightReport.unsupportedItems) ? preflightReport.unsupportedItems : [];
   const diagnostics = [
     ...commentsResult.diagnostics,
@@ -3130,13 +3466,17 @@ export function buildDocxReviewPreviewSessionCandidateFromZipBytes(input, option
       createdAt,
       targetScope,
     }),
+    ...trackedTextResult.diagnostics,
     ...docxReviewPreviewSessionUnsupportedDiagnostics(unsupportedItems, {
       createdAt,
       targetScope,
     }),
   ].slice(0, DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxDiagnostics);
 
-  if (commentsResult.comments.length === 0) {
+  const hasReviewGraphCandidate = commentsResult.comments.length > 0
+    || trackedTextResult.textChanges.length > 0
+    || trackedTextResult.structuralChanges.length > 0;
+  if (!hasReviewGraphCandidate) {
     const diagnosticOnlyReviewPacket = diagnostics.length > 0
       ? docxReviewPreviewSessionEmptyReviewPacket()
       : null;
@@ -3179,6 +3519,7 @@ export function buildDocxReviewPreviewSessionCandidateFromZipBytes(input, option
         structuralChangeCount: 0,
         diagnosticItemCount: diagnosticOnlyReviewPacket ? diagnosticOnlyReviewPacket.diagnosticItems.length : 0,
         trackedChangesDiagnosticOnly: preflightReport.trackedChangesEvidence?.present === true,
+        trackedTextCandidateCount: 0,
       },
     });
   }
@@ -3186,6 +3527,8 @@ export function buildDocxReviewPreviewSessionCandidateFromZipBytes(input, option
   const reviewPacket = docxReviewPreviewSessionEmptyReviewPacket();
   reviewPacket.commentThreads = commentsResult.comments.map((comment) => comment.thread);
   reviewPacket.commentPlacements = placementsResult.placements;
+  reviewPacket.textChanges = trackedTextResult.textChanges;
+  reviewPacket.structuralChanges = trackedTextResult.structuralChanges;
   reviewPacket.diagnosticItems = diagnostics;
   const sourceHash = revisionBlockHash({
     schemaVersion: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_SCHEMA,
@@ -3219,7 +3562,9 @@ export function buildDocxReviewPreviewSessionCandidateFromZipBytes(input, option
       textChangeCount: reviewPacket.textChanges.length,
       structuralChangeCount: reviewPacket.structuralChanges.length,
       diagnosticItemCount: reviewPacket.diagnosticItems.length,
-      trackedChangesDiagnosticOnly: preflightReport.trackedChangesEvidence?.present === true,
+      trackedChangesDiagnosticOnly: preflightReport.trackedChangesEvidence?.present === true
+        && reviewPacket.textChanges.length === 0,
+      trackedTextCandidateCount: reviewPacket.textChanges.length,
     },
   });
 }

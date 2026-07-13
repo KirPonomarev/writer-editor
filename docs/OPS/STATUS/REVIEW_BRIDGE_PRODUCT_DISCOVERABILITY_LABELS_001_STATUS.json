@@ -2,6 +2,9 @@
   "schemaVersion": 1,
   "taskId": "REVIEW_BRIDGE_PRODUCT_DISCOVERABILITY_LABELS_001",
   "status": "delivered_merged_verified",
+  "lifecycleStatus": "superseded_historical",
+  "supersededBy": "REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001_STATUS.json",
+  "supersededAtLocalDate": "2026-07-13",
   "type": "runtime_product_acceptance",
   "baseSha": "b6c2b8fba9c303ce95055e9168d72cb0390c167e",
   "scope": {

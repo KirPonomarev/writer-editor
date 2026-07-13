@@ -423,14 +423,14 @@ test('DOCX review local-file entry: command is bridge-allowlisted and menu-owned
     reviewMenu.items.find((item) => item.id === 'review-open-docx-review-preview-session'),
     {
       id: 'review-open-docx-review-preview-session',
-      label: 'Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...',
+      label: 'Open DOCX Review (Comments; tracked text candidates are manual-only)...',
       labelKey: 'menu.review.openDocxReviewPreviewSession',
       command: 'cmd.project.review.openDocxReviewPreviewSession',
     },
   );
   assert.equal(
     menuLocale.entries['menu.review.openDocxReviewPreviewSession'].en,
-    'Open DOCX Review Evidence (Comments preview; Tracked changes diagnostic)...',
+    'Open DOCX Review (Comments; tracked text candidates are manual-only)...',
   );
 });
 
@@ -590,7 +590,7 @@ test('DOCX review local-file entry: clean DOCX leaves session passive with no ca
   assertNoPrivateLocalFileFields(result);
 });
 
-test('DOCX review local-file entry: tracked changes open diagnostic-only evidence surface', async () => {
+test('DOCX review local-file entry: complex tracked changes open manual structural review', async () => {
   const bytes = cleanDocxZip([
     paragraphXml('Before'),
     '<w:ins><w:p><w:r><w:t>Inserted</w:t></w:r></w:p></w:ins>',
@@ -604,9 +604,9 @@ test('DOCX review local-file entry: tracked changes open diagnostic-only evidenc
   assert.equal(result.commandId, 'cmd.project.review.openDocxReviewPreviewSession');
   assert.equal(result.requestId, 'tracked-local-docx-review');
   assert.equal(result.activated, true);
-  assert.equal(result.diagnosticOnly, true);
-  assert.equal(result.canOpenReviewSession, false);
-  assert.equal(result.canCreateReviewPacket, false);
+  assert.equal(result.diagnosticOnly, false);
+  assert.equal(result.canOpenReviewSession, true);
+  assert.equal(result.canCreateReviewPacket, true);
   assert.equal(result.canAutoApply, false);
   assert.equal(result.canImportMutate, false);
   assert.equal(result.canWriteStorage, false);
@@ -614,8 +614,9 @@ test('DOCX review local-file entry: tracked changes open diagnostic-only evidenc
   assert.deepEqual(reviewGraph.commentThreads, []);
   assert.deepEqual(reviewGraph.commentPlacements, []);
   assert.deepEqual(reviewGraph.textChanges, []);
-  assert.deepEqual(reviewGraph.structuralChanges, []);
-  assert.equal(reviewGraph.diagnosticItems.length, 1);
+  assert.equal(reviewGraph.structuralChanges.length, 1);
+  assert.equal(reviewGraph.structuralChanges[0].manualOnly, true);
+  assert.equal(reviewGraph.diagnosticItems.length, 2);
   assert.equal(reviewGraph.diagnosticItems[0].diagnosticId, 'docx-review-tracked-insertCount');
   assert.equal(result.reviewSurface.blockedApplyPlan.canApply, false);
   assert.deepEqual(result.reviewSurface.blockedApplyPlan.applyOps, []);

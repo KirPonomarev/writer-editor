@@ -338,6 +338,11 @@ test('DOCX review preview session command: command is bridge-allowlisted and han
     source,
     /'cmd\.project\.review\.activateDocxReviewPreviewSession':\s*async\s*\(payload\s*=\s*\{\}\)\s*=>\s*\{[\s\S]*sendCanonicalRuntimeCommand\(\s*'cmd\.project\.review\.openComments',\s*\{\s*source:\s*'review-docx-preview-session',\s*requestId:\s*result\.requestId\s*\}/,
   );
+  assert.match(
+    source,
+    /DOCX_REVIEW_PREVIEW_SESSION_ALLOWED_CONTEXT_KINDS\s*=\s*new Set\(\[[\s\S]*'scene'[\s\S]*'chapter-file'[\s\S]*'roman-section'/,
+  );
+  assert.match(source, /targetScope:\s*\{\s*type:\s*documentContext\.kind,\s*id:\s*sceneId/u);
 });
 
 test('DOCX review preview session command: activates an in-memory review session from DOCX comments', async () => {
@@ -428,7 +433,7 @@ test('DOCX review preview session command: forbidden renderer fields are rejecte
   assert.equal(port.getState().activeReviewSessionLifecycle, 'passive');
 });
 
-test('DOCX review preview session command: tracked changes open diagnostic-only evidence surface', async () => {
+test('DOCX review preview session command: complex tracked changes open manual structural review', async () => {
   const port = instantiateDocxReviewPreviewSessionPort();
   const result = await port.handleDocxReviewPreviewSessionActivationCommandSurface(
     toPayload(cleanDocxZip([
@@ -442,23 +447,58 @@ test('DOCX review preview session command: tracked changes open diagnostic-only 
 
   assert.equal(result.ok, true, JSON.stringify(result, null, 2));
   assert.equal(result.activated, true);
-  assert.equal(result.diagnosticOnly, true);
-  assert.equal(result.canOpenReviewSession, false);
-  assert.equal(result.canCreateReviewPacket, false);
+  assert.equal(result.diagnosticOnly, false);
+  assert.equal(result.canOpenReviewSession, true);
+  assert.equal(result.canCreateReviewPacket, true);
   assert.equal(result.canAutoApply, false);
   assert.equal(result.canImportMutate, false);
   assert.equal(result.canWriteStorage, false);
-  assert.equal(result.candidateSummary.status, 'diagnostics');
-  assert.equal(result.candidateSummary.diagnosticItemCount, 1);
+  assert.equal(result.candidateSummary.status, 'ready');
+  assert.equal(result.candidateSummary.diagnosticItemCount, 2);
+  assert.equal(result.candidateSummary.structuralChangeCount, 1);
   const reviewGraph = result.reviewSurface.revisionSession.reviewGraph;
-  assert.equal(reviewGraph.diagnosticItems.length, 1);
+  assert.equal(reviewGraph.diagnosticItems.length, 2);
   assert.equal(reviewGraph.diagnosticItems[0].diagnosticId, 'docx-review-tracked-insertCount');
   assert.deepEqual(reviewGraph.textChanges, []);
-  assert.deepEqual(reviewGraph.structuralChanges, []);
+  assert.equal(reviewGraph.structuralChanges.length, 1);
+  assert.equal(reviewGraph.structuralChanges[0].manualOnly, true);
   assert.equal(result.reviewSurface.blockedApplyPlan.canApply, false);
   assert.deepEqual(result.reviewSurface.blockedApplyPlan.applyOps, []);
   assertNoWriteReceiptsOrApplyAuthority(result);
   assert.equal(port.getState().activeReviewSessionLifecycle, 'active');
+});
+
+test('DOCX review preview session command: simple replacement opens one manual text candidate', async () => {
+  const port = instantiateDocxReviewPreviewSessionPort();
+  const result = await port.handleDocxReviewPreviewSessionActivationCommandSurface(
+    toPayload(cleanDocxZip([
+      '<w:p>',
+      '<w:r><w:t>Alpha </w:t></w:r>',
+      '<w:del w:id="1"><w:r><w:delText>beta</w:delText></w:r></w:del>',
+      '<w:ins w:id="2"><w:r><w:t>delta</w:t></w:r></w:ins>',
+      '<w:r><w:t> gamma.</w:t></w:r>',
+      '</w:p>',
+    ].join(''))),
+    {
+      buildMainReviewContext: async () => reviewContext(),
+    },
+  );
+
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.equal(result.activated, true);
+  assert.equal(result.diagnosticOnly, false);
+  assert.equal(result.canOpenReviewSession, true);
+  assert.equal(result.canAutoApply, false);
+  assert.equal(result.candidateSummary.textChangeCount, 1);
+  assert.equal(result.candidateSummary.trackedTextCandidateCount, 1);
+  const reviewGraph = result.reviewSurface.revisionSession.reviewGraph;
+  assert.equal(reviewGraph.textChanges.length, 1);
+  assert.equal(reviewGraph.textChanges[0].match.kind, 'manual');
+  assert.equal(reviewGraph.textChanges[0].match.quote, 'beta');
+  assert.equal(reviewGraph.textChanges[0].replacementText, 'delta');
+  assert.equal(result.reviewSurface.blockedApplyPlan.canApply, false);
+  assert.deepEqual(result.reviewSurface.blockedApplyPlan.applyOps, []);
+  assertNoWriteReceiptsOrApplyAuthority(result);
 });
 
 test('DOCX review preview session command: source section has no storage write authority', () => {

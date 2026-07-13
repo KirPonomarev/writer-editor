@@ -1,8 +1,8 @@
 {
   "schemaVersion": "revision-bridge.golden-set-manifest.v1",
-  "goldenSetId": "revision-bridge-local-v1-2026-07-12",
-  "baseSha": "5456f7f3dd689559d63bb10181e8998464540f72",
-  "status": "delivered_merged_verified",
+  "goldenSetId": "revision-bridge-local-v1-gate-c-2026-07-13",
+  "baseSha": "c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886",
+  "status": "implemented_verified_pending_delivery",
   "generator": "review-bridge-golden-set.mjs",
   "artifacts": [
     {
@@ -16,10 +16,10 @@
     {
       "fileName": "docx-review-evidence-v1.docx",
       "mediaType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "byteSize": 2587,
-      "sha256": "fa1ed83a1b400a7670151c00a7ee4f39a7272bccb2e9b69310cf206bd6477b7e",
-      "proves": ["comment text extraction", "manual comment placement", "tracked insertion diagnostic", "tracked deletion diagnostic"],
-      "doesNotProve": ["DOCX text candidate apply", "Word roundtrip"]
+      "byteSize": 2726,
+      "sha256": "bbf25574580222241794fe3decea4c6cf6c034c9c07da2bd76463603cd8acc6e",
+      "proves": ["comment text extraction", "manual comment placement", "tracked deletion plus insertion replacement candidate", "manual-only zero-write candidate policy", "external office-suite consumer opens the package"],
+      "doesNotProve": ["DOCX text candidate apply authority", "Word roundtrip", "Google Docs roundtrip"]
     },
     {
       "fileName": "review-packet-v1.json",
@@ -49,19 +49,19 @@
   "actualCommands": [
     "node scripts/ops/review-bridge-golden-set.mjs --write",
     "node scripts/ops/review-bridge-golden-set.mjs",
-    "shasum -a 256 test/fixtures/revision-bridge/v1/*"
+    "shasum -a 256 test/fixtures/revision-bridge/v1/*",
+    "node test/unit/revision-bridge-docx-review-gate-c-ui-e2e-smoke.mjs",
+    "soffice --headless --convert-to txt:Text docx-review-evidence-v1.docx"
   ],
   "hashes": {
     "algorithm": "sha256",
     "count": 5
   },
   "outcomes": ["all fixture bytes match deterministic generator output", "all hashes match manifest"],
-  "nonClaims": ["external editor provenance", "packaged release compatibility"],
-  "knownLimitations": ["fixtures are bounded product artifacts, not a general format corpus", "Word and Google artifact labs remain separate post-V1 gates"],
+  "nonClaims": ["Microsoft Word provenance", "Google Docs provenance", "packaged release compatibility"],
+  "knownLimitations": ["fixtures are bounded product artifacts, not a general format corpus", "Word and Google artifact labs remain separate Gate D evidence"],
   "delivery": {
-    "featureCommit": "01b2a5f28fff9c2f3f9451edc1827c0aebf002e7",
-    "pullRequest": 1083,
-    "mergeSha": "3f71a6fa3b10cecf0973c80a1865552b57e0c180",
-    "mergedAtUtc": "2026-07-12T22:48:18Z"
+    "status": "implemented_verified_pending_delivery",
+    "bindingBaseSha": "c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886"
   }
 }

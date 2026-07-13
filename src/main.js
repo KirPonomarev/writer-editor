@@ -3274,7 +3274,11 @@ async function handleDocxReviewPreflightCommandSurface(payload = {}) {
 
 // DOCX_REVIEW_PREVIEW_SESSION_COMMAND_SURFACE_START
 const DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID = 'cmd.project.review.activateDocxReviewPreviewSession';
-const DOCX_REVIEW_PREVIEW_SESSION_ALLOWED_CONTEXT_KINDS = new Set(['scene', 'chapter-file']);
+const DOCX_REVIEW_PREVIEW_SESSION_ALLOWED_CONTEXT_KINDS = new Set([
+  'scene',
+  'chapter-file',
+  'roman-section',
+]);
 
 function makeDocxReviewPreviewSessionTypedError(code, reason, details = undefined) {
   const error = {
@@ -3393,7 +3397,7 @@ async function buildDocxReviewPreviewSessionMainContext(options = {}) {
     baselineHash,
     currentBaselineHash: baselineHash,
     targetScope: {
-      type: 'scene',
+      type: documentContext.kind,
       id: sceneId,
     },
     createdAt: new Date().toISOString(),
@@ -3433,6 +3437,12 @@ function summarizeDocxReviewPreviewSessionCandidate(candidate = {}) {
     reason: docxReviewPreviewSessionDetailString(candidate.reason),
     commentThreadCount: Number.isFinite(summary.commentThreadCount) ? summary.commentThreadCount : 0,
     commentPlacementCount: Number.isFinite(summary.commentPlacementCount) ? summary.commentPlacementCount : 0,
+    textChangeCount: Number.isFinite(summary.textChangeCount) ? summary.textChangeCount : 0,
+    structuralChangeCount: Number.isFinite(summary.structuralChangeCount) ? summary.structuralChangeCount : 0,
+    trackedTextCandidateCount: Number.isFinite(summary.trackedTextCandidateCount)
+      ? summary.trackedTextCandidateCount
+      : 0,
+    trackedChangesDiagnosticOnly: summary.trackedChangesDiagnosticOnly === true,
     diagnosticItemCount: Number.isFinite(summary.diagnosticItemCount)
       ? summary.diagnosticItemCount
       : diagnosticFallbackCount,
