@@ -210,9 +210,13 @@ const rightTabButtons = Array.from(document.querySelectorAll('[data-right-tab]')
 const rightInspectorPanel = document.querySelector('[data-right-panel-inspector]');
 const rightCommentsPanel = document.querySelector('[data-right-panel-comments]');
 const reviewSurfaceHost = document.querySelector('[data-review-surface-host]');
-const rightHistoryPanel = document.querySelector('[data-right-panel-history]');
 const inspectorCommentsAction = document.querySelector('[data-inspector-comments-action]');
 const inspectorFocusStatus = document.querySelector('[data-inspector-focus-status]');
+const inspectorFontValue = document.querySelector('[data-inspector-font]');
+const inspectorWeightValue = document.querySelector('[data-inspector-weight]');
+const inspectorFontSizeValue = document.querySelector('[data-inspector-font-size]');
+const inspectorLineHeightValue = document.querySelector('[data-inspector-line-height]');
+const inspectorMarginsValue = document.querySelector('[data-inspector-margins]');
 const previewChromeFormatValueElement = Array.from(document.querySelectorAll('.right-rail-form-row')).find((row) => {
   const key = row.querySelector('.right-rail-form-key');
   return key && key.textContent && key.textContent.trim() === 'Формат';
@@ -2913,6 +2917,31 @@ function syncPreviewChromeFormatValue() {
     button.classList.toggle('is-active', isActive);
     button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
+  syncInspectorBookProfileValues(activeProfile);
+}
+
+function formatInspectorMetric(value) {
+  const normalized = Number(value);
+  if (!Number.isFinite(normalized)) return '';
+  return String(normalized).replace('.', ',');
+}
+
+function syncInspectorBookProfileValues(profile = getActiveBookProfile()) {
+  if (!inspectorMarginsValue) return;
+  const margins = [
+    profile.marginTopMm,
+    profile.marginRightMm,
+    profile.marginBottomMm,
+    profile.marginLeftMm,
+  ].map(formatInspectorMetric);
+  if (margins.every((margin) => margin === margins[0])) {
+    inspectorMarginsValue.textContent = `${margins[0]} мм`;
+  } else if (margins[0] === margins[2] && margins[1] === margins[3]) {
+    inspectorMarginsValue.textContent = `${margins[0]} × ${margins[1]} мм`;
+  } else {
+    inspectorMarginsValue.textContent = `${margins.join(' / ')} мм`;
+  }
+  inspectorMarginsValue.title = `Верх ${margins[0]} мм, справа ${margins[1]} мм, низ ${margins[2]} мм, слева ${margins[3]} мм`;
 }
 
 function syncLayoutPreviewControlStates() {
@@ -8069,7 +8098,6 @@ function ensureCommandsOpenerInRightInspectorSurface() {
 
 function normalizeRightTab(tab) {
   if (tab === 'comments') return 'comments';
-  if (tab === 'history') return 'history';
   return 'inspector';
 }
 
@@ -8096,7 +8124,6 @@ function applyRightTab(tab) {
   }
   if (rightInspectorPanel) rightInspectorPanel.hidden = tab !== 'inspector';
   if (rightCommentsPanel) rightCommentsPanel.hidden = tab !== 'comments';
-  if (rightHistoryPanel) rightHistoryPanel.hidden = tab !== 'history';
   if (tab === 'inspector') {
     ensureCommandsOpenerInRightInspectorSurface();
   }
@@ -9876,24 +9903,36 @@ function updateThemeSwatches(theme) {
   }
 
 function syncLiteralToolbarDisplays() {
+  let fontLabel = 'Roboto Ms';
+  let weightLabel = 'Light';
+  let sizeLabel = String(currentFontSizePx);
+  let lineHeightLabel = String(editor?.style.lineHeight || '1.0');
   if (fontDisplay && fontSelect) {
     const option = fontSelect.options[fontSelect.selectedIndex];
-    fontDisplay.textContent = option?.textContent || 'Roboto Ms';
+    fontLabel = option?.textContent || fontLabel;
+    fontDisplay.textContent = fontLabel;
   }
   if (weightDisplay && weightSelect) {
     const option = weightSelect.options[weightSelect.selectedIndex];
-    weightDisplay.textContent = option?.textContent || 'Light';
+    weightLabel = option?.textContent || weightLabel;
+    weightDisplay.textContent = weightLabel;
   }
   if (sizeDisplay && sizeSelect) {
     const option = sizeSelect.options[sizeSelect.selectedIndex];
-    sizeDisplay.textContent = option?.textContent || String(currentFontSizePx);
+    sizeLabel = option?.textContent || sizeLabel;
+    sizeDisplay.textContent = sizeLabel;
   }
   if (lineHeightDisplay && lineHeightSelect) {
     const option = lineHeightSelect.options[lineHeightSelect.selectedIndex];
-    lineHeightDisplay.textContent = option?.value && !option.value.startsWith('__')
+    lineHeightLabel = option?.value && !option.value.startsWith('__')
       ? option.value
-      : String(editor?.style.lineHeight || '1.0');
+      : lineHeightLabel;
+    lineHeightDisplay.textContent = lineHeightLabel;
   }
+  if (inspectorFontValue) inspectorFontValue.textContent = fontLabel;
+  if (inspectorWeightValue) inspectorWeightValue.textContent = weightLabel;
+  if (inspectorFontSizeValue) inspectorFontSizeValue.textContent = sizeLabel;
+  if (inspectorLineHeightValue) inspectorLineHeightValue.textContent = lineHeightLabel;
 }
 
 function promptForCustomFontSize() {
@@ -11053,7 +11092,7 @@ if (rightTabsHost) {
       void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_COMMENTS);
       return;
     }
-    if (tab === 'inspector' || tab === 'history') {
+    if (tab === 'inspector') {
       applyRightTab(tab);
     }
   });

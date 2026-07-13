@@ -52,3 +52,35 @@ test('sidebar control truth: inspector exposes one real action and two truthful 
   assert.ok(editor.includes('syncInspectorStateSurface();\n  syncToolbarShellState();'));
   assert.ok(editor.includes("case 'review-open-comments':\n      void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_COMMENTS);"));
 });
+
+test('sidebar product truth: inspector projects live values and unopened surfaces stay hidden', () => {
+  const html = read('src/renderer/index.html');
+  const editor = read('src/renderer/editor.js');
+
+  for (const hook of [
+    'data-inspector-font',
+    'data-inspector-weight',
+    'data-inspector-font-size',
+    'data-inspector-line-height',
+    'data-inspector-margins',
+  ]) {
+    assert.ok(html.includes(hook), `missing live inspector hook: ${hook}`);
+  }
+  assert.ok(editor.includes('function syncInspectorBookProfileValues('));
+  assert.ok(editor.includes('if (inspectorFontValue) inspectorFontValue.textContent = fontLabel;'));
+  assert.ok(editor.includes('if (!inspectorMarginsValue) return;'));
+
+  for (const demoClaim of [
+    'data-right-tab="history"',
+    'data-right-panel-history',
+    'data-history-placeholder',
+    'Быстрая заметка',
+    'Черновик синхронизирован.',
+    'Ручные версии можно держать',
+    'EB Garamond',
+    'Широкие',
+    'Базовая',
+  ]) {
+    assert.equal(html.includes(demoClaim), false, `demo-only sidebar claim shipped: ${demoClaim}`);
+  }
+});
