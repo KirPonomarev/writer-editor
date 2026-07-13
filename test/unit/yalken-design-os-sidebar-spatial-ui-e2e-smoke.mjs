@@ -131,6 +131,24 @@ async function captureEvidence(win, basename) {
   fs.writeFileSync(path.join(outputDir, basename), image.toPNG());
 }
 
+async function captureSelectorEvidence(win, selector, basename) {
+  if (!outputDir) return;
+  const rect = await win.webContents.executeJavaScript(\`(() => {
+    const element = document.querySelector(\${JSON.stringify(selector)});
+    const bounds = element?.getBoundingClientRect();
+    return bounds ? {
+      x: Math.max(0, Math.floor(bounds.x)),
+      y: Math.max(0, Math.floor(bounds.y)),
+      width: Math.max(1, Math.ceil(bounds.width)),
+      height: Math.max(1, Math.ceil(bounds.height)),
+    } : null;
+  })()\`, true);
+  if (!rect) return;
+  fs.mkdirSync(outputDir, { recursive: true });
+  const image = await win.webContents.capturePage(rect);
+  fs.writeFileSync(path.join(outputDir, basename), image.toPNG());
+}
+
 async function dragRail(win, side, delta) {
   const selector = side === 'left' ? '[data-sidebar-resizer]' : '[data-right-sidebar-resizer]';
   const point = await win.webContents.executeJavaScript(\`(() => {
@@ -163,6 +181,40 @@ async function dragRail(win, side, delta) {
   })()\`, true);
 }
 
+async function exerciseInspectorControls(win) {
+  const before = await win.webContents.executeJavaScript(
+    "(() => { const commentsAction = document.querySelector('[data-inspector-comments-action]'); const autosaveStatus = document.querySelector('[data-inspector-autosave-status]'); const focusStatus = document.querySelector('[data-inspector-focus-status]'); return { commentsTag: commentsAction?.tagName || '', commentsAction: commentsAction?.dataset.action || '', autosaveTag: autosaveStatus?.tagName || '', autosaveText: autosaveStatus?.textContent?.trim() || '', focusTag: focusStatus?.tagName || '', focusText: focusStatus?.textContent?.trim() || '', focusState: focusStatus?.dataset.state || '' }; })()",
+    true
+  );
+
+  await win.webContents.executeJavaScript("document.querySelector('[data-inspector-comments-action]')?.click()", true);
+  const commentsOpened = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => ({ mode: document.body.dataset.mode || '', commentsVisible: document.querySelector('[data-right-panel-comments]')?.hidden === false, commentsTabPressed: document.querySelector('[data-right-tab=comments]')?.getAttribute('aria-pressed') || '' }))()",
+      true
+    ).then((state) => state.commentsVisible ? state : null),
+    'INSPECTOR_COMMENTS_ACTION_DID_NOT_OPEN'
+  );
+
+  await win.webContents.executeJavaScript("document.querySelector('[data-right-tab=inspector]')?.click()", true);
+  const inspectorRestored = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => ({ inspectorVisible: document.querySelector('[data-right-panel-inspector]')?.hidden === false, inspectorTabPressed: document.querySelector('[data-right-tab=inspector]')?.getAttribute('aria-pressed') || '', commentsActionPressed: document.querySelector('[data-inspector-comments-action]')?.getAttribute('aria-pressed') || '' }))()",
+      true
+    ).then((state) => state.inspectorVisible ? state : null),
+    'INSPECTOR_TAB_DID_NOT_RESTORE'
+  );
+
+  if (outputDir) {
+    await win.webContents.executeJavaScript("(() => { const panel = document.querySelector('[data-right-panel-inspector]'); if (panel) panel.scrollTop = panel.scrollHeight; })()", true);
+    await sleep(120);
+    await captureSelectorEvidence(win, '[data-right-sidebar]', 'sidebar-inspector-state.png');
+    await win.webContents.executeJavaScript("(() => { const panel = document.querySelector('[data-right-panel-inspector]'); if (panel) panel.scrollTop = 0; })()", true);
+  }
+
+  return { before, commentsOpened, inspectorRestored };
+}
+
 app.whenReady().then(async () => {
   try {
     const win = await waitUntil(() => BrowserWindow.getAllWindows()[0] || null, 'WINDOW_NOT_CREATED');
@@ -185,6 +237,7 @@ app.whenReady().then(async () => {
     await sleep(400);
 
     const initialWide = await resizeAndProbe(win, 1440, 850, 'initial-wide');
+    const inspectorControls = await exerciseInspectorControls(win);
     const leftDrag = await dragRail(win, 'left', 40);
     const rightDrag = await dragRail(win, 'right', -30);
     const resizedWide = await collectProbe(win, 'resized-wide');
@@ -204,6 +257,7 @@ app.whenReady().then(async () => {
     emit({
       ok: 1,
       initialWide,
+      inspectorControls,
       leftDrag,
       rightDrag,
       resizedWide,
@@ -282,6 +336,26 @@ try {
   assert.equal(result.initialWide.tree.height > 236, true, 'project tree should use available rail height');
   assert.equal(result.initialWide.leftToolbar.right + 8 <= result.initialWide.mainToolbar.left, true);
   assert.equal(result.initialWide.mainToolbar.right <= result.initialWide.innerWidth, true);
+
+  assert.deepEqual(result.inspectorControls.before, {
+    commentsTag: 'BUTTON',
+    commentsAction: 'review-open-comments',
+    autosaveTag: 'SPAN',
+    autosaveText: 'Локально',
+    focusTag: 'SPAN',
+    focusText: 'Выкл',
+    focusState: 'off',
+  });
+  assert.deepEqual(result.inspectorControls.commentsOpened, {
+    mode: 'review',
+    commentsVisible: true,
+    commentsTabPressed: 'true',
+  });
+  assert.deepEqual(result.inspectorControls.inspectorRestored, {
+    inspectorVisible: true,
+    inspectorTabPressed: 'true',
+    commentsActionPressed: 'false',
+  });
 
   assert.deepEqual(
     [result.leftDrag.leftWidth, result.rightDrag.rightWidth],

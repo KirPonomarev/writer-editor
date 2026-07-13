@@ -211,6 +211,8 @@ const rightInspectorPanel = document.querySelector('[data-right-panel-inspector]
 const rightCommentsPanel = document.querySelector('[data-right-panel-comments]');
 const reviewSurfaceHost = document.querySelector('[data-review-surface-host]');
 const rightHistoryPanel = document.querySelector('[data-right-panel-history]');
+const inspectorCommentsAction = document.querySelector('[data-inspector-comments-action]');
+const inspectorFocusStatus = document.querySelector('[data-inspector-focus-status]');
 const previewChromeFormatValueElement = Array.from(document.querySelectorAll('.right-rail-form-row')).find((row) => {
   const key = row.querySelector('.right-rail-form-key');
   return key && key.textContent && key.textContent.trim() === 'Формат';
@@ -8071,6 +8073,19 @@ function normalizeRightTab(tab) {
   return 'inspector';
 }
 
+function syncInspectorStateSurface() {
+  const commentsActive = currentRightTab === 'comments';
+  if (inspectorCommentsAction) {
+    inspectorCommentsAction.classList.toggle('is-active', commentsActive);
+    inspectorCommentsAction.setAttribute('aria-pressed', commentsActive ? 'true' : 'false');
+  }
+  if (inspectorFocusStatus) {
+    const focusActive = document.body.classList.contains('focus-mode');
+    inspectorFocusStatus.dataset.state = focusActive ? 'on' : 'off';
+    inspectorFocusStatus.textContent = focusActive ? 'Вкл' : 'Выкл';
+  }
+}
+
 function applyRightTab(tab) {
   tab = normalizeRightTab(tab);
   currentRightTab = tab;
@@ -8085,6 +8100,7 @@ function applyRightTab(tab) {
   if (tab === 'inspector') {
     ensureCommandsOpenerInRightInspectorSurface();
   }
+  syncInspectorStateSurface();
   syncToolbarShellState();
 }
 
@@ -9474,6 +9490,7 @@ function applyViewMode(mode, persist = true) {
   if (persist) {
     localStorage.setItem('editorViewMode', mode);
   }
+  syncInspectorStateSurface();
 }
 
 function applyTextStyle(action) {

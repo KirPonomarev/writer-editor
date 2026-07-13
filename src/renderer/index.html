@@ -663,18 +663,29 @@
             </section>
             <section class="right-rail-surface">
               <div class="right-rail-section__label">Состояние</div>
-              <div class="right-rail-toggle-list">
-                <div class="right-rail-toggle-row">
-                  <span class="right-rail-toggle-key">Автосохранение</span>
-                  <button type="button" class="right-rail-toggle is-on" aria-label="Автосохранение"></button>
+              <div class="right-rail-state-list">
+                <div class="right-rail-state-row">
+                  <span class="right-rail-state-key">Автосохранение</span>
+                  <span class="right-rail-state-value" data-inspector-autosave-status role="status">Локально</span>
                 </div>
-                <div class="right-rail-toggle-row">
-                  <span class="right-rail-toggle-key">Комментарии</span>
-                  <button type="button" class="right-rail-toggle is-off" aria-label="Комментарии"></button>
+                <div class="right-rail-state-row">
+                  <span class="right-rail-state-key">Комментарии</span>
+                  <button
+                    type="button"
+                    class="right-rail-state-action"
+                    data-action="review-open-comments"
+                    data-inspector-comments-action
+                    aria-pressed="false"
+                  >Открыть</button>
                 </div>
-                <div class="right-rail-toggle-row">
-                  <span class="right-rail-toggle-key">Режим фокуса</span>
-                  <button type="button" class="right-rail-toggle is-on" aria-label="Режим фокуса"></button>
+                <div class="right-rail-state-row">
+                  <span class="right-rail-state-key">Режим фокуса</span>
+                  <span
+                    class="right-rail-state-value"
+                    data-inspector-focus-status
+                    data-state="off"
+                    role="status"
+                  >Выкл</span>
                 </div>
               </div>
             </section>
