@@ -2931,13 +2931,13 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .right-rail-form-grid,
-.right-rail-toggle-list {
+.right-rail-state-list {
   display: grid;
   gap: 10px;
 }
 
 .right-rail-form-row,
-.right-rail-toggle-row {
+.right-rail-state-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -2945,7 +2945,7 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .right-rail-form-key,
-.right-rail-toggle-key {
+.right-rail-state-key {
   color: var(--text-secondary);
   font-size: 13px;
   line-height: 18px;
@@ -3047,39 +3047,51 @@ body.dark-theme .toolbar__swatch::before {
   box-shadow: none;
 }
 
-.right-rail-toggle {
-  position: relative;
-  width: 44px;
-  height: 24px;
+.right-rail-state-value,
+.right-rail-state-action {
+  justify-self: end;
+  min-height: 28px;
+  min-width: 58px;
+  padding: 0 10px;
   border-radius: 999px;
   border: 1px solid var(--toolbar-control-border);
   background: var(--selected-bg);
-  justify-self: end;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 11.5px;
+  line-height: 16px;
+  font-weight: 500;
   box-shadow:
-    var(--control-inner-highlight),
+    inset 0 1px 0 rgba(255, 255, 255, 0.68),
     var(--control-shadow);
+}
+
+.right-rail-state-value {
   cursor: default;
 }
 
-.right-rail-toggle::before {
-  content: '';
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  background: #faf7f3;
-  box-shadow: 0 1px 2px rgba(63, 57, 52, 0.11);
+.right-rail-state-value[data-state="on"],
+.right-rail-state-action.is-active {
+  background: var(--foreground);
+  color: var(--background);
 }
 
-.right-rail-toggle.is-on {
-  background: var(--toggle-on-bg);
+.right-rail-state-action {
+  appearance: none;
+  cursor: pointer;
 }
 
-.right-rail-toggle.is-on::before {
-  left: 23px;
-  background: #f8f7f5;
+.right-rail-state-action:hover {
+  background: var(--hover-bg);
+  color: var(--foreground);
+}
+
+.right-rail-state-action:focus-visible {
+  outline: 2px solid rgba(85, 79, 70, 0.34);
+  outline-offset: 2px;
 }
 
 [data-right-panel-comments]:not([hidden]) {
