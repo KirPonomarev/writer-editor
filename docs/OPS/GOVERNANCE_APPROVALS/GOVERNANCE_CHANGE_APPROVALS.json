@@ -395,10 +395,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
-      "sha256": "2b096503798315747bc99bf85dec7aac2099a6661d0281380753583b7e61ca40",
-      "approvedBy": "ticket:CONTOUR_010_10000_SUPPORTED_TIER_PROMOTION_RC_REBIND",
-      "approvedAtUtc": "2026-04-30T17:50:00.000Z",
-      "rationale": "Approve release candidate lock rebind and promotion evidence pack for the owner-approved 10000 supported tier macOS design phase contour; no runtime, UI, CSS, storage, export, dependency, 25000, 40000, 41750-plus, production, or cross-platform claim is introduced."
+      "sha256": "d4e6353d756cd1ec8b3a95c78e0ee27a0815aa5fc6a57da0874d16b87be4faeb",
+      "approvedBy": "ticket:PRODUCT_ACCEPTANCE_RELEASE_HYGIENE_004",
+      "approvedAtUtc": "2026-07-13T01:27:18.838Z",
+      "rationale": "Approve canonical release-mode lock regeneration against the current menu artifact and snapshot hashes; no promotion evidence pack, runtime, UI, storage, export, dependency, network, cloud, or new release claim is introduced."
     },
     {
       "filePath": "test/contracts/editor-sheet-6000-diagnostic-probe.contract.test.js",
