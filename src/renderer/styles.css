@@ -623,6 +623,10 @@ body {
 
 .floating-toolbar__shell {
   --floating-toolbar-width-scale: 1;
+  --floating-toolbar-vertical-rail-width: min(
+    calc(100vw - 32px),
+    max(112px, calc(136px * var(--floating-toolbar-width-scale)))
+  );
   --floating-toolbar-cluster-left: 0px;
   --floating-toolbar-cluster-right: 0px;
   --floating-toolbar-cluster-top: 0px;
@@ -670,7 +674,7 @@ body {
   align-items: flex-start;
   justify-content: flex-start;
   gap: var(--toolbar-chrome-gap-md);
-  width: auto;
+  width: var(--floating-toolbar-vertical-rail-width);
 }
 
 .floating-toolbar__shell.is-snapped {
@@ -776,22 +780,35 @@ body {
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__group {
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: flex-start;
   gap: var(--toolbar-chrome-gap-sm);
-  width: auto;
+  width: 100%;
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__controls {
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   gap: var(--toolbar-chrome-gap-lg);
+  width: 100%;
 }
 
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--format-inline,
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--color,
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--styles,
 .floating-toolbar__shell.is-vertical .floating-toolbar__group--history {
   flex-direction: row;
-  align-items: center;
-  gap: calc(var(--toolbar-chrome-gap-sm) + 2px);
+  align-items: stretch;
+  gap: var(--toolbar-chrome-gap-sm);
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--format-inline .floating-toolbar__button,
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--color .floating-toolbar__button,
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--styles .floating-toolbar__button,
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--history .floating-toolbar__button {
+  flex: 1 1 0;
+  width: auto;
+  min-width: var(--toolbar-chrome-control-height);
 }
 
 .floating-toolbar__separator {
@@ -805,7 +822,7 @@ body {
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__separator {
-  width: calc(136px * var(--floating-toolbar-width-scale));
+  width: 100%;
   height: 1px;
   margin: 2px 0;
   align-self: flex-start;
@@ -1448,11 +1465,13 @@ body {
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__button--paragraph {
-  width: calc(136px * var(--floating-toolbar-width-scale));
+  width: 100%;
   height: 32px;
-  justify-content: flex-start;
-  gap: 18px;
-  padding: 0 12px;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) 10px;
+  align-items: center;
+  gap: var(--toolbar-chrome-gap-sm);
+  padding: 0 10px;
   border: 1px solid rgba(50, 36, 24, 0.07);
   border-radius: 10px;
   background: rgba(248, 246, 243, 0.72);
@@ -1464,6 +1483,13 @@ body {
 .floating-toolbar__shell.is-vertical .floating-toolbar__button-label--paragraph,
 .floating-toolbar__shell.is-vertical .floating-toolbar__caret--paragraph {
   display: inline-flex;
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__button-label--paragraph {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__select-wrap {
@@ -1483,7 +1509,9 @@ body {
 .floating-toolbar__shell.is-vertical .floating-toolbar__select-wrap,
 .floating-toolbar__shell.is-vertical .floating-toolbar__button {
   transform: none !important;
-  align-self: flex-start;
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__display {
@@ -1509,7 +1537,7 @@ body {
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__select-wrap--line-height {
-  width: calc(72px * var(--floating-toolbar-width-scale));
+  width: 100%;
 }
 
 .floating-toolbar__separator {
@@ -4554,26 +4582,26 @@ body.dark-theme .status-bar {
     gap: calc(6px * var(--left-toolbar-width-scale));
   }
 
-  .floating-toolbar__controls {
+  .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__controls {
     gap: var(--toolbar-chrome-gap-sm);
   }
 
-  .floating-toolbar__select-wrap--font {
+  .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--font {
     width: calc(140px * var(--floating-toolbar-width-scale));
     min-width: 140px;
   }
 
-  .floating-toolbar__select-wrap--weight {
+  .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--weight {
     width: calc(96px * var(--floating-toolbar-width-scale));
     min-width: 96px;
   }
 
-  .floating-toolbar__select-wrap--size {
+  .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--size {
     width: calc(64px * var(--floating-toolbar-width-scale));
     min-width: 64px;
   }
 
-  .floating-toolbar__select-wrap--line-height {
+  .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--line-height {
     width: calc(82px * var(--floating-toolbar-width-scale));
     min-width: 82px;
   }
@@ -4609,22 +4637,22 @@ body.dark-theme .status-bar {
     gap: calc(4px * var(--left-toolbar-width-scale));
   }
 
-  .floating-toolbar__select-wrap--font {
+  .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--font {
     width: calc(120px * var(--floating-toolbar-width-scale));
     min-width: 120px;
   }
 
-  .floating-toolbar__select-wrap--weight {
+  .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--weight {
     width: calc(82px * var(--floating-toolbar-width-scale));
     min-width: 82px;
   }
 
-  .floating-toolbar__select-wrap--size {
+  .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--size {
     width: calc(56px * var(--floating-toolbar-width-scale));
     min-width: 56px;
   }
 
-  .floating-toolbar__select-wrap--line-height {
+  .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--line-height {
     width: calc(76px * var(--floating-toolbar-width-scale));
     min-width: 76px;
   }
