@@ -4016,19 +4016,19 @@ body.dark-theme .empty-state {
   -webkit-mask-image: repeating-linear-gradient(
     to bottom,
     transparent 0,
-    transparent var(--central-sheet-line-top-guard-px),
-    #fff var(--central-sheet-line-top-guard-px),
-    #fff calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px)),
-    transparent calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px)),
+    transparent calc(var(--central-sheet-line-top-guard-px) - var(--central-sheet-mask-bleed-px, 2px)),
+    #fff calc(var(--central-sheet-line-top-guard-px) - var(--central-sheet-mask-bleed-px, 2px)),
+    #fff calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px) + var(--central-sheet-mask-bleed-px, 2px)),
+    transparent calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px) + var(--central-sheet-mask-bleed-px, 2px)),
     transparent var(--central-sheet-page-stride-px)
   );
   mask-image: repeating-linear-gradient(
     to bottom,
     transparent 0,
-    transparent var(--central-sheet-line-top-guard-px),
-    #fff var(--central-sheet-line-top-guard-px),
-    #fff calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px)),
-    transparent calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px)),
+    transparent calc(var(--central-sheet-line-top-guard-px) - var(--central-sheet-mask-bleed-px, 2px)),
+    #fff calc(var(--central-sheet-line-top-guard-px) - var(--central-sheet-mask-bleed-px, 2px)),
+    #fff calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px) + var(--central-sheet-mask-bleed-px, 2px)),
+    transparent calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px) + var(--central-sheet-mask-bleed-px, 2px)),
     transparent var(--central-sheet-page-stride-px)
   );
   -webkit-mask-mode: alpha;

@@ -103,6 +103,33 @@ async function waitForLoad(win) {
   await new Promise((resolve) => win.webContents.once('did-finish-load', resolve));
 }
 
+async function setEditorZoomPercent(win, targetPercent) {
+  let state = null;
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    const script = [
+      '(() => {',
+      'const targetPercent = ' + JSON.stringify(Number(targetPercent)) + ';',
+      "const value = document.querySelector('[data-zoom-value]');",
+      "const currentPercent = Number.parseInt(value ? value.textContent || '' : '', 10);",
+      "if (!Number.isFinite(currentPercent)) return { ok: false, reason: 'ZOOM_VALUE_MISSING' };",
+      'if (currentPercent === targetPercent) return { ok: true, currentPercent };',
+      "const action = currentPercent < targetPercent ? 'zoom-in' : 'zoom-out';",
+      "const button = [...document.querySelectorAll('[data-action]')].find((item) => item.dataset.action === action);",
+      "if (!(button instanceof HTMLElement)) return { ok: false, reason: 'ZOOM_BUTTON_MISSING', currentPercent };",
+      'button.click();',
+      "return { ok: false, reason: 'ZOOM_SETTLING', currentPercent };",
+      '})()',
+    ].join('\\n');
+    state = await win.webContents.executeJavaScript(script, true);
+    if (state && state.ok && state.currentPercent === targetPercent) {
+      await sleep(800);
+      return state;
+    }
+    await sleep(120);
+  }
+  throw new Error('EDITOR_ZOOM_TARGET_NOT_REACHED ' + JSON.stringify({ targetPercent, state }));
+}
+
 async function setEditorContent(win, content, title) {
   win.webContents.send('editor:set-text', {
     content,
@@ -166,6 +193,7 @@ async function collectState(win, label) {
     const host = document.querySelector('#editor.tiptap-host');
     const strip = host ? host.querySelector('.tiptap-sheet-strip') : null;
     const prose = host ? host.querySelector('.ProseMirror') : null;
+    const overlayEditor = host ? host.querySelector(':scope > .tiptap-page-wrap .tiptap-editor') : null;
     const canvas = document.querySelector('.main-content--editor');
     const rightSidebar = document.querySelector('[data-right-sidebar]');
     const sourceWraps = host ? [...host.querySelectorAll(':scope > .tiptap-page-wrap')] : [];
@@ -219,6 +247,32 @@ async function collectState(win, label) {
     );
     const visiblePageRects = pageRects.filter(isRectVisibleInViewport);
     const visibleTextRects = textRects.filter(isRectVisibleInViewport);
+    const hostStyles = host ? window.getComputedStyle(host) : null;
+    const readHostPx = (propertyName) => {
+      const value = hostStyles ? Number.parseFloat(hostStyles.getPropertyValue(propertyName)) : 0;
+      return Number.isFinite(value) ? value : 0;
+    };
+    const overlayEditorRect = overlayEditor ? toPlainRect(overlayEditor.getBoundingClientRect()) : null;
+    const pageStridePx = readHostPx('--central-sheet-page-stride-px');
+    const contentHeightPx = readHostPx('--central-sheet-content-height-px');
+    const lineTopGuardPx = readHostPx('--central-sheet-line-top-guard-px');
+    const lineGuardPx = readHostPx('--central-sheet-line-guard-px');
+    const maskBoundaryTolerancePx = 0.5;
+    const maskBoundaryClipTextRects = overlayEditorRect
+      ? textRects.flatMap((textRect) => derivedWraps.flatMap((pageWrap) => {
+        const pageNumber = Math.max(1, Number(pageWrap.dataset.pageNumber || 1));
+        const pageOffsetPx = (pageNumber - 1) * pageStridePx;
+        const maskTop = overlayEditorRect.top + pageOffsetPx + lineTopGuardPx;
+        const maskBottom = overlayEditorRect.top + pageOffsetPx + contentHeightPx - lineGuardPx;
+        const crossesTop = textRect.top < maskTop - maskBoundaryTolerancePx
+          && textRect.bottom > maskTop + maskBoundaryTolerancePx;
+        const crossesBottom = textRect.top < maskBottom - maskBoundaryTolerancePx
+          && textRect.bottom > maskBottom + maskBoundaryTolerancePx;
+        return crossesTop || crossesBottom
+          ? [{ pageNumber, boundary: crossesTop ? 'top' : 'bottom', maskTop, maskBottom, textRect }]
+          : [];
+      }))
+      : [];
     const visibleTextOutsideVisibleSheetRectCount = visibleTextRects.filter((textRect) => (
       !visiblePageRects.some((pageRect) => intersects(textRect, pageRect))
     )).length;
@@ -268,6 +322,8 @@ async function collectState(win, label) {
       visibleSheetCount: derivedWraps.length,
       viewportVisibleSheetCount: visiblePageRects.length,
       visibleTextRectCount: visibleTextRects.length,
+      maskBoundaryClipTextRectCount: maskBoundaryClipTextRects.length,
+      maskBoundaryClipTextRectSamples: maskBoundaryClipTextRects.slice(0, 8),
       visibleTextOutsideVisibleSheetRectCount,
       sourceWrapperCount: sourceWraps.length,
       sourceEditorWrapperCount: sourceWraps.filter((el) => el.querySelector('.ProseMirror') || el.querySelector('.tiptap-editor')).length,
@@ -645,6 +701,10 @@ app.whenReady().then(async () => {
     await pressKey(win, 'Z', [primaryModifier(), 'shift']);
     await sleep(800);
     const afterRedo = await collectState(win, 'after-redo');
+    const focusBeforePaste = await focusEditorEnd(win);
+    if (!focusBeforePaste.ok) {
+      throw new Error('EDITOR_FOCUS_BEFORE_PASTE_FAILED ' + JSON.stringify(focusBeforePaste));
+    }
     await win.webContents.insertText(' ');
     await sleep(200);
     clipboard.writeText(buildLargePasteText());
@@ -671,12 +731,16 @@ app.whenReady().then(async () => {
     await sleep(800);
     const afterBackspaceRedo = await collectState(win, 'after-backspace-redo');
     await saveCapture(win, 'vertical-input-stability-after-backspace-redo.png');
+    const zoomState = await setEditorZoomPercent(win, 100);
+    const zoom100State = await collectState(win, 'zoom-100-after-backspace-redo');
+    await saveCapture(win, 'vertical-input-stability-zoom-100.png');
 
     const payload = {
       ok: true,
       fiveSheetParagraphCount: fiveSheetFixture.paragraphCount,
       boundaryBeforeParagraphCount: boundaryFixture.beforeParagraphCount,
       boundaryAfterParagraphCount: boundaryFixture.afterParagraphCount,
+      zoomState,
       markerA,
       markerB,
       pasteStart,
@@ -693,6 +757,7 @@ app.whenReady().then(async () => {
       afterMarkerB,
       afterUndo,
       afterRedo,
+      focusBeforePaste,
       afterPaste,
       boundaryFixture: boundaryFixture.state,
       boundaryCaretPlacement,
@@ -700,12 +765,14 @@ app.whenReady().then(async () => {
       afterBackspace,
       afterBackspaceUndo,
       afterBackspaceRedo,
+      zoom100State,
       networkRequests,
       dialogCalls,
       screenshots: [
         path.join(outputDir, 'vertical-input-stability-before.png'),
         path.join(outputDir, 'vertical-input-stability-after-paste.png'),
         path.join(outputDir, 'vertical-input-stability-after-backspace-redo.png'),
+        path.join(outputDir, 'vertical-input-stability-zoom-100.png'),
       ],
     };
     await fs.writeFile(path.join(outputDir, 'result.json'), JSON.stringify(payload, null, 2));
@@ -733,6 +800,7 @@ function assertVerticalState(state) {
   assert.equal(state.visibleSheetCount, renderedPageCount, `${state.label} visible sheet count must match rendered page count`);
   assert.equal(state.viewportVisibleSheetCount > 0, true, `${state.label} viewport must always contain at least one rendered sheet`);
   assert.equal(state.visibleTextRectCount > 0, true, `${state.label} viewport must always contain visible text rects`);
+  assert.equal(state.maskBoundaryClipTextRectCount, 0, `${state.label} text lines must not be clipped by sheet masks`);
   assert.equal(state.verticallyStackedSheetPairCount, Math.max(0, renderedPageCount - 1), `${state.label} must stack sheets down`);
   assert.equal(state.rightFlowSheetPairCount, 0, `${state.label} must not place the next sheet to the right`);
   assert.equal(state.centralSheetWindowingEnabled, 'true', `${state.label} must keep viewport windowing enabled`);
@@ -809,6 +877,7 @@ const states = [
   result.afterBackspace,
   result.afterBackspaceUndo,
   result.afterBackspaceRedo,
+  result.zoom100State,
 ];
 for (const state of states) {
   assertVerticalState(state);
