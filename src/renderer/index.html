@@ -89,25 +89,13 @@
       <div class="floating-toolbar__shell" data-toolbar-shell>
         <div class="floating-toolbar__transform-handle floating-toolbar__transform-handle--rotate" data-toolbar-rotate-handle aria-hidden="true">
           <span class="floating-toolbar__transform-control floating-toolbar__transform-control--rotate">
-            <svg class="floating-toolbar__transform-icon floating-toolbar__transform-icon--rotate-horizontal" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <circle cx="4" cy="8" r="1.5" fill="currentColor"></circle>
-              <circle cx="8" cy="8" r="1.5" fill="currentColor"></circle>
-              <circle cx="12" cy="8" r="1.5" fill="currentColor"></circle>
-            </svg>
-            <svg class="floating-toolbar__transform-icon floating-toolbar__transform-icon--rotate-vertical" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <circle cx="8" cy="4" r="1.5" fill="currentColor"></circle>
-              <circle cx="8" cy="8" r="1.5" fill="currentColor"></circle>
-              <circle cx="8" cy="12" r="1.5" fill="currentColor"></circle>
-            </svg>
+            <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--dots-three floating-toolbar__transform-icon floating-toolbar__transform-icon--rotate-horizontal" aria-hidden="true"></span>
+            <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--dots-three-vertical floating-toolbar__transform-icon floating-toolbar__transform-icon--rotate-vertical" aria-hidden="true"></span>
           </span>
         </div>
         <div class="floating-toolbar__transform-handle floating-toolbar__transform-handle--width" data-toolbar-width-handle aria-hidden="true">
           <span class="floating-toolbar__transform-control floating-toolbar__transform-control--width">
-            <svg class="floating-toolbar__transform-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <path d="M5 8L2 8M2 8L3.5 6.5M2 8L3.5 9.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M8 3L8 13" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"></path>
-              <path d="M11 8L14 8M14 8L12.5 6.5M14 8L12.5 9.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg>
+            <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--width floating-toolbar__transform-icon" aria-hidden="true"></span>
           </span>
         </div>
         <div class="floating-toolbar__controls">
@@ -115,9 +103,7 @@
             <div class="floating-toolbar__select-wrap floating-toolbar__select-wrap--font" data-toolbar-item-key="font-select">
               <div class="floating-toolbar__display" aria-hidden="true">
                 <span class="floating-toolbar__display-text" data-font-display>Roboto Ms</span>
-                <svg class="floating-toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                  <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--caret-down floating-toolbar__caret" aria-hidden="true"></span>
               </div>
               <select class="floating-toolbar__select" data-font-select>
                 <option value='"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'>Roboto Ms</option>
@@ -135,9 +121,7 @@
             <div class="floating-toolbar__select-wrap floating-toolbar__select-wrap--weight" data-toolbar-item-key="weight-select">
               <div class="floating-toolbar__display" aria-hidden="true">
                 <span class="floating-toolbar__display-text" data-weight-display>Light</span>
-                <svg class="floating-toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                  <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--caret-down floating-toolbar__caret" aria-hidden="true"></span>
               </div>
               <select class="floating-toolbar__select" data-weight-select>
                 <option value="regular">Regular</option>
@@ -152,9 +136,7 @@
             <div class="floating-toolbar__select-wrap floating-toolbar__select-wrap--size" data-toolbar-item-key="size-select">
               <div class="floating-toolbar__display" aria-hidden="true">
                 <span class="floating-toolbar__display-text" data-size-display>12</span>
-                <svg class="floating-toolbar__caret" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                  <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--caret-down floating-toolbar__caret" aria-hidden="true"></span>
               </div>
               <select class="floating-toolbar__select" data-size-select>
                 <option value="9">9</option>
@@ -193,16 +175,10 @@
             <div class="floating-toolbar__select-wrap floating-toolbar__select-wrap--line-height" data-toolbar-item-key="line-height-select">
               <div class="floating-toolbar__display floating-toolbar__display--line-height" aria-hidden="true">
                 <span class="floating-toolbar__line-height-icon-wrap" aria-hidden="true">
-                  <svg class="floating-toolbar__select-icon floating-toolbar__select-icon--line-height" viewBox="0 0 14 14" aria-hidden="true" focusable="false">
-                    <path d="M7 1.7v10.6" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
-                    <path d="M4.8 3.9L7 1.7l2.2 2.2" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M4.8 10.1L7 12.3l2.2-2.2" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
+                  <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--line-height floating-toolbar__select-icon floating-toolbar__select-icon--line-height" aria-hidden="true"></span>
                 </span>
                 <span class="floating-toolbar__display-value" data-line-height-display>1.0</span>
-                <svg class="floating-toolbar__caret floating-toolbar__caret--line-height" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                  <path d="M3.5 4.8L6 7.2l2.5-2.4" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--caret-down floating-toolbar__caret floating-toolbar__caret--line-height" aria-hidden="true"></span>
               </div>
               <select class="floating-toolbar__select" data-line-height-select>
                 <option value="0.5">0.5</option>
@@ -232,7 +208,7 @@
               aria-label="Bold"
               aria-pressed="false"
             >
-              <span class="floating-toolbar__format-glyph" aria-hidden="true">B</span>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--text-bold floating-toolbar__icon" aria-hidden="true"></span>
             </button>
             <button
               type="button"
@@ -242,7 +218,7 @@
               aria-label="Italic"
               aria-pressed="false"
             >
-              <span class="floating-toolbar__format-glyph" aria-hidden="true">I</span>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--text-italic floating-toolbar__icon" aria-hidden="true"></span>
             </button>
             <button
               type="button"
@@ -252,7 +228,7 @@
               aria-label="Underline"
               aria-pressed="false"
             >
-              <span class="floating-toolbar__format-glyph floating-toolbar__format-glyph--underline" aria-hidden="true">U</span>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--text-underline floating-toolbar__icon" aria-hidden="true"></span>
             </button>
           </div>
           <div class="floating-toolbar__group floating-toolbar__group--paragraph">
@@ -266,13 +242,9 @@
               aria-expanded="false"
               aria-controls="floating-toolbar-paragraph-menu"
             >
-              <svg class="floating-toolbar__icon floating-toolbar__icon--paragraph" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M4 4h8M4 8h8M4 12h8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-              </svg>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--paragraph-align floating-toolbar__icon floating-toolbar__icon--paragraph" aria-hidden="true"></span>
               <span class="floating-toolbar__button-label floating-toolbar__button-label--paragraph">Абзац</span>
-              <svg class="floating-toolbar__caret floating-toolbar__caret--paragraph" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--caret-down floating-toolbar__caret floating-toolbar__caret--paragraph" aria-hidden="true"></span>
             </button>
             <button
               type="button"
@@ -284,13 +256,8 @@
               aria-expanded="false"
               aria-controls="floating-toolbar-list-menu"
             >
-              <svg class="floating-toolbar__icon floating-toolbar__icon--list" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M5.5 4h7M5.5 8h7M5.5 12h7" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
-                <path d="M3.2 4h.1M3.2 8h.1M3.2 12h.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
-              <svg class="floating-toolbar__caret floating-toolbar__caret--list" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-                <path d="M3 4.5L6 7.5l3-3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--list-bullets floating-toolbar__icon floating-toolbar__icon--list" aria-hidden="true"></span>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--caret-down floating-toolbar__caret floating-toolbar__caret--list" aria-hidden="true"></span>
             </button>
           </div>
           <div class="floating-toolbar__group floating-toolbar__group--insert">
@@ -302,11 +269,7 @@
               aria-label="Insert link"
               aria-pressed="false"
             >
-              <svg class="floating-toolbar__icon floating-toolbar__icon--link" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M6.2 10.7L4.7 12.2a2.1 2.1 0 1 1-3-3l1.8-1.8a2.1 2.1 0 0 1 3 0" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M9.8 5.3l1.5-1.5a2.1 2.1 0 1 1 3 3l-1.8 1.8a2.1 2.1 0 0 1-3 0" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M5.6 10.4l4.8-4.8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--link floating-toolbar__icon floating-toolbar__icon--link" aria-hidden="true"></span>
             </button>
           </div>
           <div class="floating-toolbar__group floating-toolbar__group--color">
@@ -340,10 +303,7 @@
               aria-label="Open comments"
               aria-pressed="false"
             >
-              <svg class="floating-toolbar__icon floating-toolbar__icon--review" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M3.5 3.5h9a1 1 0 0 1 1 1v5.5a1 1 0 0 1-1 1H8.2l-2.7 2.4v-2.4H3.5a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linejoin="round"/>
-                <path d="M5 6.2h6M5 8.6h3.6" fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/>
-              </svg>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--comment floating-toolbar__icon floating-toolbar__icon--review" aria-hidden="true"></span>
             </button>
           </div>
           <div class="floating-toolbar__group floating-toolbar__group--styles">
@@ -357,7 +317,7 @@
               aria-expanded="false"
               aria-controls="floating-toolbar-styles-menu"
             >
-              <span class="floating-toolbar__styles-glyph" aria-hidden="true">P</span>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--paragraph-style floating-toolbar__icon" aria-hidden="true"></span>
             </button>
             <button
               type="button"
@@ -369,19 +329,15 @@
               aria-expanded="false"
               aria-controls="floating-toolbar-styles-menu"
             >
-              <span class="floating-toolbar__styles-glyph" aria-hidden="true">T</span>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--character-style floating-toolbar__icon" aria-hidden="true"></span>
             </button>
           </div>
           <div class="floating-toolbar__group floating-toolbar__group--history">
             <button type="button" class="floating-toolbar__button floating-toolbar__button--history" data-action="undo" data-toolbar-item-key="history-undo" aria-label="Undo">
-              <svg class="floating-toolbar__icon floating-toolbar__icon--history" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M6.5 5H3.75L5.5 3.25M3.75 5A5 5 0 1 1 4.8 10.2" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--undo floating-toolbar__icon floating-toolbar__icon--history" aria-hidden="true"></span>
             </button>
             <button type="button" class="floating-toolbar__button floating-toolbar__button--history" data-action="redo" data-toolbar-item-key="history-redo" aria-label="Redo">
-              <svg class="floating-toolbar__icon floating-toolbar__icon--history" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-                <path d="M9.5 5h2.75L10.5 3.25M12.25 5A5 5 0 1 0 11.2 10.2" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--redo floating-toolbar__icon floating-toolbar__icon--history" aria-hidden="true"></span>
             </button>
           </div>
         </div>
