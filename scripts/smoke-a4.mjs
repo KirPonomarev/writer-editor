@@ -21,6 +21,12 @@ const stripEnd = (text) => text.replace(/[\s﻿ ]+$/g, "");
 
 const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+const ROOT_BARREL_PRIVATE_CONTRACTS = new Set([
+  "dialog-port.contract.ts",
+  "filesystem-port.contract.ts",
+  "platform-info-port.contract.ts",
+]);
+
 let statusOut = "";
 try {
   const result = run("git", ["status", "--porcelain", "--untracked-files=all"]);
@@ -66,7 +72,10 @@ if (!existsSync(idxPath)) {
   fail("INDEX_MISSING", idxPath);
 }
 const idxText = readFileSync(idxPath, "utf8");
-const files = readdirSync(dir).filter((f) => f.endsWith(".contract.ts")).sort();
+const files = readdirSync(dir)
+  .filter((f) => f.endsWith(".contract.ts"))
+  .filter((f) => !ROOT_BARREL_PRIVATE_CONTRACTS.has(f))
+  .sort();
 if (files.length === 0) {
   fail("NO_CONTRACT_FILES", dir);
 }

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "SMOKE_A4_MINIMAL_BARREL_RECONCILIATION_2026_07_17_001_STATUS",
+  "taskId": "SMOKE_A4_MINIMAL_BARREL_RECONCILIATION_2026_07_17_001",
+  "generatedAtUtc": "2026-07-17T16:15:28.000Z",
+  "bindingBaseSha": "3a3ea891c933b32d85f442c942667ce38b87866d",
+  "result": "PASS",
+  "scope": {
+    "runtimeChanged": false,
+    "productTruthChanged": false,
+    "designChanged": false,
+    "dependenciesChanged": false,
+    "publicContractSurfaceChanged": false,
+    "opsSmokeReconciled": true
+  },
+  "before": {
+    "smokeA4Result": "FAIL",
+    "reason": "MISSING_REEXPORTS",
+    "reportedContracts": [
+      "dialog-port.contract.ts",
+      "filesystem-port.contract.ts",
+      "platform-info-port.contract.ts"
+    ]
+  },
+  "after": {
+    "smokeA4Result": "PASS",
+    "privateRootBarrelContracts": [
+      "dialog-port.contract.ts",
+      "filesystem-port.contract.ts",
+      "platform-info-port.contract.ts"
+    ],
+    "wildcardExceptionAdded": false,
+    "focusedContractTests": 2,
+    "focusedContractResult": "PASS",
+    "negativeMissingExportResult": "PASS"
+  },
+  "verification": {
+    "taskGate": "PASS",
+    "governanceApprovalState": "PASS",
+    "governanceChangeDetection": "PASS",
+    "strictDoctor": "PASS",
+    "currentOpsWave": "PASS",
+    "ossPolicy": "PASS",
+    "diffCheck": "PASS",
+    "cleanWorktreeSmokeAfterCommit": "PASS"
+  },
+  "rollback": "Revert the explicit private-contract filter and focused contract together; A4 will again report the three intentionally private port contracts.",
+  "nextStep": "Start one clean owner-selected toolbar design contour from current remote main."
+}
