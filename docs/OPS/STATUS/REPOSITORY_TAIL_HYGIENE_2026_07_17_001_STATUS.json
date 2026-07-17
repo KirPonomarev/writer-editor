@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "REPOSITORY_TAIL_HYGIENE_2026_07_17_001_STATUS",
+  "taskId": "REPOSITORY_TAIL_HYGIENE_2026_07_17_001",
+  "generatedAtUtc": "2026-07-17T16:00:00.000Z",
+  "bindingBaseSha": "e314a591f4d1a033113a3c4e6046c5b3def1ed0c",
+  "result": "PASS",
+  "scope": {
+    "runtimeChanged": false,
+    "productTruthChanged": false,
+    "designChanged": false,
+    "dependenciesChanged": false,
+    "opsGateReconciled": true,
+    "localRepositoryTailOrganized": true,
+    "githubPullRequestTailOrganized": true
+  },
+  "before": {
+    "rootHeadSha": "17b1388e3ce0373dbd5cd5e2d69d2b6c88084b6e",
+    "rootAheadOfRemoteMain": 1515,
+    "rootBehindRemoteMain": 784,
+    "uniqueDirtyWorktrees": 14,
+    "registeredCurrentCloneWorktrees": 13,
+    "openPullRequests": 18,
+    "localBranches": 831,
+    "existingCurrentCloneStashes": 23
+  },
+  "after": {
+    "localMainSha": "e314a591f4d1a033113a3c4e6046c5b3def1ed0c",
+    "remoteMainSha": "e314a591f4d1a033113a3c4e6046c5b3def1ed0c",
+    "archivedDivergentMainSha": "17b1388e3ce0373dbd5cd5e2d69d2b6c88084b6e",
+    "archivedDivergentMainRef": "archive-local-main-20260717",
+    "retainedCurrentCloneWorktrees": 2,
+    "openPullRequests": 0,
+    "localBranches": 758,
+    "safeMergedBranchesDeleted": 75,
+    "currentCloneStashes": 31,
+    "currentCloneRecoveryRefs": 8,
+    "approximateDiskSpaceRecoveredGiB": 1
+  },
+  "opsGate": {
+    "initialFailure": "CORE_PURITY_VIOLATION on already delivered core modules",
+    "falsePositiveFixed": "identifier suffix MarkRefs no longer matches filesystem token fs",
+    "approvedPathBoundarySource": "path-boundary.js",
+    "approvedPathBoundaryEvidence": "X71_PATH_BOUNDARY_EXCEPTION_STATE_V1.json",
+    "approvedDeterministicHashSources": [
+      "sceneBlockAdmission.mjs",
+      "sceneDocumentAdmission.mjs",
+      "sceneInlineRangeAdmission.mjs"
+    ],
+    "broadBypassAdded": false,
+    "focusedContractTests": 8,
+    "focusedContractResult": "PASS",
+    "taskGateResult": "PASS"
+  },
+  "recovery": {
+    "createdStashCount": 14,
+    "verifiedBundleCount": 3,
+    "bundles": [
+      {
+        "basename": "Yalken-Recovery-2026-07-17-complete.bundle",
+        "sizeMiB": 54,
+        "verification": "PASS"
+      },
+      {
+        "basename": "Yalken-Legacy-Recovery-2026-07-17.bundle",
+        "sizeMiB": 52,
+        "verification": "PASS"
+      },
+      {
+        "basename": "Yalken-X102-Residue-Recovery-2026-07-17.bundle",
+        "sizeMiB": 43,
+        "verification": "PASS"
+      }
+    ],
+    "stashes": [
+      { "label": "authority-sharpness", "sha": "2146d8aadd54744e75e705772c73cfb34143002c", "storage": "current" },
+      { "label": "vertical-sheet-feed", "sha": "9e0414d8fd45041178fff3b3ec3d4b74d25b5804", "storage": "current" },
+      { "label": "page-boundary-input", "sha": "672c304ebc9df4ec4d00efefa8e0f128392595a2", "storage": "current" },
+      { "label": "gap-no-bleed", "sha": "0b715d283d28a832d438a4433373607579a2ada2", "storage": "current" },
+      { "label": "main-sync-correction", "sha": "060a01ef3770c8bdf305d00f8f45328a57aa2063", "storage": "current" },
+      { "label": "main-sync-replay", "sha": "5cc8f63edb9c6dbbd100f759de3acd50a3c2c9f1", "storage": "current" },
+      { "label": "security-tail", "sha": "01e61d1df43e4facd5292c5f798826614502bcc5", "storage": "current" },
+      { "label": "root-lazyweb-research", "sha": "239eda0d10a31e427ca98e651e3bc95604c571b6", "storage": "current" },
+      { "label": "claim-matrix", "sha": "24f0b84b8086957a18e868f946bdacd4680a206e", "storage": "legacy-bundle" },
+      { "label": "toolbar-grid", "sha": "67011c527ee5b58705deb912bd5086fb8a747d5f", "storage": "legacy-bundle" },
+      { "label": "sector-m", "sha": "8d942c7fe95d6420601e34d8666e1615fdb1f7ae", "storage": "legacy-bundle" },
+      { "label": "toolbar-lower-grid", "sha": "72557dc85c2a0a1c048dee05be08ebbe30524fca", "storage": "legacy-bundle" },
+      { "label": "legacy-root-toolbar-docs", "sha": "6f7ab52d26c690cd9efb03289a1cbbdfc7ef7241", "storage": "legacy-bundle" },
+      { "label": "x102-residue-park", "sha": "6bb8df30bf8c68aa201d2051c7076ebe834c8f60", "storage": "residue-bundle" }
+    ]
+  },
+  "retirement": {
+    "worktreesRemoved": 11,
+    "staleWorktreeMetadataPruned": true,
+    "duplicateRepositoryClonesRemoved": 2,
+    "retainedWorktreeLabels": [
+      "current-main",
+      "running-current-app"
+    ],
+    "retainedToolbarRecoveryLabels": [
+      "toolbar-grid",
+      "toolbar-lower-grid",
+      "legacy-root-toolbar-docs"
+    ]
+  },
+  "pullRequestTriage": {
+    "closedCount": 18,
+    "remoteBranchesDeleted": false,
+    "closedPullRequests": [
+      { "number": 946, "class": "ARCHIVED_NOT_ACTIVE_CONTOUR" },
+      { "number": 912, "class": "SUPERSEDED_REVISION_BRIDGE" },
+      { "number": 768, "class": "SUPERSEDED_REVISION_BRIDGE" },
+      { "number": 718, "class": "SUPERSEDED_VERTICAL_SHEET_PROOF" },
+      { "number": 578, "class": "SUPERSEDED_TOOLBAR_VISUAL_CHAIN" },
+      { "number": 490, "class": "SUPERSEDED_COMMAND_PALETTE" },
+      { "number": 419, "class": "SUPERSEDED_DELIVERY_ENFORCEMENT" },
+      { "number": 244, "class": "STALE_OPS_POLICY" },
+      { "number": 243, "class": "STALE_OPS_POLICY" },
+      { "number": 202, "class": "STALE_RUNNER" },
+      { "number": 157, "class": "STALE_INTEGRITY" },
+      { "number": 138, "class": "STALE_GOVERNANCE" },
+      { "number": 136, "class": "STALE_TOKEN_CATALOG" },
+      { "number": 131, "class": "STALE_FAILSIGNAL" },
+      { "number": 130, "class": "STALE_AUTOMATION_AUTH" },
+      { "number": 126, "class": "STALE_POST_MERGE_VERIFY" },
+      { "number": 121, "class": "STALE_ADVISORY" },
+      { "number": 119, "class": "STALE_AUTOMERGE" }
+    ]
+  },
+  "rollback": {
+    "localMain": "Switch to archive-local-main-20260717 to inspect the preserved divergent lineage.",
+    "dirtyTail": "Resolve the named archive ref or import the matching verified bundle, then apply the recorded stash commit in an isolated worktree.",
+    "closedPullRequest": "Reopen the preserved pull request only after a fresh current-main scope and mergeability review.",
+    "opsGate": "Revert the evidence-bound exception and focused contract together; the initial stale red will return until effectful adapters move out of core."
+  },
+  "nextStep": "Open one clean owner-selected toolbar design contour from current remote main and evaluate the three archived toolbar recovery inputs as references only."
+}
