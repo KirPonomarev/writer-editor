@@ -49,3 +49,12 @@
 - Риск: случайное удаление нужных узлов могло бы повлиять на drag affordance или поведение toolbar shell.
 - Rollback: вернуть commit `22ce7a40b0e975fb67a4d3c74ecb0e2c7bc67393` через `git revert` если проявится регрессия move/width/rotate.
 - План удаления исключения: исключение считается закрытым сразу после merge этого контура, потому что оно одноразовое и не вводит новый постоянный bypass.
+
+## 2026-07-17 — Evidence-bound core purity gate exceptions
+
+- Контекст: локальный E0 gate на current main останавливается на `src/core/io/path-boundary.js` и трёх scene admission модулях, хотя path-boundary guard уже закрыт и доказан артефактом `X71_PATH_BOUNDARY_EXCEPTION_STATE_V1.json`, а admission-модули используют только детерминированный `createHash`.
+- Что нарушаем: буквальный запрет любых effect tokens внутри `src/core`.
+- Причина: текущий guard обязан проверять реальные пути и symlink boundaries через `node:path`, `node:fs` и `process.cwd`; scene admission hashes требуют точного `node:crypto` импорта. Перенос этих boundaries выходит за scope repository-tail hygiene.
+- Риск: слишком широкое исключение могло бы скрыть новый effectful core код.
+- Rollback: удалить evidence-bound ветку из `scripts/ops-gate.mjs` и соответствующий contract test; E0 снова будет блокировать current path-boundary implementation.
+- План удаления исключения: вынести filesystem и current-working-directory probes в IO adapter, а deterministic hash port — в чистый contract adapter отдельным owner-approved architecture contour, затем удалить исключения.

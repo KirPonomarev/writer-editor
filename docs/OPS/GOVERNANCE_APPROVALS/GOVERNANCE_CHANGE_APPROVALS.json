@@ -3913,6 +3913,20 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001_FACTUAL_REBIND",
       "approvedAtUtc": "2026-07-13T00:16:00.000Z",
       "rationale": "Bind the Gate C status artifacts to the exact delivered feature commit, pull request, and merge SHA."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/REPOSITORY_TAIL_HYGIENE_2026_07_17_001_STATUS.json",
+      "sha256": "48db9f91367364138dfd0307ac4dc27487dbbba1cb24f7752be2ae2829424202",
+      "approvedBy": "ticket:REPOSITORY_TAIL_HYGIENE_2026_07_17_001",
+      "approvedAtUtc": "2026-07-17T16:03:00.000Z",
+      "rationale": "Approve the bounded machine-readable repository-tail recovery, retirement, pull-request triage, and rollback ledger without runtime or product-truth changes."
+    },
+    {
+      "filePath": "test/contracts/ops-gate-core-purity-exception.contract.test.js",
+      "sha256": "10ac0bc5cd09d495cb71889638bcb616231bdb80454cf9e9d2603b3c824e790a",
+      "approvedBy": "ticket:REPOSITORY_TAIL_HYGIENE_2026_07_17_001",
+      "approvedAtUtc": "2026-07-17T16:03:00.000Z",
+      "rationale": "Approve focused positive and negative coverage for evidence-bound core-purity exceptions and exact token-boundary detection."
     }
   ]
 }

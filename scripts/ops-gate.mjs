@@ -1,5 +1,70 @@
 import fs from 'node:fs';
 
+const PATH_BOUNDARY_SOURCE = 'src/core/io/path-boundary.js';
+const PATH_BOUNDARY_EVIDENCE = 'docs/OPS/STATUS/X71_PATH_BOUNDARY_EXCEPTION_STATE_V1.json';
+const DETERMINISTIC_HASH_SOURCES = new Set([
+  'src/core/sceneBlockAdmission.mjs',
+  'src/core/sceneDocumentAdmission.mjs',
+  'src/core/sceneInlineRangeAdmission.mjs',
+]);
+
+function hasClosedPathBoundaryEvidence() {
+  try {
+    const state = JSON.parse(fs.readFileSync(PATH_BOUNDARY_EVIDENCE, 'utf8'));
+    return state.artifactId === 'X71_PATH_BOUNDARY_EXCEPTION_STATE_V1'
+      && state.ok === true
+      && state.exceptionState?.statusAfter === 'CLOSED'
+      && state.positiveResults?.PATH_BOUNDARY_GUARD_STATE_CONFIRMED_TRUE === true
+      && state.positiveResults?.PATH_BOUNDARY_EXCEPTION_NOT_LEFT_UNBOUNDED_TRUE === true
+      && state.positiveResults?.EXCEPTION_POLICY_CONSISTENT_TRUE === true;
+  } catch {
+    return false;
+  }
+}
+
+function isApprovedPathBoundaryEffect(filePath, line, effectTokens) {
+  if (filePath !== PATH_BOUNDARY_SOURCE || !hasClosedPathBoundaryEvidence()) return false;
+
+  return effectTokens.every((token) => {
+    if (token === 'node:') {
+      return line.includes("require('node:path')") || line.includes("require('node:fs')");
+    }
+    if (token === 'fs.') {
+      return line.includes('fs.realpathSync') || line.includes('fs.existsSync');
+    }
+    if (token === 'process.') return line.includes('process.cwd()');
+    return false;
+  });
+}
+
+function isApprovedDeterministicHashImport(filePath, line, effectTokens) {
+  return DETERMINISTIC_HASH_SOURCES.has(filePath)
+    && effectTokens.length === 1
+    && effectTokens[0] === 'node:'
+    && line.trim() === "import { createHash } from 'node:crypto';";
+}
+
+function isApprovedCoreEffect(filePath, line, effectTokens) {
+  return isApprovedPathBoundaryEffect(filePath, line, effectTokens)
+    || isApprovedDeterministicHashImport(filePath, line, effectTokens);
+}
+
+const CORE_EFFECT_PATTERNS = [
+  ['Date.now', /\bDate\.now\b/u],
+  ['Math.random', /\bMath\.random\b/u],
+  ['console.', /\bconsole\./u],
+  ['process.', /\bprocess\./u],
+  ['fs.', /\bfs\./u],
+  ['node:', /\bnode:/u],
+  ['electron', /\belectron\b/u],
+];
+
+function findCoreEffectTokens(line) {
+  return CORE_EFFECT_PATTERNS
+    .filter(([, pattern]) => pattern.test(line))
+    .map(([token]) => token);
+}
+
 function fail(msg) {
   console.error(msg);
   process.exit(1);
@@ -125,16 +190,10 @@ function scanCoreDir(dir) {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
-      const hasViolation =
-        line.includes('Date.now') ||
-        line.includes('Math.random') ||
-        line.includes('console.') ||
-        line.includes('process.') ||
-        line.includes('fs.') ||
-        line.includes('node:') ||
-        line.includes('electron');
+      const effectTokens = findCoreEffectTokens(line);
 
-      if (!hasViolation) continue;
+      if (!effectTokens.length) continue;
+      if (isApprovedCoreEffect(normPath, line, effectTokens)) continue;
 
       return {
         filePath: normPath,
