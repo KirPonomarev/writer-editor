@@ -16,7 +16,7 @@ const ICON_FILE_BY_CLASS = Object.freeze({
   link: 'link.svg',
   comment: 'chat-text.svg',
   'paragraph-style': 'paragraph.svg',
-  'character-style': 'text-t.svg',
+  'character-style': 'text-aa.svg',
   undo: 'arrow-counter-clockwise.svg',
   redo: 'arrow-clockwise.svg',
   'line-height': 'arrows-out-line-vertical.svg',
@@ -105,11 +105,28 @@ test('sector-m toolbar phosphor icons: CSS uses one currentColor mask protocol w
   assert.ok(iconSection.includes('-webkit-mask-image: var(--floating-toolbar-icon-source);'));
   assert.ok(iconSection.includes('mask-image: var(--floating-toolbar-icon-source);'));
   assert.equal(iconSection.includes(':nth-child'), false);
-  assert.ok(styles.includes('min-width: var(--toolbar-chrome-control-height);'));
-  assert.ok(styles.includes('min-width: 36px;'));
+  assert.ok(styles.includes('min-width: var(--toolbar-chrome-slot-icon);'));
+  assert.ok(styles.includes('min-width: var(--toolbar-chrome-slot-icon-wide);'));
 
   for (const [iconClass, fileName] of Object.entries(ICON_FILE_BY_CLASS)) {
     assert.ok(iconSection.includes(`.floating-toolbar__phosphor-icon--${iconClass} {`));
     assert.ok(iconSection.includes(`url('./assets/icons/phosphor/regular/${fileName}')`));
   }
+});
+
+test('sector-m toolbar phosphor icons: top-toolbar optical scale follows the Yalken micro master', () => {
+  const styles = read(['src', 'renderer', 'styles.css']);
+  const transformStart = styles.indexOf('.floating-toolbar__transform-control {');
+  const transformEnd = styles.indexOf('.floating-toolbar__transform-control:hover {', transformStart);
+  assert.ok(transformStart > -1 && transformEnd > transformStart);
+  const transformControl = styles.slice(transformStart, transformEnd);
+
+  assert.ok(styles.includes('--toolbar-chrome-icon-size: 16px;'));
+  assert.ok(styles.includes('--toolbar-chrome-utility-icon-size: 14px;'));
+  assert.ok(styles.includes('--toolbar-chrome-caret-size: 10px;'));
+  assert.ok(styles.includes('.floating-toolbar__button--color .floating-toolbar__button-swatch::before {'));
+  assert.ok(transformControl.includes('background: transparent;'));
+  assert.ok(transformControl.includes('color: var(--toolbar-chrome-ink);'));
+  assert.ok(transformControl.includes('box-shadow: none;'));
+  assert.equal(styles.includes('--toolbar-chrome-icon-size: 18px;'), false);
 });

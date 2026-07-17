@@ -199,8 +199,10 @@ test('layout commit sync: stylesheet projects single-rail mode without overflow 
   assert.ok(styles.includes('flex: 1 1 auto;\n  min-height: 160px;\n  max-height: none;'));
   assert.ok(styles.includes('.sidebar__resize-handle.is-resizing::after'));
   assert.ok(styles.includes('touch-action: none;'));
-  assert.ok(styles.includes('width: calc(140px * var(--floating-toolbar-width-scale));'));
-  assert.ok(styles.includes('width: calc(120px * var(--floating-toolbar-width-scale));'));
+  assert.ok(styles.includes('--toolbar-chrome-slot-xlong: 136px;'));
+  assert.ok(styles.includes('width: calc(var(--toolbar-chrome-slot-xlong) * var(--floating-toolbar-width-scale));'));
+  assert.equal(styles.includes('width: calc(140px * var(--floating-toolbar-width-scale));'), false);
+  assert.equal(styles.includes('width: calc(120px * var(--floating-toolbar-width-scale));'), false);
 
   assert.ok(editor.includes('appLayout.dataset.sidebarLayout = constraints.layoutVariant;'));
   assert.ok(editor.includes("pointerTarget?.classList.add('is-resizing');"));

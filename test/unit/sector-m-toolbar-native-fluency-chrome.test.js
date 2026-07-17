@@ -25,20 +25,33 @@ test('sector-m toolbar native fluency chrome: tokenized spacing ladder and quiet
   assert.ok(styles.includes('--toolbar-chrome-gap-sm: 8px;'));
   assert.ok(styles.includes('--toolbar-chrome-gap-md: 12px;'));
   assert.ok(styles.includes('--toolbar-chrome-gap-lg: 16px;'));
+  assert.ok(styles.includes('--toolbar-chrome-row-height: 48px;'));
+  assert.ok(styles.includes('--toolbar-chrome-pad-x: 24px;'));
+  assert.ok(styles.includes('--toolbar-chrome-item-gap: 10px;'));
+  assert.ok(styles.includes('--toolbar-chrome-group-gap: 20px;'));
+  assert.ok(styles.includes('--toolbar-chrome-separator-gap: 12px;'));
   assert.ok(styles.includes('--toolbar-chrome-control-height: 28px;'));
   assert.ok(styles.includes('--toolbar-chrome-control-height-large: 32px;'));
-  assert.ok(styles.includes('--toolbar-chrome-radius-button: 6px;'));
-  assert.ok(styles.includes('--toolbar-chrome-radius-control: 8px;'));
+  assert.ok(styles.includes('--toolbar-chrome-control-text-height: 32px;'));
+  assert.ok(styles.includes('--toolbar-chrome-control-pad-x: 12px;'));
+  assert.ok(styles.includes('--toolbar-chrome-chevron-gap: 8px;'));
+  assert.ok(styles.includes('--toolbar-chrome-slot-icon: 28px;'));
+  assert.ok(styles.includes('--toolbar-chrome-radius-button: 10px;'));
+  assert.ok(styles.includes('--toolbar-chrome-radius-control: 10px;'));
+  assert.ok(styles.includes('--toolbar-chrome-ink: rgba(45, 39, 33, 0.82);'));
+  assert.ok(styles.includes('--toolbar-chrome-ink-strong: rgba(31, 26, 21, 0.9);'));
+  assert.ok(styles.includes('--toolbar-chrome-ink-muted: rgba(45, 39, 33, 0.72);'));
+  assert.ok(styles.includes('--toolbar-chrome-field-bg: rgba(248, 246, 243, 0.72);'));
   assert.ok(styles.includes('--toolbar-chrome-quiet-bg:'));
   assert.ok(styles.includes('--toolbar-chrome-hover-bg:'));
   assert.ok(styles.includes('--toolbar-chrome-active-bg:'));
   assert.ok(styles.includes('--toolbar-chrome-pressed-bg:'));
   assert.ok(styles.includes('--toolbar-chrome-focus-ring:'));
 
-  assert.ok(styles.includes('gap: var(--toolbar-chrome-gap-xs);'));
-  assert.ok(styles.includes('gap: var(--toolbar-chrome-gap-md);'));
+  assert.ok(styles.includes('gap: var(--toolbar-chrome-item-gap);'));
+  assert.ok(styles.includes('gap: var(--toolbar-chrome-group-gap);'));
   assert.ok(styles.includes('gap: var(--toolbar-chrome-gap-lg);'));
-  assert.ok(styles.includes('margin: 0 var(--toolbar-chrome-gap-md);'));
+  assert.ok(styles.includes('margin: 0 var(--toolbar-chrome-separator-gap);'));
   assert.ok(styles.includes('background: var(--toolbar-chrome-quiet-bg);'));
   assert.ok(styles.includes('background: var(--toolbar-chrome-hover-bg);'));
   assert.ok(styles.includes('background: var(--toolbar-chrome-active-bg);'));
@@ -56,6 +69,11 @@ test('sector-m toolbar native fluency chrome: dark theme keeps chrome token pari
   assert.ok(darkThemeSection.includes('--toolbar-chrome-active-bg:'));
   assert.ok(darkThemeSection.includes('--toolbar-chrome-pressed-bg:'));
   assert.ok(darkThemeSection.includes('--toolbar-chrome-focus-ring:'));
+  assert.ok(darkThemeSection.includes('--toolbar-chrome-ink: rgba(250, 247, 242, 0.78);'));
+  assert.ok(darkThemeSection.includes('--toolbar-chrome-ink-strong: rgba(255, 253, 248, 0.92);'));
+  assert.ok(darkThemeSection.includes('--toolbar-chrome-ink-muted: rgba(250, 247, 242, 0.62);'));
+  assert.ok(darkThemeSection.includes('--toolbar-chrome-field-bg: #242630;'));
+  assert.ok(darkThemeSection.includes('--toolbar-chrome-field-hover-bg: #2a2d38;'));
 });
 
 test('sector-m toolbar native fluency chrome: numeric controls remain readable and width-scale tuning stays intact', () => {
@@ -76,13 +94,13 @@ test('sector-m toolbar native fluency chrome: numeric controls remain readable a
     '.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__button:hover {'
   );
 
-  assert.ok(styles.includes('width: calc(132px * var(--floating-toolbar-width-scale));'));
-  assert.ok(styles.includes('width: calc(84px * var(--floating-toolbar-width-scale));'));
-  assert.ok(styles.includes('width: calc(96px * var(--floating-toolbar-width-scale));'));
+  assert.ok(styles.includes('width: calc(var(--toolbar-chrome-slot-long) * var(--floating-toolbar-width-scale));'));
+  assert.ok(styles.includes('width: calc(var(--toolbar-chrome-slot-short) * var(--floating-toolbar-width-scale));'));
+  assert.ok(styles.includes('width: calc(var(--toolbar-chrome-slot-medium) * var(--floating-toolbar-width-scale));'));
   assert.ok(styles.includes('line-height: 17px;'));
-  assert.ok(styles.includes('calc(var(--toolbar-chrome-control-height) * var(--floating-toolbar-width-scale));'));
+  assert.ok(styles.includes('calc(var(--toolbar-chrome-slot-icon) * var(--floating-toolbar-width-scale));'));
   assert.ok(sizeDisplaySection.includes('justify-content: space-between;'));
-  assert.ok(sizeDisplaySection.includes('gap: var(--toolbar-chrome-gap-sm);'));
+  assert.ok(sizeDisplaySection.includes('gap: var(--toolbar-chrome-gap-xxs);'));
   assert.ok(sizeDisplaySection.includes('padding: 0 var(--toolbar-chrome-gap-sm);'));
   assert.ok(sizeDisplayTextSection.includes('min-width: 2.4ch;'));
   assert.ok(sizeDisplayTextSection.includes('text-align: right;'));
@@ -93,6 +111,29 @@ test('sector-m toolbar native fluency chrome: numeric controls remain readable a
   assert.ok(styles.includes('font-variant-numeric: tabular-nums;'));
   assert.ok(styles.includes('--floating-toolbar-width-scale: 1;'));
   assert.ok(styles.includes('--left-toolbar-width-scale: 1;'));
+});
+
+test('sector-m toolbar native fluency chrome: canonical slot classes own horizontal widths', () => {
+  const styles = readStylesSource();
+
+  for (const token of [
+    '--toolbar-chrome-slot-icon: 28px;',
+    '--toolbar-chrome-slot-icon-wide: 40px;',
+    '--toolbar-chrome-slot-short: 56px;',
+    '--toolbar-chrome-slot-medium: 72px;',
+    '--toolbar-chrome-slot-long: 104px;',
+    '--toolbar-chrome-slot-xlong: 136px;',
+  ]) {
+    assert.ok(styles.includes(token), `missing canonical slot token: ${token}`);
+  }
+
+  for (const legacyWidth of ['200px', '132px', '84px', '96px', '82px', '76px']) {
+    const selectorSection = styles.slice(
+      styles.indexOf('.floating-toolbar__select-wrap--font {'),
+      styles.indexOf('.floating-toolbar__select {'),
+    );
+    assert.equal(selectorSection.includes(legacyWidth), false, `legacy toolbar width remains: ${legacyWidth}`);
+  }
 });
 
 test('sector-m toolbar native fluency chrome: toolbar sections forbid fake-scale and blur readability tricks', () => {
@@ -106,4 +147,9 @@ test('sector-m toolbar native fluency chrome: toolbar sections forbid fake-scale
   assert.equal(floatingToolbarSection.includes('backdrop-filter:'), false);
   assert.equal(leftToolbarSection.includes('filter: blur('), false);
   assert.equal(floatingToolbarSection.includes('filter: blur('), false);
+  assert.ok(floatingToolbarSection.includes('color: var(--toolbar-chrome-ink);'));
+  assert.ok(floatingToolbarSection.includes('color: var(--toolbar-chrome-ink-strong);'));
+  assert.ok(floatingToolbarSection.includes('color: var(--toolbar-chrome-ink-muted);'));
+  assert.equal(floatingToolbarSection.includes('color: #1f1a15;'), false);
+  assert.equal(floatingToolbarSection.includes('color: #3a3a3a;'), false);
 });
