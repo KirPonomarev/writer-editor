@@ -6,14 +6,15 @@ const path = require('node:path');
 const ROOT = path.resolve(__dirname, '..', '..');
 const ICON_ROOT = path.join(ROOT, 'src', 'renderer', 'assets', 'icons', 'phosphor');
 const REGULAR_ICON_ROOT = path.join(ICON_ROOT, 'regular');
+const BOLD_ICON_ROOT = path.join(ICON_ROOT, 'bold');
 
 const ICON_FILE_BY_CLASS = Object.freeze({
   'text-bold': 'text-b.svg',
   'text-italic': 'text-italic.svg',
   'text-underline': 'text-underline.svg',
   'paragraph-align': 'text-align-left.svg',
-  'list-bullets': 'list-bullets.svg',
-  link: 'link.svg',
+  'list-bullets': 'bold/list-bullets-bold.svg',
+  link: 'regular/link-simple-horizontal.svg',
   comment: 'chat-text.svg',
   'paragraph-style': 'paragraph.svg',
   'character-style': 'text-aa.svg',
@@ -57,14 +58,23 @@ function getToolbarItemFragment(toolbarControls, bindKey) {
 }
 
 test('sector-m toolbar phosphor icons: bundled asset set is bounded, local, and licensed', () => {
-  const expectedFiles = Object.values(ICON_FILE_BY_CLASS).sort();
-  const actualFiles = fs.readdirSync(REGULAR_ICON_ROOT).filter((name) => name.endsWith('.svg')).sort();
+  const expectedFiles = Object.values(ICON_FILE_BY_CLASS)
+    .map((fileName) => fileName.includes('/') ? fileName : `regular/${fileName}`)
+    .sort();
+  const actualFiles = [
+    ...fs.readdirSync(REGULAR_ICON_ROOT)
+      .filter((name) => name.endsWith('.svg'))
+      .map((name) => `regular/${name}`),
+    ...fs.readdirSync(BOLD_ICON_ROOT)
+      .filter((name) => name.endsWith('.svg'))
+      .map((name) => `bold/${name}`),
+  ].sort();
 
   assert.deepEqual(actualFiles, expectedFiles);
   assert.match(fs.readFileSync(path.join(ICON_ROOT, 'LICENSE'), 'utf8'), /MIT License/);
 
   for (const fileName of actualFiles) {
-    const source = fs.readFileSync(path.join(REGULAR_ICON_ROOT, fileName), 'utf8');
+    const source = fs.readFileSync(path.join(ICON_ROOT, fileName), 'utf8');
     assert.match(source, /viewBox="0 0 256 256"/, `${fileName} keeps the canonical Phosphor canvas`);
     assert.match(source, /<(path|line|polyline|circle)\b/, `${fileName} contains a maskable icon shape`);
     assert.equal(source.includes('<script'), false, `${fileName} remains inert`);
@@ -109,9 +119,19 @@ test('sector-m toolbar phosphor icons: CSS uses one currentColor mask protocol w
   assert.ok(styles.includes('min-width: var(--toolbar-chrome-slot-icon-wide);'));
 
   for (const [iconClass, fileName] of Object.entries(ICON_FILE_BY_CLASS)) {
+    const relativeFileName = fileName.includes('/') ? fileName : `regular/${fileName}`;
     assert.ok(iconSection.includes(`.floating-toolbar__phosphor-icon--${iconClass} {`));
-    assert.ok(iconSection.includes(`url('./assets/icons/phosphor/regular/${fileName}')`));
+    assert.ok(iconSection.includes(`url('./assets/icons/phosphor/${relativeFileName}')`));
   }
+});
+
+test('sector-m toolbar phosphor icons: list and link keep dedicated micro-toolbar optics', () => {
+  const styles = read(['src', 'renderer', 'styles.css']);
+
+  assert.ok(styles.includes("url('./assets/icons/phosphor/bold/list-bullets-bold.svg')"));
+  assert.ok(styles.includes("url('./assets/icons/phosphor/regular/link-simple-horizontal.svg')"));
+  assert.match(styles, /\.floating-toolbar__button--list \{[\s\S]*?gap: var\(--toolbar-chrome-gap-xxs\);/);
+  assert.match(styles, /\.floating-toolbar__caret--list \{[\s\S]*?width: 8px;[\s\S]*?height: 8px;/);
 });
 
 test('sector-m toolbar phosphor icons: top-toolbar optical scale follows the Yalken micro master', () => {
