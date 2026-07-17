@@ -31,8 +31,11 @@ test('sector-m toolbar vertical rail: orientation owns one bounded rail width', 
   );
 
   assert.ok(shellSection.includes('--floating-toolbar-vertical-rail-width: min('));
-  assert.ok(shellSection.includes('max(112px, calc(136px * var(--floating-toolbar-width-scale)))'));
+  assert.ok(shellSection.includes('var(--toolbar-chrome-vertical-panel-width)'));
   assert.ok(verticalSection.includes('width: var(--floating-toolbar-vertical-rail-width);'));
+  assert.ok(verticalSection.includes('padding: var(--toolbar-chrome-vertical-pad);'));
+  assert.ok(styles.includes('--toolbar-chrome-vertical-panel-width: 160px;'));
+  assert.ok(styles.includes('--toolbar-chrome-slot-xlong: 136px;'));
 });
 
 test('sector-m toolbar vertical rail: groups and controls stretch inside the rail without component minima', () => {
@@ -69,7 +72,7 @@ test('sector-m toolbar vertical rail: paragraph content remains a bounded three-
   assert.ok(paragraphSection.includes('white-space: nowrap;'));
 });
 
-test('sector-m toolbar vertical rail: viewport compression stays scoped to horizontal posture', () => {
+test('sector-m toolbar vertical rail: viewport rules do not introduce ad hoc toolbar slot widths', () => {
   const styles = readStylesSource();
   const compactSection = sliceSection(
     styles,
@@ -80,8 +83,8 @@ test('sector-m toolbar vertical rail: viewport compression stays scoped to horiz
   const horizontalFontSelector = '.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--font {';
   const horizontalLineHeightSelector = '.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__select-wrap--line-height {';
 
-  assert.ok(compactSection.includes(horizontalFontSelector));
-  assert.ok(compactSection.includes(horizontalLineHeightSelector));
-  assert.ok(narrowSection.includes(horizontalFontSelector));
-  assert.ok(narrowSection.includes(horizontalLineHeightSelector));
+  assert.equal(compactSection.includes(horizontalFontSelector), false);
+  assert.equal(compactSection.includes(horizontalLineHeightSelector), false);
+  assert.equal(narrowSection.includes(horizontalFontSelector), false);
+  assert.equal(narrowSection.includes(horizontalLineHeightSelector), false);
 });

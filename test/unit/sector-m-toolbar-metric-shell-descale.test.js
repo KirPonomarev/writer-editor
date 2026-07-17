@@ -105,6 +105,6 @@ test('sector-m toolbar metric shell descale: css keeps metric anchors and width-
 
   assert.ok(styles.includes('--floating-toolbar-width-scale: 1;'));
   assert.ok(styles.includes('--left-toolbar-width-scale: 1;'));
-  assert.ok(styles.includes('width: calc(132px * var(--floating-toolbar-width-scale));'));
+  assert.ok(styles.includes('width: calc(var(--toolbar-chrome-slot-long) * var(--floating-toolbar-width-scale));'));
   assert.ok(styles.includes('gap: calc(12px * var(--left-toolbar-width-scale));'));
 });
