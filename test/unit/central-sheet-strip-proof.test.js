@@ -120,6 +120,8 @@ test('central sheet strip proof: source remains renderer-only and bounded', () =
   assert.ok(cssText.includes('flex-direction: column;'));
   assert.ok(cssText.includes('overflow-anchor: none;'));
   assert.ok(cssText.includes('shape-outside: repeating-linear-gradient('));
+  assert.ok(cssText.includes('calc(var(--central-sheet-line-top-guard-px) - var(--central-sheet-mask-bleed-px, 2px))'));
+  assert.ok(cssText.includes('calc(var(--central-sheet-content-height-px) - var(--central-sheet-line-guard-px) + var(--central-sheet-mask-bleed-px, 2px))'));
   assert.ok(cssText.includes('.tiptap-sheet-strip > .tiptap-page-wrap + .tiptap-page-wrap'));
   assert.ok(cssText.includes('margin-top: var(--page-gap-px);'));
   assert.ok(cssText.includes('.tiptap-sheet-derived-text'));
