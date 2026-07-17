@@ -1033,11 +1033,11 @@ body {
 }
 
 .floating-toolbar__phosphor-icon--list-bullets {
-  --floating-toolbar-icon-source: url('./assets/icons/phosphor/regular/list-bullets.svg');
+  --floating-toolbar-icon-source: url('./assets/icons/phosphor/bold/list-bullets-bold.svg');
 }
 
 .floating-toolbar__phosphor-icon--link {
-  --floating-toolbar-icon-source: url('./assets/icons/phosphor/regular/link.svg');
+  --floating-toolbar-icon-source: url('./assets/icons/phosphor/regular/link-simple-horizontal.svg');
 }
 
 .floating-toolbar__phosphor-icon--comment {
@@ -1170,7 +1170,7 @@ body {
 .floating-toolbar__button--list {
   width: calc(var(--toolbar-chrome-slot-icon-wide) * var(--floating-toolbar-width-scale));
   min-width: var(--toolbar-chrome-slot-icon-wide);
-  gap: var(--toolbar-chrome-chevron-gap);
+  gap: var(--toolbar-chrome-gap-xxs);
 }
 
 .floating-toolbar__button--insert-link {
@@ -1226,6 +1226,12 @@ body {
 .floating-toolbar__icon--link {
   width: var(--toolbar-chrome-icon-size);
   height: var(--toolbar-chrome-icon-size);
+}
+
+.floating-toolbar__caret--list {
+  width: 8px;
+  height: 8px;
+  opacity: 0.72;
 }
 
 .floating-toolbar__button-label--paragraph,
