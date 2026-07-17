@@ -3927,6 +3927,20 @@
       "approvedBy": "ticket:REPOSITORY_TAIL_HYGIENE_2026_07_17_001",
       "approvedAtUtc": "2026-07-17T16:03:00.000Z",
       "rationale": "Approve focused positive and negative coverage for evidence-bound core-purity exceptions and exact token-boundary detection."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/SMOKE_A4_MINIMAL_BARREL_RECONCILIATION_2026_07_17_001_STATUS.json",
+      "sha256": "e7793321f9ffe75ae57f84c58b864ab4690bb522a2145eb9b7c254dade2b1b49",
+      "approvedBy": "ticket:SMOKE_A4_MINIMAL_BARREL_RECONCILIATION_2026_07_17_001",
+      "approvedAtUtc": "2026-07-17T16:16:00.000Z",
+      "rationale": "Approve the bounded A4 reconciliation ledger proving the exact private root-barrel set and no runtime, product, design, dependency, or public contract surface change."
+    },
+    {
+      "filePath": "test/contracts/smoke-a4-minimal-barrel.contract.test.js",
+      "sha256": "e636367370400bfb5abd21131c78c77539b252b2655f9cf4cd809deac69561cc",
+      "approvedBy": "ticket:SMOKE_A4_MINIMAL_BARREL_RECONCILIATION_2026_07_17_001",
+      "approvedAtUtc": "2026-07-17T16:16:00.000Z",
+      "rationale": "Approve isolated positive and negative fixture coverage for the exact private root-barrel set and continued missing-export rejection."
     }
   ]
 }
