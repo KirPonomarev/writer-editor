@@ -8,3 +8,9 @@ See the full license text in the LICENSE file at the repository root.
 
 Corresponding Source policy (including network-use obligations) is defined in:
 - docs/OPERATIONS/AGPL_SOURCE_OFFER.md
+
+Third-party visual assets:
+- Phosphor Icons, Regular SVG subset
+- Copyright (c) 2020-2024 Phosphor Icons
+- Licensed under the MIT License
+- License text: src/renderer/assets/icons/phosphor/LICENSE

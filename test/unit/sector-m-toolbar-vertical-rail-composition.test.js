@@ -64,7 +64,7 @@ test('sector-m toolbar vertical rail: paragraph content remains a bounded three-
     '.floating-toolbar__shell.is-vertical .floating-toolbar__select-wrap {'
   );
 
-  assert.ok(paragraphSection.includes('grid-template-columns: 16px minmax(0, 1fr) 10px;'));
+  assert.ok(paragraphSection.includes('grid-template-columns: var(--toolbar-chrome-icon-size) minmax(0, 1fr) var(--toolbar-chrome-caret-size);'));
   assert.ok(paragraphSection.includes('text-overflow: ellipsis;'));
   assert.ok(paragraphSection.includes('white-space: nowrap;'));
 });
