@@ -3172,9 +3172,10 @@ function clampFloatingToolbarPosition(position, shellRect = toolbarShell?.getBou
   };
 }
 
-function clampFloatingToolbarWidthScale(widthScale) {
+function clampFloatingToolbarWidthScale(widthScale, isVertical = false) {
+  const minimumWidthScale = isVertical ? 1 : FLOATING_TOOLBAR_WIDTH_SCALE_MIN;
   return Math.min(
-    Math.max(widthScale, FLOATING_TOOLBAR_WIDTH_SCALE_MIN),
+    Math.max(widthScale, minimumWidthScale),
     FLOATING_TOOLBAR_WIDTH_SCALE_MAX
   );
 }
@@ -3703,6 +3704,7 @@ function applyFloatingToolbarState(partialState, persist = true) {
     y: partialState.y,
   }, shellRect);
   const nextIsDetached = Boolean(partialState.isDetached);
+  const nextIsVertical = Boolean(partialState.isVertical);
   const isModeTransition = nextIsDetached !== floatingToolbarState.isDetached;
   const providedWidthScale = Number.isFinite(partialState.widthScale)
     ? partialState.widthScale
@@ -3714,33 +3716,37 @@ function applyFloatingToolbarState(partialState, persist = true) {
       nextDockedWidthScale = clampFloatingToolbarWidthScale(
         Number.isFinite(partialState.dockedWidthScale)
           ? partialState.dockedWidthScale
-          : floatingToolbarState.dockedWidthScale || providedWidthScale
+          : floatingToolbarState.dockedWidthScale || providedWidthScale,
+        nextIsVertical
       );
-      nextFreeWidthScale = clampFloatingToolbarWidthScale(providedWidthScale);
+      nextFreeWidthScale = clampFloatingToolbarWidthScale(providedWidthScale, nextIsVertical);
     } else {
-      nextDockedWidthScale = clampFloatingToolbarWidthScale(providedWidthScale);
+      nextDockedWidthScale = clampFloatingToolbarWidthScale(providedWidthScale, nextIsVertical);
       nextFreeWidthScale = clampFloatingToolbarWidthScale(
         Number.isFinite(partialState.freeWidthScale)
           ? partialState.freeWidthScale
-          : floatingToolbarState.freeWidthScale || providedWidthScale
+          : floatingToolbarState.freeWidthScale || providedWidthScale,
+        nextIsVertical
       );
     }
   } else {
     nextDockedWidthScale = clampFloatingToolbarWidthScale(
       Number.isFinite(partialState.dockedWidthScale)
         ? partialState.dockedWidthScale
-        : (!nextIsDetached ? providedWidthScale : floatingToolbarState.dockedWidthScale || providedWidthScale)
+        : (!nextIsDetached ? providedWidthScale : floatingToolbarState.dockedWidthScale || providedWidthScale),
+      nextIsVertical
     );
     nextFreeWidthScale = clampFloatingToolbarWidthScale(
       Number.isFinite(partialState.freeWidthScale)
         ? partialState.freeWidthScale
-        : (nextIsDetached ? providedWidthScale : floatingToolbarState.freeWidthScale || providedWidthScale)
+        : (nextIsDetached ? providedWidthScale : floatingToolbarState.freeWidthScale || providedWidthScale),
+      nextIsVertical
     );
   }
   floatingToolbarState = {
     x: nextPosition.x,
     y: nextPosition.y,
-    isVertical: Boolean(partialState.isVertical),
+    isVertical: nextIsVertical,
     isDetached: nextIsDetached,
     widthScale: nextIsDetached ? nextFreeWidthScale : nextDockedWidthScale,
     dockedWidthScale: nextDockedWidthScale,

@@ -57,7 +57,7 @@ test('sector-m toolbar vertical rail: major controls and action matrix share the
 
   assert.ok(compositionSection.includes('align-items: stretch;'));
   assert.ok(compositionSection.includes('width: 100%;'));
-  assert.ok(compositionSection.includes('grid-template-columns: repeat(4, var(--toolbar-chrome-control-height));'));
+  assert.ok(compositionSection.includes('grid-template-columns: repeat(4, minmax(var(--toolbar-chrome-control-height), 1fr));'));
   assert.ok(compositionSection.includes('column-gap: var(--toolbar-chrome-gap-sm);'));
   assert.ok(compositionSection.includes('row-gap: var(--toolbar-chrome-gap-sm);'));
   assert.ok(compositionSection.includes('grid-template-columns: repeat(3, minmax(0, 1fr));'));
