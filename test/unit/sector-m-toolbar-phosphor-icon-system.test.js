@@ -136,7 +136,10 @@ test('sector-m toolbar phosphor icons: list and link keep dedicated micro-toolba
   assert.ok(styles.includes("url('./assets/icons/phosphor/bold/list-bullets-bold.svg')"));
   assert.ok(styles.includes("url('./assets/icons/phosphor/regular/link-simple-horizontal.svg')"));
   assert.match(styles, /\.floating-toolbar__button--list \{[\s\S]*?gap: var\(--toolbar-chrome-gap-xxs\);/);
-  assert.match(styles, /\.floating-toolbar__caret--list \{[\s\S]*?width: 8px;[\s\S]*?height: 8px;/);
+  assert.match(
+    styles,
+    /\.floating-toolbar__caret--list \{[\s\S]*?width: var\(--floating-toolbar-list-caret-size\);[\s\S]*?height: var\(--floating-toolbar-list-caret-size\);/,
+  );
 });
 
 test('sector-m toolbar phosphor icons: top-toolbar optical scale follows the Yalken micro master', () => {
