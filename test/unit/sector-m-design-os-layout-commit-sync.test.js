@@ -146,6 +146,7 @@ test('layout commit sync: responsive model protects the editor and preserves hid
   );
   assert.equal(constrainedCompact.layoutVariant, 'single');
   assert.equal(constrainedCompact.rightVisible, false);
+  assert.equal(constrainedCompact.leftRailMode, 'docked');
   assert.equal(constrainedCompact.leftSidebarWidth, 306);
   assert.equal(constrainedCompact.rightSidebarWidth, 352, 'hidden width must survive responsive projection');
 
@@ -175,6 +176,13 @@ test('layout commit sync: responsive model protects the editor and preserves hid
     { viewportWidth: 2048 }
   );
   assert.deepEqual([wideDesktop.leftSidebarWidth, wideDesktop.rightSidebarWidth], [420, 420]);
+
+  const narrowOverlay = buildSidebarLayoutModel(
+    { leftSidebarWidth: 320, rightSidebarWidth: 320 },
+    { viewportWidth: 820 }
+  );
+  assert.equal(narrowOverlay.leftRailMode, 'overlay');
+  assert.equal(narrowOverlay.constraints.leftRailMode, 'overlay');
 });
 
 test('layout commit sync: default stylesheet baseline is symmetric for desktop and compact visible-right modes', () => {
@@ -190,7 +198,7 @@ test('layout commit sync: stylesheet projects single-rail mode without overflow 
   const editor = readEditorSource();
 
   assert.ok(styles.includes('.app-layout[data-sidebar-layout="single"]'));
-  assert.ok(styles.includes('grid-template-columns: minmax(200px, var(--app-left-sidebar-width)) minmax(0, 1fr);'));
+  assert.ok(styles.includes('grid-template-columns: var(--app-left-sidebar-collapsed-width) minmax(0, 1fr);'));
   assert.ok(styles.includes('.sidebar--right[hidden],'));
   assert.ok(styles.includes('.sidebar__resize-handle[hidden]'));
   assert.ok(styles.includes('@media (max-width: 899px)'));

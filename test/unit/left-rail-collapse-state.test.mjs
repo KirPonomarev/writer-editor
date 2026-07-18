@@ -42,6 +42,20 @@ test('left rail collapse preserves the expanded width in the Design OS projectio
 
   const expanded = buildSidebarLayoutModel(restored, { viewportWidth: 1440, leftCollapsed: false });
   assert.equal(expanded.leftSidebarWidth, 360);
+  assert.equal(expanded.leftRailMode, 'docked');
+});
+
+test('narrow view derives a transient overlay without changing stored collapse truth', () => {
+  const model = buildSidebarLayoutModel(
+    { leftSidebarWidth: 360, rightSidebarWidth: 310, leftCollapsed: false },
+    { viewportWidth: 820 },
+  );
+
+  assert.equal(model.leftRailMode, 'overlay');
+  assert.equal(model.constraints.leftRailMode, 'overlay');
+  assert.equal(model.leftCollapsed, false);
+  assert.equal(model.leftExpandedWidth, 240);
+  assert.equal(model.rightVisible, false);
 });
 
 test('collapsed left rail increases editor budget without changing right rail truth', () => {
@@ -63,10 +77,13 @@ test('renderer owns collapse through project-bound spatial state and safe reset'
 
   assert.match(html, /data-action="toggle-left-rail"/u);
   assert.match(html, /data-left-rail-collapse/u);
+  assert.match(html, /data-left-rail-overlay-backdrop/u);
   assert.match(editor, /leftCollapsed: state\?\.leftCollapsed === true/u);
   assert.match(editor, /appLayout\.dataset\.leftRailCollapsed/u);
   assert.match(editor, /function toggleLeftRailCollapsed\(\)/u);
   assert.match(editor, /case 'toggle-left-rail':/u);
+  assert.match(editor, /case 'close-left-rail-overlay':/u);
+  assert.match(editor, /function setLeftRailOverlayOpen\(open/u);
   assert.match(editor, /const legacyKey = normalizeProjectId\(projectId\) \? storageKey : 'spatialLayout'/u);
   assert.match(editor, /applySpatialLayoutState\(getSpatialLayoutBaselineForViewport\(\), \{/u);
   assert.match(editor, /restoreSpatialLayoutState\(currentProjectId\)/u);
@@ -75,5 +92,7 @@ test('renderer owns collapse through project-bound spatial state and safe reset'
     /if \(nextProjectId !== currentProjectId\) \{[\s\S]*?currentProjectId = nextProjectId;[\s\S]*?restoreSpatialLayoutState\(currentProjectId\);/u,
   );
   assert.match(styles, /data-left-rail-collapsed="true"/u);
+  assert.match(styles, /data-left-rail-mode="overlay"/u);
+  assert.match(styles, /prefers-reduced-motion: reduce/u);
   assert.match(styles, /assets\/icons\/navigation\/phosphor-caret-left\.svg/u);
 });

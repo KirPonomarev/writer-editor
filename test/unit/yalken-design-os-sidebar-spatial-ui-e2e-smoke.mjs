@@ -101,12 +101,18 @@ async function collectProbe(win, label) {
       label: \${JSON.stringify(label)},
       innerWidth: window.innerWidth,
       layoutVariant: layout?.dataset.sidebarLayout || '',
+      leftRailMode: layout?.dataset.leftRailMode || '',
+      leftRailOverlayOpen: layout?.dataset.leftRailOverlayOpen || '',
       leftWidthVar: parseInt(layout?.style.getPropertyValue('--app-left-sidebar-width') || '0', 10),
       rightWidthVar: parseInt(layout?.style.getPropertyValue('--app-right-sidebar-width') || '0', 10),
       rightHidden: right?.hidden === true,
       rightDisplay: right ? getComputedStyle(right).display : '',
       documentFits: document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
       bodyFits: document.body.scrollWidth <= document.body.clientWidth + 1,
+      backdropHidden: document.querySelector('[data-left-rail-overlay-backdrop]')?.hidden !== false,
+      mainInert: main?.inert === true,
+      leftPosition: left ? getComputedStyle(left).position : '',
+      leftBackground: left ? getComputedStyle(left).backgroundColor : '',
       layout: toRect(layout),
       left: toRect(left),
       right: toRect(right),
@@ -211,6 +217,73 @@ async function exerciseLeftRailCollapse(win) {
     collapsed,
     restored,
     control,
+    productStateUnchanged: JSON.stringify(snapshotProjectProductFiles()) === JSON.stringify(productStateBefore),
+  };
+}
+
+async function exerciseLeftRailOverlay(win) {
+  const productStateBefore = snapshotProjectProductFiles();
+  const storageBefore = await win.webContents.executeJavaScript(
+    "(() => { const key = [...Array(localStorage.length).keys()].map((index) => localStorage.key(index)).find((item) => item?.startsWith('yalkenSpatialLayout:')) || ''; return key ? localStorage.getItem(key) : ''; })()",
+    true
+  );
+  const closed = await collectProbe(win, 'mobile-overlay-closed');
+  await win.webContents.executeJavaScript("document.querySelector('[data-left-rail-collapse]')?.click()", true);
+  const opened = await waitUntil(
+    () => collectProbe(win, 'mobile-overlay-open').then((probe) => (
+      probe.leftRailOverlayOpen === 'true' && probe.mainInert && !probe.backdropHidden ? probe : null
+    )),
+    'LEFT_RAIL_OVERLAY_OPEN_FAILED'
+  );
+  await captureEvidence(win, 'sidebar-mobile-overlay-open.png');
+  const openControl = await win.webContents.executeJavaScript(
+    "(() => { const sidebar = document.querySelector('.sidebar--left'); const button = document.querySelector('[data-left-rail-collapse]'); return { buttonExpanded: button?.getAttribute('aria-expanded') || '', buttonLabel: button?.getAttribute('aria-label') || '', buttonFocused: document.activeElement === button, activeInSidebar: sidebar?.contains(document.activeElement) === true }; })()",
+    true
+  );
+  await win.webContents.executeJavaScript(
+    "document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true }))",
+    true
+  );
+  const focusTrap = await win.webContents.executeJavaScript(
+    "(() => { const sidebar = document.querySelector('.sidebar--left'); return { activeInSidebar: sidebar?.contains(document.activeElement) === true, activeIsMain: document.querySelector('.main-content')?.contains(document.activeElement) === true }; })()",
+    true
+  );
+  await win.webContents.executeJavaScript(
+    "document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))",
+    true
+  );
+  const escaped = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => { const layout = document.querySelector('.app-layout'); const button = document.querySelector('[data-left-rail-collapse]'); const backdrop = document.querySelector('[data-left-rail-overlay-backdrop]'); return { open: layout?.dataset.leftRailOverlayOpen === 'true', buttonFocused: document.activeElement === button, backdropHidden: backdrop?.hidden !== false, mainInert: document.querySelector('.main-content')?.inert === true }; })()",
+      true
+    ).then((state) => !state.open && state.buttonFocused ? state : null),
+    'LEFT_RAIL_OVERLAY_ESCAPE_FAILED'
+  );
+  await win.webContents.executeJavaScript("document.querySelector('[data-left-rail-collapse]')?.click()", true);
+  await waitUntil(
+    () => win.webContents.executeJavaScript("document.querySelector('.app-layout')?.dataset.leftRailOverlayOpen === 'true'", true),
+    'LEFT_RAIL_OVERLAY_REOPEN_FAILED'
+  );
+  await win.webContents.executeJavaScript("document.querySelector('[data-left-rail-overlay-backdrop]')?.click()", true);
+  const backdropClosed = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => ({ open: document.querySelector('.app-layout')?.dataset.leftRailOverlayOpen === 'true', buttonFocused: document.activeElement === document.querySelector('[data-left-rail-collapse]') }))()",
+      true
+    ).then((state) => !state.open && state.buttonFocused ? state : null),
+    'LEFT_RAIL_OVERLAY_BACKDROP_CLOSE_FAILED'
+  );
+  const storageAfter = await win.webContents.executeJavaScript(
+    "(() => { const key = [...Array(localStorage.length).keys()].map((index) => localStorage.key(index)).find((item) => item?.startsWith('yalkenSpatialLayout:')) || ''; return key ? localStorage.getItem(key) : ''; })()",
+    true
+  );
+  return {
+    closed,
+    opened,
+    openControl,
+    focusTrap,
+    escaped,
+    backdropClosed,
+    storageUnchanged: storageAfter === storageBefore,
     productStateUnchanged: JSON.stringify(snapshotProjectProductFiles()) === JSON.stringify(productStateBefore),
   };
 }
@@ -517,6 +590,7 @@ app.whenReady().then(async () => {
     await captureEvidence(win, 'sidebar-compact.png');
     const mobile = await resizeAndProbe(win, 820, 850, 'mobile-single');
     await captureEvidence(win, 'sidebar-mobile.png');
+    const leftRailOverlay = await exerciseLeftRailOverlay(win);
     const restoredWide = await resizeAndProbe(win, 1440, 850, 'restored-wide');
     const leftRailSafeReset = await exerciseLeftRailSafeReset(win);
     const leftRailLastStable = await exerciseLeftRailLastStableRestore(win);
@@ -539,6 +613,7 @@ app.whenReady().then(async () => {
       resizedWide,
       compact,
       mobile,
+      leftRailOverlay,
       restoredWide,
       leftRailSafeReset,
       leftRailLastStable,
@@ -719,8 +794,34 @@ try {
   assert.equal(result.compact.main.width >= 480, true);
   assert.equal(result.compact.rightWidthVar, 320, 'hidden right width must remain projected');
   assertSingleRailProbe(result.mobile);
-  assert.equal(result.mobile.leftWidthVar, 240);
-  assert.equal(result.mobile.main.width >= 500, true);
+  assert.equal(result.mobile.leftRailMode, 'overlay');
+  assert.equal(result.mobile.leftRailOverlayOpen, 'false');
+  assert.equal(result.mobile.leftWidthVar, 48);
+  assert.equal(result.mobile.main.width >= 700, true);
+  assert.equal(result.mobile.backdropHidden, true);
+  assert.equal(result.mobile.mainInert, false);
+  assert.equal(result.leftRailOverlay.opened.leftRailMode, 'overlay');
+  assert.equal(result.leftRailOverlay.opened.leftRailOverlayOpen, 'true');
+  assert.equal(result.leftRailOverlay.opened.left.width, 240);
+  assert.equal(result.leftRailOverlay.opened.left.right <= result.leftRailOverlay.opened.innerWidth, true);
+  assert.equal(result.leftRailOverlay.opened.leftPosition, 'absolute');
+  assert.notEqual(result.leftRailOverlay.opened.leftBackground, 'rgba(0, 0, 0, 0)');
+  assert.deepEqual(result.leftRailOverlay.openControl, {
+    buttonExpanded: 'true',
+    buttonLabel: 'Закрыть навигатор',
+    buttonFocused: true,
+    activeInSidebar: true,
+  });
+  assert.deepEqual(result.leftRailOverlay.focusTrap, { activeInSidebar: true, activeIsMain: false });
+  assert.deepEqual(result.leftRailOverlay.escaped, {
+    open: false,
+    buttonFocused: true,
+    backdropHidden: true,
+    mainInert: false,
+  });
+  assert.deepEqual(result.leftRailOverlay.backdropClosed, { open: false, buttonFocused: true });
+  assert.equal(result.leftRailOverlay.storageUnchanged, true);
+  assert.equal(result.leftRailOverlay.productStateUnchanged, true);
 
   assert.equal(result.restoredWide.layoutVariant, 'dual');
   assert.equal(result.restoredWide.rightHidden, false);
