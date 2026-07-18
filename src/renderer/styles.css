@@ -57,6 +57,7 @@
   --toolbar-chrome-icon-size: 16px;
   --toolbar-chrome-utility-icon-size: 14px;
   --toolbar-chrome-caret-size: 10px;
+  --toolbar-chrome-control-font-weight: 300;
   --toolbar-chrome-radius-button: 10px;
   --toolbar-chrome-radius-control: 10px;
   --toolbar-chrome-ink: rgba(45, 39, 33, 0.82);
@@ -1045,7 +1046,7 @@ body {
   color: var(--toolbar-chrome-ink-strong);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
   font-size: var(--floating-toolbar-control-font-size);
-  font-weight: 400;
+  font-weight: var(--toolbar-chrome-control-font-weight);
   line-height: var(--floating-toolbar-control-line-height);
   letter-spacing: 0;
   text-align: left;
@@ -1167,7 +1168,7 @@ body {
   color: var(--toolbar-chrome-ink-strong);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
   font-size: var(--floating-toolbar-control-font-size);
-  font-weight: 500;
+  font-weight: var(--toolbar-chrome-control-font-weight);
   line-height: var(--floating-toolbar-control-line-height);
   text-align: center;
   letter-spacing: 0;
@@ -1336,14 +1337,14 @@ body {
   color: var(--toolbar-chrome-ink-strong);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
   font-size: var(--floating-toolbar-control-font-size);
-  font-weight: 400;
+  font-weight: var(--toolbar-chrome-control-font-weight);
   text-align: left;
   line-height: var(--floating-toolbar-control-line-height);
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display-value {
   font-size: var(--floating-toolbar-control-font-size);
-  font-weight: 500;
+  font-weight: var(--toolbar-chrome-control-font-weight);
   line-height: var(--floating-toolbar-control-line-height);
   letter-spacing: 0;
 }
@@ -1377,7 +1378,7 @@ body {
   overflow: visible;
   text-overflow: clip;
   text-align: right;
-  font-weight: 500;
+  font-weight: var(--toolbar-chrome-control-font-weight);
   letter-spacing: 0;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
@@ -1672,6 +1673,7 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: var(--floating-toolbar-control-font-size);
+  font-weight: var(--toolbar-chrome-control-font-weight);
   line-height: var(--floating-toolbar-control-line-height);
 }
 
