@@ -10967,6 +10967,46 @@ async function getFlowBatchGuard(projectRoot) {
   };
 }
 
+async function buildFlowStableNodeIdMap() {
+  const manifestPath = getProjectManifestPath(DEFAULT_PROJECT_NAME);
+  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
+  const manifest = manifestRecord ? manifestRecord.manifest : null;
+  const nodes = manifest && manifest.treeIdentity && manifest.treeIdentity.nodes
+    && typeof manifest.treeIdentity.nodes === 'object'
+    && !Array.isArray(manifest.treeIdentity.nodes)
+    ? manifest.treeIdentity.nodes
+    : {};
+  const nodeIdsByBindingKey = new Map();
+  for (const [nodeId, record] of Object.entries(nodes)) {
+    if (
+      /^tree-node-[a-f0-9]{32}$/u.test(nodeId)
+      && record
+      && record.present !== false
+      && typeof record.bindingKey === 'string'
+      && record.bindingKey.startsWith('file:')
+    ) {
+      nodeIdsByBindingKey.set(record.bindingKey, nodeId);
+    }
+  }
+  return { manifestPath, nodeIdsByBindingKey };
+}
+
+function buildFlowSceneReadDescriptor(node, identity) {
+  const filePath = typeof node?.path === 'string' ? node.path : '';
+  const sceneId = getProjectRelativeFilePath(filePath, identity.manifestPath);
+  const bindingKey = sceneId ? `file:${sceneId.split(path.sep).join('/')}` : '';
+  const nodeId = typeof node?.nodeId === 'string' && node.nodeId
+    ? node.nodeId
+    : (identity.nodeIdsByBindingKey.get(bindingKey) || '');
+  return {
+    path: filePath,
+    sceneId,
+    nodeId,
+    title: typeof node?.title === 'string' ? node.title : '',
+    kind: typeof node?.kind === 'string' ? node.kind : 'scene',
+  };
+}
+
 async function handleFlowOpenV1() {
   try {
     await ensureProjectStructure();
@@ -10979,24 +11019,19 @@ async function handleFlowOpenV1() {
     }
     const romanRoot = await buildRomanTree();
     const flowNodes = collectFlowEditableNodes(romanRoot, []);
+    const flowIdentity = await buildFlowStableNodeIdMap();
 
     const scenes = [];
     for (const node of flowNodes) {
-      const filePath = node.path;
+      const descriptor = buildFlowSceneReadDescriptor(node, flowIdentity);
+      const filePath = descriptor.path;
       let content = '';
+      let missing = false;
       try {
         content = await fs.readFile(filePath, 'utf8');
       } catch (error) {
         if (error && error.code === 'ENOENT') {
-          const created = await queueDiskOperation(
-            () => fileManager.writeFileAtomic(filePath, ''),
-            'create flow scene file',
-          );
-          if (!created.success) {
-            return makeFlowModeError(FLOW_OPEN_V1_CHANNEL, 'M7_FLOW_IO_CREATE_FAIL', 'flow_open_create_failed', {
-              path: filePath,
-            });
-          }
+          missing = true;
         } else {
           return makeFlowModeError(FLOW_OPEN_V1_CHANNEL, 'M7_FLOW_IO_READ_FAIL', 'flow_open_read_failed', {
             path: filePath,
@@ -11006,9 +11041,13 @@ async function handleFlowOpenV1() {
       }
 
       scenes.push({
-        path: filePath,
-        title: node.title,
-        kind: node.kind,
+        path: descriptor.path,
+        sceneId: descriptor.sceneId,
+        nodeId: descriptor.nodeId,
+        title: descriptor.title,
+        kind: descriptor.kind,
+        missing,
+        partial: missing,
         content: normalizeFlowTextInput(content),
       });
     }
@@ -11144,6 +11183,7 @@ function collectFlowEditableNodes(node, output = []) {
       path: nodePath,
       title: typeof node.label === 'string' ? node.label : getDisplayNameForEntry(path.basename(nodePath)),
       kind,
+      nodeId: typeof node.nodeId === 'string' ? node.nodeId : '',
     });
   }
   if (Array.isArray(node.children)) {

@@ -16,6 +16,35 @@ function normalizeSceneCount(sceneCount) {
   return sceneCount;
 }
 
+function normalizeStableId(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function normalizeFlowProjectionScene(scene, index) {
+  const source = scene && typeof scene === 'object' && !Array.isArray(scene) ? scene : {};
+  const sceneId = normalizeStableId(source.sceneId) || normalizeStableId(source.nodeId) || `flow-scene-${index + 1}`;
+  const nodeId = normalizeStableId(source.nodeId);
+  const title = typeof source.title === 'string' ? source.title : '';
+  const kind = typeof source.kind === 'string' && source.kind ? source.kind : 'scene';
+  const parsed = parseObservablePayload(typeof source.content === 'string' ? source.content : '');
+  const missing = source.missing === true;
+  return {
+    sceneId,
+    nodeId,
+    title: escapeTitle(title) || 'Untitled',
+    kind,
+    order: index,
+    missing,
+    partial: missing || source.partial === true,
+    text: missing ? '' : normalizeLineEndings(parsed.text || '').trimEnd(),
+  };
+}
+
+export function normalizeFlowReadProjectionScenes(scenes = []) {
+  const normalizedScenes = Array.isArray(scenes) ? scenes : [];
+  return normalizedScenes.map(normalizeFlowProjectionScene);
+}
+
 export function sceneMarker(index, title) {
   return `---[ SCENE ${index}: ${escapeTitle(title) || 'Untitled'} ]---`;
 }
@@ -31,6 +60,75 @@ export function composeFlowDocument(scenes = []) {
     if (i < normalizedScenes.length - 1) lines.push('');
   }
   return `${lines.join('\n').trimEnd()}\n`;
+}
+
+export function composeFlowReadProjection(scenes = []) {
+  const normalizedScenes = normalizeFlowReadProjectionScenes(scenes);
+  const lines = [];
+  const boundaries = [];
+  let cursor = 0;
+
+  normalizedScenes.forEach((scene, index) => {
+    if (index > 0) {
+      lines.push('');
+      cursor += 1;
+    }
+
+    const heading = scene.title;
+    const content = scene.missing ? '[missing source scene]' : scene.text;
+    const block = [heading, '', content].join('\n').trimEnd();
+    const start = cursor;
+    lines.push(block);
+    cursor += block.length;
+    boundaries.push({
+      sceneId: scene.sceneId,
+      nodeId: scene.nodeId,
+      title: scene.title,
+      kind: scene.kind,
+      order: scene.order,
+      missing: scene.missing,
+      start,
+      end: cursor,
+    });
+    if (index < normalizedScenes.length - 1) cursor += 1;
+  });
+
+  const text = `${lines.join('\n').trimEnd()}\n`;
+  return {
+    ok: true,
+    text,
+    scenes: normalizedScenes.map((scene) => ({
+      sceneId: scene.sceneId,
+      nodeId: scene.nodeId,
+      title: scene.title,
+      kind: scene.kind,
+      order: scene.order,
+      missing: scene.missing,
+      partial: scene.partial,
+    })),
+    boundaries,
+    partial: normalizedScenes.some((scene) => scene.partial),
+    missingSceneIds: normalizedScenes.filter((scene) => scene.missing).map((scene) => scene.sceneId),
+  };
+}
+
+export function findFlowProjectionSceneAtOffset(projection, offset) {
+  const source = projection && typeof projection === 'object' && !Array.isArray(projection) ? projection : {};
+  const boundaries = Array.isArray(source.boundaries) ? source.boundaries : [];
+  if (!boundaries.length) return null;
+  const safeOffset = Number.isFinite(offset) ? Math.max(0, offset) : 0;
+  const match = boundaries.find((boundary) => safeOffset >= boundary.start && safeOffset <= boundary.end)
+    || boundaries.find((boundary) => safeOffset < boundary.start)
+    || boundaries[boundaries.length - 1];
+  if (!match) return null;
+  return {
+    sceneId: normalizeStableId(match.sceneId),
+    nodeId: normalizeStableId(match.nodeId),
+    title: typeof match.title === 'string' ? match.title : '',
+    kind: typeof match.kind === 'string' ? match.kind : 'scene',
+    order: Number.isInteger(match.order) ? match.order : 0,
+    missing: match.missing === true,
+  };
 }
 
 export function buildFlowModeStatus(kind, sceneCount) {
