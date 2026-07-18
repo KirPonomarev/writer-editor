@@ -22,6 +22,7 @@ const ICON_FILE_BY_CLASS = Object.freeze({
   redo: 'arrow-clockwise.svg',
   'line-height': 'arrows-out-line-vertical.svg',
   width: 'arrows-out-line-horizontal.svg',
+  scale: 'arrows-out.svg',
   'caret-down': 'caret-down.svg',
   'dots-three': 'dots-three.svg',
   'dots-three-vertical': 'dots-three-vertical.svg',
@@ -98,6 +99,10 @@ test('sector-m toolbar phosphor icons: each live visual belongs to its function 
   for (const bindKey of ['color-text', 'color-highlight']) {
     assert.ok(getToolbarItemFragment(toolbarControls, bindKey).includes('floating-toolbar__button-swatch'));
   }
+
+  const scaleHandleMatch = html.match(/<div class="floating-toolbar__transform-handle floating-toolbar__transform-handle--scale"[\s\S]*?<\/div>/);
+  assert.ok(scaleHandleMatch, 'main toolbar scale handle must exist');
+  assert.ok(scaleHandleMatch[0].includes('floating-toolbar__phosphor-icon--scale'));
 
   assert.equal(toolbarControls.includes('<svg'), false);
   assert.equal(toolbarControls.includes('floating-toolbar__format-glyph'), false);

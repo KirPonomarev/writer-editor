@@ -17,7 +17,7 @@ function sliceSection(source, startToken, endToken) {
   return source.slice(startIndex, endIndex);
 }
 
-test('sector-m toolbar metric shell descale: visual state keeps width-scale channel and strips shell-scale tail', () => {
+test('sector-m toolbar metric shell scale: main scale and width are independent while left shell stays descaled', () => {
   const source = readFile('src', 'renderer', 'editor.js');
   const mainVisualSnippet = sliceSection(
     source,
@@ -30,39 +30,16 @@ test('sector-m toolbar metric shell descale: visual state keeps width-scale chan
     'function applyLeftFloatingToolbarState(partialState, persist = true) {'
   );
 
-  assert.ok(
-    mainVisualSnippet.includes("toolbarShell.style.setProperty(\n    '--floating-toolbar-width-scale',"),
-    'main shell visual state must keep width-scale css channel'
-  );
-  assert.ok(
-    mainVisualSnippet.includes("toolbarShell.style.transform = 'none';"),
-    'main shell visual state must keep shell transform neutralized'
-  );
-  assert.ok(
-    mainVisualSnippet.includes("toolbarShell.style.removeProperty('--floating-toolbar-scale');"),
-    'main shell visual state must strip legacy shell-scale css tail'
-  );
-  assert.equal(
-    mainVisualSnippet.includes("'--floating-toolbar-scale'"),
-    true,
-    'main shell visual state must only reference legacy scale var for explicit removal'
-  );
+  assert.ok(mainVisualSnippet.includes("'--floating-toolbar-width-scale',"));
+  assert.ok(mainVisualSnippet.includes("toolbarShell.style.setProperty('--floating-toolbar-scale', String(floatingToolbarState.scale));"));
+  assert.ok(mainVisualSnippet.includes("toolbarShell.style.transform = 'none';"));
 
-  assert.ok(
-    leftVisualSnippet.includes("leftToolbarShell.style.setProperty('--left-toolbar-width-scale', String(leftFloatingToolbarState.widthScale));"),
-    'left shell visual state must keep width-scale css channel'
-  );
-  assert.ok(
-    leftVisualSnippet.includes("leftToolbarShell.style.transform = 'none';"),
-    'left shell visual state must keep shell transform neutralized'
-  );
-  assert.ok(
-    leftVisualSnippet.includes("leftToolbarShell.style.removeProperty('--left-toolbar-scale');"),
-    'left shell visual state must strip legacy shell-scale css tail'
-  );
+  assert.ok(leftVisualSnippet.includes("leftToolbarShell.style.setProperty('--left-toolbar-width-scale', String(leftFloatingToolbarState.widthScale));"));
+  assert.ok(leftVisualSnippet.includes("leftToolbarShell.style.transform = 'none';"));
+  assert.ok(leftVisualSnippet.includes("leftToolbarShell.style.removeProperty('--left-toolbar-scale');"));
 });
 
-test('sector-m toolbar metric shell descale: drag semantics stay move-width with rotate and no scale command', () => {
+test('sector-m toolbar metric shell scale: drag semantics add scale only to the main formatting shell', () => {
   const source = readFile('src', 'renderer', 'editor.js');
   const mainDragSnippet = sliceSection(
     source,
@@ -77,53 +54,70 @@ test('sector-m toolbar metric shell descale: drag semantics stay move-width with
 
   assert.ok(mainDragSnippet.includes("startFloatingToolbarInteraction('move', event);"));
   assert.ok(mainDragSnippet.includes("startFloatingToolbarInteraction('width', event);"));
+  assert.ok(mainDragSnippet.includes("startFloatingToolbarInteraction('scale', event);"));
   assert.ok(mainDragSnippet.includes('toolbarRotateHandles.forEach((handle) => {'));
 
   assert.ok(leftDragSnippet.includes("startLeftFloatingToolbarInteraction('move', event);"));
   assert.ok(leftDragSnippet.includes("startLeftFloatingToolbarInteraction('width', event);"));
   assert.ok(leftDragSnippet.includes('leftToolbarRotateHandles.forEach((handle) => {'));
-
-  assert.equal(mainDragSnippet.includes("startFloatingToolbarInteraction('scale', event);"), false);
   assert.equal(leftDragSnippet.includes("startLeftFloatingToolbarInteraction('scale', event);"), false);
-  assert.equal(source.includes("mode === 'scale'"), false);
 });
 
-test('sector-m toolbar metric shell descale: vertical width scale has no hidden range below its visual minimum', () => {
+test('sector-m toolbar metric shell scale: vertical width and uniform scale retain separate clamps', () => {
   const source = readFile('src', 'renderer', 'editor.js');
-  const clampSnippet = sliceSection(
+  const widthClampSnippet = sliceSection(
     source,
     'function clampFloatingToolbarWidthScale(widthScale, isVertical = false) {',
-    'function readFloatingToolbarState() {'
+    'function clampFloatingToolbarScale(scale) {'
   );
-  const stateSnippet = sliceSection(
+  const scaleClampSnippet = sliceSection(
     source,
-    'function applyFloatingToolbarState(partialState, persist = true) {',
-    'function restoreFloatingToolbarPosition() {'
+    'function clampFloatingToolbarScale(scale) {',
+    'function getFloatingToolbarScale() {'
   );
 
-  assert.ok(clampSnippet.includes('const minimumWidthScale = isVertical ? 1 : FLOATING_TOOLBAR_WIDTH_SCALE_MIN;'));
-  assert.ok(clampSnippet.includes('Math.max(widthScale, minimumWidthScale)'));
-  assert.ok(stateSnippet.includes('const nextIsVertical = Boolean(partialState.isVertical);'));
-  assert.ok(stateSnippet.includes('clampFloatingToolbarWidthScale(providedWidthScale, nextIsVertical)'));
+  assert.ok(widthClampSnippet.includes('const minimumWidthScale = isVertical ? 1 : FLOATING_TOOLBAR_WIDTH_SCALE_MIN;'));
+  assert.ok(widthClampSnippet.includes('Math.max(widthScale, minimumWidthScale)'));
+  assert.ok(scaleClampSnippet.includes('FLOATING_TOOLBAR_SCALE_MIN'));
+  assert.ok(scaleClampSnippet.includes('FLOATING_TOOLBAR_SCALE_MAX'));
 });
 
-test('sector-m toolbar metric shell descale: css keeps metric anchors and width-scale formulas without shell scale', () => {
+test('sector-m toolbar metric shell scale: scaled popup and anchor math stays in shell-local coordinates', () => {
+  const source = readFile('src', 'renderer', 'editor.js');
+  const paragraphSnippet = sliceSection(
+    source,
+    'function setParagraphMenuOpen(nextOpen) {',
+    'function setListMenuOpen(nextOpen) {'
+  );
+  const anchorSnippet = sliceSection(
+    source,
+    'function updateToolbarAnchorVars() {',
+    'function scheduleToolbarAnchorUpdate() {'
+  );
+  const colorSnippet = sliceSection(
+    source,
+    'function positionToolbarColorPickerOverlay() {',
+    'function syncToolbarShellState() {'
+  );
+
+  assert.ok(paragraphSnippet.includes('const shellScale = getFloatingToolbarScale();'));
+  assert.ok(paragraphSnippet.includes('(triggerRect.left - shellRect.left) / shellScale'));
+  assert.ok(anchorSnippet.includes('(bounds.left - shellRect.left) / shellScale'));
+  assert.ok(colorSnippet.includes('const overlayWidth = overlayRect.width / shellScale;'));
+});
+
+test('sector-m toolbar metric shell scale: css keeps sharp shells and metric channels', () => {
   const styles = readFile('src', 'renderer', 'styles.css');
   const leftShellSection = sliceSection(styles, '.left-floating-toolbar__shell {', '.left-floating-toolbar__shell::before {');
   const mainShellSection = sliceSection(styles, '.floating-toolbar__shell {', '.floating-toolbar__shell::before {');
 
   assert.ok(leftShellSection.includes('--left-toolbar-cluster-center-x: 0px;'));
-  assert.ok(leftShellSection.includes('--left-toolbar-cluster-center-y: 0px;'));
   assert.ok(mainShellSection.includes('--floating-toolbar-cluster-center-x: 0px;'));
-  assert.ok(mainShellSection.includes('--floating-toolbar-cluster-center-y: 0px;'));
-
   assert.ok(leftShellSection.includes('transform: none;'));
   assert.ok(mainShellSection.includes('transform: none;'));
   assert.equal(leftShellSection.includes('transform: scale('), false);
   assert.equal(mainShellSection.includes('transform: scale('), false);
-
-  assert.ok(styles.includes('--floating-toolbar-width-scale: 1;'));
-  assert.ok(styles.includes('--left-toolbar-width-scale: 1;'));
+  assert.ok(mainShellSection.includes('zoom: var(--floating-toolbar-scale);'));
   assert.ok(styles.includes('width: calc(var(--toolbar-chrome-slot-long) * var(--floating-toolbar-width-scale));'));
   assert.ok(styles.includes('gap: calc(12px * var(--left-toolbar-width-scale));'));
 });

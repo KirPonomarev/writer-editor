@@ -81,7 +81,7 @@ test('sector-m toolbar shell metric geometry: main and left anchor vars use snap
   );
 });
 
-test('sector-m toolbar shell metric geometry: no command and persistence drift signals', () => {
+test('sector-m toolbar shell metric geometry: scale command stays main-only and persistence remains bounded', () => {
   const source = readEditorSource();
   const mainDragSnippet = sliceSection(
     source,
@@ -107,8 +107,9 @@ test('sector-m toolbar shell metric geometry: no command and persistence drift s
   assert.ok(
     mainDragSnippet.includes("startFloatingToolbarInteraction('move', event);")
       && mainDragSnippet.includes("startFloatingToolbarInteraction('width', event);")
+      && mainDragSnippet.includes("startFloatingToolbarInteraction('scale', event);")
       && mainDragSnippet.includes('toolbarRotateHandles.forEach((handle) => {'),
-    'main drag command semantics must stay move width with rotate handle path'
+    'main drag command semantics must expose move width scale and rotate paths'
   );
   assert.ok(
     leftDragSnippet.includes("startLeftFloatingToolbarInteraction('move', event);")
@@ -116,13 +117,9 @@ test('sector-m toolbar shell metric geometry: no command and persistence drift s
       && leftDragSnippet.includes('leftToolbarRotateHandles.forEach((handle) => {'),
     'left drag command semantics must stay move width with rotate handle path'
   );
-  assert.equal(
-    source.includes("startFloatingToolbarInteraction('scale', event);")
-      || source.includes("startLeftFloatingToolbarInteraction('scale', event);")
-      || source.includes("mode === 'scale'"),
-    false,
-    'scale command path must stay absent'
-  );
+  assert.ok(source.includes("} else if (mode === 'scale') {"));
+  assert.equal(leftDragSnippet.includes("startLeftFloatingToolbarInteraction('scale', event);"), false);
+  assert.ok(readMainStateSnippet.includes('const scale = Number(parsed.scale);'));
 
   assert.equal(
     readMainStateSnippet.includes('parsed.anchorSnap')

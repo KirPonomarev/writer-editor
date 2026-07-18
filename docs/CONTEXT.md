@@ -184,9 +184,9 @@
 ### Toolbar post-merge factual closeout
 - contour `TOOLBAR_METRIC_SHELL_DESCALE_002` is merged on main from commit `8e41f0600fccabb43abd773aee40aa5ccb9628f5` via PR `749`
 - contour `TOOLBAR_NATIVE_FLUENCY_VISUAL_REFINE_001` is merged on main from commit `59c398d8ba02390fff5dc0a435f26d1f142fbb7a` via PR `750`
-- whole-shell scale is removed as effective toolbar sizing path in accepted runtime state
-- width-scale channel remains preserved as metric tuning path in accepted runtime state
-- native fluency toolbar contract remains enforced: no transform-scale shell path and no blur trick in toolbar shell sections
+- owner-approved contour `TOOLBAR_UNIFORM_SCALE_RESTORE_001` restores independent 0.5x–2.0x uniform scale for the main formatting toolbar in horizontal and vertical orientations
+- width-scale remains a separate metric tuning path; uniform scale does not affect the editor sheet or the left system toolbar
+- native fluency toolbar contract remains enforced: no transform-scale shell path and no blur trick; uniform scale uses the layout-zoom channel
 - targeted toolbar verification for both contours is pass and independent post-audit is pass
 - required checks on both merged PRs passed: `oss-policy`, `x1-runtime-parity (ubuntu-latest)`, `x1-runtime-parity (windows-latest)`
 - this closeout does not open any automatic runtime contour; next move remains exactly one explicit owner-selected contour
