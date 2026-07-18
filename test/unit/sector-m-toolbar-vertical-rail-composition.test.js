@@ -62,6 +62,9 @@ test('sector-m toolbar vertical rail: major controls and action matrix share the
   assert.ok(compositionSection.includes('row-gap: var(--toolbar-chrome-gap-sm);'));
   assert.ok(compositionSection.includes('grid-template-columns: repeat(3, minmax(0, 1fr));'));
   assert.ok(compositionSection.includes('display: contents;'));
+  assert.ok(compositionSection.includes('.floating-toolbar__shell.is-vertical[data-toolbar-profile="minimal"] .floating-toolbar__group--history {'));
+  assert.ok(compositionSection.includes('grid-template-columns: repeat(2, minmax(0, 1fr));'));
+  assert.ok(compositionSection.includes('grid-column: 1 / -1;'));
   assert.ok(compositionSection.includes('width: var(--toolbar-chrome-control-height);'));
   assert.equal(compositionSection.includes(':nth-child'), false);
   assert.ok(controlSection.includes('align-self: stretch;'));

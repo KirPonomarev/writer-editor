@@ -549,8 +549,12 @@ export function applyToolbarActiveProfile(registry, profileState) {
   if (!activeRegistry) {
     return buildFailClosedToolbarRuntimeSnapshot(registry, 'stale-root');
   }
+  const activeToolbarProfile = normalizeProfileName(profileState?.activeToolbarProfile);
+  if (isNodeLike(activeRegistry.toolbarShell?.dataset)) {
+    activeRegistry.toolbarShell.dataset.toolbarProfile = activeToolbarProfile;
+  }
   const catalogEntries = Array.isArray(activeRegistry?.catalogEntries) ? activeRegistry.catalogEntries : [];
-  const visibleItemIds = normalizeVisibleItemIds(profileState, catalogEntries);
+  const visibleItemIds = normalizeVisibleItemIds(profileState, catalogEntries, activeToolbarProfile);
   const visibleItemIdSet = new Set(visibleItemIds);
   const itemDescriptors = Array.isArray(activeRegistry?.itemDescriptors) ? activeRegistry.itemDescriptors : [];
   const visibleItemIndexById = getVisibleItemIndexMap(visibleItemIds);

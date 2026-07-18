@@ -879,6 +879,15 @@ body {
   display: contents;
 }
 
+.floating-toolbar__shell.is-vertical[data-toolbar-profile="minimal"] .floating-toolbar__group--history {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-column: 1 / -1;
+  align-items: stretch;
+  gap: var(--toolbar-chrome-gap-sm);
+  width: 100%;
+}
+
 .floating-toolbar__shell.is-vertical .floating-toolbar__group--format-inline > .floating-toolbar__button {
   width: 100%;
   min-width: var(--toolbar-chrome-control-height);
