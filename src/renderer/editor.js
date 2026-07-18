@@ -592,6 +592,10 @@ function isPlainObject(value) {
 const REVIEW_SURFACE_RECEIPT_SCHEMA = 'revision-bridge.exact-text-min-safe-write.receipt.v1';
 const REVIEW_SURFACE_QUERY_ID = 'query.reviewSurface';
 const METADATA_INSPECTOR_QUERY_ID = 'query.metadataInspector';
+const RIGHT_RAIL_SURFACE_PROVIDERS = Object.freeze({
+  inspector: METADATA_INSPECTOR_QUERY_ID,
+  comments: REVIEW_SURFACE_QUERY_ID,
+});
 const METADATA_UPDATE_COMMAND_ID = 'cmd.project.metadata.update';
 const REVIEW_SURFACE_IMPORT_LOCAL_PACKET_COMMAND_ID = 'cmd.project.review.importLocalPacket';
 const REVIEW_SURFACE_CLEAR_SESSION_COMMAND_ID = 'cmd.project.review.clearSession';
@@ -8956,16 +8960,36 @@ function syncInspectorStateSurface() {
   }
 }
 
-function applyRightTab(tab) {
-  tab = normalizeRightTab(tab);
-  currentRightTab = tab;
+function syncRightRailCompositionState(tab) {
+  const providerId = RIGHT_RAIL_SURFACE_PROVIDERS[tab] || RIGHT_RAIL_SURFACE_PROVIDERS.inspector;
+  if (rightTabsHost instanceof HTMLElement) {
+    rightTabsHost.dataset.activeRightTab = tab;
+    rightTabsHost.dataset.activeRightProvider = providerId;
+  }
   for (const button of rightTabButtons) {
     const active = button.dataset.rightTab === tab;
     button.classList.toggle('is-active', active);
+    button.setAttribute('aria-selected', active ? 'true' : 'false');
     button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    button.tabIndex = active ? 0 : -1;
   }
-  if (rightInspectorPanel) rightInspectorPanel.hidden = tab !== 'inspector';
-  if (rightCommentsPanel) rightCommentsPanel.hidden = tab !== 'comments';
+  if (rightInspectorPanel instanceof HTMLElement) {
+    rightInspectorPanel.hidden = tab !== 'inspector';
+    rightInspectorPanel.dataset.rightSurfaceProvider = RIGHT_RAIL_SURFACE_PROVIDERS.inspector;
+  }
+  if (rightCommentsPanel instanceof HTMLElement) {
+    rightCommentsPanel.hidden = tab !== 'comments';
+    rightCommentsPanel.dataset.rightSurfaceProvider = RIGHT_RAIL_SURFACE_PROVIDERS.comments;
+  }
+  if (reviewSurfaceHost instanceof HTMLElement) {
+    reviewSurfaceHost.dataset.reviewSurfaceProvider = RIGHT_RAIL_SURFACE_PROVIDERS.comments;
+  }
+}
+
+function applyRightTab(tab) {
+  tab = normalizeRightTab(tab);
+  currentRightTab = tab;
+  syncRightRailCompositionState(tab);
   if (tab === 'inspector') {
     ensureCommandsOpenerInRightInspectorSurface();
     refreshMetadataInspector();
@@ -8983,6 +9007,7 @@ function renderReviewSurface() {
     exactTextApply: reviewSurfaceExactTextApplyTransientState,
   });
   reviewSurfaceHost.dataset.reviewSurfaceStatus = viewModel.status;
+  reviewSurfaceHost.dataset.reviewSurfaceProvider = RIGHT_RAIL_SURFACE_PROVIDERS.comments;
   reviewSurfaceHost.innerHTML = renderReviewSurfaceMarkup(viewModel);
 }
 
@@ -8999,6 +9024,9 @@ async function loadReviewSurfaceFromQuery() {
   const result = await invokeWorkspaceQueryBridge(REVIEW_SURFACE_QUERY_ID);
   if (!result || result.ok === false) {
     return setReviewSurfaceState({});
+  }
+  if (reviewSurfaceHost instanceof HTMLElement) {
+    reviewSurfaceHost.dataset.reviewSurfaceLoadedFrom = REVIEW_SURFACE_QUERY_ID;
   }
   return setReviewSurfaceState(result.reviewSurface);
 }
@@ -11962,10 +11990,8 @@ if (leftTabsHost) {
 }
 
 if (rightTabsHost) {
-  rightTabsHost.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-right-tab]');
-    if (!button) return;
-    const tab = button.dataset.rightTab;
+  const activateRightRailTabButton = (button) => {
+    const tab = button?.dataset?.rightTab;
     if (tab === 'comments') {
       void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_COMMENTS);
       return;
@@ -11973,6 +11999,41 @@ if (rightTabsHost) {
     if (tab === 'inspector') {
       applyRightTab(tab);
     }
+  };
+
+  rightTabsHost.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-right-tab]');
+    if (!button) return;
+    activateRightRailTabButton(button);
+  });
+
+  rightTabsHost.addEventListener('keydown', (event) => {
+    const activeButton = event.target instanceof Element
+      ? event.target.closest('[data-right-tab]')
+      : null;
+    if (!(activeButton instanceof HTMLElement)) return;
+    const buttons = rightTabButtons.filter((button) => button instanceof HTMLElement && !button.hidden);
+    const currentIndex = buttons.indexOf(activeButton);
+    if (currentIndex < 0) return;
+    let nextIndex = currentIndex;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      nextIndex = (currentIndex + 1) % buttons.length;
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      nextIndex = (currentIndex - 1 + buttons.length) % buttons.length;
+    } else if (event.key === 'Home') {
+      nextIndex = 0;
+    } else if (event.key === 'End') {
+      nextIndex = buttons.length - 1;
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      activateRightRailTabButton(activeButton);
+      return;
+    } else {
+      return;
+    }
+    event.preventDefault();
+    buttons[nextIndex].focus();
+    activateRightRailTabButton(buttons[nextIndex]);
   });
 }
 

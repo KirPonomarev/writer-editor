@@ -91,3 +91,39 @@ test('sidebar product truth: inspector projects live values and unopened surface
     assert.equal(html.includes(demoClaim), false, `demo-only sidebar claim shipped: ${demoClaim}`);
   }
 });
+
+test('sidebar composition truth: right rail keeps metadata and review providers separate', () => {
+  const html = read('src/renderer/index.html');
+  const editor = read('src/renderer/editor.js');
+
+  assert.ok(html.includes('data-right-tabs\n          role="tablist"'));
+  assert.ok(html.includes('data-right-tab="inspector"'));
+  assert.ok(html.includes('role="tab"\n              aria-controls="right-panel-inspector"'));
+  assert.ok(html.includes('data-right-tab="comments"'));
+  assert.ok(html.includes('role="tab"\n              aria-controls="right-panel-comments"'));
+  assert.ok(html.includes('data-right-panel-inspector\n          data-right-surface-provider="query.metadataInspector"'));
+  assert.ok(html.includes('data-right-panel-comments\n          data-right-surface-provider="query.reviewSurface"'));
+  assert.ok(html.includes('data-review-surface-provider="query.reviewSurface"'));
+
+  assert.ok(editor.includes('const RIGHT_RAIL_SURFACE_PROVIDERS = Object.freeze({'));
+  assert.ok(editor.includes('inspector: METADATA_INSPECTOR_QUERY_ID'));
+  assert.ok(editor.includes('comments: REVIEW_SURFACE_QUERY_ID'));
+  assert.ok(editor.includes('function syncRightRailCompositionState(tab)'));
+  assert.ok(editor.includes('rightTabsHost.dataset.activeRightProvider = providerId;'));
+  assert.ok(editor.includes("reviewSurfaceHost.dataset.reviewSurfaceLoadedFrom = REVIEW_SURFACE_QUERY_ID;"));
+  assert.ok(editor.includes("if (tab === 'inspector') {\n    ensureCommandsOpenerInRightInspectorSurface();\n    refreshMetadataInspector();\n  }"));
+  assert.equal(editor.includes("if (tab === 'comments') {\n    refreshMetadataInspector();"), false);
+});
+
+test('sidebar composition truth: right rail tabs have keyboard focus behavior', () => {
+  const editor = read('src/renderer/editor.js');
+
+  assert.ok(editor.includes("rightTabsHost.addEventListener('keydown', (event) => {"));
+  assert.ok(editor.includes("event.key === 'ArrowRight' || event.key === 'ArrowDown'"));
+  assert.ok(editor.includes("event.key === 'ArrowLeft' || event.key === 'ArrowUp'"));
+  assert.ok(editor.includes("event.key === 'Home'"));
+  assert.ok(editor.includes("event.key === 'End'"));
+  assert.ok(editor.includes("event.key === 'Enter' || event.key === ' '"));
+  assert.ok(editor.includes('buttons[nextIndex].focus();'));
+  assert.ok(editor.includes('activateRightRailTabButton(buttons[nextIndex]);'));
+});
