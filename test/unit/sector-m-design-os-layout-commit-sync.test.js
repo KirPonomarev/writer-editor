@@ -129,6 +129,46 @@ test('layout commit sync: shell controller preserves dual width model with symme
   assert.equal(restored.rightSidebarWidth, 287);
 });
 
+test('layout commit sync: right rail collapsed state restores without losing expanded width', async () => {
+  const modulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'design-os', 'designOsShellController.mjs')).href;
+  const {
+    buildLayoutPatchFromSpatialState,
+    buildSidebarLayoutModel,
+    buildSpatialStateFromLayoutSnapshot,
+    RIGHT_RAIL_COLLAPSED_WIDTH,
+  } = await import(modulePath);
+
+  const collapsedModel = buildSidebarLayoutModel(
+    { leftSidebarWidth: 306, rightSidebarWidth: 352, rightCollapsed: true },
+    { viewportWidth: 1440, rightVisible: true }
+  );
+  assert.equal(collapsedModel.rightCollapsed, true);
+  assert.equal(collapsedModel.rightExpandedWidth, 352);
+  assert.equal(collapsedModel.rightSidebarWidth, RIGHT_RAIL_COLLAPSED_WIDTH);
+  assert.equal(collapsedModel.constraints.rightRailMode, 'docked');
+
+  const collapsedPatch = buildLayoutPatchFromSpatialState(
+    { leftSidebarWidth: 306, rightSidebarWidth: 352, rightCollapsed: true },
+    { shellMode: 'CALM_DOCKED', viewportWidth: 1440, viewportHeight: 900, rightVisible: true }
+  );
+  assert.equal(collapsedPatch.right_width, RIGHT_RAIL_COLLAPSED_WIDTH);
+  assert.equal(collapsedPatch.right_collapsed, true);
+  assert.equal(collapsedPatch.right_expanded_width, 352);
+
+  const restored = buildSpatialStateFromLayoutSnapshot(
+    {
+      left_width: 306,
+      right_width: RIGHT_RAIL_COLLAPSED_WIDTH,
+      right_collapsed: true,
+      right_expanded_width: 352,
+      viewport_width: 1440,
+    },
+    { viewportMode: 'desktop', rightVisible: true }
+  );
+  assert.equal(restored.rightSidebarWidth, 352);
+  assert.equal(restored.rightCollapsed, true);
+});
+
 test('layout commit sync: responsive model protects the editor and preserves hidden rail width', async () => {
   const modulePath = pathToFileURL(path.join(ROOT, 'src', 'renderer', 'design-os', 'designOsShellController.mjs')).href;
   const {
@@ -183,12 +223,14 @@ test('layout commit sync: responsive model protects the editor and preserves hid
   );
   assert.equal(narrowOverlay.leftRailMode, 'overlay');
   assert.equal(narrowOverlay.constraints.leftRailMode, 'overlay');
+  assert.equal(narrowOverlay.constraints.rightRailMode, 'overlay');
 });
 
 test('layout commit sync: default stylesheet baseline is symmetric for desktop and compact visible-right modes', () => {
   const styles = readStylesSource();
   assert.ok(styles.includes('--app-left-sidebar-width: 290px;'));
   assert.ok(styles.includes('--app-right-sidebar-width: 290px;'));
+  assert.ok(styles.includes('--app-right-sidebar-collapsed-width: 48px;'));
   assert.ok(styles.includes('--app-left-sidebar-width: 260px;'));
   assert.ok(styles.includes('--app-right-sidebar-width: 260px;'));
 });
@@ -199,6 +241,10 @@ test('layout commit sync: stylesheet projects single-rail mode without overflow 
 
   assert.ok(styles.includes('.app-layout[data-sidebar-layout="single"]'));
   assert.ok(styles.includes('grid-template-columns: var(--app-left-sidebar-collapsed-width) minmax(0, 1fr);'));
+  assert.ok(styles.includes('.app-layout[data-sidebar-layout="dual"][data-right-rail-collapsed="true"]'));
+  assert.ok(styles.includes('var(--app-right-sidebar-collapsed-width);'));
+  assert.ok(styles.includes('.app-layout[data-right-rail-mode="overlay"] .sidebar--right.is-overlay-mode.is-overlay-open'));
+  assert.ok(readRuntimeSource().includes("'right_expanded_width',"));
   assert.ok(styles.includes('.sidebar--right[hidden],'));
   assert.ok(styles.includes('.sidebar__resize-handle[hidden]'));
   assert.ok(styles.includes('@media (max-width: 899px)'));
@@ -213,6 +259,11 @@ test('layout commit sync: stylesheet projects single-rail mode without overflow 
   assert.equal(styles.includes('width: calc(120px * var(--floating-toolbar-width-scale));'), false);
 
   assert.ok(editor.includes('appLayout.dataset.sidebarLayout = constraints.layoutVariant;'));
+  assert.ok(editor.includes('appLayout.dataset.rightRailCollapsed = effectiveRightCollapsed ?'));
+  assert.ok(editor.includes('appLayout.dataset.rightRailOverlayOpen = rightOverlayActive ?'));
+  assert.ok(editor.includes("case 'toggle-right-rail':"));
+  assert.ok(editor.includes("case 'close-right-rail-overlay':"));
+  assert.ok(editor.includes('setRightRailOverlayOpen(false, { restoreFocus: false });'));
   assert.ok(editor.includes("pointerTarget?.classList.add('is-resizing');"));
   assert.ok(editor.includes("activeHandle?.classList.remove('is-resizing');"));
   assert.ok(editor.includes('leftShellRect.right + 16'));
