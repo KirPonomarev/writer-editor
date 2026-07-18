@@ -86,7 +86,7 @@ export function buildLeftRailPresentationTree(rawRoot) {
     workspaceChildren.push(
       createPresentationGroup({
         id: 'left-rail-manuscript',
-        label: 'Manuscript',
+        label: 'Рукопись',
         kind: 'presentation-manuscript',
         children: manuscriptChildren,
         expandKey: 'left-rail:manuscript',
@@ -98,7 +98,7 @@ export function buildLeftRailPresentationTree(rawRoot) {
     workspaceChildren.push(
       createPresentationGroup({
         id: 'left-rail-notes',
-        label: 'Notes',
+        label: 'Заметки',
         kind: 'presentation-notes',
         children: notesChildren,
         expandKey: 'left-rail:notes',
@@ -108,7 +108,7 @@ export function buildLeftRailPresentationTree(rawRoot) {
 
   return createPresentationGroup({
     id: 'left-rail-workspace',
-    label: 'Workspace',
+    label: 'Проект',
     kind: 'presentation-workspace',
     children: workspaceChildren,
     expandKey: 'left-rail:workspace',
@@ -133,4 +133,61 @@ export function getLeftRailPresentationKind(node) {
 
 export function isLeftRailPresentationDefaultExpanded(node) {
   return Boolean(node && node.presentationDefaultExpanded);
+}
+
+export function resolveLeftRailActiveReveal(root, targetNodeId, expandedKeys = []) {
+  const targetId = typeof targetNodeId === 'string' ? targetNodeId.trim() : '';
+  const currentKeys = expandedKeys instanceof Set ? expandedKeys : new Set(expandedKeys);
+  if (!root || typeof root !== 'object' || !targetId) {
+    return { found: false, changed: false, ancestorKeys: [], expandedKeys: new Set(currentKeys) };
+  }
+
+  const parents = new Map([[root, null]]);
+  const stack = [root];
+  let target = null;
+  while (stack.length) {
+    const node = stack.pop();
+    const nodeId = typeof node.nodeId === 'string' && node.nodeId
+      ? node.nodeId
+      : (typeof node.id === 'string' ? node.id : '');
+    if (nodeId === targetId) {
+      target = node;
+      break;
+    }
+    const children = Array.isArray(node.children) ? node.children : [];
+    for (let index = children.length - 1; index >= 0; index -= 1) {
+      const child = children[index];
+      if (!child || typeof child !== 'object') continue;
+      parents.set(child, node);
+      stack.push(child);
+    }
+  }
+
+  if (!target) {
+    return { found: false, changed: false, ancestorKeys: [], expandedKeys: new Set(currentKeys) };
+  }
+
+  const ancestors = [];
+  for (let parent = parents.get(target); parent; parent = parents.get(parent)) {
+    ancestors.push(parent);
+  }
+  ancestors.reverse();
+
+  const nextKeys = new Set(currentKeys);
+  const ancestorKeys = [];
+  let changed = false;
+  for (const ancestor of ancestors) {
+    if (!Array.isArray(ancestor.children) || ancestor.children.length === 0) continue;
+    const expandKey = getLeftRailPresentationExpandKey(ancestor);
+    if (!expandKey) continue;
+    ancestorKeys.push(expandKey);
+    const collapsedKey = `collapsed:${expandKey}`;
+    if (nextKeys.delete(collapsedKey)) changed = true;
+    if (!nextKeys.has(expandKey)) {
+      nextKeys.add(expandKey);
+      changed = true;
+    }
+  }
+
+  return { found: true, changed, ancestorKeys, expandedKeys: nextKeys };
 }

@@ -70,7 +70,7 @@ test('active document channel exposes document identity without renderer path au
   const sendSection = functionSection(main, 'sendEditorText', 'attachProjectIdToEditorPayload');
   const attachSection = functionSection(main, 'attachProjectIdToEditorPayload', 'sendEditorFontSize');
   const listenerStart = editor.indexOf('window.electronAPI.onEditorSetText((payload) => {');
-  const listenerEnd = editor.indexOf('renderTree();', listenerStart);
+  const listenerEnd = editor.indexOf('window.electronAPI.onEditorTextRequest', listenerStart);
   const listenerSection = editor.slice(listenerStart, listenerEnd);
 
   assert.match(sendSection, /documentId: typeof payload\.documentId/u);

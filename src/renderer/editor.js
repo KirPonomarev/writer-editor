@@ -56,6 +56,7 @@ import {
   getLeftRailPresentationExpandKey,
   getLeftRailPresentationKind,
   isLeftRailPresentationDefaultExpanded,
+  resolveLeftRailActiveReveal,
 } from './leftRailPresentationModel.mjs';
 import {
   applyPreviewChromeCssVars,
@@ -469,6 +470,7 @@ const activeTab = 'roman';
 let currentDocumentId = null;
 let currentDocumentKind = null;
 let currentProjectId = '';
+let activeDocumentRevealRequested = false;
 let spatialLayoutState = null;
 let flowModeState = {
   active: false,
@@ -7301,17 +7303,46 @@ function saveExpandedSet(tab) {
   } catch {}
 }
 
-function getTitleFromPath(filePath) {
-  if (!filePath) return '';
-  const parts = filePath.split(/[\\/]/);
-  const fileName = parts[parts.length - 1] || '';
-  return fileName.replace(/^\d+_/, '').replace(/\.txt$/i, '');
+function revealActiveDocumentAncestors({ persist = false } = {}) {
+  if (!treeRoot || !currentDocumentId) {
+    return { found: false, changed: false, ancestorKeys: [] };
+  }
+  const presentationRoot = buildLeftRailPresentationTree(treeRoot);
+  const result = resolveLeftRailActiveReveal(
+    presentationRoot,
+    currentDocumentId,
+    getExpandedSet(activeTab),
+  );
+  if (result.changed) {
+    expandedNodesByTab.set(activeTab, result.expandedKeys);
+    if (persist) saveExpandedSet(activeTab);
+  }
+  return result;
+}
+
+function scheduleActiveTreeRowReveal({ restoreEditorFocus = false } = {}) {
+  if (!treeContainer || !currentDocumentId) return;
+  requestAnimationFrame(() => {
+    const activeRow = treeContainer.querySelector('.tree__row[data-active-document="true"]');
+    if (activeRow instanceof HTMLElement) {
+      activeRow.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+    if (restoreEditorFocus) {
+      requestAnimationFrame(() => {
+        focusEditorSurface('current');
+      });
+    }
+  });
 }
 
 function getEffectiveDocumentId(node) {
   if (!node) return '';
   if (typeof node.nodeId === 'string' && node.nodeId) return node.nodeId;
   return typeof node.id === 'string' ? node.id : '';
+}
+
+function isProjectTreeDocumentId(value) {
+  return typeof value === 'string' && /^tree-node-[a-f0-9]{32}$/u.test(value);
 }
 
 function getEffectiveDocumentKind(node) {
@@ -7405,18 +7436,21 @@ function closeCardModal() {
 async function openDocumentNode(node) {
   const documentId = getEffectiveDocumentId(node);
   if (!documentId) return false;
+  activeDocumentRevealRequested = true;
   try {
     const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, {
       projectId: currentProjectId,
       nodeId: documentId,
     });
     if (!result || result.ok === false) {
+      activeDocumentRevealRequested = false;
       return false;
     }
     const value = result.value && typeof result.value === 'object' && !Array.isArray(result.value)
       ? result.value
       : null;
     if (value && value.cancelled) {
+      activeDocumentRevealRequested = false;
       return false;
     }
     currentDocumentId = value && typeof value.documentId === 'string'
@@ -7428,6 +7462,7 @@ async function openDocumentNode(node) {
     updateInspectorSnapshot();
     return true;
   } catch {
+    activeDocumentRevealRequested = false;
     return false;
   }
 }
@@ -7573,8 +7608,13 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
   row.dataset.kind = getTreeNodePresentationKind(node);
 
   const effectiveDocumentId = getEffectiveDocumentId(node);
+  if (effectiveDocumentId) {
+    row.dataset.documentId = effectiveDocumentId;
+  }
   if (currentDocumentId && effectiveDocumentId && currentDocumentId === effectiveDocumentId) {
     row.classList.add('is-selected');
+    row.dataset.activeDocument = 'true';
+    row.setAttribute('aria-current', 'true');
   }
 
   const indent = document.createElement('span');
@@ -7713,7 +7753,7 @@ function findRomanRootNode(root) {
   return null;
 }
 
-function renderTree() {
+function renderTree({ revealActive = false, restoreEditorFocus = false } = {}) {
   if (!treeContainer) return;
   treeContainer.innerHTML = '';
   if (!treeRoot) {
@@ -7737,6 +7777,9 @@ function renderTree() {
     list.appendChild(renderTreeNode(child, 0, index === nodesToRender.length - 1, []));
   });
   treeContainer.appendChild(list);
+  if (revealActive) {
+    scheduleActiveTreeRowReveal({ restoreEditorFocus });
+  }
   renderOutlineList();
   renderSearchResults(leftSearchInput ? leftSearchInput.value : '');
   updateInspectorSnapshot();
@@ -7777,7 +7820,17 @@ async function loadTree() {
         }
       }
     }
-    renderTree();
+    const shouldRevealActiveDocument = activeDocumentRevealRequested && isProjectTreeDocumentId(currentDocumentId);
+    const revealResult = shouldRevealActiveDocument
+      ? revealActiveDocumentAncestors({ persist: true })
+      : { found: false };
+    if (revealResult.found) {
+      activeDocumentRevealRequested = false;
+    }
+    renderTree({
+      revealActive: revealResult.found,
+      restoreEditorFocus: revealResult.found,
+    });
   } catch {
     updateStatusText('Ошибка');
   }
@@ -11512,6 +11565,9 @@ if (window.electronAPI) {
     const projectId = hasProjectId && typeof payload.projectId === 'string' ? payload.projectId : '';
     const bookProfile = hasBookProfile ? payload.bookProfile : null;
     const nextMetaEnabled = typeof payload === 'object' && payload ? Boolean(payload.metaEnabled) : false;
+    const shouldRevealActiveDocument = isProjectTreeDocumentId(documentId) && (
+      activeDocumentRevealRequested || documentId !== currentDocumentId
+    );
 
     clearFlowModeState();
     metaEnabled = nextMetaEnabled;
@@ -11575,11 +11631,18 @@ if (window.electronAPI) {
       scheduleCentralSheetStripProofRefresh();
     }
 
-    const resolvedTitle = title || getTitleFromPath(path);
+    const resolvedTitle = title || '';
     if (resolvedTitle) {
       showEditorPanelFor(resolvedTitle);
     }
-    renderTree();
+    const revealResult = shouldRevealActiveDocument
+      ? revealActiveDocumentAncestors({ persist: true })
+      : { found: false };
+    renderTree({
+      revealActive: revealResult.found,
+      restoreEditorFocus: revealResult.found && Boolean(resolvedTitle),
+    });
+    activeDocumentRevealRequested = shouldRevealActiveDocument && !revealResult.found;
     updateSaveStateText('loaded');
     updatePerfHintText('normal');
     updateInspectorSnapshot();
