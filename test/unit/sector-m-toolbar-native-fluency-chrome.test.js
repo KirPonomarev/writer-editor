@@ -38,10 +38,10 @@ test('sector-m toolbar native fluency chrome: tokenized spacing ladder and quiet
   assert.ok(styles.includes('--toolbar-chrome-slot-icon: 28px;'));
   assert.ok(styles.includes('--toolbar-chrome-radius-button: 10px;'));
   assert.ok(styles.includes('--toolbar-chrome-radius-control: 10px;'));
-  assert.ok(styles.includes('--toolbar-chrome-ink: rgba(45, 39, 33, 0.92);'));
-  assert.ok(styles.includes('--toolbar-chrome-ink-strong: rgba(31, 26, 21, 0.96);'));
-  assert.ok(styles.includes('--toolbar-chrome-ink-muted: rgba(45, 39, 33, 0.82);'));
-  assert.ok(styles.includes('--toolbar-chrome-field-bg: rgba(248, 246, 243, 0.94);'));
+  assert.ok(styles.includes('--toolbar-chrome-ink: rgba(45, 39, 33, 0.82);'));
+  assert.ok(styles.includes('--toolbar-chrome-ink-strong: rgba(31, 26, 21, 0.9);'));
+  assert.ok(styles.includes('--toolbar-chrome-ink-muted: rgba(45, 39, 33, 0.72);'));
+  assert.ok(styles.includes('--toolbar-chrome-field-bg: rgba(248, 246, 243, 0.72);'));
   assert.ok(styles.includes('--toolbar-chrome-quiet-bg:'));
   assert.ok(styles.includes('--toolbar-chrome-hover-bg:'));
   assert.ok(styles.includes('--toolbar-chrome-active-bg:'));
